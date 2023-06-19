@@ -1,4 +1,4 @@
-import { useAppConfig } from '$lib/hooks/useAppConfig';
+import { useAppConfig } from '../../lib/hooks/useAppConfig';
 import { Flex, Stack, useMantineTheme, MediaQuery } from '@mantine/core';
 import Head from 'next/head';
 

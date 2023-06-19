@@ -1,5 +1,8 @@
-import { USER_PREF_COORDS, USER_PREF_LOCATION } from '$lib/constants/cookies';
-import { parseHtml } from '$lib/utils/parseHtml';
+import {
+  USER_PREF_COORDS,
+  USER_PREF_LOCATION,
+} from '../../lib/constants/cookies';
+import { parseHtml } from '../../lib/utils/parseHtml';
 import {
   Card,
   Badge,
@@ -25,8 +28,8 @@ import {
   IconNavigation,
   IconHeartMinus,
 } from '@tabler/icons-react';
-import { Anchor } from 'components/atoms/Anchor';
-import { ReferralButton } from 'components/atoms/ReferralButton';
+import { Anchor } from '../atoms/Anchor';
+import { ReferralButton } from '../atoms/ReferralButton';
 import { useTranslation } from 'next-i18next';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';

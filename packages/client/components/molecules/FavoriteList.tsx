@@ -1,4 +1,4 @@
-import { FavoriteAdapter } from '$lib/adapters/FavoriteAdapter';
+import { FavoriteAdapter } from '../../lib/adapters/FavoriteAdapter';
 import {
   Card,
   Group,
