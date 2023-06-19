@@ -9,6 +9,7 @@ import { ensureLocale } from './middleware/ensureLocale';
 import { connect as mongooseClient } from './lib/mongoose';
 import { errorHandler } from './middleware/errorHandler';
 import { logger } from './lib/winston';
+import { rateLimiter } from './middleware/rateLimiter';
 
 async function start() {
   const port = process.env.PORT ? Number(process.env.PORT) : 3001;
@@ -22,6 +23,7 @@ async function start() {
   app.use(compression());
   app.use(express.json());
   app.use(ensureLocale('en'));
+  app.use(rateLimiter());
 
   app.get('/__health', (req, res) => {
     res.sendStatus(200);
