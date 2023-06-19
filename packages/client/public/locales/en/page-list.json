@@ -1,0 +1,9 @@
+{
+  "meta_title": "Viewing list",
+  "back_to_favorites": "Back to favorites",
+  "favorites": "Favorites",
+  "no_favorites": {
+    "title": "Nothing here yet :(",
+    "subtitle": "Add some favorites on the search page to see them here"
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "header": {
+    "home": "Home",
+    "favorites": "Favorites",
+    "log_out": "Log out",
+    "submit_feedback": "Submit feedback",
+    "language_select_label": "Select a language to change the site language"
+  },
+  "search": {
+    "hero_title": "",
+    "query_placeholder": "",
+    "location_placeholder": "",
+    "radius_placeholder": "Radius",
+    "miles": "Miles",
+    "any": "Any",
+    "taxonomies": "Taxonomies",
+    "suggestions": "Suggestions",
+    "use_my_location": "Use my location",
+    "confidential_address": "This location may be confidential or not open to the public. Please choose another provided contact method for this service.",
+    "address_unavailable": "Address unavailable"
+  },
+  "call_to_action": {
+    "call": "Call",
+    "view_website": "View website",
+    "get_directions": "Get directions",
+    "view_details": "View details",
+    "add_to_list": "Add to list",
+    "delete_list": "Delete list",
+    "remove_from_list": "Remove from list",
+    "share": "Share",
+    "cancel": "Cancel",
+    "create": "Create",
+    "update": "Update",
+    "delete": "Delete",
+    "search": "Search",
+    "remove": "Remove",
+    "login": "Login"
+  },
+  "list": {
+    "private": "Private",
+    "public": "Public"
+  },
+  "message": {
+    "list_deleted": "List deleted",
+    "list_deleted_success": "Your list has been deleted.",
+    "error": "Error",
+    "list_not_deleted_error": "Your list could not be deleted."
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "Search your lists",
+      "list_name": "List",
+      "list_privacy": "Privacy",
+      "add_to_list": "Add to list",
+      "not_found": "No lists found",
+      "create_new_list": "Create a new one?"
+    },
+    "remove_from_list": {
+      "are_you_sure": "Are you sure want to remove this favorite from your list?"
+    },
+    "create_list": {
+      "create_a_list": "Create a list",
+      "list_name": "Name",
+      "list_description": "Description",
+      "make_public": "Make public"
+    },
+    "update_list": {
+      "update_list": "Update list",
+      "list_name": "Name",
+      "list_description": "Description",
+      "make_public": "Make public"
+    },
+    "delete_list": {
+      "delete_list": "Delete list"
+    },
+    "share": {
+      "share_via": "Share this via",
+      "copy_link": "Copy link",
+      "copy": "Copy",
+      "facebook": "Facebook",
+      "twitter": "Twitter",
+      "sms": "SMS",
+      "email": "Email",
+      "print": "Print",
+      "copied": "Copied!",
+      "check_out_this_list": "Check out this list I made!",
+      "check_out_this_resource": "Check out this resource I found!",
+      "share_sms": "Enter a phone number to share via SMS",
+      "enter_phone_number": "Enter phone number...",
+      "invalid_phone_number": "Invalid phone number",
+      "sms_sending_title": "Sending SMS...",
+      "sms_sending_body": "Your message is being sent.",
+      "sms_send_success_title": "SMS sent!",
+      "sms_send_success_body": "Your message has been sent.",
+      "sms_send_failed_title": "SMS send failed",
+      "sms_send_failed_body": "Your message failed to send."
+    },
+    "prompt_auth": "Please login to use this feature."
+  },
+  "data_providers": {
+    "provided_by": "Resources provided by"
+  },
+  "footer": {
+    "copyright": "All rights reserved.",
+    "privacy_policy": "Privacy policy"
+  }
+}

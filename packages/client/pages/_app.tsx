@@ -1,18 +1,63 @@
-import { AppProps } from 'next/app';
+import { appWithTranslation } from 'next-i18next';
+import { SessionProvider } from 'next-auth/react';
+import { MantineProvider } from '@mantine/core';
+import { Theme } from '../lib/theme/main';
+import { Notifications } from '@mantine/notifications';
+import { PrevUrlProvider } from '../lib/context/PrevUrl';
+import { PageView } from '../components/organisms/PageView';
 import Head from 'next/head';
-import './styles.css';
+import { GoogleTagManagerScript } from '../components/atoms/GoogleTagManagerScript';
+import { CookiesProvider } from 'react-cookie';
+import { useAppConfig } from '../lib/hooks/useAppConfig';
+import { ModalsProvider } from '@mantine/modals';
+import {
+  AddToFavoritesModal,
+  CreateFavoriteListModal,
+  RemoveFavoriteFromListModal,
+  SendSmsModal,
+  ShareModal,
+  UpdateFavoriteListModal,
+} from '../components/organisms/modals';
+import { PromptAuthModal } from '../components/organisms/modals/PromptAuth';
+import { AppProps } from 'next/app';
 
-function CustomApp({ Component, pageProps }: AppProps) {
+function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
+  const appConfig = useAppConfig();
+
   return (
     <>
       <Head>
-        <title>Welcome to client!</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href={appConfig?.brand?.faviconUrl ?? '/favicon'} />
       </Head>
-      <main className="app">
-        <Component {...pageProps} />
-      </main>
+
+      <PageView />
+
+      <SessionProvider session={session}>
+        <CookiesProvider>
+          <MantineProvider withGlobalStyles withNormalizeCSS theme={Theme}>
+            <Notifications />
+            <ModalsProvider
+              modals={{
+                share: ShareModal,
+                'add-to-favorites': AddToFavoritesModal,
+                sms: SendSmsModal,
+                'prompt-auth': PromptAuthModal,
+                'create-list': CreateFavoriteListModal,
+                'update-list': UpdateFavoriteListModal,
+                'remove-from-list': RemoveFavoriteFromListModal,
+              }}
+            >
+              <PrevUrlProvider>
+                <Component {...pageProps} />
+                <GoogleTagManagerScript />
+              </PrevUrlProvider>
+            </ModalsProvider>
+          </MantineProvider>
+        </CookiesProvider>
+      </SessionProvider>
     </>
   );
 }
 
-export default CustomApp;
+export default appWithTranslation(App);

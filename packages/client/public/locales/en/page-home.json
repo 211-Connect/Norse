@@ -1,0 +1,22 @@
+{
+  "meta_title": "",
+  "meta_description": "",
+  "take_a_tour": "First time here? Take a tour!",
+  "new": "New!",
+  "tour": {
+    "step_1": {
+      "paragraph_1": "The search box is the backbone of the search engine. It accepts common words, phrases, etc (i.e. 'food pantries')",
+      "paragraph_2": "As you type, the search box will provide suggestions based on categories we use behind the scenes. These suggestions will provide the most accurate results, however you aren't required to use them.",
+      "paragraph_3": "If you choose not to use the provided suggestions, we will use the text you provide to retrieve the most accurate results that we can."
+    },
+    "step_2": {
+      "paragraph_1": "Not quite sure what you're looking for? That's alright!",
+      "paragraph_2": "We provide many different categories and subcategories for you to explore. Simply click on any of the links in the category section to be taken to the search results."
+    },
+    "step_3": {
+      "paragraph_1": "Sometimes things break, that we don't expect to break.",
+      "paragraph_2": "If you ever find something broken, or even just want to provide some feedback in to the overall experience then you can click on the feedback button at any time."
+    }
+  },
+  "categories_title": "Categories"
+}

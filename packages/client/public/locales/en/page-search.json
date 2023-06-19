@@ -1,0 +1,12 @@
+{
+  "filter_results": "Filter results",
+  "results": "results",
+  "no_query": "No query provided",
+  "results_for": "results found for query",
+  "of": "of",
+  "no_results": {
+    "title": "No results found matching your query",
+    "subtitle": "We've provided some similar results below",
+    "alt_subtitle": "Try a different query or filter"
+  }
+}

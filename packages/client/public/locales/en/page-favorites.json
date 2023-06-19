@@ -1,0 +1,10 @@
+{
+  "meta_title": "Viewing your favorite lists",
+  "meta_description": "Viewing your favorite lists",
+  "lists": "lists",
+  "view_list": "View list",
+  "edit_list": "Edit list",
+  "delete_list": "Delete list",
+  "select_a_list": "Select a list on the side to view your favorites.",
+  "no_lists": "You have no lists yet."
+}

@@ -1,0 +1,12 @@
+{
+  "filter_results": "Filtrar Resultados",
+  "results": "resultados",
+  "no_query": "No se proporcionó ninguna consulta",
+  "results_for": "resultados encontrados para la consulta",
+  "of": "de",
+  "no_results": {
+    "title": "No se encontraron resultados que coincidan con su consulta",
+    "subtitle": "Hemos proporcionado algunos resultados similares a continuación",
+    "alt_subtitle": "Pruebe con una consulta o filtro diferente"
+  }
+}

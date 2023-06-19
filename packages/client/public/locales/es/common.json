@@ -1,0 +1,107 @@
+{
+  "header": {
+    "home": "Hogar",
+    "favorites": "Favoritos",
+    "log_out": "Cerrar sesión",
+    "submit_feedback": "Enviar comentarios",
+    "language_select_label": "Seleccione un idioma para cambiar el idioma del sitio"
+  },
+  "search": {
+    "hero_title": "",
+    "query_placeholder": "",
+    "location_placeholder": "",
+    "radius_placeholder": "Radio",
+    "miles": "Millas",
+    "any": "Cualquier",
+    "taxonomies": "Taxonomías",
+    "suggestions": "Sugerencias",
+    "use_my_location": "usar mi ubicación",
+    "confidential_address": "Esta ubicación puede ser confidencial o no estar abierta al público. Elija otro método de contacto proporcionado para este servicio.",
+    "address_unavailable": "Dirección no disponible"
+  },
+  "call_to_action": {
+    "call": "Llamar",
+    "view_website": "ver sitio web",
+    "get_directions": "Obtener las direcciones",
+    "view_details": "Ver detalles",
+    "add_to_list": "Agregar a la lista",
+    "delete_list": "Eliminar lista",
+    "remove_from_list": "Quitar de la lista",
+    "share": "Compartir",
+    "cancel": "Cancelar",
+    "create": "Crear",
+    "update": "Actualizar",
+    "delete": "Borrar",
+    "search": "Buscar",
+    "remove": "Eliminar",
+    "login": "Acceso"
+  },
+  "list": {
+    "private": "Privado",
+    "public": "Público"
+  },
+  "message": {
+    "list_deleted": "Lista eliminada",
+    "list_deleted_success": "Su lista ha sido eliminada.",
+    "error": "Error",
+    "list_not_deleted_error": "No se pudo eliminar su lista."
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "Busca en tus listas",
+      "list_name": "Lista",
+      "list_privacy": "Privacidad",
+      "add_to_list": "Agregar a la lista",
+      "not_found": "No se encontraron listas",
+      "create_new_list": "¿Crear uno nuevo?"
+    },
+    "remove_from_list": {
+      "are_you_sure": "¿Seguro que quieres eliminar este favorito de tu lista?"
+    },
+    "create_list": {
+      "create_a_list": "Crear una lista",
+      "list_name": "Nombre",
+      "list_description": "Descripción",
+      "make_public": "Hacer público"
+    },
+    "update_list": {
+      "update_list": "Lista de actualizacion",
+      "list_name": "Nombre",
+      "list_description": "Descripción",
+      "make_public": "Hacer público"
+    },
+    "delete_list": {
+      "delete_list": "Eliminar lista"
+    },
+    "share": {
+      "share_via": "Comparte esto a través de",
+      "copy_link": "Copiar link",
+      "copy": "Copiar",
+      "facebook": "Facebook",
+      "twitter": "Gorjeo",
+      "sms": "SMS",
+      "email": "Correo electrónico",
+      "print": "Imprimir",
+      "copied": "¡Copiado!",
+      "check_out_this_list": "¡Mira esta lista que hice!",
+      "check_out_this_resource": "¡Mira este recurso que encontré!",
+      "share_sms": "Introduce un número de teléfono para compartir por SMS",
+      "enter_phone_number": "Ingresa número telefónico...",
+      "invalid_phone_number": "Numero de telefono invalido",
+      "sms_sending_title": "Enviando SMS...",
+      "sms_sending_body": "Su mensaje esta siendo enviado.",
+      "sms_send_success_title": "SMS enviado!",
+      "sms_send_success_body": "Tu mensaje ha sido enviado.",
+      "sms_send_failed_title": "Envío de SMS fallido",
+      "sms_send_failed_body": "Su mensaje no se pudo enviar."
+    },
+    "prompt_auth": "Inicia sesión para utilizar esta función."
+  },
+  "data_providers": {
+    "provided_by": "Recursos proporcionados por"
+  },
+  "footer": {
+    "copyright": "Reservados todos los derechos.",
+    "privacy_policy": "Política de privacidad"
+  }
+}
