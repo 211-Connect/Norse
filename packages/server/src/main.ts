@@ -1,21 +1,38 @@
-/**
- * This is not a production server yet!
- * This is only a minimal backend to get started.
- */
-
 import express from 'express';
-import * as path from 'path';
+import compression from 'compression';
+import cors from 'cors';
+import helmet from 'helmet';
 
-const app = express();
+import apiRoutes from './routes';
+import redisClient from './lib/redis';
+import { ensureLocale } from './middleware/ensureLocale';
+import { connect as mongooseClient } from './lib/mongoose';
+import { errorHandler } from './middleware/errorHandler';
+import { logger } from './lib/winston';
 
-app.use('/assets', express.static(path.join(__dirname, 'assets')));
+async function start() {
+  const port = process.env.PORT ? Number(process.env.PORT) : 3001;
+  const app = express();
 
-app.get('/api', (req, res) => {
-  res.send({ message: 'Welcome to server!' });
-});
+  await redisClient.connect();
+  await mongooseClient();
 
-const port = process.env.PORT || 3333;
-const server = app.listen(port, () => {
-  console.log(`Listening at http://localhost:${port}/api`);
-});
-server.on('error', console.error);
+  app.use(helmet());
+  app.use(cors());
+  app.use(compression());
+  app.use(express.json());
+  app.use(ensureLocale('en'));
+
+  app.get('/__health', (req, res) => {
+    res.sendStatus(200);
+  });
+
+  app.use('/', apiRoutes);
+  app.use(errorHandler);
+
+  app.listen(port, () => {
+    logger.debug(`[ ready ] *:${port}`);
+  });
+}
+
+start();
