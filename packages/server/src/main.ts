@@ -21,7 +21,9 @@ async function start() {
   app.use(cors());
   app.use(compression());
   app.use(express.json());
-  app.use(rateLimiter());
+  // TODO: Gather metrics so that we can rate limit better
+  // This is a general place holder for now
+  app.use(rateLimiter(1000));
 
   app.get('/__health', (req, res) => {
     res.sendStatus(200);
