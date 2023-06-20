@@ -4,6 +4,7 @@ import qs from 'qs';
 import { flatten, unflatten } from 'flat';
 import client from '../lib/redis';
 import { logger } from '../lib/winston';
+import z from 'zod';
 
 const populate = qs.stringify({
   populate: {
@@ -16,15 +17,19 @@ const populate = qs.stringify({
   },
 });
 
+const requiredQueryParams = z.object({
+  tenant_id: z.string(),
+});
 export function tenantMiddleware(): RequestHandler {
   return async (req, res, next) => {
     if (process.env.MULTI_TENANT !== 'true') return next();
+    const q = await requiredQueryParams.parseAsync(req.query);
 
-    const tenantIdHeader = req.headers['x-tenant-id'] as string;
-    if (!tenantIdHeader) return res.sendStatus(400);
+    const tenantIdQuery = q.tenant_id;
+    if (!tenantIdQuery) return res.sendStatus(400);
 
     try {
-      const data = await client.hGetAll(tenantIdHeader);
+      const data = await client.hGetAll(tenantIdQuery);
       const unflattenedData: any = unflatten(data);
 
       if (Object.keys(unflattenedData).length > 0) {
@@ -32,7 +37,7 @@ export function tenantMiddleware(): RequestHandler {
         return next();
       } else {
         const response = await axios.get(
-          `${process.env.STRAPI_URL}/api/tenants?filters[tenantId][$eq]=${tenantIdHeader}&${populate}`,
+          `${process.env.STRAPI_URL}/api/tenants?filters[tenantId][$eq]=${tenantIdQuery}&${populate}`,
           {
             headers: {
               Authorization: `Bearer ${process.env.STRAPI_TOKEN}`,
@@ -49,7 +54,7 @@ export function tenantMiddleware(): RequestHandler {
         const promises: Promise<any>[] = [];
         for (const prop in flattened) {
           if (flattened[prop] != null) {
-            promises.push(client.hSet(tenantIdHeader, prop, flattened[prop]));
+            promises.push(client.hSet(tenantIdQuery, prop, flattened[prop]));
           }
         }
 
