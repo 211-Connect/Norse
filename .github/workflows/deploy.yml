@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+defaults:
+  run:
+    working-directory: ./docs
+
 jobs:
   deploy:
     name: Deploy to GitHub Pages
@@ -16,8 +20,6 @@ jobs:
           node-version: 18
           cache: npm
 
-      - name: Change directories
-        run: cd docs
       - name: Install dependencies
         run: npm ci
       - name: Build website
