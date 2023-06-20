@@ -39,15 +39,8 @@ export interface IResource {
 }
 
 export class ResourceAdapter extends BaseAdapter {
-  public async getResource(
-    id: string,
-    config?: { locale?: string }
-  ): Promise<IResource> {
-    const { data } = await this.axios.get(`/resource/${id}`, {
-      ...(config && config.locale
-        ? { headers: { 'x-locale': config.locale } }
-        : {}),
-    });
+  public async getResource(id: string): Promise<IResource> {
+    const { data } = await this.axios.get(`/resource/${id}`);
 
     return {
       id: data._id,

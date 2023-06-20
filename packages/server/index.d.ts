@@ -14,6 +14,7 @@ declare global {
         name: string;
         tenantId: string;
         facets: Facets[];
+        keycloakRealmId: string;
         appConfig: {
           brandName: string;
           keycloakConfig: {

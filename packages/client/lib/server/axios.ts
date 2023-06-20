@@ -5,7 +5,6 @@ import { parseCookies } from 'nookies';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 const TENANT_ID = process.env.NEXT_PUBLIC_TENANT_ID;
-const REALM_ID = process.env.NEXT_PUBLIC_KEYCLOAK_REALM;
 
 export function getServerSideAxios(
   ctx: GetServerSidePropsContext,
@@ -13,8 +12,6 @@ export function getServerSideAxios(
 ) {
   const headers: RawAxiosRequestHeaders = {
     'Content-Type': 'application/json',
-    'x-tenant-id': TENANT_ID,
-    'x-realm-id': REALM_ID,
   };
 
   if (session) {
@@ -26,9 +23,13 @@ export function getServerSideAxios(
     headers['x-session-id'] = cookies['session-id'];
   }
 
-  let axiosAuth = axios.create({
+  const axiosAuth = axios.create({
     baseURL: BASE_URL,
     headers,
+    params: {
+      tenant_id: TENANT_ID,
+      locale: ctx.locale,
+    },
   });
 
   return axiosAuth;

@@ -9,11 +9,13 @@ const router = Router();
 const resourceByIdSchema = z.object({
   id: z.string(),
 });
-
+const resourceQuerySchema = z.object({
+  locale: z.string().default('en'),
+});
 router.get('/:id', async (req, res) => {
   try {
     const { id } = await resourceByIdSchema.parseAsync(req.params);
-    const locale = req.headers['x-locale'] || 'en';
+    const { locale } = await resourceQuerySchema.parseAsync(req.query);
 
     const resource = await Resource.findById(id, {
       noop: 0,

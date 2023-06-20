@@ -6,6 +6,9 @@ import { logger } from '../lib/winston';
 
 const router = Router();
 
+const localeQuerySchema = z.object({
+  locale: z.string().default('en'),
+});
 router.get('/', authorizeMiddleware(), async (req, res) => {
   const favoriteLists = await FavoriteList.find({
     ownerId: req.user.id,
@@ -38,8 +41,7 @@ router.get('/search', authorizeMiddleware(), async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
-  const locale = req.headers['x-locale'] || 'en';
-
+  const { locale } = await localeQuerySchema.parseAsync(req.query);
   const favoriteList = await FavoriteList.findById(req.params.id).populate({
     path: 'favorites',
     model: 'resource',

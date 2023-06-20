@@ -9,18 +9,19 @@ import { logger } from '../lib/winston';
 export function authorizeMiddleware(): RequestHandler {
   return async (req, res, next) => {
     const authHeader = req.headers['authorization'];
-    const realmId = req.headers['x-realm-id'];
-    if (!authHeader || !authHeader.startsWith('Bearer ') || !realmId) {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.sendStatus(401);
     }
 
-    const certs = await client.hGetAll(`keycloak-realm-${realmId}`);
+    const certs = await client.hGetAll(
+      `keycloak-realm-${req.tenant.keycloakRealmId}`
+    );
     const unflattenedData: any = unflatten(certs);
 
     let response;
     if (Object.keys(unflattenedData).length === 0) {
       response = await axios.get(
-        `${process.env.KEYCLOAK_URL}/realms/${realmId}/protocol/openid-connect/certs`
+        `${process.env.KEYCLOAK_URL}/realms/${req.tenant.keycloakRealmId}/protocol/openid-connect/certs`
       );
 
       if (
@@ -37,7 +38,11 @@ export function authorizeMiddleware(): RequestHandler {
         for (const prop in flattened) {
           if (flattened[prop] != null) {
             promises.push(
-              client.hSet(`keycloak-realm-${realmId}`, prop, flattened[prop])
+              client.hSet(
+                `keycloak-realm-${req.tenant.keycloakRealmId}`,
+                prop,
+                flattened[prop]
+              )
             );
           }
         }

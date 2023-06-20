@@ -9,16 +9,17 @@ const router = Router();
 const QuerySchema = z.object({
   query: z.string(),
   page: z.number().default(1),
+  locale: z.string().default('en'),
+  tenant_id: z.string().default(''),
 });
 
 router.get('/', async (req, res) => {
   try {
     const q = await QuerySchema.parseAsync(req.query);
     const skip = (q.page - 1) * 10;
-    const locale = req.headers['x-locale'] || 'en';
 
     const queryBuilder: SearchRequest = {
-      index: `${req.tenant.tenantId}-taxonomies_v2_${locale}`,
+      index: `${q.tenant_id}-taxonomies_v2_${q.locale}`,
       from: skip,
       size: 10,
       query: {
@@ -46,7 +47,7 @@ router.get('/', async (req, res) => {
 
     cacheControl(res);
     res.json(data);
-  } catch (err: any) {
+  } catch (err) {
     console.log(err);
     res.sendStatus(400);
   }

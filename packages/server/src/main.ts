@@ -5,7 +5,6 @@ import helmet from 'helmet';
 
 import apiRoutes from './routes';
 import redisClient from './lib/redis';
-import { ensureLocale } from './middleware/ensureLocale';
 import { connect as mongooseClient } from './lib/mongoose';
 import { errorHandler } from './middleware/errorHandler';
 import { logger } from './lib/winston';
@@ -22,7 +21,6 @@ async function start() {
   app.use(cors());
   app.use(compression());
   app.use(express.json());
-  app.use(ensureLocale('en'));
   app.use(rateLimiter());
 
   app.get('/__health', (req, res) => {

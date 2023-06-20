@@ -22,9 +22,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   let data = null;
 
   try {
-    data = await resourceAdapter.getResource(ctx.query.id as string, {
-      locale: ctx.locale,
-    });
+    data = await resourceAdapter.getResource(ctx.query.id as string);
   } catch (err) {
     if (isAxiosError(err)) {
       if (err?.response?.status === 404) {

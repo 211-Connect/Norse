@@ -18,7 +18,7 @@ export interface IResult {
 export class SearchAdapter extends BaseAdapter {
   public async search(
     query: any,
-    page: number = 1,
+    page = 1,
     config?: { locale?: string }
   ): Promise<{
     results: IResult[];

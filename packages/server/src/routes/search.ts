@@ -28,11 +28,11 @@ const QuerySchema = z.object({
   distance: z
     .preprocess((v) => parseInt(v as string), z.number().nonnegative())
     .default(0),
+  locale: z.string().default('en'),
+  tenant_id: z.string().default(''),
 });
-
 router.get('/', async (req, res) => {
   try {
-    const locale = req.headers['x-locale'];
     const q = await QuerySchema.parseAsync(req.query);
     const skip = (q.page - 1) * 25;
     const aggs: any = {};
@@ -53,7 +53,7 @@ router.get('/', async (req, res) => {
     }
 
     const queryBuilder: SearchRequest = {
-      index: `${req.tenant.tenantId}-results_v2_${locale}`,
+      index: `${q.tenant_id}-results_v2_${q.locale}`,
       from: skip,
       size: 25,
       _source_excludes: ['service_area'],
