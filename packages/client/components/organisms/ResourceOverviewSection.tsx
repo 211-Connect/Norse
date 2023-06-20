@@ -1,4 +1,4 @@
-import { parseHtml } from '$lib/utils/parseHtml';
+import { parseHtml } from '../../lib/utils/parseHtml';
 import {
   useMantineTheme,
   Card,
@@ -15,8 +15,11 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'next-i18next';
 import { useCookies } from 'react-cookie';
-import { ReferralButton } from 'components/atoms/ReferralButton';
-import { USER_PREF_COORDS, USER_PREF_LOCATION } from '$lib/constants/cookies';
+import { ReferralButton } from '../atoms/ReferralButton';
+import {
+  USER_PREF_COORDS,
+  USER_PREF_LOCATION,
+} from '../../lib/constants/cookies';
 
 type Props = {
   id: string;

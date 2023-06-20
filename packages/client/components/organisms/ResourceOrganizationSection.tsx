@@ -1,4 +1,4 @@
-import { parseHtml } from '$lib/utils/parseHtml';
+import { parseHtml } from '../../lib/utils/parseHtml';
 import { Card, Text, Title, useMantineTheme } from '@mantine/core';
 import { useTranslation } from 'next-i18next';
 

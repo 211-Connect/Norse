@@ -1,4 +1,3 @@
-import { useAppConfig } from '../../../lib/hooks/useAppConfig';
 import { Autocomplete, AutocompleteProps } from '@mantine/core';
 import { useDebouncedValue, useInputState, useToggle } from '@mantine/hooks';
 import { RefAttributes, useEffect, useMemo, useRef, useState } from 'react';
@@ -8,6 +7,7 @@ import { AutoCompleteItem } from './AutocompleteItem';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { TaxonomyAdapter } from '../../../lib/adapters/TaxonomyAdapter';
+import unformattedSuggestions from '../../../.norse/suggestions.json';
 
 type Props = Partial<AutocompleteProps> &
   RefAttributes<HTMLInputElement> & {
@@ -22,7 +22,6 @@ export function TaxonomyAutocomplete({
   defaultQueryType,
   ...rest
 }: Props) {
-  const { suggestions: unformattedSuggestions } = useAppConfig();
   const hiddenQueryInput = useRef<HTMLInputElement>(null);
   const hiddenQueryLabelInput = useRef<HTMLInputElement>(null);
   const hiddenQueryTypeInput = useRef<HTMLInputElement>(null);
@@ -43,7 +42,7 @@ export function TaxonomyAutocomplete({
         group: t('search.suggestions'),
         group_label: 'Suggestions',
       })),
-    [unformattedSuggestions, t]
+    [t]
   );
 
   // Create an array that includes both our static suggestions AND elasticsearch suggestion
@@ -99,9 +98,7 @@ export function TaxonomyAutocomplete({
       toggle(true);
 
       const taxonomyAdapter = new TaxonomyAdapter();
-      const data = await taxonomyAdapter.getTaxonomySuggestions(debounced, {
-        locale: router.locale,
-      });
+      const data = await taxonomyAdapter.getTaxonomySuggestions(debounced);
 
       toggle(false);
 

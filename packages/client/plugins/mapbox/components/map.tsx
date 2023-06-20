@@ -7,12 +7,12 @@ import mapboxgl, {
 import { useEffect, useMemo, useRef } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { Stack, Title, useMantineTheme, Text, Group } from '@mantine/core';
-import { useAppConfig } from 'lib/hooks/useAppConfig';
+import { useAppConfig } from '../../../lib/hooks/useAppConfig';
 import { IconNavigation, IconPhone, IconWorldWww } from '@tabler/icons-react';
 import { useRouter } from 'next/router';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useTranslation } from 'next-i18next';
-import { ReferralButton } from 'components/atoms/ReferralButton';
+import { ReferralButton } from '../../../components/atoms/ReferralButton';
 
 type Props = {
   locations: {

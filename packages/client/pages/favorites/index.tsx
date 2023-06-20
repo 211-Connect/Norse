@@ -26,9 +26,14 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     };
   }
 
-  const axios = await getServerSideAxios(ctx, session);
+  const axios = getServerSideAxios(ctx, session);
   const favoritesAdapter = new FavoriteAdapter(axios);
-  const data = await favoritesAdapter.getFavoriteLists();
+  let data = [];
+  try {
+    data = await favoritesAdapter.getFavoriteLists();
+  } catch (err) {
+    console.error(err);
+  }
 
   return {
     props: {

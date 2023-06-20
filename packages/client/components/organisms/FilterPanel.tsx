@@ -1,4 +1,4 @@
-import { useFilterPanelStore } from 'lib/state/filterPanel';
+import { useFilterPanelStore } from '../../lib/state/filterPanel';
 import {
   Badge,
   Box,

@@ -1,18 +1,14 @@
-/**
- * TODO
- * Implement norse.config.json theme
- */
 import { MantineThemeOverride } from '@mantine/core';
 import { Open_Sans } from 'next/font/google';
-import appConfig from '../../.norse/norse.config';
+import appTheme from '../../.norse/theme.json';
 
 const openSans = Open_Sans({ subsets: ['latin'] });
 
 export const Theme: MantineThemeOverride = {
   primaryColor: 'primary',
-  primaryShade: (appConfig?.theme?.primaryShade as any) ?? 5,
+  primaryShade: (appTheme.primaryShade as any) ?? 5,
   other: {
-    secondaryShade: (appConfig?.theme?.secondaryShade as any) ?? 5,
+    secondaryShade: (appTheme.secondaryShade as any) ?? 5,
   },
   defaultRadius: 'md',
   fontFamily: openSans.style.fontFamily,
@@ -27,8 +23,8 @@ export const Theme: MantineThemeOverride = {
     fontFamily: openSans.style.fontFamily,
   },
   colors: {
-    primary: (appConfig?.theme?.primaryPalette as any) ?? [],
-    secondary: (appConfig?.theme?.secondaryPalette as any) ?? [],
+    primary: (appTheme.primaryPalette as any) ?? [],
+    secondary: (appTheme.secondaryPalette as any) ?? [],
     background: ['#EBE9F0'],
   },
   radius: {

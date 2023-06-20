@@ -35,10 +35,7 @@ export class SearchAdapter extends BaseAdapter {
       `/search?${qs.stringify({
         ...query,
         page,
-      })}`,
-      {
-        ...(config?.locale ? { headers: { 'x-locale': config.locale } } : {}),
-      }
+      })}`
     );
 
     let totalResults =

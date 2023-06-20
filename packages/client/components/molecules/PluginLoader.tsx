@@ -45,7 +45,7 @@ function InternalPluginLoader({ plugin, component, ...rest }: Props) {
 
   const PluginComponent: ComponentType<Partial<Props>> = dynamic(
     () =>
-      import(`./../../plugins/${plugin}`).then(
+      import(`../../plugins/${plugin}`).then(
         (mod) => mod.default.components[component]
       ),
     {

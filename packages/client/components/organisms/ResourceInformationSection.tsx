@@ -1,4 +1,4 @@
-import { useAppConfig } from '$lib/hooks/useAppConfig';
+import { useAppConfig } from '../../lib/hooks/useAppConfig';
 import {
   Card,
   MediaQuery,
@@ -25,7 +25,7 @@ import {
   IconLanguage,
   IconMap2,
 } from '@tabler/icons-react';
-import { PluginLoader } from 'components/molecules/PluginLoader';
+import { PluginLoader } from '../molecules/PluginLoader';
 import { useTranslation } from 'next-i18next';
 import Link from 'next/link';
 

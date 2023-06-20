@@ -70,7 +70,7 @@ export function SearchPageLayout(props: Props) {
               id="map-container"
               mt="md"
               sx={{
-                height: `calc(100vh - ${clampedWindowValue}px - ${theme.spacing.md}px - ${theme.spacing.md}px)`,
+                height: `calc(100vh - ${clampedWindowValue}px - ${theme.spacing.md} - ${theme.spacing.md})`,
               }}
             >
               <Flex

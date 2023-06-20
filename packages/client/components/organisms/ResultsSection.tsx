@@ -10,15 +10,15 @@ import {
 } from '@mantine/core';
 import { IconAdjustments } from '@tabler/icons-react';
 import Color from 'color';
-import { NoResultsCard } from 'components/molecules/NoResultsCard';
-import { Result } from 'components/molecules/Result';
+import { NoResultsCard } from '../molecules/NoResultsCard';
+import { Result } from '../molecules/Result';
 import { useRouter } from 'next/router';
 import { Search } from '../molecules/Search';
 import { useTranslation } from 'next-i18next';
-import { useFilterPanelStore } from '$lib/state/filterPanel';
+import { useFilterPanelStore } from '../../lib/state/filterPanel';
 import { useSession } from 'next-auth/react';
 import { useMemo } from 'react';
-import { IResult } from '$lib/adapters/SearchAdapter';
+import { IResult } from '../../lib/adapters/SearchAdapter';
 
 type Props = {
   results: IResult[];
@@ -133,7 +133,7 @@ export function ResultsSection(props: Props) {
             m="0 auto"
             mb="md"
             onChange={changePage}
-            initialPage={props.currentPage}
+            defaultValue={props.currentPage}
           />
         )}
       </Stack>

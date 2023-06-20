@@ -1,14 +1,13 @@
 import { Grid, Stack, Title, useMantineTheme } from '@mantine/core';
 import { Category } from '../molecules/Category';
 import { useTranslation } from 'next-i18next';
-import { useAppConfig } from '../../lib/hooks/useAppConfig';
+import categories from '../../.norse/categories.json';
 
 export function CategorySection() {
-  const appConfig = useAppConfig();
   const theme = useMantineTheme();
   const { t } = useTranslation('page-home');
 
-  if ((appConfig?.categories?.length ?? 0) === 0) return null;
+  if ((categories?.length ?? 0) === 0) return null;
 
   return (
     <Stack
@@ -25,7 +24,7 @@ export function CategorySection() {
       </Title>
 
       <Grid gutter="xl">
-        {appConfig.categories.map((el: any, idx) => (
+        {categories.map((el: any, idx) => (
           <Grid.Col key={el.name} lg={3} md={4} sm={6} xs={12}>
             <Category theme={theme} index={idx} {...el} />
           </Grid.Col>

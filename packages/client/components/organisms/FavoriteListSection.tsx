@@ -9,7 +9,7 @@ import {
 } from '@mantine/core';
 import { openContextModal } from '@mantine/modals';
 import Color from 'color';
-import { FavoriteList } from 'components/molecules/FavoriteList';
+import { FavoriteList } from '../molecules/FavoriteList';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 
@@ -92,8 +92,10 @@ export function FavoriteListSection(props: Props) {
         total={0}
         m="0 auto"
         mb="md"
-        onChange={() => {}}
-        initialPage={0}
+        onChange={() => {
+          return;
+        }}
+        defaultValue={0}
       />
     </>
   );
