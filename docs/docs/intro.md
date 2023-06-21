@@ -2,46 +2,49 @@
 sidebar_position: 1
 ---
 
-# Tutorial Intro
+# Intro
 
-Let's discover **Docusaurus in less than 5 minutes**.
+Let's discover **NORSE**.
 
 ## Getting Started
 
-Get started by **creating a new site**.
-
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
+Get started by **forking the main branch**.
 
 ### What you'll need
 
-- [Node.js](https://nodejs.org/en/download/) version 16.14 or above:
+- [Node.js](https://nodejs.org/en/download/) version 18.x or above:
   - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+- [Redis](https://redis.io/download/) latest stable version.
+- [MongoDB](https://www.mongodb.com/download-center/community/releases) version 6.x.
+- [Elasticsearch](https://www.elastic.co/downloads/elasticsearch) version 8.x.
+- [Keycloak](https://www.keycloak.org/downloads) version 21.x.
 
-## Generate a new site
-
-Generate a new Docusaurus site using the **classic template**.
-
-The classic template will automatically be added to your project after you run the command:
+## Install dependencies
 
 ```bash
-npm init docusaurus@latest my-website classic
+npm install
 ```
 
 You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
 
-The command also installs all necessary dependencies you need to run Docusaurus.
+The command installs all necessary dependencies you need to run Norse.
 
-## Start your site
+## Start the client
 
-Run the development server:
+Run the api:
 
 ```bash
-cd my-website
-npm run start
+nx serve client
 ```
 
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
+The `nx serve client` commands builds the application locally and serves it through a development server, ready for you to view at [http://localhost:4200](http://localhost:4200).
 
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
+## Start the server
 
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+In a seperate terminal, run the development server:
+
+```bash
+nx serve server
+```
+
+The `nx serve server` commands starts the api server, ready for programmatic access at [http://localhost:3001](http://localhost:3001).
