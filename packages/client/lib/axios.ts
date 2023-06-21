@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getSession } from 'next-auth/react';
+import { getSession, signIn } from 'next-auth/react';
 import { parseCookies } from 'nookies';
 import router from 'next/router';
 
@@ -19,7 +19,7 @@ axiosAuth.interceptors.request.use(
       const session = await getSession();
 
       if (session?.error && session.error === 'RefreshAccessTokenError') {
-        router.push('/auth/signin');
+        signIn('keycloak', { callbackUrl: window.location.href });
         return Promise.reject(session.error);
       }
 
