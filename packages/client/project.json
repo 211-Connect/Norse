@@ -4,17 +4,27 @@
   "sourceRoot": "packages/client",
   "projectType": "application",
   "targets": {
-    "prebuild": {
+    "pre-build": {
+      "inputs": [{ "env": "NEXT_PUBLIC_TENANT_ID" }, { "env": "NODE_ENV" }],
       "executor": "nx:run-commands",
       "options": {
-        "command": "node ./webpack/prebuild.js",
+        "command": "node ./webpack/pre-build.js",
+        "cwd": "packages/client"
+      }
+    },
+    "pre-serve": {
+      "inputs": [{ "env": "NEXT_PUBLIC_TENANT_ID" }, { "env": "NODE_ENV" }],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node ./webpack/pre-serve.js",
         "cwd": "packages/client"
       }
     },
     "build": {
+      "inputs": [{ "env": "NEXT_PUBLIC_TENANT_ID" }, { "env": "NODE_ENV" }],
       "dependsOn": [
         {
-          "target": "prebuild",
+          "target": "pre-build",
           "projects": "self"
         }
       ],
@@ -32,6 +42,7 @@
       }
     },
     "serve": {
+      "inputs": [{ "env": "NEXT_PUBLIC_TENANT_ID" }, { "env": "NODE_ENV" }],
       "executor": "@nx/next:server",
       "defaultConfiguration": "development",
       "options": {
@@ -40,7 +51,7 @@
       },
       "dependsOn": [
         {
-          "target": "prebuild",
+          "target": "pre-serve",
           "projects": "self"
         }
       ],
