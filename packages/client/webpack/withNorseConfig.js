@@ -61,5 +61,7 @@ module.exports = function withNorseConfig(config) {
     locales: appConfig?.i18n?.locales ?? ['en'],
   };
 
+  require('../next-i18next.config');
+
   return config;
 };

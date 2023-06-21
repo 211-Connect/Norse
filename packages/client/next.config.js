@@ -2,6 +2,7 @@
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { composePlugins, withNx } = require('@nx/next');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const withNorseConfig = require('./webpack/withNorseConfig');
 
 /**
@@ -12,6 +13,14 @@ const nextConfig = {
     // Set this to true if you would like to to use SVGR
     // See: https://github.com/gregberge/svgr
     svgr: false,
+  },
+  webpack: (config) => {
+    config.plugins.push(
+      new CopyWebpackPlugin({
+        patterns: [{ from: '.norse', to: '../.norse' }],
+      })
+    );
+    return config;
   },
 };
 
