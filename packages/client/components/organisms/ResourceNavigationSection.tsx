@@ -4,17 +4,22 @@ import { IconChevronLeft, IconShare, IconHeartPlus } from '@tabler/icons-react';
 import { useSession } from 'next-auth/react';
 import { useTranslation } from 'next-i18next';
 import Link from 'next/link';
+import { useReactToPrint } from 'react-to-print';
 
 type Props = {
   backUrl: 'loading' | string;
   resourceId: string;
   locationName: string;
   serviceDescription: string;
+  componentToPrint: any;
 };
 
 export function ResourceNavigationSection(props: Props) {
   const { t } = useTranslation('page-resource');
   const { status } = useSession();
+  const handlePrint = useReactToPrint({
+    content: () => props.componentToPrint.current,
+  });
 
   return (
     <Group
@@ -53,6 +58,7 @@ export function ResourceNavigationSection(props: Props) {
                   title: t('check_out_this_resource', { ns: 'common' }),
                   body: `${props.locationName}\n\n${props.serviceDescription}`,
                 },
+                printFn: handlePrint,
               },
             });
           }}

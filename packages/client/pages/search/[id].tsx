@@ -7,7 +7,7 @@ import { ResourceOverviewSection } from '../../components/organisms/ResourceOver
 import { ResourceInformationSection } from '../../components/organisms/ResourceInformationSection';
 import { ResourceOrganizationSection } from '../../components/organisms/ResourceOrganizationSection';
 import { usePrevUrl } from '../../lib/hooks/usePrevUrl';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ResourceNavigationSection } from '../../components/organisms/ResourceNavigationSection';
 import { getServerSideAxios } from '../../lib/server/axios';
 import { IResource, ResourceAdapter } from '../../lib/adapters/ResourceAdapter';
@@ -64,6 +64,7 @@ export default function SearchDetail({ resource }: Props) {
   const session = useSession();
   const prevUrl = usePrevUrl();
   const [backUrl, setBackUrl] = useState('loading');
+  const componentRef = useRef();
 
   useEffect(() => {
     if (prevUrl.current && prevUrl.current.startsWith('/search')) {
@@ -78,6 +79,7 @@ export default function SearchDetail({ resource }: Props) {
   return (
     <>
       <ResourceDetailsPageLayout
+        ref={componentRef}
         metaTitle={resource.name}
         metaDescription={resource.description}
         headerSection={<AppHeader />}
@@ -87,6 +89,7 @@ export default function SearchDetail({ resource }: Props) {
             backUrl={backUrl}
             locationName={resource.name}
             serviceDescription={resource.description}
+            componentToPrint={componentRef}
           />
         }
         resourceOverviewSection={

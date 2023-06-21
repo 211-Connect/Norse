@@ -1,6 +1,7 @@
 import {
   ActionIcon,
   Badge,
+  Box,
   Button,
   Card,
   Divider,
@@ -22,15 +23,15 @@ import {
   IconShare,
 } from '@tabler/icons-react';
 import Color from 'color';
-import { Anchor } from 'components/atoms/Anchor';
-import { Favorite } from 'components/molecules/Favorite';
+import { Anchor } from '../atoms/Anchor';
+import { Favorite } from '../molecules/Favorite';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useRef } from 'react';
 import { useTranslation } from 'next-i18next';
 import { useReactToPrint } from 'react-to-print';
-import { FavoriteAdapter } from '$lib/adapters/FavoriteAdapter';
+import { FavoriteAdapter } from '../../lib/adapters/FavoriteAdapter';
 
 type Props = {
   favoriteList: {
@@ -91,7 +92,7 @@ export function FavoritesSection(props: Props) {
   };
 
   return (
-    <>
+    <Box ref={componentRef}>
       <Paper
         withBorder
         m="0"
@@ -262,6 +263,6 @@ export function FavoritesSection(props: Props) {
           </Card>
         )}
       </Stack>
-    </>
+    </Box>
   );
 }
