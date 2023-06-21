@@ -1,7 +1,6 @@
 // This file is REQUIRED by react-i18next/next-i18next. DO NOT DELETE
 const path = require('path');
-const fs = require('fs-extra');
-const config = fs.readJsonSync('./.norse/config.json');
+const config = require('./.norse/next.config.js');
 
 module.exports = {
   i18n: {
@@ -9,4 +8,5 @@ module.exports = {
     locales: config?.i18n?.locales ?? ['en'],
     localePath: path.resolve('./public/locales'),
   },
+  nextConfig: config,
 };

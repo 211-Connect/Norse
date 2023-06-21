@@ -7,8 +7,6 @@ const STRAPI_URL = process.env.STRAPI_URL;
 const STRAPI_TOKEN = process.env.STRAPI_TOKEN;
 const TENANT_ID = process.env.NEXT_PUBLIC_TENANT_ID;
 
-let hasFetched = false;
-
 const query = qs.stringify({
   populate: {
     app_config: {
@@ -61,7 +59,6 @@ const query = qs.stringify({
  */
 module.exports = async function createFromStrapi(dir) {
   if (!STRAPI_URL || !STRAPI_TOKEN || !TENANT_ID) return;
-  if (hasFetched) return;
 
   try {
     const res = syncClient.get(
@@ -72,8 +69,6 @@ module.exports = async function createFromStrapi(dir) {
         },
       }
     );
-
-    hasFetched = true;
 
     const data = res.body.data;
     const tenant = data[0].attributes;

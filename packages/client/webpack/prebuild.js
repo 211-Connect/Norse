@@ -2,10 +2,6 @@ const createAppFromStrapi = require('./createAppFromStrapi');
 const getAppTheme = require('./getAppTheme');
 const fs = require('fs-extra');
 
-if (process.env.NODE_ENV !== 'development' && fs.existsSync('./.norse')) {
-  process.exit(0);
-}
-
 const dir = process.cwd();
 
 fs.mkdirSync(`${dir}/.norse`, { recursive: true });
@@ -37,22 +33,10 @@ try {
   fs.writeJSONSync(`${dir}/.norse/categories.json`, categories);
   fs.writeJSONSync(`${dir}/.norse/suggestions.json`, suggestions);
   fs.writeJSONSync(`${dir}/.norse/config.json`, rest);
+  fs.writeFileSync(
+    `${dir}/.norse/next.config.js`,
+    `module.exports = ${JSON.stringify(appConfig.nextConfig ?? {})}`
+  );
 } catch (err) {
   process.exit(1);
 }
-
-// if (appConfig.nextConfig && Object.keys(appConfig.nextConfig).length > 0) {
-//   config.images = {
-//     ...config.images,
-//     domains: appConfig?.nextConfig?.images?.domains ?? null,
-//   };
-// }
-
-// config.i18n = {
-//   defaultLocale: appConfig?.i18n?.defaultLocale ?? 'en',
-//   locales: appConfig?.i18n?.locales ?? ['en'],
-// };
-
-// // require('../next-i18next.config');
-
-// return config;
