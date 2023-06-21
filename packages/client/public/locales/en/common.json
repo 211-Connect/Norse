@@ -17,7 +17,10 @@
     "suggestions": "Suggestions",
     "use_my_location": "Use my location",
     "confidential_address": "This location may be confidential or not open to the public. Please choose another provided contact method for this service.",
-    "address_unavailable": "Address unavailable"
+    "address_unavailable": "Address unavailable",
+    "geocoding_error": "Geocoding error",
+    "geocoding_unsupported": "Geolocation is not supported by your browser",
+    "geocoding_unable_to_retrieve": "Unable to retrieve your location. Please check your browser's location settings and try again."
   },
   "call_to_action": {
     "call": "Call",

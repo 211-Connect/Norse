@@ -70,9 +70,8 @@ export function LocationAutocomplete(props: Props) {
         }
       } catch (err) {
         showNotification({
-          title: 'Geocoding error',
-          message:
-            'Unable to get your location. Please check your location settings and try again. If the problem persists, please contact a site administrator',
+          title: t('search.geocoding_error'),
+          message: t('search.geocoding_unable_to_retrieve'),
           color: 'red',
           autoClose: 5000,
         });
@@ -80,16 +79,15 @@ export function LocationAutocomplete(props: Props) {
 
       toggle(false);
     },
-    [setValue, toggle]
+    [setValue, toggle, t]
   );
 
   const getUserLocation = useCallback(() => {
     const error = () => {
       toggle(false);
       showNotification({
-        title: 'Geocoding error',
-        message:
-          'Unable to get your location. Please check your location settings and try again.',
+        title: t('search.geocoding_error'),
+        message: t('search.geocoding_unable_to_retrieve'),
         color: 'red',
         autoClose: 5000,
       });
@@ -97,6 +95,12 @@ export function LocationAutocomplete(props: Props) {
 
     if (!navigator.geolocation) {
       console.log('Geolocation is not supported by your browser');
+      showNotification({
+        title: t('search.geocoding_error'),
+        message: t('search.geocoding_unsupported'),
+        color: 'red',
+        autoClose: 5000,
+      });
     } else {
       toggle(true);
 

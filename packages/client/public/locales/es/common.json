@@ -17,7 +17,10 @@
     "suggestions": "Sugerencias",
     "use_my_location": "usar mi ubicación",
     "confidential_address": "Esta ubicación puede ser confidencial o no estar abierta al público. Elija otro método de contacto proporcionado para este servicio.",
-    "address_unavailable": "Dirección no disponible"
+    "address_unavailable": "Dirección no disponible",
+    "geocoding_error": "Error de geocodificación",
+    "geocoding_unsupported": "La geolocalización no es compatible con su navegador",
+    "geocoding_unable_to_retrieve": "No se puede recuperar tu ubicación. Verifique la configuración de ubicación de su navegador y vuelva a intentarlo."
   },
   "call_to_action": {
     "call": "Llamar",
