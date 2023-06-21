@@ -2,8 +2,7 @@
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { composePlugins, withNx } = require('@nx/next');
-const { i18n } = require('./next-i18next.config');
-const webpackConfig = require('./webpack');
+const withNorseConfig = require('./webpack/withNorseConfig');
 
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
@@ -14,16 +13,12 @@ const nextConfig = {
     // See: https://github.com/gregberge/svgr
     svgr: false,
   },
-  i18n: {
-    locales: i18n.locales,
-    defaultLocale: i18n.defaultLocale,
-  },
-  webpack: webpackConfig,
 };
 
 const plugins = [
   // Add more Next.js plugins to this list if needed.
   withNx,
+  withNorseConfig,
 ];
 
 module.exports = composePlugins(...plugins)(nextConfig);
