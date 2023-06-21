@@ -55,6 +55,13 @@ export function ResultsSection(props: Props) {
     if (resultTotal) resultTotal.scrollIntoView();
   };
 
+  const counterStart = props.currentPage * 25 - 25 + 1;
+  const counterEnd = Math.round(
+    Math.abs(
+      Math.min(Math.max(props.currentPage * 25 + 1, 0), props.totalResults)
+    )
+  );
+
   return (
     <>
       <Box pl="md" pt="md" pb="sm" pr="md">
@@ -89,8 +96,7 @@ export function ResultsSection(props: Props) {
               color: Color(t.colors.primary).isDark() ? '#fff' : '#000',
             })}
           >
-            {props.totalResults < 1 ? 0 : 1}-
-            {props.totalResults > 25 ? '25' : props.totalResults}
+            {counterStart}-{counterEnd}
             {` `}
             {t('of')}
             {` `}
