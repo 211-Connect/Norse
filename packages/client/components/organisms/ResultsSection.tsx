@@ -55,7 +55,12 @@ export function ResultsSection(props: Props) {
     if (resultTotal) resultTotal.scrollIntoView();
   };
 
-  const counterStart = props.currentPage * 25 - 25 + 1;
+  const counterStart = Math.round(
+    Math.abs(
+      Math.min(Math.max(props.currentPage * 25 - 25 + 1, 0), props.totalResults)
+    )
+  );
+
   const counterEnd = Math.round(
     Math.abs(
       Math.min(Math.max(props.currentPage * 25 + 1, 0), props.totalResults)

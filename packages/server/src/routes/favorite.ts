@@ -25,6 +25,13 @@ router.post('/', authorizeMiddleware(), async (req, res) => {
     const favorites = favoriteList.favorites;
     const exists = favorites.find((el) => el.toString() === data.resourceId);
 
+    if (exists) {
+      // Using 409 Conflict here because the resource already exists in the list
+      return res
+        .status(409)
+        .json({ message: 'Resource already exists in list' });
+    }
+
     if (!exists) {
       favoriteList.favorites.push(data.resourceId);
     }

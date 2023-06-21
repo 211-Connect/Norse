@@ -59,14 +59,11 @@ export class FavoriteAdapter extends BaseAdapter {
   }
 
   public async searchFavoriteLists({
-    resourceId,
     textToSearchFor,
   }: {
-    resourceId?: string;
     textToSearchFor?: string;
   }) {
     const query = qs.stringify({
-      exclude: resourceId,
       name: textToSearchFor,
     });
 

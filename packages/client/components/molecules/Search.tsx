@@ -1,4 +1,14 @@
-import { Button, Flex, MantineTheme, useMantineTheme } from '@mantine/core';
+import {
+  Badge,
+  Box,
+  Button,
+  Divider,
+  Flex,
+  Group,
+  MantineTheme,
+  Text,
+  useMantineTheme,
+} from '@mantine/core';
 import { useRouter } from 'next/router';
 import qs from 'qs';
 import { LocationAutocomplete } from './LocationAutocomplete';
@@ -13,7 +23,7 @@ type Props = {
 export function Search({ hideLocation }: Props) {
   const router = useRouter();
   const theme = useMantineTheme();
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -114,6 +124,19 @@ export function Search({ hideLocation }: Props) {
           />
         )}
       </form>
+
+      {router.query.query_type === 'taxonomy' && (
+        <>
+          <Divider mt="md" mb="md" />
+          <Group align="center" spacing="sm">
+            {(router.query.query as string)?.split(',').map((query) => (
+              <Badge key={query} variant="light">
+                {query}
+              </Badge>
+            ))}
+          </Group>
+        </>
+      )}
     </Flex>
   );
 }

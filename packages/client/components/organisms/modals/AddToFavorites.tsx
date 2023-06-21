@@ -14,6 +14,7 @@ import { IconPlaylistAdd } from '@tabler/icons-react';
 import { useTranslation } from 'next-i18next';
 import { useCallback, useEffect, useState } from 'react';
 import { FavoriteAdapter } from '../../../lib/adapters/FavoriteAdapter';
+import { showNotification } from '@mantine/notifications';
 
 type Props = ContextModalProps<{ serviceAtLocationId: string }>;
 
@@ -30,7 +31,6 @@ export function AddToFavoritesModal(props: Props) {
 
     const favoritesAdapter = new FavoriteAdapter();
     const favoriteLists = await favoritesAdapter.searchFavoriteLists({
-      resourceId: props.innerProps.serviceAtLocationId,
       textToSearchFor: value,
     });
 
@@ -38,7 +38,7 @@ export function AddToFavoritesModal(props: Props) {
       setFetching({ data: favoriteLists, status: 'success' });
       return;
     }
-  }, [props.innerProps.serviceAtLocationId, value]);
+  }, [value]);
 
   useEffect(() => {
     refreshFavoritesList();
@@ -47,13 +47,26 @@ export function AddToFavoritesModal(props: Props) {
   const addToFavoriteList = (listId: string) => {
     return async () => {
       const favoritesAdapter = new FavoriteAdapter();
-      const added = await favoritesAdapter.addToFavoriteList({
-        resourceId: props.innerProps.serviceAtLocationId,
-        favoriteListId: listId,
-      });
 
-      if (added) {
-        refreshFavoritesList();
+      try {
+        await favoritesAdapter.addToFavoriteList({
+          resourceId: props.innerProps.serviceAtLocationId,
+          favoriteListId: listId,
+        });
+
+        showNotification({
+          title: t('favorites.added_to_list'),
+          message: t('favorites.added_to_list_message'),
+          color: 'green',
+          autoClose: 5000,
+        });
+      } catch (err) {
+        showNotification({
+          title: t('favorites.already_exists'),
+          message: t('favorites.already_exists_message'),
+          color: 'red',
+          autoClose: 5000,
+        });
       }
     };
   };

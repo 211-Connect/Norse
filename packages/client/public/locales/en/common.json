@@ -6,6 +6,12 @@
     "submit_feedback": "Submit feedback",
     "language_select_label": "Select a language to change the site language"
   },
+  "favorites": {
+    "added_to_list": "Added to list",
+    "added_to_list_message": "This resource has been added to your list.",
+    "already_exists": "Already exists",
+    "already_exists_message": "This resource already exists in your list."
+  },
   "search": {
     "hero_title": "",
     "query_placeholder": "",
@@ -20,7 +26,8 @@
     "address_unavailable": "Address unavailable",
     "geocoding_error": "Geocoding error",
     "geocoding_unsupported": "Geolocation is not supported by your browser",
-    "geocoding_unable_to_retrieve": "Unable to retrieve your location. Please check your browser's location settings and try again."
+    "geocoding_unable_to_retrieve": "Unable to retrieve your location. Please check your browser's location settings and try again.",
+    "categories": "Categories"
   },
   "call_to_action": {
     "call": "Call",

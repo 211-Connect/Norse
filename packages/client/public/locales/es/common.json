@@ -6,6 +6,12 @@
     "submit_feedback": "Enviar comentarios",
     "language_select_label": "Seleccione un idioma para cambiar el idioma del sitio"
   },
+  "favorites": {
+    "added_to_list": "Añadido a la lista",
+    "added_to_list_message": "Este recurso ha sido agregado a su lista.",
+    "already_exists": "Ya existe",
+    "already_exists_message": "Este recurso ya existe en su lista."
+  },
   "search": {
     "hero_title": "",
     "query_placeholder": "",
@@ -20,7 +26,8 @@
     "address_unavailable": "Dirección no disponible",
     "geocoding_error": "Error de geocodificación",
     "geocoding_unsupported": "La geolocalización no es compatible con su navegador",
-    "geocoding_unable_to_retrieve": "No se puede recuperar tu ubicación. Verifique la configuración de ubicación de su navegador y vuelva a intentarlo."
+    "geocoding_unable_to_retrieve": "No se puede recuperar tu ubicación. Verifique la configuración de ubicación de su navegador y vuelva a intentarlo.",
+    "categories": "Categorías"
   },
   "call_to_action": {
     "call": "Llamar",
