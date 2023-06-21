@@ -2,8 +2,8 @@ import { NextApiHandler } from 'next';
 import zod from 'zod';
 
 const querySchema = zod.object({
-  address: zod.string(),
-  autocomplete: zod.string(),
+  address: zod.string().optional(),
+  autocomplete: zod.string().optional(),
   coords: zod.string().optional(),
 });
 
