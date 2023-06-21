@@ -148,6 +148,8 @@ export function TaxonomyAutocomplete({
         onItemSubmit={handleItemSubmit}
         itemComponent={AutoCompleteItem}
         rightSection={isLoading && <Loader size="sm" />}
+        limit={25}
+        maxDropdownHeight={300}
       />
       <input
         hidden
