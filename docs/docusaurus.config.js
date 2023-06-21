@@ -14,7 +14,7 @@ const config = {
   url: 'https://docs.c211.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/Norse',
+  baseUrl: '/',
 
   trailingSlash: false,
 
