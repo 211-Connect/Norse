@@ -68,14 +68,6 @@ export function LocationAutocomplete(props: Props) {
           setCookie(null, USER_PREF_COORDS, `${lng},${lat}`);
           hiddenInputRef.current.value = `${lng},${lat}`;
         }
-
-        // router.push({
-        //   query: {
-        //     ...router.query,
-        //     location: data.address,
-        //     coords: `${lng},${lat}`,
-        //   },
-        // });
       } catch (err) {
         showNotification({
           title: 'Geocoding error',
@@ -196,14 +188,11 @@ export function LocationAutocomplete(props: Props) {
           name="radius"
           aria-label={t('search.radius_placeholder') as string}
           data={[
+            { value: '0', label: t('search.any') },
             ...(appConfig?.search?.radiusOptions?.map((el: any) => ({
               value: el.value.toString(),
-              label:
-                el.value > 0
-                  ? `${el.value} ${t('search.miles')}`
-                  : t('search.any'),
+              label: `${el.value} ${t('search.miles')}`,
             })) ?? [
-              { value: '0', label: t('search.any') },
               { value: '15', label: `15 ${t('search.miles')}` },
               { value: '30', label: `30 ${t('search.miles')}` },
               { value: '45', label: `45 ${t('search.miles')}` },
