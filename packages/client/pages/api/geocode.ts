@@ -4,7 +4,7 @@ import zod from 'zod';
 const querySchema = zod.object({
   address: zod.string(),
   autocomplete: zod.string(),
-  coords: zod.string(),
+  coords: zod.string().optional(),
 });
 
 const MAPBOX_API_KEY = process.env.NEXT_PUBLIC_MAPBOX_API_KEY;
