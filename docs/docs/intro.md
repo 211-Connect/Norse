@@ -8,7 +8,7 @@ Let's discover **NORSE**.
 
 ## Getting Started
 
-Get started by **forking the main branch**.
+Get started by [forking the main branch](https://github.com/211-Connect/Norse/fork).
 
 ### What you'll need
 
