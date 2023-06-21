@@ -17,6 +17,12 @@ axiosAuth.interceptors.request.use(
   async (config) => {
     if (!config.headers['Authorization']) {
       const session = await getSession();
+
+      if (session?.error && session.error === 'RefreshAccessTokenError') {
+        router.push('/auth/signin');
+        return Promise.reject(session.error);
+      }
+
       config.headers['Authorization'] = `Bearer ${session?.user.accessToken}`;
     }
 
