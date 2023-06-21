@@ -86,6 +86,7 @@ export function ShareModal(props: Props) {
             href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
               props.innerProps.shareContents.title + '\n' + shortUrl
             )}`}
+            target="_blank"
             sx={{ borderRadius: '100%' }}
           >
             <IconBrandTwitter />
@@ -189,7 +190,6 @@ export function ShareModal(props: Props) {
       <Text>{t('modal.share.copy_link')}</Text>
       <TextInput
         icon={<IconLink />}
-        disabled
         value={shortUrl}
         rightSectionWidth={75}
         rightSection={
