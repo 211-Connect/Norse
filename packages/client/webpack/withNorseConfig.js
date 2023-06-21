@@ -11,6 +11,7 @@ module.exports = function withNorseConfig(config) {
   const dir = process.cwd();
 
   fs.mkdirSync(`${dir}/.norse`, { recursive: true });
+  fs.mkdirSync(`${dir}/tmp`, { recursive: true });
 
   createAppFromStrapi(dir);
 
