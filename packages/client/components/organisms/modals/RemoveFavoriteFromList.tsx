@@ -22,7 +22,9 @@ export function RemoveFavoriteFromList({
         favoriteListId: innerProps.favoriteListId,
       });
 
-      router.replace(`/favorites/${innerProps.favoriteListId}`);
+      closeModal();
+
+      await router.replace(`/favorites/${innerProps.favoriteListId}`);
     };
   };
 
