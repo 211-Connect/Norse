@@ -1,7 +1,7 @@
 // This file is REQUIRED by react-i18next/next-i18next. DO NOT DELETE
 const path = require('path');
 const fs = require('fs-extra');
-const config = fs.readJSONSync('./.norse/config.json');
+const config = fs.readJsonSync('./.norse/config.json');
 
 module.exports = {
   i18n: {
