@@ -17,7 +17,11 @@ async function start() {
   await redisClient.connect();
   await mongooseClient();
 
-  app.use(helmet());
+  app.use(
+    helmet({
+      crossOriginResourcePolicy: { policy: 'cross-origin' },
+    })
+  );
   app.use(cors());
   app.use(compression());
   app.use(express.json());
