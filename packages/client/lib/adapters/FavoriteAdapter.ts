@@ -26,7 +26,7 @@ export class FavoriteAdapter extends BaseAdapter {
     const { data } = await this.axios.post('/favorite-list', {
       name,
       description,
-      privacy,
+      public: privacy,
     });
 
     return data;

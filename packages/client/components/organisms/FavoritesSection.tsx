@@ -71,8 +71,8 @@ export function FavoritesSection(props: Props) {
             await favoritesAdapter.deleteFavoriteList(id);
 
             showNotification({
-              title: `${name} ${t('text:deleted')}`,
-              message: t('message:list-deleted'),
+              title: `${name} ${t('favorites.deleted_list')}`,
+              message: t('favorites.deleted_list_message'),
               color: 'green',
               icon: <IconTrash />,
             });
@@ -80,8 +80,8 @@ export function FavoritesSection(props: Props) {
             router.push('/favorites');
           } catch (err) {
             showNotification({
-              title: t('text:error'),
-              message: t('error:list-not-deleted'),
+              title: t('favorites.unable_to_delete_list'),
+              message: t('favorites.unable_to_delete_list_message'),
               icon: <IconInfoCircle />,
               color: 'red',
             });
@@ -119,7 +119,10 @@ export function FavoritesSection(props: Props) {
                     title: t('modal.update_list.update_list'),
                     centered: true,
                     innerProps: {
-                      list: props.favoriteList,
+                      list: {
+                        ...props.favoriteList,
+                        id: props.favoriteList._id,
+                      },
                     },
                   })
                 }

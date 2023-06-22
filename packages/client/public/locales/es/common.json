@@ -10,7 +10,17 @@
     "added_to_list": "Añadido a la lista",
     "added_to_list_message": "Este recurso ha sido agregado a su lista.",
     "already_exists": "Ya existe",
-    "already_exists_message": "Este recurso ya existe en su lista."
+    "already_exists_message": "Este recurso ya existe en su lista.",
+    "removed_from_list": "Eliminado de la lista",
+    "removed_from_list_message": "Este recurso ha sido eliminado de su lista.",
+    "updated_list": "Lista actualizada",
+    "updated_list_message": "Su lista ha sido actualizada.",
+    "unable_to_update_list": "No se puede actualizar la lista",
+    "unable_to_update_list_message": "Su lista no se pudo actualizar.",
+    "deleted_list": "lista eliminada",
+    "deleted_list_message": "Su lista ha sido eliminada.",
+    "unable_to_delete_list": "No se puede eliminar la lista",
+    "unable_to_delete_list_message": "No se pudo eliminar su lista."
   },
   "search": {
     "hero_title": "",

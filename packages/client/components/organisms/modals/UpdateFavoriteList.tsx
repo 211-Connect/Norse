@@ -36,8 +36,8 @@ export function UpdateFavoriteListModal({
         context.closeModal(id);
 
         showNotification({
-          title: `${t('text:list')} ${values.name} ${t('text:updated')}`,
-          message: t('message:list-updated'),
+          title: `${t('favorites.updated_list')}`,
+          message: t('favorites.updated_list_message'),
           icon: <IconInfoCircle />,
           color: 'green',
         });
@@ -48,8 +48,8 @@ export function UpdateFavoriteListModal({
       console.log(err);
 
       showNotification({
-        title: t('text:error'),
-        message: t('error:list-not-updated'),
+        title: t('favorites.Unable to update list'),
+        message: t('favorites.unable_to_update_list_message'),
         icon: <IconInfoCircle />,
         color: 'red',
       });

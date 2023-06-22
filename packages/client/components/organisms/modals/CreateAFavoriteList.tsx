@@ -17,7 +17,10 @@ export function CreateAFavoriteListModal({ context, id }: ContextModalProps) {
 
   const onSubmit = async (values: any) => {
     const favoritesAdapter = new FavoriteAdapter();
-    const created = await favoritesAdapter.createFavoriteList(values);
+    const created = await favoritesAdapter.createFavoriteList({
+      ...values,
+      privacy: values.public,
+    });
 
     if (created) {
       context.closeModal(id);
