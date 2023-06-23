@@ -67,8 +67,8 @@ export default function SearchDetail({ resource }: Props) {
   const componentRef = useRef();
 
   useEffect(() => {
-    if (prevUrl.current && prevUrl.current.startsWith('/search')) {
-      setBackUrl(prevUrl.current);
+    if (prevUrl && prevUrl.startsWith('/search')) {
+      setBackUrl(prevUrl);
     } else {
       setBackUrl('/');
     }
