@@ -106,27 +106,6 @@ export function TaxonomyAutocomplete({
     })();
   }, [debounced, toggle, router]);
 
-  useEffect(() => {
-    function routeChangeCompleteHandler(e: any) {
-      const queryParams = e.split('?')[1];
-      const searchParams = new URLSearchParams(queryParams);
-      const query = searchParams.get('query');
-      const queryLabel = searchParams.get('query_label');
-
-      if (queryLabel && queryLabel.length > 0) {
-        setValue(queryLabel || '');
-      } else if (query && query !== value) {
-        setValue(query || '');
-      }
-    }
-
-    router.events.on('routeChangeComplete', routeChangeCompleteHandler);
-
-    return () => {
-      router.events.off('routeChangeComplete', routeChangeCompleteHandler);
-    };
-  }, [router.events, value, setValue]);
-
   return (
     <>
       <Autocomplete
