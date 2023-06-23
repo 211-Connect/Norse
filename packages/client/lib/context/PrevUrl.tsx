@@ -24,7 +24,6 @@ export const PrevUrlProvider = ({ children }: PropsWithChildren) => {
     if (!prevUrl) {
       const cookies = parseCookies();
       setPrevUrl(cookies[PREV_URL]);
-      console.log('prevUrl not found. set to:', cookies[PREV_URL]);
     }
 
     if (!currentUrl.current) {
@@ -32,14 +31,9 @@ export const PrevUrlProvider = ({ children }: PropsWithChildren) => {
       if (!resourceDetailsPage.test(router.asPath)) {
         setCookie(null, PREV_URL, router.asPath);
         setPrevUrl(router.asPath);
-        console.log(
-          'Not on a resource detail page, setting prevUrl to',
-          router.asPath
-        );
       }
 
       currentUrl.current = router.asPath;
-      console.log('currentUrl not found. set to', router.asPath);
     }
 
     // Update current url when path changes
@@ -51,8 +45,6 @@ export const PrevUrlProvider = ({ children }: PropsWithChildren) => {
       }
       currentUrl.current = router.asPath;
     }
-
-    console.log(prevUrl);
   }, [router.asPath, router.isReady, prevUrl]);
 
   return (
