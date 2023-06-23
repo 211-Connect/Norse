@@ -13,11 +13,9 @@ import {
   Title,
   useMantineTheme,
 } from '@mantine/core';
-import { openConfirmModal, openContextModal } from '@mantine/modals';
-import { showNotification } from '@mantine/notifications';
+import { openContextModal } from '@mantine/modals';
 import {
   IconTrash,
-  IconInfoCircle,
   IconChevronLeft,
   IconEdit,
   IconShare,
@@ -31,7 +29,6 @@ import { useRouter } from 'next/router';
 import { useRef } from 'react';
 import { useTranslation } from 'next-i18next';
 import { useReactToPrint } from 'react-to-print';
-import { FavoriteAdapter } from '../../lib/adapters/FavoriteAdapter';
 
 type Props = {
   favoriteList: {
@@ -52,44 +49,6 @@ export function FavoritesSection(props: Props) {
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
   });
-
-  const deleteList = (id: string, name: string) => {
-    return async () => {
-      openConfirmModal({
-        title: `${t('modal.delete_list.delete_list')} ${name}?`,
-        centered: true,
-        labels: {
-          confirm: t('call_to_action.delete'),
-          cancel: t('call_to_action.cancel'),
-        },
-        confirmProps: {
-          color: 'red',
-        },
-        onConfirm: async () => {
-          try {
-            const favoritesAdapter = new FavoriteAdapter();
-            await favoritesAdapter.deleteFavoriteList(id);
-
-            showNotification({
-              title: `${name} ${t('favorites.deleted_list')}`,
-              message: t('favorites.deleted_list_message'),
-              color: 'green',
-              icon: <IconTrash />,
-            });
-
-            router.push('/favorites');
-          } catch (err) {
-            showNotification({
-              title: t('favorites.unable_to_delete_list'),
-              message: t('favorites.unable_to_delete_list_message'),
-              icon: <IconInfoCircle />,
-              color: 'red',
-            });
-          }
-        },
-      });
-    };
-  };
 
   return (
     <Box ref={componentRef}>
@@ -131,10 +90,15 @@ export function FavoritesSection(props: Props) {
               </ActionIcon>
               <ActionIcon
                 aria-label={t('call_to_action.delete_list')}
-                onClick={deleteList(
-                  props.favoriteList._id,
-                  props.favoriteList.name
-                )}
+                onClick={() => {
+                  openContextModal({
+                    modal: 'delete-list',
+                    innerProps: {
+                      name: props.favoriteList.name,
+                      id: props.favoriteList._id,
+                    },
+                  });
+                }}
               >
                 <IconTrash size={18} />
               </ActionIcon>

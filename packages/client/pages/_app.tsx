@@ -13,12 +13,13 @@ import { ModalsProvider } from '@mantine/modals';
 import {
   AddToFavoritesModal,
   CreateFavoriteListModal,
+  DeleteFavoriteListModal,
   RemoveFavoriteFromListModal,
   SendSmsModal,
   ShareModal,
   UpdateFavoriteListModal,
+  PromptAuthModal,
 } from '../components/organisms/modals';
-import { PromptAuthModal } from '../components/organisms/modals/PromptAuth';
 import { AppProps } from 'next/app';
 
 function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
@@ -46,6 +47,7 @@ function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
                 'create-list': CreateFavoriteListModal,
                 'update-list': UpdateFavoriteListModal,
                 'remove-from-list': RemoveFavoriteFromListModal,
+                'delete-list': DeleteFavoriteListModal,
               }}
             >
               <PrevUrlProvider>
