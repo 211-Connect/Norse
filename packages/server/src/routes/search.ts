@@ -58,6 +58,7 @@ router.get('/', async (req, res) => {
       size: 25,
       _source_excludes: ['service_area'],
       query: {},
+      sort: [],
       aggs,
     };
 
@@ -172,6 +173,20 @@ router.get('/', async (req, res) => {
             },
           },
         });
+
+        queryBuilder.sort = [
+          {
+            _geo_distance: {
+              location: {
+                lon: parseFloat(coords[0]),
+                lat: parseFloat(coords[1]),
+              },
+              order: 'asc',
+              unit: 'm',
+              mode: 'min',
+            },
+          },
+        ];
       }
     }
 

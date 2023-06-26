@@ -12,6 +12,7 @@ import {
   ActionIcon,
   Tooltip,
   MantineTheme,
+  Indicator,
 } from '@mantine/core';
 import { openContextModal } from '@mantine/modals';
 import {
@@ -28,6 +29,7 @@ import { parseHtml } from '../../lib/utils/parseHtml';
 import { useTranslation } from 'next-i18next';
 import { Anchor } from '../atoms/Anchor';
 import { ReferralButton } from '../atoms/ReferralButton';
+import { distanceBetweenCoordsInMiles } from '../../lib/utils/distenceBetweenCoords';
 
 type Props = {
   id: string;
@@ -54,6 +56,17 @@ export function Result(props: Props) {
     createLinkEvent(e);
   };
 
+  const distance =
+    props?.location?.coordinates && props?.coordinates
+      ? distanceBetweenCoordsInMiles(
+          props.coordinates
+            .split(',')
+            .map((c) => parseFloat(c))
+            .reverse() as [number, number],
+          props.location.coordinates
+        )
+      : null;
+
   return (
     <Card
       id={props.id}
@@ -79,15 +92,27 @@ export function Result(props: Props) {
         </Badge>
       )}
 
-      <Title mt="sm" size="h4" order={3}>
-        <Anchor
-          href={`/search/${props.id}`}
-          color="primary"
-          onClick={handleLink}
-        >
-          {props.name}
-        </Anchor>
-      </Title>
+      <Indicator
+        disabled={!distance}
+        label={`${distance}mi`}
+        size={24}
+        styles={{
+          indicator: {
+            paddingLeft: 4,
+            paddingRight: 4,
+          },
+        }}
+      >
+        <Title mt="sm" size="h4" order={3}>
+          <Anchor
+            href={`/search/${props.id}`}
+            color="primary"
+            onClick={handleLink}
+          >
+            {props.name}
+          </Anchor>
+        </Title>
+      </Indicator>
 
       <Spoiler maxHeight={130} hideLabel="Hide" showLabel="Show more">
         <Text>{parseHtml(props.description ?? '')}</Text>
