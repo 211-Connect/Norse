@@ -266,7 +266,7 @@ export function Favorite(props: Props) {
             aria-disabled={props?.location?.coordinates == null || !coords}
             target="_blank"
             href={`https://www.google.com/maps/dir/?api=1&origin=${coords}&destination=${Array.from(
-              props?.location?.coordinates
+              props?.location?.coordinates ?? []
             )
               .reverse()
               .join(',')}`}
