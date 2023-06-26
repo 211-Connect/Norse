@@ -3,7 +3,7 @@ import { model, Schema } from 'mongoose';
 const ResourceSchema = new Schema(
   {
     _id: String,
-    locationName: String,
+    displayName: String,
     website: String,
     email: String,
     phoneNumbers: [

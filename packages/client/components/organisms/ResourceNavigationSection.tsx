@@ -9,7 +9,7 @@ import { useReactToPrint } from 'react-to-print';
 type Props = {
   backUrl: 'loading' | string;
   resourceId: string;
-  locationName: string;
+  displayName: string;
   serviceDescription: string;
   componentToPrint: any;
 };
@@ -56,7 +56,7 @@ export function ResourceNavigationSection(props: Props) {
               innerProps: {
                 shareContents: {
                   title: t('check_out_this_resource', { ns: 'common' }),
-                  body: `${props.locationName}\n\n${props.serviceDescription}`,
+                  body: `${props.displayName}\n\n${props.serviceDescription}`,
                 },
                 printFn: handlePrint,
               },

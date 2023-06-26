@@ -23,7 +23,7 @@ import {
 
 type Props = {
   id: string;
-  locationName: string;
+  displayName: string;
   serviceName: string;
   serviceDescription: string;
   website: string;
@@ -66,7 +66,7 @@ export function ResourceOverviewSection(props: Props) {
       }}
     >
       <Title mt="sm" size="h3" order={3} color="primary">
-        {props.locationName}
+        {props.displayName}
       </Title>
       <Text color="primary" size="lg">
         {props.serviceName}

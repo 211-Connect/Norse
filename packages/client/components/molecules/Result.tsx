@@ -67,15 +67,17 @@ export function Result(props: Props) {
           props.theme.colors.secondary[props.theme.other.secondaryShade],
       }}
     >
-      <Badge
-        color={`secondary.${props.theme.other.secondaryShade}`}
-        sx={{
-          textOverflow: 'ellipsis',
-          maxWidth: '100%',
-        }}
-      >
-        {props.serviceName}
-      </Badge>
+      {props.serviceName && (
+        <Badge
+          color={`secondary.${props.theme.other.secondaryShade}`}
+          sx={{
+            textOverflow: 'ellipsis',
+            maxWidth: '100%',
+          }}
+        >
+          {props.serviceName}
+        </Badge>
+      )}
 
       <Title mt="sm" size="h4" order={3}>
         <Anchor

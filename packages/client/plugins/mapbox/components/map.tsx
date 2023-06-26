@@ -17,7 +17,7 @@ import { ReferralButton } from '../../../components/atoms/ReferralButton';
 type Props = {
   locations: {
     _id: string;
-    locationName: string;
+    displayName: string;
     description: string;
     website: string;
     phone: string;
@@ -97,7 +97,7 @@ export function MapComponent({ locations = [] }: Props) {
                   color: theme.colors.primary[theme.primaryShade as number],
                 }}
               >
-                {resource.locationName}
+                {resource.displayName}
               </Title>
               <Text size={theme.fontSizes.xs}>{resource.description}</Text>
 

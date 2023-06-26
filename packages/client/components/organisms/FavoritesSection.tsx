@@ -185,7 +185,7 @@ export function FavoritesSection(props: Props) {
               id={resource._id}
               favoriteListId={props.favoriteList._id}
               address={mainAddress}
-              locationName={resource.locationName}
+              displayName={resource.displayName}
               location={resource.location}
               addresses={resource.addresses}
               phoneNumbers={resource.phoneNumbers}

@@ -37,7 +37,7 @@ import { useCookies } from 'react-cookie';
 
 type Props = {
   id: string;
-  locationName: string;
+  displayName: string;
   serviceName: string;
   serviceDescription: string;
   website: string;
@@ -82,13 +82,15 @@ export function Favorite(props: Props) {
           props.theme.colors.secondary[props.theme.other.secondaryShade],
       }}
     >
-      <Badge color={`secondary.${props.theme.other.secondaryShade}`}>
-        {props.serviceName}
-      </Badge>
+      {props.serviceName && (
+        <Badge color={`secondary.${props.theme.other.secondaryShade}`}>
+          {props.serviceName}
+        </Badge>
+      )}
 
       <Title mt="sm" size="h4" order={3} color="primary">
         <Anchor href={`/search/${props.id}`} color="primary">
-          {props.locationName}
+          {props.displayName}
         </Anchor>
       </Title>
 

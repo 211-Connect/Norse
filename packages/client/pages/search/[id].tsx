@@ -87,7 +87,7 @@ export default function SearchDetail({ resource }: Props) {
           <ResourceNavigationSection
             resourceId={resource.id}
             backUrl={backUrl}
-            locationName={resource.name}
+            displayName={resource.name}
             serviceDescription={resource.description}
             componentToPrint={componentRef}
           />
@@ -95,7 +95,7 @@ export default function SearchDetail({ resource }: Props) {
         resourceOverviewSection={
           <ResourceOverviewSection
             id={resource.id}
-            locationName={resource.name}
+            displayName={resource.name}
             serviceName={resource.serviceName}
             serviceDescription={resource.description}
             phoneNumbers={resource.phoneNumbers}
