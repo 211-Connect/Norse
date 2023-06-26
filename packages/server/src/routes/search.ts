@@ -162,6 +162,21 @@ router.get('/', async (req, res) => {
         },
       });
 
+      // Sort by distance
+      queryBuilder.sort = [
+        {
+          _geo_distance: {
+            location: {
+              lon: parseFloat(coords[0]),
+              lat: parseFloat(coords[1]),
+            },
+            order: 'asc',
+            unit: 'm',
+            mode: 'min',
+          },
+        },
+      ];
+
       // If distance is greater than 0, apply geo_distance filter
       if (q.distance > 0) {
         filters.push({
@@ -173,20 +188,6 @@ router.get('/', async (req, res) => {
             },
           },
         });
-
-        queryBuilder.sort = [
-          {
-            _geo_distance: {
-              location: {
-                lon: parseFloat(coords[0]),
-                lat: parseFloat(coords[1]),
-              },
-              order: 'asc',
-              unit: 'm',
-              mode: 'min',
-            },
-          },
-        ];
       }
     }
 
