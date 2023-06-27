@@ -33,7 +33,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 
       return {
         redirect: {
-          destination: `/search?${newQuery.toString()}`,
+          destination: `/${ctx.locale}/search?${newQuery.toString()}`,
           permanent: false,
         },
       };

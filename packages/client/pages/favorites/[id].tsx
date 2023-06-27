@@ -24,7 +24,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     console.log(session.error);
     return {
       redirect: {
-        destination: `/auth/signin?redirect=${encodeURIComponent(
+        destination: `/${ctx.locale}/auth/signin?redirect=${encodeURIComponent(
           '/favorites'
         )}`,
         permanent: false,

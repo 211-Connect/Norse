@@ -31,7 +31,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
         if (err.response.data.redirect) {
           return {
             redirect: {
-              destination: err.response.data.redirect,
+              destination: `/${ctx.locale}${err.response.data.redirect}`,
               permanent: true,
             },
           };

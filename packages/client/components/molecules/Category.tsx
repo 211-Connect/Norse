@@ -62,7 +62,7 @@ export function Category({ index, image, href, subcategories, theme }: Props) {
                     : `/search?query=${encodeURIComponent(
                         el.query
                       )}&query_label=${encodeURIComponent(
-                        el.name
+                        t(`categories.${index}.subcategories.${key}`)
                       )}&query_type=${encodeURIComponent(el.query_type)}`
                 }`}
                 prefetch={false}
