@@ -1,6 +1,6 @@
 import { SearchRequest } from '@elastic/elasticsearch/lib/api/types';
 import { Router } from 'express';
-import z from 'zod';
+import z, { string } from 'zod';
 import { ElasticClient } from '../lib/ElasticClient';
 import { cacheControl } from '../lib/cacheControl';
 import { logger } from '../lib/winston';
@@ -90,6 +90,8 @@ router.get('/', async (req, res) => {
         },
       };
     } else if (q.query_type === 'taxonomy') {
+      q.query = typeof q.query === 'string' ? q.query.split(',') : q.query;
+
       queryBuilder.query = {
         bool: {
           should:
@@ -112,6 +114,8 @@ router.get('/', async (req, res) => {
           minimum_should_match: 1,
         },
       };
+
+      console.log(queryBuilder.query);
     } else if (q.query_type === 'more_like_this') {
       queryBuilder.query = {
         bool: {
