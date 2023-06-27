@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { FavoriteList } from '../models/FavoriteList';
 import { authorizeMiddleware } from '../middleware/authorize';
 import z from 'zod';
+import { logger } from '../lib/winston';
 
 const router = Router();
 
@@ -39,7 +40,7 @@ router.post('/', authorizeMiddleware(), async (req, res) => {
     const newList = await favoriteList.save();
     res.json(newList);
   } catch (err) {
-    console.log(err);
+    logger.error('Favorite list add error', err);
     res.sendStatus(400);
   }
 });
@@ -69,7 +70,7 @@ router.delete(
       const newList = await favoriteList.save();
       res.json(newList);
     } catch (err) {
-      console.log(err);
+      logger.error('Favorite list remove error', err);
       res.sendStatus(400);
     }
   }

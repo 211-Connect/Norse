@@ -4,6 +4,7 @@ import { ShortenedUrl } from '../models/ShortenedUrl';
 import { nanoid } from 'nanoid';
 import { URL } from 'url';
 import { cacheControl } from '../lib/cacheControl';
+import { logger } from '../lib/winston';
 
 const router = Router();
 
@@ -27,7 +28,7 @@ router.get('/:id', async (req, res) => {
       url: shortenedUrl.originalUrl,
     });
   } catch (err) {
-    console.error(err);
+    logger.error('Shortened URL get by id error', err);
     res.sendStatus(400);
   }
 });
@@ -65,7 +66,7 @@ router.post('/', async (req, res) => {
       url: `${origin.protocol}//${origin.host}/api/share/${newShortenedUrl.shortId}`,
     });
   } catch (err) {
-    console.error(err);
+    logger.error('Shortened URL post error', err);
     res.sendStatus(400);
   }
 });

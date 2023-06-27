@@ -3,6 +3,7 @@ import z from 'zod';
 import { Resource } from '../models/Resource';
 import { cacheControl } from '../lib/cacheControl';
 import { Redirect } from '../models/Redirect';
+import { logger } from '../lib/winston';
 
 const router = Router();
 
@@ -51,7 +52,7 @@ router.get('/:id', async (req, res) => {
     cacheControl(res);
     res.json(newV);
   } catch (err) {
-    console.error(err);
+    logger.error('Resource get by id error', err);
     res.sendStatus(400);
   }
 });

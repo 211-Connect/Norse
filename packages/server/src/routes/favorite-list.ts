@@ -10,13 +10,18 @@ const localeQuerySchema = z.object({
   locale: z.string().default('en'),
 });
 router.get('/', authorizeMiddleware(), async (req, res) => {
-  const favoriteLists = await FavoriteList.find({
-    ownerId: req.user.id,
-  })
-    .select('name description privacy')
-    .limit(20);
+  try {
+    const favoriteLists = await FavoriteList.find({
+      ownerId: req.user.id,
+    })
+      .select('name description privacy')
+      .limit(20);
 
-  res.json(favoriteLists);
+    res.json(favoriteLists);
+  } catch (err) {
+    logger.error('Favorite list get all error', err);
+    res.sendStatus(400);
+  }
 });
 
 const allFavoriteListsSchema = z.object({
@@ -24,58 +29,68 @@ const allFavoriteListsSchema = z.object({
   name: z.string().optional(),
 });
 router.get('/search', authorizeMiddleware(), async (req, res) => {
-  const query = await allFavoriteListsSchema.parseAsync(req.query);
+  try {
+    const query = await allFavoriteListsSchema.parseAsync(req.query);
 
-  const mongoQuery: any = {
-    ownerId: req.user.id,
-    favorites: { $nin: query.exclude },
-  };
+    const mongoQuery: any = {
+      ownerId: req.user.id,
+      favorites: { $nin: query.exclude },
+    };
 
-  if (query.name) mongoQuery.name = { $regex: query.name, $options: 'i' };
+    if (query.name) mongoQuery.name = { $regex: query.name, $options: 'i' };
 
-  const favoriteLists = await FavoriteList.find(mongoQuery)
-    .select('name description privacy')
-    .limit(20);
+    const favoriteLists = await FavoriteList.find(mongoQuery)
+      .select('name description privacy')
+      .limit(20);
 
-  res.json(favoriteLists);
+    res.json(favoriteLists);
+  } catch (err) {
+    logger.error('Favorite list search error', err);
+    res.sendStatus(400);
+  }
 });
 
 router.get('/:id', async (req, res) => {
-  const { locale } = await localeQuerySchema.parseAsync(req.query);
-  const favoriteList = await FavoriteList.findById(req.params.id).populate({
-    path: 'favorites',
-    model: 'resource',
-    select: '-serviceArea',
-    transform: (doc: any) => {
-      if (!doc) return null;
+  try {
+    const { locale } = await localeQuerySchema.parseAsync(req.query);
+    const favoriteList = await FavoriteList.findById(req.params.id).populate({
+      path: 'favorites',
+      model: 'resource',
+      select: '-serviceArea',
+      transform: (doc: any) => {
+        if (!doc) return null;
 
-      const translation = doc.translations.find(
-        (el: any) => el.locale === locale
-      );
+        const translation = doc.translations.find(
+          (el: any) => el.locale === locale
+        );
 
-      doc.translations = [];
+        doc.translations = [];
 
-      if (translation) doc.translations.push(translation);
+        if (translation) doc.translations.push(translation);
 
-      return doc;
-    },
-  });
-
-  if (!favoriteList) return res.sendStatus(404);
-
-  favoriteList.favorites = favoriteList.favorites.filter(
-    (el: any) => el != null
-  );
-
-  if (favoriteList.privacy === 'PRIVATE') {
-    // We invoke authorize middleware manually here ONLY if the list is set to private
-    return authorizeMiddleware()(req, res, function () {
-      return res.json(favoriteList);
+        return doc;
+      },
     });
-  }
 
-  // List is assumed to be public if it is not private
-  res.json(favoriteList);
+    if (!favoriteList) return res.sendStatus(404);
+
+    favoriteList.favorites = favoriteList.favorites.filter(
+      (el: any) => el != null
+    );
+
+    if (favoriteList.privacy === 'PRIVATE') {
+      // We invoke authorize middleware manually here ONLY if the list is set to private
+      return authorizeMiddleware()(req, res, function () {
+        return res.json(favoriteList);
+      });
+    }
+
+    // List is assumed to be public if it is not private
+    res.json(favoriteList);
+  } catch (err) {
+    logger.error('Favorite list get error', err);
+    res.sendStatus(400);
+  }
 });
 
 const NewFavoriteSchema = z.object({

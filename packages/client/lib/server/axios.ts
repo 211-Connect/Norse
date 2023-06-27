@@ -8,7 +8,7 @@ const TENANT_ID = process.env.NEXT_PUBLIC_TENANT_ID;
 
 export function getServerSideAxios(
   ctx: GetServerSidePropsContext,
-  session?: Session
+  session?: Session | null
 ) {
   const headers: RawAxiosRequestHeaders = {
     'Content-Type': 'application/json',

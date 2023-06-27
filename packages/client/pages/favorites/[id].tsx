@@ -16,7 +16,8 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerSession(ctx.req, ctx.res, authOptions);
   let viewingAsOwner = false;
 
-  const favoritesAdapter = new FavoriteAdapter();
+  const axios = getServerSideAxios(ctx, session);
+  const favoritesAdapter = new FavoriteAdapter(axios);
   let data;
   if (!session) {
     data = await favoritesAdapter.getFavoriteList(ctx?.params?.id ?? '');

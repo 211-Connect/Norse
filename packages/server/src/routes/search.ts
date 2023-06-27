@@ -1,6 +1,6 @@
 import { SearchRequest } from '@elastic/elasticsearch/lib/api/types';
 import { Router } from 'express';
-import z, { string } from 'zod';
+import z from 'zod';
 import { ElasticClient } from '../lib/ElasticClient';
 import { cacheControl } from '../lib/cacheControl';
 import { logger } from '../lib/winston';
@@ -235,7 +235,7 @@ router.get('/', async (req, res) => {
       },
     });
   } catch (err) {
-    console.log(err);
+    logger.error(err);
     res.sendStatus(400);
   }
 });

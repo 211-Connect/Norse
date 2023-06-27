@@ -3,6 +3,7 @@ import { Router } from 'express';
 import z from 'zod';
 import { ElasticClient } from '../lib/ElasticClient';
 import { cacheControl } from '../lib/cacheControl';
+import { logger } from '../lib/winston';
 
 const router = Router();
 
@@ -48,7 +49,7 @@ router.get('/', async (req, res) => {
     cacheControl(res);
     res.json(data);
   } catch (err) {
-    console.log(err);
+    logger.error('Taxonomy search error', err);
     res.sendStatus(400);
   }
 });
