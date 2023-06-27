@@ -114,8 +114,6 @@ router.get('/', async (req, res) => {
           minimum_should_match: 1,
         },
       };
-
-      console.log(queryBuilder.query);
     } else if (q.query_type === 'more_like_this') {
       queryBuilder.query = {
         bool: {
