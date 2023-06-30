@@ -7,7 +7,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 const TENANT_ID = process.env.NEXT_PUBLIC_TENANT_ID;
 
 export function getServerSideAxios(
-  ctx: GetServerSidePropsContext,
+  ctx?: Partial<GetServerSidePropsContext>,
   session?: Session | null
 ) {
   const headers: RawAxiosRequestHeaders = {
@@ -28,7 +28,7 @@ export function getServerSideAxios(
     headers,
     params: {
       tenant_id: TENANT_ID,
-      locale: ctx.locale,
+      locale: ctx?.locale ? ctx.locale : 'en',
     },
   });
 

@@ -10,11 +10,14 @@ const router = Router();
 
 const urlShortenerSchema = z.object({
   id: z.string(),
+});
+const urlShortenerSchemaQuery = z.object({
   tenant_id: z.string(),
 });
 router.get('/:id', async (req, res) => {
   try {
-    const { id, tenant_id } = await urlShortenerSchema.parseAsync(req.params);
+    const { id } = await urlShortenerSchema.parseAsync(req.params);
+    const { tenant_id } = await urlShortenerSchemaQuery.parseAsync(req.query);
 
     const shortenedUrl = await ShortenedUrl.findOne({
       shortId: id,
@@ -39,10 +42,11 @@ const newShortenedUrlSchema = z.object({
 router.post('/', async (req, res) => {
   try {
     const { url } = await newShortenedUrlSchema.parseAsync(req.body);
+    const { tenant_id } = await urlShortenerSchemaQuery.parseAsync(req.query);
 
     const shortenedUrl = await ShortenedUrl.findOne({
       originalUrl: url,
-      tenantId: req.tenant.tenantId,
+      tenantId: tenant_id,
     });
 
     if (shortenedUrl) {

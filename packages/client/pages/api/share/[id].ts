@@ -1,9 +1,12 @@
 import { NextApiHandler } from 'next';
-import axios from '../../../lib/axios';
 import { isAxiosError } from 'axios';
+import { getServerSideAxios } from '../../../lib/server/axios';
 
 const ShareHandler: NextApiHandler = async (req, res) => {
   if (req.method !== 'GET' && req.method !== 'POST') res.redirect('/');
+
+  const axios = getServerSideAxios({ req });
+
   if (req.method === 'GET') {
     const id = req.query.id;
     try {
@@ -12,7 +15,6 @@ const ShareHandler: NextApiHandler = async (req, res) => {
       else res.redirect('/404');
     } catch (err) {
       if (isAxiosError(err)) {
-        console.error('This line ran but failed');
         console.error(err.response?.data);
       }
       res.statusCode = 404;
