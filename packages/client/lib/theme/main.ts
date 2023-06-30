@@ -42,11 +42,11 @@ export const Theme: MantineThemeOverride = {
     xl: '24px',
   },
   breakpoints: {
-    xs: '576px',
-    sm: '768px',
-    md: '992px',
-    lg: '1200px',
-    xl: '1400px',
+    xs: '36em',
+    sm: '48em',
+    md: '62em',
+    lg: '75em',
+    xl: '88em',
   },
   globalStyles: (theme) => ({
     body: {
