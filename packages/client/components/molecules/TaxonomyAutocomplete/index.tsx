@@ -8,6 +8,7 @@ import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { TaxonomyAdapter } from '../../../lib/adapters/TaxonomyAdapter';
 import unformattedSuggestions from '../../../.norse/suggestions.json';
+import { isTaxonomyCode } from '../../../lib/constants/regex';
 
 type Props = Partial<AutocompleteProps> &
   RefAttributes<HTMLInputElement> & {
@@ -68,9 +69,8 @@ export function TaxonomyAutocomplete({
     }
 
     if (hiddenQueryTypeInput.current) {
-      hiddenQueryTypeInput.current.value = valueInSuggestions
-        ? 'taxonomy'
-        : 'text';
+      hiddenQueryTypeInput.current.value =
+        valueInSuggestions || isTaxonomyCode.test(value) ? 'taxonomy' : 'text';
     }
   };
 
@@ -89,22 +89,24 @@ export function TaxonomyAutocomplete({
   };
 
   useEffect(() => {
-    if (debounced.length < 2) return;
-
     (async function () {
-      const query = new URLSearchParams();
-      query.set('query', debounced);
-
-      toggle(true);
-
       const taxonomyAdapter = new TaxonomyAdapter();
-      const data = await taxonomyAdapter.getTaxonomySuggestions(debounced);
+
+      let data;
+      if (isTaxonomyCode.test(debounced)) {
+        toggle(true);
+        data = await taxonomyAdapter.getTaxonomySuggestionsByCode(debounced);
+      } else if (debounced.length > 2) {
+        toggle(true);
+        data = await taxonomyAdapter.getTaxonomySuggestions(debounced);
+      } else {
+        return;
+      }
 
       toggle(false);
-
       setElasticSuggestions(data);
     })();
-  }, [debounced, toggle, router]);
+  }, [debounced, toggle]);
 
   return (
     <>
@@ -121,6 +123,13 @@ export function TaxonomyAutocomplete({
           (t('search.query_placeholder', { ns: 'dynamic' }) as string) ||
           ''
         }
+        filter={(value, item) => {
+          if (isTaxonomyCode.test(value)) {
+            return item.term.toLowerCase().startsWith(value.toLowerCase());
+          } else {
+            return item.value.toLowerCase().includes(value.toLowerCase());
+          }
+        }}
         data={computedSuggestions}
         value={value}
         onChange={handleOnChange}
