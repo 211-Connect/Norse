@@ -15,6 +15,8 @@ const fieldsToQuery = [
   'organization_name',
   'organization_alternate_name',
   'organization_description',
+  'taxonomy_terms',
+  'taxonomy_descriptions',
 ];
 
 const QuerySchema = z.object({
