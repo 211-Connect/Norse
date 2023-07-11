@@ -62,9 +62,7 @@ export function ResultsSection(props: Props) {
   );
 
   const counterEnd = Math.round(
-    Math.abs(
-      Math.min(Math.max(props.currentPage * 25 + 1, 0), props.totalResults)
-    )
+    Math.abs(Math.min(Math.max(props.currentPage * 25, 0), props.totalResults))
   );
 
   return (
