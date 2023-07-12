@@ -94,7 +94,11 @@ export function Favorite(props: Props) {
         </Anchor>
       </Title>
 
-      <Spoiler maxHeight={50} hideLabel="Hide" showLabel="Show more">
+      <Spoiler
+        maxHeight={50}
+        hideLabel={t('call_to_action.show_less', { ns: 'common' })}
+        showLabel={t('call_to_action.show_more', { ns: 'common' })}
+      >
         <Text>
           {parseHtml(props.serviceDescription, {
             parseLineBreaks: true,
