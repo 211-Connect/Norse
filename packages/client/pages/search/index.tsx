@@ -95,7 +95,7 @@ export default function Search(props: any) {
           noResults={props.noResults}
           currentPage={props.currentPage}
           totalResults={props.totalResults}
-          totalFilters={props.filters?.length ?? 0}
+          totalFilters={props.filters ? Object.keys(props.filters).length : 0}
         />
       }
       mapSection={
