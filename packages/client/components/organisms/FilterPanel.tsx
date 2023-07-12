@@ -48,11 +48,91 @@ export function FilterPanel({ filters }: any) {
     <>
       <MediaQuery smallerThan="md" styles={{ display: 'none' }}>
         <Box maw="250px" w="100%">
-          <Stack spacing="md" p="md">
+          <Stack spacing="xl" p="md">
             {getFilters().map((el) => {
               return (
                 <div key={el.name}>
                   <Title order={5} mb="sm">
+                    {el.displayName}
+                  </Title>
+
+                  <Stack>
+                    {el.buckets.map((innerEl: any) => {
+                      return (
+                        <Flex key={innerEl.key} direction="row">
+                          <Checkbox
+                            sx={{ flex: 1 }}
+                            styles={(theme) => ({
+                              labelWrapper: { fontSize: theme.fontSizes.xs },
+                            })}
+                            checked={
+                              q.filters?.[el.name]?.includes(innerEl.key) ??
+                              false
+                            }
+                            label={innerEl.key}
+                            onChange={(e) => {
+                              const q: any = qs.parse(
+                                router.asPath.slice(
+                                  router.asPath.indexOf('?') + 1
+                                )
+                              );
+
+                              if (!q.filters) {
+                                q.filters = {};
+                              }
+
+                              if (!(q.filters[el.name] instanceof Array)) {
+                                q.filters[el.name] = [];
+                              }
+
+                              if (
+                                e.target.checked &&
+                                !q.filters[el.name].includes(innerEl.key)
+                              ) {
+                                q.filters[el.name].push(innerEl.key);
+                              } else {
+                                const idx = q.filters[el.name].findIndex(
+                                  (v: any) => v === innerEl.key
+                                );
+                                q.filters[el.name].splice(idx, 1);
+                              }
+
+                              router.push(`/search?${qs.stringify(q)}`);
+                            }}
+                          />
+
+                          <Badge color="secondary" variant="light">
+                            {innerEl.doc_count}
+                          </Badge>
+                        </Flex>
+                      );
+                    })}
+                  </Stack>
+                </div>
+              );
+            })}
+          </Stack>
+        </Box>
+      </MediaQuery>
+
+      <MediaQuery largerThan="md" styles={{ display: 'none' }}>
+        <Drawer
+          opened={state.isOpen}
+          position={mq ? 'bottom' : 'left'}
+          onClose={state.toggle}
+          sx={{
+            '.mantine-Paper-root': {
+              overflow: 'auto',
+              paddingLeft: theme.spacing.lg,
+              paddingRight: theme.spacing.lg,
+            },
+          }}
+        >
+          <Stack spacing="xl">
+            {getFilters().map((el) => {
+              return (
+                <Box key={el.name}>
+                  <Title order={5} mb="sm" mt="sm">
                     {el.displayName}
                   </Title>
 
@@ -106,85 +186,10 @@ export function FilterPanel({ filters }: any) {
                       );
                     })}
                   </Stack>
-                </div>
+                </Box>
               );
             })}
           </Stack>
-        </Box>
-      </MediaQuery>
-
-      <MediaQuery largerThan="md" styles={{ display: 'none' }}>
-        <Drawer
-          opened={state.isOpen}
-          position={mq ? 'bottom' : 'left'}
-          onClose={state.toggle}
-          sx={{
-            '.mantine-Paper-root': {
-              overflow: 'auto',
-              paddingLeft: theme.spacing.lg,
-              paddingRight: theme.spacing.lg,
-            },
-          }}
-        >
-          {getFilters().map((el) => {
-            return (
-              <Fragment key={el.name}>
-                <Title order={5} mb="sm" mt="sm">
-                  {el.displayName}
-                </Title>
-
-                <Stack>
-                  {el.buckets.map((innerEl: any) => {
-                    return (
-                      <Flex key={innerEl.key} direction="row">
-                        <Checkbox
-                          sx={{ flex: 1 }}
-                          styles={(theme) => ({
-                            labelWrapper: { fontSize: theme.fontSizes.xs },
-                          })}
-                          checked={
-                            q.filters?.[el.name]?.includes(innerEl.key) ?? false
-                          }
-                          label={innerEl.key}
-                          onChange={(e) => {
-                            const q: any = qs.parse(
-                              router.asPath.slice(
-                                router.asPath.indexOf('?') + 1
-                              )
-                            );
-
-                            if (!q.filters) {
-                              q.filters = {};
-                            }
-
-                            if (!(q.filters[el.name] instanceof Array)) {
-                              q.filters[el.name] = [];
-                            }
-
-                            if (
-                              e.target.checked &&
-                              !q.filters[el.name].includes(innerEl.key)
-                            ) {
-                              q.filters[el.name].push(innerEl.key);
-                            } else {
-                              const idx = q.filters[el.name].findIndex(
-                                (v: any) => v === innerEl.key
-                              );
-                              q.filters[el.name].splice(idx, 1);
-                            }
-
-                            router.push(`/search?${qs.stringify(q)}`);
-                          }}
-                        />
-
-                        <Badge color="primary">{innerEl.doc_count}</Badge>
-                      </Flex>
-                    );
-                  })}
-                </Stack>
-              </Fragment>
-            );
-          })}
         </Drawer>
       </MediaQuery>
     </>
