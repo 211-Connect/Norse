@@ -54,7 +54,9 @@
     "delete": "Borrar",
     "search": "Buscar",
     "remove": "Eliminar",
-    "login": "Acceso"
+    "login": "Acceso",
+    "show_more": "Mostrar más",
+    "show_less": "Muestra menos"
   },
   "list": {
     "private": "Privado",
