@@ -236,44 +236,15 @@ export function MapComponent({ locations = [] }: Props) {
           });
 
           map.current.addLayer({
-            id: 'serviceArea',
-            type: 'fill',
-            source: 'serviceArea',
-            layout: {},
-            paint: {
-              'fill-color': theme.colors.primary[theme.primaryShade as number],
-              'fill-opacity': 0.5,
-            },
-          });
-
-          map.current.addLayer({
             id: 'outline',
             type: 'line',
             source: 'serviceArea',
             layout: {},
             paint: {
-              'line-color': '#000',
-              'line-width': 1,
+              'line-color': theme.colors.primary[theme.primaryShade as number],
+              'line-width': 2,
             },
           });
-
-          map.current.addLayer(
-            {
-              id: 'label',
-              type: 'symbol',
-              source: 'serviceArea',
-              layout: {
-                'text-field': 'Service Area',
-                'text-variable-anchor': ['top', 'bottom', 'left', 'right'],
-                'text-justify': 'auto',
-              },
-              paint: {
-                'text-color':
-                  theme.colors.secondary[theme.other.secondaryShade as number],
-              },
-            },
-            'outline'
-          );
         }
       });
     }
