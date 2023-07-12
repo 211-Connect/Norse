@@ -80,41 +80,27 @@ export function Result(props: Props) {
           props.theme.colors.secondary[props.theme.other.secondaryShade],
       }}
     >
-      {props.serviceName && (
-        <Badge
-          color={`secondary.${props.theme.other.secondaryShade}`}
-          sx={{
-            textOverflow: 'ellipsis',
-            maxWidth: '100%',
-          }}
+      <Title mt="sm" size="h4" order={3}>
+        <Anchor
+          href={`/search/${props.id}`}
+          color="primary"
+          onClick={handleLink}
         >
-          {props.serviceName}
-        </Badge>
-      )}
+          {props.name}
+        </Anchor>
+      </Title>
 
-      <Indicator
-        disabled={!distance}
-        label={`${distance}mi`}
-        size={24}
+      <Spoiler
+        maxHeight={130}
+        hideLabel={t('call_to_action.show_less', { ns: 'common' })}
+        showLabel={t('call_to_action.show_more', { ns: 'common' })}
         styles={{
-          indicator: {
-            paddingLeft: 4,
-            paddingRight: 4,
+          control: {
+            color:
+              props.theme.colors.primary[props.theme.primaryShade as number],
           },
         }}
       >
-        <Title mt="sm" size="h4" order={3}>
-          <Anchor
-            href={`/search/${props.id}`}
-            color="primary"
-            onClick={handleLink}
-          >
-            {props.name}
-          </Anchor>
-        </Title>
-      </Indicator>
-
-      <Spoiler maxHeight={130} hideLabel="Hide" showLabel="Show more">
         <Text>{parseHtml(props.description ?? '')}</Text>
       </Spoiler>
 
@@ -133,7 +119,7 @@ export function Result(props: Props) {
                 textTransform: 'initial',
               }}
             >
-              {props.address}
+              {props.address} {distance && `- ${distance}mi`}
             </Badge>
           ) : (
             <Tooltip
