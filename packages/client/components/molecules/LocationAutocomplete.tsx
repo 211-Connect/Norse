@@ -110,7 +110,7 @@ export function LocationAutocomplete(props: Props) {
         maximumAge: 0,
       });
     }
-  }, [toggle, convertGeoLocation]);
+  }, [toggle, convertGeoLocation, t]);
 
   useEffect(() => {
     if (debounced.length < 2) return;
@@ -227,15 +227,7 @@ export function LocationAutocomplete(props: Props) {
       />
 
       <Group position="left">
-        <Indicator
-          position="top-start"
-          label={value.length > 0 && 0}
-          size={10}
-          color="red"
-          // showZero={value.length === 0}
-          processing
-          // dot={false}
-        >
+        <Indicator position="top-start" size={10} color="red">
           <Button
             mt="sm"
             leftIcon={<IconLocationFilled size={theme.fontSizes.xs} />}
