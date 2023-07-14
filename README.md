@@ -25,9 +25,9 @@ Contributions are always welcome!
 
 Check out this repo's issue page to see if there are any areas that you may be able to help in.
 
-See `contributing.md` for ways to get started.
+See [CONTRIBUTING.md](.github/CONTRIBUTING.md) for ways to get started.
 
-Please adhere to this project's `code of conduct`.
+Please adhere to this project's [code of conduct](.github/CODE_OF_CONDUCT.md).
 
 ## Support
 
