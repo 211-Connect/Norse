@@ -13,7 +13,11 @@
       }
     },
     "pre-serve": {
-      "inputs": [{ "env": "NEXT_PUBLIC_TENANT_ID" }, { "env": "NODE_ENV" }],
+      "inputs": [
+        { "env": "NEXT_PUBLIC_TENANT_ID" },
+        { "env": "NODE_ENV" },
+        { "env": "BUILD_ID" }
+      ],
       "executor": "nx:run-commands",
       "options": {
         "command": "node ./webpack/pre-serve.js",
@@ -21,7 +25,11 @@
       }
     },
     "build": {
-      "inputs": [{ "env": "NEXT_PUBLIC_TENANT_ID" }, { "env": "NODE_ENV" }],
+      "inputs": [
+        { "env": "NEXT_PUBLIC_TENANT_ID" },
+        { "env": "NODE_ENV" },
+        { "env": "BUILD_ID" }
+      ],
       "dependsOn": [
         {
           "target": "pre-build",
