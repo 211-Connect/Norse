@@ -1,0 +1,10 @@
+{
+  "meta_title": "Xem danh sách yêu thích của bạn",
+  "meta_description": "Xem danh sách yêu thích của bạn",
+  "lists": "danh sách",
+  "view_list": "Danh sách xem",
+  "edit_list": "Chỉnh sửa danh sách",
+  "delete_list": "Xóa danh sách",
+  "select_a_list": "Chọn một danh sách ở bên cạnh để xem các mục yêu thích của bạn.",
+  "no_lists": "Bạn chưa có danh sách nào."
+}

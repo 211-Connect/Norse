@@ -1,0 +1,129 @@
+{
+  "header": {
+    "home": "Trang chủ",
+    "favorites": "yêu thích",
+    "log_out": "Đăng xuất",
+    "submit_feedback": "gửi phản hồi",
+    "language_select_label": "Chọn một ngôn ngữ để thay đổi ngôn ngữ trang web"
+  },
+  "favorites": {
+    "added_to_list": "Đã thêm vào danh sách",
+    "added_to_list_message": "Tài nguyên này đã được thêm vào danh sách của bạn.",
+    "already_exists": "Đã tồn tại",
+    "already_exists_message": "Tài nguyên này đã tồn tại trong danh sách của bạn.",
+    "removed_from_list": "Đã xóa khỏi danh sách",
+    "removed_from_list_message": "Tài nguyên này đã bị xóa khỏi danh sách của bạn.",
+    "updated_list": "danh sách cập nhật",
+    "updated_list_message": "Danh sách của bạn đã được cập nhật.",
+    "unable_to_update_list": "Không thể cập nhật danh sách",
+    "unable_to_update_list_message": "Không thể cập nhật danh sách của bạn.",
+    "deleted_list": "danh sách đã xóa",
+    "deleted_list_message": "Danh sách của bạn đã bị xóa.",
+    "unable_to_delete_list": "Không thể xóa danh sách",
+    "unable_to_delete_list_message": "Không thể xóa danh sách của bạn."
+  },
+  "search": {
+    "hero_title": "",
+    "query_placeholder": "",
+    "location_placeholder": "",
+    "radius_placeholder": "bán kính",
+    "miles": "Dặm",
+    "any": "Bất kì",
+    "taxonomies": "phân loại",
+    "suggestions": "gợi ý",
+    "use_my_location": "Sử dụng vị trí của tôi",
+    "confidential_address": "Vị trí này có thể được bảo mật hoặc không mở cửa cho công chúng. Vui lòng chọn một phương thức liên hệ được cung cấp khác cho dịch vụ này.",
+    "address_unavailable": "Địa chỉ không khả dụng",
+    "geocoding_error": "lỗi mã hóa địa lý",
+    "geocoding_unsupported": "Định vị địa lý không được trình duyệt của bạn hỗ trợ",
+    "geocoding_unable_to_retrieve": "Không thể truy xuất vị trí của bạn. Vui lòng kiểm tra cài đặt vị trí của trình duyệt của bạn và thử lại.",
+    "categories": "Thể loại"
+  },
+  "call_to_action": {
+    "call": "Gọi",
+    "view_website": "xem trang web",
+    "get_directions": "Nhận sự chỉ dẫn",
+    "view_details": "Xem chi tiết",
+    "add_to_list": "Thêm vào danh sách",
+    "delete_list": "Xóa danh sách",
+    "remove_from_list": "Xóa từ danh sách",
+    "share": "Chia sẻ",
+    "cancel": "Hủy bỏ",
+    "create": "Tạo nên",
+    "update": "Cập nhật",
+    "delete": "Xóa bỏ",
+    "search": "Tìm kiếm",
+    "remove": "Di dời",
+    "login": "Đăng nhập",
+    "show_more": "Cho xem nhiều hơn",
+    "show_less": "Hiện ít hơn"
+  },
+  "list": {
+    "private": "Riêng tư",
+    "public": "Công cộng"
+  },
+  "message": {
+    "list_deleted": "Đã xóa danh sách",
+    "list_deleted_success": "Danh sách của bạn đã bị xóa.",
+    "error": "Lỗi",
+    "list_not_deleted_error": "Không thể xóa danh sách của bạn."
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "Tìm kiếm danh sách của bạn",
+      "list_name": "Danh sách",
+      "list_privacy": "Sự riêng tư",
+      "add_to_list": "Thêm vào danh sách",
+      "not_found": "Không tìm thấy danh sách nào",
+      "create_new_list": "Tạo một cái mới?"
+    },
+    "remove_from_list": {
+      "are_you_sure": "Bạn có chắc chắn muốn xóa mục yêu thích này khỏi danh sách của mình không?"
+    },
+    "create_list": {
+      "create_a_list": "Tạo một danh sách",
+      "list_name": "Tên",
+      "list_description": "Sự miêu tả",
+      "make_public": "Công bố công khai"
+    },
+    "update_list": {
+      "update_list": "cập nhật danh sách",
+      "list_name": "Tên",
+      "list_description": "Sự miêu tả",
+      "make_public": "Công bố công khai"
+    },
+    "delete_list": {
+      "delete_list": "Xóa danh sách"
+    },
+    "share": {
+      "share_via": "Chia sẻ cái này qua",
+      "copy_link": "Sao chép đường dẫn",
+      "copy": "Sao chép",
+      "facebook": "Facebook",
+      "twitter": "Twitter",
+      "sms": "tin nhắn",
+      "email": "E-mail",
+      "print": "In",
+      "copied": "Đã sao chép!",
+      "check_out_this_list": "Kiểm tra danh sách này tôi đã thực hiện!",
+      "check_out_this_resource": "Kiểm tra tài nguyên này tôi tìm thấy!",
+      "share_sms": "Nhập số điện thoại để chia sẻ qua SMS",
+      "enter_phone_number": "Nhập số điện thoại...",
+      "invalid_phone_number": "số điện thoại không hợp lệ",
+      "sms_sending_title": "Đang gửi tin nhắn SMS...",
+      "sms_sending_body": "Tin nhắn của bạn đang được gửi đi.",
+      "sms_send_success_title": "Đã gửi tin nhắn SMS!",
+      "sms_send_success_body": "Tin nhắn của bạn đã được gửi.",
+      "sms_send_failed_title": "Gửi tin nhắn SMS không thành công",
+      "sms_send_failed_body": "Tin nhắn của bạn không gửi được."
+    },
+    "prompt_auth": "Vui lòng đăng nhập để sử dụng tính năng này."
+  },
+  "data_providers": {
+    "provided_by": "Tài nguyên được cung cấp bởi"
+  },
+  "footer": {
+    "copyright": "Đã đăng ký Bản quyền.",
+    "privacy_policy": "Chính sách bảo mật"
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "header": {
+    "home": "घर",
+    "favorites": "मनपर्नेहरू",
+    "log_out": "बाहिर निस्कनु",
+    "submit_feedback": "प्रतिक्रिया पेश गर्नुहोस्",
+    "language_select_label": "साइट भाषा परिवर्तन गर्न भाषा चयन गर्नुहोस्"
+  },
+  "favorites": {
+    "added_to_list": "सूचीमा थपियो",
+    "added_to_list_message": "यो स्रोत तपाईंको सूचीमा थपिएको छ।",
+    "already_exists": "पहिले नै अवस्थित छ",
+    "already_exists_message": "यो स्रोत तपाईंको सूचीमा पहिले नै अवस्थित छ।",
+    "removed_from_list": "सूचीबाट हटाइयो",
+    "removed_from_list_message": "यो स्रोत तपाईंको सूचीबाट हटाइयो।",
+    "updated_list": "अद्यावधिक गरिएको सूची",
+    "updated_list_message": "तपाईंको सूची अद्यावधिक गरिएको छ।",
+    "unable_to_update_list": "सूची अद्यावधिक गर्न असमर्थ",
+    "unable_to_update_list_message": "तपाईंको सूची अद्यावधिक गर्न सकिएन।",
+    "deleted_list": "मेटाइएको सूची",
+    "deleted_list_message": "तपाईंको सूची मेटाइएको छ।",
+    "unable_to_delete_list": "सूची मेटाउन असमर्थ",
+    "unable_to_delete_list_message": "तपाईंको सूची मेटाउन सकिएन।"
+  },
+  "search": {
+    "hero_title": "",
+    "query_placeholder": "",
+    "location_placeholder": "",
+    "radius_placeholder": "त्रिज्या",
+    "miles": "माइल",
+    "any": "कुनै पनि",
+    "taxonomies": "वर्गीकरण",
+    "suggestions": "सुझावहरू",
+    "use_my_location": "मेरो स्थान प्रयोग गर्नुहोस्",
+    "confidential_address": "यो स्थान गोप्य हुन सक्छ वा जनताको लागि खुला नहुन सक्छ। कृपया यो सेवाको लागि प्रदान गरिएको सम्पर्क विधि छनौट गर्नुहोस्।",
+    "address_unavailable": "ठेगाना उपलब्ध छैन",
+    "geocoding_error": "जियोकोडिङ त्रुटि",
+    "geocoding_unsupported": "जियोलोकेशन तपाईको ब्राउजर द्वारा समर्थित छैन",
+    "geocoding_unable_to_retrieve": "तपाईंको स्थान पुन: प्राप्त गर्न असमर्थ। कृपया आफ्नो ब्राउजरको स्थान सेटिङहरू जाँच गर्नुहोस् र पुन: प्रयास गर्नुहोस्।",
+    "categories": "कोटीहरू"
+  },
+  "call_to_action": {
+    "call": "कल गर्नुहोस्",
+    "view_website": "वेबसाइट हेर्नुहोस्",
+    "get_directions": "निर्देशनहरू प्राप्त गर्नुहोस्",
+    "view_details": "विवरण हेर्नुहोस्",
+    "add_to_list": "सूचीमा थप्नुहोस्",
+    "delete_list": "सूची मेटाउनुहोस्",
+    "remove_from_list": "सूचिबाट हटाउनु",
+    "share": "सेयर गर्नुहोस्",
+    "cancel": "रद्द गर्नुहोस्",
+    "create": "सिर्जना गर्नुहोस्",
+    "update": "अपडेट गर्नुहोस्",
+    "delete": "मेटाउन",
+    "search": "खोज्नुहोस्",
+    "remove": "हटाउनुहोस्",
+    "login": "लग - इन",
+    "show_more": "थप देखाउनुहोस्",
+    "show_less": "कम देखाउनुहोस्"
+  },
+  "list": {
+    "private": "निजी",
+    "public": "सार्वजनिक"
+  },
+  "message": {
+    "list_deleted": "सूची मेटाइयो",
+    "list_deleted_success": "तपाईंको सूची मेटाइएको छ।",
+    "error": "त्रुटि",
+    "list_not_deleted_error": "तपाईंको सूची मेटाउन सकिएन।"
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "आफ्नो सूची खोज्नुहोस्",
+      "list_name": "सूची",
+      "list_privacy": "गोपनीयता",
+      "add_to_list": "सूचीमा थप्नुहोस्",
+      "not_found": "कुनै सूची फेला परेन",
+      "create_new_list": "एउटा नयाँ सिर्जना गर्ने?"
+    },
+    "remove_from_list": {
+      "are_you_sure": "के तपाइँ तपाइँको सूचीबाट यो मनपर्ने हटाउन निश्चित हुनुहुन्छ?"
+    },
+    "create_list": {
+      "create_a_list": "सूची बनाउनुहोस्",
+      "list_name": "नाम",
+      "list_description": "विवरण",
+      "make_public": "सार्वजनिक गर्नुहोस्"
+    },
+    "update_list": {
+      "update_list": "सूची अद्यावधिक गर्नुहोस्",
+      "list_name": "नाम",
+      "list_description": "विवरण",
+      "make_public": "सार्वजनिक गर्नुहोस्"
+    },
+    "delete_list": {
+      "delete_list": "सूची मेटाउनुहोस्"
+    },
+    "share": {
+      "share_via": "यो मार्फत साझेदारी गर्नुहोस्",
+      "copy_link": "लिङ्क प्रतिलिपि गर्नुहोस्",
+      "copy": "कापी",
+      "facebook": "फेसबुक",
+      "twitter": "ट्विटर",
+      "sms": "एस एम एस",
+      "email": "इमेल",
+      "print": "छाप्नुहोस्",
+      "copied": "प्रतिलिपि गरियो!",
+      "check_out_this_list": "मैले बनाएको यो सूची हेर्नुहोस्!",
+      "check_out_this_resource": "मैले फेला पारेको यो स्रोत हेर्नुहोस्!",
+      "share_sms": "SMS मार्फत साझेदारी गर्न फोन नम्बर प्रविष्ट गर्नुहोस्",
+      "enter_phone_number": "फोन नम्बर प्रविष्ट गर्नुहोस्...",
+      "invalid_phone_number": "अवैध फोन नम्बर",
+      "sms_sending_title": "SMS पठाउँदै...",
+      "sms_sending_body": "तपाईंको सन्देश पठाइँदै छ।",
+      "sms_send_success_title": "एसएमएस पठाइयो!",
+      "sms_send_success_body": "तपाईंको सन्देश पठाईयो।",
+      "sms_send_failed_title": "SMS पठाउन सकिएन",
+      "sms_send_failed_body": "तपाईंको सन्देश पठाउन असफल भयो।"
+    },
+    "prompt_auth": "कृपया यो सुविधा प्रयोग गर्न लगइन गर्नुहोस्।"
+  },
+  "data_providers": {
+    "provided_by": "द्वारा प्रदान गरिएको स्रोतहरू"
+  },
+  "footer": {
+    "copyright": "सबै अधिकार सुरक्षित।",
+    "privacy_policy": "गोपनीयता नीति"
+  }
+}

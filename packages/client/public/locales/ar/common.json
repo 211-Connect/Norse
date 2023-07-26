@@ -1,0 +1,129 @@
+{
+  "header": {
+    "home": "بيت",
+    "favorites": "المفضلة",
+    "log_out": "تسجيل خروج",
+    "submit_feedback": "إرسال التعليقات",
+    "language_select_label": "حدد لغة لتغيير لغة الموقع"
+  },
+  "favorites": {
+    "added_to_list": "تمت الإضافة إلى القائمة",
+    "added_to_list_message": "تمت إضافة هذا المورد إلى قائمتك.",
+    "already_exists": "موجود أصلا",
+    "already_exists_message": "هذا المورد موجود بالفعل في قائمتك.",
+    "removed_from_list": "تمت إزالته من القائمة",
+    "removed_from_list_message": "تمت إزالة هذا المورد من قائمتك.",
+    "updated_list": "قائمة محدثة",
+    "updated_list_message": "تم تحديث قائمتك.",
+    "unable_to_update_list": "تعذر تحديث القائمة",
+    "unable_to_update_list_message": "لا يمكن تحديث قائمتك.",
+    "deleted_list": "القائمة المحذوفة",
+    "deleted_list_message": "تم حذف قائمتك.",
+    "unable_to_delete_list": "تعذر حذف القائمة",
+    "unable_to_delete_list_message": "لا يمكن حذف قائمتك."
+  },
+  "search": {
+    "hero_title": "",
+    "query_placeholder": "",
+    "location_placeholder": "",
+    "radius_placeholder": "نصف القطر",
+    "miles": "اميال",
+    "any": "أي",
+    "taxonomies": "التصنيفات",
+    "suggestions": "اقتراحات",
+    "use_my_location": "استخدم موقعي",
+    "confidential_address": "قد يكون هذا الموقع سريًا أو غير مفتوح للجمهور. الرجاء اختيار طريقة اتصال أخرى متوفرة لهذه الخدمة.",
+    "address_unavailable": "العنوان غير متوفر",
+    "geocoding_error": "خطأ في الترميز الجغرافي",
+    "geocoding_unsupported": "تحديد الموقع الجغرافي لا يدعمه متصفحك",
+    "geocoding_unable_to_retrieve": "غير قادر على استرداد موقعك. يرجى التحقق من إعدادات موقع المستعرض الخاص بك وحاول مرة أخرى.",
+    "categories": "فئات"
+  },
+  "call_to_action": {
+    "call": "يتصل",
+    "view_website": "عرض الموقع",
+    "get_directions": "احصل على الاتجاهات",
+    "view_details": "عرض التفاصيل",
+    "add_to_list": "أضف إلى القائمة",
+    "delete_list": "قائمة الحذف",
+    "remove_from_list": "ازله من القائمة",
+    "share": "يشارك",
+    "cancel": "يلغي",
+    "create": "يخلق",
+    "update": "تحديث",
+    "delete": "يمسح",
+    "search": "يبحث",
+    "remove": "يزيل",
+    "login": "تسجيل الدخول",
+    "show_more": "أظهر المزيد",
+    "show_less": "عرض أقل"
+  },
+  "list": {
+    "private": "خاص",
+    "public": "عام"
+  },
+  "message": {
+    "list_deleted": "تم حذف القائمة",
+    "list_deleted_success": "تم حذف قائمتك.",
+    "error": "خطأ",
+    "list_not_deleted_error": "لا يمكن حذف قائمتك."
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "ابحث في قوائمك",
+      "list_name": "قائمة",
+      "list_privacy": "خصوصية",
+      "add_to_list": "أضف إلى القائمة",
+      "not_found": "لم يتم العثور على قوائم",
+      "create_new_list": "إنشاء واحدة جديدة؟"
+    },
+    "remove_from_list": {
+      "are_you_sure": "هل أنت متأكد من أنك تريد إزالة هذه المفضلة من قائمتك؟"
+    },
+    "create_list": {
+      "create_a_list": "انشئ قائمة",
+      "list_name": "اسم",
+      "list_description": "وصف",
+      "make_public": "اجعلها عامة"
+    },
+    "update_list": {
+      "update_list": "قائمة التحديث",
+      "list_name": "اسم",
+      "list_description": "وصف",
+      "make_public": "اجعلها عامة"
+    },
+    "delete_list": {
+      "delete_list": "قائمة الحذف"
+    },
+    "share": {
+      "share_via": "شارك هذا عبر",
+      "copy_link": "نسخ الوصلة",
+      "copy": "ينسخ",
+      "facebook": "فيسبوك",
+      "twitter": "تويتر",
+      "sms": "رسالة قصيرة",
+      "email": "بريد إلكتروني",
+      "print": "مطبعة",
+      "copied": "نسخ!",
+      "check_out_this_list": "تحقق من هذه القائمة التي صنعتها!",
+      "check_out_this_resource": "تحقق من هذا المورد الذي وجدته!",
+      "share_sms": "أدخل رقم هاتف لمشاركته عبر الرسائل القصيرة",
+      "enter_phone_number": "أدخل رقم الهاتف...",
+      "invalid_phone_number": "رقم الهاتف غير صحيح",
+      "sms_sending_title": "إرسال الرسائل القصيرة ...",
+      "sms_sending_body": "يتم إرسال رسالتك.",
+      "sms_send_success_title": "تم إرسال الرسائل القصيرة!",
+      "sms_send_success_body": "تم ارسال رسالتك.",
+      "sms_send_failed_title": "فشل إرسال الرسائل القصيرة",
+      "sms_send_failed_body": "فشل إرسال رسالتك."
+    },
+    "prompt_auth": "الرجاء تسجيل الدخول لاستخدام هذه الميزة."
+  },
+  "data_providers": {
+    "provided_by": "الموارد المقدمة من"
+  },
+  "footer": {
+    "copyright": "كل الحقوق محفوظة.",
+    "privacy_policy": "سياسة الخصوصية"
+  }
+}

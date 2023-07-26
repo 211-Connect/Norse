@@ -1,0 +1,22 @@
+{
+  "meta_title": "",
+  "meta_description": "",
+  "take_a_tour": "Markii ugu horeysay halkan? Safar qaado!",
+  "new": "Cusub!",
+  "tour": {
+    "step_1": {
+      "paragraph_1": "Sanduuqa raadinta ayaa ah laf-dhabarta mashiinka raadinta. Waxay aqbashaa ereyada caadiga ah, weedhaha, iwm (ie.",
+      "paragraph_2": "Markaad qorto, sanduuqa raadinta ayaa ku siin doona talooyin ku salaysan qaybaha aan isticmaalno muuqaalka gadaashiisa. Talooyinkan ayaa bixin doona natiijooyinka ugu saxsan, si kastaba ha ahaatee lagaagama baahna inaad isticmaasho.",
+      "paragraph_3": "Haddii aad doorato inaadan isticmaalin talooyinka la bixiyay, waxaanu isticmaali doonaa qoraalka aad bixisay si aan u soo saarno natiijooyinka ugu saxsan ee aan awoodno."
+    },
+    "step_2": {
+      "paragraph_1": "Ma hubtaa waxa aad raadinayso? Taasi waa hagaag!",
+      "paragraph_2": "Waxaanu ku siinaynaa qaybo badan oo kala duwan iyo qaybo-hoosaadyo si aad u sahamiso. Kaliya dhagsii mid ka mid ah isku xirka qaybta qaybta si loo qaado natiijooyinka raadinta."
+    },
+    "step_3": {
+      "paragraph_1": "Mararka qaarkood arrimuhu way jabaan, oo aynaan filaynin inay jabaan.",
+      "paragraph_2": "Haddii aad waligaa hesho wax jaban, ama xitaa aad rabto inaad siiso xoogaa jawaab celin ah khibrada guud markaa waxaad riixi kartaa badhanka jawaab celinta wakhti kasta."
+    }
+  },
+  "categories_title": "Qaybaha"
+}

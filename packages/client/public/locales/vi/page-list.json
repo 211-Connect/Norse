@@ -1,0 +1,9 @@
+{
+  "meta_title": "xem danh sách",
+  "back_to_favorites": "Quay lại mục yêu thích",
+  "favorites": "yêu thích",
+  "no_favorites": {
+    "title": "Chưa có gì ở đây :(",
+    "subtitle": "Thêm một số mục yêu thích trên trang tìm kiếm để xem chúng tại đây"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "filter_results": "Shaandhee natiijooyinka",
+  "results": "natiijooyin",
+  "no_query": "Wax su'aal ah lama bixin",
+  "results_for": "Natiijooyinka la helay weydiinta",
+  "of": "ee",
+  "no_results": {
+    "title": "Wax natiijooyin ah lama helin oo ku habboon weydiintaada",
+    "subtitle": "Waxaan ku bixinnay natiijooyin la mid ah hoos",
+    "alt_subtitle": "Isku day su'aal kale ama shaandhayn"
+  }
+}
