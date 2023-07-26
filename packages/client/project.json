@@ -50,7 +50,11 @@
       }
     },
     "serve": {
-      "inputs": [{ "env": "NEXT_PUBLIC_TENANT_ID" }, { "env": "NODE_ENV" }],
+      "inputs": [
+        { "env": "NEXT_PUBLIC_TENANT_ID" },
+        { "env": "NODE_ENV" },
+        { "runtime": "ifconfig -a" }
+      ],
       "executor": "@nx/next:server",
       "defaultConfiguration": "development",
       "options": {
