@@ -67,7 +67,7 @@ export class ResourceAdapter extends BaseAdapter {
         data?.serviceArea?.description?.join(', ') ?? null,
       categories: data?.translation?.taxonomies ?? null,
       lastAssuredOn: data?.lastAssuredDate
-        ? dayjs(data.lastAssuredDate).format('MMMM D, YYYY')
+        ? dayjs(data.lastAssuredDate).format('MM/DD/YYYY')
         : '',
       location: {
         coordinates: data?.location?.coordinates ?? [0, 0],
