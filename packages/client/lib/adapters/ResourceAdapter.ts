@@ -1,4 +1,5 @@
 import { BaseAdapter } from './BaseAdapter';
+import dayjs from 'dayjs';
 
 export interface IResource {
   id: string;
@@ -32,7 +33,7 @@ export interface IResource {
   eligibilities: string;
   serviceAreaDescription: string[];
   categories: { code: string; name: string }[];
-  lastAssuredOn: string;
+  lastAssuredOn: string | null;
   organizationName: string;
   organizationDescription: string;
   serviceArea: any;
@@ -65,7 +66,9 @@ export class ResourceAdapter extends BaseAdapter {
       serviceAreaDescription:
         data?.serviceArea?.description?.join(', ') ?? null,
       categories: data?.translation?.taxonomies ?? null,
-      lastAssuredOn: data?.lastAssuredDate ?? null,
+      lastAssuredOn: data?.lastAssuredDate
+        ? dayjs(data.lastAssuredDate).format('MMMM D, YYYY')
+        : null,
       location: {
         coordinates: data?.location?.coordinates ?? [0, 0],
       },
