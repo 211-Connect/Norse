@@ -33,7 +33,7 @@ export interface IResource {
   eligibilities: string;
   serviceAreaDescription: string[];
   categories: { code: string; name: string }[];
-  lastAssuredOn: string | null;
+  lastAssuredOn: string;
   organizationName: string;
   organizationDescription: string;
   serviceArea: any;
@@ -68,7 +68,7 @@ export class ResourceAdapter extends BaseAdapter {
       categories: data?.translation?.taxonomies ?? null,
       lastAssuredOn: data?.lastAssuredDate
         ? dayjs(data.lastAssuredDate).format('MMMM D, YYYY')
-        : null,
+        : '',
       location: {
         coordinates: data?.location?.coordinates ?? [0, 0],
       },
