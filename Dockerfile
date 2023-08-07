@@ -2,7 +2,7 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Do these first so Docker can cache the result for faster DEV cycles
-# (we can build in 1 second instead of 5 minutes)
+# (we can build in 2 seconds instead of 5 minutes)
 COPY package.json package.json
 RUN npm install
 RUN npm install --global nx@latest
