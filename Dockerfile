@@ -38,7 +38,7 @@ RUN apk add elasticsearch
 #   But I found it in edge/testing, so let's use that instead?
 RUN echo 'https://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories
 RUN apk add keycloak
-# keytool   ... there's no way to see the version?
+# keytool      ... there's no way to see the version?
 
 # --------------------------------------------
 # This invalidates all Docker caches, so do this LAST for faster DEV cycles
