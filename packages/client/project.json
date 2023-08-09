@@ -5,7 +5,14 @@
   "projectType": "application",
   "targets": {
     "pre-build": {
-      "inputs": [{ "env": "NEXT_PUBLIC_TENANT_ID" }, { "env": "NODE_ENV" }],
+      "inputs": [
+        {
+          "env": "NEXT_PUBLIC_TENANT_ID"
+        },
+        {
+          "env": "NODE_ENV"
+        }
+      ],
       "executor": "nx:run-commands",
       "options": {
         "command": "node ./webpack/pre-build.js",
@@ -14,9 +21,15 @@
     },
     "pre-serve": {
       "inputs": [
-        { "env": "NEXT_PUBLIC_TENANT_ID" },
-        { "env": "NODE_ENV" },
-        { "env": "BUILD_ID" }
+        {
+          "env": "NEXT_PUBLIC_TENANT_ID"
+        },
+        {
+          "env": "NODE_ENV"
+        },
+        {
+          "env": "BUILD_ID"
+        }
       ],
       "executor": "nx:run-commands",
       "options": {
@@ -26,9 +39,15 @@
     },
     "build": {
       "inputs": [
-        { "env": "NEXT_PUBLIC_TENANT_ID" },
-        { "env": "NODE_ENV" },
-        { "env": "BUILD_ID" }
+        {
+          "env": "NEXT_PUBLIC_TENANT_ID"
+        },
+        {
+          "env": "NODE_ENV"
+        },
+        {
+          "env": "BUILD_ID"
+        }
       ],
       "dependsOn": [
         {
@@ -51,9 +70,15 @@
     },
     "serve": {
       "inputs": [
-        { "env": "NEXT_PUBLIC_TENANT_ID" },
-        { "env": "NODE_ENV" },
-        { "runtime": "ifconfig -a" }
+        {
+          "env": "NEXT_PUBLIC_TENANT_ID"
+        },
+        {
+          "env": "NODE_ENV"
+        },
+        {
+          "runtime": "ifconfig -a"
+        }
       ],
       "executor": "@nx/next:server",
       "defaultConfiguration": "development",
