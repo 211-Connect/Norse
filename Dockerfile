@@ -40,6 +40,7 @@ RUN echo 'https://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/reposi
 RUN apk add keycloak
 # keytool      ... there's no way to see the version?
 
+COPY packages/client/next.config.js packages/client/.norse/next.config.js
 # --------------------------------------------
 # This invalidates all Docker caches, so do this LAST for faster DEV cycles
 COPY . .
