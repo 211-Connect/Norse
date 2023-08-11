@@ -41,9 +41,21 @@ RUN apk add keycloak
 # keytool      ... there's no way to see the version?
 
 COPY packages/client/next.config.js packages/client/.norse/next.config.js
+COPY packages/client/next-i18next.config.js packages/client/.norse/next-i18next.config.js
 # --------------------------------------------
 # This invalidates all Docker caches, so do this LAST for faster DEV cycles
 COPY . .
+
+# These should end up in a config file somewhere?
+ENV NEXT_PUBLIC_MAPBOX_API_KEY=""
+ENV NEXT_PUBLIC_GTM_CONTAINER_ID=""
+ENV NEXT_PUBLIC_API_URL="http://localhost:3001"
+ENV NEXT_PUBLIC_TENANT_ID="0"
+ENV NEXT_PUBLIC_MAPBOX_STYLE_URL=""
+
+# Required Next Auth environment variables
+ENV NEXTAUTH_URL="http://localhost:4200"
+ENV NEXTAUTH_SECRET="12345"
 
 # ----------------
 # The real "start the client"
