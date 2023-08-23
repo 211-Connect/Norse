@@ -10,3 +10,8 @@ docker exec -it norse sh
 
 # Logs (there aren't any yet):
 docker logs -f norse
+
+# Unfortunately, this explodes:
+#   https://gist.github.com/jhannah/46f621c4faa040a4bb20b64f7bfa3d13
+nx run client:build
+
