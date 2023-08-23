@@ -123,11 +123,11 @@ export function ResourceInformationSection(props: Props) {
                 <Grid.Col key={phone.number} lg={6} md={6} sm={12} xs={12}>
                   <Group spacing="xs">
                     <ThemeIcon size="xs" variant="default">
-                      {phone.type === 'voice' ? <IconPhone /> : <IconPrinter />}
+                      {phone.type === 'fax' ? <IconPrinter /> : <IconPhone />}
                     </ThemeIcon>
 
                     <Text weight={600}>
-                      {phone.type === 'voice' ? t('voice') : t('fax')}
+                      {phone.type === 'fax' ? t('fax') : t('voice')}
                     </Text>
                   </Group>
                   {phone.type === 'voice' ? (
