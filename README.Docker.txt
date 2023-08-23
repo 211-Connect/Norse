@@ -1,5 +1,18 @@
 Experimenting with Docker-izing Norse
 
+The happy path (more automation to come):
+
+$ docker build -t norse .
+$ docker run -dp 127.0.0.1:4200:4200 --name norse norse
+$ docker exec -it norse sh
+# nx run client:serve
+
+Now hit http://localhost:4200/ in your local browser
+
+
+---------------
+Jay's ugly notes while debugging / struggling
+---------------
 # docker image rm --force norse; docker build --progress=plain -t norse .
 docker build -t norse .
 # docker container rm norse; docker run -dp 127.0.0.1:4200:4200 --name norse norse
@@ -11,13 +24,6 @@ docker exec -it norse sh
 # Logs (there aren't any yet):
 docker logs -f norse
 
-# Unfortunately, this explodes:
-#   https://gist.github.com/jhannah/46f621c4faa040a4bb20b64f7bfa3d13
-
-# Necessary? not?
-nx run client:build
-
-##### nx serve client
 nx run client:serve
 
 Discord Nightlight wrote:
