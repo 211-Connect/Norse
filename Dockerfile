@@ -4,6 +4,7 @@ WORKDIR /app
 # Do all of these first so Docker can cache the result for faster DEV cycles
 # (we can "build" (from cache) in 2 seconds instead of 5 minutes)
 COPY package.json package.json
+COPY package-lock.json package-lock.json
 RUN npm install
 RUN npm install --global nx@latest
 # nx --version     v16.6.0
@@ -43,8 +44,11 @@ RUN apk add elasticsearch
 # RUN apk add keycloak
 # keytool      ... there's no way to see the version?
 
-COPY packages/client/next.config.js packages/client/.norse/next.config.js
-COPY packages/client/next-i18next.config.js packages/client/.norse/next-i18next.config.js
+# Per PR https://github.com/jhannah/Norse/pull/1
+# This line and the one following should be removed. These get generated at run/build time
+#COPY packages/client/next.config.js packages/client/.norse/next.config.js
+#COPY packages/client/next-i18next.config.js packages/client/.norse/next-i18next.config.js
+
 # --------------------------------------------
 # This invalidates all Docker caches, so do this LAST for faster DEV cycles
 COPY . .

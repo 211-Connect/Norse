@@ -17,5 +17,9 @@ docker logs -f norse
 # Necessary? not?
 nx run client:build
 
-nx serve client
+##### nx serve client
+nx run client:serve
 
+Discord Nightlight wrote:
+If your docker container is strictly for development then you'll have to run nx run client:serve.
+If it is for a production environment then you would run nx run client:build followed by cd dist/packages/client and  npm start
