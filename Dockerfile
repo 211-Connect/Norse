@@ -36,8 +36,11 @@ RUN apk add elasticsearch
 # Keycloak 
 #   Here's a long version: https://www.aloneguid.uk/posts/2021/05/keycloak-docker/
 #   But I found it in edge/testing, so let's use that instead?
-RUN echo 'https://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories
-RUN apk add keycloak
+#     WHOOPS! This WAS here two weeks ago, no longer exists.
+#     0.688 fetch https://dl-cdn.alpinelinux.org/alpine/edge/testing/x86_64/APKINDEX.tar.gz
+#     So umm... just comment out for now.
+# RUN echo 'https://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories
+# RUN apk add keycloak
 # keytool      ... there's no way to see the version?
 
 COPY packages/client/next.config.js packages/client/.norse/next.config.js

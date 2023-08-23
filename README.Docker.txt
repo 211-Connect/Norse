@@ -5,7 +5,7 @@ docker build -t norse .
 # docker container rm norse; docker run -dp 127.0.0.1:4200:4200 --name norse norse
 docker container stop norse; docker container rm norse; docker run -dp 127.0.0.1:4200:4200 --name norse norse
 
-# "Log in" to a running norse to poke around:
+# Shell into a running norse to poke around:
 docker exec -it norse sh
 
 # Logs (there aren't any yet):
