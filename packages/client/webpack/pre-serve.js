@@ -2,7 +2,8 @@ const createAppFromStrapi = require('./createAppFromStrapi');
 const getAppTheme = require('./getAppTheme');
 const fs = require('fs-extra');
 
-const isDev = process.env.NODE_ENV === 'development';
+const isDev =
+  process.env.NODE_ENV === 'development' || process.env.NODE_ENV == null;
 
 if (isDev) {
   const dir = process.cwd();
