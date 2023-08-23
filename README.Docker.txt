@@ -13,5 +13,9 @@ docker logs -f norse
 
 # Unfortunately, this explodes:
 #   https://gist.github.com/jhannah/46f621c4faa040a4bb20b64f7bfa3d13
+
+# Necessary? not?
 nx run client:build
+
+nx serve client
 
