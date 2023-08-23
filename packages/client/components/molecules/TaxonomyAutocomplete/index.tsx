@@ -113,15 +113,17 @@ export function TaxonomyAutocomplete({
       <Autocomplete
         {...rest}
         aria-label={
-          (t('search.query_placeholder') as string) ||
-          (t('search.query_placeholder', { ns: 'dynamic' }) as string) ||
-          ''
+          t('search.query_placeholder', {
+            ns: 'dynamic',
+            defaultValue: t('search.query_placeholder'),
+          }) || ''
         }
         icon={<IconSearch />}
         placeholder={
-          (t('search.query_placeholder') as string) ||
-          (t('search.query_placeholder', { ns: 'dynamic' }) as string) ||
-          ''
+          t('search.query_placeholder', {
+            ns: 'dynamic',
+            defaultValue: t('search.query_placeholder'),
+          }) || ''
         }
         filter={(value, item) => {
           if (isTaxonomyCode.test(value)) {

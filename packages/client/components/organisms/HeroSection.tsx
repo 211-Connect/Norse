@@ -103,8 +103,10 @@ export function HeroSection() {
           sx={{ borderRadius: theme.radius.md }}
         >
           <Title order={1} size="h3" color="primary" mb="md">
-            {t('search.hero_title', { ns: 'common' }) ||
-              t('search.hero_title', { ns: 'dynamic' })}
+            {t('search.hero_title', {
+              ns: 'dynamic',
+              defaultValue: t('search.hero_title', { ns: 'common' }),
+            })}
           </Title>
 
           <HomePageSearch />

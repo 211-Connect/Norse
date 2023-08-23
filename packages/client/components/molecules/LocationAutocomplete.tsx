@@ -160,14 +160,16 @@ export function LocationAutocomplete(props: Props) {
       <Flex align="center" mt="sm">
         <Autocomplete
           aria-label={
-            (t('search.location_placeholder') as string) ||
-            (t('search.location_placeholder', { ns: 'dynamic' }) as string) ||
-            ''
+            t('search.location_placeholder', {
+              ns: 'dynamic',
+              defaultValue: t('search.location_placeholder'),
+            }) || ''
           }
           placeholder={
-            (t('search.location_placeholder') as string) ||
-            (t('search.location_placeholder', { ns: 'dynamic' }) as string) ||
-            ''
+            t('search.location_placeholder', {
+              ns: 'dynamic',
+              defaultValue: t('search.location_placeholder'),
+            }) || ''
           }
           size="md"
           value={value}

@@ -1,9 +1,9 @@
 {
-  "search.hero_title": "Where to Turn for Teens",
+  "search.hero_title": "Search for resources",
   "search.query_placeholder": "What do you need help with?",
   "search.location_placeholder": "City, state, zip, etc...",
-  "meta_title": "Teen Link",
-  "meta_description": "Teen Link is a program of Crisis Connections that serves youth in Washington State.",
+  "meta_title": "Community resources",
+  "meta_description": "",
   "categories.0": "Alcohol, Drugs, and Substance Use",
   "categories.0.subcategories.0": "Counseling/Treatment",
   "categories.0.subcategories.1": "Support Groups",
