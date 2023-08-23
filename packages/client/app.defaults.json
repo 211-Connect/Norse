@@ -2,22 +2,31 @@
   "brand": {
     "name": "Norse",
     "logoUrl": "/logo.png",
-    "favicon": "/favicon.ico"
+    "faviconUrl": "/favicon.ico",
+    "openGraphUrl": ""
   },
   "contact": {
     "email": "",
     "number": "",
     "feedbackUrl": ""
   },
-  "nextConfig": {},
+  "nextConfig": {
+    "i18n": {
+      "defaultLocale": "en",
+      "locales": ["en"]
+    }
+  },
+  "search": {
+    "radiusOptions": [],
+    "defaultRadius": "0"
+  },
   "features": {
     "map": {
-      "plugin": {
-        "center": [-120.740135, 47.751076]
-      }
+      "plugin": "mapbox"
     },
     "sms": null
   },
+  "plugins": [],
   "theme": {
     "primaryColor": "#005191",
     "secondaryColor": "#FFB351",
@@ -31,7 +40,8 @@
       "meta": {
         "title": "NORSE - New Open Resource Search Engine",
         "description": "211 connects callers, at no cost, to critical health and human services in their community. If you're unable to find a service, please dial 211 for assistance."
-      }
+      },
+      "showLocationInput": false
     }
   },
   "menus": {
@@ -45,10 +55,6 @@
       "href": "https://connect211.com"
     }
   ],
-  "i18n": {
-    "defaultLocale": "en",
-    "locales": ["en"]
-  },
   "categories": [
     {
       "name": "Disabilities",
