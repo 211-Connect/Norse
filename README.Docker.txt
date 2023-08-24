@@ -4,11 +4,11 @@ The happy path (more automation to come):
 
 $ docker build -t norse .
 $ docker run -dp 127.0.0.1:4200:4200 --name norse norse
-$ docker exec -it norse sh
-# nx run client:serve
 
 Now hit http://localhost:4200/ in your local browser
 
+Watch the logs:
+docker logs -f norse
 
 ---------------
 Jay's ugly notes while debugging / struggling

@@ -66,8 +66,8 @@ ENV NEXTAUTH_SECRET="12345"
 
 # ----------------
 # The real "start the client"
-#   CMD ["nx", "serve", "client"]
+CMD ["nx", "run", "client:serve"]
 # Debugging - keep running forever
-ENTRYPOINT ["tail", "-f", "/dev/null"]
+# ENTRYPOINT ["tail", "-f", "/dev/null"]
 # ----------------
 EXPOSE 4200
