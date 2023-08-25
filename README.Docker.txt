@@ -2,10 +2,12 @@ Experimenting with Docker-izing Norse
 
 The happy path (more automation to come):
 
-$ docker build -t norse .
-$ docker run -dp 127.0.0.1:4200:4200 --name norse norse
+docker build -t norse .
+docker compose up
 
-Now hit http://localhost:4200/ in your local browser
+Now in your local browser:
+* http://localhost:4200/ the Norse web app
+* http://localhost:9200/ Elasticsearch
 
 Watch the logs:
 docker logs -f norse
