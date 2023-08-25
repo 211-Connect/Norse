@@ -12,21 +12,6 @@ RUN npm install --global nx@latest
 RUN apk update
 RUN apk upgrade
 
-# MongoDB https://linux.how2shout.com/how-to-install-mongodb-server-on-alpine-linux/
-# Looks like Alpine 3.9 is the latest to have MongoDB APKs :(
-# (We're on Alpine 3.18 according to /etc/os-release)
-# RUN echo 'https://dl-cdn.alpinelinux.org/alpine/v3.9/main'      >> /etc/apk/repositories
-# RUN echo 'https://dl-cdn.alpinelinux.org/alpine/v3.9/community' >> /etc/apk/repositories
-# RUN apk add mongodb
-# Don't need these? Yet?
-# apk add mongodb-tools
-# mkdir -p /data/db/
-# chown `root` /data/db
-# rc-update add mongodb default
-# rc-service mongodb start
-# mongo --version     v4.0.5
-# mongo
-
 # Keycloak 
 #   Here's a long version: https://www.aloneguid.uk/posts/2021/05/keycloak-docker/
 #   But I found it in edge/testing, so let's use that instead?
@@ -41,16 +26,18 @@ RUN apk upgrade
 # This invalidates all Docker caches, so do this LAST for faster DEV cycles
 COPY . .
 
+# -------------------------
+# All these rumors sent to me via Slack / Discord. I don't know what these do...
 # These should end up in a config file somewhere?
 ENV NEXT_PUBLIC_MAPBOX_API_KEY=""
 ENV NEXT_PUBLIC_GTM_CONTAINER_ID=""
 ENV NEXT_PUBLIC_API_URL="http://localhost:3001"
 ENV NEXT_PUBLIC_TENANT_ID="0"
 ENV NEXT_PUBLIC_MAPBOX_STYLE_URL=""
-
 # Required Next Auth environment variables
 ENV NEXTAUTH_URL="http://localhost:4200"
 ENV NEXTAUTH_SECRET="12345"
+# -------------------------
 
 # ----------------
 # The real "start the client"
