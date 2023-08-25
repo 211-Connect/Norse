@@ -4,6 +4,8 @@ The happy path (more automation to come):
 
 docker build -t norse .
 docker compose up
+# Create the Elasticsearch index we'll use:
+curl -X PUT "http://localhost:9200/0-taxonomies_v2_en"
 
 Now in your local browser:
 * http://localhost:4200/ the Norse web app
@@ -11,7 +13,7 @@ Now in your local browser:
 * http://localhost:9200/ Elasticsearch
 
 Watch the logs:
-docker logs -f norse
+docker logs -f norse-norse-1
 
 
 ---------------
