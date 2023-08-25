@@ -30,29 +30,6 @@ RUN apk add mongodb
 # mongo --version     v4.0.5
 # mongo
 
-# ---------------
-# Hmmm... trying separate container instead
-# ---------------
-# RUN apk add elasticsearch
-#RUN mkdir /usr/share/java/elasticsearch/config
-#RUN touch /usr/share/java/elasticsearch/config/jvm.options
-#RUN mkdir /usr/share/java/elasticsearch/logs
-#RUN echo "-XX:+IgnoreUnrecognizedVMOptions" >> /etc/elasticsearch/jvm.options
-#RUN adduser -D elastic
-#RUN chown -R elastic /usr/share/java/elasticsearch
-#RUN chown elastic /etc/elasticsearch
-#RUN mkdir /var/lib/elasticsearch
-#RUN chown elastic /var/lib/elasticsearch
-#USER elastic
-#RUN mkdir /var/lib/elasticsearch/_default
-#RUN mkdir /var/lib/elasticsearch/_default/plugins
-#ENV ES_PATH_CONF=/etc/elasticsearch
-## RUN /usr/share/java/elasticsearch/bin/elasticsearch --daemonize
-## netstat -tulpn | grep LISTEN
-## [2023-08-24T20:49:11,039][INFO ][o.e.t.TransportService   ] [6FBgtWt] publish_address {127.0.0.1:9300}, bound_addresses {127.0.0.1:9300}
-#USER root
-# ---------------
-
 # Keycloak 
 #   Here's a long version: https://www.aloneguid.uk/posts/2021/05/keycloak-docker/
 #   But I found it in edge/testing, so let's use that instead?
@@ -85,6 +62,8 @@ ENV NEXTAUTH_SECRET="12345"
 
 # ----------------
 # The real "start the client"
+ENV ELASTIC_NODE="http://norse-elasticsearch-1:9200"
+RUN ["nx", "serve", "server"]
 CMD ["nx", "run", "client:serve"]
 # Debugging - keep running forever
 # ENTRYPOINT ["tail", "-f", "/dev/null"]

@@ -6,8 +6,10 @@ services:
       - 9200:9200
       - 9300:9300
     environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
+      discovery.type: single-node
+      xpack.security.enabled: false
+      # Limit ES to 750MB of memory, heap
+      ES_JAVA_OPTS: -Xms750m -Xmx750m
   norse:
     image: norse
     ports:
