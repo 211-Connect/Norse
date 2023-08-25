@@ -10,7 +10,20 @@ services:
       xpack.security.enabled: false
       # Limit ES to 750MB of memory, heap
       ES_JAVA_OPTS: -Xms750m -Xmx750m
+  redis:
+    #image: redis:latest-alpine
+    image: redis:7.2.0-alpine
+    # restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning
+    #volumes:
+    #  - cache:/data
   norse:
     image: norse
+    depends_on:
+      # - elasticsearch
+      - redis
     ports:
       - 4200:4200
+      - 3001:3001

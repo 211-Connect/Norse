@@ -12,15 +12,12 @@ RUN npm install --global nx@latest
 RUN apk update
 RUN apk upgrade
 
-RUN apk add redis   
-# redis-cli --version     7.0.12
-
 # MongoDB https://linux.how2shout.com/how-to-install-mongodb-server-on-alpine-linux/
 # Looks like Alpine 3.9 is the latest to have MongoDB APKs :(
 # (We're on Alpine 3.18 according to /etc/os-release)
-RUN echo 'https://dl-cdn.alpinelinux.org/alpine/v3.9/main'      >> /etc/apk/repositories
-RUN echo 'https://dl-cdn.alpinelinux.org/alpine/v3.9/community' >> /etc/apk/repositories
-RUN apk add mongodb
+# RUN echo 'https://dl-cdn.alpinelinux.org/alpine/v3.9/main'      >> /etc/apk/repositories
+# RUN echo 'https://dl-cdn.alpinelinux.org/alpine/v3.9/community' >> /etc/apk/repositories
+# RUN apk add mongodb
 # Don't need these? Yet?
 # apk add mongodb-tools
 # mkdir -p /data/db/
@@ -40,11 +37,6 @@ RUN apk add mongodb
 # RUN apk add keycloak
 # keytool      ... there's no way to see the version?
 
-# Per PR https://github.com/jhannah/Norse/pull/1
-# This line and the one following should be removed. These get generated at run/build time
-#COPY packages/client/next.config.js packages/client/.norse/next.config.js
-#COPY packages/client/next-i18next.config.js packages/client/.norse/next-i18next.config.js
-
 # --------------------------------------------
 # This invalidates all Docker caches, so do this LAST for faster DEV cycles
 COPY . .
@@ -63,9 +55,13 @@ ENV NEXTAUTH_SECRET="12345"
 # ----------------
 # The real "start the client"
 ENV ELASTIC_NODE="http://norse-elasticsearch-1:9200"
-RUN ["nx", "serve", "server"]
-CMD ["nx", "run", "client:serve"]
+ENV REDIS_URL="redis://norse-redis-1:6379"
+# RUN ["nx", "serve", "server"]
+#CMD ["nx", "run", "client:serve"]
+CMD ["/bin/sh", "-c", "nx serve server; nx run client:serve"]
+
 # Debugging - keep running forever
 # ENTRYPOINT ["tail", "-f", "/dev/null"]
 # ----------------
 EXPOSE 4200
+EXPOSE 3001
