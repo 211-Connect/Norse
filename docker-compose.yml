@@ -1,5 +1,6 @@
 version: '3'
 services:
+
   elasticsearch:
     image: elasticsearch:8.9.1
     ports:
@@ -10,6 +11,7 @@ services:
       xpack.security.enabled: false
       # Limit ES to 750MB of memory, heap
       ES_JAVA_OPTS: -Xms750m -Xmx750m
+
   redis:
     #image: redis:latest-alpine
     image: redis:7.2.0-alpine
@@ -19,11 +21,21 @@ services:
     command: redis-server --save 20 1 --loglevel warning
     #volumes:
     #  - cache:/data
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - '27017:27017'
+    #volumes:
+    #  - dbdata6:/data/db
+
   norse:
     image: norse
-    depends_on:
+    #depends_on:
+      # huh... doesn't detect when ES comes up
       # - elasticsearch
-      - redis
+      # I'm too impatient to wait for this?
+      # - redis
     ports:
       - 4200:4200
       - 3001:3001

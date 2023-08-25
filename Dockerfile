@@ -56,10 +56,10 @@ ENV NEXTAUTH_SECRET="12345"
 # The real "start the client"
 ENV ELASTIC_NODE="http://norse-elasticsearch-1:9200"
 ENV REDIS_URL="redis://norse-redis-1:6379"
-# RUN ["nx", "serve", "server"]
-#CMD ["nx", "run", "client:serve"]
-CMD ["/bin/sh", "-c", "nx serve server; nx run client:serve"]
-
+ENV MONGODB_URI="mongodb://norse-mongodb-1:27017"
+# Squash these 2 together so we can build running neither, but "docker compose up" will run both:
+# CMD ["/bin/sh", "-c", "nx serve server &; nx run client:serve"]
+CMD ["/bin/sh", "-c", "nx run-many --target=serve --projects=server,client --parallel"]
 # Debugging - keep running forever
 # ENTRYPOINT ["tail", "-f", "/dev/null"]
 # ----------------
