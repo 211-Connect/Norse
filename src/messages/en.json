@@ -1,0 +1,8 @@
+{
+  "index": {
+    "hello": "world"
+  },
+  "NotFoundPage": {
+    "title": "Not found"
+  }
+}
