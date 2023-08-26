@@ -1,13 +1,13 @@
-import Link from 'next-intl/link';
 import Image from 'next/image';
 import HouseIcon from '../icons/House';
 import HeartIcon from '../icons/Heart';
 import Button from '../atoms/Button';
+import Link from '../atoms/Link';
 
 export default function Header() {
   return (
     <header className="min-h-20">
-      <nav className="flex flex-col items-center justify-between pt-2 pb-2 sm:p-2 sm:flex-row">
+      <nav className="flex flex-col items-center justify-between pt-2 pb-2 sm:p-2 sm:flex-row container mx-auto">
         <Link href="/">
           <Image
             src="/images/logo.png"
