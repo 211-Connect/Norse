@@ -42,6 +42,10 @@
         "description": "211 connects callers, at no cost, to critical health and human services in their community. If you're unable to find a service, please dial 211 for assistance."
       },
       "showLocationInput": false
+    },
+    "resource": {
+      "hideCategories": false,
+      "hideLastAssured": false
     }
   },
   "menus": {

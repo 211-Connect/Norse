@@ -20,6 +20,7 @@ import {
   USER_PREF_COORDS,
   USER_PREF_LOCATION,
 } from '../../lib/constants/cookies';
+import { useAppConfig } from '../../lib/hooks/useAppConfig';
 
 type Props = {
   id: string;
@@ -45,6 +46,7 @@ export function ResourceOverviewSection(props: Props) {
   const theme = useMantineTheme();
   const [cookies] = useCookies();
   const [coords, setCoords] = useState(null);
+  const config = useAppConfig();
 
   useEffect(() => {
     if (cookies[USER_PREF_COORDS] && cookies[USER_PREF_LOCATION]) {
@@ -76,36 +78,44 @@ export function ResourceOverviewSection(props: Props) {
 
       <Divider />
 
-      <Title size="h4" mt="lg" mb="xs" order={3} color="primary">
-        {t('categories')}
-      </Title>
-      <Group>
-        {props.categories?.map((el: any) => {
-          return (
-            <Badge
-              key={el.code}
-              component={Link}
-              href={`/search?query=${encodeURIComponent(
-                el.code
-              )}&query_label=${encodeURIComponent(
-                el.name
-              )}&query_type=taxonomy`}
-              sx={{
-                textDecoration: 'underline',
-                cursor: 'pointer',
-                textTransform: 'initial',
-              }}
-            >
-              {el.name}
-            </Badge>
-          );
-        })}
-      </Group>
+      {config?.pages?.resource?.hideCategories ? null : (
+        <>
+          <Title size="h4" mt="lg" mb="xs" order={3} color="primary">
+            {t('categories')}
+          </Title>
+          <Group>
+            {props.categories?.map((el: any) => {
+              return (
+                <Badge
+                  key={el.code}
+                  component={Link}
+                  href={`/search?query=${encodeURIComponent(
+                    el.code
+                  )}&query_label=${encodeURIComponent(
+                    el.name
+                  )}&query_type=taxonomy`}
+                  sx={{
+                    textDecoration: 'underline',
+                    cursor: 'pointer',
+                    textTransform: 'initial',
+                  }}
+                >
+                  {el.name}
+                </Badge>
+              );
+            })}
+          </Group>
+        </>
+      )}
 
-      <Title size="h4" mt="lg" order={3} color="primary">
-        {t('last_assured')}
-      </Title>
-      <Text size="xs">{props.lastAssuredOn || t('unknown')}</Text>
+      {config?.pages?.resource?.hideLastAssured ? null : (
+        <>
+          <Title size="h4" mt="lg" order={3} color="primary">
+            {t('last_assured')}
+          </Title>
+          <Text size="xs">{props.lastAssuredOn || t('unknown')}</Text>
+        </>
+      )}
 
       <MediaQuery largerThan="md" styles={{ flexDirection: 'row' }}>
         <Stack mt="lg">
