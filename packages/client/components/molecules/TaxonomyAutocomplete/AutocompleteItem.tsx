@@ -14,7 +14,11 @@ export const AutoCompleteItem = forwardRef<HTMLDivElement, ItemProps>(
   ) {
     return (
       <div ref={ref} {...others}>
-        <Flex justify="space-between" wrap="nowrap">
+        <Flex
+          justify="space-between"
+          wrap="nowrap"
+          sx={{ wordBreak: 'normal' }}
+        >
           <Text>{value}</Text>
           {group_label === 'Taxonomies' && (
             <Badge maw="100px" fullWidth>
