@@ -1,4 +1,7 @@
 import { ReactNode } from 'react';
+import pluginRegistry from '../../tmp/PluginRegistry';
+
+pluginRegistry.init();
 
 type Props = {
   children: ReactNode;

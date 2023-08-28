@@ -41,8 +41,5 @@ Thumbs.db
 # Next.js
 .next
 
-# Norse
-.norse
-
 # Environment
 .env
