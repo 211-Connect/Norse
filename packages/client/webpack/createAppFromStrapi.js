@@ -149,6 +149,11 @@ module.exports = async function createFromStrapi(dir) {
           },
           showLocationInput: page.showLocationInput ?? false,
         };
+      } else if (page.page === 'resource') {
+        newAppConfig.pages[page.page] = {
+          hideCategories: page.hideCategories ?? false,
+          hideLastAssured: page.hideLastAssured ?? false,
+        };
       }
     }
 
