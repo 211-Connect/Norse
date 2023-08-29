@@ -64,6 +64,8 @@ router.get('/', async (req, res) => {
       aggs,
     };
 
+    // This output doesn't show up anywhere?
+    console.log("JAY tenant ID is " + q.tenant_id)
     if (
       q.query_type === 'text' &&
       q.query.length > 0 &&

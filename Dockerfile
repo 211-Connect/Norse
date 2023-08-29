@@ -39,6 +39,9 @@ ENV NEXTAUTH_URL="http://localhost:4200"
 ENV NEXTAUTH_SECRET="12345"
 # -------------------------
 
+# Misc temporary Jay-debugging things:
+RUN apk add curl
+
 # ----------------
 # The real "start the client"
 ENV ELASTIC_NODE="http://norse-elasticsearch-1:9200"
