@@ -1,0 +1,235 @@
+[
+  {
+    "name": "Disabilities",
+    "image": "/disability.svg",
+    "subcategories": [
+      {
+        "name": "Assistive Technology",
+        "query": "LH-2700.0500",
+        "query_type": "taxonomy"
+      },
+      {
+        "name": "Early Intervention",
+        "query": "LR-1700",
+        "query_type": "taxonomy"
+      },
+      {
+        "name": "Employment",
+        "query": "ND-6500.1500",
+        "query_type": "taxonomy"
+      },
+      {
+        "name": "Financial Support",
+        "query": "NS-1800",
+        "query_type": "taxonomy"
+      }
+    ]
+  },
+  {
+    "name": "Domestic Violence",
+    "image": "/harrassment.svg",
+    "subcategories": [
+      {
+        "name": "Hotline",
+        "query": "RP-1500.1400-200",
+        "query_type": "taxonomy"
+      },
+      {
+        "name": "Shelter",
+        "query": "BH-1800.1500-100",
+        "query_type": "taxonomy"
+      }
+    ]
+  },
+  {
+    "name": "Education",
+    "image": "/assessment.svg",
+    "subcategories": [
+      {
+        "name": "Homeless Student Liaison",
+        "query": "HH-3000",
+        "query_type": "taxonomy"
+      },
+      {
+        "name": "GED Classes",
+        "query": "HH-0500.2500-250",
+        "query_type": "taxonomy"
+      },
+      {
+        "name": "ESL Classes",
+        "query": "HH-0500.8000-150",
+        "query_type": "taxonomy"
+      },
+      {
+        "name": "Tutoring/Homework Help",
+        "query": "HL-8700",
+        "query_type": "taxonomy"
+      }
+    ]
+  },
+  {
+    "name": "Employment",
+    "image": "/training.svg",
+    "subcategories": [
+      {
+        "name": "Job Search",
+        "query": "ND-3500.3600",
+        "query_type": "taxonomy"
+      },
+      {
+        "name": "Job Seeking Skills",
+        "query": "ND-2000.6500",
+        "query_type": "taxonomy"
+      },
+      { "name": "Youth", "query": "ND-6500.9800", "query_type": "taxonomy" }
+    ]
+  },
+  {
+    "name": "Financial",
+    "image": "/financing.svg",
+    "subcategories": [
+      {
+        "name": "Rent Assistance",
+        "query": "BH-3800.7000",
+        "query_type": "taxonomy"
+      },
+      {
+        "name": "Move-in Assistance",
+        "query": "BH-3800.7250",
+        "query_type": "taxonomy"
+      },
+      {
+        "name": "Utility Assistance",
+        "query": "BV-8900.9300",
+        "query_type": "taxonomy"
+      },
+      {
+        "name": "Utility Discounts",
+        "query": "BV-8900.1700",
+        "query_type": "taxonomy"
+      }
+    ]
+  },
+  {
+    "name": "Food",
+    "image": "/food.svg",
+    "subcategories": [
+      {
+        "name": "Free Meals",
+        "query": "BD-5000.8300",
+        "query_type": "taxonomy"
+      },
+      {
+        "name": "Senior Meals",
+        "query": "BD-5000.1500",
+        "query_type": "taxonomy"
+      },
+      {
+        "name": "Food Pantries/Banks",
+        "query": "BD-1800.2000",
+        "query_type": "taxonomy"
+      },
+      {
+        "name": "Grocery Delivery",
+        "query": "BD-2400.2590",
+        "query_type": "taxonomy"
+      },
+      {
+        "name": "Home Delivered Meals",
+        "query": "BD-5000.3500",
+        "query_type": "taxonomy"
+      }
+    ]
+  },
+  {
+    "name": "Health Care",
+    "image": "/health.svg",
+    "subcategories": [
+      {
+        "name": "COVID-19 Testing",
+        "query": "LF-4900.1565",
+        "query_type": "taxonomy"
+      },
+      { "name": "Dental Care", "query": "LV-1600", "query_type": "taxonomy" },
+      { "name": "Primary Care", "query": "LE", "query_type": "taxonomy" },
+      {
+        "name": "Teen Clinics",
+        "query": "LV-6800.0300",
+        "query_type": "taxonomy"
+      }
+    ]
+  },
+  {
+    "name": "Personal/Household Items",
+    "image": "/clothing.svg",
+    "subcategories": [
+      {
+        "name": "Clothing",
+        "query": "BM-6500.1500",
+        "query_type": "taxonomy"
+      },
+      {
+        "name": "Diapers",
+        "query": "BM-6500.1500-150",
+        "query_type": "taxonomy"
+      },
+      {
+        "name": "Hygiene Items",
+        "query": "BM-6500.6500-650",
+        "query_type": "taxonomy"
+      }
+    ]
+  },
+  {
+    "name": "Shelter/Housing",
+    "image": "/shelter.svg",
+    "subcategories": [
+      {
+        "name": "Homeless Day Centers",
+        "query": "BH-1800.3500",
+        "query_type": "taxonomy"
+      },
+      {
+        "name": "Overnight Shelters",
+        "query": "BH-1800.8500-150",
+        "query_type": "taxonomy"
+      },
+      {
+        "name": "Permanent Housing",
+        "query": "BH-7000.4600",
+        "query_type": "taxonomy"
+      },
+      {
+        "name": "Transitional Housing",
+        "query": "BH-8600",
+        "query_type": "taxonomy"
+      },
+      {
+        "name": "Youth Shelter",
+        "query": "BH-1800.1500-700",
+        "query_type": "taxonomy"
+      }
+    ]
+  },
+  {
+    "name": "Transportation",
+    "image": "/transportation.svg",
+    "subcategories": [
+      {
+        "name": "Bus Fare",
+        "query": "BT-8300.1000",
+        "query_type": "taxonomy"
+      },
+      {
+        "name": "Gas Money",
+        "query": "BT-8300.2500",
+        "query_type": "taxonomy"
+      },
+      {
+        "name": "Local Transportation",
+        "query": "BT-4500",
+        "query_type": "taxonomy"
+      }
+    ]
+  }
+]
