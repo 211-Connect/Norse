@@ -3,6 +3,8 @@ module.exports = {
   content: [
     // Or if using `src` directory:
     './src/**/*.{js,ts,jsx,tsx,mdx}',
+    './plugins/**/*.{js,ts,jsx,tsx,mdx}',
+    './node_modules/norse-plugin-*/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
