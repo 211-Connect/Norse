@@ -1,0 +1,75 @@
+{
+  "mappings": {
+    "properties": {
+      "code": {
+        "type": "search_as_you_type",
+        "doc_values": false,
+        "max_shingle_size": 3,
+        "fields": {
+          "raw": {
+            "type": "keyword"
+          }
+        }
+      },
+      "created_at": {
+        "type": "date",
+        "format": "yyyy-MM-dd HH:mm:ss||strict_date_optional_time||epoch_millis"
+      },
+      "description": {
+        "type": "text"
+      },
+      "id": {
+        "type": "text",
+        "index": false
+      },
+      "language": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "name": {
+        "type": "search_as_you_type",
+        "doc_values": false,
+        "max_shingle_size": 3
+      },
+      "parent_id": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "taxonomy": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "taxonomy_id": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "tenant_id": {
+        "type": "keyword"
+      },
+      "updated_at": {
+        "type": "date",
+        "format": "yyyy-MM-dd HH:mm:ss||strict_date_optional_time||epoch_millis"
+      }
+    }
+  }
+}
