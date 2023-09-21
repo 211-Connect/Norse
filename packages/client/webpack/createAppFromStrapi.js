@@ -21,6 +21,8 @@ const query = qs.stringify({
         'pages',
         'search',
         'plugins',
+        'headerMenu',
+        'footerMenu',
         'radiusSelectValues',
         'localizations',
         'localizations.logo',
