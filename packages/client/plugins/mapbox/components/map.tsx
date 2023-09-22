@@ -82,8 +82,14 @@ export function MapComponent({ locations = [] }: Props) {
 
     // add new markers to the map
     markers.current = locations
-      .filter((resource) => resource.location)
+      .filter(
+        (resource) =>
+          resource.location &&
+          resource.location.coordinates[0] != 0 &&
+          resource.location.coordinates[1] != 0
+      )
       .map((resource) => {
+        console.log(resource);
         const latLng = resource?.location?.coordinates ?? mapConfig.center;
         bounds.extend(latLng);
 
