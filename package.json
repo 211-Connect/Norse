@@ -68,7 +68,7 @@
     "@mantine/nprogress": "^6.0.14",
     "@mantine/spotlight": "^6.0.14",
     "@reactour/tour": "^3.4.0",
-    "@tabler/icons-react": "^2.23.0",
+    "@tabler/icons-react": "^2.35.0",
     "autosuggest-highlight": "^3.3.4",
     "axios": "^1.0.0",
     "color": "^4.2.3",
