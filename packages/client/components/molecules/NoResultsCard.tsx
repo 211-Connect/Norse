@@ -1,7 +1,21 @@
-import { Card, Group, Mark, Text, Title } from '@mantine/core';
+import {
+  Box,
+  Button,
+  Card,
+  Flex,
+  Group,
+  Mark,
+  Text,
+  Title,
+  useMantineTheme,
+} from '@mantine/core';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import { NextRouter } from 'next/router';
+import { useAppConfig } from '../../lib/hooks/useAppConfig';
+import Link from 'next/link';
+import { Anchor } from '../atoms/Anchor';
+import { IconPhone } from '@tabler/icons-react';
 
 type Props = {
   router: NextRouter;
@@ -10,6 +24,8 @@ type Props = {
 
 export function NoResultsCard(props: Props) {
   const { t } = useTranslation('page-search');
+  const config = useAppConfig() as any;
+  const theme = useMantineTheme();
 
   return (
     <Card shadow="sm" p="lg" radius="md" withBorder>
@@ -33,8 +49,21 @@ export function NoResultsCard(props: Props) {
       <Text align="center" color="dimmed">
         {!props.showAltSubtitle
           ? t('no_results.subtitle')
+          : config?.contact?.number
+          ? t('no_results.need_help')
           : t('no_results.alt_subtitle')}
       </Text>
+      <Flex align="center" justify="center" mt="md">
+        {config?.contact?.number && (
+          <Button
+            leftIcon={<IconPhone color={theme.colors.secondary[5]} />}
+            href={`tel:${config.contact.number}`}
+            component={Anchor}
+          >
+            {config.contact.number}
+          </Button>
+        )}
+      </Flex>
     </Card>
   );
 }

@@ -7,6 +7,7 @@
   "no_results": {
     "title": "Không tìm thấy kết quả phù hợp với truy vấn của bạn",
     "subtitle": "Chúng tôi đã cung cấp một số kết quả tương tự bên dưới",
-    "alt_subtitle": "Hãy thử một truy vấn hoặc bộ lọc khác"
+    "alt_subtitle": "Hãy thử một truy vấn hoặc bộ lọc khác",
+    "need_help": "Cần giúp đỡ? Chúng tôi có người đứng bên cạnh."
   }
 }

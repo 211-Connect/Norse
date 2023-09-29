@@ -7,6 +7,7 @@
   "no_results": {
     "title": "No se encontraron resultados que coincidan con su consulta",
     "subtitle": "Hemos proporcionado algunos resultados similares a continuación",
-    "alt_subtitle": "Pruebe con una consulta o filtro diferente"
+    "alt_subtitle": "Pruebe con una consulta o filtro diferente",
+    "need_help": "¿Necesitas ayuda? Tenemos gente esperando."
   }
 }

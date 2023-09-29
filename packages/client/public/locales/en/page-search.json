@@ -7,6 +7,7 @@
   "no_results": {
     "title": "No results found matching your query",
     "subtitle": "We've provided some similar results below",
-    "alt_subtitle": "Try a different query or filter"
+    "alt_subtitle": "Try a different query or filter",
+    "need_help": "Need help? We have people standing by."
   }
 }
