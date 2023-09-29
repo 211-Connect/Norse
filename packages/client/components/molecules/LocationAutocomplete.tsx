@@ -8,9 +8,10 @@ import {
   Indicator,
   Flex,
   Select,
+  ActionIcon,
 } from '@mantine/core';
 import { useDebouncedValue, useInputState, useToggle } from '@mantine/hooks';
-import { IconLocationFilled, IconMapPin } from '@tabler/icons-react';
+import { IconLocationFilled, IconMapPin, IconX } from '@tabler/icons-react';
 import { RefAttributes, useCallback, useEffect, useRef, useState } from 'react';
 import { showNotification } from '@mantine/notifications';
 import { useRouter } from 'next/router';
@@ -179,7 +180,17 @@ export function LocationAutocomplete(props: Props) {
           icon={<IconMapPin />}
           data={suggestions}
           w="100%"
-          rightSection={isLoading && <Loader size="sm" />}
+          rightSection={
+            isLoading ? (
+              <Loader size="sm" />
+            ) : (
+              value.length > 0 && (
+                <ActionIcon onClick={() => handleChange('')}>
+                  <IconX />
+                </ActionIcon>
+              )
+            )
+          }
           sx={{ flex: 1 }}
           styles={{
             input: {

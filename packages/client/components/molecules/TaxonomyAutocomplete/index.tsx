@@ -1,8 +1,8 @@
-import { Autocomplete, AutocompleteProps } from '@mantine/core';
+import { ActionIcon, Autocomplete, AutocompleteProps } from '@mantine/core';
 import { useDebouncedValue, useInputState, useToggle } from '@mantine/hooks';
 import { RefAttributes, useEffect, useMemo, useRef, useState } from 'react';
 import { Loader } from '@mantine/core';
-import { IconSearch } from '@tabler/icons-react';
+import { IconSearch, IconX } from '@tabler/icons-react';
 import { AutoCompleteItem } from './AutocompleteItem';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
@@ -137,7 +137,17 @@ export function TaxonomyAutocomplete({
         onChange={handleOnChange}
         onItemSubmit={handleItemSubmit}
         itemComponent={AutoCompleteItem}
-        rightSection={isLoading && <Loader size="sm" />}
+        rightSection={
+          isLoading ? (
+            <Loader size="sm" />
+          ) : (
+            value.length > 0 && (
+              <ActionIcon onClick={() => handleOnChange('')}>
+                <IconX />
+              </ActionIcon>
+            )
+          )
+        }
         limit={25}
         maxDropdownHeight={300}
       />
