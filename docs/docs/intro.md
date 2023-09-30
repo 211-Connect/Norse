@@ -31,7 +31,9 @@ The command installs all necessary dependencies you need to run Norse.
 
 
 ## Environment Variables
-  The document also mentions several environment variables that need to be set, which are categorized into "PUBLIC" and "SECRET." These variables are essential for configuring various aspects of the NORSE project. Here are some of the environment variables mentioned:
+  Rename `.env.examples` to `.env` and set environment variables.
+
+The document also mentions several environment variables that need to be set, which are categorized into "PUBLIC" and "SECRET." These variables are essential for configuring various aspects of the NORSE project. Here are some of the environment variables mentioned:
 
 PUBLIC Variables:
 - `NEXT_PUBLIC_MAPBOX_API_KEY`: Mapbox API key(get from [mapbox api](https://docs.mapbox.com/api/overview/) )
@@ -55,23 +57,7 @@ These environment variables are crucial for configuring the project's behavior a
 
 Overall, this document provides a comprehensive guide on setting up and configuring the NORSE project for development. Users who want to work on this project or deploy it will find these instructions helpful.
 
-Example: 
-  ```env
-  # PUBLIC
-  NEXT_PUBLIC_MAPBOX_API_KEY=""
-  NEXT_PUBLIC_GTM_CONTAINER_ID=""
-  NEXT_PUBLIC_API_URL="http://localhost:3001"
-  NEXT_PUBLIC_TENANT_ID="0"
-  NEXT_PUBLIC_MAPBOX_STYLE_URL=""
-  NEXT_PUBLIC_KEYCLOAK_REALM=""
 
-  # SECRET
-  NEXTAUTH_URL="http://localhost:4200"
-  NEXTAUTH_SECRET=""
-  KEYCLOAK_SECRET=""
-  KEYCLOAK_ISSUER=""
-  KEYCLOAK_CLIENT_ID=""
-```
 
 ## Start the client
 
