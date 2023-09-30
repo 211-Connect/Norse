@@ -65,7 +65,7 @@
     "@mantine/modals": "^6.0.14",
     "@mantine/next": "^6.0.14",
     "@mantine/notifications": "^6.0.14",
-    "@mantine/nprogress": "^6.0.14",
+    "@mantine/nprogress": "^6.0.21",
     "@mantine/spotlight": "^6.0.14",
     "@reactour/tour": "^3.4.0",
     "@tabler/icons-react": "^2.23.0",
