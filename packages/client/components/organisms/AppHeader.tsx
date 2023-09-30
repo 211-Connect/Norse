@@ -97,12 +97,17 @@ export function AppHeader(props: Props) {
     }
 
     if (appConfig?.contact?.feedbackUrl) {
+      const currentUrl = new URL(appConfig?.contact?.feedbackUrl);
+      const feedbackUrl = currentUrl.toString().split('?')[0];
+      const urlParams = new URLSearchParams(currentUrl.searchParams);
+      urlParams.set('referring_url', window.location.href);
+
       items.push(
         <Button
           key="feedback"
           className="feedback"
           component={Link}
-          href={appConfig.contact.feedbackUrl}
+          href={`${feedbackUrl}?${urlParams.toString()}`}
           onClick={(e) => {
             e.preventDefault();
             window.open(
@@ -171,7 +176,7 @@ export function AppHeader(props: Props) {
       >
         <Anchor href="/" aria-label={t('header.home') as string}>
           <img
-            src="https://cdn.c211.io/logo_hlc988_9ff6e2727e.svg"
+            src={appConfig?.brand?.logoUrl}
             alt={t('header.home') as string}
             width="auto"
             height={65}
