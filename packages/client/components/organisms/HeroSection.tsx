@@ -77,6 +77,7 @@ export function HeroSection() {
       styles={{
         paddingRight: theme.spacing.md,
         paddingLeft: theme.spacing.md,
+        maxHeight: '250px',
       }}
     >
       <Stack
