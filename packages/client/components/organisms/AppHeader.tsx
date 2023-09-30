@@ -171,10 +171,16 @@ export function AppHeader(props: Props) {
       >
         <Anchor href="/" aria-label={t('header.home') as string}>
           <img
-            src={appConfig.brand.logoUrl}
+            src="https://cdn.c211.io/logo_hlc988_9ff6e2727e.svg"
             alt={t('header.home') as string}
             width="auto"
             height={65}
+            style={{
+              width: '100%',
+              height: 'auto',
+              maxHeight: 65,
+              maxWidth: 300,
+            }}
           />
         </Anchor>
 
