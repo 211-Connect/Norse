@@ -74,7 +74,7 @@ export function ResourceOverviewSection(props: Props) {
         {props.serviceName}
       </Text>
 
-      <Text mb="lg">{parseHtml(props.serviceDescription ?? '')}</Text>
+      <Text mb="lg" sx={{ whiteSpace: "pre-wrap" }}>{parseHtml(props.serviceDescription ?? '')}</Text>
 
       <Divider />
 

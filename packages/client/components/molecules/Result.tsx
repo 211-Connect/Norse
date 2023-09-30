@@ -101,7 +101,7 @@ export function Result(props: Props) {
           },
         }}
       >
-        <Text>{parseHtml(props.description ?? '')}</Text>
+        <Text sx={{ whiteSpace: "pre-wrap" }}>{parseHtml(props.description ?? '')}</Text>
       </Spoiler>
 
       <Stack mt="lg" mb="lg" spacing="sm">
