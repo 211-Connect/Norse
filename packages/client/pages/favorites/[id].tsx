@@ -70,7 +70,16 @@ export default function FavoritesDetail({ favoriteList, viewingAsOwner }: any) {
         <PluginLoader
           plugin={appConfig?.features?.map?.plugin}
           component="map"
-          locations={favoriteList.favorites}
+          locations={favoriteList.favorites.map((el: any) => ({
+            id: el._id,
+            name: el.displayName,
+            description: el?.translations?.[0]?.serviceDescription,
+            location: el.location,
+            website: el.website,
+            phone: el.phoneNumbers.find(
+              (el: any) => el.rank === 1 && el.type === 'voice'
+            ),
+          }))}
         />
       }
       footerSection={<AppFooter fullWidth />}

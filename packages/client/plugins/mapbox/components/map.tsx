@@ -50,6 +50,8 @@ export function MapComponent({ locations = [] }: Props) {
     return (config as { center: [number, number] }) ?? { center: [0, 0] };
   }, [appConfig.plugins]);
 
+  console.log(locations);
+
   useEffect(() => {
     map.current = new mapboxgl.Map({
       container: mapContainer.current as HTMLDivElement, // container ID or element
@@ -89,7 +91,6 @@ export function MapComponent({ locations = [] }: Props) {
           resource.location.coordinates[1] != 0
       )
       .map((resource) => {
-        console.log(resource);
         const latLng = resource?.location?.coordinates ?? mapConfig.center;
         bounds.extend(latLng);
 
