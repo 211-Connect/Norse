@@ -192,6 +192,7 @@ export function ShareModal(props: Props) {
         icon={<IconLink />}
         value={shortUrl}
         rightSectionWidth={75}
+        readOnly
         rightSection={
           <Button
             compact
