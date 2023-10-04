@@ -120,7 +120,7 @@
     "prompt_auth": "Inicia sesión para utilizar esta función."
   },
   "data_providers": {
-    "provided_by": "Recursos proporcionados por"
+    "provided_by": "Datos proporcionados por"
   },
   "footer": {
     "copyright": "Reservados todos los derechos.",

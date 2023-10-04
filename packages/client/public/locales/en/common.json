@@ -120,7 +120,7 @@
     "prompt_auth": "Please login to use this feature."
   },
   "data_providers": {
-    "provided_by": "Resources provided by"
+    "provided_by": "Data provided by"
   },
   "footer": {
     "copyright": "All rights reserved.",

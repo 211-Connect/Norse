@@ -16,19 +16,17 @@ export function DataProviders() {
           <Flex
             maw="1200px"
             m="0 auto"
-            pt="lg"
-            pb="lg"
+            pt="xl"
+            pb="xl"
             pl="md"
             pr="md"
             direction="column"
           >
-            <Title size="h3" order={3} color="primary" mb="md" underline>
-              <Group spacing="sm">
-                <IconDatabase /> {t('data_providers.provided_by')}
-              </Group>
+            <Title size="h3" order={3} color="primary" mb="md" align="center">
+              {t('data_providers.provided_by')}
             </Title>
 
-            <Grid>
+            <Grid justify="center">
               {appConfig.providers.map((el: any) => (
                 <Grid.Col key={el.name} lg={3} md={4} sm={6} xs={12}>
                   <Card
@@ -39,6 +37,13 @@ export function DataProviders() {
                     radius="md"
                     shadow="sm"
                     withBorder
+                    sx={{
+                      height: '100%',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      display: 'flex',
+                      flexDirection: 'column',
+                    }}
                   >
                     <Text size="lg" fw="bold" color="primary">
                       {el.name}
