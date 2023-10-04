@@ -100,20 +100,20 @@ export function AppHeader(props: Props) {
       const currentUrl = new URL(appConfig?.contact?.feedbackUrl);
       const feedbackUrl = currentUrl.toString().split('?')[0];
       const urlParams = new URLSearchParams(currentUrl.searchParams);
-      urlParams.set('referring_url', window.location.href);
+
+      if (typeof window !== 'undefined') {
+        urlParams.set('referring_url', window.location.href);
+      }
 
       items.push(
         <Button
           key="feedback"
           className="feedback"
           component={Link}
-          href={`${feedbackUrl}?${urlParams.toString()}`}
+          href="#"
           onClick={(e) => {
             e.preventDefault();
-            window.open(
-              `${appConfig.contact.feedbackUrl}?referring_url=${window.location.href}`,
-              '_blank'
-            );
+            window.open(`${feedbackUrl}?${urlParams.toString()}`, '_blank');
           }}
           target="_blank"
           rel="noopener noreferrer"
