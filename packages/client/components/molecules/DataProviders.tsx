@@ -24,7 +24,7 @@ export function DataProviders() {
           >
             <Title size="h3" order={3} color="primary" mb="md" underline>
               <Group spacing="sm">
-                <IconDatabase /> {t('text:resources-provided-by')}
+                <IconDatabase /> {t('data_providers.provided_by')}
               </Group>
             </Title>
 
