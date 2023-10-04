@@ -23,6 +23,8 @@ const query = qs.stringify({
         'plugins',
         'headerMenu',
         'footerMenu',
+        'dataProviders',
+        'dataProviders.logo',
         'radiusSelectValues',
         'localizations',
         'localizations.logo',
@@ -173,11 +175,11 @@ module.exports = async function createFromStrapi(dir) {
       });
     }
 
-    for (const provider of appConfig?.providers ?? []) {
+    for (const provider of appConfig?.dataProviders ?? []) {
       newAppConfig.providers.push({
         name: provider.name,
         href: provider.url,
-        logo: provider.logo,
+        logo: provider?.logo?.data?.attributes?.url,
       });
     }
 
