@@ -8,6 +8,8 @@ import {
   Anchor as MantineAnchor,
   Stack,
   useMantineTheme,
+  Box,
+  Modal,
 } from '@mantine/core';
 import {
   IconHeart,
@@ -24,13 +26,14 @@ import ISO from 'iso-639-1';
 import { Anchor } from '../atoms/Anchor';
 import { useAppConfig } from '../../lib/hooks/useAppConfig';
 import { openContextModal } from '@mantine/modals';
+import { useDisclosure } from '@mantine/hooks';
 
 type Props = {
   fullWidth?: boolean;
 };
 
 export function AppHeader(props: Props) {
-  const [opened, setOpened] = useState(false);
+  const [opened, { open, close }] = useDisclosure(false);
   const appConfig = useAppConfig();
   const theme = useMantineTheme();
   const session = useSession();
@@ -192,15 +195,11 @@ export function AppHeader(props: Props) {
 
         <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
           <Group position="right" align="center">
-            <Drawer opened={opened} onClose={() => setOpened(false)}>
+            <Modal opened={opened} onClose={close} fullScreen>
               <Stack align="center">{menuItems}</Stack>
-            </Drawer>
+            </Modal>
 
-            <Burger
-              opened={opened}
-              onClick={() => setOpened((prev) => !prev)}
-              mr="md"
-            />
+            <Burger opened={opened} onClick={open} mr="md" />
           </Group>
         </MediaQuery>
       </Group>
