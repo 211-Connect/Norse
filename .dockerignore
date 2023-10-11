@@ -1,0 +1,5 @@
+# "npm install" is going to install all these node_modules
+# so don't copy them if we've also added those to files to git
+# (why are our dep files committed to git?)
+**/node_modules
+
