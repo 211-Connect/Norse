@@ -6,6 +6,7 @@ import {
   Drawer,
   Flex,
   MediaQuery,
+  Modal,
   Stack,
   Title,
   useMantineTheme,
@@ -116,9 +117,8 @@ export function FilterPanel({ filters }: any) {
       </MediaQuery>
 
       <MediaQuery largerThan="md" styles={{ display: 'none' }}>
-        <Drawer
+        <Modal
           opened={state.isOpen}
-          position={mq ? 'bottom' : 'left'}
           onClose={state.toggle}
           sx={{
             '.mantine-Paper-root': {
@@ -190,7 +190,7 @@ export function FilterPanel({ filters }: any) {
               );
             })}
           </Stack>
-        </Drawer>
+        </Modal>
       </MediaQuery>
     </>
   );
