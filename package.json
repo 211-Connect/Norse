@@ -70,7 +70,7 @@
     "@reactour/tour": "^3.4.0",
     "@tabler/icons-react": "^2.38.0",
     "autosuggest-highlight": "^3.3.4",
-    "axios": "^1.0.0",
+    "axios": "^1.6.0",
     "color": "^4.2.3",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
