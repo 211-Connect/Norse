@@ -82,6 +82,7 @@ export const createReferralEvent = async (
       event: 'referral',
       ...resource,
       ...router.query,
+      title: resource.name,
     };
 
     createEvent<ReferralEventProps>(newEvent);
@@ -101,6 +102,7 @@ export const createReferralEvent = async (
       event: referralType,
       ...resource,
       ...router.query,
+      title: resource.name,
     };
 
     createEvent<ReferralEventProps>(newEvent);
