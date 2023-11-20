@@ -13,7 +13,7 @@
     "@nx/linter": "16.6.0",
     "@nx/next": "16.6.0",
     "@nx/node": "16.9.1",
-    "@nx/react": "16.6.0",
+    "@nx/react": "17.1.2",
     "@nx/webpack": "16.6.0",
     "@nx/workspace": "16.6.0",
     "@testing-library/react": "14.0.0",
