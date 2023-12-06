@@ -117,7 +117,10 @@
       "sms_send_failed_title": "فشل إرسال الرسائل القصيرة",
       "sms_send_failed_body": "فشل إرسال رسالتك."
     },
-    "prompt_auth": "الرجاء تسجيل الدخول لاستخدام هذه الميزة."
+    "prompt_auth": "الرجاء تسجيل الدخول لاستخدام هذه الميزة.",
+    "update_location": {
+      "prompt_start_location": "ما هو موقع انطلاقك؟"
+    }
   },
   "data_providers": {
     "provided_by": "البيانات المقدمة من"

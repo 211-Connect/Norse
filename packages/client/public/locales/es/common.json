@@ -117,7 +117,10 @@
       "sms_send_failed_title": "Envío de SMS fallido",
       "sms_send_failed_body": "Su mensaje no se pudo enviar."
     },
-    "prompt_auth": "Inicia sesión para utilizar esta función."
+    "prompt_auth": "Inicia sesión para utilizar esta función.",
+    "update_location": {
+      "prompt_start_location": "¿Cuál es tu punto de partida?"
+    }
   },
   "data_providers": {
     "provided_by": "Datos proporcionados por"

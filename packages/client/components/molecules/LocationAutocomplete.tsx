@@ -23,16 +23,34 @@ import {
 import { useTranslation } from 'next-i18next';
 import { useAppConfig } from '../../lib/hooks/useAppConfig';
 import { usePrevUrl } from '../../lib/hooks/usePrevUrl';
+import { create } from 'zustand';
 
 type Props = Partial<AutocompleteProps> &
   RefAttributes<HTMLInputElement> & { defaultCoords?: string };
+
+type LocationStore = {
+  location: string;
+  coords: string;
+  setLocation: (location: string) => void;
+  setCoords: (coords: string) => void;
+};
+export const useLocationStore = create<LocationStore>((set) => ({
+  location: '',
+  coords: '',
+  setLocation: (location: string) => set({ location }),
+  setCoords: (coords: string) => set({ coords }),
+}));
 
 export function LocationAutocomplete(props: Props) {
   const theme = useMantineTheme();
   const appConfig = useAppConfig();
   const prevUrl = usePrevUrl();
   const [isLoading, toggle] = useToggle([false, true]);
-  const [value, setValue] = useInputState(props?.defaultValue ?? '');
+  const {
+    location: value,
+    setLocation: setValue,
+    setCoords,
+  } = useLocationStore();
   const [debounced] = useDebouncedValue(value, 200);
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const hiddenInputRef = useRef<HTMLInputElement>(null);
@@ -42,6 +60,7 @@ export function LocationAutocomplete(props: Props) {
   const handleItemSubmit = (e: any) => {
     if (hiddenInputRef.current) {
       setCookie(null, USER_PREF_COORDS, e.coordinates, { path: '/' });
+      setCoords(e.coordinates);
       hiddenInputRef.current.value = e.coordinates;
     }
   };
@@ -69,6 +88,7 @@ export function LocationAutocomplete(props: Props) {
         setCookie(null, USER_PREF_LOCATION, data.address, { path: '/' });
         if (hiddenInputRef.current) {
           setCookie(null, USER_PREF_COORDS, `${lng},${lat}`, { path: '/' });
+          setCoords(`${lng},${lat}`);
           hiddenInputRef.current.value = `${lng},${lat}`;
         }
       } catch (err) {
@@ -82,7 +102,7 @@ export function LocationAutocomplete(props: Props) {
 
       toggle(false);
     },
-    [setValue, toggle, t]
+    [setValue, toggle, t, setCoords]
   );
 
   const getUserLocation = useCallback(() => {
@@ -136,6 +156,12 @@ export function LocationAutocomplete(props: Props) {
   }, [debounced, t]);
 
   useEffect(() => {
+    if (props.defaultValue) {
+      setValue(props.defaultValue);
+    }
+  }, [props.defaultValue, setValue]);
+
+  useEffect(() => {
     function routeChangeCompleteHandler(e: any) {
       const prevQuery = prevUrl?.split('?')[1];
       const prevSearchParams = new URLSearchParams(prevQuery);
@@ -155,6 +181,7 @@ export function LocationAutocomplete(props: Props) {
 
         if (hiddenInputRef.current) {
           hiddenInputRef.current.value = newCoords || '';
+          setCoords(newCoords || '');
         }
       }
     }
@@ -164,7 +191,7 @@ export function LocationAutocomplete(props: Props) {
     return () => {
       router.events.off('routeChangeComplete', routeChangeCompleteHandler);
     };
-  }, [router.events, value, setValue, prevUrl]);
+  }, [router.events, value, setValue, prevUrl, setCoords]);
 
   return (
     <>

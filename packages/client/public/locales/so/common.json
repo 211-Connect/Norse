@@ -117,7 +117,10 @@
       "sms_send_failed_title": "Diritaanka SMS waa guul daraystay",
       "sms_send_failed_body": "Fariintaadu waa ku guul daraystay in ay dirto"
     },
-    "prompt_auth": "Fadlan gal si aad u isticmaasho sifadan"
+    "prompt_auth": "Fadlan gal si aad u isticmaasho sifadan",
+    "update_location": {
+      "prompt_start_location": "Waa maxay goobtaadu?"
+    }
   },
   "data_providers": {
     "provided_by": "Xogta ay bixiyeen"

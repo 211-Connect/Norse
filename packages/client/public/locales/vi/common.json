@@ -117,7 +117,10 @@
       "sms_send_failed_title": "Gửi tin nhắn SMS không thành công",
       "sms_send_failed_body": "Tin nhắn của bạn không gửi được."
     },
-    "prompt_auth": "Vui lòng đăng nhập để sử dụng tính năng này."
+    "prompt_auth": "Vui lòng đăng nhập để sử dụng tính năng này.",
+    "update_location": {
+      "prompt_start_location": "Vị trí xuất phát của bạn là gì?"
+    }
   },
   "data_providers": {
     "provided_by": "Dữ liệu được cung cấp bởi"

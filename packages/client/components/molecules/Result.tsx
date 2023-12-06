@@ -58,14 +58,14 @@ export function Result(props: Props) {
   const handleDirectionsClick = (e: any) => {
     const coords = props?.location?.coordinates ? props?.coordinates : null;
     if (coords?.length === 0) {
-      // e.preventDefault();
-      // openContextModal({
-      //   modal: 'update-location',
-      //   centered: true,
-      //   innerProps: {
-      //     serviceAtLocationId: props.id,
-      //   },
-      // });
+      e.preventDefault();
+      openContextModal({
+        modal: 'update-location',
+        centered: true,
+        innerProps: {
+          location: props.location,
+        },
+      });
     }
   };
 
