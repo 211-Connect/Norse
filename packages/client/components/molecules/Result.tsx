@@ -12,7 +12,6 @@ import {
   ActionIcon,
   Tooltip,
   MantineTheme,
-  Indicator,
 } from '@mantine/core';
 import { openContextModal } from '@mantine/modals';
 import {
@@ -54,6 +53,20 @@ export function Result(props: Props) {
 
   const handleLink = (e: any) => {
     createLinkEvent(e);
+  };
+
+  const handleDirectionsClick = (e: any) => {
+    const coords = props?.location?.coordinates ? props?.coordinates : null;
+    if (coords?.length === 0) {
+      // e.preventDefault();
+      // openContextModal({
+      //   modal: 'update-location',
+      //   centered: true,
+      //   innerProps: {
+      //     serviceAtLocationId: props.id,
+      //   },
+      // });
+    }
   };
 
   const distance =
@@ -101,7 +114,9 @@ export function Result(props: Props) {
           },
         }}
       >
-        <Text sx={{ whiteSpace: "pre-wrap" }}>{parseHtml(props.description ?? '')}</Text>
+        <Text sx={{ whiteSpace: 'pre-wrap' }}>
+          {parseHtml(props.description ?? '')}
+        </Text>
       </Spoiler>
 
       <Stack mt="lg" mb="lg" spacing="sm">
@@ -189,12 +204,6 @@ export function Result(props: Props) {
             resourceId={props.id}
             resource={props}
             fullWidth
-            disabled={
-              props?.location?.coordinates == null || !props.coordinates
-            }
-            aria-disabled={
-              props?.location?.coordinates == null || !props.coordinates
-            }
             target="_blank"
             href={`https://www.google.com/maps/dir/?api=1&origin=${
               props.coordinates
@@ -205,6 +214,7 @@ export function Result(props: Props) {
             }`}
             size="xs"
             leftIcon={<IconNavigation size={props.theme.fontSizes.lg} />}
+            onClick={handleDirectionsClick}
           >
             {t('call_to_action.get_directions')}
           </ReferralButton>

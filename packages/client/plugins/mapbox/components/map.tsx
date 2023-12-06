@@ -50,8 +50,6 @@ export function MapComponent({ locations = [] }: Props) {
     return (config as { center: [number, number] }) ?? { center: [0, 0] };
   }, [appConfig.plugins]);
 
-  console.log(locations);
-
   useEffect(() => {
     map.current = new mapboxgl.Map({
       container: mapContainer.current as HTMLDivElement, // container ID or element

@@ -22,6 +22,7 @@ import {
 } from '../../lib/constants/cookies';
 import { useTranslation } from 'next-i18next';
 import { useAppConfig } from '../../lib/hooks/useAppConfig';
+import { usePrevUrl } from '../../lib/hooks/usePrevUrl';
 
 type Props = Partial<AutocompleteProps> &
   RefAttributes<HTMLInputElement> & { defaultCoords?: string };
@@ -29,6 +30,7 @@ type Props = Partial<AutocompleteProps> &
 export function LocationAutocomplete(props: Props) {
   const theme = useMantineTheme();
   const appConfig = useAppConfig();
+  const prevUrl = usePrevUrl();
   const [isLoading, toggle] = useToggle([false, true]);
   const [value, setValue] = useInputState(props?.defaultValue ?? '');
   const [debounced] = useDebouncedValue(value, 200);
@@ -39,14 +41,14 @@ export function LocationAutocomplete(props: Props) {
 
   const handleItemSubmit = (e: any) => {
     if (hiddenInputRef.current) {
-      setCookie(null, USER_PREF_COORDS, e.coordinates);
+      setCookie(null, USER_PREF_COORDS, e.coordinates, { path: '/' });
       hiddenInputRef.current.value = e.coordinates;
     }
   };
 
   const handleChange = (value: string) => {
     setValue(value);
-    setCookie(null, USER_PREF_LOCATION, value);
+    setCookie(null, USER_PREF_LOCATION, value, { path: '/' });
 
     if (hiddenInputRef.current) {
       hiddenInputRef.current.value = '';
@@ -64,9 +66,9 @@ export function LocationAutocomplete(props: Props) {
         const data = await res.json();
 
         setValue(data.address);
-        setCookie(null, USER_PREF_LOCATION, data.address);
+        setCookie(null, USER_PREF_LOCATION, data.address, { path: '/' });
         if (hiddenInputRef.current) {
-          setCookie(null, USER_PREF_COORDS, `${lng},${lat}`);
+          setCookie(null, USER_PREF_COORDS, `${lng},${lat}`, { path: '/' });
           hiddenInputRef.current.value = `${lng},${lat}`;
         }
       } catch (err) {
@@ -135,16 +137,24 @@ export function LocationAutocomplete(props: Props) {
 
   useEffect(() => {
     function routeChangeCompleteHandler(e: any) {
+      const prevQuery = prevUrl?.split('?')[1];
+      const prevSearchParams = new URLSearchParams(prevQuery);
+      const prevLocation = prevSearchParams.get('location');
+      const prevCoords = prevSearchParams.get('coords');
+
       const query = e.split('?')[1];
       const searchParams = new URLSearchParams(query);
       const location = searchParams.get('location');
       const coords = searchParams.get('coords');
 
+      const newLocation = location != prevLocation ? location : null;
+      const newCoords = coords != prevCoords ? coords : null;
+
       if (location !== value) {
-        setValue(location || '');
+        setValue(newLocation || '');
 
         if (hiddenInputRef.current) {
-          hiddenInputRef.current.value = coords || '';
+          hiddenInputRef.current.value = newCoords || '';
         }
       }
     }
@@ -154,7 +164,7 @@ export function LocationAutocomplete(props: Props) {
     return () => {
       router.events.off('routeChangeComplete', routeChangeCompleteHandler);
     };
-  }, [router.events, value, setValue]);
+  }, [router.events, value, setValue, prevUrl]);
 
   return (
     <>

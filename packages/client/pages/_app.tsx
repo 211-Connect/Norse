@@ -19,6 +19,7 @@ import {
   ShareModal,
   UpdateFavoriteListModal,
   PromptAuthModal,
+  UpdateLocationModal,
 } from '../components/organisms/modals';
 import { AppProps } from 'next/app';
 
@@ -48,6 +49,7 @@ function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
                 'update-list': UpdateFavoriteListModal,
                 'remove-from-list': RemoveFavoriteFromListModal,
                 'delete-list': DeleteFavoriteListModal,
+                'update-location': UpdateLocationModal,
               }}
             >
               <PrevUrlProvider>

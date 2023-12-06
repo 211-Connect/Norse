@@ -29,7 +29,7 @@ export const PrevUrlProvider = ({ children }: PropsWithChildren) => {
     if (!currentUrl.current) {
       // Do not update prev url if current url is resource details page
       if (!resourceDetailsPage.test(router.asPath)) {
-        setCookie(null, PREV_URL, router.asPath);
+        setCookie(null, PREV_URL, router.asPath, { path: '/' });
         setPrevUrl(router.asPath);
       }
 
@@ -40,7 +40,7 @@ export const PrevUrlProvider = ({ children }: PropsWithChildren) => {
     if (router.asPath !== currentUrl.current && currentUrl.current) {
       // Do not update prev url if current url is resource details page
       if (!resourceDetailsPage.test(currentUrl.current)) {
-        setCookie(null, PREV_URL, currentUrl.current);
+        setCookie(null, PREV_URL, currentUrl.current, { path: '/' });
         setPrevUrl(currentUrl.current);
       }
       currentUrl.current = router.asPath;

@@ -1,12 +1,10 @@
 import {
   Badge,
-  Box,
   Button,
   Divider,
   Flex,
   Group,
   MantineTheme,
-  Text,
   useMantineTheme,
 } from '@mantine/core';
 import { useRouter } from 'next/router';

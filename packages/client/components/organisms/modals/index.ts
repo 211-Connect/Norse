@@ -46,3 +46,8 @@ export const DeleteFavoriteListModal: any = dynamic(
   () => import('./DeleteFavoriteList').then((mod) => mod.DeleteFavoriteList),
   { ssr: false }
 );
+
+export const UpdateLocationModal: any = dynamic(
+  () => import('./UpdateLocation').then((mod) => mod.UpdateLocation),
+  { ssr: false }
+);

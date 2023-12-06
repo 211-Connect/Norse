@@ -7,16 +7,21 @@ type Props = {
   referralType: 'call_referral' | 'website_referral' | 'directions_referral';
   resourceId: string;
   resource: any;
+  onClick?: any;
 };
 
 export function ReferralButton({
   referralType,
   resourceId,
+  onClick,
   resource,
   ...rest
 }: Props & ButtonProps & LinkProps & { target?: string; rel?: string }) {
-  const handleLink = () => {
+  const handleLink = (e: any) => {
     createReferralEvent(referralType, resourceId, resource);
+    if (onClick) {
+      onClick(e);
+    }
   };
 
   return <Button {...rest} component={Link} onClick={handleLink} />;
