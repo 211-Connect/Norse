@@ -21,6 +21,7 @@ import {
   USER_PREF_LOCATION,
 } from '../../lib/constants/cookies';
 import { useAppConfig } from '../../lib/hooks/useAppConfig';
+import { openContextModal } from '@mantine/modals';
 
 type Props = {
   id: string;
@@ -45,7 +46,7 @@ type Props = {
 export function ResourceOverviewSection(props: Props) {
   const theme = useMantineTheme();
   const [cookies] = useCookies();
-  const [coords, setCoords] = useState(null);
+  const [coords, setCoords] = useState<any>(null);
   const config = useAppConfig();
 
   useEffect(() => {
@@ -55,6 +56,19 @@ export function ResourceOverviewSection(props: Props) {
   }, [cookies]);
 
   const { t } = useTranslation('page-resource');
+
+  const handleDirectionsClick = (e: any) => {
+    if (coords?.length === 0 || !coords) {
+      e.preventDefault();
+      openContextModal({
+        modal: 'update-location',
+        centered: true,
+        innerProps: {
+          location: props.location,
+        },
+      });
+    }
+  };
 
   return (
     <Card
@@ -74,7 +88,9 @@ export function ResourceOverviewSection(props: Props) {
         {props.serviceName}
       </Text>
 
-      <Text mb="lg" sx={{ whiteSpace: "pre-wrap" }}>{parseHtml(props.serviceDescription ?? '')}</Text>
+      <Text mb="lg" sx={{ whiteSpace: 'pre-wrap' }}>
+        {parseHtml(props.serviceDescription ?? '')}
+      </Text>
 
       <Divider />
 
@@ -159,8 +175,6 @@ export function ResourceOverviewSection(props: Props) {
             resourceId={props.id}
             resource={props}
             fullWidth
-            disabled={props?.location?.coordinates == null || !coords}
-            aria-disabled={props?.location?.coordinates == null || !coords}
             target="_blank"
             href={`https://www.google.com/maps/dir/?api=1&origin=${coords}&destination=${(
               props?.location?.coordinates ?? []
@@ -170,6 +184,7 @@ export function ResourceOverviewSection(props: Props) {
               .join(',')}`}
             size="xs"
             leftIcon={<IconNavigation size={theme.fontSizes.lg} />}
+            onClick={handleDirectionsClick}
           >
             {t('call_to_action.get_directions', { ns: 'common' })}
           </ReferralButton>

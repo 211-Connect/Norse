@@ -56,7 +56,7 @@ export function Result(props: Props) {
   };
 
   const handleDirectionsClick = (e: any) => {
-    const coords = props?.location?.coordinates ? props?.coordinates : null;
+    const coords = props?.coordinates ?? null;
     if (coords?.length === 0) {
       e.preventDefault();
       openContextModal({

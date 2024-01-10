@@ -117,10 +117,10 @@
       "sms_send_failed_title": "SMS send failed",
       "sms_send_failed_body": "Your message failed to send."
     },
-    "prompt_auth": "Please login to use this feature.",
-    "update_location": {
-      "prompt_start_location": "What's your starting location?"
-    }
+    "prompt_auth": "Please login to use this feature."
+  },
+  "update_location": {
+    "prompt_start_location": "What's your starting location?"
   },
   "data_providers": {
     "provided_by": "Data provided by"

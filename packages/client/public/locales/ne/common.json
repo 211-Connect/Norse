@@ -117,10 +117,10 @@
       "sms_send_failed_title": "SMS पठाउन सकिएन",
       "sms_send_failed_body": "तपाईंको सन्देश पठाउन असफल भयो।"
     },
-    "prompt_auth": "कृपया यो सुविधा प्रयोग गर्न लगइन गर्नुहोस्।",
-    "update_location": {
-      "prompt_start_location": "तपाईंको प्रारम्भिक स्थान के हो?"
-    }
+    "prompt_auth": "कृपया यो सुविधा प्रयोग गर्न लगइन गर्नुहोस्।"
+  },
+  "update_location": {
+    "prompt_start_location": "तपाईंको प्रारम्भिक स्थान के हो?"
   },
   "data_providers": {
     "provided_by": "द्वारा प्रदान गरिएको डाटा"
