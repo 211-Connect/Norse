@@ -10,7 +10,7 @@ import {
   Select,
   ActionIcon,
 } from '@mantine/core';
-import { useDebouncedValue, useInputState, useToggle } from '@mantine/hooks';
+import { useDebouncedValue, useToggle } from '@mantine/hooks';
 import { IconLocationFilled, IconMapPin, IconX } from '@tabler/icons-react';
 import { RefAttributes, useCallback, useEffect, useRef, useState } from 'react';
 import { showNotification } from '@mantine/notifications';
@@ -60,7 +60,7 @@ export function LocationAutocomplete(props: Props) {
   const handleItemSubmit = (e: any) => {
     if (hiddenInputRef.current) {
       setCookie(null, USER_PREF_COORDS, e.coordinates, { path: '/' });
-      setCoords(e.coordinates);
+      setCoords(e.coordinates.join(','));
       hiddenInputRef.current.value = e.coordinates;
     }
   };
@@ -210,6 +210,7 @@ export function LocationAutocomplete(props: Props) {
             }) || ''
           }
           size="md"
+          withinPortal
           value={value}
           name="location"
           onChange={handleChange}
