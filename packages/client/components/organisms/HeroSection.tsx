@@ -119,7 +119,6 @@ export function HeroSection() {
           color="red"
           size={12}
           label={t('new')}
-          processing
           styles={{ indicator: { padding: theme.spacing.md } }}
         >
           <Button color="primary" onClick={enableTour}>
