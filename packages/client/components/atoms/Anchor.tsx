@@ -5,7 +5,8 @@ import Link, { LinkProps } from 'next/link';
 export function Anchor({
   children,
   ...rest
-}: AnchorProps & LinkProps & { target?: string; rel?: string }) {
+}: AnchorProps &
+  LinkProps & { target?: string; rel?: string; href?: string | null }) {
   const handleLink = (e: any) => {
     createLinkEvent(e);
   };

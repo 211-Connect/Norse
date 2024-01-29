@@ -54,11 +54,13 @@ export function AppFooter(props: Props) {
                 </Anchor>
 
                 {appConfig.menus.footer.map(
-                  (el: { name: string; href: string }) => (
+                  (el: { name: string; href: string | null }) => (
                     <Fragment key={el.name}>
                       <IconPointFilled size={theme.fontSizes.sm} />
                       <Anchor
-                        href={el.href}
+                        {...(el.href != null
+                          ? { href: el.href }
+                          : { href: '' })}
                         display="flex"
                         sx={{ alignItems: 'center' }}
                       >
