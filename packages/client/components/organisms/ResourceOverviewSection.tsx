@@ -103,12 +103,12 @@ export function ResourceOverviewSection(props: Props) {
             {props.categories?.map((el: any) => {
               return (
                 <Badge
-                  key={el.code}
+                  key={el?.code}
                   component={Link}
                   href={`/search?query=${encodeURIComponent(
-                    el.code
+                    el?.code
                   )}&query_label=${encodeURIComponent(
-                    el.name
+                    el?.name
                   )}&query_type=taxonomy`}
                   sx={{
                     textDecoration: 'underline',
@@ -116,7 +116,7 @@ export function ResourceOverviewSection(props: Props) {
                     textTransform: 'initial',
                   }}
                 >
-                  {el.name}
+                  {el?.name}
                 </Badge>
               );
             })}

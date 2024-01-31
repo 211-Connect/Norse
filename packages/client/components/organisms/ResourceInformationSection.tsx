@@ -207,7 +207,7 @@ export function ResourceInformationSection(props: Props) {
           </Grid.Col>
         )}
 
-        {props.applicationProcess && (
+        {props?.applicationProcess && (
           <Grid.Col lg={6} md={6} sm={12} xs={12}>
             <Group spacing="xs">
               <ThemeIcon size="xs" variant="default">
@@ -220,7 +220,7 @@ export function ResourceInformationSection(props: Props) {
           </Grid.Col>
         )}
 
-        {props.requiredDocuments && (
+        {props?.requiredDocuments && (
           <Grid.Col lg={6} md={6} sm={12} xs={12}>
             <Group spacing="xs">
               <ThemeIcon size="xs" variant="default">
@@ -233,7 +233,7 @@ export function ResourceInformationSection(props: Props) {
           </Grid.Col>
         )}
 
-        {props.eligibilities && (
+        {props?.eligibilities && (
           <Grid.Col lg={6} md={6} sm={12} xs={12}>
             <Group spacing="xs">
               <ThemeIcon size="xs" variant="default">
@@ -247,7 +247,7 @@ export function ResourceInformationSection(props: Props) {
           </Grid.Col>
         )}
 
-        {props.fees && (
+        {props?.fees && (
           <Grid.Col lg={6} md={6} sm={12} xs={12}>
             <Group spacing="xs">
               <ThemeIcon size="xs" variant="default">
@@ -260,7 +260,7 @@ export function ResourceInformationSection(props: Props) {
           </Grid.Col>
         )}
 
-        {props.languages instanceof Array && (
+        {props?.languages instanceof Array && (
           <Grid.Col lg={6} md={6} sm={12} xs={12}>
             <Group spacing="xs">
               <ThemeIcon size="xs" variant="default">
