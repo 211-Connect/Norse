@@ -8,7 +8,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { Stack, Title, useMantineTheme, Text, Group } from '@mantine/core';
 import { useAppConfig } from '../../../lib/hooks/useAppConfig';
-import { IconNavigation, IconPhone, IconWorldWww } from '@tabler/icons-react';
+import { IconPhone, IconWorldWww } from '@tabler/icons-react';
 import { useRouter } from 'next/router';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useTranslation } from 'next-i18next';
@@ -71,11 +71,6 @@ export function MapComponent({ locations = [] }: Props) {
     if (!map.current) return;
 
     const bounds = new LngLatBounds();
-    const coords = ((router.query?.coords as string) ?? '')
-      .split(',')
-      .slice()
-      .reverse()
-      .join(',');
 
     // remove all current markers
     markers.current.forEach((marker) => marker.remove());
@@ -140,27 +135,6 @@ export function MapComponent({ locations = [] }: Props) {
                   <Group noWrap spacing={theme.spacing.xs}>
                     <IconWorldWww size={theme.fontSizes.md} />
                     {t('call_to_action.view_website')}
-                  </Group>
-                </ReferralButton>
-
-                <ReferralButton
-                  referralType="directions_referral"
-                  resourceId={resource._id}
-                  resource={resource}
-                  disabled={!coords || !resource?.location?.coordinates}
-                  href={`https://www.google.com/maps/dir/?api=1&origin=${coords}&destination=${(
-                    resource?.location?.coordinates ?? []
-                  )
-                    .slice()
-                    .reverse()
-                    .join(',')}`}
-                  target="_blank"
-                  size="xs"
-                  miw={130}
-                >
-                  <Group noWrap spacing={theme.spacing.xs}>
-                    <IconNavigation size={theme.fontSizes.md} />
-                    {t('call_to_action.get_directions')}
                   </Group>
                 </ReferralButton>
               </Group>
