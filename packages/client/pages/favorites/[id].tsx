@@ -76,7 +76,7 @@ export default function FavoritesDetail({ favoriteList, viewingAsOwner }: any) {
             description: el?.translations?.[0]?.serviceDescription,
             location: el.location,
             website: el.website,
-            phone: el.phoneNumbers.find(
+            phone: el?.phoneNumbers?.find(
               (el: any) => el.rank === 1 && el.type === 'voice'
             ),
           }))}
