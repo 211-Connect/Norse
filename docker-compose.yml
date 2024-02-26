@@ -1,0 +1,64 @@
+version: '3'
+services:
+
+  elasticsearch:
+    image: elasticsearch:8.9.1
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: false
+      # Limit ES to 750MB of memory, heap
+      ES_JAVA_OPTS: -Xms750m -Xmx750m
+    command: ["elasticsearch", "-Elogger.level=WARN"]
+
+  redis:
+    #image: redis:latest-alpine
+    image: redis:7.2.0-alpine
+    # restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning
+    #volumes:
+    #  - cache:/data
+
+  mongodb:
+    image: mongo:latest
+    # Quieter logging (doesn't work?)
+    command: --quiet
+    ports:
+      - '27017:27017'
+    #volumes:
+    #  - dbdata6:/data/db
+
+  server:
+    image: norse
+    # CMD ["/bin/sh", "-c", "nx serve server &; nx run client:serve"]
+    command: nx serve server
+    build:
+      context: .
+      dockerfile: Dockerfile
+    #environment:
+      # 'production' or 'development' cause webpack errors? :(
+      #   because nx runs Next.js which runs webpack dev server which causes tons of these errors in Chrome:
+      #     WebSocket connection to 'ws://localhost:4200/_next/webpack-hmr' failed:
+      # NODE_ENV: "production"
+      # waaaaay too noisy, and not helpful?
+      # NODE_DEBUG: "http"
+    ports:
+      - 3001:3001
+
+  client:
+    image: norse
+    command: nx run client:serve
+    #environment:
+      # NODE_ENV: "production"
+      # NODE_DEBUG: "http"
+    # Doesn't accomplish anything since Docker thinks it's up while
+    #   nx is still re-building, re-caching anyway:
+    # depends_on:
+    #   - server
+    ports:
+      - 4200:4200
+
