@@ -194,7 +194,7 @@ export function ResourceInformationSection(props: Props) {
           </Grid.Col>
         )}
 
-        {props.hours && (
+        {props?.hours && (
           <Grid.Col lg={6} md={6} sm={12} xs={12}>
             <Group spacing="xs">
               <ThemeIcon size="xs" variant="default">
@@ -260,7 +260,7 @@ export function ResourceInformationSection(props: Props) {
           </Grid.Col>
         )}
 
-        {props?.languages instanceof Array && (
+        {props?.languages instanceof Array && props?.languages?.length > 0 && (
           <Grid.Col lg={6} md={6} sm={12} xs={12}>
             <Group spacing="xs">
               <ThemeIcon size="xs" variant="default">
