@@ -152,6 +152,7 @@ module.exports = async function createFromStrapi(dir) {
             description: page.description,
           },
           showLocationInput: page.showLocationInput ?? false,
+          disableTour: page.disableTour ?? false,
         };
       } else if (page.page === 'resource') {
         newAppConfig.pages[page.page] = {

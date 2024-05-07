@@ -48,3 +48,5 @@ Thumbs.db
 .env
 
 public/locales/**/dynamic.json
+
+.nx/

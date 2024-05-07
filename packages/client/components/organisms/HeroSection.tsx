@@ -113,18 +113,20 @@ export function HeroSection() {
           <HomePageSearch />
         </Box>
 
-        <Indicator
-          inline
-          mt="lg"
-          color="red"
-          size={12}
-          label={t('new')}
-          styles={{ indicator: { padding: theme.spacing.md } }}
-        >
-          <Button color="primary" onClick={enableTour}>
-            {t('take_a_tour')}
-          </Button>
-        </Indicator>
+        {!appConfig.pages.home.disableTour && (
+          <Indicator
+            inline
+            mt="lg"
+            color="red"
+            size={12}
+            label={t('new')}
+            styles={{ indicator: { padding: theme.spacing.md } }}
+          >
+            <Button color="primary" onClick={enableTour}>
+              {t('take_a_tour')}
+            </Button>
+          </Indicator>
+        )}
       </Stack>
     </MediaQuery>
   );
