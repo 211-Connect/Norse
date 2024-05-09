@@ -44,7 +44,7 @@ export function MapComponent({ locations = [] }: Props) {
   const appConfig = useAppConfig();
   const mapConfig = useMemo(() => {
     const config: unknown = appConfig?.plugins?.find(
-      (el) => el[0] === 'mapbox'
+      (el: any) => el[0] === 'mapbox'
     )?.[1];
 
     return (config as { center: [number, number] }) ?? { center: [0, 0] };
