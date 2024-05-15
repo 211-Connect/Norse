@@ -49,8 +49,10 @@ export class ResourceAdapter extends BaseAdapter {
       name: data?.translation?.displayName ?? data?.displayName ?? null,
       description: data?.translation?.serviceDescription ?? null,
       phone:
+        data?.displayPhoneNumber ??
         data?.phoneNumbers?.find((p: any) => p.rank === 1 && p.type === 'voice')
-          ?.number ?? null,
+          ?.number ??
+        null,
       website: data?.website ?? null,
       address:
         data?.addresses?.find((a: any) => a.rank === 1)?.address_1 ?? null,
