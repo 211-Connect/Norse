@@ -134,7 +134,7 @@ export function Result(props: Props) {
                 textTransform: 'initial',
               }}
             >
-              {props.address} {distance && `- ${distance}mi`}
+              {props.address} {distance != null ? `- ${distance}mi` : null}
             </Badge>
           ) : (
             <Tooltip
