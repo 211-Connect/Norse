@@ -4,6 +4,7 @@ const ResourceSchema = new Schema(
   {
     _id: String,
     displayName: String,
+    displayPhoneNumber: String,
     website: String,
     email: String,
     phoneNumbers: [
