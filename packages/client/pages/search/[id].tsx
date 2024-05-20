@@ -96,6 +96,7 @@ export default function SearchDetail({ resource }: Props) {
           <ResourceOverviewSection
             id={resource.id}
             displayName={resource.name}
+            displayPhoneNumber={resource.phone}
             serviceName={resource.serviceName}
             serviceDescription={resource.description}
             phoneNumbers={resource.phoneNumbers}

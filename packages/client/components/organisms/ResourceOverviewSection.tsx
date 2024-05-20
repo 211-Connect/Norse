@@ -26,6 +26,7 @@ import { openContextModal } from '@mantine/modals';
 type Props = {
   id: string;
   displayName: string;
+  displayPhoneNumber: string;
   serviceName: string;
   serviceDescription: string;
   website: string;
@@ -140,14 +141,16 @@ export function ResourceOverviewSection(props: Props) {
             resourceId={props.id}
             resource={props}
             fullWidth
-            disabled={!props.phoneNumbers || props.phoneNumbers.length === 0}
+            disabled={
+              !props.displayPhoneNumber || props.displayPhoneNumber.length === 0
+            }
             aria-disabled={
-              !props.phoneNumbers || props.phoneNumbers.length === 0
+              !props.displayPhoneNumber || props.displayPhoneNumber.length === 0
             }
             href={`tel:${
-              props.phoneNumbers &&
-              props.phoneNumbers.length > 0 &&
-              props?.phoneNumbers?.find((el: any) => el.rank === 1)?.number
+              props.displayPhoneNumber &&
+              props.displayPhoneNumber.length > 0 &&
+              props.displayPhoneNumber
             }`}
             size="xs"
             leftIcon={<IconPhone size={theme.fontSizes.lg} />}
