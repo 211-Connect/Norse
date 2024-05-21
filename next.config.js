@@ -4,9 +4,7 @@
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { nextConfig: _nextConfig } = require('./next-i18next.config');
 
-/**
- * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
- **/
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   ..._nextConfig,
   webpack: (config, context) => {
