@@ -7,7 +7,7 @@ import { AutoCompleteItem } from './AutocompleteItem';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { TaxonomyAdapter } from '../../../lib/adapters/TaxonomyAdapter';
-import unformattedSuggestions from '../../../.norse/suggestions.json';
+import unformattedSuggestions from '../../../../.norse/suggestions.json';
 import { isTaxonomyCode } from '../../../lib/constants/regex';
 
 type Props = Partial<AutocompleteProps> &
