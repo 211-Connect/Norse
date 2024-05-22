@@ -1,18 +1,12 @@
-import {
-  Badge,
-  Button,
-  Divider,
-  Flex,
-  Group,
-  MantineTheme,
-  useMantineTheme,
-} from '@mantine/core';
+import { MantineTheme } from '@mantine/core';
 import { useRouter } from 'next/router';
 import qs from 'qs';
 import { LocationAutocomplete } from './location-autocomplete';
 import { TaxonomyAutocomplete } from './TaxonomyAutocomplete';
 import { useTranslation } from 'next-i18next';
-import Color from 'color';
+import { Separator } from '../ui/separator';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
 
 type Props = {
   hideLocation?: boolean;
@@ -20,7 +14,6 @@ type Props = {
 
 export function Search({ hideLocation }: Props) {
   const router = useRouter();
-  const theme = useMantineTheme();
   const { t } = useTranslation('common');
 
   const handleSubmit = async (e: any) => {
@@ -73,9 +66,9 @@ export function Search({ hideLocation }: Props) {
   };
 
   return (
-    <Flex direction="column" w="100%">
+    <div className="flex flex-col w-full">
       <form method="get" action="/search" onSubmit={handleSubmit}>
-        <Flex align="flex-end">
+        <div className="flex">
           <TaxonomyAutocomplete
             className="search-box"
             defaultValue={
@@ -98,22 +91,13 @@ export function Search({ hideLocation }: Props) {
           />
 
           <Button
-            style={{
-              borderTopLeftRadius: 0,
-              borderBottomLeftRadius: 0,
-              color: Color(
-                theme.colors.secondary[theme.other.secondaryShade]
-              ).isLight()
-                ? '#333'
-                : '#fff',
-            }}
-            color={`secondary.${theme.other.secondaryShade}`}
-            size="md"
+            className="rounded-tl-none rounded-bl-none"
+            size="lg"
             type="submit"
           >
             {t('call_to_action.search')}
           </Button>
-        </Flex>
+        </div>
 
         {!hideLocation && (
           <LocationAutocomplete
@@ -125,16 +109,16 @@ export function Search({ hideLocation }: Props) {
 
       {router.query.query_type === 'taxonomy' && (
         <>
-          <Divider mt="md" mb="md" />
-          <Group align="center" spacing="sm">
+          <Separator className="mt-2 mb-2 bg-foreground" />
+          <div className="flex gap-2 items-center">
             {(router.query.query as string)?.split(',').map((query) => (
-              <Badge key={query} variant="light">
+              <Badge key={query} variant="secondary">
                 {query}
               </Badge>
             ))}
-          </Group>
+          </div>
         </>
       )}
-    </Flex>
+    </div>
   );
 }
