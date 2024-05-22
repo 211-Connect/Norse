@@ -23,12 +23,24 @@ import {
 } from '../components/organisms/modals';
 import { AppProps } from 'next/app';
 import '../styles/globals.css';
+import { Open_Sans as FontSans } from 'next/font/google';
+import { cn } from '@/lib/utils';
+
+const fontSans = FontSans({
+  subsets: ['latin'],
+  variable: '--font-sans',
+});
 
 function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   const appConfig = useAppConfig();
 
   return (
-    <div>
+    <div
+      className={cn(
+        'min-h-screen bg-background font-sans antialiased',
+        fontSans.variable
+      )}
+    >
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href={appConfig?.brand?.faviconUrl ?? '/favicon'} />

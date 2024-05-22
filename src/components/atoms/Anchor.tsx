@@ -1,12 +1,16 @@
+import { cn } from '@/lib/utils';
 import { createLinkEvent } from '../../lib/hooks/useEventStore/events';
-import { AnchorProps, Anchor as MantineAnchor } from '@mantine/core';
 import Link, { LinkProps } from 'next/link';
 
 export function Anchor({
   children,
+  className,
   ...rest
-}: AnchorProps &
-  LinkProps & { target?: string; rel?: string; href?: string | null }) {
+}: { children?: React.ReactNode; className?: string } & LinkProps & {
+    target?: string;
+    rel?: string;
+    href?: string | null;
+  }) {
   const handleLink = (e: any) => {
     createLinkEvent(e);
   };
@@ -20,8 +24,8 @@ export function Anchor({
   };
 
   return (
-    <MantineAnchor {...rest} onClick={onClick} component={Link}>
+    <Link {...rest} className={cn(className)} onClick={onClick}>
       {children}
-    </MantineAnchor>
+    </Link>
   );
 }

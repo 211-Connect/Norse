@@ -1,17 +1,9 @@
-import {
-  Box,
-  Card,
-  Group,
-  MantineTheme,
-  Stack,
-  Text,
-  Title,
-} from '@mantine/core';
 import { IconExternalLink } from '@tabler/icons-react';
 import Image from 'next/image';
 import { NavLink } from '../atoms/NavLink';
 import { Anchor } from '../atoms/Anchor';
 import { useTranslation } from 'next-i18next';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 
 type Props = {
   index: string;
@@ -19,15 +11,14 @@ type Props = {
   image?: string;
   href?: string;
   subcategories: any[];
-  theme: MantineTheme;
 };
 
-export function Category({ index, image, href, subcategories, theme }: Props) {
+export function Category({ index, image, href, subcategories }: Props) {
   const { t } = useTranslation('dynamic');
 
   if (subcategories && subcategories.length > 0) {
     return (
-      <Group align="flex-start" spacing="xs" noWrap>
+      <div className="flex justify-start items-start gap-2">
         {image && (
           <Image
             src={image}
@@ -37,25 +28,18 @@ export function Category({ index, image, href, subcategories, theme }: Props) {
             style={{
               height: 'auto',
               width: '40px',
-              marginRight: theme.spacing.md,
             }}
           />
         )}
 
-        <Stack spacing="xs">
-          <Title order={3} size="h4">
+        <div className="flex flex-col">
+          <h6 className="font-semibold text-lg pl-2">
             {t(`categories.${index}`)}
-          </Title>
+          </h6>
           {subcategories.map((el, key) => (
-            <Group key={el.name}>
+            <div key={el.name}>
               <NavLink
                 key={el.name}
-                label={t(`categories.${index}.subcategories.${key}`)}
-                rightSection={
-                  el.href ? (
-                    <IconExternalLink size={theme.fontSizes.xs} />
-                  ) : null
-                }
                 href={`${
                   el.href
                     ? el.href
@@ -68,71 +52,47 @@ export function Category({ index, image, href, subcategories, theme }: Props) {
                 prefetch={false}
                 target={el.href ? '_blank' : '_self'}
                 rel={el.href ? 'noopener noreferrer' : ''}
-              />
-            </Group>
+              >
+                {el.href ? <IconExternalLink className="size-4" /> : null}
+                {t(`categories.${index}.subcategories.${key}`)}
+              </NavLink>
+            </div>
           ))}
-        </Stack>
-      </Group>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card
-      radius="md"
-      component={Anchor}
+    <Anchor
       href={href || '/'}
-      withBorder
-      shadow="md"
-      sx={{
-        transition: 'transform 200ms ease',
-        '&:focus': {
-          outlineColor: theme.colors.primary,
-          outlineWidth: '2px',
-          outlineStyle: 'solid',
-          outlineOffset: theme.spacing.md,
-        },
-        '&:focus,&:hover': {
-          transform: 'scale(1.05)',
-        },
-      }}
+      className="rounded-md shadow-md transition-all block focus:outline-2 focus:outline focus:outline-offset-4 hover:scale-105 focus:scale-105"
     >
-      <Card.Section>
-        {image && (
-          <Stack align="center" justify="center" pt="xl" pb="xl">
-            <Box
-              mt="md"
-              mb="md"
-              sx={{
-                overflow: 'hidden',
-                borderRadius: '100%',
-                width: 75,
-                height: 75,
-                position: 'relative',
-              }}
-            >
-              <Image
-                src={image}
-                alt=""
-                fill
-                style={{
-                  objectFit: 'cover',
-                }}
-              />
-            </Box>
-          </Stack>
-        )}
-      </Card.Section>
-      <Card.Section
-        bg="primary"
-        sx={(theme) => ({
-          borderBottomLeftRadius: theme.radius.md,
-          borderBottomRightRadius: theme.radius.md,
-        })}
-      >
-        <Text size="lg" color="#fff" align="center">
-          {t(`categories.${index}`)}
-        </Text>
-      </Card.Section>
-    </Card>
+      <Card>
+        <CardContent className="p-0">
+          {image && (
+            <div className="flex items-center justify-center pt-8 pb-8">
+              <div className="rounded-full w-[75px] h-[75px] relative p-4 bg-background">
+                <Image
+                  src={image}
+                  alt=""
+                  width={0}
+                  height={0}
+                  style={{
+                    width: '100%',
+                    height: 'auto',
+                  }}
+                />
+              </div>
+            </div>
+          )}
+        </CardContent>
+        <CardFooter className="bg-primary rounded-bl-md rounded-br-md items-center justify-center pt-2 pb-2">
+          <p className="text-primary-foreground text-lg">
+            {t(`categories.${index}`)}
+          </p>
+        </CardFooter>
+      </Card>
+    </Anchor>
   );
 }

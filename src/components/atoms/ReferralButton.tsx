@@ -1,7 +1,7 @@
 import { createReferralEvent } from '../../lib/hooks/useEventStore/events';
-import { ButtonProps, Button } from '@mantine/core';
 import Link from 'next/link';
 import { LinkProps } from 'next/link';
+import { Button, buttonVariants, ButtonProps } from '@/components/ui/button';
 
 type Props = {
   referralType: 'call_referral' | 'website_referral' | 'directions_referral';
@@ -16,7 +16,7 @@ export function ReferralButton({
   onClick,
   resource,
   ...rest
-}: Props & ButtonProps & LinkProps & { target?: string; rel?: string }) {
+}: Props & LinkProps & { target?: string; rel?: string }) {
   const handleLink = (e: any) => {
     createReferralEvent(referralType, resourceId, resource);
     if (onClick) {
@@ -24,5 +24,11 @@ export function ReferralButton({
     }
   };
 
-  return <Button {...rest} component={Link} onClick={handleLink} />;
+  return (
+    <Link
+      {...rest}
+      className={buttonVariants({ variant: 'default' })}
+      onClick={handleLink}
+    />
+  );
 }

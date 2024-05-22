@@ -1,8 +1,8 @@
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { GetStaticPropsContext } from 'next';
 import ErrorPageLayout from '../components/layouts/ErrorPage';
-import { AppHeader } from '../components/organisms/AppHeader';
-import { AppFooter } from '../components/organisms/AppFooter';
+import { AppHeader } from '../components/organisms/app-header';
+import { AppFooter } from '../components/organisms/app-footer';
 import { DataProviders } from '../components/molecules/DataProviders';
 import { useTranslation } from 'next-i18next';
 import { useSession } from 'next-auth/react';

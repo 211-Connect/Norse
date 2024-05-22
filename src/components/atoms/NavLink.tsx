@@ -1,13 +1,21 @@
 import { createLinkEvent } from '../../lib/hooks/useEventStore/events';
-import { NavLinkProps, NavLink as MantineNavLink } from '@mantine/core';
 import Link, { LinkProps } from 'next/link';
 
 export function NavLink(
-  props: NavLinkProps & LinkProps & { target?: string; rel?: string }
+  props: { children: React.ReactNode } & LinkProps & {
+      target?: string;
+      rel?: string;
+    }
 ) {
   const handleLink = (e: any) => {
     createLinkEvent(e);
   };
 
-  return <MantineNavLink {...props} onClick={handleLink} component={Link} />;
+  return (
+    <Link
+      {...props}
+      className="p-2 flex gap-1 hover:bg-card items-center"
+      onClick={handleLink}
+    />
+  );
 }

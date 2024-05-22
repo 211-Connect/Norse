@@ -1,8 +1,8 @@
 import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { getServerSession } from 'next-auth';
-import { AppHeader } from '../../components/organisms/AppHeader';
-import { AppFooter } from '../../components/organisms/AppFooter';
+import { AppHeader } from '../../components/organisms/app-header';
+import { AppFooter } from '../../components/organisms/app-footer';
 import { authOptions } from '../api/auth/[...nextauth]';
 import { useAppConfig } from '../../lib/hooks/useAppConfig';
 import { PluginLoader } from '../../components/molecules/PluginLoader';

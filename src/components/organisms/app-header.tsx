@@ -1,41 +1,34 @@
 import {
-  Burger,
-  Button,
-  Drawer,
-  Group,
-  MediaQuery,
-  Select,
-  Anchor as MantineAnchor,
-  Stack,
-  useMantineTheme,
-  Box,
-  Modal,
-} from '@mantine/core';
-import {
   IconHeart,
   IconHome,
-  IconLanguage,
   IconLogout,
+  IconMenu2,
 } from '@tabler/icons-react';
 import { signOut, useSession } from 'next-auth/react';
 import { useTranslation } from 'next-i18next';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useMemo, useState } from 'react';
-import ISO from 'iso-639-1';
-import { Anchor } from '../atoms/Anchor';
-import { useAppConfig } from '../../lib/hooks/useAppConfig';
+import { useMemo } from 'react';
+import { Anchor } from '@/components/atoms/Anchor';
+import { useAppConfig } from '@/lib/hooks/useAppConfig';
 import { openContextModal } from '@mantine/modals';
-import { useDisclosure } from '@mantine/hooks';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 type Props = {
   fullWidth?: boolean;
 };
 
 export function AppHeader(props: Props) {
-  const [opened, { open, close }] = useDisclosure(false);
   const appConfig = useAppConfig();
-  const theme = useMantineTheme();
   const session = useSession();
   const { t } = useTranslation('common');
   const router = useRouter();
@@ -43,9 +36,9 @@ export function AppHeader(props: Props) {
   const menuItems = useMemo(() => {
     const items = [
       <Anchor key={0} href="/">
-        <Group spacing="xs">
-          <IconHome size={theme.fontSizes.xl} /> {t('header.home')}
-        </Group>
+        <div className="flex gap-1 items-center">
+          <IconHome className="size-4" /> {t('header.home')}
+        </div>
       </Anchor>,
       <Anchor
         key={1}
@@ -63,36 +56,32 @@ export function AppHeader(props: Props) {
           }
         }}
       >
-        <Group spacing="xs">
-          <IconHeart size={theme.fontSizes.xl} /> {t('header.favorites')}
-        </Group>
+        <div className="flex gap-1 items-center">
+          <IconHeart className="size-4" /> {t('header.favorites')}
+        </div>
       </Anchor>,
     ];
 
     if (session.data) {
       items.push(
-        <MantineAnchor
+        <a
+          href="#"
           key={2}
           onClick={() => {
             signOut({ redirect: true, callbackUrl: '/' });
           }}
         >
-          <Group spacing="xs">
-            <IconLogout size={theme.fontSizes.xl} /> {t('header.log_out')}
-          </Group>
-        </MantineAnchor>
+          <div className="flex gap-1 items-center">
+            <IconLogout className="size-4" /> {t('header.log_out')}
+          </div>
+        </a>
       );
     }
 
     if (appConfig?.menus?.header && appConfig.menus.header.length > 0) {
       appConfig.menus.header.forEach((el: { name: string; href: string }) => {
         items.push(
-          <Anchor
-            key={el.name}
-            href={el.href}
-            display="flex"
-            sx={{ alignItems: 'center' }}
-          >
+          <Anchor key={el.name} href={el.href}>
             {el.name}
           </Anchor>
         );
@@ -112,17 +101,11 @@ export function AppHeader(props: Props) {
         <Button
           key="feedback"
           className="feedback"
-          component={Link}
-          href="#"
           onClick={(e) => {
             e.preventDefault();
             window.open(`${feedbackUrl}?${urlParams.toString()}`, '_blank');
           }}
-          target="_blank"
           rel="noopener noreferrer"
-          mr="md"
-          ml="md"
-          size="xs"
         >
           {t('header.submit_feedback')}
         </Button>
@@ -133,24 +116,35 @@ export function AppHeader(props: Props) {
       items.push(
         <Select
           key="language"
-          icon={<IconLanguage />}
           aria-label={t('header.language_select_label') as string}
-          maw={150}
           defaultValue={router.locale}
-          onChange={(value) => {
+          onValueChange={(value) => {
             if (value) {
               router.push(router.asPath, router.asPath, {
                 locale: value,
               });
             }
           }}
-          data={
-            router.locales?.map((isoCode: string) => ({
-              value: isoCode,
-              label: ISO.getNativeName(isoCode),
-            })) ?? []
-          }
-        />
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select a fruit" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {router.locales.map((isoCode: string) => {
+                const languageNames = new Intl.DisplayNames([router.locale], {
+                  type: 'language',
+                });
+
+                return (
+                  <SelectItem key={isoCode} value={isoCode}>
+                    {languageNames.of(isoCode)}
+                  </SelectItem>
+                );
+              })}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
       );
     }
 
@@ -161,21 +155,16 @@ export function AppHeader(props: Props) {
     router,
     session.data,
     t,
-    theme.fontSizes.xl,
     session.status,
   ]);
 
   return (
     <header style={{ backgroundColor: '#fff' }}>
-      <Group
-        maw={props.fullWidth ? '100%' : '1200px'}
-        m="0 auto"
-        position="apart"
-        h="80px"
-        pl="md"
-        pr="md"
-        noWrap
-        align="center"
+      <div
+        className={cn(
+          props.fullWidth ? 'w-full' : 'container mx-auto',
+          'h-[80px] flex items-center justify-between pl-4 pr-4 2xl:pl-0 2xl:pr-0'
+        )}
       >
         <Anchor href="/" aria-label={t('header.home') as string}>
           <img
@@ -189,20 +178,24 @@ export function AppHeader(props: Props) {
           />
         </Anchor>
 
-        <MediaQuery smallerThan="sm" styles={{ display: 'none' }}>
-          <Group spacing="lg">{menuItems}</Group>
-        </MediaQuery>
+        <div className="items-center gap-4 hidden md:flex">{menuItems}</div>
 
-        <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
-          <Group position="right" align="center">
-            <Modal opened={opened} onClose={close} fullScreen>
-              <Stack align="center">{menuItems}</Stack>
-            </Modal>
+        <div className="md:hidden">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="icon">
+                <IconMenu2 />
+              </Button>
+            </DialogTrigger>
 
-            <Burger opened={opened} onClick={open} mr="md" />
-          </Group>
-        </MediaQuery>
-      </Group>
+            <DialogContent className="w-screen h-screen max-w-screen-2xl rounded-none z-50">
+              <div className="flex flex-col items-center justify-center gap-2 h-full">
+                {menuItems}
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </div>
     </header>
   );
 }

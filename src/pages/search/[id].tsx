@@ -1,8 +1,8 @@
 import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { ResourceDetailsPageLayout } from '../../components/layouts/ResourceDetailsPage';
-import { AppHeader } from '../../components/organisms/AppHeader';
-import { AppFooter } from '../../components/organisms/AppFooter';
+import { AppHeader } from '../../components/organisms/app-header';
+import { AppFooter } from '../../components/organisms/app-footer';
 import { ResourceOverviewSection } from '../../components/organisms/ResourceOverviewSection';
 import { ResourceInformationSection } from '../../components/organisms/ResourceInformationSection';
 import { ResourceOrganizationSection } from '../../components/organisms/ResourceOrganizationSection';

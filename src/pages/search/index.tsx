@@ -8,8 +8,8 @@ import {
 } from '../../lib/constants/cookies';
 import { useEffect } from 'react';
 import { useEventStore } from '../../lib/hooks/useEventStore';
-import { AppHeader } from '../../components/organisms/AppHeader';
-import { AppFooter } from '../../components/organisms/AppFooter';
+import { AppHeader } from '../../components/organisms/app-header';
+import { AppFooter } from '../../components/organisms/app-footer';
 import { FilterPanel } from '../../components/organisms/FilterPanel';
 import { ResultsSection } from '../../components/organisms/ResultsSection';
 import { PluginLoader } from '../../components/molecules/PluginLoader';

@@ -1,7 +1,7 @@
 import { parseHtml } from '../../lib/utils/parseHtml';
 import PrivacyPolicyPage from '../../components/layouts/PrivacyPolicyPage';
-import { AppFooter } from '../../components/organisms/AppFooter';
-import { AppHeader } from '../../components/organisms/AppHeader';
+import { AppFooter } from '../../components/organisms/app-footer';
+import { AppHeader } from '../../components/organisms/app-header';
 import { GetStaticPropsContext } from 'next';
 import { useSession } from 'next-auth/react';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';

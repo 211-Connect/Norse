@@ -1,14 +1,14 @@
 import { GetStaticPropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { CategorySection } from '../components/organisms/CategorySection';
-import { HomePageLayout } from '../components/layouts/HomePage';
+import { CategorySection } from '../components/organisms/category-section';
 import { TourProvider } from '@reactour/tour';
-import { AppFooter } from '../components/organisms/AppFooter';
+import { AppFooter } from '../components/organisms/app-footer';
 import { DataProviders } from '../components/molecules/DataProviders';
-import { AppHeader } from '../components/organisms/AppHeader';
-import { HeroSection } from '../components/organisms/HeroSection';
+import { AppHeader } from '../components/organisms/app-header';
+import { HeroSection } from '../components/organisms/hero-section';
 import { useTranslation } from 'next-i18next';
-import { useSession } from 'next-auth/react';
+import Head from 'next/head';
+import { useAppConfig } from '@/lib/hooks/useAppConfig';
 
 export async function getStaticProps(ctx: GetStaticPropsContext) {
   return {
@@ -24,26 +24,29 @@ export async function getStaticProps(ctx: GetStaticPropsContext) {
 
 export default function Home() {
   const { t } = useTranslation('page-home');
-  const session = useSession();
+  const appConfig = useAppConfig();
 
-  if (session.status === 'loading') return null;
+  const metaTitle = t('meta_title') || t('meta_title', { ns: 'dynamic' });
+  const metaDescription =
+    t('meta_description') || t('meta_description', { ns: 'dynamic' });
 
   return (
     <TourProvider steps={[]} scrollSmooth>
-      <HomePageLayout
-        metaTitle={t('meta_title') || t('meta_title', { ns: 'dynamic' })}
-        metaDescription={
-          t('meta_description') || t('meta_description', { ns: 'dynamic' })
-        }
-        headerSection={<AppHeader />}
-        heroSection={<HeroSection />}
-        categorySection={<CategorySection />}
-        footerSection={
-          <AppFooter>
-            <DataProviders />
-          </AppFooter>
-        }
-      />
+      <Head>
+        <title>{metaTitle}</title>
+        <meta name="description" content={metaDescription} />
+
+        <meta property="og:title" content={metaTitle} />
+        <meta property="og:image" content={appConfig.brand.openGraphUrl} />
+        <meta property="og:type" content="website" />
+        <meta property="og:description" content={metaDescription} />
+      </Head>
+      <AppHeader />
+      <HeroSection />
+      <CategorySection />
+      <AppFooter>
+        <DataProviders />
+      </AppFooter>
     </TourProvider>
   );
 }
