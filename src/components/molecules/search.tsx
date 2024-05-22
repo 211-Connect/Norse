@@ -4,7 +4,6 @@ import qs from 'qs';
 import { LocationAutocomplete } from './location-autocomplete';
 import { TaxonomyAutocomplete } from './TaxonomyAutocomplete';
 import { useTranslation } from 'next-i18next';
-import { Separator } from '../ui/separator';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 
@@ -66,7 +65,7 @@ export function Search({ hideLocation }: Props) {
   };
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col gap-2 w-full">
       <form method="get" action="/search" onSubmit={handleSubmit}>
         <div className="flex">
           <TaxonomyAutocomplete
@@ -108,16 +107,13 @@ export function Search({ hideLocation }: Props) {
       </form>
 
       {router.query.query_type === 'taxonomy' && (
-        <>
-          <Separator className="mt-2 mb-2 bg-foreground" />
-          <div className="flex gap-2 items-center">
-            {(router.query.query as string)?.split(',').map((query) => (
-              <Badge key={query} variant="secondary">
-                {query}
-              </Badge>
-            ))}
-          </div>
-        </>
+        <div className="flex gap-2 items-center">
+          {(router.query.query as string)?.split(',').map((query) => (
+            <Badge key={query} variant="secondary">
+              {query}
+            </Badge>
+          ))}
+        </div>
       )}
     </div>
   );
