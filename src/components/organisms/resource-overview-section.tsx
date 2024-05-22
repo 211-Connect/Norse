@@ -15,7 +15,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'next-i18next';
 import { useCookies } from 'react-cookie';
-import { ReferralButton } from '../atoms/referral-button';
+import { ReferralButton } from '@/components/referral-button';
 import {
   USER_PREF_COORDS,
   USER_PREF_LOCATION,

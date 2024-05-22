@@ -5,7 +5,7 @@ import {
   LocationAutocomplete,
   useLocationStore,
 } from '../../molecules/location-autocomplete';
-import { ReferralButton } from '../../atoms/referral-button';
+import { ReferralButton } from '@/components/referral-button';
 
 type Props = ContextModalProps<{ location: { coordinates: string } }>;
 

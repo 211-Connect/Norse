@@ -1,11 +1,14 @@
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { GetStaticPropsContext } from 'next';
-import ErrorPageLayout from '../components/layouts/ErrorPage';
 import { AppHeader } from '../components/organisms/app-header';
 import { AppFooter } from '../components/organisms/app-footer';
 import { DataProviders } from '../components/molecules/data-providers';
 import { useTranslation } from 'next-i18next';
-import { useSession } from 'next-auth/react';
+import Head from 'next/head';
+import Image from 'next/image';
+import Link from 'next/link';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 export async function getStaticProps(ctx: GetStaticPropsContext) {
   return {
@@ -20,23 +23,41 @@ export async function getStaticProps(ctx: GetStaticPropsContext) {
 
 export default function InternalServerError() {
   const { t } = useTranslation('page-500');
-  const session = useSession();
-
-  if (session.status === 'loading') return null;
+  const metaTitle = t('meta_title');
+  const metaDescription = t('meta_description');
 
   return (
-    <ErrorPageLayout
-      metaTitle={t('meta_title')}
-      metaDescription={t('meta_description')}
-      headerSection={<AppHeader />}
-      title={t('title')}
-      description={t('description')}
-      backgroundImage="/undraw_500.svg"
-      footerSection={
+    <>
+      <Head>
+        <title>{metaTitle}</title>
+        <meta name="description" content={metaDescription} />
+      </Head>
+
+      <div className="flex flex-col min-h-screen">
+        <AppHeader />
+        <div className="flex flex-1 flex-col relative items-center justify-center">
+          <Image
+            fill
+            src="/undraw_500.svg"
+            alt=""
+            className="object-contain z-0 object-center"
+            priority
+          />
+
+          <div className="flex flex-col z-10 items-center gap-2 text-center text-foreground justify-center bg-card shadow-md max-w-xl mx-auto p-4 rounded-md">
+            <h3 className="font-bold text-3xl">{t('title')}</h3>
+
+            <h4 className="font-semibold">{t('description')}</h4>
+
+            <Link className={cn(buttonVariants({ variant: 'link' }))} href="/">
+              {t('back_to_home')}
+            </Link>
+          </div>
+        </div>
         <AppFooter>
           <DataProviders />
         </AppFooter>
-      }
-    />
+      </div>
+    </>
   );
 }

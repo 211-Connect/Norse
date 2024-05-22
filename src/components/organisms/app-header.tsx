@@ -8,7 +8,7 @@ import { signOut, useSession } from 'next-auth/react';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { useMemo } from 'react';
-import { Anchor } from '@/components/atoms/anchor';
+import { Anchor } from '@/components/anchor';
 import { useAppConfig } from '@/lib/hooks/useAppConfig';
 import { openContextModal } from '@mantine/modals';
 import { Button } from '@/components/ui/button';
@@ -159,11 +159,13 @@ export function AppHeader(props: Props) {
   ]);
 
   return (
-    <header style={{ backgroundColor: '#fff' }}>
+    <header className="bg-white">
       <div
         className={cn(
-          props.fullWidth ? 'w-full' : 'container mx-auto',
-          'h-[80px] flex items-center justify-between pl-4 pr-4 2xl:pl-0 2xl:pr-0'
+          props.fullWidth
+            ? 'w-full 2xl:pl-4 2xl:pr-4'
+            : 'container mx-auto 2xl:pl-0 2xl:pr-0',
+          'h-[80px] flex items-center justify-between pl-4 pr-4'
         )}
       >
         <Anchor href="/" aria-label={t('header.home') as string}>

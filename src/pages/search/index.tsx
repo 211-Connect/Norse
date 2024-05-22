@@ -97,8 +97,6 @@ export default function Search(props: any) {
     props.results.length >= 25 ? '25' : props.results.length
   } / ${props.totalResults} ${t('results_for')} ${props.query}.`;
 
-  // if (session.status === 'loading') return null;
-
   return (
     <>
       <Head>

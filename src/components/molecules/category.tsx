@@ -1,7 +1,7 @@
 import { IconExternalLink } from '@tabler/icons-react';
 import Image from 'next/image';
-import { NavLink } from '../atoms/nav-link';
-import { Anchor } from '../atoms/anchor';
+import { NavLink } from '@/components/nav-link';
+import { Anchor } from '@/components/anchor';
 import { useTranslation } from 'next-i18next';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 

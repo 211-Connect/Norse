@@ -1,4 +1,4 @@
-import { createReferralEvent } from '../../lib/hooks/useEventStore/events';
+import { createReferralEvent } from '../lib/hooks/useEventStore/events';
 import Link from 'next/link';
 import { LinkProps } from 'next/link';
 import { buttonVariants } from '@/components/ui/button';

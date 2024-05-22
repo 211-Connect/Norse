@@ -1,6 +1,6 @@
 import { Fragment, PropsWithChildren } from 'react';
 import { useTranslation } from 'next-i18next';
-import { Anchor } from '@/components/atoms/anchor';
+import { Anchor } from '@/components/anchor';
 import { useAppConfig } from '@/lib/hooks/useAppConfig';
 import { IconPointFilled } from '@tabler/icons-react';
 import { cn } from '@/lib/utils';

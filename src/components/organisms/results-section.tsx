@@ -1,24 +1,24 @@
 import {
-  Box,
-  MediaQuery,
-  Group,
-  Button,
-  Stack,
   Pagination,
-  Text,
-  useMantineTheme,
-} from '@mantine/core';
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 import { IconAdjustments } from '@tabler/icons-react';
-import Color from 'color';
 import { NoResultsCard } from '../molecules/no-results-card';
 import { Result } from '../molecules/result';
 import { useRouter } from 'next/router';
-import { Search } from '../molecules/Search';
+import { Search } from '../molecules/search';
 import { useTranslation } from 'next-i18next';
 import { useFilterPanelStore } from '../../lib/state/filterPanel';
 import { useSession } from 'next-auth/react';
 import { useMemo } from 'react';
 import { IResult } from '../../lib/adapters/SearchAdapter';
+import { cn } from '@/lib/utils';
+import { Button } from '../ui/button';
 
 type Props = {
   results: IResult[];
@@ -28,12 +28,16 @@ type Props = {
   totalFilters: number;
 };
 
+function range(start: number, end: number) {
+  const length = end - start + 1;
+  return Array.from({ length }, (_, index) => index + start);
+}
+
 export function ResultsSection(props: Props) {
   const { status } = useSession();
   const filterPanel = useFilterPanelStore();
   const router = useRouter();
   const { t } = useTranslation('page-search');
-  const theme = useMantineTheme();
   const coordinates = useMemo(() => {
     return ((router.query?.coords as string) ?? '')
       .split(',')
@@ -65,50 +69,86 @@ export function ResultsSection(props: Props) {
     Math.abs(Math.min(Math.max(props.currentPage * 25, 0), props.totalResults))
   );
 
+  const total = Math.ceil(props.totalResults / 25);
+  const _total = Math.max(Math.trunc(total), 0);
+  const activePage = props.currentPage;
+  const siblings = 1;
+  const boundaries = 1;
+  const DOTS = 'dots';
+
+  function getPagination() {
+    const totalPageNumbers = siblings * 2 + 3 + boundaries * 2;
+    if (totalPageNumbers >= _total) {
+      return range(1, _total);
+    }
+
+    const leftSiblingIndex = Math.max(activePage - siblings, boundaries);
+    const rightSiblingIndex = Math.min(
+      activePage + siblings,
+      _total - boundaries
+    );
+
+    const shouldShowLeftDots = leftSiblingIndex > boundaries + 2;
+    const shouldShowRightDots = rightSiblingIndex < _total - (boundaries + 1);
+
+    if (!shouldShowLeftDots && shouldShowRightDots) {
+      const leftItemCount = siblings * 2 + boundaries + 2;
+      return [
+        ...range(1, leftItemCount),
+        DOTS,
+        ...range(_total - (boundaries - 1), _total),
+      ];
+    }
+
+    if (shouldShowLeftDots && !shouldShowRightDots) {
+      const rightItemCount = boundaries + 1 + 2 * siblings;
+      return [
+        ...range(1, boundaries),
+        DOTS,
+        ...range(_total - rightItemCount, _total),
+      ];
+    }
+
+    return [
+      ...range(1, boundaries),
+      DOTS,
+      ...range(leftSiblingIndex, rightSiblingIndex),
+      DOTS,
+      ...range(_total - boundaries + 1, _total),
+    ];
+  }
+
   return (
     <>
-      <Box pl="md" pt="md" pb="sm" pr="md">
+      <div className="p-2 pb-0">
         <Search />
-      </Box>
+      </div>
 
-      <MediaQuery largerThan="md" styles={{ justifyContent: 'flex-end' }}>
-        <Group
-          position={props.totalFilters > 0 ? 'apart' : 'right'}
-          align="center"
-          bg="primary"
-          p="sm"
-          pl="md"
-          pr="md"
-        >
-          {props.totalFilters > 0 && (
-            <MediaQuery largerThan="md" styles={{ display: 'none' }}>
-              <Button
-                variant="filled"
-                leftIcon={<IconAdjustments />}
-                size="xs"
-                onClick={filterPanel.toggle}
-              >
-                {t('filter_results')}
-              </Button>
-            </MediaQuery>
-          )}
-
-          <Text
-            id="result-total"
-            sx={(t) => ({
-              color: Color(t.colors.primary).isDark() ? '#fff' : '#000',
-            })}
+      <div
+        className={cn(
+          props.totalFilters > 0 ? 'justify-between' : 'justify-end',
+          'flex bg-primary items-center p-1 pr-2 pl-2'
+        )}
+      >
+        {props.totalFilters > 0 && (
+          <Button
+            className="flex gap-1 items-center md:hidden"
+            onClick={filterPanel.toggle}
           >
-            {counterStart}-{counterEnd}
-            {` `}
-            {t('of')}
-            {` `}
-            {props.totalResults.toLocaleString()}
-          </Text>
-        </Group>
-      </MediaQuery>
+            <IconAdjustments /> {t('filter_results')}
+          </Button>
+        )}
 
-      <Stack spacing="md" pr="md" pl="md">
+        <p id="result-total" className="text-primary-foreground">
+          {counterStart}-{counterEnd}
+          {` `}
+          {t('of')}
+          {` `}
+          {props.totalResults.toLocaleString()}
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-2 pl-2 pr-2">
         {props.noResults && (
           <NoResultsCard
             router={router}
@@ -135,16 +175,61 @@ export function ResultsSection(props: Props) {
           );
         })}
 
-        {Math.ceil(props.totalResults / 25) > 1 && (
-          <Pagination
-            total={Math.ceil(props.totalResults / 25)}
-            m="0 auto"
-            mb="md"
-            onChange={changePage}
-            defaultValue={props.currentPage}
-          />
+        {total > 1 && (
+          <Pagination>
+            <PaginationContent>
+              {props.currentPage > 1 && (
+                <PaginationItem>
+                  <PaginationPrevious
+                    href="#"
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      await changePage(props.currentPage - 1);
+                    }}
+                  />
+                </PaginationItem>
+              )}
+
+              {getPagination()?.map((val, idx) => {
+                if (val === DOTS) {
+                  return (
+                    <PaginationItem key={idx}>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  );
+                }
+
+                return (
+                  <PaginationItem key={idx}>
+                    <PaginationLink
+                      href="#"
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        await changePage(Number(val));
+                      }}
+                      isActive={val === props.currentPage}
+                    >
+                      {val}
+                    </PaginationLink>
+                  </PaginationItem>
+                );
+              })}
+
+              {props.totalResults > 1 && props.currentPage !== total && (
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      await changePage(props.currentPage + 1);
+                    }}
+                  />
+                </PaginationItem>
+              )}
+            </PaginationContent>
+          </Pagination>
         )}
-      </Stack>
+      </div>
     </>
   );
 }

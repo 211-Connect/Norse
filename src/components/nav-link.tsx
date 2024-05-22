@@ -1,4 +1,4 @@
-import { createLinkEvent } from '../../lib/hooks/useEventStore/events';
+import { createLinkEvent } from '../lib/hooks/useEventStore/events';
 import Link, { LinkProps } from 'next/link';
 
 export function NavLink(

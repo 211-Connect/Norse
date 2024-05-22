@@ -97,6 +97,7 @@
     "lodash": "^4.17.21",
     "mapbox-gl": "^2.15.0",
     "matercolors": "^2.3.0",
+    "mongodb": "^6.6.2",
     "mongoose": "^7.5.0",
     "nanoid": "^3.3.6",
     "next": "^13.4.12",
