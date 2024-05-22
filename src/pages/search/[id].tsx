@@ -12,7 +12,7 @@ import { ResourceNavigationSection } from '../../components/organisms/ResourceNa
 import { getServerSideAxios } from '../../lib/server/axios';
 import { IResource, ResourceAdapter } from '../../lib/adapters/ResourceAdapter';
 import { isAxiosError } from 'axios';
-import { cacheControl } from '../../lib/server/cacheControl';
+import { cacheControl } from '../../lib/server/cache-control';
 import { useSession } from 'next-auth/react';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {

@@ -1,13 +1,17 @@
 import { createReferralEvent } from '../../lib/hooks/useEventStore/events';
 import Link from 'next/link';
 import { LinkProps } from 'next/link';
-import { Button, buttonVariants, ButtonProps } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 type Props = {
   referralType: 'call_referral' | 'website_referral' | 'directions_referral';
   resourceId: string;
   resource: any;
   onClick?: any;
+  className?: string;
+  children?: React.ReactNode;
+  disabled?: boolean;
 };
 
 export function ReferralButton({
@@ -15,6 +19,8 @@ export function ReferralButton({
   resourceId,
   onClick,
   resource,
+  className,
+  disabled = false,
   ...rest
 }: Props & LinkProps & { target?: string; rel?: string }) {
   const handleLink = (e: any) => {
@@ -27,7 +33,12 @@ export function ReferralButton({
   return (
     <Link
       {...rest}
-      className={buttonVariants({ variant: 'default' })}
+      className={cn(
+        buttonVariants({ variant: 'default' }),
+        'gap-2',
+        disabled ? 'bg-muted text-gray-500 pointer-events-none' : null,
+        className
+      )}
       onClick={handleLink}
     />
   );
