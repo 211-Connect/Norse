@@ -6,7 +6,7 @@ import { Notifications } from '@mantine/notifications';
 import { PrevUrlProvider } from '../lib/context/PrevUrl';
 import { PageView } from '../components/organisms/PageView';
 import Head from 'next/head';
-import { GoogleTagManagerScript } from '../components/atoms/GoogleTagManagerScript';
+import { GoogleTagManagerScript } from '../components/atoms/google-tag-manager-script';
 import { CookiesProvider } from 'react-cookie';
 import { useAppConfig } from '../lib/hooks/useAppConfig';
 import { ModalsProvider } from '@mantine/modals';

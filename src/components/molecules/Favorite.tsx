@@ -28,8 +28,8 @@ import {
   IconNavigation,
   IconHeartMinus,
 } from '@tabler/icons-react';
-import { Anchor } from '../atoms/Anchor';
-import { ReferralButton } from '../atoms/ReferralButton';
+import { Anchor } from '../atoms/anchor';
+import { ReferralButton } from '../atoms/referral-button';
 import { useTranslation } from 'next-i18next';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';

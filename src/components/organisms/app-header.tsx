@@ -8,7 +8,7 @@ import { signOut, useSession } from 'next-auth/react';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { useMemo } from 'react';
-import { Anchor } from '@/components/atoms/Anchor';
+import { Anchor } from '@/components/atoms/anchor';
 import { useAppConfig } from '@/lib/hooks/useAppConfig';
 import { openContextModal } from '@mantine/modals';
 import { Button } from '@/components/ui/button';

@@ -21,7 +21,7 @@ import {
   IconShare,
 } from '@tabler/icons-react';
 import Color from 'color';
-import { Anchor } from '../atoms/Anchor';
+import { Anchor } from '../atoms/anchor';
 import { Favorite } from '../molecules/Favorite';
 import Image from 'next/image';
 import Link from 'next/link';

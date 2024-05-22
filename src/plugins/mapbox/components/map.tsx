@@ -12,7 +12,7 @@ import { IconPhone, IconWorldWww } from '@tabler/icons-react';
 import { useRouter } from 'next/router';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useTranslation } from 'next-i18next';
-import { ReferralButton } from '../../../components/atoms/ReferralButton';
+import { ReferralButton } from '../../../components/atoms/referral-button';
 
 type Props = {
   locations: {

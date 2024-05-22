@@ -1,4 +1,4 @@
-import { Category } from '../molecules/Category';
+import { Category } from '../molecules/category';
 import { useTranslation } from 'next-i18next';
 import categories from '../../../.norse/categories.json';
 
