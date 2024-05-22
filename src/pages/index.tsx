@@ -3,7 +3,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { CategorySection } from '../components/organisms/category-section';
 import { TourProvider } from '@reactour/tour';
 import { AppFooter } from '../components/organisms/app-footer';
-import { DataProviders } from '../components/molecules/DataProviders';
+import { DataProviders } from '../components/molecules/data-providers';
 import { AppHeader } from '../components/organisms/app-header';
 import { HeroSection } from '../components/organisms/hero-section';
 import { useTranslation } from 'next-i18next';

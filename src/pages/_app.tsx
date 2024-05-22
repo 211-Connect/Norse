@@ -4,7 +4,7 @@ import { MantineProvider } from '@mantine/core';
 import { Theme } from '../lib/theme/main';
 import { Notifications } from '@mantine/notifications';
 import { PrevUrlProvider } from '../lib/context/PrevUrl';
-import { PageView } from '../components/organisms/PageView';
+import { PageView } from '../components/organisms/page-view';
 import Head from 'next/head';
 import { GoogleTagManagerScript } from '../components/atoms/google-tag-manager-script';
 import { CookiesProvider } from 'react-cookie';

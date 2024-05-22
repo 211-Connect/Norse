@@ -25,7 +25,7 @@ import {
   IconLanguage,
   IconMap2,
 } from '@tabler/icons-react';
-import { PluginLoader } from '../molecules/PluginLoader';
+import { PluginLoader } from '../molecules/plugin-loader';
 import { useTranslation } from 'next-i18next';
 import Link from 'next/link';
 

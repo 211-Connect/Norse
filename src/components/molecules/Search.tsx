@@ -9,7 +9,7 @@ import {
 } from '@mantine/core';
 import { useRouter } from 'next/router';
 import qs from 'qs';
-import { LocationAutocomplete } from './LocationAutocomplete';
+import { LocationAutocomplete } from './location-autocomplete';
 import { TaxonomyAutocomplete } from './TaxonomyAutocomplete';
 import { useTranslation } from 'next-i18next';
 import Color from 'color';

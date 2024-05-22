@@ -3,7 +3,7 @@ import { useTranslation } from 'next-i18next';
 import { useEventStore } from '../../lib/hooks/useEventStore';
 import { useTour } from '@reactour/tour';
 import { useMemo } from 'react';
-import { HomePageSearch } from '../molecules/HomePageSearch';
+import { HomePageSearch } from '../molecules/home-page-search';
 import { useAppConfig } from '../../lib/hooks/useAppConfig';
 import { Button } from '../ui/button';
 

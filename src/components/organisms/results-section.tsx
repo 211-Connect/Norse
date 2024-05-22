@@ -10,8 +10,8 @@ import {
 } from '@mantine/core';
 import { IconAdjustments } from '@tabler/icons-react';
 import Color from 'color';
-import { NoResultsCard } from '../molecules/NoResultsCard';
-import { Result } from '../molecules/Result';
+import { NoResultsCard } from '../molecules/no-results-card';
+import { Result } from '../molecules/result';
 import { useRouter } from 'next/router';
 import { Search } from '../molecules/Search';
 import { useTranslation } from 'next-i18next';
@@ -129,7 +129,6 @@ export function ResultsSection(props: Props) {
               address={result.address}
               location={result.location}
               sessionStatus={status}
-              theme={theme}
               router={router}
               coordinates={coordinates}
             />

@@ -4,7 +4,7 @@ import { useTranslation } from 'next-i18next';
 import {
   LocationAutocomplete,
   useLocationStore,
-} from '../../molecules/LocationAutocomplete';
+} from '../../molecules/location-autocomplete';
 import { ReferralButton } from '../../atoms/referral-button';
 
 type Props = ContextModalProps<{ location: { coordinates: string } }>;

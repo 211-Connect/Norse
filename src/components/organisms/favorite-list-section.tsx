@@ -9,7 +9,7 @@ import {
 } from '@mantine/core';
 import { openContextModal } from '@mantine/modals';
 import Color from 'color';
-import { FavoriteList } from '../molecules/FavoriteList';
+import { FavoriteList } from '../molecules/favorite-list';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 

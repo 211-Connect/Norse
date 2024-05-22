@@ -3,7 +3,7 @@ import { GetStaticPropsContext } from 'next';
 import ErrorPageLayout from '../components/layouts/ErrorPage';
 import { AppHeader } from '../components/organisms/app-header';
 import { AppFooter } from '../components/organisms/app-footer';
-import { DataProviders } from '../components/molecules/DataProviders';
+import { DataProviders } from '../components/molecules/data-providers';
 import { useTranslation } from 'next-i18next';
 import { useSession } from 'next-auth/react';
 
