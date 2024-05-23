@@ -1,10 +1,11 @@
-import { Group, Button } from '@mantine/core';
 import { openContextModal } from '@mantine/modals';
 import { IconChevronLeft, IconShare, IconHeartPlus } from '@tabler/icons-react';
 import { useSession } from 'next-auth/react';
 import { useTranslation } from 'next-i18next';
 import Link from 'next/link';
 import { useReactToPrint } from 'react-to-print';
+import { Button, buttonVariants } from '../../ui/button';
+import { cn } from '@/lib/utils';
 
 type Props = {
   backUrl: 'loading' | string;
@@ -14,7 +15,7 @@ type Props = {
   componentToPrint: any;
 };
 
-export function ResourceNavigationSection(props: Props) {
+export function ResourceNavigation(props: Props) {
   const { t } = useTranslation('page-resource');
   const { status } = useSession();
   const handlePrint = useReactToPrint({
@@ -22,32 +23,19 @@ export function ResourceNavigationSection(props: Props) {
   });
 
   return (
-    <Group
-      w="100%"
-      maw="1100px"
-      m="0 auto"
-      pl="md"
-      pr="md"
-      pt="md"
-      position="apart"
-    >
-      <Button
-        disabled={props.backUrl === 'loading'}
-        component={Link}
+    <div className="flex justify-between items-center w-full max-w-[1100px] mx-auto pt-2">
+      <Link
+        className={cn(buttonVariants({ variant: 'default' }), 'gap-1')}
+        // disabled={props.backUrl === 'loading'}
         href={props.backUrl}
-        variant="light"
-        size="xs"
-        leftIcon={<IconChevronLeft />}
       >
+        <IconChevronLeft className="size-4" />
         {props.backUrl === '/' ? t('back_to_home') : t('back_to_results')}
-      </Button>
+      </Link>
 
-      <Group noWrap spacing="sm">
+      <div className="flex gap-2">
         <Button
-          fullWidth
-          variant="light"
-          size="xs"
-          leftIcon={<IconShare />}
+          className="gap-1"
           onClick={async () => {
             openContextModal({
               modal: 'share',
@@ -63,14 +51,12 @@ export function ResourceNavigationSection(props: Props) {
             });
           }}
         >
+          <IconShare className="size-4" />
           {t('call_to_action.share', { ns: 'common' })}
         </Button>
 
         <Button
-          fullWidth
-          variant="light"
-          size="xs"
-          leftIcon={<IconHeartPlus />}
+          className="gap-1"
           onClick={async () => {
             if (status === 'unauthenticated') {
               openContextModal({
@@ -91,9 +77,10 @@ export function ResourceNavigationSection(props: Props) {
             }
           }}
         >
+          <IconHeartPlus className="size-4" />
           {t('call_to_action.add_to_list', { ns: 'common' })}
         </Button>
-      </Group>
-    </Group>
+      </div>
+    </div>
   );
 }

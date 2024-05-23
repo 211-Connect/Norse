@@ -3,6 +3,8 @@ import mongodb from '../mongodb';
 
 export type Resource = {
   id: string;
+  displayName?: string;
+  displayPhoneNumber?: string;
   serviceName: string;
   name: string;
   description: string;
@@ -64,6 +66,8 @@ export default function ResourceAdapter() {
         }
       );
 
+      if (!record) throw new Error('404');
+
       return {
         id: record._id.toString(),
         serviceName: record?.translations?.[0]?.serviceName ?? null,
@@ -103,6 +107,14 @@ export default function ResourceAdapter() {
           record?.translations?.[0]?.organizationDescription ?? null,
         serviceArea: record?.serviceArea ?? null,
       };
+    },
+    getRedirect: async (id) => {
+      const mongo = await mongodb;
+      const collection = mongo.db(dbName).collection('redirects');
+
+      const record = await collection.findOne({ _id: id });
+
+      return record;
     },
   };
 }
