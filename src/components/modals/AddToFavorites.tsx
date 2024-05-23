@@ -13,7 +13,7 @@ import { ContextModalProps } from '@mantine/modals';
 import { IconPlaylistAdd } from '@tabler/icons-react';
 import { useTranslation } from 'next-i18next';
 import { useCallback, useEffect, useState } from 'react';
-import { FavoriteAdapter } from '../../../lib/adapters/FavoriteAdapter';
+import { FavoriteAdapter } from '../../lib/adapters/FavoriteAdapter';
 import { showNotification } from '@mantine/notifications';
 
 type Props = ContextModalProps<{ serviceAtLocationId: string }>;

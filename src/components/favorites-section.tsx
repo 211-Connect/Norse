@@ -22,7 +22,7 @@ import {
 } from '@tabler/icons-react';
 import Color from 'color';
 import { Anchor } from '@/components/anchor';
-import { Favorite } from '../molecules/Favorite';
+import { Favorite } from './molecules/Favorite';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -45,13 +45,12 @@ export function FavoritesSection(props: Props) {
   const { t } = useTranslation('common');
   const componentRef = useRef(null);
   const theme = useMantineTheme();
-  const router = useRouter();
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
   });
 
   return (
-    <Box ref={componentRef}>
+    <div ref={componentRef}>
       <Paper
         withBorder
         m="0"
@@ -230,6 +229,6 @@ export function FavoritesSection(props: Props) {
           </Card>
         )}
       </Stack>
-    </Box>
+    </div>
   );
 }

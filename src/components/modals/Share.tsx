@@ -18,9 +18,9 @@ import {
 } from '@tabler/icons-react';
 import { useClipboard } from '@mantine/hooks';
 import { useTranslation } from 'next-i18next';
-import { ShortUrlAdapter } from '../../../lib/adapters/ShortUrlAdapter';
+import { ShortUrlAdapter } from '../../lib/adapters/ShortUrlAdapter';
 import { useSession } from 'next-auth/react';
-import { useAppConfig } from '../../../lib/hooks/useAppConfig';
+import { useAppConfig } from '../../lib/hooks/useAppConfig';
 
 type Props = ContextModalProps<{
   shareContents: { title: string; body: string };

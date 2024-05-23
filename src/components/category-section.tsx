@@ -1,6 +1,6 @@
-import { Category } from '../molecules/category';
+import { Category } from './molecules/category';
 import { useTranslation } from 'next-i18next';
-import categories from '../../../.norse/categories.json';
+import categories from '../../.norse/categories.json';
 
 export function CategorySection() {
   const { t } = useTranslation('page-home');

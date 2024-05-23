@@ -7,10 +7,9 @@ import {
 } from '../../lib/constants/cookies';
 import { useEffect } from 'react';
 import { useEventStore } from '../../lib/hooks/useEventStore';
-import { AppHeader } from '../../components/organisms/app-header';
-import { AppFooter } from '../../components/organisms/app-footer';
-import { FilterPanel } from '../../components/organisms/filter-panel';
-import { ResultsSection } from '../../components/organisms/results-section';
+import { AppHeader } from '../../components/app-header';
+import { AppFooter } from '../../components/app-footer';
+import { FilterPanel } from '../../components/filter-panel';
 import { PluginLoader } from '../../components/molecules/plugin-loader';
 import { useAppConfig } from '../../lib/hooks/useAppConfig';
 import { useTranslation } from 'next-i18next';
@@ -20,6 +19,8 @@ import SearchAdapter, {
 } from '@/lib/server/adapters/search-adapter';
 import Head from 'next/head';
 import { useMediaQuery, useWindowScroll } from '@mantine/hooks';
+import { Search } from '@/components/molecules/search';
+import { Results } from '@/components/results';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const cookies = nookies.get(ctx);
@@ -68,7 +69,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   };
 }
 
-export default function Search(props: any) {
+export default function SearchPage(props: any) {
   // const session = useSession();
   const appConfig = useAppConfig();
   const { createResultsEvent } = useEventStore();
@@ -118,7 +119,11 @@ export default function Search(props: any) {
           className="flex flex-col gap-2 md:max-w-xl w-full overflow-y-auto"
           id="search-container"
         >
-          <ResultsSection
+          <div className="p-2 pb-0">
+            <Search />
+          </div>
+
+          <Results
             results={props.results}
             noResults={props.noResults}
             currentPage={props.currentPage}

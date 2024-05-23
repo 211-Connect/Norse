@@ -1,13 +1,13 @@
 import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { getServerSession } from 'next-auth';
-import { AppHeader } from '../../components/organisms/app-header';
-import { AppFooter } from '../../components/organisms/app-footer';
+import { AppHeader } from '../../components/app-header';
+import { AppFooter } from '../../components/app-footer';
 import { authOptions } from '../api/auth/[...nextauth]';
 import { useAppConfig } from '../../lib/hooks/useAppConfig';
 import { PluginLoader } from '../../components/molecules/plugin-loader';
 import { FavoriteListsPageLayout } from '../../components/layouts/FavoriteListsPage';
-import { FavoriteListSection } from '../../components/organisms/favorite-list-section';
+import { FavoriteListSection } from '../../components/favorite-list-section';
 import { getServerSideAxios } from '../../lib/server/axios';
 import { FavoriteAdapter } from '../../lib/adapters/FavoriteAdapter';
 import { useTranslation } from 'next-i18next';

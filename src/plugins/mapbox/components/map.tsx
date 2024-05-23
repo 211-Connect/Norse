@@ -6,7 +6,6 @@ import mapboxgl, {
 } from 'mapbox-gl';
 import { useEffect, useMemo, useRef } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { Stack, Title, useMantineTheme, Text, Group } from '@mantine/core';
 import { useAppConfig } from '../../../lib/hooks/useAppConfig';
 import { IconPhone, IconWorldWww } from '@tabler/icons-react';
 import { useRouter } from 'next/router';
@@ -35,7 +34,6 @@ const MAPBOX_STYLE_URL =
 const MAPBOX_ACCESS_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_KEY as string;
 
 export function MapComponent({ locations = [] }: Props) {
-  const theme = useMantineTheme();
   const map = useRef<MapType>();
   const mapContainer = useRef<HTMLDivElement>(null);
   const outerContainer = useRef<HTMLDivElement>(null);
@@ -86,41 +84,25 @@ export function MapComponent({ locations = [] }: Props) {
       )
       .map((resource) => {
         const latLng = resource?.location?.coordinates ?? mapConfig.center;
-        bounds.extend(latLng);
+        bounds.extend(latLng as [number, number]);
 
         const popup = new Popup({ offset: 25, maxWidth: '450px' }).setHTML(
           renderToStaticMarkup(
-            <Stack spacing={theme.spacing.xs}>
-              <Title
-                order={3}
-                size="h5"
-                sx={{
-                  color: theme.colors.primary[theme.primaryShade as number],
-                }}
-              >
-                {resource.name}
-              </Title>
-              <Text size={theme.fontSizes.xs}>{resource.description}</Text>
+            <div className="flex flex-col gap-2">
+              <h3 className="font-2xl font-semibold">{resource.name}</h3>
+              <p className="font-xl">{resource.description}</p>
 
-              <Group
-                mt={theme.spacing.xs}
-                spacing={theme.spacing.sm}
-                noWrap
-                grow
-              >
+              <div className="flex gap-2">
                 <ReferralButton
                   referralType="call_referral"
                   resourceId={resource._id}
                   resource={resource}
                   disabled={!resource.phone}
                   href={`tel:${resource.phone}`}
-                  size="xs"
-                  miw={130}
+                  className="min-w-[130px] gap-1"
                 >
-                  <Group noWrap spacing={theme.spacing.xs}>
-                    <IconPhone size={theme.fontSizes.md} />
-                    {t('call_to_action.call')}
-                  </Group>
+                  <IconPhone className="size-4" />
+                  {t('call_to_action.call')}
                 </ReferralButton>
 
                 <ReferralButton
@@ -130,23 +112,20 @@ export function MapComponent({ locations = [] }: Props) {
                   disabled={!resource.website}
                   href={resource?.website ?? ''}
                   target="_blank"
-                  size="xs"
-                  miw={130}
+                  className="min-w-[130px] gap-1"
                 >
-                  <Group noWrap spacing={theme.spacing.xs}>
-                    <IconWorldWww size={theme.fontSizes.md} />
-                    {t('call_to_action.view_website')}
-                  </Group>
+                  <IconWorldWww className="size-4" />
+                  {t('call_to_action.view_website')}
                 </ReferralButton>
-              </Group>
-            </Stack>
+              </div>
+            </div>
           )
         );
 
         const marker = new Marker({
-          color: theme.colors.primary[theme.primaryShade as number],
+          // color: theme.colors.primary[theme.primaryShade as number],
         })
-          .setLngLat(latLng)
+          .setLngLat(latLng as [number, number])
           .setPopup(popup);
 
         marker.getElement().style.cursor = 'pointer';
@@ -184,19 +163,7 @@ export function MapComponent({ locations = [] }: Props) {
         map.current.fitBounds(bounds, { padding: 50, zoom: 13 });
       }
     }
-  }, [
-    locations,
-    theme.colors.primary,
-    theme.primaryShade,
-    theme.spacing.xs,
-    theme.fontSizes.xs,
-    router.query.location,
-    theme.fontSizes.md,
-    theme.spacing.sm,
-    router.query.coords,
-    mapConfig.center,
-    t,
-  ]);
+  }, [locations, router.query.coords, mapConfig.center, t]);
 
   useEffect(() => {
     if (!map.current) return;
@@ -221,7 +188,7 @@ export function MapComponent({ locations = [] }: Props) {
             source: 'serviceArea',
             layout: {},
             paint: {
-              'line-color': theme.colors.primary[theme.primaryShade as number],
+              // 'line-color': theme.colors.primary[theme.primaryShade as number],
               'line-width': 2,
             },
           });
@@ -233,41 +200,18 @@ export function MapComponent({ locations = [] }: Props) {
     return () => {
       map.current?.off('load', addNewSource);
     };
-  }, [
-    locations,
-    theme.colors.primary,
-    theme.primaryShade,
-    theme.colors.secondary,
-    theme.other.secondaryShade,
-    mapConfig.center,
-  ]);
+  }, [locations, mapConfig.center]);
 
   return (
-    <>
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-      .outline {
-        outline-style: solid;
-        outline-color: transparent;
-        outline-width: 2px;
-        outline-offset: ${theme.spacing.sm}px;
-        transition: outline-color 300ms ease-out 1s;
-      }
-      `,
-        }}
-      />
-
-      <div
-        ref={outerContainer}
-        style={{
-          width: '100%',
-          height: '100%',
-          position: 'relative',
-        }}
-      >
-        <div ref={mapContainer} style={{ width: '100%', height: '100%' }}></div>
-      </div>
-    </>
+    <div
+      ref={outerContainer}
+      style={{
+        width: '100%',
+        height: '100%',
+        position: 'relative',
+      }}
+    >
+      <div ref={mapContainer} style={{ width: '100%', height: '100%' }}></div>
+    </div>
   );
 }

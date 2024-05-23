@@ -1,4 +1,4 @@
-import { FavoriteAdapter } from '../../../lib/adapters/FavoriteAdapter';
+import { FavoriteAdapter } from '../../lib/adapters/FavoriteAdapter';
 import { Button, Group, Text } from '@mantine/core';
 import { ContextModalProps } from '@mantine/modals';
 import { useTranslation } from 'next-i18next';

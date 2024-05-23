@@ -1,7 +1,7 @@
 import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { AppHeader } from '../../components/organisms/app-header';
-import { AppFooter } from '../../components/organisms/app-footer';
+import { AppHeader } from '../../components/app-header';
+import { AppFooter } from '../../components/app-footer';
 import { usePrevUrl } from '../../lib/hooks/usePrevUrl';
 import { useEffect, useRef, useState } from 'react';
 import { cacheControl } from '../../lib/server/cache-control';

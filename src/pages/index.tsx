@@ -1,11 +1,11 @@
 import { GetStaticPropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { CategorySection } from '../components/organisms/category-section';
+import { CategorySection } from '../components/category-section';
 import { TourProvider } from '@reactour/tour';
-import { AppFooter } from '../components/organisms/app-footer';
+import { AppFooter } from '../components/app-footer';
 import { DataProviders } from '../components/molecules/data-providers';
-import { AppHeader } from '../components/organisms/app-header';
-import { HeroSection } from '../components/organisms/hero-section';
+import { AppHeader } from '../components/app-header';
+import { HeroSection } from '../components/hero-section';
 import { useTranslation } from 'next-i18next';
 import Head from 'next/head';
 import { useAppConfig } from '@/lib/hooks/useAppConfig';

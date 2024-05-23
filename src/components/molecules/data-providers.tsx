@@ -1,7 +1,6 @@
 import { Card, Flex, Grid, Group, Text, Title } from '@mantine/core';
 import Image from 'next/image';
 import Link from 'next/link';
-import { IconDatabase } from '@tabler/icons-react';
 import { useAppConfig } from '../../lib/hooks/useAppConfig';
 import { useTranslation } from 'next-i18next';
 

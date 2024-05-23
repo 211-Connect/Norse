@@ -1,30 +1,13 @@
 import { appWithTranslation } from 'next-i18next';
-import { SessionProvider } from 'next-auth/react';
-import { MantineProvider } from '@mantine/core';
-import { Theme } from '../lib/theme/main';
-import { Notifications } from '@mantine/notifications';
-import { PrevUrlProvider } from '../lib/context/PrevUrl';
-import { PageView } from '../components/organisms/page-view';
+import { PageView } from '../components/page-view';
 import Head from 'next/head';
 import { GoogleTagManagerScript } from '@/components/google-tag-manager-script';
-import { CookiesProvider } from 'react-cookie';
 import { useAppConfig } from '../lib/hooks/useAppConfig';
-import { ModalsProvider } from '@mantine/modals';
-import {
-  AddToFavoritesModal,
-  CreateFavoriteListModal,
-  DeleteFavoriteListModal,
-  RemoveFavoriteFromListModal,
-  SendSmsModal,
-  ShareModal,
-  UpdateFavoriteListModal,
-  PromptAuthModal,
-  UpdateLocationModal,
-} from '../components/organisms/modals';
 import { AppProps } from 'next/app';
-import '../styles/globals.css';
 import { Open_Sans as FontSans } from 'next/font/google';
 import { cn } from '@/lib/utils';
+import Providers from '@/components/providers';
+import '../styles/globals.css';
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -48,31 +31,10 @@ function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 
       <PageView />
 
-      <SessionProvider session={session}>
-        <CookiesProvider>
-          <MantineProvider withGlobalStyles withNormalizeCSS theme={Theme}>
-            <Notifications />
-            <ModalsProvider
-              modals={{
-                share: ShareModal,
-                'add-to-favorites': AddToFavoritesModal,
-                sms: SendSmsModal,
-                'prompt-auth': PromptAuthModal,
-                'create-list': CreateFavoriteListModal,
-                'update-list': UpdateFavoriteListModal,
-                'remove-from-list': RemoveFavoriteFromListModal,
-                'delete-list': DeleteFavoriteListModal,
-                'update-location': UpdateLocationModal,
-              }}
-            >
-              <PrevUrlProvider>
-                <Component {...pageProps} />
-                <GoogleTagManagerScript />
-              </PrevUrlProvider>
-            </ModalsProvider>
-          </MantineProvider>
-        </CookiesProvider>
-      </SessionProvider>
+      <Providers session={session}>
+        <Component {...pageProps} />
+        <GoogleTagManagerScript />
+      </Providers>
     </div>
   );
 }

@@ -1,9 +1,8 @@
-import { useFilterPanelStore } from '../../lib/state/filterPanel';
+import { useFilterPanelStore } from '../lib/state/filterPanel';
 import {
   Badge,
   Box,
   Checkbox,
-  Drawer,
   Flex,
   MediaQuery,
   Modal,
@@ -14,12 +13,10 @@ import {
 import { useMediaQuery } from '@mantine/hooks';
 import { useRouter } from 'next/router';
 import qs from 'qs';
-import { Fragment } from 'react';
 
 export function FilterPanel({ filters }: any) {
   const router = useRouter();
   const theme = useMantineTheme();
-  const mq = useMediaQuery(`(max-width: ${theme.breakpoints.sm}px)`);
   const state = useFilterPanelStore();
 
   function getFilters() {

@@ -1,11 +1,11 @@
 import Image from 'next/image';
 import { useTranslation } from 'next-i18next';
-import { useEventStore } from '../../lib/hooks/useEventStore';
+import { useEventStore } from '../lib/hooks/useEventStore';
 import { useTour } from '@reactour/tour';
 import { useMemo } from 'react';
-import { HomePageSearch } from '../molecules/home-page-search';
-import { useAppConfig } from '../../lib/hooks/useAppConfig';
-import { Button } from '../ui/button';
+import { HomePageSearch } from './molecules/home-page-search';
+import { useAppConfig } from '../lib/hooks/useAppConfig';
+import { Button } from './ui/button';
 
 export function HeroSection() {
   const appConfig = useAppConfig();

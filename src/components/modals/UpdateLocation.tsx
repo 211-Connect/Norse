@@ -4,7 +4,7 @@ import { useTranslation } from 'next-i18next';
 import {
   LocationAutocomplete,
   useLocationStore,
-} from '../../molecules/location-autocomplete';
+} from '../molecules/location-autocomplete';
 import { ReferralButton } from '@/components/referral-button';
 
 type Props = ContextModalProps<{ location: { coordinates: string } }>;
@@ -41,7 +41,6 @@ export function UpdateLocation(props: Props) {
                   .join(',')
               : ''
           }`}
-          size="xs"
         >
           {t('call_to_action.get_directions')}
         </ReferralButton>

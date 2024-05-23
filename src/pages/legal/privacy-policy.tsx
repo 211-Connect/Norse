@@ -1,8 +1,7 @@
 import { parseHtml } from '../../lib/utils/parseHtml';
-import { AppFooter } from '../../components/organisms/app-footer';
-import { AppHeader } from '../../components/organisms/app-header';
+import { AppFooter } from '../../components/app-footer';
+import { AppHeader } from '../../components/app-header';
 import { GetStaticPropsContext } from 'next';
-import { useSession } from 'next-auth/react';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Head from 'next/head';
 import { useAppConfig } from '@/lib/hooks/useAppConfig';
@@ -31,10 +30,7 @@ export async function getStaticProps(ctx: GetStaticPropsContext) {
 }
 
 export default function PrivacyPolicy({ html = '' }: { html: string }) {
-  const session = useSession();
   const appConfig = useAppConfig();
-
-  if (session.status === 'loading') return null;
 
   return (
     <>

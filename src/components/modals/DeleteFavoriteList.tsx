@@ -4,7 +4,7 @@ import { showNotification } from '@mantine/notifications';
 import { IconInfoCircle, IconTrash } from '@tabler/icons-react';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import { FavoriteAdapter } from '../../../lib/adapters/FavoriteAdapter';
+import { FavoriteAdapter } from '../../lib/adapters/FavoriteAdapter';
 
 type Props = ContextModalProps<{ name: string; id: string }>;
 

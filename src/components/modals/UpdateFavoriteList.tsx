@@ -1,4 +1,4 @@
-import { FavoriteAdapter } from '../../../lib/adapters/FavoriteAdapter';
+import { FavoriteAdapter } from '../../lib/adapters/FavoriteAdapter';
 import { Button, Group, Switch, TextInput, Textarea } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { ContextModalProps } from '@mantine/modals';
