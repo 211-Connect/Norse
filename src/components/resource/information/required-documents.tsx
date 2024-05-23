@@ -5,7 +5,8 @@ import { useTranslation } from 'next-i18next';
 export default function RequiredDocuments({ data }: { data: Resource }) {
   const { t } = useTranslation('page-resource');
 
-  if (!data.requiredDocuments) return null;
+  if (!data.requiredDocuments || data.requiredDocuments.length === 0)
+    return null;
 
   return (
     <div>
