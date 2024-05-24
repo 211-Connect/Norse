@@ -2,7 +2,7 @@ import { MantineTheme } from '@mantine/core';
 import { useRouter } from 'next/router';
 import qs from 'qs';
 import { LocationAutocomplete } from './location-autocomplete';
-import { TaxonomyAutocomplete } from './molecules/TaxonomyAutocomplete';
+import { TaxonomyAutocomplete } from './TaxonomyAutocomplete';
 import { useTranslation } from 'next-i18next';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';

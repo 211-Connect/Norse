@@ -45,7 +45,7 @@ function InternalPluginLoader({ plugin, component, ...rest }: Props) {
 
   const PluginComponent: ComponentType<Partial<Props>> = dynamic(
     () =>
-      import(`../../plugins/${plugin}`).then(
+      import(`../plugins/${plugin}`).then(
         (mod) => mod.default.components[component]
       ),
     {
@@ -60,7 +60,7 @@ function InternalPluginPageLoader({ plugin, page, ...rest }: Props) {
   if (!page) return null;
 
   const PluginComponent: ComponentType<Partial<Props>> = dynamic(
-    () => import(`./../../plugins/${plugin}/pages/${page}`),
+    () => import(`./../plugins/${plugin}/pages/${page}`),
     {
       loading: () => <p>Loading...</p>,
     }
