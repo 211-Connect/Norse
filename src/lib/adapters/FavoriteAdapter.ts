@@ -9,7 +9,8 @@ export class FavoriteAdapter extends BaseAdapter {
   }
 
   public async getFavoriteLists() {
-    const { data } = await this.axios.get('/favorite-list');
+    console.log('getting favoritelists');
+    const { data } = await this.axios.get('/api/favorite/list');
 
     return data;
   }
@@ -23,7 +24,7 @@ export class FavoriteAdapter extends BaseAdapter {
     description?: string;
     privacy: boolean;
   }) {
-    const { data } = await this.axios.post('/favorite-list', {
+    const { data } = await this.axios.post('/api/favorite/list', {
       name,
       description,
       public: privacy,
@@ -63,6 +64,7 @@ export class FavoriteAdapter extends BaseAdapter {
   }: {
     textToSearchFor?: string;
   }) {
+    console.log('getting favorite lists');
     const query = qs.stringify({
       name: textToSearchFor,
     });

@@ -98,17 +98,9 @@ export function ResourceOverview({ data }: Props) {
             referralType="call_referral"
             resourceId={data.id}
             resource={data}
-            disabled={
-              !data.displayPhoneNumber || data.displayPhoneNumber.length === 0
-            }
-            aria-disabled={
-              !data.displayPhoneNumber || data.displayPhoneNumber.length === 0
-            }
-            href={`tel:${
-              data.displayPhoneNumber &&
-              data.displayPhoneNumber.length > 0 &&
-              data.displayPhoneNumber
-            }`}
+            disabled={!data.phone || data.phone.length === 0}
+            aria-disabled={!data.phone || data.phone.length === 0}
+            href={`tel:${data.phone && data.phone.length > 0 && data.phone}`}
           >
             <IconPhone className="size-4" />
             {t('call_to_action.call', { ns: 'common' })}

@@ -7,6 +7,7 @@ import { omitBy, isNil } from 'lodash';
 export const authOptions: NextAuthOptions = {
   callbacks: {
     session({ session, token }) {
+      session.user.id = token.sub;
       session.user.accessToken = token.accessToken;
       session.user.refreshToken = token.refreshToken;
       session.user = omitBy(session.user, isNil) as Session['user'];

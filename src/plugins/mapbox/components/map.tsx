@@ -122,13 +122,11 @@ export function MapComponent({ locations = [] }: Props) {
           )
         );
 
-        const marker = new Marker({
-          // color: theme.colors.primary[theme.primaryShade as number],
-        })
+        const marker = new Marker()
           .setLngLat(latLng as [number, number])
           .setPopup(popup);
 
-        marker.getElement().style.cursor = 'pointer';
+        marker.getElement().classList.add('custom-marker');
 
         marker.getElement().addEventListener('click', (e) => {
           e.preventDefault();

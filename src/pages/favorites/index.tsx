@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { getServerSession } from 'next-auth';
@@ -6,11 +7,8 @@ import { AppFooter } from '../../components/app-footer';
 import { authOptions } from '../api/auth/[...nextauth]';
 import { useAppConfig } from '../../lib/hooks/useAppConfig';
 import { PluginLoader } from '../../components/molecules/plugin-loader';
-import { FavoriteListsPageLayout } from '../../components/layouts/FavoriteListsPage';
-import { FavoriteListSection } from '../../components/favorite-list-section';
-import { getServerSideAxios } from '../../lib/server/axios';
-import { FavoriteAdapter } from '../../lib/adapters/FavoriteAdapter';
 import { useTranslation } from 'next-i18next';
+import { FavoriteLists } from '@/components/favorite-lists';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerSession(ctx.req, ctx.res, authOptions);
@@ -26,19 +24,9 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     };
   }
 
-  const axios = getServerSideAxios(ctx, session);
-  const favoritesAdapter = new FavoriteAdapter(axios);
-  let data = [];
-  try {
-    data = await favoritesAdapter.getFavoriteLists();
-  } catch (err) {
-    console.error(err);
-  }
-
   return {
     props: {
       session,
-      favoriteLists: data,
       ...(await serverSideTranslations(ctx.locale as string, [
         'page-favorites',
         'common',
@@ -47,26 +35,50 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   };
 }
 
-export default function Lists({ favoriteLists }: any) {
+export default function Lists() {
   const appConfig = useAppConfig();
   const { t } = useTranslation('page-favorites');
 
+  const metaTitle = t('meta_title');
+  const metaDescription = t('meta_description');
+
   return (
-    <FavoriteListsPageLayout
-      title={t('meta_title')}
-      metaDescription={t('meta_description')}
-      headerSection={<AppHeader fullWidth />}
-      favoriteListSection={
-        <FavoriteListSection favoriteLists={favoriteLists} />
-      }
-      mapSection={
-        <PluginLoader
-          plugin={appConfig?.features?.map?.plugin}
-          component="map"
-          locations={[]}
-        />
-      }
-      footerSection={<AppFooter fullWidth />}
-    />
+    <>
+      <Head>
+        <title>{metaTitle}</title>
+        <meta name="description" content={metaDescription} />
+      </Head>
+
+      <div className="flex flex-col h-screen overflow-hidden">
+        <AppHeader fullWidth />
+
+        <div className="flex w-full h-full overflow-hidden flex-1">
+          <div
+            className="flex flex-col w-full overflow-y-auto md:max-w-[550px] overscroll-none"
+            id="search-container"
+          >
+            <FavoriteLists />
+          </div>
+
+          <div
+            className="w-full h-full relative hidden md:flex"
+            id="map-container"
+          >
+            <div className="flex justify-center items-center absolute top-0 right-0 bottom-0 left-0 z-10 bg-black bg-opacity-60">
+              <p className="text-xl text-white">{t('select_a_list')}</p>
+            </div>
+
+            <div className="flex w-full h-full">
+              <PluginLoader
+                plugin={appConfig?.features?.map?.plugin}
+                component="map"
+                locations={[]}
+              />
+            </div>
+          </div>
+        </div>
+        <AppFooter fullWidth />
+      </div>
+    </>
   );
 }
