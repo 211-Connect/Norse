@@ -10,7 +10,7 @@ import { useEventStore } from '../../lib/hooks/useEventStore';
 import { AppHeader } from '../../components/app-header';
 import { AppFooter } from '../../components/app-footer';
 import { FilterPanel } from '../../components/filter-panel';
-import { PluginLoader } from '../../components/molecules/plugin-loader';
+import { PluginLoader } from '../../components/plugin-loader';
 import { useAppConfig } from '../../lib/hooks/useAppConfig';
 import { useTranslation } from 'next-i18next';
 import { cacheControl } from '../../lib/server/cache-control';
@@ -19,7 +19,7 @@ import SearchAdapter, {
 } from '@/lib/server/adapters/search-adapter';
 import Head from 'next/head';
 import { useMediaQuery, useWindowScroll } from '@mantine/hooks';
-import { Search } from '@/components/molecules/search';
+import { Search } from '@/components/search';
 import { Results } from '@/components/results';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {

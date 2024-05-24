@@ -2,7 +2,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { GetStaticPropsContext } from 'next';
 import { AppHeader } from '../components/app-header';
 import { AppFooter } from '../components/app-footer';
-import { DataProviders } from '../components/molecules/data-providers';
+import { DataProviders } from '../components/data-providers';
 import { useTranslation } from 'next-i18next';
 import Head from 'next/head';
 import Image from 'next/image';

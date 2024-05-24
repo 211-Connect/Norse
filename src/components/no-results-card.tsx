@@ -12,7 +12,7 @@ import {
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import { NextRouter } from 'next/router';
-import { useAppConfig } from '../../lib/hooks/useAppConfig';
+import { useAppConfig } from '../lib/hooks/useAppConfig';
 import Link from 'next/link';
 import { Anchor } from '@/components/anchor';
 import { IconPhone } from '@tabler/icons-react';

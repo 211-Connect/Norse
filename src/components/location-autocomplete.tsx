@@ -16,13 +16,10 @@ import { RefAttributes, useCallback, useEffect, useRef, useState } from 'react';
 import { showNotification } from '@mantine/notifications';
 import { useRouter } from 'next/router';
 import { setCookie } from 'nookies';
-import {
-  USER_PREF_COORDS,
-  USER_PREF_LOCATION,
-} from '../../lib/constants/cookies';
+import { USER_PREF_COORDS, USER_PREF_LOCATION } from '../lib/constants/cookies';
 import { useTranslation } from 'next-i18next';
-import { useAppConfig } from '../../lib/hooks/useAppConfig';
-import { usePrevUrl } from '../../lib/hooks/usePrevUrl';
+import { useAppConfig } from '../lib/hooks/useAppConfig';
+import { usePrevUrl } from '../lib/hooks/usePrevUrl';
 import { create } from 'zustand';
 
 type Props = Partial<AutocompleteProps> &

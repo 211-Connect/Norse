@@ -1,5 +1,5 @@
 import { useAppConfig } from '@/lib/hooks/useAppConfig';
-import { PluginLoader } from '@/components/molecules/plugin-loader';
+import { PluginLoader } from '@/components/plugin-loader';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import Addresses from './addresses';
 import { Resource } from '@/lib/server/adapters/resource-adapter';

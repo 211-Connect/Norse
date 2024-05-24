@@ -6,7 +6,7 @@ import { AppHeader } from '../../components/app-header';
 import { AppFooter } from '../../components/app-footer';
 import { authOptions } from '../api/auth/[...nextauth]';
 import { useAppConfig } from '../../lib/hooks/useAppConfig';
-import { PluginLoader } from '../../components/molecules/plugin-loader';
+import { PluginLoader } from '../../components/plugin-loader';
 import { useTranslation } from 'next-i18next';
 import { FavoriteLists } from '@/components/favorite-lists';
 

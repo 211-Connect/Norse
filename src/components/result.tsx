@@ -1,4 +1,4 @@
-import { useEventStore } from '../../lib/hooks/useEventStore';
+import { useEventStore } from '../lib/hooks/useEventStore';
 import { openContextModal } from '@mantine/modals';
 import {
   IconHeart,
@@ -10,22 +10,22 @@ import {
 } from '@tabler/icons-react';
 import Link from 'next/link';
 import { NextRouter } from 'next/router';
-import { parseHtml } from '../../lib/utils/parseHtml';
+import { parseHtml } from '../lib/utils/parseHtml';
 import { useTranslation } from 'next-i18next';
 import { Anchor } from '@/components/anchor';
 import { ReferralButton } from '@/components/referral-button';
-import { distanceBetweenCoordsInMiles } from '../../lib/utils/distenceBetweenCoords';
-import { Card, CardContent, CardFooter, CardHeader } from '../ui/card';
-import { Badge } from '../ui/badge';
-import { Button, buttonVariants } from '../ui/button';
+import { distanceBetweenCoordsInMiles } from '../lib/utils/distenceBetweenCoords';
+import { Card, CardContent, CardFooter, CardHeader } from './ui/card';
+import { Badge } from './ui/badge';
+import { Button, buttonVariants } from './ui/button';
 import { cn } from '@/lib/utils';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '../ui/tooltip';
-import { Spoiler } from '../ui/spoiler';
+} from './ui/tooltip';
+import { Spoiler } from './ui/spoiler';
 
 type Props = {
   id: string;
