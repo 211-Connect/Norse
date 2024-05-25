@@ -6,21 +6,22 @@ import {
   USER_PREF_LOCATION,
 } from '../../lib/constants/cookies';
 import { useEffect } from 'react';
-import { useEventStore } from '../../lib/hooks/useEventStore';
+import { useEventStore } from '../../lib/hooks/use-event-store';
 import { AppHeader } from '../../components/app-header';
 import { AppFooter } from '../../components/app-footer';
 import { FilterPanel } from '../../components/filter-panel';
 import { PluginLoader } from '../../components/plugin-loader';
-import { useAppConfig } from '../../lib/hooks/useAppConfig';
+import { useAppConfig } from '../../lib/hooks/use-app-config';
 import { useTranslation } from 'next-i18next';
 import { cacheControl } from '../../lib/server/cache-control';
 import SearchAdapter, {
   SearchQueryParams,
 } from '@/lib/server/adapters/search-adapter';
 import Head from 'next/head';
-import { useMediaQuery, useWindowScroll } from '@mantine/hooks';
 import { Search } from '@/components/search';
 import { Results } from '@/components/results';
+import useMediaQuery from '@/lib/hooks/use-media-query';
+import useWindowScroll from '@/lib/hooks/use-window-scroll';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const cookies = nookies.get(ctx);
@@ -70,7 +71,6 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 }
 
 export default function SearchPage(props: any) {
-  // const session = useSession();
   const appConfig = useAppConfig();
   const { createResultsEvent } = useEventStore();
   const { t } = useTranslation('page-search');

@@ -11,6 +11,7 @@ import { useTranslation } from 'next-i18next';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/router';
 import { deleteFavoriteListMutation } from '../mutations';
+import { toast } from 'sonner';
 
 export default function DeleteFavoriteList() {
   const [data, setData] = useAtom(deleteFavoriteListDialogAtom);
@@ -22,12 +23,12 @@ export default function DeleteFavoriteList() {
     try {
       await mutate(data.id);
 
-      // showNotification({
-      //   title: `${name} ${t('message.list_deleted', { ns: 'common' })}`,
-      //   message: t('message.list_deleted_success', { ns: 'common' }),
-      //   color: 'green',
-      //   icon: <IconTrash />,
-      // });
+      toast.success(
+        `${data.name} ${t('message.list_deleted', { ns: 'common' })}`,
+        {
+          description: t('message.list_deleted_success', { ns: 'common' }),
+        }
+      );
 
       setData((prev) => ({ ...prev, isOpen: false }));
 
@@ -35,12 +36,9 @@ export default function DeleteFavoriteList() {
     } catch (err) {
       console.log(err);
 
-      // showNotification({
-      //   title: t('message.error', { ns: 'common' }),
-      //   message: t('message.list_not_deleted_error', { ns: 'common' }),
-      //   icon: <IconInfoCircle />,
-      //   color: 'red',
-      // });
+      toast.error(t('message.error', { ns: 'common' }), {
+        description: t('message.list_not_deleted_error', { ns: 'common' }),
+      });
 
       setData((prev) => ({ ...prev, isOpen: false }));
     }

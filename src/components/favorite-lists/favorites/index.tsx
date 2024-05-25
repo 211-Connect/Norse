@@ -17,11 +17,11 @@ import {
   favoriteListWithFavoritesAtom,
   updateFavoriteListDialogAtom,
 } from './state';
-import { Badge } from '../ui/badge';
-import { Button, buttonVariants } from '../ui/button';
-import { Card, CardContent } from '../ui/card';
+import { Badge } from '../../ui/badge';
+import { Button, buttonVariants } from '../../ui/button';
+import { Card, CardContent } from '../../ui/card';
 import { useSession } from 'next-auth/react';
-import { Anchor } from '../anchor';
+import { Anchor } from '../../anchor';
 import { cn } from '@/lib/utils';
 import DeleteFavoriteList from './modals/delete-favorite-list';
 import { UpdateFavoriteListModal } from './modals/update-favorite-list';

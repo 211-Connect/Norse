@@ -1,4 +1,4 @@
-import { useEventStore } from '../lib/hooks/useEventStore';
+import { useEventStore } from '../lib/hooks/use-event-store';
 import { useRouter } from 'next/router';
 import { useEffect, useRef } from 'react';
 

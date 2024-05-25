@@ -10,7 +10,6 @@ import {
   Title,
   useMantineTheme,
 } from '@mantine/core';
-import { useMediaQuery } from '@mantine/hooks';
 import { useRouter } from 'next/router';
 import qs from 'qs';
 

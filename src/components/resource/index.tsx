@@ -1,4 +1,4 @@
-import { usePrevUrl } from '../../lib/hooks/usePrevUrl';
+import { usePrevUrl } from '../../lib/hooks/use-prev-url';
 import { useEffect, useRef, useState } from 'react';
 import { ResourceNavigation } from './navigation';
 import { Resource as IResource } from '@/lib/server/adapters/resource-adapter';
@@ -34,7 +34,7 @@ export default function Resource({ data }: { data: IResource }) {
           <ResourceOverview data={data} />
         </div>
 
-        <div className="flex flex-col h-full w-full md:max-w-[50%]">
+        <div className="flex flex-col h-full w-full md:max-w-[50%] gap-2">
           <ResourceInformation data={data} />
           <ResourceOrganization data={data} />
         </div>

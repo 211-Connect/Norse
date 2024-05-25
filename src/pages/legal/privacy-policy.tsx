@@ -4,7 +4,7 @@ import { AppHeader } from '../../components/app-header';
 import { GetStaticPropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Head from 'next/head';
-import { useAppConfig } from '@/lib/hooks/useAppConfig';
+import { useAppConfig } from '@/lib/hooks/use-app-config';
 
 export async function getStaticProps(ctx: GetStaticPropsContext) {
   const fs = await import('fs/promises');

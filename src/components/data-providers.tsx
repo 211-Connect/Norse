@@ -1,7 +1,7 @@
-import { Card, Flex, Grid, Group, Text, Title } from '@mantine/core';
+import { Card, Flex, Grid, Text, Title } from '@mantine/core';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useAppConfig } from '../lib/hooks/useAppConfig';
+import { useAppConfig } from '../lib/hooks/use-app-config';
 import { useTranslation } from 'next-i18next';
 
 export function DataProviders() {

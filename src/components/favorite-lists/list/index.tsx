@@ -2,8 +2,6 @@ import { Anchor } from '@/components/anchor';
 import { Badge } from '@/components/ui/badge';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { ActionIcon } from '@mantine/core';
-import { openContextModal } from '@mantine/modals';
 import { IconEdit, IconTrash } from '@tabler/icons-react';
 import { useSetAtom } from 'jotai';
 import { useTranslation } from 'next-i18next';

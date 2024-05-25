@@ -16,6 +16,7 @@ import { Label } from '@/components/ui/label';
 import { useForm } from '@tanstack/react-form';
 import { Button } from '@/components/ui/button';
 import { updateFavoriteListMutation } from '../mutations';
+import { toast } from 'sonner';
 
 export function UpdateFavoriteListModal() {
   const { mutate } = useAtomValue(updateFavoriteListMutation);
@@ -42,24 +43,18 @@ export function UpdateFavoriteListModal() {
             isOpen: false,
           }));
 
-          // showNotification({
-          //   title: `${t('favorites.updated_list')}`,
-          //   message: t('favorites.updated_list_message'),
-          //   icon: <IconInfoCircle />,
-          //   color: 'green',
-          // });
+          toast.success(t('favorites.updated_list'), {
+            description: t('favorites.updated_list_message'),
+          });
 
           router.replace(router.asPath);
         }
       } catch (err) {
         console.log(err);
 
-        // showNotification({
-        //   title: t('favorites.Unable to update list'),
-        //   message: t('favorites.unable_to_update_list_message'),
-        //   icon: <IconInfoCircle />,
-        //   color: 'red',
-        // });
+        toast.error(t('favorites.Unable to update list'), {
+          description: t('favorites.unable_to_update_list_message'),
+        });
       }
     },
   });

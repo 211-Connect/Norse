@@ -13,14 +13,14 @@ import {
 import { useDebouncedValue, useToggle } from '@mantine/hooks';
 import { IconLocationFilled, IconMapPin, IconX } from '@tabler/icons-react';
 import { RefAttributes, useCallback, useEffect, useRef, useState } from 'react';
-import { showNotification } from '@mantine/notifications';
 import { useRouter } from 'next/router';
 import { setCookie } from 'nookies';
 import { USER_PREF_COORDS, USER_PREF_LOCATION } from '../lib/constants/cookies';
 import { useTranslation } from 'next-i18next';
-import { useAppConfig } from '../lib/hooks/useAppConfig';
-import { usePrevUrl } from '../lib/hooks/usePrevUrl';
+import { useAppConfig } from '../lib/hooks/use-app-config';
+import { usePrevUrl } from '../lib/hooks/use-prev-url';
 import { create } from 'zustand';
+import { toast } from 'sonner';
 
 type Props = Partial<AutocompleteProps> &
   RefAttributes<HTMLInputElement> & { defaultCoords?: string };
@@ -89,11 +89,8 @@ export function LocationAutocomplete(props: Props) {
           hiddenInputRef.current.value = `${lng},${lat}`;
         }
       } catch (err) {
-        showNotification({
-          title: t('search.geocoding_error'),
-          message: t('search.geocoding_unable_to_retrieve'),
-          color: 'red',
-          autoClose: 5000,
+        toast.error(t('search.geocoding_error'), {
+          description: t('search.geocoding_unable_to_retrieve'),
         });
       }
 
@@ -105,21 +102,15 @@ export function LocationAutocomplete(props: Props) {
   const getUserLocation = useCallback(() => {
     const error = () => {
       toggle(false);
-      showNotification({
-        title: t('search.geocoding_error'),
-        message: t('search.geocoding_unable_to_retrieve'),
-        color: 'red',
-        autoClose: 5000,
+      toast.error(t('search.geocoding_error'), {
+        description: t('search.geocoding_unable_to_retrieve'),
       });
     };
 
     if (!navigator.geolocation) {
       console.log('Geolocation is not supported by your browser');
-      showNotification({
-        title: t('search.geocoding_error'),
-        message: t('search.geocoding_unsupported'),
-        color: 'red',
-        autoClose: 5000,
+      toast.error(t('search.geocoding_error'), {
+        description: t('search.geocoding_unsupported'),
       });
     } else {
       toggle(true);

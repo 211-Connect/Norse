@@ -4,14 +4,14 @@ import { AppHeader } from '../../components/app-header';
 import { AppFooter } from '../../components/app-footer';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]';
-import { useAppConfig } from '../../lib/hooks/useAppConfig';
+import { useAppConfig } from '../../lib/hooks/use-app-config';
 import { PluginLoader } from '../../components/plugin-loader';
 import { useTranslation } from 'next-i18next';
-import { Box, Flex, MediaQuery, Stack, useMantineTheme } from '@mantine/core';
 import Head from 'next/head';
-import { useMediaQuery, useWindowScroll } from '@mantine/hooks';
 import { useEffect } from 'react';
-import { FavoritesSection } from '@/components/favorites';
+import { FavoritesSection } from '@/components/favorite-lists/favorites';
+import useWindowScroll from '@/lib/hooks/use-window-scroll';
+import useMediaQuery from '@/lib/hooks/use-media-query';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerSession(ctx.req, ctx.res, authOptions);

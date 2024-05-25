@@ -9,8 +9,7 @@ import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { useMemo } from 'react';
 import { Anchor } from '@/components/anchor';
-import { useAppConfig } from '@/lib/hooks/useAppConfig';
-import { openContextModal } from '@mantine/modals';
+import { useAppConfig } from '@/lib/hooks/use-app-config';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
@@ -22,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import useAuthPrompt from '@/lib/hooks/use-auth-prompt';
 
 type Props = {
   fullWidth?: boolean;
@@ -32,6 +32,7 @@ export function AppHeader(props: Props) {
   const session = useSession();
   const { t } = useTranslation('common');
   const router = useRouter();
+  const { open: openAuthPrompt, AuthPrompt } = useAuthPrompt();
 
   const menuItems = useMemo(() => {
     const items = [
@@ -46,13 +47,7 @@ export function AppHeader(props: Props) {
         onClick={(e) => {
           if (session.status === 'unauthenticated') {
             e.preventDefault();
-            openContextModal({
-              title: t('modal.prompt_auth'),
-              modal: 'prompt-auth',
-              centered: true,
-              size: 320,
-              innerProps: {},
-            });
+            openAuthPrompt();
           }
         }}
       >
@@ -159,45 +154,48 @@ export function AppHeader(props: Props) {
   ]);
 
   return (
-    <header className="bg-white">
-      <div
-        className={cn(
-          props.fullWidth
-            ? 'w-full 2xl:pl-4 2xl:pr-4'
-            : 'container mx-auto 2xl:pl-0 2xl:pr-0',
-          'h-[80px] flex items-center justify-between pl-4 pr-4'
-        )}
-      >
-        <Anchor href="/" aria-label={t('header.home') as string}>
-          <img
-            src={appConfig?.brand?.logoUrl}
-            alt={t('header.home') as string}
-            style={{
-              height: 'auto',
-              maxHeight: 64,
-              maxWidth: '90%',
-            }}
-          />
-        </Anchor>
+    <>
+      <header className="bg-white">
+        <div
+          className={cn(
+            props.fullWidth
+              ? 'w-full 2xl:pl-4 2xl:pr-4'
+              : 'container mx-auto 2xl:pl-0 2xl:pr-0',
+            'h-[80px] flex items-center justify-between pl-4 pr-4'
+          )}
+        >
+          <Anchor href="/" aria-label={t('header.home') as string}>
+            <img
+              src={appConfig?.brand?.logoUrl}
+              alt={t('header.home') as string}
+              style={{
+                height: 'auto',
+                maxHeight: 64,
+                maxWidth: '90%',
+              }}
+            />
+          </Anchor>
 
-        <div className="items-center gap-4 hidden md:flex">{menuItems}</div>
+          <div className="items-center gap-4 hidden md:flex">{menuItems}</div>
 
-        <div className="md:hidden">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="icon">
-                <IconMenu2 />
-              </Button>
-            </DialogTrigger>
+          <div className="md:hidden">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <IconMenu2 />
+                </Button>
+              </DialogTrigger>
 
-            <DialogContent className="w-screen h-screen max-w-screen-2xl rounded-none z-50">
-              <div className="flex flex-col items-center justify-center gap-2 h-full">
-                {menuItems}
-              </div>
-            </DialogContent>
-          </Dialog>
+              <DialogContent className="w-screen h-screen max-w-screen-2xl rounded-none z-50">
+                <div className="flex flex-col items-center justify-center gap-2 h-full">
+                  {menuItems}
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+      <AuthPrompt />
+    </>
   );
 }

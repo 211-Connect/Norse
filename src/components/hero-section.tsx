@@ -1,10 +1,10 @@
 import Image from 'next/image';
 import { useTranslation } from 'next-i18next';
-import { useEventStore } from '../lib/hooks/useEventStore';
+import { useEventStore } from '../lib/hooks/use-event-store';
 import { useTour } from '@reactour/tour';
 import { useMemo } from 'react';
 import { HomePageSearch } from './home-page-search';
-import { useAppConfig } from '../lib/hooks/useAppConfig';
+import { useAppConfig } from '../lib/hooks/use-app-config';
 import { Button } from './ui/button';
 
 export function HeroSection() {

@@ -8,7 +8,7 @@ import { AppHeader } from '../components/app-header';
 import { HeroSection } from '../components/hero-section';
 import { useTranslation } from 'next-i18next';
 import Head from 'next/head';
-import { useAppConfig } from '@/lib/hooks/useAppConfig';
+import { useAppConfig } from '@/lib/hooks/use-app-config';
 
 export async function getStaticProps(ctx: GetStaticPropsContext) {
   return {

@@ -1,4 +1,4 @@
-import { useAppConfig } from '@/lib/hooks/useAppConfig';
+import { useAppConfig } from '@/lib/hooks/use-app-config';
 import { PluginLoader } from '@/components/plugin-loader';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import Addresses from './addresses';
@@ -23,7 +23,7 @@ export default function ResourceInformation(props: Props) {
 
   return (
     <Card>
-      <CardContent className="p-2">
+      <CardContent className="p-0 pb-2">
         <div
           className="flex w-full h-[500px] max-h-[250px] static rounded-tl-md rounded-tr-md overflow-hidden print:hidden"
           id="map-container"

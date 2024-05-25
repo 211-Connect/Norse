@@ -1,5 +1,6 @@
 import qs from 'qs';
 import { BaseAdapter } from './BaseAdapter';
+import axios from 'axios';
 
 export class FavoriteAdapter extends BaseAdapter {
   public async getFavoriteList(id: string | string[]) {
@@ -64,12 +65,11 @@ export class FavoriteAdapter extends BaseAdapter {
   }: {
     textToSearchFor?: string;
   }) {
-    console.log('getting favorite lists');
     const query = qs.stringify({
       name: textToSearchFor,
     });
 
-    const { data } = await this.axios.get(`/favorite-list/search?${query}`);
+    const { data } = await axios.get(`/api/favorite/list/search?${query}`);
 
     return data;
   }

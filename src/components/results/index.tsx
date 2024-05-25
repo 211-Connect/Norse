@@ -1,5 +1,5 @@
-import { NoResultsCard } from '../no-results-card';
-import { Result } from '../result';
+import { NoResultsCard } from './no-results-card';
+import { Result } from './result';
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
 import { useMemo } from 'react';

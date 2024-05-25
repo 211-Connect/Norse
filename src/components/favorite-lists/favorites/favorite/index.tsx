@@ -103,16 +103,14 @@ export function Favorite(props: Props) {
             {props.address ? (
               <Badge>{props.address}</Badge>
             ) : (
-              <TooltipProvider delayDuration={300}>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <Badge>{t('search.address_unavailable')}</Badge>
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-52 shadow-md" side="right">
-                    <p>{t('search.confidential_address')}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Badge>{t('search.address_unavailable')}</Badge>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-52 shadow-md" side="right">
+                  <p>{t('search.confidential_address')}</p>
+                </TooltipContent>
+              </Tooltip>
             )}
           </div>
 

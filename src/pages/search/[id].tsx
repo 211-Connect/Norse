@@ -2,14 +2,14 @@ import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { AppHeader } from '../../components/app-header';
 import { AppFooter } from '../../components/app-footer';
-import { usePrevUrl } from '../../lib/hooks/usePrevUrl';
+import { usePrevUrl } from '../../lib/hooks/use-prev-url';
 import { useEffect, useRef, useState } from 'react';
 import { cacheControl } from '../../lib/server/cache-control';
 import ResourceAdapter, {
   Resource as IResource,
 } from '@/lib/server/adapters/resource-adapter';
 import Head from 'next/head';
-import { useAppConfig } from '@/lib/hooks/useAppConfig';
+import { useAppConfig } from '@/lib/hooks/use-app-config';
 import Resource from '@/components/resource';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {

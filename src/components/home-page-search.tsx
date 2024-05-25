@@ -4,7 +4,7 @@ import qs from 'qs';
 import { LocationAutocomplete } from './location-autocomplete';
 import { TaxonomyAutocomplete } from './TaxonomyAutocomplete';
 import { useTranslation } from 'next-i18next';
-import { useAppConfig } from '../lib/hooks/useAppConfig';
+import { useAppConfig } from '../lib/hooks/use-app-config';
 import Color from 'color';
 
 export function HomePageSearch() {

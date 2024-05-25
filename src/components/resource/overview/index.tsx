@@ -6,7 +6,7 @@ import { useTranslation } from 'next-i18next';
 import { useCookies } from 'react-cookie';
 import { ReferralButton } from '@/components/referral-button';
 import { USER_PREF_COORDS, USER_PREF_LOCATION } from '@/lib/constants/cookies';
-import { useAppConfig } from '@/lib/hooks/useAppConfig';
+import { useAppConfig } from '@/lib/hooks/use-app-config';
 import { openContextModal } from '@mantine/modals';
 import { Resource } from '@/lib/server/adapters/resource-adapter';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -91,7 +91,7 @@ export function ResourceOverview({ data }: Props) {
         )}
       </CardContent>
 
-      <CardFooter>
+      <CardFooter className="p-4">
         <div className="flex flex-col md:flex-row w-full gap-2">
           <ReferralButton
             className="w-full"

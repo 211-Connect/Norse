@@ -17,6 +17,17 @@ export default function FavoriteAdapter() {
       });
       return data;
     },
+    searchFavoriteLists: async ({
+      textToSearchFor,
+    }: {
+      textToSearchFor?: string;
+    }) => {
+      const { data } = await axios.get(
+        `/api/favorite/list/search?name=${textToSearchFor}`
+      );
+
+      return data;
+    },
     removeFavoriteFromList: async ({
       resourceId,
       favoriteListId,
@@ -59,6 +70,20 @@ export default function FavoriteAdapter() {
     },
     deleteFavoriteList: async (id: string) => {
       const { data } = await axios.delete(`/api/favorite/list/${id}`);
+      return data;
+    },
+    addToFavoriteList: async ({
+      resourceId,
+      favoriteListId,
+    }: {
+      resourceId: string;
+      favoriteListId: string;
+    }) => {
+      const { data } = await axios.put('/api/favorite', {
+        resourceId: resourceId,
+        favoriteListId: favoriteListId,
+      });
+
       return data;
     },
   };

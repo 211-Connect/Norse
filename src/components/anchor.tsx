@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { createLinkEvent } from '../lib/hooks/useEventStore/events';
+import { createLinkEvent } from '../lib/hooks/use-event-store/events';
 import Link, { LinkProps } from 'next/link';
 
 export function Anchor({

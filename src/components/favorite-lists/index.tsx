@@ -1,4 +1,3 @@
-import { openContextModal } from '@mantine/modals';
 import FavoriteList from './list';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';

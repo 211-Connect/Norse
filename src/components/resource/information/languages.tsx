@@ -8,6 +8,8 @@ export default function Languages({ data }: { data: Resource }) {
   if (data.languages instanceof Array && data.languages.length === 0)
     return null;
 
+  if (data.languages.length === 0) return null;
+
   return (
     <div>
       <div className="flex gap-1 items-center">
