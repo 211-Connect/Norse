@@ -1,8 +1,8 @@
-import { Card, Flex, Grid, Text, Title } from '@mantine/core';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useAppConfig } from '../lib/hooks/use-app-config';
 import { useTranslation } from 'next-i18next';
+import { Card, CardContent, CardHeader } from './ui/card';
 
 export function DataProviders() {
   const appConfig = useAppConfig();
@@ -11,57 +11,38 @@ export function DataProviders() {
   return (
     <>
       {appConfig.providers.length > 0 && (
-        <>
-          <Flex
-            maw="1200px"
-            m="0 auto"
-            pt="xl"
-            pb="xl"
-            pl="md"
-            pr="md"
-            direction="column"
-          >
-            <Title size="h3" order={3} color="primary" mb="md" align="center">
-              {t('data_providers.provided_by')}
-            </Title>
+        <div className="flex container mx-auto pt-4 pb-4 flex-col">
+          <h3 className="text-center text-lg font-bold">
+            {t('data_providers.provided_by')}
+          </h3>
 
-            <Grid justify="center">
-              {appConfig.providers.map((el: any) => (
-                <Grid.Col key={el.name} lg={3} md={4} sm={6} xs={12}>
-                  <Card
-                    component={Link}
-                    href={el.href}
-                    target="_blank"
-                    p="lg"
-                    radius="md"
-                    shadow="sm"
-                    withBorder
-                    sx={{
-                      height: '100%',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      display: 'flex',
-                      flexDirection: 'column',
-                    }}
-                  >
-                    <Text size="lg" fw="bold" color="primary">
-                      {el.name}
-                    </Text>
-                    <Card.Section p="lg">
-                      <Image
-                        src={el.logo}
-                        alt=""
-                        width={200}
-                        height={0}
-                        style={{ width: '200px', height: 'auto' }}
-                      />
-                    </Card.Section>
-                  </Card>
-                </Grid.Col>
-              ))}
-            </Grid>
-          </Flex>
-        </>
+          <div className="grid grid-cols-4">
+            {appConfig.providers.map((el: any) => (
+              <Link
+                key={el.name}
+                href={el.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:scale-105 transition-all"
+              >
+                <Card>
+                  <CardHeader className="p-4 pb-2">
+                    <h4 className="text-md font-semibold">{el.name}</h4>
+                  </CardHeader>
+                  <CardContent className="p-4 pt-2">
+                    <Image
+                      src={el.logo}
+                      alt=""
+                      width={200}
+                      height={0}
+                      className="w-[200px] h-auto"
+                    />
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </div>
       )}
     </>
   );

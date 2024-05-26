@@ -1,21 +1,12 @@
 import { useFilterPanelStore } from '../lib/state/filterPanel';
-import {
-  Badge,
-  Box,
-  Checkbox,
-  Flex,
-  MediaQuery,
-  Modal,
-  Stack,
-  Title,
-  useMantineTheme,
-} from '@mantine/core';
 import { useRouter } from 'next/router';
 import qs from 'qs';
+import { Badge } from './ui/badge';
+import { Checkbox } from './ui/checkbox';
+import { Dialog } from './ui/dialog';
 
 export function FilterPanel({ filters }: any) {
   const router = useRouter();
-  const theme = useMantineTheme();
   const state = useFilterPanelStore();
 
   function getFilters() {
@@ -43,151 +34,119 @@ export function FilterPanel({ filters }: any) {
 
   return (
     <>
-      <MediaQuery smallerThan="md" styles={{ display: 'none' }}>
-        <Box maw="250px" w="100%">
-          <Stack spacing="xl" p="md">
-            {getFilters().map((el) => {
-              return (
-                <div key={el.name}>
-                  <Title order={5} mb="sm">
-                    {el.displayName}
-                  </Title>
+      <div className="w-full max-w-[250px] hidden md:block">
+        <div className="flex flex-col gap-2 p-2">
+          {getFilters().map((el) => {
+            return (
+              <div key={el.name} className="flex flex-col gap-2">
+                <h5>{el.displayName}</h5>
 
-                  <Stack>
-                    {el.buckets.map((innerEl: any) => {
-                      return (
-                        <Flex key={innerEl.key} direction="row">
-                          <Checkbox
-                            sx={{ flex: 1 }}
-                            styles={(theme) => ({
-                              labelWrapper: { fontSize: theme.fontSizes.xs },
-                            })}
-                            checked={
-                              q.filters?.[el.name]?.includes(innerEl.key) ??
-                              false
+                <div className="flex flex-col gap-2">
+                  {el.buckets.map((innerEl: any) => {
+                    return (
+                      <div className="flex" key={innerEl.key}>
+                        <Checkbox
+                          checked={
+                            q.filters?.[el.name]?.includes(innerEl.key) ?? false
+                          }
+                          onChange={(e: any) => {
+                            const q: any = qs.parse(
+                              router.asPath.slice(
+                                router.asPath.indexOf('?') + 1
+                              )
+                            );
+
+                            if (!q.filters) {
+                              q.filters = {};
                             }
-                            label={innerEl.key}
-                            onChange={(e) => {
-                              const q: any = qs.parse(
-                                router.asPath.slice(
-                                  router.asPath.indexOf('?') + 1
-                                )
+
+                            if (!(q.filters[el.name] instanceof Array)) {
+                              q.filters[el.name] = [];
+                            }
+
+                            if (
+                              e.target.checked &&
+                              !q.filters[el.name].includes(innerEl.key)
+                            ) {
+                              q.filters[el.name].push(innerEl.key);
+                            } else {
+                              const idx = q.filters[el.name].findIndex(
+                                (v: any) => v === innerEl.key
                               );
+                              q.filters[el.name].splice(idx, 1);
+                            }
 
-                              if (!q.filters) {
-                                q.filters = {};
-                              }
+                            router.push(`/search?${qs.stringify(q)}`);
+                          }}
+                        />
 
-                              if (!(q.filters[el.name] instanceof Array)) {
-                                q.filters[el.name] = [];
-                              }
-
-                              if (
-                                e.target.checked &&
-                                !q.filters[el.name].includes(innerEl.key)
-                              ) {
-                                q.filters[el.name].push(innerEl.key);
-                              } else {
-                                const idx = q.filters[el.name].findIndex(
-                                  (v: any) => v === innerEl.key
-                                );
-                                q.filters[el.name].splice(idx, 1);
-                              }
-
-                              router.push(`/search?${qs.stringify(q)}`);
-                            }}
-                          />
-
-                          <Badge color="secondary" variant="light">
-                            {innerEl.doc_count}
-                          </Badge>
-                        </Flex>
-                      );
-                    })}
-                  </Stack>
+                        <Badge>{innerEl.doc_count}</Badge>
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
-          </Stack>
-        </Box>
-      </MediaQuery>
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
-      <MediaQuery largerThan="md" styles={{ display: 'none' }}>
-        <Modal
-          opened={state.isOpen}
-          onClose={state.toggle}
-          sx={{
-            '.mantine-Paper-root': {
-              overflow: 'auto',
-              paddingLeft: theme.spacing.lg,
-              paddingRight: theme.spacing.lg,
-            },
-          }}
-        >
-          <Stack spacing="xl">
-            {getFilters().map((el) => {
-              return (
-                <Box key={el.name}>
-                  <Title order={5} mb="sm" mt="sm">
-                    {el.displayName}
-                  </Title>
+      <Dialog open={state.isOpen} onOpenChange={state.toggle}>
+        <div className="flex flex-col gap-2">
+          {getFilters().map((el) => {
+            return (
+              <div key={el.name} className="flex flex-col gap-2">
+                <h5>{el.displayName}</h5>
 
-                  <Stack>
-                    {el.buckets.map((innerEl: any) => {
-                      return (
-                        <Flex key={innerEl.key} direction="row">
-                          <Checkbox
-                            sx={{ flex: 1 }}
-                            styles={(theme) => ({
-                              labelWrapper: { fontSize: theme.fontSizes.xs },
-                            })}
-                            checked={
-                              q.filters?.[el.name]?.includes(innerEl.key) ??
-                              false
+                <div className="flex flex-col gap-2">
+                  {el.buckets.map((innerEl: any) => {
+                    return (
+                      <div className="flex" key={innerEl.key}>
+                        <Checkbox
+                          checked={
+                            q.filters?.[el.name]?.includes(innerEl.key) ?? false
+                          }
+                          onChange={(e: any) => {
+                            const q: any = qs.parse(
+                              router.asPath.slice(
+                                router.asPath.indexOf('?') + 1
+                              )
+                            );
+
+                            if (!q.filters) {
+                              q.filters = {};
                             }
-                            label={innerEl.key}
-                            onChange={(e) => {
-                              const q: any = qs.parse(
-                                router.asPath.slice(
-                                  router.asPath.indexOf('?') + 1
-                                )
+
+                            if (!(q.filters[el.name] instanceof Array)) {
+                              q.filters[el.name] = [];
+                            }
+
+                            if (
+                              e.target.checked &&
+                              !q.filters[el.name].includes(innerEl.key)
+                            ) {
+                              q.filters[el.name].push(innerEl.key);
+                            } else {
+                              const idx = q.filters[el.name].findIndex(
+                                (v: any) => v === innerEl.key
                               );
+                              q.filters[el.name].splice(idx, 1);
+                            }
 
-                              if (!q.filters) {
-                                q.filters = {};
-                              }
+                            router.push(`/search?${qs.stringify(q)}`);
+                          }}
+                        />
 
-                              if (!(q.filters[el.name] instanceof Array)) {
-                                q.filters[el.name] = [];
-                              }
-
-                              if (
-                                e.target.checked &&
-                                !q.filters[el.name].includes(innerEl.key)
-                              ) {
-                                q.filters[el.name].push(innerEl.key);
-                              } else {
-                                const idx = q.filters[el.name].findIndex(
-                                  (v: any) => v === innerEl.key
-                                );
-                                q.filters[el.name].splice(idx, 1);
-                              }
-
-                              router.push(`/search?${qs.stringify(q)}`);
-                            }}
-                          />
-
-                          <Badge color="primary">{innerEl.doc_count}</Badge>
-                        </Flex>
-                      );
-                    })}
-                  </Stack>
-                </Box>
-              );
-            })}
-          </Stack>
-        </Modal>
-      </MediaQuery>
+                        <Badge color="primary">{innerEl.doc_count}</Badge>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </Dialog>
     </>
   );
 }

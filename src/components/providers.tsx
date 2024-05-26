@@ -9,6 +9,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { queryClientAtom } from 'jotai-tanstack-query';
 import { UpdateLocationModal } from '../components/modals';
 import { TooltipProvider } from '@radix-ui/react-tooltip';
+import { SuggestionsProvider } from '@/lib/hooks/use-suggestions';
 
 const queryClient = new QueryClient();
 const HydrateAtoms = ({ children }) => {
@@ -16,7 +17,7 @@ const HydrateAtoms = ({ children }) => {
   return children;
 };
 
-export default function Providers({ session, children }) {
+export default function Providers({ session, suggestions, children }) {
   return (
     <QueryClientProvider client={queryClient}>
       <SessionProvider session={session}>
@@ -29,7 +30,9 @@ export default function Providers({ session, children }) {
                 }}
               >
                 <TooltipProvider>
-                  <PrevUrlProvider>{children}</PrevUrlProvider>
+                  <SuggestionsProvider value={suggestions || []}>
+                    <PrevUrlProvider>{children}</PrevUrlProvider>
+                  </SuggestionsProvider>
                 </TooltipProvider>
               </ModalsProvider>
             </MantineProvider>

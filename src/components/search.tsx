@@ -1,8 +1,6 @@
-import { MantineTheme } from '@mantine/core';
 import { useRouter } from 'next/router';
 import qs from 'qs';
 import { LocationAutocomplete } from './location-autocomplete';
-import { TaxonomyAutocomplete } from './TaxonomyAutocomplete';
 import { useTranslation } from 'next-i18next';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
@@ -68,14 +66,14 @@ export function Search({ hideLocation }: Props) {
     <div className="flex flex-col gap-2 w-full">
       <form method="get" action="/search" onSubmit={handleSubmit}>
         <div className="flex">
-          <TaxonomyAutocomplete
+          {/* <TaxonomyAutocomplete
             className="search-box"
             defaultValue={
               (router.query?.query_label as string) ??
               (router.query.query as string)
             }
             labelProps={{
-              sx: (t: MantineTheme) => ({
+              sx: (t: any) => ({
                 fontSize: t.headings.sizes.h3.fontSize,
               }),
             }}
@@ -87,7 +85,7 @@ export function Search({ hideLocation }: Props) {
             defaultQuery={router.query.query as string}
             defaultQueryLabel={router.query.query_label as string}
             defaultQueryType={router.query.query_type as string}
-          />
+          /> */}
 
           <Button
             className="rounded-tl-none rounded-bl-none"
@@ -107,7 +105,7 @@ export function Search({ hideLocation }: Props) {
       </form>
 
       {router.query.query_type === 'taxonomy' && (
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-1 items-center flex-wrap">
           {(router.query.query as string)?.split(',').map((query) => (
             <Badge key={query} variant="secondary">
               {query}

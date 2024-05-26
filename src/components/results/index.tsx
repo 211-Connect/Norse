@@ -28,10 +28,6 @@ export function Results(props: Props) {
   }, [router.query.coords]);
 
   const total = Math.ceil(props.totalResults / 25);
-  const _total = Math.max(Math.trunc(total), 0);
-  const activePage = props.currentPage;
-  const siblings = 1;
-  const boundaries = 1;
 
   return (
     <>

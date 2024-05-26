@@ -1,15 +1,15 @@
-import { Button, Flex, useMantineTheme } from '@mantine/core';
 import { useRouter } from 'next/router';
 import qs from 'qs';
 import { LocationAutocomplete } from './location-autocomplete';
 import { TaxonomyAutocomplete } from './TaxonomyAutocomplete';
 import { useTranslation } from 'next-i18next';
 import { useAppConfig } from '../lib/hooks/use-app-config';
-import Color from 'color';
+import { Button } from './ui/button';
+import Autocomplete from './ui/autocomplete';
+import Search from './search/index';
 
 export function HomePageSearch() {
   const router = useRouter();
-  const theme = useMantineTheme();
   const { t } = useTranslation('common');
   const appConfig = useAppConfig();
 
@@ -63,51 +63,34 @@ export function HomePageSearch() {
   };
 
   return (
-    <form method="get" action="/search" onSubmit={handleSubmit}>
-      <Flex align="flex-end">
-        <TaxonomyAutocomplete
-          className="search-box"
-          defaultValue={
-            (router.query?.query_label as string) ??
-            (router.query.query as string)
-          }
-          labelProps={{
-            fontSize: theme.headings.sizes.h3.fontSize,
-          }}
-          styles={{
-            input: { borderTopRightRadius: 0, borderBottomRightRadius: 0 },
-          }}
-          size="md"
-          w="100%"
-          defaultQuery={router.query.query as string}
-          defaultQueryLabel={router.query.query_label as string}
-          defaultQueryType={router.query.query_type as string}
-        />
+    <Search />
+    // <form method="get" action="/search" onSubmit={handleSubmit}>
+    //   <div className="flex justify-end">
+    //     {/* <TaxonomyAutocomplete
+    //       className="search-box"
+    //       defaultValue={
+    //         (router.query?.query_label as string) ??
+    //         (router.query.query as string)
+    //       }
+    //       styles={{
+    //         input: { borderTopRightRadius: 0, borderBottomRightRadius: 0 },
+    //       }}
+    //       size="md"
+    //       w="100%"
+    //       defaultQuery={router.query.query as string}
+    //       defaultQueryLabel={router.query.query_label as string}
+    //       defaultQueryType={router.query.query_type as string}
+    //     /> */}
 
-        <Button
-          sx={{
-            borderTopLeftRadius: 0,
-            borderBottomLeftRadius: 0,
-            color: Color(
-              theme.colors.secondary[theme.other.secondaryShade]
-            ).isLight()
-              ? '#333'
-              : '#fff',
-          }}
-          color={`secondary.${theme.other.secondaryShade}`}
-          size="md"
-          type="submit"
-        >
-          {t('call_to_action.search')}
-        </Button>
-      </Flex>
+    //     <Button type="submit">{t('call_to_action.search')}</Button>
+    //   </div>
 
-      {appConfig?.pages?.home?.showLocationInput && (
-        <LocationAutocomplete
-          defaultValue={router.query.location as string}
-          defaultCoords={router.query.coords as string}
-        />
-      )}
-    </form>
+    //   {appConfig?.pages?.home?.showLocationInput && (
+    //     <LocationAutocomplete
+    //       defaultValue={router.query.location as string}
+    //       defaultCoords={router.query.coords as string}
+    //     />
+    //   )}
+    // </form>
   );
 }

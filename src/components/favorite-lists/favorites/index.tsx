@@ -1,10 +1,4 @@
-import { openContextModal } from '@mantine/modals';
-import {
-  IconChevronLeft,
-  IconEdit,
-  IconShare,
-  IconTrash,
-} from '@tabler/icons-react';
+import { IconChevronLeft, IconEdit, IconTrash } from '@tabler/icons-react';
 import { Favorite } from './favorite';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -26,6 +20,7 @@ import { cn } from '@/lib/utils';
 import DeleteFavoriteList from './modals/delete-favorite-list';
 import { UpdateFavoriteListModal } from './modals/update-favorite-list';
 import DeleteFavorite from './modals/delete-favorite';
+import { ShareButton } from '@/components/share';
 
 export function FavoritesSection() {
   const { t } = useTranslation('common');
@@ -97,27 +92,11 @@ export function FavoritesSection() {
             </Anchor>
           )}
 
-          <Button
-            className="gap-1"
-            variant="outline"
-            onClick={async () => {
-              openContextModal({
-                modal: 'share',
-                centered: true,
-                size: 320,
-                innerProps: {
-                  shareContents: {
-                    title: t('modal.share.check_out_this_list'),
-                    body: ``,
-                  },
-                  printFn: handlePrint,
-                },
-              });
-            }}
-          >
-            <IconShare className="size-4" />
-            {t('call_to_action.share')}
-          </Button>
+          <ShareButton
+            title={t('modal.share.check_out_this_list')}
+            body=""
+            printFn={handlePrint}
+          />
         </div>
       </div>
 

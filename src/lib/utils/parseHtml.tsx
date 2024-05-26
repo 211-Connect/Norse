@@ -1,15 +1,7 @@
-import {
-  Anchor,
-  Badge,
-  Button,
-  Divider,
-  Flex,
-  Grid,
-  Group,
-  Stack,
-  Text,
-  Title,
-} from '@mantine/core';
+import { Anchor } from '@/components/anchor';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 import parse, {
   attributesToProps,
   DOMNode,
@@ -42,59 +34,39 @@ function replacer(node: DOMNode) {
     const children = parseToReact(node.children);
 
     if (node.name === 'h1') {
-      return (
-        <Title order={1} {...props}>
-          {children}
-        </Title>
-      );
+      return <h1 {...props}>{children}</h1>;
     }
 
     if (node.name === 'h2') {
-      return (
-        <Title order={2} {...props}>
-          {children}
-        </Title>
-      );
+      return <h2 {...props}>{children}</h2>;
     }
 
     if (node.name === 'h3') {
-      return (
-        <Title order={3} {...props}>
-          {children}
-        </Title>
-      );
+      return <h3 {...props}>{children}</h3>;
     }
 
     if (node.name === 'h4') {
-      return (
-        <Title order={4} {...props}>
-          {children}
-        </Title>
-      );
+      return <h4 {...props}>{children}</h4>;
     }
 
     if (node.name === 'h5') {
-      return (
-        <Title order={5} {...props}>
-          {children}
-        </Title>
-      );
+      return <h5 {...props}>{children}</h5>;
     }
 
     if (node.name === 'h6') {
-      return (
-        <Title order={6} {...props}>
-          {children}
-        </Title>
-      );
+      return <h6 {...props}>{children}</h6>;
     }
 
     if (node.name === 'a') {
-      return <Anchor {...props}>{children}</Anchor>;
+      return (
+        <Anchor href={props.href} {...props}>
+          {children}
+        </Anchor>
+      );
     }
 
     if (node.name === 'p') {
-      return <Text {...props}>{children}</Text>;
+      return <p {...props}>{children}</p>;
     }
 
     if (node.name === 'span') {
@@ -110,19 +82,31 @@ function replacer(node: DOMNode) {
     }
 
     if (node.name === 'hr') {
-      return <Divider {...props} />;
+      return <Separator {...props} />;
     }
 
     if (node.name === 'group') {
-      return <Group {...props}>{children}</Group>;
+      return (
+        <div className="flex gap-2" {...props}>
+          {children}
+        </div>
+      );
     }
 
     if (node.name === 'stack') {
-      return <Stack {...props}>{children}</Stack>;
+      return (
+        <div className="flex flex-col gap-2" {...props}>
+          {children}
+        </div>
+      );
     }
 
     if (node.name === 'flex') {
-      return <Flex {...props}>{children}</Flex>;
+      return (
+        <div className="flex" {...props}>
+          {children}
+        </div>
+      );
     }
 
     if (node.name === 'button') {
@@ -130,11 +114,11 @@ function replacer(node: DOMNode) {
     }
 
     if (node.name === 'grid') {
-      return <Grid {...props}>{children}</Grid>;
-    }
-
-    if (node.name === 'grid-col') {
-      return <Grid.Col {...props}>{children}</Grid.Col>;
+      return (
+        <div className="grid" {...props}>
+          {children}
+        </div>
+      );
     }
   }
 }

@@ -71,7 +71,7 @@ export function HeroSection() {
         className="object-cover z-0 object-center"
       />
 
-      <div className="w-full max-w-[460px] bg-card p-4 rounded-md z-10 flex flex-col gap-2">
+      <div className="w-full max-w-[460px] bg-card p-4 rounded-md z-20 flex flex-col gap-2">
         <h1 className="text-xl">
           {t('search.hero_title', {
             ns: 'dynamic',

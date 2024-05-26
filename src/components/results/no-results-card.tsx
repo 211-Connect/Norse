@@ -1,19 +1,12 @@
-import {
-  Button,
-  Card,
-  Flex,
-  Group,
-  Mark,
-  Text,
-  Title,
-  useMantineTheme,
-} from '@mantine/core';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import { NextRouter } from 'next/router';
 import { useAppConfig } from '../../lib/hooks/use-app-config';
 import { Anchor } from '@/components/anchor';
 import { IconPhone } from '@tabler/icons-react';
+import { Card, CardDescription, CardFooter, CardHeader } from '../ui/card';
+import { buttonVariants } from '../ui/button';
+import { cn } from '@/lib/utils';
 
 type Props = {
   router: NextRouter;
@@ -23,11 +16,10 @@ type Props = {
 export function NoResultsCard(props: Props) {
   const { t } = useTranslation('page-search');
   const config = useAppConfig() as any;
-  const theme = useMantineTheme();
 
   return (
-    <Card shadow="sm" p="lg" radius="md" withBorder>
-      <Group align="center">
+    <Card className="text-center">
+      <CardHeader className="p-4 pb-0 flex items-center">
         <Image
           src="/undraw_searching.svg"
           width={0}
@@ -35,33 +27,32 @@ export function NoResultsCard(props: Props) {
           alt=""
           style={{ height: '150px', width: 'auto' }}
         />
-      </Group>
-
-      <Title color="primary" order={3} align="center" mt="md" mb="md">
-        {t('no_results.title')}{' '}
-        <Mark>
+        <p>{t('no_results.title')}</p>
+        <p className="bg-yellow-100 p-1 font-semibold">
           {props.router.query.query_label || props.router.query.query}
-        </Mark>
-      </Title>
+        </p>
+      </CardHeader>
+      <CardDescription className="p-4">
+        <p>
+          {!props.showAltSubtitle
+            ? t('no_results.subtitle')
+            : config?.contact?.number
+            ? t('no_results.need_help')
+            : t('no_results.alt_subtitle')}
+        </p>
+      </CardDescription>
 
-      <Text align="center" color="dimmed">
-        {!props.showAltSubtitle
-          ? t('no_results.subtitle')
-          : config?.contact?.number
-          ? t('no_results.need_help')
-          : t('no_results.alt_subtitle')}
-      </Text>
-      <Flex align="center" justify="center" mt="md">
-        {config?.contact?.number && (
-          <Button
-            leftIcon={<IconPhone color={theme.colors.secondary[5]} />}
+      {config?.contact?.number && (
+        <CardFooter className="p-4 pt-0">
+          <Anchor
+            className={cn(buttonVariants({ variant: 'default' }), 'gap-1')}
             href={`tel:${config.contact.number}`}
-            component={Anchor}
           >
+            <IconPhone className="size-4" />
             {config.contact.number}
-          </Button>
-        )}
-      </Flex>
+          </Anchor>
+        </CardFooter>
+      )}
     </Card>
   );
 }
