@@ -81,9 +81,8 @@ export function UpdateFavoriteListModal() {
           }}
           className="flex flex-col gap-2"
         >
-          <form.Field
-            name="name"
-            children={(field) => (
+          <form.Field name="name">
+            {(field) => (
               <>
                 <Label htmlFor={field.name}>
                   {t('modal.update_list.list_name')}
@@ -97,11 +96,10 @@ export function UpdateFavoriteListModal() {
                 />
               </>
             )}
-          />
+          </form.Field>
 
-          <form.Field
-            name="description"
-            children={(field) => (
+          <form.Field name="description">
+            {(field) => (
               <>
                 <Label htmlFor={field.name}>
                   {t('modal.update_list.list_description')}
@@ -116,11 +114,10 @@ export function UpdateFavoriteListModal() {
                 />
               </>
             )}
-          />
+          </form.Field>
 
-          <form.Field
-            name="public"
-            children={(field) => (
+          <form.Field name="public">
+            {(field) => (
               <div className="flex items-center space-x-2">
                 <Switch
                   id={field.name}
@@ -132,7 +129,7 @@ export function UpdateFavoriteListModal() {
                 <Label>{t('modal.update_list.make_public')}</Label>
               </div>
             )}
-          />
+          </form.Field>
         </form>
 
         <DialogFooter>

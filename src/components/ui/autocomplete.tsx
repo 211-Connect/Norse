@@ -57,7 +57,6 @@ export default function Autocomplete({
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isOpen, setOpen] = useState(false);
-  const [selected, setSelected] = useState<Option>();
   const [inputValue, setInputValue] = useState(defaultValue || '');
 
   const handleKeyDown = useCallback(
@@ -76,17 +75,16 @@ export default function Autocomplete({
         input.blur();
       }
     },
-    [isOpen, options, onValueChange]
+    [isOpen]
   );
 
   const handleBlur = useCallback(() => {
     setOpen(false);
-  }, [selected]);
+  }, []);
 
   const handleSelectOption = useCallback(
     (selectedOption: Option) => {
       setInputValue(selectedOption.value);
-      setSelected(selectedOption);
       onValueChange?.(selectedOption);
 
       // This is a hack to prevent the input from being focused after the user selects an option
@@ -115,14 +113,14 @@ export default function Autocomplete({
     if (defaultValue != null) {
       handleInputChange(defaultValue);
     }
-  }, [defaultValue]);
+  }, [defaultValue, handleInputChange]);
 
   // This will update internal value when value gets bound from a parent component
   useEffect(() => {
     if (value != null && value !== inputValue) {
       handleInputChange(value);
     }
-  }, [value, inputValue]);
+  }, [value, inputValue, handleInputChange]);
 
   return (
     <CommandPrimitive

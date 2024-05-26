@@ -77,7 +77,8 @@ function useSms(textContent: string) {
                   return phoneRegex.test(value);
                 }, t('modal.share.invalid_phone_number', { ns: 'common' }) as string),
               }}
-              children={(field) => (
+            >
+              {(field) => (
                 <div className="flex flex-col w-full gap-1">
                   <Input
                     name={field.name}
@@ -91,7 +92,7 @@ function useSms(textContent: string) {
                   </em>
                 </div>
               )}
-            />
+            </form.Field>
 
             <Button type="submit">Send</Button>
           </form>

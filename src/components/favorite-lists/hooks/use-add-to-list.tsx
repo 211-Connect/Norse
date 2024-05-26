@@ -109,9 +109,8 @@ function useAddToList(resourceId: string) {
               form.handleSubmit();
             }}
           >
-            <form.Field
-              name="listName"
-              children={(field) => (
+            <form.Field name="listName">
+              {(field) => (
                 <div className="flex flex-col gap-1">
                   <Label htmlFor={field.name}>
                     {t('modal.add_to_list.search_list')}
@@ -143,7 +142,7 @@ function useAddToList(resourceId: string) {
                   )}
                 </div>
               )}
-            />
+            </form.Field>
           </form>
           <ScrollArea className="h-[300px] w-full">
             {data?.map((list) => {

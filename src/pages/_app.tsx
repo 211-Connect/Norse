@@ -2,13 +2,12 @@ import { appWithTranslation } from 'next-i18next';
 import { PageView } from '../components/page-view';
 import Head from 'next/head';
 import { GoogleTagManagerScript } from '@/components/google-tag-manager-script';
-import { useAppConfig } from '../lib/hooks/use-app-config';
 import { AppProps } from 'next/app';
 import { Open_Sans as FontSans } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import Providers from '@/components/providers';
-import '../styles/globals.css';
 import { Toaster } from 'sonner';
+import '../styles/globals.css';
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -17,10 +16,8 @@ const fontSans = FontSans({
 
 function App({
   Component,
-  pageProps: { session, suggestions, ...pageProps },
+  pageProps: { session, suggestions, appConfig, ...pageProps },
 }: AppProps) {
-  const appConfig = useAppConfig();
-
   return (
     <div
       className={cn(
@@ -37,8 +34,8 @@ function App({
 
       <Providers session={session} suggestions={suggestions}>
         <Component {...pageProps} />
-        <GoogleTagManagerScript />
         <Toaster />
+        <GoogleTagManagerScript />
       </Providers>
     </div>
   );

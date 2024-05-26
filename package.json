@@ -10,6 +10,7 @@
   },
   "private": true,
   "devDependencies": {
+    "@next/bundle-analyzer": "^14.2.3",
     "@testing-library/react": "14.0.0",
     "@types/color": "^3.0.3",
     "@types/compression": "^1.7.2",

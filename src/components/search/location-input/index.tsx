@@ -69,7 +69,7 @@ export default function LocationInput({
         setIsFetching(false);
       }
     },
-    [t]
+    [t, onCoordChange]
   );
 
   const getUserLocation = useCallback(() => {
@@ -111,7 +111,7 @@ export default function LocationInput({
         return i?.value?.toLowerCase()?.includes(value.toLowerCase());
       }),
     };
-  }, [data]);
+  }, [data, value]);
 
   return (
     <>

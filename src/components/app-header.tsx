@@ -151,6 +151,7 @@ export function AppHeader(props: Props) {
     session.data,
     t,
     session.status,
+    openAuthPrompt,
   ]);
 
   return (

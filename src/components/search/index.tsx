@@ -52,9 +52,8 @@ export default function Search() {
         form.handleSubmit();
       }}
     >
-      <form.Field
-        name="taxonomy"
-        children={(field) => (
+      <form.Field name="taxonomy">
+        {(field) => (
           <TaxonomySearch
             name={field.name}
             onChange={(option: Option) => {
@@ -84,7 +83,7 @@ export default function Search() {
             }}
           />
         )}
-      />
+      </form.Field>
 
       <LocationInput />
 

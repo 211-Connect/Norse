@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import qs from 'qs';
 import { LocationAutocomplete } from './location-autocomplete';
-import { TaxonomyAutocomplete } from './TaxonomyAutocomplete';
+// import { TaxonomyAutocomplete } from './TaxonomyAutocomplete';
 import { useTranslation } from 'next-i18next';
 import { useAppConfig } from '../lib/hooks/use-app-config';
 import { Button } from './ui/button';

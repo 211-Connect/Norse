@@ -1,3 +1,4 @@
+import bundleAnalyzer from '@next/bundle-analyzer';
 import pkg from './next-i18next.config.js';
 const {
   i18n: { localePath: _, ...rest },
@@ -8,4 +9,8 @@ const nextConfig = {
   i18n: rest,
 };
 
-export default nextConfig;
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+});
+
+export default withBundleAnalyzer(nextConfig);

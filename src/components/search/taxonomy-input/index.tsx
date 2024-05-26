@@ -55,7 +55,7 @@ export default function TaxonomyInput({
         }
       }),
     };
-  }, [data]);
+  }, [data, value]);
 
   const filteredSuggestions = useMemo(() => {
     return {
@@ -69,7 +69,7 @@ export default function TaxonomyInput({
           }
         }) ?? [],
     };
-  }, [suggestions, value]);
+  }, [suggestions, value, t]);
 
   const onValueChange = (option: Option) => {
     onChange?.(option);
