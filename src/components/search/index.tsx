@@ -209,7 +209,7 @@ export default function Search() {
 
       {router.query.query_type === 'taxonomy' &&
         router.query.query.length > 0 && (
-          <div>
+          <div className="flex flex-wrap gap-1">
             {router.query.query_type === 'taxonomy'
               ? (router.query?.query as string)
                   ?.split(',')
