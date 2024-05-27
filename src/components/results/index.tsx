@@ -39,10 +39,7 @@ export function Results(props: Props) {
 
       <div className="flex flex-col gap-2 pl-2 pr-2 pb-2">
         {props.noResults && (
-          <NoResultsCard
-            router={router}
-            showAltSubtitle={props.totalResults === 0}
-          />
+          <NoResultsCard showAltSubtitle={props.totalResults === 0} />
         )}
 
         {props.results.map((result) => {

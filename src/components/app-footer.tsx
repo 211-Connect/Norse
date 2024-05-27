@@ -28,7 +28,7 @@ export function AppFooter(props: Props) {
         >
           <div className="flex flex-col justify-center items-center gap-1 w-full">
             <p>
-              &copy; {new Date().getFullYear()} {appConfig.brand.name}.{' '}
+              &copy; {new Date().getFullYear()} {appConfig?.brand?.name}.{' '}
               {t('footer.copyright')}
             </p>
 
@@ -37,7 +37,7 @@ export function AppFooter(props: Props) {
                 {t('footer.privacy_policy')}
               </Anchor>
 
-              {appConfig.menus.footer.map(
+              {appConfig?.menus?.footer?.map(
                 (el: { name: string; href: string | null }) => (
                   <Fragment key={el.name}>
                     <IconPointFilled className="scale-4" />

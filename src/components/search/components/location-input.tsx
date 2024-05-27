@@ -3,44 +3,55 @@ import useDebounce from '@/lib/hooks/use-debounce';
 import { IconLocation, IconMapPin } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'next-i18next';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import LocationAdapter from '../adapters/location-adapter';
 import { useRouter } from 'next/router';
 import { toast } from 'sonner';
-import { setCookie } from 'nookies';
-import { USER_PREF_COORDS, USER_PREF_LOCATION } from '@/lib/constants/cookies';
+import { SESSION_ID } from '@/lib/constants/cookies';
 import { Button } from '@/components/ui/button';
+import { useCookies } from 'react-cookie';
 
 export default function LocationInput({
   name,
+  className,
   onChange,
   onCoordChange,
 }: {
   name?: string;
+  className?: string;
   onChange?: (option: Option) => void;
   onCoordChange?: (coords: string) => void;
 }) {
   const { t } = useTranslation();
   const router = useRouter();
   const [value, setValue] = useState('');
-  const [coords, setCoords] = useState('');
+  const [cookies] = useCookies([SESSION_ID]);
   const [isFetching, setIsFetching] = useState(false);
   const debouncedValue = useDebounce(value);
   const { data } = useQuery<Option>({
     placeholderData: (prev) => prev,
-    queryKey: ['suggestions', debouncedValue],
+    queryKey: [
+      'suggestions',
+      debouncedValue,
+      router.locale,
+      cookies[SESSION_ID],
+    ],
     queryFn: async () => {
       if (!debouncedValue || debouncedValue.length < 2) return null;
 
       const locationAdapter = LocationAdapter();
-      const data = await locationAdapter.searchLocations(debouncedValue);
+      const data = await locationAdapter.search(
+        debouncedValue,
+        router.locale,
+        cookies[SESSION_ID]
+      );
 
       return {
         group: t('search.suggestions'),
         items:
-          data?.features?.map((feature) => ({
-            value: feature.place_name,
-            coordinates: feature.center,
+          data?.suggestions?.map((suggestion) => ({
+            value: suggestion.full_address,
+            mapbox_id: suggestion.mapbox_id,
           })) ?? [],
       };
     },
@@ -48,19 +59,18 @@ export default function LocationInput({
 
   const convertGeoLocation = useCallback(
     async (position: GeolocationPosition) => {
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
+      const coords = [position.coords.longitude, position.coords.latitude].join(
+        ','
+      );
 
       try {
-        // fetch location
-        const res = await fetch(`/api/geocode?coords=${lng},${lat}`);
-        const data = await res.json();
-
-        setValue(data.address);
-        setCookie(null, USER_PREF_LOCATION, data.address, { path: '/' });
-        setCookie(null, USER_PREF_COORDS, `${lng},${lat}`, { path: '/' });
-        setCoords(`${lng},${lat}`);
-        onCoordChange?.(`${lng},${lat}`);
+        const locationAdapter = LocationAdapter();
+        const data = await locationAdapter.reverseGeocode(
+          coords,
+          router.locale
+        );
+        setValue(data?.features?.[0]?.place_name);
+        onCoordChange?.(coords);
       } catch (err) {
         toast.error(t('search.geocoding_error'), {
           description: t('search.geocoding_unable_to_retrieve'),
@@ -69,7 +79,7 @@ export default function LocationInput({
         setIsFetching(false);
       }
     },
-    [t, onCoordChange]
+    [t, onCoordChange, router.locale]
   );
 
   const getUserLocation = useCallback(() => {
@@ -83,7 +93,6 @@ export default function LocationInput({
     };
 
     if (!navigator.geolocation) {
-      console.log('Geolocation is not supported by your browser');
       toast.error(t('search.geocoding_error'), {
         description: t('search.geocoding_unsupported'),
       });
@@ -102,6 +111,17 @@ export default function LocationInput({
     setValue(option.value);
   };
 
+  const onValueSelect = async (option: Option & { mapbox_id: string }) => {
+    const locationAdapter = LocationAdapter();
+    const data = await locationAdapter.retrieve(
+      option.mapbox_id,
+      router.locale,
+      cookies[SESSION_ID]
+    );
+    const coords = data?.features?.[0]?.geometry?.coordinates;
+    onCoordChange?.(coords.join(','));
+  };
+
   const filteredData = useMemo(() => {
     if (!data) return null;
 
@@ -114,13 +134,12 @@ export default function LocationInput({
   }, [data, value]);
 
   return (
-    <>
+    <div className={className}>
       <div className="flex flex-col justify-center items-start">
         <Autocomplete
           name={name}
           className="w-full"
           options={filteredData ? [filteredData] : []}
-          value={value}
           placeholder={
             t('search.location_placeholder', {
               ns: 'dynamic',
@@ -129,7 +148,8 @@ export default function LocationInput({
           }
           Icon={IconMapPin}
           onValueChange={onValueChange}
-          defaultValue={router.query?.location as string}
+          defaultValue={(router.query?.location as string) ?? ''}
+          onValueSelect={onValueSelect}
         />
         <Button
           type="button"
@@ -141,6 +161,6 @@ export default function LocationInput({
           {t('search.use_my_location')}
         </Button>
       </div>
-    </>
+    </div>
   );
 }

@@ -18,30 +18,31 @@ import SearchAdapter, {
   SearchQueryParams,
 } from '@/lib/server/adapters/search-adapter';
 import Head from 'next/head';
-import { Search } from '@/components/search';
 import { Results } from '@/components/results';
 import useMediaQuery from '@/lib/hooks/use-media-query';
 import useWindowScroll from '@/lib/hooks/use-window-scroll';
+import Search from '@/components/search';
+import { serverSideAppConfig, serverSideFavorites } from '@/lib/server/utils';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const cookies = nookies.get(ctx);
 
   // If the user already has a location and coords, but they aren't present in the query
   // redirect them to the url using their stored location and coords
-  if (!ctx.query.location || !ctx.query.coords) {
-    if (cookies[USER_PREF_LOCATION] && cookies[USER_PREF_COORDS]) {
-      const newQuery = new URLSearchParams(ctx.resolvedUrl.split('?')[1]);
-      newQuery.set('location', cookies[USER_PREF_LOCATION]);
-      newQuery.set('coords', cookies[USER_PREF_COORDS]);
+  // if (!ctx.query.location || !ctx.query.coords) {
+  //   if (cookies[USER_PREF_LOCATION] && cookies[USER_PREF_COORDS]) {
+  //     const newQuery = new URLSearchParams(ctx.resolvedUrl.split('?')[1]);
+  //     newQuery.set('location', cookies[USER_PREF_LOCATION]);
+  //     newQuery.set('coords', cookies[USER_PREF_COORDS]);
 
-      return {
-        redirect: {
-          destination: `/${ctx.locale}/search?${newQuery.toString()}`,
-          permanent: false,
-        },
-      };
-    }
-  }
+  //     return {
+  //       redirect: {
+  //         destination: `/${ctx.locale}/search?${newQuery.toString()}`,
+  //         permanent: false,
+  //       },
+  //     };
+  //   }
+  // }
 
   const searchAdapter = SearchAdapter();
   const { results, noResults, totalResults, page, filters } =
@@ -61,6 +62,8 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       currentPage: page,
       query: ctx.query?.query ?? null,
       query_label: ctx.query?.query_label ?? null,
+      ...(await serverSideAppConfig()),
+      ...(await serverSideFavorites()),
       ...(await serverSideTranslations(ctx.locale as string, [
         'page-search',
         'common',
@@ -105,7 +108,7 @@ export default function SearchPage(props: any) {
         <meta name="description" content={metaDescription} />
 
         <meta property="og:title" content={metaTitle} />
-        <meta property="og:image" content={appConfig.brand.openGraphUrl} />
+        <meta property="og:image" content={appConfig?.brand?.openGraphUrl} />
         <meta property="og:type" content="website" />
         <meta property="og:description" content={metaDescription} />
       </Head>

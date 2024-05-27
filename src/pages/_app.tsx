@@ -32,7 +32,11 @@ function App({
 
       <PageView />
 
-      <Providers session={session} suggestions={suggestions}>
+      <Providers
+        session={session}
+        suggestions={suggestions}
+        appConfig={appConfig}
+      >
         <Component {...pageProps} />
         <Toaster />
         <GoogleTagManagerScript />

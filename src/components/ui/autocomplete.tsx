@@ -42,9 +42,11 @@ export default function Autocomplete({
   defaultValue,
   Icon,
   value,
+  onValueSelect,
 }: {
   className?: string;
   onValueChange?: (value: Option) => void;
+  onValueSelect?: (value: Option) => void;
   options: Option[];
   placeholder?: string;
   disabled?: boolean;
@@ -57,7 +59,7 @@ export default function Autocomplete({
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isOpen, setOpen] = useState(false);
-  const [inputValue, setInputValue] = useState(defaultValue || '');
+  const [inputValue, setInputValue] = useState('');
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>) => {
@@ -86,6 +88,7 @@ export default function Autocomplete({
     (selectedOption: Option) => {
       setInputValue(selectedOption.value);
       onValueChange?.(selectedOption);
+      onValueSelect?.(selectedOption);
 
       // This is a hack to prevent the input from being focused after the user selects an option
       // We can call this hack: "The next tick"
@@ -93,7 +96,7 @@ export default function Autocomplete({
         inputRef?.current?.blur();
       }, 0);
     },
-    [onValueChange]
+    [onValueChange, onValueSelect]
   );
 
   const handleInputChange = useCallback(
@@ -104,6 +107,11 @@ export default function Autocomplete({
     [onValueChange]
   );
 
+  // This will update internal value when value gets bound from a parent component
+  useEffect(() => {
+    setInputValue(value || '');
+  }, [value]);
+
   // Using defaultValue to set the input value here
   // This is because sometimes this defaultValue can come from react router
   // which may be undefined/null on first render
@@ -111,16 +119,9 @@ export default function Autocomplete({
   // components consuming this to make sure of that
   useEffect(() => {
     if (defaultValue != null) {
-      handleInputChange(defaultValue);
+      setInputValue(defaultValue);
     }
-  }, [defaultValue, handleInputChange]);
-
-  // This will update internal value when value gets bound from a parent component
-  useEffect(() => {
-    if (value != null && value !== inputValue) {
-      handleInputChange(value);
-    }
-  }, [value, inputValue, handleInputChange]);
+  }, [defaultValue]);
 
   return (
     <CommandPrimitive

@@ -9,6 +9,7 @@ import { useAppConfig } from '../../lib/hooks/use-app-config';
 import { PluginLoader } from '../../components/plugin-loader';
 import { useTranslation } from 'next-i18next';
 import { FavoriteLists } from '@/components/favorite-lists';
+import { serverSideAppConfig } from '@/lib/server/utils';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerSession(ctx.req, ctx.res, authOptions);
@@ -27,6 +28,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   return {
     props: {
       session,
+      ...(await serverSideAppConfig()),
       ...(await serverSideTranslations(ctx.locale as string, [
         'page-favorites',
         'common',

@@ -90,7 +90,7 @@ export default function ResultsPagination({
           {activePage > 1 && (
             <PaginationItem>
               <PaginationPrevious
-                href="#"
+                href=""
                 onClick={async (e) => {
                   e.preventDefault();
                   await changePage(activePage - 1);
@@ -111,7 +111,7 @@ export default function ResultsPagination({
             return (
               <PaginationItem key={idx}>
                 <PaginationLink
-                  href="#"
+                  href=""
                   onClick={async (e) => {
                     e.preventDefault();
                     await changePage(Number(val));
@@ -127,7 +127,7 @@ export default function ResultsPagination({
           {totalResults > 1 && activePage !== total && (
             <PaginationItem>
               <PaginationNext
-                href="#"
+                href=""
                 onClick={async (e) => {
                   e.preventDefault();
                   await changePage(activePage + 1);

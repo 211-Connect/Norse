@@ -1,5 +1,10 @@
-import appConfig from '../../../.norse/config.json';
+import { createContext, useContext } from 'react';
+
+const appConfigContext = createContext<{}>({});
+
+export const AppConfigProvider = appConfigContext.Provider;
 
 export function useAppConfig() {
-  return appConfig as any;
+  const appConfig = useContext(appConfigContext);
+  return appConfig as any; // COME BACK AND TYPE THIS
 }

@@ -9,22 +9,13 @@ import { HeroSection } from '../components/hero-section';
 import { useTranslation } from 'next-i18next';
 import Head from 'next/head';
 import { useAppConfig } from '@/lib/hooks/use-app-config';
-import fs from 'fs/promises';
-import path from 'path';
+import { serverSideAppConfig, serverSideFavorites } from '@/lib/server/utils';
 
 export async function getStaticProps(ctx: GetStaticPropsContext) {
-  const rawData = await fs.readFile(path.resolve('./.norse/suggestions.json'));
-  let suggestions;
-  try {
-    suggestions = JSON.parse(rawData.toString());
-  } catch (err) {
-    console.error(err);
-    suggestions = [];
-  }
-
   return {
     props: {
-      suggestions,
+      ...(await serverSideAppConfig()),
+      ...(await serverSideFavorites()),
       ...(await serverSideTranslations(ctx.locale as string, [
         'page-home',
         'common',

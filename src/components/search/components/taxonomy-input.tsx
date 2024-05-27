@@ -90,7 +90,9 @@ export default function TaxonomyInput({
         defaultValue: t('search.query_placeholder'),
       })}
       defaultValue={
-        (router.query?.query_label as string) ?? (router.query.query as string)
+        (router.query?.query_label as string) ??
+        (router.query?.query as string) ??
+        ''
       }
       onValueChange={onValueChange}
     />

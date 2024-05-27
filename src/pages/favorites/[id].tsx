@@ -12,6 +12,7 @@ import { useEffect } from 'react';
 import { FavoritesSection } from '@/components/favorite-lists/favorites';
 import useWindowScroll from '@/lib/hooks/use-window-scroll';
 import useMediaQuery from '@/lib/hooks/use-media-query';
+import { serverSideAppConfig } from '@/lib/server/utils';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerSession(ctx.req, ctx.res, authOptions);
@@ -44,6 +45,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       session,
       // favoriteList: data,
       viewingAsOwner,
+      ...(await serverSideAppConfig()),
       ...(await serverSideTranslations(ctx.locale as string, [
         'page-list',
         'common',

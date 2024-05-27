@@ -11,6 +11,7 @@ import ResourceAdapter, {
 import Head from 'next/head';
 import { useAppConfig } from '@/lib/hooks/use-app-config';
 import Resource from '@/components/resource';
+import { serverSideAppConfig } from '@/lib/server/utils';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const resourceAdapter = ResourceAdapter();
@@ -41,6 +42,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   return {
     props: {
       resource: data,
+      ...(await serverSideAppConfig()),
       ...(await serverSideTranslations(ctx.locale as string, [
         'page-resource',
         'common',

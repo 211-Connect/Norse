@@ -1,3 +1,4 @@
+import { serverSideAppConfig } from '@/lib/server/utils';
 import { GetServerSidePropsContext } from 'next';
 import { signIn } from 'next-auth/react';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
@@ -7,6 +8,7 @@ import { useEffect } from 'react';
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   return {
     props: {
+      ...(await serverSideAppConfig()),
       ...(await serverSideTranslations(ctx.locale as string)),
     },
   };

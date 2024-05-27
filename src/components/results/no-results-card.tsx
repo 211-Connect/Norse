@@ -1,6 +1,6 @@
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
-import { NextRouter } from 'next/router';
+import { NextRouter, useRouter } from 'next/router';
 import { useAppConfig } from '../../lib/hooks/use-app-config';
 import { Anchor } from '@/components/anchor';
 import { IconPhone } from '@tabler/icons-react';
@@ -9,13 +9,13 @@ import { buttonVariants } from '../ui/button';
 import { cn } from '@/lib/utils';
 
 type Props = {
-  router: NextRouter;
   showAltSubtitle?: boolean;
 };
 
 export function NoResultsCard(props: Props) {
   const { t } = useTranslation('page-search');
   const config = useAppConfig() as any;
+  const router = useRouter();
 
   return (
     <Card className="text-center">
@@ -29,17 +29,15 @@ export function NoResultsCard(props: Props) {
         />
         <p>{t('no_results.title')}</p>
         <p className="bg-yellow-100 p-1 font-semibold">
-          {props.router.query.query_label || props.router.query.query}
+          {router.query.query_label || router.query.query}
         </p>
       </CardHeader>
       <CardDescription className="p-4">
-        <p>
-          {!props.showAltSubtitle
-            ? t('no_results.subtitle')
-            : config?.contact?.number
-            ? t('no_results.need_help')
-            : t('no_results.alt_subtitle')}
-        </p>
+        {!props.showAltSubtitle
+          ? t('no_results.subtitle')
+          : config?.contact?.number
+          ? t('no_results.need_help')
+          : t('no_results.alt_subtitle')}
       </CardDescription>
 
       {config?.contact?.number && (

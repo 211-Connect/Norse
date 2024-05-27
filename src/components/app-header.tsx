@@ -145,8 +145,8 @@ export function AppHeader(props: Props) {
 
     return items;
   }, [
-    appConfig.contact.feedbackUrl,
-    appConfig.menus.header,
+    appConfig?.contact?.feedbackUrl,
+    appConfig?.menus?.header,
     router,
     session.data,
     t,

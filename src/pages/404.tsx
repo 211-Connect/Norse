@@ -9,10 +9,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
+import { serverSideAppConfig } from '@/lib/server/utils';
 
 export async function getStaticProps(ctx: GetStaticPropsContext) {
   return {
     props: {
+      ...(await serverSideAppConfig()),
       ...(await serverSideTranslations(ctx?.locale ?? 'en')),
     },
   };
