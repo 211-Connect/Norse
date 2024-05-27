@@ -1,4 +1,4 @@
-import FavoriteAdapter from '@/lib/client/adapters/favorite-adapter';
+import FavoriteAdapter from '../adapters/favorite-adapter';
 import { atomWithMutation, queryClientAtom } from 'jotai-tanstack-query';
 import { IFavoriteListWithFavorites } from './types/Favorite';
 import router from 'next/router';

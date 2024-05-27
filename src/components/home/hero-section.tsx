@@ -1,11 +1,11 @@
 import Image from 'next/image';
 import { useTranslation } from 'next-i18next';
-import { useEventStore } from '../lib/hooks/use-event-store';
+import { useEventStore } from '../../lib/hooks/use-event-store';
 import { useTour } from '@reactour/tour';
 import { useMemo } from 'react';
-import { HomePageSearch } from './home-page-search';
-import { useAppConfig } from '../lib/hooks/use-app-config';
-import { Button } from './ui/button';
+import { useAppConfig } from '../../lib/hooks/use-app-config';
+import { Button } from '../ui/button';
+import Search from '../search';
 
 export function HeroSection() {
   const appConfig = useAppConfig();
@@ -68,7 +68,7 @@ export function HeroSection() {
         src={appConfig.pages.home.heroSection.backgroundImageUrl}
         priority
         alt=""
-        className="object-cover z-0 object-center"
+        className="object-cover z-0 object-center pointer-events-none"
       />
 
       <div className="w-full max-w-[460px] bg-card p-4 rounded-md z-20 flex flex-col gap-2">
@@ -79,7 +79,7 @@ export function HeroSection() {
           })}
         </h1>
 
-        <HomePageSearch />
+        <Search />
       </div>
 
       {!appConfig.pages.home.disableTour && (

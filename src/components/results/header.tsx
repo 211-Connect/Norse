@@ -24,7 +24,7 @@ export default function ResultsHeader({
     <div
       className={cn(
         totalFilters > 0 ? 'justify-between' : 'justify-end',
-        'flex bg-primary items-center p-1 pr-2 pl-2'
+        'flex bg-primary items-center p-1 pr-2 pl-2 mb-2'
       )}
     >
       {totalFilters > 0 && (

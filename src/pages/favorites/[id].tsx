@@ -16,35 +16,10 @@ import { serverSideAppConfig } from '@/lib/server/utils';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerSession(ctx.req, ctx.res, authOptions);
-  let viewingAsOwner = false;
-
-  // const axios = getServerSideAxios(ctx, session);
-  // const favoritesAdapter = new FavoriteAdapter(axios);
-  // let data;
-  // if (!session) {
-  //   data = await favoritesAdapter.getFavoriteList(ctx?.params?.id ?? '');
-  // } else if (session.error) {
-  //   console.log(session.error);
-  //   return {
-  //     redirect: {
-  //       destination: `/${ctx.locale}/auth/signin?redirect=${encodeURIComponent(
-  //         '/favorites'
-  //       )}`,
-  //       permanent: false,
-  //     },
-  //   };
-  // } else {
-  //   const axios = getServerSideAxios(ctx, session);
-  //   favoritesAdapter.setAxiosInstance(axios);
-  //   data = await favoritesAdapter.getFavoriteList(ctx?.params?.id ?? '');
-  //   viewingAsOwner = true;
-  // }
 
   return {
     props: {
       session,
-      // favoriteList: data,
-      viewingAsOwner,
       ...(await serverSideAppConfig()),
       ...(await serverSideTranslations(ctx.locale as string, [
         'page-list',
@@ -54,7 +29,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   };
 }
 
-export default function FavoritesDetail({ favoriteList, viewingAsOwner }: any) {
+export default function FavoritesDetail() {
   const appConfig = useAppConfig();
   const { t } = useTranslation('page-list');
   const [scroll] = useWindowScroll();

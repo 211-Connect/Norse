@@ -156,6 +156,7 @@ export default function LocationInput({
           disabled={isFetching}
           className="gap-1"
           onClick={getUserLocation}
+          variant="outline"
         >
           <IconLocation className="size-4" />
           {t('search.use_my_location')}

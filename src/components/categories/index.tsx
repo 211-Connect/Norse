@@ -1,9 +1,10 @@
-import { Category } from './category';
+import { Category } from './components/category';
 import { useTranslation } from 'next-i18next';
-import categories from '../../.norse/categories.json';
+import { useCategories } from '@/lib/hooks/use-categories';
 
 export function CategorySection() {
   const { t } = useTranslation('page-home');
+  const categories = useCategories();
 
   if ((categories?.length ?? 0) === 0) return null;
 

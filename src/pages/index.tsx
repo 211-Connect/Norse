@@ -1,19 +1,24 @@
 import { GetStaticPropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { CategorySection } from '../components/category-section';
+import { CategorySection } from '../components/categories';
 import { TourProvider } from '@reactour/tour';
 import { AppFooter } from '../components/app-footer';
 import { DataProviders } from '../components/data-providers';
 import { AppHeader } from '../components/app-header';
-import { HeroSection } from '../components/hero-section';
+import { HeroSection } from '../components/home/hero-section';
 import { useTranslation } from 'next-i18next';
 import Head from 'next/head';
 import { useAppConfig } from '@/lib/hooks/use-app-config';
-import { serverSideAppConfig, serverSideFavorites } from '@/lib/server/utils';
+import {
+  serverSideAppConfig,
+  serverSideCategories,
+  serverSideFavorites,
+} from '@/lib/server/utils';
 
 export async function getStaticProps(ctx: GetStaticPropsContext) {
   return {
     props: {
+      ...(await serverSideCategories()),
       ...(await serverSideAppConfig()),
       ...(await serverSideFavorites()),
       ...(await serverSideTranslations(ctx.locale as string, [

@@ -7,6 +7,7 @@ import { queryClientAtom } from 'jotai-tanstack-query';
 import { TooltipProvider } from '@radix-ui/react-tooltip';
 import { SuggestionsProvider } from '@/lib/hooks/use-suggestions';
 import { AppConfigProvider } from '@/lib/hooks/use-app-config';
+import { CategoriesProvider } from '@/lib/hooks/use-categories';
 
 const queryClient = new QueryClient();
 const HydrateAtoms = ({ children }) => {
@@ -18,6 +19,7 @@ export default function Providers({
   session,
   suggestions,
   appConfig,
+  categories,
   children,
 }) {
   return (
@@ -28,7 +30,9 @@ export default function Providers({
             <TooltipProvider>
               <SuggestionsProvider value={suggestions || []}>
                 <AppConfigProvider value={appConfig || {}}>
-                  <PrevUrlProvider>{children}</PrevUrlProvider>
+                  <CategoriesProvider value={categories || []}>
+                    <PrevUrlProvider>{children}</PrevUrlProvider>
+                  </CategoriesProvider>
                 </AppConfigProvider>
               </SuggestionsProvider>
             </TooltipProvider>

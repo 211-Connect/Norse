@@ -30,3 +30,18 @@ export async function serverSideAppConfig() {
     appConfig,
   };
 }
+
+export async function serverSideCategories() {
+  const rawData = await fs.readFile(path.resolve('./.norse/categories.json'));
+  let categories;
+  try {
+    categories = JSON.parse(rawData.toString());
+  } catch (err) {
+    console.error(err);
+    categories = [];
+  }
+
+  return {
+    categories,
+  };
+}

@@ -119,10 +119,10 @@ export default function SearchPage(props: any) {
         <FilterPanel filters={props.filters} />
 
         <div
-          className="flex flex-col gap-2 md:max-w-xl w-full overflow-y-auto"
+          className="flex flex-col md:max-w-xl w-full overflow-y-auto"
           id="search-container"
         >
-          <div className="p-2 pb-0">
+          <div className="p-2 bg-card">
             <Search />
           </div>
 

@@ -16,7 +16,7 @@ const fontSans = FontSans({
 
 function App({
   Component,
-  pageProps: { session, suggestions, appConfig, ...pageProps },
+  pageProps: { session, suggestions, categories, appConfig, ...pageProps },
 }: AppProps) {
   return (
     <div
@@ -36,6 +36,7 @@ function App({
         session={session}
         suggestions={suggestions}
         appConfig={appConfig}
+        categories={categories}
       >
         <Component {...pageProps} />
         <Toaster />

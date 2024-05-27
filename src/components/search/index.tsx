@@ -12,6 +12,7 @@ import LocationInput from './components/location-input';
 import { useAppConfig } from '@/lib/hooks/use-app-config';
 import RadiusSelect from './components/radius-select';
 import LocationAdapter from './adapters/location-adapter';
+import { Badge } from '../ui/badge';
 
 export default function Search() {
   const { t } = useTranslation('common');
@@ -79,7 +80,7 @@ export default function Search() {
 
   return (
     <form
-      className="w-full flex flex-col"
+      className="w-full flex flex-col gap-2"
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -123,33 +124,36 @@ export default function Search() {
         )}
       </form.Field>
 
-      <div className="flex items-start">
-        <form.Field name="location">
-          {(field) => (
-            <LocationInput
-              className="w-full"
-              name={field.name}
-              onChange={(option) => {
-                field.handleChange(option.value);
-                field.form.setFieldValue('coords', '');
-              }}
-              onCoordChange={(coords) => {
-                field.form.setFieldValue('coords', coords);
-              }}
-            />
-          )}
-        </form.Field>
+      {(appConfig?.pages?.home?.showLocationInput ||
+        router.pathname.startsWith('/search')) && (
+        <div className="flex items-start">
+          <form.Field name="location">
+            {(field) => (
+              <LocationInput
+                className="w-full"
+                name={field.name}
+                onChange={(option) => {
+                  field.handleChange(option.value);
+                  field.form.setFieldValue('coords', '');
+                }}
+                onCoordChange={(coords) => {
+                  field.form.setFieldValue('coords', coords);
+                }}
+              />
+            )}
+          </form.Field>
 
-        <form.Field name="radius">
-          {(field) => (
-            <RadiusSelect
-              name={field.name}
-              value={field.state.value}
-              onValueChange={(value) => field.handleChange(value)}
-            />
-          )}
-        </form.Field>
-      </div>
+          <form.Field name="radius">
+            {(field) => (
+              <RadiusSelect
+                name={field.name}
+                value={field.state.value}
+                onValueChange={(value) => field.handleChange(value)}
+              />
+            )}
+          </form.Field>
+        </div>
+      )}
 
       <form.Field name="query">
         {(field) => (
@@ -199,7 +203,20 @@ export default function Search() {
         )}
       </form.Field>
 
-      <Button type="submit">{t('call_to_action.search')}</Button>
+      <Button className="self-end" type="submit">
+        {t('call_to_action.search')}
+      </Button>
+
+      {router.query.query_type === 'taxonomy' &&
+        router.query.query.length > 0 && (
+          <div>
+            {router.query.query_type === 'taxonomy'
+              ? (router.query?.query as string)
+                  ?.split(',')
+                  .map((value) => <Badge key={value}>{value}</Badge>)
+              : null}
+          </div>
+        )}
     </form>
   );
 }
