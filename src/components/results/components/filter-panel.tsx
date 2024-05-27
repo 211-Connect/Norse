@@ -1,13 +1,21 @@
-import { useFilterPanelStore } from '../../../lib/state/filterPanel';
 import { useRouter } from 'next/router';
 import qs from 'qs';
 import { Badge } from '../../ui/badge';
 import { Checkbox } from '../../ui/checkbox';
 import { Dialog } from '../../ui/dialog';
+import { atom, useAtom } from 'jotai';
+
+interface FilterPanelStore {
+  isOpen: boolean;
+}
+
+export const filterPanelAtom = atom<FilterPanelStore>({
+  isOpen: false,
+});
 
 export function FilterPanel({ filters }: any) {
   const router = useRouter();
-  const state = useFilterPanelStore();
+  const [filterPanel, setFilterPanel] = useAtom(filterPanelAtom);
 
   function getFilters() {
     const formattedFilters = [];
@@ -91,7 +99,15 @@ export function FilterPanel({ filters }: any) {
         </div>
       </div>
 
-      <Dialog open={state.isOpen} onOpenChange={state.toggle}>
+      <Dialog
+        open={filterPanel.isOpen}
+        onOpenChange={(open) =>
+          setFilterPanel((prev) => ({
+            ...prev,
+            isOpen: open,
+          }))
+        }
+      >
         <div className="flex flex-col gap-2">
           {getFilters().map((el) => {
             return (

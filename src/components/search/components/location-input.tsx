@@ -7,7 +7,7 @@ import { useCallback, useMemo, useState } from 'react';
 import LocationAdapter from '../adapters/location-adapter';
 import { useRouter } from 'next/router';
 import { toast } from 'sonner';
-import { SESSION_ID } from '@/lib/constants/cookies';
+import { SESSION_ID } from '@/constants/cookies';
 import { Button } from '@/components/ui/button';
 import { useCookies } from 'react-cookie';
 

@@ -1,5 +1,5 @@
 import Script from 'next/script';
-import { GTM_CONTAINER_ID } from '../lib/constants/env';
+import { GTM_CONTAINER_ID } from '../constants/env';
 
 export function GoogleTagManagerScript() {
   if (!GTM_CONTAINER_ID) return null;

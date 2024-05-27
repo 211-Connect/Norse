@@ -4,7 +4,7 @@ import Head from 'next/head';
 import { GoogleTagManagerScript } from '@/components/google-tag-manager-script';
 import { AppProps } from 'next/app';
 import { Open_Sans as FontSans } from 'next/font/google';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 import Providers from '@/components/providers';
 import { Toaster } from 'sonner';
 import '../styles/globals.css';

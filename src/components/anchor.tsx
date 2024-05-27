@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 import { createLinkEvent } from '@/hooks/use-event-store/events';
 import Link, { LinkProps } from 'next/link';
 

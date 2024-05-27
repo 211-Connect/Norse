@@ -1,4 +1,4 @@
-import { parseHtml } from '../../lib/utils/parseHtml';
+import { parseHtml } from '../../utils/parseHtml';
 import { AppFooter } from '../../components/app-footer';
 import { AppHeader } from '../../components/app-header';
 import { GetStaticPropsContext } from 'next';

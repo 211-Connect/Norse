@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from './button';
 

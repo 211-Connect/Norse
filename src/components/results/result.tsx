@@ -9,20 +9,20 @@ import {
 } from '@tabler/icons-react';
 import Link from 'next/link';
 import { NextRouter } from 'next/router';
-import { parseHtml } from '../../../utils/parseHtml';
+import { parseHtml } from '../../utils/parseHtml';
 import { useTranslation } from 'next-i18next';
 import { Anchor } from '@/components/anchor';
 import { ReferralButton } from '@/components/referral-button';
-import { distanceBetweenCoordsInMiles } from '../../../utils/distenceBetweenCoords';
-import { Card, CardContent, CardFooter, CardHeader } from '../../ui/card';
-import { Badge } from '../../ui/badge';
-import { Button, buttonVariants } from '../../ui/button';
-import { cn } from '@/utils';
-import { Tooltip, TooltipContent, TooltipTrigger } from '../../ui/tooltip';
-import { Spoiler } from '../../ui/spoiler';
+import { distanceBetweenCoordsInMiles } from '../../utils/distenceBetweenCoords';
+import { Card, CardContent, CardFooter, CardHeader } from '../ui/card';
+import { Badge } from '../ui/badge';
+import { Button, buttonVariants } from '../ui/button';
+import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
+import { Spoiler } from '../ui/spoiler';
 import useAuthPrompt from '@/hooks/use-auth-prompt';
-import useAddToList from '../../favorite-lists/hooks/use-add-to-list';
-import useUpdateLocation from '../../search/hooks/use-update-location';
+import useAddToList from '../favorite-lists/hooks/use-add-to-list';
+import useUpdateLocation from '../search/hooks/use-update-location';
 
 type Props = {
   id: string;

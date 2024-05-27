@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Resource } from '@/lib/server/adapters/resource-adapter';
-import { parseHtml } from '@/lib/utils/parseHtml';
+import { parseHtml } from '@/utils/parseHtml';
 import { useTranslation } from 'next-i18next';
 
 type Props = {

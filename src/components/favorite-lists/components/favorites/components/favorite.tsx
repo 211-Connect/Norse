@@ -1,5 +1,5 @@
-import { USER_PREF_COORDS, USER_PREF_LOCATION } from '@/lib/constants/cookies';
-import { parseHtml } from '@/lib/utils/parseHtml';
+import { USER_PREF_COORDS, USER_PREF_LOCATION } from '@/constants/cookies';
+import { parseHtml } from '@/utils/parseHtml';
 import {
   IconMapPin,
   IconPhone,
@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button, buttonVariants } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 import { Spoiler } from '@/components/ui/spoiler';
 import {
   Tooltip,

@@ -4,7 +4,7 @@ import { useTranslation } from 'next-i18next';
 import Link from 'next/link';
 import { useReactToPrint } from 'react-to-print';
 import { Button, buttonVariants } from '../../../ui/button';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 import { ShareButton } from '@/components/share';
 import useAuthPrompt from '@/lib/hooks/use-auth-prompt';
 import useAddToList from '@/components/favorite-lists/hooks/use-add-to-list';

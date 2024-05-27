@@ -22,7 +22,7 @@ import { useSession } from 'next-auth/react';
 import { useEffect, useRef, useState } from 'react';
 import { useAppConfig } from '@/lib/hooks/use-app-config';
 import { Input } from '../ui/input';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 import ShortUrlAdapter from './adapters/short-url-adapter';
 import useClipboard from '@/lib/hooks/use-clipboard';
 import useAuthPrompt from '@/lib/hooks/use-auth-prompt';

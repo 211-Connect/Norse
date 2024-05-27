@@ -1,5 +1,5 @@
 import { SessionProvider } from 'next-auth/react';
-import { PrevUrlProvider } from '../lib/context/PrevUrl';
+import { PrevUrlProvider } from '@/hooks/use-prev-url';
 import { useHydrateAtoms } from 'jotai/react/utils';
 import { CookiesProvider } from 'react-cookie';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';

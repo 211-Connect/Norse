@@ -1,8 +1,9 @@
 import { useTranslation } from 'next-i18next';
 import { Button } from '../../ui/button';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 import { IconAdjustments } from '@tabler/icons-react';
-import { useFilterPanelStore } from '@/lib/state/filterPanel';
+import { filterPanelAtom } from './filter-panel';
+import { useAtom, useSetAtom } from 'jotai';
 
 export default function ResultsHeader({
   totalFilters,
@@ -10,7 +11,7 @@ export default function ResultsHeader({
   totalResults,
 }) {
   const { t } = useTranslation('page-search');
-  const filterPanel = useFilterPanelStore();
+  const setFilterPanel = useSetAtom(filterPanelAtom);
 
   const counterStart = Math.round(
     Math.abs(Math.min(Math.max(currentPage * 25 - 25 + 1, 0), totalResults))
@@ -30,7 +31,12 @@ export default function ResultsHeader({
       {totalFilters > 0 && (
         <Button
           className="flex gap-1 items-center md:hidden"
-          onClick={filterPanel.toggle}
+          onClick={() =>
+            setFilterPanel((prev) => ({
+              ...prev,
+              isOpen: !prev.isOpen,
+            }))
+          }
         >
           <IconAdjustments className="size-4" /> {t('filter_results')}
         </Button>

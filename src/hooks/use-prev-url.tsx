@@ -1,3 +1,4 @@
+import { useContext } from 'react';
 import {
   useEffect,
   useRef,
@@ -7,7 +8,7 @@ import {
 } from 'react';
 import { parseCookies, setCookie } from 'nookies';
 import { useRouter } from 'next/router';
-import { PREV_URL } from '../constants/cookies';
+import { PREV_URL } from '@/constants/cookies';
 
 export const prevUrlContext = createContext<any>('');
 
@@ -53,3 +54,8 @@ export const PrevUrlProvider = ({ children }: PropsWithChildren) => {
     </prevUrlContext.Provider>
   );
 };
+
+export function usePrevUrl() {
+  const ctx = useContext(prevUrlContext);
+  return ctx;
+}

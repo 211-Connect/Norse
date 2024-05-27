@@ -3,7 +3,7 @@ import { useTranslation } from 'next-i18next';
 import { Anchor } from '@/components/anchor';
 import { useAppConfig } from '@/hooks/use-app-config';
 import { IconPointFilled } from '@tabler/icons-react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 
 type Props = PropsWithChildren & {
   fullWidth?: boolean;

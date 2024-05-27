@@ -1,16 +1,16 @@
-import { parseHtml } from '@/lib/utils/parseHtml';
+import { parseHtml } from '@/utils/parseHtml';
 import { IconPhone, IconWorldWww, IconNavigation } from '@tabler/icons-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'next-i18next';
 import { useCookies } from 'react-cookie';
 import { ReferralButton } from '@/components/referral-button';
-import { USER_PREF_COORDS, USER_PREF_LOCATION } from '@/lib/constants/cookies';
+import { USER_PREF_COORDS, USER_PREF_LOCATION } from '@/constants/cookies';
 import { useAppConfig } from '@/lib/hooks/use-app-config';
 import { Resource } from '@/lib/server/adapters/resource-adapter';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { badgeVariants } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 import useUpdateLocation from '@/components/search/hooks/use-update-location';
 
 type Props = {

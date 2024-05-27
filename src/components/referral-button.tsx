@@ -2,7 +2,7 @@ import { createReferralEvent } from '@/hooks/use-event-store/events';
 import Link from 'next/link';
 import { LinkProps } from 'next/link';
 import { buttonVariants } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 
 type Props = {
   referralType: 'call_referral' | 'website_referral' | 'directions_referral';

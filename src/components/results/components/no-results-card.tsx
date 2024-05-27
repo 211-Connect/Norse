@@ -6,7 +6,7 @@ import { Anchor } from '@/components/anchor';
 import { IconPhone } from '@tabler/icons-react';
 import { Card, CardDescription, CardFooter, CardHeader } from '../../ui/card';
 import { buttonVariants } from '../../ui/button';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 
 type Props = {
   showAltSubtitle?: boolean;

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { SESSION_ID } from '@/lib/constants/cookies';
+import { SESSION_ID } from '@/constants/cookies';
 
 export const config = {
   matcher: [

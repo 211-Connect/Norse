@@ -3,7 +3,7 @@ import {
   ReferralEventProps,
   SearchEvent,
   createEvent,
-} from '@/lib/utils/GTM';
+} from '@/utils/GTM';
 import { parseCookies } from 'nookies';
 import router from 'next/router';
 
