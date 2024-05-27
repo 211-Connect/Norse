@@ -23,7 +23,7 @@ export function middleware(request: NextRequest) {
   }
 
   if (!sessionId) {
-    sessionId = crypto.randomUUID().replaceAll('-', '');
+    sessionId = crypto.randomUUID();
   }
 
   const response = NextResponse.next();
