@@ -1,14 +1,14 @@
 import { GetStaticPropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { CategorySection } from '../components/categories';
+import { CategorySection } from '../components/home/categories';
 import { TourProvider } from '@reactour/tour';
 import { AppFooter } from '../components/app-footer';
-import { DataProviders } from '../components/data-providers';
+import { DataProviders } from '../components/app-footer/components/data-providers';
 import { AppHeader } from '../components/app-header';
 import { HeroSection } from '../components/home/hero-section';
 import { useTranslation } from 'next-i18next';
 import Head from 'next/head';
-import { useAppConfig } from '@/lib/hooks/use-app-config';
+import { useAppConfig } from '@/hooks/use-app-config';
 import {
   serverSideAppConfig,
   serverSideCategories,

@@ -1,11 +1,11 @@
 import Autocomplete, { Option } from '@/components/ui/autocomplete';
-import useDebounce from '@/lib/hooks/use-debounce';
+import useDebounce from '@/hooks/use-debounce';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { useMemo, useState } from 'react';
 import TaxonomyAdapter, { isTaxonomyCode } from '../adapters/taxonomy-adapter';
-import useSuggestions from '@/lib/hooks/use-suggestions';
+import useSuggestions from '../hooks/use-suggestions';
 
 export default function TaxonomyInput({
   name,

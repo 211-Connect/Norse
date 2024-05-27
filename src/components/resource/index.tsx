@@ -1,10 +1,10 @@
 import { usePrevUrl } from '../../lib/hooks/use-prev-url';
 import { useEffect, useRef, useState } from 'react';
-import { ResourceNavigation } from './navigation';
+import { ResourceNavigation } from './components/navigation';
 import { Resource as IResource } from '@/lib/server/adapters/resource-adapter';
-import ResourceInformation from './information';
-import { ResourceOverview } from './overview';
-import { ResourceOrganization } from './organization';
+import ResourceInformation from './components/information';
+import { ResourceOverview } from './components/overview';
+import { ResourceOrganization } from './components/organization';
 
 export default function Resource({ data }: { data: IResource }) {
   const prevUrl = usePrevUrl();

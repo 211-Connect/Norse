@@ -1,6 +1,6 @@
 import { Category } from './components/category';
 import { useTranslation } from 'next-i18next';
-import { useCategories } from '@/lib/hooks/use-categories';
+import { useCategories } from './hooks/use-categories';
 
 export function CategorySection() {
   const { t } = useTranslation('page-home');

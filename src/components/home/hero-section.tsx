@@ -1,9 +1,9 @@
 import Image from 'next/image';
 import { useTranslation } from 'next-i18next';
-import { useEventStore } from '../../lib/hooks/use-event-store';
+import { useEventStore } from '@/hooks/use-event-store';
 import { useTour } from '@reactour/tour';
 import { useMemo } from 'react';
-import { useAppConfig } from '../../lib/hooks/use-app-config';
+import { useAppConfig } from '@/hooks/use-app-config';
 import { Button } from '../ui/button';
 import Search from '../search';
 

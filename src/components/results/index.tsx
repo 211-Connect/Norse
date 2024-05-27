@@ -1,14 +1,14 @@
-import { NoResultsCard } from './no-results-card';
-import { Result } from './result';
+import { NoResultsCard } from './components/no-results-card';
+import { Result } from './components/result';
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
 import { useMemo } from 'react';
-import { IResult } from '../../lib/adapters/SearchAdapter';
-import ResultsHeader from './header';
-import ResultsPagination from './pagination';
+import ResultsHeader from './components/header';
+import ResultsPagination from './components/pagination';
 
 type Props = {
-  results: IResult[];
+  // results: IResult[];
+  results: any[];
   currentPage: number;
   noResults: boolean;
   totalResults: number;

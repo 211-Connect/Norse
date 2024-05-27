@@ -1,11 +1,11 @@
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
-import { NextRouter, useRouter } from 'next/router';
-import { useAppConfig } from '../../lib/hooks/use-app-config';
+import { useRouter } from 'next/router';
+import { useAppConfig } from '@/hooks/use-app-config';
 import { Anchor } from '@/components/anchor';
 import { IconPhone } from '@tabler/icons-react';
-import { Card, CardDescription, CardFooter, CardHeader } from '../ui/card';
-import { buttonVariants } from '../ui/button';
+import { Card, CardDescription, CardFooter, CardHeader } from '../../ui/card';
+import { buttonVariants } from '../../ui/button';
 import { cn } from '@/lib/utils';
 
 type Props = {

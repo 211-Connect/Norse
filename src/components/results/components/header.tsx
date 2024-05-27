@@ -1,5 +1,5 @@
 import { useTranslation } from 'next-i18next';
-import { Button } from '../ui/button';
+import { Button } from '../../ui/button';
 import { cn } from '@/lib/utils';
 import { IconAdjustments } from '@tabler/icons-react';
 import { useFilterPanelStore } from '@/lib/state/filterPanel';

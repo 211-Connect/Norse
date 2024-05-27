@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useAppConfig } from '@/lib/hooks/use-app-config';
+import { useAppConfig } from '@/hooks/use-app-config';
 import { useTranslation } from 'next-i18next';
 
 export default function RadiusSelect({

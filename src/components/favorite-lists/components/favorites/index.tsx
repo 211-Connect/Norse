@@ -1,5 +1,5 @@
 import { IconChevronLeft, IconEdit, IconTrash } from '@tabler/icons-react';
-import { Favorite } from './favorite';
+import { Favorite } from './components/favorite';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRef } from 'react';
@@ -11,15 +11,15 @@ import {
   favoriteListWithFavoritesAtom,
   updateFavoriteListDialogAtom,
 } from './state';
-import { Badge } from '../../ui/badge';
-import { Button, buttonVariants } from '../../ui/button';
-import { Card, CardContent } from '../../ui/card';
+import { Badge } from '../../../ui/badge';
+import { Button, buttonVariants } from '../../../ui/button';
+import { Card, CardContent } from '../../../ui/card';
 import { useSession } from 'next-auth/react';
-import { Anchor } from '../../anchor';
+import { Anchor } from '../../../ui/anchor';
 import { cn } from '@/lib/utils';
-import DeleteFavoriteList from './modals/delete-favorite-list';
-import { UpdateFavoriteListModal } from './modals/update-favorite-list';
-import DeleteFavorite from './modals/delete-favorite';
+import DeleteFavoriteList from './components/modals/delete-favorite-list';
+import { UpdateFavoriteListModal } from './components/modals/update-favorite-list';
+import DeleteFavorite from './components/modals/delete-favorite';
 import { ShareButton } from '@/components/share';
 
 export function FavoritesSection() {

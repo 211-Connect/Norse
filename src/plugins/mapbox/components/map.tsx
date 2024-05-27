@@ -6,7 +6,7 @@ import mapboxgl, {
 } from 'mapbox-gl';
 import { useEffect, useMemo, useRef } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { useAppConfig } from '../../../lib/hooks/use-app-config';
+import { useAppConfig } from '@/hooks/use-app-config';
 import { IconPhone, IconWorldWww } from '@tabler/icons-react';
 import { useRouter } from 'next/router';
 import 'mapbox-gl/dist/mapbox-gl.css';

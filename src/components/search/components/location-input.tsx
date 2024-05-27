@@ -1,5 +1,5 @@
 import Autocomplete, { Option } from '@/components/ui/autocomplete';
-import useDebounce from '@/lib/hooks/use-debounce';
+import useDebounce from '@/hooks/use-debounce';
 import { IconLocation, IconMapPin } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'next-i18next';

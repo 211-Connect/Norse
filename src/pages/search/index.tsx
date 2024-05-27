@@ -1,17 +1,13 @@
 import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import nookies from 'nookies';
-import {
-  USER_PREF_COORDS,
-  USER_PREF_LOCATION,
-} from '../../lib/constants/cookies';
 import { useEffect } from 'react';
-import { useEventStore } from '../../lib/hooks/use-event-store';
+import { useEventStore } from '@/hooks/use-event-store';
 import { AppHeader } from '../../components/app-header';
 import { AppFooter } from '../../components/app-footer';
-import { FilterPanel } from '../../components/filter-panel';
+import { FilterPanel } from '../../components/results/components/filter-panel';
 import { PluginLoader } from '../../components/plugin-loader';
-import { useAppConfig } from '../../lib/hooks/use-app-config';
+import { useAppConfig } from '@/hooks/use-app-config';
 import { useTranslation } from 'next-i18next';
 import { cacheControl } from '../../lib/server/cache-control';
 import SearchAdapter, {
@@ -19,8 +15,8 @@ import SearchAdapter, {
 } from '@/lib/server/adapters/search-adapter';
 import Head from 'next/head';
 import { Results } from '@/components/results';
-import useMediaQuery from '@/lib/hooks/use-media-query';
-import useWindowScroll from '@/lib/hooks/use-window-scroll';
+import useMediaQuery from '@/hooks/use-media-query';
+import useWindowScroll from '@/hooks/use-window-scroll';
 import Search from '@/components/search';
 import { serverSideAppConfig, serverSideFavorites } from '@/lib/server/utils';
 

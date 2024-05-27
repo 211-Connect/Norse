@@ -9,7 +9,7 @@ import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { useMemo } from 'react';
 import { Anchor } from '@/components/anchor';
-import { useAppConfig } from '@/lib/hooks/use-app-config';
+import { useAppConfig } from '@/hooks/use-app-config';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import useAuthPrompt from '@/lib/hooks/use-auth-prompt';
+import useAuthPrompt from '@/hooks/use-auth-prompt';
 
 type Props = {
   fullWidth?: boolean;

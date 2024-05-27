@@ -1,13 +1,13 @@
-import FavoriteList from './list';
+import FavoriteList from './components/list';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { createFavoriteListDialogAtom, favoriteListsAtom } from './state';
-import DeleteFavoriteList from './modals/delete-favorite-list';
-import { UpdateFavoriteListModal } from './modals/update-favorite-list';
-import { CreateAFavoriteListModal } from './modals/create-favorite-list';
+import DeleteFavoriteList from './components/modals/delete-favorite-list';
+import { UpdateFavoriteListModal } from './components/modals/update-favorite-list';
+import { CreateAFavoriteListModal } from './components/modals/create-favorite-list';
 
 export function FavoriteLists() {
   const { t } = useTranslation('page-favorites');

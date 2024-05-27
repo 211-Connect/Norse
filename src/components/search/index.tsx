@@ -3,13 +3,13 @@ import TaxonomySearch from './components/taxonomy-input';
 import { Button } from '../ui/button';
 import { useTranslation } from 'next-i18next';
 import { Option } from '../ui/autocomplete';
-import useSuggestions from '@/lib/hooks/use-suggestions';
+import useSuggestions from './hooks/use-suggestions';
 import { isTaxonomyCode } from './adapters/taxonomy-adapter';
 import { useRouter } from 'next/router';
 import qs from 'qs';
 import LocationInput from './components/location-input';
 
-import { useAppConfig } from '@/lib/hooks/use-app-config';
+import { useAppConfig } from '@/hooks/use-app-config';
 import RadiusSelect from './components/radius-select';
 import LocationAdapter from './adapters/location-adapter';
 import { Badge } from '../ui/badge';

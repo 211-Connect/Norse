@@ -1,9 +1,9 @@
-import { useFilterPanelStore } from '../lib/state/filterPanel';
+import { useFilterPanelStore } from '../../../lib/state/filterPanel';
 import { useRouter } from 'next/router';
 import qs from 'qs';
-import { Badge } from './ui/badge';
-import { Checkbox } from './ui/checkbox';
-import { Dialog } from './ui/dialog';
+import { Badge } from '../../ui/badge';
+import { Checkbox } from '../../ui/checkbox';
+import { Dialog } from '../../ui/dialog';
 
 export function FilterPanel({ filters }: any) {
   const router = useRouter();

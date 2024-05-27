@@ -1,5 +1,4 @@
-import { useEventStore } from '../../lib/hooks/use-event-store';
-import { openContextModal } from '@mantine/modals';
+import { useEventStore } from '@/hooks/use-event-store';
 import {
   IconHeart,
   IconLink,
@@ -10,19 +9,20 @@ import {
 } from '@tabler/icons-react';
 import Link from 'next/link';
 import { NextRouter } from 'next/router';
-import { parseHtml } from '../../lib/utils/parseHtml';
+import { parseHtml } from '../../../lib/utils/parseHtml';
 import { useTranslation } from 'next-i18next';
 import { Anchor } from '@/components/anchor';
 import { ReferralButton } from '@/components/referral-button';
-import { distanceBetweenCoordsInMiles } from '../../lib/utils/distenceBetweenCoords';
-import { Card, CardContent, CardFooter, CardHeader } from '../ui/card';
-import { Badge } from '../ui/badge';
-import { Button, buttonVariants } from '../ui/button';
+import { distanceBetweenCoordsInMiles } from '../../../lib/utils/distenceBetweenCoords';
+import { Card, CardContent, CardFooter, CardHeader } from '../../ui/card';
+import { Badge } from '../../ui/badge';
+import { Button, buttonVariants } from '../../ui/button';
 import { cn } from '@/lib/utils';
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
-import { Spoiler } from '../ui/spoiler';
-import useAuthPrompt from '@/lib/hooks/use-auth-prompt';
-import useAddToList from '../favorite-lists/hooks/use-add-to-list';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../../ui/tooltip';
+import { Spoiler } from '../../ui/spoiler';
+import useAuthPrompt from '@/hooks/use-auth-prompt';
+import useAddToList from '../../favorite-lists/hooks/use-add-to-list';
+import useUpdateLocation from '../../search/hooks/use-update-location';
 
 type Props = {
   id: string;
@@ -47,6 +47,7 @@ export function Result(props: Props) {
   const { open: openAddToList, AddToFavoriteListDialog } = useAddToList(
     props.id
   );
+  const { open: openUpdateLocation, UpdateLocation } = useUpdateLocation(props);
 
   const handleLink = (e: any) => {
     createLinkEvent(e);
@@ -56,13 +57,7 @@ export function Result(props: Props) {
     const coords = props?.coordinates ?? null;
     if (coords?.length === 0) {
       e.preventDefault();
-      openContextModal({
-        modal: 'update-location',
-        centered: true,
-        innerProps: {
-          location: props.location,
-        },
-      });
+      openUpdateLocation();
     }
   };
 
@@ -211,6 +206,7 @@ export function Result(props: Props) {
       </Card>
       <AuthPrompt />
       <AddToFavoriteListDialog />
+      <UpdateLocation />
     </>
   );
 }

@@ -29,7 +29,6 @@ import { Spoiler } from '@/components/ui/spoiler';
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { useSession } from 'next-auth/react';

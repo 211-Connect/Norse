@@ -6,11 +6,11 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useAtom, useAtomValue } from 'jotai';
-import { deleteFavoriteListDialogAtom } from '../state';
+import { deleteFavoriteListDialogAtom } from '../../state';
 import { useTranslation } from 'next-i18next';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/router';
-import { deleteFavoriteListMutation } from '../mutations';
+import { deleteFavoriteListMutation } from '../../mutations';
 import { toast } from 'sonner';
 
 export default function DeleteFavoriteList() {

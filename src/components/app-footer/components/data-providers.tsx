@@ -1,8 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { useAppConfig } from '../lib/hooks/use-app-config';
+import { useAppConfig } from '@/hooks/use-app-config';
 import { useTranslation } from 'next-i18next';
-import { Card, CardContent, CardHeader } from './ui/card';
+import { Card, CardContent, CardHeader } from '../../ui/card';
 
 export function DataProviders() {
   const appConfig = useAppConfig();

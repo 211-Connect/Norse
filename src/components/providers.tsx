@@ -5,9 +5,9 @@ import { CookiesProvider } from 'react-cookie';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { queryClientAtom } from 'jotai-tanstack-query';
 import { TooltipProvider } from '@radix-ui/react-tooltip';
-import { SuggestionsProvider } from '@/lib/hooks/use-suggestions';
-import { AppConfigProvider } from '@/lib/hooks/use-app-config';
-import { CategoriesProvider } from '@/lib/hooks/use-categories';
+import { SuggestionsProvider } from '@/components/search/hooks/use-suggestions';
+import { AppConfigProvider } from '@/hooks/use-app-config';
+import { CategoriesProvider } from '@/components/home/categories/hooks/use-categories';
 
 const queryClient = new QueryClient();
 const HydrateAtoms = ({ children }) => {

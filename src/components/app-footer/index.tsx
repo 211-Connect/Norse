@@ -1,7 +1,7 @@
 import { Fragment, PropsWithChildren } from 'react';
 import { useTranslation } from 'next-i18next';
 import { Anchor } from '@/components/anchor';
-import { useAppConfig } from '@/lib/hooks/use-app-config';
+import { useAppConfig } from '@/hooks/use-app-config';
 import { IconPointFilled } from '@tabler/icons-react';
 import { cn } from '@/lib/utils';
 
