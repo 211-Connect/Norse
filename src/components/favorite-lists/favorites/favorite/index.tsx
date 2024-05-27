@@ -89,7 +89,7 @@ export function Favorite(props: Props) {
           hideLabel={t('call_to_action.show_less', { ns: 'common' })}
           showLabel={t('call_to_action.show_more', { ns: 'common' })}
         >
-          <p className="whitespace-pre-wrap">
+          <p className="whitespace-pre-wrap prose">
             {parseHtml(props.serviceDescription, {
               parseLineBreaks: true,
             })}

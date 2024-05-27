@@ -16,7 +16,7 @@ export function ResourceOrganization({ data }: Props) {
         <h3 className="text-2xl font-bold">{t('agency_info')}</h3>
         <p className="text-lg font-semibold">{data.organizationName}</p>
 
-        <p className="whitespace-pre-wrap">
+        <p className="whitespace-pre-wrap prose">
           {parseHtml(data.organizationDescription ?? '')}
         </p>
       </CardContent>

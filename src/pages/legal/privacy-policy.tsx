@@ -46,7 +46,9 @@ export default function PrivacyPolicy({ html = '' }: { html: string }) {
         <meta property="og:description" content="Privacy Policy" />
       </Head>
       <AppHeader />
-      <div className="container mx-auto">{parseHtml(html)}</div>
+      <div className="container mx-auto whitespace-pre-wrap prose">
+        {parseHtml(html)}
+      </div>
       <AppFooter />
     </>
   );

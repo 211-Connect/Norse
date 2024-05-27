@@ -5,7 +5,7 @@ import { useForm } from '@tanstack/react-form';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import FavoriteAdapter from '@/lib/client/adapters/favorite-adapter';
+import FavoriteAdapter from '../adapters/favorite-adapter';
 import useDebounce from '@/lib/hooks/use-debounce';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';

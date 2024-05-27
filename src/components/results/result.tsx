@@ -97,7 +97,7 @@ export function Result(props: Props) {
             hideLabel={t('call_to_action.show_less', { ns: 'common' })}
             showLabel={t('call_to_action.show_more', { ns: 'common' })}
           >
-            <div className="whitespace-pre-wrap">
+            <div className="whitespace-pre-wrap prose">
               {parseHtml(props.description ?? '')}
             </div>
           </Spoiler>
