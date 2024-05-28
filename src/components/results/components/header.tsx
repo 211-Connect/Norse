@@ -3,7 +3,7 @@ import { Button } from '../../ui/button';
 import { cn } from '@/utils';
 import { IconAdjustments } from '@tabler/icons-react';
 import { filterPanelAtom } from './filter-panel';
-import { useAtom, useSetAtom } from 'jotai';
+import { useSetAtom } from 'jotai';
 
 export default function ResultsHeader({
   totalFilters,

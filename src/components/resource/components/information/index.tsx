@@ -1,4 +1,4 @@
-import { useAppConfig } from '@/lib/hooks/use-app-config';
+import { useAppConfig } from '@/hooks/use-app-config';
 import { PluginLoader } from '@/components/plugin-loader';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import Addresses from './addresses';

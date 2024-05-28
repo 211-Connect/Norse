@@ -8,14 +8,14 @@ import {
 import { useAtom, useAtomValue } from 'jotai';
 import { useTranslation } from 'next-i18next';
 import router from 'next/router';
-import { createFavoriteListDialogAtom } from '../state';
+import { createFavoriteListDialogAtom } from '../../state';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useForm } from '@tanstack/react-form';
 import { Button } from '@/components/ui/button';
-import { createFavoriteListMutation } from '../mutations';
+import { createFavoriteListMutation } from '../../mutations';
 
 export function CreateAFavoriteListModal() {
   const [data, setData] = useAtom(createFavoriteListDialogAtom);

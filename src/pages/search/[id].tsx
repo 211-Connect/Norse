@@ -2,8 +2,7 @@ import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { AppHeader } from '../../components/app-header';
 import { AppFooter } from '../../components/app-footer';
-import { usePrevUrl } from '@/hooks/use-prev-url';
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import { cacheControl } from '../../lib/server/cache-control';
 import ResourceAdapter, {
   Resource as IResource,
@@ -57,18 +56,8 @@ type Props = {
 };
 
 export default function SearchDetail({ resource }: Props) {
-  const prevUrl = usePrevUrl();
-  const [backUrl, setBackUrl] = useState('loading');
   const componentRef = useRef();
   const appConfig = useAppConfig();
-
-  useEffect(() => {
-    if (prevUrl && prevUrl.startsWith('/search')) {
-      setBackUrl(prevUrl);
-    } else {
-      setBackUrl('/');
-    }
-  }, [prevUrl]);
 
   const metaTitle = resource.name;
   const metaDescription = resource.description;

@@ -15,7 +15,7 @@ import { Badge } from '../../../ui/badge';
 import { Button, buttonVariants } from '../../../ui/button';
 import { Card, CardContent } from '../../../ui/card';
 import { useSession } from 'next-auth/react';
-import { Anchor } from '../../../ui/anchor';
+import { Anchor } from '../../../anchor';
 import { cn } from '@/utils';
 import DeleteFavoriteList from './components/modals/delete-favorite-list';
 import { UpdateFavoriteListModal } from './components/modals/update-favorite-list';

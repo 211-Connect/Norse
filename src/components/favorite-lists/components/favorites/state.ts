@@ -1,6 +1,6 @@
 import { atomWithQuery } from 'jotai-tanstack-query';
 import { IFavoriteListWithFavorites } from './types/Favorite';
-import FavoriteAdapter from '../adapters/favorite-adapter';
+import FavoriteAdapter from '../../adapters/favorite-adapter';
 import router from 'next/router';
 import { atom } from 'jotai';
 

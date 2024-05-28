@@ -4,7 +4,7 @@ import { AppHeader } from '../../components/app-header';
 import { GetStaticPropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Head from 'next/head';
-import { useAppConfig } from '@/lib/hooks/use-app-config';
+import { useAppConfig } from '@/hooks/use-app-config';
 import { serverSideAppConfig } from '@/lib/server/utils';
 
 export async function getStaticProps(ctx: GetStaticPropsContext) {

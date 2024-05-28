@@ -8,10 +8,10 @@ import {
 } from '@/components/ui/dialog';
 import { useAtom, useAtomValue } from 'jotai';
 import { useTranslation } from 'next-i18next';
-import { deleteFavoriteFromFavoriteListDialogAtom } from '../state';
-import FavoriteAdapter from '@/lib/client/adapters/favorite-adapter';
+import { deleteFavoriteFromFavoriteListDialogAtom } from '../../state';
+import FavoriteAdapter from '../../../../adapters/favorite-adapter';
 import { useRouter } from 'next/router';
-import { deleteFavoriteFromFavoriteListMutation } from '../mutations';
+import { deleteFavoriteFromFavoriteListMutation } from '../../mutations';
 
 export default function DeleteFavorite() {
   const { t } = useTranslation();

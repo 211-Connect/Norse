@@ -8,14 +8,14 @@ import {
 import { useAtom, useAtomValue } from 'jotai';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import { updateFavoriteListDialogAtom } from '../state';
+import { updateFavoriteListDialogAtom } from '../../state';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useForm } from '@tanstack/react-form';
 import { Button } from '@/components/ui/button';
-import { updateFavoriteListMutation } from '../mutations';
+import { updateFavoriteListMutation } from '../../mutations';
 import { toast } from 'sonner';
 
 export function UpdateFavoriteListModal() {

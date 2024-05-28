@@ -4,14 +4,14 @@ import { AppHeader } from '../../components/app-header';
 import { AppFooter } from '../../components/app-footer';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]';
-import { useAppConfig } from '../../lib/hooks/use-app-config';
+import { useAppConfig } from '@/hooks/use-app-config';
 import { PluginLoader } from '../../components/plugin-loader';
 import { useTranslation } from 'next-i18next';
 import Head from 'next/head';
 import { useEffect } from 'react';
-import { FavoritesSection } from '@/components/favorite-lists/favorites';
-import useWindowScroll from '@/lib/hooks/use-window-scroll';
-import useMediaQuery from '@/lib/hooks/use-media-query';
+import { FavoritesSection } from '@/components/favorite-lists/components/favorites';
+import useWindowScroll from '@/hooks/use-window-scroll';
+import useMediaQuery from '@/hooks/use-media-query';
 import { serverSideAppConfig } from '@/lib/server/utils';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {

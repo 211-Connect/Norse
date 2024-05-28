@@ -1,6 +1,6 @@
 import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import nookies from 'nookies';
+import nookies, { destroyCookie } from 'nookies';
 import { useEffect } from 'react';
 import { useEventStore } from '@/hooks/use-event-store';
 import { AppHeader } from '../../components/app-header';
@@ -19,26 +19,57 @@ import useMediaQuery from '@/hooks/use-media-query';
 import useWindowScroll from '@/hooks/use-window-scroll';
 import Search from '@/components/search';
 import { serverSideAppConfig, serverSideFavorites } from '@/lib/server/utils';
+import {
+  USER_PREF_BACK_ACTION,
+  USER_PREF_COORDS,
+  USER_PREF_DISTANCE,
+  USER_PREF_LAST_QUERY,
+  USER_PREF_LOCATION,
+} from '@/constants/cookies';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const cookies = nookies.get(ctx);
 
+  if (
+    cookies[USER_PREF_LAST_QUERY] != null &&
+    cookies[USER_PREF_BACK_ACTION] != null
+  ) {
+    destroyCookie(ctx, USER_PREF_BACK_ACTION, { path: '/' });
+    let prefix = '';
+    if (ctx.locale !== ctx.defaultLocale) {
+      prefix += `/${ctx.locale}`;
+    }
+
+    return {
+      redirect: {
+        destination: `${prefix}/search${cookies[USER_PREF_LAST_QUERY] || ''}`,
+        permanent: false,
+      },
+    };
+  }
+
   // If the user already has a location and coords, but they aren't present in the query
   // redirect them to the url using their stored location and coords
-  // if (!ctx.query.location || !ctx.query.coords) {
-  //   if (cookies[USER_PREF_LOCATION] && cookies[USER_PREF_COORDS]) {
-  //     const newQuery = new URLSearchParams(ctx.resolvedUrl.split('?')[1]);
-  //     newQuery.set('location', cookies[USER_PREF_LOCATION]);
-  //     newQuery.set('coords', cookies[USER_PREF_COORDS]);
+  if (!ctx.query.location || !ctx.query.coords) {
+    if (cookies[USER_PREF_LOCATION] && cookies[USER_PREF_COORDS]) {
+      const newQuery = new URLSearchParams(ctx.resolvedUrl.split('?')[1]);
+      newQuery.set('location', cookies[USER_PREF_LOCATION] || '');
+      newQuery.set('coords', cookies[USER_PREF_COORDS] || '0,0');
+      newQuery.set('distance', cookies[USER_PREF_DISTANCE] || '0');
 
-  //     return {
-  //       redirect: {
-  //         destination: `/${ctx.locale}/search?${newQuery.toString()}`,
-  //         permanent: false,
-  //       },
-  //     };
-  //   }
-  // }
+      let prefix = '';
+      if (ctx.locale !== ctx.defaultLocale) {
+        prefix += `/${ctx.locale}`;
+      }
+
+      return {
+        redirect: {
+          destination: `${prefix}/search?${newQuery.toString()}`,
+          permanent: false,
+        },
+      };
+    }
+  }
 
   const searchAdapter = SearchAdapter();
   const { results, noResults, totalResults, page, filters } =

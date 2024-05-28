@@ -7,8 +7,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { USER_PREF_DISTANCE } from '@/constants/cookies';
 import { useAppConfig } from '@/hooks/use-app-config';
 import { useTranslation } from 'next-i18next';
+import { setCookie } from 'nookies';
 
 export default function RadiusSelect({
   name,
@@ -23,7 +25,14 @@ export default function RadiusSelect({
   const appConfig = useAppConfig();
 
   return (
-    <Select name={name} value={value} onValueChange={onValueChange}>
+    <Select
+      name={name}
+      value={value}
+      onValueChange={(value) => {
+        onValueChange?.(value);
+        setCookie(null, USER_PREF_DISTANCE, value, { path: '/' });
+      }}
+    >
       <SelectTrigger className="w-[125px]">
         <SelectValue
           placeholder={t('search.radius_placeholder', {

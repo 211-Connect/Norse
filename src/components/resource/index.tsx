@@ -1,5 +1,4 @@
-import { usePrevUrl } from '@/hooks/use-prev-url';
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import { ResourceNavigation } from './components/navigation';
 import { Resource as IResource } from '@/lib/server/adapters/resource-adapter';
 import ResourceInformation from './components/information';
@@ -7,23 +6,12 @@ import { ResourceOverview } from './components/overview';
 import { ResourceOrganization } from './components/organization';
 
 export default function Resource({ data }: { data: IResource }) {
-  const prevUrl = usePrevUrl();
-  const [backUrl, setBackUrl] = useState('loading');
   const componentRef = useRef();
-
-  useEffect(() => {
-    if (prevUrl && prevUrl.startsWith('/search')) {
-      setBackUrl(prevUrl);
-    } else {
-      setBackUrl('/');
-    }
-  }, [prevUrl]);
 
   return (
     <div className="flex-1 flex flex-col gap-2">
       <ResourceNavigation
         resourceId={data.id}
-        backUrl={backUrl}
         displayName={data.name}
         serviceDescription={data.description}
         componentToPrint={componentRef}

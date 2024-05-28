@@ -6,11 +6,17 @@ import { useReactToPrint } from 'react-to-print';
 import { Button, buttonVariants } from '../../../ui/button';
 import { cn } from '@/utils';
 import { ShareButton } from '@/components/share';
-import useAuthPrompt from '@/lib/hooks/use-auth-prompt';
+import useAuthPrompt from '@/hooks/use-auth-prompt';
 import useAddToList from '@/components/favorite-lists/hooks/use-add-to-list';
+import { useCookies } from 'react-cookie';
+import {
+  USER_PREF_BACK_ACTION,
+  USER_PREF_LAST_QUERY,
+} from '@/constants/cookies';
+import { setCookie } from 'nookies';
+import { useRouter } from 'next/router';
 
 type Props = {
-  backUrl: 'loading' | string;
   resourceId: string;
   displayName: string;
   serviceDescription: string;
@@ -27,17 +33,27 @@ export function ResourceNavigation(props: Props) {
   const { open: openAddToList, AddToFavoriteListDialog } = useAddToList(
     props.resourceId
   );
+  const router = useRouter();
+  const [cookies] = useCookies([USER_PREF_LAST_QUERY]);
 
   return (
     <>
       <div className="flex justify-between items-center w-full max-w-[1100px] mx-auto pt-2">
-        <Link
-          className={cn(buttonVariants({ variant: 'default' }), 'gap-1')}
-          href={props.backUrl}
+        <Button
+          onClick={async () => {
+            if (cookies[USER_PREF_LAST_QUERY] == null) {
+              await router.push('/');
+            } else {
+              setCookie(null, USER_PREF_BACK_ACTION, 'true', { path: '/' });
+              await router.push('/search');
+            }
+          }}
         >
           <IconChevronLeft className="size-4" />
-          {props.backUrl === '/' ? t('back_to_home') : t('back_to_results')}
-        </Link>
+          {cookies[USER_PREF_LAST_QUERY] == null
+            ? t('back_to_home')
+            : t('back_to_results')}
+        </Button>
 
         <div className="flex gap-2">
           <ShareButton

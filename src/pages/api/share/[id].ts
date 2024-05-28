@@ -1,25 +1,22 @@
 import { NextApiHandler } from 'next';
 import { isAxiosError } from 'axios';
-import { getServerSideAxios } from '../../../lib/server/axios';
 
 const ShareHandler: NextApiHandler = async (req, res) => {
   if (req.method !== 'GET' && req.method !== 'POST') res.redirect('/');
 
-  const axios = getServerSideAxios({ req });
-
   if (req.method === 'GET') {
-    const id = req.query.id;
-    try {
-      const response = await axios.get(`/short-url/${id}`);
-      if (response.data) res.redirect(response.data.url);
-      else res.redirect('/404');
-    } catch (err) {
-      if (isAxiosError(err)) {
-        console.error(err.response?.data);
-      }
-      res.statusCode = 404;
-      res.redirect('/404');
-    }
+    // const id = req.query.id;
+    // try {
+    //   const response = await axios.get(`/short-url/${id}`);
+    //   if (response.data) res.redirect(response.data.url);
+    //   else res.redirect('/404');
+    // } catch (err) {
+    //   if (isAxiosError(err)) {
+    //     console.error(err.response?.data);
+    //   }
+    //   res.statusCode = 404;
+    //   res.redirect('/404');
+    // }
   } else {
     res.statusCode = 404;
     res.redirect('/404');
