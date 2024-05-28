@@ -35,7 +35,9 @@ Please adhere to this project's [code of conduct](.github/CODE_OF_CONDUCT.md).
 
 ## Community
 
-![Discord Banner 3](https://discordapp.com/api/guilds/1142619751219200140/widget.png?style=banner3)
+<a href="https://discord.gg/gjwsk8dJC4">
+  <img src="https://discordapp.com/api/guilds/1142619751219200140/widget.png?style=banner3" alt="Discord Banner 3"/>
+</a>
 
 ## Support
 
