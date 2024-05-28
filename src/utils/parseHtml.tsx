@@ -11,7 +11,7 @@ import parse, {
 
 export function parseHtml(
   html: string,
-  config?: { parseLineBreaks?: boolean }
+  config?: { parseLineBreaks?: boolean },
 ) {
   if (config?.parseLineBreaks) {
     html = html.replace(/\n/g, '<br />');
@@ -31,7 +31,7 @@ function parseToReact(children: DOMNode[]) {
 function replacer(node: DOMNode) {
   if (node instanceof Element) {
     const props = attributesToProps(node.attribs);
-    const children = parseToReact(node.children);
+    const children = parseToReact(node.children as DOMNode[]);
 
     if (node.name === 'h1') {
       return <h1 {...props}>{children}</h1>;
@@ -59,7 +59,7 @@ function replacer(node: DOMNode) {
 
     if (node.name === 'a') {
       return (
-        <Anchor href={props.href} {...props}>
+        <Anchor href={props.href as string} {...props}>
           {children}
         </Anchor>
       );

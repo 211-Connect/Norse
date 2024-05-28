@@ -59,15 +59,15 @@ const Distance = ({ resource }) => {
       ? distanceBetweenCoordsInMiles(
           location.coords.split(',').map((c) => parseFloat(c)) as [
             number,
-            number
+            number,
           ],
-          resource.location.coordinates
+          resource.location.coordinates,
         )
       : null;
   }, [location?.coords, resource?.location]);
 
   if (distance == null) return null;
-  return `- ${distance}mi`;
+  return <>{`- ${distance}mi`}</>;
 };
 
 const GetDirections = ({ openUpdateLocation, resource }) => {
@@ -109,7 +109,7 @@ export function Result(props: Props) {
   const { t } = useTranslation('common');
   const { open: openAuthPrompt, AuthPrompt } = useAuthPrompt();
   const { open: openAddToList, AddToFavoriteListDialog } = useAddToList(
-    props.id
+    props.id,
   );
   const { open: openUpdateLocation, UpdateLocation } = useUpdateLocation(props);
 
@@ -210,7 +210,7 @@ export function Result(props: Props) {
             <Link
               className={cn(
                 buttonVariants({ variant: 'default' }),
-                'w-full flex gap-2'
+                'w-full flex gap-2',
               )}
               href={`/search/${props.id}`}
             >

@@ -31,7 +31,7 @@ export function ResourceNavigation(props: Props) {
   });
   const { open: openAuthPrompt, AuthPrompt } = useAuthPrompt();
   const { open: openAddToList, AddToFavoriteListDialog } = useAddToList(
-    props.resourceId
+    props.resourceId,
   );
   const router = useRouter();
   const [cookies] = useCookies([USER_PREF_LAST_QUERY]);
@@ -50,9 +50,7 @@ export function ResourceNavigation(props: Props) {
           }}
         >
           <IconChevronLeft className="size-4" />
-          {cookies[USER_PREF_LAST_QUERY] == null
-            ? t('back_to_home')
-            : t('back_to_results')}
+          {t('back_to_results')}
         </Button>
 
         <div className="flex gap-2">
