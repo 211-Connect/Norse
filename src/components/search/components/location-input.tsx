@@ -5,29 +5,57 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'next-i18next';
 import { useCallback, useMemo, useState } from 'react';
 import LocationAdapter from '../adapters/location-adapter';
-import { useRouter } from 'next/router';
+import _router, { useRouter } from 'next/router';
 import { toast } from 'sonner';
-import { SESSION_ID } from '@/constants/cookies';
+import {
+  SESSION_ID,
+  USER_PREF_COORDS,
+  USER_PREF_LOCATION,
+} from '@/constants/cookies';
 import { Button } from '@/components/ui/button';
 import { useCookies } from 'react-cookie';
+import { atom, useAtom } from 'jotai';
+import { atomEffect } from 'jotai-effect';
+import { setCookie } from 'nookies';
+
+export const locationAtom = atom({
+  value: '',
+  coords: '',
+});
+
+locationAtom.onMount = (set) => {
+  set({
+    value: (_router.query?.location as string) ?? '',
+    coords: (_router.query?.coords as string) ?? '',
+  });
+};
+
+const locationAtomEffect = atomEffect((get) => {
+  const location = get(locationAtom);
+  setCookie(null, USER_PREF_LOCATION, location.value, { path: '/' });
+  setCookie(null, USER_PREF_COORDS, location.coords, { path: '/' });
+});
 
 export default function LocationInput({
   name,
   className,
-  onChange,
+  onInputChange,
+  onValueSelect,
   onCoordChange,
 }: {
   name?: string;
   className?: string;
-  onChange?: (option: Option) => void;
+  onInputChange?: (value: string) => void;
+  onValueSelect?: (option: Option) => void;
   onCoordChange?: (coords: string) => void;
 }) {
   const { t } = useTranslation();
   const router = useRouter();
-  const [value, setValue] = useState('');
+  const [location, setLocation] = useAtom(locationAtom);
+  useAtom(locationAtomEffect);
   const [cookies] = useCookies([SESSION_ID]);
   const [isFetching, setIsFetching] = useState(false);
-  const debouncedValue = useDebounce(value);
+  const debouncedValue = useDebounce(location.value);
   const { data } = useQuery<Option>({
     placeholderData: (prev) => prev,
     queryKey: [
@@ -69,7 +97,13 @@ export default function LocationInput({
           coords,
           router.locale
         );
-        setValue(data?.features?.[0]?.place_name);
+        setLocation((prev) => ({
+          ...prev,
+          coords: coords,
+          value: data?.features?.[0]?.place_name,
+        }));
+
+        onInputChange?.(data?.features?.[0]?.place_name);
         onCoordChange?.(coords);
       } catch (err) {
         toast.error(t('search.geocoding_error'), {
@@ -79,7 +113,7 @@ export default function LocationInput({
         setIsFetching(false);
       }
     },
-    [t, onCoordChange, router.locale]
+    [t, onCoordChange, router.locale, setLocation, onInputChange]
   );
 
   const getUserLocation = useCallback(() => {
@@ -106,12 +140,12 @@ export default function LocationInput({
     }
   }, [convertGeoLocation, t]);
 
-  const onValueChange = (option: Option) => {
-    onChange?.(option);
-    setValue(option.value);
+  const onChange = (value: string) => {
+    setLocation((prev) => ({ ...prev, coords: '', value: value }));
+    onInputChange?.(value);
   };
 
-  const onValueSelect = async (option: Option & { mapbox_id: string }) => {
+  const onSelect = async (option: Option & { mapbox_id: string }) => {
     const locationAdapter = LocationAdapter();
     const data = await locationAdapter.retrieve(
       option.mapbox_id,
@@ -119,6 +153,11 @@ export default function LocationInput({
       cookies[SESSION_ID]
     );
     const coords = data?.features?.[0]?.geometry?.coordinates;
+    setLocation((prev) => ({
+      ...prev,
+      coords: coords.join(','),
+    }));
+    onValueSelect?.(option);
     onCoordChange?.(coords.join(','));
   };
 
@@ -128,10 +167,10 @@ export default function LocationInput({
     return {
       group: data?.group,
       items: data?.items?.filter((i) => {
-        return i?.value?.toLowerCase()?.includes(value.toLowerCase());
+        return i?.value?.toLowerCase()?.includes(location.value?.toLowerCase());
       }),
     };
-  }, [data, value]);
+  }, [data, location.value]);
 
   return (
     <div className={className}>
@@ -146,10 +185,10 @@ export default function LocationInput({
               defaultValue: t('search.location_placeholder'),
             }) || ''
           }
+          value={location.value}
           Icon={IconMapPin}
-          onValueChange={onValueChange}
-          defaultValue={(router.query?.location as string) ?? ''}
-          onValueSelect={onValueSelect}
+          onInputChange={onChange}
+          onValueSelect={onSelect}
         />
         <Button
           type="button"

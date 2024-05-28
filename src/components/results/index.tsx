@@ -2,7 +2,6 @@ import { NoResultsCard } from './components/no-results-card';
 import { Result } from './components/result';
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
-import { useMemo } from 'react';
 import ResultsHeader from './components/header';
 import ResultsPagination from './components/pagination';
 
@@ -18,15 +17,6 @@ type Props = {
 export function Results(props: Props) {
   const { status } = useSession();
   const router = useRouter();
-
-  const coordinates = useMemo(() => {
-    return ((router.query?.coords as string) ?? '')
-      .split(',')
-      .slice()
-      .reverse()
-      .join(',');
-  }, [router.query.coords]);
-
   const total = Math.ceil(props.totalResults / 25);
 
   return (
@@ -56,7 +46,6 @@ export function Results(props: Props) {
               location={result.location}
               sessionStatus={status}
               router={router}
-              coordinates={coordinates}
             />
           );
         })}

@@ -9,15 +9,18 @@ import useSuggestions from '../hooks/use-suggestions';
 
 export default function TaxonomyInput({
   name,
-  onChange,
+  value,
+  onInputChange,
+  onValueSelect,
 }: {
   name?: string;
-  onChange?: (option: Option) => void;
+  value?: string;
+  onInputChange?: (value: string) => void;
+  onValueSelect?: (option: Option) => void;
 }) {
   const { t } = useTranslation('common');
   const router = useRouter();
   const suggestions = useSuggestions();
-  const [value, setValue] = useState('');
   const debouncedValue = useDebounce(value);
   const { data } = useQuery<Option>({
     placeholderData: (prev) => prev,
@@ -71,15 +74,11 @@ export default function TaxonomyInput({
     };
   }, [suggestions, value, t]);
 
-  const onValueChange = (option: Option) => {
-    onChange?.(option);
-    setValue(option.value);
-  };
-
   return (
     <Autocomplete
       name={name}
       className="w-full"
+      value={value}
       options={
         filteredData
           ? [filteredSuggestions, filteredData]
@@ -89,12 +88,8 @@ export default function TaxonomyInput({
         ns: 'dynamic',
         defaultValue: t('search.query_placeholder'),
       })}
-      defaultValue={
-        (router.query?.query_label as string) ??
-        (router.query?.query as string) ??
-        ''
-      }
-      onValueChange={onValueChange}
+      onInputChange={onInputChange}
+      onValueSelect={onValueSelect}
     />
   );
 }

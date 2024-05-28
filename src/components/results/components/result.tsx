@@ -9,20 +9,32 @@ import {
 } from '@tabler/icons-react';
 import Link from 'next/link';
 import { NextRouter } from 'next/router';
-import { parseHtml } from '../../../utils/parseHtml';
+import { parseHtml } from '@/utils/parseHtml';
 import { useTranslation } from 'next-i18next';
 import { Anchor } from '@/components/anchor';
 import { ReferralButton } from '@/components/referral-button';
-import { distanceBetweenCoordsInMiles } from '../../../utils/distenceBetweenCoords';
-import { Card, CardContent, CardFooter, CardHeader } from '../../ui/card';
-import { Badge } from '../../ui/badge';
-import { Button, buttonVariants } from '../../ui/button';
+import { distanceBetweenCoordsInMiles } from '@/utils/distenceBetweenCoords';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { cn } from '@/utils';
-import { Tooltip, TooltipContent, TooltipTrigger } from '../../ui/tooltip';
-import { Spoiler } from '../../ui/spoiler';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { Spoiler } from '@/components/ui/spoiler';
 import useAuthPrompt from '@/hooks/use-auth-prompt';
-import useAddToList from '../../favorite-lists/hooks/use-add-to-list';
-import useUpdateLocation from '../../search/hooks/use-update-location';
+import useAddToList from '@/components/favorite-lists/hooks/use-add-to-list';
+import useUpdateLocation from '@/components/search/hooks/use-update-location';
+import { useAtom, useAtomValue } from 'jotai';
+import { locationAtom } from '@/components/search/components/location-input';
+import { useMemo } from 'react';
 
 type Props = {
   id: string;
@@ -32,12 +44,64 @@ type Props = {
   phone?: string;
   address?: string;
   website?: string;
-  coordinates: string;
   sessionStatus: 'authenticated' | 'loading' | 'unauthenticated';
   router: NextRouter;
   location: {
     coordinates: [number, number];
   };
+};
+
+const Distance = ({ resource }) => {
+  const location = useAtomValue(locationAtom);
+
+  const distance = useMemo(() => {
+    return resource?.location?.coordinates && location.coords
+      ? distanceBetweenCoordsInMiles(
+          location.coords.split(',').map((c) => parseFloat(c)) as [
+            number,
+            number
+          ],
+          resource.location.coordinates
+        )
+      : null;
+  }, [location?.coords, resource?.location]);
+
+  if (distance == null) return null;
+  return `- ${distance}mi`;
+};
+
+const GetDirections = ({ openUpdateLocation, resource }) => {
+  const location = useAtomValue(locationAtom);
+  const { t } = useTranslation();
+
+  const handleDirectionsClick = (e: any) => {
+    const coords = location.coords ?? null;
+    if (coords?.length === 0) {
+      e.preventDefault();
+      openUpdateLocation();
+    }
+  };
+
+  return (
+    <ReferralButton
+      referralType="directions_referral"
+      resourceId={resource.id}
+      resource={resource}
+      target="_blank"
+      href={`https://www.google.com/maps/dir/?api=1&origin=${
+        location.coords
+      }&destination=${
+        resource?.location?.coordinates
+          ? Array.from(resource?.location?.coordinates).reverse().join(',')
+          : ''
+      }`}
+      onClick={handleDirectionsClick}
+      className="w-full"
+    >
+      <IconNavigation className="size-4" />
+      {t('call_to_action.get_directions')}
+    </ReferralButton>
+  );
 };
 
 export function Result(props: Props) {
@@ -52,25 +116,6 @@ export function Result(props: Props) {
   const handleLink = (e: any) => {
     createLinkEvent(e);
   };
-
-  const handleDirectionsClick = (e: any) => {
-    const coords = props?.coordinates ?? null;
-    if (coords?.length === 0) {
-      e.preventDefault();
-      openUpdateLocation();
-    }
-  };
-
-  const distance =
-    props?.location?.coordinates && props?.coordinates
-      ? distanceBetweenCoordsInMiles(
-          props.coordinates
-            .split(',')
-            .map((c) => parseFloat(c))
-            .reverse() as [number, number],
-          props.location.coordinates
-        )
-      : null;
 
   return (
     <>
@@ -103,7 +148,7 @@ export function Result(props: Props) {
 
               {props.address ? (
                 <Badge>
-                  {props.address} {distance != null ? `- ${distance}mi` : null}
+                  {props.address} <Distance resource={props} />
                 </Badge>
               ) : (
                 <Tooltip>
@@ -155,24 +200,10 @@ export function Result(props: Props) {
               {t('call_to_action.view_website')}
             </ReferralButton>
 
-            <ReferralButton
-              referralType="directions_referral"
-              resourceId={props.id}
+            <GetDirections
               resource={props}
-              target="_blank"
-              href={`https://www.google.com/maps/dir/?api=1&origin=${
-                props.coordinates
-              }&destination=${
-                props?.location?.coordinates
-                  ? Array.from(props?.location?.coordinates).reverse().join(',')
-                  : ''
-              }`}
-              onClick={handleDirectionsClick}
-              className="w-full"
-            >
-              <IconNavigation className="size-4" />
-              {t('call_to_action.get_directions')}
-            </ReferralButton>
+              openUpdateLocation={openUpdateLocation}
+            />
           </div>
 
           <div className="w-full flex gap-1">

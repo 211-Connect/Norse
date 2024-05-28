@@ -11,7 +11,6 @@ import {
   ComponentType,
   Fragment,
   useCallback,
-  useEffect,
   useRef,
   useState,
   type KeyboardEvent,
@@ -21,6 +20,7 @@ import { Badge } from './badge';
 import { Skeleton } from './skeleton';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
+import useUncontrolled from '@/hooks/use-uncontrolled';
 
 export type Option = {
   value?: string;
@@ -32,7 +32,6 @@ export type Option = {
 
 export default function Autocomplete({
   className,
-  onValueChange,
   options,
   placeholder,
   disabled,
@@ -43,9 +42,10 @@ export default function Autocomplete({
   Icon,
   value,
   onValueSelect,
+  onInputChange,
 }: {
   className?: string;
-  onValueChange?: (value: Option) => void;
+  onInputChange?: (value: string) => void;
   onValueSelect?: (value: Option) => void;
   options: Option[];
   placeholder?: string;
@@ -59,7 +59,12 @@ export default function Autocomplete({
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isOpen, setOpen] = useState(false);
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useUncontrolled<string>({
+    value,
+    defaultValue,
+    finalValue: '',
+    onChange: onInputChange,
+  });
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>) => {
@@ -87,7 +92,6 @@ export default function Autocomplete({
   const handleSelectOption = useCallback(
     (selectedOption: Option) => {
       setInputValue(selectedOption.value);
-      onValueChange?.(selectedOption);
       onValueSelect?.(selectedOption);
 
       // This is a hack to prevent the input from being focused after the user selects an option
@@ -96,32 +100,15 @@ export default function Autocomplete({
         inputRef?.current?.blur();
       }, 0);
     },
-    [onValueChange, onValueSelect]
+    [onValueSelect, setInputValue]
   );
 
   const handleInputChange = useCallback(
     (newValue: string) => {
       setInputValue(newValue);
-      onValueChange?.({ value: newValue });
     },
-    [onValueChange]
+    [setInputValue]
   );
-
-  // This will update internal value when value gets bound from a parent component
-  useEffect(() => {
-    setInputValue(value || '');
-  }, [value]);
-
-  // Using defaultValue to set the input value here
-  // This is because sometimes this defaultValue can come from react router
-  // which may be undefined/null on first render
-  // defaultValue should never be updated more than once, but we will leave that up to the
-  // components consuming this to make sure of that
-  useEffect(() => {
-    if (defaultValue != null) {
-      setInputValue(defaultValue);
-    }
-  }, [defaultValue]);
 
   return (
     <CommandPrimitive

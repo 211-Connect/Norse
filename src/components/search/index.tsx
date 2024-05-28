@@ -7,27 +7,32 @@ import useSuggestions from './hooks/use-suggestions';
 import { isTaxonomyCode } from './adapters/taxonomy-adapter';
 import { useRouter } from 'next/router';
 import qs from 'qs';
-import LocationInput from './components/location-input';
+import LocationInput, { locationAtom } from './components/location-input';
 
 import { useAppConfig } from '@/hooks/use-app-config';
 import RadiusSelect from './components/radius-select';
 import LocationAdapter from './adapters/location-adapter';
 import { Badge } from '../ui/badge';
+import { useAtom } from 'jotai';
+import { useEffect } from 'react';
 
 export default function Search() {
   const { t } = useTranslation('common');
   const router = useRouter();
   const suggestions = useSuggestions();
   const appConfig = useAppConfig();
+  const [location, setLocation] = useAtom(locationAtom);
 
   const form = useForm({
     defaultValues: {
-      taxonomy: '',
-      location: '',
+      taxonomy:
+        (router.query?.query_label as string) ??
+        (router.query?.query as string) ??
+        '',
+      location: location?.value ?? '',
       query: (router.query?.query as string) ?? '',
       query_label: (router.query?.query_label as string) ?? '',
       query_type: (router.query?.query_type as string) ?? '',
-      coords: '',
       radius:
         (router.query?.distance as string) ??
         appConfig?.search?.defaultRadius?.toString() ??
@@ -51,32 +56,55 @@ export default function Search() {
         urlParams.query_label = value.query_label;
       }
 
-      if (value.query_type && value.query_type.length > 0) {
+      if (
+        value.query_type &&
+        value.query_type.length > 0 &&
+        value.query.length > 0
+      ) {
         urlParams.query_type = value.query_type;
       }
 
-      if (value.location.length > 0 && value.coords.length === 0) {
+      if (value.location.length > 0 && location.coords.length === 0) {
         const locationAdapter = LocationAdapter();
         const data = await locationAdapter.forwardGeocode(
           value.location,
           router.locale
         );
-        console.log({ data });
+        setLocation({
+          value: data?.features?.[0]?.properties?.full_address,
+          coords: [
+            data?.features?.[0]?.properties?.coordinates?.longitude,
+            data?.features?.[0]?.properties?.coordinates?.latitude,
+          ].join(','),
+        });
         urlParams.location = data?.features?.[0]?.properties?.full_address;
         urlParams.coords = [
           data?.features?.[0]?.properties?.coordinates?.longitude,
           data?.features?.[0]?.properties?.coordinates?.latitude,
         ].join(',');
         urlParams.distance = value.radius || '0';
-      } else if (value.location.length > 0 && value.coords.length > 0) {
+      } else if (value.location.length > 0 && location.coords.length > 0) {
         urlParams.location = value.location;
-        urlParams.coords = value.coords;
+        urlParams.coords = location.coords;
         urlParams.distance = value.radius || '0';
       }
 
-      await router.push(`/search?${qs.stringify(urlParams)}`);
+      let queryString = '';
+      const parsedQueryString = qs.stringify(urlParams);
+      if (parsedQueryString.length > 0) {
+        queryString += `?${parsedQueryString}`;
+      }
+
+      console.log({ urlParams });
+
+      await router.push(`/search${queryString}`);
     },
   });
+
+  // Keep form data in sync
+  useEffect(() => {
+    form.setFieldValue('location', location.value);
+  }, [location.value, form]);
 
   return (
     <form
@@ -91,13 +119,38 @@ export default function Search() {
         {(field) => (
           <TaxonomySearch
             name={field.name}
-            onChange={(option: Option) => {
+            value={field.state.value}
+            onInputChange={(value) => {
+              field.handleChange(value);
+
+              const valueInSuggestions = suggestions.find(
+                (s) =>
+                  s.value.toLowerCase() === value.toLowerCase() ||
+                  s.term.toLowerCase() === value.toLowerCase()
+              );
+
+              field.form.setFieldValue(
+                'query',
+                valueInSuggestions ? valueInSuggestions.term : value
+              );
+              field.form.setFieldValue(
+                'query_label',
+                valueInSuggestions ? valueInSuggestions.value : value
+              );
+              field.form.setFieldValue(
+                'query_type',
+                valueInSuggestions || isTaxonomyCode.test(value)
+                  ? 'taxonomy'
+                  : 'text'
+              );
+            }}
+            onValueSelect={(option: Option) => {
               field.handleChange(option.value);
 
               const valueInSuggestions = suggestions.find(
                 (s) =>
                   s.value.toLowerCase() === option.value.toLowerCase() ||
-                  s.term.toLowerCase().startsWith(option.value.toLowerCase())
+                  s.term.toLowerCase() === option.value.toLowerCase()
               );
 
               field.form.setFieldValue(
@@ -108,7 +161,6 @@ export default function Search() {
               );
               field.form.setFieldValue(
                 'query_label',
-
                 valueInSuggestions ? valueInSuggestions.value : option.value
               );
               field.form.setFieldValue(
@@ -128,19 +180,7 @@ export default function Search() {
         router.pathname.startsWith('/search')) && (
         <div className="flex items-start">
           <form.Field name="location">
-            {(field) => (
-              <LocationInput
-                className="w-full"
-                name={field.name}
-                onChange={(option) => {
-                  field.handleChange(option.value);
-                  field.form.setFieldValue('coords', '');
-                }}
-                onCoordChange={(coords) => {
-                  field.form.setFieldValue('coords', coords);
-                }}
-              />
-            )}
+            {(field) => <LocationInput className="w-full" name={field.name} />}
           </form.Field>
 
           <form.Field name="radius">
@@ -180,18 +220,6 @@ export default function Search() {
       </form.Field>
 
       <form.Field name="query_type">
-        {(field) => (
-          <input
-            hidden
-            id={field.name}
-            name={field.name}
-            value={field.state.value}
-            onChange={(e) => field.handleChange(e.target.value)}
-          />
-        )}
-      </form.Field>
-
-      <form.Field name="coords">
         {(field) => (
           <input
             hidden

@@ -1,4 +1,4 @@
-import { usePrevUrl } from '../../lib/hooks/use-prev-url';
+import { usePrevUrl } from '@/hooks/use-prev-url';
 import { useEffect, useRef, useState } from 'react';
 import { ResourceNavigation } from './components/navigation';
 import { Resource as IResource } from '@/lib/server/adapters/resource-adapter';
