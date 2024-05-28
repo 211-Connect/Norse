@@ -70,7 +70,7 @@ export default function Search() {
         const locationAdapter = LocationAdapter();
         const data = await locationAdapter.forwardGeocode(
           value.location,
-          router.locale
+          router.locale,
         );
         setLocation({
           value: data?.features?.[0]?.properties?.full_address,
@@ -96,8 +96,6 @@ export default function Search() {
       if (parsedQueryString.length > 0) {
         queryString += `?${parsedQueryString}`;
       }
-
-      setCookie(null, USER_PREF_LAST_QUERY, queryString, { path: '/' });
 
       await router.push(`/search${queryString}`);
     },
@@ -128,22 +126,22 @@ export default function Search() {
               const valueInSuggestions = suggestions.find(
                 (s) =>
                   s.value.toLowerCase() === value.toLowerCase() ||
-                  s.term.toLowerCase() === value.toLowerCase()
+                  s.term.toLowerCase() === value.toLowerCase(),
               );
 
               field.form.setFieldValue(
                 'query',
-                valueInSuggestions ? valueInSuggestions.term : value
+                valueInSuggestions ? valueInSuggestions.term : value,
               );
               field.form.setFieldValue(
                 'query_label',
-                valueInSuggestions ? valueInSuggestions.value : value
+                valueInSuggestions ? valueInSuggestions.value : value,
               );
               field.form.setFieldValue(
                 'query_type',
                 valueInSuggestions || isTaxonomyCode.test(value)
                   ? 'taxonomy'
-                  : 'text'
+                  : 'text',
               );
             }}
             onValueSelect={(option: Option) => {
@@ -152,18 +150,18 @@ export default function Search() {
               const valueInSuggestions = suggestions.find(
                 (s) =>
                   s.value.toLowerCase() === option.value.toLowerCase() ||
-                  s.term.toLowerCase() === option.value.toLowerCase()
+                  s.term.toLowerCase() === option.value.toLowerCase(),
               );
 
               field.form.setFieldValue(
                 'query',
                 valueInSuggestions
                   ? valueInSuggestions.term
-                  : option?.term ?? option.value
+                  : option?.term ?? option.value,
               );
               field.form.setFieldValue(
                 'query_label',
-                valueInSuggestions ? valueInSuggestions.value : option.value
+                valueInSuggestions ? valueInSuggestions.value : option.value,
               );
               field.form.setFieldValue(
                 'query_type',
@@ -171,7 +169,7 @@ export default function Search() {
                   isTaxonomyCode.test(option.value) ||
                   option.term
                   ? 'taxonomy'
-                  : 'text'
+                  : 'text',
               );
             }}
           />

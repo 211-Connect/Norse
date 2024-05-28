@@ -88,9 +88,11 @@ const GetDirections = ({ openUpdateLocation, resource }) => {
       resourceId={resource.id}
       resource={resource}
       target="_blank"
-      href={`https://www.google.com/maps/dir/?api=1&origin=${
-        location.coords
-      }&destination=${
+      href={`https://www.google.com/maps/dir/?api=1&origin=${location.coords
+        .split(',')
+        .slice()
+        .reverse()
+        .join(',')}&destination=${
         resource?.location?.coordinates
           ? Array.from(resource?.location?.coordinates).reverse().join(',')
           : ''

@@ -38,7 +38,7 @@ export function ResourceNavigation(props: Props) {
 
   return (
     <>
-      <div className="flex justify-between items-center w-full max-w-[1100px] mx-auto pt-2">
+      <div className="flex justify-between items-center w-full max-w-[1100px] mx-auto">
         <Button
           onClick={async () => {
             if (cookies[USER_PREF_LAST_QUERY] == null) {

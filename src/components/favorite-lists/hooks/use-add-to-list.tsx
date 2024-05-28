@@ -32,8 +32,17 @@ function useAddToList(resourceId: string) {
     const { data, isFetching } = useQuery({
       initialData: [],
       placeholderData: (prev) => prev,
-      queryKey: ['favorite', 'lists', 'search', resourceId, debouncedValue],
+      queryKey: [
+        'favorite',
+        'lists',
+        'search',
+        resourceId,
+        debouncedValue,
+        isOpen,
+      ],
       queryFn: async () => {
+        if (!isOpen) return [];
+
         const favoriteListAdapter = FavoriteAdapter();
         return await favoriteListAdapter.searchFavoriteLists({
           textToSearchFor: debouncedValue,
@@ -64,7 +73,7 @@ function useAddToList(resourceId: string) {
       });
       queryClient.setQueryData(
         ['favorite', 'lists', 'search', resourceId, debouncedValue],
-        newList
+        newList,
       );
 
       await favoriteAdapter.createFavoriteList({
@@ -145,30 +154,32 @@ function useAddToList(resourceId: string) {
             </form.Field>
           </form>
           <ScrollArea className="h-[300px] w-full">
-            {data?.map((list) => {
-              return (
-                <div
-                  key={list._id}
-                  className="flex items-center justify-between rounded-md p-2 shadow-md border hover:shadow-lg"
-                >
-                  <div>
-                    <p className="font-semibold">{list.name}</p>
-                    <p className="text-sm">{list.description}</p>
-                  </div>
+            <div className="flex flex-col gap-1">
+              {data?.map((list) => {
+                return (
+                  <div
+                    key={list._id}
+                    className="flex items-center justify-between rounded-md p-2 shadow-sm border hover:shadow-md"
+                  >
+                    <div>
+                      <p className="font-semibold">{list.name}</p>
+                      <p className="text-sm">{list.description}</p>
+                    </div>
 
-                  <div className="flex flex-col gap-2 items-end">
-                    <Badge variant="outline">
-                      {list.privacy === 'PRIVATE'
-                        ? t('list.private')
-                        : t('list.public')}
-                    </Badge>
-                    <Button size="sm" onClick={() => addToList(list._id)}>
-                      {t('modal.add_to_list.add_to_list')}
-                    </Button>
+                    <div className="flex flex-col gap-2 items-end">
+                      <Badge variant="outline">
+                        {list.privacy === 'PRIVATE'
+                          ? t('list.private')
+                          : t('list.public')}
+                      </Badge>
+                      <Button size="sm" onClick={() => addToList(list._id)}>
+                        {t('modal.add_to_list.add_to_list')}
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </ScrollArea>
         </DialogContent>
       </Dialog>

@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button';
 import { useCookies } from 'react-cookie';
 import { atom, useAtom } from 'jotai';
 import { atomEffect } from 'jotai-effect';
-import { setCookie } from 'nookies';
+import { setCookie, parseCookies } from 'nookies';
 
 export const locationAtom = atom({
   value: '',
@@ -24,9 +24,13 @@ export const locationAtom = atom({
 });
 
 locationAtom.onMount = (set) => {
+  const cookies = parseCookies(null);
+  const locationCookie = cookies[USER_PREF_LOCATION];
+  const coordsCookie = cookies[USER_PREF_COORDS];
+
   set({
-    value: (_router.query?.location as string) ?? '',
-    coords: (_router.query?.coords as string) ?? '',
+    value: (_router.query?.location as string) ?? locationCookie ?? '',
+    coords: (_router.query?.coords as string) ?? coordsCookie ?? '',
   });
 };
 
@@ -71,7 +75,7 @@ export default function LocationInput({
       const data = await locationAdapter.search(
         debouncedValue,
         router.locale,
-        cookies[SESSION_ID]
+        cookies[SESSION_ID],
       );
 
       return {
@@ -88,14 +92,14 @@ export default function LocationInput({
   const convertGeoLocation = useCallback(
     async (position: GeolocationPosition) => {
       const coords = [position.coords.longitude, position.coords.latitude].join(
-        ','
+        ',',
       );
 
       try {
         const locationAdapter = LocationAdapter();
         const data = await locationAdapter.reverseGeocode(
           coords,
-          router.locale
+          router.locale,
         );
         setLocation((prev) => ({
           ...prev,
@@ -113,7 +117,7 @@ export default function LocationInput({
         setIsFetching(false);
       }
     },
-    [t, onCoordChange, router.locale, setLocation, onInputChange]
+    [t, onCoordChange, router.locale, setLocation, onInputChange],
   );
 
   const getUserLocation = useCallback(() => {
@@ -150,7 +154,7 @@ export default function LocationInput({
     const data = await locationAdapter.retrieve(
       option.mapbox_id,
       router.locale,
-      cookies[SESSION_ID]
+      cookies[SESSION_ID],
     );
     const coords = data?.features?.[0]?.geometry?.coordinates;
     setLocation((prev) => ({

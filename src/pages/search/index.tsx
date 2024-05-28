@@ -1,6 +1,6 @@
 import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import nookies, { destroyCookie } from 'nookies';
+import nookies, { destroyCookie, setCookie } from 'nookies';
 import { useEffect } from 'react';
 import { useEventStore } from '@/hooks/use-event-store';
 import { AppHeader } from '../../components/app-header';
@@ -26,6 +26,7 @@ import {
   USER_PREF_LAST_QUERY,
   USER_PREF_LOCATION,
 } from '@/constants/cookies';
+import qs from 'qs';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const cookies = nookies.get(ctx);
@@ -71,6 +72,14 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     }
   }
 
+  if (Object.keys(ctx.query).length > 0) {
+    setCookie(ctx, USER_PREF_LAST_QUERY, `?${qs.stringify(ctx.query)}`, {
+      path: '/',
+    });
+  } else {
+    destroyCookie(ctx, USER_PREF_LAST_QUERY, { path: '/' });
+  }
+
   const searchAdapter = SearchAdapter();
   const { results, noResults, totalResults, page, filters } =
     await searchAdapter.search({
@@ -108,7 +117,7 @@ export default function SearchPage(props: any) {
   const mapHidden = useMediaQuery('(max-width: 768px)');
 
   const clampedWindowValue = Math.round(
-    Math.abs(Math.min(Math.max(scroll.y, 0), 80) - 80)
+    Math.abs(Math.min(Math.max(scroll.y, 0), 80) - 80),
   );
 
   useEffect(() => {
