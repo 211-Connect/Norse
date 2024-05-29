@@ -36,8 +36,8 @@ export function NoResultsCard(props: Props) {
         {!props.showAltSubtitle
           ? t('no_results.subtitle')
           : config?.contact?.number
-          ? t('no_results.need_help')
-          : t('no_results.alt_subtitle')}
+            ? t('no_results.need_help')
+            : t('no_results.alt_subtitle')}
       </CardDescription>
 
       {config?.contact?.number && (

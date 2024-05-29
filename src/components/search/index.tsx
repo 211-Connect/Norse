@@ -37,7 +37,7 @@ export default function Search() {
       query_type: (router.query?.query_type as string) ?? '',
       radius:
         (router.query?.distance as string) ??
-        appConfig?.search?.defaultRadius?.toString() ??
+        appConfig?.features?.search?.defaultRadius?.toString() ??
         '0',
     },
     async onSubmit({ value }) {
@@ -176,7 +176,7 @@ export default function Search() {
         )}
       </form.Field>
 
-      {(appConfig?.pages?.home?.showLocationInput ||
+      {(!appConfig?.pages?.home?.hideLocationInput ||
         router.pathname.startsWith('/search')) && (
         <div className="flex items-start">
           <form.Field name="location">

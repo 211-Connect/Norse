@@ -23,7 +23,7 @@ export function AppFooter(props: Props) {
         <div
           className={cn(
             props.fullWidth ? 'w-full' : 'container mx-auto',
-            'h-[80px] flex items-center justify-between pl-4 pr-4 2xl:pl-0 2xl:pr-0'
+            'h-[80px] flex items-center justify-between pl-4 pr-4 2xl:pl-0 2xl:pr-0',
           )}
         >
           <div className="flex flex-col justify-center items-center gap-1 w-full">
@@ -37,18 +37,16 @@ export function AppFooter(props: Props) {
                 {t('footer.privacy_policy')}
               </Anchor>
 
-              {appConfig?.menus?.footer?.map(
-                (el: { name: string; href: string | null }) => (
-                  <Fragment key={el.name}>
-                    <IconPointFilled className="scale-4" />
-                    <Anchor
-                      {...(el.href != null ? { href: el.href } : { href: '' })}
-                    >
-                      {el.name}
-                    </Anchor>
-                  </Fragment>
-                )
-              )}
+              {appConfig?.menus?.footer?.map((el) => (
+                <Fragment key={el.name}>
+                  <IconPointFilled className="scale-4" />
+                  <Anchor
+                    {...(el.href != null ? { href: el.href } : { href: '' })}
+                  >
+                    {el.name}
+                  </Anchor>
+                </Fragment>
+              ))}
             </div>
           </div>
         </div>

@@ -45,7 +45,7 @@ export function ShareButton({
   const [shortUrl, setShortUrl] = useState('');
   const { open: openAuthPrompt, AuthPrompt } = useAuthPrompt();
   const { SendSmsDialog, open: openSmsDialog } = useSms(
-    title + '\n' + shortUrl
+    title + '\n' + shortUrl,
   );
 
   useEffect(() => {
@@ -54,7 +54,7 @@ export function ShareButton({
       hasRun.current = true;
       const shortUrlAdapter = ShortUrlAdapter();
       const { url } = await shortUrlAdapter.createShortUrl(
-        window.location.href
+        window.location.href,
       );
       setShortUrl(url);
     })();
@@ -77,14 +77,14 @@ export function ShareButton({
           <div className="grid grid-cols-2 gap-2">
             <Link
               href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-                shortUrl
+                shortUrl,
               )}`}
               target="_blank"
               className={cn(
                 buttonVariants({
                   variant: 'outline',
                 }),
-                'flex gap-1'
+                'flex gap-1',
               )}
             >
               <IconBrandFacebook />
@@ -93,14 +93,14 @@ export function ShareButton({
 
             <Link
               href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
-                title + '\n' + shortUrl
+                title + '\n' + shortUrl,
               )}`}
               target="_blank"
               className={cn(
                 buttonVariants({
                   variant: 'outline',
                 }),
-                'flex gap-1'
+                'flex gap-1',
               )}
             >
               <IconBrandTwitter />
@@ -118,11 +118,11 @@ export function ShareButton({
 
                   if (isIOS) {
                     smsLink = `sms:&body=\n${encodeURIComponent(
-                      body + '\n\n' + shortUrl
+                      body + '\n\n' + shortUrl,
                     )}`;
                   } else {
                     smsLink = `sms:?body=\n${encodeURIComponent(
-                      body + '\n\n' + shortUrl
+                      body + '\n\n' + shortUrl,
                     )}`;
                   }
 
@@ -140,7 +140,7 @@ export function ShareButton({
 
             <Link
               href={`mailto:?subject=${encodeURIComponent(
-                title
+                title,
               )}&body=${encodeURIComponent(body + '\n\n' + shortUrl)}`}
               target="_blank"
               rel="noopener noreferrer"
@@ -148,7 +148,7 @@ export function ShareButton({
                 buttonVariants({
                   variant: 'outline',
                 }),
-                'flex gap-1'
+                'flex gap-1',
               )}
             >
               <IconMail />

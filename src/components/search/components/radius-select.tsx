@@ -50,7 +50,7 @@ export default function RadiusSelect({
             })}
           </SelectLabel>
           <SelectItem value="0">{t('search.any')}</SelectItem>
-          {appConfig?.search?.radiusOptions?.map((el: any) => (
+          {appConfig?.features?.search?.radiusOptions?.map((el: any) => (
             <SelectItem
               key={el.value.toString()}
               value={el.value.toString()}

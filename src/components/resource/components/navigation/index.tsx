@@ -41,12 +41,8 @@ export function ResourceNavigation(props: Props) {
       <div className="flex justify-between items-center w-full max-w-[1100px] mx-auto">
         <Button
           onClick={async () => {
-            if (cookies[USER_PREF_LAST_QUERY] == null) {
-              await router.push('/');
-            } else {
-              setCookie(null, USER_PREF_BACK_ACTION, 'true', { path: '/' });
-              await router.push('/search');
-            }
+            setCookie(null, USER_PREF_BACK_ACTION, 'true', { path: '/' });
+            await router.push('/search');
           }}
         >
           <IconChevronLeft className="size-4" />

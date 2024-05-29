@@ -34,8 +34,6 @@ const MapboxMap = memo(function _MapboxMap({
   useEffect(() => {
     if (!state?.mapContainer) return;
 
-    console.log('rerender map');
-
     const map = new Map({
       container: state.mapContainer,
       zoom: zoom,
@@ -64,8 +62,6 @@ const MapboxMap = memo(function _MapboxMap({
   useEffect(() => {
     if (!state.bounds || !state.map) return;
     if (state.bounds.length === 0) return;
-
-    console.log('rerender all map');
 
     let _bounds;
     for (const bound of state.bounds) {

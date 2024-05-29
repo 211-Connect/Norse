@@ -15,7 +15,7 @@ export async function getStaticProps(ctx: GetStaticPropsContext) {
   try {
     privacyPolicy = (
       await fs.readFile(
-        path.resolve('./public', 'templates', 'pages', 'privacy-policy.html')
+        path.resolve('./public', 'templates', 'pages', 'privacy-policy.html'),
       )
     ).toString();
   } catch (err) {

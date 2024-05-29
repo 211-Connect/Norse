@@ -69,16 +69,16 @@ export function AppHeader(props: Props) {
           <div className="flex gap-1 items-center">
             <IconLogout className="size-4" /> {t('header.log_out')}
           </div>
-        </a>
+        </a>,
       );
     }
 
     if (appConfig?.menus?.header && appConfig.menus.header.length > 0) {
-      appConfig.menus.header.forEach((el: { name: string; href: string }) => {
+      appConfig.menus.header.forEach((el) => {
         items.push(
           <Anchor key={el.name} href={el.href}>
             {el.name}
-          </Anchor>
+          </Anchor>,
         );
       });
     }
@@ -103,7 +103,7 @@ export function AppHeader(props: Props) {
           rel="noopener noreferrer"
         >
           {t('header.submit_feedback')}
-        </Button>
+        </Button>,
       );
     }
 
@@ -139,7 +139,7 @@ export function AppHeader(props: Props) {
               })}
             </SelectGroup>
           </SelectContent>
-        </Select>
+        </Select>,
       );
     }
 
@@ -162,7 +162,7 @@ export function AppHeader(props: Props) {
             props.fullWidth
               ? 'w-full 2xl:pl-4 2xl:pr-4'
               : 'container mx-auto 2xl:pl-0 2xl:pr-0',
-            'h-[80px] flex items-center justify-between pl-4 pr-4'
+            'h-[80px] flex items-center justify-between pl-4 pr-4',
           )}
         >
           <Anchor href="/" aria-label={t('header.home') as string}>

@@ -59,8 +59,6 @@ export const Marker = memo(function _marker({
   useEffect(() => {
     if (!state.map || !state.mapContainer) return;
 
-    console.log('rerender marker');
-
     let marker;
     try {
       const lngLat: LngLatLike = [longitude, latitude];

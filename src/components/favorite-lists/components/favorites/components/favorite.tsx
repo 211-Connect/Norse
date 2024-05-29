@@ -64,7 +64,7 @@ export function Favorite(props: Props) {
   const session = useSession();
   const viewingAsOwner = session?.data?.user?.id;
   const setDeleteFavoriteFromList = useSetAtom(
-    deleteFavoriteFromFavoriteListDialogAtom
+    deleteFavoriteFromFavoriteListDialogAtom,
   );
 
   useEffect(() => {
@@ -88,11 +88,11 @@ export function Favorite(props: Props) {
           hideLabel={t('call_to_action.show_less', { ns: 'common' })}
           showLabel={t('call_to_action.show_more', { ns: 'common' })}
         >
-          <p className="whitespace-pre-wrap prose">
+          <div className="whitespace-pre-wrap prose">
             {parseHtml(props.serviceDescription, {
               parseLineBreaks: true,
             })}
-          </p>
+          </div>
         </Spoiler>
 
         <div className="flex flex-col gap-2">
@@ -197,7 +197,7 @@ export function Favorite(props: Props) {
             aria-disabled={props?.location?.coordinates == null || !coords}
             target="_blank"
             href={`https://www.google.com/maps/dir/?api=1&origin=${coords}&destination=${Array.from(
-              props?.location?.coordinates ?? []
+              props?.location?.coordinates ?? [],
             )
               .reverse()
               .join(',')}`}

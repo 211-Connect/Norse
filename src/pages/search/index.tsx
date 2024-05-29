@@ -31,6 +31,7 @@ import mapStyle from '@/components/map/style.json';
 import { Style } from 'mapbox-gl';
 import { IconPhone, IconWorldWww } from '@tabler/icons-react';
 import { ReferralButton } from '@/components/referral-button';
+import { parseHtml } from '@/utils/parseHtml';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const cookies = nookies.get(ctx);
@@ -147,7 +148,9 @@ const Markers = memo(function _markers({ results }: { results: any }) {
             popup={
               <div className="flex flex-col gap-2">
                 <h3 className="text-lg font-semibold">{result.name}</h3>
-                <p className="text-md">{result.description}</p>
+                <div className="whitespace-pre-wrap text-sm">
+                  {parseHtml(result.description)}
+                </div>
 
                 <div className="flex gap-2">
                   <ReferralButton
