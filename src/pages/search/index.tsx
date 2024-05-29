@@ -1,12 +1,11 @@
 import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import nookies, { destroyCookie, setCookie } from 'nookies';
-import { useEffect } from 'react';
+import { memo, useCallback, useEffect, useMemo } from 'react';
 import { useEventStore } from '@/hooks/use-event-store';
 import { AppHeader } from '../../components/app-header';
 import { AppFooter } from '../../components/app-footer';
 import { FilterPanel } from '../../components/results/components/filter-panel';
-import { PluginLoader } from '../../components/plugin-loader';
 import { useAppConfig } from '@/hooks/use-app-config';
 import { useTranslation } from 'next-i18next';
 import { cacheControl } from '../../lib/server/cache-control';
@@ -27,6 +26,11 @@ import {
   USER_PREF_LOCATION,
 } from '@/constants/cookies';
 import qs from 'qs';
+import MapboxMap, { Marker } from '@/components/map';
+import mapStyle from '@/components/map/style.json';
+import { Style } from 'mapbox-gl';
+import { IconPhone, IconWorldWww } from '@tabler/icons-react';
+import { ReferralButton } from '@/components/referral-button';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const cookies = nookies.get(ctx);
@@ -109,6 +113,81 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   };
 }
 
+// Memoized markers to prevent re-renders of map component
+const Markers = memo(function _markers({ results }: { results: any }) {
+  const { t } = useTranslation();
+
+  return (
+    <>
+      {results.map((result) => {
+        if (result?.location?.coordinates == null) return null;
+
+        return (
+          <Marker
+            key={result._id}
+            latitude={result.location.coordinates[1]}
+            longitude={result.location.coordinates[0]}
+            className="custom-marker"
+            onClick={(e, marker) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const element = document.getElementById(result._id);
+
+              document
+                .querySelectorAll('.outline')
+                .forEach((elem) => elem.classList.remove('outline'));
+
+              if (element) {
+                element.classList.add('outline');
+                element.scrollIntoView();
+              }
+
+              marker.togglePopup();
+            }}
+            popup={
+              <div className="flex flex-col gap-2">
+                <h3 className="text-lg font-semibold">{result.name}</h3>
+                <p className="text-md">{result.description}</p>
+
+                <div className="flex gap-2">
+                  <ReferralButton
+                    referralType="call_referral"
+                    resourceId={result._id}
+                    resource={result}
+                    disabled={!result.phone}
+                    href={`tel:${result.phone}`}
+                    className="min-w-[130px] gap-1 w-full"
+                  >
+                    <IconPhone className="size-4" />
+                    {t('call_to_action.call', {
+                      ns: 'common',
+                    })}
+                  </ReferralButton>
+
+                  <ReferralButton
+                    referralType="website_referral"
+                    resourceId={result._id}
+                    resource={result}
+                    disabled={!result.website}
+                    href={result?.website ?? ''}
+                    target="_blank"
+                    className="min-w-[130px] gap-1 w-full"
+                  >
+                    <IconWorldWww className="size-4" />
+                    {t('call_to_action.view_website', {
+                      ns: 'common',
+                    })}
+                  </ReferralButton>
+                </div>
+              </div>
+            }
+          />
+        );
+      })}
+    </>
+  );
+});
+
 export default function SearchPage(props: any) {
   const appConfig = useAppConfig();
   const { createResultsEvent } = useEventStore();
@@ -136,6 +215,18 @@ export default function SearchPage(props: any) {
   const metaDescription = `Showing ${
     props.results.length >= 25 ? '25' : props.results.length
   } / ${props.totalResults} ${t('results_for')} ${props.query}.`;
+
+  const mapProps = useMemo(
+    () => ({
+      accessToken: process.env.NEXT_PUBLIC_MAPBOX_API_KEY,
+      style: mapStyle as Style,
+      center: appConfig?.features?.map?.center,
+      zoom: 12,
+      animate: false,
+      boundsPadding: 50,
+    }),
+    [appConfig?.features?.map?.center],
+  );
 
   return (
     <>
@@ -180,11 +271,9 @@ export default function SearchPage(props: any) {
             }}
           >
             <div className="w-full h-full relative rounded-md overflow-hidden">
-              <PluginLoader
-                plugin={appConfig?.features?.map?.plugin}
-                component="map"
-                locations={props.results}
-              />
+              <MapboxMap {...mapProps}>
+                <Markers results={props.results} />
+              </MapboxMap>
             </div>
           </div>
         </div>

@@ -13,6 +13,10 @@ import Eligibility from './eligibility';
 import Fees from './fees';
 import Languages from './languages';
 import ServiceArea from './service-area';
+import MapboxMap, { Marker } from '@/components/map';
+import mapStyle from '@/components/map/style.json';
+import { Style } from 'mapbox-gl';
+import { useTranslation } from 'next-i18next';
 
 type Props = {
   data: Resource;
@@ -29,11 +33,21 @@ export default function ResourceInformation(props: Props) {
           id="map-container"
         >
           <div className="flex w-full h-full">
-            <PluginLoader
-              plugin={appConfig?.features?.map?.plugin}
-              component="map"
-              locations={[props]}
-            />
+            <MapboxMap
+              accessToken={process.env.NEXT_PUBLIC_MAPBOX_API_KEY}
+              style={mapStyle as Style}
+              center={appConfig?.features?.map?.center}
+              zoom={12}
+              animate={false}
+              boundsPadding={50}
+              boundsZoom={13}
+            >
+              <Marker
+                latitude={props.data.location.coordinates[1]}
+                longitude={props.data.location.coordinates[0]}
+                className="custom-marker"
+              />
+            </MapboxMap>
           </div>
         </div>
       </CardContent>

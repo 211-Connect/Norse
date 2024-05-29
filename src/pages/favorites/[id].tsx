@@ -13,6 +13,12 @@ import { FavoritesSection } from '@/components/favorite-lists/components/favorit
 import useWindowScroll from '@/hooks/use-window-scroll';
 import useMediaQuery from '@/hooks/use-media-query';
 import { serverSideAppConfig } from '@/lib/server/utils';
+import MapboxMap, { Marker } from '@/components/map';
+import mapStyle from '@/components/map/style.json';
+import { Style } from 'mapbox-gl';
+import { useAtomValue } from 'jotai';
+import { favoriteListWithFavoritesAtom } from '@/components/favorite-lists/components/favorites/state';
+import { useRouter } from 'next/router';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerSession(ctx.req, ctx.res, authOptions);
@@ -34,9 +40,11 @@ export default function FavoritesDetail() {
   const { t } = useTranslation('page-list');
   const [scroll] = useWindowScroll();
   const mapHidden = useMediaQuery('(max-width: 768px)');
+  const { data } = useAtomValue(favoriteListWithFavoritesAtom);
+  const router = useRouter();
 
   const clampedWindowValue = Math.round(
-    Math.abs(Math.min(Math.max(scroll.y, 0), 80) - 80)
+    Math.abs(Math.min(Math.max(scroll.y, 0), 80) - 80),
   );
 
   useEffect(() => {
@@ -78,20 +86,34 @@ export default function FavoritesDetail() {
               }}
             >
               <div className="w-full h-full relative rounded-md overflow-hidden">
-                <PluginLoader
-                  plugin={appConfig?.features?.map?.plugin}
-                  component="map"
-                  // locations={favoriteList.favorites.map((el: any) => ({
-                  //   id: el._id,
-                  //   name: el.displayName,
-                  //   description: el?.translations?.[0]?.serviceDescription,
-                  //   location: el.location,
-                  //   website: el.website,
-                  //   phone: el?.phoneNumbers?.find(
-                  //     (el: any) => el.rank === 1 && el.type === 'voice'
-                  //   ),
-                  // }))}
-                />
+                <MapboxMap
+                  accessToken={process.env.NEXT_PUBLIC_MAPBOX_API_KEY}
+                  style={mapStyle as Style}
+                  center={appConfig?.features?.map?.center}
+                  zoom={12}
+                  animate={false}
+                  boundsPadding={50}
+                  boundsZoom={
+                    (data?.favorites?.length ?? 0) > 1 ? undefined : 13
+                  }
+                >
+                  {data?.favorites?.map((list) => {
+                    if (list?.location?.coordinates == null) return null;
+
+                    // const translation = list.translations.find(
+                    //   (translation) => translation.locale === router.locale,
+                    // );
+
+                    return (
+                      <Marker
+                        key={list._id}
+                        latitude={list.location.coordinates[1]}
+                        longitude={list.location.coordinates[0]}
+                        className="custom-marker"
+                      />
+                    );
+                  }) ?? null}
+                </MapboxMap>
               </div>
             </div>
           </div>
