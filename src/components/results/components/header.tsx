@@ -22,12 +22,7 @@ export default function ResultsHeader({
   );
 
   return (
-    <div
-      className={cn(
-        totalFilters > 0 ? 'justify-between' : 'justify-end',
-        'flex bg-primary items-center p-1 pr-2 pl-2 mb-2',
-      )}
-    >
+    <div className={cn('flex bg-primary items-center p-1 pr-2 pl-2 mb-2')}>
       {totalFilters > 0 && (
         <Button
           className="flex gap-1 items-center lg:hidden text-primary-foreground"
@@ -44,7 +39,7 @@ export default function ResultsHeader({
         </Button>
       )}
 
-      <p id="result-total" className="text-primary-foreground">
+      <p id="result-total" className="text-primary-foreground ml-auto">
         {counterStart}-{counterEnd}
         {` `}
         {t('of')}
