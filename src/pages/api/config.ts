@@ -1,3 +1,8 @@
+/**
+ * This endpoint allows us to include "self-hosted" runtime environment variables
+ * for the client application
+ * @see https://gist.github.com/jihchi/bbc718366fbb6342e0a48045f18c82e5
+ */
 const config = {
   MAPBOX_ACCESS_TOKEN: process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN,
   KEYCLOAK_REALM: process.env.NEXT_PUBLIC_KEYCLOAK_REALM,
