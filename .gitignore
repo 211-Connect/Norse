@@ -43,6 +43,7 @@ Thumbs.db
 
 # Norse
 .norse
+app.config.json
 
 # Environment
 .env
