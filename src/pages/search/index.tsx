@@ -85,10 +85,11 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     destroyCookie(ctx, USER_PREF_LAST_QUERY, { path: '/' });
   }
 
+  const url = ctx.resolvedUrl.split('?')[1];
   const searchAdapter = SearchAdapter();
-  const { results, noResults, totalResults, page, filters } =
+  const { results, noResults, totalResults, page, facets } =
     await searchAdapter.search({
-      ...(ctx.query as SearchQueryParams),
+      ...(qs.parse(url) as SearchQueryParams),
       locale: ctx.locale,
     });
 
@@ -98,15 +99,16 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     props: {
       results,
       noResults,
-      filters,
+      facets,
       totalResults,
       currentPage: page,
       query: ctx.query?.query ?? null,
       query_label: ctx.query?.query_label ?? null,
       ...(await serverSideAppConfig()),
-      ...(await serverSideTranslations(ctx.locale as string, [
+      ...(await serverSideTranslations(ctx.locale, [
         'page-search',
         'common',
+        'suggestions',
       ])),
     },
   };
@@ -244,7 +246,7 @@ export default function SearchPage(props: any) {
       <AppHeader fullWidth />
 
       <div className="w-full h-full flex relative gap-2">
-        <FilterPanel filters={props.filters} />
+        <FilterPanel filters={props.facets} />
 
         <div
           className="flex flex-col md:max-w-xl w-full overflow-y-auto"
@@ -259,7 +261,7 @@ export default function SearchPage(props: any) {
             noResults={props.noResults}
             currentPage={props.currentPage}
             totalResults={props.totalResults}
-            totalFilters={props.filters ? Object.keys(props.filters).length : 0}
+            totalFilters={props.facets ? Object.keys(props.facets).length : 0}
           />
         </div>
 

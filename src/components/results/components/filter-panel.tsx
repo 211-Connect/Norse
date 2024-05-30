@@ -2,8 +2,10 @@ import { useRouter } from 'next/router';
 import qs from 'qs';
 import { Badge } from '../../ui/badge';
 import { Checkbox } from '../../ui/checkbox';
-import { Dialog } from '../../ui/dialog';
+import { Dialog, DialogContent } from '../../ui/dialog';
 import { atom, useAtom } from 'jotai';
+import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface FilterPanelStore {
   isOpen: boolean;
@@ -42,51 +44,61 @@ export function FilterPanel({ filters }: any) {
 
   return (
     <>
-      <div className="w-full max-w-[250px] hidden md:block">
-        <div className="flex flex-col gap-2 p-2">
+      <div className="w-full max-w-[250px] hidden lg:block">
+        <div className="flex flex-col gap-4 p-2">
           {getFilters().map((el) => {
             return (
-              <div key={el.name} className="flex flex-col gap-2">
-                <h5>{el.displayName}</h5>
+              <div key={el.name} className="flex flex-col gap-1">
+                <h5 className="text-md font-semibold">{el.displayName}</h5>
 
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-1">
                   {el.buckets.map((innerEl: any) => {
                     return (
-                      <div className="flex" key={innerEl.key}>
-                        <Checkbox
-                          checked={
-                            q.filters?.[el.name]?.includes(innerEl.key) ?? false
-                          }
-                          onChange={(e: any) => {
-                            const q: any = qs.parse(
-                              router.asPath.slice(
-                                router.asPath.indexOf('?') + 1
-                              )
-                            );
-
-                            if (!q.filters) {
-                              q.filters = {};
+                      <div
+                        className="flex items-center justify-between"
+                        key={innerEl.key}
+                      >
+                        <div className="flex items-center gap-1">
+                          <Checkbox
+                            id={innerEl.key}
+                            checked={
+                              q.filters?.[el.name]?.includes(innerEl.key) ??
+                              false
                             }
-
-                            if (!(q.filters[el.name] instanceof Array)) {
-                              q.filters[el.name] = [];
-                            }
-
-                            if (
-                              e.target.checked &&
-                              !q.filters[el.name].includes(innerEl.key)
-                            ) {
-                              q.filters[el.name].push(innerEl.key);
-                            } else {
-                              const idx = q.filters[el.name].findIndex(
-                                (v: any) => v === innerEl.key
+                            onCheckedChange={(checked: any) => {
+                              const q: any = qs.parse(
+                                router.asPath.slice(
+                                  router.asPath.indexOf('?') + 1,
+                                ),
                               );
-                              q.filters[el.name].splice(idx, 1);
-                            }
 
-                            router.push(`/search?${qs.stringify(q)}`);
-                          }}
-                        />
+                              if (!q.filters) {
+                                q.filters = {};
+                              }
+
+                              if (!(q.filters[el.name] instanceof Array)) {
+                                q.filters[el.name] = [];
+                              }
+
+                              if (
+                                checked &&
+                                !q.filters[el.name].includes(innerEl.key)
+                              ) {
+                                q.filters[el.name].push(innerEl.key);
+                              } else {
+                                const idx = q.filters[el.name].findIndex(
+                                  (v: any) => v === innerEl.key,
+                                );
+                                q.filters[el.name].splice(idx, 1);
+                              }
+
+                              router.push(`/search?${qs.stringify(q)}`);
+                            }}
+                          />
+                          <Label htmlFor={innerEl.key} className="text-sm">
+                            {innerEl.key}
+                          </Label>
+                        </div>
 
                         <Badge>{innerEl.doc_count}</Badge>
                       </div>
@@ -108,60 +120,84 @@ export function FilterPanel({ filters }: any) {
           }))
         }
       >
-        <div className="flex flex-col gap-2">
-          {getFilters().map((el) => {
-            return (
-              <div key={el.name} className="flex flex-col gap-2">
-                <h5>{el.displayName}</h5>
+        <DialogContent>
+          <div className="flex flex-col gap-2">
+            <ScrollArea className="max-h-[500px]">
+              <div className="flex flex-col gap-4 pr-3">
+                {getFilters().map((el) => {
+                  return (
+                    <div key={el.name} className="flex flex-col gap-1">
+                      <h5 className="text-md font-semibold">
+                        {el.displayName}
+                      </h5>
 
-                <div className="flex flex-col gap-2">
-                  {el.buckets.map((innerEl: any) => {
-                    return (
-                      <div className="flex" key={innerEl.key}>
-                        <Checkbox
-                          checked={
-                            q.filters?.[el.name]?.includes(innerEl.key) ?? false
-                          }
-                          onChange={(e: any) => {
-                            const q: any = qs.parse(
-                              router.asPath.slice(
-                                router.asPath.indexOf('?') + 1
-                              )
-                            );
+                      <div className="flex flex-col gap-2">
+                        {el.buckets.map((innerEl: any) => {
+                          return (
+                            <div
+                              className="flex items-center justify-between"
+                              key={innerEl.key}
+                            >
+                              <div className="flex items-center gap-1">
+                                <Checkbox
+                                  id={innerEl.key}
+                                  checked={
+                                    q.filters?.[el.name]?.includes(
+                                      innerEl.key,
+                                    ) ?? false
+                                  }
+                                  onCheckedChange={(checked: any) => {
+                                    const q: any = qs.parse(
+                                      router.asPath.slice(
+                                        router.asPath.indexOf('?') + 1,
+                                      ),
+                                    );
 
-                            if (!q.filters) {
-                              q.filters = {};
-                            }
+                                    if (!q.filters) {
+                                      q.filters = {};
+                                    }
 
-                            if (!(q.filters[el.name] instanceof Array)) {
-                              q.filters[el.name] = [];
-                            }
+                                    if (
+                                      !(q.filters[el.name] instanceof Array)
+                                    ) {
+                                      q.filters[el.name] = [];
+                                    }
 
-                            if (
-                              e.target.checked &&
-                              !q.filters[el.name].includes(innerEl.key)
-                            ) {
-                              q.filters[el.name].push(innerEl.key);
-                            } else {
-                              const idx = q.filters[el.name].findIndex(
-                                (v: any) => v === innerEl.key
-                              );
-                              q.filters[el.name].splice(idx, 1);
-                            }
+                                    if (
+                                      checked &&
+                                      !q.filters[el.name].includes(innerEl.key)
+                                    ) {
+                                      q.filters[el.name].push(innerEl.key);
+                                    } else {
+                                      const idx = q.filters[el.name].findIndex(
+                                        (v: any) => v === innerEl.key,
+                                      );
+                                      q.filters[el.name].splice(idx, 1);
+                                    }
 
-                            router.push(`/search?${qs.stringify(q)}`);
-                          }}
-                        />
+                                    router.push(`/search?${qs.stringify(q)}`);
+                                  }}
+                                />
+                                <Label
+                                  htmlFor={innerEl.key}
+                                  className="text-sm"
+                                >
+                                  {innerEl.key}
+                                </Label>
+                              </div>
 
-                        <Badge color="primary">{innerEl.doc_count}</Badge>
+                              <Badge>{innerEl.doc_count}</Badge>
+                            </div>
+                          );
+                        })}
                       </div>
-                    );
-                  })}
-                </div>
+                    </div>
+                  );
+                })}
               </div>
-            );
-          })}
-        </div>
+            </ScrollArea>
+          </div>
+        </DialogContent>
       </Dialog>
     </>
   );

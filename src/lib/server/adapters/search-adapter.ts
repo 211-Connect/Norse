@@ -1,6 +1,8 @@
 import z from 'zod';
 import { elasticsearch } from '../elasticsearch';
 import { SearchRequest } from '@elastic/elasticsearch/lib/api/types';
+import fs from 'fs/promises';
+import path from 'path';
 
 export type SearchRecord = {
   _id: any;
@@ -60,17 +62,26 @@ export default function SearchAdapter(retryOnNoResults = true) {
         typeof q.coords === 'string' ? q.coords.split(',') : q.coords;
       coords = coords instanceof Array && coords.length === 2 ? coords : null;
 
-      // if (req.tenant.facets && req.tenant.facets instanceof Array) {
-      //   // Get facets for faceted search for specific tenant
-      //   req.tenant.facets?.forEach((data) => {
-      //     aggs[data.facet] = {
-      //       terms: {
-      //         field: `facets.${data.facet}.keyword`,
-      //         size: 10,
-      //       },
-      //     };
-      //   });
-      // }
+      let facets = [];
+      try {
+        const rawData = await fs.readFile(
+          path.resolve(`./public/locales/${config.locale}/facets.json`),
+        );
+        facets = JSON.parse(rawData.toString());
+      } catch (err) {
+        console.error('Unable to parse facets', err);
+      }
+
+      if (facets.length > 0) {
+        facets.forEach((data) => {
+          aggs[data.facet] = {
+            terms: {
+              field: `facets.${data.facet}.keyword`,
+              size: 10,
+            },
+          };
+        });
+      }
 
       const queryBuilder: SearchRequest = {
         index: `${process.env.ELASTICSEARCH_RESOURCE_INDEX}_${q.locale}`,
@@ -154,6 +165,8 @@ export default function SearchAdapter(retryOnNoResults = true) {
 
       const filters = [];
       for (const key in q.filters) {
+        console.log({ key });
+
         if (q.filters[key] instanceof Array) {
           for (const item of q.filters[key]) {
             filters.push({
@@ -221,9 +234,8 @@ export default function SearchAdapter(retryOnNoResults = true) {
 
       let formattedData =
         data?.hits?.hits?.map((hit: any) => {
-          let mainAddress:
-            | string
-            | null = `${hit._source.address_1}, ${hit._source.city}, ${hit._source.state}, ${hit._source.postal_code}`;
+          let mainAddress: string | null =
+            `${hit._source.address_1}, ${hit._source.city}, ${hit._source.state}, ${hit._source.postal_code}`;
 
           if (mainAddress.includes('null')) {
             mainAddress = null;
@@ -242,10 +254,10 @@ export default function SearchAdapter(retryOnNoResults = true) {
           };
         }) ?? [];
 
-      // const facets: any = {};
-      // if (req.tenant.facets && req.tenant.facets instanceof Array) {
-      //   for (const item of req.tenant.facets) {
-      //     facets[item.facet] = item.name;
+      // const resFacets: any = {};
+      // if (facets.length > 0) {
+      //   for (const item of facets) {
+      //     resFacets[item.facet] = item.name;
       //   }
       // }
 
@@ -274,7 +286,7 @@ export default function SearchAdapter(retryOnNoResults = true) {
         noResults,
         totalResults,
         page: q.page,
-        filters: {},
+        facets: data?.aggregations ?? {},
       };
     },
   };
