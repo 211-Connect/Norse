@@ -1,25 +1,3 @@
-// import { MongoClient } from 'mongodb';
-
-// let cachedClient: MongoClient = global.mongoClient;
-
-// const dbName = 'search_engine';
-// export async function connect() {
-//   const mongodbUrl = process.env.MONGODB_CONNECTION_STRING;
-//   if (!mongodbUrl) {
-//     throw new Error('MONGODB_URI is not set');
-//   }
-//   if (!cachedClient) {
-//     console.log('Creating new MongoClient');
-//     global.mongoClient = new MongoClient(mongodbUrl);
-//     cachedClient = global.mongoClient;
-//     await cachedClient.connect();
-//   }
-
-//   const db = cachedClient.db(dbName);
-
-//   return db;
-// }
-
 import { MongoClient } from 'mongodb';
 
 const uri = process.env.MONGODB_CONNECTION_STRING as string; // your mongodb connection string

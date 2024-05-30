@@ -165,8 +165,6 @@ export default function SearchAdapter(retryOnNoResults = true) {
 
       const filters = [];
       for (const key in q.filters) {
-        console.log({ key });
-
         if (q.filters[key] instanceof Array) {
           for (const item of q.filters[key]) {
             filters.push({
