@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import mongodb from '../mongodb';
+import { ObjectId } from 'mongodb';
 
 export type Resource = {
   id: string;
@@ -63,7 +64,7 @@ export default function ResourceAdapter() {
               },
             },
           },
-        }
+        },
       );
 
       if (!record) throw new Error('404');
@@ -77,7 +78,7 @@ export default function ResourceAdapter() {
         phone:
           record?.displayPhoneNumber ??
           record?.phoneNumbers?.find(
-            (p: any) => p.rank === 1 && p.type === 'voice'
+            (p: any) => p.rank === 1 && p.type === 'voice',
           )?.number ??
           null,
         website: record?.website ?? null,
@@ -108,11 +109,11 @@ export default function ResourceAdapter() {
         serviceArea: record?.serviceArea ?? null,
       };
     },
-    getRedirect: async (id) => {
+    getRedirect: async (id: string) => {
       const mongo = await mongodb;
       const collection = mongo.db(dbName).collection('redirects');
 
-      const record = await collection.findOne({ _id: id });
+      const record = await collection.findOne({ _id: new ObjectId(id) });
 
       return record;
     },

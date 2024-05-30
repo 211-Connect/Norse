@@ -51,7 +51,7 @@ export function ResourceNavigation(props: Props) {
 
         <div className="flex gap-2">
           <ShareButton
-            title={t('check_out_this_resource', { ns: 'common' })}
+            title={t('modal.share.check_out_this_resource', { ns: 'common' })}
             body={`${props.displayName}\n\n${props.serviceDescription}`}
             printFn={handlePrint}
           />

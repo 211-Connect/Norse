@@ -29,7 +29,7 @@ export function FavoritesSection() {
     content: () => componentRef.current,
   });
   const { data, isLoading, isFetching } = useAtomValue(
-    favoriteListWithFavoritesAtom
+    favoriteListWithFavoritesAtom,
   );
   const setDeleteFavoriteList = useSetAtom(deleteFavoriteListDialogAtom);
   const setUpdateFavoriteList = useSetAtom(updateFavoriteListDialogAtom);
@@ -93,7 +93,7 @@ export function FavoritesSection() {
           )}
 
           <ShareButton
-            title={t('modal.share.check_out_this_list')}
+            title={t('modal.share.check_out_this_list', { ns: 'common' })}
             body=""
             printFn={handlePrint}
           />
@@ -109,7 +109,7 @@ export function FavoritesSection() {
       <div className="flex flex-col gap-2 p-2">
         {data?.favorites?.map((resource: any) => {
           const address = resource?.addresses?.find(
-            (el: any) => el.type === 'physical'
+            (el: any) => el.type === 'physical',
           );
 
           const mainAddress = address

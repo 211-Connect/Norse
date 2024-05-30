@@ -24,11 +24,20 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   } catch (err) {
     if (err.message === '404') {
       notFound = true;
-      const redirect = await resourceAdapter.getRedirect(ctx.params.id);
+      const redirect = await resourceAdapter.getRedirect(
+        ctx.params.id as string,
+      );
+
       if (redirect) {
+        let redirectUrl = '/search';
+        if (ctx.locale !== ctx.defaultLocale) {
+          redirectUrl += `'/${ctx.locale}`;
+        }
+        redirectUrl += `/${redirect.newId}`;
+
         return {
           redirect: {
-            destination: `/${ctx.locale}${redirect.newId}`,
+            destination: redirectUrl,
             permanent: true,
           },
         };

@@ -16,33 +16,6 @@ import { toast } from 'sonner';
 
 function useSms(textContent: string) {
   const [isOpen, setIsOpen] = useState(false);
-  const form = useForm({
-    defaultValues: {
-      phoneNumber: '',
-    },
-    validatorAdapter: zodValidator,
-    async onSubmit({ value }) {
-      toast(t('modal.share.sms_sending_title'), {
-        description: t('modal.share.sms_sending_body'),
-      });
-
-      const response = await axios.post('/api/share', {
-        phoneNumber: value.phoneNumber,
-        message: `\n${textContent}`,
-      });
-
-      if (response.status === 200) {
-        toast.success(t('modal.share.sms_send_success_title'), {
-          description: t('modal.share.sms_send_success_body'),
-        });
-      } else {
-        toast.error(t('modal.share.sms_send_failed_title'), {
-          description: t('modal.share.sms_send_failed_body'),
-        });
-      }
-    },
-  });
-  const { t } = useTranslation();
 
   function open() {
     setIsOpen(true);
@@ -53,6 +26,36 @@ function useSms(textContent: string) {
   }
 
   const SendSmsDialog = () => {
+    const form = useForm({
+      defaultValues: {
+        phoneNumber: '',
+      },
+      validatorAdapter: zodValidator,
+      async onSubmit({ value }) {
+        toast(t('modal.share.sms_sending_title'), {
+          description: t('modal.share.sms_sending_body'),
+        });
+
+        const response = await axios.post('/api/share', {
+          phoneNumber: value.phoneNumber,
+          message: `\n${textContent}`,
+        });
+
+        if (response.status === 200) {
+          toast.success(t('modal.share.sms_send_success_title'), {
+            description: t('modal.share.sms_send_success_body'),
+          });
+        } else {
+          toast.error(t('modal.share.sms_send_failed_title'), {
+            description: t('modal.share.sms_send_failed_body'),
+          });
+        }
+
+        close();
+      },
+    });
+    const { t } = useTranslation();
+
     if (!isOpen) return null;
 
     return (
@@ -72,10 +75,15 @@ function useSms(textContent: string) {
             <form.Field
               name="phoneNumber"
               validators={{
-                onChange: z.string().refine((value) => {
-                  const phoneRegex = /^\+?\d{10,15}$/;
-                  return phoneRegex.test(value);
-                }, t('modal.share.invalid_phone_number', { ns: 'common' }) as string),
+                onChange: z.string().refine(
+                  (value) => {
+                    const phoneRegex = /^\+?\d{10,15}$/;
+                    return phoneRegex.test(value);
+                  },
+                  t('modal.share.invalid_phone_number', {
+                    ns: 'common',
+                  }) as string,
+                ),
               }}
             >
               {(field) => (
