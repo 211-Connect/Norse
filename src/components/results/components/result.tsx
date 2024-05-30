@@ -32,7 +32,7 @@ import { Spoiler } from '@/components/ui/spoiler';
 import useAuthPrompt from '@/hooks/use-auth-prompt';
 import useAddToList from '@/components/favorite-lists/hooks/use-add-to-list';
 import useUpdateLocation from '@/components/search/hooks/use-update-location';
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { locationAtom } from '@/components/search/components/location-input';
 import { useMemo } from 'react';
 

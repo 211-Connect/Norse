@@ -1,10 +1,7 @@
-import { createContext, useContext } from 'react';
-
-const categoriesContext = createContext<any[]>([]);
-
-export const CategoriesProvider = categoriesContext.Provider;
+import { useTranslation } from 'next-i18next';
 
 export function useCategories() {
-  const categories = useContext(categoriesContext);
+  const { t } = useTranslation('categories');
+  const categories = t('categories', { returnObjects: true });
   return categories as any; // COME BACK AND TYPE THIS
 }

@@ -1,0 +1,72 @@
+{
+  "suggestions": [
+    {
+      "value": "I need a place to stay tonight.",
+      "term": "BH-1800.3500,BH-1800.8500,BH-7000.4600-800"
+    },
+    {
+      "value": "I need help finding housing.",
+      "term": "BH-3800.7250,BH-3900,BH-7000.4600-450,BH-7000.4600-600"
+    },
+    {
+      "value": "I need help affording my apartment/home.",
+      "term": "BH-3800.5000,BH-3800.7000,DT-8700.7000-700"
+    },
+    {
+      "value": "I need to find a job.",
+      "term": "ND-2000.1500-160,ND-2000.3500,ND-2000.6500,ND-3500"
+    },
+    {
+      "value": "I need help paying my utility (gas/electric/heating fuel/water) bill.",
+      "term": "BV-8900.1700-300,BV-8900.9125-920,BV-8900.9300-180,BV-8900.9300-250,BV-8900.9300-300,BV-8900.9300-950"
+    },
+    {
+      "value": "I need to know what kind of help I can get from the State of WA.",
+      "term": "FT-1000,NL-1000.2500,NL-1000.8500,NL-3000.1500,NL-5000.5000,NL-6000.2000,PH-0700"
+    },
+    {
+      "value": "I need food.",
+      "term": "BD-1800.1500,BD-1800.2000,BD-5000.1500,BD-5000.3500,BD-5000.8300,BD-5000.8500,NL-6000.2000"
+    },
+    {
+      "value": "I need health insurance for myself or my family.",
+      "term": "LH-3500,LH-3500.0200-200,NL-5000.5000,NS-8000.5000"
+    },
+    {
+      "value": "I don't have enough money to pay all my bills.",
+      "term": "BV-8900.9125-920,DM-1500.1500,DM-2000,DM-2000,DM-6500,DT-8700.2000-180,NT"
+    },
+    {
+      "value": "My child is in crisis and I don't know what to do.",
+      "term": "RP-1500.3400-650"
+    },
+    {
+      "value": "I need treatment for a drug or alcohol addiction.",
+      "term": "RX-0400.1500,RX-0400.2500,RX-8450.8000"
+    },
+    {
+      "value": "I need help preparing my taxes.",
+      "term": "DT-8700.2000-180,DT-8700.2000-200,DT-8800"
+    },
+    {
+      "value": "I need to find a counselor to talk to.",
+      "term": "RD-1900,RF-8380,RP-1400.2500,RP-1400.8000-050,RP-1400.8000-155,RP-1400.8000-675,RP-5000,RR-8500"
+    },
+    {
+      "value": "My utilities are going to be shut off.",
+      "term": "BV-8900.9200,BV-8900.9220,BV-8900.9300-180,BV-8900.9300-250,BV-8900.9300-950"
+    },
+    {
+      "value": "I need transportation.",
+      "term": "BT-4500.4600,BT-4500.4700,BT-4500.6500-170,BT-4500.6500-500,BT-4500.6500-800,BT-8500.1000-180,YL-3500.9400"
+    },
+    {
+      "value": "I'm a veteran and need help.",
+      "term": "FT-1000,TJ-3000.8000"
+    },
+    {
+      "value": "I'm feeling depressed and need some help.",
+      "term": "RF-8380,RP-1500.1400-500,RP-1500.1400-800,RP-1500.3400-650"
+    }
+  ]
+}

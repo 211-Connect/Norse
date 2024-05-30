@@ -1,32 +1,19 @@
-import { createContext, useContext, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'next-i18next';
 
-const suggestionsContext = createContext<
-  {
-    id: string | number;
-    value: string;
-    term: string;
-  }[]
->([]);
-
-export const SuggestionsProvider = suggestionsContext.Provider;
-
 export default function useSuggestions() {
-  const suggestions = useContext(suggestionsContext);
-  const { t } = useTranslation();
+  const { t } = useTranslation('suggestions');
+  const suggestions = t('suggestions', { returnObjects: true }) as any[];
 
   const translatedSuggestions = useMemo(() => {
     return (
-      suggestions?.map((suggestion, key) => ({
+      suggestions?.map((suggestion) => ({
         ...suggestion,
-        value: t(`suggestions.${key}`, {
-          defaultValue: suggestion.value,
-          ns: 'dynamic',
-        }),
+        value: suggestion.value,
         term: suggestion.term,
       })) ?? []
     );
-  }, [suggestions, t]);
+  }, [suggestions]);
 
   return translatedSuggestions;
 }

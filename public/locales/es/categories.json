@@ -1,0 +1,249 @@
+{
+  "categories": [
+    {
+      "name": "Discapacidades",
+      "image": "/disability.svg",
+      "subcategories": [
+        {
+          "name": "Tecnología de Asistencia",
+          "query": "LH-2700.0500",
+          "query_type": "taxonomy"
+        },
+        {
+          "name": "Intervención Temprana",
+          "query": "LR-1700",
+          "query_type": "taxonomy"
+        },
+        {
+          "name": "Empleo",
+          "query": "ND-6500.1500",
+          "query_type": "taxonomy"
+        },
+        {
+          "name": "Apoyo Financiero",
+          "query": "NS-1800",
+          "query_type": "taxonomy"
+        }
+      ]
+    },
+    {
+      "name": "Violencia Doméstica",
+      "image": "/harrassment.svg",
+      "subcategories": [
+        {
+          "name": "Línea Directa",
+          "query": "RP-1500.1400-200",
+          "query_type": "taxonomy"
+        },
+        {
+          "name": "Refugio",
+          "query": "BH-1800.1500-100",
+          "query_type": "taxonomy"
+        }
+      ]
+    },
+    {
+      "name": "Educación",
+      "image": "/assessment.svg",
+      "subcategories": [
+        {
+          "name": "Enlace para Estudiantes Sin Hogar",
+          "query": "HH-3000",
+          "query_type": "taxonomy"
+        },
+        {
+          "name": "Clases de GED",
+          "query": "HH-0500.2500-250",
+          "query_type": "taxonomy"
+        },
+        {
+          "name": "Clases de ESL",
+          "query": "HH-0500.8000-150",
+          "query_type": "taxonomy"
+        },
+        {
+          "name": "Tutoría/Ayuda con Tareas",
+          "query": "HL-8700",
+          "query_type": "taxonomy"
+        }
+      ]
+    },
+    {
+      "name": "Empleo",
+      "image": "/training.svg",
+      "subcategories": [
+        {
+          "name": "Búsqueda de Empleo",
+          "query": "ND-3500.3600",
+          "query_type": "taxonomy"
+        },
+        {
+          "name": "Habilidades para Buscar Empleo",
+          "query": "ND-2000.6500",
+          "query_type": "taxonomy"
+        },
+        {
+          "name": "Juventud",
+          "query": "ND-6500.9800",
+          "query_type": "taxonomy"
+        }
+      ]
+    },
+    {
+      "name": "Finanzas",
+      "image": "/financing.svg",
+      "subcategories": [
+        {
+          "name": "Asistencia para el Alquiler",
+          "query": "BH-3800.7000",
+          "query_type": "taxonomy"
+        },
+        {
+          "name": "Asistencia para Mudanza",
+          "query": "BH-3800.7250",
+          "query_type": "taxonomy"
+        },
+        {
+          "name": "Asistencia para Servicios Públicos",
+          "query": "BV-8900.9300",
+          "query_type": "taxonomy"
+        },
+        {
+          "name": "Descuentos en Servicios Públicos",
+          "query": "BV-8900.1700",
+          "query_type": "taxonomy"
+        }
+      ]
+    },
+    {
+      "name": "Alimentos",
+      "image": "/food.svg",
+      "subcategories": [
+        {
+          "name": "Comidas Gratuitas",
+          "query": "BD-5000.8300",
+          "query_type": "taxonomy"
+        },
+        {
+          "name": "Comidas para Ancianos",
+          "query": "BD-5000.1500",
+          "query_type": "taxonomy"
+        },
+        {
+          "name": "Despensas/Bancos de Alimentos",
+          "query": "BD-1800.2000",
+          "query_type": "taxonomy"
+        },
+        {
+          "name": "Entrega de Comestibles",
+          "query": "BD-2400.2590",
+          "query_type": "taxonomy"
+        },
+        {
+          "name": "Comidas a Domicilio",
+          "query": "BD-5000.3500",
+          "query_type": "taxonomy"
+        }
+      ]
+    },
+    {
+      "name": "Cuidado de la Salud",
+      "image": "/health.svg",
+      "subcategories": [
+        {
+          "name": "Pruebas de COVID-19",
+          "query": "LF-4900.1565",
+          "query_type": "taxonomy"
+        },
+        {
+          "name": "Cuidado Dental",
+          "query": "LV-1600",
+          "query_type": "taxonomy"
+        },
+        {
+          "name": "Cuidado Primario",
+          "query": "LE",
+          "query_type": "taxonomy"
+        },
+        {
+          "name": "Clínicas para Adolescentes",
+          "query": "LV-6800.0300",
+          "query_type": "taxonomy"
+        }
+      ]
+    },
+    {
+      "name": "Artículos Personales/Hogar",
+      "image": "/clothing.svg",
+      "subcategories": [
+        {
+          "name": "Ropa",
+          "query": "BM-6500.1500",
+          "query_type": "taxonomy"
+        },
+        {
+          "name": "Pañales",
+          "query": "BM-6500.1500-150",
+          "query_type": "taxonomy"
+        },
+        {
+          "name": "Artículos de Higiene",
+          "query": "BM-6500.6500-650",
+          "query_type": "taxonomy"
+        }
+      ]
+    },
+    {
+      "name": "Refugio/Vivienda",
+      "image": "/shelter.svg",
+      "subcategories": [
+        {
+          "name": "Centros de Día para Personas Sin Hogar",
+          "query": "BH-1800.3500",
+          "query_type": "taxonomy"
+        },
+        {
+          "name": "Refugios Nocturnos",
+          "query": "BH-1800.8500-150",
+          "query_type": "taxonomy"
+        },
+        {
+          "name": "Vivienda Permanente",
+          "query": "BH-7000.4600",
+          "query_type": "taxonomy"
+        },
+        {
+          "name": "Vivienda Transitoria",
+          "query": "BH-8600",
+          "query_type": "taxonomy"
+        },
+        {
+          "name": "Refugio para Jóvenes",
+          "query": "BH-1800.1500-700",
+          "query_type": "taxonomy"
+        }
+      ]
+    },
+    {
+      "name": "Transporte",
+      "image": "/transportation.svg",
+      "subcategories": [
+        {
+          "name": "Tarifa de Autobús",
+          "query": "BT-8300.1000",
+          "query_type": "taxonomy"
+        },
+        {
+          "name": "Dinero para Gasolina",
+          "query": "BT-8300.2500",
+          "query_type": "taxonomy"
+        },
+        {
+          "name": "Transporte Local",
+          "query": "BT-4500",
+          "query_type": "taxonomy"
+        }
+      ]
+    }
+  ]
+}

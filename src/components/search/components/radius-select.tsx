@@ -36,7 +36,6 @@ export default function RadiusSelect({
       <SelectTrigger className="w-[125px]">
         <SelectValue
           placeholder={t('search.radius_placeholder', {
-            ns: 'dynamic',
             defaultValue: 'radius',
           })}
         />
@@ -45,7 +44,6 @@ export default function RadiusSelect({
         <SelectGroup>
           <SelectLabel>
             {t('search.radius_placeholder', {
-              ns: 'dynamic',
               defaultValue: 'radius',
             })}
           </SelectLabel>

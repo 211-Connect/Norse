@@ -2,7 +2,6 @@ import { IconExternalLink } from '@tabler/icons-react';
 import Image from 'next/image';
 import { NavLink } from '@/components/nav-link';
 import { Anchor } from '@/components/anchor';
-import { useTranslation } from 'next-i18next';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 
 type Props = {
@@ -13,9 +12,7 @@ type Props = {
   subcategories: any[];
 };
 
-export function Category({ index, image, href, subcategories }: Props) {
-  const { t } = useTranslation('dynamic');
-
+export function Category({ index, name, image, href, subcategories }: Props) {
   if (subcategories && subcategories.length > 0) {
     return (
       <div className="flex justify-start items-start gap-2">
@@ -33,9 +30,7 @@ export function Category({ index, image, href, subcategories }: Props) {
         )}
 
         <div className="flex flex-col">
-          <h6 className="font-semibold text-lg pl-2">
-            {t(`categories.${index}`)}
-          </h6>
+          <h6 className="font-semibold text-lg pl-2">{name}</h6>
           {subcategories.map((el, key) => (
             <div key={el.name}>
               <NavLink
@@ -44,9 +39,9 @@ export function Category({ index, image, href, subcategories }: Props) {
                   el.href
                     ? el.href
                     : `/search?query=${encodeURIComponent(
-                        el.query
+                        el.query,
                       )}&query_label=${encodeURIComponent(
-                        t(`categories.${index}.subcategories.${key}`)
+                        el.name,
                       )}&query_type=${encodeURIComponent(el.query_type)}`
                 }`}
                 prefetch={false}
@@ -54,7 +49,7 @@ export function Category({ index, image, href, subcategories }: Props) {
                 rel={el.href ? 'noopener noreferrer' : ''}
               >
                 {el.href ? <IconExternalLink className="size-4" /> : null}
-                {t(`categories.${index}.subcategories.${key}`)}
+                {el.name}
               </NavLink>
             </div>
           ))}
@@ -88,9 +83,7 @@ export function Category({ index, image, href, subcategories }: Props) {
           )}
         </CardContent>
         <CardFooter className="bg-primary rounded-bl-md rounded-br-md items-center justify-center pt-2 pb-2">
-          <p className="text-primary-foreground text-lg">
-            {t(`categories.${index}`)}
-          </p>
+          <p className="text-primary-foreground text-lg">{name}</p>
         </CardFooter>
       </Card>
     </Anchor>

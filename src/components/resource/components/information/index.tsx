@@ -1,5 +1,4 @@
 import { useAppConfig } from '@/hooks/use-app-config';
-import { PluginLoader } from '@/components/plugin-loader';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import Addresses from './addresses';
 import { Resource } from '@/lib/server/adapters/resource-adapter';
@@ -16,7 +15,6 @@ import ServiceArea from './service-area';
 import MapboxMap, { Marker } from '@/components/map';
 import mapStyle from '@/components/map/style.json';
 import { Style } from 'mapbox-gl';
-import { useTranslation } from 'next-i18next';
 
 type Props = {
   data: Resource;

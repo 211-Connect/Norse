@@ -183,12 +183,7 @@ export default function LocationInput({
           name={name}
           className="w-full"
           options={filteredData ? [filteredData] : []}
-          placeholder={
-            t('search.location_placeholder', {
-              ns: 'dynamic',
-              defaultValue: t('search.location_placeholder'),
-            }) || ''
-          }
+          placeholder={t('search.location_placeholder') || ''}
           value={location.value}
           Icon={IconMapPin}
           onInputChange={onChange}

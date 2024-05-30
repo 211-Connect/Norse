@@ -5,7 +5,6 @@ import { AppFooter } from '../../components/app-footer';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]';
 import { useAppConfig } from '@/hooks/use-app-config';
-import { PluginLoader } from '../../components/plugin-loader';
 import { useTranslation } from 'next-i18next';
 import Head from 'next/head';
 import { useEffect } from 'react';
@@ -18,7 +17,6 @@ import mapStyle from '@/components/map/style.json';
 import { Style } from 'mapbox-gl';
 import { useAtomValue } from 'jotai';
 import { favoriteListWithFavoritesAtom } from '@/components/favorite-lists/components/favorites/state';
-import { useRouter } from 'next/router';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerSession(ctx.req, ctx.res, authOptions);
@@ -41,7 +39,6 @@ export default function FavoritesDetail() {
   const [scroll] = useWindowScroll();
   const mapHidden = useMediaQuery('(max-width: 768px)');
   const { data } = useAtomValue(favoriteListWithFavoritesAtom);
-  const router = useRouter();
 
   const clampedWindowValue = Math.round(
     Math.abs(Math.min(Math.max(scroll.y, 0), 80) - 80),
@@ -99,10 +96,6 @@ export default function FavoritesDetail() {
                 >
                   {data?.favorites?.map((list) => {
                     if (list?.location?.coordinates == null) return null;
-
-                    // const translation = list.translations.find(
-                    //   (translation) => translation.locale === router.locale,
-                    // );
 
                     return (
                       <Marker

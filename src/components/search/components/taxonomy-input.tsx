@@ -31,7 +31,7 @@ export default function TaxonomyInput({
       const taxonomyAdapter = TaxonomyAdapter();
       const data = await taxonomyAdapter.searchTaxonomies(
         debouncedValue,
-        router.locale
+        router.locale,
       );
 
       return {
@@ -84,10 +84,7 @@ export default function TaxonomyInput({
           ? [filteredSuggestions, filteredData]
           : [filteredSuggestions]
       }
-      placeholder={t('search.query_placeholder', {
-        ns: 'dynamic',
-        defaultValue: t('search.query_placeholder'),
-      })}
+      placeholder={t('search.query_placeholder')}
       onInputChange={onInputChange}
       onValueSelect={onValueSelect}
     />

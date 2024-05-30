@@ -9,22 +9,17 @@ import { HeroSection } from '../components/home/hero-section';
 import { useTranslation } from 'next-i18next';
 import Head from 'next/head';
 import { useAppConfig } from '@/hooks/use-app-config';
-import {
-  serverSideAppConfig,
-  serverSideCategories,
-  serverSideFavorites,
-} from '@/lib/server/utils';
+import { serverSideAppConfig } from '@/lib/server/utils';
 
 export async function getStaticProps(ctx: GetStaticPropsContext) {
   return {
     props: {
-      ...(await serverSideCategories()),
       ...(await serverSideAppConfig()),
-      ...(await serverSideFavorites()),
-      ...(await serverSideTranslations(ctx.locale as string, [
+      ...(await serverSideTranslations(ctx.locale, [
         'page-home',
         'common',
-        'dynamic',
+        'categories',
+        'suggestions',
       ])),
     },
   };
@@ -34,9 +29,8 @@ export default function Home() {
   const { t } = useTranslation('page-home');
   const appConfig = useAppConfig();
 
-  const metaTitle = t('meta_title') || t('meta_title', { ns: 'dynamic' });
-  const metaDescription =
-    t('meta_description') || t('meta_description', { ns: 'dynamic' });
+  const metaTitle = t('meta_title') || t('meta_title');
+  const metaDescription = t('meta_description') || t('meta_description');
 
   return (
     <TourProvider steps={[]} scrollSmooth>

@@ -1,7 +1,7 @@
 import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import nookies, { destroyCookie, setCookie } from 'nookies';
-import { memo, useCallback, useEffect, useMemo } from 'react';
+import { memo, useEffect, useMemo } from 'react';
 import { useEventStore } from '@/hooks/use-event-store';
 import { AppHeader } from '../../components/app-header';
 import { AppFooter } from '../../components/app-footer';
@@ -17,7 +17,7 @@ import { Results } from '@/components/results';
 import useMediaQuery from '@/hooks/use-media-query';
 import useWindowScroll from '@/hooks/use-window-scroll';
 import Search from '@/components/search';
-import { serverSideAppConfig, serverSideFavorites } from '@/lib/server/utils';
+import { serverSideAppConfig } from '@/lib/server/utils';
 import {
   USER_PREF_BACK_ACTION,
   USER_PREF_COORDS,
@@ -104,11 +104,9 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       query: ctx.query?.query ?? null,
       query_label: ctx.query?.query_label ?? null,
       ...(await serverSideAppConfig()),
-      ...(await serverSideFavorites()),
       ...(await serverSideTranslations(ctx.locale as string, [
         'page-search',
         'common',
-        'dynamic',
       ])),
     },
   };

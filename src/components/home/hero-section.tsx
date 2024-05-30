@@ -72,12 +72,7 @@ export function HeroSection() {
       />
 
       <div className="w-full max-w-[460px] bg-card p-4 rounded-md z-20 flex flex-col gap-2 search-box">
-        <h1 className="text-xl">
-          {t('search.hero_title', {
-            ns: 'dynamic',
-            defaultValue: t('search.hero_title', { ns: 'common' }),
-          })}
-        </h1>
+        <h1 className="text-xl">{t('search.hero_title', { ns: 'common' })}</h1>
 
         <Search />
       </div>

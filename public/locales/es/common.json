@@ -23,20 +23,20 @@
     "unable_to_delete_list_message": "No se pudo eliminar su lista."
   },
   "search": {
-    "hero_title": "",
-    "query_placeholder": "",
-    "location_placeholder": "",
+    "hero_title": "Buscar recursos",
+    "query_placeholder": "Comida, vivienda, etc...",
+    "location_placeholder": "Ciudad, estado o código postal",
     "radius_placeholder": "Radio",
     "miles": "Millas",
     "any": "Cualquier",
     "taxonomies": "Taxonomías",
     "suggestions": "Sugerencias",
-    "use_my_location": "usar mi ubicación",
-    "confidential_address": "Esta ubicación puede ser confidencial o no estar abierta al público. Elija otro método de contacto proporcionado para este servicio.",
+    "use_my_location": "Usar mi ubicación",
+    "confidential_address": "Esta ubicación puede ser confidencial o no estar abierta al público. Por favor, elija otro método de contacto proporcionado para este servicio.",
     "address_unavailable": "Dirección no disponible",
     "geocoding_error": "Error de geocodificación",
     "geocoding_unsupported": "La geolocalización no es compatible con su navegador",
-    "geocoding_unable_to_retrieve": "No se puede recuperar tu ubicación. Verifique la configuración de ubicación de su navegador y vuelva a intentarlo.",
+    "geocoding_unable_to_retrieve": "No se puede recuperar su ubicación. Por favor, revise la configuración de ubicación de su navegador e intente nuevamente.",
     "categories": "Categorías"
   },
   "call_to_action": {

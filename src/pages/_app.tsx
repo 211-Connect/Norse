@@ -16,7 +16,7 @@ const fontSans = FontSans({
 
 function App({
   Component,
-  pageProps: { session, suggestions, categories, appConfig, ...pageProps },
+  pageProps: { session, appConfig, ...pageProps },
 }: AppProps) {
   return (
     <div
@@ -32,12 +32,7 @@ function App({
 
       <PageView />
 
-      <Providers
-        session={session}
-        suggestions={suggestions}
-        appConfig={appConfig}
-        categories={categories}
-      >
+      <Providers session={session} appConfig={appConfig}>
         <Component {...pageProps} />
         <Toaster />
         <GoogleTagManagerScript />

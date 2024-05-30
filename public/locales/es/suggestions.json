@@ -1,0 +1,72 @@
+{
+  "suggestions": [
+    {
+      "value": "Necesito un lugar para quedarme esta noche.",
+      "term": "BH-1800.3500,BH-1800.8500,BH-7000.4600-800"
+    },
+    {
+      "value": "Necesito ayuda para encontrar vivienda.",
+      "term": "BH-3800.7250,BH-3900,BH-7000.4600-450,BH-7000.4600-600"
+    },
+    {
+      "value": "Necesito ayuda para pagar mi apartamento/hogar.",
+      "term": "BH-3800.5000,BH-3800.7000,DT-8700.7000-700"
+    },
+    {
+      "value": "Necesito encontrar un trabajo.",
+      "term": "ND-2000.1500-160,ND-2000.3500,ND-2000.6500,ND-3500"
+    },
+    {
+      "value": "Necesito ayuda para pagar mi factura de servicios públicos (gas/electricidad/combustible para calefacción/agua).",
+      "term": "BV-8900.1700-300,BV-8900.9125-920,BV-8900.9300-180,BV-8900.9300-250,BV-8900.9300-300,BV-8900.9300-950"
+    },
+    {
+      "value": "Necesito saber qué tipo de ayuda puedo obtener del Estado de WA.",
+      "term": "FT-1000,NL-1000.2500,NL-1000.8500,NL-3000.1500,NL-5000.5000,NL-6000.2000,PH-0700"
+    },
+    {
+      "value": "Necesito comida.",
+      "term": "BD-1800.1500,BD-1800.2000,BD-5000.1500,BD-5000.3500,BD-5000.8300,BD-5000.8500,NL-6000.2000"
+    },
+    {
+      "value": "Necesito seguro de salud para mí o mi familia.",
+      "term": "LH-3500,LH-3500.0200-200,NL-5000.5000,NS-8000.5000"
+    },
+    {
+      "value": "No tengo suficiente dinero para pagar todas mis facturas.",
+      "term": "BV-8900.9125-920,DM-1500.1500,DM-2000,DM-2000,DM-6500,DT-8700.2000-180,NT"
+    },
+    {
+      "value": "Mi hijo está en crisis y no sé qué hacer.",
+      "term": "RP-1500.3400-650"
+    },
+    {
+      "value": "Necesito tratamiento para una adicción a las drogas o al alcohol.",
+      "term": "RX-0400.1500,RX-0400.2500,RX-8450.8000"
+    },
+    {
+      "value": "Necesito ayuda para preparar mis impuestos.",
+      "term": "DT-8700.2000-180,DT-8700.2000-200,DT-8800"
+    },
+    {
+      "value": "Necesito encontrar un consejero con quien hablar.",
+      "term": "RD-1900,RF-8380,RP-1400.2500,RP-1400.8000-050,RP-1400.8000-155,RP-1400.8000-675,RP-5000,RR-8500"
+    },
+    {
+      "value": "Mis servicios públicos van a ser cortados.",
+      "term": "BV-8900.9200,BV-8900.9220,BV-8900.9300-180,BV-8900.9300-250,BV-8900.9300-950"
+    },
+    {
+      "value": "Necesito transporte.",
+      "term": "BT-4500.4600,BT-4500.4700,BT-4500.6500-170,BT-4500.6500-500,BT-4500.6500-800,BT-8500.1000-180,YL-3500.9400"
+    },
+    {
+      "value": "Soy un veterano y necesito ayuda.",
+      "term": "FT-1000,TJ-3000.8000"
+    },
+    {
+      "value": "Me siento deprimido y necesito ayuda.",
+      "term": "RF-8380,RP-1500.1400-500,RP-1500.1400-800,RP-1500.3400-650"
+    }
+  ]
+}
