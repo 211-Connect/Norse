@@ -43,6 +43,8 @@ function App({
 
 // We use dynamic runtime environment variables
 // Due to this we need to make sure the application is dynamically rendered for all pages
+// We might be able to get rid of this as long as we make sure that any page that relies on runtime configuration
+// is server side rendered
 App.getInitialProps = async () => {
   return {};
 };
