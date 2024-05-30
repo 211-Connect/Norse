@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 declare module '*.svg' {
   const content: any;
   export const ReactComponent: any;
@@ -10,9 +9,6 @@ declare global {
     interface ProcessEnv {
       NEXT_PUBLIC_MAPBOX_API_KEY?: string;
       NEXT_PUBLIC_GTM_CONTAINER_ID?: string;
-      NEXT_PUBLIC_API_URL?: string;
-      NEXT_PUBLIC_TENANT_ID?: string;
-      NEXT_PUBLIC_MAPBOX_STYLE_URL?: string;
 
       // Required Twilio environment variables (ONLY IF USING TWILIO FOR SMS SHARING)
       TWILIO_PHONE_NUMBER?: string;
@@ -28,13 +24,6 @@ declare global {
       KEYCLOAK_ISSUER?: string;
       KEYCLOAK_CLIENT_ID?: string;
       NEXT_PUBLIC_KEYCLOAK_REALM?: string;
-
-      // These are only used in prebuild/build scripts and are
-      // not required to run the application
-      PREBUILD_PACKAGE_NAME?: string;
-      TRANSLATE_LOCALES?: string;
-      GOOGLE_API_KEY?: string;
-      NPM_TOKEN?: string;
     }
   }
 }
