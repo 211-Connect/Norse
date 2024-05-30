@@ -2,10 +2,7 @@ type Coords = [number, number]; // [longitude, latitude]
 
 /**
  *
- * @param coords1
- * @param coords2
  * @see https://stackoverflow.com/questions/18883601/function-to-calculate-distance-between-two-coordinates
- * @returns
  */
 export function distanceBetweenCoordsInMiles(coords1: Coords, coords2: Coords) {
   const M = 0.621371; // Miles in a kilometer

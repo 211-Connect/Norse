@@ -7,8 +7,12 @@ declare module '*.svg' {
 declare global {
   namespace NodeJS {
     interface ProcessEnv {
-      NEXT_PUBLIC_MAPBOX_API_KEY?: string;
+      NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN?: string;
       NEXT_PUBLIC_GTM_CONTAINER_ID?: string;
+      NEXT_PUBLIC_KEYCLOAK_REALM?: string;
+
+      // Required for url shortening
+      BASE_URL?: string;
 
       // Required Twilio environment variables (ONLY IF USING TWILIO FOR SMS SHARING)
       TWILIO_PHONE_NUMBER?: string;
@@ -23,7 +27,6 @@ declare global {
       KEYCLOAK_SECRET?: string;
       KEYCLOAK_ISSUER?: string;
       KEYCLOAK_CLIENT_ID?: string;
-      NEXT_PUBLIC_KEYCLOAK_REALM?: string;
     }
   }
 }

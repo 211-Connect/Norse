@@ -17,7 +17,7 @@ import mapStyle from '@/components/map/style.json';
 import { Style } from 'mapbox-gl';
 import { useAtomValue } from 'jotai';
 import { favoriteListWithFavoritesAtom } from '@/components/favorite-lists/components/favorites/state';
-import { NEXT_PUBLIC_MAPBOX_API_KEY } from '@/constants/env';
+import { getPublicConfig } from '../api/config';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerSession(ctx.req, ctx.res, authOptions);
@@ -40,6 +40,7 @@ export default function FavoritesDetail() {
   const [scroll] = useWindowScroll();
   const mapHidden = useMediaQuery('(max-width: 768px)');
   const { data } = useAtomValue(favoriteListWithFavoritesAtom);
+  const MAPBOX_ACCESS_TOKEN = getPublicConfig('MAPBOX_ACCESS_TOKEN');
 
   const clampedWindowValue = Math.round(
     Math.abs(Math.min(Math.max(scroll.y, 0), 80) - 80),
@@ -85,7 +86,7 @@ export default function FavoritesDetail() {
             >
               <div className="w-full h-full relative rounded-md overflow-hidden">
                 <MapboxMap
-                  accessToken={NEXT_PUBLIC_MAPBOX_API_KEY}
+                  accessToken={MAPBOX_ACCESS_TOKEN}
                   style={mapStyle as Style}
                   center={appConfig?.features?.map?.center}
                   zoom={12}

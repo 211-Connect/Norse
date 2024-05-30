@@ -8,6 +8,7 @@ import { cn } from '@/utils';
 import Providers from '@/components/providers';
 import { Toaster } from 'sonner';
 import '../styles/globals.css';
+import Script from 'next/script';
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -40,13 +41,5 @@ function App({
     </div>
   );
 }
-
-// We use dynamic runtime environment variables
-// Due to this we need to make sure the application is dynamically rendered for all pages
-// We might be able to get rid of this as long as we make sure that any page that relies on runtime configuration
-// is server side rendered
-App.getInitialProps = async () => {
-  return {};
-};
 
 export default appWithTranslation(App);

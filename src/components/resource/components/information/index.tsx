@@ -15,7 +15,7 @@ import ServiceArea from './service-area';
 import MapboxMap, { Marker } from '@/components/map';
 import mapStyle from '@/components/map/style.json';
 import { Style } from 'mapbox-gl';
-import { NEXT_PUBLIC_MAPBOX_API_KEY } from '@/constants/env';
+import { getPublicConfig } from '@/pages/api/config';
 
 type Props = {
   data: Resource;
@@ -23,6 +23,7 @@ type Props = {
 
 export default function ResourceInformation(props: Props) {
   const appConfig = useAppConfig();
+  const MAPBOX_ACCESS_TOKEN = getPublicConfig('MAPBOX_ACCESS_TOKEN');
 
   return (
     <Card>
@@ -33,7 +34,7 @@ export default function ResourceInformation(props: Props) {
         >
           <div className="flex w-full h-full">
             <MapboxMap
-              accessToken={NEXT_PUBLIC_MAPBOX_API_KEY}
+              accessToken={MAPBOX_ACCESS_TOKEN}
               style={mapStyle as Style}
               center={appConfig?.features?.map?.center}
               zoom={12}

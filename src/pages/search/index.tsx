@@ -32,7 +32,7 @@ import { Style } from 'mapbox-gl';
 import { IconPhone, IconWorldWww } from '@tabler/icons-react';
 import { ReferralButton } from '@/components/referral-button';
 import { parseHtml } from '@/utils/parseHtml';
-import { NEXT_PUBLIC_MAPBOX_API_KEY } from '@/constants/env';
+import { getPublicConfig } from '../api/config';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const cookies = nookies.get(ctx);
@@ -193,6 +193,7 @@ const Markers = memo(function _markers({ results }: { results: any }) {
 });
 
 export default function SearchPage(props: any) {
+  const MAPBOX_ACCESS_TOKEN = getPublicConfig('MAPBOX_ACCESS_TOKEN');
   const appConfig = useAppConfig();
   const { createResultsEvent } = useEventStore();
   const { t } = useTranslation('page-search');
@@ -222,14 +223,14 @@ export default function SearchPage(props: any) {
 
   const mapProps = useMemo(
     () => ({
-      accessToken: NEXT_PUBLIC_MAPBOX_API_KEY,
+      accessToken: MAPBOX_ACCESS_TOKEN,
       style: mapStyle as Style,
       center: appConfig?.features?.map?.center,
       zoom: 12,
       animate: false,
       boundsPadding: 50,
     }),
-    [appConfig?.features?.map?.center],
+    [appConfig?.features?.map?.center, MAPBOX_ACCESS_TOKEN],
   );
 
   return (

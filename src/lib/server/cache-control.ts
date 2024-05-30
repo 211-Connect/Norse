@@ -5,7 +5,7 @@ export function cacheControl(ctx: GetServerSidePropsContext) {
   if (isProduction) {
     ctx.res.setHeader(
       'Cache-Control',
-      'public, max-age=60, s-maxage=60, stale-while-revalidate=60'
+      'public, max-age=60, s-maxage=60, stale-while-revalidate=60',
     );
   }
 }
