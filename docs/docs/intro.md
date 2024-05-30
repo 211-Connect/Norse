@@ -14,7 +14,6 @@ Get started by [forking the main branch](https://github.com/211-Connect/Norse/fo
 
 - [Node.js](https://nodejs.org/en/download/) version 18.x or above:
   - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
-- [Redis](https://redis.io/download/) latest stable version.
 - [MongoDB](https://www.mongodb.com/download-center/community/releases) version 6.x.
 - [Elasticsearch](https://www.elastic.co/downloads/elasticsearch) version 8.x.
 - [Keycloak](https://www.keycloak.org/downloads) version 21.x.
@@ -29,52 +28,63 @@ You can type this command into Command Prompt, Powershell, Terminal, or any othe
 
 The command installs all necessary dependencies you need to run Norse.
 
-
 ## Environment Variables
-  Rename `.env.examples` to `.env` and set environment variables.
+
+Copy `.env.example`, rename to `.env.local` and set environment variables.
 
 The document also mentions several environment variables that need to be set, which are categorized into "PUBLIC" and "SECRET." These variables are essential for configuring various aspects of the NORSE project. Here are some of the environment variables mentioned:
 
-PUBLIC Variables:
-- `NEXT_PUBLIC_MAPBOX_API_KEY`: Mapbox API key(get from [mapbox api](https://docs.mapbox.com/api/overview/) )
-- `NEXT_PUBLIC_GTM_CONTAINER_ID`: Google Tag Manager container ID
-- `NEXT_PUBLIC_API_URL`: API URL (http://localhost:3001 in this case)
-- `NEXT_PUBLIC_TENANT_ID`: Tenant ID ("0" in this case)
-- `NEXT_PUBLIC_MAPBOX_STYLE_URL`: Mapbox style URL
-- `NEXT_PUBLIC_KEYCLOAK_REALM`: Keycloak realm
+Public environment variables:
 
+| Key                               | Value                                                                                                                                                                     | Info       |
+| :-------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :--------- |
+| `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN` | [Mapbox Access Token](https://docs.mapbox.com/api/overview/)                                                                                                              | `Required` |
+| `NEXT_PUBLIC_GTM_CONTAINER_ID`    | [Google Tag Manager container ID](https://support.google.com/tagmanager/answer/12974036?hl=en#:~:text=In%20Tag%20Manager%2C%20click%20Workspace,as%20%22GTM%2DXXXXXX%22.) | `Optional` |
+| `NEXT_PUBLIC_KEYCLOAK_REALM`      | [Keycloak realm](https://www.keycloak.org/docs/latest/server_admin/#configuring-realms)                                                                                   | `Required` |
 
-SECRET Variables:
+Secret environment variables:
 
-- `NEXTAUTH_URL`: Next.js authentication URL (http://localhost:4200 in this case)
-- `NEXTAUTH_SECRET`: Next.js authentication secret
-- `KEYCLOAK_SECRET`: Keycloak secret
-- `KEYCLOAK_ISSUER`: Keycloak issuer
-- `KEYCLOAK_CLIENT_ID`: Keycloak client ID
-
+| Key                              | Value                                                                                                                                               | Info       |
+| :------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------- | :--------- |
+| `BASE_URL`                       | The base URL where you are hosting the application (i.e. https://example.com)                                                                       | `Required` |
+| `NEXTAUTH_URL`                   | In most cases this is the same as `BASE_URL` [See NextAuth documentation](https://next-auth.js.org/getting-started/example#deploying-to-production) | `Required` |
+| `NEXTAUTH_SECRET`                | The secret that NextAuth uses to create JSON Web Tokens                                                                                             | `Required` |
+| `KEYCLOAK_SECRET`                | Keycloak client secret                                                                                                                              | `Required` |
+| `KEYCLOAK_ISSUER`                | Keycloak issuer URL                                                                                                                                 | `Required` |
+| `KEYCLOAK_CLIENT_ID`             | Keycloak client ID                                                                                                                                  | `Required` |
+| `TWILIO_PHONE_NUMBER`            | Phone number assigned to you when creating SMS account                                                                                              | `Optional` |
+| `TWILIO_ACCOUNT_SID`             | Twilio [String identifier](https://www.twilio.com/docs/glossary/what-is-a-sid)                                                                      | `Optional` |
+| `TWILIO_AUTH_TOKEN`              | Twilio [Auth Token](https://help.twilio.com/articles/223136027-Auth-Tokens-and-How-to-Change-Them)                                                  | `Optional` |
+| `MONGODB_CONNECTION_STRING`      | MongoDB [connection string](https://www.mongodb.com/docs/manual/reference/connection-string/)                                                       | `Required` |
+| `ELASTICSEARCH_NODE`             | Elasticsearch [node](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html)                                             | `Required` |
+| `ELASTICSEARCH_API_KEY`          | Elasticsearch [api key](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-api-key.html)                           | `Required` |
+| `ELASTICSEARCH_RESOURCE_INDEX`   | Elasticsearch [index](https://www.elastic.co/blog/what-is-an-elasticsearch-index) that holds your resource records                                  | `Required` |
+| `ELASTICSEARCH_SUGGESTION_INDEX` | Elasticsearch [index](https://www.elastic.co/blog/what-is-an-elasticsearch-index) that holds your suggestion/taxonomy records                       | `Required` |
 
 These environment variables are crucial for configuring the project's behavior and connecting it to external services.
 
-Overall, this document provides a comprehensive guide on setting up and configuring the NORSE project for development. Users who want to work on this project or deploy it will find these instructions helpful.
+## Start the application
 
-
-
-## Start the client
-
-Run the api:
+Run the application in development:
 
 ```bash
-nx serve client
+npm run dev
 ```
 
-The `nx serve client` commands builds the application locally and serves it through a development server, ready for you to view at [http://localhost:4200](http://localhost:4200).
+The `npm run dev` command builds the application locally and serves it through a development server, ready for you to view at [http://localhost:3000](http://localhost:3000).
 
-## Start the server
+## Build the application
 
-In a seperate terminal, run the development server:
+Build the application:
 
 ```bash
-nx serve server
+npm run build
 ```
 
-The `nx serve server` commands starts the api server, ready for programmatic access at [http://localhost:3001](http://localhost:3001).
+## Run the built application
+
+Run the built application:
+
+```bash
+npm run start
+```
