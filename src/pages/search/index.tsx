@@ -32,6 +32,7 @@ import { Style } from 'mapbox-gl';
 import { IconPhone, IconWorldWww } from '@tabler/icons-react';
 import { ReferralButton } from '@/components/referral-button';
 import { parseHtml } from '@/utils/parseHtml';
+import { NEXT_PUBLIC_MAPBOX_API_KEY } from '@/constants/env';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const cookies = nookies.get(ctx);
@@ -221,7 +222,7 @@ export default function SearchPage(props: any) {
 
   const mapProps = useMemo(
     () => ({
-      accessToken: process.env.NEXT_PUBLIC_MAPBOX_API_KEY,
+      accessToken: NEXT_PUBLIC_MAPBOX_API_KEY,
       style: mapStyle as Style,
       center: appConfig?.features?.map?.center,
       zoom: 12,

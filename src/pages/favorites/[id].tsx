@@ -17,6 +17,7 @@ import mapStyle from '@/components/map/style.json';
 import { Style } from 'mapbox-gl';
 import { useAtomValue } from 'jotai';
 import { favoriteListWithFavoritesAtom } from '@/components/favorite-lists/components/favorites/state';
+import { NEXT_PUBLIC_MAPBOX_API_KEY } from '@/constants/env';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerSession(ctx.req, ctx.res, authOptions);
@@ -84,7 +85,7 @@ export default function FavoritesDetail() {
             >
               <div className="w-full h-full relative rounded-md overflow-hidden">
                 <MapboxMap
-                  accessToken={process.env.NEXT_PUBLIC_MAPBOX_API_KEY}
+                  accessToken={NEXT_PUBLIC_MAPBOX_API_KEY}
                   style={mapStyle as Style}
                   center={appConfig?.features?.map?.center}
                   zoom={12}

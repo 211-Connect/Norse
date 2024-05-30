@@ -31,7 +31,7 @@ export function DataProviders() {
                   </CardHeader>
                   <CardContent className="p-4 pt-2">
                     <Image
-                      src={el.logo}
+                      src={el.logoUrl}
                       alt=""
                       width={200}
                       height={0}

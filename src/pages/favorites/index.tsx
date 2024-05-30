@@ -12,6 +12,7 @@ import { serverSideAppConfig } from '@/lib/server/utils';
 import MapboxMap from '@/components/map';
 import mapStyle from '@/components/map/style.json';
 import { Style } from 'mapbox-gl';
+import { NEXT_PUBLIC_MAPBOX_API_KEY } from '@/constants/env';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerSession(ctx.req, ctx.res, authOptions);
@@ -74,7 +75,7 @@ export default function Lists() {
 
             <div className="flex w-full h-full">
               <MapboxMap
-                accessToken={process.env.NEXT_PUBLIC_MAPBOX_API_KEY}
+                accessToken={NEXT_PUBLIC_MAPBOX_API_KEY}
                 style={mapStyle as Style}
                 center={appConfig?.features?.map?.center}
                 zoom={12}

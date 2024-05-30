@@ -1,13 +1,13 @@
 import { parseHtml } from '../../utils/parseHtml';
 import { AppFooter } from '../../components/app-footer';
 import { AppHeader } from '../../components/app-header';
-import { GetStaticPropsContext } from 'next';
+import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Head from 'next/head';
 import { useAppConfig } from '@/hooks/use-app-config';
 import { serverSideAppConfig } from '@/lib/server/utils';
 
-export async function getStaticProps(ctx: GetStaticPropsContext) {
+export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const fs = await import('fs/promises');
   const path = await import('path');
 

@@ -15,6 +15,7 @@ import ServiceArea from './service-area';
 import MapboxMap, { Marker } from '@/components/map';
 import mapStyle from '@/components/map/style.json';
 import { Style } from 'mapbox-gl';
+import { NEXT_PUBLIC_MAPBOX_API_KEY } from '@/constants/env';
 
 type Props = {
   data: Resource;
@@ -32,7 +33,7 @@ export default function ResourceInformation(props: Props) {
         >
           <div className="flex w-full h-full">
             <MapboxMap
-              accessToken={process.env.NEXT_PUBLIC_MAPBOX_API_KEY}
+              accessToken={NEXT_PUBLIC_MAPBOX_API_KEY}
               style={mapStyle as Style}
               center={appConfig?.features?.map?.center}
               zoom={12}

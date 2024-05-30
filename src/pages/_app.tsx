@@ -41,4 +41,10 @@ function App({
   );
 }
 
+// We use dynamic runtime environment variables
+// Due to this we need to make sure the application is dynamically rendered for all pages
+App.getInitialProps = async () => {
+  return {};
+};
+
 export default appWithTranslation(App);

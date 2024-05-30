@@ -2,7 +2,7 @@ import fs from 'fs/promises';
 import path from 'path';
 
 export async function serverSideAppConfig() {
-  const rawData = await fs.readFile(path.resolve('./.norse/config.json'));
+  const rawData = await fs.readFile(path.resolve('./app.config.json'));
   let appConfig;
   try {
     appConfig = JSON.parse(rawData.toString());

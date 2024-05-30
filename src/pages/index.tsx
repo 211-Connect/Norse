@@ -1,4 +1,4 @@
-import { GetStaticPropsContext } from 'next';
+import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { CategorySection } from '../components/home/categories';
 import { TourProvider } from '@reactour/tour';
@@ -11,7 +11,7 @@ import Head from 'next/head';
 import { useAppConfig } from '@/hooks/use-app-config';
 import { serverSideAppConfig } from '@/lib/server/utils';
 
-export async function getStaticProps(ctx: GetStaticPropsContext) {
+export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   return {
     props: {
       ...(await serverSideAppConfig()),
