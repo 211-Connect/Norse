@@ -11,8 +11,11 @@ import Head from 'next/head';
 import { useAppConfig } from '@/hooks/use-app-config';
 import Resource from '@/components/resource';
 import { serverSideAppConfig } from '@/lib/server/utils';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../api/auth/[...nextauth]';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+  const session = await getServerSession(ctx.req, ctx.res, authOptions);
   const resourceAdapter = ResourceAdapter();
   let notFound = false;
   let data = null;
@@ -49,6 +52,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 
   return {
     props: {
+      session,
       resource: data,
       ...(await serverSideAppConfig()),
       ...(await serverSideTranslations(ctx.locale as string, [

@@ -33,9 +33,12 @@ import { IconPhone, IconWorldWww } from '@tabler/icons-react';
 import { ReferralButton } from '@/components/referral-button';
 import { parseHtml } from '@/utils/parseHtml';
 import { getPublicConfig } from '../api/config';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../api/auth/[...nextauth]';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const cookies = nookies.get(ctx);
+  const session = await getServerSession(ctx.req, ctx.res, authOptions);
 
   if (
     cookies[USER_PREF_LAST_QUERY] != null &&
@@ -98,6 +101,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 
   return {
     props: {
+      session,
       results,
       noResults,
       facets,
