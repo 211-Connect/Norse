@@ -97,6 +97,14 @@ const config = {
                 label: 'Getting Started',
                 to: '/docs/intro',
               },
+              {
+                label: 'Configuration',
+                to: '/docs/configuration',
+              },
+              {
+                label: 'Deployment',
+                to: '/docs/deployment',
+              },
             ],
           },
           {
