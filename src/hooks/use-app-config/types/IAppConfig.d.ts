@@ -49,16 +49,6 @@ export interface IAppConfig {
       hideLastAssured?: boolean;
     };
   };
-  menus?: {
-    header?: {
-      name?: string;
-      href?: string;
-    }[];
-    footer?: {
-      name?: string;
-      href?: string;
-    }[];
-  };
   providers?: {
     name?: string;
     href?: string;

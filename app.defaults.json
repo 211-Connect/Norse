@@ -46,10 +46,6 @@
       "hideLastAssured": false
     }
   },
-  "menus": {
-    "header": [],
-    "footer": []
-  },
   "providers": [
     {
       "name": "Community Resources",
