@@ -1,6 +1,5 @@
 spec:
   name: norse
-  region: sfo
   alerts:
     - rule: DEPLOYMENT_FAILED
     - rule: DOMAIN_FAILED
