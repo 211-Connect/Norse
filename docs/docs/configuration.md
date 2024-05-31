@@ -83,22 +83,6 @@ This is used for page defaults, such as meta tags when none available for other 
 | `hideCategories`  | Whether or not to hide the categories listed on the resource page | `boolean` `optional` |
 | `hideLastAssured` | Whether or not to hide the last assured date on the resource page | `boolean` `optional` |
 
-### menus
-
-#### - header
-
-| Key    | Value                          | Info       |
-| :----- | :----------------------------- | :--------- |
-| `name` | The display value for the link | `required` |
-| `href` | The URL for the link           | `required` |
-
-#### - footer
-
-| Key    | Value                          | Info       |
-| :----- | :----------------------------- | :--------- |
-| `name` | The display value for the link | `required` |
-| `href` | The URL for the link           | `required` |
-
 ### providers
 
 This accepts an `array` of `data provider` shaped like below
@@ -168,3 +152,20 @@ The `JSON` structure for this should have a top level `facets` key with an `arra
 | :------ | :----------------------------------------------------------------------- | :--------- |
 | `name`  | This is the display value that is shown to the user in the filter panel  | `required` |
 | `facet` | This is the field key that elasticsearch uses to create its aggregations | `required` |
+
+## Menus
+
+If you want to add customer links to your header or footer, then you'll want modify the `menus.json` files
+
+These can be found in `public/locales/{locale}/menus.json`
+If you modify these and are using more than 1 language then you will want to update the translations in the other language folders found in `public/locales/{locale}/menus.json`
+
+The `JSON` structure for this should have a top level `header` or `footer` key with an `array` of `menuItem`
+
+#### - menuItem
+
+| Key    | Value                                                                                                      | Info       |
+| :----- | :--------------------------------------------------------------------------------------------------------- | :--------- |
+| `name` | The display value for the link                                                                             | `required` |
+| `href` | The URL for the link                                                                                       | `required` |
+| `icon` | The name of the icon you want to use. See [lucide.dev](https://lucide.dev/icons/) for available icon names | `optional` |
