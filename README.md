@@ -11,6 +11,13 @@
 <h3 align="center">Full search, fast setup</h3>
 <p align="center">The modern search engine for community resources.</p>
 <p align="center"><a href="https://connect211.com/get-started">Cloud</a> · <a href="https://docs.c211.io">Docs</a> · <a href="https://preview.c211.io">Try live demo</a></p>
+
+<div align="center">
+
+[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/{REPO-OWNER}/{REPO-NAME}/tree/{BRANCH-NAME})
+
+</div>
+
 <br />
 
 Norse is a free and open-source search engine.

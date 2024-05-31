@@ -1,22 +1,24 @@
-[
-  {
-    "name": "Focus population",
-    "facet": "focus_population"
-  },
-  {
-    "name": "Age group",
-    "facet": "age_group"
-  },
-  {
-    "name": "Language",
-    "facet": "language"
-  },
-  {
-    "name": "Payment accepted",
-    "facet": "payment"
-  },
-  {
-    "name": "Days open",
-    "facet": "days_open"
-  }
-]
+{
+  "facets": [
+    {
+      "name": "Focus population",
+      "facet": "focus_population"
+    },
+    {
+      "name": "Age group",
+      "facet": "age_group"
+    },
+    {
+      "name": "Language",
+      "facet": "language"
+    },
+    {
+      "name": "Payment accepted",
+      "facet": "payment"
+    },
+    {
+      "name": "Days open",
+      "facet": "days_open"
+    }
+  ]
+}

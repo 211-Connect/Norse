@@ -67,7 +67,8 @@ export default function SearchAdapter(retryOnNoResults = true) {
         const rawData = await fs.readFile(
           path.resolve(`./public/locales/${config.locale}/facets.json`),
         );
-        facets = JSON.parse(rawData.toString());
+        const facetsRaw = JSON.parse(rawData.toString());
+        facets = facetsRaw?.facets ?? [];
       } catch (err) {
         console.error('Unable to parse facets', err);
       }
