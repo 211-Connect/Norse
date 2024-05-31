@@ -18,6 +18,7 @@ export async function getStaticProps(ctx: GetStaticPropsContext) {
       ...(await serverSideTranslations(ctx?.locale ?? 'en', [
         'page-500',
         'common',
+        'menus',
       ])),
     },
   };

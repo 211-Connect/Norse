@@ -110,6 +110,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
         'page-search',
         'common',
         'suggestions',
+        'menus',
       ])),
     },
   };

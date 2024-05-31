@@ -9,7 +9,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   return {
     props: {
       ...(await serverSideAppConfig()),
-      ...(await serverSideTranslations(ctx.locale as string)),
+      ...(await serverSideTranslations(ctx.locale as string, ['menus'])),
     },
   };
 }

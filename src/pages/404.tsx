@@ -15,7 +15,11 @@ export async function getStaticProps(ctx: GetStaticPropsContext) {
   return {
     props: {
       ...(await serverSideAppConfig()),
-      ...(await serverSideTranslations(ctx?.locale ?? ctx?.defaultLocale)),
+      ...(await serverSideTranslations(ctx?.locale ?? 'en', [
+        'page-404',
+        'common',
+        'menus',
+      ])),
     },
   };
 }

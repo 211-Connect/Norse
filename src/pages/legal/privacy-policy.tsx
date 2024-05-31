@@ -26,7 +26,10 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     props: {
       html: privacyPolicy,
       ...(await serverSideAppConfig()),
-      ...(await serverSideTranslations(ctx.locale as string)),
+      ...(await serverSideTranslations(ctx.locale as string, [
+        'common',
+        'menus',
+      ])),
     },
   };
 }
