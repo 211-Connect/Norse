@@ -7,6 +7,7 @@ const {
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   i18n: rest,
+  transpilePackages: ['lucide-react'],
 };
 
 const withBundleAnalyzer = bundleAnalyzer({

@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import useAuthPrompt from '@/hooks/use-auth-prompt';
+import Icon from '../icon';
 
 type Props = {
   fullWidth?: boolean;
@@ -86,6 +87,7 @@ export function AppHeader(props: Props) {
             href={el.href}
             className="flex gap-1 items-center"
           >
+            {el.icon && <Icon name={el.icon} className="size-4" />}
             {el.name}
           </Anchor>,
         );
