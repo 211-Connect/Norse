@@ -13,6 +13,11 @@ export function AppFooter(props: Props) {
   const appConfig = useAppConfig();
   const { t } = useTranslation('common');
 
+  const customFooterItems: any[] = t('footer', {
+    ns: 'menus',
+    returnObjects: true,
+  });
+
   return (
     <div className="bg-white">
       <hr />
@@ -37,12 +42,10 @@ export function AppFooter(props: Props) {
                 {t('footer.privacy_policy')}
               </Anchor>
 
-              {appConfig?.menus?.footer?.map((el) => (
+              {customFooterItems.map((el) => (
                 <Fragment key={el.name}>
                   <IconPointFilled className="scale-4" />
-                  <Anchor
-                    {...(el.href != null ? { href: el.href } : { href: '' })}
-                  >
+                  <Anchor className="flex gap-1 items-center" href={el.href}>
                     {el.name}
                   </Anchor>
                 </Fragment>

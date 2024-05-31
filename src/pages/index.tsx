@@ -1,4 +1,4 @@
-import { GetStaticPropsContext } from 'next';
+import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { CategorySection } from '../components/home/categories';
 import { TourProvider } from '@reactour/tour';
@@ -10,16 +10,22 @@ import { useTranslation } from 'next-i18next';
 import Head from 'next/head';
 import { useAppConfig } from '@/hooks/use-app-config';
 import { serverSideAppConfig } from '@/lib/server/utils';
+import { getServerSession } from 'next-auth';
+import { authOptions } from './api/auth/[...nextauth]';
 
-export async function getStaticProps(ctx: GetStaticPropsContext) {
+export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+  const session = await getServerSession(ctx.req, ctx.res, authOptions);
+
   return {
     props: {
+      session,
       ...(await serverSideAppConfig()),
       ...(await serverSideTranslations(ctx.locale, [
         'page-home',
         'common',
         'categories',
         'suggestions',
+        'menus',
       ])),
     },
   };

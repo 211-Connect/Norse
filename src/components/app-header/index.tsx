@@ -34,6 +34,11 @@ export function AppHeader(props: Props) {
   const router = useRouter();
   const { open: openAuthPrompt, AuthPrompt } = useAuthPrompt();
 
+  const customHeaderItems: any[] = t('header', {
+    ns: 'menus',
+    returnObjects: true,
+  });
+
   const menuItems = useMemo(() => {
     const items = [
       <Anchor key={0} href="/">
@@ -73,10 +78,14 @@ export function AppHeader(props: Props) {
       );
     }
 
-    if (appConfig?.menus?.header && appConfig.menus.header.length > 0) {
-      appConfig.menus.header.forEach((el) => {
+    if (customHeaderItems && customHeaderItems.length > 0) {
+      customHeaderItems.forEach((el) => {
         items.push(
-          <Anchor key={el.name} href={el.href}>
+          <Anchor
+            key={el.name}
+            href={el.href}
+            className="flex gap-1 items-center"
+          >
             {el.name}
           </Anchor>,
         );
@@ -146,12 +155,12 @@ export function AppHeader(props: Props) {
     return items;
   }, [
     appConfig?.contact?.feedbackUrl,
-    appConfig?.menus?.header,
     router,
     session.data,
     t,
     session.status,
     openAuthPrompt,
+    customHeaderItems,
   ]);
 
   return (
