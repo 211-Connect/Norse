@@ -59,6 +59,7 @@
     "dotenv": "^16.3.1",
     "effect": "^3.2.5",
     "flat": "^6.0.1",
+    "html-parser-lite": "^1.1.0",
     "html-react-parser": "^5.1.10",
     "i18next": "^23.4.4",
     "jotai": "^2.8.0",
