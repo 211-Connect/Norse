@@ -6,12 +6,12 @@ spec:
   ingress:
     rules:
       - component:
-          name: norse
+          name: app
         match:
           path:
             prefix: /
   services:
-    - name: norse-web
+    - name: app
       build_command: npm ci --include=dev && npm run build
       run_command: npm run start
       environment_slug: node-js
