@@ -1,5 +1,6 @@
 spec:
   name: norse
+  region: sfo
   alerts:
     - rule: DEPLOYMENT_FAILED
     - rule: DOMAIN_FAILED
@@ -41,11 +42,9 @@ spec:
           value: ''
         - key: NEXTAUTH_SECRET
           scope: RUN_AND_BUILD_TIME
-          type: SECRET
           value: ''
         - key: KEYCLOAK_SECRET
           scope: RUN_AND_BUILD_TIME
-          type: SECRET
           value: ''
         - key: KEYCLOAK_ISSUER
           scope: RUN_AND_BUILD_TIME
@@ -58,22 +57,18 @@ spec:
           value: ''
         - key: TWILIO_ACCOUNT_SID
           scope: RUN_AND_BUILD_TIME
-          type: SECRET
           value: ''
         - key: TWILIO_AUTH_TOKEN
           scope: RUN_AND_BUILD_TIME
-          type: SECRET
           value: ''
         - key: MONGODB_CONNECTION_STRING
           scope: RUN_AND_BUILD_TIME
-          type: SECRET
           value: ''
         - key: ELASTICSEARCH_NODE
           scope: RUN_AND_BUILD_TIME
           value: ''
         - key: ELASTICSEARCH_API_KEY
           scope: RUN_AND_BUILD_TIME
-          type: SECRET
           value: ''
         - key: ELASTICSEARCH_RESOURCE_INDEX
           scope: RUN_AND_BUILD_TIME
