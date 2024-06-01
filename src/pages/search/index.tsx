@@ -121,7 +121,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 }
 
 // Memoized markers to prevent re-renders of map component
-const Markers = memo(function _markers({ results }: { results: any }) {
+const Markers = memo(function MemoizedMarkers({ results }: { results: any }) {
   const { t } = useTranslation();
 
   return (

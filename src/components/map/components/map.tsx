@@ -10,7 +10,7 @@ import { useAtom } from 'jotai';
 import { mapAtom } from '../state';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-const MapboxMap = memo(function _MapboxMap({
+const MapboxMap = memo(function MemoizedMapboxMap({
   children,
   style,
   center,

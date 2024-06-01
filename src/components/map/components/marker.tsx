@@ -5,12 +5,12 @@ import {
   LngLatLike,
   Popup,
 } from 'mapbox-gl';
-import { ReactElement, ReactNode, memo, useEffect } from 'react';
+import { ReactElement, memo, useEffect } from 'react';
 import { useAtom } from 'jotai';
 import { mapAtom } from '../state';
 import { renderToStaticMarkup } from 'react-dom/server';
 
-export const Marker = memo(function _marker({
+export const Marker = memo(function MemoizedMarker({
   anchor,
   clickTolerance,
   color,
