@@ -1,7 +1,7 @@
 import { NextApiHandler } from 'next';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]';
-import { elasticsearch } from '@/lib/server/elasticsearch';
+import { elasticsearch } from '@/lib/elasticsearch';
 import { SearchRequest } from '@elastic/elasticsearch/lib/api/types';
 import z from 'zod';
 

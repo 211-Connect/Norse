@@ -1,5 +1,5 @@
 import { NextApiHandler } from 'next';
-import clientPromise from '@/lib/server/mongodb';
+import clientPromise from '@/lib/mongodb';
 
 const dbName = 'search_engine';
 const collectionName = 'shortenedUrls';

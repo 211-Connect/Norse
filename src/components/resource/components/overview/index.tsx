@@ -1,20 +1,19 @@
 import { parseHtml } from '@/utils/parseHtml';
 import { IconPhone, IconWorldWww, IconNavigation } from '@tabler/icons-react';
-import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
 import { ReferralButton } from '@/components/referral-button';
-import { USER_PREF_COORDS, USER_PREF_LOCATION } from '@/constants/cookies';
 import { useAppConfig } from '@/hooks/use-app-config';
-import { Resource } from '@/lib/server/adapters/resource-adapter';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { badgeVariants } from '@/components/ui/badge';
-import { cn } from '@/utils';
 import useUpdateLocation from '@/components/search/hooks/use-update-location';
 import { useAtomValue } from 'jotai';
 import { locationAtom } from '@/components/search/components/location-input';
+import { IResource } from '@/types/resource';
+import Link from 'next/link';
+import { badgeVariants } from '@/components/ui/badge';
+import { cn } from '@/utils';
 
 type Props = {
-  data: Resource;
+  data: IResource;
 };
 
 export function ResourceOverview({ data }: Props) {
@@ -35,22 +34,26 @@ export function ResourceOverview({ data }: Props) {
     <>
       <Card id={data.id}>
         <CardContent className="p-4 gap-1 flex flex-col">
-          <h3 className="text-2xl font-bold">{data.name}</h3>
-          <p className="font-semibold text-primary text-lg">
-            {data.serviceName}
-          </p>
+          {data?.name && <h3 className="text-2xl font-bold">{data.name}</h3>}
+          {data?.serviceName && (
+            <p className="font-semibold text-primary text-lg">
+              {data.serviceName}
+            </p>
+          )}
 
           <p className="whitespace-pre-wrap prose">
-            {parseHtml(data.description ?? '')}
+            {parseHtml(data?.description ?? '')}
           </p>
 
-          {config?.pages?.resource?.hideCategories ? null : (
+          {config?.pages?.resource?.hideCategories ||
+          !data?.taxonomies ||
+          (data?.taxonomies?.length ?? 0) === 0 ? null : (
             <>
               <h3 className="text-xl font-semibold text-primary">
                 {t('categories')}
               </h3>
               <div className="flex flex-wrap gap-2">
-                {data.categories?.map((el: any) => {
+                {data?.taxonomies?.map((el: any) => {
                   return (
                     <Link
                       className={cn(badgeVariants({ variant: 'outline' }))}
@@ -74,7 +77,7 @@ export function ResourceOverview({ data }: Props) {
               <h3 className="text-xl font-semibold text-primary">
                 {t('last_assured')}
               </h3>
-              <p className="text-sm">{data.lastAssuredOn || t('unknown')}</p>
+              <p className="text-sm">{data.lastAssuredDate || t('unknown')}</p>
             </>
           )}
         </CardContent>
@@ -86,9 +89,9 @@ export function ResourceOverview({ data }: Props) {
               referralType="call_referral"
               resourceId={data.id}
               resource={data}
-              disabled={!data.phone || data.phone.length === 0}
-              aria-disabled={!data.phone || data.phone.length === 0}
-              href={`tel:${data.phone && data.phone.length > 0 && data.phone}`}
+              disabled={!data.phoneNumber || data.phoneNumber.length === 0}
+              aria-disabled={!data.phoneNumber || data.phoneNumber.length === 0}
+              href={`tel:${data.phoneNumber && data.phoneNumber.length > 0 && data.phoneNumber}`}
             >
               <IconPhone className="size-4" />
               {t('call_to_action.call', { ns: 'common' })}

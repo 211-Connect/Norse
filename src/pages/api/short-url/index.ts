@@ -1,4 +1,4 @@
-import clientPromise from '@/lib/server/mongodb';
+import clientPromise from '@/lib/mongodb';
 import { NextApiHandler } from 'next';
 import z from 'zod';
 import { nanoid } from 'nanoid';

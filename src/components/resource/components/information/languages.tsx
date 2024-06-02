@@ -1,8 +1,8 @@
-import { Resource } from '@/lib/server/adapters/resource-adapter';
+import { IResource } from '@/types/resource';
 import { IconLanguage } from '@tabler/icons-react';
 import { useTranslation } from 'next-i18next';
 
-export default function Languages({ data }: { data: Resource }) {
+export default function Languages({ data }: { data: IResource }) {
   const { t } = useTranslation('page-resource');
 
   if (data?.languages instanceof Array && data?.languages?.length === 0)
@@ -17,11 +17,13 @@ export default function Languages({ data }: { data: Resource }) {
 
         <p className="font-semibold">{t('languages')}</p>
       </div>
-      {data?.languages?.map((el: string) => (
-        <p key={el} className="text-sm">
-          {el}
-        </p>
-      ))}
+      <div className="flex flex-wrap gap-1">
+        {data?.languages?.map((el: string) => (
+          <p key={el} className="text-sm">
+            {el}
+          </p>
+        ))}
+      </div>
     </div>
   );
 }

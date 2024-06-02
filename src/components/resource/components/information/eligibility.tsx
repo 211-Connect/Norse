@@ -1,8 +1,8 @@
-import { Resource } from '@/lib/server/adapters/resource-adapter';
+import { IResource } from '@/types/resource';
 import { IconCheck } from '@tabler/icons-react';
 import { useTranslation } from 'next-i18next';
 
-export default function Eligibility({ data }: { data: Resource }) {
+export default function Eligibility({ data }: { data: IResource }) {
   const { t } = useTranslation('page-resource');
 
   if (!data.eligibilities) return null;

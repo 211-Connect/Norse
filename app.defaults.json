@@ -10,9 +10,15 @@
     "number": "509-555-0100",
     "feedbackUrl": "https://example.com"
   },
+  "adapters": {
+    "database": "postgres",
+    "search": "elasticsearch",
+    "map": "mapbox",
+    "sms": "twilio"
+  },
   "features": {
+    "resource": {},
     "search": {
-      "adapter": "elasticsearch",
       "defaultRadius": 0,
       "radiusOptions": [
         { "value": 15 },
@@ -22,7 +28,6 @@
       ]
     },
     "map": {
-      "adapter": "mapbox",
       "center": [-120.740135, 47.751076]
     },
     "sms": null

@@ -1,9 +1,9 @@
 import { Anchor } from '@/components/anchor';
-import { Resource } from '@/lib/server/adapters/resource-adapter';
+import { IResource } from '@/types/resource';
 import { IconMail } from '@tabler/icons-react';
 import { useTranslation } from 'next-i18next';
 
-export default function EmailAddress({ data }: { data: Resource }) {
+export default function EmailAddress({ data }: { data: IResource }) {
   const { t } = useTranslation('page-resource');
 
   if (!data.email) return null;

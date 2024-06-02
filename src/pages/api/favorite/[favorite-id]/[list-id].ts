@@ -1,4 +1,4 @@
-import clientPromise from '@/lib/server/mongodb';
+import clientPromise from '@/lib/mongodb';
 import { NextApiHandler } from 'next';
 import { getServerSession } from 'next-auth';
 import z from 'zod';
@@ -27,7 +27,7 @@ const FavoriteListHandler: NextApiHandler = async (req, res) => {
       });
 
     const newListOfFavorites = favoriteList?.favorites?.filter(
-      (favorite) => favorite !== req.query['favorite-id']
+      (favorite) => favorite !== req.query['favorite-id'],
     );
 
     await mongo
@@ -42,7 +42,7 @@ const FavoriteListHandler: NextApiHandler = async (req, res) => {
           $set: {
             favorites: newListOfFavorites,
           },
-        }
+        },
       );
 
     res.status(200).json({ message: 'success' });

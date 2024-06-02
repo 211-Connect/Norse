@@ -155,7 +155,7 @@ const Markers = memo(function MemoizedMarkers({ results }: { results: any }) {
               <div className="flex flex-col gap-2">
                 <h3 className="text-lg font-semibold">{result.name}</h3>
                 <div className="whitespace-pre-wrap text-sm">
-                  {parseHtml(result.description)}
+                  {parseHtml(result?.description ?? '')}
                 </div>
 
                 <div className="flex gap-2">

@@ -1,8 +1,8 @@
-import { Resource } from '@/lib/server/adapters/resource-adapter';
+import { IResource } from '@/types/resource';
 import { IconMailbox, IconMapPin } from '@tabler/icons-react';
 import { useTranslation } from 'next-i18next';
 
-export default function Addresses({ data }: { data: Resource }) {
+export default function Addresses({ data }: { data: IResource }) {
   const { t } = useTranslation('page-resource');
 
   if ((data.addresses?.length ?? 0) === 0) return null;

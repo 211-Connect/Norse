@@ -1,8 +1,8 @@
-import { Resource } from '@/lib/server/adapters/resource-adapter';
+import { IResource } from '@/types/resource';
 import { IconCurrencyDollar } from '@tabler/icons-react';
 import { useTranslation } from 'next-i18next';
 
-export default function Fees({ data }: { data: Resource }) {
+export default function Fees({ data }: { data: IResource }) {
   const { t } = useTranslation('page-resource');
 
   if (!data.fees) return null;

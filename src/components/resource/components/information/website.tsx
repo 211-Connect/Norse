@@ -1,9 +1,9 @@
 import { Anchor } from '@/components/anchor';
-import { Resource } from '@/lib/server/adapters/resource-adapter';
+import { IResource } from '@/types/resource';
 import { IconWorldWww } from '@tabler/icons-react';
 import { useTranslation } from 'next-i18next';
 
-export default function Website({ data }: { data: Resource }) {
+export default function Website({ data }: { data: IResource }) {
   const { t } = useTranslation('page-resource');
 
   if (!data.website) return null;

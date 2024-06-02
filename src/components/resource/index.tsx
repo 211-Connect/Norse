@@ -1,9 +1,9 @@
 import { useRef } from 'react';
 import { ResourceNavigation } from './components/navigation';
-import { Resource as IResource } from '@/lib/server/adapters/resource-adapter';
 import ResourceInformation from './components/information';
 import { ResourceOverview } from './components/overview';
 import { ResourceOrganization } from './components/organization';
+import { IResource } from '@/types/resource';
 
 export default function Resource({ data }: { data: IResource }) {
   const componentRef = useRef();

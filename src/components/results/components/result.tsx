@@ -140,7 +140,7 @@ export function Result(props: Props) {
             showLabel={t('call_to_action.show_more', { ns: 'common' })}
           >
             <div className="whitespace-pre-wrap prose">
-              {parseHtml(props.description ?? '')}
+              {parseHtml(props?.description ?? '')}
             </div>
           </Spoiler>
 

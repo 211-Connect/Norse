@@ -1,4 +1,4 @@
-import clientPromise from '@/lib/server/mongodb';
+import clientPromise from '@/lib/mongodb';
 import { NextApiHandler } from 'next';
 import { getServerSession } from 'next-auth';
 import z from 'zod';
@@ -109,7 +109,7 @@ const FavoriteListHandler: NextApiHandler = async (req, res) => {
             description: body.description,
             privacy: body.public,
           },
-        }
+        },
       );
 
     res.status(200).json({ message: 'success' });

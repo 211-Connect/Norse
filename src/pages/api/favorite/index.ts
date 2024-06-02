@@ -2,7 +2,7 @@ import { NextApiHandler } from 'next';
 import { getServerSession } from 'next-auth';
 import z from 'zod';
 import { authOptions } from '../auth/[...nextauth]';
-import clientPromise from '@/lib/server/mongodb';
+import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 
 const dbName = 'search_engine';
@@ -59,7 +59,7 @@ const FavoriteListHandler: NextApiHandler = async (req, res) => {
           $set: {
             favorites: newList,
           },
-        }
+        },
       );
 
     res.status(200).json({ message: 'success' });

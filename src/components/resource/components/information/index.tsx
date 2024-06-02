@@ -1,7 +1,6 @@
 import { useAppConfig } from '@/hooks/use-app-config';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import Addresses from './addresses';
-import { Resource } from '@/lib/server/adapters/resource-adapter';
 import PhoneNumbers from './phone-numbers';
 import EmailAddress from './email-address';
 import Website from './website';
@@ -16,9 +15,10 @@ import MapboxMap, { Marker } from '@/components/map';
 import mapStyle from '@/components/map/style.json';
 import { Style } from 'mapbox-gl';
 import { getPublicConfig } from '@/pages/api/config';
+import { IResource } from '@/types/resource';
 
 type Props = {
-  data: Resource;
+  data: IResource;
 };
 
 export default function ResourceInformation(props: Props) {

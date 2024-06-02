@@ -1,8 +1,10 @@
 import fs from 'fs/promises';
 import path from 'path';
 
+let config = undefined;
 export async function serverSideAppConfig() {
-  let appConfig;
+  if (config != null) return { appConfig: config };
+
   let rawData;
   try {
     await fs.stat(path.resolve('./app.config.json'));
@@ -20,13 +22,13 @@ export async function serverSideAppConfig() {
   }
 
   try {
-    appConfig = JSON.parse(rawData.toString());
+    config = JSON.parse(rawData.toString());
   } catch (err) {
     console.error('Unable to parse app.config', err);
-    appConfig = {};
+    config = {};
   }
 
   return {
-    appConfig,
+    appConfig: config,
   };
 }

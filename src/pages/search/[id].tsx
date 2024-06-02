@@ -4,40 +4,38 @@ import { AppHeader } from '../../components/app-header';
 import { AppFooter } from '../../components/app-footer';
 import { useRef } from 'react';
 import { cacheControl } from '../../lib/server/cache-control';
-import ResourceAdapter, {
-  Resource as IResource,
-} from '@/lib/server/adapters/resource-adapter';
 import Head from 'next/head';
 import { useAppConfig } from '@/hooks/use-app-config';
 import Resource from '@/components/resource';
 import { serverSideAppConfig } from '@/lib/server/utils';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]';
+import { getDatabaseAdapter } from '@/lib/adapters/database/get-database-adapter';
+import { IResource } from '@/types/resource';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerSession(ctx.req, ctx.res, authOptions);
-  const resourceAdapter = ResourceAdapter();
   let notFound = false;
   let data = null;
 
+  const databaseAdapter = await getDatabaseAdapter();
+
   try {
-    data = await resourceAdapter.getRecordById(ctx.params.id as string, {
+    data = await databaseAdapter.findResourceById(ctx.params.id as string, {
       locale: ctx.locale,
     });
   } catch (err) {
     if (err.message === '404') {
       notFound = true;
-      const redirect = await resourceAdapter.getRedirect(
+      const redirect = await databaseAdapter.findRedirectById(
         ctx.params.id as string,
       );
-
       if (redirect) {
         let redirectUrl = '/search';
         if (ctx.locale !== ctx.defaultLocale) {
           redirectUrl += `'/${ctx.locale}`;
         }
         redirectUrl += `/${redirect.newId}`;
-
         return {
           redirect: {
             destination: redirectUrl,

@@ -1,5 +1,5 @@
 import z from 'zod';
-import { elasticsearch } from '../elasticsearch';
+import { elasticsearch } from '../../elasticsearch';
 import { SearchRequest } from '@elastic/elasticsearch/lib/api/types';
 import fs from 'fs/promises';
 import path from 'path';

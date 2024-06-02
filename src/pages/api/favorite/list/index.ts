@@ -1,4 +1,4 @@
-import clientPromise from '@/lib/server/mongodb';
+import clientPromise from '@/lib/mongodb';
 import { NextApiHandler } from 'next';
 import { getServerSession } from 'next-auth';
 import z from 'zod';
@@ -21,7 +21,7 @@ const FavoriteListHandler: NextApiHandler = async (req, res) => {
       .collection(collectionName)
       .find(
         { ownerId: session.user.id },
-        { limit: 20, projection: { name: 1, description: 1, privacy: 1 } }
+        { limit: 20, projection: { name: 1, description: 1, privacy: 1 } },
       )
       .toArray();
 
