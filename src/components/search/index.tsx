@@ -15,8 +15,6 @@ import LocationAdapter from './adapters/location-adapter';
 import { Badge } from '../ui/badge';
 import { useAtom } from 'jotai';
 import { useEffect } from 'react';
-import { setCookie } from 'nookies';
-import { USER_PREF_LAST_QUERY } from '@/constants/cookies';
 
 export default function Search() {
   const { t } = useTranslation('common');

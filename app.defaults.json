@@ -17,7 +17,6 @@
     "sms": "twilio"
   },
   "features": {
-    "resource": {},
     "search": {
       "defaultRadius": 0,
       "radiusOptions": [

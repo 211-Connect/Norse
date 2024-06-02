@@ -125,8 +125,8 @@ async function main() {
     );
     await elasticsearch.index({
       index: index,
+      id: resource.id,
       document: {
-        id: resource.id,
         email: resource.email,
         phone: resource.phone_number,
         website: resource.website,
@@ -141,6 +141,7 @@ async function main() {
         location_longitude: resource.location[0],
         service_name: resource_translation.service_name,
         service_alternate_name: null,
+        service_description: resource_translation.description,
         location_name: null,
         location_alternate_name: null,
         location_description: null,

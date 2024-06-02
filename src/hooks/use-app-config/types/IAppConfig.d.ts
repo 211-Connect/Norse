@@ -10,21 +10,23 @@ export interface IAppConfig {
     phoneNumber?: string;
     feedbackUrl?: string;
   };
+  adapters: {
+    database: 'postgres' | 'mongodb';
+    search: 'elasticsearch'; // considering supporting other search engines in the future
+    map: 'mapbox'; // will support Google in the future
+    sms: 'twilio'; // considering supporting other sms providers in the future
+  };
   features?: {
     search?: {
-      adapter?: 'elasticsearch'; // considering supporting other search engines in the future
       defaultRadius?: number;
       radiusOptions?: {
         value: number;
       }[];
     };
     map?: {
-      adapter?: 'mapbox'; // will support Google in the future
       center?: [number, number]; // [LONGITUDE, LATITUDE]
     };
-    sms?: {
-      adapter?: 'twilio'; // considering supporting other sms providers in the future
-    };
+    sms?: {};
   };
   pages?: {
     default?: {

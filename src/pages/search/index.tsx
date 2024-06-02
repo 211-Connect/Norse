@@ -9,9 +9,6 @@ import { FilterPanel } from '../../components/results/components/filter-panel';
 import { useAppConfig } from '@/hooks/use-app-config';
 import { useTranslation } from 'next-i18next';
 import { cacheControl } from '../../lib/server/cache-control';
-import SearchAdapter, {
-  SearchQueryParams,
-} from '@/lib/server/adapters/search-adapter';
 import Head from 'next/head';
 import { Results } from '@/components/results';
 import useMediaQuery from '@/hooks/use-media-query';
@@ -35,6 +32,8 @@ import { parseHtml } from '@/utils/parseHtml';
 import { getPublicConfig } from '../api/config';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]';
+import { getSearchAdapter } from '@/lib/adapters/search/get-search-adapter';
+import { QueryConfig } from '@/lib/adapters/search/BaseSearchAdapter';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const cookies = nookies.get(ctx);
@@ -90,10 +89,10 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   }
 
   const url = ctx.resolvedUrl.split('?')[1];
-  const searchAdapter = SearchAdapter();
+  const searchAdapter = await getSearchAdapter();
   const { results, noResults, totalResults, page, facets } =
     await searchAdapter.search({
-      ...(qs.parse(url) as SearchQueryParams),
+      ...(qs.parse(url) as QueryConfig),
       locale: ctx.locale,
     });
 
