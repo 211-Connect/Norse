@@ -8,7 +8,7 @@ import { AppFooter } from '../../components/app-footer';
 import { FilterPanel } from '../../components/results/components/filter-panel';
 import { useAppConfig } from '@/hooks/use-app-config';
 import { useTranslation } from 'next-i18next';
-import { cacheControl } from '../../lib/server/cache-control';
+import { cacheControl } from '../../lib/cache-control';
 import Head from 'next/head';
 import { Results } from '@/components/results';
 import useMediaQuery from '@/hooks/use-media-query';

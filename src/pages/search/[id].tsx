@@ -3,7 +3,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { AppHeader } from '../../components/app-header';
 import { AppFooter } from '../../components/app-footer';
 import { useRef } from 'react';
-import { cacheControl } from '../../lib/server/cache-control';
+import { cacheControl } from '../../lib/cache-control';
 import Head from 'next/head';
 import { useAppConfig } from '@/hooks/use-app-config';
 import Resource from '@/components/resource';
