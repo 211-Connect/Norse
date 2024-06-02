@@ -2,11 +2,8 @@ import { NextApiHandler } from 'next';
 import { getServerSession } from 'next-auth';
 import z from 'zod';
 import { authOptions } from '../auth/[...nextauth]';
-import clientPromise from '@/lib/mongodb';
-import { ObjectId } from 'mongodb';
+import { mongodb } from '@/lib/mongodb';
 
-const dbName = 'search_engine';
-const collectionName = 'favoriteLists';
 const FavoriteListHandler: NextApiHandler = async (req, res) => {
   const session = await getServerSession(req, res, authOptions);
 
@@ -23,15 +20,12 @@ const FavoriteListHandler: NextApiHandler = async (req, res) => {
 
     const body = await NewFavoriteSchema.parseAsync(req.body);
 
-    const mongo = await clientPromise;
-
-    const record = await mongo
-      .db(dbName)
-      .collection(collectionName)
-      .findOne({
-        _id: new ObjectId(body.favoriteListId),
+    const record = await mongodb.favoriteList.findFirst({
+      where: {
+        id: body.favoriteListId,
         ownerId: session.user.id,
-      });
+      },
+    });
 
     if (!record) {
       res.status(404).json({ message: 'Not found' });
@@ -47,20 +41,15 @@ const FavoriteListHandler: NextApiHandler = async (req, res) => {
       newList.push(body.resourceId);
     }
 
-    await mongo
-      .db(dbName)
-      .collection(collectionName)
-      .updateOne(
-        {
-          _id: new ObjectId(body.favoriteListId),
-          ownerId: session.user.id,
-        },
-        {
-          $set: {
-            favorites: newList,
-          },
-        },
-      );
+    await mongodb.favoriteList.update({
+      where: {
+        id: body.favoriteListId,
+        ownerId: session.user.id,
+      },
+      data: {
+        favorites: newList,
+      },
+    });
 
     res.status(200).json({ message: 'success' });
     return;

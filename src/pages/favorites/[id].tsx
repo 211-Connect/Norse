@@ -11,7 +11,7 @@ import { useEffect } from 'react';
 import { FavoritesSection } from '@/components/favorite-lists/components/favorites';
 import useWindowScroll from '@/hooks/use-window-scroll';
 import useMediaQuery from '@/hooks/use-media-query';
-import { serverSideAppConfig } from '@/lib/server/utils';
+import { serverSideAppConfig } from '@/lib/server-utils';
 import MapboxMap, { Marker } from '@/components/map';
 import mapStyle from '@/components/map/style.json';
 import { Style } from 'mapbox-gl';

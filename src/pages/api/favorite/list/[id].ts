@@ -1,25 +1,19 @@
-import clientPromise from '@/lib/mongodb';
+import { mongodb } from '@/lib/mongodb';
 import { NextApiHandler } from 'next';
 import { getServerSession } from 'next-auth';
 import z from 'zod';
 import { authOptions } from '../../auth/[...nextauth]';
-import { ObjectId } from 'mongodb';
 
-const dbName = 'search_engine';
-const collectionName = 'favoriteLists';
 const FavoriteListHandler: NextApiHandler = async (req, res) => {
   const session = await getServerSession(req, res, authOptions);
 
   if (req.method === 'GET') {
-    const mongo = await clientPromise;
     const locale = req.headers['accept-language'];
 
-    const aggregate = await mongo
-      .db(dbName)
-      .collection(collectionName)
-      .aggregate([
+    const aggregate: any = await mongodb.favoriteList.aggregateRaw({
+      pipeline: [
         {
-          $match: { _id: new ObjectId(req.query.id as string) },
+          $match: { _id: { $oid: req.query.id } },
         },
         {
           $lookup: {
@@ -53,8 +47,8 @@ const FavoriteListHandler: NextApiHandler = async (req, res) => {
             },
           },
         },
-      ])
-      .toArray();
+      ],
+    });
 
     const record = aggregate.length > 0 ? aggregate[0] : null;
 
@@ -63,7 +57,7 @@ const FavoriteListHandler: NextApiHandler = async (req, res) => {
       return;
     }
 
-    res.status(200).json(record);
+    res.status(200).json({ ...record, _id: record._id['$oid'] });
     return;
   }
 
@@ -73,15 +67,12 @@ const FavoriteListHandler: NextApiHandler = async (req, res) => {
   }
 
   if (req.method === 'DELETE') {
-    const mongo = await clientPromise;
-
-    await mongo
-      .db(dbName)
-      .collection(collectionName)
-      .deleteOne({
-        _id: new ObjectId(req.query.id as string),
+    await mongodb.favoriteList.delete({
+      where: {
+        id: req.query.id as string,
         ownerId: session.user.id,
-      });
+      },
+    });
 
     res.status(200).json({ message: 'success' });
     return;
@@ -93,24 +84,18 @@ const FavoriteListHandler: NextApiHandler = async (req, res) => {
     });
 
     const body = await UpdateFavoriteSchema.parseAsync(req.body);
-    const mongo = await clientPromise;
 
-    await mongo
-      .db(dbName)
-      .collection(collectionName)
-      .updateOne(
-        {
-          _id: new ObjectId(req.query.id as string),
-          ownerId: session.user.id,
-        },
-        {
-          $set: {
-            name: body.name,
-            description: body.description,
-            privacy: body.public,
-          },
-        },
-      );
+    await mongodb.favoriteList.update({
+      where: {
+        id: req.query.id as string,
+        ownerId: session.user.id,
+      },
+      data: {
+        name: body.name,
+        description: body.description,
+        privacy: body.public,
+      },
+    });
 
     res.status(200).json({ message: 'success' });
     return;

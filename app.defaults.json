@@ -11,7 +11,7 @@
     "feedbackUrl": "https://example.com"
   },
   "adapters": {
-    "database": "postgres",
+    "database": "mongodb",
     "search": "elasticsearch",
     "map": "mapbox",
     "sms": "twilio"

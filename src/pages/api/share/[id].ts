@@ -1,17 +1,16 @@
+import mongodb from '@/lib/mongodb';
 import { NextApiHandler } from 'next';
-import clientPromise from '@/lib/mongodb';
 
-const dbName = 'search_engine';
-const collectionName = 'shortenedUrls';
 const ShareHandler: NextApiHandler = async (req, res) => {
   if (req.method !== 'GET' && req.method !== 'POST') res.redirect('/');
 
   if (req.method === 'GET') {
-    const id = req.query.id;
-    const mongo = await clientPromise;
+    const id = req.query.id as string;
     try {
-      const record = await mongo.db(dbName).collection(collectionName).findOne({
-        shortId: id,
+      const record = await mongodb.shortenedUrls.findFirst({
+        where: {
+          shortId: id,
+        },
       });
 
       if (record) res.redirect(record.originalUrl);

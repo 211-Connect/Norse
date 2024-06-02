@@ -9,7 +9,7 @@ import { HeroSection } from '../components/home/hero-section';
 import { useTranslation } from 'next-i18next';
 import Head from 'next/head';
 import { useAppConfig } from '@/hooks/use-app-config';
-import { serverSideAppConfig } from '@/lib/server/utils';
+import { serverSideAppConfig } from '@/lib/server-utils';
 import { getServerSession } from 'next-auth';
 import { authOptions } from './api/auth/[...nextauth]';
 

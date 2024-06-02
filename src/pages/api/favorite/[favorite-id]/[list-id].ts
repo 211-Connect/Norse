@@ -1,12 +1,8 @@
-import clientPromise from '@/lib/mongodb';
 import { NextApiHandler } from 'next';
 import { getServerSession } from 'next-auth';
-import z from 'zod';
 import { authOptions } from '../../auth/[...nextauth]';
-import { ObjectId } from 'mongodb';
+import mongodb from '@/lib/mongodb';
 
-const dbName = 'search_engine';
-const collectionName = 'favoriteLists';
 const FavoriteListHandler: NextApiHandler = async (req, res) => {
   const session = await getServerSession(req, res, authOptions);
 
@@ -16,34 +12,26 @@ const FavoriteListHandler: NextApiHandler = async (req, res) => {
   }
 
   if (req.method === 'DELETE') {
-    const mongo = await clientPromise;
-
-    const favoriteList = await mongo
-      .db(dbName)
-      .collection(collectionName)
-      .findOne({
-        _id: new ObjectId(req.query['list-id'] as string),
+    const favoriteList = await mongodb.favoriteList.findFirst({
+      where: {
+        id: req.query['list-id'] as string,
         ownerId: session.user.id,
-      });
+      },
+    });
 
     const newListOfFavorites = favoriteList?.favorites?.filter(
       (favorite) => favorite !== req.query['favorite-id'],
     );
 
-    await mongo
-      .db(dbName)
-      .collection(collectionName)
-      .updateOne(
-        {
-          _id: new ObjectId(req.query['list-id'] as string),
-          ownerId: session.user.id,
-        },
-        {
-          $set: {
-            favorites: newListOfFavorites,
-          },
-        },
-      );
+    await mongodb.favoriteList.update({
+      where: {
+        id: req.query['list-id'] as string,
+        ownerId: session.user.id,
+      },
+      data: {
+        favorites: newListOfFavorites,
+      },
+    });
 
     res.status(200).json({ message: 'success' });
     return;

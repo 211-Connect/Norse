@@ -8,7 +8,7 @@ import { authOptions } from '../api/auth/[...nextauth]';
 import { useAppConfig } from '@/hooks/use-app-config';
 import { useTranslation } from 'next-i18next';
 import { FavoriteLists } from '@/components/favorite-lists';
-import { serverSideAppConfig } from '@/lib/server/utils';
+import { serverSideAppConfig } from '@/lib/server-utils';
 import MapboxMap from '@/components/map';
 import mapStyle from '@/components/map/style.json';
 import { Style } from 'mapbox-gl';

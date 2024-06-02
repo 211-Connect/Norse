@@ -1,10 +1,8 @@
-import clientPromise from '@/lib/mongodb';
+import { mongodb } from '@/lib/mongodb';
 import { NextApiHandler } from 'next';
 import z from 'zod';
 import { nanoid } from 'nanoid';
 
-const dbName = 'search_engine';
-const collectionName = 'shortenedUrls';
 const FavoriteListHandler: NextApiHandler = async (req, res) => {
   if (req.method === 'POST') {
     const newShortenedUrlSchema = z.object({
@@ -12,14 +10,12 @@ const FavoriteListHandler: NextApiHandler = async (req, res) => {
     });
 
     const body = await newShortenedUrlSchema.parseAsync(req.body);
-    const mongo = await clientPromise;
 
-    const shortenedUrl = await mongo
-      .db(dbName)
-      .collection(collectionName)
-      .findOne({
+    const shortenedUrl = await mongodb.shortenedUrl.findFirst({
+      where: {
         originalUrl: body.url,
-      });
+      },
+    });
 
     if (shortenedUrl) {
       const origin = new URL(shortenedUrl?.originalUrl);
@@ -29,9 +25,11 @@ const FavoriteListHandler: NextApiHandler = async (req, res) => {
     }
 
     const newShortId = nanoid(12);
-    await mongo.db(dbName).collection(collectionName).insertOne({
-      originalUrl: body.url,
-      shortId: newShortId,
+    await mongodb.shortenedUrl.create({
+      data: {
+        originalUrl: body.url,
+        shortId: newShortId,
+      },
     });
 
     const origin = new URL(body.url);

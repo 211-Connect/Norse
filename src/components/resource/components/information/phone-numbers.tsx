@@ -12,9 +12,9 @@ export default function PhoneNumbers({ data }: { data: IResource }) {
     <>
       {data.phoneNumbers
         .sort((a: any, b: any) => a.rank - b.rank)
-        .map((phone: any) => {
+        .map((phone: any, idx) => {
           return (
-            <div key={phone.number}>
+            <div key={idx}>
               <div className="flex gap-1 items-center">
                 {phone.type === 'fax' ? (
                   <IconPrinter className="size-4" />

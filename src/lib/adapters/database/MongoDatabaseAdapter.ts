@@ -6,22 +6,20 @@ import {
   PhoneNumber,
 } from '@/types/resource';
 import { BaseDatabaseAdapter, Config } from './BaseDatabaseAdapter';
-import clientPromise from '@/lib/mongodb';
 import { IRedirect } from '@/types/redirect';
+import mongodb from '@/lib/mongodb';
 
 export class MongoDatabaseAdapter extends BaseDatabaseAdapter {
   dbName = 'search_engine';
 
   async findResourceById(id: string, config: Config): Promise<IResource> {
-    const collectionName = 'resources';
-    const mongo = await clientPromise;
-    const collection = mongo.db(this.dbName).collection(collectionName);
-
-    const record = await collection.findOne(
-      {
-        _id: id as any,
+    // Doing a raw query here so we can use projections
+    const rawRecords: any = await mongodb.resource.findRaw({
+      filter: {
+        _id: id,
       },
-      {
+      options: {
+        limit: 1,
         projection: {
           noop: 0,
           translations: {
@@ -31,7 +29,9 @@ export class MongoDatabaseAdapter extends BaseDatabaseAdapter {
           },
         },
       },
-    );
+    });
+
+    const record = rawRecords?.[0];
 
     if (!record) throw new Error(this.notFound);
 
@@ -40,7 +40,12 @@ export class MongoDatabaseAdapter extends BaseDatabaseAdapter {
     return {
       id: record._id.toString(),
       email: record?.email ?? null,
-      phoneNumber: record?.displayPhoneNumber ?? null,
+      phone:
+        record?.displayPhoneNumber ??
+        record?.phoneNumber?.find(
+          (phone) => phone.type === 'voice' && phone.rank === 1,
+        ) ??
+        null,
       website: record?.website ?? null,
       addresses: (record?.addresses as Address[]) ?? null,
       phoneNumbers: (record?.phoneNumbers as PhoneNumber[]) ?? null,
@@ -50,7 +55,6 @@ export class MongoDatabaseAdapter extends BaseDatabaseAdapter {
       createdAt: record?.createdAt ?? null,
       name: translation?.displayName ?? null,
       description: translation?.serviceDescription ?? null,
-      serviceName: translation?.serviceName ?? null,
       fees: translation?.fees ?? null,
       hours: translation?.hours ?? null,
       locale: translation?.locale ?? null,
@@ -59,25 +63,24 @@ export class MongoDatabaseAdapter extends BaseDatabaseAdapter {
       taxonomies: translation?.taxonomies ?? null,
       requiredDocuments: translation?.requiredDocuments ?? null,
       languages: translation?.languages ?? null,
+      service: {
+        name: translation?.serviceName ?? null,
+      },
       organization: {
-        name: record?.organizationName ?? null,
+        name: translation?.organizationName ?? record?.organizationName ?? null,
         description: translation?.organizationDescription ?? null,
       },
     };
   }
 
   async findRedirectById(id: string): Promise<IRedirect> {
-    const collectionName = 'redirects';
-    const mongo = await clientPromise;
-    const collection = mongo.db(this.dbName).collection(collectionName);
+    const record = await mongodb.redirect.findFirst({ where: { id } });
 
-    const record = await collection.findOne({ _id: id as any });
-
-    if (!record) return null;
+    if (!record) throw new Error(this.notFound);
 
     return {
-      id: record._id.toString(),
-      oldId: record._id.toString(),
+      id: record.id.toString(),
+      oldId: record.id.toString(),
       newId: record.newId,
     };
   }

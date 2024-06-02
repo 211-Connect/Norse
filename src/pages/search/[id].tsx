@@ -7,7 +7,7 @@ import { cacheControl } from '../../lib/cache-control';
 import Head from 'next/head';
 import { useAppConfig } from '@/hooks/use-app-config';
 import Resource from '@/components/resource';
-import { serverSideAppConfig } from '@/lib/server/utils';
+import { serverSideAppConfig } from '@/lib/server-utils';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]';
 import { getDatabaseAdapter } from '@/lib/adapters/database/get-database-adapter';
@@ -27,22 +27,33 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   } catch (err) {
     if (err.message === '404') {
       notFound = true;
+    } else {
+      console.error(err);
+    }
+  }
+
+  try {
+    if (notFound) {
       const redirect = await databaseAdapter.findRedirectById(
         ctx.params.id as string,
       );
-      if (redirect) {
-        let redirectUrl = '/search';
-        if (ctx.locale !== ctx.defaultLocale) {
-          redirectUrl += `'/${ctx.locale}`;
-        }
-        redirectUrl += `/${redirect.newId}`;
-        return {
-          redirect: {
-            destination: redirectUrl,
-            permanent: true,
-          },
-        };
+
+      let redirectUrl = '/search';
+      if (ctx.locale !== ctx.defaultLocale) {
+        redirectUrl += `'/${ctx.locale}`;
       }
+      redirectUrl += `/${redirect.newId}`;
+
+      return {
+        redirect: {
+          destination: redirectUrl,
+          permanent: true,
+        },
+      };
+    }
+  } catch (err) {
+    if (err.message !== '404') {
+      console.error(err);
     }
   }
 

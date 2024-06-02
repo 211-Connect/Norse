@@ -7,12 +7,12 @@ import {
   Taxonomy,
 } from '@/types/resource';
 import { BaseDatabaseAdapter, Config } from './BaseDatabaseAdapter';
-import prisma from '@/lib/prisma';
+import postgres from '@/lib/postgres';
 import { IRedirect } from '@/types/redirect';
 
 export class PostgresDatabaseAdapter extends BaseDatabaseAdapter {
   async findResourceById(id: string, config: Config): Promise<IResource> {
-    const record = await prisma.resource.findUnique({
+    const record = await postgres.resource.findUnique({
       where: {
         id: id,
       },
@@ -63,7 +63,7 @@ export class PostgresDatabaseAdapter extends BaseDatabaseAdapter {
   }
 
   async findRedirectById(id: string): Promise<IRedirect> {
-    const record = await prisma.redirect.findUnique({
+    const record = await postgres.redirect.findUnique({
       where: {
         old_resource_id: id,
       },

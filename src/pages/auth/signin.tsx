@@ -1,4 +1,4 @@
-import { serverSideAppConfig } from '@/lib/server/utils';
+import { serverSideAppConfig } from '@/lib/server-utils';
 import { GetServerSidePropsContext } from 'next';
 import { signIn } from 'next-auth/react';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';

@@ -1,4 +1,4 @@
-import prisma from '../prisma';
+import postgres from '.';
 import { range } from '../utils';
 import { faker } from '@faker-js/faker';
 import { elasticsearch } from '../elasticsearch';
@@ -86,7 +86,7 @@ const index = process.env.ELASTICSEARCH_RESOURCE_INDEX + '_en';
 async function main() {
   const total = range(0, 100);
 
-  await prisma.resource.deleteMany();
+  await postgres.resource.deleteMany();
 
   try {
     await elasticsearch.indices.create({
@@ -111,7 +111,7 @@ async function main() {
     const resource = createRandomResource();
     const resource_translation = createRandomResourceTranslation();
 
-    await prisma.resource.create({
+    await postgres.resource.create({
       data: {
         ...resource,
         translations: {

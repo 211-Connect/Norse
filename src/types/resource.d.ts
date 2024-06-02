@@ -32,7 +32,7 @@ export type Location = {
 export interface IResource extends IResourceTranslation {
   id: string;
   email: string;
-  phoneNumber: string;
+  phone: string;
   website: string;
   addresses: Address[];
   phoneNumbers: PhoneNumber[];
@@ -46,7 +46,6 @@ export interface IResourceTranslation {
   id: string;
   name: string;
   description: string;
-  serviceName: string;
   fees: string;
   hours: string;
   locale: string;
@@ -58,5 +57,8 @@ export interface IResourceTranslation {
   organization: {
     name: string;
     description: string;
+  };
+  service: {
+    name: string;
   };
 }

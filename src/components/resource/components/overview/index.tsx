@@ -35,9 +35,9 @@ export function ResourceOverview({ data }: Props) {
       <Card id={data.id}>
         <CardContent className="p-4 gap-1 flex flex-col">
           {data?.name && <h3 className="text-2xl font-bold">{data.name}</h3>}
-          {data?.serviceName && (
+          {data?.service?.name && (
             <p className="font-semibold text-primary text-lg">
-              {data.serviceName}
+              {data.service.name}
             </p>
           )}
 
@@ -72,12 +72,13 @@ export function ResourceOverview({ data }: Props) {
             </>
           )}
 
-          {config?.pages?.resource?.hideLastAssured ? null : (
+          {config?.pages?.resource?.hideLastAssured ||
+          !data?.lastAssuredDate ? null : (
             <>
               <h3 className="text-xl font-semibold text-primary">
                 {t('last_assured')}
               </h3>
-              <p className="text-sm">{data.lastAssuredDate || t('unknown')}</p>
+              <p className="text-sm">{data.lastAssuredDate}</p>
             </>
           )}
         </CardContent>
@@ -89,9 +90,9 @@ export function ResourceOverview({ data }: Props) {
               referralType="call_referral"
               resourceId={data.id}
               resource={data}
-              disabled={!data.phoneNumber || data.phoneNumber.length === 0}
-              aria-disabled={!data.phoneNumber || data.phoneNumber.length === 0}
-              href={`tel:${data.phoneNumber && data.phoneNumber.length > 0 && data.phoneNumber}`}
+              disabled={!data.phone || data.phone.length === 0}
+              aria-disabled={!data.phone || data.phone.length === 0}
+              href={`tel:${data.phone && data.phone.length > 0 && data.phone}`}
             >
               <IconPhone className="size-4" />
               {t('call_to_action.call', { ns: 'common' })}

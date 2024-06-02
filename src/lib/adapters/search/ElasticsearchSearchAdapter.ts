@@ -3,7 +3,7 @@ import { BaseSearchAdapter, QueryConfig } from './BaseSearchAdapter';
 import path from 'path';
 import fs from 'fs/promises';
 import { SearchRequest } from '@elastic/elasticsearch/lib/api/types';
-import { elasticsearch } from '@/lib/elasticsearch';
+import elasticsearch from '@/lib/elasticsearch';
 
 export class ElasticsearchSearchAdapter extends BaseSearchAdapter {
   constructor(retryOnNoResults: boolean = true) {

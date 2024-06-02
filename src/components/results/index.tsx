@@ -35,7 +35,7 @@ export function Results(props: Props) {
         {props.results.map((result) => {
           return (
             <Result
-              key={result._id}
+              key={result.id}
               id={result.id}
               serviceName={result.serviceName}
               name={result.name}

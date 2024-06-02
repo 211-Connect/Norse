@@ -1,0 +1,124 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output = "../../../node_modules/@prisma-mongodb"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGODB_URL")
+}
+
+enum Privacy {
+  PRIVATE
+  PUBLIC
+}
+
+enum PhoneNumberType {
+  voice
+  fax
+  cell
+}
+
+type PhoneNumber {
+  rank Int?
+  type PhoneNumberType?
+  number String?
+}
+
+type Point {
+  type String?
+  coordinates Int[]
+}
+
+enum AddressType {
+  physical
+  mailing
+  virtual
+}
+
+type Address {
+  city String?
+  rank Int?
+  type AddressType?
+  country String?
+  address_1 String?
+  address_2 String?
+  postalCode String?
+  stateProvince String?
+}
+
+type Taxonomy {
+  code String?
+  name String?
+}
+
+type Translation {
+  fees String?
+  hours String?
+  locale String?
+  taxonomies Taxonomy[]
+  serviceName String?
+  serviceDescription String?
+  eligibilities String?
+  requiredDocuments String?
+  applicationProcess String?
+  organizationName String?
+  organizationDescription String?
+}
+
+model Resource {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  website String?
+  email String?
+  displayName String?
+  displayPhoneNumber String?
+  phoneNumbers PhoneNumber[]
+  location Point?
+  serviceArea Json?
+  addresses Address[]
+  organizationName String
+  lastAssuredDate String?
+  translations Translation[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("resources")
+}
+
+model FavoriteList {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  description String?
+  privacy Privacy?
+  ownerId String?
+  favorites String[]
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  @@map("favoriteLists")
+}
+
+model Redirect {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  newId String
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  @@map("redirects")
+}
+
+model ShortenedUrl {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  originalUrl String
+  shortId String
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  @@map("shortenedUrls")
+}

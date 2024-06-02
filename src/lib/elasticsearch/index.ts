@@ -8,4 +8,5 @@ const elasticsearch = new Client({
   maxRetries: 5,
 });
 
+export default elasticsearch;
 export { elasticsearch };

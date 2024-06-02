@@ -1,4 +1,4 @@
-import { serverSideAppConfig } from '@/lib/server/utils';
+import { serverSideAppConfig } from '@/lib/server-utils';
 import { BaseSearchAdapter } from './BaseSearchAdapter';
 import { ElasticsearchSearchAdapter } from './ElasticsearchSearchAdapter';
 

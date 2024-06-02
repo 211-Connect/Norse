@@ -1,11 +1,9 @@
-import clientPromise from '@/lib/mongodb';
+import { mongodb } from '@/lib/mongodb';
 import { NextApiHandler } from 'next';
 import { getServerSession } from 'next-auth';
 import z from 'zod';
 import { authOptions } from '../../auth/[...nextauth]';
 
-const dbName = 'search_engine';
-const collectionName = 'favoriteLists';
 const FavoriteListHandler: NextApiHandler = async (req, res) => {
   const session = await getServerSession(req, res, authOptions);
 
@@ -30,15 +28,13 @@ const FavoriteListHandler: NextApiHandler = async (req, res) => {
 
     if (query.name) mongoQuery.name = { $regex: query.name, $options: 'i' };
 
-    const mongo = await clientPromise;
-    const lists = await mongo
-      .db(dbName)
-      .collection(collectionName)
-      .find(mongoQuery, {
+    const lists = await mongodb.favoriteList.findRaw({
+      filter: mongoQuery,
+      options: {
         limit: 20,
         projection: { name: 1, description: 1, privacy: 1 },
-      })
-      .toArray();
+      },
+    });
 
     res.status(200).json(lists);
     return;

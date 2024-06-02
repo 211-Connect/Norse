@@ -1,11 +1,9 @@
-import clientPromise from '@/lib/mongodb';
+import { mongodb } from '@/lib/mongodb';
 import { NextApiHandler } from 'next';
 import { getServerSession } from 'next-auth';
 import z from 'zod';
 import { authOptions } from '../../auth/[...nextauth]';
 
-const dbName = 'search_engine';
-const collectionName = 'favoriteLists';
 const FavoriteListHandler: NextApiHandler = async (req, res) => {
   const session = await getServerSession(req, res, authOptions);
 
@@ -15,17 +13,17 @@ const FavoriteListHandler: NextApiHandler = async (req, res) => {
   }
 
   if (req.method === 'GET') {
-    const mongo = await clientPromise;
-    const lists = await mongo
-      .db(dbName)
-      .collection(collectionName)
-      .find(
-        { ownerId: session.user.id },
-        { limit: 20, projection: { name: 1, description: 1, privacy: 1 } },
-      )
-      .toArray();
+    const lists: any = await mongodb.favoriteList.findRaw({
+      filter: { ownerId: session.user.id },
+      options: {
+        limit: 20,
+        projection: { name: 1, description: 1, privacy: 1 },
+      },
+    });
 
-    res.status(200).json(lists);
+    res
+      .status(200)
+      .json(lists?.map((list) => ({ ...list, _id: list._id['$oid'] })));
     return;
   } else if (req.method === 'POST') {
     const NewFavoriteSchema = z.object({
@@ -36,12 +34,13 @@ const FavoriteListHandler: NextApiHandler = async (req, res) => {
 
     const body = await NewFavoriteSchema.parseAsync(req.body);
 
-    const mongo = await clientPromise;
-    await mongo.db(dbName).collection(collectionName).insertOne({
-      name: body.name,
-      description: body.description,
-      privacy: body.public,
-      ownerId: session.user.id,
+    await mongodb.favoriteList.create({
+      data: {
+        name: body.name,
+        description: body.description,
+        privacy: body.public,
+        ownerId: session.user.id,
+      },
     });
 
     res.status(200).json({ message: 'success ' });

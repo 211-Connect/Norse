@@ -1,6 +1,6 @@
 import { MongoDatabaseAdapter } from './MongoDatabaseAdapter';
 import { PostgresDatabaseAdapter } from './PostgresDatabaseAdapter';
-import { serverSideAppConfig } from '@/lib/server/utils';
+import { serverSideAppConfig } from '@/lib/server-utils';
 import { BaseDatabaseAdapter } from './BaseDatabaseAdapter';
 
 const databaseMapping = {

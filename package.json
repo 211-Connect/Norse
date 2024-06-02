@@ -6,11 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
-  },
-  "prisma": {
-    "schema": "src/lib/prisma/schema.prisma",
-    "seed": "ts-node src/lib/prisma/seed.ts"
+    "lint": "next lint",
+    "prisma:generate:mongodb": "prisma generate --schema ./src/lib/mongodb/schema.prisma",
+    "prisma:generate:postgres": "prisma generate --schema ./src/lib/postgres/schema.prisma"
   },
   "private": true,
   "devDependencies": {
@@ -60,6 +58,7 @@
     "@vercel/postgres": "^0.8.0",
     "autosuggest-highlight": "^3.3.4",
     "axios": "^1.0.0",
+    "bson": "^6.7.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",

@@ -14,7 +14,7 @@ import { Results } from '@/components/results';
 import useMediaQuery from '@/hooks/use-media-query';
 import useWindowScroll from '@/hooks/use-window-scroll';
 import Search from '@/components/search';
-import { serverSideAppConfig } from '@/lib/server/utils';
+import { serverSideAppConfig } from '@/lib/server-utils';
 import {
   USER_PREF_BACK_ACTION,
   USER_PREF_COORDS,
