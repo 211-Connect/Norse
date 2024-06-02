@@ -1,7 +1,7 @@
-import prisma from '../src/lib/prisma';
-import { range } from '../src/lib/utils';
+import prisma from '../prisma';
+import { range } from '../utils';
 import { faker } from '@faker-js/faker';
-import { elasticsearch } from '../src/lib/elasticsearch';
+import { elasticsearch } from '../elasticsearch';
 import resourceMapping from '../elasticsearch/resource_mapping.json';
 import { MappingProperty } from '@elastic/elasticsearch/lib/api/types';
 
