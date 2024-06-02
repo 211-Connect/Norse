@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button, buttonVariants } from '@/components/ui/button';
-import { cn } from '@/utils';
+import { cn } from '@/lib/utils';
 import { Spoiler } from '@/components/ui/spoiler';
 import {
   Tooltip,

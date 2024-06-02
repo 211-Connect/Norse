@@ -2,7 +2,7 @@ import { createReferralEvent } from '@/hooks/use-event-store/events';
 import Link from 'next/link';
 import { LinkProps } from 'next/link';
 import { buttonVariants } from '@/components/ui/button';
-import { cn } from '@/utils';
+import { cn } from '@/lib/utils';
 
 type Props = {
   referralType: 'call_referral' | 'website_referral' | 'directions_referral';
@@ -37,7 +37,7 @@ export function ReferralButton({
         buttonVariants({ variant: 'default' }),
         'gap-2',
         disabled ? 'bg-muted text-gray-500 pointer-events-none' : null,
-        className
+        className,
       )}
       onClick={handleLink}
     />

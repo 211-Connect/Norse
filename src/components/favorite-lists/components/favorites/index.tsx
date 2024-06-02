@@ -16,7 +16,7 @@ import { Button, buttonVariants } from '../../../ui/button';
 import { Card, CardContent } from '../../../ui/card';
 import { useSession } from 'next-auth/react';
 import { Anchor } from '../../../anchor';
-import { cn } from '@/utils';
+import { cn } from '@/lib/utils';
 import DeleteFavoriteList from './components/modals/delete-favorite-list';
 import { UpdateFavoriteListModal } from './components/modals/update-favorite-list';
 import DeleteFavorite from './components/modals/delete-favorite';

@@ -3,7 +3,7 @@ import { useTranslation } from 'next-i18next';
 import { Anchor } from '@/components/anchor';
 import { useAppConfig } from '@/hooks/use-app-config';
 import { IconPointFilled } from '@tabler/icons-react';
-import { cn } from '@/utils';
+import { cn } from '@/lib/utils';
 import Icon from '../icon';
 
 type Props = PropsWithChildren & {

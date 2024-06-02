@@ -11,7 +11,7 @@ import { useMemo } from 'react';
 import { Anchor } from '@/components/anchor';
 import { useAppConfig } from '@/hooks/use-app-config';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/utils';
+import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import {
   Select,

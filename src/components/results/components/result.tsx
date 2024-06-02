@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button, buttonVariants } from '@/components/ui/button';
-import { cn } from '@/utils';
+import { cn } from '@/lib/utils';
 import {
   Tooltip,
   TooltipContent,

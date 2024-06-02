@@ -10,7 +10,7 @@ import { locationAtom } from '@/components/search/components/location-input';
 import { IResource } from '@/types/resource';
 import Link from 'next/link';
 import { badgeVariants } from '@/components/ui/badge';
-import { cn } from '@/utils';
+import { cn } from '@/lib/utils';
 
 type Props = {
   data: IResource;

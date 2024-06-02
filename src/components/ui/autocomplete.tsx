@@ -15,7 +15,7 @@ import {
   useState,
   type KeyboardEvent,
 } from 'react';
-import { cn } from '@/utils';
+import { cn } from '@/lib/utils';
 import { Badge } from './badge';
 import { Skeleton } from './skeleton';
 import match from 'autosuggest-highlight/match';
@@ -82,7 +82,7 @@ export default function Autocomplete({
         input.blur();
       }
     },
-    [isOpen]
+    [isOpen],
   );
 
   const handleBlur = useCallback(() => {
@@ -100,14 +100,14 @@ export default function Autocomplete({
         inputRef?.current?.blur();
       }, 0);
     },
-    [onValueSelect, setInputValue]
+    [onValueSelect, setInputValue],
   );
 
   const handleInputChange = useCallback(
     (newValue: string) => {
       setInputValue(newValue);
     },
-    [setInputValue]
+    [setInputValue],
   );
 
   return (
@@ -135,7 +135,7 @@ export default function Autocomplete({
         <div
           className={cn(
             'animate-in fade-in-0 absolute top-0 z-50 bg-white w-full rounded-md shadow-md',
-            isOpen ? 'block' : 'hidden'
+            isOpen ? 'block' : 'hidden',
           )}
         >
           <CommandList>
@@ -179,7 +179,7 @@ export default function Autocomplete({
                           <span key={`${option.value}-${text.text}-${idx}`}>
                             {text.text}
                           </span>
-                        )
+                        ),
                       )}
                     </p>
                     {option.label && (
@@ -228,7 +228,7 @@ export default function Autocomplete({
                                 >
                                   {text.text}
                                 </span>
-                              )
+                              ),
                             )}
                           </p>
                           {option.label && (
