@@ -9,11 +9,11 @@ import {
 } from '@tabler/icons-react';
 import Link from 'next/link';
 import { NextRouter } from 'next/router';
-import { parseHtml } from '@/utils/parseHtml';
+import { parseHtml } from '@/lib/parseHtml';
 import { useTranslation } from 'next-i18next';
 import { Anchor } from '@/components/anchor';
 import { ReferralButton } from '@/components/referral-button';
-import { distanceBetweenCoordsInMiles } from '@/utils/distenceBetweenCoords';
+import { distanceBetweenCoordsInMiles } from '@/lib/utils';
 import {
   Card,
   CardContent,

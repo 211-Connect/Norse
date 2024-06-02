@@ -1,4 +1,4 @@
-import { parseHtml } from '../../utils/parseHtml';
+import { parseHtml } from '../../lib/parseHtml';
 import { AppFooter } from '../../components/app-footer';
 import { AppHeader } from '../../components/app-header';
 import { GetServerSidePropsContext } from 'next';

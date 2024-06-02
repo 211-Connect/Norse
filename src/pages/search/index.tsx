@@ -28,7 +28,7 @@ import mapStyle from '@/components/map/style.json';
 import { Style } from 'mapbox-gl';
 import { IconPhone, IconWorldWww } from '@tabler/icons-react';
 import { ReferralButton } from '@/components/referral-button';
-import { parseHtml } from '@/utils/parseHtml';
+import { parseHtml } from '@/lib/parseHtml';
 import { getPublicConfig } from '../api/config';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]';
@@ -130,7 +130,7 @@ const Markers = memo(function MemoizedMarkers({ results }: { results: any }) {
 
         return (
           <Marker
-            key={result._id}
+            key={result.id}
             latitude={result.location.coordinates[1]}
             longitude={result.location.coordinates[0]}
             className="custom-marker"

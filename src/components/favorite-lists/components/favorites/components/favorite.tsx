@@ -1,5 +1,5 @@
 import { USER_PREF_COORDS, USER_PREF_LOCATION } from '@/constants/cookies';
-import { parseHtml } from '@/utils/parseHtml';
+import { parseHtml } from '@/lib/parseHtml';
 import {
   IconMapPin,
   IconPhone,

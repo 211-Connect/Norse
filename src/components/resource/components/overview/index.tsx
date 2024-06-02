@@ -1,4 +1,4 @@
-import { parseHtml } from '@/utils/parseHtml';
+import { parseHtml } from '@/lib/parseHtml';
 import { IconPhone, IconWorldWww, IconNavigation } from '@tabler/icons-react';
 import { useTranslation } from 'next-i18next';
 import { ReferralButton } from '@/components/referral-button';
