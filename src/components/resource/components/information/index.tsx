@@ -29,10 +29,10 @@ export default function ResourceInformation(props: Props) {
     <Card>
       <CardContent className="p-0 pb-2">
         <div
-          className="flex w-full h-[500px] max-h-[250px] static rounded-tl-md rounded-tr-md overflow-hidden print:hidden"
+          className="static flex h-[500px] max-h-[250px] w-full overflow-hidden rounded-tl-md rounded-tr-md print:hidden"
           id="map-container"
         >
-          <div className="flex w-full h-full">
+          <div className="flex h-full w-full">
             <MapboxMap
               accessToken={MAPBOX_ACCESS_TOKEN}
               style={mapStyle as Style}
@@ -52,8 +52,8 @@ export default function ResourceInformation(props: Props) {
         </div>
       </CardContent>
 
-      <CardFooter className="p-4 pt-0">
-        <div className="grid grid-cols-2 w-full gap-2">
+      <CardFooter className="break-words p-4 pt-0">
+        <div className="grid w-full grid-cols-2 gap-2">
           <Addresses data={props.data} />
           <PhoneNumbers data={props.data} />
           <EmailAddress data={props.data} />
