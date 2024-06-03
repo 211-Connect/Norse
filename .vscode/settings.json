@@ -4,5 +4,11 @@
   "editor.tabSize": 2,
   "files.associations": {
     "*.css": "tailwindcss"
+  },
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma"
+  },
+  "[dockerfile]": {
+    "editor.defaultFormatter": "ms-azuretools.vscode-docker"
   }
 }
