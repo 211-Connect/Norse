@@ -36,10 +36,10 @@ export default function TaxonomyInput({
 
       return {
         group: t('search.taxonomies'),
-        items: data?.hits?.hits?.map((tax) => ({
-          value: tax?._source?.name,
-          term: tax?._source?.code,
-          label: tax?._source?.code,
+        items: data?.map((tax) => ({
+          value: tax?.name,
+          term: tax?.code,
+          label: tax?.code,
         })),
       };
     },

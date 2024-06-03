@@ -32,3 +32,11 @@ export interface ISearchResult {
     description?: string;
   };
 }
+
+export interface ISuggestionResult {
+  id: string;
+  name?: string;
+  code?: string;
+  description?: string;
+  taxonomy?: string;
+}

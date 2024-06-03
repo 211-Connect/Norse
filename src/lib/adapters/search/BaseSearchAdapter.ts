@@ -1,4 +1,4 @@
-import { ISearchResponse } from '@/types/search-result';
+import { ISearchResponse, ISuggestionResult } from '@/types/search-result';
 import z from 'zod';
 
 export type QueryConfig = {
@@ -8,6 +8,13 @@ export type QueryConfig = {
   coords?: string;
   filters?: string;
   distance?: string;
+  locale: string;
+};
+
+export type SuggestConfig = {
+  query?: string;
+  code?: string;
+  page?: string;
   locale: string;
 };
 
@@ -26,7 +33,18 @@ export abstract class BaseSearchAdapter {
     locale: z.string().default('en'),
   });
 
+  suggestConfigSchema = z.object({
+    query: z.string().optional(),
+    code: z.string().optional(),
+    page: z.number().default(1),
+    locale: z.string().default('en'),
+  });
+
   abstract search(
     config: QueryConfig,
   ): ISearchResponse | Promise<ISearchResponse>;
+
+  abstract suggest(
+    config: SuggestConfig,
+  ): ISuggestionResult[] | Promise<ISuggestionResult[]>;
 }

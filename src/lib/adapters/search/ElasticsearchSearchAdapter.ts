@@ -1,5 +1,9 @@
 import { ISearchResponse, ISearchResult } from '@/types/search-result';
-import { BaseSearchAdapter, QueryConfig } from './BaseSearchAdapter';
+import {
+  BaseSearchAdapter,
+  QueryConfig,
+  SuggestConfig,
+} from './BaseSearchAdapter';
 import path from 'path';
 import fs from 'fs/promises';
 import { SearchRequest } from '@elastic/elasticsearch/lib/api/types';
@@ -260,5 +264,64 @@ export class ElasticsearchSearchAdapter extends BaseSearchAdapter {
       page: q.page,
       facets: data?.aggregations ?? {},
     };
+  }
+
+  async suggest(config: SuggestConfig) {
+    const q = await this.suggestConfigSchema.parseAsync(config);
+    const skip = (q.page - 1) * 10;
+
+    if (!q.query && !q.code) {
+      throw new Error('Query or code is required');
+    }
+
+    const queryBuilder: SearchRequest = {
+      index: `${process.env.ELASTICSEARCH_SUGGESTION_INDEX}_${q.locale}`,
+      from: skip,
+      size: 10,
+      query: {
+        bool: {
+          filter: [],
+        },
+      },
+      aggs: {},
+    };
+
+    if (q.query) {
+      queryBuilder.query = {
+        bool: {
+          must: {
+            multi_match: {
+              query: q.query,
+              type: 'bool_prefix',
+              fields: ['name', 'name._2gram', 'name._3gram'],
+            },
+          },
+          filter: [],
+        },
+      };
+    } else if (q.code) {
+      queryBuilder.query = {
+        bool: {
+          must: {
+            multi_match: {
+              query: q.code,
+              type: 'bool_prefix',
+              fields: ['code', 'code._2gram', 'code._3gram'],
+            },
+          },
+          filter: [],
+        },
+      };
+    }
+
+    const data = await elasticsearch.search(queryBuilder);
+
+    return data.hits.hits.map((hit: any) => ({
+      id: hit._id,
+      name: hit._source.name,
+      code: hit._source.code,
+      description: hit._source.description,
+      taxonomy: hit._source.taxonomy,
+    }));
   }
 }
