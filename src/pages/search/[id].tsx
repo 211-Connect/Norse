@@ -97,7 +97,7 @@ export default function SearchDetail({ resource }: Props) {
         <meta property="og:description" content={metaDescription} />
       </Head>
 
-      <div className="flex flex-col gap-0 min-h-screen" ref={componentRef}>
+      <div className="flex min-h-screen flex-col gap-0" ref={componentRef}>
         <AppHeader />
 
         <Resource data={resource} />

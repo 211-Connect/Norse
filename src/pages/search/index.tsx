@@ -164,7 +164,7 @@ const Markers = memo(function MemoizedMarkers({ results }: { results: any }) {
                     resource={result}
                     disabled={!result.phone}
                     href={`tel:${result.phone}`}
-                    className="min-w-[130px] gap-1 w-full"
+                    className="w-full min-w-[130px] gap-1"
                   >
                     <IconPhone className="size-4" />
                     {t('call_to_action.call', {
@@ -179,7 +179,7 @@ const Markers = memo(function MemoizedMarkers({ results }: { results: any }) {
                     disabled={!result.website}
                     href={result?.website ?? ''}
                     target="_blank"
-                    className="min-w-[130px] gap-1 w-full"
+                    className="w-full min-w-[130px] gap-1"
                   >
                     <IconWorldWww className="size-4" />
                     {t('call_to_action.view_website', {
@@ -251,14 +251,14 @@ export default function SearchPage(props: any) {
 
       <AppHeader fullWidth />
 
-      <div className="w-full h-full flex relative gap-2">
+      <div className="relative flex h-full w-full gap-2">
         <FilterPanel filters={props.facets} />
 
         <div
-          className="flex flex-col md:max-w-xl w-full overflow-y-auto"
+          className="flex w-full flex-col overflow-y-auto md:max-w-xl"
           id="search-container"
         >
-          <div className="p-2 bg-card">
+          <div className="bg-card p-2">
             <Search />
           </div>
 
@@ -273,13 +273,13 @@ export default function SearchPage(props: any) {
 
         <div className="hidden w-full md:block">
           <div
-            className="w-full flex sticky top-2 mt-2 pr-2"
+            className="sticky top-2 mt-2 flex w-full pr-2"
             id="map-container"
             style={{
               height: `calc(100vh - ${clampedWindowValue}px - 16px)`,
             }}
           >
-            <div className="w-full h-full relative rounded-md overflow-hidden">
+            <div className="relative h-full w-full overflow-hidden rounded-md">
               <MapboxMap {...mapProps}>
                 <Markers results={props.results} />
               </MapboxMap>

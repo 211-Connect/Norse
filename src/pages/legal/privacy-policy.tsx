@@ -49,7 +49,7 @@ export default function PrivacyPolicy({ html = '' }: { html: string }) {
         <meta property="og:description" content="Privacy Policy" />
       </Head>
       <AppHeader />
-      <div className="container mx-auto whitespace-pre-wrap prose">
+      <div className="container prose mx-auto whitespace-pre-wrap">
         {parseHtml(html)}
       </div>
       <AppFooter />

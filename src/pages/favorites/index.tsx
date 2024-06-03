@@ -56,26 +56,26 @@ export default function Lists() {
         <meta name="description" content={metaDescription} />
       </Head>
 
-      <div className="flex flex-col h-screen overflow-hidden">
+      <div className="flex h-screen flex-col overflow-hidden">
         <AppHeader fullWidth />
 
-        <div className="flex w-full h-full overflow-hidden flex-1">
+        <div className="flex h-full w-full flex-1 overflow-hidden">
           <div
-            className="flex flex-col w-full overflow-y-auto md:max-w-[550px] overscroll-none"
+            className="flex w-full flex-col overflow-y-auto overscroll-none md:max-w-[550px]"
             id="search-container"
           >
             <FavoriteLists />
           </div>
 
           <div
-            className="w-full h-full relative hidden md:flex"
+            className="relative hidden h-full w-full md:flex"
             id="map-container"
           >
-            <div className="flex justify-center items-center absolute top-0 right-0 bottom-0 left-0 z-10 bg-black bg-opacity-60">
+            <div className="absolute bottom-0 left-0 right-0 top-0 z-10 flex items-center justify-center bg-black bg-opacity-60">
               <p className="text-xl text-white">{t('select_a_list')}</p>
             </div>
 
-            <div className="flex w-full h-full">
+            <div className="flex h-full w-full">
               <MapboxMap
                 accessToken={MAPBOX_ACCESS_TOKEN}
                 style={mapStyle as Style}

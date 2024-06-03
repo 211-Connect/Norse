@@ -71,7 +71,7 @@ export default function FavoritesDetail() {
 
         <div className="flex">
           <div
-            className="flex flex-col gap-2 md:max-w-xl w-full overflow-y-auto"
+            className="flex w-full flex-col gap-2 overflow-y-auto md:max-w-xl"
             id="search-container"
           >
             <FavoritesSection />
@@ -79,13 +79,13 @@ export default function FavoritesDetail() {
 
           <div className="hidden w-full md:block">
             <div
-              className="w-full flex sticky top-2 mt-2 pr-2"
+              className="sticky top-2 mt-2 flex w-full pr-2"
               id="map-container"
               style={{
                 height: `calc(100vh - ${clampedWindowValue}px - 16px)`,
               }}
             >
-              <div className="w-full h-full relative rounded-md overflow-hidden">
+              <div className="relative h-full w-full overflow-hidden rounded-md">
                 <MapboxMap
                   accessToken={MAPBOX_ACCESS_TOKEN}
                   style={mapStyle as Style}
