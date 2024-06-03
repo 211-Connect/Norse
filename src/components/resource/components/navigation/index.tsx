@@ -36,7 +36,7 @@ export function ResourceNavigation(props: Props) {
 
   return (
     <>
-      <div className="mx-auto flex w-full max-w-[1100px] items-center justify-between">
+      <div className="container mx-auto flex w-full items-center justify-between">
         <Button
           onClick={async () => {
             setCookie(null, USER_PREF_BACK_ACTION, 'true', { path: '/' });

@@ -165,10 +165,8 @@ export function AppHeader(props: Props) {
       <header className="bg-white">
         <div
           className={cn(
-            props.fullWidth
-              ? 'w-full 2xl:pl-4 2xl:pr-4'
-              : 'container mx-auto 2xl:pl-0 2xl:pr-0',
-            'flex h-[80px] items-center justify-between pl-4 pr-4',
+            props.fullWidth ? 'w-full' : 'container mx-auto',
+            'flex h-[80px] items-center justify-between',
           )}
         >
           <Anchor href="/" aria-label={t('header.home') as string}>

@@ -9,7 +9,7 @@ export default function Resource({ data }: { data: IResource }) {
   const componentRef = useRef();
 
   return (
-    <div className="flex-1 flex flex-col gap-2 pb-2 pt-2" ref={componentRef}>
+    <div className="flex flex-1 flex-col gap-2 pb-2 pt-2" ref={componentRef}>
       <ResourceNavigation
         resourceId={data.id}
         displayName={data.name}
@@ -17,12 +17,12 @@ export default function Resource({ data }: { data: IResource }) {
         componentToPrint={componentRef}
       />
 
-      <div className="flex flex-col md:flex-row w-full h-full max-w-[1100px] mx-auto gap-2 print:flex-col">
-        <div className="flex flex-col gap-2 w-full md:max-w-[50%]">
+      <div className="container mx-auto flex h-full w-full flex-col gap-2 md:flex-row print:flex-col">
+        <div className="flex w-full flex-col gap-2 md:max-w-[50%]">
           <ResourceOverview data={data} />
         </div>
 
-        <div className="flex flex-col h-full w-full md:max-w-[50%] gap-2">
+        <div className="flex h-full w-full flex-col gap-2 md:max-w-[50%]">
           <ResourceInformation data={data} />
           <ResourceOrganization data={data} />
         </div>
