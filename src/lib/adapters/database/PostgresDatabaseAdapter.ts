@@ -9,8 +9,36 @@ import {
 import { BaseDatabaseAdapter, Config } from './BaseDatabaseAdapter';
 import postgres from '@/lib/postgres';
 import { IRedirect } from '@/types/redirect';
+import { Session } from 'next-auth';
 
 export class PostgresDatabaseAdapter extends BaseDatabaseAdapter {
+  addResourceToFavoriteList(body: any, session: Session) {
+    throw new Error('Method not implemented.');
+  }
+  findFavoriteListById(id: string, locale: string, session: Session) {
+    throw new Error('Method not implemented.');
+  }
+  deleteFavoriteListById(id: string, session: Session) {
+    throw new Error('Method not implemented.');
+  }
+  updateFavoriteListById(id: string, body: any, session: Session) {
+    throw new Error('Method not implemented.');
+  }
+  searchForFavoriteLists(query: { [key: string]: any }, session: Session) {
+    throw new Error('Method not implemented.');
+  }
+  findFavoriteLists(session: Session) {
+    throw new Error('Method not implemented.');
+  }
+  createFavoriteList(body: any, session: Session) {
+    throw new Error('Method not implemented.');
+  }
+  removeResourceFromFavoriteList(
+    query: { [key: string]: any },
+    session: Session,
+  ) {
+    throw new Error('Method not implemented.');
+  }
   async findResourceById(id: string, config: Config): Promise<IResource> {
     const record = await postgres.resource.findUnique({
       where: {
@@ -36,7 +64,7 @@ export class PostgresDatabaseAdapter extends BaseDatabaseAdapter {
     return {
       id: record.id,
       email: record?.email ?? null,
-      phoneNumber: record?.phone_number ?? null,
+      phone: record?.phone_number ?? null,
       website: record?.website ?? null,
       addresses: (record?.addresses as Address[]) ?? null,
       phoneNumbers: (record?.phone_numbers as PhoneNumber[]) ?? null,
@@ -46,7 +74,6 @@ export class PostgresDatabaseAdapter extends BaseDatabaseAdapter {
       createdAt: record?.created_at?.toISOString() ?? null,
       name: translation?.name ?? null,
       description: translation?.description ?? null,
-      serviceName: translation?.service_name ?? null,
       fees: translation?.fees ?? null,
       hours: translation?.hours ?? null,
       locale: translation?.locale ?? null,
@@ -58,6 +85,9 @@ export class PostgresDatabaseAdapter extends BaseDatabaseAdapter {
       organization: {
         name: organization?.name ?? null,
         description: organization?.description ?? null,
+      },
+      service: {
+        name: translation?.service_name ?? null,
       },
     };
   }
