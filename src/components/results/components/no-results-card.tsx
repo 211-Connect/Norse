@@ -41,7 +41,7 @@ export function NoResultsCard(props: Props) {
       </CardDescription>
 
       {config?.contact?.number && (
-        <CardFooter className="p-4 pt-0">
+        <CardFooter className="items-center justify-center p-4 pt-0">
           <Anchor
             className={cn(buttonVariants({ variant: 'default' }), 'gap-1')}
             href={`tel:${config.contact.number}`}
