@@ -29,22 +29,29 @@ We call this `appConfig` when referenced in the application. It holds the majori
 | `number`      | The contact phone number for your application  | `optional` |
 | `feedbackUrl` | The URL for your feedback form IF you have one | `optional` |
 
+### adapters
+
+| Key        | Value                                                          | Info       |
+| :--------- | :------------------------------------------------------------- | :--------- |
+| `database` | `postgres` or `mongodb`                                        | `required` |
+| `search`   | `elasticsearch` (We may add postgres, Algolia, or Meilisearch) | `required` |
+| `map`      | `mapbox` (We may add Google Maps)                              | `required` |
+| `sms`      | `twilio`                                                       | `required` |
+
 ### features
 
 #### search
 
 | Key             | Value                                                                    | Info       |
 | :-------------- | :----------------------------------------------------------------------- | :--------- |
-| `adapter`       | `elasticsearch` (we're considering creating more adapters in the future) | `required` |
 | `defaultRadius` | `number`                                                                 | `optional` |
 | `radiusOptions` | `array` of `{ "value": number }` where the value is your number in miles | `optional` |
 
 #### map
 
-| Key       | Value                                                                                                                  | Info       |
-| :-------- | :--------------------------------------------------------------------------------------------------------------------- | :--------- |
-| `adapter` | `mapbox` (We're considering create more adapters in the future)                                                        | `required` |
-| `center`  | `[longitude, latitude]` following [GeoJSON specification](https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.1) | `optional` |
+| Key      | Value                                                                                                                  | Info       |
+| :------- | :--------------------------------------------------------------------------------------------------------------------- | :--------- |
+| `center` | `[longitude, latitude]` following [GeoJSON specification](https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.1) | `optional` |
 
 #### sms
 
