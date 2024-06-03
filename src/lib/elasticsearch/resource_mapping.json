@@ -3,17 +3,13 @@
     "type": "keyword",
     "index": false
   },
-  "email": {
-    "type": "keyword",
-    "index": false
-  },
-  "phone": {
-    "type": "keyword",
-    "index": false
-  },
-  "website": {
-    "type": "keyword",
-    "index": false
+  "display_name": {
+    "type": "text",
+    "fields": {
+      "raw": {
+        "type": "keyword"
+      }
+    }
   },
   "display_email": {
     "type": "keyword",
@@ -27,6 +23,22 @@
     "type": "keyword",
     "index": false
   },
+  "display_description": {
+    "type": "text",
+    "fields": {
+      "raw": {
+        "type": "keyword"
+      }
+    }
+  },
+  "display_short_description": {
+    "type": "text",
+    "fields": {
+      "raw": {
+        "type": "keyword"
+      }
+    }
+  },
   "organization_name": {
     "type": "text"
   },
@@ -38,12 +50,6 @@
   },
   "organization_short_description": {
     "type": "text"
-  },
-  "location_latitude": {
-    "type": "float"
-  },
-  "location_longitude": {
-    "type": "float"
   },
   "service_name": {
     "type": "text",
@@ -60,6 +66,9 @@
         "type": "keyword"
       }
     }
+  },
+  "service_description": {
+    "type": "text"
   },
   "location_name": {
     "type": "text",
@@ -93,44 +102,6 @@
       }
     }
   },
-  "display_name": {
-    "type": "text",
-    "fields": {
-      "raw": {
-        "type": "keyword"
-      }
-    }
-  },
-  "display_alternate_name": {
-    "type": "text",
-    "fields": {
-      "raw": {
-        "type": "keyword"
-      }
-    }
-  },
-  "display_description": {
-    "type": "text",
-    "fields": {
-      "raw": {
-        "type": "keyword"
-      }
-    }
-  },
-  "display_short_description": {
-    "type": "text",
-    "fields": {
-      "raw": {
-        "type": "keyword"
-      }
-    }
-  },
-  "service_description": {
-    "type": "text"
-  },
-  "service_short_description": {
-    "type": "text"
-  },
   "address_1": {
     "type": "text",
     "fields": {
@@ -160,42 +131,6 @@
     "type": "keyword",
     "index": false
   },
-  "physical_address": {
-    "type": "text",
-    "index": false
-  },
-  "physical_address_1": {
-    "type": "text",
-    "index": false
-  },
-  "physical_address_2": {
-    "type": "text",
-    "index": false
-  },
-  "physical_address_city": {
-    "type": "text",
-    "fields": {
-      "raw": {
-        "type": "keyword"
-      }
-    }
-  },
-  "physical_address_state": {
-    "type": "text",
-    "fields": {
-      "raw": {
-        "type": "keyword"
-      }
-    }
-  },
-  "physical_address_country": {
-    "type": "keyword",
-    "index": false
-  },
-  "physical_address_postal_code": {
-    "type": "keyword",
-    "index": false
-  },
   "taxonomy_terms": {
     "type": "text",
     "fields": {
@@ -219,17 +154,6 @@
         "type": "keyword"
       }
     }
-  },
-  "primary_phone": {
-    "type": "keyword",
-    "index": false
-  },
-  "primary_website": {
-    "type": "keyword",
-    "index": false
-  },
-  "location": {
-    "type": "geo_point"
   },
   "location_coordinates": {
     "type": "geo_point"
