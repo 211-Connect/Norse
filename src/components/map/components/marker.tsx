@@ -15,7 +15,6 @@ export const Marker = memo(function MemoizedMarker({
   clickTolerance,
   color,
   draggable,
-  occludedOpacity,
   pitchAlignment,
   rotation,
   rotationAlignment,
@@ -42,7 +41,6 @@ export const Marker = memo(function MemoizedMarker({
   color?: string;
   draggable?: boolean;
   element?: HTMLElement;
-  occludedOpacity?: number;
   offset?: PointLike;
   pitchAlignment?: Alignment;
   rotation?: number;
@@ -67,7 +65,6 @@ export const Marker = memo(function MemoizedMarker({
         clickTolerance,
         color,
         draggable,
-        occludedOpacity,
         pitchAlignment,
         rotation,
         rotationAlignment,
@@ -120,7 +117,6 @@ export const Marker = memo(function MemoizedMarker({
     clickTolerance,
     color,
     draggable,
-    occludedOpacity,
     pitchAlignment,
     rotation,
     rotationAlignment,
