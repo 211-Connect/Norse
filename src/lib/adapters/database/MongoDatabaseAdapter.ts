@@ -31,8 +31,6 @@ export class MongoDatabaseAdapter extends BaseDatabaseAdapter {
       },
     });
 
-    console.log(rawRecords);
-
     const record = rawRecords?.[0];
     const translation = record?.translations?.[0];
     if (!record || !translation) throw { message: 'Not found', code: 404 };
