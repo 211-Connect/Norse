@@ -1,7 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { IResource } from '@/types/resource';
-import { parseHtml } from '@/lib/parseHtml';
 import { useTranslation } from 'next-i18next';
+import RenderHtml from '@/components/render-html';
 
 type Props = {
   data: IResource;
@@ -22,9 +22,7 @@ export function ResourceOrganization({ data }: Props) {
         )}
 
         {data?.organization?.description && (
-          <p className="whitespace-pre-wrap prose">
-            {parseHtml(data?.organization?.description ?? '')}
-          </p>
+          <RenderHtml html={data.organization.description} />
         )}
       </CardContent>
     </Card>

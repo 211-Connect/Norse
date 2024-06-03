@@ -9,7 +9,6 @@ import {
 } from '@tabler/icons-react';
 import Link from 'next/link';
 import { NextRouter } from 'next/router';
-import { parseHtml } from '@/lib/parseHtml';
 import { useTranslation } from 'next-i18next';
 import { Anchor } from '@/components/anchor';
 import { ReferralButton } from '@/components/referral-button';
@@ -35,6 +34,7 @@ import useUpdateLocation from '@/components/search/hooks/use-update-location';
 import { useAtomValue } from 'jotai';
 import { locationAtom } from '@/components/search/components/location-input';
 import { useMemo } from 'react';
+import RenderHtml from '@/components/render-html';
 
 type Props = {
   id: string;
@@ -121,7 +121,7 @@ export function Result(props: Props) {
 
   return (
     <>
-      <Card id={props.id} className="shadow-md rounded-md outline-secondary">
+      <Card id={props.id} className="rounded-md shadow-md outline-secondary">
         <CardHeader className="p-4">
           <h3 className="text-lg font-semibold">
             <Anchor
@@ -139,9 +139,7 @@ export function Result(props: Props) {
             hideLabel={t('call_to_action.show_less', { ns: 'common' })}
             showLabel={t('call_to_action.show_more', { ns: 'common' })}
           >
-            <div className="whitespace-pre-wrap prose">
-              {parseHtml(props?.description ?? '')}
-            </div>
+            <RenderHtml html={props?.description} />
           </Spoiler>
 
           <div className="flex flex-col gap-2">
@@ -174,7 +172,7 @@ export function Result(props: Props) {
         </CardContent>
 
         <CardFooter className="flex flex-col items-center gap-2 p-4 pt-0">
-          <div className="flex flex-col w-full gap-2 lg:flex-row">
+          <div className="flex w-full flex-col gap-2 lg:flex-row">
             <ReferralButton
               referralType="call_referral"
               resourceId={props.id}
@@ -208,11 +206,11 @@ export function Result(props: Props) {
             />
           </div>
 
-          <div className="w-full flex gap-1">
+          <div className="flex w-full gap-1">
             <Link
               className={cn(
                 buttonVariants({ variant: 'default' }),
-                'w-full flex gap-2',
+                'flex w-full gap-2',
               )}
               href={`/search/${props.id}`}
             >

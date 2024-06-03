@@ -28,12 +28,12 @@ import mapStyle from '@/components/map/style.json';
 import { Style } from 'mapbox-gl';
 import { IconPhone, IconWorldWww } from '@tabler/icons-react';
 import { ReferralButton } from '@/components/referral-button';
-import { parseHtml } from '@/lib/parseHtml';
 import { getPublicConfig } from '../api/config';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]';
 import { getSearchAdapter } from '@/lib/adapters/search/get-search-adapter';
 import { QueryConfig } from '@/lib/adapters/search/BaseSearchAdapter';
+import RenderHtml from '@/components/render-html';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const cookies = nookies.get(ctx);
@@ -153,8 +153,9 @@ const Markers = memo(function MemoizedMarkers({ results }: { results: any }) {
             popup={
               <div className="flex flex-col gap-2">
                 <h3 className="text-lg font-semibold">{result.name}</h3>
-                <div className="whitespace-pre-wrap text-sm">
-                  {parseHtml(result?.description ?? '')}
+
+                <div className="text-sm">
+                  <RenderHtml html={result?.description} />
                 </div>
 
                 <div className="flex gap-2">

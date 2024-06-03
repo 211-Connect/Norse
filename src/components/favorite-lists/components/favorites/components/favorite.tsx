@@ -1,5 +1,4 @@
 import { USER_PREF_COORDS, USER_PREF_LOCATION } from '@/constants/cookies';
-import { parseHtml } from '@/lib/parseHtml';
 import {
   IconMapPin,
   IconPhone,
@@ -34,6 +33,7 @@ import {
 import { useSession } from 'next-auth/react';
 import { useSetAtom } from 'jotai';
 import { deleteFavoriteFromFavoriteListDialogAtom } from '../state';
+import RenderHtml from '@/components/render-html';
 
 type Props = {
   id: string;
@@ -75,10 +75,10 @@ export function Favorite(props: Props) {
 
   return (
     <Card id={props.id}>
-      <CardHeader className="flex flex-col justify-start items-start">
+      <CardHeader className="flex flex-col items-start justify-start">
         {props.serviceName && <Badge>{props.serviceName}</Badge>}
 
-        <h3 className="font-bold text-xl text-primary">
+        <h3 className="text-xl font-bold text-primary">
           <Anchor href={`/search/${props.id}`}>{props.displayName}</Anchor>
         </h3>
       </CardHeader>
@@ -88,11 +88,7 @@ export function Favorite(props: Props) {
           hideLabel={t('call_to_action.show_less', { ns: 'common' })}
           showLabel={t('call_to_action.show_more', { ns: 'common' })}
         >
-          <div className="whitespace-pre-wrap prose">
-            {parseHtml(props.serviceDescription, {
-              parseLineBreaks: true,
-            })}
-          </div>
+          <RenderHtml html={props.serviceDescription} />
         </Spoiler>
 
         <div className="flex flex-col gap-2">
@@ -157,7 +153,7 @@ export function Favorite(props: Props) {
       </CardContent>
 
       <CardFooter className="flex-col items-stretch gap-2">
-        <div className="flex flex-col md:flex-row gap-2 items-center">
+        <div className="flex flex-col items-center gap-2 md:flex-row">
           <ReferralButton
             referralType="call_referral"
             resourceId={props.id}

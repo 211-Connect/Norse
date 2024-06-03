@@ -1,4 +1,3 @@
-import { parseHtml } from '../../lib/parseHtml';
 import { AppFooter } from '../../components/app-footer';
 import { AppHeader } from '../../components/app-header';
 import { GetServerSidePropsContext } from 'next';
@@ -6,6 +5,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Head from 'next/head';
 import { useAppConfig } from '@/hooks/use-app-config';
 import { serverSideAppConfig } from '@/lib/server-utils';
+import RenderHtml from '@/components/render-html';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const fs = await import('fs/promises');
@@ -49,8 +49,8 @@ export default function PrivacyPolicy({ html = '' }: { html: string }) {
         <meta property="og:description" content="Privacy Policy" />
       </Head>
       <AppHeader />
-      <div className="container prose mx-auto whitespace-pre-wrap">
-        {parseHtml(html)}
+      <div className="container mx-auto">
+        <RenderHtml html={html} />
       </div>
       <AppFooter />
     </>

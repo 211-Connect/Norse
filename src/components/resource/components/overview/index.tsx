@@ -1,4 +1,3 @@
-import { parseHtml } from '@/lib/parseHtml';
 import { IconPhone, IconWorldWww, IconNavigation } from '@tabler/icons-react';
 import { useTranslation } from 'next-i18next';
 import { ReferralButton } from '@/components/referral-button';
@@ -11,6 +10,7 @@ import { IResource } from '@/types/resource';
 import Link from 'next/link';
 import { badgeVariants } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import RenderHtml from '@/components/render-html';
 
 type Props = {
   data: IResource;
@@ -33,17 +33,15 @@ export function ResourceOverview({ data }: Props) {
   return (
     <>
       <Card id={data.id}>
-        <CardContent className="p-4 gap-1 flex flex-col">
+        <CardContent className="flex flex-col gap-1 p-4">
           {data?.name && <h3 className="text-2xl font-bold">{data.name}</h3>}
           {data?.service?.name && (
-            <p className="font-semibold text-primary text-lg">
+            <p className="text-lg font-semibold text-primary">
               {data.service.name}
             </p>
           )}
 
-          <p className="whitespace-pre-wrap prose">
-            {parseHtml(data?.description ?? '')}
-          </p>
+          <RenderHtml html={data?.description} />
 
           {config?.pages?.resource?.hideCategories ||
           !data?.taxonomies ||
@@ -84,7 +82,7 @@ export function ResourceOverview({ data }: Props) {
         </CardContent>
 
         <CardFooter className="p-4">
-          <div className="flex flex-col md:flex-row w-full gap-2">
+          <div className="flex w-full flex-col gap-2 md:flex-row">
             <ReferralButton
               className="w-full"
               referralType="call_referral"
