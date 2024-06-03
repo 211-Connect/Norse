@@ -1,7 +1,7 @@
 import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import nookies, { destroyCookie, setCookie } from 'nookies';
-import { memo, useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useEventStore } from '@/hooks/use-event-store';
 import { AppHeader } from '../../components/app-header';
 import { AppFooter } from '../../components/app-footer';
@@ -23,17 +23,16 @@ import {
   USER_PREF_LOCATION,
 } from '@/constants/cookies';
 import qs from 'qs';
-import MapboxMap, { Marker } from '@/components/map';
+import MapboxMap from '@/components/map';
 import mapStyle from '@/components/map/style.json';
 import { Style } from 'mapbox-gl';
-import { ReferralButton } from '@/components/referral-button';
 import { getPublicConfig } from '../api/config';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]';
 import { getSearchAdapter } from '@/lib/adapters/search/get-search-adapter';
 import { QueryConfig } from '@/lib/adapters/search/BaseSearchAdapter';
-import RenderHtml from '@/components/render-html';
-import { Globe, Phone } from 'lucide-react';
+import { ISearchResult } from '@/types/search-result';
+import { Markers } from '@/components/results/components/map-markers';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const cookies = nookies.get(ctx);
@@ -90,11 +89,10 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 
   const url = ctx.resolvedUrl.split('?')[1];
   const searchAdapter = await getSearchAdapter();
-  const { results, noResults, totalResults, page, facets } =
-    await searchAdapter.search({
-      ...(qs.parse(url) as QueryConfig),
-      locale: ctx.locale,
-    });
+  const { results, totalResults, page, facets } = await searchAdapter.search({
+    ...(qs.parse(url) as QueryConfig),
+    locale: ctx.locale,
+  });
 
   cacheControl(ctx);
 
@@ -102,7 +100,6 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     props: {
       session,
       results,
-      noResults,
       facets,
       totalResults,
       currentPage: page,
@@ -119,85 +116,14 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   };
 }
 
-// Memoized markers to prevent re-renders of map component
-const Markers = memo(function MemoizedMarkers({ results }: { results: any }) {
-  const { t } = useTranslation();
-
-  return (
-    <>
-      {results.map((result) => {
-        if (result?.location?.coordinates == null) return null;
-
-        return (
-          <Marker
-            key={result.id}
-            latitude={result.location.coordinates[1]}
-            longitude={result.location.coordinates[0]}
-            className="custom-marker"
-            onClick={(e, marker) => {
-              e.preventDefault();
-              e.stopPropagation();
-              const element = document.getElementById(result._id);
-
-              document
-                .querySelectorAll('.outline')
-                .forEach((elem) => elem.classList.remove('outline'));
-
-              if (element) {
-                element.classList.add('outline');
-                element.scrollIntoView();
-              }
-
-              marker.togglePopup();
-            }}
-            popup={
-              <div className="flex flex-col gap-2">
-                <h3 className="text-lg font-semibold">{result.name}</h3>
-
-                <div className="text-sm">
-                  <RenderHtml html={result?.description} />
-                </div>
-
-                <div className="flex gap-2">
-                  <ReferralButton
-                    referralType="call_referral"
-                    resourceId={result._id}
-                    resource={result}
-                    disabled={!result.phone}
-                    href={`tel:${result.phone}`}
-                    className="w-full min-w-[130px] gap-1"
-                  >
-                    <Phone className="size-4" />
-                    {t('call_to_action.call', {
-                      ns: 'common',
-                    })}
-                  </ReferralButton>
-
-                  <ReferralButton
-                    referralType="website_referral"
-                    resourceId={result._id}
-                    resource={result}
-                    disabled={!result.website}
-                    href={result?.website ?? ''}
-                    target="_blank"
-                    className="w-full min-w-[130px] gap-1"
-                  >
-                    <Globe className="size-4" />
-                    {t('call_to_action.view_website', {
-                      ns: 'common',
-                    })}
-                  </ReferralButton>
-                </div>
-              </div>
-            }
-          />
-        );
-      })}
-    </>
-  );
-});
-
-export default function SearchPage(props: any) {
+export default function SearchPage(props: {
+  results: ISearchResult[];
+  totalResults: number;
+  query: string;
+  query_label: string;
+  facets: any;
+  currentPage: number;
+}) {
   const MAPBOX_ACCESS_TOKEN = getPublicConfig('MAPBOX_ACCESS_TOKEN');
   const appConfig = useAppConfig();
   const { createResultsEvent } = useEventStore();
@@ -265,7 +191,7 @@ export default function SearchPage(props: any) {
 
           <Results
             results={props.results}
-            noResults={props.noResults}
+            noResults={props.results.length === 0}
             currentPage={props.currentPage}
             totalResults={props.totalResults}
             totalFilters={props.facets ? Object.keys(props.facets).length : 0}
