@@ -4,10 +4,10 @@ import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
 import ResultsHeader from './components/header';
 import ResultsPagination from './components/pagination';
+import { ISearchResult } from '@/types/search-result';
 
 type Props = {
-  // results: IResult[];
-  results: any[];
+  results: ISearchResult[];
   currentPage: number;
   noResults: boolean;
   totalResults: number;
@@ -27,7 +27,7 @@ export function Results(props: Props) {
         totalResults={props.totalResults}
       />
 
-      <div className="flex flex-col gap-2 pl-2 pr-2 pb-2">
+      <div className="flex flex-col gap-2 pb-2 pl-2 pr-2">
         {props.noResults && (
           <NoResultsCard showAltSubtitle={props.totalResults === 0} />
         )}
@@ -37,13 +37,13 @@ export function Results(props: Props) {
             <Result
               key={result.id}
               id={result.id}
-              serviceName={result.serviceName}
+              serviceName={result.service.name}
               name={result.name}
               description={result.description}
               phone={result.phone}
               website={result.website}
               address={result.address}
-              location={result.location}
+              location={result.location.point}
               sessionStatus={status}
               router={router}
             />
