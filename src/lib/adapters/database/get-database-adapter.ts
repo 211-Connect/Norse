@@ -13,6 +13,17 @@ const databaseMapping = {
 export async function getDatabaseAdapter() {
   const { appConfig } = await serverSideAppConfig();
 
+  if (appConfig?.adapters?.database == null)
+    throw new Error(
+      'Database adapter is required. Please set one in your appConfig',
+    );
+
   const AdapterClass = databaseMapping[appConfig.adapters.database];
+
+  if (!AdapterClass)
+    throw new Error(
+      `An adapter with name ${appConfig.adapters.database} was not found!`,
+    );
+
   return new AdapterClass() as BaseDatabaseAdapter;
 }
