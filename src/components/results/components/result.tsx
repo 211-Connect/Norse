@@ -144,7 +144,7 @@ export function Result(props: Props) {
 
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2">
-              <MapPin className="text-primary" />
+              <MapPin className="size-4" />
 
               {props.address ? (
                 <Badge>
@@ -164,7 +164,7 @@ export function Result(props: Props) {
 
             {props.phone && (
               <div className="flex items-center gap-2">
-                <Phone className="text-primary" />
+                <Phone className="size-4" />
                 <Badge>{props.phone}</Badge>
               </div>
             )}
