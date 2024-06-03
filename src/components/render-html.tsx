@@ -5,7 +5,7 @@ export default function RenderHtml({ html }: { html: string }) {
   return (
     <div className="prose whitespace-pre-wrap">
       <HTML2React
-        html={html}
+        html={html || ''}
         components={{
           a: ({ children, href, ...rest }) => (
             <Anchor href={href} {...rest}>
