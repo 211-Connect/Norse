@@ -147,7 +147,7 @@ export function Result(props: Props) {
               <MapPin className="size-4" />
 
               {props.address ? (
-                <Badge>
+                <Badge variant="outline">
                   {props.address} <Distance resource={props} />
                 </Badge>
               ) : (
@@ -165,7 +165,7 @@ export function Result(props: Props) {
             {props.phone && (
               <div className="flex items-center gap-2">
                 <Phone className="size-4" />
-                <Badge>{props.phone}</Badge>
+                <Badge variant="outline">{props.phone}</Badge>
               </div>
             )}
           </div>
