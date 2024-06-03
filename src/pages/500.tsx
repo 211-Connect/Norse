@@ -36,19 +36,19 @@ export default function InternalServerError() {
         <meta name="description" content={metaDescription} />
       </Head>
 
-      <div className="flex flex-col min-h-screen">
+      <div className="flex min-h-screen flex-col">
         <AppHeader />
-        <div className="flex flex-1 flex-col relative items-center justify-center">
+        <div className="relative flex flex-1 flex-col items-center justify-center">
           <Image
             fill
             src="/undraw_500.svg"
             alt=""
-            className="object-contain z-0 object-center"
+            className="z-0 object-contain object-center"
             priority
           />
 
-          <div className="flex flex-col z-10 items-center gap-2 text-center text-foreground justify-center bg-card shadow-md max-w-xl mx-auto p-4 rounded-md">
-            <h3 className="font-bold text-3xl">{t('title')}</h3>
+          <div className="z-10 mx-auto flex max-w-xl flex-col items-center justify-center gap-2 rounded-md bg-card p-4 text-center text-foreground shadow-md">
+            <h3 className="text-3xl font-bold">{t('title')}</h3>
 
             <h4 className="font-semibold">{t('description')}</h4>
 
