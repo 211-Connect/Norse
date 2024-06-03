@@ -31,35 +31,13 @@
       }
     }
   },
-  "display_short_description": {
-    "type": "text",
-    "fields": {
-      "raw": {
-        "type": "keyword"
-      }
-    }
-  },
   "organization_name": {
-    "type": "text"
-  },
-  "organization_alternate_name": {
     "type": "text"
   },
   "organization_description": {
     "type": "text"
   },
-  "organization_short_description": {
-    "type": "text"
-  },
   "service_name": {
-    "type": "text",
-    "fields": {
-      "raw": {
-        "type": "keyword"
-      }
-    }
-  },
-  "service_alternate_name": {
     "type": "text",
     "fields": {
       "raw": {
@@ -78,23 +56,7 @@
       }
     }
   },
-  "location_alternate_name": {
-    "type": "text",
-    "fields": {
-      "raw": {
-        "type": "keyword"
-      }
-    }
-  },
   "location_description": {
-    "type": "text",
-    "fields": {
-      "raw": {
-        "type": "keyword"
-      }
-    }
-  },
-  "location_short_description": {
     "type": "text",
     "fields": {
       "raw": {
