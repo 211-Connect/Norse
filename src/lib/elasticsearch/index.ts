@@ -1,7 +1,10 @@
 import { Client } from '@elastic/elasticsearch';
 
+const nodes =
+  process.env?.ELASTICSEARCH_NODES?.split(',') ?? 'http://127.0.0.1';
+
 const elasticsearch = new Client({
-  node: (process.env?.ELASTICSEARCH_NODE as string) ?? 'http://127.0.0.1',
+  nodes: nodes,
   auth: {
     apiKey: process.env.ELASTICSEARCH_API_KEY as string,
   },
