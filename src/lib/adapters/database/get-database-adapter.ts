@@ -3,6 +3,7 @@ import { PostgresDatabaseAdapter } from './PostgresDatabaseAdapter';
 import { serverSideAppConfig } from '@/lib/server-utils';
 import { BaseDatabaseAdapter } from './BaseDatabaseAdapter';
 
+// Supported databases
 const databaseMapping = {
   mongodb: MongoDatabaseAdapter,
   postgres: PostgresDatabaseAdapter,

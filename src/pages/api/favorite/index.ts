@@ -1,62 +1,35 @@
 import { NextApiHandler } from 'next';
 import { getServerSession } from 'next-auth';
-import z from 'zod';
 import { authOptions } from '../auth/[...nextauth]';
-import { mongodb } from '@/lib/mongodb';
+import { getDatabaseAdapter } from '@/lib/adapters/database/get-database-adapter';
 
 const FavoriteListHandler: NextApiHandler = async (req, res) => {
   const session = await getServerSession(req, res, authOptions);
+  const dbAdapter = await getDatabaseAdapter();
 
   if (!session) {
-    res.status(401).json({ message: 'You must be logged in.' });
+    res.status(401);
     return;
   }
 
   if (req.method === 'PUT') {
-    const NewFavoriteSchema = z.object({
-      resourceId: z.string(),
-      favoriteListId: z.string(),
-    });
+    try {
+      await dbAdapter.addResourceToFavoriteList(req.body, session);
+    } catch (err) {
+      if (err.code != null && err.message != null) {
+        res.status(err.code).json({ message: err.message });
+        return;
+      }
 
-    const body = await NewFavoriteSchema.parseAsync(req.body);
-
-    const record = await mongodb.favoriteList.findFirst({
-      where: {
-        id: body.favoriteListId,
-        ownerId: session.user.id,
-      },
-    });
-
-    if (!record) {
-      res.status(404).json({ message: 'Not found' });
+      res.status(500);
       return;
     }
 
-    const newList: string[] = record?.favorites ?? [];
-    if (newList.includes(body.resourceId)) {
-      // Using 409 Conflict here because the resource already exists in the list
-      res.status(409).json({ message: 'Resource already exists in list' });
-      return;
-    } else {
-      newList.push(body.resourceId);
-    }
-
-    await mongodb.favoriteList.update({
-      where: {
-        id: body.favoriteListId,
-        ownerId: session.user.id,
-      },
-      data: {
-        favorites: newList,
-      },
-    });
-
-    res.status(200).json({ message: 'success' });
-    return;
-  } else {
-    res.status(404);
+    res.status(200);
     return;
   }
+
+  res.status(404);
 };
 
 export default FavoriteListHandler;

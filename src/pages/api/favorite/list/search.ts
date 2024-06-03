@@ -1,47 +1,30 @@
-import { mongodb } from '@/lib/mongodb';
 import { NextApiHandler } from 'next';
 import { getServerSession } from 'next-auth';
-import z from 'zod';
 import { authOptions } from '../../auth/[...nextauth]';
+import { getDatabaseAdapter } from '@/lib/adapters/database/get-database-adapter';
 
 const FavoriteListHandler: NextApiHandler = async (req, res) => {
   const session = await getServerSession(req, res, authOptions);
+  const dbAdapter = await getDatabaseAdapter();
 
   if (!session) {
-    res.status(401).json({ message: 'You must be logged in.' });
+    res.status(401);
     return;
   }
 
   if (req.method === 'GET') {
-    const allFavoriteListsSchema = z.object({
-      exclude: z.string().optional(),
-      name: z.string().optional(),
-    });
-
-    const query = await allFavoriteListsSchema.parseAsync(req.query);
-
-    const exclude = query.exclude ? query.exclude.split(',') : [];
-    const mongoQuery: any = {
-      ownerId: session.user.id,
-      favorites: { $nin: exclude },
-    };
-
-    if (query.name) mongoQuery.name = { $regex: query.name, $options: 'i' };
-
-    const lists = await mongodb.favoriteList.findRaw({
-      filter: mongoQuery,
-      options: {
-        limit: 20,
-        projection: { name: 1, description: 1, privacy: 1 },
-      },
-    });
-
-    res.status(200).json(lists);
-    return;
-  } else {
-    res.status(404);
-    return;
+    try {
+      const lists = await dbAdapter.searchForFavoriteLists(req.query, session);
+      res.status(200).json(lists);
+      return;
+    } catch (err) {
+      console.error(err);
+      res.status(500);
+      return;
+    }
   }
+
+  res.status(404);
 };
 
 export default FavoriteListHandler;
