@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma-postgres';
+import { PrismaClient } from '.prisma/postgres';
 
 // PrismaClient is attached to the `global` object in development to prevent
 // exhausting your database connection limit.
