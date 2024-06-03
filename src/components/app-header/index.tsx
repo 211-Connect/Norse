@@ -1,9 +1,3 @@
-import {
-  IconHeart,
-  IconHome,
-  IconLogout,
-  IconMenu2,
-} from '@tabler/icons-react';
 import { signOut, useSession } from 'next-auth/react';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
@@ -23,6 +17,7 @@ import {
 } from '@/components/ui/select';
 import useAuthPrompt from '@/hooks/use-auth-prompt';
 import Icon from '../icon';
+import { Heart, Home, LogOut, Menu } from 'lucide-react';
 
 type Props = {
   fullWidth?: boolean;
@@ -43,8 +38,8 @@ export function AppHeader(props: Props) {
   const menuItems = useMemo(() => {
     const items = [
       <Anchor key={0} href="/">
-        <div className="flex gap-1 items-center">
-          <IconHome className="size-4" /> {t('header.home')}
+        <div className="flex items-center gap-1">
+          <Home className="size-4" /> {t('header.home')}
         </div>
       </Anchor>,
       <Anchor
@@ -57,8 +52,8 @@ export function AppHeader(props: Props) {
           }
         }}
       >
-        <div className="flex gap-1 items-center">
-          <IconHeart className="size-4" /> {t('header.favorites')}
+        <div className="flex items-center gap-1">
+          <Heart className="size-4" /> {t('header.favorites')}
         </div>
       </Anchor>,
     ];
@@ -72,8 +67,8 @@ export function AppHeader(props: Props) {
             signOut({ redirect: true, callbackUrl: '/' });
           }}
         >
-          <div className="flex gap-1 items-center">
-            <IconLogout className="size-4" /> {t('header.log_out')}
+          <div className="flex items-center gap-1">
+            <LogOut className="size-4" /> {t('header.log_out')}
           </div>
         </a>,
       );
@@ -85,7 +80,7 @@ export function AppHeader(props: Props) {
           <Anchor
             key={el.name}
             href={el.href}
-            className="flex gap-1 items-center"
+            className="flex items-center gap-1"
           >
             {el.icon && <Icon name={el.icon} className="size-4" />}
             {el.name}
@@ -173,7 +168,7 @@ export function AppHeader(props: Props) {
             props.fullWidth
               ? 'w-full 2xl:pl-4 2xl:pr-4'
               : 'container mx-auto 2xl:pl-0 2xl:pr-0',
-            'h-[80px] flex items-center justify-between pl-4 pr-4',
+            'flex h-[80px] items-center justify-between pl-4 pr-4',
           )}
         >
           <Anchor href="/" aria-label={t('header.home') as string}>
@@ -188,18 +183,18 @@ export function AppHeader(props: Props) {
             />
           </Anchor>
 
-          <div className="items-center gap-4 hidden md:flex">{menuItems}</div>
+          <div className="hidden items-center gap-4 md:flex">{menuItems}</div>
 
           <div className="md:hidden">
             <Dialog>
               <DialogTrigger asChild>
                 <Button variant="outline" size="icon">
-                  <IconMenu2 />
+                  <Menu />
                 </Button>
               </DialogTrigger>
 
-              <DialogContent className="w-screen h-screen max-w-screen-2xl rounded-none z-50">
-                <div className="flex flex-col items-center justify-center gap-2 h-full">
+              <DialogContent className="z-50 h-screen w-screen max-w-screen-2xl rounded-none">
+                <div className="flex h-full flex-col items-center justify-center gap-2">
                   {menuItems}
                 </div>
               </DialogContent>

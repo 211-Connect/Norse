@@ -1,4 +1,3 @@
-import { IconPhone, IconWorldWww, IconNavigation } from '@tabler/icons-react';
 import { useTranslation } from 'next-i18next';
 import { ReferralButton } from '@/components/referral-button';
 import { useAppConfig } from '@/hooks/use-app-config';
@@ -11,6 +10,7 @@ import Link from 'next/link';
 import { badgeVariants } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import RenderHtml from '@/components/render-html';
+import { Globe, Navigation, Phone } from 'lucide-react';
 
 type Props = {
   data: IResource;
@@ -92,7 +92,7 @@ export function ResourceOverview({ data }: Props) {
               aria-disabled={!data.phone || data.phone.length === 0}
               href={`tel:${data.phone && data.phone.length > 0 && data.phone}`}
             >
-              <IconPhone className="size-4" />
+              <Phone className="size-4" />
               {t('call_to_action.call', { ns: 'common' })}
             </ReferralButton>
 
@@ -106,7 +106,7 @@ export function ResourceOverview({ data }: Props) {
               href={data.website || ''}
               target="_blank"
             >
-              <IconWorldWww className="size-4" />
+              <Globe className="size-4" />
               {t('call_to_action.view_website', { ns: 'common' })}
             </ReferralButton>
 
@@ -124,7 +124,7 @@ export function ResourceOverview({ data }: Props) {
                 .join(',')}`}
               onClick={handleDirectionsClick}
             >
-              <IconNavigation className="size-4" />
+              <Navigation className="size-4" />
               {t('call_to_action.get_directions', { ns: 'common' })}
             </ReferralButton>
           </div>

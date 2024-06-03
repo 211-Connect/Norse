@@ -1,6 +1,6 @@
 import { Anchor } from '@/components/anchor';
 import { IResource } from '@/types/resource';
-import { IconMail } from '@tabler/icons-react';
+import { Mail } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 
 export default function EmailAddress({ data }: { data: IResource }) {
@@ -10,8 +10,8 @@ export default function EmailAddress({ data }: { data: IResource }) {
 
   return (
     <div>
-      <div className="flex gap-1 items-center">
-        <IconMail className="size-4" />
+      <div className="flex items-center gap-1">
+        <Mail className="size-4" />
 
         <p className="font-semibold">{t('email')}</p>
       </div>

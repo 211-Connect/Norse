@@ -1,5 +1,5 @@
 import { IResource } from '@/types/resource';
-import { IconMailbox, IconMapPin } from '@tabler/icons-react';
+import { Mailbox, MapPin } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 
 export default function Addresses({ data }: { data: IResource }) {
@@ -14,11 +14,11 @@ export default function Addresses({ data }: { data: IResource }) {
         .map((address: any, key) => {
           return (
             <div key={key}>
-              <div className="flex gap-1 items-center">
+              <div className="flex items-center gap-1">
                 {address.type === 'physical' ? (
-                  <IconMapPin className="size-4" />
+                  <MapPin className="size-4" />
                 ) : (
-                  <IconMailbox className="size-4" />
+                  <Mailbox className="size-4" />
                 )}
 
                 <p className="font-semibold">

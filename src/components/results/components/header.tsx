@@ -1,9 +1,9 @@
 import { useTranslation } from 'next-i18next';
 import { Button } from '../../ui/button';
 import { cn } from '@/lib/utils';
-import { IconAdjustments } from '@tabler/icons-react';
 import { filterPanelAtom } from './filter-panel';
 import { useSetAtom } from 'jotai';
+import { Filter } from 'lucide-react';
 
 export default function ResultsHeader({
   totalFilters,
@@ -22,10 +22,10 @@ export default function ResultsHeader({
   );
 
   return (
-    <div className={cn('flex bg-primary items-center p-1 pr-2 pl-2 mb-2')}>
+    <div className={cn('mb-2 flex items-center bg-primary p-1 pl-2 pr-2')}>
       {totalFilters > 0 && (
         <Button
-          className="flex gap-1 items-center lg:hidden text-primary-foreground"
+          className="flex items-center gap-1 text-primary-foreground lg:hidden"
           size="sm"
           variant="link"
           onClick={() =>
@@ -35,11 +35,11 @@ export default function ResultsHeader({
             }))
           }
         >
-          <IconAdjustments className="size-4" /> {t('filter_results')}
+          <Filter className="size-4" /> {t('filter_results')}
         </Button>
       )}
 
-      <p id="result-total" className="text-primary-foreground ml-auto">
+      <p id="result-total" className="ml-auto text-primary-foreground">
         {counterStart}-{counterEnd}
         {` `}
         {t('of')}

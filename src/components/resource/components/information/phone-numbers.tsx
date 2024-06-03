@@ -1,6 +1,6 @@
 import { Anchor } from '@/components/anchor';
 import { IResource } from '@/types/resource';
-import { IconPhone, IconPrinter } from '@tabler/icons-react';
+import { Phone, Printer } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 
 export default function PhoneNumbers({ data }: { data: IResource }) {
@@ -15,11 +15,11 @@ export default function PhoneNumbers({ data }: { data: IResource }) {
         .map((phone: any, idx) => {
           return (
             <div key={idx}>
-              <div className="flex gap-1 items-center">
+              <div className="flex items-center gap-1">
                 {phone.type === 'fax' ? (
-                  <IconPrinter className="size-4" />
+                  <Printer className="size-4" />
                 ) : (
-                  <IconPhone className="size-4" />
+                  <Phone className="size-4" />
                 )}
 
                 <p className="font-semibold">

@@ -2,9 +2,9 @@ import { Fragment, PropsWithChildren } from 'react';
 import { useTranslation } from 'next-i18next';
 import { Anchor } from '@/components/anchor';
 import { useAppConfig } from '@/hooks/use-app-config';
-import { IconPointFilled } from '@tabler/icons-react';
 import { cn } from '@/lib/utils';
 import Icon from '../icon';
+import { Dot } from 'lucide-react';
 
 type Props = PropsWithChildren & {
   fullWidth?: boolean;
@@ -29,10 +29,10 @@ export function AppFooter(props: Props) {
         <div
           className={cn(
             props.fullWidth ? 'w-full' : 'container mx-auto',
-            'h-[80px] flex items-center justify-between pl-4 pr-4 2xl:pl-0 2xl:pr-0',
+            'flex h-[80px] items-center justify-between pl-4 pr-4 2xl:pl-0 2xl:pr-0',
           )}
         >
-          <div className="flex flex-col justify-center items-center gap-1 w-full">
+          <div className="flex w-full flex-col items-center justify-center gap-1">
             <p>
               &copy; {new Date().getFullYear()} {appConfig?.brand?.name}.{' '}
               {t('footer.copyright')}
@@ -45,8 +45,8 @@ export function AppFooter(props: Props) {
 
               {customFooterItems.map((el) => (
                 <Fragment key={el.name}>
-                  <IconPointFilled className="scale-4" />
-                  <Anchor className="flex gap-1 items-center" href={el.href}>
+                  <Dot className="scale-4" />
+                  <Anchor className="flex items-center gap-1" href={el.href}>
                     {el.icon && <Icon name={el.icon} className="size-4" />}
                     {el.name}
                   </Anchor>

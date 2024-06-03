@@ -1,6 +1,6 @@
 import { Anchor } from '@/components/anchor';
 import { IResource } from '@/types/resource';
-import { IconWorldWww } from '@tabler/icons-react';
+import { Globe } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 
 export default function Website({ data }: { data: IResource }) {
@@ -10,8 +10,8 @@ export default function Website({ data }: { data: IResource }) {
 
   return (
     <div>
-      <div className="flex gap-1 items-center">
-        <IconWorldWww className="size-4" />
+      <div className="flex items-center gap-1">
+        <Globe className="size-4" />
 
         <p className="font-semibold">{t('website')}</p>
       </div>

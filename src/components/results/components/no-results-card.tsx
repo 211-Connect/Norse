@@ -3,10 +3,10 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useAppConfig } from '@/hooks/use-app-config';
 import { Anchor } from '@/components/anchor';
-import { IconPhone } from '@tabler/icons-react';
 import { Card, CardDescription, CardFooter, CardHeader } from '../../ui/card';
 import { buttonVariants } from '../../ui/button';
 import { cn } from '@/lib/utils';
+import { Phone } from 'lucide-react';
 
 type Props = {
   showAltSubtitle?: boolean;
@@ -19,7 +19,7 @@ export function NoResultsCard(props: Props) {
 
   return (
     <Card className="text-center">
-      <CardHeader className="p-4 pb-0 flex items-center">
+      <CardHeader className="flex items-center p-4 pb-0">
         <Image
           src="/undraw_searching.svg"
           width={0}
@@ -46,7 +46,7 @@ export function NoResultsCard(props: Props) {
             className={cn(buttonVariants({ variant: 'default' }), 'gap-1')}
             href={`tel:${config.contact.number}`}
           >
-            <IconPhone className="size-4" />
+            <Phone className="size-4" />
             {config.contact.number}
           </Anchor>
         </CardFooter>

@@ -1,12 +1,4 @@
 import { useEventStore } from '@/hooks/use-event-store';
-import {
-  IconHeart,
-  IconLink,
-  IconMapPin,
-  IconNavigation,
-  IconPhone,
-  IconWorldWww,
-} from '@tabler/icons-react';
 import Link from 'next/link';
 import { NextRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
@@ -35,6 +27,14 @@ import { useAtomValue } from 'jotai';
 import { locationAtom } from '@/components/search/components/location-input';
 import { useMemo } from 'react';
 import RenderHtml from '@/components/render-html';
+import {
+  Globe,
+  Heart,
+  LinkIcon,
+  MapPin,
+  Navigation,
+  Phone,
+} from 'lucide-react';
 
 type Props = {
   id: string;
@@ -100,7 +100,7 @@ const GetDirections = ({ openUpdateLocation, resource }) => {
       onClick={handleDirectionsClick}
       className="w-full"
     >
-      <IconNavigation className="size-4" />
+      <Navigation className="size-4" />
       {t('call_to_action.get_directions')}
     </ReferralButton>
   );
@@ -144,7 +144,7 @@ export function Result(props: Props) {
 
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2">
-              <IconMapPin className="text-primary" />
+              <MapPin className="text-primary" />
 
               {props.address ? (
                 <Badge>
@@ -164,7 +164,7 @@ export function Result(props: Props) {
 
             {props.phone && (
               <div className="flex items-center gap-2">
-                <IconPhone className="text-primary" />
+                <Phone className="text-primary" />
                 <Badge>{props.phone}</Badge>
               </div>
             )}
@@ -182,7 +182,7 @@ export function Result(props: Props) {
               href={`tel:${props.phone}`}
               className="w-full"
             >
-              <IconPhone className="size-4" />
+              <Phone className="size-4" />
               {t('call_to_action.call')}
             </ReferralButton>
 
@@ -196,7 +196,7 @@ export function Result(props: Props) {
               target="_blank"
               className="w-full"
             >
-              <IconWorldWww className="size-4" />
+              <Globe className="size-4" />
               {t('call_to_action.view_website')}
             </ReferralButton>
 
@@ -214,7 +214,7 @@ export function Result(props: Props) {
               )}
               href={`/search/${props.id}`}
             >
-              <IconLink className="size-4" />
+              <LinkIcon className="size-4" />
               {t('call_to_action.view_details')}
             </Link>
 
@@ -230,7 +230,7 @@ export function Result(props: Props) {
                 }
               }}
             >
-              <IconHeart className="size-5" />
+              <Heart className="size-5" />
             </Button>
           </div>
         </CardFooter>

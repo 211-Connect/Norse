@@ -7,17 +7,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button, buttonVariants } from '../ui/button';
 import { useTranslation } from 'next-i18next';
-import {
-  IconBrandFacebook,
-  IconBrandTwitter,
-  IconDeviceMobileMessage,
-  IconLink,
-  IconMail,
-  IconPrinter,
-  IconShare,
-} from '@tabler/icons-react';
 import Link from 'next/link';
-
 import { useSession } from 'next-auth/react';
 import { useEffect, useRef, useState } from 'react';
 import { useAppConfig } from '@/hooks/use-app-config';
@@ -27,6 +17,15 @@ import ShortUrlAdapter from './adapters/short-url-adapter';
 import useClipboard from '@/hooks/use-clipboard';
 import useAuthPrompt from '@/hooks/use-auth-prompt';
 import useSms from './use-sms';
+import {
+  AtSign,
+  LinkIcon,
+  MessageSquareText,
+  Printer,
+  Share,
+} from 'lucide-react';
+import FacebookIcon from '../icons/facebook';
+import XIcon from '../icons/x';
 
 export function ShareButton({
   title,
@@ -65,7 +64,7 @@ export function ShareButton({
       <Dialog>
         <DialogTrigger asChild>
           <Button className="gap-1">
-            <IconShare className="size-4" />
+            <Share className="size-4" />
             {t('call_to_action.share', { ns: 'common' })}
           </Button>
         </DialogTrigger>
@@ -87,7 +86,7 @@ export function ShareButton({
                 'flex gap-1',
               )}
             >
-              <IconBrandFacebook />
+              <FacebookIcon className="size-4" />
               {t('modal.share.facebook')}
             </Link>
 
@@ -103,7 +102,7 @@ export function ShareButton({
                 'flex gap-1',
               )}
             >
-              <IconBrandTwitter />
+              <XIcon className="size-4" />
               {t('modal.share.twitter')}
             </Link>
 
@@ -134,7 +133,7 @@ export function ShareButton({
                 }
               }}
             >
-              <IconDeviceMobileMessage />
+              <MessageSquareText className="size-4" />
               {t('modal.share.sms')}
             </Button>
 
@@ -151,7 +150,7 @@ export function ShareButton({
                 'flex gap-1',
               )}
             >
-              <IconMail />
+              <AtSign className="size-4" />
               {t('modal.share.email')}
             </Link>
 
@@ -160,7 +159,7 @@ export function ShareButton({
               variant="outline"
               onClick={() => printFn?.()}
             >
-              <IconPrinter />
+              <Printer className="size-4" />
               {t('modal.share.print')}
             </Button>
           </div>
@@ -169,10 +168,10 @@ export function ShareButton({
             <p>{t('modal.share.copy_link')}</p>
             <div className="flex">
               <div className="relative w-full">
-                <IconLink className="size-4 absolute top-1/2 left-1 -translate-y-1/2" />
+                <LinkIcon className="absolute left-1 top-1/2 size-4 -translate-y-1/2" />
                 <Input className="pl-6" value={shortUrl} readOnly />
                 <Button
-                  className="absolute top-0 right-0"
+                  className="absolute right-0 top-0"
                   color={clipboard.copied ? 'green' : 'primary'}
                   onClick={() => clipboard.copy(shortUrl)}
                 >

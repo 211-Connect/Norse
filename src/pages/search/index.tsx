@@ -26,7 +26,6 @@ import qs from 'qs';
 import MapboxMap, { Marker } from '@/components/map';
 import mapStyle from '@/components/map/style.json';
 import { Style } from 'mapbox-gl';
-import { IconPhone, IconWorldWww } from '@tabler/icons-react';
 import { ReferralButton } from '@/components/referral-button';
 import { getPublicConfig } from '../api/config';
 import { getServerSession } from 'next-auth';
@@ -34,6 +33,7 @@ import { authOptions } from '../api/auth/[...nextauth]';
 import { getSearchAdapter } from '@/lib/adapters/search/get-search-adapter';
 import { QueryConfig } from '@/lib/adapters/search/BaseSearchAdapter';
 import RenderHtml from '@/components/render-html';
+import { Globe, Phone } from 'lucide-react';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const cookies = nookies.get(ctx);
@@ -167,7 +167,7 @@ const Markers = memo(function MemoizedMarkers({ results }: { results: any }) {
                     href={`tel:${result.phone}`}
                     className="w-full min-w-[130px] gap-1"
                   >
-                    <IconPhone className="size-4" />
+                    <Phone className="size-4" />
                     {t('call_to_action.call', {
                       ns: 'common',
                     })}
@@ -182,7 +182,7 @@ const Markers = memo(function MemoizedMarkers({ results }: { results: any }) {
                     target="_blank"
                     className="w-full min-w-[130px] gap-1"
                   >
-                    <IconWorldWww className="size-4" />
+                    <Globe className="size-4" />
                     {t('call_to_action.view_website', {
                       ns: 'common',
                     })}

@@ -1,5 +1,5 @@
 import { IResource } from '@/types/resource';
-import { IconClock } from '@tabler/icons-react';
+import { Clock } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 
 export default function Hours({ data }: { data: IResource }) {
@@ -9,8 +9,8 @@ export default function Hours({ data }: { data: IResource }) {
 
   return (
     <div>
-      <div className="flex gap-1 items-center">
-        <IconClock className="size-4" />
+      <div className="flex items-center gap-1">
+        <Clock className="size-4" />
 
         <p className="font-semibold">{t('hours')}</p>
       </div>

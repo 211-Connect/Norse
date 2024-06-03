@@ -1,14 +1,4 @@
 import { USER_PREF_COORDS, USER_PREF_LOCATION } from '@/constants/cookies';
-import {
-  IconMapPin,
-  IconPhone,
-  IconWorldWww,
-  IconMail,
-  IconCalendar,
-  IconLanguage,
-  IconNavigation,
-  IconHeartMinus,
-} from '@tabler/icons-react';
 import { Anchor } from '@/components/anchor';
 import { ReferralButton } from '@/components/referral-button';
 import { useTranslation } from 'next-i18next';
@@ -34,6 +24,16 @@ import { useSession } from 'next-auth/react';
 import { useSetAtom } from 'jotai';
 import { deleteFavoriteFromFavoriteListDialogAtom } from '../state';
 import RenderHtml from '@/components/render-html';
+import {
+  Calendar,
+  Globe,
+  HeartOff,
+  Languages,
+  Mail,
+  MapPin,
+  Navigation,
+  Phone,
+} from 'lucide-react';
 
 type Props = {
   id: string;
@@ -93,7 +93,7 @@ export function Favorite(props: Props) {
 
         <div className="flex flex-col gap-2">
           <div className="flex gap-1">
-            <IconMapPin />
+            <MapPin className="size-4" />
 
             {props.address ? (
               <Badge>{props.address}</Badge>
@@ -110,7 +110,7 @@ export function Favorite(props: Props) {
           </div>
 
           <div className="flex gap-1">
-            <IconPhone />
+            <Phone className="size-4" />
 
             {props.phoneNumbers?.map((el: any) => (
               <Badge key={el.number}>{el.number}</Badge>
@@ -119,14 +119,14 @@ export function Favorite(props: Props) {
 
           {props.website && (
             <div className="flex gap-1">
-              <IconWorldWww />
+              <Globe className="size-4" />
               <Badge>{props.website}</Badge>
             </div>
           )}
 
           {props.email && (
             <div className="flex gap-1">
-              <IconMail />
+              <Mail className="size-4" />
               <Badge>
                 <Anchor href={`mailto:${props.email}`}>{props.email}</Anchor>
               </Badge>
@@ -135,14 +135,14 @@ export function Favorite(props: Props) {
 
           {props.hours && (
             <div className="flex gap-1">
-              <IconCalendar />
+              <Calendar className="size-4" />
               <Badge>{props.hours}</Badge>
             </div>
           )}
 
           {props.languages instanceof Array && props.languages.length > 0 && (
             <div className="flex gap-1">
-              <IconLanguage />
+              <Languages className="size-4" />
 
               {props.languages.map((el: string) => (
                 <Badge key={el}>{el}</Badge>
@@ -167,7 +167,7 @@ export function Favorite(props: Props) {
             href={`tel:${props.displayPhoneNumber}`}
             className="w-full"
           >
-            <IconPhone />
+            <Phone className="size-4" />
             {t('call_to_action.call')}
           </ReferralButton>
 
@@ -181,7 +181,7 @@ export function Favorite(props: Props) {
             target="_blank"
             className="w-full"
           >
-            <IconWorldWww />
+            <Globe className="size-4" />
             {t('call_to_action.view_website')}
           </ReferralButton>
 
@@ -199,7 +199,7 @@ export function Favorite(props: Props) {
               .join(',')}`}
             className="w-full"
           >
-            <IconNavigation />
+            <Navigation className="size-4" />
             {t('call_to_action.get_directions')}
           </ReferralButton>
         </div>
@@ -225,7 +225,7 @@ export function Favorite(props: Props) {
                 });
               }}
             >
-              <IconHeartMinus className="size-4" />
+              <HeartOff className="size-4" />
             </Button>
           )}
         </div>

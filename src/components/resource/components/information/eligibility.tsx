@@ -1,5 +1,5 @@
 import { IResource } from '@/types/resource';
-import { IconCheck } from '@tabler/icons-react';
+import { Check } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 
 export default function Eligibility({ data }: { data: IResource }) {
@@ -9,8 +9,8 @@ export default function Eligibility({ data }: { data: IResource }) {
 
   return (
     <div>
-      <div className="flex gap-1 items-center">
-        <IconCheck className="size-4" />
+      <div className="flex items-center gap-1">
+        <Check className="size-4" />
 
         <p className="font-semibold">{t('eligibility')}</p>
       </div>

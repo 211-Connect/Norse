@@ -1,4 +1,3 @@
-import { IconChevronLeft, IconEdit, IconTrash } from '@tabler/icons-react';
 import { Favorite } from './components/favorite';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -21,6 +20,7 @@ import DeleteFavoriteList from './components/modals/delete-favorite-list';
 import { UpdateFavoriteListModal } from './components/modals/update-favorite-list';
 import DeleteFavorite from './components/modals/delete-favorite';
 import { ShareButton } from '@/components/share';
+import { ChevronLeft, Pencil, Trash2 } from 'lucide-react';
 
 export function FavoritesSection() {
   const { t } = useTranslation('common');
@@ -40,8 +40,8 @@ export function FavoritesSection() {
 
   return (
     <div ref={componentRef}>
-      <div className="bg-card p-2 flex flex-col gap-1">
-        <div className="flex justify-between items-center">
+      <div className="flex flex-col gap-1 bg-card p-2">
+        <div className="flex items-center justify-between">
           <Badge>{t(`list.${data?.privacy?.toLowerCase()}`)}</Badge>
 
           {viewingAsOwner && (
@@ -58,7 +58,7 @@ export function FavoritesSection() {
                   })
                 }
               >
-                <IconEdit className="size-4" />
+                <Pencil className="size-4" />
               </Button>
               <Button
                 size="icon"
@@ -72,7 +72,7 @@ export function FavoritesSection() {
                   });
                 }}
               >
-                <IconTrash className="size-4" />
+                <Trash2 className="size-4" />
               </Button>
             </div>
           )}
@@ -81,13 +81,13 @@ export function FavoritesSection() {
         <h3 className="text-xl font-bold text-primary">{data.name}</h3>
         <p>{data.description}</p>
 
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           {viewingAsOwner && (
             <Anchor
               className={cn(buttonVariants({ variant: 'outline' }), 'gap-1')}
               href="/favorites"
             >
-              <IconChevronLeft className="size-4" />
+              <ChevronLeft className="size-4" />
               {t('back_to_favorites', { ns: 'page-list' })}
             </Anchor>
           )}
@@ -100,7 +100,7 @@ export function FavoritesSection() {
         </div>
       </div>
 
-      <div className="flex justify-end items-center bg-primary p-2 pt-1 pb-1">
+      <div className="flex items-center justify-end bg-primary p-2 pb-1 pt-1">
         <p id="result-total" className="text-primary-foreground">
           {data?.favorites?.length} {t('favorites', { ns: 'page-list' })}
         </p>
@@ -142,7 +142,7 @@ export function FavoritesSection() {
 
         {data?.favorites?.length === 0 && (
           <Card>
-            <CardContent className="p-4 flex flex-col items-center justify-center gap-2">
+            <CardContent className="flex flex-col items-center justify-center gap-2 p-4">
               <div className="flex justify-center">
                 <Image
                   src="/undraw_no_data.svg"
@@ -154,7 +154,7 @@ export function FavoritesSection() {
               </div>
 
               <h3
-                className="text-primary font-semibold text-center text-2xl"
+                className="text-center text-2xl font-semibold text-primary"
                 color="primary"
               >
                 {t('no_favorites.title', { ns: 'page-list' })}

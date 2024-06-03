@@ -1,8 +1,8 @@
-import { IconExternalLink } from '@tabler/icons-react';
 import Image from 'next/image';
 import { NavLink } from '@/components/nav-link';
 import { Anchor } from '@/components/anchor';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { ExternalLink } from 'lucide-react';
 
 type Props = {
   index: string;
@@ -15,7 +15,7 @@ type Props = {
 export function Category({ index, name, image, href, subcategories }: Props) {
   if (subcategories && subcategories.length > 0) {
     return (
-      <div className="flex justify-start items-start gap-2">
+      <div className="flex items-start justify-start gap-2">
         {image && (
           <Image
             src={image}
@@ -30,7 +30,7 @@ export function Category({ index, name, image, href, subcategories }: Props) {
         )}
 
         <div className="flex flex-col">
-          <h6 className="font-semibold text-lg pl-2">{name}</h6>
+          <h6 className="pl-2 text-lg font-semibold">{name}</h6>
           {subcategories.map((el, key) => (
             <div key={el.name}>
               <NavLink
@@ -48,7 +48,7 @@ export function Category({ index, name, image, href, subcategories }: Props) {
                 target={el.href ? '_blank' : '_self'}
                 rel={el.href ? 'noopener noreferrer' : ''}
               >
-                {el.href ? <IconExternalLink className="size-4" /> : null}
+                {el.href ? <ExternalLink className="size-4" /> : null}
                 {el.name}
               </NavLink>
             </div>
@@ -61,13 +61,13 @@ export function Category({ index, name, image, href, subcategories }: Props) {
   return (
     <Anchor
       href={href || '/'}
-      className="rounded-md shadow-md transition-all block focus:outline-2 focus:outline focus:outline-offset-4 hover:scale-105 focus:scale-105"
+      className="block rounded-md shadow-md transition-all hover:scale-105 focus:scale-105 focus:outline focus:outline-2 focus:outline-offset-4"
     >
       <Card>
         <CardContent className="p-0">
           {image && (
-            <div className="flex items-center justify-center pt-8 pb-8">
-              <div className="rounded-full w-[75px] h-[75px] relative p-4 bg-background">
+            <div className="flex items-center justify-center pb-8 pt-8">
+              <div className="relative h-[75px] w-[75px] rounded-full bg-background p-4">
                 <Image
                   src={image}
                   alt=""
@@ -82,8 +82,8 @@ export function Category({ index, name, image, href, subcategories }: Props) {
             </div>
           )}
         </CardContent>
-        <CardFooter className="bg-primary rounded-bl-md rounded-br-md items-center justify-center pt-2 pb-2">
-          <p className="text-primary-foreground text-lg">{name}</p>
+        <CardFooter className="items-center justify-center rounded-bl-md rounded-br-md bg-primary pb-2 pt-2">
+          <p className="text-lg text-primary-foreground">{name}</p>
         </CardFooter>
       </Card>
     </Anchor>

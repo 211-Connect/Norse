@@ -1,6 +1,5 @@
 import Autocomplete, { Option } from '@/components/ui/autocomplete';
 import useDebounce from '@/hooks/use-debounce';
-import { IconLocation, IconMapPin } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'next-i18next';
 import { useCallback, useMemo, useState } from 'react';
@@ -17,6 +16,7 @@ import { useCookies } from 'react-cookie';
 import { atom, useAtom } from 'jotai';
 import { atomEffect } from 'jotai-effect';
 import { setCookie, parseCookies } from 'nookies';
+import { Locate, MapPin } from 'lucide-react';
 
 export const locationAtom = atom({
   value: '',
@@ -178,14 +178,14 @@ export default function LocationInput({
 
   return (
     <div className={className}>
-      <div className="flex flex-col justify-center items-start">
+      <div className="flex flex-col items-start justify-center">
         <Autocomplete
           name={name}
           className="w-full"
           options={filteredData ? [filteredData] : []}
           placeholder={t('search.location_placeholder') || ''}
           value={location.value}
-          Icon={IconMapPin}
+          Icon={MapPin}
           onInputChange={onChange}
           onValueSelect={onSelect}
         />
@@ -196,7 +196,7 @@ export default function LocationInput({
           onClick={getUserLocation}
           variant="outline"
         >
-          <IconLocation className="size-4" />
+          <Locate className="size-4" />
           {t('search.use_my_location')}
         </Button>
       </div>

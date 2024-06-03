@@ -1,10 +1,7 @@
-import { IconChevronLeft, IconHeartPlus } from '@tabler/icons-react';
 import { useSession } from 'next-auth/react';
 import { useTranslation } from 'next-i18next';
-import Link from 'next/link';
 import { useReactToPrint } from 'react-to-print';
-import { Button, buttonVariants } from '../../../ui/button';
-import { cn } from '@/lib/utils';
+import { Button } from '../../../ui/button';
 import { ShareButton } from '@/components/share';
 import useAuthPrompt from '@/hooks/use-auth-prompt';
 import useAddToList from '@/components/favorite-lists/hooks/use-add-to-list';
@@ -15,6 +12,7 @@ import {
 } from '@/constants/cookies';
 import { setCookie } from 'nookies';
 import { useRouter } from 'next/router';
+import { ChevronLeft, Heart } from 'lucide-react';
 
 type Props = {
   resourceId: string;
@@ -38,14 +36,14 @@ export function ResourceNavigation(props: Props) {
 
   return (
     <>
-      <div className="flex justify-between items-center w-full max-w-[1100px] mx-auto">
+      <div className="mx-auto flex w-full max-w-[1100px] items-center justify-between">
         <Button
           onClick={async () => {
             setCookie(null, USER_PREF_BACK_ACTION, 'true', { path: '/' });
             await router.push('/search');
           }}
         >
-          <IconChevronLeft className="size-4" />
+          <ChevronLeft className="size-4" />
           {t('back_to_results')}
         </Button>
 
@@ -66,7 +64,7 @@ export function ResourceNavigation(props: Props) {
               }
             }}
           >
-            <IconHeartPlus className="size-4" />
+            <Heart className="size-4" />
             {t('call_to_action.add_to_list', { ns: 'common' })}
           </Button>
         </div>

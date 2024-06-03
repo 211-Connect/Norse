@@ -2,7 +2,6 @@ import { Anchor } from '@/components/anchor';
 import { Badge } from '@/components/ui/badge';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { IconEdit, IconTrash } from '@tabler/icons-react';
 import { useSetAtom } from 'jotai';
 import { useTranslation } from 'next-i18next';
 import {
@@ -10,6 +9,7 @@ import {
   updateFavoriteListDialogAtom,
 } from '../state';
 import { IFavoriteList } from '../types/FavoriteList';
+import { Pencil, Trash2 } from 'lucide-react';
 
 type Props = IFavoriteList;
 
@@ -20,7 +20,7 @@ export default function FavoriteList(props: Props) {
 
   return (
     <Card>
-      <CardContent className="p-4 pb-2 gap-2 flex flex-col">
+      <CardContent className="flex flex-col gap-2 p-4 pb-2">
         <div className="flex items-center justify-between">
           <Badge>
             {t(`list.${props.privacy.toLowerCase()}`, { ns: 'common' })}
@@ -39,7 +39,7 @@ export default function FavoriteList(props: Props) {
                 })
               }
             >
-              <IconEdit size={18} />
+              <Pencil size={18} />
             </Button>
             <Button
               size="icon"
@@ -53,19 +53,19 @@ export default function FavoriteList(props: Props) {
                 });
               }}
             >
-              <IconTrash size={18} />
+              <Trash2 size={18} />
             </Button>
           </div>
         </div>
 
-        <h3 className="text-primary font-semibold text-xl">
+        <h3 className="text-xl font-semibold text-primary">
           <Anchor href={`/favorites/${props._id}`}>{props.name}</Anchor>
         </h3>
 
         <p className="text-sm">{props.description}</p>
       </CardContent>
 
-      <CardFooter className="p-4 pt-2 items-center justify-end">
+      <CardFooter className="items-center justify-end p-4 pt-2">
         <Anchor
           className={buttonVariants({ variant: 'default' })}
           href={`/favorites/${props._id}`}

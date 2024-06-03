@@ -1,5 +1,5 @@
 import { IResource } from '@/types/resource';
-import { IconCurrencyDollar } from '@tabler/icons-react';
+import { Receipt } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 
 export default function Fees({ data }: { data: IResource }) {
@@ -9,8 +9,8 @@ export default function Fees({ data }: { data: IResource }) {
 
   return (
     <div>
-      <div className="flex gap-1 items-center">
-        <IconCurrencyDollar className="size-4" />
+      <div className="flex items-center gap-1">
+        <Receipt className="size-4" />
 
         <p className="font-semibold">{t('fee')}</p>
       </div>
