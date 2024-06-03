@@ -6,49 +6,48 @@
 
 generator client {
   provider = "prisma-client-js"
-  output = "../../../node_modules/@prisma-postgres"
+  output   = "../../../node_modules/@prisma-postgres"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("POSTGRES_URL")
-  
 }
 
 model resource {
-  id String @id @db.Uuid @default(dbgenerated("gen_random_uuid()"))
-  email String
-  phone_number String
-  website String
-  addresses Json @db.JsonB
-  phone_numbers Json @db.JsonB
-  service_area Json @db.JsonB
-  location Json @db.JsonB
-  last_assured_date DateTime @db.Timestamptz()
-  created_at DateTime @default(now()) @db.Timestamptz()
-  translations resource_translation[]
+  id                String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email             String
+  phone_number      String
+  website           String
+  addresses         Json                   @db.JsonB
+  phone_numbers     Json                   @db.JsonB
+  service_area      Json                   @db.JsonB
+  location          Json                   @db.JsonB
+  last_assured_date DateTime               @db.Timestamptz()
+  created_at        DateTime               @default(now()) @db.Timestamptz()
+  translations      resource_translation[]
 }
 
 model resource_translation {
-  id String @id @db.Uuid @default(dbgenerated("gen_random_uuid()"))
-  resource_id String @db.Uuid
-  name String
-  service_name String
-  description String
-  fees String
-  hours String
-  locale String
-  eligibilities String
+  id                  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  resource_id         String   @db.Uuid
+  name                String
+  service_name        String
+  description         String
+  fees                String
+  hours               String
+  locale              String
+  eligibilities       String
   application_process String
-  taxonomies Json @db.JsonB
-  required_documents Json @db.JsonB
-  languages Json @db.JsonB
-  organization Json @db.JsonB
-  resource resource @relation(fields: [resource_id], references: [id], onDelete: Cascade)
+  taxonomies          Json     @db.JsonB
+  required_documents  Json     @db.JsonB
+  languages           Json     @db.JsonB
+  organization        Json     @db.JsonB
+  resource            resource @relation(fields: [resource_id], references: [id], onDelete: Cascade)
 }
 
 model redirect {
-  id String @id @db.Uuid @default(dbgenerated("gen_random_uuid()"))
-  old_resource_id String @db.Uuid @unique
+  id              String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  old_resource_id String @unique @db.Uuid
   new_resource_id String @db.Uuid
 }

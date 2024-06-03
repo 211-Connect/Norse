@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output = "../../../node_modules/@prisma-mongodb"
+  output   = "../../../node_modules/@prisma-mongodb"
 }
 
 datasource db {
@@ -26,13 +26,13 @@ enum PhoneNumberType {
 }
 
 type PhoneNumber {
-  rank Int?
-  type PhoneNumberType?
+  rank   Int?
+  type   PhoneNumberType?
   number String?
 }
 
 type Point {
-  type String?
+  type        String?
   coordinates Int[]
 }
 
@@ -43,13 +43,13 @@ enum AddressType {
 }
 
 type Address {
-  city String?
-  rank Int?
-  type AddressType?
-  country String?
-  address_1 String?
-  address_2 String?
-  postalCode String?
+  city          String?
+  rank          Int?
+  type          AddressType?
+  country       String?
+  address_1     String?
+  address_2     String?
+  postalCode    String?
   stateProvince String?
 }
 
@@ -59,54 +59,54 @@ type Taxonomy {
 }
 
 type Translation {
-  fees String?
-  hours String?
-  locale String?
-  taxonomies Taxonomy[]
-  serviceName String?
-  serviceDescription String?
-  eligibilities String?
-  requiredDocuments String?
-  applicationProcess String?
-  organizationName String?
+  fees                    String?
+  hours                   String?
+  locale                  String?
+  taxonomies              Taxonomy[]
+  serviceName             String?
+  serviceDescription      String?
+  eligibilities           String?
+  requiredDocuments       String?
+  applicationProcess      String?
+  organizationName        String?
   organizationDescription String?
 }
 
 model Resource {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  website String?
-  email String?
-  displayName String?
+  id                 String        @id @default(auto()) @map("_id") @db.ObjectId
+  website            String?
+  email              String?
+  displayName        String?
   displayPhoneNumber String?
-  phoneNumbers PhoneNumber[]
-  location Point?
-  serviceArea Json?
-  addresses Address[]
-  organizationName String
-  lastAssuredDate String?
-  translations Translation[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  phoneNumbers       PhoneNumber[]
+  location           Point?
+  serviceArea        Json?
+  addresses          Address[]
+  organizationName   String
+  lastAssuredDate    String?
+  translations       Translation[]
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
 
   @@map("resources")
 }
 
 model FavoriteList {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  name String
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
   description String?
-  privacy Privacy?
-  ownerId String?
-  favorites String[]
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
+  privacy     Privacy?
+  ownerId     String?
+  favorites   String[]
+  createdAt   DateTime? @default(now())
+  updatedAt   DateTime? @updatedAt
 
   @@map("favoriteLists")
 }
 
 model Redirect {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  newId String
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  newId     String
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
 
@@ -114,11 +114,11 @@ model Redirect {
 }
 
 model ShortenedUrl {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
   originalUrl String
-  shortId String
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
+  shortId     String
+  createdAt   DateTime? @default(now())
+  updatedAt   DateTime? @updatedAt
 
   @@map("shortenedUrls")
 }
