@@ -15,6 +15,7 @@ export class ElasticsearchSearchAdapter extends BaseSearchAdapter {
 
   fieldsToQuery = [
     'display_name',
+    'display_description',
     'service_name',
     'service_alternate_name',
     'service_description',
@@ -214,11 +215,24 @@ export class ElasticsearchSearchAdapter extends BaseSearchAdapter {
         return {
           id: hit._id,
           name: hit?._source?.display_name ?? null,
-          description: hit?._source?.service_description ?? null,
-          phone: hit?._source?.primary_phone ?? null,
-          website: hit?._source?.primary_website ?? null,
+          description: hit?._source?.display_description ?? null,
+          phone: hit?._source?.display_phone_number ?? null,
+          website: hit?._source?.display_website ?? null,
+          email: hit?._source?.display_email ?? null,
           address: mainAddress,
-          location: hit?._source?.location ?? null,
+          service: {
+            name: hit?._source?.service_name ?? null,
+            description: hit?._source?.service_description ?? null,
+          },
+          location: {
+            name: hit?._source?.location_name ?? null,
+            description: hit?._source?.location_description ?? null,
+            point: hit?._source?.location_coordinates ?? null,
+          },
+          organization: {
+            name: hit?._source?.organization_name ?? null,
+            description: hit?._source?.organization_description ?? null,
+          },
         };
       }) ?? [];
 
@@ -244,7 +258,6 @@ export class ElasticsearchSearchAdapter extends BaseSearchAdapter {
 
     return {
       results: formattedData as ISearchResult[],
-      noResults,
       totalResults,
       page: q.page,
       facets: data?.aggregations ?? {},
