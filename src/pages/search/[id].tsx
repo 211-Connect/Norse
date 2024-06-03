@@ -25,7 +25,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       locale: ctx.locale,
     });
   } catch (err) {
-    if (err.message === '404') {
+    if (err.code === 404) {
       notFound = true;
     } else {
       console.error(err);

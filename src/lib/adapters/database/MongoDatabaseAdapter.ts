@@ -10,7 +10,6 @@ import { IRedirect } from '@/types/redirect';
 import mongodb from '@/lib/mongodb';
 import z from 'zod';
 import { Session } from 'next-auth';
-import { NextApiRequest } from 'next';
 
 export class MongoDatabaseAdapter extends BaseDatabaseAdapter {
   async findResourceById(id: string, config: Config): Promise<IResource> {
@@ -32,11 +31,11 @@ export class MongoDatabaseAdapter extends BaseDatabaseAdapter {
       },
     });
 
+    console.log(rawRecords);
+
     const record = rawRecords?.[0];
-
-    if (!record) throw new Error(this.notFound);
-
     const translation = record?.translations?.[0];
+    if (!record || !translation) throw { message: 'Not found', code: 404 };
 
     return {
       id: record._id.toString(),
