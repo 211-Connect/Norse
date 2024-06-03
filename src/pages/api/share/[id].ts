@@ -7,7 +7,7 @@ const ShareHandler: NextApiHandler = async (req, res) => {
   if (req.method === 'GET') {
     const id = req.query.id as string;
     try {
-      const record = await mongodb.shortenedUrls.findFirst({
+      const record = await mongodb.shortenedUrl.findFirst({
         where: {
           shortId: id,
         },
