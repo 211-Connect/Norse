@@ -2,7 +2,6 @@ export const SESSION_ID = 'session-id';
 
 // Strictly necessary cookies
 export const ALLOW_ALL_COOKIES = 'allow-all-cookies'; // required to be able to store user preferences
-export const PREV_URL = 'prev-url';
 
 // User preferences
 export const USER_PREF_LAYOUT = 'user-pref-layout';
