@@ -14,6 +14,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "downlevelIteration": true,
+    "allowSyntheticDefaultImports": true,
     "plugins": [
       {
         "name": "next"
