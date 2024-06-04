@@ -3,7 +3,7 @@ import { Anchor } from './anchor';
 
 export default function RenderHtml({ html }: { html: string }) {
   return (
-    <div className="prose whitespace-pre-wrap">
+    <div className="prose">
       <HTML2React
         html={html || ''}
         components={{

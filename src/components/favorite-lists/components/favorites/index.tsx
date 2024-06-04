@@ -42,7 +42,9 @@ export function FavoritesSection() {
     <div ref={componentRef}>
       <div className="flex flex-col gap-1 bg-card p-2">
         <div className="flex items-center justify-between">
-          <Badge>{t(`list.${data?.privacy?.toLowerCase()}`)}</Badge>
+          <Badge variant="outline">
+            {t(`list.${data?.privacy?.toLowerCase()}`)}
+          </Badge>
 
           {viewingAsOwner && (
             <div className="flex gap-1">
@@ -78,7 +80,7 @@ export function FavoritesSection() {
           )}
         </div>
 
-        <h3 className="text-xl font-bold text-primary">{data.name}</h3>
+        <h3 className="text-xl font-bold">{data.name}</h3>
         <p>{data.description}</p>
 
         <div className="flex items-center justify-between">

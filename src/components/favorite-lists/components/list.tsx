@@ -22,7 +22,7 @@ export default function FavoriteList(props: Props) {
     <Card>
       <CardContent className="flex flex-col gap-2 p-4 pb-2">
         <div className="flex items-center justify-between">
-          <Badge>
+          <Badge variant="outline">
             {t(`list.${props.privacy.toLowerCase()}`, { ns: 'common' })}
           </Badge>
 
@@ -58,7 +58,7 @@ export default function FavoriteList(props: Props) {
           </div>
         </div>
 
-        <h3 className="text-xl font-semibold text-primary">
+        <h3 className="text-xl font-semibold">
           <Anchor href={`/favorites/${props._id}`}>{props.name}</Anchor>
         </h3>
 

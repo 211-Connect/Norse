@@ -106,7 +106,7 @@ export default function Search() {
 
   return (
     <form
-      className="w-full flex flex-col gap-2"
+      className="flex w-full flex-col gap-2"
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -229,7 +229,7 @@ export default function Search() {
         )}
       </form.Field>
 
-      <Button className="self-end" type="submit">
+      <Button className="self-end" type="submit" variant="secondary">
         {t('call_to_action.search')}
       </Button>
 
@@ -237,9 +237,11 @@ export default function Search() {
         router.query.query.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {router.query.query_type === 'taxonomy'
-              ? (router.query?.query as string)
-                  ?.split(',')
-                  .map((value) => <Badge key={value}>{value}</Badge>)
+              ? (router.query?.query as string)?.split(',').map((value) => (
+                  <Badge key={value} variant="outline">
+                    {value}
+                  </Badge>
+                ))
               : null}
           </div>
         )}

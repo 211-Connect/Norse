@@ -1,0 +1,9 @@
+/** Theme **/
+@layer base {
+  :root {
+    --primary: 206 100% 29%;
+    --primary-foreground: 0 0 100%;
+
+    --secondary: 34 100% 66%;
+  }
+}

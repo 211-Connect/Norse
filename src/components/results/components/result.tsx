@@ -1,6 +1,5 @@
 import { useEventStore } from '@/hooks/use-event-store';
 import Link from 'next/link';
-import { NextRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { Anchor } from '@/components/anchor';
 import { ReferralButton } from '@/components/referral-button';
@@ -35,33 +34,22 @@ import {
   Navigation,
   Phone,
 } from 'lucide-react';
+import { ISearchResult } from '@/types/search-result';
+import { NextRouter } from 'next/router';
 
-type Props = {
-  id: string;
-  serviceName: string;
-  name: string;
-  description?: string;
-  phone?: string;
-  address?: string;
-  website?: string;
-  sessionStatus: 'authenticated' | 'loading' | 'unauthenticated';
-  router: NextRouter;
-  location: {
-    coordinates: [number, number];
-  };
-};
+type Props = ISearchResult & { sessionStatus: string; router: NextRouter };
 
-const Distance = ({ resource }) => {
+const Distance = ({ resource }: { resource: ISearchResult }) => {
   const location = useAtomValue(locationAtom);
 
   const distance = useMemo(() => {
-    return resource?.location?.coordinates && location.coords
+    return resource?.location?.point?.coordinates && location.coords
       ? distanceBetweenCoordsInMiles(
           location.coords.split(',').map((c) => parseFloat(c)) as [
             number,
             number,
           ],
-          resource.location.coordinates,
+          resource.location.point.coordinates,
         )
       : null;
   }, [location?.coords, resource?.location]);
@@ -70,7 +58,13 @@ const Distance = ({ resource }) => {
   return <>{`- ${distance}mi`}</>;
 };
 
-const GetDirections = ({ openUpdateLocation, resource }) => {
+const GetDirections = ({
+  openUpdateLocation,
+  resource,
+}: {
+  resource: ISearchResult;
+  openUpdateLocation: () => void;
+}) => {
   const location = useAtomValue(locationAtom);
   const { t } = useTranslation();
 
@@ -93,8 +87,10 @@ const GetDirections = ({ openUpdateLocation, resource }) => {
         .slice()
         .reverse()
         .join(',')}&destination=${
-        resource?.location?.coordinates
-          ? Array.from(resource?.location?.coordinates).reverse().join(',')
+        resource?.location?.point?.coordinates
+          ? Array.from(resource?.location?.point?.coordinates)
+              .reverse()
+              .join(',')
           : ''
       }`}
       onClick={handleDirectionsClick}
@@ -124,11 +120,7 @@ export function Result(props: Props) {
       <Card id={props.id} className="rounded-md shadow-md outline-secondary">
         <CardHeader className="p-4">
           <h3 className="text-lg font-semibold">
-            <Anchor
-              href={`/search/${props.id}`}
-              onClick={handleLink}
-              className="text-primary"
-            >
+            <Anchor href={`/search/${props.id}`} onClick={handleLink}>
               {props.name}
             </Anchor>
           </h3>

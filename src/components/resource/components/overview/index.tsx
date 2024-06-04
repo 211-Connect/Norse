@@ -36,9 +36,7 @@ export function ResourceOverview({ data }: Props) {
         <CardContent className="flex flex-col gap-1 p-4">
           {data?.name && <h3 className="text-2xl font-bold">{data.name}</h3>}
           {data?.service?.name && (
-            <p className="text-lg font-semibold text-primary">
-              {data.service.name}
-            </p>
+            <p className="text-lg font-semibold">{data.service.name}</p>
           )}
 
           <RenderHtml html={data?.description} />
@@ -47,9 +45,7 @@ export function ResourceOverview({ data }: Props) {
           !data?.taxonomies ||
           (data?.taxonomies?.length ?? 0) === 0 ? null : (
             <>
-              <h3 className="text-xl font-semibold text-primary">
-                {t('categories')}
-              </h3>
+              <h3 className="text-xl font-semibold">{t('categories')}</h3>
               <div className="flex flex-wrap gap-2">
                 {data?.taxonomies?.map((el: any) => {
                   return (
@@ -73,9 +69,7 @@ export function ResourceOverview({ data }: Props) {
           {config?.pages?.resource?.hideLastAssured ||
           !data?.lastAssuredDate ? null : (
             <>
-              <h3 className="text-xl font-semibold text-primary">
-                {t('last_assured')}
-              </h3>
+              <h3 className="text-xl font-semibold">{t('last_assured')}</h3>
               <p className="text-sm">{data.lastAssuredDate}</p>
             </>
           )}

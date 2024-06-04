@@ -1,9 +1,8 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-export function range(start: number, end: number) {
-  const length = end - start + 1;
-  return Array.from({ length }, (_, index) => index + start);
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
 }
 
 type Coords = [number, number]; // [longitude, latitude]
@@ -31,8 +30,4 @@ export function distanceBetweenCoordsInMiles(coords1: Coords, coords2: Coords) {
 
 function deg2rad(deg: number) {
   return deg * (Math.PI / 180);
-}
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
 }

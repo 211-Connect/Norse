@@ -37,13 +37,15 @@ export function Results(props: Props) {
             <Result
               key={result.id}
               id={result.id}
-              serviceName={result.service.name}
+              service={{
+                name: result.service.name,
+              }}
               name={result.name}
               description={result.description}
               phone={result.phone}
               website={result.website}
               address={result.address}
-              location={result.location.point}
+              location={result.location}
               sessionStatus={status}
               router={router}
             />
