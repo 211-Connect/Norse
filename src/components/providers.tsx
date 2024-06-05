@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { queryClientAtom } from 'jotai-tanstack-query';
 import { TooltipProvider } from '@radix-ui/react-tooltip';
 import { AppConfigProvider } from '@/hooks/use-app-config';
+// import { ThemeProvider } from 'next-themes';
 
 const queryClient = new QueryClient();
 const HydrateAtoms = ({ children }) => {
@@ -20,7 +21,14 @@ export default function Providers({ session, appConfig, children }) {
           <HydrateAtoms>
             <TooltipProvider>
               <AppConfigProvider value={appConfig || {}}>
+                {/* <ThemeProvider
+                  attribute="class"
+                  defaultTheme="system"
+                  enableSystem
+                  disableTransitionOnChange
+                > */}
                 {children}
+                {/* </ThemeProvider> */}
               </AppConfigProvider>
             </TooltipProvider>
           </HydrateAtoms>

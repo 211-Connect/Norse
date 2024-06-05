@@ -5,7 +5,7 @@ export function NavLink(
   props: { children: React.ReactNode } & LinkProps & {
       target?: string;
       rel?: string;
-    }
+    },
 ) {
   const handleLink = (e: any) => {
     createLinkEvent(e);
@@ -14,7 +14,7 @@ export function NavLink(
   return (
     <Link
       {...props}
-      className="p-2 flex gap-1 hover:bg-card items-center"
+      className="flex items-center gap-1 p-2 hover:bg-neutral-200 dark:hover:bg-neutral-800"
       onClick={handleLink}
     />
   );

@@ -8,7 +8,6 @@ import { cn } from '@/lib/utils';
 import Providers from '@/components/providers';
 import { Toaster } from 'sonner';
 import '../styles/globals.css';
-import Script from 'next/script';
 
 const fontSans = FontSans({
   subsets: ['latin'],
