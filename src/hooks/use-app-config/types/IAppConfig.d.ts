@@ -5,6 +5,11 @@ export interface IAppConfig {
     faviconUrl?: string;
     openGraphUrl?: string;
   };
+  alert?: {
+    text?: string;
+    buttonText?: string;
+    url?: string;
+  };
   contact?: {
     email?: string;
     phoneNumber?: string;

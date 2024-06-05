@@ -62,16 +62,16 @@ export function HeroSection() {
   };
 
   return (
-    <div className="flex flex-col gap-4 items-center relative justify-center h-screen pl-2 pr-2 max-h-[250px] md:max-h-[450px] md:pl-0 md:pr-0">
+    <div className="relative flex h-screen max-h-[350px] flex-col items-center justify-center gap-4 pl-2 pr-2 md:max-h-[450px] md:pl-0 md:pr-0">
       <Image
         fill
         src={appConfig.pages.home.heroSection.backgroundImageUrl}
         priority
         alt=""
-        className="object-cover z-0 object-center pointer-events-none"
+        className="pointer-events-none z-0 object-cover object-center"
       />
 
-      <div className="w-full max-w-[460px] bg-card p-4 rounded-md z-20 flex flex-col gap-2 search-box">
+      <div className="search-box z-20 flex w-full max-w-[460px] flex-col gap-2 rounded-md bg-card p-4">
         <h1 className="text-xl">{t('search.hero_title', { ns: 'common' })}</h1>
 
         <Search />

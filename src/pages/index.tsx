@@ -12,6 +12,7 @@ import { useAppConfig } from '@/hooks/use-app-config';
 import { serverSideAppConfig } from '@/lib/server-utils';
 import { getServerSession } from 'next-auth';
 import { authOptions } from './api/auth/[...nextauth]';
+import Alert from '@/components/home/alert';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerSession(ctx.req, ctx.res, authOptions);
@@ -51,6 +52,7 @@ export default function Home() {
       </Head>
       <AppHeader />
       <HeroSection />
+      <Alert />
       <CategorySection />
       <AppFooter>
         <DataProviders />

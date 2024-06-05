@@ -5,6 +5,11 @@
     "faviconUrl": "/favicon.ico",
     "openGraphUrl": "http://localhost:3000/hero.jpg"
   },
+  "alert": {
+    "text": "Have you been impacted by the devastating storms passing through?",
+    "buttonText": "View Disaster Shelters",
+    "url": "/search?query=TH-2600.1580&query_label=Disaster%20Related%20Shelter%20Services&query_type=taxonomy"
+  },
   "contact": {
     "email": "hello@example.com",
     "number": "509-555-0100",
