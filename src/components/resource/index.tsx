@@ -17,12 +17,12 @@ export default function Resource({ data }: { data: IResource }) {
         componentToPrint={componentRef}
       />
 
-      <div className="container mx-auto flex h-full w-full flex-col gap-2 md:flex-row print:flex-col">
-        <div className="flex w-full flex-col gap-2 md:max-w-[50%]">
+      <div className="container mx-auto flex h-full w-full flex-col gap-2 lg:flex-row print:flex-col">
+        <div className="flex w-full flex-col gap-2 lg:max-w-[50%]">
           <ResourceOverview data={data} />
         </div>
 
-        <div className="flex h-full w-full flex-col gap-2 md:max-w-[50%]">
+        <div className="flex h-full w-full flex-col gap-2 lg:max-w-[50%]">
           <ResourceInformation data={data} />
           <ResourceOrganization data={data} />
         </div>

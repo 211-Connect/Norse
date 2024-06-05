@@ -181,9 +181,9 @@ export function AppHeader(props: Props) {
             />
           </Anchor>
 
-          <div className="hidden items-center gap-4 md:flex">{menuItems}</div>
+          <div className="hidden items-center gap-4 xl:flex">{menuItems}</div>
 
-          <div className="md:hidden">
+          <div className="xl:hidden">
             <Dialog>
               <DialogTrigger asChild>
                 <Button variant="outline" size="icon">

@@ -53,7 +53,7 @@ export default function ResourceInformation(props: Props) {
       </CardContent>
 
       <CardFooter className="break-words p-4 pt-0">
-        <div className="grid w-full grid-cols-2 gap-2">
+        <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-2">
           <Addresses data={props.data} />
           <PhoneNumbers data={props.data} />
           <EmailAddress data={props.data} />

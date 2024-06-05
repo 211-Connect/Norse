@@ -36,7 +36,7 @@ export function ResourceNavigation(props: Props) {
 
   return (
     <>
-      <div className="container mx-auto flex w-full items-center justify-between">
+      <div className="container mx-auto flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <Button
           onClick={async () => {
             setCookie(null, USER_PREF_BACK_ACTION, 'true', { path: '/' });
@@ -47,7 +47,7 @@ export function ResourceNavigation(props: Props) {
           {t('back_to_results')}
         </Button>
 
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row">
           <ShareButton
             title={t('modal.share.check_out_this_resource', { ns: 'common' })}
             body={`${props.displayName}\n\n${props.serviceDescription}`}
