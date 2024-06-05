@@ -6,7 +6,6 @@ import { Option } from '../ui/autocomplete';
 import useSuggestions from './hooks/use-suggestions';
 import { isTaxonomyCode } from './adapters/taxonomy-adapter';
 import { useRouter } from 'next/router';
-import qs from 'qs';
 import LocationInput, { locationAtom } from './components/location-input';
 
 import { useAppConfig } from '@/hooks/use-app-config';
@@ -46,7 +45,14 @@ export default function Search() {
         location?: string;
         coords?: string;
         distance?: string;
-      } = {};
+      } = {
+        query: '',
+        query_label: '',
+        query_type: '',
+        location: '',
+        coords: '',
+        distance: '',
+      };
 
       if (value.query && value.query.length > 0) {
         urlParams.query = value.query;
@@ -89,13 +95,13 @@ export default function Search() {
         urlParams.distance = value.radius || '0';
       }
 
-      let queryString = '';
-      const parsedQueryString = qs.stringify(urlParams);
-      if (parsedQueryString.length > 0) {
-        queryString += `?${parsedQueryString}`;
-      }
-
-      await router.push(`/search${queryString}`);
+      await router.push({
+        pathname: '/search',
+        query: {
+          ...router.query,
+          ...urlParams,
+        },
+      });
     },
   });
 

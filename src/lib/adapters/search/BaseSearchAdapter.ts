@@ -28,7 +28,13 @@ export abstract class BaseSearchAdapter {
     coords: z.string().or(z.array(z.string())).default([]),
     filters: z.record(z.string().or(z.array(z.string()))).default({}),
     distance: z
-      .preprocess((v) => parseInt(v as string), z.number().nonnegative())
+      .preprocess(
+        (v) =>
+          v == null || (typeof v === 'string' && v.length === 0)
+            ? 0
+            : parseInt(v as string),
+        z.number().nonnegative(),
+      )
       .default(0),
     locale: z.string().default('en'),
   });

@@ -22,7 +22,6 @@ import {
   USER_PREF_LAST_QUERY,
   USER_PREF_LOCATION,
 } from '@/constants/cookies';
-import qs from 'qs';
 import MapboxMap from '@/components/map';
 import mapStyle from '@/components/map/style.json';
 import { Style } from 'mapbox-gl';
@@ -30,9 +29,9 @@ import { getPublicConfig } from '../api/config';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]';
 import { getSearchAdapter } from '@/lib/adapters/search/get-search-adapter';
-import { QueryConfig } from '@/lib/adapters/search/BaseSearchAdapter';
 import { ISearchResult } from '@/types/search-result';
 import { Markers } from '@/components/results/components/map-markers';
+import { transformQueryParams } from '@/lib/utils';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const cookies = nookies.get(ctx);
@@ -48,9 +47,18 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       prefix += `/${ctx.locale}`;
     }
 
+    let queryParamsString;
+    try {
+      queryParamsString = new URLSearchParams(
+        JSON.parse(cookies[USER_PREF_LAST_QUERY]),
+      ).toString();
+    } catch (err) {
+      queryParamsString = '';
+    }
+
     return {
       redirect: {
-        destination: `${prefix}/search${cookies[USER_PREF_LAST_QUERY] || ''}`,
+        destination: `${prefix}/search?${queryParamsString}`,
         permanent: false,
       },
     };
@@ -80,17 +88,16 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   }
 
   if (Object.keys(ctx.query).length > 0) {
-    setCookie(ctx, USER_PREF_LAST_QUERY, `?${qs.stringify(ctx.query)}`, {
+    setCookie(ctx, USER_PREF_LAST_QUERY, JSON.stringify(ctx.query), {
       path: '/',
     });
   } else {
     destroyCookie(ctx, USER_PREF_LAST_QUERY, { path: '/' });
   }
 
-  const url = ctx.resolvedUrl.split('?')[1];
   const searchAdapter = await getSearchAdapter();
   const { results, totalResults, page, facets } = await searchAdapter.search({
-    ...(qs.parse(url) as QueryConfig),
+    ...transformQueryParams(ctx.query),
     locale: ctx.locale,
   });
 

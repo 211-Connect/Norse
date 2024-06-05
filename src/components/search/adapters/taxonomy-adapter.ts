@@ -1,8 +1,7 @@
 import axios from 'axios';
-import qs from 'qs';
 
 export const isTaxonomyCode = new RegExp(
-  /^[a-zA-Z]{1,2}(-\d{1,4}(\.\d{1,4}){0,3})?$/i
+  /^[a-zA-Z]{1,2}(-\d{1,4}(\.\d{1,4}){0,3})?$/i,
 );
 
 export type Taxonomy = {};
@@ -20,7 +19,9 @@ export default function TaxonomyAdapter() {
         apiQuery.query = query;
       }
 
-      const res = await axios.get(`/api/taxonomy?${qs.stringify(apiQuery)}`);
+      const res = await axios.get('/api/taxonomy', {
+        params: apiQuery,
+      });
 
       return res.data;
     },

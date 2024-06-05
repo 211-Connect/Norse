@@ -9,6 +9,7 @@ import fs from 'fs/promises';
 import { SearchRequest } from '@elastic/elasticsearch/lib/api/types';
 import elasticsearch from '@/lib/elasticsearch';
 
+let cachedFacets = null;
 export class ElasticsearchSearchAdapter extends BaseSearchAdapter {
   constructor(retryOnNoResults: boolean = true) {
     super();
@@ -37,18 +38,21 @@ export class ElasticsearchSearchAdapter extends BaseSearchAdapter {
     coords = coords instanceof Array && coords.length === 2 ? coords : null;
 
     let facets = [];
-    try {
-      const rawData = await fs.readFile(
-        path.resolve(`./public/locales/${config.locale}/facets.json`),
-      );
-      const facetsRaw = JSON.parse(rawData.toString());
-      facets = facetsRaw?.facets ?? [];
-    } catch (err) {
-      console.error('Unable to parse facets', err);
+    if (!cachedFacets) {
+      try {
+        const rawData = await fs.readFile(
+          path.resolve(`./public/locales/${config.locale}/facets.json`),
+        );
+        const facetsRaw = JSON.parse(rawData.toString());
+        facets = facetsRaw?.facets ?? [];
+        cachedFacets = facets;
+      } catch (err) {
+        console.error('Unable to parse facets', err);
+      }
     }
 
-    if (facets.length > 0) {
-      facets.forEach((data) => {
+    if (cachedFacets.length > 0) {
+      cachedFacets.forEach((data) => {
         aggs[data.facet] = {
           terms: {
             field: `facets.${data.facet}.keyword`,
@@ -136,10 +140,21 @@ export class ElasticsearchSearchAdapter extends BaseSearchAdapter {
           filter: [],
         },
       };
+    } else {
+      queryBuilder.query = {
+        bool: {
+          must: {
+            match_all: {},
+          },
+          filter: [],
+        },
+      };
     }
 
     const filters = [];
     for (const key in q.filters) {
+      console.log(key);
+
       if (q.filters[key] instanceof Array) {
         for (const item of q.filters[key]) {
           filters.push({

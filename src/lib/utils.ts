@@ -31,3 +31,31 @@ export function distanceBetweenCoordsInMiles(coords1: Coords, coords2: Coords) {
 function deg2rad(deg: number) {
   return deg * (Math.PI / 180);
 }
+
+export function transformQueryParams(input: { [key: string]: any }) {
+  const output = {};
+
+  for (const key in input) {
+    // Split the key to get the path segments
+    const pathSegments = key.match(/([^[\]]+)/g);
+
+    // Start from the root of the output object
+    let currentLevel = output;
+
+    // Iterate over the path segments to build the nested structure
+    pathSegments.forEach((segment, index) => {
+      if (index === pathSegments.length - 1) {
+        // Last segment, assign the value
+        currentLevel[segment] = input[key];
+      } else {
+        // Intermediate segment, ensure the object exists
+        if (!currentLevel[segment]) {
+          currentLevel[segment] = {};
+        }
+        currentLevel = currentLevel[segment];
+      }
+    });
+  }
+
+  return output;
+}

@@ -1,5 +1,4 @@
 import { useRouter } from 'next/router';
-import qs from 'qs';
 import { Badge } from '../../ui/badge';
 import { Checkbox } from '../../ui/checkbox';
 import { Dialog, DialogContent } from '../../ui/dialog';
@@ -37,14 +36,56 @@ export function FilterPanel({ filters }: any) {
     return formattedFilters;
   }
 
-  const q: any = qs.parse(router.asPath.slice(router.asPath.indexOf('?') + 1));
+  function handledOnChecked(filter: string, filterKey: string) {
+    return (checked: boolean) => {
+      const newQuery = {
+        ...router.query,
+      };
+
+      const key = `filters[${filter}]`;
+      let current = newQuery[key];
+      if (current == null) {
+        current = [];
+      }
+
+      if (current != null && !(current instanceof Array)) {
+        current = [current];
+      }
+
+      current = current as string[]; // adding this for type checking
+
+      if (checked && !current.includes(filterKey)) {
+        current.push(filterKey);
+      } else {
+        const idx = current.findIndex((v) => v === filterKey);
+        if (idx !== -1) {
+          current.splice(idx, 1);
+        }
+      }
+
+      newQuery[key] = current;
+
+      router.push({
+        pathname: '/search',
+        query: newQuery,
+      });
+    };
+  }
+
+  function getChecked(filter: string, filterKey: string) {
+    return (
+      router.query[`filters[${filter}]`]?.includes(filterKey) ||
+      router.query[`filters[${filter}]`] == filterKey
+    );
+  }
+
   const myFilters = getFilters();
 
   if (myFilters.length === 0) return null;
 
   return (
     <>
-      <div className="w-full max-w-[250px] hidden lg:block">
+      <div className="hidden w-full max-w-[250px] lg:block">
         <div className="flex flex-col gap-4 p-2">
           {getFilters().map((el) => {
             return (
@@ -61,39 +102,11 @@ export function FilterPanel({ filters }: any) {
                         <div className="flex items-center gap-1">
                           <Checkbox
                             id={innerEl.key}
-                            checked={
-                              q.filters?.[el.name]?.includes(innerEl.key) ??
-                              false
-                            }
-                            onCheckedChange={(checked: any) => {
-                              const q: any = qs.parse(
-                                router.asPath.slice(
-                                  router.asPath.indexOf('?') + 1,
-                                ),
-                              );
-
-                              if (!q.filters) {
-                                q.filters = {};
-                              }
-
-                              if (!(q.filters[el.name] instanceof Array)) {
-                                q.filters[el.name] = [];
-                              }
-
-                              if (
-                                checked &&
-                                !q.filters[el.name].includes(innerEl.key)
-                              ) {
-                                q.filters[el.name].push(innerEl.key);
-                              } else {
-                                const idx = q.filters[el.name].findIndex(
-                                  (v: any) => v === innerEl.key,
-                                );
-                                q.filters[el.name].splice(idx, 1);
-                              }
-
-                              router.push(`/search?${qs.stringify(q)}`);
-                            }}
+                            checked={getChecked(el.name, innerEl.key)}
+                            onCheckedChange={handledOnChecked(
+                              el.name,
+                              innerEl.key,
+                            )}
                           />
                           <Label htmlFor={innerEl.key} className="text-sm">
                             {innerEl.key}
@@ -141,42 +154,11 @@ export function FilterPanel({ filters }: any) {
                               <div className="flex items-center gap-1">
                                 <Checkbox
                                   id={innerEl.key}
-                                  checked={
-                                    q.filters?.[el.name]?.includes(
-                                      innerEl.key,
-                                    ) ?? false
-                                  }
-                                  onCheckedChange={(checked: any) => {
-                                    const q: any = qs.parse(
-                                      router.asPath.slice(
-                                        router.asPath.indexOf('?') + 1,
-                                      ),
-                                    );
-
-                                    if (!q.filters) {
-                                      q.filters = {};
-                                    }
-
-                                    if (
-                                      !(q.filters[el.name] instanceof Array)
-                                    ) {
-                                      q.filters[el.name] = [];
-                                    }
-
-                                    if (
-                                      checked &&
-                                      !q.filters[el.name].includes(innerEl.key)
-                                    ) {
-                                      q.filters[el.name].push(innerEl.key);
-                                    } else {
-                                      const idx = q.filters[el.name].findIndex(
-                                        (v: any) => v === innerEl.key,
-                                      );
-                                      q.filters[el.name].splice(idx, 1);
-                                    }
-
-                                    router.push(`/search?${qs.stringify(q)}`);
-                                  }}
+                                  checked={getChecked(el.name, innerEl.key)}
+                                  onCheckedChange={handledOnChecked(
+                                    el.name,
+                                    innerEl.key,
+                                  )}
                                 />
                                 <Label
                                   htmlFor={innerEl.key}
