@@ -24,7 +24,7 @@ import {
 } from '@/constants/cookies';
 import MapboxMap from '@/components/map';
 import mapStyle from '@/components/map/style.json';
-import { Style } from 'mapbox-gl';
+import { type Style } from 'mapbox-gl';
 import { getPublicConfig } from '../api/config';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]';
