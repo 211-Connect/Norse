@@ -7,13 +7,13 @@ import useSuggestions from './hooks/use-suggestions';
 import { isTaxonomyCode } from './adapters/taxonomy-adapter';
 import { useRouter } from 'next/router';
 import LocationInput, { locationAtom } from './components/location-input';
-
 import { useAppConfig } from '@/hooks/use-app-config';
 import RadiusSelect from './components/radius-select';
 import LocationAdapter from './adapters/location-adapter';
 import { Badge } from '../ui/badge';
 import { useAtom } from 'jotai';
 import { useEffect } from 'react';
+import { isNil, omitBy } from 'lodash';
 
 export default function Search() {
   const { t } = useTranslation('common');
@@ -45,14 +45,7 @@ export default function Search() {
         location?: string;
         coords?: string;
         distance?: string;
-      } = {
-        query: '',
-        query_label: '',
-        query_type: '',
-        location: '',
-        coords: '',
-        distance: '',
-      };
+      } = {};
 
       if (value.query && value.query.length > 0) {
         urlParams.query = value.query;
@@ -95,12 +88,16 @@ export default function Search() {
         urlParams.distance = value.radius || '0';
       }
 
+      let newQuery = {
+        ...router.query,
+        ...urlParams,
+      };
+
+      newQuery = omitBy(newQuery, (value) => isNil(value) || value === '');
+
       await router.push({
         pathname: '/search',
-        query: {
-          ...router.query,
-          ...urlParams,
-        },
+        query: newQuery,
       });
     },
   });
