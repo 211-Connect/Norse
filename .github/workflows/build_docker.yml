@@ -3,7 +3,7 @@ name: build_docker
 on:
   push:
     branches:
-      - 'main'
+      - 'refactor-main'
 
 jobs:
   docker:
