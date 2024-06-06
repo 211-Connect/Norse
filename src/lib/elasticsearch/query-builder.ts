@@ -11,7 +11,6 @@ export class ElasticsearchQueryBuilder {
   private _exclude: string[];
   private _elasticsearch: Client;
   private _sort = [];
-  private _filter = [];
   private _aggs = {};
 
   constructor() {
