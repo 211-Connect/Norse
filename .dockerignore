@@ -1,2 +1,7 @@
 .env*
 .prettier*
+node_modules/
+.do/
+.github/
+.vscode/
+docs/
