@@ -9,16 +9,17 @@ import { useRouter } from 'next/router';
 import LocationInput, { locationAtom } from './components/location-input';
 import { useAppConfig } from '@/hooks/use-app-config';
 import RadiusSelect from './components/radius-select';
-import LocationAdapter from './adapters/location-adapter';
 import { Badge } from '../ui/badge';
 import { useAtom } from 'jotai';
 import { useEffect } from 'react';
 import { isNil, omit, omitBy } from 'lodash';
+import useMapAdapter from '@/lib/adapters/map/use-map-adapter';
 
 export default function Search() {
   const { t } = useTranslation('common');
   const router = useRouter();
   const suggestions = useSuggestions();
+  const locationAdapter = useMapAdapter();
   const appConfig = useAppConfig();
   const [location, setLocation] = useAtom(locationAtom);
 
@@ -72,8 +73,7 @@ export default function Search() {
       }
 
       if (value.location.length > 0 && location.coords.length === 0) {
-        const locationAdapter = LocationAdapter();
-        const data = await locationAdapter.forwardGeocode(
+        const data = await locationAdapter.current.forwardGeocode(
           value.location,
           router.locale,
         );

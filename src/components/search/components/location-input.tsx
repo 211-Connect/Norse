@@ -3,7 +3,6 @@ import useDebounce from '@/hooks/use-debounce';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'next-i18next';
 import { useCallback, useMemo, useState } from 'react';
-import LocationAdapter from '../adapters/location-adapter';
 import _router, { useRouter } from 'next/router';
 import { toast } from 'sonner';
 import {
@@ -17,6 +16,7 @@ import { atom, useAtom } from 'jotai';
 import { atomEffect } from 'jotai-effect';
 import { setCookie, parseCookies } from 'nookies';
 import { Locate, MapPin } from 'lucide-react';
+import useMapAdapter from '@/lib/adapters/map/use-map-adapter';
 
 export const locationAtom = atom({
   value: '',
@@ -56,6 +56,7 @@ export default function LocationInput({
   const { t } = useTranslation();
   const router = useRouter();
   const [location, setLocation] = useAtom(locationAtom);
+  const locationAdapter = useMapAdapter();
   useAtom(locationAtomEffect);
   const [cookies] = useCookies([SESSION_ID]);
   const [isFetching, setIsFetching] = useState(false);
@@ -71,8 +72,7 @@ export default function LocationInput({
     queryFn: async () => {
       if (!debouncedValue || debouncedValue.length < 2) return null;
 
-      const locationAdapter = LocationAdapter();
-      const data = await locationAdapter.search(
+      const data = await locationAdapter.current.search(
         debouncedValue,
         router.locale,
         cookies[SESSION_ID],
@@ -96,8 +96,7 @@ export default function LocationInput({
       );
 
       try {
-        const locationAdapter = LocationAdapter();
-        const data = await locationAdapter.reverseGeocode(
+        const data = await locationAdapter.current.reverseGeocode(
           coords,
           router.locale,
         );
@@ -117,7 +116,14 @@ export default function LocationInput({
         setIsFetching(false);
       }
     },
-    [t, onCoordChange, router.locale, setLocation, onInputChange],
+    [
+      t,
+      onCoordChange,
+      router.locale,
+      locationAdapter,
+      setLocation,
+      onInputChange,
+    ],
   );
 
   const getUserLocation = useCallback(() => {
@@ -150,8 +156,7 @@ export default function LocationInput({
   };
 
   const onSelect = async (option: Option & { mapbox_id: string }) => {
-    const locationAdapter = LocationAdapter();
-    const data = await locationAdapter.retrieve(
+    const data = await locationAdapter.current.retrieve(
       option.mapbox_id,
       router.locale,
       cookies[SESSION_ID],
