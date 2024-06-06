@@ -173,7 +173,7 @@ export class ElasticsearchSearchAdapter extends BaseSearchAdapter {
       .sort(coords != null, [
         {
           _geo_distance: {
-            location: {
+            location_coordinates: {
               lon: parseFloat(coords?.[0]),
               lat: parseFloat(coords?.[1]),
             },
@@ -187,7 +187,7 @@ export class ElasticsearchSearchAdapter extends BaseSearchAdapter {
         {
           geo_distance: {
             distance: `${q.distance}miles`,
-            location: {
+            location_coordinates: {
               lon: parseFloat(coords?.[0]),
               lat: parseFloat(coords?.[1]),
             },
