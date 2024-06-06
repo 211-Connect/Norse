@@ -157,7 +157,7 @@ export default function SearchPage(props: {
 
   const metaDescription = `Showing ${
     props.results.length >= 25 ? '25' : props.results.length
-  } / ${props.totalResults} ${t('results_for')} ${props.query}.`;
+  } / ${props.totalResults} ${t('results_for')} ${props.query || ''}.`;
 
   const mapProps = useMemo(
     () => ({
