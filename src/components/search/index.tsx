@@ -13,7 +13,7 @@ import LocationAdapter from './adapters/location-adapter';
 import { Badge } from '../ui/badge';
 import { useAtom } from 'jotai';
 import { useEffect } from 'react';
-import { isNil, omitBy } from 'lodash';
+import { isNil, omit, omitBy } from 'lodash';
 
 export default function Search() {
   const { t } = useTranslation('common');
@@ -38,21 +38,27 @@ export default function Search() {
         '0',
     },
     async onSubmit({ value }) {
-      const urlParams: {
+      let urlParams: {
         query?: string;
         query_label?: string;
         query_type?: string;
         location?: string;
         coords?: string;
         distance?: string;
-      } = {};
+      } = {
+        ...router.query,
+      };
 
       if (value.query && value.query.length > 0) {
         urlParams.query = value.query;
+      } else {
+        urlParams = omit(urlParams, ['query']);
       }
 
       if (value.query_label && value.query_label.length > 0) {
         urlParams.query_label = value.query_label;
+      } else {
+        urlParams = omit(urlParams, ['query_label']);
       }
 
       if (
@@ -61,6 +67,8 @@ export default function Search() {
         value.query.length > 0
       ) {
         urlParams.query_type = value.query_type;
+      } else {
+        urlParams = omit(urlParams, ['query_type']);
       }
 
       if (value.location.length > 0 && location.coords.length === 0) {
@@ -86,18 +94,15 @@ export default function Search() {
         urlParams.location = value.location;
         urlParams.coords = location.coords;
         urlParams.distance = value.radius || '0';
+      } else {
+        urlParams = omit(urlParams, ['location', 'coords', 'distance']);
       }
 
-      let newQuery = {
-        ...router.query,
-        ...urlParams,
-      };
-
-      newQuery = omitBy(newQuery, (value) => isNil(value) || value === '');
+      urlParams = omitBy(urlParams, (value) => isNil(value) || value === '');
 
       await router.push({
         pathname: '/search',
-        query: newQuery,
+        query: urlParams,
       });
     },
   });
