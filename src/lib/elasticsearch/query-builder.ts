@@ -37,8 +37,10 @@ export class ElasticsearchQueryBuilder {
     return this;
   }
 
-  query(query: QueryDslQueryContainer) {
-    this._query = merge({}, this._query, query);
+  query(shouldApply: boolean = true, query: QueryDslQueryContainer) {
+    if (shouldApply) {
+      this._query = merge({}, this._query, query);
+    }
     return this;
   }
 
@@ -54,13 +56,17 @@ export class ElasticsearchQueryBuilder {
     });
   }
 
-  filter(filters: any[]) {
-    this._mergeFilters(this._query, filters);
+  filter(shouldApply: boolean = true, filters: any[]) {
+    if (shouldApply) {
+      this._mergeFilters(this._query, filters);
+    }
     return this;
   }
 
-  sort(sort: any[]) {
-    this._sort = this._sort.concat(sort);
+  sort(shouldApply: boolean = true, sort: any[]) {
+    if (shouldApply) {
+      this._sort = this._sort.concat(sort);
+    }
     return this;
   }
 

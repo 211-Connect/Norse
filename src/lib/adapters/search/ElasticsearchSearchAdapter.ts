@@ -64,44 +64,62 @@ export class ElasticsearchSearchAdapter extends BaseSearchAdapter {
       });
     }
 
-    const qb = new ElasticsearchQueryBuilder();
-    qb.index(`${process.env.ELASTICSEARCH_RESOURCE_INDEX}_${q.locale}`)
+    q.query =
+      q.query_type === 'taxonomy' && typeof q.query === 'string'
+        ? q.query.split(',')
+        : q.query;
+    const filters = [];
+    for (const key in q.filters) {
+      if (q.filters[key] instanceof Array) {
+        for (const item of q.filters[key]) {
+          filters.push({
+            term: {
+              [`facets.${key}.keyword`]: item,
+            },
+          });
+        }
+      } else {
+        filters.push({
+          term: {
+            [`facets.${key}.keyword`]: q.filters[key],
+          },
+        });
+      }
+    }
+
+    const qb = new ElasticsearchQueryBuilder()
+      .index(`${process.env.ELASTICSEARCH_RESOURCE_INDEX}_${q.locale}`)
       .from(skip)
       .size(25)
       .exclude(['service_area'])
-      .aggregate(aggs);
-
-    if (
-      q.query_type === 'text' &&
-      q.query.length > 0 &&
-      typeof q.query === 'string'
-    ) {
-      qb.query({
-        bool: {
-          must: {
-            multi_match: {
-              query: q.query,
-              analyzer: 'standard',
-              operator: 'AND',
-              fields: this.fieldsToQuery,
+      .aggregate(aggs)
+      .query(
+        q.query_type === 'text' &&
+          q.query.length > 0 &&
+          typeof q.query === 'string',
+        {
+          bool: {
+            must: {
+              multi_match: {
+                query: q.query as string,
+                analyzer: 'standard',
+                operator: 'AND',
+                fields: this.fieldsToQuery,
+              },
             },
+            filter: [],
           },
-          filter: [],
         },
-      });
-    } else if (q.query_type === 'text' && q.query.length === 0) {
-      qb.query({
+      )
+      .query(q.query_type === 'text' && q.query.length === 0, {
         bool: {
           must: {
             match_all: {},
           },
           filter: [],
         },
-      });
-    } else if (q.query_type === 'taxonomy') {
-      q.query = typeof q.query === 'string' ? q.query.split(',') : q.query;
-
-      qb.query({
+      })
+      .query(q.query_type === 'taxonomy', {
         bool: {
           should:
             q.query instanceof Array
@@ -122,9 +140,8 @@ export class ElasticsearchSearchAdapter extends BaseSearchAdapter {
           filter: [],
           minimum_should_match: 1,
         },
-      });
-    } else if (q.query_type === 'more_like_this') {
-      qb.query({
+      })
+      .query(q.query_type === 'more_like_this', {
         bool: {
           must: [
             {
@@ -138,82 +155,45 @@ export class ElasticsearchSearchAdapter extends BaseSearchAdapter {
           ],
           filter: [],
         },
-      });
-    } else {
-      qb.query({
-        bool: {
-          must: {
-            match_all: {},
-          },
-          filter: [],
-        },
-      });
-    }
-
-    for (const key in q.filters) {
-      if (q.filters[key] instanceof Array) {
-        for (const item of q.filters[key]) {
-          qb.filter([
-            {
-              term: {
-                [`facets.${key}.keyword`]: item,
-              },
-            },
-          ]);
-        }
-      } else {
-        qb.filter([
-          {
-            term: {
-              [`facets.${key}.keyword`]: q.filters[key],
-            },
-          },
-        ]);
-      }
-    }
-
-    if (coords) {
-      qb.filter([
+      })
+      .filter(true, filters)
+      .filter(coords != null, [
         {
           geo_shape: {
             service_area: {
               shape: {
                 type: 'point',
-                coordinates: [parseFloat(coords[0]), parseFloat(coords[1])],
+                coordinates: [parseFloat(coords?.[0]), parseFloat(coords?.[1])],
               },
               relation: 'intersects',
             },
           },
         },
-      ]).sort([
+      ])
+      .sort(coords != null, [
         {
           _geo_distance: {
             location: {
-              lon: parseFloat(coords[0]),
-              lat: parseFloat(coords[1]),
+              lon: parseFloat(coords?.[0]),
+              lat: parseFloat(coords?.[1]),
             },
             order: 'asc',
             unit: 'm',
             mode: 'min',
           },
         },
-      ]);
-
-      // If distance is greater than 0, apply geo_distance filter
-      if (q.distance > 0) {
-        qb.filter([
-          {
-            geo_distance: {
-              distance: `${q.distance}miles`,
-              location: {
-                lon: parseFloat(coords[0]),
-                lat: parseFloat(coords[1]),
-              },
+      ])
+      .filter(coords != null && q.distance > 0, [
+        {
+          geo_distance: {
+            distance: `${q.distance}miles`,
+            location: {
+              lon: parseFloat(coords?.[0]),
+              lat: parseFloat(coords?.[1]),
             },
           },
-        ]);
-      }
-    }
+        },
+      ]);
 
     const data = await qb.search();
 
@@ -286,20 +266,11 @@ export class ElasticsearchSearchAdapter extends BaseSearchAdapter {
       throw new Error('Query or code is required');
     }
 
-    const queryBuilder: SearchRequest = {
-      index: `${process.env.ELASTICSEARCH_SUGGESTION_INDEX}_${q.locale}`,
-      from: skip,
-      size: 10,
-      query: {
-        bool: {
-          filter: [],
-        },
-      },
-      aggs: {},
-    };
-
-    if (q.query) {
-      queryBuilder.query = {
+    const qb = new ElasticsearchQueryBuilder()
+      .index(`${process.env.ELASTICSEARCH_SUGGESTION_INDEX}_${q.locale}`)
+      .from(skip)
+      .size(10)
+      .query(q.query != null, {
         bool: {
           must: {
             multi_match: {
@@ -310,9 +281,8 @@ export class ElasticsearchSearchAdapter extends BaseSearchAdapter {
           },
           filter: [],
         },
-      };
-    } else if (q.code) {
-      queryBuilder.query = {
+      })
+      .query(q.code != null, {
         bool: {
           must: {
             multi_match: {
@@ -323,10 +293,9 @@ export class ElasticsearchSearchAdapter extends BaseSearchAdapter {
           },
           filter: [],
         },
-      };
-    }
+      });
 
-    const data = await elasticsearch.search(queryBuilder);
+    const data = await qb.search();
 
     return data.hits.hits.map((hit: any) => ({
       id: hit._id,
