@@ -12,12 +12,9 @@ import { FavoritesSection } from '@/components/favorite-lists/components/favorit
 import useWindowScroll from '@/hooks/use-window-scroll';
 import useMediaQuery from '@/hooks/use-media-query';
 import { serverSideAppConfig } from '@/lib/server-utils';
-import MapboxMap, { Marker } from '@/components/map';
-import mapStyle from '@/components/map/style.json';
-import { Style } from 'mapbox-gl';
 import { useAtomValue } from 'jotai';
 import { favoriteListWithFavoritesAtom } from '@/components/favorite-lists/components/favorites/state';
-import { getPublicConfig } from '../api/config';
+import MapLoader from '@/components/map';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerSession(ctx.req, ctx.res, authOptions);
@@ -41,7 +38,6 @@ export default function FavoritesDetail() {
   const [scroll] = useWindowScroll();
   const mapHidden = useMediaQuery('(max-width: 768px)');
   const { data } = useAtomValue(favoriteListWithFavoritesAtom);
-  const MAPBOX_ACCESS_TOKEN = getPublicConfig('MAPBOX_ACCESS_TOKEN');
 
   const clampedWindowValue = Math.round(
     Math.abs(Math.min(Math.max(scroll.y, 0), 80) - 80),
@@ -86,30 +82,24 @@ export default function FavoritesDetail() {
               }}
             >
               <div className="relative h-full w-full overflow-hidden rounded-md">
-                <MapboxMap
-                  accessToken={MAPBOX_ACCESS_TOKEN}
-                  style={mapStyle as Style}
-                  center={appConfig?.features?.map?.center}
+                <MapLoader
                   zoom={12}
                   animate={false}
                   boundsPadding={50}
                   boundsZoom={
                     (data?.favorites?.length ?? 0) > 1 ? undefined : 13
                   }
-                >
-                  {data?.favorites?.map((list) => {
-                    if (list?.location?.coordinates == null) return null;
-
-                    return (
-                      <Marker
-                        key={list._id}
-                        latitude={list.location.coordinates[1]}
-                        longitude={list.location.coordinates[0]}
-                        className="custom-marker"
-                      />
-                    );
-                  }) ?? null}
-                </MapboxMap>
+                  results={data?.favorites
+                    ?.map((list) => {
+                      if (list?.location?.coordinates == null) return null;
+                      return {
+                        location: {
+                          point: list.location,
+                        },
+                      };
+                    })
+                    .filter((el) => el != null)}
+                />
               </div>
             </div>
           </div>

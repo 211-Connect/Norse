@@ -11,11 +11,9 @@ import Eligibility from './eligibility';
 import Fees from './fees';
 import Languages from './languages';
 import ServiceArea from './service-area';
-import MapboxMap, { Marker } from '@/components/map';
-import mapStyle from '@/components/map/style.json';
-import { Style } from 'mapbox-gl';
 import { getPublicConfig } from '@/pages/api/config';
 import { IResource } from '@/types/resource';
+import MapLoader from '@/components/map';
 
 type Props = {
   data: IResource;
@@ -33,21 +31,12 @@ export default function ResourceInformation(props: Props) {
           id="map-container"
         >
           <div className="flex h-full w-full">
-            <MapboxMap
-              accessToken={MAPBOX_ACCESS_TOKEN}
-              style={mapStyle as Style}
-              center={appConfig?.features?.map?.center}
+            <MapLoader
               zoom={12}
-              animate={false}
               boundsPadding={50}
               boundsZoom={13}
-            >
-              <Marker
-                latitude={props.data.location.coordinates[1]}
-                longitude={props.data.location.coordinates[0]}
-                className="custom-marker"
-              />
-            </MapboxMap>
+              results={[{ location: { point: props.data.location } }]}
+            />
           </div>
         </div>
       </CardContent>

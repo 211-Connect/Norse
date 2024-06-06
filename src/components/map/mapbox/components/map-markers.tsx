@@ -1,5 +1,5 @@
 import { useTranslation } from 'next-i18next';
-import { Marker } from '@/components/map';
+import { Marker } from './marker';
 import { ReferralButton } from '@/components/referral-button';
 import RenderHtml from '@/components/render-html';
 import { Globe, Phone } from 'lucide-react';

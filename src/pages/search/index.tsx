@@ -22,16 +22,13 @@ import {
   USER_PREF_LAST_QUERY,
   USER_PREF_LOCATION,
 } from '@/constants/cookies';
-import MapboxMap from '@/components/map';
-import mapStyle from '@/components/map/style.json';
-import { type Style } from 'mapbox-gl';
 import { getPublicConfig } from '../api/config';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]';
 import { getSearchAdapter } from '@/lib/adapters/search/get-search-adapter';
 import { ISearchResult } from '@/types/search-result';
-import { Markers } from '@/components/results/components/map-markers';
 import { transformQueryParams } from '@/lib/utils';
+import MapLoader from '@/components/map';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const cookies = nookies.get(ctx);
@@ -131,7 +128,6 @@ export default function SearchPage(props: {
   facets: any;
   currentPage: number;
 }) {
-  const MAPBOX_ACCESS_TOKEN = getPublicConfig('MAPBOX_ACCESS_TOKEN');
   const appConfig = useAppConfig();
   const { createResultsEvent } = useEventStore();
   const { t } = useTranslation('page-search');
@@ -158,18 +154,6 @@ export default function SearchPage(props: {
   const metaDescription = `Showing ${
     props.results.length >= 25 ? '25' : props.results.length
   } / ${props.totalResults} ${t('results_for')} ${props.query || ''}.`;
-
-  const mapProps = useMemo(
-    () => ({
-      accessToken: MAPBOX_ACCESS_TOKEN,
-      style: mapStyle as Style,
-      center: appConfig?.features?.map?.center,
-      zoom: 12,
-      animate: false,
-      boundsPadding: 50,
-    }),
-    [appConfig?.features?.map?.center, MAPBOX_ACCESS_TOKEN],
-  );
 
   return (
     <>
@@ -214,9 +198,7 @@ export default function SearchPage(props: {
             }}
           >
             <div className="relative h-full w-full overflow-hidden rounded-md">
-              <MapboxMap {...mapProps}>
-                <Markers results={props.results} />
-              </MapboxMap>
+              <MapLoader results={props.results} />
             </div>
           </div>
         </div>

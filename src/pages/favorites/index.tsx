@@ -5,14 +5,10 @@ import { getServerSession } from 'next-auth';
 import { AppHeader } from '../../components/app-header';
 import { AppFooter } from '../../components/app-footer';
 import { authOptions } from '../api/auth/[...nextauth]';
-import { useAppConfig } from '@/hooks/use-app-config';
 import { useTranslation } from 'next-i18next';
 import { FavoriteLists } from '@/components/favorite-lists';
 import { serverSideAppConfig } from '@/lib/server-utils';
-import MapboxMap from '@/components/map';
-import mapStyle from '@/components/map/style.json';
-import { Style } from 'mapbox-gl';
-import { getPublicConfig } from '../api/config';
+import MapLoader from '@/components/map';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerSession(ctx.req, ctx.res, authOptions);
@@ -42,8 +38,6 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 }
 
 export default function Lists() {
-  const MAPBOX_ACCESS_TOKEN = getPublicConfig('MAPBOX_ACCESS_TOKEN');
-  const appConfig = useAppConfig();
   const { t } = useTranslation('page-favorites');
 
   const metaTitle = t('meta_title');
@@ -76,14 +70,7 @@ export default function Lists() {
             </div>
 
             <div className="flex h-full w-full">
-              <MapboxMap
-                accessToken={MAPBOX_ACCESS_TOKEN}
-                style={mapStyle as Style}
-                center={appConfig?.features?.map?.center}
-                zoom={12}
-                animate={false}
-                boundsPadding={50}
-              />
+              <MapLoader />
             </div>
           </div>
         </div>
