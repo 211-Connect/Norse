@@ -1,0 +1,129 @@
+{
+  "id": {
+    "type": "keyword",
+    "index": false
+  },
+  "display_name": {
+    "type": "text",
+    "fields": {
+      "raw": {
+        "type": "keyword"
+      }
+    }
+  },
+  "display_email": {
+    "type": "keyword",
+    "index": false
+  },
+  "display_phone_number": {
+    "type": "keyword",
+    "index": false
+  },
+  "display_website": {
+    "type": "keyword",
+    "index": false
+  },
+  "display_description": {
+    "type": "text",
+    "fields": {
+      "raw": {
+        "type": "keyword"
+      }
+    }
+  },
+  "organization_name": {
+    "type": "text"
+  },
+  "organization_description": {
+    "type": "text"
+  },
+  "service_name": {
+    "type": "text",
+    "fields": {
+      "raw": {
+        "type": "keyword"
+      }
+    }
+  },
+  "service_description": {
+    "type": "text"
+  },
+  "location_name": {
+    "type": "text",
+    "fields": {
+      "raw": {
+        "type": "keyword"
+      }
+    }
+  },
+  "location_description": {
+    "type": "text",
+    "fields": {
+      "raw": {
+        "type": "keyword"
+      }
+    }
+  },
+  "address_1": {
+    "type": "text",
+    "fields": {
+      "raw": {
+        "type": "keyword"
+      }
+    },
+    "index": false
+  },
+  "city": {
+    "type": "text",
+    "fields": {
+      "raw": {
+        "type": "keyword"
+      }
+    }
+  },
+  "state": {
+    "type": "text",
+    "fields": {
+      "raw": {
+        "type": "keyword"
+      }
+    }
+  },
+  "postal_code": {
+    "type": "keyword",
+    "index": false
+  },
+  "taxonomy_terms": {
+    "type": "text",
+    "fields": {
+      "raw": {
+        "type": "keyword"
+      }
+    }
+  },
+  "taxonomy_descriptions": {
+    "type": "text",
+    "fields": {
+      "raw": {
+        "type": "keyword"
+      }
+    }
+  },
+  "taxonomy_codes": {
+    "type": "text",
+    "fields": {
+      "raw": {
+        "type": "keyword"
+      }
+    }
+  },
+  "location_coordinates": {
+    "type": "geo_point"
+  },
+  "service_area": {
+    "type": "geo_shape"
+  },
+  "facets": {
+    "type": "object"
+  }
+}

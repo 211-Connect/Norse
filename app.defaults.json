@@ -1,0 +1,69 @@
+{
+  "brand": {
+    "name": "Norse",
+    "logoUrl": "/logo.png",
+    "faviconUrl": "/favicon.ico",
+    "openGraphUrl": "http://localhost:3000/hero.jpg"
+  },
+  "alert": {
+    "text": "Have you been impacted by the devastating storms passing through?",
+    "buttonText": "View Disaster Shelters",
+    "url": "/search?query=TH-2600.1580&query_label=Disaster%20Related%20Shelter%20Services&query_type=taxonomy"
+  },
+  "contact": {
+    "email": "hello@example.com",
+    "number": "509-555-0100",
+    "feedbackUrl": "https://example.com"
+  },
+  "adapters": {
+    "database": "mongodb",
+    "search": "elasticsearch",
+    "map": "mapbox",
+    "sms": "twilio"
+  },
+  "features": {
+    "search": {
+      "defaultRadius": 0,
+      "radiusOptions": [
+        { "value": 15 },
+        { "value": 30 },
+        { "value": 45 },
+        { "value": 60 }
+      ]
+    },
+    "map": {
+      "center": [-120.740135, 47.751076]
+    },
+    "sms": null
+  },
+  "pages": {
+    "default": {
+      "meta": {
+        "title": "NORSE - New Open Resource Search Engine",
+        "description": "The world's greatest open source resource directory"
+      }
+    },
+    "home": {
+      "heroSection": {
+        "backgroundImageUrl": "/hero.jpg"
+      },
+      "hideLocationInput": false,
+      "disableTour": false
+    },
+    "resource": {
+      "hideCategories": false,
+      "hideLastAssured": false
+    }
+  },
+  "providers": [
+    {
+      "name": "Community Resources",
+      "logoUrl": "/logo.png",
+      "href": "https://connect211.com"
+    }
+  ],
+  "i18n": {
+    "defaultLocale": "en",
+    "locales": ["en", "es"]
+  }
+}

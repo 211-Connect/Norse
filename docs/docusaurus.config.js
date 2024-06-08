@@ -80,6 +80,11 @@ const config = {
             label: 'GitHub',
             position: 'right',
           },
+          {
+            href: 'https://discord.gg/EyfQqJTyyq',
+            label: 'Discord',
+            position: 'right',
+          },
         ],
       },
       footer: {
@@ -91,6 +96,14 @@ const config = {
               {
                 label: 'Getting Started',
                 to: '/docs/intro',
+              },
+              {
+                label: 'Configuration',
+                to: '/docs/configuration',
+              },
+              {
+                label: 'Deployment',
+                to: '/docs/deployment',
               },
             ],
           },
@@ -104,6 +117,10 @@ const config = {
               {
                 label: 'Discussions',
                 href: 'https://github.com/211-Connect/Norse/discussions',
+              },
+              {
+                label: 'Discord',
+                href: 'https://discord.gg/EyfQqJTyyq',
               },
             ],
           },

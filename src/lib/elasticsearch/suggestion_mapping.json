@@ -1,0 +1,33 @@
+{
+  "id": {
+    "type": "text",
+    "index": false
+  },
+  "name": {
+    "type": "search_as_you_type",
+    "doc_values": false,
+    "max_shingle_size": 3
+  },
+  "description": {
+    "type": "text"
+  },
+  "taxonomy": {
+    "type": "text",
+    "fields": {
+      "keyword": {
+        "type": "keyword",
+        "ignore_above": 256
+      }
+    }
+  },
+  "code": {
+    "type": "search_as_you_type",
+    "doc_values": false,
+    "max_shingle_size": 3,
+    "fields": {
+      "raw": {
+        "type": "keyword"
+      }
+    }
+  }
+}

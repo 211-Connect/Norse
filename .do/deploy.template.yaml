@@ -1,0 +1,77 @@
+spec:
+  name: norse
+  alerts:
+    - rule: DEPLOYMENT_FAILED
+    - rule: DOMAIN_FAILED
+  ingress:
+    rules:
+      - component:
+          name: app
+        match:
+          path:
+            prefix: /
+  services:
+    - name: app
+      build_command: npm ci --include=dev && npm run build
+      run_command: npm run start
+      environment_slug: node-js
+      github:
+        branch: main
+        deploy_on_push: true
+        repo: 211-Connect/Norse
+      http_port: 3000
+      instance_count: 1
+      instance_size_slug: professional-xs
+      source_dir: /
+      envs:
+        - key: NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
+          scope: RUN_AND_BUILD_TIME
+          value: ''
+        - key: NEXT_PUBLIC_GTM_CONTAINER_ID
+          scope: RUN_AND_BUILD_TIME
+          value: ''
+        - key: NEXT_PUBLIC_KEYCLOAK_REALM
+          scope: RUN_AND_BUILD_TIME
+          value: ''
+        - key: BASE_URL
+          scope: RUN_AND_BUILD_TIME
+          value: ''
+        - key: NEXTAUTH_URL
+          scope: RUN_AND_BUILD_TIME
+          value: ''
+        - key: NEXTAUTH_SECRET
+          scope: RUN_AND_BUILD_TIME
+          value: ''
+        - key: KEYCLOAK_SECRET
+          scope: RUN_AND_BUILD_TIME
+          value: ''
+        - key: KEYCLOAK_ISSUER
+          scope: RUN_AND_BUILD_TIME
+          value: ''
+        - key: KEYCLOAK_CLIENT_ID
+          scope: RUN_AND_BUILD_TIME
+          value: ''
+        - key: TWILIO_PHONE_NUMBER
+          scope: RUN_AND_BUILD_TIME
+          value: ''
+        - key: TWILIO_ACCOUNT_SID
+          scope: RUN_AND_BUILD_TIME
+          value: ''
+        - key: TWILIO_AUTH_TOKEN
+          scope: RUN_AND_BUILD_TIME
+          value: ''
+        - key: MONGODB_CONNECTION_STRING
+          scope: RUN_AND_BUILD_TIME
+          value: ''
+        - key: ELASTICSEARCH_NODE
+          scope: RUN_AND_BUILD_TIME
+          value: ''
+        - key: ELASTICSEARCH_API_KEY
+          scope: RUN_AND_BUILD_TIME
+          value: ''
+        - key: ELASTICSEARCH_RESOURCE_INDEX
+          scope: RUN_AND_BUILD_TIME
+          value: ''
+        - key: ELASTICSEARCH_SUGGESTION_INDEX
+          scope: RUN_AND_BUILD_TIME
+          value: ''

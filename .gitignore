@@ -41,12 +41,8 @@ Thumbs.db
 # Next.js
 .next
 
-# Norse
-.norse
-
 # Environment
+.env.local*
 .env
 
-public/locales/**/dynamic.json
-
-.nx/
+analyze/

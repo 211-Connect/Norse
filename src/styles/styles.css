@@ -1,0 +1,4 @@
+/** Used for mapbox marker styling */
+.custom-marker path {
+  fill: theme(colors.primary.DEFAULT);
+}
