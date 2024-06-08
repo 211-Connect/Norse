@@ -4,6 +4,7 @@ import { BaseMapAdapter } from './BaseMapAdapter';
 
 const adapterMapping = {
   mapbox: import('./MapboxMapAdapter').then((mod) => mod.default),
+  radar: import('./RadarMapAdapter').then((mod) => mod.default),
 };
 
 export default function useMapAdapter() {

@@ -18,12 +18,13 @@ export default function MapboxMap(props) {
       zoom: 12,
       animate: false,
       boundsPadding: 50,
+      ...props,
     }),
-    [appConfig?.features?.map?.center, MAPBOX_ACCESS_TOKEN],
+    [appConfig?.features?.map?.center, MAPBOX_ACCESS_TOKEN, props],
   );
 
   return (
-    <Map {...props} {...mapProps}>
+    <Map {...mapProps}>
       <Markers results={props?.results ?? []} />
     </Map>
   );

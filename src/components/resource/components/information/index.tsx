@@ -1,4 +1,3 @@
-import { useAppConfig } from '@/hooks/use-app-config';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import Addresses from './addresses';
 import PhoneNumbers from './phone-numbers';
@@ -11,7 +10,6 @@ import Eligibility from './eligibility';
 import Fees from './fees';
 import Languages from './languages';
 import ServiceArea from './service-area';
-import { getPublicConfig } from '@/pages/api/config';
 import { IResource } from '@/types/resource';
 import MapLoader from '@/components/map';
 
@@ -20,9 +18,6 @@ type Props = {
 };
 
 export default function ResourceInformation(props: Props) {
-  const appConfig = useAppConfig();
-  const MAPBOX_ACCESS_TOKEN = getPublicConfig('MAPBOX_ACCESS_TOKEN');
-
   return (
     <Card>
       <CardContent className="p-0 pb-2">
@@ -33,9 +28,12 @@ export default function ResourceInformation(props: Props) {
           <div className="flex h-full w-full">
             <MapLoader
               zoom={12}
+              marker={{ zoom: 12 }}
               boundsPadding={50}
               boundsZoom={13}
-              results={[{ location: { point: props.data.location } }]}
+              results={[
+                { id: props.data.id, location: { point: props.data.location } },
+              ]}
             />
           </div>
         </div>

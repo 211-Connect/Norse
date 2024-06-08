@@ -17,6 +17,7 @@ import { atomEffect } from 'jotai-effect';
 import { setCookie, parseCookies } from 'nookies';
 import { Locate, MapPin } from 'lucide-react';
 import useMapAdapter from '@/lib/adapters/map/use-map-adapter';
+import { type LngLatLike } from 'maplibre-gl';
 
 export const locationAtom = atom({
   value: '',
@@ -72,18 +73,14 @@ export default function LocationInput({
     queryFn: async () => {
       if (!debouncedValue || debouncedValue.length < 2) return null;
 
-      const data = await locationAdapter.current.search(
-        debouncedValue,
-        router.locale,
-        cookies[SESSION_ID],
-      );
+      const data = await locationAdapter.current.search(debouncedValue);
 
       return {
         group: t('search.suggestions'),
         items:
-          data?.suggestions?.map((suggestion) => ({
-            value: suggestion.full_address,
-            mapbox_id: suggestion.mapbox_id,
+          data?.map((suggestion) => ({
+            value: suggestion.address,
+            coordinates: suggestion.coordinates,
           })) ?? [],
       };
     },
@@ -96,17 +93,14 @@ export default function LocationInput({
       );
 
       try {
-        const data = await locationAdapter.current.reverseGeocode(
-          coords,
-          router.locale,
-        );
+        const data = await locationAdapter.current.reverseGeocode(coords);
         setLocation((prev) => ({
           ...prev,
           coords: coords,
-          value: data?.features?.[0]?.place_name,
+          value: data?.address,
         }));
 
-        onInputChange?.(data?.features?.[0]?.place_name);
+        onInputChange?.(data?.address);
         onCoordChange?.(coords);
       } catch (err) {
         toast.error(t('search.geocoding_error'), {
@@ -116,20 +110,14 @@ export default function LocationInput({
         setIsFetching(false);
       }
     },
-    [
-      t,
-      onCoordChange,
-      router.locale,
-      locationAdapter,
-      setLocation,
-      onInputChange,
-    ],
+    [t, onCoordChange, locationAdapter, setLocation, onInputChange],
   );
 
   const getUserLocation = useCallback(() => {
     setIsFetching(true);
 
-    const error = () => {
+    const error = (err) => {
+      console.error(err);
       toast.error(t('search.geocoding_error'), {
         description: t('search.geocoding_unable_to_retrieve'),
       });
@@ -155,19 +143,14 @@ export default function LocationInput({
     onInputChange?.(value);
   };
 
-  const onSelect = async (option: Option & { mapbox_id: string }) => {
-    const data = await locationAdapter.current.retrieve(
-      option.mapbox_id,
-      router.locale,
-      cookies[SESSION_ID],
-    );
-    const coords = data?.features?.[0]?.geometry?.coordinates;
+  const onSelect = async (option: Option & { coordinates: LngLatLike }) => {
+    const coords = option.coordinates;
     setLocation((prev) => ({
       ...prev,
-      coords: coords.join(','),
+      coords: coords.toString(),
     }));
     onValueSelect?.(option);
-    onCoordChange?.(coords.join(','));
+    onCoordChange?.(coords.toString());
   };
 
   const filteredData = useMemo(() => {

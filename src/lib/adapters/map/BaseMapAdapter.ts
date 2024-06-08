@@ -1,9 +1,20 @@
+import { LngLatLike } from 'maplibre-gl';
+
+export interface MapSearchResult {
+  address: string;
+  coordinates: LngLatLike;
+}
+
 export abstract class BaseMapAdapter {
-  abstract search(query: string, locale: string, sessionId: string);
+  constructor() {
+    if (typeof window === 'undefined') {
+      throw new Error('Map adapters are meant to be used on the client only.');
+    }
+  }
 
-  abstract retrieve(mapboxId: string, locale: string, sessionId: string);
+  abstract search(query: string): Promise<MapSearchResult[]>;
 
-  abstract reverseGeocode(coords: string, locale: string);
+  abstract reverseGeocode(coords: string): Promise<MapSearchResult>;
 
-  abstract forwardGeocode(address: string, locale: string);
+  abstract forwardGeocode(address: string): Promise<MapSearchResult>;
 }

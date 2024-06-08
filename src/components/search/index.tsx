@@ -75,20 +75,13 @@ export default function Search() {
       if (value.location.length > 0 && location.coords.length === 0) {
         const data = await locationAdapter.current.forwardGeocode(
           value.location,
-          router.locale,
         );
         setLocation({
-          value: data?.features?.[0]?.properties?.full_address,
-          coords: [
-            data?.features?.[0]?.properties?.coordinates?.longitude,
-            data?.features?.[0]?.properties?.coordinates?.latitude,
-          ].join(','),
+          value: data.address,
+          coords: data.coordinates.toString(),
         });
-        urlParams.location = data?.features?.[0]?.properties?.full_address;
-        urlParams.coords = [
-          data?.features?.[0]?.properties?.coordinates?.longitude,
-          data?.features?.[0]?.properties?.coordinates?.latitude,
-        ].join(',');
+        urlParams.location = data?.address;
+        urlParams.coords = data.coordinates.toString();
         urlParams.distance = value.radius || '0';
       } else if (value.location.length > 0 && location.coords.length > 0) {
         urlParams.location = value.location;

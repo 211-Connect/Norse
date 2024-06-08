@@ -1,7 +1,7 @@
 import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import nookies, { destroyCookie, setCookie } from 'nookies';
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { useEventStore } from '@/hooks/use-event-store';
 import { AppHeader } from '../../components/app-header';
 import { AppFooter } from '../../components/app-footer';
@@ -22,7 +22,6 @@ import {
   USER_PREF_LAST_QUERY,
   USER_PREF_LOCATION,
 } from '@/constants/cookies';
-import { getPublicConfig } from '../api/config';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]';
 import { getSearchAdapter } from '@/lib/adapters/search/get-search-adapter';

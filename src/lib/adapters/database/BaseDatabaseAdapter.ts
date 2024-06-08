@@ -11,6 +11,14 @@ export abstract class BaseDatabaseAdapter {
   notFound = '404';
   conflict = '409';
 
+  constructor() {
+    if (typeof window !== 'undefined') {
+      throw new Error(
+        'Database adapters are meant to be used on the server only.',
+      );
+    }
+  }
+
   abstract findResourceById(
     id: string,
     config: Config,

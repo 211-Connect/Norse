@@ -145,7 +145,9 @@ export function Result(props: Props) {
               ) : (
                 <Tooltip>
                   <TooltipTrigger>
-                    <Badge>{t('search.address_unavailable')}</Badge>
+                    <Badge variant="outline">
+                      {t('search.address_unavailable')}
+                    </Badge>
                   </TooltipTrigger>
                   <TooltipContent className="max-w-52 shadow-md" side="right">
                     <p>{t('search.confidential_address')}</p>
