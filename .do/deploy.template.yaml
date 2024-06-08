@@ -27,10 +27,10 @@ spec:
         - key: NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
           scope: RUN_AND_BUILD_TIME
           value: ''
-        - key: NEXT_PUBLIC_GTM_CONTAINER_ID
+        - key: NEXT_PUBLIC_RADAR_ACCESS_TOKEN
           scope: RUN_AND_BUILD_TIME
           value: ''
-        - key: NEXT_PUBLIC_KEYCLOAK_REALM
+        - key: NEXT_PUBLIC_GTM_CONTAINER_ID
           scope: RUN_AND_BUILD_TIME
           value: ''
         - key: BASE_URL

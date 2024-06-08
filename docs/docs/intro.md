@@ -36,7 +36,8 @@ Public environment variables:
 
 | Key                               | Value                                                                                                                                                                     | Info       |
 | :-------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :--------- |
-| `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN` | [Mapbox Access Token](https://docs.mapbox.com/api/overview/)                                                                                                              | `required` |
+| `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN` | [Mapbox Access Token](https://docs.mapbox.com/api/overview/)                                                                                                              | `optional` |
+| `NEXT_PUBLIC_RADAR_ACCESS_TOKEN`  | [Radar Publishable Token](https://radar.com/documentation/api#authentication)                                                                                             | `optional` |
 | `NEXT_PUBLIC_GTM_CONTAINER_ID`    | [Google Tag Manager container ID](https://support.google.com/tagmanager/answer/12974036?hl=en#:~:text=In%20Tag%20Manager%2C%20click%20Workspace,as%20%22GTM%2DXXXXXX%22.) | `optional` |
 
 Secret environment variables:
