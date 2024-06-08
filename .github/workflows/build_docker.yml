@@ -2,8 +2,7 @@ name: 🐳 Build and Push Docker Image 📦
 
 on:
   push:
-    branches:
-      - 'refactor-main'
+    branches: ['main']
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
