@@ -63,7 +63,7 @@ spec:
         - key: MONGODB_CONNECTION_STRING
           scope: RUN_AND_BUILD_TIME
           value: ''
-        - key: ELASTICSEARCH_NODE
+        - key: ELASTICSEARCH_NODES
           scope: RUN_AND_BUILD_TIME
           value: ''
         - key: ELASTICSEARCH_API_KEY
