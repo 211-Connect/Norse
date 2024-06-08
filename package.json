@@ -8,8 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "prisma:generate:mongodb": "prisma generate --schema ./src/lib/mongodb/schema.prisma",
-    "prisma:generate:postgres": "prisma generate --schema ./src/lib/postgres/schema.prisma",
-    "prisma:generate:clients": "npm run prisma:generate:mongodb & npm run prisma:generate:postgres",
+    "prisma:generate:clients": "npm run prisma:generate:mongodb",
     "postinstall": "npm run prisma:generate:clients",
     "prebuild": "npm run prisma:generate:clients"
   },
