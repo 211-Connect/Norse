@@ -35,7 +35,7 @@ We call this `appConfig` when referenced in the application. It holds the majori
 | :--------- | :------------------------------------------------------------- | :--------- |
 | `database` | `postgres` or `mongodb`                                        | `required` |
 | `search`   | `elasticsearch` (We may add postgres, Algolia, or Meilisearch) | `required` |
-| `map`      | `mapbox` (We may add Google Maps)                              | `required` |
+| `map`      | `mapbox` or `radar`                                            | `required` |
 | `sms`      | `twilio`                                                       | `required` |
 
 ### features
