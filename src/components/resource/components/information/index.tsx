@@ -28,7 +28,6 @@ export default function ResourceInformation(props: Props) {
           <div className="flex h-full w-full">
             <MapLoader
               zoom={12}
-              marker={{ zoom: 12 }}
               boundsPadding={50}
               boundsZoom={13}
               results={[

@@ -70,7 +70,7 @@ export default function Lists() {
             </div>
 
             <div className="flex h-full w-full">
-              <MapLoader />
+              <MapLoader results={[]} />
             </div>
           </div>
         </div>

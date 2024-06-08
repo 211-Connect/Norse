@@ -93,8 +93,12 @@ export default function FavoritesDetail() {
                     ?.map((list) => {
                       if (list?.location?.coordinates == null) return null;
                       return {
+                        id: list._id,
                         location: {
-                          point: list.location,
+                          point: {
+                            type: list.location.type,
+                            coordinates: list.location.coordinates,
+                          },
                         },
                       };
                     })

@@ -19,7 +19,7 @@ export default function RadarMap(props) {
 
   return (
     <Map {...mapProps} {...props}>
-      <Markers results={props.results} zoom={props.boundsZoom} />
+      <Markers results={props.results} />
     </Map>
   );
 }
