@@ -33,7 +33,7 @@ We call this `appConfig` when referenced in the application. It holds the majori
 
 | Key        | Value                                                          | Info       |
 | :--------- | :------------------------------------------------------------- | :--------- |
-| `database` | `postgres` or `mongodb`                                        | `required` |
+| `database` | `mongodb` (postgres planned for the near future)               | `required` |
 | `search`   | `elasticsearch` (We may add postgres, Algolia, or Meilisearch) | `required` |
 | `map`      | `mapbox` or `radar`                                            | `required` |
 | `sms`      | `twilio`                                                       | `required` |
