@@ -2,11 +2,9 @@ FROM node:20.14.0-alpine3.20 as base
 
 WORKDIR /app
 
-RUN mkdir -p ./src/lib/postgres
 RUN mkdir -p ./src/lib/mongodb
 
 COPY package*.json ./
-COPY ./src/lib/postgres/schema.prisma ./src/lib/postgres
 COPY ./src/lib/mongodb/schema.prisma ./src/lib/mongodb
 
 RUN apk add g++ make py3-pip
