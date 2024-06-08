@@ -10,14 +10,12 @@ export default function Marker({
   popup,
   className,
   onClick,
-  zoom,
 }: {
   latitude?: number;
   longitude?: number;
   popup?: ReactElement;
   className?: string;
   onClick?: (e: MouseEvent, marker: RadarMarker) => void;
-  zoom?: number;
 }) {
   const { map } = useContext(mapContext);
 
@@ -47,7 +45,6 @@ export default function Marker({
     const clickListener = (e: any) => {
       return onClick?.(e, marker);
     };
-
     marker.getElement().addEventListener('click', clickListener);
 
     map?.fitToMarkers({ animate: false });
@@ -55,7 +52,7 @@ export default function Marker({
     return () => {
       marker.remove();
     };
-  }, [longitude, latitude, map, popup, className, onClick, zoom]);
+  }, [longitude, latitude, map, popup, className, onClick]);
 
   return null;
 }

@@ -28,7 +28,6 @@ export const Markers = memo(function MemoizedMarkers({
             longitude={result.location.point.coordinates[0]}
             latitude={result.location.point.coordinates[1]}
             className="custom-marker"
-            zoom={zoom}
             onClick={(e, marker) => {
               e.preventDefault();
               e.stopPropagation();
