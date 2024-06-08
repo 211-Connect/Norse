@@ -61,5 +61,9 @@
       "logoUrl": "/logo.png",
       "href": "https://connect211.com"
     }
-  ]
+  ],
+  "i18n": {
+    "defaultLocale": "en",
+    "locales": ["en", "es"]
+  }
 }

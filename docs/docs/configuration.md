@@ -102,6 +102,15 @@ This accepts an `array` of `data provider` shaped like below
 | `logoUrl` | The relative or absolute URL of the data provider's logo | `optional` |
 | `href`    | The URL for the link                                     | `optional` |
 
+### i18n
+
+Internationalization has the following values
+
+| Key             | Value                                                | Info       |
+| :-------------- | :--------------------------------------------------- | :--------- |
+| `defaultLocale` | The default locale for your application (ie. en, es) | `required` |
+| `locales`       | An array of supported locales in your application    | `required` |
+
 ## Suggestions
 
 Suggestions are displayed as the initial list of suggestions a user will see when they focus the `search` input
