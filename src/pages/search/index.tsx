@@ -94,7 +94,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const searchAdapter = await getSearchAdapter();
   const { results, totalResults, page, facets } = await searchAdapter.search({
     ...transformQueryParams(ctx.query),
-    locale: ctx.locale,
+    locale: ctx.locale as string,
   });
 
   cacheControl(ctx);
@@ -109,7 +109,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       query: ctx.query?.query ?? null,
       query_label: ctx.query?.query_label ?? null,
       ...(await serverSideAppConfig()),
-      ...(await serverSideTranslations(ctx.locale, [
+      ...(await serverSideTranslations(ctx.locale as string, [
         'page-search',
         'common',
         'suggestions',

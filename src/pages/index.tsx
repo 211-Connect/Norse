@@ -21,7 +21,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     props: {
       session,
       ...(await serverSideAppConfig()),
-      ...(await serverSideTranslations(ctx.locale, [
+      ...(await serverSideTranslations(ctx.locale as string, [
         'page-home',
         'common',
         'categories',
@@ -46,7 +46,7 @@ export default function Home() {
         <meta name="description" content={metaDescription} />
 
         <meta property="og:title" content={metaTitle} />
-        <meta property="og:image" content={appConfig.brand.openGraphUrl} />
+        <meta property="og:image" content={appConfig?.brand?.openGraphUrl} />
         <meta property="og:type" content="website" />
         <meta property="og:description" content={metaDescription} />
       </Head>

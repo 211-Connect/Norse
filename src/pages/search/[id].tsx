@@ -21,8 +21,8 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const databaseAdapter = await getDatabaseAdapter();
 
   try {
-    data = await databaseAdapter.findResourceById(ctx.params.id as string, {
-      locale: ctx.locale,
+    data = await databaseAdapter.findResourceById(ctx.params?.id as string, {
+      locale: ctx.locale as string,
     });
   } catch (err) {
     if (err.code === 404) {
@@ -35,7 +35,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   try {
     if (notFound) {
       const redirect = await databaseAdapter.findRedirectById(
-        ctx.params.id as string,
+        ctx.params?.id as string,
       );
 
       let redirectUrl = '/search';
@@ -79,7 +79,7 @@ type Props = {
 };
 
 export default function SearchDetail({ resource }: Props) {
-  const componentRef = useRef();
+  const componentRef = useRef<HTMLDivElement>(null);
   const appConfig = useAppConfig();
 
   const metaTitle = resource.name;
@@ -92,7 +92,7 @@ export default function SearchDetail({ resource }: Props) {
         <meta name="description" content={metaDescription} />
 
         <meta property="og:title" content={metaTitle} />
-        <meta property="og:image" content={appConfig.brand.openGraphUrl} />
+        <meta property="og:image" content={appConfig?.brand?.openGraphUrl} />
         <meta property="og:type" content="website" />
         <meta property="og:description" content={metaDescription} />
       </Head>

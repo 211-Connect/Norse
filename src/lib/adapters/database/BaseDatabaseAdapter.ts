@@ -29,7 +29,7 @@ export abstract class BaseDatabaseAdapter {
   abstract addResourceToFavoriteList(
     body: NextApiRequest['body'],
     session: Session,
-  );
+  ): void;
 
   abstract findFavoriteListById(id: string, locale: string, session: Session);
 

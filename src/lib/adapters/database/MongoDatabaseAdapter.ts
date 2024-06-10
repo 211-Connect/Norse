@@ -83,7 +83,7 @@ export class MongoDatabaseAdapter extends BaseDatabaseAdapter {
     };
   }
 
-  async addResourceToFavoriteList(rawBody, session: Session) {
+  async addResourceToFavoriteList(rawBody: any, session: Session) {
     const NewFavoriteSchema = z.object({
       resourceId: z.string(),
       favoriteListId: z.string(),
@@ -179,7 +179,7 @@ export class MongoDatabaseAdapter extends BaseDatabaseAdapter {
     });
   }
 
-  async updateFavoriteListById(id: string, rawBody, session: Session) {
+  async updateFavoriteListById(id: string, rawBody: any, session: Session) {
     const UpdateFavoriteSchema = z.object({
       name: z.string().min(1).max(100).optional(),
       description: z.string().max(2048).optional(),
@@ -240,10 +240,10 @@ export class MongoDatabaseAdapter extends BaseDatabaseAdapter {
       },
     });
 
-    return lists?.map((list) => ({ ...list, _id: list._id['$oid'] }));
+    return lists?.map((list: any) => ({ ...list, _id: list._id['$oid'] }));
   }
 
-  async createFavoriteList(rawBody, session: Session) {
+  async createFavoriteList(rawBody: any, session: Session) {
     const NewFavoriteSchema = z.object({
       name: z.string().min(1).max(100),
       description: z.string().max(2048).optional(),

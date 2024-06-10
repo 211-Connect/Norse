@@ -7,6 +7,8 @@ const databaseMapping = {
   mongodb: MongoDatabaseAdapter,
 };
 
+type DatabaseMapping = keyof typeof databaseMapping;
+
 // Function to get the adapter with the correct return type
 export async function getDatabaseAdapter() {
   const { appConfig } = await serverSideAppConfig();
@@ -16,7 +18,8 @@ export async function getDatabaseAdapter() {
       'Database adapter is required. Please set one in your appConfig',
     );
 
-  const AdapterClass = databaseMapping[appConfig.adapters.database];
+  const AdapterClass =
+    databaseMapping[appConfig.adapters.database as DatabaseMapping];
 
   if (!AdapterClass)
     throw new Error(
