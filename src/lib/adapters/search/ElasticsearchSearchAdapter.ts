@@ -8,7 +8,6 @@ import path from 'path';
 import fs from 'fs/promises';
 import { SearchRequest } from '@elastic/elasticsearch/lib/api/types';
 import elasticsearch from '@/lib/elasticsearch';
-import { ElasticsearchQueryBuilder } from '@/lib/elasticsearch/query-builder';
 
 let cachedFacets = null;
 export class ElasticsearchSearchAdapter extends BaseSearchAdapter {
@@ -32,7 +31,6 @@ export class ElasticsearchSearchAdapter extends BaseSearchAdapter {
 
   async search(config: QueryConfig): Promise<ISearchResponse> {
     const q = await this.queryConfigSchema.parseAsync(config);
-
     const skip = (q.page - 1) * 25;
     const aggs: any = {};
     let coords: string[] | null =
@@ -64,62 +62,47 @@ export class ElasticsearchSearchAdapter extends BaseSearchAdapter {
       });
     }
 
-    q.query =
-      q.query_type === 'taxonomy' && typeof q.query === 'string'
-        ? q.query.split(',')
-        : q.query;
-    const filters = [];
-    for (const key in q.filters) {
-      if (q.filters[key] instanceof Array) {
-        for (const item of q.filters[key]) {
-          filters.push({
-            term: {
-              [`facets.${key}.keyword`]: item,
-            },
-          });
-        }
-      } else {
-        filters.push({
-          term: {
-            [`facets.${key}.keyword`]: q.filters[key],
-          },
-        });
-      }
-    }
+    const queryBuilder: SearchRequest = {
+      index: `${process.env.ELASTICSEARCH_RESOURCE_INDEX}_${q.locale}`,
+      from: skip,
+      size: 25,
+      _source_excludes: ['service_area'],
+      query: {},
+      sort: [],
+      aggs,
+    };
 
-    const qb = new ElasticsearchQueryBuilder()
-      .index(`${process.env.ELASTICSEARCH_RESOURCE_INDEX}_${q.locale}`)
-      .from(skip)
-      .size(25)
-      .exclude(['service_area'])
-      .aggregate(aggs)
-      .query(
-        q.query_type === 'text' &&
-          q.query.length > 0 &&
-          typeof q.query === 'string',
-        {
-          bool: {
-            must: {
-              multi_match: {
-                query: q.query as string,
-                analyzer: 'standard',
-                operator: 'AND',
-                fields: this.fieldsToQuery,
-              },
+    if (
+      q.query_type === 'text' &&
+      q.query.length > 0 &&
+      typeof q.query === 'string'
+    ) {
+      queryBuilder.query = {
+        bool: {
+          must: {
+            multi_match: {
+              query: q.query,
+              analyzer: 'standard',
+              operator: 'AND',
+              fields: this.fieldsToQuery,
             },
-            filter: [],
           },
+          filter: [],
         },
-      )
-      .query(q.query_type === 'text' && q.query.length === 0, {
+      };
+    } else if (q.query_type === 'text' && q.query.length === 0) {
+      queryBuilder.query = {
         bool: {
           must: {
             match_all: {},
           },
           filter: [],
         },
-      })
-      .query(q.query_type === 'taxonomy', {
+      };
+    } else if (q.query_type === 'taxonomy') {
+      q.query = typeof q.query === 'string' ? q.query.split(',') : q.query;
+
+      queryBuilder.query = {
         bool: {
           should:
             q.query instanceof Array
@@ -140,8 +123,9 @@ export class ElasticsearchSearchAdapter extends BaseSearchAdapter {
           filter: [],
           minimum_should_match: 1,
         },
-      })
-      .query(q.query_type === 'more_like_this', {
+      };
+    } else if (q.query_type === 'more_like_this') {
+      queryBuilder.query = {
         bool: {
           must: [
             {
@@ -155,47 +139,86 @@ export class ElasticsearchSearchAdapter extends BaseSearchAdapter {
           ],
           filter: [],
         },
-      })
-      .filter(true, filters)
-      .filter(coords != null, [
-        {
-          geo_shape: {
-            service_area: {
-              shape: {
-                type: 'point',
-                coordinates: [parseFloat(coords?.[0]), parseFloat(coords?.[1])],
-              },
-              relation: 'intersects',
+      };
+    } else {
+      queryBuilder.query = {
+        bool: {
+          must: {
+            match_all: {},
+          },
+          filter: [],
+        },
+      };
+    }
+
+    const filters = [];
+    for (const key in q.filters) {
+      console.log(key);
+
+      if (q.filters[key] instanceof Array) {
+        for (const item of q.filters[key]) {
+          filters.push({
+            term: {
+              [`facets.${key}.keyword`]: item,
             },
+          });
+        }
+      } else {
+        filters.push({
+          term: {
+            [`facets.${key}.keyword`]: q.filters[key],
+          },
+        });
+      }
+    }
+
+    if (coords) {
+      filters.push({
+        geo_shape: {
+          service_area: {
+            shape: {
+              type: 'point',
+              coordinates: [parseFloat(coords[0]), parseFloat(coords[1])],
+            },
+            relation: 'intersects',
           },
         },
-      ])
-      .sort(coords != null, [
+      });
+
+      // Sort by distance
+      queryBuilder.sort = [
         {
           _geo_distance: {
-            location_coordinates: {
-              lon: parseFloat(coords?.[0]),
-              lat: parseFloat(coords?.[1]),
+            location: {
+              lon: parseFloat(coords[0]),
+              lat: parseFloat(coords[1]),
             },
             order: 'asc',
             unit: 'm',
             mode: 'min',
           },
         },
-      ])
-      .filter(coords != null && q.distance > 0, [
-        {
+      ];
+
+      // If distance is greater than 0, apply geo_distance filter
+      if (q.distance > 0) {
+        filters.push({
           geo_distance: {
             distance: `${q.distance}miles`,
-            location_coordinates: {
-              lon: parseFloat(coords?.[0]),
-              lat: parseFloat(coords?.[1]),
+            location: {
+              lon: parseFloat(coords[0]),
+              lat: parseFloat(coords[1]),
             },
           },
-        },
-      ]);
+        });
+      }
+    }
 
-    const data = await qb.search();
+    if (queryBuilder.query?.bool?.filter) {
+      queryBuilder.query.bool.filter = filters;
+    }
+
+    const data = await elasticsearch.search(queryBuilder);
 
     let formattedData: ISearchResult[] =
       data?.hits?.hits?.map((hit: any) => {
@@ -266,11 +289,20 @@ export class ElasticsearchSearchAdapter extends BaseSearchAdapter {
       throw new Error('Query or code is required');
     }
 
-    const qb = new ElasticsearchQueryBuilder()
-      .index(`${process.env.ELASTICSEARCH_SUGGESTION_INDEX}_${q.locale}`)
-      .from(skip)
-      .size(10)
-      .query(q.query != null, {
+    const queryBuilder: SearchRequest = {
+      index: `${process.env.ELASTICSEARCH_SUGGESTION_INDEX}_${q.locale}`,
+      from: skip,
+      size: 10,
+      query: {
+        bool: {
+          filter: [],
+        },
+      },
+      aggs: {},
+    };
+
+    if (q.query) {
+      queryBuilder.query = {
         bool: {
           must: {
             multi_match: {
@@ -281,8 +313,9 @@ export class ElasticsearchSearchAdapter extends BaseSearchAdapter {
           },
           filter: [],
         },
-      })
-      .query(q.code != null, {
+      };
+    } else if (q.code) {
+      queryBuilder.query = {
         bool: {
           must: {
             multi_match: {
@@ -293,9 +326,10 @@ export class ElasticsearchSearchAdapter extends BaseSearchAdapter {
           },
           filter: [],
         },
-      });
+      };
+    }
 
-    const data = await qb.search();
+    const data = await elasticsearch.search(queryBuilder);
 
     return data.hits.hits.map((hit: any) => ({
       id: hit._id,
