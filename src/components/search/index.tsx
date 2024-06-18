@@ -124,8 +124,8 @@ export default function Search() {
 
               const valueInSuggestions = suggestions.find(
                 (s) =>
-                  s.value.toLowerCase() === value.toLowerCase() ||
-                  s.term.toLowerCase() === value.toLowerCase(),
+                  s?.value?.toLowerCase() === value?.toLowerCase() ||
+                  s?.term?.toLowerCase() === value?.toLowerCase(),
               );
 
               field.form.setFieldValue(
@@ -148,8 +148,8 @@ export default function Search() {
 
               const valueInSuggestions = suggestions.find(
                 (s) =>
-                  s.value.toLowerCase() === option.value.toLowerCase() ||
-                  s.term.toLowerCase() === option.value.toLowerCase(),
+                  s?.value?.toLowerCase() === option?.value?.toLowerCase() ||
+                  s?.term?.toLowerCase() === option?.value?.toLowerCase(),
               );
 
               field.form.setFieldValue(
