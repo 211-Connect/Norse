@@ -128,8 +128,9 @@ export function TaxonomyAutocomplete({
         filter={(value, item) => {
           if (isTaxonomyCode.test(value)) {
             return item?.term?.toLowerCase()?.startsWith(value.toLowerCase());
+          } else {
+            return item?.value?.toLowerCase()?.includes(value.toLowerCase());
           }
-          return true;
         }}
         data={computedSuggestions}
         value={value}
