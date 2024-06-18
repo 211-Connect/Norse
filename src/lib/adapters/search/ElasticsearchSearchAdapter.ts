@@ -293,25 +293,16 @@ export class ElasticsearchSearchAdapter extends BaseSearchAdapter {
       index: `${process.env.ELASTICSEARCH_SUGGESTION_INDEX}_${q.locale}`,
       from: skip,
       size: 10,
-      query: {
-        bool: {
-          filter: [],
-        },
-      },
+      query: {},
       aggs: {},
     };
 
     if (q.query) {
       queryBuilder.query = {
-        bool: {
-          must: {
-            multi_match: {
-              query: q.query,
-              type: 'bool_prefix',
-              fields: ['name', 'name._2gram', 'name._3gram'],
-            },
-          },
-          filter: [],
+        multi_match: {
+          query: q.query,
+          operator: 'or',
+          fields: ['name', 'name.autocomplete'],
         },
       };
     } else if (q.code) {
