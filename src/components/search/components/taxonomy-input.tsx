@@ -60,8 +60,6 @@ export default function TaxonomyInput({
     };
   }, [data, value]);
 
-  console.log({ filteredData });
-
   const filteredSuggestions = useMemo(() => {
     return {
       group: t('search.suggestions'),
