@@ -134,7 +134,7 @@ export default function Autocomplete({
       <div className="relative mt-1">
         <div
           className={cn(
-            'animate-in fade-in-0 absolute top-0 z-50 bg-white w-full rounded-md shadow-md',
+            'absolute top-0 z-50 w-full rounded-md bg-white shadow-md animate-in fade-in-0',
             isOpen ? 'block' : 'hidden',
           )}
         >
@@ -157,7 +157,7 @@ export default function Autocomplete({
 
                 return (
                   <CommandItem
-                    className="p-1 pl-2 pr-2 ml-1 mr-1 text-sm flex justify-between gap-2"
+                    className="ml-1 mr-1 flex justify-between gap-2 p-1 pl-2 pr-2 text-sm"
                     key={option.value}
                     value={option.value}
                     onMouseDown={(e) => {
@@ -185,9 +185,9 @@ export default function Autocomplete({
                     {option.label && (
                       <Badge
                         variant="outline"
-                        className="w-[100px] text-xs shrink-0"
+                        className="w-[100px] shrink-0 text-xs"
                       >
-                        <p className="truncate">{option.label}</p>
+                        <p className="mx-auto truncate">{option.label}</p>
                       </Badge>
                     )}
                   </CommandItem>
@@ -204,7 +204,7 @@ export default function Autocomplete({
 
                       return (
                         <CommandItem
-                          className="p-1 pl-2 pr-2 text-sm flex justify-between gap-2"
+                          className="flex justify-between gap-2 p-1 pl-2 pr-2 text-sm"
                           key={option.value}
                           value={option.value}
                           onMouseDown={(e) => {
@@ -234,9 +234,9 @@ export default function Autocomplete({
                           {option.label && (
                             <Badge
                               variant="outline"
-                              className="w-[100px] text-xs  shrink-0"
+                              className="w-[100px] shrink-0 text-xs"
                             >
-                              <p className="truncate">{option.label}</p>
+                              <p className="mx-auto truncate">{option.label}</p>
                             </Badge>
                           )}
                         </CommandItem>
