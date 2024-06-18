@@ -53,12 +53,14 @@ export default function TaxonomyInput({
       items: data?.items?.filter((i) => {
         if (isTaxonomyCode.test(value)) {
           return i?.label?.toLowerCase()?.startsWith(value.toLowerCase());
-        } else {
-          return i?.value?.toLowerCase()?.includes(value.toLowerCase());
         }
+
+        return true;
       }),
     };
   }, [data, value]);
+
+  console.log({ filteredData });
 
   const filteredSuggestions = useMemo(() => {
     return {
