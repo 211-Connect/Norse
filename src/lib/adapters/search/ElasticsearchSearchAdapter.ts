@@ -303,6 +303,7 @@ export class ElasticsearchSearchAdapter extends BaseSearchAdapter {
           query: q.query,
           operator: 'or',
           fields: ['name', 'name.autocomplete'],
+          fuzziness: 2,
         },
       };
     } else if (q.code) {
