@@ -12,13 +12,15 @@ export default function Alert() {
     <Flex
       w="100%"
       gap="md"
-      justify="space-between"
+      justify="center"
       align="center"
       wrap="nowrap"
       bg="red"
-      color="#fff"
+      p="xl"
     >
-      <Text>{appConfig.alert.text}</Text>
+      <Text color="#fff" size="xl">
+        {appConfig.alert.text}
+      </Text>
 
       {appConfig.alert?.buttonText != null && appConfig.alert?.url != null && (
         <Button component={Link} href={appConfig.alert.url}>
