@@ -43,7 +43,7 @@ export function TaxonomyAutocomplete({
         group: t('search.suggestions'),
         group_label: 'Suggestions',
       })),
-    [t]
+    [t],
   );
 
   // Create an array that includes both our static suggestions AND elasticsearch suggestion
@@ -53,7 +53,7 @@ export function TaxonomyAutocomplete({
     setValue(value);
 
     const valueInSuggestions = computedSuggestions.find(
-      (el) => el.value.toLowerCase() === value.toLowerCase()
+      (el) => el.value.toLowerCase() === value.toLowerCase(),
     );
 
     if (hiddenQueryInput.current) {
