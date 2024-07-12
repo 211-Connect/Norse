@@ -1,5 +1,6 @@
 import { useAppConfig } from '../../lib/hooks/useAppConfig';
 import Head from 'next/head';
+import Alert from '../organisms/Alert';
 
 type Props = {
   metaTitle: string;
@@ -26,6 +27,7 @@ export function HomePageLayout(props: Props) {
       </Head>
       {props.headerSection}
       {props.heroSection}
+      <Alert />
       {props.categorySection}
       {props.footerSection}
     </>
