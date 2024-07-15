@@ -1,14 +1,12 @@
 import {
   Burger,
   Button,
-  Drawer,
   Group,
   MediaQuery,
   Select,
   Anchor as MantineAnchor,
   Stack,
   useMantineTheme,
-  Box,
   Modal,
 } from '@mantine/core';
 import {
@@ -21,7 +19,7 @@ import { signOut, useSession } from 'next-auth/react';
 import { useTranslation } from 'next-i18next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import ISO from 'iso-639-1';
 import { Anchor } from '../atoms/Anchor';
 import { useAppConfig } from '../../lib/hooks/useAppConfig';
@@ -86,6 +84,8 @@ export function AppHeader(props: Props) {
 
     if (appConfig?.menus?.header && appConfig.menus.header.length > 0) {
       appConfig.menus.header.forEach((el: { name: string; href: string }) => {
+        if (el.href == null) return;
+
         items.push(
           <Anchor
             key={el.name}
