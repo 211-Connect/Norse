@@ -74,7 +74,7 @@
     "jotai-effect": "^1.0.0",
     "jotai-tanstack-query": "^0.8.5",
     "lodash": "^4.17.21",
-    "lucide-react": "^0.381.0",
+    "lucide-react": "^0.408.0",
     "mapbox-gl": "^3.4.0",
     "maplibre-gl": "^4.3.2",
     "nanoid": "^5.0.7",
