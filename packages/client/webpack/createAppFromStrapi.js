@@ -105,7 +105,7 @@ module.exports = async function createFromStrapi(dir) {
       },
       contact: {
         email: appConfig.email,
-        number: appConfig.number,
+        number: appConfig.phoneNumber,
         feedbackUrl: appConfig.feedbackUrl,
       },
       search: {
