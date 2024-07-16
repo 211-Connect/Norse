@@ -98,7 +98,10 @@ export function ResourceOverviewSection(props: Props) {
       {config?.pages?.resource?.hideCategories ? null : (
         <>
           <Title size="h4" mt="lg" mb="xs" order={3} color="primary">
-            {t('categories')}
+            {t('categories_text', {
+              ns: 'dynamic',
+              defaultValue: t('categories'),
+            })}
           </Title>
           <Group>
             {props.categories?.map((el: any) => {
@@ -128,7 +131,10 @@ export function ResourceOverviewSection(props: Props) {
       {config?.pages?.resource?.hideLastAssured ? null : (
         <>
           <Title size="h4" mt="lg" order={3} color="primary">
-            {t('last_assured')}
+            {t('last_assured_text', {
+              ns: 'dynamic',
+              defaultValue: t('last_assured'),
+            })}
           </Title>
           <Text size="xs">{props.lastAssuredOn || t('unknown')}</Text>
         </>

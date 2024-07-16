@@ -22,6 +22,8 @@ const query = qs.stringify({
         'pages',
         'search',
         'plugins',
+        'lastAssuredText',
+        'categoriesText',
         'headerMenu',
         'footerMenu',
         'dataProviders',
@@ -37,6 +39,8 @@ const query = qs.stringify({
         'localizations.theme',
         'localizations.pages',
         'localizations.search',
+        'localizations.lastAssuredText',
+        'localizations.categoriesText',
       ],
     },
     category: {
@@ -139,6 +143,8 @@ module.exports = async function createFromStrapi(dir) {
       appConfig.search.queryInputPlaceholder;
     translationFile['en']['search.location_placeholder'] =
       appConfig.search.locationInputPlaceholder;
+    translationFile['en']['last_assured_text'] = appConfig.lastAssuredText;
+    translationFile['en']['categories_text'] = appConfig.categoriesText;
 
     for (const page of appConfig?.pages ?? []) {
       if (page.page === 'home') {
@@ -198,6 +204,10 @@ module.exports = async function createFromStrapi(dir) {
         data.search.queryInputPlaceholder;
       translationFile[data.locale]['search.location_placeholder'] =
         data.search.locationInputPlaceholder;
+      translationFile[data.locale]['last_assured_text'] =
+        appConfig?.lastAssuredText;
+      translationFile[data.locale]['categories_text'] =
+        appConfig?.categoriesText;
     }
 
     for (let catI = 0; catI < categories.length; catI++) {
