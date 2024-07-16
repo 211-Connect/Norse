@@ -51,7 +51,10 @@ export function NoResultsCard(props: Props) {
           ? t('no_results.subtitle')
           : config?.contact?.number
           ? t('no_results.need_help')
-          : t('no_results.alt_subtitle')}
+          : t('search.no_results_fallback_text', {
+              ns: 'dynamic',
+              defaultValue: t('no_results.alt_subtitle'),
+            })}
       </Text>
       <Flex align="center" justify="center" mt="md">
         {config?.contact?.number && (

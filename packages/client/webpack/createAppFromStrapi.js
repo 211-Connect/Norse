@@ -143,8 +143,10 @@ module.exports = async function createFromStrapi(dir) {
       appConfig.search.queryInputPlaceholder;
     translationFile['en']['search.location_placeholder'] =
       appConfig.search.locationInputPlaceholder;
-    translationFile['en']['last_assured_text'] = appConfig.lastAssuredText;
-    translationFile['en']['categories_text'] = appConfig.categoriesText;
+    translationFile['en']['search.no_results_fallback_text'] =
+      appConfig?.search?.noResultsFallbackText;
+    translationFile['en']['last_assured_text'] = appConfig?.lastAssuredText;
+    translationFile['en']['categories_text'] = appConfig?.categoriesText;
 
     for (const page of appConfig?.pages ?? []) {
       if (page.page === 'home') {
@@ -199,15 +201,15 @@ module.exports = async function createFromStrapi(dir) {
       }
 
       translationFile[data.locale]['search.hero_title'] =
-        data.search.homePageTitle;
+        data?.search?.homePageTitle;
       translationFile[data.locale]['search.query_placeholder'] =
-        data.search.queryInputPlaceholder;
+        data?.search?.queryInputPlaceholder;
       translationFile[data.locale]['search.location_placeholder'] =
-        data.search.locationInputPlaceholder;
-      translationFile[data.locale]['last_assured_text'] =
-        appConfig?.lastAssuredText;
-      translationFile[data.locale]['categories_text'] =
-        appConfig?.categoriesText;
+        data?.search?.locationInputPlaceholder;
+      translationFile[data.locale]['search.no_results_fallback_text'] =
+        data?.search?.noResultsFallbackText;
+      translationFile[data.locale]['last_assured_text'] = data?.lastAssuredText;
+      translationFile[data.locale]['categories_text'] = data?.categoriesText;
     }
 
     for (let catI = 0; catI < categories.length; catI++) {
