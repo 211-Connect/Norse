@@ -1,5 +1,5 @@
 import { SearchRequest } from '@elastic/elasticsearch/lib/api/types';
-import { Router } from 'express';
+import { query, Router } from 'express';
 import z from 'zod';
 import { ElasticClient } from '../lib/ElasticClient';
 import { cacheControl } from '../lib/cacheControl';
@@ -42,7 +42,7 @@ router.get('/', async (req, res) => {
       typeof q.coords === 'string' ? q.coords.split(',') : q.coords;
     coords = coords instanceof Array && coords.length === 2 ? coords : null;
 
-    if (req.tenant.facets && req.tenant.facets instanceof Array) {
+    if (req?.tenant?.facets && req?.tenant?.facets instanceof Array) {
       // Get facets for faceted search for specific tenant
       req.tenant.facets?.forEach((data) => {
         aggs[data.facet] = {
@@ -199,10 +199,20 @@ router.get('/', async (req, res) => {
       queryBuilder.query.bool.filter = filters;
     }
 
+    if (queryBuilder.sort != null) {
+      // eslint-disable-next-line
+      // @ts-ignore
+      queryBuilder.sort = [{ priority: { order: 'desc' } }].concat(
+        // eslint-disable-next-line
+        // @ts-ignore
+        queryBuilder.sort
+      );
+    }
+
     const data = await ElasticClient.search(queryBuilder);
 
     const facets: any = {};
-    if (req.tenant.facets && req.tenant.facets instanceof Array) {
+    if (req?.tenant?.facets && req?.tenant?.facets instanceof Array) {
       for (const item of req.tenant.facets) {
         facets[item.facet] = item.name;
       }
@@ -238,7 +248,9 @@ router.get('/', async (req, res) => {
     });
   } catch (err) {
     logger.error(err);
-    res.sendStatus(400);
+    if (!res.headersSent) {
+      res.sendStatus(400);
+    }
   }
 });
 
