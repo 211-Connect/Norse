@@ -73,7 +73,6 @@ export const ResourceDetailsPageLayout = forwardRef(
               </MediaQuery>
             </Flex>
           </MediaQuery>
-
           {props.footerSection}
         </Stack>
       </>

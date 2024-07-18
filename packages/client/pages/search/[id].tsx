@@ -105,6 +105,7 @@ export default function SearchDetail({ resource }: Props) {
             location={resource.location}
             categories={resource.categories}
             lastAssuredOn={resource.lastAssuredOn}
+            attribution={resource.attribution}
           />
         }
         resourceInformationSection={

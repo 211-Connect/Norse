@@ -29,6 +29,7 @@ type Props = {
   displayPhoneNumber: string;
   serviceName: string;
   serviceDescription: string;
+  attribution?: string;
   website: string;
   phoneNumbers: {
     number: string;
@@ -137,6 +138,17 @@ export function ResourceOverviewSection(props: Props) {
             })}
           </Title>
           <Text size="xs">{props.lastAssuredOn || t('unknown')}</Text>
+        </>
+      )}
+
+      {config?.hideAttribution ? null : (
+        <>
+          <Title size="h4" mt="lg" order={3} color="primary">
+            {t('data_providers.provided_by', {
+              ns: 'common',
+            })}
+          </Title>
+          <Text size="xs">{props.attribution || t('unknown')}</Text>
         </>
       )}
 

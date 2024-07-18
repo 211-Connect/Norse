@@ -9,6 +9,7 @@ export interface IResource {
   phone: string;
   website: string;
   address?: string;
+  attribution?: string;
   addresses: {
     type: string;
     address_1: string;
@@ -46,6 +47,7 @@ export class ResourceAdapter extends BaseAdapter {
     return {
       id: data._id,
       serviceName: data?.translation?.serviceName ?? null,
+      attribution: data?.attribution ?? null,
       name: data?.translation?.displayName ?? data?.displayName ?? null,
       description: data?.translation?.serviceDescription ?? null,
       phone:

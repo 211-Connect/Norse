@@ -24,6 +24,7 @@ const query = qs.stringify({
         'plugins',
         'lastAssuredText',
         'categoriesText',
+        'hideAttribution',
         'headerMenu',
         'footerMenu',
         'dataProviders',
@@ -123,6 +124,7 @@ module.exports = async function createFromStrapi(dir) {
       },
       alert: appConfig?.alert,
       theme: appConfig?.theme ?? null,
+      hideAttribution: appConfig?.hideAttribution ?? true,
       plugins: [],
       pages: {},
       menus: {
