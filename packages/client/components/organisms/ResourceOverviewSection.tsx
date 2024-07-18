@@ -141,7 +141,7 @@ export function ResourceOverviewSection(props: Props) {
         </>
       )}
 
-      {config?.hideAttribution ? null : (
+      {config?.hideAttribution || props.attribution == null ? null : (
         <>
           <Title size="h4" mt="lg" order={3} color="primary">
             {t('data_providers.provided_by', {
