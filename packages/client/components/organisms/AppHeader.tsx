@@ -89,7 +89,7 @@ export function AppHeader(props: Props) {
         items.push(
           <Anchor
             key={el.name}
-            href={el.href}
+            {...(el.href != null ? { href: el.href } : { href: '' })}
             display="flex"
             sx={{ alignItems: 'center' }}
           >
