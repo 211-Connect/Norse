@@ -22,6 +22,7 @@ import {
   UpdateLocationModal,
 } from '../components/organisms/modals';
 import { AppProps } from 'next/app';
+import ErrorBoundary from '../components/error-boundary';
 
 function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   const appConfig = useAppConfig();
@@ -53,7 +54,9 @@ function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
               }}
             >
               <PrevUrlProvider>
-                <Component {...pageProps} />
+                <ErrorBoundary appConfig={appConfig}>
+                  <Component {...pageProps} />
+                </ErrorBoundary>
                 <GoogleTagManagerScript />
               </PrevUrlProvider>
             </ModalsProvider>

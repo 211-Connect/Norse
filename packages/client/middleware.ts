@@ -32,6 +32,7 @@ export function middleware(request: NextRequest) {
     value: sessionId,
     path: '/',
     secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
   });
 
   return response;
