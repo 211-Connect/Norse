@@ -71,7 +71,7 @@ export default class ErrorBoundary extends React.Component<Props, State> {
             justify="center"
             h="100vh"
           >
-            <Title color="white">An unknown error has occurred</Title>
+            <Title color="white">An error has occurred</Title>
 
             <Text
               size="lg"
