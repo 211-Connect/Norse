@@ -103,7 +103,7 @@ export function ResultsSection(props: Props) {
             {` `}
             {t('of')}
             {` `}
-            {props.totalResults.toLocaleString()}
+            {props?.totalResults?.toLocaleString()}
           </Text>
         </Group>
       </MediaQuery>
