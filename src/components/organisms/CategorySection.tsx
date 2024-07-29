@@ -1,7 +1,7 @@
 import { Grid, Stack, Title, useMantineTheme } from '@mantine/core';
 import { Category } from '../molecules/Category';
 import { useTranslation } from 'next-i18next';
-import categories from '../../.norse/categories.json';
+import categories from '../../../.norse/categories.json';
 
 export function CategorySection() {
   const theme = useMantineTheme();

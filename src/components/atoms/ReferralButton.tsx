@@ -1,4 +1,4 @@
-import { createReferralEvent } from '../../../packages/client/lib/hooks/useEventStore/events';
+import { createReferralEvent } from '../../lib/hooks/useEventStore/events';
 import { ButtonProps, Button } from '@mantine/core';
 import Link from 'next/link';
 import { LinkProps } from 'next/link';

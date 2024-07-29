@@ -19,10 +19,10 @@ import { setCookie } from 'nookies';
 import {
   USER_PREF_COORDS,
   USER_PREF_LOCATION,
-} from '../../../packages/client/lib/constants/cookies';
+} from '../../lib/constants/cookies';
 import { useTranslation } from 'next-i18next';
-import { useAppConfig } from '../../../packages/client/lib/hooks/useAppConfig';
-import { usePrevUrl } from '../../../packages/client/lib/hooks/usePrevUrl';
+import { useAppConfig } from '../../lib/hooks/useAppConfig';
+import { usePrevUrl } from '../../lib/hooks/usePrevUrl';
 import { create } from 'zustand';
 
 type Props = Partial<AutocompleteProps> &

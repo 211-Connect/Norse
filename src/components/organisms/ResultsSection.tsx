@@ -15,10 +15,10 @@ import { Result } from '../molecules/Result';
 import { useRouter } from 'next/router';
 import { Search } from '../molecules/Search';
 import { useTranslation } from 'next-i18next';
-import { useFilterPanelStore } from '../../../packages/client/lib/state/filterPanel';
+import { useFilterPanelStore } from '../../lib/state/filterPanel';
 import { useSession } from 'next-auth/react';
 import { useMemo } from 'react';
-import { IResult } from '../../../packages/client/lib/adapters/SearchAdapter';
+import { IResult } from '../../lib/adapters/SearchAdapter';
 
 type Props = {
   results: IResult[];

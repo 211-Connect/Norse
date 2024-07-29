@@ -1,4 +1,4 @@
-import { useEventStore } from '../../../packages/client/lib/hooks/useEventStore';
+import { useEventStore } from '../../lib/hooks/useEventStore';
 import {
   Badge,
   Card,
@@ -24,11 +24,11 @@ import {
 } from '@tabler/icons-react';
 import Link from 'next/link';
 import { NextRouter } from 'next/router';
-import { parseHtml } from '../../../packages/client/lib/utils/parseHtml';
+import { parseHtml } from '../../lib/utils/parseHtml';
 import { useTranslation } from 'next-i18next';
 import { Anchor } from '../atoms/Anchor';
 import { ReferralButton } from '../atoms/ReferralButton';
-import { distanceBetweenCoordsInMiles } from '../../../packages/client/lib/utils/distenceBetweenCoords';
+import { distanceBetweenCoordsInMiles } from '../../lib/utils/distenceBetweenCoords';
 
 type Props = {
   id: string;

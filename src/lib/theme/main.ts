@@ -1,6 +1,6 @@
 import { MantineThemeOverride } from '@mantine/core';
 import { Open_Sans } from 'next/font/google';
-import appTheme from '../../.norse/theme.json';
+import appTheme from '../../../.norse/theme.json';
 
 const openSans = Open_Sans({ subsets: ['latin'] });
 

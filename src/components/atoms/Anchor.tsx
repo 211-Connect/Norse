@@ -1,4 +1,4 @@
-import { createLinkEvent } from '../../../packages/client/lib/hooks/useEventStore/events';
+import { createLinkEvent } from '../../lib/hooks/useEventStore/events';
 import { AnchorProps, Anchor as MantineAnchor } from '@mantine/core';
 import Link, { LinkProps } from 'next/link';
 

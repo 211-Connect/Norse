@@ -2,7 +2,12 @@
   "name": "@norse-mono/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "dev": "node -r dotenv/config bin/pre-build && next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
   "private": true,
   "devDependencies": {
     "@types/color": "^3.0.3",
