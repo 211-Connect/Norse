@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Card,
   Flex,
@@ -13,7 +12,6 @@ import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import { NextRouter } from 'next/router';
 import { useAppConfig } from '../../lib/hooks/useAppConfig';
-import Link from 'next/link';
 import { Anchor } from '../atoms/Anchor';
 import { IconPhone } from '@tabler/icons-react';
 
@@ -51,7 +49,10 @@ export function NoResultsCard(props: Props) {
           ? t('no_results.subtitle')
           : config?.contact?.number
           ? t('no_results.need_help')
-          : t('no_results.alt_subtitle')}
+          : t('search.no_results_fallback_text', {
+              ns: 'dynamic',
+              defaultValue: t('no_results.alt_subtitle'),
+            })}
       </Text>
       <Flex align="center" justify="center" mt="md">
         {config?.contact?.number && (

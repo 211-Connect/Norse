@@ -50,6 +50,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       ...(await serverSideTranslations(ctx.locale as string, [
         'page-resource',
         'common',
+        'dynamic',
       ])),
     },
     notFound,
@@ -104,6 +105,7 @@ export default function SearchDetail({ resource }: Props) {
             location={resource.location}
             categories={resource.categories}
             lastAssuredOn={resource.lastAssuredOn}
+            attribution={resource.attribution}
           />
         }
         resourceInformationSection={

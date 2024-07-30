@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {},
+  "engines": {
+    "node": "18.x"
+  },
   "private": true,
   "devDependencies": {
     "@nx/cypress": "16.9.1",

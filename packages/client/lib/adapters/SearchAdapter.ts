@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { BaseAdapter } from './BaseAdapter';
 import qs from 'qs';
 
@@ -6,6 +7,7 @@ export interface IResult {
   id: string;
   serviceName: string;
   name: string;
+  priority: number;
   description: string;
   phone: string;
   website: string;
@@ -71,9 +73,10 @@ export class SearchAdapter extends BaseAdapter {
             mainAddress = null;
           }
 
-          return {
+          const responseData = {
             _id: hit._id,
             id: hit?._source?.service_at_location_id ?? null,
+            priority: hit?._source?.priority,
             serviceName: hit?._source?.service_name ?? null,
             name: hit?._source?.display_name ?? null,
             description: hit?._source?.service_description ?? null,
@@ -82,6 +85,8 @@ export class SearchAdapter extends BaseAdapter {
             address: mainAddress,
             location: hit?._source?.location ?? null,
           };
+
+          return _.omitBy(responseData, _.isNil);
         }) ?? [],
       noResults,
       totalResults,
