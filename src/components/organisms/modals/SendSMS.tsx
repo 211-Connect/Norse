@@ -32,9 +32,7 @@ export function SendSMS(props: Props) {
   }, t('modal.share.invalid_phone_number', { ns: 'common' }) as string);
   const validatePhoneNumber = (value: unknown) => {
     const validationResult = phoneNumberSchema.safeParse(value);
-    return validationResult.success
-      ? null
-      : validationResult.error.issues[0].message;
+    return validationResult.success ? null : 'Invalid phone number';
   };
 
   const sendSMS = form.onSubmit(async () => {
