@@ -3,8 +3,6 @@ const path = require('path');
 const fs = require('fs-extra');
 const syncClient = require('sync-rest-client');
 
-console.log(process.env.STRAPI_TOKEN);
-
 const STRAPI_URL = process.env.STRAPI_URL;
 const STRAPI_TOKEN = process.env.STRAPI_TOKEN;
 const TENANT_ID = process.env.NEXT_PUBLIC_TENANT_ID;
