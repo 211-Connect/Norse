@@ -57,6 +57,9 @@ function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
                 <ErrorBoundary appConfig={appConfig}>
                   <Component {...pageProps} />
                 </ErrorBoundary>
+                <ErrorBoundary appConfig={appConfig}>
+                  <Component {...pageProps} />
+                </ErrorBoundary>
                 <GoogleTagManagerScript />
               </PrevUrlProvider>
             </ModalsProvider>
