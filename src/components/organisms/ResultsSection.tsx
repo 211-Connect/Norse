@@ -103,7 +103,7 @@ export function ResultsSection(props: Props) {
             {` `}
             {t('of')}
             {` `}
-            {props.totalResults.toLocaleString()}
+            {props?.totalResults?.toLocaleString()}
           </Text>
         </Group>
       </MediaQuery>
@@ -121,6 +121,7 @@ export function ResultsSection(props: Props) {
             <Result
               key={result._id}
               id={result.id}
+              priority={result.priority}
               serviceName={result.serviceName}
               name={result.name}
               description={result.description}

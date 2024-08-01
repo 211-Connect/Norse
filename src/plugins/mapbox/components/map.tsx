@@ -84,7 +84,7 @@ export function MapComponent({ locations = [] }: Props) {
           resource.location.coordinates[1] != 0
       )
       .map((resource) => {
-        const latLng = resource?.location?.coordinates ?? mapConfig.center;
+        const latLng: any = resource?.location?.coordinates ?? mapConfig.center;
         bounds.extend(latLng);
 
         const popup = new Popup({ offset: 25, maxWidth: '450px' }).setHTML(

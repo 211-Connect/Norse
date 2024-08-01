@@ -83,7 +83,7 @@ export default function Search(props: any) {
     <SearchPageLayout
       metaTitle={`${
         props.query_label || props.query || t('no_query')
-      } - ${props.totalResults.toLocaleString()} ${t('results')}`}
+      } - ${props?.totalResults?.toLocaleString()} ${t('results')}`}
       metaDescription={`Showing ${
         props.results.length >= 25 ? '25' : props.results.length
       } / ${props.totalResults} ${t('results_for')} ${props.query}.`}

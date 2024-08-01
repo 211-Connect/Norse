@@ -18,9 +18,13 @@ const query = qs.stringify({
         'i18n',
         'i18n.locales',
         'theme',
+        'alert',
         'pages',
         'search',
         'plugins',
+        'lastAssuredText',
+        'categoriesText',
+        'hideAttribution',
         'headerMenu',
         'footerMenu',
         'dataProviders',
@@ -36,6 +40,8 @@ const query = qs.stringify({
         'localizations.theme',
         'localizations.pages',
         'localizations.search',
+        'localizations.lastAssuredText',
+        'localizations.categoriesText',
       ],
     },
     category: {
@@ -104,7 +110,7 @@ module.exports = async function createFromStrapi(dir) {
       },
       contact: {
         email: appConfig.email,
-        number: appConfig.number,
+        number: appConfig.phoneNumber,
         feedbackUrl: appConfig.feedbackUrl,
       },
       search: {
@@ -116,7 +122,9 @@ module.exports = async function createFromStrapi(dir) {
           plugin: 'mapbox',
         },
       },
+      alert: appConfig?.alert,
       theme: appConfig?.theme ?? null,
+      hideAttribution: appConfig?.hideAttribution ?? true,
       plugins: [],
       pages: {},
       menus: {
@@ -137,6 +145,10 @@ module.exports = async function createFromStrapi(dir) {
       appConfig.search.queryInputPlaceholder;
     translationFile['en']['search.location_placeholder'] =
       appConfig.search.locationInputPlaceholder;
+    translationFile['en']['search.no_results_fallback_text'] =
+      appConfig?.search?.noResultsFallbackText;
+    translationFile['en']['last_assured_text'] = appConfig?.lastAssuredText;
+    translationFile['en']['categories_text'] = appConfig?.categoriesText;
 
     for (const page of appConfig?.pages ?? []) {
       if (page.page === 'home') {
@@ -191,11 +203,15 @@ module.exports = async function createFromStrapi(dir) {
       }
 
       translationFile[data.locale]['search.hero_title'] =
-        data.search.homePageTitle;
+        data?.search?.homePageTitle;
       translationFile[data.locale]['search.query_placeholder'] =
-        data.search.queryInputPlaceholder;
+        data?.search?.queryInputPlaceholder;
       translationFile[data.locale]['search.location_placeholder'] =
-        data.search.locationInputPlaceholder;
+        data?.search?.locationInputPlaceholder;
+      translationFile[data.locale]['search.no_results_fallback_text'] =
+        data?.search?.noResultsFallbackText;
+      translationFile[data.locale]['last_assured_text'] = data?.lastAssuredText;
+      translationFile[data.locale]['categories_text'] = data?.categoriesText;
     }
 
     for (let catI = 0; catI < categories.length; catI++) {

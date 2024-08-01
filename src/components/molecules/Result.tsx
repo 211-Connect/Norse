@@ -12,6 +12,7 @@ import {
   ActionIcon,
   Tooltip,
   MantineTheme,
+  Flex,
 } from '@mantine/core';
 import { openContextModal } from '@mantine/modals';
 import {
@@ -20,6 +21,7 @@ import {
   IconMapPin,
   IconNavigation,
   IconPhone,
+  IconPin,
   IconWorldWww,
 } from '@tabler/icons-react';
 import Link from 'next/link';
@@ -34,6 +36,7 @@ type Props = {
   id: string;
   serviceName: string;
   name: string;
+  priority: number;
   description?: string;
   phone?: string;
   address?: string;
@@ -91,8 +94,18 @@ export function Result(props: Props) {
         overflow: 'initial',
         outlineColor:
           props.theme.colors.secondary[props.theme.other.secondaryShade],
+        position: 'relative',
       }}
     >
+      {props.priority === 1 && (
+        <Badge>
+          <Flex align="center">
+            <IconPin size={14} />
+            Pinned
+          </Flex>
+        </Badge>
+      )}
+
       <Title mt="sm" size="h4" order={3}>
         <Anchor
           href={`/search/${props.id}`}
