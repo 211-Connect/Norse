@@ -25,6 +25,7 @@ type AppConfig = {
   };
   menus?: {
     header?: Menu[];
+    footer?: Menu[];
   };
 };
 

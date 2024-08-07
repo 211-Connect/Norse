@@ -11,8 +11,8 @@ import {
 } from '@mantine/core';
 import { Fragment, PropsWithChildren } from 'react';
 import { useTranslation } from 'next-i18next';
-import { useAppConfig } from '../../lib/hooks/useAppConfig';
 import { IconPointFilled } from '@tabler/icons-react';
+import { useAppConfig } from '../hooks/use-app-config';
 
 type Props = PropsWithChildren & {
   fullWidth?: boolean;
