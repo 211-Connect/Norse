@@ -23,12 +23,22 @@ import {
 } from '../components/organisms/modals';
 import { AppProps } from 'next/app';
 import ErrorBoundary from '../components/organisms/error-boundary';
+import '@/shared/styles/globals.css';
+import { Open_Sans } from 'next/font/google';
+import { cn } from '@/shared/lib/utils';
+import { Header } from '@/shared/components/header';
+import { Footer } from '@/shared/components/footer';
+
+const fontSans = Open_Sans({
+  subsets: ['latin'],
+  variable: '--font-sans',
+});
 
 function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   const appConfig = useAppConfig();
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href={appConfig?.brand?.faviconUrl ?? '/favicon'} />
@@ -55,7 +65,16 @@ function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
             >
               <PrevUrlProvider>
                 <ErrorBoundary appConfig={appConfig}>
-                  <Component {...pageProps} />
+                  <Header />
+                  <main
+                    className={cn(
+                      'font-sans antialiased flex-1',
+                      fontSans.variable
+                    )}
+                  >
+                    <Component {...pageProps} />
+                  </main>
+                  <Footer />
                 </ErrorBoundary>
                 <GoogleTagManagerScript />
               </PrevUrlProvider>
@@ -63,7 +82,7 @@ function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
           </MantineProvider>
         </CookiesProvider>
       </SessionProvider>
-    </>
+    </div>
   );
 }
 
