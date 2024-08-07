@@ -37,6 +37,7 @@ try {
     `${dir}/.norse/next.config.js`,
     `module.exports = ${JSON.stringify(appConfig.nextConfig ?? {})}`
   );
+  fs.rmSync(`${dir}/tmp`, { recursive: true });
 } catch (err) {
   process.exit(1);
 }
