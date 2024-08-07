@@ -2,7 +2,6 @@ import { signOut, useSession } from 'next-auth/react';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { Fragment, useMemo } from 'react';
-import { useAppConfig } from '../../lib/hooks/useAppConfig';
 import { openContextModal } from '@mantine/modals';
 import { Link } from './ui/link';
 import { useDisclosure } from '../hooks/use-disclosure';
@@ -23,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from './ui/select';
+import { useAppConfig } from '../hooks/use-app-config';
 
 type Props = {
   fullWidth?: boolean;

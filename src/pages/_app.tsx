@@ -1,7 +1,6 @@
 import { appWithTranslation } from 'next-i18next';
 import Head from 'next/head';
 import { GoogleTagManagerScript } from '../components/atoms/GoogleTagManagerScript';
-import { useAppConfig } from '../lib/hooks/useAppConfig';
 import { AppProps } from 'next/app';
 import ErrorBoundary from '../components/organisms/error-boundary';
 import '@/shared/styles/globals.css';
@@ -16,27 +15,26 @@ const fontSans = Open_Sans({
   variable: '--font-sans',
 });
 
-function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
-  const appConfig = useAppConfig();
-
+function App({
+  Component,
+  pageProps: { session, appConfig, ...pageProps },
+}: AppProps) {
   return (
     <div className="min-h-screen flex flex-col">
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href={appConfig?.brand?.faviconUrl ?? '/favicon'} />
+        <link rel="icon" href="/favicon" />
       </Head>
 
-      <Providers session={session}>
-        <ErrorBoundary appConfig={appConfig}>
-          <Header />
-          <main
-            className={cn('font-sans antialiased flex-1', fontSans.variable)}
-          >
-            <Component {...pageProps} />
-          </main>
-          <Footer />
-          <GoogleTagManagerScript />
-        </ErrorBoundary>
+      <Providers session={session} appConfig={appConfig}>
+        {/* <ErrorBoundary appConfig={appConfig}> */}
+        <Header />
+        <main className={cn('font-sans antialiased flex-1', fontSans.variable)}>
+          <Component {...pageProps} />
+        </main>
+        <Footer />
+        <GoogleTagManagerScript />
+        {/* </ErrorBoundary> */}
       </Providers>
     </div>
   );
