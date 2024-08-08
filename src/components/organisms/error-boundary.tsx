@@ -3,6 +3,7 @@ import { Title, Text, Button, Stack } from '@mantine/core';
 import Link from 'next/link';
 import Image from 'next/image';
 import axios from 'axios';
+import { withAppConfig } from '@/shared/hoc/withAppConfig';
 
 type Props = {
   children: ReactNode;
@@ -13,7 +14,7 @@ type State = {
   hasError: false;
 };
 
-export default class ErrorBoundary extends React.Component<Props, State> {
+class ErrorBoundary extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
@@ -96,3 +97,5 @@ export default class ErrorBoundary extends React.Component<Props, State> {
     return this.props.children;
   }
 }
+
+export default withAppConfig(ErrorBoundary);
