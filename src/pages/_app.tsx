@@ -1,9 +1,9 @@
+import '@/shared/styles/globals.css';
 import { appWithTranslation } from 'next-i18next';
 import Head from 'next/head';
 import { GoogleTagManagerScript } from '../components/atoms/GoogleTagManagerScript';
 import { AppProps } from 'next/app';
 import ErrorBoundary from '../components/organisms/error-boundary';
-import '@/shared/styles/globals.css';
 import { Open_Sans } from 'next/font/google';
 import { cn } from '@/shared/lib/utils';
 import { Header } from '@/shared/components/header';
@@ -27,14 +27,16 @@ function App({
       </Head>
 
       <Providers session={session} appConfig={appConfig}>
-        {/* <ErrorBoundary appConfig={appConfig}> */}
-        <Header />
-        <main className={cn('font-sans antialiased flex-1', fontSans.variable)}>
-          <Component {...pageProps} />
-        </main>
-        <Footer />
-        <GoogleTagManagerScript />
-        {/* </ErrorBoundary> */}
+        <ErrorBoundary>
+          <Header />
+          <main
+            className={cn('font-sans antialiased flex-1', fontSans.variable)}
+          >
+            <Component {...pageProps} />
+          </main>
+          <Footer />
+          <GoogleTagManagerScript />
+        </ErrorBoundary>
       </Providers>
     </div>
   );
