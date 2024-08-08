@@ -1,10 +1,10 @@
 import { useTranslation } from 'next-i18next';
-import { IconPointFilled } from '@tabler/icons-react';
 import { useAppConfig } from '../hooks/use-app-config';
 import { Separator } from './ui/separator';
 import { cn } from '../lib/utils';
 import { Link } from './ui/link';
 import { ReactNode } from 'react';
+import { DotIcon } from 'lucide-react';
 
 type Props = {
   fullWidth?: boolean;
@@ -46,7 +46,7 @@ export function Footer(props: Props) {
                     className="flex items-center gap-1"
                     {...(el.href != null ? { href: el.href } : { href: '' })}
                   >
-                    <IconPointFilled className="size-4" />
+                    <DotIcon className="size-4" />
                     {el.name}
                   </Link>
                 )
