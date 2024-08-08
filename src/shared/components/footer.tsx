@@ -1,13 +1,14 @@
-import { Fragment, PropsWithChildren } from 'react';
 import { useTranslation } from 'next-i18next';
 import { IconPointFilled } from '@tabler/icons-react';
 import { useAppConfig } from '../hooks/use-app-config';
 import { Separator } from './ui/separator';
 import { cn } from '../lib/utils';
 import { Link } from './ui/link';
+import { ReactNode } from 'react';
 
-type Props = PropsWithChildren & {
+type Props = {
   fullWidth?: boolean;
+  children?: ReactNode;
 };
 
 export function Footer(props: Props) {
