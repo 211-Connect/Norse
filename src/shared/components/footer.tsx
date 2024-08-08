@@ -1,18 +1,10 @@
-import {
-  Anchor,
-  Box,
-  Divider,
-  Flex,
-  Group,
-  MediaQuery,
-  Stack,
-  Text,
-  useMantineTheme,
-} from '@mantine/core';
 import { Fragment, PropsWithChildren } from 'react';
 import { useTranslation } from 'next-i18next';
 import { IconPointFilled } from '@tabler/icons-react';
 import { useAppConfig } from '../hooks/use-app-config';
+import { Separator } from './ui/separator';
+import { cn } from '../lib/utils';
+import { Link } from './ui/link';
 
 type Props = PropsWithChildren & {
   fullWidth?: boolean;
@@ -21,59 +13,47 @@ type Props = PropsWithChildren & {
 export function Footer(props: Props) {
   const appConfig = useAppConfig();
   const { t } = useTranslation('common');
-  const theme = useMantineTheme();
 
   return (
-    <Box bg="#fff">
-      <Divider />
+    <div className=" bg-white">
+      <Separator />
 
       {props.children}
 
       <footer>
-        <Flex
-          maw={props.fullWidth ? '100%' : '1200px'}
-          m="0 auto"
-          pt="sm"
-          pb="sm"
-          pl="md"
-          pr="md"
+        <div
+          className={cn(
+            props.fullWidth ? '100%' : 'container mx-auto',
+            'pt-4 pb-4 flex items-center justify-center'
+          )}
         >
-          <MediaQuery
-            smallerThan="xs"
-            styles={{ flexDirection: 'column', alignItems: 'center' }}
-          >
-            <Stack align="center" justify="center" spacing="xs" w="100%">
-              <Text size="sm">
-                &copy; {new Date().getFullYear()} {appConfig.brand.name}.{' '}
-                {t('footer.copyright')}
-              </Text>
+          <div className="flex flex-col items-center justify-center gap-2">
+            <p>
+              &copy; {new Date().getFullYear()} {appConfig?.brand?.name}.{' '}
+              {t('footer.copyright')}
+            </p>
 
-              <Group spacing="xs" position="center">
-                <Anchor href="/legal/privacy-policy">
-                  {t('footer.privacy_policy')}
-                </Anchor>
+            <div className="flex gap-4 items-center">
+              <Link href="/legal/privacy-policy">
+                {t('footer.privacy_policy')}
+              </Link>
 
-                {appConfig.menus.footer.map(
-                  (el: { name: string; href: string | null }) => (
-                    <Fragment key={el.name}>
-                      <IconPointFilled size={theme.fontSizes.sm} />
-                      <Anchor
-                        {...(el.href != null
-                          ? { href: el.href }
-                          : { href: '' })}
-                        display="flex"
-                        sx={{ alignItems: 'center' }}
-                      >
-                        {el.name}
-                      </Anchor>
-                    </Fragment>
-                  )
-                )}
-              </Group>
-            </Stack>
-          </MediaQuery>
-        </Flex>
+              {appConfig?.menus?.footer?.map(
+                (el: { name: string; href: string | null }) => (
+                  <Link
+                    key={el.name}
+                    className="flex items-center gap-1"
+                    {...(el.href != null ? { href: el.href } : { href: '' })}
+                  >
+                    <IconPointFilled className="size-4" />
+                    {el.name}
+                  </Link>
+                )
+              )}
+            </div>
+          </div>
+        </div>
       </footer>
-    </Box>
+    </div>
   );
 }
