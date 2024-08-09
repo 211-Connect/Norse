@@ -6,12 +6,10 @@ import { ForwardedRef, forwardRef } from 'react';
 type Props = {
   metaTitle: string;
   metaDescription: string;
-  headerSection: React.ReactNode;
   resourceNavigationSection: React.ReactNode;
   resourceOverviewSection: React.ReactNode;
   resourceInformationSection: React.ReactNode;
   resourceOrganizationSection: React.ReactNode;
-  footerSection: React.ReactNode;
 };
 
 export const ResourceDetailsPageLayout = forwardRef(
@@ -32,7 +30,6 @@ export const ResourceDetailsPageLayout = forwardRef(
         </Head>
 
         <Stack spacing={0} ref={ref}>
-          {props.headerSection}
           {props.resourceNavigationSection}
 
           <MediaQuery smallerThan="sm" styles={{ flexDirection: 'column' }}>
@@ -73,10 +70,8 @@ export const ResourceDetailsPageLayout = forwardRef(
               </MediaQuery>
             </Flex>
           </MediaQuery>
-
-          {props.footerSection}
         </Stack>
       </>
     );
-  }
+  },
 );

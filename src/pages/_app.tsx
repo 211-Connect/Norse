@@ -1,14 +1,14 @@
 import '@/shared/styles/globals.css';
-import { appWithTranslation } from 'next-i18next';
 import Head from 'next/head';
-import { GoogleTagManagerScript } from '../components/atoms/GoogleTagManagerScript';
+import { appWithTranslation } from 'next-i18next';
 import { AppProps } from 'next/app';
-import ErrorBoundary from '../components/organisms/error-boundary';
 import { Open_Sans } from 'next/font/google';
+import { ErrorBoundary } from '@/shared/components/error-boundary';
 import { cn } from '@/shared/lib/utils';
 import { Header } from '@/shared/components/header';
 import { Footer } from '@/shared/components/footer';
 import { Providers } from '@/shared/components/providers';
+import { GoogleTagManagerScript } from '@/shared/components/google-tag-manager-script';
 
 const fontSans = Open_Sans({
   subsets: ['latin'],
@@ -23,7 +23,7 @@ function App({
     <div className="min-h-screen flex flex-col">
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <Providers session={session} appConfig={appConfig}>

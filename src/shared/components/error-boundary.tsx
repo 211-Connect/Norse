@@ -13,7 +13,7 @@ type State = {
   hasError: false;
 };
 
-export default class ErrorBoundary extends React.Component<Props, State> {
+export class ErrorBoundary extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 

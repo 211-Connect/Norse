@@ -7,11 +7,9 @@ import { useEffect } from 'react';
 type Props = {
   metaTitle: string;
   metaDescription: string;
-  headerSection: React.ReactNode;
   filterPanelSection: React.ReactNode;
   resultsSection: React.ReactNode;
   mapSection: React.ReactNode;
-  footerSection: React.ReactNode;
 };
 
 export function SearchPageLayout(props: Props) {
@@ -21,7 +19,7 @@ export function SearchPageLayout(props: Props) {
   const appConfig = useAppConfig();
 
   const clampedWindowValue = Math.round(
-    Math.abs(Math.min(Math.max(scroll.y, 0), 80) - 80)
+    Math.abs(Math.min(Math.max(scroll.y, 0), 80) - 80),
   );
 
   useEffect(() => {
@@ -40,8 +38,6 @@ export function SearchPageLayout(props: Props) {
         <meta property="og:type" content="website" />
         <meta property="og:description" content={props.metaDescription} />
       </Head>
-
-      {props.headerSection}
 
       <Flex w="100%" h="100%" sx={{ position: 'relative' }} pb="md">
         {props.filterPanelSection}
@@ -88,8 +84,6 @@ export function SearchPageLayout(props: Props) {
           </Box>
         </MediaQuery>
       </Flex>
-
-      {props.footerSection}
     </>
   );
 }

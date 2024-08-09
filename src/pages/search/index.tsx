@@ -8,8 +8,6 @@ import {
 } from '../../lib/constants/cookies';
 import { useEffect } from 'react';
 import { useEventStore } from '../../lib/hooks/useEventStore';
-import { AppHeader } from '../../components/organisms/AppHeader';
-import { AppFooter } from '../../components/organisms/AppFooter';
 import { FilterPanel } from '../../components/organisms/FilterPanel';
 import { ResultsSection } from '../../components/organisms/ResultsSection';
 import { PluginLoader } from '../../components/molecules/PluginLoader';
@@ -87,7 +85,6 @@ export default function Search(props: any) {
       metaDescription={`Showing ${
         props.results.length >= 25 ? '25' : props.results.length
       } / ${props.totalResults} ${t('results_for')} ${props.query}.`}
-      headerSection={<AppHeader fullWidth />}
       filterPanelSection={<FilterPanel filters={props.filters} />}
       resultsSection={
         <ResultsSection
@@ -105,7 +102,6 @@ export default function Search(props: any) {
           locations={props.results}
         />
       }
-      footerSection={<AppFooter fullWidth />}
     />
   );
 }

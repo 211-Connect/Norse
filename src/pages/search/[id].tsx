@@ -1,8 +1,6 @@
 import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { ResourceDetailsPageLayout } from '../../components/layouts/ResourceDetailsPage';
-import { AppHeader } from '../../components/organisms/AppHeader';
-import { AppFooter } from '../../components/organisms/AppFooter';
 import { ResourceOverviewSection } from '../../components/organisms/ResourceOverviewSection';
 import { ResourceInformationSection } from '../../components/organisms/ResourceInformationSection';
 import { ResourceOrganizationSection } from '../../components/organisms/ResourceOrganizationSection';
@@ -83,7 +81,6 @@ export default function SearchDetail({ resource }: Props) {
         ref={componentRef}
         metaTitle={resource.name}
         metaDescription={resource.description}
-        headerSection={<AppHeader />}
         resourceNavigationSection={
           <ResourceNavigationSection
             resourceId={resource.id}
@@ -131,7 +128,6 @@ export default function SearchDetail({ resource }: Props) {
             organizationDescription={resource.organizationDescription}
           />
         }
-        footerSection={<AppFooter />}
       />
     </>
   );

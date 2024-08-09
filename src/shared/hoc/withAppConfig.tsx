@@ -2,7 +2,7 @@ import React from 'react';
 import { appConfigContext } from '../context/app-config-context';
 
 export function withAppConfig<P>(WrappedComponent: React.ComponentType<P>) {
-  return class extends React.Component<P> {
+  return class WithAppConfig extends React.Component<P> {
     static contextType = appConfigContext;
     context!: React.ContextType<typeof appConfigContext>;
 
