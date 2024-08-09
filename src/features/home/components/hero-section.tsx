@@ -90,7 +90,6 @@ export function HeroSection() {
           </h3>
 
           <SearchBar />
-          <HomePageSearch />
         </div>
 
         {!appConfig.pages.home.disableTour && (
