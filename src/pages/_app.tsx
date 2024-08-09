@@ -3,7 +3,7 @@ import Head from 'next/head';
 import { appWithTranslation } from 'next-i18next';
 import { AppProps } from 'next/app';
 import { Open_Sans } from 'next/font/google';
-import { ErrorBoundary } from '@/shared/components/error-boundary';
+import { ErrorBoundary } from '@/features/error/components/error-boundary';
 import { cn } from '@/shared/lib/utils';
 import { Header } from '@/shared/components/header';
 import { Footer } from '@/shared/components/footer';
@@ -20,7 +20,7 @@ function App({
   pageProps: { session, appConfig, ...pageProps },
 }: AppProps) {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex min-h-screen flex-col">
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
@@ -30,7 +30,10 @@ function App({
         <ErrorBoundary>
           <Header />
           <main
-            className={cn('font-sans antialiased flex-1', fontSans.variable)}
+            className={cn(
+              'flex flex-1 flex-col font-sans antialiased',
+              fontSans.variable,
+            )}
           >
             <Component {...pageProps} />
           </main>
