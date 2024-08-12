@@ -77,7 +77,7 @@ module.exports = async function createFromStrapi(dir) {
         headers: {
           Authorization: `Bearer ${STRAPI_TOKEN}`,
         },
-      }
+      },
     );
 
     const data = res.body.data;
@@ -114,7 +114,7 @@ module.exports = async function createFromStrapi(dir) {
         feedbackUrl: appConfig.feedbackUrl,
       },
       search: {
-        defaultRadius: appConfig?.defaultRadius ?? 0,
+        defaultRadius: appConfig?.defaultRadiusValue ?? 0,
         radiusOptions: appConfig?.radiusSelectValues ?? null,
       },
       features: {
@@ -299,14 +299,14 @@ module.exports = async function createFromStrapi(dir) {
 
     fs.writeFileSync(
       path.join(dir, 'tmp/app.json'),
-      JSON.stringify(newAppConfig, null, 2)
+      JSON.stringify(newAppConfig, null, 2),
     );
 
     for (const key in translationFile) {
       fs.mkdirpSync(path.join(dir, `public/locales/${key}`));
       fs.writeFileSync(
         path.join(dir, `public/locales/${key}/dynamic.json`),
-        JSON.stringify(translationFile[key], null, 2)
+        JSON.stringify(translationFile[key], null, 2),
       );
     }
   } catch (err) {

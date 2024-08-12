@@ -102,7 +102,7 @@ export function LocationAutocomplete(props: Props) {
 
       toggle(false);
     },
-    [setValue, toggle, t, setCoords]
+    [setValue, toggle, t, setCoords],
   );
 
   const getUserLocation = useCallback(() => {
@@ -140,7 +140,7 @@ export function LocationAutocomplete(props: Props) {
 
     (async function () {
       const res = await fetch(
-        `/api/geocode?address=${debounced}&autocomplete=true`
+        `/api/geocode?address=${debounced}&autocomplete=true`,
       );
       const data = await res.json();
 
@@ -150,7 +150,7 @@ export function LocationAutocomplete(props: Props) {
           group: t('search.suggestions'),
           group_label: 'Suggestions',
           coordinates: el.center,
-        })) ?? []
+        })) ?? [],
       );
     })();
   }, [debounced, t]);
