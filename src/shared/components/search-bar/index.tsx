@@ -7,6 +7,7 @@ export function SearchBar() {
   return (
     <form>
       <Autocomplete
+        className="search-box"
         placeholder={
           t('search.query_placeholder', {
             ns: 'dynamic',

@@ -1,43 +1,70 @@
 import {
+  CommandEmpty,
   CommandGroup,
+  CommandInput,
   CommandItem,
   CommandList,
-  CommandInput,
+  CommandSeparator,
 } from './ui/command';
 import { Command as CommandPrimitive } from 'cmdk';
-import { useState, useRef, useCallback, type KeyboardEvent } from 'react';
-
+import {
+  ComponentType,
+  Fragment,
+  useCallback,
+  useRef,
+  useState,
+  type KeyboardEvent,
+} from 'react';
+import { cn } from '@/shared/lib/utils';
+import { Badge } from './ui/badge';
 import { Skeleton } from './ui/skeleton';
+import match from 'autosuggest-highlight/match';
+import parse from 'autosuggest-highlight/parse';
+import { useUncontrolled } from '../hooks/use-uncontrolled';
 
-import { Check } from 'lucide-react';
-import { cn } from '../lib/utils';
-
-export type Option = Record<'value' | 'label', string> & Record<string, string>;
-
-type AutocompleteProps = {
-  options: Option[];
-  emptyMessage: string;
-  value?: Option;
-  onValueChange?: (value: Option) => void;
-  isLoading?: boolean;
-  disabled?: boolean;
-  placeholder?: string;
+export type Option = {
+  value?: string;
+  group?: string;
+  items?: Option[];
+  label?: string;
+  [key: string]: any;
 };
 
-export const Autocomplete = ({
+export function Autocomplete({
+  className,
   options,
   placeholder,
-  emptyMessage,
-  value,
-  onValueChange,
   disabled,
-  isLoading = false,
-}: AutocompleteProps) => {
+  emptyMessage,
+  isLoading,
+  name,
+  defaultValue,
+  Icon,
+  value,
+  onValueSelect,
+  onInputChange,
+}: {
+  className?: string;
+  onInputChange?: (value: string) => void;
+  onValueSelect?: (value: Option) => void;
+  options: Option[];
+  placeholder?: string;
+  disabled?: boolean;
+  emptyMessage?: string;
+  isLoading?: boolean;
+  name?: string;
+  defaultValue?: string;
+  Icon?: ComponentType;
+  value?: string;
+}) {
   const inputRef = useRef<HTMLInputElement>(null);
-
   const [isOpen, setOpen] = useState(false);
-  const [selected, setSelected] = useState<Option>(value as Option);
-  const [inputValue, setInputValue] = useState<string>(value?.label || '');
+  const [inputValue, setInputValue] = useUncontrolled<string>({
+    value,
+    defaultValue,
+    finalValue: '',
+    onChange: onInputChange,
+  });
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>) => {
@@ -51,35 +78,21 @@ export const Autocomplete = ({
         setOpen(true);
       }
 
-      // This is not a default behaviour of the <input /> field
-      if (event.key === 'Enter' && input.value !== '') {
-        const optionToSelect = options.find(
-          (option) => option.label === input.value,
-        );
-        if (optionToSelect) {
-          setSelected(optionToSelect);
-          onValueChange?.(optionToSelect);
-        }
-      }
-
       if (event.key === 'Escape') {
         input.blur();
       }
     },
-    [isOpen, options, onValueChange],
+    [isOpen],
   );
 
   const handleBlur = useCallback(() => {
     setOpen(false);
-    setInputValue(selected?.label);
-  }, [selected]);
+  }, []);
 
   const handleSelectOption = useCallback(
     (selectedOption: Option) => {
-      setInputValue(selectedOption.label);
-
-      setSelected(selectedOption);
-      onValueChange?.(selectedOption);
+      setInputValue(selectedOption.value);
+      onValueSelect?.(selectedOption);
 
       // This is a hack to prevent the input from being focused after the user selects an option
       // We can call this hack: "The next tick"
@@ -87,31 +100,45 @@ export const Autocomplete = ({
         inputRef?.current?.blur();
       }, 0);
     },
-    [onValueChange],
+    [onValueSelect, setInputValue],
+  );
+
+  const handleInputChange = useCallback(
+    (newValue: string) => {
+      setInputValue(newValue);
+    },
+    [setInputValue],
   );
 
   return (
-    <CommandPrimitive onKeyDown={handleKeyDown}>
+    <CommandPrimitive
+      className={cn(className)}
+      onKeyDown={handleKeyDown}
+      shouldFilter={false}
+    >
       <div>
         <CommandInput
+          id={name}
+          name={name}
           ref={inputRef}
           value={inputValue}
-          onValueChange={isLoading ? undefined : setInputValue}
-          onBlur={handleBlur}
-          onFocus={() => setOpen(true)}
+          onValueChange={isLoading ? undefined : handleInputChange}
           placeholder={placeholder}
+          onFocus={() => setOpen(true)}
+          onBlur={handleBlur}
           disabled={disabled}
-          className="text-base"
+          Icon={Icon}
         />
       </div>
+
       <div className="relative mt-1">
         <div
           className={cn(
-            'absolute top-0 z-10 w-full rounded-xl bg-white outline-none animate-in fade-in-0 zoom-in-95',
+            'absolute top-0 z-50 w-full rounded-md bg-white shadow-md animate-in fade-in-0',
             isOpen ? 'block' : 'hidden',
           )}
         >
-          <CommandList className="rounded-lg ring-1 ring-slate-200">
+          <CommandList>
             {isLoading ? (
               <CommandPrimitive.Loading>
                 <div className="p-1">
@@ -119,39 +146,110 @@ export const Autocomplete = ({
                 </div>
               </CommandPrimitive.Loading>
             ) : null}
-            {options.length > 0 && !isLoading ? (
-              <CommandGroup>
-                {options.map((option) => {
-                  const isSelected = selected?.value === option.value;
-                  return (
-                    <CommandItem
-                      key={option.value}
-                      value={option.label}
-                      onMouseDown={(event) => {
-                        event.preventDefault();
-                        event.stopPropagation();
-                      }}
-                      onSelect={() => handleSelectOption(option)}
-                      className={cn(
-                        'flex w-full items-center gap-2',
-                        !isSelected ? 'pl-8' : null,
+
+            {(emptyMessage?.length ?? 0) > 0 && (
+              <CommandEmpty>{emptyMessage}</CommandEmpty>
+            )}
+
+            {options.map((option) => {
+              if (!option.group) {
+                const matches = match(option.value, inputValue);
+
+                return (
+                  <CommandItem
+                    className="ml-1 mr-1 flex justify-between gap-2 p-1 pl-2 pr-2 text-sm"
+                    key={option.value}
+                    value={option.value}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    onSelect={() => handleSelectOption(option)}
+                  >
+                    <p>
+                      {parse(option.value, matches).map((text, idx) =>
+                        text.highlight ? (
+                          <span
+                            key={`${option.value}-${text.text}-${idx}`}
+                            className="font-semibold"
+                          >
+                            {text.text}
+                          </span>
+                        ) : (
+                          <span key={`${option.value}-${text.text}-${idx}`}>
+                            {text.text}
+                          </span>
+                        ),
                       )}
-                    >
-                      {isSelected ? <Check className="w-4" /> : null}
-                      {option.label}
-                    </CommandItem>
-                  );
-                })}
-              </CommandGroup>
-            ) : null}
-            {!isLoading ? (
-              <CommandPrimitive.Empty className="select-none rounded-sm px-2 py-3 text-center text-sm">
-                {emptyMessage}
-              </CommandPrimitive.Empty>
-            ) : null}
+                    </p>
+                    {option.label && (
+                      <Badge
+                        variant="outline"
+                        className="w-[100px] shrink-0 text-xs"
+                      >
+                        <p className="mx-auto truncate">{option.label}</p>
+                      </Badge>
+                    )}
+                  </CommandItem>
+                );
+              }
+
+              if (option.items.length === 0) return null;
+
+              return (
+                <Fragment key={option.group}>
+                  <CommandGroup heading={option.group}>
+                    {option.items.map((option) => {
+                      const matches = match(option.value, inputValue);
+
+                      return (
+                        <CommandItem
+                          className="flex justify-between gap-2 p-1 pl-2 pr-2 text-sm"
+                          key={option.value}
+                          value={option.value}
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                          onSelect={() => handleSelectOption(option)}
+                        >
+                          <p>
+                            {parse(option.value, matches).map((text, idx) =>
+                              text.highlight ? (
+                                <span
+                                  key={`${option.value}-${text.text}-${idx}`}
+                                  className="font-semibold"
+                                >
+                                  {text.text}
+                                </span>
+                              ) : (
+                                <span
+                                  key={`${option.value}-${text.text}-${idx}`}
+                                >
+                                  {text.text}
+                                </span>
+                              ),
+                            )}
+                          </p>
+                          {option.label && (
+                            <Badge
+                              variant="outline"
+                              className="w-[100px] shrink-0 text-xs"
+                            >
+                              <p className="mx-auto truncate">{option.label}</p>
+                            </Badge>
+                          )}
+                        </CommandItem>
+                      );
+                    })}
+                  </CommandGroup>
+                  <CommandSeparator className="mb-1" />
+                </Fragment>
+              );
+            })}
           </CommandList>
         </div>
       </div>
     </CommandPrimitive>
   );
-};
+}
