@@ -6,6 +6,7 @@ import { PageView } from '@/components/organisms/PageView';
 import { Theme } from '@/lib/theme/main';
 import { CookiesProvider } from 'react-cookie';
 import { ModalsProvider } from '@mantine/modals';
+import { Provider as JotaiProvider } from 'jotai';
 import {
   AddToFavoritesModal,
   CreateFavoriteListModal,
@@ -21,7 +22,7 @@ import { AppConfigProvider } from '../context/app-config-provider';
 
 export function Providers({ session, appConfig, children }) {
   return (
-    <>
+    <JotaiProvider>
       <PageView />
 
       <SessionProvider session={session}>
@@ -48,6 +49,6 @@ export function Providers({ session, appConfig, children }) {
           </CookiesProvider>
         </AppConfigProvider>
       </SessionProvider>
-    </>
+    </JotaiProvider>
   );
 }
