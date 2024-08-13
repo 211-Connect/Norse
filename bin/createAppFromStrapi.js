@@ -67,7 +67,7 @@ const query = qs.stringify({
  * @param {string} dir Next.js root directory
  * @returns {*} void
  */
-module.exports = async function createFromStrapi(dir) {
+module.exports = function createFromStrapi(dir) {
   if (!STRAPI_URL || !STRAPI_TOKEN || !TENANT_ID) return;
 
   try {
@@ -77,7 +77,7 @@ module.exports = async function createFromStrapi(dir) {
         headers: {
           Authorization: `Bearer ${STRAPI_TOKEN}`,
         },
-      }
+      },
     );
 
     const data = res.body.data;
@@ -214,6 +214,55 @@ module.exports = async function createFromStrapi(dir) {
       translationFile[data.locale]['categories_text'] = data?.categoriesText;
     }
 
+    const categoryFiles = {};
+    for (const _category of categoryTranslations || []) {
+      const category = _category.attributes;
+      if (!(category.locale in categoryFiles)) {
+        categoryFiles[category.locale] = [];
+      }
+      categoryFiles[category.locale] = categoryFiles[category.locale].concat(
+        category.list.map((cat) => ({
+          name: cat['name'],
+          href: cat['href'],
+          image: cat['image']?.['data']?.['attributes']?.['url'],
+          subcategories: cat['subcategories'].map((sub) => ({
+            name: sub['name'],
+            href: sub['href'],
+            query: sub['query'],
+            queryType: sub['queryType'],
+          })),
+        })),
+      );
+    }
+
+    for (const _category of categories) {
+      const category = _category;
+      if (!('en' in categoryFiles)) {
+        categoryFiles['en'] = [];
+      }
+      categoryFiles['en'] = categoryFiles['en'].concat([
+        {
+          name: category['name'],
+          href: category['href'],
+          image: category['image']?.['data']?.['attributes']?.['url'],
+          subcategories: category['subcategories'].map((sub) => ({
+            name: sub['name'],
+            href: sub['href'],
+            query: sub['query'],
+            queryType: sub['queryType'],
+          })),
+        },
+      ]);
+    }
+
+    for (const key in categoryFiles) {
+      const categoryToWrite = categoryFiles[key];
+      fs.writeFileSync(
+        path.resolve(`public/locales/${key}/categories.json`),
+        JSON.stringify(categoryToWrite, null, 2),
+      );
+    }
+
     for (let catI = 0; catI < categories.length; catI++) {
       const category = categories[catI];
       const subcategories = category.subcategories;
@@ -299,14 +348,14 @@ module.exports = async function createFromStrapi(dir) {
 
     fs.writeFileSync(
       path.join(dir, 'tmp/app.json'),
-      JSON.stringify(newAppConfig, null, 2)
+      JSON.stringify(newAppConfig, null, 2),
     );
 
     for (const key in translationFile) {
       fs.mkdirpSync(path.join(dir, `public/locales/${key}`));
       fs.writeFileSync(
         path.join(dir, `public/locales/${key}/dynamic.json`),
-        JSON.stringify(translationFile[key], null, 2)
+        JSON.stringify(translationFile[key], null, 2),
       );
     }
   } catch (err) {

@@ -1,10 +1,10 @@
 import { useTranslation } from 'next-i18next';
-import categories from '../../../../.norse/categories.json';
 import { IconExternalLink } from '@tabler/icons-react';
 import Image from 'next/image';
 import { Link } from '@/shared/components/ui/link';
 import { Separator } from '@/shared/components/ui/separator';
 import { Card, CardContent } from '@/shared/components/ui/card';
+import { useCategories } from '@/shared/hooks/use-categories';
 
 type Props = {
   index: string;
@@ -14,9 +14,7 @@ type Props = {
   subcategories: any[];
 };
 
-const Category = ({ index, image, href, subcategories }: Props) => {
-  const { t } = useTranslation('dynamic');
-
+const Category = ({ image, name, href, subcategories }: Props) => {
   if (subcategories && subcategories.length > 0) {
     return (
       <div className="flex items-start gap-1">
@@ -31,7 +29,7 @@ const Category = ({ index, image, href, subcategories }: Props) => {
         )}
 
         <div className="flex flex-col">
-          <h3 className="text-xl font-semibold">{t(`categories.${index}`)}</h3>
+          <h3 className="text-xl font-semibold">{name}</h3>
 
           {subcategories.map((el, key) => (
             <Link
@@ -43,12 +41,12 @@ const Category = ({ index, image, href, subcategories }: Props) => {
                   : `/search?query=${encodeURIComponent(
                       el.query,
                     )}&query_label=${encodeURIComponent(
-                      t(`categories.${index}.subcategories.${key}`),
+                      el.name,
                     )}&query_type=${encodeURIComponent(el.query_type)}`
               }`}
               prefetch={false}
             >
-              {t(`categories.${index}.subcategories.${key}`)}
+              {el.name}
               {el.href ? <IconExternalLink className="size-4" /> : null}
             </Link>
           ))}
@@ -77,7 +75,7 @@ const Category = ({ index, image, href, subcategories }: Props) => {
           )}
 
           <div>
-            <p className="text-center text-lg">{t(`categories.${index}`)}</p>
+            <p className="text-center text-lg">{name}</p>
           </div>
         </CardContent>
       </Card>
@@ -87,6 +85,7 @@ const Category = ({ index, image, href, subcategories }: Props) => {
 
 export function CategoriesSection() {
   const { t } = useTranslation('page-home');
+  const categories = useCategories();
 
   if ((categories?.length ?? 0) === 0) return null;
 
@@ -97,8 +96,8 @@ export function CategoriesSection() {
       <Separator className="mb-4 mt-4" />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {categories.map((el: any, idx) => (
-          <Category key={el.name} index={idx} {...el} />
+        {categories.map((el: any) => (
+          <Category key={el.name} {...el} />
         ))}
       </div>
     </div>

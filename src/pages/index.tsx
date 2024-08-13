@@ -11,6 +11,7 @@ export async function getStaticProps(ctx: GetStaticPropsContext) {
         'page-home',
         'common',
         'dynamic',
+        'categories',
       ])),
     },
   };
