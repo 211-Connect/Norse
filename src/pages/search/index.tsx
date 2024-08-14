@@ -17,6 +17,7 @@ import { getServerSideAxios } from '../../lib/server/axios';
 import { useTranslation } from 'next-i18next';
 import { cacheControl } from '../../lib/server/cacheControl';
 import { useSession } from 'next-auth/react';
+import { SearchView } from '@/features/search/views/search-view';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const cookies = nookies.get(ctx);
@@ -65,43 +66,45 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   };
 }
 
-export default function Search(props: any) {
-  const session = useSession();
-  const appConfig = useAppConfig();
-  const { createResultsEvent } = useEventStore();
-  const { t } = useTranslation('page-search');
+export default SearchView;
 
-  useEffect(() => {
-    createResultsEvent({ results: props.results, total: props.totalResults });
-  }, [props.results, createResultsEvent, props.totalResults]);
+// export default function Search(props: any) {
+//   const session = useSession();
+//   const appConfig = useAppConfig();
+//   const { createResultsEvent } = useEventStore();
+//   const { t } = useTranslation('page-search');
 
-  if (session.status === 'loading') return null;
+//   useEffect(() => {
+//     createResultsEvent({ results: props.results, total: props.totalResults });
+//   }, [props.results, createResultsEvent, props.totalResults]);
 
-  return (
-    <SearchPageLayout
-      metaTitle={`${
-        props.query_label || props.query || t('no_query')
-      } - ${props?.totalResults?.toLocaleString()} ${t('results')}`}
-      metaDescription={`Showing ${
-        props.results.length >= 25 ? '25' : props.results.length
-      } / ${props.totalResults} ${t('results_for')} ${props.query}.`}
-      filterPanelSection={<FilterPanel filters={props.filters} />}
-      resultsSection={
-        <ResultsSection
-          results={props.results}
-          noResults={props.noResults}
-          currentPage={props.currentPage}
-          totalResults={props.totalResults}
-          totalFilters={props.filters ? Object.keys(props.filters).length : 0}
-        />
-      }
-      mapSection={
-        <PluginLoader
-          plugin={appConfig?.features?.map?.plugin}
-          component="map"
-          locations={props.results}
-        />
-      }
-    />
-  );
-}
+//   if (session.status === 'loading') return null;
+
+//   return (
+//     <SearchPageLayout
+//       metaTitle={`${
+//         props.query_label || props.query || t('no_query')
+//       } - ${props?.totalResults?.toLocaleString()} ${t('results')}`}
+//       metaDescription={`Showing ${
+//         props.results.length >= 25 ? '25' : props.results.length
+//       } / ${props.totalResults} ${t('results_for')} ${props.query}.`}
+//       filterPanelSection={<FilterPanel filters={props.filters} />}
+//       resultsSection={
+//         <ResultsSection
+//           results={props.results}
+//           noResults={props.noResults}
+//           currentPage={props.currentPage}
+//           totalResults={props.totalResults}
+//           totalFilters={props.filters ? Object.keys(props.filters).length : 0}
+//         />
+//       }
+//       mapSection={
+//         <PluginLoader
+//           plugin={appConfig?.features?.map?.plugin}
+//           component="map"
+//           locations={props.results}
+//         />
+//       }
+//     />
+//   );
+// }
