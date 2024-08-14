@@ -1,5 +1,21 @@
 export abstract class BaseMapAdapter {
-  abstract forwardGeocode(): Promise<null>;
+  abstract forwardGeocode(
+    address: string,
+    options: { locale: string },
+  ): Promise<
+    {
+      address: string;
+      coordinates: [number, number];
+    }[]
+  >;
 
-  abstract reverseGeocode(): Promise<null>;
+  abstract reverseGeocode(
+    coordinates: string,
+    options: { locale: string },
+  ): Promise<
+    {
+      address: string;
+      coordinates: [number, number];
+    }[]
+  >;
 }

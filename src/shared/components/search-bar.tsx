@@ -81,7 +81,6 @@ export function SearchBar() {
         }) || ''
       }
       options={options}
-      emptyMessage="No results..."
       onInputChange={setSearchTerm}
       value={searchTerm}
     />

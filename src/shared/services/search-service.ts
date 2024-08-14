@@ -1,8 +1,6 @@
-import axios from 'axios';
 import { ExtractAtomValue } from 'jotai';
 import { isEmpty, isNil, isString, omitBy } from 'lodash';
 import { searchAtom } from '../store/search';
-import { API_URL, TENANT_ID } from '../lib/constants';
 
 export class SearchService {
   static endpoint = 'search';
@@ -11,9 +9,15 @@ export class SearchService {
     searchStore: ExtractAtomValue<typeof searchAtom>,
   ) {
     const urlParams = {
-      query: searchStore['query'],
-      query_label: searchStore['queryLabel'],
-      query_type: searchStore['queryType'],
+      query: searchStore['query'].trim(),
+      query_label: searchStore['queryLabel'].trim(),
+      query_type: searchStore['queryType'].trim(),
+      location: searchStore['userLocation'].trim(),
+      coords: searchStore['userCoordinates'].join(',').trim(),
+      distance:
+        searchStore['userCoordinates'].length === 2
+          ? searchStore['searchDistance'].trim() || 0
+          : '',
     };
 
     return omitBy(

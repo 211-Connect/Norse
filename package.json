@@ -89,6 +89,7 @@
     "react-i18next": "^13.0.1",
     "react-to-print": "^2.14.13",
     "sharp": "^0.32.1",
+    "sonner": "^1.5.0",
     "sync-rest-client": "^1.0.3",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",

@@ -8,6 +8,8 @@ import { Button } from '@/shared/components/ui/button';
 import { SearchBar } from '@/shared/components/search-bar';
 import { SearchButton } from '@/shared/components/search-button';
 import { LocationSearchBar } from '@/shared/components/location-search-bar';
+import { UseMyLocationButton } from '@/shared/components/use-my-location-button';
+import { DistanceSelect } from '@/shared/components/distance-select';
 
 export function HeroSection() {
   const appConfig = useAppConfig();
@@ -85,9 +87,14 @@ export function HeroSection() {
 
         <div className="flex flex-col gap-1">
           <SearchBar />
-          <LocationSearchBar />
 
-          <div className="flex justify-end">
+          <div className="flex items-stretch justify-stretch gap-1">
+            <LocationSearchBar className="flex-1" />
+            <DistanceSelect />
+          </div>
+
+          <div className="flex justify-between">
+            <UseMyLocationButton />
             <SearchButton />
           </div>
         </div>

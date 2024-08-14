@@ -1,14 +1,21 @@
-import axios from 'axios';
-import { ExtractAtomValue } from 'jotai';
-import { isEmpty, isNil, isString, omitBy } from 'lodash';
-import { searchAtom } from '../store/search';
-import { API_URL, TENANT_ID } from '../lib/constants';
 import { BaseMapAdapter } from '../adapters/map/base-map-adapter';
 
 export class MapService {
-  static endpoint = 'location';
+  static async forwardGeocode(
+    address: string,
+    options: { adapter: BaseMapAdapter; locale: string },
+  ) {
+    return await options.adapter.forwardGeocode(address, {
+      locale: options.locale,
+    });
+  }
 
-  static async forwardGeocode(options: { adapter: BaseMapAdapter }) {}
-
-  static async reverseGeocode(options: { adapter: BaseMapAdapter }) {}
+  static async reverseGeocode(
+    coordinates: string,
+    options: { adapter: BaseMapAdapter; locale: string },
+  ) {
+    return await options.adapter.reverseGeocode(coordinates, {
+      locale: options.locale,
+    });
+  }
 }

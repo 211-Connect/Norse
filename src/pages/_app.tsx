@@ -9,6 +9,7 @@ import { Header } from '@/shared/components/header';
 import { Footer } from '@/shared/components/footer';
 import { Providers } from '@/shared/components/providers';
 import { GoogleTagManagerScript } from '@/shared/components/google-tag-manager-script';
+import { Toaster } from '@/shared/components/ui/sonner';
 
 const fontSans = Open_Sans({
   subsets: ['latin'],
@@ -39,6 +40,7 @@ function App({
           </main>
           <Footer />
           <GoogleTagManagerScript />
+          <Toaster />
         </ErrorBoundary>
       </Providers>
     </div>

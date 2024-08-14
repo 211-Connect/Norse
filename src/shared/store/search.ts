@@ -6,8 +6,9 @@ export const searchAtom = atom({
   queryLabel: '',
   queryType: '',
   searchLocation: '',
+  searchDistance: '',
   userLocation: '',
-  userCoordinates: [0, 0],
+  userCoordinates: [],
 });
 
 // Currently searched term (This is the visible value in the input)
