@@ -1,11 +1,11 @@
-import { useTranslation } from 'next-i18next';
-import { Autocomplete } from './autocomplete';
-import { useTaxonomies } from '../hooks/api/use-taxonomies';
-import { useAtomValue, useSetAtom } from 'jotai';
-import { searchAtom, searchTermAtom } from '../store/search';
-import { useDebounce } from '../hooks/use-debounce';
 import { useMemo } from 'react';
-import { useSuggestions } from '../hooks/use-suggestions';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { useTranslation } from 'next-i18next';
+import { Autocomplete } from '../autocomplete';
+import { useTaxonomies } from '../../hooks/api/use-taxonomies';
+import { searchAtom, searchTermAtom } from '../../store/search';
+import { useDebounce } from '../../hooks/use-debounce';
+import { useSuggestions } from '../../hooks/use-suggestions';
 
 export function SearchBar() {
   const { t } = useTranslation();
@@ -19,7 +19,7 @@ export function SearchBar() {
   const options = useMemo(() => {
     return [
       {
-        group: 'Suggestions',
+        group: t('search.suggestions'),
         items: suggestions
           .map((option) => ({ value: option.name }))
           .filter((option) =>
@@ -27,7 +27,7 @@ export function SearchBar() {
           ),
       },
       {
-        group: 'Taxonomies',
+        group: t('search.taxonomies'),
         items: taxonomies.map((option) => ({
           value: option.name,
           label: option.code,

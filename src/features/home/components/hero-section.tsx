@@ -5,11 +5,12 @@ import { useMemo } from 'react';
 import { useAppConfig } from '@/lib/hooks/useAppConfig';
 import { createTourEvent } from '@/shared/lib/google-tag-manager';
 import { Button } from '@/shared/components/ui/button';
-import { SearchBar } from '@/shared/components/search-bar';
-import { SearchButton } from '@/shared/components/search-button';
-import { LocationSearchBar } from '@/shared/components/location-search-bar';
-import { UseMyLocationButton } from '@/shared/components/use-my-location-button';
-import { DistanceSelect } from '@/shared/components/distance-select';
+import { SearchBar } from '@/shared/components/search/search-bar';
+import { SearchButton } from '@/shared/components/search/search-button';
+import { LocationSearchBar } from '@/shared/components/search/location-search-bar';
+import { UseMyLocationButton } from '@/shared/components/search/use-my-location-button';
+import { DistanceSelect } from '@/shared/components/search/distance-select';
+import { MainSearchLayout } from '@/shared/components/search/main-search-layout';
 
 export function HeroSection() {
   const appConfig = useAppConfig();
@@ -85,19 +86,7 @@ export function HeroSection() {
           })}
         </h3>
 
-        <div className="flex flex-col gap-1">
-          <SearchBar />
-
-          <div className="flex items-stretch justify-stretch gap-1">
-            <LocationSearchBar className="flex-1" />
-            <DistanceSelect />
-          </div>
-
-          <div className="flex justify-between">
-            <UseMyLocationButton />
-            <SearchButton />
-          </div>
-        </div>
+        <MainSearchLayout />
       </div>
 
       {!appConfig.pages.home.disableTour && (

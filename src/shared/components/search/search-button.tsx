@@ -1,9 +1,9 @@
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import { Button } from './ui/button';
-import { SearchService } from '../services/search-service';
+import { Button } from '../ui/button';
+import { SearchService } from '../../services/search-service';
 import { useAtomValue } from 'jotai';
-import { searchAtom } from '../store/search';
+import { searchAtom } from '../../store/search';
 
 export function SearchButton() {
   const { t } = useTranslation('common');

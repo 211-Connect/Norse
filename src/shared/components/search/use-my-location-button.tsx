@@ -5,11 +5,11 @@ import { useRouter } from 'next/router';
 import { setCookie } from 'nookies';
 import { useSetAtom } from 'jotai';
 import { Locate } from 'lucide-react';
-import { Button } from './ui/button';
-import { useMapAdapter } from '../hooks/use-map-adapter';
-import { MapService } from '../services/map-service';
-import { searchAtom } from '../store/search';
-import { USER_PREF_COORDS, USER_PREF_LOCATION } from '../lib/constants';
+import { Button } from '../ui/button';
+import { useMapAdapter } from '../../hooks/use-map-adapter';
+import { MapService } from '../../services/map-service';
+import { searchAtom } from '../../store/search';
+import { USER_PREF_COORDS, USER_PREF_LOCATION } from '../../lib/constants';
 
 export function UseMyLocationButton() {
   const { t } = useTranslation('common');

@@ -1,12 +1,12 @@
 import { useTranslation } from 'next-i18next';
 import { MapPin } from 'lucide-react';
-import { Autocomplete } from './autocomplete';
+import { Autocomplete } from '../autocomplete';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { searchAtom, searchLocationAtom } from '../store/search';
-import { useDebounce } from '../hooks/use-debounce';
-import { useLocations } from '../hooks/api/use-locations';
+import { searchAtom, searchLocationAtom } from '../../store/search';
+import { useDebounce } from '../../hooks/use-debounce';
+import { useLocations } from '../../hooks/api/use-locations';
 import { useMemo } from 'react';
-import { cn } from '../lib/utils';
+import { cn } from '../../lib/utils';
 
 export function LocationSearchBar({ className }) {
   const { t } = useTranslation();

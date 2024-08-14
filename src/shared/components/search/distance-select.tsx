@@ -7,12 +7,12 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from './ui/select';
-import { useAppConfig } from '../hooks/use-app-config';
+} from '../ui/select';
+import { useAppConfig } from '../../hooks/use-app-config';
 import { useSetAtom } from 'jotai';
-import { searchAtom } from '../store/search';
+import { searchAtom } from '../../store/search';
 import { setCookie } from 'nookies';
-import { USER_PREF_DISTANCE } from '../lib/constants';
+import { USER_PREF_DISTANCE } from '../../lib/constants';
 
 export function DistanceSelect() {
   const { t } = useTranslation();
