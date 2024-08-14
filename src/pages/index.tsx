@@ -12,6 +12,7 @@ export async function getStaticProps(ctx: GetStaticPropsContext) {
         'common',
         'dynamic',
         'categories',
+        'suggestions',
       ])),
     },
   };

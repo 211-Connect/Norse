@@ -122,6 +122,9 @@ module.exports = function createFromStrapi(dir) {
           plugin: 'mapbox',
         },
       },
+      adapters: {
+        map: 'mapbox',
+      },
       alert: appConfig?.alert,
       theme: appConfig?.theme ?? null,
       hideAttribution: appConfig?.hideAttribution ?? true,
@@ -311,6 +314,45 @@ module.exports = function createFromStrapi(dir) {
           }
         }
       }
+    }
+
+    const suggestionFiles = {};
+    for (const _suggestion of suggestionTranslations || []) {
+      const suggestion = _suggestion.attributes;
+      if (!(suggestion.locale in suggestionFiles)) {
+        suggestionFiles[suggestion.locale] = [];
+      }
+
+      suggestionFiles[suggestion.locale] = suggestionFiles[
+        suggestion.locale
+      ].concat(
+        suggestion.list.map((sugg) => ({
+          name: sugg['displayName'],
+          taxonomies: sugg['taxonomies'],
+        })),
+      );
+    }
+
+    for (const _suggestion of suggestions || []) {
+      const suggestion = _suggestion;
+      if (!('en' in suggestionFiles)) {
+        suggestionFiles['en'] = [];
+      }
+
+      suggestionFiles['en'] = suggestionFiles['en'].concat([
+        {
+          name: suggestion['displayName'],
+          taxonomies: suggestion['taxonomies'],
+        },
+      ]);
+    }
+
+    for (const key in suggestionFiles) {
+      const suggestionToWrite = suggestionFiles[key];
+      fs.writeFileSync(
+        path.resolve(`public/locales/${key}/suggestions.json`),
+        JSON.stringify(suggestionToWrite, null, 2),
+      );
     }
 
     for (let i = 0; i < suggestions.length; i++) {

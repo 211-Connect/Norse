@@ -17,7 +17,7 @@ type Props = {
 const Category = ({ image, name, href, subcategories }: Props) => {
   if (subcategories && subcategories.length > 0) {
     return (
-      <div className="flex items-start gap-1">
+      <div className="flex items-start gap-2">
         {image && (
           <Image
             src={image}

@@ -50,5 +50,6 @@ next-env.d.ts
 
 public/locales/**/dynamic.json
 public/locales/**/categories.json
+public/locales/**/suggestions.json
 
 .nx/

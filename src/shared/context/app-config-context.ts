@@ -27,6 +27,9 @@ type AppConfig = {
     header?: Menu[];
     footer?: Menu[];
   };
+  adapters: {
+    map: 'mapbox';
+  };
 };
 
 const appConfigContext = createContext<AppConfig>(null);

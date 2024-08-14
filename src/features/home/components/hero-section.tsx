@@ -6,6 +6,8 @@ import { useAppConfig } from '@/lib/hooks/useAppConfig';
 import { createTourEvent } from '@/shared/lib/google-tag-manager';
 import { Button } from '@/shared/components/ui/button';
 import { SearchBar } from '@/shared/components/search-bar';
+import { SearchButton } from '@/shared/components/search-button';
+import { LocationSearchBar } from '@/shared/components/location-search-bar';
 
 export function HeroSection() {
   const appConfig = useAppConfig();
@@ -70,7 +72,10 @@ export function HeroSection() {
         style={{ objectFit: 'cover', zIndex: -1, objectPosition: 'center' }}
       />
 
-      <div className="flex min-w-full flex-col gap-2 rounded-md bg-white p-4 sm:min-w-96">
+      <div
+        className="flex min-w-full flex-col gap-2 rounded-md bg-white p-4 sm:min-w-[500px]"
+        role="search"
+      >
         <h3 className="text-xl font-bold">
           {t('search.hero_title', {
             ns: 'dynamic',
@@ -78,7 +83,14 @@ export function HeroSection() {
           })}
         </h3>
 
-        <SearchBar />
+        <div className="flex flex-col gap-1">
+          <SearchBar />
+          <LocationSearchBar />
+
+          <div className="flex justify-end">
+            <SearchButton />
+          </div>
+        </div>
       </div>
 
       {!appConfig.pages.home.disableTour && (

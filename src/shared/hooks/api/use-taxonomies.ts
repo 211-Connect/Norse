@@ -5,6 +5,8 @@ import { useRouter } from 'next/router';
 export function useTaxonomies(searchTerm?: string) {
   const router = useRouter();
   const { data } = useQuery({
+    initialData: [],
+    placeholderData: (prev) => prev,
     queryKey: ['taxonomies', router.locale, searchTerm],
     queryFn: async () => {
       if (!router.locale || searchTerm.length === 0) return [];
@@ -13,7 +15,6 @@ export function useTaxonomies(searchTerm?: string) {
         locale: router.locale,
       });
     },
-    initialData: [],
   });
 
   return { data };
