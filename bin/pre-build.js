@@ -35,7 +35,7 @@ try {
   fs.writeJSONSync(`${dir}/.norse/config.json`, rest);
   fs.writeFileSync(
     `${dir}/.norse/next.config.js`,
-    `module.exports = ${JSON.stringify(appConfig.nextConfig ?? {})}`
+    `module.exports = ${JSON.stringify(appConfig.nextConfig ?? {})}`,
   );
   fs.rmSync(`${dir}/tmp`, { recursive: true });
 } catch (err) {
