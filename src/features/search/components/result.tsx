@@ -25,6 +25,12 @@ import { Badge } from '@/shared/components/ui/badge';
 import { useAtomValue } from 'jotai';
 import { userCoordinatesAtom } from '@/shared/store/search';
 import { Separator } from '@/shared/components/ui/separator';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/shared/components/ui/tooltip';
 
 type ResultProps = {
   data: ResultType;
@@ -97,10 +103,26 @@ export function Result({ data }: ResultProps) {
               <p className="truncate">{data.phone}</p>
             </Badge>
           )}
-          {data.address && (
+
+          {data.address ? (
             <Badge variant="outline" className="max-w-full">
               <p className="truncate">{data.address}</p>
             </Badge>
+          ) : (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Badge variant="outline" className="max-w-full">
+                    <p className="truncate">
+                      {t('search.address_unavailable')}
+                    </p>
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-64" side="right">
+                  <p>{t('search.confidential_address')}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           )}
           {data.website && (
             <Badge variant="outline" className="max-w-full">
@@ -110,7 +132,7 @@ export function Result({ data }: ResultProps) {
         </div>
       </CardContent>
       <CardFooter className="flex flex-col gap-2">
-        <div className="flex w-full items-center gap-2">
+        <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center">
           <ReferralLink
             className="flex-1 gap-1"
             referralType="call_referral"
@@ -140,14 +162,14 @@ export function Result({ data }: ResultProps) {
             resourceId={data.id}
             resource={data}
             target="_blank"
-            // href={`https://www.google.com/maps/dir/?api=1&origin=${
-            //   props.coordinates
-            // }&destination=${
-            //   props?.location?.coordinates
-            //     ? Array.from(props?.location?.coordinates).reverse().join(',')
-            //     : ''
-            // }`}
-            href=""
+            href={`https://www.google.com/maps/dir/?api=1&origin=${coords
+              .slice()
+              .reverse()
+              .join(',')}&destination=${
+              data?.location?.coordinates
+                ? data.location.coordinates.slice().reverse().join(',')
+                : ''
+            }`}
             variant="outline"
           >
             <Navigation className="size-4" />{' '}

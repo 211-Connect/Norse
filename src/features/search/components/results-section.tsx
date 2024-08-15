@@ -6,7 +6,7 @@ export function ResultsSection() {
   return (
     <div
       id="search-container"
-      className="flex w-full max-w-[550px] flex-col overflow-y-auto"
+      className="flex w-full flex-col overflow-y-auto sm:max-w-[550px]"
     >
       <div className="bg-white p-2">
         <MainSearchLayout />
