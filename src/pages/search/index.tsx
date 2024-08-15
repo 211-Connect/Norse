@@ -18,6 +18,7 @@ import { useTranslation } from 'next-i18next';
 import { cacheControl } from '../../lib/server/cacheControl';
 import { useSession } from 'next-auth/react';
 import { SearchView } from '@/features/search/views/search-view';
+import { serverSideAppConfig } from '@/shared/lib/server-utils';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const cookies = nookies.get(ctx);
@@ -57,10 +58,15 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       currentPage: page,
       query: ctx.query?.query ?? null,
       query_label: ctx.query?.query_label ?? null,
+      location: ctx.query?.location ?? null,
+      distance: ctx.query?.distance ?? null,
+      coords: ctx.query?.coords ?? null,
+      ...(await serverSideAppConfig()),
       ...(await serverSideTranslations(ctx.locale as string, [
         'page-search',
         'common',
         'dynamic',
+        'suggestions',
       ])),
     },
   };

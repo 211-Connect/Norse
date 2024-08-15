@@ -3,7 +3,7 @@ import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { Fragment, useMemo } from 'react';
 import { openContextModal } from '@mantine/modals';
-import { Link } from './ui/link';
+import { Link } from './link';
 import { useDisclosure } from '../hooks/use-disclosure';
 import { Button } from './ui/button';
 import { cn } from '../lib/utils';
@@ -122,7 +122,7 @@ export function Header(props: Props) {
               }}
             >
               <SelectTrigger className="w-[150px]">
-                <div className="flex gap-1 items-center overflow-hidden">
+                <div className="flex items-center gap-1 overflow-hidden">
                   <LanguagesIcon className="size-4" />
                   <SelectValue
                     placeholder={t('header.language_select_label')}
@@ -159,31 +159,31 @@ export function Header(props: Props) {
         )}
       </Fragment>,
     ],
-    [session.status, t, router, appConfig]
+    [session.status, t, router, appConfig],
   );
 
   return (
-    <header style={{ backgroundColor: '#fff' }}>
+    <header className="bg-white">
       <div
         className={cn(
           props.fullWidth ? '100%' : 'container mx-auto',
-          'h-20 flex justify-between items-center'
+          'flex h-12 items-center justify-between md:h-20',
         )}
       >
-        <Link href="/" aria-label={t('header.home') as string}>
+        <Link
+          href="/"
+          aria-label={t('header.home') as string}
+          className="h-full pb-1 pt-1 md:pb-2 md:pt-2"
+        >
           <img
             src={appConfig?.brand?.logoUrl}
             alt={t('header.home') as string}
-            style={{
-              height: 'auto',
-              maxHeight: 64,
-              maxWidth: '90%',
-            }}
+            className="h-full w-auto"
           />
         </Link>
 
         <nav className="hidden lg:flex">
-          <ul className="flex gap-4 items-center">{SITEMAP}</ul>
+          <ul className="flex items-center gap-4">{SITEMAP}</ul>
         </nav>
 
         <Sheet open={opened} onOpenChange={toggle}>

@@ -11,6 +11,7 @@ import { FavoriteListSection } from '../../components/organisms/FavoriteListSect
 import { getServerSideAxios } from '../../lib/server/axios';
 import { FavoriteAdapter } from '../../lib/adapters/FavoriteAdapter';
 import { useTranslation } from 'next-i18next';
+import { serverSideAppConfig } from '@/shared/lib/server-utils';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerSession(ctx.req, ctx.res, authOptions);
@@ -19,7 +20,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     return {
       redirect: {
         destination: `/${ctx.locale}/auth/signin?redirect=${encodeURIComponent(
-          '/favorites'
+          '/favorites',
         )}`,
         permanent: false,
       },
@@ -39,6 +40,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     props: {
       session,
       favoriteLists: data,
+      ...(await serverSideAppConfig()),
       ...(await serverSideTranslations(ctx.locale as string, [
         'page-favorites',
         'common',

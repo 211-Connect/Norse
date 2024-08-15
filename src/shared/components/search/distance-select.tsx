@@ -9,8 +9,8 @@ import {
   SelectValue,
 } from '../ui/select';
 import { useAppConfig } from '../../hooks/use-app-config';
-import { useSetAtom } from 'jotai';
-import { searchAtom } from '../../store/search';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { searchAtom, searchDistanceAtom } from '../../store/search';
 import { setCookie } from 'nookies';
 import { USER_PREF_DISTANCE } from '../../lib/constants';
 
@@ -18,6 +18,7 @@ export function DistanceSelect() {
   const { t } = useTranslation();
   const appConfig = useAppConfig();
   const setSearch = useSetAtom(searchAtom);
+  const distance = useAtomValue(searchDistanceAtom);
 
   const setDistance = (value) => {
     setCookie(null, USER_PREF_DISTANCE, value, { path: '/' });
@@ -28,10 +29,7 @@ export function DistanceSelect() {
   };
 
   return (
-    <Select
-      defaultValue={appConfig?.search?.defaultRadius?.toString()}
-      onValueChange={setDistance}
-    >
+    <Select onValueChange={setDistance} value={distance}>
       <SelectTrigger className="w-[125px]">
         <SelectValue
           placeholder={t('search.radius_placeholder', {

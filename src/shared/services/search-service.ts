@@ -9,14 +9,14 @@ export class SearchService {
     searchStore: ExtractAtomValue<typeof searchAtom>,
   ) {
     const urlParams = {
-      query: searchStore['query'].trim(),
-      query_label: searchStore['queryLabel'].trim(),
-      query_type: searchStore['queryType'].trim(),
-      location: searchStore['userLocation'].trim(),
-      coords: searchStore['userCoordinates'].join(',').trim(),
+      query: searchStore['query']?.trim(),
+      query_label: searchStore['queryLabel']?.trim(),
+      query_type: searchStore['queryType']?.trim(),
+      location: searchStore['userLocation']?.trim(),
+      coords: searchStore['userCoordinates']?.join(',')?.trim(),
       distance:
-        searchStore['userCoordinates'].length === 2
-          ? searchStore['searchDistance'].trim() || 0
+        searchStore['userCoordinates']?.length === 2
+          ? searchStore['searchDistance']?.trim() || '0'
           : '',
     };
 

@@ -78,7 +78,7 @@ export function UseMyLocationButton() {
   }, [convertGeoLocation, t]);
 
   return (
-    <Button onClick={getUserLocation} className="flex gap-1">
+    <Button onClick={getUserLocation} className="flex gap-1" variant="outline">
       <Locate className="size-4" />
       {t('search.use_my_location')}
     </Button>

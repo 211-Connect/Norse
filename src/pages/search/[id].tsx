@@ -12,6 +12,7 @@ import { IResource, ResourceAdapter } from '../../lib/adapters/ResourceAdapter';
 import { isAxiosError } from 'axios';
 import { cacheControl } from '../../lib/server/cacheControl';
 import { useSession } from 'next-auth/react';
+import { serverSideAppConfig } from '@/shared/lib/server-utils';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const axios = getServerSideAxios(ctx);
@@ -45,6 +46,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   return {
     props: {
       resource: data,
+      ...(await serverSideAppConfig()),
       ...(await serverSideTranslations(ctx.locale as string, [
         'page-resource',
         'common',

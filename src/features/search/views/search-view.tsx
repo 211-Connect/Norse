@@ -3,8 +3,30 @@ import { createResultsEvent } from '@/shared/lib/google-tag-manager';
 import { useTranslation } from 'next-i18next';
 import Head from 'next/head';
 import { useEffect } from 'react';
+import { useHydrateAtoms } from 'jotai/utils';
+import { ResultsSection } from '../components/results-section';
+import {
+  resultsAtom,
+  resultsCurrentPageAtom,
+  resultTotalAtom,
+} from '@/shared/store/results';
+import { useHydrateAndSyncAtoms } from '@/shared/hooks/use-hydrate-and-sync-atoms';
+import { searchAtom } from '@/shared/store/search';
 
-export function SearchView({ results, totalResults, query_label, query }) {
+export function SearchView({
+  results,
+  totalResults,
+  currentPage,
+  query_label,
+  query,
+}) {
+  // useHydrateAndSyncAtoms([
+  //   [resultsAtom, results],
+  //   [resultsCurrentPageAtom, currentPage],
+  //   [resultTotalAtom, totalResults],
+  //   [searchAtom, { query: 'hello', searchTerm: 'hello' }],
+  // ] as const);
+
   const { t } = useTranslation('page-search');
   const appConfig = useAppConfig();
 
@@ -41,12 +63,7 @@ export function SearchView({ results, totalResults, query_label, query }) {
       </Head>
 
       <div className="flex h-full w-full">
-        <div
-          id="search-container"
-          className="flex w-full max-w-[550px] flex-col gap-2 overflow-y-auto pt-2"
-        >
-          {/* Results section */}
-        </div>
+        <ResultsSection />
 
         <div>{/* Map Section */}</div>
       </div>

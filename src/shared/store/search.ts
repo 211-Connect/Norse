@@ -25,6 +25,8 @@ export const searchLocationAtom = atom((get) => get(searchAtom).searchLocation);
 // Currently selected user location
 export const userLocationAtom = atom((get) => get(searchAtom).userLocation);
 
+export const searchDistanceAtom = atom((get) => get(searchAtom).searchDistance);
+
 // Currently selected user coordinates
 export const userCoordinatesAtom = atom(
   (get) => get(searchAtom).userCoordinates,

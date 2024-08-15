@@ -114,7 +114,7 @@ module.exports = function createFromStrapi(dir) {
         feedbackUrl: appConfig.feedbackUrl,
       },
       search: {
-        defaultRadius: appConfig?.defaultRadius ?? 0,
+        defaultRadius: appConfig?.defaultRadiusValue ?? 0,
         radiusOptions: appConfig?.radiusSelectValues ?? null,
       },
       features: {

@@ -2,7 +2,7 @@ import { useTranslation } from 'next-i18next';
 import { useAppConfig } from '../hooks/use-app-config';
 import { Separator } from './ui/separator';
 import { cn } from '../lib/utils';
-import { Link } from './ui/link';
+import { Link } from './link';
 import { ReactNode } from 'react';
 import { DotIcon } from 'lucide-react';
 

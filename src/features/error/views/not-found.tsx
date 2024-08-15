@@ -1,5 +1,5 @@
 import { buttonVariants } from '@/shared/components/ui/button';
-import { Link } from '@/shared/components/ui/link';
+import { Link } from '@/shared/components/link';
 import { useTranslation } from 'next-i18next';
 import Head from 'next/head';
 import Image from 'next/image';
