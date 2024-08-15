@@ -1,24 +1,12 @@
 import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import nookies from 'nookies';
-import { SearchPageLayout } from '../../components/layouts/SearchPage';
-import {
-  USER_PREF_COORDS,
-  USER_PREF_LOCATION,
-} from '../../lib/constants/cookies';
-import { useEffect } from 'react';
-import { useEventStore } from '../../lib/hooks/useEventStore';
-import { FilterPanel } from '../../components/organisms/FilterPanel';
-import { ResultsSection } from '../../components/organisms/ResultsSection';
-import { PluginLoader } from '../../components/molecules/PluginLoader';
-import { useAppConfig } from '../../lib/hooks/useAppConfig';
 import { SearchAdapter } from '../../lib/adapters/SearchAdapter';
 import { getServerSideAxios } from '../../lib/server/axios';
-import { useTranslation } from 'next-i18next';
 import { cacheControl } from '../../lib/server/cacheControl';
-import { useSession } from 'next-auth/react';
 import { SearchView } from '@/features/search/views/search-view';
 import { serverSideAppConfig } from '@/shared/lib/server-utils';
+import { USER_PREF_COORDS, USER_PREF_LOCATION } from '@/shared/lib/constants';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const cookies = nookies.get(ctx);
@@ -43,9 +31,13 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const axios = getServerSideAxios(ctx);
   const searchAdapter = new SearchAdapter(axios);
   const { results, noResults, totalResults, page, filters } =
-    await searchAdapter.search(ctx.query, Number(ctx.query.page), {
-      locale: ctx.locale,
-    });
+    await searchAdapter.search(
+      ctx.query,
+      parseInt((ctx?.query?.page as string) ?? ''),
+      {
+        locale: ctx.locale,
+      },
+    );
 
   cacheControl(ctx);
 
@@ -64,6 +56,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       ...(await serverSideAppConfig()),
       ...(await serverSideTranslations(ctx.locale as string, [
         'page-search',
+        'page-resource',
         'common',
         'dynamic',
         'suggestions',

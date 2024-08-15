@@ -12,6 +12,8 @@ export interface IResult {
   phone: string;
   website: string;
   address?: string;
+  taxonomyCodes?: string[];
+  taxonomyTerms?: string[];
   location: {
     coordinates: [number, number];
   };
@@ -21,7 +23,7 @@ export class SearchAdapter extends BaseAdapter {
   public async search(
     query: any,
     page = 1,
-    config?: { locale?: string }
+    config?: { locale?: string },
   ): Promise<{
     results: IResult[];
     noResults: boolean;
@@ -37,13 +39,13 @@ export class SearchAdapter extends BaseAdapter {
       `/search?${qs.stringify({
         ...query,
         page,
-      })}`
+      })}`,
     );
 
     let totalResults =
       typeof data?.search?.hits?.total !== 'number'
-        ? data?.search?.hits?.total?.value ?? 0
-        : data?.search?.hits?.total ?? 0;
+        ? (data?.search?.hits?.total?.value ?? 0)
+        : (data?.search?.hits?.total ?? 0);
 
     let noResults = false;
     if (totalResults === 0) {
@@ -53,21 +55,20 @@ export class SearchAdapter extends BaseAdapter {
           ...query,
           page,
           query_type: 'more_like_this',
-        })}`
+        })}`,
       );
 
       totalResults =
         typeof data?.search?.hits?.total !== 'number'
-          ? data?.search?.hit?.total?.value ?? 0
-          : data?.search?.hits?.total ?? 0;
+          ? (data?.search?.hit?.total?.value ?? 0)
+          : (data?.search?.hits?.total ?? 0);
     }
 
     return {
       results:
         data?.search?.hits?.hits?.map((hit: any) => {
-          let mainAddress:
-            | string
-            | null = `${hit._source.address_1}, ${hit._source.city}, ${hit._source.state}, ${hit._source.postal_code}`;
+          let mainAddress: string | null =
+            `${hit._source.address_1}, ${hit._source.city}, ${hit._source.state}, ${hit._source.postal_code}`;
 
           if (mainAddress.includes('null')) {
             mainAddress = null;
@@ -84,6 +85,8 @@ export class SearchAdapter extends BaseAdapter {
             website: hit?._source?.primary_website ?? null,
             address: mainAddress,
             location: hit?._source?.location ?? null,
+            taxonomyTerms: hit?._source?.taxonomy_terms ?? null,
+            taxonomyCodes: hit?._source?.taxonomy_codes ?? null,
           };
 
           return _.omitBy(responseData, _.isNil);

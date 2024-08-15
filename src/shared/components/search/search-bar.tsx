@@ -34,7 +34,7 @@ export function SearchBar() {
         })),
       },
     ];
-  }, [taxonomies, suggestions, searchTerm]);
+  }, [taxonomies, suggestions, searchTerm, t]);
 
   // Find the taxonomy code to be used for a query
   // Fallback to the original string value if a code isn't found

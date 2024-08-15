@@ -14,6 +14,8 @@ export type ResultType = {
   priority: number;
   serviceName: string;
   website: string;
+  taxonomyTerms: string[];
+  taxonomyCodes: string[];
 };
 
 export const resultsAtom = atom<ResultType[]>([]);

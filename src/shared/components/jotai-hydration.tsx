@@ -6,11 +6,18 @@ import {
 import { useHydrateAndSyncAtoms } from '@/shared/hooks/use-hydrate-and-sync-atoms';
 import { searchAtom } from '@/shared/store/search';
 import { useAppConfig } from '../hooks/use-app-config';
+import { parseCookies } from 'nookies';
+import {
+  USER_PREF_COORDS,
+  USER_PREF_DISTANCE,
+  USER_PREF_LOCATION,
+} from '../lib/constants';
 
 // This component handles the hydration of Jotai state as well as keeping it in sync with re-renders/fetches of new data
 // This MUST be a child of the Jotai Provider component or hydration will not work
 export function JotaiHydration({ pageProps }) {
   const appConfig = useAppConfig();
+  const cookies = parseCookies();
 
   useHydrateAndSyncAtoms([
     [resultsAtom, pageProps?.results ?? []],
@@ -24,11 +31,16 @@ export function JotaiHydration({ pageProps }) {
         queryLabel: pageProps?.query_label,
         searchDistance:
           pageProps?.distance ??
+          cookies?.[USER_PREF_DISTANCE] ??
           appConfig?.search?.defaultRadius?.toString() ??
           '0',
-        searchLocation: pageProps?.location,
+        searchLocation: pageProps?.location ?? cookies?.[USER_PREF_LOCATION],
         userLocation: pageProps?.location,
-        userCoordinates: pageProps?.coords?.split(','),
+        userCoordinates:
+          pageProps?.coords?.split(',')?.map((number) => parseFloat(number)) ??
+          cookies?.[USER_PREF_COORDS]?.split(',')?.map((number) =>
+            parseFloat(number),
+          ),
       },
     ],
   ] as const);

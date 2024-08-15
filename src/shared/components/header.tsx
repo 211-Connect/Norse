@@ -173,7 +173,7 @@ export function Header(props: Props) {
         <Link
           href="/"
           aria-label={t('header.home') as string}
-          className="h-full pb-1 pt-1 md:pb-2 md:pt-2"
+          className="h-full w-full max-w-96 pb-1 pt-1 md:pb-2 md:pt-2"
         >
           <img
             src={appConfig?.brand?.logoUrl}
@@ -182,13 +182,13 @@ export function Header(props: Props) {
           />
         </Link>
 
-        <nav className="hidden lg:flex">
+        <nav className="hidden w-full justify-end lg:flex">
           <ul className="flex items-center gap-4">{SITEMAP}</ul>
         </nav>
 
         <Sheet open={opened} onOpenChange={toggle}>
           <SheetTrigger
-            className="lg:hidden"
+            className="flex w-full justify-end lg:hidden"
             aria-label="Toggle navigation menu"
           >
             <AlignJustifyIcon className="size-8" />

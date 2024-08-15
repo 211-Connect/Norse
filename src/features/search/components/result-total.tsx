@@ -24,7 +24,7 @@ export function ResultTotal() {
       {` `}
       {t('of')}
       {` `}
-      {resultTotal}
+      {resultTotal.toLocaleString()}
     </div>
   );
 }

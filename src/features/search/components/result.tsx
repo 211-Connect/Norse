@@ -8,11 +8,23 @@ import {
   CardTitle,
 } from '@/shared/components/ui/card';
 import { Link } from '@/shared/components/link';
-import { cn } from '@/shared/lib/utils';
+import { cn, distanceBetweenCoordsInMiles } from '@/shared/lib/utils';
 import { ResultType } from '@/shared/store/results';
-import { Globe, Heart, LinkIcon, Navigation, Phone } from 'lucide-react';
+import {
+  Globe,
+  Heart,
+  LinkIcon,
+  MapPin,
+  Navigation,
+  Phone,
+  Pin,
+} from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 import { ReferralLink } from '@/shared/components/referral-link';
+import { Badge } from '@/shared/components/ui/badge';
+import { useAtomValue } from 'jotai';
+import { userCoordinatesAtom } from '@/shared/store/search';
+import { Separator } from '@/shared/components/ui/separator';
 
 type ResultProps = {
   data: ResultType;
@@ -20,13 +32,83 @@ type ResultProps = {
 
 export function Result({ data }: ResultProps) {
   const { t } = useTranslation();
+  const coords = useAtomValue(userCoordinatesAtom);
+
+  const distance =
+    data?.location?.coordinates && (coords?.length ?? 0) === 2
+      ? distanceBetweenCoordsInMiles(
+          coords as [number, number],
+          data.location.coordinates,
+        )
+      : null;
 
   return (
     <Card>
       <CardHeader>
+        <div className="flex justify-between">
+          <div className="flex items-center justify-start">
+            {data.priority === 1 && (
+              <Badge variant="outline" className="flex gap-1">
+                <Pin className="size-3" />
+                Pinned
+              </Badge>
+            )}
+          </div>
+
+          <div>
+            {distance && distance > 0 && (
+              <Badge variant="outline" className="flex gap-1">
+                <MapPin className="size-3" />
+                {distance.toLocaleString()} {t('search.miles')}
+              </Badge>
+            )}
+          </div>
+        </div>
+
         <CardTitle className="text-lg">{data.name}</CardTitle>
       </CardHeader>
-      <CardContent>{parseHtml(data.description)}</CardContent>
+      <CardContent className="flex flex-col gap-4">
+        <div>{parseHtml(data.description)}</div>
+
+        <div className="flex flex-col items-start justify-start gap-1">
+          {data.taxonomyTerms && data.taxonomyTerms.length > 0 && (
+            <>
+              <p>
+                {t('categories_text', {
+                  ns: 'dynamic',
+                  defaultValue: t('categories', { ns: 'page-resource' }),
+                })}
+              </p>
+
+              <div className="flex flex-wrap gap-1">
+                {data.taxonomyTerms.map((term) => (
+                  <Badge key={term} variant="outline">
+                    {term}
+                  </Badge>
+                ))}
+              </div>
+
+              <Separator className="mb-2 mt-2" />
+            </>
+          )}
+
+          {data.phone && (
+            <Badge variant="outline" className="max-w-full">
+              <p className="truncate">{data.phone}</p>
+            </Badge>
+          )}
+          {data.address && (
+            <Badge variant="outline" className="max-w-full">
+              <p className="truncate">{data.address}</p>
+            </Badge>
+          )}
+          {data.website && (
+            <Badge variant="outline" className="max-w-full">
+              <p className="truncate">{data.website}</p>
+            </Badge>
+          )}
+        </div>
+      </CardContent>
       <CardFooter className="flex flex-col gap-2">
         <div className="flex w-full items-center gap-2">
           <ReferralLink
