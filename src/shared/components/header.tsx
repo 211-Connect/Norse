@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from './ui/select';
 import { useAppConfig } from '../hooks/use-app-config';
+import { HEADER_ID } from '../lib/constants';
 
 type Props = {
   fullWidth?: boolean;
@@ -163,7 +164,7 @@ export function Header(props: Props) {
   );
 
   return (
-    <header className="bg-white">
+    <header id={HEADER_ID} className="bg-white">
       <div
         className={cn(
           props.fullWidth ? '100%' : 'container mx-auto',

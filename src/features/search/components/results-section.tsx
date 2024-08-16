@@ -9,7 +9,7 @@ export function ResultsSection() {
   return (
     <div
       id="search-container"
-      className="flex w-full flex-col overflow-y-auto sm:max-w-[550px]"
+      className="flex w-full flex-col overflow-y-auto lg:max-w-[550px]"
     >
       <div className="bg-white p-2">
         <MainSearchLayout />

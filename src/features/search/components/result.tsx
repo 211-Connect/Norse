@@ -42,7 +42,7 @@ export function Result({ data }: ResultProps) {
       : null;
 
   return (
-    <Card>
+    <Card id={data._id}>
       <CardHeader>
         <div className="flex justify-between">
           <div className="flex items-center justify-start">

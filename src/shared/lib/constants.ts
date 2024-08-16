@@ -3,6 +3,7 @@ export const API_URL = process.env.NEXT_PUBLIC_API_URL;
 export const TENANT_ID = process.env.NEXT_PUBLIC_TENANT_ID;
 export const MAPBOX_API_KEY = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 export const MAPBOX_API_BASE_URL = 'https://api.mapbox.com';
+export const MAPBOX_STYLE_URL = process.env.NEXT_PUBLIC_MAPBOX_STYLE_URL;
 
 // Session ID cookie
 export const SESSION_ID = 'session-id';
@@ -17,3 +18,5 @@ export const USER_PREF_LOCATION = 'user-pref-location';
 export const USER_PREF_COORDS = 'user-pref-coords';
 export const USER_PREF_THEME = 'user-pref-theme';
 export const USER_PREF_DISTANCE = 'user-pref-distance';
+
+export const HEADER_ID = 'app-header';

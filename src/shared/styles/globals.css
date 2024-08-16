@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/** Used for mapbox marker styling */
+.custom-marker path {
+  fill: theme(colors.primary.DEFAULT);
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
