@@ -4,11 +4,14 @@ import { RenderResults } from './render-results';
 import { ResultsPagination } from './results-pagination';
 import { Button } from '@/shared/components/ui/button';
 import { Filter } from 'lucide-react';
-import { useSetAtom } from 'jotai';
-import { filtersOpenAtom } from '@/shared/store/results';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { filtersAtom, filtersOpenAtom } from '@/shared/store/results';
+import { cn } from '@/shared/lib/utils';
 
 export function ResultsSection() {
   const setFiltersOpen = useSetAtom(filtersOpenAtom);
+  const filters = useAtomValue(filtersAtom);
+  const filterKeys = Object.keys(filters);
 
   return (
     <div
@@ -19,11 +22,21 @@ export function ResultsSection() {
         <MainSearchLayout />
       </div>
 
-      <div className="flex items-center justify-between bg-primary p-1 pl-2 pr-2 text-primary-foreground xl:justify-end">
+      <div
+        className={cn(
+          filterKeys.length > 0
+            ? 'justify-between xl:justify-end'
+            : 'justify-end',
+          'flex items-center bg-primary p-1 pl-2 pr-2 text-primary-foreground',
+        )}
+      >
         <Button
           size="sm"
           variant="ghost"
-          className="flex gap-1 xl:hidden"
+          className={cn(
+            filterKeys.length > 0 ? 'flex xl:hidden' : 'hidden',
+            'gap-1',
+          )}
           onClick={() => setFiltersOpen(true)}
         >
           <Filter className="size-4" />

@@ -1,12 +1,11 @@
 import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import nookies from 'nookies';
-import { SearchAdapter } from '../../lib/adapters/SearchAdapter';
-import { getServerSideAxios } from '../../lib/server/axios';
 import { cacheControl } from '../../lib/server/cacheControl';
 import { SearchView } from '@/features/search/views/search-view';
 import { serverSideAppConfig } from '@/shared/lib/server-utils';
 import { USER_PREF_COORDS, USER_PREF_LOCATION } from '@/shared/lib/constants';
+import { SearchService } from '@/shared/services/search-service';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const cookies = nookies.get(ctx);
@@ -28,16 +27,11 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     }
   }
 
-  const axios = getServerSideAxios(ctx);
-  const searchAdapter = new SearchAdapter(axios);
   const { results, noResults, totalResults, page, filters } =
-    await searchAdapter.search(
-      ctx.query,
-      parseInt((ctx?.query?.page as string) ?? ''),
-      {
-        locale: ctx.locale,
-      },
-    );
+    await SearchService.findResources(ctx.query, {
+      locale: ctx.locale,
+      page: parseInt((ctx?.query?.page as string) ?? ''),
+    });
 
   cacheControl(ctx);
 

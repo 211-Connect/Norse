@@ -12,10 +12,8 @@ import { useAtom, useAtomValue } from 'jotai';
 import { useRouter } from 'next/router';
 import qs from 'qs';
 
-const Filters = () => {
-  const filters = useAtomValue(filtersAtom);
+const Filters = ({ filters, filterKeys }) => {
   const router = useRouter();
-  const filterKeys = Object.keys(filters);
   const q: any = qs.parse(router.asPath.slice(router.asPath.indexOf('?') + 1));
 
   if (filterKeys.length === 0) return null;
@@ -86,12 +84,16 @@ const Filters = () => {
 };
 
 export function FilterPanel() {
+  const filters = useAtomValue(filtersAtom);
+  const filterKeys = Object.keys(filters);
   const [filtersOpen, setFiltersOpen] = useAtom(filtersOpenAtom);
+
+  if (filterKeys.length === 0) return null;
 
   return (
     <>
       <div className="hidden w-full max-w-64 xl:block">
-        <Filters />
+        <Filters filters={filters} filterKeys={filterKeys} />
       </div>
       <Sheet onOpenChange={setFiltersOpen} open={filtersOpen}>
         <SheetContent side="left" className="max-h-screen overflow-y-scroll">
@@ -99,7 +101,7 @@ export function FilterPanel() {
             <SheetTitle></SheetTitle>
           </SheetHeader>
           <ScrollArea>
-            <Filters />
+            <Filters filters={filters} filterKeys={filterKeys} />
           </ScrollArea>
         </SheetContent>
       </Sheet>

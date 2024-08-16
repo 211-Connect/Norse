@@ -1,6 +1,10 @@
 import { ExtractAtomValue } from 'jotai';
 import { isEmpty, isNil, isString, omitBy } from 'lodash';
 import { searchAtom } from '../store/search';
+import axios from 'axios';
+import { API_URL, TENANT_ID } from '../lib/constants';
+import qs from 'qs';
+import _ from 'lodash';
 
 export class SearchService {
   static endpoint = 'search';
@@ -26,5 +30,83 @@ export class SearchService {
     );
   }
 
-  static async findResources(searchTerm: string, options: { locale: string }) {}
+  static async findResources(
+    query: any,
+    { locale, page }: { locale: string; page: number },
+  ) {
+    if (isNaN(page)) {
+      page = 1;
+    }
+
+    let response;
+    try {
+      response = await axios.get(
+        `${API_URL}/search?${qs.stringify({
+          ...query,
+          page,
+          locale,
+          tenant_id: TENANT_ID,
+        })}`,
+      );
+    } catch (err) {}
+
+    let data = response?.data;
+
+    let totalResults =
+      typeof data?.search?.hits?.total !== 'number'
+        ? (data?.search?.hits?.total?.value ?? 0)
+        : (data?.search?.hits?.total ?? 0);
+
+    let noResults = false;
+    if (totalResults === 0) {
+      noResults = true;
+      data = await axios.get(
+        `${API_URL}/search?${qs.stringify({
+          ...query,
+          page,
+          query_type: 'more_like_this',
+          locale,
+          tenant_id: TENANT_ID,
+        })}`,
+      );
+
+      totalResults =
+        typeof data?.search?.hits?.total !== 'number'
+          ? (data?.search?.hit?.total?.value ?? 0)
+          : (data?.search?.hits?.total ?? 0);
+    }
+
+    return {
+      results:
+        data?.search?.hits?.hits?.map((hit: any) => {
+          let mainAddress: string | null =
+            `${hit._source.address_1}, ${hit._source.city}, ${hit._source.state}, ${hit._source.postal_code}`;
+
+          if (mainAddress.includes('null')) {
+            mainAddress = null;
+          }
+
+          const responseData = {
+            _id: hit._id,
+            id: hit?._source?.service_at_location_id ?? null,
+            priority: hit?._source?.priority,
+            serviceName: hit?._source?.service_name ?? null,
+            name: hit?._source?.display_name ?? null,
+            description: hit?._source?.service_description ?? null,
+            phone: hit?._source?.primary_phone ?? null,
+            website: hit?._source?.primary_website ?? null,
+            address: mainAddress,
+            location: hit?._source?.location ?? null,
+            taxonomyTerms: hit?._source?.taxonomy_terms ?? null,
+            taxonomyCodes: hit?._source?.taxonomy_codes ?? null,
+          };
+
+          return _.omitBy(responseData, _.isNil);
+        }) ?? [],
+      noResults,
+      totalResults,
+      page,
+      filters: data?.search?.aggregations ?? {},
+    };
+  }
 }
