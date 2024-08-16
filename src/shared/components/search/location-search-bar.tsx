@@ -10,7 +10,11 @@ import { cn } from '../../lib/utils';
 import { setCookie } from 'nookies';
 import { USER_PREF_COORDS, USER_PREF_LOCATION } from '@/shared/lib/constants';
 
-export function LocationSearchBar({ className }) {
+type LocationSearchBarProps = {
+  className?: string;
+};
+
+export function LocationSearchBar({ className }: LocationSearchBarProps) {
   const { t } = useTranslation();
   const setSearch = useSetAtom(searchAtom);
   const searchLocation = useAtomValue(searchLocationAtom);

@@ -10,17 +10,8 @@ import {
 import { Link } from '@/shared/components/link';
 import { cn, distanceBetweenCoordsInMiles } from '@/shared/lib/utils';
 import { ResultType } from '@/shared/store/results';
-import {
-  Globe,
-  Heart,
-  LinkIcon,
-  MapPin,
-  Navigation,
-  Phone,
-  Pin,
-} from 'lucide-react';
+import { Globe, Heart, LinkIcon, MapPin, Phone, Pin } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
-import { ReferralLink } from '@/shared/components/referral-link';
 import { Badge } from '@/shared/components/ui/badge';
 import { useAtomValue } from 'jotai';
 import { userCoordinatesAtom } from '@/shared/store/search';
@@ -31,6 +22,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/shared/components/ui/tooltip';
+import { GetDirectionsButton } from './get-directions-button';
+import { ReferralButton } from '@/shared/components/referral-button';
 
 type ResultProps = {
   data: ResultType;
@@ -133,48 +126,35 @@ export function Result({ data }: ResultProps) {
       </CardContent>
       <CardFooter className="flex flex-col gap-2">
         <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center">
-          <ReferralLink
+          <ReferralButton
             className="flex-1 gap-1"
+            disabled={!data.phone}
             referralType="call_referral"
             resourceId={data.id}
-            resource={data}
-            href={`tel:${data.phone}`}
+            resourceData={data}
             variant="outline"
+            onClick={() => {
+              window.open(`tel:${data.phone}`);
+            }}
           >
             <Phone className="size-4" /> {t('call_to_action.call')}
-          </ReferralLink>
+          </ReferralButton>
 
-          <ReferralLink
+          <ReferralButton
             className="flex-1 gap-1"
             referralType="website_referral"
             resourceId={data.id}
-            resource={data}
-            href={data.website || ''}
-            target="_blank"
+            resourceData={data}
+            disabled={!data.website}
             variant="outline"
+            onClick={() => {
+              window.open(data.website, '_blank');
+            }}
           >
             <Globe className="size-4" /> {t('call_to_action.view_website')}
-          </ReferralLink>
+          </ReferralButton>
 
-          <ReferralLink
-            className="flex-1 gap-1"
-            referralType="directions_referral"
-            resourceId={data.id}
-            resource={data}
-            target="_blank"
-            href={`https://www.google.com/maps/dir/?api=1&origin=${coords
-              .slice()
-              .reverse()
-              .join(',')}&destination=${
-              data?.location?.coordinates
-                ? data.location.coordinates.slice().reverse().join(',')
-                : ''
-            }`}
-            variant="outline"
-          >
-            <Navigation className="size-4" />{' '}
-            {t('call_to_action.get_directions')}
-          </ReferralLink>
+          <GetDirectionsButton data={data} coords={coords} />
         </div>
 
         <div className="flex w-full items-center gap-2">

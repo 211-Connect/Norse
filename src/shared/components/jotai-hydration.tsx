@@ -37,10 +37,13 @@ export function JotaiHydration({ pageProps }) {
         searchLocation: pageProps?.location ?? cookies?.[USER_PREF_LOCATION],
         userLocation: pageProps?.location,
         userCoordinates:
-          pageProps?.coords?.split(',')?.map((number) => parseFloat(number)) ??
-          cookies?.[USER_PREF_COORDS]?.split(',')?.map((number) =>
-            parseFloat(number),
-          ),
+          pageProps?.coords
+            ?.split(',')
+            ?.map((number) => parseFloat(number))
+            ?.filter((number) => !isNaN(number)) ??
+          cookies?.[USER_PREF_COORDS]?.split(',')
+            ?.map((number) => parseFloat(number))
+            ?.filter((number) => !isNaN(number)),
       },
     ],
   ] as const);

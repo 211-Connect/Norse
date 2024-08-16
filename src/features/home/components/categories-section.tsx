@@ -42,7 +42,7 @@ const Category = ({ image, name, href, subcategories }: Props) => {
                       el.query,
                     )}&query_label=${encodeURIComponent(
                       el.name,
-                    )}&query_type=${encodeURIComponent(el.query_type)}`
+                    )}&query_type=${encodeURIComponent(el.queryType)}`
               }`}
               prefetch={false}
             >
