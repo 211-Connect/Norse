@@ -1,4 +1,5 @@
 import {
+  filtersAtom,
   resultsAtom,
   resultsCurrentPageAtom,
   resultTotalAtom,
@@ -23,6 +24,7 @@ export function JotaiHydration({ pageProps }) {
     [resultsAtom, pageProps?.results ?? []],
     [resultsCurrentPageAtom, pageProps?.currentPage ?? 0],
     [resultTotalAtom, pageProps?.totalResults ?? 0],
+    [filtersAtom, pageProps?.filters ?? {}],
     [
       searchAtom,
       {

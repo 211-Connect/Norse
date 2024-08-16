@@ -5,6 +5,7 @@ import Head from 'next/head';
 import { useEffect } from 'react';
 import { ResultsSection } from '../components/results-section';
 import { MapContainer } from '../components/map-container';
+import { FilterPanel } from '../components/filter-panel';
 
 export function SearchView({ results, totalResults, query_label, query }) {
   const { t } = useTranslation('page-search');
@@ -43,6 +44,7 @@ export function SearchView({ results, totalResults, query_label, query }) {
       </Head>
 
       <div className="flex h-full w-full">
+        <FilterPanel />
         <ResultsSection />
         <MapContainer />
       </div>

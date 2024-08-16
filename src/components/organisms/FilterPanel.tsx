@@ -74,8 +74,8 @@ export function FilterPanel({ filters }: any) {
                             onChange={(e) => {
                               const q: any = qs.parse(
                                 router.asPath.slice(
-                                  router.asPath.indexOf('?') + 1
-                                )
+                                  router.asPath.indexOf('?') + 1,
+                                ),
                               );
 
                               if (!q.filters) {
@@ -93,7 +93,7 @@ export function FilterPanel({ filters }: any) {
                                 q.filters[el.name].push(innerEl.key);
                               } else {
                                 const idx = q.filters[el.name].findIndex(
-                                  (v: any) => v === innerEl.key
+                                  (v: any) => v === innerEl.key,
                                 );
                                 q.filters[el.name].splice(idx, 1);
                               }
@@ -153,8 +153,8 @@ export function FilterPanel({ filters }: any) {
                             onChange={(e) => {
                               const q: any = qs.parse(
                                 router.asPath.slice(
-                                  router.asPath.indexOf('?') + 1
-                                )
+                                  router.asPath.indexOf('?') + 1,
+                                ),
                               );
 
                               if (!q.filters) {
@@ -172,7 +172,7 @@ export function FilterPanel({ filters }: any) {
                                 q.filters[el.name].push(innerEl.key);
                               } else {
                                 const idx = q.filters[el.name].findIndex(
-                                  (v: any) => v === innerEl.key
+                                  (v: any) => v === innerEl.key,
                                 );
                                 q.filters[el.name].splice(idx, 1);
                               }
