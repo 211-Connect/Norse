@@ -13,6 +13,7 @@ import { isAxiosError } from 'axios';
 import { cacheControl } from '../../lib/server/cacheControl';
 import { useSession } from 'next-auth/react';
 import { serverSideAppConfig } from '@/shared/lib/server-utils';
+import { ResourceView } from '@/features/resource/views/resource-view';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const axios = getServerSideAxios(ctx);
@@ -61,76 +62,78 @@ type Props = {
   resource: IResource;
 };
 
-export default function SearchDetail({ resource }: Props) {
-  const session = useSession();
-  const prevUrl = usePrevUrl();
-  const [backUrl, setBackUrl] = useState('loading');
-  const componentRef = useRef();
+export default ResourceView;
 
-  useEffect(() => {
-    if (prevUrl && prevUrl.startsWith('/search')) {
-      setBackUrl(prevUrl);
-    } else {
-      setBackUrl('/');
-    }
-  }, [prevUrl]);
+// export default function SearchDetail({ resource }: Props) {
+//   const session = useSession();
+//   const prevUrl = usePrevUrl();
+//   const [backUrl, setBackUrl] = useState('loading');
+//   const componentRef = useRef();
 
-  if (session.status === 'loading') return null;
+//   useEffect(() => {
+//     if (prevUrl && prevUrl.startsWith('/search')) {
+//       setBackUrl(prevUrl);
+//     } else {
+//       setBackUrl('/');
+//     }
+//   }, [prevUrl]);
 
-  return (
-    <>
-      <ResourceDetailsPageLayout
-        ref={componentRef}
-        metaTitle={resource.name}
-        metaDescription={resource.description}
-        resourceNavigationSection={
-          <ResourceNavigationSection
-            resourceId={resource.id}
-            backUrl={backUrl}
-            displayName={resource.name}
-            serviceDescription={resource.description}
-            componentToPrint={componentRef}
-          />
-        }
-        resourceOverviewSection={
-          <ResourceOverviewSection
-            id={resource.id}
-            displayName={resource.name}
-            displayPhoneNumber={resource.phone}
-            serviceName={resource.serviceName}
-            serviceDescription={resource.description}
-            phoneNumbers={resource.phoneNumbers}
-            website={resource.website}
-            location={resource.location}
-            categories={resource.categories}
-            lastAssuredOn={resource.lastAssuredOn}
-            attribution={resource.attribution}
-          />
-        }
-        resourceInformationSection={
-          <ResourceInformationSection
-            addresses={resource.addresses}
-            phoneNumbers={resource.phoneNumbers}
-            website={resource.website}
-            email={resource.email}
-            hours={resource.hours}
-            languages={resource.languages}
-            applicationProcess={resource.applicationProcess}
-            fees={resource.fees}
-            requiredDocuments={resource.requiredDocuments}
-            eligibilities={resource.eligibilities}
-            serviceAreaDescription={resource.serviceAreaDescription}
-            location={resource.location}
-            serviceArea={resource.serviceArea}
-          />
-        }
-        resourceOrganizationSection={
-          <ResourceOrganizationSection
-            organizationName={resource.organizationName}
-            organizationDescription={resource.organizationDescription}
-          />
-        }
-      />
-    </>
-  );
-}
+//   if (session.status === 'loading') return null;
+
+//   return (
+//     <>
+//       <ResourceDetailsPageLayout
+//         ref={componentRef}
+//         metaTitle={resource.name}
+//         metaDescription={resource.description}
+//         resourceNavigationSection={
+//           <ResourceNavigationSection
+//             resourceId={resource.id}
+//             backUrl={backUrl}
+//             displayName={resource.name}
+//             serviceDescription={resource.description}
+//             componentToPrint={componentRef}
+//           />
+//         }
+//         resourceOverviewSection={
+//           <ResourceOverviewSection
+//             id={resource.id}
+//             displayName={resource.name}
+//             displayPhoneNumber={resource.phone}
+//             serviceName={resource.serviceName}
+//             serviceDescription={resource.description}
+//             phoneNumbers={resource.phoneNumbers}
+//             website={resource.website}
+//             location={resource.location}
+//             categories={resource.categories}
+//             lastAssuredOn={resource.lastAssuredOn}
+//             attribution={resource.attribution}
+//           />
+//         }
+//         resourceInformationSection={
+//           <ResourceInformationSection
+//             addresses={resource.addresses}
+//             phoneNumbers={resource.phoneNumbers}
+//             website={resource.website}
+//             email={resource.email}
+//             hours={resource.hours}
+//             languages={resource.languages}
+//             applicationProcess={resource.applicationProcess}
+//             fees={resource.fees}
+//             requiredDocuments={resource.requiredDocuments}
+//             eligibilities={resource.eligibilities}
+//             serviceAreaDescription={resource.serviceAreaDescription}
+//             location={resource.location}
+//             serviceArea={resource.serviceArea}
+//           />
+//         }
+//         resourceOrganizationSection={
+//           <ResourceOrganizationSection
+//             organizationName={resource.organizationName}
+//             organizationDescription={resource.organizationDescription}
+//           />
+//         }
+//       />
+//     </>
+//   );
+// }

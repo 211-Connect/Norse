@@ -22,7 +22,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/shared/components/ui/tooltip';
-import { GetDirectionsButton } from './get-directions-button';
+import { GetDirectionsButton } from '../../../shared/components/get-directions-button';
 import { ReferralButton } from '@/shared/components/referral-button';
 
 type ResultProps = {

@@ -10,14 +10,6 @@ import { Footer } from '@/shared/components/footer';
 import { Providers } from '@/shared/components/providers';
 import { GoogleTagManagerScript } from '@/shared/components/google-tag-manager-script';
 import { Toaster } from '@/shared/components/ui/sonner';
-import { useHydrateAtoms } from 'jotai/utils';
-import {
-  resultsAtom,
-  resultsCurrentPageAtom,
-  resultTotalAtom,
-} from '@/shared/store/results';
-import { useHydrateAndSyncAtoms } from '@/shared/hooks/use-hydrate-and-sync-atoms';
-import { searchAtom } from '@/shared/store/search';
 import { JotaiHydration } from '@/shared/components/jotai-hydration';
 
 const fontSans = Open_Sans({

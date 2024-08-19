@@ -17,13 +17,12 @@ export function ReferralButton({
   referralType,
   resourceId,
   onClick,
-  resource,
   className,
   resourceData,
   ...rest
 }: Props & ButtonProps) {
   const handleClick = (e: any) => {
-    createReferralEvent(referralType, resourceId, resource);
+    createReferralEvent(referralType, resourceId, resourceData);
     onClick?.(e);
   };
 
