@@ -79,7 +79,7 @@ export class SearchAdapter extends BaseAdapter {
             priority: hit?._source?.priority,
             serviceName: hit?._source?.service_name ?? null,
             name: hit?._source?.display_name ?? null,
-            description: hit?._source?.service_description ?? null,
+            description: hit?._source?.display_short_description ?? hit?._source?.service_description ?? null,
             phone: hit?._source?.primary_phone ?? null,
             website: hit?._source?.primary_website ?? null,
             address: mainAddress,
