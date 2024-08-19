@@ -2,15 +2,23 @@ import { useTranslation } from 'next-i18next';
 import { Button } from './ui/button';
 import { Linkedin, Mail, Printer, Share2, Smartphone } from 'lucide-react';
 import { useReactToPrint } from 'react-to-print';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from './ui/dialog';
 import { useEffect, useState } from 'react';
 import { Facebook } from './icons/facebook';
 import { X } from './icons/x';
 import { ShortUrlService } from '../services/short-url-service';
 import { Input } from './ui/input';
 import { useClipboard } from '../hooks/use-clipboard';
+import { useAppConfig } from '../hooks/use-app-config';
+import { SmsButton } from './sms-button';
 
-export function ShareButton({ componentToPrintRef }) {
+export function ShareButton({ componentToPrintRef, title, body }) {
   const { t } = useTranslation('common');
   const [open, setOpen] = useState(false);
   const clipboard = useClipboard();
@@ -18,6 +26,7 @@ export function ShareButton({ componentToPrintRef }) {
     content: () => componentToPrintRef.current,
   });
   const [shortUrl, setShortUrl] = useState('');
+  const appConfig = useAppConfig();
 
   useEffect(() => {
     async function getShortUrl() {
@@ -38,7 +47,9 @@ export function ShareButton({ componentToPrintRef }) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t('modal.share.share_via')}</DialogTitle>
+            <DialogDescription />
           </DialogHeader>
+
           <div className="flex flex-col gap-2">
             <div className="grid grid-cols-2 gap-2">
               <Button
@@ -74,7 +85,7 @@ export function ShareButton({ componentToPrintRef }) {
                 onClick={() => {
                   window.open(
                     `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-                      shortUrl,
+                      title + '\n' + shortUrl,
                     )}`,
                   );
                 }}
@@ -82,15 +93,16 @@ export function ShareButton({ componentToPrintRef }) {
                 <X className="size-4 fill-white" />X
               </Button>
 
-              <Button className="flex gap-1">
-                <Smartphone className="size-4" />
-                {t('modal.share.sms')}
-              </Button>
+              <SmsButton title={title} body={body} shortUrl={shortUrl} />
 
               <Button
                 className="flex gap-1"
                 onClick={() => {
-                  window.open(`mailto:&body=${encodeURIComponent(shortUrl)}`);
+                  window.open(
+                    `mailto:?subject=${encodeURIComponent(
+                      title,
+                    )}&body=${encodeURIComponent(body + '\n\n' + shortUrl)}`,
+                  );
                 }}
               >
                 <Mail className="size-4" />

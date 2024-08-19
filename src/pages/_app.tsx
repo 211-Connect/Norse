@@ -11,6 +11,7 @@ import { Providers } from '@/shared/components/providers';
 import { GoogleTagManagerScript } from '@/shared/components/google-tag-manager-script';
 import { Toaster } from '@/shared/components/ui/sonner';
 import { JotaiHydration } from '@/shared/components/jotai-hydration';
+import { GlobalDialogs } from '@/shared/components/global-dialogs/global-dialogs';
 
 const fontSans = Open_Sans({
   subsets: ['latin'],
@@ -42,8 +43,9 @@ function App({
             <Component {...pageProps} />
           </main>
           <Footer />
-          <GoogleTagManagerScript />
+          <GlobalDialogs />
           <Toaster />
+          <GoogleTagManagerScript />
         </ErrorBoundary>
       </Providers>
     </div>

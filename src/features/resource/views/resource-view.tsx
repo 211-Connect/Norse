@@ -23,7 +23,10 @@ export function ResourceView({ resource }) {
       </Head>
 
       <div className="container mx-auto flex flex-col gap-2 pb-2 pt-2">
-        <Navigation componentToPrintRef={componentToPrintRef} />
+        <Navigation
+          componentToPrintRef={componentToPrintRef}
+          resource={resource}
+        />
 
         <div
           className="flex flex-col gap-2 lg:flex-row"
