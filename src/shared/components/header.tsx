@@ -151,6 +151,7 @@ export function Header(props: Props) {
         {session.status === 'authenticated' && (
           <Button
             variant="link"
+            className="flex gap-1"
             onClick={() => {
               signOut({ redirect: true, callbackUrl: '/' });
             }}
@@ -171,46 +172,47 @@ export function Header(props: Props) {
           'flex h-12 items-center justify-between md:h-20',
         )}
       >
-        <Link
-          href="/"
-          aria-label={t('header.home') as string}
-          className="h-full w-full max-w-96 pb-1 pt-1 md:pb-2 md:pt-2"
-        >
-          <img
-            src={appConfig?.brand?.logoUrl}
-            alt={t('header.home') as string}
-            className="h-full w-auto"
-          />
-        </Link>
+        <div className="flex h-full w-full max-w-96 pb-1 pt-1 md:pb-2 md:pt-2">
+          <Link
+            href="/"
+            aria-label={t('header.home') as string}
+            className="h-full pb-1 pt-1 md:pb-2 md:pt-2"
+          >
+            <img
+              src={appConfig?.brand?.logoUrl}
+              alt={t('header.home') as string}
+              className="h-full w-auto"
+            />
+          </Link>
+        </div>
 
         <nav className="hidden w-full justify-end lg:flex">
           <ul className="flex items-center gap-4">{SITEMAP}</ul>
         </nav>
 
-        <Sheet open={opened} onOpenChange={toggle}>
-          <SheetTrigger
-            className="flex w-full justify-end lg:hidden"
-            aria-label="Toggle navigation menu"
-          >
-            <AlignJustifyIcon className="size-8" />
-          </SheetTrigger>
-          <SheetContent side="left">
-            <SheetTitle>
-              <Link href="/" aria-label={t('header.home') as string}>
-                <img
-                  src={appConfig?.brand?.logoUrl}
-                  alt={t('header.home') as string}
-                  style={{
-                    height: 'auto',
-                    maxHeight: 64,
-                    maxWidth: '90%',
-                  }}
-                />
-              </Link>
-            </SheetTitle>
-            <ul className="flex flex-col gap-2 pt-4">{SITEMAP}</ul>
-          </SheetContent>
-        </Sheet>
+        <div className="flex w-full justify-end lg:hidden">
+          <Sheet open={opened} onOpenChange={toggle}>
+            <SheetTrigger aria-label="Toggle navigation menu">
+              <AlignJustifyIcon className="size-8" />
+            </SheetTrigger>
+            <SheetContent side="left">
+              <SheetTitle>
+                <Link href="/" aria-label={t('header.home') as string}>
+                  <img
+                    src={appConfig?.brand?.logoUrl}
+                    alt={t('header.home') as string}
+                    style={{
+                      height: 'auto',
+                      maxHeight: 64,
+                      maxWidth: '90%',
+                    }}
+                  />
+                </Link>
+              </SheetTitle>
+              <ul className="flex flex-col gap-2 pt-4">{SITEMAP}</ul>
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
     </header>
   );

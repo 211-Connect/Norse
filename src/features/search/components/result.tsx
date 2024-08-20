@@ -24,6 +24,7 @@ import {
 } from '@/shared/components/ui/tooltip';
 import { GetDirectionsButton } from '../../../shared/components/get-directions-button';
 import { ReferralButton } from '@/shared/components/referral-button';
+import { AddToFavoritesButton } from '@/shared/components/add-to-favorites-button';
 
 type ResultProps = {
   data: ResultType;
@@ -165,9 +166,7 @@ export function Result({ data }: ResultProps) {
             <LinkIcon className="size-4" /> {t('call_to_action.view_details')}
           </Link>
 
-          <Button size="icon">
-            <Heart className="size-5" />
-          </Button>
+          <AddToFavoritesButton size="icon" serviceAtLocationId={data.id} />
         </div>
       </CardFooter>
     </Card>

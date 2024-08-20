@@ -13,7 +13,7 @@ export function Navigation({ componentToPrintRef, resource }) {
           title={resource.name}
           body={resource.description}
         />
-        <AddToFavoritesButton />
+        <AddToFavoritesButton serviceAtLocationId={resource.id} />
       </div>
     </div>
   );

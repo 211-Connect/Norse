@@ -53,6 +53,7 @@ export function ShareButton({ componentToPrintRef, title, body }) {
           <div className="flex flex-col gap-2">
             <div className="grid grid-cols-2 gap-2">
               <Button
+                variant="outline"
                 className="flex gap-1"
                 onClick={() => {
                   window.open(
@@ -63,11 +64,12 @@ export function ShareButton({ componentToPrintRef, title, body }) {
                   );
                 }}
               >
-                <Facebook className="size-4 fill-white" />
+                <Facebook className="size-4" />
                 {t('modal.share.facebook')}
               </Button>
 
               <Button
+                variant="outline"
                 className="flex gap-1"
                 onClick={() => {
                   window.open(
@@ -76,11 +78,12 @@ export function ShareButton({ componentToPrintRef, title, body }) {
                   );
                 }}
               >
-                <Linkedin className="size-4 fill-white" />
+                <Linkedin className="size-4" />
                 {t('modal.share.linkedin')}
               </Button>
 
               <Button
+                variant="outline"
                 className="flex gap-1"
                 onClick={() => {
                   window.open(
@@ -90,12 +93,13 @@ export function ShareButton({ componentToPrintRef, title, body }) {
                   );
                 }}
               >
-                <X className="size-4 fill-white" />X
+                <X className="size-4" />X
               </Button>
 
               <SmsButton title={title} body={body} shortUrl={shortUrl} />
 
               <Button
+                variant="outline"
                 className="flex gap-1"
                 onClick={() => {
                   window.open(
@@ -109,7 +113,11 @@ export function ShareButton({ componentToPrintRef, title, body }) {
                 {t('modal.share.email')}
               </Button>
 
-              <Button className="flex gap-1" onClick={handlePrint}>
+              <Button
+                variant="outline"
+                className="flex gap-1"
+                onClick={handlePrint}
+              >
                 <Printer className="size-4" />
                 {t('modal.share.print')}
               </Button>
