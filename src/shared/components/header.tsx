@@ -14,7 +14,14 @@ import {
   LanguagesIcon,
   LogOutIcon,
 } from 'lucide-react';
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from './ui/sheet';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from './ui/sheet';
 import {
   Select,
   SelectContent,
@@ -196,19 +203,22 @@ export function Header(props: Props) {
               <AlignJustifyIcon className="size-8" />
             </SheetTrigger>
             <SheetContent side="left">
-              <SheetTitle>
-                <Link href="/" aria-label={t('header.home') as string}>
-                  <img
-                    src={appConfig?.brand?.logoUrl}
-                    alt={t('header.home') as string}
-                    style={{
-                      height: 'auto',
-                      maxHeight: 64,
-                      maxWidth: '90%',
-                    }}
-                  />
-                </Link>
-              </SheetTitle>
+              <SheetHeader>
+                <SheetTitle>
+                  <Link href="/" aria-label={t('header.home') as string}>
+                    <img
+                      src={appConfig?.brand?.logoUrl}
+                      alt={t('header.home') as string}
+                      style={{
+                        height: 'auto',
+                        maxHeight: 64,
+                        maxWidth: '90%',
+                      }}
+                    />
+                  </Link>
+                </SheetTitle>
+                <SheetDescription />
+              </SheetHeader>
               <ul className="flex flex-col gap-2 pt-4">{SITEMAP}</ul>
             </SheetContent>
           </Sheet>
