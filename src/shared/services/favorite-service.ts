@@ -19,6 +19,47 @@ export class FavoriteService {
     return data;
   }
 
+  static async updateFavoriteList({
+    id,
+    name,
+    description,
+    privacy,
+  }: {
+    id: string;
+    name: string;
+    description?: string;
+    privacy: boolean;
+  }) {
+    const { data } = await axiosWithAuth.put(
+      `${API_URL}/${this.listEndpoint}/${id}`,
+      {
+        name,
+        description,
+        public: privacy,
+      },
+      {
+        params: {
+          tenant_id: TENANT_ID,
+        },
+      },
+    );
+
+    return data;
+  }
+
+  static async deleteFavoriteList(id: string) {
+    const { data } = await axiosWithAuth.delete(
+      `${API_URL}/${this.listEndpoint}/${id}`,
+      {
+        params: {
+          tenant_id: TENANT_ID,
+        },
+      },
+    );
+
+    return data;
+  }
+
   static async createFavoriteList({
     name,
     description,

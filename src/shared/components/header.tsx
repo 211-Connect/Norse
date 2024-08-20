@@ -31,6 +31,8 @@ import {
 } from './ui/select';
 import { useAppConfig } from '../hooks/use-app-config';
 import { HEADER_ID } from '../lib/constants';
+import { useSetAtom } from 'jotai';
+import { dialogsAtom } from '../store/dialogs';
 
 type Props = {
   fullWidth?: boolean;
@@ -42,6 +44,7 @@ export function Header(props: Props) {
   const session = useSession();
   const { t } = useTranslation('common');
   const router = useRouter();
+  const setDialogStore = useSetAtom(dialogsAtom);
 
   const SITEMAP = useMemo(
     () => [
@@ -59,13 +62,13 @@ export function Header(props: Props) {
           onClick={(e) => {
             if (session.status === 'unauthenticated') {
               e.preventDefault();
-              openContextModal({
-                title: t('modal.prompt_auth'),
-                modal: 'prompt-auth',
-                centered: true,
-                size: 320,
-                innerProps: {},
-              });
+              setDialogStore((prev) => ({
+                ...prev,
+                promptAuth: {
+                  ...prev.promptAuth,
+                  open: true,
+                },
+              }));
             }
           }}
         >
