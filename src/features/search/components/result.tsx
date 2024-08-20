@@ -1,5 +1,5 @@
 import { parseHtml } from '@/lib/utils/parseHtml';
-import { Button, buttonVariants } from '@/shared/components/ui/button';
+import { buttonVariants } from '@/shared/components/ui/button';
 import {
   Card,
   CardContent,
@@ -10,7 +10,7 @@ import {
 import { Link } from '@/shared/components/link';
 import { cn, distanceBetweenCoordsInMiles } from '@/shared/lib/utils';
 import { ResultType } from '@/shared/store/results';
-import { Globe, Heart, LinkIcon, MapPin, Phone, Pin } from 'lucide-react';
+import { Globe, LinkIcon, MapPin, Phone, Pin } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 import { Badge } from '@/shared/components/ui/badge';
 import { useAtomValue } from 'jotai';
@@ -65,33 +65,14 @@ export function Result({ data }: ResultProps) {
           </div>
         </div>
 
-        <CardTitle className="text-lg">{data.name}</CardTitle>
+        <CardTitle>
+          <Link href={`/search/${data.id}`}>{data.name}</Link>
+        </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <div>{parseHtml(data.description)}</div>
+        <div className="text-sm">{parseHtml(data.description)}</div>
 
-        <div className="flex flex-col items-start justify-start gap-1">
-          {data.taxonomyTerms && data.taxonomyTerms.length > 0 && (
-            <>
-              <p>
-                {t('categories_text', {
-                  ns: 'dynamic',
-                  defaultValue: t('categories', { ns: 'page-resource' }),
-                })}
-              </p>
-
-              <div className="flex flex-wrap gap-1">
-                {data.taxonomyTerms.map((term) => (
-                  <Badge key={term} variant="outline">
-                    {term}
-                  </Badge>
-                ))}
-              </div>
-
-              <Separator className="mb-2 mt-2" />
-            </>
-          )}
-
+        <div className="flex flex-col items-start justify-start gap-2">
           {data.phone && (
             <Badge variant="outline" className="max-w-full">
               <p className="truncate">{data.phone}</p>
@@ -123,12 +104,36 @@ export function Result({ data }: ResultProps) {
               <p className="truncate">{data.website}</p>
             </Badge>
           )}
+
+          {data.taxonomyTerms && data.taxonomyTerms.length > 0 && (
+            <>
+              <Separator />
+
+              <p className="text-sm font-semibold">
+                {t('categories_text', {
+                  ns: 'dynamic',
+                  defaultValue: t('categories', { ns: 'page-resource' }),
+                })}
+              </p>
+
+              <div className="flex flex-wrap gap-1">
+                {data.taxonomyTerms.map((term) => (
+                  <Badge key={term} variant="outline">
+                    {term}
+                  </Badge>
+                ))}
+              </div>
+
+              <Separator className="mb-2 mt-2" />
+            </>
+          )}
         </div>
       </CardContent>
       <CardFooter className="flex flex-col gap-2">
         <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center">
           <ReferralButton
             className="flex-1 gap-1"
+            size="sm"
             disabled={!data.phone}
             referralType="call_referral"
             resourceId={data.id}
@@ -144,6 +149,7 @@ export function Result({ data }: ResultProps) {
           <ReferralButton
             className="flex-1 gap-1"
             referralType="website_referral"
+            size="sm"
             resourceId={data.id}
             resourceData={data}
             disabled={!data.website}

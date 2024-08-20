@@ -50,6 +50,7 @@ export function GetDirectionsButton({ data, coords }) {
   return (
     <>
       <ReferralButton
+        size="sm"
         className="flex-1 gap-1"
         referralType="directions_referral"
         resourceId={data.id}

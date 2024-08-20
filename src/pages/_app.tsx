@@ -23,7 +23,12 @@ function App({
   pageProps: { session, appConfig, ...pageProps },
 }: AppProps) {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div
+      className={cn(
+        'flex min-h-screen flex-col font-sans antialiased',
+        fontSans.variable,
+      )}
+    >
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
@@ -34,12 +39,7 @@ function App({
 
         <ErrorBoundary>
           <Header />
-          <main
-            className={cn(
-              'flex flex-1 flex-col font-sans antialiased',
-              fontSans.variable,
-            )}
-          >
+          <main className="flex flex-1 flex-col">
             <Component {...pageProps} />
           </main>
           <Footer />

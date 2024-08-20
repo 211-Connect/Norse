@@ -87,6 +87,7 @@ export function Overview({ resource }) {
         </CardContent>
         <CardFooter className="flex flex-col items-stretch justify-stretch gap-2 lg:flex-row lg:items-center print:hidden">
           <ReferralButton
+            size="sm"
             className="flex-1 gap-1"
             disabled={!resource.phone}
             referralType="call_referral"
@@ -102,6 +103,7 @@ export function Overview({ resource }) {
           </ReferralButton>
 
           <ReferralButton
+            size="sm"
             className="flex-1 gap-1"
             referralType="website_referral"
             resourceId={resource.id}
