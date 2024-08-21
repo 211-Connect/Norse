@@ -13,7 +13,10 @@ import {
   USER_PREF_DISTANCE,
   USER_PREF_LOCATION,
 } from '../lib/constants';
-import { favoriteListsAtom } from '../store/favorites';
+import {
+  favoriteListsAtom,
+  favoriteListWithFavoritesAtom,
+} from '../store/favorites';
 
 // This component handles the hydration of Jotai state as well as keeping it in sync with re-renders/fetches of new data
 // This MUST be a child of the Jotai Provider component or hydration will not work
@@ -27,6 +30,13 @@ export function JotaiHydration({ pageProps }) {
     [resultTotalAtom, pageProps?.totalResults ?? 0],
     [filtersAtom, pageProps?.filters ?? {}],
     [favoriteListsAtom, pageProps?.favoriteLists ?? []],
+    [
+      favoriteListWithFavoritesAtom,
+      {
+        ...pageProps?.favoriteList,
+        viewingAsOwner: pageProps?.viewingAsOwner ?? false,
+      },
+    ],
     [
       searchAtom,
       {

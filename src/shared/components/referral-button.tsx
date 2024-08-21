@@ -7,7 +7,7 @@ import { ResultType } from '../store/results';
 type Props = {
   referralType: 'call_referral' | 'website_referral' | 'directions_referral';
   resourceId: string;
-  resourceData: ResultType;
+  resourceData: Partial<ResultType>;
   onClick?: any;
   className?: string;
   children?: ReactNode;

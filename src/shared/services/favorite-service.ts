@@ -108,4 +108,23 @@ export class FavoriteService {
 
     return data;
   }
+
+  static async removeFavoriteFromList({
+    resourceId,
+    favoriteListId,
+  }: {
+    resourceId: string;
+    favoriteListId: string;
+  }) {
+    const { data } = await axiosWithAuth.delete(
+      `${API_URL}/${this.baseEndpoint}/${resourceId}/${favoriteListId}`,
+      {
+        params: {
+          tenant_id: TENANT_ID,
+        },
+      },
+    );
+
+    return data;
+  }
 }
