@@ -19,6 +19,7 @@ import { Badge } from '@/shared/components/ui/badge';
 import { UpdateFavoriteListButton } from './update-favorite-list-button';
 import { DeleteFavoriteListButton } from './delete-favorite-list-button';
 import { NoFavoritesCard } from './no-favorites-card';
+import { fontSans } from '@/shared/styles/fonts';
 
 export function FavoritesSection() {
   const { t } = useTranslation('page-list');
@@ -85,7 +86,10 @@ export function FavoritesSection() {
         </p>
       </div>
 
-      <div className="flex flex-col gap-2 p-2" ref={componentToPrint}>
+      <div
+        className={cn('flex flex-col gap-2 p-2 font-sans', fontSans.variable)}
+        ref={componentToPrint}
+      >
         {favoriteList?.favorites?.map((list) => {
           return (
             <Favorite

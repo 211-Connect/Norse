@@ -2,13 +2,8 @@ import * as React from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { Cross2Icon } from '@radix-ui/react-icons';
 
-const fontSans = Open_Sans({
-  subsets: ['latin'],
-  variable: '--font-sans',
-});
-
 import { cn } from '@/shared/lib/utils';
-import { Open_Sans } from 'next/font/google';
+import { fontSans } from '@/shared/styles/fonts';
 
 const Dialog = DialogPrimitive.Root;
 

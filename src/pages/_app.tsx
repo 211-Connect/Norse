@@ -12,11 +12,7 @@ import { GoogleTagManagerScript } from '@/shared/components/google-tag-manager-s
 import { Toaster } from '@/shared/components/ui/sonner';
 import { JotaiHydration } from '@/shared/components/jotai-hydration';
 import { GlobalDialogs } from '@/shared/components/global-dialogs/global-dialogs';
-
-const fontSans = Open_Sans({
-  subsets: ['latin'],
-  variable: '--font-sans',
-});
+import { fontSans } from '@/shared/styles/fonts';
 
 function App({
   Component,

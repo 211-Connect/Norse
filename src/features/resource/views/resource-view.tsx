@@ -5,6 +5,8 @@ import { Overview } from '../components/overview';
 import { Information } from '../components/information';
 import { OrganizationInformation } from '../components/organization-information';
 import { useRef } from 'react';
+import { cn } from '@/shared/lib/utils';
+import { fontSans } from '@/shared/styles/fonts';
 
 export function ResourceView({ resource }) {
   const appConfig = useAppConfig();
@@ -29,7 +31,10 @@ export function ResourceView({ resource }) {
         />
 
         <div
-          className="flex flex-col gap-2 lg:flex-row"
+          className={cn(
+            'flex flex-col gap-2 font-sans lg:flex-row',
+            fontSans.variable,
+          )}
           ref={componentToPrintRef}
         >
           <Overview resource={resource} />

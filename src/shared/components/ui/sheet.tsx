@@ -3,13 +3,8 @@ import * as SheetPrimitive from '@radix-ui/react-dialog';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { cva, type VariantProps } from 'class-variance-authority';
 
-const fontSans = Open_Sans({
-  subsets: ['latin'],
-  variable: '--font-sans',
-});
-
 import { cn } from '@/shared/lib/utils';
-import { Open_Sans } from 'next/font/google';
+import { fontSans } from '@/shared/styles/fonts';
 
 const Sheet = SheetPrimitive.Root;
 
