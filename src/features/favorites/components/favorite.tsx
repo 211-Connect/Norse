@@ -50,7 +50,9 @@ export function Favorite({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{translation.displayName}</CardTitle>
+        <CardTitle>
+          <Link href={`/search/${data._id}`}>{translation.displayName}</Link>
+        </CardTitle>
         <CardDescription>
           {parseHtml(translation.serviceDescription)}
         </CardDescription>

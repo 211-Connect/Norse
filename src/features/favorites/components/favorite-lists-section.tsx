@@ -3,6 +3,7 @@ import { useAtomValue } from 'jotai';
 import { useTranslation } from 'next-i18next';
 import { CreateAListButton } from './create-a-list-button';
 import { FavoriteList } from './favorite-list';
+import { NoListsCard } from './no-lists-card';
 
 export function FavoriteListsSection() {
   const { t } = useTranslation('page-favorites');
@@ -26,6 +27,8 @@ export function FavoriteListsSection() {
         {favoriteLists.map((list) => {
           return <FavoriteList key={list._id} list={list} />;
         })}
+
+        {favoriteLists?.length === 0 && <NoListsCard />}
       </div>
     </div>
   );

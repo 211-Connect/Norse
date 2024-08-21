@@ -1,14 +1,16 @@
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/shared/components/ui/card';
 import { useTranslation } from 'next-i18next';
+import Link from 'next/link';
 import Image from 'next/image';
 
-export function NoListsCard() {
-  const { t } = useTranslation('page-favorites');
+export function NoFavoritesCard() {
+  const { t } = useTranslation('page-list');
 
   return (
     <Card>
@@ -25,7 +27,12 @@ export function NoListsCard() {
         />
       </CardContent>
       <CardHeader className="text-center">
-        <CardTitle>{t('no_lists')}</CardTitle>
+        <CardTitle>{t('no_favorites.title')}</CardTitle>
+        <CardDescription>
+          <Link href="/search" className="underline">
+            {t('no_favorites.subtitle')}
+          </Link>
+        </CardDescription>
       </CardHeader>
     </Card>
   );
