@@ -1,10 +1,11 @@
 import { useTranslation } from 'next-i18next';
 import Head from 'next/head';
 import { TourProvider } from '@reactour/tour';
-import { useAppConfig } from '@/lib/hooks/useAppConfig';
 import Alert from '../components/alert';
 import { HeroSection } from '../components/hero-section';
 import { CategoriesSection } from '../components/categories-section';
+import { DataProviders } from '@/shared/components/data-providers';
+import { useAppConfig } from '@/shared/hooks/use-app-config';
 
 export function HomeView() {
   const appConfig = useAppConfig();
@@ -34,6 +35,7 @@ export function HomeView() {
       <HeroSection />
       <Alert />
       <CategoriesSection />
+      <DataProviders />
     </TourProvider>
   );
 }

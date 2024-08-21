@@ -2,7 +2,6 @@ import Image from 'next/image';
 import { useTranslation } from 'next-i18next';
 import { useTour } from '@reactour/tour';
 import { useMemo } from 'react';
-import { useAppConfig } from '@/lib/hooks/useAppConfig';
 import { createTourEvent } from '@/shared/lib/google-tag-manager';
 import { Button } from '@/shared/components/ui/button';
 import { SearchBar } from '@/shared/components/search/search-bar';
@@ -11,6 +10,7 @@ import { LocationSearchBar } from '@/shared/components/search/location-search-ba
 import { UseMyLocationButton } from '@/shared/components/search/use-my-location-button';
 import { DistanceSelect } from '@/shared/components/search/distance-select';
 import { MainSearchLayout } from '@/shared/components/search/main-search-layout';
+import { useAppConfig } from '@/shared/hooks/use-app-config';
 
 export function HeroSection() {
   const appConfig = useAppConfig();

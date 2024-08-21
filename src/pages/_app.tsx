@@ -2,7 +2,6 @@ import '@/shared/styles/globals.css';
 import Head from 'next/head';
 import { appWithTranslation } from 'next-i18next';
 import { AppProps } from 'next/app';
-import { Open_Sans } from 'next/font/google';
 import { ErrorBoundary } from '@/features/error/components/error-boundary';
 import { cn } from '@/shared/lib/utils';
 import { Header } from '@/shared/components/header';

@@ -1,12 +1,38 @@
 import { API_URL, TENANT_ID } from '../lib/constants';
-import { axiosWithAuth } from '../lib/axios';
+import { createAxiosWithAuth } from '../lib/axios';
 
 export class FavoriteService {
   static listEndpoint = 'favorite-list';
   static baseEndpoint = 'favorite';
 
-  static async searchFavoriteLists(searchText: string) {
-    const { data } = await axiosWithAuth.get(
+  static async getFavoriteList(id: string | string[], config) {
+    const { data } = await createAxiosWithAuth(config?.ctx).get(
+      `${API_URL}/${this.listEndpoint}/${id}`,
+      {
+        params: {
+          tenant_id: TENANT_ID,
+        },
+      },
+    );
+
+    return data;
+  }
+
+  static async getFavoriteLists(config) {
+    const { data } = await createAxiosWithAuth(config?.ctx).get(
+      `${API_URL}/${this.listEndpoint}`,
+      {
+        params: {
+          tenant_id: TENANT_ID,
+        },
+      },
+    );
+
+    return data;
+  }
+
+  static async searchFavoriteLists(searchText: string, config) {
+    const { data } = await createAxiosWithAuth(config?.ctx).get(
       `${API_URL}/${this.listEndpoint}/search`,
       {
         params: {
@@ -24,13 +50,15 @@ export class FavoriteService {
     name,
     description,
     privacy,
+    config,
   }: {
     id: string;
     name: string;
     description?: string;
     privacy: boolean;
+    config?: { ctx?: any };
   }) {
-    const { data } = await axiosWithAuth.put(
+    const { data } = await createAxiosWithAuth(config?.ctx).put(
       `${API_URL}/${this.listEndpoint}/${id}`,
       {
         name,
@@ -47,8 +75,8 @@ export class FavoriteService {
     return data;
   }
 
-  static async deleteFavoriteList(id: string) {
-    const { data } = await axiosWithAuth.delete(
+  static async deleteFavoriteList(id: string, config) {
+    const { data } = await createAxiosWithAuth(config?.ctx).delete(
       `${API_URL}/${this.listEndpoint}/${id}`,
       {
         params: {
@@ -64,12 +92,14 @@ export class FavoriteService {
     name,
     description,
     privacy,
+    config,
   }: {
     name: string;
     description?: string;
     privacy: boolean;
+    config?: { ctx?: any };
   }) {
-    const { data } = await axiosWithAuth.post(
+    const { data } = await createAxiosWithAuth(config?.ctx).post(
       `${API_URL}/${this.listEndpoint}`,
       {
         name,
@@ -89,11 +119,13 @@ export class FavoriteService {
   static async addToFavoriteList({
     resourceId,
     favoriteListId,
+    config,
   }: {
     resourceId: string;
     favoriteListId: string;
+    config?: { ctx?: any };
   }) {
-    const { data } = await axiosWithAuth.post(
+    const { data } = await createAxiosWithAuth(config?.ctx).post(
       `${API_URL}/${this.baseEndpoint}`,
       {
         resourceId: resourceId,
@@ -112,11 +144,13 @@ export class FavoriteService {
   static async removeFavoriteFromList({
     resourceId,
     favoriteListId,
+    config,
   }: {
     resourceId: string;
     favoriteListId: string;
+    config?: { ctx?: any };
   }) {
-    const { data } = await axiosWithAuth.delete(
+    const { data } = await createAxiosWithAuth(config?.ctx).delete(
       `${API_URL}/${this.baseEndpoint}/${resourceId}/${favoriteListId}`,
       {
         params: {

@@ -1,15 +1,8 @@
-import {
-  useEffect,
-  useRef,
-  createContext,
-  PropsWithChildren,
-  useState,
-} from 'react';
+import { useEffect, useRef, PropsWithChildren, useState } from 'react';
 import { parseCookies, setCookie } from 'nookies';
 import { useRouter } from 'next/router';
-import { PREV_URL } from '../../lib/constants/cookies';
-
-export const prevUrlContext = createContext<any>('');
+import { PREV_URL } from '../lib/constants';
+import { prevUrlContext } from './prev-url-context';
 
 // Track current and previous url
 export const PrevUrlProvider = ({ children }: PropsWithChildren) => {

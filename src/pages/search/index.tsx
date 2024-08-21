@@ -1,9 +1,8 @@
 import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import nookies from 'nookies';
-import { cacheControl } from '../../lib/server/cacheControl';
 import { SearchView } from '@/features/search/views/search-view';
-import { serverSideAppConfig } from '@/shared/lib/server-utils';
+import { cacheControl, serverSideAppConfig } from '@/shared/lib/server-utils';
 import { USER_PREF_COORDS, USER_PREF_LOCATION } from '@/shared/lib/constants';
 import { SearchService } from '@/shared/services/search-service';
 

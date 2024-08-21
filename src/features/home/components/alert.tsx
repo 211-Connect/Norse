@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Button, Flex, Text } from '@mantine/core';
-import { useAppConfig } from '@/lib/hooks/useAppConfig';
+import { useAppConfig } from '@/shared/hooks/use-app-config';
 
 export default function Alert() {
   const appConfig = useAppConfig();
