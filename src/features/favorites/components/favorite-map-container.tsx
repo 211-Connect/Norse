@@ -1,11 +1,23 @@
 import { MapLoader } from '@/shared/components/map/map-loader';
 import { useWindowScroll } from '@/shared/hooks/use-window-scroll';
 import { HEADER_ID } from '@/shared/lib/constants';
-import { useEffect, useState } from 'react';
+import { favoriteListWithFavoritesAtom } from '@/shared/store/favorites';
+import { useAtomValue } from 'jotai';
+import { useEffect, useMemo, useState } from 'react';
 
 export function FavoriteMapContainer() {
   const [_, y] = useWindowScroll();
   const [headerHeight, setHeaderHeight] = useState(0);
+  const favoriteList = useAtomValue(favoriteListWithFavoritesAtom);
+
+  const markers = useMemo(() => {
+    return (
+      favoriteList?.favorites?.map((favorite) => ({
+        id: favorite._id,
+        coordinates: favorite.location.coordinates,
+      })) ?? []
+    );
+  }, [favoriteList.favorites]);
 
   const clampedWindowValue = Math.round(
     Math.abs(Math.min(Math.max(y, 0), headerHeight) - headerHeight),
@@ -25,7 +37,7 @@ export function FavoriteMapContainer() {
       className="sticky top-0 hidden h-full w-full lg:block"
       style={{ height: `calc(100vh - ${clampedWindowValue}px` }}
     >
-      <MapLoader markers={[]} />
+      <MapLoader markers={markers} />
     </div>
   );
 }

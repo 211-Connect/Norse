@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useRef } from 'react';
+import { ReactElement, useEffect, useMemo, useRef } from 'react';
 import mapboxgl, { LngLatBounds, Marker, Popup } from 'mapbox-gl';
 import { MAPBOX_API_KEY, MAPBOX_STYLE_URL } from '@/shared/lib/constants';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -32,7 +32,7 @@ export function Map({ center, zoom, markers }: MapProps) {
     return () => {
       mapboxMap.current?.remove();
     };
-  }, []);
+  }, [center, zoom]);
 
   useEffect(() => {
     if (!mapboxMap.current) return;
@@ -42,7 +42,11 @@ export function Map({ center, zoom, markers }: MapProps) {
 
     _markers.current = markers.map((m) => {
       const marker = new Marker()
-        .setPopup(new Popup().setHTML(renderToStaticMarkup(m.popup)))
+        .setPopup(
+          m.popup
+            ? new Popup().setHTML(renderToStaticMarkup(m.popup))
+            : undefined,
+        )
         .setLngLat(m.coordinates);
 
       const markerElement = marker.getElement();
@@ -54,7 +58,7 @@ export function Map({ center, zoom, markers }: MapProps) {
 
         _markers.current?.forEach((m) => {
           const popup = m.getPopup();
-          if (popup.isOpen()) {
+          if (popup?.isOpen()) {
             m.togglePopup();
           }
         });
