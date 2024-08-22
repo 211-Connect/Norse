@@ -1,9 +1,9 @@
 import { Button } from '@/shared/components/ui/button';
+import { usePrevUrl } from '@/shared/hooks/use-prev-url';
 import { ChevronLeft } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { usePrevUrl } from '@/lib/hooks/usePrevUrl';
 
 export function BackToResultsButton() {
   const [backUrl, setBackUrl] = useState('loading');
