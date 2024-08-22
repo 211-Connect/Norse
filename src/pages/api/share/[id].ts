@@ -1,17 +1,16 @@
 import { NextApiHandler } from 'next';
 import { isAxiosError } from 'axios';
-import { getServerSideAxios } from '../../../lib/server/axios';
+import { ShortUrlService } from '@/shared/services/short-url-service';
 
 const ShareHandler: NextApiHandler = async (req, res) => {
   if (req.method !== 'GET' && req.method !== 'POST') res.redirect('/');
 
-  const axios = getServerSideAxios({ req });
 
   if (req.method === 'GET') {
     const id = req.query.id;
     try {
-      const response = await axios.get(`/short-url/${id}`);
-      if (response.data) res.redirect(response.data.url);
+      const response = await ShortUrlService.getShortUrlById(id as string);
+      if (response) res.redirect(response.url);
       else res.redirect('/404');
     } catch (err) {
       if (isAxiosError(err)) {
