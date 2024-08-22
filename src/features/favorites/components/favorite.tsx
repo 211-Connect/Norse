@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from '@/shared/components/ui/card';
 import { type Favorite } from '@/shared/store/favorites';
-import { Globe, LinkIcon, Phone } from 'lucide-react';
+import { Globe, LinkIcon, MapPin, Phone } from 'lucide-react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import Link from 'next/link';
@@ -26,6 +26,7 @@ import {
   TooltipTrigger,
 } from '@/shared/components/ui/tooltip';
 import { RemoveFromFavoriteListButton } from './remove-from-favorite-list-button';
+import { CopyBadge } from '@/shared/components/copy-badge';
 
 export function Favorite({
   data,
@@ -50,25 +51,47 @@ export function Favorite({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>
-          <Link href={`/search/${data._id}`}>{translation.displayName}</Link>
+        <CardTitle className="flex flex-row justify-between gap-2">
+          <Link
+            className="text-primary hover:underline"
+            href={`/search/${data._id}`}
+          >
+            {translation.displayName}
+          </Link>
+
+          <div>
+            {viewingAsOwner && (
+              <RemoveFromFavoriteListButton
+                id={data._id}
+                favoriteListId={favoriteListId}
+              />
+            )}
+          </div>
         </CardTitle>
-        <CardDescription>
-          {parseHtml(translation.serviceDescription)}
-        </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex flex-col gap-4">
+        <div className="text-sm">
+          {parseHtml(translation.serviceDescription)}
+        </div>
+
         <div className="flex flex-col items-start justify-start gap-2">
           {data.displayPhoneNumber && (
-            <Badge variant="outline" className="max-w-full">
-              <p className="truncate">{data.displayPhoneNumber}</p>
-            </Badge>
+            <div className="flex max-w-full items-center gap-1 text-primary/80">
+              <Phone className="size-4 shrink-0" />
+              <CopyBadge
+                text={data.displayPhoneNumber}
+                href={`tel:${data.displayPhoneNumber}`}
+              >
+                {data.displayPhoneNumber}
+              </CopyBadge>
+            </div>
           )}
 
           {displayAddress ? (
-            <Badge variant="outline" className="max-w-full">
-              <p className="truncate">{displayAddress}</p>
-            </Badge>
+            <div className="flex max-w-full items-center gap-1 text-primary/80">
+              <MapPin className="size-4 shrink-0" />
+              <CopyBadge text={displayAddress}>{displayAddress}</CopyBadge>
+            </div>
           ) : (
             <TooltipProvider>
               <Tooltip>
@@ -86,9 +109,12 @@ export function Favorite({
             </TooltipProvider>
           )}
           {data.website && (
-            <Badge variant="outline" className="max-w-full">
-              <p className="truncate">{data.website}</p>
-            </Badge>
+            <div className="flex max-w-full items-center gap-1 text-primary/80">
+              <Globe className="size-4 shrink-0" />
+              <CopyBadge href={data.website} text={data.website}>
+                <p className="truncate">{data.website}</p>
+              </CopyBadge>
+            </div>
           )}
         </div>
       </CardContent>
@@ -101,7 +127,7 @@ export function Favorite({
             referralType="call_referral"
             resourceId={data._id}
             resourceData={data}
-            variant="outline"
+            variant="highlight"
             onClick={() => {
               window.open(`tel:${data.displayPhoneNumber}`);
             }}
@@ -116,7 +142,7 @@ export function Favorite({
             resourceId={data._id}
             resourceData={data}
             disabled={!data.website}
-            variant="outline"
+            variant="highlight"
             onClick={() => {
               window.open(data.website, '_blank');
             }}
@@ -129,18 +155,14 @@ export function Favorite({
 
         <div className="flex w-full items-center gap-2">
           <Link
-            className={cn('flex-1 gap-1', buttonVariants())}
+            className={cn(
+              'flex-1 gap-1 text-primary',
+              buttonVariants({ variant: 'ghost' }),
+            )}
             href={`/search/${data._id}`}
           >
             <LinkIcon className="size-4" /> {t('call_to_action.view_details')}
           </Link>
-
-          {viewingAsOwner && (
-            <RemoveFromFavoriteListButton
-              id={data._id}
-              favoriteListId={favoriteListId}
-            />
-          )}
         </div>
       </CardFooter>
     </Card>

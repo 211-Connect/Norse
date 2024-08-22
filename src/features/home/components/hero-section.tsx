@@ -4,11 +4,6 @@ import { useTour } from '@reactour/tour';
 import { useMemo } from 'react';
 import { createTourEvent } from '@/shared/lib/google-tag-manager';
 import { Button } from '@/shared/components/ui/button';
-import { SearchBar } from '@/shared/components/search/search-bar';
-import { SearchButton } from '@/shared/components/search/search-button';
-import { LocationSearchBar } from '@/shared/components/search/location-search-bar';
-import { UseMyLocationButton } from '@/shared/components/search/use-my-location-button';
-import { DistanceSelect } from '@/shared/components/search/distance-select';
 import { MainSearchLayout } from '@/shared/components/search/main-search-layout';
 import { useAppConfig } from '@/shared/hooks/use-app-config';
 
@@ -90,7 +85,9 @@ export function HeroSection() {
       </div>
 
       {!appConfig.pages.home.disableTour && (
-        <Button onClick={enableTour}>{t('take_a_tour')}</Button>
+        <Button onClick={enableTour} variant="outline">
+          {t('take_a_tour')}
+        </Button>
       )}
     </div>
   );

@@ -12,6 +12,7 @@ import { Label } from '@/shared/components/ui/label';
 import { Switch } from '@/shared/components/ui/switch';
 import { Textarea } from '@/shared/components/ui/textarea';
 import { FavoriteService } from '@/shared/services/favorite-service';
+import { PlusIcon } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
@@ -57,7 +58,12 @@ export function CreateAListButton() {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)}>
+      <Button
+        onClick={() => setOpen(true)}
+        variant="outline"
+        className="flex gap-1"
+      >
+        <PlusIcon className="size-4" />
         {t('modal.create_list.create_a_list')}
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>

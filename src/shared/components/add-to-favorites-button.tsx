@@ -53,16 +53,16 @@ export function AddToFavoritesButton({
 
   const addToFavoriteList = (listId: string) => {
     return async () => {
-      try {
-        await FavoriteService.addToFavoriteList({
-          resourceId: serviceAtLocationId,
-          favoriteListId: listId,
-        });
+      const data = await FavoriteService.addToFavoriteList({
+        resourceId: serviceAtLocationId,
+        favoriteListId: listId,
+      });
 
+      if (data) {
         toast.success(t('favorites.added_to_list'), {
           description: t('favorites.added_to_list_message'),
         });
-      } catch (err) {
+      } else {
         toast.error(t('favorites.already_exists'), {
           description: t('favorites.already_exists_message'),
         });
@@ -106,6 +106,7 @@ export function AddToFavoritesButton({
       <Button
         className="flex gap-1"
         size={size}
+        variant={size === 'icon' ? 'outline' : 'outline'}
         aria-label={t('call_to_action.add_to_list')}
         onClick={handleClick}
       >
@@ -126,12 +127,12 @@ export function AddToFavoritesButton({
             />
 
             {fetching.status === 'success' && fetching.data.length === 0 && (
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-4">
                 <p className="text-sm text-red-600">
                   {t('modal.add_to_list.not_found')}
                 </p>
 
-                <Button variant="ghost" size="sm" onClick={createNewList()}>
+                <Button variant="outline" size="sm" onClick={createNewList()}>
                   {t('modal.add_to_list.create_new_list')}
                 </Button>
               </div>
@@ -175,6 +176,7 @@ export function AddToFavoritesButton({
 
                         <div className="flex justify-end">
                           <Button
+                            variant="ghost"
                             size="icon"
                             onClick={addToFavoriteList(el._id)}
                             aria-label={t('modal.add_to_list.add_to_list')}

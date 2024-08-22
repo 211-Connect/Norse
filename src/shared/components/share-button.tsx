@@ -1,6 +1,14 @@
 import { useTranslation } from 'next-i18next';
 import { Button } from './ui/button';
-import { Linkedin, Mail, Printer, Share2, Smartphone } from 'lucide-react';
+import {
+  CheckIcon,
+  ClipboardIcon,
+  Linkedin,
+  Mail,
+  Printer,
+  Share2,
+  Smartphone,
+} from 'lucide-react';
 import { useReactToPrint } from 'react-to-print';
 import {
   Dialog,
@@ -39,7 +47,11 @@ export function ShareButton({ componentToPrintRef, title, body }) {
 
   return (
     <>
-      <Button className="flex gap-1" onClick={() => setOpen(true)}>
+      <Button
+        className="flex gap-1"
+        variant="outline"
+        onClick={() => setOpen(true)}
+      >
         <Share2 className="size-4" />
         {t('call_to_action.share')}
       </Button>
@@ -123,12 +135,19 @@ export function ShareButton({ componentToPrintRef, title, body }) {
               </Button>
             </div>
 
-            <div className="flex">
-              <Input disabled value={shortUrl} />
-              <Button onClick={() => clipboard.copy(shortUrl)}>
-                {clipboard.copied
-                  ? t('modal.share.copied')
-                  : t('modal.share.copy')}
+            <div className="relative flex">
+              <Button
+                onClick={() => clipboard.copy(shortUrl)}
+                variant="outline"
+                className="group flex w-full items-center justify-between gap-1"
+              >
+                {shortUrl}
+
+                {clipboard.copied ? (
+                  <CheckIcon className="size-4" />
+                ) : (
+                  <ClipboardIcon className="hidden size-4 group-hover:block" />
+                )}
               </Button>
             </div>
           </div>

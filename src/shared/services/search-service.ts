@@ -60,15 +60,17 @@ export class SearchService {
     let noResults = false;
     if (totalResults === 0) {
       noResults = true;
-      data = await axios.get(
-        `${API_URL}/search?${qs.stringify({
-          ...query,
-          page,
-          query_type: 'more_like_this',
-          locale,
-          tenant_id: TENANT_ID,
-        })}`,
-      );
+      try {
+        data = await axios.get(
+          `${API_URL}/search?${qs.stringify({
+            ...query,
+            page,
+            query_type: 'more_like_this',
+            locale,
+            tenant_id: TENANT_ID,
+          })}`,
+        );
+      } catch (err) {}
 
       totalResults =
         typeof data?.search?.hits?.total !== 'number'

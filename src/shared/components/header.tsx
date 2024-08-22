@@ -2,7 +2,6 @@ import { signOut, useSession } from 'next-auth/react';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { Fragment, useMemo } from 'react';
-import { openContextModal } from '@mantine/modals';
 import { Link } from './link';
 import { useDisclosure } from '../hooks/use-disclosure';
 import { Button } from './ui/button';
@@ -49,7 +48,7 @@ export function Header(props: Props) {
   const SITEMAP = useMemo(
     () => [
       <li key="0">
-        <Link href="/" className="flex items-center gap-1">
+        <Link href="/" className="flex items-center gap-1 hover:underline">
           <HomeIcon className="size-4" />
           {t('header.home')}
         </Link>
@@ -58,7 +57,7 @@ export function Header(props: Props) {
       <li key="1">
         <Link
           href="/favorites"
-          className="flex items-center gap-1"
+          className="flex items-center gap-1 hover:underline"
           onClick={(e) => {
             if (session.status === 'unauthenticated') {
               e.preventDefault();
@@ -85,6 +84,7 @@ export function Header(props: Props) {
             return (
               <li key={item.name}>
                 <Link
+                  className="hover:underline"
                   {...(item.href != null ? { href: item.href } : { href: '' })}
                 >
                   {item.name}
@@ -99,6 +99,7 @@ export function Header(props: Props) {
             <Button
               key="feedback"
               className="feedback"
+              variant="outline"
               onClick={(e) => {
                 e.preventDefault();
 
@@ -160,7 +161,7 @@ export function Header(props: Props) {
       <Fragment key="4">
         {session.status === 'authenticated' && (
           <Button
-            variant="link"
+            variant="ghost"
             className="flex gap-1"
             onClick={() => {
               signOut({ redirect: true, callbackUrl: '/' });

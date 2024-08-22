@@ -93,7 +93,7 @@ export function Overview({ resource }) {
             referralType="call_referral"
             resourceId={resource.id}
             resourceData={resource}
-            variant="outline"
+            variant="highlight"
             onClick={() => {
               window.open(`tel:${resource.phone}`);
             }}
@@ -109,7 +109,7 @@ export function Overview({ resource }) {
             resourceId={resource.id}
             resourceData={resource}
             disabled={!resource.website}
-            variant="outline"
+            variant="highlight"
             onClick={() => {
               window.open(resource.website, '_blank');
             }}

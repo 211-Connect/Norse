@@ -1,11 +1,11 @@
 import { useTranslation } from 'next-i18next';
 import Head from 'next/head';
 import { TourProvider } from '@reactour/tour';
-import Alert from '../components/alert';
 import { HeroSection } from '../components/hero-section';
 import { CategoriesSection } from '../components/categories-section';
 import { DataProviders } from '@/shared/components/data-providers';
 import { useAppConfig } from '@/shared/hooks/use-app-config';
+import Alert from '../components/alert';
 
 export function HomeView() {
   const appConfig = useAppConfig();
@@ -33,8 +33,13 @@ export function HomeView() {
       </Head>
 
       <HeroSection />
-      <Alert />
-      <CategoriesSection />
+      <div className="bg-primary/5">
+        <div className="flex items-center justify-center p-8">
+          <Alert />
+        </div>
+        <CategoriesSection />
+      </div>
+
       <DataProviders />
     </TourProvider>
   );

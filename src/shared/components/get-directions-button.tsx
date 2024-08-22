@@ -55,7 +55,7 @@ export function GetDirectionsButton({ data, coords }) {
         referralType="directions_referral"
         resourceId={data.id}
         resourceData={data}
-        variant="outline"
+        variant="highlight"
         onClick={onClick}
       >
         <Navigation className="size-4" /> {t('call_to_action.get_directions')}
@@ -75,7 +75,7 @@ export function GetDirectionsButton({ data, coords }) {
           </div>
 
           <div className="flex items-center justify-between">
-            <Button onClick={() => setOpen(false)}>
+            <Button onClick={() => setOpen(false)} variant="outline">
               {t('call_to_action.cancel')}
             </Button>
 

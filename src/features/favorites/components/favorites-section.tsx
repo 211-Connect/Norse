@@ -5,7 +5,6 @@ import { useTranslation } from 'next-i18next';
 import {
   Card,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/shared/components/ui/card';
@@ -54,36 +53,32 @@ export function FavoritesSection() {
           <CardTitle>{favoriteList.name}</CardTitle>
           <CardDescription>{favoriteList.description}</CardDescription>
         </CardHeader>
-        <CardFooter
-          className={cn(
-            'flex items-center',
-            !favoriteList.viewingAsOwner ? 'justify-end' : 'justify-between',
-          )}
-        >
-          {favoriteList.viewingAsOwner && (
-            <Link
-              className={cn(buttonVariants(), 'items-center gap-1')}
-              href="/favorites"
-            >
-              <ChevronLeft className="size-4" />
-              {t('back_to_favorites')}
-            </Link>
-          )}
-
-          <ShareButton
-            title={favoriteList.name}
-            body={favoriteList.description}
-            componentToPrintRef={componentToPrint}
-          />
-        </CardFooter>
       </Card>
 
-      <div className="flex items-center justify-end bg-primary p-1 pl-2 pr-2 text-primary-foreground">
-        <p>
-          {favoriteList?.favorites?.length ?? 0}
-          {` `}
-          {t('favorites')}
-        </p>
+      <div
+        className={cn(
+          'flex items-center p-2 pb-0',
+          !favoriteList.viewingAsOwner ? 'justify-end' : 'justify-between',
+        )}
+      >
+        {favoriteList.viewingAsOwner && (
+          <Link
+            className={cn(
+              buttonVariants({ variant: 'outline' }),
+              'items-center gap-1',
+            )}
+            href="/favorites"
+          >
+            <ChevronLeft className="size-4" />
+            {t('back_to_favorites')}
+          </Link>
+        )}
+
+        <ShareButton
+          title={favoriteList.name}
+          body={favoriteList.description}
+          componentToPrintRef={componentToPrint}
+        />
       </div>
 
       <div

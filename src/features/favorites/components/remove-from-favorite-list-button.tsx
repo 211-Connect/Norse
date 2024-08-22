@@ -31,7 +31,7 @@ export function RemoveFromFavoriteListButton({ id, favoriteListId }) {
 
   return (
     <>
-      <Button size="icon" onClick={() => setOpen(true)}>
+      <Button size="icon" onClick={() => setOpen(true)} variant="outline">
         <HeartOff className="size-4" />
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>

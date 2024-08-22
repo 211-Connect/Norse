@@ -21,6 +21,7 @@ export function BackToResultsButton() {
 
   return (
     <Button
+      variant="outline"
       className="flex gap-1"
       disabled={backUrl === 'loading'}
       onClick={() => {

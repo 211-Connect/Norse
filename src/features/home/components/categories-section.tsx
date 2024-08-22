@@ -33,7 +33,7 @@ const Category = ({ image, name, href, subcategories }: Props) => {
 
           {subcategories.map((el, key) => (
             <Link
-              className="flex gap-1 p-2 pl-1 pr-1 hover:bg-primary/20"
+              className="flex items-center gap-1 rounded-md p-2 pl-1 pr-1 hover:bg-primary/5"
               key={el.name}
               href={`${
                 el.href

@@ -1,26 +1,16 @@
 import { favoriteListsAtom } from '@/shared/store/favorites';
 import { useAtomValue } from 'jotai';
-import { useTranslation } from 'next-i18next';
 import { CreateAListButton } from './create-a-list-button';
 import { FavoriteList } from './favorite-list';
 import { NoListsCard } from './no-lists-card';
 
 export function FavoriteListsSection() {
-  const { t } = useTranslation('page-favorites');
   const favoriteLists = useAtomValue(favoriteListsAtom);
 
   return (
     <div className="flex w-full flex-col lg:max-w-[550px]">
-      <div className="p-2">
+      <div className="p-2 pb-0">
         <CreateAListButton />
-      </div>
-
-      <div className="flex items-center justify-end bg-primary p-1 pl-2 pr-2 text-primary-foreground">
-        <p>
-          {favoriteLists.length}
-          {` `}
-          {t('lists')}
-        </p>
       </div>
 
       <div className="flex flex-col gap-2 p-2">
