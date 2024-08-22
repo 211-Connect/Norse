@@ -1,4 +1,3 @@
-import { parseHtml } from '@/lib/utils/parseHtml';
 import {
   Card,
   CardContent,
@@ -6,6 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/shared/components/ui/card';
+import { parseHtml } from '@/shared/lib/parse-html';
 import { useTranslation } from 'next-i18next';
 
 export function OrganizationInformation({ resource }) {

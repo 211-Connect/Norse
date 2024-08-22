@@ -1,4 +1,3 @@
-import { parseHtml } from '@/lib/utils/parseHtml';
 import { buttonVariants } from '@/shared/components/ui/button';
 import {
   Card,
@@ -26,6 +25,7 @@ import { GetDirectionsButton } from '../../../shared/components/get-directions-b
 import { ReferralButton } from '@/shared/components/referral-button';
 import { AddToFavoritesButton } from '@/shared/components/add-to-favorites-button';
 import { CopyBadge } from '@/shared/components/copy-badge';
+import { parseHtml } from '@/shared/lib/parse-html';
 
 type ResultProps = {
   data: ResultType;

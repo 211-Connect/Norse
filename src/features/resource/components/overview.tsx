@@ -1,4 +1,3 @@
-import { parseHtml } from '@/lib/utils/parseHtml';
 import { GetDirectionsButton } from '@/shared/components/get-directions-button';
 import { ReferralButton } from '@/shared/components/referral-button';
 import { badgeVariants } from '@/shared/components/ui/badge';
@@ -11,6 +10,7 @@ import {
   CardTitle,
 } from '@/shared/components/ui/card';
 import { useAppConfig } from '@/shared/hooks/use-app-config';
+import { parseHtml } from '@/shared/lib/parse-html';
 import { userCoordinatesAtom } from '@/shared/store/search';
 import { useAtomValue } from 'jotai';
 import { Globe, Phone } from 'lucide-react';

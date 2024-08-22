@@ -17,7 +17,6 @@ import { cn } from '@/shared/lib/utils';
 import { buttonVariants } from '@/shared/components/ui/button';
 import { useAtomValue } from 'jotai';
 import { userCoordinatesAtom } from '@/shared/store/search';
-import { parseHtml } from '@/lib/utils/parseHtml';
 import { Badge } from '@/shared/components/ui/badge';
 import {
   Tooltip,
@@ -27,6 +26,7 @@ import {
 } from '@/shared/components/ui/tooltip';
 import { RemoveFromFavoriteListButton } from './remove-from-favorite-list-button';
 import { CopyBadge } from '@/shared/components/copy-badge';
+import { parseHtml } from '@/shared/lib/parse-html';
 
 export function Favorite({
   data,
