@@ -34,7 +34,7 @@ export function Overview({ resource }) {
 
           {appConfig?.pages?.resource?.hideCategories ? null : (
             <div className="flex flex-col gap-1">
-              <h3 className="text-xl font-bold">
+              <h3 className="text-lg font-semibold">
                 {t('categories_text', {
                   ns: 'dynamic',
                   defaultValue: t('categories'),
@@ -62,7 +62,7 @@ export function Overview({ resource }) {
 
           {appConfig?.pages?.resource?.hideLastAssured ? null : (
             <div className="flex flex-col gap-1">
-              <h3 className="text-xl font-bold">
+              <h3 className="text-lg font-semibold">
                 {t('last_assured_text', {
                   ns: 'dynamic',
                   defaultValue: t('last_assured'),
