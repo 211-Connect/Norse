@@ -15,7 +15,7 @@ module.exports = {
       } catch (err) {}
     }
 
-    appConfig = JSON.parse(appConfig);
+    appConfig = JSON.parse(appConfig?.toString('utf8') ?? '{}');
 
     return appConfig;
   },

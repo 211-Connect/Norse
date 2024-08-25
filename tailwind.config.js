@@ -85,11 +85,11 @@ module.exports = {
     function ({ addBase }) {
       const appConfig = utils.getAppConfig();
 
-      const primary = color(appConfig.theme.primaryColor).hsl();
+      const primary = color(appConfig?.theme?.primaryColor).hsl();
       const primaryHsl = primary.array();
       const primaryForeground = primary.isDark() ? '0 0% 100%' : '0 0% 0%';
 
-      const secondary = color(appConfig.theme.secondaryColor).hsl();
+      const secondary = color(appConfig?.theme?.secondaryColor).hsl();
       const secondaryHsl = secondary.array();
       const secondaryForeground = secondary.isDark() ? '0 0% 100%' : '0 0% 0%';
 
