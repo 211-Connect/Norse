@@ -38,7 +38,7 @@ export function CopyBadge({ children, text, href }: CopyBadgeProps) {
         <Tooltip open={copied}>
           <TooltipTrigger className="w-4 shrink-0" onClick={handleCopy}>
             {copied ? (
-              <CheckIcon className="size-5" />
+              <CheckIcon className="size-4" />
             ) : (
               <ClipboardIcon className="hidden size-4 group-hover:block" />
             )}
