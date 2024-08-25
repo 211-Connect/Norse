@@ -56,7 +56,7 @@ const Category = ({ image, name, href, subcategories }: Props) => {
   }
 
   return (
-    <Link href={href || '/'}>
+    <Link href={href || '/'} className="group hover:underline">
       <Card>
         <CardContent>
           {image && (

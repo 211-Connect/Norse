@@ -34,9 +34,8 @@ export function HomeView() {
 
       <HeroSection />
       <div className="bg-primary/5">
-        <div className="flex items-center justify-center p-8">
-          <Alert />
-        </div>
+        <Alert />
+
         <CategoriesSection />
       </div>
 

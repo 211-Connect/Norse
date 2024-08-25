@@ -30,7 +30,7 @@ export function GetDirectionsButton({ data, coords }) {
     }
 
     return '';
-  }, [data.location.coordinates]);
+  }, [data?.location?.coordinates]);
 
   const onClick = useCallback(
     (e) => {

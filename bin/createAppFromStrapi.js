@@ -100,6 +100,8 @@ module.exports = function createFromStrapi(dir) {
       en: {},
     };
 
+    console.log(appConfig.search.resultsLimit);
+
     const newAppConfig = {
       nextConfig: appConfig.nextConfig,
       brand: {
@@ -116,6 +118,7 @@ module.exports = function createFromStrapi(dir) {
       search: {
         defaultRadius: appConfig?.defaultRadiusValue ?? 0,
         radiusOptions: appConfig?.radiusSelectValues ?? null,
+        resultsLimit: appConfig?.search?.resultsLimit ?? 25,
       },
       features: {
         map: {

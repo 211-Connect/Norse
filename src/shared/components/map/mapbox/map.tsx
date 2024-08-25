@@ -41,13 +41,15 @@ export function Map({ center, zoom, markers }: MapProps) {
     _markers.current?.forEach((m) => m.remove());
 
     _markers.current = markers.map((m) => {
-      const marker = new Marker()
-        .setPopup(
-          m.popup
-            ? new Popup().setHTML(renderToStaticMarkup(m.popup))
-            : undefined,
-        )
-        .setLngLat(m.coordinates);
+      const marker = new Marker().setPopup(
+        m.popup
+          ? new Popup().setHTML(renderToStaticMarkup(m.popup))
+          : undefined,
+      );
+
+      if (m.coordinates) {
+        marker.setLngLat(m.coordinates);
+      }
 
       const markerElement = marker.getElement();
       markerElement.style.cursor = 'pointer';
@@ -66,7 +68,9 @@ export function Map({ center, zoom, markers }: MapProps) {
         marker.togglePopup();
       });
 
-      marker.addTo(mapboxMap.current);
+      if (m.coordinates) {
+        marker.addTo(mapboxMap.current);
+      }
 
       bounds.extend(m.coordinates);
 

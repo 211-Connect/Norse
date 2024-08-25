@@ -32,10 +32,14 @@ export class SearchService {
 
   static async findResources(
     query: any,
-    { locale, page }: { locale: string; page: number },
+    { locale, page, limit }: { locale: string; page: number; limit?: number },
   ) {
     if (isNaN(page)) {
       page = 1;
+    }
+
+    if (isNaN(limit)) {
+      limit = 25;
     }
 
     let response;
@@ -46,6 +50,7 @@ export class SearchService {
           page,
           locale,
           tenant_id: TENANT_ID,
+          limit,
         })}`,
       );
     } catch (err) {}
@@ -68,6 +73,7 @@ export class SearchService {
             query_type: 'more_like_this',
             locale,
             tenant_id: TENANT_ID,
+            limit,
           })}`,
         );
       } catch (err) {}

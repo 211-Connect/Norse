@@ -27,7 +27,7 @@ export function MapContainer() {
   const mapMarkers = useMemo(() => {
     return results.map((result) => ({
       id: result._id,
-      coordinates: result.location.coordinates,
+      coordinates: result?.location?.coordinates,
       popup: (
         <>
           <h3 className="font-bold">{result.name}</h3>

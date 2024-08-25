@@ -8,6 +8,7 @@ import { SearchService } from '@/shared/services/search-service';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const cookies = nookies.get(ctx);
+  const appConfig = (await serverSideAppConfig()).appConfig;
 
   // If the user already has a location and coords, but they aren't present in the query
   // redirect them to the url using their stored location and coords
@@ -26,10 +27,12 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     }
   }
 
+  const limit = appConfig.search.resultsLimit;
   const { results, noResults, totalResults, page, filters } =
     await SearchService.findResources(ctx.query, {
       locale: ctx.locale,
       page: parseInt((ctx?.query?.page as string) ?? ''),
+      limit,
     });
 
   cacheControl(ctx);
@@ -46,7 +49,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       location: ctx.query?.location ?? null,
       distance: ctx.query?.distance ?? null,
       coords: ctx.query?.coords ?? null,
-      ...(await serverSideAppConfig()),
+      appConfig: appConfig,
       ...(await serverSideTranslations(ctx.locale as string, [
         'page-search',
         'page-resource',

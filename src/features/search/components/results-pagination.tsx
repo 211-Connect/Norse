@@ -1,4 +1,5 @@
 import { CustomPagination } from '@/shared/components/custom-pagination';
+import { useAppConfig } from '@/shared/hooks/use-app-config';
 import {
   resultsCurrentPageAtom,
   resultTotalAtom,
@@ -6,9 +7,12 @@ import {
 import { useAtomValue } from 'jotai';
 
 export function ResultsPagination() {
+  const appConfig = useAppConfig();
   const totalResults = useAtomValue(resultTotalAtom);
   const currentPage = useAtomValue(resultsCurrentPageAtom);
-  const totalPages = Math.ceil(totalResults / 25);
+
+  const limit = appConfig.search.resultsLimit;
+  const totalPages = Math.ceil(totalResults / limit);
 
   return (
     <>
