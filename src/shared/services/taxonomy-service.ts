@@ -21,4 +21,22 @@ export class TaxonomyService {
       })) ?? []
     );
   }
+
+  static async getTaxonomyTerms(terms: string[], options: { locale: string }) {
+    const res = await axios.get(`${API_URL}/${this.endpoint}/taxonomy-term`, {
+      params: {
+        tenant_id: TENANT_ID,
+        locale: options.locale,
+        terms: terms,
+      },
+    });
+
+    return (
+      res.data?.hits?.hits?.map((hit) => ({
+        id: hit?._id,
+        code: hit?._source?.code,
+        name: hit?._source?.name,
+      })) ?? []
+    );
+  }
 }

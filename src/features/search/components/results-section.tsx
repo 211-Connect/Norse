@@ -7,6 +7,7 @@ import { Filter } from 'lucide-react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { filtersAtom, filtersOpenAtom } from '@/shared/store/results';
 import { cn } from '@/shared/lib/utils';
+import { TaxonomyContainer } from './taxonomy-container';
 
 export function ResultsSection() {
   const setFiltersOpen = useSetAtom(filtersOpenAtom);
@@ -18,8 +19,10 @@ export function ResultsSection() {
       id="search-container"
       className="flex w-full flex-col overflow-y-auto lg:max-w-[550px]"
     >
-      <div className="bg-white p-2">
+      <div className="flex flex-col gap-2 bg-white p-2">
         <MainSearchLayout />
+
+        <TaxonomyContainer />
       </div>
 
       <div
