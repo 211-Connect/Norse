@@ -13,17 +13,37 @@ import { useRouter } from 'next/router';
 import qs from 'qs';
 import { useTranslation } from 'next-i18next';
 import { Separator } from '@/shared/components/ui/separator';
+import { Button } from '@/shared/components/ui/button';
 
 const Filters = ({ filters, filterKeys }) => {
   const { t } = useTranslation();
   const router = useRouter();
   const q: any = qs.parse(router.asPath.slice(router.asPath.indexOf('?') + 1));
 
+  const clearFilters = () => {
+    const q: any =
+      router.asPath.indexOf('?') > -1
+        ? qs.parse(router.asPath.slice(router.asPath.indexOf('?') + 1))
+        : {};
+
+    delete q.filters;
+
+    const str = qs.stringify(q);
+    const query = str.length > 0 ? `?${str}` : '';
+
+    router.push(`/search${query}`);
+  };
+
   if (filterKeys.length === 0) return null;
 
   return (
     <div className="p-6">
-      <h3 className="font-bold">{t('filters', 'Filters')}</h3>
+      <div className="flex items-center justify-between">
+        <h3 className="font-bold">{t('filters', 'Filters')}</h3>
+        <Button variant="ghost" size="sm" onClick={clearFilters}>
+          {t('clear_filters', 'Clear filters')}
+        </Button>
+      </div>
 
       <Separator className="mb-4" />
 
