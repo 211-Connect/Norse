@@ -11,6 +11,7 @@ import {
 } from '@/shared/components/ui/card';
 import { useAppConfig } from '@/shared/hooks/use-app-config';
 import { parseHtml } from '@/shared/lib/parse-html';
+import { cn } from '@/shared/lib/utils';
 import { userCoordinatesAtom } from '@/shared/store/search';
 import { useAtomValue } from 'jotai';
 import { Globe, Phone } from 'lucide-react';
@@ -45,7 +46,7 @@ export function Overview({ resource }) {
                   return (
                     <Link
                       key={el?.code}
-                      className={badgeVariants({ variant: 'outline' })}
+                      className={cn(badgeVariants(), 'hover:underline')}
                       href={`/search?query=${encodeURIComponent(
                         el?.code,
                       )}&query_label=${encodeURIComponent(

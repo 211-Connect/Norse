@@ -23,7 +23,9 @@ export function TaxonomyContainer() {
 
   useEffect(() => {
     if (router.query.query_type === 'taxonomy') {
-      setTaxonomies((router?.query?.query as string)?.split(','));
+      setTaxonomies((router?.query?.query as string)?.split(',') ?? []);
+    } else {
+      setTaxonomies([]);
     }
   }, [router.query]);
 
