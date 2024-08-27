@@ -1,10 +1,10 @@
 import { useTranslation } from 'next-i18next';
-import { IconExternalLink } from '@tabler/icons-react';
 import Image from 'next/image';
 import { Link } from '@/shared/components/link';
 import { Separator } from '@/shared/components/ui/separator';
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { useCategories } from '@/shared/hooks/use-categories';
+import { ExternalLink } from 'lucide-react';
 
 type Props = {
   index: string;
@@ -47,7 +47,7 @@ const Category = ({ image, name, href, subcategories }: Props) => {
               prefetch={false}
             >
               {el.name}
-              {el.href ? <IconExternalLink className="size-4" /> : null}
+              {el.href ? <ExternalLink className="size-4" /> : null}
             </Link>
           ))}
         </div>

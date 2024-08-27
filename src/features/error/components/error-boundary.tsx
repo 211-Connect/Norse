@@ -1,8 +1,8 @@
 import React, { ReactNode } from 'react';
-import { Title, Text, Button, Stack } from '@mantine/core';
 import Link from 'next/link';
 import Image from 'next/image';
 import axios from 'axios';
+import { buttonVariants } from '@/shared/components/ui/button';
 
 type Props = {
   children: ReactNode;
@@ -50,7 +50,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
     if (this.state.hasError) {
       // You can render any custom fallback UI
       return (
-        <Stack sx={{ position: 'relative', minHeight: '100vh' }}>
+        <div className="relative flex min-h-screen flex-col">
           <Image
             fill
             src="/undraw_bug_fixing.svg"
@@ -62,33 +62,21 @@ export class ErrorBoundary extends React.Component<Props, State> {
             }}
           />
 
-          <Stack
-            spacing="xl"
-            pt="100px"
-            pb="100px"
-            bg="rgba(0,0,0,0.5)"
-            align="center"
-            justify="center"
-            h="100vh"
-          >
-            <Title color="white">An error has occurred</Title>
+          <div className="flex h-screen flex-col items-center justify-center bg-black/50 pb-28 pt-28">
+            <h1 className="text-xl font-bold text-white">
+              An error has occurred
+            </h1>
 
-            <Text
-              size="lg"
-              align="center"
-              color="white"
-              weight={500}
-              maw="500px"
-            >
+            <p className="max-w-[500px] text-center text-lg font-semibold text-white">
               Our development team has been notified and will be working on a
               fix.
-            </Text>
+            </p>
 
-            <Button size="md" component={Link} href="/">
+            <Link className={buttonVariants()} href="/">
               Back to home
-            </Button>
-          </Stack>
-        </Stack>
+            </Link>
+          </div>
+        </div>
       );
     }
 
