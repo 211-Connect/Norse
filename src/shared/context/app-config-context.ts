@@ -22,14 +22,41 @@ type AppConfig = {
     radiusOptions?: {
       value?: number;
     }[];
+    resultsLimit?: number;
   };
   menus?: {
     header?: Menu[];
     footer?: Menu[];
   };
+  pages?: {
+    home?: {
+      heroSection?: {
+        backgroundImageUrl?: string;
+      };
+      disableTour?: boolean;
+    };
+    resource?: {
+      hideCategories?: boolean;
+      hideLastAssured?: boolean;
+    };
+  };
   adapters: {
     map: 'mapbox';
   };
+  alert?: {
+    text?: string;
+    buttonText?: string;
+    url?: string;
+  };
+  hideAttribution?: boolean;
+  providers?: {
+    name?: string;
+    href?: string;
+    logo?: string;
+  }[];
+  features?: {
+    sms: any;
+  }[];
 };
 
 const appConfigContext = createContext<AppConfig>(null);

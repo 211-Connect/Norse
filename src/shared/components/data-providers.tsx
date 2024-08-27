@@ -11,7 +11,7 @@ export function DataProviders() {
 
   return (
     <>
-      {appConfig.providers.length > 0 && (
+      {appConfig?.providers?.length > 0 && (
         <>
           <div className="container mx-auto flex flex-col pb-8 pt-8">
             <h3 className="text-lg font-semibold">

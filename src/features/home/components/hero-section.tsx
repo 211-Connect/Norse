@@ -64,7 +64,7 @@ export function HeroSection() {
     <div className="relative flex h-screen max-h-64 flex-col items-center justify-center gap-2 p-2 md:max-h-96">
       <Image
         fill
-        src={appConfig.pages.home.heroSection.backgroundImageUrl}
+        src={appConfig?.pages?.home?.heroSection?.backgroundImageUrl ?? ''}
         priority
         alt=""
         style={{ objectFit: 'cover', zIndex: -1, objectPosition: 'center' }}
@@ -84,7 +84,7 @@ export function HeroSection() {
         <MainSearchLayout />
       </div>
 
-      {!appConfig.pages.home.disableTour && (
+      {!appConfig?.pages?.home?.disableTour && (
         <Button onClick={enableTour} variant="outline">
           {t('take_a_tour')}
         </Button>

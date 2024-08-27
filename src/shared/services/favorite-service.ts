@@ -22,7 +22,7 @@ export class FavoriteService {
     }
   }
 
-  static async getFavoriteLists(config) {
+  static async getFavoriteLists(config?: { ctx?: any }) {
     try {
       const { data } = await createAxiosWithAuth(config?.ctx).get(
         `${API_URL}/${this.listEndpoint}`,
@@ -39,7 +39,7 @@ export class FavoriteService {
     }
   }
 
-  static async searchFavoriteLists(searchText: string, config) {
+  static async searchFavoriteLists(searchText: string, config?: { ctx?: any }) {
     try {
       const { data } = await createAxiosWithAuth(config?.ctx).get(
         `${API_URL}/${this.listEndpoint}/search`,
@@ -91,7 +91,7 @@ export class FavoriteService {
     }
   }
 
-  static async deleteFavoriteList(id: string, config) {
+  static async deleteFavoriteList(id: string, config?: { ctx?: any }) {
     try {
       const { data } = await createAxiosWithAuth(config?.ctx).delete(
         `${API_URL}/${this.listEndpoint}/${id}`,
