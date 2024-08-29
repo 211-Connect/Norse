@@ -176,7 +176,7 @@ export function Header(props: Props) {
   );
 
   return (
-    <header id={HEADER_ID} className="bg-white">
+    <header id={HEADER_ID} className="border-b bg-white">
       <div
         className={cn(
           props.fullWidth ? '100%' : 'container mx-auto',
