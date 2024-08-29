@@ -11,6 +11,7 @@ import {
   ComponentType,
   Fragment,
   useCallback,
+  useEffect,
   useRef,
   useState,
   type KeyboardEvent,
@@ -59,12 +60,17 @@ export function Autocomplete({
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isOpen, setOpen] = useState(false);
+  const [selected, setSelected] = useState('');
   const [inputValue, setInputValue] = useUncontrolled<string>({
     value,
     defaultValue,
     finalValue: '',
     onChange: onInputChange,
   });
+
+  useEffect(() => {
+    setSelected(`${options[0]?.items?.[0]?.value ?? options[0]?.value ?? ''}`);
+  }, [options]);
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>) => {
@@ -115,6 +121,9 @@ export function Autocomplete({
       className={cn(className)}
       onKeyDown={handleKeyDown}
       shouldFilter={false}
+      loop
+      value={selected}
+      onValueChange={setSelected}
     >
       <div>
         <CommandInput
