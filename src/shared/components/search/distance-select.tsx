@@ -45,12 +45,14 @@ export function DistanceSelect() {
             })}
           </SelectLabel>
           <SelectItem value="0">{t('search.any')}</SelectItem>
-          {appConfig?.search?.radiusOptions?.map((el: any) => (
-            <SelectItem
-              key={el.value.toString()}
-              value={el.value.toString()}
-            >{`${el.value} ${t('search.miles')}`}</SelectItem>
-          )) ?? (
+          {appConfig?.search?.radiusOptions?.length > 0 ? (
+            appConfig?.search?.radiusOptions?.map((el: any) => (
+              <SelectItem
+                key={el.value.toString()}
+                value={el.value.toString()}
+              >{`${el.value} ${t('search.miles')}`}</SelectItem>
+            ))
+          ) : (
             <>
               <SelectItem value="15">{`15 ${t('search.miles')}`}</SelectItem>
               <SelectItem value="30">{`30 ${t('search.miles')}`}</SelectItem>
