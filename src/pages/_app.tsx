@@ -15,7 +15,7 @@ import { fontSans } from '@/shared/styles/fonts';
 
 function App({
   Component,
-  pageProps: { session, appConfig, ...pageProps },
+  pageProps: { session, appConfig, flags, ...pageProps },
 }: AppProps) {
   return (
     <div
@@ -29,7 +29,7 @@ function App({
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Providers session={session} appConfig={appConfig}>
+      <Providers session={session} appConfig={appConfig} flags={flags}>
         <JotaiHydration pageProps={pageProps} />
 
         <ErrorBoundary>

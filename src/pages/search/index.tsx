@@ -2,7 +2,11 @@ import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import nookies from 'nookies';
 import { SearchView } from '@/features/search/views/search-view';
-import { cacheControl, serverSideAppConfig } from '@/shared/lib/server-utils';
+import {
+  cacheControl,
+  serverSideAppConfig,
+  serverSideFlags,
+} from '@/shared/lib/server-utils';
 import { USER_PREF_COORDS, USER_PREF_LOCATION } from '@/shared/lib/constants';
 import { SearchService } from '@/shared/services/search-service';
 
@@ -50,6 +54,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       distance: ctx.query?.distance ?? null,
       coords: ctx.query?.coords ?? null,
       appConfig: appConfig,
+      ...(await serverSideFlags()),
       ...(await serverSideTranslations(ctx.locale as string, [
         'page-search',
         'page-resource',

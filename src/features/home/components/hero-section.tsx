@@ -6,11 +6,13 @@ import { createTourEvent } from '@/shared/lib/google-tag-manager';
 import { Button } from '@/shared/components/ui/button';
 import { MainSearchLayout } from '@/shared/components/search/main-search-layout';
 import { useAppConfig } from '@/shared/hooks/use-app-config';
+import { useFlag } from '@/shared/hooks/use-flag';
 
 export function HeroSection() {
   const appConfig = useAppConfig();
   const { setIsOpen, setSteps } = useTour();
   const { t } = useTranslation('page-home');
+  const showHomePageTour = useFlag('showHomePageTour');
 
   const tourSteps = useMemo(() => {
     const steps = [
@@ -84,7 +86,7 @@ export function HeroSection() {
         <MainSearchLayout />
       </div>
 
-      {!appConfig?.pages?.home?.disableTour && (
+      {showHomePageTour && (
         <Button onClick={enableTour} variant="outline">
           {t('take_a_tour')}
         </Button>

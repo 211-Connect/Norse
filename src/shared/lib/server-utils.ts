@@ -34,6 +34,25 @@ export async function serverSideAppConfig() {
   };
 }
 
+let flags = undefined;
+export async function serverSideFlags() {
+  if (flags != null) return { flags };
+
+  let rawData;
+  try {
+    await fs.stat(path.resolve('./.norse/flags.json'));
+    rawData = await fs.readFile(path.resolve('./.norse/flags.json'));
+    flags = JSON.parse(rawData.toString());
+  } catch (_err) {
+    // file doesn't exist OR issue parsing JSON. Save a default flags object
+    flags = {};
+  }
+
+  return {
+    flags,
+  };
+}
+
 const isProduction = process.env.NODE_ENV === 'production';
 export function cacheControl(ctx: GetServerSidePropsContext) {
   if (isProduction) {

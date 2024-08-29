@@ -2,7 +2,10 @@ import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]';
-import { serverSideAppConfig } from '@/shared/lib/server-utils';
+import {
+  serverSideAppConfig,
+  serverSideFlags,
+} from '@/shared/lib/server-utils';
 import { ListView } from '@/features/favorites/views/list-view';
 import { FavoriteService } from '@/shared/services/favorite-service';
 
@@ -32,6 +35,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       session,
       favoriteLists: data,
       ...(await serverSideAppConfig()),
+      ...(await serverSideFlags()),
       ...(await serverSideTranslations(ctx.locale as string, [
         'page-favorites',
         'common',

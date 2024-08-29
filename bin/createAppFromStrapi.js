@@ -2,6 +2,7 @@ const qs = require('qs');
 const path = require('path');
 const fs = require('fs-extra');
 const syncClient = require('sync-rest-client');
+const _ = require('lodash');
 
 const STRAPI_URL = process.env.STRAPI_URL;
 const STRAPI_TOKEN = process.env.STRAPI_TOKEN;
@@ -22,6 +23,7 @@ const query = qs.stringify({
         'pages',
         'search',
         'plugins',
+        'featureFlags',
         'lastAssuredText',
         'categoriesText',
         'hideAttribution',
@@ -99,8 +101,6 @@ module.exports = function createFromStrapi(dir) {
     const translationFile = {
       en: {},
     };
-
-    console.log(appConfig.search.resultsLimit);
 
     const newAppConfig = {
       nextConfig: appConfig.nextConfig,
@@ -390,6 +390,16 @@ module.exports = function createFromStrapi(dir) {
         plugin?.config ?? {},
       ]);
     }
+
+    const featureFlags = _.omit(
+      _.omitBy(appConfig.featureFlags, _.isNil),
+      'id',
+    );
+
+    fs.writeFileSync(
+      path.resolve('./.norse/flags.json'),
+      JSON.stringify(featureFlags, null, 2),
+    );
 
     fs.writeFileSync(
       path.join(dir, 'tmp/app.json'),

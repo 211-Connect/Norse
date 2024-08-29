@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/shared/components/ui/card';
-import { useAppConfig } from '@/shared/hooks/use-app-config';
+import { useFlag } from '@/shared/hooks/use-flag';
 import { parseHtml } from '@/shared/lib/parse-html';
 import { cn } from '@/shared/lib/utils';
 import { userCoordinatesAtom } from '@/shared/store/search';
@@ -19,9 +19,11 @@ import { useTranslation } from 'next-i18next';
 import Link from 'next/link';
 
 export function Overview({ resource }) {
-  const appConfig = useAppConfig();
   const { t } = useTranslation('page-resource');
   const coords = useAtomValue(userCoordinatesAtom);
+  const showCategories = useFlag('showResourceCategories');
+  const showLastAssured = useFlag('showResourceLastAssuredDate');
+  const showAttribution = useFlag('showResourceAttribution');
 
   return (
     <div className="flex-1">
@@ -33,7 +35,7 @@ export function Overview({ resource }) {
         <CardContent className="flex flex-col gap-2">
           <p className="text-sm">{parseHtml(resource.description)}</p>
 
-          {appConfig?.pages?.resource?.hideCategories ? null : (
+          {showCategories && (
             <div className="flex flex-col gap-1">
               <h3 className="text-lg font-semibold">
                 {t('categories_text', {
@@ -61,7 +63,7 @@ export function Overview({ resource }) {
             </div>
           )}
 
-          {appConfig?.pages?.resource?.hideLastAssured ? null : (
+          {showLastAssured && (
             <div className="flex flex-col gap-1">
               <h3 className="text-lg font-semibold">
                 {t('last_assured_text', {
@@ -75,7 +77,7 @@ export function Overview({ resource }) {
             </div>
           )}
 
-          {appConfig?.hideAttribution || resource.attribution == null ? null : (
+          {showAttribution && resource.attribution != null && (
             <div className="flex flex-col gap-1">
               <h3 className="text-xl font-bold">
                 {t('data_providers.provided_by', {

@@ -1,7 +1,11 @@
 import { GetServerSidePropsContext } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { isAxiosError } from 'axios';
-import { cacheControl, serverSideAppConfig } from '@/shared/lib/server-utils';
+import {
+  cacheControl,
+  serverSideAppConfig,
+  serverSideFlags,
+} from '@/shared/lib/server-utils';
 import { ResourceView } from '@/features/resource/views/resource-view';
 import { ResourceService } from '@/shared/services/resource-service';
 
@@ -37,6 +41,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     props: {
       resource: data,
       ...(await serverSideAppConfig()),
+      ...(await serverSideFlags()),
       ...(await serverSideTranslations(ctx.locale as string, [
         'page-resource',
         'common',
