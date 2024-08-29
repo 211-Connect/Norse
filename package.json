@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "node -r dotenv/config bin/pre-build && next dev",
-    "build": "NPM_CONFIG_PRODUCTION=false&& node bin/pre-build && next build",
+    "build": "node bin/pre-build && next build",
     "start": "next start",
     "lint": "next lint"
   },
