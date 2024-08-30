@@ -79,7 +79,7 @@ export function Map({ center, zoom, markers, usersLocation }: MapProps) {
     });
 
     // Add users location as a map pin
-    if (usersLocation.length > 0) {
+    if (usersLocation?.length > 0) {
       const marker = new Marker();
 
       marker.setLngLat(usersLocation as LngLatLike);

@@ -7,7 +7,7 @@ import { useDebounce } from '../../hooks/use-debounce';
 import { useLocations } from '../../hooks/api/use-locations';
 import { useMemo } from 'react';
 import { cn } from '../../lib/utils';
-import { setCookie } from 'nookies';
+import { destroyCookie, setCookie } from 'nookies';
 import { USER_PREF_COORDS, USER_PREF_LOCATION } from '@/shared/lib/constants';
 
 type LocationSearchBarProps = {
@@ -49,8 +49,8 @@ export function LocationSearchBar({ className }: LocationSearchBarProps) {
       setCookie(null, USER_PREF_COORDS, coords.join(','), { path: '/' });
       setCookie(null, USER_PREF_LOCATION, value, { path: '/' });
     } else {
-      setCookie(null, USER_PREF_COORDS, '', { path: '/' });
-      setCookie(null, USER_PREF_LOCATION, '', { path: '/' });
+      destroyCookie(null, USER_PREF_COORDS, { path: '/' });
+      destroyCookie(null, USER_PREF_LOCATION, { path: '/' });
     }
 
     setSearch((prev) => {
