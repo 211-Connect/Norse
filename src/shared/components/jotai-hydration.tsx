@@ -44,13 +44,14 @@ export function JotaiHydration({ pageProps }) {
       {
         searchTerm: pageProps?.query_label ?? '',
         query: pageProps?.query ?? '',
-        queryLabel: pageProps?.query_label,
+        queryLabel: pageProps?.query_label ?? '',
         searchDistance:
           pageProps?.distance ??
           cookies?.[USER_PREF_DISTANCE] ??
           appConfig?.search?.defaultRadius?.toString() ??
           '0',
-        searchLocation: pageProps?.location ?? cookies?.[USER_PREF_LOCATION],
+        searchLocation:
+          pageProps?.location ?? cookies?.[USER_PREF_LOCATION] ?? '',
         userLocation: pageProps?.location,
         userCoordinates:
           pageProps?.coords
@@ -59,7 +60,8 @@ export function JotaiHydration({ pageProps }) {
             ?.filter((number) => !isNaN(number)) ??
           cookies?.[USER_PREF_COORDS]?.split(',')
             ?.map((number) => parseFloat(number))
-            ?.filter((number) => !isNaN(number)),
+            ?.filter((number) => !isNaN(number)) ??
+          [],
       },
     ],
   ] as const);
