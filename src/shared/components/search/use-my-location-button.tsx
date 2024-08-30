@@ -53,7 +53,7 @@ export function UseMyLocationButton() {
         error: t('search.geocoding_unable_to_retrieve'),
       });
     },
-    [setSearch, t],
+    [setSearch, t, adapter, router.locale],
   );
 
   const getUserLocation = useCallback(() => {
