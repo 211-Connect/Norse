@@ -92,17 +92,16 @@ export function Map({ center, zoom, markers, usersLocation }: MapProps) {
     }
 
     if (!bounds.isEmpty()) {
-      if (_markers.current.length > 1) {
-        mapboxMap.current.fitBounds(bounds, { padding: 100, animate: false });
+      if (_markers.current.length > 0) {
+        mapboxMap.current.fitBounds(bounds, { padding: 50, animate: false });
       } else {
         mapboxMap.current.fitBounds(bounds, {
-          padding: 100,
-          zoom: 13,
+          zoom: zoom,
           animate: false,
         });
       }
     }
-  }, [markers, usersLocation]);
+  }, [markers, usersLocation, zoom]);
 
   return <div ref={mapContainer} className="h-full w-full"></div>;
 }
