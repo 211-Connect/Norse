@@ -41,6 +41,9 @@ export function AddToFavoritesButton({
   });
 
   const refreshFavoritesList = useCallback(async () => {
+    if (session.status === 'unauthenticated' || session.status === 'loading')
+      return;
+
     setFetching({ data: [], status: 'loading' });
 
     const favoriteLists = await FavoriteService.searchFavoriteLists(value);
@@ -49,7 +52,7 @@ export function AddToFavoritesButton({
       setFetching({ data: favoriteLists, status: 'success' });
       return;
     }
-  }, [value]);
+  }, [value, session.status]);
 
   const addToFavoriteList = (listId: string) => {
     return async () => {
