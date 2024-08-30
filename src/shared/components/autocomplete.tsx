@@ -28,6 +28,7 @@ export type Option = {
   group?: string;
   items?: Option[];
   label?: string;
+  icon?: React.ComponentType<{ className?: string }>;
   [key: string]: any;
 };
 
@@ -156,6 +157,7 @@ export function Autocomplete({
             {options.map((option) => {
               if (!option.group) {
                 const matches = match(option.value, inputValue);
+                const Icon = option.icon || 'span';
 
                 return (
                   <CommandItem
@@ -168,22 +170,26 @@ export function Autocomplete({
                     }}
                     onSelect={() => handleSelectOption(option)}
                   >
-                    <p>
-                      {parse(option.value, matches).map((text, idx) =>
-                        text.highlight ? (
-                          <span
-                            key={`${option.value}-${text.text}-${idx}`}
-                            className="font-semibold"
-                          >
-                            {text.text}
-                          </span>
-                        ) : (
-                          <span key={`${option.value}-${text.text}-${idx}`}>
-                            {text.text}
-                          </span>
-                        ),
-                      )}
-                    </p>
+                    <span className="flex items-center gap-2">
+                      {Icon === 'span' ? null : <Icon className="size-4" />}
+                      <p>
+                        {parse(option.value, matches).map((text, idx) =>
+                          text.highlight ? (
+                            <span
+                              key={`${option.value}-${text.text}-${idx}`}
+                              className="font-semibold"
+                            >
+                              {text.text}
+                            </span>
+                          ) : (
+                            <span key={`${option.value}-${text.text}-${idx}`}>
+                              {text.text}
+                            </span>
+                          ),
+                        )}
+                      </p>
+                    </span>
+
                     {option.label && (
                       <Badge
                         variant="outline"
@@ -196,13 +202,14 @@ export function Autocomplete({
                 );
               }
 
-              if (option.items.length === 0) return null;
+              if (option.items.length === 0) return false;
 
               return (
                 <Fragment key={option.group}>
                   <CommandGroup heading={option.group}>
                     {option.items.map((option) => {
                       const matches = match(option.value, inputValue);
+                      const Icon = option.icon || 'span';
 
                       return (
                         <CommandItem
@@ -215,24 +222,31 @@ export function Autocomplete({
                           }}
                           onSelect={() => handleSelectOption(option)}
                         >
-                          <p>
-                            {parse(option.value, matches).map((text, idx) =>
-                              text.highlight ? (
-                                <span
-                                  key={`${option.value}-${text.text}-${idx}`}
-                                  className="font-semibold"
-                                >
-                                  {text.text}
-                                </span>
-                              ) : (
-                                <span
-                                  key={`${option.value}-${text.text}-${idx}`}
-                                >
-                                  {text.text}
-                                </span>
-                              ),
+                          <span className="flex items-center gap-2">
+                            {Icon === 'span' ? null : (
+                              <Icon className="size-4" />
                             )}
-                          </p>
+
+                            <p>
+                              {parse(option.value, matches).map((text, idx) =>
+                                text.highlight ? (
+                                  <span
+                                    key={`${option.value}-${text.text}-${idx}`}
+                                    className="font-semibold"
+                                  >
+                                    {text.text}
+                                  </span>
+                                ) : (
+                                  <span
+                                    key={`${option.value}-${text.text}-${idx}`}
+                                  >
+                                    {text.text}
+                                  </span>
+                                ),
+                              )}
+                            </p>
+                          </span>
+
                           {option.label && (
                             <Badge
                               variant="outline"

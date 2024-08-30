@@ -1,5 +1,5 @@
 import { useTranslation } from 'next-i18next';
-import { MapPin } from 'lucide-react';
+import { MapPin, NavigationIcon } from 'lucide-react';
 import { Autocomplete } from '../autocomplete';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { searchAtom, searchLocationAtom } from '../../store/search';
@@ -21,20 +21,47 @@ export function LocationSearchBar({ className }: LocationSearchBarProps) {
   const debouncedSearchLocation = useDebounce(searchLocation, 200);
   const { data: locations } = useLocations(debouncedSearchLocation);
 
+  const additionalLocations = useMemo(
+    () => [
+      {
+        type: 'coordinates',
+        address: t('search.everywhere', 'Everywhere'),
+        coordinates: [],
+      },
+    ],
+    [t],
+  );
+
   const options = useMemo(() => {
-    return locations.map((loc) => ({
-      value: loc.address,
-    }));
-  }, [locations]);
+    return [
+      ...additionalLocations.map((loc) => ({
+        value: loc.address,
+        icon: NavigationIcon,
+      })),
+      ...locations.map((loc) => ({
+        value: loc.address,
+        icon: NavigationIcon,
+      })),
+    ];
+  }, [locations, additionalLocations]);
 
   const findCoords = (value: string) => {
     const location = locations.find(
       (loc) => loc.address.toLowerCase() === value.toLowerCase(),
     );
 
-    if (location) return location['coordinates'];
+    if (location) return location;
 
-    return [];
+    const additionalLocation = additionalLocations.find(
+      (loc) => loc.address.toLowerCase() === value.toLowerCase(),
+    );
+
+    if (additionalLocation) return additionalLocation;
+
+    return {
+      type: 'invalid',
+      coordinates: null,
+    };
   };
 
   const setSearchLocation = async (value) => {
@@ -45,27 +72,35 @@ export function LocationSearchBar({ className }: LocationSearchBarProps) {
     //
     // This is to prevent the caching of invalid locations
     // We also update the 2 values so that they are empty if coordinates are not found
-    if (coords?.length === 2) {
-      setCookie(null, USER_PREF_COORDS, coords.join(','), { path: '/' });
+    if (coords.type === 'coordinates') {
+      setCookie(null, USER_PREF_COORDS, coords.coordinates.join(','), {
+        path: '/',
+      });
       setCookie(null, USER_PREF_LOCATION, value, { path: '/' });
     } else {
       destroyCookie(null, USER_PREF_COORDS, { path: '/' });
       destroyCookie(null, USER_PREF_LOCATION, { path: '/' });
     }
 
+    console.log({ value });
+
     setSearch((prev) => {
       // Ensure we are only providing updated coordinates to prevent unnecessary rerenders
-      let newCoords = false;
+      let isNewCoords = false;
+      const coordinates = coords.coordinates;
       if (
-        coords?.[0] !== prev['userCoordinates']?.[0] &&
-        coords?.[1] !== prev['userCoordinates']?.[1]
+        (coords.type === 'coordinates' &&
+          coordinates?.[0] !== prev['userCoordinates']?.[0] &&
+          coordinates?.[1] !== prev['userCoordinates']?.[1]) ||
+        (coordinates?.[0] !== prev['userCoordinates']?.[0] &&
+          coordinates?.[1] !== prev['userCoordinates']?.[1])
       ) {
-        newCoords = true;
+        isNewCoords = true;
       }
 
       return {
         ...prev,
-        ...(newCoords ? { userCoordinates: coords } : {}),
+        ...(isNewCoords ? { userCoordinates: coordinates } : {}),
         searchLocation: value,
         userLocation: value,
       };

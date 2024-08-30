@@ -8,6 +8,7 @@ export class MapboxAdapter extends BaseMapAdapter {
     options: { locale: string },
   ): Promise<
     {
+      type: 'coordinates' | 'invalid';
       address: string;
       coordinates: [number, number];
     }[]
@@ -17,6 +18,7 @@ export class MapboxAdapter extends BaseMapAdapter {
     );
 
     return res?.data?.features?.map((feature) => ({
+      type: 'coordinates',
       address:
         feature?.[`place_name_${options.locale}`] ?? feature?.['place_name'],
       coordinates: feature?.['geometry']?.['coordinates'],

@@ -4,6 +4,7 @@ export abstract class BaseMapAdapter {
     options: { locale: string },
   ): Promise<
     {
+      type: 'coordinates' | 'invalid';
       address: string;
       coordinates: [number, number];
     }[]
