@@ -27,6 +27,7 @@ import { ReferralButton } from '@/shared/components/referral-button';
 import { AddToFavoritesButton } from '@/shared/components/add-to-favorites-button';
 import { CopyBadge } from '@/shared/components/copy-badge';
 import { parseHtml } from '@/shared/lib/parse-html';
+import { useFlag } from '@/shared/hooks/use-flag';
 
 type ResultProps = {
   data: ResultType;
@@ -35,6 +36,7 @@ type ResultProps = {
 export function Result({ data }: ResultProps) {
   const { t } = useTranslation();
   const coords = useAtomValue(userCoordinatesAtom);
+  const showServiceName = useFlag('showSearchAndResourceServiceName');
 
   const distance =
     data?.location?.coordinates && (coords?.length ?? 0) === 2
@@ -79,6 +81,9 @@ export function Result({ data }: ResultProps) {
             <AddToFavoritesButton size="icon" serviceAtLocationId={data.id} />
           </div>
         </CardTitle>
+        {showServiceName && (
+          <CardDescription>{data.serviceName}</CardDescription>
+        )}
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <div className="text-sm">{parseHtml(data.description)}</div>

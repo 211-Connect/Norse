@@ -24,13 +24,16 @@ export function Overview({ resource }) {
   const showCategories = useFlag('showResourceCategories');
   const showLastAssured = useFlag('showResourceLastAssuredDate');
   const showAttribution = useFlag('showResourceAttribution');
+  const showServiceName = useFlag('showSearchAndResourceServiceName');
 
   return (
     <div className="flex-1">
       <Card>
         <CardHeader>
           <CardTitle>{resource.name}</CardTitle>
-          <CardDescription>{resource.serviceName}</CardDescription>
+          {showServiceName && (
+            <CardDescription>{resource.serviceName}</CardDescription>
+          )}
         </CardHeader>
         <CardContent className="flex flex-col gap-2">
           <p className="text-sm">{parseHtml(resource.description)}</p>
