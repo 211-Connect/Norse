@@ -44,7 +44,7 @@ export function LocationSearchBar({ className }: LocationSearchBarProps) {
     // IF coordinates are found for a given query.
     //
     // This is to prevent the caching of invalid locations
-    // We also update the 2 valeus so that they are empty if coordinates are not found
+    // We also update the 2 values so that they are empty if coordinates are not found
     if (coords?.length === 2) {
       setCookie(null, USER_PREF_COORDS, coords.join(','), { path: '/' });
       setCookie(null, USER_PREF_LOCATION, value, { path: '/' });
@@ -53,12 +53,23 @@ export function LocationSearchBar({ className }: LocationSearchBarProps) {
       setCookie(null, USER_PREF_LOCATION, '', { path: '/' });
     }
 
-    setSearch((prev) => ({
-      ...prev,
-      searchLocation: value,
-      userLocation: value,
-      userCoordinates: coords,
-    }));
+    setSearch((prev) => {
+      // Ensure we are only providing updated coordinates to prevent unnecessary rerenders
+      let newCoords = false;
+      if (
+        coords?.[0] !== prev['userCoordinates']?.[0] &&
+        coords?.[1] !== prev['userCoordinates']?.[1]
+      ) {
+        newCoords = true;
+      }
+
+      return {
+        ...prev,
+        ...(newCoords ? { userCoordinates: coords } : {}),
+        searchLocation: value,
+        userLocation: value,
+      };
+    });
   };
 
   return (

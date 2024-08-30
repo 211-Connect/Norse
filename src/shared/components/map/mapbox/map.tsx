@@ -88,6 +88,8 @@ export function Map({ center, zoom, markers, usersLocation }: MapProps) {
       markerElement.classList.add('users-location-marker');
       marker.addTo(mapboxMap.current);
 
+      _markers.current.push(marker);
+
       bounds.extend(usersLocation as LngLatLike);
     }
 
