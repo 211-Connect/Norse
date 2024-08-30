@@ -42,7 +42,7 @@ export function Result({ data }: ResultProps) {
           coords as [number, number],
           data.location.coordinates,
         )
-      : null;
+      : false;
 
   return (
     <Card id={data._id}>
