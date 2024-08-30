@@ -6,6 +6,10 @@
   fill: theme(colors.primary.DEFAULT);
 }
 
+.users-location-marker path {
+  fill: theme(colors.yellow.500);
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

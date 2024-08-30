@@ -1,5 +1,5 @@
 import { ReactElement, useEffect, useMemo, useRef } from 'react';
-import mapboxgl, { LngLatBounds, Marker, Popup } from 'mapbox-gl';
+import mapboxgl, { LngLatBounds, LngLatLike, Marker, Popup } from 'mapbox-gl';
 import { MAPBOX_API_KEY, MAPBOX_STYLE_URL } from '@/shared/lib/constants';
 import { renderToStaticMarkup } from 'react-dom/server';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -12,9 +12,10 @@ type MapProps = {
     coordinates?: [number, number];
     popup?: ReactElement;
   }[];
+  usersLocation: any[];
 };
 
-export function Map({ center, zoom, markers }: MapProps) {
+export function Map({ center, zoom, markers, usersLocation }: MapProps) {
   const mapContainer = useRef();
   const mapboxMap = useRef(null);
   const _markers = useRef(null);
@@ -77,6 +78,19 @@ export function Map({ center, zoom, markers }: MapProps) {
       return marker;
     });
 
+    // Add users location as a map pin
+    if (usersLocation.length > 0) {
+      const marker = new Marker();
+
+      marker.setLngLat(usersLocation as LngLatLike);
+
+      const markerElement = marker.getElement();
+      markerElement.classList.add('users-location-marker');
+      marker.addTo(mapboxMap.current);
+
+      bounds.extend(usersLocation as LngLatLike);
+    }
+
     if (!bounds.isEmpty()) {
       if (_markers.current.length > 1) {
         mapboxMap.current.fitBounds(bounds, { padding: 100, animate: false });
@@ -88,7 +102,7 @@ export function Map({ center, zoom, markers }: MapProps) {
         });
       }
     }
-  }, [markers]);
+  }, [markers, usersLocation]);
 
   return <div ref={mapContainer} className="h-full w-full"></div>;
 }
