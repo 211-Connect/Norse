@@ -103,8 +103,6 @@ module.exports = function createFromStrapi(dir) {
       en: {},
     };
 
-    console.log(appConfig.map);
-
     const newAppConfig = {
       nextConfig: appConfig.nextConfig,
       brand: {

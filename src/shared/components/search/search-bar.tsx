@@ -6,6 +6,7 @@ import { useTaxonomies } from '../../hooks/api/use-taxonomies';
 import { searchAtom, searchTermAtom } from '../../store/search';
 import { useDebounce } from '../../hooks/use-debounce';
 import { useSuggestions } from '../../hooks/use-suggestions';
+import { useFlag } from '@/shared/hooks/use-flag';
 
 export function SearchBar() {
   const { t } = useTranslation();
@@ -14,6 +15,7 @@ export function SearchBar() {
   const debouncedSearchTerm = useDebounce(searchTerm, 200);
   const { data: taxonomies } = useTaxonomies(debouncedSearchTerm);
   const suggestions = useSuggestions();
+  const showTaxonomyBadge = useFlag('showSuggestionListTaxonomyBadge');
 
   // Remap and filter data as needed for the search box
   const options = useMemo(() => {
@@ -30,11 +32,11 @@ export function SearchBar() {
         group: t('search.taxonomies'),
         items: taxonomies.map((option) => ({
           value: option.name,
-          label: option.code,
+          label: showTaxonomyBadge ? option.code : null,
         })),
       },
     ];
-  }, [taxonomies, suggestions, searchTerm, t]);
+  }, [taxonomies, suggestions, searchTerm, t, showTaxonomyBadge]);
 
   // Find the taxonomy code to be used for a query
   // Fallback to the original string value if a code isn't found

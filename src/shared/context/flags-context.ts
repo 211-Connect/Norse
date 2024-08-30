@@ -6,6 +6,7 @@ export type Flags = {
   showHomePageTour: boolean;
   showResourceAttribution: boolean;
   showSearchAndResourceServiceName: boolean;
+  showSuggestionListTaxonomyBadge: boolean;
   requireUserLocation: boolean;
 };
 
