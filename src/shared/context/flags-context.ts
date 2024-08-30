@@ -5,6 +5,7 @@ export type Flags = {
   showResourceLastAssuredDate: boolean;
   showHomePageTour: boolean;
   showResourceAttribution: boolean;
+  showSearchAndResourceServiceLabel: boolean;
   requireUserLocation: boolean;
 };
 
