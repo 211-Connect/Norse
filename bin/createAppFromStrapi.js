@@ -29,6 +29,7 @@ const query = qs.stringify({
         'hideAttribution',
         'headerMenu',
         'footerMenu',
+        'map',
         'dataProviders',
         'dataProviders.logo',
         'radiusSelectValues',
@@ -102,6 +103,8 @@ module.exports = function createFromStrapi(dir) {
       en: {},
     };
 
+    console.log(appConfig.map);
+
     const newAppConfig = {
       nextConfig: appConfig.nextConfig,
       brand: {
@@ -127,6 +130,10 @@ module.exports = function createFromStrapi(dir) {
       },
       adapters: {
         map: 'mapbox',
+      },
+      map: appConfig?.map ?? {
+        center: [0, 0],
+        zoom: 7,
       },
       alert: appConfig?.alert,
       theme: appConfig?.theme ?? null,

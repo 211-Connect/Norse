@@ -14,9 +14,6 @@ type MapLoaderProps = {
   }[];
 };
 
-const defaultCenter: [number, number] = [-120.740135, 47.751076];
-const defaultZoom = 7;
-
 const MapLoader = forwardRef<HTMLDivElement, MapLoaderProps>((props, ref) => {
   const appConfig = useAppConfig();
   const Map = maps[appConfig.adapters.map];
@@ -25,8 +22,8 @@ const MapLoader = forwardRef<HTMLDivElement, MapLoaderProps>((props, ref) => {
     <div ref={ref} id="map-container" className="h-full w-full">
       <div className="relative h-full w-full">
         <Map
-          center={defaultCenter}
-          zoom={defaultZoom}
+          center={appConfig.map.center}
+          zoom={appConfig.map.zoom}
           markers={props.markers}
         />
       </div>

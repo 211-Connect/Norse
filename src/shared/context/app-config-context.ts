@@ -43,6 +43,10 @@ type AppConfig = {
   adapters: {
     map: 'mapbox';
   };
+  map: {
+    center: [number, number];
+    zoom: number;
+  };
   alert?: {
     text?: string;
     buttonText?: string;

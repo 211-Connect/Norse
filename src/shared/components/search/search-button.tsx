@@ -3,10 +3,18 @@ import { useRouter } from 'next/router';
 import { Button } from '../ui/button';
 import { SearchService } from '../../services/search-service';
 import { useAtomValue } from 'jotai';
-import { searchAtom } from '../../store/search';
+import { searchAtom, userCoordinatesAtom } from '../../store/search';
 import { useDebounce } from '@/shared/hooks/use-debounce';
 import { useTaxonomies } from '@/shared/hooks/api/use-taxonomies';
 import { useSuggestions } from '@/shared/hooks/use-suggestions';
+import { useFlag } from '@/shared/hooks/use-flag';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '../ui/dialog';
 
 export function SearchButton() {
   const { t } = useTranslation('common');
@@ -15,6 +23,8 @@ export function SearchButton() {
   const debouncedSearchTerm = useDebounce(search.searchTerm, 200);
   const { data: taxonomies } = useTaxonomies(debouncedSearchTerm);
   const suggestions = useSuggestions();
+  const userCoords = useAtomValue(userCoordinatesAtom);
+  const requireUserLocation = useFlag('requireUserLocation');
 
   // Find the taxonomy code to be used for a query
   // Fallback to the original string value if a code isn't found
@@ -39,6 +49,11 @@ export function SearchButton() {
   };
 
   const onClick = async () => {
+    // if (requireUserLocation && userCoords.length === 0) {
+    //   console.log('User location is required');
+    //   return;
+    // }
+
     const query = findCode(search.searchTerm);
     const queryType = getQueryType(search.searchTerm, query);
 
@@ -54,5 +69,17 @@ export function SearchButton() {
     });
   };
 
-  return <Button onClick={onClick}>{t('call_to_action.search')}</Button>;
+  return (
+    <>
+      <Button onClick={onClick}>{t('call_to_action.search')}</Button>
+      <Dialog>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle></DialogTitle>
+            <DialogDescription />
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
 }
