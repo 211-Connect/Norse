@@ -74,11 +74,13 @@ export function FavoritesSection() {
           </Link>
         )}
 
-        <ShareButton
-          title={favoriteList.name}
-          body={favoriteList.description}
-          componentToPrintRef={componentToPrint}
-        />
+        {favoriteList.privacy === 'PUBLIC' && (
+          <ShareButton
+            title={favoriteList.name}
+            body={favoriteList.description}
+            componentToPrintRef={componentToPrint}
+          />
+        )}
       </div>
 
       <div
