@@ -1,6 +1,9 @@
 import path from 'path';
 import fs from 'fs/promises';
 import { GetServerSidePropsContext } from 'next';
+import { Flags } from '../context/flags-context';
+import { stringToBooleanOrUndefined } from './utils';
+import _ from 'lodash';
 
 let config = undefined;
 export async function serverSideAppConfig() {
@@ -34,7 +37,30 @@ export async function serverSideAppConfig() {
   };
 }
 
-let flags = undefined;
+let flags: Flags = undefined;
+let defaultFlags: Flags = {
+  showResourceCategories: stringToBooleanOrUndefined(
+    process.env.NEXT_PUBLIC_SHOW_RESOURCE_CATEGORIES_FLAG,
+  ),
+  showResourceLastAssuredDate: stringToBooleanOrUndefined(
+    process.env.NEXT_PUBLIC_SHOW_RESOURCE_LAST_ASSURED_DATE_FLAG,
+  ),
+  showHomePageTour: stringToBooleanOrUndefined(
+    process.env.NEXT_PUBLIC_SHOW_HOME_PAGE_TOUR_FLAG,
+  ),
+  showResourceAttribution: stringToBooleanOrUndefined(
+    process.env.NEXT_PUBLIC_SHOW_RESOURCE_ATTRIBUTION_FLAG,
+  ),
+  showSearchAndResourceServiceName: stringToBooleanOrUndefined(
+    process.env.NEXT_PUBLIC_SHOW_SEARCH_AND_RESOURCE_SERVICE_NAME_FLAG,
+  ),
+  showSuggestionListTaxonomyBadge: stringToBooleanOrUndefined(
+    process.env.NEXT_PUBLIC_SHOW_SUGGESTION_LIST_TAXONOMY_BADGE_FLAG,
+  ),
+  requireUserLocation: stringToBooleanOrUndefined(
+    process.env.NEXT_PUBLIC_REQUIRE_USER_LOCATION_FLAG,
+  ),
+};
 export async function serverSideFlags() {
   if (flags != null) return { flags };
 
@@ -42,10 +68,17 @@ export async function serverSideFlags() {
   try {
     await fs.stat(path.resolve('./.norse/flags.json'));
     rawData = await fs.readFile(path.resolve('./.norse/flags.json'));
-    flags = JSON.parse(rawData.toString());
+    flags = _.merge(
+      {},
+      JSON.parse(rawData.toString()),
+      defaultFlags,
+      (objValue, srcValue) => {
+        return objValue !== undefined ? objValue : srcValue;
+      },
+    );
   } catch (_err) {
     // file doesn't exist OR issue parsing JSON. Save a default flags object
-    flags = {};
+    flags = defaultFlags;
   }
 
   return {

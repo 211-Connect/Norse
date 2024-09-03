@@ -34,3 +34,8 @@ export function distanceBetweenCoordsInMiles(coords1: Coords, coords2: Coords) {
 function deg2rad(deg: number) {
   return deg * (Math.PI / 180);
 }
+
+export function stringToBooleanOrUndefined(str?: string): boolean | undefined {
+  if (str == null || str.trim().length === 0) return;
+  return str.toLowerCase() === 'true';
+}
