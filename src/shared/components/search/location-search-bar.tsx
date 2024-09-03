@@ -2,7 +2,11 @@ import { useTranslation } from 'next-i18next';
 import { MapPin, NavigationIcon } from 'lucide-react';
 import { Autocomplete } from '../autocomplete';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { searchAtom, searchLocationAtom } from '../../store/search';
+import {
+  searchAtom,
+  searchLocationAtom,
+  searchLocationValidationErrorAtom,
+} from '../../store/search';
 import { useDebounce } from '../../hooks/use-debounce';
 import { useLocations } from '../../hooks/api/use-locations';
 import { useMemo } from 'react';
@@ -20,6 +24,7 @@ export function LocationSearchBar({ className }: LocationSearchBarProps) {
   const searchLocation = useAtomValue(searchLocationAtom);
   const debouncedSearchLocation = useDebounce(searchLocation, 200);
   const { data: locations } = useLocations(debouncedSearchLocation);
+  const validationError = useAtomValue(searchLocationValidationErrorAtom);
 
   const additionalLocations = useMemo(
     () => [
@@ -82,8 +87,6 @@ export function LocationSearchBar({ className }: LocationSearchBarProps) {
       destroyCookie(null, USER_PREF_LOCATION, { path: '/' });
     }
 
-    console.log({ value });
-
     setSearch((prev) => {
       // Ensure we are only providing updated coordinates to prevent unnecessary rerenders
       let isNewCoords = false;
@@ -103,23 +106,31 @@ export function LocationSearchBar({ className }: LocationSearchBarProps) {
         ...(isNewCoords ? { userCoordinates: coordinates } : {}),
         searchLocation: value,
         userLocation: value,
+        searchLocationValidationError: '',
       };
     });
   };
 
   return (
-    <Autocomplete
-      className={cn(className, 'search-box')}
-      placeholder={
-        t('search.location_placeholder', {
-          ns: 'dynamic',
-          defaultValue: t('search.location_placeholder'),
-        }) || ''
-      }
-      options={options}
-      Icon={MapPin}
-      onInputChange={setSearchLocation}
-      value={searchLocation}
-    />
+    <div className="w-full">
+      <Autocomplete
+        className={cn(className, 'search-box')}
+        inputWrapperClassName={cn(
+          validationError && 'border-b border-b-red-500',
+        )}
+        placeholder={
+          t('search.location_placeholder', {
+            ns: 'dynamic',
+            defaultValue: t('search.location_placeholder'),
+          }) || ''
+        }
+        options={options}
+        Icon={MapPin}
+        onInputChange={setSearchLocation}
+        value={searchLocation}
+      />
+
+      <p className="min-h-4 text-xs text-red-500">{validationError}</p>
+    </div>
   );
 }

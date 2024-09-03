@@ -38,12 +38,16 @@ const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
 interface CommandInputProps
   extends React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input> {
   Icon?: React.ComponentType<{ className?: string }>;
+  wrapperClassName?: string;
 }
 const CommandInput = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Input>,
   CommandInputProps
->(({ className, Icon, ...props }, ref) => (
-  <div className="flex items-center border-b px-3" cmdk-input-wrapper="">
+>(({ className, Icon, wrapperClassName, ...props }, ref) => (
+  <div
+    className={cn('flex items-center border-b px-3', wrapperClassName)}
+    cmdk-input-wrapper=""
+  >
     {Icon ? (
       <Icon className="mr-2 h-4 w-4 shrink-0 opacity-50" />
     ) : (

@@ -1,11 +1,12 @@
 import { atom } from 'jotai';
 
 export const searchAtom = atom({
-  searchTerm: '',
   query: '',
   queryLabel: '',
   queryType: '',
+  searchTerm: '',
   searchLocation: '',
+  searchLocationValidationError: '',
   searchDistance: '',
   userLocation: '',
   userCoordinates: [],
@@ -21,6 +22,9 @@ export const queryTypeAtom = atom((get) => get(searchAtom).queryType);
 
 // Currently searched location
 export const searchLocationAtom = atom((get) => get(searchAtom).searchLocation);
+export const searchLocationValidationErrorAtom = atom(
+  (get) => get(searchAtom).searchLocationValidationError,
+);
 
 // Currently selected user location
 export const userLocationAtom = atom((get) => get(searchAtom).userLocation);
