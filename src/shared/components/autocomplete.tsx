@@ -43,10 +43,12 @@ export function Autocomplete({
   defaultValue,
   Icon,
   value,
+  inputWrapperClassName,
   onValueSelect,
   onInputChange,
 }: {
   className?: string;
+  inputWrapperClassName?: string;
   onInputChange?: (value: string) => void;
   onValueSelect?: (value: Option) => void;
   options: Option[];
@@ -131,6 +133,7 @@ export function Autocomplete({
           onBlur={handleBlur}
           disabled={disabled}
           Icon={Icon}
+          wrapperClassName={inputWrapperClassName}
         />
       </div>
 
