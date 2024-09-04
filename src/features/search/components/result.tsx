@@ -44,7 +44,7 @@ export function Result({ data }: ResultProps) {
           coords as [number, number],
           data.location.coordinates,
         )
-      : false;
+      : null;
 
   return (
     <Card id={data._id}>
@@ -60,7 +60,7 @@ export function Result({ data }: ResultProps) {
           </div>
 
           <div>
-            {distance && distance > 0 && (
+            {distance != null && distance > 0 && (
               <Badge variant="outline" className="flex gap-1">
                 <Navigation className="size-3" />
                 {distance.toLocaleString()} {t('search.miles')}
@@ -86,7 +86,9 @@ export function Result({ data }: ResultProps) {
         )}
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <div className="text-sm">{parseHtml(data.description)}</div>
+        <div className="whitespace-break-spaces text-sm">
+          {parseHtml(data.description)}
+        </div>
 
         <div className="flex flex-col items-start justify-start gap-2">
           {data.phone && (
