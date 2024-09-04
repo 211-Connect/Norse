@@ -55,7 +55,7 @@ export function JotaiHydration({ pageProps }) {
         searchLocationValidationError: '',
         userLocation: pageProps?.location,
         userCoordinates:
-          pageProps?.coords
+          decodeURIComponent(pageProps?.coords)
             ?.split(',')
             ?.map((number) => parseFloat(number))
             ?.filter((number) => !isNaN(number)) ??
