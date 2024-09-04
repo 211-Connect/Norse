@@ -26,7 +26,10 @@ function App({
     >
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
+        <link
+          rel="icon"
+          href={appConfig?.brand?.faviconUrl ?? '/favicon.ico'}
+        />
       </Head>
 
       <Providers session={session} appConfig={appConfig} flags={flags}>
