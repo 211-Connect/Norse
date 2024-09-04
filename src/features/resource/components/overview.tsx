@@ -36,7 +36,9 @@ export function Overview({ resource }) {
           )}
         </CardHeader>
         <CardContent className="flex flex-col gap-2">
-          <p className="text-sm">{parseHtml(resource.description)}</p>
+          <p className="whitespace-break-spaces text-sm">
+            {parseHtml(resource.description)}
+          </p>
 
           {showCategories && (
             <div className="flex flex-col gap-1">
