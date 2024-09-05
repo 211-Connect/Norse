@@ -176,31 +176,6 @@ module.exports = function createFromStrapi(dir) {
       },
     };
 
-    // Removing the old pages config
-    // for (const page of appConfig?.pages ?? []) {
-    //   if (page.page === 'home') {
-    //     // translationFile['en'][`meta_title`] = page.title;
-    //     // translationFile['en'][`meta_description`] = page.description;
-
-    //     newAppConfig.pages[page.page] = {
-    //       heroSection: {
-    //         backgroundImageUrl: heroUrl,
-    //       },
-    //       meta: {
-    //         title: page.title,
-    //         description: page.description,
-    //       },
-    //       showLocationInput: page.showLocationInput ?? false,
-    //       disableTour: page.disableTour ?? false,
-    //     };
-    //   } else if (page.page === 'resource') {
-    //     newAppConfig.pages[page.page] = {
-    //       hideCategories: page.hideCategories ?? false,
-    //       hideLastAssured: page.hideLastAssured ?? false,
-    //     };
-    //   }
-    // }
-
     for (const menu of appConfig?.headerMenu ?? []) {
       newAppConfig.menus.header.push({
         name: menu.name,
