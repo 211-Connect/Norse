@@ -94,7 +94,13 @@ export function Map({ center, zoom, markers, usersLocation }: MapProps) {
     }
 
     if (!bounds.isEmpty()) {
-      if (_markers.current.length > 0) {
+      if (_markers.current.length > 0 && _markers.current.length <= 2) {
+        mapboxMap.current.fitBounds(bounds, {
+          padding: 50,
+          animate: false,
+          zoom: 15,
+        });
+      } else if (_markers.current.length > 0) {
         mapboxMap.current.fitBounds(bounds, { padding: 50, animate: false });
       } else {
         mapboxMap.current.fitBounds(bounds, {
