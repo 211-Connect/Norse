@@ -30,6 +30,8 @@ const query = qs.stringify({
         'headerMenu',
         'footerMenu',
         'map',
+        'homePage',
+        'resourcePage',
         'dataProviders',
         'dataProviders.logo',
         'radiusSelectValues',
@@ -45,6 +47,8 @@ const query = qs.stringify({
         'localizations.search',
         'localizations.lastAssuredText',
         'localizations.categoriesText',
+        'localizations.homePage',
+        'localizations.resourcePage',
       ],
     },
     category: {
@@ -92,8 +96,7 @@ module.exports = function createFromStrapi(dir) {
     const suggestionTranslations =
       tenant.suggestion.data.attributes.localizations.data;
     const appConfig = tenant.app_config.data.attributes;
-    const appConfigTranslations =
-      tenant.app_config.data.attributes.localizations.data;
+    const appConfigTranslations = appConfig.localizations.data;
     const logoUrl = appConfig.logo.data.attributes.url;
     const faviconUrl = appConfig.favicon.data.attributes.url;
     const heroUrl = appConfig.hero.data.attributes.url;
@@ -136,7 +139,6 @@ module.exports = function createFromStrapi(dir) {
       alert: appConfig?.alert,
       theme: appConfig?.theme ?? null,
       hideAttribution: appConfig?.hideAttribution ?? true,
-      plugins: [],
       pages: {},
       menus: {
         header: [],
@@ -158,32 +160,46 @@ module.exports = function createFromStrapi(dir) {
       appConfig.search.locationInputPlaceholder;
     translationFile['en']['search.no_results_fallback_text'] =
       appConfig?.search?.noResultsFallbackText;
-    translationFile['en']['last_assured_text'] = appConfig?.lastAssuredText;
-    translationFile['en']['categories_text'] = appConfig?.categoriesText;
+    translationFile['en']['last_assured_text'] =
+      appConfig?.resourcePage?.lastAssuredText;
+    translationFile['en']['categories_text'] =
+      appConfig?.resourcePage?.categoriesText;
 
-    for (const page of appConfig?.pages ?? []) {
-      if (page.page === 'home') {
-        translationFile['en'][`meta_title`] = page.title;
-        translationFile['en'][`meta_description`] = page.description;
+    translationFile['en']['meta_title'] = appConfig?.homePage?.title;
+    translationFile['en']['meta_description'] =
+      appConfig?.homePage?.description;
 
-        newAppConfig.pages[page.page] = {
-          heroSection: {
-            backgroundImageUrl: heroUrl,
-          },
-          meta: {
-            title: page.title,
-            description: page.description,
-          },
-          showLocationInput: page.showLocationInput ?? false,
-          disableTour: page.disableTour ?? false,
-        };
-      } else if (page.page === 'resource') {
-        newAppConfig.pages[page.page] = {
-          hideCategories: page.hideCategories ?? false,
-          hideLastAssured: page.hideLastAssured ?? false,
-        };
-      }
-    }
+    // Add hero section URL
+    newAppConfig.pages['home'] = {
+      heroSection: {
+        backgroundImageUrl: heroUrl,
+      },
+    };
+
+    // Removing the old pages config
+    // for (const page of appConfig?.pages ?? []) {
+    //   if (page.page === 'home') {
+    //     // translationFile['en'][`meta_title`] = page.title;
+    //     // translationFile['en'][`meta_description`] = page.description;
+
+    //     newAppConfig.pages[page.page] = {
+    //       heroSection: {
+    //         backgroundImageUrl: heroUrl,
+    //       },
+    //       meta: {
+    //         title: page.title,
+    //         description: page.description,
+    //       },
+    //       showLocationInput: page.showLocationInput ?? false,
+    //       disableTour: page.disableTour ?? false,
+    //     };
+    //   } else if (page.page === 'resource') {
+    //     newAppConfig.pages[page.page] = {
+    //       hideCategories: page.hideCategories ?? false,
+    //       hideLastAssured: page.hideLastAssured ?? false,
+    //     };
+    //   }
+    // }
 
     for (const menu of appConfig?.headerMenu ?? []) {
       newAppConfig.menus.header.push({
@@ -221,8 +237,14 @@ module.exports = function createFromStrapi(dir) {
         data?.search?.locationInputPlaceholder;
       translationFile[data.locale]['search.no_results_fallback_text'] =
         data?.search?.noResultsFallbackText;
-      translationFile[data.locale]['last_assured_text'] = data?.lastAssuredText;
-      translationFile[data.locale]['categories_text'] = data?.categoriesText;
+      translationFile[data.locale]['last_assured_text'] =
+        data?.resourcePage?.lastAssuredText;
+      translationFile[data.locale]['categories_text'] =
+        data?.resourcePage?.categoriesText;
+
+      translationFile[data.locale]['meta_title'] = data?.homePage?.title;
+      translationFile[data.locale]['meta_description'] =
+        data?.homePage?.description;
     }
 
     const categoryFiles = {};
@@ -313,12 +335,21 @@ module.exports = function createFromStrapi(dir) {
       );
     }
 
-    for (const plugin of appConfig?.plugins ?? []) {
-      newAppConfig.plugins.push([
-        plugin.__component.replace('plugin.', ''),
-        plugin?.config ?? {},
-      ]);
+    function deepCleanConfig(config) {
+      if (Array.isArray(config)) {
+        return config.map((item) => deepCleanConfig(item));
+      } else if (_.isPlainObject(config)) {
+        return _.chain(config)
+          .omitBy(_.isNil)
+          .omit('id')
+          .mapValues((value) => deepCleanConfig(value))
+          .value();
+      } else {
+        return config;
+      }
     }
+
+    const cleanedAppConfig = deepCleanConfig(newAppConfig);
 
     const featureFlags = _.omit(
       _.omitBy(appConfig.featureFlags, _.isNil),
@@ -332,7 +363,7 @@ module.exports = function createFromStrapi(dir) {
 
     fs.writeFileSync(
       path.join(dir, 'tmp/app.json'),
-      JSON.stringify(newAppConfig, null, 2),
+      JSON.stringify(cleanedAppConfig, null, 2),
     );
 
     for (const key in translationFile) {
