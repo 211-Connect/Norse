@@ -274,56 +274,6 @@ module.exports = function createFromStrapi(dir) {
       );
     }
 
-    for (let catI = 0; catI < categories.length; catI++) {
-      const category = categories[catI];
-      const subcategories = category.subcategories;
-      translationFile['en'][`categories.${catI}`] = category.name;
-
-      newAppConfig.categories.push({
-        id: category.id,
-        name: category.name,
-        href: category.href,
-        image: category?.image?.data?.attributes?.url,
-        subcategories: category.subcategories.map((subcategory, key) => {
-          return {
-            id: subcategory.id,
-            name: subcategory.name,
-            href: subcategory.href,
-            query: subcategory.query,
-            query_type: subcategory.queryType,
-          };
-        }),
-      });
-
-      for (let subCatI = 0; subCatI < subcategories.length; subCatI++) {
-        const subcategory = subcategories[subCatI];
-        translationFile['en'][`categories.${catI}.subcategories.${subCatI}`] =
-          subcategory.name;
-
-        for (const locale of categoryTranslations || []) {
-          const data = locale.attributes;
-
-          if (!translationFile[data.locale]) {
-            translationFile[data.locale] = {};
-          }
-
-          const categories = data.list;
-          const subcategories = categories?.[catI]?.subcategories;
-
-          if (categories?.[catI]) {
-            translationFile[data.locale][`categories.${catI}`] =
-              categories[catI].name;
-          }
-
-          if (subcategories?.[subCatI]) {
-            translationFile[data.locale][
-              `categories.${catI}.subcategories.${subCatI}`
-            ] = subcategories[subCatI].name;
-          }
-        }
-      }
-    }
-
     const suggestionFiles = {};
     for (const _suggestion of suggestionTranslations || []) {
       const suggestion = _suggestion.attributes;
@@ -361,32 +311,6 @@ module.exports = function createFromStrapi(dir) {
         path.resolve(`public/locales/${key}/suggestions.json`),
         JSON.stringify(suggestionToWrite, null, 2),
       );
-    }
-
-    for (let i = 0; i < suggestions.length; i++) {
-      const suggestion = suggestions[i];
-      translationFile['en'][`suggestions.${i}`] = suggestion.displayName;
-
-      newAppConfig.suggestions.push({
-        id: i,
-        value: suggestion.displayName,
-        term: suggestion.taxonomies,
-      });
-
-      for (const locale of suggestionTranslations || []) {
-        const data = locale.attributes;
-
-        if (!translationFile[data.locale]) {
-          translationFile[data.locale] = {};
-        }
-
-        const suggestions = data.list;
-
-        if (suggestions?.[i]) {
-          translationFile[data.locale][`suggestions.${i}`] =
-            suggestions[i].displayName;
-        }
-      }
     }
 
     for (const plugin of appConfig?.plugins ?? []) {
