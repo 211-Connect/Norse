@@ -18,10 +18,6 @@ export function MapContainer() {
     setHeaderHeight(header.clientHeight);
   }, [y]);
 
-  useEffect(() => {
-    window.dispatchEvent(new Event('resize'));
-  }, [clampedWindowValue]);
-
   return (
     <div
       className="sticky top-0 hidden h-full w-full lg:block"

@@ -2,7 +2,7 @@ import { useAppConfig } from '@/shared/hooks/use-app-config';
 import { userCoordinatesAtom } from '@/shared/store/search';
 import { useAtomValue } from 'jotai';
 import dynamic from 'next/dynamic';
-import { forwardRef, ReactElement } from 'react';
+import { ReactElement } from 'react';
 
 const maps = {
   mapbox: dynamic(() => import('./mapbox/map').then((mod) => mod.Map)),
@@ -16,13 +16,13 @@ type MapLoaderProps = {
   }[];
 };
 
-const MapLoader = forwardRef<HTMLDivElement, MapLoaderProps>((props, ref) => {
+const MapLoader = (props: MapLoaderProps) => {
   const appConfig = useAppConfig();
   const Map = maps[appConfig.adapters.map];
   const userCoords = useAtomValue(userCoordinatesAtom);
 
   return (
-    <div ref={ref} id="map-container" className="h-full w-full">
+    <div id="map-container" className="h-full w-full">
       <div className="relative h-full w-full">
         <Map
           center={appConfig.map.center}
@@ -33,8 +33,6 @@ const MapLoader = forwardRef<HTMLDivElement, MapLoaderProps>((props, ref) => {
       </div>
     </div>
   );
-});
-
-MapLoader.displayName = 'MapLoader';
+};
 
 export { MapLoader };

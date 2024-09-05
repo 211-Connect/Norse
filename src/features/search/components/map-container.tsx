@@ -19,10 +19,6 @@ export function MapContainer() {
     setHeaderHeight(header.clientHeight);
   }, [y]);
 
-  useEffect(() => {
-    window.dispatchEvent(new Event('resize'));
-  }, [clampedWindowValue]);
-
   // Memoize to prevent unecessary map re-renders
   const mapMarkers = useMemo(() => {
     return results.map((result) => ({
