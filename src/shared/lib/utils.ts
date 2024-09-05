@@ -39,3 +39,30 @@ export function stringToBooleanOrUndefined(str?: string): boolean | undefined {
   if (str == null || str.trim().length === 0) return;
   return str.toLowerCase() === 'true';
 }
+
+export function getGoogleMapsDestinationUrl(
+  originCoords: number[],
+  desinationCoords: number[],
+) {
+  const getOrigin = () => {
+    if (originCoords) {
+      return originCoords?.slice()?.reverse()?.join(',');
+    }
+
+    return '';
+  };
+
+  const getDestination = () => {
+    if (desinationCoords) {
+      return desinationCoords?.slice()?.reverse()?.join(',');
+    }
+
+    return '';
+  };
+
+  if (!getOrigin()) {
+    return `https://www.google.com/maps/dir/?api=1&destination=${getDestination()}`;
+  } else {
+    return `https://www.google.com/maps/dir/?api=1&origin=${getOrigin()}&destination=${getDestination()}`;
+  }
+}

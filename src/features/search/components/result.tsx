@@ -8,7 +8,11 @@ import {
   CardTitle,
 } from '@/shared/components/ui/card';
 import { Link } from '@/shared/components/link';
-import { cn, distanceBetweenCoordsInMiles } from '@/shared/lib/utils';
+import {
+  cn,
+  distanceBetweenCoordsInMiles,
+  getGoogleMapsDestinationUrl,
+} from '@/shared/lib/utils';
 import { ResultType } from '@/shared/store/results';
 import { Globe, LinkIcon, MapPin, Navigation, Phone, Pin } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
@@ -28,6 +32,7 @@ import { AddToFavoritesButton } from '@/shared/components/add-to-favorites-butto
 import { CopyBadge } from '@/shared/components/copy-badge';
 import { parseHtml } from '@/shared/lib/parse-html';
 import { useFlag } from '@/shared/hooks/use-flag';
+import { useCallback } from 'react';
 
 type ResultProps = {
   data: ResultType;
@@ -103,7 +108,15 @@ export function Result({ data }: ResultProps) {
           {data.address ? (
             <div className="flex max-w-full items-center gap-1 text-primary/80">
               <MapPin className="size-4 shrink-0" />
-              <CopyBadge text={data.address}>{data.address}</CopyBadge>
+              <CopyBadge
+                text={data.address}
+                href={getGoogleMapsDestinationUrl(
+                  coords,
+                  data?.location?.coordinates,
+                )}
+              >
+                {data.address}
+              </CopyBadge>
             </div>
           ) : (
             <TooltipProvider>

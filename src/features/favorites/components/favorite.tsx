@@ -13,7 +13,7 @@ import { Globe, LinkIcon, MapPin, Phone } from 'lucide-react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import Link from 'next/link';
-import { cn } from '@/shared/lib/utils';
+import { cn, getGoogleMapsDestinationUrl } from '@/shared/lib/utils';
 import { buttonVariants } from '@/shared/components/ui/button';
 import { useAtomValue } from 'jotai';
 import { userCoordinatesAtom } from '@/shared/store/search';
@@ -90,7 +90,15 @@ export function Favorite({
           {displayAddress ? (
             <div className="flex max-w-full items-center gap-1 text-primary/80">
               <MapPin className="size-4 shrink-0" />
-              <CopyBadge text={displayAddress}>{displayAddress}</CopyBadge>
+              <CopyBadge
+                text={displayAddress}
+                href={getGoogleMapsDestinationUrl(
+                  coords,
+                  data?.location?.coordinates,
+                )}
+              >
+                {displayAddress}
+              </CopyBadge>
             </div>
           ) : (
             <TooltipProvider>
