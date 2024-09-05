@@ -93,12 +93,15 @@ module.exports = {
       const secondaryHsl = secondary.array();
       const secondaryForeground = secondary.isDark() ? '0 0% 100%' : '0 0% 0%';
 
+      const borderRadius = appConfig?.theme?.borderRadius ?? '0.5rem';
+
       addBase({
         ':root': {
           '--primary': `${primaryHsl[0]} ${primaryHsl[1]}% ${primaryHsl[2]}%`,
           '--primary-foreground': primaryForeground,
           '--secondary': `${secondaryHsl[0]} ${secondaryHsl[1]}% ${secondaryHsl[2]}%`,
           '--secondary-foreground': secondaryForeground,
+          '--radius': borderRadius,
         },
       });
     },
