@@ -1,15 +1,17 @@
-import axios from 'axios';
-import { API_URL, TENANT_ID } from '../lib/constants';
+import { API_URL } from '../lib/constants';
+import { Axios } from '../lib/axios';
 
 export class TaxonomyService {
   static endpoint = 'taxonomy';
 
   static async getTaxonomies(searchTerm: string, options: { locale: string }) {
-    const res = await axios.get(`${API_URL}/${this.endpoint}`, {
+    const res = await Axios.get(`${API_URL}/${this.endpoint}`, {
       params: {
-        tenant_id: TENANT_ID,
         locale: options.locale,
         query: searchTerm,
+      },
+      headers: {
+        'accept-language': options.locale,
       },
     });
 
@@ -23,11 +25,13 @@ export class TaxonomyService {
   }
 
   static async getTaxonomyTerms(terms: string[], options: { locale: string }) {
-    const res = await axios.get(`${API_URL}/${this.endpoint}/taxonomy-term`, {
+    const res = await Axios.get(`${API_URL}/${this.endpoint}/taxonomy-term`, {
       params: {
-        tenant_id: TENANT_ID,
         locale: options.locale,
         terms: terms,
+      },
+      headers: {
+        'accept-language': options.locale,
       },
     });
 

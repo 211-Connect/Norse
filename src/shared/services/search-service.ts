@@ -1,10 +1,10 @@
 import { ExtractAtomValue } from 'jotai';
 import { isEmpty, isNil, isString, omitBy } from 'lodash';
 import { searchAtom } from '../store/search';
-import axios from 'axios';
-import { API_URL, TENANT_ID } from '../lib/constants';
+import { API_URL } from '../lib/constants';
 import qs from 'qs';
 import _ from 'lodash';
+import { Axios } from '../lib/axios';
 
 export class SearchService {
   static endpoint = 'search';
@@ -44,14 +44,18 @@ export class SearchService {
 
     let response;
     try {
-      response = await axios.get(
+      response = await Axios.get(
         `${API_URL}/search?${qs.stringify({
           ...query,
           page,
           locale,
-          tenant_id: TENANT_ID,
           limit,
         })}`,
+        {
+          headers: {
+            'accept-language': locale,
+          },
+        },
       );
     } catch (err) {}
 
@@ -66,15 +70,19 @@ export class SearchService {
     if (totalResults === 0) {
       noResults = true;
       try {
-        data = await axios.get(
+        data = await Axios.get(
           `${API_URL}/search?${qs.stringify({
             ...query,
             page,
             query_type: 'more_like_this',
             locale,
-            tenant_id: TENANT_ID,
             limit,
           })}`,
+          {
+            headers: {
+              'accept-language': locale,
+            },
+          },
         );
       } catch (err) {}
 

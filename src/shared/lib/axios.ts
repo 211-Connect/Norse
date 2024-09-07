@@ -1,9 +1,17 @@
 import axios from 'axios';
 import { getSession, signOut } from 'next-auth/react';
 import { parseCookies } from 'nookies';
+import { TENANT_ID } from './constants';
 
 function createAxiosWithAuth(ctx) {
-  const axiosWithAuth = axios.create();
+  const axiosWithAuth = axios.create({
+    params: {
+      tenant_id: TENANT_ID,
+    },
+    headers: {
+      'x-tenant-id': TENANT_ID,
+    },
+  });
   axiosWithAuth.interceptors.request.use(
     async (config) => {
       if (!config.headers['Authorization']) {
@@ -30,4 +38,13 @@ function createAxiosWithAuth(ctx) {
   return axiosWithAuth;
 }
 
-export { createAxiosWithAuth };
+const Axios = axios.create({
+  params: {
+    tenant_id: TENANT_ID,
+  },
+  headers: {
+    'x-tenant-id': TENANT_ID,
+  },
+});
+
+export { createAxiosWithAuth, Axios };

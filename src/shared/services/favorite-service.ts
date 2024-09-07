@@ -1,4 +1,4 @@
-import { API_URL, TENANT_ID } from '../lib/constants';
+import { API_URL } from '../lib/constants';
 import { createAxiosWithAuth } from '../lib/axios';
 
 export class FavoriteService {
@@ -9,11 +9,6 @@ export class FavoriteService {
     try {
       const { data } = await createAxiosWithAuth(config?.ctx).get(
         `${API_URL}/${this.listEndpoint}/${id}`,
-        {
-          params: {
-            tenant_id: TENANT_ID,
-          },
-        },
       );
 
       return data;
@@ -26,11 +21,6 @@ export class FavoriteService {
     try {
       const { data } = await createAxiosWithAuth(config?.ctx).get(
         `${API_URL}/${this.listEndpoint}`,
-        {
-          params: {
-            tenant_id: TENANT_ID,
-          },
-        },
       );
 
       return data;
@@ -45,7 +35,6 @@ export class FavoriteService {
         `${API_URL}/${this.listEndpoint}/search`,
         {
           params: {
-            tenant_id: TENANT_ID,
             name: searchText,
           },
         },
@@ -78,11 +67,6 @@ export class FavoriteService {
           description,
           public: privacy,
         },
-        {
-          params: {
-            tenant_id: TENANT_ID,
-          },
-        },
       );
 
       return data;
@@ -95,11 +79,6 @@ export class FavoriteService {
     try {
       const { data } = await createAxiosWithAuth(config?.ctx).delete(
         `${API_URL}/${this.listEndpoint}/${id}`,
-        {
-          params: {
-            tenant_id: TENANT_ID,
-          },
-        },
       );
 
       return data;
@@ -127,11 +106,6 @@ export class FavoriteService {
           description,
           public: privacy,
         },
-        {
-          params: {
-            tenant_id: TENANT_ID,
-          },
-        },
       );
 
       return data;
@@ -158,11 +132,6 @@ export class FavoriteService {
           resourceId: resourceId,
           favoriteListId: favoriteListId,
         },
-        {
-          params: {
-            tenant_id: TENANT_ID,
-          },
-        },
       );
 
       return data;
@@ -183,11 +152,6 @@ export class FavoriteService {
     try {
       const { data } = await createAxiosWithAuth(config?.ctx).delete(
         `${API_URL}/${this.baseEndpoint}/${resourceId}/${favoriteListId}`,
-        {
-          params: {
-            tenant_id: TENANT_ID,
-          },
-        },
       );
 
       return data;

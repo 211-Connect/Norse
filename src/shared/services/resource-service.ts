@@ -1,16 +1,12 @@
-import axios from 'axios';
-import { API_URL, TENANT_ID } from '../lib/constants';
+import { API_URL } from '../lib/constants';
 import dayjs from 'dayjs';
+import { Axios } from '../lib/axios';
 
 export class ResourceService {
   static endpoint = 'resource';
 
   static async getResource(id: string): Promise<any> {
-    const { data } = await axios.get(`${API_URL}/${this.endpoint}/${id}`, {
-      params: {
-        tenant_id: TENANT_ID,
-      },
-    });
+    const { data } = await Axios.get(`${API_URL}/${this.endpoint}/${id}`);
 
     return {
       id: data._id,
