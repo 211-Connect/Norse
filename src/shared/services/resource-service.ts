@@ -5,8 +5,18 @@ import { Axios } from '../lib/axios';
 export class ResourceService {
   static endpoint = 'resource';
 
-  static async getResource(id: string): Promise<any> {
-    const { data } = await Axios.get(`${API_URL}/${this.endpoint}/${id}`);
+  static async getResource(
+    id: string,
+    options: { locale: string },
+  ): Promise<any> {
+    const { data } = await Axios.get(`${API_URL}/${this.endpoint}/${id}`, {
+      headers: {
+        'accept-language': options.locale,
+      },
+      params: {
+        locale: options.locale,
+      },
+    });
 
     return {
       id: data._id,
