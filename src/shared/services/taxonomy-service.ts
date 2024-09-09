@@ -25,7 +25,7 @@ export class TaxonomyService {
   }
 
   static async getTaxonomyTerms(terms: string[], options: { locale: string }) {
-    const res = await Axios.get(`${API_URL}/${this.endpoint}/taxonomy-term`, {
+    const res = await Axios.get(`${API_URL}/${this.endpoint}/term`, {
       params: {
         locale: options.locale,
         terms: terms,
