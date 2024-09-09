@@ -17,6 +17,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   if (!session) {
     data = await FavoriteService.getFavoriteList(ctx?.params?.id ?? '', {
       ctx,
+      locale: ctx?.locale ?? ctx.defaultLocale,
     });
   } else if (session.error) {
     console.log(session.error);
@@ -31,6 +32,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   } else {
     data = await FavoriteService.getFavoriteList(ctx?.params?.id ?? '', {
       ctx,
+      locale: ctx?.locale ?? ctx.defaultLocale,
     });
     viewingAsOwner = true;
   }

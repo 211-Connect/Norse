@@ -9,6 +9,14 @@ export class FavoriteService {
     try {
       const { data } = await createAxiosWithAuth(config?.ctx).get(
         `${API_URL}/${this.listEndpoint}/${id}`,
+        {
+          headers: {
+            'accept-language': config.locale,
+          },
+          params: {
+            locale: config.locale,
+          },
+        },
       );
 
       return data;
