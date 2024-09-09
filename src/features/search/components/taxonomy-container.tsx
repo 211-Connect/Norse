@@ -1,5 +1,4 @@
 import { badgeVariants } from '@/shared/components/ui/badge';
-import { Skeleton } from '@/shared/components/ui/skeleton';
 import { cn } from '@/shared/lib/utils';
 import { TaxonomyService } from '@/shared/services/taxonomy-service';
 import { useQuery } from '@tanstack/react-query';
@@ -10,9 +9,11 @@ import { useEffect, useState } from 'react';
 export function TaxonomyContainer() {
   const router = useRouter();
   const [taxonomies, setTaxonomies] = useState([]);
-  const { data, isFetching, isPending } = useQuery({
+  const { data } = useQuery({
     queryKey: [...taxonomies],
     queryFn: async () => {
+      if (taxonomies.length === 0) return [];
+
       const data = await TaxonomyService.getTaxonomyTerms(taxonomies, {
         locale: router.locale,
       });
@@ -31,16 +32,6 @@ export function TaxonomyContainer() {
 
   return (
     <div className="flex flex-wrap gap-1">
-      {isFetching && isPending && (
-        <>
-          <Skeleton className="h-5 w-32" />
-          <Skeleton className="h-5 w-32" />
-          <Skeleton className="h-5 w-32" />
-          <Skeleton className="h-5 w-32" />
-          <Skeleton className="h-5 w-32" />
-        </>
-      )}
-
       {data?.map((tax) => (
         <Link
           key={tax.code}
