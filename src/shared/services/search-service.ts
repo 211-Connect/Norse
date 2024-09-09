@@ -109,7 +109,7 @@ export class SearchService {
             serviceName: hit?._source?.service_name ?? null,
             name: hit?._source?.display_name ?? null,
             description:
-              hit?._source?.short_service_description ??
+              hit?._source?.service_short_description ??
               hit?._source?.service_description ??
               null,
             phone: hit?._source?.primary_phone ?? null,
