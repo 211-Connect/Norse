@@ -265,6 +265,7 @@ module.exports = function createFromStrapi(dir) {
 
     for (const key in categoryFiles) {
       const categoryToWrite = categoryFiles[key];
+      fs.mkdirpSync(path.join(dir, `public/locales/${key}`));
       fs.writeFileSync(
         path.resolve(`public/locales/${key}/categories.json`),
         JSON.stringify(categoryToWrite, null, 2),
@@ -304,6 +305,7 @@ module.exports = function createFromStrapi(dir) {
 
     for (const key in suggestionFiles) {
       const suggestionToWrite = suggestionFiles[key];
+      fs.mkdirpSync(path.join(dir, `public/locales/${key}`));
       fs.writeFileSync(
         path.resolve(`public/locales/${key}/suggestions.json`),
         JSON.stringify(suggestionToWrite, null, 2),
