@@ -87,7 +87,11 @@ export function HeroSection() {
       </div>
 
       {showHomePageTour && (
-        <Button onClick={enableTour} variant="outline">
+        <Button
+          onClick={enableTour}
+          variant="outline"
+          className="hover:bg-primary/70 hover:text-primary-foreground"
+        >
           {t('take_a_tour')}
         </Button>
       )}
