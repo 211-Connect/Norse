@@ -228,18 +228,24 @@ module.exports = function createFromStrapi(dir) {
       if (!(category.locale in categoryFiles)) {
         categoryFiles[category.locale] = [];
       }
+
       categoryFiles[category.locale] = categoryFiles[category.locale].concat(
-        category.list.map((cat) => ({
-          name: cat['name'],
-          href: cat['href'],
-          image: cat['image']?.['data']?.['attributes']?.['url'],
-          subcategories: cat['subcategories'].map((sub) => ({
-            name: sub['name'],
-            href: sub['href'],
-            query: sub['query'],
-            queryType: sub['queryType'],
-          })),
-        })),
+        category.list.map((cat, idx) => {
+          const matchingCategory = categories[idx];
+
+          return {
+            name: cat['name'],
+            href: cat['href'],
+            image:
+              matchingCategory?.['image']?.['data']?.['attributes']?.['url'],
+            subcategories: cat['subcategories'].map((sub) => ({
+              name: sub['name'],
+              href: sub['href'],
+              query: sub['query'],
+              queryType: sub['queryType'],
+            })),
+          };
+        }),
       );
     }
 
