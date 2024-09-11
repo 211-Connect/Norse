@@ -1,13 +1,13 @@
 {
   "filter_results": "Lọc kết quả",
-  "results": "kết quả",
+  "results": "Kết quả",
   "no_query": "Không có truy vấn nào được cung cấp",
-  "results_for": "kết quả tìm thấy cho truy vấn",
+  "results_for": "Kết quả tìm thấy cho truy vấn",
   "of": "của",
   "no_results": {
-    "title": "Không tìm thấy kết quả phù hợp với truy vấn của bạn",
+    "title": "Không tìm thấy kết quả nào khớp với truy vấn của bạn",
     "subtitle": "Chúng tôi đã cung cấp một số kết quả tương tự bên dưới",
-    "alt_subtitle": "Hãy thử một truy vấn hoặc bộ lọc khác",
-    "need_help": "Cần giúp đỡ? Chúng tôi có người đứng bên cạnh."
+    "alt_subtitle": "Thử một truy vấn hoặc bộ lọc khác",
+    "need_help": "Cần giúp đỡ? Chúng tôi có những người túc trực."
   }
 }

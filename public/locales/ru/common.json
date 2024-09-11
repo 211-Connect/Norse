@@ -1,0 +1,133 @@
+{
+  "header": {
+    "home": "Дом",
+    "favorites": "Избранное",
+    "log_out": "Выходить",
+    "submit_feedback": "Отправить отзыв",
+    "language_select_label": "Выберите язык для изменения языка сайта"
+  },
+  "favorites": {
+    "added_to_list": "Добавлено в список",
+    "added_to_list_message": "Этот ресурс добавлен в ваш список.",
+    "already_exists": "Уже существует",
+    "already_exists_message": "Этот ресурс уже есть в вашем списке.",
+    "removed_from_list": "Удалено из списка",
+    "removed_from_list_message": "Этот ресурс был удален из вашего списка.",
+    "updated_list": "Обновленный список",
+    "updated_list_message": "Ваш список был обновлен.",
+    "unable_to_update_list": "Не удается обновить список",
+    "unable_to_update_list_message": "Ваш список не может быть обновлен.",
+    "deleted_list": "Список удаленных",
+    "deleted_list_message": "Ваш список был удален.",
+    "unable_to_delete_list": "Не удается удалить список",
+    "unable_to_delete_list_message": "Ваш список не может быть удален."
+  },
+  "search": {
+    "hero_title": "Поиск ресурсов",
+    "query_placeholder": "Еда, жилье и т.д.",
+    "location_placeholder": "Город, штат или почтовый индекс",
+    "radius_placeholder": "Радиус",
+    "miles": "Мили",
+    "any": "Любой",
+    "taxonomies": "Таксономии",
+    "suggestions": "Предложения",
+    "use_my_location": "Использовать мое местоположение",
+    "confidential_address": "Это место может быть конфиденциальным или закрытым для общественности. Пожалуйста, выберите другой способ связи для этой услуги.",
+    "address_unavailable": "Адрес недоступен",
+    "geocoding_error": "Ошибка геокодирования",
+    "geocoding_unsupported": "Геолокация не поддерживается вашим браузером",
+    "geocoding_unable_to_retrieve": "Не удается восстановить ваше местоположение. Проверьте настройки местоположения вашего браузера и повторите попытку.",
+    "categories": "Категории"
+  },
+  "call_to_action": {
+    "call": "Звать",
+    "view_website": "Перейти на сайт",
+    "get_directions": "Проложить маршрут",
+    "view_details": "Подробнее",
+    "add_to_list": "Добавить в список",
+    "delete_list": "Удалить список",
+    "remove_from_list": "Удалить из списка",
+    "share": "Предоставить общий доступ",
+    "cancel": "Отмена",
+    "create": "Создавать",
+    "update": "Обновлять",
+    "delete": "Удалить",
+    "search": "Искать",
+    "remove": "Убирать",
+    "login": "Логин",
+    "show_more": "Показать больше",
+    "show_less": "Свернуть"
+  },
+  "list": {
+    "private": "Частный",
+    "public": "Общественный"
+  },
+  "message": {
+    "list_deleted": "Список удален",
+    "list_deleted_success": "Ваш список был удален.",
+    "error": "Ошибка",
+    "list_not_deleted_error": "Ваш список не может быть удален."
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "Поиск по спискам",
+      "list_name": "Список",
+      "list_privacy": "Конфиденциальность",
+      "add_to_list": "Добавить в список",
+      "not_found": "Списки не найдены",
+      "create_new_list": "Создать новый?"
+    },
+    "remove_from_list": {
+      "are_you_sure": "Вы уверены, что хотите удалить это избранное из своего списка?"
+    },
+    "create_list": {
+      "create_a_list": "Создание списка",
+      "list_name": "Имя",
+      "list_description": "Описание",
+      "make_public": "Сделать общедоступным"
+    },
+    "update_list": {
+      "update_list": "Список обновлений",
+      "list_name": "Имя",
+      "list_description": "Описание",
+      "make_public": "Сделать общедоступным"
+    },
+    "delete_list": {
+      "delete_list": "Удалить список"
+    },
+    "share": {
+      "share_via": "Поделиться через",
+      "copy_link": "Скопировать ссылку",
+      "copy": "Копировать",
+      "facebook": "Фейсбук",
+      "twitter": "Щебетать",
+      "linkedin": "LinkedIn",
+      "sms": "СМС",
+      "email": "Отправить по электронной почте",
+      "print": "Печатать",
+      "copied": "Скопированы!",
+      "check_out_this_list": "Ознакомьтесь с этим списком, который я составил!",
+      "check_out_this_resource": "Ознакомьтесь с этим ресурсом, который я нашел!",
+      "share_sms": "Введите номер телефона, чтобы поделиться им по SMS",
+      "enter_phone_number": "Введите номер телефона...",
+      "invalid_phone_number": "Неверный номер телефона",
+      "sms_sending_title": "Отправка SMS...",
+      "sms_sending_body": "Ваше сообщение отправлено.",
+      "sms_send_success_title": "СМС отправлено!",
+      "sms_send_success_body": "Ваше сообщение отправлено.",
+      "sms_send_failed_title": "Не удалось отправить SMS",
+      "sms_send_failed_body": "Не удалось отправить сообщение."
+    },
+    "prompt_auth": "Пожалуйста, войдите в систему, чтобы воспользоваться этой функцией."
+  },
+  "update_location": {
+    "prompt_start_location": "Откуда вы начинаете?"
+  },
+  "data_providers": {
+    "provided_by": "Данные предоставлены"
+  },
+  "footer": {
+    "copyright": "Все права защищены.",
+    "privacy_policy": "Политика конфиденциальности"
+  }
+}

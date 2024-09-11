@@ -1,0 +1,133 @@
+{
+  "header": {
+    "home": "Nyumbani",
+    "favorites": "Vipendwa",
+    "log_out": "Ingia nje",
+    "submit_feedback": "Wasilisha maoni",
+    "language_select_label": "Chagua lugha ya kubadilisha lugha ya tovuti"
+  },
+  "favorites": {
+    "added_to_list": "Imeongezwa kwenye orodha",
+    "added_to_list_message": "Rasilimali hii imeongezwa kwenye orodha yako.",
+    "already_exists": "Tayari ipo",
+    "already_exists_message": "Rasilimali hii tayari ipo kwenye orodha yako.",
+    "removed_from_list": "Imeondolewa kwenye orodha",
+    "removed_from_list_message": "Rasilimali hii imeondolewa kwenye orodha yako.",
+    "updated_list": "Orodha iliyosasishwa",
+    "updated_list_message": "Orodha yako imesasishwa.",
+    "unable_to_update_list": "Haiwezi kusasisha orodha",
+    "unable_to_update_list_message": "Orodha yako haikuweza kusasishwa.",
+    "deleted_list": "Orodha iliyofutwa",
+    "deleted_list_message": "Orodha yako imefutwa.",
+    "unable_to_delete_list": "Haiwezi kufuta orodha",
+    "unable_to_delete_list_message": "Orodha yako haikuweza kufutwa."
+  },
+  "search": {
+    "hero_title": "Utafutaji wa rasilimali",
+    "query_placeholder": "Chakula, nyumba, nk...",
+    "location_placeholder": "Jiji, jimbo, au msimbo wa ZIP",
+    "radius_placeholder": "Radius",
+    "miles": "Maili",
+    "any": "Yoyote",
+    "taxonomies": "Taxonomies",
+    "suggestions": "Mapendekezo",
+    "use_my_location": "Tumia mahali pangu",
+    "confidential_address": "Eneo hili linaweza kuwa la siri au lisilo wazi kwa umma. Tafadhali chagua njia nyingine ya mawasiliano iliyotolewa kwa huduma hii.",
+    "address_unavailable": "Anwani haipatikani",
+    "geocoding_error": "Hitilafu ya Geocoding",
+    "geocoding_unsupported": "Geolocation haitegemezwi na kivinjari chako",
+    "geocoding_unable_to_retrieve": "Haiwezi kurejesha eneo lako. Tafadhali angalia mipangilio ya eneo la kivinjari chako na ujaribu tena.",
+    "categories": "Kategoria"
+  },
+  "call_to_action": {
+    "call": "Wito",
+    "view_website": "Tazama tovuti",
+    "get_directions": "Pata maelekezo",
+    "view_details": "Tazama maelezo",
+    "add_to_list": "Ongeza kwenye orodha",
+    "delete_list": "Futa orodha",
+    "remove_from_list": "Ondoa kutoka kwenye orodha",
+    "share": "Kushiriki",
+    "cancel": "Katisha",
+    "create": "Unda",
+    "update": "Sasisha",
+    "delete": "Futa",
+    "search": "Tafutiza",
+    "remove": "Ondoa",
+    "login": "Kuingia",
+    "show_more": "Onyesha zaidi",
+    "show_less": "Onyesha chini"
+  },
+  "list": {
+    "private": "Binafsi",
+    "public": "Umma"
+  },
+  "message": {
+    "list_deleted": "Orodha imefutwa",
+    "list_deleted_success": "Orodha yako imefutwa.",
+    "error": "Kosa",
+    "list_not_deleted_error": "Orodha yako haikuweza kufutwa."
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "Tafuta orodha yako",
+      "list_name": "Orodha",
+      "list_privacy": "Faragha",
+      "add_to_list": "Ongeza kwenye orodha",
+      "not_found": "Hakuna orodha iliyopatikana",
+      "create_new_list": "Make a New One?"
+    },
+    "remove_from_list": {
+      "are_you_sure": "Je, una uhakika unataka kuondoa hii favorite kutoka orodha yako?"
+    },
+    "create_list": {
+      "create_a_list": "Unda orodha",
+      "list_name": "Jina",
+      "list_description": "Maelezo",
+      "make_public": "Fanya umma"
+    },
+    "update_list": {
+      "update_list": "Orodha ya sasisho",
+      "list_name": "Jina",
+      "list_description": "Maelezo",
+      "make_public": "Fanya umma"
+    },
+    "delete_list": {
+      "delete_list": "Futa orodha"
+    },
+    "share": {
+      "share_via": "Shiriki hii kupitia",
+      "copy_link": "Nakili kiungo",
+      "copy": "Nakili",
+      "facebook": "Facebook",
+      "twitter": "Twitter",
+      "linkedin": "LinkedIn",
+      "sms": "SMS",
+      "email": "Barua pepe",
+      "print": "Chapisha",
+      "copied": "Nakiliwa!",
+      "check_out_this_list": "Angalia orodha hii niliyoifanya!",
+      "check_out_this_resource": "Angalia rasilimali hii niliyoipata!",
+      "share_sms": "Ingiza nambari ya simu ili kushiriki kupitia SMS",
+      "enter_phone_number": "Ingiza nambari ya simu...",
+      "invalid_phone_number": "Namba ya simu batili",
+      "sms_sending_title": "Kutuma SMS...",
+      "sms_sending_body": "Ujumbe wako umetumwa.",
+      "sms_send_success_title": "Ujumbe wa SMS!",
+      "sms_send_success_body": "Ujumbe wako umetumwa.",
+      "sms_send_failed_title": "Kutuma ujumbe mfupi wa maandishi kumeshindwa",
+      "sms_send_failed_body": "Ujumbe wako umeshindwa kutuma."
+    },
+    "prompt_auth": "Tafadhali ingia ili utumie kipengele hiki."
+  },
+  "update_location": {
+    "prompt_start_location": "Ni nini eneo lako la kuanzia?"
+  },
+  "data_providers": {
+    "provided_by": "Data iliyotolewa na"
+  },
+  "footer": {
+    "copyright": "Haki zote zimehifadhiwa.",
+    "privacy_policy": "Sera ya faragha"
+  }
+}

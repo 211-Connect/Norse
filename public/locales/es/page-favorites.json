@@ -1,10 +1,10 @@
 {
-  "meta_title": "Visualización de sus listas favoritas",
-  "meta_description": "Visualización de sus listas favoritas",
-  "lists": "liza",
+  "meta_title": "Ver tus listas de favoritos",
+  "meta_description": "Ver tus listas de favoritos",
+  "lists": "Listas",
   "view_list": "Ver lista",
-  "edit_list": "Lista de edición",
+  "edit_list": "Editar lista",
   "delete_list": "Eliminar lista",
-  "select_a_list": "Seleccione una lista al costado para ver sus favoritos.",
-  "no_lists": "Aún no tienes listas."
+  "select_a_list": "Seleccione una lista en el lateral para ver sus favoritos.",
+  "no_lists": "Todavía no tienes listas."
 }

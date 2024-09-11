@@ -1,13 +1,13 @@
 {
-  "filter_results": "Shaandhee natiijooyinka",
-  "results": "natiijooyin",
-  "no_query": "Wax su'aal ah lama bixin",
-  "results_for": "Natiijooyinka la helay weydiinta",
+  "filter_results": "Natiijooyinka Filter",
+  "results": "natiijooyinka",
+  "no_query": "Su'aal la'aan la bixiyay",
+  "results_for": "natiijooyinka helay su'aalo",
   "of": "ee",
   "no_results": {
-    "title": "Wax natiijooyin ah lama helin oo ku habboon weydiintaada",
-    "subtitle": "Waxaan ku bixinnay natiijooyin la mid ah hoos",
-    "alt_subtitle": "Isku day su'aal kale ama shaandhayn",
-    "need_help": "Ma u baahan tahay caawimo? Waxaan leenahay dad garab taagan."
+    "title": "No natiijada la helay dhigma su'aal",
+    "subtitle": "Waxaan bixinay qaar ka mid ah natiijooyinka la mid ah ee hoos ku qoran",
+    "alt_subtitle": "Isku day inaad su'aalo ama filter kala duwan",
+    "need_help": "Cawinaada u baahan tahay? Waxaanu leenahay dad ag taagan."
   }
 }

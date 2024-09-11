@@ -1,0 +1,133 @@
+{
+  "header": {
+    "home": "Дім",
+    "favorites": "Уподобання",
+    "log_out": "Вийти",
+    "submit_feedback": "Надіслати відгук",
+    "language_select_label": "Виберіть мову, щоб змінити мову сайту"
+  },
+  "favorites": {
+    "added_to_list": "Додано до списку",
+    "added_to_list_message": "Цей ресурс додано до вашого списку.",
+    "already_exists": "Вже існує",
+    "already_exists_message": "Цей ресурс вже є у вашому списку.",
+    "removed_from_list": "Видалено зі списку",
+    "removed_from_list_message": "Цей ресурс видалено з вашого списку.",
+    "updated_list": "Оновлений список",
+    "updated_list_message": "Ваш список оновлено.",
+    "unable_to_update_list": "Не вдається оновити список",
+    "unable_to_update_list_message": "Ваш список не може бути оновлений.",
+    "deleted_list": "Видалений список",
+    "deleted_list_message": "Ваш список видалено.",
+    "unable_to_delete_list": "Не вдається видалити список",
+    "unable_to_delete_list_message": "Ваш список не вдалося видалити."
+  },
+  "search": {
+    "hero_title": "Пошук ресурсів",
+    "query_placeholder": "Їжа, житло і т.д.",
+    "location_placeholder": "Місто, область або поштовий індекс",
+    "radius_placeholder": "Радіус",
+    "miles": "Милі",
+    "any": "Будь-які",
+    "taxonomies": "Таксономії",
+    "suggestions": "Пропозиції",
+    "use_my_location": "Використовувати моє місцезнаходження",
+    "confidential_address": "Це місце може бути конфіденційним або не відкритим для громадськості. Будь ласка, виберіть інший наданий спосіб зв'язку для цієї послуги.",
+    "address_unavailable": "Адреса недоступна",
+    "geocoding_error": "Помилка геокодування",
+    "geocoding_unsupported": "Геолокація не підтримується вашим браузером",
+    "geocoding_unable_to_retrieve": "Не вдається відновити дані про ваше місцезнаходження. Перевірте налаштування місцезнаходження свого браузера та повторіть спробу.",
+    "categories": "Категорії"
+  },
+  "call_to_action": {
+    "call": "Кликати",
+    "view_website": "Переглянути веб-сайт",
+    "get_directions": "Прокласти маршрут",
+    "view_details": "Перегляд докладних відомостей",
+    "add_to_list": "Додати до списку",
+    "delete_list": "Видалити список",
+    "remove_from_list": "Видалити зі списку",
+    "share": "Ділити",
+    "cancel": "Скасувати",
+    "create": "Творити",
+    "update": "Оновлювати",
+    "delete": "Видалити",
+    "search": "Шукати",
+    "remove": "Видалити",
+    "login": "Логін",
+    "show_more": "Показати більше",
+    "show_less": "Згорнути"
+  },
+  "list": {
+    "private": "Приватний",
+    "public": "Громадський"
+  },
+  "message": {
+    "list_deleted": "Список видалено",
+    "list_deleted_success": "Ваш список видалено.",
+    "error": "Помилка",
+    "list_not_deleted_error": "Ваш список не вдалося видалити."
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "Пошук у списках",
+      "list_name": "Список",
+      "list_privacy": "Приватність",
+      "add_to_list": "Додати до списку",
+      "not_found": "Списків не знайдено",
+      "create_new_list": "Створити новий?"
+    },
+    "remove_from_list": {
+      "are_you_sure": "Ви впевнені, що хочете видалити цього фаворита зі свого списку?"
+    },
+    "create_list": {
+      "create_a_list": "Створити список",
+      "list_name": "Ім'я",
+      "list_description": "Опис",
+      "make_public": "Зробити загальнодоступним"
+    },
+    "update_list": {
+      "update_list": "Список оновлень",
+      "list_name": "Ім'я",
+      "list_description": "Опис",
+      "make_public": "Зробити загальнодоступним"
+    },
+    "delete_list": {
+      "delete_list": "Видалити список"
+    },
+    "share": {
+      "share_via": "Поділіться цим через",
+      "copy_link": "Копіювати посилання",
+      "copy": "Копіювати",
+      "facebook": "Фейсбук",
+      "twitter": "Твіттер",
+      "linkedin": "LinkedIn",
+      "sms": "SMS",
+      "email": "Електронна пошта",
+      "print": "Друкувати",
+      "copied": "Скопійовані!",
+      "check_out_this_list": "Ознайомтеся з цим списком, який я склав!",
+      "check_out_this_resource": "Перегляньте цей ресурс, який я знайшов!",
+      "share_sms": "Введіть номер телефону, яким хочете поділитися через SMS",
+      "enter_phone_number": "Введіть номер телефону...",
+      "invalid_phone_number": "Невірний номер телефону",
+      "sms_sending_title": "Відправка SMS...",
+      "sms_sending_body": "Ваше повідомлення надсилається.",
+      "sms_send_success_title": "SMS відправлено!",
+      "sms_send_success_body": "Ваше повідомлення відправлено.",
+      "sms_send_failed_title": "Не вдалося відправити SMS",
+      "sms_send_failed_body": "Ваше повідомлення не вдалося надіслати."
+    },
+    "prompt_auth": "Будь ласка, увійдіть, щоб скористатися цією функцією."
+  },
+  "update_location": {
+    "prompt_start_location": "Яке ваше початкове місцезнаходження?"
+  },
+  "data_providers": {
+    "provided_by": "Дані, надані"
+  },
+  "footer": {
+    "copyright": "Всі права захищені.",
+    "privacy_policy": "Політика конфіденційності"
+  }
+}

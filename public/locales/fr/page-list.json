@@ -1,0 +1,9 @@
+{
+  "meta_title": "Liste de visionnage",
+  "back_to_favorites": "Retour aux favoris",
+  "favorites": "Favoris",
+  "no_favorites": {
+    "title": "Il n’y a encore rien ici :(",
+    "subtitle": "Ajoutez quelques favoris sur la page de recherche pour les voir ici"
+  }
+}

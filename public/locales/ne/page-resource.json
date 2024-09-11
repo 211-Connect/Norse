@@ -1,8 +1,8 @@
 {
-  "back_to_results": "परिणामहरूमा फर्कनुहोस्",
-  "back_to_home": "घर फिर्ता",
-  "categories": "कोटीहरू",
-  "last_assured": "अन्तिम आश्वासन दिए",
+  "back_to_results": "नतिजामा फर्कनुहोस्",
+  "back_to_home": "घर फर्कनुहोस्",
+  "categories": "श्रेणीहरू",
+  "last_assured": "अन्तिम आश्वासन",
   "hours": "घण्टा",
   "required_documents": "आवश्यक कागजातहरू",
   "mail": "मेल",
@@ -11,11 +11,11 @@
   "email": "इमेल",
   "fax": "फ्याक्स",
   "website": "वेबसाइट",
-  "application_process": "निवेदन प्रक्रिया",
-  "eligibility": "योग्यता",
+  "application_process": "अनुप्रयोग प्रक्रिया",
+  "eligibility": "पात्रता",
   "fee": "शुल्क",
   "service_area": "सेवा क्षेत्र",
-  "agency_info": "एजेन्सी जानकारी",
+  "agency_info": "एजेन्सी सूचना",
   "unknown": "अज्ञात",
-  "languages": "भाषाहरु"
+  "languages": "भाषाहरू"
 }

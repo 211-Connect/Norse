@@ -1,22 +1,22 @@
 {
   "meta_title": "",
   "meta_description": "",
-  "take_a_tour": "Lần đầu tiên ở đây? Đi tham quan!",
+  "take_a_tour": "Lần đầu tiên đến đây? Tham quan!",
   "new": "Mới!",
   "tour": {
     "step_1": {
-      "paragraph_1": "Hộp tìm kiếm là xương sống của công cụ tìm kiếm. Nó chấp nhận các từ, cụm từ phổ biến, v.v. (ví dụ: 'phòng đựng thức ăn')",
-      "paragraph_2": "Khi bạn nhập, hộp tìm kiếm sẽ cung cấp các đề xuất dựa trên các danh mục mà chúng tôi sử dụng ẩn. Những đề xuất này sẽ cung cấp kết quả chính xác nhất, tuy nhiên bạn không bắt buộc phải sử dụng chúng.",
-      "paragraph_3": "Nếu bạn chọn không sử dụng các đề xuất được cung cấp, chúng tôi sẽ sử dụng văn bản bạn cung cấp để truy xuất kết quả chính xác nhất mà chúng tôi có thể."
+      "paragraph_1": "Hộp tìm kiếm là xương sống của công cụ tìm kiếm. Nó chấp nhận các từ, cụm từ phổ biến, v.v. (tức là 'kho thực phẩm')",
+      "paragraph_2": "Khi bạn nhập, hộp tìm kiếm sẽ cung cấp các đề xuất dựa trên các danh mục chúng tôi sử dụng đằng sau hậu trường. Những đề xuất này sẽ cung cấp kết quả chính xác nhất, tuy nhiên bạn không bắt buộc phải sử dụng chúng.",
+      "paragraph_3": "Nếu bạn chọn không sử dụng các đề xuất được cung cấp, chúng tôi sẽ sử dụng văn bản bạn cung cấp để truy xuất kết quả chính xác nhất có thể."
     },
     "step_2": {
       "paragraph_1": "Không hoàn toàn chắc chắn những gì bạn đang tìm kiếm? Không sao đâu!",
-      "paragraph_2": "Chúng tôi cung cấp nhiều danh mục và danh mục con khác nhau để bạn khám phá. Chỉ cần nhấp vào bất kỳ liên kết nào trong phần danh mục để được đưa đến kết quả tìm kiếm."
+      "paragraph_2": "Chúng tôi cung cấp nhiều danh mục và danh mục phụ khác nhau để bạn khám phá. Chỉ cần nhấp vào bất kỳ liên kết nào trong phần danh mục để được đưa đến kết quả tìm kiếm."
     },
     "step_3": {
       "paragraph_1": "Đôi khi mọi thứ đổ vỡ, mà chúng ta không mong đợi để phá vỡ.",
-      "paragraph_2": "Nếu bạn từng thấy thứ gì đó bị hỏng hoặc thậm chí chỉ muốn cung cấp một số phản hồi về trải nghiệm tổng thể thì bạn có thể nhấp vào nút phản hồi bất kỳ lúc nào."
+      "paragraph_2": "Nếu bạn từng tìm thấy một cái gì đó bị hỏng, hoặc thậm chí chỉ muốn cung cấp một số phản hồi trong trải nghiệm tổng thể thì bạn có thể nhấp vào nút phản hồi bất cứ lúc nào."
     }
   },
-  "categories_title": "Thể loại"
+  "categories_title": "Loại"
 }

@@ -1,0 +1,13 @@
+{
+  "filter_results": "Filtrer les résultats",
+  "results": "résultats",
+  "no_query": "Aucune requête fournie",
+  "results_for": "Résultats trouvés pour la requête",
+  "of": "de",
+  "no_results": {
+    "title": "Aucun résultat correspondant à votre requête n’a été trouvé",
+    "subtitle": "Nous avons fourni des résultats similaires ci-dessous",
+    "alt_subtitle": "Essayez une autre requête ou un autre filtre",
+    "need_help": "Besoin d’aide ? Nous avons des gens qui se tiennent prêts."
+  }
+}

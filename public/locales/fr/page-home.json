@@ -1,0 +1,22 @@
+{
+  "meta_title": "",
+  "meta_description": "",
+  "take_a_tour": "C’est la première fois que vous venez ici ? Faites un tour !",
+  "new": "Nouveau!",
+  "tour": {
+    "step_1": {
+      "paragraph_1": "Le champ de recherche est l’épine dorsale du moteur de recherche. Il accepte des mots, des phrases, etc. courants (c’est-à-dire « garde-manger »)",
+      "paragraph_2": "Au fur et à mesure que vous tapez, le champ de recherche vous fournira des suggestions basées sur les catégories que nous utilisons en coulisses. Ces suggestions fourniront les résultats les plus précis, mais vous n’êtes pas obligé de les utiliser.",
+      "paragraph_3": "Si vous choisissez de ne pas utiliser les suggestions fournies, nous utiliserons le texte que vous fournissez pour obtenir les résultats les plus précis possibles."
+    },
+    "step_2": {
+      "paragraph_1": "Vous n’êtes pas sûr de ce que vous cherchez ? Ce n’est pas grave !",
+      "paragraph_2": "Nous proposons de nombreuses catégories et sous-catégories différentes que vous pouvez explorer. Il suffit de cliquer sur l’un des liens de la section catégorie pour accéder aux résultats de la recherche."
+    },
+    "step_3": {
+      "paragraph_1": "Parfois, des choses se brisent, que nous ne nous attendons pas à briser.",
+      "paragraph_2": "Si jamais vous trouvez quelque chose de cassé, ou même si vous souhaitez simplement fournir des commentaires dans l’expérience globale, vous pouvez cliquer sur le bouton de commentaires à tout moment."
+    }
+  },
+  "categories_title": "Catégories"
+}

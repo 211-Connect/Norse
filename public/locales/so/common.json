@@ -1,132 +1,133 @@
 {
   "header": {
-    "home": "Guriga",
-    "favorites": "Kuwa ugu jecel",
-    "log_out": "Ka bax",
-    "submit_feedback": "Soo gudbi jawaab celin",
-    "language_select_label": "Dooro luqad aad ku beddesho luqadda goobta"
+    "home": "Haku",
+    "favorites": "favorites",
+    "log_out": "Log out",
+    "submit_feedback": "Gudbi warcelin",
+    "language_select_label": "Dooro luqad si ay u beddelaan luqada bogga"
   },
   "favorites": {
-    "added_to_list": "Lagu daray liiska",
-    "added_to_list_message": "Ilahan waxa lagu daray liiskaaga",
-    "already_exists": "Horey u jirtay",
-    "already_exists_message": "Kheyraadkan ayaa horey ugu jiray liiskaaga.",
-    "removed_from_list": "Liiska laga saaray",
-    "removed_from_list_message": "Ilahan waa laga saaray liiskaaga",
-    "updated_list": "Liiska la cusboonaysiiyay",
-    "updated_list_message": "Liiskaaga waa la cusboonaysiiyay",
-    "unable_to_update_list": "Aan awoodin inuu cusbooneysiiyo liiska",
-    "unable_to_update_list_message": "Liiskaaga waa la cusboonaysiin kari waayay",
-    "deleted_list": "Liiska la tirtiray",
-    "deleted_list_message": "Liiskaagii waa la tirtiray",
-    "unable_to_delete_list": "Aan awoodin in la tirtiro liiska",
-    "unable_to_delete_list_message": "Liiskaaga waa la tirtiri waayay"
+    "added_to_list": "Ku daray liiska",
+    "added_to_list_message": "Kheyraadkan waxaa lagu daray liiskaada.",
+    "already_exists": "Horeba way jirtaa",
+    "already_exists_message": "Kheyraadkan horey ayaa ugu jira liiskaaga.",
+    "removed_from_list": "Laga saaro liiska",
+    "removed_from_list_message": "Ilahan waa lagaa saaray liiskaada.",
+    "updated_list": "Liiska updated",
+    "updated_list_message": "Waxaa la cusbooneysiiyay liiskaaga.",
+    "unable_to_update_list": "Awoodi karin in ay update liiska",
+    "unable_to_update_list_message": "Liiskaaga lama cusboonaysiin karo.",
+    "deleted_list": "Liiska la tirtiro",
+    "deleted_list_message": "Liiskaaga waa la tirtiray.",
+    "unable_to_delete_list": "Awoodi waayay in aad tirtirto liiska",
+    "unable_to_delete_list_message": "Liiskaaga lama tirtiri karin."
   },
   "search": {
-    "hero_title": "",
-    "query_placeholder": "",
-    "location_placeholder": "",
+    "hero_title": "Raadi khayraadka",
+    "query_placeholder": "Cuntada, guryaha, iwm ...",
+    "location_placeholder": "Magaalada, gobolka, ama ZIP code",
     "radius_placeholder": "Radius",
     "miles": "Miles",
-    "any": "Mid kasta",
-    "taxonomies": "Cashuuraha",
+    "any": "Qof kasta",
+    "taxonomies": "Taxonomies",
     "suggestions": "Talooyin",
-    "use_my_location": "Isticmaal goobtayda",
-    "confidential_address": "Goobtani waxay noqon kartaa mid sir ah ama aan u furneyn dadweynaha. Fadlan u dooro hab kale oo lagula xidhiidho adeegan.",
-    "address_unavailable": "Ciwaanka lama heli karo",
-    "geocoding_error": "Cilada geocoding",
-    "geocoding_unsupported": "Goob-goboleedka ma taageero biraawsarkaaga",
-    "geocoding_unable_to_retrieve": "Aan awoodin inaad soo celiso goobtaada Fadlan hubi dejinta goobta biraawsarkaaga oo isku day mar kale.",
-    "categories": "Qaybaha"
+    "use_my_location": "Isticmaal meesha aan joogo",
+    "confidential_address": "Goobtani waxay noqon kartaa mid sir ah ama aanay u furanayn dadweynaha oo dhan. Fadlan dooro kale habka xiriir bixisay adeeg this.",
+    "address_unavailable": "wax ka qabashada",
+    "geocoding_error": "Qalad Geocoding",
+    "geocoding_unsupported": "Geolocation ma taageerayaan aad browser",
+    "geocoding_unable_to_retrieve": "Awoodi kari la'aanta inaad soo celiso goobtaada. Fadlan hubi goobaha goobta biraawsarkaaga oo mar kale isku day.",
+    "categories": "Category: Category"
   },
   "call_to_action": {
     "call": "Wac",
-    "view_website": "Eeg mareegta",
-    "get_directions": "Hel tilmaamo",
-    "view_details": "Faahfaahinta eeg",
+    "view_website": "Ka eeg website",
+    "get_directions": "Hel jihada",
+    "view_details": "View faahfaahinta",
     "add_to_list": "Ku dar liiska",
-    "delete_list": "Tirtir liiska",
+    "delete_list": "Liiska Tirtirka",
     "remove_from_list": "Ka saar liiska",
-    "share": "La wadaag",
+    "share": "Share",
     "cancel": "Jooji",
-    "create": "Abuur",
-    "update": "Cusbooneysii",
-    "delete": "Tirtir",
-    "search": "Raadi",
-    "remove": "Ka saar",
-    "login": "Soo gal",
-    "show_more": "Wax badan muuji",
-    "show_less": "Muuji wax yar"
+    "create": "Abuuri",
+    "update": "Update",
+    "delete": "delete",
+    "search": "Haku",
+    "remove": "ka saar",
+    "login": "Gudagal",
+    "show_more": "Muuji more",
+    "show_less": "muuji wax yar"
   },
   "list": {
-    "private": "Gaar ah",
+    "private": "Private",
     "public": "Dadweynaha"
   },
   "message": {
-    "list_deleted": "Liiska waa la tirtiray",
-    "list_deleted_success": "Liiskaagii waa la tirtiray",
+    "list_deleted": "Liiska tirtiray",
+    "list_deleted_success": "Liiskaaga waa la tirtiray.",
     "error": "Khalad",
-    "list_not_deleted_error": "Liiskaaga waa la tirtiri waayay"
+    "list_not_deleted_error": "Liiskaaga lama tirtiri karin."
   },
   "modal": {
     "add_to_list": {
-      "search_list": "Ka raadi liiskaaga",
+      "search_list": "Baadh liisaskaaga",
       "list_name": "Liiska",
-      "list_privacy": "Qarsoodi",
+      "list_privacy": "Privacy",
       "add_to_list": "Ku dar liiska",
-      "not_found": "Liis lama helin",
-      "create_new_list": "Samee mid cusub?"
+      "not_found": "No liiska laga helay",
+      "create_new_list": "Abuur mid cusub?"
     },
     "remove_from_list": {
-      "are_you_sure": "Ma hubtaa inaad doonayso inaad liiskaaga ka saarto kan aad ugu jeceshahay?"
+      "are_you_sure": "Ma hubtaa in aad rabto in aad ka saarto jecel this ka liiska?"
     },
     "create_list": {
-      "create_a_list": "Samee liis",
-      "list_name": "Magaca",
-      "list_description": "Sharaxaada",
-      "make_public": "U soo bandhig dadweynaha"
+      "create_a_list": "Abuur liis",
+      "list_name": "magaca",
+      "list_description": "Tilmaan",
+      "make_public": "Samee wacyi-gelin"
     },
     "update_list": {
-      "update_list": "Liiska cusbooneysii",
-      "list_name": "Magaca",
-      "list_description": "Sharaxaada",
-      "make_public": "U soo bandhig dadweynaha"
+      "update_list": "liiska Update",
+      "list_name": "magaca",
+      "list_description": "Tilmaan",
+      "make_public": "Samee wacyi-gelin"
     },
     "delete_list": {
-      "delete_list": "Tirtir liiska"
+      "delete_list": "Liiska Tirtirka"
     },
     "share": {
-      "share_via": "La wadaag tan iyada oo loo marayo",
-      "copy_link": "Koobiga isku xirka",
+      "share_via": "La wadaag tan",
+      "copy_link": "Koobi link",
       "copy": "Nuqul",
-      "facebook": "Facebook-ga",
+      "facebook": "Facebook",
       "twitter": "Twitter",
+      "linkedin": "LinkedIn",
       "sms": "SMS",
-      "email": "iimaylka",
-      "print": "Daabac",
-      "copied": "la guuriyay!",
-      "check_out_this_list": "Eeg liiskan aan sameeyay!",
-      "check_out_this_resource": "Eeg kheyraadkan aan helay!",
-      "share_sms": "Geli nambar telefoon aad kula wadaagto SMS",
-      "enter_phone_number": "Gali lambarka taleefanka...",
-      "invalid_phone_number": "Lambarka taleefanka aan sax ahayn",
-      "sms_sending_title": "Diraya SMS",
-      "sms_sending_body": "Fariintaada waa la dirayaa",
-      "sms_send_success_title": "SMS soo diray!",
-      "sms_send_success_body": "Fariintaadii waa la soo diray",
-      "sms_send_failed_title": "Diritaanka SMS waa guul daraystay",
-      "sms_send_failed_body": "Fariintaadu waa ku guul daraystay in ay dirto"
+      "email": "Email",
+      "print": "Haku",
+      "copied": "La qabsaday!",
+      "check_out_this_list": "Fiiri liiskan aan sameeyay!",
+      "check_out_this_resource": "Fiiri khayraadkan aan helay!",
+      "share_sms": "Ku qor lambarka telefoonka si aad ula wadaagto via SMS",
+      "enter_phone_number": "Gali lambarka telefoonka...",
+      "invalid_phone_number": "lambarka telefoonka aan dhab ahayn",
+      "sms_sending_title": "Diraya SMS ...",
+      "sms_sending_body": "Fariintaada ayaa laguu dirayaa.",
+      "sms_send_success_title": "SMS diray!",
+      "sms_send_success_body": "Fariin ayaa laguu soo diray.",
+      "sms_send_failed_title": "SMS diri fashilmay",
+      "sms_send_failed_body": "Fariintaadu way guul darreysatay in ay dirto."
     },
-    "prompt_auth": "Fadlan gal si aad u isticmaasho sifadan"
+    "prompt_auth": "Fadlan gal si aad u isticmaasho habkaani."
   },
   "update_location": {
-    "prompt_start_location": "Waa maxay goobtaadu?"
+    "prompt_start_location": "Waa maxay goobta aad ka bilaabayso?"
   },
   "data_providers": {
-    "provided_by": "Xogta ay bixiyeen"
+    "provided_by": "Macluumaadka ay bixiyaan"
   },
   "footer": {
-    "copyright": "Dhammaan xuquuqaha way xifdiyeen",
+    "copyright": "Dhamaan xuquuqda waa la keydiyay.",
     "privacy_policy": "Qaanuunka Arrimaha Khaaska ah"
   }
 }

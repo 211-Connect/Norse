@@ -1,7 +1,7 @@
 {
-  "meta_title": "404 Pagina no encontrada",
-  "meta_description": "La página que intentas ver no existe.",
-  "title": "Nada que ver aqui",
-  "description": "La página que intentas ver no existe. Es posible que haya escrito mal la dirección o que la página se haya movido a otra URL. Si cree que se trata de un error, póngase en contacto con el soporte.",
+  "meta_title": "404 - Página no encontrada",
+  "meta_description": "La página que está intentando ver no existe.",
+  "title": "Nada que ver aquí",
+  "description": "La página que está intentando ver no existe. Es posible que hayas escrito mal la dirección o que la página se haya movido a otra URL. Si crees que se trata de un error, ponte en contacto con el servicio de asistencia.",
   "back_to_home": "Llévame de vuelta a la página de inicio"
 }

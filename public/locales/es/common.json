@@ -12,39 +12,39 @@
     "already_exists": "Ya existe",
     "already_exists_message": "Este recurso ya existe en su lista.",
     "removed_from_list": "Eliminado de la lista",
-    "removed_from_list_message": "Este recurso ha sido eliminado de su lista.",
+    "removed_from_list_message": "Este recurso se ha eliminado de la lista.",
     "updated_list": "Lista actualizada",
     "updated_list_message": "Su lista ha sido actualizada.",
     "unable_to_update_list": "No se puede actualizar la lista",
-    "unable_to_update_list_message": "Su lista no se pudo actualizar.",
-    "deleted_list": "lista eliminada",
-    "deleted_list_message": "Su lista ha sido eliminada.",
+    "unable_to_update_list_message": "No se ha podido actualizar la lista.",
+    "deleted_list": "Lista de eliminados",
+    "deleted_list_message": "Tu lista ha sido eliminada.",
     "unable_to_delete_list": "No se puede eliminar la lista",
-    "unable_to_delete_list_message": "No se pudo eliminar su lista."
+    "unable_to_delete_list_message": "Su lista no se pudo eliminar."
   },
   "search": {
-    "hero_title": "",
-    "query_placeholder": "",
-    "location_placeholder": "",
+    "hero_title": "Búsqueda de recursos",
+    "query_placeholder": "Alimentación, vivienda, etc...",
+    "location_placeholder": "Ciudad, estado o código postal",
     "radius_placeholder": "Radio",
     "miles": "Millas",
     "any": "Cualquier",
     "taxonomies": "Taxonomías",
     "suggestions": "Sugerencias",
-    "use_my_location": "usar mi ubicación",
-    "confidential_address": "Esta ubicación puede ser confidencial o no estar abierta al público. Elija otro método de contacto proporcionado para este servicio.",
+    "use_my_location": "Usar mi ubicación",
+    "confidential_address": "Este lugar puede ser confidencial o no estar abierto al público. Elija otro método de contacto proporcionado para este servicio.",
     "address_unavailable": "Dirección no disponible",
     "geocoding_error": "Error de geocodificación",
     "geocoding_unsupported": "La geolocalización no es compatible con su navegador",
-    "geocoding_unable_to_retrieve": "No se puede recuperar tu ubicación. Verifique la configuración de ubicación de su navegador y vuelva a intentarlo.",
+    "geocoding_unable_to_retrieve": "No se puede recuperar su ubicación. Compruebe la configuración de ubicación de su navegador y vuelva a intentarlo.",
     "categories": "Categorías"
   },
   "call_to_action": {
     "call": "Llamar",
-    "view_website": "ver sitio web",
-    "get_directions": "Obtener las direcciones",
+    "view_website": "Ver sitio web",
+    "get_directions": "Obtener direcciones",
     "view_details": "Ver detalles",
-    "add_to_list": "Agregar a la lista",
+    "add_to_list": "Añadir a la lista",
     "delete_list": "Eliminar lista",
     "remove_from_list": "Quitar de la lista",
     "share": "Compartir",
@@ -54,9 +54,9 @@
     "delete": "Borrar",
     "search": "Buscar",
     "remove": "Eliminar",
-    "login": "Acceso",
+    "login": "Iniciar sesión",
     "show_more": "Mostrar más",
-    "show_less": "Muestra menos"
+    "show_less": "Mostrar menos"
   },
   "list": {
     "private": "Privado",
@@ -64,21 +64,21 @@
   },
   "message": {
     "list_deleted": "Lista eliminada",
-    "list_deleted_success": "Su lista ha sido eliminada.",
+    "list_deleted_success": "Tu lista ha sido eliminada.",
     "error": "Error",
-    "list_not_deleted_error": "No se pudo eliminar su lista."
+    "list_not_deleted_error": "Su lista no se pudo eliminar."
   },
   "modal": {
     "add_to_list": {
       "search_list": "Busca en tus listas",
       "list_name": "Lista",
       "list_privacy": "Privacidad",
-      "add_to_list": "Agregar a la lista",
-      "not_found": "No se encontraron listas",
+      "add_to_list": "Añadir a la lista",
+      "not_found": "No se han encontrado listas",
       "create_new_list": "¿Crear uno nuevo?"
     },
     "remove_from_list": {
-      "are_you_sure": "¿Seguro que quieres eliminar este favorito de tu lista?"
+      "are_you_sure": "¿Estás seguro de que quieres eliminar este favorito de tu lista?"
     },
     "create_list": {
       "create_a_list": "Crear una lista",
@@ -87,7 +87,7 @@
       "make_public": "Hacer público"
     },
     "update_list": {
-      "update_list": "Lista de actualizacion",
+      "update_list": "Lista de actualización",
       "list_name": "Nombre",
       "list_description": "Descripción",
       "make_public": "Hacer público"
@@ -96,37 +96,38 @@
       "delete_list": "Eliminar lista"
     },
     "share": {
-      "share_via": "Comparte esto a través de",
-      "copy_link": "Copiar link",
+      "share_via": "Compártelo a través de",
+      "copy_link": "Copiar enlace",
       "copy": "Copiar",
-      "facebook": "Facebook",
-      "twitter": "Gorjeo",
+      "facebook": "Facebook (en inglés)",
+      "twitter": "Twitter",
+      "linkedin": "LinkedIn (en inglés)",
       "sms": "SMS",
       "email": "Correo electrónico",
-      "print": "Imprimir",
+      "print": "Impresión",
       "copied": "¡Copiado!",
-      "check_out_this_list": "¡Mira esta lista que hice!",
-      "check_out_this_resource": "¡Mira este recurso que encontré!",
-      "share_sms": "Introduce un número de teléfono para compartir por SMS",
-      "enter_phone_number": "Ingresa número telefónico...",
-      "invalid_phone_number": "Numero de telefono invalido",
-      "sms_sending_title": "Enviando SMS...",
-      "sms_sending_body": "Su mensaje esta siendo enviado.",
-      "sms_send_success_title": "SMS enviado!",
+      "check_out_this_list": "¡Echa un vistazo a esta lista que hice!",
+      "check_out_this_resource": "¡Echa un vistazo a este recurso que encontré!",
+      "share_sms": "Ingresa un número de teléfono para compartir a través de SMS",
+      "enter_phone_number": "Ingresa el número de teléfono...",
+      "invalid_phone_number": "Número de teléfono no válido",
+      "sms_sending_title": "Envío de SMS...",
+      "sms_sending_body": "Tu mensaje está siendo enviado.",
+      "sms_send_success_title": "¡SMS enviado!",
       "sms_send_success_body": "Tu mensaje ha sido enviado.",
-      "sms_send_failed_title": "Envío de SMS fallido",
-      "sms_send_failed_body": "Su mensaje no se pudo enviar."
+      "sms_send_failed_title": "Error en el envío de SMS",
+      "sms_send_failed_body": "No se pudo enviar el mensaje."
     },
-    "prompt_auth": "Inicia sesión para utilizar esta función."
+    "prompt_auth": "Inicie sesión para utilizar esta función."
   },
   "update_location": {
     "prompt_start_location": "¿Cuál es tu punto de partida?"
   },
   "data_providers": {
-    "provided_by": "Datos proporcionados por"
+    "provided_by": "Datos facilitados por"
   },
   "footer": {
-    "copyright": "Reservados todos los derechos.",
+    "copyright": "Todos los derechos reservados.",
     "privacy_policy": "Política de privacidad"
   }
 }

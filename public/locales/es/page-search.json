@@ -1,13 +1,13 @@
 {
-  "filter_results": "Filtrar Resultados",
-  "results": "resultados",
-  "no_query": "No se proporcionó ninguna consulta",
-  "results_for": "resultados encontrados para la consulta",
+  "filter_results": "Filtrar resultados",
+  "results": "Resultados",
+  "no_query": "No se ha proporcionado ninguna consulta",
+  "results_for": "Resultados encontrados para la consulta",
   "of": "de",
   "no_results": {
-    "title": "No se encontraron resultados que coincidan con su consulta",
-    "subtitle": "Hemos proporcionado algunos resultados similares a continuación",
+    "title": "No se han encontrado resultados que coincidan con su consulta",
+    "subtitle": "A continuación, proporcionamos algunos resultados similares",
     "alt_subtitle": "Pruebe con una consulta o filtro diferente",
-    "need_help": "¿Necesitas ayuda? Tenemos gente esperando."
+    "need_help": "¿Necesitas ayuda? Tenemos gente a la espera."
   }
 }
