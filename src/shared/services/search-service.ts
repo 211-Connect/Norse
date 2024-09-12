@@ -115,7 +115,7 @@ export class SearchService {
             phone: hit?._source?.primary_phone ?? null,
             website: hit?._source?.primary_website ?? null,
             address: mainAddress,
-            location: hit?._source?.location ?? null,
+            location: hit?._source?.location_coordinates ?? null,
             taxonomyTerms: hit?._source?.taxonomy_terms ?? null,
             taxonomyCodes: hit?._source?.taxonomy_codes ?? null,
           };
