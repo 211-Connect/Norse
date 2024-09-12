@@ -1,0 +1,13 @@
+{
+  "filter_results": "Matokeo ya kichujio",
+  "results": "Matokeo",
+  "no_query": "Hakuna swali lililotolewa",
+  "results_for": "Matokeo yaliyopatikana kwa swala",
+  "of": "Ya",
+  "no_results": {
+    "title": "Hakuna matokeo yaliyopatikana yanayolingana na swala lako",
+    "subtitle": "Tumetoa matokeo kama hayo hapa chini",
+    "alt_subtitle": "Jaribu ku Edit au Filter",
+    "need_help": "Unahitaji msaada? Tuna watu wa kusimama."
+  }
+}

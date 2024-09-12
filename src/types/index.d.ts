@@ -8,7 +8,7 @@ declare global {
   namespace NodeJS {
     interface ProcessEnv {
       NEXT_PUBLIC_MAPBOX_API_KEY?: string;
-      NEXT_PUBLIC_GTM_CONTAINER_ID?: string;
+      NEXT_PUBLIC_GTM_CONTAINER_ID: string;
       NEXT_PUBLIC_API_URL?: string;
       NEXT_PUBLIC_TENANT_ID?: string;
       NEXT_PUBLIC_MAPBOX_STYLE_URL?: string;

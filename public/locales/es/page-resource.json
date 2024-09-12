@@ -1,6 +1,6 @@
 {
-  "back_to_results": "volver a resultados",
-  "back_to_home": "De vuelta a casa",
+  "back_to_results": "Volver a los resultados",
+  "back_to_home": "Volver a casa",
   "categories": "Categorías",
   "last_assured": "Último asegurado",
   "hours": "Horas",
@@ -13,9 +13,9 @@
   "website": "Sitio web",
   "application_process": "Proceso de solicitud",
   "eligibility": "Elegibilidad",
-  "fee": "Tarifa",
-  "service_area": "Vía de Servício",
-  "agency_info": "información de la agencia",
+  "fee": "Honorario",
+  "service_area": "Área de servicio",
+  "agency_info": "Información de la agencia",
   "unknown": "Desconocido",
   "languages": "Idiomas"
 }

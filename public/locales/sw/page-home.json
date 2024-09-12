@@ -1,0 +1,22 @@
+{
+  "meta_title": "",
+  "meta_description": "",
+  "take_a_tour": "Kwa mara ya kwanza hapa? Make a Tour!",
+  "new": "Mpya!",
+  "tour": {
+    "step_1": {
+      "paragraph_1": "Sanduku la utafutaji ni uti wa mgongo wa injini ya utafutaji. Inakubali maneno ya kawaida, misemo, nk (yaani 'chakula cha chakula')",
+      "paragraph_2": "Unapoandika, kisanduku cha utafutaji kitatoa mapendekezo kulingana na kategoria tunazotumia nyuma ya pazia. Mapendekezo haya yatatoa matokeo sahihi zaidi, hata hivyo hauhitajiki kuyatumia.",
+      "paragraph_3": "Ikiwa utachagua kutotumia mapendekezo yaliyotolewa, tutatumia maandishi unayotoa ili kupata matokeo sahihi zaidi ambayo tunaweza."
+    },
+    "step_2": {
+      "paragraph_1": "Sina uhakika wa nini unatafuta? Hiyo ni sawa!",
+      "paragraph_2": "Tunatoa kategoria nyingi tofauti na vijamii kwa ajili yako kuchunguza. Bonyeza tu kwenye viungo vyovyote katika sehemu ya kategoria ili kuchukuliwa kwa matokeo ya utaftaji."
+    },
+    "step_3": {
+      "paragraph_1": "Wakati mwingine mambo yanavunjika, ambayo hatutarajii kuvunja.",
+      "paragraph_2": "Ikiwa umewahi kupata kitu kilichovunjika, au hata unataka tu kutoa maoni kwa uzoefu wa jumla basi unaweza kubofya kitufe cha maoni wakati wowote."
+    }
+  },
+  "categories_title": "Kategoria"
+}

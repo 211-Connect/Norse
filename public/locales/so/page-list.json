@@ -1,9 +1,9 @@
 {
   "meta_title": "Liiska daawashada",
-  "back_to_favorites": "Ku laabo kuwa ugu cadcad",
-  "favorites": "Kuwa ugu jecel",
+  "back_to_favorites": "Back to favorites",
+  "favorites": "favorites",
   "no_favorites": {
-    "title": "Weli waxba halkan ma jiraan :(",
-    "subtitle": "Ku dar qaar jecel bogga raadinta si aad halkan ugu aragto"
+    "title": "Halkan weli ma jiraan :(",
+    "subtitle": "Ku dar qaar ka mid ah jecel on bogga search si aad u aragto halkan"
   }
 }

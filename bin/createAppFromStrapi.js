@@ -2,6 +2,7 @@ const qs = require('qs');
 const path = require('path');
 const fs = require('fs-extra');
 const syncClient = require('sync-rest-client');
+const _ = require('lodash');
 
 const STRAPI_URL = process.env.STRAPI_URL;
 const STRAPI_TOKEN = process.env.STRAPI_TOKEN;
@@ -22,11 +23,15 @@ const query = qs.stringify({
         'pages',
         'search',
         'plugins',
+        'featureFlags',
         'lastAssuredText',
         'categoriesText',
         'hideAttribution',
         'headerMenu',
         'footerMenu',
+        'map',
+        'homePage',
+        'resourcePage',
         'dataProviders',
         'dataProviders.logo',
         'radiusSelectValues',
@@ -42,6 +47,8 @@ const query = qs.stringify({
         'localizations.search',
         'localizations.lastAssuredText',
         'localizations.categoriesText',
+        'localizations.homePage',
+        'localizations.resourcePage',
       ],
     },
     category: {
@@ -67,7 +74,7 @@ const query = qs.stringify({
  * @param {string} dir Next.js root directory
  * @returns {*} void
  */
-module.exports = async function createFromStrapi(dir) {
+module.exports = function createFromStrapi(dir) {
   if (!STRAPI_URL || !STRAPI_TOKEN || !TENANT_ID) return;
 
   try {
@@ -89,8 +96,7 @@ module.exports = async function createFromStrapi(dir) {
     const suggestionTranslations =
       tenant.suggestion.data.attributes.localizations.data;
     const appConfig = tenant.app_config.data.attributes;
-    const appConfigTranslations =
-      tenant.app_config.data.attributes.localizations.data;
+    const appConfigTranslations = appConfig.localizations.data;
     const logoUrl = appConfig.logo.data.attributes.url;
     const faviconUrl = appConfig.favicon.data.attributes.url;
     const heroUrl = appConfig.hero.data.attributes.url;
@@ -115,17 +121,25 @@ module.exports = async function createFromStrapi(dir) {
       },
       search: {
         defaultRadius: appConfig?.defaultRadiusValue ?? 0,
+        defaultRadius: appConfig?.defaultRadiusValue ?? 0,
         radiusOptions: appConfig?.radiusSelectValues ?? null,
+        resultsLimit: appConfig?.search?.resultsLimit ?? 25,
       },
       features: {
         map: {
           plugin: 'mapbox',
         },
       },
+      adapters: {
+        map: 'mapbox',
+      },
+      map: appConfig?.map ?? {
+        center: [0, 0],
+        zoom: 7,
+      },
       alert: appConfig?.alert,
       theme: appConfig?.theme ?? null,
       hideAttribution: appConfig?.hideAttribution ?? true,
-      plugins: [],
       pages: {},
       menus: {
         header: [],
@@ -147,32 +161,21 @@ module.exports = async function createFromStrapi(dir) {
       appConfig.search.locationInputPlaceholder;
     translationFile['en']['search.no_results_fallback_text'] =
       appConfig?.search?.noResultsFallbackText;
-    translationFile['en']['last_assured_text'] = appConfig?.lastAssuredText;
-    translationFile['en']['categories_text'] = appConfig?.categoriesText;
+    translationFile['en']['last_assured_text'] =
+      appConfig?.resourcePage?.lastAssuredText;
+    translationFile['en']['categories_text'] =
+      appConfig?.resourcePage?.categoriesText;
 
-    for (const page of appConfig?.pages ?? []) {
-      if (page.page === 'home') {
-        translationFile['en'][`meta_title`] = page.title;
-        translationFile['en'][`meta_description`] = page.description;
+    translationFile['en']['meta_title'] = appConfig?.homePage?.title;
+    translationFile['en']['meta_description'] =
+      appConfig?.homePage?.description;
 
-        newAppConfig.pages[page.page] = {
-          heroSection: {
-            backgroundImageUrl: heroUrl,
-          },
-          meta: {
-            title: page.title,
-            description: page.description,
-          },
-          showLocationInput: page.showLocationInput ?? false,
-          disableTour: page.disableTour ?? false,
-        };
-      } else if (page.page === 'resource') {
-        newAppConfig.pages[page.page] = {
-          hideCategories: page.hideCategories ?? false,
-          hideLastAssured: page.hideLastAssured ?? false,
-        };
-      }
-    }
+    // Add hero section URL
+    newAppConfig.pages['home'] = {
+      heroSection: {
+        backgroundImageUrl: heroUrl,
+      },
+    };
 
     for (const menu of appConfig?.headerMenu ?? []) {
       newAppConfig.menus.header.push({
@@ -210,102 +213,148 @@ module.exports = async function createFromStrapi(dir) {
         data?.search?.locationInputPlaceholder;
       translationFile[data.locale]['search.no_results_fallback_text'] =
         data?.search?.noResultsFallbackText;
-      translationFile[data.locale]['last_assured_text'] = data?.lastAssuredText;
-      translationFile[data.locale]['categories_text'] = data?.categoriesText;
+      translationFile[data.locale]['last_assured_text'] =
+        data?.resourcePage?.lastAssuredText;
+      translationFile[data.locale]['categories_text'] =
+        data?.resourcePage?.categoriesText;
+
+      translationFile[data.locale]['meta_title'] = data?.homePage?.title;
+      translationFile[data.locale]['meta_description'] =
+        data?.homePage?.description;
     }
 
-    for (let catI = 0; catI < categories.length; catI++) {
-      const category = categories[catI];
-      const subcategories = category.subcategories;
-      translationFile['en'][`categories.${catI}`] = category.name;
+    const categoryFiles = {};
+    for (const _category of categoryTranslations || []) {
+      const category = _category.attributes;
+      if (!(category.locale in categoryFiles)) {
+        categoryFiles[category.locale] = [];
+      }
 
-      newAppConfig.categories.push({
-        id: category.id,
-        name: category.name,
-        href: category.href,
-        image: category?.image?.data?.attributes?.url,
-        subcategories: category.subcategories.map((subcategory, key) => {
+      categoryFiles[category.locale] = categoryFiles[category.locale].concat(
+        category.list.map((cat, idx) => {
+          const matchingCategory = categories[idx];
+
           return {
-            id: subcategory.id,
-            name: subcategory.name,
-            href: subcategory.href,
-            query: subcategory.query,
-            query_type: subcategory.queryType,
+            name: cat['name'],
+            href: cat['href'],
+            image:
+              matchingCategory?.['image']?.['data']?.['attributes']?.['url'],
+            subcategories: cat['subcategories'].map((sub) => ({
+              name: sub['name'],
+              href: sub['href'],
+              query: sub['query'],
+              queryType: sub['queryType'],
+            })),
           };
         }),
-      });
-
-      for (let subCatI = 0; subCatI < subcategories.length; subCatI++) {
-        const subcategory = subcategories[subCatI];
-        translationFile['en'][`categories.${catI}.subcategories.${subCatI}`] =
-          subcategory.name;
-
-        for (const locale of categoryTranslations || []) {
-          const data = locale.attributes;
-
-          if (!translationFile[data.locale]) {
-            translationFile[data.locale] = {};
-          }
-
-          const categories = data.list;
-          const subcategories = categories?.[catI]?.subcategories;
-
-          if (categories?.[catI]) {
-            translationFile[data.locale][`categories.${catI}`] =
-              categories[catI].name;
-          }
-
-          if (subcategories?.[subCatI]) {
-            translationFile[data.locale][
-              `categories.${catI}.subcategories.${subCatI}`
-            ] = subcategories[subCatI].name;
-          }
-        }
-      }
+      );
     }
 
-    for (let i = 0; i < suggestions.length; i++) {
-      const suggestion = suggestions[i];
-      translationFile['en'][`suggestions.${i}`] = suggestion.displayName;
-
-      newAppConfig.suggestions.push({
-        id: i,
-        value: suggestion.displayName,
-        term: suggestion.taxonomies,
-      });
-
-      for (const locale of suggestionTranslations || []) {
-        const data = locale.attributes;
-
-        if (!translationFile[data.locale]) {
-          translationFile[data.locale] = {};
-        }
-
-        const suggestions = data.list;
-
-        if (suggestions?.[i]) {
-          translationFile[data.locale][`suggestions.${i}`] =
-            suggestions[i].displayName;
-        }
+    for (const _category of categories) {
+      const category = _category;
+      if (!('en' in categoryFiles)) {
+        categoryFiles['en'] = [];
       }
-    }
-
-    for (const plugin of appConfig?.plugins ?? []) {
-      newAppConfig.plugins.push([
-        plugin.__component.replace('plugin.', ''),
-        plugin?.config ?? {},
+      categoryFiles['en'] = categoryFiles['en'].concat([
+        {
+          name: category['name'],
+          href: category['href'],
+          image: category['image']?.['data']?.['attributes']?.['url'],
+          subcategories: category['subcategories'].map((sub) => ({
+            name: sub['name'],
+            href: sub['href'],
+            query: sub['query'],
+            queryType: sub['queryType'],
+          })),
+        },
       ]);
     }
 
+    for (const key in categoryFiles) {
+      const categoryToWrite = categoryFiles[key];
+      fs.mkdirpSync(path.join(dir, `public/locales/${key}`));
+      fs.writeFileSync(
+        path.resolve(`public/locales/${key}/categories.json`),
+        JSON.stringify(categoryToWrite, null, 2),
+      );
+    }
+
+    const suggestionFiles = {};
+    for (const _suggestion of suggestionTranslations || []) {
+      const suggestion = _suggestion.attributes;
+      if (!(suggestion.locale in suggestionFiles)) {
+        suggestionFiles[suggestion.locale] = [];
+      }
+
+      suggestionFiles[suggestion.locale] = suggestionFiles[
+        suggestion.locale
+      ].concat(
+        suggestion.list.map((sugg) => ({
+          name: sugg['displayName'],
+          taxonomies: sugg['taxonomies'],
+        })),
+      );
+    }
+
+    for (const _suggestion of suggestions || []) {
+      const suggestion = _suggestion;
+      if (!('en' in suggestionFiles)) {
+        suggestionFiles['en'] = [];
+      }
+
+      suggestionFiles['en'] = suggestionFiles['en'].concat([
+        {
+          name: suggestion['displayName'],
+          taxonomies: suggestion['taxonomies'],
+        },
+      ]);
+    }
+
+    for (const key in suggestionFiles) {
+      const suggestionToWrite = suggestionFiles[key];
+      fs.mkdirpSync(path.join(dir, `public/locales/${key}`));
+      fs.writeFileSync(
+        path.resolve(`public/locales/${key}/suggestions.json`),
+        JSON.stringify(suggestionToWrite, null, 2),
+      );
+    }
+
+    function deepCleanConfig(config) {
+      if (Array.isArray(config)) {
+        return config.map((item) => deepCleanConfig(item));
+      } else if (_.isPlainObject(config)) {
+        return _.chain(config)
+          .omitBy(_.isNil)
+          .omit('id')
+          .mapValues((value) => deepCleanConfig(value))
+          .value();
+      } else {
+        return config;
+      }
+    }
+
+    const cleanedAppConfig = deepCleanConfig(newAppConfig);
+
+    const featureFlags = _.omit(
+      _.omitBy(appConfig.featureFlags, _.isNil),
+      'id',
+    );
+
+    fs.writeFileSync(
+      path.resolve('./.norse/flags.json'),
+      JSON.stringify(featureFlags, null, 2),
+    );
+
     fs.writeFileSync(
       path.join(dir, 'tmp/app.json'),
-      JSON.stringify(newAppConfig, null, 2),
+      JSON.stringify(cleanedAppConfig, null, 2),
     );
 
     for (const key in translationFile) {
       fs.mkdirpSync(path.join(dir, `public/locales/${key}`));
       fs.writeFileSync(
         path.join(dir, `public/locales/${key}/dynamic.json`),
+        JSON.stringify(translationFile[key], null, 2),
         JSON.stringify(translationFile[key], null, 2),
       );
     }

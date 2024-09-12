@@ -20,6 +20,9 @@
     "radiusOptions": [],
     "defaultRadius": "0"
   },
+  "adapters": {
+    "map": "mapbox"
+  },
   "features": {
     "map": {
       "plugin": "mapbox"

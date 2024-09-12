@@ -1,0 +1,133 @@
+{
+  "header": {
+    "home": "ቤት",
+    "favorites": "ተወዳጅ",
+    "log_out": "ወደ ውጭ አስቀምጥ",
+    "submit_feedback": "አስተያየት አስቀምጥ",
+    "language_select_label": "የድረ ገጹን ቋንቋ ለመቀየር ቋንቋ ይምረጡ"
+  },
+  "favorites": {
+    "added_to_list": "ወደ ዝርዝር ውስጥ ይጨመራል",
+    "added_to_list_message": "ይህ የተፈጥሮ ሀብት በዝርዝራችሁ ውስጥ ተጨምሯል።",
+    "already_exists": "አሁንም አለ",
+    "already_exists_message": "ይህ የተፈጥሮ ሀብት በዝርዝራችሁ ውስጥ አስቀድሞ አለ።",
+    "removed_from_list": "ከዝርዝሩ ውስጥ የተወገዱ",
+    "removed_from_list_message": "ይህ የተፈጥሮ ሀብት ከዝርዝራችሁ ተወግዷል ።",
+    "updated_list": "የተሻሻለ ዝርዝር",
+    "updated_list_message": "የእርስዎ ዝርዝር ተሻሽሏል.",
+    "unable_to_update_list": "ዝርዝሩን ማሻሻል አልተቻለም",
+    "unable_to_update_list_message": "የእርስዎ ዝርዝር ሊሻሻል አልቻለም.",
+    "deleted_list": "የጠፋው ዝርዝር",
+    "deleted_list_message": "የእርስዎ ዝርዝር ተወግዷል.",
+    "unable_to_delete_list": "ዝርዝሩን ማጥፋት አልተቻለም",
+    "unable_to_delete_list_message": "የእርስዎ ንዝረት ሊጠፋ አልቻለም."
+  },
+  "search": {
+    "hero_title": "ሀብት ፍለጋ",
+    "query_placeholder": "ምግብ, መኖሪያ ቤት, ወዘተ...",
+    "location_placeholder": "ከተማ, ግዛት, ወይም ZIP ኮድ",
+    "radius_placeholder": "ራዲየስ",
+    "miles": "ማይልስ",
+    "any": "ማንኛውም",
+    "taxonomies": "ታክሶኖሚዎች",
+    "suggestions": "የመፍትሔ ሐሳቦች",
+    "use_my_location": "ቦታዬን ተጠቀም",
+    "confidential_address": "ይህ ቦታ ምሥጢራዊ ወይም ለሕዝብ ክፍት ላይሆን ይችላል ። እባክዎ ለዚህ አገልግሎት ሌላ የተሰጠ የግንኙነት ዘዴ ይምረጡ።",
+    "address_unavailable": "አድራሻ የማይገኝ",
+    "geocoding_error": "የጂኦኮድ ስህተት",
+    "geocoding_unsupported": "ጂኦሎሌሽን በመቃኘትህ አይደገፍም",
+    "geocoding_unable_to_retrieve": "ቦታህን ማግኘት አትችልም። እባክዎ የድር ጣቢያዎን የቦታ አቀማመጥ ይመልከቱ እና እንደገና ይሞክሩ.",
+    "categories": "ምድቦች"
+  },
+  "call_to_action": {
+    "call": "ይደውሉ",
+    "view_website": "ድረ ገፁን ይመልከቱ",
+    "get_directions": "አቅጣጫዎችን ያግኙ",
+    "view_details": "ዝርዝር ጉዳዮችን ይመልከቱ",
+    "add_to_list": "ወደ ዝርዝር ጨምር",
+    "delete_list": "ዝርዝሩን አጥፉ",
+    "remove_from_list": "ከዝርዝሩ አስወግድ",
+    "share": "አካፍሉ",
+    "cancel": "ተወው",
+    "create": "ፍጠር",
+    "update": "አሻሽል",
+    "delete": "አጥፉ",
+    "search": "ፍለጋ",
+    "remove": "አስወግድ",
+    "login": "መግቢያ",
+    "show_more": "ተጨማሪ አሳይ",
+    "show_less": "ያነሰ አሳይ"
+  },
+  "list": {
+    "private": "የግል",
+    "public": "ህዝባዊ"
+  },
+  "message": {
+    "list_deleted": "ዝርዝር የተሰረዘ",
+    "list_deleted_success": "የእርስዎ ዝርዝር ተወግዷል.",
+    "error": "ስህተት",
+    "list_not_deleted_error": "የእርስዎ ንዝረት ሊጠፋ አልቻለም."
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "ዝርዝሮችዎን ይፈትሹ",
+      "list_name": "ዝርዝር",
+      "list_privacy": "የግል ሚስጥር",
+      "add_to_list": "ወደ ዝርዝር ጨምር",
+      "not_found": "ምንም ዝርዝር አልተገኘም",
+      "create_new_list": "አዲስ ፍጠር?"
+    },
+    "remove_from_list": {
+      "are_you_sure": "ይህን ተወዳጅ ነገር ከዝርዝሩ ውስጥ ማስወገድ እንደምትፈልግ እርግጠኛ ነህ?"
+    },
+    "create_list": {
+      "create_a_list": "ዝርዝር ይፍጠሩ",
+      "list_name": "ስም",
+      "list_description": "መግለጫ",
+      "make_public": "ለሕዝብ ይፋ አድርጉ"
+    },
+    "update_list": {
+      "update_list": "የማሻሻያ ዝርዝር",
+      "list_name": "ስም",
+      "list_description": "መግለጫ",
+      "make_public": "ለሕዝብ ይፋ አድርጉ"
+    },
+    "delete_list": {
+      "delete_list": "ዝርዝሩን አጥፉ"
+    },
+    "share": {
+      "share_via": "ይህን በበኩል አካፍሉ",
+      "copy_link": "አገናኝ መገልበጥ",
+      "copy": "ግልባጭ",
+      "facebook": "ፌስቡክ",
+      "twitter": "ትዊተር",
+      "linkedin": "ሊንክድኢን",
+      "sms": "ኤስ ኤም ኤስ",
+      "email": "ኢሜይል",
+      "print": "ህትመት",
+      "copied": "የተገለበጠ!",
+      "check_out_this_list": "የሠራሁትን ይህን ዝርዝር ተመልከት!",
+      "check_out_this_resource": "ያገኘሁትን ይህን የተፈጥሮ ሀብት ተመልከት!",
+      "share_sms": "በ ኤስ ኤም ኤስ አማካኝነት ለማጋራት ስልክ ቁጥር ያስገቡ",
+      "enter_phone_number": "ስልክ ቁጥር ያስገቡ ...",
+      "invalid_phone_number": "የማይረባ የስልክ ቁጥር",
+      "sms_sending_title": "ኤስ ኤም ኤስ መላክ ...",
+      "sms_sending_body": "መልዕክትዎ እየተላከ ነው።",
+      "sms_send_success_title": "ኤስ ኤም ኤስ ተላከ!",
+      "sms_send_success_body": "መልዕክትህ ተልኳል።",
+      "sms_send_failed_title": "ኤስ ኤም ኤስ መላክ አልተሳካለትም",
+      "sms_send_failed_body": "የእርስዎ መልዕክት መላክ አልቻለም."
+    },
+    "prompt_auth": "ይህን መተግበሪያ ለመጠቀም እባክዎ መግቢያ."
+  },
+  "update_location": {
+    "prompt_start_location": "መነሻዎ ምንድን ነው?"
+  },
+  "data_providers": {
+    "provided_by": "የቀረቡ መረጃዎች"
+  },
+  "footer": {
+    "copyright": "ሁሉም መብቶች የተጠበቁ ናቸው።",
+    "privacy_policy": "የግላዊነት ፖሊሲ"
+  }
+}

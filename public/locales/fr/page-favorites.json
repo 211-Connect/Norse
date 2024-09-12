@@ -1,0 +1,10 @@
+{
+  "meta_title": "Affichage de vos listes de favoris",
+  "meta_description": "Affichage de vos listes de favoris",
+  "lists": "Listes",
+  "view_list": "Voir la liste",
+  "edit_list": "Modifier la liste",
+  "delete_list": "Supprimer la liste",
+  "select_a_list": "Sélectionnez une liste sur le côté pour afficher vos favoris.",
+  "no_lists": "Vous n’avez pas encore de listes."
+}

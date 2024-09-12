@@ -1,10 +1,10 @@
 {
-  "meta_title": "Daawashada liisaska aad jeceshahay",
-  "meta_description": "Daawashada liisaska aad jeceshahay",
-  "lists": "liisaska",
-  "view_list": "Liiska fiiri",
-  "edit_list": "Liiska wax ka beddel",
-  "delete_list": "Tirtir liiska",
+  "meta_title": "Arkaysid liiska aad ugu jeceshahay",
+  "meta_description": "Arkaysid liiska aad ugu jeceshahay",
+  "lists": "liisyada",
+  "view_list": "Liiska view",
+  "edit_list": "Liiska bedelaadda",
+  "delete_list": "Liiska Tirtirka",
   "select_a_list": "Dooro liiska dhinaca si aad u aragto kuwa aad ugu jeceshahay.",
-  "no_lists": "Weli lis ma lihid"
+  "no_lists": "Weli liis kuma lihid."
 }

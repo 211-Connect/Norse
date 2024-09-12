@@ -1,9 +1,9 @@
 {
-  "meta_title": "xem danh sách",
+  "meta_title": "Danh sách xem",
   "back_to_favorites": "Quay lại mục yêu thích",
-  "favorites": "yêu thích",
+  "favorites": "Yêu thích",
   "no_favorites": {
     "title": "Chưa có gì ở đây :(",
-    "subtitle": "Thêm một số mục yêu thích trên trang tìm kiếm để xem chúng tại đây"
+    "subtitle": "Thêm một số mục yêu thích trên trang tìm kiếm để xem chúng ở đây"
   }
 }

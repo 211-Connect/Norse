@@ -24,19 +24,20 @@ if (tmpAppConfigExists) {
 
 // Read the app config file and create a theme file
 const appConfig = fs.readJSONSync(filePath);
-const appThemeFile = `${dir}/.norse/theme.json`;
-const { theme: appTheme, categories, suggestions, ...rest } = appConfig;
-const theme = getAppTheme(appTheme);
+// const appThemeFile = `${dir}/.norse/theme.json`;
+const { categories, suggestions, ...rest } = appConfig;
+// const theme = getAppTheme(appTheme);
 
 try {
-  fs.writeJSONSync(appThemeFile, theme);
+  // fs.writeJSONSync(appThemeFile, theme);
   fs.writeJSONSync(`${dir}/.norse/categories.json`, categories);
   fs.writeJSONSync(`${dir}/.norse/suggestions.json`, suggestions);
   fs.writeJSONSync(`${dir}/.norse/config.json`, rest);
   fs.writeFileSync(
     `${dir}/.norse/next.config.js`,
-    `module.exports = ${JSON.stringify(appConfig.nextConfig ?? {})}`
+    `module.exports = ${JSON.stringify(appConfig.nextConfig ?? {})}`,
   );
+  fs.rmSync(`${dir}/tmp`, { recursive: true });
 } catch (err) {
   process.exit(1);
 }

@@ -5,17 +5,17 @@
   "new": "¡Nuevo!",
   "tour": {
     "step_1": {
-      "paragraph_1": "El cuadro de búsqueda es la columna vertebral del motor de búsqueda. Acepta palabras comunes, frases, etc. (es decir, 'despensas de alimentos')",
-      "paragraph_2": "A medida que escribe, el cuadro de búsqueda proporcionará sugerencias basadas en las categorías que usamos detrás de escena. Estas sugerencias proporcionarán los resultados más precisos, sin embargo, no es necesario que las use.",
-      "paragraph_3": "Si elige no utilizar las sugerencias proporcionadas, utilizaremos el texto que proporcione para recuperar los resultados más precisos que podamos."
+      "paragraph_1": "El cuadro de búsqueda es la columna vertebral del motor de búsqueda. Acepta palabras comunes, frases, etc. (por ejemplo, 'despensas de alimentos')",
+      "paragraph_2": "A medida que escriba, el cuadro de búsqueda proporcionará sugerencias basadas en las categorías que usamos en segundo plano. Estas sugerencias proporcionarán los resultados más precisos, sin embargo, no es necesario que las use.",
+      "paragraph_3": "Si decide no utilizar las sugerencias proporcionadas, utilizaremos el texto que nos proporcione para obtener los resultados más precisos que podamos."
     },
     "step_2": {
-      "paragraph_1": "¿No estás seguro de lo que estás buscando? ¡Eso está bien!",
-      "paragraph_2": "Ofrecemos muchas categorías y subcategorías diferentes para que las explore. Simplemente haga clic en cualquiera de los enlaces en la sección de categoría para acceder a los resultados de búsqueda."
+      "paragraph_1": "¿No estás seguro de lo que estás buscando? ¡Está bien!",
+      "paragraph_2": "Ofrecemos muchas categorías y subcategorías diferentes para que explore. Basta con hacer clic en cualquiera de los enlaces de la sección de categorías para acceder a los resultados de búsqueda."
     },
     "step_3": {
       "paragraph_1": "A veces se rompen cosas que no esperamos que se rompan.",
-      "paragraph_2": "Si alguna vez encuentra algo roto, o simplemente desea proporcionar algún comentario sobre la experiencia general, puede hacer clic en el botón de comentarios en cualquier momento."
+      "paragraph_2": "Si alguna vez encuentra algo roto, o incluso simplemente desea proporcionar algunos comentarios sobre la experiencia general, puede hacer clic en el botón de comentarios en cualquier momento."
     }
   },
   "categories_title": "Categorías"

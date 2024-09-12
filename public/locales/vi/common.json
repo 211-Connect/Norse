@@ -1,10 +1,10 @@
 {
   "header": {
-    "home": "Trang chủ",
-    "favorites": "yêu thích",
+    "home": "Nhà",
+    "favorites": "Yêu thích",
     "log_out": "Đăng xuất",
-    "submit_feedback": "gửi phản hồi",
-    "language_select_label": "Chọn một ngôn ngữ để thay đổi ngôn ngữ trang web"
+    "submit_feedback": "Gửi phản hồi",
+    "language_select_label": "Chọn ngôn ngữ để thay đổi ngôn ngữ trang web"
   },
   "favorites": {
     "added_to_list": "Đã thêm vào danh sách",
@@ -13,57 +13,57 @@
     "already_exists_message": "Tài nguyên này đã tồn tại trong danh sách của bạn.",
     "removed_from_list": "Đã xóa khỏi danh sách",
     "removed_from_list_message": "Tài nguyên này đã bị xóa khỏi danh sách của bạn.",
-    "updated_list": "danh sách cập nhật",
+    "updated_list": "Cập nhật danh sách",
     "updated_list_message": "Danh sách của bạn đã được cập nhật.",
     "unable_to_update_list": "Không thể cập nhật danh sách",
-    "unable_to_update_list_message": "Không thể cập nhật danh sách của bạn.",
-    "deleted_list": "danh sách đã xóa",
+    "unable_to_update_list_message": "Danh sách của bạn không thể được cập nhật.",
+    "deleted_list": "Danh sách đã xóa",
     "deleted_list_message": "Danh sách của bạn đã bị xóa.",
     "unable_to_delete_list": "Không thể xóa danh sách",
     "unable_to_delete_list_message": "Không thể xóa danh sách của bạn."
   },
   "search": {
-    "hero_title": "",
-    "query_placeholder": "",
-    "location_placeholder": "",
-    "radius_placeholder": "bán kính",
-    "miles": "Dặm",
+    "hero_title": "Tìm kiếm tài nguyên",
+    "query_placeholder": "Thực phẩm, nhà ở, vv...",
+    "location_placeholder": "Thành phố, tiểu bang hoặc mã ZIP",
+    "radius_placeholder": "Bán kính",
+    "miles": "Km",
     "any": "Bất kì",
-    "taxonomies": "phân loại",
-    "suggestions": "gợi ý",
+    "taxonomies": "Phân loại",
+    "suggestions": "Gợi ý",
     "use_my_location": "Sử dụng vị trí của tôi",
-    "confidential_address": "Vị trí này có thể được bảo mật hoặc không mở cửa cho công chúng. Vui lòng chọn một phương thức liên hệ được cung cấp khác cho dịch vụ này.",
+    "confidential_address": "Vị trí này có thể là bí mật hoặc không mở cửa cho công chúng. Vui lòng chọn một phương thức liên hệ được cung cấp khác cho dịch vụ này.",
     "address_unavailable": "Địa chỉ không khả dụng",
-    "geocoding_error": "lỗi mã hóa địa lý",
-    "geocoding_unsupported": "Định vị địa lý không được trình duyệt của bạn hỗ trợ",
-    "geocoding_unable_to_retrieve": "Không thể truy xuất vị trí của bạn. Vui lòng kiểm tra cài đặt vị trí của trình duyệt của bạn và thử lại.",
-    "categories": "Thể loại"
+    "geocoding_error": "Lỗi mã hóa địa lý",
+    "geocoding_unsupported": "Vị trí địa lý không được trình duyệt của bạn hỗ trợ",
+    "geocoding_unable_to_retrieve": "Không thể truy xuất vị trí của bạn. Vui lòng kiểm tra cài đặt vị trí của trình duyệt và thử lại.",
+    "categories": "Loại"
   },
   "call_to_action": {
     "call": "Gọi",
-    "view_website": "xem trang web",
-    "get_directions": "Nhận sự chỉ dẫn",
+    "view_website": "Xem trang web",
+    "get_directions": "Nhận chỉ đường",
     "view_details": "Xem chi tiết",
     "add_to_list": "Thêm vào danh sách",
     "delete_list": "Xóa danh sách",
-    "remove_from_list": "Xóa từ danh sách",
+    "remove_from_list": "Xóa khỏi danh sách",
     "share": "Chia sẻ",
-    "cancel": "Hủy bỏ",
-    "create": "Tạo nên",
+    "cancel": "Hủy",
+    "create": "Tạo",
     "update": "Cập nhật",
-    "delete": "Xóa bỏ",
+    "delete": "Xóa",
     "search": "Tìm kiếm",
-    "remove": "Di dời",
+    "remove": "Triệt",
     "login": "Đăng nhập",
-    "show_more": "Cho xem nhiều hơn",
-    "show_less": "Hiện ít hơn"
+    "show_more": "Hiển thị thêm",
+    "show_less": "Hiển thị ít hơn"
   },
   "list": {
-    "private": "Riêng tư",
+    "private": "Tư",
     "public": "Công cộng"
   },
   "message": {
-    "list_deleted": "Đã xóa danh sách",
+    "list_deleted": "Danh sách đã xóa",
     "list_deleted_success": "Danh sách của bạn đã bị xóa.",
     "error": "Lỗi",
     "list_not_deleted_error": "Không thể xóa danh sách của bạn."
@@ -81,46 +81,47 @@
       "are_you_sure": "Bạn có chắc chắn muốn xóa mục yêu thích này khỏi danh sách của mình không?"
     },
     "create_list": {
-      "create_a_list": "Tạo một danh sách",
+      "create_a_list": "Tạo danh sách",
       "list_name": "Tên",
       "list_description": "Sự miêu tả",
-      "make_public": "Công bố công khai"
+      "make_public": "Công khai"
     },
     "update_list": {
-      "update_list": "cập nhật danh sách",
+      "update_list": "Cập nhật danh sách",
       "list_name": "Tên",
       "list_description": "Sự miêu tả",
-      "make_public": "Công bố công khai"
+      "make_public": "Công khai"
     },
     "delete_list": {
       "delete_list": "Xóa danh sách"
     },
     "share": {
-      "share_via": "Chia sẻ cái này qua",
-      "copy_link": "Sao chép đường dẫn",
-      "copy": "Sao chép",
-      "facebook": "Facebook",
+      "share_via": "Chia sẻ điều này qua",
+      "copy_link": "Sao chép liên kết",
+      "copy": "Bản sao",
+      "facebook": "QUẢNG CÁO",
       "twitter": "Twitter",
-      "sms": "tin nhắn",
-      "email": "E-mail",
+      "linkedin": "Liên kết",
+      "sms": "SMS",
+      "email": "Email",
       "print": "In",
-      "copied": "Đã sao chép!",
+      "copied": "Sao chép!",
       "check_out_this_list": "Kiểm tra danh sách này tôi đã thực hiện!",
       "check_out_this_resource": "Kiểm tra tài nguyên này tôi tìm thấy!",
       "share_sms": "Nhập số điện thoại để chia sẻ qua SMS",
       "enter_phone_number": "Nhập số điện thoại...",
-      "invalid_phone_number": "số điện thoại không hợp lệ",
-      "sms_sending_title": "Đang gửi tin nhắn SMS...",
-      "sms_sending_body": "Tin nhắn của bạn đang được gửi đi.",
-      "sms_send_success_title": "Đã gửi tin nhắn SMS!",
+      "invalid_phone_number": "Số điện thoại không hợp lệ",
+      "sms_sending_title": "Gửi SMS...",
+      "sms_sending_body": "Tin nhắn của bạn đang được gửi.",
+      "sms_send_success_title": "SMS đã gửi!",
       "sms_send_success_body": "Tin nhắn của bạn đã được gửi.",
-      "sms_send_failed_title": "Gửi tin nhắn SMS không thành công",
+      "sms_send_failed_title": "Gửi SMS không thành công",
       "sms_send_failed_body": "Tin nhắn của bạn không gửi được."
     },
     "prompt_auth": "Vui lòng đăng nhập để sử dụng tính năng này."
   },
   "update_location": {
-    "prompt_start_location": "Vị trí xuất phát của bạn là gì?"
+    "prompt_start_location": "Vị trí bắt đầu của bạn là gì?"
   },
   "data_providers": {
     "provided_by": "Dữ liệu được cung cấp bởi"
