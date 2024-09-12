@@ -121,6 +121,7 @@ module.exports = function createFromStrapi(dir) {
       },
       search: {
         defaultRadius: appConfig?.defaultRadiusValue ?? 0,
+        defaultRadius: appConfig?.defaultRadiusValue ?? 0,
         radiusOptions: appConfig?.radiusSelectValues ?? null,
         resultsLimit: appConfig?.search?.resultsLimit ?? 25,
       },
@@ -353,6 +354,7 @@ module.exports = function createFromStrapi(dir) {
       fs.mkdirpSync(path.join(dir, `public/locales/${key}`));
       fs.writeFileSync(
         path.join(dir, `public/locales/${key}/dynamic.json`),
+        JSON.stringify(translationFile[key], null, 2),
         JSON.stringify(translationFile[key], null, 2),
       );
     }
