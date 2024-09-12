@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { SESSION_ID } from './shared/lib/constants';
 
-// force a build of all DO apps
 export const config = {
   matcher: [
     /*
