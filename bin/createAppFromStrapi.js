@@ -355,7 +355,6 @@ module.exports = function createFromStrapi(dir) {
       fs.writeFileSync(
         path.join(dir, `public/locales/${key}/dynamic.json`),
         JSON.stringify(translationFile[key], null, 2),
-        JSON.stringify(translationFile[key], null, 2),
       );
     }
   } catch (err) {
