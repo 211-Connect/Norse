@@ -14,7 +14,7 @@ export default function Alert() {
   return (
     <div className="flex items-center justify-center p-8">
       <AlertComponent variant="destructive" className="flex w-auto">
-        <div className="flex items-center justify-center gap-4">
+        <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
           <AlertCircle className="size-8" />
 
           <p className="text-lg font-semibold">{appConfig.alert.text}</p>
