@@ -1,6 +1,20 @@
 import { useTranslation } from 'next-i18next';
 import { useCallback } from 'react';
 
+type Subcategory = {
+  name: string;
+  href?: string;
+  query: string;
+  queryType: string;
+};
+
+type Category = {
+  name: string;
+  href?: string;
+  image?: string;
+  subcategories?: Subcategory[];
+};
+
 export function useCategories() {
   const { i18n } = useTranslation();
 
@@ -11,11 +25,11 @@ export function useCategories() {
 
     // If resources is an array of objects
     if (Array.isArray(resources)) {
-      return resources.map((item) => item.value);
+      return resources.map((item) => item.value) as Category[];
     }
 
     // If resources is an object
-    return Object.values(resources);
+    return Object.values(resources) as Category[];
   }, [i18n]);
 
   return getAllTranslations();

@@ -15,6 +15,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../ui/dialog';
+import { useCategories } from '@/shared/hooks/use-categories';
+import { useMemo } from 'react';
 
 export function SearchButton() {
   const { t } = useTranslation('common');
@@ -24,7 +26,22 @@ export function SearchButton() {
   const debouncedSearchTerm = useDebounce(search.searchTerm, 200);
   const { data: taxonomies } = useTaxonomies(debouncedSearchTerm);
   const suggestions = useSuggestions();
+  const categories = useCategories();
   const requireUserLocation = useFlag('requireUserLocation');
+
+  const reducedCategories: {
+    name: string;
+    query: string;
+    queryType: string;
+  }[] = useMemo(() => {
+    return categories.reduce((prev, current) => {
+      if (current?.subcategories?.length > 0) {
+        return prev.concat(current.subcategories);
+      }
+
+      return prev;
+    }, []);
+  }, [categories]);
 
   // Find the taxonomy code to be used for a query
   // Fallback to the original string value if a code isn't found
@@ -38,6 +55,11 @@ export function SearchButton() {
       (sugg) => sugg.name.toLowerCase() === value.toLowerCase(),
     );
     if (suggestion) return suggestion.taxonomies;
+
+    const category = reducedCategories.find(
+      (cat) => cat.name.toLowerCase() === value.toLowerCase(),
+    );
+    if (category) return category.query;
 
     return value;
   };

@@ -7,6 +7,7 @@ import { searchAtom, searchTermAtom } from '../../store/search';
 import { useDebounce } from '../../hooks/use-debounce';
 import { useSuggestions } from '../../hooks/use-suggestions';
 import { useFlag } from '@/shared/hooks/use-flag';
+import { useCategories } from '@/shared/hooks/use-categories';
 
 export function SearchBar() {
   const { t } = useTranslation();
@@ -15,7 +16,22 @@ export function SearchBar() {
   const debouncedSearchTerm = useDebounce(searchTerm, 200);
   const { data: taxonomies } = useTaxonomies(debouncedSearchTerm);
   const suggestions = useSuggestions();
+  const categories = useCategories();
   const showTaxonomyBadge = useFlag('showSuggestionListTaxonomyBadge');
+
+  const reducedCategories: {
+    name: string;
+    query: string;
+    queryType: string;
+  }[] = useMemo(() => {
+    return categories.reduce((prev, current) => {
+      if (current?.subcategories?.length > 0) {
+        return prev.concat(current.subcategories);
+      }
+
+      return prev;
+    }, []);
+  }, [categories]);
 
   // Remap and filter data as needed for the search box
   const options = useMemo(() => {
@@ -50,6 +66,11 @@ export function SearchBar() {
       (sugg) => sugg.name.toLowerCase() === value.toLowerCase(),
     );
     if (suggestion) return suggestion.taxonomies;
+
+    const category = reducedCategories.find(
+      (cat) => cat.name.toLowerCase() === value.toLowerCase(),
+    );
+    if (category) return category.query;
 
     return value;
   };
