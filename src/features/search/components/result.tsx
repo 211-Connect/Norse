@@ -91,7 +91,7 @@ export function Result({ data }: ResultProps) {
         )}
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <div className="whitespace-break-spaces text-sm">
+        <div className="whitespace-break-spaces">
           {parseHtml(data.description)}
         </div>
 

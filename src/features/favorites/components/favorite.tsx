@@ -70,9 +70,7 @@ export function Favorite({
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <div className="text-sm">
-          {parseHtml(translation.serviceDescription)}
-        </div>
+        <div>{parseHtml(translation.serviceDescription)}</div>
 
         <div className="flex flex-col items-start justify-start gap-2">
           {data.displayPhoneNumber && (

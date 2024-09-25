@@ -18,9 +18,7 @@ export function OrganizationInformation({ resource }) {
         <CardDescription>{resource.organizationName}</CardDescription>
       </CardHeader>
       <CardContent>
-        <p className="text-sm">
-          {parseHtml(resource.organizationDescription ?? '')}
-        </p>
+        <p>{parseHtml(resource.organizationDescription ?? '')}</p>
       </CardContent>
     </Card>
   );
