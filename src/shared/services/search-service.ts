@@ -12,12 +12,16 @@ export class SearchService {
   static createUrlParamsForSearch(
     searchStore: ExtractAtomValue<typeof searchAtom>,
   ) {
+    const hasLocation = searchStore['userCoordinates']?.length === 2;
+
     const urlParams = {
       query: searchStore['query']?.trim(),
       query_label: searchStore['queryLabel']?.trim(),
       query_type: searchStore['queryType']?.trim(),
-      location: searchStore['userLocation']?.trim(),
-      coords: searchStore['userCoordinates']?.join(',')?.trim(),
+      location: hasLocation ? searchStore['userLocation']?.trim() : null,
+      coords: hasLocation
+        ? searchStore['userCoordinates']?.join(',')?.trim()
+        : null,
       distance:
         searchStore['userCoordinates']?.length === 2
           ? searchStore['searchDistance']?.trim() || '0'
