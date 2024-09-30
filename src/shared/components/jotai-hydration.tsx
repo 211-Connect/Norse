@@ -19,6 +19,21 @@ import {
   favoriteListWithFavoritesAtom,
 } from '../store/favorites';
 
+function getCoordinates(pageProps, cookies) {
+  if (pageProps.coords) {
+    return decodeURIComponent(pageProps.coords)
+      .split(',')
+      .map((number) => parseFloat(number))
+      .filter((number) => !isNaN(number));
+  } else if (cookies[USER_PREF_COORDS]) {
+    return cookies[USER_PREF_COORDS].split(',')
+      .map((number) => parseFloat(number))
+      .filter((number) => !isNaN(number));
+  }
+
+  return [];
+}
+
 // This component handles the hydration of Jotai state as well as keeping it in sync with re-renders/fetches of new data
 // This MUST be a child of the Jotai Provider component or hydration will not work
 export function JotaiHydration({ pageProps }) {
@@ -54,15 +69,7 @@ export function JotaiHydration({ pageProps }) {
           pageProps?.location ?? cookies?.[USER_PREF_LOCATION] ?? '',
         searchLocationValidationError: '',
         userLocation: pageProps?.location,
-        userCoordinates:
-          decodeURIComponent(pageProps?.coords)
-            ?.split(',')
-            ?.map((number) => parseFloat(number))
-            ?.filter((number) => !isNaN(number)) ??
-          cookies?.[USER_PREF_COORDS]?.split(',')
-            ?.map((number) => parseFloat(number))
-            ?.filter((number) => !isNaN(number)) ??
-          [],
+        userCoordinates: getCoordinates(pageProps, cookies),
       },
     ],
   ] as const);
