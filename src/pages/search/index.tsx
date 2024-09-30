@@ -11,11 +11,13 @@ import { USER_PREF_COORDS, USER_PREF_LOCATION } from '@/shared/lib/constants';
 import { SearchService } from '@/shared/services/search-service';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]';
+import { getServerDevice } from '@/shared/lib/get-server-device';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const cookies = nookies.get(ctx);
   const appConfig = (await serverSideAppConfig()).appConfig;
   const session = await getServerSession(ctx.req, ctx.res, authOptions);
+  const device = getServerDevice(ctx.req.headers['user-agent']);
 
   // If the user already has a location and coords, but they aren't present in the query
   // redirect them to the url using their stored location and coords
@@ -46,6 +48,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 
   return {
     props: {
+      device,
       results,
       noResults,
       filters,

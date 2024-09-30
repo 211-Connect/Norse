@@ -18,6 +18,7 @@ import {
   favoriteListsAtom,
   favoriteListWithFavoritesAtom,
 } from '../store/favorites';
+import { deviceAtom } from '../store/device';
 
 function getCoordinates(pageProps, cookies) {
   if (pageProps.coords) {
@@ -41,6 +42,14 @@ export function JotaiHydration({ pageProps }) {
   const cookies = parseCookies();
 
   useHydrateAndSyncAtoms([
+    [
+      deviceAtom,
+      pageProps?.device ?? {
+        isMobile: false,
+        isTablet: false,
+        isDesktop: false,
+      },
+    ],
     [resultsAtom, pageProps?.results ?? []],
     [resultsCurrentPageAtom, pageProps?.currentPage ?? 0],
     [resultTotalAtom, pageProps?.totalResults ?? 0],

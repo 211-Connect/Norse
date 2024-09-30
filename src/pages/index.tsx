@@ -12,12 +12,14 @@ import {
   USER_PREF_LOCATION,
 } from '@/shared/lib/constants';
 import { shake } from 'radash';
+import { getServerDevice } from '@/shared/lib/get-server-device';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const cookies = parseCookies(ctx);
   const coords = cookies[USER_PREF_COORDS];
   const location = cookies[USER_PREF_LOCATION];
   const distance = cookies[USER_PREF_DISTANCE];
+  const device = getServerDevice(ctx.req.headers['user-agent']);
 
   const pageProps = shake({
     coords,
@@ -27,6 +29,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 
   return {
     props: {
+      device,
       ...pageProps,
       ...(await serverSideAppConfig()),
       ...(await serverSideFlags()),
