@@ -7,9 +7,21 @@ export type Flags = {
   showResourceAttribution: boolean;
   showSearchAndResourceServiceName: boolean;
   showSuggestionListTaxonomyBadge: boolean;
+  showUseMyLocationButtonOnDesktop: boolean;
   requireUserLocation: boolean;
 };
 
-const flagsContext = createContext<Flags>(null);
+const defaultContext: Flags = {
+  showResourceCategories: true,
+  showResourceLastAssuredDate: true,
+  showHomePageTour: true,
+  showResourceAttribution: true,
+  showSearchAndResourceServiceName: true,
+  showSuggestionListTaxonomyBadge: true,
+  showUseMyLocationButtonOnDesktop: true,
+  requireUserLocation: false,
+};
+
+const flagsContext = createContext<Flags>(defaultContext);
 
 export { flagsContext };

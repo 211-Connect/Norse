@@ -3,19 +3,25 @@ import { toast } from 'sonner';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { setCookie } from 'nookies';
-import { useSetAtom } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { Locate } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useMapAdapter } from '../../hooks/use-map-adapter';
 import { MapService } from '../../services/map-service';
 import { searchAtom } from '../../store/search';
 import { USER_PREF_COORDS, USER_PREF_LOCATION } from '../../lib/constants';
+import { deviceAtom } from '@/shared/store/device';
+import { useFlag } from '@/shared/hooks/use-flag';
 
 export function UseMyLocationButton() {
   const { t } = useTranslation('common');
   const router = useRouter();
   const adapter = useMapAdapter();
   const setSearch = useSetAtom(searchAtom);
+  const device = useAtomValue(deviceAtom);
+  const showUseMyLocationButtonOnDesktop = useFlag(
+    'showUseMyLocationButtonOnDesktop',
+  );
 
   const convertGeoLocation = useCallback(
     async (position: GeolocationPosition) => {
@@ -76,6 +82,9 @@ export function UseMyLocationButton() {
       });
     }
   }, [convertGeoLocation, t]);
+
+  if (showUseMyLocationButtonOnDesktop == false && device.isDesktop)
+    return false;
 
   return (
     <Button onClick={getUserLocation} className="flex gap-1" variant="outline">
