@@ -60,6 +60,9 @@ let defaultFlags: Flags = {
   requireUserLocation: stringToBooleanOrUndefined(
     process.env.NEXT_PUBLIC_REQUIRE_USER_LOCATION_FLAG,
   ),
+  showUseMyLocationButtonOnDesktop: stringToBooleanOrUndefined(
+    process.env.NEXT_PUBLIC_SHOW_USE_MY_LOCATION_BUTTON_ON_DESKTOP_FLAG,
+  ),
 };
 export async function serverSideFlags() {
   if (flags != null) return { flags };
