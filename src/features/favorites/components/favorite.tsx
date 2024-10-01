@@ -3,7 +3,6 @@ import { ReferralButton } from '@/shared/components/referral-button';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,

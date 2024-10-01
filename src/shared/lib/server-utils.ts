@@ -4,6 +4,7 @@ import { GetServerSidePropsContext } from 'next';
 import { Flags } from '../context/flags-context';
 import { stringToBooleanOrUndefined } from './utils';
 import _ from 'lodash';
+import { shake } from 'radash';
 
 let config = undefined;
 export async function serverSideAppConfig() {
@@ -71,14 +72,17 @@ export async function serverSideFlags() {
   try {
     await fs.stat(path.resolve('./.norse/flags.json'));
     rawData = await fs.readFile(path.resolve('./.norse/flags.json'));
-    flags = _.merge(
-      {},
-      JSON.parse(rawData.toString()),
-      defaultFlags,
-      (objValue, srcValue) => {
-        return objValue !== undefined ? objValue : srcValue;
-      },
-    );
+    flags = _.omitBy(
+      _.merge(
+        {},
+        JSON.parse(rawData.toString()),
+        defaultFlags,
+        (objValue, srcValue) => {
+          return objValue !== undefined ? objValue : srcValue;
+        },
+      ),
+      (value) => value == null,
+    ) as Flags;
   } catch (_err) {
     // file doesn't exist OR issue parsing JSON. Save a default flags object
     flags = defaultFlags;
