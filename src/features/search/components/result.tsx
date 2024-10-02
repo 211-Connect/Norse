@@ -32,7 +32,6 @@ import { AddToFavoritesButton } from '@/shared/components/add-to-favorites-butto
 import { CopyBadge } from '@/shared/components/copy-badge';
 import { parseHtml } from '@/shared/lib/parse-html';
 import { useFlag } from '@/shared/hooks/use-flag';
-import { useCallback } from 'react';
 
 type ResultProps = {
   data: ResultType;
@@ -145,7 +144,7 @@ export function Result({ data }: ResultProps) {
             </div>
           )}
 
-          {data.taxonomyTerms && data.taxonomyTerms.length > 0 && (
+          {data.taxonomies && data.taxonomies.length > 0 && (
             <>
               <Separator />
 
@@ -157,9 +156,9 @@ export function Result({ data }: ResultProps) {
               </p>
 
               <div className="flex flex-wrap gap-1">
-                {data.taxonomyTerms.map((term) => (
-                  <Badge key={term} variant="default">
-                    {term}
+                {data.taxonomies.map((tax) => (
+                  <Badge key={tax.name} variant="default">
+                    {tax.name}
                   </Badge>
                 ))}
               </div>

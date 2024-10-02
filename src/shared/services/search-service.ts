@@ -100,9 +100,12 @@ export class SearchService {
       results:
         data?.search?.hits?.hits?.map((hit: any) => {
           let mainAddress: string | null =
-            `${hit._source.address_1}, ${hit._source.city}, ${hit._source.state}, ${hit._source.postal_code}`;
+            `${hit._source?.location?.physical_address?.address_1}, ${hit._source?.location?.physical_address?.city}, ${hit._source?.location?.physical_address?.state}, ${hit._source?.location?.physical_address?.postal_code}`;
 
-          if (mainAddress.includes('null')) {
+          if (
+            mainAddress.includes('null') ||
+            mainAddress.includes('undefined')
+          ) {
             mainAddress = null;
           }
 
@@ -110,18 +113,17 @@ export class SearchService {
             _id: hit._id,
             id: hit?._source?.service_at_location_id ?? null,
             priority: hit?._source?.priority,
-            serviceName: hit?._source?.service_name ?? null,
-            name: hit?._source?.display_name ?? null,
+            serviceName: hit?._source?.service?.name ?? null,
+            name: hit?._source?.name ?? null,
             description:
-              hit?._source?.service_short_description ??
-              hit?._source?.service_description ??
+              hit?._source?.service?.summary ??
+              hit?._source?.service?.description ??
               null,
-            phone: hit?._source?.primary_phone ?? null,
-            website: hit?._source?.primary_website ?? null,
+            phone: hit?._source?.phone ?? null,
+            website: hit?._source?.url ?? null,
             address: mainAddress,
-            location: hit?._source?.location_coordinates ?? null,
-            taxonomyTerms: hit?._source?.taxonomy_terms ?? null,
-            taxonomyCodes: hit?._source?.taxonomy_codes ?? null,
+            location: hit?._source?.location?.point ?? null,
+            taxonomies: hit?._source?.taxonomies ?? null,
           };
 
           return _.omitBy(responseData, _.isNil);
