@@ -5,6 +5,7 @@ import { API_URL } from '../lib/constants';
 import qs from 'qs';
 import _ from 'lodash';
 import { Axios } from '../lib/axios';
+import { TaxonomyService } from './taxonomy-service';
 
 export class SearchService {
   static endpoint = 'search';
@@ -14,10 +15,16 @@ export class SearchService {
   ) {
     const hasLocation = searchStore['userCoordinates']?.length === 2;
 
+    const isTaxonomyCode = TaxonomyService.isTaxonomyCode(
+      searchStore['query']?.trim(),
+    );
+
     const urlParams = {
       query: searchStore['query']?.trim(),
       query_label: searchStore['queryLabel']?.trim(),
-      query_type: searchStore['queryType']?.trim(),
+      query_type: isTaxonomyCode
+        ? 'taxonomy'
+        : searchStore['queryType']?.trim(),
       location: hasLocation ? searchStore['userLocation']?.trim() : null,
       coords: hasLocation
         ? searchStore['userCoordinates']?.join(',')?.trim()
