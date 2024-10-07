@@ -58,8 +58,8 @@ type AppConfig = {
     href?: string;
     logo?: string;
   }[];
-  features?: {
-    sms: any;
+  sms?: {
+    provider: 'Twilio';
   }[];
 };
 

@@ -34,11 +34,12 @@ export function ShareButton({ componentToPrintRef, title, body }) {
     content: () => componentToPrintRef.current,
   });
   const [shortUrl, setShortUrl] = useState('');
-  const appConfig = useAppConfig();
 
   useEffect(() => {
     async function getShortUrl() {
-      const { url } = await ShortUrlService.getOrCreateShortUrl(window.location.href);
+      const { url } = await ShortUrlService.getOrCreateShortUrl(
+        window.location.href,
+      );
       setShortUrl(url);
     }
 

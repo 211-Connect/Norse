@@ -38,7 +38,7 @@ export function SmsButton({ title, body, shortUrl }) {
   };
 
   const handleClick = () => {
-    if (!('sms' in appConfig.features)) {
+    if (!('sms' in appConfig)) {
       const { userAgent } = navigator;
       const isIOS = /iPhone|iPad|iPod|Macintosh/i.test(userAgent);
       let smsLink = '';

@@ -35,6 +35,7 @@ const query = qs.stringify({
         'dataProviders',
         'dataProviders.logo',
         'radiusSelectValues',
+        'sms',
         'localizations',
         'localizations.logo',
         'localizations.favicon',
@@ -138,7 +139,7 @@ module.exports = function createFromStrapi(dir) {
         zoom: 7,
       },
       alert: appConfig?.alert,
-      theme: appConfig?.theme ?? null,
+      theme: appConfig?.theme,
       hideAttribution: appConfig?.hideAttribution ?? true,
       pages: {},
       menus: {
@@ -152,6 +153,7 @@ module.exports = function createFromStrapi(dir) {
       },
       categories: [],
       suggestions: [],
+      sms: appConfig?.sms,
     };
 
     translationFile['en']['search.hero_title'] = appConfig.search.homePageTitle;
