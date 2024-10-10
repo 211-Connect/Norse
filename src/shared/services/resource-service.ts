@@ -12,6 +12,7 @@ export class ResourceService {
     const { data } = await Axios.get(`${API_URL}/${this.endpoint}/${id}`, {
       headers: {
         'accept-language': options.locale,
+        'x-api-version': '1',
       },
       params: {
         locale: options.locale,

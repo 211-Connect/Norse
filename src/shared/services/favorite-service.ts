@@ -12,6 +12,7 @@ export class FavoriteService {
         {
           headers: {
             'accept-language': config.locale,
+            'x-api-version': '1',
           },
           params: {
             locale: config.locale,
@@ -29,6 +30,11 @@ export class FavoriteService {
     try {
       const { data } = await createAxiosWithAuth(config?.ctx).get(
         `${API_URL}/${this.listEndpoint}`,
+        {
+          headers: {
+            'x-api-version': '1',
+          },
+        },
       );
 
       return data;
@@ -44,6 +50,9 @@ export class FavoriteService {
         {
           params: {
             name: searchText,
+          },
+          headers: {
+            'x-api-version': '1',
           },
         },
       );
@@ -75,6 +84,11 @@ export class FavoriteService {
           description,
           public: privacy,
         },
+        {
+          headers: {
+            'x-api-version': '1',
+          },
+        },
       );
 
       return data;
@@ -87,6 +101,11 @@ export class FavoriteService {
     try {
       const { data } = await createAxiosWithAuth(config?.ctx).delete(
         `${API_URL}/${this.listEndpoint}/${id}`,
+        {
+          headers: {
+            'x-api-version': '1',
+          },
+        },
       );
 
       return data;
@@ -114,6 +133,11 @@ export class FavoriteService {
           description,
           public: privacy,
         },
+        {
+          headers: {
+            'x-api-version': '1',
+          },
+        },
       );
 
       return data;
@@ -140,6 +164,11 @@ export class FavoriteService {
           resourceId: resourceId,
           favoriteListId: favoriteListId,
         },
+        {
+          headers: {
+            'x-api-version': '1',
+          },
+        },
       );
 
       return data;
@@ -160,6 +189,11 @@ export class FavoriteService {
     try {
       const { data } = await createAxiosWithAuth(config?.ctx).delete(
         `${API_URL}/${this.baseEndpoint}/${resourceId}/${favoriteListId}`,
+        {
+          headers: {
+            'x-api-version': '1',
+          },
+        },
       );
 
       return data;

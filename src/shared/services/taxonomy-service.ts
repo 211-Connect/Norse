@@ -20,6 +20,7 @@ export class TaxonomyService {
       },
       headers: {
         'accept-language': options.locale,
+        'x-api-version': '1',
       },
     });
 
@@ -40,6 +41,7 @@ export class TaxonomyService {
       },
       headers: {
         'accept-language': options.locale,
+        'x-api-version': '1',
       },
     });
 

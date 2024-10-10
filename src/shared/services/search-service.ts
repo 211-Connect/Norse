@@ -65,6 +65,7 @@ export class SearchService {
         {
           headers: {
             'accept-language': locale,
+            'x-api-version': '1',
           },
         },
       );
@@ -92,6 +93,7 @@ export class SearchService {
           {
             headers: {
               'accept-language': locale,
+              'x-api-version': '1',
             },
           },
         );
