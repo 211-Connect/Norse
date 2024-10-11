@@ -42,7 +42,12 @@ export function DistanceSelect() {
       value={distance}
       disabled={!hasLocation}
     >
-      <SelectTrigger className="w-[125px]">
+      <SelectTrigger
+        className="w-[125px]"
+        aria-label={t('search.radius_placeholder', {
+          defaultValue: 'radius',
+        })}
+      >
         <SelectValue
           placeholder={t('search.radius_placeholder', {
             defaultValue: 'radius',
