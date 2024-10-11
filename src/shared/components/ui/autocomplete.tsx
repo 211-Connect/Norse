@@ -16,6 +16,12 @@ import { Separator } from './separator';
 import { SearchIcon, XIcon } from 'lucide-react';
 import { Button } from './button';
 import { useUncontrolled } from '@/shared/hooks/use-uncontrolled';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from './tooltip';
 
 export type AutcompleteOption = {
   label: string;
@@ -35,20 +41,19 @@ export type AutocompleteProps = {
   defaultValue?: string;
 };
 
-export function Autocomplete({
-  inputProps,
-  Icon,
-  className,
-  onInputChange,
-  onValueChange,
-  defaultValue,
-  value: inputValue,
-  ...rest
-}: AutocompleteProps) {
-  const uniqueId = useMemo(
-    () => `search-results-${Math.random().toString(36).substring(2, 9)}`,
-    [],
-  );
+export function Autocomplete(props: AutocompleteProps) {
+  const {
+    inputProps,
+    Icon,
+    className,
+    onInputChange,
+    onValueChange,
+    defaultValue,
+    value: inputValue,
+    ...rest
+  } = props;
+  const lastManualInput = useRef('');
+  const [uniqueId, setUnqiueId] = useState('');
   const [open, setOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [value, setValue] = useUncontrolled<string>({
@@ -58,6 +63,8 @@ export function Autocomplete({
     onChange: onValueChange,
   });
   const clearButtonRef = useRef(null);
+  const selectionTimer = useRef<NodeJS.Timeout | null>(null);
+
   const options: [string, AutcompleteOption[]][] = useMemo(() => {
     const options = rest.options;
     if (!options) return [];
@@ -111,84 +118,215 @@ export function Autocomplete({
   const [popperElement, setPopperElement] = useState(null);
   const { styles, attributes } = usePopper(referenceElement, popperElement);
 
-  const handleFocus = useCallback(() => {
+  const openOptions = useCallback(() => {
     setOpen(true);
   }, []);
 
-  const handleBlur = useCallback((e) => {
+  const closeOptions = useCallback(() => {
     setOpen(false);
     setCurrentIndex(-1);
-  }, []);
-
-  const handleHover = useCallback((index: number) => {
-    return () => {
-      setCurrentIndex(index);
-    };
   }, []);
 
   const handleValueSelect = useCallback(
     (value: string) => {
       return (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
         setValue(value);
         setOpen(false);
         setCurrentIndex(-1);
+        onInputChange?.(value);
+        lastManualInput.current = value;
       };
     },
-    [setValue],
+    [setValue, onInputChange],
   );
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setCurrentIndex(-1);
+    lastManualInput.current = e.target.value;
     setValue(e.target.value);
     onInputChange?.(e.target.value);
   };
 
+  const setInputSelectionPoint = useCallback(
+    (value: string) => {
+      clearTimeout(selectionTimer.current);
+      selectionTimer.current = setTimeout(() => {
+        referenceElement.selectionStart = referenceElement.selectionEnd =
+          value.length;
+      }, 0);
+    },
+    [referenceElement],
+  );
+
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
+      const currentOption = rest.options[currentIndex];
+
       if (e.key === 'ArrowDown') {
-        setCurrentIndex((prev) => {
-          const nextValue = Math.min(rest.options.length, prev + 1);
-          const nextState = nextValue === rest.options.length ? -1 : nextValue;
+        if (open) {
+          setCurrentIndex((prev) => {
+            const nextValue = Math.min(rest.options.length, prev + 1);
+            const nextState =
+              nextValue === rest.options.length ? -1 : nextValue;
 
-          const nextOption = rest.options[nextState];
-          const nextOptionValue = nextOption?.value ?? '';
+            const nextOption = rest.options[nextState];
+            const selectionValue =
+              nextOption?.value ??
+              rest.options[prev]?.value ??
+              lastManualInput?.current ??
+              '';
+            setInputSelectionPoint(selectionValue);
 
-          setTimeout(() => {
-            referenceElement.selectionStart = referenceElement.selectionEnd =
-              nextOptionValue.length;
-          }, 0);
-
-          return nextState;
-        });
+            return nextState;
+          });
+        } else {
+          openOptions();
+        }
       } else if (e.key === 'ArrowUp') {
-        setCurrentIndex((prev) => {
-          const nextValue = Math.max(-2, prev - 1);
-          const nextState =
-            nextValue === -2 ? rest.options.length - 1 : nextValue;
+        if (open) {
+          setCurrentIndex((prev) => {
+            const nextValue = Math.max(-2, prev - 1);
+            const nextState =
+              nextValue === -2 ? rest.options.length - 1 : nextValue;
 
-          const nextOption = rest.options[nextState];
-          const nextOptionValue = nextOption?.value ?? '';
+            const nextOption = rest.options[nextState];
+            const selectionValue =
+              nextOption?.value ??
+              rest.options[prev]?.value ??
+              lastManualInput?.current ??
+              '';
 
-          setTimeout(() => {
-            referenceElement.selectionStart = referenceElement.selectionEnd =
-              nextOptionValue.length;
-          }, 0);
+            setInputSelectionPoint(selectionValue);
 
-          return nextState;
-        });
+            return nextState;
+          });
+        } else {
+          const nextOption = rest.options[currentIndex];
+          const selectionValue =
+            nextOption?.value ?? lastManualInput?.current ?? '';
+
+          setInputSelectionPoint(selectionValue);
+        }
       } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
         setCurrentIndex(-1);
-        setValue('');
+        setValue(lastManualInput.current);
+        if (currentIndex >= 0) {
+          setInputSelectionPoint(lastManualInput.current);
+        }
+      } else if (e.key === 'Escape') {
+        setOpen(false);
+        if (currentOption) {
+          onInputChange?.(currentOption.value);
+          lastManualInput.current = currentOption.value;
+        }
+        setCurrentIndex(-1);
+      } else if (e.key === 'Tab') {
+        setOpen(false);
+        if (currentOption) {
+          onInputChange?.(currentOption.value);
+          lastManualInput.current = currentOption.value;
+        }
+        setCurrentIndex(-1);
+      } else if (e.key === 'Enter') {
+        setOpen(false);
+        if (currentOption) {
+          onInputChange?.(currentOption.value);
+          lastManualInput.current = currentOption.value;
+        }
+        setCurrentIndex(-1);
+      } else if (e.key === 'Home') {
+        if (open) {
+          e.preventDefault();
+          setCurrentIndex((prev) => {
+            const nextValue = 0;
+            const nextState =
+              nextValue === rest.options.length ? -1 : nextValue;
+
+            const nextOption = rest.options[nextState];
+            const selectionValue =
+              nextOption?.value ??
+              rest.options[prev]?.value ??
+              lastManualInput?.current ??
+              '';
+            setInputSelectionPoint(selectionValue);
+
+            return nextState;
+          });
+        }
+      } else if (e.key === 'End') {
+        if (open) {
+          e.preventDefault();
+          setCurrentIndex((prev) => {
+            const nextValue = rest.options.length - 1;
+            const nextState =
+              nextValue === rest.options.length ? -1 : nextValue;
+
+            const nextOption = rest.options[nextState];
+            const selectionValue =
+              nextOption?.value ??
+              rest.options[prev]?.value ??
+              lastManualInput?.current ??
+              '';
+            setInputSelectionPoint(selectionValue);
+
+            return nextState;
+          });
+        }
       }
     },
-    [rest.options, setValue, referenceElement],
+    [
+      rest.options,
+      setValue,
+      open,
+      openOptions,
+      currentIndex,
+      onInputChange,
+      setInputSelectionPoint,
+    ],
   );
 
   const clear = useCallback(() => {
     setCurrentIndex(-1);
     setValue('');
+    onInputChange?.('');
     referenceElement?.focus();
-  }, [referenceElement, setValue]);
+    setOpen(true);
+    lastManualInput.current = '';
+  }, [setValue, onInputChange, referenceElement]);
 
+  const handleOptionMouseEnter = useCallback(
+    (index: number) => {
+      return () => {
+        setCurrentIndex(index);
+        const nextOption = rest.options[index];
+        const selectionValue = nextOption?.value;
+        setInputSelectionPoint(selectionValue);
+      };
+    },
+    [rest.options, setInputSelectionPoint],
+  );
+
+  const handleOptionMouseExit = useCallback(() => {
+    return () => {
+      setCurrentIndex(-1);
+      setValue(lastManualInput.current);
+      setInputSelectionPoint(lastManualInput.current);
+    };
+  }, [setInputSelectionPoint, setValue]);
+
+  const handleBlur = useCallback(
+    (e) => {
+      if (!e.relatedTarget) {
+        closeOptions();
+      }
+    },
+    [closeOptions],
+  );
+
+  // Ensure option stays in view
   useEffect(() => {
     if (!popperElement) return;
 
@@ -205,11 +343,19 @@ export function Autocomplete({
     }
   }, [currentIndex, uniqueId, popperElement]);
 
+  // Update next option value (temp value)
   useEffect(() => {
-    const nextOption = rest.options?.[currentIndex];
-    const nextOptionValue = nextOption?.value ?? '';
-    setValue(nextOptionValue);
-  }, [currentIndex, rest.options, setValue]);
+    if (open && currentIndex >= 0) {
+      const nextOption = rest.options?.[currentIndex];
+      const nextOptionValue = nextOption?.value ?? '';
+      setValue(nextOptionValue);
+    }
+  }, [currentIndex, rest.options, setValue, open]);
+
+  // Set unique ID for component
+  useEffect(() => {
+    setUnqiueId(`search-results-${Math.random().toString(36).substring(2, 9)}`);
+  }, []);
 
   return (
     <div className={cn('relative flex items-center border-b px-3', className)}>
@@ -219,38 +365,55 @@ export function Autocomplete({
         <SearchIcon className="mr-2 h-4 w-4 shrink-0 opacity-50" />
       )}
       <Input
+        {...inputProps}
         className="rounded-none border-none px-0 shadow-none focus-visible:ring-0"
         ref={setReferenceElement}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
+        onClick={openOptions}
         onKeyDown={handleKeyDown}
+        onBlur={handleBlur}
         onChange={handleInputChange}
         value={value}
         autoComplete="off"
         aria-autocomplete="list"
-        aria-controls={uniqueId}
+        aria-controls={open ? uniqueId : undefined}
+        aria-haspopup="listbox"
+        aria-label={inputProps?.placeholder ?? ''}
+        aria-owns={uniqueId}
         aria-expanded={open}
         aria-activedescendant={
           currentIndex > -1 ? `${uniqueId}-option-${currentIndex}` : ''
         }
         role="combobox"
-        {...inputProps}
       />
-      <Button
-        ref={clearButtonRef}
-        size="icon"
-        variant="ghost"
-        className={cn(value.length > 0 ? 'visible' : 'invisible')}
-        onClick={clear}
-        aria-label="Clear"
-      >
-        <XIcon className={cn('h-4 w-4 shrink-0 opacity-50')} />
-      </Button>
+
+      <TooltipProvider>
+        <Tooltip delayDuration={100}>
+          <TooltipTrigger asChild>
+            <Button
+              ref={clearButtonRef}
+              size="icon"
+              variant="ghost"
+              className={cn(
+                value.length > 0 ? 'visible' : 'invisible',
+                'hover:bg-transparent hover:bg-none',
+              )}
+              onClick={clear}
+              aria-label="Clear"
+            >
+              <XIcon className={cn('h-4 w-4 shrink-0 opacity-50')} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">
+            <span>Clear</span>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
 
       {open && (
         <div
           id={uniqueId}
           role="listbox"
+          aria-multiselectable="false"
           ref={setPopperElement}
           style={styles.popper}
           className="z-10 mt-2 max-h-56 w-full overflow-auto rounded-md bg-white shadow-md"
@@ -258,36 +421,42 @@ export function Autocomplete({
         >
           {options?.map((group, groupIndex) => {
             const [groupName, groupOptions] = group;
+            const groupId = `${uniqueId}-group-${groupIndex}`;
 
             return (
               <Fragment key={groupName}>
                 {groupName === '_' ? (
                   <Separator />
                 ) : (
-                  <h3 className="px-3 py-1 text-xs text-primary">
+                  <h3
+                    id={groupId}
+                    className="px-3 py-1 text-xs text-primary"
+                    role="presentation"
+                  >
                     {groupName}
                   </h3>
                 )}
-
-                {groupOptions?.map((option) => {
-                  return (
-                    <div
-                      key={option.index}
-                      id={`${uniqueId}-option-${option.index}`}
-                      role="option"
-                      className={cn(
-                        'px-3 py-1 text-sm',
-                        currentIndex === option.index && 'bg-primary/5',
-                      )}
-                      aria-selected={currentIndex === option.index}
-                      onMouseEnter={handleHover(option.index)}
-                      onMouseLeave={handleHover(-1)}
-                      onClick={handleValueSelect(option.value)}
-                    >
-                      {option.value}
-                    </div>
-                  );
-                })}
+                <div role="group" aria-labelledby={groupId}>
+                  {groupOptions?.map((option, idx) => {
+                    return (
+                      <div
+                        key={option.index}
+                        id={`${uniqueId}-option-${option.index}`}
+                        role="option"
+                        className={cn(
+                          'px-3 py-1 text-sm',
+                          currentIndex === option.index && 'bg-primary/5',
+                        )}
+                        aria-selected={currentIndex === option.index}
+                        onMouseEnter={handleOptionMouseEnter(option.index)}
+                        onMouseLeave={handleOptionMouseExit()}
+                        onMouseDown={handleValueSelect(option.value)}
+                      >
+                        {option.value}
+                      </div>
+                    );
+                  })}
+                </div>
               </Fragment>
             );
           })}
