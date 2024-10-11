@@ -7,7 +7,6 @@ import { Button } from '@/shared/components/ui/button';
 import { MainSearchLayout } from '@/shared/components/search/main-search-layout';
 import { useAppConfig } from '@/shared/hooks/use-app-config';
 import { useFlag } from '@/shared/hooks/use-flag';
-import { Autocomplete } from '@/shared/components/ui/autocomplete';
 
 export function HeroSection() {
   const appConfig = useAppConfig();
@@ -85,7 +84,6 @@ export function HeroSection() {
         </h3>
 
         <MainSearchLayout />
-        <Autocomplete />
       </div>
 
       {showHomePageTour && (
