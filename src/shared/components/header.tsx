@@ -133,7 +133,10 @@ export function Header(props: Props) {
                 }
               }}
             >
-              <SelectTrigger className="w-[150px]">
+              <SelectTrigger
+                className="w-[150px]"
+                aria-label={t('header.language_select_label')}
+              >
                 <div className="flex items-center gap-1 overflow-hidden">
                   <LanguagesIcon className="size-4" />
                   <SelectValue
@@ -160,19 +163,21 @@ export function Header(props: Props) {
       </Fragment>,
       <Fragment key="4">
         {session.status === 'authenticated' && (
-          <Button
-            variant="ghost"
-            className="flex gap-1"
-            onClick={() => {
-              signOut({ redirect: true, callbackUrl: '/' });
-            }}
-          >
-            <LogOutIcon className="size-4" /> {t('header.log_out')}
-          </Button>
+          <li>
+            <Button
+              variant="ghost"
+              className="flex gap-1"
+              onClick={() => {
+                signOut({ redirect: true, callbackUrl: '/' });
+              }}
+            >
+              <LogOutIcon className="size-4" /> {t('header.log_out')}
+            </Button>
+          </li>
         )}
       </Fragment>,
     ],
-    [session.status, t, router, appConfig],
+    [session.status, t, router, appConfig, setDialogStore],
   );
 
   return (
