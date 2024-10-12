@@ -5,7 +5,9 @@ export const searchAtom = atom({
   queryLabel: '',
   queryType: '',
   searchTerm: '',
+  prevSearchTerm: '',
   searchLocation: '',
+  prevSearchLocation: '',
   searchLocationValidationError: '',
   searchDistance: '',
   userLocation: '',
@@ -14,6 +16,7 @@ export const searchAtom = atom({
 
 // Currently searched term (This is the visible value in the input)
 export const searchTermAtom = atom((get) => get(searchAtom).searchTerm);
+export const prevSearchTermAtom = atom((get) => get(searchAtom).prevSearchTerm);
 
 // The below values are used specifically for the query parameters and are separate from the search term
 export const queryAtom = atom((get) => get(searchAtom).query);
@@ -22,6 +25,9 @@ export const queryTypeAtom = atom((get) => get(searchAtom).queryType);
 
 // Currently searched location
 export const searchLocationAtom = atom((get) => get(searchAtom).searchLocation);
+export const prevSearchLocationAtom = atom(
+  (get) => get(searchAtom).prevSearchLocation,
+);
 export const searchLocationValidationErrorAtom = atom(
   (get) => get(searchAtom).searchLocationValidationError,
 );
