@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 export function useUncontrolled<T>({
   value,
@@ -15,10 +15,13 @@ export function useUncontrolled<T>({
     defaultValue !== undefined ? defaultValue : finalValue,
   );
 
-  const handleUncontrolledChange = (val, ...payload: any[]) => {
-    setUncontrolledValue(val);
-    onChange?.(val, ...payload);
-  };
+  const handleUncontrolledChange = useCallback(
+    (val, ...payload: any[]) => {
+      setUncontrolledValue(val);
+      onChange?.(val, ...payload);
+    },
+    [onChange],
+  );
 
   if (value !== undefined) {
     return [value, onChange, true];
