@@ -8,7 +8,7 @@ import {
 import { useHydrateAndSyncAtoms } from '@/shared/hooks/use-hydrate-and-sync-atoms';
 import { searchAtom } from '@/shared/store/search';
 import { useAppConfig } from '../hooks/use-app-config';
-import { parseCookies } from 'nookies';
+import { parseCookies, setCookie } from 'nookies';
 import {
   USER_PREF_COORDS,
   USER_PREF_DISTANCE,
@@ -22,10 +22,12 @@ import { deviceAtom } from '../store/device';
 
 function getCoordinates(pageProps, cookies) {
   if (pageProps.coords) {
-    return decodeURIComponent(pageProps.coords)
+    const coords = decodeURIComponent(pageProps.coords)
       .split(',')
       .map((number) => parseFloat(number))
       .filter((number) => !isNaN(number));
+    setCookie(null, USER_PREF_COORDS, coords.join(','), { path: '/' });
+    return coords;
   } else if (cookies[USER_PREF_COORDS]) {
     return cookies[USER_PREF_COORDS].split(',')
       .map((number) => parseFloat(number))
@@ -33,6 +35,18 @@ function getCoordinates(pageProps, cookies) {
   }
 
   return [];
+}
+
+function getSearchLocation(pageProps, cookies) {
+  if (pageProps.location) {
+    const location = decodeURIComponent(pageProps.location);
+    setCookie(null, USER_PREF_LOCATION, location, { path: '/' });
+    return location;
+  } else if (cookies[USER_PREF_LOCATION]) {
+    return cookies[USER_PREF_LOCATION];
+  }
+
+  return '';
 }
 
 // This component handles the hydration of Jotai state as well as keeping it in sync with re-renders/fetches of new data
@@ -67,6 +81,7 @@ export function JotaiHydration({ pageProps }) {
       searchAtom,
       {
         searchTerm: pageProps?.query_label ?? '',
+        prevSearchTerm: pageProps?.query_label ?? '',
         query: pageProps?.query ?? '',
         queryLabel: pageProps?.query_label ?? '',
         searchDistance:
@@ -74,8 +89,8 @@ export function JotaiHydration({ pageProps }) {
           cookies?.[USER_PREF_DISTANCE] ??
           appConfig?.search?.defaultRadius?.toString() ??
           '0',
-        searchLocation:
-          pageProps?.location ?? cookies?.[USER_PREF_LOCATION] ?? '',
+        searchLocation: getSearchLocation(pageProps, cookies),
+        prevSearchLocation: getSearchLocation(pageProps, cookies),
         searchLocationValidationError: '',
         userLocation: pageProps?.location,
         userCoordinates: getCoordinates(pageProps, cookies),
