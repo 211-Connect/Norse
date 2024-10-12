@@ -24,7 +24,7 @@ import {
 } from './tooltip';
 
 export type AutcompleteOption = {
-  label: string;
+  label?: string;
   value: string;
   group?: string;
   index?: number;
@@ -39,6 +39,7 @@ export type AutocompleteProps = {
   onValueChange?: (value: string) => void;
   value?: string;
   defaultValue?: string;
+  autoSelectIndex?: number;
 };
 
 export function Autocomplete(props: AutocompleteProps) {
@@ -49,6 +50,7 @@ export function Autocomplete(props: AutocompleteProps) {
     onInputChange,
     onValueChange,
     defaultValue,
+    autoSelectIndex,
     value: inputValue,
     ...rest
   } = props;
@@ -63,7 +65,6 @@ export function Autocomplete(props: AutocompleteProps) {
     onChange: onValueChange,
   });
   const clearButtonRef = useRef(null);
-  const selectionTimer = useRef<NodeJS.Timeout | null>(null);
 
   const options: [string, AutcompleteOption[]][] = useMemo(() => {
     const options = rest.options;
@@ -122,6 +123,14 @@ export function Autocomplete(props: AutocompleteProps) {
     setOpen(true);
   }, []);
 
+  const openOnClick = useCallback(() => {
+    if (!open) {
+      referenceElement?.select();
+    }
+
+    openOptions();
+  }, [referenceElement, openOptions, open]);
+
   const closeOptions = useCallback(() => {
     setOpen(false);
     setCurrentIndex(-1);
@@ -143,20 +152,20 @@ export function Autocomplete(props: AutocompleteProps) {
     [setValue, onInputChange],
   );
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setCurrentIndex(-1);
-    lastManualInput.current = e.target.value;
-    setValue(e.target.value);
-    onInputChange?.(e.target.value);
-  };
+  const handleInputChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setCurrentIndex(-1);
+      lastManualInput.current = e.target.value;
+      setValue(e.target.value);
+      onInputChange?.(e.target.value);
+    },
+    [onInputChange, setValue],
+  );
 
   const setInputSelectionPoint = useCallback(
     (value: string) => {
-      clearTimeout(selectionTimer.current);
-      selectionTimer.current = setTimeout(() => {
-        referenceElement.selectionStart = referenceElement.selectionEnd =
-          value.length;
-      }, 0);
+      referenceElement.selectionStart = referenceElement.selectionEnd =
+        value.length;
     },
     [referenceElement],
   );
@@ -167,42 +176,40 @@ export function Autocomplete(props: AutocompleteProps) {
 
       if (e.key === 'ArrowDown') {
         if (open) {
-          setCurrentIndex((prev) => {
-            const nextValue = Math.min(rest.options.length, prev + 1);
-            const nextState =
-              nextValue === rest.options.length ? -1 : nextValue;
+          const nextValue = Math.min(rest.options.length, currentIndex + 1);
+          const nextState = nextValue === rest.options.length ? -1 : nextValue;
 
-            const nextOption = rest.options[nextState];
-            const selectionValue =
-              nextOption?.value ??
-              rest.options[prev]?.value ??
-              lastManualInput?.current ??
-              '';
-            setInputSelectionPoint(selectionValue);
+          const nextOption = rest.options[nextState];
 
-            return nextState;
-          });
+          const selectionValue =
+            nextOption?.value ??
+            rest.options[currentIndex]?.value ??
+            lastManualInput?.current ??
+            '';
+          setInputSelectionPoint(selectionValue);
+          setCurrentIndex(nextState);
+          setValue(selectionValue);
         } else {
           openOptions();
         }
       } else if (e.key === 'ArrowUp') {
         if (open) {
-          setCurrentIndex((prev) => {
-            const nextValue = Math.max(-2, prev - 1);
-            const nextState =
-              nextValue === -2 ? rest.options.length - 1 : nextValue;
+          e.preventDefault();
 
-            const nextOption = rest.options[nextState];
-            const selectionValue =
-              nextOption?.value ??
-              rest.options[prev]?.value ??
-              lastManualInput?.current ??
-              '';
+          const nextValue = Math.max(-2, currentIndex - 1);
+          const nextState =
+            nextValue === -2 ? rest.options.length - 1 : nextValue;
 
-            setInputSelectionPoint(selectionValue);
+          const nextOption = rest.options[nextState];
+          const selectionValue =
+            nextOption?.value ??
+            rest.options[currentIndex]?.value ??
+            lastManualInput?.current ??
+            '';
 
-            return nextState;
-          });
+          setInputSelectionPoint(selectionValue);
+          setCurrentIndex(nextState);
+          setValue(selectionValue);
         } else {
           const nextOption = rest.options[currentIndex];
           const selectionValue =
@@ -217,26 +224,46 @@ export function Autocomplete(props: AutocompleteProps) {
           setInputSelectionPoint(lastManualInput.current);
         }
       } else if (e.key === 'Escape') {
-        setOpen(false);
-        if (currentOption) {
-          onInputChange?.(currentOption.value);
-          lastManualInput.current = currentOption.value;
+        if (open) {
+          setOpen(false);
+          if (currentOption) {
+            onInputChange?.(currentOption.value);
+            lastManualInput.current = currentOption.value;
+          }
+          setCurrentIndex(-1);
         }
-        setCurrentIndex(-1);
       } else if (e.key === 'Tab') {
-        setOpen(false);
-        if (currentOption) {
-          onInputChange?.(currentOption.value);
-          lastManualInput.current = currentOption.value;
+        if (open) {
+          setOpen(false);
+          if (currentOption) {
+            onInputChange?.(currentOption.value);
+            lastManualInput.current = currentOption.value;
+          } else if (autoSelectIndex != null) {
+            const defaultOption = rest.options[autoSelectIndex];
+            if (defaultOption) {
+              onInputChange?.(defaultOption.value);
+              setValue(defaultOption.value);
+              lastManualInput.current = defaultOption.value;
+            }
+          }
+          setCurrentIndex(-1);
         }
-        setCurrentIndex(-1);
       } else if (e.key === 'Enter') {
-        setOpen(false);
-        if (currentOption) {
-          onInputChange?.(currentOption.value);
-          lastManualInput.current = currentOption.value;
+        if (open) {
+          setOpen(false);
+          if (currentOption) {
+            onInputChange?.(currentOption.value);
+            lastManualInput.current = currentOption.value;
+          } else if (autoSelectIndex != null) {
+            const defaultOption = rest.options[autoSelectIndex];
+            if (defaultOption) {
+              onInputChange?.(defaultOption.value);
+              setValue(defaultOption.value);
+              lastManualInput.current = defaultOption.value;
+            }
+          }
+          setCurrentIndex(-1);
         }
-        setCurrentIndex(-1);
       } else if (e.key === 'Home') {
         if (open) {
           e.preventDefault();
@@ -285,17 +312,22 @@ export function Autocomplete(props: AutocompleteProps) {
       currentIndex,
       onInputChange,
       setInputSelectionPoint,
+      autoSelectIndex,
     ],
   );
 
-  const clear = useCallback(() => {
-    setCurrentIndex(-1);
-    setValue('');
-    onInputChange?.('');
-    referenceElement?.focus();
-    setOpen(true);
-    lastManualInput.current = '';
-  }, [setValue, onInputChange, referenceElement]);
+  const clear = useCallback(
+    (e) => {
+      e?.preventDefault();
+      setCurrentIndex(-1);
+      setValue('');
+      onInputChange?.('');
+      referenceElement?.focus();
+      setOpen(true);
+      lastManualInput.current = '';
+    },
+    [setValue, onInputChange, referenceElement],
+  );
 
   const handleOptionMouseEnter = useCallback(
     (index: number) => {
@@ -319,7 +351,7 @@ export function Autocomplete(props: AutocompleteProps) {
 
   const handleBlur = useCallback(
     (e) => {
-      if (!e.relatedTarget) {
+      if (clearButtonRef.current !== e.relatedTarget) {
         closeOptions();
       }
     },
@@ -343,15 +375,6 @@ export function Autocomplete(props: AutocompleteProps) {
     }
   }, [currentIndex, uniqueId, popperElement]);
 
-  // Update next option value (temp value)
-  useEffect(() => {
-    if (open && currentIndex >= 0) {
-      const nextOption = rest.options?.[currentIndex];
-      const nextOptionValue = nextOption?.value ?? '';
-      setValue(nextOptionValue);
-    }
-  }, [currentIndex, rest.options, setValue, open]);
-
   // Set unique ID for component
   useEffect(() => {
     setUnqiueId(`search-results-${Math.random().toString(36).substring(2, 9)}`);
@@ -368,7 +391,7 @@ export function Autocomplete(props: AutocompleteProps) {
         {...inputProps}
         className="rounded-none border-none px-0 shadow-none focus-visible:ring-0"
         ref={setReferenceElement}
-        onClick={openOptions}
+        onClick={openOnClick}
         onKeyDown={handleKeyDown}
         onBlur={handleBlur}
         onChange={handleInputChange}
@@ -388,7 +411,7 @@ export function Autocomplete(props: AutocompleteProps) {
 
       <TooltipProvider>
         <Tooltip delayDuration={100}>
-          <TooltipTrigger asChild>
+          <TooltipTrigger asChild autoFocus={false} tabIndex={-1}>
             <Button
               ref={clearButtonRef}
               size="icon"
@@ -399,6 +422,7 @@ export function Autocomplete(props: AutocompleteProps) {
               )}
               onClick={clear}
               aria-label="Clear"
+              type="button"
             >
               <XIcon className={cn('h-4 w-4 shrink-0 opacity-50')} />
             </Button>
