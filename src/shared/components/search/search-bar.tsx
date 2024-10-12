@@ -1,8 +1,12 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { useTranslation } from 'next-i18next';
 import { useTaxonomies } from '../../hooks/api/use-taxonomies';
-import { searchAtom, searchTermAtom } from '../../store/search';
+import {
+  prevSearchTermAtom,
+  searchAtom,
+  searchTermAtom,
+} from '../../store/search';
 import { useDebounce } from '../../hooks/use-debounce';
 import { useSuggestions } from '../../hooks/use-suggestions';
 import { useFlag } from '@/shared/hooks/use-flag';
@@ -13,9 +17,9 @@ export function SearchBar() {
   const { t } = useTranslation();
   const [shouldSearch, setShouldSearch] = useState(false);
   const setSearch = useSetAtom(searchAtom);
+  const prevSearchTerm = useAtomValue(prevSearchTermAtom);
   const searchTerm = useAtomValue(searchTermAtom);
   const debouncedSearchTerm = useDebounce(searchTerm, 200);
-  const [prevSearchTerm, setPrevSearchTerm] = useState(searchTerm);
   const { data: taxonomies } = useTaxonomies(
     shouldSearch ? debouncedSearchTerm : prevSearchTerm,
   );
@@ -70,50 +74,62 @@ export function SearchBar() {
 
   // Find the taxonomy code to be used for a query
   // Fallback to the original string value if a code isn't found
-  const findCode = (value: string) => {
-    const taxonomy = taxonomies.find(
-      (tax) => tax.name.toLowerCase() === value.toLowerCase(),
-    );
-    if (taxonomy) return taxonomy.code;
+  const findCode = useCallback(
+    (value: string) => {
+      const taxonomy = taxonomies.find(
+        (tax) => tax.name.toLowerCase() === value.toLowerCase(),
+      );
+      if (taxonomy) return taxonomy.code;
 
-    const suggestion = suggestions.find(
-      (sugg) => sugg.name.toLowerCase() === value.toLowerCase(),
-    );
-    if (suggestion) return suggestion.taxonomies;
+      const suggestion = suggestions.find(
+        (sugg) => sugg.name.toLowerCase() === value.toLowerCase(),
+      );
+      if (suggestion) return suggestion.taxonomies;
 
-    const category = reducedCategories.find(
-      (cat) => cat.name.toLowerCase() === value.toLowerCase(),
-    );
-    if (category) return category.query;
+      const category = reducedCategories.find(
+        (cat) => cat.name.toLowerCase() === value.toLowerCase(),
+      );
+      if (category) return category.query;
 
-    return value;
-  };
+      return value;
+    },
+    [reducedCategories, suggestions, taxonomies],
+  );
 
-  const getQueryType = (value, query) => {
+  const getQueryType = useCallback((value, query) => {
     if (query.trim().length === 0) return '';
     if (query === value) return 'text';
     return 'taxonomy';
-  };
+  }, []);
 
-  const setSearchTerm = (value: string) => {
-    const query = findCode(value);
-    const queryType = getQueryType(value, query);
+  const setSearchTerm = useCallback(
+    (value: string) => {
+      const query = findCode(value);
+      const queryType = getQueryType(value, query);
 
-    setShouldSearch(false);
+      setShouldSearch(false);
 
-    setSearch((prev) => ({
-      ...prev,
-      query,
-      queryType,
-      searchTerm: value,
-      queryLabel: value,
-    }));
-  };
+      setSearch((prev) => ({
+        ...prev,
+        query,
+        queryType,
+        searchTerm: value,
+        queryLabel: value,
+      }));
+    },
+    [findCode, getQueryType, setSearch],
+  );
 
-  const handleInputChange = (value: string) => {
-    setPrevSearchTerm(value);
-    setShouldSearch(true);
-  };
+  const handleInputChange = useCallback(
+    (value: string) => {
+      setShouldSearch(true);
+      setSearch((prev) => ({
+        ...prev,
+        prevSearchTerm: value,
+      }));
+    },
+    [setSearch],
+  );
 
   return (
     <Autocomplete
