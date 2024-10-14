@@ -102,10 +102,7 @@ export function MainSearchLayout() {
     <form onSubmit={onSubmit} className="flex flex-col gap-1">
       <SearchBar />
 
-      <div className="flex items-stretch justify-stretch">
-        <LocationSearchBar className="flex-1" />
-        <DistanceSelect />
-      </div>
+      <LocationSearchBar />
 
       <div
         className={cn(

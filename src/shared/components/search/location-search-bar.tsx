@@ -15,6 +15,7 @@ import { cn } from '../../lib/utils';
 import { destroyCookie, setCookie } from 'nookies';
 import { USER_PREF_COORDS, USER_PREF_LOCATION } from '@/shared/lib/constants';
 import { Autocomplete } from '../ui/autocomplete';
+import { DistanceSelect } from './distance-select';
 
 type LocationSearchBarProps = {
   className?: string;
@@ -116,9 +117,8 @@ export function LocationSearchBar({ className }: LocationSearchBarProps) {
 
         return {
           ...prev,
-          ...(isNewCoords ? { userCoordinates: coordinates } : {}),
+          ...(isNewCoords ? { searchCoordinates: coordinates } : {}),
           searchLocation: value,
-          userLocation: value,
           searchLocationValidationError: '',
         };
       });
@@ -139,29 +139,38 @@ export function LocationSearchBar({ className }: LocationSearchBarProps) {
   );
 
   return (
-    <div className="w-full">
-      <Autocomplete
+    <div>
+      <div
         className={cn(
+          'flex w-full flex-1 items-center justify-stretch border-b',
           className,
-          'search-box',
-          validationError && 'border-b border-b-red-500',
         )}
-        inputProps={{
-          placeholder:
-            t('search.location_placeholder', {
-              ns: 'dynamic',
-              defaultValue: t('search.location_placeholder'),
-            }) || '',
-        }}
-        options={options}
-        Icon={MapPin}
-        onInputChange={handleInputChange}
-        onValueChange={setSearchLocation}
-        value={searchLocation}
-        autoSelectIndex={coords ? undefined : 1}
-      />
+      >
+        <Autocomplete
+          className={cn(
+            className,
+            'search-box',
+            validationError && 'border-b border-b-red-500',
+            'flex-1 border-none',
+          )}
+          inputProps={{
+            placeholder:
+              t('search.location_placeholder', {
+                ns: 'dynamic',
+                defaultValue: t('search.location_placeholder'),
+              }) || '',
+          }}
+          options={options}
+          Icon={MapPin}
+          onInputChange={handleInputChange}
+          onValueChange={setSearchLocation}
+          value={searchLocation}
+          autoSelectIndex={coords ? undefined : 1}
+        />
 
-      <p className="min-h-4 text-xs text-red-500">{validationError}</p>
+        <DistanceSelect />
+      </div>
+      <p className="min-h-4 px-3 text-xs text-red-500">{validationError}</p>
     </div>
   );
 }

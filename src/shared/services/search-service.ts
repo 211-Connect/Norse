@@ -13,7 +13,7 @@ export class SearchService {
   static createUrlParamsForSearch(
     searchStore: ExtractAtomValue<typeof searchAtom>,
   ) {
-    const hasLocation = searchStore['userCoordinates']?.length === 2;
+    const hasLocation = searchStore['searchCoordinates']?.length === 2;
 
     const isTaxonomyCode = TaxonomyService.isTaxonomyCode(
       searchStore['query']?.trim(),
@@ -25,12 +25,12 @@ export class SearchService {
       query_type: isTaxonomyCode
         ? 'taxonomy'
         : searchStore['queryType']?.trim(),
-      location: hasLocation ? searchStore['userLocation']?.trim() : null,
+      location: hasLocation ? searchStore['searchLocation']?.trim() : null,
       coords: hasLocation
-        ? searchStore['userCoordinates']?.join(',')?.trim()
+        ? searchStore['searchCoordinates']?.join(',')?.trim()
         : null,
       distance:
-        searchStore['userCoordinates']?.length === 2
+        searchStore['searchCoordinates']?.length === 2
           ? searchStore['searchDistance']?.trim() || '0'
           : '',
     };

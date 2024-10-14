@@ -49,8 +49,7 @@ export function UseMyLocationButton() {
             setSearch((prev) => ({
               ...prev,
               searchLocation: location.address,
-              userLocation: location.address,
-              userCoordinates: location.coordinates,
+              searchCoordinates: location.coordinates,
             }));
           }
 
