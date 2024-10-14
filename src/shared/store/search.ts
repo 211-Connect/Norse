@@ -7,10 +7,10 @@ export const searchAtom = atom({
   searchTerm: '',
   prevSearchTerm: '',
   searchLocation: '',
+  searchCoordinates: [],
   prevSearchLocation: '',
   searchLocationValidationError: '',
   searchDistance: '',
-  userLocation: '',
   userCoordinates: [],
 });
 
@@ -31,9 +31,9 @@ export const prevSearchLocationAtom = atom(
 export const searchLocationValidationErrorAtom = atom(
   (get) => get(searchAtom).searchLocationValidationError,
 );
-
-// Currently selected user location
-export const userLocationAtom = atom((get) => get(searchAtom).userLocation);
+export const searchCoordinatesAtom = atom(
+  (get) => get(searchAtom).searchCoordinates,
+);
 
 export const searchDistanceAtom = atom((get) => get(searchAtom).searchDistance);
 

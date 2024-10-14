@@ -92,7 +92,7 @@ export function JotaiHydration({ pageProps }) {
         searchLocation: getSearchLocation(pageProps, cookies),
         prevSearchLocation: getSearchLocation(pageProps, cookies),
         searchLocationValidationError: '',
-        userLocation: pageProps?.location,
+        searchCoordinates: getCoordinates(pageProps, cookies),
         userCoordinates: getCoordinates(pageProps, cookies),
       },
     ],
