@@ -6,6 +6,7 @@ import {
   searchAtom,
   searchLocationAtom,
   searchLocationValidationErrorAtom,
+  userCoordinatesAtom,
 } from '../../store/search';
 import { useDebounce } from '../../hooks/use-debounce';
 import { useLocations } from '../../hooks/api/use-locations';
@@ -24,6 +25,7 @@ export function LocationSearchBar({ className }: LocationSearchBarProps) {
   const [shouldSearch, setShouldSearch] = useState(false);
   const setSearch = useSetAtom(searchAtom);
   const searchLocation = useAtomValue(searchLocationAtom);
+  const coords = useAtomValue(userCoordinatesAtom);
   const prevSearchLocation = useAtomValue(prevSearchLocationAtom);
   const debouncedSearchLocation = useDebounce(searchLocation, 200);
   const { data: locations } = useLocations(
@@ -156,7 +158,7 @@ export function LocationSearchBar({ className }: LocationSearchBarProps) {
         onInputChange={handleInputChange}
         onValueChange={setSearchLocation}
         value={searchLocation}
-        autoSelectIndex={1}
+        autoSelectIndex={coords ? undefined : 1}
       />
 
       <p className="min-h-4 text-xs text-red-500">{validationError}</p>

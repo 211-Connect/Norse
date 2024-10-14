@@ -10,12 +10,12 @@ import {
   useEffect,
   useRef,
 } from 'react';
-import { Input, InputProps } from './input';
+import { useUncontrolled } from '@/shared/hooks/use-uncontrolled';
 import { cn } from '@/shared/lib/utils';
+import { Input, InputProps } from './input';
 import { Separator } from './separator';
 import { SearchIcon, XIcon } from 'lucide-react';
 import { Button } from './button';
-import { useUncontrolled } from '@/shared/hooks/use-uncontrolled';
 import {
   Tooltip,
   TooltipContent,
