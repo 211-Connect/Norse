@@ -23,17 +23,18 @@ import {
   TooltipTrigger,
 } from './tooltip';
 
-export type AutcompleteOption = {
+export type AutocompleteOption = {
   label?: string;
   value: string;
   group?: string;
-  index?: number;
 };
+
+type AutocompleteOptionWithIndex = AutocompleteOption & { index: number };
 
 export type AutocompleteProps = {
   Icon?: ComponentType<{ className?: string }>;
   inputProps?: InputProps;
-  options?: AutcompleteOption[];
+  options?: AutocompleteOption[];
   className?: string;
   onInputChange?: (value: string) => void;
   onValueChange?: (value: string) => void;
@@ -66,7 +67,7 @@ export function Autocomplete(props: AutocompleteProps) {
   });
   const clearButtonRef = useRef(null);
 
-  const options: [string, AutcompleteOption[]][] = useMemo(() => {
+  const options: [string, AutocompleteOptionWithIndex[]][] = useMemo(() => {
     const options = rest.options;
     if (!options) return [];
 
@@ -98,7 +99,7 @@ export function Autocomplete(props: AutocompleteProps) {
 
         return 0;
       })
-      .reduce<Record<string, AutcompleteOption[]>>((acc, option) => {
+      .reduce<Record<string, AutocompleteOptionWithIndex[]>>((acc, option) => {
         const group = option.group ?? '_';
         if (!acc[group]) {
           acc[group] = [];
@@ -158,8 +159,12 @@ export function Autocomplete(props: AutocompleteProps) {
       lastManualInput.current = e.target.value;
       setValue(e.target.value);
       onInputChange?.(e.target.value);
+
+      if (!open) {
+        setOpen(true);
+      }
     },
-    [onInputChange, setValue],
+    [onInputChange, setValue, open],
   );
 
   const setInputSelectionPoint = useCallback(
@@ -267,40 +272,38 @@ export function Autocomplete(props: AutocompleteProps) {
       } else if (e.key === 'Home') {
         if (open) {
           e.preventDefault();
-          setCurrentIndex((prev) => {
-            const nextValue = 0;
-            const nextState =
-              nextValue === rest.options.length ? -1 : nextValue;
 
-            const nextOption = rest.options[nextState];
-            const selectionValue =
-              nextOption?.value ??
-              rest.options[prev]?.value ??
-              lastManualInput?.current ??
-              '';
-            setInputSelectionPoint(selectionValue);
+          const nextValue = 0;
+          const nextState = nextValue === rest.options.length ? -1 : nextValue;
 
-            return nextState;
-          });
+          const nextOption = rest.options[nextState];
+          const selectionValue =
+            nextOption?.value ??
+            rest.options[currentIndex]?.value ??
+            lastManualInput?.current ??
+            '';
+
+          setInputSelectionPoint(selectionValue);
+          setCurrentIndex(nextState);
+          setValue(selectionValue);
         }
       } else if (e.key === 'End') {
         if (open) {
           e.preventDefault();
-          setCurrentIndex((prev) => {
-            const nextValue = rest.options.length - 1;
-            const nextState =
-              nextValue === rest.options.length ? -1 : nextValue;
 
-            const nextOption = rest.options[nextState];
-            const selectionValue =
-              nextOption?.value ??
-              rest.options[prev]?.value ??
-              lastManualInput?.current ??
-              '';
-            setInputSelectionPoint(selectionValue);
+          const nextValue = rest.options.length - 1;
+          const nextState = nextValue === rest.options.length ? -1 : nextValue;
 
-            return nextState;
-          });
+          const nextOption = rest.options[nextState];
+          const selectionValue =
+            nextOption?.value ??
+            rest.options[currentIndex]?.value ??
+            lastManualInput?.current ??
+            '';
+
+          setInputSelectionPoint(selectionValue);
+          setCurrentIndex(nextState);
+          setValue(selectionValue);
         }
       }
     },
@@ -440,7 +443,7 @@ export function Autocomplete(props: AutocompleteProps) {
           aria-multiselectable="false"
           ref={setPopperElement}
           style={styles.popper}
-          className="z-10 mt-2 max-h-56 w-full overflow-auto rounded-md bg-white shadow-md"
+          className="z-10 max-h-56 w-full overflow-auto rounded-md bg-white shadow-md"
           {...attributes.popper}
         >
           {options?.map((group, groupIndex) => {
