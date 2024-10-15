@@ -338,10 +338,11 @@ export function Autocomplete(props: AutocompleteProps) {
         setCurrentIndex(index);
         const nextOption = rest.options[index];
         const selectionValue = nextOption?.value;
+        setValue(selectionValue);
         setInputSelectionPoint(selectionValue);
       };
     },
-    [rest.options, setInputSelectionPoint],
+    [rest.options, setInputSelectionPoint, setValue],
   );
 
   const handleOptionMouseExit = useCallback(() => {
