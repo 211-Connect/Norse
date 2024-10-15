@@ -183,6 +183,7 @@ export function Information({ resource }) {
               <Map className="size-4" />
               <p className="font-bold">{t('service_area')}</p>
             </div>
+            <p className="text-sm">{resource.serviceAreaName}</p>
             <p className="text-sm">{resource.serviceAreaDescription}</p>
           </div>
         )}

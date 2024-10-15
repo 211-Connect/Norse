@@ -42,8 +42,8 @@ export class ResourceService {
       fees: data?.translation?.fees,
       requiredDocuments: data?.translation?.requiredDocuments ?? null,
       eligibilities: data?.translation?.eligibilities ?? null,
-      serviceAreaDescription:
-        data?.serviceArea?.description?.join(', ') ?? null,
+      serviceAreaDescription: data?.serviceAreaDescription ?? null,
+      serviceAreaName: data?.serviceAreaName ?? null,
       categories: data?.translation?.taxonomies ?? null,
       lastAssuredOn: data?.lastAssuredDate
         ? dayjs(data.lastAssuredDate).format('MM/DD/YYYY')
