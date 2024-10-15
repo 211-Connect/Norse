@@ -12,9 +12,8 @@ import { useAppConfig } from '../../hooks/use-app-config';
 import { useAtomValue, useSetAtom } from 'jotai';
 import {
   searchAtom,
+  searchCoordinatesAtom,
   searchDistanceAtom,
-  searchLocationAtom,
-  userCoordinatesAtom,
 } from '../../store/search';
 import { setCookie } from 'nookies';
 import { USER_PREF_DISTANCE } from '../../lib/constants';
@@ -23,7 +22,7 @@ export function DistanceSelect() {
   const { t } = useTranslation();
   const appConfig = useAppConfig();
   const setSearch = useSetAtom(searchAtom);
-  const coords = useAtomValue(userCoordinatesAtom);
+  const coords = useAtomValue(searchCoordinatesAtom);
   const distance = useAtomValue(searchDistanceAtom);
 
   const hasLocation = coords?.length == 2;
