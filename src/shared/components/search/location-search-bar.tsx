@@ -49,11 +49,11 @@ export function LocationSearchBar({ className }: LocationSearchBarProps) {
     return [
       ...additionalLocations.map((loc) => ({
         value: loc.address,
-        icon: NavigationIcon,
+        Icon: NavigationIcon,
       })),
       ...locations.map((loc) => ({
         value: loc.address,
-        icon: NavigationIcon,
+        Icon: NavigationIcon,
       })),
     ];
   }, [locations, additionalLocations]);

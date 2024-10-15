@@ -392,7 +392,9 @@ export function Autocomplete(props: AutocompleteProps) {
   }, []);
 
   return (
-    <div className={cn('relative flex items-center border-b px-3', className)}>
+    <div
+      className={cn('relative flex items-center border-b px-3 py-1', className)}
+    >
       {Icon ? (
         <Icon className="mr-2 h-4 w-4 shrink-0 opacity-50" />
       ) : (
@@ -482,7 +484,7 @@ export function Autocomplete(props: AutocompleteProps) {
                         id={`${uniqueId}-option-${option.index}`}
                         role="option"
                         className={cn(
-                          'ml-1 mr-1 flex justify-between gap-2 p-1 px-3 py-1 pl-2 pr-2 text-sm',
+                          'flex justify-between gap-2 px-3 py-1',
                           currentIndex === option.index && 'bg-primary/5',
                         )}
                         aria-selected={currentIndex === option.index}
@@ -491,7 +493,9 @@ export function Autocomplete(props: AutocompleteProps) {
                         onMouseDown={handleValueSelect(option.value)}
                       >
                         <span className="flex items-center gap-2">
-                          {Icon === 'span' ? null : <Icon className="size-4" />}
+                          {Icon === 'span' ? null : (
+                            <Icon className="size-4 shrink-0" />
+                          )}
                           <p>
                             {parse(option.value, matches).map((text, idx) =>
                               text.highlight ? (
