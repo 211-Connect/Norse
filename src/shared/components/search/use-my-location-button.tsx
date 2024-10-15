@@ -5,13 +5,13 @@ import { useRouter } from 'next/router';
 import { setCookie } from 'nookies';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { Locate } from 'lucide-react';
+import { deviceAtom } from '@/shared/store/device';
+import { useFlag } from '@/shared/hooks/use-flag';
 import { Button } from '../ui/button';
 import { useMapAdapter } from '../../hooks/use-map-adapter';
 import { MapService } from '../../services/map-service';
 import { searchAtom } from '../../store/search';
 import { USER_PREF_COORDS, USER_PREF_LOCATION } from '../../lib/constants';
-import { deviceAtom } from '@/shared/store/device';
-import { useFlag } from '@/shared/hooks/use-flag';
 
 export function UseMyLocationButton() {
   const { t } = useTranslation('common');
@@ -49,8 +49,7 @@ export function UseMyLocationButton() {
             setSearch((prev) => ({
               ...prev,
               searchLocation: location.address,
-              userLocation: location.address,
-              userCoordinates: location.coordinates,
+              searchCoordinates: location.coordinates,
             }));
           }
 
@@ -87,7 +86,12 @@ export function UseMyLocationButton() {
     return false;
 
   return (
-    <Button onClick={getUserLocation} className="flex gap-1" variant="outline">
+    <Button
+      onClick={getUserLocation}
+      className="flex gap-1"
+      variant="outline"
+      type="button"
+    >
       <Locate className="size-4" />
       {t('search.use_my_location')}
     </Button>

@@ -36,7 +36,11 @@ export function CopyBadge({ children, text, href }: CopyBadgeProps) {
 
       <TooltipProvider>
         <Tooltip open={copied}>
-          <TooltipTrigger className="w-4 shrink-0" onClick={handleCopy}>
+          <TooltipTrigger
+            className="w-4 shrink-0"
+            onClick={handleCopy}
+            aria-label="Copy"
+          >
             {copied ? (
               <CheckIcon className="size-4" />
             ) : (
