@@ -10,6 +10,8 @@ import {
   useEffect,
   useRef,
 } from 'react';
+import match from 'autosuggest-highlight/match';
+import parse from 'autosuggest-highlight/parse';
 import { useUncontrolled } from '@/shared/hooks/use-uncontrolled';
 import { cn } from '@/shared/lib/utils';
 import { Input, InputProps } from './input';
@@ -22,11 +24,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from './tooltip';
+import { Badge } from './badge';
 
 export type AutocompleteOption = {
   label?: string;
   value: string;
   group?: string;
+  Icon?: ComponentType<{ className?: string }>;
 };
 
 type AutocompleteOptionWithIndex = AutocompleteOption & { index: number };
@@ -55,7 +59,7 @@ export function Autocomplete(props: AutocompleteProps) {
     value: inputValue,
     ...rest
   } = props;
-  const lastManualInput = useRef('');
+  const [lastManualInput, setLastManualInput] = useState('');
   const [uniqueId, setUnqiueId] = useState('');
   const [open, setOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(-1);
@@ -148,7 +152,7 @@ export function Autocomplete(props: AutocompleteProps) {
         setOpen(false);
         setCurrentIndex(-1);
         onInputChange?.(value);
-        lastManualInput.current = value;
+        setLastManualInput(value);
       };
     },
     [setValue, onInputChange],
@@ -157,7 +161,7 @@ export function Autocomplete(props: AutocompleteProps) {
   const handleInputChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       setCurrentIndex(-1);
-      lastManualInput.current = e.target.value;
+      setLastManualInput(e.target.value);
       setValue(e.target.value);
       onInputChange?.(e.target.value);
 
@@ -190,7 +194,7 @@ export function Autocomplete(props: AutocompleteProps) {
           const selectionValue =
             nextOption?.value ??
             rest.options[currentIndex]?.value ??
-            lastManualInput?.current ??
+            lastManualInput ??
             '';
           setInputSelectionPoint(selectionValue);
           setCurrentIndex(nextState);
@@ -210,7 +214,7 @@ export function Autocomplete(props: AutocompleteProps) {
           const selectionValue =
             nextOption?.value ??
             rest.options[currentIndex]?.value ??
-            lastManualInput?.current ??
+            lastManualInput ??
             '';
 
           setInputSelectionPoint(selectionValue);
@@ -218,23 +222,22 @@ export function Autocomplete(props: AutocompleteProps) {
           setValue(selectionValue);
         } else {
           const nextOption = rest.options[currentIndex];
-          const selectionValue =
-            nextOption?.value ?? lastManualInput?.current ?? '';
+          const selectionValue = nextOption?.value ?? lastManualInput ?? '';
 
           setInputSelectionPoint(selectionValue);
         }
       } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
         setCurrentIndex(-1);
-        setValue(lastManualInput.current);
+        setValue(lastManualInput);
         if (currentIndex >= 0) {
-          setInputSelectionPoint(lastManualInput.current);
+          setInputSelectionPoint(lastManualInput);
         }
       } else if (e.key === 'Escape') {
         if (open) {
           setOpen(false);
           if (currentOption) {
             onInputChange?.(currentOption.value);
-            lastManualInput.current = currentOption.value;
+            setLastManualInput(currentOption.value);
           }
           setCurrentIndex(-1);
         }
@@ -243,13 +246,13 @@ export function Autocomplete(props: AutocompleteProps) {
           setOpen(false);
           if (currentOption) {
             onInputChange?.(currentOption.value);
-            lastManualInput.current = currentOption.value;
+            setLastManualInput(currentOption.value);
           } else if (autoSelectIndex != null) {
             const defaultOption = rest.options[autoSelectIndex];
             if (defaultOption) {
               onInputChange?.(defaultOption.value);
               setValue(defaultOption.value);
-              lastManualInput.current = defaultOption.value;
+              setLastManualInput(defaultOption.value);
             }
           }
           setCurrentIndex(-1);
@@ -259,13 +262,13 @@ export function Autocomplete(props: AutocompleteProps) {
           setOpen(false);
           if (currentOption) {
             onInputChange?.(currentOption.value);
-            lastManualInput.current = currentOption.value;
+            setLastManualInput(currentOption.value);
           } else if (autoSelectIndex != null) {
             const defaultOption = rest.options[autoSelectIndex];
             if (defaultOption) {
               onInputChange?.(defaultOption.value);
               setValue(defaultOption.value);
-              lastManualInput.current = defaultOption.value;
+              setLastManualInput(defaultOption.value);
             }
           }
           setCurrentIndex(-1);
@@ -281,7 +284,7 @@ export function Autocomplete(props: AutocompleteProps) {
           const selectionValue =
             nextOption?.value ??
             rest.options[currentIndex]?.value ??
-            lastManualInput?.current ??
+            lastManualInput ??
             '';
 
           setInputSelectionPoint(selectionValue);
@@ -299,7 +302,7 @@ export function Autocomplete(props: AutocompleteProps) {
           const selectionValue =
             nextOption?.value ??
             rest.options[currentIndex]?.value ??
-            lastManualInput?.current ??
+            lastManualInput ??
             '';
 
           setInputSelectionPoint(selectionValue);
@@ -317,6 +320,7 @@ export function Autocomplete(props: AutocompleteProps) {
       onInputChange,
       setInputSelectionPoint,
       autoSelectIndex,
+      lastManualInput,
     ],
   );
 
@@ -328,7 +332,7 @@ export function Autocomplete(props: AutocompleteProps) {
       onInputChange?.('');
       referenceElement?.focus();
       setOpen(true);
-      lastManualInput.current = '';
+      setLastManualInput('');
     },
     [setValue, onInputChange, referenceElement],
   );
@@ -350,11 +354,11 @@ export function Autocomplete(props: AutocompleteProps) {
   const handleOptionMouseExit = useCallback(() => {
     return () => {
       setCurrentIndex(-1);
-      setValue(lastManualInput.current);
-      setInputSelectionPoint(lastManualInput.current);
+      setValue(lastManualInput);
+      setInputSelectionPoint(lastManualInput);
       setIsHovering(false);
     };
-  }, [setInputSelectionPoint, setValue]);
+  }, [setInputSelectionPoint, setValue, lastManualInput]);
 
   const handleBlur = useCallback(
     (e) => {
@@ -468,14 +472,17 @@ export function Autocomplete(props: AutocompleteProps) {
                   </h3>
                 )}
                 <div role="group" aria-labelledby={groupId}>
-                  {groupOptions?.map((option, idx) => {
+                  {groupOptions?.map((option) => {
+                    const matches = match(option.value, lastManualInput);
+                    const Icon = option.Icon || 'span';
+
                     return (
                       <div
                         key={option.index}
                         id={`${uniqueId}-option-${option.index}`}
                         role="option"
                         className={cn(
-                          'px-3 py-1 text-sm',
+                          'ml-1 mr-1 flex justify-between gap-2 p-1 px-3 py-1 pl-2 pr-2 text-sm',
                           currentIndex === option.index && 'bg-primary/5',
                         )}
                         aria-selected={currentIndex === option.index}
@@ -483,7 +490,36 @@ export function Autocomplete(props: AutocompleteProps) {
                         onMouseLeave={handleOptionMouseExit()}
                         onMouseDown={handleValueSelect(option.value)}
                       >
-                        {option.value}
+                        <span className="flex items-center gap-2">
+                          {Icon === 'span' ? null : <Icon className="size-4" />}
+                          <p>
+                            {parse(option.value, matches).map((text, idx) =>
+                              text.highlight ? (
+                                <span
+                                  key={`${option.value}-${text.text}-${idx}`}
+                                  className="font-semibold"
+                                >
+                                  {text.text}
+                                </span>
+                              ) : (
+                                <span
+                                  key={`${option.value}-${text.text}-${idx}`}
+                                >
+                                  {text.text}
+                                </span>
+                              ),
+                            )}
+                          </p>
+                        </span>
+
+                        {option.label && (
+                          <Badge
+                            variant="outline"
+                            className="w-[100px] shrink-0 text-xs"
+                          >
+                            <p className="mx-auto truncate">{option.label}</p>
+                          </Badge>
+                        )}
                       </div>
                     );
                   })}
