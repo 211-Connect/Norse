@@ -96,6 +96,11 @@ export function MainSearchLayout() {
       pathname: '/search',
       query: urlParams,
     });
+
+    setSearch((prev) => ({
+      ...prev,
+      userCoordinates: search.searchCoordinates,
+    }));
   };
 
   return (
