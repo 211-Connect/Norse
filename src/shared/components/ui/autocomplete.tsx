@@ -59,6 +59,7 @@ export function Autocomplete(props: AutocompleteProps) {
   const [uniqueId, setUnqiueId] = useState('');
   const [open, setOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(-1);
+  const [isHovering, setIsHovering] = useState(false);
   const [value, setValue] = useUncontrolled<string>({
     value: inputValue,
     defaultValue,
@@ -335,11 +336,12 @@ export function Autocomplete(props: AutocompleteProps) {
   const handleOptionMouseEnter = useCallback(
     (index: number) => {
       return () => {
-        setCurrentIndex(index);
         const nextOption = rest.options[index];
         const selectionValue = nextOption?.value;
+        setCurrentIndex(index);
         setValue(selectionValue);
         setInputSelectionPoint(selectionValue);
+        setIsHovering(true);
       };
     },
     [rest.options, setInputSelectionPoint, setValue],
@@ -350,6 +352,7 @@ export function Autocomplete(props: AutocompleteProps) {
       setCurrentIndex(-1);
       setValue(lastManualInput.current);
       setInputSelectionPoint(lastManualInput.current);
+      setIsHovering(false);
     };
   }, [setInputSelectionPoint, setValue]);
 
@@ -364,7 +367,7 @@ export function Autocomplete(props: AutocompleteProps) {
 
   // Ensure option stays in view
   useEffect(() => {
-    if (!popperElement) return;
+    if (!popperElement || isHovering) return;
 
     const element = document.querySelector(
       `#${uniqueId}-option-${currentIndex}`,
@@ -377,7 +380,7 @@ export function Autocomplete(props: AutocompleteProps) {
         inline: 'start',
       });
     }
-  }, [currentIndex, uniqueId, popperElement]);
+  }, [currentIndex, uniqueId, popperElement, isHovering]);
 
   // Set unique ID for component
   useEffect(() => {
@@ -444,7 +447,7 @@ export function Autocomplete(props: AutocompleteProps) {
           aria-multiselectable="false"
           ref={setPopperElement}
           style={styles.popper}
-          className="z-10 max-h-56 w-full overflow-auto rounded-md bg-white shadow-md"
+          className="z-10 max-h-56 w-full overflow-auto overscroll-contain rounded-md bg-white shadow-md"
           {...attributes.popper}
         >
           {options?.map((group, groupIndex) => {
