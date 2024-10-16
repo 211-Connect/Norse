@@ -264,11 +264,20 @@ export function Autocomplete(props: AutocompleteProps) {
             onInputChange?.(currentOption.value);
             setLastManualInput(currentOption.value);
           } else if (autoSelectIndex != null) {
+            e.preventDefault();
             const defaultOption = rest.options[autoSelectIndex];
             if (defaultOption) {
               onInputChange?.(defaultOption.value);
               setValue(defaultOption.value);
               setLastManualInput(defaultOption.value);
+            }
+            const form = (e.target as HTMLElement).closest('form');
+            if (form) {
+              setTimeout(() => {
+                form.dispatchEvent(
+                  new Event('submit', { cancelable: true, bubbles: true }),
+                );
+              }, 0);
             }
           }
           setCurrentIndex(-1);

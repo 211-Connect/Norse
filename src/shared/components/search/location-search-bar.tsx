@@ -4,9 +4,9 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import {
   prevSearchLocationAtom,
   searchAtom,
+  searchCoordinatesAtom,
   searchLocationAtom,
   searchLocationValidationErrorAtom,
-  userCoordinatesAtom,
 } from '../../store/search';
 import { useDebounce } from '../../hooks/use-debounce';
 import { useLocations } from '../../hooks/api/use-locations';
@@ -26,7 +26,7 @@ export function LocationSearchBar({ className }: LocationSearchBarProps) {
   const [shouldSearch, setShouldSearch] = useState(false);
   const setSearch = useSetAtom(searchAtom);
   const searchLocation = useAtomValue(searchLocationAtom);
-  const coords = useAtomValue(userCoordinatesAtom);
+  const coords = useAtomValue(searchCoordinatesAtom);
   const prevSearchLocation = useAtomValue(prevSearchLocationAtom);
   const debouncedSearchLocation = useDebounce(searchLocation, 200);
   const { data: locations } = useLocations(
@@ -106,6 +106,7 @@ export function LocationSearchBar({ className }: LocationSearchBarProps) {
         let isNewCoords = false;
         const coordinates = coords.coordinates;
         if (
+          coords.type === 'invalid' ||
           (coords.type === 'coordinates' &&
             coordinates?.[0] !== prev['userCoordinates']?.[0] &&
             coordinates?.[1] !== prev['userCoordinates']?.[1]) ||
@@ -165,7 +166,7 @@ export function LocationSearchBar({ className }: LocationSearchBarProps) {
           onInputChange={handleInputChange}
           onValueChange={setSearchLocation}
           value={searchLocation}
-          autoSelectIndex={coords ? undefined : 1}
+          autoSelectIndex={coords?.length === 2 ? undefined : 1}
         />
 
         <DistanceSelect />
