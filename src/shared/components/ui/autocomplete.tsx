@@ -47,6 +47,31 @@ export type AutocompleteProps = {
   autoSelectIndex?: number;
 };
 
+const useMouseMovement = () => {
+  const [isMoving, setIsMoving] = useState(false);
+
+  useEffect(() => {
+    let timeoutId;
+
+    const handleMouseMove = () => {
+      setIsMoving(true);
+
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        setIsMoving(false);
+      }, 100);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      clearTimeout(timeoutId);
+    };
+  }, []);
+
+  return isMoving;
+};
+
 export function Autocomplete(props: AutocompleteProps) {
   const {
     inputProps,
@@ -59,6 +84,7 @@ export function Autocomplete(props: AutocompleteProps) {
     value: inputValue,
     ...rest
   } = props;
+  const isMouseMoving = useMouseMovement();
   const [lastManualInput, setLastManualInput] = useState('');
   const [uniqueId, setUnqiueId] = useState('');
   const [open, setOpen] = useState(false);
@@ -349,6 +375,7 @@ export function Autocomplete(props: AutocompleteProps) {
   const handleOptionMouseEnter = useCallback(
     (index: number) => {
       return () => {
+        if (!isMouseMoving) return;
         const nextOption = rest.options[index];
         const selectionValue = nextOption?.value;
         setCurrentIndex(index);
@@ -357,7 +384,7 @@ export function Autocomplete(props: AutocompleteProps) {
         setIsHovering(true);
       };
     },
-    [rest.options, setInputSelectionPoint, setValue],
+    [rest.options, setInputSelectionPoint, setValue, isMouseMoving],
   );
 
   const handleOptionMouseExit = useCallback(() => {
