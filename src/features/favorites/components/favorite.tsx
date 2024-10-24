@@ -45,7 +45,14 @@ export function Favorite({
   const address = data.addresses.find(
     (el) => el.rank === 1 && el.type === 'physical',
   );
-  const displayAddress = `${address.address_1}, ${address.city}, ${address.stateProvince} ${address.postalCode}`;
+  const displayAddress = !(
+    address?.address_1 &&
+    address?.city &&
+    address?.stateProvince &&
+    address?.postalCode
+  )
+    ? ''
+    : `${address.address_1}, ${address.city}, ${address.stateProvince} ${address.postalCode}`;
 
   return (
     <Card>
