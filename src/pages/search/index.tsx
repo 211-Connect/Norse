@@ -7,7 +7,11 @@ import {
   serverSideAppConfig,
   serverSideFlags,
 } from '@/shared/lib/server-utils';
-import { USER_PREF_COORDS, USER_PREF_LOCATION } from '@/shared/lib/constants';
+import {
+  USER_PREF_COORDS,
+  USER_PREF_DISTANCE,
+  USER_PREF_LOCATION,
+} from '@/shared/lib/constants';
 import { SearchService } from '@/shared/services/search-service';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]';
@@ -26,6 +30,11 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       const newQuery = new URLSearchParams(ctx.resolvedUrl.split('?')[1]);
       newQuery.set('location', cookies[USER_PREF_LOCATION]);
       newQuery.set('coords', cookies[USER_PREF_COORDS]);
+
+      const distance = cookies[USER_PREF_DISTANCE];
+      if (distance) {
+        newQuery.set('distance', distance);
+      }
 
       return {
         redirect: {
