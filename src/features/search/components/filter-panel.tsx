@@ -14,6 +14,7 @@ import qs from 'qs';
 import { useTranslation } from 'next-i18next';
 import { Separator } from '@/shared/components/ui/separator';
 import { Button } from '@/shared/components/ui/button';
+import { useEffect } from 'react';
 
 const Filters = ({ filters, filterKeys }) => {
   const { t } = useTranslation();
@@ -119,6 +120,12 @@ export function FilterPanel() {
   const filters = useAtomValue(filtersAtom);
   const filterKeys = Object.keys(filters);
   const [filtersOpen, setFiltersOpen] = useAtom(filtersOpenAtom);
+
+  useEffect(() => {
+    if (!filterKeys.length) {
+      window.dispatchEvent(new Event('resize'));
+    }
+  }, [filterKeys]);
 
   if (filterKeys.length === 0) return null;
 
