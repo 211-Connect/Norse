@@ -5,7 +5,9 @@ import dynamic from 'next/dynamic';
 import { ReactElement } from 'react';
 
 const maps = {
-  mapbox: dynamic(() => import('./mapbox/map').then((mod) => mod.Map)),
+  mapbox: dynamic(() => import('./mapbox/map').then((mod) => mod.Map), {
+    ssr: false,
+  }),
 };
 
 type MapLoaderProps = {
