@@ -177,14 +177,19 @@ export function Information({ resource }) {
             </div>
           )}
 
-        {resource?.serviceAreaDescription && (
+        {(resource?.serviceAreaDescription || resource?.serviceAreaName) && (
           <div>
             <div className="flex items-center gap-1">
               <Map className="size-4" />
               <p className="font-bold">{t('service_area')}</p>
             </div>
-            <p className="text-sm">{resource.serviceAreaName}</p>
-            <p className="text-sm">{resource.serviceAreaDescription}</p>
+            {resource?.serviceAreaName && (
+              <p className="text-sm">{resource.serviceAreaName}</p>
+            )}
+
+            {resource?.serviceAreaDescription && (
+              <p className="text-sm">{resource.serviceAreaDescription}</p>
+            )}
           </div>
         )}
       </CardContent>
