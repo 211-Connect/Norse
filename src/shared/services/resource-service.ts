@@ -42,7 +42,7 @@ export class ResourceService {
       fees: data?.translation?.fees,
       requiredDocuments: data?.translation?.requiredDocuments ?? null,
       eligibilities: data?.translation?.eligibilities ?? null,
-      serviceAreaDescription: data?.serviceAreaDescription ?? null,
+      serviceAreaDescription: data?.translation?.serviceAreaDescription ?? null,
       serviceAreaName: data?.serviceAreaName ?? null,
       categories: data?.translation?.taxonomies ?? null,
       lastAssuredOn: data?.lastAssuredDate
