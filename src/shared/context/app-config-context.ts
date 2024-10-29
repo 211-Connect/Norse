@@ -3,6 +3,7 @@ import { createContext } from 'react';
 type Menu = {
   name: string;
   href: string;
+  target: '_self' | '_blank';
 };
 
 type AppConfig = {

@@ -85,6 +85,7 @@ export function Header(props: Props) {
               <li key={item.name}>
                 <Link
                   className="hover:underline"
+                  target={item.target}
                   {...(item.href != null ? { href: item.href } : { href: '' })}
                 >
                   {item.name}

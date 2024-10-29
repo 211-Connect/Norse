@@ -1,9 +1,7 @@
 import { useTranslation } from 'next-i18next';
 import { useAppConfig } from '../hooks/use-app-config';
-import { Separator } from './ui/separator';
 import { cn } from '../lib/utils';
 import { Link } from './link';
-import { ReactNode } from 'react';
 import { DotIcon } from 'lucide-react';
 
 type Props = {
@@ -33,18 +31,17 @@ export function Footer(props: Props) {
               {t('footer.privacy_policy')}
             </Link>
 
-            {appConfig?.menus?.footer?.map(
-              (el: { name: string; href: string | null }) => (
-                <Link
-                  key={el.name}
-                  className="flex items-center gap-1"
-                  {...(el.href != null ? { href: el.href } : { href: '' })}
-                >
-                  <DotIcon className="size-4" />
-                  {el.name}
-                </Link>
-              ),
-            )}
+            {appConfig?.menus?.footer?.map((el) => (
+              <Link
+                key={el.name}
+                className="flex items-center gap-1"
+                target={el.target}
+                {...(el.href != null ? { href: el.href } : { href: '' })}
+              >
+                <DotIcon className="size-4" />
+                {el.name}
+              </Link>
+            ))}
           </div>
         </div>
       </div>

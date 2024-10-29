@@ -5,6 +5,7 @@ import { createLinkEvent } from '@/shared/lib/google-tag-manager';
 export interface LinkProps extends NextLinkProps {
   children?: React.ReactNode;
   className?: string;
+  target?: string;
 }
 
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
@@ -26,7 +27,7 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
         {props.children}
       </NextLink>
     );
-  }
+  },
 );
 Link.displayName = 'Link';
 
