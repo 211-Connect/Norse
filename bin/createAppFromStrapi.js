@@ -183,6 +183,7 @@ module.exports = function createFromStrapi(dir) {
       newAppConfig.menus.header.push({
         name: menu.name,
         href: menu.href,
+        target: menu?.target ?? '_self',
       });
     }
 
@@ -190,6 +191,7 @@ module.exports = function createFromStrapi(dir) {
       newAppConfig.menus.footer.push({
         name: menu.name,
         href: menu.href,
+        target: menu?.target ?? '_self',
       });
     }
 
