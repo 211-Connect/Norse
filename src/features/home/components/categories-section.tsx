@@ -5,7 +5,6 @@ import { Separator } from '@/shared/components/ui/separator';
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { useCategories } from '@/shared/hooks/use-categories';
 import { ExternalLink } from 'lucide-react';
-import { cn } from '@/shared/lib/utils';
 
 type Props = {
   index: string;
