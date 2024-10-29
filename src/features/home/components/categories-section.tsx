@@ -5,6 +5,7 @@ import { Separator } from '@/shared/components/ui/separator';
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { useCategories } from '@/shared/hooks/use-categories';
 import { ExternalLink } from 'lucide-react';
+import { cn } from '@/shared/lib/utils';
 
 type Props = {
   index: string;
@@ -95,7 +96,16 @@ export function CategoriesSection() {
 
       <Separator className="mb-4 mt-4" />
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {/* <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"> */}
+      <div
+        // className={cn(categories.length < 4 ? '' : '', 'grid')}
+        // className="grid grid-cols-1 justify-center gap-4 md:grid-cols-2 lg:auto-cols-[33.33%] lg:grid-flow-col xl:auto-cols-[25%]"
+        className={`grid gap-4 ${
+          categories.length >= 4
+            ? 'grid-cols-1 justify-center sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+            : 'mx-auto max-w-fit grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+        }`}
+      >
         {categories.map((el: any) => (
           <Category key={el.name} {...el} />
         ))}
