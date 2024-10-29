@@ -129,17 +129,19 @@ export function AddToFavoritesButton({
               onChange={(e) => setValue(e.target.value)}
             />
 
-            {fetching.status === 'success' && fetching.data.length === 0 && (
-              <div className="flex items-center gap-4">
-                <p className="text-sm text-red-600">
-                  {t('modal.add_to_list.not_found')}
-                </p>
+            {fetching.status === 'success' &&
+              fetching.data.length === 0 &&
+              value?.length > 0 && (
+                <div className="flex items-center gap-4">
+                  <p className="text-sm text-red-600">
+                    {t('modal.add_to_list.not_found')}
+                  </p>
 
-                <Button variant="outline" size="sm" onClick={createNewList()}>
-                  {t('modal.add_to_list.create_new_list')}
-                </Button>
-              </div>
-            )}
+                  <Button variant="outline" size="sm" onClick={createNewList()}>
+                    {t('modal.add_to_list.create_new_list')}
+                  </Button>
+                </div>
+              )}
 
             <Separator />
 
