@@ -11,10 +11,11 @@ type Props = {
   name: string;
   image?: string;
   href?: string;
+  target?: string;
   subcategories: any[];
 };
 
-const Category = ({ image, name, href, subcategories }: Props) => {
+const Category = ({ image, name, href, target, subcategories }: Props) => {
   if (subcategories && subcategories.length > 0) {
     return (
       <div className="flex items-start gap-2">
@@ -45,9 +46,14 @@ const Category = ({ image, name, href, subcategories }: Props) => {
                     )}&query_type=${encodeURIComponent(el.queryType)}`
               }`}
               prefetch={false}
+              target={el.target}
             >
               {el.name}
-              {el.href ? <ExternalLink className="size-4" /> : null}
+              {el.target === '_blank' && el.href ? (
+                <ExternalLink className="size-4" />
+              ) : (
+                false
+              )}
             </Link>
           ))}
         </div>
@@ -56,7 +62,7 @@ const Category = ({ image, name, href, subcategories }: Props) => {
   }
 
   return (
-    <Link href={href || '/'} className="group hover:underline">
+    <Link href={href || '/'} className="group hover:underline" target={target}>
       <Card>
         <CardContent>
           {image && (
