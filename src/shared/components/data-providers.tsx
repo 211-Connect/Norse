@@ -4,6 +4,7 @@ import { useTranslation } from 'next-i18next';
 import { useAppConfig } from '../hooks/use-app-config';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Separator } from './ui/separator';
+import { cn } from '../lib/utils';
 
 export function DataProviders() {
   const appConfig = useAppConfig();
@@ -20,15 +21,27 @@ export function DataProviders() {
 
             <Separator className="mb-4" />
 
-            <div className="grid grid-cols-4">
+            <div
+              className={cn(
+                appConfig.providers.length >= 4 &&
+                  'grid-cols-1 justify-center sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+                appConfig.providers.length === 3 &&
+                  'mx-auto max-w-fit grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
+                appConfig.providers.length === 2 &&
+                  'mx-auto max-w-fit grid-cols-1 sm:grid-cols-2',
+                appConfig.providers.length === 1 &&
+                  'mx-auto max-w-fit grid-cols-1',
+                'grid gap-4',
+              )}
+            >
               {appConfig.providers.map((el: any) => (
                 <Link
                   key={el.name}
                   href={el.href}
                   target="_blank"
-                  className="group hover:underline"
+                  className="group self-stretch hover:underline"
                 >
-                  <Card className="transition-all group-hover:shadow-sm">
+                  <Card className="h-full transition-all group-hover:shadow-sm">
                     <CardHeader className="transition-all group-hover:translate-x-1">
                       <CardTitle>{el.name}</CardTitle>
                     </CardHeader>
