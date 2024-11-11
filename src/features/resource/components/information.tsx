@@ -122,6 +122,10 @@ export function Information({ resource }) {
                   ) : (
                     <p className="text-sm">{phone.number}</p>
                   )}
+
+                  {phone.description && (
+                    <p className="text-sm">{phone.description}</p>
+                  )}
                 </div>
               );
             })}
