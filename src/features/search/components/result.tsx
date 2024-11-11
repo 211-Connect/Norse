@@ -10,7 +10,7 @@ import {
 import { Link } from '@/shared/components/link';
 import {
   cn,
-  distanceBetweenCoordsInMiles,
+  distanceBetweenCoordsInKm,
   getGoogleMapsDestinationUrl,
 } from '@/shared/lib/utils';
 import { ResultType } from '@/shared/store/results';
@@ -44,7 +44,7 @@ export function Result({ data }: ResultProps) {
 
   const distance =
     data?.location?.coordinates && (coords?.length ?? 0) === 2
-      ? distanceBetweenCoordsInMiles(
+      ? distanceBetweenCoordsInKm(
           coords as [number, number],
           data.location.coordinates,
         )
@@ -67,7 +67,7 @@ export function Result({ data }: ResultProps) {
             {distance != null && distance > 0 && (
               <Badge variant="outline" className="flex gap-1">
                 <Navigation className="size-3" />
-                {distance.toLocaleString()} {t('search.miles')}
+                {distance.toFixed(1)} {t('search.miles')}
               </Badge>
             )}
           </div>
