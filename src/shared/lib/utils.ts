@@ -14,7 +14,7 @@ type Coords = [number, number]; // [longitude, latitude]
  * @see https://stackoverflow.com/questions/18883601/function-to-calculate-distance-between-two-coordinates
  * @returns
  */
-export function distanceBetweenCoordsInMiles(coords1: Coords, coords2: Coords) {
+export function distanceBetweenCoordsInKm(coords1: Coords, coords2: Coords) {
   const M = 0.621371; // Miles in a kilometer
 
   const R = 6371; // Radius of the earth in km
@@ -28,7 +28,8 @@ export function distanceBetweenCoordsInMiles(coords1: Coords, coords2: Coords) {
       Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   const d = R * c; // Distance in km
-  return Math.round(d * M);
+
+  return d;
 }
 
 function deg2rad(deg: number) {

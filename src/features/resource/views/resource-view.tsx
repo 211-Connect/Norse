@@ -7,6 +7,7 @@ import { OrganizationInformation } from '../components/organization-information'
 import { useRef } from 'react';
 import { cn } from '@/shared/lib/utils';
 import { fontSans } from '@/shared/styles/fonts';
+import { AdditionalInformation } from '../components/additional-information';
 
 export function ResourceView({ resource }) {
   const appConfig = useAppConfig();
@@ -41,6 +42,7 @@ export function ResourceView({ resource }) {
 
           <div className="flex flex-1 flex-col gap-2">
             <Information resource={resource} />
+            <AdditionalInformation resource={resource} />
             <OrganizationInformation resource={resource} />
           </div>
         </div>

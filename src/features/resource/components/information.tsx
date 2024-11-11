@@ -2,21 +2,27 @@ import { Card, CardContent } from '@/shared/components/ui/card';
 import { MapContainer } from './map-container';
 import { useTranslation } from 'next-i18next';
 import {
-  Check,
   Clock,
-  DollarSign,
   Edit,
-  Folder,
   Globe,
-  Languages,
   Mail,
   Mailbox,
-  Map,
   MapPin,
   Phone,
   Printer,
 } from 'lucide-react';
 import { Link } from '@/shared/components/link';
+import { cn } from '@/shared/lib/utils';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/shared/components/ui/tooltip';
+
+const isPhysicalAddressAvailable = (addresses: any[]) => {
+  return addresses.filter((addr) => addr.type === 'physical').length > 0;
+};
 
 export function Information({ resource }) {
   const { t } = useTranslation('page-resource');
@@ -25,13 +31,41 @@ export function Information({ resource }) {
     <Card className="overflow-hidden">
       <MapContainer resource={resource} />
 
-      <CardContent className="grid grid-cols-1 gap-2 pt-4 md:grid-cols-2">
+      <CardContent className="grid grid-cols-1 gap-4 pt-4 md:grid-cols-2">
+        {!isPhysicalAddressAvailable(resource.addresses) && (
+          <div>
+            <div className="flex items-center gap-1">
+              <MapPin className="size-4" />
+              <p className="font-bold">{t('location')}</p>
+            </div>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <div className="flex items-center gap-1">
+                    <p className="truncate text-sm">
+                      {t('search.address_unavailable', { ns: 'common' })}
+                    </p>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-64" side="bottom">
+                  <p>{t('search.confidential_address', { ns: 'common' })}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        )}
+
         {resource.addresses?.length > 0 &&
           resource.addresses
             .sort((a: any, b: any) => a.rank - b.rank)
             .map((address: any, key) => {
               return (
-                <div key={key}>
+                <div
+                  key={key}
+                  className={cn(
+                    resource.addresses.length === 1 && 'col-span-2',
+                  )}
+                >
                   <div className="flex items-center gap-1">
                     {address.type === 'physical' ? (
                       <MapPin className="size-4" />
@@ -47,12 +81,27 @@ export function Information({ resource }) {
               );
             })}
 
+        {resource?.hours && (
+          <div className="col-span-2">
+            <div className="flex items-center gap-1">
+              <Clock className="size-4" />
+              <p className="font-bold">{t('hours')}</p>
+            </div>
+            <p className="text-sm">{resource.hours}</p>
+          </div>
+        )}
+
         {resource.phoneNumbers?.length > 0 &&
           resource.phoneNumbers
             .sort((a: any, b: any) => a.rank - b.rank)
             .map((phone: any) => {
               return (
-                <div key={phone.number}>
+                <div
+                  key={phone.number}
+                  className={cn(
+                    resource.phoneNumbers.length === 1 && 'col-span-2',
+                  )}
+                >
                   <div className="flex items-center gap-1">
                     {phone.type === 'fax' ? (
                       <Printer className="size-4" />
@@ -77,6 +126,21 @@ export function Information({ resource }) {
               );
             })}
 
+        {resource.website && (
+          <div className={cn(resource.email == null && 'col-span-2')}>
+            <div className="flex items-center gap-1">
+              <Globe className="size-4" />
+              <p className="font-bold">{t('website')}</p>
+            </div>
+            <Link
+              className="break-words text-sm hover:underline"
+              href={resource.website}
+            >
+              {resource.website}
+            </Link>
+          </div>
+        )}
+
         {resource.email && (
           <div>
             <div className="flex items-center gap-1">
@@ -92,34 +156,9 @@ export function Information({ resource }) {
           </div>
         )}
 
-        {resource.website && (
-          <div>
-            <div className="flex items-center gap-1">
-              <Globe className="size-4" />
-              <p className="font-bold">{t('website')}</p>
-            </div>
-            <Link
-              className="break-words text-sm hover:underline"
-              href={resource.website}
-            >
-              {resource.website}
-            </Link>
-          </div>
-        )}
-
-        {resource?.hours && (
-          <div>
-            <div className="flex items-center gap-1">
-              <Clock className="size-4" />
-              <p className="font-bold">{t('hours')}</p>
-            </div>
-            <p className="text-sm">{resource.hours}</p>
-          </div>
-        )}
-
         {resource?.applicationProcess &&
           resource.applicationProcess.length > 0 && (
-            <div>
+            <div className="col-span-2">
               <div className="flex items-center gap-1">
                 <Edit className="size-4" />
                 <p className="font-bold">{t('application_process')}</p>
@@ -127,71 +166,6 @@ export function Information({ resource }) {
               <p className="text-sm">{resource.applicationProcess}</p>
             </div>
           )}
-
-        {resource?.requiredDocuments &&
-          resource.requiredDocuments.length > 0 && (
-            <div>
-              <div className="flex items-center gap-1">
-                <Folder className="size-4" />
-                <p className="font-bold">{t('required_documents')}</p>
-              </div>
-              <p className="text-sm">{resource.requiredDocuments}</p>
-            </div>
-          )}
-
-        {resource?.eligibilities && resource.eligibilities.length > 0 && (
-          <div>
-            <div className="flex items-center gap-1">
-              <Check className="size-4" />
-
-              <p className="font-bold">{t('eligibility')}</p>
-            </div>
-
-            <p className="text-sm">{resource.eligibilities}</p>
-          </div>
-        )}
-
-        {resource?.fees && (
-          <div>
-            <div className="flex items-center gap-1">
-              <DollarSign className="size-4" />
-
-              <p className="font-bold">{t('fee')}</p>
-            </div>
-            <p className="text-sm">{resource.fees}</p>
-          </div>
-        )}
-
-        {resource?.languages instanceof Array &&
-          resource?.languages?.length > 0 && (
-            <div>
-              <div className="flex items-center gap-1">
-                <Languages className="size-4" />
-                <p className="font-bold">{t('languages')}</p>
-              </div>
-              {resource.languages.map((el: string) => (
-                <p key={el} className="text-sm">
-                  {el}
-                </p>
-              ))}
-            </div>
-          )}
-
-        {(resource?.serviceAreaDescription || resource?.serviceAreaName) && (
-          <div>
-            <div className="flex items-center gap-1">
-              <Map className="size-4" />
-              <p className="font-bold">{t('service_area')}</p>
-            </div>
-            {resource?.serviceAreaName && (
-              <p className="text-sm">{resource.serviceAreaName}</p>
-            )}
-
-            {resource?.serviceAreaDescription && (
-              <p className="text-sm">{resource.serviceAreaDescription}</p>
-            )}
-          </div>
-        )}
       </CardContent>
     </Card>
   );
