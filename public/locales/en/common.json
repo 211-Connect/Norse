@@ -37,7 +37,9 @@
     "geocoding_error": "Geocoding error",
     "geocoding_unsupported": "Geolocation is not supported by your browser",
     "geocoding_unable_to_retrieve": "Unable to retrieve your location. Please check your browser's location settings and try again.",
-    "categories": "Categories"
+    "categories": "Categories",
+    "service": "Service",
+    "suggestion": "Suggestion"
   },
   "call_to_action": {
     "call": "Call",
