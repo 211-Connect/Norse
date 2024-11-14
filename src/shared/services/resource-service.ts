@@ -19,6 +19,8 @@ export class ResourceService {
       },
     });
 
+    console.log(data);
+
     return {
       id: data._id,
       serviceName: data?.translation?.serviceName ?? null,
@@ -34,7 +36,8 @@ export class ResourceService {
       address:
         data?.addresses?.find((a: any) => a.rank === 1)?.address_1 ?? null,
       addresses: data?.addresses ?? null,
-      phoneNumbers: data?.phoneNumbers ?? null,
+      phoneNumbers:
+        data?.translation?.phoneNumbers ?? data?.phoneNumbers ?? null,
       email: data?.email ?? null,
       hours: data?.translation?.hours ?? null,
       languages: data?.translation?.languages ?? null,
