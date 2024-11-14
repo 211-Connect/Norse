@@ -520,7 +520,7 @@ export function Autocomplete(props: AutocompleteProps) {
                         id={`${uniqueId}-option-${option.index}`}
                         role="option"
                         className={cn(
-                          'flex justify-between gap-2 px-3 py-1',
+                          'flex items-center justify-between gap-2 px-3 py-1',
                           currentIndex === option.index && 'bg-primary/5',
                         )}
                         aria-selected={currentIndex === option.index}
