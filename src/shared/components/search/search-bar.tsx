@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { useTranslation } from 'next-i18next';
 import { useTaxonomies } from '../../hooks/api/use-taxonomies';
@@ -9,7 +9,6 @@ import {
 } from '../../store/search';
 import { useDebounce } from '../../hooks/use-debounce';
 import { useSuggestions } from '../../hooks/use-suggestions';
-import { useFlag } from '@/shared/hooks/use-flag';
 import { useCategories } from '@/shared/hooks/use-categories';
 import { Autocomplete } from '../ui/autocomplete';
 
@@ -25,7 +24,6 @@ export function SearchBar() {
   );
   const suggestions = useSuggestions();
   const categories = useCategories();
-  const showTaxonomyBadge = useFlag('showSuggestionListTaxonomyBadge');
 
   const reducedCategories: {
     name: string;
@@ -47,7 +45,7 @@ export function SearchBar() {
       ...suggestions
         .map((option) => ({
           value: option.name,
-          group: t('search.suggestions'),
+          label: t('search.suggestion'),
         }))
         .filter((option) =>
           shouldSearch
@@ -57,20 +55,11 @@ export function SearchBar() {
                 ?.includes(prevSearchTerm?.toLowerCase()),
         ),
       ...taxonomies.map((option) => ({
-        group: t('search.taxonomies'),
         value: option.name,
-        label: showTaxonomyBadge ? option.code : null,
+        label: t('search.service'),
       })),
     ];
-  }, [
-    taxonomies,
-    suggestions,
-    searchTerm,
-    t,
-    showTaxonomyBadge,
-    shouldSearch,
-    prevSearchTerm,
-  ]);
+  }, [taxonomies, suggestions, searchTerm, t, shouldSearch, prevSearchTerm]);
 
   // Find the taxonomy code to be used for a query
   // Fallback to the original string value if a code isn't found
