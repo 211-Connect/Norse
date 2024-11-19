@@ -27,6 +27,14 @@ export function HeroSection() {
         ),
       },
       {
+        selector: '.location-box',
+        content: (
+          <div className="flex flex-col gap-2">
+            <p>{t('tour.step_4.paragraph_1')}</p>
+          </div>
+        ),
+      },
+      {
         selector: '.categories',
         content: (
           <div className="flex flex-col gap-2">
