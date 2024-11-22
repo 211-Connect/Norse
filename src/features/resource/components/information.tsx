@@ -28,7 +28,7 @@ export function Information({ resource }) {
   const { t } = useTranslation('page-resource');
 
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden print:border-none print:shadow-none">
       <MapContainer resource={resource} />
 
       <CardContent className="grid grid-cols-1 gap-4 pt-4 md:grid-cols-2">

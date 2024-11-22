@@ -55,7 +55,7 @@ export function Favorite({
     : `${address.address_1}, ${address.city}, ${address.stateProvince} ${address.postalCode}`;
 
   return (
-    <Card>
+    <Card className="print:border-none print:shadow-none">
       <CardHeader>
         <CardTitle className="flex flex-row justify-between gap-2">
           <Link
@@ -130,7 +130,7 @@ export function Favorite({
           )}
         </div>
       </CardContent>
-      <CardFooter className="flex flex-col gap-2">
+      <CardFooter className="flex flex-col gap-2 print:hidden">
         <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center">
           <ReferralButton
             className="flex-1 gap-1"

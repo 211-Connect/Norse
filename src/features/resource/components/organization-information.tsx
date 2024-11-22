@@ -12,7 +12,7 @@ export function OrganizationInformation({ resource }) {
   const { t } = useTranslation('page-resource');
 
   return (
-    <Card>
+    <Card className="print:border-none print:shadow-none">
       <CardHeader>
         <CardTitle>{t('agency_info')}</CardTitle>
         <CardDescription>{resource.organizationName}</CardDescription>

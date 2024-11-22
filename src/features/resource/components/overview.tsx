@@ -28,7 +28,7 @@ export function Overview({ resource }) {
 
   return (
     <div className="flex-1">
-      <Card>
+      <Card className="print:border-none print:shadow-none">
         <CardHeader>
           <CardTitle>{resource.name}</CardTitle>
           {showServiceName && (
