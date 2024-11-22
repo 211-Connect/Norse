@@ -26,7 +26,7 @@ export function Footer(props: Props) {
             {t('footer.copyright')}
           </p>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 print:hidden">
             <Link href="/legal/privacy-policy">
               {t('footer.privacy_policy')}
             </Link>

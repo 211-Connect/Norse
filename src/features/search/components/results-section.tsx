@@ -19,7 +19,7 @@ export function ResultsSection() {
       id="search-container"
       className="flex w-full flex-col overflow-y-auto lg:max-w-[550px]"
     >
-      <div className="flex flex-col gap-2 bg-white p-2">
+      <div className="flex flex-col gap-2 bg-white p-2 print:hidden">
         <MainSearchLayout />
 
         <TaxonomyContainer />

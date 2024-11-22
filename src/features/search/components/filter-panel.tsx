@@ -131,7 +131,7 @@ export function FilterPanel() {
 
   return (
     <>
-      <div className="hidden w-full max-w-72 bg-white xl:block">
+      <div className="hidden w-full max-w-72 bg-white xl:block print:hidden">
         <Filters filters={filters} filterKeys={filterKeys} />
       </div>
       <Sheet onOpenChange={setFiltersOpen} open={filtersOpen}>
