@@ -89,7 +89,6 @@ export function Autocomplete(props: AutocompleteProps) {
   const [uniqueId, setUnqiueId] = useState('');
   const [open, setOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(-1);
-  const [isHovering, setIsHovering] = useState(false);
   const [value, setValue] = useUncontrolled<string>({
     value: inputValue,
     defaultValue,
@@ -209,6 +208,7 @@ export function Autocomplete(props: AutocompleteProps) {
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
       const currentOption = rest.options[currentIndex];
+      let nextIndex;
 
       if (e.key === 'ArrowDown') {
         if (open) {
@@ -225,6 +225,7 @@ export function Autocomplete(props: AutocompleteProps) {
           setInputSelectionPoint(selectionValue);
           setCurrentIndex(nextState);
           setValue(selectionValue);
+          nextIndex = nextState;
         } else {
           openOptions();
         }
@@ -246,6 +247,7 @@ export function Autocomplete(props: AutocompleteProps) {
           setInputSelectionPoint(selectionValue);
           setCurrentIndex(nextState);
           setValue(selectionValue);
+          nextIndex = nextState;
         } else {
           const nextOption = rest.options[currentIndex];
           const selectionValue = nextOption?.value ?? lastManualInput ?? '';
@@ -255,6 +257,7 @@ export function Autocomplete(props: AutocompleteProps) {
       } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
         setCurrentIndex(-1);
         setValue(lastManualInput);
+        nextIndex = -1;
         if (currentIndex >= 0) {
           setInputSelectionPoint(lastManualInput);
         }
@@ -266,6 +269,7 @@ export function Autocomplete(props: AutocompleteProps) {
             setLastManualInput(currentOption.value);
           }
           setCurrentIndex(-1);
+          nextIndex = -1;
         }
       } else if (e.key === 'Tab') {
         if (open) {
@@ -282,6 +286,7 @@ export function Autocomplete(props: AutocompleteProps) {
             }
           }
           setCurrentIndex(-1);
+          nextIndex = -1;
         }
       } else if (e.key === 'Enter') {
         if (open) {
@@ -307,6 +312,7 @@ export function Autocomplete(props: AutocompleteProps) {
             }
           }
           setCurrentIndex(-1);
+          nextIndex = -1;
         }
       } else if (e.key === 'Home') {
         if (open) {
@@ -325,6 +331,7 @@ export function Autocomplete(props: AutocompleteProps) {
           setInputSelectionPoint(selectionValue);
           setCurrentIndex(nextState);
           setValue(selectionValue);
+          nextIndex = nextState;
         }
       } else if (e.key === 'End') {
         if (open) {
@@ -343,7 +350,22 @@ export function Autocomplete(props: AutocompleteProps) {
           setInputSelectionPoint(selectionValue);
           setCurrentIndex(nextState);
           setValue(selectionValue);
+          nextIndex = nextState;
         }
+      }
+
+      if (!popperElement || nextIndex == null) return;
+
+      const element = document.querySelector(
+        `#${uniqueId}-option-${nextIndex}`,
+      );
+      if (nextIndex === -1) {
+        popperElement.scrollTop = 0;
+      } else if (element) {
+        element.scrollIntoView({
+          block: 'nearest',
+          inline: 'start',
+        });
       }
     },
     [
@@ -356,6 +378,8 @@ export function Autocomplete(props: AutocompleteProps) {
       setInputSelectionPoint,
       autoSelectIndex,
       lastManualInput,
+      popperElement,
+      uniqueId,
     ],
   );
 
@@ -381,7 +405,6 @@ export function Autocomplete(props: AutocompleteProps) {
         setCurrentIndex(index);
         setValue(selectionValue);
         setInputSelectionPoint(selectionValue);
-        setIsHovering(true);
       };
     },
     [rest.options, setInputSelectionPoint, setValue, isMouseMoving],
@@ -392,7 +415,6 @@ export function Autocomplete(props: AutocompleteProps) {
       setCurrentIndex(-1);
       setValue(lastManualInput);
       setInputSelectionPoint(lastManualInput);
-      setIsHovering(false);
     };
   }, [setInputSelectionPoint, setValue, lastManualInput]);
 
@@ -404,23 +426,6 @@ export function Autocomplete(props: AutocompleteProps) {
     },
     [closeOptions],
   );
-
-  // Ensure option stays in view
-  useEffect(() => {
-    if (!popperElement || isHovering) return;
-
-    const element = document.querySelector(
-      `#${uniqueId}-option-${currentIndex}`,
-    );
-    if (currentIndex === -1) {
-      popperElement.scrollTop = 0;
-    } else if (element) {
-      element.scrollIntoView({
-        block: 'nearest',
-        inline: 'start',
-      });
-    }
-  }, [currentIndex, uniqueId, popperElement, isHovering]);
 
   // Set unique ID for component
   useEffect(() => {
