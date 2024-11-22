@@ -29,7 +29,7 @@ export function FavoritesSection() {
     <div className="flex w-full flex-col lg:max-w-[550px]">
       <Card className="rounded-none border-none shadow-none">
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between print:hidden">
             <Badge variant="outline">
               {t(`list.${favoriteList?.privacy?.toLowerCase()}`, {
                 ns: 'common',
@@ -57,7 +57,7 @@ export function FavoritesSection() {
 
       <div
         className={cn(
-          'flex items-center p-2 pb-0',
+          'flex items-center p-2 pb-0 print:hidden',
           !favoriteList.viewingAsOwner ? 'justify-end' : 'justify-between',
         )}
       >
