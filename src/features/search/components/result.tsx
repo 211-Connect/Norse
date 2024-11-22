@@ -91,8 +91,12 @@ export function Result({ data }: ResultProps) {
           )}
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          <div className="whitespace-break-spaces">
-            {parseHtml(data.description)}
+          <div className="whitespace-break-spaces print:hidden">
+            {parseHtml(data?.summary ?? data.description)}
+          </div>
+
+          <div className="hidden whitespace-break-spaces print:block">
+            {parseHtml(data?.description ?? data.summary)}
           </div>
 
           <div className="flex flex-col items-start justify-start gap-2">
