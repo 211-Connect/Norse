@@ -19,7 +19,7 @@ export function ResultsSection() {
       id="search-container"
       className="flex w-full flex-col overflow-y-auto lg:max-w-[550px]"
     >
-      <div className="flex flex-col gap-2 bg-white p-2">
+      <div className="flex flex-col gap-2 bg-white p-2 print:hidden">
         <MainSearchLayout />
 
         <TaxonomyContainer />
@@ -30,7 +30,7 @@ export function ResultsSection() {
           filterKeys.length > 0
             ? 'justify-between xl:justify-end'
             : 'justify-end',
-          'flex items-center bg-primary p-1 pl-2 pr-2 text-primary-foreground',
+          'flex items-center bg-primary p-1 pl-2 pr-2 text-primary-foreground print:hidden',
         )}
       >
         <Button

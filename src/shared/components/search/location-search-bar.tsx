@@ -140,7 +140,7 @@ export function LocationSearchBar({ className }: LocationSearchBarProps) {
   );
 
   return (
-    <div>
+    <div className="location-box">
       <div
         className={cn(
           'flex w-full flex-1 items-center justify-stretch border-b',

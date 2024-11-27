@@ -124,10 +124,8 @@ export class SearchService {
             priority: hit?._source?.priority,
             serviceName: hit?._source?.service?.name ?? null,
             name: hit?._source?.name ?? null,
-            description:
-              hit?._source?.service?.summary ??
-              hit?._source?.service?.description ??
-              null,
+            summary: hit?._source?.service?.summary ?? null,
+            description: hit?._source?.service?.description ?? null,
             phone: hit?._source?.phone ?? null,
             website: hit?._source?.url ?? null,
             address: mainAddress,

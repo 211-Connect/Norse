@@ -4,6 +4,7 @@ export type ResultType = {
   _id: string;
   id: string;
   address: string;
+  summary: string;
   description: string;
   location: {
     type: string;

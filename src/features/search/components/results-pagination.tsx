@@ -15,7 +15,7 @@ export function ResultsPagination() {
   const totalPages = Math.ceil(totalResults / limit);
 
   return (
-    <>
+    <div className="print:hidden">
       <CustomPagination
         total={totalPages}
         totalResults={totalResults}
@@ -23,6 +23,6 @@ export function ResultsPagination() {
         siblings={1}
         boundaries={1}
       />
-    </>
+    </div>
   );
 }

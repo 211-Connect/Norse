@@ -4,7 +4,7 @@ import { BackToResultsButton } from './back-to-results-button';
 
 export function Navigation({ componentToPrintRef, resource }) {
   return (
-    <div className="flex justify-between">
+    <div className="flex justify-between print:hidden">
       <BackToResultsButton />
 
       <div className="flex gap-2">
