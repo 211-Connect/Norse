@@ -2,7 +2,7 @@ import { API_URL } from '../lib/constants';
 import { Axios } from '../lib/axios';
 
 export class TaxonomyService {
-  static endpoint = 'taxonomy';
+  static endpoint = 'suggestion';
 
   static taxonomyCodeRegexp = new RegExp(
     /^[a-zA-Z]{1,2}(-\d{1,4}(\.\d{1,4}){0,3})?$/i,
