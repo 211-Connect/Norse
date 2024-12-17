@@ -66,11 +66,15 @@ export function AdditionalInformation({ resource }) {
                 <p className="font-bold">{t('service_area')}</p>
               </div>
               {resource?.serviceAreaName && (
-                <p className="text-sm">{resource.serviceAreaName}</p>
+                <p className="whitespace-break-spaces text-sm">
+                  {resource.serviceAreaName}
+                </p>
               )}
 
               {resource?.serviceAreaDescription && (
-                <p className="text-sm">{resource.serviceAreaDescription}</p>
+                <p className="whitespace-break-spaces text-sm">
+                  {resource.serviceAreaDescription}
+                </p>
               )}
             </div>
           )}
