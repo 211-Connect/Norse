@@ -241,13 +241,13 @@ module.exports = function createFromStrapi(dir) {
           return {
             name: cat['name'],
             href: cat['href'],
-            target: cat['target'] || '_blank',
+            target: cat['target'] || '_self',
             image:
               matchingCategory?.['image']?.['data']?.['attributes']?.['url'],
             subcategories: cat['subcategories'].map((sub) => ({
               name: sub['name'],
               href: sub['href'],
-              target: sub['target'] || '_blank',
+              target: sub['target'] || '_self',
               query: sub['query'],
               queryType: sub['queryType'],
             })),
@@ -265,12 +265,12 @@ module.exports = function createFromStrapi(dir) {
         {
           name: category['name'],
           href: category['href'],
-          target: category['target'] || '_blank',
+          target: category['target'] || '_self',
           image: category['image']?.['data']?.['attributes']?.['url'],
           subcategories: category['subcategories'].map((sub) => ({
             name: sub['name'],
             href: sub['href'],
-            target: sub['target'] || '_blank',
+            target: sub['target'] || '_self',
             query: sub['query'],
             queryType: sub['queryType'],
           })),
