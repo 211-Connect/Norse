@@ -1,5 +1,12 @@
 import { API_URL } from '../lib/constants';
 import { Axios } from '../lib/axios';
+import { AxiosError } from 'axios';
+
+interface TaxonomyTerm {
+  id: string;
+  code: string;
+  name: string;
+}
 
 export class TaxonomyService {
   static endpoint = 'taxonomy';
@@ -33,24 +40,51 @@ export class TaxonomyService {
     );
   }
 
-  static async getTaxonomyTerms(terms: string[], options: { locale: string }) {
-    const res = await Axios.get(`${API_URL}/${this.endpoint}/term`, {
-      params: {
-        locale: options.locale,
-        terms: terms,
-      },
-      headers: {
-        'accept-language': options.locale,
-        'x-api-version': '1',
-      },
-    });
+  static async getTaxonomyTerms(
+    terms: string[],
+    options: { locale: string },
+  ): Promise<TaxonomyTerm[]> {
+    const url = `${API_URL}/${this.endpoint}/term`;
+    const headers = {
+      'accept-language': options.locale,
+      'x-api-version': '1',
+    };
 
-    return (
-      res.data?.hits?.hits?.map((hit) => ({
-        id: hit?._id,
-        code: hit?._source?.code,
-        name: hit?._source?.name,
-      })) ?? []
-    );
+    try {
+      const response = await Axios.get(url, {
+        params: {
+          locale: options.locale,
+          terms: terms,
+        },
+        headers,
+      });
+
+      if (!response.data || !response.data.hits?.hits) {
+        console.warn(
+          'API response missing expected data structure:',
+          response.data,
+        );
+        return [];
+      }
+
+      return response.data.hits.hits.map((hit: any) => ({
+        id: hit._id,
+        code: hit._source.code,
+        name: hit._source.name,
+      }));
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error(
+          `Error fetching taxonomy terms from ${url}`,
+          error.message,
+        );
+      } else {
+        console.error(
+          `An unexpected error occurred while fetching taxonomy terms from ${url}`,
+          error,
+        );
+      }
+      return []; // Return an empty array on error
+    }
   }
 }
