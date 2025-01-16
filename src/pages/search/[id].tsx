@@ -39,6 +39,12 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 
   cacheControl(ctx);
 
+  if (notFound) {
+    return {
+      notFound: true,
+    };
+  }
+
   return {
     props: {
       resource: data,
@@ -50,7 +56,6 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
         'dynamic',
       ])),
     },
-    notFound,
   };
 }
 

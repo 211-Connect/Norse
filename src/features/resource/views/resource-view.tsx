@@ -13,6 +13,15 @@ export function ResourceView({ resource }) {
   const appConfig = useAppConfig();
   const componentToPrintRef = useRef();
 
+  if (!resource) {
+    // Handle the case where resource is null or undefined.
+    return (
+      <div>
+        <h1>Resource not found</h1>
+      </div>
+    );
+  }
+
   return (
     <>
       <Head>

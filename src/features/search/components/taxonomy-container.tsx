@@ -42,7 +42,7 @@ export function TaxonomyContainer() {
       const codes = new Set<string>();
       if (typeof query === 'string') {
         query.split(',').forEach((code) => {
-          codes.add(code);
+          codes.add(code.trim());
         });
         return Array.from(codes);
       }
