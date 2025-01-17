@@ -9,17 +9,19 @@ export class ResourceService {
     id: string,
     options: { locale: string },
   ): Promise<any> {
-    const { data } = await Axios.get(`${API_URL}/${this.endpoint}/${id}`, {
-      headers: {
-        'accept-language': options.locale,
-        'x-api-version': '1',
-      },
-      params: {
-        locale: options.locale,
-      },
-    });
+    const url = `${API_URL}/${this.endpoint}/${id}`;
+    const headers = {
+      'accept-language': options.locale,
+      'x-api-version': '1',
+    };
+    const params = {
+      locale: options.locale,
+    };
 
-    console.log(data);
+    const { data } = await Axios.get(url, {
+      headers: headers,
+      params: params,
+    });
 
     return {
       id: data._id,

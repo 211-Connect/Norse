@@ -14,6 +14,15 @@ type TaxonomyComplexQuery =
     }
   | string;
 
+interface TaxonomyBadgeData {
+  code: string | null | undefined;
+  name: string | null | undefined;
+}
+
+interface Props {
+  data: TaxonomyBadgeData[] | null | undefined;
+}
+
 export function TaxonomyContainer() {
   const router = useRouter();
   const [taxonomies, setTaxonomies] = useState<string[]>([]);
@@ -42,7 +51,7 @@ export function TaxonomyContainer() {
       const codes = new Set<string>();
       if (typeof query === 'string') {
         query.split(',').forEach((code) => {
-          codes.add(code);
+          codes.add(code.trim());
         });
         return Array.from(codes);
       }
@@ -100,17 +109,34 @@ export function TaxonomyContainer() {
     }
   }, [router.query, extractTaxonomyCodes]);
 
+  // Deduplicate data based on code
+  const uniqueTaxonomies = data?.reduce<TaxonomyBadgeData[]>((acc, tax) => {
+    if (!tax || !tax.code || !tax.name) {
+      return acc; // Skip invalid entries
+    }
+    if (!acc.find((t) => t.code === tax.code)) {
+      acc.push(tax);
+    }
+    return acc;
+  }, []);
+
   return (
     <div className="flex flex-wrap gap-1">
-      {data?.map((tax) => (
-        <Link
-          key={tax.code}
-          className={cn(badgeVariants(), 'hover:underline')}
-          href={`/search?query=${tax.code}&query_label=${tax.name}&query_type=taxonomy`}
-        >
-          {tax.name}
-        </Link>
-      ))}
+      {uniqueTaxonomies?.map((tax) => {
+        if (!tax || !tax.name || !tax.code) {
+          return null;
+        }
+
+        return (
+          <Link
+            key={tax.code}
+            className={cn(badgeVariants(), 'hover:underline')}
+            href={`/search?query=${tax.code}&query_label=${tax.name}&query_type=taxonomy`}
+          >
+            {tax.name}
+          </Link>
+        );
+      })}
     </div>
   );
 }
