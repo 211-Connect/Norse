@@ -193,7 +193,7 @@ export function Header(props: Props) {
           <Link
             href="/"
             aria-label={t('header.home') as string}
-            className="h-full pb-1 pt-1 md:pb-2 md:pt-2"
+            className="max-h-full pb-1 pt-1 md:pb-2 md:pt-2"
           >
             <img
               src={appConfig?.brand?.logoUrl}
