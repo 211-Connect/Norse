@@ -198,7 +198,7 @@ export function Header(props: Props) {
             <img
               src={appConfig?.brand?.logoUrl}
               alt={t('header.home') as string}
-              className="h-full w-auto"
+              className="max-h-full w-auto"
             />
           </Link>
         </div>
