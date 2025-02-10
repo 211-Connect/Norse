@@ -189,7 +189,7 @@ export function Header(props: Props) {
           'flex h-12 items-center justify-between md:h-20',
         )}
       >
-        <div className="flex h-full w-full max-w-96 pb-1 pt-1 md:pb-2 md:pt-2">
+        <div className="flex max-h-full w-full max-w-96 pb-1 pt-1 md:pb-2 md:pt-2">
           <Link
             href="/"
             aria-label={t('header.home') as string}
