@@ -29,34 +29,12 @@ export function LocationSearchBar({ className }: LocationSearchBarProps) {
   const coords = useAtomValue(searchCoordinatesAtom);
   const prevSearchLocation = useAtomValue(prevSearchLocationAtom);
   const debouncedSearchLocation = useDebounce(searchLocation, 200);
-  const { data: locations } = useLocations(
-    shouldSearch ? debouncedSearchLocation : prevSearchLocation,
-  );
+  const {
+    data: locations,
+    options,
+    additionalLocations,
+  } = useLocations(shouldSearch ? debouncedSearchLocation : prevSearchLocation);
   const validationError = useAtomValue(searchLocationValidationErrorAtom);
-
-  const additionalLocations = useMemo(
-    () => [
-      {
-        type: 'coordinates',
-        address: t('search.everywhere', 'Everywhere'),
-        coordinates: [],
-      },
-    ],
-    [t],
-  );
-
-  const options = useMemo(() => {
-    return [
-      ...additionalLocations.map((loc) => ({
-        value: loc.address,
-        Icon: NavigationIcon,
-      })),
-      ...locations.map((loc) => ({
-        value: loc.address,
-        Icon: NavigationIcon,
-      })),
-    ];
-  }, [locations, additionalLocations]);
 
   const findCoords = useCallback(
     (value: string) => {
@@ -77,7 +55,7 @@ export function LocationSearchBar({ className }: LocationSearchBarProps) {
         coordinates: null,
       };
     },
-    [additionalLocations, locations],
+    [locations, additionalLocations],
   );
 
   const setSearchLocation = useCallback(

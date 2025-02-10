@@ -2,9 +2,13 @@ import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import { MapService } from '@/shared/services/map-service';
 import { useMapAdapter } from '../use-map-adapter';
+import { useMemo } from 'react';
+import { useTranslation } from 'next-i18next';
+import { NavigationIcon } from 'lucide-react';
 
 export function useLocations(searchTerm: string) {
   const adapter = useMapAdapter();
+  const { t } = useTranslation();
   const router = useRouter();
   const { data } = useQuery({
     initialData: [],
@@ -19,5 +23,29 @@ export function useLocations(searchTerm: string) {
     },
   });
 
-  return { data };
+  const additionalLocations = useMemo(
+    () => [
+      {
+        type: 'coordinates',
+        address: t('search.everywhere', 'Everywhere'),
+        coordinates: [],
+      },
+    ],
+    [t],
+  );
+
+  const options = useMemo(() => {
+    return [
+      ...additionalLocations.map((loc) => ({
+        value: loc.address,
+        Icon: NavigationIcon,
+      })),
+      ...data.map((loc) => ({
+        value: loc.address,
+        Icon: NavigationIcon,
+      })),
+    ];
+  }, [data, additionalLocations]);
+
+  return { data, options, additionalLocations };
 }

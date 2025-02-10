@@ -13,8 +13,9 @@ import { useCategories } from '@/shared/hooks/use-categories';
 import { useSuggestions } from '@/shared/hooks/use-suggestions';
 import { useTaxonomies } from '@/shared/hooks/api/use-taxonomies';
 import { useDebounce } from '@/shared/hooks/use-debounce';
-import { searchAtom } from '@/shared/store/search';
+import { searchAtom, searchLocationAtom } from '@/shared/store/search';
 import { useRouter } from 'next/router';
+import { useLocations } from '@/shared/hooks/api/use-locations';
 
 export function MainSearchLayout() {
   const device = useAtomValue(deviceAtom);
@@ -30,6 +31,9 @@ export function MainSearchLayout() {
   const suggestions = useSuggestions();
   const categories = useCategories();
   const requireUserLocation = useFlag('requireUserLocation');
+  const searchLocation = useAtomValue(searchLocationAtom);
+  const debouncedSearchLocation = useDebounce(searchLocation, 200);
+  const { data: locations } = useLocations(debouncedSearchLocation);
 
   const reducedCategories: {
     name: string;
@@ -86,8 +90,18 @@ export function MainSearchLayout() {
     const query = findCode(search.searchTerm);
     const queryType = getQueryType(search.searchTerm, query);
 
+    const location = locations[0];
+    const locationParams =
+      location?.address && location?.coordinates
+        ? {
+            searchLocation: location.address,
+            searchCoordinates: location.coordinates,
+          }
+        : {};
+
     const urlParams = SearchService.createUrlParamsForSearch({
       ...search,
+      ...locationParams,
       query,
       queryType,
     });
@@ -99,6 +113,7 @@ export function MainSearchLayout() {
 
     setSearch((prev) => ({
       ...prev,
+      ...locationParams,
       userCoordinates: search.searchCoordinates,
     }));
   };
