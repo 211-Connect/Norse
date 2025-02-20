@@ -43,9 +43,9 @@ export function SmsButton({ title, body, shortUrl }) {
       const isIOS = /iPhone|iPad|iPod|Macintosh/i.test(userAgent);
       let smsLink = '';
       if (isIOS) {
-        smsLink = `sms:&body=\n${encodeURIComponent(body + '\n\n' + shortUrl)}`;
+        smsLink = `sms:&body=\n${encodeURIComponent(`${title}\n\n${body}\n\n${shortUrl}`)}`;
       } else {
-        smsLink = `sms:?body=\n${encodeURIComponent(body + '\n\n' + shortUrl)}`;
+        smsLink = `sms:?body=\n${encodeURIComponent(`${title}\n\n${body}\n\n${shortUrl}`)}`;
       }
       window.open(smsLink, '_blank');
     } else if (!session.data) {
