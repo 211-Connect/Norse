@@ -3,8 +3,11 @@ import * as process from 'process';
 import client from 'twilio';
 
 const twilioClient = client(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
+  process.env.TWILIO_API_KEY_SID,
+  process.env.TWILIO_API_KEY,
+  {
+    accountSid: process.env.TWILIO_ACCOUNT_SID,
+  },
 );
 
 const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER;
