@@ -7,7 +7,6 @@ import {
   Mail,
   Printer,
   Share2,
-  Smartphone,
 } from 'lucide-react';
 import { useReactToPrint } from 'react-to-print';
 import {
@@ -21,9 +20,7 @@ import { useEffect, useState } from 'react';
 import { Facebook } from './icons/facebook';
 import { X } from './icons/x';
 import { ShortUrlService } from '../services/short-url-service';
-import { Input } from './ui/input';
 import { useClipboard } from '../hooks/use-clipboard';
-import { useAppConfig } from '../hooks/use-app-config';
 import { SmsButton } from './sms-button';
 
 export function ShareButton({ componentToPrintRef, title, body }) {

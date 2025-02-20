@@ -71,7 +71,7 @@ export function SmsButton({ title, body, shortUrl }) {
 
     const promise = axios.post('/api/share', {
       phoneNumber: phoneNumber,
-      message: `\n${body}`,
+      message: `${title}\n\n${body}\n\n${shortUrl}`,
     });
 
     toast.promise(promise, {
