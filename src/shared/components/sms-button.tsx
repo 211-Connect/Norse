@@ -77,6 +77,7 @@ export function SmsButton({ title, body, shortUrl }) {
     toast.promise(promise, {
       loading: t('modal.share.sms_sending_body'),
       success: (_res) => {
+        setOpen(false);
         return t('modal.share.sms_send_success_body');
       },
       error: t('modal.share.sms_send_failed_body'),
