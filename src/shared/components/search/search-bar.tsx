@@ -96,11 +96,29 @@ export function SearchBar() {
     [reducedCategories, suggestions, taxonomies],
   );
 
-  const getQueryType = useCallback((value, query) => {
-    if (query.trim().length === 0) return '';
-    if (query === value) return 'text';
-    return 'taxonomy';
-  }, []);
+  const getQueryType = useCallback(
+    (value, query) => {
+      const taxonomy = taxonomies.find(
+        (tax) => tax.name.toLowerCase() === value.toLowerCase(),
+      );
+      if (taxonomy) return 'taxonomy';
+
+      const suggestion = suggestions.find(
+        (sugg) => sugg.name.toLowerCase() === value.toLowerCase(),
+      );
+      if (suggestion) return 'taxonomy';
+
+      const category = reducedCategories.find(
+        (cat) => cat.name.toLowerCase() === value.toLowerCase(),
+      );
+      if (category) return 'taxonomy';
+
+      if (query.trim().length === 0) return '';
+      if (query === value) return 'text';
+      return 'taxonomy';
+    },
+    [reducedCategories, suggestions, taxonomies],
+  );
 
   const setSearchTerm = useCallback(
     (value: string) => {
