@@ -142,7 +142,6 @@ export class FavoriteService {
 
       return data;
     } catch (err) {
-      console.log('ERRR');
       console.log(err);
       return null;
     }
