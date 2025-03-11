@@ -13,9 +13,16 @@ type MapProps = {
     popup?: ReactElement;
   }[];
   usersLocation: any[];
+  disableUserLocation?: boolean;
 };
 
-export function Map({ center, zoom, markers, usersLocation }: MapProps) {
+export function Map({
+  center,
+  zoom,
+  markers,
+  usersLocation,
+  disableUserLocation,
+}: MapProps) {
   const mapContainer = useRef();
   const mapboxMap = useRef(null);
   const _markers = useRef(null);
@@ -90,7 +97,9 @@ export function Map({ center, zoom, markers, usersLocation }: MapProps) {
 
       _markers.current.push(marker);
 
-      bounds.extend(usersLocation as LngLatLike);
+      if (!disableUserLocation) {
+        bounds.extend(usersLocation as LngLatLike);
+      }
     }
 
     if (!bounds.isEmpty()) {
@@ -109,7 +118,7 @@ export function Map({ center, zoom, markers, usersLocation }: MapProps) {
         });
       }
     }
-  }, [markers, usersLocation, zoom]);
+  }, [markers, usersLocation, disableUserLocation, zoom]);
 
   return <div ref={mapContainer} className="h-full w-full"></div>;
 }

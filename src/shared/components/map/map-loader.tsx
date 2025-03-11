@@ -14,6 +14,7 @@ type MapLoaderProps = {
     coordinates?: [number, number];
     popup?: ReactElement;
   }[];
+  disableUserLocation?: boolean;
 };
 
 const MapLoader = (props: MapLoaderProps) => {
@@ -29,6 +30,7 @@ const MapLoader = (props: MapLoaderProps) => {
           zoom={appConfig.map.zoom}
           markers={props.markers}
           usersLocation={userCoords}
+          disableUserLocation={props.disableUserLocation}
         />
       </div>
     </div>

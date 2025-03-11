@@ -10,6 +10,7 @@ export function MapContainer({ resource }) {
             coordinates: resource?.location?.coordinates,
           },
         ]}
+        disableUserLocation
       />
     </div>
   );
