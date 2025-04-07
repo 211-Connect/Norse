@@ -1,3 +1,4 @@
+'use client';
 import Link from 'next/link';
 import { useAppConfig } from '@/shared/hooks/use-app-config';
 import { cn } from '@/shared/lib/utils';

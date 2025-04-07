@@ -1,3 +1,4 @@
+'use client';
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import { Link } from '@/shared/components/link';
@@ -35,7 +36,7 @@ const Category = ({ image, name, href, target, subcategories }: Props) => {
 
           {subcategories.map((el, key) => (
             <Link
-              className="flex items-center gap-1 rounded-md p-2 pl-1 pr-1 hover:bg-primary/5"
+              className="hover:bg-primary/5 flex items-center gap-1 rounded-md p-2 pr-1 pl-1"
               key={el.name}
               href={`${
                 el.href
@@ -67,8 +68,8 @@ const Category = ({ image, name, href, target, subcategories }: Props) => {
       <Card>
         <CardContent>
           {image && (
-            <div className="flex flex-col items-center justify-center pb-8 pt-8">
-              <div className="relative mb-4 mt-4 h-20 w-20 overflow-hidden rounded-full">
+            <div className="flex flex-col items-center justify-center pt-8 pb-8">
+              <div className="relative mt-4 mb-4 h-20 w-20 overflow-hidden rounded-full">
                 <Image
                   src={image}
                   alt=""
@@ -97,10 +98,10 @@ export function CategoriesSection() {
   if ((categories?.length ?? 0) === 0) return null;
 
   return (
-    <div className="categories container mx-auto pb-8 pt-8">
+    <div className="categories container mx-auto pt-8 pb-8">
       <h3 className="text-2xl font-bold">{t('categories_title')}</h3>
 
-      <Separator className="mb-4 mt-4" />
+      <Separator className="mt-4 mb-4" />
 
       <div
         className={cn(

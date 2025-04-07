@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import createMiddleware from 'next-intl/middleware';
+import { routing } from './i18n/routing';
 import { SESSION_ID } from './shared/lib/constants';
 
 export const config = {
@@ -11,7 +13,7 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/((?!api|trpc|_next|_vercel|_next/static|_next/image|.*\\..*).*)',
   ],
 };
 
@@ -35,5 +37,5 @@ export function middleware(request: NextRequest) {
     httpOnly: true,
   });
 
-  return response;
+  return createMiddleware(routing)(request);
 }

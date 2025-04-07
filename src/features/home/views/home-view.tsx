@@ -1,5 +1,6 @@
+'use client';
 import { useTranslation } from 'next-i18next';
-import Head from 'next/head';
+// import Head from 'next/head';
 import { TourProvider } from '@reactour/tour';
 import { HeroSection } from '../components/hero-section';
 import { CategoriesSection } from '../components/categories-section';
@@ -12,8 +13,8 @@ export function HomeView() {
   const { t } = useTranslation('dynamic');
 
   return (
-    <TourProvider steps={[]} scrollSmooth>
-      <Head>
+    <>
+      {/* <Head>
         <title>{t('meta_title')}</title>
         <meta name="description" content={t('meta_description')} />
 
@@ -21,16 +22,16 @@ export function HomeView() {
         <meta property="og:image" content={appConfig.brand.openGraphUrl} />
         <meta property="og:type" content="website" />
         <meta property="og:description" content={t('meta_description')} />
-      </Head>
+      </Head> */}
 
-      <HeroSection />
+      {/* <HeroSection /> */}
       <div className="bg-primary/5">
-        <Alert />
+        {/* <Alert /> */}
 
-        <CategoriesSection />
+        {/* <CategoriesSection /> */}
       </div>
 
-      <DataProviders />
-    </TourProvider>
+      {/* <DataProviders /> */}
+    </>
   );
 }
