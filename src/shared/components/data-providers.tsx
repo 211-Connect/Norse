@@ -41,7 +41,7 @@ export function DataProviders() {
                   target="_blank"
                   className="group self-stretch hover:underline"
                 >
-                  <Card className="h-full transition-all group-hover:shadow-sm">
+                  <Card className="h-full transition-all group-hover:shadow-xs">
                     <CardHeader className="transition-all group-hover:translate-x-1">
                       <CardTitle>{el.name}</CardTitle>
                     </CardHeader>

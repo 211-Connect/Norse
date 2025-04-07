@@ -1,5 +1,5 @@
 const { fontFamily } = require('tailwindcss/defaultTheme');
-const color = require('color');
+const color = require('color').default;
 const utils = require('./bin/utils');
 
 /** @type {import('tailwindcss').Config} */
