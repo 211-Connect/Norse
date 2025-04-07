@@ -20,6 +20,7 @@ import {
   TooltipTrigger,
 } from '@/shared/components/ui/tooltip';
 import { Separator } from '@/shared/components/ui/separator';
+import { parseHtml } from '@/shared/lib/parse-html';
 
 const isPhysicalAddressAvailable = (addresses: any[]) => {
   return addresses.filter((addr) => addr.type === 'physical').length > 0;
@@ -91,7 +92,7 @@ export function Information({ resource }) {
                 <Clock className="size-4" />
                 <p className="font-bold">{t('hours')}</p>
               </div>
-              <p className="text-sm">{resource.hours}</p>
+              <p className="text-sm">{parseHtml(resource.hours)}</p>
             </div>
           )}
 
@@ -171,7 +172,9 @@ export function Information({ resource }) {
                   <Edit className="size-4" />
                   <p className="font-bold">{t('application_process')}</p>
                 </div>
-                <p className="text-sm">{resource.applicationProcess}</p>
+                <p className="text-sm">
+                  {parseHtml(resource.applicationProcess)}
+                </p>
               </div>
             )}
         </CardContent>
