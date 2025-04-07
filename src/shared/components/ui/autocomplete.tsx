@@ -14,7 +14,7 @@ import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
 import { useUncontrolled } from '@/shared/hooks/use-uncontrolled';
 import { cn } from '@/shared/lib/utils';
-import { Input, InputProps } from './input';
+import { Input } from './input';
 import { Separator } from './separator';
 import { SearchIcon, XIcon } from 'lucide-react';
 import { Button } from './button';
@@ -37,7 +37,7 @@ type AutocompleteOptionWithIndex = AutocompleteOption & { index: number };
 
 export type AutocompleteProps = {
   Icon?: ComponentType<{ className?: string }>;
-  inputProps?: InputProps;
+  inputProps?: React.ComponentProps<'input'>;
   options?: AutocompleteOption[];
   className?: string;
   onInputChange?: (value: string) => void;
@@ -508,7 +508,7 @@ export function Autocomplete(props: AutocompleteProps) {
                 ) : (
                   <h3
                     id={groupId}
-                    className="px-3 py-1 text-xs text-primary"
+                    className="text-primary px-3 py-1 text-xs"
                     role="presentation"
                   >
                     {groupName}
