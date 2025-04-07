@@ -87,7 +87,7 @@ export function Result({ data }: ResultProps) {
             </div>
           </CardTitle>
           {showServiceName && (
-            <CardDescription>{data.serviceName}</CardDescription>
+            <CardDescription>{parseHtml(data.serviceName)}</CardDescription>
           )}
         </CardHeader>
         <CardContent className="flex flex-col gap-4">

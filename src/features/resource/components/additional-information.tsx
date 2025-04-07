@@ -2,6 +2,7 @@ import { Card, CardContent } from '@/shared/components/ui/card';
 import { useTranslation } from 'next-i18next';
 import { Check, DollarSign, Folder, Languages, Map } from 'lucide-react';
 import { Separator } from '@/shared/components/ui/separator';
+import { parseHtml } from '@/shared/lib/parse-html';
 
 export function AdditionalInformation({ resource }) {
   const { t } = useTranslation('page-resource');
@@ -17,7 +18,7 @@ export function AdditionalInformation({ resource }) {
 
                 <p className="font-bold">{t('fee')}</p>
               </div>
-              <p className="text-sm">{resource.fees}</p>
+              <p className="text-sm">{parseHtml(resource.fees)}</p>
             </div>
           )}
 
@@ -28,7 +29,9 @@ export function AdditionalInformation({ resource }) {
                   <Folder className="size-4" />
                   <p className="font-bold">{t('required_documents')}</p>
                 </div>
-                <p className="text-sm">{resource.requiredDocuments}</p>
+                <p className="text-sm">
+                  {parseHtml(resource.requiredDocuments)}
+                </p>
               </div>
             )}
 
@@ -40,7 +43,7 @@ export function AdditionalInformation({ resource }) {
                 <p className="font-bold">{t('eligibility')}</p>
               </div>
 
-              <p className="text-sm">{resource.eligibilities}</p>
+              <p className="text-sm">{parseHtml(resource.eligibilities)}</p>
             </div>
           )}
 
@@ -67,13 +70,13 @@ export function AdditionalInformation({ resource }) {
               </div>
               {resource?.serviceAreaName && (
                 <p className="whitespace-break-spaces text-sm">
-                  {resource.serviceAreaName}
+                  {parseHtml(resource.serviceAreaName)}
                 </p>
               )}
 
               {resource?.serviceAreaDescription && (
                 <p className="whitespace-break-spaces text-sm">
-                  {resource.serviceAreaDescription}
+                  {parseHtml(resource.serviceAreaDescription)}
                 </p>
               )}
             </div>
