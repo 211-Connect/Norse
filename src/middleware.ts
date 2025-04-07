@@ -13,7 +13,7 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      */
-    '/((?!api|trpc|_next|_vercel|_next/static|_next/image|.*\\..*).*)',
+    '/((?!api|trpc|_next|_vercel|_next/static|_next/image|admin|.*\\..*).*)',
   ],
 };
 
