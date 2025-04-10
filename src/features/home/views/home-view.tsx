@@ -1,17 +1,10 @@
 'use client';
-import { useTranslation } from 'next-i18next';
-// import Head from 'next/head';
-import { TourProvider } from '@reactour/tour';
 import { HeroSection } from '../components/hero-section';
 import { CategoriesSection } from '../components/categories-section';
 import { DataProviders } from '@/shared/components/data-providers';
-import { useAppConfig } from '@/shared/hooks/use-app-config';
 import Alert from '../components/alert';
 
 export function HomeView() {
-  const appConfig = useAppConfig();
-  const { t } = useTranslation('dynamic');
-
   return (
     <>
       {/* <Head>
@@ -26,12 +19,11 @@ export function HomeView() {
 
       {/* <HeroSection /> */}
       <div className="bg-primary/5">
-        {/* <Alert /> */}
-
-        {/* <CategoriesSection /> */}
+        <Alert />
+        <CategoriesSection />
       </div>
 
-      {/* <DataProviders /> */}
+      <DataProviders />
     </>
   );
 }
