@@ -1,1 +1,13 @@
-{}
+{
+  "Header": {
+    "home": "Home",
+    "submit_feedback": "Submit Feedback"
+  },
+  "HomePage": {
+    "categories_title": "Categories"
+  },
+  "Footer": {
+    "privacy_policy": "Privacy Policy",
+    "copyright": "All rights reserved"
+  }
+}
