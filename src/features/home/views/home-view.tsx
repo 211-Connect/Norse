@@ -17,7 +17,7 @@ export function HomeView() {
         <meta property="og:description" content={t('meta_description')} />
       </Head> */}
 
-      {/* <HeroSection /> */}
+      <HeroSection />
       <div className="bg-primary/5">
         <Alert />
         <CategoriesSection />
