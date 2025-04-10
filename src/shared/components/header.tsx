@@ -1,3 +1,4 @@
+'use client';
 import { signOut, useSession } from 'next-auth/react';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
@@ -32,6 +33,8 @@ import { useAppConfig } from '../hooks/use-app-config';
 import { HEADER_ID } from '../lib/constants';
 import { useSetAtom } from 'jotai';
 import { dialogsAtom } from '../store/dialogs';
+import { useTranslations } from 'next-intl';
+import { useConfigStore } from '@/lib/context/config-context/config-store-provider';
 
 type Props = {
   fullWidth?: boolean;
@@ -39,10 +42,12 @@ type Props = {
 
 export function Header(props: Props) {
   const [opened, { toggle }] = useDisclosure(false);
-  const appConfig = useAppConfig();
-  const session = useSession();
-  const { t } = useTranslation('common');
-  const router = useRouter();
+  const menus = useConfigStore((config) => config.menus);
+  const brand = useConfigStore((config) => config.brand);
+  const contact = useConfigStore((config) => config.contact);
+  // const session = useSession();
+  const t = useTranslations('Header');
+  // const router = useRouter();
   const setDialogStore = useSetAtom(dialogsAtom);
 
   const SITEMAP = useMemo(
@@ -50,35 +55,35 @@ export function Header(props: Props) {
       <li key="0">
         <Link href="/" className="flex items-center gap-1 hover:underline">
           <HomeIcon className="size-4" />
-          {t('header.home')}
+          {t('home')}
         </Link>
       </li>,
 
-      <li key="1">
-        <Link
-          href="/favorites"
-          className="flex items-center gap-1 hover:underline"
-          onClick={(e) => {
-            if (session.status === 'unauthenticated') {
-              e.preventDefault();
-              setDialogStore((prev) => ({
-                ...prev,
-                promptAuth: {
-                  ...prev.promptAuth,
-                  open: true,
-                },
-              }));
-            }
-          }}
-        >
-          <HeartIcon className="size-4" />
-          {t('header.favorites')}
-        </Link>
-      </li>,
+      // <li key="1">
+      //   <Link
+      //     href="/favorites"
+      //     className="flex items-center gap-1 hover:underline"
+      //     onClick={(e) => {
+      //       if (session.status === 'unauthenticated') {
+      //         e.preventDefault();
+      //         setDialogStore((prev) => ({
+      //           ...prev,
+      //           promptAuth: {
+      //             ...prev.promptAuth,
+      //             open: true,
+      //           },
+      //         }));
+      //       }
+      //     }}
+      //   >
+      //     <HeartIcon className="size-4" />
+      //     {t('header.favorites')}
+      //   </Link>
+      // </li>,
       <Fragment key="5">
-        {appConfig?.menus?.header &&
-          appConfig.menus.header.length > 0 &&
-          appConfig.menus.header.map((item) => {
+        {menus?.header &&
+          menus.header.length > 0 &&
+          menus.header.map((item) => {
             if (item.href == null) return;
 
             return (
@@ -95,7 +100,7 @@ export function Header(props: Props) {
           })}
       </Fragment>,
       <Fragment key="2">
-        {appConfig?.contact?.feedbackUrl && (
+        {contact?.feedbackUrl && (
           <li>
             <Button
               key="feedback"
@@ -104,7 +109,7 @@ export function Header(props: Props) {
               onClick={(e) => {
                 e.preventDefault();
 
-                const currentUrl = new URL(appConfig?.contact?.feedbackUrl);
+                const currentUrl = new URL(contact?.feedbackUrl);
                 const feedbackUrl = currentUrl.toString().split('?')[0];
                 const urlParams = new URLSearchParams(currentUrl.searchParams);
 
@@ -115,70 +120,70 @@ export function Header(props: Props) {
                 window.open(`${feedbackUrl}?${urlParams.toString()}`, '_blank');
               }}
             >
-              {t('header.submit_feedback')}
+              {t('submit_feedback')}
             </Button>
           </li>
         )}
       </Fragment>,
-      <Fragment key="3">
-        {(router?.locales?.length ?? 0) > 1 && router?.locale != null && (
-          <li>
-            <Select
-              aria-label={t('header.language_select_label') as string}
-              defaultValue={router.locale}
-              onValueChange={(value) => {
-                if (value) {
-                  router.push(router.asPath, router.asPath, {
-                    locale: value,
-                  });
-                }
-              }}
-            >
-              <SelectTrigger
-                className="w-[150px]"
-                aria-label={t('header.language_select_label')}
-              >
-                <div className="flex items-center gap-1 overflow-hidden">
-                  <LanguagesIcon className="size-4" />
-                  <SelectValue
-                    placeholder={t('header.language_select_label')}
-                  />
-                </div>
-              </SelectTrigger>
-              <SelectContent>
-                {router.locales.map((locale) => {
-                  const languageNames = new Intl.DisplayNames([router.locale], {
-                    type: 'language',
-                  });
+      // <Fragment key="3">
+      //   {(router?.locales?.length ?? 0) > 1 && router?.locale != null && (
+      //     <li>
+      //       <Select
+      //         aria-label={t('header.language_select_label') as string}
+      //         defaultValue={router.locale}
+      //         onValueChange={(value) => {
+      //           if (value) {
+      //             router.push(router.asPath, router.asPath, {
+      //               locale: value,
+      //             });
+      //           }
+      //         }}
+      //       >
+      //         <SelectTrigger
+      //           className="w-[150px]"
+      //           aria-label={t('header.language_select_label')}
+      //         >
+      //           <div className="flex items-center gap-1 overflow-hidden">
+      //             <LanguagesIcon className="size-4" />
+      //             <SelectValue
+      //               placeholder={t('header.language_select_label')}
+      //             />
+      //           </div>
+      //         </SelectTrigger>
+      //         <SelectContent>
+      //           {router.locales.map((locale) => {
+      //             const languageNames = new Intl.DisplayNames([router.locale], {
+      //               type: 'language',
+      //             });
 
-                  return (
-                    <SelectItem key={locale} value={locale}>
-                      {languageNames.of(locale)}
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
-          </li>
-        )}
-      </Fragment>,
-      <Fragment key="4">
-        {session.status === 'authenticated' && (
-          <li>
-            <Button
-              variant="ghost"
-              className="flex gap-1"
-              onClick={() => {
-                signOut({ redirect: true, callbackUrl: '/' });
-              }}
-            >
-              <LogOutIcon className="size-4" /> {t('header.log_out')}
-            </Button>
-          </li>
-        )}
-      </Fragment>,
+      //             return (
+      //               <SelectItem key={locale} value={locale}>
+      //                 {languageNames.of(locale)}
+      //               </SelectItem>
+      //             );
+      //           })}
+      //         </SelectContent>
+      //       </Select>
+      //     </li>
+      //   )}
+      // </Fragment>,
+      // <Fragment key="4">
+      //   {session.status === 'authenticated' && (
+      //     <li>
+      //       <Button
+      //         variant="ghost"
+      //         className="flex gap-1"
+      //         onClick={() => {
+      //           signOut({ redirect: true, callbackUrl: '/' });
+      //         }}
+      //       >
+      //         <LogOutIcon className="size-4" /> {t('header.log_out')}
+      //       </Button>
+      //     </li>
+      //   )}
+      // </Fragment>,
     ],
-    [session.status, t, router, appConfig, setDialogStore],
+    [t, setDialogStore],
   );
 
   return (
@@ -189,15 +194,15 @@ export function Header(props: Props) {
           'flex h-12 items-center justify-between md:h-20',
         )}
       >
-        <div className="flex max-h-full w-full max-w-96 pb-1 pt-1 md:pb-2 md:pt-2">
+        <div className="flex max-h-full w-full max-w-96 pt-1 pb-1 md:pt-2 md:pb-2">
           <Link
             href="/"
-            aria-label={t('header.home') as string}
-            className="max-h-full pb-1 pt-1 md:pb-2 md:pt-2"
+            aria-label={t('home') as string}
+            className="max-h-full pt-1 pb-1 md:pt-2 md:pb-2"
           >
             <img
-              src={appConfig?.brand?.logoUrl}
-              alt={t('header.home') as string}
+              src={brand?.logoUrl}
+              alt={t('home') as string}
               className="max-h-full w-auto"
             />
           </Link>
@@ -215,10 +220,10 @@ export function Header(props: Props) {
             <SheetContent side="left">
               <SheetHeader>
                 <SheetTitle>
-                  <Link href="/" aria-label={t('header.home') as string}>
+                  <Link href="/" aria-label={t('home') as string}>
                     <img
-                      src={appConfig?.brand?.logoUrl}
-                      alt={t('header.home') as string}
+                      src={brand?.logoUrl}
+                      alt={t('home') as string}
                       style={{
                         height: 'auto',
                         maxHeight: 64,
