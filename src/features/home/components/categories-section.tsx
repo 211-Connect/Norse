@@ -1,15 +1,14 @@
 'use client';
-import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import { Link } from '@/shared/components/link';
 import { Separator } from '@/shared/components/ui/separator';
 import { Card, CardContent } from '@/shared/components/ui/card';
-import { useCategories } from '@/shared/hooks/use-categories';
 import { ExternalLink } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
+import { useConfigStore } from '@/lib/context/config-context/config-store-provider';
+import { useTranslations } from 'next-intl';
 
 type Props = {
-  index: string;
   name: string;
   image?: string;
   href?: string;
@@ -18,7 +17,7 @@ type Props = {
 };
 
 const Category = ({ image, name, href, target, subcategories }: Props) => {
-  if (subcategories && subcategories.length > 0) {
+  if (!!subcategories) {
     return (
       <div className="flex items-start gap-2">
         {image && (
@@ -34,7 +33,7 @@ const Category = ({ image, name, href, target, subcategories }: Props) => {
         <div className="flex flex-col">
           <h3 className="text-xl font-semibold">{name}</h3>
 
-          {subcategories.map((el, key) => (
+          {subcategories.map((el) => (
             <Link
               className="hover:bg-primary/5 flex items-center gap-1 rounded-md p-2 pr-1 pl-1"
               key={el.name}
@@ -92,8 +91,8 @@ const Category = ({ image, name, href, target, subcategories }: Props) => {
 };
 
 export function CategoriesSection() {
-  const { t } = useTranslation('page-home');
-  const categories = useCategories();
+  const t = useTranslations('HomePage');
+  const categories = useConfigStore((config) => config.categories);
 
   if ((categories?.length ?? 0) === 0) return null;
 
@@ -115,7 +114,7 @@ export function CategoriesSection() {
           'grid gap-4',
         )}
       >
-        {categories.map((el: any) => (
+        {categories.map((el) => (
           <Category key={el.name} {...el} />
         ))}
       </div>
