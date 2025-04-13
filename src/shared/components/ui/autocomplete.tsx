@@ -1,4 +1,3 @@
-import { usePopper } from 'react-popper';
 import {
   useCallback,
   useState,
@@ -148,7 +147,7 @@ export function Autocomplete(props: AutocompleteProps) {
   // Popper
   const [referenceElement, setReferenceElement] = useState(null);
   const [popperElement, setPopperElement] = useState(null);
-  const { styles, attributes } = usePopper(referenceElement, popperElement);
+  // const { styles, attributes } = usePopper(referenceElement, popperElement);
 
   const openOptions = useCallback(() => {
     setOpen(true);
@@ -207,7 +206,7 @@ export function Autocomplete(props: AutocompleteProps) {
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
-      const currentOption = rest.options[currentIndex];
+      const currentOption = rest?.options[currentIndex];
       let nextIndex;
 
       if (e.key === 'ArrowDown') {

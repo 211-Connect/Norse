@@ -7,6 +7,8 @@ import { cn } from '@/shared/lib/cn-utils';
 import { fontSans } from '@/shared/styles/fonts';
 import { Footer } from '@/shared/components/footer';
 import { Header } from '@/shared/components/header';
+import { SearchStoreProvider } from '@/lib/context/search-context/search-store-provider';
+import { QueryClientProvider } from '@/lib/context/query-client-context/query-client-provider';
 
 export default async function LocaleLayout({
   children,
@@ -28,13 +30,17 @@ export default async function LocaleLayout({
           fontSans.variable,
         )}
       >
-        <ConfigStoreProvider>
-          <NextIntlClientProvider>
-            <Header />
-            <main className="flex flex-1 flex-col">{children}</main>
-            <Footer />
-          </NextIntlClientProvider>
-        </ConfigStoreProvider>
+        <QueryClientProvider>
+          <ConfigStoreProvider>
+            <SearchStoreProvider>
+              <NextIntlClientProvider>
+                <Header />
+                <main className="flex flex-1 flex-col">{children}</main>
+                <Footer />
+              </NextIntlClientProvider>
+            </SearchStoreProvider>
+          </ConfigStoreProvider>
+        </QueryClientProvider>
       </body>
     </html>
   );

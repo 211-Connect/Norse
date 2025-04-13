@@ -24,7 +24,7 @@ export function HeroSection() {
       >
         <h3 className="text-xl font-bold">{t('hero_title')}</h3>
 
-        {/* <MainSearchLayout /> */}
+        <MainSearchLayout />
       </div>
     </div>
   );
