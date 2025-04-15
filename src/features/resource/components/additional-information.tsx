@@ -22,16 +22,18 @@ export function AdditionalInformation({ resource }) {
             </div>
           )}
 
-          {resource?.requiredDocuments &&
-            resource.requiredDocuments.length > 0 && (
+          {resource?.requiredDocuments instanceof Array &&
+            resource?.requiredDocuments?.length > 0 && (
               <div className="col-span-2">
                 <div className="flex items-center gap-1">
                   <Folder className="size-4" />
                   <p className="font-bold">{t('required_documents')}</p>
                 </div>
-                <p className="text-sm">
-                  {parseHtml(resource.requiredDocuments)}
-                </p>
+                {resource.requiredDocuments.map((doc: string) => (
+                  <p key={doc} className="text-sm">
+                    {parseHtml(doc)}
+                  </p>
+                ))}
               </div>
             )}
 
