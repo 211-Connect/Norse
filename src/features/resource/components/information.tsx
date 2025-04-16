@@ -92,7 +92,9 @@ export function Information({ resource }) {
                 <Clock className="size-4" />
                 <p className="font-bold">{t('hours')}</p>
               </div>
-              <p className="text-sm">{parseHtml(resource.hours)}</p>
+              <p className="whitespace-break-spaces text-sm">
+                {parseHtml(resource.hours)}
+              </p>
             </div>
           )}
 
@@ -172,7 +174,7 @@ export function Information({ resource }) {
                   <Edit className="size-4" />
                   <p className="font-bold">{t('application_process')}</p>
                 </div>
-                <p className="text-sm">
+                <p className="whitespace-break-spaces text-sm">
                   {parseHtml(resource.applicationProcess)}
                 </p>
               </div>

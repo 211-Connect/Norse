@@ -18,7 +18,9 @@ export function AdditionalInformation({ resource }) {
 
                 <p className="font-bold">{t('fee')}</p>
               </div>
-              <p className="text-sm">{parseHtml(resource.fees)}</p>
+              <p className="whitespace-break-spaces text-sm">
+                {parseHtml(resource.fees)}
+              </p>
             </div>
           )}
 
@@ -30,12 +32,12 @@ export function AdditionalInformation({ resource }) {
               </div>
               {resource.requiredDocuments instanceof Array ? (
                 resource.requiredDocuments.map((doc: string) => (
-                  <p key={doc} className="text-sm">
+                  <p key={doc} className="whitespace-break-spaces text-sm">
                     {parseHtml(doc)}
                   </p>
                 ))
               ) : (
-                <p className="text-sm">
+                <p className="whitespace-break-spaces text-sm">
                   {parseHtml(resource.requiredDocuments)}
                 </p>
               )}
