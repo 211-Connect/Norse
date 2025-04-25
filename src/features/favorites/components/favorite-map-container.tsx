@@ -1,4 +1,4 @@
-import { MapLoader } from '@/shared/components/map/map-loader';
+import { MapRenderer } from '@/shared/components/map/map-renderer';
 import { useWindowScroll } from '@/shared/hooks/use-window-scroll';
 import { HEADER_ID } from '@/shared/lib/constants';
 import { favoriteListWithFavoritesAtom } from '@/shared/store/favorites';
@@ -37,7 +37,7 @@ export function FavoriteMapContainer() {
       className="sticky top-0 hidden h-full w-full lg:block"
       style={{ height: `calc(100vh - ${clampedWindowValue}px` }}
     >
-      <MapLoader markers={markers} />
+      <MapRenderer markers={markers} />
     </div>
   );
 }

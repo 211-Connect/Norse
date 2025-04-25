@@ -1,4 +1,4 @@
-export abstract class BaseMapAdapter {
+export abstract class BaseGeocoderAdapter {
   abstract forwardGeocode(
     address: string,
     options: { locale: string },

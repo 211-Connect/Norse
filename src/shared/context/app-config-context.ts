@@ -42,7 +42,8 @@ type AppConfig = {
     };
   };
   adapters: {
-    map: 'mapbox';
+    geocoder: 'mapbox';
+    map: 'mapbox' | 'maplibre';
   };
   map: {
     center: [number, number];
