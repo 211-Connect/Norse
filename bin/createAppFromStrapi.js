@@ -126,13 +126,9 @@ module.exports = function createFromStrapi(dir) {
         radiusOptions: appConfig?.radiusSelectValues ?? null,
         resultsLimit: appConfig?.search?.resultsLimit ?? 25,
       },
-      features: {
-        map: {
-          plugin: 'mapbox',
-        },
-      },
       adapters: {
-        map: 'mapbox',
+        geocoder: appConfig?.adapters?.geocoder ?? 'mapbox',
+        map: appConfig?.adapters?.map ?? 'maplibre',
       },
       map: appConfig?.map ?? {
         center: [0, 0],

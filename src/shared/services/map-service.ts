@@ -1,9 +1,9 @@
-import { BaseMapAdapter } from '../adapters/map/base-map-adapter';
+import { BaseGeocoderAdapter } from '../adapters/geocoder/base-geocoder-adapter';
 
 export class MapService {
   static async forwardGeocode(
     address: string,
-    options: { adapter: BaseMapAdapter; locale: string },
+    options: { adapter: BaseGeocoderAdapter; locale: string },
   ) {
     return await options.adapter.forwardGeocode(address, {
       locale: options.locale,
@@ -12,7 +12,7 @@ export class MapService {
 
   static async reverseGeocode(
     coordinates: string,
-    options: { adapter: BaseMapAdapter; locale: string },
+    options: { adapter: BaseGeocoderAdapter; locale: string },
   ) {
     return await options.adapter.reverseGeocode(coordinates, {
       locale: options.locale,

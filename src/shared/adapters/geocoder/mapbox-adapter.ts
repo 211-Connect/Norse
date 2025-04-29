@@ -1,8 +1,8 @@
 import { MAPBOX_API_KEY, MAPBOX_API_BASE_URL } from '@/shared/lib/constants';
-import { BaseMapAdapter } from './base-map-adapter';
+import { BaseGeocoderAdapter } from './base-geocoder-adapter';
 import axios from 'axios';
 
-export class MapboxAdapter extends BaseMapAdapter {
+export class MapboxAdapter extends BaseGeocoderAdapter {
   async forwardGeocode(
     address: string,
     options: { locale: string },

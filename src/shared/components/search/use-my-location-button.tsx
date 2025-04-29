@@ -8,7 +8,7 @@ import { Locate } from 'lucide-react';
 import { deviceAtom } from '@/shared/store/device';
 import { useFlag } from '@/shared/hooks/use-flag';
 import { Button } from '../ui/button';
-import { useMapAdapter } from '../../hooks/use-map-adapter';
+import { useGeocodingAdapter } from '../../hooks/use-geocoding-adapter';
 import { MapService } from '../../services/map-service';
 import { searchAtom } from '../../store/search';
 import { USER_PREF_COORDS, USER_PREF_LOCATION } from '../../lib/constants';
@@ -16,7 +16,7 @@ import { USER_PREF_COORDS, USER_PREF_LOCATION } from '../../lib/constants';
 export function UseMyLocationButton() {
   const { t } = useTranslation('common');
   const router = useRouter();
-  const adapter = useMapAdapter();
+  const adapter = useGeocodingAdapter();
   const setSearch = useSetAtom(searchAtom);
   const device = useAtomValue(deviceAtom);
   const showUseMyLocationButtonOnDesktop = useFlag(

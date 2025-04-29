@@ -4,11 +4,12 @@ import { useAtomValue } from 'jotai';
 import dynamic from 'next/dynamic';
 import { ReactElement } from 'react';
 
-const maps = {
+const renderers = {
   mapbox: dynamic(() => import('./mapbox/map').then((mod) => mod.Map)),
+  maplibre: dynamic(() => import('./maplibre/map').then((mod) => mod.Map)),
 };
 
-type MapLoaderProps = {
+type MapRendererProps = {
   markers: {
     id: string;
     coordinates?: [number, number];
@@ -17,9 +18,28 @@ type MapLoaderProps = {
   disableUserLocation?: boolean;
 };
 
-const MapLoader = (props: MapLoaderProps) => {
+const MapRenderer = (props: MapRendererProps) => {
   const appConfig = useAppConfig();
-  const Map = maps[appConfig.adapters.map];
+  const adapterName = appConfig.adapters.map;
+  const Map = renderers[adapterName];
+  if (!Map) {
+    return (
+      <div
+        id="map-container"
+        className="flex h-full w-full items-center justify-center"
+      >
+        <div className="rounded-md bg-white p-6 shadow-md">
+          <h3 className="mb-2 text-lg font-medium text-red-600">
+            Map Adapter Error
+          </h3>
+          <p className="text-gray-600">
+            The requested map adapter '{adapterName}' is not available.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   const userCoords = useAtomValue(userCoordinatesAtom);
 
   return (
@@ -37,4 +57,4 @@ const MapLoader = (props: MapLoaderProps) => {
   );
 };
 
-export { MapLoader };
+export { MapRenderer };
