@@ -18,7 +18,7 @@ import { z } from 'zod';
 import axios from 'axios';
 import { toast } from 'sonner';
 
-export function SmsButton({ title, body, shortUrl }) {
+export function SmsButton({ title = '', body = '', shortUrl = '' }) {
   const { t } = useTranslation('common');
   const [open, setOpen] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');

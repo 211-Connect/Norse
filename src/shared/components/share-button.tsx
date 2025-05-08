@@ -23,7 +23,7 @@ import { ShortUrlService } from '../services/short-url-service';
 import { useClipboard } from '../hooks/use-clipboard';
 import { SmsButton } from './sms-button';
 
-export function ShareButton({ componentToPrintRef, title, body }) {
+export function ShareButton({ componentToPrintRef, title = '', body = '' }) {
   const { t } = useTranslation('common');
   const [open, setOpen] = useState(false);
   const clipboard = useClipboard();
