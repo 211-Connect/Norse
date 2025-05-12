@@ -1,28 +1,27 @@
-import { useTranslation } from 'next-i18next';
+'use client';
 import Image from 'next/image';
-import { Link } from '@/shared/components/link';
-import { Separator } from '@/shared/components/ui/separator';
-import { Card, CardContent } from '@/shared/components/ui/card';
-import { useCategories } from '@/shared/hooks/use-categories';
 import { ExternalLink } from 'lucide-react';
-import { cn } from '@/shared/lib/utils';
+import { useCategories } from '@/lib/context/categories-context';
+import { Link } from '@/i18n/navigation';
+import { Card, CardContent } from '@/components/ui/card';
+import { useTranslations } from 'next-intl';
+import { Separator } from '@/components/ui/separator';
+import { cn } from '@/lib/cn-utils';
+import { Category as CategoryType } from '@/types/category';
 
 type Props = {
-  index: string;
-  name: string;
-  image?: string;
-  href?: string;
-  target?: string;
-  subcategories: any[];
+  category: CategoryType;
 };
 
-const Category = ({ image, name, href, target, subcategories }: Props) => {
+const Category = ({ category }: Props) => {
+  const { subcategories, image, name, href, target } = category;
+
   if (subcategories && subcategories.length > 0) {
     return (
       <div className="flex items-start gap-2">
-        {image && (
+        {image?.url && (
           <Image
-            src={image}
+            src={image.url}
             alt=""
             width={80}
             height={0}
@@ -41,10 +40,10 @@ const Category = ({ image, name, href, target, subcategories }: Props) => {
                 el.href
                   ? el.href
                   : `/search?query=${encodeURIComponent(
-                      el.query,
+                      el.query || '',
                     )}&query_label=${encodeURIComponent(
                       el.name,
-                    )}&query_type=${encodeURIComponent(el.queryType)}`
+                    )}&query_type=${encodeURIComponent(el.queryType || '')}`
               }`}
               prefetch={false}
               target={el.target}
@@ -70,7 +69,7 @@ const Category = ({ image, name, href, target, subcategories }: Props) => {
             <div className="flex flex-col items-center justify-center pb-8 pt-8">
               <div className="relative mb-4 mt-4 h-20 w-20 overflow-hidden rounded-full">
                 <Image
-                  src={image}
+                  src={image?.url}
                   alt=""
                   fill
                   style={{
@@ -91,7 +90,7 @@ const Category = ({ image, name, href, target, subcategories }: Props) => {
 };
 
 export function CategoriesSection() {
-  const { t } = useTranslation('page-home');
+  const t = useTranslations('page');
   const categories = useCategories();
 
   if ((categories?.length ?? 0) === 0) return null;
@@ -114,8 +113,8 @@ export function CategoriesSection() {
           'grid gap-4',
         )}
       >
-        {categories.map((el: any) => (
-          <Category key={el.name} {...el} />
+        {categories.map((category) => (
+          <Category key={category.name} category={category} />
         ))}
       </div>
     </div>

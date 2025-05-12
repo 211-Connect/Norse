@@ -1,9 +1,10 @@
+'use client';
 import Link from 'next/link';
-import { useAppConfig } from '@/shared/hooks/use-app-config';
-import { cn } from '@/shared/lib/utils';
-import { buttonVariants } from '@/shared/components/ui/button';
-import { Alert as AlertComponent } from '@/shared/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
+import { useAppConfig } from '@/lib/context/app-config-context';
+import { cn } from '@/lib/cn-utils';
+import { buttonVariants } from '@/components/ui/button';
+import { Alert as AlertComponent } from '@/components/ui/alert';
 
 export default function Alert() {
   const appConfig = useAppConfig();

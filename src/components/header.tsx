@@ -1,11 +1,11 @@
 'use client';
 import { Link } from '@/i18n/navigation';
+import { cn } from '@/lib/cn-utils';
 import { useAppConfig } from '@/lib/context/app-config-context';
-import { Button } from '@/shared/components/ui/button';
-import { HEADER_ID } from '@/shared/lib/constants';
-import { cn } from '@/shared/lib/utils';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
+import { HEADER_ID } from '@/lib/constants';
+import { Button } from './ui/button';
 
 type Props = {
   fullWidth?: boolean;

@@ -24,7 +24,11 @@ export interface AppConfig {
     secondaryColor: string;
     borderRadius: string;
   };
-  alert?: {};
+  alert?: {
+    buttonText: string;
+    url: string;
+    text: string;
+  };
   homePage?: {
     title: string;
     description: string;
@@ -51,7 +55,11 @@ export interface AppConfig {
   radiusSelectValues: {
     value: number;
   }[];
-  dataproviders: {}[];
+  dataProviders?: {
+    name: string;
+    href: string;
+    logo: Image;
+  }[];
   headerMenu: MenuItem[];
   footerMenu: MenuItem[];
 }

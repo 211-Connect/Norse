@@ -80,30 +80,5 @@ module.exports = {
       },
     },
   },
-  plugins: [
-    require('tailwindcss-animate'),
-    function ({ addBase }) {
-      const appConfig = utils.getAppConfig();
-
-      const primary = color(appConfig?.theme?.primaryColor).hsl();
-      const primaryHsl = primary.array();
-      const primaryForeground = primary.isDark() ? '0 0% 100%' : '0 0% 0%';
-
-      const secondary = color(appConfig?.theme?.secondaryColor).hsl();
-      const secondaryHsl = secondary.array();
-      const secondaryForeground = secondary.isDark() ? '0 0% 100%' : '0 0% 0%';
-
-      const borderRadius = appConfig?.theme?.borderRadius ?? '0.5rem';
-
-      addBase({
-        ':root': {
-          '--primary': `${primaryHsl[0]} ${primaryHsl[1]}% ${primaryHsl[2]}%`,
-          '--primary-foreground': primaryForeground,
-          '--secondary': `${secondaryHsl[0]} ${secondaryHsl[1]}% ${secondaryHsl[2]}%`,
-          '--secondary-foreground': secondaryForeground,
-          '--radius': borderRadius,
-        },
-      });
-    },
-  ],
+  plugins: [require('tailwindcss-animate')],
 };

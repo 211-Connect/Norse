@@ -1,18 +1,19 @@
+'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useTranslation } from 'next-i18next';
-import { useAppConfig } from '../hooks/use-app-config';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Separator } from './ui/separator';
 import { cn } from '../lib/utils';
+import { useAppConfig } from '@/lib/context/app-config-context';
+import { useTranslations } from 'next-intl';
 
 export function DataProviders() {
   const appConfig = useAppConfig();
-  const { t } = useTranslation();
+  const t = useTranslations('common');
 
   return (
     <>
-      {appConfig?.providers?.length > 0 && (
+      {appConfig?.dataProviders?.length && (
         <>
           <div className="container mx-auto flex flex-col pb-8 pt-8">
             <h3 className="text-lg font-semibold">
@@ -23,18 +24,18 @@ export function DataProviders() {
 
             <div
               className={cn(
-                appConfig.providers.length >= 4 &&
+                appConfig.dataProviders.length >= 4 &&
                   'grid-cols-1 justify-center sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
-                appConfig.providers.length === 3 &&
+                appConfig.dataProviders.length === 3 &&
                   'mx-auto max-w-fit grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
-                appConfig.providers.length === 2 &&
+                appConfig.dataProviders.length === 2 &&
                   'mx-auto max-w-fit grid-cols-1 sm:grid-cols-2',
-                appConfig.providers.length === 1 &&
+                appConfig.dataProviders.length === 1 &&
                   'mx-auto max-w-fit grid-cols-1',
                 'grid gap-4',
               )}
             >
-              {appConfig.providers.map((el: any) => (
+              {appConfig.dataProviders.map((el: any) => (
                 <Link
                   key={el.name}
                   href={el.href}

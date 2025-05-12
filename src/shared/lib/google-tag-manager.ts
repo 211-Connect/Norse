@@ -1,5 +1,5 @@
 import { parseCookies } from 'nookies';
-import router from 'next/router';
+import router from 'next/navigation';
 
 export interface ReferralEventProps {
   event: string;
@@ -87,7 +87,7 @@ export const createPageViewEvent = async (e: any) => {
 export const createReferralEvent = async (
   referralType: 'call_referral' | 'website_referral' | 'directions_referral',
   resourceId: string,
-  resource: any
+  resource: any,
 ) => {
   const eventExists = getFromSessionStorage(`referral.${resourceId}`);
   if (!eventExists) {
