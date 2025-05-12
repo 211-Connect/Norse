@@ -1,5 +1,5 @@
 import { useTranslation } from 'next-i18next';
-import { MapPin, NavigationIcon } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import {
   prevSearchLocationAtom,
@@ -8,14 +8,15 @@ import {
   searchLocationAtom,
   searchLocationValidationErrorAtom,
 } from '../../store/search';
-import { useDebounce } from '../../hooks/use-debounce';
 import { useLocations } from '../../hooks/api/use-locations';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { cn } from '../../lib/utils';
 import { destroyCookie, setCookie } from 'nookies';
 import { USER_PREF_COORDS, USER_PREF_LOCATION } from '@/shared/lib/constants';
 import { Autocomplete } from '../ui/autocomplete';
 import { DistanceSelect } from './distance-select';
+import { useDebounce } from 'use-debounce';
+import { useAppConfig } from '@/lib/context/app-config-context';
 
 type LocationSearchBarProps = {
   className?: string;
@@ -23,12 +24,13 @@ type LocationSearchBarProps = {
 
 export function LocationSearchBar({ className }: LocationSearchBarProps) {
   const { t } = useTranslation();
+  const appConfig = useAppConfig();
   const [shouldSearch, setShouldSearch] = useState(false);
   const setSearch = useSetAtom(searchAtom);
   const searchLocation = useAtomValue(searchLocationAtom);
   const coords = useAtomValue(searchCoordinatesAtom);
   const prevSearchLocation = useAtomValue(prevSearchLocationAtom);
-  const debouncedSearchLocation = useDebounce(searchLocation, 200);
+  const [debouncedSearchLocation] = useDebounce(searchLocation, 200);
   const {
     data: locations,
     options,
@@ -133,11 +135,7 @@ export function LocationSearchBar({ className }: LocationSearchBarProps) {
             'flex-1 border-none',
           )}
           inputProps={{
-            placeholder:
-              t('search.location_placeholder', {
-                ns: 'dynamic',
-                defaultValue: t('search.location_placeholder'),
-              }) || '',
+            placeholder: appConfig.search?.locationInputPlaceholder ?? '',
           }}
           options={options}
           Icon={MapPin}

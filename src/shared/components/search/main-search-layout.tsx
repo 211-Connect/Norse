@@ -1,38 +1,33 @@
 import { useAtomValue, useSetAtom } from 'jotai';
-import { DistanceSelect } from './distance-select';
 import { LocationSearchBar } from './location-search-bar';
 import { SearchBar } from './search-bar';
 import { SearchButton } from './search-button';
 import { UseMyLocationButton } from './use-my-location-button';
-import { useFlag } from '@/shared/hooks/use-flag';
 import { deviceAtom } from '@/shared/store/device';
 import { cn } from '@/shared/lib/utils';
 import { SearchService } from '@/shared/services/search-service';
 import { useMemo } from 'react';
-import { useCategories } from '@/shared/hooks/use-categories';
-import { useSuggestions } from '@/shared/hooks/use-suggestions';
 import { useTaxonomies } from '@/shared/hooks/api/use-taxonomies';
-import { useDebounce } from '@/shared/hooks/use-debounce';
 import { searchAtom, searchLocationAtom } from '@/shared/store/search';
-import { useRouter } from 'next/router';
 import { useLocations } from '@/shared/hooks/api/use-locations';
+import { useDebounce } from 'use-debounce';
+import { useAppConfig } from '@/lib/context/app-config-context';
+import { useRouter } from '@/i18n/navigation';
+import { useSuggestions } from '@/lib/context/suggestions-context';
+import { useCategories } from '@/lib/context/categories-context';
 
 export function MainSearchLayout() {
   const device = useAtomValue(deviceAtom);
-  const showUseMyLocationButtonOnDesktop = useFlag(
-    'showUseMyLocationButtonOnDesktop',
-  );
-
+  const appConfig = useAppConfig();
   const router = useRouter();
   const search = useAtomValue(searchAtom);
   const setSearch = useSetAtom(searchAtom);
-  const debouncedSearchTerm = useDebounce(search.searchTerm, 200);
+  const [debouncedSearchTerm] = useDebounce(search.searchTerm, 200);
   const { data: taxonomies } = useTaxonomies(debouncedSearchTerm);
   const suggestions = useSuggestions();
   const categories = useCategories();
-  const requireUserLocation = useFlag('requireUserLocation');
   const searchLocation = useAtomValue(searchLocationAtom);
-  const debouncedSearchLocation = useDebounce(searchLocation, 200);
+  const [debouncedSearchLocation] = useDebounce(searchLocation, 200);
   const { data: locations } = useLocations(debouncedSearchLocation);
 
   const reducedCategories: {
@@ -41,7 +36,7 @@ export function MainSearchLayout() {
     queryType: string;
   }[] = useMemo(() => {
     return categories.reduce((prev, current) => {
-      if (current?.subcategories?.length > 0) {
+      if (current?.subcategories?.length) {
         return prev.concat(current.subcategories);
       }
 
@@ -94,7 +89,10 @@ export function MainSearchLayout() {
   const onSubmit = async (e) => {
     e.preventDefault();
 
-    if (requireUserLocation && search.searchLocation.trim().length === 0) {
+    if (
+      appConfig.featureFlags?.requireUserLocation &&
+      search.searchLocation.trim().length === 0
+    ) {
       setSearch((prev) => ({
         ...prev,
         searchLocationValidationError: 'Address is required.',
@@ -142,7 +140,8 @@ export function MainSearchLayout() {
       <div
         className={cn(
           'flex',
-          showUseMyLocationButtonOnDesktop == false && device.isDesktop
+          appConfig.featureFlags?.showUseMyLocationButtonOnDesktop == false &&
+            device.isDesktop
             ? 'justify-end'
             : 'justify-between',
         )}

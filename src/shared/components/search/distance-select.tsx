@@ -1,4 +1,3 @@
-import { useTranslation } from 'next-i18next';
 import {
   Select,
   SelectContent,
@@ -8,7 +7,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
-import { useAppConfig } from '../../hooks/use-app-config';
 import { useAtomValue, useSetAtom } from 'jotai';
 import {
   searchAtom,
@@ -17,9 +15,11 @@ import {
 } from '../../store/search';
 import { setCookie } from 'nookies';
 import { USER_PREF_DISTANCE } from '../../lib/constants';
+import { useAppConfig } from '@/lib/context/app-config-context';
+import { useTranslations } from 'next-intl';
 
 export function DistanceSelect() {
-  const { t } = useTranslation();
+  const t = useTranslations('common');
   const appConfig = useAppConfig();
   const setSearch = useSetAtom(searchAtom);
   const coords = useAtomValue(searchCoordinatesAtom);
@@ -61,8 +61,8 @@ export function DistanceSelect() {
             })}
           </SelectLabel>
           <SelectItem value="0">{t('search.any')}</SelectItem>
-          {appConfig?.search?.radiusOptions?.length > 0 ? (
-            appConfig?.search?.radiusOptions?.map((el: any) => (
+          {appConfig?.radiusSelectValues?.length ? (
+            appConfig?.radiusSelectValues?.map((el: any) => (
               <SelectItem
                 key={el.value.toString()}
                 value={el.value.toString()}

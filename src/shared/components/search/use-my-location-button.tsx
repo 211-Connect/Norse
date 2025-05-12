@@ -1,27 +1,26 @@
 import { useCallback } from 'react';
 import { toast } from 'sonner';
-import { useTranslation } from 'next-i18next';
-import { useRouter } from 'next/router';
 import { setCookie } from 'nookies';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { Locate } from 'lucide-react';
 import { deviceAtom } from '@/shared/store/device';
-import { useFlag } from '@/shared/hooks/use-flag';
 import { Button } from '../ui/button';
 import { useGeocodingAdapter } from '../../hooks/use-geocoding-adapter';
 import { MapService } from '../../services/map-service';
 import { searchAtom } from '../../store/search';
 import { USER_PREF_COORDS, USER_PREF_LOCATION } from '../../lib/constants';
+import { useRouter } from 'next/navigation';
+import { useAppConfig } from '@/lib/context/app-config-context';
+import { useLocale, useTranslations } from 'next-intl';
 
 export function UseMyLocationButton() {
-  const { t } = useTranslation('common');
+  const t = useTranslations('common');
+  const appConfig = useAppConfig();
   const router = useRouter();
+  const locale = useLocale();
   const adapter = useGeocodingAdapter();
   const setSearch = useSetAtom(searchAtom);
   const device = useAtomValue(deviceAtom);
-  const showUseMyLocationButtonOnDesktop = useFlag(
-    'showUseMyLocationButtonOnDesktop',
-  );
 
   const convertGeoLocation = useCallback(
     async (position: GeolocationPosition) => {
@@ -29,7 +28,7 @@ export function UseMyLocationButton() {
       const lng = position.coords.longitude;
 
       const promise = MapService.reverseGeocode(`${lng},${lat}`, {
-        locale: router.locale,
+        locale: locale,
         adapter: adapter.current,
       });
 
@@ -58,7 +57,7 @@ export function UseMyLocationButton() {
         error: t('search.geocoding_unable_to_retrieve'),
       });
     },
-    [setSearch, t, adapter, router.locale],
+    [setSearch, t, adapter, locale],
   );
 
   const getUserLocation = useCallback(() => {
@@ -82,7 +81,10 @@ export function UseMyLocationButton() {
     }
   }, [convertGeoLocation, t]);
 
-  if (showUseMyLocationButtonOnDesktop == false && device.isDesktop)
+  if (
+    appConfig.featureFlags?.showUseMyLocationButtonOnDesktop == false &&
+    device.isDesktop
+  )
     return false;
 
   return (

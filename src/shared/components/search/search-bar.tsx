@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { useTranslation } from 'next-i18next';
 import { useTaxonomies } from '../../hooks/api/use-taxonomies';
@@ -7,25 +7,25 @@ import {
   searchAtom,
   searchTermAtom,
 } from '../../store/search';
-import { useDebounce } from '../../hooks/use-debounce';
-import { useSuggestions } from '../../hooks/use-suggestions';
-import { useFlag } from '@/shared/hooks/use-flag';
-import { useCategories } from '@/shared/hooks/use-categories';
 import { Autocomplete } from '../ui/autocomplete';
+import { useSuggestions } from '@/lib/context/suggestions-context';
+import { useCategories } from '@/lib/context/categories-context';
+import { useAppConfig } from '@/lib/context/app-config-context';
+import { useDebounce } from 'use-debounce';
 
 export function SearchBar() {
   const { t } = useTranslation();
+  const appConfig = useAppConfig();
   const [shouldSearch, setShouldSearch] = useState(false);
   const setSearch = useSetAtom(searchAtom);
   const prevSearchTerm = useAtomValue(prevSearchTermAtom);
   const searchTerm = useAtomValue(searchTermAtom);
-  const debouncedSearchTerm = useDebounce(searchTerm, 200);
+  const [debouncedSearchTerm] = useDebounce(searchTerm, 200);
   const { data: taxonomies } = useTaxonomies(
     shouldSearch ? debouncedSearchTerm : prevSearchTerm,
   );
   const suggestions = useSuggestions();
   const categories = useCategories();
-  const showTaxonomyBadge = useFlag('showSuggestionListTaxonomyBadge');
 
   const reducedCategories: {
     name: string;
@@ -33,7 +33,7 @@ export function SearchBar() {
     queryType: string;
   }[] = useMemo(() => {
     return categories.reduce((prev, current) => {
-      if (current?.subcategories?.length > 0) {
+      if (current?.subcategories?.length) {
         return prev.concat(current.subcategories);
       }
 
@@ -46,7 +46,7 @@ export function SearchBar() {
     return [
       ...suggestions
         .map((option) => ({
-          value: option.name,
+          value: option.displayName,
           group: t('search.suggestions'),
         }))
         .filter((option) =>
@@ -59,7 +59,7 @@ export function SearchBar() {
       ...taxonomies.map((option) => ({
         group: t('search.taxonomies'),
         value: option.name,
-        label: showTaxonomyBadge ? option.code : null,
+        label: appConfig.featureFlags?.showTaxonomyBadge ? option.code : null,
       })),
     ];
   }, [
@@ -67,7 +67,7 @@ export function SearchBar() {
     suggestions,
     searchTerm,
     t,
-    showTaxonomyBadge,
+    appConfig.featureFlags?.showTaxonomyBadge,
     shouldSearch,
     prevSearchTerm,
   ]);
@@ -82,7 +82,7 @@ export function SearchBar() {
       if (taxonomy) return taxonomy.code;
 
       const suggestion = suggestions.find(
-        (sugg) => sugg.name.toLowerCase() === value.toLowerCase(),
+        (sugg) => sugg.displayName.toLowerCase() === value.toLowerCase(),
       );
       if (suggestion) return suggestion.taxonomies;
 
@@ -104,7 +104,7 @@ export function SearchBar() {
       if (taxonomy) return 'taxonomy';
 
       const suggestion = suggestions.find(
-        (sugg) => sugg.name.toLowerCase() === value.toLowerCase(),
+        (sugg) => sugg.displayName.toLowerCase() === value.toLowerCase(),
       );
       if (suggestion) return 'taxonomy';
 
@@ -153,11 +153,7 @@ export function SearchBar() {
     <Autocomplete
       className="search-box"
       inputProps={{
-        placeholder:
-          t('search.query_placeholder', {
-            ns: 'dynamic',
-            defaultValue: t('search.query_placeholder'),
-          }) || '',
+        placeholder: appConfig.search?.queryInputPlaceholder ?? '',
       }}
       options={options}
       onInputChange={handleInputChange}

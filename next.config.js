@@ -1,12 +1,13 @@
-const utils = require('./bin/utils.js');
-
-const appConfig = utils.getAppConfig();
+const createNextIntlPlugin = require('next-intl/plugin');
 
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
-  ...(appConfig?.nextConfig ?? {}),
+  images: {
+    remotePatterns: [new URL('https://cdn.c211.io/**')],
+  },
 };
 
-module.exports = nextConfig;
+const withNextIntl = createNextIntlPlugin();
+module.exports = withNextIntl(nextConfig);

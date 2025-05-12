@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { useRouter } from 'next/router';
 import { MapService } from '@/shared/services/map-service';
 import { useGeocodingAdapter } from '../use-geocoding-adapter';
 import { useMemo } from 'react';
 import { useTranslation } from 'next-i18next';
 import { NavigationIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export function useLocations(searchTerm: string) {
   const adapter = useGeocodingAdapter();

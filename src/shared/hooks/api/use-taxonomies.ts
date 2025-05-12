@@ -1,6 +1,6 @@
+import { useRouter } from '@/i18n/navigation';
 import { TaxonomyService } from '@/shared/services/taxonomy-service';
 import { useQuery } from '@tanstack/react-query';
-import { useRouter } from 'next/router';
 
 export function useTaxonomies(searchTerm?: string) {
   const router = useRouter();
