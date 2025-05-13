@@ -39,7 +39,7 @@ export function Header(props: Props) {
       >
         <Link href="/">
           <Image
-            src={appConfig?.logo?.url || '/fallback-logo.png'}
+            src={appConfig?.logo?.url ?? '/logo.png'}
             alt="Home"
             width={appConfig?.logo?.width}
             height={appConfig?.logo?.height}

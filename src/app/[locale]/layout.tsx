@@ -9,6 +9,21 @@ import { cn } from '@/shared/lib/utils';
 import { Providers } from '@/lib/providers';
 import { getThemeColors } from '@/utils/get-theme-colors';
 import '../../shared/styles/globals.css';
+import { Metadata } from 'next';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { data: appConfig } = await getAppConfig();
+
+  const faviconUrl = appConfig?.favicon?.url ?? '/favicon.ico';
+
+  return {
+    title: appConfig?.brandName,
+    icons: {
+      icon: faviconUrl,
+      shortcut: faviconUrl,
+    },
+  };
+}
 
 export default async function LocaleLayout({
   children,

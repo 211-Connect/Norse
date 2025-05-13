@@ -10,7 +10,7 @@ export function HeroSection() {
     <div className="relative flex h-screen max-h-64 flex-col items-center justify-center gap-2 p-2 md:max-h-96">
       <Image
         fill
-        src={appConfig?.hero?.url ?? ''}
+        src={appConfig?.hero?.url ?? '/hero.jpg'}
         priority
         alt=""
         style={{ objectFit: 'cover', zIndex: -1, objectPosition: 'center' }}
