@@ -91,7 +91,7 @@ export function UseMyLocationButton() {
     <Button
       onClick={getUserLocation}
       className="flex gap-1"
-      variant="outline"
+      variant="ghost"
       type="button"
     >
       <Locate className="size-4" />

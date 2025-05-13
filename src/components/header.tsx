@@ -1,5 +1,5 @@
 'use client';
-import { Link } from '@/i18n/navigation';
+import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/lib/cn-utils';
 import { useAppConfig } from '@/lib/context/app-config-context';
 import { useTranslations } from 'next-intl';
@@ -14,6 +14,7 @@ type Props = {
 export function Header(props: Props) {
   const appConfig = useAppConfig();
   const t = useTranslations('common');
+  const path = usePathname();
 
   const handleFeedback = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -50,12 +51,28 @@ export function Header(props: Props) {
         <nav className="hidden w-full justify-end lg:flex">
           <ul className="flex items-center gap-4">
             <li>
-              <Link href="/">{t('header.home')}</Link>
+              <Link
+                href="/"
+                className={cn(
+                  path === '/' && 'border-b-2 border-b-primary font-semibold',
+                  'border-b-primary transition-all hover:border-b-2',
+                )}
+              >
+                {t('header.home')}
+              </Link>
             </li>
 
             {appConfig?.headerMenu?.map((item) => (
               <li key={item.name}>
-                <Link href={item.href} target={item.target}>
+                <Link
+                  href={item.href}
+                  target={item.target}
+                  className={cn(
+                    path === item.href &&
+                      'border-b-2 border-b-primary font-semibold',
+                    'border-b-primary transition-all hover:border-b-2',
+                  )}
+                >
                   {item.name}
                 </Link>
               </li>
