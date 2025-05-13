@@ -10,6 +10,7 @@ import { Providers } from '@/lib/providers';
 import { getThemeColors } from '@/utils/get-theme-colors';
 import '../../shared/styles/globals.css';
 import { Metadata } from 'next';
+import { Toaster } from '@/components/ui/sonner';
 
 export async function generateMetadata(): Promise<Metadata> {
   const { data: appConfig } = await getAppConfig();
@@ -64,6 +65,7 @@ export default async function LocaleLayout({
             <Providers>
               <Header />
               {children}
+              <Toaster />
             </Providers>
           </AppConfigProvider>
         </NextIntlClientProvider>

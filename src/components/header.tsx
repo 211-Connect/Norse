@@ -55,7 +55,7 @@ export function Header(props: Props) {
                 href="/"
                 className={cn(
                   path === '/' && 'border-b-2 border-b-primary font-semibold',
-                  'border-b-primary transition-all hover:border-b-2',
+                  'border-b-primary py-1 transition-all hover:border-b-2',
                 )}
               >
                 {t('header.home')}
@@ -70,7 +70,7 @@ export function Header(props: Props) {
                   className={cn(
                     path === item.href &&
                       'border-b-2 border-b-primary font-semibold',
-                    'border-b-primary transition-all hover:border-b-2',
+                    'border-b-primary py-1 transition-all hover:border-b-2',
                   )}
                 >
                   {item.name}

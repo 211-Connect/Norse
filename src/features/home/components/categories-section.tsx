@@ -18,45 +18,44 @@ const Category = ({ category }: Props) => {
 
   if (subcategories && subcategories.length > 0) {
     return (
-      <div className="flex items-start gap-2">
-        {image?.url && (
-          <Image
-            src={image.url}
-            alt=""
-            width={80}
-            height={0}
-            className="h-auto w-10"
-          />
-        )}
-
-        <div className="flex flex-col">
-          <h3 className="text-xl font-semibold">{name}</h3>
-
-          {subcategories.map((el, key) => (
-            <Link
-              className="flex items-center gap-1 rounded-md p-2 pl-1 pr-1 hover:bg-primary/5"
-              key={el.name}
-              href={`${
-                el.href
-                  ? el.href
-                  : `/search?query=${encodeURIComponent(
-                      el.query || '',
-                    )}&query_label=${encodeURIComponent(
-                      el.name,
-                    )}&query_type=${encodeURIComponent(el.queryType || '')}`
-              }`}
-              prefetch={false}
-              target={el.target}
-            >
-              {el.name}
-              {el.target === '_blank' && el.href ? (
-                <ExternalLink className="size-4" />
-              ) : (
-                false
-              )}
-            </Link>
-          ))}
+      <div className="flex flex-col">
+        <div className="flex items-center gap-2">
+          {image?.url && (
+            <Image
+              src={image.url}
+              alt=""
+              width={80}
+              height={0}
+              className="h-auto w-10"
+            />
+          )}
+          <h3 className="text-lg font-semibold">{name}</h3>
         </div>
+
+        {subcategories.map((el) => (
+          <Link
+            className="ml-[40px] flex items-center gap-1 rounded-md p-2 px-2 hover:bg-primary/5"
+            key={el.name}
+            href={`${
+              el.href
+                ? el.href
+                : `/search?query=${encodeURIComponent(
+                    el.query || '',
+                  )}&query_label=${encodeURIComponent(
+                    el.name,
+                  )}&query_type=${encodeURIComponent(el.queryType || '')}`
+            }`}
+            prefetch={false}
+            target={el.target}
+          >
+            {el.name}
+            {el.target === '_blank' && el.href ? (
+              <ExternalLink className="size-4" />
+            ) : (
+              false
+            )}
+          </Link>
+        ))}
       </div>
     );
   }
@@ -96,10 +95,10 @@ export function CategoriesSection() {
   if ((categories?.length ?? 0) === 0) return null;
 
   return (
-    <div className="categories container mx-auto pb-8 pt-8">
-      <h3 className="text-2xl font-bold">{t('categories_title')}</h3>
+    <div className="categories container mx-auto py-8">
+      <h3 className="text-xl font-bold">{t('categories_title')}</h3>
 
-      <Separator className="mb-4 mt-4" />
+      <Separator className="my-2" />
 
       <div
         className={cn(
