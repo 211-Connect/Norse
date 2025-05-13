@@ -19,12 +19,8 @@ export default async function HomePage() {
       <SuggestionsProvider value={suggestions}>
         <CategoriesProvider value={categories}>
           <HeroSection />
-
-          <div className="bg-primary/5">
-            <Alert />
-            <CategoriesSection />
-          </div>
-
+          <Alert />
+          <CategoriesSection />
           <DataProviders />
         </CategoriesProvider>
       </SuggestionsProvider>
