@@ -6,9 +6,9 @@ import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
 import { fontSans } from '@/shared/styles/fonts';
 import { cn } from '@/shared/lib/utils';
-import '../../shared/styles/globals.css';
 import { Providers } from '@/lib/providers';
 import { getThemeColors } from '@/utils/get-theme-colors';
+import '../../shared/styles/globals.css';
 
 export default async function LocaleLayout({
   children,
@@ -23,6 +23,7 @@ export default async function LocaleLayout({
   }
 
   const { data: appConfig } = await getAppConfig();
+
   const primaryColor = getThemeColors(appConfig?.theme.primaryColor ?? '');
   const secondaryColor = getThemeColors(appConfig?.theme.secondaryColor ?? '');
 
@@ -35,10 +36,10 @@ export default async function LocaleLayout({
         )}
         style={
           {
-            '--radius': appConfig?.theme.borderRadius ?? '0.5rem',
-            '--primary': `${primaryColor.color[0]} ${primaryColor.color[1]}% ${primaryColor.color[2]}%`,
+            '--radius': appConfig?.theme.borderRadius,
+            '--primary': primaryColor.color,
             '--primary-foreground': primaryColor.foregroundColor,
-            '--secondary': `${secondaryColor.color[0]} ${secondaryColor.color[1]}% ${secondaryColor.color[2]}%`,
+            '--secondary': secondaryColor.color,
             '--secondary-foreground': secondaryColor.foregroundColor,
           } as React.CSSProperties
         }
