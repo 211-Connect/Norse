@@ -1,3 +1,4 @@
+'use client';
 import { MapRenderer } from '@/shared/components/map/map-renderer';
 import { useWindowScroll } from '@/shared/hooks/use-window-scroll';
 import { HEADER_ID } from '@/shared/lib/constants';

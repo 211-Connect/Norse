@@ -1,3 +1,4 @@
+'use client';
 import { Badge } from '@/shared/components/ui/badge';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { ScrollArea } from '@/shared/components/ui/scroll-area';
@@ -9,16 +10,17 @@ import {
 } from '@/shared/components/ui/sheet';
 import { filtersAtom, filtersOpenAtom } from '@/shared/store/results';
 import { useAtom, useAtomValue } from 'jotai';
-import { useRouter } from 'next/router';
 import qs from 'qs';
 import { useTranslation } from 'next-i18next';
 import { Separator } from '@/shared/components/ui/separator';
 import { Button } from '@/shared/components/ui/button';
 import { useEffect } from 'react';
+import { useRouter } from '@/i18n/navigation';
 
 const Filters = ({ filters, filterKeys }) => {
   const { t } = useTranslation();
   const router = useRouter();
+
   const q: any = qs.parse(router.asPath.slice(router.asPath.indexOf('?') + 1));
 
   const clearFilters = () => {

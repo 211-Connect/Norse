@@ -1,4 +1,4 @@
-import { useAppConfig } from '@/shared/hooks/use-app-config';
+import { useAppConfig } from '@/lib/context/app-config-context';
 import { userCoordinatesAtom } from '@/shared/store/search';
 import { useAtomValue } from 'jotai';
 import dynamic from 'next/dynamic';
@@ -20,7 +20,7 @@ type MapRendererProps = {
 
 const MapRenderer = (props: MapRendererProps) => {
   const appConfig = useAppConfig();
-  const adapterName = appConfig.adapters.map;
+  const adapterName = 'maplibre';
   const Map = renderers[adapterName];
   if (!Map) {
     return (
@@ -46,8 +46,8 @@ const MapRenderer = (props: MapRendererProps) => {
     <div id="map-container" className="h-full w-full">
       <div className="relative h-full w-full">
         <Map
-          center={appConfig.map.center}
-          zoom={appConfig.map.zoom}
+          center={appConfig.map?.center}
+          zoom={appConfig.map?.zoom}
           markers={props.markers}
           usersLocation={userCoords}
           disableUserLocation={props.disableUserLocation}

@@ -1,9 +1,11 @@
+import { useSearchQuery } from '@/hooks/use-search-query';
+import { useSearchQueryType } from '@/hooks/use-search-query-type';
 import { badgeVariants } from '@/shared/components/ui/badge';
 import { cn } from '@/shared/lib/utils';
 import { TaxonomyService } from '@/shared/services/taxonomy-service';
 import { useQuery } from '@tanstack/react-query';
+import { useLocale } from 'next-intl';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import { useEffect, useState, useCallback } from 'react';
 
 type TaxonomyQuery = string | string[] | TaxonomyComplexQuery;
@@ -19,12 +21,10 @@ interface TaxonomyBadgeData {
   name: string | null | undefined;
 }
 
-interface Props {
-  data: TaxonomyBadgeData[] | null | undefined;
-}
-
 export function TaxonomyContainer() {
-  const router = useRouter();
+  const locale = useLocale();
+  const [query] = useSearchQuery();
+  const [queryType] = useSearchQueryType();
   const [taxonomies, setTaxonomies] = useState<string[]>([]);
   const { data } = useQuery({
     queryKey: ['taxonomies', ...taxonomies],
@@ -32,7 +32,7 @@ export function TaxonomyContainer() {
       if (taxonomies.length === 0) return [];
 
       const data = await TaxonomyService.getTaxonomyTerms(taxonomies, {
-        locale: router.locale,
+        locale: locale,
       });
 
       return data;
@@ -86,9 +86,9 @@ export function TaxonomyContainer() {
   );
 
   useEffect(() => {
-    if (router.query.query_type === 'taxonomy' && router.query.query) {
+    if (queryType === 'taxonomy' && query) {
       try {
-        const query = router.query.query;
+        const query = queryType;
         let parsedQuery: TaxonomyQuery;
         if (
           typeof query === 'string' &&
@@ -107,7 +107,7 @@ export function TaxonomyContainer() {
     } else {
       setTaxonomies([]);
     }
-  }, [router.query, extractTaxonomyCodes]);
+  }, [query, extractTaxonomyCodes]);
 
   // Deduplicate data based on code
   const uniqueTaxonomies = data?.reduce<TaxonomyBadgeData[]>((acc, tax) => {

@@ -1,3 +1,4 @@
+import { getPathname, usePathname, useRouter } from '@/i18n/navigation';
 import {
   Pagination,
   PaginationContent,
@@ -7,8 +8,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from './ui/pagination';
-import { useRouter } from 'next/router';
 import { useCallback } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 const DOTS = 'dots';
 
@@ -24,13 +25,17 @@ export function CustomPagination({
   activePage,
   totalResults,
 }) {
+  const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const changePage = async (newPage: number) => {
+    const queryEntries = searchParams?.entries() ?? [];
+    const query = Object.fromEntries(queryEntries);
     await router.push({
-      pathname: router.pathname,
+      pathname,
       query: {
-        ...router.query,
+        ...query,
         page: newPage,
       },
     });

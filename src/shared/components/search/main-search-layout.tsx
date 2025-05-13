@@ -35,9 +35,21 @@ export function MainSearchLayout() {
     query: string;
     queryType: string;
   }[] = useMemo(() => {
-    return categories.reduce((prev, current) => {
+    return categories.reduce<
+      {
+        name: string;
+        query: string;
+        queryType: string;
+      }[]
+    >((prev, current) => {
       if (current?.subcategories?.length) {
-        return prev.concat(current.subcategories);
+        return prev.concat(
+          current.subcategories.map((subcategory) => ({
+            name: subcategory.name || '',
+            query: subcategory.query || '',
+            queryType: subcategory.queryType || '',
+          })),
+        );
       }
 
       return prev;
@@ -53,7 +65,7 @@ export function MainSearchLayout() {
     if (taxonomy) return taxonomy.code;
 
     const suggestion = suggestions.find(
-      (sugg) => sugg.name.toLowerCase() === value.toLowerCase(),
+      (sugg) => sugg.displayName.toLowerCase() === value.toLowerCase(),
     );
     if (suggestion) return suggestion.taxonomies;
 
@@ -72,7 +84,7 @@ export function MainSearchLayout() {
     if (taxonomy) return 'taxonomy';
 
     const suggestion = suggestions.find(
-      (sugg) => sugg.name.toLowerCase() === value.toLowerCase(),
+      (sugg) => sugg.displayName.toLowerCase() === value.toLowerCase(),
     );
     if (suggestion) return 'taxonomy';
 

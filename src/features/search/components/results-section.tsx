@@ -1,3 +1,4 @@
+'use client';
 import { MainSearchLayout } from '@/shared/components/search/main-search-layout';
 import { ResultTotal } from './result-total';
 import { RenderResults } from './render-results';

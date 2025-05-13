@@ -62,4 +62,8 @@ export interface AppConfig {
   }[];
   headerMenu: MenuItem[];
   footerMenu: MenuItem[];
+  map?: {
+    center: [number, number];
+    zoom: number;
+  };
 }

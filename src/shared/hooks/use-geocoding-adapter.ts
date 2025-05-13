@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { BaseGeocoderAdapter } from '../adapters/geocoder/base-geocoder-adapter';
-import { useAppConfig } from './use-app-config';
+import { useAppConfig } from '@/lib/context/app-config-context';
 
 const geocoders = {
   mapbox: import('../adapters/geocoder/mapbox-adapter').then(
@@ -14,7 +14,7 @@ export function useGeocodingAdapter() {
 
   useEffect(() => {
     async function getAdapter() {
-      const adapterName = appConfig.adapters.geocoder;
+      const adapterName = 'mapbox';
       const Geocoder = await geocoders[adapterName];
       if (!Geocoder) {
         throw new Error(
