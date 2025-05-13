@@ -11,6 +11,7 @@ import { getThemeColors } from '@/utils/get-theme-colors';
 import '../../shared/styles/globals.css';
 import { Metadata } from 'next';
 import { Toaster } from '@/components/ui/sonner';
+import { Footer } from '@/components/footer';
 
 export async function generateMetadata(): Promise<Metadata> {
   const { data: appConfig } = await getAppConfig();
@@ -65,6 +66,7 @@ export default async function LocaleLayout({
             <Providers>
               <Header />
               {children}
+              <Footer />
               <Toaster />
             </Providers>
           </AppConfigProvider>
