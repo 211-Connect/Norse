@@ -20,6 +20,7 @@ type MapRendererProps = {
 
 const MapRenderer = (props: MapRendererProps) => {
   const appConfig = useAppConfig();
+  const userCoords = useAtomValue(userCoordinatesAtom);
   const adapterName = 'maplibre';
   const Map = renderers[adapterName];
   if (!Map) {
@@ -33,14 +34,13 @@ const MapRenderer = (props: MapRendererProps) => {
             Map Adapter Error
           </h3>
           <p className="text-gray-600">
-            The requested map adapter '{adapterName}' is not available.
+            The requested map adapter &apos;{adapterName}&apos; is not
+            available.
           </p>
         </div>
       </div>
     );
   }
-
-  const userCoords = useAtomValue(userCoordinatesAtom);
 
   return (
     <div id="map-container" className="h-full w-full">

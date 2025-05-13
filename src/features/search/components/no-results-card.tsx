@@ -1,4 +1,5 @@
-import { Button, buttonVariants } from '@/shared/components/ui/button';
+import { useAppConfig } from '@/lib/context/app-config-context';
+import { buttonVariants } from '@/shared/components/ui/button';
 import {
   Card,
   CardContent,
@@ -7,25 +8,24 @@ import {
   CardHeader,
   CardTitle,
 } from '@/shared/components/ui/card';
-import { useAppConfig } from '@/shared/hooks/use-app-config';
 import { cn } from '@/shared/lib/utils';
 import { Phone } from 'lucide-react';
-import { useTranslation } from 'next-i18next';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useSearchParams } from 'next/navigation';
 
 export function NoResultsCard({ showAltSubtitle }) {
-  const { t } = useTranslation('page-search');
+  const t = useTranslations('page');
   const appConfig = useAppConfig();
-  const router = useRouter();
+  const searchParams = useSearchParams();
 
   return (
     <Card>
       <CardHeader className="text-center">
         <CardTitle>{t('no_results.title')}</CardTitle>
         <CardDescription>
-          {router.query.query_label || router.query.query}
+          {searchParams?.get('query_label') || searchParams?.get('query')}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex items-center justify-center p-2">
@@ -42,7 +42,7 @@ export function NoResultsCard({ showAltSubtitle }) {
         <p className="font-semibold">
           {!showAltSubtitle
             ? t('no_results.subtitle')
-            : appConfig?.contact?.number
+            : appConfig?.phoneNumber
               ? t('no_results.need_help')
               : t('search.no_results_fallback_text', {
                   ns: 'dynamic',
@@ -50,12 +50,12 @@ export function NoResultsCard({ showAltSubtitle }) {
                 })}
         </p>
 
-        {appConfig?.contact?.number && (
+        {appConfig?.phoneNumber && (
           <Link
-            href={`tel:${appConfig.contact.number}`}
+            href={`tel:${appConfig.phoneNumber}`}
             className={cn(buttonVariants({ size: 'sm' }), 'gap-1')}
           >
-            <Phone className="size-4" /> {appConfig.contact.number}
+            <Phone className="size-4" /> {appConfig.phoneNumber}
           </Link>
         )}
       </CardFooter>

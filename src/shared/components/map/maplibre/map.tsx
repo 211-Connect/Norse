@@ -34,9 +34,9 @@ export function Map({
   usersLocation,
   disableUserLocation,
 }: MapProps) {
-  const mapContainer = useRef();
-  const mapLibreMap = useRef(null);
-  const _markers = useRef(null);
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const mapLibreMap = useRef<mapLibreGl.Map>();
+  const _markers = useRef<maplibregl.Marker[]>();
 
   useEffect(() => {
     mapLibreMap.current = new mapLibreGl.Map({
@@ -86,11 +86,13 @@ export function Map({
         marker.togglePopup();
       });
 
-      if (m.coordinates) {
+      if (m.coordinates && mapLibreMap.current) {
         marker.addTo(mapLibreMap.current);
       }
 
-      bounds.extend(m.coordinates);
+      if (m.coordinates) {
+        bounds.extend(m.coordinates);
+      }
 
       return marker;
     });

@@ -1,25 +1,26 @@
 import { useAppConfig } from '@/lib/context/app-config-context';
 import { CustomPagination } from '@/shared/components/custom-pagination';
-import {
-  resultsCurrentPageAtom,
-  resultTotalAtom,
-} from '@/shared/store/results';
-import { useAtomValue } from 'jotai';
 
-export function ResultsPagination() {
+type ResultsPaginationProps = {
+  page: number;
+  total: number;
+};
+
+export function ResultsPagination({
+  page = 1,
+  total = 0,
+}: ResultsPaginationProps) {
   const appConfig = useAppConfig();
-  const totalResults = useAtomValue(resultTotalAtom);
-  const currentPage = useAtomValue(resultsCurrentPageAtom);
 
   const limit = appConfig.search?.resultsLimit ?? 25;
-  const totalPages = Math.ceil(totalResults / limit);
+  const totalPages = Math.ceil(total / limit);
 
   return (
     <div className="print:hidden">
       <CustomPagination
         total={totalPages}
-        totalResults={totalResults}
-        activePage={currentPage}
+        totalResults={total}
+        activePage={page}
         siblings={1}
         boundaries={1}
       />

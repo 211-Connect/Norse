@@ -59,7 +59,7 @@ export type SearchQueryParams = {
   locale?: string;
 };
 
-type SearchResultResponse = {
+export type SearchResultResponse = {
   results: {
     _id: string;
     id: string;
@@ -70,6 +70,12 @@ type SearchResultResponse = {
     phone: string;
     website: string;
     address: string;
+    summary: string;
+    location: any;
+    taxonomies: {
+      name: string;
+      code: string;
+    }[];
   }[];
   noResults: boolean;
   totalResults: number;
@@ -179,9 +185,7 @@ export async function fetchSearchResults(
           };
 
           return Object.fromEntries(
-            keys(responseData)
-              .filter((key) => responseData[key] != null)
-              .map((key) => [key, responseData[key]]),
+            Object.entries(responseData).filter(([, value]) => value != null),
           );
         }) ?? [],
       noResults,

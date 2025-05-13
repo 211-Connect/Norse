@@ -1,27 +1,23 @@
 import { useAppConfig } from '@/lib/context/app-config-context';
-import {
-  resultsCurrentPageAtom,
-  resultTotalAtom,
-} from '@/shared/store/results';
-import { useAtomValue } from 'jotai';
-import { useTranslation } from 'next-i18next';
+import { useTranslations } from 'next-intl';
 
-export function ResultTotal() {
-  const { t } = useTranslation();
+type ResultTotalProps = {
+  page: number;
+  total: number;
+};
+
+export function ResultTotal({ page = 1, total = 0 }: ResultTotalProps) {
+  const t = useTranslations('page');
   const appConfig = useAppConfig();
-  const resultTotal = useAtomValue(resultTotalAtom);
-  const currentPage = useAtomValue(resultsCurrentPageAtom);
 
   const limit = appConfig.search?.resultsLimit ?? 25;
 
   const counterStart = Math.round(
-    Math.abs(
-      Math.min(Math.max(currentPage * limit - limit + 1, 0), resultTotal),
-    ),
+    Math.abs(Math.min(Math.max(page * limit - limit + 1, 0), total)),
   );
 
   const counterEnd = Math.round(
-    Math.abs(Math.min(Math.max(currentPage * limit, 0), resultTotal)),
+    Math.abs(Math.min(Math.max(page * limit, 0), total)),
   );
 
   return (
@@ -30,7 +26,7 @@ export function ResultTotal() {
       {` `}
       {t('of')}
       {` `}
-      {resultTotal.toLocaleString()}
+      {total.toLocaleString()}
     </div>
   );
 }

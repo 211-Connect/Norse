@@ -9,11 +9,11 @@ import {
   DialogTitle,
 } from '@/shared/components/ui/dialog';
 import { Navigation } from 'lucide-react';
-import { useTranslation } from 'next-i18next';
+import { useTranslations } from 'next-intl';
 import { useCallback, useState } from 'react';
 
 export function GetDirectionsButton({ data, coords }) {
-  const { t } = useTranslation();
+  const t = useTranslations('common');
   const [open, setOpen] = useState(false);
 
   const getOrigin = useCallback(() => {

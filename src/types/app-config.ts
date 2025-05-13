@@ -13,6 +13,7 @@ type Image = {
 export interface AppConfig {
   brandName: string;
   feedbackUrl: string;
+  categoriesText?: string;
   email?: string;
   phoneNumber?: string;
   logo?: Image;

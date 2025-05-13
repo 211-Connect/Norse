@@ -1,15 +1,17 @@
 'use client';
+import { SearchResultResponse } from '@/lib/server/fetch-search-results';
 import { MapRenderer } from '@/shared/components/map/map-renderer';
 import { useWindowScroll } from '@/shared/hooks/use-window-scroll';
 import { HEADER_ID } from '@/shared/lib/constants';
-import { resultsAtom } from '@/shared/store/results';
-import { useAtomValue } from 'jotai';
 import { useEffect, useMemo, useState } from 'react';
 
-export function MapContainer() {
+type MapContainerProps = {
+  results: SearchResultResponse['results'];
+};
+
+export function MapContainer({ results }: MapContainerProps) {
   const [_, y] = useWindowScroll();
   const [headerHeight, setHeaderHeight] = useState(0);
-  const results = useAtomValue(resultsAtom);
 
   const clampedWindowValue = Math.round(
     Math.abs(Math.min(Math.max(y, 0), headerHeight) - headerHeight),
@@ -17,7 +19,7 @@ export function MapContainer() {
 
   useEffect(() => {
     const header = document.getElementById(HEADER_ID);
-    setHeaderHeight(header.clientHeight);
+    setHeaderHeight(header?.clientHeight ?? 0);
   }, [y]);
 
   // Memoize to prevent unecessary map re-renders

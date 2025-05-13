@@ -13,9 +13,7 @@ import {
   distanceBetweenCoordsInKm,
   getGoogleMapsDestinationUrl,
 } from '@/shared/lib/utils';
-import { ResultType } from '@/shared/store/results';
 import { Globe, LinkIcon, MapPin, Navigation, Phone, Pin } from 'lucide-react';
-import { useTranslation } from 'next-i18next';
 import { Badge } from '@/shared/components/ui/badge';
 import { useAtomValue } from 'jotai';
 import { userCoordinatesAtom } from '@/shared/store/search';
@@ -31,24 +29,28 @@ import { ReferralButton } from '@/shared/components/referral-button';
 import { AddToFavoritesButton } from '@/shared/components/add-to-favorites-button';
 import { CopyBadge } from '@/shared/components/copy-badge';
 import { parseHtml } from '@/shared/lib/parse-html';
-import { useFlag } from '@/shared/hooks/use-flag';
+import { SearchResultResponse } from '@/lib/server/fetch-search-results';
+import { useTranslations } from 'next-intl';
+import { useAppConfig } from '@/lib/context/app-config-context';
 
 type ResultProps = {
-  data: ResultType;
+  data: SearchResultResponse['results'][number];
 };
 
 export function Result({ data }: ResultProps) {
-  const { t } = useTranslation();
+  const t = useTranslations('common');
+  const appConfig = useAppConfig();
   const coords = useAtomValue(userCoordinatesAtom);
-  const showServiceName = useFlag('showSearchAndResourceServiceName');
+  const showServiceName =
+    appConfig.featureFlags?.showSearchAndResourceServiceName;
 
-  const distance =
-    data?.location?.coordinates && (coords?.length ?? 0) === 2
-      ? distanceBetweenCoordsInKm(
-          coords as [number, number],
-          data.location.coordinates,
-        )
-      : null;
+  // const distance =
+  //   data?.location?.coordinates && (coords?.length ?? 0) === 2
+  //     ? distanceBetweenCoordsInKm(
+  //         coords as [number, number],
+  //         data.location.coordinates,
+  //       )
+  //     : null;
 
   return (
     <>
@@ -64,14 +66,14 @@ export function Result({ data }: ResultProps) {
               )}
             </div>
 
-            <div>
+            {/* <div>
               {distance != null && distance > 0 && (
                 <Badge variant="outline" className="flex gap-1">
                   <Navigation className="size-3" />
                   {distance.toFixed(1)} {t('search.miles')}
                 </Badge>
               )}
-            </div>
+            </div> */}
           </div>
 
           <CardTitle className="flex flex-row justify-between gap-2">
@@ -83,7 +85,7 @@ export function Result({ data }: ResultProps) {
             </Link>
 
             <div className="print:hidden">
-              <AddToFavoritesButton size="icon" serviceAtLocationId={data.id} />
+              {/* <AddToFavoritesButton size="icon" serviceAtLocationId={data.id} /> */}
             </div>
           </CardTitle>
           {showServiceName && (
@@ -154,10 +156,7 @@ export function Result({ data }: ResultProps) {
                 <Separator className="print:hidden" />
 
                 <p className="text-sm font-semibold print:hidden">
-                  {t('categories_text', {
-                    ns: 'dynamic',
-                    defaultValue: t('categories', { ns: 'page-resource' }),
-                  })}
+                  {appConfig?.categoriesText ?? t('search.categories')}
                 </p>
 
                 <div className="flex flex-wrap gap-1 print:hidden">
