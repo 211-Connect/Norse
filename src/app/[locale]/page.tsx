@@ -10,9 +10,12 @@ import Alert from '@/features/home/components/alert';
 import { DataProviders } from '@/shared/components/data-providers';
 
 export default async function HomePage() {
-  const messages = await loadMessages('home');
-  const { data: suggestions } = await fetchSuggestions();
-  const { data: categories } = await fetchCategories();
+  const [messages, { data: suggestions }, { data: categories }] =
+    await Promise.all([
+      loadMessages('home'),
+      fetchSuggestions(),
+      fetchCategories(),
+    ]);
 
   return (
     <NextIntlClientProvider messages={messages}>
