@@ -1,20 +1,21 @@
 import { Header } from '@/components/header';
 import { routing } from '@/i18n/routing';
 import { AppConfigProvider } from '@/lib/context/app-config-context';
-import { getAppConfig } from '@/lib/server/get-app-config';
+import { fetchAppConfig } from '@/lib/server/fetch-app-config';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
 import { fontSans } from '@/shared/styles/fonts';
 import { cn } from '@/shared/lib/utils';
 import { Providers } from '@/lib/providers';
 import { getThemeColors } from '@/utils/get-theme-colors';
-import '../../shared/styles/globals.css';
 import { Metadata } from 'next';
 import { Toaster } from '@/components/ui/sonner';
 import { Footer } from '@/components/footer';
+import '../../shared/styles/globals.css';
+import { getDirection } from '@/i18n/get-direction';
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { data: appConfig } = await getAppConfig();
+  const { data: appConfig } = await fetchAppConfig();
 
   const faviconUrl = appConfig?.favicon?.url ?? '/favicon.ico';
 
@@ -39,13 +40,15 @@ export default async function LocaleLayout({
     notFound();
   }
 
-  const { data: appConfig } = await getAppConfig();
+  const dir = getDirection(locale);
+
+  const { data: appConfig } = await fetchAppConfig();
 
   const primaryColor = getThemeColors(appConfig?.theme.primaryColor ?? '');
   const secondaryColor = getThemeColors(appConfig?.theme.secondaryColor ?? '');
 
   return (
-    <html lang={locale}>
+    <html lang={locale} dir={dir}>
       <body
         className={cn(
           'flex min-h-screen flex-col bg-primary/5 font-sans antialiased',

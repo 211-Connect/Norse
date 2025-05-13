@@ -1,6 +1,6 @@
 import { getLocale, getMessages } from 'next-intl/server';
 
-export async function getPageMessages(pageName: string) {
+export async function loadMessages(pageName: string) {
   const locale = await getLocale();
   const commonMessages = await getMessages();
   const pageMessages = (

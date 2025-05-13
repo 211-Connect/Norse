@@ -62,6 +62,18 @@ export function Header(props: Props) {
               </Link>
             </li>
 
+            <li>
+              <Link
+                href="/search"
+                className={cn(
+                  'border-b-2 border-b-transparent py-1 transition-all hover:border-b-primary',
+                  path === '/search' && 'border-b-primary font-semibold',
+                )}
+              >
+                {t('header.search')}
+              </Link>
+            </li>
+
             {appConfig?.headerMenu?.map((item) => (
               <li key={item.name}>
                 <Link

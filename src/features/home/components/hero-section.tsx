@@ -7,7 +7,7 @@ export function HeroSection() {
   const appConfig = useAppConfig();
 
   return (
-    <div className="relative flex h-screen max-h-64 flex-col items-center justify-center gap-2 p-2 md:max-h-96">
+    <div className="relative flex flex-col items-center justify-center gap-2 p-2 py-8 sm:py-16 md:py-24">
       <Image
         fill
         src={appConfig?.hero?.url ?? '/hero.jpg'}

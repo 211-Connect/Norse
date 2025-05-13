@@ -12,7 +12,7 @@ const query = qs.stringify({
   },
 });
 
-export async function getSuggestions() {
+export async function fetchSuggestions() {
   const locale = await getLocale();
   const response = await fetch(
     `${STRAPI_URL}/api/tenants?filters[tenantId][$eq]=${TENANT_ID}&${query}&locale=${locale}`,

@@ -1,6 +1,7 @@
 {
   "header": {
     "home": "Home",
+    "search": "Search",
     "favorites": "Favorites",
     "log_out": "Log out",
     "submit_feedback": "Submit feedback",

@@ -2,14 +2,14 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { FilterPanel } from '@/features/search/components/filter-panel';
 import { MapContainer } from '@/features/search/components/map-container';
 import { ResultsSection } from '@/features/search/components/results-section';
-import { getSuggestions } from '@/lib/server/get-suggestions';
-import { getCategories } from '@/lib/server/get-categories';
+import { fetchSuggestions } from '@/lib/server/fetch-suggestions';
+import { fetchCategories } from '@/lib/server/fetch-categories';
 import { SuggestionsProvider } from '@/lib/context/suggestions-context';
 import { CategoriesProvider } from '@/lib/context/categories-context';
 
 export default async function SearchPage() {
-  const { data: suggestions } = await getSuggestions();
-  const { data: categories } = await getCategories();
+  const { data: suggestions } = await fetchSuggestions();
+  const { data: categories } = await fetchCategories();
 
   return (
     <NuqsAdapter>

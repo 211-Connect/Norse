@@ -37,7 +37,7 @@ const query = qs.stringify({
   },
 });
 
-export async function getAppConfig() {
+export async function fetchAppConfig() {
   const locale = await getLocale();
   const response = await fetch(
     `${STRAPI_URL}/api/tenants?filters[tenantId][$eq]=${TENANT_ID}&${query}&locale=${locale}`,
