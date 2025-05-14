@@ -107,7 +107,7 @@ export function TaxonomyContainer() {
     } else {
       setTaxonomies([]);
     }
-  }, [query, extractTaxonomyCodes]);
+  }, [query, queryType, extractTaxonomyCodes]);
 
   // Deduplicate data based on code
   const uniqueTaxonomies = data?.reduce<TaxonomyBadgeData[]>((acc, tax) => {

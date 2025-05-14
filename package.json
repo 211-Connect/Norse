@@ -3,11 +3,10 @@
   "version": "0.1.1",
   "license": "MIT",
   "scripts": {
-    "dev": "node -r dotenv/config bin/pre-build && next dev --turbo",
-    "build": "node bin/pre-build && next build",
+    "dev": "next dev --turbo",
+    "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "translate": "node bin/translateFromEnglish"
+    "lint": "next lint"
   },
   "engines": {
     "node": "20.x"
