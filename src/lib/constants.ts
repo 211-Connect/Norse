@@ -8,8 +8,13 @@ export const MAPBOX_API_BASE_URL = 'https://api.mapbox.com';
 export const MAPBOX_STYLE_URL = process.env.NEXT_PUBLIC_MAPBOX_STYLE_URL;
 export const MAPLIBRE_STYLE_URL = process.env.NEXT_PUBLIC_MAPLIBRE_STYLE_URL;
 
+export const IS_DEVELOPMENT = process.env.NODE_ENV !== 'production';
+
 // Session ID cookie
 export const SESSION_ID = 'session-id';
+
+export const COOKIE_SESSION_ID = '_norse_session_id';
+export const COOKIE_TENANT_ID = '_norse_tenant_id';
 
 // Strictly necessary cookies
 export const ALLOW_ALL_COOKIES = 'allow-all-cookies'; // required to be able to store user preferences

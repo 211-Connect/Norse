@@ -1,6 +1,7 @@
 import { z } from 'zod';
-import { API_URL, TENANT_ID } from '../constants';
+import { API_URL } from '../constants';
 import qs from 'qs';
+import { getTenantId } from './get-tenant-id';
 
 const createComplexQuerySchema = (depth: number): z.ZodTypeAny => {
   if (depth <= 0) {
@@ -88,6 +89,12 @@ export async function fetchSearchResults(
   searchParams: SearchQueryParams,
   locale: string | undefined = '',
 ): Promise<{ data: SearchResultResponse | null; error: string | null }> {
+  const tenantId = await getTenantId();
+
+  if (!tenantId) {
+    return { data: null, error: 'Tenant id not set' };
+  }
+
   const { data: params, error } = searchSchema.safeParse(searchParams);
 
   if (error) {
@@ -105,7 +112,7 @@ export async function fetchSearchResults(
       headers: {
         'accept-language': locale,
         'x-api-version': '1',
-        'x-tenant-id': TENANT_ID || '',
+        'x-tenant-id': tenantId,
       },
     },
   );
@@ -136,7 +143,7 @@ export async function fetchSearchResults(
         headers: {
           'accept-language': locale,
           'x-api-version': '1',
-          'x-tenant-id': TENANT_ID || '',
+          'x-tenant-id': tenantId,
         },
       },
     );
