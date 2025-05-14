@@ -12,6 +12,7 @@ import { ResultTotal } from '../components/result-total';
 import { ResultsPagination } from '../components/results-pagination';
 import { Result } from '../components/result';
 import { NoResultsCard } from '../components/no-results-card';
+import { FilterPanel } from '../components/filter-panel';
 
 type ListViewTemplateProps = {
   resultData: SearchResultResponse;
@@ -19,12 +20,11 @@ type ListViewTemplateProps = {
 
 export function ListViewTemplate({ resultData }: ListViewTemplateProps) {
   const setFiltersOpen = useSetAtom(filtersOpenAtom);
-  const filters = useAtomValue(filtersAtom);
-  const filterKeys = Object.keys(filters);
+  const filterKeys = Object.keys(resultData.filters);
 
   return (
     <div className="flex h-full w-full">
-      {/* <FilterPanel /> */}
+      <FilterPanel filters={resultData.filters} />
 
       <div
         id="search-container"
@@ -32,7 +32,6 @@ export function ListViewTemplate({ resultData }: ListViewTemplateProps) {
       >
         <div className="flex flex-col gap-2 bg-white p-2 print:hidden">
           <MainSearchLayout />
-
           <TaxonomyContainer />
         </div>
 

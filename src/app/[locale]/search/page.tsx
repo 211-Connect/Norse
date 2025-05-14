@@ -12,19 +12,29 @@ import {
 import { ListViewTemplate } from '@/features/search/templates/list-view-template';
 
 type SearchPageProps = {
-  params: Promise<SearchQueryParams>;
+  searchParams: Promise<SearchQueryParams>;
+  params: Promise<{ locale: string }>;
 };
 
-export default async function SearchPage({ params }: SearchPageProps) {
-  const [messages, { data: suggestions }, { data: categories }, searchParams] =
-    await Promise.all([
-      loadMessages('search'),
-      fetchSuggestions(),
-      fetchCategories(),
-      params,
-    ]);
+export default async function SearchPage({
+  searchParams,
+  params,
+}: SearchPageProps) {
+  const [
+    messages,
+    { data: suggestions },
+    { data: categories },
+    queryParams,
+    parsedParams,
+  ] = await Promise.all([
+    loadMessages('search'),
+    fetchSuggestions(),
+    fetchCategories(),
+    searchParams,
+    params,
+  ]);
 
-  const { data } = await fetchSearchResults(searchParams, searchParams?.locale);
+  const { data } = await fetchSearchResults(queryParams, parsedParams?.locale);
 
   if (!data) {
     throw new Error('Error fetching search results');

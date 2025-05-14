@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { API_URL, TENANT_ID } from '../constants';
 import qs from 'qs';
-import { keys, omit } from 'radash';
 
 const createComplexQuerySchema = (depth: number): z.ZodTypeAny => {
   if (depth <= 0) {
@@ -42,7 +41,10 @@ const searchSchema = z.object({
       return numbers;
     })
     .optional(),
-  filters: z.record(z.string().or(z.array(z.string()))).default({}),
+  filters: z
+    .string()
+    .transform((val) => qs.parse(val))
+    .default(''),
   distance: z.coerce.number().int().nonnegative().default(0),
   limit: z.coerce.number().int().positive().max(300).min(25).default(25),
 });
@@ -56,7 +58,6 @@ export type SearchQueryParams = {
   query?: string;
   query_type?: string;
   filters?: string;
-  locale?: string;
 };
 
 export type SearchResultResponse = {
@@ -84,10 +85,10 @@ export type SearchResultResponse = {
 };
 
 export async function fetchSearchResults(
-  params: SearchQueryParams,
+  searchParams: SearchQueryParams,
   locale: string | undefined = '',
 ): Promise<{ data: SearchResultResponse | null; error: string | null }> {
-  const { data: searchParams, error } = searchSchema.safeParse(params);
+  const { data: params, error } = searchSchema.safeParse(searchParams);
 
   if (error) {
     console.log(error);
@@ -96,7 +97,7 @@ export async function fetchSearchResults(
 
   const response = await fetch(
     `${API_URL}/search?${qs.stringify({
-      ...searchParams,
+      ...params,
       locale,
     })}`,
     {
@@ -126,7 +127,7 @@ export async function fetchSearchResults(
 
     const noResultsResponse = await fetch(
       `${API_URL}/search?${qs.stringify({
-        ...searchParams,
+        ...params,
         locale,
         query_type: 'more_like_this',
       })}`,
@@ -190,7 +191,7 @@ export async function fetchSearchResults(
         }) ?? [],
       noResults,
       totalResults,
-      page: searchParams.page,
+      page: params.page,
       filters: data?.search?.aggregations ?? {},
     },
     error: null,
