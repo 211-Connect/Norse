@@ -3,7 +3,7 @@ import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { Cross2Icon } from '@radix-ui/react-icons';
 
 import { cn } from '@/shared/lib/utils';
-import { fontSans } from '@/shared/styles/fonts';
+import { fontSans } from '@/styles/fonts';
 
 const Dialog = DialogPrimitive.Root;
 

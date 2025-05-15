@@ -1,9 +1,12 @@
+import { useForm } from 'react-hook-form';
 import { SearchBar } from '../components/search-bar';
 
 export function SearchForm() {
+  const form = useForm();
+
   return (
-    <div>
+    <form>
       <SearchBar />
-    </div>
+    </form>
   );
 }

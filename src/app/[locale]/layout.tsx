@@ -4,15 +4,15 @@ import { AppConfigProvider } from '@/lib/context/app-config-context';
 import { fetchAppConfig } from '@/lib/server/fetch-app-config';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
-import { fontSans } from '@/shared/styles/fonts';
 import { cn } from '@/shared/lib/utils';
 import { Providers } from '@/lib/providers';
 import { getThemeColors } from '@/utils/get-theme-colors';
 import { Metadata } from 'next';
 import { Toaster } from '@/components/ui/sonner';
 import { Footer } from '@/components/footer';
-import '../../shared/styles/globals.css';
 import { getDirection } from '@/i18n/get-direction';
+import { fontSans } from '@/styles/fonts';
+import '../../styles/globals.css';
 
 export async function generateMetadata(): Promise<Metadata> {
   const { data: appConfig } = await fetchAppConfig();

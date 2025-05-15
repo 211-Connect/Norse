@@ -1,4 +1,3 @@
-import '@/shared/styles/globals.css';
 import Head from 'next/head';
 import { appWithTranslation } from 'next-i18next';
 import { AppProps } from 'next/app';
@@ -11,7 +10,6 @@ import { GoogleTagManagerScript } from '@/shared/components/google-tag-manager-s
 import { Toaster } from '@/shared/components/ui/sonner';
 import { JotaiHydration } from '@/shared/components/jotai-hydration';
 import { GlobalDialogs } from '@/shared/components/global-dialogs/global-dialogs';
-import { fontSans } from '@/shared/styles/fonts';
 
 function App({
   Component,
@@ -21,7 +19,6 @@ function App({
     <div
       className={cn(
         'flex min-h-screen flex-col bg-primary/5 font-sans antialiased',
-        fontSans.variable,
       )}
     >
       <Head>
