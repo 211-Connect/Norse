@@ -6,7 +6,7 @@ type Menu = {
   target: '_self' | '_blank';
 };
 
-type AppConfig = {
+export type AppConfig = {
   brand?: {
     name: string;
     logoUrl?: string;
