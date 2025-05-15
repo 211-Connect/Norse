@@ -53,6 +53,7 @@
     "@radix-ui/react-tooltip": "^1.2.0",
     "@reactour/tour": "^3.7.0",
     "@tanstack/react-query": "^5.74.3",
+    "@uidotdev/usehooks": "^2.4.1",
     "autoprefixer": "^10.4.21",
     "autosuggest-highlight": "^3.3.4",
     "axios": "^1.8.4",

@@ -48,12 +48,6 @@ const CommandInput = React.forwardRef<
     className={cn('flex items-center border-b px-3', wrapperClassName)}
     cmdk-input-wrapper=""
   >
-    {Icon ? (
-      <Icon className="mr-2 h-4 w-4 shrink-0 opacity-50" />
-    ) : (
-      <MagnifyingGlassIcon className="mr-2 h-4 w-4 shrink-0 opacity-50" />
-    )}
-
     <CommandPrimitive.Input
       ref={ref}
       className={cn(

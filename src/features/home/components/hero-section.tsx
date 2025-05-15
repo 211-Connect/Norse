@@ -1,7 +1,7 @@
 'use client';
 import Image from 'next/image';
 import { useAppConfig } from '@/lib/context/app-config-context';
-import { MainSearchLayout } from '@/shared/components/search/main-search-layout';
+import { SearchBar } from '@/features/search/components/search-bar';
 
 export function HeroSection() {
   const appConfig = useAppConfig();
@@ -24,7 +24,7 @@ export function HeroSection() {
           {appConfig?.search?.homePageTitle}
         </h3>
 
-        <MainSearchLayout />
+        <SearchBar />
       </div>
     </div>
   );
