@@ -21,7 +21,6 @@ export function SearchForm() {
           name="query"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Search</FormLabel>
               <SearchBar />
               <FormMessage />
             </FormItem>

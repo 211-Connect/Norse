@@ -46,6 +46,7 @@ export type AutocompleteProps = {
   onInputChange?: (value: string) => void;
   value?: string;
   defaultValue?: string;
+  placeholder?: string;
 };
 
 export function Autocomplete({
@@ -54,6 +55,7 @@ export function Autocomplete({
   onInputChange,
   defaultValue,
   value: inputValue,
+  placeholder,
   ...rest
 }: AutocompleteProps) {
   const uniqueId = useId();
@@ -337,6 +339,7 @@ export function Autocomplete({
         onBlur={handleBlur}
         onChange={handleInputChange}
         value={value}
+        placeholder={placeholder}
         autoComplete="off"
         aria-autocomplete="list"
         aria-controls={open ? uniqueId : undefined}

@@ -5,8 +5,11 @@ import { useState } from 'react';
 import { useDebounce } from '@uidotdev/usehooks';
 import { useTaxonomies } from './hooks/use-taxonomies';
 import { useOptions } from './hooks/use-options';
+import { useAppConfig } from '@/lib/context/app-config-context';
+import { SearchIcon } from 'lucide-react';
 
 export function SearchBar() {
+  const appConfig = useAppConfig();
   const [value, setValue] = useState('');
   const [inputValue, setInputValue] = useState('');
   const debouncedValue = useDebounce(inputValue, 500);
@@ -24,12 +27,14 @@ export function SearchBar() {
   };
 
   return (
-    <div className="px-4">
+    <div className="flex items-center space-x-2 border-b">
+      <SearchIcon size={16} />
       <Autocomplete
         options={options}
         onValueChange={handleValueChange}
         onInputChange={handleInputChange}
         value={value}
+        placeholder={appConfig.search?.queryInputPlaceholder}
       />
     </div>
   );

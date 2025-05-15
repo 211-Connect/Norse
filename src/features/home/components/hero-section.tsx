@@ -17,7 +17,7 @@ export function HeroSection() {
       />
 
       <div
-        className="flex min-w-full flex-col gap-1 rounded-md bg-white p-4 sm:min-w-[500px]"
+        className="flex min-w-full flex-col gap-4 rounded-md bg-white p-4 sm:min-w-[500px]"
         role="search"
       >
         <h3 className="text-2xl font-bold">
