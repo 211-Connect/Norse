@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { HEADER_ID } from '@/lib/constants';
 import { Button } from './ui/button';
+import { MessagesSquareIcon } from 'lucide-react';
 
 type Props = {
   fullWidth?: boolean;
@@ -97,6 +98,7 @@ export function Header(props: Props) {
                   variant="outline"
                   onClick={handleFeedback}
                 >
+                  <MessagesSquareIcon size={16} className="opacity-50" />
                   {t('header.submit_feedback')}
                 </Button>
               </li>
