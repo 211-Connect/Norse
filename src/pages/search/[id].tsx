@@ -21,8 +21,6 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   } catch (err) {
     if (isAxiosError(err)) {
       if (err?.response?.status === 404) {
-        notFound = true;
-
         if (err.response.data.redirect) {
           return {
             redirect: {
@@ -31,6 +29,13 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
             },
           };
         }
+
+        return {
+          redirect: {
+            destination: `/${ctx.locale}`,
+            permanent: false,
+          },
+        };
       }
     } else {
       console.error(err);
@@ -38,12 +43,6 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   }
 
   cacheControl(ctx);
-
-  if (notFound) {
-    return {
-      notFound: true,
-    };
-  }
 
   return {
     props: {
