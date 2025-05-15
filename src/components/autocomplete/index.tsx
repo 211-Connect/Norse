@@ -330,7 +330,7 @@ export function Autocomplete({
   );
 
   return (
-    <div className={cn('flex items-center', className)}>
+    <div className={cn('flex w-full items-center', className)}>
       <Input
         className="rounded-none border-none px-0 shadow-none focus-visible:ring-0"
         ref={setReferenceElement}
@@ -400,7 +400,10 @@ export function Autocomplete({
                 ) : (
                   <h3
                     id={groupId}
-                    className="px-3 py-1 text-xs text-primary"
+                    className={cn(
+                      'p-2 text-xs text-primary',
+                      groupIndex > 0 && 'pt-4',
+                    )}
                     role="presentation"
                   >
                     {groupName}
@@ -421,7 +424,7 @@ export function Autocomplete({
                         ref={setOptionRef(option.index)}
                         role="option"
                         className={cn(
-                          'flex justify-between gap-2 px-3 py-1',
+                          'flex justify-between gap-2 px-2 py-1',
                           currentIndex === option.index && 'bg-primary/5',
                         )}
                         aria-selected={currentIndex === option.index}

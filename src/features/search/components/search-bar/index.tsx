@@ -27,8 +27,8 @@ export function SearchBar() {
   };
 
   return (
-    <div className="flex items-center space-x-2 border-b">
-      <SearchIcon size={16} />
+    <div className="flex w-full items-center space-x-2 border-b">
+      <SearchIcon size={16} className="opacity-50" />
       <Autocomplete
         options={options}
         onValueChange={handleValueChange}

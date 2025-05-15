@@ -15,7 +15,7 @@ export function SearchForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)}>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="w-full">
         <FormField
           control={form.control}
           name="query"
