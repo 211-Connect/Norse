@@ -1,15 +1,11 @@
 import { useForm } from 'react-hook-form';
 import { SearchBar } from '../components/search-bar';
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+import { Form, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
+import { useTranslations } from 'next-intl';
 
 export function SearchForm() {
+  const t = useTranslations('common');
   const form = useForm();
 
   const handleSubmit = (values) => {};
@@ -32,7 +28,7 @@ export function SearchForm() {
         />
 
         <div className="flex justify-end">
-          <Button>Search</Button>
+          <Button>{t('search.search')}</Button>
         </div>
       </form>
     </Form>
