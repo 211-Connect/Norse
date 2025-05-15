@@ -24,7 +24,7 @@ export function SearchBar() {
   };
 
   return (
-    <div>
+    <div className="px-4">
       <Autocomplete
         options={options}
         onValueChange={handleValueChange}

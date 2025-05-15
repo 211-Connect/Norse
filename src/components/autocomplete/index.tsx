@@ -328,9 +328,7 @@ export function Autocomplete({
   );
 
   return (
-    <div
-      className={cn('relative flex items-center border-b px-3 py-1', className)}
-    >
+    <div className={cn('flex items-center', className)}>
       <Input
         className="rounded-none border-none px-0 shadow-none focus-visible:ring-0"
         ref={setReferenceElement}
@@ -384,8 +382,8 @@ export function Autocomplete({
           role="listbox"
           aria-multiselectable="false"
           ref={setPopperElement}
-          style={styles.popper}
-          className="z-10 max-h-56 w-full overflow-auto overscroll-contain rounded-md bg-white shadow-md"
+          style={{ ...styles.popper, width: referenceElement?.offsetWidth }}
+          className="z-10 max-h-56 overflow-auto overscroll-contain rounded-md bg-white shadow-md"
           {...attributes.popper}
         >
           {options?.map((group, groupIndex) => {
