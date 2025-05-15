@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 
-export function useMouseMovement() {
+export function useMouseMovement(enabled?: boolean) {
   const [isMoving, setIsMoving] = useState(false);
 
   useEffect(() => {
+    if (!enabled) return;
+
     let timeoutId;
 
     const handleMouseMove = () => {
@@ -20,7 +22,7 @@ export function useMouseMovement() {
       window.removeEventListener('mousemove', handleMouseMove);
       clearTimeout(timeoutId);
     };
-  }, []);
+  }, [enabled]);
 
   return isMoving;
 }

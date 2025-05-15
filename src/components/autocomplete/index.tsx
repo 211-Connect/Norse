@@ -59,9 +59,9 @@ export function Autocomplete({
   ...rest
 }: AutocompleteProps) {
   const uniqueId = useId();
-  const isMouseMoving = useMouseMovement();
   const lastManualInputRef = useRef('');
   const [open, setOpen] = useState(false);
+  const isMouseMoving = useMouseMovement(open);
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [value, setValue] = useUncontrolledState<string>({
     value: inputValue,
