@@ -4,9 +4,6 @@ import { fetchSuggestions } from '@/lib/server/fetch-suggestions';
 import { SuggestionsProvider } from '@/lib/context/suggestions-context';
 import { fetchCategories } from '@/lib/server/fetch-categories';
 import { CategoriesProvider } from '@/lib/context/categories-context';
-import { CategoriesSection } from '@/features/home/components/categories-section';
-import Alert from '@/features/home/components/alert';
-import { DataProviders } from '@/shared/components/data-providers';
 import { HomePageTemplate } from '@/features/home/templates/home-page-template';
 
 export default async function HomePage() {
