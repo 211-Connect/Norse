@@ -7,6 +7,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { Button } from '@/components/ui/button';
 
 export function SearchForm() {
   const form = useForm();
@@ -15,7 +16,10 @@ export function SearchForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="w-full">
+      <form
+        onSubmit={form.handleSubmit(handleSubmit)}
+        className="w-full space-y-2"
+      >
         <FormField
           control={form.control}
           name="query"
@@ -26,6 +30,10 @@ export function SearchForm() {
             </FormItem>
           )}
         />
+
+        <div className="flex justify-end">
+          <Button>Search</Button>
+        </div>
       </form>
     </Form>
   );
