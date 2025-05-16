@@ -1,3 +1,4 @@
+'use client';
 import { useClipboard } from '@/shared/hooks/use-clipboard';
 import { CheckIcon, ClipboardIcon } from 'lucide-react';
 import {

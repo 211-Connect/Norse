@@ -1,3 +1,4 @@
+'use client';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { LocationSearchBar } from './location-search-bar';
 import { SearchBar } from './search-bar';

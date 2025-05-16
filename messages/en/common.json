@@ -7,6 +7,8 @@
     "submit_feedback": "Submit feedback",
     "language_select_label": "Select a language to change the site language"
   },
+  "filters": "Filters",
+  "clear_filters": "Clear filters",
   "favorites": {
     "added_to_list": "Added to list",
     "added_to_list_message": "This resource has been added to your list.",

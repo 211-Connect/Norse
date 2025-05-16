@@ -1,3 +1,4 @@
+'use client';
 import { buttonVariants } from '@/shared/components/ui/button';
 import {
   Card,

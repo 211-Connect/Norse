@@ -1,3 +1,4 @@
+'use client';
 import { ReferralButton } from '@/shared/components/referral-button';
 import { LocationSearchBar } from '@/shared/components/search/location-search-bar';
 import { Button } from '@/shared/components/ui/button';

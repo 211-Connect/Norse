@@ -1,3 +1,4 @@
+'use client';
 import { useQuery } from '@tanstack/react-query';
 import { MapService } from '@/shared/services/map-service';
 import { useGeocodingAdapter } from '../use-geocoding-adapter';

@@ -1,3 +1,4 @@
+'use client';
 import { useSearchQuery } from '@/hooks/use-search-query';
 import { useSearchQueryType } from '@/hooks/use-search-query-type';
 import { badgeVariants } from '@/shared/components/ui/badge';

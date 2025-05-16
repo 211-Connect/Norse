@@ -6,18 +6,17 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/shared/components/ui/sheet';
-import { filtersOpenAtom } from '@/shared/store/results';
-import { useAtom } from 'jotai';
 import { useEffect } from 'react';
 import { SearchResultResponse } from '@/lib/server/fetch-search-results';
 import { Filters } from './filters';
+import { useFilterPanel } from '@/lib/context/filter-panel-context';
 
 type FilterPanelProps = {
   filters: SearchResultResponse['filters'];
 };
 
 export function FilterPanel({ filters }: FilterPanelProps) {
-  const [filtersOpen, setFiltersOpen] = useAtom(filtersOpenAtom);
+  const { open, setOpen } = useFilterPanel();
   const filterKeys = Object.keys(filters || {});
 
   useEffect(() => {
@@ -33,7 +32,7 @@ export function FilterPanel({ filters }: FilterPanelProps) {
       <div className="hidden w-full max-w-72 bg-white xl:block print:hidden">
         <Filters filters={filters} filterKeys={filterKeys} />
       </div>
-      <Sheet onOpenChange={setFiltersOpen} open={filtersOpen}>
+      <Sheet onOpenChange={setOpen} open={open}>
         <SheetContent side="left" className="max-h-screen overflow-y-scroll">
           <SheetHeader>
             <SheetTitle></SheetTitle>

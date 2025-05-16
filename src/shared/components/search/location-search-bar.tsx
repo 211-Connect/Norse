@@ -1,3 +1,4 @@
+'use client';
 import { useTranslation } from 'next-i18next';
 import { MapPin } from 'lucide-react';
 import { useAtomValue, useSetAtom } from 'jotai';

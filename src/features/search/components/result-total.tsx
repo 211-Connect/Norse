@@ -1,3 +1,4 @@
+'use client';
 import { useAppConfig } from '@/lib/context/app-config-context';
 import { useTranslations } from 'next-intl';
 

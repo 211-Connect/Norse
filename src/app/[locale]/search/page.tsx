@@ -5,11 +5,9 @@ import { SuggestionsProvider } from '@/lib/context/suggestions-context';
 import { CategoriesProvider } from '@/lib/context/categories-context';
 import { loadMessages } from '@/lib/server/load-messages';
 import { NextIntlClientProvider } from 'next-intl';
-import {
-  fetchSearchResults,
-  SearchQueryParams,
-} from '@/lib/server/fetch-search-results';
+import { SearchQueryParams } from '@/lib/server/fetch-search-results';
 import { ListViewTemplate } from '@/features/search/templates/list-view-template';
+import { FilterPanelProvider } from '@/lib/context/filter-panel-context';
 
 type SearchPageProps = {
   searchParams: Promise<SearchQueryParams>;
@@ -20,32 +18,21 @@ export default async function SearchPage({
   searchParams,
   params,
 }: SearchPageProps) {
-  const [
-    messages,
-    { data: suggestions },
-    { data: categories },
-    queryParams,
-    parsedParams,
-  ] = await Promise.all([
-    loadMessages('search'),
-    fetchSuggestions(),
-    fetchCategories(),
-    searchParams,
-    params,
-  ]);
-
-  const { data } = await fetchSearchResults(queryParams, parsedParams?.locale);
-
-  if (!data) {
-    throw new Error('Error fetching search results');
-  }
+  const [messages, { data: suggestions }, { data: categories }] =
+    await Promise.all([
+      loadMessages('search'),
+      fetchSuggestions(),
+      fetchCategories(),
+    ]);
 
   return (
     <NextIntlClientProvider messages={messages}>
       <NuqsAdapter>
         <SuggestionsProvider value={suggestions}>
           <CategoriesProvider value={categories}>
-            <ListViewTemplate resultData={data} />
+            <FilterPanelProvider>
+              <ListViewTemplate searchParams={searchParams} params={params} />
+            </FilterPanelProvider>
           </CategoriesProvider>
         </SuggestionsProvider>
       </NuqsAdapter>

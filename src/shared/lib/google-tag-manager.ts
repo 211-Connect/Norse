@@ -1,3 +1,4 @@
+'use client';
 import { parseCookies } from 'nookies';
 import router from 'next/navigation';
 

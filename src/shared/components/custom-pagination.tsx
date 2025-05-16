@@ -1,3 +1,4 @@
+'use client';
 import { getPathname, usePathname, useRouter } from '@/i18n/navigation';
 import {
   Pagination,

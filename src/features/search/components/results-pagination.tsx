@@ -1,3 +1,4 @@
+'use client';
 import { useAppConfig } from '@/lib/context/app-config-context';
 import { CustomPagination } from '@/shared/components/custom-pagination';
 

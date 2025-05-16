@@ -1,3 +1,4 @@
+'use client';
 import { useCallback, useMemo, useState } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { useTranslation } from 'next-i18next';

@@ -1,3 +1,4 @@
+'use client';
 import { Separator } from '@/components/ui/separator';
 import { useTranslations } from 'next-intl';
 import { Filter } from './filter';

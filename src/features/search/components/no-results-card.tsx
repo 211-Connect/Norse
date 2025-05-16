@@ -1,3 +1,4 @@
+'use client';
 import { useAppConfig } from '@/lib/context/app-config-context';
 import { buttonVariants } from '@/shared/components/ui/button';
 import {
