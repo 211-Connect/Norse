@@ -8,6 +8,7 @@ import {
   ComponentType,
   useRef,
   useId,
+  useEffect,
 } from 'react';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
@@ -143,6 +144,10 @@ export function Autocomplete({
       if (referenceElement) {
         referenceElement.selectionStart = referenceElement.selectionEnd =
           value.length;
+
+        requestAnimationFrame(() => {
+          referenceElement.scrollLeft = referenceElement.scrollWidth;
+        });
       }
     },
     [referenceElement],
@@ -223,29 +228,23 @@ export function Autocomplete({
 
   const handleEnterOrTab = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
-      e.preventDefault();
-
       const option = flatOptions[currentIndex];
-      if (option?.onClick) {
-        option.onClick();
-      } else if (option) {
-        lastManualInputRef.current = option.value;
-        setValue(option.value);
-      }
-      closeOptions();
 
-      if (e.key === 'Enter') {
-        const form = (e.target as HTMLElement).closest('form');
-        if (form) {
-          setTimeout(() => {
-            form.dispatchEvent(
-              new Event('submit', { cancelable: true, bubbles: true }),
-            );
-          }, 0);
+      if (open && currentIndex !== -1) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (option?.onClick) {
+          option.onClick();
+        } else if (option) {
+          lastManualInputRef.current = option.value;
+          setValue(option.value);
         }
       }
+
+      closeOptions();
     },
-    [currentIndex, flatOptions, setValue, closeOptions],
+    [open, currentIndex, flatOptions, setValue, closeOptions],
   );
 
   const handleHomeEnd = useCallback(
@@ -345,6 +344,29 @@ export function Autocomplete({
     [closeOptions],
   );
 
+  useEffect(() => {
+    if (!open) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (
+        referenceElement?.contains(target) ||
+        popperElement?.contains(target) ||
+        clearButtonRef.current?.contains(target)
+      ) {
+        return;
+      }
+
+      closeOptions();
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [open, referenceElement, popperElement, closeOptions]);
+
   return (
     <div className={cn('flex w-full items-center', className)}>
       <Input
@@ -379,14 +401,16 @@ export function Autocomplete({
               size="icon"
               variant="ghost"
               className={cn(
-                value.length > 0 ? 'visible' : 'invisible',
                 'hover:bg-transparent hover:bg-none',
+                value.length > 0
+                  ? 'pointer-events-auto opacity-100'
+                  : 'pointer-events-none opacity-0',
               )}
               onClick={clear}
               aria-label="Clear"
               type="button"
             >
-              <XIcon className={cn('h-4 w-4 shrink-0 opacity-50')} />
+              <XIcon className="h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom">

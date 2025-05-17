@@ -2,19 +2,21 @@
 import { Autocomplete } from '@/components/autocomplete';
 import { useSuggestions } from '@/lib/context/suggestions-context';
 import { useState } from 'react';
-import { useDebounce } from '@uidotdev/usehooks';
 import { useTaxonomies } from './hooks/use-taxonomies';
 import { useOptions } from './hooks/use-options';
 import { useAppConfig } from '@/lib/context/app-config-context';
 import { SearchIcon } from 'lucide-react';
+import { useSearchStore } from '@/lib/context/search-context/search-store-provider';
 
 export function SearchBar() {
   const appConfig = useAppConfig();
-  const [value, setValue] = useState('');
-  const [inputValue, setInputValue] = useState('');
-  const debouncedValue = useDebounce(inputValue, 500);
-  const { data: taxonomies } = useTaxonomies(debouncedValue);
   const suggestions = useSuggestions();
+  const { inputValue, setInputValue } = useSearchStore((store) => ({
+    inputValue: store.searchTerm,
+    setInputValue: store.setSearchTerm,
+  }));
+  const [value, setValue] = useState('');
+  const { data: taxonomies } = useTaxonomies();
 
   const options = useOptions({
     suggestions,

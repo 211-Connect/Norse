@@ -1,11 +1,12 @@
 import { useAppConfig } from '@/lib/context/app-config-context';
 import { Suggestion } from '@/types/suggestion';
+import { Taxonomy } from '@/types/taxonomy';
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 
 type useOptionsProps = {
   suggestions: Suggestion[];
-  taxonomies: any[];
+  taxonomies: Taxonomy[];
   searchTerm: string | undefined;
 };
 

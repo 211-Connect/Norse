@@ -17,5 +17,6 @@ export interface Category {
   href?: string;
   target?: '_blank' | '_self';
   image?: Image;
+  query?: string;
   subcategories?: Subcategory[];
 }

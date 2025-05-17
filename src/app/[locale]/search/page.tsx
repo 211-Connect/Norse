@@ -8,6 +8,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { SearchQueryParams } from '@/lib/server/fetch-search-results';
 import { ListViewTemplate } from '@/features/search/templates/list-view-template';
 import { FilterPanelProvider } from '@/lib/context/filter-panel-context';
+import { SearchStoreProvider } from '@/lib/context/search-context/search-store-provider';
 
 type SearchPageProps = {
   searchParams: Promise<SearchQueryParams>;
@@ -31,7 +32,9 @@ export default async function SearchPage({
         <SuggestionsProvider value={suggestions}>
           <CategoriesProvider value={categories}>
             <FilterPanelProvider>
-              <ListViewTemplate searchParams={searchParams} params={params} />
+              <SearchStoreProvider>
+                <ListViewTemplate searchParams={searchParams} params={params} />
+              </SearchStoreProvider>
             </FilterPanelProvider>
           </CategoriesProvider>
         </SuggestionsProvider>

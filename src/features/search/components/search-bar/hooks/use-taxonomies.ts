@@ -1,13 +1,20 @@
+import { useSearchStore } from '@/lib/context/search-context/search-store-provider';
 import { TaxonomyService } from '@/shared/services/taxonomy-service';
+import { Taxonomy } from '@/types/taxonomy';
 import { useQuery } from '@tanstack/react-query';
+import { useDebounce } from '@uidotdev/usehooks';
 import { useLocale } from 'next-intl';
 
-export function useTaxonomies(searchTerm: string | undefined) {
+export function useTaxonomies() {
   const locale = useLocale();
-  const query = useQuery({
+  const { searchTerm } = useSearchStore((store) => ({
+    searchTerm: store.searchTerm,
+  }));
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+  const query = useQuery<Taxonomy[]>({
     initialData: [],
     placeholderData: (prev) => prev,
-    queryKey: ['taxonomies', locale, searchTerm],
+    queryKey: ['taxonomies', locale, debouncedSearchTerm],
     queryFn: async () => {
       if (!locale || !searchTerm?.length) return [];
 
