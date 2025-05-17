@@ -15,7 +15,6 @@ export function SearchBar() {
     inputValue: store.searchTerm,
     setInputValue: store.setSearchTerm,
   }));
-  const [value, setValue] = useState('');
   const { data: taxonomies } = useTaxonomies();
 
   const options = useOptions({
@@ -24,23 +23,21 @@ export function SearchBar() {
     searchTerm: inputValue,
   });
 
-  const handleValueChange = (value) => {
-    setValue(value);
-  };
-
   const handleInputChange = (value) => {
     setInputValue(value);
   };
+
+  console.log({ inputValue });
+  console.log('rendering');
 
   return (
     <div className="flex w-full items-center space-x-2 border-b">
       <SearchIcon size={16} className="opacity-50" />
       <Autocomplete
         options={options}
-        onValueChange={handleValueChange}
         onInputChange={handleInputChange}
-        value={value}
         placeholder={appConfig.search?.queryInputPlaceholder}
+        defaultValue={inputValue || ''}
       />
     </div>
   );

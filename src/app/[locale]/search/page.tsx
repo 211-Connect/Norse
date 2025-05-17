@@ -19,11 +19,12 @@ export default async function SearchPage({
   searchParams,
   params,
 }: SearchPageProps) {
-  const [messages, { data: suggestions }, { data: categories }] =
+  const [messages, { data: suggestions }, { data: categories }, queryParams] =
     await Promise.all([
       loadMessages('search'),
       fetchSuggestions(),
       fetchCategories(),
+      searchParams,
     ]);
 
   return (
@@ -32,7 +33,7 @@ export default async function SearchPage({
         <SuggestionsProvider value={suggestions}>
           <CategoriesProvider value={categories}>
             <FilterPanelProvider>
-              <SearchStoreProvider>
+              <SearchStoreProvider searchTerm={queryParams.query_label || ''}>
                 <ListViewTemplate searchParams={searchParams} params={params} />
               </SearchStoreProvider>
             </FilterPanelProvider>

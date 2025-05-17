@@ -12,6 +12,7 @@ import { Result } from '../components/result';
 import { NoResultsCard } from '../components/no-results-card';
 import { FilterPanel } from '../components/filter-panel';
 import { ToggleFilterPanelButton } from '../components/filter-panel/toggle-filter-panel-button';
+import { SearchForm } from './search-form';
 
 type ListViewTemplateProps = {
   searchParams: Promise<SearchQueryParams>;
@@ -24,13 +25,17 @@ export async function ListViewTemplate({
 }: ListViewTemplateProps) {
   const [queryParams, parsedParams] = await Promise.all([searchParams, params]);
 
-  const { data } = await fetchSearchResults(queryParams, parsedParams?.locale);
+  const { data, error } = await fetchSearchResults(
+    queryParams,
+    parsedParams?.locale,
+  );
 
-  if (!data) {
+  if (!data || error) {
+    console.log(error);
     throw new Error('Error fetching search results');
   }
 
-  const filterKeys = data.noResults ? [] : Object.keys(data.filters);
+  const filterKeys = data.noResults ? [] : Object.keys(data?.filters);
 
   return (
     <div className="flex h-full w-full">
@@ -41,7 +46,7 @@ export async function ListViewTemplate({
         className="flex w-full flex-col overflow-y-auto lg:max-w-[550px]"
       >
         <div className="flex flex-col gap-2 bg-white p-2 print:hidden">
-          <MainSearchLayout />
+          <SearchForm />
           <TaxonomyContainer />
         </div>
 

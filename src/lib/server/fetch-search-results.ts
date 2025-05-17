@@ -58,6 +58,7 @@ export type SearchQueryParams = {
   limit?: string;
   query?: string;
   query_type?: string;
+  query_label?: string;
   filters?: string;
 };
 
@@ -85,6 +86,14 @@ export type SearchResultResponse = {
   filters: any;
 };
 
+const emptyResponse = {
+  results: [],
+  noResults: true,
+  totalResults: 0,
+  page: 1,
+  filters: {},
+};
+
 export async function fetchSearchResults(
   searchParams: SearchQueryParams,
   locale: string | undefined = '',
@@ -98,7 +107,6 @@ export async function fetchSearchResults(
   const { data: params, error } = searchSchema.safeParse(searchParams);
 
   if (error) {
-    console.log(error);
     return { data: null, error: error.flatten().formErrors.join(', ') };
   }
 
@@ -118,7 +126,7 @@ export async function fetchSearchResults(
   );
 
   if (!response.ok) {
-    return { data: null, error: 'Unable to fetch search results' };
+    return { data: emptyResponse, error: null };
   }
 
   let data = await response.json();
@@ -150,8 +158,8 @@ export async function fetchSearchResults(
 
     if (!noResultsResponse.ok) {
       return {
-        data: null,
-        error: 'Unable to fetch search more_like_this results',
+        data: emptyResponse,
+        error: null,
       };
     }
 
