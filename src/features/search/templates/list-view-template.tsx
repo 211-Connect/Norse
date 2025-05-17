@@ -58,12 +58,12 @@ export async function ListViewTemplate({
         </div>
 
         <div className="flex flex-col gap-2 p-2">
-          {data.results?.map((result) => (
-            <Result key={result._id} data={result} />
-          ))}
           {data.noResults && (
             <NoResultsCard showAltSubtitle={data.results?.length === 0} />
           )}
+          {data.results?.map((result) => (
+            <Result key={result._id} data={result} />
+          ))}
 
           <ResultsPagination page={data?.page} total={data?.totalResults} />
         </div>
