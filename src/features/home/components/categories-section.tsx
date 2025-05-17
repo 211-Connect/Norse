@@ -29,7 +29,7 @@ const Category = ({ category }: Props) => {
               className="h-auto w-10"
             />
           )}
-          <h3 className="text-lg font-semibold">{name}</h3>
+          <h3 className="text-lg font-medium">{name}</h3>
         </div>
 
         {subcategories.map((el) => (
@@ -96,7 +96,7 @@ export function CategoriesSection() {
 
   return (
     <div className="categories container mx-auto py-8">
-      <h3 className="text-xl font-bold">{t('categories_title')}</h3>
+      <h3 className="text-xl font-semibold">{t('categories_title')}</h3>
 
       <Separator className="my-2" />
 
