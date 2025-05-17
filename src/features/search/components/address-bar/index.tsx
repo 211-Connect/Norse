@@ -1,26 +1,19 @@
-'use client';
+import { MapPinIcon } from 'lucide-react';
+import { useAddresses } from './hooks/use-addresses';
 import { Autocomplete } from '@/components/autocomplete';
-import { useSuggestions } from '@/lib/context/suggestions-context';
+import { useAppConfig } from '@/lib/context/app-config-context';
 import { useState } from 'react';
 import { useDebounce } from '@uidotdev/usehooks';
-import { useTaxonomies } from './hooks/use-taxonomies';
 import { useOptions } from './hooks/use-options';
-import { useAppConfig } from '@/lib/context/app-config-context';
-import { SearchIcon } from 'lucide-react';
 
-export function SearchBar() {
+export function AddressBar() {
   const appConfig = useAppConfig();
   const [value, setValue] = useState('');
   const [inputValue, setInputValue] = useState('');
   const debouncedValue = useDebounce(inputValue, 500);
-  const { data: taxonomies } = useTaxonomies(debouncedValue);
-  const suggestions = useSuggestions();
+  const { data: addresses } = useAddresses(debouncedValue);
 
-  const options = useOptions({
-    suggestions,
-    taxonomies,
-    searchTerm: inputValue,
-  });
+  const options = useOptions({ addresses });
 
   const handleValueChange = (value) => {
     setValue(value);
@@ -32,13 +25,13 @@ export function SearchBar() {
 
   return (
     <div className="flex w-full items-center space-x-2 border-b">
-      <SearchIcon size={16} className="opacity-50" />
+      <MapPinIcon size={16} className="opacity-50" />
       <Autocomplete
         options={options}
         onValueChange={handleValueChange}
         onInputChange={handleInputChange}
         value={value}
-        placeholder={appConfig.search?.queryInputPlaceholder}
+        placeholder={appConfig.search?.locationInputPlaceholder}
       />
     </div>
   );

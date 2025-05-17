@@ -14,7 +14,7 @@ import parse from 'autosuggest-highlight/parse';
 import { cn } from '@/shared/lib/utils';
 import { XIcon } from 'lucide-react';
 import { useUncontrolledState } from '@/hooks/use-uncontrolled-state';
-import { Input, InputProps } from '../ui/input';
+import { Input } from '../ui/input';
 import {
   Tooltip,
   TooltipContent,
@@ -32,7 +32,8 @@ export type AutocompleteOption = {
   label?: string;
   value: string;
   group?: string;
-  Icon?: ComponentType<{ className?: string }>;
+  Icon?: ComponentType<{ className?: string; size?: number | string }>;
+  onClick?: () => void;
 };
 
 export type AutocompleteOptionWithIndex = AutocompleteOption & {
@@ -101,18 +102,24 @@ export function Autocomplete({
   }, []);
 
   const handleValueSelect = useCallback(
-    (value: string) => {
-      return (e) => {
+    (option: AutocompleteOptionWithIndex) => {
+      return (e: React.MouseEvent | React.KeyboardEvent) => {
         e.preventDefault();
         e.stopPropagation();
 
-        setValue(value);
+        if (option.onClick) {
+          option.onClick();
+          closeOptions();
+          return;
+        }
+
+        setValue(option.value);
         setOpen(false);
         setCurrentIndex(-1);
-        lastManualInputRef.current = value;
+        lastManualInputRef.current = option.value;
       };
     },
-    [setValue],
+    [setValue, closeOptions],
   );
 
   const handleInputChange = useCallback(
@@ -143,25 +150,45 @@ export function Autocomplete({
 
   const selectValueAtIndex = useCallback(
     (index: number) => {
-      const option = flatOptions[index];
-      const val = option?.value ?? lastManualInputRef.current;
-      setCurrentIndex(index);
+      if (index === -1) {
+        setCurrentIndex(-1);
+        setValue(lastManualInputRef.current);
+        setInputSelectionPoint(lastManualInputRef.current);
+        popperElement?.scrollTo({ top: 0 });
+        return;
+      }
+
+      const clampedIndex = Math.max(0, Math.min(index, flatOptions.length - 1));
+      const option = flatOptions[clampedIndex];
+
+      setCurrentIndex(clampedIndex);
+
+      if (!option || option.onClick) return;
+
+      const val = option.value;
       setValue(val);
       setInputSelectionPoint(val);
+
+      const node = optionRefs.current[clampedIndex];
+      if (node) {
+        node.scrollIntoView({ block: 'nearest' });
+      }
+
       return val;
     },
-    [flatOptions, setValue, setInputSelectionPoint],
+    [flatOptions, setValue, setInputSelectionPoint, popperElement],
   );
 
   const getValidIndex = useCallback(
     (index: number) => {
-      return index < 0
-        ? flatOptions.length - 1
-        : index >= flatOptions.length
-          ? -1
-          : index;
+      if (index === -2) return flatOptions.length - 1;
+      if (index === flatOptions.length) return -1;
+      if (index === -1 && currentIndex === flatOptions.length - 1) return 0;
+      if (index === -1 && currentIndex === 0) return -1;
+      if (index === -1) return 0;
+      return Math.max(-1, Math.min(index, flatOptions.length - 1));
     },
-    [flatOptions],
+    [flatOptions, currentIndex],
   );
 
   const handleArrowDown = useCallback(() => {
@@ -174,10 +201,9 @@ export function Autocomplete({
   const handleArrowUp = useCallback(() => {
     if (!open) return;
 
-    const nextIndex =
-      currentIndex <= 0 ? flatOptions.length - 1 : currentIndex - 1;
+    const nextIndex = getValidIndex(currentIndex - 1);
     selectValueAtIndex(nextIndex);
-  }, [open, currentIndex, flatOptions.length, selectValueAtIndex]);
+  }, [open, currentIndex, getValidIndex, selectValueAtIndex]);
 
   const handleArrowLeftRight = useCallback(() => {
     if (open && currentIndex !== -1) {
@@ -200,7 +226,9 @@ export function Autocomplete({
       e.preventDefault();
 
       const option = flatOptions[currentIndex];
-      if (option) {
+      if (option?.onClick) {
+        option.onClick();
+      } else if (option) {
         lastManualInputRef.current = option.value;
         setValue(option.value);
       }
@@ -260,19 +288,6 @@ export function Autocomplete({
           handleHomeEnd(true);
           break;
       }
-
-      // Scroll into view
-      const nextIndex =
-        e.key === 'ArrowDown'
-          ? currentIndex + 1
-          : e.key === 'ArrowUp'
-            ? currentIndex - 1
-            : currentIndex;
-      if (nextIndex === -1) {
-        popperElement?.scrollTo({ top: 0 });
-      } else {
-        optionRefs.current[nextIndex]?.scrollIntoView({ block: 'nearest' });
-      }
     },
     [
       handleArrowDown,
@@ -281,8 +296,6 @@ export function Autocomplete({
       handleEscape,
       handleEnterOrTab,
       handleHomeEnd,
-      currentIndex,
-      popperElement,
     ],
   );
 
@@ -291,11 +304,12 @@ export function Autocomplete({
       e?.preventDefault();
       setCurrentIndex(-1);
       setValue('');
+      onInputChange?.('');
       referenceElement?.focus();
       setOpen(true);
       lastManualInputRef.current = '';
     },
-    [setValue, referenceElement],
+    [setValue, referenceElement, onInputChange],
   );
 
   const handleOptionMouseEnter = useCallback(
@@ -303,8 +317,10 @@ export function Autocomplete({
       return () => {
         if (!isMouseMoving) return;
         const nextOption = flatOptions[index];
-        const selectionValue = nextOption?.value;
         setCurrentIndex(index);
+
+        if (nextOption.onClick) return;
+        const selectionValue = nextOption?.value;
         setValue(selectionValue);
         setInputSelectionPoint(selectionValue);
       };
@@ -401,7 +417,7 @@ export function Autocomplete({
                   <h3
                     id={groupId}
                     className={cn(
-                      'p-2 text-xs text-primary',
+                      'px-2 pb-1 pt-3 text-xs uppercase tracking-wide text-muted-foreground',
                       groupIndex > 0 && 'pt-4',
                     )}
                     role="presentation"
@@ -411,10 +427,10 @@ export function Autocomplete({
                 )}
                 <div role="group" aria-labelledby={groupId}>
                   {groupOptions?.map((option) => {
-                    const matches = match(
-                      option.value,
-                      lastManualInputRef.current,
-                    );
+                    const matches =
+                      option.value && !option.onClick
+                        ? match(option.value, lastManualInputRef.current)
+                        : [];
                     const Icon = option.Icon;
 
                     return (
@@ -424,17 +440,21 @@ export function Autocomplete({
                         ref={setOptionRef(option.index)}
                         role="option"
                         className={cn(
-                          'flex justify-between gap-2 px-2 py-1',
-                          currentIndex === option.index && 'bg-primary/5',
+                          'flex justify-between gap-2 px-3 py-2 transition-colors',
+                          currentIndex === option.index && 'bg-muted/50',
+                          option.onClick &&
+                            'cursor-pointer rounded-md px-4 py-2 text-sm',
                         )}
                         aria-selected={currentIndex === option.index}
                         onMouseEnter={handleOptionMouseEnter(option.index)}
                         onMouseLeave={handleOptionMouseExit()}
-                        onMouseDown={handleValueSelect(option.value)}
+                        onMouseDown={handleValueSelect(option)}
                       >
                         <span className="flex items-center gap-2">
-                          {!Icon ? null : <Icon className="size-4 shrink-0" />}
-                          <p>
+                          {!Icon ? null : (
+                            <Icon size={16} className="shrink-0 opacity-50" />
+                          )}
+                          <p className={cn(option.onClick && 'font-medium')}>
                             {parse(option.value, matches).map((text, idx) =>
                               text.highlight ? (
                                 <span

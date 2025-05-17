@@ -3,6 +3,7 @@ import { SearchBar } from '../components/search-bar';
 import { Form, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from 'next-intl';
+import { AddressBar } from '../components/address-bar';
 
 export function SearchForm() {
   const t = useTranslations('common');
@@ -26,6 +27,8 @@ export function SearchForm() {
             </FormItem>
           )}
         />
+
+        <AddressBar />
 
         <div className="flex justify-end">
           <Button>{t('search.search')}</Button>

@@ -1,8 +1,9 @@
-import { TaxonomyService } from '@/shared/services/taxonomy-service';
+import { MapboxAdapter } from '@/shared/adapters/geocoder/mapbox-adapter';
 import { useQuery } from '@tanstack/react-query';
 import { useLocale } from 'next-intl';
 
-export function useTaxonomies(searchTerm: string | undefined) {
+const mapbox = new MapboxAdapter();
+export function useAddresses(searchTerm: string | undefined) {
   const locale = useLocale();
   const query = useQuery({
     initialData: [],
@@ -11,7 +12,7 @@ export function useTaxonomies(searchTerm: string | undefined) {
     queryFn: async () => {
       if (!locale || !searchTerm?.length) return [];
 
-      return TaxonomyService.getTaxonomies(searchTerm, {
+      return mapbox.forwardGeocode(searchTerm, {
         locale: locale,
       });
     },
