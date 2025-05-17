@@ -30,7 +30,7 @@ export async function ListViewTemplate({
     throw new Error('Error fetching search results');
   }
 
-  const filterKeys = Object.keys(data.filters);
+  const filterKeys = data.noResults ? [] : Object.keys(data.filters);
 
   return (
     <div className="flex h-full w-full">
