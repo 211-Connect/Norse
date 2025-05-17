@@ -27,9 +27,6 @@ export function SearchBar() {
     setInputValue(value);
   };
 
-  console.log({ inputValue });
-  console.log('rendering');
-
   return (
     <div className="flex w-full items-center space-x-2 border-b">
       <SearchIcon size={16} className="opacity-50" />

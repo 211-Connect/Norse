@@ -9,6 +9,7 @@ import { useCategories } from '@/lib/context/categories-context';
 import { useSuggestions } from '@/lib/context/suggestions-context';
 import { useTaxonomies } from '../components/search-bar/hooks/use-taxonomies';
 import { useRouter } from '@/i18n/navigation';
+import { omitNullish } from '@/utils/omit-nullish';
 
 export function SearchForm() {
   const t = useTranslations('common');
@@ -27,13 +28,15 @@ export function SearchForm() {
       taxonomies,
     });
 
+    const queryParams = omitNullish({
+      query,
+      query_label: queryLabel,
+      query_type: queryType,
+    });
+
     router.push({
       pathname: '/search',
-      query: {
-        query,
-        query_label: queryLabel,
-        query_type: queryType,
-      },
+      query: queryParams,
     });
   };
 

@@ -11,12 +11,12 @@ export const SearchStoreContext = createContext<SearchStoreApi | undefined>(
 
 type SearchProviderProps = {
   children: React.ReactNode;
-  searchTerm: SearchStore['searchTerm'];
+  searchTerm: SearchStore['searchTerm'] | undefined;
 };
 
 export function SearchStoreProvider({
   children,
-  searchTerm,
+  searchTerm = '',
 }: SearchProviderProps) {
   const searchStoreRef = useRef<SearchStoreApi | null>(null);
 

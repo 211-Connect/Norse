@@ -1,5 +1,5 @@
 import { useSearchStore } from '@/lib/context/search-context/search-store-provider';
-import { TaxonomyService } from '@/shared/services/taxonomy-service';
+import { fetchTaxonomies } from '@/lib/fetch-taxonomies';
 import { Taxonomy } from '@/types/taxonomy';
 import { useQuery } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
@@ -18,9 +18,14 @@ export function useTaxonomies() {
     queryFn: async () => {
       if (!locale || !searchTerm?.length) return [];
 
-      return TaxonomyService.getTaxonomies(searchTerm, {
-        locale: locale,
-      });
+      const { data, error } = await fetchTaxonomies(searchTerm, locale);
+
+      if (error) {
+        console.error(error);
+        return [];
+      }
+
+      return data;
     },
   });
 

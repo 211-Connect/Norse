@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { API_URL } from '../constants';
 import qs from 'qs';
 import { getTenantId } from './get-tenant-id';
+import { omitNullish } from '@/utils/omit-nullish';
 
 const createComplexQuerySchema = (depth: number): z.ZodTypeAny => {
   if (depth <= 0) {
@@ -200,9 +201,7 @@ export async function fetchSearchResults(
             taxonomies: hit?._source?.taxonomies ?? null,
           };
 
-          return Object.fromEntries(
-            Object.entries(responseData).filter(([, value]) => value != null),
-          );
+          return omitNullish(responseData);
         }) ?? [],
       noResults,
       totalResults,

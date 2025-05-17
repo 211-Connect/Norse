@@ -1,10 +1,11 @@
 import { Category } from '@/types/category';
 import { Suggestion } from '@/types/suggestion';
+import { Taxonomy } from '@/types/taxonomy';
 
 export type SearchData = {
   categories: Category[];
   suggestions: Suggestion[];
-  taxonomies: any[];
+  taxonomies: Taxonomy[];
 };
 
 export function getSearchQuery(searchTerm: string, data: SearchData) {
@@ -38,7 +39,7 @@ function getQuery(
       ) ?? category.name.toLowerCase() === searchTerm.toLowerCase(),
   );
   if (category && (category.query || category.href))
-    return category?.query ?? category.href;
+    return category.query || category.href || '';
 
   return searchTerm;
 }
@@ -66,7 +67,7 @@ function getQueryType(
           subcategory.name.toLowerCase() === searchTerm.toLowerCase(),
       ) ?? category.name.toLowerCase() === searchTerm.toLowerCase(),
   );
-  if (category) return 'taxonomy';
+  if (category && (category.query || category.href)) return 'taxonomy';
 
   if (query.trim().length === 0) return '';
   if (query === searchTerm) return 'text';

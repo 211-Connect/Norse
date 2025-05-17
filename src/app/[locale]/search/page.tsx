@@ -33,7 +33,7 @@ export default async function SearchPage({
         <SuggestionsProvider value={suggestions}>
           <CategoriesProvider value={categories}>
             <FilterPanelProvider>
-              <SearchStoreProvider searchTerm={queryParams.query_label || ''}>
+              <SearchStoreProvider searchTerm={queryParams.query_label}>
                 <ListViewTemplate searchParams={searchParams} params={params} />
               </SearchStoreProvider>
             </FilterPanelProvider>
