@@ -11,7 +11,7 @@ import {
 const intlMiddleware = createMiddleware(routing);
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/((?!api|_next/|.*\\..*).*)'],
 };
 
 export function middleware(request: NextRequest) {
@@ -24,6 +24,7 @@ export function middleware(request: NextRequest) {
       path: '/',
       secure: !IS_DEVELOPMENT,
       httpOnly: true,
+      sameSite: 'lax',
     });
   }
 
@@ -34,6 +35,7 @@ export function middleware(request: NextRequest) {
       path: '/',
       secure: !IS_DEVELOPMENT,
       httpOnly: true,
+      sameSite: 'lax',
     });
   }
 
