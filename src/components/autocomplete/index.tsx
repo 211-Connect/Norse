@@ -115,6 +115,7 @@ export function Autocomplete({
         }
 
         setValue(option.value);
+        onInputChange?.(option.value);
         setOpen(false);
         setCurrentIndex(-1);
         lastManualInputRef.current = option.value;
@@ -221,9 +222,9 @@ export function Autocomplete({
   const handleEscape = useCallback(() => {
     if (!open) return;
 
-    const option = flatOptions[currentIndex];
     closeOptions();
-    lastManualInputRef.current = option?.value ?? lastManualInputRef.current;
+    setValue(lastManualInputRef.current);
+    setCurrentIndex(-1);
   }, [open, flatOptions, currentIndex, closeOptions]);
 
   const handleEnterOrTab = useCallback(
@@ -239,6 +240,7 @@ export function Autocomplete({
         } else if (option) {
           lastManualInputRef.current = option.value;
           setValue(option.value);
+          onInputChange?.(option.value);
         }
       }
 
