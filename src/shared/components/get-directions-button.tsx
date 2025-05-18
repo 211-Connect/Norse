@@ -1,6 +1,5 @@
 'use client';
 import { ReferralButton } from '@/shared/components/referral-button';
-import { LocationSearchBar } from '@/shared/components/search/location-search-bar';
 import { Button } from '@/shared/components/ui/button';
 import {
   Dialog,
@@ -70,10 +69,6 @@ export function GetDirectionsButton({ data, coords }) {
             </DialogTitle>
             <DialogDescription></DialogDescription>
           </DialogHeader>
-
-          <div>
-            <LocationSearchBar />
-          </div>
 
           <div className="flex items-center justify-between">
             <Button onClick={() => setOpen(false)} variant="outline">
