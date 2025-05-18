@@ -7,16 +7,29 @@ import { useLocationStore } from '@/lib/context/location-context/location-store-
 
 export function AddressBar() {
   const appConfig = useAppConfig();
-  const { setInputValue, selectedValue, setSelectedValue } = useLocationStore(
-    (store) => ({
+  const { setInputValue, selectedValue, setSelectedValue, setUserCoords } =
+    useLocationStore((store) => ({
       selectedValue: store.selectedValue,
       setInputValue: store.setSearchTerm,
       setSelectedValue: store.setSelectedValue,
-    }),
-  );
+      setUserCoords: store.setUserCoords,
+    }));
   const { data: addresses } = useAddresses();
 
   const options = useOptions({ addresses });
+
+  const handleOnValueChange = (newValue: string) => {
+    setSelectedValue(newValue);
+
+    const address = addresses.find(
+      (address) => address.address.toLowerCase() === newValue.toLowerCase(),
+    );
+    if (address) {
+      setUserCoords(address.coordinates);
+    } else {
+      setUserCoords(undefined);
+    }
+  };
 
   return (
     <div className="flex w-full items-center space-x-2 border-b">
@@ -25,7 +38,7 @@ export function AddressBar() {
         options={options}
         onInputChange={setInputValue}
         placeholder={appConfig.search?.locationInputPlaceholder}
-        onValueChange={setSelectedValue}
+        onValueChange={handleOnValueChange}
         value={selectedValue}
       />
     </div>

@@ -9,7 +9,7 @@ export type LocationState = {
 export type LocationActions = {
   setSearchTerm: (newValue: string) => void;
   setSelectedValue: (newValue: string) => void;
-  setUserCoords: (newValue: [number, number]) => void;
+  setUserCoords: (newValue: [number, number] | undefined) => void;
 };
 
 export type LocationStore = LocationState & LocationActions;

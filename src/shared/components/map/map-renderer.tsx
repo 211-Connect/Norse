@@ -1,6 +1,5 @@
 import { useAppConfig } from '@/lib/context/app-config-context';
-import { userCoordinatesAtom } from '@/shared/store/search';
-import { useAtomValue } from 'jotai';
+import { useLocationStore } from '@/lib/context/location-context/location-store-provider';
 import dynamic from 'next/dynamic';
 import { ReactElement } from 'react';
 
@@ -20,7 +19,7 @@ type MapRendererProps = {
 
 const MapRenderer = (props: MapRendererProps) => {
   const appConfig = useAppConfig();
-  const userCoords = useAtomValue(userCoordinatesAtom);
+  const userCoords = useLocationStore((store) => store.userCoords);
   const adapterName = 'maplibre';
   const Map = renderers[adapterName];
   if (!Map) {
@@ -49,7 +48,7 @@ const MapRenderer = (props: MapRendererProps) => {
           center={appConfig.map?.center}
           zoom={appConfig.map?.zoom}
           markers={props.markers}
-          usersLocation={userCoords}
+          usersLocation={userCoords || []}
           disableUserLocation={props.disableUserLocation}
         />
       </div>
