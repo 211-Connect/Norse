@@ -18,12 +18,12 @@ export const COOKIE_TENANT_ID = '_norse_tenant_id';
 
 // Strictly necessary cookies
 export const ALLOW_ALL_COOKIES = 'allow-all-cookies'; // required to be able to store user preferences
-export const PREV_URL = 'prev-url';
+export const PREV_SEARCH = '_norse_prev_search';
 
 // User preferences
 export const USER_PREF_LAYOUT = 'user-pref-layout';
-export const USER_PREF_LOCATION = 'user-pref-location';
-export const USER_PREF_COORDS = 'user-pref-coords';
+export const USER_PREF_LOCATION = '_norse_user_pref_location';
+export const USER_PREF_COORDS = '_norse_user_pref_coordinates';
 export const USER_PREF_THEME = 'user-pref-theme';
 export const USER_PREF_DISTANCE = 'user-pref-distance';
 

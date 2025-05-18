@@ -12,10 +12,13 @@ type useOptionsProps = {
 const mapbox = new MapboxAdapter();
 export function useOptions({ addresses }: useOptionsProps) {
   const locale = useLocale();
-  const { setSelectedValue, setSearchTerm } = useLocationStore((store) => ({
-    setSelectedValue: store.setSelectedValue,
-    setSearchTerm: store.setSearchTerm,
-  }));
+  const { setSelectedValue, setSearchTerm, setUserCoords } = useLocationStore(
+    (store) => ({
+      setSelectedValue: store.setSelectedValue,
+      setSearchTerm: store.setSearchTerm,
+      setUserCoords: store.setUserCoords,
+    }),
+  );
   return useMemo(() => {
     return [
       {
@@ -42,7 +45,7 @@ export function useOptions({ addresses }: useOptionsProps) {
               const { address, coordinates } = addresses[0];
               setSelectedValue(address);
               setSearchTerm(address);
-              console.log({ address, coordinates });
+              setUserCoords(coordinates);
             }
           }
         },

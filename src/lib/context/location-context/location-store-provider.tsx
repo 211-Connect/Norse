@@ -12,11 +12,13 @@ export const SearchStoreContext = createContext<LocationStoreApi | undefined>(
 type SearchProviderProps = {
   children: React.ReactNode;
   searchTerm: LocationStore['searchTerm'] | undefined;
+  userCoords: LocationStore['userCoords'] | undefined;
 };
 
 export function LocationStoreProvider({
   children,
   searchTerm = '',
+  userCoords = undefined,
 }: SearchProviderProps) {
   const locationStoreRef = useRef<LocationStoreApi | null>(null);
 
@@ -24,6 +26,7 @@ export function LocationStoreProvider({
     locationStoreRef.current = createLocationStore({
       searchTerm,
       selectedValue: searchTerm,
+      userCoords,
     });
   }
 

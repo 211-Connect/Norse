@@ -10,14 +10,19 @@ import { useSuggestions } from '@/lib/context/suggestions-context';
 import { useTaxonomies } from '../components/search-bar/hooks/use-taxonomies';
 import { useRouter } from '@/i18n/navigation';
 import { omitNullish } from '@/utils/omit-nullish';
+import { useLocationStore } from '@/lib/context/location-context/location-store-provider';
+import { getLocationQuery } from '@/lib/context/location-context/get-location-query';
+import { useAddresses } from '../components/address-bar/hooks/use-addresses';
 
 export function SearchForm() {
   const t = useTranslations('common');
+  const router = useRouter();
   const searchTerm = useSearchStore((store) => store.searchTerm);
+  const locationSearchTerm = useLocationStore((store) => store.searchTerm);
   const categories = useCategories();
   const suggestions = useSuggestions();
   const { data: taxonomies } = useTaxonomies();
-  const router = useRouter();
+  const { data: addresses } = useAddresses();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,10 +33,18 @@ export function SearchForm() {
       taxonomies,
     });
 
+    const { location, coords, distance } = getLocationQuery(
+      locationSearchTerm,
+      { addresses },
+    );
+
     const queryParams = omitNullish({
       query,
       query_label: queryLabel,
       query_type: queryType,
+      location,
+      coords,
+      distance,
     });
 
     router.push({

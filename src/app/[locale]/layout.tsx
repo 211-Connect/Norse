@@ -14,6 +14,8 @@ import { getDirection } from '@/i18n/get-direction';
 import { fontSans } from '@/styles/fonts';
 import { LocationStoreProvider } from '@/lib/context/location-context/location-store-provider';
 import '../../styles/globals.css';
+import { cookies } from 'next/headers';
+import { USER_PREF_COORDS, USER_PREF_LOCATION } from '@/lib/constants';
 
 export async function generateMetadata(): Promise<Metadata> {
   const { data: appConfig } = await fetchAppConfig();
@@ -43,10 +45,16 @@ export default async function LocaleLayout({
 
   const dir = getDirection(locale);
 
-  const { data: appConfig } = await fetchAppConfig();
+  const [{ data: appConfig }, cookieStore] = await Promise.all([
+    fetchAppConfig(),
+    cookies(),
+  ]);
 
   const primaryColor = getThemeColors(appConfig?.theme.primaryColor ?? '');
   const secondaryColor = getThemeColors(appConfig?.theme.secondaryColor ?? '');
+
+  const location = cookieStore.get(USER_PREF_LOCATION)?.value;
+  const coords = cookieStore.get(USER_PREF_COORDS)?.value;
 
   return (
     <html lang={locale} dir={dir}>
@@ -69,7 +77,13 @@ export default async function LocaleLayout({
           <AppConfigProvider value={appConfig}>
             <Providers>
               <Header />
-              <LocationStoreProvider searchTerm="">
+              <LocationStoreProvider
+                searchTerm={location}
+                userCoords={
+                  (coords?.split(',') as unknown as [number, number]) ||
+                  undefined
+                }
+              >
                 {children}
               </LocationStoreProvider>
               <Footer />

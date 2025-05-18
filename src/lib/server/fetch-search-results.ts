@@ -40,7 +40,7 @@ const searchSchema = z.object({
         return undefined;
       }
 
-      return numbers;
+      return val;
     })
     .optional(),
   filters: z
