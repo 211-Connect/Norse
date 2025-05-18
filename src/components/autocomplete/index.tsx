@@ -369,6 +369,21 @@ export function Autocomplete({
     };
   }, [open, referenceElement, popperElement, closeOptions]);
 
+  const prevValueRef = useRef<string | undefined>(inputValue);
+
+  useEffect(() => {
+    const isExternalChange =
+      inputValue !== prevValueRef.current &&
+      currentIndex === -1 &&
+      !isMouseMoving;
+
+    if (isExternalChange && inputValue !== undefined) {
+      lastManualInputRef.current = inputValue;
+    }
+
+    prevValueRef.current = inputValue;
+  }, [inputValue, currentIndex, isMouseMoving]);
+
   return (
     <div className={cn('flex w-full items-center', className)}>
       <Input

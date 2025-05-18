@@ -19,7 +19,7 @@ export default async function HomePage() {
     <NextIntlClientProvider messages={messages}>
       <SuggestionsProvider value={suggestions}>
         <CategoriesProvider value={categories}>
-          <SearchStoreProvider>
+          <SearchStoreProvider searchTerm="">
             <HomePageTemplate />
           </SearchStoreProvider>
         </CategoriesProvider>

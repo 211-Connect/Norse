@@ -11,11 +11,22 @@ export const getGeolocation = (): Promise<
     }
 
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        resolve({ data: position, error: null });
-      },
+      (position) => resolve({ data: position, error: null }),
       (error) => {
-        resolve({ data: null, error: error.message });
+        // retry without high accuracy if failed
+        if (error.code === error.POSITION_UNAVAILABLE) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => resolve({ data: position, error: null }),
+            (finalError) => resolve({ data: null, error: finalError.message }),
+            {
+              enableHighAccuracy: false,
+              timeout: 5000,
+              maximumAge: 60000,
+            },
+          );
+        } else {
+          resolve({ data: null, error: error.message });
+        }
       },
       {
         enableHighAccuracy: true,

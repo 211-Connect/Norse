@@ -1,14 +1,20 @@
+import { useLocationStore } from '@/lib/context/location-context/location-store-provider';
 import { MapboxAdapter } from '@/shared/adapters/geocoder/mapbox-adapter';
 import { useQuery } from '@tanstack/react-query';
+import { useDebounce } from '@uidotdev/usehooks';
 import { useLocale } from 'next-intl';
 
 const mapbox = new MapboxAdapter();
-export function useAddresses(searchTerm: string | undefined) {
+export function useAddresses() {
   const locale = useLocale();
+  const { searchTerm } = useLocationStore((store) => ({
+    searchTerm: store.searchTerm,
+  }));
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const query = useQuery({
     initialData: [],
     placeholderData: (prev) => prev,
-    queryKey: ['taxonomies', locale, searchTerm],
+    queryKey: ['taxonomies', locale, debouncedSearchTerm],
     queryFn: async () => {
       if (!locale || !searchTerm?.length) return [];
 

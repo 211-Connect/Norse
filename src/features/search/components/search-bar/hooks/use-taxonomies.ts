@@ -10,7 +10,7 @@ export function useTaxonomies() {
   const { searchTerm } = useSearchStore((store) => ({
     searchTerm: store.searchTerm,
   }));
-  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const query = useQuery<Taxonomy[]>({
     initialData: [],
     placeholderData: (prev) => prev,

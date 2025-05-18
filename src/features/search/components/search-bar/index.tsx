@@ -34,7 +34,7 @@ export function SearchBar() {
         options={options}
         onInputChange={handleInputChange}
         placeholder={appConfig.search?.queryInputPlaceholder}
-        defaultValue={inputValue || ''}
+        defaultValue={inputValue}
       />
     </div>
   );

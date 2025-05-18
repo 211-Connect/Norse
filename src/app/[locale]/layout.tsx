@@ -12,6 +12,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { Footer } from '@/components/footer';
 import { getDirection } from '@/i18n/get-direction';
 import { fontSans } from '@/styles/fonts';
+import { LocationStoreProvider } from '@/lib/context/location-context/location-store-provider';
 import '../../styles/globals.css';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -68,7 +69,9 @@ export default async function LocaleLayout({
           <AppConfigProvider value={appConfig}>
             <Providers>
               <Header />
-              {children}
+              <LocationStoreProvider searchTerm="">
+                {children}
+              </LocationStoreProvider>
               <Footer />
               <Toaster />
             </Providers>
