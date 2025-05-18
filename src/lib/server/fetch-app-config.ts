@@ -3,7 +3,6 @@ import { STRAPI_TOKEN, STRAPI_URL } from '../constants';
 import { getLocale } from 'next-intl/server';
 import { AppConfig } from '@/types/app-config';
 import { flattenAttributes } from './flatten-attributes';
-import { cookies } from 'next/headers';
 import { getTenantId } from './get-tenant-id';
 
 const query = qs.stringify({

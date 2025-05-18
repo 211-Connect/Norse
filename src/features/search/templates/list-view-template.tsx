@@ -30,8 +30,7 @@ export async function ListViewTemplate({
     parsedParams?.locale,
   );
 
-  if (!data || error) {
-    console.log(error);
+  if (error || !data) {
     throw new Error('Error fetching search results');
   }
 
@@ -47,7 +46,10 @@ export async function ListViewTemplate({
       >
         <div className="flex flex-col gap-2 bg-white p-2 print:hidden">
           <SearchForm />
-          <TaxonomyContainer />
+          <TaxonomyContainer
+            query={queryParams.query}
+            queryType={queryParams.query_type}
+          />
         </div>
 
         <div

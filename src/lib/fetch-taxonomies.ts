@@ -1,6 +1,6 @@
 export async function fetchTaxonomies(searchTerm: string, locale: string) {
   const response = await fetch(
-    `/api/taxonomies?query=${searchTerm}&locale=${locale}`,
+    `/api/taxonomy?query=${searchTerm}&locale=${locale}`,
   );
 
   if (!response.ok) {

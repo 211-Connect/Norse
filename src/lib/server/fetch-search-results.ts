@@ -98,7 +98,9 @@ const emptyResponse = {
 export async function fetchSearchResults(
   searchParams: SearchQueryParams,
   locale: string | undefined = '',
-): Promise<{ data: SearchResultResponse | null; error: string | null }> {
+): Promise<
+  { data: null; error: string } | { data: SearchResultResponse; error: null }
+> {
   const tenantId = await getTenantId();
 
   if (!tenantId) {
