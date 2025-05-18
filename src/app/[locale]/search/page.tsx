@@ -34,7 +34,7 @@ export default async function SearchPage({
           <CategoriesProvider value={categories}>
             <FilterPanelProvider>
               <SearchStoreProvider searchTerm={queryParams.query_label}>
-                <ListViewTemplate searchParams={searchParams} params={params} />
+                <ListViewTemplate searchParams={queryParams} params={params} />
               </SearchStoreProvider>
             </FilterPanelProvider>
           </CategoriesProvider>

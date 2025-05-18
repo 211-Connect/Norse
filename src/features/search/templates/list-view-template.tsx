@@ -15,7 +15,7 @@ import { ToggleFilterPanelButton } from '../components/filter-panel/toggle-filte
 import { SearchForm } from './search-form';
 
 type ListViewTemplateProps = {
-  searchParams: Promise<SearchQueryParams>;
+  searchParams: SearchQueryParams;
   params: Promise<{ locale: string }>;
 };
 
