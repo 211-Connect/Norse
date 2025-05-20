@@ -1,5 +1,4 @@
 import { useTranslation } from 'next-i18next';
-import { useAppConfig } from '../hooks/use-app-config';
 import { Button } from './ui/button';
 import {
   Dialog,
@@ -17,6 +16,7 @@ import { dialogsAtom } from '../store/dialogs';
 import { z } from 'zod';
 import axios from 'axios';
 import { toast } from 'sonner';
+import { useAppConfig } from '@/lib/context/app-config-context';
 
 export function SmsButton({ title = '', body = '', shortUrl = '' }) {
   const { t } = useTranslation('common');

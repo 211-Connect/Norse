@@ -2,12 +2,12 @@ import { ReactNode } from 'react';
 import { createReferralEvent } from '../lib/google-tag-manager';
 import { cn } from '../lib/utils';
 import { Button, ButtonProps } from './ui/button';
-import { ResultType } from '../store/results';
+import { Resource } from '@/types/resource';
 
 type Props = {
   referralType: 'call_referral' | 'website_referral' | 'directions_referral';
   resourceId: string;
-  resourceData: Partial<ResultType>;
+  resourceData: Partial<Resource>;
   onClick?: any;
   className?: string;
   children?: ReactNode;
