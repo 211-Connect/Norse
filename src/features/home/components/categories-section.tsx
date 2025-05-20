@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/shared/components/ui/card';
 import { useCategories } from '@/shared/hooks/use-categories';
 import { ExternalLink } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
+import { useAppConfig } from '@/shared/hooks/use-app-config';
 
 type Props = {
   index: string;
@@ -92,15 +93,25 @@ const Category = ({ image, name, href, target, subcategories }: Props) => {
 
 export function CategoriesSection() {
   const { t } = useTranslation('page-home');
+  const appConfig = useAppConfig();
   const categories = useCategories();
 
   if ((categories?.length ?? 0) === 0) return null;
 
   return (
     <div className="categories container mx-auto pb-8 pt-8">
-      <h3 className="text-2xl font-bold">{t('categories_title')}</h3>
+      {!appConfig.hideCategoriesHeading && (
+        <>
+          <h3 className="text-2xl font-bold">
+            {t('search.categories_heading', {
+              ns: 'dynamic',
+              defaultValue: t('categories_title'),
+            })}
+          </h3>
 
-      <Separator className="mb-4 mt-4" />
+          <Separator className="mb-4 mt-4" />
+        </>
+      )}
 
       <div
         className={cn(

@@ -27,6 +27,10 @@ const query = qs.stringify({
         'lastAssuredText',
         'categoriesText',
         'hideAttribution',
+        'hideCategoriesHeading',
+        'customCategoriesHeading',
+        'hideDataProvidersHeading',
+        'customDataProvidersHeading',
         'headerMenu',
         'footerMenu',
         'map',
@@ -137,6 +141,8 @@ module.exports = function createFromStrapi(dir) {
       alert: appConfig?.alert,
       theme: appConfig?.theme,
       hideAttribution: appConfig?.hideAttribution ?? true,
+      hideCategoriesHeading: appConfig?.hideCategoriesHeading ?? false,
+      hideDataProvidersHeading: appConfig?.hideDataProvidersHeading ?? false,
       pages: {},
       menus: {
         header: [],
@@ -152,23 +158,29 @@ module.exports = function createFromStrapi(dir) {
       sms: appConfig?.sms,
     };
 
-    translationFile['en']['search.hero_title'] = appConfig.search.homePageTitle;
-    translationFile['en']['search.query_placeholder'] =
-      appConfig.search.queryInputPlaceholder;
-    translationFile['en']['search.location_placeholder'] =
-      appConfig.search.locationInputPlaceholder;
-    translationFile['en']['search.no_results_fallback_text'] =
-      appConfig?.search?.noResultsFallbackText;
-    translationFile['en']['last_assured_text'] =
-      appConfig?.resourcePage?.lastAssuredText;
-    translationFile['en']['categories_text'] =
-      appConfig?.resourcePage?.categoriesText;
+    const translations = {
+      'search.hero_title': appConfig.search.homePageTitle,
+      'search.query_placeholder': appConfig.search.queryInputPlaceholder,
+      'search.location_placeholder': appConfig.search.locationInputPlaceholder,
+      'search.no_results_fallback_text':
+        appConfig?.search?.noResultsFallbackText,
+      last_assured_text: appConfig?.resourcePage?.lastAssuredText,
+      categories_text: appConfig?.resourcePage?.categoriesText,
+      meta_title: appConfig?.homePage?.title,
+      meta_description: appConfig?.homePage?.description,
+    };
 
-    translationFile['en']['meta_title'] = appConfig?.homePage?.title;
-    translationFile['en']['meta_description'] =
-      appConfig?.homePage?.description;
+    if (appConfig?.customCategoriesHeading) {
+      translations['search.categories_heading'] =
+        appConfig.customCategoriesHeading;
+    }
+    if (appConfig?.customDataProvidersHeading) {
+      translations['search.data_providers_heading'] =
+        appConfig.customDataProvidersHeading;
+    }
 
-    // Add hero section URL
+    translationFile['en'] = translations;
+
     newAppConfig.pages['home'] = {
       heroSection: {
         backgroundImageUrl: heroUrl,
@@ -201,26 +213,28 @@ module.exports = function createFromStrapi(dir) {
 
     for (const locale of appConfigTranslations || []) {
       const data = locale.attributes;
-      if (!translationFile[data.locale]) {
-        translationFile[data.locale] = {};
+
+      const translations = {
+        'search.hero_title': data?.search?.homePageTitle,
+        'search.query_placeholder': data?.search?.queryInputPlaceholder,
+        'search.location_placeholder': data?.search?.locationInputPlaceholder,
+        'search.no_results_fallback_text': data?.search?.noResultsFallbackText,
+        last_assured_text: data?.resourcePage?.lastAssuredText,
+        categories_text: data?.resourcePage?.categoriesText,
+        meta_title: data?.homePage?.title,
+        meta_description: data?.homePage?.description,
+      };
+
+      if (data?.customCategoriesHeading) {
+        translations['search.categories_heading'] =
+          data.customCategoriesHeading;
+      }
+      if (data?.customDataProvidersHeading) {
+        translations['search.data_providers_heading'] =
+          data.customDataProvidersHeading;
       }
 
-      translationFile[data.locale]['search.hero_title'] =
-        data?.search?.homePageTitle;
-      translationFile[data.locale]['search.query_placeholder'] =
-        data?.search?.queryInputPlaceholder;
-      translationFile[data.locale]['search.location_placeholder'] =
-        data?.search?.locationInputPlaceholder;
-      translationFile[data.locale]['search.no_results_fallback_text'] =
-        data?.search?.noResultsFallbackText;
-      translationFile[data.locale]['last_assured_text'] =
-        data?.resourcePage?.lastAssuredText;
-      translationFile[data.locale]['categories_text'] =
-        data?.resourcePage?.categoriesText;
-
-      translationFile[data.locale]['meta_title'] = data?.homePage?.title;
-      translationFile[data.locale]['meta_description'] =
-        data?.homePage?.description;
+      translationFile[data.locale] = translations;
     }
 
     const categoryFiles = {};

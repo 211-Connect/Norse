@@ -55,6 +55,8 @@ export type AppConfig = {
     url?: string;
   };
   hideAttribution?: boolean;
+  hideCategoriesHeading?: boolean;
+  hideDataProvidersHeading?: boolean;
   providers?: {
     name?: string;
     href?: string;
