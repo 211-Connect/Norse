@@ -121,7 +121,7 @@ export function Autocomplete({
         lastManualInputRef.current = option.value;
       };
     },
-    [setValue, closeOptions],
+    [setValue, closeOptions, onInputChange],
   );
 
   const handleInputChange = useCallback(
@@ -225,7 +225,7 @@ export function Autocomplete({
     closeOptions();
     setValue(lastManualInputRef.current);
     setCurrentIndex(-1);
-  }, [open, flatOptions, currentIndex, closeOptions]);
+  }, [open, closeOptions, setValue]);
 
   const handleEnterOrTab = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
@@ -246,7 +246,7 @@ export function Autocomplete({
 
       closeOptions();
     },
-    [open, currentIndex, flatOptions, setValue, closeOptions],
+    [open, currentIndex, flatOptions, setValue, closeOptions, onInputChange],
   );
 
   const handleHomeEnd = useCallback(
