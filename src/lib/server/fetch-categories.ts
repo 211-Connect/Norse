@@ -4,6 +4,7 @@ import { getLocale } from 'next-intl/server';
 import { flattenAttributes } from '../../utils/flatten-attributes';
 import { Category } from '@/types/category';
 import { getTenantId } from './get-tenant-id';
+import { unstable_cache } from 'next/cache';
 
 const query = qs.stringify({
   populate: {
@@ -13,31 +14,45 @@ const query = qs.stringify({
   },
 });
 
+const getCachedCategories = unstable_cache(
+  async (tenantId: string, locale: string) => {
+    const response = await fetch(
+      `${STRAPI_URL}/api/tenants?filters[tenantId][$eq]=${tenantId}&${query}&locale=${locale}`,
+      {
+        headers: {
+          Authorization: `Bearer ${STRAPI_TOKEN}`,
+        },
+      },
+    );
+
+    if (response.ok) {
+      const { data } = await response.json();
+
+      return {
+        data: flattenAttributes(data[0])?.category?.list as Category[],
+        error: null,
+      };
+    }
+
+    throw new Error('Unable to get categories');
+  },
+  [],
+  { revalidate: 15 * 60 },
+);
+
 export async function fetchCategories() {
-  const tenantId = await getTenantId();
+  const [tenantId, locale] = await Promise.all([getTenantId(), getLocale()]);
 
   if (!tenantId) {
     return { data: null, error: 'Tenant id not set' };
   }
 
-  const locale = await getLocale();
-  const response = await fetch(
-    `${STRAPI_URL}/api/tenants?filters[tenantId][$eq]=${tenantId}&${query}&locale=${locale}`,
-    {
-      headers: {
-        Authorization: `Bearer ${STRAPI_TOKEN}`,
-      },
-    },
-  );
+  const currentLocale = locale || 'en';
 
-  if (response.ok) {
-    const { data } = await response.json();
-
-    return {
-      data: flattenAttributes(data[0])?.category?.list as Category[],
-      error: null,
-    };
+  try {
+    const response = await getCachedCategories(tenantId, currentLocale);
+    return response;
+  } catch (error) {
+    return { data: null, error: 'Failed to fetch categories' };
   }
-
-  return { data: null, error: 'Failed to fetch categories' };
 }

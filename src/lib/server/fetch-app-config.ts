@@ -4,6 +4,7 @@ import { getLocale } from 'next-intl/server';
 import { AppConfig } from '@/types/app-config';
 import { flattenAttributes } from '../../utils/flatten-attributes';
 import { getTenantId } from './get-tenant-id';
+import { unstable_cache } from 'next/cache';
 
 const query = qs.stringify({
   populate: {
@@ -38,31 +39,47 @@ const query = qs.stringify({
   },
 });
 
+const getCachedAppConfig = unstable_cache(
+  async (tenantId: string, locale: string) => {
+    const response = await fetch(
+      `${STRAPI_URL}/api/tenants?filters[tenantId][$eq]=${tenantId}&${query}&locale=${locale}`,
+      {
+        headers: {
+          Authorization: `Bearer ${STRAPI_TOKEN}`,
+        },
+      },
+    );
+
+    if (response.ok) {
+      const { data } = await response.json();
+
+      return {
+        data: flattenAttributes(data[0])?.app_config as AppConfig,
+        error: null,
+      };
+    }
+
+    throw new Error('Unable to get app config');
+  },
+  [],
+  {
+    revalidate: 15 * 60,
+  },
+);
+
 export async function fetchAppConfig() {
-  const tenantId = await getTenantId();
+  const [tenantId, locale] = await Promise.all([getTenantId(), getLocale()]);
 
   if (!tenantId) {
     return { data: null, error: 'Tenant id not set' };
   }
 
-  const locale = await getLocale();
-  const response = await fetch(
-    `${STRAPI_URL}/api/tenants?filters[tenantId][$eq]=${tenantId}&${query}&locale=${locale}`,
-    {
-      headers: {
-        Authorization: `Bearer ${STRAPI_TOKEN}`,
-      },
-    },
-  );
+  const currentLocale = locale || 'en';
 
-  if (response.ok) {
-    const { data } = await response.json();
-
-    return {
-      data: flattenAttributes(data[0])?.app_config as AppConfig,
-      error: null,
-    };
+  try {
+    const response = await getCachedAppConfig(tenantId, currentLocale);
+    return response;
+  } catch (error) {
+    return { data: null, error: 'Failed to fetch app config' };
   }
-
-  return { data: null, error: 'Failed to fetch app config' };
 }
