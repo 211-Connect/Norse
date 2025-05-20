@@ -47,10 +47,8 @@ export async function fetchCategories() {
     return { data: null, error: 'Tenant id not set' };
   }
 
-  const currentLocale = locale || 'en';
-
   try {
-    const response = await getCachedCategories(tenantId, currentLocale);
+    const response = await getCachedCategories(tenantId, locale);
     return response;
   } catch (error) {
     return { data: null, error: 'Failed to fetch categories' };

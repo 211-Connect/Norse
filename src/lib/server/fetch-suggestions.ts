@@ -47,9 +47,8 @@ export async function fetchSuggestions() {
     return { data: null, error: 'Tenant id not set' };
   }
 
-  const currentLocale = locale || 'en';
   try {
-    const response = await getCachedSuggestions(tenantId, currentLocale);
+    const response = await getCachedSuggestions(tenantId, locale);
     return response;
   } catch (error) {
     return { data: null, error: 'Failed to fetch suggestions' };

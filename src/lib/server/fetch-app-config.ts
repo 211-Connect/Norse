@@ -74,10 +74,8 @@ export async function fetchAppConfig() {
     return { data: null, error: 'Tenant id not set' };
   }
 
-  const currentLocale = locale || 'en';
-
   try {
-    const response = await getCachedAppConfig(tenantId, currentLocale);
+    const response = await getCachedAppConfig(tenantId, locale);
     return response;
   } catch (error) {
     return { data: null, error: 'Failed to fetch app config' };
