@@ -2,11 +2,19 @@ import { ResourceTemplate } from '@/features/resource/templates/resource-templat
 import { PREV_SEARCH } from '@/lib/constants';
 import { fetchOriginalResource } from '@/lib/server/fetch-original-resource';
 import { loadMessages } from '@/lib/server/load-messages';
+import { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { cookies } from 'next/headers';
 
 type DetailsPageProps = {
   params: Promise<{ id: string }>;
+};
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: true,
+  },
 };
 
 export default async function DetailsPage({ params }: DetailsPageProps) {
