@@ -1,3 +1,4 @@
+'use client';
 import { ReactElement, useEffect, useRef } from 'react';
 import mapLibreGl, {
   LngLatBounds,
@@ -7,7 +8,6 @@ import mapLibreGl, {
 } from 'maplibre-gl';
 import { MAPLIBRE_STYLE_URL } from '@/shared/lib/constants';
 import { Protocol } from 'pmtiles';
-import { renderToStaticMarkup } from 'react-dom/server';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 type MapProps = {
@@ -60,9 +60,7 @@ export function Map({
 
     _markers.current = markers.map((m) => {
       const marker = new Marker().setPopup(
-        m.popup
-          ? new Popup().setHTML(renderToStaticMarkup(m.popup))
-          : undefined,
+        m.popup ? new Popup().setHTML(`${m.popup}`) : undefined,
       );
 
       if (m.coordinates) {

@@ -1,3 +1,4 @@
+'use client';
 import {
   Card,
   CardContent,
@@ -6,10 +7,17 @@ import {
   CardTitle,
 } from '@/shared/components/ui/card';
 import { parseHtml } from '@/shared/lib/parse-html';
-import { useTranslation } from 'next-i18next';
+import { Resource } from '@/types/resource';
+import { useTranslations } from 'next-intl';
 
-export function OrganizationInformation({ resource }) {
-  const { t } = useTranslation('page-resource');
+type OrganizationInformationProps = {
+  resource: Resource;
+};
+
+export function OrganizationInformation({
+  resource,
+}: OrganizationInformationProps) {
+  const t = useTranslations('page');
 
   return (
     <Card className="print:border-none print:shadow-none">

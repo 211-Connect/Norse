@@ -1,11 +1,19 @@
+'use client';
 import { Card, CardContent } from '@/shared/components/ui/card';
-import { useTranslation } from 'next-i18next';
 import { Check, DollarSign, Folder, Languages, Map } from 'lucide-react';
 import { Separator } from '@/shared/components/ui/separator';
 import { parseHtml } from '@/shared/lib/parse-html';
+import { useTranslations } from 'next-intl';
+import { Resource } from '@/types/resource';
 
-export function AdditionalInformation({ resource }) {
-  const { t } = useTranslation('page-resource');
+type AdditionalInformationProps = {
+  resource: Resource;
+};
+
+export function AdditionalInformation({
+  resource,
+}: AdditionalInformationProps) {
+  const t = useTranslations('page');
 
   return (
     <>

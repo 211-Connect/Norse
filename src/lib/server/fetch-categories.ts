@@ -1,7 +1,7 @@
 import qs from 'qs';
 import { STRAPI_TOKEN, STRAPI_URL } from '../constants';
 import { getLocale } from 'next-intl/server';
-import { flattenAttributes } from './flatten-attributes';
+import { flattenAttributes } from '../../utils/flatten-attributes';
 import { Category } from '@/types/category';
 import { getTenantId } from './get-tenant-id';
 

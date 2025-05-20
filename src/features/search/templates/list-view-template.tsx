@@ -3,7 +3,6 @@ import {
   SearchQueryParams,
 } from '@/lib/server/fetch-search-results';
 import { MapContainer } from '../components/map-container';
-import { MainSearchLayout } from '@/shared/components/search/main-search-layout';
 import { TaxonomyContainer } from '../components/taxonomy-container';
 import { cn } from '@/lib/cn-utils';
 import { ResultTotal } from '../components/result-total';
@@ -16,19 +15,14 @@ import { SearchForm } from './search-form';
 
 type ListViewTemplateProps = {
   searchParams: SearchQueryParams;
-  params: Promise<{ locale: string }>;
 };
 
 export async function ListViewTemplate({
   searchParams,
-  params,
 }: ListViewTemplateProps) {
-  const [queryParams, parsedParams] = await Promise.all([searchParams, params]);
+  const queryParams = await searchParams;
 
-  const { data, error } = await fetchSearchResults(
-    queryParams,
-    parsedParams?.locale,
-  );
+  const { data, error } = await fetchSearchResults(queryParams);
 
   if (error || !data) {
     throw new Error('Error fetching search results');

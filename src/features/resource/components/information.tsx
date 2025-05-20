@@ -1,6 +1,6 @@
+'use client';
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { MapContainer } from './map-container';
-import { useTranslation } from 'next-i18next';
 import {
   Clock,
   Edit,
@@ -21,13 +21,20 @@ import {
 } from '@/shared/components/ui/tooltip';
 import { Separator } from '@/shared/components/ui/separator';
 import { parseHtml } from '@/shared/lib/parse-html';
+import { useTranslations } from 'next-intl';
+import { Resource } from '@/types/resource';
 
-const isPhysicalAddressAvailable = (addresses: any[]) => {
+const isPhysicalAddressAvailable = (addresses: any[] | null) => {
+  if (!addresses) return false;
   return addresses.filter((addr) => addr.type === 'physical').length > 0;
 };
 
-export function Information({ resource }) {
-  const { t } = useTranslation('page-resource');
+type InformationProps = {
+  resource: Resource;
+};
+
+export function Information({ resource }: InformationProps) {
+  const t = useTranslations('page');
 
   return (
     <>
@@ -58,7 +65,8 @@ export function Information({ resource }) {
             </div>
           )}
 
-          {resource.addresses?.length > 0 &&
+          {resource.addresses &&
+            !!resource.addresses?.length &&
             resource.addresses
               .sort((a: any, b: any) => a.rank - b.rank)
               .map((address: any, key) => {
@@ -66,7 +74,9 @@ export function Information({ resource }) {
                   <div
                     key={key}
                     className={cn(
-                      resource.addresses.length === 1 && 'col-span-2',
+                      resource.addresses &&
+                        resource.addresses.length === 1 &&
+                        'col-span-2',
                     )}
                   >
                     <div className="flex items-center gap-1">
@@ -98,7 +108,8 @@ export function Information({ resource }) {
             </div>
           )}
 
-          {resource.phoneNumbers?.length > 0 &&
+          {resource.phoneNumbers &&
+            !!resource.phoneNumbers?.length &&
             resource.phoneNumbers
               .sort((a: any, b: any) => a.rank - b.rank)
               .map((phone: any) => {
@@ -106,7 +117,9 @@ export function Information({ resource }) {
                   <div
                     key={phone.number}
                     className={cn(
-                      resource.phoneNumbers.length === 1 && 'col-span-2',
+                      resource.phoneNumbers &&
+                        resource.phoneNumbers.length === 1 &&
+                        'col-span-2',
                     )}
                   >
                     <div className="flex items-center gap-1">

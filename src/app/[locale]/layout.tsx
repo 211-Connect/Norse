@@ -16,6 +16,7 @@ import { LocationStoreProvider } from '@/lib/context/location-context/location-s
 import '../../styles/globals.css';
 import { cookies } from 'next/headers';
 import { USER_PREF_COORDS, USER_PREF_LOCATION } from '@/lib/constants';
+import { Devtools } from '@/features/devtools/components/devtools';
 
 export async function generateMetadata(): Promise<Metadata> {
   const { data: appConfig } = await fetchAppConfig();
@@ -76,6 +77,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider>
           <AppConfigProvider value={appConfig}>
             <Providers>
+              <Devtools />
               <Header />
               <LocationStoreProvider
                 searchTerm={location}

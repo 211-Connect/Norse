@@ -1,6 +1,6 @@
 import { ResourceTemplate } from '@/features/resource/templates/resource-template';
 import { PREV_SEARCH } from '@/lib/constants';
-import { fetchResource } from '@/lib/server/fetch-resource';
+import { fetchOriginalResource } from '@/lib/server/fetch-original-resource';
 import { loadMessages } from '@/lib/server/load-messages';
 import { NextIntlClientProvider } from 'next-intl';
 import { cookies } from 'next/headers';
@@ -17,7 +17,7 @@ export default async function DetailsPage({ params }: DetailsPageProps) {
   ]);
 
   const prevSearch = cookieStore.get(PREV_SEARCH)?.value;
-  const { data } = await fetchResource(pageParams.id);
+  const { data } = await fetchOriginalResource(pageParams.id);
 
   return (
     <NextIntlClientProvider messages={messages}>

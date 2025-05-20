@@ -1,3 +1,6 @@
+'use client';
+import { useAppConfig } from '@/lib/context/app-config-context';
+import { useLocationStore } from '@/lib/context/location-context/location-store-provider';
 import { GetDirectionsButton } from '@/shared/components/get-directions-button';
 import { ReferralButton } from '@/shared/components/referral-button';
 import { badgeVariants } from '@/shared/components/ui/badge';
@@ -10,22 +13,28 @@ import {
   CardTitle,
 } from '@/shared/components/ui/card';
 import { Separator } from '@/shared/components/ui/separator';
-import { useFlag } from '@/shared/hooks/use-flag';
 import { parseHtml } from '@/shared/lib/parse-html';
 import { cn } from '@/shared/lib/utils';
-import { userCoordinatesAtom } from '@/shared/store/search';
-import { useAtomValue } from 'jotai';
+import { Resource } from '@/types/resource';
 import { Globe, Phone } from 'lucide-react';
-import { useTranslation } from 'next-i18next';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
-export function Overview({ resource }) {
-  const { t } = useTranslation('page-resource');
-  const coords = useAtomValue(userCoordinatesAtom);
-  const showCategories = useFlag('showResourceCategories');
-  const showLastAssured = useFlag('showResourceLastAssuredDate');
-  const showAttribution = useFlag('showResourceAttribution');
-  const showServiceName = useFlag('showSearchAndResourceServiceName');
+type OverviewProps = {
+  resource: Resource;
+};
+
+export function Overview({ resource }: OverviewProps) {
+  const t = useTranslations('page');
+  const commonT = useTranslations('common');
+  const coords = useLocationStore((store) => store.userCoords);
+  const appConfig = useAppConfig();
+
+  const showCategories = appConfig.featureFlags?.showResourceCategories;
+  const showLastAssured = appConfig.featureFlags?.showResourceLastAssuredDate;
+  const showAttribution = appConfig.featureFlags?.showResourceAttribution;
+  const showServiceName =
+    appConfig.featureFlags?.showSearchAndResourceServiceName;
 
   return (
     <>
@@ -39,7 +48,7 @@ export function Overview({ resource }) {
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
             <p className="whitespace-break-spaces">
-              {parseHtml(resource.description)}
+              {parseHtml(resource.description || '')}
             </p>
 
             {showCategories && (
@@ -111,7 +120,7 @@ export function Overview({ resource }) {
               }}
             >
               <Phone className="size-4" />{' '}
-              {t('call_to_action.call', { ns: 'common' })}
+              {commonT('call_to_action.call', { ns: 'common' })}
             </ReferralButton>
 
             <ReferralButton
@@ -123,11 +132,11 @@ export function Overview({ resource }) {
               disabled={!resource.website}
               variant="highlight"
               onClick={() => {
-                window.open(resource.website, '_blank');
+                window.open(resource.website || '', '_blank');
               }}
             >
               <Globe className="size-4" />{' '}
-              {t('call_to_action.view_website', { ns: 'common' })}
+              {commonT('call_to_action.view_website', { ns: 'common' })}
             </ReferralButton>
 
             <GetDirectionsButton data={resource} coords={coords} />

@@ -8,7 +8,7 @@ import {
 import * as SelectPrimitive from '@radix-ui/react-select';
 
 import { cn } from '@/shared/lib/utils';
-import { fontSans } from '@/shared/styles/fonts';
+import { fontSans } from '@/styles/fonts';
 
 const Select = SelectPrimitive.Root;
 

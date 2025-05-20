@@ -38,7 +38,7 @@ export function DataProviders() {
               {appConfig.dataProviders.map((el: any) => (
                 <Link
                   key={el.name}
-                  href={el.href}
+                  href={el.href || ''}
                   target="_blank"
                   className="group self-stretch hover:underline"
                 >

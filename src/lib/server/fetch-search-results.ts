@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import { API_URL } from '../constants';
 import qs from 'qs';
 import { getTenantId } from './get-tenant-id';
 import { omitNullish } from '@/utils/omit-nullish';
+import { apiFetch } from './api-fetch';
 
 const createComplexQuerySchema = (depth: number): z.ZodTypeAny => {
   if (depth <= 0) {
@@ -97,7 +97,6 @@ const emptyResponse = {
 
 export async function fetchSearchResults(
   searchParams: SearchQueryParams,
-  locale: string | undefined = '',
 ): Promise<
   { data: null; error: string } | { data: SearchResultResponse; error: null }
 > {
@@ -113,20 +112,7 @@ export async function fetchSearchResults(
     return { data: null, error: error.flatten().formErrors.join(', ') };
   }
 
-  const response = await fetch(
-    `${API_URL}/search?${qs.stringify({
-      ...params,
-      locale,
-    })}`,
-    {
-      method: 'GET',
-      headers: {
-        'accept-language': locale,
-        'x-api-version': '1',
-        'x-tenant-id': tenantId,
-      },
-    },
-  );
+  const response = await apiFetch(`/search?${qs.stringify(params)}`);
 
   if (!response.ok) {
     return { data: emptyResponse, error: null };
@@ -143,20 +129,11 @@ export async function fetchSearchResults(
   if (totalResults === 0) {
     noResults = true;
 
-    const noResultsResponse = await fetch(
-      `${API_URL}/search?${qs.stringify({
+    const noResultsResponse = await apiFetch(
+      `/search?${qs.stringify({
         ...params,
-        locale,
         query_type: 'more_like_this',
       })}`,
-      {
-        method: 'GET',
-        headers: {
-          'accept-language': locale,
-          'x-api-version': '1',
-          'x-tenant-id': tenantId,
-        },
-      },
     );
 
     if (!noResultsResponse.ok) {

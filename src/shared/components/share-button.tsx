@@ -16,14 +16,24 @@ import {
   DialogHeader,
   DialogTitle,
 } from './ui/dialog';
-import { useEffect, useState } from 'react';
+import { RefObject, useEffect, useState } from 'react';
 import { Facebook } from './icons/facebook';
 import { X } from './icons/x';
 import { ShortUrlService } from '../services/short-url-service';
 import { useClipboard } from '../hooks/use-clipboard';
 import { SmsButton } from './sms-button';
 
-export function ShareButton({ componentToPrintRef, title = '', body = '' }) {
+type ShareButtonProps = {
+  componentToPrintRef: RefObject<HTMLDivElement>;
+  title: string | undefined | null;
+  body: string | undefined | null;
+};
+
+export function ShareButton({
+  componentToPrintRef,
+  title = '',
+  body = '',
+}: ShareButtonProps) {
   const { t } = useTranslation('common');
   const [open, setOpen] = useState(false);
   const clipboard = useClipboard();

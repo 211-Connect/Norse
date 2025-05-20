@@ -1,7 +1,7 @@
-import { ReactElement, useEffect, useMemo, useRef } from 'react';
+'use client';
+import { ReactElement, useEffect, useRef } from 'react';
 import mapboxgl, { LngLatBounds, LngLatLike, Marker, Popup } from 'mapbox-gl';
 import { MAPBOX_API_KEY, MAPBOX_STYLE_URL } from '@/shared/lib/constants';
-import { renderToStaticMarkup } from 'react-dom/server';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 type MapProps = {
@@ -50,9 +50,7 @@ export function Map({
 
     _markers.current = markers.map((m) => {
       const marker = new Marker().setPopup(
-        m.popup
-          ? new Popup().setHTML(renderToStaticMarkup(m.popup))
-          : undefined,
+        m.popup ? new Popup().setHTML(`${m.popup}`) : undefined,
       );
 
       if (m.coordinates) {

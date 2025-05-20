@@ -1,6 +1,12 @@
+'use client';
 import { MapRenderer } from '@/shared/components/map/map-renderer';
+import { Resource } from '@/types/resource';
 
-export function MapContainer({ resource }) {
+type MapContainerProps = {
+  resource: Resource;
+};
+
+export function MapContainer({ resource }: MapContainerProps) {
   return (
     <div className="h-[500px] max-h-64 w-full print:hidden">
       <MapRenderer
