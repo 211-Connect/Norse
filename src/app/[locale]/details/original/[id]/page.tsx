@@ -17,7 +17,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function DetailsPage({ params }: DetailsPageProps) {
+export default async function OriginalDetailsPage({
+  params,
+}: DetailsPageProps) {
   const [pageParams, messages, cookieStore] = await Promise.all([
     params,
     loadMessages('resource'),
