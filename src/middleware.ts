@@ -14,7 +14,7 @@ import {
 const intlMiddleware = createMiddleware(routing);
 
 export const config = {
-  matcher: ['/((?!api|_next/|.*\\..*).*)'],
+  matcher: ['/((?!api|_next/|admin|.*\\..*).*)'],
 };
 
 export function middleware(request: NextRequest) {
