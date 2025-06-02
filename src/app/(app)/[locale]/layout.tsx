@@ -13,10 +13,10 @@ import { Footer } from '@/components/footer';
 import { getDirection } from '@/i18n/get-direction';
 import { fontSans } from '@/styles/fonts';
 import { LocationStoreProvider } from '@/lib/context/location-context/location-store-provider';
-import '../../styles/globals.css';
 import { cookies } from 'next/headers';
 import { USER_PREF_COORDS, USER_PREF_LOCATION } from '@/lib/constants';
 import { Devtools } from '@/features/devtools/components/devtools';
+import '../../../styles/globals.css';
 
 export async function generateMetadata(): Promise<Metadata> {
   const { data: appConfig } = await fetchAppConfig();

@@ -1,4 +1,5 @@
-const createNextIntlPlugin = require('next-intl/plugin');
+import createNextIntlPlugin from 'next-intl/plugin';
+import { withPayload } from '@payloadcms/next/withPayload';
 
 const { REMOTE_PATTERNS } = process.env;
 
@@ -15,7 +16,10 @@ const nextConfig = {
         },
       }
     : {}),
+  experimental: {
+    reactCompiler: false,
+  },
 };
 
 const withNextIntl = createNextIntlPlugin();
-module.exports = withNextIntl(nextConfig);
+export default withPayload(withNextIntl(nextConfig));
