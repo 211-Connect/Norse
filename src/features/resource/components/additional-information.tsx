@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { useTranslation } from 'next-i18next';
-import { Check, DollarSign, Folder, Languages, Map } from 'lucide-react';
+import { Check, DollarSign, Folder, Languages, Map, Handshake } from 'lucide-react';
 import { Separator } from '@/shared/components/ui/separator';
 import { parseHtml } from '@/shared/lib/parse-html';
 
@@ -70,6 +70,18 @@ export function AdditionalInformation({ resource }) {
                 ))}
               </div>
             )}
+
+          {resource?.interpretationServices && (
+            <div className="col-span-2">
+              <div className="flex items-center gap-1">
+                <Handshake className="size-4" />
+
+                <p className="font-bold">{t('Interpretation services')}</p>
+              </div>
+
+              <p className="text-sm">{parseHtml(resource.interpretationServices)}</p>
+            </div>
+          )}
 
           {(resource?.serviceAreaDescription || resource?.serviceAreaName) && (
             <div className="col-span-2">
