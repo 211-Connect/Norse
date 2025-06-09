@@ -46,6 +46,8 @@ export class ResourceService {
         email: data?.email ?? null,
         hours: data?.translation?.hours ?? null,
         languages: data?.translation?.languages ?? null,
+        interpretationServices:
+          data?.translation?.interpretationServices ?? null,
         applicationProcess: data?.translation?.applicationProcess ?? null,
         fees: data?.translation?.fees,
         requiredDocuments: data?.translation?.requiredDocuments ?? null,
