@@ -1,6 +1,13 @@
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { useTranslation } from 'next-i18next';
-import { Check, DollarSign, Folder, Languages, Map, Handshake } from 'lucide-react';
+import {
+  Check,
+  DollarSign,
+  Folder,
+  Languages,
+  Map,
+  Handshake,
+} from 'lucide-react';
 import { Separator } from '@/shared/components/ui/separator';
 import { parseHtml } from '@/shared/lib/parse-html';
 
@@ -79,7 +86,11 @@ export function AdditionalInformation({ resource }) {
                 <p className="font-bold">{t('Interpretation services')}</p>
               </div>
 
-              <p className="text-sm">{parseHtml(resource.interpretationServices)}</p>
+              <p className="text-sm">
+                {parseHtml(resource.interpretationServices, {
+                  parseLineBreaks: true,
+                })}
+              </p>
             </div>
           )}
 
@@ -91,13 +102,17 @@ export function AdditionalInformation({ resource }) {
               </div>
               {resource?.serviceAreaName && (
                 <p className="whitespace-break-spaces text-sm">
-                  {parseHtml(resource.serviceAreaName)}
+                  {parseHtml(resource.serviceAreaName, {
+                    parseLineBreaks: true,
+                  })}
                 </p>
               )}
 
               {resource?.serviceAreaDescription && (
                 <p className="whitespace-break-spaces text-sm">
-                  {parseHtml(resource.serviceAreaDescription)}
+                  {parseHtml(resource.serviceAreaDescription, {
+                    parseLineBreaks: true,
+                  })}
                 </p>
               )}
             </div>

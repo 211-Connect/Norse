@@ -69,7 +69,7 @@ export function UpdateFavoriteListButton({ id, name, description, privacy }) {
       description,
       public: privacy === 'PUBLIC',
     });
-  }, [open]);
+  }, [open, name, description, privacy]);
 
   return (
     <>
