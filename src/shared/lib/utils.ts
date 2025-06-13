@@ -43,7 +43,7 @@ export function stringToBooleanOrUndefined(str?: string): boolean | undefined {
 
 export function getGoogleMapsDestinationUrl(
   originCoords: number[],
-  desinationCoords: number[],
+  destinationCoords: number[],
 ) {
   const getOrigin = () => {
     if (originCoords) {
@@ -54,8 +54,8 @@ export function getGoogleMapsDestinationUrl(
   };
 
   const getDestination = () => {
-    if (desinationCoords) {
-      return desinationCoords?.slice()?.reverse()?.join(',');
+    if (destinationCoords) {
+      return destinationCoords?.slice()?.reverse()?.join(',');
     }
 
     return '';

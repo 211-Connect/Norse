@@ -117,14 +117,19 @@ export function Map({
         mapLibreMap.current.fitBounds(bounds, {
           padding: 50,
           animate: false,
-          zoom: 15,
+          zoom: 15, // Zoom level for single or two markers
         });
       } else if (_markers.current.length > 0) {
-        mapLibreMap.current.fitBounds(bounds, { padding: 50, animate: false });
+        mapLibreMap.current.fitBounds(bounds, {
+          padding: 50,
+          animate: false,
+          maxZoom: 13, // Add maximum zoom constraint for multiple locations
+        });
       } else {
         mapLibreMap.current.fitBounds(bounds, {
           zoom: zoom,
           animate: false,
+          maxZoom: 12, // Add maximum zoom constraint for fallback
         });
       }
     }
