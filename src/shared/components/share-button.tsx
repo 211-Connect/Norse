@@ -22,9 +22,11 @@ import { X } from './icons/x';
 import { ShortUrlService } from '../services/short-url-service';
 import { useClipboard } from '../hooks/use-clipboard';
 import { SmsButton } from './sms-button';
+import { useRouter } from 'next/router';
 
 export function ShareButton({ componentToPrintRef, title = '', body = '' }) {
   const { t } = useTranslation('common');
+  const { basePath } = useRouter();
   const [open, setOpen] = useState(false);
   const clipboard = useClipboard();
   const handlePrint = useReactToPrint({
@@ -34,14 +36,13 @@ export function ShareButton({ componentToPrintRef, title = '', body = '' }) {
 
   useEffect(() => {
     async function getShortUrl() {
-      const { url } = await ShortUrlService.getOrCreateShortUrl(
-        window.location.href,
-      );
+      const id = await ShortUrlService.shortenUrl(window.location.href);
+      const url = `${window.location.origin}${basePath}/api/share/${id}`;
       setShortUrl(url);
     }
 
     getShortUrl();
-  }, []);
+  }, [basePath]);
 
   return (
     <>
