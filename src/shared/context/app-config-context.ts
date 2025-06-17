@@ -12,6 +12,7 @@ export type AppConfig = {
     logoUrl?: string;
     faviconUrl?: string;
     openGraphUrl?: string;
+    copyright?: string;
   };
   contact?: {
     email?: string;
@@ -53,6 +54,7 @@ export type AppConfig = {
     text?: string;
     buttonText?: string;
     url?: string;
+    variant?: 'destructive' | 'default';
   };
   hideAttribution?: boolean;
   hideCategoriesHeading?: boolean;

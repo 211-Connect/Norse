@@ -16,6 +16,7 @@ const query = qs.stringify({
         'favicon',
         'hero',
         'openGraph',
+        'copyright',
         'i18n',
         'i18n.locales',
         'theme',
@@ -118,6 +119,7 @@ module.exports = function createFromStrapi(dir) {
         logoUrl: logoUrl,
         faviconUrl: faviconUrl,
         openGraphUrl: openGraphUrl,
+        copyright: appConfig?.copyright,
       },
       contact: {
         email: appConfig.email,
