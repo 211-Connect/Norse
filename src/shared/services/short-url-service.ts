@@ -4,17 +4,17 @@ import { Axios } from '../lib/axios';
 export class ShortUrlService {
   static endpoint = 'short-url';
 
-  static async getShortUrlById(id: string) {
+  static async expandUrl(id: string): Promise<string | null> {
     const res = await Axios.get(`${API_URL}/${this.endpoint}/${id}`, {
       headers: {
         'x-api-version': '1',
       },
     });
 
-    return res.data;
+    return res.data?.url || null;
   }
 
-  static async getOrCreateShortUrl(url: string) {
+  static async shortenUrl(url: string): Promise<string | null> {
     const res = await Axios.post(
       `${API_URL}/${this.endpoint}`,
       {
@@ -27,22 +27,16 @@ export class ShortUrlService {
       },
     );
 
-    return res.data;
-  }
+    const shortUrl = res.data?.url;
+    if (!shortUrl) {
+      return null;
+    }
 
-  static async createShortUrl(url: string): Promise<{ url: string }> {
-    const { data } = await Axios.post(
-      `/${this.endpoint}`,
-      {
-        url,
-      },
-      {
-        headers: {
-          'x-api-version': '1',
-        },
-      },
-    );
+    // Backend shouldn't return frontend URLs really,
+    // keep it straightforward and backwards compatible
+    // by extracting the ID from the short URL.
+    const id = shortUrl.split('/').pop();
 
-    return data;
+    return id;
   }
 }
