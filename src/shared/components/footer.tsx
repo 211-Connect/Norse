@@ -22,7 +22,8 @@ export function Footer(props: Props) {
       >
         <div className="flex flex-col items-center justify-center gap-2">
           <p>
-            &copy; {new Date().getFullYear()} {appConfig?.brand?.name}.{' '}
+            &copy; {new Date().getFullYear()}{' '}
+            {appConfig?.brand?.copyright || appConfig?.brand?.name}.{' '}
             {t('footer.copyright')}
           </p>
 

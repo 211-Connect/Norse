@@ -11,9 +11,11 @@ export default function Alert() {
   if (appConfig.alert == null || Object.keys(appConfig.alert).length === 0)
     return null;
 
+  const variant = appConfig?.alert?.variant || 'destructive';
+
   return (
     <div className="flex items-center justify-center p-8">
-      <AlertComponent variant="destructive" className="flex w-auto">
+      <AlertComponent variant={variant} className="flex w-auto">
         <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
           <AlertCircle className="size-8" />
 
@@ -22,7 +24,7 @@ export default function Alert() {
           {appConfig.alert?.buttonText != null &&
             appConfig.alert?.url != null && (
               <Link
-                className={cn(buttonVariants({ variant: 'destructive' }))}
+                className={cn(buttonVariants({ variant }))}
                 href={appConfig.alert.url}
               >
                 {appConfig.alert.buttonText}
