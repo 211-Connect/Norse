@@ -53,17 +53,17 @@ export function MainSearchLayout() {
   // Fallback to the original string value if a code isn't found
   const findCode = (value: string) => {
     const taxonomy = taxonomies.find(
-      (tax) => tax.name.toLowerCase() === value.toLowerCase(),
+      (tax) => tax?.name?.toLowerCase() === value.toLowerCase(),
     );
     if (taxonomy) return taxonomy.code;
 
     const suggestion = suggestions.find(
-      (sugg) => sugg.name.toLowerCase() === value.toLowerCase(),
+      (sugg) => sugg?.name?.toLowerCase() === value.toLowerCase(),
     );
     if (suggestion) return suggestion.taxonomies;
 
     const category = reducedCategories.find(
-      (cat) => cat.name.toLowerCase() === value.toLowerCase(),
+      (cat) => cat?.name?.toLowerCase() === value.toLowerCase(),
     );
     if (category) return category.query;
 
@@ -72,17 +72,17 @@ export function MainSearchLayout() {
 
   const getQueryType = (value, query) => {
     const taxonomy = taxonomies.find(
-      (tax) => tax.name.toLowerCase() === value.toLowerCase(),
+      (tax) => tax?.name?.toLowerCase() === value.toLowerCase(),
     );
     if (taxonomy) return 'taxonomy';
 
     const suggestion = suggestions.find(
-      (sugg) => sugg.name.toLowerCase() === value.toLowerCase(),
+      (sugg) => sugg?.name?.toLowerCase() === value.toLowerCase(),
     );
     if (suggestion) return 'taxonomy';
 
     const category = reducedCategories.find(
-      (cat) => cat.name.toLowerCase() === value.toLowerCase(),
+      (cat) => cat?.name?.toLowerCase() === value.toLowerCase(),
     );
     if (category) return 'taxonomy';
 
