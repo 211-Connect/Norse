@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useMemo, useRef } from 'react';
+import { ReactElement, useEffect, useRef } from 'react';
 import mapboxgl, { LngLatBounds, LngLatLike, Marker, Popup } from 'mapbox-gl';
 import { MAPBOX_API_KEY, MAPBOX_STYLE_URL } from '@/shared/lib/constants';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -55,8 +55,14 @@ export function Map({
           : undefined,
       );
 
-      if (m.coordinates) {
+      if (
+        m.coordinates &&
+        !isNaN(m.coordinates[0]) &&
+        !isNaN(m.coordinates[1])
+      ) {
         marker.setLngLat(m.coordinates);
+        marker.addTo(mapboxMap.current);
+        bounds.extend(m.coordinates); // Only extend if coordinates are valid
       }
 
       const markerElement = marker.getElement();
@@ -86,7 +92,11 @@ export function Map({
     });
 
     // Add users location as a map pin
-    if (usersLocation?.length > 0) {
+    if (
+      usersLocation?.length > 0 &&
+      !isNaN(usersLocation[0]) &&
+      !isNaN(usersLocation[1])
+    ) {
       const marker = new Marker();
 
       marker.setLngLat(usersLocation as LngLatLike);

@@ -10,7 +10,6 @@ import { ResourceView } from '@/features/resource/views/resource-view';
 import { ResourceService } from '@/shared/services/resource-service';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
-  let notFound = false;
   let data = null;
 
   try {

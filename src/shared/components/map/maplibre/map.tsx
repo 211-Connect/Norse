@@ -65,38 +65,43 @@ export function Map({
           : undefined,
       );
 
-      if (m.coordinates) {
+      // Check if coordinates are valid before doing anything with them
+      const hasValidCoordinates =
+        m.coordinates && !isNaN(m.coordinates[0]) && !isNaN(m.coordinates[1]);
+
+      if (hasValidCoordinates) {
         marker.setLngLat(m.coordinates);
-      }
 
-      const markerElement = marker.getElement();
-      markerElement.style.cursor = 'pointer';
-      markerElement.classList.add('custom-marker');
-      markerElement.addEventListener('click', (e) => {
-        const listElement = document.getElementById(m.id);
-        listElement?.scrollIntoView();
+        const markerElement = marker.getElement();
+        markerElement.style.cursor = 'pointer';
+        markerElement.classList.add('custom-marker');
+        markerElement.addEventListener('click', (e) => {
+          const listElement = document.getElementById(m.id);
+          listElement?.scrollIntoView();
 
-        _markers.current?.forEach((m) => {
-          const popup = m.getPopup();
-          if (popup?.isOpen()) {
-            m.togglePopup();
-          }
+          _markers.current?.forEach((m) => {
+            const popup = m.getPopup();
+            if (popup?.isOpen()) {
+              m.togglePopup();
+            }
+          });
+
+          marker.togglePopup();
         });
 
-        marker.togglePopup();
-      });
-
-      if (m.coordinates) {
         marker.addTo(mapLibreMap.current);
+        bounds.extend(m.coordinates); // Only extend if coordinates are valid
       }
-
-      bounds.extend(m.coordinates);
 
       return marker;
     });
 
     // Add users location as a map pin
-    if (usersLocation?.length > 0) {
+    if (
+      usersLocation?.length > 0 &&
+      !isNaN(usersLocation[0]) &&
+      !isNaN(usersLocation[1])
+    ) {
       const marker = new Marker();
 
       marker.setLngLat(usersLocation as LngLatLike);

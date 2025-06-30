@@ -32,13 +32,18 @@ export function SearchBar() {
     query: string;
     queryType: string;
   }[] = useMemo(() => {
-    return categories.reduce((prev, current) => {
+    const result = categories.reduce((prev, current) => {
       if (current?.subcategories?.length > 0) {
-        return prev.concat(current.subcategories);
+        // Filter out null/undefined subcategories before concatenating
+        const validSubcategories = current.subcategories.filter(
+          (subcat) => subcat != null && subcat.name != null,
+        );
+        return prev.concat(validSubcategories);
       }
-
       return prev;
     }, []);
+
+    return result;
   }, [categories]);
 
   // Remap and filter data as needed for the search box
@@ -77,17 +82,17 @@ export function SearchBar() {
   const findCode = useCallback(
     (value: string) => {
       const taxonomy = taxonomies.find(
-        (tax) => tax.name.toLowerCase() === value.toLowerCase(),
+        (tax) => tax?.name?.toLowerCase() === value.toLowerCase(),
       );
       if (taxonomy) return taxonomy.code;
 
       const suggestion = suggestions.find(
-        (sugg) => sugg.name.toLowerCase() === value.toLowerCase(),
+        (sugg) => sugg?.name?.toLowerCase() === value.toLowerCase(),
       );
       if (suggestion) return suggestion.taxonomies;
 
       const category = reducedCategories.find(
-        (cat) => cat.name.toLowerCase() === value.toLowerCase(),
+        (cat) => cat?.name?.toLowerCase() === value.toLowerCase(),
       );
       if (category) return category.query;
 
@@ -99,22 +104,23 @@ export function SearchBar() {
   const getQueryType = useCallback(
     (value, query) => {
       const taxonomy = taxonomies.find(
-        (tax) => tax.name.toLowerCase() === value.toLowerCase(),
+        (tax) => tax?.name?.toLowerCase() === value.toLowerCase(),
       );
       if (taxonomy) return 'taxonomy';
 
       const suggestion = suggestions.find(
-        (sugg) => sugg.name.toLowerCase() === value.toLowerCase(),
+        (sugg) => sugg?.name?.toLowerCase() === value.toLowerCase(),
       );
       if (suggestion) return 'taxonomy';
 
       const category = reducedCategories.find(
-        (cat) => cat.name.toLowerCase() === value.toLowerCase(),
+        (cat) => cat?.name?.toLowerCase() === value.toLowerCase(),
       );
       if (category) return 'taxonomy';
 
       if (query.trim().length === 0) return '';
       if (query === value) return 'text';
+
       return 'taxonomy';
     },
     [reducedCategories, suggestions, taxonomies],

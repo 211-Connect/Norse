@@ -31,6 +31,13 @@ export class ErrorBoundary extends React.Component<Props, State> {
     // You can use your own error logging service here
     console.log({ error, errorInfo });
 
+    // Capture additional debugging info for coordinate errors
+    const debugInfo = {
+      userAgent: navigator.userAgent,
+      url: window.location.href,
+      geolocationSupported: 'geolocation' in navigator,
+    };
+
     try {
       await axios.post('/api/webhook', {
         message: error?.message,
@@ -39,6 +46,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
         url: window?.location?.href,
         openGraphUrl: this.props?.appConfig?.brand?.openGraphUrl,
         hostname: window?.location?.hostname,
+        debugInfo: JSON.stringify(debugInfo),
       });
     } catch (err) {
       console.log('Unable to send webhook');
