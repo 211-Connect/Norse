@@ -17,6 +17,25 @@ export const config = {
 
 // Add a session_id to the cookies of the user for tracking purposes
 export function middleware(request: NextRequest) {
+  const url = request.nextUrl.clone();
+  const { pathname } = url;
+
+  // Get trailing slash config from environment
+  const enableTrailingSlashRemoval =
+    process.env.ENABLE_TRAILING_SLASH_REMOVAL === 'true';
+
+  // Handle trailing slash removal for /adresources paths
+  if (
+    enableTrailingSlashRemoval &&
+    pathname.startsWith('/adresources/') &&
+    pathname.endsWith('/') &&
+    pathname !== '/adresources/'
+  ) {
+    url.pathname = pathname.slice(0, -1); // remove trailing slash
+    return NextResponse.redirect(url);
+  }
+
+  // Session ID handling
   let sessionId: string | undefined;
   if (request.cookies.has(SESSION_ID)) {
     sessionId = request.cookies.get(SESSION_ID)?.value;
