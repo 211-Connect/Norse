@@ -1,11 +1,13 @@
 import { buttonVariants } from '@/shared/components/ui/button';
 import { Link } from '@/shared/components/link';
 import { useTranslation } from 'next-i18next';
+import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Image from 'next/image';
 
 export function NotFound() {
   const { t } = useTranslation('page-404');
+  const router = useRouter();
 
   return (
     <div className="flex flex-1">
@@ -17,8 +19,8 @@ export function NotFound() {
       <div className="relative flex flex-1 flex-col">
         <Image
           fill
-          src="/undraw_404.svg"
-          alt=""
+          src={`${router.basePath}/undraw_404.svg`}
+          alt="404 illustration"
           style={{ objectFit: 'contain', zIndex: -1, objectPosition: 'center' }}
         />
 

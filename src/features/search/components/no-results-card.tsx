@@ -30,10 +30,10 @@ export function NoResultsCard({ showAltSubtitle }) {
       </CardHeader>
       <CardContent className="flex items-center justify-center p-2">
         <Image
-          src="/undraw_searching.svg"
+          src={`${router.basePath}/undraw_searching.svg`}
           width={0}
           height={150}
-          alt=""
+          alt="Illustration of a person searching"
           style={{ height: '150px', width: 'auto' }}
         />
       </CardContent>

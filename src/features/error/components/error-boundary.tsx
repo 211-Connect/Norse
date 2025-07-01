@@ -3,17 +3,36 @@ import Link from 'next/link';
 import Image from 'next/image';
 import axios from 'axios';
 import { buttonVariants } from '@/shared/components/ui/button';
+import { useRouter } from 'next/router';
+
+// Create a wrapper component that has access to router
+function ErrorBoundaryWithRouter({
+  children,
+  appConfig,
+}: {
+  children: ReactNode;
+  appConfig?: any;
+}) {
+  const router = useRouter();
+
+  return (
+    <ErrorBoundary appConfig={appConfig} basePath={router.basePath}>
+      {children}
+    </ErrorBoundary>
+  );
+}
 
 type Props = {
   children: ReactNode;
   appConfig?: any;
+  basePath?: string;
 };
 
 type State = {
   hasError: false;
 };
 
-export class ErrorBoundary extends React.Component<Props, State> {
+class ErrorBoundary extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
@@ -27,6 +46,33 @@ export class ErrorBoundary extends React.Component<Props, State> {
     return { hasError: true };
   }
 
+  private checkWebGLSupport(): boolean {
+    try {
+      const canvas = document.createElement('canvas');
+      const gl =
+        canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      return !!gl;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  private checkHardwareAcceleration(): string {
+    try {
+      const canvas = document.createElement('canvas');
+      const gl = canvas.getContext('webgl');
+      if (gl) {
+        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+        if (debugInfo) {
+          return gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+        }
+      }
+      return 'unknown';
+    } catch (e) {
+      return 'unavailable';
+    }
+  }
+
   async componentDidCatch(error: any, errorInfo: any) {
     // You can use your own error logging service here
     console.log({ error, errorInfo });
@@ -36,6 +82,10 @@ export class ErrorBoundary extends React.Component<Props, State> {
       userAgent: navigator.userAgent,
       url: window.location.href,
       geolocationSupported: 'geolocation' in navigator,
+      webglSupported: this.checkWebGLSupport(),
+      hardwareAcceleration: this.checkHardwareAcceleration(),
+      platform: navigator?.platform || 'unknown',
+      memory: (navigator as any).deviceMemory || 'unknown',
     };
 
     try {
@@ -56,13 +106,12 @@ export class ErrorBoundary extends React.Component<Props, State> {
   render() {
     // Check if the error is thrown
     if (this.state.hasError) {
-      // You can render any custom fallback UI
       return (
         <div className="relative flex min-h-screen flex-col">
           <Image
             fill
-            src="/undraw_bug_fixing.svg"
-            alt=""
+            src={`${this.props.basePath}/undraw_bug_fixing.svg`}
+            alt="Bug fixing illustration"
             style={{
               objectFit: 'contain',
               zIndex: -1,
@@ -92,3 +141,6 @@ export class ErrorBoundary extends React.Component<Props, State> {
     return this.props.children;
   }
 }
+
+// Export the wrapper component
+export { ErrorBoundaryWithRouter as ErrorBoundary };
