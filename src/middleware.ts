@@ -34,7 +34,8 @@ export function middleware(request: NextRequest) {
     enableTrailingSlashRemoval &&
     pathname.startsWith('/adresources/') &&
     pathname.endsWith('/') &&
-    pathname !== '/adresources/'
+    pathname !== '/adresources/' &&
+    request.method !== 'POST'
   ) {
     url.pathname = pathname.slice(0, -1); // remove trailing slash
     return NextResponse.redirect(url);
