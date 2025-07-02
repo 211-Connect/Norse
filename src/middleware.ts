@@ -24,7 +24,11 @@ export function middleware(request: NextRequest) {
   const enableTrailingSlashRemoval =
     process.env.ENABLE_TRAILING_SLASH_REMOVAL === 'true';
 
-  if (request.method === 'POST' && pathname.endsWith('/')) {
+  if (
+    enableTrailingSlashRemoval &&
+    request.method === 'POST' &&
+    pathname.endsWith('/')
+  ) {
     url.pathname = pathname.slice(0, -1);
     return NextResponse.redirect(url, 308); // preserve method
   }
