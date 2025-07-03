@@ -11,7 +11,7 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/((?!api/auth|api|_next/static|_next/image|favicon.ico).*)',
   ],
 };
 
@@ -55,13 +55,15 @@ export function middleware(request: NextRequest) {
   }
 
   const response = NextResponse.next();
-  response.cookies.set({
-    name: SESSION_ID,
-    value: sessionId,
-    path: '/',
-    secure: process.env.NODE_ENV === 'production',
-    httpOnly: true,
-  });
+  if (!request.cookies.has(SESSION_ID)) {
+    response.cookies.set({
+      name: SESSION_ID,
+      value: sessionId,
+      path: '/',
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+    });
+  }
 
   return response;
 }
