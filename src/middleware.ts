@@ -11,7 +11,7 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      */
-    '/((?!adresources/api/auth|api/auth|api|_next/static|_next/image|favicon.ico).*)',
+    '/((?!favorites|adresources/api/auth|api/auth|api|_next/static|_next/image|favicon.ico).*)',
   ],
 };
 
@@ -22,6 +22,10 @@ export function middleware(request: NextRequest) {
 
   const url = request.nextUrl.clone();
   const { pathname } = url;
+  // Log every middleware invocation
+  console.log(`[middleware] Invoked for: ${request.method} ${pathname}`);
+
+
 
   // Get trailing slash config from environment
   const enableTrailingSlashRemoval =
