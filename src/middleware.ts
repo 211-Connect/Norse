@@ -11,7 +11,7 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/((?!api/auth|api|_next/static|_next/image|favicon.ico).*)',
   ],
 };
 
@@ -24,13 +24,21 @@ export function middleware(request: NextRequest) {
   const enableTrailingSlashRemoval =
     process.env.ENABLE_TRAILING_SLASH_REMOVAL === 'true';
 
+  if (
+    enableTrailingSlashRemoval &&
+    request.method === 'POST' &&
+    pathname.endsWith('/')
+  ) {
+    url.pathname = pathname.slice(0, -1);
+    return NextResponse.redirect(url, 308); // preserve method
+  }
+
   // Handle trailing slash removal for /adresources paths
   if (
     enableTrailingSlashRemoval &&
     pathname.startsWith('/adresources/') &&
     pathname.endsWith('/') &&
-    pathname !== '/adresources/' &&
-    request.method !== 'POST'
+    pathname !== '/adresources/'
   ) {
     url.pathname = pathname.slice(0, -1); // remove trailing slash
     return NextResponse.redirect(url);
@@ -47,13 +55,15 @@ export function middleware(request: NextRequest) {
   }
 
   const response = NextResponse.next();
-  response.cookies.set({
-    name: SESSION_ID,
-    value: sessionId,
-    path: '/',
-    secure: process.env.NODE_ENV === 'production',
-    httpOnly: true,
-  });
+  if (!request.cookies.has(SESSION_ID)) {
+    response.cookies.set({
+      name: SESSION_ID,
+      value: sessionId,
+      path: '/',
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+    });
+  }
 
   return response;
 }
