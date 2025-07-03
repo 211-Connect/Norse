@@ -4,6 +4,8 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import KeycloakProvider from 'next-auth/providers/keycloak';
 import { omitBy, isNil } from 'lodash';
 
+const isDebug = process.env.NEXTAUTH_DEBUG === 'true';
+
 export const authOptions: NextAuthOptions = {
   callbacks: {
     session({ session, token }) {
@@ -105,6 +107,20 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+  ...(isDebug && {
+    debug: true,
+    logger: {
+      error(code, metadata) {
+        console.error("[NextAuth][error]", code, metadata);
+      },
+      warn(code) {
+        console.warn("[NextAuth][warn]", code);
+      },
+      debug(code, metadata) {
+        console.debug("[NextAuth][debug]", code, metadata);
+      }
+    }
+  }),
 };
 
 export default NextAuth(authOptions);
