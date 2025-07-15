@@ -17,15 +17,8 @@ export const config = {
 
 // Add a session_id to the cookies of the user for tracking purposes
 export function middleware(request: NextRequest) {
-  // Log every middleware invocation
-  console.log(`[middleware] Invoked for: ${request.method} ${request.nextUrl.pathname} cookies: ${request.cookies.getAll()}`);
-
   const url = request.nextUrl.clone();
   const { pathname } = url;
-  // Log every middleware invocation
-  console.log(`[middleware] Invoked for: ${request.method} ${pathname}`);
-
-
 
   // Get trailing slash config from environment
   const enableTrailingSlashRemoval =
