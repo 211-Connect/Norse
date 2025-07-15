@@ -39,6 +39,7 @@ export class FavoriteService {
 
       return data;
     } catch (err) {
+      console.error('Error fetching favorite lists:', err);
       return [];
     }
   }
@@ -59,6 +60,7 @@ export class FavoriteService {
 
       return data;
     } catch (err) {
+      console.error('Error searching favorite lists:', err);
       return [];
     }
   }
