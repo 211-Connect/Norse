@@ -81,7 +81,9 @@ export function Information({ resource }) {
                           : t('mail')}
                       </p>
                     </div>
-                    <p className="text-sm">{`${address.address_1}, ${address.city}, ${address.stateProvince} ${address.postalCode}`}</p>
+                    <p className="text-sm">
+                      {`${address.address_1},${address.address_2 ? ` ${address.address_2},` : ''} ${address.city}, ${address.stateProvince} ${address.postalCode}`}
+                    </p>
                   </div>
                 );
               })}
