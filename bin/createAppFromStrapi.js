@@ -137,7 +137,7 @@ module.exports = function createFromStrapi(dir) {
         map: appConfig?.adapters?.map ?? 'maplibre',
       },
       map: appConfig?.map ?? {
-        center: [0, 0],
+        center: [39.8283459, ,-98.5794797],
         zoom: 7,
       },
       alert: appConfig?.alert,
