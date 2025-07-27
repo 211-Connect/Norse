@@ -59,7 +59,9 @@ export function AdditionalInformation({ resource }) {
                 <p className="font-bold">{t('eligibility')}</p>
               </div>
 
-              <p className="text-sm">{parseHtml(resource.eligibilities)}</p>
+              <p className="whitespace-break-spaces text-sm">
+                {parseHtml(resource.eligibilities)}
+              </p>
             </div>
           )}
 
@@ -86,7 +88,7 @@ export function AdditionalInformation({ resource }) {
                 <p className="font-bold">{t('Interpretation services')}</p>
               </div>
 
-              <p className="text-sm">
+              <p className="whitespace-break-spaces text-sm">
                 {parseHtml(resource.interpretationServices, {
                   parseLineBreaks: true,
                 })}
