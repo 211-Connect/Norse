@@ -9,14 +9,23 @@ import {
 import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
 import { ReactNode } from 'react';
+import { cn } from '@/shared/lib/utils';
 
 type CopyBadgeProps = {
   children?: ReactNode;
   text: string;
   href?: string;
+  target?: string;
+  className?: string;
 };
 
-export function CopyBadge({ children, text, href }: CopyBadgeProps) {
+export function CopyBadge({
+  children,
+  text,
+  href,
+  target,
+  className,
+}: CopyBadgeProps) {
   const { t } = useTranslation('common');
   const { copied, copy } = useClipboard({ timeout: 500 });
 
@@ -30,7 +39,11 @@ export function CopyBadge({ children, text, href }: CopyBadgeProps) {
   return (
     <WrapperComponent
       href={href}
-      className="group flex items-center gap-1 truncate text-xs font-semibold hover:underline"
+      target={target}
+      className={cn(
+        'group flex items-center gap-1 truncate text-xs font-semibold hover:underline',
+        className,
+      )}
     >
       {children}
 

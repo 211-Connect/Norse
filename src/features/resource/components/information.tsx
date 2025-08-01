@@ -1,4 +1,5 @@
 import { Card, CardContent } from '@/shared/components/ui/card';
+import { CopyBadge } from '@/shared/components/copy-badge';
 import { MapContainer } from './map-container';
 import { useTranslation } from 'next-i18next';
 import {
@@ -145,12 +146,14 @@ export function Information({ resource }) {
                 <Globe className="size-4" />
                 <p className="font-bold">{t('website')}</p>
               </div>
-              <Link
-                className="break-words text-sm hover:underline"
+              <CopyBadge
                 href={resource.website}
+                text={resource.website}
+                target="_blank"
+                className="text-sm font-normal"
               >
-                {resource.website}
-              </Link>
+                <p className="break-words text-sm">{resource.website}</p>
+              </CopyBadge>
             </div>
           )}
 
