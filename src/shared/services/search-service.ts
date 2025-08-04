@@ -108,14 +108,25 @@ export class SearchService {
     return {
       results:
         data?.search?.hits?.hits?.map((hit: any) => {
-          let mainAddress: string | null =
-            `${hit._source?.location?.physical_address?.address_1}, ${hit._source?.location?.physical_address?.city}, ${hit._source?.location?.physical_address?.state}, ${hit._source?.location?.physical_address?.postal_code}`;
+          const physicalAddress = hit._source?.location?.physical_address;
+          let mainAddress: string | null = null;
 
           if (
-            mainAddress.includes('null') ||
-            mainAddress.includes('undefined')
+            physicalAddress?.address_1 &&
+            physicalAddress?.city &&
+            physicalAddress?.state &&
+            physicalAddress?.postal_code
           ) {
-            mainAddress = null;
+            // Construct address similar to information.tsx format
+            const addressParts = [
+              physicalAddress.address_1,
+              physicalAddress.address_2 ? physicalAddress.address_2 : null,
+              physicalAddress.city,
+              physicalAddress.state,
+              physicalAddress.postal_code,
+            ].filter(Boolean); // Remove null/undefined values
+
+            mainAddress = addressParts.join(', ');
           }
 
           const responseData = {
