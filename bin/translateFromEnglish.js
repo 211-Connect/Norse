@@ -6,14 +6,14 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
-const translateCedential = {
+const translateCredentials = {
   key: process.env.AZURE_TRANSLATE_API_KEY,
   region: 'global',
 };
 
 const translationClient = TextTranslationClient(
   'https://api.cognitive.microsofttranslator.com',
-  translateCedential,
+  translateCredentials,
 );
 
 const _redisPort = Number(process.env.REDIS_PORT);

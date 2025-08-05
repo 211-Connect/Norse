@@ -1,0 +1,10 @@
+{
+  "meta_title": "즐겨찾기 목록 보기",
+  "meta_description": "즐겨찾기 목록 보기",
+  "lists": "목록",
+  "view_list": "목록 보기",
+  "edit_list": "목록 편집",
+  "delete_list": "목록 삭제",
+  "select_a_list": "옆에 있는 목록을 선택하여 즐겨찾기를 봅니다.",
+  "no_lists": "아직 목록이 없습니다."
+}

@@ -44,6 +44,12 @@
     "resource": {
       "hideCategories": false,
       "hideLastAssured": false
+    },
+    "privacyPolicy": {
+      "enabled": true
+    },
+    "termsOfUse": {
+      "enabled": false
     }
   },
   "menus": {

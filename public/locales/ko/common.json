@@ -1,0 +1,133 @@
+{
+  "header": {
+    "home": "집",
+    "favorites": "즐겨찾기",
+    "log_out": "로그아웃",
+    "submit_feedback": "피드백 제출",
+    "language_select_label": "사이트 언어를 변경할 언어를 선택합니다."
+  },
+  "favorites": {
+    "added_to_list": "목록에 추가됨",
+    "added_to_list_message": "이 리소스가 목록에 추가되었습니다.",
+    "already_exists": "이미",
+    "already_exists_message": "이 리소스는 이미 목록에 있습니다.",
+    "removed_from_list": "목록에서 제거됨",
+    "removed_from_list_message": "이 리소스는 목록에서 제거되었습니다.",
+    "updated_list": "업데이트된 목록",
+    "updated_list_message": "목록이 업데이트되었습니다.",
+    "unable_to_update_list": "목록을 업데이트할 수 없습니다.",
+    "unable_to_update_list_message": "목록을 업데이트할 수 없습니다.",
+    "deleted_list": "삭제된 목록",
+    "deleted_list_message": "목록이 삭제되었습니다.",
+    "unable_to_delete_list": "목록을 삭제할 수 없습니다.",
+    "unable_to_delete_list_message": "목록을 삭제할 수 없습니다."
+  },
+  "search": {
+    "hero_title": "리소스 검색",
+    "query_placeholder": "음식, 주거 등...",
+    "location_placeholder": "도시, 주 또는 우편 번호",
+    "radius_placeholder": "반지름",
+    "miles": "마일리지",
+    "any": "어떤",
+    "taxonomies": "분류",
+    "suggestions": "제안",
+    "use_my_location": "내 위치 사용",
+    "confidential_address": "이 위치는 기밀이거나 대중에게 공개되지 않을 수 있습니다. 이 서비스에 대해 제공된 다른 연락 방법을 선택하십시오.",
+    "address_unavailable": "주소를 사용할 수 없음",
+    "geocoding_error": "지오코딩 오류",
+    "geocoding_unsupported": "지리적 위치는 브라우저에서 지원되지 않습니다.",
+    "geocoding_unable_to_retrieve": "위치를 검색할 수 없습니다. 브라우저의 위치 설정을 확인하고 다시 시도하십시오.",
+    "categories": "카테고리"
+  },
+  "call_to_action": {
+    "call": "외침",
+    "view_website": "웹사이트 보기",
+    "get_directions": "길 찾기",
+    "view_details": "세부 정보보기",
+    "add_to_list": "목록에 추가",
+    "delete_list": "목록 삭제",
+    "remove_from_list": "목록에서 제거",
+    "share": "공유",
+    "cancel": "취소",
+    "create": "창조하다",
+    "update": "업데이트",
+    "delete": "삭제하다",
+    "search": "검색",
+    "remove": "제거하다",
+    "login": "로그인",
+    "show_more": "더 보기",
+    "show_less": "간단히 보기",
+    "print": "인쇄하다"
+  },
+  "list": {
+    "private": "민간의",
+    "public": "공공의"
+  },
+  "message": {
+    "list_deleted": "삭제된 목록",
+    "list_deleted_success": "목록이 삭제되었습니다.",
+    "error": "오류",
+    "list_not_deleted_error": "목록을 삭제할 수 없습니다."
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "목록 검색",
+      "list_name": "목록",
+      "list_privacy": "사생활",
+      "add_to_list": "목록에 추가",
+      "not_found": "목록을 찾을 수 없습니다.",
+      "create_new_list": "새 것을 만드시겠습니까?"
+    },
+    "remove_from_list": {
+      "are_you_sure": "목록에서 이 즐겨찾기를 제거하시겠습니까?"
+    },
+    "create_list": {
+      "create_a_list": "목록 만들기",
+      "list_name": "이름",
+      "list_description": "묘사",
+      "make_public": "공개"
+    },
+    "update_list": {
+      "update_list": "업데이트 목록",
+      "list_name": "이름",
+      "list_description": "묘사",
+      "make_public": "공개"
+    },
+    "delete_list": {
+      "delete_list": "목록 삭제"
+    },
+    "share": {
+      "share_via": "다음을 통해 공유하세요.",
+      "copy_link": "링크 복사",
+      "copy": "복사",
+      "facebook": "페이스북",
+      "twitter": "지저귀다",
+      "linkedin": "링크드인",
+      "sms": "SMS",
+      "email": "메일 주소",
+      "print": "인쇄하다",
+      "copied": "복사!",
+      "check_out_this_list": "내가 만든 이 목록을 확인하십시오!",
+      "check_out_this_resource": "내가 찾은 이 리소스를 확인하십시오!",
+      "share_sms": "SMS를 통해 공유할 전화번호를 입력합니다.",
+      "enter_phone_number": "전화번호 입력...",
+      "invalid_phone_number": "잘못된 전화번호",
+      "sms_sending_title": "SMS 보내기 중...",
+      "sms_sending_body": "메시지가 전송되고 있습니다.",
+      "sms_send_success_title": "SMS가 전송되었습니다!",
+      "sms_send_success_body": "메시지가 전송되었습니다.",
+      "sms_send_failed_title": "SMS 전송 실패",
+      "sms_send_failed_body": "메시지를 보내지 못했습니다."
+    },
+    "prompt_auth": "이 기능을 사용하려면 로그인하십시오."
+  },
+  "update_location": {
+    "prompt_start_location": "시작 위치는 어디입니까?"
+  },
+  "data_providers": {
+    "provided_by": "데이터 제공"
+  },
+  "footer": {
+    "copyright": "판권 소유."
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "filter_results": "筛选结果",
+  "results": "结果",
+  "no_query": "未提供查询",
+  "results_for": "找到查询结果",
+  "of": "之",
+  "no_results": {
+    "title": "未找到与查询匹配的结果",
+    "subtitle": "我们在下面提供了一些类似的结果",
+    "alt_subtitle": "尝试其他查询或筛选器",
+    "need_help": "需要帮助？我们有人在旁边待命。"
+  }
+}

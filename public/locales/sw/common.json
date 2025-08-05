@@ -56,7 +56,8 @@
     "remove": "Ondoa",
     "login": "Kuingia",
     "show_more": "Onyesha zaidi",
-    "show_less": "Onyesha chini"
+    "show_less": "Onyesha chini",
+    "print": "Chapisha"
   },
   "list": {
     "private": "Binafsi",
@@ -127,7 +128,6 @@
     "provided_by": "Data iliyotolewa na"
   },
   "footer": {
-    "copyright": "Haki zote zimehifadhiwa.",
-    "privacy_policy": "Sera ya faragha"
+    "copyright": "Haki zote zimehifadhiwa."
   }
 }

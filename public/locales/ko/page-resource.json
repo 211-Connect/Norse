@@ -1,0 +1,21 @@
+{
+  "back_to_results": "결과로 돌아가기",
+  "back_to_home": "집으로 돌아가기",
+  "categories": "카테고리",
+  "last_assured": "마지막 보증",
+  "hours": "시간",
+  "required_documents": "구비서류",
+  "mail": "우편 주소",
+  "location": "실제 주소",
+  "voice": "목소리",
+  "email": "메일 주소",
+  "fax": "팩스",
+  "website": "웹 사이트",
+  "application_process": "신청 프로세스",
+  "eligibility": "적임",
+  "fee": "요금",
+  "service_area": "서비스 지역",
+  "agency_info": "에이전시 정보",
+  "unknown": "알려지지 않은",
+  "languages": "언어들"
+}

@@ -28,9 +28,21 @@ export function Footer(props: Props) {
           </p>
 
           <div className="flex items-center gap-4 print:hidden">
-            <Link href="/legal/privacy-policy">
-              {t('footer.privacy_policy')}
-            </Link>
+            {appConfig?.pages?.privacyPolicy?.enabled && (
+              <Link href="/legal/privacy-policy">
+                {t('privacy_policy.title', {
+                  ns: 'dynamic',
+                })}
+              </Link>
+            )}
+
+            {appConfig?.pages?.termsOfUse?.enabled && (
+              <Link href="/legal/terms-of-use">
+                {t('terms_of_use.title', {
+                  ns: 'dynamic',
+                })}
+              </Link>
+            )}
 
             {appConfig?.menus?.footer?.map((el) => (
               <Link

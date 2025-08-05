@@ -56,7 +56,8 @@
     "remove": "አስወግድ",
     "login": "መግቢያ",
     "show_more": "ተጨማሪ አሳይ",
-    "show_less": "ያነሰ አሳይ"
+    "show_less": "ያነሰ አሳይ",
+    "print": "ህትመት"
   },
   "list": {
     "private": "የግል",
@@ -127,7 +128,6 @@
     "provided_by": "የቀረቡ መረጃዎች"
   },
   "footer": {
-    "copyright": "ሁሉም መብቶች የተጠበቁ ናቸው።",
-    "privacy_policy": "የግላዊነት ፖሊሲ"
+    "copyright": "ሁሉም መብቶች የተጠበቁ ናቸው።"
   }
 }

@@ -56,7 +56,8 @@
     "remove": "Triệt",
     "login": "Đăng nhập",
     "show_more": "Hiển thị thêm",
-    "show_less": "Hiển thị ít hơn"
+    "show_less": "Hiển thị ít hơn",
+    "print": "In"
   },
   "list": {
     "private": "Tư",
@@ -127,7 +128,6 @@
     "provided_by": "Dữ liệu được cung cấp bởi"
   },
   "footer": {
-    "copyright": "Đã đăng ký Bản quyền.",
-    "privacy_policy": "Chính sách bảo mật"
+    "copyright": "Đã đăng ký Bản quyền."
   }
 }

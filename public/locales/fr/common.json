@@ -56,7 +56,8 @@
     "remove": "Enlever",
     "login": "Connectez-vous",
     "show_more": "Afficher plus",
-    "show_less": "Afficher moins"
+    "show_less": "Afficher moins",
+    "print": "Imprimer"
   },
   "list": {
     "private": "Privé",
@@ -127,7 +128,6 @@
     "provided_by": "Données fournies par"
   },
   "footer": {
-    "copyright": "Tous droits réservés.",
-    "privacy_policy": "Politique de confidentialité"
+    "copyright": "Tous droits réservés."
   }
 }

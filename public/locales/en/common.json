@@ -56,7 +56,8 @@
     "remove": "Remove",
     "login": "Login",
     "show_more": "Show more",
-    "show_less": "Show less"
+    "show_less": "Show less",
+    "print": "Print"
   },
   "list": {
     "private": "Private",
@@ -127,7 +128,6 @@
     "provided_by": "Data provided by"
   },
   "footer": {
-    "copyright": "All rights reserved.",
-    "privacy_policy": "Privacy policy"
+    "copyright": "All rights reserved."
   }
 }
