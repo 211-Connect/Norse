@@ -4,12 +4,12 @@ import {
   serverSideFlags,
 } from '@/shared/lib/server-utils';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { PrivacyPolicyView } from '@/features/privacy-policy/views/privacy-policy-view';
+import { TermsOfUseView } from '@/features/terms-of-use/views/terms-of-use-view';
 
 export async function getStaticProps(ctx: GetStaticPropsContext) {
   const { appConfig } = await serverSideAppConfig();
 
-  if (!appConfig?.pages?.privacyPolicy?.enabled) {
+  if (!appConfig?.pages?.termsOfUse?.enabled) {
     return {
       notFound: true,
     };
@@ -24,4 +24,4 @@ export async function getStaticProps(ctx: GetStaticPropsContext) {
   };
 }
 
-export default PrivacyPolicyView;
+export default TermsOfUseView;

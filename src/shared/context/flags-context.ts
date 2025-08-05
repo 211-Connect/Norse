@@ -9,6 +9,7 @@ export type Flags = {
   showSuggestionListTaxonomyBadge: boolean;
   showUseMyLocationButtonOnDesktop: boolean;
   requireUserLocation: boolean;
+  showPrintButton: boolean;
 };
 
 const flagsContext = createContext<Flags>(null);

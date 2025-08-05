@@ -1,0 +1,9 @@
+{
+  "meta_title": "查看列表",
+  "back_to_favorites": "返回收藏夹",
+  "favorites": "收藏 夹",
+  "no_favorites": {
+    "title": "这里还没有:(",
+    "subtitle": "在搜索页面上添加一些收藏夹，以便在此处查看它们"
+  }
+}

@@ -8,11 +8,13 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { filtersAtom, filtersOpenAtom } from '@/shared/store/results';
 import { cn } from '@/shared/lib/utils';
 import { TaxonomyContainer } from './taxonomy-container';
+import { useRef } from 'react';
 
 export function ResultsSection() {
   const setFiltersOpen = useSetAtom(filtersOpenAtom);
   const filters = useAtomValue(filtersAtom);
   const filterKeys = Object.keys(filters);
+  const componentToPrintRef = useRef<HTMLDivElement>(null);
 
   return (
     <div
@@ -49,8 +51,8 @@ export function ResultsSection() {
         <ResultTotal />
       </div>
 
-      <div className="flex flex-col gap-2 p-2">
-        <RenderResults />
+      <div className="flex flex-col gap-2 p-2" ref={componentToPrintRef}>
+        <RenderResults componentToPrintRef={componentToPrintRef} />
         <ResultsPagination />
       </div>
     </div>

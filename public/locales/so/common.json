@@ -56,7 +56,8 @@
     "remove": "ka saar",
     "login": "Gudagal",
     "show_more": "Muuji more",
-    "show_less": "muuji wax yar"
+    "show_less": "muuji wax yar",
+    "print": "Haku"
   },
   "list": {
     "private": "Private",
@@ -127,7 +128,6 @@
     "provided_by": "Macluumaadka ay bixiyaan"
   },
   "footer": {
-    "copyright": "Dhamaan xuquuqda waa la keydiyay.",
-    "privacy_policy": "Qaanuunka Arrimaha Khaaska ah"
+    "copyright": "Dhamaan xuquuqda waa la keydiyay."
   }
 }

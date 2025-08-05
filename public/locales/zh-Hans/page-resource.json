@@ -1,0 +1,21 @@
+{
+  "back_to_results": "返回结果",
+  "back_to_home": "返回首页",
+  "categories": "类别",
+  "last_assured": "最后保证",
+  "hours": "小时",
+  "required_documents": "所需文件",
+  "mail": "邮寄地址",
+  "location": "实际地址",
+  "voice": "声音",
+  "email": "电子邮件",
+  "fax": "传真",
+  "website": "网站",
+  "application_process": "申请流程",
+  "eligibility": "资格",
+  "fee": "费",
+  "service_area": "服务区域",
+  "agency_info": "机构信息",
+  "unknown": "未知",
+  "languages": "语言"
+}

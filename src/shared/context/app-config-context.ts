@@ -41,6 +41,12 @@ export type AppConfig = {
       hideCategories?: boolean;
       hideLastAssured?: boolean;
     };
+    privacyPolicy?: {
+      enabled: boolean;
+    };
+    termsOfUse?: {
+      enabled: boolean;
+    };
   };
   adapters: {
     geocoder: 'mapbox';

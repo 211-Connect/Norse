@@ -37,6 +37,8 @@ const query = qs.stringify({
         'map',
         'homePage',
         'resourcePage',
+        'privacyPolicyPage',
+        'termsOfUsePage',
         'dataProviders',
         'dataProviders.logo',
         'radiusSelectValues',
@@ -55,6 +57,8 @@ const query = qs.stringify({
         'localizations.categoriesText',
         'localizations.homePage',
         'localizations.resourcePage',
+        'localizations.privacyPolicyPage',
+        'localizations.termsOfUsePage',
       ],
     },
     category: {
@@ -170,6 +174,11 @@ module.exports = function createFromStrapi(dir) {
       categories_text: appConfig?.resourcePage?.categoriesText,
       meta_title: appConfig?.homePage?.title,
       meta_description: appConfig?.homePage?.description,
+      'privacy_policy.title':
+        appConfig?.privacyPolicyPage?.title ?? 'Privacy Policy',
+      'privacy_policy.content': appConfig?.privacyPolicyPage?.content,
+      'terms_of_use.title': appConfig?.termsOfUsePage?.title ?? 'Terms of Use',
+      'terms_of_use.content': appConfig?.termsOfUsePage?.content,
     };
 
     if (appConfig?.customCategoriesHeading) {
@@ -187,6 +196,12 @@ module.exports = function createFromStrapi(dir) {
       heroSection: {
         backgroundImageUrl: heroUrl,
       },
+    };
+    newAppConfig.pages['privacyPolicy'] = {
+      enabled: appConfig?.privacyPolicyPage?.enabled ?? true,
+    };
+    newAppConfig.pages['termsOfUse'] = {
+      enabled: appConfig?.termsOfUsePage?.enabled ?? false,
     };
 
     for (const menu of appConfig?.headerMenu ?? []) {
@@ -225,6 +240,10 @@ module.exports = function createFromStrapi(dir) {
         categories_text: data?.resourcePage?.categoriesText,
         meta_title: data?.homePage?.title,
         meta_description: data?.homePage?.description,
+        'privacy_policy.title': data?.privacyPolicyPage?.title,
+        'privacy_policy.content': data?.privacyPolicyPage?.content,
+        'terms_of_use.title': data?.termsOfUsePage?.title,
+        'terms_of_use.content': data?.termsOfUsePage?.content,
       };
 
       if (data?.customCategoriesHeading) {

@@ -56,7 +56,8 @@
     "remove": "أبعد",
     "login": "تسجيل الدخول",
     "show_more": "استعراض المزيد",
-    "show_less": "عرض أقل"
+    "show_less": "عرض أقل",
+    "print": "طبع"
   },
   "list": {
     "private": "عسكري",
@@ -127,7 +128,6 @@
     "provided_by": "البيانات المقدمة من"
   },
   "footer": {
-    "copyright": "كل الحقوق محفوظة.",
-    "privacy_policy": "سياسة الخصوصية"
+    "copyright": "كل الحقوق محفوظة."
   }
 }

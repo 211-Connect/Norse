@@ -1,6 +1,7 @@
 import { AddToFavoritesButton } from '@/shared/components/add-to-favorites-button';
 import { ShareButton } from '@/shared/components/share-button';
 import { BackToResultsButton } from './back-to-results-button';
+import { PrintButton } from '../../../shared/components/print-button';
 
 export function Navigation({ componentToPrintRef, resource }) {
   return (
@@ -8,6 +9,7 @@ export function Navigation({ componentToPrintRef, resource }) {
       <BackToResultsButton />
 
       <div className="flex gap-2">
+        <PrintButton componentToPrintRef={componentToPrintRef} />
         <ShareButton
           componentToPrintRef={componentToPrintRef}
           title={resource.name}

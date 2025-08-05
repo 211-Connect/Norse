@@ -1,0 +1,133 @@
+{
+  "header": {
+    "home": "家",
+    "favorites": "收藏 夹",
+    "log_out": "注销",
+    "submit_feedback": "提交反馈",
+    "language_select_label": "选择一种语言以更改网站语言"
+  },
+  "favorites": {
+    "added_to_list": "已添加到列表",
+    "added_to_list_message": "此资源已添加到您的列表中。",
+    "already_exists": "已经存在",
+    "already_exists_message": "此资源已存在于您的列表中。",
+    "removed_from_list": "已从列表中删除",
+    "removed_from_list_message": "此资源已从您的列表中删除。",
+    "updated_list": "更新列表",
+    "updated_list_message": "您的列表已更新。",
+    "unable_to_update_list": "无法更新列表",
+    "unable_to_update_list_message": "您的列表无法更新。",
+    "deleted_list": "已删除列表",
+    "deleted_list_message": "您的列表已被删除。",
+    "unable_to_delete_list": "无法删除列表",
+    "unable_to_delete_list_message": "无法删除您的列表。"
+  },
+  "search": {
+    "hero_title": "搜索资源",
+    "query_placeholder": "食物、住房等......",
+    "location_placeholder": "城市、州或邮政编码",
+    "radius_placeholder": "半径",
+    "miles": "英里",
+    "any": "任何",
+    "taxonomies": "分类法",
+    "suggestions": "建议",
+    "use_my_location": "使用我的位置",
+    "confidential_address": "该位置可能是保密的或不向公众开放。请为此服务选择其他提供的联系方式。",
+    "address_unavailable": "地址不可用",
+    "geocoding_error": "地理编码错误",
+    "geocoding_unsupported": "您的浏览器不支持地理定位",
+    "geocoding_unable_to_retrieve": "无法检索您的位置。请检查浏览器的位置设置，然后重试。",
+    "categories": "类别"
+  },
+  "call_to_action": {
+    "call": "叫",
+    "view_website": "查看网站",
+    "get_directions": "获取路线",
+    "view_details": "查看详情",
+    "add_to_list": "添加到列表",
+    "delete_list": "删除列表",
+    "remove_from_list": "从列表中删除",
+    "share": "共享",
+    "cancel": "取消",
+    "create": "创造",
+    "update": "更新",
+    "delete": "删除",
+    "search": "搜索",
+    "remove": "删除",
+    "login": "登录",
+    "show_more": "显示更多",
+    "show_less": "显示简要信息",
+    "print": "打印"
+  },
+  "list": {
+    "private": "私人",
+    "public": "公共"
+  },
+  "message": {
+    "list_deleted": "已删除列表",
+    "list_deleted_success": "您的列表已被删除。",
+    "error": "错误",
+    "list_not_deleted_error": "无法删除您的列表。"
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "搜索您的列表",
+      "list_name": "列表",
+      "list_privacy": "隐私",
+      "add_to_list": "添加到列表",
+      "not_found": "未找到列表",
+      "create_new_list": "创建一个新的？"
+    },
+    "remove_from_list": {
+      "are_you_sure": "您确定要从列表中删除此收藏夹吗？"
+    },
+    "create_list": {
+      "create_a_list": "创建列表",
+      "list_name": "名字",
+      "list_description": "描述",
+      "make_public": "公"
+    },
+    "update_list": {
+      "update_list": "更新列表",
+      "list_name": "名字",
+      "list_description": "描述",
+      "make_public": "公"
+    },
+    "delete_list": {
+      "delete_list": "删除列表"
+    },
+    "share": {
+      "share_via": "通过以下方式分享",
+      "copy_link": "复制链接",
+      "copy": "复制",
+      "facebook": "脸书",
+      "twitter": "唽",
+      "linkedin": "LinkedIn",
+      "sms": "短信",
+      "email": "电子邮件",
+      "print": "打印",
+      "copied": "复制！",
+      "check_out_this_list": "看看我做的这个清单！",
+      "check_out_this_resource": "看看我找到的这个资源！",
+      "share_sms": "输入要通过短信共享的电话号码",
+      "enter_phone_number": "输入电话号码...",
+      "invalid_phone_number": "电话号码无效",
+      "sms_sending_title": "发送短信...",
+      "sms_sending_body": "您的消息正在发送中。",
+      "sms_send_success_title": "短信已发送！",
+      "sms_send_success_body": "您的消息已发送。",
+      "sms_send_failed_title": "短信发送失败",
+      "sms_send_failed_body": "您的消息发送失败。"
+    },
+    "prompt_auth": "请登录才能使用此功能。"
+  },
+  "update_location": {
+    "prompt_start_location": "你的起点在哪里？"
+  },
+  "data_providers": {
+    "provided_by": "数据提供"
+  },
+  "footer": {
+    "copyright": "版权所有。"
+  }
+}
