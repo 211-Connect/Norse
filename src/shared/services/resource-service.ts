@@ -66,6 +66,8 @@ export class ResourceService {
         organizationDescription:
           data?.translation?.organizationDescription ?? null,
         serviceArea: data?.serviceArea ?? null,
+        transportation: data?.translation?.transportation ?? null,
+        accessibility: data?.translation?.accessibility ?? null,
       };
     } catch (error) {
       if (error instanceof AxiosError) {

@@ -11,6 +11,7 @@ import {
   MapPin,
   Phone,
   Printer,
+  Car,
 } from 'lucide-react';
 import { Link } from '@/shared/components/link';
 import { cn } from '@/shared/lib/utils';
@@ -88,6 +89,20 @@ export function Information({ resource }) {
                   </div>
                 );
               })}
+
+          {resource?.transportation && (
+            <div className="col-span-2">
+              <div className="flex items-center gap-1">
+                <Car className="size-4" />
+                <p className="font-bold">{t('transportation')}</p>
+              </div>
+              <p className="whitespace-break-spaces text-sm">
+                {parseHtml(resource.transportation, {
+                  parseLineBreaks: true,
+                })}
+              </p>
+            </div>
+          )}
 
           {resource?.hours && (
             <div className="col-span-2">

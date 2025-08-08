@@ -7,6 +7,7 @@ import {
   Languages,
   Map,
   Handshake,
+  Accessibility,
 } from 'lucide-react';
 import { Separator } from '@/shared/components/ui/separator';
 import { parseHtml } from '@/shared/lib/parse-html';
@@ -61,6 +62,20 @@ export function AdditionalInformation({ resource }) {
 
               <p className="whitespace-break-spaces text-sm">
                 {parseHtml(resource.eligibilities)}
+              </p>
+            </div>
+          )}
+
+          {resource?.accessibility && (
+            <div className="col-span-2">
+              <div className="flex items-center gap-1">
+                <Accessibility className="size-4" />
+                <p className="font-bold">{t('accessibility')}</p>
+              </div>
+              <p className="whitespace-break-spaces text-sm">
+                {parseHtml(resource.accessibility, {
+                  parseLineBreaks: true,
+                })}
               </p>
             </div>
           )}
