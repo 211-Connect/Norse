@@ -17,5 +17,7 @@
   "service_area": "Территория обслуживания",
   "agency_info": "Информация об агентстве",
   "unknown": "Неизвестный",
-  "languages": "Языки"
+  "languages": "Языки",
+  "transportation": "Транспорт",
+  "accessibility": "Доступность"
 }

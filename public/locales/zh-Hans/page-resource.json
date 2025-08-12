@@ -17,5 +17,7 @@
   "service_area": "服务区域",
   "agency_info": "机构信息",
   "unknown": "未知",
-  "languages": "语言"
+  "languages": "语言",
+  "transportation": "交通",
+  "accessibility": "无障碍"
 }

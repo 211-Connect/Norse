@@ -17,5 +17,7 @@
   "service_area": "Área de servicio",
   "agency_info": "Información de la agencia",
   "unknown": "Desconocido",
-  "languages": "Idiomas"
+  "languages": "Idiomas",
+  "transportation": "Transporte",
+  "accessibility": "Accesibilidad"
 }

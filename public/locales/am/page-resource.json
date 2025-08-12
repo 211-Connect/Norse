@@ -17,5 +17,7 @@
   "service_area": "የአገልግሎት አካባቢ",
   "agency_info": "ኤጀንሲ ኢንፎርሜሽን",
   "unknown": "ያልታወቀ",
-  "languages": "ቋንቋዎች"
+  "languages": "ቋንቋዎች",
+  "transportation": "ትራንስፖርት",
+  "accessibility": "አካል ይዞታ"
 }

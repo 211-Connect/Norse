@@ -17,5 +17,7 @@
   "service_area": "منطقة الخدمة",
   "agency_info": "معلومات الوكالة",
   "unknown": "مجهول",
-  "languages": "اللغات"
+  "languages": "اللغات",
+  "transportation": "النقل",
+  "accessibility": "سهولة الوصول"
 }

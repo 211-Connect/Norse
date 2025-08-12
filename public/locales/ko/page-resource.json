@@ -17,5 +17,7 @@
   "service_area": "서비스 지역",
   "agency_info": "에이전시 정보",
   "unknown": "알려지지 않은",
-  "languages": "언어들"
+  "languages": "언어들",
+  "transportation": "교통",
+  "accessibility": "접근성"
 }

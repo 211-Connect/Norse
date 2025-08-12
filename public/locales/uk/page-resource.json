@@ -17,5 +17,7 @@
   "service_area": "Зона обслуговування",
   "agency_info": "Інформація про агентство",
   "unknown": "Невідомий",
-  "languages": "Мови"
+  "languages": "Мови",
+  "transportation": "Транспорт",
+  "accessibility": "Доступність"
 }
