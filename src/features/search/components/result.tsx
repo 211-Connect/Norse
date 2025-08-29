@@ -18,7 +18,10 @@ import { Globe, LinkIcon, MapPin, Navigation, Phone, Pin } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 import { Badge } from '@/shared/components/ui/badge';
 import { useAtomValue } from 'jotai';
-import { userCoordinatesAtom } from '@/shared/store/search';
+import {
+  searchCoordinatesAtom,
+  userCoordinatesAtom,
+} from '@/shared/store/search';
 import { Separator } from '@/shared/components/ui/separator';
 import {
   Tooltip,
@@ -40,6 +43,7 @@ type ResultProps = {
 export function Result({ data }: ResultProps) {
   const { t } = useTranslation();
   const coords = useAtomValue(userCoordinatesAtom);
+  const searchCoords = useAtomValue(searchCoordinatesAtom);
   const showServiceName = useFlag('showSearchAndResourceServiceName');
 
   const distance =
@@ -207,7 +211,7 @@ export function Result({ data }: ResultProps) {
               <Globe className="size-4" /> {t('call_to_action.view_website')}
             </ReferralButton>
 
-            <GetDirectionsButton data={data} coords={coords} />
+            <GetDirectionsButton data={data} coords={searchCoords} />
           </div>
 
           <div className="flex w-full items-center gap-2">
