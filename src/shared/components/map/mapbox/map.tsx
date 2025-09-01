@@ -3,17 +3,20 @@ import mapboxgl, { LngLatBounds, LngLatLike, Marker, Popup } from 'mapbox-gl';
 import { MAPBOX_API_KEY, MAPBOX_STYLE_URL } from '@/shared/lib/constants';
 import { renderToStaticMarkup } from 'react-dom/server';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import {
+  ServiceAreaGeoJSON,
+  normalizeServiceArea,
+  getBoundsFromServiceArea,
+  MarkerDef,
+} from '../map-shared';
 
 type MapProps = {
   center?: [number, number];
   zoom?: number;
-  markers: {
-    id: string;
-    coordinates?: [number, number];
-    popup?: ReactElement;
-  }[];
+  markers: MarkerDef[];
   usersLocation: any[];
   disableUserLocation?: boolean;
+  serviceArea?: ServiceAreaGeoJSON;
 };
 
 export function Map({
@@ -22,6 +25,7 @@ export function Map({
   markers,
   usersLocation,
   disableUserLocation,
+  serviceArea,
 }: MapProps) {
   const mapContainer = useRef();
   const mapboxMap = useRef(null);
@@ -55,38 +59,31 @@ export function Map({
           : undefined,
       );
 
-      if (
-        m.coordinates &&
-        !isNaN(m.coordinates[0]) &&
-        !isNaN(m.coordinates[1])
-      ) {
-        marker.setLngLat(m.coordinates);
+      const hasValidCoordinates =
+        m.coordinates && !isNaN(m.coordinates[0]) && !isNaN(m.coordinates[1]);
+
+      if (hasValidCoordinates) {
+        marker.setLngLat(m.coordinates as [number, number]);
         marker.addTo(mapboxMap.current);
-        bounds.extend(m.coordinates); // Only extend if coordinates are valid
+        bounds.extend(m.coordinates as [number, number]);
       }
 
       const markerElement = marker.getElement();
       markerElement.style.cursor = 'pointer';
       markerElement.classList.add('custom-marker');
-      markerElement.addEventListener('click', (e) => {
+      markerElement.addEventListener('click', () => {
         const listElement = document.getElementById(m.id);
         listElement?.scrollIntoView();
 
-        _markers.current?.forEach((m) => {
-          const popup = m.getPopup();
+        _markers.current?.forEach((mm) => {
+          const popup = mm.getPopup();
           if (popup?.isOpen()) {
-            m.togglePopup();
+            mm.togglePopup();
           }
         });
 
         marker.togglePopup();
       });
-
-      if (m.coordinates) {
-        marker.addTo(mapboxMap.current);
-      }
-
-      bounds.extend(m.coordinates);
 
       return marker;
     });
@@ -134,6 +131,64 @@ export function Map({
       }
     }
   }, [markers, usersLocation, disableUserLocation, zoom]);
+
+  // --- Service Area (Polygon) rendering when no valid markers ---
+  useEffect(() => {
+    if (!mapboxMap.current) return;
+    const map = mapboxMap.current as any;
+    const hasMarkers =
+      Array.isArray(markers) &&
+      markers.some(
+        (m) =>
+          m.coordinates && !isNaN(m.coordinates[0]) && !isNaN(m.coordinates[1]),
+      );
+
+    const cleanup = () => {
+      if (map.getLayer('service-area-fill'))
+        map.removeLayer('service-area-fill');
+      if (map.getLayer('service-area-outline'))
+        map.removeLayer('service-area-outline');
+      if (map.getSource('service-area')) map.removeSource('service-area');
+    };
+
+    if (hasMarkers || !serviceArea) {
+      cleanup();
+      return;
+    }
+
+    const normalized = normalizeServiceArea(
+      JSON.parse(JSON.stringify(serviceArea)),
+    );
+    if (!normalized) return;
+
+    const sourceData = {
+      type: 'FeatureCollection',
+      features: [{ type: 'Feature', geometry: normalized, properties: {} }],
+    } as any;
+
+    const addLayer = () => {
+      cleanup();
+      map.addSource('service-area', { type: 'geojson', data: sourceData });
+      map.addLayer({
+        id: 'service-area-fill',
+        type: 'fill',
+        source: 'service-area',
+        paint: { 'fill-color': '#2563eb', 'fill-opacity': 0.25 },
+      });
+      map.addLayer({
+        id: 'service-area-outline',
+        type: 'line',
+        source: 'service-area',
+        paint: { 'line-color': '#2563eb', 'line-width': 2 },
+      });
+      const b = getBoundsFromServiceArea(normalized);
+      if (b) map.fitBounds(b, { padding: 40, animate: false });
+    };
+
+    if (map.isStyleLoaded && map.isStyleLoaded()) addLayer();
+    else map.once('load', addLayer);
+    return () => cleanup();
+  }, [serviceArea, markers]);
 
   return <div ref={mapContainer} className="h-full w-full"></div>;
 }
