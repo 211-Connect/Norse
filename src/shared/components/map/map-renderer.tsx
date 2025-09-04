@@ -2,20 +2,30 @@ import { useAppConfig } from '@/shared/hooks/use-app-config';
 import { userCoordinatesAtom } from '@/shared/store/search';
 import { useAtomValue } from 'jotai';
 import dynamic from 'next/dynamic';
-import { ReactElement } from 'react';
 
 const renderers = {
   mapbox: dynamic(() => import('./mapbox/map').then((mod) => mod.Map)),
   maplibre: dynamic(() => import('./maplibre/map').then((mod) => mod.Map)),
 };
 
+export interface MarkerDef {
+  id: string;
+  coordinates?: [number, number];
+  popup?: any;
+}
+
+export interface ServiceAreaGeoJSON {
+  type: 'Polygon' | 'MultiPolygon';
+  coordinates: any; // Keep broad; underlying map lib validates
+}
+
 type MapRendererProps = {
-  markers: {
-    id: string;
-    coordinates?: [number, number];
-    popup?: ReactElement;
-  }[];
+  markers?: MarkerDef[]; // made optional; component will default to []
+  serviceArea?: ServiceAreaGeoJSON;
+  usersLocation?: [number, number];
   disableUserLocation?: boolean;
+  center?: [number, number];
+  zoom?: number;
 };
 
 const MapRenderer = (props: MapRendererProps) => {
@@ -43,13 +53,15 @@ const MapRenderer = (props: MapRendererProps) => {
     );
   }
 
+  const markers = props.markers ?? [];
   return (
     <div id="map-container" className="h-full w-full">
       <div className="relative h-full w-full">
         <Map
           center={appConfig.map.center}
           zoom={appConfig.map.zoom}
-          markers={props.markers}
+          markers={markers}
+          serviceArea={props.serviceArea}
           usersLocation={userCoords}
           disableUserLocation={props.disableUserLocation}
         />
