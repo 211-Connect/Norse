@@ -1,7 +1,6 @@
 const qs = require('qs');
 const path = require('path');
 const fs = require('fs-extra');
-const syncClient = require('sync-rest-client');
 const _ = require('lodash');
 
 const STRAPI_URL = process.env.STRAPI_URL;
@@ -84,20 +83,25 @@ const query = qs.stringify({
  * @param {string} dir Next.js root directory
  * @returns {*} void
  */
-module.exports = function createFromStrapi(dir) {
+module.exports = async function createFromStrapi(dir) {
   if (!STRAPI_URL || !STRAPI_TOKEN || !TENANT_ID) return;
 
   try {
-    const res = syncClient.get(
+    const response = await fetch(
       `${STRAPI_URL}/api/tenants?filters[tenantId][$eq]=${TENANT_ID}&${query}`,
       {
+        method: 'GET',
         headers: {
           Authorization: `Bearer ${STRAPI_TOKEN}`,
         },
       },
     );
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const res = await response.json();
+    const data = res.data;
 
-    const data = res.body.data;
     const tenant = data[0].attributes;
     const categories = tenant.category.data.attributes.list;
     const categoryTranslations =
