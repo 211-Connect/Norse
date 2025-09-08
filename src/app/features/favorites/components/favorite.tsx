@@ -149,7 +149,8 @@ export function Favorite({
                 window.open(`tel:${data.displayPhoneNumber}`);
               }}
             >
-              <Phone className="size-4" /> {t('call_to_action.call')}
+              <Phone className="size-4" />{' '}
+              {t('call_to_action.call', { ns: 'common' })}
             </ReferralButton>
 
             <ReferralButton
@@ -164,7 +165,8 @@ export function Favorite({
                 window.open(data.website, '_blank');
               }}
             >
-              <Globe className="size-4" /> {t('call_to_action.view_website')}
+              <Globe className="size-4" />{' '}
+              {t('call_to_action.view_website', { ns: 'common' })}
             </ReferralButton>
 
             <GetDirectionsButton data={data} coords={coords} />
@@ -178,7 +180,8 @@ export function Favorite({
               )}
               href={`/search/${data._id}`}
             >
-              <LinkIcon className="size-4" /> {t('call_to_action.view_details')}
+              <LinkIcon className="size-4" />{' '}
+              {t('call_to_action.view_details', { ns: 'common' })}
             </Link>
           </div>
         </CardFooter>
