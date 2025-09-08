@@ -7,12 +7,13 @@ import { PageView } from './page-view';
 import { PrevUrlProvider } from '../context/prev-url-provider';
 import { FlagsProvider } from '../context/flags-provider';
 import { AuthProvider } from '../context/auth-provider';
+import { SessionProvider } from 'next-auth/react';
 
 const queryClient = new QueryClient();
 
-export function Providers({ appConfig, flags, children, auth }) {
+export function Providers({ appConfig, flags, children, auth, session }) {
   return (
-    <>
+    <SessionProvider basePath="/api/auth" session={session}>
       <PageView />
       <QueryClientProvider client={queryClient}>
         <AuthProvider value={auth}>
@@ -23,6 +24,6 @@ export function Providers({ appConfig, flags, children, auth }) {
           </FlagsProvider>
         </AuthProvider>
       </QueryClientProvider>
-    </>
+    </SessionProvider>
   );
 }

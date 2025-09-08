@@ -12,6 +12,7 @@ import {
 import { Providers } from '@/app/shared/components/providers';
 import { cookies } from 'next/headers';
 import { SESSION_ID } from '../shared/lib/constants';
+import { getSession } from '@/auth';
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -47,6 +48,7 @@ export default async function RootLayout({
     errorTranslationData: { errorNamespaces, resources, locale },
   };
 
+  const session = await getSession();
   const auth = {
     sessionId: cookieList.get(SESSION_ID)?.value,
   };
@@ -60,7 +62,12 @@ export default async function RootLayout({
             fontSans.variable,
           )}
         >
-          <Providers appConfig={resultAppConfig} auth={auth} flags={flags}>
+          <Providers
+            appConfig={resultAppConfig}
+            auth={auth}
+            flags={flags}
+            session={session}
+          >
             {children}
           </Providers>
         </div>

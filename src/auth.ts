@@ -3,6 +3,7 @@ import { getServerSession, NextAuthOptions, Session } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import KeycloakProvider from 'next-auth/providers/keycloak';
 import { omitBy, isNil } from 'lodash';
+import { cache } from 'react';
 
 const isDebug = process.env.NEXTAUTH_DEBUG === 'true';
 
@@ -123,6 +124,6 @@ const authOptions: NextAuthOptions = {
   }),
 };
 
-const getSession = () => getServerSession(authOptions);
+const getSession = cache(() => getServerSession(authOptions));
 
 export { authOptions, getSession };

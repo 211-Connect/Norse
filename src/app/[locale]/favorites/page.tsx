@@ -46,7 +46,6 @@ export default async function FavoritesPage({ params }) {
     <PageWrapper
       cookies={cookieList}
       translationData={{ i18nNamespaces, locale, resources }}
-      session={session}
       jotaiData={{ favoriteLists }}
     >
       <div className="flex flex-1">
