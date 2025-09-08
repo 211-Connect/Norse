@@ -122,7 +122,6 @@ export const generateMetadata = async ({
 };
 
 export default async function SearchPage({ params, searchParams }) {
-  const session = await getSession();
   const device = getServerDevice((await headers()).get('user-agent')!);
 
   const [paramsResult, searchParamsResult] = await Promise.all([
@@ -155,7 +154,6 @@ export default async function SearchPage({ params, searchParams }) {
   return (
     <PageWrapper
       cookies={cookies}
-      session={session}
       translationData={{ i18nNamespaces, locale, resources }}
       jotaiData={{
         coords,
