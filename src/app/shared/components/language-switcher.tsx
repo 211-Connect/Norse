@@ -54,18 +54,25 @@ export const LanguageSwitcher = () => {
         >
           <div className="flex items-center gap-1 overflow-hidden">
             <LanguagesIcon className="size-4" />
-            <SelectValue placeholder={t('header.language_select_label')} />
+            <SelectValue placeholder={t('header.language_select_label')}>
+              <span className="capitalize">
+                {new Intl.DisplayNames([currentLanguage], {
+                  type: 'language',
+                }).of(currentLanguage)}
+              </span>
+            </SelectValue>
           </div>
         </SelectTrigger>
         <SelectContent>
           {i18nConfig.locales.map((locale: string) => {
-            const languageNames = new Intl.DisplayNames([currentLanguage], {
+            const languageNames = new Intl.DisplayNames([locale], {
               type: 'language',
             });
 
             return (
               <SelectItem key={locale} value={locale}>
-                {languageNames.of(locale)}
+                <span className="capitalize">{languageNames.of(locale)}</span>
+                {` (${locale})`}
               </SelectItem>
             );
           })}
