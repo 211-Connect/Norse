@@ -1,7 +1,7 @@
 import { signOut, useSession } from 'next-auth/react';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import { Fragment, useMemo } from 'react';
+import { Fragment, useMemo, useState } from 'react';
 import { Link } from './link';
 import { useDisclosure } from '../hooks/use-disclosure';
 import { Button } from './ui/button';
@@ -44,6 +44,7 @@ export function Header(props: Props) {
   const { t } = useTranslation('common');
   const router = useRouter();
   const setDialogStore = useSetAtom(dialogsAtom);
+  const [value, setValue] = useState(router.locale);
 
   const SITEMAP = useMemo(
     () => [
@@ -128,6 +129,7 @@ export function Header(props: Props) {
               defaultValue={router.locale}
               onValueChange={(value) => {
                 if (value) {
+                  setValue(value);
                   router.push(router.asPath, router.asPath, {
                     locale: value,
                   });
@@ -140,20 +142,27 @@ export function Header(props: Props) {
               >
                 <div className="flex items-center gap-1 overflow-hidden">
                   <LanguagesIcon className="size-4" />
-                  <SelectValue
-                    placeholder={t('header.language_select_label')}
-                  />
+                  <SelectValue placeholder={t('header.language_select_label')}>
+                    <span className="capitalize">
+                      {new Intl.DisplayNames([value], {
+                        type: 'language',
+                      }).of(value)}
+                    </span>
+                  </SelectValue>
                 </div>
               </SelectTrigger>
               <SelectContent>
                 {router.locales.map((locale) => {
-                  const languageNames = new Intl.DisplayNames([router.locale], {
+                  const languageNames = new Intl.DisplayNames([locale], {
                     type: 'language',
                   });
 
                   return (
                     <SelectItem key={locale} value={locale}>
-                      {languageNames.of(locale)}
+                      <span className="capitalize">
+                        {languageNames.of(locale)}
+                      </span>
+                      {` (${locale})`}
                     </SelectItem>
                   );
                 })}
