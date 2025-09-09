@@ -42,7 +42,14 @@ export function Map({
     });
 
     return () => {
-      mapboxMap.current?.remove();
+      // Safe cleanup
+      if (mapboxMap.current) {
+        try {
+          mapboxMap.current.remove();
+        } catch (error) {
+          console.warn('Error removing map:', error);
+        }
+      }
     };
   }, [center, zoom]);
 
@@ -136,20 +143,30 @@ export function Map({
   useEffect(() => {
     if (!mapboxMap.current) return;
     const map = mapboxMap.current as any;
+
+    const cleanup = () => {
+      // Check if map exists and is still valid
+      if (!map || !map.getStyle || !map.isStyleLoaded()) return;
+
+      try {
+        if (map.getLayer && map.getLayer('service-area-fill'))
+          map.removeLayer('service-area-fill');
+        if (map.getLayer && map.getLayer('service-area-outline'))
+          map.removeLayer('service-area-outline');
+        if (map.getSource && map.getSource('service-area'))
+          map.removeSource('service-area');
+      } catch (error) {
+        console.warn('Error during map cleanup:', error);
+        // Don't throw - just log and continue
+      }
+    };
+
     const hasMarkers =
       Array.isArray(markers) &&
       markers.some(
         (m) =>
           m.coordinates && !isNaN(m.coordinates[0]) && !isNaN(m.coordinates[1]),
       );
-
-    const cleanup = () => {
-      if (map.getLayer('service-area-fill'))
-        map.removeLayer('service-area-fill');
-      if (map.getLayer('service-area-outline'))
-        map.removeLayer('service-area-outline');
-      if (map.getSource('service-area')) map.removeSource('service-area');
-    };
 
     if (hasMarkers || !serviceArea) {
       cleanup();
@@ -167,26 +184,41 @@ export function Map({
     } as any;
 
     const addLayer = () => {
+      // Double-check map is still valid before adding layers
+      if (!map || !map.getStyle || !map.isStyleLoaded()) return;
+
       cleanup();
-      map.addSource('service-area', { type: 'geojson', data: sourceData });
-      map.addLayer({
-        id: 'service-area-fill',
-        type: 'fill',
-        source: 'service-area',
-        paint: { 'fill-color': '#2563eb', 'fill-opacity': 0.25 },
-      });
-      map.addLayer({
-        id: 'service-area-outline',
-        type: 'line',
-        source: 'service-area',
-        paint: { 'line-color': '#2563eb', 'line-width': 2 },
-      });
-      const b = getBoundsFromServiceArea(normalized);
-      if (b) map.fitBounds(b, { padding: 40, animate: false });
+
+      try {
+        map.addSource('service-area', { type: 'geojson', data: sourceData });
+        map.addLayer({
+          id: 'service-area-fill',
+          type: 'fill',
+          source: 'service-area',
+          paint: { 'fill-color': '#2563eb', 'fill-opacity': 0.25 },
+        });
+        map.addLayer({
+          id: 'service-area-outline',
+          type: 'line',
+          source: 'service-area',
+          paint: { 'line-color': '#2563eb', 'line-width': 2 },
+        });
+
+        const b = getBoundsFromServiceArea(normalized);
+        if (b) {
+          map.fitBounds(b, { padding: 40, animate: false });
+        }
+      } catch (error) {
+        console.warn('Error adding service area layers:', error);
+      }
     };
 
-    if (map.isStyleLoaded && map.isStyleLoaded()) addLayer();
-    else map.once('load', addLayer);
+    if (map.isStyleLoaded && map.isStyleLoaded()) {
+      addLayer();
+    } else {
+      map.once('load', addLayer);
+    }
+
     return () => cleanup();
   }, [serviceArea, markers]);
 

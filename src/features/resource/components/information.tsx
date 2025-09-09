@@ -119,10 +119,10 @@ export function Information({ resource }) {
           {resource.phoneNumbers?.length > 0 &&
             resource.phoneNumbers
               .sort((a: any, b: any) => a.rank - b.rank)
-              .map((phone: any) => {
+              .map((phone: any, index: number) => {
                 return (
                   <div
-                    key={phone.number}
+                    key={`contact-phone-${index}`}
                     className={cn(
                       resource.phoneNumbers.length === 1 && 'col-span-2',
                     )}
