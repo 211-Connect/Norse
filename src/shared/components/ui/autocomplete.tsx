@@ -516,7 +516,10 @@ export function Autocomplete(props: AutocompleteProps) {
                 )}
                 <div role="group" aria-labelledby={groupId}>
                   {groupOptions?.map((option) => {
-                    const matches = match(option.value, lastManualInput);
+                    const optionValue = option.value ?? '';
+                    const matches = optionValue
+                      ? match(optionValue, lastManualInput)
+                      : [];
                     const Icon = option.Icon || 'span';
 
                     return (
@@ -538,17 +541,17 @@ export function Autocomplete(props: AutocompleteProps) {
                             <Icon className="size-4 shrink-0" />
                           )}
                           <p>
-                            {parse(option.value, matches).map((text, idx) =>
+                            {parse(optionValue, matches).map((text, idx) =>
                               text.highlight ? (
                                 <span
-                                  key={`${option.value}-${text.text}-${idx}`}
+                                  key={`${optionValue}-${text.text}-${idx}`}
                                   className="font-semibold"
                                 >
                                   {text.text}
                                 </span>
                               ) : (
                                 <span
-                                  key={`${option.value}-${text.text}-${idx}`}
+                                  key={`${optionValue}-${text.text}-${idx}`}
                                 >
                                   {text.text}
                                 </span>

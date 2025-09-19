@@ -110,7 +110,14 @@ export function Header(props: Props) {
                 const urlParams = new URLSearchParams(currentUrl.searchParams);
 
                 if (typeof window !== 'undefined') {
-                  urlParams.set('referring_url', window.location.href);
+                  // Construct the full URL including basePath
+                  const protocol = window.location.protocol;
+                  const host = window.location.host;
+                  const basePath = router.basePath || '';
+                  const asPath = router.asPath;
+                  const fullUrl = `${protocol}//${host}${basePath}${asPath}`;
+
+                  urlParams.set('referring_url', fullUrl);
                 }
 
                 window.open(`${feedbackUrl}?${urlParams.toString()}`, '_blank');
@@ -187,7 +194,7 @@ export function Header(props: Props) {
         )}
       </Fragment>,
     ],
-    [session.status, t, router, appConfig, setDialogStore],
+    [session.status, t, router, appConfig, setDialogStore, value],
   );
 
   return (
