@@ -29,7 +29,6 @@ export function middleware(request: NextRequest) {
     request.method === 'POST' &&
     pathname.endsWith('/')
   ) {
-    console.log(`[middleware] Removing trailing slash (POST): ${pathname} -> ${pathname.slice(0, -1)}`);
     url.pathname = pathname.slice(0, -1);
     return NextResponse.redirect(url, 308); // preserve method
   }
@@ -41,7 +40,6 @@ export function middleware(request: NextRequest) {
     pathname.endsWith('/') &&
     pathname !== '/adresources/'
   ) {
-    console.log(`[middleware] Removing trailing slash (/adresources): ${pathname} -> ${pathname.slice(0, -1)}`);
     url.pathname = pathname.slice(0, -1); // remove trailing slash
     return NextResponse.redirect(url);
   }
