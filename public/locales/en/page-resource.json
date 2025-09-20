@@ -1,7 +1,9 @@
 {
-  "back_to_results": "Back to results",
-  "back_to_home": "Back to home",
+  "back_to_results": "Results",
+  "back_to_home": "Home",
   "categories": "Categories",
+  "categories_title": "What's Here",
+  "description": "Description",
   "last_assured": "Last assured",
   "hours": "Hours",
   "required_documents": "Required documents",
@@ -13,11 +15,13 @@
   "website": "Website",
   "application_process": "Application process",
   "eligibility": "Eligibility",
-  "fee": "Fee",
+  "fee": "Fees",
   "service_area": "Service area",
   "agency_info": "Agency info",
   "unknown": "Unknown",
   "languages": "Languages",
   "transportation": "Transportation",
-  "accessibility": "Accessibility"
+  "accessibility": "Accessibility",
+  "report": "Report",
+  "providing_organization": "Providing organization"
 }

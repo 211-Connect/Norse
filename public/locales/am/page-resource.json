@@ -1,7 +1,9 @@
 {
-  "back_to_results": "ወደ ውጤት መመለስ",
-  "back_to_home": "ወደ ቤት መመለስ",
+  "back_to_results": "ውጤቶች",
+  "back_to_home": "ቤት",
   "categories": "ምድቦች",
+  "categories_title": "እዚህ ምን አለ",
+  "description": "መግለጫ",
   "last_assured": "የመጨረሻ ማረጋገጫ",
   "hours": "ሰዓታት",
   "required_documents": "የሚያስፈልጉ ሰነዶች",
@@ -13,11 +15,13 @@
   "website": "ድረ ገጽ",
   "application_process": "የመተግበሪያ ሂደት",
   "eligibility": "ብቃት",
-  "fee": "ክፍያ",
+  "fee": "ክፍያዎች",
   "service_area": "የአገልግሎት አካባቢ",
   "agency_info": "ኤጀንሲ ኢንፎርሜሽን",
   "unknown": "ያልታወቀ",
   "languages": "ቋንቋዎች",
   "transportation": "ትራንስፖርት",
-  "accessibility": "አካል ይዞታ"
+  "accessibility": "አካል ይዞታ",
+  "report": "ሪፖርት",
+  "providing_organization": "የሚሰጥ ድርጅት"
 }

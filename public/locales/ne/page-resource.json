@@ -1,7 +1,9 @@
 {
-  "back_to_results": "नतिजामा फर्कनुहोस्",
-  "back_to_home": "घर फर्कनुहोस्",
+  "back_to_results": "परिणामहरू",
+  "back_to_home": "गृह पृष्ठ",
   "categories": "श्रेणीहरू",
+  "categories_title": "यहाँ के छ",
+  "description": "विवरण",
   "last_assured": "अन्तिम आश्वासन",
   "hours": "घण्टा",
   "required_documents": "आवश्यक कागजातहरू",
@@ -13,11 +15,13 @@
   "website": "वेबसाइट",
   "application_process": "अनुप्रयोग प्रक्रिया",
   "eligibility": "पात्रता",
-  "fee": "शुल्क",
+  "fee": "शुल्कहरू",
   "service_area": "सेवा क्षेत्र",
   "agency_info": "एजेन्सी सूचना",
   "unknown": "अज्ञात",
   "languages": "भाषाहरू",
   "transportation": "परिवहन",
-  "accessibility": "सुगम्यता"
+  "accessibility": "सुगम्यता",
+  "report": "रिपोर्ट",
+  "providing_organization": "प्रदान गर्ने संस्था"
 }

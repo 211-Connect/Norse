@@ -41,7 +41,9 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     }
   }
 
-  cacheControl(ctx);
+  // cacheControl(ctx);
+
+  console.log(data);
 
   return {
     props: {

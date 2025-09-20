@@ -1,7 +1,9 @@
 {
-  "back_to_results": "Ku noqo natiijooyinka",
-  "back_to_home": "Ku noqo guriga",
+  "back_to_results": "Natiijooyinka",
+  "back_to_home": "Guriga",
   "categories": "Category: Category",
+  "categories_title": "What's Here",
+  "description": "Description",
   "last_assured": "Last xaqiijiyay",
   "hours": "Saacadaha",
   "required_documents": "Dukumentiyada loo baahan yahay",
@@ -13,11 +15,13 @@
   "website": "Website",
   "application_process": "Habka codsiga",
   "eligibility": "Eligibility",
-  "fee": "Marka",
+  "fee": "Kharashyada",
   "service_area": "Aagga adeegga",
   "agency_info": "Hay'adda info",
   "unknown": "Aan la garaneynin",
   "languages": "Luuqado",
   "transportation": "Gaadiidka",
-  "accessibility": "Helitaanka"
+  "accessibility": "Helitaanka",
+  "report": "Warbixin",
+  "providing_organization": "Hay'adda bixisa"
 }

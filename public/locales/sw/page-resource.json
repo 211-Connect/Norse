@@ -1,7 +1,9 @@
 {
-  "back_to_results": "Rudi kwenye matokeo",
-  "back_to_home": "Rudi nyumbani",
+  "back_to_results": "Matokeo",
+  "back_to_home": "Nyumbani",
   "categories": "Kategoria",
+  "categories_title": "Kuna nini hapa",
+  "description": "Maelezo",
   "last_assured": "Mwisho wa uhakika",
   "hours": "Masaa",
   "required_documents": "Nyaraka zinazohitajika",
@@ -19,5 +21,7 @@
   "unknown": "Isiyojulikana",
   "languages": "Lugha",
   "transportation": "Usafiri",
-  "accessibility": "Upatikanaji"
+  "accessibility": "Upatikanaji",
+  "report": "Ripoti",
+  "providing_organization": "Shirika linalotoa"
 }

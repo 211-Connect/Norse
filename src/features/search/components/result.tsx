@@ -90,9 +90,6 @@ export function Result({ data }: ResultProps) {
               <AddToFavoritesButton size="icon" serviceAtLocationId={data.id} />
             </div>
           </CardTitle>
-          {showServiceName && (
-            <CardDescription>{parseHtml(data.serviceName)}</CardDescription>
-          )}
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           <div className="whitespace-break-spaces print:hidden">

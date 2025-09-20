@@ -1,7 +1,9 @@
 {
-  "back_to_results": "Вернуться к результатам",
-  "back_to_home": "Вернуться на главную страницу",
+  "back_to_results": "Результаты",
+  "back_to_home": "Главная страница",
   "categories": "Категории",
+  "categories_title": "Что здесь",
+  "description": "Описание",
   "last_assured": "Последняя гарантия",
   "hours": "Часов",
   "required_documents": "Необходимые документы",
@@ -13,11 +15,13 @@
   "website": "Сайт",
   "application_process": "Процесс подачи заявки",
   "eligibility": "Приемлемость",
-  "fee": "Плата",
+  "fee": "Сборы",
   "service_area": "Территория обслуживания",
   "agency_info": "Информация об агентстве",
   "unknown": "Неизвестный",
   "languages": "Языки",
   "transportation": "Транспорт",
-  "accessibility": "Доступность"
+  "accessibility": "Доступность",
+  "report": "Сообщить",
+  "providing_organization": "Предоставляющая организация"
 }

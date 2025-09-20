@@ -1,7 +1,9 @@
 {
-  "back_to_results": "返回结果",
-  "back_to_home": "返回首页",
+  "back_to_results": "结果",
+  "back_to_home": "家",
   "categories": "类别",
+  "categories_title": "这里有什么",
+  "description": "描述",
   "last_assured": "最后保证",
   "hours": "小时",
   "required_documents": "所需文件",
@@ -13,11 +15,13 @@
   "website": "网站",
   "application_process": "申请流程",
   "eligibility": "资格",
-  "fee": "费",
+  "fee": "费用",
   "service_area": "服务区域",
   "agency_info": "机构信息",
   "unknown": "未知",
   "languages": "语言",
   "transportation": "交通",
-  "accessibility": "无障碍"
+  "accessibility": "无障碍",
+  "report": "报告",
+  "providing_organization": "提供组织"
 }

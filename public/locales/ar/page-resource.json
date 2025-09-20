@@ -1,7 +1,9 @@
 {
-  "back_to_results": "العودة إلى النتائج",
-  "back_to_home": "العودة إلى الصفحة الرئيسية",
+  "back_to_results": "نتائج",
+  "back_to_home": "بيت",
   "categories": "فئات",
+  "categories_title": "ما الذي يوجد هنا",
+  "description": "الوصف",
   "last_assured": "آخر تأكيد",
   "hours": "الساعات",
   "required_documents": "المستندات المطلوبة",
@@ -13,11 +15,13 @@
   "website": "الموقع الإلكتروني",
   "application_process": "عملية التقديم",
   "eligibility": "الاهليه",
-  "fee": "رسوم",
+  "fee": "الرسوم",
   "service_area": "منطقة الخدمة",
   "agency_info": "معلومات الوكالة",
   "unknown": "مجهول",
   "languages": "اللغات",
   "transportation": "النقل",
-  "accessibility": "سهولة الوصول"
+  "accessibility": "سهولة الوصول",
+  "report": "تقرير",
+  "providing_organization": "المنظمة المقدمة"
 }

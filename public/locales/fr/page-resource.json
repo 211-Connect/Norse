@@ -1,7 +1,9 @@
 {
-  "back_to_results": "Retour aux résultats",
-  "back_to_home": "Retour à l’accueil",
+  "back_to_results": "Résultats",
+  "back_to_home": "L’accueil",
   "categories": "Catégories",
+  "categories_title": "Qu'y a-t-il ici",
+  "description": "Description",
   "last_assured": "Dernier assuré",
   "hours": "Heures",
   "required_documents": "Documents requis",
@@ -19,5 +21,7 @@
   "unknown": "Inconnu",
   "languages": "Traduction",
   "transportation": "Transport",
-  "accessibility": "Accessibilité"
+  "accessibility": "Accessibilité",
+  "report": "Signaler",
+  "providing_organization": "Organisation fournissant le service"
 }

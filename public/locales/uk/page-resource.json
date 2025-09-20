@@ -1,7 +1,9 @@
 {
-  "back_to_results": "Назад до результатів",
-  "back_to_home": "Назад на головну",
+  "back_to_results": "Результати",
+  "back_to_home": "Дім",
   "categories": "Категорії",
+  "categories_title": "Що тут",
+  "description": "Опис",
   "last_assured": "Останній запевнений",
   "hours": "Годин",
   "required_documents": "Необхідні документи",
@@ -13,11 +15,13 @@
   "website": "Веб-сторінка",
   "application_process": "Процес подання заявки",
   "eligibility": "Право",
-  "fee": "Плата",
+  "fee": "Збори",
   "service_area": "Зона обслуговування",
   "agency_info": "Інформація про агентство",
   "unknown": "Невідомий",
   "languages": "Мови",
   "transportation": "Транспорт",
-  "accessibility": "Доступність"
+  "accessibility": "Доступність",
+  "report": "Повідомити",
+  "providing_organization": "Організація, що надає послугу"
 }
