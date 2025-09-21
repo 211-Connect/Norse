@@ -42,9 +42,9 @@
   },
   "call_to_action": {
     "call": "कल गर्नुहोस्",
-    "view_website": "वेबसाइट हेर्नुहोस्",
-    "get_directions": "निर्देशन प्राप्त गर्नुहोस्",
-    "view_details": "विवरण हेर्नुहोस्",
+    "view_website": "वेबसाइट",
+    "get_directions": "दिशानिर्देशहरू",
+    "view_details": "थप हेर्नुहोस्",
     "add_to_list": "मनपर्ने",
     "delete_list": "सूची मेट्नुहोस्",
     "remove_from_list": "सूचीबाट हटाउनुहोस्",

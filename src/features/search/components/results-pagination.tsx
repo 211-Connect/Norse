@@ -14,6 +14,10 @@ export function ResultsPagination() {
   const limit = appConfig.search.resultsLimit;
   const totalPages = Math.ceil(totalResults / limit);
 
+  if (totalPages <= 1) {
+    return null;
+  }
+
   return (
     <div className="print:hidden">
       <CustomPagination

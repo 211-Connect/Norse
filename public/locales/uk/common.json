@@ -42,9 +42,9 @@
   },
   "call_to_action": {
     "call": "Кликати",
-    "view_website": "Переглянути веб-сайт",
-    "get_directions": "Прокласти маршрут",
-    "view_details": "Перегляд докладних відомостей",
+    "view_website": "Веб-сайт",
+    "get_directions": "Маршрути",
+    "view_details": "Дивитися більше",
     "add_to_list": "Улюблене",
     "delete_list": "Видалити список",
     "remove_from_list": "Видалити зі списку",

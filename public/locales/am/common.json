@@ -42,9 +42,9 @@
   },
   "call_to_action": {
     "call": "ይደውሉ",
-    "view_website": "ድረ ገፁን ይመልከቱ",
-    "get_directions": "አቅጣጫዎችን ያግኙ",
-    "view_details": "ዝርዝር ጉዳዮችን ይመልከቱ",
+    "view_website": "ድር ጣቢያ",
+    "get_directions": "አቅጣጫዎች",
+    "view_details": "ተጨማሪ ይመልከቱ",
     "add_to_list": "ተወዳጅ",
     "delete_list": "ዝርዝሩን አጥፉ",
     "remove_from_list": "ከዝርዝሩ አስወግድ",

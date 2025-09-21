@@ -42,9 +42,9 @@
   },
   "call_to_action": {
     "call": "Call",
-    "view_website": "View website",
-    "get_directions": "Get directions",
-    "view_details": "View details",
+    "view_website": "Website",
+    "get_directions": "Directions",
+    "view_details": "See more",
     "add_to_list": "Favorite",
     "delete_list": "Delete list",
     "remove_from_list": "Remove from list",

@@ -42,9 +42,9 @@
   },
   "call_to_action": {
     "call": "Звать",
-    "view_website": "Перейти на сайт",
-    "get_directions": "Проложить маршрут",
-    "view_details": "Подробнее",
+    "view_website": "Веб-сайт",
+    "get_directions": "Маршруты",
+    "view_details": "Смотреть больше",
     "add_to_list": "Любимый",
     "delete_list": "Удалить список",
     "remove_from_list": "Удалить из списка",

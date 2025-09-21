@@ -13,7 +13,12 @@ import { useTranslation } from 'next-i18next';
 import { useCallback, useState } from 'react';
 import { cn } from '../lib/utils';
 
-export function GetDirectionsButton({ className = '', data, coords }) {
+export function GetDirectionsButton({
+  className = '',
+  data,
+  coords,
+  text = '',
+}) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
@@ -59,7 +64,8 @@ export function GetDirectionsButton({ className = '', data, coords }) {
         variant="highlight"
         onClick={onClick}
       >
-        <Map className="mr-[5px] size-4" /> {t('call_to_action.get_directions')}
+        <Map className="mr-[5px] size-4" />{' '}
+        {text || t('call_to_action.get_directions')}
       </ReferralButton>
 
       <Dialog open={open} onOpenChange={setOpen}>
@@ -90,7 +96,7 @@ export function GetDirectionsButton({ className = '', data, coords }) {
               onClick={onClick}
             >
               <Map className="mr-[5px] size-4" />
-              {t('call_to_action.get_directions')}
+              {text || t('call_to_action.get_directions')}
             </ReferralButton>
           </div>
         </DialogContent>

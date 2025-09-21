@@ -42,9 +42,9 @@
   },
   "call_to_action": {
     "call": "Appeler",
-    "view_website": "Voir le site web",
-    "get_directions": "Obtenir l’itinéraire",
-    "view_details": "Voir les détails",
+    "view_website": "Site web",
+    "get_directions": "Itinéraire",
+    "view_details": "Voir plus",
     "add_to_list": "Préféré",
     "delete_list": "Supprimer la liste",
     "remove_from_list": "Retirer de la liste",

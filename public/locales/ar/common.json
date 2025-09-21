@@ -43,8 +43,8 @@
   "call_to_action": {
     "call": "دعا",
     "view_website": "عرض الموقع",
-    "get_directions": "احصل على الاتجاهات",
-    "view_details": "عرض التفاصيل",
+    "get_directions": "الاتجاهات",
+    "view_details": "شاهد المزيد",
     "add_to_list": "مفضل",
     "delete_list": "حذف القائمة",
     "remove_from_list": "إزالة من القائمة",

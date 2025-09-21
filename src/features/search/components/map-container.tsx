@@ -65,10 +65,12 @@ export function MapContainer() {
 
   return (
     <div
-      className="sticky top-0 hidden h-full w-full lg:block"
+      className="sticky top-0 hidden h-full w-full p-[10px] lg:block"
       style={{ height: `calc(100vh - ${clampedWindowValue}px` }}
     >
-      <MapRenderer markers={mapMarkers} />
+      <div className="h-full w-full overflow-hidden rounded-lg">
+        <MapRenderer markers={mapMarkers} />
+      </div>
     </div>
   );
 }

@@ -42,9 +42,9 @@
   },
   "call_to_action": {
     "call": "叫",
-    "view_website": "查看网站",
-    "get_directions": "获取路线",
-    "view_details": "查看详情",
+    "view_website": "网站",
+    "get_directions": "路线",
+    "view_details": "查看更多",
     "add_to_list": "最喜欢的",
     "delete_list": "删除列表",
     "remove_from_list": "从列表中删除",

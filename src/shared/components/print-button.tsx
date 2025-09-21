@@ -10,16 +10,17 @@ export function PrintButton({ componentToPrintRef }) {
     content: () => componentToPrintRef.current,
   });
 
-  const showPrintButton = useFlag('showPrintButton');
-  if (!showPrintButton) {
-    return null;
-  }
+  // const showPrintButton = useFlag('showPrintButton');
+  // if (!showPrintButton) {
+  //   return null;
+  // }
 
   return (
     <Button
       variant="outline"
       className="flex gap-1 print:hidden"
       onClick={handlePrint}
+      size="sm"
     >
       <Printer className="size-4" />
       {t('call_to_action.print')}

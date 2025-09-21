@@ -15,6 +15,8 @@ import { useTranslation } from 'next-i18next';
 import { Separator } from '@/shared/components/ui/separator';
 import { Button } from '@/shared/components/ui/button';
 import { useEffect } from 'react';
+import { MainSearchLayout } from '@/shared/components/search/main-search-layout';
+import { TaxonomyContainer } from './taxonomy-container';
 
 const Filters = ({ filters, filterKeys }) => {
   const { t } = useTranslation();
@@ -127,23 +129,32 @@ export function FilterPanel() {
     }
   }, [filterKeys]);
 
-  if (filterKeys.length === 0) return null;
-
   return (
-    <>
-      <div className="hidden w-full max-w-72 bg-white xl:block print:hidden">
-        <Filters filters={filters} filterKeys={filterKeys} />
+    <div className="p-[10px]">
+      <div className="flex flex-col gap-2 bg-white p-2 print:hidden">
+        <MainSearchLayout />
+        <TaxonomyContainer />
       </div>
-      <Sheet onOpenChange={setFiltersOpen} open={filtersOpen}>
-        <SheetContent side="left" className="max-h-screen overflow-y-scroll">
-          <SheetHeader>
-            <SheetTitle></SheetTitle>
-          </SheetHeader>
-          <ScrollArea>
+      {filterKeys.length > 0 && (
+        <>
+          <div className="hidden w-full max-w-72 bg-white xl:block print:hidden">
             <Filters filters={filters} filterKeys={filterKeys} />
-          </ScrollArea>
-        </SheetContent>
-      </Sheet>
-    </>
+          </div>
+          <Sheet onOpenChange={setFiltersOpen} open={filtersOpen}>
+            <SheetContent
+              side="left"
+              className="max-h-screen overflow-y-scroll"
+            >
+              <SheetHeader>
+                <SheetTitle></SheetTitle>
+              </SheetHeader>
+              <ScrollArea>
+                <Filters filters={filters} filterKeys={filterKeys} />
+              </ScrollArea>
+            </SheetContent>
+          </Sheet>
+        </>
+      )}
+    </div>
   );
 }

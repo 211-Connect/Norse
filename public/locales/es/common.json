@@ -42,9 +42,9 @@
   },
   "call_to_action": {
     "call": "Llamar",
-    "view_website": "Ver sitio web",
-    "get_directions": "Obtener direcciones",
-    "view_details": "Ver detalles",
+    "view_website": "Sitio web",
+    "get_directions": "Direcciones",
+    "view_details": "Ver más",
     "add_to_list": "Favorito",
     "delete_list": "Eliminar lista",
     "remove_from_list": "Quitar de la lista",

@@ -42,9 +42,9 @@
   },
   "call_to_action": {
     "call": "Gọi",
-    "view_website": "Xem trang web",
-    "get_directions": "Nhận chỉ đường",
-    "view_details": "Xem chi tiết",
+    "view_website": "Trang web",
+    "get_directions": "Hướng dẫn",
+    "view_details": "Xem thêm",
     "add_to_list": "Yêu thích",
     "delete_list": "Xóa danh sách",
     "remove_from_list": "Xóa khỏi danh sách",

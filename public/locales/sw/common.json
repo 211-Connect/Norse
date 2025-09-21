@@ -42,9 +42,9 @@
   },
   "call_to_action": {
     "call": "Wito",
-    "view_website": "Tazama tovuti",
-    "get_directions": "Pata maelekezo",
-    "view_details": "Tazama maelezo",
+    "view_website": "Tovuti",
+    "get_directions": "Maelekezo",
+    "view_details": "Tazama zaidi",
     "add_to_list": "Kipendwa",
     "delete_list": "Futa orodha",
     "remove_from_list": "Ondoa kutoka kwenye orodha",

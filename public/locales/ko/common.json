@@ -42,9 +42,9 @@
   },
   "call_to_action": {
     "call": "외침",
-    "view_website": "웹사이트 보기",
-    "get_directions": "길 찾기",
-    "view_details": "세부 정보보기",
+    "view_website": "웹사이트",
+    "get_directions": "길찾기",
+    "view_details": "더 보기",
     "add_to_list": "가장 좋아하는",
     "delete_list": "목록 삭제",
     "remove_from_list": "목록에서 제거",
