@@ -88,19 +88,19 @@ class ErrorBoundary extends React.Component<Props, State> {
       memory: (navigator as any).deviceMemory || 'unknown',
     };
 
-    try {
-      await axios.post('/api/webhook', {
-        message: error?.message,
-        brandName: this.props?.appConfig?.brand?.name,
-        faviconUrl: this.props?.appConfig?.brand?.faviconUrl,
-        url: window?.location?.href,
-        openGraphUrl: this.props?.appConfig?.brand?.openGraphUrl,
-        hostname: window?.location?.hostname,
-        debugInfo: JSON.stringify(debugInfo),
-      });
-    } catch (err) {
-      console.log('Unable to send webhook');
-    }
+    // try {
+    //   await axios.post('/api/webhook', {
+    //     message: error?.message,
+    //     brandName: this.props?.appConfig?.brand?.name,
+    //     faviconUrl: this.props?.appConfig?.brand?.faviconUrl,
+    //     url: window?.location?.href,
+    //     openGraphUrl: this.props?.appConfig?.brand?.openGraphUrl,
+    //     hostname: window?.location?.hostname,
+    //     debugInfo: JSON.stringify(debugInfo),
+    //   });
+    // } catch (err) {
+    //   console.log('Unable to send webhook');
+    // }
   }
 
   render() {

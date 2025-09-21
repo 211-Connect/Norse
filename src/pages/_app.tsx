@@ -1,4 +1,5 @@
 import '@/shared/styles/globals.css';
+import '@/shared/styles/map.css';
 import Head from 'next/head';
 import { appWithTranslation } from 'next-i18next';
 import { AppProps } from 'next/app';

@@ -63,11 +63,14 @@ export function Map({
     _markers.current?.forEach((m) => m.remove());
 
     _markers.current = markers.map((m) => {
-      const marker = new Marker().setPopup(
-        m.popup
-          ? new Popup().setHTML(renderToStaticMarkup(m.popup))
-          : undefined,
-      );
+      const marker = new Marker();
+      if (m.popup) {
+        marker.setPopup(
+          new Popup({ closeButton: false, focusAfterOpen: false }).setHTML(
+            renderToStaticMarkup(m.popup),
+          ),
+        );
+      }
 
       // Check if coordinates are valid before doing anything with them
       const hasValidCoordinates =
@@ -77,20 +80,15 @@ export function Map({
         marker.setLngLat(m.coordinates);
 
         const markerElement = marker.getElement();
-        markerElement.style.cursor = 'pointer';
+        if (marker.getPopup()) {
+          markerElement.style.cursor = 'pointer';
+        }
         markerElement.classList.add('custom-marker');
         markerElement.addEventListener('click', (e) => {
-          const listElement = document.getElementById(m.id);
-          listElement?.scrollIntoView();
-
-          _markers.current?.forEach((m) => {
-            const popup = m.getPopup();
-            if (popup?.isOpen()) {
-              m.togglePopup();
-            }
+          setTimeout(() => {
+            const listElement = document.getElementById(m.id);
+            listElement?.scrollIntoView();
           });
-
-          marker.togglePopup();
         });
 
         marker.addTo(mapLibreMap.current);
