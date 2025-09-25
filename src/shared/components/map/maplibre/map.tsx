@@ -52,7 +52,9 @@ export function Map({
     });
 
     return () => {
+      // Remove and clear ref so other effects don't act on a torn-down map
       mapLibreMap.current?.remove();
+      mapLibreMap.current = null;
     };
   }, [center, zoom]);
 
@@ -151,6 +153,7 @@ export function Map({
   // This ensures the service area is always visible and correctly framed on the map.
   useEffect(() => {
     if (!mapLibreMap.current) return;
+
     const map = mapLibreMap.current as any;
     const hasMarkers =
       Array.isArray(markers) &&
@@ -158,14 +161,29 @@ export function Map({
         (m) =>
           m.coordinates && !isNaN(m.coordinates[0]) && !isNaN(m.coordinates[1]),
       );
+    let cancelled = false;
 
-    // Cleanup helper
+    const safeHasLayer = (id: string) => {
+      try {
+        return !!map?.style && !!map.getLayer(id);
+      } catch {
+        return false;
+      }
+    };
+
+    // Cleanup helper with guards (map may be removed before style load)
     const cleanup = () => {
-      if (map.getLayer('service-area-fill'))
-        map.removeLayer('service-area-fill');
-      if (map.getLayer('service-area-outline'))
-        map.removeLayer('service-area-outline');
-      if (map.getSource('service-area')) map.removeSource('service-area');
+      if (!map || !map.style) return;
+      try {
+        if (safeHasLayer('service-area-fill'))
+          map.removeLayer('service-area-fill');
+        if (safeHasLayer('service-area-outline'))
+          map.removeLayer('service-area-outline');
+        if (map.getSource && map.getSource('service-area'))
+          map.removeSource('service-area');
+      } catch {
+        // swallow errors that can occur if map is mid-destroy
+      }
     };
 
     if (hasMarkers || !serviceArea) {
@@ -190,40 +208,55 @@ export function Map({
     } as any;
 
     const addLayer = () => {
-      cleanup(); // Ensure clean slate
-      map.addSource('service-area', { type: 'geojson', data: sourceData });
-      map.addLayer({
-        id: 'service-area-fill',
-        type: 'fill',
-        source: 'service-area',
-        paint: {
-          'fill-color': '#2563eb',
-          'fill-opacity': 0.25,
-        },
-      });
-      map.addLayer({
-        id: 'service-area-outline',
-        type: 'line',
-        source: 'service-area',
-        paint: {
-          'line-color': '#2563eb',
-          'line-width': 2,
-        },
-      });
+      if (cancelled) return;
+      if (!map || !map.style) return;
 
-      const b = getBoundsFromServiceArea(normalized);
-      if (b) {
-        map.fitBounds(b, { padding: 40, animate: false });
+      cleanup(); // Ensure clean slate
+
+      try {
+        map.addSource('service-area', { type: 'geojson', data: sourceData });
+        map.addLayer({
+          id: 'service-area-fill',
+          type: 'fill',
+          source: 'service-area',
+          paint: {
+            'fill-color': '#2563eb',
+            'fill-opacity': 0.25,
+          },
+        });
+        map.addLayer({
+          id: 'service-area-outline',
+          type: 'line',
+          source: 'service-area',
+          paint: {
+            'line-color': '#2563eb',
+            'line-width': 2,
+          },
+        });
+        const b = getBoundsFromServiceArea(normalized);
+        if (b && !cancelled) {
+          map.fitBounds(b, { padding: 40, animate: false });
+        }
+      } catch {
+        // ignore race condition errors
       }
     };
+
+    const handleLoad = () => addLayer();
 
     if (map.isStyleLoaded && map.isStyleLoaded()) {
       addLayer();
     } else {
-      map.once('load', addLayer);
+      map.on('load', handleLoad);
     }
 
-    return () => cleanup();
+    return () => {
+      cancelled = true;
+      try {
+        map.off && map.off('load', handleLoad);
+      } catch {}
+      cleanup();
+    };
   }, [serviceArea, markers]);
 
   return <div ref={mapContainer} className="h-full w-full"></div>;
