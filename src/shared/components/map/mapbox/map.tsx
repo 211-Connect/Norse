@@ -43,6 +43,7 @@ export function Map({
 
     return () => {
       mapboxMap.current?.remove();
+      mapboxMap.current = null; // prevent later effects from touching a removed map
     };
   }, [center, zoom]);
 
@@ -142,13 +143,28 @@ export function Map({
         (m) =>
           m.coordinates && !isNaN(m.coordinates[0]) && !isNaN(m.coordinates[1]),
       );
+    let cancelled = false;
+
+    const safeHasLayer = (id: string) => {
+      try {
+        return !!map?.style && !!map.getLayer(id);
+      } catch {
+        return false;
+      }
+    };
 
     const cleanup = () => {
-      if (map.getLayer('service-area-fill'))
-        map.removeLayer('service-area-fill');
-      if (map.getLayer('service-area-outline'))
-        map.removeLayer('service-area-outline');
-      if (map.getSource('service-area')) map.removeSource('service-area');
+      if (!map || !map.style) return;
+      try {
+        if (safeHasLayer('service-area-fill'))
+          map.removeLayer('service-area-fill');
+        if (safeHasLayer('service-area-outline'))
+          map.removeLayer('service-area-outline');
+        if (map.getSource && map.getSource('service-area'))
+          map.removeSource('service-area');
+      } catch {
+        // ignore errors during teardown
+      }
     };
 
     if (hasMarkers || !serviceArea) {
@@ -167,27 +183,42 @@ export function Map({
     } as any;
 
     const addLayer = () => {
+      if (cancelled) return;
+      if (!map || !map.style) return;
       cleanup();
-      map.addSource('service-area', { type: 'geojson', data: sourceData });
-      map.addLayer({
-        id: 'service-area-fill',
-        type: 'fill',
-        source: 'service-area',
-        paint: { 'fill-color': '#2563eb', 'fill-opacity': 0.25 },
-      });
-      map.addLayer({
-        id: 'service-area-outline',
-        type: 'line',
-        source: 'service-area',
-        paint: { 'line-color': '#2563eb', 'line-width': 2 },
-      });
-      const b = getBoundsFromServiceArea(normalized);
-      if (b) map.fitBounds(b, { padding: 40, animate: false });
+      try {
+        map.addSource('service-area', { type: 'geojson', data: sourceData });
+        map.addLayer({
+          id: 'service-area-fill',
+          type: 'fill',
+          source: 'service-area',
+          paint: { 'fill-color': '#2563eb', 'fill-opacity': 0.25 },
+        });
+        map.addLayer({
+          id: 'service-area-outline',
+          type: 'line',
+          source: 'service-area',
+          paint: { 'line-color': '#2563eb', 'line-width': 2 },
+        });
+        const b = getBoundsFromServiceArea(normalized);
+        if (b && !cancelled) map.fitBounds(b, { padding: 40, animate: false });
+      } catch {
+        // ignore if map was removed mid-operation
+      }
     };
 
+    const handleLoad = () => addLayer();
+
     if (map.isStyleLoaded && map.isStyleLoaded()) addLayer();
-    else map.once('load', addLayer);
-    return () => cleanup();
+    else map.on('load', handleLoad);
+
+    return () => {
+      cancelled = true;
+      try {
+        map.off && map.off('load', handleLoad);
+      } catch {}
+      cleanup();
+    };
   }, [serviceArea, markers]);
 
   return <div ref={mapContainer} className="h-full w-full"></div>;
