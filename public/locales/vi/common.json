@@ -23,6 +23,7 @@
     "unable_to_delete_list_message": "Không thể xóa danh sách của bạn."
   },
   "search": {
+    "back": "Quay lại",
     "hero_title": "Tìm kiếm tài nguyên",
     "query_placeholder": "Thực phẩm, nhà ở, vv...",
     "location_placeholder": "Thành phố, tiểu bang hoặc mã ZIP",

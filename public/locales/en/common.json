@@ -23,6 +23,7 @@
     "unable_to_delete_list_message": "Your list could not be deleted."
   },
   "search": {
+    "back": "Back",
     "hero_title": "Search for resources",
     "query_placeholder": "Food, housing, etc...",
     "location_placeholder": "City, state, or ZIP code",

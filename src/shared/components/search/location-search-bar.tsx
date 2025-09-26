@@ -1,21 +1,22 @@
 import { useTranslation } from 'next-i18next';
-import { MapPin, NavigationIcon } from 'lucide-react';
-import { useAtomValue, useSetAtom } from 'jotai';
+import { MapPin } from 'lucide-react';
+import { useAtomValue } from 'jotai';
 import {
   prevSearchLocationAtom,
-  searchAtom,
   searchCoordinatesAtom,
   searchLocationAtom,
   searchLocationValidationErrorAtom,
 } from '../../store/search';
 import { useDebounce } from '../../hooks/use-debounce';
 import { useLocations } from '../../hooks/api/use-locations';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { cn } from '../../lib/utils';
 import { destroyCookie, setCookie } from 'nookies';
 import { USER_PREF_COORDS, USER_PREF_LOCATION } from '@/shared/lib/constants';
 import { Autocomplete } from '../ui/autocomplete';
 import { DistanceSelect } from './distance-select';
+import { useSearchResources } from '@/shared/hooks/use-search-resources';
+import { UseMyLocationButton } from './use-my-location-button';
 
 type LocationSearchBarProps = {
   className?: string;
@@ -24,7 +25,6 @@ type LocationSearchBarProps = {
 export function LocationSearchBar({ className }: LocationSearchBarProps) {
   const { t } = useTranslation();
   const [shouldSearch, setShouldSearch] = useState(false);
-  const setSearch = useSetAtom(searchAtom);
   const searchLocation = useAtomValue(searchLocationAtom);
   const coords = useAtomValue(searchCoordinatesAtom);
   const prevSearchLocation = useAtomValue(prevSearchLocationAtom);
@@ -35,6 +35,8 @@ export function LocationSearchBar({ className }: LocationSearchBarProps) {
     additionalLocations,
   } = useLocations(shouldSearch ? debouncedSearchLocation : prevSearchLocation);
   const validationError = useAtomValue(searchLocationValidationErrorAtom);
+
+  const { setSearch } = useSearchResources();
 
   const findCoords = useCallback(
     (value: string) => {
@@ -118,38 +120,32 @@ export function LocationSearchBar({ className }: LocationSearchBarProps) {
   );
 
   return (
-    <div className="location-box">
-      <div
-        className={cn(
-          'flex w-full flex-1 items-center justify-stretch border-b',
-          className,
-        )}
-      >
-        <Autocomplete
-          className={cn(
-            className,
-            'search-box',
-            validationError && 'border-b border-b-red-500',
-            'flex-1 border-none',
-          )}
-          inputProps={{
-            placeholder:
-              t('search.location_placeholder', {
-                ns: 'dynamic',
-                defaultValue: t('search.location_placeholder'),
-              }) || '',
-          }}
-          options={options}
-          Icon={MapPin}
-          onInputChange={handleInputChange}
-          onValueChange={setSearchLocation}
-          value={searchLocation}
-          autoSelectIndex={coords?.length === 2 ? undefined : 1}
-        />
-
+    <div className="location-box flex flex-col gap-4">
+      <Autocomplete
+        className={cn(className, 'search-box')}
+        inputProps={{
+          className: validationError ? '!border-red-500' : undefined,
+          placeholder:
+            t('search.location_placeholder', {
+              ns: 'dynamic',
+              defaultValue: t('search.location_placeholder'),
+            }) || '',
+        }}
+        options={options}
+        Icon={MapPin}
+        onInputChange={handleInputChange}
+        onValueChange={setSearchLocation}
+        value={searchLocation}
+        optionsPopoverClassName="mt-[60px] max-h-[calc(100vh-310px)]"
+        autoSelectIndex={coords?.length === 2 ? undefined : 1}
+      />
+      {validationError && (
+        <p className="min-h-4 px-3 text-xs text-red-500">{validationError}</p>
+      )}
+      <div className="flex justify-between">
+        <UseMyLocationButton />
         <DistanceSelect />
       </div>
-      <p className="min-h-4 px-3 text-xs text-red-500">{validationError}</p>
     </div>
   );
 }

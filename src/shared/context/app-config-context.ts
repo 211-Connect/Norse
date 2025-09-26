@@ -73,6 +73,7 @@ export type AppConfig = {
   sms?: {
     provider: 'Twilio';
   }[];
+  safeExitUrl?: string;
 };
 
 const appConfigContext = createContext<AppConfig>(null);

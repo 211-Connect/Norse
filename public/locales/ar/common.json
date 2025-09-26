@@ -23,6 +23,7 @@
     "unable_to_delete_list_message": "تعذر حذف قائمتك."
   },
   "search": {
+    "back": "عودة",
     "hero_title": "البحث عن الموارد",
     "query_placeholder": "الغذاء والسكن ، إلخ ...",
     "location_placeholder": "المدينة أو الولاية أو الرمز البريدي",

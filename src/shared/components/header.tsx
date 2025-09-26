@@ -1,4 +1,4 @@
-import { signOut, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { Fragment, useMemo, useState } from 'react';
@@ -8,10 +8,11 @@ import { Button } from './ui/button';
 import { cn } from '../lib/utils';
 import {
   AlignJustifyIcon,
-  HeartIcon,
+  ChevronDown,
   HomeIcon,
   LanguagesIcon,
-  LogOutIcon,
+  LogOut,
+  UserRound,
 } from 'lucide-react';
 import {
   Sheet,
@@ -32,6 +33,13 @@ import { useAppConfig } from '../hooks/use-app-config';
 import { HEADER_ID } from '../lib/constants';
 import { useSetAtom } from 'jotai';
 import { dialogsAtom } from '../store/dialogs';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from './ui/dropdown';
+import { Card, CardContent } from './ui/card';
 
 type Props = {
   fullWidth?: boolean;
@@ -50,30 +58,10 @@ export function Header(props: Props) {
     () => [
       <li key="0">
         <Link href="/" className="flex items-center gap-1 hover:underline">
-          <HomeIcon className="size-4" />
-          {t('header.home')}
-        </Link>
-      </li>,
-
-      <li key="1">
-        <Link
-          href="/favorites"
-          className="flex items-center gap-1 hover:underline"
-          onClick={(e) => {
-            if (session.status === 'unauthenticated') {
-              e.preventDefault();
-              setDialogStore((prev) => ({
-                ...prev,
-                promptAuth: {
-                  ...prev.promptAuth,
-                  open: true,
-                },
-              }));
-            }
-          }}
-        >
-          <HeartIcon className="size-4" />
-          {t('header.favorites')}
+          <Button variant="outline" className="flex items-center gap-[5px]">
+            <HomeIcon className="size-4" />
+            {t('header.home')}
+          </Button>
         </Link>
       </li>,
       <Fragment key="5">
@@ -89,44 +77,11 @@ export function Header(props: Props) {
                   target={item.target}
                   {...(item.href != null ? { href: item.href } : { href: '' })}
                 >
-                  {item.name}
+                  <Button variant="outline">{item.name}</Button>
                 </Link>
               </li>
             );
           })}
-      </Fragment>,
-      <Fragment key="2">
-        {appConfig?.contact?.feedbackUrl && (
-          <li>
-            <Button
-              key="feedback"
-              className="feedback"
-              variant="outline"
-              onClick={(e) => {
-                e.preventDefault();
-
-                const currentUrl = new URL(appConfig?.contact?.feedbackUrl);
-                const feedbackUrl = currentUrl.toString().split('?')[0];
-                const urlParams = new URLSearchParams(currentUrl.searchParams);
-
-                if (typeof window !== 'undefined') {
-                  // Construct the full URL including basePath
-                  const protocol = window.location.protocol;
-                  const host = window.location.host;
-                  const basePath = router.basePath || '';
-                  const asPath = router.asPath;
-                  const fullUrl = `${protocol}//${host}${basePath}${asPath}`;
-
-                  urlParams.set('referring_url', fullUrl);
-                }
-
-                window.open(`${feedbackUrl}?${urlParams.toString()}`, '_blank');
-              }}
-            >
-              {t('header.submit_feedback')}
-            </Button>
-          </li>
-        )}
       </Fragment>,
       <Fragment key="3">
         {(router?.locales?.length ?? 0) > 1 && router?.locale != null && (
@@ -144,10 +99,10 @@ export function Header(props: Props) {
               }}
             >
               <SelectTrigger
-                className="w-[150px]"
+                className="flex min-w-[140px] items-center gap-[5px]"
                 aria-label={t('header.language_select_label')}
               >
-                <div className="flex items-center gap-1 overflow-hidden">
+                <div className="flex items-center gap-[5px] overflow-hidden">
                   <LanguagesIcon className="size-4" />
                   <SelectValue placeholder={t('header.language_select_label')}>
                     <span className="capitalize">
@@ -178,18 +133,55 @@ export function Header(props: Props) {
           </li>
         )}
       </Fragment>,
-      <Fragment key="4">
-        {session.status === 'authenticated' && (
-          <li>
-            <Button
-              variant="ghost"
-              className="flex gap-1"
-              onClick={() => {
-                signOut({ redirect: true, callbackUrl: '/' });
-              }}
-            >
-              <LogOutIcon className="size-4" /> {t('header.log_out')}
+      <Fragment key="1">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button className="flex items-center gap-[5px]" variant="outline">
+              <UserRound className="size-4" />
+              My Stuff
+              <ChevronDown className="size-4" />
             </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="min-w-[143px]">
+            <Card className="px-0 py-[10px]">
+              <CardContent>
+                <DropdownMenuItem>
+                  <Button
+                    className="w-full justify-start px-[10px] text-primary hover:text-primary"
+                    variant="ghost"
+                    onClick={(e) => {
+                      if (session.status === 'unauthenticated') {
+                        setTimeout(() => {
+                          setDialogStore((prev) => ({
+                            ...prev,
+                            promptAuth: {
+                              ...prev.promptAuth,
+                              open: true,
+                            },
+                          }));
+                        });
+                      } else {
+                        router.push('/favorites');
+                      }
+                    }}
+                  >
+                    {t('header.favorites')}
+                  </Button>
+                </DropdownMenuItem>
+              </CardContent>
+            </Card>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </Fragment>,
+      <Fragment key="4">
+        {(appConfig?.safeExitUrl || true) && (
+          <li>
+            <Link target="_blank" href={appConfig.safeExitUrl ?? '#'}>
+              <Button className="flex items-center gap-1" variant="outline">
+                Safe Exit
+                <LogOut className="size-4" />
+              </Button>
+            </Link>
           </li>
         )}
       </Fragment>,
@@ -202,25 +194,25 @@ export function Header(props: Props) {
       <div
         className={cn(
           props.fullWidth ? '100%' : 'container mx-auto',
-          'flex h-12 items-center justify-between md:h-20',
+          'flex items-center justify-between py-3',
         )}
       >
-        <div className="flex max-h-full w-full max-w-96 pb-1 pt-1 md:pb-2 md:pt-2">
+        <div className="flex max-h-full w-full max-w-96">
           <Link
             href="/"
             aria-label={t('header.home') as string}
-            className="max-h-full pb-1 pt-1 md:pb-2 md:pt-2"
+            className="max-h-full"
           >
             <img
               src={appConfig?.brand?.logoUrl}
               alt={t('header.home') as string}
-              className="max-h-full w-auto"
+              className="h-[80px] max-h-full w-auto"
             />
           </Link>
         </div>
 
         <nav className="hidden w-full justify-end lg:flex">
-          <ul className="flex items-center gap-4">{SITEMAP}</ul>
+          <ul className="flex items-center gap-6">{SITEMAP}</ul>
         </nav>
 
         <div className="flex w-full justify-end lg:hidden">

@@ -131,7 +131,7 @@ export function FilterPanel() {
 
   return (
     <div className="p-[10px]">
-      <div className="flex flex-col gap-2 bg-white p-2 print:hidden">
+      <div className="flex flex-col print:hidden">
         <MainSearchLayout />
         <TaxonomyContainer />
       </div>

@@ -28,6 +28,9 @@ export function UseMyLocationButton() {
       const lat = position.coords.latitude;
       const lng = position.coords.longitude;
 
+      // const lat = 41.853133;
+      // const lng = -87.748296;
+
       const promise = MapService.reverseGeocode(`${lng},${lat}`, {
         locale: router.locale,
         adapter: adapter.current,
@@ -51,9 +54,11 @@ export function UseMyLocationButton() {
               searchLocation: location.address,
               searchCoordinates: location.coordinates,
             }));
-          }
 
-          return 'Successfully fetched your location';
+            return 'Successfully fetched your location';
+          } else {
+            throw new Error();
+          }
         },
         error: t('search.geocoding_unable_to_retrieve'),
       });
@@ -88,8 +93,8 @@ export function UseMyLocationButton() {
   return (
     <Button
       onClick={getUserLocation}
-      className="flex gap-1"
-      variant="outline"
+      className="flex gap-1 !text-primary"
+      variant="ghost"
       type="button"
     >
       <Locate className="size-4" />

@@ -10,10 +10,10 @@ export function PrintButton({ componentToPrintRef }) {
     content: () => componentToPrintRef.current,
   });
 
-  // const showPrintButton = useFlag('showPrintButton');
-  // if (!showPrintButton) {
-  //   return null;
-  // }
+  const showPrintButton = useFlag('showPrintButton');
+  if (!showPrintButton) {
+    return null;
+  }
 
   return (
     <Button

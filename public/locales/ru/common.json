@@ -23,6 +23,7 @@
     "unable_to_delete_list_message": "Ваш список не может быть удален."
   },
   "search": {
+    "back": "Назад",
     "hero_title": "Поиск ресурсов",
     "query_placeholder": "Еда, жилье и т.д.",
     "location_placeholder": "Город, штат или почтовый индекс",

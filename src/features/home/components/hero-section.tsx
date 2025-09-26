@@ -81,10 +81,10 @@ export function HeroSection() {
       />
 
       <div
-        className="flex min-w-full flex-col gap-2 rounded-md bg-white p-4 sm:min-w-[500px]"
+        className="flex min-w-full flex-col gap-2 rounded-lg bg-[#0E2853] p-3 sm:min-w-[500px]"
         role="search"
       >
-        <h3 className="text-xl font-bold">
+        <h3 className="text-2xl font-medium text-white">
           {t('search.hero_title', {
             ns: 'dynamic',
             defaultValue: t('search.hero_title', { ns: 'common' }),
