@@ -127,8 +127,8 @@ export function Favorite({
             {data.website && (
               <div className="flex max-w-full items-center gap-1 text-primary/80">
                 <Globe className="size-4 shrink-0" />
-                <CopyBadge href={data.website} text={data.website}>
-                  <p className="truncate">{data.website}</p>
+                <CopyBadge href={data.website} text={data.website} truncate>
+                  {data.website}
                 </CopyBadge>
               </div>
             )}

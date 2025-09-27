@@ -3,8 +3,9 @@
     "home": "집",
     "favorites": "즐겨찾기",
     "log_out": "로그아웃",
-    "submit_feedback": "피드백 제출",
-    "language_select_label": "사이트 언어를 변경할 언어를 선택합니다."
+    "language_select_label": "사이트 언어를 변경할 언어를 선택합니다.",
+    "my_stuff": "내 물건",
+    "search": "검색"
   },
   "favorites": {
     "added_to_list": "목록에 추가됨",
@@ -39,7 +40,7 @@
     "geocoding_error": "지오코딩 오류",
     "geocoding_unsupported": "지리적 위치는 브라우저에서 지원되지 않습니다.",
     "geocoding_unable_to_retrieve": "위치를 검색할 수 없습니다. 브라우저의 위치 설정을 확인하고 다시 시도하십시오.",
-    "categories": "카테고리"
+    "categories": "주제"
   },
   "call_to_action": {
     "call": "외침",
@@ -130,6 +131,6 @@
     "provided_by": "데이터 제공"
   },
   "footer": {
-    "copyright": "판권 소유."
+    "copyright": "© 저작권 {{text}}"
   }
 }

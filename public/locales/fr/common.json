@@ -3,8 +3,9 @@
     "home": "Domicile",
     "favorites": "Favoris",
     "log_out": "Se déconnecter",
-    "submit_feedback": "Envoyer des commentaires",
-    "language_select_label": "Sélectionnez une langue pour modifier la langue du site"
+    "language_select_label": "Sélectionnez une langue pour modifier la langue du site",
+    "my_stuff": "Mes affaires",
+    "search": "Chercher"
   },
   "favorites": {
     "added_to_list": "Ajouté à la liste",
@@ -39,7 +40,7 @@
     "geocoding_error": "Erreur de géocodage",
     "geocoding_unsupported": "La géolocalisation n’est pas prise en charge par votre navigateur",
     "geocoding_unable_to_retrieve": "Impossible de récupérer votre position. Veuillez vérifier les paramètres de localisation de votre navigateur et réessayer.",
-    "categories": "Catégories"
+    "categories": "Sujets"
   },
   "call_to_action": {
     "call": "Appeler",
@@ -130,6 +131,6 @@
     "provided_by": "Données fournies par"
   },
   "footer": {
-    "copyright": "Tous droits réservés."
+    "copyright": "© Droits d’auteur {{text}}"
   }
 }

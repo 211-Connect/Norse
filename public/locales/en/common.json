@@ -3,8 +3,9 @@
     "home": "Home",
     "favorites": "Favorites",
     "log_out": "Log out",
-    "submit_feedback": "Submit feedback",
-    "language_select_label": "Select a language to change the site language"
+    "language_select_label": "Select a language to change the site language",
+    "my_stuff": "My stuff",
+    "search": "Search"
   },
   "favorites": {
     "added_to_list": "Added to list",
@@ -39,7 +40,7 @@
     "geocoding_error": "Geocoding error",
     "geocoding_unsupported": "Geolocation is not supported by your browser",
     "geocoding_unable_to_retrieve": "Unable to retrieve your location. Please check your browser's location settings and try again.",
-    "categories": "Categories"
+    "categories": "Topics"
   },
   "call_to_action": {
     "call": "Call",
@@ -130,6 +131,6 @@
     "provided_by": "Data provided by"
   },
   "footer": {
-    "copyright": "All rights reserved."
+    "copyright": "© Copyright {{text}}"
   }
 }

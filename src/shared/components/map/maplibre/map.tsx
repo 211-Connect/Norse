@@ -159,11 +159,13 @@ export function Map({
 
     // Cleanup helper
     const cleanup = () => {
-      if (map.getLayer('service-area-fill'))
-        map.removeLayer('service-area-fill');
-      if (map.getLayer('service-area-outline'))
-        map.removeLayer('service-area-outline');
-      if (map.getSource('service-area')) map.removeSource('service-area');
+      try {
+        if (map.getLayer('service-area-fill'))
+          map.removeLayer('service-area-fill');
+        if (map.getLayer('service-area-outline'))
+          map.removeLayer('service-area-outline');
+        if (map.getSource('service-area')) map.removeSource('service-area');
+      } catch {}
     };
 
     if (hasMarkers || !serviceArea) {

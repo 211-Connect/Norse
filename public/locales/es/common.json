@@ -3,8 +3,9 @@
     "home": "Hogar",
     "favorites": "Favoritos",
     "log_out": "Cerrar sesión",
-    "submit_feedback": "Enviar comentarios",
-    "language_select_label": "Seleccione un idioma para cambiar el idioma del sitio"
+    "language_select_label": "Seleccione un idioma para cambiar el idioma del sitio",
+    "my_stuff": "Mis cosas",
+    "search": "Buscar"
   },
   "favorites": {
     "added_to_list": "Añadido a la lista",
@@ -39,7 +40,7 @@
     "geocoding_error": "Error de geocodificación",
     "geocoding_unsupported": "La geolocalización no es compatible con su navegador",
     "geocoding_unable_to_retrieve": "No se puede recuperar su ubicación. Compruebe la configuración de ubicación de su navegador y vuelva a intentarlo.",
-    "categories": "Categorías"
+    "categories": "Temas"
   },
   "call_to_action": {
     "call": "Llamar",
@@ -130,6 +131,6 @@
     "provided_by": "Datos facilitados por"
   },
   "footer": {
-    "copyright": "Todos los derechos reservados."
+    "copyright": "© Derechos de autor {{text}}"
   }
 }

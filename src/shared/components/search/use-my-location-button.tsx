@@ -28,9 +28,6 @@ export function UseMyLocationButton() {
       const lat = position.coords.latitude;
       const lng = position.coords.longitude;
 
-      // const lat = 41.853133;
-      // const lng = -87.748296;
-
       const promise = MapService.reverseGeocode(`${lng},${lat}`, {
         locale: router.locale,
         adapter: adapter.current,

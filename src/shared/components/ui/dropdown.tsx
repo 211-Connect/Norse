@@ -14,7 +14,13 @@ export function DropdownMenuContent({
   ...props
 }: DropdownMenuContentProps) {
   return (
-    <DropdownMenuPrimitive.Content className={cn('mt-2', className)} {...props}>
+    <DropdownMenuPrimitive.Content
+      className={cn(
+        'z-10 mt-2 animate-in fade-in-0 slide-in-from-top-2',
+        className,
+      )}
+      {...props}
+    >
       {children}
     </DropdownMenuPrimitive.Content>
   );

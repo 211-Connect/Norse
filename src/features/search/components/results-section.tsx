@@ -14,7 +14,7 @@ export function ResultsSection() {
   return (
     <div
       id="search-container"
-      className="flex w-full flex-col gap-3 overflow-y-auto p-[10px] lg:max-w-[550px]"
+      className="flex w-full flex-col gap-3 overflow-y-auto p-[10px] xl:max-w-[550px]"
     >
       <div className="flex items-center justify-between py-[5.5px] print:hidden">
         <ResultTotal />

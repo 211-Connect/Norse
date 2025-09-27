@@ -65,7 +65,7 @@ export function MapContainer() {
 
   return (
     <div
-      className="sticky top-0 hidden h-full w-full p-[10px] lg:block"
+      className="sticky top-0 hidden h-full w-full flex-1 p-[10px] lg:block"
       style={{ height: `calc(100vh - ${clampedWindowValue}px` }}
     >
       <div className="h-full w-full overflow-hidden rounded-lg">

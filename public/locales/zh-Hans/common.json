@@ -3,8 +3,9 @@
     "home": "家",
     "favorites": "收藏 夹",
     "log_out": "注销",
-    "submit_feedback": "提交反馈",
-    "language_select_label": "选择一种语言以更改网站语言"
+    "language_select_label": "选择一种语言以更改网站语言",
+    "my_stuff": "我的东西",
+    "search": "搜索"
   },
   "favorites": {
     "added_to_list": "已添加到列表",
@@ -130,6 +131,6 @@
     "provided_by": "数据提供"
   },
   "footer": {
-    "copyright": "版权所有。"
+    "copyright": "© 版权 {{text}}"
   }
 }

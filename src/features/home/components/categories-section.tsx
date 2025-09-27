@@ -1,11 +1,9 @@
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import { Link } from '@/shared/components/link';
-import { Separator } from '@/shared/components/ui/separator';
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { useCategories } from '@/shared/hooks/use-categories';
 import { ExternalLink } from 'lucide-react';
-import { cn } from '@/shared/lib/utils';
 import { useAppConfig } from '@/shared/hooks/use-app-config';
 
 type Props = {
@@ -20,23 +18,23 @@ type Props = {
 const Category = ({ image, name, href, target, subcategories }: Props) => {
   if (subcategories && subcategories.length > 0) {
     return (
-      <div className="flex items-start gap-2">
+      <div className="flex items-start gap-5">
         {image && (
           <Image
             src={image}
             alt=""
-            width={80}
-            height={0}
-            className="h-auto w-10"
+            width={64}
+            height={64}
+            className="size-16 rounded-xl object-cover"
           />
         )}
 
         <div className="flex flex-col">
-          <h3 className="text-xl font-semibold">{name}</h3>
+          <h3 className="mb-1 text-xl font-semibold">{name}</h3>
 
           {subcategories.map((el, key) => (
             <Link
-              className="flex items-center gap-1 rounded-md p-2 pl-1 pr-1 hover:bg-primary/5"
+              className="flex items-center gap-1 rounded-md p-1 pl-1 pr-1 hover:bg-primary/5"
               key={el.name}
               href={`${
                 el.href
@@ -99,32 +97,19 @@ export function CategoriesSection() {
   if ((categories?.length ?? 0) === 0) return null;
 
   return (
-    <div className="categories container mx-auto pb-8 pt-8">
+    <div className="categories container mx-auto max-w-[872px] pb-8 pt-8">
       {!appConfig.hideCategoriesHeading && (
         <>
-          <h3 className="text-2xl font-bold">
+          <h3 className="mb-10 text-center text-2xl font-medium">
             {t('search.categories_heading', {
               ns: 'dynamic',
               defaultValue: t('categories_title'),
             })}
           </h3>
-
-          <Separator className="mb-4 mt-4" />
         </>
       )}
 
-      <div
-        className={cn(
-          categories.length >= 4 &&
-            'grid-cols-1 justify-center sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
-          categories.length === 3 &&
-            'mx-auto max-w-fit grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
-          categories.length === 2 &&
-            'mx-auto max-w-fit grid-cols-1 sm:grid-cols-2',
-          categories.length === 1 && 'mx-auto max-w-fit grid-cols-1',
-          'grid gap-4',
-        )}
-      >
+      <div className="grid grid-cols-1 justify-center gap-10 sm:grid-cols-2 lg:grid-cols-3">
         {categories.map((el: any) => (
           <Category key={el.name} {...el} />
         ))}

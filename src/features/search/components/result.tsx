@@ -2,7 +2,6 @@ import { buttonVariants } from '@/shared/components/ui/button';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -14,7 +13,7 @@ import {
   getGoogleMapsDestinationUrl,
 } from '@/shared/lib/utils';
 import { ResultType } from '@/shared/store/results';
-import { Globe, LinkIcon, MapPin, Navigation, Phone, Pin } from 'lucide-react';
+import { LinkIcon, MapPin, Phone, Pin } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 import { Badge } from '@/shared/components/ui/badge';
 import { useAtomValue } from 'jotai';
@@ -45,7 +44,6 @@ export function Result({ data }: ResultProps) {
   const { t } = useTranslation();
   const coords = useAtomValue(userCoordinatesAtom);
   const searchCoords = useAtomValue(searchCoordinatesAtom);
-  const showServiceName = useFlag('showSearchAndResourceServiceName');
 
   const distance =
     data?.location?.coordinates && (coords?.length ?? 0) === 2
@@ -68,7 +66,7 @@ export function Result({ data }: ResultProps) {
                 <div className="flex items-center justify-start">
                   {data.priority === 1 && (
                     <Badge variant="outline" className="flex gap-1">
-                      Pinned
+                      {t('pinned', { ns: 'page-search' })}
                       <Pin className="size-4" />
                     </Badge>
                   )}
@@ -90,23 +88,28 @@ export function Result({ data }: ResultProps) {
         </CardTitle>
         <CardContent className="flex flex-col gap-3">
           {data.address ? (
-            <div className="flex max-w-full items-center gap-1">
-              <MapPin className="size-4 shrink-0 text-primary" />
-              <CopyBadge
-                className="text-sm font-normal"
-                text={data.address}
-                href={getGoogleMapsDestinationUrl(
-                  coords,
-                  data?.location?.coordinates,
-                )}
-              >
-                {data.address}
-              </CopyBadge>
+            <div className="flex justify-between gap-3">
+              <div className="flex max-w-full items-center gap-1">
+                <MapPin className="mt-[2px] size-4 shrink-0 self-start text-primary" />
+                <CopyBadge
+                  className="max-w-[240px] text-sm font-normal"
+                  text={data.address}
+                  href={getGoogleMapsDestinationUrl(
+                    coords,
+                    data?.location?.coordinates,
+                  )}
+                >
+                  {data.address}
+                </CopyBadge>
+              </div>
+              {distance !== null && (
+                <p className="whitespace-nowrap text-sm">{`${distance.toFixed(1)} ${t('search.miles_short', { ns: 'common' })}`}</p>
+              )}
             </div>
           ) : (
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger>
+                <TooltipTrigger className="w-fit">
                   <div className="flex max-w-full items-center gap-1">
                     <MapPin className="size-4 shrink-0 text-primary" />
                     <p className="truncate text-sm font-normal">
@@ -142,8 +145,9 @@ export function Result({ data }: ResultProps) {
                 href={data.website}
                 text={data.website}
                 target="_blank"
+                truncate
               >
-                <p className="truncate">{data.website}</p>
+                {data.website}
               </CopyBadge>
             </div>
           )}

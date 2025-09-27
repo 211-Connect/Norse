@@ -2,36 +2,61 @@ import { distanceBetweenCoordsInKm } from '@/shared/lib/utils';
 import { Alert as AlertComponent } from '@/shared/components/ui/alert';
 import { useTranslation } from 'next-i18next';
 import { useMemo } from 'react';
-import { Accessibility, BusFront, TriangleAlert } from 'lucide-react';
+import {
+  Accessibility,
+  BusFront,
+  Clock,
+  FileCheck2,
+  TriangleAlert,
+} from 'lucide-react';
 import { parseHtml } from '@/shared/lib/parse-html';
 import { useAtomValue } from 'jotai';
 import { userCoordinatesAtom } from '@/shared/store/search';
 
 import { LabeledElement } from './labeled-element';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/shared/components/ui/tooltip';
 
 export function MainSection({ resource }) {
   const { t } = useTranslation('page-resource');
 
   const coords = useAtomValue(userCoordinatesAtom);
 
-  const { accessibility, addresses, eligibilities, location, transportation } =
-    useMemo(() => {
-      const {
-        accessibility,
-        addresses,
-        eligibilities,
-        location,
-        transportation,
-      } = resource ?? {};
+  console.log(resource);
 
-      return {
-        accessibility,
-        addresses,
-        eligibilities,
-        location,
-        transportation,
-      };
-    }, [resource]);
+  const {
+    accessibility,
+    addresses,
+    eligibilities,
+    hours,
+    location,
+    requiredDocuments,
+    transportation,
+  } = useMemo(() => {
+    const {
+      accessibility,
+      addresses,
+      eligibilities,
+      hours,
+      location,
+      requiredDocuments,
+      transportation,
+    } = resource ?? {};
+
+    return {
+      accessibility,
+      addresses,
+      eligibilities,
+      hours,
+      location,
+      requiredDocuments,
+      transportation,
+    };
+  }, [resource]);
 
   const address = useMemo(() => {
     return (addresses ?? []).find(({ type }) => type === 'physical');
@@ -51,10 +76,12 @@ export function MainSection({ resource }) {
   // HARDCODED
   const alert = 'Temporary closed Dec-Jan.';
 
+  console.log(address);
+
   return (
     <>
       <div className="flex flex-col gap-3">
-        {address && (
+        {address ? (
           <div className="flex items-center justify-between gap-1">
             <p className="text-base">
               {`${address.address_1},${address.address_2 ? ` ${address.address_2},` : ''} ${address.city}, ${address.stateProvince} ${address.postalCode}`}
@@ -66,6 +93,19 @@ export function MainSection({ resource }) {
               </p>
             )}
           </div>
+        ) : (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger className="w-fit">
+                <p className="truncate text-sm font-normal">
+                  {t('search.address_unavailable', { ns: 'common' })}
+                </p>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-64" side="right">
+                <p>{t('search.confidential_address', { ns: 'common' })}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         )}
         {alert && (
           <AlertComponent className="rounded-lg bg-primary/5 p-3">
@@ -77,7 +117,7 @@ export function MainSection({ resource }) {
         )}
         {transportation && (
           <div className="flex items-center gap-[6px]">
-            <BusFront className="text-positive size-4" />
+            <BusFront className="size-4 text-positive" />
             <p className="text-sm">
               {parseHtml(transportation, {
                 parseLineBreaks: true,
@@ -87,7 +127,7 @@ export function MainSection({ resource }) {
         )}
         {accessibility && (
           <div className="flex items-center gap-[6px]">
-            <Accessibility className="text-custom-blue size-4" />
+            <Accessibility className="size-4 text-custom-blue" />
             <p className="text-sm">
               {parseHtml(accessibility, {
                 parseLineBreaks: true,
@@ -97,13 +137,29 @@ export function MainSection({ resource }) {
         )}
       </div>
       {eligibilities && (
-        <div className="mt-8">
+        <div className="mt-8 whitespace-pre-line">
           <LabeledElement
             Icon={TriangleAlert}
             IconCustomClasses="text-destructive"
             title={t('eligibility')}
           >
             {parseHtml(eligibilities)}
+          </LabeledElement>
+        </div>
+      )}
+      {requiredDocuments && requiredDocuments.length > 0 && (
+        <div className="mt-8 whitespace-pre-line">
+          <LabeledElement Icon={FileCheck2} title={t('required_documents')}>
+            {requiredDocuments
+              .map((document) => document.replaceAll(';', '\n'))
+              .join('\n')}
+          </LabeledElement>
+        </div>
+      )}
+      {hours && (
+        <div className="mt-8 whitespace-pre-line">
+          <LabeledElement Icon={Clock} title={t('hours')}>
+            {hours.replaceAll(';', '\n')}
           </LabeledElement>
         </div>
       )}

@@ -24,11 +24,9 @@ export function HomeView() {
       </Head>
 
       <HeroSection />
-      <div className="bg-primary/5">
-        <Alert />
+      <Alert />
 
-        <CategoriesSection />
-      </div>
+      <CategoriesSection />
 
       <DataProviders />
     </TourProvider>

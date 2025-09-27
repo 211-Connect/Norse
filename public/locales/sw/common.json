@@ -3,8 +3,9 @@
     "home": "Nyumbani",
     "favorites": "Vipendwa",
     "log_out": "Ingia nje",
-    "submit_feedback": "Wasilisha maoni",
-    "language_select_label": "Chagua lugha ya kubadilisha lugha ya tovuti"
+    "language_select_label": "Chagua lugha ya kubadilisha lugha ya tovuti",
+    "my_stuff": "Mambo yangu",
+    "search": "Tafuta"
   },
   "favorites": {
     "added_to_list": "Imeongezwa kwenye orodha",
@@ -39,7 +40,7 @@
     "geocoding_error": "Hitilafu ya Geocoding",
     "geocoding_unsupported": "Geolocation haitegemezwi na kivinjari chako",
     "geocoding_unable_to_retrieve": "Haiwezi kurejesha eneo lako. Tafadhali angalia mipangilio ya eneo la kivinjari chako na ujaribu tena.",
-    "categories": "Kategoria"
+    "categories": "Mada"
   },
   "call_to_action": {
     "call": "Wito",
@@ -130,6 +131,6 @@
     "provided_by": "Data iliyotolewa na"
   },
   "footer": {
-    "copyright": "Haki zote zimehifadhiwa."
+    "copyright": "© Haki miliki {{text}}"
   }
 }

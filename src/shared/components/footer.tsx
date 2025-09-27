@@ -1,61 +1,60 @@
 import { useTranslation } from 'next-i18next';
 import { useAppConfig } from '../hooks/use-app-config';
-import { cn } from '../lib/utils';
 import { Link } from './link';
 import { DotIcon } from 'lucide-react';
+import { Button } from './ui/button';
+import { parseHtml } from '../lib/parse-html';
 
-type Props = {
-  fullWidth?: boolean;
-};
-
-export function Footer(props: Props) {
+export function Footer() {
   const appConfig = useAppConfig();
   const { t } = useTranslation('common');
 
-  return (
-    <footer className="bg-white">
-      <div
-        className={cn(
-          props.fullWidth ? '100%' : 'container mx-auto',
-          'flex items-center justify-center pb-4 pt-4',
-        )}
-      >
-        <div className="flex flex-col items-center justify-center gap-2">
-          <p>
-            &copy; {new Date().getFullYear()}{' '}
-            {appConfig?.brand?.copyright || appConfig?.brand?.name}.{' '}
-            {t('footer.copyright')}
-          </p>
+  const brand = appConfig?.brand?.copyright || appConfig?.brand?.name;
 
-          <div className="flex items-center gap-4 print:hidden">
-            {appConfig?.pages?.privacyPolicy?.enabled && (
+  return (
+    <footer className="container pb-3 pt-12">
+      {appConfig.footer?.disclaimer && (
+        <p className="mb-3 text-sm">{parseHtml(appConfig.footer.disclaimer)}</p>
+      )}
+      <div className="flex items-center gap-3 text-xs font-medium">
+        <p>
+          {t('footer.copyright', {
+            text: `${new Date().getFullYear()}${brand ? ` ${brand}` : ''}`,
+          })}
+        </p>
+
+        <div className="flex flex-wrap items-center gap-3 print:hidden">
+          {appConfig?.pages?.privacyPolicy?.enabled && (
+            <Button variant="link">
               <Link href="/legal/privacy-policy">
                 {t('privacy_policy.title', {
                   ns: 'dynamic',
                 })}
               </Link>
-            )}
+            </Button>
+          )}
 
-            {appConfig?.pages?.termsOfUse?.enabled && (
-              <Link href="/legal/terms-of-use">
+          {appConfig?.pages?.termsOfUse?.enabled && (
+            <Button variant="link">
+              <Link className="!text-primary" href="/legal/terms-of-use">
                 {t('terms_of_use.title', {
                   ns: 'dynamic',
                 })}
               </Link>
-            )}
+            </Button>
+          )}
 
-            {appConfig?.menus?.footer?.map((el) => (
+          {appConfig?.menus?.footer?.map((el) => (
+            <Button key={el.name} variant="link">
               <Link
-                key={el.name}
-                className="flex items-center gap-1"
+                className="flex items-center gap-3 !text-primary"
                 target={el.target}
                 {...(el.href != null ? { href: el.href } : { href: '' })}
               >
-                <DotIcon className="size-4" />
                 {el.name}
               </Link>
-            ))}
-          </div>
+            </Button>
+          ))}
         </div>
       </div>
     </footer>

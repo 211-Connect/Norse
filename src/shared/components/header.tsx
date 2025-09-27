@@ -5,13 +5,13 @@ import { Fragment, useMemo, useState } from 'react';
 import { Link } from './link';
 import { useDisclosure } from '../hooks/use-disclosure';
 import { Button } from './ui/button';
-import { cn } from '../lib/utils';
 import {
   AlignJustifyIcon,
   ChevronDown,
   HomeIcon,
   LanguagesIcon,
   LogOut,
+  Search,
   UserRound,
 } from 'lucide-react';
 import {
@@ -41,11 +41,7 @@ import {
 } from './ui/dropdown';
 import { Card, CardContent } from './ui/card';
 
-type Props = {
-  fullWidth?: boolean;
-};
-
-export function Header(props: Props) {
+export function Header() {
   const [opened, { toggle }] = useDisclosure(false);
   const appConfig = useAppConfig();
   const session = useSession();
@@ -57,14 +53,32 @@ export function Header(props: Props) {
   const SITEMAP = useMemo(
     () => [
       <li key="0">
-        <Link href="/" className="flex items-center gap-1 hover:underline">
+        <Link
+          href={appConfig.header?.customHomeUrl || '/'}
+          className="flex items-center gap-1 hover:underline"
+        >
           <Button variant="outline" className="flex items-center gap-[5px]">
             <HomeIcon className="size-4" />
             {t('header.home')}
           </Button>
         </Link>
       </li>,
-      <Fragment key="5">
+      <Fragment key="1">
+        {appConfig.header?.searchUrl && (
+          <li>
+            <Link
+              href={appConfig.header.searchUrl}
+              className="flex items-center gap-1 hover:underline"
+            >
+              <Button variant="outline" className="flex items-center gap-[5px]">
+                <Search className="size-4" />
+                {t('header.search')}
+              </Button>
+            </Link>
+          </li>
+        )}
+      </Fragment>,
+      <Fragment key="2">
         {appConfig?.menus?.header &&
           appConfig.menus.header.length > 0 &&
           appConfig.menus.header.map((item) => {
@@ -133,23 +147,23 @@ export function Header(props: Props) {
           </li>
         )}
       </Fragment>,
-      <Fragment key="1">
+      <Fragment key="4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button className="flex items-center gap-[5px]" variant="outline">
               <UserRound className="size-4" />
-              My Stuff
+              {t('header.my_stuff')}
               <ChevronDown className="size-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="min-w-[143px]">
             <Card className="px-0 py-[10px]">
               <CardContent>
-                <DropdownMenuItem>
+                <DropdownMenuItem className="!outline-none [&:focus-visible>*]:bg-accent">
                   <Button
                     className="w-full justify-start px-[10px] text-primary hover:text-primary"
                     variant="ghost"
-                    onClick={(e) => {
+                    onClick={() => {
                       if (session.status === 'unauthenticated') {
                         setTimeout(() => {
                           setDialogStore((prev) => ({
@@ -173,12 +187,12 @@ export function Header(props: Props) {
           </DropdownMenuContent>
         </DropdownMenu>
       </Fragment>,
-      <Fragment key="4">
-        {(appConfig?.safeExitUrl || true) && (
+      <Fragment key="5">
+        {appConfig?.safeExit?.enabled && (
           <li>
-            <Link target="_blank" href={appConfig.safeExitUrl ?? '#'}>
+            <Link target="_blank" href={appConfig.safeExit.url}>
               <Button className="flex items-center gap-1" variant="outline">
-                Safe Exit
+                {appConfig.safeExit.text}
                 <LogOut className="size-4" />
               </Button>
             </Link>
@@ -191,12 +205,7 @@ export function Header(props: Props) {
 
   return (
     <header id={HEADER_ID} className="border-b bg-white print:hidden">
-      <div
-        className={cn(
-          props.fullWidth ? '100%' : 'container mx-auto',
-          'flex items-center justify-between py-3',
-        )}
-      >
+      <div className="container flex items-center justify-between py-3 pl-3 pr-6">
         <div className="flex max-h-full w-full max-w-96">
           <Link
             href="/"

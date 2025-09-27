@@ -3,8 +3,9 @@
     "home": "Haku",
     "favorites": "favorites",
     "log_out": "Log out",
-    "submit_feedback": "Gudbi warcelin",
-    "language_select_label": "Dooro luqad si ay u beddelaan luqada bogga"
+    "language_select_label": "Dooro luqad si ay u beddelaan luqada bogga",
+    "my_stuff": "My stuff",
+    "search": "Search"
   },
   "favorites": {
     "added_to_list": "Ku daray liiska",
@@ -39,7 +40,7 @@
     "geocoding_error": "Qalad Geocoding",
     "geocoding_unsupported": "Geolocation ma taageerayaan aad browser",
     "geocoding_unable_to_retrieve": "Awoodi kari la'aanta inaad soo celiso goobtaada. Fadlan hubi goobaha goobta biraawsarkaaga oo mar kale isku day.",
-    "categories": "Category: Category"
+    "categories": "Mawduucyada"
   },
   "call_to_action": {
     "call": "Wac",
@@ -130,6 +131,6 @@
     "provided_by": "Macluumaadka ay bixiyaan"
   },
   "footer": {
-    "copyright": "Dhamaan xuquuqda waa la keydiyay."
+    "copyright": "© Xuquuqda daabacaadda {{text}}"
   }
 }

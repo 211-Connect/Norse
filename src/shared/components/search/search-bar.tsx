@@ -46,7 +46,7 @@ export function SearchBar() {
       ...reducedCategories
         .map((option) => ({
           Icon: SearchIcon,
-          group: 'Topics',
+          group: t('search.categories'),
           value: option.name,
         }))
         .filter((option) =>

@@ -43,6 +43,9 @@ const query = qs.stringify({
         'dataProviders.logo',
         'radiusSelectValues',
         'sms',
+        'safeExit',
+        'header',
+        'footer',
         'localizations',
         'localizations.logo',
         'localizations.favicon',
@@ -59,6 +62,9 @@ const query = qs.stringify({
         'localizations.resourcePage',
         'localizations.privacyPolicyPage',
         'localizations.termsOfUsePage',
+        'localizations.safeExit',
+        'localizations.header',
+        'localizations.footer',
       ],
     },
     category: {
@@ -162,6 +168,13 @@ module.exports = function createFromStrapi(dir) {
       categories: [],
       suggestions: [],
       sms: appConfig?.sms,
+      translatedConfig: {
+        en: {
+          safeExit: appConfig?.safeExit,
+          header: appConfig?.header,
+          footer: appConfig?.footer,
+        },
+      },
     };
 
     const translations = {
@@ -256,6 +269,10 @@ module.exports = function createFromStrapi(dir) {
       }
 
       translationFile[data.locale] = translations;
+      newAppConfig.translatedConfig[data.locale] = {
+        safeExit: data?.safeExit,
+        header: data?.header,
+      };
     }
 
     const categoryFiles = {};

@@ -130,10 +130,9 @@ export function FilterPanel() {
   }, [filterKeys]);
 
   return (
-    <div className="p-[10px]">
+    <div className="min-w-[340px] p-[10px]">
       <div className="flex flex-col print:hidden">
         <MainSearchLayout />
-        <TaxonomyContainer />
       </div>
       {filterKeys.length > 0 && (
         <>

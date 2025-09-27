@@ -13,7 +13,7 @@ export function LabeledElement({
         <Icon className={cn('size-4', IconCustomClasses)} />
         <Label>{title}</Label>
       </div>
-      <div className="ml-[22px]">{children}</div>
+      <div className="ml-[22px] text-sm">{children}</div>
     </div>
   );
 }

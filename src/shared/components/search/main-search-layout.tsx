@@ -1,5 +1,5 @@
 import { SearchIcon } from 'lucide-react';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Input } from '../ui/input';
 import { useTranslation } from 'next-i18next';
 import { SearchDialog } from './search-dialog';
@@ -13,12 +13,21 @@ export function MainSearchLayout() {
 
   const [dialogOpened, setDialogOpened] = useState(false);
 
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      setDialogOpened(true);
+    }
+  }, []);
+
   return (
     <>
       <div className="relative">
         <Input
           onClick={() => setDialogOpened(true)}
-          className="h-10 rounded-lg border-[#00000080] bg-white pl-[44px]"
+          onKeyDown={handleKeyDown}
+          readOnly
+          className="h-10 rounded-lg border-[#00000080] bg-white pl-[44px] focus:border-primary"
           placeholder={t('search.query_placeholder') || ''}
           value={searchTerm}
         />
