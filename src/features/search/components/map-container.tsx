@@ -55,8 +55,7 @@ export function MapContainer() {
             id={result.id}
             linkText={t('learn_more')}
             name={result.name}
-            address={result.address}
-            labels={['Waivers Accepted']}
+            address={result.address} // TODO: Add Waiver
           />
         ),
       };

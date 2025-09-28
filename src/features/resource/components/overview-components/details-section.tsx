@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'next-i18next';
-import { DollarSign, Edit, Languages, Map } from 'lucide-react';
+import { DollarSign, Edit, Handshake, Languages, Map } from 'lucide-react';
 import { parseHtml } from '@/shared/lib/parse-html';
 
 import { LabeledElement } from './labeled-element';
@@ -12,6 +12,7 @@ export function DetailsSection({ resource }) {
   const {
     applicationProcess,
     fees,
+    interpretationServices,
     languages,
     serviceAreaName,
     serviceAreaDescription,
@@ -19,6 +20,7 @@ export function DetailsSection({ resource }) {
     const {
       applicationProcess,
       fees,
+      interpretationServices,
       languages = [],
       serviceAreaName,
       serviceAreaDescription,
@@ -26,6 +28,7 @@ export function DetailsSection({ resource }) {
     return {
       applicationProcess,
       fees,
+      interpretationServices,
       languages,
       serviceAreaName,
       serviceAreaDescription,
@@ -35,6 +38,7 @@ export function DetailsSection({ resource }) {
   const shouldRender =
     applicationProcess ||
     fees ||
+    interpretationServices ||
     languages.length > 0 ||
     serviceAreaName ||
     serviceAreaDescription;
@@ -49,6 +53,15 @@ export function DetailsSection({ resource }) {
         {languages.length > 0 && (
           <LabeledElement Icon={Languages} title={t('languages')}>
             <p className="text-sm">{languages.join(', ')}</p>
+          </LabeledElement>
+        )}
+        {interpretationServices && (
+          <LabeledElement Icon={Handshake} title={t('interpretation_services')}>
+            <p className="whitespace-break-spaces text-sm">
+              {parseHtml(interpretationServices, {
+                parseLineBreaks: true,
+              })}
+            </p>
           </LabeledElement>
         )}
         {applicationProcess && (

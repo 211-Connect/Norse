@@ -16,7 +16,7 @@ export function Overview({ resource }) {
       <div className="flex-1">
         <Card className="print:border-none print:shadow-none">
           <CardHeader>
-            <Badges className="mb-3" items={['Waiver']} /> {/* HARDCODED */}
+            <Badges className="mb-3" items={[]} /> {/* TODO: Add Waiver */}
             <CardTitle>{resource.name}</CardTitle>
           </CardHeader>
           <CardContent>

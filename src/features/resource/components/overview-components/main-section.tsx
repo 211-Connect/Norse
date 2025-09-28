@@ -22,7 +22,7 @@ import {
 } from '@/shared/components/ui/tooltip';
 
 export function MainSection({ resource }) {
-  const { t } = useTranslation('page-resource');
+  const { i18n, t } = useTranslation('page-resource');
 
   const coords = useAtomValue(userCoordinatesAtom);
 
@@ -36,6 +36,7 @@ export function MainSection({ resource }) {
     location,
     requiredDocuments,
     transportation,
+    translations,
   } = useMemo(() => {
     const {
       accessibility,
@@ -45,6 +46,7 @@ export function MainSection({ resource }) {
       location,
       requiredDocuments,
       transportation,
+      translations,
     } = resource ?? {};
 
     return {
@@ -55,6 +57,7 @@ export function MainSection({ resource }) {
       location,
       requiredDocuments,
       transportation,
+      translations,
     };
   }, [resource]);
 
@@ -73,10 +76,10 @@ export function MainSection({ resource }) {
     );
   }, [coords, location.coordinates]);
 
-  // HARDCODED
-  const alert = 'Temporary closed Dec-Jan.';
-
-  console.log(address);
+  const alert = useMemo(
+    () => translations?.[i18n.language]?.alert,
+    [i18n.language, translations],
+  );
 
   return (
     <>

@@ -53,7 +53,7 @@ export function Result({ data }: ResultProps) {
         )
       : null;
 
-  const labels = []; // HARDCODED
+  const labels = []; // TODO: Add Waiver
 
   return (
     <>
