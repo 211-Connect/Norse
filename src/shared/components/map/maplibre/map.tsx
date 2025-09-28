@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import mapLibreGl, {
   LngLatBounds,
   LngLatLike,
@@ -7,7 +7,6 @@ import mapLibreGl, {
 } from 'maplibre-gl';
 import { MAPLIBRE_STYLE_URL } from '@/shared/lib/constants';
 import { Protocol } from 'pmtiles';
-import { renderToStaticMarkup } from 'react-dom/server';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import {
   ServiceAreaGeoJSON,
@@ -15,6 +14,7 @@ import {
   getBoundsFromServiceArea,
   MarkerDef,
 } from '../map-shared';
+import { createPortal } from 'react-dom';
 
 type MapProps = {
   center?: [number, number];
@@ -42,6 +42,11 @@ export function Map({
   const mapLibreMap = useRef(null);
   const _markers = useRef(null);
 
+  const [activePopup, setActivePopup] = useState<{
+    element: HTMLElement;
+    popup: any;
+  } | null>(null);
+
   useEffect(() => {
     mapLibreMap.current = new mapLibreGl.Map({
       container: mapContainer.current as HTMLDivElement,
@@ -65,11 +70,24 @@ export function Map({
     _markers.current = markers.map((m) => {
       const marker = new Marker();
       if (m.popup) {
-        marker.setPopup(
-          new Popup({ closeButton: false, focusAfterOpen: false }).setHTML(
-            renderToStaticMarkup(m.popup),
-          ),
-        );
+        const popupDiv = document.createElement('div');
+        const popup = new Popup({
+          focusAfterOpen: false,
+          closeButton: false,
+        }).setDOMContent(popupDiv);
+
+        popup.on('open', () => {
+          setActivePopup({
+            element: popupDiv,
+            popup: m.popup,
+          });
+        });
+
+        popup.on('close', () => {
+          setActivePopup(null);
+        });
+
+        marker.setPopup(popup);
       }
 
       // Check if coordinates are valid before doing anything with them
@@ -88,6 +106,14 @@ export function Map({
           setTimeout(() => {
             const listElement = document.getElementById(m.id);
             listElement?.scrollIntoView();
+          });
+          _markers.current?.forEach((otherMarker) => {
+            if (otherMarker !== marker) {
+              const otherPopup = otherMarker.getPopup();
+              if (otherPopup && otherPopup.isOpen()) {
+                otherPopup.remove();
+              }
+            }
           });
         });
 
@@ -226,5 +252,10 @@ export function Map({
     return () => cleanup();
   }, [serviceArea, markers]);
 
-  return <div ref={mapContainer} className="h-full w-full"></div>;
+  return (
+    <div className="size-full">
+      <div ref={mapContainer} className="size-full"></div>
+      {activePopup && createPortal(activePopup.popup, activePopup.element)}
+    </div>
+  );
 }

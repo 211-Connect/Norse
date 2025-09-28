@@ -6,15 +6,13 @@ import { useAtomValue } from 'jotai';
 import { useEffect, useMemo, useState } from 'react';
 import { userCoordinatesAtom } from '@/shared/store/search';
 import { distanceBetweenCoordsInKm } from '@/shared/lib/utils';
-import { useTranslation } from 'next-i18next';
 
 import { MapPopup } from './map-popup';
+import { useRouter } from 'next/router';
 
 export function MapContainer() {
   const [_, y] = useWindowScroll();
   const [headerHeight, setHeaderHeight] = useState(0);
-
-  const { t } = useTranslation('page-search');
 
   const results = useAtomValue(resultsAtom);
   const coords = useAtomValue(userCoordinatesAtom);
@@ -48,19 +46,15 @@ export function MapContainer() {
         coordinates,
         popup: (
           <MapPopup
-            distance={
-              distance &&
-              `${distance.toFixed(1)} ${t('search.miles_short', { ns: 'common' })}`
-            }
+            distance={distance}
             id={result.id}
-            linkText={t('learn_more')}
             name={result.name}
             address={result.address} // TODO: Add Waiver
           />
         ),
       };
     });
-  }, [coords, results, t]);
+  }, [coords, results]);
 
   return (
     <div
