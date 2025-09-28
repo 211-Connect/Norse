@@ -1,4 +1,4 @@
-import { useSession } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { Fragment, useMemo, useState } from 'react';
@@ -218,6 +218,17 @@ export function Header() {
                   >
                     {t('header.favorites')}
                   </Button>
+                  {session.status === 'authenticated' && (
+                    <Button
+                      className="w-full justify-start px-[10px] text-primary hover:text-primary"
+                      variant="ghost"
+                      onClick={() => {
+                        signOut({ redirect: true, callbackUrl: '/' });
+                      }}
+                    >
+                      {t('header.log_out')}
+                    </Button>
+                  )}
                 </DropdownMenuItem>
               </CardContent>
             </Card>
