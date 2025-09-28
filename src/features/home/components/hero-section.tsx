@@ -27,14 +27,6 @@ export function HeroSection() {
         ),
       },
       {
-        selector: '.location-box',
-        content: (
-          <div className="flex flex-col gap-2">
-            <p>{t('tour.step_4.paragraph_1')}</p>
-          </div>
-        ),
-      },
-      {
         selector: '.categories',
         content: (
           <div className="flex flex-col gap-2">
@@ -45,20 +37,8 @@ export function HeroSection() {
       },
     ];
 
-    if (appConfig.contact.feedbackUrl) {
-      steps.push({
-        selector: '.feedback',
-        content: (
-          <div className="flex flex-col gap-2">
-            <p>{t('tour.step_3.paragraph_1')}</p>
-            <p>{t('tour.step_3.paragraph_2')}</p>
-          </div>
-        ),
-      });
-    }
-
     return steps;
-  }, [appConfig.contact.feedbackUrl, t]);
+  }, [t]);
 
   const enableTour = () => {
     createTourEvent(null);

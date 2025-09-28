@@ -13,15 +13,20 @@ import { Toaster } from '@/shared/components/ui/sonner';
 import { JotaiHydration } from '@/shared/components/jotai-hydration';
 import { GlobalDialogs } from '@/shared/components/global-dialogs/global-dialogs';
 import { fontSans } from '@/shared/styles/fonts';
+import { useRouter } from 'next/router';
 
 function App({
   Component,
   pageProps: { session, appConfig, flags, ...pageProps },
 }: AppProps) {
+  const router = useRouter();
+
+  const newLayoutEnabled = appConfig?.newLayout?.enabled;
   return (
     <div
       className={cn(
         'flex min-h-screen flex-col bg-primary/5 font-sans antialiased',
+        newLayoutEnabled && router.asPath === '/' && 'bg-white',
         fontSans.variable,
       )}
     >

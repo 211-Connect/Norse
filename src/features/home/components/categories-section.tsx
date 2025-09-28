@@ -3,8 +3,10 @@ import Image from 'next/image';
 import { Link } from '@/shared/components/link';
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { useCategories } from '@/shared/hooks/use-categories';
-import { ExternalLink } from 'lucide-react';
+import { ChevronLeft, ExternalLink } from 'lucide-react';
 import { useAppConfig } from '@/shared/hooks/use-app-config';
+import { cn } from '@/shared/lib/utils';
+import { Button } from '@/shared/components/ui/button';
 
 type Props = {
   index: string;
@@ -89,24 +91,40 @@ const Category = ({ image, name, href, target, subcategories }: Props) => {
   );
 };
 
-export function CategoriesSection() {
-  const { t } = useTranslation('page-home');
+export function CategoriesSection({
+  className = '',
+  backText,
+}: {
+  backText?: string;
+  className?: string;
+}) {
+  const { t } = useTranslation();
   const appConfig = useAppConfig();
   const categories = useCategories();
 
   if ((categories?.length ?? 0) === 0) return null;
 
   return (
-    <div className="categories container mx-auto max-w-[872px] pb-8 pt-8">
+    <div
+      className={cn('categories container mx-auto max-w-[872px]', className)}
+    >
       {!appConfig.hideCategoriesHeading && (
-        <>
-          <h3 className="mb-10 text-center text-2xl font-medium">
+        <div className="mb-10">
+          <h3 className="text-center text-2xl font-medium">
             {t('search.categories_heading', {
               ns: 'dynamic',
-              defaultValue: t('categories_title'),
+              defaultValue: t('search.categories', { ns: 'common' }),
             })}
           </h3>
-        </>
+          {backText && (
+            <Link href="/">
+              <Button variant="link" className="">
+                <ChevronLeft className="size-4" />
+                {backText}
+              </Button>
+            </Link>
+          )}
+        </div>
       )}
 
       <div className="grid grid-cols-1 justify-center gap-10 sm:grid-cols-2 lg:grid-cols-3">

@@ -21,5 +21,28 @@
       "paragraph_1": "Agregue su dirección aquí para encontrar los servicios disponibles en su vecindario. Esto nos ayuda a mostrarle solo las opciones que realmente llegan a su área."
     }
   },
-  "categories_title": "Temas"
+  "categories_title": "Temas",
+  "new_layout": {
+    "topics_section": {
+      "cta": "Explorar temas",
+      "title": "No estás seguro de por dónde empezar"
+    },
+    "other_ways_section": {
+      "list": {
+        "call": {
+          "subtitle": "Línea directa 24/7",
+          "title": "Llamar"
+        },
+        "chat": {
+          "subtitle": "Disponible en línea",
+          "title": "Chat"
+        },
+        "sms": {
+          "subtitle": "Texto: 211",
+          "title": "SMS"
+        }
+      },
+      "title": "También hay otras formas de pedir ayuda:"
+    }
+  }
 }

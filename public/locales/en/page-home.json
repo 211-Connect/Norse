@@ -21,5 +21,28 @@
       "paragraph_1": "Add your address here to find services available in your neighborhood. This helps us show you only the options that actually come to your area."
     }
   },
-  "categories_title": "Topics"
+  "categories_title": "Topics",
+  "new_layout": {
+    "topics_section": {
+      "cta": "Browse topics",
+      "title": "Not sure where to start"
+    },
+    "other_ways_section": {
+      "list": {
+        "call": {
+          "subtitle": "24/7 Hotline",
+          "title": "Call"
+        },
+        "chat": {
+          "subtitle": "Available Online",
+          "title": "Chat"
+        },
+        "sms": {
+          "subtitle": "Text: 211",
+          "title": "SMS"
+        }
+      },
+      "title": "There are other ways to ask for help too:"
+    }
+  }
 }

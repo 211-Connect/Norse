@@ -73,6 +73,13 @@ export type AppConfig = {
   sms?: {
     provider: 'Twilio';
   }[];
+  newLayout?: {
+    enabled?: boolean;
+    headerStart?: string;
+    headerEnd?: string;
+    heroUrl?: string;
+    logoUrl?: string;
+  };
   translatedConfig: {
     [locale: string]: {
       footer?: {

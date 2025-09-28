@@ -21,5 +21,28 @@
       "paragraph_1": "Ajoutez votre adresse ici pour trouver les services disponibles dans votre quartier. Cela nous permet de ne vous montrer que les options qui se présentent réellement dans votre région."
     }
   },
-  "categories_title": "Sujets"
+  "categories_title": "Sujets",
+  "new_layout": {
+    "topics_section": {
+      "cta": "Parcourir les sujets",
+      "title": "Vous ne savez pas par où commencer"
+    },
+    "other_ways_section": {
+      "list": {
+        "call": {
+          "subtitle": "Ligne d’assistance téléphonique 24h/24 et 7j/7",
+          "title": "Appeler"
+        },
+        "chat": {
+          "subtitle": "Disponible en ligne",
+          "title": "Chat"
+        },
+        "sms": {
+          "subtitle": "Texte : 211",
+          "title": "SMS"
+        }
+      },
+      "title": "Il existe également d’autres moyens de demander de l’aide :"
+    }
+  }
 }

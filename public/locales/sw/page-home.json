@@ -21,5 +21,28 @@
       "paragraph_1": "Ongeza anwani yako hapa ili kupata huduma zinazopatikana katika mtaa wako. Hii inatusaidia kukuonyesha chaguzi tu ambazo zinakuja kwenye eneo lako."
     }
   },
-  "categories_title": "Mawduucyada"
+  "categories_title": "Mawduucyada",
+  "new_layout": {
+    "topics_section": {
+      "cta": "Vinjari Mada",
+      "title": "Hujui wapi pa kuanza"
+    },
+    "other_ways_section": {
+      "list": {
+        "call": {
+          "subtitle": "Mstari wa msaada wa 24/7",
+          "title": "Piga simu"
+        },
+        "chat": {
+          "subtitle": "Inapatikana mtandaoni",
+          "title": "Chat"
+        },
+        "sms": {
+          "subtitle": "Nakala: 211",
+          "title": "SMS"
+        }
+      },
+      "title": "Kuna njia nyingine pia za kuomba msaada:"
+    }
+  }
 }

@@ -63,7 +63,7 @@ export function Result({ data }: ResultProps) {
             <CardHeader>
               <div className="flex justify-between">
                 {labels.length > 0 && <Badges items={labels} />}
-                <div className="flex items-center justify-start">
+                <div className="ml-auto flex items-center justify-start">
                   {data.priority === 1 && (
                     <Badge variant="outline" className="flex gap-1">
                       {t('pinned', { ns: 'page-search' })}

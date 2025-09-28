@@ -26,8 +26,6 @@ export function MainSection({ resource }) {
 
   const coords = useAtomValue(userCoordinatesAtom);
 
-  console.log(resource);
-
   const {
     accessibility,
     addresses,

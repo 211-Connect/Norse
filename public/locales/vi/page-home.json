@@ -21,5 +21,28 @@
       "paragraph_1": "Thêm địa chỉ của bạn ở đây để tìm các dịch vụ có sẵn trong khu vực lân cận của bạn. Điều này giúp chúng tôi chỉ hiển thị cho bạn các tùy chọn thực sự đến khu vực của bạn."
     }
   },
-  "categories_title": "Chủ đề"
+  "categories_title": "Chủ đề",
+  "new_layout": {
+    "topics_section": {
+      "cta": "Duyệt qua các chủ đề",
+      "title": "Không chắc bắt đầu từ đâu"
+    },
+    "other_ways_section": {
+      "list": {
+        "call": {
+          "subtitle": "Đường dây nóng 24/7",
+          "title": "Gọi điện"
+        },
+        "chat": {
+          "subtitle": "Có sẵn trực tuyến",
+          "title": "Trò chuyện"
+        },
+        "sms": {
+          "subtitle": "Văn bản: 211",
+          "title": "SMS"
+        }
+      },
+      "title": "Cũng có những cách khác để yêu cầu trợ giúp:"
+    }
+  }
 }

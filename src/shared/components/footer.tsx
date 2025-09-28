@@ -12,7 +12,7 @@ export function Footer() {
   const brand = appConfig?.brand?.copyright || appConfig?.brand?.name;
 
   return (
-    <footer className="container pb-3 pt-12">
+    <footer className="px-3 pb-3 pt-12">
       {appConfig.footer?.disclaimer && (
         <p className="mb-3 text-sm">{parseHtml(appConfig.footer.disclaimer)}</p>
       )}

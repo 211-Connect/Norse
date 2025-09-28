@@ -6,6 +6,7 @@ import { CategoriesSection } from '../components/categories-section';
 import { DataProviders } from '@/shared/components/data-providers';
 import { useAppConfig } from '@/shared/hooks/use-app-config';
 import Alert from '../components/alert';
+import { NewHomeContent } from '../components/new-home-content';
 
 export function HomeView() {
   const appConfig = useAppConfig();
@@ -23,12 +24,18 @@ export function HomeView() {
         <meta property="og:description" content={t('meta_description')} />
       </Head>
 
-      <HeroSection />
-      <Alert />
+      {appConfig?.newLayout?.enabled ? (
+        <NewHomeContent />
+      ) : (
+        <>
+          <HeroSection />
+          <Alert />
 
-      <CategoriesSection />
+          <CategoriesSection className="py-8" />
 
-      <DataProviders />
+          <DataProviders />
+        </>
+      )}
     </TourProvider>
   );
 }

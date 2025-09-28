@@ -46,6 +46,10 @@ const query = qs.stringify({
         'safeExit',
         'header',
         'footer',
+        'newLayout',
+        'newLayout.logo',
+        'newLayout.hero',
+        'topicsPage',
         'localizations',
         'localizations.logo',
         'localizations.favicon',
@@ -65,6 +69,7 @@ const query = qs.stringify({
         'localizations.safeExit',
         'localizations.header',
         'localizations.footer',
+        'localizations.topicsPage',
       ],
     },
     category: {
@@ -118,6 +123,16 @@ module.exports = function createFromStrapi(dir) {
     const heroUrl = appConfig.hero.data.attributes.url;
     const openGraphUrl = appConfig.openGraph.data.attributes.url;
 
+    const newLayoutLogoUrl = appConfig?.newLayout?.logo?.data?.attributes?.url;
+    const newLayoutHeroUrl = appConfig?.newLayout?.hero?.data?.attributes?.url;
+    const newLayout = appConfig?.newLayout && {
+      enabled: appConfig.newLayout.enabled,
+      headerStart: appConfig.newLayout.headerStart,
+      headerEnd: appConfig.newLayout.headerEnd,
+      logoUrl: newLayoutLogoUrl,
+      heroUrl: newLayoutHeroUrl,
+    };
+
     const translationFile = {
       en: {},
     };
@@ -168,6 +183,7 @@ module.exports = function createFromStrapi(dir) {
       categories: [],
       suggestions: [],
       sms: appConfig?.sms,
+      newLayout,
       translatedConfig: {
         en: {
           safeExit: appConfig?.safeExit,
@@ -192,6 +208,7 @@ module.exports = function createFromStrapi(dir) {
       'privacy_policy.content': appConfig?.privacyPolicyPage?.content,
       'terms_of_use.title': appConfig?.termsOfUsePage?.title ?? 'Terms of Use',
       'terms_of_use.content': appConfig?.termsOfUsePage?.content,
+      'topics_page.backText': appConfig?.topicsPage?.backText,
     };
 
     if (appConfig?.customCategoriesHeading) {
@@ -257,6 +274,7 @@ module.exports = function createFromStrapi(dir) {
         'privacy_policy.content': data?.privacyPolicyPage?.content,
         'terms_of_use.title': data?.termsOfUsePage?.title,
         'terms_of_use.content': data?.termsOfUsePage?.content,
+        'topics_page.backText': data?.topicsPage?.backText,
       };
 
       if (data?.customCategoriesHeading) {

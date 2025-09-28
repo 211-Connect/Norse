@@ -21,5 +21,28 @@
       "paragraph_1": "Ku dar cinwaankaaga si aad uga hesho adeegyo laga heli karo xaafadaada. Tani waxay naga caawineysaa inaan ku tusno kaliya fursadaha dhabta ah ee ku yimaada degaankaaga."
     }
   },
-  "categories_title": "Mawduucyada"
+  "categories_title": "Mawduucyada",
+  "new_layout": {
+    "topics_section": {
+      "cta": "Dulmar mawduucyada",
+      "title": "Ma hubtid meesha laga bilaabo"
+    },
+    "other_ways_section": {
+      "list": {
+        "call": {
+          "subtitle": "Xariirka tooska ah ee 24/7",
+          "title": "Wac"
+        },
+        "chat": {
+          "subtitle": "Waxaa laga heli karaa khadka tooska ah",
+          "title": "Sheekeysi"
+        },
+        "sms": {
+          "subtitle": "Text: 211",
+          "title": "SMS"
+        }
+      },
+      "title": "Waxaa jira siyaabo kale oo lagu weydiisto caawimaad sidoo kale:"
+    }
+  }
 }

@@ -17,6 +17,8 @@ import { Button } from '@/shared/components/ui/button';
 import { useEffect } from 'react';
 import { MainSearchLayout } from '@/shared/components/search/main-search-layout';
 import { TaxonomyContainer } from './taxonomy-container';
+import { cn } from '@/shared/lib/utils';
+import { Filter } from 'lucide-react';
 
 const Filters = ({ filters, filterKeys }) => {
   const { t } = useTranslation();
@@ -40,7 +42,7 @@ const Filters = ({ filters, filterKeys }) => {
   if (filterKeys.length === 0) return null;
 
   return (
-    <div className="p-6">
+    <div className="py-5">
       <div className="flex items-center justify-between">
         <h3 className="font-bold">{t('filters', 'Filters')}</h3>
         <Button variant="ghost" size="sm" onClick={clearFilters}>
@@ -60,7 +62,7 @@ const Filters = ({ filters, filterKeys }) => {
 
           return (
             <div key={key} className="flex flex-col gap-1">
-              <h3 className="font-semibold">{heading}</h3>
+              <h3 className="font-medium">{heading}</h3>
               <div className="flex flex-col gap-2">
                 {filter.buckets.map((b) => (
                   <div
@@ -106,7 +108,9 @@ const Filters = ({ filters, filterKeys }) => {
                       {b.key}
                     </label>
 
-                    <Badge variant="outline">{b.doc_count}</Badge>
+                    <Badge className="bg-[rgba(0,0,0,0.03)]" variant="outline">
+                      {b.doc_count}
+                    </Badge>
                   </div>
                 ))}
               </div>
@@ -130,13 +134,25 @@ export function FilterPanel() {
   }, [filterKeys]);
 
   return (
-    <div className="min-w-[340px] p-[10px]">
-      <div className="flex flex-col print:hidden">
-        <MainSearchLayout />
+    <div className="w-full p-[10px] pl-[20px] xl:max-w-[340px]">
+      <div className="flex items-center print:hidden">
+        <MainSearchLayout className="flex-1" />
+        <Button
+          size="sm"
+          variant="ghost"
+          className={cn(
+            filterKeys.length > 0 ? 'flex xl:hidden' : 'hidden',
+            'gap-1',
+          )}
+          onClick={() => setFiltersOpen(true)}
+        >
+          <Filter className="size-4" />
+          Filter
+        </Button>
       </div>
       {filterKeys.length > 0 && (
         <>
-          <div className="hidden w-full max-w-72 bg-white xl:block print:hidden">
+          <div className="hidden w-full xl:block print:hidden">
             <Filters filters={filters} filterKeys={filterKeys} />
           </div>
           <Sheet onOpenChange={setFiltersOpen} open={filtersOpen}>

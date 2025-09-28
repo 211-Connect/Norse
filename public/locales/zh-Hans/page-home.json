@@ -21,5 +21,28 @@
       "paragraph_1": "在此处添加您的地址以查找您所在地区可用的服务。这有助于我们仅向您显示您所在地区实际出现的选项。"
     }
   },
-  "categories_title": "主题"
+  "categories_title": "主题",
+  "new_layout": {
+    "topics_section": {
+      "cta": "浏览主题",
+      "title": "不确定从哪里开始"
+    },
+    "other_ways_section": {
+      "list": {
+        "call": {
+          "subtitle": "全天候热线",
+          "title": "打电话"
+        },
+        "chat": {
+          "subtitle": "在线提供",
+          "title": "聊天"
+        },
+        "sms": {
+          "subtitle": "短信：211",
+          "title": "短信"
+        }
+      },
+      "title": "还有其他请求帮助的方式："
+    }
+  }
 }

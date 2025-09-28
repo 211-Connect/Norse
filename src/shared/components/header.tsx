@@ -40,6 +40,7 @@ import {
   DropdownMenuItem,
 } from './ui/dropdown';
 import { Card, CardContent } from './ui/card';
+import { cn } from '../lib/utils';
 
 export function Header() {
   const [opened, { toggle }] = useDisclosure(false);
@@ -50,6 +51,16 @@ export function Header() {
   const setDialogStore = useSetAtom(dialogsAtom);
   const [value, setValue] = useState(router.locale);
 
+  const newLayoutEnabled = useMemo(
+    () => appConfig?.newLayout?.enabled,
+    [appConfig],
+  );
+
+  const logoUrl = useMemo(
+    () => appConfig?.newLayout?.logoUrl || appConfig?.brand?.logoUrl,
+    [appConfig],
+  );
+
   const SITEMAP = useMemo(
     () => [
       <li key="0">
@@ -57,7 +68,13 @@ export function Header() {
           href={appConfig.header?.customHomeUrl || '/'}
           className="flex items-center gap-1 hover:underline"
         >
-          <Button variant="outline" className="flex items-center gap-[5px]">
+          <Button
+            variant="outline"
+            className={cn(
+              'flex items-center gap-[5px]',
+              newLayoutEnabled && '!bg-white',
+            )}
+          >
             <HomeIcon className="size-4" />
             {t('header.home')}
           </Button>
@@ -70,7 +87,13 @@ export function Header() {
               href={appConfig.header.searchUrl}
               className="flex items-center gap-1 hover:underline"
             >
-              <Button variant="outline" className="flex items-center gap-[5px]">
+              <Button
+                variant="outline"
+                className={cn(
+                  'flex items-center gap-[5px]',
+                  newLayoutEnabled && '!bg-white',
+                )}
+              >
                 <Search className="size-4" />
                 {t('header.search')}
               </Button>
@@ -91,7 +114,12 @@ export function Header() {
                   target={item.target}
                   {...(item.href != null ? { href: item.href } : { href: '' })}
                 >
-                  <Button variant="outline">{item.name}</Button>
+                  <Button
+                    variant="outline"
+                    className={cn(newLayoutEnabled && '!bg-white')}
+                  >
+                    {item.name}
+                  </Button>
                 </Link>
               </li>
             );
@@ -113,7 +141,10 @@ export function Header() {
               }}
             >
               <SelectTrigger
-                className="flex min-w-[140px] items-center gap-[5px]"
+                className={cn(
+                  'flex w-auto min-w-[140px] items-center gap-[5px]',
+                  newLayoutEnabled && '!bg-white',
+                )}
                 aria-label={t('header.language_select_label')}
               >
                 <div className="flex items-center gap-[5px] overflow-hidden">
@@ -150,7 +181,13 @@ export function Header() {
       <Fragment key="4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button className="flex items-center gap-[5px]" variant="outline">
+            <Button
+              className={cn(
+                'flex items-center gap-[5px]',
+                newLayoutEnabled && '!bg-white',
+              )}
+              variant="outline"
+            >
               <UserRound className="size-4" />
               {t('header.my_stuff')}
               <ChevronDown className="size-4" />
@@ -200,20 +237,53 @@ export function Header() {
         )}
       </Fragment>,
     ],
-    [session.status, t, router, appConfig, setDialogStore, value],
+    [
+      appConfig.header?.customHomeUrl,
+      appConfig.header?.searchUrl,
+      appConfig.menus.header,
+      appConfig.safeExit?.enabled,
+      appConfig.safeExit?.url,
+      appConfig.safeExit?.text,
+      newLayoutEnabled,
+      t,
+      router,
+      value,
+      session.status,
+      setDialogStore,
+    ],
   );
 
   return (
-    <header id={HEADER_ID} className="border-b bg-white print:hidden">
-      <div className="container flex items-center justify-between py-3 pl-3 pr-6">
-        <div className="flex max-h-full w-full max-w-96">
+    <header
+      id={HEADER_ID}
+      className={cn(
+        'px-3 print:hidden',
+        newLayoutEnabled ? 'py-[18px] lg:p-8' : 'border-b bg-white',
+      )}
+    >
+      <div
+        className={cn(
+          'relative flex items-center justify-between',
+          newLayoutEnabled
+            ? 'from-header-start to-header-end rounded-xl bg-gradient-to-r p-6'
+            : 'py-3 pr-6',
+        )}
+      >
+        <div
+          className={cn(
+            'flex',
+            newLayoutEnabled
+              ? 'absolute -left-3 -top-[18px]'
+              : 'max-h-full w-full max-w-96',
+          )}
+        >
           <Link
             href="/"
             aria-label={t('header.home') as string}
             className="max-h-full"
           >
             <img
-              src={appConfig?.brand?.logoUrl}
+              src={logoUrl}
               alt={t('header.home') as string}
               className="h-[80px] max-h-full w-auto"
             />
@@ -227,7 +297,9 @@ export function Header() {
         <div className="flex w-full justify-end lg:hidden">
           <Sheet open={opened} onOpenChange={toggle}>
             <SheetTrigger aria-label="Toggle navigation menu">
-              <AlignJustifyIcon className="size-8" />
+              <AlignJustifyIcon
+                className={cn('size-8', newLayoutEnabled && 'text-white')}
+              />
             </SheetTrigger>
             <SheetContent side="left">
               <SheetHeader>
@@ -246,7 +318,9 @@ export function Header() {
                 </SheetTitle>
                 <SheetDescription />
               </SheetHeader>
-              <ul className="flex flex-col gap-2 pt-4">{SITEMAP}</ul>
+              <ul className="flex flex-col items-start gap-2 pt-4">
+                {SITEMAP}
+              </ul>
             </SheetContent>
           </Sheet>
         </div>

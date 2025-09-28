@@ -5,8 +5,9 @@ import { useTranslation } from 'next-i18next';
 import { SearchDialog } from './search-dialog';
 import { useAtomValue } from 'jotai';
 import { searchTermAtom } from '@/shared/store/search';
+import { cn } from '@/shared/lib/utils';
 
-export function MainSearchLayout() {
+export function MainSearchLayout({ className = '' }: { className?: string }) {
   const { t } = useTranslation('dynamic');
 
   const searchTerm = useAtomValue(searchTermAtom);
@@ -22,12 +23,12 @@ export function MainSearchLayout() {
 
   return (
     <>
-      <div className="relative">
+      <div className={cn('relative', className)}>
         <Input
           onClick={() => setDialogOpened(true)}
           onKeyDown={handleKeyDown}
           readOnly
-          className="h-10 rounded-lg border-[#00000080] bg-white pl-[44px] focus:border-primary"
+          className="search-box h-10 rounded-lg border-[#00000080] bg-white pl-[44px] focus:border-primary"
           placeholder={t('search.query_placeholder') || ''}
           value={searchTerm}
         />
