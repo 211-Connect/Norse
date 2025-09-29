@@ -12,23 +12,23 @@ import { FavoriteService } from '@/shared/services/favorite-service';
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerSession(ctx.req, ctx.res, authOptions);
 
-  // if (!session || session.error) {
-  //   return {
-  //     redirect: {
-  //       destination: `/${ctx.locale}/auth/signin?redirect=${encodeURIComponent(
-  //         '/favorites',
-  //       )}`,
-  //       permanent: false,
-  //     },
-  //   };
-  // }
+  if (!session || session.error) {
+    return {
+      redirect: {
+        destination: `/${ctx.locale}/auth/signin?redirect=${encodeURIComponent(
+          '/favorites',
+        )}`,
+        permanent: false,
+      },
+    };
+  }
 
-  // let data = [];
-  // try {
-  //   data = await FavoriteService.getFavoriteLists({ ctx });
-  // } catch (err) {
-  //   console.error(err);
-  // }
+  let data = [];
+  try {
+    data = await FavoriteService.getFavoriteLists({ ctx });
+  } catch (err) {
+    console.error(err);
+  }
 
   return {
     props: {
