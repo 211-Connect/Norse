@@ -34,7 +34,7 @@ export function FavoriteMapContainer() {
 
   return (
     <div
-      className="sticky top-0 hidden h-full w-full lg:block"
+      className="sticky top-0 hidden h-full w-full overflow-hidden rounded-lg p-[10px] lg:block"
       style={{ height: `calc(100vh - ${clampedWindowValue}px` }}
     >
       <MapRenderer markers={markers} />

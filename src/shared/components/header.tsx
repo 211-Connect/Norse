@@ -218,7 +218,9 @@ export function Header() {
                   >
                     {t('header.favorites')}
                   </Button>
-                  {session.status === 'authenticated' && (
+                </DropdownMenuItem>
+                {session.status === 'authenticated' && (
+                  <DropdownMenuItem className="!outline-none [&:focus-visible>*]:bg-accent">
                     <Button
                       className="w-full justify-start px-[10px] text-primary hover:text-primary"
                       variant="ghost"
@@ -228,8 +230,8 @@ export function Header() {
                     >
                       {t('header.log_out')}
                     </Button>
-                  )}
-                </DropdownMenuItem>
+                  </DropdownMenuItem>
+                )}
               </CardContent>
             </Card>
           </DropdownMenuContent>

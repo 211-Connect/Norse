@@ -8,12 +8,10 @@ export function FavoriteListsSection() {
   const favoriteLists = useAtomValue(favoriteListsAtom);
 
   return (
-    <div className="flex w-full flex-col lg:max-w-[550px]">
-      <div className="p-2 pb-0">
-        <CreateAListButton />
-      </div>
+    <div className="flex w-full flex-col p-[10px] lg:max-w-[550px] lg:pl-[20px]">
+      <CreateAListButton className="self-start" />
 
-      <div className="flex flex-col gap-2 p-2">
+      <div className="mt-[10px] flex flex-col gap-2">
         {favoriteLists.map((list) => {
           return <FavoriteList key={list._id} list={list} />;
         })}

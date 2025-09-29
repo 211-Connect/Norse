@@ -134,7 +134,7 @@ export function FilterPanel() {
   }, [filterKeys]);
 
   return (
-    <div className="w-full p-[10px] pl-[20px] xl:max-w-[340px]">
+    <div className="w-full p-[10px] lg:pl-[20px] xl:max-w-[340px]">
       <div className="flex items-center print:hidden">
         <MainSearchLayout className="flex-1" />
         <Button

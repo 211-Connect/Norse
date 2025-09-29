@@ -20,13 +20,17 @@ export function MapContainer() {
 
   return (
     <div
-      className="sticky top-0 hidden h-full w-full lg:block"
+      className="sticky top-0 hidden h-full w-full p-[10px] lg:block"
       style={{ height: `calc(100vh - ${clampedWindowValue}px` }}
     >
-      <div className="absolute bottom-0 left-0 right-0 top-0 z-10 flex items-center justify-center bg-black bg-opacity-55">
-        <p className="text-lg font-semibold text-white">{t('select_a_list')}</p>
+      <div className="relative h-full w-full overflow-hidden rounded-lg">
+        <div className="absolute bottom-0 left-0 right-0 top-0 z-10 flex items-center justify-center bg-black bg-opacity-55">
+          <p className="text-lg font-semibold text-white">
+            {t('select_a_list')}
+          </p>
+        </div>
+        <MapRenderer markers={[]} />
       </div>
-      <MapRenderer markers={[]} />
     </div>
   );
 }

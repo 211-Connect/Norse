@@ -26,11 +26,11 @@ export function FavoritesSection() {
   const componentToPrint = useRef();
 
   return (
-    <div className="flex w-full flex-col lg:max-w-[550px]">
-      <Card className="rounded-none border-none shadow-none">
+    <div className="flex w-full flex-col p-[10px] lg:max-w-[550px] lg:pl-[20px]">
+      <Card className="rounded-none border-none bg-transparent p-0 shadow-none">
         <CardHeader>
           <div className="flex items-center justify-between print:hidden">
-            <Badge variant="outline">
+            <Badge variant="outline" className="bg-white">
               {t(`list.${favoriteList?.privacy?.toLowerCase()}`, {
                 ns: 'common',
               })}
