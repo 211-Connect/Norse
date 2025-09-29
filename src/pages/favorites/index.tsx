@@ -33,7 +33,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   return {
     props: {
       session,
-      favoriteLists: [],
+      favoriteLists: data,
       ...(await serverSideAppConfig()),
       ...(await serverSideFlags()),
       ...(await serverSideTranslations(ctx.locale as string, [
