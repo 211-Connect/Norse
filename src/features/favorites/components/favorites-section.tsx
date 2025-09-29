@@ -57,7 +57,7 @@ export function FavoritesSection() {
 
       <div
         className={cn(
-          'flex items-center p-2 pb-0 print:hidden',
+          'mt-2 flex items-center print:hidden',
           !favoriteList.viewingAsOwner ? 'justify-end' : 'justify-between',
         )}
       >
@@ -84,7 +84,7 @@ export function FavoritesSection() {
       </div>
 
       <div
-        className={cn('flex flex-col gap-2 p-2 font-sans', fontSans.variable)}
+        className={cn('mt-2 flex flex-col gap-2 font-sans', fontSans.variable)}
         ref={componentToPrint}
       >
         {favoriteList?.favorites?.map((list) => {
