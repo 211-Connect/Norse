@@ -24,6 +24,7 @@
     "unable_to_delete_list_message": "የእርስዎ ንዝረት ሊጠፋ አልቻለም."
   },
   "search": {
+    "add_my_location": "ቦታዬን ጨምር",
     "back": "ተመለስ",
     "hero_title": "ሀብት ፍለጋ",
     "query_placeholder": "ምግብ, መኖሪያ ቤት, ወዘተ...",

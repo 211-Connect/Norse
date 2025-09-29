@@ -20,9 +20,13 @@ import { UseMyLocationButton } from './use-my-location-button';
 
 type LocationSearchBarProps = {
   className?: string;
+  focusByDefault?: boolean;
 };
 
-export function LocationSearchBar({ className }: LocationSearchBarProps) {
+export function LocationSearchBar({
+  className,
+  focusByDefault = false,
+}: LocationSearchBarProps) {
   const { t } = useTranslation();
   const [shouldSearch, setShouldSearch] = useState(false);
   const searchLocation = useAtomValue(searchLocationAtom);
@@ -124,6 +128,7 @@ export function LocationSearchBar({ className }: LocationSearchBarProps) {
       <Autocomplete
         className={cn(className, 'search-box')}
         inputProps={{
+          autoFocus: focusByDefault,
           className: validationError ? '!border-red-500' : undefined,
           placeholder:
             t('search.location_placeholder', {
@@ -131,6 +136,7 @@ export function LocationSearchBar({ className }: LocationSearchBarProps) {
               defaultValue: t('search.location_placeholder'),
             }) || '',
         }}
+        defaultOpen={focusByDefault}
         options={options}
         Icon={MapPin}
         onInputChange={handleInputChange}

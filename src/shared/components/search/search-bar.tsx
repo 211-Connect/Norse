@@ -13,7 +13,11 @@ import { Autocomplete } from '../ui/autocomplete';
 import { useSearchResources } from '@/shared/hooks/use-search-resources';
 import { SearchIcon } from 'lucide-react';
 
-export function SearchBar() {
+interface SearchBarProps {
+  focusByDefault?: boolean;
+}
+
+export function SearchBar({ focusByDefault = false }: SearchBarProps) {
   const { t } = useTranslation();
   const [shouldSearch, setShouldSearch] = useState(false);
   const prevSearchTerm = useAtomValue(prevSearchTermAtom);
@@ -25,7 +29,7 @@ export function SearchBar() {
   const showTaxonomyBadge = useFlag('showSuggestionListTaxonomyBadge');
 
   const { reducedCategories, findCode, getQueryType, setSearch, suggestions } =
-    useSearchResources();
+    useSearchResources(shouldSearch ? debouncedSearchTerm : prevSearchTerm);
 
   // Remap and filter data as needed for the search box
   const options = useMemo(() => {
@@ -36,31 +40,37 @@ export function SearchBar() {
           value: option.name,
           group: t('search.suggestions'),
         }))
-        .filter((option) =>
-          shouldSearch
+        .filter((option, index) => {
+          if (searchTerm.length !== 0 && index > 5) return false;
+
+          return shouldSearch
             ? option?.value?.toLowerCase()?.includes(searchTerm?.toLowerCase())
             : option?.value
                 ?.toLowerCase()
-                ?.includes(prevSearchTerm?.toLowerCase()),
-        ),
+                ?.includes(prevSearchTerm?.toLowerCase());
+        }),
       ...reducedCategories
         .map((option) => ({
           Icon: SearchIcon,
           group: t('search.categories'),
           value: option.name,
         }))
-        .filter((option) =>
-          shouldSearch
+        .filter((option, index) => {
+          if (index > 5) return false;
+
+          return shouldSearch
             ? option?.value?.toLowerCase()?.includes(searchTerm?.toLowerCase())
             : option?.value
                 ?.toLowerCase()
-                ?.includes(prevSearchTerm?.toLowerCase()),
-        ),
-      ...taxonomies.map((option) => ({
-        group: t('search.taxonomies'),
-        value: option.name,
-        label: showTaxonomyBadge ? option.code : null,
-      })),
+                ?.includes(prevSearchTerm?.toLowerCase());
+        }),
+      ...taxonomies
+        .map((option) => ({
+          group: t('search.taxonomies'),
+          value: option.name,
+          label: showTaxonomyBadge ? option.code : null,
+        }))
+        .slice(0, 5),
     ];
   }, [
     suggestions,
@@ -106,14 +116,14 @@ export function SearchBar() {
     <Autocomplete
       className="search-box"
       inputProps={{
-        autoFocus: true,
+        autoFocus: focusByDefault,
         placeholder:
           t('search.query_placeholder', {
             ns: 'dynamic',
             defaultValue: t('search.query_placeholder'),
           }) || '',
       }}
-      defaultOpen
+      defaultOpen={focusByDefault}
       options={options}
       onInputChange={handleInputChange}
       onValueChange={setSearchTerm}

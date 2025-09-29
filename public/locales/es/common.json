@@ -24,6 +24,7 @@
     "unable_to_delete_list_message": "Su lista no se pudo eliminar."
   },
   "search": {
+    "add_my_location": "Agregar mi ubicación",
     "back": "Atrás",
     "hero_title": "Búsqueda de recursos",
     "query_placeholder": "Alimentación, vivienda, etc...",

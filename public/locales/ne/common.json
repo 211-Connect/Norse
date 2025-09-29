@@ -24,6 +24,7 @@
     "unable_to_delete_list_message": "तपाईँको सूची मेट्न सकिएन ।"
   },
   "search": {
+    "add_my_location": "मेरो स्थान थप्नुहोस्",
     "back": "फिर्ता",
     "hero_title": "स्रोतका लागि खोजी गर्नुहोस्",
     "query_placeholder": "खाना, आवास, आदि ...",

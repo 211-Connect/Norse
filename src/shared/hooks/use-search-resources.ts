@@ -7,7 +7,7 @@ import { useTaxonomies } from './api/use-taxonomies';
 import { searchAtom, searchLocationAtom } from '../store/search';
 import { useLocations } from './api/use-locations';
 
-export const useSearchResources = () => {
+export const useSearchResources = (searchTerm: string = '') => {
   const search = useAtomValue(searchAtom);
   const setSearch = useSetAtom(searchAtom);
 
@@ -25,14 +25,20 @@ export const useSearchResources = () => {
     query: string;
     queryType: string;
   }[] = useMemo(() => {
-    return categories.reduce((prev, current) => {
-      if (current?.subcategories?.length > 0) {
-        return prev.concat(current.subcategories);
-      }
+    if (searchTerm.length === 0) return [];
 
-      return prev;
-    }, []);
-  }, [categories]);
+    return categories
+      .reduce((prev, current) => {
+        if (current?.subcategories?.length > 0) {
+          return prev.concat(current.subcategories);
+        }
+
+        return prev;
+      }, [])
+      .filter(({ name }) =>
+        name.toLowerCase().includes(searchTerm.toLowerCase()),
+      );
+  }, [categories, searchTerm]);
 
   const findCode = useCallback(
     (value: string) => {

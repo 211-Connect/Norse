@@ -24,6 +24,7 @@
     "unable_to_delete_list_message": "Ваш список не вдалося видалити."
   },
   "search": {
+    "add_my_location": "Додати моє місцезнаходження",
     "back": "Назад",
     "hero_title": "Пошук ресурсів",
     "query_placeholder": "Їжа, житло і т.д.",

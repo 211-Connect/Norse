@@ -17,12 +17,17 @@ import { useRouter } from 'next/router';
 import { useSearchResources } from '@/shared/hooks/use-search-resources';
 import { DialogTitle } from '@radix-ui/react-dialog';
 
-interface SearchDialogProps {
+export interface SearchDialogProps {
+  focusByDefault?: 'search' | 'location';
   open: boolean;
   setOpen?: (open: boolean) => void;
 }
 
-export function SearchDialog({ open, setOpen }: SearchDialogProps) {
+export function SearchDialog({
+  focusByDefault = 'search',
+  open,
+  setOpen,
+}: SearchDialogProps) {
   const { t } = useTranslation('common');
 
   const requireUserLocation = useFlag('requireUserLocation');
@@ -118,8 +123,8 @@ export function SearchDialog({ open, setOpen }: SearchDialogProps) {
             </Button>
             <SearchButton loading={loading} />
           </DialogHeader>
-          <SearchBar />
-          <LocationSearchBar />
+          <SearchBar focusByDefault={focusByDefault === 'search'} />
+          <LocationSearchBar focusByDefault={focusByDefault === 'location'} />
         </form>
       </DialogContent>
     </Dialog>

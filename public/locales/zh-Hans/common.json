@@ -24,6 +24,7 @@
     "unable_to_delete_list_message": "无法删除您的列表。"
   },
   "search": {
+    "add_my_location": "添加我的位置",
     "back": "返回",
     "hero_title": "搜索资源",
     "query_placeholder": "食物、住房等......",

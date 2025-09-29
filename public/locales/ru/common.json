@@ -24,6 +24,7 @@
     "unable_to_delete_list_message": "Ваш список не может быть удален."
   },
   "search": {
+    "add_my_location": "Добавить мое местоположение",
     "back": "Назад",
     "hero_title": "Поиск ресурсов",
     "query_placeholder": "Еда, жилье и т.д.",

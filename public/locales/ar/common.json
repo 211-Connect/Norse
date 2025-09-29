@@ -24,6 +24,7 @@
     "unable_to_delete_list_message": "تعذر حذف قائمتك."
   },
   "search": {
+    "add_my_location": "أضف موقعي",
     "back": "عودة",
     "hero_title": "البحث عن الموارد",
     "query_placeholder": "الغذاء والسكن ، إلخ ...",

@@ -16,7 +16,7 @@ export function NewHomeContent() {
   return (
     <div className="relative flex flex-1 justify-center border-t px-3 lg:justify-start lg:pl-8 lg:pr-0">
       <div className="flex min-h-full flex-row px-0">
-        <div className="flex flex-col items-start gap-16 py-6 pl-0 lg:w-[430px] lg:pr-6">
+        <div className="flex flex-col items-start justify-around gap-16 py-6 pl-0 lg:w-[430px] lg:pr-6">
           <div className="w-full">
             <h3 className="mb-2 whitespace-break-spaces text-2xl font-medium text-primary">
               {t('search.hero_title', {

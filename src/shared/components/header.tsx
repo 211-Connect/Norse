@@ -57,8 +57,15 @@ export function Header() {
   );
 
   const logoUrl = useMemo(
-    () => appConfig?.newLayout?.logoUrl || appConfig?.brand?.logoUrl,
-    [appConfig],
+    () =>
+      newLayoutEnabled
+        ? appConfig?.newLayout?.logoUrl
+        : appConfig?.brand?.logoUrl,
+    [
+      appConfig?.brand?.logoUrl,
+      appConfig?.newLayout?.logoUrl,
+      newLayoutEnabled,
+    ],
   );
 
   const SITEMAP = useMemo(

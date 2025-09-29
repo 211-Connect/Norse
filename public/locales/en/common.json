@@ -24,6 +24,7 @@
     "unable_to_delete_list_message": "Your list could not be deleted."
   },
   "search": {
+    "add_my_location": "Add my location",
     "back": "Back",
     "hero_title": "Search for resources",
     "query_placeholder": "Food, housing, etc...",
