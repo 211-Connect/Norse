@@ -41,7 +41,9 @@
     "geocoding_error": "خطأ في الترميز الجغرافي",
     "geocoding_unsupported": "الموقع الجغرافي غير مدعوم من قبل متصفحك",
     "geocoding_unable_to_retrieve": "غير قادر على استرداد موقعك. يرجى التحقق من إعدادات الموقع في متصفحك والمحاولة مرة أخرى.",
-    "categories": "المواضيع"
+    "categories": "المواضيع",
+    "show_all": "عرض الكل ({{count}})",
+    "show_less": "عرض أقل"
   },
   "call_to_action": {
     "call": "دعا",

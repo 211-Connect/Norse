@@ -41,7 +41,9 @@
     "geocoding_error": "Hitilafu ya Geocoding",
     "geocoding_unsupported": "Geolocation haitegemezwi na kivinjari chako",
     "geocoding_unable_to_retrieve": "Haiwezi kurejesha eneo lako. Tafadhali angalia mipangilio ya eneo la kivinjari chako na ujaribu tena.",
-    "categories": "Mada"
+    "categories": "Mada",
+    "show_all": "Onyesha yote ({{count}})",
+    "show_less": "Onyesha kidogo"
   },
   "call_to_action": {
     "call": "Wito",

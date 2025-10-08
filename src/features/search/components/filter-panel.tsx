@@ -14,16 +14,29 @@ import qs from 'qs';
 import { useTranslation } from 'next-i18next';
 import { Separator } from '@/shared/components/ui/separator';
 import { Button } from '@/shared/components/ui/button';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { MainSearchLayout } from '@/shared/components/search/main-search-layout';
 import { TaxonomyContainer } from './taxonomy-container';
 import { cn } from '@/shared/lib/utils';
 import { Filter } from 'lucide-react';
 
+const MAX_VISIBLE_FILTERS = 6;
+
 const Filters = ({ filters, filterKeys }) => {
   const { t } = useTranslation();
   const router = useRouter();
   const q: any = qs.parse(router.asPath.slice(router.asPath.indexOf('?') + 1));
+
+  const [filtersExpanded, setFiltersExpanded] = useState<{
+    [key: string]: boolean;
+  }>({});
+
+  const updateFilterExpanded = useCallback((key: string) => {
+    setFiltersExpanded((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  }, []);
 
   const clearFilters = () => {
     const q: any =
@@ -59,12 +72,20 @@ const Filters = ({ filters, filterKeys }) => {
             .map((k) => k.charAt(0).toUpperCase() + k.slice(1))
             .join(' ');
           const filter = filters[key];
+          let filterList = filter.buckets;
+
+          const originalCount = filter.buckets.length;
+          const filtersExpandedForKey = filtersExpanded[key] ?? false;
+
+          if (!filtersExpandedForKey) {
+            filterList = filterList.slice(0, MAX_VISIBLE_FILTERS);
+          }
 
           return (
             <div key={key} className="flex flex-col gap-1">
               <h3 className="font-medium">{heading}</h3>
               <div className="flex flex-col gap-2">
-                {filter.buckets.map((b) => (
+                {filterList.map((b) => (
                   <div
                     key={b.key}
                     className="flex items-center justify-between"
@@ -113,6 +134,21 @@ const Filters = ({ filters, filterKeys }) => {
                     </Badge>
                   </div>
                 ))}
+                {originalCount > MAX_VISIBLE_FILTERS && (
+                  <Button
+                    variant="link"
+                    size="sm"
+                    className="w-fit px-0"
+                    onClick={() => updateFilterExpanded(key)}
+                  >
+                    {filtersExpandedForKey
+                      ? t('search.show_less', { ns: 'common' })
+                      : t('search.show_all', {
+                          ns: 'common',
+                          count: originalCount,
+                        })}
+                  </Button>
+                )}
               </div>
             </div>
           );

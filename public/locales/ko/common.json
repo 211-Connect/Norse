@@ -41,7 +41,9 @@
     "geocoding_error": "지오코딩 오류",
     "geocoding_unsupported": "지리적 위치는 브라우저에서 지원되지 않습니다.",
     "geocoding_unable_to_retrieve": "위치를 검색할 수 없습니다. 브라우저의 위치 설정을 확인하고 다시 시도하십시오.",
-    "categories": "주제"
+    "categories": "주제",
+    "show_all": "모두 보기 ({{count}})",
+    "show_less": "간단히 보기"
   },
   "call_to_action": {
     "call": "외침",

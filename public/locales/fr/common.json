@@ -41,7 +41,9 @@
     "geocoding_error": "Erreur de géocodage",
     "geocoding_unsupported": "La géolocalisation n’est pas prise en charge par votre navigateur",
     "geocoding_unable_to_retrieve": "Impossible de récupérer votre position. Veuillez vérifier les paramètres de localisation de votre navigateur et réessayer.",
-    "categories": "Sujets"
+    "categories": "Sujets",
+    "show_all": "Tout afficher ({{count}})",
+    "show_less": "Afficher moins"
   },
   "call_to_action": {
     "call": "Appeler",

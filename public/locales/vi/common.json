@@ -41,7 +41,9 @@
     "geocoding_error": "Lỗi mã hóa địa lý",
     "geocoding_unsupported": "Vị trí địa lý không được trình duyệt của bạn hỗ trợ",
     "geocoding_unable_to_retrieve": "Không thể truy xuất vị trí của bạn. Vui lòng kiểm tra cài đặt vị trí của trình duyệt và thử lại.",
-    "categories": "Chủ đề"
+    "categories": "Chủ đề",
+    "show_all": "Hiển thị tất cả ({{count}})",
+    "show_less": "Hiển thị ít hơn"
   },
   "call_to_action": {
     "call": "Gọi",

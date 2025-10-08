@@ -41,7 +41,9 @@
     "geocoding_error": "Error de geocodificación",
     "geocoding_unsupported": "La geolocalización no es compatible con su navegador",
     "geocoding_unable_to_retrieve": "No se puede recuperar su ubicación. Compruebe la configuración de ubicación de su navegador y vuelva a intentarlo.",
-    "categories": "Temas"
+    "categories": "Temas",
+    "show_all": "Mostrar todo ({{count}})",
+    "show_less": "Mostrar menos"
   },
   "call_to_action": {
     "call": "Llamar",

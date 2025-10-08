@@ -41,7 +41,9 @@
     "geocoding_error": "Qalad Geocoding",
     "geocoding_unsupported": "Geolocation ma taageerayaan aad browser",
     "geocoding_unable_to_retrieve": "Awoodi kari la'aanta inaad soo celiso goobtaada. Fadlan hubi goobaha goobta biraawsarkaaga oo mar kale isku day.",
-    "categories": "Mawduucyada"
+    "categories": "Mawduucyada",
+    "show_all": "Show all ({{count}})",
+    "show_less": "Show less"
   },
   "call_to_action": {
     "call": "Wac",

@@ -41,7 +41,9 @@
     "geocoding_error": "地理编码错误",
     "geocoding_unsupported": "您的浏览器不支持地理定位",
     "geocoding_unable_to_retrieve": "无法检索您的位置。请检查浏览器的位置设置，然后重试。",
-    "categories": "类别"
+    "categories": "类别",
+    "show_all": "显示全部 ({{count}})",
+    "show_less": "显示较少"
   },
   "call_to_action": {
     "call": "叫",
