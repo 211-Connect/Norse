@@ -17,8 +17,13 @@ import {
 } from '../../store/search';
 import { setCookie } from 'nookies';
 import { USER_PREF_DISTANCE } from '../../lib/constants';
+import { cn } from '../../lib/utils';
 
-export function DistanceSelect() {
+export interface DistanceSelectProps {
+  className?: string;
+}
+
+export function DistanceSelect({ className = '' }: DistanceSelectProps) {
   const { t } = useTranslation();
   const appConfig = useAppConfig();
   const setSearch = useSetAtom(searchAtom);
@@ -36,7 +41,7 @@ export function DistanceSelect() {
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <div className={cn('flex items-center gap-2', className)}>
       <p className="text-sm font-medium">
         {t('search.radius_placeholder', {
           defaultValue: 'radius',

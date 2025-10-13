@@ -6,9 +6,20 @@ import { SearchDialog, SearchDialogProps } from './search-dialog';
 import { useAtomValue } from 'jotai';
 import { searchLocationAtom, searchTermAtom } from '@/shared/store/search';
 import { cn } from '@/shared/lib/utils';
-import { AddMyLocationButton } from './add-my-location-button';
+import {
+  AddMyLocationButton,
+  AddMyLocationButtonProps,
+} from './add-my-location-button';
 
-export function MainSearchLayout({ className = '' }: { className?: string }) {
+interface MainSearchLayoutProps {
+  addMyLocationButtonVariant?: AddMyLocationButtonProps['variant'];
+  className?: string;
+}
+
+export function MainSearchLayout({
+  addMyLocationButtonVariant,
+  className = '',
+}: MainSearchLayoutProps) {
   const { t } = useTranslation('dynamic');
 
   const searchLocation = useAtomValue(searchLocationAtom);
@@ -48,6 +59,7 @@ export function MainSearchLayout({ className = '' }: { className?: string }) {
           <SearchIcon className="absolute left-[15px] top-2 size-6 text-primary" />
         </div>
         <AddMyLocationButton
+          variant={addMyLocationButtonVariant}
           location={searchLocation}
           onClick={() => openSearchDialog('location')}
         />

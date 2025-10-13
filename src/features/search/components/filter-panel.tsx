@@ -170,7 +170,7 @@ export function FilterPanel() {
   }, [filterKeys]);
 
   return (
-    <div className="w-full p-[10px] lg:pl-[20px] xl:max-w-[340px]">
+    <div className="w-full self-start p-[10px] lg:pl-[20px] xl:max-w-[340px]">
       <div className="flex items-center print:hidden">
         <MainSearchLayout className="flex-1" />
         <Button
@@ -178,7 +178,7 @@ export function FilterPanel() {
           variant="ghost"
           className={cn(
             filterKeys.length > 0 ? 'flex xl:hidden' : 'hidden',
-            'gap-1',
+            'mt-1 gap-1 self-start',
           )}
           onClick={() => setFiltersOpen(true)}
         >

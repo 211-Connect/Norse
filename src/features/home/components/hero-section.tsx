@@ -71,7 +71,7 @@ export function HeroSection() {
           })}
         </h3>
 
-        <MainSearchLayout />
+        <MainSearchLayout addMyLocationButtonVariant="link" />
       </div>
 
       {showHomePageTour && (
