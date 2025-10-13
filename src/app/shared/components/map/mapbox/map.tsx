@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactElement, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import mapboxgl, { LngLatBounds, LngLatLike, Marker, Popup } from 'mapbox-gl';
 import { MAPBOX_API_KEY, MAPBOX_STYLE_URL } from '@/app/shared/lib/constants';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -74,17 +74,10 @@ export function Map({
       markerElement.style.cursor = 'pointer';
       markerElement.classList.add('custom-marker');
       markerElement.addEventListener('click', () => {
-        const listElement = document.getElementById(m.id);
-        listElement?.scrollIntoView();
-
-        _markers.current?.forEach((mm) => {
-          const popup = mm.getPopup();
-          if (popup?.isOpen()) {
-            mm.togglePopup();
-          }
+        setTimeout(() => {
+          const listElement = document.getElementById(m.id);
+          listElement?.scrollIntoView();
         });
-
-        marker.togglePopup();
       });
 
       return marker;

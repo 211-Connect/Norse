@@ -1,26 +1,28 @@
+'use client';
+
 import { useCallback } from 'react';
 import { toast } from 'sonner';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { Locate } from 'lucide-react';
-import { deviceAtom } from '@/app/shared/store/device';
-import { useFlag } from '@/app/shared/hooks/use-flag';
 import { useTranslation } from 'react-i18next';
-import { Button } from '../ui/button';
+import { setCookie } from 'cookies-next/client';
 
 import { useGeocodingAdapter } from '../../hooks/use-geocoding-adapter';
 import { MapService } from '../../services/map-service';
 import { searchAtom } from '../../store/search';
 import { USER_PREF_COORDS, USER_PREF_LOCATION } from '../../lib/constants';
-import { setCookie } from 'cookies-next/client';
+import { Button } from '../ui/button';
+import { deviceAtom } from '../../store/device';
+import { useFlag } from '../../hooks/use-flag';
 
 export function UseMyLocationButton() {
+  const { i18n, t } = useTranslation('common');
   const adapter = useGeocodingAdapter();
   const setSearch = useSetAtom(searchAtom);
   const device = useAtomValue(deviceAtom);
   const showUseMyLocationButtonOnDesktop = useFlag(
     'showUseMyLocationButtonOnDesktop',
   );
-  const { t, i18n } = useTranslation('common');
 
   const convertGeoLocation = useCallback(
     async (position: GeolocationPosition) => {
@@ -52,9 +54,11 @@ export function UseMyLocationButton() {
               searchLocation: location.address,
               searchCoordinates: location.coordinates,
             }));
-          }
 
-          return 'Successfully fetched your location';
+            return 'Successfully fetched your location';
+          } else {
+            throw new Error();
+          }
         },
         error: t('search.geocoding_unable_to_retrieve'),
       });
@@ -89,8 +93,8 @@ export function UseMyLocationButton() {
   return (
     <Button
       onClick={getUserLocation}
-      className="flex gap-1"
-      variant="outline"
+      className="flex gap-1 !text-primary"
+      variant="ghost"
       type="button"
     >
       <Locate className="size-4" />

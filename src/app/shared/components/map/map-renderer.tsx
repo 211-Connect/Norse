@@ -14,6 +14,7 @@ export interface MarkerDef {
   id: string;
   coordinates?: [number, number];
   popup?: any;
+  popupData?: any;
 }
 
 export interface ServiceAreaGeoJSON {

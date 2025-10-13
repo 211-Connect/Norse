@@ -4,7 +4,6 @@ import { buttonVariants } from '@/app/shared/components/ui/button';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -16,7 +15,7 @@ import {
   getGoogleMapsDestinationUrl,
 } from '@/app/shared/lib/utils';
 import { ResultType } from '@/app/shared/store/results';
-import { Globe, LinkIcon, MapPin, Navigation, Phone, Pin } from 'lucide-react';
+import { LinkIcon, MapPin, Phone, Pin } from 'lucide-react';
 import { Badge } from '@/app/shared/components/ui/badge';
 import { useAtomValue } from 'jotai';
 import {
@@ -34,10 +33,9 @@ import { ReferralButton } from '@/app/shared/components/referral-button';
 import { AddToFavoritesButton } from '@/app/shared/components/add-to-favorites-button';
 import { CopyBadge } from '@/app/shared/components/copy-badge';
 import { parseHtml } from '@/app/shared/lib/parse-html';
-import { useFlag } from '@/app/shared/hooks/use-flag';
+import { Badges } from '@/app/shared/components/badges';
+import { GetDirectionsButton } from '@/app/shared/components/get-directions-button';
 import { useTranslation } from 'react-i18next';
-
-import { GetDirectionsButton } from '../../../shared/components/get-directions-button';
 
 type ResultProps = {
   data: ResultType;
@@ -47,7 +45,6 @@ export function Result({ data }: ResultProps) {
   const { t } = useTranslation('common');
   const coords = useAtomValue(userCoordinatesAtom);
   const searchCoords = useAtomValue(searchCoordinatesAtom);
-  const showServiceName = useFlag('showSearchAndResourceServiceName');
 
   const distance =
     data?.location?.coordinates && (coords?.length ?? 0) === 2
@@ -57,69 +54,46 @@ export function Result({ data }: ResultProps) {
         )
       : null;
 
+  const labels = []; // TODO: Add Waiver
+
   return (
     <>
-      <Card id={data._id} className="print:border-none print:shadow-none">
-        <CardHeader>
-          <div className="flex justify-between">
-            <div className="flex items-center justify-start">
-              {data.priority === 1 && (
-                <Badge variant="outline" className="flex gap-1">
-                  <Pin className="size-3" />
-                  Pinned
-                </Badge>
-              )}
-            </div>
-
-            <div>
-              {distance != null && distance > 0 && (
-                <Badge variant="outline" className="flex gap-1">
-                  <Navigation className="size-3" />
-                  {distance.toFixed(1)} {t('search.miles')}
-                </Badge>
-              )}
-            </div>
-          </div>
-
-          <CardTitle className="flex flex-row justify-between gap-2">
-            <Link
-              className="self-center text-primary hover:underline"
-              href={`/search/${data.id}`}
-            >
-              {data.name}
-            </Link>
-
-            <div className="print:hidden">
-              <AddToFavoritesButton size="icon" serviceAtLocationId={data.id} />
-            </div>
-          </CardTitle>
-          {showServiceName && (
-            <CardDescription>{parseHtml(data.serviceName)}</CardDescription>
-          )}
-        </CardHeader>
-        <CardContent className="flex flex-col gap-4">
-          <div className="whitespace-break-spaces print:hidden">
-            {parseHtml(data?.summary ?? data.description)}
-          </div>
-
-          <div className="hidden whitespace-break-spaces print:block">
-            {parseHtml(data?.description ?? data.summary)}
-          </div>
-
-          <div className="flex flex-col items-start justify-start gap-2">
-            {data.phone && (
-              <div className="flex max-w-full items-center gap-1 text-primary/80">
-                <Phone className="size-4 shrink-0" />
-                <CopyBadge text={data.phone} href={`tel:${data.phone}`}>
-                  {data.phone}
-                </CopyBadge>
+      <Card id={data._id} className="flex flex-col gap-3 print:border-none">
+        {labels.length > 0 ||
+          (data.priority === 1 && (
+            <CardHeader>
+              <div className="flex justify-between">
+                {labels.length > 0 && <Badges items={labels} />}
+                <div className="ml-auto flex items-center justify-start">
+                  {data.priority === 1 && (
+                    <Badge variant="outline" className="flex gap-1">
+                      {t('pinned', { ns: 'page-search' })}
+                      <Pin className="size-4" />
+                    </Badge>
+                  )}
+                </div>
               </div>
-            )}
+            </CardHeader>
+          ))}
+        <CardTitle className="flex flex-row justify-between gap-2">
+          <Link
+            className="self-center hover:underline"
+            href={`/search/${data.id}`}
+          >
+            {data.name}
+          </Link>
 
-            {data.address ? (
-              <div className="flex max-w-full items-center gap-1 text-primary/80">
-                <MapPin className="size-4 shrink-0" />
+          <div className="print:hidden">
+            <AddToFavoritesButton size="icon" serviceAtLocationId={data.id} />
+          </div>
+        </CardTitle>
+        <CardContent className="flex flex-col gap-3">
+          {data.address ? (
+            <div className="flex justify-between gap-3">
+              <div className="flex max-w-full items-center gap-1">
+                <MapPin className="mt-[2px] size-4 shrink-0 self-start text-primary" />
                 <CopyBadge
+                  className="max-w-[240px] text-sm font-normal"
                   text={data.address}
                   href={getGoogleMapsDestinationUrl(
                     coords,
@@ -129,58 +103,81 @@ export function Result({ data }: ResultProps) {
                   {data.address}
                 </CopyBadge>
               </div>
-            ) : (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <div className="flex max-w-full items-center gap-1">
-                      <MapPin className="size-4 shrink-0 text-primary" />
-                      <p className="truncate text-xs font-semibold">
-                        {t('search.address_unavailable')}
-                      </p>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-64" side="right">
-                    <p>{t('search.confidential_address')}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
+              {distance !== null && (
+                <p className="whitespace-nowrap text-sm">{`${distance.toFixed(1)} ${t('search.miles_short', { ns: 'common' })}`}</p>
+              )}
+            </div>
+          ) : (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger className="w-fit">
+                  <div className="flex max-w-full items-center gap-1">
+                    <MapPin className="size-4 shrink-0 text-primary" />
+                    <p className="truncate text-sm font-normal">
+                      {t('search.address_unavailable')}
+                    </p>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-64" side="right">
+                  <p>{t('search.confidential_address')}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
 
-            {data.website && (
-              <div className="flex max-w-full items-center gap-1 text-primary/80">
-                <Globe className="size-4 shrink-0" />
-                <CopyBadge
-                  href={data.website}
-                  text={data.website}
-                  target="_blank"
-                >
-                  <p className="truncate">{data.website}</p>
-                </CopyBadge>
-              </div>
-            )}
+          {data.phone && (
+            <div className="flex max-w-full items-center gap-1">
+              <Phone className="size-4 shrink-0 text-primary" />
+              <CopyBadge
+                className="text-sm font-normal"
+                text={data.phone}
+                href={`tel:${data.phone}`}
+              >
+                {data.phone}
+              </CopyBadge>
+            </div>
+          )}
 
-            {data.taxonomies && data.taxonomies.length > 0 && (
-              <>
-                <Separator className="print:hidden" />
+          {data.website && (
+            <div className="flex max-w-full items-center gap-1">
+              <LinkIcon className="size-4 shrink-0 text-primary" />
+              <CopyBadge
+                className="text-sm font-normal"
+                href={data.website}
+                text={data.website}
+                target="_blank"
+                truncate
+              >
+                {data.website}
+              </CopyBadge>
+            </div>
+          )}
 
-                <p className="text-sm font-semibold print:hidden">
-                  {t('categories_text', {
-                    ns: 'dynamic',
-                    defaultValue: t('categories', { ns: 'page-resource' }),
-                  })}
-                </p>
-
-                <div className="flex flex-wrap gap-1 print:hidden">
-                  {data.taxonomies.map((tax) => (
-                    <Badge key={tax.name} variant="default">
-                      {tax.name}
-                    </Badge>
-                  ))}
-                </div>
-              </>
-            )}
+          <div className="whitespace-break-spaces text-sm print:hidden">
+            {parseHtml(data?.summary ?? data.description)}
           </div>
+
+          <div className="hidden whitespace-break-spaces text-sm print:block">
+            {parseHtml(data?.description ?? data.summary)}
+          </div>
+
+          {data.taxonomies && data.taxonomies.length > 0 && (
+            <>
+              <Separator className="print:hidden" />
+
+              <p className="text-sm font-semibold print:hidden">
+                {t('categories_title', { ns: 'page-resource' })}
+              </p>
+
+              <div className="flex flex-col items-start gap-3 print:hidden">
+                {data.taxonomies.map((tax) => (
+                  <Badge key={tax.name} variant="default">
+                    {tax.name}
+                  </Badge>
+                ))}
+              </div>
+            </>
+          )}
         </CardContent>
         <CardFooter className="flex flex-col gap-2 print:hidden">
           <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center">
@@ -211,7 +208,7 @@ export function Result({ data }: ResultProps) {
                 window.open(data.website, '_blank');
               }}
             >
-              <Globe className="size-4" /> {t('call_to_action.view_website')}
+              <LinkIcon className="size-4" /> {t('call_to_action.view_website')}
             </ReferralButton>
 
             <GetDirectionsButton data={data} coords={searchCoords} />
@@ -225,7 +222,7 @@ export function Result({ data }: ResultProps) {
               )}
               href={`/search/${data.id}`}
             >
-              <LinkIcon className="size-4" /> {t('call_to_action.view_details')}
+              {t('call_to_action.view_details')}
             </Link>
           </div>
         </CardFooter>

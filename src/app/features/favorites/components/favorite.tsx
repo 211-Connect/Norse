@@ -10,12 +10,15 @@ import {
   CardTitle,
 } from '@/app/shared/components/ui/card';
 import { type Favorite } from '@/app/shared/store/favorites';
-import { Globe, LinkIcon, MapPin, Phone } from 'lucide-react';
-import { cn, getGoogleMapsDestinationUrl } from '@/app/shared/lib/utils';
+import { LinkIcon, MapPin, Phone } from 'lucide-react';
+import {
+  cn,
+  distanceBetweenCoordsInKm,
+  getGoogleMapsDestinationUrl,
+} from '@/app/shared/lib/utils';
 import { buttonVariants } from '@/app/shared/components/ui/button';
 import { useAtomValue } from 'jotai';
 import { userCoordinatesAtom } from '@/app/shared/store/search';
-import { Badge } from '@/app/shared/components/ui/badge';
 import {
   Tooltip,
   TooltipContent,
@@ -25,6 +28,7 @@ import {
 import { CopyBadge } from '@/app/shared/components/copy-badge';
 import { parseHtml } from '@/app/shared/lib/parse-html';
 import { Separator } from '@/app/shared/components/ui/separator';
+import { Badges } from '@/app/shared/components/badges';
 import { Link } from '@/app/shared/components/link';
 import { useTranslation } from 'react-i18next';
 
@@ -56,50 +60,47 @@ export function Favorite({
     ? ''
     : `${address.address_1}, ${address.city}, ${address.stateProvince} ${address.postalCode}`;
 
+  const distance =
+    data?.location?.coordinates && (coords?.length ?? 0) === 2
+      ? distanceBetweenCoordsInKm(
+          coords as [number, number],
+          data.location.coordinates,
+        )
+      : null;
+
+  const labels = []; // TODO: Add Waiver
+
   return (
     <>
-      <Card className="print:border-none print:shadow-none">
-        <CardHeader>
-          <CardTitle className="flex flex-row justify-between gap-2">
-            <Link
-              className="text-primary hover:underline"
-              href={`/search/${data._id}`}
-            >
-              {translation?.displayName}
-            </Link>
+      <Card className="flex flex-col gap-3 print:border-none print:shadow-none">
+        {labels.length > 0 && (
+          <CardHeader>
+            <Badges items={labels} />
+          </CardHeader>
+        )}
 
-            <div>
-              {viewingAsOwner && (
-                <RemoveFromFavoriteListButton
-                  id={data._id}
-                  favoriteListId={favoriteListId}
-                />
-              )}
-            </div>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-4">
-          <div className="whitespace-break-spaces">
-            {parseHtml(translation?.serviceDescription ?? '')}
-          </div>
+        <CardTitle className="flex flex-row justify-between gap-2">
+          <Link
+            className="self-center hover:underline"
+            href={`/search/${data._id}`}
+          >
+            {translation?.displayName}
+          </Link>
 
-          <div className="flex flex-col items-start justify-start gap-2">
-            {data.displayPhoneNumber && (
-              <div className="flex max-w-full items-center gap-1 text-primary/80">
-                <Phone className="size-4 shrink-0" />
+          {viewingAsOwner && (
+            <RemoveFromFavoriteListButton
+              id={data._id}
+              favoriteListId={favoriteListId}
+            />
+          )}
+        </CardTitle>
+        <CardContent className="flex flex-col gap-3">
+          {displayAddress ? (
+            <div className="flex justify-between gap-3">
+              <div className="flex max-w-full items-center gap-1">
+                <MapPin className="mt-[2px] size-4 shrink-0 self-start text-primary" />
                 <CopyBadge
-                  text={data.displayPhoneNumber}
-                  href={`tel:${data.displayPhoneNumber}`}
-                >
-                  {data.displayPhoneNumber}
-                </CopyBadge>
-              </div>
-            )}
-
-            {displayAddress ? (
-              <div className="flex max-w-full items-center gap-1 text-primary/80">
-                <MapPin className="size-4 shrink-0" />
-                <CopyBadge
+                  className="max-w-[240px] text-sm font-normal"
                   text={displayAddress}
                   href={getGoogleMapsDestinationUrl(
                     coords,
@@ -109,30 +110,58 @@ export function Favorite({
                   {displayAddress}
                 </CopyBadge>
               </div>
-            ) : (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <Badge variant="outline" className="max-w-full">
-                      <p className="truncate">
-                        {t('search.address_unavailable')}
-                      </p>
-                    </Badge>
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-64" side="right">
-                    <p>{t('search.confidential_address')}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
-            {data.website && (
-              <div className="flex max-w-full items-center gap-1 text-primary/80">
-                <Globe className="size-4 shrink-0" />
-                <CopyBadge href={data.website} text={data.website}>
-                  <p className="truncate">{data.website}</p>
-                </CopyBadge>
-              </div>
-            )}
+              {distance !== null && (
+                <p className="whitespace-nowrap text-sm">{`${distance.toFixed(1)} ${t('search.miles_short', { ns: 'common' })}`}</p>
+              )}
+            </div>
+          ) : (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger className="w-fit">
+                  <div className="flex max-w-full items-center gap-1">
+                    <MapPin className="size-4 shrink-0 text-primary" />
+                    <p className="truncate text-sm font-normal">
+                      {t('search.address_unavailable')}
+                    </p>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-64" side="right">
+                  <p>{t('search.confidential_address')}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+
+          {data.displayPhoneNumber && (
+            <div className="flex max-w-full items-center gap-1">
+              <Phone className="size-4 shrink-0 text-primary" />
+              <CopyBadge
+                className="text-sm font-normal"
+                text={data.displayPhoneNumber}
+                href={`tel:${data.displayPhoneNumber}`}
+              >
+                {data.displayPhoneNumber}
+              </CopyBadge>
+            </div>
+          )}
+
+          {data.website && (
+            <div className="flex max-w-full items-center gap-1">
+              <LinkIcon className="size-4 shrink-0 text-primary" />
+              <CopyBadge
+                className="text-sm font-normal"
+                href={data.website}
+                text={data.website}
+                target="_blank"
+                truncate
+              >
+                {data.website}
+              </CopyBadge>
+            </div>
+          )}
+
+          <div className="whitespace-break-spaces text-sm">
+            {parseHtml(translation?.serviceDescription ?? '')}
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-2 print:hidden">
@@ -149,8 +178,7 @@ export function Favorite({
                 window.open(`tel:${data.displayPhoneNumber}`);
               }}
             >
-              <Phone className="size-4" />{' '}
-              {t('call_to_action.call', { ns: 'common' })}
+              <Phone className="size-4" /> {t('call_to_action.call')}
             </ReferralButton>
 
             <ReferralButton
@@ -165,13 +193,11 @@ export function Favorite({
                 window.open(data.website, '_blank');
               }}
             >
-              <Globe className="size-4" />{' '}
-              {t('call_to_action.view_website', { ns: 'common' })}
+              <LinkIcon className="size-4" /> {t('call_to_action.view_website')}
             </ReferralButton>
 
             <GetDirectionsButton data={data} coords={coords} />
           </div>
-
           <div className="flex w-full items-center gap-2">
             <Link
               className={cn(
@@ -180,8 +206,7 @@ export function Favorite({
               )}
               href={`/search/${data._id}`}
             >
-              <LinkIcon className="size-4" />{' '}
-              {t('call_to_action.view_details', { ns: 'common' })}
+              {t('call_to_action.view_details')}
             </Link>
           </div>
         </CardFooter>

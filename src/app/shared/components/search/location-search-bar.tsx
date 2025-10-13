@@ -1,35 +1,37 @@
 'use client';
 
 import { MapPin } from 'lucide-react';
-import { useAtomValue, useSetAtom } from 'jotai';
-import { useCallback, useState } from 'react';
+import { useAtomValue } from 'jotai';
 import { useTranslation } from 'react-i18next';
+import { deleteCookie, setCookie } from 'cookies-next/client';
 
 import {
   prevSearchLocationAtom,
-  searchAtom,
   searchCoordinatesAtom,
   searchLocationAtom,
   searchLocationValidationErrorAtom,
 } from '../../store/search';
 import { useDebounce } from '../../hooks/use-debounce';
 import { useLocations } from '../../hooks/api/use-locations';
+import { useCallback, useState } from 'react';
 import { cn } from '../../lib/utils';
-import {
-  USER_PREF_COORDS,
-  USER_PREF_LOCATION,
-} from '@/app/shared/lib/constants';
 import { Autocomplete } from '../ui/autocomplete';
 import { DistanceSelect } from './distance-select';
-import { deleteCookie, setCookie } from 'cookies-next/client';
+import { UseMyLocationButton } from './use-my-location-button';
+import { useSearchResources } from '../../hooks/use-search-resources';
+import { USER_PREF_COORDS, USER_PREF_LOCATION } from '../../lib/constants';
 
 type LocationSearchBarProps = {
   className?: string;
+  focusByDefault?: boolean;
 };
 
-export function LocationSearchBar({ className }: LocationSearchBarProps) {
+export function LocationSearchBar({
+  className,
+  focusByDefault = false,
+}: LocationSearchBarProps) {
+  const { t } = useTranslation();
   const [shouldSearch, setShouldSearch] = useState(false);
-  const setSearch = useSetAtom(searchAtom);
   const searchLocation = useAtomValue(searchLocationAtom);
   const coords = useAtomValue(searchCoordinatesAtom);
   const prevSearchLocation = useAtomValue(prevSearchLocationAtom);
@@ -41,7 +43,7 @@ export function LocationSearchBar({ className }: LocationSearchBarProps) {
   } = useLocations(shouldSearch ? debouncedSearchLocation : prevSearchLocation);
   const validationError = useAtomValue(searchLocationValidationErrorAtom);
 
-  const { t } = useTranslation();
+  const { setSearch } = useSearchResources();
 
   const findCoords = useCallback(
     (value: string) => {
@@ -125,38 +127,34 @@ export function LocationSearchBar({ className }: LocationSearchBarProps) {
   );
 
   return (
-    <div className="location-box">
-      <div
-        className={cn(
-          'flex w-full flex-1 items-center justify-stretch border-b',
-          className,
-        )}
-      >
-        <Autocomplete
-          className={cn(
-            className,
-            'search-box',
-            validationError && 'border-b border-b-red-500',
-            'flex-1 border-none',
-          )}
-          inputProps={{
-            placeholder:
-              t('search.location_placeholder', {
-                ns: 'dynamic',
-                defaultValue: t('search.location_placeholder'),
-              }) || '',
-          }}
-          options={options}
-          Icon={MapPin}
-          onInputChange={handleInputChange}
-          onValueChange={setSearchLocation}
-          value={searchLocation}
-          autoSelectIndex={coords?.length === 2 ? undefined : 1}
-        />
-
+    <div className="location-box flex flex-col gap-4">
+      <Autocomplete
+        className={cn(className, 'search-box')}
+        inputProps={{
+          autoFocus: focusByDefault,
+          className: validationError ? '!border-red-500' : undefined,
+          placeholder:
+            t('search.location_placeholder', {
+              ns: 'dynamic',
+              defaultValue: t('search.location_placeholder'),
+            }) || '',
+        }}
+        defaultOpen={focusByDefault}
+        options={options}
+        Icon={MapPin}
+        onInputChange={handleInputChange}
+        onValueChange={setSearchLocation}
+        value={searchLocation}
+        optionsPopoverClassName="mt-[60px] max-h-[calc(100vh-310px)]"
+        autoSelectIndex={coords?.length === 2 ? undefined : 1}
+      />
+      {validationError && (
+        <p className="min-h-4 px-3 text-xs text-red-500">{validationError}</p>
+      )}
+      <div className="flex justify-between">
+        <UseMyLocationButton />
         <DistanceSelect />
       </div>
-      <p className="min-h-4 px-3 text-xs text-red-500">{validationError}</p>
     </div>
   );
 }

@@ -14,10 +14,15 @@ import { useAtom, useAtomValue } from 'jotai';
 import qs from 'qs';
 import { Separator } from '@/app/shared/components/ui/separator';
 import { Button } from '@/app/shared/components/ui/button';
-import { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useCallback, useEffect, useState } from 'react';
+import { MainSearchLayout } from '@/app/shared/components/search/main-search-layout';
+import { cn } from '@/app/shared/lib/utils';
+import { Filter } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useClientSearchParams } from '@/app/shared/hooks/use-client-search-params';
+import { useTranslation } from 'react-i18next';
+
+const MAX_VISIBLE_FILTERS = 6;
 
 const Filters = ({ filters, filterKeys }) => {
   const { t } = useTranslation();
@@ -25,6 +30,17 @@ const Filters = ({ filters, filterKeys }) => {
   const { stringifiedSearchParams } = useClientSearchParams();
 
   const q: any = qs.parse(stringifiedSearchParams);
+
+  const [filtersExpanded, setFiltersExpanded] = useState<{
+    [key: string]: boolean;
+  }>({});
+
+  const updateFilterExpanded = useCallback((key: string) => {
+    setFiltersExpanded((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  }, []);
 
   const clearFilters = () => {
     const q: any =
@@ -47,7 +63,7 @@ const Filters = ({ filters, filterKeys }) => {
   if (filterKeys.length === 0) return null;
 
   return (
-    <div className="p-6">
+    <div className="py-5">
       <div className="flex items-center justify-between">
         <h3 className="font-bold">{t('filters', 'Filters')}</h3>
         <Button variant="ghost" size="sm" onClick={clearFilters}>
@@ -64,12 +80,20 @@ const Filters = ({ filters, filterKeys }) => {
             .map((k) => k.charAt(0).toUpperCase() + k.slice(1))
             .join(' ');
           const filter = filters[key];
+          let filterList = filter.buckets;
+
+          const originalCount = filter.buckets.length;
+          const filtersExpandedForKey = filtersExpanded[key] ?? false;
+
+          if (!filtersExpandedForKey) {
+            filterList = filterList.slice(0, MAX_VISIBLE_FILTERS);
+          }
 
           return (
             <div key={key} className="flex flex-col gap-1">
-              <h3 className="font-semibold">{heading}</h3>
+              <h3 className="font-medium">{heading}</h3>
               <div className="flex flex-col gap-2">
-                {filter.buckets.map((b) => (
+                {filterList.map((b) => (
                   <div
                     key={b.key}
                     className="flex items-center justify-between"
@@ -79,10 +103,10 @@ const Filters = ({ filters, filterKeys }) => {
                         checked={q.filters?.[key]?.includes(b.key) ?? false}
                         onCheckedChange={(checked) => {
                           const q: any =
-                            stringifiedSearchParams.indexOf('?') > -1
+                            router.asPath.indexOf('?') > -1
                               ? qs.parse(
-                                  stringifiedSearchParams.slice(
-                                    stringifiedSearchParams.indexOf('?') + 1,
+                                  router.asPath.slice(
+                                    router.asPath.indexOf('?') + 1,
                                   ),
                                 )
                               : {};
@@ -113,9 +137,26 @@ const Filters = ({ filters, filterKeys }) => {
                       {b.key}
                     </label>
 
-                    <Badge variant="outline">{b.doc_count}</Badge>
+                    <Badge className="bg-[rgba(0,0,0,0.03)]" variant="outline">
+                      {b.doc_count}
+                    </Badge>
                   </div>
                 ))}
+                {originalCount > MAX_VISIBLE_FILTERS && (
+                  <Button
+                    variant="link"
+                    size="sm"
+                    className="w-fit px-0"
+                    onClick={() => updateFilterExpanded(key)}
+                  >
+                    {filtersExpandedForKey
+                      ? t('search.show_less', { ns: 'common' })
+                      : t('search.show_all', {
+                          ns: 'common',
+                          count: originalCount,
+                        })}
+                  </Button>
+                )}
               </div>
             </div>
           );
@@ -136,23 +177,43 @@ export function FilterPanel() {
     }
   }, [filterKeys]);
 
-  if (filterKeys.length === 0) return null;
-
   return (
-    <>
-      <div className="hidden w-full max-w-72 bg-white xl:block print:hidden">
-        <Filters filters={filters} filterKeys={filterKeys} />
+    <div className="w-full p-[10px] lg:pl-[20px] xl:max-w-[340px]">
+      <div className="flex items-center print:hidden">
+        <MainSearchLayout className="flex-1" />
+        <Button
+          size="sm"
+          variant="ghost"
+          className={cn(
+            filterKeys.length > 0 ? 'flex xl:hidden' : 'hidden',
+            'gap-1',
+          )}
+          onClick={() => setFiltersOpen(true)}
+        >
+          <Filter className="size-4" />
+          Filter
+        </Button>
       </div>
-      <Sheet onOpenChange={setFiltersOpen} open={filtersOpen}>
-        <SheetContent side="left" className="max-h-screen overflow-y-scroll">
-          <SheetHeader>
-            <SheetTitle></SheetTitle>
-          </SheetHeader>
-          <ScrollArea>
+      {filterKeys.length > 0 && (
+        <>
+          <div className="hidden w-full xl:block print:hidden">
             <Filters filters={filters} filterKeys={filterKeys} />
-          </ScrollArea>
-        </SheetContent>
-      </Sheet>
-    </>
+          </div>
+          <Sheet onOpenChange={setFiltersOpen} open={filtersOpen}>
+            <SheetContent
+              side="left"
+              className="max-h-screen overflow-y-scroll"
+            >
+              <SheetHeader>
+                <SheetTitle></SheetTitle>
+              </SheetHeader>
+              <ScrollArea>
+                <Filters filters={filters} filterKeys={filterKeys} />
+              </ScrollArea>
+            </SheetContent>
+          </Sheet>
+        </>
+      )}
+    </div>
   );
 }

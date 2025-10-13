@@ -1,23 +1,14 @@
+import { getAppConfig } from '@/app/shared/lib/appConfig';
 import initTranslations from '@/app/shared/i18n/i18n';
 import { Metadata } from 'next/types';
-import { getAppConfig } from '@/app/shared/lib/appConfig';
-import { TourProvider } from '@/app/shared/context/tour-provider';
-import { HeroSection } from '@/app/features/home/components/hero-section';
-import Alert from '@/app/features/home/components/alert';
 import { CategoriesSection } from '@/app/features/home/components/categories-section';
-import { DataProviders } from '@/app/shared/components/data-providers';
+import { redirect } from 'next/navigation';
 import { PageWrapper } from '@/app/shared/components/page-wrapper';
+import { getCookies } from 'cookies-next/server';
 import { cookies, headers } from 'next/headers';
 import { getServerDevice } from '@/app/shared/lib/get-server-device';
-import { getCookies } from 'cookies-next/server';
 
-const i18nNamespaces = [
-  'page-home',
-  'common',
-  'dynamic',
-  'categories',
-  'suggestions',
-];
+const i18nNamespaces = ['common', 'dynamic', 'categories'];
 
 export const generateMetadata = async ({ params }): Promise<Metadata> => {
   const appConfig = getAppConfig();
@@ -42,12 +33,19 @@ export const generateMetadata = async ({ params }): Promise<Metadata> => {
   };
 };
 
-export default async function HomePage({ params }) {
+export default async function TopicsView({ params }) {
+  const appConfig = getAppConfig();
+
   const { locale } = await params;
-  const { resources } = await initTranslations(locale, i18nNamespaces);
+  const { t, resources } = await initTranslations(locale, i18nNamespaces);
+
   const cookieList = await getCookies({ cookies });
 
   const device = getServerDevice((await headers()).get('user-agent')!);
+
+  if (!appConfig?.newLayout?.enabled) {
+    redirect('/');
+  }
 
   return (
     <PageWrapper
@@ -55,14 +53,11 @@ export default async function HomePage({ params }) {
       jotaiData={{ device }}
       translationData={{ i18nNamespaces, locale, resources }}
     >
-      <TourProvider>
-        <HeroSection />
-        <div className="bg-primary/5">
-          <Alert />
-          <CategoriesSection />
-        </div>
-        <DataProviders />
-      </TourProvider>
+      <div className="container">
+        <CategoriesSection
+          backText={t('topics_page.backText', { ns: 'dynamic' })}
+        />
+      </div>
     </PageWrapper>
   );
 }

@@ -22,6 +22,7 @@ export function PrintButton({ componentToPrintRef }) {
       variant="outline"
       className="flex gap-1 print:hidden"
       onClick={handlePrint}
+      size="sm"
     >
       <Printer className="size-4" />
       {t('call_to_action.print')}

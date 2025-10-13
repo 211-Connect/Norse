@@ -27,7 +27,7 @@ export function ResultTotal() {
   );
 
   return (
-    <div id="result-total">
+    <div id="result-total" className="text-sm">
       {counterStart}-{counterEnd}
       {` `}
       {t('of')}

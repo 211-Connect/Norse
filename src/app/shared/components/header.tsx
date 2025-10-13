@@ -3,16 +3,20 @@
 import { signOut, useSession } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
 import { Fragment, useMemo } from 'react';
+import { useSetAtom } from 'jotai';
+import {
+  AlignJustifyIcon,
+  ChevronDown,
+  HomeIcon,
+  LogOut,
+  Search,
+  UserRound,
+} from 'lucide-react';
+import { useRouter } from 'next/navigation';
+
 import { Link } from './link';
 import { useDisclosure } from '../hooks/use-disclosure';
 import { Button } from './ui/button';
-import { cn } from '../lib/utils';
-import {
-  AlignJustifyIcon,
-  HeartIcon,
-  HomeIcon,
-  LogOutIcon,
-} from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -23,53 +27,84 @@ import {
 } from './ui/sheet';
 import { useAppConfig } from '../hooks/use-app-config';
 import { HEADER_ID } from '../lib/constants';
-import { useSetAtom } from 'jotai';
 import { dialogsAtom } from '../store/dialogs';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from './ui/dropdown';
+import { Card, CardContent } from './ui/card';
+import { cn } from '../lib/utils';
 import { LanguageSwitcher } from './language-switcher';
 
-type Props = {
-  fullWidth?: boolean;
-};
-
-export function Header(props: Props) {
+export function Header() {
   const appConfig = useAppConfig();
   const { t } = useTranslation('common');
+  const router = useRouter();
 
   const session = useSession();
   const setDialogStore = useSetAtom(dialogsAtom);
   const [opened, { toggle }] = useDisclosure(false);
 
+  const newLayoutEnabled = useMemo(
+    () => appConfig?.newLayout?.enabled,
+    [appConfig],
+  );
+
+  const logoUrl = useMemo(
+    () =>
+      newLayoutEnabled
+        ? appConfig?.newLayout?.logoUrl
+        : appConfig?.brand?.logoUrl,
+    [
+      appConfig?.brand?.logoUrl,
+      appConfig?.newLayout?.logoUrl,
+      newLayoutEnabled,
+    ],
+  );
+
   const SITEMAP = useMemo(
     () => [
       <li key="0">
-        <Link href="/" className="flex items-center gap-1 hover:underline">
-          <HomeIcon className="size-4" />
-          {t('header.home')}
-        </Link>
-      </li>,
-
-      <li key="1">
         <Link
-          href="/favorites"
+          href={appConfig.header?.customHomeUrl || '/'}
           className="flex items-center gap-1 hover:underline"
-          onClick={(e) => {
-            if (session.status === 'unauthenticated') {
-              e.preventDefault();
-              setDialogStore((prev) => ({
-                ...prev,
-                promptAuth: {
-                  ...prev.promptAuth,
-                  open: true,
-                },
-              }));
-            }
-          }}
         >
-          <HeartIcon className="size-4" />
-          {t('header.favorites')}
+          <Button
+            variant="outline"
+            className={cn(
+              'flex items-center gap-[5px]',
+              newLayoutEnabled && '!bg-white',
+            )}
+          >
+            <HomeIcon className="size-4" />
+            {t('header.home')}
+          </Button>
         </Link>
       </li>,
-      <Fragment key="5">
+      <Fragment key="1">
+        {appConfig.header?.searchUrl && (
+          <li>
+            <Link
+              href={appConfig.header.searchUrl}
+              className="flex items-center gap-1 hover:underline"
+            >
+              <Button
+                variant="outline"
+                className={cn(
+                  'flex items-center gap-[5px]',
+                  newLayoutEnabled && '!bg-white',
+                )}
+              >
+                <Search className="size-4" />
+                {t('header.search')}
+              </Button>
+            </Link>
+          </li>
+        )}
+      </Fragment>,
+      <Fragment key="2">
         {appConfig?.menus?.header &&
           appConfig.menus.header.length > 0 &&
           appConfig.menus.header.map((item) => {
@@ -82,94 +117,154 @@ export function Header(props: Props) {
                   target={item.target}
                   {...(item.href != null ? { href: item.href } : { href: '' })}
                 >
-                  {item.name}
+                  <Button
+                    variant="outline"
+                    className={cn(newLayoutEnabled && '!bg-white')}
+                  >
+                    {item.name}
+                  </Button>
                 </Link>
               </li>
             );
           })}
       </Fragment>,
-      <Fragment key="2">
-        {appConfig?.contact?.feedbackUrl && (
-          <li>
-            <Button
-              key="feedback"
-              className="feedback"
-              variant="outline"
-              onClick={(e) => {
-                e.preventDefault();
-
-                if (!appConfig?.contact?.feedbackUrl) {
-                  return;
-                }
-
-                const currentUrl = new URL(appConfig?.contact?.feedbackUrl);
-                const feedbackUrl = currentUrl.toString().split('?')[0];
-                const urlParams = new URLSearchParams(currentUrl.searchParams);
-
-                if (typeof window !== 'undefined') {
-                  urlParams.set('referring_url', window.location.href);
-                }
-
-                window.open(`${feedbackUrl}?${urlParams.toString()}`, '_blank');
-              }}
-            >
-              {t('header.submit_feedback')}
-            </Button>
-          </li>
-        )}
-      </Fragment>,
       <Fragment key="3">
         <LanguageSwitcher />
       </Fragment>,
       <Fragment key="4">
-        {session.status === 'authenticated' && (
-          <li>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
             <Button
-              variant="ghost"
-              className="flex gap-1"
-              onClick={() => {
-                signOut({ redirect: true, callbackUrl: '/' });
-              }}
+              className={cn(
+                'flex items-center gap-[5px]',
+                newLayoutEnabled && '!bg-white',
+              )}
+              variant="outline"
             >
-              <LogOutIcon className="size-4" /> {t('header.log_out')}
+              <UserRound className="size-4" />
+              {t('header.my_stuff')}
+              <ChevronDown className="size-4" />
             </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="min-w-[143px]">
+            <Card className="px-0 py-[10px]">
+              <CardContent>
+                <DropdownMenuItem className="!outline-none [&:focus-visible>*]:bg-accent">
+                  <Button
+                    className="w-full justify-start px-[10px] text-primary hover:text-primary"
+                    variant="ghost"
+                    onClick={() => {
+                      if (session.status === 'unauthenticated') {
+                        setTimeout(() => {
+                          setDialogStore((prev) => ({
+                            ...prev,
+                            promptAuth: {
+                              ...prev.promptAuth,
+                              open: true,
+                            },
+                          }));
+                        });
+                      } else {
+                        router.push('/favorites');
+                      }
+                    }}
+                  >
+                    {t('header.favorites')}
+                  </Button>
+                </DropdownMenuItem>
+                {session.status === 'authenticated' && (
+                  <DropdownMenuItem className="!outline-none [&:focus-visible>*]:bg-accent">
+                    <Button
+                      className="w-full justify-start px-[10px] text-primary hover:text-primary"
+                      variant="ghost"
+                      onClick={() => {
+                        signOut({ redirect: true, callbackUrl: '/' });
+                      }}
+                    >
+                      {t('header.log_out')}
+                    </Button>
+                  </DropdownMenuItem>
+                )}
+              </CardContent>
+            </Card>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </Fragment>,
+      <Fragment key="5">
+        {appConfig?.safeExit?.enabled && (
+          <li>
+            <Link target="_blank" href={appConfig.safeExit.url}>
+              <Button className="flex items-center gap-1" variant="outline">
+                {appConfig.safeExit.text}
+                <LogOut className="size-4" />
+              </Button>
+            </Link>
           </li>
         )}
       </Fragment>,
     ],
-    [session.status, t, appConfig, setDialogStore],
+    [
+      appConfig.header?.customHomeUrl,
+      appConfig.header?.searchUrl,
+      appConfig.menus?.header,
+      appConfig.safeExit?.enabled,
+      appConfig.safeExit?.url,
+      appConfig.safeExit?.text,
+      newLayoutEnabled,
+      t,
+      session.status,
+      setDialogStore,
+      router,
+    ],
   );
 
   return (
-    <header id={HEADER_ID} className="border-b bg-white print:hidden">
+    <header
+      id={HEADER_ID}
+      className={cn(
+        'px-3 print:hidden',
+        newLayoutEnabled ? 'py-[18px] lg:p-8' : 'border-b bg-white',
+      )}
+    >
       <div
         className={cn(
-          props.fullWidth ? '100%' : 'container mx-auto',
-          'flex h-12 items-center justify-between md:h-20',
+          'relative flex items-center justify-between',
+          newLayoutEnabled
+            ? 'rounded-xl bg-gradient-to-r from-header-start to-header-end p-6'
+            : 'py-3 pr-6',
         )}
       >
-        <div className="flex max-h-full w-full max-w-96 pb-1 pt-1 md:pb-2 md:pt-2">
+        <div
+          className={cn(
+            'flex',
+            newLayoutEnabled
+              ? 'absolute -left-3 -top-[18px]'
+              : 'max-h-full w-full max-w-96',
+          )}
+        >
           <Link
             href="/"
             aria-label={t('header.home') as string}
-            className="max-h-full pb-1 pt-1 md:pb-2 md:pt-2"
+            className="max-h-full"
           >
             <img
-              src={appConfig?.brand?.logoUrl}
+              src={logoUrl}
               alt={t('header.home') as string}
-              className="max-h-full w-auto"
+              className="h-[80px] max-h-full w-auto"
             />
           </Link>
         </div>
 
         <nav className="hidden w-full justify-end lg:flex">
-          <ul className="flex items-center gap-4">{SITEMAP}</ul>
+          <ul className="flex items-center gap-6">{SITEMAP}</ul>
         </nav>
 
         <div className="flex w-full justify-end lg:hidden">
           <Sheet open={opened} onOpenChange={toggle}>
             <SheetTrigger aria-label="Toggle navigation menu">
-              <AlignJustifyIcon className="size-8" />
+              <AlignJustifyIcon
+                className={cn('size-8', newLayoutEnabled && 'text-white')}
+              />
             </SheetTrigger>
             <SheetContent side="left">
               <SheetHeader>
@@ -188,7 +283,9 @@ export function Header(props: Props) {
                 </SheetTitle>
                 <SheetDescription />
               </SheetHeader>
-              <ul className="flex flex-col gap-2 pt-4">{SITEMAP}</ul>
+              <ul className="flex flex-col items-start gap-2 pt-4">
+                {SITEMAP}
+              </ul>
             </SheetContent>
           </Sheet>
         </div>

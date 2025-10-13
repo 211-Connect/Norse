@@ -3,8 +3,9 @@
     "home": "Дом",
     "favorites": "Избранное",
     "log_out": "Выходить",
-    "submit_feedback": "Отправить отзыв",
-    "language_select_label": "Выберите язык для изменения языка сайта"
+    "language_select_label": "Выберите язык для изменения языка сайта",
+    "my_stuff": "Мои вещи",
+    "search": "Поиск"
   },
   "favorites": {
     "added_to_list": "Добавлено в список",
@@ -23,11 +24,14 @@
     "unable_to_delete_list_message": "Ваш список не может быть удален."
   },
   "search": {
+    "add_my_location": "Добавить мое местоположение",
+    "back": "Назад",
     "hero_title": "Поиск ресурсов",
     "query_placeholder": "Еда, жилье и т.д.",
     "location_placeholder": "Город, штат или почтовый индекс",
     "radius_placeholder": "Радиус",
     "miles": "Мили",
+    "miles_short": "ми",
     "any": "Любой",
     "taxonomies": "Таксономии",
     "suggestions": "Предложения",
@@ -37,14 +41,16 @@
     "geocoding_error": "Ошибка геокодирования",
     "geocoding_unsupported": "Геолокация не поддерживается вашим браузером",
     "geocoding_unable_to_retrieve": "Не удается восстановить ваше местоположение. Проверьте настройки местоположения вашего браузера и повторите попытку.",
-    "categories": "Категории"
+    "categories": "Темы",
+    "show_all": "Показать все ({{count}})",
+    "show_less": "Показать меньше"
   },
   "call_to_action": {
     "call": "Звать",
-    "view_website": "Перейти на сайт",
-    "get_directions": "Проложить маршрут",
-    "view_details": "Подробнее",
-    "add_to_list": "Добавить в список",
+    "view_website": "Веб-сайт",
+    "get_directions": "Маршруты",
+    "view_details": "Смотреть больше",
+    "add_to_list": "Любимый",
     "delete_list": "Удалить список",
     "remove_from_list": "Удалить из списка",
     "share": "Предоставить общий доступ",
@@ -128,6 +134,6 @@
     "provided_by": "Данные предоставлены"
   },
   "footer": {
-    "copyright": "Все права защищены."
+    "copyright": "© Авторские права {{text}}"
   }
 }

@@ -3,8 +3,9 @@
     "home": "Nhà",
     "favorites": "Yêu thích",
     "log_out": "Đăng xuất",
-    "submit_feedback": "Gửi phản hồi",
-    "language_select_label": "Chọn ngôn ngữ để thay đổi ngôn ngữ trang web"
+    "language_select_label": "Chọn ngôn ngữ để thay đổi ngôn ngữ trang web",
+    "my_stuff": "Đồ của tôi",
+    "search": "Tìm kiếm"
   },
   "favorites": {
     "added_to_list": "Đã thêm vào danh sách",
@@ -23,11 +24,14 @@
     "unable_to_delete_list_message": "Không thể xóa danh sách của bạn."
   },
   "search": {
+    "add_my_location": "Thêm vị trí của tôi",
+    "back": "Quay lại",
     "hero_title": "Tìm kiếm tài nguyên",
     "query_placeholder": "Thực phẩm, nhà ở, vv...",
     "location_placeholder": "Thành phố, tiểu bang hoặc mã ZIP",
     "radius_placeholder": "Bán kính",
     "miles": "Km",
+    "miles_short": "km",
     "any": "Bất kì",
     "taxonomies": "Phân loại",
     "suggestions": "Gợi ý",
@@ -37,14 +41,16 @@
     "geocoding_error": "Lỗi mã hóa địa lý",
     "geocoding_unsupported": "Vị trí địa lý không được trình duyệt của bạn hỗ trợ",
     "geocoding_unable_to_retrieve": "Không thể truy xuất vị trí của bạn. Vui lòng kiểm tra cài đặt vị trí của trình duyệt và thử lại.",
-    "categories": "Loại"
+    "categories": "Chủ đề",
+    "show_all": "Hiển thị tất cả ({{count}})",
+    "show_less": "Hiển thị ít hơn"
   },
   "call_to_action": {
     "call": "Gọi",
-    "view_website": "Xem trang web",
-    "get_directions": "Nhận chỉ đường",
-    "view_details": "Xem chi tiết",
-    "add_to_list": "Thêm vào danh sách",
+    "view_website": "Trang web",
+    "get_directions": "Hướng dẫn",
+    "view_details": "Xem thêm",
+    "add_to_list": "Yêu thích",
     "delete_list": "Xóa danh sách",
     "remove_from_list": "Xóa khỏi danh sách",
     "share": "Chia sẻ",
@@ -128,6 +134,6 @@
     "provided_by": "Dữ liệu được cung cấp bởi"
   },
   "footer": {
-    "copyright": "Đã đăng ký Bản quyền."
+    "copyright": "© Bản quyền {{text}}"
   }
 }

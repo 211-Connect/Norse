@@ -7,9 +7,9 @@ import { cn } from '@/app/shared/lib/utils';
 
 import { Navigation } from './navigation';
 import { Overview } from './overview';
-import { Information } from './information';
-import { AdditionalInformation } from './additional-information';
 import { OrganizationInformation } from './organization-information';
+import { DescriptionSection } from './description-section';
+import { MapSection } from './map-section';
 
 export const ResourcePageContent = ({ resource }: { resource: any }) => {
   const appConfig = useAppConfig();
@@ -21,18 +21,19 @@ export const ResourcePageContent = ({ resource }: { resource: any }) => {
         componentToPrintRef={componentToPrintRef}
         resource={resource}
       />
+
       <div
         className={cn(
-          'flex flex-col gap-2 font-sans lg:flex-row',
+          'flex flex-col gap-3 font-sans lg:flex-row',
           fontSans.variable,
         )}
         ref={componentToPrintRef}
       >
         <Overview resource={resource} />
 
-        <div className="flex flex-1 flex-col gap-2">
-          <Information resource={resource} />
-          <AdditionalInformation resource={resource} />
+        <div className="flex flex-1 flex-col gap-3">
+          <DescriptionSection resource={resource} />
+          <MapSection resource={resource} />
           <OrganizationInformation resource={resource} />
         </div>
       </div>

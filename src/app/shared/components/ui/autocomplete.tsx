@@ -53,6 +53,8 @@ export type AutocompleteProps = {
   value?: string;
   defaultValue?: string;
   autoSelectIndex?: number;
+  optionsPopoverClassName?: string;
+  defaultOpen?: boolean;
 };
 
 const useMouseMovement = () => {
@@ -90,12 +92,15 @@ export function Autocomplete(props: AutocompleteProps) {
     defaultValue,
     autoSelectIndex,
     value: inputValue,
+    optionsPopoverClassName,
+    defaultOpen = false,
     ...rest
   } = props;
+
   const isMouseMoving = useMouseMovement();
   const [lastManualInput, setLastManualInput] = useState('');
   const [uniqueId, setUnqiueId] = useState('');
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [value, setValue] = useUncontrolled<string>({
     value: inputValue,
@@ -458,158 +463,158 @@ export function Autocomplete(props: AutocompleteProps) {
   }, []);
 
   return (
-    <div
-      className={cn('relative flex items-center border-b px-3 py-1', className)}
-    >
-      {Icon ? (
-        <Icon className="mr-2 h-4 w-4 shrink-0 opacity-50" />
-      ) : (
-        <SearchIcon className="mr-2 h-4 w-4 shrink-0 opacity-50" />
-      )}
-      <Input
-        {...inputProps}
-        className="rounded-none border-none px-0 shadow-none focus-visible:ring-0"
-        ref={setReferenceElement}
-        onClick={openOnClick}
-        onKeyDown={handleKeyDown}
-        onBlur={handleBlur}
-        onChange={handleInputChange}
-        value={value}
-        autoComplete="off"
-        aria-autocomplete="list"
-        aria-controls={open ? uniqueId : undefined}
-        aria-haspopup="listbox"
-        aria-label={inputProps?.placeholder ?? ''}
-        aria-owns={uniqueId}
-        aria-expanded={open}
-        aria-activedescendant={
-          currentIndex > -1 ? `${uniqueId}-option-${currentIndex}` : ''
-        }
-        role="combobox"
-      />
+    <div className={cn('relative flex items-center', className)}>
+      <div className="relative w-full">
+        {Icon ? (
+          <Icon className="absolute left-2 top-2 size-4 shrink-0 text-primary" />
+        ) : (
+          <SearchIcon className="absolute left-2 top-2 size-4 shrink-0 text-primary" />
+        )}
+        <Input
+          {...inputProps}
+          className={cn(
+            'h-auto w-full rounded-lg border p-0 px-[29px] py-2 text-xs shadow-none focus:border-primary focus-visible:ring-0',
+            inputProps?.className,
+          )}
+          ref={setReferenceElement}
+          onClick={openOnClick}
+          onKeyDown={handleKeyDown}
+          onBlur={handleBlur}
+          onChange={handleInputChange}
+          value={value}
+          autoComplete="off"
+          aria-autocomplete="list"
+          aria-controls={open ? uniqueId : undefined}
+          aria-haspopup="listbox"
+          aria-label={inputProps?.placeholder ?? ''}
+          aria-owns={uniqueId}
+          aria-expanded={open}
+          aria-activedescendant={
+            currentIndex > -1 ? `${uniqueId}-option-${currentIndex}` : ''
+          }
+          role="combobox"
+        />
 
-      <TooltipProvider>
-        <Tooltip delayDuration={100}>
-          <TooltipTrigger asChild autoFocus={false} tabIndex={-1}>
-            <Button
-              ref={clearButtonRef}
-              size="icon"
-              variant="ghost"
-              className={cn(
-                (value?.length ?? 0) > 0 ? 'visible' : 'invisible',
-                'hover:bg-transparent hover:bg-none',
-              )}
-              onClick={clear}
-              aria-label="Clear"
-              type="button"
-            >
-              <XIcon className={cn('h-4 w-4 shrink-0 opacity-50')} />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="bottom">
-            <span>Clear</span>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-
-      {open && (
-        <div
-          id={uniqueId}
-          role="listbox"
-          aria-multiselectable="false"
-          ref={setPopperElement}
-          style={{
-            position: strategy,
-            top: y ?? 0,
-            left: 0,
-            width: '100%',
-            zIndex: 10,
-            maxHeight: '14rem',
-            overflow: 'auto',
-            overscrollBehavior: 'contain',
-            borderRadius: '0.375rem',
-            background: 'white',
-            boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-          }}
-          className="max-h-56 w-full overflow-auto overscroll-contain rounded-md bg-white shadow-md"
-        >
-          {options?.map((group, groupIndex) => {
-            const [groupName, groupOptions] = group;
-            const groupId = `${uniqueId}-group-${groupIndex}`;
-
-            return (
-              <Fragment key={groupName}>
-                {groupName === '_' ? (
-                  <Separator />
-                ) : (
-                  <h3
-                    id={groupId}
-                    className="px-3 py-1 text-xs text-primary"
-                    role="presentation"
-                  >
-                    {groupName}
-                  </h3>
+        <TooltipProvider>
+          <Tooltip delayDuration={100}>
+            <TooltipTrigger asChild autoFocus={false} tabIndex={-1}>
+              <Button
+                ref={clearButtonRef}
+                size="icon"
+                variant="ghost"
+                className={cn(
+                  (value?.length ?? 0) > 0 ? 'visible' : 'invisible',
+                  'absolute right-0 top-0 h-full hover:bg-transparent hover:bg-none',
                 )}
-                <div role="group" aria-labelledby={groupId}>
-                  {groupOptions?.map((option) => {
-                    const matches = match(option.value, lastManualInput);
-                    const Icon = option.Icon || 'span';
+                onClick={clear}
+                aria-label="Clear"
+                type="button"
+              >
+                <XIcon className={cn('h-4 w-4 shrink-0 opacity-50')} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              <span>Clear</span>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
 
-                    return (
-                      <div
-                        key={option.index}
-                        id={`${uniqueId}-option-${option.index}`}
-                        role="option"
-                        className={cn(
-                          'flex justify-between gap-2 px-3 py-1',
-                          currentIndex === option.index && 'bg-primary/5',
-                        )}
-                        aria-selected={currentIndex === option.index}
-                        onMouseEnter={handleOptionMouseEnter(option.index)}
-                        onMouseLeave={handleOptionMouseExit()}
-                        onMouseDown={handleValueSelect(option.value)}
-                      >
-                        <span className="flex items-center gap-2">
-                          {Icon === 'span' ? null : (
-                            <Icon className="size-4 shrink-0" />
+        {open && (
+          <div
+            id={uniqueId}
+            role="listbox"
+            aria-multiselectable="false"
+            ref={setPopperElement}
+            className={cn(
+              'absolute z-10 max-h-56 w-full animate-opacity-in overflow-auto overscroll-contain bg-white',
+              optionsPopoverClassName,
+            )}
+          >
+            {options?.map((group, groupIndex) => {
+              const [groupName, groupOptions] = group;
+              const groupId = `${uniqueId}-group-${groupIndex}`;
+
+              return (
+                <Fragment key={groupName}>
+                  {groupName === '_' ? (
+                    groupIndex !== 0 && <Separator />
+                  ) : (
+                    <h3
+                      id={groupId}
+                      className="mb-3 px-3 py-1 text-xs font-medium [&:not(:first-child)]:mt-3"
+                      role="presentation"
+                    >
+                      {groupName}
+                    </h3>
+                  )}
+                  <div
+                    className="flex flex-col gap-2"
+                    role="group"
+                    aria-labelledby={groupId}
+                  >
+                    {groupOptions?.map((option) => {
+                      const optionValue = option.value ?? '';
+                      const matches = optionValue
+                        ? match(optionValue, lastManualInput)
+                        : [];
+                      const Icon = option.Icon || 'span';
+
+                      return (
+                        <div
+                          key={option.index}
+                          id={`${uniqueId}-option-${option.index}`}
+                          role="option"
+                          className={cn(
+                            'flex justify-between gap-2 px-3 py-2',
+                            currentIndex === option.index && 'bg-primary/5',
                           )}
-                          <p>
-                            {parse(option.value, matches).map((text, idx) =>
-                              text.highlight ? (
-                                <span
-                                  key={`${option.value}-${text.text}-${idx}`}
-                                  className="font-semibold"
-                                >
-                                  {text.text}
-                                </span>
-                              ) : (
-                                <span
-                                  key={`${option.value}-${text.text}-${idx}`}
-                                >
-                                  {text.text}
-                                </span>
-                              ),
+                          aria-selected={currentIndex === option.index}
+                          onMouseEnter={handleOptionMouseEnter(option.index)}
+                          onMouseLeave={handleOptionMouseExit()}
+                          onMouseDown={handleValueSelect(option.value)}
+                        >
+                          <span className="flex items-center gap-2 text-xs font-medium text-primary">
+                            {Icon === 'span' ? null : (
+                              <Icon className="size-4 shrink-0" />
                             )}
-                          </p>
-                        </span>
+                            <p>
+                              {parse(optionValue, matches).map((text, idx) =>
+                                text.highlight ? (
+                                  <span
+                                    key={`${optionValue}-${text.text}-${idx}`}
+                                    className="font-semibold"
+                                  >
+                                    {text.text}
+                                  </span>
+                                ) : (
+                                  <span
+                                    key={`${optionValue}-${text.text}-${idx}`}
+                                  >
+                                    {text.text}
+                                  </span>
+                                ),
+                              )}
+                            </p>
+                          </span>
 
-                        {option.label && (
-                          <Badge
-                            variant="outline"
-                            className="w-[100px] shrink-0 text-xs"
-                          >
-                            <p className="mx-auto truncate">{option.label}</p>
-                          </Badge>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </Fragment>
-            );
-          })}
-        </div>
-      )}
+                          {option.label && (
+                            <Badge
+                              variant="outline"
+                              className="w-[100px] shrink-0 text-xs"
+                            >
+                              <p className="mx-auto truncate">{option.label}</p>
+                            </Badge>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </Fragment>
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

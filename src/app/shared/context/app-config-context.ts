@@ -76,6 +76,29 @@ export type AppConfig = {
     provider: 'Twilio';
   }[];
   errorTranslationData: any;
+  newLayout?: {
+    enabled?: boolean;
+    headerStart?: string;
+    headerEnd?: string;
+    heroUrl?: string;
+    logoUrl?: string;
+  };
+  translatedConfig: {
+    [locale: string]: {
+      footer?: {
+        disclaimer?: string;
+      };
+      header?: {
+        customHomeUrl?: string;
+        searchUrl?: string;
+      };
+      safeExit?: {
+        enabled?: boolean;
+        text: string;
+        url: string;
+      };
+    };
+  };
 };
 
 const appConfigContext = createContext<AppConfig | null>(null);

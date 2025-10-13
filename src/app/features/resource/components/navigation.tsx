@@ -1,8 +1,9 @@
 import { AddToFavoritesButton } from '@/app/shared/components/add-to-favorites-button';
+import { ReportButton } from '@/app/shared/components/report-button';
+import { PrintButton } from '@/app/shared/components/print-button';
 import { ShareButton } from '@/app/shared/components/share-button';
 
 import { BackToResultsButton } from './back-to-results-button';
-import { PrintButton } from '../../../shared/components/print-button';
 
 export function Navigation({ componentToPrintRef, resource }) {
   return (
@@ -16,6 +17,7 @@ export function Navigation({ componentToPrintRef, resource }) {
           body={resource.description}
         />
         <AddToFavoritesButton serviceAtLocationId={resource.id} />
+        <ReportButton />
       </div>
     </div>
   );

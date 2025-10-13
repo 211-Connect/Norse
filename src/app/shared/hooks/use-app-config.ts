@@ -1,9 +1,21 @@
-'use client';
+import { useContext, useEffect, useMemo, useState } from 'react';
+import { AppConfig, appConfigContext } from '../context/app-config-context';
+import { useTranslation } from 'react-i18next';
 
-import { useContext } from 'react';
-import { appConfigContext } from '../context/app-config-context';
+export type TranslatedAppConfig = Omit<AppConfig, 'translatedConfig'> &
+  AppConfig['translatedConfig'][string];
 
-export function useAppConfig() {
+export function useAppConfig(): TranslatedAppConfig {
+  const { i18n } = useTranslation('common');
   const appConfig = useContext(appConfigContext);
-  return appConfig;
+
+  const translatedConfig = useMemo(() => {
+    const { translatedConfig, ...rest } = appConfig!;
+    return {
+      ...rest,
+      ...(translatedConfig?.[i18n.language] || {}),
+    };
+  }, [appConfig, i18n.language]);
+
+  return translatedConfig;
 }

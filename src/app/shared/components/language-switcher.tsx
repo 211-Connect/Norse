@@ -14,8 +14,11 @@ import {
 } from './ui/select';
 import { LanguagesIcon } from 'lucide-react';
 import { useClientSearchParams } from '../hooks/use-client-search-params';
+import { useAppConfig } from '../hooks/use-app-config';
+import { cn } from '../lib/utils';
 
 export const LanguageSwitcher = () => {
+  const appConfig = useAppConfig();
   const router = useRouter();
   const currentPathname = usePathname();
   const { stringifiedSearchParams } = useClientSearchParams();
@@ -23,6 +26,11 @@ export const LanguageSwitcher = () => {
   const { t, i18n } = useTranslation('common');
 
   const currentLanguage = useMemo(() => i18n.language, [i18n.language]);
+
+  const newLayoutEnabled = useMemo(
+    () => appConfig?.newLayout?.enabled,
+    [appConfig],
+  );
 
   const handleValueChange = useCallback(
     (language: string) => {
@@ -49,7 +57,10 @@ export const LanguageSwitcher = () => {
         onValueChange={handleValueChange}
       >
         <SelectTrigger
-          className="w-[150px]"
+          className={cn(
+            'flex w-auto min-w-[140px] items-center gap-[5px]',
+            newLayoutEnabled && '!bg-white',
+          )}
           aria-label={t('header.language_select_label')}
         >
           <div className="flex items-center gap-1 overflow-hidden">

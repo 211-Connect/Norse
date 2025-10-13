@@ -115,6 +115,7 @@ export function CustomPagination({
             return (
               <PaginationItem key={idx}>
                 <PaginationLink
+                  className="h-[30px] w-[36px]"
                   href=""
                   onClick={async (e) => {
                     e.preventDefault();

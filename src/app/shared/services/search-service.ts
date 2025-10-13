@@ -35,7 +35,7 @@ export function createUrlParamsForSearch(
   return omitBy(
     urlParams,
     (value) => isNil(value) || (isString(value) && isEmpty(value.trim())),
-  );
+  ) as Record<string, string>;
 }
 
 export const findResources = cache(

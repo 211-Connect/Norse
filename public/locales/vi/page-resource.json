@@ -1,7 +1,10 @@
 {
-  "back_to_results": "Quay lại kết quả",
-  "back_to_home": "Trở về trang chủ",
+  "back_to_results": "Kết quả",
+  "back_to_home": "Trang chủ",
   "categories": "Loại",
+  "categories_title": "Có gì ở đây",
+  "description": "Mô tả",
+  "directions_button": "Lấy chỉ đường",
   "last_assured": "Đảm bảo cuối cùng",
   "hours": "Giờ",
   "required_documents": "Tài liệu cần thiết",
@@ -19,5 +22,8 @@
   "unknown": "Không biết",
   "languages": "Ngôn ngữ",
   "transportation": "Giao thông",
-  "accessibility": "Khả năng tiếp cận"
+  "accessibility": "Khả năng tiếp cận",
+  "report": "Báo cáo",
+  "providing_organization": "Tổ chức cung cấp",
+  "interpretation_services": "Dịch vụ phiên dịch"
 }

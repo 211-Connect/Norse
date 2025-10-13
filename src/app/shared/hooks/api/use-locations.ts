@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { MapService } from '@/app/shared/services/map-service';
 import { useGeocodingAdapter } from '../use-geocoding-adapter';
 import { useMemo } from 'react';
-import { NavigationIcon } from 'lucide-react';
+import { EarthIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export function useLocations(searchTerm: string) {
@@ -40,11 +40,11 @@ export function useLocations(searchTerm: string) {
     return [
       ...additionalLocations.map((loc) => ({
         value: loc.address,
-        Icon: NavigationIcon,
+        Icon: EarthIcon,
       })),
       ...data.map((loc) => ({
         value: loc.address,
-        Icon: NavigationIcon,
+        Icon: EarthIcon,
       })),
     ];
   }, [data, additionalLocations]);

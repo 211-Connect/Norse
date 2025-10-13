@@ -1,133 +1,86 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { useAtomValue, useSetAtom } from 'jotai';
-import { useTaxonomies } from '../../hooks/api/use-taxonomies';
-import {
-  prevSearchTermAtom,
-  searchAtom,
-  searchTermAtom,
-} from '../../store/search';
-import { useDebounce } from '../../hooks/use-debounce';
-import { useSuggestions } from '../../hooks/use-suggestions';
-import { useFlag } from '@/app/shared/hooks/use-flag';
-import { Subcategory, useCategories } from '@/app/shared/hooks/use-categories';
-import { Autocomplete } from '../ui/autocomplete';
 import { useTranslation } from 'react-i18next';
+import { useAtomValue } from 'jotai';
+import { SearchIcon } from 'lucide-react';
 
-export function SearchBar() {
+import { useTaxonomies } from '../../hooks/api/use-taxonomies';
+import { prevSearchTermAtom, searchTermAtom } from '../../store/search';
+import { useDebounce } from '../../hooks/use-debounce';
+import { Autocomplete } from '../ui/autocomplete';
+import { useFlag } from '../../hooks/use-flag';
+import { useSearchResources } from '../../hooks/use-search-resources';
+
+interface SearchBarProps {
+  focusByDefault?: boolean;
+}
+
+export function SearchBar({ focusByDefault = false }: SearchBarProps) {
+  const { t } = useTranslation('common');
   const [shouldSearch, setShouldSearch] = useState(false);
-  const setSearch = useSetAtom(searchAtom);
   const prevSearchTerm = useAtomValue(prevSearchTermAtom);
   const searchTerm = useAtomValue(searchTermAtom);
   const debouncedSearchTerm = useDebounce(searchTerm, 200);
   const { data: taxonomies } = useTaxonomies(
     shouldSearch ? debouncedSearchTerm : prevSearchTerm,
   );
-  const suggestions = useSuggestions();
-  const categories = useCategories();
   const showTaxonomyBadge = useFlag('showSuggestionListTaxonomyBadge');
 
-  const { t } = useTranslation();
-
-  const reducedCategories: {
-    name: string;
-    query: string;
-    queryType: string;
-  }[] = useMemo(() => {
-    const result = categories.reduce<Subcategory[]>((prev, current) => {
-      if (current?.subcategories && current?.subcategories?.length > 0) {
-        // Filter out null/undefined subcategories before concatenating
-        const validSubcategories = current.subcategories.filter(
-          (subcat) => subcat != null && subcat.name != null,
-        );
-        return prev.concat(validSubcategories);
-      }
-      return prev;
-    }, []);
-
-    return result;
-  }, [categories]);
+  const { reducedCategories, findCode, getQueryType, setSearch, suggestions } =
+    useSearchResources(shouldSearch ? debouncedSearchTerm : prevSearchTerm);
 
   // Remap and filter data as needed for the search box
   const options = useMemo(() => {
     return [
       ...suggestions
         .map((option) => ({
+          Icon: SearchIcon,
           value: option.name,
-          group: t('search.suggestions', { ns: 'common' }),
+          group: t('search.suggestions'),
         }))
-        .filter((option) =>
-          shouldSearch
+        .filter((option, index) => {
+          if (searchTerm.length !== 0 && index > 5) return false;
+
+          return shouldSearch
             ? option?.value?.toLowerCase()?.includes(searchTerm?.toLowerCase())
             : option?.value
                 ?.toLowerCase()
-                ?.includes(prevSearchTerm?.toLowerCase()),
-        ),
-      ...taxonomies.map((option) => ({
-        group: t('search.taxonomies', { ns: 'common' }),
-        value: option.name,
-        label: showTaxonomyBadge ? option.code : null,
-      })),
+                ?.includes(prevSearchTerm?.toLowerCase());
+        }),
+      ...reducedCategories
+        .map((option) => ({
+          Icon: SearchIcon,
+          group: t('search.categories'),
+          value: option.name,
+        }))
+        .filter((option, index) => {
+          if (index > 5) return false;
+
+          return shouldSearch
+            ? option?.value?.toLowerCase()?.includes(searchTerm?.toLowerCase())
+            : option?.value
+                ?.toLowerCase()
+                ?.includes(prevSearchTerm?.toLowerCase());
+        }),
+      ...taxonomies
+        .map((option) => ({
+          group: t('search.taxonomies'),
+          value: option.name,
+          label: showTaxonomyBadge ? option.code : null,
+        }))
+        .slice(0, 5),
     ];
   }, [
-    taxonomies,
     suggestions,
-    searchTerm,
+    reducedCategories,
+    taxonomies,
     t,
-    showTaxonomyBadge,
     shouldSearch,
+    searchTerm,
     prevSearchTerm,
+    showTaxonomyBadge,
   ]);
-
-  // Find the taxonomy code to be used for a query
-  // Fallback to the original string value if a code isn't found
-  const findCode = useCallback(
-    (value: string) => {
-      const taxonomy = taxonomies.find(
-        (tax) => tax?.name?.toLowerCase() === value.toLowerCase(),
-      );
-      if (taxonomy) return taxonomy.code;
-
-      const suggestion = suggestions.find(
-        (sugg) => sugg?.name?.toLowerCase() === value.toLowerCase(),
-      );
-      if (suggestion) return suggestion.taxonomies;
-
-      const category = reducedCategories.find(
-        (cat) => cat?.name?.toLowerCase() === value.toLowerCase(),
-      );
-      if (category) return category.query;
-
-      return value;
-    },
-    [reducedCategories, suggestions, taxonomies],
-  );
-
-  const getQueryType = useCallback(
-    (value, query) => {
-      const taxonomy = taxonomies.find(
-        (tax) => tax?.name?.toLowerCase() === value.toLowerCase(),
-      );
-      if (taxonomy) return 'taxonomy';
-
-      const suggestion = suggestions.find(
-        (sugg) => sugg?.name?.toLowerCase() === value.toLowerCase(),
-      );
-      if (suggestion) return 'taxonomy';
-
-      const category = reducedCategories.find(
-        (cat) => cat?.name?.toLowerCase() === value.toLowerCase(),
-      );
-      if (category) return 'taxonomy';
-
-      if (query.trim().length === 0) return '';
-      if (query === value) return 'text';
-
-      return 'taxonomy';
-    },
-    [reducedCategories, suggestions, taxonomies],
-  );
 
   const setSearchTerm = useCallback(
     (value: string) => {
@@ -162,15 +115,18 @@ export function SearchBar() {
     <Autocomplete
       className="search-box"
       inputProps={{
+        autoFocus: focusByDefault,
         placeholder:
           t('search.query_placeholder', {
             ns: 'dynamic',
             defaultValue: t('search.query_placeholder'),
           }) || '',
       }}
+      defaultOpen={focusByDefault}
       options={options}
       onInputChange={handleInputChange}
       onValueChange={setSearchTerm}
+      optionsPopoverClassName="mt-[110px] max-h-[calc(100vh-360px)]"
       value={searchTerm}
     />
   );

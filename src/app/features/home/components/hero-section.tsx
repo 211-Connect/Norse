@@ -12,10 +12,9 @@ import { useTranslation } from 'react-i18next';
 
 export function HeroSection() {
   const appConfig = useAppConfig();
-  const showHomePageTour = useFlag('showHomePageTour');
   const { setIsOpen, setSteps } = useTour();
-
   const { t } = useTranslation('page-home');
+  const showHomePageTour = useFlag('showHomePageTour');
 
   const tourSteps = useMemo(() => {
     const steps = [
@@ -30,14 +29,6 @@ export function HeroSection() {
         ),
       },
       {
-        selector: '.location-box',
-        content: (
-          <div className="flex flex-col gap-2">
-            <p>{t('tour.step_4.paragraph_1')}</p>
-          </div>
-        ),
-      },
-      {
         selector: '.categories',
         content: (
           <div className="flex flex-col gap-2">
@@ -48,20 +39,8 @@ export function HeroSection() {
       },
     ];
 
-    if (appConfig?.contact?.feedbackUrl) {
-      steps.push({
-        selector: '.feedback',
-        content: (
-          <div className="flex flex-col gap-2">
-            <p>{t('tour.step_3.paragraph_1')}</p>
-            <p>{t('tour.step_3.paragraph_2')}</p>
-          </div>
-        ),
-      });
-    }
-
     return steps;
-  }, [appConfig?.contact?.feedbackUrl, t]);
+  }, [t]);
 
   const enableTour = () => {
     createTourEvent(null);
@@ -84,10 +63,10 @@ export function HeroSection() {
       />
 
       <div
-        className="flex min-w-full flex-col gap-2 rounded-md bg-white p-4 sm:min-w-[500px]"
+        className="flex min-w-full flex-col gap-2 rounded-lg bg-[#0E2853] p-3 sm:min-w-[500px]"
         role="search"
       >
-        <h3 className="text-xl font-bold">
+        <h3 className="text-2xl font-medium text-white">
           {t('search.hero_title', {
             ns: 'dynamic',
             defaultValue: t('search.hero_title', { ns: 'common' }),

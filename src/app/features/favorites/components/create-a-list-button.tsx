@@ -13,10 +13,10 @@ import { Input } from '@/app/shared/components/ui/input';
 import { Label } from '@/app/shared/components/ui/label';
 import { Switch } from '@/app/shared/components/ui/switch';
 import { Textarea } from '@/app/shared/components/ui/textarea';
-import { useAuth } from '@/app/shared/hooks/use-auth';
+import { cn } from '@/app/shared/lib/utils';
 import { createFavoriteList } from '@/app/shared/services/favorite-service';
 import { PlusIcon } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -26,12 +26,13 @@ const initialState = {
   public: false,
 };
 
-export function CreateAListButton() {
-  const { sessionId } = useAuth();
+export function CreateAListButton({ className = '' }: { className?: string }) {
   const { t } = useTranslation('common');
+  const router = useRouter();
+  const pathname = usePathname();
+
   const [open, _setOpen] = useState(false);
   const [formState, setFormState] = useState(initialState);
-  const router = useRouter();
 
   const setOpen = (value: boolean) => {
     setFormState(initialState);
@@ -41,18 +42,15 @@ export function CreateAListButton() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const newList = await createFavoriteList(
-      {
-        name: formState.name,
-        description: formState.description,
-        privacy: formState.public,
-      },
-      sessionId,
-    );
+    const newList = await createFavoriteList({
+      name: formState.name,
+      description: formState.description,
+      privacy: formState.public,
+    });
 
     if (newList) {
       setOpen(false);
-      router.refresh();
+      router.replace(pathname);
     }
   };
 
@@ -68,7 +66,7 @@ export function CreateAListButton() {
       <Button
         onClick={() => setOpen(true)}
         variant="outline"
-        className="flex gap-1"
+        className={cn('flex gap-1', className)}
       >
         <PlusIcon className="size-4" />
         {t('modal.create_list.create_a_list')}

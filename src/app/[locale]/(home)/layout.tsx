@@ -2,6 +2,7 @@ import { Metadata, Viewport } from 'next/types';
 import initTranslations from '@/app/shared/i18n/i18n';
 
 import '@/app/shared/styles/globals.css';
+import '@/app/shared/styles/map.css';
 import { fontSans } from '@/app/shared/styles/fonts';
 import { cn } from '@/app/shared/lib/utils';
 import { getAppConfig } from '@/app/shared/lib/appConfig';
@@ -11,7 +12,7 @@ import {
 } from '@/app/shared/lib/server-utils';
 import { Providers } from '@/app/shared/components/providers';
 import { cookies } from 'next/headers';
-import { SESSION_ID } from '../shared/lib/constants';
+import { SESSION_ID } from '../../shared/lib/constants';
 import { getSession } from '@/auth';
 
 export const viewport: Viewport = {
@@ -53,12 +54,15 @@ export default async function RootLayout({
     sessionId: cookieList.get(SESSION_ID)?.value,
   };
 
+  const newLayoutEnabled = appConfig?.newLayout?.enabled;
+
   return (
     <html lang={locale}>
       <body>
         <div
           className={cn(
             'flex min-h-screen flex-col bg-primary/5 font-sans antialiased',
+            newLayoutEnabled && 'bg-white',
             fontSans.variable,
           )}
         >

@@ -3,8 +3,9 @@
     "home": "Дім",
     "favorites": "Уподобання",
     "log_out": "Вийти",
-    "submit_feedback": "Надіслати відгук",
-    "language_select_label": "Виберіть мову, щоб змінити мову сайту"
+    "language_select_label": "Виберіть мову, щоб змінити мову сайту",
+    "my_stuff": "Мої речі",
+    "search": "Пошук"
   },
   "favorites": {
     "added_to_list": "Додано до списку",
@@ -23,11 +24,14 @@
     "unable_to_delete_list_message": "Ваш список не вдалося видалити."
   },
   "search": {
+    "add_my_location": "Додати моє місцезнаходження",
+    "back": "Назад",
     "hero_title": "Пошук ресурсів",
     "query_placeholder": "Їжа, житло і т.д.",
     "location_placeholder": "Місто, область або поштовий індекс",
     "radius_placeholder": "Радіус",
     "miles": "Милі",
+    "miles_short": "ми",
     "any": "Будь-які",
     "taxonomies": "Таксономії",
     "suggestions": "Пропозиції",
@@ -37,14 +41,16 @@
     "geocoding_error": "Помилка геокодування",
     "geocoding_unsupported": "Геолокація не підтримується вашим браузером",
     "geocoding_unable_to_retrieve": "Не вдається відновити дані про ваше місцезнаходження. Перевірте налаштування місцезнаходження свого браузера та повторіть спробу.",
-    "categories": "Категорії"
+    "categories": "Теми",
+    "show_all": "Показати все ({{count}})",
+    "show_less": "Показати менше"
   },
   "call_to_action": {
     "call": "Кликати",
-    "view_website": "Переглянути веб-сайт",
-    "get_directions": "Прокласти маршрут",
-    "view_details": "Перегляд докладних відомостей",
-    "add_to_list": "Додати до списку",
+    "view_website": "Веб-сайт",
+    "get_directions": "Маршрути",
+    "view_details": "Дивитися більше",
+    "add_to_list": "Улюблене",
     "delete_list": "Видалити список",
     "remove_from_list": "Видалити зі списку",
     "share": "Ділити",
@@ -128,6 +134,6 @@
     "provided_by": "Дані, надані"
   },
   "footer": {
-    "copyright": "Всі права захищені."
+    "copyright": "© Авторські права {{text}}"
   }
 }

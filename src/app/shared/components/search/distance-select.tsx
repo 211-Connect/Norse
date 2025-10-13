@@ -9,7 +9,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
@@ -45,47 +44,50 @@ export function DistanceSelect() {
   };
 
   return (
-    <Select
-      onValueChange={setDistance}
-      value={distance}
-      disabled={!hasLocation}
-    >
-      <SelectTrigger
-        className="w-[125px] rounded-none border-none shadow-none"
-        aria-label={t('search.radius_placeholder', {
+    <div className="flex items-center gap-2">
+      <p className="text-sm font-medium">
+        {t('search.radius_placeholder', {
           defaultValue: 'radius',
         })}
+        :
+      </p>
+      <Select
+        onValueChange={setDistance}
+        value={distance}
+        disabled={!hasLocation}
       >
-        <SelectValue
-          placeholder={t('search.radius_placeholder', {
+        <SelectTrigger
+          className="w-[125px]"
+          aria-label={t('search.radius_placeholder', {
             defaultValue: 'radius',
           })}
-        />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectGroup>
-          <SelectLabel>
-            {t('search.radius_placeholder', {
+        >
+          <SelectValue
+            placeholder={t('search.radius_placeholder', {
               defaultValue: 'radius',
             })}
-          </SelectLabel>
-          <SelectItem value="0">{t('search.any')}</SelectItem>
-          {(appConfig?.search?.radiusOptions?.length ?? 0) > 0 ? (
-            appConfig?.search?.radiusOptions?.map((el: any) => (
-              <SelectItem
-                key={el.value.toString()}
-                value={el.value.toString()}
-              >{`${el.value} ${t('search.miles')}`}</SelectItem>
-            ))
-          ) : (
-            <>
-              <SelectItem value="15">{`15 ${t('search.miles')}`}</SelectItem>
-              <SelectItem value="30">{`30 ${t('search.miles')}`}</SelectItem>
-              <SelectItem value="45">{`45 ${t('search.miles')}`}</SelectItem>
-            </>
-          )}
-        </SelectGroup>
-      </SelectContent>
-    </Select>
+          />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectItem value="0">{t('search.any')}</SelectItem>
+            {appConfig?.search?.radiusOptions?.length > 0 ? (
+              appConfig?.search?.radiusOptions?.map((el: any) => (
+                <SelectItem
+                  key={el.value.toString()}
+                  value={el.value.toString()}
+                >{`${el.value} ${t('search.miles')}`}</SelectItem>
+              ))
+            ) : (
+              <>
+                <SelectItem value="15">{`15 ${t('search.miles')}`}</SelectItem>
+                <SelectItem value="30">{`30 ${t('search.miles')}`}</SelectItem>
+                <SelectItem value="45">{`45 ${t('search.miles')}`}</SelectItem>
+              </>
+            )}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+    </div>
   );
 }

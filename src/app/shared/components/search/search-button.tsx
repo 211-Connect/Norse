@@ -4,8 +4,16 @@ import { useTranslation } from 'react-i18next';
 
 import { Button } from '../ui/button';
 
-export function SearchButton() {
+interface SearchButtonProps {
+  loading?: boolean;
+}
+
+export function SearchButton({ loading = false }: SearchButtonProps) {
   const { t } = useTranslation('common');
 
-  return <Button type="submit">{t('call_to_action.search')}</Button>;
+  return (
+    <Button className="!m-0" type="submit" loading={loading}>
+      {t('call_to_action.search')}
+    </Button>
+  );
 }

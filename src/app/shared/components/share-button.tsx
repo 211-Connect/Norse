@@ -63,7 +63,7 @@ export function ShareButton({ componentToPrintRef, title = '', body = '' }) {
             <DialogDescription />
           </DialogHeader>
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 overflow-hidden">
             <div className="grid grid-cols-2 gap-2">
               <Button
                 variant="outline"

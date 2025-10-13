@@ -15,7 +15,7 @@ module.exports = {
   theme: {
     container: {
       center: true,
-      padding: '2rem',
+      padding: '0.75rem',
       screens: {
         '2xl': '1400px',
       },
@@ -29,6 +29,7 @@ module.exports = {
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
         background: 'hsl(var(--background))',
+        'background-highlight': 'hsl(var(--background-highlight))',
         foreground: 'hsl(var(--foreground))',
         primary: {
           DEFAULT: 'hsl(var(--primary))',
@@ -58,6 +59,16 @@ module.exports = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
+        positive: {
+          DEFAULT: 'hsl(var(--positive))',
+          foreground: 'hsl(var(--positive-foreground))',
+        },
+        'custom-blue': {
+          DEFAULT: 'hsl(var(--custom-blue))',
+          foreground: 'hsl(var(--custom-blue-foreground))',
+        },
+        'header-start': 'var(--header-start)',
+        'header-end': 'var(--header-end)',
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -73,10 +84,15 @@ module.exports = {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: '0' },
         },
+        'opacity-in': {
+          from: { opacity: 0 },
+          to: { opacity: 1 },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'opacity-in': 'opacity-in 0.2s ease-in',
       },
     },
   },
@@ -95,6 +111,8 @@ module.exports = {
 
       const borderRadius = appConfig?.theme?.borderRadius ?? '0.5rem';
 
+      const { headerStart, headerEnd } = appConfig?.newLayout ?? {};
+
       addBase({
         ':root': {
           '--primary': `${primaryHsl[0]} ${primaryHsl[1]}% ${primaryHsl[2]}%`,
@@ -102,6 +120,8 @@ module.exports = {
           '--secondary': `${secondaryHsl[0]} ${secondaryHsl[1]}% ${secondaryHsl[2]}%`,
           '--secondary-foreground': secondaryForeground,
           '--radius': borderRadius,
+          '--header-start': headerStart || '#ffffff',
+          '--header-end': headerEnd || '#ffffff',
         },
       });
     },

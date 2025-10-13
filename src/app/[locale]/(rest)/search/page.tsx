@@ -22,22 +22,6 @@ const i18nNamespaces = [
   'suggestions',
 ];
 
-function getUrlSearchParams(params: {
-  [key: string]: string | string[] | undefined;
-}) {
-  const searchParams = new URLSearchParams();
-  Object.entries(params).forEach(([key, value]) => {
-    if (value) {
-      if (Array.isArray(value)) {
-        value.forEach((v) => searchParams.append(key, v));
-      } else {
-        searchParams.append(key, value);
-      }
-    }
-  });
-  return searchParams;
-}
-
 const getPageData = cache(async function (
   stringifiedParams: string,
   stringifiedSearchParams: string,
@@ -170,7 +154,7 @@ export default async function SearchPage({ params, searchParams }) {
       }}
     >
       <ResultsEvents results={results} totalResults={totalResults} />
-      <div className="flex h-full w-full">
+      <div className="flex h-full w-full flex-col xl:flex-row">
         <FilterPanel />
         <ResultsSection />
         <MapContainer />

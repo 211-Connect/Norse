@@ -3,8 +3,9 @@
     "home": "Haku",
     "favorites": "favorites",
     "log_out": "Log out",
-    "submit_feedback": "Gudbi warcelin",
-    "language_select_label": "Dooro luqad si ay u beddelaan luqada bogga"
+    "language_select_label": "Dooro luqad si ay u beddelaan luqada bogga",
+    "my_stuff": "My stuff",
+    "search": "Search"
   },
   "favorites": {
     "added_to_list": "Ku daray liiska",
@@ -23,11 +24,14 @@
     "unable_to_delete_list_message": "Liiskaaga lama tirtiri karin."
   },
   "search": {
+    "add_my_location": "Add my location",
+    "back": "Back",
     "hero_title": "Raadi khayraadka",
     "query_placeholder": "Cuntada, guryaha, iwm ...",
     "location_placeholder": "Magaalada, gobolka, ama ZIP code",
     "radius_placeholder": "Radius",
     "miles": "Miles",
+    "miles_short": "mi",
     "any": "Qof kasta",
     "taxonomies": "Taxonomies",
     "suggestions": "Talooyin",
@@ -37,14 +41,16 @@
     "geocoding_error": "Qalad Geocoding",
     "geocoding_unsupported": "Geolocation ma taageerayaan aad browser",
     "geocoding_unable_to_retrieve": "Awoodi kari la'aanta inaad soo celiso goobtaada. Fadlan hubi goobaha goobta biraawsarkaaga oo mar kale isku day.",
-    "categories": "Category: Category"
+    "categories": "Mawduucyada",
+    "show_all": "Show all ({{count}})",
+    "show_less": "Show less"
   },
   "call_to_action": {
     "call": "Wac",
-    "view_website": "Ka eeg website",
-    "get_directions": "Hel jihada",
-    "view_details": "View faahfaahinta",
-    "add_to_list": "Ku dar liiska",
+    "view_website": "Mareegta",
+    "get_directions": "Tilmaamaha",
+    "view_details": "Wax badan ka arag",
+    "add_to_list": "La jecelyahay",
     "delete_list": "Liiska Tirtirka",
     "remove_from_list": "Ka saar liiska",
     "share": "Share",
@@ -128,6 +134,6 @@
     "provided_by": "Macluumaadka ay bixiyaan"
   },
   "footer": {
-    "copyright": "Dhamaan xuquuqda waa la keydiyay."
+    "copyright": "© Xuquuqda daabacaadda {{text}}"
   }
 }

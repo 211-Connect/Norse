@@ -20,6 +20,7 @@ type CopyBadgeProps = {
   href?: string;
   target?: string;
   className?: string;
+  truncate?: boolean;
 };
 
 export function CopyBadge({
@@ -27,6 +28,7 @@ export function CopyBadge({
   text,
   href,
   target,
+  truncate = false,
   className,
 }: CopyBadgeProps) {
   const { t } = useTranslation('common');
@@ -44,23 +46,29 @@ export function CopyBadge({
       href={href!}
       target={target}
       className={cn(
-        'group flex items-center gap-1 truncate text-xs font-semibold hover:underline',
+        'group overflow-hidden text-xs font-semibold hover:underline',
+        truncate && 'flex items-center gap-1',
         className,
       )}
     >
-      {children}
+      <span className={cn(truncate && 'truncate')}>{children}</span>
 
       <TooltipProvider>
         <Tooltip open={copied}>
           <TooltipTrigger
-            className="w-4 shrink-0"
+            className={cn('size-4 shrink-0', !truncate && 'ml-1 inline')}
             onClick={handleCopy}
             aria-label="Copy"
           >
             {copied ? (
-              <CheckIcon className="size-4" />
+              <CheckIcon className={cn('size-4', !truncate && 'mt-[2px]')} />
             ) : (
-              <ClipboardIcon className="hidden size-4 group-hover:block" />
+              <ClipboardIcon
+                className={cn(
+                  'hidden size-4 group-hover:block',
+                  !truncate && 'mt-[2px]',
+                )}
+              />
             )}
           </TooltipTrigger>
           <TooltipContent>
