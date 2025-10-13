@@ -14,10 +14,11 @@ import qs from 'qs';
 import { useTranslation } from 'next-i18next';
 import { Separator } from '@/shared/components/ui/separator';
 import { Button } from '@/shared/components/ui/button';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MainSearchLayout } from '@/shared/components/search/main-search-layout';
 import { cn } from '@/shared/lib/utils';
 import { Filter } from 'lucide-react';
+import { HEADER_ID } from '@/shared/lib/constants';
 import { useAppConfig } from '@/shared/hooks/use-app-config';
 
 const MAX_VISIBLE_FILTERS = 6;
@@ -158,6 +159,86 @@ const Filters = ({ filters, filterKeys }) => {
   );
 };
 
+const useScrollOffset = () => {
+  const [scrollOffset, setScrollOffset] = useState<number>();
+
+  const lastScrollYRef = useRef(0);
+  const scrollOffsetRef = useRef(scrollOffset);
+
+  const maxMinusOffsetRef = useRef(0);
+  const maxPlusOffsetRef = useRef(0);
+
+  useEffect(() => {
+    lastScrollYRef.current = window.scrollY;
+
+    const handleResize = () => {
+      const element = document.querySelector('#filter-panel') as HTMLDivElement;
+      const header = document.querySelector(`#${HEADER_ID}`) as HTMLDivElement;
+
+      if (element && header) {
+        maxMinusOffsetRef.current = element.clientHeight - window.innerHeight;
+        maxPlusOffsetRef.current = header.offsetHeight;
+      }
+    };
+
+    const handleScroll = () => {
+      const delta = window.scrollY - lastScrollYRef.current;
+
+      lastScrollYRef.current = window.scrollY;
+
+      if (delta > 0) {
+        if (scrollOffsetRef.current <= -maxMinusOffsetRef.current) {
+          return;
+        }
+
+        scrollOffsetRef.current = Math.max(
+          (scrollOffsetRef.current ?? 0) - delta,
+          -maxMinusOffsetRef.current,
+        );
+      } else if (delta < 0) {
+        if (scrollOffsetRef.current >= maxPlusOffsetRef.current) {
+          return;
+        }
+
+        scrollOffsetRef.current = Math.min(
+          scrollOffsetRef.current - delta,
+          maxPlusOffsetRef.current,
+        );
+      }
+
+      setScrollOffset(scrollOffsetRef.current);
+    };
+
+    handleResize();
+
+    const resize_ob = new ResizeObserver(handleResize);
+
+    const element = document.querySelector('#filter-panel') as HTMLDivElement;
+    if (element) {
+      resize_ob.observe(element);
+      const topStyle = window.getComputedStyle(element).top ?? '0px';
+      const parsedStyle = parseInt(topStyle.replace('px', ''), 10);
+      scrollOffsetRef.current = parsedStyle;
+    }
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('scroll', handleScroll);
+
+      if (element) {
+        resize_ob.unobserve(element);
+      }
+    };
+  }, []);
+
+  return {
+    scrollOffset,
+  };
+};
+
 export function FilterPanel() {
   const appConfig = useAppConfig();
   const filters = useAtomValue(filtersAtom);
@@ -165,14 +246,18 @@ export function FilterPanel() {
 
   const filterKeys = useMemo(() => Object.keys(filters), [filters]);
 
+  const { scrollOffset } = useScrollOffset();
+
   return (
     <div
       className={cn(
         'w-full self-start overflow-auto p-[10px] lg:pl-[20px] xl:sticky xl:top-[105px] xl:max-w-[340px]',
-        'xl:max-h-[calc(100vh-105px)]',
-        appConfig.newLayout?.enabled && 'xl:top-[144px]',
-        appConfig.newLayout?.enabled && 'lg:max-h-[calc(100vh-155px)]',
+        appConfig.newLayout?.enabled && 'xl:top-[155px]',
       )}
+      id="filter-panel"
+      style={{
+        top: scrollOffset !== undefined ? `${scrollOffset}px` : undefined,
+      }}
     >
       <div className="flex items-center print:hidden">
         <MainSearchLayout className="flex-1" />
