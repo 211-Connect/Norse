@@ -14,11 +14,11 @@ import qs from 'qs';
 import { useTranslation } from 'next-i18next';
 import { Separator } from '@/shared/components/ui/separator';
 import { Button } from '@/shared/components/ui/button';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { MainSearchLayout } from '@/shared/components/search/main-search-layout';
-import { TaxonomyContainer } from './taxonomy-container';
 import { cn } from '@/shared/lib/utils';
 import { Filter } from 'lucide-react';
+import { useAppConfig } from '@/shared/hooks/use-app-config';
 
 const MAX_VISIBLE_FILTERS = 6;
 
@@ -159,18 +159,21 @@ const Filters = ({ filters, filterKeys }) => {
 };
 
 export function FilterPanel() {
+  const appConfig = useAppConfig();
   const filters = useAtomValue(filtersAtom);
-  const filterKeys = Object.keys(filters);
   const [filtersOpen, setFiltersOpen] = useAtom(filtersOpenAtom);
 
-  useEffect(() => {
-    if (!filterKeys.length) {
-      window.dispatchEvent(new Event('resize'));
-    }
-  }, [filterKeys]);
+  const filterKeys = useMemo(() => Object.keys(filters), [filters]);
 
   return (
-    <div className="w-full self-start p-[10px] lg:pl-[20px] xl:max-w-[340px]">
+    <div
+      className={cn(
+        'w-full self-start overflow-auto p-[10px] lg:pl-[20px] xl:sticky xl:top-[105px] xl:max-w-[340px]',
+        'xl:max-h-[calc(100vh-105px)]',
+        appConfig.newLayout?.enabled && 'xl:top-[144px]',
+        appConfig.newLayout?.enabled && 'lg:max-h-[calc(100vh-155px)]',
+      )}
+    >
       <div className="flex items-center print:hidden">
         <MainSearchLayout className="flex-1" />
         <Button

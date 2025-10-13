@@ -277,7 +277,7 @@ export function Header() {
     <header
       id={HEADER_ID}
       className={cn(
-        'px-3 print:hidden',
+        'sticky top-0 z-[3] px-3 print:hidden',
         newLayoutEnabled ? 'py-[18px] lg:p-8' : 'border-b bg-white',
       )}
     >
@@ -285,7 +285,7 @@ export function Header() {
         className={cn(
           'relative flex items-center justify-between',
           newLayoutEnabled
-            ? 'from-header-start to-header-end rounded-xl bg-gradient-to-r p-6'
+            ? 'rounded-xl bg-gradient-to-r from-header-start to-header-end p-6'
             : 'py-3 pr-6',
         )}
       >
