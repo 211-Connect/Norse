@@ -2,7 +2,6 @@ import { Locate } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useTranslation } from 'next-i18next';
 import { cn } from '@/shared/lib/utils';
-import { useAppConfig } from '@/shared/hooks/use-app-config';
 
 export interface AddMyLocationButtonProps {
   className?: string;
@@ -18,7 +17,6 @@ export function AddMyLocationButton({
   onClick = () => {},
 }: AddMyLocationButtonProps) {
   const { t } = useTranslation('common');
-  const { newLayout } = useAppConfig();
 
   return (
     <Button
