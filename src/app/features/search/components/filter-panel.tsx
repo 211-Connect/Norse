@@ -14,13 +14,15 @@ import { useAtom, useAtomValue } from 'jotai';
 import qs from 'qs';
 import { Separator } from '@/app/shared/components/ui/separator';
 import { Button } from '@/app/shared/components/ui/button';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MainSearchLayout } from '@/app/shared/components/search/main-search-layout';
 import { cn } from '@/app/shared/lib/utils';
 import { Filter } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useClientSearchParams } from '@/app/shared/hooks/use-client-search-params';
 import { useTranslation } from 'react-i18next';
+import { HEADER_ID } from '@/app/shared/lib/constants';
+import { useAppConfig } from '@/app/shared/hooks/use-app-config';
 
 const MAX_VISIBLE_FILTERS = 6;
 
@@ -103,10 +105,10 @@ const Filters = ({ filters, filterKeys }) => {
                         checked={q.filters?.[key]?.includes(b.key) ?? false}
                         onCheckedChange={(checked) => {
                           const q: any =
-                            router.asPath.indexOf('?') > -1
+                            stringifiedSearchParams.indexOf('?') > -1
                               ? qs.parse(
-                                  router.asPath.slice(
-                                    router.asPath.indexOf('?') + 1,
+                                  stringifiedSearchParams.slice(
+                                    stringifiedSearchParams.indexOf('?') + 1,
                                   ),
                                 )
                               : {};
@@ -166,19 +168,106 @@ const Filters = ({ filters, filterKeys }) => {
   );
 };
 
-export function FilterPanel() {
-  const filters = useAtomValue(filtersAtom);
-  const filterKeys = Object.keys(filters);
-  const [filtersOpen, setFiltersOpen] = useAtom(filtersOpenAtom);
+const useScrollOffset = () => {
+  const [scrollOffset, setScrollOffset] = useState<number>();
+
+  const lastScrollYRef = useRef(0);
+  const scrollOffsetRef = useRef(scrollOffset);
+
+  const maxMinusOffsetRef = useRef(0);
+  const maxPlusOffsetRef = useRef(0);
 
   useEffect(() => {
-    if (!filterKeys.length) {
-      window.dispatchEvent(new Event('resize'));
+    lastScrollYRef.current = window.scrollY;
+
+    const handleResize = () => {
+      const element = document.querySelector('#filter-panel') as HTMLDivElement;
+      const header = document.querySelector(`#${HEADER_ID}`) as HTMLDivElement;
+
+      if (element && header) {
+        maxMinusOffsetRef.current = element.clientHeight - window.innerHeight;
+        maxPlusOffsetRef.current = header.offsetHeight;
+      }
+    };
+
+    const handleScroll = () => {
+      const delta = window.scrollY - lastScrollYRef.current;
+
+      lastScrollYRef.current = window.scrollY;
+
+      if (delta > 0) {
+        if (scrollOffsetRef.current! <= -maxMinusOffsetRef.current) {
+          return;
+        }
+
+        scrollOffsetRef.current = Math.max(
+          (scrollOffsetRef.current ?? 0) - delta,
+          -maxMinusOffsetRef.current,
+        );
+      } else if (delta < 0) {
+        if (scrollOffsetRef.current! >= maxPlusOffsetRef.current) {
+          return;
+        }
+
+        scrollOffsetRef.current = Math.min(
+          scrollOffsetRef.current! - delta,
+          maxPlusOffsetRef.current,
+        );
+      }
+
+      setScrollOffset(scrollOffsetRef.current);
+    };
+
+    handleResize();
+
+    const resize_ob = new ResizeObserver(handleResize);
+
+    const element = document.querySelector('#filter-panel') as HTMLDivElement;
+    if (element) {
+      resize_ob.observe(element);
+      const topStyle = window.getComputedStyle(element).top ?? '0px';
+      const parsedStyle = parseInt(topStyle.replace('px', ''), 10);
+      scrollOffsetRef.current = parsedStyle;
     }
-  }, [filterKeys]);
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('scroll', handleScroll);
+
+      if (element) {
+        resize_ob.unobserve(element);
+      }
+    };
+  }, []);
+
+  return {
+    scrollOffset,
+  };
+};
+
+export function FilterPanel() {
+  const appConfig = useAppConfig();
+  const filters = useAtomValue(filtersAtom);
+  const [filtersOpen, setFiltersOpen] = useAtom(filtersOpenAtom);
+
+  const filterKeys = useMemo(() => Object.keys(filters), [filters]);
+
+  const { scrollOffset } = useScrollOffset();
 
   return (
-    <div className="w-full p-[10px] lg:pl-[20px] xl:max-w-[340px]">
+    <div
+      className={cn(
+        'w-full self-start overflow-auto p-[10px] lg:pl-[20px] xl:sticky xl:top-[105px] xl:max-w-[340px]',
+        appConfig.newLayout?.enabled && 'xl:top-[155px]',
+      )}
+      id="filter-panel"
+      style={{
+        top: scrollOffset !== undefined ? `${scrollOffset}px` : undefined,
+      }}
+    >
       <div className="flex items-center print:hidden">
         <MainSearchLayout className="flex-1" />
         <Button
@@ -186,7 +275,7 @@ export function FilterPanel() {
           variant="ghost"
           className={cn(
             filterKeys.length > 0 ? 'flex xl:hidden' : 'hidden',
-            'gap-1',
+            'mt-1 gap-1 self-start',
           )}
           onClick={() => setFiltersOpen(true)}
         >

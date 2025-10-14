@@ -19,14 +19,19 @@ import {
   searchDistanceAtom,
 } from '../../store/search';
 import { USER_PREF_DISTANCE } from '../../lib/constants';
+import { cn } from '../../lib/utils';
 
-export function DistanceSelect() {
+export interface DistanceSelectProps {
+  className?: string;
+}
+
+export function DistanceSelect({ className = '' }: DistanceSelectProps) {
+  const { t } = useTranslation('common');
+
   const appConfig = useAppConfig();
   const setSearch = useSetAtom(searchAtom);
   const coords = useAtomValue(searchCoordinatesAtom);
   const distance = useAtomValue(searchDistanceAtom);
-
-  const { t } = useTranslation('common');
 
   const hasLocation = coords?.length == 2;
 
@@ -44,7 +49,7 @@ export function DistanceSelect() {
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <div className={cn('flex items-center gap-2', className)}>
       <p className="text-sm font-medium">
         {t('search.radius_placeholder', {
           defaultValue: 'radius',

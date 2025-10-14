@@ -1,14 +1,13 @@
-'use client';
-
 import { MapRenderer } from '@/app/shared/components/map/map-renderer';
-import { useWindowScroll } from '@/app/shared/hooks/use-window-scroll';
+import { useAppConfig } from '@/app/shared/hooks/use-app-config';
 import { HEADER_ID } from '@/app/shared/lib/constants';
+import { cn } from '@/app/shared/lib/utils';
 import { favoriteListWithFavoritesAtom } from '@/app/shared/store/favorites';
 import { useAtomValue } from 'jotai';
 import { useEffect, useMemo, useState } from 'react';
 
 export function FavoriteMapContainer() {
-  const [_, y] = useWindowScroll();
+  const appConfig = useAppConfig();
   const [headerHeight, setHeaderHeight] = useState(0);
   const favoriteList = useAtomValue(favoriteListWithFavoritesAtom);
 
@@ -21,25 +20,22 @@ export function FavoriteMapContainer() {
     );
   }, [favoriteList.favorites]);
 
-  const clampedWindowValue = Math.round(
-    Math.abs(Math.min(Math.max(y, 0), headerHeight) - headerHeight),
-  );
-
   useEffect(() => {
     const header = document.getElementById(HEADER_ID);
-    setHeaderHeight(header!.clientHeight);
-  }, [y]);
-
-  useEffect(() => {
-    window.dispatchEvent(new Event('resize'));
-  }, [clampedWindowValue]);
+    if (header) {
+      setHeaderHeight(header.clientHeight);
+    }
+  }, []);
 
   if (headerHeight === 0) return null;
 
   return (
     <div
-      className="sticky top-0 hidden h-full w-full p-[10px] lg:block"
-      style={{ height: `calc(100vh - ${clampedWindowValue}px` }}
+      className={cn(
+        'sticky hidden h-full w-full p-[10px] lg:top-[105px] lg:block',
+        appConfig.newLayout?.enabled && 'lg:top-[144px]',
+      )}
+      style={{ height: `calc(100vh - ${headerHeight}px` }}
     >
       <div className="size-full overflow-hidden rounded-lg">
         <MapRenderer markers={markers} />

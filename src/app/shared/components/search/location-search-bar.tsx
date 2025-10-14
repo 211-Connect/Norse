@@ -153,7 +153,7 @@ export function LocationSearchBar({
       )}
       <div className="flex justify-between">
         <UseMyLocationButton />
-        <DistanceSelect />
+        <DistanceSelect className="ml-auto" />
       </div>
     </div>
   );

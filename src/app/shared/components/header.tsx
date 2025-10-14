@@ -222,7 +222,7 @@ export function Header() {
     <header
       id={HEADER_ID}
       className={cn(
-        'px-3 print:hidden',
+        'sticky top-0 z-[3] px-3 print:hidden',
         newLayoutEnabled ? 'py-[18px] lg:p-8' : 'border-b bg-white',
       )}
     >

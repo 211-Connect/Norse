@@ -5,9 +5,9 @@ import { cn } from '@/app/shared/lib/utils';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '../ui/button';
-import { useAppConfig } from '../../hooks/use-app-config';
-interface AddMyLocationButtonProps {
+export interface AddMyLocationButtonProps {
   className?: string;
+  variant?: 'link' | 'ghost';
   location?: string;
   onClick?: () => void;
 }
@@ -15,20 +15,20 @@ interface AddMyLocationButtonProps {
 export function AddMyLocationButton({
   className = '',
   location,
+  variant = 'ghost',
   onClick = () => {},
 }: AddMyLocationButtonProps) {
   const { t } = useTranslation('common');
-  const { newLayout } = useAppConfig();
 
   return (
     <Button
       onClick={onClick}
       className={cn(
         'flex gap-1',
-        newLayout?.enabled ? '!text-primary' : '!text-white',
+        variant === 'ghost' ? '!text-primary' : '!text-white',
         className,
       )}
-      variant={newLayout?.enabled ? 'ghost' : 'link'}
+      variant={variant}
       type="button"
     >
       <Locate className="size-4" />

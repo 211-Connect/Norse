@@ -73,6 +73,8 @@ export function Map({
       const marker = new Marker();
       if (m.popup) {
         const popupDiv = document.createElement('div');
+        popupDiv.style.minHeight = '200px';
+        popupDiv.style.width = '240px';
         const popup = new Popup({
           focusAfterOpen: false,
           closeButton: false,
