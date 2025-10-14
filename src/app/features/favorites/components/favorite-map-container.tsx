@@ -1,3 +1,5 @@
+'use client';
+
 import { MapRenderer } from '@/app/shared/components/map/map-renderer';
 import { useAppConfig } from '@/app/shared/hooks/use-app-config';
 import { HEADER_ID } from '@/app/shared/lib/constants';

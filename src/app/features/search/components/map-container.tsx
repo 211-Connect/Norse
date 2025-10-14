@@ -1,3 +1,5 @@
+'use client';
+
 import { MapRenderer } from '@/app/shared/components/map/map-renderer';
 import { HEADER_ID } from '@/app/shared/lib/constants';
 import { resultsAtom } from '@/app/shared/store/results';
