@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-html-link-for-pages */
 import React, { ReactNode } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -88,19 +89,19 @@ class ErrorBoundary extends React.Component<Props, State> {
       memory: (navigator as any).deviceMemory || 'unknown',
     };
 
-    // try {
-    //   await axios.post('/api/webhook', {
-    //     message: error?.message,
-    //     brandName: this.props?.appConfig?.brand?.name,
-    //     faviconUrl: this.props?.appConfig?.brand?.faviconUrl,
-    //     url: window?.location?.href,
-    //     openGraphUrl: this.props?.appConfig?.brand?.openGraphUrl,
-    //     hostname: window?.location?.hostname,
-    //     debugInfo: JSON.stringify(debugInfo),
-    //   });
-    // } catch (err) {
-    //   console.log('Unable to send webhook');
-    // }
+    try {
+      await axios.post('/api/webhook', {
+        message: error?.message,
+        brandName: this.props?.appConfig?.brand?.name,
+        faviconUrl: this.props?.appConfig?.brand?.faviconUrl,
+        url: window?.location?.href,
+        openGraphUrl: this.props?.appConfig?.brand?.openGraphUrl,
+        hostname: window?.location?.hostname,
+        debugInfo: JSON.stringify(debugInfo),
+      });
+    } catch (err) {
+      console.log('Unable to send webhook');
+    }
   }
 
   render() {
@@ -129,9 +130,9 @@ class ErrorBoundary extends React.Component<Props, State> {
               fix.
             </p>
 
-            <Link className={buttonVariants()} href="/">
+            <a className={buttonVariants()} href="/">
               Back to home
-            </Link>
+            </a>
           </div>
         </div>
       );

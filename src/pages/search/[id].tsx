@@ -52,6 +52,8 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
         'page-resource',
         'common',
         'dynamic',
+        'categories',
+        'suggestions',
       ])),
     },
   };
