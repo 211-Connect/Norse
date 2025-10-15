@@ -26,7 +26,7 @@ export function ContactSection({ resource }) {
           <div className="flex items-center gap-[6px]">
             <LinkIcon className="size-4" />
             <Link
-              className="text-custom-blue text-sm hover:underline"
+              className="flex-1 text-sm text-custom-blue hover:underline"
               href={website}
             >
               {website}
@@ -36,7 +36,10 @@ export function ContactSection({ resource }) {
         {email && (
           <div className="flex items-center gap-[6px]">
             <Send className="size-4" />
-            <Link className="text-sm hover:underline" href={`mailto:${email}`}>
+            <Link
+              className="flex-1 text-sm hover:underline"
+              href={`mailto:${email}`}
+            >
               {email}
             </Link>
           </div>
