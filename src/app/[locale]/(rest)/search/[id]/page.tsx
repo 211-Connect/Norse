@@ -9,7 +9,13 @@ import { PageWrapper } from '@/app/shared/components/page-wrapper';
 import { getCookies } from 'cookies-next/server';
 import { cookies } from 'next/headers';
 
-const i18nNamespaces = ['page-resource', 'common', 'dynamic'];
+const i18nNamespaces = [
+  'page-resource',
+  'common',
+  'dynamic',
+  'categories',
+  'suggestions',
+];
 
 export const generateMetadata = async ({ params }): Promise<Metadata> => {
   const appConfig = getAppConfig();
