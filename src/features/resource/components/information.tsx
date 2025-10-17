@@ -165,9 +165,11 @@ export function Information({ resource }) {
                 href={resource.website}
                 text={resource.website}
                 target="_blank"
-                className="text-sm font-normal"
+                className="whitespace-break-spaces text-sm font-normal"
               >
-                <p className="break-words text-sm">{resource.website}</p>
+                <p className="max-w-[calc(100%-18px)] break-words text-sm">
+                  {resource.website}
+                </p>
               </CopyBadge>
             </div>
           )}
