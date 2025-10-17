@@ -503,7 +503,7 @@ export function Autocomplete(props: AutocompleteProps) {
           ref={setPopperElement}
           style={styles.popper}
           className={cn(
-            'animate-opacity-in z-10 max-h-56 w-full overflow-auto overscroll-contain bg-white',
+            'z-10 max-h-56 w-full animate-opacity-in overflow-auto overscroll-contain bg-white',
             optionsPopoverClassName,
           )}
           {...attributes.popper}
@@ -543,7 +543,7 @@ export function Autocomplete(props: AutocompleteProps) {
                         id={`${uniqueId}-option-${option.index}`}
                         role="option"
                         className={cn(
-                          'flex justify-between gap-2 px-3 py-2',
+                          'flex cursor-pointer justify-between gap-2 px-3 py-2',
                           currentIndex === option.index && 'bg-primary/5',
                         )}
                         aria-selected={currentIndex === option.index}

@@ -7,8 +7,10 @@ import { ChevronLeft, ExternalLink } from 'lucide-react';
 import { useAppConfig } from '@/shared/hooks/use-app-config';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/components/ui/button';
+import { Separator } from '@/shared/components/ui/separator';
 
 type Props = {
+  iconSize: 'small' | 'medium';
   index: string;
   name: string;
   image?: string;
@@ -17,17 +19,29 @@ type Props = {
   subcategories: any[];
 };
 
-const Category = ({ image, name, href, target, subcategories }: Props) => {
+const Category = ({
+  iconSize,
+  image,
+  name,
+  href,
+  target,
+  subcategories,
+}: Props) => {
+  const sizeOfIcon = iconSize === 'small' ? 40 : 64;
+
   if (subcategories && subcategories.length > 0) {
     return (
-      <div className="flex items-start gap-5">
+      <div className="flex items-start gap-2">
         {image && (
           <Image
             src={image}
             alt=""
-            width={64}
-            height={64}
-            className="size-16 rounded-xl object-cover"
+            width={sizeOfIcon}
+            height={sizeOfIcon}
+            className={cn(
+              'rounded-xl object-cover',
+              sizeOfIcon === 40 ? 'size-10' : 'size-16',
+            )}
           />
         )}
 
@@ -36,7 +50,7 @@ const Category = ({ image, name, href, target, subcategories }: Props) => {
 
           {subcategories.map((el, key) => (
             <Link
-              className="flex items-center gap-1 rounded-md p-1 pl-1 pr-1 hover:bg-primary/5"
+              className="flex items-center gap-1 rounded-md p-2 pl-1 pr-1 hover:bg-primary/5"
               key={el.name}
               href={`${
                 el.href
@@ -104,18 +118,19 @@ export function CategoriesSection({
 
   if ((categories?.length ?? 0) === 0) return null;
 
+  const iconSize = appConfig?.topicsConfig?.iconSize || 'small';
+
   return (
-    <div
-      className={cn('categories container mx-auto max-w-[872px]', className)}
-    >
+    <div className={cn('categories container mx-auto', className)}>
       {!appConfig.hideCategoriesHeading && (
         <div className="mb-10">
-          <h3 className="text-center text-2xl font-medium">
+          <h2 className="text-center text-3xl font-bold">
             {t('search.categories_heading', {
               ns: 'dynamic',
               defaultValue: t('search.categories', { ns: 'common' }),
             })}
-          </h3>
+          </h2>
+          <Separator className="my-3" />
           {backText && (
             <Link href="/">
               <Button variant="link" className="">
@@ -127,9 +142,9 @@ export function CategoriesSection({
         </div>
       )}
 
-      <div className="grid grid-cols-1 justify-center gap-10 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 justify-center gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {categories.map((el: any) => (
-          <Category key={el.name} {...el} />
+          <Category key={el.name} iconSize={iconSize} {...el} />
         ))}
       </div>
     </div>

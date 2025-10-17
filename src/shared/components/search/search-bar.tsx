@@ -33,44 +33,48 @@ export function SearchBar({ focusByDefault = false }: SearchBarProps) {
 
   // Remap and filter data as needed for the search box
   const options = useMemo(() => {
+    const suggestionList = suggestions
+      .map((option) => ({
+        Icon: SearchIcon,
+        value: option.name,
+        group: t('search.suggestions'),
+      }))
+      .filter((option) =>
+        shouldSearch
+          ? option?.value?.toLowerCase()?.includes(searchTerm?.toLowerCase())
+          : option?.value
+              ?.toLowerCase()
+              ?.includes(prevSearchTerm?.toLowerCase()),
+      );
+
+    const categoryList = reducedCategories
+      .map((option) => ({
+        Icon: SearchIcon,
+        group: t('search.categories'),
+        value: option.name,
+      }))
+      .filter((option) =>
+        shouldSearch
+          ? option?.value?.toLowerCase()?.includes(searchTerm?.toLowerCase())
+          : option?.value
+              ?.toLowerCase()
+              ?.includes(prevSearchTerm?.toLowerCase()),
+      );
+
+    const taxonomyList = taxonomies.map((option) => ({
+      group: t('search.taxonomies'),
+      value: option.name,
+      label: showTaxonomyBadge ? option.code : null,
+    }));
+
+    const atLeastTwo =
+      [suggestionList, categoryList, taxonomyList].filter((a) => a.length)
+        .length >= 2;
+
     return [
-      ...suggestions
-        .map((option) => ({
-          Icon: SearchIcon,
-          value: option.name,
-          group: t('search.suggestions'),
-        }))
-        .filter((option, index) => {
-          if (searchTerm.length !== 0 && index > 5) return false;
-
-          return shouldSearch
-            ? option?.value?.toLowerCase()?.includes(searchTerm?.toLowerCase())
-            : option?.value
-                ?.toLowerCase()
-                ?.includes(prevSearchTerm?.toLowerCase());
-        }),
-      ...reducedCategories
-        .map((option) => ({
-          Icon: SearchIcon,
-          group: t('search.categories'),
-          value: option.name,
-        }))
-        .filter((option, index) => {
-          if (index > 5) return false;
-
-          return shouldSearch
-            ? option?.value?.toLowerCase()?.includes(searchTerm?.toLowerCase())
-            : option?.value
-                ?.toLowerCase()
-                ?.includes(prevSearchTerm?.toLowerCase());
-        }),
-      ...taxonomies
-        .map((option) => ({
-          group: t('search.taxonomies'),
-          value: option.name,
-          label: showTaxonomyBadge ? option.code : null,
-        }))
-        .slice(0, 5),
+      ...suggestionList.filter((_, index) => !(atLeastTwo && index > 5)),
+      ...categoryList.filter((_, index) => !(atLeastTwo && index > 5)),
+      ...taxonomyList.filter((_, index) => !(atLeastTwo && index > 5)),
     ];
   }, [
     suggestions,

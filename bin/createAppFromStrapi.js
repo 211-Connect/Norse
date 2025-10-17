@@ -50,6 +50,7 @@ const query = qs.stringify({
         'newLayout.logo',
         'newLayout.hero',
         'topicsPage',
+        'topics',
         'localizations',
         'localizations.logo',
         'localizations.favicon',
@@ -184,6 +185,7 @@ module.exports = function createFromStrapi(dir) {
       suggestions: [],
       sms: appConfig?.sms,
       newLayout,
+      topicsConfig: appConfig?.topics,
       translatedConfig: {
         en: {
           safeExit: appConfig?.safeExit,

@@ -80,6 +80,9 @@ export type AppConfig = {
     heroUrl?: string;
     logoUrl?: string;
   };
+  topicsConfig?: {
+    iconSize: 'small' | 'medium';
+  };
   translatedConfig: {
     [locale: string]: {
       footer?: {
