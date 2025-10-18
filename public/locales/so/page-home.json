@@ -27,20 +27,12 @@
       "cta": "Dulmar mawduucyada",
       "title": "Ma hubtid meesha laga bilaabo"
     },
-    "other_ways_section": {
+    "callouts": {
       "list": {
-        "call": {
-          "subtitle": "Xariirka tooska ah ee 24/7",
-          "title": "Wac"
-        },
-        "chat": {
-          "subtitle": "Waxaa laga heli karaa khadka tooska ah",
-          "title": "Sheekeysi"
-        },
-        "sms": {
-          "subtitle": "Text: 211",
-          "title": "SMS"
-        }
+        "call": "Wac",
+        "chat": "Sheekeysi",
+        "email": "Iimayl",
+        "sms": "SMS"
       },
       "title": "Waxaa jira siyaabo kale oo lagu weydiisto caawimaad sidoo kale:"
     }

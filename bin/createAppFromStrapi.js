@@ -51,6 +51,9 @@ const query = qs.stringify({
         'newLayout.hero',
         'topicsPage',
         'topics',
+        'newLayoutCallouts',
+        'newLayoutCallouts.options',
+        'newLayoutCallouts.options.customImg',
         'localizations',
         'localizations.logo',
         'localizations.favicon',
@@ -71,6 +74,9 @@ const query = qs.stringify({
         'localizations.header',
         'localizations.footer',
         'localizations.topicsPage',
+        'localizations.newLayoutCallouts',
+        'localizations.newLayoutCallouts.options',
+        'localizations.newLayoutCallouts.options.customImg',
       ],
     },
     category: {
@@ -138,6 +144,15 @@ module.exports = function createFromStrapi(dir) {
       en: {},
     };
 
+    const newLayoutCallouts = appConfig?.newLayoutCallouts && {
+      title: appConfig.newLayoutCallouts.title,
+      options:
+        appConfig.newLayoutCallouts.options?.map((option) => ({
+          ...option,
+          customImg: option.customImg?.data?.attributes?.url ?? null,
+        })) ?? [],
+    };
+
     const newAppConfig = {
       nextConfig: appConfig.nextConfig,
       brand: {
@@ -188,6 +203,7 @@ module.exports = function createFromStrapi(dir) {
       topicsConfig: appConfig?.topics,
       translatedConfig: {
         en: {
+          newLayoutCallouts,
           safeExit: appConfig?.safeExit,
           header: appConfig?.header,
           footer: appConfig?.footer,
@@ -289,9 +305,20 @@ module.exports = function createFromStrapi(dir) {
       }
 
       translationFile[data.locale] = translations;
+      const newLayoutCallouts = data?.newLayoutCallouts && {
+        title: data.newLayoutCallouts.title,
+        options:
+          data.newLayoutCallouts.options?.map((option) => ({
+            ...option,
+            customImg: option.customImg?.data?.attributes?.url ?? null,
+          })) ?? [],
+      };
+
       newAppConfig.translatedConfig[data.locale] = {
         safeExit: data?.safeExit,
         header: data?.header,
+        footer: data?.footer,
+        newLayoutCallouts,
       };
     }
 

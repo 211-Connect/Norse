@@ -27,20 +27,12 @@
       "cta": "Browse topics",
       "title": "Not sure where to start"
     },
-    "other_ways_section": {
+    "callouts": {
       "list": {
-        "call": {
-          "subtitle": "24/7 Hotline",
-          "title": "Call"
-        },
-        "chat": {
-          "subtitle": "Available Online",
-          "title": "Chat"
-        },
-        "sms": {
-          "subtitle": "Text: 211",
-          "title": "SMS"
-        }
+        "call": "Call",
+        "chat": "Chat",
+        "email": "Email",
+        "sms": "SMS"
       },
       "title": "There are other ways to ask for help too:"
     }

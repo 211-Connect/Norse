@@ -27,20 +27,12 @@
       "cta": "Duyệt qua các chủ đề",
       "title": "Không chắc bắt đầu từ đâu"
     },
-    "other_ways_section": {
+    "callouts": {
       "list": {
-        "call": {
-          "subtitle": "Đường dây nóng 24/7",
-          "title": "Gọi điện"
-        },
-        "chat": {
-          "subtitle": "Có sẵn trực tuyến",
-          "title": "Trò chuyện"
-        },
-        "sms": {
-          "subtitle": "Văn bản: 211",
-          "title": "SMS"
-        }
+        "call": "Gọi điện",
+        "chat": "Trò chuyện",
+        "email": "Email",
+        "sms": "SMS"
       },
       "title": "Cũng có những cách khác để yêu cầu trợ giúp:"
     }
