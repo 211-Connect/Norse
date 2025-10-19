@@ -1,11 +1,5 @@
-import { Metadata, Viewport } from 'next/types';
 import initTranslations from '@/app/shared/i18n/i18n';
 
-import '@/app/shared/styles/globals.css';
-import '@/app/shared/styles/map.css';
-import { fontSans } from '@/app/shared/styles/fonts';
-import { cn } from '@/app/shared/lib/utils';
-import { getAppConfig } from '@/app/shared/lib/appConfig';
 import {
   serverSideAppConfig,
   serverSideFlags,
@@ -15,21 +9,7 @@ import { cookies } from 'next/headers';
 import { SESSION_ID } from '../../shared/lib/constants';
 import { getSession } from '@/auth';
 
-export const viewport: Viewport = {
-  width: 'device-width',
-  initialScale: 1,
-};
-
-export const generateMetadata = (): Metadata => {
-  const appConfig = getAppConfig();
-  return {
-    icons: {
-      icon: appConfig?.brand?.faviconUrl ?? '/favicon.ico',
-    },
-  };
-};
-
-export default async function RootLayout({
+export default async function RestLayout({
   children,
   params,
 }: {
@@ -55,24 +35,15 @@ export default async function RootLayout({
   };
 
   return (
-    <html lang={locale}>
-      <body>
-        <div
-          className={cn(
-            'flex min-h-screen flex-col bg-primary/5 font-sans antialiased',
-            fontSans.variable,
-          )}
-        >
-          <Providers
-            appConfig={resultAppConfig}
-            auth={auth}
-            flags={flags}
-            session={session}
-          >
-            {children}
-          </Providers>
-        </div>
-      </body>
-    </html>
+    <div className="flex min-h-screen flex-col bg-primary/5">
+      <Providers
+        appConfig={resultAppConfig}
+        auth={auth}
+        flags={flags}
+        session={session}
+      >
+        {children}
+      </Providers>
+    </div>
   );
 }

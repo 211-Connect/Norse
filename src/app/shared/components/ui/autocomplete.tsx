@@ -526,7 +526,7 @@ export function Autocomplete(props: AutocompleteProps) {
             aria-multiselectable="false"
             ref={setPopperElement}
             className={cn(
-              'z-10 max-h-56 w-full animate-opacity-in overflow-auto overscroll-contain bg-white',
+              'absolute z-10 max-h-56 w-full animate-opacity-in overflow-auto overscroll-contain bg-white',
               optionsPopoverClassName,
             )}
           >
