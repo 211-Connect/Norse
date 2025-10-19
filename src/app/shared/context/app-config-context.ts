@@ -83,6 +83,9 @@ export type AppConfig = {
     heroUrl?: string;
     logoUrl?: string;
   };
+  topicsConfig?: {
+    iconSize: 'small' | 'medium';
+  };
   translatedConfig: {
     [locale: string]: {
       footer?: {
@@ -91,6 +94,17 @@ export type AppConfig = {
       header?: {
         customHomeUrl?: string;
         searchUrl?: string;
+      };
+      newLayoutCallouts?: {
+        options?: {
+          type: 'Call' | 'SMS' | 'Chat' | 'Email';
+          customImg?: string;
+          description?: string;
+          title?: string;
+          url?: string;
+          urlTarget?: '_self' | '_blank';
+        }[];
+        title?: string;
       };
       safeExit?: {
         enabled?: boolean;

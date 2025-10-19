@@ -27,20 +27,12 @@
       "cta": "주제 둘러보기",
       "title": "어디서부터 시작해야 할지 잘 모르겠나요"
     },
-    "other_ways_section": {
+    "callouts": {
       "list": {
-        "call": {
-          "subtitle": "연중무휴 핫라인",
-          "title": "전화"
-        },
-        "chat": {
-          "subtitle": "온라인에서 이용 가능",
-          "title": "채팅"
-        },
-        "sms": {
-          "subtitle": "문자: 211",
-          "title": "SMS"
-        }
+        "call": "전화",
+        "chat": "채팅",
+        "email": "이메일",
+        "sms": "SMS"
       },
       "title": "도움을 요청하는 다른 방법도 있습니다:"
     }

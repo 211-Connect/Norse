@@ -27,20 +27,12 @@
       "cta": "Parcourir les sujets",
       "title": "Vous ne savez pas par où commencer"
     },
-    "other_ways_section": {
+    "callouts": {
       "list": {
-        "call": {
-          "subtitle": "Ligne d’assistance téléphonique 24h/24 et 7j/7",
-          "title": "Appeler"
-        },
-        "chat": {
-          "subtitle": "Disponible en ligne",
-          "title": "Chat"
-        },
-        "sms": {
-          "subtitle": "Texte : 211",
-          "title": "SMS"
-        }
+        "call": "Appeler",
+        "chat": "Chat",
+        "email": "E-mail",
+        "sms": "SMS"
       },
       "title": "Il existe également d’autres moyens de demander de l’aide :"
     }

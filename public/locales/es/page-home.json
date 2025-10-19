@@ -27,20 +27,12 @@
       "cta": "Explorar temas",
       "title": "No estás seguro de por dónde empezar"
     },
-    "other_ways_section": {
+    "callouts": {
       "list": {
-        "call": {
-          "subtitle": "Línea directa 24/7",
-          "title": "Llamar"
-        },
-        "chat": {
-          "subtitle": "Disponible en línea",
-          "title": "Chat"
-        },
-        "sms": {
-          "subtitle": "Texto: 211",
-          "title": "SMS"
-        }
+        "call": "Llamar",
+        "chat": "Chat",
+        "email": "Correo electrónico",
+        "sms": "SMS"
       },
       "title": "También hay otras formas de pedir ayuda:"
     }

@@ -27,20 +27,12 @@
       "cta": "ይምረጡ ርዕሶች",
       "title": "የመጀመሪያ እርምጃ አያውቁም"
     },
-    "other_ways_section": {
+    "callouts": {
       "list": {
-        "call": {
-          "subtitle": "24/7 ሆትላይን",
-          "title": "ይደውሉ"
-        },
-        "chat": {
-          "subtitle": "በመስመር ላይ ይገኛል",
-          "title": "ቻት"
-        },
-        "sms": {
-          "subtitle": "ጽፉ: 211",
-          "title": "ኤስኤምኤስ"
-        }
+        "call": "ይደውሉ",
+        "chat": "ቻት",
+        "email": "ኢሜይል",
+        "sms": "ኤስኤምኤስ"
       },
       "title": "እንዲሁም ለእርዳታ ሌሎች መንገዶች አሉ:"
     }
