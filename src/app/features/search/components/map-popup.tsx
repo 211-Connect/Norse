@@ -22,7 +22,7 @@ export function MapPopup({
   const { t } = useTranslation('common');
 
   return (
-    <Card>
+    <Card className="shadow-md">
       <CardContent className="flex flex-col gap-3">
         {labels.length > 0 && <Badges items={labels} />}
         <p className="text-sm font-medium">{name}</p>

@@ -243,7 +243,7 @@ export function Header() {
           )}
         >
           <Link
-            href="/"
+            href={appConfig.header?.customHomeUrl || '/'}
             aria-label={t('header.home') as string}
             className="max-h-full"
           >
