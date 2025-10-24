@@ -120,7 +120,7 @@ export function NewHomeContent() {
                 {appConfig.newLayoutCallouts?.title ||
                   t('new_layout.other_ways_section.title', { ns: 'page-home' })}
               </h3>
-              <div className="flex flex-wrap justify-center gap-3 md:justify-start">
+              <div className="grid grid-cols-[repeat(auto-fit,minmax(min(calc(50%-12px),127px),1fr))] justify-center gap-3 md:justify-start">
                 {callouts.map(
                   (
                     { icon, title, description, url, urlTarget, type },

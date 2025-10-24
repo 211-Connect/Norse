@@ -260,7 +260,7 @@ export function Header() {
     [
       appConfig.header?.customHomeUrl,
       appConfig.header?.searchUrl,
-      appConfig.menus.header,
+      appConfig.menus?.header,
       appConfig.safeExit?.enabled,
       appConfig.safeExit?.url,
       appConfig.safeExit?.text,
@@ -298,7 +298,7 @@ export function Header() {
           )}
         >
           <Link
-            href="/"
+            href={appConfig.header?.customHomeUrl || '/'}
             aria-label={t('header.home') as string}
             className="max-h-full"
           >

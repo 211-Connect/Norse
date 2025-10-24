@@ -78,7 +78,7 @@ export function HeroSection() {
         <Button
           onClick={enableTour}
           variant="outline"
-          className="hover:bg-primary/70 hover:text-primary-foreground"
+          className="hover:bg-primary hover:text-primary-foreground"
         >
           {t('take_a_tour')}
         </Button>
