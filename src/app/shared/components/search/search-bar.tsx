@@ -106,13 +106,23 @@ export function SearchBar({ focusByDefault = false }: SearchBarProps) {
 
   const handleInputChange = useCallback(
     (value: string) => {
+      // If the value hasn't actually changed from the label, preserve existing query state
+      if (value === searchTerm && searchTerm.length > 0) {
+        setSearch((prev) => ({
+          ...prev,
+          searchTerm: value,
+        }));
+        setShouldSearch(true);
+        return;
+      }
+
       setShouldSearch(true);
       setSearch((prev) => ({
         ...prev,
         prevSearchTerm: value,
       }));
     },
-    [setSearch],
+    [setSearch, searchTerm],
   );
 
   return (

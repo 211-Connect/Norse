@@ -85,6 +85,7 @@ export function JotaiHydration({ cookies = {}, pageProps }) {
         prevSearchTerm: pageProps?.query_label ?? '',
         query: pageProps?.query ?? '',
         queryLabel: pageProps?.query_label ?? '',
+        queryType: pageProps?.query_type ?? '',
         searchDistance:
           pageProps?.distance ??
           cookies?.[USER_PREF_DISTANCE] ??

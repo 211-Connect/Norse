@@ -12,6 +12,7 @@ import { Footer } from './footer';
 import { Toaster } from './ui/sonner';
 import TranslationsProvider from '../i18n/TranslationsProvider';
 import { GoogleTagManagerScript } from './google-tag-manager-script';
+import { MatomoTagManagerScript } from './matomo-tag-manager-script';
 
 interface PageWrapperProps {
   cookies?: TmpCookiesObj;
@@ -44,6 +45,7 @@ export const PageWrapper = ({
           <GlobalDialogs />
           <Toaster />
           <GoogleTagManagerScript />
+          <MatomoTagManagerScript />
         </ErrorBoundary>
       </TranslationsProvider>
     </JotaiProvider>
