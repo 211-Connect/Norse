@@ -27,9 +27,5 @@ export const LocalizedLink = (props: LinkProps) => {
     href = `/${currentLanguage}${href}`;
   }
 
-  if (appConfig.customBasePath && href.startsWith('/')) {
-    href = `${appConfig.customBasePath}${href}`;
-  }
-
   return <Link {...props} href={href} />;
 };

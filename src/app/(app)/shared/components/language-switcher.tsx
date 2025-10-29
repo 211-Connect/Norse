@@ -34,14 +34,7 @@ export const LanguageSwitcher = () => {
   const handleValueChange = useCallback(
     (language: string) => {
       if (currentLanguage === appConfig.i18n.defaultLocale) {
-        let parsedPathname = currentPathname;
-        if (appConfig.customBasePath) {
-          parsedPathname = parsedPathname.replace(appConfig.customBasePath, '');
-        }
-
-        router.push(
-          `${appConfig.customBasePath}/${language}${parsedPathname}${stringifiedSearchParams}`,
-        );
+        router.push(`/${language}${currentPathname}${stringifiedSearchParams}`);
       } else {
         router.push(
           `${currentPathname.replace(`/${currentLanguage}`, `/${language}`)}${stringifiedSearchParams}`,
@@ -49,7 +42,6 @@ export const LanguageSwitcher = () => {
       }
     },
     [
-      appConfig.customBasePath,
       appConfig.i18n.defaultLocale,
       currentLanguage,
       currentPathname,

@@ -6,7 +6,6 @@ import { AppConfig } from '@/types/appConfig';
 import { headers } from 'next/headers';
 import { getHost, parseHost } from './getHost';
 import { defaultLocale } from '@/payload/i18n/locales';
-import { BASE_PATH_MAPPER } from '@/basePathMapper';
 
 function getMediaUrl(media?: TenantMedia | number | null): string | undefined {
   if (typeof media === 'number' || !media) return undefined;
@@ -57,6 +56,7 @@ async function getAppConfigBase(
         theme: {},
       },
       contact: {},
+      customBasePath: '',
       featureFlags: {
         hideCategoriesHeading: false,
         hideDataProvidersHeading: false,
@@ -102,10 +102,8 @@ async function getAppConfigBase(
     };
   }
 
-  const customBasePath = BASE_PATH_MAPPER[parseHost(host)] || '';
-
   const headerList = await headers();
-  const baseUrl = `${headerList.get('x-forwarded-proto')}://${headerList.get('host')}${customBasePath}`;
+  const baseUrl = `${headerList.get('x-forwarded-proto')}://${headerList.get('host')}`;
 
   try {
     const parsedCenter = JSON.parse(resourceDirectory.search.map.center);
@@ -166,7 +164,7 @@ async function getAppConfigBase(
       number: resourceDirectory.brand.phoneNumber ?? undefined,
       feedbackUrl: resourceDirectory.brand.feedbackUrl ?? undefined,
     },
-    customBasePath,
+    customBasePath: process.env.CUSTOM_BASE_PATH || '',
     featureFlags: {
       hideCategoriesHeading:
         resourceDirectory.featureFlags?.hideCategoriesHeading ?? false,

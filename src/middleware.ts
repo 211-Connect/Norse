@@ -5,19 +5,21 @@ import { i18nRouter } from 'next-i18n-router';
 import { SESSION_ID } from './app/(app)/shared/lib/constants';
 import { searchLinkCorrectionMiddleware } from './middlewares/searchLinkCorrectionMiddleware';
 import { Tenant } from './payload/payload-types';
-import { BASE_PATH_MAPPER } from './basePathMapper';
 import { parseHost } from './app/(app)/shared/utils/getHost';
 
-const excludeFromPagesLogic = [
-  'admin',
-  'api/auth',
-  'chrome.devtools',
-  'api',
-  '_next/static',
-  '_next/image',
-  'images',
-  'favicon.ico',
-];
+export const config = {
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    '/((?!admin|api/auth|chrome.devtools|api|_next/static|_next/image|images|favicon.ico).*)',
+    { source: '/' },
+  ],
+};
 
 function cacheControlMiddleware(response: NextResponse, pathname: string) {
   const requiredCachePaths = ['/search', '/details/original'];
@@ -47,46 +49,21 @@ function robotsMiddleware(response: NextResponse, pathname: string) {
   }
 }
 
-function isPageRequest(pathname: string) {
-  return !excludeFromPagesLogic.some((path) => pathname.includes(path));
-}
-
-function getApiRoute(
-  request: NextRequest,
-  target: string,
-  basePath: string = '',
-) {
-  return request.nextUrl.origin + basePath + `/api/${target}`;
+function getApiRoute(request: NextRequest, target: string) {
+  return (
+    request.nextUrl.origin +
+    `${process.env.CUSTOM_BASE_PATH || ''}/api/${target}`
+  );
 }
 
 // Add a session_id to the cookies of the user for tracking purposes
 export async function middleware(request: NextRequest) {
   const host = parseHost(request.headers.get('host') || '');
 
-  const basePath = BASE_PATH_MAPPER[host];
-
-  const isPageRequestResult = isPageRequest(request.nextUrl.pathname);
-
-  if (!basePath && !isPageRequestResult) {
-    return NextResponse.next();
-  }
-
-  if (basePath && !request.nextUrl.pathname.startsWith(basePath)) {
-    const url = request.nextUrl.clone();
-    url.pathname = basePath + request.nextUrl.pathname;
-    return NextResponse.redirect(url);
-  }
-
-  if (!isPageRequestResult) {
-    const url = request.nextUrl.clone();
-    url.pathname = request.nextUrl.pathname.replace(basePath, '');
-    return NextResponse.rewrite(url);
-  }
-
   let locales = ['en'];
   let defaultLocale = 'en';
 
-  const apiRoute = getApiRoute(request, 'getTenant', basePath);
+  const apiRoute = getApiRoute(request, 'getTenant');
   try {
     const response = await fetch(
       `${apiRoute}?host=${host}&secret=${process.env.PAYLOAD_API_ROUTE_SECRET}`,
@@ -101,8 +78,6 @@ export async function middleware(request: NextRequest) {
 
     locales = tenant.enabledLocales;
     defaultLocale = tenant.defaultLocale;
-    request.nextUrl.basePath = basePath;
-    request.nextUrl.pathname = request.nextUrl.pathname.replace(basePath, '');
   } catch {}
 
   const url = request.nextUrl.clone();
@@ -124,11 +99,13 @@ export async function middleware(request: NextRequest) {
   }
 
   const i18nConfig = {
-    basePath,
     defaultLocale,
     locales,
   };
-  let response = i18nRouter(request, i18nConfig);
+  let response = i18nRouter(request, {
+    ...i18nConfig,
+    basePath: process.env.CUSTOM_BASE_PATH || undefined,
+  });
   if (!request.cookies.has(SESSION_ID)) {
     response.cookies.set({
       name: SESSION_ID,
@@ -141,33 +118,6 @@ export async function middleware(request: NextRequest) {
 
   cacheControlMiddleware(response, pathname);
   robotsMiddleware(response, pathname);
-
-  if (basePath) {
-    const locationHeader = response.headers.get('location');
-    if (locationHeader) {
-      return NextResponse.redirect(locationHeader);
-    }
-
-    const rewriteUrl = request.nextUrl.clone();
-    rewriteUrl.pathname = request.nextUrl.pathname.replace(basePath, '');
-    const rewriteResponse = NextResponse.rewrite(rewriteUrl);
-
-    response.cookies.getAll().forEach((cookie) => {
-      rewriteResponse.cookies.set(cookie);
-    });
-
-    response.headers.forEach((value, key) => {
-      switch (key) {
-        case 'x-middleware-rewrite':
-          rewriteResponse.headers.set(key, value.replace(basePath, ''));
-          break;
-        default:
-          rewriteResponse.headers.set(key, value);
-      }
-    });
-
-    return rewriteResponse;
-  }
 
   return response;
 }
