@@ -2,7 +2,7 @@ import {
   USER_PREF_COORDS,
   USER_PREF_DISTANCE,
   USER_PREF_LOCATION,
-} from '@/app/shared/lib/constants';
+} from '@/app/(app)/shared/lib/constants';
 import { NextRequest, NextResponse } from 'next/server';
 
 export function searchLinkCorrectionMiddleware(request: NextRequest) {

@@ -1,0 +1,147 @@
+import sharp from 'sharp';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+import { buildConfig } from 'payload';
+import { lexicalEditor } from '@payloadcms/richtext-lexical';
+import { postgresAdapter } from '@payloadcms/db-postgres';
+import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant';
+import { Config, Tenant } from './payload-types';
+import { s3Storage } from '@payloadcms/storage-s3';
+
+import { findByHost } from './collections/ResourceDirectories/services/findByHost';
+import { Users } from './collections/Users';
+import { Tenants } from './collections/Tenants';
+import { TenantMedia } from './collections/TenantMedia';
+import { ResourceDirectories } from './collections/ResourceDirectories';
+import { defaultLocale, locales } from './i18n/locales';
+import { isSuperAdmin } from './collections/Users/access/isSuperAdmin';
+import { getUserTenantIDs } from './utilities/getUserTenantIDs';
+
+import { seedEndpoint } from './migrations';
+
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
+
+const config = buildConfig({
+  collections: [Users, Tenants, TenantMedia, ResourceDirectories],
+  admin: {
+    importMap: {
+      baseDir: path.resolve(dirname, '../'),
+    },
+    user: Users.slug,
+  },
+  secret: process.env.PAYLOAD_SECRET as string,
+  db: postgresAdapter({
+    pool: {
+      connectionString: process.env.DATABASE_URI,
+    },
+    allowIDOnCreate: true,
+    beforeSchemaInit: [
+      ({ schema, adapter }) => {
+        // This fixes the issue with filenames being unique across all tenants
+        const tenantMediaIndexes = adapter.rawTables.tenant_media.indexes;
+        if (tenantMediaIndexes) {
+          delete tenantMediaIndexes.tenant_media_filename_idx;
+          tenantMediaIndexes.tenant_media_tenant_filename_idx = {
+            name: 'tenant_media_tenant_filename_idx',
+            unique: true,
+            on: ['tenant', 'filename'],
+          };
+        }
+
+        return schema;
+      },
+    ],
+  }),
+  localization: {
+    locales,
+    defaultLocale,
+    fallback: false,
+    filterAvailableLocales: async ({
+      locales,
+      req: { user, payload, host, url },
+    }) => {
+      if (!user) {
+        return [{ code: defaultLocale, label: defaultLocale }];
+      }
+
+      if (isSuperAdmin(user)) {
+        return locales;
+      }
+
+      const resourceDirectory = await findByHost(payload, host, defaultLocale);
+      if (resourceDirectory) {
+        const tenant = resourceDirectory.tenant as Tenant;
+        return tenant.enabledLocales.map((code: string) => ({
+          code,
+          label: code,
+        }));
+      }
+
+      return locales;
+    },
+  },
+  editor: lexicalEditor(),
+  sharp,
+  upload: {
+    abortOnLimit: true,
+    limits: {
+      fileSize: 5000000,
+    },
+  },
+  plugins: [
+    multiTenantPlugin<Config>({
+      collections: {
+        [TenantMedia.slug]: true,
+        [ResourceDirectories.slug]: {
+          isGlobal: true,
+        },
+      },
+      tenantField: {
+        access: {
+          read: () => true,
+          update: ({ req }) => {
+            if (isSuperAdmin(req.user)) {
+              return true;
+            }
+            return getUserTenantIDs(req.user).length > 0;
+          },
+        },
+      },
+      tenantsArrayField: {
+        includeDefaultField: false,
+      },
+      userHasAccessToAllTenants: (user) => isSuperAdmin(user),
+    }),
+    s3Storage({
+      collections: {
+        [TenantMedia.slug]: {
+          // This will be replaced dynamically by setTenantIdPrefix hook
+          prefix: 'tenant-id-placeholder',
+          // This avoid copying media to memory
+          // They still do that in 3.47.0
+          // https://github.com/payloadcms/payload/blob/v3.47.0/packages/storage-s3/src/staticHandler.ts#L139
+          signedDownloads: {
+            shouldUseSignedURL: ({}) => true,
+          },
+        },
+      },
+      bucket: process.env.MEDIA_S3_BUCKET as string,
+      config: {
+        credentials: {
+          accessKeyId: process.env.MEDIA_S3_ACCESS_KEY_ID as string,
+          secretAccessKey: process.env.MEDIA_S3_SECRET_ACCESS_KEY as string,
+        },
+        endpoint: process.env.MEDIA_S3_ENDPOINT,
+        region: process.env.MEDIA_S3_REGION,
+        forcePathStyle: process.env.MEDIA_S3_FORCE_PATH_STYLE === 'true',
+      },
+    }),
+  ],
+  typescript: {
+    outputFile: path.resolve(dirname, 'payload-types.ts'),
+  },
+  endpoints: process.env.NODE_ENV === 'development' ? [seedEndpoint] : [],
+});
+
+export default config;

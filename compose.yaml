@@ -1,0 +1,42 @@
+services:
+  postgres:
+    image: postgres:17.5
+    restart: always
+    environment:
+      POSTGRES_USER: norse-ng
+      POSTGRES_PASSWORD: norse-ng
+      POSTGRES_DB: norse-ng
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U norse-ng"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  minio:
+    image: bitnamilegacy/minio:2025.6.13
+    restart: always
+    environment:
+      MINIO_ROOT_USER: norse-ng
+      MINIO_ROOT_PASSWORD: norse-ng
+      MINIO_DEFAULT_BUCKETS: norse-ng
+      MINIO_BROWSER: "on"
+    ports:
+      - 9000:9000
+      - 9001:9001
+    volumes:
+      - minio_data:/bitnami/minio/data
+    healthcheck:
+      test:
+        ["CMD", "curl", "--fail", "http://localhost:9000/minio/health/ready"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  postgres_data:
+  minio_data:

@@ -1,0 +1,25 @@
+export const defaultLocale = 'en';
+
+export const locales = [
+  'am',
+  'ar',
+  'de',
+  'en',
+  'es',
+  'fi',
+  'fr',
+  'hi',
+  'hr',
+  'ht',
+  'ko',
+  'ne',
+  'pl',
+  'ru',
+  'so',
+  'sw',
+  'uk',
+  'vi',
+  'yue',
+  'zh-Hans',
+  'zh-Hant',
+];

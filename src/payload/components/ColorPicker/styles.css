@@ -1,0 +1,18 @@
+.color-picker .color-picker-row {
+  display: flex;
+  gap: 16px;
+}
+
+.color-picker .color-picker-row .field-type {
+  width: 100%;
+}
+
+.color-picker .color-picker-row input[type="color"] {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+}
+
+.color-picker .color-picker-row input[type="text"] {
+  width: 100%;
+}

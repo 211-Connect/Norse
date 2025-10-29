@@ -1,14 +1,27 @@
-const utils = require('./bin/utils.js');
-
-const appConfig = utils.getAppConfig();
-
-const { i18n, ...rest } = appConfig?.nextConfig ?? {};
+import { withPayload } from '@payloadcms/next/withPayload';
 
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
-  ...(rest ?? {}),
+  experimental: {
+    useCache: true,
+  },
+  images: {
+    remotePatterns: [
+      {
+        hostname: '*',
+        pathname: '/api/tenant-media/file/**',
+      },
+      {
+        hostname: '*',
+        pathname: '/**/api/tenant-media/file/**',
+      },
+      {
+        hostname: 'cdn.c211.io',
+      },
+    ],
+  },
 };
 
-module.exports = nextConfig;
+export default withPayload(nextConfig);

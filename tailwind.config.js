@@ -1,6 +1,4 @@
 const { fontFamily } = require('tailwindcss/defaultTheme');
-const color = require('color');
-const utils = require('./bin/utils');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -71,9 +69,9 @@ module.exports = {
         'header-end': 'var(--header-end)',
       },
       borderRadius: {
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
+        lg: 'var(--border-radius)',
+        md: 'calc(var(--border-radius) - 2px)',
+        sm: 'calc(var(--border-radius) - 4px)',
       },
       keyframes: {
         'accordion-down': {
@@ -96,34 +94,5 @@ module.exports = {
       },
     },
   },
-  plugins: [
-    require('tailwindcss-animate'),
-    function ({ addBase }) {
-      const appConfig = utils.getAppConfig();
-
-      const primary = color(appConfig?.theme?.primaryColor).hsl();
-      const primaryHsl = primary.array();
-      const primaryForeground = primary.isDark() ? '0 0% 100%' : '0 0% 0%';
-
-      const secondary = color(appConfig?.theme?.secondaryColor).hsl();
-      const secondaryHsl = secondary.array();
-      const secondaryForeground = secondary.isDark() ? '0 0% 100%' : '0 0% 0%';
-
-      const borderRadius = appConfig?.theme?.borderRadius ?? '0.5rem';
-
-      const { headerStart, headerEnd } = appConfig?.newLayout ?? {};
-
-      addBase({
-        ':root': {
-          '--primary': `${primaryHsl[0]} ${primaryHsl[1]}% ${primaryHsl[2]}%`,
-          '--primary-foreground': primaryForeground,
-          '--secondary': `${secondaryHsl[0]} ${secondaryHsl[1]}% ${secondaryHsl[2]}%`,
-          '--secondary-foreground': secondaryForeground,
-          '--radius': borderRadius,
-          '--header-start': headerStart || '#ffffff',
-          '--header-end': headerEnd || '#ffffff',
-        },
-      });
-    },
-  ],
+  plugins: [require('tailwindcss-animate')],
 };

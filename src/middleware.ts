@@ -1,23 +1,23 @@
-import { NextResponse, userAgent } from 'next/server';
+import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { i18nRouter } from 'next-i18n-router';
 
-import { SESSION_ID } from './app/shared/lib/constants';
-import i18nConfig from './i18nConfig';
+import { SESSION_ID } from './app/(app)/shared/lib/constants';
 import { searchLinkCorrectionMiddleware } from './middlewares/searchLinkCorrectionMiddleware';
+import { Tenant } from './payload/payload-types';
+import { BASE_PATH_MAPPER } from './basePathMapper';
+import { parseHost } from './app/(app)/shared/utils/getHost';
 
-export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    '/((?!adresources/api/auth|api/auth|api|_next/static|_next/image|images|favicon.ico).*)',
-  ],
-};
+const excludeFromPagesLogic = [
+  'admin',
+  'api/auth',
+  'chrome.devtools',
+  'api',
+  '_next/static',
+  '_next/image',
+  'images',
+  'favicon.ico',
+];
 
 function cacheControlMiddleware(response: NextResponse, pathname: string) {
   const requiredCachePaths = ['/search', '/details/original'];
@@ -47,38 +47,70 @@ function robotsMiddleware(response: NextResponse, pathname: string) {
   }
 }
 
+function isPageRequest(pathname: string) {
+  return !excludeFromPagesLogic.some((path) => pathname.includes(path));
+}
+
+function getApiRoute(
+  request: NextRequest,
+  target: string,
+  basePath: string = '',
+) {
+  return request.nextUrl.origin + basePath + `/api/${target}`;
+}
+
 // Add a session_id to the cookies of the user for tracking purposes
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
+  const host = parseHost(request.headers.get('host') || '');
+
+  const basePath = BASE_PATH_MAPPER[host];
+
+  const isPageRequestResult = isPageRequest(request.nextUrl.pathname);
+
+  if (!basePath && !isPageRequestResult) {
+    return NextResponse.next();
+  }
+
+  if (basePath && !request.nextUrl.pathname.startsWith(basePath)) {
+    const url = request.nextUrl.clone();
+    url.pathname = basePath + request.nextUrl.pathname;
+    return NextResponse.redirect(url);
+  }
+
+  if (!isPageRequestResult) {
+    const url = request.nextUrl.clone();
+    url.pathname = request.nextUrl.pathname.replace(basePath, '');
+    return NextResponse.rewrite(url);
+  }
+
+  let locales = ['en'];
+  let defaultLocale = 'en';
+
+  const apiRoute = getApiRoute(request, 'getTenant', basePath);
+  try {
+    const response = await fetch(
+      `${apiRoute}?host=${host}&secret=${process.env.PAYLOAD_API_ROUTE_SECRET}`,
+      {
+        headers: {
+          host: request.headers.get('host') || '',
+        },
+        next: { tags: [`tenants:${host}`] },
+      },
+    );
+    const tenant: Tenant = await response.json();
+
+    locales = tenant.enabledLocales;
+    defaultLocale = tenant.defaultLocale;
+    request.nextUrl.basePath = basePath;
+    request.nextUrl.pathname = request.nextUrl.pathname.replace(basePath, '');
+  } catch {}
+
   const url = request.nextUrl.clone();
   const { pathname } = url;
 
   const searchCorrectionResponse = searchLinkCorrectionMiddleware(request);
   if (searchCorrectionResponse) {
     return searchCorrectionResponse;
-  }
-
-  // Get trailing slash config from environment
-  const enableTrailingSlashRemoval =
-    process.env.ENABLE_TRAILING_SLASH_REMOVAL === 'true';
-
-  if (
-    enableTrailingSlashRemoval &&
-    request.method === 'POST' &&
-    pathname.endsWith('/')
-  ) {
-    url.pathname = pathname.slice(0, -1);
-    return NextResponse.redirect(url, 308); // preserve method
-  }
-
-  // Handle trailing slash removal for /adresources paths
-  if (
-    enableTrailingSlashRemoval &&
-    pathname.startsWith('/adresources/') &&
-    pathname.endsWith('/') &&
-    pathname !== '/adresources/'
-  ) {
-    url.pathname = pathname.slice(0, -1); // remove trailing slash
-    return NextResponse.redirect(url);
   }
 
   // Session ID handling
@@ -91,6 +123,11 @@ export function middleware(request: NextRequest) {
     sessionId = crypto.randomUUID().replaceAll('-', '');
   }
 
+  const i18nConfig = {
+    basePath,
+    defaultLocale,
+    locales,
+  };
   let response = i18nRouter(request, i18nConfig);
   if (!request.cookies.has(SESSION_ID)) {
     response.cookies.set({
@@ -104,6 +141,33 @@ export function middleware(request: NextRequest) {
 
   cacheControlMiddleware(response, pathname);
   robotsMiddleware(response, pathname);
+
+  if (basePath) {
+    const locationHeader = response.headers.get('location');
+    if (locationHeader) {
+      return NextResponse.redirect(locationHeader);
+    }
+
+    const rewriteUrl = request.nextUrl.clone();
+    rewriteUrl.pathname = request.nextUrl.pathname.replace(basePath, '');
+    const rewriteResponse = NextResponse.rewrite(rewriteUrl);
+
+    response.cookies.getAll().forEach((cookie) => {
+      rewriteResponse.cookies.set(cookie);
+    });
+
+    response.headers.forEach((value, key) => {
+      switch (key) {
+        case 'x-middleware-rewrite':
+          rewriteResponse.headers.set(key, value.replace(basePath, ''));
+          break;
+        default:
+          rewriteResponse.headers.set(key, value);
+      }
+    });
+
+    return rewriteResponse;
+  }
 
   return response;
 }
