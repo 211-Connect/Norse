@@ -52,12 +52,29 @@ export function SearchDialog({
 
       setLoading(true);
 
-      const query = findCode(search.searchTerm);
-      const queryType = getQueryType(search.searchTerm, query);
+      // If the search term matches the query label and we have an existing query,
+      // preserve the original query and query_type
+      let query = search.query;
+      let queryType = search.queryType;
+
+      // Only recalculate if the user has actually changed the search term
+      if (search.searchTerm !== search.queryLabel || !search.query) {
+        query = findCode(search.searchTerm);
+        queryType = getQueryType(search.searchTerm, query);
+      }
+
+      // Ensure queryType is never empty - default to 'taxonomy' if we have a query
+      if (!queryType && query) {
+        queryType = 'taxonomy';
+      }
 
       const location = locations[0];
+      // Only update location params if the user has actually changed the location
+      // Compare with prevSearchLocation to detect user changes
+      const hasLocationChanged =
+        search.searchLocation !== search.prevSearchLocation;
       const locationParams =
-        location?.address && location?.coordinates
+        hasLocationChanged && location?.address && location?.coordinates
           ? {
               searchLocation: location.address,
               searchCoordinates: location.coordinates,

@@ -9,6 +9,7 @@ import { Header } from '@/shared/components/header';
 import { Footer } from '@/shared/components/footer';
 import { Providers } from '@/shared/components/providers';
 import { GoogleTagManagerScript } from '@/shared/components/google-tag-manager-script';
+import { MatomoTagManagerScript } from '@/shared/components/matomo-tag-manager-script';
 import { Toaster } from '@/shared/components/ui/sonner';
 import { JotaiHydration } from '@/shared/components/jotai-hydration';
 import { GlobalDialogs } from '@/shared/components/global-dialogs/global-dialogs';
@@ -49,6 +50,7 @@ function App({
           <GlobalDialogs />
           <Toaster />
           <GoogleTagManagerScript />
+          <MatomoTagManagerScript />
         </ErrorBoundary>
       </Providers>
     </div>

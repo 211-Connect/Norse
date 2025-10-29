@@ -4,6 +4,8 @@ import { useTranslation } from 'next-i18next';
 import { useTaxonomies } from '../../hooks/api/use-taxonomies';
 import {
   prevSearchTermAtom,
+  queryAtom,
+  queryTypeAtom,
   searchAtom,
   searchTermAtom,
 } from '../../store/search';
@@ -22,6 +24,9 @@ export function SearchBar({ focusByDefault = false }: SearchBarProps) {
   const [shouldSearch, setShouldSearch] = useState(false);
   const prevSearchTerm = useAtomValue(prevSearchTermAtom);
   const searchTerm = useAtomValue(searchTermAtom);
+  // Track original query state
+  const currentQuery = useAtomValue(queryAtom);
+  const currentQueryType = useAtomValue(queryTypeAtom);
   const debouncedSearchTerm = useDebounce(searchTerm, 200);
   const { data: taxonomies } = useTaxonomies(
     shouldSearch ? debouncedSearchTerm : prevSearchTerm,
@@ -107,13 +112,23 @@ export function SearchBar({ focusByDefault = false }: SearchBarProps) {
 
   const handleInputChange = useCallback(
     (value: string) => {
+      // If the value hasn't actually changed from the label, preserve existing query state
+      if (value === searchTerm && searchTerm.length > 0) {
+        setSearch((prev) => ({
+          ...prev,
+          searchTerm: value,
+        }));
+        setShouldSearch(true);
+        return;
+      }
+
       setShouldSearch(true);
       setSearch((prev) => ({
         ...prev,
         prevSearchTerm: value,
       }));
     },
-    [setSearch],
+    [setSearch, searchTerm],
   );
 
   return (
