@@ -29,7 +29,7 @@ async function findByHostOrig(
       and: [
         {
           'tenant.trustedDomains.domain': {
-            contains: domain,
+            equals: domain,
           },
         },
         {

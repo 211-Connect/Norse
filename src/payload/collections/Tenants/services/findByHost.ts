@@ -20,7 +20,7 @@ async function findByHostOrig(host: string): Promise<Tenant | null> {
     collection: 'tenants',
     where: {
       'trustedDomains.domain': {
-        contains: host,
+        equals: host,
       },
     },
     limit: 1,

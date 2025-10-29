@@ -525,12 +525,9 @@ async function createResourceDirectory(
   }
 }
 
-export function createTrustedDomains(
-  trustedDomains: Array<{ url: string }>,
-  isDevelopment: boolean,
-) {
+export function createTrustedDomains(trustedDomains: Array<{ url: string }>) {
   return trustedDomains.map(({ url }) => ({
-    domain: isDevelopment ? url.replace(/\./g, '-') + '.localhost' : url,
+    domain: url,
   }));
 }
 
@@ -659,10 +656,7 @@ async function processTenant(
     app_config,
   } = attributes;
 
-  const trustedDomains = createTrustedDomains(
-    rawTrustedDomains,
-    process.env.NODE_ENV === 'development',
-  );
+  const trustedDomains = createTrustedDomains(rawTrustedDomains);
 
   console.log(`Seed: Processing tenant ${name} (${id})`);
 
