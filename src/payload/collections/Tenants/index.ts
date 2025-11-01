@@ -133,6 +133,53 @@ export const Tenants: CollectionConfig = {
             },
           ],
         },
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'nextAuthSecret',
+              type: 'text',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'common',
+      type: 'group',
+      label: 'Common Settings',
+      fields: [
+        {
+          name: 'gtmContainerId',
+          type: 'text',
+        },
+        {
+          name: 'matomoContainerUrl',
+          type: 'text',
+        },
+      ],
+    },
+    {
+      name: 'twilio',
+      type: 'group',
+      label: 'Twilio Settings',
+      fields: [
+        {
+          name: 'phoneNumber',
+          type: 'text',
+        },
+        {
+          name: 'apiKey',
+          type: 'text',
+        },
+        {
+          name: 'apiKeySid',
+          type: 'text',
+        },
+        {
+          name: 'accountSid',
+          type: 'text',
+        },
       ],
     },
   ],

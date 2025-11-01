@@ -1,8 +1,11 @@
 import Script from 'next/script';
-import { MATOMO_CONTAINER_URL } from '../lib/constants';
 
-export function MatomoTagManagerScript() {
-  if (!MATOMO_CONTAINER_URL) return null;
+export function MatomoTagManagerScript({
+  matamoContainerUrl,
+}: {
+  matamoContainerUrl?: string;
+}) {
+  if (!matamoContainerUrl) return null;
 
   return (
     <>
@@ -11,7 +14,7 @@ export function MatomoTagManagerScript() {
         _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
         (function() {
           var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-          g.async=true; g.src='${MATOMO_CONTAINER_URL}'; s.parentNode.insertBefore(g,s);
+          g.async=true; g.src='${matamoContainerUrl}'; s.parentNode.insertBefore(g,s);
         })();`}
       </Script>
     </>

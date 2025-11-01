@@ -97,7 +97,9 @@ export type AppConfig = {
     variant?: 'destructive' | 'default';
   };
   customBasePath?: string;
+  gtmContainerId?: string;
   heroUrl?: string;
+  matomoContainerUrl?: string;
   newLayout?: {
     callouts?: {
       options?: {

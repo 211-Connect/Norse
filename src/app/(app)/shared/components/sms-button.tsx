@@ -41,7 +41,7 @@ export function SmsButton({ title = '', body = '', shortUrl = '' }) {
   };
 
   const handleClick = () => {
-    if (!appConfig?.sms) {
+    if (!true) {
       const { userAgent } = navigator;
       const isIOS = /iPhone|iPad|iPod|Macintosh/i.test(userAgent);
       let smsLink = '';
@@ -52,13 +52,14 @@ export function SmsButton({ title = '', body = '', shortUrl = '' }) {
       }
       window.open(smsLink, '_blank');
     } else if (!session.data) {
-      setDialog((prev) => ({
-        ...prev,
-        promptAuth: {
-          ...prev.promptAuth,
-          open: true,
-        },
-      }));
+      setOpen(true);
+      // setDialog((prev) => ({
+      //   ...prev,
+      //   promptAuth: {
+      //     ...prev.promptAuth,
+      //     open: true,
+      //   },
+      // }));
     } else {
       setOpen(true);
     }
@@ -72,7 +73,7 @@ export function SmsButton({ title = '', body = '', shortUrl = '' }) {
       return;
     }
 
-    const promise = axios.post('/api/share', {
+    const promise = axios.post(`/api/share/${appConfig.tenantId}`, {
       phoneNumber: phoneNumber,
       message: `${title}\n\n${body}\n\n${shortUrl}`,
     });

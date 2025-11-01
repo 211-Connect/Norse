@@ -5,10 +5,36 @@ import KeycloakProvider from 'next-auth/providers/keycloak';
 import { omitBy, isNil } from 'lodash';
 import { cache } from 'react';
 
+import { parseHost } from '@/app/(app)/shared/utils/parseHost';
+import { findByHost } from '@/payload/collections/Tenants/services/findByHost';
+import { Tenant } from './payload/payload-types';
+
 const isDebug = process.env.NEXTAUTH_DEBUG === 'true';
 
-const authOptions: NextAuthOptions = {
+export interface createAuthOptionsProps {
+  baseUrl?: string;
+  keycloak?: {
+    issuer?: string;
+    clientSecret?: string;
+  };
+  secret?: string;
+}
+
+const createAuthOptions = ({
+  baseUrl,
+  keycloak,
+  secret,
+}: createAuthOptionsProps): NextAuthOptions => ({
   callbacks: {
+    async redirect({ url, baseUrl: _baseUrl }) {
+      console.log('Redirect URL:', url);
+      console.log('Base URL:', _baseUrl);
+      if (!baseUrl) return _baseUrl;
+
+      if (url.startsWith('/')) return `${baseUrl}${url}`;
+      if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
+    },
     session({ session, token }) {
       session.user.accessToken = token.accessToken;
       session.user.refreshToken = token.refreshToken;
@@ -36,10 +62,10 @@ const authOptions: NextAuthOptions = {
         // Token expired. Refresh it.
         try {
           const response = await axios.post(
-            `${process.env.KEYCLOAK_ISSUER}/protocol/openid-connect/token`,
+            `${keycloak?.issuer}/protocol/openid-connect/token`,
             {
               client_id: process.env.KEYCLOAK_CLIENT_ID,
-              client_secret: process.env.KEYCLOAK_SECRET,
+              client_secret: keycloak?.clientSecret,
               grant_type: 'refresh_token',
               refresh_token: token.refreshToken,
             },
@@ -73,10 +99,10 @@ const authOptions: NextAuthOptions = {
   events: {
     signOut: async (message) => {
       await axios.post(
-        `${process.env.KEYCLOAK_ISSUER}/protocol/openid-connect/logout`,
+        `${keycloak?.issuer}/protocol/openid-connect/logout`,
         {
           client_id: process.env.KEYCLOAK_CLIENT_ID,
-          client_secret: process.env.KEYCLOAK_SECRET,
+          client_secret: keycloak?.clientSecret,
           refresh_token: message.token.refreshToken,
         },
         {
@@ -89,9 +115,14 @@ const authOptions: NextAuthOptions = {
   },
   providers: [
     KeycloakProvider({
+      authorization: {
+        params: {
+          redirect_uri: `${baseUrl}/api/auth/callback/keycloak`,
+        },
+      },
       clientId: process.env?.KEYCLOAK_CLIENT_ID ?? '',
-      clientSecret: process.env?.KEYCLOAK_SECRET ?? '',
-      issuer: process.env.KEYCLOAK_ISSUER,
+      clientSecret: keycloak?.clientSecret ?? '',
+      issuer: keycloak?.issuer,
     }),
     // TODO :: Implement custom Keycloak integration so we can have integrated signup/signout pages
     CredentialsProvider({
@@ -108,6 +139,7 @@ const authOptions: NextAuthOptions = {
       },
     }),
   ],
+  secret,
   ...(isDebug && {
     debug: true,
     logger: {
@@ -122,8 +154,25 @@ const authOptions: NextAuthOptions = {
       },
     },
   }),
+});
+
+const getSession = (
+  protocol: string,
+  host: string,
+  authConfig?: Tenant['auth'],
+) => {
+  const baseUrl = `${protocol}://${host}`;
+
+  const authOptions = createAuthOptions({
+    baseUrl,
+    keycloak: {
+      clientSecret: authConfig?.keycloakSecret ?? undefined,
+      issuer: authConfig?.keycloakIssuer ?? undefined,
+    },
+    secret: authConfig?.nextAuthSecret ?? undefined,
+  });
+
+  return getServerSession(authOptions);
 };
 
-const getSession = cache(() => getServerSession(authOptions));
-
-export { authOptions, getSession };
+export { createAuthOptions, getSession };

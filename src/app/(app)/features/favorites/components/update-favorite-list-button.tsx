@@ -14,8 +14,7 @@ import { Label } from '@/app/(app)/shared/components/ui/label';
 import { Switch } from '@/app/(app)/shared/components/ui/switch';
 import { Textarea } from '@/app/(app)/shared/components/ui/textarea';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
-import { useAuth } from '@/app/(app)/shared/hooks/use-auth';
-import { updateFavoriteList } from '@/app/(app)/shared/services/favorite-service';
+import { updateFavoriteList } from '@/app/(app)/shared/serverActions/favorites/updateFavoriteList';
 import { SquarePen } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -24,7 +23,6 @@ import { toast } from 'sonner';
 
 export function UpdateFavoriteListButton({ id, name, description, privacy }) {
   const appConfig = useAppConfig();
-  const { sessionId } = useAuth();
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const { t } = useTranslation('common');
@@ -46,7 +44,6 @@ export function UpdateFavoriteListButton({ id, name, description, privacy }) {
           description: formState.description,
           privacy: formState.public,
         },
-        sessionId,
         appConfig.tenantId,
       );
 

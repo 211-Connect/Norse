@@ -235,6 +235,17 @@ export interface Tenant {
     realmId: string;
     keycloakSecret?: string | null;
     keycloakIssuer?: string | null;
+    nextAuthSecret?: string | null;
+  };
+  common?: {
+    gtmContainerId?: string | null;
+    matomoContainerUrl?: string | null;
+  };
+  twilio?: {
+    phoneNumber?: string | null;
+    apiKey?: string | null;
+    apiKeySid?: string | null;
+    accountSid?: string | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -565,6 +576,21 @@ export interface TenantsSelect<T extends boolean = true> {
         realmId?: T;
         keycloakSecret?: T;
         keycloakIssuer?: T;
+        nextAuthSecret?: T;
+      };
+  common?:
+    | T
+    | {
+        gtmContainerId?: T;
+        matomoContainerUrl?: T;
+      };
+  twilio?:
+    | T
+    | {
+        phoneNumber?: T;
+        apiKey?: T;
+        apiKeySid?: T;
+        accountSid?: T;
       };
   updatedAt?: T;
   createdAt?: T;

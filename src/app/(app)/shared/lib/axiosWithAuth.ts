@@ -1,13 +1,14 @@
 import axios from 'axios';
-import { getSession, signOut } from 'next-auth/react';
-import { Session } from 'next-auth';
-import { getSession as getSessionServer } from '@/auth';
-import { isServer } from './isServer';
+import { signOut } from 'next-auth/react';
+import { cookies } from 'next/headers';
+import { SESSION_ID } from './constants';
+import { getSession } from '../utils/getServerSession';
 
-function createAxiosWithAuth({
-  sessionId,
-  tenantId,
-}: { sessionId?: string; tenantId?: string } = {}) {
+interface AxiosWithAuthProps {
+  tenantId?: string;
+}
+
+function createAxiosWithAuth({ tenantId }: AxiosWithAuthProps) {
   const axiosWithAuth = axios.create({
     params: {
       tenant_id: tenantId,
@@ -19,27 +20,25 @@ function createAxiosWithAuth({
   axiosWithAuth.interceptors.request.use(
     async (config) => {
       if (!config.headers['Authorization']) {
-        let session: Session | null = null;
-
-        if (isServer()) {
-          session = await getSessionServer();
-        } else {
-          session = await getSession();
-        }
-
+        const session = await getSession();
         if (session?.error && session.error === 'RefreshAccessTokenError') {
           await signOut();
         }
 
-        config.headers['Authorization'] = `Bearer ${session?.user.accessToken}`;
+        if (session?.user?.accessToken) {
+          config.headers['Authorization'] =
+            `Bearer ${session?.user.accessToken}`;
+        }
       }
+
+      const cookieList = await cookies();
+      const sessionId = cookieList.get(SESSION_ID)?.value;
 
       if (!config.headers['x-session-id'] && sessionId) {
         config.headers['x-session-id'] = sessionId;
       }
 
       config.params = config.params || {};
-
       return config;
     },
     (error) => Promise.reject(error),

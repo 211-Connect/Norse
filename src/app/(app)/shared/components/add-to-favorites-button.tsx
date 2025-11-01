@@ -21,14 +21,11 @@ import { Separator } from './ui/separator';
 import { Skeleton } from './ui/skeleton';
 import { Badge } from './ui/badge';
 import { dialogsAtom } from '../store/dialogs';
-import {
-  addToFavoriteList,
-  createFavoriteList,
-  searchFavoriteLists,
-} from '../services/favorite-service';
-import { useAuth } from '../hooks/use-auth';
 import { cn } from '../lib/utils';
 import { useAppConfig } from '../hooks/use-app-config';
+import { searchFavoriteLists } from '../serverActions/favorites/searchFavoriteLists';
+import { createFavoriteList } from '../serverActions/favorites/createFavoriteList';
+import { addToFavoriteList } from '../serverActions/favorites/addToFavoriteList';
 
 type AddToFavoritesButtonProps = {
   size?: 'default' | 'icon';
@@ -40,7 +37,6 @@ export function AddToFavoritesButton({
   serviceAtLocationId,
 }: AddToFavoritesButtonProps) {
   const appConfig = useAppConfig();
-  const { sessionId } = useAuth();
   const session = useSession();
   const setDialog = useSetAtom(dialogsAtom);
   const { t } = useTranslation('common');
@@ -59,17 +55,13 @@ export function AddToFavoritesButton({
 
     setFetching({ data: [], status: 'loading' });
 
-    const favoriteLists = await searchFavoriteLists(
-      value,
-      sessionId,
-      appConfig.tenantId,
-    );
+    const favoriteLists = await searchFavoriteLists(value, appConfig.tenantId);
 
     if (favoriteLists) {
       setFetching({ data: favoriteLists, status: 'success' });
       return;
     }
-  }, [session.status, value, sessionId, appConfig.tenantId]);
+  }, [session.status, value, appConfig.tenantId]);
 
   const addToFavoriteListHandler = (listId: string) => {
     return async () => {
@@ -78,7 +70,6 @@ export function AddToFavoritesButton({
           resourceId: serviceAtLocationId,
           favoriteListId: listId,
         },
-        sessionId,
         appConfig.tenantId,
       );
 
@@ -101,7 +92,6 @@ export function AddToFavoritesButton({
           name: value,
           privacy: false,
         },
-        sessionId,
         appConfig.tenantId,
       );
 

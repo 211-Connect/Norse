@@ -5,11 +5,6 @@ export const getHost = cache(async () => {
   const headerList = await headers();
 
   const host = headerList.get('host')?.split(':')[0] || 'localhost';
-  return { host };
+  const protocol = headerList.get('x-forwarded-proto') || 'http';
+  return { host, protocol };
 });
-
-export const parseHost = (host: string): string => {
-  return process.env.NODE_ENV === 'development'
-    ? host.split('.localhost')[0]
-    : host;
-};

@@ -8,7 +8,7 @@ import {
 import { byTenantId } from '../cache/tags';
 import { locales } from '@/payload/i18n/locales';
 import { cache } from 'react';
-import { parseHost } from '@/app/(app)/shared/utils/getHost';
+import { parseHost } from '@/app/(app)/shared/utils/parseHost';
 
 async function findByHostOrig(
   payload: Payload,

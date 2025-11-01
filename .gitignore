@@ -47,6 +47,8 @@ next-env.d.ts
 
 # Environment
 .env
+.env.new
+.env.old
 
 public/locales/**/dynamic.json
 public/locales/**/categories.json

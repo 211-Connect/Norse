@@ -3,7 +3,7 @@ import { Tenant } from '@/payload/payload-types';
 
 import { byTenantId as byTenantIdResource } from '../../ResourceDirectories/cache/tags';
 import { byDomain, byTenantId } from '../cache/tags';
-import { parseHost } from '@/app/(app)/shared/utils/getHost';
+import { parseHost } from '@/app/(app)/shared/utils/parseHost';
 
 export async function revalidateCache({
   doc,

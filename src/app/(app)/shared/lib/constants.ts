@@ -1,11 +1,11 @@
-export const GTM_CONTAINER_ID = process.env.NEXT_PUBLIC_GTM_CONTAINER_ID;
-export const MATOMO_CONTAINER_URL =
-  process.env.NEXT_PUBLIC_MATOMO_CONTAINER_URL;
 export const API_URL = process.env.NEXT_PUBLIC_API_URL;
 export const MAPBOX_API_KEY = process.env.NEXT_PUBLIC_MAPBOX_API_KEY;
 export const MAPBOX_API_BASE_URL = 'https://api.mapbox.com';
 export const MAPBOX_STYLE_URL = process.env.NEXT_PUBLIC_MAPBOX_STYLE_URL;
 export const MAPLIBRE_STYLE_URL = process.env.NEXT_PUBLIC_MAPLIBRE_STYLE_URL;
+
+export const FAVORITES_LIST_ENDPOINT = 'favorite-list';
+export const FAVORITES_BASE_ENDPOINT = 'favorites';
 
 // Session ID cookie
 export const SESSION_ID = 'session-id';

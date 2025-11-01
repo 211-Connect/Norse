@@ -3,7 +3,7 @@
 import { PropsWithChildren } from 'react';
 import { Provider as JotaiProvider } from 'jotai';
 import { ErrorBoundary } from '@/app/(app)/features/error/components/error-boundary';
-import { TmpCookiesObj } from 'cookies-next/lib/common/types';
+import { TmpCookiesObj } from 'cookies-next';
 
 import { GlobalDialogs } from './global-dialogs/global-dialogs';
 import { Header } from './header';
@@ -13,6 +13,7 @@ import { Toaster } from './ui/sonner';
 import TranslationsProvider from '../i18n/TranslationsProvider';
 import { GoogleTagManagerScript } from './google-tag-manager-script';
 import { MatomoTagManagerScript } from './matomo-tag-manager-script';
+import { useAppConfig } from '../hooks/use-app-config';
 
 interface PageWrapperProps {
   cookies?: TmpCookiesObj;
@@ -30,6 +31,8 @@ export const PageWrapper = ({
   jotaiData = {},
   translationData,
 }: PropsWithChildren<PageWrapperProps>) => {
+  const appConfig = useAppConfig();
+
   return (
     <JotaiProvider>
       <TranslationsProvider
@@ -44,8 +47,10 @@ export const PageWrapper = ({
           <Footer />
           <GlobalDialogs />
           <Toaster />
-          <GoogleTagManagerScript />
-          <MatomoTagManagerScript />
+          <GoogleTagManagerScript containerId={appConfig.gtmContainerId} />
+          <MatomoTagManagerScript
+            matamoContainerUrl={appConfig.matomoContainerUrl}
+          />
         </ErrorBoundary>
       </TranslationsProvider>
     </JotaiProvider>

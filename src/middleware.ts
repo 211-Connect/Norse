@@ -5,7 +5,7 @@ import { i18nRouter } from 'next-i18n-router';
 import { SESSION_ID } from './app/(app)/shared/lib/constants';
 import { searchLinkCorrectionMiddleware } from './middlewares/searchLinkCorrectionMiddleware';
 import { Tenant } from './payload/payload-types';
-import { parseHost } from './app/(app)/shared/utils/getHost';
+import { parseHost } from './app/(app)/shared/utils/parseHost';
 
 export const config = {
   matcher: [

@@ -10,8 +10,7 @@ import {
   DialogTitle,
 } from '@/app/(app)/shared/components/ui/dialog';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
-import { useAuth } from '@/app/(app)/shared/hooks/use-auth';
-import { removeFavoriteFromList } from '@/app/(app)/shared/services/favorite-service';
+import { removeFavoriteFromList } from '@/app/(app)/shared/serverActions/favorites/removeFavoriteFromList';
 import { HeartOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -19,7 +18,6 @@ import { useTranslation } from 'react-i18next';
 
 export function RemoveFromFavoriteListButton({ id, favoriteListId }) {
   const appConfig = useAppConfig();
-  const { sessionId } = useAuth();
   const { t } = useTranslation('common');
   const [open, setOpen] = useState(false);
   const router = useRouter();
@@ -30,7 +28,6 @@ export function RemoveFromFavoriteListButton({ id, favoriteListId }) {
         resourceId: id,
         favoriteListId: favoriteListId,
       },
-      sessionId,
       appConfig.tenantId,
     );
 

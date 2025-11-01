@@ -9,9 +9,7 @@ import { getAppConfigWithoutHost } from '../shared/utils/appConfig';
 import { AppConfig } from '@/types/appConfig';
 import { notFound } from 'next/navigation';
 import { Providers } from '../shared/components/providers';
-import { getSession } from '@/auth';
-import { cookies } from 'next/headers';
-import { SESSION_ID } from '../shared/lib/constants';
+import { getSession } from '../shared/utils/getServerSession';
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -76,12 +74,7 @@ export default async function RootLayout({
   const { locale } = await params;
   const appConfig = await getAppConfigWithoutHost(locale);
 
-  const cookieList = await cookies();
-
   const session = await getSession();
-  const auth = {
-    sessionId: cookieList.get(SESSION_ID)?.value,
-  };
 
   if (appConfig.brand.name === '') {
     notFound();
@@ -92,7 +85,7 @@ export default async function RootLayout({
   return (
     <html lang={locale} style={theme as any}>
       <body className={cn('font-sans antialiased', fontSans.variable)}>
-        <Providers appConfig={appConfig} auth={auth} session={session}>
+        <Providers appConfig={appConfig} session={session}>
           {children}
         </Providers>
       </body>

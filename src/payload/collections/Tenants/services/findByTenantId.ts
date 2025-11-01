@@ -9,7 +9,7 @@ export async function findByTenantId(
     docs: [tenant],
   } = await payload.find({
     collection: 'tenants',
-    where: { tenant: { equals: tenantId } },
+    where: { id: { equals: tenantId } },
     limit: 1,
     pagination: false,
   });

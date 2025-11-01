@@ -1,15 +1,27 @@
-import { ResourceDirectory, TenantMedia } from '@/payload/payload-types';
+import {
+  ResourceDirectory,
+  Tenant,
+  TenantMedia,
+} from '@/payload/payload-types';
 import { TypedLocale } from 'payload';
 import { findByHostCached } from '@/payload/collections/ResourceDirectories/services/findByHost';
 import { cache } from 'react';
 import { AppConfig } from '@/types/appConfig';
 import { headers } from 'next/headers';
-import { getHost, parseHost } from './getHost';
+import { getHost } from './getHost';
 import { defaultLocale } from '@/payload/i18n/locales';
 
 function getMediaUrl(media?: TenantMedia | number | null): string | undefined {
   if (typeof media === 'number' || !media) return undefined;
   return media?.url || undefined;
+}
+
+function getTenant(resourceDirectory: ResourceDirectory): Tenant | undefined {
+  if (typeof resourceDirectory.tenant === 'string') {
+    return undefined;
+  }
+
+  return resourceDirectory.tenant ?? undefined;
 }
 
 function getTenantId(resourceDirectory: ResourceDirectory): string | undefined {
@@ -184,6 +196,8 @@ async function getAppConfigBase(
         resourceDirectory.featureFlags?.showUseMyLocationButtonOnDesktop ??
         false,
     },
+    gtmContainerId:
+      getTenant(resourceDirectory)?.common?.gtmContainerId ?? undefined,
     footer: {
       customMenu: resourceDirectory.footer?.customMenu ?? [],
       disclaimer: resourceDirectory.footer?.disclaimer ?? undefined,
@@ -201,6 +215,8 @@ async function getAppConfigBase(
       searchUrl: resourceDirectory.header?.searchUrl ?? undefined,
     },
     i18n: getTenantI18n(resourceDirectory),
+    matomoContainerUrl:
+      getTenant(resourceDirectory)?.common?.matomoContainerUrl ?? undefined,
     meta: {
       description: resourceDirectory.brand.meta?.description ?? '',
       title: resourceDirectory.brand.meta?.title ?? '',

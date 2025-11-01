@@ -15,7 +15,7 @@ import { Switch } from '@/app/(app)/shared/components/ui/switch';
 import { Textarea } from '@/app/(app)/shared/components/ui/textarea';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { cn } from '@/app/(app)/shared/lib/utils';
-import { createFavoriteList } from '@/app/(app)/shared/services/favorite-service';
+import { createFavoriteList } from '@/app/(app)/shared/serverActions/favorites/createFavoriteList';
 import { PlusIcon } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -50,7 +50,6 @@ export function CreateAListButton({ className = '' }: { className?: string }) {
         description: formState.description,
         privacy: formState.public,
       },
-      undefined,
       appConfig.tenantId,
     );
 

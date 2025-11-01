@@ -1,7 +1,5 @@
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
-import { getSession } from '@/auth';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
-import { getFavoriteLists } from '@/app/(app)/shared/services/favorite-service';
 import { redirect } from 'next/navigation';
 import { Metadata } from 'next/types';
 import { FavoriteListsSection } from '@/app/(app)/features/favorites/components/favorite-lists-section';
@@ -10,6 +8,8 @@ import { getCookies } from 'cookies-next/server';
 import { cookies } from 'next/headers';
 import { SESSION_ID } from '@/app/(app)/shared/lib/constants';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
+import { getSession } from '@/app/(app)/shared/utils/getServerSession';
+import { getFavoriteLists } from '@/app/(app)/shared/serverActions/favorites/getFavoriteLists';
 
 const i18nNamespaces = ['page-favorites', 'common'];
 
@@ -50,10 +50,7 @@ export default async function FavoritesPage({ params }) {
 
   let favoriteLists = [];
   try {
-    favoriteLists = await getFavoriteLists(
-      cookieList[SESSION_ID],
-      appConfig.tenantId,
-    );
+    favoriteLists = await getFavoriteLists(appConfig.tenantId);
   } catch (err) {
     console.error(err);
   }

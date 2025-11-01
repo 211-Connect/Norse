@@ -1,15 +1,14 @@
-import { getSession } from '@/auth';
 import { Metadata } from 'next/types';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
-import { getFavoriteList } from '@/app/(app)/shared/services/favorite-service';
 import { redirect } from 'next/navigation';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import { FavoritesSection } from '@/app/(app)/features/favorites/components/favorites-section';
 import { FavoriteMapContainer } from '@/app/(app)/features/favorites/components/favorite-map-container';
 import { getCookies } from 'cookies-next/server';
 import { cookies } from 'next/headers';
-import { SESSION_ID } from '@/app/(app)/shared/lib/constants';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
+import { getSession } from '@/app/(app)/shared/utils/getServerSession';
+import { getFavoriteList } from '@/app/(app)/shared/serverActions/favorites/getFavoriteList';
 
 const i18nNamespaces = ['page-list', 'common'];
 
@@ -62,23 +61,13 @@ export default async function FavoritesDetailsPage({ params }) {
   let favoriteList;
 
   if (!session) {
-    favoriteList = await getFavoriteList(
-      id,
-      locale,
-      cookieList[SESSION_ID],
-      appConfig.tenantId,
-    );
+    favoriteList = await getFavoriteList(id, locale, appConfig.tenantId);
   } else if (session.error) {
     redirect(
       `/${locale}/auth/signin?redirect=${encodeURIComponent('/favorites')}`,
     );
   } else {
-    favoriteList = await getFavoriteList(
-      id,
-      locale,
-      undefined,
-      appConfig.tenantId,
-    );
+    favoriteList = await getFavoriteList(id, locale, appConfig.tenantId);
     viewingAsOwner = true;
   }
 
