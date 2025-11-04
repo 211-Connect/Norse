@@ -251,8 +251,8 @@ export function FilterPanel() {
   return (
     <div
       className={cn(
-        'w-full self-start overflow-auto p-[10px] lg:pl-[20px] xl:sticky xl:top-[105px] xl:max-w-[340px]',
-        appConfig.newLayout?.enabled && 'xl:top-[155px]',
+        'w-full self-start overflow-auto p-[10px] md:sticky md:top-[105px] md:max-w-[340px] lg:pl-[20px]',
+        appConfig.newLayout?.enabled && 'md:top-[155px]',
       )}
       id="filter-panel"
       style={{
@@ -265,7 +265,7 @@ export function FilterPanel() {
           size="sm"
           variant="ghost"
           className={cn(
-            filterKeys.length > 0 ? 'flex xl:hidden' : 'hidden',
+            filterKeys.length > 0 ? 'flex md:hidden' : 'hidden',
             'mt-1 gap-1 self-start',
           )}
           onClick={() => setFiltersOpen(true)}
@@ -276,7 +276,7 @@ export function FilterPanel() {
       </div>
       {filterKeys.length > 0 && (
         <>
-          <div className="hidden w-full xl:block print:hidden">
+          <div className="hidden w-full md:block print:hidden">
             <Filters filters={filters} filterKeys={filterKeys} />
           </div>
           <Sheet onOpenChange={setFiltersOpen} open={filtersOpen}>

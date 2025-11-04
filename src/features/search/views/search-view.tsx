@@ -43,7 +43,7 @@ export function SearchView({ results, totalResults, query_label, query }) {
         />
       </Head>
 
-      <div className="flex h-full w-full flex-col xl:flex-row">
+      <div className="flex h-full w-full flex-col md:flex-row">
         <FilterPanel />
         <ResultsSection />
         <MapContainer />
