@@ -42,7 +42,7 @@ export function ResourceView({ resource }) {
 
         <div
           className={cn(
-            'flex flex-col gap-3 font-sans lg:flex-row',
+            'flex flex-col gap-3 font-sans md:flex-row',
             fontSans.variable,
           )}
           ref={componentToPrintRef}
