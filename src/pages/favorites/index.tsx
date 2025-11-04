@@ -39,6 +39,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       ...(await serverSideTranslations(ctx.locale as string, [
         'page-favorites',
         'common',
+        'dynamic',
       ])),
     },
   };

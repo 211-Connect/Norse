@@ -3,8 +3,9 @@
     "home": "ቤት",
     "favorites": "ተወዳጅ",
     "log_out": "ወደ ውጭ አስቀምጥ",
-    "submit_feedback": "አስተያየት አስቀምጥ",
-    "language_select_label": "የድረ ገጹን ቋንቋ ለመቀየር ቋንቋ ይምረጡ"
+    "language_select_label": "የድረ ገጹን ቋንቋ ለመቀየር ቋንቋ ይምረጡ",
+    "my_stuff": "የእኔ ነገሮች",
+    "search": "ፍለጋ"
   },
   "favorites": {
     "added_to_list": "ወደ ዝርዝር ውስጥ ይጨመራል",
@@ -23,11 +24,14 @@
     "unable_to_delete_list_message": "የእርስዎ ንዝረት ሊጠፋ አልቻለም."
   },
   "search": {
+    "add_my_location": "ቦታዬን ጨምር",
+    "back": "ተመለስ",
     "hero_title": "ሀብት ፍለጋ",
     "query_placeholder": "ምግብ, መኖሪያ ቤት, ወዘተ...",
     "location_placeholder": "ከተማ, ግዛት, ወይም ZIP ኮድ",
     "radius_placeholder": "ራዲየስ",
     "miles": "ማይልስ",
+    "miles_short": "ማይል",
     "any": "ማንኛውም",
     "taxonomies": "ታክሶኖሚዎች",
     "suggestions": "የመፍትሔ ሐሳቦች",
@@ -37,14 +41,16 @@
     "geocoding_error": "የጂኦኮድ ስህተት",
     "geocoding_unsupported": "ጂኦሎሌሽን በመቃኘትህ አይደገፍም",
     "geocoding_unable_to_retrieve": "ቦታህን ማግኘት አትችልም። እባክዎ የድር ጣቢያዎን የቦታ አቀማመጥ ይመልከቱ እና እንደገና ይሞክሩ.",
-    "categories": "ምድቦች"
+    "categories": "ርዕሶች",
+    "show_all": "ሁሉንም አሳይ ({{count}})",
+    "show_less": "ያነሰ አሳይ"
   },
   "call_to_action": {
     "call": "ይደውሉ",
-    "view_website": "ድረ ገፁን ይመልከቱ",
-    "get_directions": "አቅጣጫዎችን ያግኙ",
-    "view_details": "ዝርዝር ጉዳዮችን ይመልከቱ",
-    "add_to_list": "ወደ ዝርዝር ጨምር",
+    "view_website": "ድር ጣቢያ",
+    "get_directions": "አቅጣጫዎች",
+    "view_details": "ተጨማሪ ይመልከቱ",
+    "add_to_list": "ተወዳጅ",
     "delete_list": "ዝርዝሩን አጥፉ",
     "remove_from_list": "ከዝርዝሩ አስወግድ",
     "share": "አካፍሉ",
@@ -128,6 +134,6 @@
     "provided_by": "የቀረቡ መረጃዎች"
   },
   "footer": {
-    "copyright": "ሁሉም መብቶች የተጠበቁ ናቸው።"
+    "copyright": "© የቅጂ መብት {{text}}"
   }
 }

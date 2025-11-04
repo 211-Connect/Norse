@@ -3,8 +3,9 @@
     "home": "Nyumbani",
     "favorites": "Vipendwa",
     "log_out": "Ingia nje",
-    "submit_feedback": "Wasilisha maoni",
-    "language_select_label": "Chagua lugha ya kubadilisha lugha ya tovuti"
+    "language_select_label": "Chagua lugha ya kubadilisha lugha ya tovuti",
+    "my_stuff": "Mambo yangu",
+    "search": "Tafuta"
   },
   "favorites": {
     "added_to_list": "Imeongezwa kwenye orodha",
@@ -23,11 +24,14 @@
     "unable_to_delete_list_message": "Orodha yako haikuweza kufutwa."
   },
   "search": {
+    "add_my_location": "Ongeza eneo langu",
+    "back": "Rudi",
     "hero_title": "Utafutaji wa rasilimali",
     "query_placeholder": "Chakula, nyumba, nk...",
     "location_placeholder": "Jiji, jimbo, au msimbo wa ZIP",
     "radius_placeholder": "Radius",
     "miles": "Maili",
+    "miles_short": "mi",
     "any": "Yoyote",
     "taxonomies": "Taxonomies",
     "suggestions": "Mapendekezo",
@@ -37,14 +41,16 @@
     "geocoding_error": "Hitilafu ya Geocoding",
     "geocoding_unsupported": "Geolocation haitegemezwi na kivinjari chako",
     "geocoding_unable_to_retrieve": "Haiwezi kurejesha eneo lako. Tafadhali angalia mipangilio ya eneo la kivinjari chako na ujaribu tena.",
-    "categories": "Kategoria"
+    "categories": "Mada",
+    "show_all": "Onyesha yote ({{count}})",
+    "show_less": "Onyesha kidogo"
   },
   "call_to_action": {
     "call": "Wito",
-    "view_website": "Tazama tovuti",
-    "get_directions": "Pata maelekezo",
-    "view_details": "Tazama maelezo",
-    "add_to_list": "Ongeza kwenye orodha",
+    "view_website": "Tovuti",
+    "get_directions": "Maelekezo",
+    "view_details": "Tazama zaidi",
+    "add_to_list": "Kipendwa",
     "delete_list": "Futa orodha",
     "remove_from_list": "Ondoa kutoka kwenye orodha",
     "share": "Kushiriki",
@@ -128,6 +134,6 @@
     "provided_by": "Data iliyotolewa na"
   },
   "footer": {
-    "copyright": "Haki zote zimehifadhiwa."
+    "copyright": "© Haki miliki {{text}}"
   }
 }

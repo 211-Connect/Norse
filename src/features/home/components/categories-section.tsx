@@ -1,14 +1,16 @@
 import { useTranslation } from 'next-i18next';
 import Image from 'next/image';
 import { Link } from '@/shared/components/link';
-import { Separator } from '@/shared/components/ui/separator';
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { useCategories } from '@/shared/hooks/use-categories';
-import { ExternalLink } from 'lucide-react';
-import { cn } from '@/shared/lib/utils';
+import { ChevronLeft, ExternalLink } from 'lucide-react';
 import { useAppConfig } from '@/shared/hooks/use-app-config';
+import { cn } from '@/shared/lib/utils';
+import { Button } from '@/shared/components/ui/button';
+import { Separator } from '@/shared/components/ui/separator';
 
 type Props = {
+  iconSize: 'small' | 'medium';
   index: string;
   name: string;
   image?: string;
@@ -17,7 +19,16 @@ type Props = {
   subcategories: any[];
 };
 
-const Category = ({ image, name, href, target, subcategories }: Props) => {
+const Category = ({
+  iconSize,
+  image,
+  name,
+  href,
+  target,
+  subcategories,
+}: Props) => {
+  const sizeOfIcon = iconSize === 'small' ? 40 : 64;
+
   if (subcategories && subcategories.length > 0) {
     return (
       <div className="flex items-start gap-2">
@@ -25,14 +36,17 @@ const Category = ({ image, name, href, target, subcategories }: Props) => {
           <Image
             src={image}
             alt=""
-            width={80}
-            height={0}
-            className="h-auto w-10"
+            width={sizeOfIcon}
+            height={sizeOfIcon}
+            className={cn(
+              'rounded-xl object-cover',
+              sizeOfIcon === 40 ? 'size-10' : 'size-16',
+            )}
           />
         )}
 
         <div className="flex flex-col">
-          <h3 className="text-xl font-semibold">{name}</h3>
+          <h3 className="mb-1 text-xl font-semibold">{name}</h3>
 
           {subcategories.map((el, key) => (
             <Link
@@ -91,42 +105,46 @@ const Category = ({ image, name, href, target, subcategories }: Props) => {
   );
 };
 
-export function CategoriesSection() {
-  const { t } = useTranslation('page-home');
+export function CategoriesSection({
+  className = '',
+  backText,
+}: {
+  backText?: string;
+  className?: string;
+}) {
+  const { t } = useTranslation();
   const appConfig = useAppConfig();
   const categories = useCategories();
 
   if ((categories?.length ?? 0) === 0) return null;
 
+  const iconSize = appConfig?.topicsConfig?.iconSize || 'small';
+
   return (
-    <div className="categories container mx-auto pb-8 pt-8">
+    <div className={cn('categories container mx-auto', className)}>
       {!appConfig.hideCategoriesHeading && (
-        <>
-          <h3 className="text-2xl font-bold">
+        <div className="mb-10">
+          <h2 className="text-center text-3xl font-bold">
             {t('search.categories_heading', {
               ns: 'dynamic',
-              defaultValue: t('categories_title'),
+              defaultValue: t('search.categories', { ns: 'common' }),
             })}
-          </h3>
-
-          <Separator className="mb-4 mt-4" />
-        </>
+          </h2>
+          <Separator className="my-3" />
+          {backText && (
+            <Link href="/">
+              <Button variant="link" className="">
+                <ChevronLeft className="size-4" />
+                {backText}
+              </Button>
+            </Link>
+          )}
+        </div>
       )}
 
-      <div
-        className={cn(
-          categories.length >= 4 &&
-            'grid-cols-1 justify-center sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
-          categories.length === 3 &&
-            'mx-auto max-w-fit grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
-          categories.length === 2 &&
-            'mx-auto max-w-fit grid-cols-1 sm:grid-cols-2',
-          categories.length === 1 && 'mx-auto max-w-fit grid-cols-1',
-          'grid gap-4',
-        )}
-      >
+      <div className="grid grid-cols-1 justify-center gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {categories.map((el: any) => (
-          <Category key={el.name} {...el} />
+          <Category key={el.name} iconSize={iconSize} {...el} />
         ))}
       </div>
     </div>

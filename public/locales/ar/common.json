@@ -3,8 +3,9 @@
     "home": "وطن",
     "favorites": "المفضله",
     "log_out": "تسجيل الخروج",
-    "submit_feedback": "إرسال تعليقات",
-    "language_select_label": "حدد لغة لتغيير لغة الموقع"
+    "language_select_label": "حدد لغة لتغيير لغة الموقع",
+    "my_stuff": "أشيائي",
+    "search": "بحث"
   },
   "favorites": {
     "added_to_list": "تمت الإضافة إلى القائمة",
@@ -23,11 +24,14 @@
     "unable_to_delete_list_message": "تعذر حذف قائمتك."
   },
   "search": {
+    "add_my_location": "أضف موقعي",
+    "back": "عودة",
     "hero_title": "البحث عن الموارد",
     "query_placeholder": "الغذاء والسكن ، إلخ ...",
     "location_placeholder": "المدينة أو الولاية أو الرمز البريدي",
     "radius_placeholder": "نصف القطر",
-    "miles": "اميال",
+    "miles": "أميال",
+    "miles_short": "ميل",
     "any": "أي",
     "taxonomies": "التصنيفات",
     "suggestions": "اقتراحات",
@@ -37,14 +41,16 @@
     "geocoding_error": "خطأ في الترميز الجغرافي",
     "geocoding_unsupported": "الموقع الجغرافي غير مدعوم من قبل متصفحك",
     "geocoding_unable_to_retrieve": "غير قادر على استرداد موقعك. يرجى التحقق من إعدادات الموقع في متصفحك والمحاولة مرة أخرى.",
-    "categories": "فئات"
+    "categories": "المواضيع",
+    "show_all": "عرض الكل ({{count}})",
+    "show_less": "عرض أقل"
   },
   "call_to_action": {
     "call": "دعا",
     "view_website": "عرض الموقع",
-    "get_directions": "احصل على الاتجاهات",
-    "view_details": "عرض التفاصيل",
-    "add_to_list": "أضف إلى القائمة",
+    "get_directions": "الاتجاهات",
+    "view_details": "شاهد المزيد",
+    "add_to_list": "مفضل",
     "delete_list": "حذف القائمة",
     "remove_from_list": "إزالة من القائمة",
     "share": "سهم",
@@ -128,6 +134,6 @@
     "provided_by": "البيانات المقدمة من"
   },
   "footer": {
-    "copyright": "كل الحقوق محفوظة."
+    "copyright": "© حقوق النشر {{text}}"
   }
 }

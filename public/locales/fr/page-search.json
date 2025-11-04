@@ -1,4 +1,5 @@
 {
+  "learn_more": "En savoir plus",
   "filter_results": "Filtrer les résultats",
   "results": "résultats",
   "no_query": "Aucune requête fournie",
@@ -9,5 +10,6 @@
     "subtitle": "Nous avons fourni des résultats similaires ci-dessous",
     "alt_subtitle": "Essayez une autre requête ou un autre filtre",
     "need_help": "Besoin d’aide ? Nous avons des gens qui se tiennent prêts."
-  }
+  },
+  "pinned": "Épinglé"
 }

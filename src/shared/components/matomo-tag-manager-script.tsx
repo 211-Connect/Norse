@@ -6,8 +6,8 @@ export function MatomoTagManagerScript() {
 
   return (
     <>
-    <Script id="matomo-tag-manager-script">
-      {`var _mtm = window._mtm = window._mtm || [];
+      <Script id="matomo-tag-manager-script">
+        {`var _mtm = window._mtm = window._mtm || [];
         _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
         (function() {
           var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];

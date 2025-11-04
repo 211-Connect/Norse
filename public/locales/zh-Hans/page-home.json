@@ -21,5 +21,20 @@
       "paragraph_1": "在此处添加您的地址以查找您所在地区可用的服务。这有助于我们仅向您显示您所在地区实际出现的选项。"
     }
   },
-  "categories_title": "类别"
+  "categories_title": "主题",
+  "new_layout": {
+    "topics_section": {
+      "cta": "浏览主题",
+      "title": "不确定从哪里开始"
+    },
+    "callouts": {
+      "list": {
+        "call": "打电话",
+        "chat": "聊天",
+        "email": "电子邮件",
+        "sms": "短信"
+      },
+      "title": "还有其他请求帮助的方式："
+    }
+  }
 }

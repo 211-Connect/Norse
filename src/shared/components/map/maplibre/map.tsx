@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import mapLibreGl, {
   LngLatBounds,
   LngLatLike,
@@ -7,7 +7,6 @@ import mapLibreGl, {
 } from 'maplibre-gl';
 import { MAPLIBRE_STYLE_URL } from '@/shared/lib/constants';
 import { Protocol } from 'pmtiles';
-import { renderToStaticMarkup } from 'react-dom/server';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import {
   ServiceAreaGeoJSON,
@@ -15,6 +14,7 @@ import {
   getBoundsFromServiceArea,
   MarkerDef,
 } from '../map-shared';
+import { createPortal } from 'react-dom';
 
 type MapProps = {
   center?: [number, number];
@@ -42,6 +42,11 @@ export function Map({
   const mapLibreMap = useRef(null);
   const _markers = useRef(null);
 
+  const [activePopup, setActivePopup] = useState<{
+    element: HTMLElement;
+    popup: any;
+  } | null>(null);
+
   useEffect(() => {
     mapLibreMap.current = new mapLibreGl.Map({
       container: mapContainer.current as HTMLDivElement,
@@ -65,11 +70,29 @@ export function Map({
     _markers.current?.forEach((m) => m.remove());
 
     _markers.current = markers.map((m) => {
-      const marker = new Marker().setPopup(
-        m.popup
-          ? new Popup().setHTML(renderToStaticMarkup(m.popup))
-          : undefined,
-      );
+      const marker = new Marker();
+      if (m.popup) {
+        const popupDiv = document.createElement('div');
+        popupDiv.style.minHeight = '200px';
+        popupDiv.style.width = '240px';
+        const popup = new Popup({
+          focusAfterOpen: false,
+          closeButton: false,
+        }).setDOMContent(popupDiv);
+
+        popup.on('open', () => {
+          setActivePopup({
+            element: popupDiv,
+            popup: m.popup,
+          });
+        });
+
+        popup.on('close', () => {
+          setActivePopup(null);
+        });
+
+        marker.setPopup(popup);
+      }
 
       // Check if coordinates are valid before doing anything with them
       const hasValidCoordinates =
@@ -79,20 +102,23 @@ export function Map({
         marker.setLngLat(m.coordinates);
 
         const markerElement = marker.getElement();
-        markerElement.style.cursor = 'pointer';
+        if (marker.getPopup()) {
+          markerElement.style.cursor = 'pointer';
+        }
         markerElement.classList.add('custom-marker');
         markerElement.addEventListener('click', (e) => {
-          const listElement = document.getElementById(m.id);
-          listElement?.scrollIntoView();
-
-          _markers.current?.forEach((m) => {
-            const popup = m.getPopup();
-            if (popup?.isOpen()) {
-              m.togglePopup();
+          setTimeout(() => {
+            const listElement = document.getElementById(m.id);
+            listElement?.scrollIntoView();
+          });
+          _markers.current?.forEach((otherMarker) => {
+            if (otherMarker !== marker) {
+              const otherPopup = otherMarker.getPopup();
+              if (otherPopup && otherPopup.isOpen()) {
+                otherPopup.remove();
+              }
             }
           });
-
-          marker.togglePopup();
         });
 
         marker.addTo(mapLibreMap.current);
@@ -173,17 +199,13 @@ export function Map({
 
     // Cleanup helper with guards (map may be removed before style load)
     const cleanup = () => {
-      if (!map || !map.style) return;
       try {
-        if (safeHasLayer('service-area-fill'))
+        if (map.getLayer('service-area-fill'))
           map.removeLayer('service-area-fill');
-        if (safeHasLayer('service-area-outline'))
+        if (map.getLayer('service-area-outline'))
           map.removeLayer('service-area-outline');
-        if (map.getSource && map.getSource('service-area'))
-          map.removeSource('service-area');
-      } catch {
-        // swallow errors that can occur if map is mid-destroy
-      }
+        if (map.getSource('service-area')) map.removeSource('service-area');
+      } catch {}
     };
 
     if (hasMarkers || !serviceArea) {
@@ -259,5 +281,10 @@ export function Map({
     };
   }, [serviceArea, markers]);
 
-  return <div ref={mapContainer} className="h-full w-full"></div>;
+  return (
+    <div className="size-full">
+      <div ref={mapContainer} className="size-full"></div>
+      {activePopup && createPortal(activePopup.popup, activePopup.element)}
+    </div>
+  );
 }

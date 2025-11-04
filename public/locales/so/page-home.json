@@ -21,5 +21,20 @@
       "paragraph_1": "Ku dar cinwaankaaga si aad uga hesho adeegyo laga heli karo xaafadaada. Tani waxay naga caawineysaa inaan ku tusno kaliya fursadaha dhabta ah ee ku yimaada degaankaaga."
     }
   },
-  "categories_title": "Category: Category"
+  "categories_title": "Mawduucyada",
+  "new_layout": {
+    "topics_section": {
+      "cta": "Dulmar mawduucyada",
+      "title": "Ma hubtid meesha laga bilaabo"
+    },
+    "callouts": {
+      "list": {
+        "call": "Wac",
+        "chat": "Sheekeysi",
+        "email": "Iimayl",
+        "sms": "SMS"
+      },
+      "title": "Waxaa jira siyaabo kale oo lagu weydiisto caawimaad sidoo kale:"
+    }
+  }
 }

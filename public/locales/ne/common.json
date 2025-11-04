@@ -3,8 +3,9 @@
     "home": "घर",
     "favorites": "मनपर्नेहरू",
     "log_out": "लग आउट गर्नुहोस्",
-    "submit_feedback": "प्रतिक्रिया पेश गर्नुहोस्",
-    "language_select_label": "साइट भाषा परिवर्तन गर्न भाषा चयन गर्नुहोस्"
+    "language_select_label": "साइट भाषा परिवर्तन गर्न भाषा चयन गर्नुहोस्",
+    "my_stuff": "मेरो सामान",
+    "search": "खोजी गर्नुहोस्"
   },
   "favorites": {
     "added_to_list": "सूचीमा थपियो",
@@ -23,11 +24,14 @@
     "unable_to_delete_list_message": "तपाईँको सूची मेट्न सकिएन ।"
   },
   "search": {
+    "add_my_location": "मेरो स्थान थप्नुहोस्",
+    "back": "फिर्ता",
     "hero_title": "स्रोतका लागि खोजी गर्नुहोस्",
     "query_placeholder": "खाना, आवास, आदि ...",
     "location_placeholder": "शहर, राज्य, वा जिप कोड",
     "radius_placeholder": "त्रिज्या",
     "miles": "माइल्स",
+    "miles_short": "माइल",
     "any": "कुनै पनि",
     "taxonomies": "टैक्सोनोमीज",
     "suggestions": "सुझावहरू[सम्पादन गर्ने]",
@@ -37,14 +41,16 @@
     "geocoding_error": "जियोकोडिङ त्रुटि",
     "geocoding_unsupported": "भू-स्थान तपाईँको ब्राउजरद्वारा समर्थित छैन ।",
     "geocoding_unable_to_retrieve": "तपाईँको स्थान पुन: प्राप्त गर्न अक्षम । कृपया तपाईँको ब्राउजरको स्थान सेटिङ जाँच गर्नुहोस् र पुन: प्रयास गर्नुहोस् ।",
-    "categories": "श्रेणीहरू"
+    "categories": "विषयहरू",
+    "show_all": "सबै देखाउनुहोस् ({{count}})",
+    "show_less": "कम देखाउनुहोस्"
   },
   "call_to_action": {
     "call": "कल गर्नुहोस्",
-    "view_website": "वेबसाइट हेर्नुहोस्",
-    "get_directions": "निर्देशन प्राप्त गर्नुहोस्",
-    "view_details": "विवरण हेर्नुहोस्",
-    "add_to_list": "सूचीमा थप्नुहोस्",
+    "view_website": "वेबसाइट",
+    "get_directions": "दिशानिर्देशहरू",
+    "view_details": "थप हेर्नुहोस्",
+    "add_to_list": "मनपर्ने",
     "delete_list": "सूची मेट्नुहोस्",
     "remove_from_list": "सूचीबाट हटाउनुहोस्",
     "share": "साझेदारी गर्नुहोस्",
@@ -128,6 +134,6 @@
     "provided_by": "द्वारा प्रदान गरिएको डेटा"
   },
   "footer": {
-    "copyright": "सबै अधिकार सुरक्षित छ ।"
+    "copyright": "© प्रतिलिपि अधिकार {{text}}"
   }
 }

@@ -27,14 +27,6 @@ export function HeroSection() {
         ),
       },
       {
-        selector: '.location-box',
-        content: (
-          <div className="flex flex-col gap-2">
-            <p>{t('tour.step_4.paragraph_1')}</p>
-          </div>
-        ),
-      },
-      {
         selector: '.categories',
         content: (
           <div className="flex flex-col gap-2">
@@ -45,20 +37,8 @@ export function HeroSection() {
       },
     ];
 
-    if (appConfig.contact.feedbackUrl) {
-      steps.push({
-        selector: '.feedback',
-        content: (
-          <div className="flex flex-col gap-2">
-            <p>{t('tour.step_3.paragraph_1')}</p>
-            <p>{t('tour.step_3.paragraph_2')}</p>
-          </div>
-        ),
-      });
-    }
-
     return steps;
-  }, [appConfig.contact.feedbackUrl, t]);
+  }, [t]);
 
   const enableTour = () => {
     createTourEvent(null);
@@ -81,24 +61,24 @@ export function HeroSection() {
       />
 
       <div
-        className="flex min-w-full flex-col gap-2 rounded-md bg-white p-4 sm:min-w-[500px]"
+        className="flex min-w-full flex-col gap-2 rounded-lg bg-primary p-3 sm:min-w-[500px]"
         role="search"
       >
-        <h3 className="text-xl font-bold">
+        <h3 className="text-2xl font-medium text-white">
           {t('search.hero_title', {
             ns: 'dynamic',
             defaultValue: t('search.hero_title', { ns: 'common' }),
           })}
         </h3>
 
-        <MainSearchLayout />
+        <MainSearchLayout addMyLocationButtonVariant="link" />
       </div>
 
       {showHomePageTour && (
         <Button
           onClick={enableTour}
           variant="outline"
-          className="hover:bg-primary/70 hover:text-primary-foreground"
+          className="hover:bg-primary hover:text-primary-foreground"
         >
           {t('take_a_tour')}
         </Button>

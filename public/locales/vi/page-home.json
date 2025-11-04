@@ -21,5 +21,20 @@
       "paragraph_1": "Thêm địa chỉ của bạn ở đây để tìm các dịch vụ có sẵn trong khu vực lân cận của bạn. Điều này giúp chúng tôi chỉ hiển thị cho bạn các tùy chọn thực sự đến khu vực của bạn."
     }
   },
-  "categories_title": "Loại"
+  "categories_title": "Chủ đề",
+  "new_layout": {
+    "topics_section": {
+      "cta": "Duyệt qua các chủ đề",
+      "title": "Không chắc bắt đầu từ đâu"
+    },
+    "callouts": {
+      "list": {
+        "call": "Gọi điện",
+        "chat": "Trò chuyện",
+        "email": "Email",
+        "sms": "SMS"
+      },
+      "title": "Cũng có những cách khác để yêu cầu trợ giúp:"
+    }
+  }
 }

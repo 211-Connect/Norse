@@ -11,6 +11,7 @@ import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Switch } from '@/shared/components/ui/switch';
 import { Textarea } from '@/shared/components/ui/textarea';
+import { cn } from '@/shared/lib/utils';
 import { FavoriteService } from '@/shared/services/favorite-service';
 import { PlusIcon } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
@@ -23,7 +24,7 @@ const initialState = {
   public: false,
 };
 
-export function CreateAListButton() {
+export function CreateAListButton({ className = '' }: { className?: string }) {
   const { t } = useTranslation('common');
   const [open, _setOpen] = useState(false);
   const [formState, setFormState] = useState(initialState);
@@ -61,7 +62,7 @@ export function CreateAListButton() {
       <Button
         onClick={() => setOpen(true)}
         variant="outline"
-        className="flex gap-1"
+        className={cn('flex gap-1', className)}
       >
         <PlusIcon className="size-4" />
         {t('modal.create_list.create_a_list')}

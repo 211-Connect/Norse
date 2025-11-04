@@ -43,6 +43,17 @@ const query = qs.stringify({
         'dataProviders.logo',
         'radiusSelectValues',
         'sms',
+        'safeExit',
+        'header',
+        'footer',
+        'newLayout',
+        'newLayout.logo',
+        'newLayout.hero',
+        'topicsPage',
+        'topics',
+        'newLayoutCallouts',
+        'newLayoutCallouts.options',
+        'newLayoutCallouts.options.customImg',
         'localizations',
         'localizations.logo',
         'localizations.favicon',
@@ -59,6 +70,13 @@ const query = qs.stringify({
         'localizations.resourcePage',
         'localizations.privacyPolicyPage',
         'localizations.termsOfUsePage',
+        'localizations.safeExit',
+        'localizations.header',
+        'localizations.footer',
+        'localizations.topicsPage',
+        'localizations.newLayoutCallouts',
+        'localizations.newLayoutCallouts.options',
+        'localizations.newLayoutCallouts.options.customImg',
       ],
     },
     category: {
@@ -112,8 +130,27 @@ module.exports = function createFromStrapi(dir) {
     const heroUrl = appConfig.hero.data.attributes.url;
     const openGraphUrl = appConfig.openGraph.data.attributes.url;
 
+    const newLayoutLogoUrl = appConfig?.newLayout?.logo?.data?.attributes?.url;
+    const newLayoutHeroUrl = appConfig?.newLayout?.hero?.data?.attributes?.url;
+    const newLayout = appConfig?.newLayout && {
+      enabled: appConfig.newLayout.enabled,
+      headerStart: appConfig.newLayout.headerStart,
+      headerEnd: appConfig.newLayout.headerEnd,
+      logoUrl: newLayoutLogoUrl,
+      heroUrl: newLayoutHeroUrl,
+    };
+
     const translationFile = {
       en: {},
+    };
+
+    const newLayoutCallouts = appConfig?.newLayoutCallouts && {
+      title: appConfig.newLayoutCallouts.title,
+      options:
+        appConfig.newLayoutCallouts.options?.map((option) => ({
+          ...option,
+          customImg: option.customImg?.data?.attributes?.url ?? null,
+        })) ?? [],
     };
 
     const newAppConfig = {
@@ -162,6 +199,16 @@ module.exports = function createFromStrapi(dir) {
       categories: [],
       suggestions: [],
       sms: appConfig?.sms,
+      newLayout,
+      topicsConfig: appConfig?.topics,
+      translatedConfig: {
+        en: {
+          newLayoutCallouts,
+          safeExit: appConfig?.safeExit,
+          header: appConfig?.header,
+          footer: appConfig?.footer,
+        },
+      },
     };
 
     const translations = {
@@ -179,6 +226,7 @@ module.exports = function createFromStrapi(dir) {
       'privacy_policy.content': appConfig?.privacyPolicyPage?.content,
       'terms_of_use.title': appConfig?.termsOfUsePage?.title ?? 'Terms of Use',
       'terms_of_use.content': appConfig?.termsOfUsePage?.content,
+      'topics_page.backText': appConfig?.topicsPage?.backText,
     };
 
     if (appConfig?.customCategoriesHeading) {
@@ -244,6 +292,7 @@ module.exports = function createFromStrapi(dir) {
         'privacy_policy.content': data?.privacyPolicyPage?.content,
         'terms_of_use.title': data?.termsOfUsePage?.title,
         'terms_of_use.content': data?.termsOfUsePage?.content,
+        'topics_page.backText': data?.topicsPage?.backText,
       };
 
       if (data?.customCategoriesHeading) {
@@ -256,6 +305,21 @@ module.exports = function createFromStrapi(dir) {
       }
 
       translationFile[data.locale] = translations;
+      const newLayoutCallouts = data?.newLayoutCallouts && {
+        title: data.newLayoutCallouts.title,
+        options:
+          data.newLayoutCallouts.options?.map((option) => ({
+            ...option,
+            customImg: option.customImg?.data?.attributes?.url ?? null,
+          })) ?? [],
+      };
+
+      newAppConfig.translatedConfig[data.locale] = {
+        safeExit: data?.safeExit,
+        header: data?.header,
+        footer: data?.footer,
+        newLayoutCallouts,
+      };
     }
 
     const categoryFiles = {};

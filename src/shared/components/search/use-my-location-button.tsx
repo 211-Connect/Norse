@@ -51,9 +51,11 @@ export function UseMyLocationButton() {
               searchLocation: location.address,
               searchCoordinates: location.coordinates,
             }));
-          }
 
-          return 'Successfully fetched your location';
+            return 'Successfully fetched your location';
+          } else {
+            throw new Error();
+          }
         },
         error: t('search.geocoding_unable_to_retrieve'),
       });
@@ -88,8 +90,8 @@ export function UseMyLocationButton() {
   return (
     <Button
       onClick={getUserLocation}
-      className="flex gap-1"
-      variant="outline"
+      className="flex gap-1 !text-primary"
+      variant="ghost"
       type="button"
     >
       <Locate className="size-4" />

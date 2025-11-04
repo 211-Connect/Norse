@@ -1,7 +1,10 @@
 {
-  "back_to_results": "Volver a los resultados",
-  "back_to_home": "Volver a casa",
+  "back_to_results": "Resultados",
+  "back_to_home": "Casa",
   "categories": "Categorías",
+  "categories_title": "Qué hay aquí",
+  "description": "Descripción",
+  "directions_button": "Obtener direcciones",
   "last_assured": "Último asegurado",
   "hours": "Horas",
   "required_documents": "Documentos requeridos",
@@ -13,11 +16,14 @@
   "website": "Sitio web",
   "application_process": "Proceso de solicitud",
   "eligibility": "Elegibilidad",
-  "fee": "Honorario",
+  "fee": "Honorarios",
   "service_area": "Área de servicio",
   "agency_info": "Información de la agencia",
   "unknown": "Desconocido",
   "languages": "Idiomas",
   "transportation": "Transporte",
-  "accessibility": "Accesibilidad"
+  "accessibility": "Accesibilidad",
+  "report": "Informe",
+  "providing_organization": "Organización proveedora",
+  "interpretation_services": "Servicios de interpretación"
 }

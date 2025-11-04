@@ -3,8 +3,9 @@
     "home": "집",
     "favorites": "즐겨찾기",
     "log_out": "로그아웃",
-    "submit_feedback": "피드백 제출",
-    "language_select_label": "사이트 언어를 변경할 언어를 선택합니다."
+    "language_select_label": "사이트 언어를 변경할 언어를 선택합니다.",
+    "my_stuff": "내 물건",
+    "search": "검색"
   },
   "favorites": {
     "added_to_list": "목록에 추가됨",
@@ -23,11 +24,14 @@
     "unable_to_delete_list_message": "목록을 삭제할 수 없습니다."
   },
   "search": {
+    "add_my_location": "내 위치 추가",
+    "back": "뒤로",
     "hero_title": "리소스 검색",
     "query_placeholder": "음식, 주거 등...",
     "location_placeholder": "도시, 주 또는 우편 번호",
     "radius_placeholder": "반지름",
     "miles": "마일리지",
+    "miles_short": "마일",
     "any": "어떤",
     "taxonomies": "분류",
     "suggestions": "제안",
@@ -37,14 +41,16 @@
     "geocoding_error": "지오코딩 오류",
     "geocoding_unsupported": "지리적 위치는 브라우저에서 지원되지 않습니다.",
     "geocoding_unable_to_retrieve": "위치를 검색할 수 없습니다. 브라우저의 위치 설정을 확인하고 다시 시도하십시오.",
-    "categories": "카테고리"
+    "categories": "주제",
+    "show_all": "모두 보기 ({{count}})",
+    "show_less": "간단히 보기"
   },
   "call_to_action": {
     "call": "외침",
-    "view_website": "웹사이트 보기",
-    "get_directions": "길 찾기",
-    "view_details": "세부 정보보기",
-    "add_to_list": "목록에 추가",
+    "view_website": "웹사이트",
+    "get_directions": "길찾기",
+    "view_details": "더 보기",
+    "add_to_list": "가장 좋아하는",
     "delete_list": "목록 삭제",
     "remove_from_list": "목록에서 제거",
     "share": "공유",
@@ -128,6 +134,6 @@
     "provided_by": "데이터 제공"
   },
   "footer": {
-    "copyright": "판권 소유."
+    "copyright": "© 저작권 {{text}}"
   }
 }

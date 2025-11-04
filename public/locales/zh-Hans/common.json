@@ -3,8 +3,9 @@
     "home": "家",
     "favorites": "收藏 夹",
     "log_out": "注销",
-    "submit_feedback": "提交反馈",
-    "language_select_label": "选择一种语言以更改网站语言"
+    "language_select_label": "选择一种语言以更改网站语言",
+    "my_stuff": "我的东西",
+    "search": "搜索"
   },
   "favorites": {
     "added_to_list": "已添加到列表",
@@ -23,11 +24,14 @@
     "unable_to_delete_list_message": "无法删除您的列表。"
   },
   "search": {
+    "add_my_location": "添加我的位置",
+    "back": "返回",
     "hero_title": "搜索资源",
     "query_placeholder": "食物、住房等......",
     "location_placeholder": "城市、州或邮政编码",
     "radius_placeholder": "半径",
     "miles": "英里",
+    "miles_short": "英里",
     "any": "任何",
     "taxonomies": "分类法",
     "suggestions": "建议",
@@ -37,14 +41,16 @@
     "geocoding_error": "地理编码错误",
     "geocoding_unsupported": "您的浏览器不支持地理定位",
     "geocoding_unable_to_retrieve": "无法检索您的位置。请检查浏览器的位置设置，然后重试。",
-    "categories": "类别"
+    "categories": "类别",
+    "show_all": "显示全部 ({{count}})",
+    "show_less": "显示较少"
   },
   "call_to_action": {
     "call": "叫",
-    "view_website": "查看网站",
-    "get_directions": "获取路线",
-    "view_details": "查看详情",
-    "add_to_list": "添加到列表",
+    "view_website": "网站",
+    "get_directions": "路线",
+    "view_details": "查看更多",
+    "add_to_list": "最喜欢的",
     "delete_list": "删除列表",
     "remove_from_list": "从列表中删除",
     "share": "共享",
@@ -128,6 +134,6 @@
     "provided_by": "数据提供"
   },
   "footer": {
-    "copyright": "版权所有。"
+    "copyright": "© 版权 {{text}}"
   }
 }

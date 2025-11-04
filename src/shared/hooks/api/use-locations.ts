@@ -4,7 +4,7 @@ import { MapService } from '@/shared/services/map-service';
 import { useGeocodingAdapter } from '../use-geocoding-adapter';
 import { useMemo } from 'react';
 import { useTranslation } from 'next-i18next';
-import { NavigationIcon } from 'lucide-react';
+import { EarthIcon } from 'lucide-react';
 
 export function useLocations(searchTerm: string) {
   const adapter = useGeocodingAdapter();
@@ -38,11 +38,11 @@ export function useLocations(searchTerm: string) {
     return [
       ...additionalLocations.map((loc) => ({
         value: loc.address,
-        Icon: NavigationIcon,
+        Icon: EarthIcon,
       })),
       ...data.map((loc) => ({
         value: loc.address,
-        Icon: NavigationIcon,
+        Icon: EarthIcon,
       })),
     ];
   }, [data, additionalLocations]);

@@ -2,12 +2,12 @@ import { useAppConfig } from '@/shared/hooks/use-app-config';
 import Head from 'next/head';
 import { Navigation } from '../components/navigation';
 import { Overview } from '../components/overview';
-import { Information } from '../components/information';
 import { OrganizationInformation } from '../components/organization-information';
 import { useRef } from 'react';
 import { cn } from '@/shared/lib/utils';
 import { fontSans } from '@/shared/styles/fonts';
-import { AdditionalInformation } from '../components/additional-information';
+import { DescriptionSection } from '../components/description-section';
+import { MapSection } from '../components/map-section';
 
 export function ResourceView({ resource }) {
   const appConfig = useAppConfig();
@@ -42,16 +42,16 @@ export function ResourceView({ resource }) {
 
         <div
           className={cn(
-            'flex flex-col gap-2 font-sans lg:flex-row',
+            'flex flex-col gap-3 font-sans lg:flex-row',
             fontSans.variable,
           )}
           ref={componentToPrintRef}
         >
           <Overview resource={resource} />
 
-          <div className="flex flex-1 flex-col gap-2">
-            <Information resource={resource} />
-            <AdditionalInformation resource={resource} />
+          <div className="flex flex-1 flex-col gap-3">
+            <DescriptionSection resource={resource} />
+            <MapSection resource={resource} />
             <OrganizationInformation resource={resource} />
           </div>
         </div>

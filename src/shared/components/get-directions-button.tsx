@@ -8,11 +8,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/shared/components/ui/dialog';
-import { Navigation } from 'lucide-react';
+import { Map } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 import { useCallback, useState } from 'react';
+import { cn } from '../lib/utils';
 
-export function GetDirectionsButton({ data, coords }) {
+export function GetDirectionsButton({
+  className = '',
+  data,
+  coords,
+  text = '',
+}) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
@@ -51,14 +57,15 @@ export function GetDirectionsButton({ data, coords }) {
     <>
       <ReferralButton
         size="sm"
-        className="flex-1 gap-1"
+        className={cn('gap1 flex-1', className)}
         referralType="directions_referral"
         resourceId={data.id}
         resourceData={data}
         variant="highlight"
         onClick={onClick}
       >
-        <Navigation className="size-4" /> {t('call_to_action.get_directions')}
+        <Map className="mr-[5px] size-4" />{' '}
+        {text || t('call_to_action.get_directions')}
       </ReferralButton>
 
       <Dialog open={open} onOpenChange={setOpen}>
@@ -88,8 +95,8 @@ export function GetDirectionsButton({ data, coords }) {
               variant="outline"
               onClick={onClick}
             >
-              <Navigation className="size-4" />{' '}
-              {t('call_to_action.get_directions')}
+              <Map className="mr-[5px] size-4" />
+              {text || t('call_to_action.get_directions')}
             </ReferralButton>
           </div>
         </DialogContent>

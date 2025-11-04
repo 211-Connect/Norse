@@ -19,6 +19,7 @@ import { Skeleton } from './ui/skeleton';
 import { Badge } from './ui/badge';
 import { FavoriteService } from '../services/favorite-service';
 import { toast } from 'sonner';
+import { cn } from '../lib/utils';
 
 type AddToFavoritesButtonProps = {
   size?: 'default' | 'icon';
@@ -107,13 +108,13 @@ export function AddToFavoritesButton({
   return (
     <>
       <Button
-        className="flex gap-1"
+        className={cn('flex gap-1', size === 'icon' && 'size-6')}
         size={size}
-        variant={size === 'icon' ? 'outline' : 'outline'}
+        variant={size === 'icon' ? 'ghost' : 'outline'}
         aria-label={t('call_to_action.add_to_list')}
         onClick={handleClick}
       >
-        <Heart className="size-4" />
+        <Heart className={size === 'icon' ? 'size-6' : 'size-4'} />
         {size !== 'icon' && t('call_to_action.add_to_list')}
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>

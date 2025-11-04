@@ -73,6 +73,43 @@ export type AppConfig = {
   sms?: {
     provider: 'Twilio';
   }[];
+  newLayout?: {
+    enabled?: boolean;
+    headerStart?: string;
+    headerEnd?: string;
+    heroUrl?: string;
+    logoUrl?: string;
+  };
+  topicsConfig?: {
+    iconSize: 'small' | 'medium';
+  };
+  translatedConfig: {
+    [locale: string]: {
+      footer?: {
+        disclaimer?: string;
+      };
+      header?: {
+        customHomeUrl?: string;
+        searchUrl?: string;
+      };
+      newLayoutCallouts?: {
+        options?: {
+          type: 'Call' | 'SMS' | 'Chat' | 'Email';
+          customImg?: string;
+          description?: string;
+          title?: string;
+          url?: string;
+          urlTarget?: '_self' | '_blank';
+        }[];
+        title?: string;
+      };
+      safeExit?: {
+        enabled?: boolean;
+        text: string;
+        url: string;
+      };
+    };
+  };
 };
 
 const appConfigContext = createContext<AppConfig>(null);

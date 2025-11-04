@@ -1,4 +1,5 @@
 {
+  "learn_more": "Tìm hiểu thêm",
   "filter_results": "Lọc kết quả",
   "results": "Kết quả",
   "no_query": "Không có truy vấn nào được cung cấp",
@@ -9,5 +10,6 @@
     "subtitle": "Chúng tôi đã cung cấp một số kết quả tương tự bên dưới",
     "alt_subtitle": "Thử một truy vấn hoặc bộ lọc khác",
     "need_help": "Cần giúp đỡ? Chúng tôi có những người túc trực."
-  }
+  },
+  "pinned": "Đã ghim"
 }

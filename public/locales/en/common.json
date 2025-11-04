@@ -3,8 +3,9 @@
     "home": "Home",
     "favorites": "Favorites",
     "log_out": "Log out",
-    "submit_feedback": "Submit feedback",
-    "language_select_label": "Select a language to change the site language"
+    "language_select_label": "Select a language to change the site language",
+    "my_stuff": "My stuff",
+    "search": "Search"
   },
   "favorites": {
     "added_to_list": "Added to list",
@@ -23,11 +24,14 @@
     "unable_to_delete_list_message": "Your list could not be deleted."
   },
   "search": {
+    "add_my_location": "Add my location",
+    "back": "Back",
     "hero_title": "Search for resources",
     "query_placeholder": "Food, housing, etc...",
     "location_placeholder": "City, state, or ZIP code",
     "radius_placeholder": "Radius",
     "miles": "Miles",
+    "miles_short": "mi",
     "any": "Any",
     "taxonomies": "Taxonomies",
     "suggestions": "Suggestions",
@@ -37,14 +41,16 @@
     "geocoding_error": "Geocoding error",
     "geocoding_unsupported": "Geolocation is not supported by your browser",
     "geocoding_unable_to_retrieve": "Unable to retrieve your location. Please check your browser's location settings and try again.",
-    "categories": "Categories"
+    "categories": "Topics",
+    "show_all": "Show all ({{count}})",
+    "show_less": "Show less"
   },
   "call_to_action": {
     "call": "Call",
-    "view_website": "View website",
-    "get_directions": "Get directions",
-    "view_details": "View details",
-    "add_to_list": "Add to list",
+    "view_website": "Website",
+    "get_directions": "Directions",
+    "view_details": "See more",
+    "add_to_list": "Favorite",
     "delete_list": "Delete list",
     "remove_from_list": "Remove from list",
     "share": "Share",
@@ -128,6 +134,6 @@
     "provided_by": "Data provided by"
   },
   "footer": {
-    "copyright": "All rights reserved."
+    "copyright": "© Copyright {{text}}"
   }
 }

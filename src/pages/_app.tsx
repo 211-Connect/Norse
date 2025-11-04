@@ -1,4 +1,5 @@
 import '@/shared/styles/globals.css';
+import '@/shared/styles/map.css';
 import Head from 'next/head';
 import { appWithTranslation } from 'next-i18next';
 import { AppProps } from 'next/app';
@@ -13,15 +14,19 @@ import { Toaster } from '@/shared/components/ui/sonner';
 import { JotaiHydration } from '@/shared/components/jotai-hydration';
 import { GlobalDialogs } from '@/shared/components/global-dialogs/global-dialogs';
 import { fontSans } from '@/shared/styles/fonts';
+import { useRouter } from 'next/router';
 
 function App({
   Component,
   pageProps: { session, appConfig, flags, ...pageProps },
 }: AppProps) {
+  const router = useRouter();
+
   return (
     <div
       className={cn(
         'flex min-h-screen flex-col bg-primary/5 font-sans antialiased',
+        appConfig.newLayout?.enabled && router.asPath === '/' && 'bg-white',
         fontSans.variable,
       )}
     >

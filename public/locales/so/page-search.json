@@ -1,4 +1,5 @@
 {
+  "learn_more": "Wax dheeraad ah baro",
   "filter_results": "Natiijooyinka Filter",
   "results": "natiijooyinka",
   "no_query": "Su'aal la'aan la bixiyay",
@@ -9,5 +10,6 @@
     "subtitle": "Waxaan bixinay qaar ka mid ah natiijooyinka la mid ah ee hoos ku qoran",
     "alt_subtitle": "Isku day inaad su'aalo ama filter kala duwan",
     "need_help": "Cawinaada u baahan tahay? Waxaanu leenahay dad ag taagan."
-  }
+  },
+  "pinned": "La xidhay"
 }

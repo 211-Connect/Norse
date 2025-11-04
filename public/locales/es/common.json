@@ -3,8 +3,9 @@
     "home": "Hogar",
     "favorites": "Favoritos",
     "log_out": "Cerrar sesión",
-    "submit_feedback": "Enviar comentarios",
-    "language_select_label": "Seleccione un idioma para cambiar el idioma del sitio"
+    "language_select_label": "Seleccione un idioma para cambiar el idioma del sitio",
+    "my_stuff": "Mis cosas",
+    "search": "Buscar"
   },
   "favorites": {
     "added_to_list": "Añadido a la lista",
@@ -23,11 +24,14 @@
     "unable_to_delete_list_message": "Su lista no se pudo eliminar."
   },
   "search": {
+    "add_my_location": "Agregar mi ubicación",
+    "back": "Atrás",
     "hero_title": "Búsqueda de recursos",
     "query_placeholder": "Alimentación, vivienda, etc...",
     "location_placeholder": "Ciudad, estado o código postal",
     "radius_placeholder": "Radio",
     "miles": "Millas",
+    "miles_short": "mi",
     "any": "Cualquier",
     "taxonomies": "Taxonomías",
     "suggestions": "Sugerencias",
@@ -37,14 +41,16 @@
     "geocoding_error": "Error de geocodificación",
     "geocoding_unsupported": "La geolocalización no es compatible con su navegador",
     "geocoding_unable_to_retrieve": "No se puede recuperar su ubicación. Compruebe la configuración de ubicación de su navegador y vuelva a intentarlo.",
-    "categories": "Categorías"
+    "categories": "Temas",
+    "show_all": "Mostrar todo ({{count}})",
+    "show_less": "Mostrar menos"
   },
   "call_to_action": {
     "call": "Llamar",
-    "view_website": "Ver sitio web",
-    "get_directions": "Obtener direcciones",
-    "view_details": "Ver detalles",
-    "add_to_list": "Añadir a la lista",
+    "view_website": "Sitio web",
+    "get_directions": "Direcciones",
+    "view_details": "Ver más",
+    "add_to_list": "Favorito",
     "delete_list": "Eliminar lista",
     "remove_from_list": "Quitar de la lista",
     "share": "Compartir",
@@ -128,6 +134,6 @@
     "provided_by": "Datos facilitados por"
   },
   "footer": {
-    "copyright": "Todos los derechos reservados."
+    "copyright": "© Derechos de autor {{text}}"
   }
 }

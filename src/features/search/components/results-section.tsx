@@ -1,58 +1,33 @@
-import { MainSearchLayout } from '@/shared/components/search/main-search-layout';
 import { ResultTotal } from './result-total';
 import { RenderResults } from './render-results';
 import { ResultsPagination } from './results-pagination';
-import { Button } from '@/shared/components/ui/button';
-import { Filter } from 'lucide-react';
-import { useAtomValue, useSetAtom } from 'jotai';
-import { filtersAtom, filtersOpenAtom } from '@/shared/store/results';
-import { cn } from '@/shared/lib/utils';
-import { TaxonomyContainer } from './taxonomy-container';
+import { useAtomValue } from 'jotai';
+import { noResultsAtom } from '@/shared/store/results';
 import { useRef } from 'react';
+import { PrintButton } from '@/shared/components/print-button';
+import { ShareButton } from '@/shared/components/share-button';
 
 export function ResultsSection() {
-  const setFiltersOpen = useSetAtom(filtersOpenAtom);
-  const filters = useAtomValue(filtersAtom);
-  const filterKeys = Object.keys(filters);
   const componentToPrintRef = useRef<HTMLDivElement>(null);
+  const noResults = useAtomValue(noResultsAtom);
 
   return (
     <div
       id="search-container"
-      className="flex w-full flex-col overflow-y-auto lg:max-w-[550px]"
+      className="flex w-full flex-col gap-3 overflow-y-auto p-[10px] xl:max-w-[550px]"
     >
-      <div className="flex flex-col gap-2 bg-white p-2 print:hidden">
-        <MainSearchLayout />
-
-        <TaxonomyContainer />
-      </div>
-
-      <div
-        className={cn(
-          filterKeys.length > 0
-            ? 'justify-between xl:justify-end'
-            : 'justify-end',
-          'flex items-center bg-primary p-1 pl-2 pr-2 text-primary-foreground print:hidden',
-        )}
-      >
-        <Button
-          size="sm"
-          variant="ghost"
-          className={cn(
-            filterKeys.length > 0 ? 'flex xl:hidden' : 'hidden',
-            'gap-1',
-          )}
-          onClick={() => setFiltersOpen(true)}
-        >
-          <Filter className="size-4" />
-          Filter
-        </Button>
-
+      <div className="flex items-center justify-between py-[5.5px] print:hidden">
         <ResultTotal />
+        <div className="flex gap-[10px]">
+          {!noResults && (
+            <PrintButton componentToPrintRef={componentToPrintRef} />
+          )}
+          <ShareButton componentToPrintRef={componentToPrintRef} />
+        </div>
       </div>
 
-      <div className="flex flex-col gap-2 p-2" ref={componentToPrintRef}>
-        <RenderResults componentToPrintRef={componentToPrintRef} />
+      <div className="flex flex-col gap-6" ref={componentToPrintRef}>
+        <RenderResults />
         <ResultsPagination />
       </div>
     </div>

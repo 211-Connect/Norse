@@ -73,17 +73,10 @@ export function Map({
       markerElement.style.cursor = 'pointer';
       markerElement.classList.add('custom-marker');
       markerElement.addEventListener('click', () => {
-        const listElement = document.getElementById(m.id);
-        listElement?.scrollIntoView();
-
-        _markers.current?.forEach((mm) => {
-          const popup = mm.getPopup();
-          if (popup?.isOpen()) {
-            mm.togglePopup();
-          }
+        setTimeout(() => {
+          const listElement = document.getElementById(m.id);
+          listElement?.scrollIntoView();
         });
-
-        marker.togglePopup();
       });
 
       return marker;

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-html-link-for-pages */
 import React, { ReactNode } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -129,9 +130,9 @@ class ErrorBoundary extends React.Component<Props, State> {
               fix.
             </p>
 
-            <Link className={buttonVariants()} href="/">
+            <a className={buttonVariants()} href="/">
               Back to home
-            </Link>
+            </a>
           </div>
         </div>
       );

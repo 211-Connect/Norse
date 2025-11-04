@@ -1,4 +1,5 @@
 {
+  "learn_more": "了解更多",
   "filter_results": "筛选结果",
   "results": "结果",
   "no_query": "未提供查询",
@@ -9,5 +10,6 @@
     "subtitle": "我们在下面提供了一些类似的结果",
     "alt_subtitle": "尝试其他查询或筛选器",
     "need_help": "需要帮助？我们有人在旁边待命。"
-  }
+  },
+  "pinned": "已固定"
 }
