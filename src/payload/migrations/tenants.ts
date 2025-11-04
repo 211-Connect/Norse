@@ -780,7 +780,10 @@ function filterValidTenants(tenants: StrapiTenant[]): StrapiTenant[] {
   });
 }
 
-export async function addTenants(payload: Payload): Promise<void> {
+export async function addTenants(
+  payload: Payload,
+  requestedTenants?: string[],
+): Promise<void> {
   let tenants;
   try {
     tenants = await fetchTenants();
@@ -791,7 +794,7 @@ export async function addTenants(payload: Payload): Promise<void> {
     });
   }
 
-  const validTetantsNames = [
+  const validTetantsNames = requestedTenants || [
     'Illinois 211',
     'Nebraska 211',
     'Minnesota Aging and Disability Resources',

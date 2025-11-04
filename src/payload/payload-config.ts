@@ -1,7 +1,7 @@
 import sharp from 'sharp';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import { buildConfig } from 'payload';
+import { buildConfig, Endpoint } from 'payload';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
 import { postgresAdapter } from '@payloadcms/db-postgres';
 import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant';
@@ -17,10 +17,16 @@ import { defaultLocale, locales } from './i18n/locales';
 import { isSuperAdmin } from './collections/Users/access/isSuperAdmin';
 import { getUserTenantIDs } from './utilities/getUserTenantIDs';
 
-import { seedEndpoint } from './migrations';
+import { seedEndpoint, addLocalAdminEndpoint } from './migrations';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
+
+const endpoints: Endpoint[] = [seedEndpoint];
+
+if (process.env.NODE_ENV === 'development') {
+  endpoints.push(addLocalAdminEndpoint);
+}
 
 const config = buildConfig({
   collections: [Users, Tenants, TenantMedia, ResourceDirectories],
@@ -141,7 +147,7 @@ const config = buildConfig({
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
-  endpoints: process.env.NODE_ENV === 'development' ? [seedEndpoint] : [],
+  endpoints,
 });
 
 export default config;
