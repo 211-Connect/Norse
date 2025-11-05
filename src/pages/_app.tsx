@@ -15,6 +15,7 @@ import { JotaiHydration } from '@/shared/components/jotai-hydration';
 import { GlobalDialogs } from '@/shared/components/global-dialogs/global-dialogs';
 import { fontSans } from '@/shared/styles/fonts';
 import { useRouter } from 'next/router';
+import { DynamicHeightListener } from '@/shared/components/DynamicHeightListener';
 
 function App({
   Component,
@@ -51,6 +52,7 @@ function App({
           <Toaster />
           <GoogleTagManagerScript />
           <MatomoTagManagerScript />
+          <DynamicHeightListener />
         </ErrorBoundary>
       </Providers>
     </div>
