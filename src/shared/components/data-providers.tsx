@@ -24,14 +24,14 @@ export function DataProviders() {
       <div className="container mx-auto flex flex-col pb-8 pt-8">
         {!appConfig.hideDataProvidersHeading && (
           <>
-            <h3 className="text-lg font-semibold">
+            <h2 className="text-center text-lg font-bold">
               {t('search.data_providers_heading', {
                 ns: 'dynamic',
                 defaultValue: t('data_providers.provided_by'),
               })}
-            </h3>
+            </h2>
 
-            <Separator className="mb-4" />
+            <Separator className="mb-4 mt-3" />
           </>
         )}
 
