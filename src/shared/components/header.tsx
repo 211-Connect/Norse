@@ -283,7 +283,7 @@ export function Header() {
     >
       <div
         className={cn(
-          'relative flex items-center justify-between',
+          'relative flex h-[104px] items-center justify-between',
           newLayoutEnabled
             ? 'rounded-xl bg-gradient-to-r from-header-start to-header-end p-6'
             : 'py-3 pr-6',
@@ -305,7 +305,7 @@ export function Header() {
             <img
               src={logoUrl}
               alt={t('header.home') as string}
-              className="h-[80px] max-h-full w-auto"
+              className="max-h-full w-auto"
             />
           </Link>
         </div>

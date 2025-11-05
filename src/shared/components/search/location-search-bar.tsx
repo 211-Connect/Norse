@@ -142,7 +142,7 @@ export function LocationSearchBar({
         onInputChange={handleInputChange}
         onValueChange={setSearchLocation}
         value={searchLocation}
-        optionsPopoverClassName="mt-[60px] max-h-[calc(100vh-310px)]"
+        optionsPopoverClassName="max-h-[calc(100vh-190px)] mt-[60px] sm:max-h-[calc(100vh-310px)]"
         autoSelectIndex={coords?.length === 2 ? undefined : 1}
       />
       {validationError && (
