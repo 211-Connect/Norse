@@ -73,9 +73,6 @@ export function Favorite({
 
   const labels = []; // TODO: Add Waiver
 
-  console.log('DATA', data);
-  console.log('TRANSLATION', translation);
-
   return (
     <>
       <Card className="flex flex-col gap-3 print:border-none print:shadow-none">
@@ -171,7 +168,7 @@ export function Favorite({
             </div>
           )}
 
-          <div className="whitespace-break-spaces text-sm">
+          <div className="whitespace-break-spaces break-all text-sm">
             {parseHtml(translation.serviceDescription)}
           </div>
 
