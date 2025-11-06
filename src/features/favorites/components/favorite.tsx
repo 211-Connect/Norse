@@ -85,7 +85,7 @@ export function Favorite({
           </CardHeader>
         )}
 
-        <CardTitle className="flex flex-row justify-between gap-2">
+        <CardTitle className="mb-0 flex flex-row justify-between gap-2">
           <Link
             className="self-center hover:underline"
             href={`/search/${data._id}`}
@@ -180,7 +180,7 @@ export function Favorite({
               <Separator className="print:hidden" />
 
               <p className="text-sm font-semibold print:hidden">
-                {t('categories_title', { ns: 'page-resource' })}
+                {t('categories_title', { ns: 'page-favorites' })}
               </p>
 
               <div className="flex flex-col items-start gap-3 print:hidden">
