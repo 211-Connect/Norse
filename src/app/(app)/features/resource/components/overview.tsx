@@ -13,10 +13,11 @@ import { Badges } from '@/app/(app)/shared/components/badges';
 import { ContactSection } from './overview-components/contact-section';
 import { DetailsSection } from './overview-components/details-section';
 import { MainSection } from './overview-components/main-section';
-import { useFlag } from '@/app/shared/hooks/use-flag';
+import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
 
 export function Overview({ resource }) {
-  const showServiceName = useFlag('showSearchAndResourceServiceName');
+  // const showServiceName = useFlag('showSearchAndResourceServiceName');
+  const showServiceName = false;
 
   return (
     <>

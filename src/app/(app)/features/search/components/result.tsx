@@ -37,7 +37,7 @@ import { parseHtml } from '@/app/(app)/shared/lib/parse-html';
 import { Badges } from '@/app/(app)/shared/components/badges';
 import { GetDirectionsButton } from '@/app/(app)/shared/components/get-directions-button';
 import { useTranslation } from 'react-i18next';
-import { useFlag } from '@/app/shared/hooks/use-flag';
+import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
 
 type ResultProps = {
   data: ResultType;
@@ -48,7 +48,8 @@ export function Result({ data }: ResultProps) {
   const coords = useAtomValue(userCoordinatesAtom);
   const searchCoords = useAtomValue(searchCoordinatesAtom);
 
-  const showServiceName = useFlag('showSearchAndResourceServiceName');
+  // const showServiceName = useFlag('showSearchAndResourceServiceName');
+  const showServiceName = false;
 
   const distance =
     data?.location?.coordinates && (coords?.length ?? 0) === 2
