@@ -5,9 +5,6 @@ import { withPayload } from '@payloadcms/next/withPayload';
  **/
 const nextConfig = {
   basePath: process.env.CUSTOM_BASE_PATH || undefined,
-  experimental: {
-    useCache: true,
-  },
   images: {
     unoptimized: process.env.NODE_ENV === 'development',
     remotePatterns: [

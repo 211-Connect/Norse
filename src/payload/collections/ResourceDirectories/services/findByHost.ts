@@ -1,14 +1,11 @@
 import { ResourceDirectory } from '@/payload/payload-types';
 import { getPayload, Payload, TypedLocale } from 'payload';
 import config from '@/payload/payload-config';
-import {
-  unstable_cacheLife as cacheLife,
-  unstable_cacheTag as cacheTag,
-} from 'next/cache';
-import { byTenantId } from '../cache/tags';
 import { locales } from '@/payload/i18n/locales';
 import { cache } from 'react';
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
+import { cacheService } from '@/cacheService';
+import { createCacheKey } from '../cache/keys';
 
 async function findByHostOrig(
   payload: Payload,
@@ -59,24 +56,32 @@ async function findByHostCachedOrig(
   host: string,
   locale: TypedLocale,
 ): Promise<ResourceDirectory | null> {
-  'use cache';
-  cacheLife('max');
-
   if (!locales.includes(locale)) {
     return null;
   }
 
+  const cacheServiceInstance = cacheService();
+
+  const domain = parseHost(host);
+  const cacheKey = createCacheKey(locale, domain);
+  try {
+    const cachedData = await cacheServiceInstance.get(cacheKey);
+    if (cachedData) {
+      return JSON.parse(cachedData) as ResourceDirectory;
+    }
+  } catch {}
+
   const payload = await getPayload({ config });
   const resourceDirectory = await findByHost(payload, host, locale);
 
-  const tenantId =
-    typeof resourceDirectory?.tenant === 'string'
-      ? resourceDirectory.tenant
-      : resourceDirectory?.tenant?.id;
-
-  if (tenantId) {
-    cacheTag(byTenantId(tenantId));
-  }
+  try {
+    if (resourceDirectory) {
+      await cacheServiceInstance.set(
+        cacheKey,
+        JSON.stringify(resourceDirectory),
+      );
+    }
+  } catch {}
 
   return resourceDirectory;
 }

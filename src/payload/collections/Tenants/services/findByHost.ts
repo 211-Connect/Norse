@@ -1,16 +1,20 @@
 import { Tenant } from '@/payload/payload-types';
-import {
-  unstable_cacheLife as cacheLife,
-  unstable_cacheTag as cacheTag,
-} from 'next/cache';
 import config from '@/payload/payload-config';
 import { getPayload } from 'payload';
-import { byTenantId } from '../cache/tags';
 import { cache } from 'react';
+import { cacheService } from '@/cacheService';
+import { createCacheKey } from '../cache/keys';
 
 async function findByHostOrig(host: string): Promise<Tenant | null> {
-  'use cache';
-  cacheLife('max');
+  const cacheServiceInstance = cacheService();
+
+  const cacheKey = createCacheKey(host);
+  try {
+    const cachedData = await cacheServiceInstance.get(cacheKey);
+    if (cachedData) {
+      return JSON.parse(cachedData) as Tenant;
+    }
+  } catch {}
 
   const payload = await getPayload({ config });
 
@@ -28,7 +32,9 @@ async function findByHostOrig(host: string): Promise<Tenant | null> {
   });
 
   if (tenant) {
-    cacheTag(byTenantId(tenant.id));
+    try {
+      await cacheServiceInstance.set(cacheKey, JSON.stringify(tenant));
+    } catch {}
   }
 
   return tenant || null;
