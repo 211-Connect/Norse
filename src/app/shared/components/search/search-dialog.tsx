@@ -135,7 +135,7 @@ export function SearchDialog({
       >
         <form
           onSubmit={onSubmit}
-          className="mt-[120px] flex w-full max-w-[400px] flex-col gap-4"
+          className="flex w-full max-w-[400px] flex-col gap-4 sm:mt-[120px]"
         >
           <DialogHeader className="flex flex-row justify-between gap-4">
             <Button

@@ -4,6 +4,7 @@ import { buttonVariants } from '@/app/shared/components/ui/button';
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -46,6 +47,8 @@ export function Result({ data }: ResultProps) {
   const coords = useAtomValue(userCoordinatesAtom);
   const searchCoords = useAtomValue(searchCoordinatesAtom);
 
+  const showServiceName = useFlag('showSearchAndResourceServiceName');
+
   const distance =
     data?.location?.coordinates && (coords?.length ?? 0) === 2
       ? distanceBetweenCoordsInKm(
@@ -75,7 +78,7 @@ export function Result({ data }: ResultProps) {
               </div>
             </CardHeader>
           ))}
-        <CardTitle className="flex flex-row justify-between gap-2">
+        <CardTitle className="m-0 flex flex-row justify-between gap-2">
           <Link
             className="self-center hover:underline"
             href={`/search/${data.id}`}
@@ -87,6 +90,9 @@ export function Result({ data }: ResultProps) {
             <AddToFavoritesButton size="icon" serviceAtLocationId={data.id} />
           </div>
         </CardTitle>
+        {showServiceName && (
+          <CardDescription>{parseHtml(data.serviceName)}</CardDescription>
+        )}
         <CardContent className="flex flex-col gap-3">
           {data.address ? (
             <div className="flex justify-between gap-3">

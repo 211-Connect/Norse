@@ -140,8 +140,9 @@ export function SearchBar({ focusByDefault = false }: SearchBarProps) {
       options={options}
       onInputChange={handleInputChange}
       onValueChange={setSearchTerm}
-      optionsPopoverClassName="mt-[110px] max-h-[calc(100vh-360px)]"
+      optionsPopoverClassName="max-h-[calc(var(--vh)-240px)] mt-[110px] sm:max-h-[calc(var(--vh)-360px)]"
       value={searchTerm}
+      blurOnOptionsInteraction
     />
   );
 }

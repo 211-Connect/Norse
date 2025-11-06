@@ -13,6 +13,7 @@ import { Toaster } from './ui/sonner';
 import TranslationsProvider from '../i18n/TranslationsProvider';
 import { GoogleTagManagerScript } from './google-tag-manager-script';
 import { MatomoTagManagerScript } from './matomo-tag-manager-script';
+import { DynamicHeightListener } from './dynamic-height-listener';
 
 interface PageWrapperProps {
   cookies?: TmpCookiesObj;
@@ -46,6 +47,7 @@ export const PageWrapper = ({
           <Toaster />
           <GoogleTagManagerScript />
           <MatomoTagManagerScript />
+          <DynamicHeightListener />
         </ErrorBoundary>
       </TranslationsProvider>
     </JotaiProvider>
