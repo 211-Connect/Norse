@@ -39,8 +39,9 @@ export const useSearchResources = (searchTerm: string = '') => {
 
         return prev;
       }, [])
-      .filter(({ name }) =>
-        name.toLowerCase().includes(searchTerm.toLowerCase()),
+      .filter(
+        ({ name, href }) =>
+          !href && name.toLowerCase().includes(searchTerm.toLowerCase()),
       );
   }, [topics, searchTerm]);
 

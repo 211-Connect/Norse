@@ -18,14 +18,14 @@ export function Footer() {
       {appConfig.footer?.disclaimer && (
         <p className="mb-3 text-sm">{parseHtml(appConfig.footer.disclaimer)}</p>
       )}
-      <div className="flex items-center gap-3 text-xs font-medium">
+      <div className="flex flex-col items-center gap-3 text-xs font-medium sm:flex-row">
         <p>
           {t('footer.copyright', {
             text: `${new Date().getFullYear()}${brand ? ` ${brand}` : ''}`,
           })}
         </p>
 
-        <div className="flex flex-wrap items-center gap-3 print:hidden">
+        <div className="flex flex-wrap items-center justify-center gap-3 print:hidden">
           {appConfig.pages.privacyPolicyPage.enabled && (
             <Button variant="link">
               <Link href="/legal/privacy-policy">
@@ -36,7 +36,10 @@ export function Footer() {
 
           {appConfig.pages.termsOfUsePage.enabled && (
             <Button variant="link">
-              <Link className="!text-primary" href="/legal/terms-of-use">
+              <Link
+                className="whitespace-pre-wrap !text-primary"
+                href="/legal/terms-of-use"
+              >
                 {appConfig.pages.termsOfUsePage.title}
               </Link>
             </Button>
@@ -45,7 +48,7 @@ export function Footer() {
           {appConfig.footer.customMenu.map((el) => (
             <Button key={el.name} variant="link">
               <Link
-                className="flex items-center gap-3 !text-primary"
+                className="flex items-center gap-3 whitespace-pre-wrap !text-primary"
                 target={el.target ?? '_self'}
                 {...(el.href != null ? { href: el.href } : { href: '' })}
               >

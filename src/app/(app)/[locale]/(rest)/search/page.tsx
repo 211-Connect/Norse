@@ -154,7 +154,7 @@ export default async function SearchPage({ params, searchParams }) {
       }}
     >
       <ResultsEvents results={results} totalResults={totalResults} />
-      <div className="flex h-full w-full flex-col xl:flex-row">
+      <div className="flex h-full w-full flex-col md:flex-row">
         <FilterPanel />
         <ResultsSection />
         <MapContainer />

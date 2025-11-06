@@ -4,6 +4,7 @@ import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -36,6 +37,7 @@ import { parseHtml } from '@/app/(app)/shared/lib/parse-html';
 import { Badges } from '@/app/(app)/shared/components/badges';
 import { GetDirectionsButton } from '@/app/(app)/shared/components/get-directions-button';
 import { useTranslation } from 'react-i18next';
+import { useFlag } from '@/app/shared/hooks/use-flag';
 
 type ResultProps = {
   data: ResultType;
@@ -45,6 +47,8 @@ export function Result({ data }: ResultProps) {
   const { t } = useTranslation('common');
   const coords = useAtomValue(userCoordinatesAtom);
   const searchCoords = useAtomValue(searchCoordinatesAtom);
+
+  const showServiceName = useFlag('showSearchAndResourceServiceName');
 
   const distance =
     data?.location?.coordinates && (coords?.length ?? 0) === 2
@@ -75,7 +79,7 @@ export function Result({ data }: ResultProps) {
               </div>
             </CardHeader>
           ))}
-        <CardTitle className="flex flex-row justify-between gap-2">
+        <CardTitle className="m-0 flex flex-row justify-between gap-2">
           <Link
             className="self-center hover:underline"
             href={`/search/${data.id}`}
@@ -87,6 +91,9 @@ export function Result({ data }: ResultProps) {
             <AddToFavoritesButton size="icon" serviceAtLocationId={data.id} />
           </div>
         </CardTitle>
+        {showServiceName && (
+          <CardDescription>{parseHtml(data.serviceName)}</CardDescription>
+        )}
         <CardContent className="flex flex-col gap-3">
           {data.address ? (
             <div className="flex justify-between gap-3">
