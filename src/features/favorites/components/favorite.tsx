@@ -3,6 +3,7 @@ import { ReferralButton } from '@/shared/components/referral-button';
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -32,6 +33,7 @@ import { CopyBadge } from '@/shared/components/copy-badge';
 import { parseHtml } from '@/shared/lib/parse-html';
 import { Separator } from '@/shared/components/ui/separator';
 import { Badges } from '@/shared/components/badges';
+import { useFlag } from '@/shared/hooks/use-flag';
 
 export function Favorite({
   data,
@@ -44,6 +46,7 @@ export function Favorite({
 }) {
   const { t } = useTranslation();
   const router = useRouter();
+  const showServiceName = useFlag('showSearchAndResourceServiceName');
   const translation = data.translations.find(
     (el) => el.locale === router.locale,
   );
@@ -70,6 +73,9 @@ export function Favorite({
 
   const labels = []; // TODO: Add Waiver
 
+  console.log('DATA', data);
+  console.log('TRANSLATION', translation);
+
   return (
     <>
       <Card className="flex flex-col gap-3 print:border-none print:shadow-none">
@@ -94,6 +100,11 @@ export function Favorite({
             />
           )}
         </CardTitle>
+        {showServiceName && (
+          <CardDescription>
+            {parseHtml(translation.serviceName)}
+          </CardDescription>
+        )}
         <CardContent className="flex flex-col gap-3">
           {displayAddress ? (
             <div className="flex justify-between gap-3">
@@ -163,6 +174,24 @@ export function Favorite({
           <div className="whitespace-break-spaces text-sm">
             {parseHtml(translation.serviceDescription)}
           </div>
+
+          {translation.taxonomies && translation.taxonomies.length > 0 && (
+            <>
+              <Separator className="print:hidden" />
+
+              <p className="text-sm font-semibold print:hidden">
+                {t('categories_title', { ns: 'page-resource' })}
+              </p>
+
+              <div className="flex flex-col items-start gap-3 print:hidden">
+                {translation.taxonomies.map((tax) => (
+                  <Badge key={tax.name} variant="default">
+                    {tax.name}
+                  </Badge>
+                ))}
+              </div>
+            </>
+          )}
         </CardContent>
         <CardFooter className="flex flex-col gap-2 print:hidden">
           <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center">
