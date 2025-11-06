@@ -45,6 +45,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       ...(await serverSideAppConfig()),
       ...(await serverSideFlags()),
       ...(await serverSideTranslations(ctx.locale as string, [
+        'page-favorites',
         'page-list',
         'common',
       ])),
