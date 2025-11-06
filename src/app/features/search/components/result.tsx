@@ -37,6 +37,7 @@ import { parseHtml } from '@/app/shared/lib/parse-html';
 import { Badges } from '@/app/shared/components/badges';
 import { GetDirectionsButton } from '@/app/shared/components/get-directions-button';
 import { useTranslation } from 'react-i18next';
+import { useFlag } from '@/app/shared/hooks/use-flag';
 
 type ResultProps = {
   data: ResultType;
