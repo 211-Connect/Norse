@@ -2,13 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { useTranslation } from 'next-i18next';
 import { useTaxonomies } from '../../hooks/api/use-taxonomies';
-import {
-  prevSearchTermAtom,
-  queryAtom,
-  queryTypeAtom,
-  searchAtom,
-  searchTermAtom,
-} from '../../store/search';
+import { prevSearchTermAtom, searchTermAtom } from '../../store/search';
 import { useDebounce } from '../../hooks/use-debounce';
 import { useFlag } from '@/shared/hooks/use-flag';
 import { Autocomplete } from '../ui/autocomplete';
@@ -24,9 +18,6 @@ export function SearchBar({ focusByDefault = false }: SearchBarProps) {
   const [shouldSearch, setShouldSearch] = useState(false);
   const prevSearchTerm = useAtomValue(prevSearchTermAtom);
   const searchTerm = useAtomValue(searchTermAtom);
-  // Track original query state
-  const currentQuery = useAtomValue(queryAtom);
-  const currentQueryType = useAtomValue(queryTypeAtom);
   const debouncedSearchTerm = useDebounce(searchTerm, 200);
   const { data: taxonomies } = useTaxonomies(
     shouldSearch ? debouncedSearchTerm : prevSearchTerm,
@@ -148,6 +139,7 @@ export function SearchBar({ focusByDefault = false }: SearchBarProps) {
       onValueChange={setSearchTerm}
       optionsPopoverClassName="max-h-[calc(var(--vh)-240px)] mt-[110px] sm:max-h-[calc(var(--vh)-360px)]"
       value={searchTerm}
+      blurOnOptionsInteraction
     />
   );
 }

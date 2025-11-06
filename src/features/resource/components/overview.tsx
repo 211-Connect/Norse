@@ -2,6 +2,7 @@ import { Badges } from '@/shared/components/badges';
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/shared/components/ui/card';
@@ -9,8 +10,11 @@ import { Separator } from '@/shared/components/ui/separator';
 import { ContactSection } from './overview-components/contact-section';
 import { DetailsSection } from './overview-components/details-section';
 import { MainSection } from './overview-components/main-section';
+import { useFlag } from '@/shared/hooks/use-flag';
 
 export function Overview({ resource }) {
+  const showServiceName = useFlag('showSearchAndResourceServiceName');
+
   return (
     <>
       <div className="flex-1">
@@ -18,6 +22,11 @@ export function Overview({ resource }) {
           <CardHeader>
             <Badges className="mb-3" items={[]} /> {/* TODO: Add Waiver */}
             <CardTitle>{resource.name}</CardTitle>
+            {showServiceName && (
+              <CardDescription className="mb-3">
+                {resource.serviceName}
+              </CardDescription>
+            )}
           </CardHeader>
           <CardContent>
             <MainSection resource={resource} />

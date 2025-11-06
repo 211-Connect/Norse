@@ -1,4 +1,5 @@
 import { usePopper } from 'react-popper';
+import { useOnClickOutside } from 'usehooks-ts';
 import {
   useCallback,
   useState,
@@ -9,6 +10,7 @@ import {
   ComponentType,
   useEffect,
   useRef,
+  MouseEventHandler,
 } from 'react';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
@@ -45,8 +47,10 @@ export type AutocompleteProps = {
   value?: string;
   defaultValue?: string;
   autoSelectIndex?: number;
+  autoSelectOnBlurIndex?: number;
   optionsPopoverClassName?: string;
   defaultOpen?: boolean;
+  blurOnOptionsInteraction?: boolean;
 };
 
 const useMouseMovement = () => {
@@ -83,9 +87,11 @@ export function Autocomplete(props: AutocompleteProps) {
     onValueChange,
     defaultValue,
     autoSelectIndex,
+    autoSelectOnBlurIndex,
     value: inputValue,
     optionsPopoverClassName,
     defaultOpen = false,
+    blurOnOptionsInteraction = false,
     ...rest
   } = props;
 
@@ -101,6 +107,8 @@ export function Autocomplete(props: AutocompleteProps) {
     onChange: onValueChange,
   });
   const clearButtonRef = useRef(null);
+
+  const stayOpenOnBlurRef = useRef(false);
 
   const options: [string, AutocompleteOptionWithIndex[]][] = useMemo(() => {
     const options = rest.options;
@@ -150,10 +158,17 @@ export function Autocomplete(props: AutocompleteProps) {
     return Object.entries(groupedOptions).map(([key, value]) => [key, value]);
   }, [rest.options]);
 
+  const selectedOption = useMemo(() => {
+    return rest.options?.find((option) => option.value === value);
+  }, [options]);
+
   // Popper
-  const [referenceElement, setReferenceElement] = useState(null);
+  const [referenceElement, setReferenceElement] =
+    useState<HTMLInputElement | null>(null);
   const [popperElement, setPopperElement] = useState(null);
   const { styles, attributes } = usePopper(referenceElement, popperElement);
+
+  const referenceElementRef = useRef(referenceElement);
 
   const openOptions = useCallback(() => {
     setOpen(true);
@@ -174,9 +189,11 @@ export function Autocomplete(props: AutocompleteProps) {
 
   const handleValueSelect = useCallback(
     (value: string) => {
-      return (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+      return (e?: MouseEvent) => {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
 
         setValue(value);
         setOpen(false);
@@ -201,6 +218,12 @@ export function Autocomplete(props: AutocompleteProps) {
     },
     [onInputChange, setValue, open],
   );
+
+  const handleClickOutside = useCallback(() => {
+    setOpen(false);
+  }, []);
+
+  useOnClickOutside(referenceElementRef, handleClickOutside);
 
   const setInputSelectionPoint = useCallback(
     (value: string) => {
@@ -425,12 +448,43 @@ export function Autocomplete(props: AutocompleteProps) {
 
   const handleBlur = useCallback(
     (e) => {
-      if (clearButtonRef.current !== e.relatedTarget) {
+      if (autoSelectOnBlurIndex != null && !selectedOption) {
+        const selectedOption = options[0]?.[1]?.[autoSelectOnBlurIndex]?.value;
+        if (selectedOption) {
+          handleValueSelect(selectedOption)();
+        }
+      }
+
+      if (
+        clearButtonRef.current !== e.relatedTarget &&
+        !stayOpenOnBlurRef.current
+      ) {
         closeOptions();
       }
     },
-    [closeOptions],
+    [
+      autoSelectOnBlurIndex,
+      closeOptions,
+      handleValueSelect,
+      options,
+      selectedOption,
+    ],
   );
+
+  const handleFocus = useCallback(() => {
+    stayOpenOnBlurRef.current = false;
+  }, []);
+
+  const touchOnList = useCallback(() => {
+    if (blurOnOptionsInteraction) {
+      stayOpenOnBlurRef.current = true;
+      referenceElement?.blur();
+    }
+  }, [blurOnOptionsInteraction, referenceElement]);
+
+  useEffect(() => {
+    referenceElementRef.current = referenceElement;
+  }, [referenceElement]);
 
   // Set unique ID for component
   useEffect(() => {
@@ -455,6 +509,7 @@ export function Autocomplete(props: AutocompleteProps) {
           onClick={openOnClick}
           onKeyDown={handleKeyDown}
           onBlur={handleBlur}
+          onFocus={handleFocus}
           onChange={handleInputChange}
           value={value}
           autoComplete="off"
@@ -506,6 +561,7 @@ export function Autocomplete(props: AutocompleteProps) {
             'z-10 max-h-56 w-full animate-opacity-in overflow-auto overscroll-contain bg-white',
             optionsPopoverClassName,
           )}
+          onTouchStart={touchOnList}
           {...attributes.popper}
         >
           {options?.map((group, groupIndex) => {
@@ -549,7 +605,11 @@ export function Autocomplete(props: AutocompleteProps) {
                         aria-selected={currentIndex === option.index}
                         onMouseEnter={handleOptionMouseEnter(option.index)}
                         onMouseLeave={handleOptionMouseExit()}
-                        onMouseDown={handleValueSelect(option.value)}
+                        onMouseDown={
+                          handleValueSelect(
+                            option.value,
+                          ) as unknown as MouseEventHandler
+                        }
                       >
                         <span className="flex items-center gap-2 text-xs font-medium text-primary">
                           {Icon === 'span' ? null : (
