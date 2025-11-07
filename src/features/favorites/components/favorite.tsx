@@ -73,6 +73,8 @@ export function Favorite({
 
   const labels = []; // TODO: Add Waiver
 
+  const taxonomies = translation?.taxonomies?.filter(({ name }) => name) || [];
+
   return (
     <>
       <Card className="flex flex-col gap-3 print:border-none print:shadow-none">
@@ -172,7 +174,7 @@ export function Favorite({
             {parseHtml(translation.serviceDescription)}
           </div>
 
-          {translation.taxonomies && translation.taxonomies.length > 0 && (
+          {taxonomies.length > 0 && (
             <>
               <Separator className="print:hidden" />
 
@@ -181,7 +183,7 @@ export function Favorite({
               </p>
 
               <div className="flex flex-col items-start gap-3 print:hidden">
-                {translation.taxonomies.map((tax) => (
+                {taxonomies.map((tax) => (
                   <Badge key={tax.name} variant="default">
                     {tax.name}
                   </Badge>

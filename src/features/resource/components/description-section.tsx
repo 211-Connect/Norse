@@ -15,8 +15,12 @@ export function DescriptionSection({ resource }) {
 
   const { categories, description } = useMemo(() => {
     const { categories = [], description } = resource ?? {};
+
+    const filteredCategories = categories.filter(
+      (el: any) => el?.name && el?.code,
+    );
     return {
-      categories,
+      categories: filteredCategories,
       description,
     };
   }, [resource]);

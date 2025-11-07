@@ -58,6 +58,8 @@ export function Result({ data }: ResultProps) {
 
   const labels = []; // TODO: Add Waiver
 
+  const taxonomies = data.taxonomies?.filter(({ name }) => name) || [];
+
   return (
     <>
       <Card id={data._id} className="flex flex-col gap-3 print:border-none">
@@ -166,7 +168,7 @@ export function Result({ data }: ResultProps) {
             {parseHtml(data?.description ?? data.summary)}
           </div>
 
-          {data.taxonomies && data.taxonomies.length > 0 && (
+          {taxonomies.length > 0 && (
             <>
               <Separator className="print:hidden" />
 
@@ -175,7 +177,7 @@ export function Result({ data }: ResultProps) {
               </p>
 
               <div className="flex flex-col items-start gap-3 print:hidden">
-                {data.taxonomies.map((tax) => (
+                {taxonomies.map((tax) => (
                   <Badge key={tax.name} variant="default">
                     {tax.name}
                   </Badge>
