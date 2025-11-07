@@ -33,7 +33,9 @@ export function OrganizationInformation({ resource }) {
           <p className="mt-[6px] font-medium">{organizationName}</p>
         )}
         {organizationDescription && (
-          <p className="mt-4">{parseHtml(organizationDescription)}</p>
+          <p className="mt-4 whitespace-break-spaces">
+            {parseHtml(organizationDescription)}
+          </p>
         )}
       </CardContent>
     </Card>
