@@ -12,9 +12,10 @@ export function DescriptionSection({ resource }) {
   const { t } = useTranslation('page-resource');
 
   const showCategories = useFlag('showResourceCategories');
+  const showLastAssured = useFlag('showResourceLastAssuredDate');
 
-  const { categories, description } = useMemo(() => {
-    const { categories = [], description } = resource ?? {};
+  const { categories, description, lastAssuredOn } = useMemo(() => {
+    const { categories = [], description, lastAssuredOn } = resource ?? {};
 
     const filteredCategories = categories.filter(
       (el: any) => el?.name && el?.code,
@@ -22,6 +23,7 @@ export function DescriptionSection({ resource }) {
     return {
       categories: filteredCategories,
       description,
+      lastAssuredOn,
     };
   }, [resource]);
 
@@ -42,6 +44,17 @@ export function DescriptionSection({ resource }) {
               <p className="whitespace-break-spaces">
                 {parseHtml(resource.description)}
               </p>
+              {showLastAssured && (
+                <div className="text-sm">
+                  <h4 className="mb-1 mt-4 font-semibold">
+                    {t('last_assured_text', {
+                      ns: 'dynamic',
+                      defaultValue: t('last_assured'),
+                    })}
+                  </h4>
+                  <p>{lastAssuredOn || t('unknown')}</p>
+                </div>
+              )}
             </div>
           )}
           {categories?.length > 0 && (
