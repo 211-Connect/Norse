@@ -11,7 +11,7 @@ import { getCookies } from 'cookies-next/server';
 import { cookies } from 'next/headers';
 import { SESSION_ID } from '@/app/shared/lib/constants';
 
-const i18nNamespaces = ['page-list', 'common', 'dynamic'];
+const i18nNamespaces = ['page-favorites', 'page-list', 'common', 'dynamic'];
 
 export const generateMetadata = async ({ params }): Promise<Metadata> => {
   const appConfig = getAppConfig();

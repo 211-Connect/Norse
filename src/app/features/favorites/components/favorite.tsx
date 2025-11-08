@@ -5,6 +5,7 @@ import { ReferralButton } from '@/app/shared/components/referral-button';
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -30,6 +31,8 @@ import { parseHtml } from '@/app/shared/lib/parse-html';
 import { Separator } from '@/app/shared/components/ui/separator';
 import { Badges } from '@/app/shared/components/badges';
 import { Link } from '@/app/shared/components/link';
+import { useFlag } from '@/app/shared/hooks/use-flag';
+import { Badge } from '@/app/shared/components/ui/badge';
 import { useTranslation } from 'react-i18next';
 
 import { RemoveFromFavoriteListButton } from './remove-from-favorite-list-button';
@@ -44,6 +47,7 @@ export function Favorite({
   favoriteListId: string;
 }) {
   const { t, i18n } = useTranslation();
+  const showServiceName = useFlag('showSearchAndResourceServiceName');
   const translation = data.translations.find(
     (el) => el.locale === i18n.language,
   );
@@ -70,6 +74,8 @@ export function Favorite({
 
   const labels = []; // TODO: Add Waiver
 
+  const taxonomies = translation?.taxonomies?.filter(({ name }) => name) || [];
+
   return (
     <>
       <Card className="flex flex-col gap-3 print:border-none print:shadow-none">
@@ -79,7 +85,7 @@ export function Favorite({
           </CardHeader>
         )}
 
-        <CardTitle className="flex flex-row justify-between gap-2">
+        <CardTitle className="mb-0 flex flex-row justify-between gap-2">
           <Link
             className="self-center hover:underline"
             href={`/search/${data._id}`}
@@ -94,6 +100,11 @@ export function Favorite({
             />
           )}
         </CardTitle>
+        {showServiceName && translation?.serviceName && (
+          <CardDescription>
+            {parseHtml(translation.serviceName)}
+          </CardDescription>
+        )}
         <CardContent className="flex flex-col gap-3">
           {displayAddress ? (
             <div className="flex justify-between gap-3">
@@ -160,9 +171,27 @@ export function Favorite({
             </div>
           )}
 
-          <div className="whitespace-break-spaces text-sm">
+          <div className="whitespace-break-spaces break-all text-sm">
             {parseHtml(translation?.serviceDescription ?? '')}
           </div>
+
+          {taxonomies.length > 0 && (
+            <>
+              <Separator className="print:hidden" />
+
+              <p className="text-sm font-semibold print:hidden">
+                {t('categories_title', { ns: 'page-favorites' })}
+              </p>
+
+              <div className="flex flex-col items-start gap-3 print:hidden">
+                {taxonomies.map((tax) => (
+                  <Badge key={tax.name} variant="default">
+                    {tax.name}
+                  </Badge>
+                ))}
+              </div>
+            </>
+          )}
         </CardContent>
         <CardFooter className="flex flex-col gap-2 print:hidden">
           <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center">
