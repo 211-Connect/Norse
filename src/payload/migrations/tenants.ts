@@ -393,6 +393,10 @@ async function createResourceDirectory(
       showPrintButton: populatedAppConfig.featureFlags.showPrintButton,
       showResourceCategories:
         populatedAppConfig.featureFlags.showResourceCategories,
+      showResourceLastAssuredDate:
+        populatedAppConfig.featureFlags.showResourceLastAssuredDate,
+      showSearchAndResourceServiceName:
+        populatedAppConfig.featureFlags.showSearchAndResourceServiceName,
       showSuggestionListTaxonomyBadge:
         populatedAppConfig.featureFlags.showSuggestionListTaxonomyBadge,
       showUseMyLocationButtonOnDesktop:

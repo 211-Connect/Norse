@@ -68,12 +68,14 @@ export function DetailsSection({ resource }) {
         )}
         {applicationProcess && (
           <LabeledElement Icon={Edit} title={t('application_process')}>
-            <p className="text-sm">{parseHtml(applicationProcess)}</p>
+            <p className="whitespace-break-spaces text-sm">
+              {parseHtml(applicationProcess)}
+            </p>
           </LabeledElement>
         )}
         {fees && (
           <LabeledElement Icon={DollarSign} title={t('fee')}>
-            <p className="text-sm">{parseHtml(fees)}</p>
+            <p className="whitespace-break-spaces text-sm">{parseHtml(fees)}</p>
           </LabeledElement>
         )}
         {(serviceAreaName || serviceAreaDescription) && (

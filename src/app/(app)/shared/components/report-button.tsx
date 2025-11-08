@@ -22,6 +22,10 @@ export function ReportButton({}) {
       onClick={(e) => {
         e.preventDefault();
 
+        if (!appConfig?.contact?.feedbackUrl) {
+          return;
+        }
+
         const currentUrl = new URL(appConfig?.contact?.feedbackUrl);
         const feedbackUrl = currentUrl.toString().split('?')[0];
         const urlParams = new URLSearchParams(currentUrl.searchParams);

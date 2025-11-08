@@ -29,6 +29,16 @@ export const featureFlags: Tab = {
       defaultValue: false,
     },
     {
+      name: 'showResourceLastAssuredDate',
+      type: 'checkbox',
+      defaultValue: false,
+    },
+    {
+      name: 'showSearchAndResourceServiceName',
+      type: 'checkbox',
+      defaultValue: false,
+    },
+    {
       name: 'showSuggestionListTaxonomyBadge',
       type: 'checkbox',
       defaultValue: false,

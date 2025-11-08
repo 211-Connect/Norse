@@ -16,8 +16,7 @@ import { MainSection } from './overview-components/main-section';
 import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
 
 export function Overview({ resource }) {
-  // const showServiceName = useFlag('showSearchAndResourceServiceName');
-  const showServiceName = false;
+  const showServiceName = useFlag('showSearchAndResourceServiceName');
 
   return (
     <>

@@ -10,6 +10,7 @@ import { AppConfig } from '@/types/appConfig';
 import { headers } from 'next/headers';
 import { getHost } from './getHost';
 import { defaultLocale } from '@/payload/i18n/locales';
+import initTranslations from '../i18n/i18n';
 
 function getMediaUrl(media?: TenantMedia | number | null): string | undefined {
   if (typeof media === 'number' || !media) return undefined;
@@ -76,6 +77,8 @@ async function getAppConfigBase(
         showHomePageTour: false,
         showPrintButton: false,
         showResourceCategories: false,
+        showResourceLastAssuredDate: false,
+        showSearchAndResourceServiceName: false,
         showSuggestionListTaxonomyBadge: false,
         showUseMyLocationButtonOnDesktop: false,
       },
@@ -113,6 +116,15 @@ async function getAppConfigBase(
       },
     };
   }
+
+  const i18n = getTenantI18n(resourceDirectory);
+  const errorNamespaces = ['page-500', 'common'];
+  const { resources } = await initTranslations(
+    locale,
+    errorNamespaces,
+    i18n.locales,
+    i18n.defaultLocale,
+  );
 
   const headerList = await headers();
   const baseUrl = `${headerList.get('x-forwarded-proto')}://${headerList.get('host')}`;
@@ -177,6 +189,11 @@ async function getAppConfigBase(
       feedbackUrl: resourceDirectory.brand.feedbackUrl ?? undefined,
     },
     customBasePath: process.env.CUSTOM_BASE_PATH || '',
+    errorTranslationData: {
+      errorNamespaces,
+      resources,
+      locale,
+    },
     featureFlags: {
       hideCategoriesHeading:
         resourceDirectory.featureFlags?.hideCategoriesHeading ?? false,
@@ -189,6 +206,11 @@ async function getAppConfigBase(
       showPrintButton: resourceDirectory.featureFlags?.showPrintButton ?? false,
       showResourceCategories:
         resourceDirectory.featureFlags?.showResourceCategories ?? false,
+      showResourceLastAssuredDate:
+        resourceDirectory.featureFlags?.showResourceLastAssuredDate ?? false,
+      showSearchAndResourceServiceName:
+        resourceDirectory.featureFlags?.showSearchAndResourceServiceName ??
+        false,
       showSuggestionListTaxonomyBadge:
         resourceDirectory.featureFlags?.showSuggestionListTaxonomyBadge ??
         false,
@@ -214,7 +236,7 @@ async function getAppConfigBase(
         : undefined,
       searchUrl: resourceDirectory.header?.searchUrl ?? undefined,
     },
-    i18n: getTenantI18n(resourceDirectory),
+    i18n,
     matomoContainerUrl:
       getTenant(resourceDirectory)?.common?.matomoContainerUrl ?? undefined,
     meta: {

@@ -446,6 +446,8 @@ export interface ResourceDirectory {
     showResourceCategories?: boolean | null;
     showHomePageTour?: boolean | null;
     requireUserLocation?: boolean | null;
+    showResourceLastAssuredDate?: boolean | null;
+    showSearchAndResourceServiceName?: boolean | null;
     showSuggestionListTaxonomyBadge?: boolean | null;
     showUseMyLocationButtonOnDesktop?: boolean | null;
     showPrintButton?: boolean | null;
@@ -827,6 +829,8 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         showResourceCategories?: T;
         showHomePageTour?: T;
         requireUserLocation?: T;
+        showResourceLastAssuredDate?: T;
+        showSearchAndResourceServiceName?: T;
         showSuggestionListTaxonomyBadge?: T;
         showUseMyLocationButtonOnDesktop?: T;
         showPrintButton?: T;

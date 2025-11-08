@@ -29,8 +29,10 @@ export type AppConfig = {
     hideDataProvidersHeading: boolean;
     requireUserLocation: boolean;
     showHomePageTour: boolean;
+    showResourceLastAssuredDate: boolean;
     showPrintButton: boolean;
     showResourceCategories: boolean;
+    showSearchAndResourceServiceName: boolean;
     showSuggestionListTaxonomyBadge: boolean;
     showUseMyLocationButtonOnDesktop: boolean;
   };
@@ -97,6 +99,11 @@ export type AppConfig = {
     variant?: 'destructive' | 'default';
   };
   customBasePath?: string;
+  errorTranslationData?: {
+    errorNamespaces: string[];
+    resources: Record<string, Record<string, unknown>>;
+    locale: string;
+  };
   gtmContainerId?: string;
   heroUrl?: string;
   matomoContainerUrl?: string;

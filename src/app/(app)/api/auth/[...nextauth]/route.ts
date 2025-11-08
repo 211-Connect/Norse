@@ -1,10 +1,10 @@
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
 import { createAuthOptions } from '@/auth';
 import { findByHost } from '@/payload/collections/Tenants/services/findByHost';
-import { NextApiRequest, NextApiResponse } from 'next';
 import NextAuth from 'next-auth';
+import { NextRequest } from 'next/server';
 
-const handlerFunction = async (req: NextApiRequest, res: NextApiResponse) => {
+const handlerFunction = async (req: NextRequest) => {
   const headers = req.headers as unknown as Headers;
   const host = headers.get('host');
   const protocol = headers.get('x-forwarded-proto') || 'http';
@@ -15,8 +15,6 @@ const handlerFunction = async (req: NextApiRequest, res: NextApiResponse) => {
   const tenant = await findByHost(parsedHost);
 
   return NextAuth(
-    req,
-    res,
     createAuthOptions({
       baseUrl,
       keycloak: {

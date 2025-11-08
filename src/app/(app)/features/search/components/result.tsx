@@ -35,9 +35,9 @@ import { AddToFavoritesButton } from '@/app/(app)/shared/components/add-to-favor
 import { CopyBadge } from '@/app/(app)/shared/components/copy-badge';
 import { parseHtml } from '@/app/(app)/shared/lib/parse-html';
 import { Badges } from '@/app/(app)/shared/components/badges';
+import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
 import { GetDirectionsButton } from '@/app/(app)/shared/components/get-directions-button';
 import { useTranslation } from 'react-i18next';
-import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
 
 type ResultProps = {
   data: ResultType;
@@ -48,8 +48,7 @@ export function Result({ data }: ResultProps) {
   const coords = useAtomValue(userCoordinatesAtom);
   const searchCoords = useAtomValue(searchCoordinatesAtom);
 
-  // const showServiceName = useFlag('showSearchAndResourceServiceName');
-  const showServiceName = false;
+  const showServiceName = useFlag('showSearchAndResourceServiceName');
 
   const distance =
     data?.location?.coordinates && (coords?.length ?? 0) === 2
@@ -60,6 +59,8 @@ export function Result({ data }: ResultProps) {
       : null;
 
   const labels = []; // TODO: Add Waiver
+
+  const taxonomies = data.taxonomies?.filter(({ name }) => name) || [];
 
   return (
     <>
@@ -169,7 +170,7 @@ export function Result({ data }: ResultProps) {
             {parseHtml(data?.description ?? data.summary)}
           </div>
 
-          {data.taxonomies && data.taxonomies.length > 0 && (
+          {taxonomies.length > 0 && (
             <>
               <Separator className="print:hidden" />
 
@@ -178,7 +179,7 @@ export function Result({ data }: ResultProps) {
               </p>
 
               <div className="flex flex-col items-start gap-3 print:hidden">
-                {data.taxonomies.map((tax) => (
+                {taxonomies.map((tax) => (
                   <Badge key={tax.name} variant="default">
                     {tax.name}
                   </Badge>
