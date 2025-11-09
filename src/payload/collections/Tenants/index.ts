@@ -4,18 +4,18 @@ import { defaultLocale, locales } from '@/payload/i18n/locales';
 import { updateAndDeleteAccess } from './access/updateAndDelete';
 import { hasResourceDirectory } from './validators/hasResourceDirectory';
 import { revalidateCache } from './hooks/revalidateCache';
-import { isSuperAdminAccess } from '../Users/access/roles';
+import {
+  isSuperAdminAccess,
+  isSuperAdminFieldAccess,
+  isSuperAdminOrSupportFieldAccess,
+} from '../Users/access/roles';
 
 export const Tenants: CollectionConfig = {
   slug: 'tenants',
   access: {
     create: isSuperAdminAccess,
     delete: updateAndDeleteAccess,
-    read: ({ req }) => Boolean(req.user),
     update: updateAndDeleteAccess,
-  },
-  versions: {
-    drafts: false,
   },
   admin: {
     useAsTitle: 'name',
@@ -29,17 +29,28 @@ export const Tenants: CollectionConfig = {
       name: 'id',
       type: 'text',
       required: true,
+      admin: {
+        readOnly: true,
+      },
     },
     {
       name: 'name',
       type: 'text',
       required: true,
       unique: true,
+      access: {
+        update: isSuperAdminOrSupportFieldAccess,
+        create: isSuperAdminOrSupportFieldAccess,
+      },
     },
     {
       name: 'trustedDomains',
       type: 'array',
       required: true,
+      access: {
+        update: isSuperAdminOrSupportFieldAccess,
+        create: isSuperAdminOrSupportFieldAccess,
+      },
       fields: [
         {
           name: 'domain',
@@ -59,6 +70,10 @@ export const Tenants: CollectionConfig = {
           hasMany: true,
           defaultValue: defaultLocale,
           options: locales,
+          access: {
+            update: isSuperAdminOrSupportFieldAccess,
+            create: isSuperAdminOrSupportFieldAccess,
+          },
         },
         {
           name: 'defaultLocale',
@@ -66,6 +81,10 @@ export const Tenants: CollectionConfig = {
           required: true,
           defaultValue: defaultLocale,
           options: locales,
+          access: {
+            update: isSuperAdminOrSupportFieldAccess,
+            create: isSuperAdminOrSupportFieldAccess,
+          },
         },
       ],
     },
@@ -109,6 +128,11 @@ export const Tenants: CollectionConfig = {
     {
       name: 'auth',
       type: 'group',
+      access: {
+        create: isSuperAdminFieldAccess,
+        read: isSuperAdminFieldAccess,
+        update: isSuperAdminFieldAccess,
+      },
       fields: [
         {
           type: 'row',
@@ -148,6 +172,11 @@ export const Tenants: CollectionConfig = {
       name: 'common',
       type: 'group',
       label: 'Common Settings',
+      access: {
+        create: isSuperAdminOrSupportFieldAccess,
+        read: isSuperAdminOrSupportFieldAccess,
+        update: isSuperAdminOrSupportFieldAccess,
+      },
       fields: [
         {
           name: 'gtmContainerId',

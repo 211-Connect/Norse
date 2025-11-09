@@ -40,3 +40,12 @@ export const isTenantAccess: Access = ({ req }): boolean => {
 export const isTenantFieldAccess: FieldAccess = ({ req }) => {
   return isTenant(req.user);
 };
+
+/* COMBINED ROLES */
+export const isSuperAdminOrSupportAccess: Access = ({ req }): boolean => {
+  return isSuperAdmin(req.user) || isSupport(req.user);
+};
+
+export const isSuperAdminOrSupportFieldAccess: FieldAccess = ({ req }) => {
+  return isSuperAdmin(req.user) || isSupport(req.user);
+};
