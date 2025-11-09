@@ -16,10 +16,7 @@ import { footer } from './tabs/footer';
 import { featureFlags } from './tabs/featureFlags';
 import { privacyPolicyPage } from './tabs/privacyPolicyPage';
 import { termsOfUsePage } from './tabs/termsOfUsePage';
-import {
-  isSuperAdminAccess,
-  isSuperAdminFieldAccess,
-} from '../Users/access/roles';
+import { isSuperAdminAccess } from '../Users/access/roles';
 
 export const ResourceDirectories: CollectionConfig = {
   slug: 'resource-directories',
@@ -28,8 +25,6 @@ export const ResourceDirectories: CollectionConfig = {
   access: {
     create: isSuperAdminAccess,
     delete: isSuperAdminAccess,
-    read: superAdminOrTenantAdminAccess,
-    update: superAdminOrTenantAdminAccess,
   },
   versions: {
     drafts: false,
@@ -58,9 +53,8 @@ export const ResourceDirectories: CollectionConfig = {
           name: 'name',
           type: 'text',
           required: true,
-          access: {
-            create: isSuperAdminFieldAccess,
-            update: isSuperAdminFieldAccess,
+          admin: {
+            readOnly: true,
           },
         },
       ],

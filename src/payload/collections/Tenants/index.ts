@@ -9,6 +9,7 @@ import {
   isSuperAdminFieldAccess,
   isSuperAdminOrSupportFieldAccess,
 } from '../Users/access/roles';
+import { hasPropertySettingsFieldAccess } from '../Users/access/permissions';
 
 export const Tenants: CollectionConfig = {
   slug: 'tenants',
@@ -71,8 +72,8 @@ export const Tenants: CollectionConfig = {
           defaultValue: defaultLocale,
           options: locales,
           access: {
-            update: isSuperAdminOrSupportFieldAccess,
-            create: isSuperAdminOrSupportFieldAccess,
+            update: hasPropertySettingsFieldAccess,
+            create: hasPropertySettingsFieldAccess,
           },
         },
         {
@@ -82,8 +83,8 @@ export const Tenants: CollectionConfig = {
           defaultValue: defaultLocale,
           options: locales,
           access: {
-            update: isSuperAdminOrSupportFieldAccess,
-            create: isSuperAdminOrSupportFieldAccess,
+            update: hasPropertySettingsFieldAccess,
+            create: hasPropertySettingsFieldAccess,
           },
         },
       ],
@@ -108,18 +109,6 @@ export const Tenants: CollectionConfig = {
               type: 'checkbox',
               defaultValue: false,
               validate: hasResourceDirectory,
-            },
-            {
-              name: 'hsda',
-              label: 'HSDA',
-              type: 'checkbox',
-              defaultValue: false,
-            },
-            {
-              name: 'searchApi',
-              label: 'Search API',
-              type: 'checkbox',
-              defaultValue: false,
             },
           ],
         },

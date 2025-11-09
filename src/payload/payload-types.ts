@@ -228,8 +228,6 @@ export interface Tenant {
     | 'zh-Hant';
   services: {
     resourceDirectory?: boolean | null;
-    hsda?: boolean | null;
-    searchApi?: boolean | null;
   };
   auth: {
     realmId: string;
@@ -569,8 +567,6 @@ export interface TenantsSelect<T extends boolean = true> {
     | T
     | {
         resourceDirectory?: T;
-        hsda?: T;
-        searchApi?: T;
       };
   auth?:
     | T
