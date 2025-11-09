@@ -53,7 +53,7 @@ export function CreateAListButton({ className = '' }: { className?: string }) {
       appConfig.tenantId,
     );
 
-    if (newList) {
+    if (newList && pathname) {
       setOpen(false);
       router.replace(pathname);
     }

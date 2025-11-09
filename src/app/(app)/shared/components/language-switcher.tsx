@@ -37,7 +37,7 @@ export const LanguageSwitcher = () => {
         router.push(`/${language}${currentPathname}${stringifiedSearchParams}`);
       } else {
         router.push(
-          `${currentPathname.replace(`/${currentLanguage}`, `/${language}`)}${stringifiedSearchParams}`,
+          `${currentPathname?.replace(`/${currentLanguage}`, `/${language}`)}${stringifiedSearchParams}`,
         );
       }
     },

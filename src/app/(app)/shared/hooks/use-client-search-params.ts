@@ -17,12 +17,12 @@ export const useClientSearchParams = () => {
   );
 
   const stringifiedSearchParams = useMemo(
-    () => stringifySearchParams(searchParams),
+    () => (searchParams ? stringifySearchParams(searchParams) : ''),
     [searchParams, stringifySearchParams],
   );
 
   const searchParamsObject = useMemo(
-    () => getSearchParamsObject(searchParams),
+    () => (searchParams ? getSearchParamsObject(searchParams) : {}),
     [searchParams],
   );
 

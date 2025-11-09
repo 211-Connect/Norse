@@ -31,12 +31,12 @@ export const PrevUrlProvider = ({ children }: PropsWithChildren) => {
 
     if (!currentUrl.current) {
       // Do not update prev url if current url is resource details page
-      if (!resourceDetailsPage.test(path)) {
+      if (path && !resourceDetailsPage.test(path)) {
         setCookie(PREV_URL, path, { path: '/' });
         setPrevUrl(path);
       }
 
-      currentUrl.current = path;
+      currentUrl.current = path ?? undefined;
     }
 
     // Update current url when path changes
@@ -46,7 +46,7 @@ export const PrevUrlProvider = ({ children }: PropsWithChildren) => {
         setCookie(PREV_URL, currentUrl.current, { path: '/' });
         setPrevUrl(currentUrl.current);
       }
-      currentUrl.current = path;
+      currentUrl.current = path ?? undefined;
     }
   }, [path, prevUrl]);
 

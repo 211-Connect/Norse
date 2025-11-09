@@ -3,10 +3,7 @@ import { getServerSession, NextAuthOptions, Session } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import KeycloakProvider from 'next-auth/providers/keycloak';
 import { omitBy, isNil } from 'lodash';
-import { cache } from 'react';
 
-import { parseHost } from '@/app/(app)/shared/utils/parseHost';
-import { findByHost } from '@/payload/collections/Tenants/services/findByHost';
 import { Tenant } from './payload/payload-types';
 
 const isDebug = process.env.NEXTAUTH_DEBUG === 'true';
@@ -27,8 +24,6 @@ const createAuthOptions = ({
 }: createAuthOptionsProps): NextAuthOptions => ({
   callbacks: {
     async redirect({ url, baseUrl: _baseUrl }) {
-      console.log('Redirect URL:', url);
-      console.log('Base URL:', _baseUrl);
       if (!baseUrl) return _baseUrl;
 
       if (url.startsWith('/')) return `${baseUrl}${url}`;

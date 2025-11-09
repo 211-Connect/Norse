@@ -27,7 +27,7 @@ export function NoResultsCard({ showAltSubtitle }) {
       <CardHeader className="text-center">
         <CardTitle>{t('no_results.title')}</CardTitle>
         <CardDescription>
-          {searchParams.get('query_label') || searchParams.get('query')}
+          {searchParams?.get('query_label') || searchParams?.get('query')}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex items-center justify-center p-2">
