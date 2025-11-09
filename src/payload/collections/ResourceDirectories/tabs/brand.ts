@@ -1,4 +1,8 @@
 import { Tab } from 'payload';
+import {
+  hasContactFieldAccess,
+  hasThemeFieldAccess,
+} from '../../Users/access/permissions';
 
 export const brand: Tab = {
   name: 'brand',
@@ -11,12 +15,20 @@ export const brand: Tab = {
           type: 'upload',
           relationTo: 'tenant-media',
           required: true,
+          access: {
+            update: hasThemeFieldAccess,
+            create: hasThemeFieldAccess,
+          },
         },
         {
           name: 'favicon',
           type: 'upload',
           relationTo: 'tenant-media',
           required: true,
+          access: {
+            update: hasThemeFieldAccess,
+            create: hasThemeFieldAccess,
+          },
         },
       ],
     },
@@ -27,11 +39,19 @@ export const brand: Tab = {
           name: 'hero',
           type: 'upload',
           relationTo: 'tenant-media',
+          access: {
+            update: hasThemeFieldAccess,
+            create: hasThemeFieldAccess,
+          },
         },
         {
           name: 'openGraph',
           type: 'upload',
           relationTo: 'tenant-media',
+          access: {
+            update: hasThemeFieldAccess,
+            create: hasThemeFieldAccess,
+          },
         },
       ],
     },
@@ -41,10 +61,18 @@ export const brand: Tab = {
         {
           name: 'copyright',
           type: 'text',
+          access: {
+            update: hasThemeFieldAccess,
+            create: hasThemeFieldAccess,
+          },
         },
         {
           name: 'feedbackUrl',
           type: 'text',
+          access: {
+            create: hasContactFieldAccess,
+            update: hasContactFieldAccess,
+          },
         },
       ],
     },
@@ -54,6 +82,10 @@ export const brand: Tab = {
         {
           name: 'phoneNumber',
           type: 'text',
+          access: {
+            create: hasContactFieldAccess,
+            update: hasContactFieldAccess,
+          },
         },
       ],
     },
@@ -74,6 +106,10 @@ export const brand: Tab = {
                   Field: '@/payload/components/ColorPicker',
                 },
               },
+              access: {
+                update: hasThemeFieldAccess,
+                create: hasThemeFieldAccess,
+              },
             },
             {
               name: 'secondaryColor',
@@ -84,11 +120,19 @@ export const brand: Tab = {
                   Field: '@/payload/components/ColorPicker',
                 },
               },
+              access: {
+                update: hasThemeFieldAccess,
+                create: hasThemeFieldAccess,
+              },
             },
             {
               name: 'borderRadius',
               type: 'text',
               required: true,
+              access: {
+                update: hasThemeFieldAccess,
+                create: hasThemeFieldAccess,
+              },
             },
           ],
         },
@@ -105,11 +149,19 @@ export const brand: Tab = {
               name: 'title',
               type: 'text',
               localized: true,
+              access: {
+                update: hasThemeFieldAccess,
+                create: hasThemeFieldAccess,
+              },
             },
             {
               name: 'description',
               type: 'text',
               localized: true,
+              access: {
+                update: hasThemeFieldAccess,
+                create: hasThemeFieldAccess,
+              },
             },
           ],
         },

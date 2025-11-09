@@ -1,4 +1,9 @@
 import { Tab } from 'payload';
+import {
+  hasLayoutFieldAccess,
+  hasResourceNavigationFieldAccess,
+  hasSiteNavigationFieldAccess,
+} from '../../Users/access/permissions';
 
 export const topics: Tab = {
   label: 'Topics',
@@ -8,22 +13,38 @@ export const topics: Tab = {
       type: 'text',
       name: 'backText',
       localized: true,
+      access: {
+        create: hasSiteNavigationFieldAccess,
+        update: hasSiteNavigationFieldAccess,
+      },
     },
     {
       type: 'text',
       name: 'customHeading',
       localized: true,
+      access: {
+        create: hasResourceNavigationFieldAccess,
+        update: hasResourceNavigationFieldAccess,
+      },
     },
     {
       type: 'select',
       name: 'iconSize',
       options: ['small', 'medium'],
       defaultValue: 'small',
+      access: {
+        create: hasLayoutFieldAccess,
+        update: hasLayoutFieldAccess,
+      },
     },
     {
       name: 'list',
       type: 'array',
       localized: true,
+      access: {
+        create: hasResourceNavigationFieldAccess,
+        update: hasResourceNavigationFieldAccess,
+      },
       fields: [
         {
           name: 'name',

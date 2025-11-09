@@ -382,6 +382,9 @@ export interface ResourceDirectory {
         }[]
       | null;
   };
+  resource?: {
+    lastAssuredText?: string | null;
+  };
   search: {
     texts?: {
       title?: string | null;
@@ -747,6 +750,11 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
                   };
               id?: T;
             };
+      };
+  resource?:
+    | T
+    | {
+        lastAssuredText?: T;
       };
   search?:
     | T

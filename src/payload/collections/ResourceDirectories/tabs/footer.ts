@@ -1,4 +1,8 @@
 import { Tab } from 'payload';
+import {
+  hasContentFieldAccess,
+  hasSiteNavigationFieldAccess,
+} from '../../Users/access/permissions';
 
 export const footer: Tab = {
   name: 'footer',
@@ -7,6 +11,10 @@ export const footer: Tab = {
       name: 'disclaimer',
       type: 'textarea',
       localized: true,
+      access: {
+        create: hasContentFieldAccess,
+        update: hasContentFieldAccess,
+      },
     },
     {
       name: 'customMenu',
@@ -15,6 +23,10 @@ export const footer: Tab = {
       labels: {
         singular: 'Menu Item',
         plural: 'Menu Items',
+      },
+      access: {
+        create: hasSiteNavigationFieldAccess,
+        update: hasSiteNavigationFieldAccess,
       },
       fields: [
         {

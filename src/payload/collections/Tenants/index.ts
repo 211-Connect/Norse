@@ -9,7 +9,10 @@ import {
   isSuperAdminFieldAccess,
   isSuperAdminOrSupportFieldAccess,
 } from '../Users/access/roles';
-import { hasPropertySettingsFieldAccess } from '../Users/access/permissions';
+import {
+  hasFeatureFieldAccess,
+  hasPropertySettingsFieldAccess,
+} from '../Users/access/permissions';
 
 export const Tenants: CollectionConfig = {
   slug: 'tenants',
@@ -49,8 +52,8 @@ export const Tenants: CollectionConfig = {
       type: 'array',
       required: true,
       access: {
-        update: isSuperAdminOrSupportFieldAccess,
-        create: isSuperAdminOrSupportFieldAccess,
+        update: hasPropertySettingsFieldAccess,
+        create: hasPropertySettingsFieldAccess,
       },
       fields: [
         {
@@ -181,6 +184,10 @@ export const Tenants: CollectionConfig = {
       name: 'twilio',
       type: 'group',
       label: 'Twilio Settings',
+      access: {
+        create: hasFeatureFieldAccess,
+        update: hasFeatureFieldAccess,
+      },
       fields: [
         {
           name: 'phoneNumber',

@@ -70,6 +70,9 @@ export type AppConfig = {
       content?: string;
     };
   };
+  resource: {
+    lastAssuredText?: string;
+  };
   search: {
     map: {
       center: [number, number];

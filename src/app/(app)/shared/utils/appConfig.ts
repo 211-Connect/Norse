@@ -104,6 +104,9 @@ async function getAppConfigBase(
           enabled: false,
         },
       },
+      resource: {
+        lastAssuredText: undefined,
+      },
       search: {
         map,
         radiusOptions: [],
@@ -254,6 +257,9 @@ async function getAppConfigBase(
         enabled: resourceDirectory.termsOfUsePage?.enabled ?? false,
         title: resourceDirectory.termsOfUsePage?.title ?? undefined,
       },
+    },
+    resource: {
+      lastAssuredText: resourceDirectory.resource?.lastAssuredText ?? undefined,
     },
     search: {
       map,

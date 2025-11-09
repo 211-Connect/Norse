@@ -1,4 +1,5 @@
 import { Tab } from 'payload';
+import { hasLayoutFieldAccess } from '../../Users/access/permissions';
 
 export const newLayout: Tab = {
   name: 'newLayout',
@@ -7,6 +8,10 @@ export const newLayout: Tab = {
       name: 'enabled',
       type: 'checkbox',
       defaultValue: false,
+      access: {
+        create: hasLayoutFieldAccess,
+        update: hasLayoutFieldAccess,
+      },
     },
     {
       type: 'row',
@@ -20,6 +25,10 @@ export const newLayout: Tab = {
               Field: '@/payload/components/ColorPicker',
             },
           },
+          access: {
+            create: hasLayoutFieldAccess,
+            update: hasLayoutFieldAccess,
+          },
         },
         {
           name: 'headerEnd',
@@ -29,6 +38,10 @@ export const newLayout: Tab = {
             components: {
               Field: '@/payload/components/ColorPicker',
             },
+          },
+          access: {
+            create: hasLayoutFieldAccess,
+            update: hasLayoutFieldAccess,
           },
         },
       ],
@@ -40,11 +53,19 @@ export const newLayout: Tab = {
           name: 'hero',
           type: 'upload',
           relationTo: 'tenant-media',
+          access: {
+            create: hasLayoutFieldAccess,
+            update: hasLayoutFieldAccess,
+          },
         },
         {
           name: 'logo',
           type: 'upload',
           relationTo: 'tenant-media',
+          access: {
+            create: hasLayoutFieldAccess,
+            update: hasLayoutFieldAccess,
+          },
         },
       ],
     },
@@ -61,6 +82,10 @@ export const newLayout: Tab = {
             plural: 'Callouts',
           },
           maxRows: 4,
+          access: {
+            create: hasLayoutFieldAccess,
+            update: hasLayoutFieldAccess,
+          },
           fields: [
             {
               type: 'select',
@@ -97,6 +122,10 @@ export const newLayout: Tab = {
           name: 'title',
           type: 'text',
           localized: true,
+          access: {
+            create: hasLayoutFieldAccess,
+            update: hasLayoutFieldAccess,
+          },
         },
       ],
     },

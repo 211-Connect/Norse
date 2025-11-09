@@ -450,6 +450,9 @@ async function createResourceDirectory(
         existingDirectory,
       ),
     },
+    resource: {
+      lastAssuredText: populatedAppConfig.lastAssuredText || null,
+    },
     search: {
       map: populatedAppConfig.map && {
         center: JSON.stringify(populatedAppConfig.map.center),

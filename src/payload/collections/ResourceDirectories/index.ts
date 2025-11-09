@@ -1,6 +1,5 @@
 import type { CollectionConfig } from 'payload';
 
-import { superAdminOrTenantAdminAccess } from './access/superAdminOrTenantAdmin';
 import { setTenantIdAsId } from './hooks/setTenantIdAsId';
 import { preventUpdateInDisabledLocale } from './hooks/preventUpdateInDisabledLocale';
 import { revalidateCache } from './hooks/revalidateCache';
@@ -17,6 +16,8 @@ import { featureFlags } from './tabs/featureFlags';
 import { privacyPolicyPage } from './tabs/privacyPolicyPage';
 import { termsOfUsePage } from './tabs/termsOfUsePage';
 import { isSuperAdminAccess } from '../Users/access/roles';
+import { hasThemeFieldAccess } from '../Users/access/permissions';
+import { resource } from './tabs/resource';
 
 export const ResourceDirectories: CollectionConfig = {
   slug: 'resource-directories',
@@ -53,8 +54,9 @@ export const ResourceDirectories: CollectionConfig = {
           name: 'name',
           type: 'text',
           required: true,
-          admin: {
-            readOnly: true,
+          access: {
+            update: hasThemeFieldAccess,
+            create: hasThemeFieldAccess,
           },
         },
       ],
@@ -68,6 +70,7 @@ export const ResourceDirectories: CollectionConfig = {
         footer,
         suggestions,
         topics,
+        resource,
         search,
         newLayout,
         privacyPolicyPage,

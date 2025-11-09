@@ -1,4 +1,8 @@
 import { Tab } from 'payload';
+import {
+  hasPropertySettingsFieldAccess,
+  hasSearchFieldAccess,
+} from '../../Users/access/permissions';
 
 export const search: Tab = {
   name: 'search',
@@ -14,11 +18,19 @@ export const search: Tab = {
               name: 'title',
               type: 'text',
               localized: true,
+              access: {
+                create: hasSearchFieldAccess,
+                update: hasSearchFieldAccess,
+              },
             },
             {
               name: 'queryInputPlaceholder',
               type: 'text',
               localized: true,
+              access: {
+                create: hasSearchFieldAccess,
+                update: hasSearchFieldAccess,
+              },
             },
           ],
         },
@@ -29,11 +41,19 @@ export const search: Tab = {
               name: 'locationInputPlaceholder',
               type: 'text',
               localized: true,
+              access: {
+                create: hasSearchFieldAccess,
+                update: hasSearchFieldAccess,
+              },
             },
             {
               name: 'noResultsFallbackText',
               type: 'textarea',
               localized: true,
+              access: {
+                create: hasSearchFieldAccess,
+                update: hasSearchFieldAccess,
+              },
             },
           ],
         },
@@ -49,6 +69,10 @@ export const search: Tab = {
           defaultValue: 25,
           min: 25,
           required: true,
+          access: {
+            create: hasSearchFieldAccess,
+            update: hasSearchFieldAccess,
+          },
         },
         {
           name: 'radiusSelectValues',
@@ -56,6 +80,10 @@ export const search: Tab = {
           labels: {
             singular: 'Radius Option',
             plural: 'Radius Options',
+          },
+          access: {
+            create: hasSearchFieldAccess,
+            update: hasSearchFieldAccess,
           },
           fields: [
             {
@@ -71,12 +99,20 @@ export const search: Tab = {
           },
           name: 'defaultRadius',
           type: 'number',
+          access: {
+            create: hasSearchFieldAccess,
+            update: hasSearchFieldAccess,
+          },
         },
       ],
     },
     {
       type: 'group',
       name: 'map',
+      access: {
+        create: hasPropertySettingsFieldAccess,
+        update: hasPropertySettingsFieldAccess,
+      },
       fields: [
         {
           name: 'center',

@@ -1,4 +1,8 @@
 import { Tab } from 'payload';
+import {
+  hasFeatureFieldAccess,
+  hasSiteNavigationFieldAccess,
+} from '../../Users/access/permissions';
 
 export const header: Tab = {
   name: 'header',
@@ -10,6 +14,10 @@ export const header: Tab = {
       labels: {
         singular: 'Menu Item',
         plural: 'Menu Items',
+      },
+      access: {
+        create: hasSiteNavigationFieldAccess,
+        update: hasSiteNavigationFieldAccess,
       },
       fields: [
         {
@@ -38,17 +46,29 @@ export const header: Tab = {
           name: 'customHomeUrl',
           type: 'text',
           localized: true,
+          access: {
+            create: hasSiteNavigationFieldAccess,
+            update: hasSiteNavigationFieldAccess,
+          },
         },
         {
           name: 'searchUrl',
           type: 'text',
           localized: true,
+          access: {
+            create: hasSiteNavigationFieldAccess,
+            update: hasSiteNavigationFieldAccess,
+          },
         },
       ],
     },
     {
       name: 'safeExit',
       type: 'group',
+      access: {
+        create: hasFeatureFieldAccess,
+        update: hasFeatureFieldAccess,
+      },
       fields: [
         {
           name: 'enabled',

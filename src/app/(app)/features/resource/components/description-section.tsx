@@ -1,6 +1,7 @@
 import { badgeVariants } from '@/app/(app)/shared/components/ui/badge';
 import { Card, CardContent } from '@/app/(app)/shared/components/ui/card';
 import { Separator } from '@/app/(app)/shared/components/ui/separator';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
 import { parseHtml } from '@/app/(app)/shared/lib/parse-html';
 import { cn } from '@/app/(app)/shared/lib/utils';
@@ -9,6 +10,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export function DescriptionSection({ resource }) {
+  const appConfig = useAppConfig();
   const { t } = useTranslation('page-resource');
 
   const showCategories = useFlag('showResourceCategories');
@@ -47,10 +49,7 @@ export function DescriptionSection({ resource }) {
               {showLastAssured && (
                 <div className="text-sm">
                   <h4 className="mb-1 mt-4 font-semibold">
-                    {t('last_assured_text', {
-                      ns: 'dynamic',
-                      defaultValue: t('last_assured'),
-                    })}
+                    {appConfig.resource.lastAssuredText || t('last_assured')}
                   </h4>
                   <p>{lastAssuredOn || t('unknown')}</p>
                 </div>

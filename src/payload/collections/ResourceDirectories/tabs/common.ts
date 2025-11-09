@@ -1,4 +1,8 @@
 import { Tab } from 'payload';
+import {
+  hasLayoutFieldAccess,
+  hasResourceNavigationFieldAccess,
+} from '../../Users/access/permissions';
 
 export const common: Tab = {
   name: 'common',
@@ -8,6 +12,10 @@ export const common: Tab = {
       name: 'alert',
       localized: true,
       maxRows: 1,
+      access: {
+        create: hasResourceNavigationFieldAccess,
+        update: hasResourceNavigationFieldAccess,
+      },
       fields: [
         {
           type: 'row',
@@ -49,6 +57,10 @@ export const common: Tab = {
       name: 'customDataProvidersHeading',
       type: 'text',
       localized: true,
+      access: {
+        create: hasLayoutFieldAccess,
+        update: hasLayoutFieldAccess,
+      },
     },
     {
       name: 'dataProviders',
@@ -57,6 +69,10 @@ export const common: Tab = {
       labels: {
         singular: 'Data Provider',
         plural: 'Data Providers',
+      },
+      access: {
+        create: hasLayoutFieldAccess,
+        update: hasLayoutFieldAccess,
       },
       fields: [
         {
