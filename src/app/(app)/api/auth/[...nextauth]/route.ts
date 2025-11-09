@@ -4,7 +4,10 @@ import { findByHost } from '@/payload/collections/Tenants/services/findByHost';
 import NextAuth from 'next-auth';
 import { NextRequest } from 'next/server';
 
-const handlerFunction = async (req: NextRequest) => {
+const handlerFunction = async (
+  req: NextRequest,
+  ctx: RouteContext<'/api/auth/[...nextauth]'>,
+) => {
   const headers = req.headers as unknown as Headers;
   const host = headers.get('host');
   const protocol = headers.get('x-forwarded-proto') || 'http';
@@ -15,6 +18,8 @@ const handlerFunction = async (req: NextRequest) => {
   const tenant = await findByHost(parsedHost);
 
   return NextAuth(
+    req,
+    ctx,
     createAuthOptions({
       baseUrl,
       keycloak: {
