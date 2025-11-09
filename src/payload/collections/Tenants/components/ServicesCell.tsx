@@ -6,8 +6,6 @@ type Services = Tenant['services'];
 
 const serviceMap: Record<keyof Services, string> = {
   resourceDirectory: 'RD',
-  hsda: 'HSDA',
-  searchApi: 'SAPI',
 };
 
 export default function ServicesCell({

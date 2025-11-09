@@ -29,7 +29,8 @@ export const Users: CollectionConfig = {
       hasMany: true,
       options: ['super-admin', 'support', 'tenant'],
       filterOptions: ({ options, req }) => {
-        if (isSuperAdmin(req.user) || req.context?.migration) {
+        const firstUser = !req.user;
+        if (isSuperAdmin(req.user) || req.context?.migration || firstUser) {
           return options;
         }
 

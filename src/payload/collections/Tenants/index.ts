@@ -102,6 +102,10 @@ export const Tenants: CollectionConfig = {
           Cell: '@/payload/collections/Tenants/components/ServicesCell',
         },
       },
+      access: {
+        create: isSuperAdminOrSupportFieldAccess,
+        update: isSuperAdminOrSupportFieldAccess,
+      },
       fields: [
         {
           type: 'row',
