@@ -18,11 +18,17 @@ export async function upsert<I extends Record<string, unknown>, O>(
       collection,
       id: existing.docs[0].id,
       data,
+      context: {
+        migration: true,
+      },
     }) as Promise<O>;
   }
 
   return payload.create({
     collection,
     data,
+    context: {
+      migration: true,
+    },
   }) as Promise<O>;
 }

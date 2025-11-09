@@ -9,10 +9,6 @@ import { brand } from './tabs/brand';
 import { topics } from './tabs/topics';
 import { suggestions } from './tabs/suggestions';
 import { search } from './tabs/search';
-import {
-  isSuperAdminAccess,
-  superAdminEditFieldAccess,
-} from '../Users/access/isSuperAdmin';
 import { common } from './tabs/common';
 import { newLayout } from './tabs/newLayout';
 import { header } from './tabs/header';
@@ -20,6 +16,10 @@ import { footer } from './tabs/footer';
 import { featureFlags } from './tabs/featureFlags';
 import { privacyPolicyPage } from './tabs/privacyPolicyPage';
 import { termsOfUsePage } from './tabs/termsOfUsePage';
+import {
+  isSuperAdminAccess,
+  isSuperAdminFieldAccess,
+} from '../Users/access/roles';
 
 export const ResourceDirectories: CollectionConfig = {
   slug: 'resource-directories',
@@ -58,7 +58,10 @@ export const ResourceDirectories: CollectionConfig = {
           name: 'name',
           type: 'text',
           required: true,
-          access: superAdminEditFieldAccess,
+          access: {
+            create: isSuperAdminFieldAccess,
+            update: isSuperAdminFieldAccess,
+          },
         },
       ],
     },

@@ -4,7 +4,7 @@ import { defaultLocale, locales } from '@/payload/i18n/locales';
 import { updateAndDeleteAccess } from './access/updateAndDelete';
 import { hasResourceDirectory } from './validators/hasResourceDirectory';
 import { revalidateCache } from './hooks/revalidateCache';
-import { isSuperAdminAccess } from '../Users/access/isSuperAdmin';
+import { isSuperAdminAccess } from '../Users/access/roles';
 
 export const Tenants: CollectionConfig = {
   slug: 'tenants',

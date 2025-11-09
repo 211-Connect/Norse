@@ -144,11 +144,11 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: number;
-  roles?: ('super-admin' | 'user')[] | null;
+  roles: ('super-admin' | 'support' | 'tenant')[];
   tenants?:
     | {
         tenant: string | Tenant;
-        roles: ('tenant-admin' | 'tenant-viewer')[];
+        roles: ('tenant-admin' | 'tenant-editor')[];
         id?: string | null;
       }[]
     | null;

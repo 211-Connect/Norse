@@ -14,10 +14,10 @@ import { Tenants } from './collections/Tenants';
 import { TenantMedia } from './collections/TenantMedia';
 import { ResourceDirectories } from './collections/ResourceDirectories';
 import { defaultLocale, locales } from './i18n/locales';
-import { isSuperAdmin } from './collections/Users/access/isSuperAdmin';
 import { getUserTenantIDs } from './utilities/getUserTenantIDs';
 
 import { seedEndpoint, addLocalAdminEndpoint } from './migrations';
+import { isSuperAdmin, isSupport } from './collections/Users/access/roles';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -107,7 +107,7 @@ const config = buildConfig({
         access: {
           read: () => true,
           update: ({ req }) => {
-            if (isSuperAdmin(req.user)) {
+            if (isSuperAdmin(req.user) || isSupport(req.user)) {
               return true;
             }
             return getUserTenantIDs(req.user).length > 0;
@@ -117,7 +117,8 @@ const config = buildConfig({
       tenantsArrayField: {
         includeDefaultField: false,
       },
-      userHasAccessToAllTenants: (user) => isSuperAdmin(user),
+      userHasAccessToAllTenants: (user) =>
+        isSuperAdmin(user) || isSupport(user),
     }),
     s3Storage({
       collections: {

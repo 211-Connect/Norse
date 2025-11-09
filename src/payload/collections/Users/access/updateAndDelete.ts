@@ -2,26 +2,34 @@ import type { Access } from 'payload';
 
 import { getUserTenantIDs } from '@/payload/utilities/getUserTenantIDs';
 
-import { isSuperAdmin } from './isSuperAdmin';
 import { isAccessingSelf } from './isAccessingSelf';
+import { isSuperAdmin, isSupport } from './roles';
 
-export const updateAndDeleteAccess: Access = ({ req, id }) => {
+export const updateAndDeleteAccess: Access = ({ req, id, data }) => {
   const { user } = req;
 
   if (!user) {
     return false;
   }
 
-  if (isSuperAdmin(user) || isAccessingSelf({ user, id })) {
+  if (isSuperAdmin(user)) {
+    return true;
+  }
+
+  if (data?.roles?.includes('super-admin')) {
+    return false;
+  }
+
+  if (isSupport(user) || isAccessingSelf({ user, id })) {
     return true;
   }
 
   /**
    * Constrains update and delete access to users that belong
-   * to the same tenant as the tenant-admin making the request
+   * to the same tenant as the admin making the request
    *
    * You may want to take this a step further with a beforeChange
-   * hook to ensure that the a tenant-admin can only remove users
+   * hook to ensure that the a admin can only remove users
    * from their own tenant in the tenants array.
    */
   return {
