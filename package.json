@@ -111,7 +111,7 @@
     "react-dom": "^19.1.1",
     "react-i18next": "^15.7.3",
     "react-to-print": "^3.1.1",
-    "sharp": "^0.32.6",
+    "sharp": "0.34.5",
     "sonner": "^1.7.4",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
