@@ -63,6 +63,11 @@ export async function middleware(request: NextRequest) {
   let locales = ['en'];
   let defaultLocale = 'en';
 
+  console.log('URL', request.url);
+  console.log('Next URL', request.nextUrl);
+  console.log('Host', host);
+  console.log('HEADERS', request.headers);
+
   const apiRoute = getApiRoute(request, 'getTenant');
   console.log('API ROUTE', apiRoute);
   try {
