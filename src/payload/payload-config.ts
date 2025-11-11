@@ -58,6 +58,7 @@ const config = buildConfig({
         return schema;
       },
     ],
+    migrationDir: path.resolve(dirname, './migrations/postgres'),
   }),
   localization: {
     locales,
