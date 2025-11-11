@@ -64,6 +64,7 @@ export async function middleware(request: NextRequest) {
   let defaultLocale = 'en';
 
   const apiRoute = getApiRoute(request, 'getTenant');
+  console.log('API ROUTE', apiRoute);
   try {
     const response = await fetch(
       `${apiRoute}?host=${host}&secret=${process.env.PAYLOAD_API_ROUTE_SECRET}`,
