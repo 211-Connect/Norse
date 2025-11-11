@@ -50,10 +50,9 @@ function robotsMiddleware(response: NextResponse, pathname: string) {
 }
 
 function getApiRoute(request: NextRequest, target: string) {
-  return (
-    request.nextUrl.origin +
-    `${process.env.CUSTOM_BASE_PATH || ''}/api/${target}`
-  );
+  const proto = request.headers.get('x-forwarded-proto') || 'http';
+  const host = request.headers.get('host') || 'localhost:3000';
+  return `${proto}://${host}${process.env.CUSTOM_BASE_PATH || ''}/api/${target}`;
 }
 
 // Add a session_id to the cookies of the user for tracking purposes
@@ -62,11 +61,6 @@ export async function middleware(request: NextRequest) {
 
   let locales = ['en'];
   let defaultLocale = 'en';
-
-  console.log('URL', request.url);
-  console.log('Next URL', request.nextUrl);
-  console.log('Host', host);
-  console.log('HEADERS', request.headers);
 
   const apiRoute = getApiRoute(request, 'getTenant');
   console.log('API ROUTE', apiRoute);
