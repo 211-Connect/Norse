@@ -52,9 +52,19 @@ export const topics: Tab = {
           required: true,
         },
         {
-          name: 'image',
-          type: 'upload',
-          relationTo: 'tenant-media',
+          type: 'row',
+          fields: [
+            {
+              name: 'image',
+              type: 'upload',
+              relationTo: 'tenant-media',
+            },
+            {
+              name: 'imageBorderRadius',
+              type: 'number',
+              defaultValue: 12,
+            },
+          ],
         },
         {
           type: 'row',

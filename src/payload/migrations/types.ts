@@ -72,6 +72,7 @@ export type CategoryData = {
     id: string;
     name: string;
     image: { data: { attributes: ImageUploadData } };
+    borderRadius?: number | null;
     href: string;
     subcategories: Array<StrapiSubCategoryData>;
   }>;

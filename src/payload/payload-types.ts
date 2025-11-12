@@ -366,6 +366,7 @@ export interface ResourceDirectory {
       | {
           name: string;
           image?: (number | null) | TenantMedia;
+          imageBorderRadius?: number | null;
           href?: string | null;
           target?: ('_self' | '_blank') | null;
           subtopics?:
@@ -736,6 +737,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
           | {
               name?: T;
               image?: T;
+              imageBorderRadius?: T;
               href?: T;
               target?: T;
               subtopics?:
