@@ -14,6 +14,7 @@ type Props = {
   index: string;
   name: string;
   image?: string;
+  imageBorderRadius?: string | null;
   href?: string;
   target?: string;
   subcategories: any[];
@@ -22,6 +23,7 @@ type Props = {
 const Category = ({
   iconSize,
   image,
+  imageBorderRadius,
   name,
   href,
   target,
@@ -42,6 +44,9 @@ const Category = ({
               'rounded-xl object-cover',
               sizeOfIcon === 40 ? 'size-10' : 'size-16',
             )}
+            style={{
+              borderRadius: imageBorderRadius ?? undefined,
+            }}
           />
         )}
 

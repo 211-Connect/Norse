@@ -339,6 +339,7 @@ module.exports = function createFromStrapi(dir) {
             target: cat['target'] || '_self',
             image:
               matchingCategory?.['image']?.['data']?.['attributes']?.['url'],
+            imageBorderRadius: matchingCategory?.['borderRadius'] ?? null,
             subcategories: cat['subcategories'].map((sub) => ({
               name: sub['name'],
               href: sub['href'],
@@ -362,6 +363,7 @@ module.exports = function createFromStrapi(dir) {
           href: category['href'],
           target: category['target'] || '_self',
           image: category['image']?.['data']?.['attributes']?.['url'],
+          imageBorderRadius: category['borderRadius'] ?? null,
           subcategories: category['subcategories'].map((sub) => ({
             name: sub['name'],
             href: sub['href'],
