@@ -12,7 +12,15 @@ import { useLocations } from '../../hooks/api/use-locations';
 import { useCallback, useState } from 'react';
 import { cn } from '../../lib/utils';
 import { destroyCookie, setCookie } from 'nookies';
-import { USER_PREF_COORDS, USER_PREF_LOCATION } from '@/shared/lib/constants';
+import { 
+  USER_PREF_COORDS, 
+  USER_PREF_LOCATION, 
+  USER_PREF_COUNTRY, 
+  USER_PREF_DISTRICT, 
+  USER_PREF_PLACE, 
+  USER_PREF_POSTCODE, 
+  USER_PREF_REGION 
+} from '@/shared/lib/constants';
 import { Autocomplete } from '../ui/autocomplete';
 import { DistanceSelect } from './distance-select';
 import { useSearchResources } from '@/shared/hooks/use-search-resources';
@@ -78,9 +86,19 @@ export function LocationSearchBar({
           path: '/',
         });
         setCookie(null, USER_PREF_LOCATION, value, { path: '/' });
+        if ('country' in coords) {setCookie(null, USER_PREF_COUNTRY, coords.country, { path: '/' })};
+        if ('district' in coords) {setCookie(null, USER_PREF_DISTRICT, coords.district, { path: '/' })};
+        if ('place' in coords) {setCookie(null, USER_PREF_PLACE, coords.place, { path: '/' })};
+        if ('postcode' in coords) {setCookie(null, USER_PREF_POSTCODE, coords.postcode, { path: '/' })};
+        if ('region' in coords) {setCookie(null, USER_PREF_REGION, coords.region, { path: '/' })};
       } else {
         destroyCookie(null, USER_PREF_COORDS, { path: '/' });
         destroyCookie(null, USER_PREF_LOCATION, { path: '/' });
+        destroyCookie(null, USER_PREF_COUNTRY, {path: '/'});
+        destroyCookie(null, USER_PREF_DISTRICT, {path: '/'});
+        destroyCookie(null, USER_PREF_PLACE, {path: '/'});
+        destroyCookie(null, USER_PREF_POSTCODE, {path: '/'});
+        destroyCookie(null, USER_PREF_REGION, {path: '/'});
       }
 
       setShouldSearch(false);

@@ -7,6 +7,11 @@ export abstract class BaseGeocoderAdapter {
       type: 'coordinates' | 'invalid';
       address: string;
       coordinates: [number, number];
+      country?: string;
+      district?: string;
+      place?: string;
+      postcode?: string;
+      region?: string;
     }[]
   >;
 
@@ -17,6 +22,11 @@ export abstract class BaseGeocoderAdapter {
     {
       address: string;
       coordinates: [number, number];
+      country?: string;
+      district?: string;
+      place?: string;
+      postcode?: string;
+      region?: string;
     }[]
   >;
 }
