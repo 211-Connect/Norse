@@ -130,7 +130,7 @@ const config = buildConfig({
           // They still do that in 3.47.0
           // https://github.com/payloadcms/payload/blob/v3.47.0/packages/storage-s3/src/staticHandler.ts#L139
           signedDownloads: {
-            shouldUseSignedURL: ({}) => true,
+            shouldUseSignedURL: ({}) => false,
           },
         },
       },
