@@ -132,6 +132,8 @@ const config = buildConfig({
           signedDownloads: {
             shouldUseSignedURL: ({}) => false,
           },
+          generateFileURL: ({ filename, prefix }) =>
+            `https://${process.env.MEDIA_S3_BUCKET}.${process.env.MEDIA_S3_ENDPOINT}/${prefix}/${filename}`,
         },
       },
       bucket: process.env.MEDIA_S3_BUCKET as string,
