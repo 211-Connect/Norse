@@ -51,7 +51,10 @@ function robotsMiddleware(response: NextResponse, pathname: string) {
 
 function getApiRoute(request: NextRequest, target: string) {
   const proto = request.headers.get('x-forwarded-proto') || 'http';
-  const host = request.headers.get('host') || 'localhost:3000';
+  const host =
+    process.env.NODE_ENV !== 'development'
+      ? request.headers.get('host')
+      : 'localhost:3000';
   return `${proto}://${host}${process.env.CUSTOM_BASE_PATH || ''}/api/${target}`;
 }
 
@@ -63,7 +66,6 @@ export async function middleware(request: NextRequest) {
   let defaultLocale = 'en';
 
   const apiRoute = getApiRoute(request, 'getTenant');
-  console.log('API ROUTE', apiRoute);
   try {
     const response = await fetch(
       `${apiRoute}?host=${host}&secret=${process.env.PAYLOAD_API_ROUTE_SECRET}`,
@@ -78,7 +80,9 @@ export async function middleware(request: NextRequest) {
 
     locales = tenant.enabledLocales;
     defaultLocale = tenant.defaultLocale;
-  } catch {}
+  } catch (err) {
+    console.log('ERROR', err);
+  }
 
   const url = request.nextUrl.clone();
   const { pathname } = url;
