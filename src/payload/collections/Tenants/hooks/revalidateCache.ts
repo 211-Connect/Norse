@@ -7,14 +7,25 @@ import { createCacheKey } from '../cache/keys';
 
 export async function revalidateCache({
   doc,
+  previousDoc,
 }: {
   doc: Tenant;
+  previousDoc?: Tenant;
 }): Promise<Tenant> {
   const cacheServiceInstance = cacheService();
 
+  const trustedDomains = Array.from(
+    new Set<string>([
+      ...doc.trustedDomains.map(({ domain }) => domain),
+      ...(previousDoc
+        ? previousDoc.trustedDomains.map(({ domain }) => domain)
+        : []),
+    ]),
+  );
+
   try {
     await Promise.all(
-      doc.trustedDomains.map(async ({ domain }) => {
+      trustedDomains.map(async (domain) => {
         const host = parseHost(domain);
         await cacheServiceInstance.delPattern(
           createCacheKeyForAllLocales(host),
