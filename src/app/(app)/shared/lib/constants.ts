@@ -5,7 +5,7 @@ export const MAPBOX_STYLE_URL = process.env.NEXT_PUBLIC_MAPBOX_STYLE_URL;
 export const MAPLIBRE_STYLE_URL = process.env.NEXT_PUBLIC_MAPLIBRE_STYLE_URL;
 
 export const FAVORITES_LIST_ENDPOINT = 'favorite-list';
-export const FAVORITES_BASE_ENDPOINT = 'favorites';
+export const FAVORITES_BASE_ENDPOINT = 'favorite';
 
 // Session ID cookie
 export const SESSION_ID = 'session-id';

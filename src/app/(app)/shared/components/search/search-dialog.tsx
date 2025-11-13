@@ -98,7 +98,7 @@ export function SearchDialog({
 
       const queryParams = stringifySearchParams(new URLSearchParams(urlParams));
 
-      router.push(`/search?${queryParams}`);
+      router.push(`/search${queryParams}`);
 
       setSearch((prev) => ({
         ...prev,
