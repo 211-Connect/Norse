@@ -168,7 +168,7 @@ export function Autocomplete(props: AutocompleteProps) {
   const [popperElement, setPopperElement] = useState(null);
   const { styles, attributes } = usePopper(referenceElement, popperElement);
 
-  const referenceElementRef = useRef(referenceElement);
+  const wrapperElementRef = useRef<HTMLDivElement>(null);
 
   const openOptions = useCallback(() => {
     setOpen(true);
@@ -223,7 +223,7 @@ export function Autocomplete(props: AutocompleteProps) {
     setOpen(false);
   }, []);
 
-  useOnClickOutside(referenceElementRef, handleClickOutside);
+  useOnClickOutside(wrapperElementRef, handleClickOutside);
 
   const setInputSelectionPoint = useCallback(
     (value: string) => {
@@ -482,17 +482,16 @@ export function Autocomplete(props: AutocompleteProps) {
     }
   }, [blurOnOptionsInteraction, referenceElement]);
 
-  useEffect(() => {
-    referenceElementRef.current = referenceElement;
-  }, [referenceElement]);
-
   // Set unique ID for component
   useEffect(() => {
     setUnqiueId(`search-results-${Math.random().toString(36).substring(2, 9)}`);
   }, []);
 
   return (
-    <div className={cn('relative flex items-center', className)}>
+    <div
+      className={cn('relative flex items-center', className)}
+      ref={wrapperElementRef}
+    >
       <div className="relative w-full">
         {Icon ? (
           <Icon className="absolute left-2 top-2 size-4 shrink-0 text-primary" />
@@ -562,6 +561,7 @@ export function Autocomplete(props: AutocompleteProps) {
             optionsPopoverClassName,
           )}
           onTouchStart={touchOnList}
+          onMouseDown={touchOnList}
           {...attributes.popper}
         >
           {options?.map((group, groupIndex) => {
