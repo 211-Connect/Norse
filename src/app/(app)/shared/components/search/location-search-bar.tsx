@@ -19,7 +19,15 @@ import { Autocomplete } from '../ui/autocomplete';
 import { DistanceSelect } from './distance-select';
 import { UseMyLocationButton } from './use-my-location-button';
 import { useSearchResources } from '../../hooks/use-search-resources';
-import { USER_PREF_COORDS, USER_PREF_LOCATION } from '../../lib/constants';
+import {
+  USER_PREF_COORDS,
+  USER_PREF_LOCATION,
+  USER_PREF_COUNTRY,
+  USER_PREF_DISTRICT,
+  USER_PREF_PLACE,
+  USER_PREF_POSTCODE,
+  USER_PREF_REGION,
+} from '../../lib/constants';
 import { useAppConfig } from '../../hooks/use-app-config';
 
 type LocationSearchBarProps = {
@@ -84,9 +92,29 @@ export function LocationSearchBar({
           path: '/',
         });
         setCookie(USER_PREF_LOCATION, value, { path: '/' });
+        if ('country' in coords) {
+          setCookie(USER_PREF_COUNTRY, coords.country, { path: '/' });
+        }
+        if ('district' in coords) {
+          setCookie(USER_PREF_DISTRICT, coords.district, { path: '/' });
+        }
+        if ('place' in coords) {
+          setCookie(USER_PREF_PLACE, coords.place, { path: '/' });
+        }
+        if ('postcode' in coords) {
+          setCookie(USER_PREF_POSTCODE, coords.postcode, { path: '/' });
+        }
+        if ('region' in coords) {
+          setCookie(USER_PREF_REGION, coords.region, { path: '/' });
+        }
       } else {
         deleteCookie(USER_PREF_COORDS, { path: '/' });
         deleteCookie(USER_PREF_LOCATION, { path: '/' });
+        deleteCookie(USER_PREF_COUNTRY, { path: '/' });
+        deleteCookie(USER_PREF_DISTRICT, { path: '/' });
+        deleteCookie(USER_PREF_PLACE, { path: '/' });
+        deleteCookie(USER_PREF_POSTCODE, { path: '/' });
+        deleteCookie(USER_PREF_REGION, { path: '/' });
       }
 
       setShouldSearch(false);

@@ -1,6 +1,13 @@
 'use client';
 
 import { getCookies } from 'cookies-next/client';
+import {
+  USER_PREF_COUNTRY,
+  USER_PREF_DISTRICT,
+  USER_PREF_PLACE,
+  USER_PREF_POSTCODE,
+  USER_PREF_REGION,
+} from './constants';
 
 export interface ReferralEventProps {
   event: string;
@@ -13,6 +20,11 @@ export interface SearchEvent {
   query_language?: string | null;
   location?: string | null;
   results?: boolean | null;
+  country?: string | null;
+  district?: string | null;
+  place?: string | null;
+  postcode?: string | null;
+  region?: string | null;
 }
 
 export interface PageViewEvent {
@@ -136,6 +148,7 @@ export const createReferralEvent = async (
 export const createResultsEvent = async (e: any, query: any) => {
   if (query.query_type === 'taxonomy') {
     const eventExists = getFromSessionStorage(`search.${query.query}`);
+    const cookies = getCookies() ?? {};
 
     if (!eventExists) {
       if (isDevelopment) {
@@ -149,6 +162,11 @@ export const createResultsEvent = async (e: any, query: any) => {
         event: 'search',
         ...query,
         results: e.total,
+        country: cookies[USER_PREF_COUNTRY] ?? null,
+        district: cookies[USER_PREF_DISTRICT] ?? null,
+        place: cookies[USER_PREF_PLACE] ?? null,
+        postcode: cookies[USER_PREF_POSTCODE] ?? null,
+        region: cookies[USER_PREF_REGION] ?? null,
       };
 
       createEvent<SearchEvent>(newEvent);
@@ -173,6 +191,7 @@ export const createResultsEvent = async (e: any, query: any) => {
     }
   } else {
     const eventExists = getFromSessionStorage(`search.${query.query}`);
+    const cookies = getCookies() ?? {};
 
     if (!eventExists) {
       if (isDevelopment) {
@@ -187,6 +206,11 @@ export const createResultsEvent = async (e: any, query: any) => {
         ...query,
         results: e.total,
         query_label: query?.query ?? null,
+        country: cookies[USER_PREF_COUNTRY] ?? null,
+        district: cookies[USER_PREF_DISTRICT] ?? null,
+        place: cookies[USER_PREF_PLACE] ?? null,
+        postcode: cookies[USER_PREF_POSTCODE] ?? null,
+        region: cookies[USER_PREF_REGION] ?? null,
       };
 
       createEvent<SearchEvent>(newEvent);

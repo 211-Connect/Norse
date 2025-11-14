@@ -20,5 +20,10 @@ export const USER_PREF_LOCATION = 'user-pref-location';
 export const USER_PREF_COORDS = 'user-pref-coords';
 export const USER_PREF_THEME = 'user-pref-theme';
 export const USER_PREF_DISTANCE = 'user-pref-distance';
+export const USER_PREF_COUNTRY = 'user-pref-country';
+export const USER_PREF_DISTRICT = 'user-pref-district';
+export const USER_PREF_PLACE = 'user-pref-place';
+export const USER_PREF_POSTCODE = 'user-pref-postcode';
+export const USER_PREF_REGION = 'user-pref-region';
 
 export const HEADER_ID = 'app-header';
