@@ -7,5 +7,7 @@ export function Image(props: React.ComponentProps<typeof NextImage>) {
   const appConfig = useAppConfig();
   const src = props.src && `${appConfig.baseUrl}${props.src}`;
 
+  console.log('SRC:', src);
+
   return <NextImage {...props} src={src} />;
 }
