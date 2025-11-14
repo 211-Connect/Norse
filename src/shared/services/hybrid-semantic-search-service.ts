@@ -115,12 +115,25 @@ export class HybridSemanticSearchService {
         },
       );
     } catch (err) {
-      // No fallback - throw error
+      console.error('Hybrid semantic search failed:', err);
       throw err;
     }
 
     const data = response?.data;
-    const totalResults = data?.hits?.total?.value ?? 0;
+    const totalResults = data?.total_results ?? 0;
+
+    // Extract pagination metadata from top-level response properties
+    const currentPage = data?.page ?? page;
+    const totalPages = data?.total_pages ?? 1;
+    const hasNextPage = data?.has_next_page ?? false;
+    const hasPreviousPage = data?.has_previous_page ?? false;
+
+    console.log('HybridSemanticSearchService total results:', totalResults);
+    console.log('HybridSemanticSearchService total pages:', totalPages);
+    console.log('HybridSemanticSearchService current page:', currentPage);
+
+    // Check if no results
+    const noResults = totalResults === 0;
 
     return {
       results:
@@ -159,14 +172,17 @@ export class HybridSemanticSearchService {
             address: mainAddress,
             location: hit?._source?.location?.point ?? null,
             taxonomies: hit?._source?.taxonomies ?? null,
-            distance: hit?._source?.distance_from_user ?? null,
+            distance_from_user: hit?._source?.distance_from_user ?? null,
           };
 
           return _.omitBy(responseData, _.isNil);
         }) ?? [],
-      noResults: totalResults === 0,
+      noResults,
       totalResults,
-      page: data?.page ?? page,
+      page: currentPage,
+      totalPages,
+      hasNextPage,
+      hasPreviousPage,
       filters: {}, // Hybrid semantic search doesn't return aggregations yet
       metadata: data?.metadata,
     };
