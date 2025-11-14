@@ -6,6 +6,8 @@ import qs from 'qs';
 import _ from 'lodash';
 import { Axios } from '../lib/axios';
 import { TaxonomyService } from './taxonomy-service';
+import { HybridSemanticSearchService } from './hybrid-semantic-search-service';
+import { QueryType, determineQueryType } from '../constants/query-types';
 
 export class SearchService {
   static endpoint = 'search';
@@ -19,12 +21,15 @@ export class SearchService {
       searchStore['query']?.trim(),
     );
 
+    const queryType = determineQueryType(
+      isTaxonomyCode,
+      searchStore['queryType']?.trim(),
+    );
+
     const urlParams = {
       query: searchStore['query']?.trim(),
       query_label: searchStore['queryLabel']?.trim(),
-      query_type: isTaxonomyCode
-        ? 'taxonomy'
-        : searchStore['queryType']?.trim(),
+      query_type: queryType,
       location: hasLocation ? searchStore['searchLocation']?.trim() : null,
       coords: hasLocation
         ? searchStore['searchCoordinates']?.join(',')?.trim()
@@ -45,6 +50,23 @@ export class SearchService {
     query: any,
     { locale, page, limit }: { locale: string; page: number; limit?: number },
   ) {
+    // Check if hybrid semantic search is enabled via environment variable
+    const useHybridSemanticSearch =
+      process.env.NEXT_PUBLIC_USE_HYBRID_SEMANTIC_SEARCH === 'true';
+
+    console.log('useHybridSemanticSearch:', useHybridSemanticSearch);
+    console.log('Search query type:', query.query_type);
+
+    // Use hybrid semantic search for text queries if enabled
+    if (useHybridSemanticSearch && query.query_type === QueryType.TEXT) {
+      return HybridSemanticSearchService.findResources(query, {
+        locale,
+        page,
+        limit,
+      });
+    }
+
+    // Continue with legacy search implementation
     if (isNaN(page)) {
       page = 1;
     }
@@ -86,7 +108,7 @@ export class SearchService {
           `${API_URL}/search?${qs.stringify({
             ...query,
             page,
-            query_type: 'more_like_this',
+            query_type: QueryType.MORE_LIKE_THIS,
             locale,
             limit,
           })}`,
