@@ -5,9 +5,11 @@ import { useAppConfig } from '../hooks/use-app-config';
 
 export function Image(props: React.ComponentProps<typeof NextImage>) {
   const appConfig = useAppConfig();
-  const src = props.src && `${appConfig.baseUrl}${props.src}`;
 
-  console.log('SRC:', src);
+  let src = props.src;
+  if (src && typeof src === 'string' && src.startsWith('/')) {
+    src = `${appConfig.baseUrl}${props.src}`;
+  }
 
   return <NextImage {...props} src={src} />;
 }
