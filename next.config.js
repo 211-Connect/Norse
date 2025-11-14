@@ -15,6 +15,9 @@ const nextConfig = {
       {
         hostname: 'cdn.c211.io',
       },
+      {
+        hostname: 'norse2-dev-media.sfo3.cdn.digitaloceanspaces.com',
+      },
     ],
   },
   trailingSlash: process.env.WITH_TRAILING_SLASHES === 'true',
