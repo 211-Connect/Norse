@@ -222,12 +222,14 @@ async function findExistingResourceDirectory(
 }
 
 export function createSuggestionItems(
-  suggestions: SuggestionData,
+  suggestions?: SuggestionData,
 ): ResourceDirectory['suggestions'] {
-  return suggestions.list.map(({ displayName, taxonomies }) => ({
-    value: displayName,
-    taxonomies,
-  }));
+  return (
+    suggestions?.list.map(({ displayName, taxonomies }) => ({
+      value: displayName,
+      taxonomies,
+    })) ?? []
+  );
 }
 
 export async function createDataProvidersItems(
@@ -263,11 +265,11 @@ export async function createTopicsItems(
   payload: Payload,
   tenant: Tenant,
   locale: TypedLocale,
-  topics: CategoryData,
   existingDirectory: ResourceDirectory | null,
+  topics?: CategoryData,
 ): Promise<NonNullable<ResourceDirectory['topics']>['list']> {
   const result = await Promise.all(
-    topics.list.map(async (topic, idx) => {
+    topics?.list.map(async (topic, idx) => {
       let image: TenantMedia | number | undefined | null;
       if (topic.image?.data?.attributes) {
         image = await uploadImage(payload, topic.image.data.attributes, {
@@ -291,7 +293,7 @@ export async function createTopicsItems(
           target: subcat.target,
         })),
       };
-    }),
+    }) ?? [],
   );
   return result as NonNullable<ResourceDirectory['topics']>['list'];
 }
@@ -340,8 +342,8 @@ async function createResourceDirectory(
   tenant: Tenant,
   locale: TypedLocale,
   appConfigId: StrapiAppConfig['id'],
-  suggestions: SuggestionData,
-  topics: CategoryData,
+  suggestions?: SuggestionData,
+  topics?: CategoryData,
 ): Promise<ResourceDirectory> {
   const id = tenant.id;
   const populatedAppConfig = await fetchAppConfig(appConfigId, locale);
@@ -447,8 +449,8 @@ async function createResourceDirectory(
         payload,
         tenant,
         locale,
-        topics,
         existingDirectory,
+        topics,
       ),
     },
     resource: {
@@ -598,7 +600,11 @@ async function processResourceDirectories(
   }
 }
 
-function createSuggestionsMap(suggestion: { data: StrapiSuggestion }) {
+function createSuggestionsMap(suggestion: { data: StrapiSuggestion | null }) {
+  if (!suggestion.data) {
+    return {};
+  }
+
   const base = suggestion.data.attributes;
   const localizationMap: Record<string, SuggestionData> = {};
 
@@ -612,7 +618,11 @@ function createSuggestionsMap(suggestion: { data: StrapiSuggestion }) {
   };
 }
 
-function createTopicsMap(category: { data: StrapiCategory }) {
+function createTopicsMap(category: { data: StrapiCategory | null }) {
+  if (!category.data) {
+    return {};
+  }
+
   const base = category.data.attributes;
   const localizationMap: Record<string, CategoryData> = {};
 
@@ -813,11 +823,6 @@ export async function addTenants(
   const validTenants = filterValidTenants(tenants).filter((tenant) =>
     validTetantsNames.includes(tenant.attributes.name),
   );
-
-  // const validTenants = filterValidTenants(tenants).filter(
-  //   (tenant) =>
-  //     tenant.attributes.name === 'Minnesota Aging and Disability Resources',
-  // );
 
   const processValidTenant = (tenant: StrapiTenant) =>
     processTenant(payload, tenant);
