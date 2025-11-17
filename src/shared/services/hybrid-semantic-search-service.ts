@@ -96,8 +96,6 @@ export class HybridSemanticSearchService {
       }
     }
 
-    console.log('HybridSemanticSearchService requestBody:', requestBody);
-
     let response;
     try {
       response = await Axios.post(
@@ -128,10 +126,6 @@ export class HybridSemanticSearchService {
     const hasNextPage = data?.has_next_page ?? false;
     const hasPreviousPage = data?.has_previous_page ?? false;
 
-    console.log('HybridSemanticSearchService total results:', totalResults);
-    console.log('HybridSemanticSearchService total pages:', totalPages);
-    console.log('HybridSemanticSearchService current page:', currentPage);
-
     // Check if no results
     const noResults = totalResults === 0;
 
@@ -159,6 +153,18 @@ export class HybridSemanticSearchService {
             mainAddress = addressParts.join(', ');
           }
 
+          // Extract and format location to match map expectations
+          let location = null;
+          const point = hit._source?.location?.point;
+          if (point) {
+            // Map expects { coordinates: [lon, lat] } format
+            if (point.lat !== undefined && point.lon !== undefined) {
+              location = {
+                coordinates: [point.lon, point.lat],
+              };
+            }
+          }
+
           const responseData = {
             _id: hit._id,
             id: hit?._source?.service_at_location_id ?? null,
@@ -170,7 +176,7 @@ export class HybridSemanticSearchService {
             phone: hit?._source?.phone ?? null,
             website: hit?._source?.url ?? null,
             address: mainAddress,
-            location: hit?._source?.location?.point ?? null,
+            location: location,
             taxonomies: hit?._source?.taxonomies ?? null,
             distance_from_user: hit?._source?.distance_from_user ?? null,
           };
