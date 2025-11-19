@@ -149,6 +149,7 @@ const config = buildConfig({
         region: process.env.MEDIA_S3_REGION,
         forcePathStyle: process.env.MEDIA_S3_FORCE_PATH_STYLE === 'true',
       },
+      acl: 'public-read',
     }),
   ],
   typescript: {
