@@ -16,7 +16,7 @@ export async function revalidateCache({
 
   const trustedDomains = Array.from(
     new Set<string>([
-      ...doc.trustedDomains.map(({ domain }) => domain),
+      ...(doc.trustedDomains?.map(({ domain }) => domain) ?? []),
       ...(previousDoc?.trustedDomains?.map(({ domain }) => domain) ?? []),
     ]),
   );

@@ -782,22 +782,6 @@ async function fetchTenants(): Promise<StrapiTenant[]> {
   }
 }
 
-function filterValidTenants(tenants: StrapiTenant[]): StrapiTenant[] {
-  return tenants.filter((tenant) => {
-    const hasTrustedDomains =
-      tenant.attributes.trustedDomains &&
-      tenant.attributes.trustedDomains.length > 0;
-
-    if (!hasTrustedDomains) {
-      console.warn(
-        `Seed: Skipping tenant ${tenant.attributes.name} (${tenant.attributes.tenantId}) due to missing trustedDomains. A resource directory will not be created.`,
-      );
-      return false;
-    }
-    return true;
-  });
-}
-
 export async function addTenants(
   payload: Payload,
   requestedTenants?: string[],
@@ -820,7 +804,7 @@ export async function addTenants(
     '988 Maryland',
   ];
 
-  const validTenants = filterValidTenants(tenants).filter((tenant) =>
+  const validTenants = tenants.filter((tenant) =>
     validTetantsNames.includes(tenant.attributes.name),
   );
 

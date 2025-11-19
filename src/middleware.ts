@@ -80,9 +80,7 @@ export async function middleware(request: NextRequest) {
 
     locales = tenant.enabledLocales;
     defaultLocale = tenant.defaultLocale;
-  } catch (err) {
-    console.log('ERROR', err);
-  }
+  } catch {}
 
   const url = request.nextUrl.clone();
   const { pathname } = url;

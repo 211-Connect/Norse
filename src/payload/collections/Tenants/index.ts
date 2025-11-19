@@ -50,7 +50,8 @@ export const Tenants: CollectionConfig = {
     {
       name: 'trustedDomains',
       type: 'array',
-      required: true,
+      required: false,
+      defaultValue: [],
       access: {
         update: hasPropertySettingsFieldAccess,
         create: hasPropertySettingsFieldAccess,

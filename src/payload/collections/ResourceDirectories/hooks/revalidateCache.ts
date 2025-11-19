@@ -17,7 +17,7 @@ export async function revalidateCache({
       const payload = await getPayload({ config });
       const tenant = await findByTenantId(payload, tenantId);
 
-      if (tenant) {
+      if (tenant && tenant.trustedDomains) {
         const cacheKeys = tenant.trustedDomains.map(({ domain }) =>
           createCacheKey(locale, domain),
         );

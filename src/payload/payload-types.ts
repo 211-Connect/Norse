@@ -97,6 +97,7 @@ export interface Config {
     | 'en'
     | 'es'
     | 'fi'
+    | 'fil'
     | 'fr'
     | 'hi'
     | 'hr'
@@ -177,10 +178,12 @@ export interface User {
 export interface Tenant {
   id: string;
   name: string;
-  trustedDomains: {
-    domain: string;
-    id?: string | null;
-  }[];
+  trustedDomains?:
+    | {
+        domain: string;
+        id?: string | null;
+      }[]
+    | null;
   enabledLocales: (
     | 'am'
     | 'ar'
@@ -188,6 +191,7 @@ export interface Tenant {
     | 'en'
     | 'es'
     | 'fi'
+    | 'fil'
     | 'fr'
     | 'hi'
     | 'hr'
@@ -211,6 +215,7 @@ export interface Tenant {
     | 'en'
     | 'es'
     | 'fi'
+    | 'fil'
     | 'fr'
     | 'hi'
     | 'hr'
