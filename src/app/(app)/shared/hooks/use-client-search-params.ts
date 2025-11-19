@@ -2,8 +2,7 @@
 
 import { useSearchParams } from 'next/navigation';
 import { useCallback, useMemo } from 'react';
-
-import { getSearchParamsObject } from '../lib/search-params';
+import qs from 'qs';
 
 export const useClientSearchParams = () => {
   const searchParams = useSearchParams();
@@ -22,8 +21,11 @@ export const useClientSearchParams = () => {
   );
 
   const searchParamsObject = useMemo(
-    () => (searchParams ? getSearchParamsObject(searchParams) : {}),
-    [searchParams],
+    () =>
+      stringifiedSearchParams
+        ? qs.parse(stringifiedSearchParams, { ignoreQueryPrefix: true })
+        : {},
+    [stringifiedSearchParams],
   );
 
   return {

@@ -31,7 +31,7 @@ const Filters = ({ filters, filterKeys }) => {
   const router = useRouter();
   const { stringifiedSearchParams } = useClientSearchParams();
 
-  const q: any = qs.parse(stringifiedSearchParams);
+  const q: any = qs.parse(stringifiedSearchParams, { ignoreQueryPrefix: true });
 
   const [filtersExpanded, setFiltersExpanded] = useState<{
     [key: string]: boolean;
