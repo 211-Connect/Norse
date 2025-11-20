@@ -31,5 +31,5 @@ export function determineQueryType(
     return QueryType.TAXONOMY;
   }
 
-  return QueryType.TEXT;
+  return undefined;
 }

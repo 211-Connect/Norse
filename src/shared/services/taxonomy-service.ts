@@ -20,6 +20,18 @@ export class TaxonomyService {
   }
 
   static async getTaxonomies(searchTerm: string, options: { locale: string }) {
+    // Check if hybrid semantic search is enabled via environment variable
+    const useHybridSemanticSearch =
+      process.env.NEXT_PUBLIC_USE_HYBRID_SEMANTIC_SEARCH === 'true';
+
+    let apiVersion = '1';
+    // Use hybrid semantic search for text queries if enabled
+    if (useHybridSemanticSearch) {
+      // Switch to API version 2 for hybrid semantic taxonomy suggestions
+      apiVersion = '2';
+      this.endpoint = 'suggestion';
+    }
+
     const res = await Axios.get(`${API_URL}/${this.endpoint}`, {
       params: {
         locale: options.locale,
@@ -27,7 +39,7 @@ export class TaxonomyService {
       },
       headers: {
         'accept-language': options.locale,
-        'x-api-version': '1',
+        'x-api-version': apiVersion,
       },
     });
 
