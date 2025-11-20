@@ -77,10 +77,12 @@ async function getAppConfigBase(
         showHomePageTour: false,
         showPrintButton: false,
         showResourceCategories: false,
+        showResourceAttribution: false,
         showResourceLastAssuredDate: false,
         showSearchAndResourceServiceName: false,
         showSuggestionListTaxonomyBadge: false,
         showUseMyLocationButtonOnDesktop: false,
+        useHybridSemanticSearch: false,
       },
       footer: {
         customMenu: [],
@@ -207,6 +209,8 @@ async function getAppConfigBase(
       showHomePageTour:
         resourceDirectory.featureFlags?.showHomePageTour ?? false,
       showPrintButton: resourceDirectory.featureFlags?.showPrintButton ?? false,
+      showResourceAttribution:
+        resourceDirectory.featureFlags?.showResourceAttribution ?? false,
       showResourceCategories:
         resourceDirectory.featureFlags?.showResourceCategories ?? false,
       showResourceLastAssuredDate:
@@ -220,6 +224,8 @@ async function getAppConfigBase(
       showUseMyLocationButtonOnDesktop:
         resourceDirectory.featureFlags?.showUseMyLocationButtonOnDesktop ??
         false,
+      useHybridSemanticSearch:
+        resourceDirectory.featureFlags?.useHybridSemanticSearch ?? false,
     },
     gtmContainerId:
       getTenant(resourceDirectory)?.common?.gtmContainerId ?? undefined,

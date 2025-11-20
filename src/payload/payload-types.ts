@@ -105,6 +105,7 @@ export interface Config {
     | 'ko'
     | 'ne'
     | 'pl'
+    | 'pt'
     | 'ru'
     | 'so'
     | 'sw'
@@ -199,6 +200,7 @@ export interface Tenant {
     | 'ko'
     | 'ne'
     | 'pl'
+    | 'pt'
     | 'ru'
     | 'so'
     | 'sw'
@@ -223,6 +225,7 @@ export interface Tenant {
     | 'ko'
     | 'ne'
     | 'pl'
+    | 'pt'
     | 'ru'
     | 'so'
     | 'sw'
@@ -450,14 +453,16 @@ export interface ResourceDirectory {
   featureFlags?: {
     hideCategoriesHeading?: boolean | null;
     hideDataProvidersHeading?: boolean | null;
+    showResourceAttribution?: boolean | null;
     showResourceCategories?: boolean | null;
+    showResourceLastAssuredDate?: boolean | null;
     showHomePageTour?: boolean | null;
     requireUserLocation?: boolean | null;
-    showResourceLastAssuredDate?: boolean | null;
     showSearchAndResourceServiceName?: boolean | null;
     showSuggestionListTaxonomyBadge?: boolean | null;
     showUseMyLocationButtonOnDesktop?: boolean | null;
     showPrintButton?: boolean | null;
+    useHybridSemanticSearch?: boolean | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -837,14 +842,16 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
     | {
         hideCategoriesHeading?: T;
         hideDataProvidersHeading?: T;
+        showResourceAttribution?: T;
         showResourceCategories?: T;
+        showResourceLastAssuredDate?: T;
         showHomePageTour?: T;
         requireUserLocation?: T;
-        showResourceLastAssuredDate?: T;
         showSearchAndResourceServiceName?: T;
         showSuggestionListTaxonomyBadge?: T;
         showUseMyLocationButtonOnDesktop?: T;
         showPrintButton?: T;
+        useHybridSemanticSearch?: T;
       };
   updatedAt?: T;
   createdAt?: T;

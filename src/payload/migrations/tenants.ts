@@ -394,6 +394,8 @@ async function createResourceDirectory(
       requireUserLocation: populatedAppConfig.featureFlags.requireUserLocation,
       showHomePageTour: populatedAppConfig.featureFlags.showHomePageTour,
       showPrintButton: populatedAppConfig.featureFlags.showPrintButton,
+      showResourceAttribution:
+        populatedAppConfig.featureFlags.showResourceAttribution,
       showResourceCategories:
         populatedAppConfig.featureFlags.showResourceCategories,
       showResourceLastAssuredDate:

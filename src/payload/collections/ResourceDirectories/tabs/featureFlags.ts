@@ -28,7 +28,25 @@ export const featureFlags: Tab = {
       },
     },
     {
+      name: 'showResourceAttribution',
+      type: 'checkbox',
+      defaultValue: false,
+      access: {
+        create: hasLayoutFieldAccess,
+        update: hasLayoutFieldAccess,
+      },
+    },
+    {
       name: 'showResourceCategories',
+      type: 'checkbox',
+      defaultValue: false,
+      access: {
+        create: hasLayoutFieldAccess,
+        update: hasLayoutFieldAccess,
+      },
+    },
+    {
+      name: 'showResourceLastAssuredDate',
       type: 'checkbox',
       defaultValue: false,
       access: {
@@ -52,15 +70,6 @@ export const featureFlags: Tab = {
       access: {
         create: hasSearchFieldAccess,
         update: hasSearchFieldAccess,
-      },
-    },
-    {
-      name: 'showResourceLastAssuredDate',
-      type: 'checkbox',
-      defaultValue: false,
-      access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
       },
     },
     {
@@ -92,6 +101,15 @@ export const featureFlags: Tab = {
     },
     {
       name: 'showPrintButton',
+      type: 'checkbox',
+      defaultValue: false,
+      access: {
+        create: hasFeatureFieldAccess,
+        update: hasFeatureFieldAccess,
+      },
+    },
+    {
+      name: 'useHybridSemanticSearch',
       type: 'checkbox',
       defaultValue: false,
       access: {

@@ -15,6 +15,7 @@ export function DescriptionSection({ resource }) {
 
   const showCategories = useFlag('showResourceCategories');
   const showLastAssured = useFlag('showResourceLastAssuredDate');
+  const showAttribution = useFlag('showResourceAttribution');
 
   const { categories, description, lastAssuredOn } = useMemo(() => {
     const { categories = [], description, lastAssuredOn } = resource ?? {};
@@ -52,6 +53,16 @@ export function DescriptionSection({ resource }) {
                     {appConfig.resource.lastAssuredText || t('last_assured')}
                   </h4>
                   <p>{lastAssuredOn || t('unknown')}</p>
+                </div>
+              )}
+              {showAttribution && resource.attribution != null && (
+                <div className="text-sm">
+                  <h4 className="mb-1 mt-4 font-semibold">
+                    {t('data_providers.provided_by', {
+                      ns: 'common',
+                    })}
+                  </h4>
+                  <p>{resource.attribution || t('unknown')}</p>
                 </div>
               )}
             </div>

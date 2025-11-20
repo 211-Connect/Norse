@@ -32,9 +32,11 @@ export type AppConfig = {
     showResourceLastAssuredDate: boolean;
     showPrintButton: boolean;
     showResourceCategories: boolean;
+    showResourceAttribution: boolean;
     showSearchAndResourceServiceName: boolean;
     showSuggestionListTaxonomyBadge: boolean;
     showUseMyLocationButtonOnDesktop: boolean;
+    useHybridSemanticSearch: boolean;
   };
   footer: {
     customMenu: Menu[];
