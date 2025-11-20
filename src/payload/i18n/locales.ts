@@ -15,6 +15,7 @@ export const locales = [
   'ko',
   'ne',
   'pl',
+  'pt',
   'ru',
   'so',
   'sw',
