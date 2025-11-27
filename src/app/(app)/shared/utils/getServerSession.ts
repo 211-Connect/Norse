@@ -13,7 +13,7 @@ const getSession = cache(async () => {
 
   const parsedHost = parseHost(host);
   const tenant = await findByHost(parsedHost);
-  const baseUrl = `${protocol}://${host}`;
+  const baseUrl = `${protocol}://${host}${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}`;
 
   const authOptions = createAuthOptions({
     baseUrl,
