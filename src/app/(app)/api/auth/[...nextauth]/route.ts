@@ -14,7 +14,7 @@ const handlerFunction = async (
 
   const parsedHost = parseHost(host ?? '');
 
-  const baseUrl = `${protocol}://${host}`;
+  const baseUrl = `${protocol}://${host}${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}`;
   const tenant = await findByHost(parsedHost);
 
   return NextAuth(
