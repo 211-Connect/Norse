@@ -134,6 +134,13 @@ const createAuthOptions = ({
       },
     }),
   ],
+  pages: {
+    error: `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/auth/error`,
+    newUser: `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/auth/new-user`,
+    signIn: `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/auth/sign-in`,
+    signOut: `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/auth/sign-out`,
+    verifyRequest: `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/auth/verify-request`,
+  },
   secret,
   ...(isDebug && {
     debug: true,
