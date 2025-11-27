@@ -7,6 +7,7 @@ import { postgresAdapter } from '@payloadcms/db-postgres';
 import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant';
 import { Config, Tenant } from './payload-types';
 import { s3Storage } from '@payloadcms/storage-s3';
+import { nodemailerAdapter } from '@payloadcms/email-nodemailer';
 
 import { findByHost } from './collections/ResourceDirectories/services/findByHost';
 import { Users } from './collections/Users';
@@ -18,6 +19,7 @@ import { getUserTenantIDs } from './utilities/getUserTenantIDs';
 
 import { seedEndpoint, addLocalAdminEndpoint } from './migrations';
 import { isSuperAdmin, isSupport } from './collections/Users/access/roles';
+import { sendGridTransport } from './utilities/sendgridAdapter';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -37,6 +39,13 @@ const config = buildConfig({
     user: Users.slug,
   },
   secret: process.env.PAYLOAD_SECRET as string,
+  email: nodemailerAdapter({
+    defaultFromAddress: 'support@connect211.com',
+    defaultFromName: 'Connect 211 Support Team',
+    transportOptions: sendGridTransport({
+      apiKey: process.env.SENDGRID_API_KEY || '',
+    }),
+  }),
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URI,
