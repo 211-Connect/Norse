@@ -7,6 +7,8 @@ import { API_URL, FAVORITES_LIST_ENDPOINT } from '../../lib/constants';
 export const searchFavoriteLists = cache(
   async (searchText: string, tenantId?: string) => {
     try {
+      console.log(searchText, tenantId);
+      console.log(createAxiosWithAuth({ tenantId }));
       const { data } = await createAxiosWithAuth({ tenantId }).get(
         `${API_URL}/${FAVORITES_LIST_ENDPOINT}/search`,
         {
