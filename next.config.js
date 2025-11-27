@@ -5,6 +5,9 @@ import { withPayload } from '@payloadcms/next/withPayload';
  **/
 const nextConfig = {
   basePath: process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || undefined,
+  env: {
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+  },
   images: {
     unoptimized: process.env.NODE_ENV === 'development',
     remotePatterns: [
