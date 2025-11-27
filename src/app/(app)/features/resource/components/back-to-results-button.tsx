@@ -29,7 +29,6 @@ export function BackToResultsButton() {
       disabled={backUrl === 'loading'}
       onClick={() => {
         if (backUrl === 'loading') return;
-        console.log(backUrl);
         router.push(backUrl);
       }}
     >

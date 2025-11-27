@@ -8,8 +8,6 @@ export const searchFavoriteLists = async (
   tenantId?: string,
 ) => {
   try {
-    console.log(searchText, tenantId);
-    console.log(createAxiosWithAuth({ tenantId }));
     const { data } = await createAxiosWithAuth({ tenantId }).get(
       `${API_URL}/${FAVORITES_LIST_ENDPOINT}/search`,
       {
