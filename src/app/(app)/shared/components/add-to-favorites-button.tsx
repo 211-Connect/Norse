@@ -101,12 +101,9 @@ export function AddToFavoritesButton({
     };
   };
 
-  useEffect(() => {
-    refreshFavoritesList();
-  }, [refreshFavoritesList]);
-
   const handleClick = () => {
     if (session.status === 'authenticated') {
+      refreshFavoritesList();
       setOpen(true);
     } else {
       setDialog((prev) => ({
