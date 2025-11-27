@@ -18,6 +18,7 @@ import { getUserTenantIDs } from './utilities/getUserTenantIDs';
 
 import { seedEndpoint, addLocalAdminEndpoint } from './migrations';
 import { isSuperAdmin, isSupport } from './collections/Users/access/roles';
+import { mailer } from './utilities/getEmailAdapter';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -37,6 +38,7 @@ const config = buildConfig({
     user: Users.slug,
   },
   secret: process.env.PAYLOAD_SECRET as string,
+  email: mailer,
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URI,
