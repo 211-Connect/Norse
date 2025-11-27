@@ -12,7 +12,7 @@ const queryClient = new QueryClient();
 export function Providers({ appConfig, children, session }) {
   return (
     <SessionProvider
-      basePath={`${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH}/api/auth`}
+      basePath={`${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/api/auth`}
       session={session}
     >
       <PageView />
