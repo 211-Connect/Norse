@@ -112,7 +112,7 @@ const createAuthOptions = ({
     KeycloakProvider({
       authorization: {
         params: {
-          redirect_uri: `${baseUrl}/api/auth/callback/keycloak`,
+          redirect_uri: `${baseUrl}${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/api/auth/callback/keycloak`,
         },
       },
       clientId: process.env?.KEYCLOAK_CLIENT_ID ?? '',
@@ -156,7 +156,7 @@ const getSession = (
   host: string,
   authConfig?: Tenant['auth'],
 ) => {
-  const baseUrl = `${protocol}://${host}`;
+  const baseUrl = `${protocol}://${host}${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}`;
 
   const authOptions = createAuthOptions({
     baseUrl,

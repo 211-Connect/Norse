@@ -4,7 +4,7 @@ import { withPayload } from '@payloadcms/next/withPayload';
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
-  basePath: process.env.CUSTOM_BASE_PATH || undefined,
+  basePath: process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || undefined,
   images: {
     unoptimized: process.env.NODE_ENV === 'development',
     remotePatterns: [

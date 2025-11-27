@@ -9,7 +9,7 @@ declare global {
     interface ProcessEnv {
       NEXT_PUBLIC_API_URL?: string;
       WITH_TRAILING_SLASHES?: string;
-      CUSTOM_BASE_PATH?: string;
+      NEXT_PUBLIC_CUSTOM_BASE_PATH?: string;
 
       // Map environment variables
       NEXT_PUBLIC_MAPBOX_API_KEY?: string;

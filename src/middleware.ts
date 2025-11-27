@@ -55,7 +55,7 @@ function getApiRoute(request: NextRequest, target: string) {
     process.env.NODE_ENV !== 'development'
       ? request.headers.get('host')
       : 'localhost:3000';
-  return `${proto}://${host}${process.env.CUSTOM_BASE_PATH || ''}/api/${target}`;
+  return `${proto}://${host}${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/api/${target}`;
 }
 
 // Add a session_id to the cookies of the user for tracking purposes
@@ -106,7 +106,7 @@ export async function middleware(request: NextRequest) {
   };
   let response = i18nRouter(request, {
     ...i18nConfig,
-    basePath: process.env.CUSTOM_BASE_PATH || undefined,
+    basePath: process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || undefined,
   });
   if (!request.cookies.has(SESSION_ID)) {
     response.cookies.set({

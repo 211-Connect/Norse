@@ -193,7 +193,7 @@ async function getAppConfigBase(
       number: resourceDirectory.brand.phoneNumber ?? undefined,
       feedbackUrl: resourceDirectory.brand.feedbackUrl ?? undefined,
     },
-    customBasePath: process.env.CUSTOM_BASE_PATH || '',
+    customBasePath: process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || '',
     errorTranslationData: {
       errorNamespaces,
       resources,
