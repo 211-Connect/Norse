@@ -43,25 +43,25 @@ export function DescriptionSection({ resource }) {
         <CardContent className="flex flex-col gap-8">
           {description && (
             <div>
-              <h4 className="mb-4 font-medium">{t('description')}</h4>
+              <h2 className="mb-4 font-medium">{t('description')}</h2>
               <p className="whitespace-break-spaces">
                 {parseHtml(resource.description)}
               </p>
               {showLastAssured && (
                 <div className="text-sm">
-                  <h4 className="mb-1 mt-4 font-semibold">
+                  <h2 className="mb-1 mt-4 font-semibold">
                     {appConfig.resource.lastAssuredText || t('last_assured')}
-                  </h4>
+                  </h2>
                   <p>{lastAssuredOn || t('unknown')}</p>
                 </div>
               )}
               {showAttribution && resource.attribution != null && (
                 <div className="text-sm">
-                  <h4 className="mb-1 mt-4 font-semibold">
+                  <h2 className="mb-1 mt-4 font-semibold">
                     {t('data_providers.provided_by', {
                       ns: 'common',
                     })}
-                  </h4>
+                  </h2>
                   <p>{resource.attribution || t('unknown')}</p>
                 </div>
               )}
@@ -69,7 +69,7 @@ export function DescriptionSection({ resource }) {
           )}
           {categories?.length > 0 && (
             <div>
-              <h4 className="mb-4 font-medium">{t('categories_title')}</h4>
+              <h2 className="mb-4 font-medium">{t('categories_title')}</h2>
               <div className="flex flex-wrap gap-1">
                 {categories.map((el: any) => {
                   return (

@@ -24,7 +24,9 @@ export function Overview({ resource }) {
         <Card className="print:border-none print:shadow-none">
           <CardHeader>
             <Badges className="mb-3" items={[]} /> {/* TODO: Add Waiver */}
-            <CardTitle>{resource.name}</CardTitle>
+            <h1 className="mb-3 text-xl font-semibold leading-none tracking-tight">
+              {resource.name}
+            </h1>
             {showServiceName && (
               <CardDescription className="mb-3">
                 {resource.serviceName}

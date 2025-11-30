@@ -7,13 +7,22 @@ export function LabeledElement({
   title,
   children,
 }) {
+  const id = title.replace(/\s+/g, '-').toLowerCase();
+
   return (
     <div className="flex flex-col gap-1">
       <div className="flex items-center gap-[6px]">
         <Icon className={cn('size-4', IconCustomClasses)} />
-        <Label>{title}</Label>
+        <p
+          className="text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          id={id}
+        >
+          {title}
+        </p>
       </div>
-      <div className="ml-[22px] text-sm">{children}</div>
+      <div className="ml-[22px] text-sm" aria-labelledby={id}>
+        {children}
+      </div>
     </div>
   );
 }
