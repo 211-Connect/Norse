@@ -2,7 +2,7 @@
 
 import { signOut, useSession } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
-import { Fragment, useMemo } from 'react';
+import { Fragment, useCallback, useMemo } from 'react';
 import { useSetAtom } from 'jotai';
 import {
   AlignJustifyIcon,
@@ -63,6 +63,10 @@ export function Header() {
       newLayoutEnabled,
     ],
   );
+
+  const handleLogoClick = useCallback(() => {
+    router.push(appConfig.header?.customHomeUrl || '/');
+  }, [appConfig.header?.customHomeUrl, router]);
 
   const SITEMAP = useMemo(
     () => [
@@ -241,17 +245,17 @@ export function Header() {
               : 'max-h-full w-full max-w-96',
           )}
         >
-          <Link
-            href={appConfig.header?.customHomeUrl || '/'}
+          <div
+            className="cursor-pointer"
             aria-label={t('header.home') as string}
-            className="max-h-full"
+            onClick={handleLogoClick}
           >
             <img
               src={logoUrl}
               alt={t('header.home') as string}
               className="max-h-full w-auto"
             />
-          </Link>
+          </div>
         </div>
 
         <nav className="hidden w-full justify-end lg:flex">

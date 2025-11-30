@@ -9,6 +9,7 @@ export interface LinkProps extends NextLinkProps {
   children?: React.ReactNode;
   className?: string;
   target?: string;
+  tabIndex?: number;
 }
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
   ({ children, ...props }, ref) => {
