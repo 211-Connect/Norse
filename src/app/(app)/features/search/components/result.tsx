@@ -17,7 +17,7 @@ import {
 } from '@/app/(app)/shared/lib/utils';
 import { ResultType } from '@/app/(app)/shared/store/results';
 import { LinkIcon, MapPin, Phone, Pin } from 'lucide-react';
-import { Badge } from '@/app/(app)/shared/components/ui/badge';
+import { Badge, badgeVariants } from '@/app/(app)/shared/components/ui/badge';
 import { useAtomValue } from 'jotai';
 import {
   searchCoordinatesAtom,
@@ -179,11 +179,21 @@ export function Result({ data }: ResultProps) {
               </p>
 
               <div className="flex flex-col items-start gap-3 print:hidden">
-                {taxonomies.map((tax) => (
-                  <Badge key={tax.name} variant="default">
-                    {tax.name}
-                  </Badge>
-                ))}
+                {taxonomies.map((el) => {
+                  return (
+                    <Link
+                      key={el?.code}
+                      className={cn(badgeVariants(), 'hover:underline')}
+                      href={`/search?query=${encodeURIComponent(
+                        el?.code,
+                      )}&query_label=${encodeURIComponent(
+                        el?.name,
+                      )}&query_type=taxonomy`}
+                    >
+                      {el?.name}
+                    </Link>
+                  );
+                })}
               </div>
             </>
           )}
