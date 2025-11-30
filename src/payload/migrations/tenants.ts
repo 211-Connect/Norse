@@ -283,7 +283,6 @@ export async function createTopicsItems(
       return {
         name: topic.name,
         image,
-        imageBorderRadius: topic.borderRadius,
         href: topic.href,
         subtopics: topic.subcategories.map((subcat) => ({
           name: subcat.name,
