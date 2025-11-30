@@ -53,6 +53,12 @@ export const topics: Tab = {
         create: hasResourceNavigationFieldAccess,
         update: hasResourceNavigationFieldAccess,
       },
+      admin: {
+        components: {
+          RowLabel:
+            '@/payload/collections/ResourceDirectories/components/TopicsRowLabel',
+        },
+      },
       fields: [
         {
           name: 'name',
@@ -86,6 +92,12 @@ export const topics: Tab = {
         {
           name: 'subtopics',
           type: 'array',
+          admin: {
+            components: {
+              RowLabel:
+                '@/payload/collections/ResourceDirectories/components/TopicsRowLabel',
+            },
+          },
           fields: [
             {
               type: 'row',

@@ -13,6 +13,12 @@ export const suggestions: Tab = {
       type: 'array',
       required: true,
       localized: true,
+      admin: {
+        components: {
+          RowLabel:
+            '@/payload/collections/ResourceDirectories/components/SuggestionsRowLabel',
+        },
+      },
       fields: [
         {
           type: 'row',
