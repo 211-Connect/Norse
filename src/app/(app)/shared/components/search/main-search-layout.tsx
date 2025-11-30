@@ -54,6 +54,7 @@ export function MainSearchLayout({
       <div className="flex w-full flex-col items-start gap-2">
         <div className={cn('relative w-full', className)}>
           <Input
+            aria-label="open-search-dialog"
             onClick={() => openSearchDialog('search')}
             onKeyDown={handleKeyDown}
             readOnly
