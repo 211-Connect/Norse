@@ -3,6 +3,7 @@ import {
   USER_PREF_DISTANCE,
   USER_PREF_LOCATION,
 } from '@/app/(app)/shared/lib/constants';
+import { validateCoordsString } from '@/app/(app)/shared/lib/validators';
 import { NextRequest, NextResponse } from 'next/server';
 
 export function searchLinkCorrectionMiddleware(request: NextRequest) {
@@ -24,9 +25,21 @@ export function searchLinkCorrectionMiddleware(request: NextRequest) {
       url.searchParams.set('location', prefLocation);
       anyChanges = true;
     }
-    if (prefCoords && !alreadyHasCoords) {
-      url.searchParams.set('coords', prefCoords);
-      anyChanges = true;
+
+    if (alreadyHasCoords) {
+      const hasValidCoords = validateCoordsString(
+        url.searchParams.get('coords'),
+      );
+      if (!hasValidCoords) {
+        url.searchParams.delete('coords');
+        anyChanges = true;
+      }
+    } else if (prefCoords) {
+      const hasValidCoords = validateCoordsString(prefCoords);
+      if (hasValidCoords) {
+        url.searchParams.set('coords', prefCoords);
+        anyChanges = true;
+      }
     }
     if (prefDistance && !alreadyHasDistance) {
       url.searchParams.set('distance', prefDistance);

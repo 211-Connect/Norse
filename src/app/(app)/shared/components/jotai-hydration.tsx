@@ -10,7 +10,7 @@ import {
 import { useHydrateAndSyncAtoms } from '@/app/(app)/shared/hooks/use-hydrate-and-sync-atoms';
 import { searchAtom } from '@/app/(app)/shared/store/search';
 import { useAppConfig } from '../hooks/use-app-config';
-import { setCookie } from 'cookies-next';
+import { setCookie, deleteCookie } from 'cookies-next';
 import {
   USER_PREF_COORDS,
   USER_PREF_DISTANCE,
@@ -21,19 +21,26 @@ import {
   favoriteListWithFavoritesAtom,
 } from '../store/favorites';
 import { deviceAtom } from '../store/device';
+import { validateCoordsString } from '../lib/validators';
 
 function getCoordinates(pageProps, cookies) {
   if (pageProps.coords) {
     const coords = decodeURIComponent(pageProps.coords)
       .split(',')
-      .map((number) => parseFloat(number))
-      .filter((number) => !isNaN(number));
+      .map((number) => Number.parseFloat(number))
+      .filter((number) => !Number.isNaN(number));
     setCookie(USER_PREF_COORDS, coords.join(','), { path: '/' });
     return coords;
   } else if (cookies[USER_PREF_COORDS]) {
+    const hasValidCoords = validateCoordsString(cookies[USER_PREF_COORDS]);
+    if (!hasValidCoords) {
+      deleteCookie(USER_PREF_COORDS, { path: '/' });
+      return [];
+    }
+
     return cookies[USER_PREF_COORDS].split(',')
-      .map((number) => parseFloat(number))
-      .filter((number) => !isNaN(number));
+      .map((number) => Number.parseFloat(number))
+      .filter((number) => !Number.isNaN(number));
   }
 
   return [];
