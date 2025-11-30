@@ -100,8 +100,13 @@ const Filters = ({ filters, filterKeys }) => {
                     key={b.key}
                     className="flex items-center justify-between"
                   >
-                    <label className="flex items-center gap-2 text-sm">
+                    <label
+                      className="flex items-center gap-2 text-sm"
+                      htmlFor={b.key}
+                    >
                       <Checkbox
+                        aria-label={b.key}
+                        id={b.key}
                         checked={q.filters?.[key]?.includes(b.key) ?? false}
                         onCheckedChange={(checked) => {
                           const q: any =
