@@ -139,10 +139,10 @@ export type AppConfig = {
   smsProvider?: 'Twilio';
   topics: {
     iconSize: 'small' | 'medium';
+    imageBorderRadius?: number;
     list: {
       name: string;
       image?: string;
-      imageBorderRadius?: number;
       href?: string;
       target?: '_self' | '_blank';
       subtopics: {

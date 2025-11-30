@@ -87,7 +87,11 @@ const Category = ({
 
   return (
     <Link href={href || '/'} className="group hover:underline" target={target}>
-      <Card>
+      <Card
+        style={{
+          borderRadius: imageBorderRadius ?? undefined,
+        }}
+      >
         <CardContent>
           {image && (
             <div className="flex flex-col items-center justify-center pb-8 pt-8">
@@ -128,6 +132,7 @@ export function CategoriesSection({
   if (topics.length === 0) return null;
 
   const iconSize = appConfig.topics.iconSize;
+  const imageBorderRadius = appConfig.topics.imageBorderRadius;
 
   return (
     <div className={cn('categories container mx-auto', className)}>
@@ -151,7 +156,12 @@ export function CategoriesSection({
 
       <div className="grid grid-cols-1 justify-center gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {topics.map((el: any) => (
-          <Category key={el.name} iconSize={iconSize} {...el} />
+          <Category
+            key={el.name}
+            iconSize={iconSize}
+            imageBorderRadius={imageBorderRadius}
+            {...el}
+          />
         ))}
       </div>
     </div>

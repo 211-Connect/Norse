@@ -38,6 +38,14 @@ export const topics: Tab = {
       },
     },
     {
+      name: 'imageBorderRadius',
+      type: 'number',
+      access: {
+        create: hasResourceNavigationFieldAccess,
+        update: hasResourceNavigationFieldAccess,
+      },
+    },
+    {
       name: 'list',
       type: 'array',
       localized: true,
@@ -58,11 +66,6 @@ export const topics: Tab = {
               name: 'image',
               type: 'upload',
               relationTo: 'tenant-media',
-            },
-            {
-              name: 'imageBorderRadius',
-              type: 'number',
-              defaultValue: 12,
             },
           ],
         },

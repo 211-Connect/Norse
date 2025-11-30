@@ -370,11 +370,11 @@ export interface ResourceDirectory {
     backText?: string | null;
     customHeading?: string | null;
     iconSize?: ('small' | 'medium') | null;
+    imageBorderRadius?: number | null;
     list?:
       | {
           name: string;
           image?: (number | null) | TenantMedia;
-          imageBorderRadius?: number | null;
           href?: string | null;
           target?: ('_self' | '_blank') | null;
           subtopics?:
@@ -742,12 +742,12 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         backText?: T;
         customHeading?: T;
         iconSize?: T;
+        imageBorderRadius?: T;
         list?:
           | T
           | {
               name?: T;
               image?: T;
-              imageBorderRadius?: T;
               href?: T;
               target?: T;
               subtopics?:

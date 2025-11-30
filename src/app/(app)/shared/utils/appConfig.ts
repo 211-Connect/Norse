@@ -173,7 +173,6 @@ async function getAppConfigBase(
   const heroUrl =
     newLayout?.heroUrl ?? getMediaUrl(resourceDirectory.brand.hero);
 
-  resourceDirectory.suggestions;
   return {
     baseUrl,
     brand: {
@@ -294,13 +293,14 @@ async function getAppConfigBase(
       backText: resourceDirectory.topics?.backText ?? undefined,
       customHeading: resourceDirectory.topics?.customHeading ?? undefined,
       iconSize: resourceDirectory.topics?.iconSize ?? 'small',
+      imageBorderRadius:
+        resourceDirectory.topics?.imageBorderRadius ?? undefined,
       list: (resourceDirectory.topics?.list ?? []).map(
-        ({ name, href, id, image, imageBorderRadius, subtopics, target }) => ({
+        ({ name, href, id, image, subtopics, target }) => ({
           name,
           href: href ?? undefined,
           id: id ?? undefined,
           image: getMediaUrl(image),
-          imageBorderRadius: imageBorderRadius ?? undefined,
           subtopics:
             subtopics?.map(({ name, query, queryType, href, target }) => ({
               name,
