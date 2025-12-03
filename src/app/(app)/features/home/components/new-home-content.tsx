@@ -95,10 +95,10 @@ export function NewHomeContent() {
       <div className="flex min-h-full flex-row px-0">
         <div className="flex flex-col items-start justify-around gap-16 py-6 pl-0 lg:w-[430px] lg:pr-6">
           <div className="w-full">
-            <h3 className="mb-2 whitespace-break-spaces text-2xl font-medium text-primary">
+            <h2 className="mb-2 whitespace-break-spaces text-2xl font-medium text-primary">
               {appConfig.search.texts?.title ||
                 t('search.hero_title', { ns: 'common' })}
-            </h3>
+            </h2>
             <MainSearchLayout />
           </div>
           <div>
