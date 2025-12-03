@@ -87,15 +87,16 @@ const Category = ({
 
   return (
     <Link href={href || '/'} className="group hover:underline" target={target}>
-      <Card
-        style={{
-          borderRadius: imageBorderRadius ?? undefined,
-        }}
-      >
+      <Card>
         <CardContent>
           {image && (
             <div className="flex flex-col items-center justify-center pb-8 pt-8">
-              <div className="relative mb-4 mt-4 h-20 w-20 overflow-hidden rounded-full">
+              <div
+                className="relative mb-4 mt-4 h-20 w-20 overflow-hidden"
+                style={{
+                  borderRadius: imageBorderRadius ?? undefined,
+                }}
+              >
                 <Image
                   src={image}
                   alt=""
