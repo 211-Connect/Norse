@@ -153,6 +153,7 @@ export default async function SearchPage({ params, searchParams }) {
         totalResults,
       }}
     >
+      <h1 className="sr-only">View Search Results</h1>
       <ResultsEvents results={results} totalResults={totalResults} />
       <div className="flex h-full w-full flex-col md:flex-row">
         <FilterPanel />

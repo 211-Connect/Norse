@@ -62,6 +62,7 @@ export default async function HomePage({ params }) {
       jotaiData={{ device }}
       translationData={{ i18nNamespaces, locale, resources }}
     >
+      <h1 className="sr-only">Search by Keyword or Topic</h1>
       <TourProvider>
         {appConfig?.newLayout?.enabled ? (
           <NewHomeContent />
