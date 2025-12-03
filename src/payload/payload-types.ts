@@ -462,6 +462,7 @@ export interface ResourceDirectory {
     showSuggestionListTaxonomyBadge?: boolean | null;
     showUseMyLocationButtonOnDesktop?: boolean | null;
     showPrintButton?: boolean | null;
+    turnResourceCardTaxonomiesIntoLinks?: boolean | null;
     useHybridSemanticSearch?: boolean | null;
   };
   updatedAt: string;
@@ -851,6 +852,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         showSuggestionListTaxonomyBadge?: T;
         showUseMyLocationButtonOnDesktop?: T;
         showPrintButton?: T;
+        turnResourceCardTaxonomiesIntoLinks?: T;
         useHybridSemanticSearch?: T;
       };
   updatedAt?: T;

@@ -1,4 +1,4 @@
-import { badgeVariants } from '@/app/(app)/shared/components/ui/badge';
+import { Badge, badgeVariants } from '@/app/(app)/shared/components/ui/badge';
 import { Card, CardContent } from '@/app/(app)/shared/components/ui/card';
 import { Separator } from '@/app/(app)/shared/components/ui/separator';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
@@ -16,6 +16,9 @@ export function DescriptionSection({ resource }) {
   const showCategories = useFlag('showResourceCategories');
   const showLastAssured = useFlag('showResourceLastAssuredDate');
   const showAttribution = useFlag('showResourceAttribution');
+  const turnResourceCardTaxonomiesIntoLinks = useFlag(
+    'turnResourceCardTaxonomiesIntoLinks',
+  );
 
   const { categories, description, lastAssuredOn } = useMemo(() => {
     const { categories = [], description, lastAssuredOn } = resource ?? {};
@@ -72,7 +75,7 @@ export function DescriptionSection({ resource }) {
               <h2 className="mb-4 font-medium">{t('categories_title')}</h2>
               <div className="flex flex-wrap gap-1">
                 {categories.map((el: any) => {
-                  return (
+                  return turnResourceCardTaxonomiesIntoLinks ? (
                     <Link
                       key={el?.code}
                       className={cn(badgeVariants(), 'hover:underline')}
@@ -84,6 +87,10 @@ export function DescriptionSection({ resource }) {
                     >
                       {el?.name}
                     </Link>
+                  ) : (
+                    <Badge key={el.name} variant="default">
+                      {el.name}
+                    </Badge>
                   );
                 })}
               </div>

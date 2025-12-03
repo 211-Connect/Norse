@@ -36,6 +36,7 @@ export type AppConfig = {
     showSearchAndResourceServiceName: boolean;
     showSuggestionListTaxonomyBadge: boolean;
     showUseMyLocationButtonOnDesktop: boolean;
+    turnResourceCardTaxonomiesIntoLinks: boolean;
     useHybridSemanticSearch: boolean;
   };
   footer: {

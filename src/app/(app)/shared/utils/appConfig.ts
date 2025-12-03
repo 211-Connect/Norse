@@ -82,6 +82,7 @@ async function getAppConfigBase(
         showSearchAndResourceServiceName: false,
         showSuggestionListTaxonomyBadge: false,
         showUseMyLocationButtonOnDesktop: false,
+        turnResourceCardTaxonomiesIntoLinks: true,
         useHybridSemanticSearch: false,
       },
       footer: {
@@ -223,6 +224,9 @@ async function getAppConfigBase(
       showUseMyLocationButtonOnDesktop:
         resourceDirectory.featureFlags?.showUseMyLocationButtonOnDesktop ??
         false,
+      turnResourceCardTaxonomiesIntoLinks:
+        resourceDirectory.featureFlags?.turnResourceCardTaxonomiesIntoLinks ??
+        true,
       useHybridSemanticSearch:
         resourceDirectory.featureFlags?.useHybridSemanticSearch ?? false,
     },

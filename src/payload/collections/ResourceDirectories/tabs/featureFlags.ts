@@ -109,6 +109,15 @@ export const featureFlags: Tab = {
       },
     },
     {
+      name: 'turnResourceCardTaxonomiesIntoLinks',
+      type: 'checkbox',
+      defaultValue: true,
+      access: {
+        create: hasFeatureFieldAccess,
+        update: hasFeatureFieldAccess,
+      },
+    },
+    {
       name: 'useHybridSemanticSearch',
       type: 'checkbox',
       defaultValue: false,

@@ -49,6 +49,9 @@ export function Result({ data }: ResultProps) {
   const searchCoords = useAtomValue(searchCoordinatesAtom);
 
   const showServiceName = useFlag('showSearchAndResourceServiceName');
+  const turnResourceCardTaxonomiesIntoLinks = useFlag(
+    'turnResourceCardTaxonomiesIntoLinks',
+  );
 
   const distance =
     data?.location?.coordinates && (coords?.length ?? 0) === 2
@@ -180,7 +183,7 @@ export function Result({ data }: ResultProps) {
 
               <div className="flex flex-col items-start gap-3 print:hidden">
                 {taxonomies.map((el) => {
-                  return (
+                  return turnResourceCardTaxonomiesIntoLinks ? (
                     <Link
                       key={el?.code}
                       className={cn(badgeVariants(), 'hover:underline')}
@@ -192,6 +195,10 @@ export function Result({ data }: ResultProps) {
                     >
                       {el?.name}
                     </Link>
+                  ) : (
+                    <Badge key={el.name} variant="default">
+                      {el.name}
+                    </Badge>
                   );
                 })}
               </div>
