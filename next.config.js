@@ -4,6 +4,19 @@ import { withPayload } from '@payloadcms/next/withPayload';
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload',
+          },
+        ],
+      },
+    ];
+  },
   basePath: process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || undefined,
   env: {
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
