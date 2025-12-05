@@ -5,6 +5,7 @@ import { updateAndDeleteAccess } from './access/updateAndDelete';
 import { hasResourceDirectory } from './validators/hasResourceDirectory';
 import { revalidateCache } from './hooks/revalidateCache';
 import {
+  isSuperAdmin,
   isSuperAdminAccess,
   isSuperAdminFieldAccess,
   isSuperAdminOrSupportFieldAccess,
@@ -34,7 +35,9 @@ export const Tenants: CollectionConfig = {
       type: 'text',
       required: true,
       admin: {
-        readOnly: true,
+        condition: (_, __, { user }) => {
+          return isSuperAdmin(user);
+        },
       },
     },
     {

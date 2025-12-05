@@ -177,7 +177,7 @@ export interface User {
  * via the `definition` "tenants".
  */
 export interface Tenant {
-  id: string;
+  id?: string | null;
   name: string;
   trustedDomains?:
     | {
