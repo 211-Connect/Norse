@@ -232,7 +232,10 @@ export function Header() {
                       className="w-full justify-start px-[10px] text-primary hover:text-primary"
                       variant="ghost"
                       onClick={() => {
-                        signOut({ redirect: true, callbackUrl: '/' });
+                        signOut({
+                          redirect: true,
+                          callbackUrl: process.env.NEXT_PUBLIC_BASE_PATH || '/',
+                        });
                       }}
                     >
                       {t('header.log_out')}
