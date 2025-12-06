@@ -34,10 +34,10 @@ export const Tenants: CollectionConfig = {
       name: 'id',
       type: 'text',
       required: true,
-      admin: {
-        condition: (_, __, { user }) => {
-          return isSuperAdmin(user);
-        },
+      unique: true,
+      access: {
+        update: isSuperAdminFieldAccess,
+        create: isSuperAdminFieldAccess,
       },
     },
     {
