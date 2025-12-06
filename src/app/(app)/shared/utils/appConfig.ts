@@ -30,7 +30,7 @@ function getTenantId(resourceDirectory: ResourceDirectory): string | undefined {
     return resourceDirectory.tenant;
   }
 
-  return resourceDirectory.tenant?.id;
+  return resourceDirectory.tenant?.id ?? undefined;
 }
 
 function getTenantI18n(resourceDirectory: ResourceDirectory): {
