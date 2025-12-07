@@ -1,8 +1,8 @@
 import { Card, CardContent } from '@/app/(app)/shared/components/ui/card';
 import { Badges } from '@/app/(app)/shared/components/badges';
 import { ChevronRight, MapPin } from 'lucide-react';
-import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
+import { Link } from '@/app/(app)/shared/components/link';
 
 interface MapPopupProps {
   id: string;

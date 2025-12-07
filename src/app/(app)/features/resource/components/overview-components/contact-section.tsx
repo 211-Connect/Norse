@@ -2,8 +2,8 @@
 
 import { useMemo } from 'react';
 import { LinkIcon, Send } from 'lucide-react';
-import Link from 'next/link';
 
+import { Link } from '@/app/(app)/shared/components/link';
 import { PhoneNumbersSection } from './phone-number-section';
 import { Separator } from './separator';
 

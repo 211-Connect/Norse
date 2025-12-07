@@ -1,5 +1,5 @@
+import { Link } from '@/app/(app)/shared/components/link';
 import { Phone, Printer } from 'lucide-react';
-import Link from 'next/link';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 

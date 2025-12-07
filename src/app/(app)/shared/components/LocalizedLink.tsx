@@ -27,5 +27,5 @@ export const LocalizedLink = (props: LinkProps) => {
     href = `/${currentLanguage}${href}`;
   }
 
-  return <Link {...props} href={href} />;
+  return <Link {...props} href={href} rel="noopener noreferrer" />;
 };
