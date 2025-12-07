@@ -1,11 +1,11 @@
-import type { CollectionConfig } from "payload";
-import { setTenantIdPrefix } from "./hooks/setTenantIdPrefix";
+import type { CollectionConfig } from 'payload';
+import { setTenantIdPrefix } from './hooks/setTenantIdPrefix';
 
 export const TenantMedia: CollectionConfig = {
-  slug: "tenant-media",
+  slug: 'tenant-media',
   labels: {
-    singular: "Tenant Media",
-    plural: "Tenant Media",
+    singular: 'Media',
+    plural: 'Media',
   },
   access: {
     read: () => true,
@@ -13,14 +13,14 @@ export const TenantMedia: CollectionConfig = {
   upload: {
     imageSizes: [
       {
-        name: "thumbnail",
+        name: 'thumbnail',
         width: 250,
         height: undefined,
-        position: "centre",
+        position: 'centre',
       },
     ],
-    adminThumbnail: "thumbnail",
-    mimeTypes: ["image/*", "application/xml"],
+    adminThumbnail: 'thumbnail',
+    mimeTypes: ['image/*', 'application/xml'],
   },
   fields: [],
   hooks: {

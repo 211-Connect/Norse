@@ -27,6 +27,10 @@ export const ResourceDirectories: CollectionConfig = {
     create: isSuperAdminAccess,
     delete: isSuperAdminAccess,
   },
+  labels: {
+    singular: 'Settings',
+    plural: 'Settings',
+  },
   versions: {
     drafts: false,
   },
@@ -39,6 +43,16 @@ export const ResourceDirectories: CollectionConfig = {
     afterDelete: [revalidateCache, disableService],
   },
   fields: [
+    {
+      type: 'ui',
+      name: 'Seed in Production',
+      admin: {
+        position: 'above',
+        components: {
+          Field: '@/payload/components/ProductionLinkButton',
+        },
+      },
+    },
     {
       name: 'id',
       type: 'text',

@@ -17,6 +17,10 @@ import {
 
 export const Tenants: CollectionConfig = {
   slug: 'tenants',
+  labels: {
+    singular: 'Site',
+    plural: 'Sites',
+  },
   access: {
     create: isSuperAdminAccess,
     delete: updateAndDeleteAccess,
