@@ -107,6 +107,10 @@ export async function middleware(request: NextRequest) {
   let response = i18nRouter(request, {
     ...i18nConfig,
     basePath: process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || undefined,
+    cookieOptions: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+    },
   });
   if (!request.cookies.has(SESSION_ID)) {
     response.cookies.set({
