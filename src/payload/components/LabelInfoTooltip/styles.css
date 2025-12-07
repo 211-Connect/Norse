@@ -1,0 +1,30 @@
+.label-info-tooltip {
+  width: fit-content;
+  position: relative;
+}
+
+.label-info-tooltip .label-info-tooltip-content {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.label-info-tooltip .label-info-tooltip-icon-wrapper {
+  position: relative;
+  display: flex;
+  padding-bottom: 5px;
+}
+
+.label-info-tooltip .label-info-tooltip-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.label-info-tooltip .label-info-tooltip-tooltip {
+  background-color: black;
+  color: white;
+}
+
+.label-info-tooltip .label-info-tooltip-tooltip::after {
+  border-top-color: black;
+}

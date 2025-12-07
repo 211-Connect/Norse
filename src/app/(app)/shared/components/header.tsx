@@ -117,7 +117,7 @@ export function Header() {
               <li key={item.name}>
                 <Link
                   className="hover:underline"
-                  target={item.target ?? '_self'}
+                  target={item.openInNewTab ? '_blank' : undefined}
                   {...(item.href != null ? { href: item.href } : { href: '' })}
                 >
                   <Button

@@ -28,6 +28,7 @@ export default function Alert() {
               <LocalizedLink
                 className={cn(buttonVariants({ variant }))}
                 href={appConfig.alert.url}
+                target={appConfig.alert.target}
               >
                 {appConfig.alert.buttonText}
               </LocalizedLink>

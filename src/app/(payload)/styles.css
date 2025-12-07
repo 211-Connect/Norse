@@ -1,0 +1,13 @@
+.url-field-row {
+  min-width: 100%;
+}
+
+.url-field-row > div {
+  align-items: center;
+  min-width: 100%;
+}
+
+.url-field-row .checkbox {
+  flex: unset !important;
+  margin-top: 22px;
+}

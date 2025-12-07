@@ -3,6 +3,7 @@ import {
   hasFeatureFieldAccess,
   hasSiteNavigationFieldAccess,
 } from '../../Users/access/permissions';
+import { generateUrlFields } from '@/payload/fields/urlField';
 
 export const header: Tab = {
   name: 'header',
@@ -25,18 +26,7 @@ export const header: Tab = {
           type: 'text',
           required: true,
         },
-        {
-          name: 'href',
-          type: 'text',
-        },
-        {
-          name: 'target',
-          type: 'select',
-          options: [
-            { label: '_self', value: '_self' },
-            { label: '_blank', value: '_blank' },
-          ],
-        },
+        ...generateUrlFields('href'),
       ],
     },
     {
@@ -76,11 +66,7 @@ export const header: Tab = {
           defaultValue: false,
           localized: true,
         },
-        {
-          name: 'url',
-          type: 'text',
-          localized: true,
-        },
+        ...generateUrlFields(undefined, undefined, true),
         {
           name: 'text',
           type: 'text',

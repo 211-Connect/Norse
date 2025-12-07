@@ -289,7 +289,6 @@ export async function createTopicsItems(
           href: subcat.href,
           query: subcat.query,
           queryType: subcat.queryType,
-          target: subcat.target,
         })),
       };
     }) ?? [],
@@ -329,7 +328,6 @@ async function createNewLayoutCalloutsItems(
         description: callout.description,
         title: callout.title,
         url: callout.url,
-        urlTarget: callout.urlTarget,
       };
     }),
   );

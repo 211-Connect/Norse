@@ -27,11 +27,17 @@ export const suggestions: Tab = {
               name: 'value',
               type: 'text',
               required: true,
+              label: 'Text',
             },
             {
               name: 'taxonomies',
               type: 'text',
               required: true,
+              admin: {
+                components: {
+                  Label: '@/payload/components/LabelInfoTooltip',
+                },
+              },
             },
           ],
         },

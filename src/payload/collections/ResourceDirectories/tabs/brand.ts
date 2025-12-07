@@ -29,6 +29,11 @@ export const brand: Tab = {
             update: hasThemeFieldAccess,
             create: hasThemeFieldAccess,
           },
+          admin: {
+            components: {
+              Label: '@/payload/components/LabelInfoTooltip',
+            },
+          },
         },
       ],
     },
@@ -37,6 +42,7 @@ export const brand: Tab = {
       fields: [
         {
           name: 'hero',
+          label: 'Hero Image',
           type: 'upload',
           relationTo: 'tenant-media',
           access: {
@@ -51,6 +57,11 @@ export const brand: Tab = {
           access: {
             update: hasThemeFieldAccess,
             create: hasThemeFieldAccess,
+          },
+          admin: {
+            components: {
+              Label: '@/payload/components/LabelInfoTooltip',
+            },
           },
         },
       ],

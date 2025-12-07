@@ -3,7 +3,7 @@ import { Nullable } from './common';
 type Menu = {
   name: string;
   href?: Nullable<string>;
-  target?: Nullable<'_self' | '_blank'>;
+  openInNewTab?: Nullable<boolean>;
 };
 
 export type AppConfig = {
@@ -50,6 +50,7 @@ export type AppConfig = {
       enabled?: boolean;
       text?: string;
       url?: string;
+      target?: '_self' | '_blank';
     };
     searchUrl?: string;
   };
@@ -102,6 +103,7 @@ export type AppConfig = {
     text: string;
     buttonText?: string;
     url?: string;
+    target?: '_self' | '_blank';
     variant?: 'destructive' | 'default';
   };
   customBasePath?: string;
@@ -135,6 +137,7 @@ export type AppConfig = {
     name?: string;
     href?: string;
     logo?: string;
+    target?: '_self' | '_blank';
   }[];
   providersCustomHeading?: string;
   smsProvider?: 'Twilio';
@@ -148,7 +151,7 @@ export type AppConfig = {
       target?: '_self' | '_blank';
       subtopics: {
         name: string;
-        queryType?: 'taxonomy' | 'text';
+        queryType?: 'taxonomy' | 'text' | 'link';
         query?: string;
         href?: string;
         target?: '_self' | '_blank';

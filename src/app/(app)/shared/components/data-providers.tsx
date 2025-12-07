@@ -92,7 +92,7 @@ export function DataProviders() {
               <LocalizedLink
                 key={key}
                 href={el.href}
-                target="_blank"
+                target={el.target}
                 className="group self-stretch hover:underline"
               >
                 {CardComponent}

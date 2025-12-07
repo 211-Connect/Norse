@@ -163,7 +163,7 @@ async function getAppConfigBase(
               type: callout.type,
               customImg: getMediaUrl(callout.customImg),
               url: callout.url ?? undefined,
-              urlTarget: callout.urlTarget ?? undefined,
+              urlTarget: callout.openInNewTab ? '_blank' : undefined,
             }),
           ),
           title: resourceDirectory.newLayout.callouts?.title ?? undefined,
@@ -244,6 +244,9 @@ async function getAppConfigBase(
             enabled: resourceDirectory.header.safeExit.enabled ?? false,
             text: resourceDirectory.header.safeExit.text ?? undefined,
             url: resourceDirectory.header.safeExit.url ?? undefined,
+            target: resourceDirectory.header.safeExit.openInNewTab
+              ? '_blank'
+              : undefined,
           }
         : undefined,
       searchUrl: resourceDirectory.header?.searchUrl ?? undefined,
@@ -300,20 +303,22 @@ async function getAppConfigBase(
       imageBorderRadius:
         resourceDirectory.topics?.imageBorderRadius ?? undefined,
       list: (resourceDirectory.topics?.list ?? []).map(
-        ({ name, href, id, image, subtopics, target }) => ({
+        ({ name, href, id, image, subtopics, openInNewTab }) => ({
           name,
           href: href ?? undefined,
           id: id ?? undefined,
           image: getMediaUrl(image),
           subtopics:
-            subtopics?.map(({ name, query, queryType, href, target }) => ({
-              name,
-              query: query ?? undefined,
-              queryType: queryType ?? undefined,
-              href: href ?? undefined,
-              target: target ?? undefined,
-            })) || [],
-          target: target ?? undefined,
+            subtopics?.map(
+              ({ name, query, queryType, href, openInNewTab }) => ({
+                name,
+                query: queryType !== 'link' ? (query ?? undefined) : undefined,
+                queryType: queryType ?? undefined,
+                href: queryType === 'link' ? (href ?? undefined) : undefined,
+                target: openInNewTab ? '_blank' : undefined,
+              }),
+            ) || [],
+          target: openInNewTab ? '_blank' : undefined,
         }),
       ),
     },
@@ -321,6 +326,9 @@ async function getAppConfigBase(
       ? {
           text: resourceDirectory.common.alert[0].text,
           buttonText: resourceDirectory.common.alert[0].buttonText ?? undefined,
+          target: resourceDirectory.common.alert[0].openInNewTab
+            ? '_blank'
+            : undefined,
           url: resourceDirectory.common.alert[0].url ?? undefined,
           variant: resourceDirectory.common.alert[0].variant ?? undefined,
         }
@@ -331,6 +339,7 @@ async function getAppConfigBase(
       href: provider.url ?? undefined,
       logo: getMediaUrl(provider.logo),
       name: provider.name || undefined,
+      target: provider.openInNewTab ? '_blank' : undefined,
     })),
     providersCustomHeading:
       resourceDirectory.common?.customDataProvidersHeading ?? undefined,

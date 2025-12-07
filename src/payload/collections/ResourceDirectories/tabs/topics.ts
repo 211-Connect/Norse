@@ -4,6 +4,7 @@ import {
   hasResourceNavigationFieldAccess,
   hasSiteNavigationFieldAccess,
 } from '../../Users/access/permissions';
+import { generateUrlFields } from '@/payload/fields/urlField';
 
 export const topics: Tab = {
   label: 'Topics',
@@ -21,6 +22,11 @@ export const topics: Tab = {
     {
       type: 'text',
       name: 'customHeading',
+      label: 'Topics Heading Text',
+      defaultValue: 'Topics',
+      admin: {
+        placeholder: 'Topics',
+      },
       localized: true,
       access: {
         create: hasResourceNavigationFieldAccess,
@@ -77,17 +83,14 @@ export const topics: Tab = {
         },
         {
           type: 'row',
-          fields: [
-            {
-              name: 'href',
-              type: 'text',
+          admin: {
+            condition: (_, siblingData) => {
+              return (
+                !siblingData?.subtopics || siblingData?.subtopics?.length === 0
+              );
             },
-            {
-              name: 'target',
-              type: 'select',
-              options: ['_self', '_blank'],
-            },
-          ],
+          },
+          fields: generateUrlFields('href'),
         },
         {
           name: 'subtopics',
@@ -110,27 +113,30 @@ export const topics: Tab = {
                 {
                   name: 'queryType',
                   type: 'select',
-                  options: ['taxonomy', 'text'],
+                  options: ['taxonomy', 'text', 'link'],
                 },
               ],
             },
             {
               name: 'query',
               type: 'text',
+              admin: {
+                components: {
+                  Label: '@/payload/components/LabelInfoTooltip',
+                },
+                condition: (_, siblingData) => {
+                  return siblingData?.queryType !== 'link';
+                },
+              },
             },
             {
               type: 'row',
-              fields: [
-                {
-                  name: 'href',
-                  type: 'text',
+              admin: {
+                condition: (_, siblingData) => {
+                  return siblingData?.queryType === 'link';
                 },
-                {
-                  name: 'target',
-                  type: 'select',
-                  options: ['_self', '_blank'],
-                },
-              ],
+              },
+              fields: generateUrlFields('href'),
             },
           ],
         },

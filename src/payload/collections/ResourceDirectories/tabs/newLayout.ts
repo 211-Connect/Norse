@@ -1,5 +1,6 @@
 import { Tab } from 'payload';
 import { hasLayoutFieldAccess } from '../../Users/access/permissions';
+import { generateUrlFields } from '@/payload/fields/urlField';
 
 export const newLayout: Tab = {
   name: 'newLayout',
@@ -106,16 +107,7 @@ export const newLayout: Tab = {
               name: 'title',
               type: 'text',
             },
-            {
-              name: 'url',
-              type: 'text',
-            },
-            {
-              name: 'urlTarget',
-              type: 'select',
-              options: ['_self', '_blank'],
-              defaultValue: '_self',
-            },
+            ...generateUrlFields(),
           ],
         },
         {

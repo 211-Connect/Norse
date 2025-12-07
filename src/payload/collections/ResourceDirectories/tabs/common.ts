@@ -3,6 +3,7 @@ import {
   hasLayoutFieldAccess,
   hasResourceNavigationFieldAccess,
 } from '../../Users/access/permissions';
+import { generateUrlFields } from '@/payload/fields/urlField';
 
 export const common: Tab = {
   name: 'common',
@@ -31,20 +32,18 @@ export const common: Tab = {
             },
           ],
         },
+        ...generateUrlFields(),
         {
-          type: 'row',
-          fields: [
+          name: 'variant',
+          type: 'select',
+          options: [
             {
-              name: 'url',
-              type: 'text',
+              label: 'Urgent (Red)',
+              value: 'destructive',
             },
-            {
-              name: 'variant',
-              type: 'select',
-              options: ['default', 'destructive'],
-              defaultValue: 'destructive',
-            },
+            { label: 'Default (neutral)', value: 'default' },
           ],
+          defaultValue: 'destructive',
         },
       ],
     },
@@ -60,6 +59,9 @@ export const common: Tab = {
       access: {
         create: hasLayoutFieldAccess,
         update: hasLayoutFieldAccess,
+      },
+      admin: {
+        placeholder: 'Provided by',
       },
     },
     {
@@ -79,10 +81,7 @@ export const common: Tab = {
           name: 'name',
           type: 'text',
         },
-        {
-          name: 'url',
-          type: 'text',
-        },
+        ...generateUrlFields(),
         {
           name: 'logo',
           type: 'upload',

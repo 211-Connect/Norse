@@ -300,7 +300,8 @@ export interface ResourceDirectory {
           text: string;
           buttonText?: string | null;
           url?: string | null;
-          variant?: ('default' | 'destructive') | null;
+          openInNewTab?: boolean | null;
+          variant?: ('destructive' | 'default') | null;
           id?: string | null;
         }[]
       | null;
@@ -310,6 +311,7 @@ export interface ResourceDirectory {
       | {
           name?: string | null;
           url?: string | null;
+          openInNewTab?: boolean | null;
           logo?: (number | null) | TenantMedia;
           id?: string | null;
         }[]
@@ -338,7 +340,7 @@ export interface ResourceDirectory {
       | {
           name: string;
           href?: string | null;
-          target?: ('_self' | '_blank') | null;
+          openInNewTab?: boolean | null;
           id?: string | null;
         }[]
       | null;
@@ -347,6 +349,7 @@ export interface ResourceDirectory {
     safeExit?: {
       enabled?: boolean | null;
       url?: string | null;
+      openInNewTab?: boolean | null;
       text?: string | null;
     };
   };
@@ -356,7 +359,7 @@ export interface ResourceDirectory {
       | {
           name: string;
           href?: string | null;
-          target?: ('_self' | '_blank') | null;
+          openInNewTab?: boolean | null;
           id?: string | null;
         }[]
       | null;
@@ -376,14 +379,14 @@ export interface ResourceDirectory {
           name: string;
           image?: (number | null) | TenantMedia;
           href?: string | null;
-          target?: ('_self' | '_blank') | null;
+          openInNewTab?: boolean | null;
           subtopics?:
             | {
                 name: string;
-                queryType?: ('taxonomy' | 'text') | null;
+                queryType?: ('taxonomy' | 'text' | 'link') | null;
                 query?: string | null;
                 href?: string | null;
-                target?: ('_self' | '_blank') | null;
+                openInNewTab?: boolean | null;
                 id?: string | null;
               }[]
             | null;
@@ -433,7 +436,7 @@ export interface ResourceDirectory {
             description?: string | null;
             title?: string | null;
             url?: string | null;
-            urlTarget?: ('_self' | '_blank') | null;
+            openInNewTab?: boolean | null;
             id?: string | null;
           }[]
         | null;
@@ -658,6 +661,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
               text?: T;
               buttonText?: T;
               url?: T;
+              openInNewTab?: T;
               variant?: T;
               id?: T;
             };
@@ -668,6 +672,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
           | {
               name?: T;
               url?: T;
+              openInNewTab?: T;
               logo?: T;
               id?: T;
             };
@@ -704,7 +709,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
           | {
               name?: T;
               href?: T;
-              target?: T;
+              openInNewTab?: T;
               id?: T;
             };
         customHomeUrl?: T;
@@ -714,6 +719,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
           | {
               enabled?: T;
               url?: T;
+              openInNewTab?: T;
               text?: T;
             };
       };
@@ -726,7 +732,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
           | {
               name?: T;
               href?: T;
-              target?: T;
+              openInNewTab?: T;
               id?: T;
             };
       };
@@ -750,7 +756,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
               name?: T;
               image?: T;
               href?: T;
-              target?: T;
+              openInNewTab?: T;
               subtopics?:
                 | T
                 | {
@@ -758,7 +764,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
                     queryType?: T;
                     query?: T;
                     href?: T;
-                    target?: T;
+                    openInNewTab?: T;
                     id?: T;
                   };
               id?: T;
@@ -818,7 +824,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
                     description?: T;
                     title?: T;
                     url?: T;
-                    urlTarget?: T;
+                    openInNewTab?: T;
                     id?: T;
                   };
               title?: T;

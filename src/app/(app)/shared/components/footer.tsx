@@ -49,7 +49,7 @@ export function Footer() {
             <Button key={el.name} variant="link">
               <Link
                 className="flex items-center gap-3 whitespace-pre-wrap !text-primary"
-                target={el.target ?? '_self'}
+                target={el.openInNewTab ? '_blank' : undefined}
                 {...(el.href != null ? { href: el.href } : { href: '' })}
               >
                 {el.name}

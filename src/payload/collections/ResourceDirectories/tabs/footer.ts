@@ -3,6 +3,7 @@ import {
   hasContentFieldAccess,
   hasSiteNavigationFieldAccess,
 } from '../../Users/access/permissions';
+import { generateUrlFields } from '@/payload/fields/urlField';
 
 export const footer: Tab = {
   name: 'footer',
@@ -34,18 +35,7 @@ export const footer: Tab = {
           type: 'text',
           required: true,
         },
-        {
-          name: 'href',
-          type: 'text',
-        },
-        {
-          name: 'target',
-          type: 'select',
-          options: [
-            { label: '_self', value: '_self' },
-            { label: '_blank', value: '_blank' },
-          ],
-        },
+        ...generateUrlFields('href'),
       ],
     },
   ],
