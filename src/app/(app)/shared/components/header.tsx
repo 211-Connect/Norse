@@ -196,7 +196,10 @@ export function Header() {
       <Fragment key="5">
         {appConfig.header.safeExit?.enabled && (
           <li>
-            <Link target="_blank" href={appConfig.header.safeExit?.url ?? '#'}>
+            <Link
+              target={appConfig.header.safeExit.target}
+              href={appConfig.header.safeExit?.url ?? '#'}
+            >
               <Button className="flex items-center gap-1" variant="outline">
                 {appConfig.header.safeExit?.text}
                 <LogOut className="size-4" />
@@ -211,6 +214,7 @@ export function Header() {
       appConfig.header.searchUrl,
       appConfig.header.customMenu,
       appConfig.header.safeExit?.enabled,
+      appConfig.header.safeExit?.target,
       appConfig.header.safeExit?.url,
       appConfig.header.safeExit?.text,
       newLayoutEnabled,
