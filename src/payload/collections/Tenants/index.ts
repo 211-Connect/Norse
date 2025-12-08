@@ -14,6 +14,7 @@ import {
   hasFeatureFieldAccess,
   hasPropertySettingsFieldAccess,
 } from '../Users/access/permissions';
+import { removeRelatedResources } from './hooks/removeRelatedResources';
 
 export const Tenants: CollectionConfig = {
   slug: 'tenants',
@@ -31,6 +32,7 @@ export const Tenants: CollectionConfig = {
   },
   hooks: {
     afterChange: [revalidateCache],
+    beforeDelete: [removeRelatedResources],
     afterDelete: [revalidateCache],
   },
   fields: [

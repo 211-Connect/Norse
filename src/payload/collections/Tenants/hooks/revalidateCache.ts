@@ -9,14 +9,14 @@ export async function revalidateCache({
   doc,
   previousDoc,
 }: {
-  doc: Tenant;
+  doc?: Tenant;
   previousDoc?: Tenant;
-}): Promise<Tenant> {
+}): Promise<Tenant | undefined> {
   const cacheServiceInstance = cacheService();
 
   const trustedDomains = Array.from(
     new Set<string>([
-      ...(doc.trustedDomains?.map(({ domain }) => domain) ?? []),
+      ...(doc?.trustedDomains?.map(({ domain }) => domain) ?? []),
       ...(previousDoc?.trustedDomains?.map(({ domain }) => domain) ?? []),
     ]),
   );
