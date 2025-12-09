@@ -67,3 +67,94 @@ export function getGoogleMapsDestinationUrl(
     return `https://www.google.com/maps/dir/?api=1&origin=${getOrigin()}&destination=${getDestination()}`;
   }
 }
+
+/**
+ * Validates and parses coords query parameter.
+ * Returns [lng, lat] tuple if valid, null otherwise.
+ * Handles malformed coords like duplicated values or corrupted strings.
+ *
+ * @param coords - The coords string from query params
+ * @param options.attemptExtract - If true, attempts to extract the first valid [lng, lat] pair
+ *                                  from malformed coords (e.g., duplicated values). Default: true
+ */
+export function parseAndValidateCoords(
+  coords: string | string[] | undefined,
+  options: { attemptExtract?: boolean } = {},
+): [number, number] | null {
+  const { attemptExtract = true } = options;
+
+  if (!coords) return null;
+
+  const coordString = Array.isArray(coords) ? coords[0] : coords;
+  const parts = coordString.split(',').map((p) => parseFloat(p.trim()));
+
+  // Ideal case: exactly 2 values
+  if (parts.length === 2) {
+    const [lng, lat] = parts;
+    if (!isNaN(lng) && !isNaN(lat) && isValidCoordRange(lng, lat)) {
+      return [lng, lat];
+    }
+    console.warn(`Invalid coords (NaN or out of range): ${coordString}`);
+    return null;
+  }
+
+  // Malformed: wrong number of values
+  if (parts.length !== 2) {
+    console.warn(
+      `Invalid coords format (expected 2 values, got ${parts.length}): ${coordString}`,
+    );
+
+    // Attempt to extract first valid pair if enabled
+    if (attemptExtract && parts.length >= 2) {
+      const extracted = extractFirstValidCoordPair(parts);
+      if (extracted) {
+        console.log(
+          `Extracted valid coords [${extracted[0]}, ${extracted[1]}] from malformed input`,
+        );
+        return extracted;
+      }
+    }
+
+    return null;
+  }
+
+  return null;
+}
+
+/**
+ * Checks if longitude and latitude are within valid ranges.
+ */
+function isValidCoordRange(lng: number, lat: number): boolean {
+  return lng >= -180 && lng <= 180 && lat >= -90 && lat <= 90;
+}
+
+/**
+ * Attempts to extract the first valid [lng, lat] pair from an array of numbers.
+ * Useful for handling duplicated coords like [-76.6, 39.3, -76.6, 39.3].
+ */
+function extractFirstValidCoordPair(parts: number[]): [number, number] | null {
+  for (let i = 0; i < parts.length - 1; i++) {
+    const lng = parts[i];
+    const lat = parts[i + 1];
+
+    if (!isNaN(lng) && !isNaN(lat) && isValidCoordRange(lng, lat)) {
+      return [lng, lat];
+    }
+  }
+  return null;
+}
+
+/**
+ * Cleans duplicated values from location string.
+ * Handles cases like "21201, Maryland, United States,21201, Maryland, United States"
+ */
+export function cleanLocationString(
+  location: string | string[] | undefined,
+): string | null {
+  if (!location) return null;
+
+  const locationStr = Array.isArray(location) ? location[0] : location;
+  const parts = locationStr.split(',');
+  const uniqueParts = [...new Set(parts.map((p) => p.trim()))];
+  return uniqueParts.join(', ');
+}

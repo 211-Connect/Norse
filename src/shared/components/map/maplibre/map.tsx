@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import mapLibreGl, {
   LngLatBounds,
   LngLatLike,
@@ -46,6 +46,37 @@ export function Map({
     element: HTMLElement;
     popup: any;
   } | null>(null);
+
+  // Validate usersLocation - must be exactly [lng, lat] with valid numbers
+  const validatedUsersLocation = useMemo((): [number, number] | null => {
+    if (!Array.isArray(usersLocation) || usersLocation.length !== 2) {
+      if (usersLocation?.length > 0) {
+        console.warn(
+          `Invalid usersLocation format (expected 2 values, got ${usersLocation?.length})`,
+        );
+      }
+      return null;
+    }
+
+    const [lng, lat] = usersLocation;
+
+    if (
+      typeof lng !== 'number' ||
+      typeof lat !== 'number' ||
+      isNaN(lng) ||
+      isNaN(lat)
+    ) {
+      console.warn(`Invalid usersLocation values: [${lng}, ${lat}]`);
+      return null;
+    }
+
+    if (lng < -180 || lng > 180 || lat < -90 || lat > 90) {
+      console.warn(`usersLocation out of range: [${lng}, ${lat}]`);
+      return null;
+    }
+
+    return [lng, lat];
+  }, [usersLocation]);
 
   useEffect(() => {
     mapLibreMap.current = new mapLibreGl.Map({
@@ -128,15 +159,11 @@ export function Map({
       return marker;
     });
 
-    // Add users location as a map pin
-    if (
-      usersLocation?.length > 0 &&
-      !isNaN(usersLocation[0]) &&
-      !isNaN(usersLocation[1])
-    ) {
+    // Add users location as a map pin - use validated location
+    if (validatedUsersLocation) {
       const marker = new Marker();
 
-      marker.setLngLat(usersLocation as LngLatLike);
+      marker.setLngLat(validatedUsersLocation);
 
       const markerElement = marker.getElement();
       markerElement.classList.add('users-location-marker');
@@ -145,7 +172,7 @@ export function Map({
       _markers.current.push(marker);
 
       if (!disableUserLocation) {
-        bounds.extend(usersLocation as LngLatLike);
+        bounds.extend(validatedUsersLocation);
       }
     }
 
@@ -170,7 +197,7 @@ export function Map({
         });
       }
     }
-  }, [markers, usersLocation, disableUserLocation, zoom]);
+  }, [markers, validatedUsersLocation, disableUserLocation, zoom]);
 
   // The map component displays a service area polygon when there are no valid markers.
   // normalizeServiceArea: Ensures all polygon rings are closed and supports Polygon, MultiPolygon, and GeometryCollection types. It modifies the geometry so it is valid for rendering.
