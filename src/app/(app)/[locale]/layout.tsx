@@ -14,6 +14,7 @@ import { getSession } from '../shared/utils/getServerSession';
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
+  maximumScale: 1,
 };
 
 export const generateMetadata = async ({
