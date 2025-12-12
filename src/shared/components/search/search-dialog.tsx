@@ -1,10 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-} from '../ui/dialog';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { SearchBar } from './search-bar';
 import { LocationSearchBar } from './location-search-bar';
 import { Button } from '../ui/button';
@@ -15,7 +9,11 @@ import { useFlag } from '@/shared/hooks/use-flag';
 import { SearchService } from '@/shared/services/search-service';
 import { useRouter } from 'next/router';
 import { useSearchResources } from '@/shared/hooks/use-search-resources';
-import { DialogTitle } from '@radix-ui/react-dialog';
+import { cn, getScrollbarWidth } from '@/shared/lib/utils';
+import { createPortal } from 'react-dom';
+
+const SEARCH_INPUT_ID = 'search-input';
+const LOCATION_INPUT_ID = 'location-input';
 
 export interface SearchDialogProps {
   focusByDefault?: 'search' | 'location';
@@ -32,7 +30,11 @@ export function SearchDialog({
 
   const requireUserLocation = useFlag('requireUserLocation');
 
+  const scrollPositionRef = useRef(0);
+  const initialRenderRef = useRef(true);
+
   const [loading, setLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
 
   const { findCode, getQueryType, locations, search, setSearch } =
@@ -116,34 +118,78 @@ export function SearchDialog({
     setOpen?.(false);
   }, [router.asPath, setOpen]);
 
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTitle className="sr-only">Search</DialogTitle>
-      <DialogDescription />
-      <DialogContent
-        className="flex h-full w-full max-w-full justify-center !rounded-none border-0"
-        withClose={false}
-      >
-        <form
-          onSubmit={onSubmit}
-          className="flex w-full max-w-[400px] flex-col gap-4 sm:mt-[120px]"
-        >
-          <DialogHeader className="flex flex-row justify-between gap-4">
-            <Button
-              type="button"
-              className="self-start"
-              variant="highlight"
-              onClick={() => setOpen?.(false)}
-            >
-              <ChevronLeft className="size-4 text-primary" />
-              {t('search.back')}
-            </Button>
-            <SearchButton loading={loading} />
-          </DialogHeader>
-          <SearchBar focusByDefault={focusByDefault === 'search'} />
-          <LocationSearchBar focusByDefault={focusByDefault === 'location'} />
-        </form>
-      </DialogContent>
-    </Dialog>
+  useEffect(() => {
+    if (initialRenderRef.current) return;
+
+    if (open) {
+      const elementToSelect =
+        focusByDefault === 'location' ? LOCATION_INPUT_ID : SEARCH_INPUT_ID;
+
+      const scrollbarWidth = getScrollbarWidth();
+      scrollPositionRef.current = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollPositionRef.current}px`;
+      document.body.style.width = '100%';
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+
+      setTimeout(() => {
+        (
+          document.querySelector(`#${elementToSelect}`) as
+            | HTMLInputElement
+            | undefined
+        )?.focus();
+      }, 100);
+    } else {
+      setTimeout(() => {
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.body.style.position = '';
+        document.body.style.paddingRight = '';
+        window.scrollTo(0, scrollPositionRef.current || 0);
+      }, 10);
+    }
+  }, [focusByDefault, open]);
+
+  useEffect(() => {
+    initialRenderRef.current = false;
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
+  return createPortal(
+    <div
+      className={cn(
+        'fixed bottom-0 left-0 right-0 top-0 z-50 bg-white p-6 transition-opacity duration-300',
+        open ? 'opacity-100' : 'pointer-events-none opacity-0',
+      )}
+      role="dialog"
+    >
+      <h2 className="sr-only">Search</h2>
+      <div className="flex h-full w-full max-w-full justify-center !rounded-none border-0">
+        {open && (
+          <form
+            onSubmit={onSubmit}
+            className="flex w-full max-w-[400px] flex-col gap-4 sm:mt-[120px]"
+          >
+            <div className="flex flex-row justify-between gap-4">
+              <Button
+                type="button"
+                className="self-start"
+                variant="highlight"
+                onClick={() => setOpen?.(false)}
+              >
+                <ChevronLeft className="size-4 text-primary" />
+                {t('search.back')}
+              </Button>
+              <SearchButton loading={loading} />
+            </div>
+            <SearchBar inputId={SEARCH_INPUT_ID} />
+            <LocationSearchBar inputId={LOCATION_INPUT_ID} />
+          </form>
+        )}
+      </div>
+    </div>,
+    document.querySelector('#app-root') as Element,
   );
 }

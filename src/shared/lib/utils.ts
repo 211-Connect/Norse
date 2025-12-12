@@ -158,3 +158,29 @@ export function cleanLocationString(
   const uniqueParts = [...new Set(parts.map((p) => p.trim()))];
   return uniqueParts.join(', ');
 }
+
+export function getScrollbarWidth(): number {
+  if (typeof window === 'undefined') return 0;
+
+  const element = document.documentElement;
+  const hasVerticalScrollbar = element.scrollHeight > element.clientHeight;
+  const hasHorizontalScrollbar = element.scrollWidth > element.clientWidth;
+
+  if (!hasVerticalScrollbar && !hasHorizontalScrollbar) return 0;
+
+  // dynamiczny pomiar (potencjalna szerokość scrollbara)
+  const scrollDiv = document.createElement('div');
+  scrollDiv.style.width = '100px';
+  scrollDiv.style.height = '100px';
+  scrollDiv.style.overflow = 'scroll';
+  scrollDiv.style.position = 'absolute';
+  scrollDiv.style.top = '-9999px';
+
+  document.body.appendChild(scrollDiv);
+
+  const scrollbarWidth = scrollDiv.offsetWidth - scrollDiv.clientWidth;
+
+  document.body.removeChild(scrollDiv);
+
+  return scrollbarWidth;
+}

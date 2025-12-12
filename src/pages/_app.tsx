@@ -30,9 +30,13 @@ function App({
         appConfig.newLayout?.enabled && router.asPath === '/' && 'bg-white',
         fontSans.variable,
       )}
+      id="app-root"
     >
       <Head>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1"
+        />
         <link
           rel="icon"
           href={appConfig?.brand?.faviconUrl ?? '/favicon.ico'}

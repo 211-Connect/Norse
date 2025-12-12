@@ -11,9 +11,10 @@ import { SearchIcon } from 'lucide-react';
 
 interface SearchBarProps {
   focusByDefault?: boolean;
+  inputId?: string;
 }
 
-export function SearchBar({ focusByDefault = false }: SearchBarProps) {
+export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
   const { t } = useTranslation();
   const [shouldSearch, setShouldSearch] = useState(false);
   const prevSearchTerm = useAtomValue(prevSearchTermAtom);
@@ -127,6 +128,7 @@ export function SearchBar({ focusByDefault = false }: SearchBarProps) {
       className="search-box"
       inputProps={{
         autoFocus: focusByDefault,
+        id: inputId,
         placeholder:
           t('search.query_placeholder', {
             ns: 'dynamic',
