@@ -7,7 +7,6 @@ export function useOnPointerDownOutside(
   useEffect(() => {
     const listener = (event: PointerEvent) => {
       const el = ref?.current;
-      console.log(el, event.target);
       if (!el || el.contains(event.target as Node)) return;
       handler(event);
     };

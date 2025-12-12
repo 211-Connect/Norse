@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronLeft } from 'lucide-react';
 
 import { LocationSearchBar } from './location-search-bar';
@@ -13,7 +14,7 @@ import { useSearchResources } from '../../hooks/use-search-resources';
 import { createUrlParamsForSearch } from '../../services/search-service';
 import { usePathname, useRouter } from 'next/navigation';
 import { useClientSearchParams } from '../../hooks/use-client-search-params';
-import { cn } from '../../lib/utils';
+import { cn, getScrollbarWidth } from '../../lib/utils';
 export interface SearchDialogProps {
   focusByDefault?: 'search' | 'location';
   open: boolean;
@@ -39,8 +40,10 @@ export function SearchDialog({
   const requireUserLocation = useFlag('requireUserLocation');
 
   const scrollPositionRef = useRef(0);
+  const initialRenderRef = useRef(true);
 
   const [loading, setLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const { findCode, getQueryType, locations, search, setSearch } =
     useSearchResources();
@@ -125,14 +128,19 @@ export function SearchDialog({
   }, [pathname, stringifiedSearchParams, setOpen]);
 
   useEffect(() => {
+    if (initialRenderRef.current) return;
+
     if (open) {
       const elementToSelect =
         focusByDefault === 'location' ? LOCATION_INPUT_ID : SEARCH_INPUT_ID;
 
+      const scrollbarWidth = getScrollbarWidth();
       scrollPositionRef.current = window.scrollY;
       document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
       document.body.style.top = `-${scrollPositionRef.current}px`;
+      document.body.style.width = '100%';
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+
       setTimeout(() => {
         (
           document.querySelector(`#${elementToSelect}`) as
@@ -141,42 +149,56 @@ export function SearchDialog({
         )?.focus();
       }, 100);
     } else {
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      window.scrollTo(0, scrollPositionRef.current || 0);
+      setTimeout(() => {
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.body.style.position = '';
+        document.body.style.paddingRight = '';
+        window.scrollTo(0, scrollPositionRef.current || 0);
+      }, 10);
     }
   }, [focusByDefault, open]);
 
-  return (
+  useEffect(() => {
+    initialRenderRef.current = false;
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
+  return createPortal(
     <div
       className={cn(
         'fixed bottom-0 left-0 right-0 top-0 z-50 bg-white p-6 transition-opacity duration-300',
         open ? 'opacity-100' : 'pointer-events-none opacity-0',
       )}
+      role="dialog"
     >
       <h2 className="sr-only">Search</h2>
       <div className="flex h-full w-full max-w-full justify-center !rounded-none border-0">
-        <form
-          onSubmit={onSubmit}
-          className="flex w-full max-w-[400px] flex-col gap-4 sm:mt-[120px]"
-        >
-          <div className="flex flex-row justify-between gap-4">
-            <Button
-              type="button"
-              className="self-start"
-              variant="highlight"
-              onClick={() => setOpen?.(false)}
-            >
-              <ChevronLeft className="size-4 text-primary" />
-              {t('search.back')}
-            </Button>
-            <SearchButton loading={loading} />
-          </div>
-          <SearchBar inputId={SEARCH_INPUT_ID} />
-          <LocationSearchBar inputId={LOCATION_INPUT_ID} />
-        </form>
+        {open && (
+          <form
+            onSubmit={onSubmit}
+            className="flex w-full max-w-[400px] flex-col gap-4 sm:mt-[120px]"
+          >
+            <div className="flex flex-row justify-between gap-4">
+              <Button
+                type="button"
+                className="self-start"
+                variant="highlight"
+                onClick={() => setOpen?.(false)}
+              >
+                <ChevronLeft className="size-4 text-primary" />
+                {t('search.back')}
+              </Button>
+              <SearchButton loading={loading} />
+            </div>
+            <SearchBar inputId={SEARCH_INPUT_ID} />
+            <LocationSearchBar inputId={LOCATION_INPUT_ID} />
+          </form>
+        )}
       </div>
-    </div>
+    </div>,
+    document.querySelector('#app-root') as Element,
   );
 }

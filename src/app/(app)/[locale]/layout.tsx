@@ -85,7 +85,10 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} style={theme as any}>
-      <body className={cn('font-sans antialiased', fontSans.variable)}>
+      <body
+        className={cn('font-sans antialiased', fontSans.variable)}
+        id="app-root"
+      >
         <Providers appConfig={appConfig} session={session}>
           {children}
         </Providers>

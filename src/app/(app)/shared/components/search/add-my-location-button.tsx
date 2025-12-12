@@ -34,7 +34,7 @@ export function AddMyLocationButton({
       <Locate className="size-4" />
       {location || t('search.add_my_location')}
       <input
-        className="absolute h-full w-full opacity-0"
+        className="absolute h-full w-full cursor-pointer opacity-0"
         aria-label="change-location-input"
       />
     </Button>
