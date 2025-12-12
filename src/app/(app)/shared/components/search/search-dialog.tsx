@@ -131,6 +131,7 @@ export function SearchDialog({
 
       scrollPositionRef.current = window.scrollY;
       document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
       document.body.style.top = `-${scrollPositionRef.current}px`;
       setTimeout(() => {
         (
@@ -142,6 +143,7 @@ export function SearchDialog({
     } else {
       document.body.style.position = '';
       document.body.style.top = '';
+      document.body.style.width = '';
       window.scrollTo(0, scrollPositionRef.current || 0);
     }
   }, [focusByDefault, open]);
