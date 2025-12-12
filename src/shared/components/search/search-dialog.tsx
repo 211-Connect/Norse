@@ -153,6 +153,14 @@ export function SearchDialog({
   useEffect(() => {
     initialRenderRef.current = false;
     setMounted(true);
+
+    return () => {
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.position = '';
+      document.body.style.paddingRight = '';
+      window.scrollTo(0, 0);
+    };
   }, []);
 
   if (!mounted) return null;
