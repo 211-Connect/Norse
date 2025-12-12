@@ -15,9 +15,10 @@ import { useAppConfig } from '../../hooks/use-app-config';
 
 interface SearchBarProps {
   focusByDefault?: boolean;
+  inputId?: string;
 }
 
-export function SearchBar({ focusByDefault = false }: SearchBarProps) {
+export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
   const appConfig = useAppConfig();
   const { t } = useTranslation('common');
   const [shouldSearch, setShouldSearch] = useState(false);
@@ -132,6 +133,7 @@ export function SearchBar({ focusByDefault = false }: SearchBarProps) {
       className="search-box"
       inputProps={{
         autoFocus: focusByDefault,
+        id: inputId,
         placeholder:
           appConfig.search.texts?.queryInputPlaceholder ||
           t('search.query_placeholder'),

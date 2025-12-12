@@ -1,30 +1,27 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ChevronLeft } from 'lucide-react';
-import { DialogTitle } from '@radix-ui/react-dialog';
 
 import { LocationSearchBar } from './location-search-bar';
 import { SearchBar } from './search-bar';
 import { SearchButton } from './search-button';
 import { Button } from '../ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-} from '../ui/dialog';
 import { useTranslation } from 'react-i18next';
 import { useFlag } from '../../hooks/use-flag';
 import { useSearchResources } from '../../hooks/use-search-resources';
 import { createUrlParamsForSearch } from '../../services/search-service';
 import { usePathname, useRouter } from 'next/navigation';
 import { useClientSearchParams } from '../../hooks/use-client-search-params';
+import { cn } from '../../lib/utils';
 export interface SearchDialogProps {
   focusByDefault?: 'search' | 'location';
   open: boolean;
   setOpen?: (open: boolean) => void;
 }
+
+const SEARCH_INPUT_ID = 'search-input';
+const LOCATION_INPUT_ID = 'location-input';
 
 export function SearchDialog({
   focusByDefault = 'search',
@@ -40,6 +37,8 @@ export function SearchDialog({
   const { stringifiedSearchParams } = useClientSearchParams();
 
   const requireUserLocation = useFlag('requireUserLocation');
+
+  const scrollPositionRef = useRef(0);
 
   const [loading, setLoading] = useState(false);
 
@@ -125,19 +124,42 @@ export function SearchDialog({
     }, 500);
   }, [pathname, stringifiedSearchParams, setOpen]);
 
+  useEffect(() => {
+    if (open) {
+      const elementToSelect =
+        focusByDefault === 'location' ? LOCATION_INPUT_ID : SEARCH_INPUT_ID;
+
+      scrollPositionRef.current = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollPositionRef.current}px`;
+      setTimeout(() => {
+        (
+          document.querySelector(`#${elementToSelect}`) as
+            | HTMLInputElement
+            | undefined
+        )?.focus();
+      }, 100);
+    } else {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      window.scrollTo(0, scrollPositionRef.current || 0);
+    }
+  }, [focusByDefault, open]);
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTitle className="sr-only">Search</DialogTitle>
-      <DialogDescription />
-      <DialogContent
-        className="flex h-full w-full max-w-full justify-center !rounded-none border-0"
-        withClose={false}
-      >
+    <div
+      className={cn(
+        'fixed bottom-0 left-0 right-0 top-0 z-50 bg-white p-6 transition-opacity duration-300',
+        open ? 'opacity-100' : 'pointer-events-none opacity-0',
+      )}
+    >
+      <h2 className="sr-only">Search</h2>
+      <div className="flex h-full w-full max-w-full justify-center !rounded-none border-0">
         <form
           onSubmit={onSubmit}
           className="flex w-full max-w-[400px] flex-col gap-4 sm:mt-[120px]"
         >
-          <DialogHeader className="flex flex-row justify-between gap-4">
+          <div className="flex flex-row justify-between gap-4">
             <Button
               type="button"
               className="self-start"
@@ -148,11 +170,11 @@ export function SearchDialog({
               {t('search.back')}
             </Button>
             <SearchButton loading={loading} />
-          </DialogHeader>
-          <SearchBar focusByDefault={focusByDefault === 'search'} />
-          <LocationSearchBar focusByDefault={focusByDefault === 'location'} />
+          </div>
+          <SearchBar inputId={SEARCH_INPUT_ID} />
+          <LocationSearchBar inputId={LOCATION_INPUT_ID} />
         </form>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 }

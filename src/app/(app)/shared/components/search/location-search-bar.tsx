@@ -33,11 +33,13 @@ import { useAppConfig } from '../../hooks/use-app-config';
 type LocationSearchBarProps = {
   className?: string;
   focusByDefault?: boolean;
+  inputId?: string;
 };
 
 export function LocationSearchBar({
   className,
   focusByDefault = false,
+  inputId,
 }: LocationSearchBarProps) {
   const appConfig = useAppConfig();
 
@@ -163,6 +165,7 @@ export function LocationSearchBar({
         className={cn(className, 'search-box')}
         inputProps={{
           autoFocus: focusByDefault,
+          id: inputId,
           className: validationError ? '!border-red-500' : undefined,
           placeholder:
             appConfig.search.texts?.locationInputPlaceholder ||

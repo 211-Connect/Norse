@@ -7,7 +7,6 @@ import {
   shift,
   autoUpdate,
 } from '@floating-ui/react';
-import { useOnClickOutside } from 'usehooks-ts';
 import {
   useCallback,
   useState,
@@ -35,6 +34,7 @@ import {
   TooltipTrigger,
 } from './tooltip';
 import { Badge } from './badge';
+import { useOnPointerDownOutside } from '../../hooks/use-on-pointer-down-outside';
 
 export type AutocompleteOption = {
   label?: string;
@@ -242,9 +242,10 @@ export function Autocomplete(props: AutocompleteProps) {
 
   const handleClickOutside = useCallback(() => {
     setOpen(false);
-  }, []);
+    referenceElement?.blur();
+  }, [referenceElement]);
 
-  useOnClickOutside(wrapperElementRef, handleClickOutside);
+  useOnPointerDownOutside(wrapperElementRef, handleClickOutside);
 
   const setInputSelectionPoint = useCallback(
     (value: string) => {
@@ -497,6 +498,9 @@ export function Autocomplete(props: AutocompleteProps) {
 
   const handleFocus = useCallback(() => {
     stayOpenOnBlurRef.current = false;
+    setTimeout(() => {
+      setOpen(true);
+    }, 100);
   }, []);
 
   const touchOnList = useCallback(() => {
