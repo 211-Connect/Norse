@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import { createPortal } from 'react-dom';
 import { ChevronLeft } from 'lucide-react';
 
@@ -31,6 +31,8 @@ export function SearchDialog({
 }: SearchDialogProps) {
   const { t } = useTranslation('common');
 
+  const [isPending, startTransition] = useTransition();
+
   const { stringifySearchParams, stringifiedSearchParams } =
     useClientSearchParams();
 
@@ -42,7 +44,6 @@ export function SearchDialog({
   const scrollPositionRef = useRef(0);
   const initialRenderRef = useRef(true);
 
-  const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   const { findCode, getQueryType, locations, search, setSearch } =
@@ -52,67 +53,63 @@ export function SearchDialog({
     async (e) => {
       e.preventDefault();
 
-      if (requireUserLocation && search.searchLocation.trim().length === 0) {
+      startTransition(() => {
+        if (requireUserLocation && search.searchLocation.trim().length === 0) {
+          setSearch((prev) => ({
+            ...prev,
+            searchLocationValidationError: 'Address is required.',
+          }));
+          return;
+        }
+
+        // If the search term matches the query label and we have an existing query,
+        // preserve the original query and query_type
+        let query = search.query;
+        let queryType = search.queryType;
+
+        // Only recalculate if the user has actually changed the search term
+        if (search.searchTerm !== search.queryLabel || !search.query) {
+          query = findCode(search.searchTerm);
+          queryType = getQueryType(search.searchTerm, query);
+        }
+
+        // Ensure queryType is never empty - default to 'taxonomy' if we have a query
+        if (!queryType && query) {
+          queryType = 'taxonomy';
+        }
+
+        const location = locations[0];
+        // Only update location params if the user has actually changed the location
+        // Compare with prevSearchLocation to detect user changes
+        const hasLocationChanged =
+          search.searchLocation !== search.prevSearchLocation;
+        const locationParams =
+          hasLocationChanged && location?.address && location?.coordinates
+            ? {
+                searchLocation: location.address,
+                searchCoordinates: location.coordinates,
+              }
+            : {};
+
+        const urlParams = createUrlParamsForSearch({
+          ...search,
+          ...locationParams,
+          query,
+          queryType,
+        });
+
+        const queryParams = stringifySearchParams(
+          new URLSearchParams(urlParams),
+        );
+
+        router.push(`/search${queryParams}`);
+
         setSearch((prev) => ({
           ...prev,
-          searchLocationValidationError: 'Address is required.',
+          ...locationParams,
+          userCoordinates: search.searchCoordinates,
         }));
-        return;
-      }
-
-      setLoading(true);
-
-      // If the search term matches the query label and we have an existing query,
-      // preserve the original query and query_type
-      let query = search.query;
-      let queryType = search.queryType;
-
-      // Only recalculate if the user has actually changed the search term
-      if (search.searchTerm !== search.queryLabel || !search.query) {
-        query = findCode(search.searchTerm);
-        queryType = getQueryType(search.searchTerm, query);
-      }
-
-      // Ensure queryType is never empty - default to 'taxonomy' if we have a query
-      if (!queryType && query) {
-        queryType = 'taxonomy';
-      }
-
-      const location = locations[0];
-      // Only update location params if the user has actually changed the location
-      // Compare with prevSearchLocation to detect user changes
-      const hasLocationChanged =
-        search.searchLocation !== search.prevSearchLocation;
-      const locationParams =
-        hasLocationChanged && location?.address && location?.coordinates
-          ? {
-              searchLocation: location.address,
-              searchCoordinates: location.coordinates,
-            }
-          : {};
-
-      const urlParams = createUrlParamsForSearch({
-        ...search,
-        ...locationParams,
-        query,
-        queryType,
       });
-
-      const queryParams = stringifySearchParams(new URLSearchParams(urlParams));
-
-      if (queryParams === stringifiedSearchParams) {
-        setLoading(false);
-        setOpen?.(false);
-        return;
-      }
-
-      router.push(`/search${queryParams}`);
-
-      setSearch((prev) => ({
-        ...prev,
-        ...locationParams,
-        userCoordinates: search.searchCoordinates,
-      }));
     },
     [
       findCode,
@@ -121,19 +118,16 @@ export function SearchDialog({
       requireUserLocation,
       router,
       search,
-      setOpen,
       setSearch,
       stringifySearchParams,
-      stringifiedSearchParams,
     ],
   );
 
   useEffect(() => {
-    setOpen?.(false);
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
-  }, [pathname, stringifiedSearchParams, setOpen]);
+    if (!isPending) {
+      setOpen?.(false);
+    }
+  }, [isPending, setOpen]);
 
   useEffect(() => {
     if (initialRenderRef.current) return;
@@ -207,7 +201,7 @@ export function SearchDialog({
                 <ChevronLeft className="size-4 text-primary" />
                 {t('search.back')}
               </Button>
-              <SearchButton loading={loading} />
+              <SearchButton loading={isPending} />
             </div>
             <SearchBar inputId={SEARCH_INPUT_ID} />
             <LocationSearchBar inputId={LOCATION_INPUT_ID} />
