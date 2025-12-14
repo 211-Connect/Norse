@@ -135,6 +135,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       currentPage: page,
       query: ctx.query?.query ?? null,
       query_label: ctx.query?.query_label ?? null,
+      query_type: ctx.query?.query_type ?? null,
       location: finalLocation,
       distance: ctx.query?.distance ?? null,
       coords: finalCoords,

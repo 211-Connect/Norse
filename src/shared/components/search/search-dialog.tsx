@@ -115,8 +115,10 @@ export function SearchDialog({
   );
 
   useEffect(() => {
-    setOpen?.(false);
-  }, [router.asPath, setOpen]);
+    if (!loading) {
+      setOpen?.(false);
+    }
+  }, [loading, setOpen]);
 
   useEffect(() => {
     if (initialRenderRef.current) return;
