@@ -66,10 +66,10 @@ export function HeroSection() {
         className="flex min-w-full flex-col gap-2 rounded-lg bg-primary p-3 sm:min-w-[500px]"
         role="search"
       >
-        <h3 className="text-2xl font-medium text-white">
+        <h2 className="text-2xl font-medium text-white">
           {appConfig.search.texts?.title ||
             t('search.hero_title', { ns: 'common' })}
-        </h3>
+        </h2>
 
         <MainSearchLayout addMyLocationButtonVariant="link" />
       </div>
