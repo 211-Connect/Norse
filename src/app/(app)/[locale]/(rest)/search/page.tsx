@@ -23,7 +23,8 @@ const getPageData = cache(async function (
 
   const appConfig = await getAppConfigWithoutHost(locale);
 
-  const { location, coords, query, query_label } = searchParamsResult;
+  const { location, coords, query, query_label, query_type } =
+    searchParamsResult;
   const cookieList = await getCookies({ cookies });
 
   const { t, resources } = await initTranslations(
@@ -45,6 +46,7 @@ const getPageData = cache(async function (
     location,
     query,
     query_label,
+    query_type,
   };
 });
 
@@ -121,6 +123,7 @@ export default async function SearchPage({ params, searchParams }) {
     location,
     query,
     query_label,
+    query_type,
   } = await getPageData(
     JSON.stringify(paramsResult),
     JSON.stringify(searchParamsResult),
@@ -149,6 +152,7 @@ export default async function SearchPage({ params, searchParams }) {
         noResults,
         query,
         query_label,
+        query_type,
         results,
         totalResults,
       }}

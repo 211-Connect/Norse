@@ -31,11 +31,11 @@ export function SearchDialog({
 }: SearchDialogProps) {
   const { t } = useTranslation('common');
 
-  const { stringifySearchParams } = useClientSearchParams();
+  const { stringifySearchParams, stringifiedSearchParams } =
+    useClientSearchParams();
 
   const router = useRouter();
   const pathname = usePathname();
-  const { stringifiedSearchParams } = useClientSearchParams();
 
   const requireUserLocation = useFlag('requireUserLocation');
 
@@ -100,6 +100,12 @@ export function SearchDialog({
 
       const queryParams = stringifySearchParams(new URLSearchParams(urlParams));
 
+      if (queryParams === stringifiedSearchParams) {
+        setLoading(false);
+        setOpen?.(false);
+        return;
+      }
+
       router.push(`/search${queryParams}`);
 
       setSearch((prev) => ({
@@ -115,8 +121,10 @@ export function SearchDialog({
       requireUserLocation,
       router,
       search,
+      setOpen,
       setSearch,
       stringifySearchParams,
+      stringifiedSearchParams,
     ],
   );
 
