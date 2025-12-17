@@ -15,11 +15,11 @@ export function useLocations(searchTerm: string) {
     initialData: [],
     placeholderData: (prev) => prev,
     queryKey: ['locations', i18n.language, searchTerm],
+    enabled: !!adapter && searchTerm.length > 0,
     queryFn: async () => {
-      if (!i18n.language || searchTerm.length === 0 || !adapter.current)
-        return [];
+      if (!i18n.language || searchTerm.length === 0 || !adapter) return [];
       return await MapService.forwardGeocode(searchTerm, {
-        adapter: adapter.current,
+        adapter,
         locale: i18n.language,
       });
     },

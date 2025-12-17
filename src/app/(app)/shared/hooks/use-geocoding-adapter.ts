@@ -1,8 +1,7 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { BaseGeocoderAdapter } from '../adapters/geocoder/base-geocoder-adapter';
-import { useAppConfig } from './use-app-config';
 
 const geocoders = {
   mapbox: import('../adapters/geocoder/mapbox-adapter').then(
@@ -11,9 +10,7 @@ const geocoders = {
 };
 
 export function useGeocodingAdapter() {
-  const appConfig = useAppConfig();
-
-  const adapter = useRef<BaseGeocoderAdapter>();
+  const [adapter, setAdapter] = useState<BaseGeocoderAdapter>();
 
   useEffect(() => {
     async function getAdapter() {
@@ -25,7 +22,7 @@ export function useGeocodingAdapter() {
           `The requested geocoder adapter '${adapterName}' is not available.`,
         );
       }
-      adapter.current = new Geocoder();
+      setAdapter(new Geocoder());
     }
 
     getAdapter();

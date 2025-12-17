@@ -38,11 +38,11 @@ export function UseMyLocationButton() {
       const lat = position.coords.latitude;
       const lng = position.coords.longitude;
 
-      if (!adapter.current) return;
+      if (!adapter) return;
 
       const promise = MapService.reverseGeocode(`${lng},${lat}`, {
         locale: i18n.language,
-        adapter: adapter.current,
+        adapter,
       });
 
       toast.promise(promise, {

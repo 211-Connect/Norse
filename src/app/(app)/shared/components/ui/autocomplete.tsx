@@ -104,7 +104,9 @@ export function Autocomplete(props: AutocompleteProps) {
   } = props;
 
   const isMouseMoving = useMouseMovement();
-  const [lastManualInput, setLastManualInput] = useState('');
+  const [lastManualInput, setLastManualInput] = useState(
+    inputValue ?? defaultValue ?? '',
+  );
   const [uniqueId, setUnqiueId] = useState('');
   const [open, setOpen] = useState(defaultOpen);
   const [currentIndex, setCurrentIndex] = useState(-1);
@@ -229,6 +231,7 @@ export function Autocomplete(props: AutocompleteProps) {
   const handleInputChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       setCurrentIndex(-1);
+      console.log('tutaj');
       setLastManualInput(e.target.value);
       setValue(e.target.value);
       onInputChange?.(e.target.value);
@@ -438,6 +441,7 @@ export function Autocomplete(props: AutocompleteProps) {
 
   const clear = useCallback(
     (e) => {
+      console.log('tutaj');
       e?.preventDefault();
       setCurrentIndex(-1);
       setValue('');
