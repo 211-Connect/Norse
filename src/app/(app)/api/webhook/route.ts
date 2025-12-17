@@ -33,25 +33,25 @@ export async function POST(request: Request) {
       JSON.stringify(validated, null, 2),
     );
 
-    // await axios.post(`${process.env.WEBHOOK_ALERT_URL}`, {
-    //   embeds: [
-    //     {
-    //       title: 'An unhandled error has occurred',
-    //       description: validated.message,
-    //       author: {
-    //         name: validated.brandName,
-    //         icon_url: validated.faviconUrl || undefined,
-    //       },
-    //       url: validated.url || undefined,
-    //       image: validated.openGraphUrl
-    //         ? { url: validated.openGraphUrl }
-    //         : undefined,
-    //       timestamp: new Date().toISOString(),
-    //       footer: { text: validated.hostname },
-    //       color: 0xff0000,
-    //     },
-    //   ],
-    // });
+    await axios.post(`${process.env.WEBHOOK_ALERT_URL}`, {
+      embeds: [
+        {
+          title: 'An unhandled error has occurred',
+          description: validated.message,
+          author: {
+            name: validated.brandName,
+            icon_url: validated.faviconUrl || undefined,
+          },
+          url: validated.url || undefined,
+          image: validated.openGraphUrl
+            ? { url: validated.openGraphUrl }
+            : undefined,
+          timestamp: new Date().toISOString(),
+          footer: { text: validated.hostname },
+          color: 0xff0000,
+        },
+      ],
+    });
 
     console.log('Successfully sent webhook to Discord');
   } catch (error: any) {
