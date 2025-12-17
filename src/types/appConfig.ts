@@ -98,6 +98,7 @@ export type AppConfig = {
       noResultsFallbackText?: string;
     };
   };
+  sessionId: string;
   suggestions: {
     value: string;
     taxonomies: string;

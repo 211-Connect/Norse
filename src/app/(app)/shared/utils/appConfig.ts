@@ -7,10 +7,11 @@ import { TypedLocale } from 'payload';
 import { findByHostCached } from '@/payload/collections/ResourceDirectories/services/findByHost';
 import { cache } from 'react';
 import { AppConfig } from '@/types/appConfig';
-import { headers } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { getHost } from './getHost';
 import { defaultLocale } from '@/payload/i18n/locales';
 import initTranslations from '../i18n/i18n';
+import { SESSION_ID } from '../lib/constants';
 
 function getMediaUrl(media?: TenantMedia | number | null): string | undefined {
   if (typeof media === 'number' || !media) return undefined;
@@ -116,6 +117,7 @@ async function getAppConfigBase(
         radiusOptions: [],
         resultsLimit: 25,
       },
+      sessionId: '',
       suggestions: [],
       topics: {
         iconSize: 'small',
@@ -134,7 +136,10 @@ async function getAppConfigBase(
   );
 
   const headerList = await headers();
+  const cookiesList = await cookies();
+
   const baseUrl = `${headerList.get('x-forwarded-proto')}://${headerList.get('host')}`;
+  const sessionId = cookiesList.get(SESSION_ID)?.value || '';
 
   try {
     const parsedCenter = JSON.parse(resourceDirectory.search.map.center);
@@ -297,6 +302,7 @@ async function getAppConfigBase(
         title: resourceDirectory.search.texts?.title ?? undefined,
       },
     },
+    sessionId,
     suggestions:
       resourceDirectory.suggestions?.map((suggestion) => ({
         value: suggestion.value,

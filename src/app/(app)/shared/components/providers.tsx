@@ -15,10 +15,12 @@ export function Providers({ appConfig, children, session }) {
       basePath={`${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/api/auth`}
       session={session}
     >
-      <PageView />
       <QueryClientProvider client={queryClient}>
         <AppConfigProvider value={appConfig}>
-          <PrevUrlProvider>{children}</PrevUrlProvider>
+          <PrevUrlProvider>
+            <PageView />
+            {children}
+          </PrevUrlProvider>
         </AppConfigProvider>
       </QueryClientProvider>
     </SessionProvider>

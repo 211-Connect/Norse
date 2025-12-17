@@ -42,23 +42,21 @@ export interface NoResultEvent {
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
-const getFromSessionStorage = async (key: string) => {
+const getFromSessionStorage = (key: string, sessionId: string) => {
   if (key == null) return;
 
-  const cookies = getCookies() ?? {};
-  const itemKey = `event.${cookies['session-id']}.${key}`; // event.1234.pageview
+  const itemKey = `event.${sessionId}.${key}`; // event.1234.pageview
   return JSON.parse(sessionStorage.getItem(itemKey) || 'null');
 };
 
-const setSessionStorage = async (key: string, value: any) => {
+const setSessionStorage = (key: string, value: any, sessionId: string) => {
   if (key == null || value == null) return;
 
-  const cookies = getCookies() ?? {};
-  const itemKey = `event.${cookies['session-id']}.${key}`; // event.1234.pageview
+  const itemKey = `event.${sessionId}.${key}`; // event.1234.pageview
   sessionStorage.setItem(itemKey, JSON.stringify(value || {}));
 };
 
-export const createFeedbackEvent = async (e: any) => {
+export const createFeedbackEvent = (e: any) => {
   if (isDevelopment) {
     console.log({
       event: '/// FEEDBACK EVENT ///',
@@ -67,7 +65,7 @@ export const createFeedbackEvent = async (e: any) => {
   }
 };
 
-export const createLinkEvent = async (e: any) => {
+export const createLinkEvent = (e: any) => {
   if (isDevelopment) {
     console.log({
       event: '/// LINK EVENT ///',
@@ -76,8 +74,8 @@ export const createLinkEvent = async (e: any) => {
   }
 };
 
-export const createPageViewEvent = async (e: any) => {
-  const eventExists = getFromSessionStorage(`pageview-${e.url}`);
+export const createPageViewEvent = (e: any, sessionId: string) => {
+  const eventExists = getFromSessionStorage(`pageview-${e.url}`, sessionId);
 
   if (!eventExists) {
     if (isDevelopment) {
@@ -93,17 +91,21 @@ export const createPageViewEvent = async (e: any) => {
     };
 
     createEvent<PageViewEvent>(newEvent);
-    setSessionStorage(`pageview-${e.url}`, newEvent);
+    setSessionStorage(`pageview-${e.url}`, newEvent, sessionId);
   }
 };
 
-export const createReferralEvent = async (
+export const createReferralEvent = (
   referralType: 'call_referral' | 'website_referral' | 'directions_referral',
   resourceId: string,
   resource: any,
   query: any,
+  sessionId: string,
 ) => {
-  const eventExists = getFromSessionStorage(`referral.${resourceId}`);
+  const eventExists = getFromSessionStorage(
+    `referral.${resourceId}`,
+    sessionId,
+  );
 
   if (!eventExists) {
     if (isDevelopment) {
@@ -121,10 +123,13 @@ export const createReferralEvent = async (
     };
 
     createEvent<ReferralEventProps>(newEvent);
-    setSessionStorage(`referral.${resourceId}`, newEvent);
+    setSessionStorage(`referral.${resourceId}`, newEvent, sessionId);
   }
 
-  const eventExists2 = getFromSessionStorage(`${referralType}.${resourceId}`);
+  const eventExists2 = getFromSessionStorage(
+    `${referralType}.${resourceId}`,
+    sessionId,
+  );
   if (!eventExists2) {
     if (isDevelopment) {
       console.log({
@@ -141,13 +146,16 @@ export const createReferralEvent = async (
     };
 
     createEvent<ReferralEventProps>(newEvent);
-    setSessionStorage(`${referralType}.${resourceId}`, newEvent);
+    setSessionStorage(`${referralType}.${resourceId}`, newEvent, sessionId);
   }
 };
 
-export const createResultsEvent = async (e: any, query: any) => {
+export const createResultsEvent = (e: any, query: any, sessionId: string) => {
   if (query.query_type === 'taxonomy') {
-    const eventExists = getFromSessionStorage(`search.${query.query}`);
+    const eventExists = getFromSessionStorage(
+      `search.${query.query}`,
+      sessionId,
+    );
     const cookies = getCookies() ?? {};
 
     if (!eventExists) {
@@ -170,11 +178,14 @@ export const createResultsEvent = async (e: any, query: any) => {
       };
 
       createEvent<SearchEvent>(newEvent);
-      setSessionStorage(`search.${query.query}`, newEvent);
+      setSessionStorage(`search.${query.query}`, newEvent, sessionId);
 
       const taxonomies = (query?.query as string)?.split(',') ?? [];
       for (const taxonomy of taxonomies) {
-        const eventExists = getFromSessionStorage(`taxonomy.${taxonomy}`);
+        const eventExists = getFromSessionStorage(
+          `taxonomy.${taxonomy}`,
+          sessionId,
+        );
 
         if (!eventExists) {
           const newEvent = {
@@ -185,12 +196,15 @@ export const createResultsEvent = async (e: any, query: any) => {
           };
 
           createEvent<SearchEvent>(newEvent);
-          setSessionStorage(`taxonomy.${taxonomy}`, newEvent);
+          setSessionStorage(`taxonomy.${taxonomy}`, newEvent, sessionId);
         }
       }
     }
   } else {
-    const eventExists = getFromSessionStorage(`search.${query.query}`);
+    const eventExists = getFromSessionStorage(
+      `search.${query.query}`,
+      sessionId,
+    );
     const cookies = getCookies() ?? {};
 
     if (!eventExists) {
@@ -214,12 +228,12 @@ export const createResultsEvent = async (e: any, query: any) => {
       };
 
       createEvent<SearchEvent>(newEvent);
-      setSessionStorage(`search.${query.query}`, newEvent);
+      setSessionStorage(`search.${query.query}`, newEvent, sessionId);
     }
   }
 };
 
-export const createTourEvent = async (data: any) => {
+export const createTourEvent = (data: any) => {
   if (isDevelopment) {
     console.log({
       event: '/// TOUR EVENT ///',
@@ -228,7 +242,7 @@ export const createTourEvent = async (data: any) => {
   }
 };
 
-export async function createEvent<T>(event: T) {
+export function createEvent<T>(event: T) {
   if (typeof window !== 'undefined' && window.dataLayer) {
     window.dataLayer.push(event);
   }

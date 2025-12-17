@@ -7,6 +7,7 @@ import { cn } from '../lib/utils';
 import { Button, ButtonProps } from './ui/button';
 import { ResultType } from '../store/results';
 import { useClientSearchParams } from '../hooks/use-client-search-params';
+import { useAppConfig } from '../hooks/use-app-config';
 
 type Props = {
   referralType: 'call_referral' | 'website_referral' | 'directions_referral';
@@ -26,6 +27,7 @@ export function ReferralButton({
   ...rest
 }: Props & ButtonProps) {
   const { searchParamsObject } = useClientSearchParams();
+  const appConfig = useAppConfig();
 
   const handleClick = (e: any) => {
     createReferralEvent(
@@ -33,6 +35,7 @@ export function ReferralButton({
       resourceId,
       resourceData,
       searchParamsObject,
+      appConfig.sessionId,
     );
     onClick?.(e);
   };
