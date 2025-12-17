@@ -5,7 +5,6 @@ import { updateAndDeleteAccess } from './access/updateAndDelete';
 import { hasResourceDirectory } from './validators/hasResourceDirectory';
 import { revalidateCache } from './hooks/revalidateCache';
 import {
-  isSuperAdmin,
   isSuperAdminAccess,
   isSuperAdminFieldAccess,
   isSuperAdminOrSupportFieldAccess,
@@ -18,6 +17,7 @@ import { removeRelatedResources } from './hooks/removeRelatedResources';
 
 export const Tenants: CollectionConfig = {
   slug: 'tenants',
+  defaultSort: 'name',
   labels: {
     singular: 'Site',
     plural: 'Sites',
