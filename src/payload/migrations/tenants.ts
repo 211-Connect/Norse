@@ -341,6 +341,7 @@ async function createResourceDirectory(
   appConfigId: StrapiAppConfig['id'],
   suggestions?: SuggestionData,
   topics?: CategoryData,
+  facets?: Array<{ name: string; facet: string }>,
 ): Promise<ResourceDirectory> {
   const id = tenant.id;
   const populatedAppConfig = await fetchAppConfig(appConfigId, locale);
@@ -500,6 +501,10 @@ async function createResourceDirectory(
           ...baseData.newLayout,
           ...newLayoutAssets,
         },
+        search: {
+          ...baseData.search,
+          facets,
+        },
       };
 
       const res = await payload.create({
@@ -519,11 +524,20 @@ async function createResourceDirectory(
   }
 
   try {
+    const updatedFacets = (existingDirectory.search.facets ?? []).map(
+      (facet) => {
+        const newFacet = facets?.find((f) => f.facet === facet.facet);
+        return newFacet ? { ...facet, name: newFacet.name } : facet;
+      },
+    );
     return await payload.update({
       collection: 'resource-directories',
       id: existingDirectory.id,
       locale,
-      data: baseData,
+      data: {
+        ...baseData,
+        search: { ...baseData.search, facets: updatedFacets },
+      },
     });
   } catch (error) {
     console.error(error);
@@ -576,6 +590,7 @@ async function processResourceDirectories(
   appConfigIds: Record<string, StrapiAppConfig['id']>,
   suggestions: Record<string, SuggestionData>,
   topics: Record<string, CategoryData>,
+  facets: Record<string, Array<{ name: string; facet: string }>>,
 ) {
   for (const [locale, appConfigId] of Object.entries(appConfigIds)) {
     console.log(
@@ -589,6 +604,7 @@ async function processResourceDirectories(
         appConfigId,
         suggestions[locale],
         topics[locale],
+        facets[locale],
       );
     } catch (error) {
       throw new Error(
@@ -661,6 +677,23 @@ function createAppConfigIdsMap(appConfig: {
   };
 }
 
+function createFacetsMap(
+  baseFacets: { name: string; facet: string }[],
+  localizations: Array<{
+    attributes: { locale: string; facets: { name: string; facet: string }[] };
+  }>,
+): Record<string, Array<{ name: string; facet: string }>> {
+  const facetsMap: Record<string, Array<{ name: string; facet: string }>> = {
+    en: baseFacets,
+  };
+
+  localizations.forEach((loc) => {
+    facetsMap[loc.attributes.locale] = loc.attributes.facets;
+  });
+
+  return facetsMap;
+}
+
 async function processTenant(
   payload: Payload,
   strapiTenant: StrapiTenant,
@@ -705,11 +738,15 @@ async function processTenant(
     console.log(
       `Seed: Found app_config for tenant ${name} (${id}). Creating resource directory.`,
     );
-    let suggestions, appConfigIds, topics;
+    let suggestions, appConfigIds, topics, facets;
     try {
       suggestions = createSuggestionsMap(attributes.suggestion);
       appConfigIds = createAppConfigIdsMap(attributes.app_config);
       topics = createTopicsMap(attributes.category);
+      facets = createFacetsMap(
+        attributes.facets,
+        attributes.localizations.data,
+      );
     } catch (error) {
       // This should not happen due to hasAppConfig check, but for safety:
       throw new Error(
@@ -725,6 +762,7 @@ async function processTenant(
         appConfigIds,
         suggestions,
         topics,
+        facets,
       );
 
       // Now update the tenant to enable the service
@@ -751,25 +789,49 @@ async function processTenant(
 }
 
 async function fetchTenants(): Promise<StrapiTenant[]> {
-  const params = [
-    'locale=en',
-    'populate[trustedDomains]=*',
-    'populate[app_config][populate][0]=localizations',
-    'populate[app_config][populate][1]=nextConfig',
-    'populate[suggestion][populate][0]=list',
-    'populate[suggestion][populate][1]=localizations',
-    'populate[suggestion][populate][2]=localizations.list',
-    'populate[category][populate][0]=list',
-    'populate[category][populate][1]=list.image',
-    'populate[category][populate][2]=list.subcategories',
-    'populate[category][populate][3]=localizations',
-    'populate[category][populate][4]=localizations.list',
-    'populate[category][populate][5]=localizations.list.image',
-    'populate[category][populate][6]=localizations.list.subcategories',
-    'pagination[pageSize]=100',
-  ].join('&');
+  const query = qs.stringify(
+    {
+      locale: 'en',
+      populate: {
+        trustedDomains: '*',
+        localizations: {
+          populate: 'facets',
+        },
+        facets: '*',
+        app_config: {
+          populate: ['localizations', 'nextConfig'],
+        },
+        suggestion: {
+          populate: {
+            list: '*',
+            localizations: {
+              populate: ['list'],
+            },
+          },
+        },
+        category: {
+          populate: {
+            list: {
+              populate: ['image', 'subcategories'],
+            },
+            localizations: {
+              populate: {
+                list: {
+                  populate: ['image', 'subcategories'],
+                },
+              },
+            },
+          },
+        },
+      },
+      pagination: {
+        pageSize: 100,
+      },
+    },
+    { encodeValuesOnly: true },
+  );
 
-  const url = `${process.env.STRAPI_URL}/api/tenants?${params}`;
+  const url = `${process.env.STRAPI_URL}/api/tenants?${query}`;
 
   try {
     const { data } = await fetchJson(url);

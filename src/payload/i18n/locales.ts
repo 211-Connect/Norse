@@ -13,6 +13,7 @@ export const locales = [
   'hr',
   'ht',
   'ko',
+  'km',
   'ne',
   'pl',
   'pt',

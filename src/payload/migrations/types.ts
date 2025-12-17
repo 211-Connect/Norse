@@ -16,10 +16,16 @@ export type StrapiAttributes = {
   tenantId: string;
   trustedDomains: Array<{ url: string }>;
   keycloakRealmId: string;
+  facets: Array<{ name: string; facet: string }>;
   app_config: { data: StrapiAppConfig };
   category: { data: StrapiCategory };
   suggestion: { data: StrapiSuggestion };
   dataProviders: Array<StrapiDataProvider>;
+  localizations: {
+    data: Array<{
+      attributes: { locale: string; facets: { name: string; facet: string }[] };
+    }>;
+  };
 };
 
 export type StrapiTenant = {
