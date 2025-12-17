@@ -107,6 +107,36 @@ export const search: Tab = {
       ],
     },
     {
+      name: 'facets',
+      type: 'array',
+      admin: {
+        components: {
+          RowLabel:
+            '@/payload/collections/ResourceDirectories/components/FacetsRowLabel',
+        },
+      },
+      labels: {
+        singular: 'Facet',
+        plural: 'Facets',
+      },
+      access: {
+        create: hasSearchFieldAccess,
+        update: hasSearchFieldAccess,
+      },
+      fields: [
+        {
+          name: 'name',
+          type: 'text',
+          localized: true,
+        },
+        {
+          name: 'facet',
+          type: 'text',
+          required: true,
+        },
+      ],
+    },
+    {
       type: 'group',
       name: 'map',
       access: {

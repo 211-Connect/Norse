@@ -78,6 +78,10 @@ export type AppConfig = {
     lastAssuredText?: string;
   };
   search: {
+    facets: {
+      name: string;
+      facet: string;
+    }[];
     map: {
       center: [number, number];
       zoom: number;

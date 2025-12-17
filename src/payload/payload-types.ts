@@ -417,6 +417,13 @@ export interface ResourceDirectory {
        */
       defaultRadius?: number | null;
     };
+    facets?:
+      | {
+          name?: string | null;
+          facet: string;
+          id?: string | null;
+        }[]
+      | null;
     map: {
       center: string;
       zoom: number;
@@ -797,6 +804,13 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
                     id?: T;
                   };
               defaultRadius?: T;
+            };
+        facets?:
+          | T
+          | {
+              name?: T;
+              facet?: T;
+              id?: T;
             };
         map?:
           | T

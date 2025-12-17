@@ -6,6 +6,7 @@ import { default as default_770fe60ed8029346277f652cebdaf650 } from '@/payload/c
 import { default as default_f772357a6881d7587c9d743ce8b90802 } from '@/payload/components/ColorPicker'
 import { default as default_e1dfdb6347d608fbc226068dad2ea010 } from '@/payload/collections/ResourceDirectories/components/SuggestionsRowLabel'
 import { default as default_765ef9987a5d1fd11dffcca1049fc6a0 } from '@/payload/collections/ResourceDirectories/components/TopicsRowLabel'
+import { default as default_f83d96d079111af09b6323bb84c1f19e } from '@/payload/collections/ResourceDirectories/components/FacetsRowLabel'
 import { GlobalViewRedirect as GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { TenantSelector as TenantSelector_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
 import { TenantSelectionProvider as TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
@@ -20,6 +21,7 @@ export const importMap = {
   "@/payload/components/ColorPicker#default": default_f772357a6881d7587c9d743ce8b90802,
   "@/payload/collections/ResourceDirectories/components/SuggestionsRowLabel#default": default_e1dfdb6347d608fbc226068dad2ea010,
   "@/payload/collections/ResourceDirectories/components/TopicsRowLabel#default": default_765ef9987a5d1fd11dffcca1049fc6a0,
+  "@/payload/collections/ResourceDirectories/components/FacetsRowLabel#default": default_f83d96d079111af09b6323bb84c1f19e,
   "@payloadcms/plugin-multi-tenant/rsc#GlobalViewRedirect": GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62,
   "@payloadcms/plugin-multi-tenant/client#TenantSelector": TenantSelector_1d0591e3cf4f332c83a86da13a0de59a,
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelectionProvider": TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62,

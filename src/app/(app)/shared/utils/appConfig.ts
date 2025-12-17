@@ -111,6 +111,7 @@ async function getAppConfigBase(
         lastAssuredText: undefined,
       },
       search: {
+        facets: [],
         map,
         radiusOptions: [],
         resultsLimit: 25,
@@ -274,6 +275,12 @@ async function getAppConfigBase(
       lastAssuredText: resourceDirectory.resource?.lastAssuredText ?? undefined,
     },
     search: {
+      facets: (resourceDirectory.search.facets ?? [])
+        .filter(({ name }) => name)
+        .map(({ name, facet }) => ({
+          name: name!,
+          facet,
+        })),
       map,
       radiusOptions:
         resourceDirectory.search.searchSettings.radiusSelectValues ?? [],
@@ -312,7 +319,7 @@ async function getAppConfigBase(
             subtopics?.map(
               ({ name, query, queryType, href, openInNewTab }) => ({
                 name,
-                query: queryType !== 'link' ? (query ?? undefined) : undefined,
+                query: queryType === 'link' ? undefined : (query ?? undefined),
                 queryType: queryType ?? undefined,
                 href: queryType === 'link' ? (href ?? undefined) : undefined,
                 target: openInNewTab ? '_blank' : undefined,
