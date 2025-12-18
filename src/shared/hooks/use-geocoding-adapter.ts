@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { BaseGeocoderAdapter } from '../adapters/geocoder/base-geocoder-adapter';
 import { useAppConfig } from './use-app-config';
 
@@ -9,7 +9,7 @@ const geocoders = {
 };
 
 export function useGeocodingAdapter() {
-  const adapter = useRef<BaseGeocoderAdapter>();
+  const [adapter, setAdapter] = useState<BaseGeocoderAdapter>();
   const appConfig = useAppConfig();
 
   useEffect(() => {
@@ -21,7 +21,7 @@ export function useGeocodingAdapter() {
           `The requested geocoder adapter '${adapterName}' is not available.`,
         );
       }
-      adapter.current = new Geocoder();
+      setAdapter(new Geocoder());
     }
 
     getAdapter();

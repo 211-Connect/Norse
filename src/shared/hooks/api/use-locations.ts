@@ -13,11 +13,12 @@ export function useLocations(searchTerm: string) {
   const { data } = useQuery({
     initialData: [],
     placeholderData: (prev) => prev,
+    enabled: !!adapter && searchTerm.length > 0,
     queryKey: ['locations', router.locale, searchTerm],
     queryFn: async () => {
       if (!router.locale || searchTerm.length === 0) return [];
       return await MapService.forwardGeocode(searchTerm, {
-        adapter: adapter.current,
+        adapter,
         locale: router.locale,
       });
     },

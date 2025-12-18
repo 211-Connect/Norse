@@ -97,7 +97,9 @@ export function Autocomplete(props: AutocompleteProps) {
   } = props;
 
   const isMouseMoving = useMouseMovement();
-  const [lastManualInput, setLastManualInput] = useState('');
+  const [lastManualInput, setLastManualInput] = useState(
+    inputValue ?? defaultValue ?? '',
+  );
   const [uniqueId, setUnqiueId] = useState('');
   const [open, setOpen] = useState(defaultOpen);
   const [currentIndex, setCurrentIndex] = useState(-1);

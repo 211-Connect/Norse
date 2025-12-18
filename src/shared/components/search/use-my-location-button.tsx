@@ -11,14 +11,14 @@ import { Button } from '../ui/button';
 import { useGeocodingAdapter } from '../../hooks/use-geocoding-adapter';
 import { MapService } from '../../services/map-service';
 import { searchAtom } from '../../store/search';
-import { 
-  USER_PREF_COORDS, 
-  USER_PREF_LOCATION, 
-  USER_PREF_COUNTRY, 
-  USER_PREF_DISTRICT, 
-  USER_PREF_PLACE, 
-  USER_PREF_POSTCODE, 
-  USER_PREF_REGION 
+import {
+  USER_PREF_COORDS,
+  USER_PREF_LOCATION,
+  USER_PREF_COUNTRY,
+  USER_PREF_DISTRICT,
+  USER_PREF_PLACE,
+  USER_PREF_POSTCODE,
+  USER_PREF_REGION,
 } from '../../lib/constants';
 
 export function UseMyLocationButton() {
@@ -36,9 +36,11 @@ export function UseMyLocationButton() {
       const lat = position.coords.latitude;
       const lng = position.coords.longitude;
 
+      if (!adapter) return;
+
       const promise = MapService.reverseGeocode(`${lng},${lat}`, {
         locale: router.locale,
-        adapter: adapter.current,
+        adapter,
       });
 
       toast.promise(promise, {
