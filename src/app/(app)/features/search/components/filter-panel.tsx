@@ -15,7 +15,7 @@ import qs from 'qs';
 import { Separator } from '@/app/(app)/shared/components/ui/separator';
 import { Button } from '@/app/(app)/shared/components/ui/button';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { MainSearchLayout } from '@/app/(app)/shared/components/search/main-search-layout';
+import { MainSearchLayout } from '@/app/(app)/shared/components/search/main-search-layout/main-search-layout';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { Filter } from 'lucide-react';
 import { useRouter } from 'next/navigation';

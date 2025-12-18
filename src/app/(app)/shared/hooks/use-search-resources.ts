@@ -10,12 +10,13 @@ import { useTaxonomies } from './api/use-taxonomies';
 import { searchAtom, searchLocationAtom } from '../store/search';
 import { useLocations } from './api/use-locations';
 
-export const useSearchResources = (searchTerm: string = '') => {
+export const useSearchResources = () => {
   const search = useAtomValue(searchAtom);
   const setSearch = useSetAtom(searchAtom);
 
   const debouncedSearchTerm = useDebounce(search.searchTerm, 200);
-  const { data: taxonomies } = useTaxonomies(debouncedSearchTerm);
+  const { data: taxonomies, displayData: displayTaxonomies } =
+    useTaxonomies(debouncedSearchTerm);
   const suggestions = useSuggestions();
   const topics = useTopics();
 
@@ -28,7 +29,7 @@ export const useSearchResources = (searchTerm: string = '') => {
     query?: string;
     queryType?: string;
   }[] = useMemo(() => {
-    if (searchTerm.length === 0) return [];
+    if (search.searchTerm.length === 0) return [];
 
     return topics
       .reduce<SubTopic[]>((prev, current) => {
@@ -41,9 +42,9 @@ export const useSearchResources = (searchTerm: string = '') => {
       }, [])
       .filter(
         ({ name, href }) =>
-          !href && name.toLowerCase().includes(searchTerm.toLowerCase()),
+          !href && name.toLowerCase().includes(search.searchTerm.toLowerCase()),
       );
-  }, [topics, searchTerm]);
+  }, [topics, search.searchTerm]);
 
   const findCode = useCallback(
     (value: string) => {
@@ -99,5 +100,7 @@ export const useSearchResources = (searchTerm: string = '') => {
     search,
     setSearch,
     suggestions,
+    taxonomies,
+    displayTaxonomies,
   };
 };

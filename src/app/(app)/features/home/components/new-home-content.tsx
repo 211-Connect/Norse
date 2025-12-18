@@ -2,7 +2,7 @@
 
 import { useTranslation } from 'react-i18next';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
-import { MainSearchLayout } from '@/app/(app)/shared/components/search/main-search-layout';
+import { MainSearchLayout } from '@/app/(app)/shared/components/search/main-search-layout/main-search-layout';
 import {
   LayoutGrid,
   Mail,

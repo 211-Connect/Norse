@@ -10,11 +10,11 @@ import { SearchButton } from './search-button';
 import { Button } from '../ui/button';
 import { useTranslation } from 'react-i18next';
 import { useFlag } from '../../hooks/use-flag';
-import { useSearchResources } from '../../hooks/use-search-resources';
 import { createUrlParamsForSearch } from '../../services/search-service';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useClientSearchParams } from '../../hooks/use-client-search-params';
 import { cn, getScrollbarWidth } from '../../lib/utils';
+import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
 export interface SearchDialogProps {
   focusByDefault?: 'search' | 'location';
   open: boolean;
@@ -33,11 +33,9 @@ export function SearchDialog({
 
   const [isPending, startTransition] = useTransition();
 
-  const { stringifySearchParams, stringifiedSearchParams } =
-    useClientSearchParams();
+  const { stringifySearchParams } = useClientSearchParams();
 
   const router = useRouter();
-  const pathname = usePathname();
 
   const requireUserLocation = useFlag('requireUserLocation');
 
@@ -47,7 +45,7 @@ export function SearchDialog({
   const [mounted, setMounted] = useState(false);
 
   const { findCode, getQueryType, locations, search, setSearch } =
-    useSearchResources();
+    useMainSearchLayoutContext();
 
   const onSubmit = useCallback(
     async (e) => {
@@ -62,16 +60,8 @@ export function SearchDialog({
           return;
         }
 
-        // If the search term matches the query label and we have an existing query,
-        // preserve the original query and query_type
-        let query = search.query;
-        let queryType = search.queryType;
-
-        // Only recalculate if the user has actually changed the search term
-        if (search.searchTerm !== search.queryLabel || !search.query) {
-          query = findCode(search.searchTerm);
-          queryType = getQueryType(search.searchTerm, query);
-        }
+        let query = findCode(search.searchTerm);
+        let queryType = getQueryType(search.searchTerm, query);
 
         // Ensure queryType is never empty - default to 'taxonomy' if we have a query
         if (!queryType && query) {

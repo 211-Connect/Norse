@@ -8,12 +8,13 @@ import { useAtomValue } from 'jotai';
 import {
   AddMyLocationButton,
   AddMyLocationButtonProps,
-} from './add-my-location-button';
-import { Input } from '../ui/input';
-import { SearchDialog, SearchDialogProps } from './search-dialog';
-import { searchLocationAtom, searchTermAtom } from '../../store/search';
-import { cn } from '../../lib/utils';
-import { useAppConfig } from '../../hooks/use-app-config';
+} from '../add-my-location-button';
+import { Input } from '../../ui/input';
+import { SearchDialog, SearchDialogProps } from '../search-dialog';
+import { searchLocationAtom, searchTermAtom } from '../../../store/search';
+import { cn } from '../../../lib/utils';
+import { useAppConfig } from '../../../hooks/use-app-config';
+import { MainSearchLayoutContextProvider } from './main-search-layout-context';
 
 interface MainSearchLayoutProps {
   addMyLocationButtonVariant?: AddMyLocationButtonProps['variant'];
@@ -50,7 +51,7 @@ export function MainSearchLayout({
   );
 
   return (
-    <>
+    <MainSearchLayoutContextProvider>
       <div className="flex w-full flex-col items-start gap-2">
         <div className={cn('relative w-full', className)}>
           <Input
@@ -78,6 +79,6 @@ export function MainSearchLayout({
         open={dialogOpened}
         setOpen={setDialogOpened}
       />
-    </>
+    </MainSearchLayoutContextProvider>
   );
 }

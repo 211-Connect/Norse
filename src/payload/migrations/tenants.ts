@@ -288,7 +288,7 @@ export async function createTopicsItems(
           name: subcat.name,
           href: subcat.href,
           query: subcat.query,
-          queryType: subcat.queryType,
+          queryType: subcat.queryType || (subcat.href ? 'link' : 'text'),
         })),
       };
     }) ?? [],

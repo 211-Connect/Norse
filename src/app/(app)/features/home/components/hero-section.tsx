@@ -4,7 +4,7 @@ import { useTour } from '@reactour/tour';
 import { useMemo } from 'react';
 import { createTourEvent } from '@/app/(app)/shared/lib/google-tag-manager';
 import { Button } from '@/app/(app)/shared/components/ui/button';
-import { MainSearchLayout } from '@/app/(app)/shared/components/search/main-search-layout';
+import { MainSearchLayout } from '@/app/(app)/shared/components/search/main-search-layout/main-search-layout';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
 import { useTranslation } from 'react-i18next';
