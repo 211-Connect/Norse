@@ -23,8 +23,8 @@ import {
 } from '@/shared/lib/constants';
 import { Autocomplete } from '../ui/autocomplete';
 import { DistanceSelect } from './distance-select';
-import { useSearchResources } from '@/shared/hooks/use-search-resources';
 import { UseMyLocationButton } from './use-my-location-button';
+import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
 
 type LocationSearchBarProps = {
   className?: string;
@@ -50,7 +50,7 @@ export function LocationSearchBar({
   } = useLocations(shouldSearch ? debouncedSearchLocation : prevSearchLocation);
   const validationError = useAtomValue(searchLocationValidationErrorAtom);
 
-  const { setSearch } = useSearchResources();
+  const { setSearch } = useMainSearchLayoutContext();
 
   const findCoords = useCallback(
     (value: string) => {

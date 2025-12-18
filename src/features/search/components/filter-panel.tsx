@@ -15,7 +15,7 @@ import { useTranslation } from 'next-i18next';
 import { Separator } from '@/shared/components/ui/separator';
 import { Button } from '@/shared/components/ui/button';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { MainSearchLayout } from '@/shared/components/search/main-search-layout';
+import { MainSearchLayout } from '@/shared/components/search/main-search-layout/main-search-layout';
 import { cn } from '@/shared/lib/utils';
 import { Filter } from 'lucide-react';
 import { HEADER_ID } from '@/shared/lib/constants';

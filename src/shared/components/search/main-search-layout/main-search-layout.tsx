@@ -1,15 +1,16 @@
 import { SearchIcon } from 'lucide-react';
 import { use, useCallback, useState } from 'react';
-import { Input } from '../ui/input';
+import { Input } from '../../ui/input';
 import { useTranslation } from 'next-i18next';
-import { SearchDialog, SearchDialogProps } from './search-dialog';
+import { SearchDialog, SearchDialogProps } from '../search-dialog';
 import { useAtomValue } from 'jotai';
 import { searchLocationAtom, searchTermAtom } from '@/shared/store/search';
 import { cn } from '@/shared/lib/utils';
 import {
   AddMyLocationButton,
   AddMyLocationButtonProps,
-} from './add-my-location-button';
+} from '../add-my-location-button';
+import { MainSearchLayoutContextProvider } from './main-search-layout-context';
 
 interface MainSearchLayoutProps {
   addMyLocationButtonVariant?: AddMyLocationButtonProps['variant'];
@@ -45,7 +46,7 @@ export function MainSearchLayout({
   );
 
   return (
-    <>
+    <MainSearchLayoutContextProvider>
       <div className="flex w-full flex-col items-start gap-2">
         <div className={cn('relative w-full', className)}>
           <Input
@@ -69,6 +70,6 @@ export function MainSearchLayout({
         open={dialogOpened}
         setOpen={setDialogOpened}
       />
-    </>
+    </MainSearchLayoutContextProvider>
   );
 }

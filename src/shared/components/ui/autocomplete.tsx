@@ -100,7 +100,7 @@ export function Autocomplete(props: AutocompleteProps) {
   const [lastManualInput, setLastManualInput] = useState(
     inputValue ?? defaultValue ?? '',
   );
-  const [uniqueId, setUnqiueId] = useState('');
+  const [uniqueId, setUniqueId] = useState('');
   const [open, setOpen] = useState(defaultOpen);
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [value, setValue] = useUncontrolled<string>({
@@ -109,6 +109,7 @@ export function Autocomplete(props: AutocompleteProps) {
     finalValue: '',
     onChange: onValueChange,
   });
+  const [tempValue, setTempValue] = useState(value || '');
   const clearButtonRef = useRef(null);
 
   const stayOpenOnBlurRef = useRef(false);
@@ -435,20 +436,20 @@ export function Autocomplete(props: AutocompleteProps) {
         const nextOption = rest.options[index];
         const selectionValue = nextOption?.value;
         setCurrentIndex(index);
-        setValue(selectionValue);
+        setTempValue(selectionValue);
         setInputSelectionPoint(selectionValue);
       };
     },
-    [rest.options, setInputSelectionPoint, setValue, isMouseMoving],
+    [rest.options, setInputSelectionPoint, isMouseMoving],
   );
 
   const handleOptionMouseExit = useCallback(() => {
     return () => {
       setCurrentIndex(-1);
-      setValue(lastManualInput);
+      setTempValue(lastManualInput);
       setInputSelectionPoint(lastManualInput);
     };
-  }, [setInputSelectionPoint, setValue, lastManualInput]);
+  }, [setInputSelectionPoint, lastManualInput]);
 
   const handleBlur = useCallback(
     (e) => {
@@ -489,9 +490,13 @@ export function Autocomplete(props: AutocompleteProps) {
     }
   }, [blurOnOptionsInteraction, referenceElement]);
 
+  useEffect(() => {
+    setTempValue(value ?? '');
+  }, [value]);
+
   // Set unique ID for component
   useEffect(() => {
-    setUnqiueId(`search-results-${Math.random().toString(36).substring(2, 9)}`);
+    setUniqueId(`search-results-${Math.random().toString(36).substring(2, 9)}`);
   }, []);
 
   return (
@@ -517,7 +522,7 @@ export function Autocomplete(props: AutocompleteProps) {
           onBlur={handleBlur}
           onFocus={handleFocus}
           onChange={handleInputChange}
-          value={value}
+          value={tempValue}
           autoComplete="off"
           aria-autocomplete="list"
           aria-controls={open ? uniqueId : undefined}

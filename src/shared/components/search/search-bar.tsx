@@ -1,13 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useCallback, useMemo } from 'react';
+import { useAtomValue } from 'jotai';
 import { useTranslation } from 'next-i18next';
-import { useTaxonomies } from '../../hooks/api/use-taxonomies';
 import { prevSearchTermAtom, searchTermAtom } from '../../store/search';
-import { useDebounce } from '../../hooks/use-debounce';
 import { useFlag } from '@/shared/hooks/use-flag';
 import { Autocomplete } from '../ui/autocomplete';
-import { useSearchResources } from '@/shared/hooks/use-search-resources';
 import { SearchIcon } from 'lucide-react';
+import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
 
 interface SearchBarProps {
   focusByDefault?: boolean;
@@ -16,17 +14,20 @@ interface SearchBarProps {
 
 export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
   const { t } = useTranslation();
-  const [shouldSearch, setShouldSearch] = useState(false);
   const prevSearchTerm = useAtomValue(prevSearchTermAtom);
   const searchTerm = useAtomValue(searchTermAtom);
-  const debouncedSearchTerm = useDebounce(searchTerm, 200);
-  const { data: taxonomies } = useTaxonomies(
-    shouldSearch ? debouncedSearchTerm : prevSearchTerm,
-  );
   const showTaxonomyBadge = useFlag('showSuggestionListTaxonomyBadge');
 
-  const { reducedCategories, findCode, getQueryType, setSearch, suggestions } =
-    useSearchResources(shouldSearch ? debouncedSearchTerm : prevSearchTerm);
+  const {
+    findCode,
+    getQueryType,
+    setSearch,
+    suggestions,
+    displayTaxonomies: taxonomiesDisplay,
+    shouldSearch,
+    setShouldSearch,
+    reducedCategories,
+  } = useMainSearchLayoutContext();
 
   // Remap and filter data as needed for the search box
   const options = useMemo(() => {
@@ -58,7 +59,7 @@ export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
               ?.includes(prevSearchTerm?.toLowerCase()),
       );
 
-    const taxonomyList = taxonomies.map((option) => ({
+    const taxonomyList = taxonomiesDisplay.map((option) => ({
       group: t('search.taxonomies'),
       value: option.name,
       label: showTaxonomyBadge ? option.code : null,
@@ -76,7 +77,7 @@ export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
   }, [
     suggestions,
     reducedCategories,
-    taxonomies,
+    taxonomiesDisplay,
     t,
     shouldSearch,
     searchTerm,

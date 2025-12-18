@@ -1,6 +1,6 @@
 import { useTranslation } from 'next-i18next';
 import { useAppConfig } from '@/shared/hooks/use-app-config';
-import { MainSearchLayout } from '@/shared/components/search/main-search-layout';
+import { MainSearchLayout } from '@/shared/components/search/main-search-layout/main-search-layout';
 
 import {
   LayoutGrid,

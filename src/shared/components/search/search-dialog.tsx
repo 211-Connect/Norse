@@ -8,9 +8,9 @@ import { SearchButton } from './search-button';
 import { useFlag } from '@/shared/hooks/use-flag';
 import { SearchService } from '@/shared/services/search-service';
 import { useRouter } from 'next/router';
-import { useSearchResources } from '@/shared/hooks/use-search-resources';
 import { cn, getScrollbarWidth } from '@/shared/lib/utils';
 import { createPortal } from 'react-dom';
+import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
 
 const SEARCH_INPUT_ID = 'search-input';
 const LOCATION_INPUT_ID = 'location-input';
@@ -38,7 +38,7 @@ export function SearchDialog({
   const router = useRouter();
 
   const { findCode, getQueryType, locations, search, setSearch } =
-    useSearchResources();
+    useMainSearchLayoutContext();
 
   const onSubmit = useCallback(
     async (e) => {
