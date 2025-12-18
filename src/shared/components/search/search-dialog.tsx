@@ -54,16 +54,8 @@ export function SearchDialog({
 
       setLoading(true);
 
-      // If the search term matches the query label and we have an existing query,
-      // preserve the original query and query_type
-      let query = search.query;
-      let queryType = search.queryType;
-
-      // Only recalculate if the user has actually changed the search term
-      if (search.searchTerm !== search.queryLabel || !search.query) {
-        query = findCode(search.searchTerm);
-        queryType = getQueryType(search.searchTerm, query);
-      }
+      let query = findCode(search.searchTerm);
+      let queryType = getQueryType(search.searchTerm, query);
 
       // Ensure queryType is never empty - default to 'taxonomy' if we have a query
       if (!queryType && query) {
