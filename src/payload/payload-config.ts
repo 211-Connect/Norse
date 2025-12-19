@@ -20,11 +20,12 @@ import { getUserTenantIDs } from './utilities/getUserTenantIDs';
 import { seedEndpoint, addLocalAdminEndpoint } from './migrations';
 import { isSuperAdmin, isSupport } from './collections/Users/access/roles';
 import { sendGridTransport } from './utilities/sendgridAdapter';
+import { clearCache } from './endpoints/clearCache';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
-const endpoints: Endpoint[] = [seedEndpoint];
+const endpoints: Endpoint[] = [clearCache, seedEndpoint];
 
 if (process.env.NODE_ENV === 'development') {
   endpoints.push(addLocalAdminEndpoint);
@@ -37,6 +38,9 @@ const config = buildConfig({
       baseDir: path.resolve(dirname, '../'),
     },
     user: Users.slug,
+    components: {
+      afterNavLinks: ['@/payload/components/ClearCacheButton'],
+    },
   },
   secret: process.env.PAYLOAD_SECRET as string,
   email: nodemailerAdapter({

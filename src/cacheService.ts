@@ -12,6 +12,10 @@ export function cacheService() {
 
   const client = getRedisClient();
 
+  async function clear() {
+    return client?.flushdb();
+  }
+
   async function set(key: string, value: string) {
     return client?.set(key, value);
   }
@@ -34,6 +38,7 @@ export function cacheService() {
   }
 
   return {
+    clear,
     set,
     get,
     del,
