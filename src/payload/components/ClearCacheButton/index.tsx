@@ -21,7 +21,7 @@ const ClearCacheButton = () => {
 
   if (loading) {
     return (
-      <Button size="large" disabled>
+      <Button className="clear-cache-button" size="large" disabled>
         Clearing cache...
       </Button>
     );
