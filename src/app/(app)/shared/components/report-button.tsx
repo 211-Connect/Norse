@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppConfig } from '../hooks/use-app-config';
 import { Button } from './ui/button';
 
-export function ReportButton({}) {
+export function ReportButton({ customText }: { customText?: string }) {
   const appConfig = useAppConfig();
   const { t } = useTranslation('page-resource');
 
@@ -38,7 +38,7 @@ export function ReportButton({}) {
       }}
     >
       <TriangleAlert className="size-4" />
-      {t('report')}
+      {customText || t('report')}
     </Button>
   );
 }

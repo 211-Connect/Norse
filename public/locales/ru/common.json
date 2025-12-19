@@ -5,7 +5,8 @@
     "log_out": "Выходить",
     "language_select_label": "Выберите язык для изменения языка сайта",
     "my_stuff": "Мои вещи",
-    "search": "Поиск"
+    "search": "Поиск",
+    "report": "Отправить отзыв"
   },
   "favorites": {
     "added_to_list": "Добавлено в список",

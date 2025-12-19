@@ -5,7 +5,8 @@
     "log_out": "로그아웃",
     "language_select_label": "사이트 언어를 변경할 언어를 선택합니다.",
     "my_stuff": "내 물건",
-    "search": "검색"
+    "search": "검색",
+    "report": "피드백 제출"
   },
   "favorites": {
     "added_to_list": "목록에 추가됨",

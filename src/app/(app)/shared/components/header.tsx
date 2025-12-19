@@ -37,6 +37,7 @@ import {
 import { Card, CardContent } from './ui/card';
 import { cn } from '../lib/utils';
 import { LanguageSwitcher } from './language-switcher';
+import { ReportButton } from './report-button';
 
 export function Header() {
   const appConfig = useAppConfig();
@@ -109,6 +110,11 @@ export function Header() {
         )}
       </Fragment>,
       <Fragment key="2">
+        {appConfig.featureFlags.showFeedbackButtonGlobal && (
+          <ReportButton customText={t('header.report')} />
+        )}
+      </Fragment>,
+      <Fragment key="3">
         {appConfig.header.customMenu.length > 0 &&
           appConfig.header.customMenu.map((item) => {
             if (item.href == null) return;
@@ -131,10 +137,10 @@ export function Header() {
             );
           })}
       </Fragment>,
-      <Fragment key="3">
+      <Fragment key="4">
         <LanguageSwitcher />
       </Fragment>,
-      <Fragment key="4">
+      <Fragment key="5">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -193,7 +199,7 @@ export function Header() {
           </DropdownMenuContent>
         </DropdownMenu>
       </Fragment>,
-      <Fragment key="5">
+      <Fragment key="6">
         {appConfig.header.safeExit?.enabled && (
           <li>
             <Link
@@ -217,6 +223,7 @@ export function Header() {
       appConfig.header.safeExit?.target,
       appConfig.header.safeExit?.url,
       appConfig.header.safeExit?.text,
+      appConfig.featureFlags.showFeedbackButtonGlobal,
       newLayoutEnabled,
       t,
       session.status,

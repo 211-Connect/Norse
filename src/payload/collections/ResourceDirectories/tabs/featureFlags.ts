@@ -126,5 +126,23 @@ export const featureFlags: Tab = {
         update: hasFeatureFieldAccess,
       },
     },
+    {
+      name: 'showFeedbackButtonGlobal',
+      type: 'checkbox',
+      defaultValue: false,
+      access: {
+        create: hasFeatureFieldAccess,
+        update: hasFeatureFieldAccess,
+      },
+    },
+    {
+      name: 'showFeedbackButtonOnResourcePages',
+      type: 'checkbox',
+      defaultValue: true,
+      access: {
+        create: hasFeatureFieldAccess,
+        update: hasFeatureFieldAccess,
+      },
+    },
   ],
 };

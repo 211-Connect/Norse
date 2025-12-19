@@ -28,6 +28,8 @@ export type AppConfig = {
     hideCategoriesHeading: boolean;
     hideDataProvidersHeading: boolean;
     requireUserLocation: boolean;
+    showFeedbackButtonGlobal: boolean;
+    showFeedbackButtonOnResourcePages: boolean;
     showHomePageTour: boolean;
     showResourceLastAssuredDate: boolean;
     showPrintButton: boolean;

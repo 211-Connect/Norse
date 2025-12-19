@@ -477,6 +477,8 @@ export interface ResourceDirectory {
     showPrintButton?: boolean | null;
     turnResourceCardTaxonomiesIntoLinks?: boolean | null;
     useHybridSemanticSearch?: boolean | null;
+    showFeedbackButtonGlobal?: boolean | null;
+    showFeedbackButtonOnResourcePages?: boolean | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -877,6 +879,8 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         showPrintButton?: T;
         turnResourceCardTaxonomiesIntoLinks?: T;
         useHybridSemanticSearch?: T;
+        showFeedbackButtonGlobal?: T;
+        showFeedbackButtonOnResourcePages?: T;
       };
   updatedAt?: T;
   createdAt?: T;

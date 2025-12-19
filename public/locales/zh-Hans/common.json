@@ -5,7 +5,8 @@
     "log_out": "注销",
     "language_select_label": "选择一种语言以更改网站语言",
     "my_stuff": "我的东西",
-    "search": "搜索"
+    "search": "搜索",
+    "report": "提交反馈"
   },
   "favorites": {
     "added_to_list": "已添加到列表",

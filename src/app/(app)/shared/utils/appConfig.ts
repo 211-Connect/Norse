@@ -75,6 +75,8 @@ async function getAppConfigBase(
         hideCategoriesHeading: false,
         hideDataProvidersHeading: false,
         requireUserLocation: false,
+        showFeedbackButtonGlobal: false,
+        showFeedbackButtonOnResourcePages: false,
         showHomePageTour: false,
         showPrintButton: false,
         showResourceCategories: false,
@@ -212,6 +214,11 @@ async function getAppConfigBase(
         resourceDirectory.featureFlags?.hideDataProvidersHeading ?? false,
       requireUserLocation:
         resourceDirectory.featureFlags?.requireUserLocation ?? false,
+      showFeedbackButtonGlobal:
+        resourceDirectory.featureFlags?.showFeedbackButtonGlobal ?? false,
+      showFeedbackButtonOnResourcePages:
+        resourceDirectory.featureFlags?.showFeedbackButtonOnResourcePages ??
+        false,
       showHomePageTour:
         resourceDirectory.featureFlags?.showHomePageTour ?? false,
       showPrintButton: resourceDirectory.featureFlags?.showPrintButton ?? false,
