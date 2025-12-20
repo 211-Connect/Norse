@@ -111,7 +111,10 @@ export function Header() {
       </Fragment>,
       <Fragment key="2">
         {appConfig.featureFlags.showFeedbackButtonGlobal && (
-          <ReportButton customText={t('header.report')} />
+          <ReportButton
+            customText={t('header.report')}
+            className={newLayoutEnabled ? '!bg-white' : undefined}
+          />
         )}
       </Fragment>,
       <Fragment key="3">

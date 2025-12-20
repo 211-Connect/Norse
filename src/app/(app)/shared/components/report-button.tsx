@@ -5,8 +5,15 @@ import { useTranslation } from 'react-i18next';
 
 import { useAppConfig } from '../hooks/use-app-config';
 import { Button } from './ui/button';
+import { cn } from '../lib/utils';
 
-export function ReportButton({ customText }: { customText?: string }) {
+export function ReportButton({
+  className,
+  customText,
+}: {
+  className?: string;
+  customText?: string;
+}) {
   const appConfig = useAppConfig();
   const { t } = useTranslation('page-resource');
 
@@ -17,7 +24,7 @@ export function ReportButton({ customText }: { customText?: string }) {
   return (
     <Button
       key="feedback"
-      className="flex gap-1"
+      className={cn('flex gap-1', className)}
       variant="outline"
       onClick={(e) => {
         e.preventDefault();
