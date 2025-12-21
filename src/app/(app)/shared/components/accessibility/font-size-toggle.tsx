@@ -7,8 +7,9 @@ import { USER_PREF_FONT_SIZE } from '../../lib/constants';
 import { useAppConfig } from '../../hooks/use-app-config';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { accessibilityAtom } from '../../store/accessibility';
+import { cn } from '../../lib/utils';
 
-export const FontSizeToggle = () => {
+export const FontSizeToggle = ({ className }: { className?: string }) => {
   const accessibility = useAtomValue(accessibilityAtom);
   const setAccessibility = useSetAtom(accessibilityAtom);
 
@@ -41,7 +42,10 @@ export const FontSizeToggle = () => {
     <ToggleGroup
       type="single"
       aria-label="Font size toggle"
-      className="flex flex-shrink-0 overflow-hidden rounded bg-white font-medium text-foreground [&>*[data-state=on]]:bg-background-highlight [&>*]:cursor-pointer [&>*]:rounded [&>*]:p-[7px]"
+      className={cn(
+        'flex flex-shrink-0 overflow-hidden rounded bg-white font-medium text-foreground [&>*[data-state=on]]:bg-background-highlight [&>*]:cursor-pointer [&>*]:rounded [&>*]:p-[7px]',
+        className,
+      )}
       value={accessibility.fontSize}
       onValueChange={(value) => setAccessibility({ fontSize: value })}
     >

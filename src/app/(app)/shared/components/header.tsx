@@ -115,7 +115,7 @@ export function Header() {
         )}
       </Fragment>,
       <Fragment key="2">
-        <FontSizeToggle />
+        <FontSizeToggle className="hidden sm:flex" />
       </Fragment>,
       <Fragment key="3">
         {appConfig.featureFlags.showFeedbackButtonGlobal && (
