@@ -122,10 +122,13 @@ export const topics: Tab = {
               type: 'text',
               admin: {
                 components: {
-                  Label: '@/payload/components/LabelInfoTooltip',
+                  Label:
+                    '@/payload/collections/ResourceDirectories/components/TopicsLabelInfoTooltip',
                 },
                 condition: (_, siblingData) => {
-                  return siblingData?.queryType !== 'link';
+                  return (
+                    siblingData?.queryType && siblingData?.queryType !== 'link'
+                  );
                 },
               },
             },

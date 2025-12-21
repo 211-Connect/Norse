@@ -12,6 +12,8 @@ const TOOLTIP_MAPPER: Record<string, string> = {
   openGraph: 'The image used when sharing over social media',
   query:
     'Use a comma to separate taxonomy codes in a list. Example: BD-1800,BD-2000',
+  queryText:
+    'Use keywords or a phrase like "secondary disaster insurance" or "Goodwill"',
   taxonomies:
     'Use a comma to separate taxonomy codes in a list. Example: BD-1800,BD-2000',
 };
