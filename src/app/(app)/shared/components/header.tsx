@@ -273,7 +273,7 @@ export function Header() {
             <img
               src={logoUrl}
               alt={t('header.home') as string}
-              className="max-h-full w-auto object-contain"
+              className="max-h-full w-auto object-contain lg:max-w-[400px]"
             />
           </div>
         </div>
