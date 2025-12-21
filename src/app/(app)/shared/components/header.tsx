@@ -282,7 +282,9 @@ export function Header() {
           id={HEADER_DESKTOP_ID}
           className="z-[1] ml-auto hidden w-fit justify-end overflow-hidden lg:flex"
         >
-          <ul className="flex items-center gap-6 overflow-x-auto">{SITEMAP}</ul>
+          <ul className="flex items-center gap-6 overflow-x-auto overflow-y-hidden">
+            {SITEMAP}
+          </ul>
         </nav>
 
         <div
