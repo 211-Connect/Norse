@@ -156,7 +156,7 @@ export function Map({
         mapLibreMap.current.fitBounds(bounds, {
           padding: 50,
           animate: false,
-          zoom: 15, // Zoom level for single or two markers
+          maxZoom: 15, // Zoom level for single or two markers
         });
       } else if (_markers.current.length > 0) {
         mapLibreMap.current.fitBounds(bounds, {
