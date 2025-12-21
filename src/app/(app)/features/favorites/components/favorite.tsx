@@ -132,12 +132,12 @@ export function Favorite({
                   <div className="flex max-w-full items-center gap-1">
                     <MapPin className="size-4 shrink-0 text-primary" />
                     <p className="truncate text-sm font-normal">
-                      {t('search.address_unavailable')}
+                      {t('search.address_unavailable', { ns: 'common' })}
                     </p>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-64" side="right">
-                  <p>{t('search.confidential_address')}</p>
+                  <p>{t('search.confidential_address', { ns: 'common' })}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -196,7 +196,7 @@ export function Favorite({
         <CardFooter className="flex flex-col gap-2 print:hidden">
           <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center">
             <ReferralButton
-              className="flex-1 gap-1"
+              className="flex-1 gap-1 overflow-hidden"
               size="sm"
               disabled={!data.displayPhoneNumber}
               referralType="call_referral"
@@ -208,11 +208,14 @@ export function Favorite({
               }}
             >
               <Phone className="size-4" />{' '}
-              {t('call_to_action.call', { ns: 'common' })}
+              <span className="truncate">
+                {' '}
+                {t('call_to_action.call', { ns: 'common' })}{' '}
+              </span>
             </ReferralButton>
 
             <ReferralButton
-              className="flex-1 gap-1"
+              className="flex-1 gap-1 overflow-hidden"
               referralType="website_referral"
               size="sm"
               resourceId={data._id}
@@ -224,10 +227,17 @@ export function Favorite({
               }}
             >
               <LinkIcon className="size-4" />{' '}
-              {t('call_to_action.view_website', { ns: 'common' })}
+              <span className="truncate">
+                {' '}
+                {t('call_to_action.view_website', { ns: 'common' })}{' '}
+              </span>
             </ReferralButton>
 
-            <GetDirectionsButton data={data} coords={coords} />
+            <GetDirectionsButton
+              className="overflow-hidden"
+              data={data}
+              coords={coords}
+            />
           </div>
           <div className="flex w-full items-center gap-2">
             <Link

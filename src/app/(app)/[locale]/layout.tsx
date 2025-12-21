@@ -10,6 +10,8 @@ import { AppConfig } from '@/types/appConfig';
 import { notFound } from 'next/navigation';
 import { Providers } from '../shared/components/providers';
 import { getSession } from '../shared/utils/getServerSession';
+import { cookies } from 'next/headers';
+import { USER_PREF_FONT_SIZE } from '../shared/lib/constants';
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -36,7 +38,9 @@ export const generateMetadata = async ({
   };
 };
 
-function prepareTheme(appConfig: AppConfig) {
+async function prepareTheme(appConfig: AppConfig) {
+  const cookieList = await cookies();
+
   const {
     borderRadius: borderRadiusFromTheme,
     primaryColor,
@@ -54,6 +58,21 @@ function prepareTheme(appConfig: AppConfig) {
 
   const borderRadius = borderRadiusFromTheme ?? '0.5rem';
 
+  let savedFontSize: string | undefined = undefined;
+
+  if (appConfig.accessibility.fontSize.allowedValues.length > 1) {
+    const fontSizeCookie = cookieList.get(USER_PREF_FONT_SIZE);
+
+    if (
+      fontSizeCookie &&
+      appConfig.accessibility.fontSize.allowedValues.includes(
+        fontSizeCookie.value,
+      )
+    ) {
+      savedFontSize = fontSizeCookie.value;
+    }
+  }
+
   return {
     '--primary': `${primaryHsl[0]} ${primaryHsl[1]}% ${primaryHsl[2]}%`,
     '--primary-foreground': primaryForeground,
@@ -62,6 +81,7 @@ function prepareTheme(appConfig: AppConfig) {
     '--border-radius': borderRadius,
     '--header-start': headerStart || '#ffffff',
     '--header-end': headerEnd || '#ffffff',
+    'font-size': savedFontSize,
   };
 }
 
@@ -81,10 +101,10 @@ export default async function RootLayout({
     notFound();
   }
 
-  const theme = prepareTheme(appConfig);
+  const theme = await prepareTheme(appConfig);
 
   return (
-    <html lang={locale} style={theme as any}>
+    <html lang={locale} style={theme as any} className="max-sm:!text-[100%]">
       <body
         className={cn('font-sans antialiased', fontSans.variable)}
         id="app-root"

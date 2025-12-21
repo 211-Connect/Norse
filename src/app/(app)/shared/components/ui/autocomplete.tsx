@@ -536,7 +536,7 @@ export function Autocomplete(props: AutocompleteProps) {
         <Input
           {...inputProps}
           className={cn(
-            'h-auto w-full rounded-lg border p-0 px-[29px] py-2 text-xs shadow-none focus:border-primary focus-visible:ring-0',
+            'h-auto w-full rounded-lg border p-0 px-[1.8rem] py-2 text-xs shadow-none focus:border-primary focus-visible:ring-0',
             inputProps?.className,
           )}
           ref={setReferenceElement}

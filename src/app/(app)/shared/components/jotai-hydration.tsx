@@ -14,6 +14,7 @@ import { setCookie, deleteCookie } from 'cookies-next';
 import {
   USER_PREF_COORDS,
   USER_PREF_DISTANCE,
+  USER_PREF_FONT_SIZE,
   USER_PREF_LOCATION,
 } from '../lib/constants';
 import {
@@ -22,6 +23,7 @@ import {
 } from '../store/favorites';
 import { deviceAtom } from '../store/device';
 import { validateCoordsString } from '../lib/validators';
+import { accessibilityAtom } from '../store/accessibility';
 
 function getCoordinates(pageProps, cookies) {
   if (pageProps.coords) {
@@ -64,6 +66,7 @@ export function JotaiHydration({ cookies = {}, pageProps }) {
   const appConfig = useAppConfig();
 
   useHydrateAndSyncAtoms([
+    [accessibilityAtom, { fontSize: cookies[USER_PREF_FONT_SIZE] || '1rem' }],
     [
       deviceAtom,
       pageProps?.device ?? {

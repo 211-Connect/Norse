@@ -68,7 +68,9 @@ export function GetDirectionsButton({
         onClick={onClick}
       >
         <Map className="mr-[5px] size-4" />{' '}
-        {text || t('call_to_action.get_directions')}
+        <span className="truncate">
+          {text || t('call_to_action.get_directions')}
+        </span>
       </ReferralButton>
 
       <Dialog open={open} onOpenChange={setOpen}>

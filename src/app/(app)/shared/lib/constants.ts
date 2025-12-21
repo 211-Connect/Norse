@@ -25,5 +25,8 @@ export const USER_PREF_DISTRICT = 'user-pref-district';
 export const USER_PREF_PLACE = 'user-pref-place';
 export const USER_PREF_POSTCODE = 'user-pref-postcode';
 export const USER_PREF_REGION = 'user-pref-region';
+export const USER_PREF_FONT_SIZE = 'user-pref-font-size';
 
 export const HEADER_ID = 'app-header';
+export const HEADER_DESKTOP_ID = 'app-header-desktop';
+export const HEADER_MOBILE_ID = 'app-header-mobile';

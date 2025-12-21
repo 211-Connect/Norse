@@ -297,6 +297,9 @@ export interface ResourceDirectory {
   tenant?: (string | null) | Tenant;
   id: string;
   name: string;
+  accessibility?: {
+    fontSizeAdjustment?: ('150%' | '175%' | '200%') | null;
+  };
   common?: {
     alert?:
       | {
@@ -664,6 +667,11 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
   tenant?: T;
   id?: T;
   name?: T;
+  accessibility?:
+    | T
+    | {
+        fontSizeAdjustment?: T;
+      };
   common?:
     | T
     | {

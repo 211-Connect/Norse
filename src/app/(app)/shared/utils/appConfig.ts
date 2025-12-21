@@ -64,6 +64,11 @@ async function getAppConfigBase(
 
   if (!resourceDirectory) {
     return {
+      accessibility: {
+        fontSize: {
+          allowedValues: ['1rem'],
+        },
+      },
       baseUrl: '',
       brand: {
         name: '',
@@ -182,7 +187,19 @@ async function getAppConfigBase(
   const heroUrl =
     newLayout?.heroUrl ?? getMediaUrl(resourceDirectory.brand.hero);
 
+  let a11yAllowedFontSizes: string[] = ['1rem'];
+  if (resourceDirectory.accessibility?.fontSizeAdjustment) {
+    a11yAllowedFontSizes.push(
+      resourceDirectory.accessibility.fontSizeAdjustment,
+    );
+  }
+
   return {
+    accessibility: {
+      fontSize: {
+        allowedValues: a11yAllowedFontSizes,
+      },
+    },
     baseUrl,
     brand: {
       name: resourceDirectory.name,

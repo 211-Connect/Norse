@@ -63,7 +63,7 @@ export function HeroSection() {
       />
 
       <div
-        className="flex min-w-full flex-col gap-2 rounded-lg bg-primary p-3 sm:min-w-[500px]"
+        className="flex w-full max-w-[31rem] flex-col gap-2 rounded-lg bg-primary p-3"
         role="search"
       >
         <h2 className="text-2xl font-medium text-white">

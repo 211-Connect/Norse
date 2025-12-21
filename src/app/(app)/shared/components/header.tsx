@@ -26,7 +26,11 @@ import {
   SheetTrigger,
 } from './ui/sheet';
 import { useAppConfig } from '../hooks/use-app-config';
-import { HEADER_ID } from '../lib/constants';
+import {
+  HEADER_DESKTOP_ID,
+  HEADER_ID,
+  HEADER_MOBILE_ID,
+} from '../lib/constants';
 import { dialogsAtom } from '../store/dialogs';
 import {
   DropdownMenu,
@@ -38,6 +42,7 @@ import { Card, CardContent } from './ui/card';
 import { cn } from '../lib/utils';
 import { LanguageSwitcher } from './language-switcher';
 import { ReportButton } from './report-button';
+import { FontSizeToggle } from './accessibility/font-size-toggle';
 
 export function Header() {
   const appConfig = useAppConfig();
@@ -110,6 +115,9 @@ export function Header() {
         )}
       </Fragment>,
       <Fragment key="2">
+        <FontSizeToggle />
+      </Fragment>,
+      <Fragment key="3">
         {appConfig.featureFlags.showFeedbackButtonGlobal && (
           <ReportButton
             customText={t('header.report')}
@@ -117,7 +125,7 @@ export function Header() {
           />
         )}
       </Fragment>,
-      <Fragment key="3">
+      <Fragment key="4">
         {appConfig.header.customMenu.length > 0 &&
           appConfig.header.customMenu.map((item) => {
             if (item.href == null) return;
@@ -140,10 +148,10 @@ export function Header() {
             );
           })}
       </Fragment>,
-      <Fragment key="4">
+      <Fragment key="5">
         <LanguageSwitcher />
       </Fragment>,
-      <Fragment key="5">
+      <Fragment key="6">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -202,7 +210,7 @@ export function Header() {
           </DropdownMenuContent>
         </DropdownMenu>
       </Fragment>,
-      <Fragment key="6">
+      <Fragment key="7">
         {appConfig.header.safeExit?.enabled && (
           <li>
             <Link
@@ -245,7 +253,7 @@ export function Header() {
     >
       <div
         className={cn(
-          'relative flex h-[104px] items-center justify-between',
+          'relative flex h-[104px] items-center justify-between gap-16 sm:gap-4',
           newLayoutEnabled
             ? 'rounded-xl bg-gradient-to-r from-header-start to-header-end p-6'
             : 'py-3 pr-6',
@@ -254,29 +262,33 @@ export function Header() {
         <div
           className={cn(
             'flex',
-            newLayoutEnabled
-              ? 'absolute -left-3 -top-[18px]'
-              : 'max-h-full w-full max-w-96',
+            newLayoutEnabled ? 'absolute -left-3 -top-[18px]' : 'h-full',
           )}
         >
           <div
-            className="cursor-pointer"
+            className="flex cursor-pointer items-center"
             aria-label={t('header.home') as string}
             onClick={handleLogoClick}
           >
             <img
               src={logoUrl}
               alt={t('header.home') as string}
-              className="max-h-full w-auto"
+              className="max-h-full w-auto object-contain"
             />
           </div>
         </div>
 
-        <nav className="hidden w-full justify-end lg:flex">
-          <ul className="flex items-center gap-6">{SITEMAP}</ul>
+        <nav
+          id={HEADER_DESKTOP_ID}
+          className="z-[1] ml-auto hidden w-fit justify-end overflow-hidden lg:flex"
+        >
+          <ul className="flex items-center gap-6 overflow-x-auto">{SITEMAP}</ul>
         </nav>
 
-        <div className="flex w-full justify-end lg:hidden">
+        <div
+          id={HEADER_MOBILE_ID}
+          className="flex w-full flex-1 justify-end lg:hidden"
+        >
           <Sheet open={opened} onOpenChange={toggle}>
             <SheetTrigger aria-label="Toggle navigation menu">
               <AlignJustifyIcon

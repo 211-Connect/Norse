@@ -208,7 +208,7 @@ export function Result({ data }: ResultProps) {
         <CardFooter className="flex flex-col gap-2 print:hidden">
           <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center">
             <ReferralButton
-              className="flex-1 gap-1"
+              className="flex-1 gap-1 overflow-hidden"
               size="sm"
               disabled={!data.phone}
               referralType="call_referral"
@@ -219,11 +219,12 @@ export function Result({ data }: ResultProps) {
                 window.open(`tel:${data.phone}`);
               }}
             >
-              <Phone className="size-4" /> {t('call_to_action.call')}
+              <Phone className="size-4" />{' '}
+              <span className="truncate"> {t('call_to_action.call')} </span>
             </ReferralButton>
 
             <ReferralButton
-              className="flex-1 gap-1"
+              className="flex-1 gap-1 overflow-hidden"
               referralType="website_referral"
               size="sm"
               resourceId={data.id}
@@ -234,10 +235,17 @@ export function Result({ data }: ResultProps) {
                 window.open(data.website, '_blank');
               }}
             >
-              <LinkIcon className="size-4" /> {t('call_to_action.view_website')}
+              <LinkIcon className="size-4" />{' '}
+              <span className="truncate">
+                {t('call_to_action.view_website')}
+              </span>
             </ReferralButton>
 
-            <GetDirectionsButton data={data} coords={searchCoords} />
+            <GetDirectionsButton
+              className="overflow-hidden"
+              data={data}
+              coords={searchCoords}
+            />
           </div>
 
           <div className="flex w-full items-center gap-2">

@@ -7,6 +7,11 @@ type Menu = {
 };
 
 export type AppConfig = {
+  accessibility: {
+    fontSize: {
+      allowedValues: string[];
+    };
+  };
   baseUrl: string;
   brand: {
     name: string;

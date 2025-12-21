@@ -18,6 +18,7 @@ import { termsOfUsePage } from './tabs/termsOfUsePage';
 import { isSuperAdminAccess } from '../Users/access/roles';
 import { hasThemeFieldAccess } from '../Users/access/permissions';
 import { resource } from './tabs/resource';
+import { accessibility } from './tabs/accessibility';
 
 export const ResourceDirectories: CollectionConfig = {
   slug: 'resource-directories',
@@ -78,6 +79,7 @@ export const ResourceDirectories: CollectionConfig = {
     {
       type: 'tabs',
       tabs: [
+        accessibility,
         common,
         brand,
         header,

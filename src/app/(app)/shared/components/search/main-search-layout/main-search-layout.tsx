@@ -59,7 +59,7 @@ export function MainSearchLayout({
             onClick={() => openSearchDialog('search')}
             onKeyDown={handleKeyDown}
             readOnly
-            className="search-box h-10 rounded-lg border-[#00000080] bg-white pl-[44px] focus:border-primary"
+            className="search-box h-10 rounded-lg border-[#00000080] bg-white pl-[2.7rem] focus:border-primary"
             placeholder={
               appConfig.search.texts?.queryInputPlaceholder ||
               t('search.query_placeholder', { ns: 'common' })

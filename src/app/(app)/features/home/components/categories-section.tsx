@@ -54,11 +54,11 @@ const Category = ({
         )}
 
         <div className="flex flex-col">
-          <h3 className="mb-1 text-xl font-semibold">{name}</h3>
+          <h3 className="mb-1 break-all text-xl font-semibold">{name}</h3>
 
           {subtopics.map((el) => (
             <Link
-              className="flex items-center gap-1 rounded-md p-2 pl-1 pr-1 hover:bg-primary/5"
+              className="flex items-center gap-1 break-all rounded-md p-2 pl-1 pr-1 hover:bg-primary/5 md:[word-break:break-word]"
               key={el.name}
               href={`${
                 el.href

@@ -93,7 +93,7 @@ export function NewHomeContent() {
   return (
     <div className="relative flex flex-1 justify-center border-t px-3 lg:justify-start lg:pl-8 lg:pr-0">
       <div className="flex min-h-full flex-row px-0">
-        <div className="flex flex-col items-start justify-around gap-16 py-6 pl-0 lg:w-[430px] lg:pr-6">
+        <div className="flex flex-col items-start justify-around gap-16 py-6 pl-0 lg:w-[430px] lg:pr-[24px]">
           <div className="w-full">
             <h2 className="mb-2 whitespace-break-spaces text-2xl font-medium text-primary">
               {appConfig.search.texts?.title ||
@@ -163,7 +163,7 @@ export function NewHomeContent() {
             </div>
           )}
         </div>
-        <div className="absolute right-0 hidden h-full w-[calc(100vw-462px)] lg:block">
+        <div className="absolute right-0 hidden h-full w-[calc(100vw-(100vw-100%)-430px-2rem)] lg:block">
           <img
             className="h-full w-full object-cover"
             src={appConfig?.newLayout?.heroUrl}
