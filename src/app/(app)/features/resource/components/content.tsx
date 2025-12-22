@@ -22,7 +22,7 @@ export const ResourcePageContent = ({ resource }: { resource: any }) => {
 
       <div
         className={cn(
-          'flex flex-col gap-3 font-sans md:flex-row',
+          'grid grid-cols-1 gap-3 font-sans md:grid-cols-2',
           fontSans.variable,
         )}
         ref={componentToPrintRef}
