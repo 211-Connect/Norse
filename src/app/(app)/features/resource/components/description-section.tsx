@@ -47,7 +47,7 @@ export function DescriptionSection({ resource }) {
           {description && (
             <div>
               <h2 className="mb-4 font-medium">{t('description')}</h2>
-              <p className="whitespace-break-spaces">
+              <p className="whitespace-break-spaces [&>a]:break-all">
                 {parseHtml(resource.description)}
               </p>
               {showLastAssured && (
