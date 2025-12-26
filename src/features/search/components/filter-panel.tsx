@@ -46,6 +46,7 @@ const Filters = ({ filters, filterKeys }) => {
         : {};
 
     delete q.filters;
+    delete q.page;
 
     const str = qs.stringify(q);
     const query = str.length > 0 ? `?${str}` : '';
@@ -103,6 +104,8 @@ const Filters = ({ filters, filterKeys }) => {
                                   ),
                                 )
                               : {};
+
+                          delete q.page;
 
                           if (!q.filters) {
                             q.filters = {};
