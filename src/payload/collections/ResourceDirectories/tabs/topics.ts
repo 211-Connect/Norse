@@ -54,7 +54,6 @@ export const topics: Tab = {
     {
       name: 'list',
       type: 'array',
-      localized: true,
       access: {
         create: hasResourceNavigationFieldAccess,
         update: hasResourceNavigationFieldAccess,
@@ -70,6 +69,7 @@ export const topics: Tab = {
           name: 'name',
           type: 'text',
           required: true,
+          localized: true,
         },
         {
           type: 'row',
@@ -109,6 +109,7 @@ export const topics: Tab = {
                   name: 'name',
                   type: 'text',
                   required: true,
+                  localized: true,
                 },
                 {
                   name: 'queryType',
