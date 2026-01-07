@@ -31,46 +31,106 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"_parent_id" integer NOT NULL
   );`);
 
-  // Step 2: Delete duplicate rows (non-'en' locale rows) FIRST
-  await db.execute(sql`
-  -- Delete non-English subtopics
-  DELETE FROM "rds_topics_list_subtopics"
-  WHERE "_locale" != 'en';
+  // Step 2: Migrate locale data - map all locale names to their English topic's ID
+  // The challenge: Each locale has a different ID but same _parent_id and _order
+  // We need to match them by _parent_id and _order, then use the English ID
+  const createMappingsAndMigrate = sql`
+  -- Create temp table to map locale topics to their English equivalent
+  CREATE TEMP TABLE topic_en_mapping AS
+  SELECT 
+    t_all."id" as locale_id,
+    t_all."_locale" as locale,
+    t_all."name" as locale_name,
+    t_en."id" as en_id
+  FROM "rds_topics_list" t_all
+  INNER JOIN "rds_topics_list" t_en 
+    ON t_all."_parent_id" = t_en."_parent_id" 
+    AND t_all."_order" = t_en."_order"
+    AND t_en."_locale" = 'en';
   
-  -- Delete non-English topics
-  DELETE FROM "rds_topics_list"
-  WHERE "_locale" != 'en';
-  
-  -- Delete non-English version subtopics
-  DELETE FROM "_rds_v_version_topics_list_subtopics"
-  WHERE "_locale" != 'en';
-  
-  -- Delete non-English version topics
-  DELETE FROM "_rds_v_version_topics_list"
-  WHERE "_locale" != 'en';
-  `);
-
-  // Step 3: Migrate data from old structure to new structure (only 'en' locale now remains)
-  await db.execute(sql`
-  -- Migrate main topics list data (only English rows remain)
+  -- Migrate topics using the English ID as _parent_id
   INSERT INTO "rds_topics_list_locales" ("name", "_locale", "_parent_id")
-  SELECT "name", "_locale", "id"
-  FROM "rds_topics_list";
+  SELECT locale_name, locale, en_id
+  FROM topic_en_mapping;
   
-  -- Migrate subtopics data
+  -- Subtopics: They reference locale-specific topic IDs, so we need to:
+  -- 1. Find the English topic for each subtopic's parent
+  -- 2. Match subtopics by English parent + order
+  -- 3. Migrate all locale names to the English subtopic's ID
+  CREATE TEMP TABLE subtopic_en_mapping AS
+  SELECT 
+    st_all."id" as locale_id,
+    st_all."_locale" as locale,
+    st_all."name" as locale_name,
+    st_en."id" as en_id
+  FROM "rds_topics_list_subtopics" st_all
+  -- Join to find the English topic for the non-English parent
+  INNER JOIN "rds_topics_list" t_parent 
+    ON st_all."_parent_id" = t_parent."id"
+  INNER JOIN "rds_topics_list" t_parent_en
+    ON t_parent."_parent_id" = t_parent_en."_parent_id"
+    AND t_parent."_order" = t_parent_en."_order"
+    AND t_parent_en."_locale" = 'en'
+  -- Now match with English subtopic by same English parent + order
+  INNER JOIN "rds_topics_list_subtopics" st_en 
+    ON st_en."_parent_id" = t_parent_en."id"
+    AND st_all."_order" = st_en."_order"
+    AND st_en."_locale" = 'en';
+  
   INSERT INTO "rds_topics_list_subtopics_locales" ("name", "_locale", "_parent_id")
-  SELECT "name", "_locale", "id"
-  FROM "rds_topics_list_subtopics";
+  SELECT locale_name, locale, en_id
+  FROM subtopic_en_mapping;
   
-  -- Migrate version topics list data
+  -- Same for version tables
+  CREATE TEMP TABLE version_topic_en_mapping AS
+  SELECT 
+    t_all."id" as locale_id,
+    t_all."_locale" as locale,
+    t_all."name" as locale_name,
+    t_en."id" as en_id
+  FROM "_rds_v_version_topics_list" t_all
+  INNER JOIN "_rds_v_version_topics_list" t_en 
+    ON t_all."_parent_id" = t_en."_parent_id" 
+    AND t_all."_order" = t_en."_order"
+    AND t_en."_locale" = 'en';
+  
   INSERT INTO "_rds_v_version_topics_list_locales" ("name", "_locale", "_parent_id")
-  SELECT "name", "_locale", "id"
-  FROM "_rds_v_version_topics_list";
+  SELECT locale_name, locale, en_id
+  FROM version_topic_en_mapping;
   
-  -- Migrate version subtopics data
+  CREATE TEMP TABLE version_subtopic_en_mapping AS
+  SELECT 
+    st_all."id" as locale_id,
+    st_all."_locale" as locale,
+    st_all."name" as locale_name,
+    st_en."id" as en_id
+  FROM "_rds_v_version_topics_list_subtopics" st_all
+  -- Join to find the English topic for the non-English parent
+  INNER JOIN "_rds_v_version_topics_list" t_parent 
+    ON st_all."_parent_id" = t_parent."id"
+  INNER JOIN "_rds_v_version_topics_list" t_parent_en
+    ON t_parent."_parent_id" = t_parent_en."_parent_id"
+    AND t_parent."_order" = t_parent_en."_order"
+    AND t_parent_en."_locale" = 'en'
+  -- Now match with English subtopic by same English parent + order
+  INNER JOIN "_rds_v_version_topics_list_subtopics" st_en 
+    ON st_en."_parent_id" = t_parent_en."id"
+    AND st_all."_order" = st_en."_order" 
+    AND st_en."_locale" = 'en';
+  
   INSERT INTO "_rds_v_version_topics_list_subtopics_locales" ("name", "_locale", "_parent_id")
-  SELECT "name", "_locale", "id"
-  FROM "_rds_v_version_topics_list_subtopics";
+  SELECT locale_name, locale, en_id
+  FROM version_subtopic_en_mapping;
+  `;
+
+  await db.execute(createMappingsAndMigrate);
+
+  // Step 3: Delete non-English rows from main tables
+  await db.execute(sql`
+  DELETE FROM "rds_topics_list_subtopics" WHERE "_locale" != 'en';
+  DELETE FROM "rds_topics_list" WHERE "_locale" != 'en';
+  DELETE FROM "_rds_v_version_topics_list_subtopics" WHERE "_locale" != 'en';
+  DELETE FROM "_rds_v_version_topics_list" WHERE "_locale" != 'en';
   `);
 
   // Step 4: Add constraints and indexes, drop old columns
