@@ -26,7 +26,7 @@ const TopicsRowLabel = (props) => {
     <ArrayRowLabel
       rowNumber={rowNumber}
       title={localizedName}
-      englishTitle={!isEnglish && !localizedName ? englishName : undefined}
+      englishTitle={isEnglish ? undefined : englishName}
     />
   );
 };
