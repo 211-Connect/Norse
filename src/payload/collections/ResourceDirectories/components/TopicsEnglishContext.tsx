@@ -8,6 +8,7 @@ import {
   ReactNode,
 } from 'react';
 import { useLocale } from '@payloadcms/ui';
+import { getEnglishTopics } from '../services/getEnglishTopics';
 
 interface TopicsEnglishContextType {
   englishTopics: Record<string, string>;
@@ -47,33 +48,8 @@ export const TopicsEnglishProvider = ({
     const fetchEnglishTopics = async () => {
       setLoading(true);
       try {
-        const response = await fetch(
-          `/api/resource-directories/${resourceDirectoryId}?locale=en&depth=2`,
-          {
-            credentials: 'include',
-          },
-        );
-
-        if (response.ok) {
-          const rdData = await response.json();
-          const topics = rdData.topics?.list || [];
-          const englishMap: Record<string, string> = {};
-
-          // Map all topic and subtopic IDs to their English names
-          topics.forEach((topic: any) => {
-            if (topic.id && topic.name) {
-              englishMap[topic.id] = topic.name;
-            }
-
-            topic.subtopics?.forEach((subtopic: any) => {
-              if (subtopic.id && subtopic.name) {
-                englishMap[subtopic.id] = subtopic.name;
-              }
-            });
-          });
-
-          setEnglishTopics(englishMap);
-        }
+        const englishMap = await getEnglishTopics(resourceDirectoryId);
+        setEnglishTopics(englishMap);
       } catch (error) {
         console.error('Failed to fetch English topics:', error);
       } finally {
