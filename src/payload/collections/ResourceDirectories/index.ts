@@ -37,6 +37,16 @@ export const ResourceDirectories: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'name',
+    components: {
+      views: {
+        edit: {
+          default: {
+            Component:
+              '@/payload/collections/ResourceDirectories/components/EditViewWrapper',
+          },
+        },
+      },
+    },
   },
   hooks: {
     beforeChange: [setTenantIdAsId, preventUpdateInDisabledLocale],

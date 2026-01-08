@@ -8,6 +8,7 @@ import { default as default_e1dfdb6347d608fbc226068dad2ea010 } from '@/payload/c
 import { default as default_ca7d93146a02f18039f3d89f97316881 } from '@/payload/collections/ResourceDirectories/components/TopicsLabelInfoTooltip'
 import { default as default_765ef9987a5d1fd11dffcca1049fc6a0 } from '@/payload/collections/ResourceDirectories/components/TopicsRowLabel'
 import { default as default_f83d96d079111af09b6323bb84c1f19e } from '@/payload/collections/ResourceDirectories/components/FacetsRowLabel'
+import { default as default_76ffa28dff37b978c6ada354e1e9e67c } from '@/payload/collections/ResourceDirectories/components/EditViewWrapper'
 import { GlobalViewRedirect as GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { default as default_4a6586eaa0248cb1fccb2e03335a2b51 } from '@/payload/components/ClearCacheButton'
 import { TenantSelector as TenantSelector_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
@@ -25,6 +26,7 @@ export const importMap = {
   "@/payload/collections/ResourceDirectories/components/TopicsLabelInfoTooltip#default": default_ca7d93146a02f18039f3d89f97316881,
   "@/payload/collections/ResourceDirectories/components/TopicsRowLabel#default": default_765ef9987a5d1fd11dffcca1049fc6a0,
   "@/payload/collections/ResourceDirectories/components/FacetsRowLabel#default": default_f83d96d079111af09b6323bb84c1f19e,
+  "@/payload/collections/ResourceDirectories/components/EditViewWrapper#default": default_76ffa28dff37b978c6ada354e1e9e67c,
   "@payloadcms/plugin-multi-tenant/rsc#GlobalViewRedirect": GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62,
   "@/payload/components/ClearCacheButton#default": default_4a6586eaa0248cb1fccb2e03335a2b51,
   "@payloadcms/plugin-multi-tenant/client#TenantSelector": TenantSelector_1d0591e3cf4f332c83a86da13a0de59a,
