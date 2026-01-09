@@ -41,6 +41,11 @@ declare global {
       REDIS_PASSWORD?: string;
       AZURE_TRANSLATE_API_KEY?: string;
 
+      // Translation service (auto-translation feature)
+      AZURE_TRANSLATOR_KEY?: string;
+      AZURE_TRANSLATOR_REGION?: string;
+      GOOGLE_TRANSLATE_CREDENTIALS_JSON?: string;
+
       // Alerting
       WEBHOOK_ALERT_URL?: string;
 

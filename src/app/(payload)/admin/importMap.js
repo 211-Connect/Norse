@@ -1,7 +1,7 @@
 import { default as default_feaf6b52f59b1e80713468d4249f1e7d } from '@/payload/collections/Tenants/components/ServicesCell'
 import { WatchTenantCollection as WatchTenantCollection_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
 import { TenantField as TenantField_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
-import { default as default_30cb1c1f0455b75c0fc31b5ddf1dabaa } from '@/payload/components/ProductionLinkButton'
+import { default as default_fa45892c63b42dce924e26a36629edb3 } from '@/payload/collections/ResourceDirectories/components/ActionButtons'
 import { default as default_770fe60ed8029346277f652cebdaf650 } from '@/payload/components/LabelInfoTooltip'
 import { default as default_f772357a6881d7587c9d743ce8b90802 } from '@/payload/components/ColorPicker'
 import { default as default_e1dfdb6347d608fbc226068dad2ea010 } from '@/payload/collections/ResourceDirectories/components/SuggestionsRowLabel'
@@ -19,7 +19,7 @@ export const importMap = {
   "@/payload/collections/Tenants/components/ServicesCell#default": default_feaf6b52f59b1e80713468d4249f1e7d,
   "@payloadcms/plugin-multi-tenant/client#WatchTenantCollection": WatchTenantCollection_1d0591e3cf4f332c83a86da13a0de59a,
   "@payloadcms/plugin-multi-tenant/client#TenantField": TenantField_1d0591e3cf4f332c83a86da13a0de59a,
-  "@/payload/components/ProductionLinkButton#default": default_30cb1c1f0455b75c0fc31b5ddf1dabaa,
+  "@/payload/collections/ResourceDirectories/components/ActionButtons#default": default_fa45892c63b42dce924e26a36629edb3,
   "@/payload/components/LabelInfoTooltip#default": default_770fe60ed8029346277f652cebdaf650,
   "@/payload/components/ColorPicker#default": default_f772357a6881d7587c9d743ce8b90802,
   "@/payload/collections/ResourceDirectories/components/SuggestionsRowLabel#default": default_e1dfdb6347d608fbc226068dad2ea010,

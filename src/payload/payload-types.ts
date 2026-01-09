@@ -71,6 +71,7 @@ export interface Config {
     tenants: Tenant;
     'tenant-media': TenantMedia;
     'resource-directories': ResourceDirectory;
+    'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -81,6 +82,7 @@ export interface Config {
     tenants: TenantsSelect<false> | TenantsSelect<true>;
     'tenant-media': TenantMediaSelect<false> | TenantMediaSelect<true>;
     'resource-directories': ResourceDirectoriesSelect<false> | ResourceDirectoriesSelect<true>;
+    'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -121,7 +123,13 @@ export interface Config {
     collection: 'users';
   };
   jobs: {
-    tasks: unknown;
+    tasks: {
+      translateTopics: TaskTranslateTopics;
+      inline: {
+        input: unknown;
+        output: unknown;
+      };
+    };
     workflows: unknown;
   };
 }
@@ -303,6 +311,11 @@ export interface ResourceDirectory {
   tenant?: (string | null) | Tenant;
   id: string;
   name: string;
+  _translationMeta?: {
+    lastTranslatedAt?: string | null;
+    translatedBy?: ('auto' | 'manual') | null;
+    engine?: ('azure' | 'google') | null;
+  };
   accessibility?: {
     fontSizeAdjustment?: ('150%' | '175%' | '200%') | null;
   };
@@ -494,6 +507,98 @@ export interface ResourceDirectory {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs".
+ */
+export interface PayloadJob {
+  id: number;
+  /**
+   * Input data provided to the job
+   */
+  input?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  taskStatus?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  completedAt?: string | null;
+  totalTried?: number | null;
+  /**
+   * If hasError is true this job will not be retried
+   */
+  hasError?: boolean | null;
+  /**
+   * If hasError is true, this is the error that caused it
+   */
+  error?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Task execution log
+   */
+  log?:
+    | {
+        executedAt: string;
+        completedAt: string;
+        taskSlug: 'inline' | 'translateTopics';
+        taskID: string;
+        input?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        output?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        state: 'failed' | 'succeeded';
+        error?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  taskSlug?: ('inline' | 'translateTopics') | null;
+  queue?: string | null;
+  waitUntil?: string | null;
+  processing?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -514,6 +619,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'resource-directories';
         value: string | ResourceDirectory;
+      } | null)
+    | ({
+        relationTo: 'payload-jobs';
+        value: number | PayloadJob;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -673,6 +782,13 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
   tenant?: T;
   id?: T;
   name?: T;
+  _translationMeta?:
+    | T
+    | {
+        lastTranslatedAt?: T;
+        translatedBy?: T;
+        engine?: T;
+      };
   accessibility?:
     | T
     | {
@@ -901,6 +1017,37 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs_select".
+ */
+export interface PayloadJobsSelect<T extends boolean = true> {
+  input?: T;
+  taskStatus?: T;
+  completedAt?: T;
+  totalTried?: T;
+  hasError?: T;
+  error?: T;
+  log?:
+    | T
+    | {
+        executedAt?: T;
+        completedAt?: T;
+        taskSlug?: T;
+        taskID?: T;
+        input?: T;
+        output?: T;
+        state?: T;
+        error?: T;
+        id?: T;
+      };
+  taskSlug?: T;
+  queue?: T;
+  waitUntil?: T;
+  processing?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents_select".
  */
 export interface PayloadLockedDocumentsSelect<T extends boolean = true> {
@@ -930,6 +1077,24 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskTranslateTopics".
+ */
+export interface TaskTranslateTopics {
+  input: {
+    tenantId: string;
+    locales: {
+      locale?: string | null;
+    }[];
+    engine: 'azure' | 'google';
+    force?: boolean | null;
+  };
+  output: {
+    success: boolean;
+    translated: number;
+  };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
