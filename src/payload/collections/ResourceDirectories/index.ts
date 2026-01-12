@@ -61,7 +61,7 @@ export const ResourceDirectories: CollectionConfig = {
         position: 'above',
         components: {
           Field:
-            '@/payload/collections/ResourceDirectories/components/ActionButtons',
+            '@/payload/collections/ResourceDirectories/components/ResourceDirectoryActions',
         },
       },
     },

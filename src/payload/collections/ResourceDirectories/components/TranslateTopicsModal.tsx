@@ -116,7 +116,7 @@ export const TranslateTopicsModal: React.FC<TranslateTopicsModalProps> = ({
           }}
         >
           <h2 style={{ marginTop: '0', marginBottom: '24px' }}>
-            Auto-Translate Topics
+            Auto-Translate
           </h2>
 
           <div>
