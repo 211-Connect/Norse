@@ -2,9 +2,15 @@ import axios from 'axios';
 import { getServerSession, NextAuthOptions, Session } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import KeycloakProvider from 'next-auth/providers/keycloak';
-import { omitBy, isNil } from 'lodash';
 
 import { Tenant } from './payload/payload-types';
+
+// Helper to remove null/undefined values from object
+const omitNilValues = <T extends Record<string, any>>(obj: T): Partial<T> => {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([_, value]) => value != null),
+  ) as Partial<T>;
+};
 
 const isDebug = process.env.NEXTAUTH_DEBUG === 'true';
 
@@ -33,14 +39,14 @@ const createAuthOptions = ({
     session({ session, token }) {
       session.user.accessToken = token.accessToken;
       session.user.refreshToken = token.refreshToken;
-      session.user = omitBy(session.user, isNil) as Session['user'];
+      session.user = omitNilValues(session.user) as Session['user'];
       if (token.error) {
         session.error = token.error;
       }
       return session;
     },
     async jwt({ token, account }) {
-      token = omitBy(token, isNil);
+      token = omitNilValues(token);
 
       if (account) {
         // Initial sign in
