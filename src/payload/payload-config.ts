@@ -137,7 +137,7 @@ const config = buildConfig({
       });
 
       if (
-        resourceDirectory.tenant &&
+        resourceDirectory?.tenant &&
         typeof resourceDirectory.tenant === 'object'
       ) {
         const tenant = resourceDirectory.tenant;
