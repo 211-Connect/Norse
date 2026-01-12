@@ -53,6 +53,8 @@ const config = buildConfig({
         defaultJobsCollection.admin = {};
       }
       defaultJobsCollection.admin.hidden = ({ user }) => {
+        if (!user) return true;
+
         const roles = user.roles;
 
         if (Array.isArray(roles) === false) {
