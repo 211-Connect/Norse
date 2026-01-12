@@ -78,7 +78,7 @@ export const TranslateTopicsModal: React.FC<TranslateTopicsModalProps> = ({
       const result = await response.json();
 
       toast.success(
-        `Translation job started! Job ID: ${result.jobId}. Check the Translation Jobs page for progress.`,
+        `Translation job #${result.jobId} started! If translations do not appear shortly, please contact with administrator.`,
       );
 
       closeModal('translate-topics-modal');
