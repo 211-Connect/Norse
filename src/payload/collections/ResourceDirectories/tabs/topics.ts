@@ -11,6 +11,17 @@ export const topics: Tab = {
   name: 'topics',
   fields: [
     {
+      type: 'ui',
+      name: 'topicsActions',
+      admin: {
+        position: 'above',
+        components: {
+          Field:
+            '@/payload/collections/ResourceDirectories/components/TopicsActions',
+        },
+      },
+    },
+    {
       type: 'text',
       name: 'backText',
       localized: true,

@@ -56,11 +56,12 @@ export const ResourceDirectories: CollectionConfig = {
   fields: [
     {
       type: 'ui',
-      name: 'Seed in Production',
+      name: 'actionButtons',
       admin: {
         position: 'above',
         components: {
-          Field: '@/payload/components/ProductionLinkButton',
+          Field:
+            '@/payload/collections/ResourceDirectories/components/ResourceDirectoryActions',
         },
       },
     },
@@ -83,6 +84,29 @@ export const ResourceDirectories: CollectionConfig = {
             update: hasThemeFieldAccess,
             create: hasThemeFieldAccess,
           },
+        },
+      ],
+    },
+    {
+      name: '_translationMeta',
+      type: 'group',
+      admin: {
+        hidden: true,
+      },
+      fields: [
+        {
+          name: 'lastTranslatedAt',
+          type: 'date',
+        },
+        {
+          name: 'translatedBy',
+          type: 'select',
+          options: ['auto', 'manual'],
+        },
+        {
+          name: 'engine',
+          type: 'select',
+          options: ['azure', 'google'],
         },
       ],
     },

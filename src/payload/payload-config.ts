@@ -21,11 +21,17 @@ import { seedEndpoint, addLocalAdminEndpoint } from './migrations';
 import { isSuperAdmin, isSupport } from './collections/Users/access/roles';
 import { sendGridTransport } from './utilities/sendgridAdapter';
 import { clearCache } from './endpoints/clearCache';
+import { translateTopicsEndpoint } from './endpoints/translateTopics';
+import { translateTopics } from './jobs/translateTopics';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
-const endpoints: Endpoint[] = [clearCache, seedEndpoint];
+const endpoints: Endpoint[] = [
+  clearCache,
+  translateTopicsEndpoint,
+  seedEndpoint,
+];
 
 if (process.env.NODE_ENV === 'development') {
   endpoints.push(addLocalAdminEndpoint);
@@ -33,6 +39,33 @@ if (process.env.NODE_ENV === 'development') {
 
 const config = buildConfig({
   collections: [Users, Tenants, TenantMedia, ResourceDirectories],
+  jobs: {
+    tasks: [translateTopics],
+    autoRun: [
+      {
+        queue: 'translation',
+        cron: '* * * * * *',
+      },
+    ],
+    // Make jobs collection visible to super admins only
+    jobsCollectionOverrides: ({ defaultJobsCollection }) => {
+      if (!defaultJobsCollection.admin) {
+        defaultJobsCollection.admin = {};
+      }
+      defaultJobsCollection.admin.hidden = ({ user }) => {
+        if (!user) return true;
+
+        const roles = user.roles;
+
+        if (Array.isArray(roles) === false) {
+          return true;
+        }
+
+        return !isSuperAdmin({ roles });
+      };
+      return defaultJobsCollection;
+    },
+  },
   admin: {
     importMap: {
       baseDir: path.resolve(dirname, '../'),
