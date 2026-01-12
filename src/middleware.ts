@@ -31,7 +31,7 @@ function cacheControlMiddleware(response: NextResponse, pathname: string) {
   ) {
     response.headers.set(
       'Cache-Control',
-      'public, max-age=60, s-maxage=60, stale-while-revalidate=60',
+      'public, max-age=1800, s-maxage=3600, stale-while-revalidate=600',
     );
   }
 }
