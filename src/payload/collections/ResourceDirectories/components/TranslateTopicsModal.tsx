@@ -61,10 +61,17 @@ export const TranslateTopicsModal: React.FC<TranslateTopicsModalProps> = ({
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(body),
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('You must be logged in to start translations');
+        }
+        if (response.status === 403) {
+          throw new Error('You do not have permission to start translations');
+        }
         const error = await response.json();
         throw new Error(error.message || 'Translation failed');
       }
