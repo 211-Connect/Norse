@@ -82,7 +82,6 @@ export const migrations = [
   {
     up: migration_20260109_130027.up,
     down: migration_20260109_130027.down,
-    name: '20260109_130027'
-    name: '20260107_085936'
+    name: '20260109_130027',
   },
 ];
