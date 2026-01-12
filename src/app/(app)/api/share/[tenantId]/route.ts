@@ -1,5 +1,4 @@
 import { findByTenantId } from '@/payload/collections/Tenants/services/findByTenantId';
-import config from '@/payload/payload-config';
 import { NextResponse } from 'next/server';
 import { getPayload } from 'payload';
 import client from 'twilio';
@@ -10,6 +9,7 @@ export async function POST(
 ) {
   try {
     const { tenantId } = await params;
+    const config = (await import('@/payload/payload-config')).default;
     const payload = await getPayload({ config });
     const tenant = await findByTenantId(payload, tenantId ?? '');
 

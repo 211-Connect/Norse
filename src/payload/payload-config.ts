@@ -5,11 +5,10 @@ import { buildConfig, Endpoint } from 'payload';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
 import { postgresAdapter } from '@payloadcms/db-postgres';
 import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant';
-import { Config, Tenant } from './payload-types';
+import { Config } from './payload-types';
 import { s3Storage } from '@payloadcms/storage-s3';
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer';
 
-import { findByHost } from './collections/ResourceDirectories/services/findByHost';
 import { Users } from './collections/Users';
 import { Tenants } from './collections/Tenants';
 import { TenantMedia } from './collections/TenantMedia';
@@ -122,9 +121,26 @@ const config = buildConfig({
         return locales;
       }
 
-      const resourceDirectory = await findByHost(payload, host, defaultLocale);
-      if (resourceDirectory) {
-        const tenant = resourceDirectory.tenant as Tenant;
+      const {
+        docs: [resourceDirectory],
+      } = await payload.find({
+        collection: 'resource-directories',
+        depth: 1,
+        where: {
+          and: [
+            { 'tenant.trustedDomains.domain': { equals: host } },
+            { 'tenant.services.resourceDirectory': { equals: true } },
+          ],
+        },
+        limit: 1,
+        pagination: false,
+      });
+
+      if (
+        resourceDirectory.tenant &&
+        typeof resourceDirectory.tenant === 'object'
+      ) {
+        const tenant = resourceDirectory.tenant;
         return tenant.enabledLocales.map((code: string) => ({
           code,
           label: code,

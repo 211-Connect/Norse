@@ -1,7 +1,6 @@
 'use server';
 
 import { getPayload } from 'payload';
-import config from '@/payload/payload-config';
 
 export async function getTrustedDomain(
   tenantId: string,
@@ -10,6 +9,7 @@ export async function getTrustedDomain(
     return null;
   }
 
+  const config = (await import('@/payload/payload-config')).default;
   const payload = await getPayload({ config });
 
   const tenant = await payload.findByID({
