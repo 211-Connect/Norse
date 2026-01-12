@@ -82,12 +82,15 @@ async function translateWithGoogle(
   texts: string[],
   targetLocale: string,
 ): Promise<string[]> {
-  const credentialsJson = process.env.GOOGLE_TRANSLATE_CREDENTIALS_JSON;
+  const credentialsBase64 = process.env.GOOGLE_TRANSLATE_CREDENTIALS_BASE64;
 
-  if (!credentialsJson) {
-    throw new Error('GOOGLE_TRANSLATE_CREDENTIALS_JSON is not configured');
+  if (!credentialsBase64) {
+    throw new Error('GOOGLE_TRANSLATE_CREDENTIALS_BASE64 is not configured');
   }
 
+  const credentialsJson = Buffer.from(credentialsBase64, 'base64').toString(
+    'utf-8',
+  );
   const credentials = JSON.parse(credentialsJson);
   const client = new TranslationServiceClient({ credentials });
   const projectId = credentials.project_id;
