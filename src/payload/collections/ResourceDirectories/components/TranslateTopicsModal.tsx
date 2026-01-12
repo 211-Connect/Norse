@@ -202,7 +202,7 @@ export const TranslateTopicsModal: React.FC<TranslateTopicsModalProps> = ({
               id="force-translate"
               checked={force}
               onChange={(e) => setForce(e.target.checked)}
-              style={{ marginRight: '8px' }}
+              style={{ marginRight: '16px' }}
             />
             <label htmlFor="force-translate">
               <strong>Force re-translate all fields</strong>
