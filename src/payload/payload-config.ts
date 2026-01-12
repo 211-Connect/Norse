@@ -47,12 +47,20 @@ const config = buildConfig({
         cron: '* * * * * *',
       },
     ],
-    // Make jobs collection visible in admin for debugging
+    // Make jobs collection visible to super admins only
     jobsCollectionOverrides: ({ defaultJobsCollection }) => {
       if (!defaultJobsCollection.admin) {
         defaultJobsCollection.admin = {};
       }
-      defaultJobsCollection.admin.hidden = false;
+      defaultJobsCollection.admin.hidden = ({ user }) => {
+        const roles = user.roles;
+
+        if (Array.isArray(roles) === false) {
+          return true;
+        }
+
+        return !isSuperAdmin({ roles });
+      };
       return defaultJobsCollection;
     },
   },

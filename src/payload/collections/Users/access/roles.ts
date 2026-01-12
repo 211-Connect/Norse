@@ -3,7 +3,7 @@ import { User } from '@/payload/payload-types';
 
 /* SUPER ADMIN */
 
-export const isSuperAdmin = (user: User | null): boolean => {
+export const isSuperAdmin = (user: Pick<User, 'roles'> | null): boolean => {
   return Boolean(user?.roles?.includes('super-admin'));
 };
 
