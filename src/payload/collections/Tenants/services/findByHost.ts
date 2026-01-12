@@ -1,5 +1,4 @@
 import { Tenant } from '@/payload/payload-types';
-import config from '@/payload/payload-config';
 import { getPayload } from 'payload';
 import { cache } from 'react';
 import { cacheService } from '@/cacheService';
@@ -16,6 +15,7 @@ async function findByHostOrig(host: string): Promise<Tenant | null> {
     }
   } catch {}
 
+  const config = (await import('@/payload/payload-config')).default;
   const payload = await getPayload({ config });
 
   const {

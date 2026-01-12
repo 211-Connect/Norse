@@ -1,6 +1,5 @@
 import { ResourceDirectory } from '@/payload/payload-types';
 import { getPayload, Payload, TypedLocale } from 'payload';
-import config from '@/payload/payload-config';
 import { locales } from '@/payload/i18n/locales';
 import { cache } from 'react';
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
@@ -71,6 +70,7 @@ async function findByHostCachedOrig(
     }
   } catch {}
 
+  const config = (await import('@/payload/payload-config')).default;
   const payload = await getPayload({ config });
   const resourceDirectory = await findByHost(payload, host, locale);
 

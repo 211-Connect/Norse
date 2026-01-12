@@ -1,7 +1,6 @@
 import { ResourceDirectory } from '@/payload/payload-types';
 import { findByTenantId } from '../../Tenants/services/findByTenantId';
 import { getPayload } from 'payload';
-import config from '@/payload/payload-config';
 import { cacheService } from '@/cacheService';
 import { createCacheKey } from '../cache/keys';
 
@@ -14,6 +13,7 @@ export async function revalidateCache({
 
   if (typeof tenantId === 'string' && locale) {
     try {
+      const config = (await import('@/payload/payload-config')).default;
       const payload = await getPayload({ config });
       const tenant = await findByTenantId(payload, tenantId);
 
