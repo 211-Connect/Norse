@@ -1,0 +1,17 @@
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.action-button {
+  min-width: 160px;
+  width: 160px;
+}
+
+.spinner-icon {
+  animation: spin 1s linear infinite;
+}
