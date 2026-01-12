@@ -38,7 +38,11 @@ export const translateTopicsEndpoint: Endpoint = {
 
     if (isTenant(req.user) && !isSuperAdmin(req.user) && !isSupport(req.user)) {
       const userTenantIds =
-        req.user.tenants?.map((t) => (typeof t === 'string' ? t : t.id)) || [];
+        req.user.tenants?.map((t) => {
+          if (typeof t === 'string') return t;
+          if (typeof t.tenant === 'string') return t.tenant;
+          return t.tenant.id;
+        }) || [];
 
       if (!userTenantIds.includes(tenantId)) {
         console.error(
