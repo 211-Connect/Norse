@@ -1,7 +1,5 @@
 import { ExtractAtomValue } from 'jotai';
-import { isEmpty, isNil, isString, omitBy } from 'lodash';
 import qs from 'qs';
-import _ from 'lodash';
 
 import { TaxonomyService } from './taxonomy-service';
 import { searchAtom } from '../store/search';
@@ -32,9 +30,11 @@ export function createUrlParamsForSearch(
         : '',
   };
 
-  return omitBy(
-    urlParams,
-    (value) => isNil(value) || (isString(value) && isEmpty(value.trim())),
+  return Object.fromEntries(
+    Object.entries(urlParams).filter(
+      ([_, value]) =>
+        value != null && (typeof value !== 'string' || value.trim() !== ''),
+    ),
   ) as Record<string, string>;
 }
 
@@ -147,7 +147,9 @@ export const findResources = cache(
             taxonomies: hit?._source?.taxonomies ?? null,
           };
 
-          return _.omitBy(responseData, _.isNil);
+          return Object.fromEntries(
+            Object.entries(responseData).filter(([_, value]) => value != null),
+          );
         }) ?? [],
       noResults,
       totalResults,
