@@ -12,7 +12,7 @@ import {
   StrapiDataProvider,
 } from './types';
 import { ResourceDirectory, Tenant, TenantMedia } from '../payload-types';
-import { findByTenantId as findResourceDirectory } from '../collections/ResourceDirectories/services/findByTenantId';
+import { findResourceDirectoryByTenantId } from '../collections/ResourceDirectories/actions';
 import { upsert } from './upsert';
 import { defaultLocale } from '../i18n/locales';
 import qs from 'qs';
@@ -207,12 +207,9 @@ async function fetchAppConfig(
   }
 }
 
-async function findExistingResourceDirectory(
-  payload: Payload,
-  tenantId: string,
-) {
+async function findExistingResourceDirectory(tenantId: string) {
   try {
-    return await findResourceDirectory(payload, tenantId);
+    return await findResourceDirectoryByTenantId(tenantId);
   } catch (error) {
     throw new Error(
       `Failed to find resource directory for tenantId ${tenantId}`,
@@ -345,7 +342,7 @@ async function createResourceDirectory(
 ): Promise<ResourceDirectory> {
   const id = tenant.id;
   const populatedAppConfig = await fetchAppConfig(appConfigId, locale);
-  const existingDirectory = await findExistingResourceDirectory(payload, id);
+  const existingDirectory = await findExistingResourceDirectory(id);
 
   const baseData = {
     id,

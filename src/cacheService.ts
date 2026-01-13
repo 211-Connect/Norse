@@ -39,17 +39,20 @@ export function cacheService(db: number = 0) {
   }
 
   async function get(key: string) {
-    return client?.get(key);
+    if (!client) return null;
+    return client.get(key);
   }
 
   async function del(key: string) {
-    return client?.del(key);
+    if (!client) return null;
+    return client.del(key);
   }
 
   async function delPattern(pattern: string) {
-    const keys = await client?.keys(pattern);
+    if (!client) return null;
+    const keys = await client.keys(pattern);
     if (keys && keys.length > 0) {
-      return client?.del(...keys);
+      return client.del(...keys);
     }
 
     return null;

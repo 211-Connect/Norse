@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { toast, Button, useField } from '@payloadcms/ui';
-import { getTrustedDomain } from '../../Tenants/actions/getTrustedDomain';
+import { getTenantTrustedDomain } from '../../Tenants/actions/getTenantTrustedDomain';
 
 const ResourceDirectoryActions: React.FC = () => {
   const [isLoadingWebpage, setIsLoadingWebpage] = useState(false);
@@ -16,7 +16,7 @@ const ResourceDirectoryActions: React.FC = () => {
 
     setIsLoadingWebpage(true);
     try {
-      const domain = await getTrustedDomain(tenantId);
+      const domain = await getTenantTrustedDomain(tenantId);
       if (domain) {
         window.open(`https://${domain}`, '_blank', 'noopener,noreferrer');
       } else {

@@ -1,12 +1,15 @@
-import { defaultLocale } from '@/payload/i18n/locales';
-import { ResourceDirectory } from '@/payload/payload-types';
-import { Payload, TypedLocale } from 'payload';
+'use server';
 
-export async function findByTenantId(
-  payload: Payload,
+import { defaultLocale } from '@/payload/i18n/locales';
+import config from '@/payload/payload-config';
+import { ResourceDirectory } from '@/payload/payload-types';
+import { getPayload, TypedLocale } from 'payload';
+
+export async function findResourceDirectoryByTenantId(
   tenantId: string,
   locale: TypedLocale = defaultLocale,
 ): Promise<ResourceDirectory | null> {
+  const payload = await getPayload({ config });
   const {
     docs: [resourceDirectory],
   } = await payload.find({

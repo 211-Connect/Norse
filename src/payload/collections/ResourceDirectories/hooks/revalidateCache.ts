@@ -1,32 +1,34 @@
 import { ResourceDirectory } from '@/payload/payload-types';
-import { findByTenantId } from '../../Tenants/services/findByTenantId';
-import { getPayload } from 'payload';
 import { cacheService } from '@/cacheService';
-import { createCacheKey } from '../cache/keys';
+import { findTenantById } from '../../Tenants/actions';
+import { RedisCacheKey } from '@/payload/utilities';
+import { parseHost } from '@/app/(app)/shared/utils/parseHost';
 
 export async function revalidateCache({
   doc,
   req,
 }): Promise<ResourceDirectory> {
   const tenantId = doc.tenant;
-  const locale = new URL(req.url).searchParams.get('locale');
 
-  if (typeof tenantId === 'string' && locale) {
+  if (typeof tenantId === 'string') {
     try {
-      const config = (await import('@/payload/payload-config')).default;
-      const payload = await getPayload({ config });
-      const tenant = await findByTenantId(payload, tenantId);
+      const tenant = await findTenantById(tenantId);
 
       if (tenant && tenant.trustedDomains) {
-        const cacheKeys = tenant.trustedDomains.map(({ domain }) =>
-          createCacheKey(locale, domain),
+        const cacheKeys = tenant.trustedDomains.map(
+          ({ domain }): RedisCacheKey => {
+            const host = parseHost(domain);
+            return `resource_directory:${host}:*`;
+          },
         );
         const cacheServiceInstance = cacheService();
-        await Promise.all(
-          cacheKeys.map((key) => cacheServiceInstance.del(key)),
-        );
+        for (const key of cacheKeys) {
+          await cacheServiceInstance.delPattern(key);
+        }
       }
-    } catch {}
+    } catch (error) {
+      console.error('Error invalidating resource directory cache:', error);
+    }
   }
 
   return doc;

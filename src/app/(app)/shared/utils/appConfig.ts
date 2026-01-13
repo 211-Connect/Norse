@@ -4,7 +4,7 @@ import {
   TenantMedia,
 } from '@/payload/payload-types';
 import { TypedLocale } from 'payload';
-import { findByHostCached } from '@/payload/collections/ResourceDirectories/services/findByHost';
+import { findResourceDirectoryByHost } from '@/payload/collections/ResourceDirectories/actions';
 import { cache } from 'react';
 import { AppConfig } from '@/types/appConfig';
 import { cookies, headers } from 'next/headers';
@@ -55,7 +55,10 @@ async function getAppConfigBase(
   host: string,
   locale: string,
 ): Promise<AppConfig> {
-  const resourceDirectory = await findByHostCached(host, locale as TypedLocale);
+  const resourceDirectory = await findResourceDirectoryByHost(
+    host,
+    locale as TypedLocale,
+  );
 
   let map: AppConfig['search']['map'] = {
     center: [39.8283459, -98.5794797], // Center of USA

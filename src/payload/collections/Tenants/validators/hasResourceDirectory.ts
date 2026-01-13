@@ -1,13 +1,12 @@
 import { CheckboxFieldValidation } from 'payload';
-
-import { findByTenantId } from '../../ResourceDirectories/services/findByTenantId';
+import { findResourceDirectoryByTenantId } from '../../ResourceDirectories/actions';
 
 export const hasResourceDirectory: CheckboxFieldValidation = async (
   value,
-  { id, req: { payload } },
+  { id },
 ) => {
   if (value) {
-    const resourceDirectory = await findByTenantId(payload, id as string);
+    const resourceDirectory = await findResourceDirectoryByTenantId(String(id));
     if (!resourceDirectory) {
       return 'A Resource Directory must be created before this service can be enabled.';
     }

@@ -1,0 +1,49 @@
+import { cacheService } from '@/cacheService';
+
+type Seconds = number;
+const ONE_HOUR: Seconds = 60 * 60;
+const CACHE_TTL = ONE_HOUR;
+
+type Domain = string;
+type Locale = string;
+
+export type RedisCacheKey =
+  | `tenant:${Domain}`
+  | `tenant_locale:${Domain}`
+  | `resource_directory:${Domain}:${Locale}`;
+
+export const withRedisCache = async <T>(
+  key: RedisCacheKey,
+  fetchFunction: () => Promise<T>,
+): Promise<T | null> => {
+  const cache = cacheService();
+
+  try {
+    const cachedValue = await cache.get(key);
+    if (cachedValue) {
+      try {
+        return JSON.parse(cachedValue);
+      } catch (parseError) {
+        console.error(
+          `Failed to parse cached value for key ${key}:`,
+          parseError,
+        );
+        await cache.del(key);
+      }
+    }
+  } catch (error) {
+    console.error(`Error reading from Redis cache for key ${key}:`, error);
+  }
+
+  const value = await fetchFunction();
+
+  if (value != null) {
+    try {
+      await cache.set(key, JSON.stringify(value), CACHE_TTL);
+    } catch (error) {
+      console.error(`Error writing to Redis cache for key ${key}:`, error);
+    }
+  }
+
+  return value;
+};

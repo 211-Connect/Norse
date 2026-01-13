@@ -1,6 +1,5 @@
-import { findByTenantId } from '@/payload/collections/Tenants/services/findByTenantId';
+import { findTenantById } from '@/payload/collections/Tenants/actions';
 import { NextResponse } from 'next/server';
-import { getPayload } from 'payload';
 import client from 'twilio';
 
 export async function POST(
@@ -9,9 +8,15 @@ export async function POST(
 ) {
   try {
     const { tenantId } = await params;
-    const config = (await import('@/payload/payload-config')).default;
-    const payload = await getPayload({ config });
-    const tenant = await findByTenantId(payload, tenantId ?? '');
+
+    if (!tenantId) {
+      return NextResponse.json(
+        { error: 'Tenant ID is required in the URL' },
+        { status: 400 },
+      );
+    }
+
+    const tenant = await findTenantById(tenantId);
 
     const { accountSid, apiKey, apiKeySid, phoneNumber } = tenant?.twilio ?? {};
 

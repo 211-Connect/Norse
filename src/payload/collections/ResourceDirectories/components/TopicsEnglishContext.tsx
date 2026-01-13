@@ -8,7 +8,7 @@ import {
   ReactNode,
 } from 'react';
 import { useLocale } from '@payloadcms/ui';
-import { getEnglishTopics } from '../services/getEnglishTopics';
+import { getEnglishTopics } from '../actions/getEnglishTopics';
 
 interface TopicsEnglishContextType {
   englishTopics: Record<string, string>;
