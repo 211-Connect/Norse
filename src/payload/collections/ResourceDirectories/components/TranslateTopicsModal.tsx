@@ -14,7 +14,6 @@ export const TranslateTopicsModal: React.FC<TranslateTopicsModalProps> = ({
   availableLocales,
 }) => {
   const { closeModal } = useModal();
-  const [engine, setEngine] = useState<'azure' | 'google'>('azure');
   const [selectedLocales, setSelectedLocales] = useState<Set<string>>(
     new Set(),
   );
@@ -50,7 +49,7 @@ export const TranslateTopicsModal: React.FC<TranslateTopicsModalProps> = ({
     const body: TaskTranslateTopics['input'] = {
       tenantId: resourceDirectoryId,
       locales: Array.from(selectedLocales).map((locale) => ({ locale })),
-      engine,
+      engine: 'google',
       force,
     };
 
@@ -118,31 +117,6 @@ export const TranslateTopicsModal: React.FC<TranslateTopicsModalProps> = ({
           <h2 style={{ marginTop: '0', marginBottom: '24px' }}>
             Auto-Translate
           </h2>
-
-          <div>
-            <label
-              style={{
-                display: 'block',
-                marginBottom: '8px',
-                fontWeight: 'bold',
-              }}
-            >
-              Translation Engine
-            </label>
-            <select
-              value={engine}
-              onChange={(e) => setEngine(e.target.value as 'azure' | 'google')}
-              style={{
-                width: '100%',
-                padding: '8px',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-              }}
-            >
-              <option value="azure">Azure Translator</option>
-              <option value="google">Google Translate</option>
-            </select>
-          </div>
 
           <div>
             <div
