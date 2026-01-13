@@ -6,7 +6,7 @@ import _ from 'lodash';
 import { TaxonomyService } from './taxonomy-service';
 import { searchAtom } from '../store/search';
 import { API_URL } from '../lib/constants';
-import { createAxios } from '../lib/axios';
+import { fetchApi } from '../lib/fetch';
 import { cache } from 'react';
 
 export function createUrlParamsForSearch(
@@ -54,11 +54,9 @@ export const findResources = cache(
       limit = 25;
     }
 
-    const axios = createAxios(tenantId);
-
     let response;
     try {
-      response = await axios.get(
+      response = await fetchApi(
         `${API_URL}/search?${qs.stringify({
           ...query,
           page,
@@ -66,6 +64,7 @@ export const findResources = cache(
           limit,
         })}`,
         {
+          tenantId,
           headers: {
             'accept-language': locale,
             'x-api-version': '1',
@@ -85,7 +84,7 @@ export const findResources = cache(
     if (totalResults === 0) {
       noResults = true;
       try {
-        data = await axios.get(
+        const fallbackResponse = await fetchApi(
           `${API_URL}/search?${qs.stringify({
             ...query,
             page,
@@ -94,12 +93,14 @@ export const findResources = cache(
             limit,
           })}`,
           {
+            tenantId,
             headers: {
               'accept-language': locale,
               'x-api-version': '1',
             },
           },
         );
+        data = fallbackResponse?.data;
       } catch (err) {}
 
       totalResults =

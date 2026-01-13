@@ -1,6 +1,6 @@
 'use server';
 
-import { createAxiosWithAuth } from '../../lib/axiosWithAuth';
+import { fetchApiWithAuth } from '../../lib/fetchWithAuth';
 import { API_URL, FAVORITES_LIST_ENDPOINT } from '../../lib/constants';
 
 export const updateFavoriteList = async (
@@ -18,14 +18,16 @@ export const updateFavoriteList = async (
   tenantId?: string,
 ) => {
   try {
-    const { data } = await createAxiosWithAuth({ tenantId }).put(
+    const { data } = await fetchApiWithAuth(
       `${API_URL}/${FAVORITES_LIST_ENDPOINT}/${id}`,
       {
-        name,
-        description,
-        public: privacy,
-      },
-      {
+        tenantId,
+        method: 'PUT',
+        body: {
+          name,
+          description,
+          public: privacy,
+        },
         headers: {
           'x-api-version': '1',
         },

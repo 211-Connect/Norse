@@ -1,7 +1,6 @@
 import { Metadata } from 'next/types';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { getResourceByOriginalId } from '@/app/(app)/shared/services/resource-service';
-import { isAxiosError } from 'axios';
 import { notFound, permanentRedirect, RedirectType } from 'next/navigation';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import { ResourcePageContent } from '@/app/(app)/features/resource/components/content';
@@ -27,10 +26,8 @@ export const generateMetadata = async ({ params }) => {
     try {
       await getResourceByOriginalId(original_id, locale, appConfig.tenantId);
     } catch (err) {
-      if (isAxiosError(err)) {
-        if (err?.response?.status === 404) {
-          notFoundFlag = true;
-        }
+      if (err?.response?.status === 404) {
+        notFoundFlag = true;
       } else {
         console.error(err);
       }
@@ -72,17 +69,15 @@ export default async function OriginalDetailsPage({ params }) {
         locale,
         appConfig.tenantId,
       );
-    } catch (err) {
-      if (isAxiosError(err)) {
-        if (err?.response?.status === 404) {
-          notFoundFlag = true;
+    } catch (err: any) {
+      if (err?.response?.status === 404) {
+        notFoundFlag = true;
 
-          if (err.response.data.redirect) {
-            permanentRedirect(
-              `/${locale}${err.response.data.redirect}`,
-              RedirectType.replace,
-            );
-          }
+        if (err.response.data.redirect) {
+          permanentRedirect(
+            `/${locale}${err.response.data.redirect}`,
+            RedirectType.replace,
+          );
         }
       } else {
         console.error(err);

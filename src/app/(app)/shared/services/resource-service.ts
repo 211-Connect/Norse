@@ -1,26 +1,23 @@
 import dayjs from 'dayjs';
-import { AxiosError } from 'axios';
 import { cache } from 'react';
 
 import { API_URL } from '../lib/constants';
-import { createAxios } from '../lib/axios';
+import { fetchApi } from '../lib/fetch';
 
 async function fetchAndTransformResource(
   url: string,
   options: { locale: string; tenantId?: string },
 ): Promise<any> {
-  const headers = {
-    'accept-language': options.locale,
-    'x-api-version': '1',
-  };
-  const params = {
-    locale: options.locale,
-  };
-
   try {
-    const { data } = await createAxios(options.tenantId).get(url, {
-      headers: headers,
-      params: params,
+    const { data } = await fetchApi(url, {
+      tenantId: options.tenantId,
+      params: {
+        locale: options.locale,
+      },
+      headers: {
+        'accept-language': options.locale,
+        'x-api-version': '1',
+      },
     });
 
     return {
@@ -64,16 +61,10 @@ async function fetchAndTransformResource(
       transportation: data?.translation?.transportation ?? null,
       accessibility: data?.translation?.accessibility ?? null,
     };
-  } catch (error) {
-    if (error instanceof AxiosError) {
-      // Concise logging for Axios errors
-      console.error(
-        `Error fetching resource: ${error.message}, Status Code: ${error.response?.status}, URL: ${url}`,
-      );
-    } else {
-      // Fallback for non-Axios errors
-      console.error('Error fetching resource:', error);
-    }
+  } catch (error: any) {
+    console.error(
+      `Error fetching resource: ${error.message}, Status Code: ${error.response?.status}, URL: ${url}`,
+    );
     throw error;
   }
 }

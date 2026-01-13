@@ -1,14 +1,15 @@
 'use server';
 
 import { cache } from 'react';
-import { createAxiosWithAuth } from '../../lib/axiosWithAuth';
+import { fetchApiWithAuth } from '../../lib/fetchWithAuth';
 import { API_URL, FAVORITES_LIST_ENDPOINT } from '../../lib/constants';
 
 export const getFavoriteLists = cache(async (tenantId?: string) => {
   try {
-    const { data } = await createAxiosWithAuth({ tenantId }).get(
+    const { data } = await fetchApiWithAuth(
       `${API_URL}/${FAVORITES_LIST_ENDPOINT}`,
       {
+        tenantId,
         headers: {
           'x-api-version': '1',
         },

@@ -1,5 +1,5 @@
 import { API_URL } from '../lib/constants';
-import { createAxios } from '../lib/axios';
+import { fetchApi } from '../lib/fetch';
 
 interface TaxonomyTerm {
   id: string;
@@ -22,19 +22,17 @@ export class TaxonomyService {
     searchTerm: string,
     options: { locale: string; tenantId?: string },
   ) {
-    const res = await createAxios(options.tenantId).get(
-      `${API_URL}/${this.endpoint}`,
-      {
-        params: {
-          locale: options.locale,
-          query: searchTerm,
-        },
-        headers: {
-          'accept-language': options.locale,
-          'x-api-version': '1',
-        },
+    const res = await fetchApi(`${API_URL}/${this.endpoint}`, {
+      tenantId: options.tenantId,
+      params: {
+        locale: options.locale,
+        query: searchTerm,
       },
-    );
+      headers: {
+        'accept-language': options.locale,
+        'x-api-version': '1',
+      },
+    });
 
     return (
       res.data?.hits?.hits?.map((hit) => ({

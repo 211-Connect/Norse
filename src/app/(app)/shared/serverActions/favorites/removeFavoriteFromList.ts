@@ -1,6 +1,6 @@
 'use server';
 
-import { createAxiosWithAuth } from '../../lib/axiosWithAuth';
+import { fetchApiWithAuth } from '../../lib/fetchWithAuth';
 import { API_URL, FAVORITES_BASE_ENDPOINT } from '../../lib/constants';
 
 export const removeFavoriteFromList = async (
@@ -14,9 +14,11 @@ export const removeFavoriteFromList = async (
   tenantId?: string,
 ) => {
   try {
-    const { data } = await createAxiosWithAuth({ tenantId }).delete(
+    const { data } = await fetchApiWithAuth(
       `${API_URL}/${FAVORITES_BASE_ENDPOINT}/${resourceId}/${favoriteListId}`,
       {
+        tenantId,
+        method: 'DELETE',
         headers: {
           'x-api-version': '1',
         },

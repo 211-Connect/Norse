@@ -1,5 +1,5 @@
 import { API_URL } from '../lib/constants';
-import { createAxios } from '../lib/axios';
+import { fetchApi } from '../lib/fetch';
 
 export class ShortUrlService {
   static endpoint = 'short-url';
@@ -8,14 +8,12 @@ export class ShortUrlService {
     id: string,
     tenantId?: string,
   ): Promise<string | null> {
-    const res = await createAxios(tenantId).get(
-      `${API_URL}/${this.endpoint}/${id}`,
-      {
-        headers: {
-          'x-api-version': '1',
-        },
+    const res = await fetchApi(`${API_URL}/${this.endpoint}/${id}`, {
+      tenantId,
+      headers: {
+        'x-api-version': '1',
       },
-    );
+    });
 
     return res.data?.url || null;
   }
@@ -24,17 +22,14 @@ export class ShortUrlService {
     url: string,
     tenantId?: string,
   ): Promise<string | null> {
-    const res = await createAxios(tenantId).post(
-      `${API_URL}/${this.endpoint}`,
-      {
-        url,
+    const res = await fetchApi(`${API_URL}/${this.endpoint}`, {
+      tenantId,
+      method: 'POST',
+      body: { url },
+      headers: {
+        'x-api-version': '1',
       },
-      {
-        headers: {
-          'x-api-version': '1',
-        },
-      },
-    );
+    });
 
     const shortUrl = res.data?.url;
     if (!shortUrl) {

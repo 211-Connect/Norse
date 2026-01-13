@@ -1,6 +1,6 @@
 'use server';
 
-import { createAxiosWithAuth } from '../../lib/axiosWithAuth';
+import { fetchApiWithAuth } from '../../lib/fetchWithAuth';
 import { API_URL, FAVORITES_LIST_ENDPOINT } from '../../lib/constants';
 
 export const searchFavoriteLists = async (
@@ -8,9 +8,10 @@ export const searchFavoriteLists = async (
   tenantId?: string,
 ) => {
   try {
-    const { data } = await createAxiosWithAuth({ tenantId }).get(
+    const { data } = await fetchApiWithAuth(
       `${API_URL}/${FAVORITES_LIST_ENDPOINT}/search`,
       {
+        tenantId,
         params: {
           name: searchText,
         },
