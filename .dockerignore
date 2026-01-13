@@ -1,0 +1,33 @@
+# Dependencies
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Next.js
+.next/
+out/
+*.tsbuildinfo
+
+# Build artifacts
+build
+.dist
+dist
+
+# Misc
+.DS_Store
+.cache
+.vscode
+.idea
+
+# Git
+.git
+.github
+
+# Tests and coverage
+coverage
+.nyc_output
+
+# Logs
+logs
+*.log
