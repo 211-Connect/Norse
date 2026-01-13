@@ -2,7 +2,7 @@ import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { Metadata } from 'next/types';
 import { getResource } from '@/app/(app)/shared/services/resource-service';
 import { isAxiosError } from 'axios';
-import { permanentRedirect, redirect, RedirectType } from 'next/navigation';
+import { permanentRedirect, notFound, RedirectType } from 'next/navigation';
 import { ResourcePageContent } from '@/app/(app)/features/resource/components/content';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import { getCookies } from 'cookies-next/server';
@@ -11,6 +11,9 @@ import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 
 const i18nNamespaces = ['page-resource', 'common'];
 
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export const generateMetadata = async ({ params }): Promise<Metadata> => {
   const { id, locale } = await params;
 
@@ -18,7 +21,7 @@ export const generateMetadata = async ({ params }): Promise<Metadata> => {
 
   let resource: any = null;
 
-  if (id) {
+  if (id && UUID_REGEX.test(id)) {
     try {
       resource = await getResource(id, locale, appConfig.tenantId);
     } catch {}
@@ -60,23 +63,24 @@ export default async function ResourcePage({ params }) {
   let resource: any = null;
 
   if (id) {
+    if (!UUID_REGEX.test(id)) {
+      console.warn('Resource ID is not a valid UUID:', id);
+      notFound();
+    }
+
     try {
       resource = await getResource(id, locale, appConfig.tenantId);
     } catch (err) {
       if (isAxiosError(err)) {
-        if (err?.response?.status === 404) {
-          if (err.response.data.redirect) {
-            permanentRedirect(
-              `/${locale}${err.response.data.redirect}`,
-              RedirectType.replace,
-            );
-          }
-
-          redirect(`/${locale}`, RedirectType.replace);
+        if (err?.response?.status === 404 && err.response.data.redirect) {
+          permanentRedirect(
+            `/${locale}${err.response.data.redirect}`,
+            RedirectType.replace,
+          );
         }
-      } else {
-        console.error(err);
       }
+
+      notFound();
     }
   }
 
