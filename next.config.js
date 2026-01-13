@@ -44,6 +44,7 @@ const nextConfig = {
   trailingSlash: process.env.WITH_TRAILING_SLASHES === 'true',
   poweredByHeader: false,
   skipTrailingSlashRedirect: true,
+  output: 'standalone',
 };
 
 export default withPayload(nextConfig);
