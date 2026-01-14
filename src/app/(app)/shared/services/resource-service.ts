@@ -1,23 +1,23 @@
 import dayjs from 'dayjs';
-import { AxiosError } from 'axios';
 import { cache } from 'react';
 
 import { API_URL } from '../lib/constants';
 import { createAxios } from '../lib/axios';
+import { RedisCacheKey, withRedisCache } from '@/payload/utilities';
 
 async function fetchAndTransformResource(
   url: string,
-  options: { locale: string; tenantId?: string },
+  options: { locale: string; tenantId?: string; cacheKey: RedisCacheKey },
 ): Promise<any> {
-  const headers = {
-    'accept-language': options.locale,
-    'x-api-version': '1',
-  };
-  const params = {
-    locale: options.locale,
-  };
+  return await withRedisCache(options.cacheKey, async () => {
+    const headers = {
+      'accept-language': options.locale,
+      'x-api-version': '1',
+    };
+    const params = {
+      locale: options.locale,
+    };
 
-  try {
     const { data } = await createAxios(options.tenantId).get(url, {
       headers: headers,
       params: params,
@@ -64,30 +64,27 @@ async function fetchAndTransformResource(
       transportation: data?.translation?.transportation ?? null,
       accessibility: data?.translation?.accessibility ?? null,
     };
-  } catch (error) {
-    if (error instanceof AxiosError) {
-      // Concise logging for Axios errors
-      console.error(
-        `Error fetching resource: ${error.message}, Status Code: ${error.response?.status}, URL: ${url}`,
-      );
-    } else {
-      // Fallback for non-Axios errors
-      console.error('Error fetching resource:', error);
-    }
-    throw error;
-  }
+  });
 }
 
 export const getResource = cache(
   (id: string, locale: string, tenantId?: string): Promise<any> => {
     const url = `${API_URL}/resource/${id}`;
-    return fetchAndTransformResource(url, { locale, tenantId });
+    return fetchAndTransformResource(url, {
+      locale,
+      tenantId,
+      cacheKey: `resource:${id}:${locale}`,
+    });
   },
 );
 
 export const getResourceByOriginalId = cache(
   (originalId: string, locale: string, tenantId?: string): Promise<any> => {
     const url = `${API_URL}/resource/original/${originalId}`;
-    return fetchAndTransformResource(url, { locale, tenantId });
+    return fetchAndTransformResource(url, {
+      locale,
+      tenantId,
+      cacheKey: `resource:${originalId}:${locale}`,
+    });
   },
 );
