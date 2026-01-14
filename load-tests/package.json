@@ -1,0 +1,21 @@
+{
+  "name": "norse-load-tests",
+  "version": "1.0.0",
+  "description": "Load tests for Norse application using k6",
+  "scripts": {
+    "test": "k6 run load-test.js",
+    "test:smoke": "k6 run --vus 1 --duration 2s load-test.js",
+    "test:smoke-2": "k6 run --vus 100 --duration 10s load-test.js",
+    "test:load": "k6 run --vus 10 --duration 2m load-test.js",
+    "test:stress": "k6 run --vus 50 --duration 2m load-test.js",
+    "test:spike": "k6 run --vus 100 --duration 1m load-test.js",
+    "test:report": "k6 run --out json=results.json load-test.js"
+  },
+  "keywords": [
+    "k6",
+    "load-testing",
+    "performance"
+  ],
+  "author": "",
+  "license": "ISC"
+}
