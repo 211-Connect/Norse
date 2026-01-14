@@ -71,6 +71,7 @@ export interface Config {
     tenants: Tenant;
     'tenant-media': TenantMedia;
     'resource-directories': ResourceDirectory;
+    'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -82,6 +83,7 @@ export interface Config {
     tenants: TenantsSelect<false> | TenantsSelect<true>;
     'tenant-media': TenantMediaSelect<false> | TenantMediaSelect<true>;
     'resource-directories': ResourceDirectoriesSelect<false> | ResourceDirectoriesSelect<true>;
+    'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -90,6 +92,66 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
+  fallbackLocale:
+    | ('false' | 'none' | 'null')
+    | false
+    | null
+    | (
+        | 'am'
+        | 'ar'
+        | 'de'
+        | 'en'
+        | 'es'
+        | 'fi'
+        | 'fil'
+        | 'ff'
+        | 'fr'
+        | 'hi'
+        | 'hr'
+        | 'ht'
+        | 'ko'
+        | 'km'
+        | 'ne'
+        | 'om'
+        | 'pl'
+        | 'pt'
+        | 'ru'
+        | 'so'
+        | 'sw'
+        | 'uk'
+        | 'vi'
+        | 'yue'
+        | 'zh-Hans'
+        | 'zh-Hant'
+      )
+    | (
+        | 'am'
+        | 'ar'
+        | 'de'
+        | 'en'
+        | 'es'
+        | 'fi'
+        | 'fil'
+        | 'ff'
+        | 'fr'
+        | 'hi'
+        | 'hr'
+        | 'ht'
+        | 'ko'
+        | 'km'
+        | 'ne'
+        | 'om'
+        | 'pl'
+        | 'pt'
+        | 'ru'
+        | 'so'
+        | 'sw'
+        | 'uk'
+        | 'vi'
+        | 'yue'
+        | 'zh-Hans'
+        | 'zh-Hant'
+      )[];
   globals: {
     'payload-jobs-stats': PayloadJobsStat;
   };
@@ -512,6 +574,23 @@ export interface ResourceDirectory {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-kv".
+ */
+export interface PayloadKv {
+  id: number;
+  key: string;
+  data:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-jobs".
  */
 export interface PayloadJob {
@@ -633,10 +712,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'resource-directories';
         value: string | ResourceDirectory;
-      } | null)
-    | ({
-        relationTo: 'payload-jobs';
-        value: number | PayloadJob;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1028,6 +1103,14 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
       };
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-kv_select".
+ */
+export interface PayloadKvSelect<T extends boolean = true> {
+  key?: T;
+  data?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
