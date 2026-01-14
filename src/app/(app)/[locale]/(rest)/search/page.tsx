@@ -74,7 +74,7 @@ export const generateMetadata = async ({
   const { results, totalResults } = await findResources(
     searchParamsResult,
     locale,
-    parseInt((searchParamsResult?.page as string) ?? ''),
+    parseInt((searchParamsResult?.page as string) ?? '1'),
     limit,
     appConfig.tenantId,
   );
@@ -85,7 +85,7 @@ export const generateMetadata = async ({
 
   const description = `Showing ${
     results.length >= 25 ? '25' : results.length
-  } / ${totalResults} ${t('results_for')} ${query}.`;
+  } / ${totalResults} ${t('results_for', { ns: 'page-search' })} ${query || ''}.`;
 
   return {
     openGraph: {
@@ -133,7 +133,7 @@ export default async function SearchPage({ params, searchParams }) {
     await findResources(
       searchParamsResult,
       locale,
-      parseInt((searchParamsResult?.page as string) ?? ''),
+      parseInt((searchParamsResult?.page as string) ?? '1'),
       limit,
       appConfig.tenantId,
     );
