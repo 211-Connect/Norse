@@ -78,9 +78,16 @@ export async function middleware(request: NextRequest) {
     );
     const tenantLocales: TenantLocaleResponse = await response.json();
 
-    if (tenantLocales.enabledLocales.length > 0 && tenantLocales.defaultLocale) {
+    if (
+      tenantLocales.enabledLocales.length > 0 &&
+      tenantLocales.defaultLocale
+    ) {
       locales = tenantLocales.enabledLocales;
       defaultLocale = tenantLocales.defaultLocale;
+    } else {
+      console.warn(
+        `No locales configured for tenant ${host}, falling back to defaults.`,
+      );
     }
   } catch (error) {
     console.error(`Failed to fetch tenant locales for ${host}`, error);
