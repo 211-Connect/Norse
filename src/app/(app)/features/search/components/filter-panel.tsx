@@ -82,9 +82,11 @@ const Filters = ({ filters, filterKeys }) => {
             .map((k) => k.charAt(0).toUpperCase() + k.slice(1))
             .join(' ');
           const filter = filters[key];
-          let filterList = filter.buckets;
+          let filterList = filter.buckets.filter(
+            (b) => b.key != null && b.key !== '',
+          );
 
-          const originalCount = filter.buckets.length;
+          const originalCount = filterList.length;
           const filtersExpandedForKey = filtersExpanded[key] ?? false;
 
           if (!filtersExpandedForKey) {

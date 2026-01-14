@@ -72,9 +72,31 @@ export const findResources = cache(
           },
         },
       );
-    } catch (err) {}
+    } catch (err) {
+      console.error('Search API error:', err);
+      // Return early with empty results if API fails completely
+      return {
+        results: [],
+        noResults: true,
+        totalResults: 0,
+        page: 1,
+        filters: {},
+      };
+    }
 
     let data = response?.data;
+
+    // If response succeeded but data is malformed, return empty results
+    if (!data || !data.search) {
+      console.error('Malformed API response:', data);
+      return {
+        results: [],
+        noResults: true,
+        totalResults: 0,
+        page: 1,
+        filters: {},
+      };
+    }
 
     let totalResults =
       typeof data?.search?.hits?.total !== 'number'
@@ -85,7 +107,7 @@ export const findResources = cache(
     if (totalResults === 0) {
       noResults = true;
       try {
-        data = await axios.get(
+        const fallbackResponse = await axios.get(
           `${API_URL}/search?${qs.stringify({
             ...query,
             page,
@@ -100,7 +122,13 @@ export const findResources = cache(
             },
           },
         );
-      } catch (err) {}
+
+        if (fallbackResponse?.data?.search) {
+          data = fallbackResponse.data;
+        }
+      } catch (err) {
+        console.error('Fallback search API error:', err);
+      }
 
       totalResults =
         typeof data?.search?.hits?.total !== 'number'
@@ -108,9 +136,9 @@ export const findResources = cache(
           : (data?.search?.hits?.total ?? 0);
     }
 
-    return {
-      results:
-        data?.search?.hits?.hits?.map((hit: any) => {
+    const hits = data?.search?.hits?.hits;
+    const results = Array.isArray(hits)
+      ? hits.map((hit: any) => {
           const physicalAddress = hit._source?.location?.physical_address;
           let mainAddress: string | null = null;
 
@@ -150,7 +178,11 @@ export const findResources = cache(
           return Object.fromEntries(
             Object.entries(responseData).filter(([_, value]) => value != null),
           );
-        }) ?? [],
+        })
+      : [];
+
+    return {
+      results,
       noResults,
       totalResults,
       page,
