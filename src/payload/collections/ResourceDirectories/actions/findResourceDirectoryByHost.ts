@@ -13,8 +13,6 @@ async function findResourceDirectoryByHostOrig(
   const payload = await getPayload({ config });
   const domain = parseHost(host);
 
-  payload.logger.debug('findResourceDirectoryByHost', { domain });
-
   const {
     docs: [resourceDirectory],
   } = await payload.find({
