@@ -78,9 +78,17 @@ export async function middleware(request: NextRequest) {
     );
     const tenantLocales: TenantLocaleResponse = await response.json();
 
-    locales = tenantLocales.enabledLocales;
-    defaultLocale = tenantLocales.defaultLocale;
-  } catch {}
+    if (tenantLocales.enabledLocales.length > 0 && tenantLocales.defaultLocale) {
+      locales = tenantLocales.enabledLocales;
+      defaultLocale = tenantLocales.defaultLocale;
+    }
+  } catch (error) {
+    console.error(`Failed to fetch tenant locales for ${host}`, error);
+  }
+
+  if (!locales.includes(defaultLocale)) {
+    locales.push(defaultLocale);
+  }
 
   const url = request.nextUrl.clone();
   const { pathname } = url;
