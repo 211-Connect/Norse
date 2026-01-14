@@ -1,12 +1,12 @@
 'use server';
 
+import config from '@/payload/payload-config';
 import { getPayload } from 'payload';
 import { cache } from 'react';
 
 async function getEnglishTopicsOrig(
   resourceDirectoryId: string,
 ): Promise<Record<string, string>> {
-  const config = (await import('@/payload/payload-config')).default;
   const payload = await getPayload({ config });
 
   const resourceDirectory = await payload.findByID({

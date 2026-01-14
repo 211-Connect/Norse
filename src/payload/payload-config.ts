@@ -22,6 +22,7 @@ import { sendGridTransport } from './utilities/sendgridAdapter';
 import { clearCache } from './endpoints/clearCache';
 import { translateTopicsEndpoint } from './endpoints/translateTopics';
 import { translateTopics } from './jobs/translateTopics';
+import { warmCache } from './jobs/warmCache';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -39,10 +40,14 @@ if (process.env.NODE_ENV === 'development') {
 const config = buildConfig({
   collections: [Users, Tenants, TenantMedia, ResourceDirectories],
   jobs: {
-    tasks: [translateTopics],
+    tasks: [translateTopics, warmCache],
     autoRun: [
       {
         queue: 'translation',
+        cron: '* * * * * *',
+      },
+      {
+        queue: 'cache',
         cron: '* * * * * *',
       },
     ],
@@ -218,6 +223,21 @@ const config = buildConfig({
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
   endpoints,
+  onInit: async (payload) => {
+    payload.logger.info('Queueing warmCache task on startup...');
+    try {
+      const job = await payload.jobs.queue({
+        task: 'warmCache',
+        input: {},
+        queue: 'cache',
+      });
+      payload.logger.info(
+        `warmCache task queued successfully with job ID: ${job.id}`,
+      );
+    } catch (error) {
+      payload.logger.error('Failed to queue warmCache task on startup:', error);
+    }
+  },
 });
 
 export default config;

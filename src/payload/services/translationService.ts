@@ -1,5 +1,4 @@
 import crypto from 'crypto';
-import { retry } from 'radash';
 import TextTranslationClient, {
   isUnexpected,
 } from '@azure-rest/ai-translation-text';

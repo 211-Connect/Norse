@@ -2,8 +2,6 @@ import { Tenant } from '@/payload/payload-types';
 
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
 import { cacheService } from '@/cacheService';
-import { createCacheKeyForAllLocales } from '../../ResourceDirectories/cache/keys';
-import { createCacheKey } from '../cache/keys';
 
 export async function revalidateCache({
   doc,
@@ -25,13 +23,14 @@ export async function revalidateCache({
     await Promise.all(
       trustedDomains.map(async (domain) => {
         const host = parseHost(domain);
-        await cacheServiceInstance.delPattern(
-          createCacheKeyForAllLocales(host),
-        );
-        await cacheServiceInstance.del(createCacheKey(parseHost(host)));
+        await cacheServiceInstance.delPattern(`tenant_locale:${host}`);
+        await cacheServiceInstance.del(`tenant:${host}`);
+        await cacheServiceInstance.delPattern(`resource_directory:${host}:*`);
       }),
     );
-  } catch {}
+  } catch (error) {
+    console.error('Error invalidating tenant cache:', error);
+  }
 
   return doc;
 }

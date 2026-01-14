@@ -1,6 +1,6 @@
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
 import { createAuthOptions } from '@/auth';
-import { findByHost } from '@/payload/collections/Tenants/services/findByHost';
+import { findTenantByHost } from '@/payload/collections/Tenants/actions';
 import NextAuth from 'next-auth';
 import { NextRequest } from 'next/server';
 
@@ -15,7 +15,7 @@ const handlerFunction = async (
   const parsedHost = parseHost(host ?? '');
 
   const baseUrl = `${protocol}://${host}${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}`;
-  const tenant = await findByHost(parsedHost);
+  const tenant = await findTenantByHost(parsedHost);
 
   return NextAuth(
     req,

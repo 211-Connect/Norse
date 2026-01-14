@@ -4,7 +4,7 @@ import { i18nRouter } from 'next-i18n-router';
 
 import { SESSION_ID } from './app/(app)/shared/lib/constants';
 import { searchLinkCorrectionMiddleware } from './middlewares/searchLinkCorrectionMiddleware';
-import { Tenant } from './payload/payload-types';
+import { TenantLocaleResponse } from './app/(payload)/api/getTenantLocales/route';
 import { parseHost } from './app/(app)/shared/utils/parseHost';
 
 export const config = {
@@ -65,7 +65,7 @@ export async function middleware(request: NextRequest) {
   let locales = ['en'];
   let defaultLocale = 'en';
 
-  const apiRoute = getApiRoute(request, 'getTenant');
+  const apiRoute = getApiRoute(request, 'getTenantLocales');
   try {
     const response = await fetch(
       `${apiRoute}?host=${host}&secret=${process.env.PAYLOAD_API_ROUTE_SECRET}`,
@@ -76,10 +76,10 @@ export async function middleware(request: NextRequest) {
         next: { tags: [`tenants:${host}`] },
       },
     );
-    const tenant: Tenant = await response.json();
+    const tenantLocales: TenantLocaleResponse = await response.json();
 
-    locales = tenant.enabledLocales;
-    defaultLocale = tenant.defaultLocale;
+    locales = tenantLocales.enabledLocales;
+    defaultLocale = tenantLocales.defaultLocale;
   } catch {}
 
   const url = request.nextUrl.clone();

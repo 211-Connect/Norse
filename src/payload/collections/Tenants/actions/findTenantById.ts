@@ -1,10 +1,11 @@
-import { Tenant } from '@/payload/payload-types';
-import { Payload } from 'payload';
+'use server';
 
-export async function findByTenantId(
-  payload: Payload,
-  tenantId: string,
-): Promise<Tenant | null> {
+import config from '@/payload/payload-config';
+import { Tenant } from '@/payload/payload-types';
+import { getPayload } from 'payload';
+
+export async function findTenantById(tenantId: string): Promise<Tenant | null> {
+  const payload = await getPayload({ config });
   const {
     docs: [tenant],
   } = await payload.find({

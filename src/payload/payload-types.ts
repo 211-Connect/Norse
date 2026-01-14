@@ -90,8 +90,12 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    'payload-jobs-stats': PayloadJobsStat;
+  };
+  globalsSelect: {
+    'payload-jobs-stats': PayloadJobsStatsSelect<false> | PayloadJobsStatsSelect<true>;
+  };
   locale:
     | 'am'
     | 'ar'
@@ -125,6 +129,7 @@ export interface Config {
   jobs: {
     tasks: {
       translateTopics: TaskTranslateTopics;
+      warmCache: TaskWarmCache;
       inline: {
         input: unknown;
         output: unknown;
@@ -557,7 +562,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'translateTopics';
+        taskSlug: 'inline' | 'translateTopics' | 'warmCache';
         taskID: string;
         input?:
           | {
@@ -590,10 +595,19 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'translateTopics') | null;
+  taskSlug?: ('inline' | 'translateTopics' | 'warmCache') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
+  meta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1043,6 +1057,7 @@ export interface PayloadJobsSelect<T extends boolean = true> {
   queue?: T;
   waitUntil?: T;
   processing?: T;
+  meta?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1080,6 +1095,34 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs-stats".
+ */
+export interface PayloadJobsStat {
+  id: number;
+  stats?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs-stats_select".
+ */
+export interface PayloadJobsStatsSelect<T extends boolean = true> {
+  stats?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "TaskTranslateTopics".
  */
 export interface TaskTranslateTopics {
@@ -1094,6 +1137,24 @@ export interface TaskTranslateTopics {
   output: {
     success: boolean;
     translated: number;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskWarmCache".
+ */
+export interface TaskWarmCache {
+  input: {
+    domains?:
+      | {
+          domain?: string | null;
+        }[]
+      | null;
+  };
+  output: {
+    success: boolean;
+    warmedTenants: number;
+    warmedResourceDirectories: number;
   };
 }
 /**
