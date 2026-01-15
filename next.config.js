@@ -44,6 +44,7 @@ const nextConfig = {
   trailingSlash: process.env.WITH_TRAILING_SLASHES === 'true',
   poweredByHeader: false,
   skipTrailingSlashRedirect: true,
+  cacheMaxMemorySize: 32 * 1024 * 1024, // 32 MB
 };
 
 export default withPayload(nextConfig);
