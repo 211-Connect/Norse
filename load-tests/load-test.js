@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 import http from 'k6/http';
 import { check } from 'k6';
 import { Counter, Trend, Rate } from 'k6/metrics';
@@ -36,8 +37,6 @@ const BASE_URL = __ENV.BASE_URL || 'http://localhost:3000';
  * Check cache status from response headers
  */
 function checkCacheStatus(response, url) {
-  console.log(url, response.headers);
-
   // Common cache headers to check
   const cacheHeader =
     response.headers['X-Cache'] ||
@@ -173,7 +172,7 @@ export default function () {
     console.log(
       `[Landing] Status: ${result.status}, Duration: ${result.duration.toFixed(2)}ms, Cache: ${result.cache}`,
     );
-  } else if (rand < 0.4) {
+  } else if (rand < 1) {
     // 40% search pages
     const result = testSearchPage();
     console.log(
