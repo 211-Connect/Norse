@@ -3,7 +3,7 @@ import TextTranslationClient, {
   isUnexpected,
 } from '@azure-rest/ai-translation-text';
 import { TranslationServiceClient } from '@google-cloud/translate';
-import { cacheService } from '@/cacheService';
+import { translationCacheService } from '@/cacheService';
 
 export type TranslationEngine = 'azure' | 'google';
 
@@ -111,7 +111,6 @@ export async function batchTranslate(
   engine: TranslationEngine,
   inputs: BatchTranslationInput[],
 ): Promise<BatchTranslationResult[]> {
-  const cache = cacheService(CACHE_DB);
   const results: BatchTranslationResult[] = [];
 
   const byLocale = inputs.reduce<Record<string, BatchTranslationInput[]>>(
@@ -131,7 +130,7 @@ export async function batchTranslate(
 
     for (const input of localeInputs) {
       const cacheKey = createCacheKey(engine, locale, input.text);
-      const cached = await cache.get(cacheKey);
+      const cached = await translationCacheService.get(cacheKey);
 
       if (cached) {
         results.push({
@@ -160,7 +159,7 @@ export async function batchTranslate(
         const translatedText = translations[i];
         const cacheKey = createCacheKey(engine, locale, input.text);
 
-        await cache.set(cacheKey, translatedText, CACHE_TTL);
+        await translationCacheService.set(cacheKey, translatedText, CACHE_TTL);
 
         results.push({
           text: input.text,

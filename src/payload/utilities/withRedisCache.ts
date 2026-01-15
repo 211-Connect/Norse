@@ -18,10 +18,8 @@ export const withRedisCache = async <T>(
   key: RedisCacheKey,
   fetchFunction: () => Promise<T>,
 ): Promise<T | null> => {
-  const cache = cacheService();
-
   try {
-    const cachedValue = await cache.get(key);
+    const cachedValue = await cacheService.get(key);
     if (cachedValue) {
       try {
         return JSON.parse(cachedValue);
@@ -30,7 +28,7 @@ export const withRedisCache = async <T>(
           `Failed to parse cached value for key ${key}:`,
           parseError,
         );
-        await cache.del(key);
+        await cacheService.del(key);
       }
     }
   } catch (error) {
@@ -41,7 +39,7 @@ export const withRedisCache = async <T>(
 
   if (value != null) {
     try {
-      await cache.set(key, JSON.stringify(value), CACHE_TTL);
+      await cacheService.set(key, JSON.stringify(value), CACHE_TTL);
     } catch (error) {
       console.error(`Error writing to Redis cache for key ${key}:`, error);
     }

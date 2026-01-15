@@ -13,8 +13,7 @@ export const clearCache: Endpoint = {
     }
 
     try {
-      const cacheServiceInstance = cacheService();
-      await cacheServiceInstance.clear();
+      await cacheService.clear();
       return Response.json({ status: 'cache cleared' }, { status: 200 });
     } catch (error) {
       return Response.json({ status: 'cache not cleared' }, { status: 200 });

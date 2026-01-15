@@ -21,9 +21,8 @@ export async function revalidateCache({
             return `resource_directory:${host}:*`;
           },
         );
-        const cacheServiceInstance = cacheService();
         for (const key of cacheKeys) {
-          await cacheServiceInstance.delPattern(key);
+          await cacheService.delPattern(key);
         }
       }
     } catch (error) {
