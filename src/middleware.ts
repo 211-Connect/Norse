@@ -67,6 +67,9 @@ export async function middleware(request: NextRequest) {
 
   const apiRoute = getApiRoute(request, 'getTenantLocales');
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
     const response = await fetch(
       `${apiRoute}?host=${host}&secret=${process.env.PAYLOAD_API_ROUTE_SECRET}`,
       {
@@ -74,8 +77,10 @@ export async function middleware(request: NextRequest) {
           host: request.headers.get('host') || '',
         },
         next: { tags: [`tenants:${host}`] },
+        signal: controller.signal,
       },
     );
+    clearTimeout(timeoutId);
     const tenantLocales: TenantLocaleResponse = await response.json();
 
     if (
