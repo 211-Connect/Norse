@@ -37,6 +37,17 @@ export const Tenants: CollectionConfig = {
   },
   fields: [
     {
+      type: 'ui',
+      name: 'tenantActions',
+      admin: {
+        position: 'above',
+        components: {
+          Field: '@/payload/collections/Tenants/components/TenantActions',
+        },
+        disableListColumn: true,
+      },
+    },
+    {
       name: 'id',
       type: 'text',
       required: true,

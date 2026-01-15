@@ -1,3 +1,4 @@
+import { default as default_680dd7c5c6cc78791164ebf0fb21d580 } from '@/payload/collections/Tenants/components/TenantActions'
 import { default as default_feaf6b52f59b1e80713468d4249f1e7d } from '@/payload/collections/Tenants/components/ServicesCell'
 import { WatchTenantCollection as WatchTenantCollection_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
 import { TenantField as TenantField_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
@@ -19,6 +20,7 @@ import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc056
 import { CollectionCards as CollectionCards_ab83ff7e88da8d3530831f296ec4756a } from '@payloadcms/ui/rsc'
 
 export const importMap = {
+  "@/payload/collections/Tenants/components/TenantActions#default": default_680dd7c5c6cc78791164ebf0fb21d580,
   "@/payload/collections/Tenants/components/ServicesCell#default": default_feaf6b52f59b1e80713468d4249f1e7d,
   "@payloadcms/plugin-multi-tenant/client#WatchTenantCollection": WatchTenantCollection_1d0591e3cf4f332c83a86da13a0de59a,
   "@payloadcms/plugin-multi-tenant/client#TenantField": TenantField_1d0591e3cf4f332c83a86da13a0de59a,
