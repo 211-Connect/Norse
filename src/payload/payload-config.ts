@@ -46,11 +46,11 @@ const config = buildConfig({
     autoRun: [
       {
         queue: 'translation',
-        cron: '* * * * * *',
+        cron: '* * * * *',
       },
       {
         queue: 'cache',
-        cron: '* * * * * *',
+        cron: '* * * * *',
       },
     ],
     // Make jobs collection visible to super admins only
