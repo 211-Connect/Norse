@@ -1,3 +1,4 @@
+export * from './generateRandomKey';
 export * from './getCollectionIDType';
 export * from './getUserTenantIDs';
 export * from './isEmpty';

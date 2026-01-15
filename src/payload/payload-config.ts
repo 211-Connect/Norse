@@ -21,6 +21,7 @@ import { isSuperAdmin, isSupport } from './collections/Users/access/roles';
 import { sendGridTransport } from './utilities/sendgridAdapter';
 import { clearCache } from './endpoints/clearCache';
 import { translateTopicsEndpoint } from './endpoints/translateTopics';
+import { duplicateTenant } from './endpoints/duplicateTenant';
 import { translateTopics } from './jobs/translateTopics';
 import { warmCache } from './jobs/warmCache';
 
@@ -30,6 +31,7 @@ const dirname = path.dirname(filename);
 const endpoints: Endpoint[] = [
   clearCache,
   translateTopicsEndpoint,
+  duplicateTenant,
   seedEndpoint,
 ];
 
