@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import mapboxgl, { LngLatBounds, LngLatLike, Marker, Popup } from 'mapbox-gl';
 import {
   MAPBOX_API_KEY,
@@ -14,6 +14,7 @@ import {
   getBoundsFromServiceArea,
   MarkerDef,
 } from '../map-shared';
+import { MapErrorFallback } from '../map-error-fallback';
 
 type MapProps = {
   center?: [number, number];
@@ -35,16 +36,33 @@ export function Map({
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapboxMap = useRef<any>(null);
   const _markers = useRef<mapboxgl.Marker[]>([]);
+  const [mapError, setMapError] = useState<string | null>(null);
 
   useEffect(() => {
-    mapboxMap.current = new mapboxgl.Map({
-      container: mapContainer.current as HTMLDivElement, // container ID or element
-      style: MAPBOX_STYLE_URL, // style URL
-      zoom: zoom ?? 7, // starting zoom
-      center: center ?? undefined,
-      accessToken: MAPBOX_API_KEY,
-      trackResize: true,
-    });
+    try {
+      mapboxMap.current = new mapboxgl.Map({
+        container: mapContainer.current || '',
+        style: MAPBOX_STYLE_URL,
+        zoom: zoom ?? 7,
+        center: center ?? undefined,
+        accessToken: MAPBOX_API_KEY,
+        trackResize: true,
+      });
+
+      mapboxMap.current.on('error', (e) => {
+        console.error('Mapbox error:', e);
+        if (e.error?.message?.includes('WebGL')) {
+          setMapError('WebGL is not supported on this device');
+        }
+      });
+    } catch (error) {
+      console.error('Failed to initialize map:', error);
+      setMapError(
+        error.message?.includes('WebGL')
+          ? 'WebGL is not supported on this device'
+          : 'Failed to load map',
+      );
+    }
 
     return () => {
       mapboxMap.current?.remove();
@@ -219,5 +237,13 @@ export function Map({
     };
   }, [serviceArea, markers]);
 
-  return <div ref={mapContainer} className="h-full w-full"></div>;
+  return (
+    <div className="h-full w-full">
+      {mapError ? (
+        <MapErrorFallback error={mapError} />
+      ) : (
+        <div ref={mapContainer} className="h-full w-full"></div>
+      )}
+    </div>
+  );
 }

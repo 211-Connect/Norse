@@ -17,6 +17,7 @@ import {
   MarkerDef,
 } from '../map-shared';
 import { createPortal } from 'react-dom';
+import { MapErrorFallback } from '../map-error-fallback';
 
 type MapProps = {
   center?: [number, number];
@@ -48,15 +49,32 @@ export function Map({
     element: HTMLElement;
     popup: any;
   } | null>(null);
+  const [mapError, setMapError] = useState<string | null>(null);
 
   useEffect(() => {
-    mapLibreMap.current = new mapLibreGl.Map({
-      container: mapContainer.current as HTMLDivElement,
-      style: MAPLIBRE_STYLE_URL,
-      zoom: zoom ?? 7, // starting zoom
-      center: center ?? undefined,
-      trackResize: true,
-    });
+    try {
+      mapLibreMap.current = new mapLibreGl.Map({
+        container: mapContainer.current || '',
+        style: MAPLIBRE_STYLE_URL,
+        zoom: zoom ?? 7,
+        center: center ?? undefined,
+        trackResize: true,
+      });
+
+      mapLibreMap.current.on('error', (e: any) => {
+        console.error('MapLibre error:', e);
+        if (e.error?.message?.includes('WebGL')) {
+          setMapError('WebGL is not supported on this device');
+        }
+      });
+    } catch (error: any) {
+      console.error('Failed to initialize map:', error);
+      setMapError(
+        error.message?.includes('WebGL')
+          ? 'WebGL is not supported on this device'
+          : 'Failed to load map',
+      );
+    }
 
     return () => {
       // Remove and clear ref so other effects don't act on a torn-down map
@@ -285,8 +303,14 @@ export function Map({
 
   return (
     <div className="size-full">
-      <div ref={mapContainer} className="size-full"></div>
-      {activePopup && createPortal(activePopup.popup, activePopup.element)}
+      {mapError ? (
+        <MapErrorFallback error={mapError} />
+      ) : (
+        <>
+          <div ref={mapContainer} className="size-full"></div>
+          {activePopup && createPortal(activePopup.popup, activePopup.element)}
+        </>
+      )}
     </div>
   );
 }
