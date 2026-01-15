@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/app/(app)/shared/components/ui/card';
 import { Separator } from '@/app/(app)/shared/components/ui/separator';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
+import { containsBlockElements } from '@/app/(app)/shared/lib/html-helpers';
 import { parseHtml } from '@/app/(app)/shared/lib/parse-html';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { useMemo } from 'react';
@@ -40,6 +41,8 @@ export function DescriptionSection({ resource }) {
     return null;
   }
 
+  const shouldRenderDescriptionAsBlock = containsBlockElements(description);
+
   return (
     <>
       <Card className="overflow-hidden print:border-none">
@@ -47,9 +50,15 @@ export function DescriptionSection({ resource }) {
           {description && (
             <div>
               <h2 className="mb-4 font-medium">{t('description')}</h2>
-              <p className="whitespace-break-spaces [&>a]:break-all">
-                {parseHtml(resource.description)}
-              </p>
+              {shouldRenderDescriptionAsBlock ? (
+                <div className="flex flex-col gap-4 whitespace-break-spaces [&_a]:break-all">
+                  {parseHtml(description)}
+                </div>
+              ) : (
+                <p className="whitespace-break-spaces [&_a]:break-all">
+                  {parseHtml(description)}
+                </p>
+              )}
               {showLastAssured && (
                 <div className="text-sm">
                   <h2 className="mb-1 mt-4 font-semibold">
