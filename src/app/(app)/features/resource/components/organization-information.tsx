@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/app/(app)/shared/components/ui/card';
+import { containsBlockElements } from '@/app/(app)/shared/lib/html-helpers';
 import { parseHtml } from '@/app/(app)/shared/lib/parse-html';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -34,11 +35,16 @@ export function OrganizationInformation({ resource }) {
         {organizationName && (
           <p className="mt-[6px] font-medium">{organizationName}</p>
         )}
-        {organizationDescription && (
-          <p className="mt-4 whitespace-break-spaces">
-            {parseHtml(organizationDescription)}
-          </p>
-        )}
+        {organizationDescription &&
+          (containsBlockElements(organizationDescription) ? (
+            <div className="mt-4 flex flex-col gap-4 whitespace-break-spaces">
+              {parseHtml(organizationDescription)}
+            </div>
+          ) : (
+            <p className="mt-4 whitespace-break-spaces">
+              {parseHtml(organizationDescription)}
+            </p>
+          ))}
       </CardContent>
     </Card>
   );
