@@ -10,8 +10,6 @@ export async function revalidateCache({
   doc?: Tenant;
   previousDoc?: Tenant;
 }): Promise<Tenant | undefined> {
-  const cacheServiceInstance = cacheService();
-
   const trustedDomains = Array.from(
     new Set<string>([
       ...(doc?.trustedDomains?.map(({ domain }) => domain) ?? []),
@@ -23,9 +21,9 @@ export async function revalidateCache({
     await Promise.all(
       trustedDomains.map(async (domain) => {
         const host = parseHost(domain);
-        await cacheServiceInstance.delPattern(`tenant_locale:${host}`);
-        await cacheServiceInstance.del(`tenant:${host}`);
-        await cacheServiceInstance.delPattern(`resource_directory:${host}:*`);
+        await cacheService.delPattern(`tenant_locale:${host}`);
+        await cacheService.del(`tenant:${host}`);
+        await cacheService.delPattern(`resource_directory:${host}:*`);
       }),
     );
   } catch (error) {
