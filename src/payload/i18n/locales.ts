@@ -3,32 +3,36 @@ import { TypedLocale } from 'payload';
 export const defaultLocale = 'en';
 
 export const locales = [
-  'am',
-  'ar',
-  'de',
-  'en',
-  'es',
-  'fi',
-  'fil',
-  'ff',
-  'fr',
-  'hi',
-  'hr',
-  'ht',
-  'ko',
-  'km',
-  'ne',
-  'om',
-  'pl',
-  'pt',
-  'ru',
-  'so',
-  'sw',
-  'uk',
-  'vi',
-  'yue',
-  'zh-Hans',
-  'zh-Hant',
+  'am', // Amharic
+  'ar', // Arabic
+  'de', // German
+  'en', // English
+  'es', // Spanish
+  'fa', // Farsi (Persian)
+  'fi', // Finnish
+  'fil', // Filipino
+  'ff', // Fulah
+  'fr', // French
+  'hi', // Hindi
+  'hr', // Croatian
+  'ht', // Haitian Creole
+  'ko', // Korean
+  'km', // Khmer
+  'ne', // Nepali
+  'om', // Oromo
+  'or', // Odia
+  'pl', // Polish
+  'ps', // Pashto
+  'prs', // Dari
+  'pt', // Portuguese
+  'ru', // Russian
+  'so', // Somali
+  'sw', // Swahili
+  'uk', // Ukrainian
+  'vi', // Vietnamese
+  'yue', // Cantonese
+  'zh-Hans', // Chinese (Simplified)
+  'zh-Hant', // Chinese (Traditional)
 ];
 
 const validLocaleCodes = new Set<string>(locales);
