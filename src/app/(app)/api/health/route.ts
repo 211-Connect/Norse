@@ -55,13 +55,9 @@ export async function GET() {
       healthCheck.services.redis.status = 'disabled';
       healthCheck.services.redis.message = 'CACHE_REDIS_URI not configured';
     } else {
-      const cache = cacheService();
-      const testKey = '__health_check__';
-      await cache.set(testKey, 'ok', 10);
-      const result = await cache.get(testKey);
-      await cache.del(testKey);
+      const ok = await cacheService.isHealthy();
 
-      if (result === 'ok') {
+      if (ok) {
         healthCheck.services.redis.status = 'ok';
       } else {
         healthCheck.status = 'degraded';

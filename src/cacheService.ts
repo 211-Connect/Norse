@@ -2,7 +2,7 @@ import { Redis } from 'ioredis';
 
 class CacheService {
   private client: Redis | null = null;
-  private readonly isEnabled = Boolean(process.env.CACHE_REDIS_URI);
+  private isEnabled = Boolean(process.env.CACHE_REDIS_URI);
 
   constructor(private db: number = 0) {
     if (!this.isEnabled) {
@@ -155,7 +155,15 @@ class CacheService {
 
     try {
       await this.client.ping();
-      return true;
+
+      const testKey = `__health_check__:${this.db}:${process.pid}`;
+      const expectedValue = 'ok';
+
+      await this.client.setex(testKey, 10, expectedValue);
+      const result = await this.client.get(testKey);
+      await this.client.del(testKey);
+
+      return result === expectedValue;
     } catch (error) {
       console.error('Redis health check failed:', error);
       return false;
