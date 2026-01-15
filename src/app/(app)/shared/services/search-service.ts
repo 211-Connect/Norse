@@ -56,24 +56,31 @@ export const findResources = cache(
 
     const axios = createAxios(tenantId);
 
+    const searchUrl = `${API_URL}/search?${qs.stringify({
+      ...query,
+      page,
+      locale,
+      limit,
+    })}`;
+
     let response;
     try {
-      response = await axios.get(
-        `${API_URL}/search?${qs.stringify({
-          ...query,
-          page,
-          locale,
-          limit,
-        })}`,
-        {
-          headers: {
-            'accept-language': locale,
-            'x-api-version': '1',
-          },
+      response = await axios.get(searchUrl, {
+        headers: {
+          'accept-language': locale,
+          'x-api-version': '1',
         },
-      );
+      });
     } catch (err) {
-      console.error('Search API error:', err);
+      console.error('Search API error:', {
+        error: err,
+        url: searchUrl,
+        tenantId,
+        query,
+        page,
+        locale,
+        limit,
+      });
       // Return early with empty results if API fails completely
       return {
         results: [],
@@ -88,7 +95,17 @@ export const findResources = cache(
 
     // If response succeeded but data is malformed, return empty results
     if (!data || !data.search) {
-      console.error('Malformed API response:', data);
+      console.error('Malformed API response:', {
+        data,
+        url: searchUrl,
+        tenantId,
+        query,
+        page,
+        locale,
+        limit,
+        statusCode: response?.status,
+        headers: response?.headers,
+      });
       return {
         results: [],
         noResults: true,
@@ -106,28 +123,35 @@ export const findResources = cache(
     let noResults = false;
     if (totalResults === 0) {
       noResults = true;
+      const fallbackUrl = `${API_URL}/search?${qs.stringify({
+        ...query,
+        page,
+        query_type: 'more_like_this',
+        locale,
+        limit,
+      })}`;
+
       try {
-        const fallbackResponse = await axios.get(
-          `${API_URL}/search?${qs.stringify({
-            ...query,
-            page,
-            query_type: 'more_like_this',
-            locale,
-            limit,
-          })}`,
-          {
-            headers: {
-              'accept-language': locale,
-              'x-api-version': '1',
-            },
+        const fallbackResponse = await axios.get(fallbackUrl, {
+          headers: {
+            'accept-language': locale,
+            'x-api-version': '1',
           },
-        );
+        });
 
         if (fallbackResponse?.data?.search) {
           data = fallbackResponse.data;
         }
       } catch (err) {
-        console.error('Fallback search API error:', err);
+        console.error('Fallback search API error:', {
+          error: err,
+          url: fallbackUrl,
+          tenantId,
+          query: { ...query, query_type: 'more_like_this' },
+          page,
+          locale,
+          limit,
+        });
       }
 
       totalResults =
