@@ -77,8 +77,8 @@ export async function middleware(request: NextRequest) {
         headers: {
           host: request.headers.get('host') || '',
         },
-        next: { tags: [`tenants:${host}`] },
         signal: controller.signal,
+        cache: 'no-store',
       },
     );
     clearTimeout(timeoutId);
