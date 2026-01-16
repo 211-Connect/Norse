@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getPayload } from 'payload';
-import config from '@/payload/payload-config';
+import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
 import { cacheService } from '@/cacheService';
 
 export const dynamic = 'force-dynamic';
@@ -62,7 +61,7 @@ export async function GET() {
   }
 
   try {
-    const payload = await getPayload({ config });
+    const payload = await getPayloadSingleton();
     await payload.find({
       collection: 'users',
       limit: 1,

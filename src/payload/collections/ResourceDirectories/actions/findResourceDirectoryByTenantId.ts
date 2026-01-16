@@ -1,15 +1,15 @@
 'use server';
 
 import { defaultLocale } from '@/payload/i18n/locales';
-import config from '@/payload/payload-config';
 import { ResourceDirectory } from '@/payload/payload-types';
-import { getPayload, TypedLocale } from 'payload';
+import { TypedLocale } from 'payload';
+import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
 
 export async function findResourceDirectoryByTenantId(
   tenantId: string,
   locale: TypedLocale = defaultLocale,
 ): Promise<ResourceDirectory | null> {
-  const payload = await getPayload({ config });
+  const payload = await getPayloadSingleton();
   const {
     docs: [resourceDirectory],
   } = await payload.find({

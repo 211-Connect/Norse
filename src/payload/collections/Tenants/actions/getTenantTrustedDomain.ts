@@ -1,7 +1,6 @@
 'use server';
 
-import config from '@/payload/payload-config';
-import { getPayload } from 'payload';
+import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
 
 export async function getTenantTrustedDomain(
   tenantId: string,
@@ -10,7 +9,7 @@ export async function getTenantTrustedDomain(
     return null;
   }
 
-  const payload = await getPayload({ config });
+  const payload = await getPayloadSingleton();
 
   const tenant = await payload.findByID({
     collection: 'tenants',

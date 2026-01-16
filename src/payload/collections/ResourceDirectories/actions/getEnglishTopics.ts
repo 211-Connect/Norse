@@ -1,13 +1,11 @@
 'use server';
 
-import config from '@/payload/payload-config';
-import { getPayload } from 'payload';
-import { cache } from 'react';
+import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
 
-async function getEnglishTopicsOrig(
+export async function getEnglishTopics(
   resourceDirectoryId: string,
 ): Promise<Record<string, string>> {
-  const payload = await getPayload({ config });
+  const payload = await getPayloadSingleton();
 
   const resourceDirectory = await payload.findByID({
     collection: 'resource-directories',
@@ -38,5 +36,3 @@ async function getEnglishTopicsOrig(
 
   return englishMap;
 }
-
-export const getEnglishTopics = cache(getEnglishTopicsOrig);

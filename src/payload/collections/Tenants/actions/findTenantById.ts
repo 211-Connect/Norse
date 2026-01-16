@@ -1,11 +1,10 @@
 'use server';
 
-import config from '@/payload/payload-config';
 import { Tenant } from '@/payload/payload-types';
-import { getPayload } from 'payload';
+import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
 
 export async function findTenantById(tenantId: string): Promise<Tenant | null> {
-  const payload = await getPayload({ config });
+  const payload = await getPayloadSingleton();
   const {
     docs: [tenant],
   } = await payload.find({
