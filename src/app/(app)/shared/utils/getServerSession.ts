@@ -1,11 +1,10 @@
-import { cache } from 'react';
 import { parseHost } from './parseHost';
 import { findTenantByHost } from '@/payload/collections/Tenants/actions/findTenantByHost';
 import { getServerSession } from 'next-auth';
 import { createAuthOptions } from '@/auth';
 import { headers } from 'next/headers';
 
-const getSession = cache(async () => {
+async function getSession() {
   const headerList = await headers();
 
   const host = headerList.get('host') || 'localhost';
@@ -25,6 +24,6 @@ const getSession = cache(async () => {
   });
 
   return getServerSession(authOptions);
-});
+}
 
 export { getSession };

@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import { cache } from 'react';
 
 import { API_URL } from '../lib/constants';
 import { createAxios } from '../lib/axios';
@@ -67,24 +66,28 @@ async function fetchAndTransformResource(
   });
 }
 
-export const getResource = cache(
-  (id: string, locale: string, tenantId?: string): Promise<any> => {
-    const url = `${API_URL}/resource/${id}`;
-    return fetchAndTransformResource(url, {
-      locale,
-      tenantId,
-      cacheKey: `resource:${id}:${locale}`,
-    });
-  },
-);
+export async function getResource(
+  id: string,
+  locale: string,
+  tenantId?: string,
+): Promise<any> {
+  const url = `${API_URL}/resource/${id}`;
+  return fetchAndTransformResource(url, {
+    locale,
+    tenantId,
+    cacheKey: `resource:${id}:${locale}`,
+  });
+}
 
-export const getResourceByOriginalId = cache(
-  (originalId: string, locale: string, tenantId?: string): Promise<any> => {
-    const url = `${API_URL}/resource/original/${originalId}`;
-    return fetchAndTransformResource(url, {
-      locale,
-      tenantId,
-      cacheKey: `resource:${originalId}:${locale}`,
-    });
-  },
-);
+export async function getResourceByOriginalId(
+  originalId: string,
+  locale: string,
+  tenantId?: string,
+): Promise<any> {
+  const url = `${API_URL}/resource/original/${originalId}`;
+  return fetchAndTransformResource(url, {
+    locale,
+    tenantId,
+    cacheKey: `resource:${originalId}:${locale}`,
+  });
+}

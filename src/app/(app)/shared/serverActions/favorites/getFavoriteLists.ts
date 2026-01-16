@@ -1,10 +1,9 @@
 'use server';
 
-import { cache } from 'react';
 import { createAxiosWithAuth } from '../../lib/axiosWithAuth';
 import { API_URL, FAVORITES_LIST_ENDPOINT } from '../../lib/constants';
 
-export const getFavoriteLists = cache(async (tenantId?: string) => {
+export async function getFavoriteLists(tenantId?: string) {
   try {
     const { data } = await createAxiosWithAuth({ tenantId }).get(
       `${API_URL}/${FAVORITES_LIST_ENDPOINT}`,
@@ -20,4 +19,4 @@ export const getFavoriteLists = cache(async (tenantId?: string) => {
     console.error('Error fetching favorite lists:', err);
     return [];
   }
-});
+}

@@ -2,9 +2,8 @@
 
 import config from '@/payload/payload-config';
 import { getPayload } from 'payload';
-import { cache } from 'react';
 
-async function getEnglishTopicsOrig(
+export async function getEnglishTopics(
   resourceDirectoryId: string,
 ): Promise<Record<string, string>> {
   const payload = await getPayload({ config });
@@ -38,5 +37,3 @@ async function getEnglishTopicsOrig(
 
   return englishMap;
 }
-
-export const getEnglishTopics = cache(getEnglishTopicsOrig);

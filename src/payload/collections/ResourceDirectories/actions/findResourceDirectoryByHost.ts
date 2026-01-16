@@ -1,7 +1,6 @@
 import { ResourceDirectory } from '@/payload/payload-types';
 import { getPayload, TypedLocale } from 'payload';
 import { locales } from '@/payload/i18n/locales';
-import { cache } from 'react';
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
 import { withRedisCache } from '@/payload/utilities';
 import config from '@/payload/payload-config';
@@ -37,7 +36,7 @@ async function findResourceDirectoryByHostOrig(
   return resourceDirectory;
 }
 
-async function findResourceDirectoryByHostCachedOrig(
+export async function findResourceDirectoryByHost(
   host: string,
   locale: TypedLocale,
   disableCache = false,
@@ -56,7 +55,3 @@ async function findResourceDirectoryByHostCachedOrig(
     findResourceDirectoryByHostOrig(host, locale),
   );
 }
-
-export const findResourceDirectoryByHost = cache(
-  findResourceDirectoryByHostCachedOrig,
-);
