@@ -66,9 +66,10 @@ export async function middleware(request: NextRequest) {
   let defaultLocale = 'en';
 
   const apiRoute = getApiRoute(request, 'getTenantLocales');
+  let timeoutId: NodeJS.Timeout | undefined;
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    timeoutId = setTimeout(() => controller.abort(), 5000);
 
     const response = await fetch(
       `${apiRoute}?host=${host}&secret=${process.env.PAYLOAD_API_ROUTE_SECRET}`,
@@ -81,6 +82,7 @@ export async function middleware(request: NextRequest) {
       },
     );
     clearTimeout(timeoutId);
+    timeoutId = undefined;
     const tenantLocales: TenantLocaleResponse = await response.json();
 
     if (
@@ -96,6 +98,10 @@ export async function middleware(request: NextRequest) {
     }
   } catch (error) {
     console.error(`Failed to fetch tenant locales for ${host}`, error);
+  } finally {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
   }
 
   if (!locales.includes(defaultLocale)) {
