@@ -18,6 +18,8 @@ export const locales = [
   'ht', // Haitian Creole
   'ko', // Korean
   'km', // Khmer
+  'lo', // Lao
+  'mww', // Hmong
   'ne', // Nepali
   'om', // Oromo
   'or', // Odia
