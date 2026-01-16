@@ -1,12 +1,11 @@
 'use server';
 
-import config from '@/payload/payload-config';
-import { getPayload } from 'payload';
+import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
 
 export async function getEnglishTopics(
   resourceDirectoryId: string,
 ): Promise<Record<string, string>> {
-  const payload = await getPayload({ config });
+  const payload = await getPayloadSingleton();
 
   const resourceDirectory = await payload.findByID({
     collection: 'resource-directories',
