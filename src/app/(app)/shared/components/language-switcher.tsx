@@ -16,6 +16,11 @@ import { useClientSearchParams } from '../hooks/use-client-search-params';
 import { useAppConfig } from '../hooks/use-app-config';
 import { cn } from '../lib/utils';
 
+const LANGUAGE_NAME = {
+  ff: 'Fulfulde',
+  mww: 'Hmong',
+};
+
 export const LanguageSwitcher = () => {
   const appConfig = useAppConfig();
   const router = useRouter();
@@ -54,6 +59,10 @@ export const LanguageSwitcher = () => {
     return null;
   }
 
+  const languageNames = new Intl.DisplayNames(appConfig.i18n.locales, {
+    type: 'language',
+  });
+
   return (
     <li>
       <Select
@@ -81,13 +90,12 @@ export const LanguageSwitcher = () => {
         </SelectTrigger>
         <SelectContent>
           {appConfig.i18n.locales.map((locale: string) => {
-            const languageNames = new Intl.DisplayNames([locale], {
-              type: 'language',
-            });
+            const languageName =
+              LANGUAGE_NAME[locale] || languageNames.of(locale);
 
             return (
               <SelectItem key={locale} value={locale}>
-                <span className="capitalize">{languageNames.of(locale)}</span>
+                <span className="capitalize">{languageName}</span>
                 {` (${locale})`}
               </SelectItem>
             );
