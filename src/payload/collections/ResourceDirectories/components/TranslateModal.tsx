@@ -2,14 +2,14 @@
 
 import React, { useState } from 'react';
 import { Button, toast, Modal, useModal } from '@payloadcms/ui';
-import { TaskTranslateTopics } from '@/payload/payload-types';
+import { TaskTranslate } from '@/payload/payload-types';
 
-interface TranslateTopicsModalProps {
+interface TranslateModalProps {
   resourceDirectoryId: string;
   availableLocales: string[];
 }
 
-export const TranslateTopicsModal: React.FC<TranslateTopicsModalProps> = ({
+export const TranslateModal: React.FC<TranslateModalProps> = ({
   resourceDirectoryId,
   availableLocales,
 }) => {
@@ -46,7 +46,7 @@ export const TranslateTopicsModal: React.FC<TranslateTopicsModalProps> = ({
 
     setIsSubmitting(true);
 
-    const body: TaskTranslateTopics['input'] = {
+    const body: TaskTranslate['input'] = {
       tenantId: resourceDirectoryId,
       locales: Array.from(selectedLocales).map((locale) => ({ locale })),
       engine: 'google',
@@ -54,14 +54,17 @@ export const TranslateTopicsModal: React.FC<TranslateTopicsModalProps> = ({
     };
 
     try {
-      const response = await fetch('/api/translate-topics', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/api/translate`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify(body),
         },
-        credentials: 'include',
-        body: JSON.stringify(body),
-      });
+      );
 
       if (!response.ok) {
         if (response.status === 401) {
@@ -77,10 +80,10 @@ export const TranslateTopicsModal: React.FC<TranslateTopicsModalProps> = ({
       const result = await response.json();
 
       toast.success(
-        `Translation job #${result.jobId} started! If translations do not appear shortly, please contact with administrator.`,
+        `Translation job #${result.jobId} queued! If translations do not appear shortly, please contact with administrator.`,
       );
 
-      closeModal('translate-topics-modal');
+      closeModal('translate-modal');
     } catch (error) {
       console.error('Translation error:', error);
       toast.error(
@@ -94,7 +97,7 @@ export const TranslateTopicsModal: React.FC<TranslateTopicsModalProps> = ({
   };
 
   return (
-    <Modal slug="translate-topics-modal">
+    <Modal slug="translate-modal">
       <div
         style={{
           display: 'flex',
@@ -196,7 +199,7 @@ export const TranslateTopicsModal: React.FC<TranslateTopicsModalProps> = ({
           >
             <Button
               buttonStyle="secondary"
-              onClick={() => closeModal('translate-topics-modal')}
+              onClick={() => closeModal('translate-modal')}
               disabled={isSubmitting}
             >
               Cancel

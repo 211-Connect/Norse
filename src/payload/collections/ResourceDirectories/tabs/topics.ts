@@ -11,17 +11,6 @@ export const topics: Tab = {
   name: 'topics',
   fields: [
     {
-      type: 'ui',
-      name: 'topicsActions',
-      admin: {
-        position: 'above',
-        components: {
-          Field:
-            '@/payload/collections/ResourceDirectories/components/TopicsActions',
-        },
-      },
-    },
-    {
       type: 'text',
       name: 'backText',
       localized: true,
@@ -72,7 +61,7 @@ export const topics: Tab = {
       admin: {
         components: {
           RowLabel:
-            '@/payload/collections/ResourceDirectories/components/TopicsRowLabel',
+            '@/payload/collections/ResourceDirectories/components/LocalizedRowLabel',
         },
       },
       fields: [

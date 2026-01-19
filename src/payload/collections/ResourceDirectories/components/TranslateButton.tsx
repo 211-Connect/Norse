@@ -1,26 +1,31 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useDocumentInfo, toast, Button, useModal } from '@payloadcms/ui';
-import { TranslateTopicsModal } from './TranslateTopicsModal';
-import { getTenantLocales } from '../actions/getTenantLocales';
+import { toast, Button, useModal } from '@payloadcms/ui';
+import { TranslateModal } from './TranslateModal';
+import { getTenantLocales } from '../../Tenants/components/actions/getTenantLocales';
 
-const TopicsActions: React.FC = () => {
+interface TranslateButtonProps {
+  tenantId: string;
+}
+
+export const TranslateButton: React.FC<TranslateButtonProps> = ({
+  tenantId,
+}) => {
   const [targetLocales, setTargetLocales] = useState<string[]>([]);
   const [isLoadingTranslate, setIsLoadingTranslate] = useState(false);
-  const { id } = useDocumentInfo();
   const { openModal } = useModal();
 
   const handleTranslateClick = async () => {
-    if (!id || typeof id !== 'string') {
-      toast.error('Resource directory ID is required');
+    if (!tenantId) {
+      toast.error('Tenant ID is required');
       return;
     }
 
     setIsLoadingTranslate(true);
 
     try {
-      const allLocales = await getTenantLocales(id);
+      const allLocales = await getTenantLocales(tenantId);
       const locales = allLocales.filter((locale) => locale !== 'en');
 
       if (locales.length === 0) {
@@ -29,7 +34,7 @@ const TopicsActions: React.FC = () => {
       }
 
       setTargetLocales(locales);
-      openModal('translate-topics-modal');
+      openModal('translate-modal');
     } catch (error) {
       console.error('Error opening translate modal:', error);
       toast.error('Failed to load translation options');
@@ -38,6 +43,10 @@ const TopicsActions: React.FC = () => {
     }
   };
 
+  if (!tenantId) {
+    return null;
+  }
+
   return (
     <>
       <Button
@@ -45,16 +54,12 @@ const TopicsActions: React.FC = () => {
         onClick={handleTranslateClick}
         disabled={isLoadingTranslate}
       >
-        {isLoadingTranslate ? 'Loading...' : 'Auto-Translate Topics'}
+        {isLoadingTranslate ? 'Loading...' : 'Translate (BETA)'}
       </Button>
-      {typeof id === 'string' && (
-        <TranslateTopicsModal
-          resourceDirectoryId={id}
-          availableLocales={targetLocales}
-        />
-      )}
+      <TranslateModal
+        resourceDirectoryId={tenantId}
+        availableLocales={targetLocales}
+      />
     </>
   );
 };
-
-export default TopicsActions;

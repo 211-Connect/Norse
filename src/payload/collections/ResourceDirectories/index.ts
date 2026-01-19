@@ -4,6 +4,7 @@ import { setTenantIdAsId } from './hooks/setTenantIdAsId';
 import { preventUpdateInDisabledLocale } from './hooks/preventUpdateInDisabledLocale';
 import { revalidateCache } from './hooks/revalidateCache';
 import { disableService } from './hooks/disableResourceDirectoryService';
+import { autoTranslate } from './hooks/autoTranslate';
 import { brand } from './tabs/brand';
 import { topics } from './tabs/topics';
 import { suggestions } from './tabs/suggestions';
@@ -50,7 +51,7 @@ export const ResourceDirectories: CollectionConfig = {
   },
   hooks: {
     beforeChange: [setTenantIdAsId, preventUpdateInDisabledLocale],
-    afterChange: [revalidateCache],
+    afterChange: [revalidateCache, autoTranslate],
     afterDelete: [revalidateCache, disableService],
   },
   fields: [

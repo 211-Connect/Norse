@@ -1,7 +1,7 @@
 'use client';
 
 import { DefaultEditView } from '@payloadcms/ui';
-import { TopicsEnglishProvider } from './TopicsEnglishContext';
+import { EnglishDataProvider } from './EnglishDataContext';
 import { useEffect, useState } from 'react';
 
 const EditViewWrapper = (props: any) => {
@@ -15,9 +15,9 @@ const EditViewWrapper = (props: any) => {
   }, []);
 
   return (
-    <TopicsEnglishProvider resourceDirectoryId={rdId}>
+    <EnglishDataProvider resourceDirectoryId={rdId}>
       <DefaultEditView {...props} />
-    </TopicsEnglishProvider>
+    </EnglishDataProvider>
   );
 };
 
