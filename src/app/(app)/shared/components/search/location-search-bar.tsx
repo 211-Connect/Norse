@@ -169,7 +169,7 @@ export function LocationSearchBar({
           className: validationError ? '!border-red-500' : undefined,
           placeholder:
             appConfig.search.texts?.locationInputPlaceholder ||
-            t('common.location_placeholder'),
+            t('search.location_placeholder'),
         }}
         defaultOpen={focusByDefault}
         options={options}
