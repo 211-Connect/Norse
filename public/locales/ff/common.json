@@ -1,0 +1,140 @@
+{
+  "header": {
+    "home": "Saare",
+    "favorites": "Yiɗɓe",
+    "log_out": "Yaltu",
+    "language_select_label": "Suɓo ɗemngal ngam waylude ɗemngal lowre ndee",
+    "my_stuff": "Geɗe am",
+    "search": "Teffol",
+    "report": "Neldu Miijooji"
+  },
+  "favorites": {
+    "added_to_list": "Ɓeydaama e doggol",
+    "added_to_list_message": "Ngalɗoo ballal ɓeydaama e doggol maa.",
+    "already_exists": "Ina woodi tawo",
+    "already_exists_message": "Ooɗoo kaɓirgal ina woodi e doggol maa.",
+    "removed_from_list": "Ittaama e doggol",
+    "removed_from_list_message": "Ngalɗoo kuutorgal ittaama e doggol maa.",
+    "updated_list": "Doggol kesɗitinaangol",
+    "updated_list_message": "Doggol maa hesɗitinaama.",
+    "unable_to_update_list": "Waawaa kesɗitinde doggol ngol",
+    "unable_to_update_list_message": "Doggol maa ngol waawaa hesɗitineede.",
+    "deleted_list": "Doggol mumtaangol",
+    "deleted_list_message": "Doggol maa momtaama.",
+    "unable_to_delete_list": "Waawaa momtude doggol ngol",
+    "unable_to_delete_list_message": "Doggol maa waawaa momteede."
+  },
+  "search": {
+    "add_my_location": "Ɓeydu nokku am",
+    "back": "Bawo",
+    "hero_title": "Yiylo jawdi",
+    "query_placeholder": "Nyaamdu, galleeji, ekn...",
+    "location_placeholder": "Wuro, diiwaan, walla kode ZIP",
+    "radius_placeholder": "Rajo",
+    "miles": "Miliyoŋaaji",
+    "miles_short": "mi",
+    "any": "Ko toy",
+    "taxonomies": "Tagzonomiiji",
+    "suggestions": "Wasiyaaji",
+    "use_my_location": "Huutoro nokku am",
+    "confidential_address": "Ooɗoo nokku ina waawi wonde sirlu walla udditanaaka yimɓe fof. Suɓo feere jokkondirnde woɗnde ngam ndee sarwiis.",
+    "address_unavailable": "Adres oo alaa",
+    "geocoding_error": "Juumre geɗe kodde",
+    "geocoding_unsupported": "Geolocation jaɓaaka e feerorde maa",
+    "geocoding_unable_to_retrieve": "Waawaa heɓtude nokku maa. Tiiɗno ƴeewto dottaaɗe nokkuure feerorde maa, enndito-ɗaa kadi.",
+    "categories": "Tiitooɗe",
+    "show_all": "Hollit fof ({{limto}})",
+    "show_less": "Hollit ko famɗi"
+  },
+  "call_to_action": {
+    "call": "Ewnandu",
+    "view_website": "Lowre ndee",
+    "get_directions": "Tiitoonde",
+    "view_details": "Ƴeew ko ɓuri ɗum",
+    "add_to_list": "Favorite",
+    "delete_list": "Mumtu doggol ngol",
+    "remove_from_list": "Ittu e doggol",
+    "share": "Seendugo",
+    "cancel": "Willugo",
+    "create": "Taggugo",
+    "update": "Lartol",
+    "delete": "Wilugo",
+    "search": "Teffol",
+    "remove": "Ittugo",
+    "login": "Naatde",
+    "show_more": "Hollit ko ɓuri ɗum",
+    "show_less": "Hollit ko famɗi",
+    "print": "Tappirde"
+  },
+  "list": {
+    "private": "Feerejo",
+    "public": "Yimɓe fu"
+  },
+  "message": {
+    "list_deleted": "Doggol ngol momtaama",
+    "list_deleted_success": "Doggol maa momtaama.",
+    "error": "Harbol",
+    "list_not_deleted_error": "Doggol maa waawaa momteede."
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "Yiylo doggol maa",
+      "list_name": "Limte",
+      "list_privacy": "Siiri",
+      "add_to_list": "Ɓeydu e doggol",
+      "not_found": "Alaa doggol tawaa",
+      "create_new_list": "Sosde keso?"
+    },
+    "remove_from_list": {
+      "are_you_sure": "Mbele aɗa yiɗi ittude ndee yiɗde e doggol maa?"
+    },
+    "create_list": {
+      "create_a_list": "Sos doggol",
+      "list_name": "Inde",
+      "list_description": "Limtol",
+      "make_public": "Waɗde renndo"
+    },
+    "update_list": {
+      "update_list": "Doggol kesɗitin",
+      "list_name": "Inde",
+      "list_description": "Limtol",
+      "make_public": "Waɗde renndo"
+    },
+    "delete_list": {
+      "delete_list": "Mumtu doggol ngol"
+    },
+    "share": {
+      "share_via": "Renndinde ɗum e laawol",
+      "copy_link": "Koppir jokkorde",
+      "copy": "Koppir",
+      "facebook": "Feesbuuk",
+      "twitter": "Tiwiter",
+      "linkedin": "Linkeed",
+      "sms": "SMS",
+      "email": "Imeel",
+      "print": "Tappirde",
+      "copied": "Koppiraama!",
+      "check_out_this_list": "Ƴeew ndee doggol ngol mbaɗ-mi!",
+      "check_out_this_resource": "Ƴeew ndee ɗoo deftere nde njiy-mi!",
+      "share_sms": "Winndu tonngoode telefoŋ ngam renndinde e SMS",
+      "enter_phone_number": "Winndu tonngoode telefoŋ...",
+      "invalid_phone_number": "Limoore telefoŋ nde moƴƴaani",
+      "sms_sending_title": "Neldude SMS...",
+      "sms_sending_body": "Mesaas maa ina neldee.",
+      "sms_send_success_title": "SMS neldaama!",
+      "sms_send_success_body": "Mesaas maa neldaama.",
+      "sms_send_failed_title": "Neldude SMS ŋakki",
+      "sms_send_failed_body": "Mesaas maa waawaa neldeede."
+    },
+    "prompt_auth": "Tiiɗno, naata ngam huutoraade ngalɗoo gollal."
+  },
+  "update_location": {
+    "prompt_start_location": "Hol nokku ɗo puɗɗorto-ɗaa?"
+  },
+  "data_providers": {
+    "provided_by": "Dataaji ɗi..."
+  },
+  "footer": {
+    "copyright": "© Hakkeeji {{binndol}}"
+  }
+}

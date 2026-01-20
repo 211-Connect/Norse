@@ -1,0 +1,140 @@
+{
+  "header": {
+    "home": "خانه",
+    "favorites": "موارد دلخواه",
+    "log_out": "خروج از سیستم",
+    "language_select_label": "برای تغییر زبان سایت، یک زبان انتخاب کنید",
+    "my_stuff": "وسایل من",
+    "search": "جستجو",
+    "report": "ارسال بازخورد"
+  },
+  "favorites": {
+    "added_to_list": "به لیست اضافه شد",
+    "added_to_list_message": "این منبع به لیست شما اضافه شد.",
+    "already_exists": "از قبل وجود دارد",
+    "already_exists_message": "این منبع از قبل در فهرست شما وجود دارد.",
+    "removed_from_list": "از لیست حذف شد",
+    "removed_from_list_message": "این منبع از لیست شما حذف شده است.",
+    "updated_list": "لیست به‌روز شده",
+    "updated_list_message": "لیست شما به‌روزرسانی شد.",
+    "unable_to_update_list": "امکان به‌روزرسانی فهرست وجود ندارد",
+    "unable_to_update_list_message": "لیست شما قابل به‌روزرسانی نیست.",
+    "deleted_list": "لیست حذف شده",
+    "deleted_list_message": "لیست شما حذف شد.",
+    "unable_to_delete_list": "امکان حذف لیست وجود ندارد",
+    "unable_to_delete_list_message": "لیست شما قابل حذف نیست."
+  },
+  "search": {
+    "add_my_location": "مکان من را اضافه کنید",
+    "back": "برگشت",
+    "hero_title": "جستجوی منابع",
+    "query_placeholder": "خوراک، مسکن و...",
+    "location_placeholder": "شهر، ایالت یا کد پستی",
+    "radius_placeholder": "شعاع",
+    "miles": "مایل",
+    "miles_short": "من",
+    "any": "هر",
+    "taxonomies": "طبقه‌بندی‌ها",
+    "suggestions": "پیشنهادات",
+    "use_my_location": "از موقعیت مکانی من استفاده کنید",
+    "confidential_address": "این مکان ممکن است محرمانه باشد یا برای عموم باز نباشد. لطفاً روش تماس دیگری را برای این سرویس انتخاب کنید.",
+    "address_unavailable": "آدرس در دسترس نیست",
+    "geocoding_error": "خطای کد جغرافیایی",
+    "geocoding_unsupported": "موقعیت جغرافیایی توسط مرورگر شما پشتیبانی نمی‌شود",
+    "geocoding_unable_to_retrieve": "بازیابی موقعیت مکانی شما امکان‌پذیر نیست. لطفاً تنظیمات موقعیت مکانی مرورگر خود را بررسی کرده و دوباره امتحان کنید.",
+    "categories": "مباحث",
+    "show_all": "نمایش همه ({{count}})",
+    "show_less": "نمایش کمتر"
+  },
+  "call_to_action": {
+    "call": "تماس بگیرید",
+    "view_website": "وب‌سایت",
+    "get_directions": "مسیرها",
+    "view_details": "بیشتر ببینید",
+    "add_to_list": "مورد علاقه",
+    "delete_list": "حذف لیست",
+    "remove_from_list": "حذف از لیست",
+    "share": "اشتراک گذاری",
+    "cancel": "لغو",
+    "create": "ایجاد کردن",
+    "update": "به‌روزرسانی",
+    "delete": "حذف",
+    "search": "جستجو",
+    "remove": "حذف",
+    "login": "ورود",
+    "show_more": "نمایش بیشتر",
+    "show_less": "نمایش کمتر",
+    "print": "چاپ"
+  },
+  "list": {
+    "private": "خصوصی",
+    "public": "عمومی"
+  },
+  "message": {
+    "list_deleted": "لیست حذف شد",
+    "list_deleted_success": "لیست شما حذف شد.",
+    "error": "خطا",
+    "list_not_deleted_error": "لیست شما قابل حذف نیست."
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "فهرست‌هایتان را جستجو کنید",
+      "list_name": "فهرست",
+      "list_privacy": "حریم خصوصی",
+      "add_to_list": "اضافه کردن به لیست",
+      "not_found": "هیچ لیستی یافت نشد",
+      "create_new_list": "جدیدی ایجاد کنید؟"
+    },
+    "remove_from_list": {
+      "are_you_sure": "آیا از حذف این مورد علاقه از لیست خود مطمئن هستید؟"
+    },
+    "create_list": {
+      "create_a_list": "ایجاد یک لیست",
+      "list_name": "نام",
+      "list_description": "توضیحات",
+      "make_public": "عمومی کردن"
+    },
+    "update_list": {
+      "update_list": "لیست به‌روزرسانی",
+      "list_name": "نام",
+      "list_description": "توضیحات",
+      "make_public": "عمومی کردن"
+    },
+    "delete_list": {
+      "delete_list": "حذف لیست"
+    },
+    "share": {
+      "share_via": "اشتراک گذاری از طریق",
+      "copy_link": "کپی کردن لینک",
+      "copy": "کپی",
+      "facebook": "فیسبوک",
+      "twitter": "توییتر",
+      "linkedin": "لینکدین",
+      "sms": "پیامک",
+      "email": "ایمیل",
+      "print": "چاپ",
+      "copied": "کپی شده!",
+      "check_out_this_list": "به این لیستی که درست کردم یه نگاهی بنداز!",
+      "check_out_this_resource": "به این منبعی که پیدا کردم نگاهی بیندازید!",
+      "share_sms": "شماره تلفنی را برای اشتراک گذاری از طریق پیامک وارد کنید",
+      "enter_phone_number": "شماره تلفن را وارد کنید...",
+      "invalid_phone_number": "شماره تلفن نامعتبر است",
+      "sms_sending_title": "ارسال پیامک ...",
+      "sms_sending_body": "پیام شما در حال ارسال است.",
+      "sms_send_success_title": "پیامک ارسال شد!",
+      "sms_send_success_body": "پیام شما ارسال شد.",
+      "sms_send_failed_title": "ارسال پیامک ناموفق بود",
+      "sms_send_failed_body": "پیام شما ارسال نشد."
+    },
+    "prompt_auth": "برای استفاده از این قابلیت، لطفاً وارد شوید."
+  },
+  "update_location": {
+    "prompt_start_location": "محل شروع شما کجاست؟"
+  },
+  "data_providers": {
+    "provided_by": "داده‌های ارائه شده توسط"
+  },
+  "footer": {
+    "copyright": "© حق نشر {{متن}}"
+  }
+}

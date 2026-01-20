@@ -1,0 +1,15 @@
+{
+  "learn_more": "Saber mais",
+  "filter_results": "Filtrar resultados",
+  "results": "resultados",
+  "no_query": "Nenhuma pergunta fornecida",
+  "results_for": "Resultados encontrados para a consulta",
+  "of": "de",
+  "no_results": {
+    "title": "Nenhum resultado encontrado que corresponda à sua pesquisa.",
+    "subtitle": "Apresentamos alguns resultados semelhantes abaixo.",
+    "alt_subtitle": "Tente uma consulta ou filtro diferente.",
+    "need_help": "Precisa de ajuda? Temos pessoas à sua disposição."
+  },
+  "pinned": "Fixado"
+}

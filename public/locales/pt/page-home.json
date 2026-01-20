@@ -1,0 +1,40 @@
+{
+  "meta_title": "",
+  "meta_description": "",
+  "take_a_tour": "É a sua primeira vez aqui? Faça uma visita guiada!",
+  "new": "Novo!",
+  "tour": {
+    "step_1": {
+      "paragraph_1": "A caixa de pesquisa é a espinha dorsal do mecanismo de busca. Ela aceita palavras comuns, frases, etc. (ex.: 'bancos de alimentos').",
+      "paragraph_2": "À medida que você digita, a caixa de pesquisa fornecerá sugestões com base nas categorias que usamos internamente. Essas sugestões fornecerão os resultados mais precisos, porém você não é obrigado a usá-las.",
+      "paragraph_3": "Caso opte por não utilizar as sugestões fornecidas, usaremos o texto que você nos fornecer para obter os resultados mais precisos possíveis."
+    },
+    "step_2": {
+      "paragraph_1": "Não tem certeza do que está procurando? Não tem problema!",
+      "paragraph_2": "Oferecemos diversas categorias e subcategorias para você explorar. Basta clicar em qualquer um dos links na seção de categorias para acessar os resultados da pesquisa."
+    },
+    "step_3": {
+      "paragraph_1": "Às vezes, coisas quebram sem que esperemos que quebrem.",
+      "paragraph_2": "Se você encontrar algum problema ou simplesmente quiser dar um feedback sobre a sua experiência geral, pode clicar no botão de feedback a qualquer momento."
+    },
+    "step_4": {
+      "paragraph_1": "Adicione seu endereço aqui para encontrar os serviços disponíveis em sua vizinhança. Isso nos ajuda a mostrar apenas as opções que realmente atendem à sua região."
+    }
+  },
+  "categories_title": "Tópicos",
+  "new_layout": {
+    "topics_section": {
+      "cta": "Navegue pelos tópicos",
+      "title": "Não sei por onde começar."
+    },
+    "callouts": {
+      "list": {
+        "call": "Chamar",
+        "chat": "Bater papo",
+        "email": "E-mail",
+        "sms": "SMS"
+      },
+      "title": "Existem outras maneiras de pedir ajuda também:"
+    }
+  }
+}

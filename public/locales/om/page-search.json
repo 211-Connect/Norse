@@ -1,0 +1,15 @@
+{
+  "learn_more": "Caalaatti Baruuf",
+  "filter_results": "Bu'aa calaqqee",
+  "results": "bu'aawwan",
+  "no_query": "Gaaffiin hin kennamne",
+  "results_for": "bu’aa gaaffiif argame",
+  "of": "kan",
+  "no_results": {
+    "title": "Bu'aan gaaffii kee wajjin walsimu hin argamne",
+    "subtitle": "Bu'aawwan walfakkaatan tokko tokko armaan gaditti dhiyeessineerra",
+    "alt_subtitle": "Gaaffii ykn calaqqee adda ta'e yaali",
+    "need_help": "Gargaarsa barbaadduu? Namoota cinaa dhaabbatan qabna."
+  },
+  "pinned": "Pinned ta'e"
+}

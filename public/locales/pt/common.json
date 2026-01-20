@@ -1,0 +1,140 @@
+{
+  "header": {
+    "home": "Lar",
+    "favorites": "Favoritos",
+    "log_out": "Sair",
+    "language_select_label": "Selecione um idioma para alterar o idioma do site.",
+    "my_stuff": "Minhas coisas",
+    "search": "Procurar",
+    "report": "Enviar feedback"
+  },
+  "favorites": {
+    "added_to_list": "Adicionado à lista",
+    "added_to_list_message": "Este recurso foi adicionado à sua lista.",
+    "already_exists": "Já existe",
+    "already_exists_message": "Este recurso já existe na sua lista.",
+    "removed_from_list": "Removido da lista",
+    "removed_from_list_message": "Este recurso foi removido da sua lista.",
+    "updated_list": "Lista atualizada",
+    "updated_list_message": "Sua lista foi atualizada.",
+    "unable_to_update_list": "Não foi possível atualizar a lista.",
+    "unable_to_update_list_message": "Não foi possível atualizar sua lista.",
+    "deleted_list": "Lista de itens excluídos",
+    "deleted_list_message": "Sua lista foi excluída.",
+    "unable_to_delete_list": "Não foi possível excluir a lista.",
+    "unable_to_delete_list_message": "Sua lista não pôde ser excluída."
+  },
+  "search": {
+    "add_my_location": "Adicionar minha localização",
+    "back": "Voltar",
+    "hero_title": "Pesquisar recursos",
+    "query_placeholder": "Alimentação, alojamento, etc...",
+    "location_placeholder": "Cidade, estado ou código postal",
+    "radius_placeholder": "Raio",
+    "miles": "Milhas",
+    "miles_short": "mi",
+    "any": "Qualquer",
+    "taxonomies": "Taxonomias",
+    "suggestions": "Sugestões",
+    "use_my_location": "Usar minha localização",
+    "confidential_address": "Este local pode ser confidencial ou não estar aberto ao público. Por favor, escolha outro método de contato fornecido para este serviço.",
+    "address_unavailable": "Endereço não disponível",
+    "geocoding_error": "Erro de geocodificação",
+    "geocoding_unsupported": "A geolocalização não é suportada pelo seu navegador.",
+    "geocoding_unable_to_retrieve": "Não foi possível obter sua localização. Verifique as configurações de localização do seu navegador e tente novamente.",
+    "categories": "Tópicos",
+    "show_all": "Mostrar tudo ({{count}})",
+    "show_less": "Mostrar menos"
+  },
+  "call_to_action": {
+    "call": "Chamar",
+    "view_website": "Site",
+    "get_directions": "Instruções",
+    "view_details": "Veja mais",
+    "add_to_list": "Favorito",
+    "delete_list": "Excluir lista",
+    "remove_from_list": "Remover da lista",
+    "share": "Compartilhar",
+    "cancel": "Cancelar",
+    "create": "Criar",
+    "update": "Atualizar",
+    "delete": "Excluir",
+    "search": "Procurar",
+    "remove": "Remover",
+    "login": "Conecte-se",
+    "show_more": "Mostrar mais",
+    "show_less": "Mostrar menos",
+    "print": "Imprimir"
+  },
+  "list": {
+    "private": "Privado",
+    "public": "Público"
+  },
+  "message": {
+    "list_deleted": "Lista excluída",
+    "list_deleted_success": "Sua lista foi excluída.",
+    "error": "Erro",
+    "list_not_deleted_error": "Sua lista não pôde ser excluída."
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "Pesquise suas listas",
+      "list_name": "Lista",
+      "list_privacy": "Privacidade",
+      "add_to_list": "Adicionar à lista",
+      "not_found": "Nenhuma lista encontrada",
+      "create_new_list": "Criar um novo?"
+    },
+    "remove_from_list": {
+      "are_you_sure": "Tem certeza de que deseja remover este item da sua lista de favoritos?"
+    },
+    "create_list": {
+      "create_a_list": "Crie uma lista",
+      "list_name": "Nome",
+      "list_description": "Descrição",
+      "make_public": "Tornar público"
+    },
+    "update_list": {
+      "update_list": "Lista de atualização",
+      "list_name": "Nome",
+      "list_description": "Descrição",
+      "make_public": "Tornar público"
+    },
+    "delete_list": {
+      "delete_list": "Excluir lista"
+    },
+    "share": {
+      "share_via": "Compartilhe isso via",
+      "copy_link": "Copiar link",
+      "copy": "Cópia",
+      "facebook": "Facebook",
+      "twitter": "Twitter",
+      "linkedin": "LinkedIn",
+      "sms": "SMS",
+      "email": "E-mail",
+      "print": "Imprimir",
+      "copied": "Copiado!",
+      "check_out_this_list": "Confira esta lista que eu fiz!",
+      "check_out_this_resource": "Dá uma olhada nesse recurso que eu encontrei!",
+      "share_sms": "Digite um número de telefone para compartilhar via SMS.",
+      "enter_phone_number": "Digite o número de telefone...",
+      "invalid_phone_number": "Número de telefone inválido",
+      "sms_sending_title": "Enviando SMS...",
+      "sms_sending_body": "Sua mensagem está sendo enviada.",
+      "sms_send_success_title": "SMS enviado!",
+      "sms_send_success_body": "Sua mensagem foi enviada.",
+      "sms_send_failed_title": "Falha no envio do SMS",
+      "sms_send_failed_body": "Sua mensagem não pôde ser enviada."
+    },
+    "prompt_auth": "Faça login para usar este recurso."
+  },
+  "update_location": {
+    "prompt_start_location": "Qual é o seu ponto de partida?"
+  },
+  "data_providers": {
+    "provided_by": "Dados fornecidos por"
+  },
+  "footer": {
+    "copyright": "© Copyright {{text}}"
+  }
+}

@@ -1,0 +1,140 @@
+{
+  "header": {
+    "home": "Kotiin",
+    "favorites": "Suosikit",
+    "log_out": "Kirjaudu ulos",
+    "language_select_label": "Valitse kieli vaihtaaksesi sivuston kielen",
+    "my_stuff": "Minun tavarani",
+    "search": "Haku",
+    "report": "Lähetä palautetta"
+  },
+  "favorites": {
+    "added_to_list": "Lisätty listaan",
+    "added_to_list_message": "Tämä resurssi on lisätty listaasi.",
+    "already_exists": "Jo olemassa",
+    "already_exists_message": "Tämä resurssi on jo listallasi.",
+    "removed_from_list": "Poistettu listalta",
+    "removed_from_list_message": "Tämä resurssi on poistettu listaltasi.",
+    "updated_list": "Päivitetty lista",
+    "updated_list_message": "Listasi on päivitetty.",
+    "unable_to_update_list": "Listan päivittäminen epäonnistui",
+    "unable_to_update_list_message": "Listaasi ei voitu päivittää.",
+    "deleted_list": "Poistettu lista",
+    "deleted_list_message": "Listasi on poistettu.",
+    "unable_to_delete_list": "Listan poistaminen epäonnistui",
+    "unable_to_delete_list_message": "Listaasi ei voitu poistaa."
+  },
+  "search": {
+    "add_my_location": "Lisää sijaintini",
+    "back": "Takaisin",
+    "hero_title": "Hae resursseja",
+    "query_placeholder": "Ruoka, asuminen jne...",
+    "location_placeholder": "Kaupunki, osavaltio tai postinumero",
+    "radius_placeholder": "Säde",
+    "miles": "Mailia",
+    "miles_short": "mi",
+    "any": "Mikä tahansa",
+    "taxonomies": "Taksonomiat",
+    "suggestions": "Ehdotukset",
+    "use_my_location": "Käytä sijaintiani",
+    "confidential_address": "Tämä sijainti voi olla luottamuksellinen tai suljettu yleisöltä. Valitse jokin toinen annettu yhteydenottotapa tätä palvelua varten.",
+    "address_unavailable": "Osoite ei saatavilla",
+    "geocoding_error": "Geokoodausvirhe",
+    "geocoding_unsupported": "Selaimesi ei tue paikannusta",
+    "geocoding_unable_to_retrieve": "Sijaintiasi ei voitu hakea. Tarkista selaimesi sijaintiasetukset ja yritä uudelleen.",
+    "categories": "Aiheet",
+    "show_all": "Näytä kaikki ({{count}})",
+    "show_less": "Näytä vähemmän"
+  },
+  "call_to_action": {
+    "call": "Soittaa",
+    "view_website": "Verkkosivusto",
+    "get_directions": "Ohjeet",
+    "view_details": "Näytä lisää",
+    "add_to_list": "Suosikki",
+    "delete_list": "Poista lista",
+    "remove_from_list": "Poista listalta",
+    "share": "Jakaa",
+    "cancel": "Peruuttaa",
+    "create": "Luoda",
+    "update": "Päivittää",
+    "delete": "Poistaa",
+    "search": "Haku",
+    "remove": "Poistaa",
+    "login": "Kirjaudu sisään",
+    "show_more": "Näytä lisää",
+    "show_less": "Näytä vähemmän",
+    "print": "Painaa"
+  },
+  "list": {
+    "private": "Yksityinen",
+    "public": "Julkinen"
+  },
+  "message": {
+    "list_deleted": "Lista poistettu",
+    "list_deleted_success": "Listasi on poistettu.",
+    "error": "Virhe",
+    "list_not_deleted_error": "Listaasi ei voitu poistaa."
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "Hae listoiltasi",
+      "list_name": "Lista",
+      "list_privacy": "Tietosuoja",
+      "add_to_list": "Lisää listaan",
+      "not_found": "Ei listoja löytynyt",
+      "create_new_list": "Luodaanko uusi?"
+    },
+    "remove_from_list": {
+      "are_you_sure": "Haluatko varmasti poistaa tämän suosikin listaltasi?"
+    },
+    "create_list": {
+      "create_a_list": "Luo lista",
+      "list_name": "Nimi",
+      "list_description": "Kuvaus",
+      "make_public": "Julkistaa"
+    },
+    "update_list": {
+      "update_list": "Päivitä lista",
+      "list_name": "Nimi",
+      "list_description": "Kuvaus",
+      "make_public": "Julkistaa"
+    },
+    "delete_list": {
+      "delete_list": "Poista lista"
+    },
+    "share": {
+      "share_via": "Jaa tämä kautta",
+      "copy_link": "Kopioi linkki",
+      "copy": "Kopioida",
+      "facebook": "Facebook",
+      "twitter": "Viserrys",
+      "linkedin": "LinkedIn",
+      "sms": "Tekstiviesti",
+      "email": "Sähköposti",
+      "print": "Painaa",
+      "copied": "Kopioitu!",
+      "check_out_this_list": "Katsokaa tätä listaa, jonka tein!",
+      "check_out_this_resource": "Katsokaa tätä löytämääni resurssia!",
+      "share_sms": "Anna puhelinnumero jaettavaksi tekstiviestillä",
+      "enter_phone_number": "Syötä puhelinnumero...",
+      "invalid_phone_number": "Virheellinen puhelinnumero",
+      "sms_sending_title": "Tekstiviestiä lähetetään...",
+      "sms_sending_body": "Viestiäsi lähetetään.",
+      "sms_send_success_title": "Tekstiviesti lähetetty!",
+      "sms_send_success_body": "Viestisi on lähetetty.",
+      "sms_send_failed_title": "Tekstiviestin lähetys epäonnistui",
+      "sms_send_failed_body": "Viestisi lähettäminen epäonnistui."
+    },
+    "prompt_auth": "Kirjaudu sisään käyttääksesi tätä ominaisuutta."
+  },
+  "update_location": {
+    "prompt_start_location": "Mikä on lähtöpaikkasi?"
+  },
+  "data_providers": {
+    "provided_by": "Tiedot toimittanut"
+  },
+  "footer": {
+    "copyright": "© Tekijänoikeus {{text}}"
+  }
+}

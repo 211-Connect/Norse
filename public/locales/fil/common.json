@@ -1,0 +1,140 @@
+{
+  "header": {
+    "home": "Tahanan",
+    "favorites": "Mga Paborito",
+    "log_out": "Mag-log out",
+    "language_select_label": "Pumili ng wika para baguhin ang wika ng site",
+    "my_stuff": "Mga gamit ko",
+    "search": "Maghanap",
+    "report": "Magsumite ng Feedback"
+  },
+  "favorites": {
+    "added_to_list": "Idinagdag sa listahan",
+    "added_to_list_message": "Naidagdag na ang mapagkukunang ito sa iyong listahan.",
+    "already_exists": "Mayroon na",
+    "already_exists_message": "Ang mapagkukunang ito ay nasa iyong listahan na.",
+    "removed_from_list": "Inalis sa listahan",
+    "removed_from_list_message": "Inalis na ang mapagkukunang ito sa iyong listahan.",
+    "updated_list": "Na-update na listahan",
+    "updated_list_message": "Na-update na ang listahan mo.",
+    "unable_to_update_list": "Hindi ma-update ang listahan",
+    "unable_to_update_list_message": "Hindi ma-update ang iyong listahan.",
+    "deleted_list": "Tinanggal na listahan",
+    "deleted_list_message": "Nabura na ang iyong listahan.",
+    "unable_to_delete_list": "Hindi mabura ang listahan",
+    "unable_to_delete_list_message": "Hindi mabura ang iyong listahan."
+  },
+  "search": {
+    "add_my_location": "Idagdag ang aking lokasyon",
+    "back": "Balik",
+    "hero_title": "Maghanap ng mga mapagkukunan",
+    "query_placeholder": "Pagkain, tirahan, atbp...",
+    "location_placeholder": "Lungsod, estado, o ZIP code",
+    "radius_placeholder": "Radius",
+    "miles": "Milya",
+    "miles_short": "milya",
+    "any": "Kahit ano",
+    "taxonomies": "Mga Taksonomiya",
+    "suggestions": "Mga Mungkahi",
+    "use_my_location": "Gamitin ang aking lokasyon",
+    "confidential_address": "Maaaring kumpidensyal o hindi bukas sa publiko ang lokasyong ito. Pumili lamang ng ibang paraan ng pakikipag-ugnayan para sa serbisyong ito.",
+    "address_unavailable": "Hindi available ang address",
+    "geocoding_error": "Error sa geocoding",
+    "geocoding_unsupported": "Hindi sinusuportahan ng iyong browser ang geolocation",
+    "geocoding_unable_to_retrieve": "Hindi makuha ang iyong lokasyon. Pakitingnan ang mga setting ng lokasyon ng iyong browser at subukang muli.",
+    "categories": "Mga Paksa",
+    "show_all": "Ipakita lahat ({{count}})",
+    "show_less": "Ipakita nang mas kaunti"
+  },
+  "call_to_action": {
+    "call": "Tumawag",
+    "view_website": "Website",
+    "get_directions": "Mga Direksyon",
+    "view_details": "Tingnan ang higit pa",
+    "add_to_list": "Paborito",
+    "delete_list": "Burahin ang listahan",
+    "remove_from_list": "Alisin sa listahan",
+    "share": "Ibahagi",
+    "cancel": "Kanselahin",
+    "create": "Gumawa",
+    "update": "I-update",
+    "delete": "Burahin",
+    "search": "Maghanap",
+    "remove": "Alisin",
+    "login": "Mag-login",
+    "show_more": "Magpakita pa",
+    "show_less": "Ipakita nang mas kaunti",
+    "print": "I-print"
+  },
+  "list": {
+    "private": "Pribado",
+    "public": "Pampubliko"
+  },
+  "message": {
+    "list_deleted": "Tinanggal ang listahan",
+    "list_deleted_success": "Nabura na ang iyong listahan.",
+    "error": "Mali",
+    "list_not_deleted_error": "Hindi mabura ang iyong listahan."
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "Hanapin ang iyong mga listahan",
+      "list_name": "Listahan",
+      "list_privacy": "Pagkapribado",
+      "add_to_list": "Idagdag sa listahan",
+      "not_found": "Walang nakitang listahan",
+      "create_new_list": "Gumawa ng bago?"
+    },
+    "remove_from_list": {
+      "are_you_sure": "Sigurado ka bang gusto mong alisin ang paborito na ito sa iyong listahan?"
+    },
+    "create_list": {
+      "create_a_list": "Gumawa ng listahan",
+      "list_name": "Pangalan",
+      "list_description": "Paglalarawan",
+      "make_public": "Ipubliko"
+    },
+    "update_list": {
+      "update_list": "I-update ang listahan",
+      "list_name": "Pangalan",
+      "list_description": "Paglalarawan",
+      "make_public": "Ipubliko"
+    },
+    "delete_list": {
+      "delete_list": "Burahin ang listahan"
+    },
+    "share": {
+      "share_via": "Ibahagi ito sa pamamagitan ng",
+      "copy_link": "Kopyahin ang link",
+      "copy": "Kopyahin",
+      "facebook": "Facebook",
+      "twitter": "Twitter",
+      "linkedin": "LinkedIn",
+      "sms": "SMS",
+      "email": "I-email",
+      "print": "I-print",
+      "copied": "Kinopya!",
+      "check_out_this_list": "Tingnan mo itong listahang ginawa ko!",
+      "check_out_this_resource": "Tingnan ang mapagkukunang ito na aking natagpuan!",
+      "share_sms": "Maglagay ng numero ng telepono na ibabahagi sa pamamagitan ng SMS",
+      "enter_phone_number": "Ilagay ang numero ng telepono...",
+      "invalid_phone_number": "Hindi wastong numero ng telepono",
+      "sms_sending_title": "Nagpapadala ng SMS...",
+      "sms_sending_body": "Ipinapadala na ang iyong mensahe.",
+      "sms_send_success_title": "Naipadala na ang SMS!",
+      "sms_send_success_body": "Naipadala na ang iyong mensahe.",
+      "sms_send_failed_title": "Nabigo ang pagpapadala ng SMS",
+      "sms_send_failed_body": "Hindi naipadala ang iyong mensahe."
+    },
+    "prompt_auth": "Mangyaring mag-login upang magamit ang tampok na ito."
+  },
+  "update_location": {
+    "prompt_start_location": "Saan ang panimulang lokasyon mo?"
+  },
+  "data_providers": {
+    "provided_by": "Ang datos na ibinigay ni"
+  },
+  "footer": {
+    "copyright": "© Karapatang-ari {{text}}"
+  }
+}

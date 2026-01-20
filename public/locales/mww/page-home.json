@@ -1,0 +1,40 @@
+{
+  "meta_title": "",
+  "meta_description": "",
+  "take_a_tour": "Nov yog thawj zaug tuaj? Mus ncig xyuas!",
+  "new": "Tshiab!",
+  "tour": {
+    "step_1": {
+      "paragraph_1": "Lub thawv tshawb nrhiav yog lub hauv paus ntawm lub tshuab tshawb nrhiav. Nws txais cov lus, kab lus, thiab lwm yam (piv txwv li 'cov chaw khaws khoom noj')",
+      "paragraph_2": "Thaum koj ntaus ntawv, lub thawv tshawb nrhiav yuav muab cov lus qhia raws li pawg uas peb siv tom qab qhov xwm txheej. Cov lus qhia no yuav muab cov txiaj ntsig tseeb tshaj plaws, txawm li cas los xij koj tsis tas yuav siv lawv.",
+      "paragraph_3": "Yog koj xaiv tsis siv cov lus qhia uas tau muab, peb yuav siv cov ntawv uas koj muab los nrhiav cov txiaj ntsig tseeb tshaj plaws uas peb ua tau."
+    },
+    "step_2": {
+      "paragraph_1": "Tsis paub meej tias koj tab tom nrhiav dab tsi? Tsis ua li cas!",
+      "paragraph_2": "Peb muaj ntau pawg thiab ntau pawg me rau koj mus tshawb nrhiav. Tsuas yog nias rau ib qho ntawm cov txuas hauv ntu pawg kom koj pom cov txiaj ntsig tshawb nrhiav."
+    },
+    "step_3": {
+      "paragraph_1": "Qee zaum tej yam tawg, uas peb tsis xav tias yuav tawg.",
+      "paragraph_2": "Yog tias koj pom muaj qee yam puas lawm, lossis tsuas yog xav muab qee cov lus taw qhia rau hauv qhov kev paub tag nrho ces koj tuaj yeem nyem rau ntawm lub pob tawm tswv yim txhua lub sijhawm."
+    },
+    "step_4": {
+      "paragraph_1": "Ntxiv koj qhov chaw nyob rau ntawm no kom nrhiav tau cov kev pabcuam uas muaj nyob hauv koj cheeb tsam. Qhov no pab peb qhia koj tsuas yog cov kev xaiv uas muaj rau koj cheeb tsam xwb."
+    }
+  },
+  "categories_title": "Cov Ncauj Lus",
+  "new_layout": {
+    "topics_section": {
+      "cta": "Xauj cov ncauj lus",
+      "title": "Tsis paub meej tias yuav pib qhov twg"
+    },
+    "callouts": {
+      "list": {
+        "call": "Hu xov tooj",
+        "chat": "Sib tham",
+        "email": "Email",
+        "sms": "SMS"
+      },
+      "title": "Kuj muaj lwm txoj hauv kev los thov kev pab thiab:"
+    }
+  }
+}

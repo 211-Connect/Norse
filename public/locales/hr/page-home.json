@@ -1,0 +1,40 @@
+{
+  "meta_title": "",
+  "meta_description": "",
+  "take_a_tour": "Prvi put ovdje? Krenite u obilazak!",
+  "new": "Novi!",
+  "tour": {
+    "step_1": {
+      "paragraph_1": "Okvir za pretraživanje je okosnica tražilice. Prihvaća uobičajene riječi, fraze itd. (npr. 'ostava za hranu')",
+      "paragraph_2": "Dok tipkate, okvir za pretraživanje prikazivat će prijedloge na temelju kategorija koje koristimo u pozadini. Ti će prijedlozi pružiti najtočnije rezultate, no niste ih obvezni koristiti.",
+      "paragraph_3": "Ako odlučite ne koristiti dane prijedloge, upotrijebit ćemo tekst koji nam date kako bismo dobili najtočnije moguće rezultate."
+    },
+    "step_2": {
+      "paragraph_1": "Niste sasvim sigurni što tražite? U redu je!",
+      "paragraph_2": "Nudimo vam mnogo različitih kategorija i podkategorija za istraživanje. Jednostavno kliknite na bilo koju od poveznica u odjeljku kategorija kako biste se otvorili rezultati pretraživanja."
+    },
+    "step_3": {
+      "paragraph_1": "Ponekad se stvari slome, a ne očekujemo da će se slomiti.",
+      "paragraph_2": "Ako ikada pronađete nešto pokvareno ili samo želite dati povratne informacije o cjelokupnom iskustvu, možete kliknuti na gumb za povratne informacije u bilo kojem trenutku."
+    },
+    "step_4": {
+      "paragraph_1": "Dodajte svoju adresu ovdje kako biste pronašli usluge dostupne u vašem susjedstvu. To nam pomaže da vam prikažemo samo opcije koje su stvarno dostupne u vašem području."
+    }
+  },
+  "categories_title": "Teme",
+  "new_layout": {
+    "topics_section": {
+      "cta": "Pregledaj teme",
+      "title": "Nisam siguran odakle početi"
+    },
+    "callouts": {
+      "list": {
+        "call": "Poziv",
+        "chat": "Razgovor",
+        "email": "E-pošta",
+        "sms": "SMS-a"
+      },
+      "title": "Postoje i drugi načini za traženje pomoći:"
+    }
+  }
+}

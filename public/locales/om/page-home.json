@@ -1,0 +1,40 @@
+{
+  "meta_title": "",
+  "meta_description": "",
+  "take_a_tour": "Yeroo jalqabaaf asitti? Daawwadhaa!",
+  "new": "Haaraa!",
+  "tour": {
+    "step_1": {
+      "paragraph_1": "Sanduuqa barbaacha lafee dugdaa motora barbaachaati. Jechoota, gaaleewwan beekamoo fi kkf (i.e. 'food pantrys') fudhata.",
+      "paragraph_2": "Yeroo barreessitu sanduuqa barbaacha yaada gosoota nuti fuula duuba fayyadamnu irratti hundaa'uun ni kenna. Yaadonni kun bu'aa hunda caalaa sirrii ta'e ni kennu, haa ta'u malee itti fayyadamuun si hin barbaachisu.",
+      "paragraph_3": "Yaada kenname fayyadamuu dhiisuu yoo filatte, barreeffama ati kennitutti fayyadamnee bu’aa sirrii ta’e kan dandeenyu arganna."
+    },
+    "step_2": {
+      "paragraph_1": "Maal akka barbaaddu sirriitti hin beektu? Sun tole!",
+      "paragraph_2": "Gosoota adda addaa fi gosoota xiqqaa hedduu akka qorattaniif isiniif dhiyeessina. Salphaatti hidhaa kutaa gosa keessa jiru kamiyyuu cuqaasuun gara bu'aa barbaachaatti geessu."
+    },
+    "step_3": {
+      "paragraph_1": "Yeroo tokko tokko wantootni ni caccabu, kan nuti cabsa jennee hin eegne.",
+      "paragraph_2": "Yoom iyyuu waan cabe argatte, ykn illee muuxannoo waliigalaa keessa yaada tokko tokko kennuu qofa barbaadde sana booda yeroo barbaaddetti button yaada kennuu cuqaasuu dandeessa."
+    },
+    "step_4": {
+      "paragraph_1": "Tajaajila naannoo keessan jiru argachuuf teessoo keessan asitti dabalaa. Kunis filannoowwan qabatamaan naannoo keessanitti dhufan qofa akka isin agarsiifnu nu gargaara."
+    }
+  },
+  "categories_title": "Mata dureewwan",
+  "new_layout": {
+    "topics_section": {
+      "cta": "Mata dureewwan daawwadhu",
+      "title": "Eessaa akka jalqabdu mirkanaa'aa miti"
+    },
+    "callouts": {
+      "list": {
+        "call": "Waamuu",
+        "chat": "Waliin dubbii",
+        "email": "Imeelii",
+        "sms": "Ergaa gabaabaa"
+      },
+      "title": "Karaaleen biroo gargaarsa gaafachuu dandeessanis jiru:"
+    }
+  }
+}

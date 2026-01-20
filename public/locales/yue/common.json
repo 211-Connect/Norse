@@ -1,0 +1,140 @@
+{
+  "header": {
+    "home": "屋企",
+    "favorites": "最愛",
+    "log_out": "登出",
+    "language_select_label": "揀一種語言嚟更改網站語言",
+    "my_stuff": "我嘅嘢",
+    "search": "搜尋",
+    "report": "提交意見"
+  },
+  "favorites": {
+    "added_to_list": "加咗去清單",
+    "added_to_list_message": "呢個資源已經加入咗你嘅清單。",
+    "already_exists": "已經存在",
+    "already_exists_message": "呢個資源已經存在喺你嘅清單入面。",
+    "removed_from_list": "喺清單入面移除咗",
+    "removed_from_list_message": "呢個資源已經喺你嘅清單入面移除咗。",
+    "updated_list": "更新咗嘅清單",
+    "updated_list_message": "你嘅清單已經更新咗。",
+    "unable_to_update_list": "更新唔到清單",
+    "unable_to_update_list_message": "你個清單更新唔到。",
+    "deleted_list": "刪除咗嘅清單",
+    "deleted_list_message": "你個清單已經刪除咗。",
+    "unable_to_delete_list": "刪除唔到清單",
+    "unable_to_delete_list_message": "你嘅清單刪除唔到。"
+  },
+  "search": {
+    "add_my_location": "加入我嘅位置",
+    "back": "返回",
+    "hero_title": "搵資源",
+    "query_placeholder": "食物、住屋等 ...",
+    "location_placeholder": "城市、州或者郵遞區號",
+    "radius_placeholder": "半徑",
+    "miles": "里數",
+    "miles_short": "米",
+    "any": "任何",
+    "taxonomies": "分類學",
+    "suggestions": "建議",
+    "use_my_location": "用我嘅位置",
+    "confidential_address": "呢個位置可能係機密或者唔公開。請為呢個服務選擇另一個提供嘅聯絡方法。",
+    "address_unavailable": "地址唔可用",
+    "geocoding_error": "地理編碼錯誤",
+    "geocoding_unsupported": "你嘅瀏覽器唔支援地理位置",
+    "geocoding_unable_to_retrieve": "搵唔到你嘅位置。請檢查瀏覽器嘅位置設定，然後試多一次。",
+    "categories": "主題",
+    "show_all": "顯示全部（ { { 計數 } } ）",
+    "show_less": "顯示少啲"
+  },
+  "call_to_action": {
+    "call": "叫",
+    "view_website": "網站",
+    "get_directions": "路線",
+    "view_details": "睇多啲",
+    "add_to_list": "最鍾意嘅",
+    "delete_list": "刪除清單",
+    "remove_from_list": "喺清單入面移除",
+    "share": "分享",
+    "cancel": "取消",
+    "create": "創造",
+    "update": "更新",
+    "delete": "刪除",
+    "search": "搜尋",
+    "remove": "去除",
+    "login": "登入",
+    "show_more": "顯示更多",
+    "show_less": "顯示少啲",
+    "print": "列印"
+  },
+  "list": {
+    "private": "私人",
+    "public": "公眾"
+  },
+  "message": {
+    "list_deleted": "清單刪除咗",
+    "list_deleted_success": "你個清單已經刪除咗。",
+    "error": "錯誤",
+    "list_not_deleted_error": "你嘅清單刪除唔到。"
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "搜尋你嘅清單",
+      "list_name": "清單",
+      "list_privacy": "私隱",
+      "add_to_list": "加入清單",
+      "not_found": "搵唔到清單",
+      "create_new_list": "建立新嘅？"
+    },
+    "remove_from_list": {
+      "are_you_sure": "你肯定想喺你嘅清單入面移除呢個最愛嗎？"
+    },
+    "create_list": {
+      "create_a_list": "建立一個清單",
+      "list_name": "名字",
+      "list_description": "描述",
+      "make_public": "公開"
+    },
+    "update_list": {
+      "update_list": "更新清單",
+      "list_name": "名字",
+      "list_description": "描述",
+      "make_public": "公開"
+    },
+    "delete_list": {
+      "delete_list": "刪除清單"
+    },
+    "share": {
+      "share_via": "分享呢個透過",
+      "copy_link": "複製連結",
+      "copy": "複製",
+      "facebook": "臉書",
+      "twitter": "推特",
+      "linkedin": "連登",
+      "sms": "短訊",
+      "email": "電郵",
+      "print": "列印",
+      "copied": "複製咗！",
+      "check_out_this_list": "睇下我整嘅呢個清單！",
+      "check_out_this_resource": "睇下我搵到嘅呢個資源！",
+      "share_sms": "輸入電話號碼，透過短訊分享",
+      "enter_phone_number": "輸入電話號碼 ...",
+      "invalid_phone_number": "電話號碼無效",
+      "sms_sending_title": "發送短訊 …",
+      "sms_sending_body": "你嘅訊息傳送緊。",
+      "sms_send_success_title": "短訊已經發送咗！",
+      "sms_send_success_body": "你嘅訊息已經發送咗。",
+      "sms_send_failed_title": "短訊發送失敗",
+      "sms_send_failed_body": "你嘅訊息發送唔到。"
+    },
+    "prompt_auth": "請登入以使用此功能。"
+  },
+  "update_location": {
+    "prompt_start_location": "你嘅起點係邊度？"
+  },
+  "data_providers": {
+    "provided_by": "資料由"
+  },
+  "footer": {
+    "copyright": "© 版權所有 { { 文字 } }"
+  }
+}

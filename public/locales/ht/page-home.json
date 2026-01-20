@@ -1,0 +1,40 @@
+{
+  "meta_title": "",
+  "meta_description": "",
+  "take_a_tour": "Premye fwa ou isit la? Fè yon ti tou!",
+  "new": "Nouvo!",
+  "tour": {
+    "step_1": {
+      "paragraph_1": "Bwat rechèch la se fondasyon motè rechèch la. Li aksepte mo komen, fraz, elatriye (pa egzanp 'gadmanje').",
+      "paragraph_2": "Pandan w ap tape, bwat rechèch la ap ba ou sijesyon ki baze sou kategori nou itilize an kachèt. Sijesyon sa yo ap ba ou rezilta ki pi egzak yo, sepandan ou pa oblije itilize yo.",
+      "paragraph_3": "Si ou chwazi pou pa itilize sijesyon yo bay yo, n ap itilize tèks ou bay la pou nou jwenn rezilta ki pi egzak posib."
+    },
+    "step_2": {
+      "paragraph_1": "Ou pa fin sèten sa w ap chèche a? Pa gen pwoblèm!",
+      "paragraph_2": "Nou ofri anpil kategori ak sou-kategori diferan pou ou eksplore. Senpleman klike sou nenpòt nan lyen ki nan seksyon kategori a pou ale nan rezilta rechèch yo."
+    },
+    "step_3": {
+      "paragraph_1": "Pafwa bagay kase, nou pa t espere ki ta kase.",
+      "paragraph_2": "Si ou janm jwenn yon bagay ki pa mache, oubyen menm si ou jis vle bay kèk fidbak sou eksperyans lan an jeneral, ou ka klike sou bouton fidbak la nenpòt ki lè."
+    },
+    "step_4": {
+      "paragraph_1": "Ajoute adrès ou isit la pou jwenn sèvis ki disponib nan katye w la. Sa ede nou montre w sèlman opsyon ki aktyèlman vini nan zòn ou an."
+    }
+  },
+  "categories_title": "Sijè yo",
+  "new_layout": {
+    "topics_section": {
+      "cta": "Browse sijè yo",
+      "title": "M pa sèten ki kote pou m kòmanse"
+    },
+    "callouts": {
+      "list": {
+        "call": "Rele",
+        "chat": "Chat",
+        "email": "Imèl",
+        "sms": "SMS"
+      },
+      "title": "Gen lòt fason pou mande èd tou:"
+    }
+  }
+}

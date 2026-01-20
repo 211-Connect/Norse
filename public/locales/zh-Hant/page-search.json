@@ -1,0 +1,15 @@
+{
+  "learn_more": "了解更多",
+  "filter_results": "篩選結果",
+  "results": "結果",
+  "no_query": "未提供查詢",
+  "results_for": "找到與查詢相符的結果",
+  "of": "的",
+  "no_results": {
+    "title": "沒有找到與您的查詢相符的結果",
+    "subtitle": "我們在下面提供了一些類似的結果。",
+    "alt_subtitle": "嘗試不同的查詢或篩選條件",
+    "need_help": "需要幫助嗎？我們有專人隨時待命。"
+  },
+  "pinned": "置頂"
+}

@@ -1,0 +1,140 @@
+{
+  "header": {
+    "home": "ផ្ទះ",
+    "favorites": "ចំណូលចិត្ត",
+    "log_out": "ចាកចេញ",
+    "language_select_label": "ជ្រើសរើសភាសាដើម្បីផ្លាស់ប្តូរភាសាគេហទំព័រ",
+    "my_stuff": "របស់របររបស់ខ្ញុំ",
+    "search": "ស្វែងរក",
+    "report": "ដាក់ស្នើមតិកែលម្អ"
+  },
+  "favorites": {
+    "added_to_list": "បានបន្ថែមទៅក្នុងបញ្ជី",
+    "added_to_list_message": "ធនធាននេះត្រូវបានបន្ថែមទៅក្នុងបញ្ជីរបស់អ្នក។",
+    "already_exists": "មានរួចហើយ",
+    "already_exists_message": "ធនធាននេះមានរួចហើយនៅក្នុងបញ្ជីរបស់អ្នកហើយ។",
+    "removed_from_list": "បានលុបចេញពីបញ្ជី",
+    "removed_from_list_message": "ធនធាននេះត្រូវបានដកចេញពីបញ្ជីរបស់អ្នក។",
+    "updated_list": "បញ្ជីដែលបានធ្វើបច្ចុប្បន្នភាព",
+    "updated_list_message": "បញ្ជីរបស់អ្នកត្រូវបានធ្វើបច្ចុប្បន្នភាពហើយ។",
+    "unable_to_update_list": "មិនអាចធ្វើបច្ចុប្បន្នភាពបញ្ជីបានទេ",
+    "unable_to_update_list_message": "បញ្ជីរបស់អ្នកមិនអាចធ្វើបច្ចុប្បន្នភាពបានទេ។",
+    "deleted_list": "បានលុបបញ្ជី",
+    "deleted_list_message": "បញ្ជីរបស់អ្នកត្រូវបានលុបចោល។",
+    "unable_to_delete_list": "មិនអាចលុបបញ្ជីបានទេ",
+    "unable_to_delete_list_message": "មិនអាចលុបបញ្ជីរបស់អ្នកបានទេ។"
+  },
+  "search": {
+    "add_my_location": "បន្ថែមទីតាំងរបស់ខ្ញុំ",
+    "back": "ថយក្រោយ",
+    "hero_title": "ស្វែងរកធនធាន",
+    "query_placeholder": "អាហារ លំនៅឋាន ជាដើម...",
+    "location_placeholder": "ទីក្រុង រដ្ឋ ឬលេខកូដប្រៃសណីយ៍",
+    "radius_placeholder": "កាំ",
+    "miles": "ម៉ាយល៍",
+    "miles_short": "ម៉ាយ",
+    "any": "ណាមួយ",
+    "taxonomies": "ចំណាត់ថ្នាក់",
+    "suggestions": "ការណែនាំ",
+    "use_my_location": "ប្រើប្រាស់ទីតាំងរបស់ខ្ញុំ",
+    "confidential_address": "ទីតាំងនេះអាចជាការសម្ងាត់ ឬមិនបើកចំហសម្រាប់សាធារណជន។ សូមជ្រើសរើសវិធីសាស្ត្រទំនាក់ទំនងផ្សេងទៀតដែលបានផ្តល់ជូនសម្រាប់សេវាកម្មនេះ។",
+    "address_unavailable": "អាសយដ្ឋានមិនអាចប្រើបានទេ",
+    "geocoding_error": "កំហុសក្នុងការសរសេរកូដភូមិសាស្ត្រ",
+    "geocoding_unsupported": "ទីតាំងភូមិសាស្ត្រមិនត្រូវបានគាំទ្រដោយកម្មវិធីរុករកតាមអ៊ីនធឺណិតរបស់អ្នកទេ",
+    "geocoding_unable_to_retrieve": "មិនអាចទាញយកទីតាំងរបស់អ្នកបានទេ។ សូមពិនិត្យមើលការកំណត់ទីតាំងរបស់កម្មវិធីរុករកតាមអ៊ីនធឺណិតរបស់អ្នក ហើយព្យាយាមម្តងទៀត។",
+    "categories": "ប្រធានបទ",
+    "show_all": "បង្ហាញទាំងអស់ ({{count}})",
+    "show_less": "បង្ហាញតិចជាង"
+  },
+  "call_to_action": {
+    "call": "ហៅទូរសព្ទ",
+    "view_website": "គេហទំព័រ",
+    "get_directions": "ទិសដៅ",
+    "view_details": "មើលបន្ថែម",
+    "add_to_list": "សំណព្វចិត្ត",
+    "delete_list": "លុបបញ្ជី",
+    "remove_from_list": "ដកចេញពីបញ្ជី",
+    "share": "ចែករំលែក",
+    "cancel": "បោះបង់",
+    "create": "បង្កើត",
+    "update": "ធ្វើបច្ចុប្បន្នភាព",
+    "delete": "លុប",
+    "search": "ស្វែងរក",
+    "remove": "លុបចេញ",
+    "login": "ចូល",
+    "show_more": "បង្ហាញបន្ថែម",
+    "show_less": "បង្ហាញតិចជាង",
+    "print": "បោះពុម្ព"
+  },
+  "list": {
+    "private": "ឯកជន",
+    "public": "សាធារណៈ"
+  },
+  "message": {
+    "list_deleted": "បានលុបបញ្ជី",
+    "list_deleted_success": "បញ្ជីរបស់អ្នកត្រូវបានលុបចោល។",
+    "error": "កំហុស",
+    "list_not_deleted_error": "មិនអាចលុបបញ្ជីរបស់អ្នកបានទេ។"
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "ស្វែងរកបញ្ជីរបស់អ្នក",
+      "list_name": "បញ្ជី",
+      "list_privacy": "ភាពឯកជន",
+      "add_to_list": "បន្ថែមទៅក្នុងបញ្ជី",
+      "not_found": "រកមិនឃើញបញ្ជីទេ",
+      "create_new_list": "បង្កើតថ្មីមួយ?"
+    },
+    "remove_from_list": {
+      "are_you_sure": "តើអ្នកពិតជាចង់លុបចំណូលចិត្តនេះចេញពីបញ្ជីរបស់អ្នកមែនទេ?"
+    },
+    "create_list": {
+      "create_a_list": "បង្កើតបញ្ជី",
+      "list_name": "ឈ្មោះ",
+      "list_description": "ការពិពណ៌នា",
+      "make_public": "ផ្សព្វផ្សាយជាសាធារណៈ"
+    },
+    "update_list": {
+      "update_list": "ធ្វើបច្ចុប្បន្នភាពបញ្ជី",
+      "list_name": "ឈ្មោះ",
+      "list_description": "ការពិពណ៌នា",
+      "make_public": "ផ្សព្វផ្សាយជាសាធារណៈ"
+    },
+    "delete_list": {
+      "delete_list": "លុបបញ្ជី"
+    },
+    "share": {
+      "share_via": "ចែករំលែក​នេះ​តាមរយៈ",
+      "copy_link": "ចម្លងតំណ",
+      "copy": "ចម្លង",
+      "facebook": "ហ្វេសប៊ុក",
+      "twitter": "ធ្វីតធ័រ",
+      "linkedin": "LinkedIn",
+      "sms": "សារ SMS",
+      "email": "អ៊ីមែល",
+      "print": "បោះពុម្ព",
+      "copied": "បានចម្លងហើយ!",
+      "check_out_this_list": "សូមពិនិត្យមើលបញ្ជីដែលខ្ញុំបានធ្វើនេះ!",
+      "check_out_this_resource": "សូមពិនិត្យមើលធនធានដែលខ្ញុំបានរកឃើញនេះ!",
+      "share_sms": "បញ្ចូលលេខទូរស័ព្ទដើម្បីចែករំលែកតាមរយៈសារ SMS",
+      "enter_phone_number": "បញ្ចូលលេខទូរស័ព្ទ...",
+      "invalid_phone_number": "លេខទូរស័ព្ទមិនត្រឹមត្រូវ",
+      "sms_sending_title": "កំពុងផ្ញើសារ SMS...",
+      "sms_sending_body": "សាររបស់អ្នកកំពុងត្រូវបានផ្ញើ។",
+      "sms_send_success_title": "សារ SMS បានផ្ញើហើយ!",
+      "sms_send_success_body": "សាររបស់អ្នកត្រូវបានផ្ញើហើយ។",
+      "sms_send_failed_title": "ការផ្ញើសារ SMS បរាជ័យ",
+      "sms_send_failed_body": "សាររបស់អ្នកមិនអាចផ្ញើបានទេ។"
+    },
+    "prompt_auth": "សូមចូលគណនីដើម្បីប្រើប្រាស់មុខងារនេះ។"
+  },
+  "update_location": {
+    "prompt_start_location": "តើទីតាំងចាប់ផ្តើមរបស់អ្នកគឺជាអ្វី?"
+  },
+  "data_providers": {
+    "provided_by": "ទិន្នន័យដែលផ្តល់ដោយ"
+  },
+  "footer": {
+    "copyright": "© រក្សាសិទ្ធិគ្រប់យ៉ាង {{text}}"
+  }
+}

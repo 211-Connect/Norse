@@ -1,0 +1,140 @@
+{
+  "header": {
+    "home": "Heim",
+    "favorites": "Favoriten",
+    "log_out": "Abmelden",
+    "language_select_label": "Wählen Sie eine Sprache aus, um die Website-Sprache zu ändern.",
+    "my_stuff": "Meine Sachen",
+    "search": "Suchen",
+    "report": "Feedback senden"
+  },
+  "favorites": {
+    "added_to_list": "Zur Liste hinzugefügt",
+    "added_to_list_message": "Diese Ressource wurde Ihrer Liste hinzugefügt.",
+    "already_exists": "Existiert bereits",
+    "already_exists_message": "Diese Ressource ist bereits in Ihrer Liste vorhanden.",
+    "removed_from_list": "Aus der Liste entfernt",
+    "removed_from_list_message": "Diese Ressource wurde aus Ihrer Liste entfernt.",
+    "updated_list": "Aktualisierte Liste",
+    "updated_list_message": "Ihre Liste wurde aktualisiert.",
+    "unable_to_update_list": "Liste konnte nicht aktualisiert werden",
+    "unable_to_update_list_message": "Ihre Liste konnte nicht aktualisiert werden.",
+    "deleted_list": "Gelöschte Liste",
+    "deleted_list_message": "Ihre Liste wurde gelöscht.",
+    "unable_to_delete_list": "Liste konnte nicht gelöscht werden",
+    "unable_to_delete_list_message": "Ihre Liste konnte nicht gelöscht werden."
+  },
+  "search": {
+    "add_my_location": "Meinen Standort hinzufügen",
+    "back": "Zurück",
+    "hero_title": "Ressourcen suchen",
+    "query_placeholder": "Essen, Unterkunft usw.",
+    "location_placeholder": "Stadt, Bundesland oder Postleitzahl",
+    "radius_placeholder": "Radius",
+    "miles": "Meilen",
+    "miles_short": "mi",
+    "any": "Beliebig",
+    "taxonomies": "Taxonomien",
+    "suggestions": "Vorschläge",
+    "use_my_location": "Meinen Standort verwenden",
+    "confidential_address": "Dieser Bereich ist möglicherweise vertraulich oder nicht öffentlich zugänglich. Bitte wählen Sie für diesen Service eine andere der angebotenen Kontaktmöglichkeiten.",
+    "address_unavailable": "Adresse nicht verfügbar",
+    "geocoding_error": "Geokodierungsfehler",
+    "geocoding_unsupported": "Die Geolokalisierung wird von Ihrem Browser nicht unterstützt.",
+    "geocoding_unable_to_retrieve": "Ihr Standort konnte nicht ermittelt werden. Bitte überprüfen Sie die Standorteinstellungen Ihres Browsers und versuchen Sie es erneut.",
+    "categories": "Themen",
+    "show_all": "Alle anzeigen ({{count}})",
+    "show_less": "Weniger anzeigen"
+  },
+  "call_to_action": {
+    "call": "Anruf",
+    "view_website": "Webseite",
+    "get_directions": "Wegbeschreibung",
+    "view_details": "Mehr anzeigen",
+    "add_to_list": "Favorit",
+    "delete_list": "Liste löschen",
+    "remove_from_list": "Aus der Liste entfernen",
+    "share": "Aktie",
+    "cancel": "Stornieren",
+    "create": "Erstellen",
+    "update": "Aktualisieren",
+    "delete": "Löschen",
+    "search": "Suchen",
+    "remove": "Entfernen",
+    "login": "Login",
+    "show_more": "Mehr anzeigen",
+    "show_less": "Weniger anzeigen",
+    "print": "Drucken"
+  },
+  "list": {
+    "private": "Privat",
+    "public": "Öffentlich"
+  },
+  "message": {
+    "list_deleted": "Liste gelöscht",
+    "list_deleted_success": "Ihre Liste wurde gelöscht.",
+    "error": "Fehler",
+    "list_not_deleted_error": "Ihre Liste konnte nicht gelöscht werden."
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "Durchsuchen Sie Ihre Listen",
+      "list_name": "Liste",
+      "list_privacy": "Datenschutz",
+      "add_to_list": "Zur Liste hinzufügen",
+      "not_found": "Keine Listen gefunden",
+      "create_new_list": "Einen neuen erstellen?"
+    },
+    "remove_from_list": {
+      "are_you_sure": "Möchtest du diesen Favoriten wirklich aus deiner Liste entfernen?"
+    },
+    "create_list": {
+      "create_a_list": "Liste erstellen",
+      "list_name": "Name",
+      "list_description": "Beschreibung",
+      "make_public": "Veröffentlichen"
+    },
+    "update_list": {
+      "update_list": "Aktualisierungsliste",
+      "list_name": "Name",
+      "list_description": "Beschreibung",
+      "make_public": "Veröffentlichen"
+    },
+    "delete_list": {
+      "delete_list": "Liste löschen"
+    },
+    "share": {
+      "share_via": "Teilen Sie dies über",
+      "copy_link": "Link kopieren",
+      "copy": "Kopie",
+      "facebook": "Facebook",
+      "twitter": "Twitter",
+      "linkedin": "LinkedIn",
+      "sms": "SMS",
+      "email": "E-Mail",
+      "print": "Drucken",
+      "copied": "Kopiert!",
+      "check_out_this_list": "Schaut euch diese Liste an, die ich erstellt habe!",
+      "check_out_this_resource": "Schaut euch diese Ressource an, die ich gefunden habe!",
+      "share_sms": "Geben Sie eine Telefonnummer ein, die per SMS geteilt werden soll.",
+      "enter_phone_number": "Telefonnummer eingeben...",
+      "invalid_phone_number": "Ungültige Telefonnummer",
+      "sms_sending_title": "SMS senden...",
+      "sms_sending_body": "Ihre Nachricht wird gesendet.",
+      "sms_send_success_title": "SMS gesendet!",
+      "sms_send_success_body": "Ihre Nachricht wurde gesendet.",
+      "sms_send_failed_title": "SMS-Versand fehlgeschlagen",
+      "sms_send_failed_body": "Ihre Nachricht konnte nicht gesendet werden."
+    },
+    "prompt_auth": "Bitte melden Sie sich an, um diese Funktion zu nutzen."
+  },
+  "update_location": {
+    "prompt_start_location": "Wo starten Sie?"
+  },
+  "data_providers": {
+    "provided_by": "Daten bereitgestellt von"
+  },
+  "footer": {
+    "copyright": "© Copyright {{text}}"
+  }
+}

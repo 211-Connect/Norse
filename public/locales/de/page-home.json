@@ -1,0 +1,40 @@
+{
+  "meta_title": "",
+  "meta_description": "",
+  "take_a_tour": "Zum ersten Mal hier? Machen Sie eine Tour!",
+  "new": "Neu!",
+  "tour": {
+    "step_1": {
+      "paragraph_1": "Das Suchfeld ist das Rückgrat der Suchmaschine. Es akzeptiert gängige Wörter, Phrasen usw. (z. B. „Lebensmittelausgabestellen“).",
+      "paragraph_2": "Während Sie tippen, liefert Ihnen das Suchfeld Vorschläge basierend auf Kategorien, die wir intern verwenden. Diese Vorschläge liefern die genauesten Ergebnisse, Sie sind jedoch nicht verpflichtet, sie zu nutzen.",
+      "paragraph_3": "Wenn Sie die bereitgestellten Vorschläge nicht nutzen, verwenden wir den von Ihnen angegebenen Text, um die genauesten Ergebnisse zu erzielen, die uns möglich sind."
+    },
+    "step_2": {
+      "paragraph_1": "Sie wissen noch nicht genau, wonach Sie suchen? Kein Problem!",
+      "paragraph_2": "Wir bieten Ihnen zahlreiche Kategorien und Unterkategorien zum Stöbern. Klicken Sie einfach auf einen der Links im Kategorienbereich, um zu den Suchergebnissen zu gelangen."
+    },
+    "step_3": {
+      "paragraph_1": "Manchmal gehen Dinge kaputt, von denen wir nicht erwarten, dass sie kaputtgehen.",
+      "paragraph_2": "Sollten Sie jemals einen Fehler entdecken oder einfach nur Feedback zum Gesamterlebnis geben wollen, können Sie jederzeit auf die Feedback-Schaltfläche klicken."
+    },
+    "step_4": {
+      "paragraph_1": "Tragen Sie hier Ihre Adresse ein, um Dienstleistungen in Ihrer Nähe zu finden. So können wir Ihnen nur die Angebote anzeigen, die tatsächlich in Ihrer Region verfügbar sind."
+    }
+  },
+  "categories_title": "Themen",
+  "new_layout": {
+    "topics_section": {
+      "cta": "Themen durchsuchen",
+      "title": "Ich weiß nicht, wo ich anfangen soll."
+    },
+    "callouts": {
+      "list": {
+        "call": "Anruf",
+        "chat": "Chat",
+        "email": "E-Mail",
+        "sms": "SMS"
+      },
+      "title": "Es gibt auch andere Möglichkeiten, um Hilfe zu bitten:"
+    }
+  }
+}

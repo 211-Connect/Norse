@@ -1,0 +1,140 @@
+{
+  "header": {
+    "home": "Tsev",
+    "favorites": "Cov nyiam",
+    "log_out": "Tawm mus",
+    "language_select_label": "Xaiv ib hom lus los hloov hom lus ntawm lub xaib",
+    "my_stuff": "Kuv cov khoom",
+    "search": "Tshawb Nrhiav",
+    "report": "Xa Cov Lus Qhia"
+  },
+  "favorites": {
+    "added_to_list": "Ntxiv rau daim ntawv teev npe",
+    "added_to_list_message": "Cov peev txheej no tau raug ntxiv rau koj daim ntawv teev npe.",
+    "already_exists": "Twb muaj lawm",
+    "already_exists_message": "Cov peev txheej no twb muaj nyob hauv koj daim ntawv teev npe lawm.",
+    "removed_from_list": "Tshem tawm ntawm daim ntawv teev npe",
+    "removed_from_list_message": "Cov peev txheej no tau raug tshem tawm ntawm koj daim ntawv teev npe.",
+    "updated_list": "Daim ntawv teev npe hloov tshiab",
+    "updated_list_message": "Koj daim ntawv teev npe tau hloov kho tshiab lawm.",
+    "unable_to_update_list": "Tsis tuaj yeem hloov kho daim ntawv teev npe",
+    "unable_to_update_list_message": "Koj daim ntawv teev npe tsis tuaj yeem hloov kho tshiab.",
+    "deleted_list": "Daim ntawv teev npe raug tshem tawm",
+    "deleted_list_message": "Koj daim ntawv teev npe tau raug tshem tawm lawm.",
+    "unable_to_delete_list": "Tsis tuaj yeem rho tawm daim ntawv teev npe",
+    "unable_to_delete_list_message": "Koj daim ntawv teev npe tsis tuaj yeem raug rho tawm."
+  },
+  "search": {
+    "add_my_location": "Ntxiv kuv qhov chaw nyob",
+    "back": "Rov qab",
+    "hero_title": "Nrhiav cov peev txheej",
+    "query_placeholder": "Khoom noj, tsev nyob, thiab lwm yam ...",
+    "location_placeholder": "Lub nroog, lub xeev, lossis tus lej ZIP",
+    "radius_placeholder": "Lub vojvoog",
+    "miles": "Mais",
+    "miles_short": "kuv",
+    "any": "Txhua yam",
+    "taxonomies": "Kev faib tawm",
+    "suggestions": "Cov Lus Qhia",
+    "use_my_location": "Siv kuv qhov chaw nyob",
+    "confidential_address": "Qhov chaw no tej zaum yuav zais cia lossis tsis qhib rau pej xeem. Thov xaiv lwm txoj kev tiv tauj uas tau muab rau qhov kev pabcuam no.",
+    "address_unavailable": "Chaw nyob tsis muaj",
+    "geocoding_error": "Qhov yuam kev ntawm geocoding",
+    "geocoding_unsupported": "Koj tus browser tsis txhawb nqa qhov chaw nyob",
+    "geocoding_unable_to_retrieve": "Tsis tuaj yeem nrhiav tau koj qhov chaw nyob. Thov xyuas koj tus browser qhov chaw teeb tsa thiab sim dua.",
+    "categories": "Cov Ncauj Lus",
+    "show_all": "Qhia tag nrho ({{count}})",
+    "show_less": "Qhia tsawg dua"
+  },
+  "call_to_action": {
+    "call": "Hu xov tooj",
+    "view_website": "Lub Vas Sab",
+    "get_directions": "Cov Lus Qhia",
+    "view_details": "Saib ntxiv",
+    "add_to_list": "Nyiam tshaj plaws",
+    "delete_list": "Tshem tawm daim ntawv teev npe",
+    "remove_from_list": "Tshem tawm ntawm daim ntawv teev npe",
+    "share": "Qhia",
+    "cancel": "Tshem tawm",
+    "create": "Tsim",
+    "update": "Hloov tshiab",
+    "delete": "Tshem tawm",
+    "search": "Tshawb Nrhiav",
+    "remove": "Tshem tawm",
+    "login": "Nkag mus",
+    "show_more": "Qhia ntxiv",
+    "show_less": "Qhia tsawg dua",
+    "print": "Luam tawm"
+  },
+  "list": {
+    "private": "Ntiag tug",
+    "public": "Pej xeem"
+  },
+  "message": {
+    "list_deleted": "Daim ntawv teev npe raug tshem tawm",
+    "list_deleted_success": "Koj daim ntawv teev npe tau raug tshem tawm lawm.",
+    "error": "Yuam Kev",
+    "list_not_deleted_error": "Koj daim ntawv teev npe tsis tuaj yeem raug rho tawm."
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "Tshawb nrhiav koj cov npe",
+      "list_name": "Daim Ntawv Teev Npe",
+      "list_privacy": "Kev Ceev Ntaub Ntiag Tug",
+      "add_to_list": "Ntxiv rau daim ntawv teev npe",
+      "not_found": "Tsis pom cov npe",
+      "create_new_list": "Tsim ib qho tshiab?"
+    },
+    "remove_from_list": {
+      "are_you_sure": "Koj puas xav tshem qhov koj nyiam no tawm ntawm koj daim ntawv teev npe?"
+    },
+    "create_list": {
+      "create_a_list": "Tsim ib daim ntawv teev npe",
+      "list_name": "Lub Npe",
+      "list_description": "Kev piav qhia",
+      "make_public": "Ua rau pej xeem pom"
+    },
+    "update_list": {
+      "update_list": "Hloov kho daim ntawv teev npe",
+      "list_name": "Lub Npe",
+      "list_description": "Kev piav qhia",
+      "make_public": "Ua rau pej xeem pom"
+    },
+    "delete_list": {
+      "delete_list": "Tshem tawm daim ntawv teev npe"
+    },
+    "share": {
+      "share_via": "Qhia qhov no ntawm",
+      "copy_link": "Luam qhov txuas",
+      "copy": "Luam theej",
+      "facebook": "Facebook",
+      "twitter": "Twitter",
+      "linkedin": "LinkedIn",
+      "sms": "SMS",
+      "email": "Email",
+      "print": "Luam tawm",
+      "copied": "Luam theej lawm!",
+      "check_out_this_list": "Saib daim ntawv teev npe no uas kuv tau ua!",
+      "check_out_this_resource": "Mus saib qhov chaw pab no uas kuv pom!",
+      "share_sms": "Sau tus xov tooj kom qhia ntawm SMS",
+      "enter_phone_number": "Sau tus xov tooj...",
+      "invalid_phone_number": "Tus xov tooj tsis raug",
+      "sms_sending_title": "Xa SMS...",
+      "sms_sending_body": "Koj cov lus tab tom raug xa mus.",
+      "sms_send_success_title": "Xa SMS lawm!",
+      "sms_send_success_body": "Koj cov lus tau raug xa mus lawm.",
+      "sms_send_failed_title": "Xa SMS tsis tau",
+      "sms_send_failed_body": "Koj cov lus xa tsis tau."
+    },
+    "prompt_auth": "Thov nkag mus rau hauv koj tus account kom siv tau qhov feature no."
+  },
+  "update_location": {
+    "prompt_start_location": "Koj qhov chaw pib yog dab tsi?"
+  },
+  "data_providers": {
+    "provided_by": "Cov ntaub ntawv muab los ntawm"
+  },
+  "footer": {
+    "copyright": "© Muaj Cai {{text}}"
+  }
+}

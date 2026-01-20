@@ -1,0 +1,15 @@
+{
+  "learn_more": "了解更多",
+  "filter_results": "過濾結果",
+  "results": "結果",
+  "no_query": "冇提供任何查詢",
+  "results_for": "搵到查詢嘅結果",
+  "of": "嘅",
+  "no_results": {
+    "title": "搵唔到同你查詢相符嘅結果",
+    "subtitle": "我哋喺下面提供咗一啲類似嘅結果",
+    "alt_subtitle": "試下用唔同嘅查詢或者篩選器",
+    "need_help": "需要幫手？我哋有人企喺度。"
+  },
+  "pinned": "固定咗"
+}

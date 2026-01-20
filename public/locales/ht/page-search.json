@@ -1,0 +1,15 @@
+{
+  "learn_more": "Aprann plis",
+  "filter_results": "Filtre rezilta yo",
+  "results": "rezilta yo",
+  "no_query": "Pa gen okenn demann yo bay",
+  "results_for": "rezilta yo te jwenn pou rechèch la",
+  "of": "de",
+  "no_results": {
+    "title": "Pa gen okenn rezilta ki koresponn ak rechèch ou an",
+    "subtitle": "Nou bay kèk rezilta menm jan anba a",
+    "alt_subtitle": "Eseye yon lòt rechèch oswa yon lòt filtè",
+    "need_help": "Bezwen èd? Gen moun ki la pou ede w."
+  },
+  "pinned": "Epingle"
+}

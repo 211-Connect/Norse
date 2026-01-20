@@ -1,0 +1,9 @@
+{
+  "meta_title": "Pregled popisa",
+  "back_to_favorites": "Natrag na favorite",
+  "favorites": "Favoriti",
+  "no_favorites": {
+    "title": "Ovdje još ništa :(",
+    "subtitle": "Dodajte neke favorite na stranicu za pretraživanje da biste ih vidjeli ovdje"
+  }
+}

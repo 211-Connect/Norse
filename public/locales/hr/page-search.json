@@ -1,0 +1,15 @@
+{
+  "learn_more": "Saznajte više",
+  "filter_results": "Filtriraj rezultate",
+  "results": "rezultati",
+  "no_query": "Nije naveden upit",
+  "results_for": "pronađeni rezultati za upit",
+  "of": "od",
+  "no_results": {
+    "title": "Nisu pronađeni rezultati koji odgovaraju vašem upitu",
+    "subtitle": "U nastavku smo naveli neke slične rezultate",
+    "alt_subtitle": "Isprobajte drugi upit ili filter",
+    "need_help": "Trebate pomoć? Imamo ljude koji su vam na raspolaganju."
+  },
+  "pinned": "Prikvačeno"
+}

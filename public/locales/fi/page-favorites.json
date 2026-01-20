@@ -1,0 +1,11 @@
+{
+  "categories_title": "Mitä täällä on",
+  "meta_title": "Suosikkilistojen tarkasteleminen",
+  "meta_description": "Suosikkilistojen tarkasteleminen",
+  "lists": "listat",
+  "view_list": "Näytä lista",
+  "edit_list": "Muokkaa listaa",
+  "delete_list": "Poista lista",
+  "select_a_list": "Valitse sivulta luettelo nähdäksesi suosikkisi.",
+  "no_lists": "Sinulla ei ole vielä listoja."
+}

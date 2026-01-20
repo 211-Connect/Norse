@@ -1,0 +1,140 @@
+{
+  "header": {
+    "home": "Mana",
+    "favorites": "Kan jaallataman",
+    "log_out": "Ba'aa",
+    "language_select_label": "Afaan saayitii jijjiiruuf afaan filadhu",
+    "my_stuff": "Waan koo",
+    "search": "Barbaaduu",
+    "report": "Yaada Galchuu"
+  },
+  "favorites": {
+    "added_to_list": "Tarree irratti dabalameera",
+    "added_to_list_message": "Qabeenyi kun tarree keessanitti dabalameera.",
+    "already_exists": "Duraanis jira",
+    "already_exists_message": "Qabeenyi kun duraan tarree kee keessa jira.",
+    "removed_from_list": "Tarree keessaa haqame",
+    "removed_from_list_message": "Qabeenyi kun tarree kee keessaa haqameera.",
+    "updated_list": "Tarree haaromfame",
+    "updated_list_message": "Tarreen keessan haaromfameera.",
+    "unable_to_update_list": "Tarree haaromsuu hin dandeenye",
+    "unable_to_update_list_message": "Tarreen kee haaromfamuu hin dandeenye.",
+    "deleted_list": "Tarree haqame",
+    "deleted_list_message": "Tarreen keessan haqameera.",
+    "unable_to_delete_list": "Tarree haquu hin dandeenye",
+    "unable_to_delete_list_message": "Tarreen kee haqamuu hin dandeenye."
+  },
+  "search": {
+    "add_my_location": "Bakka koo itti dabali",
+    "back": "Dugda",
+    "hero_title": "Qabeenya barbaadi",
+    "query_placeholder": "Nyaata, mana jireenyaa fi kkf...",
+    "location_placeholder": "Magaalaa, kutaa biyyaa, ykn ZIP code",
+    "radius_placeholder": "Raadiyaasii",
+    "miles": "Maayilii",
+    "miles_short": "mi",
+    "any": "Kamuu",
+    "taxonomies": "Taksonomii",
+    "suggestions": "Yaada",
+    "use_my_location": "Bakka ani jirutti fayyadamaa",
+    "confidential_address": "Bakki kun iccitii ta’uu ykn ummataaf banaa ta’uu dhiisuu danda’a. Maaloo tajaajila kanaaf mala quunnamtii biraa kenname filadhaa.",
+    "address_unavailable": "Teessoon hin jiru",
+    "geocoding_error": "Dogoggora ji'ookoodii",
+    "geocoding_unsupported": "Geolocation browser keessaniin hin deeggaramu",
+    "geocoding_unable_to_retrieve": "Bakka jirtu deebifachuu hin dandeenye. Maaloo qindaa'ina bakka biraawzari keessanii ilaalaa irra deebi'aa yaalaa.",
+    "categories": "Mata dureewwan",
+    "show_all": "Hundaa agarsiisi ({{count}})",
+    "show_less": "Xiqqaa agarsiisi"
+  },
+  "call_to_action": {
+    "call": "Waamuu",
+    "view_website": "Weebsaayitii",
+    "get_directions": "Kallattii",
+    "view_details": "Dabalata ilaalaa",
+    "add_to_list": "Jaallatamaa",
+    "delete_list": "Tarree haquu",
+    "remove_from_list": "Tarree keessaa haqi",
+    "share": "Qooduu",
+    "cancel": "Haquu",
+    "create": "Uumuu",
+    "update": "Odeeffannoo dhiyeenyaa",
+    "delete": "Haquu",
+    "search": "Barbaaduu",
+    "remove": "Irraa kaasuu",
+    "login": "Galmaa'i",
+    "show_more": "Dabalata agarsiisi",
+    "show_less": "Xiqqaa agarsiisi",
+    "print": "Maxxansa"
+  },
+  "list": {
+    "private": "Dhuunfaa",
+    "public": "Uummata"
+  },
+  "message": {
+    "list_deleted": "Tarreen haqame",
+    "list_deleted_success": "Tarreen keessan haqameera.",
+    "error": "Dogoggora",
+    "list_not_deleted_error": "Tarreen kee haqamuu hin dandeenye."
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "Tarreewwan keessan barbaadaa",
+      "list_name": "Tarreeffama",
+      "list_privacy": "Dhuunfummaa",
+      "add_to_list": "Tarree irratti dabali",
+      "not_found": "Tarreewwan hin argamne",
+      "create_new_list": "Kan haaraa uumuu?"
+    },
+    "remove_from_list": {
+      "are_you_sure": "Jaallatamaa kana tarree keessan keessaa haquu akka barbaaddan mirkanaa'aadhaa?"
+    },
+    "create_list": {
+      "create_a_list": "Tarree uumuu",
+      "list_name": "Maqaa",
+      "list_description": "Ibsa",
+      "make_public": "Ummataaf ifa godhaa"
+    },
+    "update_list": {
+      "update_list": "Tarree fooyyessa",
+      "list_name": "Maqaa",
+      "list_description": "Ibsa",
+      "make_public": "Ummataaf ifa godhaa"
+    },
+    "delete_list": {
+      "delete_list": "Tarree haquu"
+    },
+    "share": {
+      "share_via": "Share kana karaa...",
+      "copy_link": "Link waraabuu",
+      "copy": "Koppii godhaa",
+      "facebook": "Facebook",
+      "twitter": "Tiwiitara irratti",
+      "linkedin": "LinkedIn irratti",
+      "sms": "Ergaa gabaabaa",
+      "email": "Imeelii",
+      "print": "Maxxansa",
+      "copied": "Koppii godhame!",
+      "check_out_this_list": "Tarree ani hojjedhe kana ilaalaa!",
+      "check_out_this_resource": "Qabeenya ani argadhe kana ilaalaa!",
+      "share_sms": "Lakkoofsa bilbilaa karaa ergaa gabaabaatiin qooduuf galchaa",
+      "enter_phone_number": "Lakkoofsa bilbilaa galchaa...",
+      "invalid_phone_number": "Lakkoofsa bilbilaa sirrii hin taane",
+      "sms_sending_title": "Ergaa gabaabaa erguun...",
+      "sms_sending_body": "Ergaan keessan ergamaa jira.",
+      "sms_send_success_title": "Ergaa gabaabaa ergame!",
+      "sms_send_success_body": "Ergaan keessan ergamee jira.",
+      "sms_send_failed_title": "Ergaa gabaabaa erguun hin milkoofne",
+      "sms_send_failed_body": "Ergaan kee erguu dadhabe."
+    },
+    "prompt_auth": "Maaloo amala kana fayyadamuuf seena."
+  },
+  "update_location": {
+    "prompt_start_location": "Bakki itti jalqabdan maali?"
+  },
+  "data_providers": {
+    "provided_by": "Daataa kan kenne"
+  },
+  "footer": {
+    "copyright": "© Mirga garagalchuu {{text}}"
+  }
+}

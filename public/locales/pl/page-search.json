@@ -1,0 +1,15 @@
+{
+  "learn_more": "Dowiedz się więcej",
+  "filter_results": "Filtruj wyniki",
+  "results": "wyniki",
+  "no_query": "Brak zapytania",
+  "results_for": "znaleziono wyniki dla zapytania",
+  "of": "z",
+  "no_results": {
+    "title": "Nie znaleziono wyników odpowiadających Twojemu zapytaniu",
+    "subtitle": "Poniżej zamieściliśmy kilka podobnych wyników",
+    "alt_subtitle": "Wypróbuj inne zapytanie lub filtr",
+    "need_help": "Potrzebujesz pomocy? Mamy ludzi gotowych do pomocy."
+  },
+  "pinned": "Przypięte"
+}
