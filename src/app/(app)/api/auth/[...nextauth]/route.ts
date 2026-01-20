@@ -9,8 +9,8 @@ const handlerFunction = async (
   ctx: RouteContext<'/api/auth/[...nextauth]'>,
 ) => {
   const headers = req.headers as unknown as Headers;
-  const host = headers.get('host');
-  const protocol = headers.get('x-forwarded-proto') || 'http';
+  const host = process.env.CUSTOM_AUTH_HOST || headers.get('x-forwarded-host') || headers.get('host');
+  const protocol = process.env.CUSTOM_AUTH_PROTOCOL || headers.get('x-forwarded-proto') || 'https';
 
   const parsedHost = parseHost(host ?? '');
 

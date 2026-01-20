@@ -55,6 +55,10 @@ declare global {
       TRANSLATE_LOCALES?: string;
       GOOGLE_API_KEY?: string;
       NPM_TOKEN?: string;
+
+      // For custom auth host/protocol in proxies
+      CUSTOM_AUTH_HOST?: string;
+      CUSTOM_AUTH_PROTOCOL?: string;
     }
   }
 }

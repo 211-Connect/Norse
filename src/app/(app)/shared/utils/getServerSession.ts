@@ -7,8 +7,8 @@ import { headers } from 'next/headers';
 async function getSession() {
   const headerList = await headers();
 
-  const host = headerList.get('host') || 'localhost';
-  const protocol = headerList.get('x-forwarded-proto') || 'http';
+  const host = process.env.CUSTOM_AUTH_HOST || headerList.get('x-forwarded-host') || headerList.get('host') || 'localhost';
+  const protocol = process.env.CUSTOM_AUTH_PROTOCOL || headerList.get('x-forwarded-proto') || 'https';
 
   const parsedHost = parseHost(host);
   const tenant = await findTenantByHost(parsedHost);
