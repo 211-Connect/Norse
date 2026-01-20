@@ -1,0 +1,40 @@
+{
+  "meta_title": "",
+  "meta_description": "",
+  "take_a_tour": "Unang beses mo lang dito? Mag-tour ka!",
+  "new": "Bago!",
+  "tour": {
+    "step_1": {
+      "paragraph_1": "Ang search box ang gulugod ng search engine. Tumatanggap ito ng mga karaniwang salita, parirala, atbp (hal. 'mga food pantry')",
+      "paragraph_2": "Habang nagta-type ka, ang search box ay magbibigay ng mga mungkahi batay sa mga kategoryang ginagamit namin sa likod ng mga eksena. Ang mga mungkahing ito ang magbibigay ng pinakatumpak na mga resulta, ngunit hindi mo kinakailangang gamitin ang mga ito.",
+      "paragraph_3": "Kung pipiliin mong huwag gamitin ang mga ibinigay na mungkahi, gagamitin namin ang tekstong ibinigay mo upang makuha ang pinakatumpak na mga resulta hangga't maaari."
+    },
+    "step_2": {
+      "paragraph_1": "Hindi sigurado kung ano ang hinahanap mo? Ayos lang!",
+      "paragraph_2": "Nagbibigay kami ng maraming iba't ibang kategorya at subkategorya para matuklasan mo. I-click lamang ang alinman sa mga link sa seksyon ng kategorya para mapunta sa mga resulta ng paghahanap."
+    },
+    "step_3": {
+      "paragraph_1": "Minsan may mga bagay na nasisira, na hindi natin inaasahang masisira.",
+      "paragraph_2": "Kung sakaling may makita kang sira, o gusto mo lang magbigay ng feedback sa pangkalahatang karanasan, maaari mong i-click ang button na feedback anumang oras."
+    },
+    "step_4": {
+      "paragraph_1": "Idagdag ang iyong address dito upang mahanap ang mga serbisyong available sa iyong kapitbahayan. Makakatulong ito sa amin na ipakita lamang sa iyo ang mga opsyon na talagang dumarating sa iyong lugar."
+    }
+  },
+  "categories_title": "Mga Paksa",
+  "new_layout": {
+    "topics_section": {
+      "cta": "Mag-browse ng mga paksa",
+      "title": "Hindi sigurado kung saan magsisimula"
+    },
+    "callouts": {
+      "list": {
+        "call": "Tumawag",
+        "chat": "Makipag-chat",
+        "email": "I-email",
+        "sms": "SMS"
+      },
+      "title": "May iba pang mga paraan upang humingi ng tulong:"
+    }
+  }
+}

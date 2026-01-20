@@ -1,0 +1,40 @@
+{
+  "meta_title": "",
+  "meta_description": "",
+  "take_a_tour": "Ensimmäistä kertaa täällä? Käy tutustumassa!",
+  "new": "Uusi!",
+  "tour": {
+    "step_1": {
+      "paragraph_1": "Hakukenttä on hakukoneen selkäranka. Se hyväksyy yleisiä sanoja, lauseita jne. (esim. \"ruokakomero\")",
+      "paragraph_2": "Kirjoittaessasi hakukenttä antaa ehdotuksia kulissien takana käyttämiemme luokkien perusteella. Nämä ehdotukset antavat tarkimmat tulokset, mutta sinun ei ole pakko käyttää niitä.",
+      "paragraph_3": "Jos et käytä annettuja ehdotuksia, käytämme antamaasi tekstiä saadaksemme mahdollisimman tarkat tulokset."
+    },
+    "step_2": {
+      "paragraph_1": "Etkö ole aivan varma, mitä etsit? Ei hätää!",
+      "paragraph_2": "Tarjoamme useita eri luokkia ja alakategorioita tutkittavaksi. Napsauta vain mitä tahansa luokkien linkkiä siirtyäksesi hakutuloksiin."
+    },
+    "step_3": {
+      "paragraph_1": "Joskus asiat hajoavat, joita emme odota hajoavamme.",
+      "paragraph_2": "Jos huomaat joskus rikkinäisen tuotteen tai haluat vain antaa palautetta yleisestä käyttökokemuksesta, voit napsauttaa palautepainiketta milloin tahansa."
+    },
+    "step_4": {
+      "paragraph_1": "Lisää osoitteesi tähän löytääksesi lähialueellasi saatavilla olevia palveluita. Näin voimme näyttää sinulle vain ne vaihtoehdot, jotka todella tulevat alueellesi."
+    }
+  },
+  "categories_title": "Aiheet",
+  "new_layout": {
+    "topics_section": {
+      "cta": "Selaa aiheita",
+      "title": "En ole varma, mistä aloittaa"
+    },
+    "callouts": {
+      "list": {
+        "call": "Soittaa",
+        "chat": "Chat",
+        "email": "Sähköposti",
+        "sms": "Tekstiviesti"
+      },
+      "title": "On myös muita tapoja pyytää apua:"
+    }
+  }
+}

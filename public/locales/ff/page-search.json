@@ -1,0 +1,15 @@
+{
+  "learn_more": "Janngu ko ɓuri ɗum",
+  "filter_results": "Fiiltir njeñtudi ndii",
+  "results": "sappinolji",
+  "no_query": "Alaa naamnal rokkaama",
+  "results_for": "njeñtudi tawaandi ngam naamnal",
+  "of": "je",
+  "no_results": {
+    "title": "Alaa njeñtudi tawaandi e naamnal maa",
+    "subtitle": "Min ndokki heen njeñtudi nanndundi e ndi les ɗoo",
+    "alt_subtitle": "Enndu naamnal walla filtirde woɗnde",
+    "need_help": "Aɗa yiɗi ballal? En njogii yimɓe dariiɓe."
+  },
+  "pinned": "Pinnaama"
+}

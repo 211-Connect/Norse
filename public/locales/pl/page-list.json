@@ -1,0 +1,9 @@
+{
+  "meta_title": "Lista przeglądania",
+  "back_to_favorites": "Powrót do ulubionych",
+  "favorites": "Ulubione",
+  "no_favorites": {
+    "title": "Jeszcze nic tu nie ma :(",
+    "subtitle": "Dodaj kilka ulubionych na stronie wyszukiwania, aby je tutaj zobaczyć"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "learn_more": "Lue lisää",
+  "filter_results": "Suodata tulokset",
+  "results": "tulokset",
+  "no_query": "Ei kyselyä",
+  "results_for": "tuloksia haulla",
+  "of": "jostakin",
+  "no_results": {
+    "title": "Hakuasi vastaavia tuloksia ei löytynyt",
+    "subtitle": "Olemme antaneet joitakin samankaltaisia ​​tuloksia alla",
+    "alt_subtitle": "Kokeile eri kyselyä tai suodatinta",
+    "need_help": "Tarvitsetko apua? Meillä on ihmisiä valmiina auttamaan."
+  },
+  "pinned": "Kiinnitetty"
+}

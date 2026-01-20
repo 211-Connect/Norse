@@ -1,0 +1,140 @@
+{
+  "header": {
+    "home": "Lakay",
+    "favorites": "Favori",
+    "log_out": "Dekonekte",
+    "language_select_label": "Chwazi yon lang pou chanje lang sit la",
+    "my_stuff": "Bagay mwen yo",
+    "search": "Rechèch",
+    "report": "Soumèt Kòmantè"
+  },
+  "favorites": {
+    "added_to_list": "Ajoute nan lis la",
+    "added_to_list_message": "Yo ajoute resous sa a nan lis ou a.",
+    "already_exists": "Deja egziste",
+    "already_exists_message": "Resous sa a deja egziste nan lis ou a.",
+    "removed_from_list": "Retire nan lis la",
+    "removed_from_list_message": "Yo retire resous sa a nan lis ou a.",
+    "updated_list": "Lis mete ajou",
+    "updated_list_message": "Lis ou a te mete ajou.",
+    "unable_to_update_list": "Lis la pa ka mete ajou",
+    "unable_to_update_list_message": "Lis ou a pa t kapab mete ajou.",
+    "deleted_list": "Lis efase",
+    "deleted_list_message": "Lis ou a efase.",
+    "unable_to_delete_list": "Pa kapab efase lis la",
+    "unable_to_delete_list_message": "Lis ou a pa t kapab efase."
+  },
+  "search": {
+    "add_my_location": "Ajoute kote mwen ye a",
+    "back": "Retounen",
+    "hero_title": "Chèche resous",
+    "query_placeholder": "Manje, lojman, elatriye...",
+    "location_placeholder": "Vil, eta, oswa kòd postal",
+    "radius_placeholder": "Reyon",
+    "miles": "Mil",
+    "miles_short": "mi",
+    "any": "Nenpòt",
+    "taxonomies": "Taksonomi",
+    "suggestions": "Sijesyon",
+    "use_my_location": "Sèvi ak kote mwen ye a",
+    "confidential_address": "Kote sa a ka konfidansyèl oswa li pa ouvè pou piblik la. Tanpri chwazi yon lòt metòd kontak yo bay pou sèvis sa a.",
+    "address_unavailable": "Adrès pa disponib",
+    "geocoding_error": "Erè jeokodaj",
+    "geocoding_unsupported": "Navigatè w la pa sipòte jeolokalizasyon an",
+    "geocoding_unable_to_retrieve": "Pa kapab jwenn kote w ye a. Tanpri verifye paramèt kote navigatè w la epi eseye ankò.",
+    "categories": "Sijè yo",
+    "show_all": "Montre tout ({{count}})",
+    "show_less": "Montre mwens"
+  },
+  "call_to_action": {
+    "call": "Rele",
+    "view_website": "Sit wèb",
+    "get_directions": "Direksyon",
+    "view_details": "Gade plis",
+    "add_to_list": "Pi renmen",
+    "delete_list": "Efase lis la",
+    "remove_from_list": "Retire nan lis la",
+    "share": "Pataje",
+    "cancel": "Anile",
+    "create": "Kreye",
+    "update": "Mizajou",
+    "delete": "Efase",
+    "search": "Rechèch",
+    "remove": "Retire",
+    "login": "Konekte",
+    "show_more": "Montre plis",
+    "show_less": "Montre mwens",
+    "print": "Enprime"
+  },
+  "list": {
+    "private": "Prive",
+    "public": "Piblik"
+  },
+  "message": {
+    "list_deleted": "Lis la efase",
+    "list_deleted_success": "Lis ou a efase.",
+    "error": "Erè",
+    "list_not_deleted_error": "Lis ou a pa t kapab efase."
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "Chèche nan lis ou yo",
+      "list_name": "Lis",
+      "list_privacy": "Konfidansyalite",
+      "add_to_list": "Ajoute nan lis la",
+      "not_found": "Pa jwenn okenn lis",
+      "create_new_list": "Kreye yon nouvo?"
+    },
+    "remove_from_list": {
+      "are_you_sure": "Èske ou sèten ou vle retire favori sa a nan lis ou a?"
+    },
+    "create_list": {
+      "create_a_list": "Kreye yon lis",
+      "list_name": "Non",
+      "list_description": "Deskripsyon",
+      "make_public": "Fè piblik"
+    },
+    "update_list": {
+      "update_list": "Mizajou lis la",
+      "list_name": "Non",
+      "list_description": "Deskripsyon",
+      "make_public": "Fè piblik"
+    },
+    "delete_list": {
+      "delete_list": "Efase lis la"
+    },
+    "share": {
+      "share_via": "Pataje sa a atravè",
+      "copy_link": "Kopye lyen an",
+      "copy": "Kopi",
+      "facebook": "Facebook",
+      "twitter": "Twitter",
+      "linkedin": "LinkedIn",
+      "sms": "SMS",
+      "email": "Imèl",
+      "print": "Enprime",
+      "copied": "Kopye!",
+      "check_out_this_list": "Gade lis sa a mwen te fè a!",
+      "check_out_this_resource": "Gade resous sa a mwen jwenn nan!",
+      "share_sms": "Antre yon nimewo telefòn pou pataje pa SMS",
+      "enter_phone_number": "Antre nimewo telefòn...",
+      "invalid_phone_number": "Nimewo telefòn ki pa valab",
+      "sms_sending_title": "Ap voye SMS...",
+      "sms_sending_body": "Mesaj ou a ap voye.",
+      "sms_send_success_title": "SMS voye!",
+      "sms_send_success_body": "Mesaj ou a voye.",
+      "sms_send_failed_title": "Voye SMS la echwe",
+      "sms_send_failed_body": "Mesaj ou a pa t rive voye."
+    },
+    "prompt_auth": "Tanpri konekte pou itilize fonksyonalite sa a."
+  },
+  "update_location": {
+    "prompt_start_location": "Ki kote ou kòmanse?"
+  },
+  "data_providers": {
+    "provided_by": "Done yo bay pa"
+  },
+  "footer": {
+    "copyright": "© Dwa otè {{tèks}}"
+  }
+}

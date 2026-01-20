@@ -1,0 +1,40 @@
+{
+  "meta_title": "",
+  "meta_description": "",
+  "take_a_tour": "Pierwszy raz tu jesteś? Wybierz się na wycieczkę!",
+  "new": "Nowy!",
+  "tour": {
+    "step_1": {
+      "paragraph_1": "Pole wyszukiwania stanowi podstawę wyszukiwarki. Akceptuje popularne słowa, frazy itp. (np. „bankiety żywności”).",
+      "paragraph_2": "W miarę wpisywania, pole wyszukiwania będzie wyświetlać sugestie oparte na kategoriach, których używamy w tle. Sugestie te zapewnią najdokładniejsze wyniki, jednak nie musisz z nich korzystać.",
+      "paragraph_3": "Jeśli nie skorzystasz z podanych sugestii, posłużymy się podanym przez Ciebie tekstem, aby uzyskać jak najdokładniejsze wyniki."
+    },
+    "step_2": {
+      "paragraph_1": "Nie jesteś pewien, czego szukasz? W porządku!",
+      "paragraph_2": "Oferujemy wiele różnych kategorii i podkategorii do odkrycia. Wystarczy kliknąć dowolny link w sekcji kategorii, aby przejść do wyników wyszukiwania."
+    },
+    "step_3": {
+      "paragraph_1": "Czasami psują się rzeczy, których nie spodziewamy się zepsuć.",
+      "paragraph_2": "Jeśli kiedykolwiek znajdziesz coś uszkodzonego lub po prostu będziesz chciał podzielić się swoją opinią na temat ogólnego doświadczenia, możesz w każdej chwili kliknąć przycisk „Opinia”."
+    },
+    "step_4": {
+      "paragraph_1": "Dodaj tutaj swój adres, aby znaleźć usługi dostępne w Twojej okolicy. Dzięki temu będziemy mogli wyświetlać Ci tylko te usługi, które faktycznie są dostępne w Twojej okolicy."
+    }
+  },
+  "categories_title": "Tematy",
+  "new_layout": {
+    "topics_section": {
+      "cta": "Przeglądaj tematy",
+      "title": "Nie wiem, od czego zacząć"
+    },
+    "callouts": {
+      "list": {
+        "call": "Dzwonić",
+        "chat": "Pogawędzić",
+        "email": "E-mail",
+        "sms": "SMS"
+      },
+      "title": "Istnieją również inne sposoby proszenia o pomoc:"
+    }
+  }
+}

@@ -1,0 +1,140 @@
+{
+  "header": {
+    "home": "घर",
+    "favorites": "पसंदीदा",
+    "log_out": "लॉग आउट",
+    "language_select_label": "साइट की भाषा बदलने के लिए भाषा चुनें",
+    "my_stuff": "मेरा सामान",
+    "search": "खोज",
+    "report": "प्रतिक्रिया सबमिट करें"
+  },
+  "favorites": {
+    "added_to_list": "सूची में जोड़ा गया",
+    "added_to_list_message": "यह संसाधन आपकी सूची में जोड़ दिया गया है।",
+    "already_exists": "पहले से ही मौजूद है",
+    "already_exists_message": "यह संसाधन आपकी सूची में पहले से मौजूद है।",
+    "removed_from_list": "सूची से हटा दिया गया",
+    "removed_from_list_message": "इस संसाधन को आपकी सूची से हटा दिया गया है।",
+    "updated_list": "अद्यतित सूची",
+    "updated_list_message": "आपकी सूची अपडेट कर दी गई है।",
+    "unable_to_update_list": "सूची को अपडेट करने में असमर्थ",
+    "unable_to_update_list_message": "आपकी सूची अपडेट नहीं हो सकी।",
+    "deleted_list": "हटाई गई सूची",
+    "deleted_list_message": "आपकी सूची हटा दी गई है।",
+    "unable_to_delete_list": "सूची को हटाने में असमर्थ",
+    "unable_to_delete_list_message": "आपकी सूची हटाई नहीं जा सकी।"
+  },
+  "search": {
+    "add_my_location": "मेरा स्थान जोड़ें",
+    "back": "पीछे",
+    "hero_title": "संसाधनों की खोज करें",
+    "query_placeholder": "भोजन, आवास आदि...",
+    "location_placeholder": "शहर, राज्य या ज़िप कोड",
+    "radius_placeholder": "RADIUS",
+    "miles": "मील",
+    "miles_short": "एम आई",
+    "any": "कोई",
+    "taxonomies": "taxonomies",
+    "suggestions": "सुझाव",
+    "use_my_location": "मेरे स्थान का उपयोग करें",
+    "confidential_address": "यह स्थान गोपनीय हो सकता है या आम जनता के लिए खुला नहीं हो सकता है। कृपया इस सेवा के लिए दिए गए संपर्क के किसी अन्य तरीके का चयन करें।",
+    "address_unavailable": "पता उपलब्ध नहीं है",
+    "geocoding_error": "जियोकोडिंग त्रुटि",
+    "geocoding_unsupported": "आपके ब्राउज़र में जियोलोकेशन सुविधा उपलब्ध नहीं है।",
+    "geocoding_unable_to_retrieve": "आपकी लोकेशन का पता नहीं चल पा रहा है। कृपया अपने ब्राउज़र की लोकेशन सेटिंग जांचें और दोबारा कोशिश करें।",
+    "categories": "विषय",
+    "show_all": "सभी दिखाएँ ({{count}})",
+    "show_less": "कम दिखाएँ"
+  },
+  "call_to_action": {
+    "call": "पुकारना",
+    "view_website": "वेबसाइट",
+    "get_directions": "दिशा-निर्देश",
+    "view_details": "और देखें",
+    "add_to_list": "पसंदीदा",
+    "delete_list": "सूची हटाएं",
+    "remove_from_list": "सूची से हटाएँ",
+    "share": "शेयर करना",
+    "cancel": "रद्द करना",
+    "create": "बनाएं",
+    "update": "अद्यतन",
+    "delete": "मिटाना",
+    "search": "खोज",
+    "remove": "निकालना",
+    "login": "लॉग इन करें",
+    "show_more": "और दिखाएँ",
+    "show_less": "कम दिखाएँ",
+    "print": "छाप"
+  },
+  "list": {
+    "private": "निजी",
+    "public": "जनता"
+  },
+  "message": {
+    "list_deleted": "सूची हटा दी गई",
+    "list_deleted_success": "आपकी सूची हटा दी गई है।",
+    "error": "गलती",
+    "list_not_deleted_error": "आपकी सूची हटाई नहीं जा सकी।"
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "अपनी सूचियों में खोजें",
+      "list_name": "सूची",
+      "list_privacy": "गोपनीयता",
+      "add_to_list": "सूची में शामिल",
+      "not_found": "कोई सूची नहीं मिली",
+      "create_new_list": "एक नया बनाएं?"
+    },
+    "remove_from_list": {
+      "are_you_sure": "क्या आप वाकई इस पसंदीदा आइटम को अपनी सूची से हटाना चाहते हैं?"
+    },
+    "create_list": {
+      "create_a_list": "एक सूची बनाएं",
+      "list_name": "नाम",
+      "list_description": "विवरण",
+      "make_public": "सार्वजनिक करें"
+    },
+    "update_list": {
+      "update_list": "सूची अपडेट करें",
+      "list_name": "नाम",
+      "list_description": "विवरण",
+      "make_public": "सार्वजनिक करें"
+    },
+    "delete_list": {
+      "delete_list": "सूची हटाएं"
+    },
+    "share": {
+      "share_via": "इसे साझा करें",
+      "copy_link": "लिंक की प्रतिलिपि करें",
+      "copy": "प्रतिलिपि",
+      "facebook": "फेसबुक",
+      "twitter": "ट्विटर",
+      "linkedin": "Linkedin",
+      "sms": "एसएमएस",
+      "email": "ईमेल",
+      "print": "छाप",
+      "copied": "कॉपी हो गया!",
+      "check_out_this_list": "मैंने जो सूची बनाई है, उसे देखें!",
+      "check_out_this_resource": "मैंने यह संसाधन ढूंढा है, इसे देखें!",
+      "share_sms": "एसएमएस के माध्यम से साझा करने के लिए फ़ोन नंबर दर्ज करें",
+      "enter_phone_number": "फ़ोन नंबर दर्ज करें...",
+      "invalid_phone_number": "अमान्य फ़ोन नंबर",
+      "sms_sending_title": "एसएमएस भेजा जा रहा है...",
+      "sms_sending_body": "आपका संदेश भेजा जा रहा है।",
+      "sms_send_success_title": "एसएमएस भेज दिया गया!",
+      "sms_send_success_body": "आपका संदेश भेज दिया गया है।",
+      "sms_send_failed_title": "एसएमएस भेजने में विफल",
+      "sms_send_failed_body": "आपका संदेश भेजने में विफल रहा।"
+    },
+    "prompt_auth": "इस विशेष सुविधा का प्रयोग करने के लिए लॉग इन करें।"
+  },
+  "update_location": {
+    "prompt_start_location": "आपका शुरुआती स्थान क्या है?"
+  },
+  "data_providers": {
+    "provided_by": "द्वारा प्रदान किया गया डेटा"
+  },
+  "footer": {
+    "copyright": "© कॉपीराइट {{text}}"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "meta_title": "Ansichtsliste",
+  "back_to_favorites": "Zurück zu den Favoriten",
+  "favorites": "Favoriten",
+  "no_favorites": {
+    "title": "Hier ist noch nichts zu sehen :(",
+    "subtitle": "Fügen Sie auf der Suchseite einige Favoriten hinzu, um sie hier anzuzeigen."
+  }
+}

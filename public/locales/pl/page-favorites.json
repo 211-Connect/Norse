@@ -1,0 +1,11 @@
+{
+  "categories_title": "Co tu jest",
+  "meta_title": "Przeglądanie list ulubionych",
+  "meta_description": "Przeglądanie list ulubionych",
+  "lists": "listy",
+  "view_list": "Wyświetl listę",
+  "edit_list": "Edytuj listę",
+  "delete_list": "Usuń listę",
+  "select_a_list": "Wybierz listę z boku, aby wyświetlić ulubione.",
+  "no_lists": "Nie masz jeszcze żadnych list."
+}

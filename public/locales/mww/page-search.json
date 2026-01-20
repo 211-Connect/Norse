@@ -1,0 +1,15 @@
+{
+  "learn_more": "Kawm Ntxiv",
+  "filter_results": "Lim cov txiaj ntsig",
+  "results": "cov txiaj ntsig",
+  "no_query": "Tsis muaj lus nug",
+  "results_for": "cov txiaj ntsig tau pom rau cov lus nug",
+  "of": "ntawm",
+  "no_results": {
+    "title": "Tsis pom muaj cov txiaj ntsig sib xws nrog koj cov lus nug",
+    "subtitle": "Peb tau muab qee cov txiaj ntsig zoo sib xws hauv qab no",
+    "alt_subtitle": "Sim ib qho lus nug lossis lim sib txawv",
+    "need_help": "Xav tau kev pab? Peb muaj cov neeg sawv ntawm no."
+  },
+  "pinned": "Tau pinned"
+}

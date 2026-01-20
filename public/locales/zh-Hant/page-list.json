@@ -1,0 +1,9 @@
+{
+  "meta_title": "查看列表",
+  "back_to_favorites": "返回收藏夾",
+  "favorites": "收藏夾",
+  "no_favorites": {
+    "title": "這裡還沒有任何東西 :(",
+    "subtitle": "在搜尋頁面上新增一些收藏，即可在此處查看。"
+  }
+}

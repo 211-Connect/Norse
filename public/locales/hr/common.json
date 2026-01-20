@@ -1,0 +1,140 @@
+{
+  "header": {
+    "home": "Dom",
+    "favorites": "Favoriti",
+    "log_out": "Odjava",
+    "language_select_label": "Odaberite jezik za promjenu jezika web-mjesta",
+    "my_stuff": "Moje stvari",
+    "search": "Pretraživanje",
+    "report": "Pošalji povratne informacije"
+  },
+  "favorites": {
+    "added_to_list": "Dodano na popis",
+    "added_to_list_message": "Ovaj resurs je dodan na vaš popis.",
+    "already_exists": "Već postoji",
+    "already_exists_message": "Ovaj resurs već postoji na vašem popisu.",
+    "removed_from_list": "Uklonjeno s popisa",
+    "removed_from_list_message": "Ovaj resurs je uklonjen s vašeg popisa.",
+    "updated_list": "Ažurirani popis",
+    "updated_list_message": "Vaš popis je ažuriran.",
+    "unable_to_update_list": "Nije moguće ažurirati popis",
+    "unable_to_update_list_message": "Vaš popis nije mogao biti ažuriran.",
+    "deleted_list": "Izbrisani popis",
+    "deleted_list_message": "Vaš popis je izbrisan.",
+    "unable_to_delete_list": "Nije moguće izbrisati popis",
+    "unable_to_delete_list_message": "Vaš popis nije mogao biti izbrisan."
+  },
+  "search": {
+    "add_my_location": "Dodaj moju lokaciju",
+    "back": "Nazad",
+    "hero_title": "Pretraživanje resursa",
+    "query_placeholder": "Hrana, smještaj itd...",
+    "location_placeholder": "Grad, država ili poštanski broj",
+    "radius_placeholder": "Radius",
+    "miles": "Milje",
+    "miles_short": "mi",
+    "any": "Bilo koji",
+    "taxonomies": "Taksonomije",
+    "suggestions": "Prijedlozi",
+    "use_my_location": "Koristi moju lokaciju",
+    "confidential_address": "Ova lokacija može biti povjerljiva ili nije otvorena za javnost. Molimo odaberite drugi navedeni način kontakta za ovu uslugu.",
+    "address_unavailable": "Adresa nije dostupna",
+    "geocoding_error": "Pogreška geokodiranja",
+    "geocoding_unsupported": "Vaš preglednik ne podržava geolokaciju",
+    "geocoding_unable_to_retrieve": "Nije moguće dohvatiti vašu lokaciju. Provjerite postavke lokacije u pregledniku i pokušajte ponovno.",
+    "categories": "Teme",
+    "show_all": "Prikaži sve ({{count}})",
+    "show_less": "Prikaži manje"
+  },
+  "call_to_action": {
+    "call": "Poziv",
+    "view_website": "Web stranica",
+    "get_directions": "Upute",
+    "view_details": "Prikaži više",
+    "add_to_list": "Omiljeno",
+    "delete_list": "Izbriši popis",
+    "remove_from_list": "Ukloni s popisa",
+    "share": "Udio",
+    "cancel": "Otkazati",
+    "create": "Stvoriti",
+    "update": "Ažurirati",
+    "delete": "Izbrisati",
+    "search": "Pretraživanje",
+    "remove": "Ukloniti",
+    "login": "Prijava",
+    "show_more": "Prikaži više",
+    "show_less": "Prikaži manje",
+    "print": "Ispis"
+  },
+  "list": {
+    "private": "Privatno",
+    "public": "Javnost"
+  },
+  "message": {
+    "list_deleted": "Popis izbrisan",
+    "list_deleted_success": "Vaš popis je izbrisan.",
+    "error": "Pogreška",
+    "list_not_deleted_error": "Vaš popis nije mogao biti izbrisan."
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "Pretražite svoje popise",
+      "list_name": "Popis",
+      "list_privacy": "Privatnost",
+      "add_to_list": "Dodaj na popis",
+      "not_found": "Nisu pronađeni popisi",
+      "create_new_list": "Stvoriti novi?"
+    },
+    "remove_from_list": {
+      "are_you_sure": "Jeste li sigurni da želite ukloniti ovog favorita s popisa?"
+    },
+    "create_list": {
+      "create_a_list": "Izradi popis",
+      "list_name": "Ime",
+      "list_description": "Opis",
+      "make_public": "Objavi"
+    },
+    "update_list": {
+      "update_list": "Ažuriraj popis",
+      "list_name": "Ime",
+      "list_description": "Opis",
+      "make_public": "Objavi"
+    },
+    "delete_list": {
+      "delete_list": "Izbriši popis"
+    },
+    "share": {
+      "share_via": "Podijeli ovo putem",
+      "copy_link": "Kopiraj poveznicu",
+      "copy": "Kopirati",
+      "facebook": "Facebook",
+      "twitter": "Cvrkut",
+      "linkedin": "LinkedIn",
+      "sms": "SMS-a",
+      "email": "E-pošta",
+      "print": "Ispis",
+      "copied": "Kopirano!",
+      "check_out_this_list": "Pogledajte ovaj popis koji sam napravio/la!",
+      "check_out_this_resource": "Pogledajte ovaj resurs koji sam pronašao!",
+      "share_sms": "Unesite telefonski broj za dijeljenje putem SMS-a",
+      "enter_phone_number": "Unesite broj telefona...",
+      "invalid_phone_number": "Nevažeći telefonski broj",
+      "sms_sending_title": "Slanje SMS-a...",
+      "sms_sending_body": "Vaša se poruka šalje.",
+      "sms_send_success_title": "SMS poslan!",
+      "sms_send_success_body": "Vaša poruka je poslana.",
+      "sms_send_failed_title": "Slanje SMS-a nije uspjelo",
+      "sms_send_failed_body": "Slanje vaše poruke nije uspjelo."
+    },
+    "prompt_auth": "Molimo prijavite se kako biste koristili ovu značajku."
+  },
+  "update_location": {
+    "prompt_start_location": "Koja je vaša početna lokacija?"
+  },
+  "data_providers": {
+    "provided_by": "Podaci koje je pružio"
+  },
+  "footer": {
+    "copyright": "© Autorska prava {{text}}"
+  }
+}

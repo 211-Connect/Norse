@@ -1,0 +1,9 @@
+{
+  "meta_title": "Katseluluettelo",
+  "back_to_favorites": "Takaisin suosikkeihin",
+  "favorites": "Suosikit",
+  "no_favorites": {
+    "title": "Ei täällä vielä mitään :(",
+    "subtitle": "Lisää suosikkeja hakusivulle nähdäksesi ne täällä"
+  }
+}

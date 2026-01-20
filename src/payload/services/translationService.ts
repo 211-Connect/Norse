@@ -5,8 +5,11 @@ import TextTranslationClient, {
 import { TranslationServiceClient } from '@google-cloud/translate';
 import { translationCacheService } from '@/cacheService';
 
+// Google does not support some language codes - especially dialects.
+// Therefore, we map them to the closest supported language.
 const LANGUAGE_ALIAS = {
   mww: 'hmn',
+  prs: 'fa',
 };
 
 export type TranslationEngine = 'azure' | 'google';

@@ -1,0 +1,9 @@
+{
+  "meta_title": "Lista de visualização",
+  "back_to_favorites": "Voltar aos favoritos",
+  "favorites": "Favoritos",
+  "no_favorites": {
+    "title": "Nada por aqui ainda :(",
+    "subtitle": "Adicione alguns favoritos na página de pesquisa para vê-los aqui."
+  }
+}

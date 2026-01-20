@@ -1,0 +1,140 @@
+{
+  "header": {
+    "home": "ບ້ານ",
+    "favorites": "ລາຍການທີ່ມັກ",
+    "log_out": "ອອກຈາກລະບົບ",
+    "language_select_label": "ເລືອກພາສາເພື່ອປ່ຽນພາສາເວັບໄຊ",
+    "my_stuff": "ສິ່ງຂອງຂອງຂ້ອຍ",
+    "search": "ຄົ້ນຫາ",
+    "report": "ສົ່ງຄຳຕິຊົມ"
+  },
+  "favorites": {
+    "added_to_list": "ເພີ່ມໃສ່ລາຍຊື່ແລ້ວ",
+    "added_to_list_message": "ຊັບພະຍາກອນນີ້ໄດ້ຖືກເພີ່ມເຂົ້າໃນລາຍຊື່ຂອງທ່ານແລ້ວ.",
+    "already_exists": "ມີຢູ່ແລ້ວ",
+    "already_exists_message": "ຊັບພະຍາກອນນີ້ມີຢູ່ໃນລາຍການຂອງທ່ານແລ້ວ.",
+    "removed_from_list": "ລຶບອອກຈາກລາຍຊື່ແລ້ວ",
+    "removed_from_list_message": "ຊັບພະຍາກອນນີ້ໄດ້ຖືກລຶບອອກຈາກລາຍຊື່ຂອງທ່ານແລ້ວ.",
+    "updated_list": "ລາຍຊື່ທີ່ອັບເດດແລ້ວ",
+    "updated_list_message": "ລາຍຊື່ຂອງທ່ານໄດ້ຖືກອັບເດດແລ້ວ.",
+    "unable_to_update_list": "ບໍ່ສາມາດອັບເດດລາຍຊື່ໄດ້",
+    "unable_to_update_list_message": "ບໍ່ສາມາດອັບເດດລາຍຊື່ຂອງທ່ານໄດ້.",
+    "deleted_list": "ລາຍຊື່ທີ່ຖືກລຶບແລ້ວ",
+    "deleted_list_message": "ລາຍຊື່ຂອງທ່ານຖືກລຶບອອກແລ້ວ.",
+    "unable_to_delete_list": "ບໍ່ສາມາດລຶບລາຍຊື່ໄດ້",
+    "unable_to_delete_list_message": "ບໍ່ສາມາດລຶບລາຍຊື່ຂອງທ່ານໄດ້."
+  },
+  "search": {
+    "add_my_location": "ເພີ່ມສະຖານທີ່ຂອງຂ້ອຍ",
+    "back": "ກັບຄືນ",
+    "hero_title": "ຄົ້ນຫາຊັບພະຍາກອນ",
+    "query_placeholder": "ອາຫານ, ທີ່ຢູ່ອາໄສ, ແລະອື່ນໆ...",
+    "location_placeholder": "ເມືອງ, ລັດ ຫຼື ລະຫັດໄປສະນີ",
+    "radius_placeholder": "ລັດສະໝີ",
+    "miles": "ໄມລ໌",
+    "miles_short": "ໄມ",
+    "any": "ໃດກໍໄດ້",
+    "taxonomies": "ການຈັດປະເພດ",
+    "suggestions": "ຄຳແນະນຳ",
+    "use_my_location": "ໃຊ້ສະຖານທີ່ຂອງຂ້ອຍ",
+    "confidential_address": "ສະຖານທີ່ນີ້ອາດຈະເປັນຄວາມລັບ ຫຼື ບໍ່ເປີດໃຫ້ສາທາລະນະຊົນເຂົ້າຊົມ. ກະລຸນາເລືອກວິທີການຕິດຕໍ່ອື່ນທີ່ລະບຸໄວ້ສຳລັບການບໍລິການນີ້.",
+    "address_unavailable": "ທີ່ຢູ່ບໍ່ສາມາດໃຊ້ໄດ້",
+    "geocoding_error": "ຂໍ້ຜິດພາດຂອງລະຫັດພູມສາດ",
+    "geocoding_unsupported": "ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານບໍ່ຮອງຮັບການລະບຸຕຳແໜ່ງພູມສາດ",
+    "geocoding_unable_to_retrieve": "ບໍ່ສາມາດດຶງຂໍ້ມູນສະຖານທີ່ຂອງທ່ານໄດ້. ກະລຸນາກວດສອບການຕັ້ງຄ່າສະຖານທີ່ຂອງໂປຣແກຣມທ່ອງເວັບຂອງທ່ານ ແລະ ລອງໃໝ່ອີກຄັ້ງ.",
+    "categories": "ຫົວຂໍ້ຕ່າງໆ",
+    "show_all": "ສະແດງທັງໝົດ ({{count}})",
+    "show_less": "ສະແດງໜ້ອຍລົງ"
+  },
+  "call_to_action": {
+    "call": "ໂທ",
+    "view_website": "ເວັບໄຊທ໌",
+    "get_directions": "ທິດທາງ",
+    "view_details": "ເບິ່ງເພີ່ມເຕີມ",
+    "add_to_list": "ມັກທີ່ສຸດ",
+    "delete_list": "ລຶບລາຍຊື່",
+    "remove_from_list": "ລຶບອອກຈາກລາຍຊື່",
+    "share": "ແບ່ງປັນ",
+    "cancel": "ຍົກເລີກ",
+    "create": "ສ້າງ",
+    "update": "ອັບເດດ",
+    "delete": "ລຶບ",
+    "search": "ຄົ້ນຫາ",
+    "remove": "ລຶບອອກ",
+    "login": "ເຂົ້າສູ່ລະບົບ",
+    "show_more": "ສະແດງເພີ່ມເຕີມ",
+    "show_less": "ສະແດງໜ້ອຍລົງ",
+    "print": "ພິມ"
+  },
+  "list": {
+    "private": "ສ່ວນຕົວ",
+    "public": "ສາທາລະນະ"
+  },
+  "message": {
+    "list_deleted": "ລຶບລາຍຊື່ແລ້ວ",
+    "list_deleted_success": "ລາຍຊື່ຂອງທ່ານຖືກລຶບອອກແລ້ວ.",
+    "error": "ຜິດພາດ",
+    "list_not_deleted_error": "ບໍ່ສາມາດລຶບລາຍຊື່ຂອງທ່ານໄດ້."
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "ຄົ້ນຫາລາຍຊື່ຂອງທ່ານ",
+      "list_name": "ລາຍຊື່",
+      "list_privacy": "ຄວາມເປັນສ່ວນຕົວ",
+      "add_to_list": "ເພີ່ມໃສ່ລາຍຊື່",
+      "not_found": "ບໍ່ພົບລາຍຊື່",
+      "create_new_list": "ສ້າງອັນໃໝ່ບໍ?"
+    },
+    "remove_from_list": {
+      "are_you_sure": "ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບລາຍການທີ່ມັກນີ້ອອກຈາກລາຍຊື່ຂອງທ່ານ?"
+    },
+    "create_list": {
+      "create_a_list": "ສ້າງລາຍຊື່",
+      "list_name": "ຊື່",
+      "list_description": "ລາຍລະອຽດ",
+      "make_public": "ເປີດເຜີຍຕໍ່ສາທາລະນະ"
+    },
+    "update_list": {
+      "update_list": "ອັບເດດລາຍຊື່",
+      "list_name": "ຊື່",
+      "list_description": "ລາຍລະອຽດ",
+      "make_public": "ເປີດເຜີຍຕໍ່ສາທາລະນະ"
+    },
+    "delete_list": {
+      "delete_list": "ລຶບລາຍຊື່"
+    },
+    "share": {
+      "share_via": "ແບ່ງປັນສິ່ງນີ້ຜ່ານ",
+      "copy_link": "ສຳເນົາລິ້ງ",
+      "copy": "ສຳເນົາ",
+      "facebook": "ເຟສບຸກ",
+      "twitter": "ທະວິດເຕີ",
+      "linkedin": "LinkedIn",
+      "sms": "ຂໍ້ຄວາມ",
+      "email": "ອີເມວ",
+      "print": "ພິມ",
+      "copied": "ສຳເນົາແລ້ວ!",
+      "check_out_this_list": "ກວດເບິ່ງລາຍຊື່ທີ່ຂ້ອຍເຮັດນີ້!",
+      "check_out_this_resource": "ກວດສອບຊັບພະຍາກອນນີ້ທີ່ຂ້ອຍພົບ!",
+      "share_sms": "ໃສ່ເບີໂທລະສັບເພື່ອແບ່ງປັນຜ່ານ SMS",
+      "enter_phone_number": "ໃສ່ເບີໂທລະສັບ...",
+      "invalid_phone_number": "ເບີໂທລະສັບບໍ່ຖືກຕ້ອງ",
+      "sms_sending_title": "ກຳລັງສົ່ງ SMS...",
+      "sms_sending_body": "ຂໍ້ຄວາມຂອງທ່ານກຳລັງຖືກສົ່ງໄປ.",
+      "sms_send_success_title": "ສົ່ງ SMS ແລ້ວ!",
+      "sms_send_success_body": "ຂໍ້ຄວາມຂອງທ່ານຖືກສົ່ງໄປແລ້ວ.",
+      "sms_send_failed_title": "ສົ່ງ SMS ບໍ່ສຳເລັດ",
+      "sms_send_failed_body": "ສົ່ງຂໍ້ຄວາມຂອງທ່ານບໍ່ສຳເລັດ."
+    },
+    "prompt_auth": "ກະລຸນາເຂົ້າສູ່ລະບົບເພື່ອໃຊ້ຄຸນສົມບັດນີ້."
+  },
+  "update_location": {
+    "prompt_start_location": "ສະຖານທີ່ເລີ່ມຕົ້ນຂອງເຈົ້າແມ່ນຫຍັງ?"
+  },
+  "data_providers": {
+    "provided_by": "ຂໍ້ມູນສະໜອງໃຫ້ໂດຍ"
+  },
+  "footer": {
+    "copyright": "© ລິຂະສິດ {{text}}"
+  }
+}

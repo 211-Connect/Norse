@@ -1,0 +1,40 @@
+{
+  "meta_title": "",
+  "meta_description": "",
+  "take_a_tour": "Ko adii fof ɗoo? Ƴettu njillu!",
+  "new": "Keesum!",
+  "tour": {
+    "step_1": {
+      "paragraph_1": "Ko njiylawu woni ɓalndu njiylawu. Ina jaɓa kelme kuutorteeɗe, konnguɗi, ekn (ɗum woni 'pantries' food')",
+      "paragraph_2": "No mbinndirtaa nii, kaɓirgol njiylawu ngol maa rokku miijooji tuugiiɗi e cate ɗe kuutorto-ɗen caggal. Ɗee miijooji maa ndokku njeñtudi ɓurndi laaɓtude, kono aɗa foti huutoraade ɗi.",
+      "paragraph_3": "So a suɓiima waasde huutoraade miijooji dokkaaɗi ɗii, min kuutortoo ko binndol ngol ndokku-ɗaa ngol ngam heɓde njeñtudi ɓurndi laaɓtude ndi min mbaawi."
+    },
+    "step_2": {
+      "paragraph_1": "A anndaa ko njiɗɗaa? Ɗum noon ina moƴƴi!",
+      "paragraph_2": "Min ndokka on cate e cate tokoose keewɗe ceertuɗe ngam on njiyloo. Ɓoɗɗu tan e kala jokkorde gonnde e feccere cate ngam nawde ɗum to njeñtudi njiylawu."
+    },
+    "step_3": {
+      "paragraph_1": "Heen sahaaji geɗe ina mbonna, ɗe en cikkataa mbonnata.",
+      "paragraph_2": "So tawii a meeɗii yiyde huunde bonnde, walla hay so aɗa yiɗi rokkude heen miijooji e nder humpito ngo fof ndeen aɗa waawi ɓuɗɗude e butoŋ miijooji ɗii kala sahaa."
+    },
+    "step_4": {
+      "paragraph_1": "Ɓeydu ɗoo adrees maa ngam yiytude sarwisaaji gonɗi e nokku maa. Ɗuum ina wallita min hollirde on tan ko cuɓe garooje tigi rigi e nokku mon."
+    }
+  },
+  "categories_title": "Tiitooɗe",
+  "new_layout": {
+    "topics_section": {
+      "cta": "Yeewtu toɓɓe",
+      "title": "Mi anndaa ɗo puɗɗorto-ɗaa"
+    },
+    "callouts": {
+      "list": {
+        "call": "Ewnandu",
+        "chat": "Ngewtugo",
+        "email": "Imeel",
+        "sms": "SMS"
+      },
+      "title": "Ina woodi kadi laabi goɗɗi ngam naamnaade ballal:"
+    }
+  }
+}

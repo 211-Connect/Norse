@@ -1,0 +1,140 @@
+{
+  "header": {
+    "home": "ଘର",
+    "favorites": "ପସନ୍ଦିତ",
+    "log_out": "ଲଗ୍ ଆଉଟ୍",
+    "language_select_label": "ସାଇଟର ଭାଷା ପରିବର୍ତ୍ତନ କରିବାକୁ ଏକ ଭାଷା ଚୟନ କରନ୍ତୁ।",
+    "my_stuff": "ମୋ ଜିନିଷ",
+    "search": "ଖୋଜନ୍ତୁ",
+    "report": "ମତାମତ ଦାଖଲ କରନ୍ତୁ"
+  },
+  "favorites": {
+    "added_to_list": "ତାଲିକାରେ ଯୋଗ କରାଯାଇଛି",
+    "added_to_list_message": "ଏହି ସମ୍ବଳକୁ ଆପଣଙ୍କ ତାଲିକାରେ ଯୋଡା ଯାଇଛି।",
+    "already_exists": "ପୂର୍ବରୁ ବିଦ୍ୟମାନ ଅଛି",
+    "already_exists_message": "ଏହି ସାଧନ ଆପଣଙ୍କ ତାଲିକାରେ ପୂର୍ବରୁ ଅଛି।",
+    "removed_from_list": "ତାଲିକାରୁ କାଢ଼ିଦିଆଗଲା",
+    "removed_from_list_message": "ଏହି ଉତ୍ସକୁ ଆପଣଙ୍କ ତାଲିକାରୁ କାଢ଼ି ଦିଆଯାଇଛି।",
+    "updated_list": "ଅପଡେଟ୍ କରାଯାଇଥିବା ତାଲିକା",
+    "updated_list_message": "ଆପଣଙ୍କର ତାଲିକାକୁ ଅପଡେଟ୍ କରାଯାଇଛି।",
+    "unable_to_update_list": "ତାଲିକା ଅପଡେଟ୍ କରିବାରେ ଅସମର୍ଥ",
+    "unable_to_update_list_message": "ଆପଣଙ୍କର ତାଲିକାକୁ ଅପଡେଟ୍ କରାଯାଇପାରିଲା ନାହିଁ।",
+    "deleted_list": "ଡିଲିଟ୍ କରାଯାଇଥିବା ତାଲିକା",
+    "deleted_list_message": "ଆପଣଙ୍କର ତାଲିକା ଡିଲିଟ୍ କରାଯାଇଛି।",
+    "unable_to_delete_list": "ତାଲିକା ଡିଲିଟ୍ କରିବାରେ ଅସମର୍ଥ",
+    "unable_to_delete_list_message": "ଆପଣଙ୍କର ତାଲିକା ଡିଲିଟ୍ କରାଯାଇପାରିଲା ନାହିଁ।"
+  },
+  "search": {
+    "add_my_location": "ମୋ ଲୋକେସନ୍ ଯୋଡନ୍ତୁ",
+    "back": "ପଛକୁ",
+    "hero_title": "ଉତ୍ସଗୁଡ଼ିକୁ ସନ୍ଧାନ କରନ୍ତୁ",
+    "query_placeholder": "ଖାଦ୍ୟ, ବାସସ୍ଥାନ, ଇତ୍ୟାଦି...",
+    "location_placeholder": "ସହର, ରାଜ୍ୟ କିମ୍ବା ଜିପ୍ କୋଡ୍",
+    "radius_placeholder": "ବ୍ୟାସାର୍ଦ୍ଧ",
+    "miles": "ମାଇଲ୍",
+    "miles_short": "ମାଇଲ୍",
+    "any": "ଯେକୌଣସି",
+    "taxonomies": "ବର୍ଗୀକରଣ",
+    "suggestions": "ପରାମର୍ଶ",
+    "use_my_location": "ମୋ ଲୋକେସନ୍ ବ୍ୟବହାର କରନ୍ତୁ",
+    "confidential_address": "ଏହି ସ୍ଥାନଟି ଗୋପନୀୟ ହୋଇପାରେ କିମ୍ବା ସାଧାରଣ ଲୋକଙ୍କ ପାଇଁ ଖୋଲା ନଥାଇପାରେ। ଦୟାକରି ଏହି ସେବା ପାଇଁ ଅନ୍ୟ ଏକ ଯୋଗାଯୋଗ ପଦ୍ଧତି ବାଛନ୍ତୁ।",
+    "address_unavailable": "ଠିକଣା ଉପଲବ୍ଧ ନାହିଁ",
+    "geocoding_error": "ଜିଓକୋଡିଂ ତ୍ରୁଟି",
+    "geocoding_unsupported": "ଆପଣଙ୍କ ବ୍ରାଉଜର୍ ଦ୍ୱାରା ଭୌଗଳିକ ଅବସ୍ଥାନ ସମର୍ଥିତ ନୁହେଁ।",
+    "geocoding_unable_to_retrieve": "ଆପଣଙ୍କ ଲୋକେସନ୍ ପୁନରୁଦ୍ଧାର କରିହେଲା ନାହିଁ। ଦୟାକରି ଆପଣଙ୍କ ବ୍ରାଉଜରର ଲୋକେସନ୍ ସେଟିଂସ ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।",
+    "categories": "ବିଷୟଗୁଡ଼ିକ",
+    "show_all": "ସବୁ ଦେଖାନ୍ତୁ ({{count}})",
+    "show_less": "କମ୍ ଦେଖାନ୍ତୁ"
+  },
+  "call_to_action": {
+    "call": "କଲ୍ କରନ୍ତୁ",
+    "view_website": "ୱେବସାଇଟ୍",
+    "get_directions": "ଦିଗନିର୍ଦ୍ଦେଶ",
+    "view_details": "ଅଧିକ ଦେଖନ୍ତୁ",
+    "add_to_list": "ପ୍ରିୟ",
+    "delete_list": "ତାଲିକା ଡିଲିଟ୍ କରନ୍ତୁ",
+    "remove_from_list": "ତାଲିକାରୁ କାଢ଼ିଦିଅନ୍ତୁ",
+    "share": "ସେୟାର୍‍ କରନ୍ତୁ",
+    "cancel": "ବାତିଲ କରନ୍ତୁ",
+    "create": "ତିଆରି କରନ୍ତୁ",
+    "update": "ଅପଡେଟ୍‌ କରନ୍ତୁ",
+    "delete": "ଡିଲିଟ୍ କରନ୍ତୁ",
+    "search": "ଖୋଜନ୍ତୁ",
+    "remove": "କାଢ଼ିଦିଅନ୍ତୁ",
+    "login": "ଲଗ୍ଇନ୍",
+    "show_more": "ଅଧିକ ଦେଖାନ୍ତୁ",
+    "show_less": "କମ୍ ଦେଖାନ୍ତୁ",
+    "print": "ପ୍ରିଣ୍ଟ କରନ୍ତୁ"
+  },
+  "list": {
+    "private": "ଗୋପନୀୟ",
+    "public": "ସାର୍ବଜନିକ"
+  },
+  "message": {
+    "list_deleted": "ତାଲିକା ଡିଲିଟ୍ ହୋଇଯାଇଛି",
+    "list_deleted_success": "ଆପଣଙ୍କର ତାଲିକା ଡିଲିଟ୍ କରାଯାଇଛି।",
+    "error": "ତ୍ରୁଟି",
+    "list_not_deleted_error": "ଆପଣଙ୍କର ତାଲିକା ଡିଲିଟ୍ କରାଯାଇପାରିଲା ନାହିଁ।"
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "ଆପଣଙ୍କର ତାଲିକାଗୁଡ଼ିକ ସନ୍ଧାନ କରନ୍ତୁ",
+      "list_name": "ତାଲିକା",
+      "list_privacy": "ଗୋପନୀୟତା",
+      "add_to_list": "ତାଲିକାରେ ଯୋଡନ୍ତୁ",
+      "not_found": "କୌଣସି ତାଲିକା ମିଳିଲା ନାହିଁ",
+      "create_new_list": "ଏକ ନୂଆ ତିଆରି କରିବେ?"
+    },
+    "remove_from_list": {
+      "are_you_sure": "ଆପଣ କ’ଣ ନିଶ୍ଚିତ ଭାବରେ ଆପଣଙ୍କ ତାଲିକାରୁ ଏହି ପ୍ରିୟଟିକୁ ହଟାଇବାକୁ ଚାହୁଁଛନ୍ତି?"
+    },
+    "create_list": {
+      "create_a_list": "ଏକ ତାଲିକା ତିଆରି କରନ୍ତୁ",
+      "list_name": "ନାମ",
+      "list_description": "ବର୍ଣ୍ଣନା",
+      "make_public": "ସାର୍ବଜନିକ କରନ୍ତୁ"
+    },
+    "update_list": {
+      "update_list": "ତାଲିକା ଅପଡେଟ୍ କରନ୍ତୁ",
+      "list_name": "ନାମ",
+      "list_description": "ବର୍ଣ୍ଣନା",
+      "make_public": "ସାର୍ବଜନିକ କରନ୍ତୁ"
+    },
+    "delete_list": {
+      "delete_list": "ତାଲିକା ଡିଲିଟ୍ କରନ୍ତୁ"
+    },
+    "share": {
+      "share_via": "ଏହାକୁ ମାଧ୍ୟମରେ ସେୟାର କରନ୍ତୁ",
+      "copy_link": "ଲିଙ୍କ୍ କପି କରନ୍ତୁ",
+      "copy": "କପି କରନ୍ତୁ",
+      "facebook": "ଫେସବୁକ୍",
+      "twitter": "ଟ୍ଵିଟର୍",
+      "linkedin": "ଲିଙ୍କଡିନ୍",
+      "sms": "ଏସଏମଏସ",
+      "email": "ଇମେଲ୍",
+      "print": "ପ୍ରିଣ୍ଟ କରନ୍ତୁ",
+      "copied": "କପି କରାଯାଇଛି!",
+      "check_out_this_list": "ମୁଁ ତିଆରି କରିଥିବା ଏହି ତାଲିକାଟି ଦେଖନ୍ତୁ!",
+      "check_out_this_resource": "ମୁଁ ପାଇଥିବା ଏହି ଉତ୍ସକୁ ଦେଖନ୍ତୁ!",
+      "share_sms": "SMS ମାଧ୍ୟମରେ ସେୟାର୍‌ କରିବାକୁ ଏକ ଫୋନ୍‌ ନମ୍ବର୍‌ ଲେଖନ୍ତୁ",
+      "enter_phone_number": "ଫୋନ୍ ନମ୍ବର ପ୍ରବେଶ କରନ୍ତୁ...",
+      "invalid_phone_number": "ଅବୈଧ ଫୋନ୍ ନମ୍ବର",
+      "sms_sending_title": "SMS ପଠାଯାଉଛି...",
+      "sms_sending_body": "ଆପଣଙ୍କର ମେସେଜ୍ ପଠାଯାଉଛି।",
+      "sms_send_success_title": "SMS ପଠାଗଲା!",
+      "sms_send_success_body": "ଆପଣଙ୍କର ବାର୍ତ୍ତା ପଠାଯାଇଛି।",
+      "sms_send_failed_title": "SMS ପଠାଇବା ବିଫଳ ହେଲା",
+      "sms_send_failed_body": "ଆପଣଙ୍କ ମେସେଜ୍ ପଠାଇହେଲା ନାହିଁ।"
+    },
+    "prompt_auth": "ଏହି ବୈଶିଷ୍ଟ୍ୟ ବ୍ୟବହାର କରିବାକୁ ଦୟାକରି ଲଗଇନ୍ କରନ୍ତୁ।"
+  },
+  "update_location": {
+    "prompt_start_location": "ଆପଣଙ୍କର ଆରମ୍ଭ ସ୍ଥାନ କେଉଁଠାରୁ?"
+  },
+  "data_providers": {
+    "provided_by": "ଦ୍ଵାରା ପ୍ରଦାନ କରାଯାଇଥିବା ଡାଟା"
+  },
+  "footer": {
+    "copyright": "© କପିରାଇଟ୍ {{ଟେକ୍ସଟ୍}}"
+  }
+}

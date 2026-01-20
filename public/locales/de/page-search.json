@@ -1,0 +1,15 @@
+{
+  "learn_more": "Mehr erfahren",
+  "filter_results": "Ergebnisse filtern",
+  "results": "Ergebnisse",
+  "no_query": "Es wurde keine Anfrage gestellt.",
+  "results_for": "Ergebnisse für die Anfrage gefunden",
+  "of": "von",
+  "no_results": {
+    "title": "Für Ihre Anfrage wurden keine Ergebnisse gefunden.",
+    "subtitle": "Wir haben unten einige ähnliche Ergebnisse aufgeführt.",
+    "alt_subtitle": "Versuchen Sie eine andere Abfrage oder einen anderen Filter.",
+    "need_help": "Brauchen Sie Hilfe? Wir haben Helfer bereitstehen."
+  },
+  "pinned": "Angepinnt"
+}

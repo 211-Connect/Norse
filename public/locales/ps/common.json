@@ -1,0 +1,140 @@
+{
+  "header": {
+    "home": "کور",
+    "favorites": "خوښې",
+    "log_out": "وتل",
+    "language_select_label": "د سایټ ژبه بدلولو لپاره ژبه غوره کړئ",
+    "my_stuff": "زما سامانونه",
+    "search": "د لټون",
+    "report": "نظرونه وسپارئ"
+  },
+  "favorites": {
+    "added_to_list": "په لیست کې اضافه شوی",
+    "added_to_list_message": "دا سرچینه ستاسو په لیست کې اضافه شوې ده.",
+    "already_exists": "دمخه شتون لري",
+    "already_exists_message": "دا سرچینه لا دمخه ستاسو په لیست کې شتون لري.",
+    "removed_from_list": "له لیست څخه لرې شوی",
+    "removed_from_list_message": "دا سرچینه ستاسو له لیست څخه لرې شوې ده.",
+    "updated_list": "تازه شوی لیست",
+    "updated_list_message": "ستاسو لیست تازه شوی دی.",
+    "unable_to_update_list": "د لیست تازه کولو توان نلري",
+    "unable_to_update_list_message": "ستاسو لیست تازه نشو.",
+    "deleted_list": "حذف شوی لیست",
+    "deleted_list_message": "ستاسو لیست حذف شوی دی.",
+    "unable_to_delete_list": "د لیست حذف کولو توان نلري",
+    "unable_to_delete_list_message": "ستاسو لیست حذف نه شو."
+  },
+  "search": {
+    "add_my_location": "زما ځای اضافه کړئ",
+    "back": "شاته",
+    "hero_title": "د سرچینو لټون",
+    "query_placeholder": "خواړه، استوګنځی، او نور...",
+    "location_placeholder": "ښار، ایالت، یا زپ کوډ",
+    "radius_placeholder": "وړانګې",
+    "miles": "میلونه",
+    "miles_short": "مای",
+    "any": "هر یو",
+    "taxonomies": "د ټیکسونومیز",
+    "suggestions": "وړاندیزونه",
+    "use_my_location": "زما ځای وکاروئ",
+    "confidential_address": "دا ځای ممکن محرم وي یا د خلکو لپاره خلاص نه وي. مهرباني وکړئ د دې خدمت لپاره د اړیکو بله چمتو شوې طریقه غوره کړئ.",
+    "address_unavailable": "پته نشته",
+    "geocoding_error": "د جیوکوډ کولو تېروتنه",
+    "geocoding_unsupported": "ستاسو براوزر د جغرافیایي موقعیت ملاتړ نه کوي",
+    "geocoding_unable_to_retrieve": "ستاسو ځای بیرته ترلاسه کولو توان نلري. مهرباني وکړئ د خپل براوزر د موقعیت تنظیمات وګورئ او بیا هڅه وکړئ.",
+    "categories": "موضوعات",
+    "show_all": "ټول وښایاست ({{count}})",
+    "show_less": "لږ وښایاست"
+  },
+  "call_to_action": {
+    "call": "زنګ ووهئ",
+    "view_website": "وېب پاڼه",
+    "get_directions": "لارښوونې",
+    "view_details": "نور وګورئ",
+    "add_to_list": "د خوښې",
+    "delete_list": "لیست ړنګ کړئ",
+    "remove_from_list": "له لیست څخه لرې کړئ",
+    "share": "شریک کړئ",
+    "cancel": "لغوه کول",
+    "create": "جوړول",
+    "update": "تازه کول",
+    "delete": "ړنګول",
+    "search": "د لټون",
+    "remove": "لرې کړئ",
+    "login": "ننوتل",
+    "show_more": "نور ښکاره کړئ",
+    "show_less": "لږ وښایاست",
+    "print": "چاپ"
+  },
+  "list": {
+    "private": "شخصي",
+    "public": "عامه"
+  },
+  "message": {
+    "list_deleted": "لیست ړنګ شو",
+    "list_deleted_success": "ستاسو لیست حذف شوی دی.",
+    "error": "تېروتنه",
+    "list_not_deleted_error": "ستاسو لیست حذف نه شو."
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "خپل لیستونه وپلټئ",
+      "list_name": "لیست",
+      "list_privacy": "محرمیت",
+      "add_to_list": "لیست ته اضافه کړئ",
+      "not_found": "هیڅ لیست ونه موندل شو",
+      "create_new_list": "یو نوی جوړ کړئ؟"
+    },
+    "remove_from_list": {
+      "are_you_sure": "ایا تاسو ډاډه یاست چې دا غوره له خپل لیست څخه لرې کول غواړئ؟"
+    },
+    "create_list": {
+      "create_a_list": "یو لیست جوړ کړئ",
+      "list_name": "نوم",
+      "list_description": "تفصیل",
+      "make_public": "عامه کړئ"
+    },
+    "update_list": {
+      "update_list": "د تازه کولو لیست",
+      "list_name": "نوم",
+      "list_description": "تفصیل",
+      "make_public": "عامه کړئ"
+    },
+    "delete_list": {
+      "delete_list": "لیست ړنګ کړئ"
+    },
+    "share": {
+      "share_via": "دا له لارې شریک کړئ",
+      "copy_link": "لینک کاپي کړئ",
+      "copy": "کاپي",
+      "facebook": "فیسبوک",
+      "twitter": "ټویټر",
+      "linkedin": "لینکډین",
+      "sms": "پیغامونه",
+      "email": "استول",
+      "print": "چاپ",
+      "copied": "کاپي شوی!",
+      "check_out_this_list": "دا لیست وګورئ چې ما جوړ کړی دی!",
+      "check_out_this_resource": "دا سرچینه وګورئ چې ما وموندله!",
+      "share_sms": "د SMS له لارې د شریکولو لپاره د تلیفون شمیره دننه کړئ",
+      "enter_phone_number": "د تلیفون شمیره دننه کړئ...",
+      "invalid_phone_number": "د تلیفون شمیره ناسمه ده",
+      "sms_sending_title": "د ایس ایم ایس لیږل...",
+      "sms_sending_body": "ستاسو پیغام لیږل کیږي.",
+      "sms_send_success_title": "ایس ایم ایس واستول شو!",
+      "sms_send_success_body": "ستاسو پیغام لیږل شوی دی.",
+      "sms_send_failed_title": "د ایس ایم ایس لیږل ناکام شول",
+      "sms_send_failed_body": "ستاسو پیغام واستول شو."
+    },
+    "prompt_auth": "د دې ځانګړتیا کارولو لپاره مهرباني وکړئ ننوتل وکړئ."
+  },
+  "update_location": {
+    "prompt_start_location": "ستاسو د پیل ځای څه دی؟"
+  },
+  "data_providers": {
+    "provided_by": "معلومات د لخوا چمتو شوي"
+  },
+  "footer": {
+    "copyright": "© د چاپ حق {{متن}}"
+  }
+}
