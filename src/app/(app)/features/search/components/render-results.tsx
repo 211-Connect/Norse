@@ -12,8 +12,10 @@ export function RenderResults() {
 
   return (
     <>
-      {results?.map((result) => <Result key={result._id} data={result} />)}
       {noResults && <NoResultsCard showAltSubtitle={results?.length === 0} />}
+      {results?.map((result) => (
+        <Result key={result._id} data={result} />
+      ))}
     </>
   );
 }

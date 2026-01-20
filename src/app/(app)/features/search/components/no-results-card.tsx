@@ -22,6 +22,8 @@ export function NoResultsCard({ showAltSubtitle }) {
   const appConfig = useAppConfig();
   const searchParams = useSearchParams();
 
+  const imageUrl = `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/images/undraw_searching.svg`;
+
   return (
     <Card>
       <CardHeader className="text-center">
@@ -32,7 +34,7 @@ export function NoResultsCard({ showAltSubtitle }) {
       </CardHeader>
       <CardContent className="flex items-center justify-center p-2">
         <Image
-          src="/images/undraw_searching.svg"
+          src={imageUrl}
           width={0}
           height={150}
           alt="Illustration of a person searching"
