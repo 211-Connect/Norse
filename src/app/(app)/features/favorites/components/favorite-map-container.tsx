@@ -17,7 +17,9 @@ export function FavoriteMapContainer() {
     return (
       favoriteList?.favorites?.map((favorite) => ({
         id: favorite._id,
-        coordinates: favorite.location.coordinates,
+        coordinates: favorite.location?.coordinates as
+          | [number, number]
+          | undefined,
       })) ?? []
     );
   }, [favoriteList.favorites]);

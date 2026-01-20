@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-type Coords = [number, number]; // [longitude, latitude]
+export type Coords = [number, number]; // [longitude, latitude]
 
 /**
  *

@@ -14,6 +14,7 @@ import { type Favorite } from '@/app/(app)/shared/store/favorites';
 import { LinkIcon, MapPin, Phone } from 'lucide-react';
 import {
   cn,
+  Coords,
   distanceBetweenCoordsInKm,
   getGoogleMapsDestinationUrl,
 } from '@/app/(app)/shared/lib/utils';
@@ -67,8 +68,8 @@ export function Favorite({
   const distance =
     data?.location?.coordinates && (coords?.length ?? 0) === 2
       ? distanceBetweenCoordsInKm(
-          coords as [number, number],
-          data.location.coordinates,
+          coords as Coords,
+          data.location.coordinates as Coords,
         )
       : null;
 
@@ -115,7 +116,7 @@ export function Favorite({
                   text={displayAddress}
                   href={getGoogleMapsDestinationUrl(
                     coords,
-                    data?.location?.coordinates,
+                    data?.location?.coordinates || [],
                   )}
                 >
                   {displayAddress}
