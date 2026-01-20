@@ -9,6 +9,7 @@ import { getCookies } from 'cookies-next/server';
 import { cookies } from 'next/headers';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { isValidUUID } from '@/app/(app)/shared/utils/uuid';
+import { Resource } from '@/types/resource';
 
 const i18nNamespaces = ['page-resource', 'common'];
 
@@ -17,7 +18,7 @@ export const generateMetadata = async ({ params }): Promise<Metadata> => {
 
   const appConfig = await getAppConfigWithoutHost(locale);
 
-  let resource: any = null;
+  let resource: Resource | null = null;
 
   if (id && isValidUUID(id)) {
     try {
@@ -31,7 +32,7 @@ export const generateMetadata = async ({ params }): Promise<Metadata> => {
 
   return {
     openGraph: {
-      description: resource.description,
+      description: resource.description ?? undefined,
       images: appConfig.brand.openGraphUrl
         ? [
             {
@@ -40,10 +41,10 @@ export const generateMetadata = async ({ params }): Promise<Metadata> => {
           ]
         : undefined,
       type: 'website',
-      title: resource.name,
+      title: resource.name ?? undefined,
     },
-    description: resource.description,
-    title: resource.name,
+    description: resource.description ?? undefined,
+    title: resource.name ?? undefined,
   };
 };
 
@@ -67,7 +68,7 @@ export default async function ResourcePage({ params }) {
     appConfig.i18n.defaultLocale,
   );
 
-  let resource: any = null;
+  let resource: Resource | null = null;
 
   try {
     resource = await getResource(id, locale, appConfig.tenantId);
@@ -80,7 +81,9 @@ export default async function ResourcePage({ params }) {
         );
       }
     }
+  }
 
+  if (!resource) {
     notFound();
   }
 

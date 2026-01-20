@@ -1,4 +1,5 @@
 import { atom } from 'jotai';
+import { ApiResource, Address, Translation } from '@/types/resource';
 
 export type FavoriteList = {
   _id: string;
@@ -7,50 +8,10 @@ export type FavoriteList = {
   privacy: 'PRIVATE' | 'PUBLIC';
 };
 
-export type Favorite = {
-  _id: string;
-  addresses: {
-    _id: string;
-    city: string;
-    address_1: string;
-    country: string;
-    postalCode: string;
-    rank: number;
-    stateProvince: string;
-    type: string;
-  }[];
-  attribution: string;
-  email: string;
-  website: string;
-  displayPhoneNumber: string;
-  location: {
-    type: string;
-    coordinates: [number, number];
-  };
-  phoneNumbers: {
-    _id: string;
-    number: string;
-    rank: number;
-    type: string;
-  }[];
-  translations: {
-    applicationProcess: string;
-    displayName: string;
-    eligibilities: string;
-    fees: string;
-    hours: string;
-    locale: string;
-    languages: string[];
-    organizationDescription: string;
-    requiredDocuments: string[];
-    serviceName: string;
-    serviceDescription: string;
-    taxonomies: {
-      code: string;
-      name: string;
-    }[];
-  }[];
-};
+export interface Favorite extends ApiResource {
+  addresses: Address[];
+  translations: Translation[];
+}
 
 export type FavoriteListWithFavorites = {
   _id: string;

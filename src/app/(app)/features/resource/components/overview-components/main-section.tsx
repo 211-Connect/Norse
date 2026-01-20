@@ -22,8 +22,9 @@ import {
 } from '@/app/(app)/shared/components/ui/tooltip';
 
 import { LabeledElement } from './labeled-element';
+import { Resource } from '@/types/resource';
 
-export function MainSection({ resource }) {
+export function MainSection({ resource }: { resource: Resource }) {
   const { i18n, t } = useTranslation('page-resource');
 
   const coords = useAtomValue(userCoordinatesAtom);
@@ -72,9 +73,9 @@ export function MainSection({ resource }) {
 
     return distanceBetweenCoordsInKm(
       coords as [number, number],
-      location.coordinates,
+      location.coordinates as [number, number],
     );
-  }, [coords, location.coordinates]);
+  }, [coords, location?.coordinates]);
 
   const alert = useMemo(
     () => translations?.[i18n.language]?.alert,

@@ -7,8 +7,15 @@ import { ShareButton } from '@/app/(app)/shared/components/share-button';
 
 import { BackToResultsButton } from './back-to-results-button';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { Resource } from '@/types/resource';
 
-export function Navigation({ componentToPrintRef, resource }) {
+export function Navigation({
+  componentToPrintRef,
+  resource,
+}: {
+  componentToPrintRef: unknown;
+  resource: Resource;
+}) {
   const appConfig = useAppConfig();
 
   return (
@@ -18,8 +25,8 @@ export function Navigation({ componentToPrintRef, resource }) {
         <PrintButton componentToPrintRef={componentToPrintRef} />
         <ShareButton
           componentToPrintRef={componentToPrintRef}
-          title={resource.name}
-          body={resource.description}
+          title={resource.name ?? undefined}
+          body={resource.description ?? undefined}
         />
         <AddToFavoritesButton serviceAtLocationId={resource.id} />
         {appConfig.featureFlags.showFeedbackButtonOnResourcePages ? (

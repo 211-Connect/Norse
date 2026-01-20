@@ -9,8 +9,9 @@ import { Overview } from './overview';
 import { OrganizationInformation } from './organization-information';
 import { DescriptionSection } from './description-section';
 import { MapSection } from './map-section';
+import { Resource } from '@/types/resource';
 
-export const ResourcePageContent = ({ resource }: { resource: any }) => {
+export const ResourcePageContent = ({ resource }: { resource: Resource }) => {
   const componentToPrintRef = useRef<HTMLDivElement>(null);
 
   return (

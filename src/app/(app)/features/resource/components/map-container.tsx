@@ -1,6 +1,7 @@
 import { MapRenderer } from '@/app/(app)/shared/components/map/map-renderer';
+import { Resource } from '@/types/resource';
 
-export function MapContainer({ resource }) {
+export function MapContainer({ resource }: { resource: Resource }) {
   const coordinates = resource?.location?.coordinates;
 
   // Check if coordinates are [0, 0]
@@ -19,8 +20,7 @@ export function MapContainer({ resource }) {
 
   const serviceArea = resource?.serviceArea; // Expecting a GeoJSON-like { type, coordinates }
 
-  // If neither a valid point nor a serviceArea polygon exists, render nothing
-  if (!hasValidPoint && !serviceArea) {
+  if (!(hasValidPoint && serviceArea)) {
     return null;
   }
 
@@ -32,10 +32,7 @@ export function MapContainer({ resource }) {
             ? [
                 {
                   id: resource.id,
-                  coordinates: [
-                    Number(coordinates[0]),
-                    Number(coordinates[1]),
-                  ] as [number, number],
+                  coordinates: coordinates as [number, number],
                 },
               ]
             : []

@@ -8,6 +8,7 @@ import {
   USER_PREF_POSTCODE,
   USER_PREF_REGION,
 } from './constants';
+import { ResultType } from '../store/results';
 
 export interface ReferralEventProps {
   event: string;
@@ -98,7 +99,7 @@ export const createPageViewEvent = (e: any, sessionId: string) => {
 export const createReferralEvent = (
   referralType: 'call_referral' | 'website_referral' | 'directions_referral',
   resourceId: string,
-  resource: any,
+  resource: Partial<ResultType>,
   query: any,
   sessionId: string,
 ) => {

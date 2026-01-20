@@ -1,4 +1,5 @@
 import { atom } from 'jotai';
+import { Location, Taxonomy } from '@/types/resource';
 
 export type ResultType = {
   _id: string;
@@ -6,16 +7,13 @@ export type ResultType = {
   address: string;
   summary: string;
   description: string;
-  location: {
-    type: string;
-    coordinates: [number, number];
-  };
+  location: Location;
   name: string;
   phone: string;
   priority: number;
   serviceName: string;
   website: string;
-  taxonomies: { code: string; name: string }[];
+  taxonomies: Taxonomy[];
 };
 
 export const resultsAtom = atom<ResultType[]>([]);

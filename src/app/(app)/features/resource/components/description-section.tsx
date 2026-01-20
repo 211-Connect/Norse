@@ -9,8 +9,9 @@ import { parseHtml } from '@/app/(app)/shared/lib/parse-html';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Resource, Taxonomy } from '@/types/resource';
 
-export function DescriptionSection({ resource }) {
+export function DescriptionSection({ resource }: { resource: Resource }) {
   const appConfig = useAppConfig();
   const { t } = useTranslation('page-resource');
 
@@ -24,8 +25,8 @@ export function DescriptionSection({ resource }) {
   const { categories, description, lastAssuredOn } = useMemo(() => {
     const { categories = [], description, lastAssuredOn } = resource ?? {};
 
-    const filteredCategories = categories.filter(
-      (el: any) => el?.name && el?.code,
+    const filteredCategories = (categories ?? []).filter(
+      (el: Taxonomy) => el?.name && el?.code,
     );
     return {
       categories: filteredCategories,
@@ -41,7 +42,9 @@ export function DescriptionSection({ resource }) {
     return null;
   }
 
-  const shouldRenderDescriptionAsBlock = containsBlockElements(description);
+  const shouldRenderDescriptionAsBlock = containsBlockElements(
+    description ?? '',
+  );
 
   return (
     <>

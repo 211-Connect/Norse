@@ -8,6 +8,7 @@ import { ResourcePageContent } from '@/app/(app)/features/resource/components/co
 import { getCookies } from 'cookies-next/server';
 import { cookies } from 'next/headers';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
+import { Resource } from '@/types/resource';
 
 const i18nNamespaces = ['page-resource', 'page-404', 'common'];
 
@@ -63,7 +64,7 @@ export default async function OriginalDetailsPage({ params }) {
   );
 
   let notFoundFlag = false;
-  let resource: any = null;
+  let resource: Resource | null = null;
 
   if (original_id) {
     try {
@@ -90,7 +91,7 @@ export default async function OriginalDetailsPage({ params }) {
     }
   }
 
-  if (notFound) {
+  if (notFoundFlag || !resource) {
     notFound();
   }
 

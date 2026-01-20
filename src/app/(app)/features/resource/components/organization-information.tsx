@@ -11,8 +11,9 @@ import { containsBlockElements } from '@/app/(app)/shared/lib/html-helpers';
 import { parseHtml } from '@/app/(app)/shared/lib/parse-html';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Resource } from '@/types/resource';
 
-export function OrganizationInformation({ resource }) {
+export function OrganizationInformation({ resource }: { resource: Resource }) {
   const { t } = useTranslation('page-resource');
 
   const { organizationName, organizationDescription } = useMemo(() => {

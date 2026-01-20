@@ -7,8 +7,9 @@ import { parseHtml } from '@/app/(app)/shared/lib/parse-html';
 
 import { LabeledElement } from './labeled-element';
 import { Separator } from './separator';
+import { Resource } from '@/types/resource';
 
-export function DetailsSection({ resource }) {
+export function DetailsSection({ resource }: { resource: Resource }) {
   const { t } = useTranslation('page-resource');
 
   const {
@@ -31,7 +32,7 @@ export function DetailsSection({ resource }) {
       applicationProcess,
       fees,
       interpretationServices,
-      languages,
+      languages: languages ?? [],
       serviceAreaName,
       serviceAreaDescription,
     };
@@ -41,7 +42,7 @@ export function DetailsSection({ resource }) {
     applicationProcess ||
     fees ||
     interpretationServices ||
-    languages.length > 0 ||
+    (languages && languages.length > 0) ||
     serviceAreaName ||
     serviceAreaDescription;
   if (!shouldRender) {
@@ -52,7 +53,7 @@ export function DetailsSection({ resource }) {
     <>
       <Separator />
       <div className="flex flex-col gap-8">
-        {languages.length > 0 && (
+        {languages && languages.length > 0 && (
           <LabeledElement Icon={Languages} title={t('languages')}>
             <p className="text-sm">{languages.join(', ')}</p>
           </LabeledElement>

@@ -14,8 +14,9 @@ import { ContactSection } from './overview-components/contact-section';
 import { DetailsSection } from './overview-components/details-section';
 import { MainSection } from './overview-components/main-section';
 import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
+import { Resource } from '@/types/resource';
 
-export function Overview({ resource }) {
+export function Overview({ resource }: { resource: Resource }) {
   const showServiceName = useFlag('showSearchAndResourceServiceName');
 
   return (
