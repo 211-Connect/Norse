@@ -6,7 +6,11 @@ import { resultsAtom } from '@/app/(app)/shared/store/results';
 import { useAtomValue } from 'jotai';
 import { useEffect, useMemo, useState } from 'react';
 import { userCoordinatesAtom } from '@/app/(app)/shared/store/search';
-import { cn, distanceBetweenCoordsInKm } from '@/app/(app)/shared/lib/utils';
+import {
+  cn,
+  Coords,
+  distanceBetweenCoordsInKm,
+} from '@/app/(app)/shared/lib/utils';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 
 import { MapPopup } from './map-popup';
@@ -28,15 +32,15 @@ export function MapContainer() {
   // Memoize to prevent unecessary map re-renders
   const mapMarkers = useMemo(() => {
     return results.map((result) => {
-      const coordinates = result?.location?.coordinates;
+      const coordinates = result?.location?.coordinates as Coords | undefined;
       const distance = (() => {
         if (!coordinates || (coords?.length ?? 0) !== 2) {
           return undefined;
         }
 
         return distanceBetweenCoordsInKm(
-          coords as [number, number],
-          coordinates,
+          coords as Coords,
+          coordinates as Coords,
         );
       })();
 

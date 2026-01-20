@@ -12,6 +12,7 @@ import {
 import { Link } from '@/app/(app)/shared/components/link';
 import {
   cn,
+  Coords,
   distanceBetweenCoordsInKm,
   getGoogleMapsDestinationUrl,
 } from '@/app/(app)/shared/lib/utils';
@@ -56,8 +57,8 @@ export function Result({ data }: ResultProps) {
   const distance =
     data?.location?.coordinates && (coords?.length ?? 0) === 2
       ? distanceBetweenCoordsInKm(
-          coords as [number, number],
-          data.location.coordinates,
+          coords as Coords,
+          data.location.coordinates as Coords,
         )
       : null;
 

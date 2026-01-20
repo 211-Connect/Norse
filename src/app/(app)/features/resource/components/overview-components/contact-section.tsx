@@ -6,8 +6,9 @@ import { LinkIcon, Send } from 'lucide-react';
 import { Link } from '@/app/(app)/shared/components/link';
 import { PhoneNumbersSection } from './phone-number-section';
 import { Separator } from './separator';
+import { Resource } from '@/types/resource';
 
-export function ContactSection({ resource }) {
+export function ContactSection({ resource }: { resource: Resource }) {
   const { email, phoneNumbers, website } = useMemo(() => {
     const { phoneNumbers, website, email } = resource ?? {};
     return { phoneNumbers, website, email };
@@ -23,7 +24,7 @@ export function ContactSection({ resource }) {
     <>
       <Separator />
       <div className="flex flex-col gap-8">
-        <PhoneNumbersSection phoneNumbers={phoneNumbers} />
+        <PhoneNumbersSection phoneNumbers={phoneNumbers ?? []} />
         {website && (
           <div className="flex items-center gap-[6px]">
             <LinkIcon className="size-4" />

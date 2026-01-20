@@ -2,8 +2,13 @@ import { Link } from '@/app/(app)/shared/components/link';
 import { Phone, Printer } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { PhoneNumber } from '@/types/resource';
 
-export function PhoneNumbersSection({ phoneNumbers = [] }) {
+export function PhoneNumbersSection({
+  phoneNumbers = [],
+}: {
+  phoneNumbers: PhoneNumber[];
+}) {
   const { t } = useTranslation('page-resource');
 
   const mappedPhoneNumbers = useMemo(() => {
