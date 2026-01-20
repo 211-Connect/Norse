@@ -209,6 +209,7 @@ export interface Config {
   jobs: {
     tasks: {
       translateTopics: TaskTranslateTopics;
+      translate: TaskTranslate;
       warmCache: TaskWarmCache;
       inline: {
         input: unknown;
@@ -671,7 +672,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'translateTopics' | 'warmCache';
+        taskSlug: 'inline' | 'translateTopics' | 'translate' | 'warmCache';
         taskID: string;
         input?:
           | {
@@ -704,7 +705,7 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'translateTopics' | 'warmCache') | null;
+  taskSlug?: ('inline' | 'translateTopics' | 'translate' | 'warmCache') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
@@ -1246,6 +1247,29 @@ export interface TaskTranslateTopics {
     }[];
     engine: 'azure' | 'google';
     force?: boolean | null;
+  };
+  output: {
+    success: boolean;
+    translated: number;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskTranslate".
+ */
+export interface TaskTranslate {
+  input: {
+    tenantId: string;
+    locales: {
+      locale?: string | null;
+    }[];
+    engine: 'azure' | 'google';
+    force?: boolean | null;
+    changedItemIds?:
+      | {
+          id?: string | null;
+        }[]
+      | null;
   };
   output: {
     success: boolean;

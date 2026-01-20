@@ -12,7 +12,6 @@ export const suggestions: Tab = {
       name: 'suggestions',
       type: 'array',
       required: true,
-      localized: true,
       admin: {
         components: {
           RowLabel:
@@ -28,6 +27,7 @@ export const suggestions: Tab = {
               type: 'text',
               required: true,
               label: 'Text',
+              localized: true,
             },
             {
               name: 'taxonomies',

@@ -5,12 +5,12 @@ import {
   isTenant,
 } from '../collections/Users/access/roles';
 
-export const translateTopicsEndpoint: Endpoint = {
-  path: '/translate-topics',
+export const translateEndpoint: Endpoint = {
+  path: '/translate',
   method: 'post',
   handler: async (req) => {
     if (!req.user) {
-      console.error('[translateTopicsEndpoint] Unauthorized: No user');
+      console.error('[translateEndpoint] Unauthorized: No user');
       return Response.json(
         { error: true, message: 'Unauthorized' },
         { status: 401 },
@@ -20,13 +20,10 @@ export const translateTopicsEndpoint: Endpoint = {
     const hasPermission =
       isSuperAdmin(req.user) || isSupport(req.user) || isTenant(req.user);
     if (!hasPermission) {
-      console.error(
-        '[translateTopicsEndpoint] Forbidden: User lacks required role',
-        {
-          userId: req.user.id,
-          roles: req.user.roles,
-        },
-      );
+      console.error('[translateEndpoint] Forbidden: User lacks required role', {
+        userId: req.user.id,
+        roles: req.user.roles,
+      });
       return Response.json(
         { error: true, message: 'Forbidden: Insufficient permissions' },
         { status: 403 },
@@ -46,7 +43,7 @@ export const translateTopicsEndpoint: Endpoint = {
 
       if (!userTenantIds.includes(tenantId)) {
         console.error(
-          '[translateTopicsEndpoint] Forbidden: Tenant does not own this resource directory',
+          '[translateEndpoint] Forbidden: Tenant does not own this resource directory',
           {
             userId: req.user.id,
             requestedTenantId: tenantId,
@@ -64,7 +61,7 @@ export const translateTopicsEndpoint: Endpoint = {
       }
     }
 
-    console.log('[translateTopicsEndpoint] Request received:', {
+    console.log('[translateEndpoint] Request received:', {
       tenantId,
       locales,
       engine,
@@ -74,14 +71,11 @@ export const translateTopicsEndpoint: Endpoint = {
     });
 
     if (!tenantId || !locales || !engine) {
-      console.error(
-        '[translateTopicsEndpoint] Missing required fields. Received:',
-        {
-          tenantId,
-          locales,
-          engine,
-        },
-      );
+      console.error('[translateEndpoint] Missing required fields. Received:', {
+        tenantId,
+        locales,
+        engine,
+      });
       return Response.json(
         { error: true, message: 'Missing required fields' },
         { status: 400 },
@@ -89,9 +83,9 @@ export const translateTopicsEndpoint: Endpoint = {
     }
 
     try {
-      console.log('[translateTopicsEndpoint] Queueing job...');
+      console.log('[translateEndpoint] Queueing job...');
       const job = await req.payload.jobs.queue({
-        task: 'translateTopics',
+        task: 'translate',
         input: {
           tenantId,
           locales,
@@ -101,7 +95,7 @@ export const translateTopicsEndpoint: Endpoint = {
         queue: 'translation',
       });
 
-      console.log('[translateTopicsEndpoint] Job queued successfully:', {
+      console.log('[translateEndpoint] Job queued successfully:', {
         jobId: job.id,
         queue: 'translation',
       });

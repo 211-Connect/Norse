@@ -2,7 +2,7 @@
 
 import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
 
-export async function getEnglishTopics(
+export async function getEnglishData(
   resourceDirectoryId: string,
 ): Promise<Record<string, string>> {
   const payload = await getPayloadSingleton();
@@ -18,10 +18,9 @@ export async function getEnglishTopics(
     return {};
   }
 
-  const topics = resourceDirectory.topics?.list || [];
   const englishMap: Record<string, string> = {};
 
-  // Map all topic and subtopic IDs to their English names
+  const topics = resourceDirectory.topics?.list || [];
   topics.forEach((topic) => {
     if (topic.id && topic.name) {
       englishMap[topic.id] = topic.name;
@@ -32,6 +31,13 @@ export async function getEnglishTopics(
         englishMap[subtopic.id] = subtopic.name;
       }
     });
+  });
+
+  const suggestions = resourceDirectory.suggestions || [];
+  suggestions.forEach((suggestion) => {
+    if (suggestion.id && suggestion.value) {
+      englishMap[suggestion.id] = suggestion.value;
+    }
   });
 
   return englishMap;

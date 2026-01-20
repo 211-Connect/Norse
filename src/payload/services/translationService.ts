@@ -5,6 +5,10 @@ import TextTranslationClient, {
 import { TranslationServiceClient } from '@google-cloud/translate';
 import { translationCacheService } from '@/cacheService';
 
+const LANGUAGE_ALIAS = {
+  mww: 'hmn',
+};
+
 export type TranslationEngine = 'azure' | 'google';
 
 export interface TranslationResult {
@@ -13,11 +17,13 @@ export interface TranslationResult {
 }
 
 export interface BatchTranslationInput {
+  id?: string;
   text: string;
   targetLocale: string;
 }
 
 export interface BatchTranslationResult {
+  id?: string;
   text: string;
   translatedText: string;
   targetLocale: string;
@@ -100,7 +106,7 @@ async function translateWithGoogle(
     contents: texts,
     mimeType: 'text/plain',
     sourceLanguageCode: 'en',
-    targetLanguageCode: targetLocale,
+    targetLanguageCode: LANGUAGE_ALIAS[targetLocale] || targetLocale,
   };
 
   const [response] = await client.translateText(request);
@@ -111,37 +117,39 @@ export async function batchTranslate(
   engine: TranslationEngine,
   inputs: BatchTranslationInput[],
 ): Promise<BatchTranslationResult[]> {
-  const results: BatchTranslationResult[] = [];
+  const results: BatchTranslationResult[] = new Array(inputs.length);
 
-  const byLocale = inputs.reduce<Record<string, BatchTranslationInput[]>>(
-    (acc, input) => {
-      if (!acc[input.targetLocale]) {
-        acc[input.targetLocale] = [];
-      }
-      acc[input.targetLocale].push(input);
-      return acc;
-    },
-    {},
-  );
+  const inputsWithIndex = inputs.map((input, index) => ({ input, index }));
+
+  const byLocale = inputsWithIndex.reduce<
+    Record<string, typeof inputsWithIndex>
+  >((acc, item) => {
+    if (!acc[item.input.targetLocale]) {
+      acc[item.input.targetLocale] = [];
+    }
+    acc[item.input.targetLocale].push(item);
+    return acc;
+  }, {});
 
   for (const [locale, localeInputs] of Object.entries(byLocale)) {
     const textsToTranslate: string[] = [];
-    const inputsToTranslate: BatchTranslationInput[] = [];
+    const itemsToTranslate: typeof inputsWithIndex = [];
 
-    for (const input of localeInputs) {
-      const cacheKey = createCacheKey(engine, locale, input.text);
+    for (const item of localeInputs) {
+      const cacheKey = createCacheKey(engine, locale, item.input.text);
       const cached = await translationCacheService.get(cacheKey);
 
       if (cached) {
-        results.push({
-          text: input.text,
+        results[item.index] = {
+          id: item.input.id,
+          text: item.input.text,
           translatedText: cached,
           targetLocale: locale,
           fromCache: true,
-        });
+        };
       } else {
-        textsToTranslate.push(input.text);
-        inputsToTranslate.push(input);
+        textsToTranslate.push(item.input.text);
+        itemsToTranslate.push(item);
       }
     }
 
@@ -155,18 +163,19 @@ export async function batchTranslate(
       }
 
       for (let i = 0; i < translations.length; i++) {
-        const input = inputsToTranslate[i];
+        const item = itemsToTranslate[i];
         const translatedText = translations[i];
-        const cacheKey = createCacheKey(engine, locale, input.text);
+        const cacheKey = createCacheKey(engine, locale, item.input.text);
 
         await translationCacheService.set(cacheKey, translatedText, CACHE_TTL);
 
-        results.push({
-          text: input.text,
+        results[item.index] = {
+          id: item.input.id,
+          text: item.input.text,
           translatedText,
           targetLocale: locale,
           fromCache: false,
-        });
+        };
       }
     }
   }

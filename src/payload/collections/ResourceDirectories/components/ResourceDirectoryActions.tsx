@@ -3,17 +3,17 @@
 import React, { useState } from 'react';
 import { toast, Button, useField } from '@payloadcms/ui';
 import { getTenantTrustedDomain } from '../../Tenants/actions/getTenantTrustedDomain';
+import { TranslateButton } from './TranslateButton';
 
 const ResourceDirectoryActions: React.FC = () => {
   const [isLoadingWebpage, setIsLoadingWebpage] = useState(false);
   const tenantId = useField({ path: 'tenant' }).value;
 
-  const handleViewWebpage = async () => {
-    if (!tenantId || typeof tenantId !== 'string') {
-      toast.error('Tenant ID is required');
-      return;
-    }
+  if (!tenantId || typeof tenantId !== 'string') {
+    return null;
+  }
 
+  const handleViewWebpage = async () => {
     setIsLoadingWebpage(true);
     try {
       const domain = await getTenantTrustedDomain(tenantId);
@@ -31,13 +31,16 @@ const ResourceDirectoryActions: React.FC = () => {
   };
 
   return (
-    <Button
-      buttonStyle="primary"
-      onClick={handleViewWebpage}
-      disabled={isLoadingWebpage}
-    >
-      {isLoadingWebpage ? 'Loading...' : 'See Live Webpage'}
-    </Button>
+    <div style={{ display: 'flex', flexDirection: 'row', gap: 8 }}>
+      <Button
+        buttonStyle="primary"
+        onClick={handleViewWebpage}
+        disabled={isLoadingWebpage}
+      >
+        {isLoadingWebpage ? 'Loading...' : 'See Live Webpage'}
+      </Button>
+      <TranslateButton tenantId={tenantId} />
+    </div>
   );
 };
 

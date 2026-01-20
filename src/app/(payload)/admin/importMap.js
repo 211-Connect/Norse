@@ -7,9 +7,9 @@ import { default as default_195dd2bf68ebc55b917ae596e82c7581 } from '@/payload/c
 import { default as default_770fe60ed8029346277f652cebdaf650 } from '@/payload/components/LabelInfoTooltip'
 import { default as default_f772357a6881d7587c9d743ce8b90802 } from '@/payload/components/ColorPicker'
 import { default as default_e1dfdb6347d608fbc226068dad2ea010 } from '@/payload/collections/ResourceDirectories/components/SuggestionsRowLabel'
-import { default as default_36765cb6b68ef198416e555df5f8bece } from '@/payload/collections/ResourceDirectories/components/TopicsActions'
 import { default as default_ca7d93146a02f18039f3d89f97316881 } from '@/payload/collections/ResourceDirectories/components/TopicsLabelInfoTooltip'
 import { default as default_765ef9987a5d1fd11dffcca1049fc6a0 } from '@/payload/collections/ResourceDirectories/components/TopicsRowLabel'
+import { default as default_40477996d1dbddf266ccde95a78ddba0 } from '@/payload/collections/ResourceDirectories/components/LocalizedRowLabel'
 import { default as default_f83d96d079111af09b6323bb84c1f19e } from '@/payload/collections/ResourceDirectories/components/FacetsRowLabel'
 import { default as default_76ffa28dff37b978c6ada354e1e9e67c } from '@/payload/collections/ResourceDirectories/components/EditViewWrapper'
 import { GlobalViewRedirect as GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
@@ -29,9 +29,9 @@ export const importMap = {
   "@/payload/components/LabelInfoTooltip#default": default_770fe60ed8029346277f652cebdaf650,
   "@/payload/components/ColorPicker#default": default_f772357a6881d7587c9d743ce8b90802,
   "@/payload/collections/ResourceDirectories/components/SuggestionsRowLabel#default": default_e1dfdb6347d608fbc226068dad2ea010,
-  "@/payload/collections/ResourceDirectories/components/TopicsActions#default": default_36765cb6b68ef198416e555df5f8bece,
   "@/payload/collections/ResourceDirectories/components/TopicsLabelInfoTooltip#default": default_ca7d93146a02f18039f3d89f97316881,
   "@/payload/collections/ResourceDirectories/components/TopicsRowLabel#default": default_765ef9987a5d1fd11dffcca1049fc6a0,
+  "@/payload/collections/ResourceDirectories/components/LocalizedRowLabel#default": default_40477996d1dbddf266ccde95a78ddba0,
   "@/payload/collections/ResourceDirectories/components/FacetsRowLabel#default": default_f83d96d079111af09b6323bb84c1f19e,
   "@/payload/collections/ResourceDirectories/components/EditViewWrapper#default": default_76ffa28dff37b978c6ada354e1e9e67c,
   "@payloadcms/plugin-multi-tenant/rsc#GlobalViewRedirect": GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62,
