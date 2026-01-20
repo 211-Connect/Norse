@@ -199,17 +199,20 @@ const config = buildConfig({
         [TenantMedia.slug]: {
           // This will be replaced dynamically by setTenantIdPrefix hook
           prefix: 'tenant-id-placeholder',
-          // This avoid copying media to memory
-          // They still do that in 3.47.0
-          // https://github.com/payloadcms/payload/blob/v3.47.0/packages/storage-s3/src/staticHandler.ts#L139
-          signedDownloads: {
-            shouldUseSignedURL: ({}) => true,
+          generateFileURL: ({ filename, prefix }) => {
+            const endpoint =
+              process.env.MEDIA_DO_CDN_ENDPOINT ||
+              process.env.MEDIA_S3_ENDPOINT;
+            const bucket = process.env.MEDIA_S3_BUCKET;
+
+            // If using DigitalOcean Spaces CDN
+            if (process.env.MEDIA_DO_CDN_ENDPOINT) {
+              return `https://${bucket}.${process.env.MEDIA_DO_CDN_ENDPOINT}/${prefix}/${filename}`;
+            }
+
+            // Fallback for local development or direct S3 access
+            return `https://${bucket}.${endpoint}/${prefix}/${filename}`;
           },
-          generateFileURL:
-            process.env.NODE_ENV !== 'development'
-              ? ({ filename, prefix }) =>
-                  `https://${process.env.MEDIA_S3_BUCKET}.${process.env.MEDIA_DO_CDN_ENDPOINT}/${prefix}/${filename}`
-              : undefined,
         },
       },
       bucket: process.env.MEDIA_S3_BUCKET as string,

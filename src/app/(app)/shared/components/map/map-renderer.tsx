@@ -6,8 +6,12 @@ import { useAtomValue } from 'jotai';
 import dynamic from 'next/dynamic';
 
 const renderers = {
-  mapbox: dynamic(() => import('./mapbox/map').then((mod) => mod.Map)),
-  maplibre: dynamic(() => import('./maplibre/map').then((mod) => mod.Map)),
+  mapbox: dynamic(() => import('./mapbox/map').then((mod) => mod.Map), {
+    ssr: false,
+  }),
+  maplibre: dynamic(() => import('./maplibre/map').then((mod) => mod.Map), {
+    ssr: false,
+  }),
 };
 
 export interface MarkerDef {
