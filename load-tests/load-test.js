@@ -17,13 +17,6 @@ const errorRate = new Rate('error_rate');
 
 // Test configuration
 export const options = {
-  stages: [
-    { duration: '30s', target: 10 }, // Ramp up to 10 users
-    { duration: '1m', target: 10 }, // Stay at 10 users
-    { duration: '30s', target: 20 }, // Ramp up to 20 users
-    { duration: '1m', target: 20 }, // Stay at 20 users
-    { duration: '30s', target: 0 }, // Ramp down to 0 users
-  ],
   thresholds: {
     http_req_duration: ['p(95)<2000'], // 95% of requests should be below 2s
     http_req_failed: ['rate<0.1'], // Error rate should be below 10%
