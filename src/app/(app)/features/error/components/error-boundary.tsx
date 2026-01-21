@@ -5,7 +5,7 @@ import React, { ReactNode } from 'react';
 import Image from 'next/image';
 import axios from 'axios';
 import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
-import { LocalizedLink } from '@/app/(app)/shared/components/LocalizedLink';
+import { getImageUrl } from '@/app/(app)/shared/utils/getImageUrl';
 
 // Create a wrapper component that has access to router
 function ErrorBoundaryWithRouter({
@@ -112,7 +112,7 @@ class ErrorBoundary extends React.Component<Props, State> {
         <div className="relative flex min-h-screen flex-col">
           <Image
             fill
-            src="/images/undraw_bug_fixing.svg"
+            src={getImageUrl('undraw_bug_fixing.svg')}
             alt="Bug fixing illustration"
             style={{
               objectFit: 'contain',

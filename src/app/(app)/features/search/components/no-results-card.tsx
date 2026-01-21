@@ -12,6 +12,7 @@ import {
 } from '@/app/(app)/shared/components/ui/card';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { cn } from '@/app/(app)/shared/lib/utils';
+import { getImageUrl } from '@/app/(app)/shared/utils/getImageUrl';
 import { Phone } from 'lucide-react';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
@@ -21,8 +22,6 @@ export function NoResultsCard({ showAltSubtitle }) {
   const { t } = useTranslation('page-search');
   const appConfig = useAppConfig();
   const searchParams = useSearchParams();
-
-  const imageUrl = `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/images/undraw_searching.svg`;
 
   return (
     <Card>
@@ -34,7 +33,7 @@ export function NoResultsCard({ showAltSubtitle }) {
       </CardHeader>
       <CardContent className="flex items-center justify-center p-2">
         <Image
-          src={imageUrl}
+          src={getImageUrl('undraw_searching.svg')}
           width={0}
           height={150}
           alt="Illustration of a person searching"
