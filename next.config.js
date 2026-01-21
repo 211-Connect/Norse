@@ -41,6 +41,7 @@ const nextConfig = {
       },
     ],
   },
+  output: 'standalone',
   trailingSlash: process.env.WITH_TRAILING_SLASHES === 'true',
   poweredByHeader: false,
   skipTrailingSlashRedirect: true,
