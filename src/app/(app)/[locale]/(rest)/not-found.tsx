@@ -6,6 +6,7 @@ import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import { LocalizedLink } from '@/app/(app)/shared/components/LocalizedLink';
 import { getCookies } from 'cookies-next/server';
 import { getAppConfigWithoutHost } from '../../shared/utils/appConfig';
+import { getImageUrl } from '../../shared/utils/getImageUrl';
 
 const i18nNamespaces = ['common', 'page-404'];
 
@@ -47,7 +48,7 @@ export default async function NotFoundPage() {
       <div className="relative flex flex-1 flex-col">
         <Image
           fill
-          src="/images/undraw_404.svg"
+          src={getImageUrl('undraw_404.svg')}
           alt="404 illustration"
           style={{ objectFit: 'contain', zIndex: -1, objectPosition: 'center' }}
         />

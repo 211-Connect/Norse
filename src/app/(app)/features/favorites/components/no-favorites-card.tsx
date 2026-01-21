@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/app/(app)/shared/components/ui/card';
+import { getImageUrl } from '@/app/(app)/shared/utils/getImageUrl';
 import Image from 'next/image';
 import { useTranslation } from 'react-i18next';
 
@@ -18,7 +19,7 @@ export function NoFavoritesCard() {
     <Card>
       <CardContent className="flex items-center justify-center p-2">
         <Image
-          src="/images/undraw_no_data.svg"
+          src={getImageUrl('undraw_no_data.svg')}
           alt="Illustration of no data"
           height={150}
           width={0}

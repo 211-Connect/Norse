@@ -5,6 +5,7 @@ import { Link } from '@/app/(app)/shared/components/link';
 import Head from 'next/head';
 import Image from 'next/image';
 import { useTranslation } from 'react-i18next';
+import { getImageUrl } from '@/app/(app)/shared/utils/getImageUrl';
 
 export function InternalServerErrorContent() {
   const { t, i18n } = useTranslation('page-500');
@@ -19,7 +20,7 @@ export function InternalServerErrorContent() {
       <div className="relative flex flex-1 flex-col">
         <Image
           fill
-          src="/images/undraw_500.svg"
+          src={getImageUrl('undraw_500.svg')}
           alt="Illustration of an internal server error"
           style={{ objectFit: 'contain', zIndex: -1, objectPosition: 'center' }}
         />
