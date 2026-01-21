@@ -1,4 +1,26 @@
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 2G
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - 3000:3000
+    environment:
+      DATABASE_URI: postgresql://norse-ng:norse-ng@postgres:5432/norse-ng
+      CACHE_REDIS_URI: redis://:norse-ng@redis:6379
+
   postgres:
     image: postgres:17.5
     restart: always
@@ -37,6 +59,7 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
+
   redis:
     image: redis:7.4
     restart: always
