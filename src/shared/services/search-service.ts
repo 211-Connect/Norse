@@ -19,7 +19,7 @@ export class SearchService {
       searchStore['query']?.trim(),
     );
 
-    const geoType = searchStore['searchGeoType'] || 'radius';
+    const geoType = searchStore['searchGeoType'];
     const hasBbox = searchStore['searchBbox']?.length === 4;
 
     const urlParams = {
@@ -31,7 +31,7 @@ export class SearchService {
       location: searchStore['searchLocation']?.trim() || null,
       
       // Geo Params
-      geo_type: geoType,
+      geo_type: geoType || null,
       
       // BBox Params
       bbox: (geoType === 'bbox' && hasBbox) 

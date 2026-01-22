@@ -3,7 +3,7 @@ import { distanceBetweenCoordsInKm } from "./utils";
 
 export type MapboxFeature = {
   id: string;
-  place_type: string[];
+  place_type?: string[];
   bbox?: [number, number, number, number];
   center: [number, number];
   text: string;
@@ -33,6 +33,10 @@ export type GeoStrategy =
 // Major cities list removed in favor of BBox heuristic
 
 export function determineUrbanization(feature: MapboxFeature): UrbanizationLevel {
+  if (!feature || !feature.place_type || feature.place_type.length === 0) {
+    return 'unknown';
+  }
+
   const placeType = feature.place_type[0];
   const bbox = feature.bbox;
   const context = feature.context || [];
@@ -83,6 +87,9 @@ export function determineUrbanization(feature: MapboxFeature): UrbanizationLevel
  * Determines whether to use BBOX or RADIUS strategy based on urbanization/feature type.
  */
 export function determineGeoStrategy(feature: MapboxFeature): GeoStrategy {
+  if (!feature) {
+    return { type: 'radius', radius: 15 };
+  }
   const urbanization = determineUrbanization(feature);
 
   // Administrative Levels -> BBOX
@@ -116,7 +123,7 @@ export function calculateSmartRadius(feature: MapboxFeature): number {
     case 'district':
        // Should be handled by BBOX strategy, but as fallback/utility:
        // Use center-to-corner distance
-      if (bbox) {
+      if (bbox && feature?.center) {
         const center: [number, number] = feature.center; // [lng, lat]
         const corner: [number, number] = [bbox[2], bbox[3]]; // [maxLng, maxLat]
         
