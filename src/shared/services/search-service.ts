@@ -19,20 +19,32 @@ export class SearchService {
       searchStore['query']?.trim(),
     );
 
+    const geoType = searchStore['searchGeoType'] || 'radius';
+    const hasBbox = searchStore['searchBbox']?.length === 4;
+
     const urlParams = {
       query: searchStore['query']?.trim(),
       query_label: searchStore['queryLabel']?.trim(),
       query_type: isTaxonomyCode
         ? 'taxonomy'
         : searchStore['queryType']?.trim(),
-      location: hasLocation ? searchStore['searchLocation']?.trim() : null,
-      coords: hasLocation
+      location: searchStore['searchLocation']?.trim() || null,
+      
+      // Geo Params
+      geo_type: geoType,
+      
+      // BBox Params
+      bbox: (geoType === 'bbox' && hasBbox) 
+        ? searchStore['searchBbox']?.join(',') 
+        : null,
+
+      // Radius Params
+      coords: (geoType === 'radius' && hasLocation)
         ? searchStore['searchCoordinates']?.join(',')?.trim()
         : null,
-      distance:
-        searchStore['searchCoordinates']?.length === 2
+      distance: (geoType === 'radius' && hasLocation)
           ? searchStore['searchDistance']?.trim() || '0'
-          : '',
+          : null,
     };
 
     return omitBy(

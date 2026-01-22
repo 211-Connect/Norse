@@ -16,6 +16,11 @@ export class MapboxAdapter extends BaseGeocoderAdapter {
       place?: string;
       postcode?: string;
       region?: string;
+      // Extended fields
+      id?: string;
+      place_type?: string[];
+      bbox?: [number, number, number, number];
+      context?: { id: string; text: string }[];
     }[]
   > {
     const res = await axios.get(
@@ -25,25 +30,34 @@ export class MapboxAdapter extends BaseGeocoderAdapter {
     let output = [];
 
     res?.data?.features?.forEach((feature) => {
+      console.log('[MapboxAdapter] feature:', JSON.stringify(feature, null, 2));
       let obj = {
         type: 'coordinates',
         address:
           feature?.[`place_name_${options.locale}`] ?? feature?.['place_name'],
         coordinates: feature?.['geometry']?.['coordinates'],
+        // Capture extended fields
+        id: feature?.id,
+        place_type: feature?.place_type,
+        bbox: feature?.bbox,
+        context: feature?.context,
+        // Existing context mapping logic below
       };
 
       // Add detailed location information to the output for analytics event tracking
       feature?.context?.forEach((item) => {
+        const text = item?.[`text_${options.locale}`] ?? item?.text;
+        
         if (item?.id?.startsWith('postcode')) {
-          obj['postcode'] = item?.[`text_${options.locale}`] ?? item?.text;
+          obj['postcode'] = text;
         } else if (item?.id?.startsWith('place')) {
-          obj['place'] = item?.[`text_${options.locale}`] ?? item?.text;
+          obj['place'] = text;
         } else if (item?.id?.startsWith('district')) {
-          obj['district'] = item?.[`text_${options.locale}`] ?? item?.text;
+          obj['district'] = text;
         } else if (item?.id?.startsWith('region')) {
-          obj['region'] = item?.[`text_${options.locale}`] ?? item?.text;
+          obj['region'] = text;
         } else if (item?.id?.startsWith('country')) {
-          obj['country'] = item?.[`text_${options.locale}`] ?? item?.text;
+          obj['country'] = text;
         }
       })
       

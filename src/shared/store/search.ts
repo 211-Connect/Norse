@@ -10,7 +10,10 @@ export const searchAtom = atom({
   searchCoordinates: [],
   prevSearchLocation: '',
   searchLocationValidationError: '',
+
   searchDistance: '',
+  searchBbox: [],
+  searchGeoType: 'radius',
   userCoordinates: [],
 });
 
@@ -36,6 +39,8 @@ export const searchCoordinatesAtom = atom(
 );
 
 export const searchDistanceAtom = atom((get) => get(searchAtom).searchDistance);
+export const searchBboxAtom = atom((get) => get(searchAtom).searchBbox);
+export const searchGeoTypeAtom = atom((get) => get(searchAtom).searchGeoType);
 
 // Currently selected user coordinates
 export const userCoordinatesAtom = atom(

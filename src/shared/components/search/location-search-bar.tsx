@@ -20,11 +20,13 @@ import {
   USER_PREF_PLACE,
   USER_PREF_POSTCODE,
   USER_PREF_REGION,
+  USER_PREF_DISTANCE,
 } from '@/shared/lib/constants';
 import { Autocomplete } from '../ui/autocomplete';
 import { DistanceSelect } from './distance-select';
 import { UseMyLocationButton } from './use-my-location-button';
 import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
+import { determineGeoStrategy } from '@/shared/lib/advanced-geolocation';
 
 type LocationSearchBarProps = {
   className?: string;
@@ -76,7 +78,7 @@ export function LocationSearchBar({
 
   const setSearchLocation = useCallback(
     (value) => {
-      const coords = findCoords(value);
+      const coords: any = findCoords(value);
 
       // We only want to update the user pref cookie for location
       // IF coordinates are found for a given query.
@@ -111,6 +113,7 @@ export function LocationSearchBar({
         destroyCookie(null, USER_PREF_PLACE, { path: '/' });
         destroyCookie(null, USER_PREF_POSTCODE, { path: '/' });
         destroyCookie(null, USER_PREF_REGION, { path: '/' });
+        destroyCookie(null, USER_PREF_DISTANCE, { path: '/' });
       }
 
       setShouldSearch(false);
@@ -130,11 +133,52 @@ export function LocationSearchBar({
           isNewCoords = true;
         }
 
+        // Strategy Resolution
+        let newDist = prev['searchDistance'];
+        let newBbox = prev['searchBbox'] || [];
+        let newGeoType = prev['searchGeoType'] || 'radius';
+
+        // Check if the user has manually set a distance (and it's not the '0' default)
+        const isDefaultDistance = !prev['searchDistance'] || prev['searchDistance'] === '0';
+        console.log('[LocationSearchBar] isDefaultDistance:', isDefaultDistance, 'prevDistance:', prev['searchDistance']);
+
+        if (coords.type === 'coordinates') {
+           // If user has a specific distance set (and it's not the default), we honor that as a RADIUS search
+           if (!isDefaultDistance) {
+             newGeoType = 'radius';
+             // newDist remains as the user's manual selection
+             newBbox = []; 
+           } else {
+             // Use advanced strategy to decide based on location type
+             const feature = coords as unknown as import('@/shared/lib/advanced-geolocation').MapboxFeature;
+             console.log('[LocationSearchBar] determining strategy for feature:', feature);
+             const strategy = determineGeoStrategy(feature);
+             console.log('[LocationSearchBar] strategy determined:', strategy);
+
+             if (strategy.type === 'bbox') {
+                newGeoType = 'bbox';
+                newBbox = strategy.bbox;
+                newDist = ''; // Clear distance for bbox search
+                // Clear distance cookie as we are now in bbox mode
+                destroyCookie(null, USER_PREF_DISTANCE, { path: '/' });
+             } else {
+                newGeoType = 'radius';
+                newDist = strategy.radius.toString();
+                newBbox = [];
+                // Set distance cookie for persistence
+                setCookie(null, USER_PREF_DISTANCE, newDist, { path: '/' });
+             }
+           }
+        }
+
         return {
           ...prev,
           ...(isNewCoords ? { searchCoordinates: coordinates } : {}),
           searchLocation: value,
           searchLocationValidationError: '',
+          searchDistance: newDist,
+          searchBbox: newBbox,
+          searchGeoType: newGeoType,
         };
       });
     },
