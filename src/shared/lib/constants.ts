@@ -8,6 +8,8 @@ export const MAPBOX_API_BASE_URL = 'https://api.mapbox.com';
 export const MAPBOX_STYLE_URL = process.env.NEXT_PUBLIC_MAPBOX_STYLE_URL;
 export const MAPLIBRE_STYLE_URL = process.env.NEXT_PUBLIC_MAPLIBRE_STYLE_URL;
 
+export const DEFAULT_RESULTS_LIMIT = 25;
+
 // Session ID cookie
 export const SESSION_ID = 'session-id';
 

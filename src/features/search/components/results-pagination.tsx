@@ -1,5 +1,6 @@
 import { CustomPagination } from '@/shared/components/custom-pagination';
 import { useAppConfig } from '@/shared/hooks/use-app-config';
+import { DEFAULT_RESULTS_LIMIT } from '@/shared/lib/constants';
 import {
   resultsCurrentPageAtom,
   resultTotalAtom,
@@ -11,7 +12,7 @@ export function ResultsPagination() {
   const totalResults = useAtomValue(resultTotalAtom);
   const currentPage = useAtomValue(resultsCurrentPageAtom);
 
-  const limit = appConfig.search.resultsLimit;
+  const limit = appConfig.search?.resultsLimit || DEFAULT_RESULTS_LIMIT;
   const totalPages = Math.ceil(totalResults / limit);
 
   if (totalPages <= 1) {

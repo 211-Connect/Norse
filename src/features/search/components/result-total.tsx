@@ -1,4 +1,5 @@
 import { useAppConfig } from '@/shared/hooks/use-app-config';
+import { DEFAULT_RESULTS_LIMIT } from '@/shared/lib/constants';
 import {
   resultsCurrentPageAtom,
   resultTotalAtom,
@@ -12,11 +13,14 @@ export function ResultTotal() {
   const resultTotal = useAtomValue(resultTotalAtom);
   const currentPage = useAtomValue(resultsCurrentPageAtom);
 
-  const limit = appConfig.search.resultsLimit;
+  const limit = appConfig.search?.resultsLimit || DEFAULT_RESULTS_LIMIT;
 
   const counterStart = Math.round(
     Math.abs(
-      Math.min(Math.max(currentPage * limit - limit + 1, 0), resultTotal),
+      Math.min(
+        Math.max(currentPage * limit - limit + 1, 0),
+        resultTotal,
+      ),
     ),
   );
 

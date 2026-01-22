@@ -24,6 +24,10 @@
     "geocoder": "mapbox",
     "map": "maplibre"
   },
+  "map": {
+    "center": [39.8283459, -60.5794797],
+    "zoom": 7
+  },
   "plugins": [],
   "theme": {
     "primaryColor": "#005191",

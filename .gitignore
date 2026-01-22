@@ -53,3 +53,10 @@ public/locales/**/categories.json
 public/locales/**/suggestions.json
 
 .nx/
+
+# Environment setup hotwire.  This helped David set up the environment on his local machine while waiting for the official docker setup to be ready. 
+# See https://github.com/211-Connect/Norse/pull/295 for more information.
+do_production.dump
+reset-db.sh
+docker-compose.yml
+.tool-versions
