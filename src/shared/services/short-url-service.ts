@@ -1,4 +1,4 @@
-import { API_URL } from '../lib/constants';
+import { API_URL, TENANT_ID } from '../lib/constants';
 import { Axios } from '../lib/axios';
 
 export class ShortUrlService {
@@ -8,6 +8,7 @@ export class ShortUrlService {
     const res = await Axios.get(`${API_URL}/${this.endpoint}/${id}`, {
       headers: {
         'x-api-version': '1',
+        'x-tenant-id': TENANT_ID,
       },
     });
 
@@ -23,6 +24,7 @@ export class ShortUrlService {
       {
         headers: {
           'x-api-version': '1',
+          'x-tenant-id': TENANT_ID,
         },
       },
     );
