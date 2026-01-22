@@ -83,7 +83,7 @@ export type AppConfig = {
   topicsConfig?: {
     iconSize: 'small' | 'medium';
   };
-  translatedConfig: {
+  translatedConfig?: {
     [locale: string]: {
       footer?: {
         disclaimer?: string;

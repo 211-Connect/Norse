@@ -13,7 +13,7 @@ export function useAppConfig(): TranslatedAppConfig {
     const { translatedConfig, ...rest } = appConfig;
     return {
       ...rest,
-      ...(translatedConfig[i18n.language] || {}),
+      ...(translatedConfig?.[i18n.language] || {}),
     };
   }, [appConfig, i18n.language]);
 
