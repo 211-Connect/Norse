@@ -3,7 +3,7 @@ import {
   MAPBOX_API_BASE_URL,
 } from '@/app/(app)/shared/lib/constants';
 import { BaseGeocoderAdapter } from './base-geocoder-adapter';
-import axios from 'axios';
+import { fetchWrapper } from '../../lib/fetchWrapper';
 
 export class MapboxAdapter extends BaseGeocoderAdapter {
   async forwardGeocode(
@@ -21,13 +21,20 @@ export class MapboxAdapter extends BaseGeocoderAdapter {
       region?: string;
     }[]
   > {
-    const res = await axios.get(
-      `${MAPBOX_API_BASE_URL}/geocoding/v5/mapbox.places/${address}.json?access_token=${MAPBOX_API_KEY}&country=US&autocomplete=true&language=${options.locale}`,
+    const searchParams = new URLSearchParams({
+      access_token: MAPBOX_API_KEY || '',
+      country: 'US',
+      autocomplete: 'true',
+      language: options.locale,
+    });
+
+    const data = await fetchWrapper(
+      `${MAPBOX_API_BASE_URL}/geocoding/v5/mapbox.places/${address}.json?${searchParams.toString()}`,
     );
 
     let output: any[] = [];
 
-    res?.data?.features?.forEach((feature) => {
+    data?.features?.forEach((feature) => {
       let obj = {
         type: 'coordinates',
         address:
@@ -70,18 +77,25 @@ export class MapboxAdapter extends BaseGeocoderAdapter {
       region?: string;
     }[]
   > {
-    const res = await axios.get(
-      `${MAPBOX_API_BASE_URL}/geocoding/v5/mapbox.places/${coords}.json?access_token=${MAPBOX_API_KEY}&types=address&country=US&language=${options.locale}`,
+    const searchParams = new URLSearchParams({
+      access_token: MAPBOX_API_KEY || '',
+      types: 'address',
+      country: 'US',
+      language: options.locale,
+    });
+
+    const data = await fetchWrapper(
+      `${MAPBOX_API_BASE_URL}/geocoding/v5/mapbox.places/${coords}.json?${searchParams.toString()}`,
     );
 
-    let output = res?.data?.features?.map((feature) => ({
+    let output = data?.features?.map((feature) => ({
       address:
         feature?.[`place_name_${options.locale}`] ?? feature?.['place_name'],
       coordinates: feature?.['geometry']?.['coordinates'],
     }));
 
     // Add detailed location information to the output for analytics event tracking
-    res?.data?.features[0]?.context?.forEach((item) => {
+    data?.features[0]?.context?.forEach((item) => {
       if (item?.id?.startsWith('postcode')) {
         output[0]['postcode'] = item?.[`text_${options.locale}`] ?? item?.text;
       } else if (item?.id?.startsWith('place')) {

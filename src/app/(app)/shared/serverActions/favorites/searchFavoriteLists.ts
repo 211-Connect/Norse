@@ -1,28 +1,26 @@
 'use server';
 
-import { createAxiosWithAuth } from '../../lib/axiosWithAuth';
 import { API_URL, FAVORITES_LIST_ENDPOINT } from '../../lib/constants';
+import { getAuthHeaders } from '../../lib/authHeaders';
+import { fetchWrapper } from '../../lib/fetchWrapper';
 
 export const searchFavoriteLists = async (
   searchText: string,
   tenantId?: string,
 ) => {
-  try {
-    const { data } = await createAxiosWithAuth({ tenantId }).get(
-      `${API_URL}/${FAVORITES_LIST_ENDPOINT}/search`,
-      {
-        params: {
-          name: searchText,
-        },
-        headers: {
-          'x-api-version': '1',
-        },
-      },
-    );
+  const authHeaders = await getAuthHeaders(tenantId);
 
-    return data;
-  } catch (err) {
-    console.error('Error searching favorite lists:', err);
-    return [];
+  const searchParams = new URLSearchParams({ name: searchText });
+  if (tenantId) {
+    searchParams.append('tenant_id', tenantId);
   }
+
+  const url = `${API_URL}/${FAVORITES_LIST_ENDPOINT}/search?${searchParams.toString()}`;
+  return fetchWrapper(url, {
+    headers: {
+      ...authHeaders,
+      'x-api-version': '1',
+    },
+    cache: 'no-store',
+  });
 };

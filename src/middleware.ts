@@ -6,6 +6,7 @@ import { SESSION_ID } from './app/(app)/shared/lib/constants';
 import { searchLinkCorrectionMiddleware } from './middlewares/searchLinkCorrectionMiddleware';
 import { TenantLocaleResponse } from './app/(payload)/api/getTenantLocales/route';
 import { parseHost } from './app/(app)/shared/utils/parseHost';
+import { fetchWrapper } from './app/(app)/shared/lib/fetchWrapper';
 
 export const config = {
   matcher: [
@@ -71,7 +72,7 @@ export async function middleware(request: NextRequest) {
     const controller = new AbortController();
     timeoutId = setTimeout(() => controller.abort(), 5000);
 
-    const response = await fetch(
+    const tenantLocales: TenantLocaleResponse | null = await fetchWrapper(
       `${apiRoute}?host=${host}&secret=${process.env.PAYLOAD_API_ROUTE_SECRET}`,
       {
         headers: {
@@ -83,12 +84,8 @@ export async function middleware(request: NextRequest) {
     );
     clearTimeout(timeoutId);
     timeoutId = undefined;
-    const tenantLocales: TenantLocaleResponse = await response.json();
 
-    if (
-      tenantLocales.enabledLocales.length > 0 &&
-      tenantLocales.defaultLocale
-    ) {
+    if (tenantLocales?.enabledLocales.length && tenantLocales.defaultLocale) {
       locales = tenantLocales.enabledLocales;
       defaultLocale = tenantLocales.defaultLocale;
     } else {

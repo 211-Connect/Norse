@@ -1,5 +1,5 @@
 import { API_URL } from '../lib/constants';
-import { createAxios } from '../lib/axios';
+import { fetchWrapper } from '../lib/fetchWrapper';
 
 export class ShortUrlService {
   static endpoint = 'short-url';
@@ -8,35 +8,36 @@ export class ShortUrlService {
     id: string,
     tenantId?: string,
   ): Promise<string | null> {
-    const res = await createAxios(tenantId).get(
-      `${API_URL}/${this.endpoint}/${id}`,
-      {
-        headers: {
-          'x-api-version': '1',
-        },
+    const data = await fetchWrapper(`${API_URL}/${this.endpoint}/${id}`, {
+      headers: {
+        'x-api-version': '1',
+        ...(tenantId && { 'x-tenant-id': tenantId }),
       },
-    );
+      cache: 'no-store',
+    });
 
-    return res.data?.url || null;
+    if (!data) {
+      return null;
+    }
+    return data.url;
   }
 
   static async shortenUrl(
     url: string,
     tenantId?: string,
   ): Promise<string | null> {
-    const res = await createAxios(tenantId).post(
-      `${API_URL}/${this.endpoint}`,
-      {
-        url,
+    const data = await fetchWrapper(`${API_URL}/${this.endpoint}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-version': '1',
+        ...(tenantId && { 'x-tenant-id': tenantId }),
       },
-      {
-        headers: {
-          'x-api-version': '1',
-        },
-      },
-    );
+      body: { url },
+      cache: 'no-store',
+    });
 
-    const shortUrl = res.data?.url;
+    const shortUrl = data?.url;
     if (!shortUrl) {
       return null;
     }

@@ -1,7 +1,8 @@
 'use server';
 
-import { createAxiosWithAuth } from '../../lib/axiosWithAuth';
 import { API_URL, FAVORITES_BASE_ENDPOINT } from '../../lib/constants';
+import { getAuthHeaders } from '../../lib/authHeaders';
+import { fetchWrapper } from '../../lib/fetchWrapper';
 
 export const addToFavoriteList = async (
   {
@@ -13,22 +14,26 @@ export const addToFavoriteList = async (
   },
   tenantId?: string,
 ) => {
-  try {
-    const { data } = await createAxiosWithAuth({ tenantId }).post(
-      `${API_URL}/${FAVORITES_BASE_ENDPOINT}`,
-      {
-        resourceId: resourceId,
-        favoriteListId: favoriteListId,
-      },
-      {
-        headers: {
-          'x-api-version': '1',
-        },
-      },
-    );
+  const authHeaders = await getAuthHeaders(tenantId);
 
-    return data;
-  } catch (err) {
-    return null;
+  const searchParams = new URLSearchParams();
+  if (tenantId) {
+    searchParams.append('tenant_id', tenantId);
   }
+
+  const url = `${API_URL}/${FAVORITES_BASE_ENDPOINT}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
+
+  return fetchWrapper(url, {
+    method: 'POST',
+    headers: {
+      ...authHeaders,
+      'Content-Type': 'application/json',
+      'x-api-version': '1',
+    },
+    body: {
+      resourceId: resourceId,
+      favoriteListId: favoriteListId,
+    },
+    cache: 'no-store',
+  });
 };

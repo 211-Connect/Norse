@@ -1,7 +1,8 @@
 'use server';
 
-import { createAxiosWithAuth } from '../../lib/axiosWithAuth';
 import { API_URL, FAVORITES_BASE_ENDPOINT } from '../../lib/constants';
+import { getAuthHeaders } from '../../lib/authHeaders';
+import { fetchWrapper } from '../../lib/fetchWrapper';
 
 export const removeFavoriteFromList = async (
   {
@@ -13,18 +14,20 @@ export const removeFavoriteFromList = async (
   },
   tenantId?: string,
 ) => {
-  try {
-    const { data } = await createAxiosWithAuth({ tenantId }).delete(
-      `${API_URL}/${FAVORITES_BASE_ENDPOINT}/${resourceId}/${favoriteListId}`,
-      {
-        headers: {
-          'x-api-version': '1',
-        },
-      },
-    );
+  const authHeaders = await getAuthHeaders(tenantId);
 
-    return data;
-  } catch (err) {
-    return null;
+  const searchParams = new URLSearchParams();
+  if (tenantId) {
+    searchParams.append('tenant_id', tenantId);
   }
+
+  const url = `${API_URL}/${FAVORITES_BASE_ENDPOINT}/${resourceId}/${favoriteListId}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
+  return fetchWrapper(url, {
+    method: 'DELETE',
+    headers: {
+      ...authHeaders,
+      'x-api-version': '1',
+    },
+    cache: 'no-store',
+  });
 };

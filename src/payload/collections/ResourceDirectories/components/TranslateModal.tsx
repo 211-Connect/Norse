@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Button, toast, Modal, useModal } from '@payloadcms/ui';
 import { TaskTranslate } from '@/payload/payload-types';
+import { fetchWrapper } from '@/app/(app)/shared/lib/fetchWrapper';
 
 interface TranslateModalProps {
   resourceDirectoryId: string;
@@ -54,7 +55,7 @@ export const TranslateModal: React.FC<TranslateModalProps> = ({
     };
 
     try {
-      const response = await fetch(
+      const result = await fetchWrapper(
         `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/api/translate`,
         {
           method: 'POST',
@@ -62,28 +63,19 @@ export const TranslateModal: React.FC<TranslateModalProps> = ({
             'Content-Type': 'application/json',
           },
           credentials: 'include',
-          body: JSON.stringify(body),
+          body,
         },
       );
 
-      if (!response.ok) {
-        if (response.status === 401) {
-          throw new Error('You must be logged in to start translations');
-        }
-        if (response.status === 403) {
-          throw new Error('You do not have permission to start translations');
-        }
-        const error = await response.json();
-        throw new Error(error.message || 'Translation failed');
+      if (result) {
+        toast.success(
+          `Translation job #${result.jobId} queued! If translations do not appear shortly, please contact with administrator.`,
+        );
+
+        closeModal('translate-modal');
+      } else {
+        throw new Error('Failed to start translation job');
       }
-
-      const result = await response.json();
-
-      toast.success(
-        `Translation job #${result.jobId} queued! If translations do not appear shortly, please contact with administrator.`,
-      );
-
-      closeModal('translate-modal');
     } catch (error) {
       console.error('Translation error:', error);
       toast.error(
