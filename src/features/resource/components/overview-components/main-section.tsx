@@ -85,7 +85,16 @@ export function MainSection({ resource }) {
         {address ? (
           <div className="flex items-center justify-between gap-1">
             <p className="text-base">
-              {`${address.address_1},${address.address_2 ? ` ${address.address_2},` : ''} ${address.city}, ${address.stateProvince} ${address.postalCode}`}
+              {[
+                address.address_1,
+                address.address_2,
+                address.city,
+                [address.stateProvince, address.postalCode]
+                  .filter(Boolean)
+                  .join(' '),
+              ]
+                .filter(Boolean)
+                .join(', ')}
             </p>
             {distance && (
               <p className="text-sm">
