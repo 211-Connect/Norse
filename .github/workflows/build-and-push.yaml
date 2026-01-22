@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - payload-integration # change after completion of payload integration back to main
+  pull_request:
+    branches:
+      - feat/dockerization # change after completion of payload integration back to main
 
   workflow_dispatch:
 
@@ -54,8 +57,7 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          provenance: false
-          sbom: false
+          sbom: true
           cache-from: type=local,src=${{ runner.temp }}/.buildx-cache
           cache-to: type=local,dest=${{ runner.temp }}/.buildx-cache-new,mode=max
 
