@@ -517,6 +517,19 @@ export interface ResourceDirectory {
         }[]
       | null;
   };
+  badges?: {
+    list?:
+      | {
+          filter: string;
+          badgeLabel?: string | null;
+          tooltip?: string | null;
+          style: 'bold' | 'light' | 'outline';
+          color: string;
+          icon?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
   resource?: {
     lastAssuredText?: string | null;
   };
@@ -1029,6 +1042,21 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
                     openInNewTab?: T;
                     id?: T;
                   };
+              id?: T;
+            };
+      };
+  badges?:
+    | T
+    | {
+        list?:
+          | T
+          | {
+              filter?: T;
+              badgeLabel?: T;
+              tooltip?: T;
+              style?: T;
+              color?: T;
+              icon?: T;
               id?: T;
             };
       };

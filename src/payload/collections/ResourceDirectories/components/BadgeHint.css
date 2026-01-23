@@ -1,0 +1,228 @@
+.badge-hint {
+  background: var(--theme-elevation-50);
+  border: 1px solid var(--theme-elevation-200);
+  border-radius: var(--style-radius-m);
+  margin-bottom: 20px;
+  font-family: var(--font-body);
+}
+
+.badge-hint-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.2s ease;
+}
+
+.badge-hint-toggle:hover {
+  background: var(--theme-elevation-100);
+}
+
+.badge-hint-toggle-content {
+  flex: 1;
+}
+
+.badge-hint-toggle-icon {
+  flex-shrink: 0;
+  color: var(--theme-elevation-600);
+  transition: color 0.2s ease;
+}
+
+.badge-hint-toggle:hover .badge-hint-toggle-icon {
+  color: var(--theme-elevation-900);
+}
+
+.badge-hint-content {
+  padding: 24px;
+  border-top: 1px solid var(--theme-elevation-200);
+}
+
+.badge-hint-header {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--theme-elevation-200);
+}
+
+.badge-hint-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--theme-elevation-1000);
+  margin: 0 0 4px 0;
+}
+
+.badge-hint-subtitle {
+  font-size: 14px;
+  color: var(--theme-elevation-700);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.badge-hint-section {
+  margin-bottom: 24px;
+  margin-top: 24px;
+}
+
+.badge-hint-section:first-child {
+  margin-top: 0;
+}
+
+.badge-hint-section:last-child {
+  margin-bottom: 0;
+}
+
+.badge-hint-section-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--theme-elevation-900);
+  margin: 0 0 12px 0;
+}
+
+.badge-hint-text {
+  font-size: 13px;
+  color: var(--theme-elevation-800);
+  line-height: 1.6;
+  margin: 0 0 12px 0;
+}
+
+.badge-hint-text:last-child {
+  margin-bottom: 0;
+}
+
+.badge-hint-code-block {
+  background: var(--theme-elevation-0);
+  border: 1px solid var(--theme-elevation-200);
+  border-radius: var(--style-radius-s);
+  padding: 12px;
+  margin: 12px 0;
+  overflow-x: auto;
+}
+
+.badge-hint-code-block pre {
+  margin: 0;
+  font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+  font-size: 12px;
+  color: var(--theme-elevation-900);
+  line-height: 1.4;
+}
+
+.badge-hint-subsection {
+  margin: 16px 0;
+}
+
+.badge-hint-subsection strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--theme-elevation-900);
+  margin-bottom: 8px;
+}
+
+.badge-hint-list {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.badge-hint-list li {
+  font-size: 13px;
+  color: var(--theme-elevation-800);
+  line-height: 1.6;
+  margin-bottom: 6px;
+}
+
+.badge-hint-list li:last-child {
+  margin-bottom: 0;
+}
+
+.badge-hint-list code {
+  background: var(--theme-elevation-100);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+  font-size: 12px;
+  color: var(--theme-success-500);
+}
+
+.badge-hint-examples {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.badge-hint-example {
+  background: var(--theme-elevation-0);
+  border-left: 3px solid var(--theme-success-500);
+  padding: 12px;
+  border-radius: var(--style-radius-s);
+}
+
+.badge-hint-example code {
+  display: block;
+  font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+  font-size: 12px;
+  color: var(--theme-elevation-1000);
+  margin-bottom: 6px;
+  word-break: break-all;
+}
+
+.badge-hint-example p,
+.badge-hint-example strong {
+  font-size: 12px;
+  color: var(--theme-elevation-700);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.badge-hint-example strong {
+  display: inline;
+  margin-right: 4px;
+  color: var(--theme-elevation-900);
+}
+
+.badge-hint-warning {
+  background: var(--theme-warning-50);
+  border: 1px solid var(--theme-warning-200);
+  padding: 16px;
+  border-radius: var(--style-radius-s);
+}
+
+.badge-hint-warning .badge-hint-section-title {
+  color: var(--theme-warning-800);
+}
+
+.badge-hint-warning .badge-hint-list li {
+  color: var(--theme-warning-900);
+}
+
+.badge-hint-text code {
+  background: var(--theme-elevation-100);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+  font-size: 12px;
+  color: var(--theme-success-500);
+}
+
+@media (max-width: 768px) {
+  .badge-hint-toggle {
+    padding: 12px 16px;
+  }
+
+  .badge-hint-content {
+    padding: 0 16px 16px 16px;
+  }
+
+  .badge-hint-title {
+    font-size: 16px;
+  }
+
+  .badge-hint-section-title {
+    font-size: 14px;
+  }
+}

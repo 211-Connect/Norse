@@ -39,6 +39,9 @@ import { Badges } from '@/app/(app)/shared/components/badges';
 import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
 import { GetDirectionsButton } from '@/app/(app)/shared/components/get-directions-button';
 import { useTranslation } from 'react-i18next';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { getBadgesForResource } from '@/utils/getBadgesForResource';
+import { useMemo } from 'react';
 
 type ResultProps = {
   data: ResultType;
@@ -48,6 +51,8 @@ export function Result({ data }: ResultProps) {
   const { t } = useTranslation('common');
   const coords = useAtomValue(userCoordinatesAtom);
   const searchCoords = useAtomValue(searchCoordinatesAtom);
+  const appConfig = useAppConfig();
+  const badgeConfigs = appConfig.badges;
 
   const showServiceName = useFlag('showSearchAndResourceServiceName');
   const turnResourceCardTaxonomiesIntoLinks = useFlag(
@@ -62,7 +67,12 @@ export function Result({ data }: ResultProps) {
         )
       : null;
 
-  const labels = []; // TODO: Add Waiver
+  const labels = useMemo(() => {
+    if (!data || !badgeConfigs || badgeConfigs.length === 0) {
+      return [];
+    }
+    return getBadgesForResource(data.facets, badgeConfigs);
+  }, [data, badgeConfigs]);
 
   const taxonomies = data.taxonomies?.filter(({ name }) => name) || [];
 

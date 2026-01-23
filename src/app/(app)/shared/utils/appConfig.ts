@@ -128,6 +128,7 @@ async function getAppConfigBase(
         resultsLimit: 25,
       },
       sessionId: '',
+      badges: [],
       suggestions: [],
       topics: {
         iconSize: 'small',
@@ -330,6 +331,15 @@ async function getAppConfigBase(
       },
     },
     sessionId,
+    badges:
+      resourceDirectory.badges?.list
+        ?.filter((badge) => badge.filter)
+        ?.map((badge) => ({
+          ...badge,
+          style: badge.style || 'bold',
+          color: badge.color || '#0044B5',
+          icon: badge.icon,
+        })) || [],
     suggestions:
       resourceDirectory.suggestions?.map((suggestion) => ({
         value: suggestion.value,

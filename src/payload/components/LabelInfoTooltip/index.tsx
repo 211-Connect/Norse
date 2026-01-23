@@ -16,6 +16,8 @@ const TOOLTIP_MAPPER: Record<string, string> = {
     'Use keywords or a phrase like "secondary disaster insurance" or "Goodwill"',
   taxonomies:
     'Use a comma to separate taxonomy codes in a list. Example: BD-1800,BD-2000',
+  badgeLabel:
+    'Custom label for the badge. If not defined, the taxonomy term name will be used instead.',
 };
 
 const LabelInfoTooltip: TextFieldLabelClientComponent = ({ field, path }) => {
@@ -36,6 +38,7 @@ const LabelInfoTooltip: TextFieldLabelClientComponent = ({ field, path }) => {
             label={field?.label || field?.name}
             path={path}
             required={field?.required}
+            localized={field?.localized}
           />
           <div ref={infoIconRef} className="label-info-tooltip-icon-wrapper">
             <InfoIcon className="label-info-tooltip-icon" />

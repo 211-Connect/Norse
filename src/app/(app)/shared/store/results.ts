@@ -1,5 +1,5 @@
 import { atom } from 'jotai';
-import { Location, Taxonomy } from '@/types/resource';
+import { Location, Taxonomy, FacetWithTranslation } from '@/types/resource';
 
 export type ResultType = {
   _id: string;
@@ -14,6 +14,7 @@ export type ResultType = {
   serviceName: string;
   website: string;
   taxonomies: Taxonomy[];
+  facets?: FacetWithTranslation[] | null;
 };
 
 export const resultsAtom = atom<ResultType[]>([]);

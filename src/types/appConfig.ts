@@ -1,3 +1,4 @@
+import { ResourceDirectoryBadgeListItem } from '@/payload/collections/ResourceDirectories/types/badge';
 import { Nullable } from './common';
 
 type Menu = {
@@ -106,6 +107,7 @@ export type AppConfig = {
     };
   };
   sessionId: string;
+  badges: ResourceDirectoryBadgeListItem[];
   suggestions: {
     value: string;
     taxonomies: string;

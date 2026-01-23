@@ -1,10 +1,10 @@
 import { ExtractAtomValue } from 'jotai';
-import qs from 'qs';
 
 import { TaxonomyService } from './taxonomy-service';
 import { searchAtom } from '../store/search';
 import { API_URL } from '../lib/constants';
 import { fetchWrapper } from '../lib/fetchWrapper';
+import { transformFacetsToArray } from '../utils/toFacetsWithTranslation';
 
 export function createUrlParamsForSearch(
   searchStore: ExtractAtomValue<typeof searchAtom>,
@@ -170,6 +170,8 @@ export async function findResources(
   }
 
   const hits = data?.search?.hits?.hits;
+  const facetDefinitions = data?.facets;
+
   const results = Array.isArray(hits)
     ? hits.map((hit: any) => {
         const physicalAddress = hit._source?.location?.physical_address;
@@ -193,6 +195,12 @@ export async function findResources(
           mainAddress = addressParts.join(', ');
         }
 
+        const transformedFacets = transformFacetsToArray(
+          hit?._source?.facets,
+          facetDefinitions,
+          locale,
+        );
+
         const responseData = {
           _id: hit._id,
           id: hit?._source?.service_at_location_id ?? null,
@@ -206,6 +214,7 @@ export async function findResources(
           address: mainAddress,
           location: hit?._source?.location?.point ?? null,
           taxonomies: hit?._source?.taxonomies ?? null,
+          facets: transformedFacets.length > 0 ? transformedFacets : null,
         };
 
         return Object.fromEntries(

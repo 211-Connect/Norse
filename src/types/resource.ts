@@ -8,7 +8,9 @@ export interface Facet {
   _id?: string;
   code: string;
   taxonomyName: string;
+  taxonomyCode?: string;
   termName: string;
+  termCode?: string;
 }
 
 export interface FacetWithTranslation extends Facet {
