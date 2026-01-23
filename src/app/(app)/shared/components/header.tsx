@@ -185,7 +185,9 @@ export function Header() {
                           }));
                         });
                       } else {
-                        router.push('/favorites');
+                        router.push(
+                          `/favorites${process.env.WITH_TRAILING_SLASHES === 'true' ? '/' : ''}`,
+                        );
                       }
                     }}
                   >
