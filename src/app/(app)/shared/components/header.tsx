@@ -186,7 +186,7 @@ export function Header() {
                         });
                       } else {
                         router.push(
-                          `/favorites${process.env.WITH_TRAILING_SLASHES === 'true' ? '/' : ''}`,
+                          `/favorites${process.env.NEXT_PUBLIC_WITH_TRAILING_SLASHES === 'true' ? '/' : ''}`,
                         );
                       }
                     }}

@@ -8,7 +8,7 @@ declare global {
   namespace NodeJS {
     interface ProcessEnv {
       NEXT_PUBLIC_API_URL?: string;
-      WITH_TRAILING_SLASHES?: string;
+      NEXT_PUBLIC_WITH_TRAILING_SLASHES?: string;
       NEXT_PUBLIC_CUSTOM_BASE_PATH?: string;
 
       // Map environment variables
