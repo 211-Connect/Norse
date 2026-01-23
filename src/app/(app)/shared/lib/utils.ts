@@ -93,3 +93,19 @@ export function getScrollbarWidth(): number {
 
   return scrollbarWidth;
 }
+
+import { Address } from '@/types/resource';
+
+export function formatAddressForDisplay(
+  address: Partial<Address> | undefined | null,
+) {
+  if (!address) return '';
+  return [
+    address.address_1,
+    address.address_2,
+    address.city,
+    [address.stateProvince, address.postalCode].filter(Boolean).join(' '),
+  ]
+    .filter(Boolean)
+    .join(', ');
+}

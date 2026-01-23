@@ -10,7 +10,10 @@ import {
   FileCheck2,
   TriangleAlert,
 } from 'lucide-react';
-import { distanceBetweenCoordsInKm } from '@/app/(app)/shared/lib/utils';
+import {
+  distanceBetweenCoordsInKm,
+  formatAddressForDisplay
+} from '@/app/(app)/shared/lib/utils';
 import { Alert as AlertComponent } from '@/app/(app)/shared/components/ui/alert';
 import { parseHtml } from '@/app/(app)/shared/lib/parse-html';
 import { userCoordinatesAtom } from '@/app/(app)/shared/store/search';
@@ -87,9 +90,7 @@ export function MainSection({ resource }: { resource: Resource }) {
       <div className="flex flex-col gap-3">
         {address ? (
           <div className="flex items-center justify-between gap-1">
-            <p className="text-base">
-              {`${address.address_1},${address.address_2 ? ` ${address.address_2},` : ''} ${address.city}, ${address.stateProvince} ${address.postalCode}`}
-            </p>
+            <p className="text-base">{formatAddressForDisplay(address)}</p>
             {distance && (
               <p className="text-sm">
                 {distance.toFixed(1)}{' '}
