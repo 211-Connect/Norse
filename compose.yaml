@@ -6,6 +6,7 @@ services:
       POSTGRES_USER: norse-ng
       POSTGRES_PASSWORD: norse-ng
       POSTGRES_DB: norse-ng
+    container_name: norse-postgres
     ports:
       - 5432:5432
     volumes:

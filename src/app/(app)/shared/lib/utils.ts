@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { Address } from '@/types/resource';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -92,4 +93,18 @@ export function getScrollbarWidth(): number {
   document.body.removeChild(scrollDiv);
 
   return scrollbarWidth;
+}
+
+export function formatAddressForDisplay(
+  address: Partial<Address> | undefined | null,
+): string {
+  if (!address) return '';
+  return [
+    address.address_1,
+    address.address_2,
+    address.city,
+    [address.stateProvince, address.postalCode].filter(Boolean).join(' '),
+  ]
+    .filter(Boolean)
+    .join(', ');
 }

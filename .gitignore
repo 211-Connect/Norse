@@ -55,3 +55,8 @@ public/locales/**/categories.json
 public/locales/**/suggestions.json
 
 .nx/
+
+# Ignore local development files
+.tool-versions
+do_production.dump
+reset-db.sh
