@@ -99,12 +99,21 @@ export function formatAddressForDisplay(
   address: Partial<Address> | undefined | null,
 ): string {
   if (!address) return '';
+
+  const isValidPart = (part: string | undefined | null) => {
+    return (
+      part &&
+      part !== 'null' &&
+      part.trim() !== ''
+    );
+  };
+
   return [
     address.address_1,
     address.address_2,
     address.city,
-    [address.stateProvince, address.postalCode].filter(Boolean).join(' '),
+    [address.stateProvince, address.postalCode].filter(isValidPart).join(' '),
   ]
-    .filter(Boolean)
+    .filter(isValidPart)
     .join(', ');
 }
