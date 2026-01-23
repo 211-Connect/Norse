@@ -61,7 +61,13 @@ export function Favorite({
     address?.postalCode
   )
     ? ''
-    : `${address.address_1}, ${address.city}, ${address.stateProvince} ${address.postalCode}`;
+    : [
+        address.address_1,
+        address.city,
+        [address.stateProvince, address.postalCode].filter(Boolean).join(' '),
+      ]
+        .filter(Boolean)
+        .join(', ');
 
   const distance =
     data?.location?.coordinates && (coords?.length ?? 0) === 2
