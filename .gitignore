@@ -53,3 +53,7 @@ public/locales/**/categories.json
 public/locales/**/suggestions.json
 
 .nx/
+
+.tool-versions
+do_production.dump
+reset-db.sh
