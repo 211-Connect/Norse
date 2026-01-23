@@ -98,7 +98,7 @@ import { Address } from '@/types/resource';
 
 export function formatAddressForDisplay(
   address: Partial<Address> | undefined | null,
-) {
+): string {
   if (!address) return '';
   return [
     address.address_1,
