@@ -1,4 +1,7 @@
-import { distanceBetweenCoordsInKm } from '@/shared/lib/utils';
+import {
+  distanceBetweenCoordsInKm,
+  formatAddressForDisplay,
+} from '@/shared/lib/utils';
 import { Alert as AlertComponent } from '@/shared/components/ui/alert';
 import { useTranslation } from 'next-i18next';
 import { useMemo } from 'react';
@@ -85,16 +88,7 @@ export function MainSection({ resource }) {
         {address ? (
           <div className="flex items-center justify-between gap-1">
             <p className="text-base">
-              {[
-                address.address_1,
-                address.address_2,
-                address.city,
-                [address.stateProvince, address.postalCode]
-                  .filter(Boolean)
-                  .join(' '),
-              ]
-                .filter(Boolean)
-                .join(', ')}
+              {formatAddressForDisplay(address)}
             </p>
             {distance && (
               <p className="text-sm">

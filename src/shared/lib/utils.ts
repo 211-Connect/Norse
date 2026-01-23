@@ -184,3 +184,28 @@ export function getScrollbarWidth(): number {
 
   return scrollbarWidth;
 }
+
+export function formatAddressForDisplay(
+  address?: {
+    address_1?: string | null;
+    address_2?: string | null;
+    city?: string | null;
+    stateProvince?: string | null;
+    postalCode?: string | null;
+  } | null,
+): string {
+  if (!address) return '';
+
+  const isValidPart = (part: string | undefined | null): part is string => {
+    return !!part && part !== 'null' && part.trim() !== '';
+  };
+
+  const parts = [
+    address.address_1,
+    address.address_2,
+    address.city,
+    [address.stateProvince, address.postalCode].filter(isValidPart).join(' '),
+  ];
+
+  return parts.filter(isValidPart).join(', ');
+}

@@ -17,6 +17,7 @@ import {
   cn,
   distanceBetweenCoordsInKm,
   getGoogleMapsDestinationUrl,
+  formatAddressForDisplay,
 } from '@/shared/lib/utils';
 import { buttonVariants } from '@/shared/components/ui/button';
 import { useAtomValue } from 'jotai';
@@ -54,20 +55,7 @@ export function Favorite({
   const address = data.addresses.find(
     (el) => el.rank === 1 && el.type === 'physical',
   );
-  const displayAddress = !(
-    address?.address_1 &&
-    address?.city &&
-    address?.stateProvince &&
-    address?.postalCode
-  )
-    ? ''
-    : [
-        address.address_1,
-        address.city,
-        [address.stateProvince, address.postalCode].filter(Boolean).join(' '),
-      ]
-        .filter(Boolean)
-        .join(', ');
+  const displayAddress = formatAddressForDisplay(address);
 
   const distance =
     data?.location?.coordinates && (coords?.length ?? 0) === 2
