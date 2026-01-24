@@ -1,9 +1,9 @@
-import axios from 'axios';
 import { getServerSession, NextAuthOptions, Session } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import KeycloakProvider from 'next-auth/providers/keycloak';
 
 import { Tenant } from './payload/payload-types';
+import { FetchError } from './app/(app)/shared/lib/fetchError';
 
 // Helper to remove null/undefined values from object
 const omitNilValues = <T extends Record<string, any>>(obj: T): Partial<T> => {
@@ -62,34 +62,48 @@ const createAuthOptions = ({
       } else {
         // Token expired. Refresh it.
         try {
-          const response = await axios.post(
+          const body = new URLSearchParams({
+            client_id: process.env.KEYCLOAK_CLIENT_ID || '',
+            client_secret: keycloak?.clientSecret || '',
+            grant_type: 'refresh_token',
+            refresh_token: token.refreshToken as string,
+          });
+
+          const response = await fetch(
             `${keycloak?.issuer}/protocol/openid-connect/token`,
             {
-              client_id: process.env.KEYCLOAK_CLIENT_ID,
-              client_secret: keycloak?.clientSecret,
-              grant_type: 'refresh_token',
-              refresh_token: token.refreshToken,
-            },
-            {
+              method: 'POST',
               headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
               },
+              body: body.toString(),
             },
           );
 
+          if (!response.ok) {
+            let errorData;
+            try {
+              errorData = await response.json();
+            } catch {
+              errorData = undefined;
+            }
+            throw new FetchError({
+              status: response.status,
+              statusText: response.statusText,
+              data: errorData,
+            });
+          }
+
+          const data = await response.json();
+
           return {
             ...token,
-            accessToken: response.data.access_token,
-            refreshToken: response.data.refresh_token,
-            expiresAt: Math.floor(Date.now() / 1000 + response.data.expires_in),
+            accessToken: data.access_token,
+            refreshToken: data.refresh_token,
+            expiresAt: Math.floor(Date.now() / 1000 + data.expires_in),
           };
         } catch (err: any) {
-          if (axios.isAxiosError(err)) {
-            console.error(
-              'Error refreshing access token :',
-              err.response?.data,
-            );
-          }
+          console.error('Error refreshing access token:', err);
 
           token.error = 'RefreshAccessTokenError';
           return token;
@@ -99,19 +113,24 @@ const createAuthOptions = ({
   },
   events: {
     signOut: async (message) => {
-      await axios.post(
+      const body = new URLSearchParams({
+        client_id: process.env.KEYCLOAK_CLIENT_ID || '',
+        client_secret: keycloak?.clientSecret || '',
+        refresh_token: message.token.refreshToken as string,
+      });
+
+      const logoutResponse = await fetch(
         `${keycloak?.issuer}/protocol/openid-connect/logout`,
         {
-          client_id: process.env.KEYCLOAK_CLIENT_ID,
-          client_secret: keycloak?.clientSecret,
-          refresh_token: message.token.refreshToken,
-        },
-        {
+          method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
+          body: body.toString(),
         },
       );
+      // Consume the response body to prevent memory leak
+      await logoutResponse.text().catch(() => {});
     },
   },
   providers: [

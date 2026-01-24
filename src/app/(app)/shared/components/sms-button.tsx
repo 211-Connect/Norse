@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useSetAtom } from 'jotai';
 import { z } from 'zod';
-import axios from 'axios';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 
@@ -73,9 +72,19 @@ export function SmsButton({ title = '', body = '', shortUrl = '' }) {
       return;
     }
 
-    const promise = axios.post(`/api/share/${appConfig.tenantId}`, {
-      phoneNumber: phoneNumber,
-      message: `${title}\n\n${body}\n\n${shortUrl}`,
+    const promise = fetch(`/api/share/${appConfig.tenantId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        phoneNumber: phoneNumber,
+        message: `${title}\n\n${body}\n\n${shortUrl}`,
+      }),
+    }).then(async (response) => {
+      // Consume the response body to prevent memory leak
+      await response.text().catch(() => {});
+      return response;
     });
 
     toast.promise(promise, {

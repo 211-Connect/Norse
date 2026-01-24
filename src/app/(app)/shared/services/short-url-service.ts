@@ -1,5 +1,5 @@
 import { API_URL } from '../lib/constants';
-import { createAxios } from '../lib/axios';
+import { FetchError } from '../lib/fetchError';
 
 export class ShortUrlService {
   static endpoint = 'short-url';
@@ -8,35 +8,63 @@ export class ShortUrlService {
     id: string,
     tenantId?: string,
   ): Promise<string | null> {
-    const res = await createAxios(tenantId).get(
-      `${API_URL}/${this.endpoint}/${id}`,
-      {
-        headers: {
-          'x-api-version': '1',
-        },
+    const response = await fetch(`${API_URL}/${this.endpoint}/${id}`, {
+      headers: {
+        'x-api-version': '1',
+        ...(tenantId && { 'x-tenant-id': tenantId }),
       },
-    );
+      cache: 'no-store',
+    });
 
-    return res.data?.url || null;
+    if (!response.ok) {
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch {
+        errorData = undefined;
+      }
+      throw new FetchError({
+        status: response.status,
+        statusText: response.statusText,
+        data: errorData,
+      });
+    }
+
+    const data = await response.json();
+    return data?.url || null;
   }
 
   static async shortenUrl(
     url: string,
     tenantId?: string,
   ): Promise<string | null> {
-    const res = await createAxios(tenantId).post(
-      `${API_URL}/${this.endpoint}`,
-      {
-        url,
+    const response = await fetch(`${API_URL}/${this.endpoint}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-version': '1',
+        ...(tenantId && { 'x-tenant-id': tenantId }),
       },
-      {
-        headers: {
-          'x-api-version': '1',
-        },
-      },
-    );
+      body: JSON.stringify({ url }),
+      cache: 'no-store',
+    });
 
-    const shortUrl = res.data?.url;
+    if (!response.ok) {
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch {
+        errorData = undefined;
+      }
+      throw new FetchError({
+        status: response.status,
+        statusText: response.statusText,
+        data: errorData,
+      });
+    }
+
+    const data = await response.json();
+    const shortUrl = data?.url;
     if (!shortUrl) {
       return null;
     }

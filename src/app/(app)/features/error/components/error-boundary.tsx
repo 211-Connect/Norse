@@ -3,7 +3,6 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
 import React, { ReactNode } from 'react';
 import Image from 'next/image';
-import axios from 'axios';
 import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import { getImageUrl } from '@/app/(app)/shared/utils/getImageUrl';
 
@@ -91,14 +90,20 @@ class ErrorBoundary extends React.Component<Props, State> {
     };
 
     try {
-      await axios.post('/api/webhook', {
-        message: error?.message,
-        brandName: this.props?.appConfig?.brand?.name,
-        faviconUrl: this.props?.appConfig?.brand?.faviconUrl,
-        url: window?.location?.href,
-        openGraphUrl: this.props?.appConfig?.brand?.openGraphUrl,
-        hostname: window?.location?.hostname,
-        debugInfo: JSON.stringify(debugInfo),
+      await fetch('/api/webhook', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: error?.message,
+          brandName: this.props?.appConfig?.brand?.name,
+          faviconUrl: this.props?.appConfig?.brand?.faviconUrl,
+          url: window?.location?.href,
+          openGraphUrl: this.props?.appConfig?.brand?.openGraphUrl,
+          hostname: window?.location?.hostname,
+          debugInfo: JSON.stringify(debugInfo),
+        }),
       });
     } catch (err) {
       console.log('Unable to send webhook');

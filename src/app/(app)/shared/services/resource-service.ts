@@ -1,27 +1,52 @@
 import dayjs from 'dayjs';
 
 import { API_URL } from '../lib/constants';
-import { createAxios } from '../lib/axios';
 import { RedisCacheKey, withRedisCache } from '@/payload/utilities';
 import { ApiResource, Resource } from '@/types/resource';
+import { FetchError } from '../lib/fetchError';
 
 async function fetchAndTransformResource(
   url: string,
   options: { locale: string; tenantId?: string; cacheKey: RedisCacheKey },
 ): Promise<Resource | null> {
   return await withRedisCache(options.cacheKey, async () => {
-    const headers = {
+    const searchParams = new URLSearchParams({
+      locale: options.locale,
+    });
+
+    if (options.tenantId) {
+      searchParams.append('tenant_id', options.tenantId);
+    }
+
+    const headers: HeadersInit = {
       'accept-language': options.locale,
       'x-api-version': '1',
     };
-    const params = {
-      locale: options.locale,
-    };
 
-    const { data } = await createAxios(options.tenantId).get<ApiResource>(url, {
-      headers: headers,
-      params: params,
+    if (options.tenantId) {
+      headers['x-tenant-id'] = options.tenantId;
+    }
+
+    const response = await fetch(`${url}?${searchParams.toString()}`, {
+      headers,
+      cache: 'no-store',
     });
+
+    if (!response.ok) {
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch {
+        errorData = undefined;
+      }
+      throw new FetchError({
+        status: response.status,
+        statusText: response.statusText,
+        data: errorData,
+      });
+    }
+
+    const data: ApiResource = await response.json();
 
     return {
       id: data._id,

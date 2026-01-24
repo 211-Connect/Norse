@@ -1,7 +1,7 @@
 import { Metadata } from 'next/types';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { getResourceByOriginalId } from '@/app/(app)/shared/services/resource-service';
-import { isAxiosError } from 'axios';
+import { FetchError } from '@/app/(app)/shared/lib/fetchError';
 import { notFound, permanentRedirect, RedirectType } from 'next/navigation';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import { ResourcePageContent } from '@/app/(app)/features/resource/components/content';
@@ -28,8 +28,8 @@ export const generateMetadata = async ({ params }) => {
     try {
       await getResourceByOriginalId(original_id, locale, appConfig.tenantId);
     } catch (err) {
-      if (isAxiosError(err)) {
-        if (err?.response?.status === 404) {
+      if (err instanceof FetchError) {
+        if (err.response.status === 404) {
           notFoundFlag = true;
         }
       } else {
@@ -74,19 +74,17 @@ export default async function OriginalDetailsPage({ params }) {
         appConfig.tenantId,
       );
     } catch (err) {
-      if (isAxiosError(err)) {
-        if (err?.response?.status === 404) {
+      if (err instanceof FetchError) {
+        if (err.response.status === 404) {
           notFoundFlag = true;
 
-          if (err.response.data.redirect) {
+          if (err.response.data?.redirect) {
             permanentRedirect(
               `/${locale}${err.response.data.redirect}`,
               RedirectType.replace,
             );
           }
         }
-      } else {
-        console.error(err);
       }
     }
   }

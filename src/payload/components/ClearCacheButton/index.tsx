@@ -15,7 +15,11 @@ const ClearCacheButton = () => {
 
   async function onClick() {
     setLoading(true);
-    await fetch('/api/clear-cache?secret=7cbde38e-32d8-42e6-8000-9dcf4d57502b');
+    const response = await fetch(
+      '/api/clear-cache?secret=7cbde38e-32d8-42e6-8000-9dcf4d57502b',
+    );
+    // Consume the response body to prevent memory leak
+    await response.text().catch(() => {});
     setLoading(false);
   }
 

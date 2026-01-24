@@ -4,7 +4,7 @@ import qs from 'qs';
 import { TaxonomyService } from './taxonomy-service';
 import { searchAtom } from '../store/search';
 import { API_URL } from '../lib/constants';
-import { createAxios } from '../lib/axios';
+import { FetchError } from '../lib/fetchError';
 
 export function createUrlParamsForSearch(
   searchStore: ExtractAtomValue<typeof searchAtom>,
@@ -52,27 +52,53 @@ export async function findResources(
     limit = 25;
   }
 
-  const axios = createAxios(tenantId);
-
-  const searchUrl = `${API_URL}/search?${qs.stringify({
-    ...query,
-    page,
-    locale,
-    limit,
-  })}`;
-
-  let response;
+  let data;
+  let responseStatusCode;
+  let responseHeaders;
   try {
-    response = await axios.get(searchUrl, {
-      headers: {
-        'accept-language': locale,
-        'x-api-version': '1',
-      },
+    const searchParams = new URLSearchParams({
+      ...query,
+      page: String(page),
+      locale,
+      limit: '0',
     });
+
+    if (tenantId) {
+      searchParams.append('tenant_id', tenantId);
+    }
+
+    const response = await fetch(
+      `${API_URL}/search?${searchParams.toString()}`,
+      {
+        headers: {
+          'accept-language': locale,
+          'x-api-version': '1',
+          ...(tenantId && { 'x-tenant-id': tenantId }),
+        },
+        cache: 'no-store',
+      },
+    );
+
+    if (!response.ok) {
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch {
+        errorData = undefined;
+      }
+      throw new FetchError({
+        status: response.status,
+        statusText: response.statusText,
+        data: errorData,
+      });
+    }
+
+    responseStatusCode = response.status;
+    responseHeaders = response.headers;
+    data = await response.json();
   } catch (err) {
     console.error('Search API error:', {
       error: err,
-      url: searchUrl,
       tenantId,
       query,
       page,
@@ -89,20 +115,17 @@ export async function findResources(
     };
   }
 
-  let data = response?.data;
-
   // If response succeeded but data is malformed, return empty results
   if (!data || !data.search) {
     console.error('Malformed API response:', {
       data,
-      url: searchUrl,
       tenantId,
       query,
       page,
       locale,
       limit,
-      statusCode: response?.status,
-      headers: response?.headers,
+      statusCode: responseStatusCode,
+      headers: responseHeaders,
     });
     return {
       results: [],
@@ -121,29 +144,41 @@ export async function findResources(
   let noResults = false;
   if (totalResults === 0) {
     noResults = true;
-    const fallbackUrl = `${API_URL}/search?${qs.stringify({
-      ...query,
-      page,
-      query_type: 'more_like_this',
-      locale,
-      limit,
-    })}`;
 
     try {
-      const fallbackResponse = await axios.get(fallbackUrl, {
-        headers: {
-          'accept-language': locale,
-          'x-api-version': '1',
-        },
+      const fallbackParams = new URLSearchParams({
+        ...query,
+        page: String(page),
+        query_type: 'more_like_this',
+        locale,
+        limit: String(limit),
       });
 
-      if (fallbackResponse?.data?.search) {
-        data = fallbackResponse.data;
+      if (tenantId) {
+        fallbackParams.append('tenant_id', tenantId);
+      }
+
+      const fallbackResponse = await fetch(
+        `${API_URL}/search?${fallbackParams.toString()}`,
+        {
+          headers: {
+            'accept-language': locale,
+            'x-api-version': '1',
+            ...(tenantId && { 'x-tenant-id': tenantId }),
+          },
+          cache: 'no-store',
+        },
+      );
+
+      if (fallbackResponse.ok) {
+        const fallbackData = await fallbackResponse.json();
+        if (fallbackData?.search) {
+          data = fallbackData;
+        }
       }
     } catch (err) {
       console.error('Fallback search API error:', {
         error: err,
-        url: fallbackUrl,
         tenantId,
         query: { ...query, query_type: 'more_like_this' },
         page,
