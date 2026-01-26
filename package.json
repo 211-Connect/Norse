@@ -86,7 +86,7 @@
     "next-i18next": "^14.0.3",
     "next-themes": "^0.3.0",
     "nookies": "^2.5.2",
-    "pmtiles": "^4.3.0",
+    "pmtiles": "^4.3.2",
     "qs": "^6.14.0",
     "radash": "^12.1.0",
     "react": "18.2.0",
