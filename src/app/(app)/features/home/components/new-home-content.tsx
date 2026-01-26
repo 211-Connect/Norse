@@ -163,13 +163,15 @@ export function NewHomeContent() {
             </div>
           )}
         </div>
-        <div className="absolute right-0 hidden h-full w-[calc(100vw-(100vw-100%)-430px-2rem)] lg:block">
-          <img
-            className="h-full w-full object-cover"
-            src={appConfig?.newLayout?.heroUrl}
-            alt="Hero image"
-          />
-        </div>
+        {appConfig?.newLayout?.heroUrl && (
+          <div className="absolute right-0 hidden h-full w-[calc(100vw-(100vw-100%)-430px-2rem)] lg:block">
+            <Image
+              className="h-full w-full object-cover"
+              src={appConfig.newLayout.heroUrl}
+              alt="Hero image"
+            />
+          </div>
+        )}
       </div>
     </div>
   );
