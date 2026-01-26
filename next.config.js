@@ -27,7 +27,6 @@ const nextConfig = {
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
   },
   images: {
-    unoptimized: true,
     remotePatterns: [
       {
         hostname: '*',
