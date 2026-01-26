@@ -1,4 +1,4 @@
-import { cacheService } from '@/cacheService';
+import { cacheService, CacheService } from '@/cacheService';
 
 type Seconds = number;
 const ONE_HOUR: Seconds = 60 * 60;
@@ -19,9 +19,10 @@ export type RedisCacheKey =
 export const withRedisCache = async <T>(
   key: RedisCacheKey,
   fetchFunction: () => Promise<T>,
+  cacheInstance: CacheService = cacheService,
 ): Promise<T | null> => {
   try {
-    const cachedValue = await cacheService.get(key);
+    const cachedValue = await cacheInstance.get(key);
     if (cachedValue) {
       try {
         return JSON.parse(cachedValue);
@@ -30,7 +31,7 @@ export const withRedisCache = async <T>(
           `Failed to parse cached value for key ${key}:`,
           parseError,
         );
-        await cacheService.del(key);
+        await cacheInstance.del(key);
       }
     }
   } catch (error) {
@@ -41,7 +42,7 @@ export const withRedisCache = async <T>(
 
   if (value != null) {
     try {
-      await cacheService.set(key, JSON.stringify(value), CACHE_TTL);
+      await cacheInstance.set(key, JSON.stringify(value), CACHE_TTL);
     } catch (error) {
       console.error(`Error writing to Redis cache for key ${key}:`, error);
     }

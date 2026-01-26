@@ -1,5 +1,5 @@
 import { findTenantByHost } from '@/payload/collections/Tenants/actions';
-import { withRedisCache } from '@/payload/utilities';
+import { withRedisCache } from '@/utilities/withRedisCache';
 import { TypedLocale } from 'payload';
 
 export type TenantLocaleResponse = {

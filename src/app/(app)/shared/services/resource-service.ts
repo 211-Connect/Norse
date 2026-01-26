@@ -1,9 +1,9 @@
 import dayjs from 'dayjs';
 
-import { API_URL, INTERNAL_API_KEY } from '../lib/constants';
-import { RedisCacheKey, withRedisCache } from '@/payload/utilities';
 import { ApiResource, Resource } from '@/types/resource';
+import { RedisCacheKey, withRedisCache } from '@/utilities/withRedisCache';
 import { fetchWrapper } from '../lib/fetchWrapper';
+import { INTERNAL_API_KEY, API_URL } from '../lib/constants';
 
 async function fetchAndTransformResource(
   url: string,
