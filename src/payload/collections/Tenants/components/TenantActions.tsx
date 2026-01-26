@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { toast, Button, useDocumentInfo, useAuth } from '@payloadcms/ui';
 import { useRouter } from 'next/navigation';
+import { fetchWrapper } from '@/app/(app)/shared/lib/fetchWrapper';
 
 const TenantActions: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -22,23 +23,20 @@ const TenantActions: React.FC = () => {
 
     setIsLoading(true);
     try {
-      const response = await fetch('/api/duplicate-tenant', {
+      const data = await fetchWrapper('/api/duplicate-tenant', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ tenantId: id }),
+        body: { tenantId: id },
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to duplicate tenant');
+      if (data?.tenant) {
+        toast.success(`Tenant duplicated successfully: ${data.tenant.name}`);
+        router.push(`/admin/collections/tenants/${data.tenant.id}`);
+      } else {
+        throw new Error('Failed to duplicate tenant');
       }
-
-      toast.success(`Tenant duplicated successfully: ${data.tenant.name}`);
-
-      router.push(`/admin/collections/tenants/${data.tenant.id}`);
     } catch (error) {
       console.error('Error duplicating tenant:', error);
       toast.error(

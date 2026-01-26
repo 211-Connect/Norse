@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { isAxiosError } from 'axios';
 import { ShortUrlService } from '@/app/(app)/shared/services/short-url-service';
 
 export async function GET(
@@ -15,9 +14,6 @@ export async function GET(
       return NextResponse.redirect('/404', 302);
     }
   } catch (err) {
-    if (isAxiosError(err)) {
-      console.error(err.response?.data);
-    }
     return NextResponse.redirect('/404', 302);
   }
 }

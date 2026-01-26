@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useSetAtom } from 'jotai';
 import { z } from 'zod';
-import axios from 'axios';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 
@@ -20,6 +19,7 @@ import {
 import { Input } from './ui/input';
 import { useAppConfig } from '../hooks/use-app-config';
 import { dialogsAtom } from '../store/dialogs';
+import { fetchWrapper } from '../lib/fetchWrapper';
 
 export function SmsButton({ title = '', body = '', shortUrl = '' }) {
   const { t } = useTranslation('common');
@@ -73,18 +73,34 @@ export function SmsButton({ title = '', body = '', shortUrl = '' }) {
       return;
     }
 
-    const promise = axios.post(`/api/share/${appConfig.tenantId}`, {
-      phoneNumber: phoneNumber,
-      message: `${title}\n\n${body}\n\n${shortUrl}`,
+    const promise = fetchWrapper(`/api/share/${appConfig.tenantId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: {
+        phoneNumber: phoneNumber,
+        message: `${title}\n\n${body}\n\n${shortUrl}`,
+      },
+    }).catch((error) => {
+      // fetchWrapper returns null for non-FetchError errors
+      // Re-throw for toast to handle
+      throw error || new Error(t('modal.share.sms_send_failed_body'));
     });
 
     toast.promise(promise, {
       loading: t('modal.share.sms_sending_body'),
       success: (_res) => {
         setOpen(false);
+        setPhoneNumber('');
+        setMessage('');
         return t('modal.share.sms_send_success_body');
       },
-      error: t('modal.share.sms_send_failed_body'),
+      error: (err) => {
+        return err instanceof Error
+          ? err.message
+          : t('modal.share.sms_send_failed_body');
+      },
     });
   };
 

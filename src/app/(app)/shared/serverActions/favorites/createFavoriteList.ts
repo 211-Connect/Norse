@@ -1,7 +1,8 @@
 'use server';
 
-import { createAxiosWithAuth } from '../../lib/axiosWithAuth';
 import { API_URL, FAVORITES_LIST_ENDPOINT } from '../../lib/constants';
+import { getAuthHeaders } from '../../lib/authHeaders';
+import { fetchWrapper } from '../../lib/fetchWrapper';
 
 export const createFavoriteList = async (
   {
@@ -15,24 +16,26 @@ export const createFavoriteList = async (
   },
   tenantId?: string,
 ) => {
-  try {
-    const { data } = await createAxiosWithAuth({ tenantId }).post(
-      `${API_URL}/${FAVORITES_LIST_ENDPOINT}`,
-      {
-        name,
-        description,
-        public: privacy,
-      },
-      {
-        headers: {
-          'x-api-version': '1',
-        },
-      },
-    );
+  const authHeaders = await getAuthHeaders(tenantId);
 
-    return data;
-  } catch (err) {
-    console.log(err);
-    return null;
+  const searchParams = new URLSearchParams();
+  if (tenantId) {
+    searchParams.append('tenant_id', tenantId);
   }
+
+  const url = `${API_URL}/${FAVORITES_LIST_ENDPOINT}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
+  return fetchWrapper(url, {
+    method: 'POST',
+    headers: {
+      ...authHeaders,
+      'Content-Type': 'application/json',
+      'x-api-version': '1',
+    },
+    body: {
+      name,
+      description,
+      public: privacy,
+    },
+    cache: 'no-store',
+  });
 };

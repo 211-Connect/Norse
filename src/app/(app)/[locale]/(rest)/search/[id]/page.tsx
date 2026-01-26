@@ -1,7 +1,7 @@
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { Metadata } from 'next/types';
 import { getResource } from '@/app/(app)/shared/services/resource-service';
-import { isAxiosError } from 'axios';
+import { FetchError } from '@/app/(app)/shared/lib/fetchError';
 import { permanentRedirect, notFound, RedirectType } from 'next/navigation';
 import { ResourcePageContent } from '@/app/(app)/features/resource/components/content';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
@@ -73,13 +73,15 @@ export default async function ResourcePage({ params }) {
   try {
     resource = await getResource(id, locale, appConfig.tenantId);
   } catch (err) {
-    if (isAxiosError(err)) {
-      if (err?.response?.status === 404 && err.response.data.redirect) {
-        permanentRedirect(
-          `/${locale}${err.response.data.redirect}`,
-          RedirectType.replace,
-        );
-      }
+    if (
+      err instanceof FetchError &&
+      err.response.status === 404 &&
+      err.response.data?.redirect
+    ) {
+      permanentRedirect(
+        `/${locale}${err.response.data.redirect}`,
+        RedirectType.replace,
+      );
     }
   }
 

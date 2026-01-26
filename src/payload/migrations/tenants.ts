@@ -16,23 +16,20 @@ import { findResourceDirectoryByTenantId } from '../collections/ResourceDirector
 import { upsert } from './upsert';
 import { defaultLocale } from '../i18n/locales';
 import qs from 'qs';
+import { fetchWrapper } from '@/app/(app)/shared/lib/fetchWrapper';
 
 export async function fetchJson(url: string) {
-  const response = await fetch(url, {
+  const data = await fetchWrapper(url, {
     headers: {
       Authorization: `Bearer ${process.env.STRAPI_TOKEN}`,
     },
   });
-  if (!response.ok) {
-    throw new Error(`Failed to fetch ${url}: ${response.statusText}`);
+
+  if (!data) {
+    throw new Error(`Failed to fetch or parse JSON from ${url}`);
   }
-  try {
-    return await response.json();
-  } catch (error) {
-    throw new Error(`Failed to parse JSON from ${url}`, {
-      cause: error,
-    });
-  }
+
+  return data;
 }
 
 async function uploadImage(
@@ -50,14 +47,17 @@ async function uploadImage(
     resource,
   } = context;
 
-  const data = await fetch(imageData.url);
-  if (!data.ok) {
+  const data = await fetchWrapper(imageData.url, {
+    parseResponse: false,
+  });
+
+  if (!data) {
     throw new Error(
-      `Seed: Failed to fetch image from ${imageData.url} for tenant ${tenantName} (${tenantId})${locale ? `, locale ${locale}` : ''}${resource ? `, resource ${resource}` : ''}: ${data.statusText}`,
+      `Seed: Failed to fetch image from ${imageData.url} for tenant ${tenantName} (${tenantId})${locale ? `, locale ${locale}` : ''}${resource ? `, resource ${resource}` : ''}`,
     );
   }
 
-  const buffer = Buffer.from(await data.arrayBuffer());
+  const buffer = Buffer.from(await (data as Response).arrayBuffer());
 
   try {
     return await payload.create({
