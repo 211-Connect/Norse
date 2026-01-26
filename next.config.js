@@ -65,6 +65,12 @@ const nextConfig = {
         maxGenerations: 1, // Limit cache memory usage
       });
     }
+
+    // Suppress Payload CMS dynamic import warnings
+    config.module = config.module || {};
+    config.module.unknownContextCritical = false;
+    config.module.exprContextCritical = false;
+
     return config;
   },
 };
