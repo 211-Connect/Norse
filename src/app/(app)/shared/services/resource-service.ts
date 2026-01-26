@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 
 import { API_URL } from '../lib/constants';
-import { RedisCacheKey, withRedisCache } from '@/payload/utilities';
+import { RedisCacheKey, withRedisCache } from '@/utilities/withRedisCache';
 import { ApiResource, Resource } from '@/types/resource';
 import { fetchWrapper } from '../lib/fetchWrapper';
 
