@@ -5,16 +5,6 @@ interface FetchWrapperOptions extends Omit<RequestInit, 'body'> {
   body?: any; // Can accept any object, will be stringified automatically
 }
 
-/**
- * A wrapper around fetch that handles errors consistently across the application.
- * Throws FetchError for HTTP errors and returns null for unexpected errors.
- * Automatically handles JSON.stringify for body objects.
- *
- * @param url - The URL to fetch
- * @param options - Fetch options with an additional parseResponse flag (defaults to true)
- * @returns The parsed JSON response or null on unexpected errors
- * @throws FetchError when the response is not ok
- */
 export async function fetchWrapper<T = any>(
   url: string,
   options: FetchWrapperOptions = {},
@@ -53,7 +43,6 @@ export async function fetchWrapper<T = any>(
     const data = await response.json();
     return data;
   } catch (err) {
-    console.error('FetchWrapper error:', err);
     if (!(err instanceof FetchError)) {
       // Handle unexpected errors (network errors, JSON parsing errors, JSON.stringify errors, etc.)
       return null;
