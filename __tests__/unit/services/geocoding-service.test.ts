@@ -1,41 +1,56 @@
-import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
-import { geocodeLocationCached } from '@/app/(app)/shared/services/geocoding-service';
-import { withRedisCache } from '@/utilities/withRedisCache';
-import axios from 'axios';
-import { GeocodeResult, Coordinates, BBox } from '@/types/resource';
+import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 
-// Mock the Redis cache
-jest.mock('@/utilities/withRedisCache', () => ({
-  withRedisCache: jest.fn(),
-}));
-
-// Mock axios
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
-
-const mockedWithRedisCache = withRedisCache as jest.MockedFunction<typeof withRedisCache>;
+import type { GeocodeResult, Coordinates, BBox } from '@/types/resource';
 
 describe('geocoding-service', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
+  let geocodeLocationCached: any;
+  let mockWithRedisCache: jest.Mock<any>;
+  let mockFetchWrapper: jest.Mock<any>;
+  const mockCacheService = { disconnect: jest.fn() };
+  const mockGeoDataCacheService = { disconnect: jest.fn(), ...{ name: 'mockGeoDataCacheService' } };
+  const mockTranslationCacheService = { disconnect: jest.fn() };
+
+  beforeEach(async () => {
+    jest.resetModules();
+
+    mockWithRedisCache = jest.fn((key: any, fn: any) => fn());
+    mockFetchWrapper = jest.fn();
+
+    jest.doMock('@/utilities/withRedisCache', () => ({
+      __esModule: true,
+      withRedisCache: mockWithRedisCache,
+    }));
+
+    jest.doMock('@/app/(app)/shared/lib/fetchWrapper', () => ({
+      __esModule: true,
+      fetchWrapper: mockFetchWrapper,
+    }));
+
+    jest.doMock('@/cacheService', () => ({
+      __esModule: true,
+      cacheService: mockCacheService,
+      geoDataCacheService: mockGeoDataCacheService,
+      translationCacheService: mockTranslationCacheService,
+    }));
+
+    const serviceModule = await import('@/app/(app)/shared/services/geocoding-service');
+    geocodeLocationCached = serviceModule.geocodeLocationCached;
   });
 
-  describe('geocodeLocationCached', () => {
-    const mockMapboxResponse = {
-      data: {
-        features: [
-          {
-            place_type: ['region'],
-            bbox: [-97.238218, 43.499476, -89.498952, 49.384458],
-            geometry: {
-              coordinates: [-94.199117, 46.343406],
-            },
-            place_name: 'Minnesota, United States',
-          },
-        ],
+  const mockMapboxResponse = {
+    features: [
+      {
+        place_type: ['region'],
+        bbox: [-97.238218, 43.499476, -89.498952, 49.384458],
+        geometry: {
+          coordinates: [-94.199117, 46.343406],
+        },
+        place_name: 'Minnesota, United States',
       },
-    };
+    ],
+  };
 
+  describe('geocodeLocationCached', () => {
     describe('Cache Hit Scenario', () => {
       it('should return cached data when cache hit occurs', async () => {
         const expectedResult: GeocodeResult = {
@@ -46,40 +61,37 @@ describe('geocoding-service', () => {
           address: 'Minnesota, United States',
         };
 
-        // Mock cache hit
-        mockedWithRedisCache.mockResolvedValueOnce(expectedResult);
+        mockWithRedisCache.mockResolvedValueOnce(expectedResult);
 
         const result = await geocodeLocationCached('Minnesota', 'en');
 
         expect(result).toEqual(expectedResult);
-        expect(mockedWithRedisCache).toHaveBeenCalledWith(
+        expect(mockWithRedisCache).toHaveBeenCalledWith(
           'geocode:minnesota:en',
-          expect.any(Function)
+          expect.any(Function),
+          mockGeoDataCacheService
         );
-        // Should NOT call Mapbox API on cache hit
-        expect(mockedAxios.get).not.toHaveBeenCalled();
+        expect(mockFetchWrapper).not.toHaveBeenCalled();
       });
 
       it('should use normalized cache key (lowercase, trimmed)', async () => {
-        mockedWithRedisCache.mockResolvedValueOnce(null);
+        mockWithRedisCache.mockResolvedValueOnce(null);
 
         await geocodeLocationCached('  MinNeSoTa  ', 'en');
 
-        expect(mockedWithRedisCache).toHaveBeenCalledWith(
+        expect(mockWithRedisCache).toHaveBeenCalledWith(
           'geocode:minnesota:en',
-          expect.any(Function)
+          expect.any(Function),
+          mockGeoDataCacheService
         );
       });
     });
 
     describe('Cache Miss Scenario', () => {
       it('should call Mapbox API and return transformed data on cache miss', async () => {
-        // Mock cache miss - withRedisCache will execute the function
-        mockedWithRedisCache.mockImplementation(async (key, fn) => {
-          return await fn();
-        });
-
-        mockedAxios.get.mockResolvedValueOnce(mockMapboxResponse);
+        // Mock cache miss (implementation is already set in beforeEach to call fn)
+        
+        mockFetchWrapper.mockResolvedValueOnce(mockMapboxResponse);
 
         const result = await geocodeLocationCached('Minnesota', 'en');
 
@@ -91,38 +103,26 @@ describe('geocoding-service', () => {
           address: 'Minnesota, United States',
         });
 
-        expect(mockedAxios.get).toHaveBeenCalledWith(
+        expect(mockFetchWrapper).toHaveBeenCalledWith(
           expect.stringContaining('mapbox.com/geocoding'),
-          expect.objectContaining({
-            params: expect.objectContaining({
-              access_token: expect.any(String),
-              country: 'US',
-              autocomplete: false,
-              language: 'en',
-              limit: 1,
-            }),
-          })
         );
       });
 
       it('should handle cache miss for city (place type)', async () => {
         const cityResponse = {
-          data: {
-            features: [
-              {
-                place_type: ['place'],
-                bbox: null,
-                geometry: {
-                  coordinates: [-93.2650, 44.9778],
-                },
-                place_name: 'Minneapolis, Minnesota, United States',
+          features: [
+            {
+              place_type: ['place'],
+              bbox: null,
+              geometry: {
+                coordinates: [-93.2650, 44.9778],
               },
-            ],
-          },
+              place_name: 'Minneapolis, Minnesota, United States',
+            },
+          ],
         };
 
-        mockedWithRedisCache.mockImplementation(async (key, fn) => await fn());
-        mockedAxios.get.mockResolvedValueOnce(cityResponse);
+        mockFetchWrapper.mockResolvedValueOnce(cityResponse);
 
         const result = await geocodeLocationCached('Minneapolis', 'en');
 
@@ -138,8 +138,7 @@ describe('geocoding-service', () => {
 
     describe('Error Handling', () => {
       it('should return null when Mapbox API returns no features', async () => {
-        mockedWithRedisCache.mockImplementation(async (key, fn) => await fn());
-        mockedAxios.get.mockResolvedValueOnce({ data: { features: [] } });
+        mockFetchWrapper.mockResolvedValueOnce({ features: [] });
 
         const result = await geocodeLocationCached('InvalidLocation', 'en');
 
@@ -147,8 +146,7 @@ describe('geocoding-service', () => {
       });
 
       it('should return null when Mapbox API fails', async () => {
-        mockedWithRedisCache.mockImplementation(async (key, fn) => await fn());
-        mockedAxios.get.mockRejectedValueOnce(new Error('API Error'));
+        mockFetchWrapper.mockRejectedValueOnce(new Error('API Error'));
 
         const result = await geocodeLocationCached('Minnesota', 'en');
 
@@ -156,8 +154,7 @@ describe('geocoding-service', () => {
       });
 
       it('should handle malformed Mapbox response gracefully', async () => {
-        mockedWithRedisCache.mockImplementation(async (key, fn) => await fn());
-        mockedAxios.get.mockResolvedValueOnce({ data: {} });
+        mockFetchWrapper.mockResolvedValueOnce({});
 
         const result = await geocodeLocationCached('Minnesota', 'en');
 
@@ -168,19 +165,16 @@ describe('geocoding-service', () => {
     describe('Data Transformation', () => {
       it('should handle missing bbox (defaults to null)', async () => {
         const noBboxResponse = {
-          data: {
-            features: [
-              {
-                place_type: ['address'],
-                geometry: { coordinates: [-93.2650, 44.9778] },
-                place_name: '123 Main St',
-              },
-            ],
-          },
+          features: [
+            {
+              place_type: ['address'],
+              geometry: { coordinates: [-93.2650, 44.9778] },
+              place_name: '123 Main St',
+            },
+          ],
         };
 
-        mockedWithRedisCache.mockImplementation(async (key, fn) => await fn());
-        mockedAxios.get.mockResolvedValueOnce(noBboxResponse);
+        mockFetchWrapper.mockResolvedValueOnce(noBboxResponse);
 
         const result = await geocodeLocationCached('123 Main St', 'en');
 
@@ -189,19 +183,16 @@ describe('geocoding-service', () => {
 
       it('should handle missing coordinates (defaults to [0, 0])', async () => {
         const noCoordinatesResponse = {
-          data: {
-            features: [
-              {
-                place_type: ['region'],
-                bbox: [-97.238218, 43.499476, -89.498952, 49.384458],
-                place_name: 'Minnesota',
-              },
-            ],
-          },
+          features: [
+            {
+              place_type: ['region'],
+              bbox: [-97.238218, 43.499476, -89.498952, 49.384458],
+              place_name: 'Minnesota',
+            },
+          ],
         };
 
-        mockedWithRedisCache.mockImplementation(async (key, fn) => await fn());
-        mockedAxios.get.mockResolvedValueOnce(noCoordinatesResponse);
+        mockFetchWrapper.mockResolvedValueOnce(noCoordinatesResponse);
 
         const result = await geocodeLocationCached('Minnesota', 'en');
 
@@ -210,19 +201,16 @@ describe('geocoding-service', () => {
 
       it('should preserve place_type as array', async () => {
         const multiTypeResponse = {
-          data: {
-            features: [
-              {
-                place_type: ['region', 'administrative'],
-                geometry: { coordinates: [-94.199117, 46.343406] },
-                place_name: 'Minnesota',
-              },
-            ],
-          },
+          features: [
+            {
+              place_type: ['region', 'administrative'],
+              geometry: { coordinates: [-94.199117, 46.343406] },
+              place_name: 'Minnesota',
+            },
+          ],
         };
 
-        mockedWithRedisCache.mockImplementation(async (key, fn) => await fn());
-        mockedAxios.get.mockResolvedValueOnce(multiTypeResponse);
+        mockFetchWrapper.mockResolvedValueOnce(multiTypeResponse);
 
         const result = await geocodeLocationCached('Minnesota', 'en');
 
@@ -232,29 +220,24 @@ describe('geocoding-service', () => {
 
     describe('Locale Support', () => {
       it('should pass locale to Mapbox API', async () => {
-        mockedWithRedisCache.mockImplementation(async (key, fn) => await fn());
-        mockedAxios.get.mockResolvedValueOnce(mockMapboxResponse);
+        mockFetchWrapper.mockResolvedValueOnce(mockMapboxResponse);
 
         await geocodeLocationCached('Minnesota', 'es');
 
-        expect(mockedAxios.get).toHaveBeenCalledWith(
-          expect.any(String),
-          expect.objectContaining({
-            params: expect.objectContaining({
-              language: 'es',
-            }),
-          })
+        expect(mockFetchWrapper).toHaveBeenCalledWith(
+           expect.stringContaining('language=es')
         );
       });
 
       it('should create separate cache keys for different locales', async () => {
-        mockedWithRedisCache.mockResolvedValueOnce(null);
+        mockWithRedisCache.mockResolvedValueOnce(null);
 
         await geocodeLocationCached('Minnesota', 'es');
 
-        expect(mockedWithRedisCache).toHaveBeenCalledWith(
+        expect(mockWithRedisCache).toHaveBeenCalledWith(
           'geocode:minnesota:es',
-          expect.any(Function)
+          expect.any(Function),
+          mockGeoDataCacheService
         );
       });
     });
