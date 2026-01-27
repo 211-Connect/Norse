@@ -372,5 +372,98 @@ describe('geo-search-utils', () => {
       expect(result.queryParams.geo_type).toBe('boundary');
       expect(result.body.geometry).toBeDefined();
     });
+
+    describe('Query type derivation in buildSearchRequest', () => {
+      it('should derive query_type as "text" when query is plain text', () => {
+        const searchStore = {
+          query: 'food',
+          queryLabel: 'food',
+          queryType: 'text',
+          searchLocation: 'Seattle',
+          searchCoordinates: [-122.3321, 47.6062],
+          searchDistance: '10',
+          searchPlaceType: ['place'],
+          searchBbox: null,
+        };
+
+        const result = buildSearchRequest(searchStore);
+
+        expect(result.queryParams.query_type).toBe('text');
+      });
+
+      it('should derive query_type as "taxonomy" when query is taxonomy code', () => {
+        const searchStore = {
+          query: 'BD-1800.2000',
+          queryLabel: 'Food Pantries',
+          queryType: 'taxonomy',
+          searchLocation: 'Seattle',
+          searchCoordinates: [-122.3321, 47.6062],
+          searchDistance: '10',
+          searchPlaceType: ['place'],
+          searchBbox: null,
+        };
+
+        const result = buildSearchRequest(searchStore);
+
+        expect(result.queryParams.query_type).toBe('taxonomy');
+      });
+
+      it('should derive query_type as "taxonomy" for multiple taxonomy codes', () => {
+        const searchStore = {
+          query: 'BD-1800.2250,NL-6000.2000',
+          queryLabel: 'food',
+          queryType: 'text',
+          searchLocation: 'Minnesota',
+          searchCoordinates: [-94.199117, 46.343406],
+          searchDistance: '0',
+          searchPlaceType: ['region'],
+          searchBbox: null,
+        };
+
+        const result = buildSearchRequest(searchStore);
+
+        expect(result.queryParams.query_type).toBe('taxonomy');
+      });
+
+      it('should use storedType when query is plain text even if storedType seems wrong', () => {
+        // Scenario: User typed "food" (text) but state has queryType='taxonomy' from previous search
+        const searchStore = {
+          query: 'food',
+          queryLabel: 'food',
+          queryType: 'taxonomy', // wrong type in state from previous search
+          searchLocation: 'Minnesota',
+          searchCoordinates: [-94.199117, 46.343406],
+          searchDistance: '0',
+          searchPlaceType: ['region'],
+          searchBbox: null,
+        };
+
+        const result = buildSearchRequest(searchStore);
+
+        // buildSearchRequest calls deriveQueryType('food', 'taxonomy')
+        // Since 'food' is not a taxonomy code, deriveQueryType uses storedType
+        // This is CORRECT per priority rules
+        // The real fix is for getQueryType in use-search-resources.ts to pass undefined
+        expect(result.queryParams.query_type).toBe('taxonomy');
+      });
+
+      it('should prioritize taxonomy code pattern over storedType', () => {
+        const searchStore = {
+          query: 'BD-1800.2000',
+          queryLabel: 'BD-1800.2000',
+          queryType: 'text', // stored as text
+          searchLocation: '',
+          searchCoordinates: [],
+          searchDistance: '',
+          searchPlaceType: [],
+          searchBbox: null,
+        };
+
+        const result = buildSearchRequest(searchStore);
+
+        // deriveQueryType should detect taxonomy pattern regardless of storedType
+        expect(result.queryParams.query_type).toBe('taxonomy');
+      });
+    });
   });
 });
