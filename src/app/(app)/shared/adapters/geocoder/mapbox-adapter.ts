@@ -14,12 +14,11 @@ export class MapboxAdapter extends BaseGeocoderAdapter {
     // Try Norse API first (with Redis caching)
     // This provides massive performance improvement for common locations
     try {
-      const res = await fetch(
+      const data = await fetchWrapper(
         `/api/geocode?location=${encodeURIComponent(address)}&locale=${options.locale}`
       );
       
-      if (res.ok) {
-        const data = await res.json();
+      if (data) {
         // Return in the same format as direct Mapbox call
         return [{
           type: 'coordinates',
