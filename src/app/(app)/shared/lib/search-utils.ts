@@ -101,8 +101,10 @@ export function buildSearchRequest(
   if (searchStore.queryLabel?.trim()) {
     baseParams.query_label = searchStore.queryLabel.trim();
   }
-  if (searchStore.queryType?.trim()) {
-    baseParams.query_type = searchStore.queryType.trim();
+  // Derive query type using the same logic as findResources/createUrlParamsForSearch
+  const derivedQueryType = deriveQueryType(searchStore.query, searchStore.queryType);
+  if (derivedQueryType?.trim()) {
+    baseParams.query_type = derivedQueryType.trim();
   }
   if (hasLocation && searchStore.searchLocation?.trim()) {
     baseParams.location = searchStore.searchLocation.trim();
@@ -173,8 +175,17 @@ export function deriveQueryType(query: string | undefined, storedType: string | 
   const normalizedQuery = query?.trim();
   
   // Check if query is a taxonomy code (highest priority)
-  if (normalizedQuery && TaxonomyService.isTaxonomyCode(normalizedQuery)) {
-    return 'taxonomy';
+  // Handle both single codes and comma-separated multiple codes
+  if (normalizedQuery) {
+    // Split by comma and check if all parts are taxonomy codes
+    const parts = normalizedQuery.split(',').map(part => part.trim());
+    const allAreTaxonomyCodes = parts.every(part => 
+      part.length > 0 && TaxonomyService.isTaxonomyCode(part)
+    );
+    
+    if (allAreTaxonomyCodes) {
+      return 'taxonomy';
+    }
   }
 
   // Validate and use storedType if it's valid
