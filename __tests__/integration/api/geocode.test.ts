@@ -20,6 +20,7 @@ describe('Geocode API Endpoint', () => {
 
   it('should return 200 and geocoded data when location is provided', async () => {
     const mockResult = {
+      type: 'coordinates' as const,
       place_type: ['region'],
       bbox: [-97.238218, 43.499476, -89.498952, 49.384458] as [number, number, number, number],
       coordinates: [-94.199117, 46.343406] as [number, number],
@@ -60,6 +61,7 @@ describe('Geocode API Endpoint', () => {
 
   it('should use default locale "en" if not provided', async () => {
     mockGeocodeLocationCached.mockResolvedValue({
+      type: 'coordinates' as const,
       place_type: ['region'],
       bbox: [0, 0, 0, 0],
       coordinates: [0, 0],
