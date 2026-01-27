@@ -5,7 +5,11 @@ import { ResultsSection } from '@/app/(app)/features/search/components/results-s
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { getServerDevice } from '@/app/(app)/shared/lib/get-server-device';
-import { findResources } from '@/app/(app)/shared/services/search-service';
+import {
+  findResources,
+  findResourcesV2,
+} from '@/app/(app)/shared/services/search-service';
+import { geocodeLocationCached } from '@/app/(app)/shared/services/geocoding-service';
 import { getCookies } from 'cookies-next/server';
 import { cookies, headers } from 'next/headers';
 import { Metadata } from 'next/types';
@@ -81,13 +85,62 @@ export const generateMetadata = async ({
     query_label,
   } = await getPageData(paramsResult.locale, searchParamsResult);
 
-  const { results, totalResults } = await findResources(
-    searchParamsResult,
-    locale,
-    parseInt((searchParamsResult?.page as string) ?? '1'),
-    limit,
-    appConfig.tenantId,
-  );
+  // Check if we should use V2 with geospatial filtering (matches logic in SearchPage)
+  const useGeospatialSearch =
+    process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG ===
+      'true' && searchParamsResult?.location;
+
+  let results, totalResults;
+
+  if (useGeospatialSearch) {
+    // Server-side geocoding to get place metadata
+    const placeMetadata = await geocodeLocationCached(
+      searchParamsResult.location,
+      locale,
+    );
+
+    if (placeMetadata) {
+      const searchStore = {
+        query: query || '',
+        queryLabel: query_label || '',
+        queryType: query_label || '',
+        searchLocation: searchParamsResult.location || '',
+        searchCoordinates:
+          searchParamsResult.coords?.split(',').map(Number) ||
+          placeMetadata.coordinates,
+        searchDistance: searchParamsResult.distance || '0',
+        searchPlaceType: placeMetadata.place_type,
+        searchBbox: placeMetadata.bbox,
+      };
+
+      try {
+        ({ results, totalResults } = await findResourcesV2(
+          searchStore,
+          locale,
+          parseInt((searchParamsResult?.page as string) ?? '1'),
+          limit,
+          appConfig.tenantId,
+        ));
+      } catch (error) {
+        console.error(
+          'Geospatial search failed, falling back to legacy:',
+          error,
+        );
+        // Fallback below
+      }
+    }
+  }
+
+  // Fallback or legacy path
+  if (!results) {
+    ({ results, totalResults } = await findResources(
+      searchParamsResult,
+      locale,
+      parseInt((searchParamsResult?.page as string) ?? '1'),
+      limit,
+      appConfig.tenantId,
+    ));
+  }
 
   const title = `${
     query_label || query || t('no_query', { ns: 'page-search' })
@@ -152,15 +205,62 @@ export default async function SearchPage({
     query_type,
   } = await getPageData(paramsResult.locale, searchParamsResult);
 
-  const resultResources = await findResources(
-    searchParamsResult,
-    locale,
-    parseInt((searchParamsResult?.page as string) ?? '1'),
-    limit,
-    appConfig.tenantId,
-  );
+  // Check if we should use V2 with geospatial filtering
+  const useGeospatialSearch =
+    process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG ===
+      'true' && location;
 
-  const { noResults, page, results, totalResults, filters } = resultResources;
+  let useFindResourcesV2 = false;
+  let results, noResults, page, totalResults, filters;
+
+  if (useGeospatialSearch) {
+    // Server-side geocoding to get place metadata
+    const placeMetadata = await geocodeLocationCached(location, locale);
+
+    if (placeMetadata) {
+      const searchStore = {
+        query: query || '',
+        queryLabel: query_label || '',
+        queryType: query_label || '',
+        searchLocation: location || '',
+        searchCoordinates:
+          coords?.split(',').map(Number) || placeMetadata.coordinates,
+        searchDistance: searchParamsResult.distance || '0',
+        searchPlaceType: placeMetadata.place_type,
+        searchBbox: placeMetadata.bbox,
+      };
+
+      try {
+        // Use V2 with complete data
+        ({ results, noResults, page, totalResults, filters } =
+          await findResourcesV2(
+            searchStore,
+            locale,
+            parseInt((searchParamsResult?.page as string) ?? '1'),
+            limit,
+            appConfig.tenantId,
+          ));
+        useFindResourcesV2 = true;
+      } catch (error) {
+        console.error(
+          'Geospatial search failed, falling back to legacy:',
+          error,
+        );
+      }
+    }
+  }
+
+  // Fallback to legacy search if geospatial wasn't used or failed
+  if (!useFindResourcesV2) {
+    ({ results, noResults, page, totalResults, filters } = await findResources(
+      searchParamsResult,
+      locale,
+      parseInt((searchParamsResult?.page as string) ?? '1'),
+      limit,
+      appConfig.tenantId,
+    ));
+  }
+
   return (
     <PageWrapper
       cookies={cookies}
