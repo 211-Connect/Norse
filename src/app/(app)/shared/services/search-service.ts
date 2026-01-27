@@ -274,10 +274,7 @@ export async function findResourcesV2(
   // Build request using decision logic from geo-search-utils
   const { buildSearchRequest } = await import('../lib/search-utils');
   
-  const request = buildSearchRequest({
-    ...searchStore,
-    queryType: deriveQueryType(searchStore['query'], searchStore['queryType']) || '',
-  });
+  const request = buildSearchRequest(searchStore);
 
   // Build query params with pagination
   const queryParams = qs.stringify({
