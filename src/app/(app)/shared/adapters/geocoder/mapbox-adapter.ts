@@ -4,23 +4,36 @@ import {
 } from '@/app/(app)/shared/lib/constants';
 import { BaseGeocoderAdapter } from './base-geocoder-adapter';
 import { fetchWrapper } from '../../lib/fetchWrapper';
+import { GeocodeResult, Coordinates, BBox } from '@/types/resource';
 
 export class MapboxAdapter extends BaseGeocoderAdapter {
   async forwardGeocode(
     address: string,
     options: { locale: string },
-  ): Promise<
-    {
-      type: 'coordinates' | 'invalid';
-      address: string;
-      coordinates: [number, number];
-      country?: string;
-      district?: string;
-      place?: string;
-      postcode?: string;
-      region?: string;
-    }[]
-  > {
+  ): Promise<GeocodeResult[]> {
+    // Try Norse API first (with Redis caching)
+    // This provides massive performance improvement for common locations
+    try {
+      const res = await fetch(
+        `/api/geocode?location=${encodeURIComponent(address)}&locale=${options.locale}`
+      );
+      
+      if (res.ok) {
+        const data = await res.json();
+        // Return in the same format as direct Mapbox call
+        return [{
+          type: 'coordinates',
+          address: data.address,
+          coordinates: data.coordinates as Coordinates,
+          place_type: data.place_type,
+          bbox: data.bbox as BBox,
+        }];
+      }
+    } catch (error) {
+      console.warn('Cached geocode failed, using direct Mapbox API:', error);
+    }
+    
+    // Fallback to direct Mapbox API call (existing behavior)
     const searchParams = new URLSearchParams({
       access_token: MAPBOX_API_KEY || '',
       country: 'US',
@@ -32,18 +45,21 @@ export class MapboxAdapter extends BaseGeocoderAdapter {
       `${MAPBOX_API_BASE_URL}/geocoding/v5/mapbox.places/${address}.json?${searchParams.toString()}`,
     );
 
-    let output: any[] = [];
+    let output: GeocodeResult[] = [];
 
-    data?.features?.forEach((feature) => {
-      let obj = {
+    data?.features?.forEach((feature: any) => {
+      let obj: GeocodeResult = {
         type: 'coordinates',
         address:
           feature?.[`place_name_${options.locale}`] ?? feature?.['place_name'],
-        coordinates: feature?.['geometry']?.['coordinates'],
+        coordinates: feature?.['geometry']?.['coordinates'] as Coordinates,
+        // Capture place_type and bbox for advanced geospatial filtering
+        place_type: feature?.['place_type'],
+        bbox: feature?.['bbox'] as BBox,
       };
 
       // Add detailed location information to the output for analytics event tracking
-      feature?.context?.forEach((item) => {
+      feature?.context?.forEach((item: any) => {
         if (item?.id?.startsWith('postcode')) {
           obj['postcode'] = item?.[`text_${options.locale}`] ?? item?.text;
         } else if (item?.id?.startsWith('place')) {
@@ -66,17 +82,7 @@ export class MapboxAdapter extends BaseGeocoderAdapter {
   async reverseGeocode(
     coords: string,
     options: { locale: string },
-  ): Promise<
-    {
-      address: string;
-      coordinates: [number, number];
-      country?: string;
-      district?: string;
-      place?: string;
-      postcode?: string;
-      region?: string;
-    }[]
-  > {
+  ): Promise<GeocodeResult[]> {
     const searchParams = new URLSearchParams({
       access_token: MAPBOX_API_KEY || '',
       types: 'address',
@@ -88,26 +94,29 @@ export class MapboxAdapter extends BaseGeocoderAdapter {
       `${MAPBOX_API_BASE_URL}/geocoding/v5/mapbox.places/${coords}.json?${searchParams.toString()}`,
     );
 
-    let output = data?.features?.map((feature) => ({
+    let output: GeocodeResult[] = data?.features?.map((feature: any) => ({
+      type: 'coordinates',
       address:
         feature?.[`place_name_${options.locale}`] ?? feature?.['place_name'],
-      coordinates: feature?.['geometry']?.['coordinates'],
-    }));
+      coordinates: feature?.['geometry']?.['coordinates'] as Coordinates,
+    })) || [];
 
     // Add detailed location information to the output for analytics event tracking
-    data?.features[0]?.context?.forEach((item) => {
-      if (item?.id?.startsWith('postcode')) {
-        output[0]['postcode'] = item?.[`text_${options.locale}`] ?? item?.text;
-      } else if (item?.id?.startsWith('place')) {
-        output[0]['place'] = item?.[`text_${options.locale}`] ?? item?.text;
-      } else if (item?.id?.startsWith('district')) {
-        output[0]['district'] = item?.[`text_${options.locale}`] ?? item?.text;
-      } else if (item?.id?.startsWith('region')) {
-        output[0]['region'] = item?.[`text_${options.locale}`] ?? item?.text;
-      } else if (item?.id?.startsWith('country')) {
-        output[0]['country'] = item?.[`text_${options.locale}`] ?? item?.text;
-      }
-    });
+    if (output.length > 0) {
+      data?.features[0]?.context?.forEach((item: any) => {
+        if (item?.id?.startsWith('postcode')) {
+          output[0]['postcode'] = item?.[`text_${options.locale}`] ?? item?.text;
+        } else if (item?.id?.startsWith('place')) {
+          output[0]['place'] = item?.[`text_${options.locale}`] ?? item?.text;
+        } else if (item?.id?.startsWith('district')) {
+          output[0]['district'] = item?.[`text_${options.locale}`] ?? item?.text;
+        } else if (item?.id?.startsWith('region')) {
+          output[0]['region'] = item?.[`text_${options.locale}`] ?? item?.text;
+        } else if (item?.id?.startsWith('country')) {
+          output[0]['country'] = item?.[`text_${options.locale}`] ?? item?.text;
+        }
+      });
+    }
 
     return output;
   }
