@@ -292,7 +292,7 @@ export async function findResourcesV2(
   let response;
 
   try {
-    response = await fetch(searchUrl, {
+    const data = await fetchWrapper(searchUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -300,15 +300,10 @@ export async function findResourcesV2(
         'x-api-version': '1',
         ...(tenantId && { 'x-tenant-id': tenantId }),
       },
-      body: JSON.stringify(request.body),
+      body: request.body,
     });
 
-    if (!response.ok) {
-      // enhanced error handling
-      const errorText = await response.text();
-      console.error('Search API Failed Response:', errorText);
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
+    response = data;
   } catch (err) {
     console.error('Search API error (V2):', {
       error: err,
@@ -332,23 +327,8 @@ export async function findResourcesV2(
     };
   }
 
-  let data;
-  try {
-    data = await response.json();
-  } catch (err) {
-    console.error('Failed to parse search response:', {
-      error: err,
-      url: searchUrl,
-      status: response.status,
-    });
-    return {
-      results: [],
-      noResults: true,
-      totalResults: 0,
-      page: 1,
-      filters: {},
-    };
-  }
+  // fetchWrapper already returns parsed JSON
+  let data = response;
 
   // If response succeeded but data is malformed, return empty results
   if (!data || !data.search) {
@@ -390,7 +370,7 @@ export async function findResourcesV2(
     const fallbackUrl = `${API_URL}/search?${fallbackQueryParams}`;
 
     try {
-      const fallbackResponse = await fetch(fallbackUrl, {
+      const fallbackData = await fetchWrapper(fallbackUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -398,14 +378,11 @@ export async function findResourcesV2(
           'x-api-version': '1',
           ...(tenantId && { 'x-tenant-id': tenantId }),
         },
-        body: JSON.stringify(request.body),
+        body: request.body,
       });
 
-      if (fallbackResponse.ok) {
-        const fallbackData = await fallbackResponse.json();
-        if (fallbackData?.search) {
-          data = fallbackData;
-        }
+      if (fallbackData?.search) {
+        data = fallbackData;
       }
     } catch (err) {
       console.error('Fallback search API error (V2):', {
