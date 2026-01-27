@@ -108,7 +108,10 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
 
       return {
         type: 'invalid',
-        coordinates: null,
+        address: value,
+        coordinates: [0, 0], // Dummy coordinates
+        place_type: [],
+        bbox: undefined,
       };
     },
     [locations, additionalLocations],
@@ -128,19 +131,19 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
           path: '/',
         });
         setCookie(USER_PREF_LOCATION, value, { path: '/' });
-        if ('country' in coords) {
+        if ('country' in coords && coords.country) {
           setCookie(USER_PREF_COUNTRY, coords.country, { path: '/' });
         }
-        if ('district' in coords) {
+        if ('district' in coords && coords.district) {
           setCookie(USER_PREF_DISTRICT, coords.district, { path: '/' });
         }
-        if ('place' in coords) {
+        if ('place' in coords && coords.place) {
           setCookie(USER_PREF_PLACE, coords.place, { path: '/' });
         }
-        if ('postcode' in coords) {
+        if ('postcode' in coords && coords.postcode) {
           setCookie(USER_PREF_POSTCODE, coords.postcode, { path: '/' });
         }
-        if ('region' in coords) {
+        if ('region' in coords && coords.region) {
           setCookie(USER_PREF_REGION, coords.region, { path: '/' });
         }
       } else {
@@ -163,22 +166,25 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
           // Ensure we are only providing updated coordinates to prevent unnecessary rerenders
           let isNewCoords = false;
           const coordinates = coords.coordinates;
+          const prevCoordinates = prev.searchCoordinates;
+          
           if (
             coords.type === 'invalid' ||
             (coords.type === 'coordinates' &&
-              coordinates?.[0] !== prev['userCoordinates']?.[0] &&
-              coordinates?.[1] !== prev['userCoordinates']?.[1]) ||
-            (coordinates?.[0] !== prev['userCoordinates']?.[0] &&
-              coordinates?.[1] !== prev['userCoordinates']?.[1])
+              (coordinates?.[0] !== prevCoordinates?.[0] ||
+                coordinates?.[1] !== prevCoordinates?.[1]))
           ) {
             isNewCoords = true;
           }
 
           return {
             ...prev,
-            ...(isNewCoords ? { searchCoordinates: coordinates ?? [] } : {}),
+            ...(isNewCoords ? { searchCoordinates: coords.type === 'invalid' ? [] : (coordinates ?? []) } : {}),
             searchLocation: value,
             searchLocationValidationError: '',
+            // Capture place metadata for advanced geospatial filtering
+            searchPlaceType: coords.place_type ?? [],
+            searchBbox: coords.bbox ?? null,
           };
         });
       }
