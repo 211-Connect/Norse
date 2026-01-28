@@ -24,14 +24,19 @@ export function GetDirectionsButton({
 }) {
   const { t } = useTranslation('common');
   const [open, setOpen] = useState(false);
+  const [selectedCoordinates, setSelectedCoordinates] = useState<
+    number[] | null
+  >(null);
 
   const getOrigin = useCallback(() => {
-    if (coords) {
-      return coords?.slice()?.reverse()?.join(',');
+    // Use selected coordinates from dialog if available, otherwise use props
+    const originCoords = selectedCoordinates || coords;
+    if (originCoords && originCoords.length === 2) {
+      return originCoords?.slice()?.reverse()?.join(',');
     }
 
     return '';
-  }, [coords]);
+  }, [coords, selectedCoordinates]);
 
   const getDestination = useCallback(() => {
     if (data?.location?.coordinates) {
@@ -79,11 +84,15 @@ export function GetDirectionsButton({
             <DialogTitle>
               {t('update_location.prompt_start_location')}
             </DialogTitle>
-            <DialogDescription></DialogDescription>
           </DialogHeader>
 
           <div>
-            <LocationSearchBar />
+            <LocationSearchBar
+              mode="standalone"
+              onLocationChange={(location, coordinates) => {
+                setSelectedCoordinates(coordinates);
+              }}
+            />
           </div>
 
           <div className="flex items-center justify-between">

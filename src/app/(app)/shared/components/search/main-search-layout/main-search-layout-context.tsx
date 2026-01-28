@@ -11,13 +11,14 @@ import {
 } from 'react';
 import { useSearchResources } from '../../../hooks/use-search-resources';
 
-export interface MainSearchLayoutContextValue
-  extends ReturnType<typeof useSearchResources> {
+export interface MainSearchLayoutContextValue extends ReturnType<
+  typeof useSearchResources
+> {
   shouldSearch: boolean;
   setShouldSearch: Dispatch<SetStateAction<boolean>>;
 }
 
-const MainSearchLayoutContext =
+export const MainSearchLayoutContext =
   createContext<MainSearchLayoutContextValue | null>(null);
 
 export function MainSearchLayoutContextProvider({
