@@ -20,6 +20,7 @@ import { isSuperAdminAccess } from '../Users/access/roles';
 import { hasThemeFieldAccess } from '../Users/access/permissions';
 import { resource } from './tabs/resource';
 import { accessibility } from './tabs/accessibility';
+import { badges } from './tabs/badges';
 
 export const ResourceDirectories: CollectionConfig = {
   slug: 'resource-directories',
@@ -121,6 +122,7 @@ export const ResourceDirectories: CollectionConfig = {
         footer,
         suggestions,
         topics,
+        badges,
         resource,
         search,
         newLayout,

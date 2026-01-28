@@ -39,6 +39,9 @@ import { Badges } from '@/app/(app)/shared/components/badges';
 import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
 import { GetDirectionsButton } from '@/app/(app)/shared/components/get-directions-button';
 import { useTranslation } from 'react-i18next';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { getBadgesForResource } from '@/utils/getBadgesForResource';
+import { useMemo } from 'react';
 
 type ResultProps = {
   data: ResultType;
@@ -48,6 +51,8 @@ export function Result({ data }: ResultProps) {
   const { t } = useTranslation('common');
   const coords = useAtomValue(userCoordinatesAtom);
   const searchCoords = useAtomValue(searchCoordinatesAtom);
+  const appConfig = useAppConfig();
+  const badgeConfigs = appConfig.badges;
 
   const showServiceName = useFlag('showSearchAndResourceServiceName');
   const turnResourceCardTaxonomiesIntoLinks = useFlag(
@@ -62,29 +67,33 @@ export function Result({ data }: ResultProps) {
         )
       : null;
 
-  const labels = []; // TODO: Add Waiver
+  const labels = useMemo(() => {
+    if (!data || !badgeConfigs || badgeConfigs.length === 0) {
+      return [];
+    }
+    return getBadgesForResource(data.facets, badgeConfigs);
+  }, [data, badgeConfigs]);
 
   const taxonomies = data.taxonomies?.filter(({ name }) => name) || [];
 
   return (
     <>
       <Card id={data._id} className="flex flex-col gap-3 print:border-none">
-        {labels.length > 0 ||
-          (data.priority === 1 && (
-            <CardHeader>
-              <div className="flex justify-between">
-                {labels.length > 0 && <Badges items={labels} />}
-                <div className="ml-auto flex items-center justify-start">
-                  {data.priority === 1 && (
-                    <Badge variant="outline" className="flex gap-1">
-                      {t('pinned', { ns: 'page-search' })}
-                      <Pin className="size-4" />
-                    </Badge>
-                  )}
-                </div>
+        {labels.length > 0 || data.priority === 1 ? (
+          <CardHeader>
+            <div className="flex justify-between">
+              {labels.length > 0 && <Badges items={labels} />}
+              <div className="ml-auto flex items-center justify-start">
+                {data.priority === 1 && (
+                  <Badge variant="outline" className="flex gap-1">
+                    {t('pinned', { ns: 'page-search' })}
+                    <Pin className="size-4" />
+                  </Badge>
+                )}
               </div>
-            </CardHeader>
-          ))}
+            </div>
+          </CardHeader>
+        ) : null}
         <CardTitle className="m-0 flex flex-row justify-between gap-2">
           <Link
             className="self-center hover:underline"

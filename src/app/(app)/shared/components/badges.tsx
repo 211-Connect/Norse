@@ -1,21 +1,20 @@
-import { MapIcon } from 'lucide-react';
-
-import { Badge } from './ui/badge';
 import { cn } from '../lib/utils';
+import { Badge, type BadgeProps } from './ui/badge';
 
 interface BadgesProps {
-  items: string[];
+  items: BadgeProps[];
   className?: string;
 }
 
 export function Badges({ items, className = '' }: BadgesProps) {
+  if (!items || items.length === 0) {
+    return null;
+  }
+
   return (
-    <div className={cn('flex flex-wrap gap-1', className)}>
-      {items.map((item) => (
-        <Badge className="flex gap-1" key={item} variant="primary">
-          {item}
-          <MapIcon className="size-4" />
-        </Badge>
+    <div className={cn('flex flex-wrap gap-2', className)}>
+      {items.map((item, index) => (
+        <Badge {...item} key={`badge-${index}-${item.label}`} />
       ))}
     </div>
   );

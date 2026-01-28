@@ -9,12 +9,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/app/(app)/shared/components/ui/card';
-import { Resource, Facet } from '@/types/resource';
+import { Resource, FacetWithTranslation } from '@/types/resource';
 
 const EXCLUDED_TAXONOMY_NAMES = ['Area Served by County'];
 
 interface GroupedFacets {
-  [taxonomyName: string]: Facet[];
+  [taxonomyName: string]: FacetWithTranslation[];
 }
 
 export function FacetsSection({ resource }: { resource: Resource }) {
@@ -28,7 +28,10 @@ export function FacetsSection({ resource }: { resource: Resource }) {
     }
 
     const filtered = facets.filter(
-      (facet) => !EXCLUDED_TAXONOMY_NAMES.includes(facet.taxonomyName),
+      (facet) =>
+        !EXCLUDED_TAXONOMY_NAMES.includes(
+          facet.taxonomyNameEn ?? facet.taxonomyName,
+        ),
     );
 
     if (filtered.length === 0) {
