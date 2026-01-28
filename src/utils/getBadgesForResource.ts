@@ -12,6 +12,7 @@ export function getBadgesForResource(
   badgeConfigs: ResourceDirectoryBadgeListItem[],
 ): BadgeProps[] {
   const badges: BadgeProps[] = [];
+  const seenLabels = new Set<string>();
 
   if (
     !facets ||
@@ -33,10 +34,16 @@ export function getBadgesForResource(
             ? interpolateProperties(config.badgeLabel, facet)
             : facet.termName || facet.termNameEn || facet.code;
 
+          // Skip if badge with same label already exists
+          if (seenLabels.has(label)) {
+            continue;
+          }
+
           const tooltip: string | undefined = config.tooltip
             ? interpolateProperties(config.tooltip, facet)
             : undefined;
 
+          seenLabels.add(label);
           badges.push({
             label,
             tooltip,
@@ -44,8 +51,6 @@ export function getBadgesForResource(
             color: config.color,
             icon: config.icon,
           });
-
-          break;
         }
       }
     } catch (error) {
