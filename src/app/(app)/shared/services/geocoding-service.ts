@@ -64,6 +64,7 @@ export async function geocodeLocationCached(
         return null;
       }
     },
-    geoDataCacheService
+    geoDataCacheService,
+    2592000 // 30 days TTL
   );
 }

@@ -13,7 +13,7 @@ describe('geocoding-service', () => {
   beforeEach(async () => {
     jest.resetModules();
 
-    mockWithRedisCache = jest.fn((key: any, fn: any) => fn());
+    mockWithRedisCache = jest.fn((key: any, fn: any, cacheInstance: any, ttl: number) => fn());
     mockFetchWrapper = jest.fn();
 
     jest.doMock('@/utilities/withRedisCache', () => ({
@@ -69,7 +69,8 @@ describe('geocoding-service', () => {
         expect(mockWithRedisCache).toHaveBeenCalledWith(
           'geocode:minnesota:en',
           expect.any(Function),
-          mockGeoDataCacheService
+          mockGeoDataCacheService,
+          2592000
         );
         expect(mockFetchWrapper).not.toHaveBeenCalled();
       });
@@ -82,7 +83,8 @@ describe('geocoding-service', () => {
         expect(mockWithRedisCache).toHaveBeenCalledWith(
           'geocode:minnesota:en',
           expect.any(Function),
-          mockGeoDataCacheService
+          mockGeoDataCacheService,
+          2592000
         );
       });
     });
@@ -237,7 +239,8 @@ describe('geocoding-service', () => {
         expect(mockWithRedisCache).toHaveBeenCalledWith(
           'geocode:minnesota:es',
           expect.any(Function),
-          mockGeoDataCacheService
+          mockGeoDataCacheService,
+          2592000
         );
       });
     });
