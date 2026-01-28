@@ -20,11 +20,12 @@ export function MapPopup({
   labels = [],
 }: MapPopupProps) {
   const { t } = useTranslation('common');
+  const badges = labels.map((label) => ({ label }));
 
   return (
     <Card className="shadow-md">
       <CardContent className="flex flex-col gap-3">
-        {labels.length > 0 && <Badges items={labels} />}
+        {badges.length > 0 && <Badges items={badges} />}
         <p className="text-sm font-medium">{name}</p>
         {address && (
           <div className="flex flex-col gap-[10px]">
