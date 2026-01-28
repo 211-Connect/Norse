@@ -109,7 +109,7 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
       return {
         type: 'invalid',
         address: value,
-        coordinates: [0, 0], // Dummy coordinates
+        coordinates: appConfig.search.map.center, // Dummy coordinates
         place_type: [],
         bbox: undefined,
       };
