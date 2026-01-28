@@ -223,11 +223,25 @@ export async function findResources(
       })
     : [];
 
+  const aggregations = data?.search?.aggregations ?? {};
+  const filters = Object.keys(aggregations).reduce((acc, key) => {
+    const buckets = aggregations[key]?.buckets;
+    if (
+      !key.startsWith('label_') &&
+      !key.endsWith('_en') &&
+      Array.isArray(buckets) &&
+      buckets.length > 0
+    ) {
+      acc[key] = aggregations[key];
+    }
+    return acc;
+  }, {});
+
   return {
     results,
     noResults,
     totalResults,
     page,
-    filters: data?.search?.aggregations ?? {},
+    filters,
   };
 }
