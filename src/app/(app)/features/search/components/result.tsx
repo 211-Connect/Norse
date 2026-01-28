@@ -79,19 +79,21 @@ export function Result({ data }: ResultProps) {
   return (
     <>
       <Card id={data._id} className="flex flex-col gap-3 print:border-none">
-        <CardHeader>
-          <div className="flex justify-between">
-            {labels.length > 0 && <Badges items={labels} />}
-            <div className="ml-auto flex items-center justify-start">
-              {data.priority === 1 && (
-                <Badge variant="outline" className="flex gap-1">
-                  {t('pinned', { ns: 'page-search' })}
-                  <Pin className="size-4" />
-                </Badge>
-              )}
+        {labels.length > 0 || data.priority === 1 ? (
+          <CardHeader>
+            <div className="flex justify-between">
+              {labels.length > 0 && <Badges items={labels} />}
+              <div className="ml-auto flex items-center justify-start">
+                {data.priority === 1 && (
+                  <Badge variant="outline" className="flex gap-1">
+                    {t('pinned', { ns: 'page-search' })}
+                    <Pin className="size-4" />
+                  </Badge>
+                )}
+              </div>
             </div>
-          </div>
-        </CardHeader>
+          </CardHeader>
+        ) : null}
         <CardTitle className="m-0 flex flex-row justify-between gap-2">
           <Link
             className="self-center hover:underline"
