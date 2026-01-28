@@ -39,8 +39,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(result, {
       headers: {
-        // Allow browser to cache for 1 hour (same as Redis TTL)
-        'Cache-Control': 'public, max-age=3600',
+        // Allow browser to cache for 1 month (same as Redis TTL)
+        'Cache-Control': 'public, max-age=2592000',
       }
     });
   } catch (error) {

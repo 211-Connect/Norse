@@ -19,6 +19,7 @@ export const withRedisCache = async <T>(
   key: RedisCacheKey,
   fetchFunction: () => Promise<T>,
   cacheInstance: CacheService = cacheService,
+  ttl: number = CACHE_TTL,
 ): Promise<T | null> => {
   try {
     const cachedValue = await cacheInstance.get(key);
@@ -41,7 +42,7 @@ export const withRedisCache = async <T>(
 
   if (value != null) {
     try {
-      await cacheInstance.set(key, JSON.stringify(value), CACHE_TTL);
+      await cacheInstance.set(key, JSON.stringify(value), ttl);
     } catch (error) {
       console.error(`Error writing to Redis cache for key ${key}:`, error);
     }
