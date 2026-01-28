@@ -13,6 +13,7 @@ import { Badges } from '@/app/(app)/shared/components/badges';
 import { ContactSection } from './overview-components/contact-section';
 import { DetailsSection } from './overview-components/details-section';
 import { MainSection } from './overview-components/main-section';
+import { FacetsSection } from './overview-components/facets-section';
 import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
 import { Resource } from '@/types/resource';
 
@@ -21,7 +22,7 @@ export function Overview({ resource }: { resource: Resource }) {
 
   return (
     <>
-      <div className="flex-1">
+      <div className="flex flex-1 flex-col gap-3">
         <Card className="print:border-none print:shadow-none">
           <CardHeader>
             <Badges className="mb-3" items={[]} /> {/* TODO: Add Waiver */}
@@ -40,6 +41,7 @@ export function Overview({ resource }: { resource: Resource }) {
             <DetailsSection resource={resource} />
           </CardContent>
         </Card>
+        <FacetsSection resource={resource} />
       </div>
       <Separator className="hidden border-b border-black print:block" />
     </>

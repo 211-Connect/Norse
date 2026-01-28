@@ -11,6 +11,11 @@ export interface Facet {
   termName: string;
 }
 
+export interface FacetWithTranslation extends Facet {
+  taxonomyNameEn?: string;
+  termNameEn?: string;
+}
+
 export interface Address {
   _id?: string;
   city: string;
@@ -70,11 +75,11 @@ export interface ApiResource {
   addresses?: Address[];
   address?: string;
   attribution?: string;
-  createdAt?: string;
+  createdAt?: string | null;
   displayName: string;
   displayPhoneNumber?: string;
   phone?: string;
-  email?: string;
+  email?: string | null;
   languages?: string[];
   lastAssuredDate?: string;
   organizationName?: string;
@@ -82,11 +87,12 @@ export interface ApiResource {
   serviceArea?: ServiceArea;
   serviceAreaName?: string;
   tenant_id?: string;
-  originalId?: string;
-  updatedAt?: string;
+  originalId?: string | null;
+  updatedAt?: string | null;
   website?: string;
   translation?: Translation;
   translations?: Translation[];
+  facetsEn?: Facet[];
 }
 
 export interface Resource {
@@ -122,6 +128,6 @@ export interface Resource {
   serviceArea: ServiceArea | null;
   transportation: string | null;
   accessibility: string | null;
-  facets: Facet[] | null;
+  facets: FacetWithTranslation[] | null;
   translations?: Translation[];
 }

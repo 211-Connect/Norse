@@ -39,6 +39,10 @@ async function fetchAndTransformResource(
       return null;
     }
 
+    const facetsEnMap = new Map(
+      data?.facetsEn?.map((facet) => [facet.code, facet]) ?? [],
+    );
+
     return {
       id: data._id,
       originalId: data?.originalId ?? null,
@@ -84,7 +88,15 @@ async function fetchAndTransformResource(
       serviceArea: data?.serviceArea ?? null,
       transportation: data?.translation?.transportation ?? null,
       accessibility: data?.translation?.accessibility ?? null,
-      facets: data?.translation?.facets ?? null,
+      facets:
+        data?.translation?.facets?.map((facet) => {
+          const englishFacet = facetsEnMap.get(facet.code);
+          return {
+            ...facet,
+            taxonomyNameEn: englishFacet?.taxonomyName,
+            termNameEn: englishFacet?.termName,
+          };
+        }) ?? null,
     };
   });
 }
