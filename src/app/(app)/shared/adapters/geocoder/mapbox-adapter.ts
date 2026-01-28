@@ -5,6 +5,7 @@ import {
 import { BaseGeocoderAdapter } from './base-geocoder-adapter';
 import { fetchWrapper } from '../../lib/fetchWrapper';
 import { GeocodeResult, Coordinates, BBox } from '@/types/resource';
+import { MapboxResponse, MapboxFeature, MapboxContext } from '@/types/geospatial';
 
 export class MapboxAdapter extends BaseGeocoderAdapter {
   async forwardGeocode(
@@ -42,11 +43,11 @@ export class MapboxAdapter extends BaseGeocoderAdapter {
 
     const data = await fetchWrapper(
       `${MAPBOX_API_BASE_URL}/geocoding/v5/mapbox.places/${address}.json?${searchParams.toString()}`,
-    );
+    ) as MapboxResponse;
 
     let output: GeocodeResult[] = [];
 
-    data?.features?.forEach((feature: any) => {
+    data?.features?.forEach((feature: MapboxFeature) => {
       let obj: GeocodeResult = {
         type: 'coordinates',
         address:
@@ -58,7 +59,7 @@ export class MapboxAdapter extends BaseGeocoderAdapter {
       };
 
       // Add detailed location information to the output for analytics event tracking
-      feature?.context?.forEach((item: any) => {
+      feature?.context?.forEach((item: MapboxContext) => {
         if (item?.id?.startsWith('postcode')) {
           obj['postcode'] = item?.[`text_${options.locale}`] ?? item?.text;
         } else if (item?.id?.startsWith('place')) {
@@ -91,9 +92,9 @@ export class MapboxAdapter extends BaseGeocoderAdapter {
 
     const data = await fetchWrapper(
       `${MAPBOX_API_BASE_URL}/geocoding/v5/mapbox.places/${coords}.json?${searchParams.toString()}`,
-    );
+    ) as MapboxResponse;
 
-    let output: GeocodeResult[] = data?.features?.map((feature: any) => ({
+    let output: GeocodeResult[] = data?.features?.map((feature: MapboxFeature) => ({
       type: 'coordinates',
       address:
         feature?.[`place_name_${options.locale}`] ?? feature?.['place_name'],
@@ -102,7 +103,7 @@ export class MapboxAdapter extends BaseGeocoderAdapter {
 
     // Add detailed location information to the output for analytics event tracking
     if (output.length > 0) {
-      data?.features[0]?.context?.forEach((item: any) => {
+      data?.features[0]?.context?.forEach((item: MapboxContext) => {
         if (item?.id?.startsWith('postcode')) {
           output[0]['postcode'] = item?.[`text_${options.locale}`] ?? item?.text;
         } else if (item?.id?.startsWith('place')) {
