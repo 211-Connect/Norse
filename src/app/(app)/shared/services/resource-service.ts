@@ -43,10 +43,6 @@ async function fetchAndTransformResource(
       data?.facetsEn?.map((facet) => [facet.code, facet]) ?? [],
     );
 
-    const facetsEnMap = new Map(
-      data?.facetsEn?.map((facet) => [facet.code, facet]) ?? [],
-    );
-
     return {
       id: data._id,
       originalId: data?.originalId ?? null,
