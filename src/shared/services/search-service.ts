@@ -110,6 +110,7 @@ export class SearchService {
       const buckets = aggregations[key]?.buckets;
       if (
         !key.startsWith('label_') &&
+        !key.endsWith('_en') &&
         Array.isArray(buckets) &&
         buckets.length > 0
       ) {
