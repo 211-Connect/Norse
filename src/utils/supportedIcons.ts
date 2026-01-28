@@ -6,6 +6,7 @@
  */
 
 import {
+  Accessibility,
   AlertCircle,
   AlertTriangle,
   ArrowLeft,
@@ -39,6 +40,7 @@ import {
   Locate,
   Lock,
   Mail,
+  Map,
   MapPin,
   Menu,
   MessageSquare,
@@ -66,6 +68,7 @@ import {
 } from 'lucide-react';
 
 export const SUPPORTED_ICONS = {
+  Accessibility,
   AlertCircle,
   AlertTriangle,
   ArrowLeft,
@@ -99,6 +102,7 @@ export const SUPPORTED_ICONS = {
   Locate,
   Lock,
   Mail,
+  Map,
   MapPin,
   Menu,
   MessageSquare,
