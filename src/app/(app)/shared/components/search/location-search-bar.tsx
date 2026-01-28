@@ -13,7 +13,7 @@ import {
 } from '../../store/search';
 import { useDebounce } from '../../hooks/use-debounce';
 import { useLocations } from '../../hooks/api/use-locations';
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useContext } from 'react';
 import { cn } from '../../lib/utils';
 import { Autocomplete } from '../ui/autocomplete';
 import { DistanceSelect } from './distance-select';
@@ -28,35 +28,69 @@ import {
   USER_PREF_REGION,
 } from '../../lib/constants';
 import { useAppConfig } from '../../hooks/use-app-config';
-import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
+import { MainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
 
-type LocationSearchBarProps = {
+type BaseProps = {
   className?: string;
   focusByDefault?: boolean;
   inputId?: string;
 };
 
-export function LocationSearchBar({
-  className,
-  focusByDefault = false,
-  inputId,
-}: LocationSearchBarProps) {
-  const appConfig = useAppConfig();
+// Integrated mode - uses global atoms and context
+type IntegratedModeProps = BaseProps & {
+  mode?: 'integrated';
+};
 
+// Standalone mode - uses local state and callbacks
+type StandaloneModeProps = BaseProps & {
+  mode: 'standalone';
+  onLocationChange: (location: string, coordinates: number[] | null) => void;
+  initialValue?: string;
+};
+
+type LocationSearchBarProps = IntegratedModeProps | StandaloneModeProps;
+
+export function LocationSearchBar(props: LocationSearchBarProps) {
+  const { className, focusByDefault = false, inputId } = props;
+  const mode = props.mode || 'integrated';
+  const isStandalone = mode === 'standalone';
+
+  const appConfig = useAppConfig();
   const { t } = useTranslation();
   const [shouldSearch, setShouldSearch] = useState(false);
-  const searchLocation = useAtomValue(searchLocationAtom);
+
+  // Local state for standalone mode
+  const [localSearchLocation, setLocalSearchLocation] = useState(
+    isStandalone && 'initialValue' in props ? props.initialValue || '' : '',
+  );
+  const [localPrevSearchLocation, setLocalPrevSearchLocation] = useState('');
+
+  // Global atoms for integrated mode
+  const globalSearchLocation = useAtomValue(searchLocationAtom);
   const coords = useAtomValue(searchCoordinatesAtom);
-  const prevSearchLocation = useAtomValue(prevSearchLocationAtom);
+  const globalPrevSearchLocation = useAtomValue(prevSearchLocationAtom);
+
+  // Select state based on mode
+  const searchLocation = isStandalone
+    ? localSearchLocation
+    : globalSearchLocation;
+  const prevSearchLocation = isStandalone
+    ? localPrevSearchLocation
+    : globalPrevSearchLocation;
   const debouncedSearchLocation = useDebounce(searchLocation, 200);
   const {
     data: locations,
     options,
     additionalLocations,
-  } = useLocations(shouldSearch ? debouncedSearchLocation : prevSearchLocation);
+  } = useLocations(
+    shouldSearch ? debouncedSearchLocation : prevSearchLocation,
+    isStandalone, // Exclude additional locations in standalone mode
+  );
   const validationError = useAtomValue(searchLocationValidationErrorAtom);
 
-  const { setSearch } = useMainSearchLayoutContext();
+  // Use context only if available (for main search integration)
+  const context = useContext(MainSearchLayoutContext);
+  const setSearch = context?.setSearch;
 
   const findCoords = useCallback(
     (value: string) => {
@@ -121,42 +155,52 @@ export function LocationSearchBar({
 
       setShouldSearch(false);
 
-      setSearch((prev) => {
-        // Ensure we are only providing updated coordinates to prevent unnecessary rerenders
-        let isNewCoords = false;
-        const coordinates = coords.coordinates;
-        if (
-          coords.type === 'invalid' ||
-          (coords.type === 'coordinates' &&
-            coordinates?.[0] !== prev['userCoordinates']?.[0] &&
-            coordinates?.[1] !== prev['userCoordinates']?.[1]) ||
-          (coordinates?.[0] !== prev['userCoordinates']?.[0] &&
-            coordinates?.[1] !== prev['userCoordinates']?.[1])
-        ) {
-          isNewCoords = true;
-        }
+      if (isStandalone && 'onLocationChange' in props) {
+        setLocalSearchLocation(value);
+        props.onLocationChange(value, coords.coordinates || null);
+      } else {
+        setSearch?.((prev) => {
+          // Ensure we are only providing updated coordinates to prevent unnecessary rerenders
+          let isNewCoords = false;
+          const coordinates = coords.coordinates;
+          if (
+            coords.type === 'invalid' ||
+            (coords.type === 'coordinates' &&
+              coordinates?.[0] !== prev['userCoordinates']?.[0] &&
+              coordinates?.[1] !== prev['userCoordinates']?.[1]) ||
+            (coordinates?.[0] !== prev['userCoordinates']?.[0] &&
+              coordinates?.[1] !== prev['userCoordinates']?.[1])
+          ) {
+            isNewCoords = true;
+          }
 
-        return {
-          ...prev,
-          ...(isNewCoords ? { searchCoordinates: coordinates ?? [] } : {}),
-          searchLocation: value,
-          searchLocationValidationError: '',
-        };
-      });
+          return {
+            ...prev,
+            ...(isNewCoords ? { searchCoordinates: coordinates ?? [] } : {}),
+            searchLocation: value,
+            searchLocationValidationError: '',
+          };
+        });
+      }
     },
-    [findCoords, setSearch],
+    [findCoords, setSearch, isStandalone, props],
   );
 
   const handleInputChange = useCallback(
     (value: string) => {
       setShouldSearch(true);
 
-      setSearch((prev) => ({
-        ...prev,
-        prevSearchLocation: value,
-      }));
+      if (isStandalone) {
+        setLocalSearchLocation(value);
+        setLocalPrevSearchLocation(value);
+      } else {
+        setSearch?.((prev) => ({
+          ...prev,
+          prevSearchLocation: value,
+        }));
+      }
     },
-    [setSearch],
+    [setSearch, isStandalone],
   );
 
   return (
@@ -177,7 +221,7 @@ export function LocationSearchBar({
         onInputChange={handleInputChange}
         onValueChange={setSearchLocation}
         value={searchLocation}
-        optionsPopoverClassName="max-h-[calc(100dvh-190px)] mt-[60px] sm:max-h-[calc(100dvh-310px)]"
+        optionsPopoverClassName={`max-h-[calc(100dvh-190px)] ${isStandalone ? 'mt-[10px] sm:max-h-[calc(100dvh-250px)]' : 'mt-[60px] sm:max-h-[calc(100dvh-310px)]'}`}
         autoSelectIndex={coords?.length === 2 ? undefined : 1}
         autoSelectOnBlurIndex={1}
         blurOnOptionsInteraction
@@ -185,10 +229,12 @@ export function LocationSearchBar({
       {validationError && (
         <p className="min-h-4 px-3 text-xs text-red-500">{validationError}</p>
       )}
-      <div className="flex justify-between">
-        <UseMyLocationButton />
-        <DistanceSelect className="ml-auto" />
-      </div>
+      {!isStandalone && (
+        <div className="flex justify-between">
+          <UseMyLocationButton />
+          <DistanceSelect className="ml-auto" />
+        </div>
+      )}
     </div>
   );
 }

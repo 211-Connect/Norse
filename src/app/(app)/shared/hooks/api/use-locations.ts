@@ -7,7 +7,7 @@ import { useMemo } from 'react';
 import { EarthIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-export function useLocations(searchTerm: string) {
+export function useLocations(searchTerm: string, excludeEverywhere = false) {
   const adapter = useGeocodingAdapter();
   const { t, i18n } = useTranslation();
 
@@ -43,16 +43,18 @@ export function useLocations(searchTerm: string) {
 
   const options = useMemo(() => {
     return [
-      ...additionalLocations.map((loc) => ({
-        value: loc.address,
-        Icon: EarthIcon,
-      })),
+      ...(excludeEverywhere
+        ? []
+        : additionalLocations.map((loc) => ({
+            value: loc.address,
+            Icon: EarthIcon,
+          }))),
       ...data.map((loc) => ({
         value: loc.address,
         Icon: EarthIcon,
       })),
     ];
-  }, [data, additionalLocations]);
+  }, [data, additionalLocations, excludeEverywhere]);
 
   return { data, options, additionalLocations };
 }
