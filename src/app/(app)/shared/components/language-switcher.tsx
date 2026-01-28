@@ -21,6 +21,19 @@ const LANGUAGE_NAME = {
   mww: 'Hmong',
 };
 
+const getLanguageName = (locale: string) => {
+  if (LANGUAGE_NAME[locale]) {
+    return LANGUAGE_NAME[locale];
+  }
+  try {
+    return new Intl.DisplayNames([locale], {
+      type: 'language',
+    }).of(locale);
+  } catch (error) {
+    return locale;
+  }
+};
+
 export const LanguageSwitcher = () => {
   const appConfig = useAppConfig();
   const router = useRouter();
@@ -59,10 +72,6 @@ export const LanguageSwitcher = () => {
     return null;
   }
 
-  const languageNames = new Intl.DisplayNames(appConfig.i18n.locales, {
-    type: 'language',
-  });
-
   return (
     <li>
       <Select
@@ -81,17 +90,14 @@ export const LanguageSwitcher = () => {
             <LanguagesIcon className="size-4" />
             <SelectValue placeholder={t('header.language_select_label')}>
               <span className="capitalize">
-                {new Intl.DisplayNames([currentLanguage], {
-                  type: 'language',
-                }).of(currentLanguage)}
+                {getLanguageName(currentLanguage)}
               </span>
             </SelectValue>
           </div>
         </SelectTrigger>
         <SelectContent>
           {appConfig.i18n.locales.map((locale: string) => {
-            const languageName =
-              LANGUAGE_NAME[locale] || languageNames.of(locale);
+            const languageName = getLanguageName(locale);
 
             return (
               <SelectItem key={locale} value={locale}>
