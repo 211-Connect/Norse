@@ -11,7 +11,11 @@ import {
 } from '@/app/(app)/shared/components/ui/card';
 import { Resource, FacetWithTranslation } from '@/types/resource';
 
-const EXCLUDED_TAXONOMY_NAMES = ['Area Served by County'];
+const EXCLUDED_TAXONOMY_NAMES = [
+  'Area Served by County',
+  'Days Of The Week',
+  'Call Centers',
+];
 
 interface GroupedFacets {
   [taxonomyName: string]: FacetWithTranslation[];
