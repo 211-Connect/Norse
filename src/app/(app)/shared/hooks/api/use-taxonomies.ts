@@ -11,14 +11,11 @@ export function useTaxonomies(searchTerm: string = '') {
   const { i18n } = useTranslation();
 
   const [savedData, setSavedData] = useState<any[]>([]);
-
   const { data } = useQuery({
     initialData: [],
     placeholderData: (prev) => prev,
     queryKey: ['taxonomies', i18n.language, searchTerm],
     queryFn: async () => {
-      if (!i18n.language || searchTerm.length === 0) return [];
-
       const taxonomies = await TaxonomyService.getTaxonomies(searchTerm, {
         locale: i18n.language,
         tenantId: appConfig.tenantId,
@@ -27,7 +24,10 @@ export function useTaxonomies(searchTerm: string = '') {
 
       return taxonomies;
     },
+    enabled: !!i18n.language && searchTerm.length > 0,
+    staleTime: 30000, // 30 seconds
+    gcTime: 60000, // 60 seconds
   });
 
-  return { data: savedData, displayData: data };
+  return { data: savedData, displayData: data || [] };
 }
