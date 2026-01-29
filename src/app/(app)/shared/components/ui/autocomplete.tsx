@@ -183,7 +183,7 @@ export function Autocomplete(props: AutocompleteProps) {
 
   const selectedOption = useMemo(() => {
     return rest.options?.find((option) => option.value === value);
-  }, [options]);
+  }, [rest.options, value]);
 
   // Attach refs
   useEffect(() => {
