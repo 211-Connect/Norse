@@ -49,6 +49,7 @@ next-env.d.ts
 .env
 .env.new
 .env.old
+.env.test
 
 public/locales/**/dynamic.json
 public/locales/**/categories.json

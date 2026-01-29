@@ -1,7 +1,7 @@
 'use server';
 
 import { Tenant } from '@/payload/payload-types';
-import { withRedisCache } from '@/payload/utilities';
+import { withRedisCache } from '@/utilities/withRedisCache';
 import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
 
 export async function findTenantByHost(host: string): Promise<Tenant | null> {
