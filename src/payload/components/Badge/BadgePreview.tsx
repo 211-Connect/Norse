@@ -17,8 +17,14 @@ export const BadgePreview: FC<BadgePreviewProps> = ({ path }) => {
     return path.replace(/\.[^.]+$/, '');
   }, [path]);
 
-  const badgeData: ResourceDirectoryBadgeListItem = getDataByPath(badgeRowPath);
-  const displayLabel = badgeData.badgeLabel || 'Preview';
+  const badgeData: ResourceDirectoryBadgeListItem | undefined =
+    getDataByPath(badgeRowPath);
+
+  if (!badgeData) {
+    return null;
+  }
+
+  const displayLabel = badgeData?.badgeLabel || 'Preview';
 
   return (
     <div className="badge-preview">
