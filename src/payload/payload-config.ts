@@ -93,10 +93,14 @@ const config = buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URI,
-      max: 4,
+      max: 8,
       min: 2,
-      idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 10000,
+      idle_in_transaction_session_timeout: 20_000,
+      keepAliveInitialDelayMillis: 10_000,
+      statement_timeout: 15_000,
+      query_timeout: 10_000,
+      idleTimeoutMillis: 30_000,
+      connectionTimeoutMillis: 20_000,
     },
     allowIDOnCreate: true,
     beforeSchemaInit: [
