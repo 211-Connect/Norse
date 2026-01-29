@@ -12,9 +12,13 @@ export function Badges({ items, className = '' }: BadgesProps) {
   }
 
   return (
-    <div className={cn('flex flex-wrap gap-2', className)}>
+    <div className={cn('flex max-w-full flex-wrap gap-2', className)}>
       {items.map((item, index) => (
-        <Badge {...item} key={`badge-${index}-${item.label}`} />
+        <Badge
+          {...item}
+          key={`badge-${index}-${item.label}`}
+          className="max-w-full"
+        />
       ))}
     </div>
   );

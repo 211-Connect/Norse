@@ -52,7 +52,23 @@ function Badge({
   ...props
 }: BadgeProps) {
   const [showTooltip, setShowTooltip] = React.useState(false);
+  const [tooltipPosition, setTooltipPosition] = React.useState<{
+    top: number;
+    left: number;
+  } | null>(null);
+  const badgeRef = React.useRef<HTMLSpanElement>(null);
   const IconComponent = useIconComponent(icon);
+
+  const handleMouseEnter = () => {
+    if (tooltip && badgeRef.current) {
+      const rect = badgeRef.current.getBoundingClientRect();
+      setTooltipPosition({
+        top: rect.top + window.scrollY,
+        left: rect.left + rect.width / 2 + window.scrollX,
+      });
+      setShowTooltip(true);
+    }
+  };
 
   // If variant is provided, use CVA-based rendering (static badges)
   if (variant) {
@@ -115,43 +131,41 @@ function Badge({
   };
 
   return (
-    <span
-      style={getDynamicStyles()}
-      onMouseEnter={() => tooltip && setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
-      className={className}
-      {...props}
-    >
-      <span>{label || children}</span>
-      {IconComponent && <IconComponent size={14} aria-hidden="true" />}
-      {tooltip && showTooltip && (
+    <>
+      <span
+        ref={badgeRef}
+        style={getDynamicStyles()}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={() => setShowTooltip(false)}
+        className={cn('min-w-0 max-w-full', className)}
+        {...props}
+      >
+        <span className="min-w-0 truncate">{label || children}</span>
+        {IconComponent && (
+          <IconComponent size={14} aria-hidden="true" className="shrink-0" />
+        )}
+      </span>
+      {tooltip && showTooltip && tooltipPosition && (
         <span
+          className="pointer-events-none fixed z-[9999] whitespace-nowrap"
           style={{
-            position: 'absolute',
-            bottom: 'calc(100% + 8px)',
-            left: '50%',
-            transform: 'translateX(-50%)',
+            top: `${tooltipPosition.top - 8}px`,
+            left: `${tooltipPosition.left}px`,
+            transform: 'translate(-50%, -100%)',
             backgroundColor: 'rgba(0, 0, 0, 0.9)',
             color: 'white',
             padding: '6px 10px',
             borderRadius: '4px',
             fontSize: '12px',
             fontWeight: 400,
-            whiteSpace: 'nowrap',
-            zIndex: 1000,
-            pointerEvents: 'none',
             lineHeight: 'normal',
             boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
           }}
         >
           {tooltip}
           <span
+            className="absolute left-1/2 top-full -translate-x-1/2"
             style={{
-              content: '""',
-              position: 'absolute',
-              top: '100%',
-              left: '50%',
-              transform: 'translateX(-50%)',
               borderWidth: '4px',
               borderStyle: 'solid',
               borderColor:
@@ -160,7 +174,7 @@ function Badge({
           />
         </span>
       )}
-    </span>
+    </>
   );
 }
 
