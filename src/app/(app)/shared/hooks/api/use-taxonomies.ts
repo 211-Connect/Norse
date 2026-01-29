@@ -26,7 +26,7 @@ export function useTaxonomies(searchTerm: string = '') {
     },
     enabled: !!i18n.language && searchTerm.length > 0,
     staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 30 * 60 * 1000, // 30 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
   });
 
   return { data: savedData, displayData: data || [] };
