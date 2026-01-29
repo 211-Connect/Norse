@@ -15,16 +15,18 @@ import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 const i18nNamespaces = ['page-search', 'page-resource', 'common'];
 
 const getPageData = cache(async function (
-  stringifiedParams: string,
-  stringifiedSearchParams: string,
+  locale: string,
+  searchParams: {
+    location: string;
+    coords: string;
+    query: string;
+    query_label: string;
+    query_type: string;
+  },
 ) {
-  const { locale } = JSON.parse(stringifiedParams);
-  const searchParamsResult = JSON.parse(stringifiedSearchParams);
-
   const appConfig = await getAppConfigWithoutHost(locale);
 
-  const { location, coords, query, query_label, query_type } =
-    searchParamsResult;
+  const { location, coords, query, query_label, query_type } = searchParams;
   const cookieList = await getCookies({ cookies });
 
   const { t, resources } = await initTranslations(
@@ -53,10 +55,21 @@ const getPageData = cache(async function (
 export const generateMetadata = async ({
   params,
   searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{
+    location: string;
+    coords: string;
+    query: string;
+    query_label: string;
+    query_type: string;
+    page: string;
+    distance: string;
+  }>;
 }): Promise<Metadata> => {
   const [paramsResult, searchParamsResult] = await Promise.all([
-    await params,
-    await searchParams,
+    params,
+    searchParams,
   ]);
 
   const {
@@ -66,10 +79,7 @@ export const generateMetadata = async ({
     locale,
     query,
     query_label,
-  } = await getPageData(
-    JSON.stringify(paramsResult),
-    JSON.stringify(searchParamsResult),
-  );
+  } = await getPageData(paramsResult.locale, searchParamsResult);
 
   const { results, totalResults } = await findResources(
     searchParamsResult,
@@ -105,7 +115,21 @@ export const generateMetadata = async ({
   };
 };
 
-export default async function SearchPage({ params, searchParams }) {
+export default async function SearchPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{
+    location: string;
+    coords: string;
+    query: string;
+    query_label: string;
+    query_type: string;
+    page: string;
+    distance: string;
+  }>;
+}) {
   const device = getServerDevice((await headers()).get('user-agent')!);
 
   const [paramsResult, searchParamsResult] = await Promise.all([
@@ -124,20 +148,17 @@ export default async function SearchPage({ params, searchParams }) {
     query,
     query_label,
     query_type,
-  } = await getPageData(
-    JSON.stringify(paramsResult),
-    JSON.stringify(searchParamsResult),
+  } = await getPageData(paramsResult.locale, searchParamsResult);
+
+  const resultResources = await findResources(
+    searchParamsResult,
+    locale,
+    parseInt((searchParamsResult?.page as string) ?? '1'),
+    limit,
+    appConfig.tenantId,
   );
 
-  const { noResults, page, results, totalResults, filters } =
-    await findResources(
-      searchParamsResult,
-      locale,
-      parseInt((searchParamsResult?.page as string) ?? '1'),
-      limit,
-      appConfig.tenantId,
-    );
-
+  const { noResults, page, results, totalResults, filters } = resultResources;
   return (
     <PageWrapper
       cookies={cookies}
