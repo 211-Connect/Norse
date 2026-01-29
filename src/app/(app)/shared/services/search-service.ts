@@ -1,4 +1,5 @@
 import { ExtractAtomValue } from 'jotai';
+import qs from 'qs';
 
 import { TaxonomyService } from './taxonomy-service';
 import { deriveQueryType } from '../lib/search-utils';
