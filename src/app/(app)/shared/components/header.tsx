@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { signOut, useSession } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
 import { Fragment, useCallback, useMemo } from 'react';
@@ -272,11 +273,13 @@ export function Header() {
             aria-label={t('header.home') as string}
             onClick={handleLogoClick}
           >
-            <img
-              src={logoUrl}
-              alt={t('header.home') as string}
-              className="max-h-full w-auto object-contain lg:max-w-[400px]"
-            />
+            {logoUrl && (
+              <Image
+                src={logoUrl}
+                alt={t('header.home') as string}
+                className="max-h-full w-auto object-contain lg:max-w-[400px]"
+              />
+            )}
           </div>
         </div>
 
@@ -303,15 +306,17 @@ export function Header() {
               <SheetHeader>
                 <SheetTitle>
                   <Link href="/" aria-label={t('header.home') as string}>
-                    <img
-                      src={appConfig?.brand?.logoUrl}
-                      alt={t('header.home') as string}
-                      style={{
-                        height: 'auto',
-                        maxHeight: 64,
-                        maxWidth: '90%',
-                      }}
-                    />
+                    {appConfig?.brand?.logoUrl && (
+                      <Image
+                        src={appConfig.brand.logoUrl}
+                        alt={t('header.home') as string}
+                        style={{
+                          height: 'auto',
+                          maxHeight: 64,
+                          maxWidth: '90%',
+                        }}
+                      />
+                    )}
                   </Link>
                 </SheetTitle>
                 <SheetDescription />
