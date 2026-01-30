@@ -75,10 +75,12 @@ services:
     command: redis-server --appendonly yes --requirepass norse-ng
 
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v3.9.1
     restart: always
     ports:
       - 9090:9090
+    environment:
+      - PROMETHEUS_TOKEN=my-super-secure-token
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
@@ -92,7 +94,7 @@ services:
       - app
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/12.3
     restart: always
     ports:
       - 3001:3000

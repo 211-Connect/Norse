@@ -8,3 +8,6 @@ scrape_configs:
       - targets: ['app:3000']
     metrics_path: '/api/metrics'
     scrape_interval: 5s
+    authorization:
+      type: Bearer
+      credentials: ${PROMETHEUS_TOKEN}
