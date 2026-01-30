@@ -104,6 +104,7 @@ services:
       - grafana_data:/var/lib/grafana
     depends_on:
       - prometheus
+
 volumes:
   postgres_data:
   minio_data:
