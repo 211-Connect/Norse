@@ -10,4 +10,4 @@ scrape_configs:
     scrape_interval: 5s
     authorization:
       type: Bearer
-      credentials: ${PROMETHEUS_TOKEN}
+      credentials: my-super-secure-token
