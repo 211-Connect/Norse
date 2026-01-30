@@ -30,6 +30,8 @@ export default async function NotFoundPage() {
   const headerList = await headers();
   const cookieList = await getCookies({ cookies });
 
+  const headersList = await headers();
+  const nonce = headersList.get('x-nonce') ?? '';
   const locale = headerList.get('x-next-i18n-router-locale') || 'en';
 
   const appConfig = await getAppConfigWithoutHost(locale);
@@ -44,6 +46,7 @@ export default async function NotFoundPage() {
     <PageWrapper
       cookies={cookieList}
       translationData={{ i18nNamespaces, locale, resources }}
+      nonce={nonce}
     >
       <div className="relative flex flex-1 flex-col">
         <Image
