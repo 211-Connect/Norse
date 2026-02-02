@@ -5,6 +5,11 @@ import KeycloakProvider from 'next-auth/providers/keycloak';
 import { Tenant } from './payload/payload-types';
 import { fetchWrapper } from './app/(app)/shared/lib/fetchWrapper';
 
+const maskValue = (value: string) => {
+  if (!value || value.length <= 8) return '***';
+  return `${value.slice(0, 4)}${'*'.repeat(value.length - 8)}${value.slice(-4)}`;
+};
+
 // Helper to remove null/undefined values from object
 const omitNilValues = <T extends Record<string, any>>(obj: T): Partial<T> => {
   return Object.fromEntries(
@@ -78,6 +83,11 @@ const createAuthOptions = ({
             },
           );
 
+          console.log(
+            'Refreshed access token successfully for issuer:',
+            keycloak?.issuer,
+          );
+
           return {
             ...token,
             accessToken: data.access_token,
@@ -86,6 +96,12 @@ const createAuthOptions = ({
           };
         } catch (err: any) {
           console.error('Error refreshing access token:', err);
+          console.log(`Error refreshing access token: ${keycloak?.issuer}`, {
+            client_id: process.env.KEYCLOAK_CLIENT_ID || '',
+            client_secret: maskValue(keycloak?.clientSecret || ''),
+            grant_type: 'refresh_token',
+            refresh_token: maskValue(token.refreshToken as string),
+          });
 
           token.error = 'RefreshAccessTokenError';
           return token;
