@@ -82,10 +82,9 @@ export const generateMetadata = async ({
     query_label,
   } = await getPageData(paramsResult.locale, searchParamsResult);
 
-  const { results, totalResults } = await findResources(
+  const { results, totalResults } = await getSearchResults(
     searchParamsResult,
     locale,
-    parseInt((searchParamsResult?.page as string) ?? '1'),
     limit,
     appConfig.tenantId,
   );
@@ -151,10 +150,9 @@ export default async function SearchPage({
     query_type,
   } = await getPageData(paramsResult.locale, searchParamsResult);
 
-  const resultResources = await findResources(
+  const resultResources = await getSearchResults(
     searchParamsResult,
     locale,
-    parseInt((searchParamsResult?.page as string) ?? '1'),
     limit,
     appConfig.tenantId,
   );

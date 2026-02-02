@@ -49,52 +49,50 @@ export const useSearchResources = () => {
       );
   }, [topics, search.searchTerm]);
 
-  const findCode = useCallback(
-    (value: string) => {
+  const resolveSearchTerm = useCallback(
+    (value: string): { query: string; queryType: string } => {
+      // Check for exact taxonomy match
       const taxonomy = taxonomies.find(
         (tax) => tax?.name?.toLowerCase() === value.toLowerCase(),
       );
-      if (taxonomy) return taxonomy.code;
+      if (taxonomy) {
+        return { query: taxonomy.code, queryType: 'taxonomy' };
+      }
 
+      // Check for suggestions (but keep as text search per existing logic)
       const suggestion = suggestions.find(
         (sugg) => sugg?.value?.toLowerCase() === value.toLowerCase(),
       );
-      if (suggestion) return suggestion.taxonomies;
+      if (suggestion) {
+        // Preserves existing behavior: returns suggestion code but uses text/derived type
+        return {
+          query: suggestion.taxonomies,
+          queryType: deriveQueryType(value, undefined),
+        };
+      }
 
+      // Check for reduced topics/categories
       const category = reducedTopics.find(
         (cat) => cat?.name?.toLowerCase() === value.toLowerCase(),
       );
-      if (category) return category.query;
+      if (category) {
+        return {
+          query: category.query ?? value,
+          queryType: 'taxonomy',
+        };
+      }
 
-      return value;
+      // Default fallback
+      return {
+        query: value,
+        queryType: deriveQueryType(value, undefined),
+      };
     },
     [reducedTopics, suggestions, taxonomies],
   );
 
-  const getQueryType = useCallback(
-    (value, query) => {
-      // Check if user selected a taxonomy by name from the dropdown
-      const taxonomy = taxonomies.find(
-        (tax) => tax?.name?.toLowerCase() === value.toLowerCase(),
-      );
-      if (taxonomy) return 'taxonomy';
-
-      // Check if user selected a category from the dropdown
-      const category = reducedTopics.find(
-        (cat) => cat?.name?.toLowerCase() === value.toLowerCase(),
-      );
-      if (category) return 'taxonomy';
-
-      // For all other cases (including suggestions), derive based on the user input
-      // This ensures "food" returns 'text' even if it matches suggestion values
-      return deriveQueryType(value, undefined);
-    },
-    [reducedTopics, taxonomies],
-  );
-
   return {
-    findCode,
-    getQueryType,
+    resolveSearchTerm,
     locations,
     reducedTopics,
     search,
