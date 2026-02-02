@@ -1,3 +1,6 @@
+import { BBox, Point } from 'geojson';
+export type { BBox, Point };
+
 export interface Taxonomy {
   _id?: string;
   code: string;
@@ -40,8 +43,6 @@ export interface PhoneNumber {
 
 export type Coordinates = [number, number];
 
-export type BBox = [number, number, number, number];
-
 export interface GeocodeResult {
   type: 'coordinates' | 'invalid';
   address: string;
@@ -53,11 +54,6 @@ export interface GeocodeResult {
   region?: string;
   place_type?: string[];
   bbox?: BBox;
-}
-
-export interface Location {
-  type: 'Point';
-  coordinates: number[];
 }
 
 export interface ServiceArea {
@@ -90,7 +86,7 @@ export interface Translation {
 
 export interface ApiResource {
   _id: string;
-  location?: Location;
+  location?: Point;
   addresses?: Address[];
   address?: string;
   attribution?: string;
@@ -139,9 +135,7 @@ export interface Resource {
   serviceAreaName: string | null;
   categories: Taxonomy[] | null;
   lastAssuredOn: string;
-  location: {
-    coordinates: number[];
-  };
+  location: Point;
   organizationName: string | null;
   organizationDescription: string | null;
   serviceArea: ServiceArea | null;

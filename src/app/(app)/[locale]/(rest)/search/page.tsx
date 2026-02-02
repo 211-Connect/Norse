@@ -5,13 +5,17 @@ import { ResultsSection } from '@/app/(app)/features/search/components/results-s
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { getServerDevice } from '@/app/(app)/shared/lib/get-server-device';
-import { findResources, findResourcesV2 } from '@/app/(app)/shared/services/search-service';
+import {
+  findResources,
+  findResourcesV2,
+} from '@/app/(app)/shared/services/search-service';
 import { geocodeLocationCached } from '@/app/(app)/shared/services/geocoding-service';
 import { getCookies } from 'cookies-next/server';
 import { cookies, headers } from 'next/headers';
 import { Metadata } from 'next/types';
 import { cache } from 'react';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
+import { FindResourcesResult } from '@/types/search';
 
 const i18nNamespaces = ['page-search', 'page-resource', 'common'];
 

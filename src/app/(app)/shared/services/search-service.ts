@@ -7,10 +7,17 @@ import { searchAtom } from '../store/search';
 import { API_URL } from '../lib/constants';
 import { fetchWrapper } from '../lib/fetchWrapper';
 import { transformFacetsToArray } from '../utils/toFacetsWithTranslation';
+import { buildSearchRequest } from '../lib/search-utils';
+import {
+  FindResourcesResult,
+  SearchResponseRoot,
+  SearchHit,
+  SearchResultItem,
+  SearchStoreState,
+} from '@/types/search';
+import { Point } from 'geojson';
 
-export function createUrlParamsForSearch(
-  searchStore: ExtractAtomValue<typeof searchAtom>,
-) {
+export function createUrlParamsForSearch(searchStore: SearchStoreState) {
   const hasLocation = searchStore['searchCoordinates']?.length === 2;
 
   const urlParams = {
@@ -36,12 +43,12 @@ export function createUrlParamsForSearch(
 }
 
 export async function findResources(
-  query: any,
+  query: Record<string, string>,
   locale: string,
   page: number,
   limit?: number,
   tenantId?: string,
-) {
+): Promise<FindResourcesResult> {
   if (isNaN(page)) {
     page = 1;
   }
@@ -50,29 +57,34 @@ export async function findResources(
     limit = 25;
   }
 
-  let data;
-  let responseStatusCode;
-  let responseHeaders;
+  const pageStr = String(page);
+  const limitStr = String(limit);
+
+  let data: SearchResponseRoot | null = null;
+
   try {
     const searchParams = new URLSearchParams({
       ...query,
-      page: String(page),
+      page: pageStr,
       locale,
-      limit,
+      limit: limitStr,
     });
 
     if (tenantId) {
       searchParams.append('tenant_id', tenantId);
     }
 
-    data = await fetchWrapper(`${API_URL}/search?${searchParams.toString()}`, {
-      headers: {
-        'accept-language': locale,
-        'x-api-version': '1',
-        ...(tenantId && { 'x-tenant-id': tenantId }),
+    data = await fetchWrapper<SearchResponseRoot>(
+      `${API_URL}/search?${searchParams.toString()}`,
+      {
+        headers: {
+          'accept-language': locale,
+          'x-api-version': '1',
+          ...(tenantId && { 'x-tenant-id': tenantId }),
+        },
+        cache: 'no-store',
       },
-      cache: 'no-store',
-    });
+    );
   } catch (err) {
     console.error('Search API error:', {
       error: err,
@@ -101,8 +113,6 @@ export async function findResources(
       page,
       locale,
       limit,
-      statusCode: responseStatusCode,
-      headers: responseHeaders,
     });
     return {
       results: [],
@@ -125,17 +135,17 @@ export async function findResources(
     try {
       const fallbackParams = new URLSearchParams({
         ...query,
-        page: String(page),
+        page: pageStr,
         query_type: 'more_like_this',
         locale,
-        limit: String(limit),
+        limit: limitStr,
       });
 
       if (tenantId) {
         fallbackParams.append('tenant_id', tenantId);
       }
 
-      const fallbackData = await fetchWrapper(
+      const fallbackData = await fetchWrapper<SearchResponseRoot>(
         `${API_URL}/search?${fallbackParams.toString()}`,
         {
           headers: {
@@ -163,7 +173,7 @@ export async function findResources(
 
     totalResults =
       typeof data?.search?.hits?.total !== 'number'
-        ? (data?.search?.hit?.total?.value ?? 0)
+        ? (data?.search?.hits?.total?.value ?? 0)
         : (data?.search?.hits?.total ?? 0);
   }
 
@@ -171,53 +181,56 @@ export async function findResources(
   const facetDefinitions = data?.facets;
 
   const results = Array.isArray(hits)
-    ? hits.map((hit: any) => {
-        const physicalAddress = hit._source?.location?.physical_address;
+    ? hits.map((hit: SearchHit) => {
+        const source = hit._source;
         let mainAddress: string | null = null;
 
+        // Check for physical address from nested location object
+        const physicalAddress = source.location?.physical_address;
         if (
           physicalAddress?.address_1 &&
           physicalAddress?.city &&
           physicalAddress?.state &&
           physicalAddress?.postal_code
         ) {
-          // Construct address similar to information.tsx format
           const addressParts = [
             physicalAddress.address_1,
             physicalAddress.address_2 ? physicalAddress.address_2 : null,
             physicalAddress.city,
             physicalAddress.state,
             physicalAddress.postal_code,
-          ].filter(Boolean); // Remove null/undefined values
+          ].filter(Boolean);
 
           mainAddress = addressParts.join(', ');
         }
 
         const transformedFacets = transformFacetsToArray(
-          hit?._source?.facets,
+          source.facets,
           facetDefinitions,
           locale,
         );
 
-        const responseData = {
+        // Map nested properties to SearchResultItem
+        const responseData: SearchResultItem = {
           _id: hit._id,
-          id: hit?._source?.service_at_location_id ?? null,
-          priority: hit?._source?.priority,
-          serviceName: hit?._source?.service?.name ?? null,
-          name: hit?._source?.name ?? null,
-          summary: hit?._source?.service?.summary ?? null,
-          description: hit?._source?.service?.description ?? null,
-          phone: hit?._source?.phone ?? null,
-          website: hit?._source?.url ?? null,
+          id: source.service_at_location_id ?? null,
+          priority: source.priority,
+          serviceName: source.service?.name ?? null,
+          name: source.name ?? null,
+          summary: source.service?.summary ?? null,
+          description:
+            source.service?.description ?? source.description ?? null,
+          phone: source.phone ?? null,
+          website: source.url ?? null,
           address: mainAddress,
-          location: hit?._source?.location?.point ?? null,
-          taxonomies: hit?._source?.taxonomies ?? null,
+          location: (source.location?.point ?? null) as Point | null,
+          taxonomies: source.taxonomies ?? null,
           facets: transformedFacets.length > 0 ? transformedFacets : null,
         };
 
         return Object.fromEntries(
           Object.entries(responseData).filter(([_, value]) => value != null),
-        );
+        ) as SearchResultItem;
       })
     : [];
 
@@ -255,12 +268,12 @@ export async function findResources(
  * @returns Search results with pagination info
  */
 export async function findResourcesV2(
-  searchStore: any, // From searchAtom
+  searchStore: SearchStoreState,
   locale: string,
   page: number,
   limit?: number,
   tenantId?: string,
-) {
+): Promise<FindResourcesResult> {
   console.log('findResourceV2 was called');
   if (isNaN(page)) {
     page = 1;
@@ -270,10 +283,11 @@ export async function findResourcesV2(
     limit = 25;
   }
 
-  // Build request using decision logic from geo-search-utils
-  const { buildSearchRequest } = await import('../lib/search-utils');
-  
-  const request = buildSearchRequest(searchStore);
+  const request = buildSearchRequest({
+    ...searchStore,
+    searchPlaceType: searchStore.searchPlaceType || [],
+    searchBbox: searchStore.searchBbox || null,
+  });
 
   // Build query params with pagination
   const queryParams = qs.stringify({
@@ -285,10 +299,10 @@ export async function findResourcesV2(
 
   const searchUrl = `${API_URL}/search?${queryParams}`;
 
-  let response;
+  let data: SearchResponseRoot | null = null;
 
   try {
-    const data = await fetchWrapper(searchUrl, {
+    data = await fetchWrapper<SearchResponseRoot>(searchUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -298,8 +312,6 @@ export async function findResourcesV2(
       },
       body: request.body,
     });
-
-    response = data;
   } catch (err) {
     console.error('Search API error (V2):', {
       error: err,
@@ -323,9 +335,6 @@ export async function findResourcesV2(
     };
   }
 
-  // fetchWrapper already returns parsed JSON
-  let data = response;
-
   // If response succeeded but data is malformed, return empty results
   if (!data || !data.search) {
     console.error('Malformed API response (V2):', {
@@ -335,7 +344,6 @@ export async function findResourcesV2(
       page,
       locale,
       limit,
-      statusCode: response.status,
     });
     return {
       results: [],
@@ -346,15 +354,17 @@ export async function findResourcesV2(
     };
   }
 
-  let totalResults =
-    typeof data?.search?.hits?.total !== 'number'
-      ? (data?.search?.hits?.total?.value ?? 0)
-      : (data?.search?.hits?.total ?? 0);
+  let totalResults = 0;
+  if (typeof data?.search?.hits?.total === 'number') {
+    totalResults = data.search.hits.total;
+  } else if (typeof data?.search?.hits?.total === 'object') {
+    totalResults = data.search.hits.total.value ?? 0;
+  }
 
   let noResults = false;
   if (totalResults === 0) {
     noResults = true;
-    
+
     // Try fallback search with more_like_this
     const fallbackQueryParams = qs.stringify({
       ...request.queryParams,
@@ -388,57 +398,62 @@ export async function findResourcesV2(
       });
     }
 
-    totalResults =
-      typeof data?.search?.hits?.total !== 'number'
-        ? (data?.search?.hits?.total?.value ?? 0)
-        : (data?.search?.hits?.total ?? 0);
+    if (typeof data?.search?.hits?.total === 'number') {
+      totalResults = data.search.hits.total;
+    } else if (typeof data?.search?.hits?.total === 'object') {
+      totalResults = data.search.hits.total.value ?? 0;
+    }
   }
 
   const hits = data?.search?.hits?.hits;
+  console.log('hit example from hits', hits?.[0]);
   const results = Array.isArray(hits)
-    ? hits.map((hit: any) => {
-        const physicalAddress = hit._source?.location?.physical_address;
+    ? hits.map((hit: SearchHit) => {
+        const source = hit._source;
         let mainAddress: string | null = null;
 
+        const physicalAddress = source.location?.physical_address;
         if (
           physicalAddress?.address_1 &&
           physicalAddress?.city &&
           physicalAddress?.state &&
           physicalAddress?.postal_code
         ) {
-          // Construct address similar to information.tsx format
           const addressParts = [
             physicalAddress.address_1,
             physicalAddress.address_2 ? physicalAddress.address_2 : null,
             physicalAddress.city,
             physicalAddress.state,
             physicalAddress.postal_code,
-          ].filter(Boolean); // Remove null/undefined values
+          ].filter(Boolean);
 
           mainAddress = addressParts.join(', ');
         }
 
-        const responseData = {
+        const responseData: SearchResultItem = {
           _id: hit._id,
-          id: hit?._source?.service_at_location_id ?? null,
-          priority: hit?._source?.priority,
-          serviceName: hit?._source?.service?.name ?? null,
-          name: hit?._source?.name ?? null,
-          summary: hit?._source?.service?.summary ?? null,
-          description: hit?._source?.service?.description ?? null,
-          phone: hit?._source?.phone ?? null,
-          website: hit?._source?.url ?? null,
+          id: source.service_at_location_id ?? null,
+          priority: source.priority,
+          serviceName: source.service?.name ?? null,
+          name: source.name ?? source.organization?.name ?? null,
+          summary: source.service?.summary ?? null,
+          description:
+            source.service?.description ?? source.description ?? null,
+          phone: source.phone ?? null,
+          website: source.url ?? null,
           address: mainAddress,
-          location: hit?._source?.location?.point ?? null,
-          taxonomies: hit?._source?.taxonomies ?? null,
+          location: (source.location?.point ?? null) as Point | null,
+          taxonomies: source.taxonomies ?? null,
+          facets: null,
         };
 
         return Object.fromEntries(
           Object.entries(responseData).filter(([_, value]) => value != null),
-        );
+        ) as SearchResultItem;
       })
     : [];
 
+  console.log('example result from results', results[0]);
   return {
     results,
     noResults,

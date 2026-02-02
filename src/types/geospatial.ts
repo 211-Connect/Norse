@@ -1,10 +1,13 @@
+import { BBox, Point } from 'geojson';
+
 export interface MapboxContext {
   id: string;
   text: string;
   wikidata?: string;
   short_code?: string;
   mapbox_id?: string;
-  [key: string]: any; // Allow dynamic locale keys like text_es
+  // Locale-specific text fields (e.g., text_en, text_es)
+  [key: `text_${string}`]: string | undefined;
 }
 
 export interface MapboxFeature {
@@ -12,17 +15,15 @@ export interface MapboxFeature {
   type: 'Feature';
   place_type: string[];
   relevance: number;
-  properties: Record<string, any>; // Generic properties object
-  text: string; // "Minnesota"
-  place_name: string; // "Minnesota, United States"
-  bbox?: [number, number, number, number]; // BBox is array of 4 numbers
+  properties: Record<string, string | number | boolean | null>;
+  text: string;
+  place_name: string;
+  bbox?: BBox;
   center?: [number, number];
-  geometry: {
-    type: 'Point';
-    coordinates: [number, number]; // [longitude, latitude]
-  };
+  geometry: Point;
   context?: MapboxContext[];
-  [key: string]: any; // Allow dynamic locale keys like place_name_es
+  // Locale-specific place names (e.g., place_name_en, place_name_es)
+  [key: `place_name_${string}`]: string | undefined;
 }
 
 export interface MapboxResponse {
