@@ -1,7 +1,6 @@
-import { headers } from 'next/headers';
 import Script from 'next/script';
 
-export async function MatomoTagManagerScript({
+export function MatomoTagManagerScript({
   matamoContainerUrl,
   nonce,
 }: {

@@ -153,13 +153,16 @@ export async function middleware(request: NextRequest) {
       sameSite: 'strict',
     });
   }
+
+  const isProduction = process.env.NODE_ENV === 'production';
+
   const cspHeader = `
     default-src 'self';
-    script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://www.googletagmanager.com ${process.env.NODE_ENV === 'production' ? '' : "'unsafe-eval'"};
+    script-src 'self' 'nonce-${nonce}' https://www.googletagmanager.com ${isProduction ? "'strict-dynamic'" : "'unsafe-eval' 'unsafe-inline'"};
     style-src 'self' 'unsafe-inline' https://api.mapbox.com https://fonts.googleapis.com;
-    img-src 'self' blob: data: https://api.mapbox.com https://*.tiles.mapbox.com https://events.mapbox.com https://cdn.c211.io *.digitaloceanspaces.com *.feathr.co;
+    img-src 'self' blob: data: https://api.mapbox.com https://*.tiles.mapbox.com https://events.mapbox.com https://cdn.c211.io *.digitaloceanspaces.com *.feathr.co www.googletagmanager.com;
     font-src 'self' data: https://fonts.gstatic.com;
-    connect-src 'self' https://api.mapbox.com https://*.tiles.mapbox.com https://events.mapbox.com *.digitaloceanspaces.com *.feathr.co https://*.google-analytics.com https://cdn.matomo.cloud https://api.c211.io https://maps.c211.io;
+    connect-src 'self' https://api.mapbox.com https://*.tiles.mapbox.com https://events.mapbox.com *.digitaloceanspaces.com *.feathr.co https://*.google-analytics.com https://cdn.matomo.cloud https://api.c211.io https://maps.c211.io www.googletagmanager.com www.google.com ${isProduction ? '' : 'http://localhost:* ws://localhost:*'};
     worker-src 'self' blob:;
     child-src 'self' blob:;
     frame-src 'self' blob:;
