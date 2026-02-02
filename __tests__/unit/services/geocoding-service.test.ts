@@ -1,19 +1,34 @@
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 
 import type { GeocodeResult, Coordinates, BBox } from '@/types/resource';
+import type { RedisCacheKey } from '@/utilities/withRedisCache';
+import type { CacheService } from '@/cacheService';
 
 describe('geocoding-service', () => {
-  let geocodeLocationCached: any;
+  let geocodeLocationCached: (
+    location: string,
+    locale?: string,
+  ) => Promise<GeocodeResult | null>;
   let mockWithRedisCache: jest.Mock<any>;
   let mockFetchWrapper: jest.Mock<any>;
   const mockCacheService = { disconnect: jest.fn() };
-  const mockGeoDataCacheService = { disconnect: jest.fn(), ...{ name: 'mockGeoDataCacheService' } };
+  const mockGeoDataCacheService = {
+    disconnect: jest.fn(),
+    ...{ name: 'mockGeoDataCacheService' },
+  };
   const mockTranslationCacheService = { disconnect: jest.fn() };
 
   beforeEach(async () => {
     jest.resetModules();
 
-    mockWithRedisCache = jest.fn((key: any, fn: any, cacheInstance: any, ttl: number) => fn());
+    mockWithRedisCache = jest.fn(
+      <T>(
+        key: RedisCacheKey,
+        fn: () => Promise<T>,
+        cacheInstance: CacheService,
+        ttl: number,
+      ) => fn() as Promise<T>,
+    );
     mockFetchWrapper = jest.fn();
 
     jest.doMock('@/utilities/withRedisCache', () => ({
@@ -33,7 +48,8 @@ describe('geocoding-service', () => {
       translationCacheService: mockTranslationCacheService,
     }));
 
-    const serviceModule = await import('@/app/(app)/shared/services/geocoding-service');
+    const serviceModule =
+      await import('@/app/(app)/shared/services/geocoding-service');
     geocodeLocationCached = serviceModule.geocodeLocationCached;
   });
 
@@ -70,7 +86,7 @@ describe('geocoding-service', () => {
           'geocode:minnesota:en',
           expect.any(Function),
           mockGeoDataCacheService,
-          2592000
+          2592000,
         );
         expect(mockFetchWrapper).not.toHaveBeenCalled();
       });
@@ -84,7 +100,7 @@ describe('geocoding-service', () => {
           'geocode:minnesota:en',
           expect.any(Function),
           mockGeoDataCacheService,
-          2592000
+          2592000,
         );
       });
     });
@@ -92,7 +108,7 @@ describe('geocoding-service', () => {
     describe('Cache Miss Scenario', () => {
       it('should call Mapbox API and return transformed data on cache miss', async () => {
         // Mock cache miss (implementation is already set in beforeEach to call fn)
-        
+
         mockFetchWrapper.mockResolvedValueOnce(mockMapboxResponse);
 
         const result = await geocodeLocationCached('Minnesota', 'en');
@@ -117,7 +133,7 @@ describe('geocoding-service', () => {
               place_type: ['place'],
               bbox: null,
               geometry: {
-                coordinates: [-93.2650, 44.9778],
+                coordinates: [-93.265, 44.9778],
               },
               place_name: 'Minneapolis, Minnesota, United States',
             },
@@ -132,7 +148,7 @@ describe('geocoding-service', () => {
           type: 'coordinates',
           place_type: ['place'],
           bbox: null,
-          coordinates: [-93.2650, 44.9778],
+          coordinates: [-93.265, 44.9778],
           address: 'Minneapolis, Minnesota, United States',
         });
       });
@@ -170,7 +186,7 @@ describe('geocoding-service', () => {
           features: [
             {
               place_type: ['address'],
-              geometry: { coordinates: [-93.2650, 44.9778] },
+              geometry: { coordinates: [-93.265, 44.9778] },
               place_name: '123 Main St',
             },
           ],
@@ -227,7 +243,7 @@ describe('geocoding-service', () => {
         await geocodeLocationCached('Minnesota', 'es');
 
         expect(mockFetchWrapper).toHaveBeenCalledWith(
-           expect.stringContaining('language=es')
+          expect.stringContaining('language=es'),
         );
       });
 
@@ -240,7 +256,7 @@ describe('geocoding-service', () => {
           'geocode:minnesota:es',
           expect.any(Function),
           mockGeoDataCacheService,
-          2592000
+          2592000,
         );
       });
     });

@@ -1,10 +1,11 @@
 import { describe, it, expect } from '@jest/globals';
 import { createUrlParamsForSearch } from '@/app/(app)/shared/services/search-service';
+import { SearchStoreState } from '@/types/search';
 
 describe('createUrlParamsForSearch', () => {
   describe('Query type derivation integration', () => {
     it('should use storedType when query is plain text', () => {
-      const searchStore = {
+      const searchStore: SearchStoreState = {
         query: 'food',
         queryLabel: 'food',
         queryType: 'taxonomy', // stored as taxonomy
@@ -15,7 +16,7 @@ describe('createUrlParamsForSearch', () => {
         searchBbox: null,
       };
 
-      const params = createUrlParamsForSearch(searchStore as any);
+      const params = createUrlParamsForSearch(searchStore);
 
       // deriveQueryType('food', 'taxonomy') returns 'taxonomy' because:
       // 1. 'food' is not a taxonomy code pattern
@@ -25,7 +26,7 @@ describe('createUrlParamsForSearch', () => {
     });
 
     it('should derive "taxonomy" for taxonomy code pattern', () => {
-      const searchStore = {
+      const searchStore: SearchStoreState = {
         query: 'BD-1800.2000',
         queryLabel: 'Food Pantries',
         queryType: 'text', // stored as text
@@ -36,14 +37,14 @@ describe('createUrlParamsForSearch', () => {
         searchBbox: null,
       };
 
-      const params = createUrlParamsForSearch(searchStore as any);
+      const params = createUrlParamsForSearch(searchStore);
 
       // deriveQueryType should detect taxonomy code pattern
       expect(params.query_type).toBe('taxonomy');
     });
 
     it('should derive "taxonomy" for multiple taxonomy codes', () => {
-      const searchStore = {
+      const searchStore: SearchStoreState = {
         query: 'BD-1800.2250,NL-6000.2000',
         queryLabel: 'food',
         queryType: 'text',
@@ -54,13 +55,13 @@ describe('createUrlParamsForSearch', () => {
         searchBbox: null,
       };
 
-      const params = createUrlParamsForSearch(searchStore as any);
+      const params = createUrlParamsForSearch(searchStore);
 
       expect(params.query_type).toBe('taxonomy');
     });
 
     it('should use valid storedType when query is not a taxonomy code', () => {
-      const searchStore = {
+      const searchStore: SearchStoreState = {
         query: 'red cross',
         queryLabel: 'red cross',
         queryType: 'organization',
@@ -71,7 +72,7 @@ describe('createUrlParamsForSearch', () => {
         searchBbox: null,
       };
 
-      const params = createUrlParamsForSearch(searchStore as any);
+      const params = createUrlParamsForSearch(searchStore);
 
       expect(params.query_type).toBe('organization');
     });
@@ -79,7 +80,7 @@ describe('createUrlParamsForSearch', () => {
 
   describe('URL parameter construction', () => {
     it('should include all location parameters when location exists', () => {
-      const searchStore = {
+      const searchStore: SearchStoreState = {
         query: 'shelter',
         queryLabel: 'shelter',
         queryType: 'text',
@@ -90,7 +91,7 @@ describe('createUrlParamsForSearch', () => {
         searchBbox: null,
       };
 
-      const params = createUrlParamsForSearch(searchStore as any);
+      const params = createUrlParamsForSearch(searchStore);
 
       expect(params.query).toBe('shelter');
       expect(params.query_label).toBe('shelter');
@@ -101,7 +102,7 @@ describe('createUrlParamsForSearch', () => {
     });
 
     it('should exclude location parameters when no coordinates', () => {
-      const searchStore = {
+      const searchStore: SearchStoreState = {
         query: 'food banks',
         queryLabel: 'food banks',
         queryType: 'text',
@@ -112,7 +113,7 @@ describe('createUrlParamsForSearch', () => {
         searchBbox: null,
       };
 
-      const params = createUrlParamsForSearch(searchStore as any);
+      const params = createUrlParamsForSearch(searchStore);
 
       expect(params.query).toBe('food banks');
       expect(params.query_type).toBe('text');
@@ -122,7 +123,7 @@ describe('createUrlParamsForSearch', () => {
     });
 
     it('should trim whitespace from all parameters', () => {
-      const searchStore = {
+      const searchStore: SearchStoreState = {
         query: '  food banks  ',
         queryLabel: '  Food Banks  ',
         queryType: '  text  ',
@@ -133,7 +134,7 @@ describe('createUrlParamsForSearch', () => {
         searchBbox: null,
       };
 
-      const params = createUrlParamsForSearch(searchStore as any);
+      const params = createUrlParamsForSearch(searchStore);
 
       expect(params.query).toBe('food banks');
       expect(params.query_label).toBe('Food Banks');
@@ -143,7 +144,7 @@ describe('createUrlParamsForSearch', () => {
     });
 
     it('should filter out empty string values', () => {
-      const searchStore = {
+      const searchStore: SearchStoreState = {
         query: 'shelter',
         queryLabel: '',
         queryType: 'text',
@@ -154,7 +155,7 @@ describe('createUrlParamsForSearch', () => {
         searchBbox: null,
       };
 
-      const params = createUrlParamsForSearch(searchStore as any);
+      const params = createUrlParamsForSearch(searchStore);
 
       expect(params.query).toBe('shelter');
       expect(params.query_type).toBe('text');
@@ -164,7 +165,7 @@ describe('createUrlParamsForSearch', () => {
     });
 
     it('should default distance to "0" when coordinates exist but distance is empty', () => {
-      const searchStore = {
+      const searchStore: SearchStoreState = {
         query: 'hospital',
         queryLabel: 'hospital',
         queryType: 'text',
@@ -175,7 +176,7 @@ describe('createUrlParamsForSearch', () => {
         searchBbox: null,
       };
 
-      const params = createUrlParamsForSearch(searchStore as any);
+      const params = createUrlParamsForSearch(searchStore);
 
       expect(params.coords).toBe('-71.0589,42.3601');
       expect(params.distance).toBe('0');
@@ -191,7 +192,7 @@ describe('createUrlParamsForSearch', () => {
       // 4. System internally finds taxonomy codes via suggestions
       // 5. But URL should show query_type=text because user typed text
 
-      const searchStore = {
+      const searchStore: SearchStoreState = {
         query: 'BD-1800.2250,NL-6000.2000', // from findCode("food")
         queryLabel: 'food', // what user actually typed
         queryType: 'taxonomy', // BUG: still set to taxonomy from previous search
@@ -202,13 +203,13 @@ describe('createUrlParamsForSearch', () => {
         searchBbox: [-97.238218, 43.499476, -89.498952, 49.384458],
       };
 
-      const params = createUrlParamsForSearch(searchStore as any);
+      const params = createUrlParamsForSearch(searchStore);
 
       // Expected: query_type should be "taxonomy" because the QUERY is taxonomy codes
       // This reveals the issue - we need to check the queryLabel (user input), not the query (derived codes)
       expect(params.query).toBe('BD-1800.2250,NL-6000.2000');
       expect(params.query_label).toBe('food');
-      
+
       // This will fail with current implementation:
       // Current: query is taxonomy codes → query_type = 'taxonomy'
       // Expected: queryLabel is plain text → query_type = 'text'
@@ -216,7 +217,7 @@ describe('createUrlParamsForSearch', () => {
     });
 
     it('CORRECT SCENARIO: User selects "Food Pantries" from dropdown', () => {
-      const searchStore = {
+      const searchStore: SearchStoreState = {
         query: 'BD-1800.2000',
         queryLabel: 'Food Pantries',
         queryType: 'taxonomy', // correctly set when selected from dropdown
@@ -227,7 +228,7 @@ describe('createUrlParamsForSearch', () => {
         searchBbox: null,
       };
 
-      const params = createUrlParamsForSearch(searchStore as any);
+      const params = createUrlParamsForSearch(searchStore);
 
       expect(params.query).toBe('BD-1800.2000');
       expect(params.query_label).toBe('Food Pantries');
@@ -235,7 +236,7 @@ describe('createUrlParamsForSearch', () => {
     });
 
     it('EXPECTED: User types taxonomy code directly', () => {
-      const searchStore = {
+      const searchStore: SearchStoreState = {
         query: 'BD-1800.2000',
         queryLabel: 'BD-1800.2000',
         queryType: '', // not set yet
@@ -246,7 +247,7 @@ describe('createUrlParamsForSearch', () => {
         searchBbox: null,
       };
 
-      const params = createUrlParamsForSearch(searchStore as any);
+      const params = createUrlParamsForSearch(searchStore);
 
       expect(params.query_type).toBe('taxonomy');
     });

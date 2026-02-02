@@ -6,13 +6,15 @@ import {
   buildSearchRequest,
   type SearchRequestParams,
 } from '@/app/(app)/shared/lib/search-utils';
+import { SearchStoreState } from '@/types/search';
 
 describe('geo-search-utils', () => {
   // Store original env value
   let originalEnv: string | undefined;
 
   beforeEach(() => {
-    originalEnv = process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG;
+    originalEnv =
+      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG;
   });
 
   afterEach(() => {
@@ -20,18 +22,21 @@ describe('geo-search-utils', () => {
     if (originalEnv === undefined) {
       delete process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG;
     } else {
-      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG = originalEnv;
+      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG =
+        originalEnv;
     }
   });
 
   describe('isAdvancedGeoEnabled', () => {
     it('should return true when feature flag is "true"', () => {
-      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG = 'true';
+      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG =
+        'true';
       expect(isAdvancedGeoEnabled()).toBe(true);
     });
 
     it('should return false when feature flag is "false"', () => {
-      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG = 'false';
+      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG =
+        'false';
       expect(isAdvancedGeoEnabled()).toBe(false);
     });
 
@@ -48,7 +53,8 @@ describe('geo-search-utils', () => {
 
   describe('shouldUseBoundarySearch', () => {
     it('should return true for region with bbox when flag is enabled', () => {
-      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG = 'true';
+      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG =
+        'true';
       const result = shouldUseBoundarySearch(
         ['region'],
         [-97.238218, 43.499476, -89.498952, 49.384458],
@@ -57,7 +63,8 @@ describe('geo-search-utils', () => {
     });
 
     it('should return true for country with bbox when flag is enabled', () => {
-      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG = 'true';
+      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG =
+        'true';
       const result = shouldUseBoundarySearch(
         ['country'],
         [-125.0, 24.0, -66.0, 49.0],
@@ -66,7 +73,8 @@ describe('geo-search-utils', () => {
     });
 
     it('should return false for place (city) even with bbox', () => {
-      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG = 'true';
+      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG =
+        'true';
       const result = shouldUseBoundarySearch(
         ['place'],
         [-122.4194, 47.6062, -122.3321, 47.6762],
@@ -75,7 +83,8 @@ describe('geo-search-utils', () => {
     });
 
     it('should return false for district even with bbox', () => {
-      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG = 'true';
+      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG =
+        'true';
       const result = shouldUseBoundarySearch(
         ['district'],
         [-122.5, 47.5, -122.0, 48.0],
@@ -84,19 +93,24 @@ describe('geo-search-utils', () => {
     });
 
     it('should return false for region without bbox', () => {
-      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG = 'true';
+      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG =
+        'true';
       const result = shouldUseBoundarySearch(['region'], null);
       expect(result).toBe(false);
     });
 
     it('should return false for region with invalid bbox (not 4 numbers)', () => {
-      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG = 'true';
-      const result = shouldUseBoundarySearch(['region'], [-97.2, 43.5, -89.5] as any);
+      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG =
+        'true';
+      const result = shouldUseBoundarySearch(['region'], [
+        -97.2, 43.5, -89.5,
+      ] as any);
       expect(result).toBe(false);
     });
 
     it('should return false when place_type is null', () => {
-      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG = 'true';
+      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG =
+        'true';
       const result = shouldUseBoundarySearch(
         null,
         [-97.238218, 43.499476, -89.498952, 49.384458],
@@ -105,7 +119,8 @@ describe('geo-search-utils', () => {
     });
 
     it('should return false when place_type is empty array', () => {
-      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG = 'true';
+      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG =
+        'true';
       const result = shouldUseBoundarySearch(
         [],
         [-97.238218, 43.499476, -89.498952, 49.384458],
@@ -114,7 +129,8 @@ describe('geo-search-utils', () => {
     });
 
     it('should return false when feature flag is disabled (even with region and bbox)', () => {
-      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG = 'false';
+      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG =
+        'false';
       const result = shouldUseBoundarySearch(
         ['region'],
         [-97.238218, 43.499476, -89.498952, 49.384458],
@@ -123,7 +139,8 @@ describe('geo-search-utils', () => {
     });
 
     it('should return true for multiple place types including region', () => {
-      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG = 'true';
+      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG =
+        'true';
       const result = shouldUseBoundarySearch(
         ['place', 'region'],
         [-97.238218, 43.499476, -89.498952, 49.384458],
@@ -165,7 +182,7 @@ describe('geo-search-utils', () => {
 
       // Check that all four corners are represented
       const [minLon, minLat, maxLon, maxLat] = bbox;
-      
+
       // Ring should contain all four corners in some order
       const expectedPoints = [
         [minLon, minLat], // SW
@@ -180,7 +197,7 @@ describe('geo-search-utils', () => {
 
     it('should handle small bboxes correctly', () => {
       const bbox: [number, number, number, number] = [
-        -122.3321, 47.6062, -122.3320, 47.6063,
+        -122.3321, 47.6062, -122.332, 47.6063,
       ];
       const polygon = bboxToPolygon(bbox);
 
@@ -191,11 +208,12 @@ describe('geo-search-utils', () => {
 
   describe('buildSearchRequest', () => {
     beforeEach(() => {
-      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG = 'true';
+      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG =
+        'true';
     });
 
     it('should build boundary search request for region with bbox', () => {
-      const searchStore = {
+      const searchStore: SearchStoreState = {
         query: 'food banks',
         queryLabel: 'food banks',
         queryType: 'text',
@@ -203,12 +221,7 @@ describe('geo-search-utils', () => {
         searchCoordinates: [-94.199117, 46.343406],
         searchDistance: '10',
         searchPlaceType: ['region'],
-        searchBbox: [-97.238218, 43.499476, -89.498952, 49.384458] as [
-          number,
-          number,
-          number,
-          number,
-        ],
+        searchBbox: [-97.238218, 43.499476, -89.498952, 49.384458],
       };
 
       const result = buildSearchRequest(searchStore);
@@ -223,7 +236,7 @@ describe('geo-search-utils', () => {
     });
 
     it('should build proximity search request for city', () => {
-      const searchStore = {
+      const searchStore: SearchStoreState = {
         query: 'food banks',
         queryLabel: 'food banks',
         queryType: 'text',
@@ -245,7 +258,7 @@ describe('geo-search-utils', () => {
     });
 
     it('should build proximity search when no location is specified', () => {
-      const searchStore = {
+      const searchStore: SearchStoreState = {
         query: 'food banks',
         queryLabel: 'food banks',
         queryType: 'taxonomy',
@@ -266,9 +279,10 @@ describe('geo-search-utils', () => {
     });
 
     it('should build proximity search when feature flag is disabled', () => {
-      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG = 'false';
+      process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG =
+        'false';
 
-      const searchStore = {
+      const searchStore: SearchStoreState = {
         query: 'food banks',
         queryLabel: 'food banks',
         queryType: 'text',
@@ -276,12 +290,7 @@ describe('geo-search-utils', () => {
         searchCoordinates: [-94.199117, 46.343406],
         searchDistance: '0',
         searchPlaceType: ['region'],
-        searchBbox: [-97.238218, 43.499476, -89.498952, 49.384458] as [
-          number,
-          number,
-          number,
-          number,
-        ],
+        searchBbox: [-97.238218, 43.499476, -89.498952, 49.384458],
       };
 
       const result = buildSearchRequest(searchStore);
@@ -293,7 +302,7 @@ describe('geo-search-utils', () => {
     });
 
     it('should default distance to "0" when not specified', () => {
-      const searchStore = {
+      const searchStore: SearchStoreState = {
         query: 'crisis hotline',
         queryLabel: '',
         queryType: '',
@@ -311,7 +320,7 @@ describe('geo-search-utils', () => {
     });
 
     it('should handle empty query gracefully', () => {
-      const searchStore = {
+      const searchStore: SearchStoreState = {
         query: '',
         queryLabel: '',
         queryType: '',
@@ -319,12 +328,7 @@ describe('geo-search-utils', () => {
         searchCoordinates: [-94.199117, 46.343406],
         searchDistance: '10',
         searchPlaceType: ['region'],
-        searchBbox: [-97.238218, 43.499476, -89.498952, 49.384458] as [
-          number,
-          number,
-          number,
-          number,
-        ],
+        searchBbox: [-97.238218, 43.499476, -89.498952, 49.384458],
       };
 
       const result = buildSearchRequest(searchStore);
@@ -335,7 +339,7 @@ describe('geo-search-utils', () => {
     });
 
     it('should trim whitespace from query parameters', () => {
-      const searchStore = {
+      const searchStore: SearchStoreState = {
         query: '  food banks  ',
         queryLabel: '  food banks  ',
         queryType: '  text  ',
@@ -355,7 +359,7 @@ describe('geo-search-utils', () => {
     });
 
     it('should handle country place type (boundary search)', () => {
-      const searchStore = {
+      const searchStore: SearchStoreState = {
         query: 'shelters',
         queryLabel: '',
         queryType: '',
@@ -363,7 +367,7 @@ describe('geo-search-utils', () => {
         searchCoordinates: [-98.5795, 39.8283],
         searchDistance: '0',
         searchPlaceType: ['country'],
-        searchBbox: [-125.0, 24.0, -66.0, 49.0] as [number, number, number, number],
+        searchBbox: [-125.0, 24.0, -66.0, 49.0],
       };
 
       const result = buildSearchRequest(searchStore);
@@ -375,7 +379,7 @@ describe('geo-search-utils', () => {
 
     describe('Query type derivation in buildSearchRequest', () => {
       it('should derive query_type as "text" when query is plain text', () => {
-        const searchStore = {
+        const searchStore: SearchStoreState = {
           query: 'food',
           queryLabel: 'food',
           queryType: 'text',
@@ -392,7 +396,7 @@ describe('geo-search-utils', () => {
       });
 
       it('should derive query_type as "taxonomy" when query is taxonomy code', () => {
-        const searchStore = {
+        const searchStore: SearchStoreState = {
           query: 'BD-1800.2000',
           queryLabel: 'Food Pantries',
           queryType: 'taxonomy',
@@ -409,7 +413,7 @@ describe('geo-search-utils', () => {
       });
 
       it('should derive query_type as "taxonomy" for multiple taxonomy codes', () => {
-        const searchStore = {
+        const searchStore: SearchStoreState = {
           query: 'BD-1800.2250,NL-6000.2000',
           queryLabel: 'food',
           queryType: 'text',
@@ -427,7 +431,7 @@ describe('geo-search-utils', () => {
 
       it('should use storedType when query is plain text even if storedType seems wrong', () => {
         // Scenario: User typed "food" (text) but state has queryType='taxonomy' from previous search
-        const searchStore = {
+        const searchStore: SearchStoreState = {
           query: 'food',
           queryLabel: 'food',
           queryType: 'taxonomy', // wrong type in state from previous search
@@ -448,7 +452,7 @@ describe('geo-search-utils', () => {
       });
 
       it('should prioritize taxonomy code pattern over storedType', () => {
-        const searchStore = {
+        const searchStore: SearchStoreState = {
           query: 'BD-1800.2000',
           queryLabel: 'BD-1800.2000',
           queryType: 'text', // stored as text
