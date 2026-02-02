@@ -1,4 +1,5 @@
 import { atom } from 'jotai';
+import { BBox } from 'geojson';
 
 export const searchAtom = atom({
   query: '',
@@ -14,7 +15,7 @@ export const searchAtom = atom({
   userCoordinates: [] as any[],
   // New fields for advanced geospatial filtering
   searchPlaceType: [] as string[],
-  searchBbox: null as [number, number, number, number] | null,
+  searchBbox: null as BBox | null,
 });
 
 // Currently searched term (This is the visible value in the input)
