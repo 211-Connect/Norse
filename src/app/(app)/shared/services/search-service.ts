@@ -274,7 +274,6 @@ export async function findResourcesV2(
   limit?: number,
   tenantId?: string,
 ): Promise<FindResourcesResult> {
-  console.log('findResourceV2 was called');
   if (isNaN(page)) {
     page = 1;
   }
@@ -406,7 +405,6 @@ export async function findResourcesV2(
   }
 
   const hits = data?.search?.hits?.hits;
-  console.log('hit example from hits', hits?.[0]);
   const results = Array.isArray(hits)
     ? hits.map((hit: SearchHit) => {
         const source = hit._source;
@@ -452,8 +450,7 @@ export async function findResourcesV2(
         ) as SearchResultItem;
       })
     : [];
-
-  console.log('example result from results', results[0]);
+    
   return {
     results,
     noResults,

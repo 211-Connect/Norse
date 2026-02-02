@@ -9,6 +9,7 @@ import { useSuggestions } from './use-suggestions';
 import { useTaxonomies } from './api/use-taxonomies';
 import { searchAtom, searchLocationAtom } from '../store/search';
 import { useLocations } from './api/use-locations';
+import { deriveQueryType } from '../lib/search-utils';
 
 export const useSearchResources = () => {
   const search = useAtomValue(searchAtom);
@@ -86,7 +87,6 @@ export const useSearchResources = () => {
 
       // For all other cases (including suggestions), derive based on the user input
       // This ensures "food" returns 'text' even if it matches suggestion values
-      const { deriveQueryType } = require('../lib/search-utils');
       return deriveQueryType(value, undefined);
     },
     [reducedTopics, taxonomies],
