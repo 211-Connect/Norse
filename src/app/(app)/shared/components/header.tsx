@@ -270,13 +270,15 @@ export function Header() {
         >
           <div
             className="flex cursor-pointer items-center"
-            aria-label={t('header.home') as string}
+            aria-label={t('header.home') || 'Logo'}
             onClick={handleLogoClick}
           >
             {logoUrl && (
               <Image
                 src={logoUrl}
-                alt={t('header.home') as string}
+                alt={t('header.home') || 'Logo'}
+                width={400}
+                height={100}
                 className="max-h-full w-auto object-contain lg:max-w-[400px]"
               />
             )}
@@ -310,6 +312,8 @@ export function Header() {
                       <Image
                         src={appConfig.brand.logoUrl}
                         alt={t('header.home') as string}
+                        width={200}
+                        height={64}
                         style={{
                           height: 'auto',
                           maxHeight: 64,
