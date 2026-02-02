@@ -82,7 +82,7 @@
     "matercolors": "^2.3.0",
     "nanoid": "^3.3.11",
     "next": "^14.2.30",
-    "next-auth": "^4.24.11",
+    "next-auth": "^4.24.13",
     "next-i18next": "^14.0.3",
     "next-themes": "^0.3.0",
     "nookies": "^2.5.2",
