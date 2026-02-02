@@ -182,24 +182,9 @@ export class CacheService {
   }
 }
 
-// Singleton instances for commonly used databases
-const globalForRedis = global as unknown as {
-  cacheService: CacheService | undefined;
-  translationCacheService: CacheService | undefined;
-  geoDataCacheService: CacheService | undefined;
-};
-
-export const cacheService = globalForRedis.cacheService ?? new CacheService(0);
-export const translationCacheService =
-  globalForRedis.translationCacheService ?? new CacheService(1);
-export const geoDataCacheService =
-  globalForRedis.geoDataCacheService ?? new CacheService(2);
-
-if (process.env.NODE_ENV !== 'production') {
-  globalForRedis.cacheService = cacheService;
-  globalForRedis.translationCacheService = translationCacheService;
-  globalForRedis.geoDataCacheService = geoDataCacheService;
-}
+export const cacheService = new CacheService(0);
+export const translationCacheService = new CacheService(1);
+export const geoDataCacheService = new CacheService(2);
 
 let cleanupRegistered = false;
 if (typeof process !== 'undefined' && !cleanupRegistered) {
