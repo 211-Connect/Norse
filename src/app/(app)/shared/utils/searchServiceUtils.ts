@@ -311,3 +311,37 @@ export async function executeSearch(
     filters: data?.search?.aggregations ?? {},
   };
 }
+import { deriveQueryType } from '../lib/search-utils';
+import { SearchStoreState } from '@/types/search';
+
+/**
+ * Creates a URL parameters object from the search store state.
+ * Filters out null/undefined/empty values.
+ *
+ * @param searchStore - Current search store state
+ * @returns Record of URL parameters
+ */
+export function createUrlParamsForSearch(searchStore: SearchStoreState) {
+  const hasLocation = searchStore['searchCoordinates']?.length === 2;
+
+  const urlParams = {
+    query: searchStore['query']?.trim(),
+    query_label: searchStore['queryLabel']?.trim(),
+    query_type: deriveQueryType(searchStore['query'], searchStore['queryType']),
+    location: hasLocation ? searchStore['searchLocation']?.trim() : null,
+    coords: hasLocation
+      ? searchStore['searchCoordinates']?.join(',')?.trim()
+      : null,
+    distance:
+      searchStore['searchCoordinates']?.length === 2
+        ? searchStore['searchDistance']?.trim() || '0'
+        : '',
+  };
+
+  return Object.fromEntries(
+    Object.entries(urlParams).filter(
+      ([_, value]) =>
+        value != null && (typeof value !== 'string' || value.trim() !== ''),
+    ),
+  ) as Record<string, string>;
+}

@@ -10,7 +10,7 @@ import { SearchButton } from './search-button';
 import { Button } from '../ui/button';
 import { useTranslation } from 'react-i18next';
 import { useFlag } from '../../hooks/use-flag';
-import { createUrlParamsForSearch } from '../../services/search-service';
+import { createUrlParamsForSearch } from '../../utils/searchServiceUtils';
 import { useRouter } from 'next/navigation';
 import { useClientSearchParams } from '../../hooks/use-client-search-params';
 import { cn, getScrollbarWidth } from '../../lib/utils';

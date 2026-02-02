@@ -1,33 +1,73 @@
 import { executeSearch } from '../utils/searchServiceUtils';
-import { deriveQueryType } from '../lib/search-utils';
 import { API_URL } from '../lib/constants';
 import { fetchWrapper } from '../lib/fetchWrapper';
 import { buildSearchRequest } from '../lib/search-utils';
 import { FindResourcesResult, SearchStoreState } from '@/types/search';
+import { geocodeLocationCached } from '../services/geocoding-service';
 
-export function createUrlParamsForSearch(searchStore: SearchStoreState) {
-  const hasLocation = searchStore['searchCoordinates']?.length === 2;
+/**
+ * Orchestrate search with feature flags and server-side geocoding.
+ * This function effectively replaces the old logic in page.tsx.
+ */
+export async function getSearchResults(
+  searchParams: Record<string, string | string[] | undefined>,
+  locale: string,
+  limit: number,
+  tenantId?: string,
+): Promise<FindResourcesResult> {
+  const page = parseInt((searchParams?.page as string) ?? '1');
+  const location = searchParams?.location as string | undefined;
 
-  const urlParams = {
-    query: searchStore['query']?.trim(),
-    query_label: searchStore['queryLabel']?.trim(),
-    query_type: deriveQueryType(searchStore['query'], searchStore['queryType']),
-    location: hasLocation ? searchStore['searchLocation']?.trim() : null,
-    coords: hasLocation
-      ? searchStore['searchCoordinates']?.join(',')?.trim()
-      : null,
-    distance:
-      searchStore['searchCoordinates']?.length === 2
-        ? searchStore['searchDistance']?.trim() || '0'
-        : '',
-  };
+  // Feature flag check
+  const useGeospatialSearch =
+    process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG ===
+      'true' && !!location;
 
-  return Object.fromEntries(
-    Object.entries(urlParams).filter(
-      ([_, value]) =>
-        value != null && (typeof value !== 'string' || value.trim() !== ''),
-    ),
-  ) as Record<string, string>;
+  let v2Result: FindResourcesResult | null = null;
+
+  if (useGeospatialSearch) {
+    const placeMetadata = await geocodeLocationCached(location!, locale);
+
+    if (placeMetadata) {
+      const searchStore = {
+        query: (searchParams?.query as string) || '',
+        queryLabel: (searchParams?.query_label as string) || '',
+        queryType: (searchParams?.query_label as string) || '',
+        searchLocation: location!,
+        searchCoordinates: searchParams?.coords
+          ? (searchParams.coords as string).split(',').map(Number)
+          : placeMetadata.coordinates,
+        searchDistance: (searchParams?.distance as string) || '0',
+        searchPlaceType: placeMetadata.place_type,
+        searchBbox: placeMetadata.bbox,
+      };
+
+      try {
+        v2Result = await findResourcesV2(
+          searchStore,
+          locale,
+          page,
+          limit,
+          tenantId,
+        );
+      } catch (error) {
+        console.error(
+          'Geospatial search failed, falling back to legacy:',
+          error,
+        );
+      }
+    }
+  }
+
+  if (v2Result) return v2Result;
+
+  return findResources(
+    searchParams as Record<string, string>,
+    locale,
+    page,
+    limit,
+    tenantId,
+  );
 }
 
 export async function findResources(

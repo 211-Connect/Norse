@@ -1,5 +1,5 @@
 import { describe, it, expect } from '@jest/globals';
-import { createUrlParamsForSearch } from '@/app/(app)/shared/services/search-service';
+import { createUrlParamsForSearch } from '@/app/(app)/shared/utils/searchServiceUtils';
 import { SearchStoreState } from '@/types/search';
 
 describe('createUrlParamsForSearch', () => {
