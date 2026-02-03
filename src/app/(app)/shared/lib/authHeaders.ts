@@ -1,12 +1,16 @@
 import { cookies } from 'next/headers';
-import { signOut } from 'next-auth/react';
 import { SESSION_ID } from './constants';
 import { getSession } from '../utils/getServerSession';
 
 export async function getAuthHeaders(tenantId?: string): Promise<HeadersInit> {
   const session = await getSession();
-  if (session?.error && session.error === 'RefreshAccessTokenError') {
-    await signOut();
+
+  // If token refresh failed completely, session will have an error
+  // We don't sign out here - let the client handle it
+  if (session?.error === 'RefreshTokenExpired') {
+    console.warn(
+      'Session has expired refresh token - client should re-authenticate',
+    );
   }
 
   const cookieList = await cookies();
@@ -14,8 +18,8 @@ export async function getAuthHeaders(tenantId?: string): Promise<HeadersInit> {
 
   const headers: HeadersInit = {};
 
-  if (session?.user?.accessToken) {
-    headers['Authorization'] = `Bearer ${session.user.accessToken}`;
+  if (session?.accessToken) {
+    headers['Authorization'] = `Bearer ${session.accessToken}`;
   }
 
   if (sessionId) {

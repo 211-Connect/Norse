@@ -5,6 +5,22 @@ interface FetchWrapperOptions extends Omit<RequestInit, 'body'> {
   body?: any; // Can accept any object, will be stringified automatically
 }
 
+const toBody = (body: FetchWrapperOptions['body']) => {
+  if (body instanceof URLSearchParams) {
+    return body.toString();
+  }
+
+  if (body instanceof FormData) {
+    return body;
+  }
+
+  if (body && typeof body === 'object') {
+    return JSON.stringify(body);
+  }
+
+  return body;
+};
+
 export async function fetchWrapper<T = any>(
   url: string,
   options: FetchWrapperOptions = {},
@@ -12,14 +28,9 @@ export async function fetchWrapper<T = any>(
   const { parseResponse = true, body, ...fetchOptions } = options;
 
   try {
-    const requestBody =
-      body && typeof body === 'object' && !(body instanceof FormData)
-        ? JSON.stringify(body)
-        : body;
-
     const response = await fetch(url, {
       ...fetchOptions,
-      body: requestBody,
+      body: toBody(body),
     });
 
     if (!response.ok) {
