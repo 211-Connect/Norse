@@ -6,7 +6,7 @@ import { notFound, permanentRedirect, RedirectType } from 'next/navigation';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import { ResourcePageContent } from '@/app/(app)/features/resource/components/content';
 import { getCookies } from 'cookies-next/server';
-import { cookies, headers } from 'next/headers';
+import { cookies } from 'next/headers';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { Resource } from '@/types/resource';
 
@@ -51,8 +51,6 @@ export const generateMetadata = async ({ params }) => {
 
 export default async function OriginalDetailsPage({ params }) {
   const cookieList = await getCookies({ cookies });
-  const headersList = await headers();
-  const nonce = headersList.get('x-nonce') ?? '';
   const { original_id, locale } = await params;
   const appConfig = await getAppConfigWithoutHost(locale);
   const { resources } = await initTranslations(
@@ -94,7 +92,6 @@ export default async function OriginalDetailsPage({ params }) {
     <PageWrapper
       cookies={cookieList}
       translationData={{ i18nNamespaces, locale, resources }}
-      nonce={nonce}
     >
       <ResourcePageContent resource={resource} />
     </PageWrapper>

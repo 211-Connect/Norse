@@ -6,7 +6,7 @@ import { permanentRedirect, notFound, RedirectType } from 'next/navigation';
 import { ResourcePageContent } from '@/app/(app)/features/resource/components/content';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import { getCookies } from 'cookies-next/server';
-import { cookies, headers } from 'next/headers';
+import { cookies } from 'next/headers';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { isValidUUID } from '@/app/(app)/shared/utils/uuid';
 import { Resource } from '@/types/resource';
@@ -51,9 +51,6 @@ export const generateMetadata = async ({ params }): Promise<Metadata> => {
 export default async function ResourcePage({ params }) {
   const { id, locale } = await params;
 
-  const headersList = await headers();
-  const nonce = headersList.get('x-nonce') ?? '';
-
   if (!id || !isValidUUID(id)) {
     console.warn('Resource ID is not a valid UUID:', id);
     notFound();
@@ -96,7 +93,6 @@ export default async function ResourcePage({ params }) {
     <PageWrapper
       cookies={cookieList}
       translationData={{ i18nNamespaces, locale, resources }}
-      nonce={nonce}
     >
       <ResourcePageContent resource={resource} />
     </PageWrapper>

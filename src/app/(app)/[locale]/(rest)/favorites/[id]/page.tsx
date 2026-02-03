@@ -5,7 +5,7 @@ import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import { FavoritesSection } from '@/app/(app)/features/favorites/components/favorites-section';
 import { FavoriteMapContainer } from '@/app/(app)/features/favorites/components/favorite-map-container';
 import { getCookies } from 'cookies-next/server';
-import { cookies, headers } from 'next/headers';
+import { cookies } from 'next/headers';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { getSession } from '@/app/(app)/shared/utils/getServerSession';
 import { getFavoriteList } from '@/app/(app)/shared/serverActions/favorites/getFavoriteList';
@@ -47,8 +47,7 @@ export const generateMetadata = async ({ params }): Promise<Metadata> => {
 export default async function FavoritesDetailsPage({ params }) {
   const { id, locale } = await params;
   const cookieList = await getCookies({ cookies });
-  const headersList = await headers();
-  const nonce = headersList.get('x-nonce') ?? '';
+
   const session = await getSession();
   const appConfig = await getAppConfigWithoutHost(locale);
   const { resources } = await initTranslations(
@@ -77,7 +76,6 @@ export default async function FavoritesDetailsPage({ params }) {
       cookies={cookieList}
       translationData={{ i18nNamespaces, locale, resources }}
       jotaiData={{ favoriteList, viewingAsOwner }}
-      nonce={nonce}
     >
       <div className="flex flex-1">
         <FavoritesSection />

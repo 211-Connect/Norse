@@ -130,9 +130,7 @@ export default async function SearchPage({
     distance: string;
   }>;
 }) {
-  const headersList = await headers();
-  const nonce = headersList.get('x-nonce') ?? '';
-  const device = headersList.get('user-agent') ?? '';
+  const device = getServerDevice((await headers()).get('user-agent')!);
 
   const [paramsResult, searchParamsResult] = await Promise.all([
     await params,
@@ -179,7 +177,6 @@ export default async function SearchPage({
         results,
         totalResults,
       }}
-      nonce={nonce}
     >
       <h1 className="sr-only">View Search Results</h1>
       <ResultsEvents results={results} totalResults={totalResults} />
