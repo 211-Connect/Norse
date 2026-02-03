@@ -48,6 +48,8 @@ export default async function TopicsView({ params }) {
     appConfig.i18n.defaultLocale,
   );
 
+  const headersList = await headers();
+  const nonce = headersList.get('x-nonce') ?? '';
   const cookieList = await getCookies({ cookies });
 
   const device = getServerDevice((await headers()).get('user-agent')!);
@@ -61,6 +63,7 @@ export default async function TopicsView({ params }) {
       cookies={cookieList}
       jotaiData={{ device }}
       translationData={{ i18nNamespaces, locale, resources }}
+      nonce={nonce}
     >
       <div className="container">
         <CategoriesSection backText={appConfig.topics.backText} />

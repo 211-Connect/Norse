@@ -2,7 +2,7 @@ import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import { notFound } from 'next/navigation';
 import { getCookies } from 'cookies-next/server';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 
 const i18nNamespaces = ['common', 'page-404'];
@@ -51,6 +51,9 @@ export default async function TermsOfUsePage({ params }) {
   const { locale } = await params;
   const appConfig = await getAppConfigWithoutHost(locale);
 
+  const headersList = await headers();
+  const nonce = headersList.get('x-nonce') ?? '';
+
   if (!appConfig.pages.termsOfUsePage.enabled) {
     notFound();
   }
@@ -67,6 +70,7 @@ export default async function TermsOfUsePage({ params }) {
     <PageWrapper
       cookies={cookieList}
       translationData={{ i18nNamespaces, locale, resources }}
+      nonce={nonce}
     >
       <div className="container mx-auto pb-8 pt-8">
         <h1 className="mb-2 text-3xl font-bold">
