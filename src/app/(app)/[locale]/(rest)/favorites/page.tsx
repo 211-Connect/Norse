@@ -5,7 +5,7 @@ import { Metadata } from 'next/types';
 import { FavoriteListsSection } from '@/app/(app)/features/favorites/components/favorite-lists-section';
 import { MapContainer } from '@/app/(app)/features/favorites/components/map-container';
 import { getCookies } from 'cookies-next/server';
-import { cookies, headers } from 'next/headers';
+import { cookies } from 'next/headers';
 import { SESSION_ID } from '@/app/(app)/shared/lib/constants';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { getSession } from '@/app/(app)/shared/utils/getServerSession';
@@ -33,8 +33,6 @@ export default async function FavoritesPage({ params }) {
   const session = await getSession();
   const cookieList = await getCookies({ cookies });
 
-  const headersList = await headers();
-  const nonce = headersList.get('x-nonce') ?? '';
   const { locale } = await params;
   const appConfig = await getAppConfigWithoutHost(locale);
   const { resources } = await initTranslations(
@@ -62,7 +60,6 @@ export default async function FavoritesPage({ params }) {
       cookies={cookieList}
       translationData={{ i18nNamespaces, locale, resources }}
       jotaiData={{ favoriteLists }}
-      nonce={nonce}
     >
       <div className="flex flex-1">
         <FavoriteListsSection />
