@@ -50,7 +50,22 @@ export function FacetsSection({ resource }: { resource: Resource }) {
       return acc;
     }, {});
 
-    return grouped;
+    const deduplicated = Object.entries(grouped).reduce<GroupedFacets>(
+      (acc, [taxonomyName, facets]) => {
+        const seen = new Set<string>();
+        acc[taxonomyName] = facets.filter((facet) => {
+          if (seen.has(facet.termName)) {
+            return false;
+          }
+          seen.add(facet.termName);
+          return true;
+        });
+        return acc;
+      },
+      {},
+    );
+
+    return deduplicated;
   }, [resource]);
 
   if (!filteredFacets) {
