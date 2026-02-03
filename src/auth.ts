@@ -42,12 +42,15 @@ const createAuthOptions = ({
       return baseUrl;
     },
     session({ session, token }) {
-      session.user.accessToken = token.accessToken;
-      session.user.refreshToken = token.refreshToken;
-      session.user = omitNilValues(session.user) as Session['user'];
-      if (token.error) {
-        session.error = token.error;
+      session.accessToken = token.accessToken;
+      session.idToken = token.idToken;
+      session.error = token.error ?? null;
+
+      if (token.sub) {
+        session.user.id = token.sub;
       }
+
+      session.user = omitNilValues(session.user) as Session['user'];
       return session;
     },
     async jwt({ token, account }) {
@@ -59,70 +62,99 @@ const createAuthOptions = ({
           ...token,
           accessToken: account.access_token,
           refreshToken: account.refresh_token,
+          idToken: account.id_token,
           expiresAt: account.expires_at,
         };
-      } else if (Date.now() < (token?.expiresAt ?? 0) * 1000) {
-        // Token is still valid
+      }
+
+      const REFRESH_BUFFER = 30;
+      if (
+        token.expiresAt &&
+        Date.now() / 1000 < token.expiresAt - REFRESH_BUFFER
+      ) {
         return token;
-      } else {
-        // Token expired. Refresh it.
-        try {
-          const data = await fetchWrapper(
-            `${keycloak?.issuer}/protocol/openid-connect/token`,
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-              },
-              body: {
-                client_id: process.env.KEYCLOAK_CLIENT_ID || '',
-                client_secret: keycloak?.clientSecret || '',
-                grant_type: 'refresh_token',
-                refresh_token: token.refreshToken as string,
-              },
+      }
+
+      if (!token.refreshToken) {
+        return { ...token, error: 'NoRefreshToken' };
+      }
+
+      try {
+        const params = new URLSearchParams({
+          client_id: process.env.KEYCLOAK_CLIENT_ID || '',
+          client_secret: keycloak?.clientSecret || '',
+          grant_type: 'refresh_token',
+          refresh_token: token.refreshToken,
+        });
+
+        const data = await fetchWrapper(
+          `${keycloak?.issuer}/protocol/openid-connect/token`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
             },
-          );
+            body: params,
+          },
+        );
 
-          console.log(
-            'Refreshed access token successfully for issuer:',
-            keycloak?.issuer,
-          );
-
-          return {
-            ...token,
-            accessToken: data.access_token,
-            refreshToken: data.refresh_token,
-            expiresAt: Math.floor(Date.now() / 1000 + data.expires_in),
-          };
-        } catch (err: any) {
-          console.error('Error refreshing access token:', err);
-          console.log(`Error refreshing access token: ${keycloak?.issuer}`, {
-            client_id: process.env.KEYCLOAK_CLIENT_ID || '',
-            client_secret: maskValue(keycloak?.clientSecret || ''),
-            grant_type: 'refresh_token',
-            refresh_token: maskValue(token.refreshToken as string),
-          });
-
-          token.error = 'RefreshAccessTokenError';
-          return token;
+        if (!data) {
+          throw new Error('Token refresh failed: no response');
         }
+
+        return {
+          ...token,
+          accessToken: data.access_token,
+          refreshToken: data.refresh_token ?? token.refreshToken,
+          expiresAt: Math.floor(Date.now() / 1000 + data.expires_in),
+          error: undefined,
+        };
+      } catch (err: any) {
+        console.error('Error refreshing access token:', err);
+
+        if (
+          err.response?.status === 400 ||
+          err.response?.data?.error === 'invalid_grant'
+        ) {
+          return { ...token, error: 'RefreshTokenExpired' };
+        }
+
+        return { ...token, error: 'RefreshAccessTokenError' };
       }
     },
   },
   events: {
     signOut: async (message) => {
-      await fetchWrapper(`${keycloak?.issuer}/protocol/openid-connect/logout`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: {
+      if (!keycloak?.issuer) {
+        return console.error('Keycloak issuer not configured');
+      }
+
+      if (!message.token?.refreshToken) {
+        return console.error('No refresh token available for logout');
+      }
+
+      try {
+        const params = new URLSearchParams({
           client_id: process.env.KEYCLOAK_CLIENT_ID || '',
           client_secret: keycloak?.clientSecret || '',
-          refresh_token: message.token.refreshToken as string,
-        },
-        parseResponse: false,
-      });
+          refresh_token: String(message.token.refreshToken),
+        });
+
+        await fetchWrapper(
+          `${keycloak?.issuer}/protocol/openid-connect/logout`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: params,
+            parseResponse: false,
+          },
+        );
+      } catch (err) {
+        console.error('Error during Keycloak logout:', err);
+        // Don't throw - allow NextAuth signOut to complete
+      }
     },
   },
   providers: [
