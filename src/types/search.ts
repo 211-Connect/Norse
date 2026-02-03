@@ -33,7 +33,13 @@ export interface SearchBodyDto {
 
 // -- Response Types --
 
-// Nested DTOs to match Norse API response structure
+// Top-level facets mapping (facet key -> human-readable name object)
+export type SearchFacets = Record<string, Record<string, string>>;
+
+// Per-document facet values: language -> array of values
+// Example: { area_served_by_county: { en: ['Dakota County'], es: ['Condado de Dakota'] } }
+export type DocumentFacets = Record<string, Record<string, string[]>>;
+
 export interface ServiceDto {
   name: string;
   alternate_name?: string | null;
@@ -87,7 +93,7 @@ export interface SearchSource {
   location: LocationDto;
   organization: OrganizationDto;
   taxonomies: TaxonomyDto[];
-  facets: Record<string, any>;
+  facets: DocumentFacets;
   tenant_id: string;
   priority: number;
   pinned: boolean;
@@ -135,7 +141,8 @@ export interface SearchResponseRoot {
     };
     aggregations?: SearchAggregations;
   };
-  facets?: Record<string, any>;
+  facets: SearchFacets;
+  facets_values?: DocumentFacets;
 }
 
 // -- Transformed Types for UI --

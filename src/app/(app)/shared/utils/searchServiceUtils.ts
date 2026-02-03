@@ -1,3 +1,5 @@
+import { deriveQueryType } from '../lib/search-utils';
+import { SearchStoreState } from '@/types/search';
 import { Point } from 'geojson';
 import qs from 'qs';
 import {
@@ -6,6 +8,7 @@ import {
   PhysicalAddressDto,
   SearchHit,
   SearchResultItem,
+  SearchFacets,
 } from '@/types/search';
 import { transformFacetsToArray } from './toFacetsWithTranslation';
 
@@ -112,7 +115,7 @@ export function createSearchHeaders(
 export function transformSearchHit(
   hit: SearchHit,
   locale: string,
-  facetDefinitions?: Record<string, any>,
+  facetDefinitions?: SearchFacets,
 ): SearchResultItem {
   const source = hit._source;
   const mainAddress = buildAddressFromPhysical(
@@ -311,8 +314,6 @@ export async function executeSearch(
     filters: data?.search?.aggregations ?? {},
   };
 }
-import { deriveQueryType } from '../lib/search-utils';
-import { SearchStoreState } from '@/types/search';
 
 /**
  * Creates a URL parameters object from the search store state.
