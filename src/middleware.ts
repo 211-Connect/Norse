@@ -8,6 +8,12 @@ import { TenantLocaleResponse } from './app/(payload)/api/getTenantLocales/route
 import { parseHost } from './app/(app)/shared/utils/parseHost';
 import { fetchWrapper } from './app/(app)/shared/lib/fetchWrapper';
 
+const DOMAINS_WITH_CSP = [
+  'localhost',
+  'localhost:3000',
+  'therc.vdh.virginia.gov',
+];
+
 export const config = {
   matcher: [
     /*
@@ -59,8 +65,15 @@ function getApiRoute(request: NextRequest, target: string) {
   return `${proto}://${host}${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/api/${target}`;
 }
 
+function generateNonce() {
+  const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
+  return nonce;
+}
+
 // Add a session_id to the cookies of the user for tracking purposes
 export async function middleware(request: NextRequest) {
+  const nonce = generateNonce();
+
   const host = parseHost(request.headers.get('host') || '');
 
   let locales = ['en'];
@@ -133,6 +146,7 @@ export async function middleware(request: NextRequest) {
     cookieOptions: {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
     },
   });
   if (!request.cookies.has(SESSION_ID)) {
@@ -142,8 +156,38 @@ export async function middleware(request: NextRequest) {
       path: '/',
       secure: process.env.NODE_ENV === 'production',
       httpOnly: true,
+      sameSite: 'strict',
     });
   }
+
+  const isProduction = process.env.NODE_ENV === 'production';
+
+  const cspHeader = `
+    default-src 'self';
+    script-src 'self' 'nonce-${nonce}' https://www.googletagmanager.com ${isProduction ? "'strict-dynamic'" : "'unsafe-eval' 'unsafe-inline'"};
+    style-src 'self' 'unsafe-inline' https://api.mapbox.com https://fonts.googleapis.com;
+    img-src 'self' blob: data: https://api.mapbox.com https://*.tiles.mapbox.com https://events.mapbox.com https://cdn.c211.io *.digitaloceanspaces.com *.feathr.co www.googletagmanager.com;
+    font-src 'self' data: https://fonts.gstatic.com;
+    connect-src 'self' https://api.mapbox.com https://*.tiles.mapbox.com https://events.mapbox.com *.digitaloceanspaces.com *.feathr.co https://*.google-analytics.com https://cdn.matomo.cloud https://api.c211.io https://maps.c211.io www.googletagmanager.com www.google.com ${isProduction ? '' : 'http://localhost:* ws://localhost:*'};
+    worker-src 'self' blob:;
+    child-src 'self' blob:;
+    frame-src 'self' blob:;
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+    frame-ancestors 'self';
+  `
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+
+  if (DOMAINS_WITH_CSP.includes(host)) {
+    response.headers.set('Content-Security-Policy', cspHeader);
+    response.headers.set('x-nonce', nonce);
+  }
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('X-Frame-Options', 'DENY');
+  response.headers.set('X-XSS-Protection', '1; mode=block');
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
 
   cacheControlMiddleware(response, pathname);
   robotsMiddleware(response, pathname);

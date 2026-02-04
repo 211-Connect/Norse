@@ -43,6 +43,8 @@ export const generateMetadata = async ({ params }): Promise<Metadata> => {
 
 export default async function HomePage({ params }) {
   const { locale } = await params;
+  const headersList = await headers();
+  const nonce = headersList.get('x-nonce') ?? '';
 
   const appConfig = await getAppConfigWithoutHost(locale);
 
@@ -61,6 +63,7 @@ export default async function HomePage({ params }) {
       cookies={cookieList}
       jotaiData={{ device }}
       translationData={{ i18nNamespaces, locale, resources }}
+      nonce={nonce}
     >
       <h1 className="sr-only">Search by Keyword or Topic</h1>
       <TourProvider>

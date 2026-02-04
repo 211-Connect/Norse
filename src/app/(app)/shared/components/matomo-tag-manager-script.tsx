@@ -2,14 +2,16 @@ import Script from 'next/script';
 
 export function MatomoTagManagerScript({
   matamoContainerUrl,
+  nonce,
 }: {
   matamoContainerUrl?: string;
+  nonce?: string;
 }) {
   if (!matamoContainerUrl) return null;
 
   return (
     <>
-      <Script id="matomo-tag-manager-script">
+      <Script id="matomo-tag-manager-script" nonce={nonce}>
         {`var _mtm = window._mtm = window._mtm || [];
         _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
         (function() {

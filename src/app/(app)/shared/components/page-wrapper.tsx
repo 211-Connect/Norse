@@ -24,6 +24,7 @@ interface PageWrapperProps {
     resources: any;
   };
   jotaiData?: Record<string, any>;
+  nonce?: string;
 }
 
 export const PageWrapper = ({
@@ -31,6 +32,7 @@ export const PageWrapper = ({
   cookies,
   jotaiData = {},
   translationData,
+  nonce,
 }: PropsWithChildren<PageWrapperProps>) => {
   const appConfig = useAppConfig();
 
@@ -48,9 +50,13 @@ export const PageWrapper = ({
           <Footer />
           <GlobalDialogs />
           <Toaster />
-          <GoogleTagManagerScript containerId={appConfig.gtmContainerId} />
+          <GoogleTagManagerScript
+            containerId={appConfig.gtmContainerId}
+            nonce={nonce}
+          />
           <MatomoTagManagerScript
             matamoContainerUrl={appConfig.matomoContainerUrl}
+            nonce={nonce}
           />
           <DynamicHeightListener />
         </ErrorBoundary>
