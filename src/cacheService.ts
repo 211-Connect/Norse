@@ -3,28 +3,67 @@ import { Redis } from 'ioredis';
 class CacheService {
   private client: Redis | null = null;
   private isEnabled = Boolean(process.env.CACHE_REDIS_URI);
+  private isConnecting = false;
+  private connectionPromise: Promise<void> | null = null;
+  private connectionAttempted = false;
 
   constructor(private db: number = 0) {
     if (!this.isEnabled) {
       console.warn('CACHE_REDIS_URI is not set. Caching is disabled.');
+    }
+  }
+
+  private async ensureConnection(): Promise<void> {
+    if (!this.isEnabled) return;
+
+    if (this.client?.status === 'ready') return;
+
+    if (this.isConnecting && this.connectionPromise) {
+      return this.connectionPromise;
+    }
+
+    if (this.connectionAttempted && !this.client) {
+      console.warn(
+        'Previous Redis connection attempt failed. Caching is disabled.',
+      );
       return;
     }
 
+    this.isConnecting = true;
+    this.connectionPromise = this._connect();
+
+    try {
+      await this.connectionPromise;
+    } finally {
+      this.isConnecting = false;
+      this.connectionPromise = null;
+      this.connectionAttempted = true;
+    }
+  }
+
+  private async _connect(): Promise<void> {
+    if (this.client) return;
+
     try {
       this.client = new Redis(process.env.CACHE_REDIS_URI!, {
-        db,
+        db: this.db,
         maxRetriesPerRequest: 3,
         enableReadyCheck: true,
         enableOfflineQueue: true,
         connectTimeout: 10_000,
         commandTimeout: 5_000,
+        lazyConnect: true,
         retryStrategy: (times) => {
           if (times > 5) {
-            console.error(`Redis reconnection failed after ${times} attempts`);
-            return null; // Stop retrying
+            console.error(
+              `Redis reconnection failed after ${times} attempts (DB ${this.db})`,
+            );
+            return null;
           }
           const delay = Math.pow(2, times) * 1000;
-          console.log(`Redis reconnecting in ${delay}ms (attempt ${times})`);
+          console.log(
+            `Redis reconnecting in ${delay}ms (attempt ${times}, DB ${this.db})`,
+          );
           return delay;
         },
         reconnectOnError: (err) => {
@@ -36,30 +75,34 @@ class CacheService {
       });
 
       this.client.on('error', (err) => {
-        console.error(`Redis error (DB ${db}):`, err);
-      });
-
-      this.client.on('connect', () => {
-        console.log(`Redis connected (DB ${db})`);
-      });
-
-      this.client.on('ready', () => {
-        console.log(`Redis ready (DB ${db})`);
+        console.error(`Redis error (DB ${this.db}):`, err);
       });
 
       this.client.on('reconnecting', () => {
-        console.warn(`Redis reconnecting (DB ${db})`);
+        console.warn(`Redis reconnecting (DB ${this.db})`);
       });
+
+      await this.client.connect();
+      console.log(`Redis connected and ready (DB ${this.db})`);
     } catch (error) {
-      console.error(`Failed to initialize Redis client (DB ${db}):`, error);
+      console.error(`Failed to connect to Redis (DB ${this.db}):`, error);
+      if (this.client) {
+        try {
+          await this.client.quit();
+        } catch {
+          // Ignore cleanup errors
+        }
+      }
       this.client = null;
       this.isEnabled = false;
+      throw error;
     }
   }
 
   async clear(): Promise<void> {
-    if (!this.client) return;
     try {
+      await this.ensureConnection();
+      if (!this.client) return;
       await this.client.flushdb();
     } catch (error) {
       console.error('Redis clear error:', error);
@@ -68,11 +111,12 @@ class CacheService {
   }
 
   async set(key: string, value: string, ttl?: number): Promise<void> {
-    if (!this.client) {
-      console.warn(`Cache set skipped (disabled): ${key}`);
-      return;
-    }
     try {
+      await this.ensureConnection();
+      if (!this.client) {
+        console.warn(`Cache set skipped (disabled): ${key}`);
+        return;
+      }
       if (ttl !== undefined && ttl > 0) {
         await this.client.setex(key, ttl, value);
       } else {
@@ -85,8 +129,9 @@ class CacheService {
   }
 
   async get(key: string): Promise<string | null> {
-    if (!this.client) return null;
     try {
+      await this.ensureConnection();
+      if (!this.client) return null;
       return await this.client.get(key);
     } catch (error) {
       console.error('Redis get error:', error);
@@ -95,8 +140,9 @@ class CacheService {
   }
 
   async del(key: string): Promise<void> {
-    if (!this.client) return;
     try {
+      await this.ensureConnection();
+      if (!this.client) return;
       await this.client.del(key);
     } catch (error) {
       console.error('Redis del error:', error);
@@ -105,9 +151,10 @@ class CacheService {
   }
 
   async delPattern(pattern: string): Promise<number> {
-    if (!this.client) return 0;
-
     try {
+      await this.ensureConnection();
+      if (!this.client) return 0;
+
       let cursor = '0';
       let deletedCount = 0;
       let iterations = 0;
@@ -145,15 +192,16 @@ class CacheService {
   }
 
   async isHealthy(): Promise<boolean> {
-    if (!this.isEnabled || this.client === null) {
-      return false;
-    }
-
-    if (this.client.status !== 'ready') {
+    if (!this.isEnabled) {
       return false;
     }
 
     try {
+      await this.ensureConnection();
+      if (!this.client || this.client.status !== 'ready') {
+        return false;
+      }
+
       await this.client.ping();
 
       const testKey = `__health_check__:${this.db}:${process.pid}`;

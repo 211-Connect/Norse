@@ -80,12 +80,9 @@ export const warmCache: TaskConfig<'warmCache'> = {
 
     for (const domain of domains) {
       try {
-        console.log(`[warmCache] Warming cache for domain: ${domain}`);
-
         const tenant = await findTenantByHost(domain);
         if (tenant) {
           warmedTenants++;
-          console.log(`[warmCache] ✓ Tenant cache warmed for: ${domain}`);
 
           if (tenant.enabledLocales && tenant.enabledLocales.length > 0) {
             for (const locale of tenant.enabledLocales) {
@@ -96,9 +93,6 @@ export const warmCache: TaskConfig<'warmCache'> = {
                 );
                 if (resourceDirectory) {
                   warmedResourceDirectories++;
-                  console.log(
-                    `[warmCache] ✓ ResourceDirectory cache warmed for: ${domain} (${locale})`,
-                  );
                 }
               } catch (error) {
                 console.error(
