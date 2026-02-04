@@ -5,12 +5,13 @@ import { ResultsSection } from '@/app/(app)/features/search/components/results-s
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { getServerDevice } from '@/app/(app)/shared/lib/get-server-device';
-import { findResources } from '@/app/(app)/shared/services/search-service';
+import { getSearchResults } from '@/app/(app)/shared/services/search-service';
 import { getCookies } from 'cookies-next/server';
 import { cookies, headers } from 'next/headers';
 import { Metadata } from 'next/types';
 import { cache } from 'react';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
+import { FindResourcesResult } from '@/types/search';
 
 const i18nNamespaces = ['page-search', 'page-resource', 'common'];
 
@@ -81,10 +82,9 @@ export const generateMetadata = async ({
     query_label,
   } = await getPageData(paramsResult.locale, searchParamsResult);
 
-  const { results, totalResults } = await findResources(
+  const { results, totalResults } = await getSearchResults(
     searchParamsResult,
     locale,
-    parseInt((searchParamsResult?.page as string) ?? '1'),
     limit,
     appConfig.tenantId,
   );
@@ -152,10 +152,9 @@ export default async function SearchPage({
     query_type,
   } = await getPageData(paramsResult.locale, searchParamsResult);
 
-  const resultResources = await findResources(
+  const resultResources = await getSearchResults(
     searchParamsResult,
     locale,
-    parseInt((searchParamsResult?.page as string) ?? '1'),
     limit,
     appConfig.tenantId,
   );

@@ -8,7 +8,7 @@ import {
   USER_PREF_POSTCODE,
   USER_PREF_REGION,
 } from './constants';
-import { ResultType } from '../store/results';
+import { SearchResultItem } from '@/types/search';
 
 export interface ReferralEventProps {
   event: string;
@@ -99,7 +99,7 @@ export const createPageViewEvent = (e: any, sessionId: string) => {
 export const createReferralEvent = (
   referralType: 'call_referral' | 'website_referral' | 'directions_referral',
   resourceId: string,
-  resource: Partial<ResultType>,
+  resource: Partial<SearchResultItem>,
   query: any,
   sessionId: string,
 ) => {

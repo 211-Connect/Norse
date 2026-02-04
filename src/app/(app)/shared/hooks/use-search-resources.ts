@@ -9,6 +9,7 @@ import { useSuggestions } from './use-suggestions';
 import { useTaxonomies } from './api/use-taxonomies';
 import { searchAtom, searchLocationAtom } from '../store/search';
 import { useLocations } from './api/use-locations';
+import { deriveQueryType } from '../lib/search-utils';
 
 export const useSearchResources = () => {
   const search = useAtomValue(searchAtom);
@@ -48,55 +49,50 @@ export const useSearchResources = () => {
       );
   }, [topics, search.searchTerm]);
 
-  const findCode = useCallback(
-    (value: string) => {
+  const resolveSearchTerm = useCallback(
+    (value: string): { query: string; queryType: string } => {
+      // Check for exact taxonomy match
       const taxonomy = taxonomies.find(
         (tax) => tax?.name?.toLowerCase() === value.toLowerCase(),
       );
-      if (taxonomy) return taxonomy.code;
+      if (taxonomy) {
+        return { query: taxonomy.code, queryType: 'taxonomy' };
+      }
 
+      // Check for suggestions (but keep as text search per existing logic)
       const suggestion = suggestions.find(
         (sugg) => sugg?.value?.toLowerCase() === value.toLowerCase(),
       );
-      if (suggestion) return suggestion.taxonomies;
+      if (suggestion) {
+        // Preserves existing behavior: returns suggestion code but uses text/derived type
+        return {
+          query: suggestion.taxonomies,
+          queryType: deriveQueryType(value, undefined),
+        };
+      }
 
+      // Check for reduced topics/categories
       const category = reducedTopics.find(
         (cat) => cat?.name?.toLowerCase() === value.toLowerCase(),
       );
-      if (category) return category.query;
+      if (category) {
+        return {
+          query: category.query ?? value,
+          queryType: 'taxonomy',
+        };
+      }
 
-      return value;
-    },
-    [reducedTopics, suggestions, taxonomies],
-  );
-
-  const getQueryType = useCallback(
-    (value, query) => {
-      const taxonomy = taxonomies.find(
-        (tax) => tax?.name?.toLowerCase() === value.toLowerCase(),
-      );
-      if (taxonomy) return 'taxonomy';
-
-      const suggestion = suggestions.find(
-        (sugg) => sugg?.value?.toLowerCase() === value.toLowerCase(),
-      );
-      if (suggestion) return 'taxonomy';
-
-      const category = reducedTopics.find(
-        (cat) => cat?.name?.toLowerCase() === value.toLowerCase(),
-      );
-      if (category) return 'taxonomy';
-
-      if (query.trim().length === 0) return '';
-      if (query === value) return 'text';
-      return 'taxonomy';
+      // Default fallback
+      return {
+        query: value,
+        queryType: deriveQueryType(value, undefined),
+      };
     },
     [reducedTopics, suggestions, taxonomies],
   );
 
   return {
-    findCode,
-    getQueryType,
+    resolveSearchTerm,
     locations,
     reducedTopics,
     search,

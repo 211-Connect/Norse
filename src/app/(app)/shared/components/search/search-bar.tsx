@@ -25,8 +25,7 @@ export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
 
   const {
     reducedTopics,
-    findCode,
-    getQueryType,
+    resolveSearchTerm,
     setSearch,
     suggestions,
     displayTaxonomies: taxonomiesDisplay,
@@ -67,7 +66,7 @@ export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
     const taxonomyList = taxonomiesDisplay.map((option) => ({
       group: t('search.taxonomies'),
       value: option.name,
-      label: showTaxonomyBadge ? option.code : null,
+      label: showTaxonomyBadge ? option.code : undefined,
     }));
 
     const atLeastTwo =
@@ -92,8 +91,7 @@ export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
 
   const setSearchTerm = useCallback(
     (value: string) => {
-      const query = findCode(value);
-      const queryType = getQueryType(value, query);
+      const { query, queryType } = resolveSearchTerm(value);
 
       setShouldSearch(false);
 
@@ -105,7 +103,7 @@ export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
         queryLabel: value,
       }));
     },
-    [findCode, getQueryType, setSearch, setShouldSearch],
+    [resolveSearchTerm, setSearch, setShouldSearch],
   );
 
   const handleInputChange = useCallback(

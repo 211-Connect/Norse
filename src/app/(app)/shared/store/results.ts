@@ -1,5 +1,5 @@
 import { atom } from 'jotai';
-import { Location, Taxonomy, FacetWithTranslation } from '@/types/resource';
+import { Point, Taxonomy, FacetWithTranslation } from '@/types/resource';
 
 export type ResultType = {
   _id: string;
@@ -7,7 +7,7 @@ export type ResultType = {
   address: string;
   summary: string;
   description: string;
-  location: Location;
+  location: Point;
   name: string;
   phone: string;
   priority: number;

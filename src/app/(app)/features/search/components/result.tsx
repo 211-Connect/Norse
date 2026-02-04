@@ -16,7 +16,6 @@ import {
   distanceBetweenCoordsInKm,
   getGoogleMapsDestinationUrl,
 } from '@/app/(app)/shared/lib/utils';
-import { ResultType } from '@/app/(app)/shared/store/results';
 import { LinkIcon, MapPin, Phone, Pin } from 'lucide-react';
 import { Badge, badgeVariants } from '@/app/(app)/shared/components/ui/badge';
 import { useAtomValue } from 'jotai';
@@ -42,9 +41,10 @@ import { useTranslation } from 'react-i18next';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { getBadgesForResource } from '@/utils/getBadgesForResource';
 import { useMemo } from 'react';
+import { SearchResultItem } from '@/types/search';
 
 type ResultProps = {
-  data: ResultType;
+  data: SearchResultItem;
 };
 
 export function Result({ data }: ResultProps) {

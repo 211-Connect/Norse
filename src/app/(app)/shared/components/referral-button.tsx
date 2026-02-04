@@ -5,14 +5,14 @@ import { ReactNode } from 'react';
 import { createReferralEvent } from '../lib/google-tag-manager';
 import { cn } from '../lib/utils';
 import { Button, ButtonProps } from './ui/button';
-import { ResultType } from '../store/results';
 import { useClientSearchParams } from '../hooks/use-client-search-params';
 import { useAppConfig } from '../hooks/use-app-config';
+import { SearchResultItem } from '@/types/search';
 
 type Props = {
   referralType: 'call_referral' | 'website_referral' | 'directions_referral';
   resourceId: string;
-  resourceData: Partial<ResultType>;
+  resourceData: Partial<SearchResultItem>;
   onClick?: any;
   className?: string;
   children?: ReactNode;

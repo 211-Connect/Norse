@@ -89,6 +89,12 @@ const Filters = ({ filters, filterKeys }) => {
           const originalCount = filterList.length;
           const filtersExpandedForKey = filtersExpanded[key] ?? false;
 
+          if (filterList.length === 0) {
+            return null;
+          }
+
+          console.log(key, ': ', filterList);
+
           if (!filtersExpandedForKey) {
             filterList = filterList.slice(0, MAX_VISIBLE_FILTERS);
           }
@@ -259,8 +265,21 @@ export function FilterPanel() {
   const appConfig = useAppConfig();
   const filters = useAtomValue(filtersAtom);
   const [filtersOpen, setFiltersOpen] = useAtom(filtersOpenAtom);
+  const { i18n } = useTranslation();
 
-  const filterKeys = useMemo(() => Object.keys(filters), [filters]);
+  const filterKeys = useMemo(() => {
+    const allKeys = Object.keys(filters);
+    const locale = i18n.language.split('-')[0]; // e.g., 'en' from 'en-US'
+
+    // Filter out label keys that end with _{locale}
+    return allKeys.filter((key) => {
+      // Skip keys that match the pattern: label_*_{locale}
+      if (key.startsWith('label_') && key.endsWith(`_${locale}`)) {
+        return false;
+      }
+      return true;
+    });
+  }, [filters, i18n.language]);
 
   const { scrollOffset } = useScrollOffset();
 

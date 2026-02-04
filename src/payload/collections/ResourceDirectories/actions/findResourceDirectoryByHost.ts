@@ -2,7 +2,7 @@ import { ResourceDirectory } from '@/payload/payload-types';
 import { TypedLocale } from 'payload';
 import { locales } from '@/payload/i18n/locales';
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
-import { withRedisCache } from '@/payload/utilities';
+import { withRedisCache } from '@/utilities/withRedisCache';
 import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
 
 async function findResourceDirectoryByHostOrig(

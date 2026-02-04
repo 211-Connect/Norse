@@ -1,8 +1,9 @@
 import { FacetWithTranslation } from '@/types/resource';
+import { DocumentFacets, SearchFacets } from '@/types/search';
 
 export function transformFacetsToArray(
-  sourceFacets: unknown, // expected { [taxonomyCode: string]: string[] }
-  facetDefinitions: unknown, // expected { [taxonomyCode: string]: { en: string; [locale: string]: string } }
+  sourceFacets: DocumentFacets | null | undefined,
+  facetDefinitions: SearchFacets | null | undefined,
   locale: string,
 ): FacetWithTranslation[] {
   if (!sourceFacets || typeof sourceFacets !== 'object') {
@@ -18,27 +19,24 @@ export function transformFacetsToArray(
 
       if (facetDefinitions && typeof facetDefinitions === 'object') {
         const taxDef = facetDefinitions[taxonomyCode];
-        if (taxDef && typeof taxDef === 'object') {
+        if (taxDef) {
           taxonomyNameEn = taxDef.en;
           taxonomyName = taxDef[locale] || taxDef.en;
-        } else if (typeof taxDef === 'string') {
-          taxonomyNameEn = taxDef;
-          taxonomyName = taxDef;
         }
       }
 
       let currentLocaleTerms: string[] = [];
       let englishTerms: string[] = [];
 
-      if (Array.isArray(terms)) {
+      // DocumentFacets is Record<string, Record<string, string[]>>
+      // terms is Record<string, string[]>
+      if (terms && typeof terms === 'object' && !Array.isArray(terms)) {
+        currentLocaleTerms = terms[locale] || [];
+        englishTerms = terms['en'] || [];
+      } else if (Array.isArray(terms)) {
+        // Fallback for legacy structure if any
         currentLocaleTerms = terms;
         englishTerms = terms;
-      } else if (terms && typeof terms === 'object') {
-        const termsObj: Record<string, unknown> = terms;
-        currentLocaleTerms = Array.isArray(termsObj[locale])
-          ? termsObj[locale]
-          : [];
-        englishTerms = Array.isArray(termsObj.en) ? termsObj.en : [];
       }
 
       const maxLength = Math.max(

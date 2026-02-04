@@ -1,49 +1,82 @@
-import { ExtractAtomValue } from 'jotai';
-
-import { TaxonomyService } from './taxonomy-service';
-import { searchAtom } from '../store/search';
+import { executeSearch } from '../utils/searchServiceUtils';
 import { API_URL } from '../lib/constants';
 import { fetchWrapper } from '../lib/fetchWrapper';
-import { transformFacetsToArray } from '../utils/toFacetsWithTranslation';
+import { buildSearchRequest } from '../lib/search-utils';
+import { FindResourcesResult, SearchStoreState } from '@/types/search';
+import { geocodeLocationCached } from '../services/geocoding-service';
 
-export function createUrlParamsForSearch(
-  searchStore: ExtractAtomValue<typeof searchAtom>,
-) {
-  const hasLocation = searchStore['searchCoordinates']?.length === 2;
+/**
+ * Orchestrate search with feature flags and server-side geocoding.
+ * This function effectively replaces the old logic in page.tsx.
+ */
+export async function getSearchResults(
+  searchParams: Record<string, string | string[] | undefined>,
+  locale: string,
+  limit: number,
+  tenantId?: string,
+): Promise<FindResourcesResult> {
+  const page = parseInt((searchParams?.page as string) ?? '1');
+  const location = searchParams?.location as string | undefined;
 
-  const isTaxonomyCode = TaxonomyService.isTaxonomyCode(
-    searchStore['query']?.trim(),
+  // Feature flag check
+  const useGeospatialSearch =
+    process.env.NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG ===
+      'true' && !!location;
+
+  let v2Result: FindResourcesResult | null = null;
+
+  if (useGeospatialSearch) {
+    const placeMetadata = await geocodeLocationCached(location!, locale);
+
+    if (placeMetadata) {
+      const searchStore = {
+        query: (searchParams?.query as string) || '',
+        queryLabel: (searchParams?.query_label as string) || '',
+        queryType: (searchParams?.query_label as string) || '',
+        searchLocation: location!,
+        searchCoordinates: searchParams?.coords
+          ? (searchParams.coords as string).split(',').map(Number)
+          : placeMetadata.coordinates,
+        searchDistance: (searchParams?.distance as string) || '0',
+        searchPlaceType: placeMetadata.place_type,
+        searchBbox: placeMetadata.bbox,
+      };
+
+      try {
+        v2Result = await findResourcesV2(
+          searchStore,
+          locale,
+          page,
+          limit,
+          tenantId,
+        );
+      } catch (error) {
+        console.error(
+          'Geospatial search failed, falling back to legacy:',
+          error,
+        );
+      }
+    }
+  }
+
+  if (v2Result) return v2Result;
+
+  return findResources(
+    searchParams as Record<string, string>,
+    locale,
+    page,
+    limit,
+    tenantId,
   );
-
-  const urlParams = {
-    query: searchStore['query']?.trim(),
-    query_label: searchStore['queryLabel']?.trim(),
-    query_type: isTaxonomyCode ? 'taxonomy' : searchStore['queryType']?.trim(),
-    location: hasLocation ? searchStore['searchLocation']?.trim() : null,
-    coords: hasLocation
-      ? searchStore['searchCoordinates']?.join(',')?.trim()
-      : null,
-    distance:
-      searchStore['searchCoordinates']?.length === 2
-        ? searchStore['searchDistance']?.trim() || '0'
-        : '',
-  };
-
-  return Object.fromEntries(
-    Object.entries(urlParams).filter(
-      ([_, value]) =>
-        value != null && (typeof value !== 'string' || value.trim() !== ''),
-    ),
-  ) as Record<string, string>;
 }
 
 export async function findResources(
-  query: any,
+  query: Record<string, string>,
   locale: string,
   page: number,
   limit?: number,
   tenantId?: string,
-) {
+): Promise<FindResourcesResult> {
   if (isNaN(page)) {
     page = 1;
   }
@@ -52,196 +85,83 @@ export async function findResources(
     limit = 25;
   }
 
-  let data;
-  let responseStatusCode;
-  let responseHeaders;
-  try {
-    const searchParams = new URLSearchParams({
-      ...query,
-      page: String(page),
-      locale,
-      limit,
-    });
+  const pageStr = isNaN(page) ? '1' : page.toString();
+  const limitStr = !limit || isNaN(limit) ? '25' : limit.toString();
 
-    if (tenantId) {
-      searchParams.append('tenant_id', tenantId);
-    }
-
-    data = await fetchWrapper(`${API_URL}/search?${searchParams.toString()}`, {
-      headers: {
-        'accept-language': locale,
-        'x-api-version': '1',
-        ...(tenantId && { 'x-tenant-id': tenantId }),
-      },
-      cache: 'no-store',
-    });
-  } catch (err) {
-    console.error('Search API error:', {
-      error: err,
-      tenantId,
-      query,
-      page,
-      locale,
-      limit,
-    });
-    // Return early with empty results if API fails completely
-    return {
-      results: [],
-      noResults: true,
-      totalResults: 0,
-      page: 1,
-      filters: {},
-    };
-  }
-
-  // If response succeeded but data is malformed, return empty results
-  if (!data || !data.search) {
-    console.error('Malformed API response:', {
-      data,
-      tenantId,
-      query,
-      page,
-      locale,
-      limit,
-      statusCode: responseStatusCode,
-      headers: responseHeaders,
-    });
-    return {
-      results: [],
-      noResults: true,
-      totalResults: 0,
-      page: 1,
-      filters: {},
-    };
-  }
-
-  let totalResults =
-    typeof data?.search?.hits?.total !== 'number'
-      ? (data?.search?.hits?.total?.value ?? 0)
-      : (data?.search?.hits?.total ?? 0);
-
-  let noResults = false;
-  if (totalResults === 0) {
-    noResults = true;
-
-    try {
-      const fallbackParams = new URLSearchParams({
-        ...query,
-        page: String(page),
-        query_type: 'more_like_this',
-        locale,
-        limit: String(limit),
-      });
-
-      if (tenantId) {
-        fallbackParams.append('tenant_id', tenantId);
-      }
-
-      const fallbackData = await fetchWrapper(
-        `${API_URL}/search?${fallbackParams.toString()}`,
-        {
-          headers: {
-            'accept-language': locale,
-            'x-api-version': '1',
-            ...(tenantId && { 'x-tenant-id': tenantId }),
-          },
-          cache: 'no-store',
-        },
-      );
-
-      if (fallbackData?.search) {
-        data = fallbackData;
-      }
-    } catch (err) {
-      console.error('Fallback search API error:', {
-        error: err,
-        tenantId,
-        query: { ...query, query_type: 'more_like_this' },
-        page,
-        locale,
-        limit,
-      });
-    }
-
-    totalResults =
-      typeof data?.search?.hits?.total !== 'number'
-        ? (data?.search?.hit?.total?.value ?? 0)
-        : (data?.search?.hits?.total ?? 0);
-  }
-
-  const hits = data?.search?.hits?.hits;
-  const facetDefinitions = data?.facets;
-
-  const results = Array.isArray(hits)
-    ? hits.map((hit: any) => {
-        const physicalAddress = hit._source?.location?.physical_address;
-        let mainAddress: string | null = null;
-
-        if (
-          physicalAddress?.address_1 &&
-          physicalAddress?.city &&
-          physicalAddress?.state &&
-          physicalAddress?.postal_code
-        ) {
-          // Construct address similar to information.tsx format
-          const addressParts = [
-            physicalAddress.address_1,
-            physicalAddress.address_2 ? physicalAddress.address_2 : null,
-            physicalAddress.city,
-            physicalAddress.state,
-            physicalAddress.postal_code,
-          ].filter(Boolean); // Remove null/undefined values
-
-          mainAddress = addressParts.join(', ');
-        }
-
-        const transformedFacets = transformFacetsToArray(
-          hit?._source?.facets,
-          facetDefinitions,
-          locale,
-        );
-
-        const responseData = {
-          _id: hit._id,
-          id: hit?._source?.service_at_location_id ?? null,
-          priority: hit?._source?.priority,
-          serviceName: hit?._source?.service?.name ?? null,
-          name: hit?._source?.name ?? null,
-          summary: hit?._source?.service?.summary ?? null,
-          description: hit?._source?.service?.description ?? null,
-          phone: hit?._source?.phone ?? null,
-          website: hit?._source?.url ?? null,
-          address: mainAddress,
-          location: hit?._source?.location?.point ?? null,
-          taxonomies: hit?._source?.taxonomies ?? null,
-          facets: transformedFacets.length > 0 ? transformedFacets : null,
-        };
-
-        return Object.fromEntries(
-          Object.entries(responseData).filter(([_, value]) => value != null),
-        );
-      })
-    : [];
-
-  const aggregations = data?.search?.aggregations ?? {};
-  const filters = Object.keys(aggregations).reduce((acc, key) => {
-    const buckets = aggregations[key]?.buckets;
-    if (
-      !key.startsWith('label_') &&
-      !key.endsWith('_en') &&
-      Array.isArray(buckets) &&
-      buckets.length > 0
-    ) {
-      acc[key] = aggregations[key];
-    }
-    return acc;
-  }, {});
-
-  return {
-    results,
-    noResults,
-    totalResults,
-    page,
-    filters,
+  const queryParams = {
+    ...query,
+    page: pageStr,
+    limit: limitStr,
+    locale,
   };
+
+  const fallbackQueryParams: Record<string, any> = { ...queryParams };
+  if (tenantId) {
+    fallbackQueryParams.tenant_id = tenantId;
+  }
+
+  return executeSearch(
+    fetchWrapper,
+    `${API_URL}/search`,
+    queryParams,
+    locale,
+    parseInt(pageStr),
+    parseInt(limitStr),
+    tenantId,
+    'GET',
+    null,
+    fallbackQueryParams,
+  );
+}
+
+/**
+ * Find resources using POST endpoint with advanced geospatial filtering
+ * This is the V2 implementation that supports both boundary and proximity search
+ * @param searchStore - Search state from searchAtom
+ * @param locale - Language locale
+ * @param page - Current page number
+ * @param limit - Results per page
+ * @param tenantId - Tenant identifier
+ * @returns Search results with pagination info
+ */
+export async function findResourcesV2(
+  searchStore: SearchStoreState,
+  locale: string,
+  page: number,
+  limit?: number,
+  tenantId?: string,
+): Promise<FindResourcesResult> {
+  if (isNaN(page)) {
+    page = 1;
+  }
+
+  if (!limit || isNaN(limit)) {
+    limit = 25;
+  }
+
+  const request = buildSearchRequest({
+    ...searchStore,
+    searchPlaceType: searchStore.searchPlaceType || [],
+    searchBbox: searchStore.searchBbox || null,
+  });
+
+  // Build query params with pagination
+  const queryParams = {
+    ...request.queryParams,
+    page,
+    locale,
+    limit,
+  };
+
+  return executeSearch(
+    fetchWrapper,
+    `${API_URL}/search`,
+    queryParams,
+    locale,
+    page,
+    limit,
+    tenantId,
+    'POST',
+    request.body,
+  );
 }

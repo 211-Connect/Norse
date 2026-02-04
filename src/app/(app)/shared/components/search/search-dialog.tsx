@@ -10,7 +10,7 @@ import { SearchButton } from './search-button';
 import { Button } from '../ui/button';
 import { useTranslation } from 'react-i18next';
 import { useFlag } from '../../hooks/use-flag';
-import { createUrlParamsForSearch } from '../../services/search-service';
+import { createUrlParamsForSearch } from '../../utils/searchServiceUtils';
 import { useRouter } from 'next/navigation';
 import { useClientSearchParams } from '../../hooks/use-client-search-params';
 import { cn, getScrollbarWidth } from '../../lib/utils';
@@ -44,7 +44,7 @@ export function SearchDialog({
 
   const [mounted, setMounted] = useState(false);
 
-  const { findCode, getQueryType, locations, search, setSearch } =
+  const { locations, resolveSearchTerm, search, setSearch } =
     useMainSearchLayoutContext();
 
   const onSubmit = useCallback(
@@ -60,8 +60,7 @@ export function SearchDialog({
           return;
         }
 
-        let query = findCode(search.searchTerm);
-        let queryType = getQueryType(search.searchTerm, query);
+        let { query, queryType } = resolveSearchTerm(search.searchTerm);
 
         // Ensure queryType is never empty - default to 'taxonomy' if we have a query
         if (!queryType && query) {
@@ -84,7 +83,7 @@ export function SearchDialog({
         const urlParams = createUrlParamsForSearch({
           ...search,
           ...locationParams,
-          query,
+          query: query ?? '',
           queryType,
         });
 
@@ -102,10 +101,9 @@ export function SearchDialog({
       });
     },
     [
-      findCode,
-      getQueryType,
       locations,
       requireUserLocation,
+      resolveSearchTerm,
       router,
       search,
       setSearch,
