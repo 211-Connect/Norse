@@ -8,6 +8,12 @@ import { TenantLocaleResponse } from './app/(payload)/api/getTenantLocales/route
 import { parseHost } from './app/(app)/shared/utils/parseHost';
 import { fetchWrapper } from './app/(app)/shared/lib/fetchWrapper';
 
+const DOMAINS_WITH_CSP = [
+  'localhost',
+  'localhost:3000',
+  'therc.vdh.virginia.gov',
+];
+
 export const config = {
   matcher: [
     /*
@@ -174,8 +180,10 @@ export async function middleware(request: NextRequest) {
     .replace(/\s{2,}/g, ' ')
     .trim();
 
-  response.headers.set('Content-Security-Policy', cspHeader);
-  response.headers.set('x-nonce', nonce);
+  if (DOMAINS_WITH_CSP.includes(host)) {
+    response.headers.set('Content-Security-Policy', cspHeader);
+    response.headers.set('x-nonce', nonce);
+  }
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-XSS-Protection', '1; mode=block');
