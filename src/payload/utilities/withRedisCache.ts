@@ -7,12 +7,14 @@ const CACHE_TTL = ONE_HOUR;
 type Domain = string;
 type Locale = string;
 type ResourceId = string;
+type TenantId = string;
 
 export type RedisCacheKey =
   | `tenant:${Domain}`
   | `tenant_locale:${Domain}`
   | `resource_directory:${Domain}:${Locale}`
-  | `resource:${ResourceId}:${Locale}`;
+  | `resource:${ResourceId}:${Locale}`
+  | `search_config:${TenantId}:${Locale}`;
 
 export const withRedisCache = async <T>(
   key: RedisCacheKey,

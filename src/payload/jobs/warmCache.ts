@@ -1,6 +1,9 @@
 import type { TaskConfig } from 'payload';
 import { findTenantByHost } from '../collections/Tenants/actions';
-import { findResourceDirectoryByHost } from '../collections/ResourceDirectories/actions';
+import {
+  findResourceDirectoryByHost,
+  findResourceDirectoryByTenantId,
+} from '../collections/ResourceDirectories/actions';
 
 export const warmCache: TaskConfig<'warmCache'> = {
   slug: 'warmCache',
@@ -87,10 +90,11 @@ export const warmCache: TaskConfig<'warmCache'> = {
           if (tenant.enabledLocales && tenant.enabledLocales.length > 0) {
             for (const locale of tenant.enabledLocales) {
               try {
-                const resourceDirectory = await findResourceDirectoryByHost(
-                  domain,
-                  locale,
-                );
+                const resourceDirectory = await Promise.all([
+                  findResourceDirectoryByHost(domain, locale),
+                  findResourceDirectoryByTenantId(tenant.id, locale),
+                ]);
+
                 if (resourceDirectory) {
                   warmedResourceDirectories++;
                 }
