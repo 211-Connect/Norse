@@ -4,11 +4,7 @@ import KeycloakProvider from 'next-auth/providers/keycloak';
 
 import { Tenant } from './payload/payload-types';
 import { fetchWrapper } from './app/(app)/shared/lib/fetchWrapper';
-
-const maskValue = (value: string) => {
-  if (!value || value.length <= 8) return '***';
-  return `${value.slice(0, 4)}${'*'.repeat(value.length - 8)}${value.slice(-4)}`;
-};
+import { isJwtExpired } from './utils/getJwtExpirationTime';
 
 // Helper to remove null/undefined values from object
 const omitNilValues = <T extends Record<string, any>>(obj: T): Partial<T> => {
@@ -79,6 +75,11 @@ const createAuthOptions = ({
         return { ...token, error: 'NoRefreshToken' };
       }
 
+      if (isJwtExpired(token.refreshToken)) {
+        console.warn('Refresh token has expired');
+        return { ...token, error: 'RefreshTokenExpired' };
+      }
+
       try {
         const params = new URLSearchParams({
           client_id: process.env.KEYCLOAK_CLIENT_ID || '',
@@ -116,6 +117,7 @@ const createAuthOptions = ({
           err.response?.status === 400 ||
           err.response?.data?.error === 'invalid_grant'
         ) {
+          console.log('Refresh token is invalid or expired');
           return { ...token, error: 'RefreshTokenExpired' };
         }
 
