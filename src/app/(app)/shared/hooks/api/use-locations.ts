@@ -23,6 +23,8 @@ export function useLocations(searchTerm: string, excludeEverywhere = false) {
         locale: i18n.language,
       });
     },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
   });
 
   const additionalLocations = useMemo(

@@ -4,7 +4,6 @@ import { TaxonomyService } from '@/app/(app)/shared/services/taxonomy-service';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useAppConfig } from '../use-app-config';
-import { useState } from 'react';
 
 export function useTaxonomies(searchTerm: string = '') {
   const appConfig = useAppConfig();
