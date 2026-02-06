@@ -14,14 +14,14 @@ export const useSearchResources = () => {
   const search = useAtomValue(searchAtom);
   const setSearch = useSetAtom(searchAtom);
 
-  const debouncedSearchTerm = useDebounce(search.searchTerm, 200);
+  const debouncedSearchTerm = useDebounce(search.searchTerm, 1000);
   const { data: taxonomies, displayData: displayTaxonomies } =
     useTaxonomies(debouncedSearchTerm);
   const suggestions = useSuggestions();
   const topics = useTopics();
 
   const searchLocation = useAtomValue(searchLocationAtom);
-  const debouncedSearchLocation = useDebounce(searchLocation, 200);
+  const debouncedSearchLocation = useDebounce(searchLocation, 1000);
   const { data: locations } = useLocations(debouncedSearchLocation);
 
   const reducedTopics: {
