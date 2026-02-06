@@ -13,6 +13,7 @@ export function useLocations(searchTerm: string, excludeEverywhere = false) {
 
   const { data } = useQuery({
     initialData: [],
+    initialDataUpdatedAt: 0,
     placeholderData: (prev) => prev,
     queryKey: ['locations', i18n.language, searchTerm],
     enabled: !!adapter && searchTerm.length > 0,
