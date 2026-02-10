@@ -7,7 +7,8 @@ declare module '*.svg' {
 declare global {
   namespace NodeJS {
     interface ProcessEnv {
-      NEXT_PUBLIC_API_URL?: string;
+      API_URL?: string;
+      INTERNAL_API_KEY?: string;
       NEXT_PUBLIC_WITH_TRAILING_SLASHES?: string;
       NEXT_PUBLIC_CUSTOM_BASE_PATH?: string;
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { TaxonomyService } from '@/app/(app)/shared/services/taxonomy-service';
+import { getTaxonomies } from '@/app/(app)/shared/serverActions/taxonomy/getTaxonomies';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useAppConfig } from '../use-app-config';
@@ -14,7 +14,7 @@ export function useTaxonomies(searchTerm: string = '') {
     queryFn: async () => {
       if (!i18n.language || searchTerm.length === 0) return [];
 
-      const taxonomies = await TaxonomyService.getTaxonomies(searchTerm, {
+      const taxonomies = await getTaxonomies(searchTerm, {
         locale: i18n.language,
         tenantId: appConfig.tenantId,
       });

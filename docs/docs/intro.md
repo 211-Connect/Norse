@@ -39,11 +39,12 @@ PUBLIC Variables:
 
 - `NEXT_PUBLIC_MAPBOX_API_KEY`: Mapbox API key(get from [mapbox api](https://docs.mapbox.com/api/overview/) )
 - `NEXT_PUBLIC_GTM_CONTAINER_ID`: Google Tag Manager container ID
-- `NEXT_PUBLIC_API_URL`: API URL (http://localhost:3001 in this case)
 - `NEXT_PUBLIC_MAPBOX_STYLE_URL`: Mapbox style URL
 
 SECRET Variables:
 
+- `API_URL`: API URL (http://localhost:3001 in this case) - Server-side only
+- `INTERNAL_API_KEY`: API key for bypassing rate limiting - Server-side only
 - `KEYCLOAK_CLIENT_ID`: Keycloak client ID
 
 These environment variables are crucial for configuring the project's behavior and connecting it to external services.

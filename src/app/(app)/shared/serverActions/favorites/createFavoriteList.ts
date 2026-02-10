@@ -1,6 +1,10 @@
 'use server';
 
-import { API_URL, FAVORITES_LIST_ENDPOINT } from '../../lib/constants';
+import {
+  API_URL,
+  FAVORITES_LIST_ENDPOINT,
+  INTERNAL_API_KEY,
+} from '../../lib/constants';
 import { getAuthHeaders } from '../../lib/authHeaders';
 import { fetchWrapper } from '../../lib/fetchWrapper';
 
@@ -30,6 +34,7 @@ export const createFavoriteList = async (
       ...authHeaders,
       'Content-Type': 'application/json',
       'x-api-version': '1',
+      'x-api-key': INTERNAL_API_KEY || '',
     },
     body: {
       name,

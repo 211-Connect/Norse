@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 
-import { API_URL } from '../lib/constants';
+import { API_URL, INTERNAL_API_KEY } from '../lib/constants';
 import { RedisCacheKey, withRedisCache } from '@/payload/utilities';
 import { ApiResource, Resource } from '@/types/resource';
 import { fetchWrapper } from '../lib/fetchWrapper';
@@ -21,6 +21,7 @@ async function fetchAndTransformResource(
     const headers: HeadersInit = {
       'accept-language': options.locale,
       'x-api-version': '1',
+      'x-api-key': INTERNAL_API_KEY || '',
     };
 
     if (options.tenantId) {
