@@ -4,6 +4,7 @@ import { MapRenderer } from '@/app/(app)/shared/components/map/map-renderer';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { HEADER_ID } from '@/app/(app)/shared/lib/constants';
 import { cn } from '@/app/(app)/shared/lib/utils';
+import { isValidCoordinate } from '@/utils/isValidCoordinate';
 import { favoriteListWithFavoritesAtom } from '@/app/(app)/shared/store/favorites';
 import { useAtomValue } from 'jotai';
 import { useEffect, useMemo, useState } from 'react';
@@ -17,13 +18,9 @@ export function FavoriteMapContainer() {
     return (
       favoriteList?.favorites?.map((favorite) => {
         const coords = favorite.location?.coordinates;
-        const isZero =
-          Array.isArray(coords) && coords[0] === 0 && coords[1] === 0;
         return {
           id: favorite._id,
-          coordinates: isZero
-            ? undefined
-            : (coords as [number, number] | undefined),
+          coordinates: isValidCoordinate(coords) ? coords : undefined,
         };
       }) ?? []
     );

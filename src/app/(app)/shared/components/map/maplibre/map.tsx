@@ -17,6 +17,7 @@ import {
   MarkerDef,
 } from '../map-shared';
 import { createPortal } from 'react-dom';
+import { isValidCoordinate } from '@/utils/isValidCoordinate';
 import { MapErrorFallback } from '../map-error-fallback';
 
 type MapProps = {
@@ -114,12 +115,7 @@ export function Map({
         marker.setPopup(popup);
       }
 
-      // Check if coordinates are valid before doing anything with them
-      const hasValidCoordinates =
-        m.coordinates &&
-        !isNaN(m.coordinates[0]) &&
-        !isNaN(m.coordinates[1]) &&
-        !(m.coordinates[0] === 0 && m.coordinates[1] === 0);
+      const hasValidCoordinates = isValidCoordinate(m.coordinates);
 
       if (hasValidCoordinates) {
         marker.setLngLat(m.coordinates!);
@@ -206,13 +202,7 @@ export function Map({
     const map = mapLibreMap.current as any;
     const hasMarkers =
       Array.isArray(markers) &&
-      markers.some(
-        (m) =>
-          m.coordinates &&
-          !isNaN(m.coordinates[0]) &&
-          !isNaN(m.coordinates[1]) &&
-          !(m.coordinates[0] === 0 && m.coordinates[1] === 0),
-      );
+      markers.some((m) => isValidCoordinate(m.coordinates));
     let cancelled = false;
 
     const safeHasLayer = (id: string) => {
