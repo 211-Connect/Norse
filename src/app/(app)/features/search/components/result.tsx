@@ -97,7 +97,7 @@ export function Result({ data }: ResultProps) {
         <CardTitle className="m-0 flex flex-row justify-between gap-2">
           <Link
             className="self-center hover:underline"
-            href={`/search/${data.id}`}
+            href={`/search/${data.id}${process.env.NEXT_PUBLIC_WITH_TRAILING_SLASHES === 'true' ? '/' : ''}`}
           >
             {data.name}
           </Link>
