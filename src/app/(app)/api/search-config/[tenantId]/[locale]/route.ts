@@ -45,16 +45,20 @@ export async function GET(
         }
 
         const tenant = resourceDirectory.tenant as Tenant;
-        const domain = tenant?.trustedDomains?.[0]?.domain ?? '';
+        const domain = `${tenant?.trustedDomains?.[0]?.domain ?? ''}${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}`;
 
         const subtopics =
           resourceDirectory.topics?.list?.flatMap((topic) =>
-            (topic.subtopics ?? []).map((subtopic) => ({
-              name: subtopic.name,
-              topicName: topic.name,
-              queryType: subtopic.queryType ?? 'taxonomy',
-              query: subtopic.query ?? '',
-            })),
+            (topic.subtopics ?? []).map(
+              (subtopic): SearchConfig['subtopics'][number] => ({
+                name: subtopic.name,
+                topicName: topic.name,
+                queryType: subtopic.queryType ?? 'text',
+                query: subtopic.query || null,
+                openInNewTab: subtopic.openInNewTab || null,
+                href: subtopic.href || null,
+              }),
+            ),
           ) ?? [];
 
         const config: SearchConfig = {
