@@ -43,8 +43,8 @@ export function stringToBooleanOrUndefined(str?: string): boolean | undefined {
 }
 
 export function getGoogleMapsDestinationUrl(
-  originCoords: number[],
-  destinationCoords: number[],
+  originCoords: number[] | undefined | null,
+  destinationCoords: number[] | undefined | null,
 ) {
   const getOrigin = () => {
     if (originCoords) {
@@ -101,11 +101,7 @@ export function formatAddressForDisplay(
   if (!address) return '';
 
   const isValidPart = (part: string | undefined | null) => {
-    return (
-      part &&
-      part !== 'null' &&
-      part.trim() !== ''
-    );
+    return part && part !== 'null' && part.trim() !== '';
   };
 
   return [
