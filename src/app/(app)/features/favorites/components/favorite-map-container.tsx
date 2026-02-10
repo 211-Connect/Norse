@@ -15,12 +15,17 @@ export function FavoriteMapContainer() {
 
   const markers = useMemo(() => {
     return (
-      favoriteList?.favorites?.map((favorite) => ({
-        id: favorite._id,
-        coordinates: favorite.location?.coordinates as
-          | [number, number]
-          | undefined,
-      })) ?? []
+      favoriteList?.favorites?.map((favorite) => {
+        const coords = favorite.location?.coordinates;
+        const isZero =
+          Array.isArray(coords) && coords[0] === 0 && coords[1] === 0;
+        return {
+          id: favorite._id,
+          coordinates: isZero
+            ? undefined
+            : (coords as [number, number] | undefined),
+        };
+      }) ?? []
     );
   }, [favoriteList.favorites]);
 

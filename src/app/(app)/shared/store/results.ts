@@ -7,7 +7,7 @@ export type ResultType = {
   address: string;
   summary: string;
   description: string;
-  location: Location;
+  location: Location | null;
   name: string;
   phone: string;
   priority: number;

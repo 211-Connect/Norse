@@ -116,7 +116,10 @@ export function Map({
 
       // Check if coordinates are valid before doing anything with them
       const hasValidCoordinates =
-        m.coordinates && !isNaN(m.coordinates[0]) && !isNaN(m.coordinates[1]);
+        m.coordinates &&
+        !isNaN(m.coordinates[0]) &&
+        !isNaN(m.coordinates[1]) &&
+        !(m.coordinates[0] === 0 && m.coordinates[1] === 0);
 
       if (hasValidCoordinates) {
         marker.setLngLat(m.coordinates!);
@@ -205,7 +208,10 @@ export function Map({
       Array.isArray(markers) &&
       markers.some(
         (m) =>
-          m.coordinates && !isNaN(m.coordinates[0]) && !isNaN(m.coordinates[1]),
+          m.coordinates &&
+          !isNaN(m.coordinates[0]) &&
+          !isNaN(m.coordinates[1]) &&
+          !(m.coordinates[0] === 0 && m.coordinates[1] === 0),
       );
     let cancelled = false;
 

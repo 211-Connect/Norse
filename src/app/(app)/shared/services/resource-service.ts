@@ -79,9 +79,11 @@ async function fetchAndTransformResource(
       lastAssuredOn: data?.lastAssuredDate
         ? dayjs(data.lastAssuredDate).format('MM/DD/YYYY')
         : '',
-      location: {
-        coordinates: data?.location?.coordinates ?? [0, 0],
-      },
+      location: data?.location?.coordinates
+        ? {
+            coordinates: data.location.coordinates,
+          }
+        : null,
       organizationName: data?.organizationName ?? null,
       organizationDescription:
         data?.translation?.organizationDescription ?? null,

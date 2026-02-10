@@ -124,7 +124,7 @@ export interface Resource {
   lastAssuredOn: string;
   location: {
     coordinates: number[];
-  };
+  } | null;
   organizationName: string | null;
   organizationDescription: string | null;
   serviceArea: ServiceArea | null;
