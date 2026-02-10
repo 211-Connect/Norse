@@ -12,7 +12,9 @@ export type SearchConfig = {
   subtopics: {
     name: string;
     topicName: string;
-    queryType: string;
-    query: string;
+    queryType: 'link' | 'text' | 'taxonomy';
+    query: string | null;
+    openInNewTab: boolean | null;
+    href: string | null;
   }[];
 };
