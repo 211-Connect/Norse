@@ -9,14 +9,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/app/(app)/shared/components/ui/card';
-import { type FavoriteList } from '@/app/(app)/shared/store/favorites';
 import { useTranslation } from 'react-i18next';
 import { Link } from '@/app/(app)/shared/components/link';
 
 import { DeleteFavoriteListButton } from './delete-favorite-list-button';
 import { UpdateFavoriteListButton } from './update-favorite-list-button';
+import { FavoriteListState } from '@/types/favorites';
 
-export function FavoriteList({ list }: { list: FavoriteList }) {
+export function FavoriteList(list: FavoriteListState) {
   const { t } = useTranslation('page-favorites');
 
   return (

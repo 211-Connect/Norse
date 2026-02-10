@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from './ui/button';
+import { CustomPagination } from './custom-pagination';
 import {
   Dialog,
   DialogContent,
@@ -23,9 +24,10 @@ import { Badge } from './ui/badge';
 import { dialogsAtom } from '../store/dialogs';
 import { cn } from '../lib/utils';
 import { useAppConfig } from '../hooks/use-app-config';
-import { searchFavoriteLists } from '../serverActions/favorites/searchFavoriteLists';
+import { getFavoriteLists } from '../serverActions/favorites/getFavoriteLists';
 import { createFavoriteList } from '../serverActions/favorites/createFavoriteList';
 import { addToFavoriteList } from '../serverActions/favorites/addToFavoriteList';
+import { FavoriteListState } from '@/types/favorites';
 
 type AddToFavoritesButtonProps = {
   size?: 'default' | 'icon';
@@ -44,10 +46,16 @@ export function AddToFavoritesButton({
   const [open, setOpen] = useState(false);
   const [_value, setValue] = useState('');
   const value = useDebounce(_value, 200);
-  const [fetching, setFetching] = useState<any>({
+  const [fetching, setFetching] = useState<{
+    data: FavoriteListState[];
+    status: 'loading' | 'success';
+  }>({
     data: [],
     status: 'loading',
   });
+  const [page, setPage] = useState(1);
+  const [limit] = useState(5);
+  const [totalCount, setTotalCount] = useState(0);
 
   const refreshFavoritesList = useCallback(async () => {
     if (session.status === 'unauthenticated' || session.status === 'loading')
@@ -55,13 +63,25 @@ export function AddToFavoritesButton({
 
     setFetching({ data: [], status: 'loading' });
 
-    const favoriteLists = await searchFavoriteLists(value, appConfig.tenantId);
+    const response = await getFavoriteLists(
+      appConfig.tenantId,
+      page,
+      limit,
+      value,
+    );
 
-    if (favoriteLists) {
-      setFetching({ data: favoriteLists, status: 'success' });
+    if (response) {
+      setFetching({ data: response.data, status: 'success' });
+      setTotalCount(response.totalCount);
       return;
     }
-  }, [session, value, appConfig]);
+  }, [session, value, appConfig, page, limit]);
+
+  useEffect(() => {
+    if (open) {
+      refreshFavoritesList();
+    }
+  }, [refreshFavoritesList, open]);
 
   const addToFavoriteListHandler = (listId: string) => {
     return async () => {
@@ -103,7 +123,6 @@ export function AddToFavoritesButton({
 
   const handleClick = () => {
     if (session.status === 'authenticated') {
-      refreshFavoritesList();
       setOpen(true);
     } else {
       setDialog((prev) => ({
@@ -178,7 +197,7 @@ export function AddToFavoritesButton({
 
               {fetching.status === 'success' && (
                 <>
-                  {fetching.data.map((el: any) => {
+                  {fetching.data.map((el) => {
                     return (
                       <Fragment key={el._id}>
                         <p className="col-span-2 text-sm">{el.name}</p>
@@ -207,6 +226,18 @@ export function AddToFavoritesButton({
                 </>
               )}
             </div>
+            {fetching.status === 'success' && totalCount > limit && (
+              <div className="mt-4 flex justify-center">
+                <CustomPagination
+                  total={Math.ceil(totalCount / limit)}
+                  totalResults={totalCount}
+                  activePage={page}
+                  siblings={1}
+                  boundaries={1}
+                  onPageChange={(page) => setPage(page)}
+                />
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>

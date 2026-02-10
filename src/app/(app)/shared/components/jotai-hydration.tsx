@@ -20,6 +20,8 @@ import {
 import {
   favoriteListsAtom,
   favoriteListWithFavoritesAtom,
+  favoriteListsTotalAtom,
+  favoriteListsCurrentPageAtom,
 } from '../store/favorites';
 import { deviceAtom } from '../store/device';
 import { validateCoordsString } from '../lib/validators';
@@ -80,6 +82,8 @@ export function JotaiHydration({ cookies = {}, pageProps }) {
     [resultTotalAtom, pageProps?.totalResults ?? 0],
     [filtersAtom, pageProps?.filters ?? {}],
     [favoriteListsAtom, pageProps?.favoriteLists ?? []],
+    [favoriteListsTotalAtom, pageProps?.favoriteListsTotal ?? 0],
+    [favoriteListsCurrentPageAtom, pageProps?.favoriteListsCurrentPage ?? 1],
     [
       favoriteListWithFavoritesAtom,
       {
