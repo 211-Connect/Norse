@@ -67,7 +67,7 @@ export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
     const taxonomyList = taxonomiesDisplay.map((option) => ({
       group: t('search.taxonomies'),
       value: option.name,
-      label: showTaxonomyBadge ? option.code : null,
+      label: showTaxonomyBadge ? option.code : undefined,
     }));
 
     const atLeastTwo =
@@ -99,7 +99,7 @@ export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
 
       setSearch((prev) => ({
         ...prev,
-        query,
+        query: query ?? '',
         queryType,
         searchTerm: value,
         queryLabel: value,
