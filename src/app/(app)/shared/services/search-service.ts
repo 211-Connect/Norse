@@ -2,7 +2,7 @@ import { ExtractAtomValue } from 'jotai';
 
 import { TaxonomyService } from './taxonomy-service';
 import { searchAtom } from '../store/search';
-import { API_URL } from '../lib/constants';
+import { API_URL, INTERNAL_API_KEY } from '../lib/constants';
 import { fetchWrapper } from '../lib/fetchWrapper';
 import { transformFacetsToArray } from '../utils/toFacetsWithTranslation';
 
@@ -71,6 +71,7 @@ export async function findResources(
       headers: {
         'accept-language': locale,
         'x-api-version': '1',
+        'x-api-key': INTERNAL_API_KEY || '',
         ...(tenantId && { 'x-tenant-id': tenantId }),
       },
       cache: 'no-store',
@@ -143,6 +144,7 @@ export async function findResources(
           headers: {
             'accept-language': locale,
             'x-api-version': '1',
+            'x-api-key': INTERNAL_API_KEY || '',
             ...(tenantId && { 'x-tenant-id': tenantId }),
           },
           cache: 'no-store',

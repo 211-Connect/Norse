@@ -1,6 +1,10 @@
 'use server';
 
-import { API_URL, FAVORITES_BASE_ENDPOINT } from '../../lib/constants';
+import {
+  API_URL,
+  FAVORITES_BASE_ENDPOINT,
+  INTERNAL_API_KEY,
+} from '../../lib/constants';
 import { getAuthHeaders } from '../../lib/authHeaders';
 import { fetchWrapper } from '../../lib/fetchWrapper';
 
@@ -27,6 +31,7 @@ export const removeFavoriteFromList = async (
     headers: {
       ...authHeaders,
       'x-api-version': '1',
+      'x-api-key': INTERNAL_API_KEY || '',
     },
     cache: 'no-store',
   });

@@ -22,7 +22,7 @@ import {
 } from './ui/dialog';
 import { Facebook } from './icons/facebook';
 import { X } from './icons/x';
-import { ShortUrlService } from '../services/short-url-service';
+import { shortenUrl } from '../serverActions/shortUrl/shortenUrl';
 import { useClipboard } from '../hooks/use-clipboard';
 import { SmsButton } from './sms-button';
 import { useAppConfig } from '../hooks/use-app-config';
@@ -40,10 +40,7 @@ export function ShareButton({ componentToPrintRef, title = '', body = '' }) {
 
   useEffect(() => {
     async function getShortUrl() {
-      const id = await ShortUrlService.shortenUrl(
-        window.location.href,
-        appConfig.tenantId,
-      );
+      const id = await shortenUrl(window.location.href, appConfig.tenantId);
       const url = `${window.location.origin}${appConfig.customBasePath}/api/share/${appConfig.tenantId}/${id}`;
       setShortUrl(url);
     }

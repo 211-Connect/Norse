@@ -1,9 +1,6 @@
-import {
-  MAPBOX_API_KEY,
-  MAPBOX_API_BASE_URL,
-} from '@/app/(app)/shared/lib/constants';
 import { BaseGeocoderAdapter } from './base-geocoder-adapter';
-import { fetchWrapper } from '../../lib/fetchWrapper';
+import { forwardGeocode as forwardGeocodeAction } from '../../serverActions/geocoding/forwardGeocode';
+import { reverseGeocode as reverseGeocodeAction } from '../../serverActions/geocoding/reverseGeocode';
 
 export class MapboxAdapter extends BaseGeocoderAdapter {
   async forwardGeocode(
@@ -21,46 +18,7 @@ export class MapboxAdapter extends BaseGeocoderAdapter {
       region?: string;
     }[]
   > {
-    const searchParams = new URLSearchParams({
-      access_token: MAPBOX_API_KEY || '',
-      country: 'US',
-      autocomplete: 'true',
-      language: options.locale,
-    });
-
-    const data = await fetchWrapper(
-      `${MAPBOX_API_BASE_URL}/geocoding/v5/mapbox.places/${address}.json?${searchParams.toString()}`,
-    );
-
-    let output: any[] = [];
-
-    data?.features?.forEach((feature) => {
-      let obj = {
-        type: 'coordinates',
-        address:
-          feature?.[`place_name_${options.locale}`] ?? feature?.['place_name'],
-        coordinates: feature?.['geometry']?.['coordinates'],
-      };
-
-      // Add detailed location information to the output for analytics event tracking
-      feature?.context?.forEach((item) => {
-        if (item?.id?.startsWith('postcode')) {
-          obj['postcode'] = item?.[`text_${options.locale}`] ?? item?.text;
-        } else if (item?.id?.startsWith('place')) {
-          obj['place'] = item?.[`text_${options.locale}`] ?? item?.text;
-        } else if (item?.id?.startsWith('district')) {
-          obj['district'] = item?.[`text_${options.locale}`] ?? item?.text;
-        } else if (item?.id?.startsWith('region')) {
-          obj['region'] = item?.[`text_${options.locale}`] ?? item?.text;
-        } else if (item?.id?.startsWith('country')) {
-          obj['country'] = item?.[`text_${options.locale}`] ?? item?.text;
-        }
-      });
-
-      output.push(obj);
-    });
-
-    return output;
+    return await forwardGeocodeAction(address, options);
   }
 
   async reverseGeocode(
@@ -77,38 +35,6 @@ export class MapboxAdapter extends BaseGeocoderAdapter {
       region?: string;
     }[]
   > {
-    const searchParams = new URLSearchParams({
-      access_token: MAPBOX_API_KEY || '',
-      types: 'address',
-      country: 'US',
-      language: options.locale,
-    });
-
-    const data = await fetchWrapper(
-      `${MAPBOX_API_BASE_URL}/geocoding/v5/mapbox.places/${coords}.json?${searchParams.toString()}`,
-    );
-
-    let output = data?.features?.map((feature) => ({
-      address:
-        feature?.[`place_name_${options.locale}`] ?? feature?.['place_name'],
-      coordinates: feature?.['geometry']?.['coordinates'],
-    }));
-
-    // Add detailed location information to the output for analytics event tracking
-    data?.features[0]?.context?.forEach((item) => {
-      if (item?.id?.startsWith('postcode')) {
-        output[0]['postcode'] = item?.[`text_${options.locale}`] ?? item?.text;
-      } else if (item?.id?.startsWith('place')) {
-        output[0]['place'] = item?.[`text_${options.locale}`] ?? item?.text;
-      } else if (item?.id?.startsWith('district')) {
-        output[0]['district'] = item?.[`text_${options.locale}`] ?? item?.text;
-      } else if (item?.id?.startsWith('region')) {
-        output[0]['region'] = item?.[`text_${options.locale}`] ?? item?.text;
-      } else if (item?.id?.startsWith('country')) {
-        output[0]['country'] = item?.[`text_${options.locale}`] ?? item?.text;
-      }
-    });
-
-    return output;
+    return await reverseGeocodeAction(coords, options);
   }
 }

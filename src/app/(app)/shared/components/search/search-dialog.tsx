@@ -84,8 +84,8 @@ export function SearchDialog({
         const urlParams = createUrlParamsForSearch({
           ...search,
           ...locationParams,
-          query,
-          queryType,
+          query: query || '',
+          queryType: queryType || '',
         });
 
         const queryParams = stringifySearchParams(

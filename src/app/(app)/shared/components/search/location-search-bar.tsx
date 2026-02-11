@@ -77,7 +77,7 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
   const prevSearchLocation = isStandalone
     ? localPrevSearchLocation
     : globalPrevSearchLocation;
-  const debouncedSearchLocation = useDebounce(searchLocation, 200);
+  const debouncedSearchLocation = useDebounce(searchLocation, 1000);
   const {
     data: locations,
     options,
