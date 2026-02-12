@@ -17,7 +17,7 @@ export const removeFavoriteFromList = async (
     favoriteListId: string;
   },
   tenantId?: string,
-) => {
+): Promise<any> => {
   const authHeaders = await getAuthHeaders(tenantId);
 
   const searchParams = new URLSearchParams();
@@ -26,7 +26,7 @@ export const removeFavoriteFromList = async (
   }
 
   const url = `${API_URL}/${FAVORITES_BASE_ENDPOINT}/${resourceId}/${favoriteListId}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
-  return fetchWrapper(url, {
+  return fetchWrapper<void>(url, {
     method: 'DELETE',
     headers: {
       ...authHeaders,

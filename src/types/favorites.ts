@@ -6,20 +6,21 @@ export interface FavoritesPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-// Atom Type
-export interface FavoriteListState {
-  _id: string;
+// Base favorite list interface
+interface BaseFavoriteList {
   name: string;
   description: string;
+}
+
+// Atom Type - using _id for backward compatibility with existing components
+export interface FavoriteListState extends BaseFavoriteList {
+  id: string;
   privacy: Privacy;
   ownerId?: string;
 }
 
-
-// Norse API `/favorite-list` v2 Response Types
-export interface CreateFavoriteListDto {
-  name: string;
-  description: string;
+// Norse API `/favorite-list` v1 Request DTOs
+export interface CreateFavoriteListDto extends BaseFavoriteList {
   public: boolean;
 }
 
@@ -30,50 +31,25 @@ export interface SearchFavoriteListDto {
   exclude?: string;
 }
 
-interface FavoriteListHitSource {
+// Norse API `/favorite-list` v1 Response DTOs
+export interface FavoriteListItemDto extends BaseFavoriteList {
   id: string;
-  name: string;
-  description: string;
-  privacy: Privacy;
+  privacy: string;
   ownerId: string;
 }
 
-interface FavoriteListHit {
-  _index: string;
-  _id: string;
-  _score: number;
-  _source: FavoriteListHitSource;
-}
-
-interface ShardInfo {
+export interface PaginationResponseDto {
+  page: number;
+  limit: number;
   total: number;
-  successful: number;
-  skipped: number;
-  failed: number;
+  totalPages: number;
 }
 
-interface TotalHits {
-  value: number;
-  relation: string;
+export interface FavoriteListResponseDto extends PaginationResponseDto {
+  items: FavoriteListItemDto[];
 }
 
-interface FavoriteListHitsContainer {
-  total: TotalHits;
-  max_score: number | null;
-  hits: FavoriteListHit[];
-}
-
-interface SearchResponse {
-  took: number;
-  timed_out: boolean;
-  _shards: ShardInfo;
-  hits: FavoriteListHitsContainer;
-}
-
-export interface FavoriteListV2Response {
-  search: SearchResponse;
-}
-
+// Internal response type for getFavoriteLists
 export interface GetFavoriteListsResponse {
   data: FavoriteListState[];
   totalCount: number;

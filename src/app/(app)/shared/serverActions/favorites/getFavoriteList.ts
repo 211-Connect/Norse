@@ -7,12 +7,13 @@ import {
 } from '../../lib/constants';
 import { getAuthHeaders } from '../../lib/authHeaders';
 import { fetchWrapper } from '../../lib/fetchWrapper';
+import { FavoriteListItemDto } from '@/types/favorites';
 
 export async function getFavoriteList(
   id: string,
   locale: string,
   tenantId?: string,
-) {
+): Promise<FavoriteListItemDto | null> {
   const authHeaders = await getAuthHeaders(tenantId);
 
   const searchParams = new URLSearchParams({ locale });
@@ -21,13 +22,22 @@ export async function getFavoriteList(
   }
 
   const url = `${API_URL}/${FAVORITES_LIST_ENDPOINT}/${id}?${searchParams.toString()}`;
-  return fetchWrapper(url, {
-    headers: {
-      ...authHeaders,
-      'accept-language': locale,
-      'x-api-version': '1',
-      'x-api-key': INTERNAL_API_KEY || '',
+  const response = await fetchWrapper<FavoriteListItemDto>(
+    url,
+    {
+      headers: {
+        ...authHeaders,
+        'accept-language': locale,
+        'x-api-version': '1',
+        'x-api-key': INTERNAL_API_KEY || '',
+      },
+      cache: 'no-store',
     },
-    cache: 'no-store',
-  });
+  );
+
+  if (!response) {
+    return null;
+  }
+
+  return response;
 }

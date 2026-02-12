@@ -8,7 +8,7 @@ export interface Favorite extends ApiResource {
 }
 
 export type FavoriteListWithFavorites = {
-  _id: string;
+  id: string;
   name: string;
   description: string;
   privacy: FavoriteListState['privacy'];
@@ -16,17 +16,25 @@ export type FavoriteListWithFavorites = {
   favorites: Favorite[];
 };
 
-export const favoriteListsAtom = atom<FavoriteListState[]>([]);
+export const favoriteListsStateAtom = atom<{
+  data: FavoriteListState[];
+  totalCount: number;
+  currentPage: number;
+  limit: number;
+  status: 'loading' | 'success';
+}>({
+  data: [],
+  totalCount: 0,
+  currentPage: 1,
+  limit: 10,
+  status: 'loading',
+});
 
 export const favoriteListWithFavoritesAtom = atom<FavoriteListWithFavorites>({
-  _id: '',
+  id: '',
   name: '',
   description: '',
   privacy: 'PRIVATE' as FavoriteListState['privacy'],
   viewingAsOwner: false,
   favorites: [],
 });
-
-export const favoriteListsTotalAtom = atom<number>(0);
-export const favoriteListsCurrentPageAtom = atom<number>(0);
-export const favoriteListLimitAtom = atom<number>(10);

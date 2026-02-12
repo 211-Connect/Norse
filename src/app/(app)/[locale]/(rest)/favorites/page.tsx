@@ -54,18 +54,40 @@ export default async function FavoritesPage({
     );
   }
 
+  const pageParam = Array.isArray(page) ? page[0] : page;
+  const limitParam = Array.isArray(limit) ? limit[0] : limit;
+  const searchParam = Array.isArray(search) ? search[0] : search;
+
   const { data: favoriteLists, totalCount: favoriteListsTotal } =
     await getFavoriteLists(
       appConfig.tenantId,
-      Number(page) || 1,
-      Number(limit) || 10,
-      search as string,
+      Number(pageParam) || 1,
+      Number(limitParam) || 10,
+      searchParam || '',
     ).catch((err) => {
       console.error(err);
       return { data: [], totalCount: 0 };
     });
 
-  const favoriteListsCurrentPage = Number(page) || 1;
+  const currentPage = Number(pageParam) || 1;
+  const limits = Number(limitParam) || 10;
+  const maxPages = Math.ceil(favoriteListsTotal / limits);
+
+  const getRedirectUrl = (newPage: number) => {
+    const params = new URLSearchParams();
+    if (searchParam) params.set('search', searchParam);
+    if (limitParam) params.set('limit', String(limitParam));
+    params.set('page', String(newPage));
+    return `/${locale}/favorites?${params.toString()}`;
+  };
+
+  if (favoriteListsTotal > 0 && currentPage > maxPages) {
+    redirect(getRedirectUrl(maxPages));
+  }
+
+  if (currentPage <= 0) {
+    redirect(getRedirectUrl(1));
+  }
 
   return (
     <PageWrapper
@@ -74,7 +96,7 @@ export default async function FavoritesPage({
       jotaiData={{
         favoriteLists,
         favoriteListsTotal,
-        favoriteListsCurrentPage,
+        favoriteListsCurrentPage: currentPage,
       }}
       nonce={nonce}
     >

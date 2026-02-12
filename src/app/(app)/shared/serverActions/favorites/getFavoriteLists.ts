@@ -8,8 +8,9 @@ import {
 import { getAuthHeaders } from '../../lib/authHeaders';
 import { fetchWrapper } from '../../lib/fetchWrapper';
 import {
-  FavoriteListV2Response,
+  FavoriteListResponseDto,
   GetFavoriteListsResponse,
+  Privacy,
 } from '@/types/favorites';
 
 export async function getFavoriteLists(
@@ -17,6 +18,7 @@ export async function getFavoriteLists(
   page: number = 1,
   limit: number = 10,
   search: string = '',
+  locale: string = 'en',
 ): Promise<GetFavoriteListsResponse> {
   const authHeaders = await getAuthHeaders(tenantId);
 
@@ -31,24 +33,26 @@ export async function getFavoriteLists(
   }
 
   const url = `${API_URL}/${FAVORITES_LIST_ENDPOINT}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
-  const response = (await fetchWrapper(url, {
+
+  const response = await fetchWrapper<FavoriteListResponseDto>(url, {
     headers: {
       ...authHeaders,
-      'x-api-version': '2',
+      'accept-language': locale,
+      'x-api-version': '1',
       'x-api-key': INTERNAL_API_KEY || '',
     },
     cache: 'no-store',
-  })) as FavoriteListV2Response;
+  })
 
-  const hits = response?.search?.hits?.hits || [];
-  const totalCount = response?.search?.hits?.total?.value || 0;
+  const items = response?.items || [];
+  const totalCount = response?.total || 0;
 
-  const data = hits.map((hit) => ({
-    _id: hit._id,
-    name: hit._source.name,
-    description: hit._source.description,
-    privacy: hit._source.privacy,
-    ownerId: hit._source.ownerId,
+  const data = items.map((item) => ({
+    id: item.id,
+    name: item.name,
+    description: item.description,
+    privacy: item.privacy as Privacy,
+    ownerId: item.ownerId,
   }));
 
   return { data, totalCount };

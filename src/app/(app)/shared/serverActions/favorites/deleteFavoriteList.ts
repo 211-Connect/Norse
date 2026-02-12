@@ -8,7 +8,10 @@ import {
 import { getAuthHeaders } from '../../lib/authHeaders';
 import { fetchWrapper } from '../../lib/fetchWrapper';
 
-export const deleteFavoriteList = async (id: string, tenantId?: string) => {
+export const deleteFavoriteList = async (
+  id: string,
+  tenantId?: string,
+): Promise<void | null> => {
   const authHeaders = await getAuthHeaders(tenantId);
 
   const searchParams = new URLSearchParams();
@@ -17,7 +20,7 @@ export const deleteFavoriteList = async (id: string, tenantId?: string) => {
   }
 
   const url = `${API_URL}/${FAVORITES_LIST_ENDPOINT}/${id}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
-  return fetchWrapper(url, {
+  return fetchWrapper<void>(url, {
     method: 'DELETE',
     headers: {
       ...authHeaders,

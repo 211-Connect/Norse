@@ -32,11 +32,15 @@ import { FavoriteListState } from '@/types/favorites';
 type AddToFavoritesButtonProps = {
   size?: 'default' | 'icon';
   serviceAtLocationId: string;
+  siblings?: number;
+  boundaries?: number;
 };
 
 export function AddToFavoritesButton({
   size = 'default',
   serviceAtLocationId,
+  siblings = 1,
+  boundaries = 1,
 }: AddToFavoritesButtonProps) {
   const appConfig = useAppConfig();
   const session = useSession();
@@ -46,36 +50,42 @@ export function AddToFavoritesButton({
   const [open, setOpen] = useState(false);
   const [_value, setValue] = useState('');
   const value = useDebounce(_value, 200);
-  const [fetching, setFetching] = useState<{
+  const [favoritesState, setFavoritesState] = useState<{
     data: FavoriteListState[];
     status: 'loading' | 'success';
+    page: number;
+    limit: number;
+    totalCount: number;
   }>({
     data: [],
     status: 'loading',
+    page: 1,
+    limit: 5,
+    totalCount: 0,
   });
-  const [page, setPage] = useState(1);
-  const [limit] = useState(5);
-  const [totalCount, setTotalCount] = useState(0);
 
   const refreshFavoritesList = useCallback(async () => {
     if (session.status === 'unauthenticated' || session.status === 'loading')
       return;
 
-    setFetching({ data: [], status: 'loading' });
+    setFavoritesState((prev) => ({ ...prev, data: [], status: 'loading' }));
 
     const response = await getFavoriteLists(
       appConfig.tenantId,
-      page,
-      limit,
+      favoritesState.page,
+      favoritesState.limit,
       value,
     );
 
     if (response) {
-      setFetching({ data: response.data, status: 'success' });
-      setTotalCount(response.totalCount);
-      return;
+      setFavoritesState((prev) => ({
+        ...prev,
+        data: response.data,
+        status: 'success',
+        totalCount: response.totalCount,
+      }));
     }
-  }, [session, value, appConfig, page, limit]);
+  }, [session, value, appConfig, favoritesState.page, favoritesState.limit]);
 
   useEffect(() => {
     if (open) {
@@ -85,21 +95,27 @@ export function AddToFavoritesButton({
 
   const addToFavoriteListHandler = (listId: string) => {
     return async () => {
-      const data = await addToFavoriteList(
-        {
-          resourceId: serviceAtLocationId,
-          favoriteListId: listId,
-        },
-        appConfig.tenantId,
-      );
+      try {
+        const data = await addToFavoriteList(
+          {
+            resourceId: serviceAtLocationId,
+            favoriteListId: listId,
+          },
+          appConfig.tenantId,
+        );
 
-      if (data) {
-        toast.success(t('favorites.added_to_list'), {
-          description: t('favorites.added_to_list_message'),
-        });
-      } else {
-        toast.error(t('favorites.already_exists'), {
-          description: t('favorites.already_exists_message'),
+        if (data) {
+          toast.success(t('favorites.added_to_list'), {
+            description: t('favorites.added_to_list_message'),
+          });
+        } else {
+          toast.error(t('favorites.already_exists'), {
+            description: t('favorites.already_exists_message'),
+          });
+        }
+      } catch (error) {
+        toast.error(t('message.error'), {
+          description: t('favorites.unable_to_update_list_message'),
         });
       }
     };
@@ -110,7 +126,8 @@ export function AddToFavoritesButton({
       const created = await createFavoriteList(
         {
           name: value,
-          privacy: false,
+          description: '',
+          public: false,
         },
         appConfig.tenantId,
       );
@@ -160,8 +177,8 @@ export function AddToFavoritesButton({
               onChange={(e) => setValue(e.target.value)}
             />
 
-            {fetching.status === 'success' &&
-              fetching.data.length === 0 &&
+            {favoritesState.status === 'success' &&
+              favoritesState.data.length === 0 &&
               value?.length > 0 && (
                 <div className="flex items-center gap-4">
                   <p className="text-sm text-red-600">
@@ -185,7 +202,7 @@ export function AddToFavoritesButton({
                 {t('modal.add_to_list.list_privacy')}
               </p>
 
-              {fetching.status === 'loading' && (
+              {favoritesState.status === 'loading' && (
                 <>
                   <Skeleton className="col-span-2 h-6" />
 
@@ -195,11 +212,11 @@ export function AddToFavoritesButton({
                 </>
               )}
 
-              {fetching.status === 'success' && (
+              {favoritesState.status === 'success' && (
                 <>
-                  {fetching.data.map((el) => {
+                  {favoritesState.data.map((el) => {
                     return (
-                      <Fragment key={el._id}>
+                      <Fragment key={el.id}>
                         <p className="col-span-2 text-sm">{el.name}</p>
 
                         <div className="col-span-2">
@@ -214,7 +231,7 @@ export function AddToFavoritesButton({
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={addToFavoriteListHandler(el._id)}
+                            onClick={addToFavoriteListHandler(el.id)}
                             aria-label={t('modal.add_to_list.add_to_list')}
                           >
                             <ListPlus className="size-4" />
@@ -226,18 +243,23 @@ export function AddToFavoritesButton({
                 </>
               )}
             </div>
-            {fetching.status === 'success' && totalCount > limit && (
-              <div className="mt-4 flex justify-center">
-                <CustomPagination
-                  total={Math.ceil(totalCount / limit)}
-                  totalResults={totalCount}
-                  activePage={page}
-                  siblings={1}
-                  boundaries={1}
-                  onPageChange={(page) => setPage(page)}
-                />
-              </div>
-            )}
+            {favoritesState.status === 'success' &&
+              favoritesState.totalCount > favoritesState.limit && (
+                <div className="mt-4 flex justify-center">
+                  <CustomPagination
+                    total={Math.ceil(
+                      favoritesState.totalCount / favoritesState.limit,
+                    )}
+                    totalResults={favoritesState.totalCount}
+                    activePage={favoritesState.page}
+                    siblings={siblings}
+                    boundaries={boundaries}
+                    onPageChange={(page) =>
+                      setFavoritesState((prev) => ({ ...prev, page }))
+                    }
+                  />
+                </div>
+              )}
           </div>
         </DialogContent>
       </Dialog>

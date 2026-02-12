@@ -37,15 +37,7 @@ export function UpdateFavoriteListButton({ id, name, description, privacy }) {
     if (formState.name.length === 0) return;
 
     try {
-      await updateFavoriteList(
-        {
-          id: id,
-          name: formState.name,
-          description: formState.description,
-          privacy: formState.public,
-        },
-        appConfig.tenantId,
-      );
+      await updateFavoriteList(id, formState, appConfig.tenantId);
 
       toast.success(t('favorites.updated_list'), {
         description: t('favorites.updated_list_message'),
