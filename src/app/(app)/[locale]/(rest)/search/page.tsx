@@ -40,14 +40,10 @@ const getPageData = cache(async function (
 
   const useGeospatialSearch = isAdvancedGeoEnabled() && location;
 
-  console.log('xd', useGeospatialSearch);
-
   let useFindResourcesV2 = false;
   let results, noResults, totalResults, filters;
 
   if (useGeospatialSearch) {
-    // Server-side geocoding to get place metadata
-    console.log('xd: using geospatial search with location:');
     const [placeMetadata] = await forwardGeocode(location, { locale });
 
     if (placeMetadata) {
@@ -101,8 +97,6 @@ const getPageData = cache(async function (
     appConfig.i18n.locales,
     appConfig.i18n.defaultLocale,
   );
-
-  console.log('xd:useFindResourcesV2', useFindResourcesV2);
 
   return {
     appConfig,
