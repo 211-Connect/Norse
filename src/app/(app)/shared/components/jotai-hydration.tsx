@@ -18,7 +18,7 @@ import {
   USER_PREF_LOCATION,
 } from '../lib/constants';
 import {
-  favoriteListsAtom,
+  favoriteListsStateAtom,
   favoriteListWithFavoritesAtom,
 } from '../store/favorites';
 import { deviceAtom } from '../store/device';
@@ -79,7 +79,16 @@ export function JotaiHydration({ cookies = {}, pageProps }) {
     [resultsCurrentPageAtom, pageProps?.currentPage ?? 0],
     [resultTotalAtom, pageProps?.totalResults ?? 0],
     [filtersAtom, pageProps?.filters ?? {}],
-    [favoriteListsAtom, pageProps?.favoriteLists ?? []],
+    [
+      favoriteListsStateAtom,
+      {
+        data: pageProps?.favoriteLists ?? [],
+        totalCount: pageProps?.favoriteListsTotal ?? 0,
+        currentPage: pageProps?.favoriteListsCurrentPage ?? 1,
+        limit: 10,
+        status: 'success', // Assuming success if data is present during hydration
+      },
+    ],
     [
       favoriteListWithFavoritesAtom,
       {

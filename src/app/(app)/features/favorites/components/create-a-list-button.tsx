@@ -17,9 +17,12 @@ import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { createFavoriteList } from '@/app/(app)/shared/serverActions/favorites/createFavoriteList';
 import { PlusIcon } from 'lucide-react';
+import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAtomValue } from 'jotai';
+import { favoriteListsStateAtom } from '@/app/(app)/shared/store/favorites';
 
 const initialState = {
   name: '',
@@ -36,6 +39,9 @@ export function CreateAListButton({ className = '' }: { className?: string }) {
   const [open, _setOpen] = useState(false);
   const [formState, setFormState] = useState(initialState);
 
+  const { searchParamsObject, stringifySearchParams } = useClientSearchParams();
+  const { totalCount, limit } = useAtomValue(favoriteListsStateAtom);
+
   const setOpen = (value: boolean) => {
     setFormState(initialState);
     _setOpen(value);
@@ -44,18 +50,23 @@ export function CreateAListButton({ className = '' }: { className?: string }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const newList = await createFavoriteList(
-      {
-        name: formState.name,
-        description: formState.description,
-        privacy: formState.public,
-      },
-      appConfig.tenantId,
-    );
+    const newList = await createFavoriteList(formState, appConfig.tenantId);
 
     if (newList && pathname) {
       setOpen(false);
-      router.replace(pathname);
+
+      const newTotalCount = totalCount + 1;
+      const newPage = Math.ceil(newTotalCount / limit);
+
+      const newParams = new URLSearchParams();
+      Object.entries(searchParamsObject).forEach(([key, value]) => {
+        if (typeof value === 'string') {
+          newParams.set(key, value);
+        }
+      });
+      newParams.set('page', newPage.toString());
+
+      router.replace(`${pathname}${stringifySearchParams(newParams)}`);
     }
   };
 

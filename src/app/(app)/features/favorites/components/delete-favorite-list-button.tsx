@@ -12,16 +12,19 @@ import {
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { deleteFavoriteList } from '@/app/(app)/shared/serverActions/favorites/deleteFavoriteList';
 import { Trash2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
 
 export function DeleteFavoriteListButton({ id, name }) {
   const appConfig = useAppConfig();
   const { t } = useTranslation('common');
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
+  const { stringifiedSearchParams } = useClientSearchParams();
 
   const onConfirm = async () => {
     try {
@@ -31,7 +34,16 @@ export function DeleteFavoriteListButton({ id, name }) {
         description: t('message.list_deleted_success'),
       });
 
-      router.refresh();
+      // If we're on a detail page, navigate back to the list page with preserved query params
+      // Otherwise, just refresh the current page
+      if (
+        pathname?.includes('/favorites/') &&
+        !pathname.endsWith('/favorites')
+      ) {
+        router.push(`/favorites${stringifiedSearchParams}`);
+      } else {
+        router.refresh();
+      }
     } catch (err) {
       console.log(err);
 

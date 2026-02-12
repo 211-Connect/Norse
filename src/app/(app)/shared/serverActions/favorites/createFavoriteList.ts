@@ -7,19 +7,12 @@ import {
 } from '../../lib/constants';
 import { getAuthHeaders } from '../../lib/authHeaders';
 import { fetchWrapper } from '../../lib/fetchWrapper';
+import { CreateFavoriteListDto, FavoriteListItemDto } from '@/types/favorites';
 
 export const createFavoriteList = async (
-  {
-    name,
-    description,
-    privacy,
-  }: {
-    name: string;
-    description?: string;
-    privacy: boolean;
-  },
+  data: CreateFavoriteListDto,
   tenantId?: string,
-) => {
+): Promise<FavoriteListItemDto | null> => {
   const authHeaders = await getAuthHeaders(tenantId);
 
   const searchParams = new URLSearchParams();
@@ -28,19 +21,28 @@ export const createFavoriteList = async (
   }
 
   const url = `${API_URL}/${FAVORITES_LIST_ENDPOINT}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
-  return fetchWrapper(url, {
-    method: 'POST',
-    headers: {
-      ...authHeaders,
-      'Content-Type': 'application/json',
-      'x-api-version': '1',
-      'x-api-key': INTERNAL_API_KEY || '',
+  const response = await fetchWrapper<FavoriteListItemDto>(
+    url,
+    {
+      method: 'POST',
+      headers: {
+        ...authHeaders,
+        'Content-Type': 'application/json',
+        'x-api-version': '1',
+        'x-api-key': INTERNAL_API_KEY || '',
+      },
+      body: {
+        name: data.name,
+        description: data.description,
+        public: data.public,
+      },
+      cache: 'no-store',
     },
-    body: {
-      name,
-      description,
-      public: privacy,
-    },
-    cache: 'no-store',
-  });
+  );
+
+  if (!response) {
+    return null;
+  }
+
+  return response;
 };

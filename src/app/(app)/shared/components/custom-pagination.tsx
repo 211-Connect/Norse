@@ -20,19 +20,34 @@ function range(start: number, end: number) {
   return Array.from({ length }, (_, index) => index + start);
 }
 
+interface CustomPaginationProps {
+  total: number;
+  siblings: number;
+  boundaries: number;
+  activePage: number;
+  totalResults: number;
+  onPageChange?: (page: number) => void;
+}
+
 export function CustomPagination({
   total,
   siblings,
   boundaries,
   activePage,
   totalResults,
-}) {
+  onPageChange,
+}: CustomPaginationProps) {
   const pathname = usePathname();
   const { stringifiedSearchParams, stringifySearchParams } =
     useClientSearchParams();
   const router = useRouter();
 
   const changePage = async (newPage: number) => {
+    if (onPageChange) {
+      onPageChange(newPage);
+      return;
+    }
+
     const newSearchParams = new URLSearchParams(stringifiedSearchParams);
     newSearchParams.set('page', newPage.toString());
     const newPath = `${pathname}${stringifySearchParams(newSearchParams)}`;

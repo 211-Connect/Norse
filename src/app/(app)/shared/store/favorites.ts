@@ -1,12 +1,6 @@
 import { atom } from 'jotai';
 import { ApiResource, Address, Translation } from '@/types/resource';
-
-export type FavoriteList = {
-  _id: string;
-  name: string;
-  description: string;
-  privacy: 'PRIVATE' | 'PUBLIC';
-};
+import { FavoriteListState } from '@/types/favorites';
 
 export interface Favorite extends ApiResource {
   addresses: Address[];
@@ -14,21 +8,33 @@ export interface Favorite extends ApiResource {
 }
 
 export type FavoriteListWithFavorites = {
-  _id: string;
+  id: string;
   name: string;
   description: string;
-  privacy: 'PRIVATE' | 'PUBLIC';
+  privacy: FavoriteListState['privacy'];
   viewingAsOwner: boolean;
   favorites: Favorite[];
 };
 
-export const favoriteListsAtom = atom<FavoriteList[]>([]);
+export const favoriteListsStateAtom = atom<{
+  data: FavoriteListState[];
+  totalCount: number;
+  currentPage: number;
+  limit: number;
+  status: 'loading' | 'success';
+}>({
+  data: [],
+  totalCount: 0,
+  currentPage: 1,
+  limit: 10,
+  status: 'loading',
+});
 
 export const favoriteListWithFavoritesAtom = atom<FavoriteListWithFavorites>({
-  _id: '',
+  id: '',
   name: '',
   description: '',
-  privacy: 'PRIVATE',
+  privacy: 'PRIVATE' as FavoriteListState['privacy'],
   viewingAsOwner: false,
   favorites: [],
 });

@@ -9,15 +9,17 @@ import {
   CardHeader,
   CardTitle,
 } from '@/app/(app)/shared/components/ui/card';
-import { type FavoriteList } from '@/app/(app)/shared/store/favorites';
 import { useTranslation } from 'react-i18next';
 import { Link } from '@/app/(app)/shared/components/link';
+import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
 
 import { DeleteFavoriteListButton } from './delete-favorite-list-button';
 import { UpdateFavoriteListButton } from './update-favorite-list-button';
+import { FavoriteListState } from '@/types/favorites';
 
-export function FavoriteList({ list }: { list: FavoriteList }) {
+export function FavoriteList({ list }: { list: FavoriteListState }) {
   const { t } = useTranslation('page-favorites');
+  const { stringifiedSearchParams } = useClientSearchParams();
 
   return (
     <Card>
@@ -29,24 +31,26 @@ export function FavoriteList({ list }: { list: FavoriteList }) {
 
           <div className="flex gap-2">
             <UpdateFavoriteListButton
-              id={list._id}
+              id={list.id}
               name={list.name}
               description={list.description}
               privacy={list.privacy}
             />
 
-            <DeleteFavoriteListButton id={list._id} name={list.name} />
+            <DeleteFavoriteListButton id={list.id} name={list.name} />
           </div>
         </div>
         <CardTitle>
-          <Link href={`/favorites/${list._id}`}>{list.name}</Link>
+          <Link href={`/favorites/${list.id}${stringifiedSearchParams}`}>
+            {list.name}
+          </Link>
         </CardTitle>
         <CardDescription>{list.description}</CardDescription>
       </CardHeader>
       <CardFooter className="flex justify-end">
         <Link
           className={buttonVariants({ variant: 'outline' })}
-          href={`/favorites/${list._id}`}
+          href={`/favorites/${list.id}${stringifiedSearchParams}`}
         >
           {t('view_list')}
         </Link>

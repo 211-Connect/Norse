@@ -16,6 +16,7 @@ import { cn } from '@/app/(app)/shared/lib/utils';
 import { Badge } from '@/app/(app)/shared/components/ui/badge';
 import { fontSans } from '@/app/(app)/shared/styles/fonts';
 import { useTranslation } from 'react-i18next';
+import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
 
 import { Favorite } from './favorite';
 import { NoFavoritesCard } from './no-favorites-card';
@@ -27,6 +28,7 @@ export function FavoritesSection() {
   const { t } = useTranslation('page-list');
   const favoriteList = useAtomValue(favoriteListWithFavoritesAtom);
   const componentToPrint = useRef<HTMLDivElement>(null);
+  const { stringifiedSearchParams } = useClientSearchParams();
 
   return (
     <div className="flex w-full flex-col p-[10px] lg:max-w-[550px] lg:pl-[20px]">
@@ -41,14 +43,14 @@ export function FavoritesSection() {
 
             <div className="flex gap-2">
               <UpdateFavoriteListButton
-                id={favoriteList._id}
+                id={favoriteList.id}
                 name={favoriteList.name}
                 description={favoriteList.description}
                 privacy={favoriteList.privacy}
               />
 
               <DeleteFavoriteListButton
-                id={favoriteList._id}
+                id={favoriteList.id}
                 name={favoriteList.name}
               />
             </div>
@@ -70,7 +72,7 @@ export function FavoritesSection() {
               buttonVariants({ variant: 'outline' }),
               'items-center gap-1',
             )}
-            href="/favorites"
+            href={`/favorites${stringifiedSearchParams}`}
           >
             <ChevronLeft className="size-4" />
             {t('back_to_favorites')}
@@ -96,7 +98,7 @@ export function FavoritesSection() {
               key={list._id}
               data={list}
               viewingAsOwner={favoriteList.viewingAsOwner}
-              favoriteListId={favoriteList._id}
+              favoriteListId={favoriteList.id}
             />
           );
         })}
