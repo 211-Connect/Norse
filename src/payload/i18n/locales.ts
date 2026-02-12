@@ -27,6 +27,7 @@ export const locales = [
   'ps', // Pashto
   'prs', // Dari
   'pt', // Portuguese
+  'rw', // Kinyarwanda
   'ru', // Russian
   'so', // Somali
   'sw', // Swahili
