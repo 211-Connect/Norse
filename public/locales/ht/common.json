@@ -22,7 +22,10 @@
     "deleted_list": "Lis efase",
     "deleted_list_message": "Lis ou a efase.",
     "unable_to_delete_list": "Pa kapab efase lis la",
-    "unable_to_delete_list_message": "Lis ou a pa t kapab efase."
+    "unable_to_delete_list_message": "Lis ou a pa t kapab efase.",
+    "list_created": "Lis la kreye",
+    "list_created_message": "Lis ou a kreye avèk siksè.",
+    "unable_to_create_list_message": "Lis ou a pa t kapab kreye."
   },
   "search": {
     "add_my_location": "Ajoute kote mwen ye a",

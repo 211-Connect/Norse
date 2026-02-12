@@ -1,0 +1,143 @@
+{
+  "header": {
+    "home": "Urugo",
+    "favorites": "Ibyo ukunda",
+    "log_out": "Sohoka",
+    "language_select_label": "Hitamo ururimi rwo guhindura ururimi rw'urubuga",
+    "my_stuff": "Ibintu byanjye",
+    "search": "Gushakisha",
+    "report": "Ohereza igitekerezo"
+  },
+  "favorites": {
+    "added_to_list": "Yongewe ku rutonde",
+    "added_to_list_message": "Iyi nkomoko yongewe ku rutonde rwawe.",
+    "already_exists": "Isanzwe ihari",
+    "already_exists_message": "Iyi nkomoko isanzwe ihari ku rutonde rwawe.",
+    "removed_from_list": "Byakuwe ku rutonde",
+    "removed_from_list_message": "Iyi nkomoko yakuwe ku rutonde rwawe.",
+    "updated_list": "Urutonde rwavuguruwe",
+    "updated_list_message": "Urutonde rwawe rwavuguruwe.",
+    "unable_to_update_list": "Ntibishoboka kuvugurura urutonde",
+    "unable_to_update_list_message": "Urutonde rwawe ntirwashoboye kuvugururwa.",
+    "deleted_list": "Urutonde rwasibwe",
+    "deleted_list_message": "Urutonde rwawe rwarasibwe.",
+    "unable_to_delete_list": "Ntibishoboka gusiba urutonde",
+    "unable_to_delete_list_message": "Urutonde rwawe ntirwashoboye gusibwa.",
+    "list_created": "Urutonde rwakozwe",
+    "list_created_message": "Urutonde rwawe rwakozwe neza.",
+    "unable_to_create_list_message": "Urutonde rwawe ntirwashoboye gukorwa."
+  },
+  "search": {
+    "add_my_location": "Ongeraho aho ndi",
+    "back": "Garuka",
+    "hero_title": "Shakisha amikoro",
+    "query_placeholder": "Ibiryo, amacumbi, nibindi...",
+    "location_placeholder": "Umujyi, intara, cyangwa kode y'iposita",
+    "radius_placeholder": "Umwanya w'ubugari",
+    "miles": "Amayirometero",
+    "miles_short": "mi",
+    "any": "Icyo ari cyo cyose",
+    "taxonomies": "Imiterere y'amatagisi",
+    "suggestions": "Ibyifuzo",
+    "use_my_location": "Koresha aho ndi",
+    "confidential_address": "Aha hantu hashobora kuba ari ibanga cyangwa hatari heza ku bantu bose. Hitamo ubundi buryo bwo kuvugana kuri iyi serivisi.",
+    "address_unavailable": "Aderesi ntabwo ihari",
+    "geocoding_error": "Ikosa rya Geocoding",
+    "geocoding_unsupported": "Aho ikoranabuhanga riherereye ntabwo rishyigikiwe na porogaramu yawe yo gushakisha amakuru",
+    "geocoding_unable_to_retrieve": "Ntibishoboka kubona aho uherereye. Nyamuneka reba imiterere y'aho uherereye muri mushakisha yawe hanyuma wongere ugerageze.",
+    "categories": "Ingingo",
+    "show_all": "Erekana byose ({{count}})",
+    "show_less": "Erekana bike"
+  },
+  "call_to_action": {
+    "call": "Hamagara",
+    "view_website": "Urubuga",
+    "get_directions": "Amabwiriza",
+    "view_details": "Reba byinshi",
+    "add_to_list": "Igikundwa",
+    "delete_list": "Siba urutonde",
+    "remove_from_list": "Kura ku rutonde",
+    "share": "Sangiza",
+    "cancel": "Hagarika",
+    "create": "Kurema",
+    "update": "Ivugurura",
+    "delete": "Siba",
+    "search": "Gushakisha",
+    "remove": "Kuraho",
+    "login": "Injira",
+    "show_more": "Erekana byinshi",
+    "show_less": "Erekana bike",
+    "print": "Capa"
+  },
+  "list": {
+    "private": "Ibanga",
+    "public": "Rubanda"
+  },
+  "message": {
+    "list_deleted": "Urutonde rwarasibwe",
+    "list_deleted_success": "Urutonde rwawe rwarasibwe.",
+    "error": "Ikosa",
+    "list_not_deleted_error": "Urutonde rwawe ntirwashoboye gusibwa."
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "Shakisha urutonde rwawe",
+      "list_name": "Urutonde",
+      "list_privacy": "Ubuzima bwite",
+      "add_to_list": "Ongeraho ku rutonde",
+      "not_found": "Nta rutonde rwabonetse",
+      "create_new_list": "Kora indi nshya?"
+    },
+    "remove_from_list": {
+      "are_you_sure": "Ese wizeye neza ko ushaka gukuraho iyi ukunda ku rutonde rwawe?"
+    },
+    "create_list": {
+      "create_a_list": "Kora urutonde",
+      "list_name": "Izina",
+      "list_description": "Ibisobanuro",
+      "make_public": "Shyira ahagaragara"
+    },
+    "update_list": {
+      "update_list": "Urutonde rw'ibyavuguruwe",
+      "list_name": "Izina",
+      "list_description": "Ibisobanuro",
+      "make_public": "Shyira ahagaragara"
+    },
+    "delete_list": {
+      "delete_list": "Siba urutonde"
+    },
+    "share": {
+      "share_via": "Sangiza ibi binyuze kuri",
+      "copy_link": "Kopisha iyi link",
+      "copy": "Kopisha",
+      "facebook": "Facebook",
+      "twitter": "Twitter",
+      "linkedin": "LinkedIn",
+      "sms": "Ubutumwa bugufi",
+      "email": "Imeri",
+      "print": "Capa",
+      "copied": "Byakopiwe!",
+      "check_out_this_list": "Reba uru rutonde nakoze!",
+      "check_out_this_resource": "Reba iyi nkomoko nabonye!",
+      "share_sms": "Andika nimero ya terefone kugira ngo usangize ukoresheje SMS",
+      "enter_phone_number": "Andika nimero ya terefone...",
+      "invalid_phone_number": "Nimero ya terefone itemewe",
+      "sms_sending_title": "Kohereza ubutumwa bugufi...",
+      "sms_sending_body": "Ubutumwa bwawe buri koherezwa.",
+      "sms_send_success_title": "Ubutumwa bugufi bwoherejwe!",
+      "sms_send_success_body": "Ubutumwa bwawe bwoherejwe.",
+      "sms_send_failed_title": "Kohereza ubutumwa bugufi byanze",
+      "sms_send_failed_body": "Ubutumwa bwawe bwananiwe koherezwa."
+    },
+    "prompt_auth": "Injira kugira ngo ukoreshe iki gikorwa."
+  },
+  "update_location": {
+    "prompt_start_location": "Aho utangiriye ni he?"
+  },
+  "data_providers": {
+    "provided_by": "Amakuru yatanzwe na"
+  },
+  "footer": {
+    "copyright": "© Uburenganzira {{text}}"
+  }
+}

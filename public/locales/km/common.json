@@ -22,7 +22,10 @@
     "deleted_list": "បានលុបបញ្ជី",
     "deleted_list_message": "បញ្ជីរបស់អ្នកត្រូវបានលុបចោល។",
     "unable_to_delete_list": "មិនអាចលុបបញ្ជីបានទេ",
-    "unable_to_delete_list_message": "មិនអាចលុបបញ្ជីរបស់អ្នកបានទេ។"
+    "unable_to_delete_list_message": "មិនអាចលុបបញ្ជីរបស់អ្នកបានទេ។",
+    "list_created": "បញ្ជីត្រូវបានបង្កើតឡើង",
+    "list_created_message": "បញ្ជីរបស់អ្នកត្រូវបានបង្កើតដោយជោគជ័យ។",
+    "unable_to_create_list_message": "មិនអាចបង្កើតបញ្ជីរបស់អ្នកបានទេ។"
   },
   "search": {
     "add_my_location": "បន្ថែមទីតាំងរបស់ខ្ញុំ",

@@ -22,7 +22,10 @@
     "deleted_list": "Tinanggal na listahan",
     "deleted_list_message": "Nabura na ang iyong listahan.",
     "unable_to_delete_list": "Hindi mabura ang listahan",
-    "unable_to_delete_list_message": "Hindi mabura ang iyong listahan."
+    "unable_to_delete_list_message": "Hindi mabura ang iyong listahan.",
+    "list_created": "Nalikha na ang listahan",
+    "list_created_message": "Matagumpay na nalikha ang iyong listahan.",
+    "unable_to_create_list_message": "Hindi malikha ang iyong listahan."
   },
   "search": {
     "add_my_location": "Idagdag ang aking lokasyon",

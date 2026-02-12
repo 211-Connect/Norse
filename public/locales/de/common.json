@@ -22,7 +22,10 @@
     "deleted_list": "Gelöschte Liste",
     "deleted_list_message": "Ihre Liste wurde gelöscht.",
     "unable_to_delete_list": "Liste konnte nicht gelöscht werden",
-    "unable_to_delete_list_message": "Ihre Liste konnte nicht gelöscht werden."
+    "unable_to_delete_list_message": "Ihre Liste konnte nicht gelöscht werden.",
+    "list_created": "Liste erstellt",
+    "list_created_message": "Ihre Liste wurde erfolgreich erstellt.",
+    "unable_to_create_list_message": "Ihre Liste konnte nicht erstellt werden."
   },
   "search": {
     "add_my_location": "Meinen Standort hinzufügen",

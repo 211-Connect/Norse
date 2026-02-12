@@ -1,0 +1,40 @@
+{
+  "meta_title": "",
+  "meta_description": "",
+  "take_a_tour": "Ni ubwa mbere ugeze hano? Fata urugendo!",
+  "new": "Gishya!",
+  "tour": {
+    "step_1": {
+      "paragraph_1": "Agasanduku k'ishakisha ni inkingi y'ingenzi ya moteri y'ishakisha. Karemera amagambo asanzwe, interuro, nibindi (ni ukuvuga 'ibiryo byo mu rugo')",
+      "paragraph_2": "Uko wandika, agasanduku ko gushakisha kazatanga ibitekerezo bishingiye ku byiciro dukoresha inyuma y'amashusho. Ibi bitekerezo bizatanga ibisubizo nyabyo, ariko ntabwo ari ngombwa kubikoresha.",
+      "paragraph_3": "Nuhitamo kudakoresha ibitekerezo byatanzwe, tuzakoresha inyandiko utanga kugira ngo tubone ibisubizo nyabyo bishoboka."
+    },
+    "step_2": {
+      "paragraph_1": "Ntuzi neza icyo ushaka? Nta kibazo!",
+      "paragraph_2": "Dutanga ibyiciro byinshi bitandukanye n'ibyiciro bito kugirango urebe. Kanda gusa kuri iyo link iyo ari yo yose iri mu gice cy'ibyiciro kugira ngo ugerwe ku bisubizo by'ishakisha."
+    },
+    "step_3": {
+      "paragraph_1": "Hari igihe ibintu bicika, tudatekereza ko bizacika.",
+      "paragraph_2": "Niba hari ikintu cyangiritse, cyangwa se ukaba ushaka gutanga ibitekerezo ku buryo rusange, ushobora gukanda kuri buto yo gutanga ibitekerezo igihe icyo ari cyo cyose."
+    },
+    "step_4": {
+      "paragraph_1": "Ongeraho aderesi yawe hano kugira ngo ubone serivisi ziboneka mu gace utuyemo. Ibi bidufasha kukwereka gusa amahitamo aboneka mu gace utuyemo."
+    }
+  },
+  "categories_title": "Ingingo",
+  "new_layout": {
+    "topics_section": {
+      "cta": "Reba ingingo",
+      "title": "Sinzi neza aho gutangirira"
+    },
+    "callouts": {
+      "list": {
+        "call": "Hamagara",
+        "chat": "Ikiganiro",
+        "email": "Imeri",
+        "sms": "Ubutumwa bugufi"
+      },
+      "title": "Hariho n'ubundi buryo bwo gusaba ubufasha:"
+    }
+  }
+}

@@ -22,7 +22,10 @@
     "deleted_list": "لیست حذف شده",
     "deleted_list_message": "لیست شما حذف شد.",
     "unable_to_delete_list": "امکان حذف لیست وجود ندارد",
-    "unable_to_delete_list_message": "لیست شما قابل حذف نیست."
+    "unable_to_delete_list_message": "لیست شما قابل حذف نیست.",
+    "list_created": "فهرست ایجاد شد",
+    "list_created_message": "لیست شما با موفقیت ایجاد شد.",
+    "unable_to_create_list_message": "فهرست شما ایجاد نشد."
   },
   "search": {
     "add_my_location": "مکان من را اضافه کنید",

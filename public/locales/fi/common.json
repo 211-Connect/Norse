@@ -22,7 +22,10 @@
     "deleted_list": "Poistettu lista",
     "deleted_list_message": "Listasi on poistettu.",
     "unable_to_delete_list": "Listan poistaminen epäonnistui",
-    "unable_to_delete_list_message": "Listaasi ei voitu poistaa."
+    "unable_to_delete_list_message": "Listaasi ei voitu poistaa.",
+    "list_created": "Lista luotu",
+    "list_created_message": "Listasi on luotu onnistuneesti.",
+    "unable_to_create_list_message": "Listaasi ei voitu luoda."
   },
   "search": {
     "add_my_location": "Lisää sijaintini",

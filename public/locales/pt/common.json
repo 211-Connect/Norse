@@ -22,7 +22,10 @@
     "deleted_list": "Lista de itens excluídos",
     "deleted_list_message": "Sua lista foi excluída.",
     "unable_to_delete_list": "Não foi possível excluir a lista.",
-    "unable_to_delete_list_message": "Sua lista não pôde ser excluída."
+    "unable_to_delete_list_message": "Sua lista não pôde ser excluída.",
+    "list_created": "Lista criada",
+    "list_created_message": "Sua lista foi criada com sucesso.",
+    "unable_to_create_list_message": "Não foi possível criar sua lista."
   },
   "search": {
     "add_my_location": "Adicionar minha localização",

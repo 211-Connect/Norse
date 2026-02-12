@@ -22,7 +22,10 @@
     "deleted_list": "삭제된 목록",
     "deleted_list_message": "목록이 삭제되었습니다.",
     "unable_to_delete_list": "목록을 삭제할 수 없습니다.",
-    "unable_to_delete_list_message": "목록을 삭제할 수 없습니다."
+    "unable_to_delete_list_message": "목록을 삭제할 수 없습니다.",
+    "list_created": "목록이 생성되었습니다",
+    "list_created_message": "목록이 성공적으로 생성되었습니다.",
+    "unable_to_create_list_message": "목록을 만들 수 없습니다."
   },
   "search": {
     "add_my_location": "내 위치 추가",

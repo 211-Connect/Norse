@@ -22,7 +22,10 @@
     "deleted_list": "Видалений список",
     "deleted_list_message": "Ваш список видалено.",
     "unable_to_delete_list": "Не вдається видалити список",
-    "unable_to_delete_list_message": "Ваш список не вдалося видалити."
+    "unable_to_delete_list_message": "Ваш список не вдалося видалити.",
+    "list_created": "Список створено",
+    "list_created_message": "Ваш список успішно створено.",
+    "unable_to_create_list_message": "Не вдалося створити ваш список."
   },
   "search": {
     "add_my_location": "Додати моє місцезнаходження",

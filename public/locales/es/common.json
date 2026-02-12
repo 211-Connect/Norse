@@ -22,7 +22,10 @@
     "deleted_list": "Lista de eliminados",
     "deleted_list_message": "Tu lista ha sido eliminada.",
     "unable_to_delete_list": "No se puede eliminar la lista",
-    "unable_to_delete_list_message": "Su lista no se pudo eliminar."
+    "unable_to_delete_list_message": "Su lista no se pudo eliminar.",
+    "list_created": "Lista creada",
+    "list_created_message": "Su lista ha sido creada exitosamente",
+    "unable_to_create_list_message": "No se pudo crear su lista."
   },
   "search": {
     "add_my_location": "Agregar mi ubicación",

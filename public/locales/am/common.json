@@ -22,7 +22,10 @@
     "deleted_list": "የጠፋው ዝርዝር",
     "deleted_list_message": "የእርስዎ ዝርዝር ተወግዷል.",
     "unable_to_delete_list": "ዝርዝሩን ማጥፋት አልተቻለም",
-    "unable_to_delete_list_message": "የእርስዎ ንዝረት ሊጠፋ አልቻለም."
+    "unable_to_delete_list_message": "የእርስዎ ንዝረት ሊጠፋ አልቻለም.",
+    "list_created": "ዝርዝር ተፈጥሯል",
+    "list_created_message": "ዝርዝርዎ በተሳካ ሁኔታ ተፈጥሯል።",
+    "unable_to_create_list_message": "ዝርዝርዎ ሊፈጠር አልቻለም።"
   },
   "search": {
     "add_my_location": "ቦታዬን ጨምር",

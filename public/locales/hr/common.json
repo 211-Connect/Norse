@@ -22,7 +22,10 @@
     "deleted_list": "Izbrisani popis",
     "deleted_list_message": "Vaš popis je izbrisan.",
     "unable_to_delete_list": "Nije moguće izbrisati popis",
-    "unable_to_delete_list_message": "Vaš popis nije mogao biti izbrisan."
+    "unable_to_delete_list_message": "Vaš popis nije mogao biti izbrisan.",
+    "list_created": "Popis je kreiran",
+    "list_created_message": "Vaš popis je uspješno kreiran.",
+    "unable_to_create_list_message": "Vaš popis nije mogao biti kreiran."
   },
   "search": {
     "add_my_location": "Dodaj moju lokaciju",

@@ -22,7 +22,10 @@
     "deleted_list": "Liiska la tirtiro",
     "deleted_list_message": "Liiskaaga waa la tirtiray.",
     "unable_to_delete_list": "Awoodi waayay in aad tirtirto liiska",
-    "unable_to_delete_list_message": "Liiskaaga lama tirtiri karin."
+    "unable_to_delete_list_message": "Liiskaaga lama tirtiri karin.",
+    "list_created": "Liiska la sameeyay",
+    "list_created_message": "Liiskaaga si guul leh ayaa loo sameeyay.",
+    "unable_to_create_list_message": "Liiskaaga lama abuuri karin."
   },
   "search": {
     "add_my_location": "Add my location",

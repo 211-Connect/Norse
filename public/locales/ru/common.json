@@ -22,7 +22,10 @@
     "deleted_list": "Список удаленных",
     "deleted_list_message": "Ваш список был удален.",
     "unable_to_delete_list": "Не удается удалить список",
-    "unable_to_delete_list_message": "Ваш список не может быть удален."
+    "unable_to_delete_list_message": "Ваш список не может быть удален.",
+    "list_created": "Список создан",
+    "list_created_message": "Ваш список успешно создан.",
+    "unable_to_create_list_message": "Не удалось создать ваш список."
   },
   "search": {
     "add_my_location": "Добавить мое местоположение",
