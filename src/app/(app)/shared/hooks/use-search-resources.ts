@@ -3,6 +3,7 @@
 import { useCallback, useMemo } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
 
+import { deriveQueryType } from '../lib/search-utils';
 import { useDebounce } from './use-debounce';
 import { SubTopic, useTopics } from './use-topics';
 import { useSuggestions } from './use-suggestions';
@@ -86,7 +87,6 @@ export const useSearchResources = () => {
 
       // For all other cases (including suggestions), derive based on the user input
       // This ensures "food" returns 'text' even if it matches suggestion values
-      const { deriveQueryType } = require('../lib/search-utils');
       return deriveQueryType(value, undefined);
     },
     [reducedTopics, taxonomies],

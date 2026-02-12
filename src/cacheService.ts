@@ -1,6 +1,6 @@
 import { Redis } from 'ioredis';
 
-export class CacheService {
+class CacheService {
   private client: Redis | null = null;
   private isEnabled = Boolean(process.env.CACHE_REDIS_URI);
   private isConnecting = false;
@@ -230,24 +230,8 @@ export class CacheService {
   }
 }
 
-// Singleton instances for commonly used databases
-const globalForRedis = global as unknown as {
-  cacheService: CacheService | undefined;
-  translationCacheService: CacheService | undefined;
-  geoDataCacheService: CacheService | undefined;
-};
-
-export const cacheService = globalForRedis.cacheService ?? new CacheService(0);
-export const translationCacheService =
-  globalForRedis.translationCacheService ?? new CacheService(1);
-export const geoDataCacheService =
-  globalForRedis.geoDataCacheService ?? new CacheService(2);
-
-if (process.env.NODE_ENV !== 'production') {
-  globalForRedis.cacheService = cacheService;
-  globalForRedis.translationCacheService = translationCacheService;
-  globalForRedis.geoDataCacheService = geoDataCacheService;
-}
+export const cacheService = new CacheService(0);
+export const translationCacheService = new CacheService(1);
 
 let cleanupRegistered = false;
 if (typeof process !== 'undefined' && !cleanupRegistered) {
@@ -256,7 +240,6 @@ if (typeof process !== 'undefined' && !cleanupRegistered) {
       await Promise.all([
         cacheService.disconnect(),
         translationCacheService.disconnect(),
-        geoDataCacheService.disconnect(),
       ]);
     } catch (error) {
       console.error('Error during cache cleanup:', error);

@@ -1,11 +1,31 @@
 import { ExtractAtomValue } from 'jotai';
 
-import { TaxonomyService } from './taxonomy-service';
-import { deriveQueryType } from '../lib/search-utils';
+import { buildSearchRequest, deriveQueryType } from '../lib/search-utils';
 import { searchAtom } from '../store/search';
 import { API_URL, INTERNAL_API_KEY } from '../lib/constants';
 import { fetchWrapper } from '../lib/fetchWrapper';
 import { transformFacetsToArray } from '../utils/toFacetsWithTranslation';
+import { BBox } from '@/types/resource';
+import qs from 'qs';
+
+export type FindResourcesQuery = {
+  query: string;
+  queryLabel: string;
+  queryType: string;
+  searchLocation: string;
+  searchCoordinates: number[];
+  searchDistance: string;
+  searchPlaceType: string[] | undefined;
+  searchBbox: BBox | undefined;
+};
+
+type SearchResult = {
+  results: any[];
+  noResults: boolean;
+  totalResults: number;
+  page: number;
+  filters: Record<string, any>;
+};
 
 export function createUrlParamsForSearch(
   searchStore: ExtractAtomValue<typeof searchAtom>,
@@ -34,30 +54,131 @@ export function createUrlParamsForSearch(
   ) as Record<string, string>;
 }
 
+/**
+ * Extract total results count from search response
+ */
+function extractTotalResults(data: any): number {
+  return typeof data?.search?.hits?.total !== 'number'
+    ? (data?.search?.hits?.total?.value ?? 0)
+    : (data?.search?.hits?.total ?? 0);
+}
+
+/**
+ * Transform search hits into result objects
+ */
+function transformSearchHits(
+  hits: any[],
+  locale?: string,
+  facetDefinitions?: any,
+): any[] {
+  if (!Array.isArray(hits)) return [];
+
+  return hits.map((hit: any) => {
+    const physicalAddress = hit._source?.location?.physical_address;
+    let mainAddress: string | null = null;
+
+    if (
+      physicalAddress?.address_1 &&
+      physicalAddress?.city &&
+      physicalAddress?.state &&
+      physicalAddress?.postal_code
+    ) {
+      const addressParts = [
+        physicalAddress.address_1,
+        physicalAddress.address_2 ? physicalAddress.address_2 : null,
+        physicalAddress.city,
+        physicalAddress.state,
+        physicalAddress.postal_code,
+      ].filter(Boolean);
+
+      mainAddress = addressParts.join(', ');
+    }
+
+    const responseData: Record<string, any> = {
+      _id: hit._id,
+      id: hit?._source?.service_at_location_id ?? null,
+      priority: hit?._source?.priority,
+      serviceName: hit?._source?.service?.name ?? null,
+      name: hit?._source?.name ?? null,
+      summary: hit?._source?.service?.summary ?? null,
+      description: hit?._source?.service?.description ?? null,
+      phone: hit?._source?.phone ?? null,
+      website: hit?._source?.url ?? null,
+      address: mainAddress,
+      location: hit?._source?.location?.point ?? null,
+      taxonomies: hit?._source?.taxonomies ?? null,
+    };
+
+    // Add facets if available (V1 only)
+    if (facetDefinitions && locale) {
+      const transformedFacets = transformFacetsToArray(
+        hit?._source?.facets,
+        facetDefinitions,
+        locale,
+      );
+      if (transformedFacets.length > 0) {
+        responseData.facets = transformedFacets;
+      }
+    }
+
+    return Object.fromEntries(
+      Object.entries(responseData).filter(([_, value]) => value != null),
+    );
+  });
+}
+
+/**
+ * Extract and filter aggregations from search response
+ */
+function extractFilters(data: any): Record<string, any> {
+  const aggregations = data?.search?.aggregations ?? {};
+  return Object.keys(aggregations).reduce(
+    (acc, key) => {
+      const buckets = aggregations[key]?.buckets;
+      if (
+        !key.startsWith('label_') &&
+        !key.endsWith('_en') &&
+        Array.isArray(buckets) &&
+        buckets.length > 0
+      ) {
+        acc[key] = aggregations[key];
+      }
+      return acc;
+    },
+    {} as Record<string, any>,
+  );
+}
+
+/**
+ * Create empty search result
+ */
+function createEmptyResult(page: number): SearchResult {
+  return {
+    results: [],
+    noResults: true,
+    totalResults: 0,
+    page,
+    filters: {},
+  };
+}
+
 export async function findResources(
   query: any,
   locale: string,
   page: number,
   limit?: number,
   tenantId?: string,
-) {
-  if (isNaN(page)) {
-    page = 1;
-  }
-
-  if (!limit || isNaN(limit)) {
-    limit = 25;
-  }
+): Promise<SearchResult> {
+  if (isNaN(page)) page = 1;
+  if (!limit || isNaN(limit)) limit = 25;
 
   let data;
-  let responseStatusCode;
-  let responseHeaders;
   try {
     const searchParams = new URLSearchParams({
       ...query,
       page: String(page),
       locale,
-      limit,
+      limit: String(limit),
     });
 
     if (tenantId) {
@@ -82,17 +203,9 @@ export async function findResources(
       locale,
       limit,
     });
-    // Return early with empty results if API fails completely
-    return {
-      results: [],
-      noResults: true,
-      totalResults: 0,
-      page: 1,
-      filters: {},
-    };
+    return createEmptyResult(page);
   }
 
-  // If response succeeded but data is malformed, return empty results
   if (!data || !data.search) {
     console.error('Malformed API response:', {
       data,
@@ -101,140 +214,25 @@ export async function findResources(
       page,
       locale,
       limit,
-      statusCode: responseStatusCode,
-      headers: responseHeaders,
     });
-    return {
-      results: [],
-      noResults: true,
-      totalResults: 0,
-      page: 1,
-      filters: {},
-    };
+    return createEmptyResult(page);
   }
 
-  let totalResults =
-    typeof data?.search?.hits?.total !== 'number'
-      ? (data?.search?.hits?.total?.value ?? 0)
-      : (data?.search?.hits?.total ?? 0);
-
+  let totalResults = extractTotalResults(data);
   let noResults = false;
+
+  // Try fallback search if no results
   if (totalResults === 0) {
     noResults = true;
-
-    try {
-      const fallbackParams = new URLSearchParams({
-        ...query,
-        page: String(page),
-        query_type: 'more_like_this',
-        locale,
-        limit: String(limit),
-      });
-
-      if (tenantId) {
-        fallbackParams.append('tenant_id', tenantId);
-      }
-
-      const fallbackData = await fetchWrapper(
-        `${API_URL}/search?${fallbackParams.toString()}`,
-        {
-          headers: {
-            'accept-language': locale,
-            'x-api-version': '1',
-            'x-api-key': INTERNAL_API_KEY || '',
-            ...(tenantId && { 'x-tenant-id': tenantId }),
-          },
-          cache: 'no-store',
-        },
-      );
-
-      if (fallbackData?.search) {
-        data = fallbackData;
-      }
-    } catch (err) {
-      console.error('Fallback search API error:', {
-        error: err,
-        tenantId,
-        query: { ...query, query_type: 'more_like_this' },
-        page,
-        locale,
-        limit,
-      });
-    }
-
-    totalResults =
-      typeof data?.search?.hits?.total !== 'number'
-        ? (data?.search?.hit?.total?.value ?? 0)
-        : (data?.search?.hits?.total ?? 0);
+    data =
+      (await tryFallbackSearch(query, page, locale, limit, tenantId)) ?? data;
+    totalResults = extractTotalResults(data);
   }
 
   const hits = data?.search?.hits?.hits;
   const facetDefinitions = data?.facets;
-
-  const results = Array.isArray(hits)
-    ? hits.map((hit: any) => {
-        const physicalAddress = hit._source?.location?.physical_address;
-        let mainAddress: string | null = null;
-
-        if (
-          physicalAddress?.address_1 &&
-          physicalAddress?.city &&
-          physicalAddress?.state &&
-          physicalAddress?.postal_code
-        ) {
-          // Construct address similar to information.tsx format
-          const addressParts = [
-            physicalAddress.address_1,
-            physicalAddress.address_2 ? physicalAddress.address_2 : null,
-            physicalAddress.city,
-            physicalAddress.state,
-            physicalAddress.postal_code,
-          ].filter(Boolean); // Remove null/undefined values
-
-          mainAddress = addressParts.join(', ');
-        }
-
-        const transformedFacets = transformFacetsToArray(
-          hit?._source?.facets,
-          facetDefinitions,
-          locale,
-        );
-
-        const responseData = {
-          _id: hit._id,
-          id: hit?._source?.service_at_location_id ?? null,
-          priority: hit?._source?.priority,
-          serviceName: hit?._source?.service?.name ?? null,
-          name: hit?._source?.name ?? null,
-          summary: hit?._source?.service?.summary ?? null,
-          description: hit?._source?.service?.description ?? null,
-          phone: hit?._source?.phone ?? null,
-          website: hit?._source?.url ?? null,
-          address: mainAddress,
-          location: hit?._source?.location?.point ?? null,
-          taxonomies: hit?._source?.taxonomies ?? null,
-          facets: transformedFacets.length > 0 ? transformedFacets : null,
-        };
-
-        return Object.fromEntries(
-          Object.entries(responseData).filter(([_, value]) => value != null),
-        );
-      })
-    : [];
-
-  const aggregations = data?.search?.aggregations ?? {};
-  const filters = Object.keys(aggregations).reduce((acc, key) => {
-    const buckets = aggregations[key]?.buckets;
-    if (
-      !key.startsWith('label_') &&
-      !key.endsWith('_en') &&
-      Array.isArray(buckets) &&
-      buckets.length > 0
-    ) {
-      acc[key] = aggregations[key];
-    }
-    return acc;
-  }, {});
+  const results = transformSearchHits(hits, locale, facetDefinitions);
+  const filters = extractFilters(data);
 
   return {
     results,
@@ -243,6 +241,94 @@ export async function findResources(
     page,
     filters,
   };
+}
+
+/**
+ * Try fallback search with more_like_this query type
+ */
+async function tryFallbackSearch(
+  query: any,
+  page: number,
+  locale: string,
+  limit: number,
+  tenantId?: string,
+): Promise<any | null> {
+  try {
+    const fallbackParams = new URLSearchParams({
+      ...query,
+      page: String(page),
+      query_type: 'more_like_this',
+      locale,
+      limit: String(limit),
+    });
+
+    if (tenantId) {
+      fallbackParams.append('tenant_id', tenantId);
+    }
+
+    const fallbackData = await fetchWrapper(
+      `${API_URL}/search?${fallbackParams.toString()}`,
+      {
+        headers: {
+          'accept-language': locale,
+          'x-api-version': '1',
+          'x-api-key': INTERNAL_API_KEY || '',
+          ...(tenantId && { 'x-tenant-id': tenantId }),
+        },
+        cache: 'no-store',
+      },
+    );
+
+    return fallbackData?.search ? fallbackData : null;
+  } catch (err) {
+    console.error('Fallback search API error:', {
+      error: err,
+      tenantId,
+      query: { ...query, query_type: 'more_like_this' },
+      page,
+      locale,
+      limit,
+    });
+    return null;
+  }
+}
+
+/**
+ * Try fallback search with more_like_this query type for V2
+ */
+async function tryFallbackSearchV2(
+  request: any,
+  page: number,
+  locale: string,
+  limit: number,
+  tenantId?: string,
+): Promise<any | null> {
+  try {
+    const fallbackQueryParams = qs.stringify({
+      ...request.queryParams,
+      page,
+      query_type: 'more_like_this',
+      locale,
+      limit,
+    });
+    const fallbackUrl = `${API_URL}/search?${fallbackQueryParams}`;
+
+    const fallbackData = await fetchWrapper(fallbackUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'accept-language': locale,
+        'x-api-version': '1',
+        ...(tenantId && { 'x-tenant-id': tenantId }),
+      },
+      body: request.body,
+    });
+
+    return fallbackData?.search ? fallbackData : null;
+  } catch (err) {
+    console.error('Fallback search API error (V2):', { error: err, tenantId });
+    return null;
+  }
 }
 
 /**
@@ -256,40 +342,27 @@ export async function findResources(
  * @returns Search results with pagination info
  */
 export async function findResourcesV2(
-  searchStore: any, // From searchAtom
+  searchStore: FindResourcesQuery,
   locale: string,
   page: number,
   limit?: number,
   tenantId?: string,
-) {
-  console.log('findResourceV2 was called');
-  if (isNaN(page)) {
-    page = 1;
-  }
+): Promise<SearchResult> {
+  if (isNaN(page)) page = 1;
+  if (!limit || isNaN(limit)) limit = 25;
 
-  if (!limit || isNaN(limit)) {
-    limit = 25;
-  }
-
-  // Build request using decision logic from geo-search-utils
-  const { buildSearchRequest } = await import('../lib/search-utils');
-  
   const request = buildSearchRequest(searchStore);
-
-  // Build query params with pagination
   const queryParams = qs.stringify({
     ...request.queryParams,
     page,
     locale,
     limit,
   });
-
   const searchUrl = `${API_URL}/search?${queryParams}`;
 
-  let response;
-
+  let data;
   try {
-    const data = await fetchWrapper(searchUrl, {
+    data = await fetchWrapper(searchUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -299,8 +372,6 @@ export async function findResourcesV2(
       },
       body: request.body,
     });
-
-    response = data;
   } catch (err) {
     console.error('Search API error (V2):', {
       error: err,
@@ -313,21 +384,9 @@ export async function findResourcesV2(
       locale,
       limit,
     });
-
-    // Return early with empty results if API fails completely
-    return {
-      results: [],
-      noResults: true,
-      totalResults: 0,
-      page: 1,
-      filters: {},
-    };
+    return createEmptyResult(page);
   }
 
-  // fetchWrapper already returns parsed JSON
-  let data = response;
-
-  // If response succeeded but data is malformed, return empty results
   if (!data || !data.search) {
     console.error('Malformed API response (V2):', {
       data,
@@ -336,115 +395,31 @@ export async function findResourcesV2(
       page,
       locale,
       limit,
-      statusCode: response.status,
     });
-    return {
-      results: [],
-      noResults: true,
-      totalResults: 0,
-      page: 1,
-      filters: {},
-    };
+    return createEmptyResult(page);
   }
 
-  let totalResults =
-    typeof data?.search?.hits?.total !== 'number'
-      ? (data?.search?.hits?.total?.value ?? 0)
-      : (data?.search?.hits?.total ?? 0);
-
+  let totalResults = extractTotalResults(data);
   let noResults = false;
+
+  // Try fallback search if no results
   if (totalResults === 0) {
     noResults = true;
-    
-    // Try fallback search with more_like_this
-    const fallbackQueryParams = qs.stringify({
-      ...request.queryParams,
-      page,
-      query_type: 'more_like_this',
-      locale,
-      limit,
-    });
-    const fallbackUrl = `${API_URL}/search?${fallbackQueryParams}`;
-
-    try {
-      const fallbackData = await fetchWrapper(fallbackUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'accept-language': locale,
-          'x-api-version': '1',
-          ...(tenantId && { 'x-tenant-id': tenantId }),
-        },
-        body: request.body,
-      });
-
-      if (fallbackData?.search) {
-        data = fallbackData;
-      }
-    } catch (err) {
-      console.error('Fallback search API error (V2):', {
-        error: err,
-        url: fallbackUrl,
-        tenantId,
-      });
-    }
-
-    totalResults =
-      typeof data?.search?.hits?.total !== 'number'
-        ? (data?.search?.hits?.total?.value ?? 0)
-        : (data?.search?.hits?.total ?? 0);
+    data =
+      (await tryFallbackSearchV2(request, page, locale, limit, tenantId)) ??
+      data;
+    totalResults = extractTotalResults(data);
   }
 
   const hits = data?.search?.hits?.hits;
-  const results = Array.isArray(hits)
-    ? hits.map((hit: any) => {
-        const physicalAddress = hit._source?.location?.physical_address;
-        let mainAddress: string | null = null;
-
-        if (
-          physicalAddress?.address_1 &&
-          physicalAddress?.city &&
-          physicalAddress?.state &&
-          physicalAddress?.postal_code
-        ) {
-          // Construct address similar to information.tsx format
-          const addressParts = [
-            physicalAddress.address_1,
-            physicalAddress.address_2 ? physicalAddress.address_2 : null,
-            physicalAddress.city,
-            physicalAddress.state,
-            physicalAddress.postal_code,
-          ].filter(Boolean); // Remove null/undefined values
-
-          mainAddress = addressParts.join(', ');
-        }
-
-        const responseData = {
-          _id: hit._id,
-          id: hit?._source?.service_at_location_id ?? null,
-          priority: hit?._source?.priority,
-          serviceName: hit?._source?.service?.name ?? null,
-          name: hit?._source?.name ?? null,
-          summary: hit?._source?.service?.summary ?? null,
-          description: hit?._source?.service?.description ?? null,
-          phone: hit?._source?.phone ?? null,
-          website: hit?._source?.url ?? null,
-          address: mainAddress,
-          location: hit?._source?.location?.point ?? null,
-          taxonomies: hit?._source?.taxonomies ?? null,
-        };
-
-        return Object.fromEntries(
-          Object.entries(responseData).filter(([_, value]) => value != null),
-        );
-      })
-    : [];
+  const results = transformSearchHits(hits);
+  const filters = extractFilters(data);
 
   return {
     results,
     noResults,
     totalResults,
     page,
-    filters: data?.search?.aggregations ?? {},
+    filters,
   };
 }
