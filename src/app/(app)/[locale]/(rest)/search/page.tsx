@@ -44,9 +44,7 @@ const getPageData = cache(async function (
   let results, noResults, totalResults, filters;
 
   if (geospatialSearchLocation) {
-    console.log('geospatialSearchLocation is: ', geospatialSearchLocation);
     const [placeMetadata] = await forwardGeocode(location, { locale });
-    console.log('placeMetadata is: ', placeMetadata);
 
     if (placeMetadata) {
       const searchStore = {
@@ -60,8 +58,6 @@ const getPageData = cache(async function (
         searchPlaceType: placeMetadata.place_type,
         searchBbox: placeMetadata.bbox,
       };
-
-      console.log(placeMetadata);
 
       try {
         // Use V2 with complete data
