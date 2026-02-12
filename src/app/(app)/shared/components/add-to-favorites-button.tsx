@@ -16,8 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from './ui/dialog';
-import { Input } from './ui/input';
-import { useDebounce } from '../hooks/use-debounce';
+import { FavoritesSearchBar } from './favorites-search-bar';
 import { Separator } from './ui/separator';
 import { Skeleton } from './ui/skeleton';
 import { Badge } from './ui/badge';
@@ -48,8 +47,7 @@ export function AddToFavoritesButton({
   const { t } = useTranslation('common');
 
   const [open, setOpen] = useState(false);
-  const [_value, setValue] = useState('');
-  const value = useDebounce(_value, 200);
+  const [searchValue, setSearchValue] = useState('');
   const [favoritesState, setFavoritesState] = useState<{
     data: FavoriteListState[];
     status: 'loading' | 'success';
@@ -74,7 +72,7 @@ export function AddToFavoritesButton({
       appConfig.tenantId,
       favoritesState.page,
       favoritesState.limit,
-      value,
+      searchValue,
     );
 
     if (response) {
@@ -85,7 +83,13 @@ export function AddToFavoritesButton({
         totalCount: response.totalCount,
       }));
     }
-  }, [session, value, appConfig, favoritesState.page, favoritesState.limit]);
+  }, [
+    session,
+    searchValue,
+    appConfig,
+    favoritesState.page,
+    favoritesState.limit,
+  ]);
 
   useEffect(() => {
     if (open) {
@@ -125,7 +129,7 @@ export function AddToFavoritesButton({
     return async () => {
       const created = await createFavoriteList(
         {
-          name: value,
+          name: searchValue,
           description: '',
           public: false,
         },
@@ -171,15 +175,15 @@ export function AddToFavoritesButton({
             <DialogDescription />
           </DialogHeader>
           <div className="flex flex-col gap-2">
-            <Input
+            <FavoritesSearchBar
               placeholder={t('modal.add_to_list.search_list')}
-              value={_value}
-              onChange={(e) => setValue(e.target.value)}
+              initialValue={searchValue}
+              onChange={setSearchValue}
             />
 
             {favoritesState.status === 'success' &&
               favoritesState.data.length === 0 &&
-              value?.length > 0 && (
+              searchValue?.length > 0 && (
                 <div className="flex items-center gap-4">
                   <p className="text-sm text-red-600">
                     {t('modal.add_to_list.not_found')}
