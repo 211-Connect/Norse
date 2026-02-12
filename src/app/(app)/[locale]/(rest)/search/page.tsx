@@ -38,13 +38,15 @@ const getPageData = cache(async function (
 
   const limit = appConfig.search.resultsLimit;
 
-  const useGeospatialSearch = isAdvancedGeoEnabled() && location;
+  const geospatialSearchLocation = isAdvancedGeoEnabled() && location;
 
   let useFindResourcesV2 = false;
   let results, noResults, totalResults, filters;
 
-  if (useGeospatialSearch) {
+  if (geospatialSearchLocation) {
+    console.log('geospatialSearchLocation is: ', geospatialSearchLocation);
     const [placeMetadata] = await forwardGeocode(location, { locale });
+    console.log('placeMetadata is: ', placeMetadata);
 
     if (placeMetadata) {
       const searchStore = {
