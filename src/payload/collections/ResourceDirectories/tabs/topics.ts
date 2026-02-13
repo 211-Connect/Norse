@@ -60,8 +60,13 @@ export const topics: Tab = {
       },
       admin: {
         components: {
-          RowLabel:
-            '@/payload/collections/ResourceDirectories/components/LocalizedRowLabel',
+          RowLabel: {
+            path: '@/payload/collections/ResourceDirectories/components/LocalizedRowLabel',
+            clientProps: {
+              path: 'topics.list',
+              localizedFieldKey: 'name',
+            },
+          },
         },
       },
       fields: [
