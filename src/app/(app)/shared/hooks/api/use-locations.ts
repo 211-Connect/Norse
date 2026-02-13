@@ -6,6 +6,7 @@ import { useGeocodingAdapter } from '../use-geocoding-adapter';
 import { useMemo } from 'react';
 import { EarthIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { GeocodeResult } from '@/types/resource';
 
 export function useLocations(searchTerm: string, excludeEverywhere = false) {
   const adapter = useGeocodingAdapter();
@@ -26,17 +27,19 @@ export function useLocations(searchTerm: string, excludeEverywhere = false) {
     gcTime: 10 * 60 * 1000, // 10 minutes
   });
 
-  const additionalLocations = useMemo(
+  const additionalLocations = useMemo<GeocodeResult[]>(
     () => [
       {
-        type: 'coordinates',
+        type: 'invalid', // Mark as invalid to trigger cookie deletion and empty search
         address: t('search.everywhere', 'Everywhere'),
-        coordinates: [],
+        coordinates: [0, 0], // Dummy coordinates to satisfy strict type
         country: t('search.everywhere', 'Everywhere'),
         district: t('search.everywhere', 'Everywhere'),
         place: t('search.everywhere', 'Everywhere'),
         postcode: t('search.everywhere', 'Everywhere'),
         region: t('search.everywhere', 'Everywhere'),
+        place_type: [],
+        bbox: undefined,
       },
     ],
     [t],

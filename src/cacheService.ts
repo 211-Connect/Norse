@@ -230,7 +230,6 @@ class CacheService {
   }
 }
 
-// Singleton instances for commonly used databases
 export const cacheService = new CacheService(0);
 export const translationCacheService = new CacheService(1);
 

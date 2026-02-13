@@ -4,7 +4,7 @@ import { SearchConfig } from '@/types/search-config';
 import { TypedLocale } from 'payload';
 import { locales } from '@/payload/i18n/locales';
 import { Tenant } from '@/payload/payload-types';
-import { withRedisCache } from '@/payload/utilities';
+import { withRedisCache } from '@/utilities/withRedisCache';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',

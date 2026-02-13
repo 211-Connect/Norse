@@ -1,23 +1,13 @@
 'use server';
 
+import { GeocodeResult } from '@/types/resource';
 import { API_URL, INTERNAL_API_KEY } from '../../lib/constants';
 import { fetchWrapper } from '../../lib/fetchWrapper';
 
 export async function forwardGeocode(
   address: string,
   options: { locale: string; tenantId?: string },
-): Promise<
-  {
-    type: 'coordinates' | 'invalid';
-    address: string;
-    coordinates: [number, number];
-    country?: string;
-    district?: string;
-    place?: string;
-    postcode?: string;
-    region?: string;
-  }[]
-> {
+): Promise<GeocodeResult[]> {
   const searchParams = new URLSearchParams({
     address: address,
     locale: options.locale,

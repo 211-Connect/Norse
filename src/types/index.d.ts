@@ -60,6 +60,9 @@ declare global {
       // For custom auth host/protocol in proxies
       CUSTOM_AUTH_HOST?: string;
       CUSTOM_AUTH_PROTOCOL?: string;
+
+      // Geospatial filtering feature flag
+      NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG?: string;
     }
   }
 }

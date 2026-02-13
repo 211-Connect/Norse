@@ -3,6 +3,7 @@
 import { useCallback, useMemo } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
 
+import { deriveQueryType } from '../lib/search-utils';
 import { useDebounce } from './use-debounce';
 import { SubTopic, useTopics } from './use-topics';
 import { useSuggestions } from './use-suggestions';
@@ -72,26 +73,23 @@ export const useSearchResources = () => {
 
   const getQueryType = useCallback(
     (value, query) => {
+      // Check if user selected a taxonomy by name from the dropdown
       const taxonomy = taxonomies.find(
         (tax) => tax?.name?.toLowerCase() === value.toLowerCase(),
       );
       if (taxonomy) return 'taxonomy';
 
-      const suggestion = suggestions.find(
-        (sugg) => sugg?.value?.toLowerCase() === value.toLowerCase(),
-      );
-      if (suggestion) return 'taxonomy';
-
+      // Check if user selected a category from the dropdown
       const category = reducedTopics.find(
         (cat) => cat?.name?.toLowerCase() === value.toLowerCase(),
       );
       if (category) return 'taxonomy';
 
-      if (query.trim().length === 0) return '';
-      if (query === value) return 'text';
-      return 'taxonomy';
+      // For all other cases (including suggestions), derive based on the user input
+      // This ensures "food" returns 'text' even if it matches suggestion values
+      return deriveQueryType(value, undefined);
     },
-    [reducedTopics, suggestions, taxonomies],
+    [reducedTopics, taxonomies],
   );
 
   return {
