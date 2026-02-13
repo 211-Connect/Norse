@@ -22,7 +22,10 @@
     "deleted_list": "قائمة محذوفة",
     "deleted_list_message": "تم حذف قائمتك.",
     "unable_to_delete_list": "غير قادر على حذف القائمة",
-    "unable_to_delete_list_message": "تعذر حذف قائمتك."
+    "unable_to_delete_list_message": "تعذر حذف قائمتك.",
+    "list_created": "تم إنشاء القائمة",
+    "list_created_message": "تم إنشاء قائمتك بنجاح.",
+    "unable_to_create_list_message": "تعذر إنشاء قائمتك."
   },
   "search": {
     "add_my_location": "أضف موقعي",

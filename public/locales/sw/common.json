@@ -22,7 +22,10 @@
     "deleted_list": "Orodha iliyofutwa",
     "deleted_list_message": "Orodha yako imefutwa.",
     "unable_to_delete_list": "Haiwezi kufuta orodha",
-    "unable_to_delete_list_message": "Orodha yako haikuweza kufutwa."
+    "unable_to_delete_list_message": "Orodha yako haikuweza kufutwa.",
+    "list_created": "Orodha imeundwa",
+    "list_created_message": "Orodha yako imeundwa kwa mafanikio.",
+    "unable_to_create_list_message": "Orodha yako haikuweza kuundwa."
   },
   "search": {
     "add_my_location": "Ongeza eneo langu",

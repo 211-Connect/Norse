@@ -1,6 +1,6 @@
 'use client';
 
-import { Heart, ListPlus } from 'lucide-react';
+import { Heart, ListPlus, PlusIcon } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useSetAtom } from 'jotai';
 import { Fragment, useCallback, useEffect, useState } from 'react';
@@ -16,6 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from './ui/dialog';
+import { CreateFavoriteListDialog } from './create-favorite-list-dialog';
 import { FavoritesSearchBar } from './favorites-search-bar';
 import { Separator } from './ui/separator';
 import { Skeleton } from './ui/skeleton';
@@ -47,6 +48,7 @@ export function AddToFavoritesButton({
   const { t } = useTranslation('common');
 
   const [open, setOpen] = useState(false);
+  const [createListOpen, setCreateListOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [favoritesState, setFavoritesState] = useState<{
     data: FavoriteListState[];
@@ -125,21 +127,8 @@ export function AddToFavoritesButton({
     };
   };
 
-  const createNewList = () => {
-    return async () => {
-      const created = await createFavoriteList(
-        {
-          name: searchValue,
-          description: '',
-          public: false,
-        },
-        appConfig.tenantId,
-      );
-
-      if (created) {
-        refreshFavoritesList();
-      }
-    };
+  const handleCreateListSuccess = async () => {
+    await refreshFavoritesList();
   };
 
   const handleClick = () => {
@@ -175,24 +164,29 @@ export function AddToFavoritesButton({
             <DialogDescription />
           </DialogHeader>
           <div className="flex flex-col gap-2">
-            <FavoritesSearchBar
-              placeholder={t('modal.add_to_list.search_list')}
-              initialValue={searchValue}
-              onChange={setSearchValue}
-            />
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <FavoritesSearchBar
+                className="flex-1"
+                placeholder={t('modal.add_to_list.search_list')}
+                initialValue={searchValue}
+                onChange={setSearchValue}
+              />
+              <Button
+                variant="outline"
+                className="flex h-9 gap-1"
+                onClick={() => setCreateListOpen(true)}
+              >
+                <PlusIcon className="size-4" />
+                {t('modal.create_list.create_a_list')}
+              </Button>
+            </div>
 
             {favoritesState.status === 'success' &&
               favoritesState.data.length === 0 &&
               searchValue?.length > 0 && (
-                <div className="flex items-center gap-4">
-                  <p className="text-sm text-red-600">
-                    {t('modal.add_to_list.not_found')}
-                  </p>
-
-                  <Button variant="outline" size="sm" onClick={createNewList()}>
-                    {t('modal.add_to_list.create_new_list')}
-                  </Button>
-                </div>
+                <p className="text-sm text-muted-foreground">
+                  {t('modal.add_to_list.not_found')}
+                </p>
               )}
 
             <Separator />
@@ -267,6 +261,12 @@ export function AddToFavoritesButton({
           </div>
         </DialogContent>
       </Dialog>
+
+      <CreateFavoriteListDialog
+        open={createListOpen}
+        onOpenChange={setCreateListOpen}
+        onSuccess={handleCreateListSuccess}
+      />
     </>
   );
 }

@@ -22,7 +22,10 @@
     "deleted_list": "ລາຍຊື່ທີ່ຖືກລຶບແລ້ວ",
     "deleted_list_message": "ລາຍຊື່ຂອງທ່ານຖືກລຶບອອກແລ້ວ.",
     "unable_to_delete_list": "ບໍ່ສາມາດລຶບລາຍຊື່ໄດ້",
-    "unable_to_delete_list_message": "ບໍ່ສາມາດລຶບລາຍຊື່ຂອງທ່ານໄດ້."
+    "unable_to_delete_list_message": "ບໍ່ສາມາດລຶບລາຍຊື່ຂອງທ່ານໄດ້.",
+    "list_created": "ສ້າງລາຍຊື່ແລ້ວ",
+    "list_created_message": "ລາຍຊື່ຂອງທ່ານໄດ້ຖືກສ້າງຂຶ້ນສຳເລັດແລ້ວ.",
+    "unable_to_create_list_message": "ບໍ່ສາມາດສ້າງລາຍຊື່ຂອງທ່ານໄດ້."
   },
   "search": {
     "add_my_location": "ເພີ່ມສະຖານທີ່ຂອງຂ້ອຍ",

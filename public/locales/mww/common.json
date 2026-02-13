@@ -22,7 +22,10 @@
     "deleted_list": "Daim ntawv teev npe raug tshem tawm",
     "deleted_list_message": "Koj daim ntawv teev npe tau raug tshem tawm lawm.",
     "unable_to_delete_list": "Tsis tuaj yeem rho tawm daim ntawv teev npe",
-    "unable_to_delete_list_message": "Koj daim ntawv teev npe tsis tuaj yeem raug rho tawm."
+    "unable_to_delete_list_message": "Koj daim ntawv teev npe tsis tuaj yeem raug rho tawm.",
+    "list_created": "Daim ntawv teev npe tau tsim",
+    "list_created_message": "Koj daim ntawv teev npe tau tsim tiav lawm.",
+    "unable_to_create_list_message": "Koj daim ntawv teev npe tsis tau tsim."
   },
   "search": {
     "add_my_location": "Ntxiv kuv qhov chaw nyob",

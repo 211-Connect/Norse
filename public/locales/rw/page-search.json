@@ -1,0 +1,15 @@
+{
+  "learn_more": "Menya byinshi",
+  "filter_results": "Gushungura ibisubizo",
+  "results": "ibisubizo",
+  "no_query": "Nta kibazo cyatanzwe",
+  "results_for": "Ibisubizo byabonetse ku kibazo",
+  "of": "bya",
+  "no_results": {
+    "title": "Nta bisubizo byabonetse bihuye n'ikibazo cyawe",
+    "subtitle": "Twatanze ibisubizo bisa hano hepfo",
+    "alt_subtitle": "Gerageza ikibazo cyangwa akayunguruzo gatandukanye",
+    "need_help": "Ukeneye ubufasha? Dufite abantu bahagaze hafi."
+  },
+  "pinned": "Byashyizwemo imigozi"
+}

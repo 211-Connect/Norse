@@ -22,7 +22,10 @@
     "deleted_list": "Liste supprimée",
     "deleted_list_message": "Votre liste a été supprimée.",
     "unable_to_delete_list": "Impossible de supprimer la liste",
-    "unable_to_delete_list_message": "Votre liste n’a pas pu être supprimée."
+    "unable_to_delete_list_message": "Votre liste n’a pas pu être supprimée.",
+    "list_created": "Liste créée",
+    "list_created_message": "Votre liste a été créée avec succès.",
+    "unable_to_create_list_message": "Impossible de créer votre liste."
   },
   "search": {
     "add_my_location": "Ajouter ma position",

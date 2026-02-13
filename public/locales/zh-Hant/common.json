@@ -22,7 +22,10 @@
     "deleted_list": "已刪除清單",
     "deleted_list_message": "您的清單已被刪除。",
     "unable_to_delete_list": "無法刪除列表",
-    "unable_to_delete_list_message": "您的清單無法刪除。"
+    "unable_to_delete_list_message": "您的清單無法刪除。",
+    "list_created": "已建立清單",
+    "list_created_message": "您的清單已成功建立。",
+    "unable_to_create_list_message": "您的清單建立失敗。"
   },
   "search": {
     "add_my_location": "添加我的位置",

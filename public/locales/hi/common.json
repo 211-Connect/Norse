@@ -22,7 +22,10 @@
     "deleted_list": "हटाई गई सूची",
     "deleted_list_message": "आपकी सूची हटा दी गई है।",
     "unable_to_delete_list": "सूची को हटाने में असमर्थ",
-    "unable_to_delete_list_message": "आपकी सूची हटाई नहीं जा सकी।"
+    "unable_to_delete_list_message": "आपकी सूची हटाई नहीं जा सकी।",
+    "list_created": "सूची बनाई गई",
+    "list_created_message": "आपकी सूची सफलतापूर्वक बना ली गई है।",
+    "unable_to_create_list_message": "आपकी सूची नहीं बनाई जा सकी।"
   },
   "search": {
     "add_my_location": "मेरा स्थान जोड़ें",

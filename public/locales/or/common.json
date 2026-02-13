@@ -22,7 +22,10 @@
     "deleted_list": "ଡିଲିଟ୍ କରାଯାଇଥିବା ତାଲିକା",
     "deleted_list_message": "ଆପଣଙ୍କର ତାଲିକା ଡିଲିଟ୍ କରାଯାଇଛି।",
     "unable_to_delete_list": "ତାଲିକା ଡିଲିଟ୍ କରିବାରେ ଅସମର୍ଥ",
-    "unable_to_delete_list_message": "ଆପଣଙ୍କର ତାଲିକା ଡିଲିଟ୍ କରାଯାଇପାରିଲା ନାହିଁ।"
+    "unable_to_delete_list_message": "ଆପଣଙ୍କର ତାଲିକା ଡିଲିଟ୍ କରାଯାଇପାରିଲା ନାହିଁ।",
+    "list_created": "ତାଲିକା ତିଆରି କରାଯାଇଛି",
+    "list_created_message": "ଆପଣଙ୍କର ତାଲିକା ସଫଳତାର ସହ ତିଆରି ହୋଇଛି।",
+    "unable_to_create_list_message": "ଆପଣଙ୍କର ତାଲିକା ତିଆରି ହୋଇପାରିଲା ନାହିଁ।"
   },
   "search": {
     "add_my_location": "ମୋ ଲୋକେସନ୍ ଯୋଡନ୍ତୁ",

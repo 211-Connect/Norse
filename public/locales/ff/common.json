@@ -22,7 +22,10 @@
     "deleted_list": "Doggol mumtaangol",
     "deleted_list_message": "Doggol maa momtaama.",
     "unable_to_delete_list": "Waawaa momtude doggol ngol",
-    "unable_to_delete_list_message": "Doggol maa waawaa momteede."
+    "unable_to_delete_list_message": "Doggol maa waawaa momteede.",
+    "list_created": "Doggol sosaa",
+    "list_created_message": "Doggol maa sosaa ko no moƴƴi.",
+    "unable_to_create_list_message": "Doggol maa ngol waawaa soseede."
   },
   "search": {
     "add_my_location": "Ɓeydu nokku am",

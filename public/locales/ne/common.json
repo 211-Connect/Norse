@@ -22,7 +22,10 @@
     "deleted_list": "मेटिएको सूची",
     "deleted_list_message": "तपाईँको सूची मेटिएको छ ।",
     "unable_to_delete_list": "सूची मेट्न अक्षम",
-    "unable_to_delete_list_message": "तपाईँको सूची मेट्न सकिएन ।"
+    "unable_to_delete_list_message": "तपाईँको सूची मेट्न सकिएन ।",
+    "list_created": "सूची सिर्जना गरियो",
+    "list_created_message": "तपाईंको सूची सफलतापूर्वक सिर्जना गरिएको छ।",
+    "unable_to_create_list_message": "तपाईंको सूची सिर्जना गर्न सकिएन।"
   },
   "search": {
     "add_my_location": "मेरो स्थान थप्नुहोस्",

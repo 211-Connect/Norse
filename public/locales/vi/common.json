@@ -22,7 +22,10 @@
     "deleted_list": "Danh sách đã xóa",
     "deleted_list_message": "Danh sách của bạn đã bị xóa.",
     "unable_to_delete_list": "Không thể xóa danh sách",
-    "unable_to_delete_list_message": "Không thể xóa danh sách của bạn."
+    "unable_to_delete_list_message": "Không thể xóa danh sách của bạn.",
+    "list_created": "Danh sách đã được tạo",
+    "list_created_message": "Danh sách của bạn đã được tạo thành công.",
+    "unable_to_create_list_message": "Danh sách của bạn không thể được tạo."
   },
   "search": {
     "add_my_location": "Thêm vị trí của tôi",
