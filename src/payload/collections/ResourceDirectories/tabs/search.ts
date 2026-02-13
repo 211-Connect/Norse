@@ -134,6 +134,11 @@ export const search: Tab = {
           type: 'text',
           required: true,
         },
+        {
+          name: 'showInDetails',
+          type: 'checkbox',
+          defaultValue: true,
+        },
       ],
     },
     {

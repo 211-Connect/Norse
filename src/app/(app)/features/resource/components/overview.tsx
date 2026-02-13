@@ -52,7 +52,10 @@ export function Overview({ resource }: { resource: Resource }) {
             <DetailsSection resource={resource} />
           </CardContent>
         </Card>
-        <FacetsSection resource={resource} />
+        <FacetsSection
+          resource={resource}
+          facetsConfig={appConfig.search.facets}
+        />
       </div>
       <Separator className="hidden border-b border-black print:block" />
     </>

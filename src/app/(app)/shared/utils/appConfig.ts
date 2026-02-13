@@ -310,9 +310,10 @@ async function getAppConfigBase(
     search: {
       facets: (resourceDirectory.search.facets ?? [])
         .filter(({ name }) => name)
-        .map(({ name, facet }) => ({
+        .map(({ name, facet, showInDetails }) => ({
           name: name!,
           facet,
+          showInDetails: Boolean(showInDetails ?? true),
         })),
       map,
       radiusOptions:

@@ -562,6 +562,7 @@ export interface ResourceDirectory {
       | {
           name?: string | null;
           facet: string;
+          showInDetails?: boolean | null;
           id?: string | null;
         }[]
       | null;
@@ -1098,6 +1099,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
           | {
               name?: T;
               facet?: T;
+              showInDetails?: T;
               id?: T;
             };
         map?:

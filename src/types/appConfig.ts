@@ -89,6 +89,7 @@ export type AppConfig = {
     facets: {
       name: string;
       facet: string;
+      showInDetails?: boolean;
     }[];
     map: {
       center: [number, number];

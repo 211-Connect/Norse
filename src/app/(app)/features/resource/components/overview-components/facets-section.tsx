@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from '@/app/(app)/shared/components/ui/card';
 import { Resource, FacetWithTranslation } from '@/types/resource';
+import { AppConfig } from '@/types/appConfig';
 
 const EXCLUDED_TAXONOMY_NAMES = [
   'Area Served by County',
@@ -21,7 +22,13 @@ interface GroupedFacets {
   [taxonomyName: string]: FacetWithTranslation[];
 }
 
-export function FacetsSection({ resource }: { resource: Resource }) {
+export function FacetsSection({
+  resource,
+  facetsConfig,
+}: {
+  resource: Resource;
+  facetsConfig: AppConfig['search']['facets'];
+}) {
   const { t } = useTranslation('page-resource');
 
   const filteredFacets = useMemo(() => {
@@ -31,12 +38,29 @@ export function FacetsSection({ resource }: { resource: Resource }) {
       return null;
     }
 
-    const filtered = facets.filter(
-      (facet) =>
-        !EXCLUDED_TAXONOMY_NAMES.includes(
-          facet.taxonomyNameEn ?? facet.taxonomyName,
-        ),
+    const taxonomyVisibilityMap = new Map(
+      facetsConfig.map((config) => [
+        config.name,
+        config.showInDetails !== false,
+      ]),
     );
+
+    const filtered = facets.filter((facet) => {
+      const taxonomyName = facet.taxonomyNameEn ?? facet.taxonomyName;
+
+      if (EXCLUDED_TAXONOMY_NAMES.includes(taxonomyName)) {
+        return false;
+      }
+
+      if (
+        taxonomyVisibilityMap.has(facet.taxonomyName) &&
+        !taxonomyVisibilityMap.get(facet.taxonomyName)
+      ) {
+        return false;
+      }
+
+      return true;
+    });
 
     if (filtered.length === 0) {
       return null;
@@ -66,7 +90,7 @@ export function FacetsSection({ resource }: { resource: Resource }) {
     );
 
     return deduplicated;
-  }, [resource]);
+  }, [resource, facetsConfig]);
 
   if (!filteredFacets) {
     return null;
