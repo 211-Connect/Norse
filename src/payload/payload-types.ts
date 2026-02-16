@@ -619,6 +619,18 @@ export interface ResourceDirectory {
     showFeedbackButtonGlobal?: boolean | null;
     showFeedbackButtonOnResourcePages?: boolean | null;
   };
+  customAttributes?: {
+    attributes?:
+      | {
+          source_column: string;
+          link_entity: 'organization' | 'service' | 'location';
+          label: string;
+          provenance?: string | null;
+          searchable?: boolean | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -1166,6 +1178,20 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         useHybridSemanticSearch?: T;
         showFeedbackButtonGlobal?: T;
         showFeedbackButtonOnResourcePages?: T;
+      };
+  customAttributes?:
+    | T
+    | {
+        attributes?:
+          | T
+          | {
+              source_column?: T;
+              link_entity?: T;
+              label?: T;
+              provenance?: T;
+              searchable?: T;
+              id?: T;
+            };
       };
   updatedAt?: T;
   createdAt?: T;
