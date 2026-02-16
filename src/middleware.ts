@@ -103,7 +103,7 @@ export async function middleware(request: NextRequest) {
       defaultLocale = tenantLocales.defaultLocale;
     } else {
       console.warn(
-        `No locales configured for tenant ${host}, falling back to defaults.`,
+        `No locales configured for tenant ${host}, falling back to defaults. Request URL: ${request.url}`,
       );
     }
   } catch (error) {
