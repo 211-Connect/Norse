@@ -232,6 +232,7 @@ class CacheService {
 
 export const cacheService = new CacheService(0);
 export const translationCacheService = new CacheService(1);
+export const customAttributesCacheService = new CacheService(2);
 
 let cleanupRegistered = false;
 if (typeof process !== 'undefined' && !cleanupRegistered) {
@@ -240,6 +241,7 @@ if (typeof process !== 'undefined' && !cleanupRegistered) {
       await Promise.all([
         cacheService.disconnect(),
         translationCacheService.disconnect(),
+        customAttributesCacheService.disconnect(),
       ]);
     } catch (error) {
       console.error('Error during cache cleanup:', error);

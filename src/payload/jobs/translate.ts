@@ -5,14 +5,6 @@ import { assertValidLocale } from '../i18n/locales';
 import { isEmpty } from '../utilities/isEmpty';
 import { ResourceDirectory } from '../payload-types';
 
-interface TranslateInput {
-  tenantId: string;
-  locales: { locale: string }[];
-  engine: 'azure' | 'google';
-  force: boolean;
-  changedItemIds?: { id: string }[];
-}
-
 interface FieldToTranslate {
   path: string;
   value: string;

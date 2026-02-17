@@ -25,6 +25,7 @@ import { duplicateTenant } from './endpoints/duplicateTenant';
 import { translate } from './jobs/translate';
 import { translateTopics } from './jobs/translateTopics';
 import { warmCache } from './jobs/warmCache';
+import { syncCustomAttributes } from './jobs/syncCustomAttributes';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -43,7 +44,7 @@ if (process.env.NODE_ENV === 'development') {
 const config = buildConfig({
   collections: [Users, Tenants, TenantMedia, ResourceDirectories],
   jobs: {
-    tasks: [translateTopics, translate, warmCache],
+    tasks: [translateTopics, translate, warmCache, syncCustomAttributes],
     autoRun: [
       {
         queue: 'translation',

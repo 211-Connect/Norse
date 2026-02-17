@@ -214,6 +214,7 @@ export interface Config {
       translateTopics: TaskTranslateTopics;
       translate: TaskTranslate;
       warmCache: TaskWarmCache;
+      syncCustomAttributes: TaskSyncCustomAttributes;
       inline: {
         input: unknown;
         output: unknown;
@@ -703,7 +704,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'translateTopics' | 'translate' | 'warmCache';
+        taskSlug: 'inline' | 'translateTopics' | 'translate' | 'warmCache' | 'syncCustomAttributes';
         taskID: string;
         input?:
           | {
@@ -736,7 +737,7 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'translateTopics' | 'translate' | 'warmCache') | null;
+  taskSlug?: ('inline' | 'translateTopics' | 'translate' | 'warmCache' | 'syncCustomAttributes') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
@@ -1353,6 +1354,24 @@ export interface TaskWarmCache {
     success: boolean;
     warmedTenants: number;
     warmedResourceDirectories: number;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskSyncCustomAttributes".
+ */
+export interface TaskSyncCustomAttributes {
+  input: {
+    tenantIds?:
+      | {
+          tenantId?: string | null;
+        }[]
+      | null;
+  };
+  output: {
+    success: boolean;
+    syncedTenants: number;
+    syncedConfigurations: number;
   };
 }
 /**

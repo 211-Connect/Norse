@@ -5,6 +5,7 @@ import { preventUpdateInDisabledLocale } from './hooks/preventUpdateInDisabledLo
 import { revalidateCache } from './hooks/revalidateCache';
 import { disableService } from './hooks/disableResourceDirectoryService';
 import { autoTranslate } from './hooks/autoTranslate';
+import { pushCustomAttributesToCache } from './hooks/pushCustomAttributesToCache';
 import { brand } from './tabs/brand';
 import { topics } from './tabs/topics';
 import { suggestions } from './tabs/suggestions';
@@ -53,7 +54,7 @@ export const ResourceDirectories: CollectionConfig = {
   },
   hooks: {
     beforeChange: [setTenantIdAsId, preventUpdateInDisabledLocale],
-    afterChange: [revalidateCache, autoTranslate],
+    afterChange: [revalidateCache, autoTranslate, pushCustomAttributesToCache],
     afterDelete: [revalidateCache, disableService],
   },
   fields: [
