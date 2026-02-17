@@ -21,6 +21,7 @@ import { hasThemeFieldAccess } from '../Users/access/permissions';
 import { resource } from './tabs/resource';
 import { accessibility } from './tabs/accessibility';
 import { badges } from './tabs/badges';
+import { customAttributes } from './tabs/customAttributes';
 
 export const ResourceDirectories: CollectionConfig = {
   slug: 'resource-directories',
@@ -129,6 +130,7 @@ export const ResourceDirectories: CollectionConfig = {
         privacyPolicyPage,
         termsOfUsePage,
         featureFlags,
+        customAttributes,
       ],
     },
   ],
