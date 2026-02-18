@@ -86,6 +86,19 @@ export async function middleware(request: NextRequest) {
   const isLocalhostInProd =
     process.env.NODE_ENV === 'production' && host === 'localhost';
 
+  if (isLocalhostInProd) {
+    console.warn(
+      'Localhost request skipped tenant resolution:',
+      JSON.stringify({
+        url: request.url,
+        method: request.method,
+        userAgent: request.headers.get('user-agent'),
+        referer: request.headers.get('referer'),
+        xForwardedFor: request.headers.get('x-forwarded-for'),
+      }),
+    );
+  }
+
   if (!isLocalhostInProd) {
     try {
       const controller = new AbortController();
