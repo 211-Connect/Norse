@@ -8,11 +8,7 @@ import { TenantLocaleResponse } from './app/(payload)/api/getTenantLocales/route
 import { parseHost } from './app/(app)/shared/utils/parseHost';
 import { fetchWrapper } from './app/(app)/shared/lib/fetchWrapper';
 
-const DOMAINS_WITH_CSP = [
-  'localhost',
-  'localhost:3000',
-  'therc.vdh.virginia.gov',
-];
+const DOMAINS_WITH_CSP = ['localhost', 'therc.vdh.virginia.gov'];
 
 export const config = {
   matcher: [
@@ -74,43 +70,56 @@ function generateNonce() {
 export async function middleware(request: NextRequest) {
   const nonce = generateNonce();
 
-  const host = parseHost(request.headers.get('host') || '');
+  // Use raw host for headers that require it, but parsed host for logic/identification
+  const rawHost = request.headers.get('host') || '';
+  const host = parseHost(rawHost);
 
   let locales = ['en'];
   let defaultLocale = 'en';
 
   const apiRoute = getApiRoute(request, 'getTenantLocales');
   let timeoutId: NodeJS.Timeout | undefined;
-  try {
-    const controller = new AbortController();
-    timeoutId = setTimeout(() => controller.abort(), 5000);
 
-    const tenantLocales: TenantLocaleResponse | null = await fetchWrapper(
-      `${apiRoute}?host=${host}&secret=${process.env.PAYLOAD_API_ROUTE_SECRET}`,
-      {
-        headers: {
-          host: request.headers.get('host') || '',
+  // Mitigation: Skip tenant lookup for localhost in production to prevent DB resource exhaustion
+  // from internal/bot requests (e.g. invalid URL templates hitting the server)
+  // Use parsed host to ensure we catch all localhost variants (with ports, subdomains etc)
+  const isLocalhostInProd =
+    process.env.NODE_ENV === 'production' && host === 'localhost';
+
+  if (!isLocalhostInProd) {
+    try {
+      const controller = new AbortController();
+      timeoutId = setTimeout(() => controller.abort(), 5000);
+
+      const tenantLocales: TenantLocaleResponse | null = await fetchWrapper(
+        `${apiRoute}?host=${host}&secret=${process.env.PAYLOAD_API_ROUTE_SECRET}`,
+        {
+          headers: {
+            host: rawHost,
+          },
+          signal: controller.signal,
+          cache: 'no-store',
         },
-        signal: controller.signal,
-        cache: 'no-store',
-      },
-    );
-    clearTimeout(timeoutId);
-    timeoutId = undefined;
-
-    if (tenantLocales?.enabledLocales.length && tenantLocales.defaultLocale) {
-      locales = tenantLocales.enabledLocales;
-      defaultLocale = tenantLocales.defaultLocale;
-    } else {
-      console.warn(
-        `No locales configured for tenant ${host}, falling back to defaults. Request URL: ${request.url}`,
       );
-    }
-  } catch (error) {
-    console.error(`Failed to fetch tenant locales for ${host}`, error);
-  } finally {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
+
+      if (
+        tenantLocales &&
+        tenantLocales.enabledLocales.length &&
+        tenantLocales.defaultLocale
+      ) {
+        locales = tenantLocales.enabledLocales;
+        defaultLocale = tenantLocales.defaultLocale;
+      } else {
+        console.warn(
+          `No locales configured for tenant, falling back to defaults. Request URL: ${request.url}`,
+        );
+      }
+    } catch (error) {
+      console.error('Failed to fetch tenant locales', error);
+    } finally {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
     }
   }
 
