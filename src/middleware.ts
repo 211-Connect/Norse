@@ -8,11 +8,7 @@ import { TenantLocaleResponse } from './app/(payload)/api/getTenantLocales/route
 import { parseHost } from './app/(app)/shared/utils/parseHost';
 import { fetchWrapper } from './app/(app)/shared/lib/fetchWrapper';
 
-const DOMAINS_WITH_CSP = [
-  'localhost',
-  'localhost:3000',
-  'therc.vdh.virginia.gov',
-];
+const DOMAINS_WITH_CSP = ['localhost', 'therc.vdh.virginia.gov'];
 
 export const config = {
   matcher: [
@@ -74,13 +70,16 @@ function generateNonce() {
 export async function middleware(request: NextRequest) {
   const nonce = generateNonce();
 
-  const host = parseHost(request.headers.get('host') || '');
+  // Use raw host for headers that require it, but parsed host for logic/identification
+  const rawHost = request.headers.get('host') || '';
+  const host = parseHost(rawHost);
 
   let locales = ['en'];
   let defaultLocale = 'en';
 
   const apiRoute = getApiRoute(request, 'getTenantLocales');
   let timeoutId: NodeJS.Timeout | undefined;
+
   try {
     const controller = new AbortController();
     timeoutId = setTimeout(() => controller.abort(), 5000);
@@ -89,25 +88,48 @@ export async function middleware(request: NextRequest) {
       `${apiRoute}?host=${host}&secret=${process.env.PAYLOAD_API_ROUTE_SECRET}`,
       {
         headers: {
-          host: request.headers.get('host') || '',
+          host: rawHost,
         },
         signal: controller.signal,
         cache: 'no-store',
       },
     );
-    clearTimeout(timeoutId);
-    timeoutId = undefined;
 
-    if (tenantLocales?.enabledLocales.length && tenantLocales.defaultLocale) {
+    if (
+      tenantLocales &&
+      tenantLocales.enabledLocales.length &&
+      tenantLocales.defaultLocale
+    ) {
       locales = tenantLocales.enabledLocales;
       defaultLocale = tenantLocales.defaultLocale;
     } else {
       console.warn(
-        `No locales configured for tenant ${host}, falling back to defaults. Request URL: ${request.url}`,
+        '[Anti-Bot] No locales configured for tenant, falling back to defaults:',
+        JSON.stringify({
+          url: request.url,
+          method: request.method,
+          host,
+          rawHost,
+          userAgent: request.headers.get('user-agent'),
+          referer: request.headers.get('referer'),
+          xForwardedFor: request.headers.get('x-forwarded-for'),
+        }),
       );
     }
   } catch (error) {
-    console.error(`Failed to fetch tenant locales for ${host}`, error);
+    console.error(
+      '[Anti-Bot] Failed to fetch tenant locales:',
+      JSON.stringify({
+        error: error instanceof Error ? error.message : String(error),
+        url: request.url,
+        method: request.method,
+        host,
+        rawHost,
+        userAgent: request.headers.get('user-agent'),
+        referer: request.headers.get('referer'),
+        xForwardedFor: request.headers.get('x-forwarded-for'),
+      }),
+    );
   } finally {
     if (timeoutId) {
       clearTimeout(timeoutId);
