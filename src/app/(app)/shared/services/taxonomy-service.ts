@@ -1,17 +1,11 @@
 import { API_URL } from '../lib/constants';
 import { fetchWrapper } from '../lib/fetchWrapper';
 
-interface TaxonomyTerm {
-  id: string;
-  code: string;
-  name: string;
-}
-
 export class TaxonomyService {
   static endpoint = 'taxonomy';
 
   static taxonomyCodeRegexp = new RegExp(
-    /^[a-zA-Z]{1,2}(-\d{1,4}(\.\d{1,4}){0,3})?$/i,
+    /^[a-zA-Z]{1,2}(-\d{1,4}([\.-]\d{1,4}){0,3})?$/i,
   );
 
   static isTaxonomyCode(code: string) {
