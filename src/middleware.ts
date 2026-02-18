@@ -80,59 +80,59 @@ export async function middleware(request: NextRequest) {
   const apiRoute = getApiRoute(request, 'getTenantLocales');
   let timeoutId: NodeJS.Timeout | undefined;
 
-  // Mitigation: Skip tenant lookup for localhost in production to prevent DB resource exhaustion
-  // from internal/bot requests (e.g. invalid URL templates hitting the server)
-  // Use parsed host to ensure we catch all localhost variants (with ports, subdomains etc)
-  const isLocalhostInProd =
-    process.env.NODE_ENV === 'production' && host === 'localhost';
+  try {
+    const controller = new AbortController();
+    timeoutId = setTimeout(() => controller.abort(), 5000);
 
-  if (isLocalhostInProd) {
-    console.warn(
-      'Localhost request skipped tenant resolution:',
+    const tenantLocales: TenantLocaleResponse | null = await fetchWrapper(
+      `${apiRoute}?host=${host}&secret=${process.env.PAYLOAD_API_ROUTE_SECRET}`,
+      {
+        headers: {
+          host: rawHost,
+        },
+        signal: controller.signal,
+        cache: 'no-store',
+      },
+    );
+
+    if (
+      tenantLocales &&
+      tenantLocales.enabledLocales.length &&
+      tenantLocales.defaultLocale
+    ) {
+      locales = tenantLocales.enabledLocales;
+      defaultLocale = tenantLocales.defaultLocale;
+    } else {
+      console.warn(
+        '[Anti-Bot] No locales configured for tenant, falling back to defaults:',
+        JSON.stringify({
+          url: request.url,
+          method: request.method,
+          host,
+          rawHost,
+          userAgent: request.headers.get('user-agent'),
+          referer: request.headers.get('referer'),
+          xForwardedFor: request.headers.get('x-forwarded-for'),
+        }),
+      );
+    }
+  } catch (error) {
+    console.error(
+      '[Anti-Bot] Failed to fetch tenant locales:',
       JSON.stringify({
+        error: error instanceof Error ? error.message : String(error),
         url: request.url,
         method: request.method,
+        host,
+        rawHost,
         userAgent: request.headers.get('user-agent'),
         referer: request.headers.get('referer'),
         xForwardedFor: request.headers.get('x-forwarded-for'),
       }),
     );
-  }
-
-  if (!isLocalhostInProd) {
-    try {
-      const controller = new AbortController();
-      timeoutId = setTimeout(() => controller.abort(), 5000);
-
-      const tenantLocales: TenantLocaleResponse | null = await fetchWrapper(
-        `${apiRoute}?host=${host}&secret=${process.env.PAYLOAD_API_ROUTE_SECRET}`,
-        {
-          headers: {
-            host: rawHost,
-          },
-          signal: controller.signal,
-          cache: 'no-store',
-        },
-      );
-
-      if (
-        tenantLocales &&
-        tenantLocales.enabledLocales.length &&
-        tenantLocales.defaultLocale
-      ) {
-        locales = tenantLocales.enabledLocales;
-        defaultLocale = tenantLocales.defaultLocale;
-      } else {
-        console.warn(
-          `No locales configured for tenant, falling back to defaults. Request URL: ${request.url}`,
-        );
-      }
-    } catch (error) {
-      console.error('Failed to fetch tenant locales', error);
-    } finally {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
+  } finally {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
     }
   }
 
