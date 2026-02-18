@@ -53,9 +53,18 @@ export default async function ResourcePage({ params }) {
 
   const headersList = await headers();
   const nonce = headersList.get('x-nonce') ?? '';
+  const userAgent = headersList.get('user-agent') || 'unknown';
+  const referer = headersList.get('referer') || 'unknown';
+  const xForwardedFor = headersList.get('x-forwarded-for') || 'unknown';
 
   if (!id || !isValidUUID(id)) {
-    console.warn('Resource ID is not a valid UUID:', id);
+    console.warn(
+      `[Anti-Bot] Invalid UUID accessed. ID: ${id}. Details: ${JSON.stringify({
+        userAgent,
+        referer,
+        xForwardedFor,
+      })}`,
+    );
     notFound();
   }
 
@@ -89,6 +98,13 @@ export default async function ResourcePage({ params }) {
   }
 
   if (!resource) {
+    console.info(
+      `[Anti-Bot] Resource not found. ID: ${id}. Details: ${JSON.stringify({
+        userAgent,
+        referer,
+        xForwardedFor,
+      })}`,
+    );
     notFound();
   }
 
