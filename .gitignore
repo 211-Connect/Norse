@@ -61,3 +61,5 @@ public/locales/**/suggestions.json
 .tool-versions
 do_production.dump
 reset-db.sh
+
+norse-context/
