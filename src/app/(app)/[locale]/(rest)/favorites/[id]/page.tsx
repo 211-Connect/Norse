@@ -1,6 +1,6 @@
 import { Metadata } from 'next/types';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
-import { redirect } from 'next/navigation';
+import { redirect, notFound } from 'next/navigation';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import { FavoritesSection } from '@/app/(app)/features/favorites/components/favorites-section';
 import { FavoriteMapContainer } from '@/app/(app)/features/favorites/components/favorite-map-container';
@@ -63,12 +63,18 @@ export default async function FavoritesDetailsPage({ params }) {
 
   if (!session) {
     favoriteList = await getFavoriteList(id, locale, appConfig.tenantId);
+    if (!favoriteList) {
+      notFound();
+    }
   } else if (session.error) {
     redirect(
       `/${locale}/auth/signin?redirect=${encodeURIComponent('/favorites')}`,
     );
   } else {
     favoriteList = await getFavoriteList(id, locale, appConfig.tenantId);
+    if (!favoriteList) {
+      notFound();
+    }
     viewingAsOwner = true;
   }
 
