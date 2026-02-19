@@ -7,6 +7,7 @@ import { searchLinkCorrectionMiddleware } from './middlewares/searchLinkCorrecti
 import { TenantLocaleResponse } from './app/(payload)/api/getTenantLocales/route';
 import { parseHost } from './app/(app)/shared/utils/parseHost';
 import { fetchWrapper } from './app/(app)/shared/lib/fetchWrapper';
+import { protectWithArcjet } from './utils/arcjet';
 
 const DOMAINS_WITH_CSP = ['localhost', 'therc.vdh.virginia.gov'];
 
@@ -68,6 +69,11 @@ function generateNonce() {
 
 // Add a session_id to the cookies of the user for tracking purposes
 export async function middleware(request: NextRequest) {
+  const arcjetResponse = await protectWithArcjet(request);
+  if (arcjetResponse) {
+    return arcjetResponse;
+  }
+
   const nonce = generateNonce();
 
   // Use raw host for headers that require it, but parsed host for logic/identification

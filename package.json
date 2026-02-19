@@ -47,6 +47,8 @@
     "tsx": "^4.21.0"
   },
   "dependencies": {
+    "@arcjet/inspect": "^1.1.0",
+    "@arcjet/next": "^1.1.0",
     "@azure-rest/ai-translation-text": "^1.0.1",
     "@floating-ui/react": "^0.27.16",
     "@google-cloud/translate": "^9.3.0",
