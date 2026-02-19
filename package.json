@@ -6,9 +6,9 @@
   "scripts": {
     "dev": "dotenv -e .env -- next dev",
     "dev:profile": "NODE_OPTIONS=--inspect next dev",
-    "build": "next build",
+    "build": "next build && sh bin/setup-standalone.sh",
     "build-with-env": "dotenv -e .env -- next build",
-    "start": "npm run payload migrate && next start",
+    "start": "npm run payload migrate && node .next/standalone/server.js",
     "lint": "next lint",
     "generate:importmap": "payload generate:importmap",
     "generate:types": "payload generate:types",
