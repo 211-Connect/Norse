@@ -403,7 +403,7 @@ async function getAppConfigBase(
 }
 export const getAppConfig = cache(getAppConfigBase);
 
-export const getAppConfigWithoutHost = async (locale: string) => {
+export const getAppConfigWithoutHost = cache(async (locale: string) => {
   const { host } = await getHost();
   return getAppConfig(host, locale);
-};
+});
