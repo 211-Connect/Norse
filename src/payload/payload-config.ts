@@ -13,6 +13,7 @@ import { Users } from './collections/Users';
 import { Tenants } from './collections/Tenants';
 import { TenantMedia } from './collections/TenantMedia';
 import { ResourceDirectories } from './collections/ResourceDirectories';
+import { OrchestrationConfig } from './collections/OrchestrationConfig';
 import { defaultLocale, locales } from './i18n/locales';
 import { getUserTenantIDs } from './utilities/getUserTenantIDs';
 
@@ -25,7 +26,7 @@ import { duplicateTenant } from './endpoints/duplicateTenant';
 import { translate } from './jobs/translate';
 import { translateTopics } from './jobs/translateTopics';
 import { warmCache } from './jobs/warmCache';
-import { syncCustomAttributes } from './jobs/syncCustomAttributes';
+import { syncOrchestrationConfig } from './jobs/syncCustomAttributes';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -42,9 +43,15 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 const config = buildConfig({
-  collections: [Users, Tenants, TenantMedia, ResourceDirectories],
+  collections: [
+    Users,
+    Tenants,
+    TenantMedia,
+    ResourceDirectories,
+    OrchestrationConfig,
+  ],
   jobs: {
-    tasks: [translateTopics, translate, warmCache, syncCustomAttributes],
+    tasks: [translateTopics, translate, warmCache, syncOrchestrationConfig],
     autoRun: [
       {
         queue: 'translation',
@@ -180,6 +187,9 @@ const config = buildConfig({
       collections: {
         [TenantMedia.slug]: true,
         [ResourceDirectories.slug]: {
+          isGlobal: true,
+        },
+        [OrchestrationConfig.slug]: {
           isGlobal: true,
         },
       },

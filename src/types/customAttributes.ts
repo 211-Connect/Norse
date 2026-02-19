@@ -1,8 +1,10 @@
-import { ResourceDirectory } from '@/payload/payload-types';
+import { OrchestrationConfig } from '@/payload/payload-types';
 
 export type CustomAttribute = Pick<
   NonNullable<
-    NonNullable<ResourceDirectory['customAttributes']>['attributes']
+    NonNullable<
+      NonNullable<OrchestrationConfig['schemas']>
+    >[number]['customAttributes']
   >[number],
   'source_column' | 'link_entity' | 'provenance' | 'searchable' | 'id'
 > & {
@@ -11,4 +13,12 @@ export type CustomAttribute = Pick<
   };
 };
 
-export type CustomAttributesCache = CustomAttribute[];
+export type SchemaConfig = {
+  schemaName: string;
+  customAttributes: CustomAttribute[];
+};
+
+export type OrchestrationConfigCache = {
+  tenantId: string;
+  schemas: SchemaConfig[];
+};

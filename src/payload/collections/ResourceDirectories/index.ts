@@ -5,7 +5,6 @@ import { preventUpdateInDisabledLocale } from './hooks/preventUpdateInDisabledLo
 import { revalidateCache } from './hooks/revalidateCache';
 import { disableService } from './hooks/disableResourceDirectoryService';
 import { autoTranslate } from './hooks/autoTranslate';
-import { pushCustomAttributesToCache } from './hooks/pushCustomAttributesToCache';
 import { brand } from './tabs/brand';
 import { topics } from './tabs/topics';
 import { suggestions } from './tabs/suggestions';
@@ -22,7 +21,6 @@ import { hasThemeFieldAccess } from '../Users/access/permissions';
 import { resource } from './tabs/resource';
 import { accessibility } from './tabs/accessibility';
 import { badges } from './tabs/badges';
-import { customAttributes } from './tabs/customAttributes';
 
 export const ResourceDirectories: CollectionConfig = {
   slug: 'resource-directories',
@@ -54,7 +52,7 @@ export const ResourceDirectories: CollectionConfig = {
   },
   hooks: {
     beforeChange: [setTenantIdAsId, preventUpdateInDisabledLocale],
-    afterChange: [revalidateCache, autoTranslate, pushCustomAttributesToCache],
+    afterChange: [revalidateCache, autoTranslate],
     afterDelete: [revalidateCache, disableService],
   },
   fields: [
@@ -131,7 +129,6 @@ export const ResourceDirectories: CollectionConfig = {
         privacyPolicyPage,
         termsOfUsePage,
         featureFlags,
-        customAttributes,
       ],
     },
   ],

@@ -15,7 +15,7 @@ export type RedisCacheKey =
   | `resource_directory:${Domain}:${Locale}`
   | `resource:${ResourceId}:${Locale}`
   | `search_config:${TenantId}:${Locale}`
-  | `custom_attributes:${TenantId}`;
+  | `orchestration_config:${TenantId}`;
 
 export const withRedisCache = async <T>(
   key: RedisCacheKey,

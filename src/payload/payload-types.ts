@@ -71,6 +71,7 @@ export interface Config {
     tenants: Tenant;
     'tenant-media': TenantMedia;
     'resource-directories': ResourceDirectory;
+    'orchestration-config': OrchestrationConfig;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
@@ -83,6 +84,7 @@ export interface Config {
     tenants: TenantsSelect<false> | TenantsSelect<true>;
     'tenant-media': TenantMediaSelect<false> | TenantMediaSelect<true>;
     'resource-directories': ResourceDirectoriesSelect<false> | ResourceDirectoriesSelect<true>;
+    'orchestration-config': OrchestrationConfigSelect<false> | OrchestrationConfigSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -214,7 +216,7 @@ export interface Config {
       translateTopics: TaskTranslateTopics;
       translate: TaskTranslate;
       warmCache: TaskWarmCache;
-      syncCustomAttributes: TaskSyncCustomAttributes;
+      syncOrchestrationConfig: TaskSyncOrchestrationConfig;
       inline: {
         input: unknown;
         output: unknown;
@@ -620,18 +622,35 @@ export interface ResourceDirectory {
     showFeedbackButtonGlobal?: boolean | null;
     showFeedbackButtonOnResourcePages?: boolean | null;
   };
-  customAttributes?: {
-    attributes?:
-      | {
-          source_column: string;
-          link_entity: 'organization' | 'service' | 'location';
-          label: string;
-          provenance?: string | null;
-          searchable?: boolean | null;
-          id?: string | null;
-        }[]
-      | null;
-  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orchestration-config".
+ */
+export interface OrchestrationConfig {
+  tenant?: (string | null) | Tenant;
+  id: string;
+  schemas?:
+    | {
+        /**
+         * Name of the schema for this configuration (e.g. NE211)
+         */
+        schemaName: string;
+        customAttributes?:
+          | {
+              source_column: string;
+              link_entity: 'organization' | 'service' | 'location';
+              label: string;
+              provenance?: string | null;
+              searchable?: boolean | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -704,7 +723,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'translateTopics' | 'translate' | 'warmCache' | 'syncCustomAttributes';
+        taskSlug: 'inline' | 'translateTopics' | 'translate' | 'warmCache' | 'syncOrchestrationConfig';
         taskID: string;
         input?:
           | {
@@ -737,7 +756,7 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'translateTopics' | 'translate' | 'warmCache' | 'syncCustomAttributes') | null;
+  taskSlug?: ('inline' | 'translateTopics' | 'translate' | 'warmCache' | 'syncOrchestrationConfig') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
@@ -775,6 +794,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'resource-directories';
         value: string | ResourceDirectory;
+      } | null)
+    | ({
+        relationTo: 'orchestration-config';
+        value: string | OrchestrationConfig;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1180,10 +1203,21 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         showFeedbackButtonGlobal?: T;
         showFeedbackButtonOnResourcePages?: T;
       };
-  customAttributes?:
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orchestration-config_select".
+ */
+export interface OrchestrationConfigSelect<T extends boolean = true> {
+  tenant?: T;
+  id?: T;
+  schemas?:
     | T
     | {
-        attributes?:
+        schemaName?: T;
+        customAttributes?:
           | T
           | {
               source_column?: T;
@@ -1193,6 +1227,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
               searchable?: T;
               id?: T;
             };
+        id?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -1358,9 +1393,9 @@ export interface TaskWarmCache {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "TaskSyncCustomAttributes".
+ * via the `definition` "TaskSyncOrchestrationConfig".
  */
-export interface TaskSyncCustomAttributes {
+export interface TaskSyncOrchestrationConfig {
   input: {
     tenantIds?:
       | {
@@ -1371,7 +1406,7 @@ export interface TaskSyncCustomAttributes {
   output: {
     success: boolean;
     syncedTenants: number;
-    syncedConfigurations: number;
+    syncedSchemas: number;
   };
 }
 /**
