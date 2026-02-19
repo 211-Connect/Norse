@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "dotenv -e .env -- next dev",
+    "dev:profile": "NODE_OPTIONS=--inspect next dev",
     "build": "next build",
     "build-with-env": "dotenv -e .env -- next build",
     "start": "npm run payload migrate && next start",
