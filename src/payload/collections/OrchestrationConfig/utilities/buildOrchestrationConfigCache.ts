@@ -74,7 +74,7 @@ export async function buildOrchestrationConfigCache(
             source_column: attr.source_column,
             link_entity: attr.link_entity,
             label: {},
-            provenance: attr.provenance || null,
+            origin: attr.origin || null,
             searchable: attr.searchable ?? null,
             id: attr.id || null,
           });

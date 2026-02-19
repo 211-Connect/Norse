@@ -643,7 +643,7 @@ export interface OrchestrationConfig {
               source_column: string;
               link_entity: 'organization' | 'service' | 'location';
               label: string;
-              provenance?: string | null;
+              origin?: string | null;
               searchable?: boolean | null;
               id?: string | null;
             }[]
@@ -1223,7 +1223,7 @@ export interface OrchestrationConfigSelect<T extends boolean = true> {
               source_column?: T;
               link_entity?: T;
               label?: T;
-              provenance?: T;
+              origin?: T;
               searchable?: T;
               id?: T;
             };

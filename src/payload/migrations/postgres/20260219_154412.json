@@ -6014,8 +6014,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "provenance": {
-          "name": "provenance",
+        "origin": {
+          "name": "origin",
           "type": "varchar",
           "primaryKey": false,
           "notNull": false
@@ -6371,8 +6371,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "provenance": {
-          "name": "provenance",
+        "origin": {
+          "name": "origin",
           "type": "varchar",
           "primaryKey": false,
           "notNull": false
@@ -8222,6 +8222,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "17ba167f-b32d-4438-8a1d-b2c0d2ffe6fd",
+  "id": "318bd354-8c37-4011-9040-f40a32e6d1d0",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }

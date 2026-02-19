@@ -10,7 +10,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"id" varchar PRIMARY KEY NOT NULL,
   	"source_column" varchar NOT NULL,
   	"link_entity" "enum_oc_schemas_custom_attributes_link_entity" NOT NULL,
-  	"provenance" varchar,
+  	"origin" varchar,
   	"searchable" boolean DEFAULT true
   );
   
@@ -41,7 +41,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"id" serial PRIMARY KEY NOT NULL,
   	"source_column" varchar NOT NULL,
   	"link_entity" "enum__oc_v_version_schemas_custom_attributes_link_entity" NOT NULL,
-  	"provenance" varchar,
+  	"origin" varchar,
   	"searchable" boolean DEFAULT true,
   	"_uuid" varchar
   );
