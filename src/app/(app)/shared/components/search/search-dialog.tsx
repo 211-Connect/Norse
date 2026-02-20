@@ -61,12 +61,7 @@ export function SearchDialog({
         }
 
         let query = findCode(search.searchTerm);
-        let queryType = getQueryType(search.searchTerm, query);
-
-        // Ensure queryType is never empty - default to 'taxonomy' if we have a query
-        if (!queryType && query) {
-          queryType = 'taxonomy';
-        }
+        const queryType = getQueryType(search.searchTerm, query);
 
         const location = locations[0];
         // Only update location params if the user has actually changed the location
@@ -85,7 +80,7 @@ export function SearchDialog({
           ...search,
           ...locationParams,
           query: query || '',
-          queryType: queryType || '',
+          queryType: queryType,
         });
 
         const queryParams = stringifySearchParams(

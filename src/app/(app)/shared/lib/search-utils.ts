@@ -96,14 +96,14 @@ export function buildSearchRequest(
   if (searchStore.queryLabel?.trim()) {
     baseParams.query_label = searchStore.queryLabel.trim();
   }
+
   // Derive query type using the same logic as findResources/createUrlParamsForSearch
   const derivedQueryType = deriveQueryType(
     searchStore.query,
     searchStore.queryType,
   );
-  if (derivedQueryType?.trim()) {
-    baseParams.query_type = derivedQueryType.trim();
-  }
+  baseParams.query_type = derivedQueryType;
+
   if (hasLocation && searchStore.searchLocation?.trim()) {
     baseParams.location = searchStore.searchLocation.trim();
   }
@@ -144,20 +144,19 @@ export function buildSearchRequest(
 /**
  * Valid query type options supported by the Norse API
  */
-const VALID_QUERY_TYPES = [
-  'text',
-  'taxonomy',
-  'organization',
-  'more_like_this',
-] as const;
-type ValidQueryType = (typeof VALID_QUERY_TYPES)[number];
+export enum QueryType {
+  Text = 'text',
+  Taxonomy = 'taxonomy',
+  Organization = 'organization',
+  MoreLikeThis = 'more_like_this',
+}
 
 /**
  * Check if a string is a valid query type
  */
-function isValidQueryType(type: string | undefined): type is ValidQueryType {
+function isValidQueryType(type: string | undefined): type is QueryType {
   if (!type) return false;
-  return VALID_QUERY_TYPES.includes(type as ValidQueryType);
+  return Object.values(QueryType).includes(type as QueryType);
 }
 
 /**
@@ -177,7 +176,7 @@ function isValidQueryType(type: string | undefined): type is ValidQueryType {
 export function deriveQueryType(
   query: string | undefined,
   storedType: string | undefined,
-): string {
+): QueryType {
   const normalizedQuery = query?.trim();
 
   // Check if query is a taxonomy code (highest priority)
@@ -190,16 +189,16 @@ export function deriveQueryType(
     );
 
     if (allAreTaxonomyCodes) {
-      return 'taxonomy';
+      return QueryType.Taxonomy;
     }
   }
 
   // Validate and use storedType if it's valid
   const trimmedType = storedType?.trim();
   if (isValidQueryType(trimmedType)) {
-    return trimmedType;
+    return trimmedType as QueryType;
   }
 
   // Default to 'text' for keyword search
-  return 'text';
+  return QueryType.Text;
 }

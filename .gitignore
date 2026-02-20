@@ -63,3 +63,4 @@ do_production.dump
 reset-db.sh
 
 norse-context/
+*.dump
