@@ -1,5 +1,3 @@
-import { cacheService } from '@/cacheService';
-
 type Seconds = number;
 const ONE_HOUR: Seconds = 60 * 60;
 const CACHE_TTL = ONE_HOUR;
@@ -20,6 +18,8 @@ export const withRedisCache = async <T>(
   key: RedisCacheKey,
   fetchFunction: () => Promise<T>,
 ): Promise<T | null> => {
+  const { cacheService } = await import('@/cacheService');
+
   try {
     const cachedValue = await cacheService.get(key);
     if (cachedValue) {

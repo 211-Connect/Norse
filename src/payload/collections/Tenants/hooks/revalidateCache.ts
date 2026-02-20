@@ -1,7 +1,6 @@
 import { Tenant } from '@/payload/payload-types';
 
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
-import { cacheService } from '@/cacheService';
 
 export async function revalidateCache({
   doc,
@@ -21,6 +20,7 @@ export async function revalidateCache({
     await Promise.all(
       trustedDomains.map(async (domain) => {
         const host = parseHost(domain);
+        const { cacheService } = await import('@/cacheService');
         await cacheService.delPattern(`tenant_locale:${host}`);
         await cacheService.del(`tenant:${host}`);
         await cacheService.delPattern(`resource_directory:${host}:*`);
