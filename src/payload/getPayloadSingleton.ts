@@ -5,33 +5,38 @@ import config from './payload-config';
  * Singleton pattern for Payload instance to prevent memory leaks
  * from creating multiple Payload instances per request
  */
-let cachedPayload: Payload | null = null;
-let initPromise: Promise<Payload> | null = null;
+const globalWithPayload = global as typeof global & {
+  cachedPayload: Payload | null;
+  initPromise: Promise<Payload> | null;
+};
+
+globalWithPayload.cachedPayload ??= null;
+globalWithPayload.initPromise ??= null;
 
 export async function getPayloadSingleton(): Promise<Payload> {
   // If we already have a cached instance, return it
-  if (cachedPayload) {
-    return cachedPayload;
+  if (globalWithPayload.cachedPayload) {
+    return globalWithPayload.cachedPayload;
   }
 
   // If initialization is in progress, wait for it
-  if (initPromise) {
-    return initPromise;
+  if (globalWithPayload.initPromise) {
+    return globalWithPayload.initPromise;
   }
 
   // Start initialization
-  initPromise = getPayload({ config })
+  globalWithPayload.initPromise = getPayload({ config })
     .then((payload) => {
-      cachedPayload = payload;
-      initPromise = null;
+      globalWithPayload.cachedPayload = payload;
+      globalWithPayload.initPromise = null;
       return payload;
     })
     .catch((error) => {
-      initPromise = null;
+      globalWithPayload.initPromise = null;
       throw error;
     });
 
-  return initPromise;
+  return globalWithPayload.initPromise;
 }
 
 // Export for use in actions
