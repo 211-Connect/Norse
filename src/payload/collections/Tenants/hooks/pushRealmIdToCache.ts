@@ -15,28 +15,36 @@ export const pushRealmIdToCache: CollectionAfterChangeHook<Tenant> = async ({
     return doc;
   }
 
-  try {
-    const realmId = doc.auth?.realmId;
+  // Fire and forget - don't block the database transaction
+  const cacheOperation = async () => {
+    try {
+      const realmId = doc.auth?.realmId;
 
-    if (!realmId) {
-      console.warn(
-        `[pushRealmIdToCache] No realmId found for tenant ID: ${tenantId}`,
+      if (!realmId) {
+        console.warn(
+          `[pushRealmIdToCache] No realmId found for tenant ID: ${tenantId}`,
+        );
+        return;
+      }
+
+      const cacheKey = getRealmIdKey(tenantId);
+      await apiConfigCacheService.set(cacheKey, realmId);
+
+      console.log(
+        `[pushRealmIdToCache] ✓ Pushed realmId for tenant ${tenantId}: ${realmId}`,
       );
-      return doc;
+    } catch (error) {
+      console.error(
+        `[pushRealmIdToCache] Error pushing realmId to cache:`,
+        error,
+      );
     }
+  };
 
-    const cacheKey = getRealmIdKey(tenantId);
-    await apiConfigCacheService.set(cacheKey, realmId);
-
-    console.log(
-      `[pushRealmIdToCache] ✓ Pushed realmId for tenant ${tenantId}: ${realmId}`,
-    );
-  } catch (error) {
-    console.error(
-      `[pushRealmIdToCache] Error pushing realmId to cache:`,
-      error,
-    );
-  }
+  // Execute without awaiting to avoid blocking the transaction
+  cacheOperation().catch((err) => {
+    console.error('[pushRealmIdToCache] Unhandled cache error:', err);
+  });
 
   return doc;
 };
