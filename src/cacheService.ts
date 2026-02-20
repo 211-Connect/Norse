@@ -50,6 +50,7 @@ class CacheService {
         maxRetriesPerRequest: 3,
         enableReadyCheck: true,
         enableOfflineQueue: true,
+        keepAlive: 30_000,
         connectTimeout: 10_000,
         commandTimeout: 5_000,
         lazyConnect: true,
