@@ -13,6 +13,7 @@ import { Users } from './collections/Users';
 import { Tenants } from './collections/Tenants';
 import { TenantMedia } from './collections/TenantMedia';
 import { ResourceDirectories } from './collections/ResourceDirectories';
+import { OrchestrationConfig } from './collections/OrchestrationConfig';
 import { defaultLocale, locales } from './i18n/locales';
 import { getUserTenantIDs } from './utilities/getUserTenantIDs';
 
@@ -41,7 +42,13 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 const config = buildConfig({
-  collections: [Users, Tenants, TenantMedia, ResourceDirectories],
+  collections: [
+    Users,
+    Tenants,
+    TenantMedia,
+    ResourceDirectories,
+    OrchestrationConfig,
+  ],
   jobs: {
     tasks: [translateTopics, translate, warmCache],
     autoRun: [
@@ -179,6 +186,9 @@ const config = buildConfig({
       collections: {
         [TenantMedia.slug]: true,
         [ResourceDirectories.slug]: {
+          isGlobal: true,
+        },
+        [OrchestrationConfig.slug]: {
           isGlobal: true,
         },
       },
