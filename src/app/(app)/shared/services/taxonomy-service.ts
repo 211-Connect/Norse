@@ -4,11 +4,11 @@ import { fetchWrapper } from '../lib/fetchWrapper';
 export class TaxonomyService {
   static endpoint = 'taxonomy';
 
-  static taxonomyCodeRegexp = new RegExp(
-    /^[a-zA-Z]{1,2}(-\d{1,4}([\.-]\d{1,4}){0,3})?$/i,
-  );
+  static readonly taxonomyCodeRegexp =
+    /^[a-zA-Z]{1,2}(-\d{1,4}([.-]\d{1,4}){0,3})?$/i;
 
-  static isTaxonomyCode(code: string) {
+  static isTaxonomyCode(code: string): boolean {
+    if (!code || typeof code !== 'string') return false;
     return this.taxonomyCodeRegexp.test(code);
   }
 
