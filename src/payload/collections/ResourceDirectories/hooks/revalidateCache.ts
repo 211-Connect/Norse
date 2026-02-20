@@ -1,5 +1,5 @@
 import { ResourceDirectory } from '@/payload/payload-types';
-import { cacheService } from '@/cacheService';
+
 import { findTenantById } from '../../Tenants/actions';
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
 import { RedisCacheKey } from '@/utilities/withRedisCache';
@@ -25,6 +25,7 @@ export async function revalidateCache({
           },
         );
         for (const key of cacheKeys) {
+          const { cacheService } = await import('@/cacheService');
           await cacheService.delPattern(key);
         }
       }
