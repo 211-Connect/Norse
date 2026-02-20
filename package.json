@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "dotenv -e .env -- next dev",
-    "dev:profile": "NODE_OPTIONS=--inspect next dev",
-    "start:profile": "NODE_OPTIONS=--inspect next start",
+    "dev:profile": "NODE_OPTIONS='--inspect=9229' next dev",
+    "start:profile": "next build && sh bin/setup-standalone.sh && node --inspect=9229 .next/standalone/server.js",
     "build": "next build && sh bin/setup-standalone.sh",
     "build-with-env": "dotenv -e .env -- next build",
     "start": "npm run payload migrate && node .next/standalone/server.js",

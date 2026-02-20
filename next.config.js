@@ -1,8 +1,12 @@
 import { withPayload } from '@payloadcms/next/withPayload';
 import bundleAnalyzer from '@next/bundle-analyzer';
 import { createRequire } from 'module';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const require = createRequire(import.meta.url);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
@@ -64,6 +68,7 @@ const nextConfig = {
     'ioredis',
   ],
   experimental: {
+    outputFileTracingRoot: __dirname,
     webpackMemoryOptimizations: true,
     webpackBuildWorker: true,
     preloadEntriesOnStart: false,
