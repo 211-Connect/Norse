@@ -54,9 +54,9 @@ export const schemas: Tab = {
               label: 'Label',
             },
             {
-              name: 'origin',
+              name: 'provenance',
               type: 'text',
-              label: 'Origin',
+              label: 'Provenance',
             },
             {
               name: 'searchable',
