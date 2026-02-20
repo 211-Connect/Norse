@@ -81,11 +81,11 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   DROP TABLE "_rds_v_version_custom_attributes_attributes_locales" CASCADE;
   ALTER TABLE "payload_jobs_log" ALTER COLUMN "task_slug" SET DATA TYPE text;
   DROP TYPE "public"."enum_payload_jobs_log_task_slug";
-  CREATE TYPE "public"."enum_payload_jobs_log_task_slug" AS ENUM('inline', 'translateTopics', 'translate', 'warmCache', 'syncOrchestrationConfig');
+  CREATE TYPE "public"."enum_payload_jobs_log_task_slug" AS ENUM('inline', 'translateTopics', 'translate', 'warmCache');
   ALTER TABLE "payload_jobs_log" ALTER COLUMN "task_slug" SET DATA TYPE "public"."enum_payload_jobs_log_task_slug" USING "task_slug"::"public"."enum_payload_jobs_log_task_slug";
   ALTER TABLE "payload_jobs" ALTER COLUMN "task_slug" SET DATA TYPE text;
   DROP TYPE "public"."enum_payload_jobs_task_slug";
-  CREATE TYPE "public"."enum_payload_jobs_task_slug" AS ENUM('inline', 'translateTopics', 'translate', 'warmCache', 'syncOrchestrationConfig');
+  CREATE TYPE "public"."enum_payload_jobs_task_slug" AS ENUM('inline', 'translateTopics', 'translate', 'warmCache');
   ALTER TABLE "payload_jobs" ALTER COLUMN "task_slug" SET DATA TYPE "public"."enum_payload_jobs_task_slug" USING "task_slug"::"public"."enum_payload_jobs_task_slug";
   ALTER TABLE "payload_locked_documents_rels" ADD COLUMN "oc_id" varchar;
   ALTER TABLE "oc_schemas_custom_attributes" ADD CONSTRAINT "oc_schemas_custom_attributes_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."oc_schemas"("id") ON DELETE cascade ON UPDATE no action;
@@ -126,6 +126,8 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   await db.execute(sql`
    CREATE TYPE "public"."enum_rds_custom_attributes_attributes_link_entity" AS ENUM('organization', 'service', 'location');
   CREATE TYPE "public"."enum__rds_v_version_custom_attributes_attributes_link_entity" AS ENUM('organization', 'service', 'location');
+  ALTER TYPE "public"."enum_payload_jobs_log_task_slug" ADD VALUE 'syncCustomAttributes';
+  ALTER TYPE "public"."enum_payload_jobs_task_slug" ADD VALUE 'syncCustomAttributes';
   CREATE TABLE "rds_custom_attributes_attributes" (
   	"_order" integer NOT NULL,
   	"_parent_id" varchar NOT NULL,
@@ -179,14 +181,6 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TABLE "_oc_v" CASCADE;
   ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT "payload_locked_documents_rels_orchestration_config_fk";
   
-  ALTER TABLE "payload_jobs_log" ALTER COLUMN "task_slug" SET DATA TYPE text;
-  DROP TYPE "public"."enum_payload_jobs_log_task_slug";
-  CREATE TYPE "public"."enum_payload_jobs_log_task_slug" AS ENUM('inline', 'translateTopics', 'translate', 'warmCache', 'syncCustomAttributes');
-  ALTER TABLE "payload_jobs_log" ALTER COLUMN "task_slug" SET DATA TYPE "public"."enum_payload_jobs_log_task_slug" USING "task_slug"::"public"."enum_payload_jobs_log_task_slug";
-  ALTER TABLE "payload_jobs" ALTER COLUMN "task_slug" SET DATA TYPE text;
-  DROP TYPE "public"."enum_payload_jobs_task_slug";
-  CREATE TYPE "public"."enum_payload_jobs_task_slug" AS ENUM('inline', 'translateTopics', 'translate', 'warmCache', 'syncCustomAttributes');
-  ALTER TABLE "payload_jobs" ALTER COLUMN "task_slug" SET DATA TYPE "public"."enum_payload_jobs_task_slug" USING "task_slug"::"public"."enum_payload_jobs_task_slug";
   DROP INDEX "payload_locked_documents_rels_oc_id_idx";
   ALTER TABLE "rds_custom_attributes_attributes" ADD CONSTRAINT "rds_custom_attributes_attributes_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."rds"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "rds_custom_attributes_attributes_locales" ADD CONSTRAINT "rds_custom_attributes_attributes_locales_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."rds_custom_attributes_attributes"("id") ON DELETE cascade ON UPDATE no action;

@@ -8188,8 +8188,7 @@
         "inline",
         "translateTopics",
         "translate",
-        "warmCache",
-        "syncOrchestrationConfig"
+        "warmCache"
       ]
     },
     "public.enum_payload_jobs_log_state": {
@@ -8207,8 +8206,7 @@
         "inline",
         "translateTopics",
         "translate",
-        "warmCache",
-        "syncOrchestrationConfig"
+        "warmCache"
       ]
     }
   },
@@ -8222,6 +8220,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "318bd354-8c37-4011-9040-f40a32e6d1d0",
+  "id": "a462d9e8-eb26-4026-9d0e-c25ec0b2f73b",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }

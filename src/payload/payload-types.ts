@@ -216,7 +216,6 @@ export interface Config {
       translateTopics: TaskTranslateTopics;
       translate: TaskTranslate;
       warmCache: TaskWarmCache;
-      syncOrchestrationConfig: TaskSyncOrchestrationConfig;
       inline: {
         input: unknown;
         output: unknown;
@@ -723,7 +722,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'translateTopics' | 'translate' | 'warmCache' | 'syncOrchestrationConfig';
+        taskSlug: 'inline' | 'translateTopics' | 'translate' | 'warmCache';
         taskID: string;
         input?:
           | {
@@ -756,7 +755,7 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'translateTopics' | 'translate' | 'warmCache' | 'syncOrchestrationConfig') | null;
+  taskSlug?: ('inline' | 'translateTopics' | 'translate' | 'warmCache') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
@@ -1389,26 +1388,6 @@ export interface TaskWarmCache {
     success: boolean;
     warmedTenants: number;
     warmedResourceDirectories: number;
-    warmedFacets: number;
-    warmedRealmIds: number;
-  };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "TaskSyncOrchestrationConfig".
- */
-export interface TaskSyncOrchestrationConfig {
-  input: {
-    tenantIds?:
-      | {
-          tenantId?: string | null;
-        }[]
-      | null;
-  };
-  output: {
-    success: boolean;
-    syncedTenants: number;
-    syncedSchemas: number;
   };
 }
 /**

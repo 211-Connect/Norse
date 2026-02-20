@@ -15,8 +15,8 @@ export async function buildOrchestrationConfigCache(
   payload: Payload,
   tenantId: string,
   enabledLocales: string[],
-  currentDoc?: OrchestrationConfig,
-  currentLocale?: string,
+  currentDoc: OrchestrationConfig,
+  currentLocale: string | undefined,
 ): Promise<OrchestrationConfigCache | null> {
   // Map to store schemas: schemaName -> Map of attributes by source_column
   const schemasMap = new Map<string, Map<string, CustomAttribute>>();

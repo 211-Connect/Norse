@@ -11,8 +11,8 @@ export async function buildFacetsCache(
   payload: Payload,
   tenantId: string,
   enabledLocales: string[],
-  currentDoc?: ResourceDirectory,
-  currentLocale?: string,
+  currentDoc: ResourceDirectory,
+  currentLocale: string,
 ): Promise<FacetsCache | null> {
   // Map to store facets by facet identifier
   const facetsMap = new Map<string, FacetConfig>();

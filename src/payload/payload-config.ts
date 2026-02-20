@@ -26,7 +26,6 @@ import { duplicateTenant } from './endpoints/duplicateTenant';
 import { translate } from './jobs/translate';
 import { translateTopics } from './jobs/translateTopics';
 import { warmCache } from './jobs/warmCache';
-import { syncOrchestrationConfig } from './jobs/syncOrchestrationConfig';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -51,7 +50,7 @@ const config = buildConfig({
     OrchestrationConfig,
   ],
   jobs: {
-    tasks: [translateTopics, translate, warmCache, syncOrchestrationConfig],
+    tasks: [translateTopics, translate, warmCache],
     autoRun: [
       {
         queue: 'translation',
