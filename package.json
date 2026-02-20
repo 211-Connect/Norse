@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "dotenv -e .env -- next dev",
     "dev:profile": "NODE_OPTIONS=--inspect next dev",
+    "start:profile": "NODE_OPTIONS=--inspect next start",
     "build": "next build && sh bin/setup-standalone.sh",
     "build-with-env": "dotenv -e .env -- next build",
     "start": "npm run payload migrate && node .next/standalone/server.js",
@@ -51,6 +52,7 @@
     "@azure-rest/ai-translation-text": "^1.0.1",
     "@floating-ui/react": "^0.27.16",
     "@google-cloud/translate": "^9.3.0",
+    "@next/bundle-analyzer": "^16.1.6",
     "@payloadcms/db-postgres": "3.71.1",
     "@payloadcms/email-nodemailer": "3.71.1",
     "@payloadcms/next": "3.71.1",
