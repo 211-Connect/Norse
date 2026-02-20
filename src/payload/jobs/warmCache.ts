@@ -4,6 +4,10 @@ import {
   findResourceDirectoryByHost,
   findResourceDirectoryByTenantId,
 } from '../collections/ResourceDirectories/actions';
+import { buildFacetsCache } from '../collections/ResourceDirectories/utilities/buildFacetsCache';
+import { getFacetsKey } from '../collections/ResourceDirectories/utilities/getFacetsKey';
+import { getRealmIdKey } from '../collections/Tenants/utilities/getRealmIdKey';
+import { apiConfigCacheService } from '@/cacheService';
 
 export const warmCache: TaskConfig<'warmCache'> = {
   slug: 'warmCache',
@@ -39,6 +43,16 @@ export const warmCache: TaskConfig<'warmCache'> = {
     },
     {
       name: 'warmedResourceDirectories',
+      type: 'number',
+      required: true,
+    },
+    {
+      name: 'warmedFacets',
+      type: 'number',
+      required: true,
+    },
+    {
+      name: 'warmedRealmIds',
       type: 'number',
       required: true,
     },
@@ -80,6 +94,8 @@ export const warmCache: TaskConfig<'warmCache'> = {
 
     let warmedTenants = 0;
     let warmedResourceDirectories = 0;
+    let warmedFacets = 0;
+    let warmedRealmIds = 0;
 
     for (const domain of domains) {
       try {
@@ -87,7 +103,51 @@ export const warmCache: TaskConfig<'warmCache'> = {
         if (tenant) {
           warmedTenants++;
 
+          // Warm realmId cache
+          try {
+            const realmId = tenant.auth?.realmId;
+            if (realmId) {
+              const cacheKey = getRealmIdKey(tenant.id);
+              await apiConfigCacheService.set(cacheKey, realmId);
+              warmedRealmIds++;
+              console.log(
+                `[warmCache] ✓ Warmed realmId for tenant ${tenant.id}`,
+              );
+            }
+          } catch (error) {
+            console.error(
+              `[warmCache] ✗ Error warming realmId for tenant ${tenant.id}:`,
+              error,
+            );
+          }
+
           if (tenant.enabledLocales && tenant.enabledLocales.length > 0) {
+            // Warm facets cache
+            try {
+              const facetsCache = await buildFacetsCache(
+                payload,
+                tenant.id,
+                tenant.enabledLocales,
+              );
+
+              if (facetsCache) {
+                const cacheKey = getFacetsKey(tenant.id);
+                await apiConfigCacheService.set(
+                  cacheKey,
+                  JSON.stringify(facetsCache),
+                );
+                warmedFacets++;
+                console.log(
+                  `[warmCache] ✓ Warmed ${facetsCache.facets.length} facet(s) for tenant ${tenant.id}`,
+                );
+              }
+            } catch (error) {
+              console.error(
+                `[warmCache] ✗ Error warming facets for tenant ${tenant.id}:`,
+                error,
+              );
+            }
+
             for (const locale of tenant.enabledLocales) {
               try {
                 const resourceDirectory = await Promise.all([
@@ -124,6 +184,8 @@ export const warmCache: TaskConfig<'warmCache'> = {
       totalDomains: domains.length,
       warmedTenants,
       warmedResourceDirectories,
+      warmedFacets,
+      warmedRealmIds,
       durationMs: duration,
       durationSeconds: `${durationSeconds}s`,
     });
@@ -133,6 +195,8 @@ export const warmCache: TaskConfig<'warmCache'> = {
         success: true,
         warmedTenants,
         warmedResourceDirectories,
+        warmedFacets,
+        warmedRealmIds,
       },
     };
   },

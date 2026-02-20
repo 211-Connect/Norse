@@ -1,5 +1,5 @@
 import type { TaskConfig } from 'payload';
-import { customAttributesCacheService } from '@/cacheService';
+import { apiConfigCacheService } from '@/cacheService';
 import { findTenantById } from '../collections/Tenants/actions';
 import { buildOrchestrationConfigCache } from '../collections/OrchestrationConfig/utilities/buildOrchestrationConfigCache';
 import { getOrchestrationConfigKey } from '../collections/OrchestrationConfig/utilities/getOrchestrationConfigKey';
@@ -124,7 +124,7 @@ export const syncOrchestrationConfig: TaskConfig<'syncOrchestrationConfig'> = {
           }
 
           const cacheKey = getOrchestrationConfigKey(tenantId);
-          await customAttributesCacheService.set(
+          await apiConfigCacheService.set(
             cacheKey,
             JSON.stringify(orchestrationConfigCache),
           );

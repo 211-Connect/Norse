@@ -1389,6 +1389,8 @@ export interface TaskWarmCache {
     success: boolean;
     warmedTenants: number;
     warmedResourceDirectories: number;
+    warmedFacets: number;
+    warmedRealmIds: number;
   };
 }
 /**

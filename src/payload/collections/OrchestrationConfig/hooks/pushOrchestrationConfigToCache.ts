@@ -1,5 +1,5 @@
 import { OrchestrationConfig } from '@/payload/payload-types';
-import { customAttributesCacheService } from '@/cacheService';
+import { apiConfigCacheService } from '@/cacheService';
 import { findTenantById } from '../../Tenants/actions';
 import { buildOrchestrationConfigCache } from '../utilities/buildOrchestrationConfigCache';
 import { getOrchestrationConfigKey } from '../utilities/getOrchestrationConfigKey';
@@ -45,7 +45,7 @@ export const pushOrchestrationConfigToCache: CollectionAfterChangeHook<
     }
 
     const cacheKey = getOrchestrationConfigKey(tenantId);
-    await customAttributesCacheService.set(
+    await apiConfigCacheService.set(
       cacheKey,
       JSON.stringify(orchestrationConfigCache),
     );
