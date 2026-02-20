@@ -1,4 +1,12 @@
 import { withPayload } from '@payloadcms/next/withPayload';
+import bundleAnalyzer from '@next/bundle-analyzer';
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
+
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+});
 
 /**
  * @type {import('next').NextConfig}
@@ -46,6 +54,15 @@ const nextConfig = {
   skipTrailingSlashRedirect: true,
   cacheMaxMemorySize: 32 * 1024 * 1024, // 32 MB
   // Memory optimization settings
+  // Explicitly prevent Webpack from parsing and bundling these massive
+  // Node-only dependencies into chunks. This eliminates the chunk bloat.
+  serverExternalPackages: [
+    '@google-cloud/translate',
+    '@azure-rest/ai-translation-text',
+    '@grpc/grpc-js',
+    'google-gax',
+    'ioredis',
+  ],
   experimental: {
     webpackMemoryOptimizations: true,
     webpackBuildWorker: true,
@@ -69,6 +86,15 @@ const nextConfig = {
       });
     }
 
+    if (isServer) {
+      const StatsPlugin = require('webpack').StatsPlugin;
+      if (StatsPlugin) {
+        config.plugins.push(
+          new StatsPlugin('stats.json', { chunkModules: true })
+        );
+      }
+    }
+
     // Suppress Payload CMS dynamic import warnings
     config.module = config.module || {};
     config.module.unknownContextCritical = false;
@@ -89,4 +115,4 @@ const nextConfig = {
   },
 };
 
-export default withPayload(nextConfig);
+export default withBundleAnalyzer(withPayload(nextConfig));
