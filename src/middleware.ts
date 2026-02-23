@@ -10,6 +10,51 @@ import { fetchWrapper } from './app/(app)/shared/lib/fetchWrapper';
 
 const DOMAINS_WITH_CSP = ['localhost', 'therc.vdh.virginia.gov'];
 
+const LOCALE_CACHE_TTL_MS = 10 * 60 * 1000;
+const LOCALE_CACHE_MAX_ENTRIES = 1_000;
+
+type LocaleCacheEntry = {
+  data: TenantLocaleResponse | null;
+  expiresAt: number;
+};
+
+const tenantLocaleCache = new Map<string, LocaleCacheEntry>();
+
+function getCachedTenantLocales(
+  host: string,
+): TenantLocaleResponse | null | undefined {
+  const entry = tenantLocaleCache.get(host);
+
+  if (!entry) {
+    return undefined;
+  }
+
+  const expired = Date.now() > entry.expiresAt;
+  if (expired) {
+    tenantLocaleCache.delete(host);
+    return undefined;
+  }
+
+  return entry.data;
+}
+
+function setCachedTenantLocales(
+  host: string,
+  data: TenantLocaleResponse | null,
+): void {
+  if (tenantLocaleCache.size >= LOCALE_CACHE_MAX_ENTRIES) {
+    const firstKey = tenantLocaleCache.keys().next().value;
+    if (firstKey) {
+      tenantLocaleCache.delete(firstKey);
+    }
+  }
+
+  tenantLocaleCache.set(host, {
+    data,
+    expiresAt: Date.now() + LOCALE_CACHE_TTL_MS,
+  });
+}
+
 export const config = {
   matcher: [
     /*
@@ -53,11 +98,17 @@ function robotsMiddleware(response: NextResponse, pathname: string) {
 }
 
 function getApiRoute(request: NextRequest, target: string) {
-  const proto = request.headers.get('x-forwarded-proto') || 'http';
   const host =
     process.env.NODE_ENV !== 'development'
       ? request.headers.get('host')
       : 'localhost:3000';
+
+  const hostname = host?.split(':')[0] || '';
+  const isInternal = hostname === 'localhost' || hostname === '127.0.0.1';
+  const proto = isInternal
+    ? 'http'
+    : request.headers.get('x-forwarded-proto') || 'http';
+
   return `${proto}://${host}${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/api/${target}`;
 }
 
@@ -77,35 +128,64 @@ export async function middleware(request: NextRequest) {
   let locales = ['en'];
   let defaultLocale = 'en';
 
-  const apiRoute = getApiRoute(request, 'getTenantLocales');
-  let timeoutId: NodeJS.Timeout | undefined;
+  const cached = getCachedTenantLocales(host);
 
-  try {
-    const controller = new AbortController();
-    timeoutId = setTimeout(() => controller.abort(), 5000);
+  if (cached !== undefined) {
+    // Cache hit (may be null if tenant was not found previously)
+    if (cached && cached.enabledLocales.length && cached.defaultLocale) {
+      locales = cached.enabledLocales;
+      defaultLocale = cached.defaultLocale;
+    }
+  } else {
+    const apiRoute = getApiRoute(request, 'getTenantLocales');
+    let timeoutId: NodeJS.Timeout | undefined;
 
-    const tenantLocales: TenantLocaleResponse | null = await fetchWrapper(
-      `${apiRoute}?host=${host}&secret=${process.env.PAYLOAD_API_ROUTE_SECRET}`,
-      {
-        headers: {
-          host: rawHost,
+    try {
+      const controller = new AbortController();
+      timeoutId = setTimeout(() => controller.abort(), 5000);
+
+      const tenantLocales: TenantLocaleResponse | null = await fetchWrapper(
+        `${apiRoute}?host=${host}&secret=${process.env.PAYLOAD_API_ROUTE_SECRET}`,
+        {
+          headers: {
+            host: rawHost,
+          },
+          signal: controller.signal,
+          cache: 'no-store',
         },
-        signal: controller.signal,
-        cache: 'no-store',
-      },
-    );
+      );
 
-    if (
-      tenantLocales &&
-      tenantLocales.enabledLocales.length &&
-      tenantLocales.defaultLocale
-    ) {
-      locales = tenantLocales.enabledLocales;
-      defaultLocale = tenantLocales.defaultLocale;
-    } else {
-      console.warn(
-        '[Anti-Bot] No locales configured for tenant, falling back to defaults:',
+      setCachedTenantLocales(host, tenantLocales);
+
+      if (
+        tenantLocales &&
+        tenantLocales.enabledLocales.length &&
+        tenantLocales.defaultLocale
+      ) {
+        locales = tenantLocales.enabledLocales;
+        defaultLocale = tenantLocales.defaultLocale;
+      } else {
+        console.warn(
+          '[Anti-Bot] No locales configured for tenant, falling back to defaults:',
+          JSON.stringify({
+            url: request.url,
+            method: request.method,
+            host,
+            rawHost,
+            userAgent: request.headers.get('user-agent'),
+            referer: request.headers.get('referer'),
+            xForwardedFor: request.headers.get('x-forwarded-for'),
+          }),
+        );
+      }
+    } catch (error) {
+      // Cache the failure so we don't retry immediately
+      setCachedTenantLocales(host, null);
+
+      console.error(
+        '[Anti-Bot] Failed to fetch tenant locales:',
         JSON.stringify({
+          error: error instanceof Error ? error.message : String(error),
           url: request.url,
           method: request.method,
           host,
@@ -115,24 +195,10 @@ export async function middleware(request: NextRequest) {
           xForwardedFor: request.headers.get('x-forwarded-for'),
         }),
       );
-    }
-  } catch (error) {
-    console.error(
-      '[Anti-Bot] Failed to fetch tenant locales:',
-      JSON.stringify({
-        error: error instanceof Error ? error.message : String(error),
-        url: request.url,
-        method: request.method,
-        host,
-        rawHost,
-        userAgent: request.headers.get('user-agent'),
-        referer: request.headers.get('referer'),
-        xForwardedFor: request.headers.get('x-forwarded-for'),
-      }),
-    );
-  } finally {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
+    } finally {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
     }
   }
 
