@@ -3,7 +3,7 @@ name: Build and Push to DigitalOcean Registry
 on:
   push:
     branches:
-      - payload-integration # change after completion of payload integration back to main
+      - main
 
   workflow_dispatch:
 
