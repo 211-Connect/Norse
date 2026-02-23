@@ -6,6 +6,7 @@ import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import {
   findResources,
+  FindResourcesQueryParams,
   findResourcesV2,
 } from '@/app/(app)/shared/services/search-service';
 import { getCookies } from 'cookies-next/server';
@@ -18,15 +19,7 @@ import { isAdvancedGeoEnabled } from '@/app/(app)/shared/lib/search-utils';
 
 const i18nNamespaces = ['page-search', 'page-resource', 'common'];
 
-type SearchParams = {
-  location: string;
-  coords: string;
-  query: string;
-  query_label: string;
-  query_type: string;
-  page: string;
-  distance: string;
-};
+type SearchParams = FindResourcesQueryParams;
 
 const getPageData = cache(async function (
   locale: string,
@@ -34,7 +27,8 @@ const getPageData = cache(async function (
 ) {
   const appConfig = await getAppConfigWithoutHost(locale);
 
-  const { location, coords, query, query_label, distance, page } = searchParams;
+  const { location, coords, query, query_label, query_type, distance, page } =
+    searchParams;
 
   const limit = appConfig.search.resultsLimit;
 
@@ -50,7 +44,7 @@ const getPageData = cache(async function (
       const searchStore = {
         query: query || '',
         queryLabel: query_label || '',
-        queryType: query_label || '',
+        queryType: query_type || '',
         searchLocation: location || '',
         searchCoordinates:
           coords?.split(',').map(Number) || placeMetadata.coordinates,

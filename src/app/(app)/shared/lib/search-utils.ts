@@ -1,7 +1,7 @@
 import { bboxPolygon } from '@turf/bbox-polygon';
 import type { Polygon } from 'geojson';
 import { TaxonomyService } from '../services/taxonomy-service';
-import { BBox, Coordinates } from '@/types/resource';
+import { BBox } from '@/types/resource';
 import { FindResourcesQuery } from '../services/search-service';
 
 /**
@@ -152,11 +152,15 @@ export enum QueryType {
 }
 
 /**
- * Check if a string is a valid query type
+ * Fuzzy-match a raw string to a QueryType by checking if the string
+ * includes one of the known query type values.
+ * e.g. "textt" → QueryType.Text, "organization!" → QueryType.Organization
  */
-function isValidQueryType(type: string | undefined): type is QueryType {
-  if (!type) return false;
-  return Object.values(QueryType).includes(type as QueryType);
+function fuzzyMatchQueryType(type: string | undefined): QueryType | undefined {
+  if (!type) return undefined;
+  return Object.values(QueryType).find((qt) => type.includes(qt)) as
+    | QueryType
+    | undefined;
 }
 
 /**
@@ -193,10 +197,14 @@ export function deriveQueryType(
     }
   }
 
-  // Validate and use storedType if it's valid
+  // Validate and use storedType if it's valid, but never propagate 'taxonomy'
+  // from state — taxonomy must always be re-detected from the query above.
+  // Use fuzzy matching so slightly malformed values like "textt" or "organization!" still resolve.
   const trimmedType = storedType?.trim();
-  if (isValidQueryType(trimmedType)) {
-    return trimmedType as QueryType;
+  const resolvedType = fuzzyMatchQueryType(trimmedType);
+
+  if (resolvedType && resolvedType !== QueryType.Taxonomy) {
+    return resolvedType;
   }
 
   // Default to 'text' for keyword search
