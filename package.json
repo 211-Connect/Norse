@@ -101,7 +101,7 @@
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "tslib": "^2.8.1",
-    "twilio": "^4.23.0",
+    "twilio": "^5.12.2",
     "typescript": "^5.8.3",
     "ua-parser-js": "^1.0.40",
     "usehooks-ts": "^3.1.1",
