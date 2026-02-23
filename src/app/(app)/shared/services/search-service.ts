@@ -162,8 +162,18 @@ function createEmptyResult(page: number): SearchResult {
   };
 }
 
+export type FindResourcesQueryParams = {
+  location: string;
+  coords: string;
+  query: string;
+  query_label: string;
+  query_type: string;
+  page: string;
+  distance: string;
+};
+
 export async function findResources(
-  query: any,
+  query: FindResourcesQueryParams,
   locale: string,
   page: number,
   limit?: number,
