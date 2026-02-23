@@ -212,7 +212,7 @@ export function AddToFavoritesButton({
 
               {favoritesState.status === 'success' && (
                 <>
-                  {favoritesState.data.map((el) => {
+                  {favoritesState.data?.map((el) => {
                     return (
                       <Fragment key={el.id}>
                         <p className="col-span-2 text-sm">{el.name}</p>
