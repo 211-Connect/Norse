@@ -4,6 +4,9 @@ import { User } from '@/payload/payload-types';
 
 import { AdminUserData } from './types';
 import { upsert } from './upsert';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('seed');
 
 function createAdminUser(): AdminUserData {
   return {
@@ -14,7 +17,7 @@ function createAdminUser(): AdminUserData {
 }
 
 export async function addLocalAdmin(payload: Payload): Promise<User> {
-  console.log('Seed: Processing local admin user');
+  log.info('Processing local admin user');
 
   const adminData = createAdminUser();
 

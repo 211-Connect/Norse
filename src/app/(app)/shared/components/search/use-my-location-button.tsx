@@ -22,6 +22,9 @@ import {
 import { Button } from '../ui/button';
 import { deviceAtom } from '../../store/device';
 import { useAppConfig } from '../../hooks/use-app-config';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('use-my-location-button');
 
 export function UseMyLocationButton() {
   const appConfig = useAppConfig();
@@ -103,7 +106,7 @@ export function UseMyLocationButton() {
     };
 
     if (!navigator.geolocation) {
-      console.log('Geolocation is not supported by your browser');
+      log.warn('Geolocation is not supported by this browser');
       toast(t('search.geocoding_error'), {
         description: t('search.geocoding_unsupported'),
       });

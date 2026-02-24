@@ -5,6 +5,7 @@ import KeycloakProvider from 'next-auth/providers/keycloak';
 import { Tenant } from './payload/payload-types';
 import { fetchWrapper } from './app/(app)/shared/lib/fetchWrapper';
 import { isJwtExpired } from './utils/getJwtExpirationTime';
+import { createLogger } from './lib/logger';
 
 // Helper to remove null/undefined values from object
 const omitNilValues = <T extends Record<string, any>>(obj: T): Partial<T> => {
@@ -13,6 +14,7 @@ const omitNilValues = <T extends Record<string, any>>(obj: T): Partial<T> => {
   ) as Partial<T>;
 };
 
+const log = createLogger('auth');
 const isDebug = process.env.NEXTAUTH_DEBUG === 'true';
 
 export interface CreateAuthOptionsProps {
@@ -76,7 +78,7 @@ const createAuthOptions = ({
       }
 
       if (isJwtExpired(token.refreshToken)) {
-        console.warn('Refresh token has expired');
+        log.warn('Refresh token has expired');
         return { ...token, error: 'RefreshTokenExpired' };
       }
 
@@ -111,13 +113,13 @@ const createAuthOptions = ({
           error: undefined,
         };
       } catch (err: any) {
-        console.error('Error refreshing access token:', err);
+        log.error({ err }, 'Error refreshing access token');
 
         if (
           err.response?.status === 400 ||
           err.response?.data?.error === 'invalid_grant'
         ) {
-          console.log('Refresh token is invalid or expired');
+          log.warn('Refresh token is invalid or expired');
           return { ...token, error: 'RefreshTokenExpired' };
         }
 
@@ -128,11 +130,13 @@ const createAuthOptions = ({
   events: {
     signOut: async (message) => {
       if (!keycloak?.issuer) {
-        return console.error('Keycloak issuer not configured');
+        log.error('Keycloak issuer not configured');
+        return;
       }
 
       if (!message.token?.refreshToken) {
-        return console.error('No refresh token available for logout');
+        log.error('No refresh token available for logout');
+        return;
       }
 
       try {
@@ -154,7 +158,7 @@ const createAuthOptions = ({
           },
         );
       } catch (err) {
-        console.error('Error during Keycloak logout:', err);
+        log.error({ err }, 'Error during Keycloak logout');
         // Don't throw - allow NextAuth signOut to complete
       }
     },
@@ -197,13 +201,13 @@ const createAuthOptions = ({
     debug: true,
     logger: {
       error(code, metadata) {
-        console.error('[NextAuth][error]', code, metadata);
+        log.error({ code, metadata }, 'NextAuth error');
       },
       warn(code) {
-        console.warn('[NextAuth][warn]', code);
+        log.warn({ code }, 'NextAuth warning');
       },
       debug(code, metadata) {
-        console.debug('[NextAuth][debug]', code, metadata);
+        log.debug({ code, metadata }, 'NextAuth debug');
       },
     },
   }),

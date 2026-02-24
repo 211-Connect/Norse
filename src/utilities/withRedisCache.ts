@@ -1,4 +1,7 @@
 import { cacheService } from '@/cacheService';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('withRedisCache');
 
 type Seconds = number;
 const ONE_HOUR: Seconds = 60 * 60;
@@ -27,15 +30,15 @@ export const withRedisCache = async <T>(
       try {
         return JSON.parse(cachedValue);
       } catch (parseError) {
-        console.error(
-          `Failed to parse cached value for key ${key}:`,
-          parseError,
+        log.error(
+          { err: parseError, key },
+          'Failed to parse cached value; evicting key',
         );
         await cacheService.del(key);
       }
     }
   } catch (error) {
-    console.error(`Error reading from Redis cache for key ${key}:`, error);
+    log.error({ err: error, key }, 'Error reading from Redis cache');
   }
 
   const value = await fetchFunction();
@@ -44,7 +47,7 @@ export const withRedisCache = async <T>(
     try {
       await cacheService.set(key, JSON.stringify(value), CACHE_TTL);
     } catch (error) {
-      console.error(`Error writing to Redis cache for key ${key}:`, error);
+      log.error({ err: error, key }, 'Error writing to Redis cache');
     }
   }
 

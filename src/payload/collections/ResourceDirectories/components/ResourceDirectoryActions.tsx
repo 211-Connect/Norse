@@ -4,6 +4,9 @@ import React, { useState } from 'react';
 import { toast, Button, useField } from '@payloadcms/ui';
 import { getTenantTrustedDomain } from '../../Tenants/actions/getTenantTrustedDomain';
 import { TranslateButton } from './TranslateButton';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('resource-directory-actions');
 
 const ResourceDirectoryActions: React.FC = () => {
   const [isLoadingWebpage, setIsLoadingWebpage] = useState(false);
@@ -23,7 +26,7 @@ const ResourceDirectoryActions: React.FC = () => {
         toast.error('No trusted domain configured for this tenant');
       }
     } catch (error) {
-      console.error('Error fetching trusted domain:', error);
+      log.error({ err: error }, 'Error fetching trusted domain');
       toast.error('Failed to load webpage URL');
     } finally {
       setIsLoadingWebpage(false);

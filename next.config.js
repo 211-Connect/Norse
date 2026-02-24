@@ -51,6 +51,10 @@ const nextConfig = {
     webpackBuildWorker: true,
     preloadEntriesOnStart: false,
   },
+  // Do not bundle pino/pino-pretty for server — use native require() at
+  // runtime. This avoids pino.transport() worker threads resolving paths
+  // inside the .next/server/vendor-chunks/ directory.
+  serverExternalPackages: ['pino', 'pino-pretty'],
   // Disable source maps in production to save memory
   productionBrowserSourceMaps: false,
   webpack: (
@@ -69,6 +73,17 @@ const nextConfig = {
     config.module = config.module || {};
     config.module.unknownContextCritical = false;
     config.module.exprContextCritical = false;
+
+    // pino-pretty → pino-abstract-transport → worker_threads (Node.js built-in).
+    // Aliasing to false replaces it with an empty module in the browser bundle,
+    // preventing the "Can't resolve 'worker_threads'" error in client components
+    // that import from src/lib/logger.ts.
+    if (!isServer) {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        'pino-pretty': false,
+      };
+    }
 
     return config;
   },

@@ -2,6 +2,9 @@ import { Tenant } from '@/payload/payload-types';
 import { apiConfigCacheService } from '@/cacheService';
 import { getRealmIdKey } from '../utilities/getRealmIdKey';
 import { CollectionAfterChangeHook } from 'payload';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('pushRealmIdToCache');
 
 export const pushRealmIdToCache: CollectionAfterChangeHook<Tenant> = async ({
   doc,
@@ -9,9 +12,7 @@ export const pushRealmIdToCache: CollectionAfterChangeHook<Tenant> = async ({
   const tenantId = doc.id;
 
   if (typeof tenantId !== 'string') {
-    console.warn(
-      `[pushRealmIdToCache] Invalid tenant ID: ${tenantId}. Skipping cache update.`,
-    );
+    log.warn({ tenantId }, 'Invalid tenant ID; skipping realmId cache update');
     return doc;
   }
 
@@ -21,29 +22,22 @@ export const pushRealmIdToCache: CollectionAfterChangeHook<Tenant> = async ({
       const realmId = doc.auth?.realmId;
 
       if (!realmId) {
-        console.warn(
-          `[pushRealmIdToCache] No realmId found for tenant ID: ${tenantId}`,
-        );
+        log.warn({ tenantId }, 'No realmId found; skipping cache update');
         return;
       }
 
       const cacheKey = getRealmIdKey(tenantId);
       await apiConfigCacheService.set(cacheKey, realmId);
 
-      console.log(
-        `[pushRealmIdToCache] ✓ Pushed realmId for tenant ${tenantId}: ${realmId}`,
-      );
+      log.info({ tenantId }, 'realmId cache updated');
     } catch (error) {
-      console.error(
-        `[pushRealmIdToCache] Error pushing realmId to cache:`,
-        error,
-      );
+      log.error({ err: error, tenantId }, 'Error pushing realmId to cache');
     }
   };
 
   // Execute without awaiting to avoid blocking the transaction
   cacheOperation().catch((err) => {
-    console.error('[pushRealmIdToCache] Unhandled cache error:', err);
+    log.error({ err, tenantId }, 'Unhandled cache error in pushRealmIdToCache');
   });
 
   return doc;

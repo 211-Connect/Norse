@@ -9,6 +9,9 @@ import {
 } from 'react';
 import { useLocale } from '@payloadcms/ui';
 import { getEnglishData } from '../actions/getEnglishData';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('english-data-context');
 
 interface EnglishDataContextType {
   englishData: Record<string, string>;
@@ -41,7 +44,7 @@ export const EnglishDataProvider = ({
       const englishMap = await getEnglishData(resourceDirectoryId);
       setEnglishData(englishMap);
     } catch (error) {
-      console.error('Failed to fetch English data:', error);
+      log.error({ err: error }, 'Failed to fetch English data');
     } finally {
       setLoading(false);
     }

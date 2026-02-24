@@ -1,6 +1,9 @@
 import { Endpoint } from 'payload';
 import { addLocalAdmin } from './admin';
 import { addTenants } from './tenants';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('seed');
 
 export const seedEndpoint: Endpoint = {
   path: '/seed',
@@ -19,7 +22,7 @@ export const seedEndpoint: Endpoint = {
     try {
       await addTenants(payload, requestedTenants);
     } catch (error) {
-      console.error('Error during seeding:', error);
+      log.error({ err: error }, 'Error during seeding');
       throw error;
     }
 
@@ -34,7 +37,7 @@ export const addLocalAdminEndpoint: Endpoint = {
     try {
       await addLocalAdmin(payload);
     } catch (error) {
-      console.error('Error adding local admin:', error);
+      log.error({ err: error }, 'Error adding local admin');
       throw error;
     }
 

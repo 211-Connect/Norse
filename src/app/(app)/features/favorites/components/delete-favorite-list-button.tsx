@@ -17,6 +17,9 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('delete-favorite-list-button');
 
 export function DeleteFavoriteListButton({ id, name }) {
   const appConfig = useAppConfig();
@@ -45,7 +48,7 @@ export function DeleteFavoriteListButton({ id, name }) {
         router.refresh();
       }
     } catch (err) {
-      console.log(err);
+      log.error({ err }, 'Failed to delete favorite list');
 
       toast.error(t('message.error'), {
         description: t('message.list_not_deleted_error'),

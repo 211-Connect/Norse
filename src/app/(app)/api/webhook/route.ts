@@ -4,6 +4,9 @@ import { cookies } from 'next/headers';
 import { getCookie } from 'cookies-next/server';
 import { SESSION_ID } from '@/app/(app)/shared/lib/constants';
 import { fetchWrapper } from '@/app/(app)/shared/lib/fetchWrapper';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('webhook');
 
 const bodySchema = z.object({
   message: z.string(),
@@ -24,13 +27,13 @@ export async function POST(request: Request) {
   let body: any = {};
   try {
     body = await request.json();
-    console.log('Webhook received payload:', JSON.stringify(body, null, 2));
+    log.debug({ body }, 'Webhook received');
 
     const validated = await bodySchema.parseAsync(body);
 
-    console.log(
-      'Webhook validated payload:',
-      JSON.stringify(validated, null, 2),
+    log.debug(
+      { tenantHostname: validated.hostname },
+      'Webhook payload validated',
     );
 
     await fetchWrapper(`${process.env.WEBHOOK_ALERT_URL}`, {
@@ -59,12 +62,15 @@ export async function POST(request: Request) {
       },
     });
 
-    console.log('Successfully sent webhook to Discord');
+    log.info({ hostname: validated.hostname }, 'Webhook forwarded to Discord');
   } catch (error: any) {
-    console.error('Webhook error:', error);
+    log.error({ err: error }, 'Webhook handler error');
 
     if (error instanceof z.ZodError) {
-      console.error('Zod validation failed:', error.errors);
+      log.warn(
+        { errors: error.errors },
+        'Webhook Zod validation failed; sending fallback',
+      );
 
       try {
         await fetchWrapper(`${process.env.WEBHOOK_ALERT_URL}`, {
@@ -84,12 +90,12 @@ export async function POST(request: Request) {
             ],
           },
         });
-        console.log('Sent fallback webhook to Discord');
+        log.info('Fallback webhook sent to Discord');
       } catch (fallbackError) {
-        console.error('Failed to send fallback webhook:', fallbackError);
+        log.error({ err: fallbackError }, 'Failed to send fallback webhook');
       }
     } else {
-      console.error('Non-Zod error in webhook:', error);
+      log.error({ err: error }, 'Non-Zod error in webhook handler');
     }
   }
 

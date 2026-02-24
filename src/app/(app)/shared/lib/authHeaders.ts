@@ -1,6 +1,9 @@
 import { cookies } from 'next/headers';
 import { SESSION_ID } from './constants';
 import { getSession } from '../utils/getServerSession';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('authHeaders');
 
 export async function getAuthHeaders(tenantId?: string): Promise<HeadersInit> {
   const session = await getSession();
@@ -8,8 +11,8 @@ export async function getAuthHeaders(tenantId?: string): Promise<HeadersInit> {
   // If token refresh failed completely, session will have an error
   // We don't sign out here - let the client handle it
   if (session?.error === 'RefreshTokenExpired') {
-    console.warn(
-      'Session has expired refresh token - client should re-authenticate',
+    log.warn(
+      'Session has expired refresh token; client should re-authenticate',
     );
   }
 

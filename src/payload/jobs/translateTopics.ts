@@ -4,6 +4,7 @@ import { batchTranslate } from '../services/translationService';
 import { retry } from 'radash';
 import { assertValidLocale } from '../i18n/locales';
 import { isEmpty } from '../utilities/isEmpty';
+import { createLogger } from '@/lib/logger';
 
 interface FieldToTranslate {
   path: string; // e.g., "backText", "list.0.name", "list.0.subtopics.1.name"
@@ -13,6 +14,8 @@ interface FieldToTranslate {
 
 const BATCH_SIZE_AZURE = 100;
 const BATCH_SIZE_GOOGLE = 128;
+
+const log = createLogger('translateTopics');
 
 export const translateTopics: TaskConfig<'translateTopics'> = {
   slug: 'translateTopics',
@@ -66,16 +69,13 @@ export const translateTopics: TaskConfig<'translateTopics'> = {
       return locale;
     });
 
-    console.log('[translateTopics] Handler started', {
-      jobId: job.id,
-      tenantId,
-      locales,
-      engine,
-      force,
-    });
+    log.info(
+      { jobId: job.id, tenantId, locales, engine, force },
+      'Handler started',
+    );
 
     try {
-      console.log('[translateTopics] Fetching resource directory:', tenantId);
+      log.debug({ tenantId }, 'Fetching English resource directory');
       const resourceDirectory = await payload.findByID({
         collection: 'resource-directories',
         id: tenantId,
@@ -83,16 +83,11 @@ export const translateTopics: TaskConfig<'translateTopics'> = {
       });
 
       if (!resourceDirectory) {
-        console.error(
-          '[translateTopics] Resource directory not found:',
-          tenantId,
-        );
+        log.error({ tenantId }, 'Resource directory not found');
         throw new Error(`Resource directory not found: ${tenantId}`);
       }
 
-      console.log(
-        '[translateTopics] Resource directory found, collecting fields...',
-      );
+      log.debug({ tenantId }, 'Resource directory found; collecting fields');
 
       const fieldsToTranslate: FieldToTranslate[] = [];
 
@@ -166,19 +161,23 @@ export const translateTopics: TaskConfig<'translateTopics'> = {
 
       const totalFields = fieldsToTranslate.length;
 
-      console.log('[translateTopics] Fields collected:', {
-        totalFields,
-        fieldsBreakdown: fieldsToTranslate.reduce<Record<string, number>>(
-          (acc, field) => {
-            acc[field.locale] = (acc[field.locale] || 0) + 1;
-            return acc;
-          },
-          {},
-        ),
-      });
+      log.debug(
+        {
+          tenantId,
+          totalFields,
+          fieldsByLocale: fieldsToTranslate.reduce<Record<string, number>>(
+            (acc, field) => {
+              acc[field.locale] = (acc[field.locale] || 0) + 1;
+              return acc;
+            },
+            {},
+          ),
+        },
+        'Fields collected',
+      );
 
       if (totalFields === 0) {
-        console.log('[translateTopics] No fields to translate');
+        log.info({ tenantId }, 'No fields to translate');
         return {
           output: {
             success: true,
@@ -191,21 +190,22 @@ export const translateTopics: TaskConfig<'translateTopics'> = {
         engine === 'azure' ? BATCH_SIZE_AZURE : BATCH_SIZE_GOOGLE;
       let processedCount = 0;
 
-      console.log('[translateTopics] Starting batch processing', {
-        totalFields,
-        batchSize,
-        engine,
-      });
+      log.info(
+        { tenantId, totalFields, batchSize, engine },
+        'Starting batch processing',
+      );
 
       for (let i = 0; i < fieldsToTranslate.length; i += batchSize) {
         const batch = fieldsToTranslate.slice(i, i + batchSize);
 
-        console.log(
-          `[translateTopics] Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(totalFields / batchSize)}`,
+        log.debug(
           {
-            batchSize: batch.length,
+            tenantId,
+            batch: Math.floor(i / batchSize) + 1,
+            totalBatches: Math.ceil(totalFields / batchSize),
             progress: `${i + batch.length}/${totalFields}`,
           },
+          'Processing batch',
         );
 
         const translations = await retry(
@@ -292,14 +292,13 @@ export const translateTopics: TaskConfig<'translateTopics'> = {
         }
 
         processedCount += batch.length;
-        console.log(
-          `[translateTopics] Batch completed. Total processed: ${processedCount}/${totalFields}`,
-        );
+        log.debug({ tenantId, processedCount, totalFields }, 'Batch completed');
       }
 
-      console.log('[translateTopics] Translation completed successfully', {
-        totalTranslated: processedCount,
-      });
+      log.info(
+        { tenantId, translated: processedCount },
+        'Translation completed',
+      );
 
       return {
         output: {
@@ -308,11 +307,10 @@ export const translateTopics: TaskConfig<'translateTopics'> = {
         },
       };
     } catch (error) {
-      console.error('[translateTopics] Error during translation:', {
-        error: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined,
-        jobId: job.id,
-      });
+      log.error(
+        { err: error, tenantId, jobId: job.id },
+        'Translation handler failed',
+      );
       throw error;
     }
   },

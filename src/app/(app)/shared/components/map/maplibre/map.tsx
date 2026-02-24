@@ -8,6 +8,9 @@ import mapLibreGl, {
   Popup,
 } from 'maplibre-gl';
 import { MAPLIBRE_STYLE_URL } from '@/app/(app)/shared/lib/constants';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('maplibre');
 import { Protocol } from 'pmtiles';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import {
@@ -63,13 +66,13 @@ export function Map({
       });
 
       mapLibreMap.current.on('error', (e: any) => {
-        console.error('MapLibre error:', e);
+        log.error({ err: e.error ?? e }, 'MapLibre error');
         if (e.error?.message?.includes('WebGL')) {
           setMapError('WebGL is not supported on this device');
         }
       });
     } catch (error: any) {
-      console.error('Failed to initialize map:', error);
+      log.error({ err: error }, 'Failed to initialize MapLibre map');
       setMapError(
         error.message?.includes('WebGL')
           ? 'WebGL is not supported on this device'

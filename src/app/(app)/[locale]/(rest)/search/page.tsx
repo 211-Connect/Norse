@@ -16,6 +16,9 @@ import { cache } from 'react';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { forwardGeocode } from '@/app/(app)/shared/serverActions/geocoding/forwardGeocode';
 import { isAdvancedGeoEnabled } from '@/app/(app)/shared/lib/search-utils';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('search-page');
 
 const i18nNamespaces = ['page-search', 'page-resource', 'common'];
 
@@ -64,9 +67,9 @@ const getPageData = cache(async function (
         ));
         useFindResourcesV2 = true;
       } catch (error) {
-        console.error(
-          'Geospatial search failed, falling back to legacy:',
-          error,
+        log.error(
+          { err: error },
+          'Geospatial search failed; falling back to legacy',
         );
       }
     }

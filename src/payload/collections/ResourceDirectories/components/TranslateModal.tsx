@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Button, toast, Modal, useModal } from '@payloadcms/ui';
 import { TaskTranslate } from '@/payload/payload-types';
-import { fetchWrapper } from '@/app/(app)/shared/lib/fetchWrapper';
+import { fetchWrapper } from '@/app/(app)/shared/lib/fetchWrapper';\nimport { createLogger } from '@/lib/logger';\n\nconst log = createLogger('translate-modal');
 
 interface TranslateModalProps {
   resourceDirectoryId: string;
@@ -77,7 +77,7 @@ export const TranslateModal: React.FC<TranslateModalProps> = ({
         throw new Error('Failed to start translation job');
       }
     } catch (error) {
-      console.error('Translation error:', error);
+      log.error({ err: error }, 'Translation error');
       toast.error(
         error instanceof Error
           ? error.message

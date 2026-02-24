@@ -1,4 +1,7 @@
 import { PayloadRequest } from 'payload';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('removeRelatedResources');
 
 export const removeRelatedResources = async ({
   req,
@@ -9,7 +12,7 @@ export const removeRelatedResources = async ({
 }): Promise<void> => {
   const { payload } = req;
 
-  console.log(`🗑️ Usuwam tenant ${id} i powiązane dane...`);
+  log.info({ tenantId: id }, 'Deleting tenant and related data');
 
   const resourceDirs = await payload.find({
     collection: 'resource-directories',
@@ -26,7 +29,10 @@ export const removeRelatedResources = async ({
       collection: 'resource-directories',
       id: doc.id,
     });
-    console.log(`✅ Usunięto resource directory: ${doc.id}`);
+    log.info(
+      { tenantId: id, resourceDirectoryId: doc.id },
+      'Resource directory deleted',
+    );
   }
 
   const media = await payload.find({
@@ -44,8 +50,8 @@ export const removeRelatedResources = async ({
       collection: 'tenant-media',
       id: file.id,
     });
-    console.log(`✅ Usunięto media: ${file.id}`);
+    log.info({ tenantId: id, mediaId: file.id }, 'Media deleted');
   }
 
-  console.log(`✅ Tenant ${id} i powiązane dane usunięte`);
+  log.info({ tenantId: id }, 'Tenant and related data deleted');
 };

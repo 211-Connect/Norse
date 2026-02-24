@@ -10,6 +10,46 @@ import { fetchWrapper } from './app/(app)/shared/lib/fetchWrapper';
 
 const DOMAINS_WITH_CSP = ['localhost', 'therc.vdh.virginia.gov'];
 
+/**
+ * Minimal structured-JSON logger for Edge Runtime where pino cannot be used.
+ * Emits the same top-level fields as the production pino output so log
+ * aggregators (Loki / OpenSearch) can parse both sources uniformly.
+ */
+const EDGE_LEVELS: Record<string, number> = {
+  trace: 10,
+  debug: 20,
+  info: 30,
+  warn: 40,
+  error: 50,
+  fatal: 60,
+};
+const _isDev = process.env.NODE_ENV === 'development';
+const _configuredLevel =
+  EDGE_LEVELS[
+    process.env.NEXT_PUBLIC_LOG_LEVEL ?? (_isDev ? 'debug' : 'info')
+  ] ?? EDGE_LEVELS.info;
+
+function edgeLog(
+  level: 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal',
+  event: string,
+  data?: Record<string, unknown>,
+) {
+  if (EDGE_LEVELS[level] < _configuredLevel) return;
+
+  const entry = JSON.stringify({
+    level,
+    module: 'middleware',
+    event,
+    time: new Date().toISOString(),
+    env: process.env.NODE_ENV,
+    ...data,
+  });
+  if (level === 'error' || level === 'fatal') console.error(entry);
+  else if (level === 'warn') console.warn(entry);
+  else if (level === 'debug' || level === 'trace') console.debug(entry);
+  else console.log(entry);
+}
+
 const LOCALE_CACHE_TTL_MS = 10 * 60 * 1000;
 const LOCALE_CACHE_MAX_ENTRIES = 1_000;
 
@@ -165,27 +205,7 @@ export async function middleware(request: NextRequest) {
         locales = tenantLocales.enabledLocales;
         defaultLocale = tenantLocales.defaultLocale;
       } else {
-        console.warn(
-          '[Anti-Bot] No locales configured for tenant, falling back to defaults:',
-          JSON.stringify({
-            url: request.url,
-            method: request.method,
-            host,
-            rawHost,
-            userAgent: request.headers.get('user-agent'),
-            referer: request.headers.get('referer'),
-            xForwardedFor: request.headers.get('x-forwarded-for'),
-          }),
-        );
-      }
-    } catch (error) {
-      // Cache the failure so we don't retry immediately
-      setCachedTenantLocales(host, null);
-
-      console.error(
-        '[Anti-Bot] Failed to fetch tenant locales:',
-        JSON.stringify({
-          error: error instanceof Error ? error.message : String(error),
+        edgeLog('warn', 'tenant_locales_not_configured', {
           url: request.url,
           method: request.method,
           host,
@@ -193,8 +213,22 @@ export async function middleware(request: NextRequest) {
           userAgent: request.headers.get('user-agent'),
           referer: request.headers.get('referer'),
           xForwardedFor: request.headers.get('x-forwarded-for'),
-        }),
-      );
+        });
+      }
+    } catch (error) {
+      // Cache the failure so we don't retry immediately
+      setCachedTenantLocales(host, null);
+
+      edgeLog('error', 'tenant_locales_fetch_failed', {
+        error: error instanceof Error ? error.message : String(error),
+        url: request.url,
+        method: request.method,
+        host,
+        rawHost,
+        userAgent: request.headers.get('user-agent'),
+        referer: request.headers.get('referer'),
+        xForwardedFor: request.headers.get('x-forwarded-for'),
+      });
     } finally {
       if (timeoutId) {
         clearTimeout(timeoutId);

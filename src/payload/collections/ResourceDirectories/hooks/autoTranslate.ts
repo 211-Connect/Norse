@@ -2,6 +2,9 @@ import { CollectionAfterChangeHook } from 'payload';
 import { get } from 'radash';
 import { getChangedLocalizedPaths } from '@/payload/utilities/getChangedLocalizedPaths';
 import { ResourceDirectory } from '@/payload/payload-types';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('autoTranslate');
 
 export const autoTranslate: CollectionAfterChangeHook<
   ResourceDirectory
@@ -17,23 +20,19 @@ export const autoTranslate: CollectionAfterChangeHook<
   const { payload } = req;
 
   try {
-    console.log('[autoTranslate] ========================================');
-    console.log('[autoTranslate] Resource Directory ID:', doc.id);
+    log.debug({ docId: doc.id }, 'autoTranslate hook triggered');
 
     const changedPaths = getChangedLocalizedPaths(previousDoc, doc);
-    console.log('[autoTranslate] Changed paths:', changedPaths);
 
     if (!changedPaths.length) {
-      console.log('[autoTranslate] No changes detected in localized fields');
-      console.log('[autoTranslate] ========================================');
+      log.debug({ docId: doc.id }, 'No changes in localized fields; skipping');
       return doc;
     }
 
     const tenant = typeof doc.tenant === 'string' ? doc.tenant : doc.tenant?.id;
 
     if (!tenant) {
-      console.log('[autoTranslate] No tenant associated with document');
-      console.log('[autoTranslate] ========================================');
+      log.warn({ docId: doc.id }, 'No tenant associated; skipping translation');
       return doc;
     }
 
@@ -47,8 +46,10 @@ export const autoTranslate: CollectionAfterChangeHook<
     );
 
     if (targetLocales.length === 0) {
-      console.log('[autoTranslate] No target locales enabled for translation');
-      console.log('[autoTranslate] ========================================');
+      log.info(
+        { docId: doc.id, tenantId: tenant },
+        'No target locales for translation; skipping',
+      );
       return doc;
     }
 
@@ -107,11 +108,15 @@ export const autoTranslate: CollectionAfterChangeHook<
       }
     });
 
-    console.log('[autoTranslate] Target locales:', targetLocales);
-    console.log('[autoTranslate] Changed Paths:', changedPaths);
-    console.log(
-      '[autoTranslate] Changed Item IDs:',
-      Array.from(changedItemIds),
+    log.debug(
+      {
+        docId: doc.id,
+        tenantId: tenant,
+        targetLocales,
+        changedPaths,
+        changedItemIds: Array.from(changedItemIds),
+      },
+      'Queuing translation job',
     );
 
     const changedItemIdsArray = Array.from(changedItemIds).map((id) => ({
@@ -130,21 +135,22 @@ export const autoTranslate: CollectionAfterChangeHook<
       queue: 'translation',
     });
 
-    console.log('[autoTranslate] Translation job queued:', `Job ${job.id}`);
-    console.log('[autoTranslate] Will translate items:', changedItemIdsArray);
-    console.log('[autoTranslate] ========================================');
-  } catch (error) {
-    // Log error but don't throw - translation failures shouldn't block saves
-    console.error('[autoTranslate] ===== ERROR =====');
-    console.error('[autoTranslate] Failed to queue translation job:', {
-      error: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined,
-      documentId: doc.id,
-    });
-    console.error(
-      '[autoTranslate] Document save will proceed despite translation error',
+    log.info(
+      {
+        jobId: job.id,
+        docId: doc.id,
+        tenantId: tenant,
+        localeCount: targetLocales.length,
+        itemCount: changedItemIdsArray.length,
+      },
+      'Translation job queued',
     );
-    console.error('[autoTranslate] ====================');
+  } catch (error) {
+    // Don't throw — translation failures should not block document saves
+    log.error(
+      { err: error, docId: doc.id },
+      'Failed to queue translation job; document save continues',
+    );
   }
 
   return doc;

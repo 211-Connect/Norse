@@ -4,6 +4,9 @@ import { findTenantById } from '../../Tenants/actions';
 import { buildFacetsCache } from '../utilities/buildFacetsCache';
 import { getFacetsKey } from '../utilities/getFacetsKey';
 import { CollectionAfterChangeHook } from 'payload';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('pushFacetsToCache');
 
 export const pushFacetsToCache: CollectionAfterChangeHook<
   ResourceDirectory
@@ -11,9 +14,7 @@ export const pushFacetsToCache: CollectionAfterChangeHook<
   const tenantId = typeof doc.tenant === 'string' ? doc.tenant : doc.tenant?.id;
 
   if (typeof tenantId !== 'string') {
-    console.warn(
-      `[pushFacetsToCache] Invalid tenant ID: ${tenantId}. Skipping cache update.`,
-    );
+    log.warn({ tenantId }, 'Invalid tenant ID; skipping facets cache update');
     return doc;
   }
 
@@ -21,8 +22,9 @@ export const pushFacetsToCache: CollectionAfterChangeHook<
     const tenant = await findTenantById(tenantId);
 
     if (!tenant?.enabledLocales) {
-      console.warn(
-        `[pushFacetsToCache] No tenant or enabled locales found for tenant ID: ${tenantId}`,
+      log.warn(
+        { tenantId },
+        'No tenant or enabled locales found; skipping facets cache update',
       );
       return doc;
     }
@@ -38,18 +40,22 @@ export const pushFacetsToCache: CollectionAfterChangeHook<
     );
 
     if (!facetsCache) {
-      console.log(`[pushFacetsToCache] No facets found for tenant ${tenantId}`);
+      log.info(
+        { tenantId },
+        'No facets found for tenant; skipping cache update',
+      );
       return doc;
     }
 
     const cacheKey = getFacetsKey(tenantId);
     await apiConfigCacheService.set(cacheKey, JSON.stringify(facetsCache));
 
-    console.log(
-      `[pushFacetsToCache] ✓ Pushed ${facetsCache.facets.length} facet(s) for tenant ${tenantId}`,
+    log.info(
+      { tenantId, facetCount: facetsCache.facets.length },
+      'Facets cache updated',
     );
   } catch (error) {
-    console.error(`[pushFacetsToCache] Error pushing facets to cache:`, error);
+    log.error({ err: error, tenantId }, 'Error pushing facets to cache');
   }
 
   return doc;

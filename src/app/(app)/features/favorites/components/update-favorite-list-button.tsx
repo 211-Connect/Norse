@@ -20,6 +20,9 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('update-favorite-list-button');
 
 export function UpdateFavoriteListButton({ id, name, description, privacy }) {
   const appConfig = useAppConfig();
@@ -45,7 +48,7 @@ export function UpdateFavoriteListButton({ id, name, description, privacy }) {
 
       router.refresh();
     } catch (err) {
-      console.log(err);
+      log.error({ err }, 'Failed to update favorite list');
 
       toast.error(t('favorites.unable_to_update_list'), {
         description: t('favorites.unable_to_update_list_message'),

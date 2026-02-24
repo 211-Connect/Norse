@@ -1,3 +1,7 @@
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('getJwtExpirationTime');
+
 export const isJwtExpired = (jwt: string): boolean | null => {
   try {
     const refreshTokenPayload = JSON.parse(
@@ -11,7 +15,7 @@ export const isJwtExpired = (jwt: string): boolean | null => {
       return true;
     }
   } catch (err) {
-    console.error('Error parsing refresh token:', err);
+    log.error({ err }, 'Error parsing refresh token');
     return true;
   }
 

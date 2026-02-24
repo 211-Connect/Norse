@@ -6,6 +6,9 @@ import type {
 } from '@/types/customAttributes';
 import type { OrchestrationConfig } from '@/payload/payload-types';
 import { assertValidLocale } from '@/payload/i18n/locales';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('buildOrchestrationConfigCache');
 
 /**
  * Builds orchestration config cache structure for a specific tenant
@@ -41,8 +44,9 @@ export async function buildOrchestrationConfigCache(
             .then((result) => result.docs[0] || null);
 
     if (!orchestrationConfig) {
-      console.warn(
-        `[buildOrchestrationConfigCache] No orchestration config found for tenant ID: ${tenantId}, locale: ${locale}`,
+      log.warn(
+        { tenantId, locale },
+        'No orchestration config found; skipping locale',
       );
       continue;
     }
@@ -51,8 +55,9 @@ export async function buildOrchestrationConfigCache(
 
     for (const schema of schemas) {
       if (!schema.schemaName || !schema.customAttributes) {
-        console.warn(
-          `[buildOrchestrationConfigCache] Invalid schema entry for tenant ID: ${tenantId}, locale: ${locale}. Skipping.`,
+        log.warn(
+          { tenantId, locale },
+          'Invalid schema entry (missing schemaName or customAttributes); skipping',
         );
         continue;
       }

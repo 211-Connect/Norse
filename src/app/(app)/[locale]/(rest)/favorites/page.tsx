@@ -10,6 +10,9 @@ import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { getSession } from '@/app/(app)/shared/utils/getServerSession';
 import { getFavoriteLists } from '@/app/(app)/shared/serverActions/favorites/getFavoriteLists';
 import { FavoritesPageProps } from '@/types/favorites';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('favorites-page');
 
 const i18nNamespaces = ['page-favorites', 'common'];
 
@@ -65,7 +68,7 @@ export default async function FavoritesPage({
       Number(limitParam) || 10,
       searchParam || '',
     ).catch((err) => {
-      console.error(err);
+      log.error({ err }, 'Error fetching favorite lists');
       return { data: [], totalCount: 0 };
     });
 

@@ -7,6 +7,9 @@ import {
 } from '../../lib/constants';
 import { getAuthHeaders } from '../../lib/authHeaders';
 import { fetchWrapper } from '../../lib/fetchWrapper';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('addToFavoriteList');
 
 export const addToFavoriteList = async (
   {
@@ -37,22 +40,10 @@ export const addToFavoriteList = async (
     favoriteListId: favoriteListId,
   };
 
-  console.log('--- addToFavoriteList Request ---');
-  console.log('URL:', url);
-  console.log('Method: POST');
-  console.log(
-    'Headers:',
-    JSON.stringify(
-      {
-        ...headers,
-        Authorization: headers['Authorization'] ? 'Bearer ***' : undefined,
-        'x-api-key': '***',
-      },
-      null,
-      2,
-    ),
+  log.debug(
+    { url, resourceId, favoriteListId, tenantId },
+    'addToFavoriteList request',
   );
-  console.log('Body:', JSON.stringify(body, null, 2));
 
   try {
     const response = await fetchWrapper<any>(url, {
@@ -61,13 +52,16 @@ export const addToFavoriteList = async (
       body,
       cache: 'no-store',
     });
-    console.log('--- addToFavoriteList Response ---');
-    console.log('Status: Success');
+    log.debug(
+      { resourceId, favoriteListId, tenantId },
+      'addToFavoriteList succeeded',
+    );
     return response;
   } catch (error: any) {
-    console.error('--- addToFavoriteList Error ---');
-    console.error('Status:', error.response?.status);
-    console.error('Error Body:', error.response?.data || error.message);
+    log.error(
+      { err: error, status: error.response?.status, tenantId },
+      'addToFavoriteList failed',
+    );
     if (error.response?.status === 409) {
       return null;
     }

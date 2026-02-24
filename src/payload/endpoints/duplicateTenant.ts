@@ -3,6 +3,9 @@ import { isSuperAdmin } from '../collections/Users/access/roles';
 import { generateRandomKey } from '../utilities';
 import { randomUUID } from 'crypto';
 import { ResourceDirectory, Tenant } from '../payload-types';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('duplicateTenant');
 
 /**
  * Recursively regenerate all id fields in nested objects and arrays.
@@ -153,7 +156,7 @@ export const duplicateTenant: Endpoint = {
         { status: 200 },
       );
     } catch (error) {
-      console.error('Error duplicating tenant:', error);
+      log.error({ err: error }, 'Error duplicating tenant');
       return Response.json(
         {
           error: 'Failed to duplicate tenant',
