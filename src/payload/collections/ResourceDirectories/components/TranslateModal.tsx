@@ -3,7 +3,10 @@
 import React, { useState } from 'react';
 import { Button, toast, Modal, useModal } from '@payloadcms/ui';
 import { TaskTranslate } from '@/payload/payload-types';
-import { fetchWrapper } from '@/app/(app)/shared/lib/fetchWrapper';\nimport { createLogger } from '@/lib/logger';\n\nconst log = createLogger('translate-modal');
+import { fetchWrapper } from '@/app/(app)/shared/lib/fetchWrapper';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('translate-modal');
 
 interface TranslateModalProps {
   resourceDirectoryId: string;
