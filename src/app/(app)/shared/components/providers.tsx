@@ -1,6 +1,7 @@
 'use client';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import NextTopLoader from 'nextjs-toploader';
 
 import { AppConfigProvider } from '../context/app-config-provider';
 import { PageView } from './page-view';
@@ -18,6 +19,7 @@ export function Providers({ appConfig, children, session }) {
       <QueryClientProvider client={queryClient}>
         <AppConfigProvider value={appConfig}>
           <PrevUrlProvider>
+            <NextTopLoader color="hsl(var(--primary))" height={2} />
             <PageView />
             {children}
           </PrevUrlProvider>
