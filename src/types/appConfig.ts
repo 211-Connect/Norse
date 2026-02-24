@@ -99,6 +99,7 @@ export type AppConfig = {
       value?: number;
     }[];
     defaultRadius?: number;
+    hybridSemanticSearchEnabled: boolean;
     resultsLimit: number;
     texts?: {
       title?: string;

@@ -64,6 +64,15 @@ export const search: Tab = {
       name: 'searchSettings',
       fields: [
         {
+          name: 'hybridSemanticSearchEnabled',
+          type: 'checkbox',
+          defaultValue: false,
+          access: {
+            create: hasSearchFieldAccess,
+            update: hasSearchFieldAccess,
+          },
+        },
+        {
           name: 'resultsLimit',
           type: 'number',
           defaultValue: 25,

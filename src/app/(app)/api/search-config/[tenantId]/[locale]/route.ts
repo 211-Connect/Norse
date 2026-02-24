@@ -76,6 +76,9 @@ export async function GET(
             ) ?? [],
           defaultRadius:
             resourceDirectory.search.searchSettings.defaultRadius ?? 10,
+          hybridSemanticSearchEnabled:
+            resourceDirectory.search.searchSettings
+              .hybridSemanticSearchEnabled ?? false,
           suggestions: resourceDirectory.suggestions,
           subtopics,
         };

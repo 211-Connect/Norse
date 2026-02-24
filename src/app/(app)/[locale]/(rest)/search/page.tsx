@@ -54,6 +54,8 @@ const getPageData = cache(async function (
         searchDistance: distance || '0',
         searchPlaceType: placeMetadata.place_type,
         searchBbox: placeMetadata.bbox,
+        hybridSemanticSearchEnabled:
+          appConfig.search.hybridSemanticSearchEnabled,
       };
 
       try {
