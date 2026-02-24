@@ -10,8 +10,12 @@ const isServer = typeof window === 'undefined';
 // pino.transport() spawns a worker thread and breaks Next.js module resolution.
 // Importing pino-pretty directly and calling it as a stream is synchronous (same
 // thread) and works correctly inside Next.js dev server.
+//
+// require() is available in CJS (Next.js compiled server code) but not in native
+// ESM (e.g. the payload CLI). `typeof require` returns 'undefined' in ESM without
+// throwing, so this guard makes the stream optional when require is unavailable.
 const stream =
-  isServer && isDev
+  isServer && isDev && typeof require === 'function'
     ? require('pino-pretty')({
         colorize: true,
         translateTime: 'SYS:HH:MM:ss.l',
