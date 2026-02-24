@@ -19,7 +19,13 @@ export function Providers({ appConfig, children, session }) {
       <QueryClientProvider client={queryClient}>
         <AppConfigProvider value={appConfig}>
           <PrevUrlProvider>
-            <NextTopLoader color="hsl(var(--primary))" height={2} />
+            <NextTopLoader
+              color="hsl(var(--primary))"
+              showSpinner={false}
+              height={2}
+              crawlSpeed={25}
+              speed={100}
+            />
             <PageView />
             {children}
           </PrevUrlProvider>
