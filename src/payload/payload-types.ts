@@ -573,6 +573,7 @@ export interface ResourceDirectory {
       noResultsFallbackText?: string | null;
     };
     searchSettings: {
+      hybridSemanticSearchEnabled?: boolean | null;
       resultsLimit: number;
       radiusSelectValues?:
         | {
@@ -1145,6 +1146,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         searchSettings?:
           | T
           | {
+              hybridSemanticSearchEnabled?: T;
               resultsLimit?: T;
               radiusSelectValues?:
                 | T

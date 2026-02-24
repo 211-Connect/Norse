@@ -101,6 +101,7 @@ export function buildSearchRequest(
   const derivedQueryType = deriveQueryType(
     searchStore.query,
     searchStore.queryType,
+    false,
   );
   baseParams.query_type = derivedQueryType;
 
@@ -146,6 +147,7 @@ export function buildSearchRequest(
  */
 export enum QueryType {
   Text = 'text',
+  Hybrid = 'hybrid',
   Taxonomy = 'taxonomy',
   Organization = 'organization',
   MoreLikeThis = 'more_like_this',
@@ -175,11 +177,13 @@ function fuzzyMatchQueryType(type: string | undefined): QueryType | undefined {
  *
  * @param query - The search query string
  * @param storedType - The query type from state (may be invalid user input)
- * @returns A valid query type: 'taxonomy', 'text', 'organization', or 'more_like_this'
+ * @param hybridSemanticSearchEnabled - When true, 'text' falls back to 'hybrid'
+ * @returns A valid query type: 'taxonomy', 'hybrid', 'text', 'organization', or 'more_like_this'
  */
 export function deriveQueryType(
   query: string | undefined,
   storedType: string | undefined,
+  hybridSemanticSearchEnabled?: boolean,
 ): QueryType {
   const normalizedQuery = query?.trim();
 
@@ -207,6 +211,6 @@ export function deriveQueryType(
     return resolvedType;
   }
 
-  // Default to 'text' for keyword search
-  return QueryType.Text;
+  // Default to 'hybrid' when enabled, otherwise 'text'
+  return hybridSemanticSearchEnabled ? QueryType.Hybrid : QueryType.Text;
 }

@@ -32,20 +32,25 @@ type SearchResult = {
 
 export function createUrlParamsForSearch(
   searchStore: ExtractAtomValue<typeof searchAtom>,
+  hybridSemanticSearchEnabled?: boolean,
 ) {
   const hasLocation = searchStore['searchCoordinates']?.length === 2;
 
   const urlParams = {
-    query: searchStore['query']?.trim(),
-    query_label: searchStore['queryLabel']?.trim(),
-    query_type: deriveQueryType(searchStore['query'], searchStore['queryType']),
-    location: hasLocation ? searchStore['searchLocation']?.trim() : null,
+    query: searchStore.query?.trim(),
+    query_label: searchStore.queryLabel?.trim(),
+    query_type: deriveQueryType(
+      searchStore.query,
+      searchStore.queryType,
+      hybridSemanticSearchEnabled,
+    ),
+    location: hasLocation ? searchStore.searchLocation?.trim() : null,
     coords: hasLocation
-      ? searchStore['searchCoordinates']?.join(',')?.trim()
+      ? searchStore.searchCoordinates?.join(',')?.trim()
       : null,
     distance:
-      searchStore['searchCoordinates']?.length === 2
-        ? searchStore['searchDistance']?.trim() || '0'
+      searchStore.searchCoordinates?.length === 2
+        ? searchStore.searchDistance?.trim() || '0'
         : '',
   };
 
