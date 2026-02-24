@@ -9,6 +9,7 @@ export const locales = [
   'en', // English
   'es', // Spanish
   'fa', // Farsi (Persian)
+  'fj', // Fijian
   'fi', // Finnish
   'fil', // Filipino
   'ff', // Fulah
@@ -16,6 +17,8 @@ export const locales = [
   'hi', // Hindi
   'hr', // Croatian
   'ht', // Haitian Creole
+  'haw', // Hawaiian
+  'ja', // Japanese
   'ko', // Korean
   'km', // Khmer
   'lo', // Lao
@@ -29,8 +32,10 @@ export const locales = [
   'pt', // Portuguese
   'rw', // Kinyarwanda
   'ru', // Russian
+  'sm', // Samoan
   'so', // Somali
   'sw', // Swahili
+  'tl', // Tagalog
   'uk', // Ukrainian
   'vi', // Vietnamese
   'yue', // Cantonese
