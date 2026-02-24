@@ -3,12 +3,20 @@ import { findTenantByHost } from '@/payload/collections/Tenants/actions/findTena
 import { getServerSession } from 'next-auth';
 import { createAuthOptions } from '@/auth';
 import { headers } from 'next/headers';
+import { cache } from 'react';
 
-async function getSession() {
+async function getSessionOrigin() {
   const headerList = await headers();
 
-  const host = process.env.CUSTOM_AUTH_HOST || headerList.get('x-forwarded-host') || headerList.get('host') || 'localhost';
-  const protocol = process.env.CUSTOM_AUTH_PROTOCOL || headerList.get('x-forwarded-proto') || 'https';
+  const host =
+    process.env.CUSTOM_AUTH_HOST ||
+    headerList.get('x-forwarded-host') ||
+    headerList.get('host') ||
+    'localhost';
+  const protocol =
+    process.env.CUSTOM_AUTH_PROTOCOL ||
+    headerList.get('x-forwarded-proto') ||
+    'https';
 
   const parsedHost = parseHost(host);
   const tenant = await findTenantByHost(parsedHost);
@@ -25,5 +33,7 @@ async function getSession() {
 
   return getServerSession(authOptions);
 }
+
+const getSession = cache(getSessionOrigin);
 
 export { getSession };
