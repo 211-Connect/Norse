@@ -19,6 +19,7 @@ import { MainSearchLayout } from '@/app/(app)/shared/components/search/main-sear
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { Filter } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useTopLoader } from 'nextjs-toploader';
 import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
 import { useTranslation } from 'react-i18next';
 import { HEADER_ID } from '@/app/(app)/shared/lib/constants';
@@ -26,41 +27,76 @@ import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 
 const MAX_VISIBLE_FILTERS = 6;
 
-const Filters = ({ filters, filterKeys }) => {
+type FilterBucket = { key: string; doc_count: number };
+type FilterEntry = { buckets: FilterBucket[] };
+type FiltersMap = Record<string, FilterEntry>;
+type ActiveFilters = Record<string, string[]>;
+
+type FiltersProps = {
+  filters: FiltersMap;
+  filterKeys: string[];
+};
+
+const Filters = ({ filters, filterKeys }: FiltersProps) => {
   const { t } = useTranslation();
   const router = useRouter();
-  const { stringifiedSearchParams } = useClientSearchParams();
+  const { stringifiedSearchParams, searchParamsObject } =
+    useClientSearchParams();
+  const { start } = useTopLoader();
+  const [isPending, setIsPending] = useState(false);
+  const [filtersExpanded, setFiltersExpanded] = useState<
+    Record<string, boolean>
+  >({});
 
-  const q: any = qs.parse(stringifiedSearchParams, { ignoreQueryPrefix: true });
+  useEffect(() => {
+    setIsPending(false);
+  }, [stringifiedSearchParams]);
 
-  const [filtersExpanded, setFiltersExpanded] = useState<{
-    [key: string]: boolean;
-  }>({});
+  const navigate = useCallback(
+    (url: string) => {
+      setIsPending(true);
+      start();
+      router.push(url);
+    },
+    [router, start],
+  );
 
-  const updateFilterExpanded = useCallback((key: string) => {
-    setFiltersExpanded((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
+  const activeFilters = useMemo(
+    () => (searchParamsObject.filters ?? {}) as ActiveFilters,
+    [searchParamsObject.filters],
+  );
+
+  const applyFilters = useCallback(
+    (newFilters?: ActiveFilters) => {
+      const params = {
+        ...searchParamsObject,
+        ...(newFilters ? { filters: newFilters } : {}),
+      };
+      if (!newFilters) delete params.filters;
+      const str = qs.stringify(params);
+      navigate(`/search${str ? `?${str}` : ''}`);
+    },
+    [searchParamsObject, navigate],
+  );
+
+  const toggleFilter = useCallback(
+    (key: string, value: string, checked: boolean) => {
+      const current = Array.isArray(activeFilters[key])
+        ? [...activeFilters[key]]
+        : [];
+      const next = checked
+        ? [...new Set([...current, value])]
+        : current.filter((v) => v !== value);
+      applyFilters({ ...activeFilters, [key]: next });
+    },
+    [activeFilters, applyFilters],
+  );
+
+  const toggleExpanded = useCallback((key: string) => {
+    setFiltersExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
   }, []);
 
-  const clearFilters = () => {
-    const q: any =
-      stringifiedSearchParams.indexOf('?') > -1
-        ? qs.parse(
-            stringifiedSearchParams.slice(
-              stringifiedSearchParams.indexOf('?') + 1,
-            ),
-          )
-        : {};
-
-    delete q.filters;
-
-    const str = qs.stringify(q);
-    const query = str.length > 0 ? `?${str}` : '';
-
-    router.push(`/search${query}`);
-  };
+  const currentFilters = activeFilters;
 
   if (filterKeys.length === 0) return null;
 
@@ -68,7 +104,12 @@ const Filters = ({ filters, filterKeys }) => {
     <div className="py-5">
       <div className="flex items-center justify-between">
         <h3 className="font-bold">{t('filters', 'Filters')}</h3>
-        <Button variant="ghost" size="sm" onClick={clearFilters}>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => applyFilters()}
+          disabled={isPending}
+        >
           {t('clear_filters', 'Clear filters')}
         </Button>
       </div>
@@ -81,23 +122,19 @@ const Filters = ({ filters, filterKeys }) => {
             .split('_')
             .map((k) => k.charAt(0).toUpperCase() + k.slice(1))
             .join(' ');
-          const filter = filters[key];
-          let filterList = filter.buckets.filter(
+          const filterList = filters[key].buckets.filter(
             (b) => b.key != null && b.key !== '',
           );
-
-          const originalCount = filterList.length;
-          const filtersExpandedForKey = filtersExpanded[key] ?? false;
-
-          if (!filtersExpandedForKey) {
-            filterList = filterList.slice(0, MAX_VISIBLE_FILTERS);
-          }
+          const isExpanded = filtersExpanded[key] ?? false;
+          const visibleList = isExpanded
+            ? filterList
+            : filterList.slice(0, MAX_VISIBLE_FILTERS);
 
           return (
             <div key={key} className="flex flex-col gap-1">
               <h3 className="font-medium">{heading}</h3>
               <div className="flex flex-col gap-2">
-                {filterList.map((b) => (
+                {visibleList.map((b) => (
                   <div
                     key={b.key}
                     className="flex items-center justify-between"
@@ -109,60 +146,31 @@ const Filters = ({ filters, filterKeys }) => {
                       <Checkbox
                         aria-label={b.key}
                         id={b.key}
-                        checked={q.filters?.[key]?.includes(b.key) ?? false}
-                        onCheckedChange={(checked) => {
-                          const q: any =
-                            stringifiedSearchParams.indexOf('?') > -1
-                              ? qs.parse(
-                                  stringifiedSearchParams.slice(
-                                    stringifiedSearchParams.indexOf('?') + 1,
-                                  ),
-                                )
-                              : {};
-
-                          if (!q.filters) {
-                            q.filters = {};
-                          }
-
-                          if (!(q.filters[key] instanceof Array)) {
-                            q.filters[key] = [];
-                          }
-
-                          if (checked && !q.filters[key].includes(b.key)) {
-                            q.filters[key].push(b.key);
-                          } else {
-                            const idx = q.filters[key].findIndex(
-                              (v: any) => v === b.key,
-                            );
-                            q.filters[key].splice(idx, 1);
-                          }
-
-                          const str = qs.stringify(q);
-                          const query = str.length > 0 ? `?${str}` : '';
-
-                          router.push(`/search${query}`);
-                        }}
+                        disabled={isPending}
+                        checked={currentFilters[key]?.includes(b.key) ?? false}
+                        onCheckedChange={(checked) =>
+                          toggleFilter(key, b.key, !!checked)
+                        }
                       />
                       {b.key}
                     </label>
-
                     <Badge className="bg-[rgba(0,0,0,0.03)]" variant="outline">
                       {b.doc_count}
                     </Badge>
                   </div>
                 ))}
-                {originalCount > MAX_VISIBLE_FILTERS && (
+                {filterList.length > MAX_VISIBLE_FILTERS && (
                   <Button
                     variant="link"
                     size="sm"
                     className="w-fit px-0"
-                    onClick={() => updateFilterExpanded(key)}
+                    onClick={() => toggleExpanded(key)}
                   >
-                    {filtersExpandedForKey
+                    {isExpanded
                       ? t('search.show_less', { ns: 'common' })
                       : t('search.show_all', {
                           ns: 'common',
-                          count: originalCount,
+                          count: filterList.length,
                         })}
                   </Button>
                 )}
