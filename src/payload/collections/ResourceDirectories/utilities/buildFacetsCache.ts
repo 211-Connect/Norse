@@ -2,6 +2,9 @@ import type { Payload } from 'payload';
 import type { FacetsCache, FacetConfig } from '@/types/facets';
 import type { ResourceDirectory } from '@/payload/payload-types';
 import { assertValidLocale } from '@/payload/i18n/locales';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('buildFacetsCache');
 
 /**
  * Builds facets cache structure for a specific tenant
@@ -37,8 +40,9 @@ export async function buildFacetsCache(
             .then((result) => result.docs[0] || null);
 
     if (!resourceDirectory) {
-      console.warn(
-        `[buildFacetsCache] No resource directory found for tenant ID: ${tenantId}, locale: ${locale}`,
+      log.warn(
+        { tenantId, locale },
+        'No resource directory found; skipping locale',
       );
       continue;
     }
@@ -47,8 +51,9 @@ export async function buildFacetsCache(
 
     for (const facet of facets) {
       if (!facet.facet || !facet.name) {
-        console.warn(
-          `[buildFacetsCache] Invalid facet entry for tenant ID: ${tenantId}, locale: ${locale}. Skipping.`,
+        log.warn(
+          { tenantId, locale },
+          'Invalid facet entry (missing facet or name); skipping',
         );
         continue;
       }

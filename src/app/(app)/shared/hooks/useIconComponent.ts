@@ -1,5 +1,8 @@
 import * as React from 'react';
 import { type LucideIcon } from 'lucide-react';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('useIconComponent');
 import {
   SUPPORTED_ICONS,
   type SupportedIconName,
@@ -23,9 +26,9 @@ export function useIconComponent(
     const icon = SUPPORTED_ICONS[iconName as SupportedIconName];
 
     if (!icon) {
-      console.warn(
-        `Icon "${iconName}" is not in the supported icons list. ` +
-          `Only icons from SUPPORTED_ICONS can be used.`,
+      log.warn(
+        { iconName },
+        'Icon is not in the supported icons list; only icons from SUPPORTED_ICONS can be used',
       );
       return null;
     }

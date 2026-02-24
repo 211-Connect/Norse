@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { register, collectDefaultMetrics } from 'prom-client';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('metrics');
 
 collectDefaultMetrics({ prefix: 'norse_' });
 
@@ -25,7 +28,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error generating metrics:', error);
+    log.error({ err: error }, 'Error generating metrics');
     return NextResponse.json(
       { error: 'Failed to generate metrics' },
       { status: 500 },

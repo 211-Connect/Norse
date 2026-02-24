@@ -4,6 +4,9 @@ import {
   findResourceDirectoryByHost,
   findResourceDirectoryByTenantId,
 } from '../collections/ResourceDirectories/actions';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('warmCache');
 
 export const warmCache: TaskConfig<'warmCache'> = {
   slug: 'warmCache',
@@ -47,15 +50,15 @@ export const warmCache: TaskConfig<'warmCache'> = {
     const { payload } = req;
     const startTime = Date.now();
 
-    console.log('[warmCache] Handler started', {
-      jobId: job.id,
-      domains: input.domains?.length || 'all',
-    });
+    log.info(
+      { jobId: job.id, domainCount: input.domains?.length || 'all' },
+      'Handler started',
+    );
 
     let domains: string[] = [];
 
     if (!input.domains || input.domains.length === 0) {
-      console.log('[warmCache] Fetching all tenants to get domains...');
+      log.debug('Fetching all tenants to resolve domains');
       const { docs: tenants } = await payload.find({
         collection: 'tenants',
         limit: 1000,
@@ -70,12 +73,15 @@ export const warmCache: TaskConfig<'warmCache'> = {
         }
       }
 
-      console.log(`[warmCache] Found ${domains.length} domains to warm`);
+      log.info(
+        { domainCount: domains.length },
+        'Discovered domains for warming',
+      );
     } else {
       domains = input.domains
         .map(({ domain }) => domain)
         .filter((domain) => typeof domain === 'string');
-      console.log(`[warmCache] Warming ${domains.length} specified domains`);
+      log.info({ domainCount: domains.length }, 'Warming specified domains');
     }
 
     let warmedTenants = 0;
@@ -99,34 +105,33 @@ export const warmCache: TaskConfig<'warmCache'> = {
                   warmedResourceDirectories++;
                 }
               } catch (error) {
-                console.error(
-                  `[warmCache] ✗ Error warming ResourceDirectory for ${domain} (${locale}):`,
-                  error,
+                log.error(
+                  { err: error, domain, locale },
+                  'Error warming ResourceDirectory',
                 );
               }
             }
           }
         } else {
-          console.log(`[warmCache] ✗ No tenant found for domain: ${domain}`);
+          log.warn({ domain }, 'No tenant found for domain');
         }
       } catch (error) {
-        console.error(
-          `[warmCache] ✗ Error warming cache for domain ${domain}:`,
-          error,
-        );
+        log.error({ err: error, domain }, 'Error warming cache for domain');
       }
     }
 
     const duration = Date.now() - startTime;
     const durationSeconds = (duration / 1000).toFixed(2);
 
-    console.log('[warmCache] Cache warming complete', {
-      totalDomains: domains.length,
-      warmedTenants,
-      warmedResourceDirectories,
-      durationMs: duration,
-      durationSeconds: `${durationSeconds}s`,
-    });
+    log.info(
+      {
+        totalDomains: domains.length,
+        warmedTenants,
+        warmedResourceDirectories,
+        durationMs: duration,
+      },
+      'Cache warming complete',
+    );
 
     return {
       output: {

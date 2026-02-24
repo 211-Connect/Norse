@@ -4,6 +4,9 @@ import React, { useState } from 'react';
 import { toast, Button, useModal } from '@payloadcms/ui';
 import { TranslateModal } from './TranslateModal';
 import { getTenantLocales } from '../../Tenants/components/actions/getTenantLocales';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('translate-button');
 
 interface TranslateButtonProps {
   tenantId: string;
@@ -36,7 +39,7 @@ export const TranslateButton: React.FC<TranslateButtonProps> = ({
       setTargetLocales(locales);
       openModal('translate-modal');
     } catch (error) {
-      console.error('Error opening translate modal:', error);
+      log.error({ err: error }, 'Error opening translate modal');
       toast.error('Failed to load translation options');
     } finally {
       setIsLoadingTranslate(false);

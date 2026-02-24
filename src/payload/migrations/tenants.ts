@@ -17,6 +17,9 @@ import { upsert } from './upsert';
 import { defaultLocale } from '../i18n/locales';
 import qs from 'qs';
 import { fetchWrapper } from '@/app/(app)/shared/lib/fetchWrapper';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('seed');
 
 export async function fetchJson(url: string) {
   const data = await fetchWrapper(url, {
@@ -512,7 +515,7 @@ async function createResourceDirectory(
 
       return res;
     } catch (error) {
-      console.error(error);
+      log.error({ err: error }, 'Failed to create resource directory');
       throw new Error(
         `Seed: Failed to create resource directory for tenant ${tenant.name} (${id}), locale ${locale}`,
         { cause: error },
@@ -537,7 +540,7 @@ async function createResourceDirectory(
       },
     });
   } catch (error) {
-    console.error(error);
+    log.error({ err: error }, 'Failed to update resource directory');
     throw new Error(
       `Seed: Failed to update resource directory for tenant ${tenant.name} (${id}), locale ${locale}`,
       { cause: error },
@@ -590,8 +593,9 @@ async function processResourceDirectories(
   facets: Record<string, Array<{ name: string; facet: string }>>,
 ) {
   for (const [locale, appConfigId] of Object.entries(appConfigIds)) {
-    console.log(
-      `Seed: Adding resource directory for tenant ${tenant.name} (${tenant.id}) in locale ${locale}`,
+    log.info(
+      { tenantId: tenant.id, tenantName: tenant.name, locale },
+      'Adding resource directory',
     );
     try {
       await createResourceDirectory(
@@ -705,7 +709,7 @@ async function processTenant(
 
   const trustedDomains = createTrustedDomains(rawTrustedDomains);
 
-  console.log(`Seed: Processing tenant ${name} (${id})`);
+  log.info({ tenantId: id, tenantName: name }, 'Processing tenant');
 
   const hasAppConfig = Boolean(attributes.app_config.data);
 
@@ -732,8 +736,9 @@ async function processTenant(
   }
 
   if (hasAppConfig) {
-    console.log(
-      `Seed: Found app_config for tenant ${name} (${id}). Creating resource directory.`,
+    log.info(
+      { tenantId: id, tenantName: name },
+      'Found app_config; creating resource directory',
     );
     let suggestions, appConfigIds, topics, facets;
     try {
@@ -773,8 +778,9 @@ async function processTenant(
           },
         },
       });
-      console.log(
-        `Seed: Enabled 'resourceDirectory' service for tenant ${name} (${id}).`,
+      log.info(
+        { tenantId: id, tenantName: name },
+        "Enabled 'resourceDirectory' service",
       );
     } catch (error) {
       throw new Error(
@@ -847,7 +853,7 @@ export async function addTenants(
   let tenants;
   try {
     tenants = await fetchTenants();
-    console.log(`Seed: Found ${tenants.length} tenants`);
+    log.info({ tenantCount: tenants.length }, 'Tenants fetched from Strapi');
   } catch (error) {
     throw new Error(`Failed to fetch tenants`, {
       cause: error,

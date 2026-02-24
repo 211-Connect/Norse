@@ -6,6 +6,9 @@ import Image from 'next/image';
 import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import { getImageUrl } from '@/app/(app)/shared/utils/getImageUrl';
 import { fetchWrapper } from '@/app/(app)/shared/lib/fetchWrapper';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('error-boundary');
 
 // Create a wrapper component that has access to router
 function ErrorBoundaryWithRouter({
@@ -77,7 +80,7 @@ class ErrorBoundary extends React.Component<Props, State> {
 
   async componentDidCatch(error: any, errorInfo: any) {
     // You can use your own error logging service here
-    console.log({ error, errorInfo });
+    log.error({ err: error, errorInfo }, 'Unhandled render error');
 
     // Capture additional debugging info for coordinate errors
     const debugInfo = {
@@ -107,7 +110,7 @@ class ErrorBoundary extends React.Component<Props, State> {
         },
       });
     } catch (err) {
-      console.log('Unable to send webhook');
+      log.warn({ err }, 'Unable to send webhook');
     }
   }
 

@@ -4,6 +4,7 @@ import { retry } from 'radash';
 import { assertValidLocale } from '../i18n/locales';
 import { isEmpty } from '../utilities/isEmpty';
 import { ResourceDirectory } from '../payload-types';
+import { createLogger } from '@/lib/logger';
 
 interface FieldToTranslate {
   path: string;
@@ -14,6 +15,8 @@ interface FieldToTranslate {
 
 const BATCH_SIZE_AZURE = 100;
 const BATCH_SIZE_GOOGLE = 128;
+
+const log = createLogger('translate');
 
 export const translate: TaskConfig<'translate'> = {
   slug: 'translate',
@@ -79,12 +82,10 @@ export const translate: TaskConfig<'translate'> = {
     const changedItemIds = new Set(input.changedItemIds?.map(({ id }) => id));
     const hasSpecificChanges = changedItemIds.size > 0;
 
-    console.log('[translate] Handler started', {
-      jobId: job.id,
-      tenantId,
-      locales,
-      hasSpecificChanges,
-    });
+    log.info(
+      { jobId: job.id, tenantId, locales, hasSpecificChanges },
+      'Handler started',
+    );
 
     try {
       const englishResourceDirectory = await payload.findByID({
@@ -102,7 +103,7 @@ export const translate: TaskConfig<'translate'> = {
       for (const targetLocale of locales) {
         if (targetLocale === 'en') continue;
 
-        console.log(`[translate] Processing locale: ${targetLocale}`);
+        log.debug({ targetLocale, tenantId }, 'Processing locale');
 
         const targetDoc = await payload.findByID({
           collection: 'resource-directories',
@@ -134,15 +135,17 @@ export const translate: TaskConfig<'translate'> = {
           englishResourceDirectory;
 
         if (!englishTopics) {
-          console.error(
-            '[translate] No topics found in English resource directory',
+          log.error(
+            { tenantId, targetLocale },
+            'No topics in English resource directory; skipping locale',
           );
           continue;
         }
 
         if (!englishSuggestions) {
-          console.error(
-            '[translate] No suggestions found in English resource directory',
+          log.error(
+            { tenantId, targetLocale },
+            'No suggestions in English resource directory; skipping locale',
           );
           continue;
         }
@@ -244,12 +247,16 @@ export const translate: TaskConfig<'translate'> = {
         });
 
         if (fieldsToTranslate.length === 0) {
-          console.log(`[translate] No fields to translate for ${targetLocale}`);
+          log.debug(
+            { targetLocale, tenantId },
+            'No fields to translate for locale; skipping',
+          );
           continue;
         }
 
-        console.log(
-          `[translate] Translating ${fieldsToTranslate.length} fields for ${targetLocale}`,
+        log.info(
+          { targetLocale, tenantId, fieldCount: fieldsToTranslate.length },
+          'Translating fields',
         );
 
         const batchSize =
@@ -393,7 +400,17 @@ export const translate: TaskConfig<'translate'> = {
         totalTranslatedCounts[targetLocale] = fieldsToTranslate.length;
       }
 
-      console.log('[translate] Completed successfully');
+      log.info(
+        {
+          translated: Object.values(totalTranslatedCounts).reduce(
+            (a, b) => a + b,
+            0,
+          ),
+          tenantId,
+          localeBreakdown: totalTranslatedCounts,
+        },
+        'Translation completed',
+      );
 
       return {
         output: {
@@ -405,7 +422,7 @@ export const translate: TaskConfig<'translate'> = {
         },
       };
     } catch (error) {
-      console.error('[translate] Error:', error);
+      log.error({ err: error, tenantId }, 'Translation handler failed');
       throw error;
     }
   },

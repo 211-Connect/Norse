@@ -5,6 +5,9 @@ import { TypedLocale } from 'payload';
 import { locales } from '@/payload/i18n/locales';
 import { Tenant } from '@/payload/payload-types';
 import { withRedisCache } from '@/utilities/withRedisCache';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('search-config');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -25,9 +28,9 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ tenantId: string; locale: string }> },
 ) {
-  try {
-    const { tenantId, locale } = await params;
+  const { tenantId, locale } = await params;
 
+  try {
     if (!locales.includes(locale as TypedLocale)) {
       return NextResponse.json({ error: 'Invalid locale' }, { status: 400 });
     }
@@ -95,7 +98,7 @@ export async function GET(
       },
     });
   } catch (error) {
-    console.error('[search-config] Error fetching search config:', error);
+    log.error({ err: error, tenantId, locale }, 'Error fetching search config');
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 },

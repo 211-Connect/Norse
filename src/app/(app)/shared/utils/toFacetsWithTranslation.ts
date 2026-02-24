@@ -1,4 +1,7 @@
 import { FacetWithTranslation } from '@/types/resource';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('toFacetsWithTranslation');
 
 export function transformFacetsToArray(
   sourceFacets: unknown, // expected { [taxonomyCode: string]: string[] }
@@ -63,7 +66,7 @@ export function transformFacetsToArray(
       }
     }
   } catch (error) {
-    console.error('Error transforming facets in search-service:', error);
+    log.error({ err: error }, 'Error transforming facets');
     return [];
   }
 

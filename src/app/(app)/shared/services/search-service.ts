@@ -7,6 +7,9 @@ import { fetchWrapper } from '../lib/fetchWrapper';
 import { transformFacetsToArray } from '../utils/toFacetsWithTranslation';
 import { BBox } from '@/types/resource';
 import qs from 'qs';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('search');
 
 export type FindResourcesQuery = {
   query: string;
@@ -205,26 +208,18 @@ export async function findResources(
       cache: 'no-store',
     });
   } catch (err) {
-    console.error('Search API error:', {
-      error: err,
-      tenantId,
-      query,
-      page,
-      locale,
-      limit,
-    });
+    log.error(
+      { err, tenantId, query, page, locale, limit },
+      'Search API error',
+    );
     return createEmptyResult(page);
   }
 
   if (!data || !data.search) {
-    console.error('Malformed API response:', {
-      data,
-      tenantId,
-      query,
-      page,
-      locale,
-      limit,
-    });
+    log.error(
+      { tenantId, page, locale, limit, query },
+      'Malformed API response from search',
+    );
     return createEmptyResult(page);
   }
 
@@ -291,14 +286,7 @@ async function tryFallbackSearch(
 
     return fallbackData?.search ? fallbackData : null;
   } catch (err) {
-    console.error('Fallback search API error:', {
-      error: err,
-      tenantId,
-      query: { ...query, query_type: 'more_like_this' },
-      page,
-      locale,
-      limit,
-    });
+    log.error({ err, tenantId }, 'Fallback search API error');
     return null;
   }
 }
@@ -336,7 +324,7 @@ async function tryFallbackSearchV2(
 
     return fallbackData?.search ? fallbackData : null;
   } catch (err) {
-    console.error('Fallback search API error (V2):', { error: err, tenantId });
+    log.error({ err, tenantId }, 'Fallback search API error (V2)');
     return null;
   }
 }
@@ -383,29 +371,18 @@ export async function findResourcesV2(
       body: request.body,
     });
   } catch (err) {
-    console.error('Search API error (V2):', {
-      error: err,
-      url: searchUrl,
-      method: request.method,
-      tenantId,
-      queryParams: request.queryParams,
-      hasGeometry: !!request.body.geometry,
-      page,
-      locale,
-      limit,
-    });
+    log.error(
+      { err, url: searchUrl, tenantId, page, locale, limit },
+      'Search API error (V2)',
+    );
     return createEmptyResult(page);
   }
 
   if (!data || !data.search) {
-    console.error('Malformed API response (V2):', {
-      data,
-      url: searchUrl,
-      tenantId,
-      page,
-      locale,
-      limit,
-    });
+    log.error(
+      { url: searchUrl, tenantId, page, locale, limit },
+      'Malformed API response from search (V2)',
+    );
     return createEmptyResult(page);
   }
 

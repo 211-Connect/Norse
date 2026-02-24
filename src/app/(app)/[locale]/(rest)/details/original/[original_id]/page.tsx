@@ -9,6 +9,9 @@ import { getCookies } from 'cookies-next/server';
 import { cookies, headers } from 'next/headers';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { Resource } from '@/types/resource';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('original-details-page');
 
 const i18nNamespaces = ['page-resource', 'page-404', 'common'];
 
@@ -29,9 +32,16 @@ export const generateMetadata = async ({ params }) => {
       await getResourceByOriginalId(original_id, locale, appConfig.tenantId);
     } catch (err) {
       if (err instanceof FetchError && err.response.status === 404) {
+        log.warn(
+          { originalId: original_id, locale },
+          'Resource not found for metadata generation',
+        );
         notFoundFlag = true;
       } else {
-        console.error(err);
+        log.error(
+          { err, originalId: original_id, locale },
+          'Error fetching resource for metadata',
+        );
       }
     }
   }

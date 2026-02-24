@@ -1,4 +1,7 @@
 import { Redis } from 'ioredis';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('cache');
 
 class CacheService {
   private client: Redis | null = null;
@@ -9,7 +12,7 @@ class CacheService {
 
   constructor(private db: number = 0) {
     if (!this.isEnabled) {
-      console.warn('CACHE_REDIS_URI is not set. Caching is disabled.');
+      log.warn('CACHE_REDIS_URI is not set; caching is disabled');
     }
   }
 
@@ -23,8 +26,9 @@ class CacheService {
     }
 
     if (this.connectionAttempted && !this.client) {
-      console.warn(
-        'Previous Redis connection attempt failed. Caching is disabled.',
+      log.warn(
+        { db: this.db },
+        'Previous Redis connection attempt failed; caching is disabled',
       );
       return;
     }
@@ -56,14 +60,16 @@ class CacheService {
         lazyConnect: true,
         retryStrategy: (times) => {
           if (times > 5) {
-            console.error(
-              `Redis reconnection failed after ${times} attempts (DB ${this.db})`,
+            log.error(
+              { db: this.db, attempts: times },
+              'Redis reconnection failed',
             );
             return null;
           }
           const delay = Math.pow(2, times) * 1000;
-          console.log(
-            `Redis reconnecting in ${delay}ms (attempt ${times}, DB ${this.db})`,
+          log.debug(
+            { db: this.db, attempt: times, delayMs: delay },
+            'Redis will reconnect',
           );
           return delay;
         },
@@ -76,17 +82,17 @@ class CacheService {
       });
 
       this.client.on('error', (err) => {
-        console.error(`Redis error (DB ${this.db}):`, err);
+        log.error({ err, db: this.db }, 'Redis error');
       });
 
       this.client.on('reconnecting', () => {
-        console.warn(`Redis reconnecting (DB ${this.db})`);
+        log.warn({ db: this.db }, 'Redis reconnecting');
       });
 
       await this.client.connect();
-      console.log(`Redis connected and ready (DB ${this.db})`);
+      log.info({ db: this.db }, 'Redis connected and ready');
     } catch (error) {
-      console.error(`Failed to connect to Redis (DB ${this.db}):`, error);
+      log.error({ err: error, db: this.db }, 'Failed to connect to Redis');
       if (this.client) {
         try {
           await this.client.quit();
@@ -106,7 +112,7 @@ class CacheService {
       if (!this.client) return;
       await this.client.flushdb();
     } catch (error) {
-      console.error('Redis clear error:', error);
+      log.error({ err: error, db: this.db }, 'Redis clear error');
       throw error;
     }
   }
@@ -115,7 +121,7 @@ class CacheService {
     try {
       await this.ensureConnection();
       if (!this.client) {
-        console.warn(`Cache set skipped (disabled): ${key}`);
+        log.warn({ key }, 'Cache set skipped; Redis disabled');
         return;
       }
       if (ttl !== undefined && ttl > 0) {
@@ -124,7 +130,7 @@ class CacheService {
         await this.client.set(key, value);
       }
     } catch (error) {
-      console.error('Redis set error:', error);
+      log.error({ err: error, db: this.db }, 'Redis set error');
       throw error;
     }
   }
@@ -135,7 +141,7 @@ class CacheService {
       if (!this.client) return null;
       return await this.client.get(key);
     } catch (error) {
-      console.error('Redis get error:', error);
+      log.error({ err: error, db: this.db }, 'Redis get error');
       return null;
     }
   }
@@ -146,7 +152,7 @@ class CacheService {
       if (!this.client) return;
       await this.client.del(key);
     } catch (error) {
-      console.error('Redis del error:', error);
+      log.error({ err: error, db: this.db }, 'Redis del error');
       throw error;
     }
   }
@@ -164,8 +170,9 @@ class CacheService {
       // Use SCAN instead of KEYS for production safety
       do {
         if (iterations++ > maxIterations) {
-          console.warn(
-            `delPattern exceeded max iterations for pattern: ${pattern}`,
+          log.warn(
+            { pattern, maxIterations },
+            'delPattern exceeded max iterations',
           );
           break;
         }
@@ -187,7 +194,7 @@ class CacheService {
 
       return deletedCount;
     } catch (error) {
-      console.error('Redis delPattern error:', error);
+      log.error({ err: error, db: this.db }, 'Redis delPattern error');
       throw error;
     }
   }
@@ -214,7 +221,7 @@ class CacheService {
 
       return result === expectedValue;
     } catch (error) {
-      console.error('Redis health check failed:', error);
+      log.error({ err: error, db: this.db }, 'Redis health check failed');
       return false;
     }
   }
@@ -245,7 +252,7 @@ if (typeof process !== 'undefined' && !cleanupRegistered) {
         apiConfigCacheService.disconnect(),
       ]);
     } catch (error) {
-      console.error('Error during cache cleanup:', error);
+      log.error({ err: error }, 'Error during cache cleanup');
     }
   };
 

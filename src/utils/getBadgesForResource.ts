@@ -6,6 +6,9 @@ import {
 } from './badgeFilterEvaluator';
 import { ResourceDirectoryBadgeListItem } from '@/payload/collections/ResourceDirectories/types/badge';
 import type { BadgeProps } from '@/app/(app)/shared/components/ui/badge';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('getBadgesForResource');
 
 export function getBadgesForResource(
   facets: FacetWithTranslation[] | null | undefined,
@@ -55,7 +58,10 @@ export function getBadgesForResource(
       }
     } catch (error) {
       // Log error but don't break the entire badge generation
-      console.error(`Error evaluating badge filter "${config.filter}":`, error);
+      log.error(
+        { err: error, filter: config.filter },
+        'Error evaluating badge filter',
+      );
     }
   }
 

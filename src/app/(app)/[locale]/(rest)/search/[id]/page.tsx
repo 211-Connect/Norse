@@ -10,6 +10,9 @@ import { cookies, headers } from 'next/headers';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { isValidUUID } from '@/app/(app)/shared/utils/uuid';
 import { Resource } from '@/types/resource';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('resource-page');
 
 const i18nNamespaces = ['page-resource', 'common'];
 
@@ -58,12 +61,9 @@ export default async function ResourcePage({ params }) {
   const xForwardedFor = headersList.get('x-forwarded-for') || 'unknown';
 
   if (!id || !isValidUUID(id)) {
-    console.warn(
-      `[Anti-Bot] Invalid UUID accessed. ID: ${id}. Details: ${JSON.stringify({
-        userAgent,
-        referer,
-        xForwardedFor,
-      })}`,
+    log.warn(
+      { id, userAgent, referer, xForwardedFor },
+      'Invalid UUID accessed',
     );
     notFound();
   }
@@ -98,13 +98,7 @@ export default async function ResourcePage({ params }) {
   }
 
   if (!resource) {
-    console.info(
-      `[Anti-Bot] Resource not found. ID: ${id}. Details: ${JSON.stringify({
-        userAgent,
-        referer,
-        xForwardedFor,
-      })}`,
-    );
+    log.warn({ id, userAgent, referer, xForwardedFor }, 'Resource not found');
     notFound();
   }
 

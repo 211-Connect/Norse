@@ -6,6 +6,9 @@ import {
   MAPBOX_API_KEY,
   MAPBOX_STYLE_URL,
 } from '@/app/(app)/shared/lib/constants';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('mapbox');
 import { renderToStaticMarkup } from 'react-dom/server';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import {
@@ -51,13 +54,13 @@ export function Map({
       });
 
       mapboxMap.current.on('error', (e) => {
-        console.error('Mapbox error:', e);
+        log.error({ err: e.error ?? e }, 'Mapbox error');
         if (e.error?.message?.includes('WebGL')) {
           setMapError('WebGL is not supported on this device');
         }
       });
     } catch (error) {
-      console.error('Failed to initialize map:', error);
+      log.error({ err: error }, 'Failed to initialize Mapbox map');
       setMapError(
         error.message?.includes('WebGL')
           ? 'WebGL is not supported on this device'

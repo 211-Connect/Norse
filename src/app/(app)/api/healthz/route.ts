@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
 import { cacheService } from '@/cacheService';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('healthz');
 
 export const dynamic = 'force-dynamic';
 type MB = number;
@@ -58,7 +61,7 @@ export async function GET() {
   };
 
   if (heapUsedPercent > 80) {
-    console.warn('High memory usage detected:', healthCheck.memory);
+    log.warn({ memory: healthCheck.memory }, 'High memory usage detected');
     healthCheck.status = 'degraded';
   }
 

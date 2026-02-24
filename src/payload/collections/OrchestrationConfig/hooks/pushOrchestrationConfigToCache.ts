@@ -4,6 +4,9 @@ import { findTenantById } from '../../Tenants/actions';
 import { buildOrchestrationConfigCache } from '../utilities/buildOrchestrationConfigCache';
 import { getOrchestrationConfigKey } from '../utilities/getOrchestrationConfigKey';
 import { CollectionAfterChangeHook } from 'payload';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('pushOrchestrationConfigToCache');
 
 export const pushOrchestrationConfigToCache: CollectionAfterChangeHook<
   OrchestrationConfig
@@ -11,8 +14,9 @@ export const pushOrchestrationConfigToCache: CollectionAfterChangeHook<
   const tenantId = typeof doc.tenant === 'string' ? doc.tenant : doc.tenant?.id;
 
   if (typeof tenantId !== 'string') {
-    console.warn(
-      `[pushOrchestrationConfigToCache] Invalid tenant ID: ${tenantId}. Skipping cache update.`,
+    log.warn(
+      { tenantId },
+      'Invalid tenant ID; skipping orchestration config cache update',
     );
     return doc;
   }
@@ -21,8 +25,9 @@ export const pushOrchestrationConfigToCache: CollectionAfterChangeHook<
     const tenant = await findTenantById(tenantId);
 
     if (!tenant?.enabledLocales) {
-      console.warn(
-        `[pushOrchestrationConfigToCache] No tenant or enabled locales found for tenant ID: ${tenantId}`,
+      log.warn(
+        { tenantId },
+        'No tenant or enabled locales found; skipping orchestration config cache update',
       );
       return doc;
     }
@@ -38,8 +43,9 @@ export const pushOrchestrationConfigToCache: CollectionAfterChangeHook<
     );
 
     if (!orchestrationConfigCache) {
-      console.log(
-        `[pushOrchestrationConfigToCache] No schemas found for tenant ${tenantId}`,
+      log.info(
+        { tenantId },
+        'No schemas found for tenant; skipping cache update',
       );
       return doc;
     }
@@ -50,13 +56,14 @@ export const pushOrchestrationConfigToCache: CollectionAfterChangeHook<
       JSON.stringify(orchestrationConfigCache),
     );
 
-    console.log(
-      `[pushOrchestrationConfigToCache] ✓ Pushed ${orchestrationConfigCache.schemas.length} schema(s) for tenant ${tenantId}`,
+    log.info(
+      { tenantId, schemaCount: orchestrationConfigCache.schemas.length },
+      'Orchestration config cache updated',
     );
   } catch (error) {
-    console.error(
-      `[pushOrchestrationConfigToCache] Error pushing orchestration config to cache:`,
-      error,
+    log.error(
+      { err: error, tenantId },
+      'Error pushing orchestration config to cache',
     );
   }
 

@@ -4,6 +4,9 @@ import React, { useState } from 'react';
 import { toast, Button, useDocumentInfo, useAuth } from '@payloadcms/ui';
 import { useRouter } from 'next/navigation';
 import { fetchWrapper } from '@/app/(app)/shared/lib/fetchWrapper';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('tenant-actions');
 
 const TenantActions: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -38,7 +41,7 @@ const TenantActions: React.FC = () => {
         throw new Error('Failed to duplicate tenant');
       }
     } catch (error) {
-      console.error('Error duplicating tenant:', error);
+      log.error({ err: error }, 'Error duplicating tenant');
       toast.error(
         error instanceof Error ? error.message : 'Failed to duplicate tenant',
       );

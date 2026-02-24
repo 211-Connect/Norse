@@ -3,6 +3,9 @@ import { cacheService } from '@/cacheService';
 import { findTenantById } from '../../Tenants/actions';
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
 import { RedisCacheKey } from '@/utilities/withRedisCache';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('revalidateCache');
 
 export async function revalidateCache({
   doc,
@@ -26,7 +29,10 @@ export async function revalidateCache({
         }
       }
     } catch (error) {
-      console.error('Error invalidating resource directory cache:', error);
+      log.error(
+        { err: error, tenantId },
+        'Error invalidating resource directory cache',
+      );
     }
   }
 
