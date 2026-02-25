@@ -5,12 +5,13 @@ import { useAtomValue, useSetAtom } from 'jotai';
 
 import { deriveQueryType, QueryType } from '../lib/search-utils';
 import { useDebounce } from './use-debounce';
-import { SubTopic, useTopics } from './use-topics';
+import { useTopics } from './use-topics';
 import { useSuggestions } from './use-suggestions';
 import { useTaxonomies } from './api/use-taxonomies';
 import { searchAtom, searchLocationAtom } from '../store/search';
 import { useLocations } from './api/use-locations';
 import { useAppConfig } from './use-app-config';
+import { SubTopic } from '@/types/topics';
 
 export const useSearchResources = () => {
   const search = useAtomValue(searchAtom);
