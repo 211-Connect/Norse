@@ -1,6 +1,10 @@
 import { ExtractAtomValue } from 'jotai';
 
-import { buildSearchRequest, deriveQueryType } from '../lib/search-utils';
+import {
+  buildSearchRequest,
+  deriveQueryType,
+  QueryType,
+} from '../lib/search-utils';
 import { searchAtom } from '../store/search';
 import { API_URL, INTERNAL_API_KEY } from '../lib/constants';
 import { fetchWrapper } from '../lib/fetchWrapper';
@@ -61,6 +65,10 @@ export function createUrlParamsForSearch(
     ),
   ) as Record<string, string>;
 }
+
+const VALID_QUERY_TYPES = new Set<string>(Object.values(QueryType));
+const isValidQueryType = (queryType: string | undefined): boolean =>
+  Boolean(queryType && VALID_QUERY_TYPES.has(queryType));
 
 /**
  * Extract total results count from search response
@@ -189,6 +197,11 @@ export async function findResources(
 ): Promise<SearchResult> {
   if (isNaN(page)) page = 1;
   if (!limit || isNaN(limit)) limit = 25;
+
+  if (!isValidQueryType(query.query_type)) {
+    log.warn({ tenantId, query, page, locale }, 'Invalid query_type rejected');
+    return createEmptyResult(page);
+  }
 
   let data;
   try {
