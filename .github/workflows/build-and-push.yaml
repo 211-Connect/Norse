@@ -5,6 +5,13 @@ on:
     branches:
       - main
       - development
+     paths:
+      - 'src/**'
+      - 'Dockerfile'
+      - 'Dockerfile.payload'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'next.config.js'
 
   workflow_dispatch:
 
