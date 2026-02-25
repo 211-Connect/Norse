@@ -5,7 +5,7 @@ on:
     branches:
       - main
       - development
-     paths:
+    paths:
       - 'src/**'
       - 'Dockerfile'
       - 'Dockerfile.payload'
