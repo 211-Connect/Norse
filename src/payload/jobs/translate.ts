@@ -1,9 +1,12 @@
 import { TaskConfig } from 'payload';
-import { batchTranslate } from '../services/translationService';
+import {
+  batchTranslate,
+  TranslationEngine,
+} from '../services/translationService';
 import { retry } from 'radash';
 import { assertValidLocale } from '../i18n/locales';
 import { isEmpty } from '../utilities/isEmpty';
-import { ResourceDirectory } from '../payload-types';
+import { OrchestrationConfig, ResourceDirectory } from '../payload-types';
 import { createLogger } from '@/lib/logger';
 
 interface FieldToTranslate {
@@ -16,7 +19,64 @@ interface FieldToTranslate {
 const BATCH_SIZE_AZURE = 100;
 const BATCH_SIZE_GOOGLE = 128;
 
+/**
+ * Values containing {{ }} template syntax are dynamic (e.g. {{termName}}) and
+ * should not be machine-translated because they reference run-time facet data.
+ */
+const CONTAINS_DYNAMIC_VALUE = /\{\{[^}]+\}\}/;
+
+const SEARCH_TEXT_FIELDS = [
+  'title',
+  'queryInputPlaceholder',
+  'locationInputPlaceholder',
+  'noResultsFallbackText',
+] as const;
+
 const log = createLogger('translate');
+
+async function executeBatchTranslation(
+  fields: FieldToTranslate[],
+  engine: TranslationEngine,
+): Promise<Record<string, string>> {
+  const batchSize = engine === 'azure' ? BATCH_SIZE_AZURE : BATCH_SIZE_GOOGLE;
+  const translationsByPath: Record<string, string> = {};
+
+  for (let i = 0; i < fields.length; i += batchSize) {
+    const batch = fields.slice(i, i + batchSize);
+    const translations = await retry({ times: 3, delay: 1000 }, () =>
+      batchTranslate(
+        engine,
+        batch.map((f) => ({
+          id: f.path,
+          text: f.value,
+          targetLocale: f.locale,
+        })),
+      ),
+    );
+    translations.forEach((t) => {
+      if (t?.id) translationsByPath[t.id] = t.translatedText;
+    });
+  }
+
+  return translationsByPath;
+}
+
+function makeShouldTranslate(
+  force: boolean | null | undefined,
+  hasSpecificChanges: boolean,
+  changedItemIds: Set<string | undefined>,
+) {
+  return (
+    sourceValue: string | undefined | null,
+    targetValue: string | undefined | null,
+    itemId?: string | null,
+  ): boolean => {
+    if (isEmpty(sourceValue)) return false;
+    if (force) return true;
+    if (hasSpecificChanges) return itemId ? changedItemIds.has(itemId) : false;
+    return isEmpty(targetValue);
+  };
+}
 
 export const translate: TaskConfig<'translate'> = {
   slug: 'translate',
@@ -79,12 +139,20 @@ export const translate: TaskConfig<'translate'> = {
       return locale;
     });
 
-    const changedItemIds = new Set(input.changedItemIds?.map(({ id }) => id));
+    const changedItemIds = new Set(
+      input.changedItemIds?.map(({ id }) => id ?? undefined),
+    );
     const hasSpecificChanges = changedItemIds.size > 0;
 
     log.info(
       { jobId: job.id, tenantId, locales, hasSpecificChanges },
       'Handler started',
+    );
+
+    const shouldTranslate = makeShouldTranslate(
+      force,
+      hasSpecificChanges,
+      changedItemIds,
     );
 
     try {
@@ -112,24 +180,6 @@ export const translate: TaskConfig<'translate'> = {
         });
 
         const fieldsToTranslate: FieldToTranslate[] = [];
-
-        const shouldTranslate = (
-          sourceValue: string | undefined | null,
-          targetValue: string | undefined | null,
-          itemId?: string | null,
-        ): boolean => {
-          if (isEmpty(sourceValue)) return false;
-
-          if (force) {
-            return true;
-          }
-
-          if (hasSpecificChanges) {
-            return itemId ? changedItemIds.has(itemId) : false;
-          }
-
-          return isEmpty(targetValue);
-        };
 
         const { topics: englishTopics, suggestions: englishSuggestions } =
           englishResourceDirectory;
@@ -246,6 +296,71 @@ export const translate: TaskConfig<'translate'> = {
           }
         });
 
+        // Search Texts
+        SEARCH_TEXT_FIELDS.forEach((field) => {
+          const path = `search.texts.${field}`;
+          const sourceValue = englishResourceDirectory.search?.texts?.[field];
+          const targetValue = targetDoc.search?.texts?.[field];
+
+          if (shouldTranslate(sourceValue, targetValue, path)) {
+            fieldsToTranslate.push({
+              path,
+              value: sourceValue!,
+              locale: targetLocale,
+            });
+          }
+        });
+
+        // Search Facets
+        englishResourceDirectory.search?.facets?.forEach(
+          (sourceFacet, index) => {
+            if (!sourceFacet.id) return;
+            const targetFacet = targetDoc.search?.facets?.find(
+              (f) => f.id === sourceFacet.id,
+            );
+
+            if (
+              shouldTranslate(
+                sourceFacet.name,
+                targetFacet?.name,
+                sourceFacet.id,
+              )
+            ) {
+              fieldsToTranslate.push({
+                path: `search.facets.${index}.name`,
+                value: sourceFacet.name!,
+                locale: targetLocale,
+                id: sourceFacet.id,
+              });
+            }
+          },
+        );
+
+        // Badges
+        englishResourceDirectory.badges?.list?.forEach((sourceBadge, index) => {
+          if (!sourceBadge.id) return;
+          const targetBadge = targetDoc.badges?.list?.find(
+            (b) => b.id === sourceBadge.id,
+          );
+
+          (['badgeLabel', 'tooltip'] as const).forEach((field) => {
+            const sourceValue = sourceBadge[field];
+            const targetValue = targetBadge?.[field];
+
+            // Skip dynamic template values (e.g. "{{termName}}")
+            if (sourceValue && CONTAINS_DYNAMIC_VALUE.test(sourceValue)) return;
+
+            if (shouldTranslate(sourceValue, targetValue, sourceBadge.id)) {
+              fieldsToTranslate.push({
+                path: `badges.list.${index}.${field}`,
+                value: sourceValue!,
+                locale: targetLocale,
+                id: sourceBadge.id ?? undefined,
+              });
+            }
+          });
+        });
+
         if (fieldsToTranslate.length === 0) {
           log.debug(
             { targetLocale, tenantId },
@@ -259,30 +374,10 @@ export const translate: TaskConfig<'translate'> = {
           'Translating fields',
         );
 
-        const batchSize =
-          engine === 'azure' ? BATCH_SIZE_AZURE : BATCH_SIZE_GOOGLE;
-        const translationsByPath: Record<string, string> = {};
-
-        for (let i = 0; i < fieldsToTranslate.length; i += batchSize) {
-          const batch = fieldsToTranslate.slice(i, i + batchSize);
-
-          const translations = await retry({ times: 3, delay: 1000 }, () =>
-            batchTranslate(
-              engine,
-              batch.map((f) => ({
-                id: f.path,
-                text: f.value,
-                targetLocale: f.locale,
-              })),
-            ),
-          );
-
-          translations.forEach((translation) => {
-            if (translation && translation.id) {
-              translationsByPath[translation.id] = translation.translatedText;
-            }
-          });
-        }
+        const translationsByPath = await executeBatchTranslation(
+          fieldsToTranslate,
+          engine,
+        );
 
         const updateData: Partial<ResourceDirectory> = {
           ...targetDoc,
@@ -382,6 +477,89 @@ export const translate: TaskConfig<'translate'> = {
               return newItem;
             },
           );
+        }
+
+        // Search Texts
+        updateData.search = {
+          ...targetDoc.search,
+          texts: { ...targetDoc.search?.texts },
+        };
+
+        SEARCH_TEXT_FIELDS.forEach((field) => {
+          const path = `search.texts.${field}`;
+          if (translationsByPath[path]) {
+            updateData.search!.texts = {
+              ...updateData.search!.texts,
+              [field]: translationsByPath[path],
+            };
+          } else if (isEmpty(targetDoc.search?.texts?.[field])) {
+            updateData.search!.texts = {
+              ...updateData.search!.texts,
+              [field]: englishResourceDirectory.search?.texts?.[field],
+            };
+          }
+        });
+
+        // Search Facets
+        if (englishResourceDirectory.search?.facets) {
+          const targetFacetMap = new Map(
+            targetDoc.search?.facets?.map((f) => [f.id!, f]) || [],
+          );
+          updateData.search!.facets =
+            englishResourceDirectory.search.facets.map((sourceFacet, index) => {
+              const targetFacet = targetFacetMap.get(sourceFacet.id!);
+              const newFacet = {
+                ...sourceFacet,
+                ...(targetFacet || {}),
+                id: sourceFacet.id,
+              };
+
+              const path = `search.facets.${index}.name`;
+              if (translationsByPath[path]) {
+                newFacet.name = translationsByPath[path];
+              } else if (isEmpty(targetFacet?.name)) {
+                newFacet.name = sourceFacet.name;
+              }
+              return newFacet;
+            });
+        }
+
+        // Badges
+        if (englishResourceDirectory.badges?.list) {
+          const targetBadgeMap = new Map(
+            targetDoc.badges?.list?.map((b) => [b.id!, b]) || [],
+          );
+          updateData.badges = {
+            ...targetDoc.badges,
+            list: englishResourceDirectory.badges.list.map(
+              (sourceBadge, index) => {
+                const targetBadge = targetBadgeMap.get(sourceBadge.id!);
+                const newBadge = {
+                  ...sourceBadge,
+                  ...(targetBadge || {}),
+                  id: sourceBadge.id,
+                };
+
+                (['badgeLabel', 'tooltip'] as const).forEach((field) => {
+                  const path = `badges.list.${index}.${field}`;
+                  if (translationsByPath[path]) {
+                    newBadge[field] = translationsByPath[path];
+                  } else if (isEmpty(targetBadge?.[field])) {
+                    // Only fall back to English if the source doesn't contain dynamic values
+                    const sourceValue = sourceBadge[field];
+                    if (
+                      sourceValue &&
+                      !CONTAINS_DYNAMIC_VALUE.test(sourceValue)
+                    ) {
+                      newBadge[field] = sourceValue;
+                    }
+                  }
+                });
+
+                return newBadge;
+              },
+            ),
+          };
         }
 
         updateData._translationMeta = {
