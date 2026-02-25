@@ -14,11 +14,11 @@ const extractItemId = (
   prefix: string,
   doc: ResourceDirectory,
 ): string | undefined => {
-  const escapedPrefix = prefix.replace(/\./g, '\\.');
-  const match = path.match(new RegExp(`^${escapedPrefix}\\.(\\d+)\\.`));
-  if (!match) return undefined;
+  if (!path.startsWith(`${prefix}.`)) return undefined;
 
-  const index = parseInt(match[1], 10);
+  const index = parseInt(path.slice(prefix.length + 1), 10);
+  if (isNaN(index)) return undefined;
+
   const item = get(doc, `${prefix}.${index}`);
 
   if (
