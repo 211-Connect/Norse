@@ -61,7 +61,7 @@ export default async function ResourcePage({ params }) {
   const xForwardedFor = headersList.get('x-forwarded-for') || 'unknown';
 
   if (!id || !isValidUUID(id)) {
-    log.warn(
+    log.debug(
       { id, userAgent, referer, xForwardedFor },
       'Invalid UUID accessed',
     );
@@ -98,7 +98,7 @@ export default async function ResourcePage({ params }) {
   }
 
   if (!resource) {
-    log.warn({ id, userAgent, referer, xForwardedFor }, 'Resource not found');
+    log.debug({ id, userAgent, referer, xForwardedFor }, 'Resource not found');
     notFound();
   }
 
