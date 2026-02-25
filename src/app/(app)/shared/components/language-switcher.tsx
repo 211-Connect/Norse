@@ -19,6 +19,8 @@ import { cn } from '../lib/utils';
 const LANGUAGE_NAME = {
   ff: 'Fulfulde',
   mww: 'Hmong',
+  fj: 'Fijian',
+  tl: 'Tagalog',
 };
 
 const getLanguageName = (locale: string) => {
