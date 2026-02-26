@@ -22,7 +22,7 @@ async function findResourceDirectoryByHostOrig(
       and: [
         { 'tenant.trustedDomains.domain': { equals: domain } },
         { 'tenant.services.resourceDirectory': { equals: true } },
-        { 'tenant.enabledLocales': { contains: locale } },
+        { 'tenant.enabledLocales': { equals: locale } },
       ],
     },
     limit: 1,

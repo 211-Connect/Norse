@@ -223,9 +223,7 @@ export interface Config {
     | 'yue'
     | 'zh-Hans'
     | 'zh-Hant';
-  user: User & {
-    collection: 'users';
-  };
+  user: User;
   jobs: {
     tasks: {
       translateTopics: TaskTranslateTopics;
@@ -288,6 +286,7 @@ export interface User {
       }[]
     | null;
   password?: string | null;
+  collection: 'users';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

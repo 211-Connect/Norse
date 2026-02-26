@@ -110,6 +110,7 @@ export function SearchDialog({
       search,
       setSearch,
       stringifySearchParams,
+      appConfig.search.hybridSemanticSearchEnabled,
     ],
   );
 
