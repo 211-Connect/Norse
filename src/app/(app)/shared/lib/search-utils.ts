@@ -81,10 +81,10 @@ export interface SearchRequestParams {
 export function buildSearchRequest(
   searchStore: FindResourcesQuery,
 ): SearchRequestParams {
-  const hasLocation = searchStore.searchCoordinates?.length === 2;
+  const hasLocation = searchStore.coordinates?.length === 2;
   const useBoundary = shouldUseBoundarySearch(
-    searchStore.searchPlaceType,
-    searchStore.searchBbox,
+    searchStore.placeType,
+    searchStore.bbox,
   );
 
   // Base query params (shared by both modes)
@@ -101,14 +101,15 @@ export function buildSearchRequest(
   const derivedQueryType = deriveQueryType(
     searchStore.query,
     searchStore.queryType,
+    false,
   );
   baseParams.query_type = derivedQueryType;
 
-  if (hasLocation && searchStore.searchLocation?.trim()) {
-    baseParams.location = searchStore.searchLocation.trim();
+  if (hasLocation && searchStore.location?.trim()) {
+    baseParams.location = searchStore.location.trim();
   }
 
-  if (useBoundary && searchStore.searchBbox) {
+  if (useBoundary && searchStore.bbox) {
     // Boundary Search Mode
     return {
       method: 'boundary',
@@ -117,7 +118,7 @@ export function buildSearchRequest(
         geo_type: 'boundary',
       },
       body: {
-        geometry: bboxToPolygon(searchStore.searchBbox),
+        geometry: bboxToPolygon(searchStore.bbox),
       },
     };
   } else if (hasLocation) {
@@ -126,8 +127,8 @@ export function buildSearchRequest(
       method: 'proximity',
       queryParams: {
         ...baseParams,
-        coords: searchStore.searchCoordinates.join(','),
-        distance: searchStore.searchDistance?.trim() || '0',
+        coords: searchStore.coordinates!.join(','),
+        distance: searchStore.distance?.trim() || '0',
       },
       body: {},
     };
@@ -146,6 +147,7 @@ export function buildSearchRequest(
  */
 export enum QueryType {
   Text = 'text',
+  Hybrid = 'hybrid',
   Taxonomy = 'taxonomy',
   Organization = 'organization',
   MoreLikeThis = 'more_like_this',
@@ -175,11 +177,13 @@ function fuzzyMatchQueryType(type: string | undefined): QueryType | undefined {
  *
  * @param query - The search query string
  * @param storedType - The query type from state (may be invalid user input)
- * @returns A valid query type: 'taxonomy', 'text', 'organization', or 'more_like_this'
+ * @param hybridSemanticSearchEnabled - When true, 'text' falls back to 'hybrid'
+ * @returns A valid query type: 'taxonomy', 'hybrid', 'text', 'organization', or 'more_like_this'
  */
 export function deriveQueryType(
   query: string | undefined,
   storedType: string | undefined,
+  hybridSemanticSearchEnabled?: boolean,
 ): QueryType {
   const normalizedQuery = query?.trim();
 
@@ -207,6 +211,6 @@ export function deriveQueryType(
     return resolvedType;
   }
 
-  // Default to 'text' for keyword search
-  return QueryType.Text;
+  // Default to 'hybrid' when enabled, otherwise 'text'
+  return hybridSemanticSearchEnabled ? QueryType.Hybrid : QueryType.Text;
 }

@@ -10,6 +10,7 @@ import { SearchButton } from './search-button';
 import { Button } from '../ui/button';
 import { useTranslation } from 'react-i18next';
 import { useFlag } from '../../hooks/use-flag';
+import { useAppConfig } from '../../hooks/use-app-config';
 import { createUrlParamsForSearch } from '../../services/search-service';
 import { useRouter } from 'next/navigation';
 import { useClientSearchParams } from '../../hooks/use-client-search-params';
@@ -37,6 +38,7 @@ export function SearchDialog({
 
   const router = useRouter();
 
+  const appConfig = useAppConfig();
   const requireUserLocation = useFlag('requireUserLocation');
 
   const scrollPositionRef = useRef(0);
@@ -76,12 +78,15 @@ export function SearchDialog({
               }
             : {};
 
-        const urlParams = createUrlParamsForSearch({
-          ...search,
-          ...locationParams,
-          query: query || '',
-          queryType: queryType,
-        });
+        const urlParams = createUrlParamsForSearch(
+          {
+            ...search,
+            ...locationParams,
+            query: query || '',
+            queryType: queryType,
+          },
+          appConfig.search.hybridSemanticSearchEnabled,
+        );
 
         const queryParams = stringifySearchParams(
           new URLSearchParams(urlParams),
@@ -105,6 +110,7 @@ export function SearchDialog({
       search,
       setSearch,
       stringifySearchParams,
+      appConfig.search.hybridSemanticSearchEnabled,
     ],
   );
 

@@ -223,9 +223,7 @@ export interface Config {
     | 'yue'
     | 'zh-Hans'
     | 'zh-Hant';
-  user: User & {
-    collection: 'users';
-  };
+  user: User;
   jobs: {
     tasks: {
       translateTopics: TaskTranslateTopics;
@@ -288,6 +286,7 @@ export interface User {
       }[]
     | null;
   password?: string | null;
+  collection: 'users';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -573,6 +572,7 @@ export interface ResourceDirectory {
       noResultsFallbackText?: string | null;
     };
     searchSettings: {
+      hybridSemanticSearchEnabled?: boolean | null;
       resultsLimit: number;
       radiusSelectValues?:
         | {
@@ -1145,6 +1145,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         searchSettings?:
           | T
           | {
+              hybridSemanticSearchEnabled?: T;
               resultsLimit?: T;
               radiusSelectValues?:
                 | T

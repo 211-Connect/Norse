@@ -5,15 +5,20 @@ import { useAtomValue, useSetAtom } from 'jotai';
 
 import { deriveQueryType, QueryType } from '../lib/search-utils';
 import { useDebounce } from './use-debounce';
-import { SubTopic, useTopics } from './use-topics';
+import { useTopics } from './use-topics';
 import { useSuggestions } from './use-suggestions';
 import { useTaxonomies } from './api/use-taxonomies';
 import { searchAtom, searchLocationAtom } from '../store/search';
 import { useLocations } from './api/use-locations';
+import { useAppConfig } from './use-app-config';
+import { SubTopic } from '@/types/topics';
 
 export const useSearchResources = () => {
   const search = useAtomValue(searchAtom);
   const setSearch = useSetAtom(searchAtom);
+  const appConfig = useAppConfig();
+  const hybridSemanticSearchEnabled =
+    appConfig.search.hybridSemanticSearchEnabled;
 
   const debouncedSearchTerm = useDebounce(search.searchTerm, 1000);
   const { data: taxonomies, displayData: displayTaxonomies } =
@@ -87,9 +92,13 @@ export const useSearchResources = () => {
 
       // For all other cases (including suggestions), derive based on the user input
       // This ensures "food" returns 'text' even if it matches suggestion values
-      return deriveQueryType(effectiveQuery, search.queryType);
+      return deriveQueryType(
+        effectiveQuery,
+        search.queryType,
+        hybridSemanticSearchEnabled,
+      );
     },
-    [reducedTopics, taxonomies, search.queryType],
+    [reducedTopics, taxonomies, search.queryType, hybridSemanticSearchEnabled],
   );
 
   return {

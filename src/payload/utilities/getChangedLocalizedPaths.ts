@@ -2,6 +2,7 @@ import { get } from 'radash';
 import { ResourceDirectory } from '../payload-types';
 import { ResourceDirectoryTopicListItem } from '../collections/ResourceDirectories/types/topic';
 import { ResourceDirectorySuggestionListItem } from '../collections/ResourceDirectories/types/suggestion';
+import { ResourceDirectoryBadgeListItem } from '../collections/ResourceDirectories/types/badge';
 
 interface ChangeDetail {
   path: string;
@@ -9,7 +10,14 @@ interface ChangeDetail {
   after: any;
 }
 
-const STRING_PATHS = ['topics.backText', 'topics.customHeading'];
+export const AUTO_TRANSLATED_STRING_PATHS = [
+  'topics.backText',
+  'topics.customHeading',
+  'search.texts.title',
+  'search.texts.queryInputPlaceholder',
+  'search.texts.locationInputPlaceholder',
+  'search.texts.noResultsFallbackText',
+];
 
 function deepLocalizedDiff(
   before: ResourceDirectory,
@@ -21,7 +29,7 @@ function deepLocalizedDiff(
     return changes;
   }
 
-  STRING_PATHS.forEach((path) => {
+  AUTO_TRANSLATED_STRING_PATHS.forEach((path) => {
     if (get(before, path) !== get(after, path)) {
       changes.push({
         path,
@@ -152,6 +160,102 @@ function deepLocalizedDiff(
       changes.push({
         path: `suggestions.${index}.value`,
         before: beforeSuggestion.value,
+        after: undefined,
+      });
+    }
+  });
+
+  // BADGES
+
+  const beforeBadges: ResourceDirectoryBadgeListItem[] = get(
+    before,
+    'badges.list',
+    [],
+  );
+  const afterBadges: ResourceDirectoryBadgeListItem[] = get(
+    after,
+    'badges.list',
+    [],
+  );
+
+  const beforeBadgesMap = new Map(beforeBadges.map((b) => [b.id, b]));
+  const afterBadgesMap = new Map(afterBadges.map((b) => [b.id, b]));
+
+  afterBadges.forEach((afterBadge, index) => {
+    const beforeBadge = beforeBadgesMap.get(afterBadge.id);
+
+    (['badgeLabel', 'tooltip'] as const).forEach((field) => {
+      if (!beforeBadge) {
+        if (afterBadge[field]) {
+          changes.push({
+            path: `badges.list.${index}.${field}`,
+            before: undefined,
+            after: afterBadge[field],
+          });
+        }
+      } else if (beforeBadge[field] !== afterBadge[field]) {
+        changes.push({
+          path: `badges.list.${index}.${field}`,
+          before: beforeBadge[field],
+          after: afterBadge[field],
+        });
+      }
+    });
+  });
+
+  beforeBadges.forEach((beforeBadge, index) => {
+    if (!afterBadgesMap.has(beforeBadge.id)) {
+      (['badgeLabel', 'tooltip'] as const).forEach((field) => {
+        if (beforeBadge[field]) {
+          changes.push({
+            path: `badges.list.${index}.${field}`,
+            before: beforeBadge[field],
+            after: undefined,
+          });
+        }
+      });
+    }
+  });
+
+  // SEARCH FACETS
+
+  const beforeFacets: NonNullable<ResourceDirectory['search']['facets']> = get(
+    before,
+    'search.facets',
+    [],
+  );
+  const afterFacets: NonNullable<ResourceDirectory['search']['facets']> = get(
+    after,
+    'search.facets',
+    [],
+  );
+
+  const beforeFacetsMap = new Map(beforeFacets.map((f) => [f.id, f]));
+  const afterFacetsMap = new Map(afterFacets.map((f) => [f.id, f]));
+
+  afterFacets.forEach((afterFacet, index) => {
+    const beforeFacet = beforeFacetsMap.get(afterFacet.id);
+
+    if (!beforeFacet) {
+      changes.push({
+        path: `search.facets.${index}.name`,
+        before: undefined,
+        after: afterFacet.name,
+      });
+    } else if (beforeFacet.name !== afterFacet.name) {
+      changes.push({
+        path: `search.facets.${index}.name`,
+        before: beforeFacet.name,
+        after: afterFacet.name,
+      });
+    }
+  });
+
+  beforeFacets.forEach((beforeFacet, index) => {
+    if (!afterFacetsMap.has(beforeFacet.id)) {
+      changes.push({
+        path: `search.facets.${index}.name`,
+        before: beforeFacet.name,
         after: undefined,
       });
     }

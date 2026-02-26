@@ -1,10 +1,35 @@
 import { CollectionAfterChangeHook } from 'payload';
 import { get } from 'radash';
-import { getChangedLocalizedPaths } from '@/payload/utilities/getChangedLocalizedPaths';
+import {
+  AUTO_TRANSLATED_STRING_PATHS,
+  getChangedLocalizedPaths,
+} from '@/payload/utilities/getChangedLocalizedPaths';
 import { ResourceDirectory } from '@/payload/payload-types';
 import { createLogger } from '@/lib/logger';
 
 const log = createLogger('autoTranslate');
+
+const extractItemId = (
+  path: string,
+  prefix: string,
+  doc: ResourceDirectory,
+): string | undefined => {
+  if (!path.startsWith(`${prefix}.`)) return undefined;
+
+  const index = parseInt(path.slice(prefix.length + 1), 10);
+  if (isNaN(index)) return undefined;
+
+  const item = get(doc, `${prefix}.${index}`);
+
+  if (
+    item &&
+    typeof item === 'object' &&
+    'id' in item &&
+    typeof item.id === 'string'
+  ) {
+    return item.id;
+  }
+};
 
 export const autoTranslate: CollectionAfterChangeHook<
   ResourceDirectory
@@ -56,23 +81,23 @@ export const autoTranslate: CollectionAfterChangeHook<
     const changedItemIds = new Set<string>();
 
     changedPaths.forEach((path) => {
-      if (path === 'topics.backText' || path === 'topics.customHeading') {
+      if (AUTO_TRANSLATED_STRING_PATHS.includes(path)) {
         changedItemIds.add(path);
         return;
       }
 
-      const suggestionMatch = path.match(/^suggestions\.(\d+)\./);
-      if (suggestionMatch) {
-        const index = parseInt(suggestionMatch[1], 10);
-        const item = get(doc, `suggestions.${index}`);
-        if (
-          item &&
-          typeof item === 'object' &&
-          'id' in item &&
-          typeof item.id === 'string'
-        )
-          changedItemIds.add(item.id);
-        return;
+      const flatPrefixes = [
+        'suggestions',
+        'badges.list',
+        'search.facets',
+      ] as const;
+
+      for (const prefix of flatPrefixes) {
+        const id = extractItemId(path, prefix, doc);
+        if (id) {
+          changedItemIds.add(id);
+          return;
+        }
       }
 
       const topicMatch = path.match(/^topics\.list\.(\d+)\./);
@@ -95,15 +120,8 @@ export const autoTranslate: CollectionAfterChangeHook<
           )
             changedItemIds.add(item.id);
         } else {
-          const index = parseInt(topicMatch[1], 10);
-          const item = get(doc, `topics.list.${index}`);
-          if (
-            item &&
-            typeof item === 'object' &&
-            'id' in item &&
-            typeof item.id === 'string'
-          )
-            changedItemIds.add(item.id);
+          const id = extractItemId(path, 'topics.list', doc);
+          if (id) changedItemIds.add(id);
         }
       }
     });

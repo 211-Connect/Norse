@@ -11,8 +11,6 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      minio:
-        condition: service_healthy
       redis:
         condition: service_healthy
     ports:
@@ -38,27 +36,6 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
-
-  minio:
-    image: bitnamilegacy/minio:2025.6.13
-    restart: always
-    environment:
-      MINIO_ROOT_USER: norse-ng
-      MINIO_ROOT_PASSWORD: norse-ng
-      MINIO_DEFAULT_BUCKETS: norse-ng
-      MINIO_BROWSER: "on"
-    ports:
-      - 9000:9000
-      - 9001:9001
-    volumes:
-      - minio_data:/bitnami/minio/data
-    healthcheck:
-      test:
-        ["CMD", "curl", "--fail", "http://localhost:9000/minio/health/ready"]
-      interval: 15s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
 
   redis:
     image: redis:7.4
@@ -107,7 +84,6 @@ services:
 
 volumes:
   postgres_data:
-  minio_data:
   redis_data:
   prometheus_data:
   grafana_data:

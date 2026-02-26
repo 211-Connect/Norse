@@ -13,6 +13,7 @@ function createAdminUser(): AdminUserData {
     email: 'admin@c211.io',
     password: 'admin',
     roles: ['super-admin'],
+    collection: 'users',
   };
 }
 

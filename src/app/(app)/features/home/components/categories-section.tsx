@@ -4,6 +4,7 @@ import { Image } from '@/app/(app)/shared/components/image';
 import { Link } from '@/app/(app)/shared/components/link';
 import { Card, CardContent } from '@/app/(app)/shared/components/ui/card';
 import { useTopics } from '@/app/(app)/shared/hooks/use-topics';
+import { Topic } from '@/types/topics';
 import { ChevronLeft, ExternalLink } from 'lucide-react';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { useTranslation } from 'react-i18next';
@@ -13,24 +14,15 @@ import { Separator } from '@/app/(app)/shared/components/ui/separator';
 import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
 
 type Props = {
+  topic: Topic;
   iconSize: 'small' | 'medium';
-  index: string;
-  name: string;
-  image?: string;
-  imageBorderRadius?: string | null;
-  href?: string;
-  target?: string;
-  subtopics: any[];
+  imageBorderRadius?: number;
 };
 
 const Category = ({
   iconSize,
-  image,
   imageBorderRadius,
-  name,
-  href,
-  target,
-  subtopics,
+  topic: { name, image, subtopics, href, target },
 }: Props) => {
   const sizeOfIcon = iconSize === 'small' ? 40 : 64;
 
@@ -56,18 +48,18 @@ const Category = ({
         <div className="flex flex-col">
           <h3 className="break-word mb-1 text-xl font-semibold">{name}</h3>
 
-          {subtopics.map((el) => (
+          {subtopics.map((el, index) => (
             <Link
               className="break-word flex items-center gap-1 rounded-md p-2 pl-1 pr-1 hover:bg-primary/5"
-              key={el.name}
+              key={`${el.name}-${index}`}
               href={`${
                 el.href
                   ? el.href
                   : `/search?query=${encodeURIComponent(
-                      el.query,
+                      el.query ?? '',
                     )}&query_label=${encodeURIComponent(
                       el.name,
-                    )}&query_type=${encodeURIComponent(el.queryType)}`
+                    )}&query_type=${encodeURIComponent(el.queryType ?? '')}`
               }`}
               prefetch={false}
               target={el.target}
@@ -156,12 +148,12 @@ export function CategoriesSection({
       )}
 
       <div className="grid grid-cols-1 justify-center gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {topics.map((el: any) => (
+        {topics.map((topic) => (
           <Category
-            key={el.name}
+            key={topic.name}
             iconSize={iconSize}
             imageBorderRadius={imageBorderRadius}
-            {...el}
+            topic={topic}
           />
         ))}
       </div>

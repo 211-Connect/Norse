@@ -1,6 +1,10 @@
 import { ExtractAtomValue } from 'jotai';
 
-import { buildSearchRequest, deriveQueryType } from '../lib/search-utils';
+import {
+  buildSearchRequest,
+  deriveQueryType,
+  QueryType,
+} from '../lib/search-utils';
 import { searchAtom } from '../store/search';
 import { API_URL, INTERNAL_API_KEY } from '../lib/constants';
 import { fetchWrapper } from '../lib/fetchWrapper';
@@ -12,14 +16,15 @@ import { createLogger } from '@/lib/logger';
 const log = createLogger('search');
 
 export type FindResourcesQuery = {
-  query: string;
-  queryLabel: string;
-  queryType: string;
-  searchLocation: string;
-  searchCoordinates: number[];
-  searchDistance: string;
-  searchPlaceType: string[] | undefined;
-  searchBbox: BBox | undefined;
+  query?: string;
+  queryLabel?: string;
+  queryType?: string;
+  location?: string;
+  coordinates?: number[];
+  distance?: string;
+  placeType?: string[];
+  bbox?: BBox;
+  filters?: Record<string, string[]>;
 };
 
 type SearchResult = {
@@ -32,20 +37,25 @@ type SearchResult = {
 
 export function createUrlParamsForSearch(
   searchStore: ExtractAtomValue<typeof searchAtom>,
+  hybridSemanticSearchEnabled?: boolean,
 ) {
   const hasLocation = searchStore['searchCoordinates']?.length === 2;
 
   const urlParams = {
-    query: searchStore['query']?.trim(),
-    query_label: searchStore['queryLabel']?.trim(),
-    query_type: deriveQueryType(searchStore['query'], searchStore['queryType']),
-    location: hasLocation ? searchStore['searchLocation']?.trim() : null,
+    query: searchStore.query?.trim(),
+    query_label: searchStore.queryLabel?.trim(),
+    query_type: deriveQueryType(
+      searchStore.query,
+      searchStore.queryType,
+      hybridSemanticSearchEnabled,
+    ),
+    location: hasLocation ? searchStore.searchLocation?.trim() : null,
     coords: hasLocation
-      ? searchStore['searchCoordinates']?.join(',')?.trim()
+      ? searchStore.searchCoordinates?.join(',')?.trim()
       : null,
     distance:
-      searchStore['searchCoordinates']?.length === 2
-        ? searchStore['searchDistance']?.trim() || '0'
+      searchStore.searchCoordinates?.length === 2
+        ? searchStore.searchDistance?.trim() || '0'
         : '',
   };
 
@@ -165,18 +175,8 @@ function createEmptyResult(page: number): SearchResult {
   };
 }
 
-export type FindResourcesQueryParams = {
-  location: string;
-  coords: string;
-  query: string;
-  query_label: string;
-  query_type: string;
-  page: string;
-  distance: string;
-};
-
 export async function findResources(
-  query: FindResourcesQueryParams,
+  query: FindResourcesQuery,
   locale: string,
   page: number,
   limit?: number,
@@ -185,20 +185,31 @@ export async function findResources(
   if (isNaN(page)) page = 1;
   if (!limit || isNaN(limit)) limit = 25;
 
+  const resolvedQueryType = deriveQueryType(
+    query.query,
+    query.queryType,
+    false,
+  );
+  const hasCoords = query.coordinates?.length === 2;
+
   let data;
   try {
-    const searchParams = new URLSearchParams({
-      ...query,
-      page: String(page),
+    const searchString = qs.stringify({
+      ...(query.query?.trim() && { query: query.query.trim() }),
+      ...(query.queryLabel?.trim() && { query_label: query.queryLabel.trim() }),
+      query_type: resolvedQueryType,
+      ...(query.location?.trim() && { location: query.location.trim() }),
+      ...(hasCoords && { coords: query.coordinates!.join(',') }),
+      ...(hasCoords && { distance: query.distance?.trim() || '0' }),
+      page,
       locale,
-      limit: String(limit),
+      limit,
+      ...(tenantId && { tenant_id: tenantId }),
+      ...(query.filters &&
+        Object.keys(query.filters).length > 0 && { filters: query.filters }),
     });
 
-    if (tenantId) {
-      searchParams.append('tenant_id', tenantId);
-    }
-
-    data = await fetchWrapper(`${API_URL}/search?${searchParams.toString()}`, {
+    data = await fetchWrapper(`${API_URL}/search?${searchString}`, {
       headers: {
         'accept-language': locale,
         'x-api-version': '1',
@@ -252,27 +263,31 @@ export async function findResources(
  * Try fallback search with more_like_this query type
  */
 async function tryFallbackSearch(
-  query: any,
+  query: FindResourcesQuery,
   page: number,
   locale: string,
   limit: number,
   tenantId?: string,
 ): Promise<any | null> {
+  const hasCoords = query.coordinates?.length === 2;
   try {
-    const fallbackParams = new URLSearchParams({
-      ...query,
-      page: String(page),
+    const fallbackString = qs.stringify({
+      ...(query.query?.trim() && { query: query.query.trim() }),
+      ...(query.queryLabel?.trim() && { query_label: query.queryLabel.trim() }),
       query_type: 'more_like_this',
+      ...(query.location?.trim() && { location: query.location.trim() }),
+      ...(hasCoords && { coords: query.coordinates!.join(',') }),
+      ...(hasCoords && { distance: query.distance?.trim() || '0' }),
+      page,
       locale,
-      limit: String(limit),
+      limit,
+      ...(tenantId && { tenant_id: tenantId }),
+      ...(query.filters &&
+        Object.keys(query.filters).length > 0 && { filters: query.filters }),
     });
 
-    if (tenantId) {
-      fallbackParams.append('tenant_id', tenantId);
-    }
-
     const fallbackData = await fetchWrapper(
-      `${API_URL}/search?${fallbackParams.toString()}`,
+      `${API_URL}/search?${fallbackString}`,
       {
         headers: {
           'accept-language': locale,
@@ -300,6 +315,7 @@ async function tryFallbackSearchV2(
   locale: string,
   limit: number,
   tenantId?: string,
+  filters?: Record<string, any>,
 ): Promise<any | null> {
   try {
     const fallbackQueryParams = qs.stringify({
@@ -308,6 +324,7 @@ async function tryFallbackSearchV2(
       query_type: 'more_like_this',
       locale,
       limit,
+      ...(filters && Object.keys(filters).length > 0 ? { filters } : {}),
     });
     const fallbackUrl = `${API_URL}/search?${fallbackQueryParams}`;
 
@@ -355,6 +372,9 @@ export async function findResourcesV2(
     page,
     locale,
     limit,
+    ...(searchStore.filters && Object.keys(searchStore.filters).length > 0
+      ? { filters: searchStore.filters }
+      : {}),
   });
   const searchUrl = `${API_URL}/search?${queryParams}`;
 
@@ -393,8 +413,14 @@ export async function findResourcesV2(
   if (totalResults === 0) {
     noResults = true;
     data =
-      (await tryFallbackSearchV2(request, page, locale, limit, tenantId)) ??
-      data;
+      (await tryFallbackSearchV2(
+        request,
+        page,
+        locale,
+        limit,
+        tenantId,
+        searchStore.filters,
+      )) ?? data;
     totalResults = extractTotalResults(data);
   }
 
