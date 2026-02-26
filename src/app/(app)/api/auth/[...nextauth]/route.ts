@@ -4,13 +4,15 @@ import { findTenantByHost } from '@/payload/collections/Tenants/actions';
 import NextAuth from 'next-auth';
 import { NextRequest } from 'next/server';
 
-const handlerFunction = async (
-  req: NextRequest,
-  ctx: RouteContext<'/api/auth/[...nextauth]'>,
-) => {
-  const headers = req.headers as unknown as Headers;
-  const host = process.env.CUSTOM_AUTH_HOST || headers.get('x-forwarded-host') || headers.get('host');
-  const protocol = process.env.CUSTOM_AUTH_PROTOCOL || headers.get('x-forwarded-proto') || 'https';
+const handlerFunction = async (req: NextRequest, ctx) => {
+  const host =
+    process.env.CUSTOM_AUTH_HOST ||
+    req.headers.get('x-forwarded-host') ||
+    req.headers.get('host');
+  const protocol =
+    process.env.CUSTOM_AUTH_PROTOCOL ||
+    req.headers.get('x-forwarded-proto') ||
+    'https';
 
   const parsedHost = parseHost(host ?? '');
 
