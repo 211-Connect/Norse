@@ -1,8 +1,0 @@
-FROM node:24-bookworm-slim
-WORKDIR /payload
-COPY . .
-RUN npm ci
-ENV PAYLOAD_CONFIG_PATH=src/payload/payload-config.ts
-ARG NODE_ENV=production
-ENV NODE_ENV=$NODE_ENV
-CMD ["npm", "run", "payload", "migrate"]
