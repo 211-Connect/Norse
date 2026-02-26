@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "@azure-rest/ai-translation-text": "^1.0.1",
-    "@floating-ui/react": "^0.27.16",
+    "@floating-ui/react": "^0.27.18",
     "@google-cloud/translate": "^9.3.0",
     "@payloadcms/db-postgres": "3.71.1",
     "@payloadcms/email-nodemailer": "3.71.1",
