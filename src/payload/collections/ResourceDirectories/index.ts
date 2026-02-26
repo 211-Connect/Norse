@@ -37,6 +37,7 @@ export const ResourceDirectories: CollectionConfig = {
   },
   versions: {
     drafts: false,
+    maxPerDoc: 0,
   },
   admin: {
     useAsTitle: 'name',
