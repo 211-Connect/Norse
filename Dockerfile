@@ -33,10 +33,10 @@ COPY --from=builder --chown=nextjs:nodejs /opt/norse/build/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /opt/norse/build/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /opt/norse/build/public ./public
 USER nextjs
-ARG NODE_ENV=production
-ENV NODE_ENV=$NODE_ENV
 ENV PAYLOAD_CONFIG_PATH=src/payload/payload-config.ts
 ENV HOME=/opt/norse/app
+ARG NODE_ENV=production
+ENV NODE_ENV=$NODE_ENV
 ARG PORT=3000
 ENV PORT=$PORT
 ENV HOSTNAME=0.0.0.0
