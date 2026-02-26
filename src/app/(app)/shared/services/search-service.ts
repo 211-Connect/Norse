@@ -16,14 +16,15 @@ import { createLogger } from '@/lib/logger';
 const log = createLogger('search');
 
 export type FindResourcesQuery = {
-  query: string;
-  queryLabel: string;
-  queryType: string;
-  searchLocation: string;
-  searchCoordinates: number[];
-  searchDistance: string;
-  searchPlaceType: string[] | undefined;
-  searchBbox: BBox | undefined;
+  query?: string;
+  queryLabel?: string;
+  queryType?: string;
+  location?: string;
+  coordinates?: number[];
+  distance?: string;
+  placeType?: string[];
+  bbox?: BBox;
+  filters?: Record<string, string[]>;
 };
 
 type SearchResult = {
@@ -65,10 +66,6 @@ export function createUrlParamsForSearch(
     ),
   ) as Record<string, string>;
 }
-
-const VALID_QUERY_TYPES = new Set<string>(Object.values(QueryType));
-const isValidQueryType = (queryType: string | undefined): boolean =>
-  Boolean(queryType && VALID_QUERY_TYPES.has(queryType));
 
 /**
  * Extract total results count from search response
@@ -178,18 +175,8 @@ function createEmptyResult(page: number): SearchResult {
   };
 }
 
-export type FindResourcesQueryParams = {
-  location: string;
-  coords: string;
-  query: string;
-  query_label: string;
-  query_type: string;
-  page: string;
-  distance: string;
-};
-
 export async function findResources(
-  query: FindResourcesQueryParams,
+  query: FindResourcesQuery,
   locale: string,
   page: number,
   limit?: number,
@@ -198,25 +185,31 @@ export async function findResources(
   if (isNaN(page)) page = 1;
   if (!limit || isNaN(limit)) limit = 25;
 
-  if (!isValidQueryType(query.query_type)) {
-    log.warn({ tenantId, query, page, locale }, 'Invalid query_type rejected');
-    return createEmptyResult(page);
-  }
+  const resolvedQueryType = deriveQueryType(
+    query.query,
+    query.queryType,
+    false,
+  );
+  const hasCoords = query.coordinates?.length === 2;
 
   let data;
   try {
-    const searchParams = new URLSearchParams({
-      ...query,
-      page: String(page),
+    const searchString = qs.stringify({
+      ...(query.query?.trim() && { query: query.query.trim() }),
+      ...(query.queryLabel?.trim() && { query_label: query.queryLabel.trim() }),
+      query_type: resolvedQueryType,
+      ...(query.location?.trim() && { location: query.location.trim() }),
+      ...(hasCoords && { coords: query.coordinates!.join(',') }),
+      ...(hasCoords && { distance: query.distance?.trim() || '0' }),
+      page,
       locale,
-      limit: String(limit),
+      limit,
+      ...(tenantId && { tenant_id: tenantId }),
+      ...(query.filters &&
+        Object.keys(query.filters).length > 0 && { filters: query.filters }),
     });
 
-    if (tenantId) {
-      searchParams.append('tenant_id', tenantId);
-    }
-
-    data = await fetchWrapper(`${API_URL}/search?${searchParams.toString()}`, {
+    data = await fetchWrapper(`${API_URL}/search?${searchString}`, {
       headers: {
         'accept-language': locale,
         'x-api-version': '1',
@@ -270,27 +263,31 @@ export async function findResources(
  * Try fallback search with more_like_this query type
  */
 async function tryFallbackSearch(
-  query: any,
+  query: FindResourcesQuery,
   page: number,
   locale: string,
   limit: number,
   tenantId?: string,
 ): Promise<any | null> {
+  const hasCoords = query.coordinates?.length === 2;
   try {
-    const fallbackParams = new URLSearchParams({
-      ...query,
-      page: String(page),
+    const fallbackString = qs.stringify({
+      ...(query.query?.trim() && { query: query.query.trim() }),
+      ...(query.queryLabel?.trim() && { query_label: query.queryLabel.trim() }),
       query_type: 'more_like_this',
+      ...(query.location?.trim() && { location: query.location.trim() }),
+      ...(hasCoords && { coords: query.coordinates!.join(',') }),
+      ...(hasCoords && { distance: query.distance?.trim() || '0' }),
+      page,
       locale,
-      limit: String(limit),
+      limit,
+      ...(tenantId && { tenant_id: tenantId }),
+      ...(query.filters &&
+        Object.keys(query.filters).length > 0 && { filters: query.filters }),
     });
 
-    if (tenantId) {
-      fallbackParams.append('tenant_id', tenantId);
-    }
-
     const fallbackData = await fetchWrapper(
-      `${API_URL}/search?${fallbackParams.toString()}`,
+      `${API_URL}/search?${fallbackString}`,
       {
         headers: {
           'accept-language': locale,
@@ -318,6 +315,7 @@ async function tryFallbackSearchV2(
   locale: string,
   limit: number,
   tenantId?: string,
+  filters?: Record<string, any>,
 ): Promise<any | null> {
   try {
     const fallbackQueryParams = qs.stringify({
@@ -326,6 +324,7 @@ async function tryFallbackSearchV2(
       query_type: 'more_like_this',
       locale,
       limit,
+      ...(filters && Object.keys(filters).length > 0 ? { filters } : {}),
     });
     const fallbackUrl = `${API_URL}/search?${fallbackQueryParams}`;
 
@@ -373,6 +372,9 @@ export async function findResourcesV2(
     page,
     locale,
     limit,
+    ...(searchStore.filters && Object.keys(searchStore.filters).length > 0
+      ? { filters: searchStore.filters }
+      : {}),
   });
   const searchUrl = `${API_URL}/search?${queryParams}`;
 
@@ -411,8 +413,14 @@ export async function findResourcesV2(
   if (totalResults === 0) {
     noResults = true;
     data =
-      (await tryFallbackSearchV2(request, page, locale, limit, tenantId)) ??
-      data;
+      (await tryFallbackSearchV2(
+        request,
+        page,
+        locale,
+        limit,
+        tenantId,
+        searchStore.filters,
+      )) ?? data;
     totalResults = extractTotalResults(data);
   }
 

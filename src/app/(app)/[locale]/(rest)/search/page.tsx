@@ -6,13 +6,14 @@ import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import {
   findResources,
-  FindResourcesQueryParams,
+  FindResourcesQuery,
   findResourcesV2,
 } from '@/app/(app)/shared/services/search-service';
 import { getCookies } from 'cookies-next/server';
 import { cookies, headers } from 'next/headers';
 import { Metadata } from 'next/types';
 import { cache } from 'react';
+import qs from 'qs';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { forwardGeocode } from '@/app/(app)/shared/serverActions/geocoding/forwardGeocode';
 import { isAdvancedGeoEnabled } from '@/app/(app)/shared/lib/search-utils';
@@ -22,48 +23,84 @@ const log = createLogger('search-page');
 
 const i18nNamespaces = ['page-search', 'page-resource', 'common'];
 
-type SearchParams = FindResourcesQueryParams;
+type RawSearchParams = Record<string, string | string[] | undefined>;
+
+/**
+ * Parse the raw Next.js searchParams (which may contain bracket-notation filter keys
+ * like `filters[key][0]=val`) into a typed FindResourcesQuery object.
+ */
+function parseSearchParams(raw: RawSearchParams): FindResourcesQuery {
+  const entries = Object.entries(raw).flatMap(([k, v]) =>
+    (Array.isArray(v) ? v : [v ?? '']).map(
+      (val) => [k, val] as [string, string],
+    ),
+  );
+  const parsed = qs.parse(new URLSearchParams(entries).toString());
+
+  const coordsStr =
+    typeof parsed.coords === 'string' ? parsed.coords : undefined;
+
+  return {
+    query:
+      typeof parsed.query === 'string' ? parsed.query || undefined : undefined,
+    queryLabel:
+      typeof parsed.query_label === 'string'
+        ? parsed.query_label || undefined
+        : undefined,
+    queryType:
+      typeof parsed.query_type === 'string'
+        ? parsed.query_type || undefined
+        : undefined,
+    location:
+      typeof parsed.location === 'string'
+        ? parsed.location || undefined
+        : undefined,
+    coordinates: coordsStr
+      ? coordsStr
+          .split(',')
+          .map(Number)
+          .filter((n) => !isNaN(n))
+      : undefined,
+    distance:
+      typeof parsed.distance === 'string'
+        ? parsed.distance || undefined
+        : undefined,
+    filters: parsed.filters as Record<string, string[]> | undefined,
+  };
+}
 
 const getPageData = cache(async function (
   locale: string,
-  searchParams: SearchParams,
+  rawParams: RawSearchParams,
 ) {
   const appConfig = await getAppConfigWithoutHost(locale);
 
-  const { location, coords, query, query_label, query_type, distance, page } =
-    searchParams;
-
+  const searchQuery = parseSearchParams(rawParams);
+  const page =
+    typeof rawParams.page === 'string' ? parseInt(rawParams.page) || 1 : 1;
   const limit = appConfig.search.resultsLimit;
-
-  const geospatialSearchLocation = isAdvancedGeoEnabled() && location;
 
   let useFindResourcesV2 = false;
   let results, noResults, totalResults, filters;
 
-  if (geospatialSearchLocation) {
-    const [placeMetadata] = await forwardGeocode(location, { locale });
+  if (isAdvancedGeoEnabled() && searchQuery.location) {
+    const [placeMetadata] = await forwardGeocode(searchQuery.location, {
+      locale,
+    });
 
     if (placeMetadata) {
-      const searchStore = {
-        query: query || '',
-        queryLabel: query_label || '',
-        queryType: query_type || '',
-        searchLocation: location || '',
-        searchCoordinates:
-          coords?.split(',').map(Number) || placeMetadata.coordinates,
-        searchDistance: distance || '0',
-        searchPlaceType: placeMetadata.place_type,
-        searchBbox: placeMetadata.bbox,
-        hybridSemanticSearchEnabled:
-          appConfig.search.hybridSemanticSearchEnabled,
+      const geoQuery: FindResourcesQuery = {
+        ...searchQuery,
+        coordinates: searchQuery.coordinates ?? placeMetadata.coordinates,
+        placeType: placeMetadata.place_type,
+        bbox: placeMetadata.bbox,
       };
 
       try {
-        // Use V2 with complete data
         ({ results, noResults, totalResults, filters } = await findResourcesV2(
-          searchStore,
+          geoQuery,
           locale,
-          parseInt(page ?? '1'),
+          page,
           limit,
           appConfig.tenantId,
         ));
@@ -80,9 +117,9 @@ const getPageData = cache(async function (
   // Fallback to legacy search if geospatial wasn't used or failed
   if (!useFindResourcesV2) {
     ({ results, noResults, totalResults, filters } = await findResources(
-      searchParams,
+      searchQuery,
       locale,
-      parseInt(page ?? '1'),
+      page,
       limit,
       appConfig.tenantId,
     ));
@@ -103,6 +140,7 @@ const getPageData = cache(async function (
     totalResults,
     resources,
     t,
+    searchQuery,
   };
 });
 
@@ -111,27 +149,25 @@ export const generateMetadata = async ({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<SearchParams>;
+  searchParams: Promise<RawSearchParams>;
 }): Promise<Metadata> => {
   const [paramsResult, searchParamsResult] = await Promise.all([
     params,
     searchParams,
   ]);
 
-  const { appConfig, results, totalResults, t } = await getPageData(
-    paramsResult.locale,
-    searchParamsResult,
-  );
+  const { appConfig, results, totalResults, t, searchQuery } =
+    await getPageData(paramsResult.locale, searchParamsResult);
 
   const title = `${
-    searchParamsResult.query_label ||
-    searchParamsResult.query ||
+    searchQuery.queryLabel ||
+    searchQuery.query ||
     t('no_query', { ns: 'page-search' })
   } - ${totalResults?.toLocaleString()} ${t('results', { ns: 'page-search' })}`;
 
   const description = `Showing ${
     results.length >= 25 ? '25' : results.length
-  } / ${totalResults} ${t('results_for', { ns: 'page-search' })} ${searchParamsResult.query || ''}.`;
+  } / ${totalResults} ${t('results_for', { ns: 'page-search' })} ${searchQuery.query || ''}.`;
 
   return {
     openGraph: {
@@ -156,7 +192,7 @@ export default async function SearchPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<SearchParams>;
+  searchParams: Promise<RawSearchParams>;
 }) {
   const headersList = await headers();
   const nonce = headersList.get('x-nonce') ?? '';
@@ -168,10 +204,8 @@ export default async function SearchPage({
     getCookies({ cookies }),
   ]);
   const locale = paramsResult.locale;
-  const { coords, distance, query, query_label, query_type, location } =
-    searchParamsResult;
 
-  const { filters, results, noResults, totalResults, resources } =
+  const { filters, results, noResults, totalResults, resources, searchQuery } =
     await getPageData(locale, searchParamsResult);
 
   return (
@@ -179,16 +213,19 @@ export default async function SearchPage({
       cookies={cookieList}
       translationData={{ i18nNamespaces, locale, resources }}
       jotaiData={{
-        coords,
-        currentPage: searchParamsResult.page || '1',
+        coords: searchQuery.coordinates?.join(',') ?? '',
+        currentPage:
+          typeof searchParamsResult.page === 'string'
+            ? searchParamsResult.page
+            : '1',
         device,
-        distance,
+        distance: searchQuery.distance ?? '',
         filters,
-        location,
+        location: searchQuery.location ?? '',
         noResults,
-        query,
-        query_label,
-        query_type,
+        query: searchQuery.query ?? '',
+        query_label: searchQuery.queryLabel ?? '',
+        query_type: searchQuery.queryType ?? '',
         results,
         totalResults,
       }}
