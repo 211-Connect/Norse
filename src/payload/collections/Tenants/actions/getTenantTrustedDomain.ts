@@ -1,7 +1,5 @@
 'use server';
 
-import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
-
 export async function getTenantTrustedDomain(
   tenantId: string,
 ): Promise<string | null> {
@@ -9,6 +7,7 @@ export async function getTenantTrustedDomain(
     return null;
   }
 
+  const { getPayloadSingleton } = await import('@/payload/getPayloadSingleton');
   const payload = await getPayloadSingleton();
 
   const tenant = await payload.findByID({

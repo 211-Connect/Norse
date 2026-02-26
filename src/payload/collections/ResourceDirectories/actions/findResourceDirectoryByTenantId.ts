@@ -3,12 +3,14 @@
 import { defaultLocale } from '@/payload/i18n/locales';
 import { ResourceDirectory } from '@/payload/payload-types';
 import { TypedLocale } from 'payload';
-import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
+// import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
 
 export async function findResourceDirectoryByTenantId(
   tenantId: string,
   locale: TypedLocale = defaultLocale,
 ): Promise<ResourceDirectory | null> {
+  const { getPayloadSingleton } = await import('@/payload/getPayloadSingleton');
+
   const payload = await getPayloadSingleton();
   const {
     docs: [resourceDirectory],

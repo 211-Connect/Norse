@@ -3,12 +3,13 @@ import { TypedLocale } from 'payload';
 import { locales } from '@/payload/i18n/locales';
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
 import { withRedisCache } from '@/utilities/withRedisCache';
-import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
+// import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
 
 async function findResourceDirectoryByHostOrig(
   host: string,
   locale: TypedLocale,
 ): Promise<ResourceDirectory | null> {
+  const { getPayloadSingleton } = await import('@/payload/getPayloadSingleton');
   const payload = await getPayloadSingleton();
   const domain = parseHost(host);
 

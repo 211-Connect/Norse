@@ -1,4 +1,3 @@
-import { cacheService } from '@/cacheService';
 import { createLogger } from '@/lib/logger';
 
 const log = createLogger('withRedisCache');
@@ -24,6 +23,8 @@ export const withRedisCache = async <T>(
   key: RedisCacheKey,
   fetchFunction: () => Promise<T>,
 ): Promise<T | null> => {
+  const { cacheService } = await import('@/cacheService');
+
   try {
     const cachedValue = await cacheService.get(key);
     if (cachedValue) {

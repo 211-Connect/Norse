@@ -49,10 +49,12 @@ function createCacheKey(
   return `${engine}:${locale}:${hash}`;
 }
 
-async function translateWithAzure(
-  texts: string[],
-  targetLocale: string,
-): Promise<string[]> {
+let azureClient: ReturnType<typeof TextTranslationClient> | null = null;
+let googleClient: TranslationServiceClient | null = null;
+
+function getAzureClient() {
+  if (azureClient) return azureClient;
+
   const apiKey = process.env.AZURE_TRANSLATOR_KEY;
   const endpoint =
     process.env.AZURE_TRANSLATOR_ENDPOINT ||
@@ -63,10 +65,37 @@ async function translateWithAzure(
     throw new Error('AZURE_TRANSLATOR_KEY is not configured');
   }
 
-  const client = TextTranslationClient(endpoint, {
+  azureClient = TextTranslationClient(endpoint, {
     key: apiKey,
     region: region,
   });
+
+  return azureClient;
+}
+
+function getGoogleClient() {
+  if (googleClient) return googleClient;
+
+  const credentialsBase64 = process.env.GOOGLE_TRANSLATE_CREDENTIALS_BASE64;
+
+  if (!credentialsBase64) {
+    throw new Error('GOOGLE_TRANSLATE_CREDENTIALS_BASE64 is not configured');
+  }
+
+  const credentialsJson = Buffer.from(credentialsBase64, 'base64').toString(
+    'utf-8',
+  );
+  const credentials = JSON.parse(credentialsJson);
+  googleClient = new TranslationServiceClient({ credentials });
+
+  return googleClient;
+}
+
+async function translateWithAzure(
+  texts: string[],
+  targetLocale: string,
+): Promise<string[]> {
+  const client = getAzureClient();
 
   const inputText = texts.map((text) => ({ text }));
   const translateResponse = await client.path('/translate').post({
@@ -90,18 +119,8 @@ async function translateWithGoogle(
   texts: string[],
   targetLocale: string,
 ): Promise<string[]> {
-  const credentialsBase64 = process.env.GOOGLE_TRANSLATE_CREDENTIALS_BASE64;
-
-  if (!credentialsBase64) {
-    throw new Error('GOOGLE_TRANSLATE_CREDENTIALS_BASE64 is not configured');
-  }
-
-  const credentialsJson = Buffer.from(credentialsBase64, 'base64').toString(
-    'utf-8',
-  );
-  const credentials = JSON.parse(credentialsJson);
-  const client = new TranslationServiceClient({ credentials });
-  const projectId = credentials.project_id;
+  const client = getGoogleClient();
+  const projectId = (client.auth.getCredentials() as any).project_id;
   const location = 'global';
 
   const request = {

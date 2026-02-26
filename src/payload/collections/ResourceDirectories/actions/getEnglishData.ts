@@ -1,10 +1,9 @@
 'use server';
 
-import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
-
 export async function getEnglishData(
   resourceDirectoryId: string,
 ): Promise<Record<string, string>> {
+  const { getPayloadSingleton } = await import('@/payload/getPayloadSingleton');
   const payload = await getPayloadSingleton();
 
   const resourceDirectory = await payload.findByID({

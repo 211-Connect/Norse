@@ -23,8 +23,6 @@ import { sendGridTransport } from './utilities/sendgridAdapter';
 import { clearCache } from './endpoints/clearCache';
 import { translateEndpoint } from './endpoints/translate';
 import { duplicateTenant } from './endpoints/duplicateTenant';
-import { translate } from './jobs/translate';
-import { translateTopics } from './jobs/translateTopics';
 import { warmCache } from './jobs/warmCache';
 
 const filename = fileURLToPath(import.meta.url);
@@ -50,7 +48,23 @@ const config = buildConfig({
     OrchestrationConfig,
   ],
   jobs: {
-    tasks: [translateTopics, translate, warmCache],
+    tasks: [
+      {
+        slug: 'translate',
+        handler: async (...args) => {
+          const { translate } = await import('./jobs/translate');
+          return (translate.handler as Function)(...args);
+        },
+      },
+      {
+        slug: 'translateTopics',
+        handler: async (...args) => {
+          const { translateTopics } = await import('./jobs/translateTopics');
+          return (translateTopics.handler as Function)(...args);
+        },
+      },
+      warmCache,
+    ],
     autoRun: [
       {
         queue: 'translation',
