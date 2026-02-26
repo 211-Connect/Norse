@@ -165,10 +165,11 @@ export function AddToFavoritesButton({
                 </>
               )}
 
-              {fetching.status === 'success' && (
-                <>
-                  {fetching.data.map((el: any) => {
-                    return (
+              {fetching.status === 'success' &&
+                fetching.data &&
+                Array.isArray(fetching.data) && (
+                  <>
+                    {fetching.data.map((el) => (
                       <Fragment key={el._id}>
                         <p className="col-span-2 text-sm">{el.name}</p>
 
@@ -191,10 +192,9 @@ export function AddToFavoritesButton({
                           </Button>
                         </div>
                       </Fragment>
-                    );
-                  })}
-                </>
-              )}
+                    ))}
+                  </>
+                )}
             </div>
           </div>
         </DialogContent>

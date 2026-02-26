@@ -46,7 +46,7 @@ export function useLocations(searchTerm: string) {
         value: loc.address,
         Icon: EarthIcon,
       })),
-      ...data.map((loc) => ({
+      ...(data || []).map((loc) => ({
         value: loc.address,
         Icon: EarthIcon,
       })),
