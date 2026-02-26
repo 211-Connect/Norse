@@ -17,6 +17,7 @@ ENV NEXT_PUBLIC_MAPBOX_STYLE_URL=$NEXT_PUBLIC_MAPBOX_STYLE_URL
 ENV NEXT_PUBLIC_MAPLIBRE_STYLE_URL=$NEXT_PUBLIC_MAPLIBRE_STYLE_URL
 RUN npm run build && npm prune --omit=dev
 
+
 FROM base AS runner
 WORKDIR /opt/norse/app
 RUN addgroup --system --gid 1001 nodejs \
@@ -25,15 +26,20 @@ RUN addgroup --system --gid 1001 nodejs \
     && apt-get install --no-install-recommends -y tini=0.19.0-1+b3 \
     && rm -rf /var/lib/apt/lists/* \
     && chown nextjs:nodejs /opt/norse/app
+COPY --from=builder --chown=nextjs:nodejs /opt/norse/build/node_modules ./node_modules
+COPY --from=builder --chown=nextjs:nodejs /opt/norse/build/tsconfig.json ./
+COPY --from=builder --chown=nextjs:nodejs /opt/norse/build/src ./src
 COPY --from=builder --chown=nextjs:nodejs /opt/norse/build/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /opt/norse/build/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /opt/norse/build/public ./public
-EXPOSE 3000
 USER nextjs
 ARG NODE_ENV=production
 ENV NODE_ENV=$NODE_ENV
+ENV PAYLOAD_CONFIG_PATH=src/payload/payload-config.ts
+ENV HOME=/opt/norse/app
 ARG PORT=3000
 ENV PORT=$PORT
 ENV HOSTNAME=0.0.0.0
+EXPOSE 3000
 ENTRYPOINT ["/usr/bin/tini", "--"]
-CMD ["sh", "-c", "node server.js"]
+CMD ["sh", "-c", "npx payload migrate && node server.js"]
