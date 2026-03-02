@@ -16,13 +16,19 @@
     "seed": "curl 'localhost:3000/api/seed?secret=2f6d2e3ac98d0260fb33672995964f69c25ae36debcf448af5f9751a4270360527d4d8b4e8b1a39828b37934c4c4a3fa6ad49fba714831cff38af7ac2ecaa75105ed04784da9d4a1cc1eef5dee6acfb4bbcc48094d62ce33bf96318a981beda59276da4327c345dd4f782e88e09bb53c83a025918a49c6bb2492ff2717e8123b'",
     "seed-admin": "curl localhost:3000/api/seed-local-admin",
     "translate": "node bin/translateFromEnglish",
-    "sync-translations": "dotenv -e .env -- tsx bin/sync-translations.ts"
+    "sync-translations": "dotenv -e .env -- tsx bin/sync-translations.ts",
+    "test:e2e": "npx playwright test",
+    "test:e2e:headed": "cross-env PW_SLOWMO=250 npx playwright test --headed --workers=1",
+    "test:e2e:debug": "cross-env PWDEBUG=1 PW_SLOWMO=250 npx playwright test --headed --workers=1",
+    "test:e2e:favorites": "npx playwright test --project=favorites",
+    "test:e2e:search-taxonomy": "npx playwright test --project=search-taxonomy"
   },
   "engines": {
     "node": "24.x"
   },
   "private": true,
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@types/autosuggest-highlight": "^3.2.3",
     "@types/mapbox-gl": "^2.7.21",
     "@types/node": "^24.10.9",
