@@ -25,7 +25,7 @@ export async function goToFavorites(page: Page) {
  * Wait until NextAuth session endpoint returns an authenticated user.
  * Useful on client-routed pages where useSession() may hydrate slowly in CI.
  */
-export async function waitForAuthenticatedSession(page: Page, timeout = 15000) {
+export async function waitForAuthenticatedSession(page: Page, timeout = 30000) {
   await page.waitForFunction(
     async () => {
       try {
