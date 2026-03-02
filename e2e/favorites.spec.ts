@@ -24,6 +24,15 @@ test.describe('Favorites Feature (Authenticated)', () => {
   );
   test.use({ storageState: AUTH_STATE_PATH });
 
+  const isAuthRedirect = (url: string) =>
+    /\/auth\/signin|auth\.c211\.io|keycloak/i.test(url);
+
+  test.afterEach(async ({ page }) => {
+    if (!isAuthRedirect(page.url())) {
+      await page.context().storageState({ path: AUTH_STATE_PATH });
+    }
+  });
+
   /** Randomised list name to avoid collisions between runs. */
   const listName = `E2E Test List ${Date.now()}`;
   const listDescription = 'Created by Playwright E2E test';
