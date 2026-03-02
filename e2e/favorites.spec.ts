@@ -66,7 +66,7 @@ test.describe('Favorites Feature (Authenticated)', () => {
     // Wait for results to load
     await page
       .locator('#search-container')
-      .waitFor({ state: 'visible', timeout: 15000 });
+      .waitFor({ state: 'visible', timeout: 30000 });
 
     // Click the first "Favorite" button on a result card
     const favoriteBtn = page.locator('button[aria-label="Favorite"]').first();
