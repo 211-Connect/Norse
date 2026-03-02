@@ -1,21 +1,24 @@
 import { cacheService } from '@/cacheService';
 import { createLogger } from '@/lib/logger';
+import { createHash, randomUUID } from 'crypto';
 
 const log = createLogger('withRedisCache');
 
 type Seconds = number;
-const ONE_HOUR: Seconds = 60 * 60;
-const CACHE_TTL = ONE_HOUR;
+const FIFTEEN_MINUTES: Seconds = 15 * 60;
+const CACHE_TTL = FIFTEEN_MINUTES;
 
 type Domain = string;
 type Locale = string;
 type ResourceId = string;
 type TenantId = string;
+type Hash = string;
 
 export type RedisCacheKey =
   | `tenant:${Domain}`
   | `tenant_locale:${Domain}`
   | `resource_directory:${Domain}:${Locale}`
+  | `search_results:${TenantId}:${Locale}:${Hash}`
   | `resource:${ResourceId}:${Locale}`
   | `search_config:${TenantId}:${Locale}`
   | `orchestration_config:${TenantId}`;
@@ -53,3 +56,24 @@ export const withRedisCache = async <T>(
 
   return value;
 };
+
+/**
+ * Stable SHA-256 hash of arbitrary data for use as a Redis cache key segment.
+ * Sorts object keys before serializing so key insertion order doesn't affect the hash.
+ */
+export function stableHash(value: unknown): string {
+  try {
+    const stable =
+      JSON.stringify(value, (_, v) =>
+        v && typeof v === 'object' && !Array.isArray(v)
+          ? Object.fromEntries(
+              Object.entries(v).sort(([a], [b]) => a.localeCompare(b)),
+            )
+          : v,
+      ) ?? 'null';
+    return createHash('sha256').update(stable).digest('hex');
+  } catch (error) {
+    log.error({ err: error, value }, 'Error hashing value for Redis cache key');
+    return randomUUID();
+  }
+}
