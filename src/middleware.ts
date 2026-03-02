@@ -206,6 +206,7 @@ export async function middleware(request: NextRequest) {
         defaultLocale = tenantLocales.defaultLocale;
       } else {
         edgeLog('warn', 'tenant_locales_not_configured', {
+          tenantLocales,
           url: request.url,
           method: request.method,
           host,
