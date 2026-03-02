@@ -153,6 +153,7 @@ export function AddToFavoritesButton({
         variant={size === 'icon' ? 'ghost' : 'outline'}
         aria-label={t('call_to_action.add_to_list')}
         onClick={handleClick}
+        disabled={session.status === 'loading'}
       >
         <Heart className={size === 'icon' ? 'size-6' : 'size-4'} />
         {size !== 'icon' && t('call_to_action.add_to_list')}
