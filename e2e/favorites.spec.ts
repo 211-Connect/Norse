@@ -63,14 +63,14 @@ test.describe('Favorites Feature (Authenticated)', () => {
     await expect(page.getByText(listName)).toBeVisible({ timeout: 10000 });
   });
 
-  test('should create a new favorite list', async ({ page }) => {
+  test('should create a new favorite list 2', async ({ page }) => {
     await goToFavorites(page);
 
     // Click "Create a list"
     await page.getByRole('button', { name: 'Create a list' }).click();
 
     // Fill the form
-    await page.locator('#name').fill(listName);
+    await page.locator('#name').fill('new list');
     await page.locator('#description').fill(listDescription);
 
     // Submit
