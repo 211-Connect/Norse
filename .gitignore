@@ -64,3 +64,8 @@ reset-db.sh
 
 norse-context/
 *.dump
+
+# Playwright
+e2e/.auth/
+playwright-report/
+test-results/
