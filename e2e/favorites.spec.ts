@@ -63,6 +63,28 @@ test.describe('Favorites Feature (Authenticated)', () => {
     await expect(page.getByText(listName)).toBeVisible({ timeout: 10000 });
   });
 
+  test('should create a new favorite list', async ({ page }) => {
+    await goToFavorites(page);
+
+    // Click "Create a list"
+    await page.getByRole('button', { name: 'Create a list' }).click();
+
+    // Fill the form
+    await page.locator('#name').fill(listName);
+    await page.locator('#description').fill(listDescription);
+
+    // Submit
+    await page.getByRole('button', { name: 'Create' }).click();
+
+    // Toast confirmation
+    await expect(page.getByText('List created')).toBeVisible({
+      timeout: 10000,
+    });
+
+    // The new list should now appear in the list
+    await expect(page.getByText(listName)).toBeVisible({ timeout: 10000 });
+  });
+
   /* ---------- ADD ---------- */
 
   test('should add a resource to the favorite list', async ({ page }) => {
