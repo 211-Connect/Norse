@@ -22,6 +22,29 @@ export async function goToFavorites(page: Page) {
 }
 
 /**
+ * Wait until NextAuth session endpoint returns an authenticated user.
+ * Useful on client-routed pages where useSession() may hydrate slowly in CI.
+ */
+export async function waitForAuthenticatedSession(page: Page, timeout = 15000) {
+  await page.waitForFunction(
+    async () => {
+      try {
+        const response = await fetch('/api/auth/session', {
+          credentials: 'include',
+        });
+        if (!response.ok) return false;
+        const session = await response.json();
+        return Boolean(session?.user);
+      } catch {
+        return false;
+      }
+    },
+    undefined,
+    { timeout },
+  );
+}
+
+/**
  * Open the search dialog, type a query, and submit.
  * Returns after navigation to the search results page.
  */

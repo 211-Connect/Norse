@@ -7,6 +7,7 @@ import {
   expect,
   goToSearch,
   goToFavorites,
+  waitForAuthenticatedSession,
   AUTH_STATE_PATH,
 } from './helpers';
 import fs from 'node:fs';
@@ -68,6 +69,8 @@ test.describe('Favorites Feature (Authenticated)', () => {
     await page
       .locator('#search-container')
       .waitFor({ state: 'visible', timeout: 5000 });
+
+    await waitForAuthenticatedSession(page);
 
     // Click the first "Favorite" button on a result card
     const favoriteBtn = page.locator('button[aria-label="Favorite"]').first();
