@@ -134,7 +134,7 @@ export function AddToFavoritesButton({
   const handleClick = () => {
     if (session.status === 'authenticated') {
       setOpen(true);
-    } else {
+    } else if (session.status === 'unauthenticated') {
       setDialog((prev) => ({
         ...prev,
         promptAuth: {
@@ -143,6 +143,8 @@ export function AddToFavoritesButton({
         },
       }));
     }
+    // While session is 'loading', ignore the click — avoids showing
+    // a login prompt to users whose session is still hydrating.
   };
 
   return (
@@ -154,6 +156,7 @@ export function AddToFavoritesButton({
         aria-label={t('call_to_action.add_to_list')}
         onClick={handleClick}
         disabled={session.status === 'loading'}
+        data-session-status={session.status}
       >
         <Heart className={size === 'icon' ? 'size-6' : 'size-4'} />
         {size !== 'icon' && t('call_to_action.add_to_list')}
