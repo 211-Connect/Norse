@@ -3,7 +3,6 @@ import { ExtractAtomValue } from 'jotai';
 import {
   buildSearchRequest,
   deriveQueryType,
-  QueryType,
   SearchRequestParams,
 } from '../lib/search-utils';
 import { searchAtom } from '../store/search';
@@ -20,6 +19,7 @@ import {
 import qs from 'qs';
 import { createLogger } from '@/lib/logger';
 import { formatAddressForDisplay } from '../lib/utils';
+import { stableHash, withRedisCache } from '@/utilities/withRedisCache';
 
 const log = createLogger('search');
 
@@ -160,13 +160,21 @@ function createEmptyResult(page: number): SearchResult {
   };
 }
 
-export async function findResources(
-  query: FindResourcesQuery,
-  locale: string,
-  page: number,
-  limit?: number,
-  tenantId?: string,
-): Promise<SearchResult> {
+type FindResourcesOriginArgs = {
+  query: FindResourcesQuery;
+  locale: string;
+  page: number;
+  limit?: number;
+  tenantId?: string;
+};
+
+async function findResourcesOrigin({
+  query,
+  locale,
+  page,
+  limit,
+  tenantId,
+}: FindResourcesOriginArgs): Promise<SearchResult> {
   if (isNaN(page)) page = 1;
   if (!limit || isNaN(limit)) limit = 25;
 
@@ -248,6 +256,18 @@ export async function findResources(
     filters,
   };
 }
+
+export const findResources = (
+  query: FindResourcesQuery,
+  locale: string,
+  page: number,
+  limit?: number,
+  tenantId?: string,
+) =>
+  withRedisCache(
+    `search_results:${tenantId}:${locale}:${stableHash({ query, page, limit })}`,
+    () => findResourcesOrigin({ query, locale, page, limit, tenantId }),
+  );
 
 /**
  * Try fallback search with more_like_this query type
