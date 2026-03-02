@@ -56,6 +56,7 @@ test.describe('Favorites Feature (Authenticated)', () => {
   /* ---------- ADD ---------- */
 
   test('should add a resource to the favorite list', async ({ page }) => {
+    await goToFavorites(page);
     // Search for a resource first
     await goToSearch(page, {
       query: 'food',
@@ -66,7 +67,7 @@ test.describe('Favorites Feature (Authenticated)', () => {
     // Wait for results to load
     await page
       .locator('#search-container')
-      .waitFor({ state: 'visible', timeout: 30000 });
+      .waitFor({ state: 'visible', timeout: 5000 });
 
     // Click the first "Favorite" button on a result card
     const favoriteBtn = page.locator('button[aria-label="Favorite"]').first();
