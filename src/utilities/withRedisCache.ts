@@ -1,6 +1,6 @@
 import { cacheService } from '@/cacheService';
 import { createLogger } from '@/lib/logger';
-import { createHash } from 'crypto';
+import { createHash, randomUUID } from 'crypto';
 
 const log = createLogger('withRedisCache');
 
@@ -62,12 +62,18 @@ export const withRedisCache = async <T>(
  * Sorts object keys before serializing so key insertion order doesn't affect the hash.
  */
 export function stableHash(value: unknown): string {
-  const stable = JSON.stringify(value, (_, v) =>
-    v && typeof v === 'object' && !Array.isArray(v)
-      ? Object.fromEntries(
-          Object.entries(v).sort(([a], [b]) => a.localeCompare(b)),
-        )
-      : v,
-  );
-  return createHash('sha256').update(stable).digest('hex');
+  try {
+    const stable =
+      JSON.stringify(value, (_, v) =>
+        v && typeof v === 'object' && !Array.isArray(v)
+          ? Object.fromEntries(
+              Object.entries(v).sort(([a], [b]) => a.localeCompare(b)),
+            )
+          : v,
+      ) ?? 'null';
+    return createHash('sha256').update(stable).digest('hex');
+  } catch (error) {
+    log.error({ err: error, value }, 'Error hashing value for Redis cache key');
+    return randomUUID();
+  }
 }
