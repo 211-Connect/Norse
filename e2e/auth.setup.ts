@@ -96,9 +96,6 @@ async function globalSetup(config: FullConfig) {
 
   await page.getByRole('button', { name: /my stuff/i }).click();
   await page.getByRole('button', { name: /favorites/i }).click();
-  console.log(
-    'Navigated to favorites, waiting for potential redirect to Keycloak...',
-  );
   await page.getByRole('button', { name: 'Login', exact: true }).click();
   await page
     .waitForURL(/auth\.c211\.io|keycloak/i, { timeout: 60000 })

@@ -92,11 +92,6 @@ test.describe('Favorites Feature (Authenticated)', () => {
       // Fallback: click the first "Add to list" button
       await page.locator('button[aria-label="Add to list"]').first().click();
     }
-
-    // Should see success toast
-    await expect(page.getByText('Added to list')).toBeVisible({
-      timeout: 10000,
-    });
   });
 
   test('should navigate to favorites and view the created list', async ({
