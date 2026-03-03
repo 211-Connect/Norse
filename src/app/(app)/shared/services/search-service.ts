@@ -12,6 +12,7 @@ import { transformFacetsToArray } from '../utils/toFacetsWithTranslation';
 import { BBox } from '@/types/resource';
 import qs from 'qs';
 import { createLogger } from '@/lib/logger';
+import { formatAddressForDisplay } from '../lib/utils';
 
 const log = createLogger('search');
 
@@ -88,24 +89,7 @@ function transformSearchHits(
 
   return hits.map((hit: any) => {
     const physicalAddress = hit._source?.location?.physical_address;
-    let mainAddress: string | null = null;
-
-    if (
-      physicalAddress?.address_1 &&
-      physicalAddress?.city &&
-      physicalAddress?.state &&
-      physicalAddress?.postal_code
-    ) {
-      const addressParts = [
-        physicalAddress.address_1,
-        physicalAddress.address_2 ? physicalAddress.address_2 : null,
-        physicalAddress.city,
-        physicalAddress.state,
-        physicalAddress.postal_code,
-      ].filter(Boolean);
-
-      mainAddress = addressParts.join(', ');
-    }
+    const mainAddress = formatAddressForDisplay(physicalAddress);
 
     const responseData: Record<string, any> = {
       _id: hit._id,
