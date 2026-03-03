@@ -14,7 +14,7 @@ export type ResultType = {
   serviceName: string;
   website: string;
   taxonomies: Taxonomy[];
-  facets?: FacetWithTranslation[] | null;
+  facets: FacetWithTranslation[] | null | undefined;
 };
 
 export const resultsAtom = atom<ResultType[]>([]);
