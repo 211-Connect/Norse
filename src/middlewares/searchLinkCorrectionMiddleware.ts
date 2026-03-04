@@ -17,7 +17,7 @@ export function searchLinkCorrectionMiddleware(request: NextRequest) {
   const alreadyHasCoords = searchParams.has('coords');
   const alreadyHasDistance = searchParams.has('distance');
 
-  if (pathname.endsWith('/search')) {
+  if (pathname.endsWith('/search') || pathname.endsWith('/search/')) {
     let anyChanges = false;
     const url = request.nextUrl.clone();
 
