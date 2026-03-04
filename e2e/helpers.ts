@@ -23,11 +23,8 @@ export async function goToSearch(page: Page) {
 }
 
 export async function openSearchDialog(page: Page) {
-  await page
-    .getByPlaceholder('Food, clothing, shelter, etc...')
-    .first()
-    .click();
-  await page.locator('div[role="dialog"]').waitFor({ state: 'visible' });
+  await page.getByTestId('search-trigger').first().click();
+  await page.getByTestId('search-dialog').waitFor({ state: 'visible' });
   return page.locator('#search-input');
 }
 
@@ -43,10 +40,10 @@ export async function performSearch(page: Page, params: SearchParams) {
   if (params.query_type === 'taxonomy') {
     await searchInput.fill(params.query_label ?? params.query);
 
-    const listbox = page.locator('div[role="listbox"]');
+    const listbox = page.getByTestId('autocomplete-listbox');
     await listbox.waitFor({ state: 'visible', timeout: 10_000 });
 
-    const options = listbox.locator('div[role="option"]');
+    const options = listbox.getByTestId('autocomplete-option');
     const optionCount = await options.count();
     if (optionCount === 0) {
       throw new Error('No taxonomy options were returned from autocomplete');
@@ -70,15 +67,15 @@ export async function performSearch(page: Page, params: SearchParams) {
     await searchInput.fill(params.query ?? '');
   }
 
-  await page.locator('div[role="dialog"] button[type="submit"]').click();
+  await page.getByTestId('search-submit-btn').click();
 
   await page.waitForURL(/\/search\?/);
   await page.waitForLoadState('networkidle');
 }
 
 export async function goToFavorites(page: Page) {
-  await page.getByRole('button', { name: /my stuff/i }).click();
-  await page.getByRole('button', { name: /favorites/i }).click();
+  await page.getByTestId('my-stuff-btn').click();
+  await page.getByTestId('favorites-btn').click();
   await page.waitForLoadState('networkidle');
 }
 
@@ -103,9 +100,9 @@ export async function loginViaKeycloak(page: Page) {
   await goHome(page);
   await page.waitForLoadState('networkidle');
 
-  await page.getByRole('button', { name: /my stuff/i }).click();
-  await page.getByRole('button', { name: /favorites/i }).click();
-  await page.getByRole('button', { name: 'Login', exact: true }).click();
+  await page.getByTestId('my-stuff-btn').click();
+  await page.getByTestId('favorites-btn').click();
+  await page.getByTestId('login-btn').click();
 
   await page
     .waitForURL(/auth\.c211\.io|keycloak/i, { timeout: 60_000 })
