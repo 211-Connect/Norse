@@ -6,7 +6,6 @@ permissions:
 on:
   push:
     branches:
-      - main
       - development
     paths:
       - 'src/**'
@@ -14,6 +13,9 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'next.config.js'
+
+  release:
+    types: [published]
 
   workflow_dispatch:
 
@@ -55,7 +57,9 @@ jobs:
           tags: |
             type=sha,format=short
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/development' }}
-            type=raw,value=production,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=development,enable=${{ github.ref == 'refs/heads/development' }}
+            type=raw,value=production,enable=${{ github.event_name == 'release' }}
+            type=semver,pattern={{version}},enable=${{ github.event_name == 'release' }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
