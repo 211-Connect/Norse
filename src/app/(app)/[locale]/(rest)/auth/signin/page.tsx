@@ -1,5 +1,5 @@
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
-import { signIn } from 'next-auth/react';
+import { SignInTrigger } from './signin-trigger';
 
 export default async function SignInPage({ params, searchParams }) {
   const { locale } = await params;
@@ -11,9 +11,7 @@ export default async function SignInPage({ params, searchParams }) {
       ? '/favorites'
       : `/${locale}/favorites`;
 
-  signIn('keycloak', {
-    callbackUrl: (query?.redirect as string) ?? defaultCallbackUrl,
-  });
+  const callbackUrl = (query?.redirect as string) ?? defaultCallbackUrl;
 
-  return null;
+  return <SignInTrigger callbackUrl={callbackUrl} />;
 }
