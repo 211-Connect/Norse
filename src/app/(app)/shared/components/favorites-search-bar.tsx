@@ -46,6 +46,7 @@ export function FavoritesSearchBar({
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         className="pl-9"
+        data-testid="favorites-search-input"
       />
     </div>
   );

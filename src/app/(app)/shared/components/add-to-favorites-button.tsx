@@ -154,6 +154,7 @@ export function AddToFavoritesButton({
         size={size}
         variant={size === 'icon' ? 'ghost' : 'outline'}
         aria-label={t('call_to_action.add_to_list')}
+        data-testid="favorite-btn"
         onClick={handleClick}
         disabled={session.status === 'loading'}
         data-session-status={session.status}
@@ -235,6 +236,7 @@ export function AddToFavoritesButton({
                             size="icon"
                             onClick={addToFavoriteListHandler(el.id)}
                             aria-label={t('modal.add_to_list.add_to_list')}
+                            data-testid="add-to-list-btn"
                           >
                             <ListPlus className="size-4" />
                           </Button>

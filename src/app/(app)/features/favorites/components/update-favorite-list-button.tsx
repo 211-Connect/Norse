@@ -75,7 +75,12 @@ export function UpdateFavoriteListButton({ id, name, description, privacy }) {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} size="icon" variant="outline">
+      <Button
+        onClick={() => setOpen(true)}
+        size="icon"
+        variant="outline"
+        data-testid="edit-list-btn"
+      >
         <SquarePen className="size-4" />
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -126,7 +131,11 @@ export function UpdateFavoriteListButton({ id, name, description, privacy }) {
             <Button variant="outline" onClick={() => setOpen(false)}>
               {t('call_to_action.cancel')}
             </Button>
-            <Button form="update-favorite-form" type="submit">
+            <Button
+              form="update-favorite-form"
+              type="submit"
+              data-testid="update-list-submit-btn"
+            >
               {t('call_to_action.update')}
             </Button>
           </DialogFooter>
