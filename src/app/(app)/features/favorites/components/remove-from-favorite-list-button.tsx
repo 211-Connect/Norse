@@ -43,6 +43,7 @@ export function RemoveFromFavoriteListButton({ id, favoriteListId }) {
         onClick={() => setOpen(true)}
         variant="ghost"
         className="size-6 print:hidden"
+        data-testid="remove-favorite-btn"
       >
         <HeartOff className="size-6" />
       </Button>
@@ -61,6 +62,7 @@ export function RemoveFromFavoriteListButton({ id, favoriteListId }) {
             <Button
               variant="destructive"
               onClick={removeFavoriteFromListHandler}
+              data-testid="remove-favorite-confirm-btn"
             >
               {t('call_to_action.delete')}
             </Button>

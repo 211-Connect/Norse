@@ -161,6 +161,7 @@ export function Header() {
                 newLayoutEnabled && '!bg-white',
               )}
               variant="outline"
+              data-testid="my-stuff-btn"
             >
               <UserRound className="size-4" />
               {t('header.my_stuff')}
@@ -174,6 +175,7 @@ export function Header() {
                   <Button
                     className="w-full justify-start px-[10px] text-primary hover:text-primary"
                     variant="ghost"
+                    data-testid="favorites-btn"
                     onClick={() => {
                       if (session.status === 'unauthenticated') {
                         setTimeout(() => {

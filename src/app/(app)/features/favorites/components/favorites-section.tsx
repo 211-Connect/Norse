@@ -73,6 +73,7 @@ export function FavoritesSection() {
               'items-center gap-1',
             )}
             href={`/favorites${stringifiedSearchParams}`}
+            data-testid="back-to-favorites"
           >
             <ChevronLeft className="size-4" />
             {t('back_to_favorites')}
