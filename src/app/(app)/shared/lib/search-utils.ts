@@ -188,9 +188,31 @@ export function deriveQueryType(
   const normalizedQuery = query?.trim();
 
   // Check if query is a taxonomy code (highest priority)
-  // Handle both single codes and comma-separated multiple codes
+  // Handle JSON OR syntax, Standard codes, and comma-separated codes
   if (normalizedQuery) {
-    // Split by comma and check if all parts are taxonomy codes
+    // 1. Check JSON OR syntax: {"OR":["code1","code2",...]}
+    // Advanced queries are assumed to be taxonomy
+    if (normalizedQuery.startsWith('{')) {
+      try {
+        const parsed = JSON.parse(normalizedQuery);
+        if (parsed.OR && Array.isArray(parsed.OR)) {
+          return QueryType.Taxonomy;
+        }
+        if (parsed.AND && Array.isArray(parsed.AND)) {
+          return QueryType.Taxonomy;
+        }
+      } catch {
+        // Not valid JSON, continue to other checks
+      }
+    }
+
+    // 2. Check if entire query is a single taxonomy code
+    //    (handles codes with internal commas like Standard:00015795,015)
+    if (TaxonomyService.isTaxonomyCode(normalizedQuery)) {
+      return QueryType.Taxonomy;
+    }
+
+    // 3. Split by comma and check if all parts are taxonomy codes
     const parts = normalizedQuery.split(',').map((part) => part.trim());
     const allAreTaxonomyCodes = parts.every(
       (part) => part.length > 0 && TaxonomyService.isTaxonomyCode(part),
