@@ -10,14 +10,13 @@ class CacheService {
   private connectionPromise: Promise<void> | null = null;
   private connectionAttempted = false;
 
-  constructor(private db: number = 0) {
-    if (!this.isEnabled) {
-      log.warn('CACHE_REDIS_URI is not set; caching is disabled');
-    }
-  }
+  constructor(private db: number = 0) {}
 
   private async ensureConnection(): Promise<void> {
-    if (!this.isEnabled) return;
+    if (!this.isEnabled) {
+      log.warn('CACHE_REDIS_URI is not set; caching is disabled');
+      return;
+    }
 
     if (this.client?.status === 'ready') return;
 
