@@ -130,3 +130,51 @@ jobs:
     needs: wait-for-deploy
     uses: ./.github/workflows/e2e-tests.yaml
     secrets: inherit
+
+  notify-build-failure:
+    if: always()
+    needs: [build-and-push]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack notification - Deploy failed
+        uses: slackapi/slack-github-action@v2.1.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": ":x: *Development Build & Push Failed (Test)*",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ":x: *Build & Push Failed*\nDocker image build or push to registry failed.`\n*Commit:* `${{ github.sha }}`\n*Author:* ${{ github.actor }}"
+                  }
+                }
+              ]
+            }
+
+  notify-e2e-failure:
+    if: always()
+    needs: [e2e-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack notification - E2E tests failed
+        uses: slackapi/slack-github-action@v2.1.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": ":rotating_light: *Development E2E Tests Failed (Test)*",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ":rotating_light: *E2E Tests Failed*\nEnd-to-end tests failed after successful deployment.\n*Commit:* `${{ github.sha }}`\n*Author:* ${{ github.actor }}"
+                  }
+                }
+              ]
+            }
