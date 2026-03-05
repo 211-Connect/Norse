@@ -41,10 +41,10 @@ test.describe('Search Autocomplete Suggestions', () => {
     const searchInput = await openSearchDialog(page);
     await searchInput.fill('I need');
 
-    const listbox = page.locator('div[role="listbox"]');
+    const listbox = page.getByTestId('autocomplete-listbox');
     await listbox.waitFor({ state: 'visible', timeout: 10000 });
 
-    const options = listbox.locator('div[role="option"]');
+    const options = listbox.getByTestId('autocomplete-option');
     const count = await options.count();
     expect(count).toBeGreaterThan(0);
 
@@ -61,10 +61,10 @@ test.describe('Search Autocomplete Suggestions', () => {
     const searchInput = await openSearchDialog(page);
     await searchInput.fill('food');
 
-    const listbox = page.locator('div[role="listbox"]');
+    const listbox = page.getByTestId('autocomplete-listbox');
     await listbox.waitFor({ state: 'visible', timeout: 10000 });
 
-    const options = listbox.locator('div[role="option"]');
+    const options = listbox.getByTestId('autocomplete-option');
     const count = await options.count();
     expect(count).toBeGreaterThan(0);
   });
@@ -88,7 +88,7 @@ test.describe('Search Autocomplete Suggestions', () => {
     await searchInput.fill('food');
     await expect(searchInput).toHaveValue('food');
 
-    const clearBtn = page.locator('button[aria-label="Clear"]').first();
+    const clearBtn = page.getByTestId('search-clear-btn').first();
     await expect(clearBtn).toBeVisible();
     await clearBtn.click();
     await expect(searchInput).toHaveValue('');
@@ -137,18 +137,16 @@ test.describe('Keyword Search', () => {
       query_type: 'text',
     });
 
-    const noResultsTitle = page.getByText(
-      'No results found matching your query',
-    );
+    const noResultsCard = page.getByTestId('no-results-card');
     const resultTotal = page.locator('#result-total');
 
-    const hasNoResults = await noResultsTitle.isVisible().catch(() => false);
+    const hasNoResults = await noResultsCard.isVisible().catch(() => false);
     if (!hasNoResults) {
       const totalText = await resultTotal.textContent();
       const total = parseTotalFromResultText(totalText ?? '');
       expect(total).toBe(0);
     } else {
-      await expect(noResultsTitle).toBeVisible();
+      await expect(noResultsCard).toBeVisible();
     }
   });
 });
@@ -164,10 +162,10 @@ test.describe('Search Result Pagination', () => {
 
     test.skip(total <= 10, `Expected >10 results for pagination, got ${total}`);
 
-    const pagination = page.locator('nav[aria-label="pagination"]');
+    const pagination = page.getByTestId('pagination');
     await expect(pagination).toBeVisible();
 
-    const nextBtn = page.getByLabel('Go to next page');
+    const nextBtn = page.getByTestId('pagination-next');
     await expect(nextBtn).toBeVisible();
   });
 
@@ -179,7 +177,7 @@ test.describe('Search Result Pagination', () => {
     const beforeUrl = new URL(page.url());
     const beforePage = Number(beforeUrl.searchParams.get('page') ?? '1');
 
-    const nextBtn = page.getByLabel('Go to next page');
+    const nextBtn = page.getByTestId('pagination-next');
     await nextBtn.click();
 
     await page.waitForLoadState('networkidle');
