@@ -11,6 +11,19 @@ on:
   push:
     branches:
       - development
+    paths:
+      - 'bin/**'
+      - 'src/**'
+      - 'public/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'next.config.js'
+      - 'tsconfig.json'
+      - 'tailwind.config.ts'
+      - 'postcss.config.cjs'
+      - 'components.json'
+      - 'app.defaults.json'
+      - 'Dockerfile'
 
   workflow_dispatch:
 
