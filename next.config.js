@@ -82,6 +82,7 @@ const nextConfig = {
       config.resolve.alias = {
         ...config.resolve.alias,
         'pino-pretty': false,
+        ioredis: false,
       };
     }
 
