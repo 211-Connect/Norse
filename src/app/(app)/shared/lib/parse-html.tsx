@@ -1,4 +1,7 @@
 import parse from 'html-react-parser';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('parse-html');
 
 export function markdownLinksToHtml(text: string): string {
   if (!text || typeof text !== 'string') return '';
@@ -43,5 +46,11 @@ export function parseHtml(
     html = html.replace(/\n/g, '<br />');
   }
 
-  return parse(html);
+  try {
+    const parsedHtml = parse(html);
+    return parsedHtml;
+  } catch (e) {
+    log.error({ err: e }, 'failed to parse HTML');
+    return html;
+  }
 }
