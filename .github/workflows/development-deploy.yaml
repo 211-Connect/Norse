@@ -33,7 +33,6 @@ jobs:
         id: before
         run: |
           APP_ID="${{ secrets.DO_DEVELOPMENT_APP_ID }}"
-          echo "app_id=$APP_ID" >> "$GITHUB_OUTPUT"
 
           ACTIVE_DEPLOYMENT=$(doctl apps list-deployments "$APP_ID" --format ID,Phase --no-header | grep ACTIVE | awk '{print $1}' | head -n1)
           echo "deployment_id=$ACTIVE_DEPLOYMENT" >> "$GITHUB_OUTPUT"
@@ -98,9 +97,9 @@ jobs:
 
       - name: Wait for new deployment to become active
         env:
-          APP_ID: ${{ needs.build-and-push.outputs.app_id }}
           OLD_DEPLOYMENT_ID: ${{ needs.build-and-push.outputs.deployment_id }}
         run: |
+          APP_ID="${{ secrets.DO_DEVELOPMENT_APP_ID }}"
           echo "Waiting for a new deployment to replace: $OLD_DEPLOYMENT_ID"
           MAX_ATTEMPTS=60
           SLEEP_SECONDS=30
