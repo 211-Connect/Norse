@@ -132,7 +132,7 @@ jobs:
     secrets: inherit
 
   notify-build-failure:
-    if: always()
+    if: always() && needs.build-and-push.result == 'failure'
     needs: [build-and-push]
     runs-on: ubuntu-latest
     steps:
@@ -143,20 +143,20 @@ jobs:
           webhook-type: incoming-webhook
           payload: |
             {
-              "text": ":x: *Development Build & Push Failed (Test)*",
+              "text": ":x: *Build & Push Failed*",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": ":x: *Build & Push Failed*\nDocker image build or push to registry failed.`\n*Commit:* `${{ github.sha }}`\n*Author:* ${{ github.actor }}"
+                    "text": ":x: *Development Build & Push Failed*\nDocker image build or push to registry failed.`\n*Commit:* `${{ github.sha }}`\n*Author:* ${{ github.actor }}"
                   }
                 }
               ]
             }
 
   notify-e2e-failure:
-    if: always()
+    if: always() && needs.e2e-tests.result == 'failure'
     needs: [e2e-tests]
     runs-on: ubuntu-latest
     steps:
@@ -167,13 +167,13 @@ jobs:
           webhook-type: incoming-webhook
           payload: |
             {
-              "text": ":rotating_light: *Development E2E Tests Failed (Test)*",
+              "text": ":rotating_light: *E2E Tests Failed*",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": ":rotating_light: *E2E Tests Failed*\nEnd-to-end tests failed after successful deployment.\n*Commit:* `${{ github.sha }}`\n*Author:* ${{ github.actor }}"
+                    "text": ":rotating_light: *Development E2E Tests Failed*\nEnd-to-end tests failed after successful deployment.\n*Commit:* `${{ github.sha }}`\n*Author:* ${{ github.actor }}"
                   }
                 }
               ]
