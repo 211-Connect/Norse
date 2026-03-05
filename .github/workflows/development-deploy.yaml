@@ -1,7 +1,7 @@
 name: Development Deploy
 
 concurrency:
-  group: deploy-production
+  group: development-deploy
   cancel-in-progress: false
 
 permissions:
