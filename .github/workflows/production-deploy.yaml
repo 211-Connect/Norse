@@ -12,8 +12,6 @@ on:
     tags:
       - 'v*'
 
-  workflow_dispatch:
-
 env:
   REGISTRY: registry.digitalocean.com
   IMAGE_NAME: ${{ secrets.DO_REGISTRY_NAME }}/norse
