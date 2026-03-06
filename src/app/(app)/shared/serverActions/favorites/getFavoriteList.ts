@@ -6,7 +6,7 @@ import {
   INTERNAL_API_KEY,
 } from '../../lib/constants';
 import { getAuthHeaders } from '../../lib/authHeaders';
-import { fetchWrapper } from '../../lib/fetchWrapper';
+import { fetchWrapper, sanitizePathSegment } from '../../lib/fetchWrapper';
 import { FavoriteListItemDto } from '@/types/favorites';
 
 export async function getFavoriteList(
@@ -21,7 +21,8 @@ export async function getFavoriteList(
     searchParams.append('tenant_id', tenantId);
   }
 
-  const url = `${API_URL}/${FAVORITES_LIST_ENDPOINT}/${id}?${searchParams.toString()}`;
+  const safeId = sanitizePathSegment(id);
+  const url = `${API_URL}/${FAVORITES_LIST_ENDPOINT}/${safeId}?${searchParams.toString()}`;
   const response = await fetchWrapper<FavoriteListItemDto>(
     url,
     {
