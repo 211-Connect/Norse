@@ -27,5 +27,5 @@
     "strictNullChecks": true
   },
   "include": ["**/*.ts", "**/*.tsx", "next-env.d.ts", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "docs"]
+  "exclude": ["node_modules", "docs", "e2e", "playwright.config.ts"]
 }
