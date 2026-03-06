@@ -5,6 +5,16 @@ interface FetchWrapperOptions extends Omit<RequestInit, 'body'> {
   body?: any; // Can accept any object, will be stringified automatically
 }
 
+export function sanitizePathSegment(segment: string): string {
+  const trimmed = segment?.trim();
+  // Allow only URL-safe identifier characters to prevent path traversal or header injection.
+  const SAFE_SEGMENT_REGEX = /^[A-Za-z0-9_-]+$/;
+  if (!trimmed || !SAFE_SEGMENT_REGEX.test(trimmed)) {
+    throw new Error('Invalid identifier provided for URL path segment.');
+  }
+  return trimmed;
+}
+
 const toBody = (body: FetchWrapperOptions['body']) => {
   if (body instanceof URLSearchParams) {
     return body.toString();

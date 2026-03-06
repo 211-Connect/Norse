@@ -6,7 +6,7 @@ import {
   INTERNAL_API_KEY,
 } from '../../lib/constants';
 import { getAuthHeaders } from '../../lib/authHeaders';
-import { fetchWrapper } from '../../lib/fetchWrapper';
+import { fetchWrapper, sanitizePathSegment } from '../../lib/fetchWrapper';
 
 export const removeFavoriteFromList = async (
   {
@@ -25,7 +25,9 @@ export const removeFavoriteFromList = async (
     searchParams.append('tenant_id', tenantId);
   }
 
-  const url = `${API_URL}/${FAVORITES_BASE_ENDPOINT}/${resourceId}/${favoriteListId}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
+  const safeResourceId = sanitizePathSegment(resourceId);
+  const safeFavoriteListId = sanitizePathSegment(favoriteListId);
+  const url = `${API_URL}/${FAVORITES_BASE_ENDPOINT}/${safeResourceId}/${safeFavoriteListId}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
   return fetchWrapper<void>(url, {
     method: 'DELETE',
     headers: {
