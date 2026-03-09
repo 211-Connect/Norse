@@ -2,7 +2,7 @@
 
 import { BusFront } from 'lucide-react';
 import { Datum } from '../datum';
-import { ResourceComponentProps } from '../layout-renderer';
+import { ResourceComponentProps } from '../component-registry';
 
 export function TransportationComponent({ resource }: ResourceComponentProps) {
   if (!resource.transportation) {
