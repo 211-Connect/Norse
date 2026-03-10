@@ -34,7 +34,10 @@ export function Datum({
   const parsedDescription = description ? parseHtml(description) : null;
 
   return (
-    <div className="flex flex-row gap-2 whitespace-pre-line" id={generatedId}>
+    <div
+      className="flex flex-row gap-2 whitespace-pre-line py-2"
+      id={generatedId}
+    >
       <div>
         {Icon ? (
           <Icon
