@@ -44,4 +44,6 @@ export enum ResourceComponentId {
 
   // Layout helpers
   SEPARATOR = 'separator',
+
+  CUSTOM_ATTRIBUTE = 'customAttribute',
 }

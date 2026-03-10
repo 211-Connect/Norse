@@ -2,6 +2,17 @@ import { ResourceComponentId } from './component-ids';
 
 export interface LayoutColumnItem {
   componentId: ResourceComponentId;
+  customAttribute?: {
+    title?: string;
+    subtitle?: string;
+    description?: string;
+    icon?: string;
+    iconColor?: string;
+    url?: string;
+    urlTarget?: '_blank' | '_self';
+    titleBelow?: boolean;
+    size?: 'sm' | 'md';
+  };
 }
 
 export interface ResourceLayout {
