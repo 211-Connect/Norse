@@ -24,7 +24,9 @@ export const DEFAULT_RESOURCE_LAYOUT: ResourceLayout = {
   leftColumn: [
     {
       items: [
-        { componentId: ResourceComponentId.HEADER },
+        { componentId: ResourceComponentId.BADGES },
+        { componentId: ResourceComponentId.RESOURCE_NAME },
+        { componentId: ResourceComponentId.SERVICE_NAME },
         { componentId: ResourceComponentId.ADDRESS },
         { componentId: ResourceComponentId.TRANSPORTATION },
         { componentId: ResourceComponentId.ACCESSIBILITY },

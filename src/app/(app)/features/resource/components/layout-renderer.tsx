@@ -93,7 +93,7 @@ function ColumnRenderer({ groups, resource }: ColumnRendererProps) {
               key={`group-${groupIndex}`}
               className="print:border-none print:shadow-none"
             >
-              <CardContent className="flex flex-col gap-4">
+              <CardContent className="flex flex-col gap-2">
                 {renderedComponents}
               </CardContent>
             </Card>
@@ -101,7 +101,7 @@ function ColumnRenderer({ groups, resource }: ColumnRendererProps) {
         }
 
         return (
-          <div key={`group-${groupIndex}`} className="flex flex-col gap-4">
+          <div key={`group-${groupIndex}`} className="flex flex-col gap-2">
             {renderedComponents}
           </div>
         );

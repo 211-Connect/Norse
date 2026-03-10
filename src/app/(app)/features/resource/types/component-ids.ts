@@ -1,6 +1,8 @@
 export enum ResourceComponentId {
   // Header section
-  HEADER = 'header',
+  BADGES = 'badges',
+  RESOURCE_NAME = 'resourceName',
+  SERVICE_NAME = 'serviceName',
 
   // Main info
   ADDRESS = 'address',

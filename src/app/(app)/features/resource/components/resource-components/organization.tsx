@@ -15,11 +15,15 @@ export function OrganizationComponent({ resource }: { resource: Resource }) {
 
   return (
     <div>
-      <Datum
-        description={organizationName}
-        title={t('providing_organization')}
-      />
-      <Datum description={organizationDescription} />
+      {organizationName && (
+        <Datum
+          description={organizationName}
+          title={t('providing_organization')}
+        />
+      )}
+      {organizationDescription && (
+        <Datum description={organizationDescription} />
+      )}
     </div>
   );
 }

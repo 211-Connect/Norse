@@ -3,6 +3,9 @@ import { ResourceComponentId } from '../types/component-ids';
 import { Resource } from '@/types/resource';
 import {
   HeaderComponent,
+  BadgesComponent,
+  ResourceNameComponent,
+  ServiceNameComponent,
   AddressComponent,
   TransportationComponent,
   AccessibilityComponent,
@@ -26,6 +29,7 @@ import {
   OrganizationComponent,
   FacetsComponent,
   SeparatorComponent,
+  CustomAttributeComponent,
 } from './resource-components';
 
 export interface ResourceComponentProps {
@@ -36,7 +40,9 @@ export const componentRegistry: Record<
   ResourceComponentId,
   ComponentType<ResourceComponentProps>
 > = {
-  [ResourceComponentId.HEADER]: HeaderComponent,
+  [ResourceComponentId.BADGES]: BadgesComponent,
+  [ResourceComponentId.RESOURCE_NAME]: ResourceNameComponent,
+  [ResourceComponentId.SERVICE_NAME]: ServiceNameComponent,
   [ResourceComponentId.ADDRESS]: AddressComponent,
   [ResourceComponentId.TRANSPORTATION]: TransportationComponent,
   [ResourceComponentId.ACCESSIBILITY]: AccessibilityComponent,
@@ -61,6 +67,7 @@ export const componentRegistry: Record<
   [ResourceComponentId.ORGANIZATION]: OrganizationComponent,
   [ResourceComponentId.FACETS]: FacetsComponent,
   [ResourceComponentId.SEPARATOR]: SeparatorComponent,
+  [ResourceComponentId.CUSTOM_ATTRIBUTE]: CustomAttributeComponent,
 };
 
 export function getResourceComponentById(
@@ -76,7 +83,11 @@ export function shouldComponentRender(
   switch (componentId) {
     case ResourceComponentId.SEPARATOR:
       return true;
-    case ResourceComponentId.HEADER:
+    case ResourceComponentId.BADGES:
+      return true;
+    case ResourceComponentId.RESOURCE_NAME:
+      return Boolean(resource.name);
+    case ResourceComponentId.SERVICE_NAME:
       return true;
     case ResourceComponentId.ADDRESS:
       return Boolean(resource.address);
@@ -134,6 +145,8 @@ export function shouldComponentRender(
       return Boolean(
         resource.organizationName || resource.organizationDescription,
       );
+    case ResourceComponentId.CUSTOM_ATTRIBUTE:
+      return true; // Custom attribute component handles its own conditional rendering
     default:
       return true;
   }
