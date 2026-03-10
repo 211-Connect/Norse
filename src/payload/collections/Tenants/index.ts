@@ -204,6 +204,10 @@ export const Tenants: CollectionConfig = {
           name: 'matomoContainerUrl',
           type: 'text',
         },
+        {
+          name: 'umamiWebsiteId',
+          type: 'text',
+        },
       ],
     },
     {
