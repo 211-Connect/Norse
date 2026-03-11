@@ -392,6 +392,7 @@ export interface Tenant {
   common?: {
     gtmContainerId?: string | null;
     matomoContainerUrl?: string | null;
+    umamiWebsiteId?: string | null;
   };
   twilio?: {
     phoneNumber?: string | null;
@@ -928,6 +929,7 @@ export interface TenantsSelect<T extends boolean = true> {
     | {
         gtmContainerId?: T;
         matomoContainerUrl?: T;
+        umamiWebsiteId?: T;
       };
   twilio?:
     | T

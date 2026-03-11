@@ -131,6 +131,7 @@ export type AppConfig = {
   gtmContainerId?: string;
   heroUrl?: string;
   matomoContainerUrl?: string;
+  umamiWebsiteId?: string;
   newLayout?: {
     callouts?: {
       options?: {
