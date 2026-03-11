@@ -19,6 +19,7 @@ export function EmailComponent({ resource }: { resource: Resource }) {
       title={t('email')}
       description={resource.email}
       url={`mailto:${resource.email}`}
+      shouldParseHtml={false}
     />
   );
 }

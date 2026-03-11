@@ -1,5 +1,6 @@
 import { ResourceDirectoryBadgeListItem } from '@/payload/collections/ResourceDirectories/types/badge';
 import { Nullable } from './common';
+import { ResourceDirectory } from '@/payload/payload-types';
 
 type Menu = {
   name: string;
@@ -83,6 +84,10 @@ export type AppConfig = {
   };
   resource: {
     lastAssuredText?: string;
+    layout: {
+      leftColumn: NonNullable<ResourceDirectory['resource']>['leftColumn'];
+      rightColumn: NonNullable<ResourceDirectory['resource']>['rightColumn'];
+    };
   };
   search: {
     facets: {

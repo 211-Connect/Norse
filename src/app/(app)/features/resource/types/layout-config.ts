@@ -1,26 +1,19 @@
+import { AppConfig } from '@/types/appConfig';
 import { ResourceComponentId } from './component-ids';
+
+export type ResourceLayoutConfig = AppConfig['resource']['layout'];
+export type CustomAttributeConfig = NonNullable<
+  NonNullable<
+    ResourceLayoutConfig['leftColumn' | 'rightColumn']
+  >[number]['items']
+>[number]['customAttribute'];
 
 export interface LayoutColumnItem {
   componentId: ResourceComponentId;
-  customAttribute?: {
-    title?: string;
-    subtitle?: string;
-    description?: string;
-    icon?: string;
-    iconColor?: string;
-    url?: string;
-    urlTarget?: '_blank' | '_self';
-    titleBelow?: boolean;
-    size?: 'sm' | 'md';
-  };
+  customAttribute?: CustomAttributeConfig | null;
 }
 
-export interface ResourceLayout {
-  leftColumn: { items: LayoutColumnItem[]; isCard: boolean }[];
-  rightColumn: { items: LayoutColumnItem[]; isCard: boolean }[];
-}
-
-export const DEFAULT_RESOURCE_LAYOUT: ResourceLayout = {
+export const DEFAULT_RESOURCE_LAYOUT: AppConfig['resource']['layout'] = {
   leftColumn: [
     {
       items: [

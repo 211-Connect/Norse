@@ -47,6 +47,7 @@ export function PhoneNumbersComponent({ resource }: { resource: Resource }) {
           url={`tel:${number}`}
           urlTarget="_self"
           titleBelow
+          shouldParseHtml={false}
         />
       ))}
     </div>
