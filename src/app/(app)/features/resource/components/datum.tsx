@@ -6,16 +6,17 @@ import { Typography } from '@/app/(app)/shared/components/ui/typography';
 import { parseHtml } from '@/app/(app)/shared/lib/parse-html';
 
 export interface DatumProps {
-  id?: string;
-  title?: string;
-  subtitle?: string;
+  id?: string | null;
+  title?: string | null;
+  subtitle?: string | null;
   description?: string | null;
-  icon?: LucideIcon;
-  iconColor?: string;
-  url?: string;
-  urlTarget?: '_blank' | '_self';
-  titleBelow?: boolean;
-  size?: 'sm' | 'md';
+  icon?: LucideIcon | null;
+  iconColor?: string | null;
+  url?: string | null;
+  urlTarget?: '_blank' | '_self' | null;
+  titleBelow?: boolean | null;
+  size?: 'sm' | 'md' | null;
+  shouldParseHtml?: boolean;
 }
 
 export function Datum({
@@ -29,9 +30,11 @@ export function Datum({
   urlTarget = '_self',
   titleBelow,
   size = 'sm',
+  shouldParseHtml = true,
 }: DatumProps) {
   const generatedId = id ?? title?.replace(/\s+/g, '-').toLowerCase();
-  const parsedDescription = description ? parseHtml(description) : null;
+  const parsedDescription =
+    description && shouldParseHtml ? parseHtml(description) : description;
 
   return (
     <div

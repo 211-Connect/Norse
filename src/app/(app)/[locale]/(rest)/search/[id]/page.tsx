@@ -11,6 +11,7 @@ import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { isValidUUID } from '@/app/(app)/shared/utils/uuid';
 import { Resource } from '@/types/resource';
 import { createLogger } from '@/lib/logger';
+import { DEFAULT_RESOURCE_LAYOUT } from '@/app/(app)/features/resource/types/layout-config';
 
 const log = createLogger('resource-page');
 
@@ -102,13 +103,15 @@ export default async function ResourcePage({ params }) {
     notFound();
   }
 
+  const layout = appConfig.resource.layout ?? DEFAULT_RESOURCE_LAYOUT;
+
   return (
     <PageWrapper
       cookies={cookieList}
       translationData={{ i18nNamespaces, locale, resources }}
       nonce={nonce}
     >
-      <ResourcePageContent resource={resource} />
+      <ResourcePageContent resource={resource} layout={layout} />
     </PageWrapper>
   );
 }

@@ -31,9 +31,11 @@ import {
   SeparatorComponent,
   CustomAttributeComponent,
 } from './resource-components';
+import { CustomAttributeConfig } from '../types/layout-config';
 
 export interface ResourceComponentProps {
   resource: Resource;
+  customAttribute?: CustomAttributeConfig | null;
 }
 
 export const componentRegistry: Record<
@@ -71,13 +73,18 @@ export const componentRegistry: Record<
 };
 
 export function getResourceComponentById(
-  componentId: ResourceComponentId,
+  componentId: ResourceComponentId | string,
 ): ComponentType<ResourceComponentProps> | undefined {
-  return componentRegistry[componentId];
+  const component = componentRegistry[componentId];
+  if (!component) {
+    console.warn(`Component with ID "${componentId}" not found in registry.`);
+  }
+
+  return component;
 }
 
 export function shouldComponentRender(
-  componentId: ResourceComponentId,
+  componentId: ResourceComponentId | string,
   resource: Resource,
 ): boolean {
   switch (componentId) {

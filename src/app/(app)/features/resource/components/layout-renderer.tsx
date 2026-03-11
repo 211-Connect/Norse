@@ -4,28 +4,36 @@ import { Card, CardContent } from '@/app/(app)/shared/components/ui/card';
 import { Separator } from '@/app/(app)/shared/components/ui/separator';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { Resource } from '@/types/resource';
-import { ResourceLayout, LayoutColumnItem } from '../types/layout-config';
 import { ResourceComponentId } from '../types/component-ids';
 import {
   getResourceComponentById,
   shouldComponentRender,
 } from './component-registry';
+import { ResourceLayoutConfig } from '../types/layout-config';
 
 interface LayoutRendererProps {
-  layout: ResourceLayout;
+  layout: ResourceLayoutConfig;
   resource: Resource;
   className?: string;
 }
 
 type ColumnRendererProps = {
-  groups: { items: LayoutColumnItem[]; isCard: boolean }[];
+  groups: ResourceLayoutConfig['leftColumn' | 'rightColumn'];
   resource: Resource;
 };
 
 function ColumnRenderer({ groups, resource }: ColumnRendererProps) {
+  if (!groups) {
+    return null;
+  }
+
   return (
     <div className="flex flex-1 flex-col gap-4">
       {groups.map((group, groupIndex) => {
+        if (!group.items) {
+          return null;
+        }
+
         const itemsToRender = group.items.filter((item) =>
           shouldComponentRender(item.componentId, resource),
         );
@@ -48,6 +56,7 @@ function ColumnRenderer({ groups, resource }: ColumnRendererProps) {
                     : item.componentId
                 }
                 resource={resource}
+                customAttribute={item.customAttribute}
               />
             ),
             isSeparator,

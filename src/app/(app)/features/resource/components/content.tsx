@@ -7,9 +7,17 @@ import { cn } from '@/app/(app)/shared/lib/utils';
 import { Navigation } from './navigation';
 import { Resource } from '@/types/resource';
 import { LayoutRenderer } from './layout-renderer';
-import { DEFAULT_RESOURCE_LAYOUT } from '../types/layout-config';
+import { AppConfig } from '@/types/appConfig';
 
-export const ResourcePageContent = ({ resource }: { resource: Resource }) => {
+type ResourcePageContentProps = {
+  resource: Resource;
+  layout: AppConfig['resource']['layout'];
+};
+
+export const ResourcePageContent = ({
+  resource,
+  layout,
+}: ResourcePageContentProps) => {
   const componentToPrintRef = useRef<HTMLDivElement>(null);
 
   return (
@@ -21,7 +29,7 @@ export const ResourcePageContent = ({ resource }: { resource: Resource }) => {
 
       <div ref={componentToPrintRef}>
         <LayoutRenderer
-          layout={DEFAULT_RESOURCE_LAYOUT}
+          layout={layout}
           resource={resource}
           className={cn(fontSans.variable)}
         />

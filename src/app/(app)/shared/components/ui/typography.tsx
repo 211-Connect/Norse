@@ -87,8 +87,8 @@ export interface TypographyProps
     VariantProps<typeof typographyVariants> {
   asChild?: boolean;
   as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span' | 'div' | 'label';
-  url?: string;
-  urlTarget?: '_blank' | '_self';
+  url?: string | null;
+  urlTarget?: '_blank' | '_self' | null;
 }
 
 const Typography = React.forwardRef<HTMLElement, TypographyProps>(
@@ -128,7 +128,7 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
 function getElement(
   as: TypographyProps['as'] | undefined,
   variant: 'heading' | 'paragraph' | 'label' | null | undefined,
-  url: string | undefined,
+  url: string | null | undefined,
 ): React.ElementType {
   if (as) {
     return as;

@@ -1,18 +1,21 @@
-.color-picker .color-picker-row {
+.color-picker-row {
   display: flex;
-  gap: 16px;
+  gap: 0.5rem;
+  align-items: center;
 }
 
-.color-picker .color-picker-row .field-type {
+.color-picker-row .field-type {
   width: 100%;
+  margin-bottom: 0;
 }
 
-.color-picker .color-picker-row input[type="color"] {
+.color-picker-row input[type='color'] {
   flex-shrink: 0;
   width: 40px;
   height: 40px;
-}
-
-.color-picker .color-picker-row input[type="text"] {
-  width: 100%;
+  padding: 0;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--style-radius-s);
+  cursor: pointer;
+  background: none;
 }

@@ -564,6 +564,116 @@ export interface ResourceDirectory {
   };
   resource?: {
     lastAssuredText?: string | null;
+    /**
+     * Enable custom layout for resource pages. When disabled, the default layout will be used.
+     */
+    useCustomLayout?: boolean | null;
+    /**
+     * Configure groups of components for the left column
+     */
+    leftColumn?:
+      | {
+          isCard?: boolean | null;
+          items?:
+            | {
+                componentId:
+                  | 'badges'
+                  | 'resourceName'
+                  | 'serviceName'
+                  | 'address'
+                  | 'transportation'
+                  | 'accessibility'
+                  | 'eligibility'
+                  | 'requiredDocuments'
+                  | 'hours'
+                  | 'phoneNumbers'
+                  | 'website'
+                  | 'email'
+                  | 'languages'
+                  | 'interpretationServices'
+                  | 'applicationProcess'
+                  | 'fees'
+                  | 'serviceArea'
+                  | 'description'
+                  | 'categories'
+                  | 'lastAssured'
+                  | 'attribution'
+                  | 'map'
+                  | 'getDirections'
+                  | 'organization'
+                  | 'facets'
+                  | 'separator'
+                  | 'customAttribute';
+                customAttribute?: {
+                  title?: string | null;
+                  subtitle?: string | null;
+                  description?: string | null;
+                  icon?: string | null;
+                  iconColor?: string | null;
+                  size?: ('sm' | 'md') | null;
+                  titleBelow?: boolean | null;
+                  url?: string | null;
+                  urlTarget?: ('_self' | '_blank') | null;
+                };
+                id?: string | null;
+              }[]
+            | null;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Configure groups of components for the right column
+     */
+    rightColumn?:
+      | {
+          isCard?: boolean | null;
+          items?:
+            | {
+                componentId:
+                  | 'badges'
+                  | 'resourceName'
+                  | 'serviceName'
+                  | 'address'
+                  | 'transportation'
+                  | 'accessibility'
+                  | 'eligibility'
+                  | 'requiredDocuments'
+                  | 'hours'
+                  | 'phoneNumbers'
+                  | 'website'
+                  | 'email'
+                  | 'languages'
+                  | 'interpretationServices'
+                  | 'applicationProcess'
+                  | 'fees'
+                  | 'serviceArea'
+                  | 'description'
+                  | 'categories'
+                  | 'lastAssured'
+                  | 'attribution'
+                  | 'map'
+                  | 'getDirections'
+                  | 'organization'
+                  | 'facets'
+                  | 'separator'
+                  | 'customAttribute';
+                customAttribute?: {
+                  title?: string | null;
+                  subtitle?: string | null;
+                  description?: string | null;
+                  icon?: string | null;
+                  iconColor?: string | null;
+                  size?: ('sm' | 'md') | null;
+                  titleBelow?: boolean | null;
+                  url?: string | null;
+                  urlTarget?: ('_self' | '_blank') | null;
+                };
+                id?: string | null;
+              }[]
+            | null;
+          id?: string | null;
+        }[]
+      | null;
   };
   search: {
     texts?: {
@@ -1132,6 +1242,57 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
     | T
     | {
         lastAssuredText?: T;
+        useCustomLayout?: T;
+        leftColumn?:
+          | T
+          | {
+              isCard?: T;
+              items?:
+                | T
+                | {
+                    componentId?: T;
+                    customAttribute?:
+                      | T
+                      | {
+                          title?: T;
+                          subtitle?: T;
+                          description?: T;
+                          icon?: T;
+                          iconColor?: T;
+                          size?: T;
+                          titleBelow?: T;
+                          url?: T;
+                          urlTarget?: T;
+                        };
+                    id?: T;
+                  };
+              id?: T;
+            };
+        rightColumn?:
+          | T
+          | {
+              isCard?: T;
+              items?:
+                | T
+                | {
+                    componentId?: T;
+                    customAttribute?:
+                      | T
+                      | {
+                          title?: T;
+                          subtitle?: T;
+                          description?: T;
+                          icon?: T;
+                          iconColor?: T;
+                          size?: T;
+                          titleBelow?: T;
+                          url?: T;
+                          urlTarget?: T;
+                        };
+                    id?: T;
+                  };
+              id?: T;
+            };
       };
   search?:
     | T

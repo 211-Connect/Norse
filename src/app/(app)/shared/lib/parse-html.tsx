@@ -50,7 +50,7 @@ export function parseHtml(
     const parsedHtml = parse(html);
     return parsedHtml;
   } catch (e) {
-    log.error({ err: e }, 'failed to parse HTML');
+    log.error({ err: e }, 'failed to parse HTML', { html });
     return html;
   }
 }
