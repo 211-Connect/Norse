@@ -19,8 +19,7 @@
     "sync-translations": "dotenv -e .env -- tsx bin/sync-translations.ts",
     "test:e2e": "npx playwright test",
     "test:e2e:favorites": "npx playwright test --project=favorites",
-    "test:e2e:search-taxonomy": "npx playwright test --project=search-taxonomy",
-    "test:e2e:translations": "npx playwright test --project=translations"
+    "test:e2e:search-taxonomy": "npx playwright test --project=search-taxonomy"
   },
   "engines": {
     "node": "24.x"

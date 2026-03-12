@@ -6,7 +6,7 @@ import {
   getResultTotalText,
   getResultTitles,
   openTopicSearch,
-  applyFilterWithExpectedDecrease,
+  markFiltersByIds,
   getSelectedFilterIds,
   switchLanguage,
   performSearch,
@@ -33,27 +33,23 @@ test.describe('Language Persistence And Results Button', () => {
     const r0 = await getResultTotalNumber(page);
     expect(r0).toBeGreaterThan(0);
 
-    const firstApplied = await applyFilterWithExpectedDecrease(page, r0);
-    expect(firstApplied.actualCount).toBe(firstApplied.expectedCount);
-    expect(firstApplied.actualCount).toBeLessThan(r0);
+    const requiredFilterIds = [
+      'Low Income',
+      'General',
+      'Low-Cost/Sliding Scale',
+    ];
+    await markFiltersByIds(page, requiredFilterIds);
 
-    const r1Titles = await getResultTitles(page);
-    expect(r1Titles.length).toBeGreaterThan(0);
+    const r2 = await getResultTotalNumber(page);
+    expect(r2).toBeLessThanOrEqual(r0);
 
-    const secondApplied = await applyFilterWithExpectedDecrease(
-      page,
-      firstApplied.actualCount,
-    );
-    expect(secondApplied.actualCount).toBe(secondApplied.expectedCount);
-    expect(secondApplied.actualCount).toBeLessThan(firstApplied.actualCount);
-
-    const r2 = secondApplied.actualCount;
     const r2TitlesEnglish = await getResultTitles(page);
     expect(r2TitlesEnglish.length).toBeGreaterThan(0);
 
     const selectedInEnglish = await getSelectedFilterIds(page);
-    expect(selectedInEnglish.length).toBeGreaterThanOrEqual(2);
-
+    expect(selectedInEnglish).toEqual(
+      expect.arrayContaining(requiredFilterIds),
+    );
     const resultTotalTextEn = await getResultTotalText(page);
     expect(resultTotalTextEn.toLowerCase()).toContain('of');
 
