@@ -118,15 +118,6 @@ export const featureFlags: Tab = {
       },
     },
     {
-      name: 'useHybridSemanticSearch',
-      type: 'checkbox',
-      defaultValue: false,
-      access: {
-        create: hasFeatureFieldAccess,
-        update: hasFeatureFieldAccess,
-      },
-    },
-    {
       name: 'showFeedbackButtonGlobal',
       type: 'checkbox',
       defaultValue: false,
