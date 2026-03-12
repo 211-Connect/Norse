@@ -3,14 +3,9 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SquareCheck } from 'lucide-react';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/app/(app)/shared/components/ui/card';
 import { Resource, FacetWithTranslation } from '@/types/resource';
-import { AppConfig } from '@/types/appConfig';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { Typography } from '@/app/(app)/shared/components/ui/typography';
 
 const EXCLUDED_TAXONOMY_NAMES = [
   'Area Served by County',
@@ -22,13 +17,9 @@ interface GroupedFacets {
   [taxonomyName: string]: FacetWithTranslation[];
 }
 
-export function FacetsSection({
-  resource,
-  facetsConfig,
-}: {
-  resource: Resource;
-  facetsConfig: AppConfig['search']['facets'];
-}) {
+export function FacetsComponent({ resource }: { resource: Resource }) {
+  const appConfig = useAppConfig();
+  const facetsConfig = appConfig.search.facets;
   const { t } = useTranslation('page-resource');
 
   const filteredFacets = useMemo(() => {
@@ -97,30 +88,28 @@ export function FacetsSection({
   }
 
   return (
-    <Card className="print:border-none print:shadow-none">
-      <CardHeader>
-        <CardTitle className="text-base">{t('other_information')}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="flex flex-col gap-6">
-          {Object.entries(filteredFacets).map(([taxonomyName, facets]) => (
-            <div key={taxonomyName} className="flex flex-col gap-2">
-              <p className="text-sm font-semibold">{taxonomyName}</p>
-              <div className="flex flex-col gap-2">
-                {facets.map((facet, index) => (
-                  <div
-                    key={`${facet.code}-${index}`}
-                    className="flex items-start gap-2"
-                  >
-                    <SquareCheck className="mt-0.5 size-4 shrink-0 text-[#bbbbbb]" />
-                    <span className="text-sm">{facet.termName}</span>
-                  </div>
-                ))}
-              </div>
+    <div>
+      <Typography variant="heading" size="sm" className="mb-4">
+        {t('other_information')}
+      </Typography>
+      <div className="flex flex-col gap-6">
+        {Object.entries(filteredFacets).map(([taxonomyName, facets]) => (
+          <div key={taxonomyName} className="flex flex-col gap-2">
+            <p className="text-sm font-semibold">{taxonomyName}</p>
+            <div className="flex flex-col gap-2">
+              {facets.map((facet, index) => (
+                <div
+                  key={`${facet.code}-${index}`}
+                  className="flex items-start gap-2"
+                >
+                  <SquareCheck className="mt-0.5 size-4 shrink-0 text-[#bbbbbb]" />
+                  <span className="text-sm">{facet.termName}</span>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }

@@ -14,6 +14,9 @@ import { default as default_1df8c46e6398cb3456430ac0b5b9d578 } from '@/payload/c
 import { default as default_406df21fc25a4fcd95fce6d937e31641 } from '@/payload/components/FilterBuilder'
 import { default as default_e9e2bf969415f060c7a102f3cdbba7fa } from '@/payload/components/IconPicker'
 import { default as default_515b5f95e2889c13b7e6b7bf088c75df } from '@/payload/components/Badge/BadgePreview'
+import { default as default_c4f12422c5b10d814ea4b2b4e4240441 } from '@/payload/collections/ResourceDirectories/components/UseCustomLayoutField'
+import { default as default_165938afea8b83deab0e5a96dea47a38 } from '@/payload/collections/ResourceDirectories/components/CustomLayoutHint'
+import { default as default_3b301e482d0e37c98ec50b2153f0f45d } from '@/payload/collections/ResourceDirectories/components/ResourceLayoutRowLabel'
 import { default as default_f83d96d079111af09b6323bb84c1f19e } from '@/payload/collections/ResourceDirectories/components/FacetsRowLabel'
 import { default as default_76ffa28dff37b978c6ada354e1e9e67c } from '@/payload/collections/ResourceDirectories/components/EditViewWrapper'
 import { default as default_7a8b15e24786becdbc27798cd6643e36 } from '@/payload/collections/OrchestrationConfig/components/TenantHeader'
@@ -43,6 +46,9 @@ export const importMap = {
   "@/payload/components/FilterBuilder#default": default_406df21fc25a4fcd95fce6d937e31641,
   "@/payload/components/IconPicker#default": default_e9e2bf969415f060c7a102f3cdbba7fa,
   "@/payload/components/Badge/BadgePreview#default": default_515b5f95e2889c13b7e6b7bf088c75df,
+  "@/payload/collections/ResourceDirectories/components/UseCustomLayoutField#default": default_c4f12422c5b10d814ea4b2b4e4240441,
+  "@/payload/collections/ResourceDirectories/components/CustomLayoutHint#default": default_165938afea8b83deab0e5a96dea47a38,
+  "@/payload/collections/ResourceDirectories/components/ResourceLayoutRowLabel#default": default_3b301e482d0e37c98ec50b2153f0f45d,
   "@/payload/collections/ResourceDirectories/components/FacetsRowLabel#default": default_f83d96d079111af09b6323bb84c1f19e,
   "@/payload/collections/ResourceDirectories/components/EditViewWrapper#default": default_76ffa28dff37b978c6ada354e1e9e67c,
   "@/payload/collections/OrchestrationConfig/components/TenantHeader#default": default_7a8b15e24786becdbc27798cd6643e36,
