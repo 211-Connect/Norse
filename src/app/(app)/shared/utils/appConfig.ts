@@ -94,7 +94,6 @@ async function getAppConfigBase(
         showSuggestionListTaxonomyBadge: false,
         showUseMyLocationButtonOnDesktop: false,
         turnResourceCardTaxonomiesIntoLinks: true,
-        useHybridSemanticSearch: false,
       },
       footer: {
         customMenu: [],
@@ -262,8 +261,6 @@ async function getAppConfigBase(
       turnResourceCardTaxonomiesIntoLinks:
         resourceDirectory.featureFlags?.turnResourceCardTaxonomiesIntoLinks ??
         true,
-      useHybridSemanticSearch:
-        resourceDirectory.featureFlags?.useHybridSemanticSearch ?? false,
     },
     gtmContainerId:
       getTenant(resourceDirectory)?.common?.gtmContainerId ?? undefined,

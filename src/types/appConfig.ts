@@ -45,7 +45,6 @@ export type AppConfig = {
     showSuggestionListTaxonomyBadge: boolean;
     showUseMyLocationButtonOnDesktop: boolean;
     turnResourceCardTaxonomiesIntoLinks: boolean;
-    useHybridSemanticSearch: boolean;
   };
   footer: {
     customMenu: Menu[];
