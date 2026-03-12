@@ -19,6 +19,7 @@ jobs:
     env:
       CI: true
       E2E_BASE_URL: ${{ vars.E2E_BASE_URL }}
+      E2E_TRANSLATIONS_BASE_URL: ${{ vars.E2E_TRANSLATIONS_BASE_URL }}
       TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
       TEST_USER_USERNAME: ${{ secrets.TEST_USER_USERNAME }}
       TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}

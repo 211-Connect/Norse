@@ -17,11 +17,6 @@ export async function goHome(page: Page) {
   await page.waitForLoadState('networkidle');
 }
 
-export async function goToSearch(page: Page) {
-  await page.getByRole('link', { name: 'Search' }).click();
-  await page.waitForLoadState('networkidle');
-}
-
 export async function openSearchDialog(page: Page) {
   await page.getByTestId('search-trigger').first().click();
   await page.getByTestId('search-dialog').waitFor({ state: 'visible' });
@@ -83,6 +78,226 @@ export async function getResultTotal(page: Page): Promise<string> {
   const resultTotal = page.locator('#result-total');
   await resultTotal.waitFor({ state: 'visible', timeout: 15000 });
   return (await resultTotal.textContent()) ?? '';
+}
+
+export function parseTrailingInteger(text: string): number {
+  const match = text.replace(/,/g, '').match(/(\d+)\s*$/);
+  return match ? Number(match[1]) : 0;
+}
+
+export async function getResultTotalNumber(page: Page): Promise<number> {
+  const resultTotal = page.locator('#result-total');
+  await expect(resultTotal).toBeVisible({ timeout: 20_000 });
+  const raw = (await resultTotal.textContent()) ?? '';
+  return parseTrailingInteger(raw);
+}
+
+export async function getResultTotalText(page: Page): Promise<string> {
+  const resultTotal = page.locator('#result-total');
+  await expect(resultTotal).toBeVisible({ timeout: 20_000 });
+  return ((await resultTotal.textContent()) ?? '').trim();
+}
+
+export async function getResultTitles(
+  page: Page,
+  limit = 10,
+): Promise<string[]> {
+  const links = page.getByTestId('resource-link');
+  await expect(links.first()).toBeVisible({ timeout: 20_000 });
+  const count = await links.count();
+  const capped = Math.min(count, limit);
+  const titles: string[] = [];
+
+  for (let i = 0; i < capped; i += 1) {
+    const title = ((await links.nth(i).textContent()) ?? '').trim();
+    if (title) titles.push(title);
+  }
+
+  return titles;
+}
+
+export async function openTopicSearch(page: Page) {
+  const directTopicLinks = page.locator('a[href*="/search?query="]');
+  if ((await directTopicLinks.count()) === 0) {
+    const topicsLink = page
+      .locator('a[href$="/topics"], a[href*="/topics?"]')
+      .first();
+    await expect(topicsLink).toBeVisible({ timeout: 20_000 });
+    await topicsLink.click();
+    await page.waitForURL(/\/topics(\?|$)/, { timeout: 20_000 });
+    await page.waitForLoadState('networkidle');
+  }
+
+  const maxTries = 10;
+  const linksCount = await page.locator('a[href*="/search?query="]').count();
+  const tries = Math.min(maxTries, linksCount);
+
+  for (let i = 0; i < tries; i += 1) {
+    const topicLink = page.locator('a[href*="/search?query="]').nth(i);
+    await expect(topicLink).toBeVisible({ timeout: 20_000 });
+    await topicLink.click();
+
+    await page.waitForURL(/\/search\?/, { timeout: 20_000 });
+    await expect(page.locator('#search-container')).toBeVisible({
+      timeout: 20_000,
+    });
+
+    return;
+  }
+
+  throw new Error('No topic search link found.');
+}
+
+export type AppliedFilter = {
+  id: string;
+  expectedCount: number;
+  actualCount: number;
+};
+
+export async function getSelectedFilterIds(page: Page): Promise<string[]> {
+  const selected = page.locator(
+    '#filter-panel [role="checkbox"][data-state="checked"]',
+  );
+  const count = await selected.count();
+  const ids: string[] = [];
+
+  for (let i = 0; i < count; i += 1) {
+    const ariaLabel = await selected.nth(i).getAttribute('aria-label');
+    if (ariaLabel) ids.push(ariaLabel);
+  }
+
+  return ids.sort();
+}
+
+function toSingleRegexLiteral(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+export async function getCheckedFilterDisplayedCount(
+  page: Page,
+  filterId: string,
+): Promise<number> {
+  const checkbox = page.locator(
+    `#filter-panel [role="checkbox"][aria-label="${filterId}"]`,
+  );
+  await expect(checkbox).toHaveAttribute('data-state', 'checked', {
+    timeout: 20_000,
+  });
+
+  const row = checkbox.locator(
+    'xpath=ancestor::div[contains(@class,"items-center") and contains(@class,"justify-between")][1]',
+  );
+  const rowText = ((await row.textContent()) ?? '').trim();
+  return parseTrailingInteger(rowText);
+}
+
+export async function applyFilterWithExpectedDecrease(
+  page: Page,
+  previousTotal: number,
+): Promise<AppliedFilter> {
+  const panel = page.locator('#filter-panel');
+  await expect(panel).toBeVisible({ timeout: 20_000 });
+
+  const checkboxes = panel.locator('[role="checkbox"]');
+  const checkboxCount = await checkboxes.count();
+  let firstAttempt: AppliedFilter | null = null;
+
+  for (let i = 0; i < checkboxCount; i += 1) {
+    const checkbox = checkboxes.nth(i);
+
+    const state = await checkbox.getAttribute('data-state');
+    if (state === 'checked') continue;
+
+    const row = checkbox.locator(
+      'xpath=ancestor::div[contains(@class,"items-center") and contains(@class,"justify-between")][1]',
+    );
+    const rowText = ((await row.textContent()) ?? '').trim();
+    const candidateCount = parseTrailingInteger(rowText);
+    if (candidateCount <= 0 || candidateCount >= previousTotal) continue;
+
+    const selectedBefore = new Set(await getSelectedFilterIds(page));
+
+    await checkbox.click();
+    await page.waitForLoadState('networkidle');
+
+    const selectedAfter = await getSelectedFilterIds(page);
+    const newlySelected = selectedAfter.find((id) => !selectedBefore.has(id));
+    if (!newlySelected) continue;
+
+    const expectedCount = await getCheckedFilterDisplayedCount(
+      page,
+      newlySelected,
+    );
+    const actualCount = await getResultTotalNumber(page);
+    const attempt = {
+      id: newlySelected,
+      expectedCount,
+      actualCount,
+    };
+
+    if (actualCount < previousTotal) {
+      return attempt;
+    }
+
+    if (!firstAttempt) {
+      firstAttempt = attempt;
+    }
+
+    const selectedCheckbox = page.locator(
+      `#filter-panel [role="checkbox"][aria-label="${newlySelected}"]`,
+    );
+    await selectedCheckbox.click();
+    await page.waitForLoadState('networkidle');
+  }
+
+  if (firstAttempt) {
+    return firstAttempt;
+  }
+
+  throw new Error(`No applicable filter was found for total ${previousTotal}.`);
+}
+
+export async function switchLanguage(page: Page, locale: 'en' | 'es') {
+  const previousPathname = new URL(page.url()).pathname;
+
+  const languageSelect = page
+    .locator('button[aria-label][role="combobox"]')
+    .first();
+  await expect(languageSelect).toBeVisible({ timeout: 20_000 });
+  await languageSelect.click();
+
+  const option = page.getByRole('option', {
+    name: new RegExp(`${toSingleRegexLiteral(locale)}\\)$`, 'i'),
+  });
+  await expect(option).toBeVisible({ timeout: 20_000 });
+  await option.click();
+
+  await page.waitForURL(
+    (url) => {
+      const pathname = url.pathname;
+      const escapedLocale = toSingleRegexLiteral(locale);
+      const hasExplicitLocale = new RegExp(`^/${escapedLocale}(?:/|$)`).test(
+        pathname,
+      );
+
+      if (locale !== LOCALE) {
+        return hasExplicitLocale;
+      }
+
+      if (hasExplicitLocale) {
+        return true;
+      }
+
+      const previousWithoutLocale = previousPathname.replace(
+        /^\/[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,4})?(?=\/|$)/,
+        '',
+      );
+      const expectedDefaultPath = previousWithoutLocale || '/';
+      return pathname === expectedDefaultPath;
+    },
+    { timeout: 20_000 },
+  );
+  await page.waitForLoadState('networkidle');
 }
 
 export function parseTotalFromResultText(text: string): number {
