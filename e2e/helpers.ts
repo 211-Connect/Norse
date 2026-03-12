@@ -154,6 +154,19 @@ export type AppliedFilter = {
   actualCount: number;
 };
 
+function escapeCssAttributeValue(value: string): string {
+  return value.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+}
+
+function getFilterCheckboxById(page: Page, filterId: string) {
+  const escaped = escapeCssAttributeValue(filterId);
+  return page
+    .locator(
+      `#filter-panel [role="checkbox"][aria-label="${escaped}"], #filter-panel [role="checkbox"][id="${escaped}"]`,
+    )
+    .first();
+}
+
 export async function getSelectedFilterIds(page: Page): Promise<string[]> {
   const selected = page.locator(
     '#filter-panel [role="checkbox"][data-state="checked"]',
@@ -162,11 +175,33 @@ export async function getSelectedFilterIds(page: Page): Promise<string[]> {
   const ids: string[] = [];
 
   for (let i = 0; i < count; i += 1) {
-    const ariaLabel = await selected.nth(i).getAttribute('aria-label');
-    if (ariaLabel) ids.push(ariaLabel);
+    const checkbox = selected.nth(i);
+    const filterId =
+      (await checkbox.getAttribute('aria-label')) ??
+      (await checkbox.getAttribute('id'));
+    if (filterId) ids.push(filterId);
   }
 
   return ids.sort();
+}
+
+export async function markFiltersByIds(page: Page, filterIds: string[]) {
+  const panel = page.locator('#filter-panel');
+  await expect(panel).toBeVisible({ timeout: 20_000 });
+
+  for (const filterId of filterIds) {
+    const checkbox = getFilterCheckboxById(page, filterId);
+    await expect(checkbox).toBeVisible({ timeout: 20_000 });
+
+    if ((await checkbox.getAttribute('data-state')) !== 'checked') {
+      await checkbox.scrollIntoViewIfNeeded();
+      await checkbox.click();
+      await page.waitForLoadState('networkidle');
+      await expect(checkbox).toHaveAttribute('data-state', 'checked', {
+        timeout: 20_000,
+      });
+    }
+  }
 }
 
 function toSingleRegexLiteral(value: string): string {
@@ -189,72 +224,6 @@ export async function getCheckedFilterDisplayedCount(
   );
   const rowText = ((await row.textContent()) ?? '').trim();
   return parseTrailingInteger(rowText);
-}
-
-export async function applyFilterWithExpectedDecrease(
-  page: Page,
-  previousTotal: number,
-): Promise<AppliedFilter> {
-  const panel = page.locator('#filter-panel');
-  await expect(panel).toBeVisible({ timeout: 20_000 });
-
-  const checkboxes = panel.locator('[role="checkbox"]');
-  const checkboxCount = await checkboxes.count();
-  let firstAttempt: AppliedFilter | null = null;
-
-  for (let i = 0; i < checkboxCount; i += 1) {
-    const checkbox = checkboxes.nth(i);
-
-    const state = await checkbox.getAttribute('data-state');
-    if (state === 'checked') continue;
-
-    const row = checkbox.locator(
-      'xpath=ancestor::div[contains(@class,"items-center") and contains(@class,"justify-between")][1]',
-    );
-    const rowText = ((await row.textContent()) ?? '').trim();
-    const candidateCount = parseTrailingInteger(rowText);
-    if (candidateCount <= 0 || candidateCount >= previousTotal) continue;
-
-    const selectedBefore = new Set(await getSelectedFilterIds(page));
-
-    await checkbox.click();
-    await page.waitForLoadState('networkidle');
-
-    const selectedAfter = await getSelectedFilterIds(page);
-    const newlySelected = selectedAfter.find((id) => !selectedBefore.has(id));
-    if (!newlySelected) continue;
-
-    const expectedCount = await getCheckedFilterDisplayedCount(
-      page,
-      newlySelected,
-    );
-    const actualCount = await getResultTotalNumber(page);
-    const attempt = {
-      id: newlySelected,
-      expectedCount,
-      actualCount,
-    };
-
-    if (actualCount < previousTotal) {
-      return attempt;
-    }
-
-    if (!firstAttempt) {
-      firstAttempt = attempt;
-    }
-
-    const selectedCheckbox = page.locator(
-      `#filter-panel [role="checkbox"][aria-label="${newlySelected}"]`,
-    );
-    await selectedCheckbox.click();
-    await page.waitForLoadState('networkidle');
-  }
-
-  if (firstAttempt) {
-    return firstAttempt;
-  }
-
-  throw new Error(`No applicable filter was found for total ${previousTotal}.`);
 }
 
 export async function switchLanguage(page: Page, locale: 'en' | 'es') {
