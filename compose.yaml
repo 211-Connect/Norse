@@ -67,6 +67,17 @@ services:
       - "--web.enable-lifecycle"
     depends_on:
       - app
+      - pushgateway
+
+  pushgateway:
+    image: prom/pushgateway:v1.10.0
+    restart: always
+    ports:
+      - 9091:9091
+    volumes:
+      - pushgateway_data:/data
+    command:
+      - "--persistence.file=/data/pushgateway.data"
 
   grafana:
     image: grafana/grafana:12.3
@@ -86,4 +97,5 @@ volumes:
   postgres_data:
   redis_data:
   prometheus_data:
+  pushgateway_data:
   grafana_data:
