@@ -4,6 +4,7 @@ import { TourProvider } from '@/app/(app)/shared/context/tour-provider';
 import { HeroSection } from '@/app/(app)/features/home/components/hero-section';
 import Alert from '@/app/(app)/features/home/components/alert';
 import { CategoriesSection } from '@/app/(app)/features/home/components/categories-section';
+import { HighlightsSection } from '@/app/(app)/features/home/components/highlights-section';
 import { DataProviders } from '@/app/(app)/shared/components/data-providers';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import { cookies, headers } from 'next/headers';
@@ -73,6 +74,8 @@ export default async function HomePage({ params }) {
           <>
             <HeroSection />
             <Alert />
+
+            <HighlightsSection />
 
             <CategoriesSection className="py-8" />
 

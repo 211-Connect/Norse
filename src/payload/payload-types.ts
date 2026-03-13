@@ -549,6 +549,46 @@ export interface ResourceDirectory {
         }[]
       | null;
   };
+  highlights?: {
+    /**
+     * The title displayed above the highlights section
+     */
+    sectionTitle?: string | null;
+    /**
+     * Automatically rotate through highlights when there are more than can fit on screen
+     */
+    enableCarouselAutoplay?: boolean | null;
+    /**
+     * Time in seconds between automatic slide changes
+     */
+    autoplayInterval?: number | null;
+    /**
+     * Add callouts to highlight resources, news, or important information. When more items exist than can fit on screen, they will display in a carousel.
+     */
+    items?:
+      | {
+          /**
+           * Image for the highlight card
+           */
+          image?: (number | null) | TenantMedia;
+          /**
+           * The main heading for this highlight
+           */
+          title: string;
+          /**
+           * Brief description or summary of the highlight
+           */
+          description?: string | null;
+          /**
+           * Text displayed on the button or link
+           */
+          buttonText?: string | null;
+          buttonUrl?: string | null;
+          openInNewTab?: boolean | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
   badges?: {
     list?:
       | {
@@ -1110,6 +1150,24 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
                     openInNewTab?: T;
                     id?: T;
                   };
+              id?: T;
+            };
+      };
+  highlights?:
+    | T
+    | {
+        sectionTitle?: T;
+        enableCarouselAutoplay?: T;
+        autoplayInterval?: T;
+        items?:
+          | T
+          | {
+              image?: T;
+              title?: T;
+              description?: T;
+              buttonText?: T;
+              buttonUrl?: T;
+              openInNewTab?: T;
               id?: T;
             };
       };

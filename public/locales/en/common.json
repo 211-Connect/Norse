@@ -137,6 +137,11 @@
   "data_providers": {
     "provided_by": "Data provided by"
   },
+  "carousel": {
+    "previous": "Previous",
+    "next": "Next",
+    "go_to": "Go to"
+  },
   "footer": {
     "copyright": "© Copyright {{text}}"
   }

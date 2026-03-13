@@ -130,6 +130,19 @@ export type AppConfig = {
   };
   gtmContainerId?: string;
   heroUrl?: string;
+  highlights?: {
+    sectionTitle?: string;
+    enableCarouselAutoplay?: boolean;
+    autoplayInterval?: number;
+    items?: {
+      image?: string;
+      title: string;
+      description?: string;
+      buttonText?: string;
+      buttonUrl?: string;
+      openInNewTab?: boolean;
+    }[];
+  };
   matomoContainerUrl?: string;
   umamiWebsiteId?: string;
   newLayout?: {

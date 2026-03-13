@@ -391,6 +391,22 @@ async function getAppConfigBase(
         }
       : undefined,
     heroUrl,
+    highlights: resourceDirectory.highlights
+      ? {
+          sectionTitle: resourceDirectory.highlights.sectionTitle ?? undefined,
+          enableCarouselAutoplay:
+            resourceDirectory.highlights.enableCarouselAutoplay ?? false,
+          autoplayInterval: resourceDirectory.highlights.autoplayInterval ?? 5,
+          items: (resourceDirectory.highlights.items ?? []).map((item) => ({
+            image: getMediaUrl(item.image),
+            title: item.title,
+            description: item.description ?? undefined,
+            buttonText: item.buttonText ?? undefined,
+            buttonUrl: item.buttonUrl ?? undefined,
+            openInNewTab: item.openInNewTab ?? false,
+          })),
+        }
+      : undefined,
     newLayout,
     providers: resourceDirectory.common?.dataProviders?.map((provider) => ({
       href: provider.url ?? undefined,
