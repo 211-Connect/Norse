@@ -110,6 +110,7 @@ export interface Config {
         | 'fil'
         | 'ff'
         | 'fr'
+        | 'gu'
         | 'hi'
         | 'hr'
         | 'ht'
@@ -150,6 +151,7 @@ export interface Config {
         | 'fil'
         | 'ff'
         | 'fr'
+        | 'gu'
         | 'hi'
         | 'hr'
         | 'ht'
@@ -196,6 +198,7 @@ export interface Config {
     | 'fil'
     | 'ff'
     | 'fr'
+    | 'gu'
     | 'hi'
     | 'hr'
     | 'ht'
@@ -313,6 +316,7 @@ export interface Tenant {
     | 'fil'
     | 'ff'
     | 'fr'
+    | 'gu'
     | 'hi'
     | 'hr'
     | 'ht'
@@ -353,6 +357,7 @@ export interface Tenant {
     | 'fil'
     | 'ff'
     | 'fr'
+    | 'gu'
     | 'hi'
     | 'hr'
     | 'ht'
@@ -643,7 +648,6 @@ export interface ResourceDirectory {
     showUseMyLocationButtonOnDesktop?: boolean | null;
     showPrintButton?: boolean | null;
     turnResourceCardTaxonomiesIntoLinks?: boolean | null;
-    useHybridSemanticSearch?: boolean | null;
     showFeedbackButtonGlobal?: boolean | null;
     showFeedbackButtonOnResourcePages?: boolean | null;
   };
@@ -1226,7 +1230,6 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         showUseMyLocationButtonOnDesktop?: T;
         showPrintButton?: T;
         turnResourceCardTaxonomiesIntoLinks?: T;
-        useHybridSemanticSearch?: T;
         showFeedbackButtonGlobal?: T;
         showFeedbackButtonOnResourcePages?: T;
       };
