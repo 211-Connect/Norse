@@ -3010,13 +3010,6 @@
           "notNull": false,
           "default": true
         },
-        "feature_flags_use_hybrid_semantic_search": {
-          "name": "feature_flags_use_hybrid_semantic_search",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
-        },
         "feature_flags_show_feedback_button_global": {
           "name": "feature_flags_show_feedback_button_global",
           "type": "boolean",
@@ -5485,13 +5478,6 @@
           "notNull": false,
           "default": true
         },
-        "version_feature_flags_use_hybrid_semantic_search": {
-          "name": "version_feature_flags_use_hybrid_semantic_search",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
-        },
         "version_feature_flags_show_feedback_button_global": {
           "name": "version_feature_flags_show_feedback_button_global",
           "type": "boolean",
@@ -7912,6 +7898,7 @@
         "fil",
         "ff",
         "fr",
+        "gu",
         "hi",
         "hr",
         "ht",
@@ -7973,6 +7960,7 @@
         "fil",
         "ff",
         "fr",
+        "gu",
         "hi",
         "hr",
         "ht",
@@ -8017,6 +8005,7 @@
         "fil",
         "ff",
         "fr",
+        "gu",
         "hi",
         "hr",
         "ht",
@@ -8255,6 +8244,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "49804c92-92f9-4dbe-a8a8-a64f85d5ab21",
+  "id": "ee21da5f-498b-4546-8870-b8cf42963386",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }
