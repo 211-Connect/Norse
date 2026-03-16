@@ -106,7 +106,10 @@ export default async function OriginalDetailsPage({ params }) {
       translationData={{ i18nNamespaces, locale, resources }}
       nonce={nonce}
     >
-      <ResourcePageContent resource={resource} />
+      <ResourcePageContent
+        resource={resource}
+        layout={appConfig.resource.layout}
+      />
     </PageWrapper>
   );
 }

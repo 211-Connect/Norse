@@ -26,8 +26,8 @@ const UseCustomLayoutField = ({
   const handlePopulateDefault = () => {
     setValue(true);
 
-    leftColumnField.setValue([...DEFAULT_RESOURCE_LAYOUT.leftColumn]);
-    rightColumnField.setValue([...DEFAULT_RESOURCE_LAYOUT.rightColumn]);
+    leftColumnField.setValue([...(DEFAULT_RESOURCE_LAYOUT.leftColumn || [])]);
+    rightColumnField.setValue([...(DEFAULT_RESOURCE_LAYOUT.rightColumn || [])]);
   };
 
   const hasCustomLayout =
