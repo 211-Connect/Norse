@@ -14,6 +14,7 @@ export const locales = [
   'fil', // Filipino
   'ff', // Fulah
   'fr', // French
+  'gu', // Gujarati
   'hi', // Hindi
   'hr', // Croatian
   'ht', // Haitian Creole
