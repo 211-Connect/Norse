@@ -1,7 +1,7 @@
 'use client';
 
 import { Send, Smartphone } from 'lucide-react';
-import { useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { z } from 'zod';
 import { toast } from 'sonner';
@@ -25,6 +25,10 @@ export function SmsButton({ title = '', body = '', shortUrl = '' }) {
   const [phoneNumber, setPhoneNumber] = useState('');
   const appConfig = useAppConfig();
   const session = useSession();
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const dialogId = useId();
+  const inputId = useId();
+  const errorId = useId();
   const [message, setMessage] = useState('');
 
   const phoneNumberSchema = z.string().refine((value) => {
@@ -34,7 +38,9 @@ export function SmsButton({ title = '', body = '', shortUrl = '' }) {
 
   const validatePhoneNumber = (value: unknown) => {
     const validationResult = phoneNumberSchema.safeParse(value);
-    return validationResult.success ? null : 'Invalid phone number';
+    return validationResult.success
+      ? null
+      : t('modal.share.invalid_phone_number');
   };
 
   const handleClick = () => {
@@ -82,32 +88,52 @@ export function SmsButton({ title = '', body = '', shortUrl = '' }) {
 
   return (
     <>
-      <Button className="flex gap-1" onClick={handleClick} variant="outline">
+      <Button
+        ref={triggerRef}
+        className="flex gap-1"
+        onClick={handleClick}
+        variant="outline"
+        aria-controls={dialogId}
+        aria-haspopup="dialog"
+      >
         <Smartphone className="size-4" />
         {t('modal.share.sms')}
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
+        <DialogContent id={dialogId} restoreFocusElement={triggerRef.current}>
           <DialogHeader>
             <DialogTitle>{t('modal.share.share_sms')}</DialogTitle>
             <DialogDescription />
           </DialogHeader>
           <div className="flex flex-col gap-1">
             <div className="flex gap-2">
+              <label className="sr-only" htmlFor={inputId}>
+                {t('modal.share.phone_number_label')}
+              </label>
               <Input
+                id={inputId}
+                aria-describedby={message ? errorId : undefined}
+                aria-invalid={message ? true : undefined}
                 placeholder={t('modal.share.enter_phone_number')}
                 value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
+                onChange={(e) => {
+                  setPhoneNumber(e.target.value);
+                  if (message) {
+                    setMessage('');
+                  }
+                }}
               />
               <Button className="flex h-full gap-1" onClick={sendSms}>
                 <Send className="size-4" />
-                Send
+                {t('call_to_action.send')}
               </Button>
             </div>
 
             {message && message.length > 0 && (
-              <p className="text-sm text-red-600">{message}</p>
+              <p id={errorId} className="text-sm text-red-600" role="alert">
+                {message}
+              </p>
             )}
           </div>
         </DialogContent>
