@@ -3,7 +3,7 @@
 import { Heart, ListPlus, PlusIcon } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useSetAtom } from 'jotai';
-import { Fragment, useCallback, useEffect, useState } from 'react';
+import { Fragment, type MouseEvent, useCallback, useEffect, useId, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 
@@ -32,6 +32,7 @@ import { FavoriteListState } from '@/types/favorites';
 type AddToFavoritesButtonProps = {
   size?: 'default' | 'icon';
   serviceAtLocationId: string;
+  resourceName?: string;
   siblings?: number;
   boundaries?: number;
 };
@@ -39,6 +40,7 @@ type AddToFavoritesButtonProps = {
 export function AddToFavoritesButton({
   size = 'default',
   serviceAtLocationId,
+  resourceName,
   siblings = 1,
   boundaries = 1,
 }: AddToFavoritesButtonProps) {
@@ -46,6 +48,8 @@ export function AddToFavoritesButton({
   const session = useSession();
   const setDialog = useSetAtom(dialogsAtom);
   const { t } = useTranslation('common');
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const dialogId = useId();
 
   const [open, setOpen] = useState(false);
   const [createListOpen, setCreateListOpen] = useState(false);
@@ -131,15 +135,18 @@ export function AddToFavoritesButton({
     await refreshFavoritesList();
   };
 
-  const handleClick = () => {
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     if (session.status === 'authenticated') {
+      triggerRef.current = event.currentTarget;
       setOpen(true);
     } else if (session.status === 'unauthenticated') {
+      const trigger = event.currentTarget;
       setDialog((prev) => ({
         ...prev,
         promptAuth: {
           ...prev.promptAuth,
           open: true,
+          returnFocusTo: trigger,
         },
       }));
     }
@@ -150,10 +157,17 @@ export function AddToFavoritesButton({
   return (
     <>
       <Button
+        ref={triggerRef}
         className={cn('flex gap-1', size === 'icon' && 'size-6')}
         size={size}
         variant={size === 'icon' ? 'ghost' : 'outline'}
-        aria-label={t('call_to_action.add_to_list')}
+        aria-label={
+          resourceName
+            ? `${t('call_to_action.add_to_list')} ${resourceName}`
+            : t('call_to_action.add_to_list')
+        }
+        aria-haspopup="dialog"
+        aria-controls={dialogId}
         data-testid="favorite-btn"
         onClick={handleClick}
         disabled={session.status === 'loading'}
@@ -163,7 +177,7 @@ export function AddToFavoritesButton({
         {size !== 'icon' && t('call_to_action.add_to_list')}
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
+        <DialogContent id={dialogId} restoreFocusElement={triggerRef.current}>
           <DialogHeader>
             <DialogTitle>{t('modal.add_to_list.search_list')}</DialogTitle>
             <DialogDescription />
