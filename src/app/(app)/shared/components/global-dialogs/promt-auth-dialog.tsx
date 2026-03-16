@@ -21,6 +21,7 @@ export function PromptAuthDialog() {
       promptAuth: {
         ...prev.promptAuth,
         open: value,
+        returnFocusTo: value ? prev.promptAuth.returnFocusTo : null,
       },
     }));
   };
@@ -36,7 +37,7 @@ export function PromptAuthDialog() {
 
   return (
     <Dialog open={state.open} onOpenChange={handleOpenChange}>
-      <DialogContent>
+      <DialogContent restoreFocusElement={state.returnFocusTo}>
         <DialogHeader>
           <DialogTitle>{t('modal.prompt_auth')}</DialogTitle>
         </DialogHeader>
