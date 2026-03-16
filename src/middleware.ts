@@ -131,6 +131,8 @@ function cacheControlMiddleware(response: NextResponse, pathname: string) {
       'Cache-Control',
       'public, max-age=1800, s-maxage=3600, stale-while-revalidate=600',
     );
+    // Ensure CDN/proxies cache separately per cookie to prevent cross-user data leakage
+    response.headers.set('Vary', 'Cookie');
   }
 }
 
