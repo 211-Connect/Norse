@@ -216,14 +216,16 @@ export function Header() {
                   <DropdownMenuItem
                     className="cursor-pointer px-[10px] py-2 text-primary !outline-none focus:bg-accent focus:text-primary"
                     data-testid="favorites-btn"
-                    onClick={() => {
+                    onClick={(event) => {
                       if (session.status === 'unauthenticated') {
+                        const trigger = event.currentTarget;
                         setTimeout(() => {
                           setDialogStore((prev) => ({
                             ...prev,
                             promptAuth: {
                               ...prev.promptAuth,
                               open: true,
+                              returnFocusTo: trigger,
                             },
                           }));
                         });
