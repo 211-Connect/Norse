@@ -15,7 +15,7 @@ export function BackToResultsButton() {
   const [backUrl, setBackUrl] = useState('loading');
 
   useEffect(() => {
-    if (prevUrl && prevUrl.startsWith('/search')) {
+    if (prevUrl && /\/search\/?(\?|$)/.test(prevUrl)) {
       setBackUrl(prevUrl);
     } else {
       setBackUrl('/');

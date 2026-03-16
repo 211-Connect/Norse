@@ -60,7 +60,12 @@ export function DeleteFavoriteListButton({ id, name }) {
 
   return (
     <>
-      <Button size="icon" variant="outline" onClick={() => setOpen(true)}>
+      <Button
+        size="icon"
+        variant="outline"
+        onClick={() => setOpen(true)}
+        data-testid="delete-list-btn"
+      >
         <Trash2 className="size-4" />
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -76,7 +81,11 @@ export function DeleteFavoriteListButton({ id, name }) {
             <Button variant="outline" onClick={() => setOpen(false)}>
               {t('call_to_action.cancel')}
             </Button>
-            <Button variant="destructive" onClick={onConfirm}>
+            <Button
+              variant="destructive"
+              onClick={onConfirm}
+              data-testid="delete-list-confirm-btn"
+            >
               {t('call_to_action.delete')}
             </Button>
           </DialogFooter>

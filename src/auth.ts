@@ -4,7 +4,7 @@ import KeycloakProvider from 'next-auth/providers/keycloak';
 
 import { Tenant } from './payload/payload-types';
 import { fetchWrapper } from './app/(app)/shared/lib/fetchWrapper';
-import { isJwtExpired } from './utils/getJwtExpirationTime';
+import { isJwtExpired } from './utils/isJwtExpired';
 import { createLogger } from './lib/logger';
 
 // Helper to remove null/undefined values from object
@@ -65,7 +65,7 @@ const createAuthOptions = ({
         };
       }
 
-      const REFRESH_BUFFER = 30;
+      const REFRESH_BUFFER = 60;
       if (
         token.expiresAt &&
         Date.now() / 1000 < token.expiresAt - REFRESH_BUFFER

@@ -47,6 +47,7 @@ export function PromptAuthDialog() {
               onClick={() =>
                 signIn('keycloak', { callbackUrl: window.location.href })
               }
+              data-testid="login-btn"
             >
               {t('call_to_action.login')}
             </Button>

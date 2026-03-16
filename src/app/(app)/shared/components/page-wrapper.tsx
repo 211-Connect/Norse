@@ -13,6 +13,7 @@ import { Toaster } from './ui/sonner';
 import TranslationsProvider from '../i18n/TranslationsProvider';
 import { GoogleTagManagerScript } from './google-tag-manager-script';
 import { MatomoTagManagerScript } from './matomo-tag-manager-script';
+import { UmamiScript } from './umami-script';
 import { useAppConfig } from '../hooks/use-app-config';
 import { DynamicHeightListener } from './dynamic-height-listener';
 
@@ -56,6 +57,11 @@ export const PageWrapper = ({
           />
           <MatomoTagManagerScript
             matamoContainerUrl={appConfig.matomoContainerUrl}
+            nonce={nonce}
+          />
+          <UmamiScript
+            scriptUrl={process.env.NEXT_PUBLIC_UMAMI_SCRIPT_URL}
+            websiteId={appConfig.umamiWebsiteId}
             nonce={nonce}
           />
           <DynamicHeightListener />

@@ -44,6 +44,7 @@ export function CreateAListButton({ className = '' }: { className?: string }) {
         onClick={() => setOpen(true)}
         variant="outline"
         className={cn('flex gap-1', className)}
+        data-testid="create-list-btn"
       >
         <PlusIcon className="size-4" />
         {t('modal.create_list.create_a_list')}

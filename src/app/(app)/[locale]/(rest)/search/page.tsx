@@ -116,13 +116,26 @@ const getPageData = cache(async function (
 
   // Fallback to legacy search if geospatial wasn't used or failed
   if (!useFindResourcesV2) {
-    ({ results, noResults, totalResults, filters } = await findResources(
+    const searchResult = await findResources(
       searchQuery,
       locale,
       page,
       limit,
       appConfig.tenantId,
-    ));
+    );
+
+    if (!searchResult) {
+      log.warn(
+        { searchQuery, locale, page, limit, tenantId: appConfig.tenantId },
+        'Search returned no result object; defaulting to empty results',
+      );
+      results = [];
+      noResults = true;
+      totalResults = 0;
+      filters = {};
+    } else {
+      ({ results, noResults, totalResults, filters } = searchResult);
+    }
   }
 
   const { resources, t } = await initTranslations(

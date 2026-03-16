@@ -289,6 +289,8 @@ async function getAppConfigBase(
     i18n,
     matomoContainerUrl:
       getTenant(resourceDirectory)?.common?.matomoContainerUrl ?? undefined,
+    umamiWebsiteId:
+      getTenant(resourceDirectory)?.common?.umamiWebsiteId ?? undefined,
     meta: {
       description: resourceDirectory.brand.meta?.description ?? '',
       title: resourceDirectory.brand.meta?.title ?? '',

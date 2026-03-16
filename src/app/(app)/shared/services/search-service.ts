@@ -3,15 +3,23 @@ import { ExtractAtomValue } from 'jotai';
 import {
   buildSearchRequest,
   deriveQueryType,
-  QueryType,
+  SearchRequestParams,
 } from '../lib/search-utils';
 import { searchAtom } from '../store/search';
 import { API_URL, INTERNAL_API_KEY } from '../lib/constants';
 import { fetchWrapper } from '../lib/fetchWrapper';
 import { transformFacetsToArray } from '../utils/toFacetsWithTranslation';
 import { BBox } from '@/types/resource';
+import {
+  FiltersMap,
+  SearchApiResponse,
+  SearchFacet,
+  SearchHit,
+} from '@/types/search';
 import qs from 'qs';
 import { createLogger } from '@/lib/logger';
+import { formatAddressForDisplay } from '../lib/utils';
+import { stableHash, withRedisCache } from '@/utilities/withRedisCache';
 
 const log = createLogger('search');
 
@@ -28,11 +36,11 @@ export type FindResourcesQuery = {
 };
 
 type SearchResult = {
-  results: any[];
+  results: Record<string, unknown>[];
   noResults: boolean;
   totalResults: number;
   page: number;
-  filters: Record<string, any>;
+  filters: FiltersMap;
 };
 
 export function createUrlParamsForSearch(
@@ -70,7 +78,7 @@ export function createUrlParamsForSearch(
 /**
  * Extract total results count from search response
  */
-function extractTotalResults(data: any): number {
+function extractTotalResults(data: SearchApiResponse): number {
   return typeof data?.search?.hits?.total !== 'number'
     ? (data?.search?.hits?.total?.value ?? 0)
     : (data?.search?.hits?.total ?? 0);
@@ -80,32 +88,15 @@ function extractTotalResults(data: any): number {
  * Transform search hits into result objects
  */
 function transformSearchHits(
-  hits: any[],
-  locale?: string,
-  facetDefinitions?: any,
-): any[] {
+  hits: SearchHit[],
+  locale: string,
+  facetDefinitions: Record<string, { en: string; [key: string]: string }>,
+): Record<string, unknown>[] {
   if (!Array.isArray(hits)) return [];
 
   return hits.map((hit: any) => {
     const physicalAddress = hit._source?.location?.physical_address;
-    let mainAddress: string | null = null;
-
-    if (
-      physicalAddress?.address_1 &&
-      physicalAddress?.city &&
-      physicalAddress?.state &&
-      physicalAddress?.postal_code
-    ) {
-      const addressParts = [
-        physicalAddress.address_1,
-        physicalAddress.address_2 ? physicalAddress.address_2 : null,
-        physicalAddress.city,
-        physicalAddress.state,
-        physicalAddress.postal_code,
-      ].filter(Boolean);
-
-      mainAddress = addressParts.join(', ');
-    }
+    const mainAddress = formatAddressForDisplay(physicalAddress);
 
     const responseData: Record<string, any> = {
       _id: hit._id,
@@ -122,16 +113,13 @@ function transformSearchHits(
       taxonomies: hit?._source?.taxonomies ?? null,
     };
 
-    // Add facets if available (V1 only)
-    if (facetDefinitions && locale) {
-      const transformedFacets = transformFacetsToArray(
-        hit?._source?.facets,
-        facetDefinitions,
-        locale,
-      );
-      if (transformedFacets.length > 0) {
-        responseData.facets = transformedFacets;
-      }
+    const transformedFacets = transformFacetsToArray(
+      hit?._source?.facets,
+      facetDefinitions,
+      locale,
+    );
+    if (transformedFacets.length > 0) {
+      responseData.facets = transformedFacets;
     }
 
     return Object.fromEntries(
@@ -140,25 +128,22 @@ function transformSearchHits(
   });
 }
 
-/**
- * Extract and filter aggregations from search response
- */
-function extractFilters(data: any): Record<string, any> {
-  const aggregations = data?.search?.aggregations ?? {};
-  return Object.keys(aggregations).reduce(
-    (acc, key) => {
-      const buckets = aggregations[key]?.buckets;
-      if (
-        !key.startsWith('label_') &&
-        !key.endsWith('_en') &&
-        Array.isArray(buckets) &&
-        buckets.length > 0
-      ) {
-        acc[key] = aggregations[key];
-      }
-      return acc;
-    },
-    {} as Record<string, any>,
+function extractFilters(data: SearchApiResponse, locale: string): FiltersMap {
+  const facets: SearchFacet[] = data?.facets ?? [];
+  return Object.fromEntries(
+    facets
+      .filter((f) => f.values.length > 0)
+      .map((f) => [
+        f.key,
+        {
+          name: f.name.locale,
+          buckets: f.values.map((v) => ({
+            key: v.en,
+            display: v.locale,
+            doc_count: v.doc_count,
+          })),
+        },
+      ]),
   );
 }
 
@@ -175,13 +160,21 @@ function createEmptyResult(page: number): SearchResult {
   };
 }
 
-export async function findResources(
-  query: FindResourcesQuery,
-  locale: string,
-  page: number,
-  limit?: number,
-  tenantId?: string,
-): Promise<SearchResult> {
+type FindResourcesOriginArgs = {
+  query: FindResourcesQuery;
+  locale: string;
+  page: number;
+  limit?: number;
+  tenantId?: string;
+};
+
+async function findResourcesOrigin({
+  query,
+  locale,
+  page,
+  limit,
+  tenantId,
+}: FindResourcesOriginArgs): Promise<SearchResult> {
   if (isNaN(page)) page = 1;
   if (!limit || isNaN(limit)) limit = 25;
 
@@ -192,7 +185,7 @@ export async function findResources(
   );
   const hasCoords = query.coordinates?.length === 2;
 
-  let data;
+  let data: SearchApiResponse | null | undefined;
   try {
     const searchString = qs.stringify({
       ...(query.query?.trim() && { query: query.query.trim() }),
@@ -246,9 +239,14 @@ export async function findResources(
   }
 
   const hits = data?.search?.hits?.hits;
-  const facetDefinitions = data?.facets;
+  const facetDefinitions = Object.fromEntries(
+    (data.facets ?? []).map((f) => [
+      f.key,
+      { en: f.name.en, [locale]: f.name.locale },
+    ]),
+  );
   const results = transformSearchHits(hits, locale, facetDefinitions);
-  const filters = extractFilters(data);
+  const filters = extractFilters(data, locale);
 
   return {
     results,
@@ -259,6 +257,18 @@ export async function findResources(
   };
 }
 
+export const findResources = (
+  query: FindResourcesQuery,
+  locale: string,
+  page: number,
+  limit?: number,
+  tenantId?: string,
+) =>
+  withRedisCache(
+    `search_results:${tenantId}:${locale}:${stableHash({ query, page, limit })}`,
+    () => findResourcesOrigin({ query, locale, page, limit, tenantId }),
+  );
+
 /**
  * Try fallback search with more_like_this query type
  */
@@ -268,7 +278,7 @@ async function tryFallbackSearch(
   locale: string,
   limit: number,
   tenantId?: string,
-): Promise<any | null> {
+): Promise<SearchApiResponse | null> {
   const hasCoords = query.coordinates?.length === 2;
   try {
     const fallbackString = qs.stringify({
@@ -310,13 +320,13 @@ async function tryFallbackSearch(
  * Try fallback search with more_like_this query type for V2
  */
 async function tryFallbackSearchV2(
-  request: any,
+  request: SearchRequestParams,
   page: number,
   locale: string,
   limit: number,
   tenantId?: string,
-  filters?: Record<string, any>,
-): Promise<any | null> {
+  filters?: Record<string, string[]>,
+): Promise<SearchApiResponse | null> {
   try {
     const fallbackQueryParams = qs.stringify({
       ...request.queryParams,
@@ -378,7 +388,7 @@ export async function findResourcesV2(
   });
   const searchUrl = `${API_URL}/search?${queryParams}`;
 
-  let data;
+  let data: SearchApiResponse | null | undefined;
   try {
     data = await fetchWrapper(searchUrl, {
       method: 'POST',
@@ -425,8 +435,14 @@ export async function findResourcesV2(
   }
 
   const hits = data?.search?.hits?.hits;
-  const results = transformSearchHits(hits);
-  const filters = extractFilters(data);
+  const facetDefinitions = Object.fromEntries(
+    (data.facets ?? []).map((f) => [
+      f.key,
+      { en: f.name.en, [locale]: f.name.locale },
+    ]),
+  );
+  const results = transformSearchHits(hits, locale, facetDefinitions);
+  const filters = extractFilters(data, locale);
 
   return {
     results,
