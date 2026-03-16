@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import { ReactNode } from 'react';
 
 import { createReferralEvent } from '../lib/google-tag-manager';
@@ -18,14 +19,13 @@ type Props = {
   children?: ReactNode;
 };
 
-export function ReferralButton({
-  referralType,
-  resourceId,
-  onClick,
-  className,
-  resourceData,
-  ...rest
-}: Props & ButtonProps) {
+export const ReferralButton = React.forwardRef<
+  HTMLButtonElement,
+  Props & ButtonProps
+>(function ReferralButton(
+  { referralType, resourceId, onClick, className, resourceData, ...rest },
+  ref,
+) {
   const { searchParamsObject } = useClientSearchParams();
   const appConfig = useAppConfig();
 
@@ -40,5 +40,12 @@ export function ReferralButton({
     onClick?.(e);
   };
 
-  return <Button className={cn(className)} onClick={handleClick} {...rest} />;
-}
+  return (
+    <Button
+      ref={ref}
+      className={cn(className)}
+      onClick={handleClick}
+      {...rest}
+    />
+  );
+});
