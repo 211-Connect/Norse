@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
+import { useCallback, useId, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAtomValue } from 'jotai';
 import { SearchIcon } from 'lucide-react';
@@ -19,6 +19,7 @@ interface SearchBarProps {
 export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
   const appConfig = useAppConfig();
   const { t } = useTranslation('common');
+  const labelId = useId();
   const prevSearchTerm = useAtomValue(prevSearchTermAtom);
   const searchTerm = useAtomValue(searchTermAtom);
   const showTaxonomyBadge = useFlag('showSuggestionListTaxonomyBadge');
@@ -132,22 +133,39 @@ export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
   );
 
   return (
-    <Autocomplete
-      className="search-box"
-      inputProps={{
-        autoFocus: focusByDefault,
-        id: inputId,
-        placeholder:
-          appConfig.search.texts?.queryInputPlaceholder ||
-          t('search.query_placeholder'),
-      }}
-      defaultOpen={focusByDefault}
-      options={options}
-      onInputChange={handleInputChange}
-      onValueChange={setSearchTerm}
-      optionsPopoverClassName="max-h-[calc(var(--vh)-240px)] mt-[110px] sm:max-h-[calc(var(--vh)-360px)]"
-      value={searchTerm}
-      blurOnOptionsInteraction
-    />
+    <>
+      <label className="sr-only" htmlFor={inputId} id={labelId}>
+        {t('search.query_input_label', {
+          defaultValue: 'Search for resources',
+        })}
+      </label>
+      <Autocomplete
+        className="search-box"
+        inputProps={{
+          autoFocus: focusByDefault,
+          id: inputId,
+          'aria-labelledby': labelId,
+          placeholder:
+            appConfig.search.texts?.queryInputPlaceholder ||
+            t('search.query_placeholder'),
+        }}
+        defaultOpen={focusByDefault}
+        options={options}
+        onInputChange={handleInputChange}
+        onValueChange={setSearchTerm}
+        getSuggestionsStatusMessage={(count) =>
+          t('search.suggestions_status', {
+            count,
+            defaultValue:
+              count === 1
+                ? '1 suggestion available. Use the up and down arrow keys to review.'
+                : `${count} suggestions available. Use the up and down arrow keys to review.`,
+          })
+        }
+        optionsPopoverClassName="mt-2 max-h-[min(18rem,calc(100dvh-18rem))] sm:max-h-[min(20rem,calc(100dvh-22rem))]"
+        value={searchTerm}
+        blurOnOptionsInteraction
+      />
+    </>
   );
 }
