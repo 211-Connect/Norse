@@ -8,7 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/app/(app)/shared/components/ui/tooltip';
-import React, { ReactNode } from 'react';
+import { ReactNode, useId } from 'react';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { useTranslation } from 'react-i18next';
 
@@ -21,7 +21,8 @@ type CopyBadgeProps = {
   target?: string;
   className?: string;
   truncate?: boolean;
-  onClick?: (e: React.MouseEvent<HTMLAnchorElement | HTMLDivElement>) => void;
+  copyLabel: string;
+  linkAriaLabel?: string;
 };
 
 export function CopyBadge({
@@ -31,54 +32,64 @@ export function CopyBadge({
   target,
   truncate = false,
   className,
-  onClick,
+  copyLabel,
+  linkAriaLabel,
 }: CopyBadgeProps) {
   const { t } = useTranslation('common');
   const { copied, copy } = useClipboard({ timeout: 500 });
+  const statusId = useId();
 
-  const WrapperComponent = href ? LocalizedLink : 'div';
-
-  const handleCopy = (e) => {
-    e.preventDefault();
+  const handleCopy = () => {
     copy(text);
   };
 
   return (
-    <WrapperComponent
-      href={href!}
-      target={target}
-      onClick={onClick}
+    <div
       className={cn(
-        'group overflow-hidden text-xs font-semibold hover:underline',
-        truncate && 'flex items-center gap-1',
+        'group flex items-center gap-1 overflow-hidden text-xs font-semibold',
         className,
       )}
     >
-      <span className={cn(truncate && 'truncate')}>{children}</span>
+      {href ? (
+        <LocalizedLink
+          href={href}
+          target={target}
+          aria-label={linkAriaLabel}
+          className={cn('overflow-hidden hover:underline', truncate && 'truncate')}
+        >
+          <span className={cn(truncate && 'truncate')}>{children}</span>
+        </LocalizedLink>
+      ) : (
+        <span className={cn('overflow-hidden', truncate && 'truncate')}>
+          {children}
+        </span>
+      )}
 
       <TooltipProvider>
         <Tooltip open={copied}>
-          <TooltipTrigger
-            className={cn('size-4 shrink-0', !truncate && 'ml-1 inline')}
-            onClick={handleCopy}
-            aria-label="Copy"
-          >
-            {copied ? (
-              <CheckIcon className={cn('size-4', !truncate && 'mt-[2px]')} />
-            ) : (
-              <ClipboardIcon
-                className={cn(
-                  'hidden size-4 group-hover:block',
-                  !truncate && 'mt-[2px]',
-                )}
-              />
-            )}
+          <TooltipTrigger asChild>
+            <button
+              type="button"
+              className="inline-flex size-4 shrink-0 items-center justify-center rounded-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              onClick={handleCopy}
+              aria-label={copyLabel}
+              aria-describedby={statusId}
+            >
+              {copied ? (
+                <CheckIcon className="size-4" />
+              ) : (
+                <ClipboardIcon className="size-4" />
+              )}
+            </button>
           </TooltipTrigger>
           <TooltipContent>
             <p>{t('modal.share.copied')}</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-    </WrapperComponent>
+      <span id={statusId} className="sr-only" role="status" aria-live="polite">
+        {copied ? t('modal.share.copied') : ''}
+      </span>
+    </div>
   );
 }
