@@ -11,6 +11,7 @@ import {
   useCallback,
   useState,
   KeyboardEvent,
+  MouseEvent,
   ChangeEvent,
   useMemo,
   Fragment,
@@ -25,7 +26,14 @@ import { useUncontrolled } from '@/app/(app)/shared/hooks/use-uncontrolled';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { Input, InputProps } from './input';
 import { Separator } from './separator';
-import { SearchIcon } from 'lucide-react';
+import { SearchIcon, XIcon } from 'lucide-react';
+import { Button } from './button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from './tooltip';
 import { Badge } from './badge';
 import { useOnPointerDownOutside } from '../../hooks/use-on-pointer-down-outside';
 
@@ -53,6 +61,8 @@ export type AutocompleteProps = {
   optionsPopoverClassName?: string;
   defaultOpen?: boolean;
   blurOnOptionsInteraction?: boolean;
+  clearButtonLabel?: string;
+  getSuggestionsStatusMessage?: (count: number) => string;
 };
 
 const useMouseMovement = () => {
@@ -94,6 +104,8 @@ export function Autocomplete(props: AutocompleteProps) {
     optionsPopoverClassName,
     defaultOpen = false,
     blurOnOptionsInteraction = false,
+    clearButtonLabel = 'Clear',
+    getSuggestionsStatusMessage,
     ...rest
   } = props;
 
@@ -111,6 +123,7 @@ export function Autocomplete(props: AutocompleteProps) {
     onChange: onValueChange,
   });
   const [tempValue, setTempValue] = useState(value || '');
+  const clearButtonRef = useRef<HTMLButtonElement>(null);
 
   const stayOpenOnBlurRef = useRef(false);
 
@@ -177,6 +190,15 @@ export function Autocomplete(props: AutocompleteProps) {
   const selectedOption = useMemo(() => {
     return rest.options?.find((option) => option.value === value);
   }, [rest.options, value]);
+
+  const totalOptions = rest.options?.length ?? 0;
+  const suggestionsStatusMessage =
+    open && totalOptions > 0
+      ? getSuggestionsStatusMessage?.(totalOptions) ??
+        `${
+          totalOptions === 1 ? '1 suggestion' : `${totalOptions} suggestions`
+        } available. Use the up and down arrow keys to review.`
+      : '';
 
   // Attach refs
   useEffect(() => {
@@ -439,6 +461,19 @@ export function Autocomplete(props: AutocompleteProps) {
     ],
   );
 
+  const clear = useCallback(
+    (e?: MouseEvent) => {
+      e?.preventDefault();
+      setCurrentIndex(-1);
+      setValue('');
+      onInputChange?.('');
+      referenceElement?.focus();
+      setOpen(true);
+      setLastManualInput('');
+    },
+    [setValue, onInputChange, referenceElement],
+  );
+
   const handleOptionMouseEnter = useCallback(
     (index: number) => {
       return () => {
@@ -470,7 +505,10 @@ export function Autocomplete(props: AutocompleteProps) {
         }
       }
 
-      if (!stayOpenOnBlurRef.current) {
+      if (
+        clearButtonRef.current !== e.relatedTarget &&
+        !stayOpenOnBlurRef.current
+      ) {
         closeOptions();
       }
     },
@@ -513,10 +551,19 @@ export function Autocomplete(props: AutocompleteProps) {
     >
       <div className="relative w-full">
         {Icon ? (
-          <Icon className="absolute left-2 top-2 size-4 shrink-0 text-primary" />
+          <Icon
+            className="absolute left-2 top-2 size-4 shrink-0 text-primary"
+            aria-hidden="true"
+          />
         ) : (
-          <SearchIcon className="absolute left-2 top-2 size-4 shrink-0 text-primary" />
+          <SearchIcon
+            className="absolute left-2 top-2 size-4 shrink-0 text-primary"
+            aria-hidden="true"
+          />
         )}
+        <div className="sr-only" role="status" aria-live="polite">
+          {suggestionsStatusMessage}
+        </div>
         <Input
           {...inputProps}
           className={cn(
@@ -534,7 +581,12 @@ export function Autocomplete(props: AutocompleteProps) {
           aria-autocomplete="list"
           aria-controls={open ? uniqueId : undefined}
           aria-haspopup="listbox"
-          aria-label={inputProps?.placeholder ?? ''}
+          aria-label={
+            inputProps?.['aria-labelledby']
+              ? undefined
+              : inputProps?.['aria-label'] ?? inputProps?.placeholder ?? ''
+          }
+          aria-labelledby={inputProps?.['aria-labelledby']}
           aria-owns={uniqueId}
           aria-expanded={open}
           aria-activedescendant={
@@ -542,6 +594,31 @@ export function Autocomplete(props: AutocompleteProps) {
           }
           role="combobox"
         />
+
+        <TooltipProvider>
+          <Tooltip delayDuration={100}>
+            <TooltipTrigger asChild autoFocus={false}>
+              <Button
+                ref={clearButtonRef}
+                size="icon"
+                variant="ghost"
+                className={cn(
+                  (value?.length ?? 0) > 0 ? 'visible' : 'invisible',
+                  'absolute right-0 top-0 h-full hover:bg-transparent hover:bg-none',
+                )}
+                onClick={clear}
+                aria-label={clearButtonLabel}
+                data-testid="search-clear-btn"
+                type="button"
+              >
+                <XIcon className={cn('h-4 w-4 shrink-0 opacity-50')} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              <span>{clearButtonLabel}</span>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
 
         {open && (
           <div
@@ -608,7 +685,10 @@ export function Autocomplete(props: AutocompleteProps) {
                         >
                           <span className="flex items-center gap-2 text-xs font-medium text-primary">
                             {Icon === 'span' ? null : (
-                              <Icon className="size-4 shrink-0" />
+                              <Icon
+                                className="size-4 shrink-0"
+                                aria-hidden="true"
+                              />
                             )}
                             <p>
                               {parse(optionValue, matches).map((text, idx) =>
