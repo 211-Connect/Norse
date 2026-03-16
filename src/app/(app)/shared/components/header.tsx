@@ -264,12 +264,7 @@ export function Header() {
             : 'py-3 pr-6',
         )}
       >
-        <div
-          className={cn(
-            'flex',
-            newLayoutEnabled ? 'absolute -left-3 -top-[18px]' : 'h-full',
-          )}
-        >
+        <div className="flex h-full items-center">
           <div
             className="flex cursor-pointer items-center"
             aria-label={t('header.home') || 'Logo'}
