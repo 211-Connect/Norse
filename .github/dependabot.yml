@@ -10,3 +10,5 @@ updates:
     schedule:
       interval: 'weekly'
     target-branch: 'development'
+    ignore:
+      - dependency-name: 'i18next'
