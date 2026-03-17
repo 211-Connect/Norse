@@ -120,19 +120,20 @@ export const config = {
 };
 
 function cacheControlMiddleware(response: NextResponse, pathname: string) {
-  const requiredCachePaths = ['/search', '/details/original'];
-
   const isProduction = process.env.NODE_ENV === 'production';
-  if (
-    isProduction &&
-    requiredCachePaths.some((path) => pathname.includes(path))
-  ) {
+
+  const isResourceDetailPage = /\/search\/[^/?]+/.test(pathname);
+  const isDetailsOriginalPage = pathname.includes('/details/original');
+
+  if (isProduction && (isResourceDetailPage || isDetailsOriginalPage)) {
     response.headers.set(
       'Cache-Control',
       'public, max-age=1800, s-maxage=3600, stale-while-revalidate=600',
     );
     // Ensure CDN/proxies cache separately per cookie to prevent cross-user data leakage
     response.headers.set('Vary', 'Cookie');
+  } else {
+    response.headers.set('Cache-Control', 'no-cache');
   }
 }
 
