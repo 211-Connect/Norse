@@ -10,6 +10,7 @@ import { AppConfig } from '@/types/appConfig';
 import { notFound } from 'next/navigation';
 import { Providers } from '../shared/components/providers';
 import { getSession } from '../shared/utils/getServerSession';
+import { sanitizeSessionForClient } from '../shared/utils/sanitizeSession';
 import { cookies } from 'next/headers';
 import { USER_PREF_FONT_SIZE } from '../shared/lib/constants';
 
@@ -96,6 +97,7 @@ export default async function RootLayout({
   const appConfig = await getAppConfigWithoutHost(locale);
 
   const session = await getSession();
+  const clientSession = sanitizeSessionForClient(session);
 
   if (appConfig.brand.name === '') {
     notFound();
@@ -109,7 +111,7 @@ export default async function RootLayout({
         className={cn('font-sans antialiased', fontSans.variable)}
         id="app-root"
       >
-        <Providers appConfig={appConfig} session={session}>
+        <Providers appConfig={appConfig} session={clientSession}>
           {children}
         </Providers>
       </body>

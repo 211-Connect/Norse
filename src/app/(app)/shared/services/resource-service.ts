@@ -1,11 +1,12 @@
 import dayjs from 'dayjs';
+import { cache } from 'react';
 
 import { ApiResource, Resource } from '@/types/resource';
 import { RedisCacheKey, withRedisCache } from '@/utilities/withRedisCache';
 import { fetchWrapper } from '../lib/fetchWrapper';
 import { INTERNAL_API_KEY, API_URL } from '../lib/constants';
 
-async function fetchAndTransformResource(
+async function fetchAndTransformResourceOrigin(
   url: string,
   options: { locale: string; tenantId?: string; cacheKey: RedisCacheKey },
 ): Promise<Resource | null> {
@@ -103,6 +104,8 @@ async function fetchAndTransformResource(
     };
   });
 }
+
+const fetchAndTransformResource = cache(fetchAndTransformResourceOrigin);
 
 export async function getResource(
   id: string,
