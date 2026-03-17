@@ -133,7 +133,7 @@ function cacheControlMiddleware(response: NextResponse, pathname: string) {
     // Ensure CDN/proxies cache separately per cookie to prevent cross-user data leakage
     response.headers.set('Vary', 'Cookie');
   } else {
-    response.headers.set('Cache-Control', 'cache');
+    response.headers.set('Cache-Control', 'no-cache');
   }
 }
 
