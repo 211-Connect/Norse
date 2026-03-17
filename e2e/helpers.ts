@@ -1,4 +1,4 @@
-import { test as base, expect, type Page } from '@playwright/test';
+import { test as base, expect, type Locator, type Page } from '@playwright/test';
 
 export const LOCALE = 'en';
 
@@ -267,6 +267,29 @@ export async function switchLanguage(page: Page, locale: 'en' | 'es') {
     { timeout: 20_000 },
   );
   await page.waitForLoadState('networkidle');
+}
+
+export async function clickAvoidingStickyHeader(locator: Locator) {
+  await locator.evaluate((element) => {
+    element.scrollIntoView({ block: 'center', inline: 'center' });
+  });
+
+  try {
+    await locator.click({ timeout: 5_000 });
+  } catch (error) {
+    if (
+      !(error instanceof Error) ||
+      !/intercepts pointer events|element is outside of the viewport/i.test(
+        error.message,
+      )
+    ) {
+      throw error;
+    }
+
+    await locator.evaluate((element: HTMLElement) => {
+      element.click();
+    });
+  }
 }
 
 export function parseTotalFromResultText(text: string): number {

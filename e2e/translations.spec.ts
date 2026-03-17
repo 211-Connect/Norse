@@ -10,6 +10,7 @@ import {
   getSelectedFilterIds,
   switchLanguage,
   performSearch,
+  clickAvoidingStickyHeader,
 } from './helpers';
 
 test.describe('Language Persistence And Results Button', () => {
@@ -95,7 +96,7 @@ test.describe('Language Persistence And Results Button', () => {
 
     const resultsButton = page.getByRole('button', { name: /^Results$/i });
     await expect(resultsButton).toBeVisible({ timeout: 20_000 });
-    await resultsButton.click();
+    await clickAvoidingStickyHeader(resultsButton);
 
     await page.waitForURL(/\/search\?/);
     await expect(page.locator('#search-container')).toBeVisible({
@@ -122,7 +123,7 @@ test.describe('Language Persistence And Results Button', () => {
 
     const resultsButton = page.getByRole('button', { name: /^Resultados$/i });
     await expect(resultsButton).toBeVisible({ timeout: 20_000 });
-    await resultsButton.click();
+    await clickAvoidingStickyHeader(resultsButton);
 
     await page.waitForURL(/\/search\?/);
     await expect(page.locator('#search-container')).toBeVisible({
