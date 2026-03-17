@@ -167,6 +167,7 @@ export function NewHomeContent() {
           <div className="absolute right-0 hidden h-full w-[calc(100vw-(100vw-100%)-430px-2rem)] lg:block">
             <Image
               className="h-full w-full object-cover"
+              fill
               src={appConfig.newLayout.heroUrl}
               alt="Hero image"
             />

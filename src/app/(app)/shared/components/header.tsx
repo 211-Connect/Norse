@@ -266,7 +266,7 @@ export function Header() {
       >
         <div className="flex h-full items-center">
           <div
-            className="flex cursor-pointer items-center"
+            className="flex h-full cursor-pointer items-center"
             aria-label={t('header.home') || 'Logo'}
             onClick={handleLogoClick}
           >
