@@ -10,7 +10,7 @@ permissions:
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 env:
   REGISTRY: registry.digitalocean.com
@@ -53,7 +53,7 @@ jobs:
             type=semver,pattern={{version}}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: ./Dockerfile
