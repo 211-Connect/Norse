@@ -50,5 +50,10 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'], baseURL },
       workers: 1,
     },
+    {
+      name: 'accessibility',
+      testMatch: ['**/a11y/*.ts'],
+      use: { ...devices['Desktop Chrome'], baseURL: defaultBaseUrl },
+    },
   ],
 });
