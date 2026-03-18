@@ -168,7 +168,9 @@ export function Header() {
               <Link
                 target={item.openInNewTab ? '_blank' : undefined}
                 aria-label={
-                  item.openInNewTab ? `${item.name}${NEW_TAB_WARNING}` : item.name
+                  item.openInNewTab
+                    ? `${item.name}${NEW_TAB_WARNING}`
+                    : item.name
                 }
                 aria-current={getAriaCurrent(item.href)}
                 href={item.href ?? ''}
@@ -205,7 +207,7 @@ export function Header() {
               <Card className="px-0 py-[10px]">
                 <CardContent>
                   <DropdownMenuItem
-                    className="cursor-pointer !outline-none px-[10px] py-2 text-primary focus:bg-accent focus:text-primary"
+                    className="cursor-pointer px-[10px] py-2 text-primary !outline-none focus:bg-accent focus:text-primary"
                     data-testid="favorites-btn"
                     onClick={() => {
                       if (session.status === 'unauthenticated') {
@@ -229,7 +231,7 @@ export function Header() {
                   </DropdownMenuItem>
                   {session.status === 'authenticated' && (
                     <DropdownMenuItem
-                      className="cursor-pointer !outline-none px-[10px] py-2 text-primary focus:bg-accent focus:text-primary"
+                      className="cursor-pointer px-[10px] py-2 text-primary !outline-none focus:bg-accent focus:text-primary"
                       onClick={() => {
                         signOut({ redirect: true, callbackUrl: '/' });
                       }}
@@ -302,7 +304,7 @@ export function Header() {
       >
         <div className="flex h-full items-center">
           <div
-            className="flex cursor-pointer items-center"
+            className="flex h-full cursor-pointer items-center"
             aria-label={logoAlt}
             onClick={handleLogoClick}
           >

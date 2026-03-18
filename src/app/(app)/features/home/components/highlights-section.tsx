@@ -67,7 +67,7 @@ export function HighlightsSection() {
   }
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="container z-[2] mx-auto py-8">
       {sectionTitle && (
         <div className="mb-6">
           <h2 className="text-center text-3xl font-bold">{sectionTitle}</h2>
@@ -75,7 +75,7 @@ export function HighlightsSection() {
         </div>
       )}
 
-      <div className="relative">
+      <div className="relative px-1 sm:px-16">
         {/* Navigation Buttons */}
         {canScrollPrev && (
           <Button
