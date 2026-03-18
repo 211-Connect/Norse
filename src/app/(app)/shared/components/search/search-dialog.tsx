@@ -168,7 +168,10 @@ export function SearchDialog({
             <SearchButton loading={isPending} />
           </div>
           <SearchBar inputId={SEARCH_INPUT_ID} />
-          <LocationSearchBar inputId={LOCATION_INPUT_ID} />
+          <LocationSearchBar
+            inputId={LOCATION_INPUT_ID}
+            enterKeyFocusTargetId={SEARCH_INPUT_ID}
+          />
         </form>
       </DialogContent>
     </Dialog>

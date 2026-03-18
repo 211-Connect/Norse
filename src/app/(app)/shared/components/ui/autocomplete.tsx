@@ -63,6 +63,8 @@ export type AutocompleteProps = {
   blurOnOptionsInteraction?: boolean;
   clearButtonLabel?: string;
   getSuggestionsStatusMessage?: (count: number) => string;
+  enterKeyBehavior?: 'submit-form' | 'focus-target';
+  enterKeyFocusTargetId?: string;
 };
 
 const useMouseMovement = () => {
@@ -106,6 +108,8 @@ export function Autocomplete(props: AutocompleteProps) {
     blurOnOptionsInteraction = false,
     clearButtonLabel = 'Clear',
     getSuggestionsStatusMessage,
+    enterKeyBehavior = 'submit-form',
+    enterKeyFocusTargetId,
     ...rest
   } = props;
 
@@ -194,10 +198,10 @@ export function Autocomplete(props: AutocompleteProps) {
   const totalOptions = rest.options?.length ?? 0;
   const suggestionsStatusMessage =
     open && totalOptions > 0
-      ? getSuggestionsStatusMessage?.(totalOptions) ??
+      ? (getSuggestionsStatusMessage?.(totalOptions) ??
         `${
           totalOptions === 1 ? '1 suggestion' : `${totalOptions} suggestions`
-        } available. Use the up and down arrow keys to review.`
+        } available. Use the up and down arrow keys to review.`)
       : '';
 
   // Attach refs
@@ -365,13 +369,14 @@ export function Autocomplete(props: AutocompleteProps) {
         }
       } else if (e.key === 'Enter') {
         if (open) {
+          e.preventDefault();
           setOpen(false);
+
           if (currentOption) {
             onInputChange?.(currentOption.value);
             setLastManualInput(currentOption.value);
             onValueChange?.(currentOption.value, currentOption);
           } else if (autoSelectIndex != null) {
-            e.preventDefault();
             const defaultOption = rest.options[autoSelectIndex];
             if (defaultOption) {
               onInputChange?.(defaultOption.value);
@@ -379,15 +384,28 @@ export function Autocomplete(props: AutocompleteProps) {
               setLastManualInput(defaultOption.value);
               onValueChange?.(defaultOption.value, defaultOption);
             }
+          }
+
+          if (enterKeyBehavior === 'focus-target' && enterKeyFocusTargetId) {
+            setTimeout(() => {
+              document.getElementById(enterKeyFocusTargetId)?.focus();
+            }, 0);
+          } else {
             const form = (e.target as HTMLElement).closest('form');
             if (form) {
               setTimeout(() => {
+                if (typeof form.requestSubmit === 'function') {
+                  form.requestSubmit();
+                  return;
+                }
+
                 form.dispatchEvent(
                   new Event('submit', { cancelable: true, bubbles: true }),
                 );
               }, 0);
             }
           }
+
           setCurrentIndex(-1);
           nextIndex = -1;
         }
@@ -458,6 +476,8 @@ export function Autocomplete(props: AutocompleteProps) {
       popperElement,
       uniqueId,
       onValueChange,
+      enterKeyBehavior,
+      enterKeyFocusTargetId,
     ],
   );
 
@@ -584,7 +604,7 @@ export function Autocomplete(props: AutocompleteProps) {
           aria-label={
             inputProps?.['aria-labelledby']
               ? undefined
-              : inputProps?.['aria-label'] ?? inputProps?.placeholder ?? ''
+              : (inputProps?.['aria-label'] ?? inputProps?.placeholder ?? '')
           }
           aria-labelledby={inputProps?.['aria-labelledby']}
           aria-owns={uniqueId}

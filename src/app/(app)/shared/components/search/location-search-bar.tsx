@@ -34,6 +34,7 @@ type BaseProps = {
   className?: string;
   focusByDefault?: boolean;
   inputId?: string;
+  enterKeyFocusTargetId?: string;
 };
 
 // Integrated mode - uses global atoms and context
@@ -51,7 +52,12 @@ type StandaloneModeProps = BaseProps & {
 type LocationSearchBarProps = IntegratedModeProps | StandaloneModeProps;
 
 export function LocationSearchBar(props: LocationSearchBarProps) {
-  const { className, focusByDefault = false, inputId } = props;
+  const {
+    className,
+    focusByDefault = false,
+    inputId,
+    enterKeyFocusTargetId,
+  } = props;
   const mode = props.mode || 'integrated';
   const isStandalone = mode === 'standalone';
   const labelId = useId();
@@ -251,6 +257,8 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
         optionsPopoverClassName={`mt-2 max-h-[min(18rem,calc(100dvh-18rem))] ${isStandalone ? 'sm:max-h-[min(20rem,calc(100dvh-16rem))]' : 'sm:max-h-[min(20rem,calc(100dvh-22rem))]'}`}
         autoSelectIndex={coords?.length === 2 ? undefined : 1}
         autoSelectOnBlurIndex={1}
+        enterKeyBehavior={enterKeyFocusTargetId ? 'focus-target' : 'submit-form'}
+        enterKeyFocusTargetId={enterKeyFocusTargetId}
         blurOnOptionsInteraction
       />
       {validationError && (
