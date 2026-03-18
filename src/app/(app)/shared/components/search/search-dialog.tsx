@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useTransition } from 'react';
+import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/navigation';
@@ -9,34 +10,32 @@ import { LocationSearchBar } from './location-search-bar';
 import { SearchBar } from './search-bar';
 import { SearchButton } from './search-button';
 import { Button } from '../ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '../ui/dialog';
 import { useFlag } from '../../hooks/use-flag';
 import { useAppConfig } from '../../hooks/use-app-config';
 import { createUrlParamsForSearch } from '../../services/search-service';
 import { useClientSearchParams } from '../../hooks/use-client-search-params';
+import { cn, getScrollbarWidth } from '../../lib/utils';
+import {
+  LOCATION_INPUT_ID,
+  SEARCH_DIALOG_DESCRIPTION_ID,
+  SEARCH_DIALOG_ID,
+  SEARCH_DIALOG_TITLE_ID,
+  SEARCH_INPUT_ID,
+} from '../../lib/constants';
 import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
 
 export interface SearchDialogProps {
   focusByDefault?: 'search' | 'location';
   open: boolean;
   setOpen?: (open: boolean) => void;
+  restoreFocusElement?: HTMLElement | null;
 }
-
-export const SEARCH_DIALOG_ID = 'search-dialog';
-
-const SEARCH_INPUT_ID = 'search-input';
-const LOCATION_INPUT_ID = 'location-input';
 
 export function SearchDialog({
   focusByDefault = 'search',
   open,
   setOpen,
+  restoreFocusElement,
 }: SearchDialogProps) {
   const { t } = useTranslation('common');
   const [isPending, startTransition] = useTransition();
@@ -44,6 +43,10 @@ export function SearchDialog({
   const router = useRouter();
   const appConfig = useAppConfig();
   const requireUserLocation = useFlag('requireUserLocation');
+  const scrollPositionRef = useRef(0);
+  const initialRenderRef = useRef(true);
+  const [mounted, setMounted] = useState(false);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
 
   const { findCode, locations, search, setSearch } =
     useMainSearchLayoutContext();
@@ -119,61 +122,163 @@ export function SearchDialog({
     }
   }, [isPending, setOpen]);
 
-  const handleOpenAutoFocus = useCallback(
-    (event: Event) => {
-      const inputId =
+  useEffect(() => {
+    if (initialRenderRef.current) return;
+
+    if (open) {
+      const elementToSelect =
         focusByDefault === 'location' ? LOCATION_INPUT_ID : SEARCH_INPUT_ID;
-      const input = document.getElementById(inputId);
 
-      if (!input) return;
+      const scrollbarWidth = getScrollbarWidth();
+      scrollPositionRef.current = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollPositionRef.current}px`;
+      document.body.style.width = '100%';
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
 
-      event.preventDefault();
-      input.focus();
+      setTimeout(() => {
+        (
+          document.querySelector(`#${elementToSelect}`) as
+            | HTMLInputElement
+            | undefined
+        )?.focus();
+      }, 100);
+    } else {
+      setTimeout(() => {
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.body.style.position = '';
+        document.body.style.paddingRight = '';
+        window.scrollTo(0, scrollPositionRef.current || 0);
+      }, 10);
+    }
+  }, [focusByDefault, open]);
+
+  const closeDialog = useCallback(() => {
+    setOpen?.(false);
+
+    if (restoreFocusElement) {
+      setTimeout(() => {
+        restoreFocusElement.focus({ preventScroll: true });
+      }, 20);
+    }
+  }, [restoreFocusElement, setOpen]);
+
+  const handleDialogKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeDialog();
+        return;
+      }
+
+      if (event.key !== 'Tab' || !dialogRef.current) {
+        return;
+      }
+
+      const focusableSelectors = [
+        'a[href]',
+        'button:not([disabled])',
+        'input:not([disabled])',
+        'select:not([disabled])',
+        'textarea:not([disabled])',
+        '[tabindex]:not([tabindex="-1"])',
+      ].join(', ');
+
+      const focusableElements = Array.from(
+        dialogRef.current.querySelectorAll<HTMLElement>(focusableSelectors),
+      ).filter((element) => {
+        return (
+          element.getAttribute('aria-hidden') !== 'true' &&
+          !element.hasAttribute('disabled') &&
+          element.tabIndex !== -1
+        );
+      });
+
+      if (focusableElements.length === 0) {
+        return;
+      }
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+      const activeElement = document.activeElement as HTMLElement | null;
+
+      if (!event.shiftKey && activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
+      } else if (event.shiftKey && activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+      }
     },
-    [focusByDefault],
+    [closeDialog],
   );
 
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent
-        id={SEARCH_DIALOG_ID}
-        data-testid="search-dialog"
-        withClose={false}
-        onOpenAutoFocus={handleOpenAutoFocus}
-        className="left-0 top-0 flex h-[100dvh] max-h-[100dvh] w-screen max-w-none translate-x-0 translate-y-0 flex-col gap-6 overflow-y-auto rounded-none border-0 p-6 duration-300 data-[state=closed]:zoom-out-100 data-[state=open]:zoom-in-100 data-[state=closed]:slide-out-to-left-0 data-[state=closed]:slide-out-to-top-0 data-[state=open]:slide-in-from-left-0 data-[state=open]:slide-in-from-top-0"
-      >
-        <DialogHeader className="sr-only">
-          <DialogTitle>{t('header.search')}</DialogTitle>
-          <DialogDescription>
-            {t('search.search_dialog_description', {
-              defaultValue: 'Search for resources and update your location.',
-            })}
-          </DialogDescription>
-        </DialogHeader>
+  useEffect(() => {
+    initialRenderRef.current = false;
+    setMounted(true);
 
-        <form
-          onSubmit={onSubmit}
-          className="mx-auto flex w-full max-w-[25rem] flex-col gap-4 sm:mt-[120px]"
-        >
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <Button
-              type="button"
-              className="self-start"
-              variant="highlight"
-              onClick={() => setOpen?.(false)}
-            >
-              <ChevronLeft className="size-4 text-primary" aria-hidden="true" />
-              {t('search.back')}
-            </Button>
-            <SearchButton loading={isPending} />
-          </div>
-          <SearchBar inputId={SEARCH_INPUT_ID} />
-          <LocationSearchBar
-            inputId={LOCATION_INPUT_ID}
-            enterKeyFocusTargetId={SEARCH_INPUT_ID}
-          />
-        </form>
-      </DialogContent>
-    </Dialog>
+    return () => {
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.position = '';
+      document.body.style.paddingRight = '';
+      window.scrollTo(0, 0);
+    };
+  }, []);
+
+  if (!mounted) return null;
+
+  return createPortal(
+    <div
+      ref={dialogRef}
+      className={cn(
+        'fixed bottom-0 left-0 right-0 top-0 z-50 bg-white p-6 transition-opacity duration-300',
+        open ? 'opacity-100' : 'pointer-events-none opacity-0',
+      )}
+      role="dialog"
+      data-testid="search-dialog"
+      aria-hidden={!open}
+      aria-modal={open ? true : undefined}
+      aria-labelledby={SEARCH_DIALOG_TITLE_ID}
+      aria-describedby={SEARCH_DIALOG_DESCRIPTION_ID}
+      onKeyDown={handleDialogKeyDown}
+    >
+      <h2 className="sr-only" id={SEARCH_DIALOG_TITLE_ID}>
+        {t('header.search')}
+      </h2>
+      <p className="sr-only" id={SEARCH_DIALOG_DESCRIPTION_ID}>
+        {t('search.search_dialog_description', {
+          defaultValue: 'Search for resources and update your location.',
+        })}
+      </p>
+      <div className="flex h-full w-full max-w-full justify-center !rounded-none border-0">
+        {open && (
+          <form
+            onSubmit={onSubmit}
+            className="flex w-full max-w-[25rem] flex-col gap-4 sm:mt-[120px]"
+          >
+            <div className="flex flex-row justify-between gap-4">
+              <Button
+                type="button"
+                className="self-start"
+                variant="highlight"
+                onClick={closeDialog}
+              >
+                <ChevronLeft className="size-4 text-primary" />
+                {t('search.back')}
+              </Button>
+              <SearchButton loading={isPending} />
+            </div>
+            <SearchBar inputId={SEARCH_INPUT_ID} />
+            <LocationSearchBar
+              inputId={LOCATION_INPUT_ID}
+              enterKeyFocusTargetId={SEARCH_INPUT_ID}
+            />
+          </form>
+        )}
+      </div>
+    </div>,
+    document.querySelector('#app-root') as Element,
   );
 }

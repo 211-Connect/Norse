@@ -63,7 +63,7 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
   const labelId = useId();
 
   const appConfig = useAppConfig();
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const [shouldSearch, setShouldSearch] = useState(false);
 
   // Local state for standalone mode

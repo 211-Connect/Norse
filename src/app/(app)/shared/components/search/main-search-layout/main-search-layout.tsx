@@ -1,7 +1,7 @@
 'use client';
 
 import { SearchIcon } from 'lucide-react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAtomValue } from 'jotai';
 
@@ -10,11 +10,11 @@ import {
   AddMyLocationButtonProps,
 } from '../add-my-location-button';
 import {
-  SEARCH_DIALOG_ID,
   SearchDialog,
   SearchDialogProps,
 } from '../search-dialog';
 import { searchLocationAtom, searchTermAtom } from '../../../store/search';
+import { SEARCH_DIALOG_ID } from '../../../lib/constants';
 import { cn } from '../../../lib/utils';
 import { useAppConfig } from '../../../hooks/use-app-config';
 import { MainSearchLayoutContextProvider } from './main-search-layout-context';
@@ -37,6 +37,8 @@ export function MainSearchLayout({
   const [dialogOpened, setDialogOpened] = useState(false);
   const [focusByDefault, setFocusByDefault] =
     useState<SearchDialogProps['focusByDefault']>('search');
+  const searchTriggerRef = useRef<HTMLButtonElement>(null);
+  const addMyLocationButtonRef = useRef<HTMLButtonElement>(null);
 
   const openSearchDialog = useCallback(
     (location: SearchDialogProps['focusByDefault']) => {
@@ -62,6 +64,7 @@ export function MainSearchLayout({
       <div className="flex w-full flex-col items-start gap-2">
         <div className={cn('relative w-full', className)}>
           <button
+            ref={searchTriggerRef}
             type="button"
             aria-controls={SEARCH_DIALOG_ID}
             aria-expanded={dialogOpened}
@@ -90,6 +93,7 @@ export function MainSearchLayout({
           />
         </div>
         <AddMyLocationButton
+          buttonRef={addMyLocationButtonRef}
           variant={addMyLocationButtonVariant}
           location={searchLocation}
           onClick={() => openSearchDialog('location')}
@@ -100,6 +104,11 @@ export function MainSearchLayout({
         focusByDefault={focusByDefault}
         open={dialogOpened}
         setOpen={setDialogOpened}
+        restoreFocusElement={
+          focusByDefault === 'location'
+            ? addMyLocationButtonRef.current
+            : searchTriggerRef.current
+        }
       />
     </MainSearchLayoutContextProvider>
   );
