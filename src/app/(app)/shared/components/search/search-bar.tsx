@@ -153,6 +153,7 @@ export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
         options={options}
         onInputChange={handleInputChange}
         onValueChange={setSearchTerm}
+        clearButtonLabel={t('call_to_action.remove')}
         getSuggestionsStatusMessage={(count) =>
           t('search.suggestions_status', {
             count,

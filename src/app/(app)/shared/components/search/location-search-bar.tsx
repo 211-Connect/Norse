@@ -245,6 +245,7 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
         onInputChange={handleInputChange}
         onValueChange={setSearchLocation}
         value={searchLocation}
+        clearButtonLabel={t('call_to_action.remove')}
         getSuggestionsStatusMessage={(count) =>
           t('search.suggestions_status', {
             count,
