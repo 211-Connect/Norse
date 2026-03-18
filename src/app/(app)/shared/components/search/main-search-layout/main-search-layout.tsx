@@ -71,7 +71,7 @@ export function MainSearchLayout({
             })}
             data-testid="search-trigger"
             onClick={() => openSearchDialog('search')}
-            className="search-box flex min-h-10 w-full items-start rounded-lg border border-[#00000080] bg-white py-2 pl-[2.7rem] pr-3 text-left text-xs shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            className="search-box flex min-h-10 w-full items-center rounded-lg border border-[#00000080] bg-white py-2 pl-[2.7rem] pr-3 text-left text-xs shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           >
             <span
               className={cn(

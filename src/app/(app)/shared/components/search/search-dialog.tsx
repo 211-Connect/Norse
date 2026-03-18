@@ -140,7 +140,7 @@ export function SearchDialog({
         data-testid="search-dialog"
         withClose={false}
         onOpenAutoFocus={handleOpenAutoFocus}
-        className="flex h-[100dvh] max-h-[100dvh] w-screen max-w-none flex-col gap-6 overflow-y-auto rounded-none border-0 p-6 sm:h-auto sm:max-h-[calc(100dvh-2rem)] sm:w-[calc(100vw-2rem)] sm:max-w-[28rem] sm:rounded-lg"
+        className="left-0 top-0 flex h-[100dvh] max-h-[100dvh] w-screen max-w-none translate-x-0 translate-y-0 flex-col gap-6 overflow-y-auto rounded-none border-0 p-6 duration-300 data-[state=closed]:zoom-out-100 data-[state=open]:zoom-in-100 data-[state=closed]:slide-out-to-left-0 data-[state=closed]:slide-out-to-top-0 data-[state=open]:slide-in-from-left-0 data-[state=open]:slide-in-from-top-0"
       >
         <DialogHeader className="sr-only">
           <DialogTitle>{t('header.search')}</DialogTitle>
@@ -151,7 +151,10 @@ export function SearchDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={onSubmit} className="mx-auto flex w-full flex-col gap-4">
+        <form
+          onSubmit={onSubmit}
+          className="mx-auto flex w-full max-w-[25rem] flex-col gap-4 sm:mt-[120px]"
+        >
           <div className="flex flex-wrap items-center justify-between gap-4">
             <Button
               type="button"
