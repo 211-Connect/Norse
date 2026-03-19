@@ -4,10 +4,8 @@ import { useTranslation } from 'react-i18next';
 
 import { useAppConfig } from '../hooks/use-app-config';
 import { Link } from './link';
-import { buttonVariants } from './ui/button';
-import { cn } from '../lib/utils';
+import { Button } from './ui/button';
 import { parseHtml } from '../lib/parse-html';
-import { NEW_TAB_WARNING } from '../lib/constants';
 
 export function Footer() {
   const appConfig = useAppConfig();
@@ -28,55 +26,36 @@ export function Footer() {
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-3 print:hidden">
-          <nav aria-label="Footer">
-            <ul className="flex flex-wrap items-center justify-center gap-3">
-              {appConfig.pages.privacyPolicyPage.enabled && (
-                <li>
-                  <Link
-                    href="/legal/privacy-policy"
-                    className={buttonVariants({ variant: 'link' })}
-                  >
-                    {appConfig.pages.privacyPolicyPage.title}
-                  </Link>
-                </li>
-              )}
+          {appConfig.pages.privacyPolicyPage.enabled && (
+            <Button variant="link">
+              <Link href="/legal/privacy-policy">
+                {appConfig.pages.privacyPolicyPage.title}
+              </Link>
+            </Button>
+          )}
 
-              {appConfig.pages.termsOfUsePage.enabled && (
-                <li>
-                  <Link
-                    className={cn(
-                      buttonVariants({ variant: 'link' }),
-                      'whitespace-pre-wrap !text-primary',
-                    )}
-                    href="/legal/terms-of-use"
-                  >
-                    {appConfig.pages.termsOfUsePage.title}
-                  </Link>
-                </li>
-              )}
+          {appConfig.pages.termsOfUsePage.enabled && (
+            <Button variant="link">
+              <Link
+                className="whitespace-pre-wrap !text-primary"
+                href="/legal/terms-of-use"
+              >
+                {appConfig.pages.termsOfUsePage.title}
+              </Link>
+            </Button>
+          )}
 
-              {appConfig.footer.customMenu.map((el) => (
-                <li key={el.name}>
-                  <Link
-                    className={cn(
-                      buttonVariants({ variant: 'link' }),
-                      'flex items-center gap-3 whitespace-pre-wrap !text-primary',
-                    )}
-                    target={el.openInNewTab ? '_blank' : undefined}
-                    {...(el.openInNewTab && {
-                      'aria-label': `${el.name}${NEW_TAB_WARNING}`,
-                    })}
-                    {...(el.href != null ? { href: el.href } : { href: '' })}
-                  >
-                    {el.name}
-                    {el.openInNewTab && (
-                      <span className="sr-only">{NEW_TAB_WARNING}</span>
-                    )}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
+          {appConfig.footer.customMenu.map((el) => (
+            <Button key={el.name} variant="link">
+              <Link
+                className="flex items-center gap-3 whitespace-pre-wrap !text-primary"
+                target={el.openInNewTab ? '_blank' : undefined}
+                {...(el.href != null ? { href: el.href } : { href: '' })}
+              >
+                {el.name}
+              </Link>
+            </Button>
+          ))}
         </div>
       </div>
     </footer>
