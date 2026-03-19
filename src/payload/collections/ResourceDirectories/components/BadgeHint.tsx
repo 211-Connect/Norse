@@ -73,6 +73,10 @@ const BadgeHint = () => {
               <strong>Available Properties:</strong>
               <ul className="badge-hint-list">
                 <li>
+                  <code>{'{{taxonomyCode}}'}</code> - The taxonomy code (e.g.,
+                  &quot;DM-6500&quot;)
+                </li>
+                <li>
                   <code>{'{{taxonomyNameEn}}'}</code> - Category name (English)
                 </li>
                 <li>
@@ -133,6 +137,13 @@ const BadgeHint = () => {
           <div className="badge-hint-section">
             <h4 className="badge-hint-section-title">Filter Examples</h4>
             <div className="badge-hint-examples">
+              <div className="badge-hint-example">
+                <strong>Match by Taxonomy Code:</strong>
+                <pre>{'{{taxonomyCode}}'} Is &quot;DM-6500&quot;</pre>
+                <p className="badge-hint-example-desc">
+                  Shows badge for resources with taxonomy code DM-6500
+                </p>
+              </div>
               <div className="badge-hint-example">
                 <strong>County Services:</strong>
                 <code>{'{{termNameEn}} Contains "County"'}</code>
@@ -196,6 +207,10 @@ const BadgeHint = () => {
           <div className="badge-hint-section badge-hint-warning">
             <h4 className="badge-hint-section-title">Best Practices</h4>
             <ul className="badge-hint-list">
+              <li>
+                Use <code>taxonomyCode</code> for precise matching based on
+                taxonomy codes (e.g., &quot;DM-6500&quot;)
+              </li>
               <li>
                 Use English properties (<code>taxonomyNameEn</code>,{' '}
                 <code>termNameEn</code>) in filters for consistency across

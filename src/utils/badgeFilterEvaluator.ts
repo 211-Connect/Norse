@@ -79,6 +79,7 @@ function parseCondition(conditionStr: string): FilterCondition | null {
   // Valid property names
   const validProperties = [
     'code',
+    'taxonomyCode',
     'taxonomyName',
     'termName',
     'taxonomyNameEn',
