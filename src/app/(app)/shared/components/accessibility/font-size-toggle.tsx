@@ -47,14 +47,16 @@ export const FontSizeToggle = ({ className }: { className?: string }) => {
         className,
       )}
       value={accessibility.fontSize}
-      onValueChange={(value) => {
-        if (value) setAccessibility({ fontSize: value });
-      }}
+      onValueChange={(value) => setAccessibility({ fontSize: value })}
     >
       <ToggleGroupItem
         className="text-xs"
         value={appConfig.accessibility.fontSize.allowedValues[0]}
         aria-label="Normal font size"
+        disabled={
+          accessibility.fontSize ===
+          appConfig.accessibility.fontSize.allowedValues[0]
+        }
       >
         A
       </ToggleGroupItem>
@@ -62,6 +64,10 @@ export const FontSizeToggle = ({ className }: { className?: string }) => {
         className="text-lg leading-4"
         value={appConfig.accessibility.fontSize.allowedValues[1]}
         aria-label="Larger font size"
+        disabled={
+          accessibility.fontSize ===
+          appConfig.accessibility.fontSize.allowedValues[1]
+        }
       >
         A
       </ToggleGroupItem>
