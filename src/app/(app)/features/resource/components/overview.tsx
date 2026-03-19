@@ -28,7 +28,11 @@ export function Overview({ resource }: { resource: Resource }) {
     if (!resource || !badgeConfigs || badgeConfigs.length === 0) {
       return [];
     }
-    return getBadgesForResource(resource.facets, badgeConfigs);
+    return getBadgesForResource(
+      badgeConfigs,
+      resource.facets,
+      resource.categories,
+    );
   }, [resource, badgeConfigs]);
 
   return (

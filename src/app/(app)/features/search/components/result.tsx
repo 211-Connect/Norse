@@ -71,7 +71,7 @@ export function Result({ data }: ResultProps) {
     if (!data || !badgeConfigs || badgeConfigs.length === 0) {
       return [];
     }
-    return getBadgesForResource(data.facets, badgeConfigs);
+    return getBadgesForResource(badgeConfigs, data.facets, data.taxonomies);
   }, [data, badgeConfigs]);
 
   const taxonomies = data.taxonomies?.filter(({ name }) => name) || [];
