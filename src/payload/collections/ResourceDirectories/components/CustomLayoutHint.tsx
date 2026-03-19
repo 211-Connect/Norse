@@ -44,11 +44,11 @@ const CustomLayoutHint = () => {
             <div className="custom-layout-hint-code-block">
               <pre>
                 {`{
-  "title": "{{ attribute_values.sitesystem_emailaddress.label }}",
-  "description": "{{ attribute_values.sitesystem_emailaddress.value }}",
+  "title": "{{ attributeValues.sitesystem_emailaddress.label }}",
+  "description": "{{ attributeValues.sitesystem_emailaddress.value }}",
   "icon": "Mail",
   "iconColor": "#00aaff",
-  "url": "mailto:{{ attribute_values.sitesystem_emailaddress.value }}"
+  "url": "mailto:{{ attributeValues.sitesystem_emailaddress.value }}"
 }`}
               </pre>
             </div>
