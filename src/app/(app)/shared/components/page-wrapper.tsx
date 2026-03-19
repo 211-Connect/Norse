@@ -16,6 +16,7 @@ import { MatomoTagManagerScript } from './matomo-tag-manager-script';
 import { UmamiScript } from './umami-script';
 import { useAppConfig } from '../hooks/use-app-config';
 import { DynamicHeightListener } from './dynamic-height-listener';
+import { MAIN_CONTENT_ID } from '../lib/constants';
 
 interface PageWrapperProps {
   cookies?: TmpCookiesObj;
@@ -46,8 +47,16 @@ export const PageWrapper = ({
       >
         <JotaiHydration cookies={cookies} pageProps={jotaiData} />
         <ErrorBoundary>
+          <a
+            href={`#${MAIN_CONTENT_ID}`}
+            className="sr-only z-50 m-3 inline-flex rounded-md bg-background px-4 py-2 text-sm font-medium text-foreground focus:not-sr-only focus:absolute focus:left-0 focus:top-0 focus:ring-2 focus:ring-ring"
+          >
+            Skip to content
+          </a>
           <Header />
-          <main className="flex flex-1 flex-col">{children}</main>
+          <main id={MAIN_CONTENT_ID} className="flex flex-1 flex-col">
+            {children}
+          </main>
           <Footer />
           <GlobalDialogs />
           <Toaster />

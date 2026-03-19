@@ -12,6 +12,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
     <Sonner
       theme={theme as ToasterProps['theme']}
       className="toaster group"
+      containerAriaLabel="" // empty string prevents Sonner's <section> from becoming a named landmark region (MNADR-011)
+      hotkey={[]}
       toastOptions={{
         classNames: {
           toast:

@@ -31,3 +31,6 @@ export const USER_PREF_FONT_SIZE = 'user-pref-font-size';
 export const HEADER_ID = 'app-header';
 export const HEADER_DESKTOP_ID = 'app-header-desktop';
 export const HEADER_MOBILE_ID = 'app-header-mobile';
+export const MAIN_CONTENT_ID = 'main-content';
+
+export const NEW_TAB_WARNING = ' (opens in a new tab)';
