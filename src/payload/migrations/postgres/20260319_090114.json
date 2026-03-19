@@ -2096,6 +2096,215 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.rds_highlights_items": {
+      "name": "rds_highlights_items",
+      "schema": "",
+      "columns": {
+        "_order": {
+          "name": "_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "_parent_id": {
+          "name": "_parent_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "image_id": {
+          "name": "image_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "button_url": {
+          "name": "button_url",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "open_in_new_tab": {
+          "name": "open_in_new_tab",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        }
+      },
+      "indexes": {
+        "rds_highlights_items_order_idx": {
+          "name": "rds_highlights_items_order_idx",
+          "columns": [
+            {
+              "expression": "_order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "rds_highlights_items_parent_id_idx": {
+          "name": "rds_highlights_items_parent_id_idx",
+          "columns": [
+            {
+              "expression": "_parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "rds_highlights_items_image_idx": {
+          "name": "rds_highlights_items_image_idx",
+          "columns": [
+            {
+              "expression": "image_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "rds_highlights_items_image_id_tenant_media_id_fk": {
+          "name": "rds_highlights_items_image_id_tenant_media_id_fk",
+          "tableFrom": "rds_highlights_items",
+          "tableTo": "tenant_media",
+          "columnsFrom": [
+            "image_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "rds_highlights_items_parent_id_fk": {
+          "name": "rds_highlights_items_parent_id_fk",
+          "tableFrom": "rds_highlights_items",
+          "tableTo": "rds",
+          "columnsFrom": [
+            "_parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.rds_highlights_items_locales": {
+      "name": "rds_highlights_items_locales",
+      "schema": "",
+      "columns": {
+        "title": {
+          "name": "title",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "button_text": {
+          "name": "button_text",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "_locale": {
+          "name": "_locale",
+          "type": "_locales",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "_parent_id": {
+          "name": "_parent_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "rds_highlights_items_locales_locale_parent_id_unique": {
+          "name": "rds_highlights_items_locales_locale_parent_id_unique",
+          "columns": [
+            {
+              "expression": "_locale",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "_parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "rds_highlights_items_locales_parent_id_fk": {
+          "name": "rds_highlights_items_locales_parent_id_fk",
+          "tableFrom": "rds_highlights_items_locales",
+          "tableTo": "rds_highlights_items",
+          "columnsFrom": [
+            "_parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.rds_badges_list": {
       "name": "rds_badges_list",
       "schema": "",
@@ -3411,6 +3620,20 @@
           "primaryKey": false,
           "notNull": false
         },
+        "highlights_enable_carousel_autoplay": {
+          "name": "highlights_enable_carousel_autoplay",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "highlights_autoplay_interval": {
+          "name": "highlights_autoplay_interval",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 5
+        },
         "resource_use_custom_layout": {
           "name": "resource_use_custom_layout",
           "type": "boolean",
@@ -3602,13 +3825,6 @@
           "primaryKey": false,
           "notNull": false,
           "default": true
-        },
-        "feature_flags_use_hybrid_semantic_search": {
-          "name": "feature_flags_use_hybrid_semantic_search",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
         },
         "feature_flags_show_feedback_button_global": {
           "name": "feature_flags_show_feedback_button_global",
@@ -3946,6 +4162,13 @@
           "primaryKey": false,
           "notNull": false,
           "default": "'Topics'"
+        },
+        "highlights_section_title": {
+          "name": "highlights_section_title",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'Featured Resources and News'"
         },
         "resource_last_assured_text": {
           "name": "resource_last_assured_text",
@@ -5118,6 +5341,221 @@
           "name": "_rds_v_version_topics_list_locales_parent_id_fk",
           "tableFrom": "_rds_v_version_topics_list_locales",
           "tableTo": "_rds_v_version_topics_list",
+          "columnsFrom": [
+            "_parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public._rds_v_version_highlights_items": {
+      "name": "_rds_v_version_highlights_items",
+      "schema": "",
+      "columns": {
+        "_order": {
+          "name": "_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "_parent_id": {
+          "name": "_parent_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "image_id": {
+          "name": "image_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "button_url": {
+          "name": "button_url",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "open_in_new_tab": {
+          "name": "open_in_new_tab",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "_uuid": {
+          "name": "_uuid",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "_rds_v_version_highlights_items_order_idx": {
+          "name": "_rds_v_version_highlights_items_order_idx",
+          "columns": [
+            {
+              "expression": "_order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_rds_v_version_highlights_items_parent_id_idx": {
+          "name": "_rds_v_version_highlights_items_parent_id_idx",
+          "columns": [
+            {
+              "expression": "_parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_rds_v_version_highlights_items_image_idx": {
+          "name": "_rds_v_version_highlights_items_image_idx",
+          "columns": [
+            {
+              "expression": "image_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "_rds_v_version_highlights_items_image_id_tenant_media_id_fk": {
+          "name": "_rds_v_version_highlights_items_image_id_tenant_media_id_fk",
+          "tableFrom": "_rds_v_version_highlights_items",
+          "tableTo": "tenant_media",
+          "columnsFrom": [
+            "image_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "_rds_v_version_highlights_items_parent_id_fk": {
+          "name": "_rds_v_version_highlights_items_parent_id_fk",
+          "tableFrom": "_rds_v_version_highlights_items",
+          "tableTo": "_rds_v",
+          "columnsFrom": [
+            "_parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public._rds_v_version_highlights_items_locales": {
+      "name": "_rds_v_version_highlights_items_locales",
+      "schema": "",
+      "columns": {
+        "title": {
+          "name": "title",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "button_text": {
+          "name": "button_text",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "_locale": {
+          "name": "_locale",
+          "type": "_locales",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "_parent_id": {
+          "name": "_parent_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "_rds_v_version_highlights_items_locales_locale_parent_id_uni": {
+          "name": "_rds_v_version_highlights_items_locales_locale_parent_id_uni",
+          "columns": [
+            {
+              "expression": "_locale",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "_parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "_rds_v_version_highlights_items_locales_parent_id_fk": {
+          "name": "_rds_v_version_highlights_items_locales_parent_id_fk",
+          "tableFrom": "_rds_v_version_highlights_items_locales",
+          "tableTo": "_rds_v_version_highlights_items",
           "columnsFrom": [
             "_parent_id"
           ],
@@ -6503,6 +6941,20 @@
           "primaryKey": false,
           "notNull": false
         },
+        "version_highlights_enable_carousel_autoplay": {
+          "name": "version_highlights_enable_carousel_autoplay",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "version_highlights_autoplay_interval": {
+          "name": "version_highlights_autoplay_interval",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 5
+        },
         "version_resource_use_custom_layout": {
           "name": "version_resource_use_custom_layout",
           "type": "boolean",
@@ -6694,13 +7146,6 @@
           "primaryKey": false,
           "notNull": false,
           "default": true
-        },
-        "version_feature_flags_use_hybrid_semantic_search": {
-          "name": "version_feature_flags_use_hybrid_semantic_search",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
         },
         "version_feature_flags_show_feedback_button_global": {
           "name": "version_feature_flags_show_feedback_button_global",
@@ -7108,6 +7553,13 @@
           "primaryKey": false,
           "notNull": false,
           "default": "'Topics'"
+        },
+        "version_highlights_section_title": {
+          "name": "version_highlights_section_title",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'Featured Resources and News'"
         },
         "version_resource_last_assured_text": {
           "name": "version_resource_last_assured_text",
@@ -9122,6 +9574,7 @@
         "fil",
         "ff",
         "fr",
+        "gu",
         "hi",
         "hr",
         "ht",
@@ -9183,6 +9636,7 @@
         "fil",
         "ff",
         "fr",
+        "gu",
         "hi",
         "hr",
         "ht",
@@ -9227,6 +9681,7 @@
         "fil",
         "ff",
         "fr",
+        "gu",
         "hi",
         "hr",
         "ht",
@@ -9613,6 +10068,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "89f2c636-d29e-4972-9459-1d0cf2aeabfc",
+  "id": "4afd2270-2be2-4bde-9e57-a480b1c22203",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }

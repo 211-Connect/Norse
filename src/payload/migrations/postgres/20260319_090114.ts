@@ -1,4 +1,4 @@
-import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
+import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres';
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
@@ -161,10 +161,14 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "_right_col_v_items_parent_id_idx" ON "_right_col_v_items" USING btree ("_parent_id");
   CREATE UNIQUE INDEX "_right_col_v_items_locales_locale_parent_id_unique" ON "_right_col_v_items_locales" USING btree ("_locale","_parent_id");
   CREATE INDEX "_right_col_v_order_idx" ON "_right_col_v" USING btree ("_order");
-  CREATE INDEX "_right_col_v_parent_id_idx" ON "_right_col_v" USING btree ("_parent_id");`)
+  CREATE INDEX "_right_col_v_parent_id_idx" ON "_right_col_v" USING btree ("_parent_id");`);
 }
 
-export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
+export async function down({
+  db,
+  payload,
+  req,
+}: MigrateDownArgs): Promise<void> {
   await db.execute(sql`
    DROP TABLE "left_col_items" CASCADE;
   DROP TABLE "left_col_items_locales" CASCADE;
@@ -185,5 +189,5 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TYPE "public"."urlTarget";
   DROP TYPE "public"."enum_right_col_items_component_id";
   DROP TYPE "public"."enum__left_col_v_items_component_id";
-  DROP TYPE "public"."enum__right_col_v_items_component_id";`)
+  DROP TYPE "public"."enum__right_col_v_items_component_id";`);
 }
