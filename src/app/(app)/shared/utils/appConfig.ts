@@ -52,6 +52,52 @@ function getTenantI18n(resourceDirectory: ResourceDirectory): {
   };
 }
 
+function applyCustomAttributeFallback(
+  column: NonNullable<ResourceDirectory['resource']>['leftColumn'],
+  fallbackColumn: NonNullable<ResourceDirectory['resource']>['leftColumn'],
+): NonNullable<ResourceDirectory['resource']>['leftColumn'] {
+  if (!column || !fallbackColumn) return column;
+
+  return column.map((group, groupIndex) => {
+    const fallbackGroup = fallbackColumn[groupIndex];
+    if (!fallbackGroup || !group.items) return group;
+
+    return {
+      ...group,
+      items: group.items.map((item, itemIndex) => {
+        const fallbackItem = fallbackGroup.items?.[itemIndex];
+
+        if (
+          item.componentId !== 'customAttribute' ||
+          !item.customAttribute ||
+          !fallbackItem?.customAttribute
+        ) {
+          return item;
+        }
+
+        return {
+          ...item,
+          customAttribute: {
+            ...item.customAttribute,
+            title:
+              item.customAttribute.title ||
+              fallbackItem.customAttribute.title ||
+              null,
+            subtitle:
+              item.customAttribute.subtitle ||
+              fallbackItem.customAttribute.subtitle ||
+              null,
+            description:
+              item.customAttribute.description ||
+              fallbackItem.customAttribute.description ||
+              null,
+          },
+        };
+      }),
+    };
+  });
+}
+
 async function getAppConfigBase(
   host: string,
   locale: string,
@@ -150,6 +196,12 @@ async function getAppConfigBase(
     i18n.locales,
     i18n.defaultLocale,
   );
+
+  // Fetch English resource directory for fallback if not English locale
+  let englishResourceDirectory: ResourceDirectory | null = null;
+  if (locale !== 'en' && resourceDirectory.resource?.useCustomLayout) {
+    englishResourceDirectory = await findResourceDirectoryByHost(host, 'en');
+  }
 
   const headerList = await headers();
   const cookiesList = await cookies();
@@ -313,8 +365,14 @@ async function getAppConfigBase(
       lastAssuredText: resourceDirectory.resource?.lastAssuredText ?? undefined,
       layout: resourceDirectory.resource?.useCustomLayout
         ? {
-            leftColumn: resourceDirectory.resource.leftColumn,
-            rightColumn: resourceDirectory.resource.rightColumn,
+            leftColumn: applyCustomAttributeFallback(
+              resourceDirectory.resource.leftColumn,
+              englishResourceDirectory?.resource?.leftColumn,
+            ),
+            rightColumn: applyCustomAttributeFallback(
+              resourceDirectory.resource.rightColumn,
+              englishResourceDirectory?.resource?.rightColumn,
+            ),
           }
         : DEFAULT_RESOURCE_LAYOUT,
     },
