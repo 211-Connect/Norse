@@ -139,5 +139,10 @@
   },
   "footer": {
     "copyright": "© Hakkeeji {{binndol}}"
+  },
+  "carousel": {
+    "previous": "Je sali",
+    "next": "Tokki",
+    "go_to": "Yah to"
   }
 }

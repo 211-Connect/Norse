@@ -11,5 +11,7 @@
     "alt_subtitle": "Sim ib qho lus nug lossis lim sib txawv",
     "need_help": "Xav tau kev pab? Peb muaj cov neeg sawv ntawm no."
   },
-  "pinned": "Tau pinned"
+  "pinned": "Tau pinned",
+  "filters": "Cov lim dej",
+  "clear_filters": "Tshem cov lim dej"
 }

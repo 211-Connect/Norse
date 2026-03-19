@@ -11,5 +11,7 @@
     "alt_subtitle": "Wypróbuj inne zapytanie lub filtr",
     "need_help": "Potrzebujesz pomocy? Mamy ludzi gotowych do pomocy."
   },
-  "pinned": "Przypięte"
+  "pinned": "Przypięte",
+  "filters": "Filtry",
+  "clear_filters": "Wyczyść filtry"
 }

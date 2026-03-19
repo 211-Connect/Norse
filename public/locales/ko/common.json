@@ -139,5 +139,10 @@
   },
   "footer": {
     "copyright": "© 저작권 {{text}}"
+  },
+  "carousel": {
+    "previous": "이전의",
+    "next": "다음",
+    "go_to": "가다"
   }
 }

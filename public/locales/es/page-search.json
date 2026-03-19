@@ -11,5 +11,7 @@
     "alt_subtitle": "Pruebe con una consulta o filtro diferente",
     "need_help": "¿Necesitas ayuda? Tenemos gente a la espera."
   },
-  "pinned": "Fijado"
+  "pinned": "Fijado",
+  "filters": "Filtros",
+  "clear_filters": "Filtros transparentes"
 }

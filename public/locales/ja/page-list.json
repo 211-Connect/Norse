@@ -1,0 +1,9 @@
+{
+  "meta_title": "閲覧リスト",
+  "back_to_favorites": "お気に入りに戻る",
+  "favorites": "お気に入り",
+  "no_favorites": {
+    "title": "まだ何もありません :(",
+    "subtitle": "検索ページでお気に入りを追加すると、ここに表示されます。"
+  }
+}

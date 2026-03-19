@@ -139,5 +139,10 @@
   },
   "footer": {
     "copyright": "© Tekijänoikeus {{text}}"
+  },
+  "carousel": {
+    "previous": "Edellinen",
+    "next": "Seuraava",
+    "go_to": "Siirry osoitteeseen"
   }
 }

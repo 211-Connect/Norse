@@ -11,5 +11,7 @@
     "alt_subtitle": "Versuchen Sie eine andere Abfrage oder einen anderen Filter.",
     "need_help": "Brauchen Sie Hilfe? Wir haben Helfer bereitstehen."
   },
-  "pinned": "Angepinnt"
+  "pinned": "Angepinnt",
+  "filters": "Filter",
+  "clear_filters": "Filter löschen"
 }

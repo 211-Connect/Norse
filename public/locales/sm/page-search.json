@@ -1,0 +1,17 @@
+{
+  "learn_more": "Aoao atili",
+  "filter_results": "Fa'amama taunuuga",
+  "filters": "Fa'amama",
+  "clear_filters": "Fa'amamā faamama",
+  "results": "i'uga",
+  "no_query": "Leai se fesili na tu'uina atu",
+  "results_for": "i'uga na maua mo le fesili",
+  "of": "o",
+  "no_results": {
+    "title": "E leai ni i'uga na maua e fetaui ma lau fesili",
+    "subtitle": "Ua matou tuʻuina atu nisi o taunuuga talitutusa i lalo",
+    "alt_subtitle": "Taumafai i se isi fesili po'o se faamama",
+    "need_help": "Mana'omia se fesoasoani? O loo i ai tagata o loo faatalitali mai."
+  },
+  "pinned": "Fa'amauina"
+}

@@ -11,5 +11,7 @@
     "alt_subtitle": "Essayez une autre requête ou un autre filtre",
     "need_help": "Besoin d’aide ? Nous avons des gens qui se tiennent prêts."
   },
-  "pinned": "Épinglé"
+  "pinned": "Épinglé",
+  "filters": "Filtres",
+  "clear_filters": "Filtres d'effacement"
 }

@@ -139,5 +139,10 @@
   },
   "footer": {
     "copyright": "© Karapatang-ari {{text}}"
+  },
+  "carousel": {
+    "previous": "Nakaraan",
+    "next": "Susunod",
+    "go_to": "Pumunta sa"
   }
 }

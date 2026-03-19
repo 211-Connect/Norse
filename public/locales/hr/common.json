@@ -139,5 +139,10 @@
   },
   "footer": {
     "copyright": "© Autorska prava {{text}}"
+  },
+  "carousel": {
+    "previous": "Prethodno",
+    "next": "Sljedeći",
+    "go_to": "Idi na"
   }
 }

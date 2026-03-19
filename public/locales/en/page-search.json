@@ -1,6 +1,8 @@
 {
   "learn_more": "Learn More",
   "filter_results": "Filter results",
+  "filters": "Filters",
+  "clear_filters": "Clear filters",
   "results": "results",
   "no_query": "No query provided",
   "results_for": "results found for query",

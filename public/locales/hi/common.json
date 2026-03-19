@@ -139,5 +139,10 @@
   },
   "footer": {
     "copyright": "© कॉपीराइट {{text}}"
+  },
+  "carousel": {
+    "previous": "पहले का",
+    "next": "अगला",
+    "go_to": "जाओ"
   }
 }

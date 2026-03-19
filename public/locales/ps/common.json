@@ -139,5 +139,10 @@
   },
   "footer": {
     "copyright": "© د چاپ حق {{متن}}"
+  },
+  "carousel": {
+    "previous": "مخکینی",
+    "next": "بل",
+    "go_to": "ورتګ"
   }
 }

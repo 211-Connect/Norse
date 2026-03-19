@@ -1,0 +1,148 @@
+{
+  "header": {
+    "home": "Vale",
+    "favorites": "Taleitaki",
+    "log_out": "Lako tani",
+    "language_select_label": "Digitaka e dua na vosa me veisautaki kina na vosa ni vanua .",
+    "my_stuff": "Na noqu iyaya",
+    "search": "Vakasaqaqara",
+    "report": "Vakauta mai na nomu vakatutu"
+  },
+  "favorites": {
+    "added_to_list": "Vakacurumi ki na lisi",
+    "added_to_list_message": "Na ivurevure oqo sa vakacurumi ki na nomu lisi.",
+    "already_exists": "Sa tu rawa",
+    "already_exists_message": "Na ivurevure oqo sa tiko ena nomu lisi.",
+    "removed_from_list": "Kauta laivi mai na lisi",
+    "removed_from_list_message": "Na ivurevure oqo sa kau tani mai na nomu lisi.",
+    "updated_list": "Lisi vakavoutaki",
+    "updated_list_message": "Sa vakavoutaki na nomu lisi.",
+    "unable_to_update_list": "Sega ni rawa ni vakavoutaki na lisi",
+    "unable_to_update_list_message": "E sega ni rawa ni vakavoutaki na nomu lisi.",
+    "deleted_list": "Lisi sa bokoci",
+    "deleted_list_message": "Sa bokoci na nomu lisi.",
+    "unable_to_delete_list": "Sega ni rawa ni bokoci na lisi",
+    "unable_to_delete_list_message": "E sega ni rawa ni bokoci na nomu lisi.",
+    "list_created": "Sa buli na lisi",
+    "list_created_message": "Sa vakarautaki vinaka na nomu lisi.",
+    "unable_to_create_list_message": "E sega ni rawa ni buli na nomu lisi."
+  },
+  "search": {
+    "add_my_location": "Kuria na noqu vanua",
+    "back": "Lesu tale",
+    "hero_title": "Vakasaqara na ivurevure .",
+    "query_placeholder": "Kakana, vale, kei na so tale...",
+    "location_placeholder": "Siti, matanitu, se naba ni ZIP",
+    "radius_placeholder": "Radiusi",
+    "miles": "Maile",
+    "miles_short": "mi",
+    "any": "Dua",
+    "taxonomies": "Veimataqali",
+    "suggestions": "Vakatutu",
+    "use_my_location": "Vakayagataka na noqu vanua .",
+    "confidential_address": "Na vanua oqo e rawa ni vunitaki se sega ni dolavi vei ira na lewenivanua. Yalovinaka digitaka e dua tale na iwalewale ni veitaratara e vakarautaki me baleta na veiqaravi oqo.",
+    "address_unavailable": "Sega ni tiko na itikotiko",
+    "geocoding_error": "Cala ni kode ni vanua",
+    "geocoding_unsupported": "Na Geolocation e sega ni tokoni ena nomu barausa .",
+    "geocoding_unable_to_retrieve": "E sega ni rawa ni vakasukai na nomu vanua. Yalovinaka raica na ituvatuva ni vanua ni nomu barausa ka tovolea tale.",
+    "categories": "Ulutaga",
+    "show_all": "Vakaraitaka kece ({{wiliwili}})",
+    "show_less": "Vakaraitaka lailai"
+  },
+  "call_to_action": {
+    "call": "Kaci",
+    "view_website": "Tukutuku",
+    "get_directions": "Veidusimaki",
+    "view_details": "Raica eso tale",
+    "add_to_list": "Taleitaki",
+    "delete_list": "Bokoca na lisi",
+    "remove_from_list": "Kauta laivi mai na lisi",
+    "share": "Ivotavota",
+    "cancel": "Biuta laivi",
+    "create": "Bulia",
+    "update": "Vakavoui",
+    "delete": "Bokoca",
+    "search": "Vakasaqaqara",
+    "remove": "Kauta tani",
+    "login": "Loma",
+    "show_more": "Vakaraitaka eso tale",
+    "show_less": "Vakaraitaka lailai",
+    "print": "Tabaka"
+  },
+  "list": {
+    "private": "Veika e baleti keda",
+    "public": "Lewenivanua"
+  },
+  "message": {
+    "list_deleted": "Sa bokoci na lisi",
+    "list_deleted_success": "Sa bokoci na nomu lisi.",
+    "error": "Cala",
+    "list_not_deleted_error": "E sega ni rawa ni bokoci na nomu lisi."
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "Vakasaqara na nomu lisi .",
+      "list_name": "Lisi",
+      "list_privacy": "Veika me baleti keda",
+      "add_to_list": "Kuria ki na lisi",
+      "not_found": "Sega ni kune e dua na lisi",
+      "create_new_list": "Cakava e dua na ka vou?"
+    },
+    "remove_from_list": {
+      "are_you_sure": "O sa vakadeitaka beka ni o vinakata mo kauta laivi na taleitaki oqo mai na nomu lisi?"
+    },
+    "create_list": {
+      "create_a_list": "Cakava e dua na lisi",
+      "list_name": "Yaca",
+      "list_description": "Ivakamacala",
+      "make_public": "Cakava raraba"
+    },
+    "update_list": {
+      "update_list": "Lisi ni vakavoui",
+      "list_name": "Yaca",
+      "list_description": "Ivakamacala",
+      "make_public": "Cakava raraba"
+    },
+    "delete_list": {
+      "delete_list": "Bokoca na lisi"
+    },
+    "share": {
+      "share_via": "Wasea oqo ena",
+      "copy_link": "Kopitaka na isema",
+      "copy": "Kopi",
+      "facebook": "Facebook",
+      "twitter": "Tuwita",
+      "linkedin": "Lidine",
+      "sms": "SMS",
+      "email": "Imeli",
+      "print": "Tabaka",
+      "copied": "Sa kopitaki!",
+      "check_out_this_list": "Raica na lisi oqo au a cakava!",
+      "check_out_this_resource": "Raica na ivurevure oqo au kunea!",
+      "share_sms": "Vakacuruma e dua na naba ni talevoni me wasei ena SMS .",
+      "enter_phone_number": "Vakacuruma na naba ni talevoni...",
+      "invalid_phone_number": "Naba ni talevoni sega ni dodonu",
+      "sms_sending_title": "Vakauta tiko na SMS...",
+      "sms_sending_body": "Sa vakau tiko yani na nomu itukutuku.",
+      "sms_send_success_title": "SMS vakau!",
+      "sms_send_success_body": "Sa vakau yani na nomu itukutuku.",
+      "sms_send_failed_title": "E sega ni rawa ni vakau na SMS",
+      "sms_send_failed_body": "E sega ni vakau na nomu itukutuku."
+    },
+    "prompt_auth": "Kerekere mo curu mai mo vakayagataka na iwalewale oqo."
+  },
+  "update_location": {
+    "prompt_start_location": "Na cava na nomu vanua ni tekivu?"
+  },
+  "data_providers": {
+    "provided_by": "Na itukutuku e vakarautaka na"
+  },
+  "carousel": {
+    "previous": "Liu",
+    "next": "Tarava",
+    "go_to": "Lako ki na"
+  },
+  "footer": {
+    "copyright": "© Dodonu ni taukeni {{volavola}}"
+  }
+}

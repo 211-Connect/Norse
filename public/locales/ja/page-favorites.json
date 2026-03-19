@@ -1,0 +1,11 @@
+{
+  "categories_title": "ここにあるもの",
+  "meta_title": "お気に入りのリストを表示する",
+  "meta_description": "お気に入りのリストを表示する",
+  "lists": "リスト",
+  "view_list": "リストを表示",
+  "edit_list": "リストを編集",
+  "delete_list": "リストを削除",
+  "select_a_list": "サイドバーのリストを選択して、お気に入りの商品を表示してください。",
+  "no_lists": "まだリストがありません。"
+}
