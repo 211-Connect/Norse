@@ -174,6 +174,7 @@ export function SearchDialog({
         open ? 'opacity-100' : 'pointer-events-none opacity-0',
       )}
       role="dialog"
+      data-testid="search-dialog"
     >
       <h2 className="sr-only">Search</h2>
       <div className="flex h-full w-full max-w-full justify-center !rounded-none border-0">

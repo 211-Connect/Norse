@@ -17,6 +17,7 @@ import { footer } from './tabs/footer';
 import { featureFlags } from './tabs/featureFlags';
 import { privacyPolicyPage } from './tabs/privacyPolicyPage';
 import { termsOfUsePage } from './tabs/termsOfUsePage';
+import { highlights } from './tabs/highlights';
 import { isSuperAdminAccess } from '../Users/access/roles';
 import { hasThemeFieldAccess } from '../Users/access/permissions';
 import { resource } from './tabs/resource';
@@ -124,6 +125,7 @@ export const ResourceDirectories: CollectionConfig = {
         footer,
         suggestions,
         topics,
+        highlights,
         badges,
         resource,
         search,

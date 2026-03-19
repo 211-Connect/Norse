@@ -22,7 +22,7 @@ export const PrevUrlProvider = ({ children }: PropsWithChildren) => {
   }, [pathname, stringifiedSearchParams]);
 
   useEffect(() => {
-    const resourceDetailsPage = /\/search\/(\S*)/i;
+    const resourceDetailsPage = /\/search\/[^?]/i;
 
     if (!prevUrl) {
       const prevUrl = getCookie(PREV_URL);

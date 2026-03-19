@@ -135,7 +135,7 @@ export function Header() {
               <li key={item.name}>
                 <Link
                   className="hover:underline"
-                  target={item.openInNewTab ? '_blank' : undefined}
+                  target={item.name}
                   {...(item.href != null ? { href: item.href } : { href: '' })}
                 >
                   <Button
@@ -161,6 +161,7 @@ export function Header() {
                 newLayoutEnabled && '!bg-white',
               )}
               variant="outline"
+              data-testid="my-stuff-btn"
             >
               <UserRound className="size-4" />
               {t('header.my_stuff')}
@@ -174,6 +175,7 @@ export function Header() {
                   <Button
                     className="w-full justify-start px-[10px] text-primary hover:text-primary"
                     variant="ghost"
+                    data-testid="favorites-btn"
                     onClick={() => {
                       if (session.status === 'unauthenticated') {
                         setTimeout(() => {
@@ -262,14 +264,9 @@ export function Header() {
             : 'py-3 pr-6',
         )}
       >
-        <div
-          className={cn(
-            'flex',
-            newLayoutEnabled ? 'absolute -left-3 -top-[18px]' : 'h-full',
-          )}
-        >
+        <div className="flex h-full items-center">
           <div
-            className="flex cursor-pointer items-center"
+            className="flex h-full cursor-pointer items-center"
             aria-label={t('header.home') || 'Logo'}
             onClick={handleLogoClick}
           >
@@ -307,11 +304,11 @@ export function Header() {
             <SheetContent side="left">
               <SheetHeader>
                 <SheetTitle>
-                  <Link href="/" aria-label={t('header.home') as string}>
+                  <Link href="/" aria-label={t('header.home')}>
                     {appConfig?.brand?.logoUrl && (
                       <Image
                         src={appConfig.brand.logoUrl}
-                        alt={t('header.home') as string}
+                        alt={t('header.home')}
                         width={200}
                         height={64}
                         style={{

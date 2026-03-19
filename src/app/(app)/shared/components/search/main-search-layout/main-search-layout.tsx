@@ -56,6 +56,7 @@ export function MainSearchLayout({
         <div className={cn('relative w-full', className)}>
           <Input
             aria-label="open-search-dialog"
+            data-testid="search-trigger"
             onClick={() => openSearchDialog('search')}
             onKeyDown={handleKeyDown}
             readOnly

@@ -94,7 +94,6 @@ async function getAppConfigBase(
         showSuggestionListTaxonomyBadge: false,
         showUseMyLocationButtonOnDesktop: false,
         turnResourceCardTaxonomiesIntoLinks: true,
-        useHybridSemanticSearch: false,
       },
       footer: {
         customMenu: [],
@@ -262,8 +261,6 @@ async function getAppConfigBase(
       turnResourceCardTaxonomiesIntoLinks:
         resourceDirectory.featureFlags?.turnResourceCardTaxonomiesIntoLinks ??
         true,
-      useHybridSemanticSearch:
-        resourceDirectory.featureFlags?.useHybridSemanticSearch ?? false,
     },
     gtmContainerId:
       getTenant(resourceDirectory)?.common?.gtmContainerId ?? undefined,
@@ -289,6 +286,8 @@ async function getAppConfigBase(
     i18n,
     matomoContainerUrl:
       getTenant(resourceDirectory)?.common?.matomoContainerUrl ?? undefined,
+    umamiWebsiteId:
+      getTenant(resourceDirectory)?.common?.umamiWebsiteId ?? undefined,
     meta: {
       description: resourceDirectory.brand.meta?.description ?? '',
       title: resourceDirectory.brand.meta?.title ?? '',
@@ -389,6 +388,22 @@ async function getAppConfigBase(
         }
       : undefined,
     heroUrl,
+    highlights: resourceDirectory.highlights
+      ? {
+          sectionTitle: resourceDirectory.highlights.sectionTitle ?? undefined,
+          enableCarouselAutoplay:
+            resourceDirectory.highlights.enableCarouselAutoplay ?? false,
+          autoplayInterval: resourceDirectory.highlights.autoplayInterval ?? 5,
+          items: (resourceDirectory.highlights.items ?? []).map((item) => ({
+            image: getMediaUrl(item.image),
+            title: item.title,
+            description: item.description ?? undefined,
+            buttonText: item.buttonText ?? undefined,
+            buttonUrl: item.buttonUrl ?? undefined,
+            openInNewTab: item.openInNewTab ?? false,
+          })),
+        }
+      : undefined,
     newLayout,
     providers: resourceDirectory.common?.dataProviders?.map((provider) => ({
       href: provider.url ?? undefined,

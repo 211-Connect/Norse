@@ -110,6 +110,7 @@ export interface Config {
         | 'fil'
         | 'ff'
         | 'fr'
+        | 'gu'
         | 'hi'
         | 'hr'
         | 'ht'
@@ -150,6 +151,7 @@ export interface Config {
         | 'fil'
         | 'ff'
         | 'fr'
+        | 'gu'
         | 'hi'
         | 'hr'
         | 'ht'
@@ -196,6 +198,7 @@ export interface Config {
     | 'fil'
     | 'ff'
     | 'fr'
+    | 'gu'
     | 'hi'
     | 'hr'
     | 'ht'
@@ -313,6 +316,7 @@ export interface Tenant {
     | 'fil'
     | 'ff'
     | 'fr'
+    | 'gu'
     | 'hi'
     | 'hr'
     | 'ht'
@@ -353,6 +357,7 @@ export interface Tenant {
     | 'fil'
     | 'ff'
     | 'fr'
+    | 'gu'
     | 'hi'
     | 'hr'
     | 'ht'
@@ -392,6 +397,7 @@ export interface Tenant {
   common?: {
     gtmContainerId?: string | null;
     matomoContainerUrl?: string | null;
+    umamiWebsiteId?: string | null;
   };
   twilio?: {
     phoneNumber?: string | null;
@@ -548,6 +554,46 @@ export interface ResourceDirectory {
         }[]
       | null;
   };
+  highlights?: {
+    /**
+     * The title displayed above the highlights section
+     */
+    sectionTitle?: string | null;
+    /**
+     * Automatically rotate through highlights when there are more than can fit on screen
+     */
+    enableCarouselAutoplay?: boolean | null;
+    /**
+     * Time in seconds between automatic slide changes
+     */
+    autoplayInterval?: number | null;
+    /**
+     * Add callouts to highlight resources, news, or important information. When more items exist than can fit on screen, they will display in a carousel.
+     */
+    items?:
+      | {
+          /**
+           * Image for the highlight card
+           */
+          image?: (number | null) | TenantMedia;
+          /**
+           * The main heading for this highlight
+           */
+          title: string;
+          /**
+           * Brief description or summary of the highlight
+           */
+          description?: string | null;
+          /**
+           * Text displayed on the button or link
+           */
+          buttonText?: string | null;
+          buttonUrl?: string | null;
+          openInNewTab?: boolean | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
   badges?: {
     list?:
       | {
@@ -642,7 +688,6 @@ export interface ResourceDirectory {
     showUseMyLocationButtonOnDesktop?: boolean | null;
     showPrintButton?: boolean | null;
     turnResourceCardTaxonomiesIntoLinks?: boolean | null;
-    useHybridSemanticSearch?: boolean | null;
     showFeedbackButtonGlobal?: boolean | null;
     showFeedbackButtonOnResourcePages?: boolean | null;
   };
@@ -928,6 +973,7 @@ export interface TenantsSelect<T extends boolean = true> {
     | {
         gtmContainerId?: T;
         matomoContainerUrl?: T;
+        umamiWebsiteId?: T;
       };
   twilio?:
     | T
@@ -1111,6 +1157,24 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
               id?: T;
             };
       };
+  highlights?:
+    | T
+    | {
+        sectionTitle?: T;
+        enableCarouselAutoplay?: T;
+        autoplayInterval?: T;
+        items?:
+          | T
+          | {
+              image?: T;
+              title?: T;
+              description?: T;
+              buttonText?: T;
+              buttonUrl?: T;
+              openInNewTab?: T;
+              id?: T;
+            };
+      };
   badges?:
     | T
     | {
@@ -1224,7 +1288,6 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         showUseMyLocationButtonOnDesktop?: T;
         showPrintButton?: T;
         turnResourceCardTaxonomiesIntoLinks?: T;
-        useHybridSemanticSearch?: T;
         showFeedbackButtonGlobal?: T;
         showFeedbackButtonOnResourcePages?: T;
       };

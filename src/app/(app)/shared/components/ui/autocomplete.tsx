@@ -572,6 +572,7 @@ export function Autocomplete(props: AutocompleteProps) {
                 )}
                 onClick={clear}
                 aria-label="Clear"
+                data-testid="search-clear-btn"
                 type="button"
               >
                 <XIcon className={cn('h-4 w-4 shrink-0 opacity-50')} />
@@ -587,6 +588,7 @@ export function Autocomplete(props: AutocompleteProps) {
           <div
             id={uniqueId}
             role="listbox"
+            data-testid="autocomplete-listbox"
             aria-multiselectable="false"
             ref={setPopperElement}
             className={cn(
@@ -630,6 +632,7 @@ export function Autocomplete(props: AutocompleteProps) {
                           key={option.index}
                           id={`${uniqueId}-option-${option.index}`}
                           role="option"
+                          data-testid="autocomplete-option"
                           className={cn(
                             'flex cursor-pointer justify-between gap-2 px-3 py-2',
                             currentIndex === option.index && 'bg-primary/5',

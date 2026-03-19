@@ -4,7 +4,7 @@ import KeycloakProvider from 'next-auth/providers/keycloak';
 
 import { Tenant } from './payload/payload-types';
 import { fetchWrapper } from './app/(app)/shared/lib/fetchWrapper';
-import { isJwtExpired } from './utils/getJwtExpirationTime';
+import { isJwtExpired } from './utils/isJwtExpired';
 import { createLogger } from './lib/logger';
 
 // Helper to remove null/undefined values from object
@@ -55,9 +55,13 @@ const createAuthOptions = ({
       token = omitNilValues(token);
 
       if (account) {
-        // Initial sign in
+        // Initial sign in - only store necessary fields to minimize attack surface
+        // Explicitly avoid spreading all OIDC claims (e.g., nonce) into JWT
         return {
-          ...token,
+          sub: token.sub,
+          name: token.name,
+          email: token.email,
+          picture: token.picture,
           accessToken: account.access_token,
           refreshToken: account.refresh_token,
           idToken: account.id_token,
@@ -65,7 +69,7 @@ const createAuthOptions = ({
         };
       }
 
-      const REFRESH_BUFFER = 30;
+      const REFRESH_BUFFER = 60;
       if (
         token.expiresAt &&
         Date.now() / 1000 < token.expiresAt - REFRESH_BUFFER
@@ -195,6 +199,17 @@ const createAuthOptions = ({
     signIn: `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/auth/sign-in`,
     signOut: `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/auth/sign-out`,
     verifyRequest: `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/auth/verify-request`,
+  },
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'strict',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
   },
   secret,
   ...(isDebug && {

@@ -45,7 +45,6 @@ export type AppConfig = {
     showSuggestionListTaxonomyBadge: boolean;
     showUseMyLocationButtonOnDesktop: boolean;
     turnResourceCardTaxonomiesIntoLinks: boolean;
-    useHybridSemanticSearch: boolean;
   };
   footer: {
     customMenu: Menu[];
@@ -130,7 +129,21 @@ export type AppConfig = {
   };
   gtmContainerId?: string;
   heroUrl?: string;
+  highlights?: {
+    sectionTitle?: string;
+    enableCarouselAutoplay?: boolean;
+    autoplayInterval?: number;
+    items?: {
+      image?: string;
+      title: string;
+      description?: string;
+      buttonText?: string;
+      buttonUrl?: string;
+      openInNewTab?: boolean;
+    }[];
+  };
   matomoContainerUrl?: string;
+  umamiWebsiteId?: string;
   newLayout?: {
     callouts?: {
       options?: {

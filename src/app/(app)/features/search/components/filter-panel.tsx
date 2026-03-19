@@ -24,12 +24,10 @@ import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-searc
 import { useTranslation } from 'react-i18next';
 import { HEADER_ID } from '@/app/(app)/shared/lib/constants';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { FiltersMap } from '@/types/search';
 
 const MAX_VISIBLE_FILTERS = 6;
 
-type FilterBucket = { key: string; doc_count: number };
-type FilterEntry = { buckets: FilterBucket[] };
-type FiltersMap = Record<string, FilterEntry>;
 type ActiveFilters = Record<string, string[]>;
 
 type FiltersProps = {
@@ -118,12 +116,13 @@ const Filters = ({ filters, filterKeys }: FiltersProps) => {
 
       <div className="flex flex-col gap-4">
         {filterKeys.map((key) => {
-          const heading = key
-            .split('_')
-            .map((k) => k.charAt(0).toUpperCase() + k.slice(1))
-            .join(' ');
+          const heading = filters[key].name;
           const filterList = filters[key].buckets.filter(
-            (b) => b.key != null && b.key !== '',
+            (b) =>
+              b.key != null &&
+              b.key !== '' &&
+              b.display != null &&
+              b.display !== '',
           );
           const isExpanded = filtersExpanded[key] ?? false;
           const visibleList = isExpanded
@@ -152,7 +151,7 @@ const Filters = ({ filters, filterKeys }: FiltersProps) => {
                           toggleFilter(key, b.key, !!checked)
                         }
                       />
-                      {b.key}
+                      {b.display}
                     </label>
                     <Badge className="bg-[rgba(0,0,0,0.03)]" variant="outline">
                       {b.doc_count}

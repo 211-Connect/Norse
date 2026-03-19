@@ -24,7 +24,7 @@ export function NoResultsCard({ showAltSubtitle }) {
   const searchParams = useSearchParams();
 
   return (
-    <Card>
+    <Card data-testid="no-results-card">
       <CardHeader className="text-center">
         <CardTitle>{t('no_results.title')}</CardTitle>
         <CardDescription>
