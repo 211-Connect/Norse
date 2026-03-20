@@ -14,7 +14,12 @@ export function BadgesComponent({ resource }: ResourceComponentProps) {
     if (!resource || !badgeConfigs || badgeConfigs.length === 0) {
       return [];
     }
-    return getBadgesForResource(resource.facets, badgeConfigs);
+
+    return getBadgesForResource(
+      badgeConfigs,
+      resource.facets,
+      resource.categories,
+    );
   }, [resource, badgeConfigs]);
 
   if (labels.length === 0) {
