@@ -2,7 +2,7 @@ import { ResourceDirectory } from '@/payload/payload-types';
 import { TypedLocale } from 'payload';
 import { locales } from '@/payload/i18n/locales';
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
-import { withRedisCache } from '@/utilities/withRedisCache';
+import { withCache } from '@/utilities/withCache';
 import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
 
 async function findResourceDirectoryByHostOrig(
@@ -51,7 +51,9 @@ export async function findResourceDirectoryByHost(
     return await findResourceDirectoryByHostOrig(host, locale);
   }
 
-  return await withRedisCache(`resource_directory:${domain}:${locale}`, () =>
-    findResourceDirectoryByHostOrig(host, locale),
+  return await withCache(
+    `resource_directory:${domain}:${locale}`,
+    () => findResourceDirectoryByHostOrig(host, locale),
+    { redis: true, memory: true },
   );
 }
