@@ -1,0 +1,148 @@
+{
+  "header": {
+    "home": "ઘર",
+    "favorites": "મનપસંદ",
+    "log_out": "લોગ આઉટ કરો",
+    "language_select_label": "સાઇટની ભાષા બદલવા માટે ભાષા પસંદ કરો",
+    "my_stuff": "મારી વસ્તુઓ",
+    "search": "શોધો",
+    "report": "પ્રતિસાદ સબમિટ કરો"
+  },
+  "favorites": {
+    "added_to_list": "યાદીમાં ઉમેર્યું",
+    "added_to_list_message": "આ સંસાધન તમારી યાદીમાં ઉમેરવામાં આવ્યું છે.",
+    "already_exists": "પહેલેથી જ અસ્તિત્વમાં છે",
+    "already_exists_message": "આ સંસાધન તમારી યાદીમાં પહેલેથી જ અસ્તિત્વમાં છે.",
+    "removed_from_list": "યાદીમાંથી દૂર કર્યું",
+    "removed_from_list_message": "આ સંસાધન તમારી સૂચિમાંથી દૂર કરવામાં આવ્યું છે.",
+    "updated_list": "અપડેટ કરેલી યાદી",
+    "updated_list_message": "તમારી યાદી અપડેટ કરવામાં આવી છે.",
+    "unable_to_update_list": "સૂચિ અપડેટ કરવામાં અસમર્થ",
+    "unable_to_update_list_message": "તમારી યાદી અપડેટ કરી શકાઈ નથી.",
+    "deleted_list": "કાઢી નાખેલી સૂચિ",
+    "deleted_list_message": "તમારી યાદી કાઢી નાખવામાં આવી છે.",
+    "unable_to_delete_list": "સૂચિ કાઢી નાખવામાં અસમર્થ",
+    "unable_to_delete_list_message": "તમારી યાદી કાઢી શકાઈ નથી.",
+    "list_created": "સૂચિ બનાવી",
+    "list_created_message": "તમારી યાદી સફળતાપૂર્વક બનાવવામાં આવી છે.",
+    "unable_to_create_list_message": "તમારી યાદી બનાવી શકાઈ નથી."
+  },
+  "search": {
+    "add_my_location": "મારું સ્થાન ઉમેરો",
+    "back": "પાછળ",
+    "hero_title": "સંસાધનો શોધો",
+    "query_placeholder": "ખોરાક, રહેઠાણ, વગેરે...",
+    "location_placeholder": "શહેર, રાજ્ય અથવા ઝીપ કોડ",
+    "radius_placeholder": "ત્રિજ્યા",
+    "miles": "માઇલ્સ",
+    "miles_short": "માઇલ",
+    "any": "કોઈપણ",
+    "taxonomies": "વર્ગીકરણ",
+    "suggestions": "સૂચનો",
+    "use_my_location": "મારા સ્થાનનો ઉપયોગ કરો",
+    "confidential_address": "આ સ્થાન ગોપનીય હોઈ શકે છે અથવા જાહેર જનતા માટે ખુલ્લું ન પણ હોય. કૃપા કરીને આ સેવા માટે બીજી પ્રદાન કરેલી સંપર્ક પદ્ધતિ પસંદ કરો.",
+    "address_unavailable": "સરનામું ઉપલબ્ધ નથી",
+    "geocoding_error": "જીઓકોડિંગ ભૂલ",
+    "geocoding_unsupported": "તમારા બ્રાઉઝર દ્વારા ભૌગોલિક સ્થાન સમર્થિત નથી.",
+    "geocoding_unable_to_retrieve": "તમારું સ્થાન પુનઃપ્રાપ્ત કરવામાં અસમર્થ. કૃપા કરીને તમારા બ્રાઉઝરની સ્થાન સેટિંગ્સ તપાસો અને ફરી પ્રયાસ કરો.",
+    "categories": "વિષયો",
+    "show_all": "બધા બતાવો ({{count}})",
+    "show_less": "ઓછું બતાવો"
+  },
+  "call_to_action": {
+    "call": "કૉલ કરો",
+    "view_website": "વેબસાઇટ",
+    "get_directions": "દિશાઓ",
+    "view_details": "વધુ જુઓ",
+    "add_to_list": "મનપસંદ",
+    "delete_list": "સૂચિ કાઢી નાખો",
+    "remove_from_list": "યાદીમાંથી દૂર કરો",
+    "share": "શેર કરો",
+    "cancel": "રદ કરો",
+    "create": "બનાવો",
+    "update": "અપડેટ",
+    "delete": "કાઢી નાખો",
+    "search": "શોધો",
+    "remove": "દૂર કરો",
+    "login": "લૉગિન",
+    "show_more": "વધુ બતાવો",
+    "show_less": "ઓછું બતાવો",
+    "print": "પ્રિંટ"
+  },
+  "list": {
+    "private": "ખાનગી",
+    "public": "જાહેર"
+  },
+  "message": {
+    "list_deleted": "સૂચિ કાઢી નાખી",
+    "list_deleted_success": "તમારી યાદી કાઢી નાખવામાં આવી છે.",
+    "error": "ભૂલ",
+    "list_not_deleted_error": "તમારી યાદી કાઢી શકાઈ નથી."
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "તમારી યાદીઓ શોધો",
+      "list_name": "યાદી",
+      "list_privacy": "ગોપનીયતા",
+      "add_to_list": "યાદીમાં ઉમેરો",
+      "not_found": "કોઈ યાદી મળી નથી",
+      "create_new_list": "નવું બનાવવું છે?"
+    },
+    "remove_from_list": {
+      "are_you_sure": "શું તમે ખરેખર તમારી સૂચિમાંથી આ મનપસંદને દૂર કરવા માંગો છો?"
+    },
+    "create_list": {
+      "create_a_list": "યાદી બનાવો",
+      "list_name": "નામ",
+      "list_description": "વર્ણન",
+      "make_public": "જાહેર કરો"
+    },
+    "update_list": {
+      "update_list": "અપડેટ સૂચિ",
+      "list_name": "નામ",
+      "list_description": "વર્ણન",
+      "make_public": "જાહેર કરો"
+    },
+    "delete_list": {
+      "delete_list": "સૂચિ કાઢી નાખો"
+    },
+    "share": {
+      "share_via": "આના દ્વારા શેર કરો",
+      "copy_link": "લિંક કૉપી કરો",
+      "copy": "કૉપિ કરો",
+      "facebook": "ફેસબુક",
+      "twitter": "ટ્વિટર",
+      "linkedin": "લિંક્ડઇન",
+      "sms": "એસએમએસ",
+      "email": "ઇમેઇલ",
+      "print": "પ્રિંટ",
+      "copied": "નકલ કરી!",
+      "check_out_this_list": "મેં બનાવેલી આ યાદી જુઓ!",
+      "check_out_this_resource": "મને મળેલ આ સંસાધન તપાસો!",
+      "share_sms": "SMS દ્વારા શેર કરવા માટે ફોન નંબર દાખલ કરો",
+      "enter_phone_number": "ફોન નંબર દાખલ કરો...",
+      "invalid_phone_number": "અમાન્ય ફોન નંબર",
+      "sms_sending_title": "SMS મોકલી રહ્યું છે...",
+      "sms_sending_body": "તમારો સંદેશ મોકલવામાં આવી રહ્યો છે.",
+      "sms_send_success_title": "SMS મોકલ્યો!",
+      "sms_send_success_body": "તમારો સંદેશ મોકલવામાં આવ્યો છે.",
+      "sms_send_failed_title": "SMS મોકલવામાં નિષ્ફળ ગયા",
+      "sms_send_failed_body": "તમારો સંદેશ મોકલવામાં નિષ્ફળ ગયો."
+    },
+    "prompt_auth": "આ સુવિધાનો ઉપયોગ કરવા માટે કૃપા કરીને લોગિન કરો."
+  },
+  "update_location": {
+    "prompt_start_location": "તમારું શરૂઆતનું સ્થાન કયું છે?"
+  },
+  "data_providers": {
+    "provided_by": "દ્વારા પ્રદાન કરાયેલ ડેટા"
+  },
+  "carousel": {
+    "previous": "પાછલું",
+    "next": "આગળ",
+    "go_to": "પર જાઓ"
+  },
+  "footer": {
+    "copyright": "© કૉપિરાઇટ {{ટેક્સ્ટ}}"
+  }
+}

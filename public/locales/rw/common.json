@@ -139,5 +139,10 @@
   },
   "footer": {
     "copyright": "© Uburenganzira {{text}}"
+  },
+  "carousel": {
+    "previous": "Ibanjirije",
+    "next": "Ibikurikiraho",
+    "go_to": "Jya kuri"
   }
 }

@@ -139,5 +139,10 @@
   },
   "footer": {
     "copyright": "© Mirga garagalchuu {{text}}"
+  },
+  "carousel": {
+    "previous": "Kan duraa",
+    "next": "Kan itti aanu",
+    "go_to": "Gara"
   }
 }

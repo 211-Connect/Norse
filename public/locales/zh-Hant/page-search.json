@@ -11,5 +11,7 @@
     "alt_subtitle": "嘗試不同的查詢或篩選條件",
     "need_help": "需要幫助嗎？我們有專人隨時待命。"
   },
-  "pinned": "置頂"
+  "pinned": "置頂",
+  "filters": "過濾器",
+  "clear_filters": "清除過濾器"
 }

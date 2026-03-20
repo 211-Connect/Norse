@@ -1,0 +1,40 @@
+{
+  "meta_title": "",
+  "meta_description": "",
+  "take_a_tour": "O le taimi muamua lenei iinei? Fai se maimoaga!",
+  "new": "Fou!",
+  "tour": {
+    "step_1": {
+      "paragraph_1": "O le pusa su'esu'e o le ivi autū lea o le afi su'esu'e. E talia ai upu masani, fuaitau, ma isi mea fa'apena (e pei o 'fale'oloa mea'ai')",
+      "paragraph_2": "A'o e taina, o le pusa su'esu'e o le a tu'uina atu ai ni fautuaga e fa'atatau i vaega matou te fa'aaogaina i tua atu o le vaaiga. O nei fautuaga o le a tu'uina atu ai ni taunuuga sili ona sa'o, peita'i e te le mana'omia ona fa'aaogaina.",
+      "paragraph_3": "Afai e te filifili e lē faʻaaogāina fautuaga ua tuʻuina mai, matou te faʻaaogāina le tusitusiga e te tuʻuina mai e toe maua ai iʻuga e sili ona saʻo e mafai ai."
+    },
+    "step_2": {
+      "paragraph_1": "E te le o mautinoa po o le a le mea o loʻo e sailia? Ua lelei!",
+      "paragraph_2": "Matou te tuʻuina atu le tele o vaega eseese ma vaega laiti mo oe e suʻesuʻe. Naʻo le kiliki i luga o soʻo se soʻotaga i le vaega o vaega e ave ai oe i taunuuga o le sailiga."
+    },
+    "step_3": {
+      "paragraph_1": "O nisi taimi e malepe ai mea, tatou te le fa'amoemoe e malepe.",
+      "paragraph_2": "Afai e te mauaina se mea ua leaga, pe na'o lou mana'o e tu'uina atu ni manatu fa'aalia i le aafiaga atoa, e mafai ona e kiliki i le fa'amau o manatu fa'aalia i so'o se taimi."
+    },
+    "step_4": {
+      "paragraph_1": "Fa'aopoopo lau tuatusi iinei e su'e ai auaunaga o lo'o avanoa i lou pitonu'u. E fesoasoani lea ia matou e fa'aali atu ai na'o filifiliga o lo'o o'o mai i lou eria."
+    }
+  },
+  "categories_title": "Autu",
+  "new_layout": {
+    "topics_section": {
+      "cta": "Su'esu'e autu",
+      "title": "E le o mautinoa po o fea e amata ai"
+    },
+    "callouts": {
+      "list": {
+        "call": "Telefoni",
+        "chat": "Talanoaga",
+        "email": "Imeli",
+        "sms": "Fa'amatalaga tusitusia"
+      },
+      "title": "E iai fo'i isi auala e mafai ona e ole atu ai mo se fesoasoani:"
+    }
+  }
+}

@@ -139,5 +139,10 @@
   },
   "footer": {
     "copyright": "© Haki miliki {{text}}"
+  },
+  "carousel": {
+    "previous": "Iliyotangulia",
+    "next": "Inayofuata",
+    "go_to": "Nenda kwenye"
   }
 }

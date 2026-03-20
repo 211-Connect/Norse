@@ -139,5 +139,10 @@
   },
   "footer": {
     "copyright": "© 版權所有 {{text}}"
+  },
+  "carousel": {
+    "previous": "以前的",
+    "next": "下一個",
+    "go_to": "前往"
   }
 }

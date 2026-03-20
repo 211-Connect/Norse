@@ -139,5 +139,10 @@
   },
   "footer": {
     "copyright": "© Muaj Cai {{text}}"
+  },
+  "carousel": {
+    "previous": "Yav tas los",
+    "next": "Tom ntej no",
+    "go_to": "Mus rau"
   }
 }

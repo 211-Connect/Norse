@@ -139,5 +139,10 @@
   },
   "footer": {
     "copyright": "© 版權所有 { { 文字 } }"
+  },
+  "carousel": {
+    "previous": "之前",
+    "next": "下一個",
+    "go_to": "去到"
   }
 }

@@ -263,6 +263,7 @@ const useScrollOffset = () => {
 };
 
 export function FilterPanel() {
+  const { t } = useTranslation();
   const appConfig = useAppConfig();
   const filters = useAtomValue(filtersAtom);
   const [filtersOpen, setFiltersOpen] = useAtom(filtersOpenAtom);
@@ -294,7 +295,7 @@ export function FilterPanel() {
           onClick={() => setFiltersOpen(true)}
         >
           <Filter className="size-4" />
-          Filter
+          {t('search.filter', 'Filter')}
         </Button>
       </div>
       {filterKeys.length > 0 && (

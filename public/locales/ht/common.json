@@ -139,5 +139,10 @@
   },
   "footer": {
     "copyright": "© Dwa otè {{tèks}}"
+  },
+  "carousel": {
+    "previous": "Anvan",
+    "next": "Apre",
+    "go_to": "Ale nan"
   }
 }

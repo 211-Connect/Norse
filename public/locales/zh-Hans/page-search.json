@@ -11,5 +11,7 @@
     "alt_subtitle": "尝试其他查询或筛选器",
     "need_help": "需要帮助？我们有人在旁边待命。"
   },
-  "pinned": "已固定"
+  "pinned": "已固定",
+  "filters": "过滤器",
+  "clear_filters": "清除过滤器"
 }

@@ -1,0 +1,148 @@
+{
+  "header": {
+    "home": "Home",
+    "favorites": "Nā mea punahele",
+    "log_out": "Haʻalele",
+    "language_select_label": "E koho i kahi ʻōlelo e hoʻololi i ka ʻōlelo o ka pūnaewele",
+    "my_stuff": "Kaʻu mau mea",
+    "search": "Huli",
+    "report": "Hoʻouna i nā Manaʻo"
+  },
+  "favorites": {
+    "added_to_list": "Ua hoʻohui ʻia i ka papa inoa",
+    "added_to_list_message": "Ua hoʻohui ʻia kēia kumuwaiwai i kāu papa inoa.",
+    "already_exists": "Ua loaʻa mua",
+    "already_exists_message": "Aia kēia kumuwaiwai i kāu papa inoa.",
+    "removed_from_list": "Ua wehe ʻia mai ka papa inoa",
+    "removed_from_list_message": "Ua wehe ʻia kēia kumuwaiwai mai kāu papa inoa.",
+    "updated_list": "Papa inoa i hōʻano hou ʻia",
+    "updated_list_message": "Ua hōʻano hou ʻia kāu papa inoa.",
+    "unable_to_update_list": "ʻAʻole hiki ke hoʻohou i ka papa inoa",
+    "unable_to_update_list_message": "ʻAʻole hiki ke hōʻano hou ʻia kāu papa inoa.",
+    "deleted_list": "Papa inoa i holoi ʻia",
+    "deleted_list_message": "Ua holoi ʻia kāu papa inoa.",
+    "unable_to_delete_list": "ʻAʻole hiki ke holoi i ka papa inoa",
+    "unable_to_delete_list_message": "ʻAʻole hiki ke holoi ʻia kāu papa inoa.",
+    "list_created": "Papa inoa i hana ʻia",
+    "list_created_message": "Ua hana pono ʻia kāu papa inoa.",
+    "unable_to_create_list_message": "ʻAʻole hiki ke hana ʻia kāu papa inoa."
+  },
+  "search": {
+    "add_my_location": "Hoʻohui i koʻu wahi",
+    "back": "Hoʻi",
+    "hero_title": "E huli i nā kumuwaiwai",
+    "query_placeholder": "ʻAi, hale noho, a pēlā aku...",
+    "location_placeholder": "Kūlanakauhale, mokuʻāina, a i ʻole helu ZIP",
+    "radius_placeholder": "Radius",
+    "miles": "Nā Mile",
+    "miles_short": "mi",
+    "any": "Kekahi",
+    "taxonomies": "Nā ʻano hoʻokaʻawale",
+    "suggestions": "Nā Manaʻo",
+    "use_my_location": "E hoʻohana i koʻu wahi",
+    "confidential_address": "He mea hūnā paha kēia wahi a ʻaʻole paha e wehe ʻia i ka lehulehu. E ʻoluʻolu e koho i kahi ʻano hoʻopili ʻē aʻe i hāʻawi ʻia no kēia lawelawe.",
+    "address_unavailable": "ʻAʻole hiki ke loaʻa ka helu wahi",
+    "geocoding_error": "Hewa geocoding",
+    "geocoding_unsupported": "ʻAʻole kākoʻo ʻia ka Geolocation e kāu polokalamu kele pūnaewele",
+    "geocoding_unable_to_retrieve": "ʻAʻole hiki ke kiʻi i kou wahi. E ʻoluʻolu e nānā i nā hoʻonohonoho wahi o kāu polokalamu kele pūnaewele a hoʻāʻo hou.",
+    "categories": "Nā Kumuhana",
+    "show_all": "Hōʻike i nā mea a pau ({{count}})",
+    "show_less": "Hōʻike emi mai"
+  },
+  "call_to_action": {
+    "call": "Kāhea",
+    "view_website": "Pūnaewele",
+    "get_directions": "Nā kuhikuhi",
+    "view_details": "E ʻike hou aku",
+    "add_to_list": "Punahele",
+    "delete_list": "Holoi i ka papa inoa",
+    "remove_from_list": "Wehe mai ka papa inoa",
+    "share": "Kaʻana like",
+    "cancel": "Hoʻōki",
+    "create": "Hana",
+    "update": "Hoʻohou",
+    "delete": "Holoi",
+    "search": "Huli",
+    "remove": "Wehe",
+    "login": "E komo",
+    "show_more": "Hōʻike hou aku",
+    "show_less": "Hōʻike emi mai",
+    "print": "Paʻi"
+  },
+  "list": {
+    "private": "Pilikino",
+    "public": "Lehulehu"
+  },
+  "message": {
+    "list_deleted": "Ua holoi ʻia ka papa inoa",
+    "list_deleted_success": "Ua holoi ʻia kāu papa inoa.",
+    "error": "Hewa",
+    "list_not_deleted_error": "ʻAʻole hiki ke holoi ʻia kāu papa inoa."
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "E huli i kāu mau papa inoa",
+      "list_name": "Papa inoa",
+      "list_privacy": "Kulekele pilikino",
+      "add_to_list": "Hoʻohui i ka papa inoa",
+      "not_found": "ʻAʻohe papa inoa i loaʻa",
+      "create_new_list": "E hana i kahi mea hou?"
+    },
+    "remove_from_list": {
+      "are_you_sure": "Makemake ʻoe e wehe i kēia punahele mai kāu papa inoa?"
+    },
+    "create_list": {
+      "create_a_list": "E hana i kahi papa inoa",
+      "list_name": "Inoa",
+      "list_description": "Wehewehena",
+      "make_public": "E hoʻolaha i ka lehulehu"
+    },
+    "update_list": {
+      "update_list": "Hoʻohou i ka papa inoa",
+      "list_name": "Inoa",
+      "list_description": "Wehewehena",
+      "make_public": "E hoʻolaha i ka lehulehu"
+    },
+    "delete_list": {
+      "delete_list": "Holoi i ka papa inoa"
+    },
+    "share": {
+      "share_via": "E kaʻana like i kēia ma o",
+      "copy_link": "Kope loulou",
+      "copy": "Kope",
+      "facebook": "Facebook",
+      "twitter": "Twitter",
+      "linkedin": "LinkedIn",
+      "sms": "SMS",
+      "email": "Leka uila",
+      "print": "Paʻi",
+      "copied": "Ua kope ʻia!",
+      "check_out_this_list": "E nānā i kēia papa inoa aʻu i hana ai!",
+      "check_out_this_resource": "E nānā i kēia kumuwaiwai aʻu i loaʻa ai!",
+      "share_sms": "E hoʻokomo i kahi helu kelepona e kaʻana like ma o SMS",
+      "enter_phone_number": "E hoʻokomo i ka helu kelepona...",
+      "invalid_phone_number": "Helu kelepona kūpono ʻole",
+      "sms_sending_title": "Ke hoʻouna nei i ka SMS...",
+      "sms_sending_body": "Ke hoʻouna ʻia aku nei kāu leka.",
+      "sms_send_success_title": "Ua hoʻouna ʻia ka SMS!",
+      "sms_send_success_body": "Ua hoʻouna ʻia kāu leka.",
+      "sms_send_failed_title": "Ua hāʻule ka hoʻouna ʻana o ka SMS",
+      "sms_send_failed_body": "ʻAʻole i hoʻouna ʻia kāu leka."
+    },
+    "prompt_auth": "E ʻoluʻolu e komo e hoʻohana i kēia hiʻona."
+  },
+  "update_location": {
+    "prompt_start_location": "Ma hea kou wahi hoʻomaka?"
+  },
+  "data_providers": {
+    "provided_by": "ʻIkepili i hāʻawi ʻia e"
+  },
+  "carousel": {
+    "previous": "Ma mua",
+    "next": "Aʻe",
+    "go_to": "E hele i"
+  },
+  "footer": {
+    "copyright": "© Kuleana kope {{text}}"
+  }
+}
