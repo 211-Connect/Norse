@@ -86,6 +86,7 @@ export interface Translation {
   transportation?: string;
   accessibility?: string;
   facets?: Facet[];
+  attributeValues?: Record<string, string>;
 }
 
 export interface ApiResource {
@@ -149,4 +150,5 @@ export interface Resource {
   accessibility: string | null;
   facets: FacetWithTranslation[] | null;
   translations?: Translation[];
+  attributeValues?: Record<string, string> | null;
 }

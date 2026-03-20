@@ -12,6 +12,7 @@ import { getHost } from './getHost';
 import { defaultLocale } from '@/payload/i18n/locales';
 import initTranslations from '../i18n/i18n';
 import { SESSION_ID } from '../lib/constants';
+import { DEFAULT_RESOURCE_LAYOUT } from '../../features/resource/types/layout-config';
 
 function getMediaUrl(media?: TenantMedia | number | null): string | undefined {
   if (typeof media === 'number' || !media) return undefined;
@@ -49,6 +50,52 @@ function getTenantI18n(resourceDirectory: ResourceDirectory): {
     defaultLocale: resourceDirectory.tenant?.defaultLocale || defaultLocale,
     locales: resourceDirectory.tenant?.enabledLocales || [defaultLocale],
   };
+}
+
+function applyCustomAttributeFallback(
+  column: NonNullable<ResourceDirectory['resource']>['leftColumn'],
+  fallbackColumn: NonNullable<ResourceDirectory['resource']>['leftColumn'],
+): NonNullable<ResourceDirectory['resource']>['leftColumn'] {
+  if (!column || !fallbackColumn) return column;
+
+  return column.map((group, groupIndex) => {
+    const fallbackGroup = fallbackColumn[groupIndex];
+    if (!fallbackGroup || !group.items) return group;
+
+    return {
+      ...group,
+      items: group.items.map((item, itemIndex) => {
+        const fallbackItem = fallbackGroup.items?.[itemIndex];
+
+        if (
+          item.componentId !== 'customAttribute' ||
+          !item.customAttribute ||
+          !fallbackItem?.customAttribute
+        ) {
+          return item;
+        }
+
+        return {
+          ...item,
+          customAttribute: {
+            ...item.customAttribute,
+            title:
+              item.customAttribute.title ||
+              fallbackItem.customAttribute.title ||
+              null,
+            subtitle:
+              item.customAttribute.subtitle ||
+              fallbackItem.customAttribute.subtitle ||
+              null,
+            description:
+              item.customAttribute.description ||
+              fallbackItem.customAttribute.description ||
+              null,
+          },
+        };
+      }),
+    };
+  });
 }
 
 async function getAppConfigBase(
@@ -119,6 +166,10 @@ async function getAppConfigBase(
       },
       resource: {
         lastAssuredText: undefined,
+        layout: {
+          leftColumn: [],
+          rightColumn: [],
+        },
       },
       search: {
         facets: [],
@@ -145,6 +196,12 @@ async function getAppConfigBase(
     i18n.locales,
     i18n.defaultLocale,
   );
+
+  // Fetch English resource directory for fallback if not English locale
+  let englishResourceDirectory: ResourceDirectory | null = null;
+  if (locale !== 'en' && resourceDirectory.resource?.useCustomLayout) {
+    englishResourceDirectory = await findResourceDirectoryByHost(host, 'en');
+  }
 
   const headerList = await headers();
   const cookiesList = await cookies();
@@ -306,6 +363,18 @@ async function getAppConfigBase(
     },
     resource: {
       lastAssuredText: resourceDirectory.resource?.lastAssuredText ?? undefined,
+      layout: resourceDirectory.resource?.useCustomLayout
+        ? {
+            leftColumn: applyCustomAttributeFallback(
+              resourceDirectory.resource.leftColumn,
+              englishResourceDirectory?.resource?.leftColumn,
+            ),
+            rightColumn: applyCustomAttributeFallback(
+              resourceDirectory.resource.rightColumn,
+              englishResourceDirectory?.resource?.rightColumn,
+            ),
+          }
+        : DEFAULT_RESOURCE_LAYOUT,
     },
     search: {
       facets: (resourceDirectory.search.facets ?? [])

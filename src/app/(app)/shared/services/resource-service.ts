@@ -101,6 +101,7 @@ async function fetchAndTransformResourceOrigin(
             termNameEn: englishFacet?.termName,
           };
         }) ?? null,
+      attributeValues: data?.translation?.attributeValues ?? null,
     };
   });
 }

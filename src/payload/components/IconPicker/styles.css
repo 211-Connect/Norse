@@ -2,13 +2,6 @@
   width: 256px;
 }
 
-.icon-picker .field-label {
-  display: block;
-  font-weight: 600;
-  font-size: 0.875rem;
-  margin: 0;
-}
-
 .icon-picker .required {
   color: var(--theme-error-500);
 }
