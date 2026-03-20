@@ -2,7 +2,7 @@ import { ResourceDirectory } from '@/payload/payload-types';
 import { cacheService } from '@/cacheService';
 import { findTenantById } from '../../Tenants/actions';
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
-import { RedisCacheKey } from '@/utilities/withRedisCache';
+import { CacheKey } from '@/utilities/withCache';
 import { createLogger } from '@/lib/logger';
 
 const log = createLogger('revalidateCache');
@@ -19,7 +19,7 @@ export async function revalidateCache({
 
       if (tenant && tenant.trustedDomains) {
         const cacheKeys = tenant.trustedDomains.map(
-          ({ domain }): RedisCacheKey => {
+          ({ domain }): CacheKey => {
             const host = parseHost(domain);
             return `resource_directory:${host}:*`;
           },

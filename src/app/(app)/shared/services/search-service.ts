@@ -19,7 +19,7 @@ import {
 import qs from 'qs';
 import { createLogger } from '@/lib/logger';
 import { formatAddressForDisplay } from '../lib/utils';
-import { stableHash, withRedisCache } from '@/utilities/withRedisCache';
+import { stableHash, withCache } from '@/utilities/withCache';
 
 const log = createLogger('search');
 
@@ -264,9 +264,10 @@ export const findResources = (
   limit?: number,
   tenantId?: string,
 ) =>
-  withRedisCache(
+  withCache(
     `search_results:${tenantId}:${locale}:${stableHash({ query, page, limit })}`,
     () => findResourcesOrigin({ query, locale, page, limit, tenantId }),
+    { redis: true, memory: false },
   );
 
 /**

@@ -1,11 +1,13 @@
 'use server';
 
 import { Tenant } from '@/payload/payload-types';
-import { withRedisCache } from '@/utilities/withRedisCache';
+import { withCache } from '@/utilities/withCache';
 import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
 
 export async function findTenantByHost(host: string): Promise<Tenant | null> {
-  return await withRedisCache(`tenant:${host}`, async () => {
+  return await withCache(
+    `tenant:${host}`,
+    async () => {
     const payload = await getPayloadSingleton();
 
     const {
@@ -22,5 +24,7 @@ export async function findTenantByHost(host: string): Promise<Tenant | null> {
     });
 
     return tenant || null;
-  });
+    },
+    { redis: true, memory: true },
+  );
 }

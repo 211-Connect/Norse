@@ -1,5 +1,5 @@
 import { findTenantByHost } from '@/payload/collections/Tenants/actions';
-import { withRedisCache } from '@/utilities/withRedisCache';
+import { withCache } from '@/utilities/withCache';
 import { TypedLocale } from 'payload';
 
 export type TenantLocaleResponse = {
@@ -20,13 +20,17 @@ export const GET = async (request: Request) => {
     return new Response('Host query parameter is required', { status: 400 });
   }
 
-  const tenant = await withRedisCache(`tenant_locale:${host}`, async () => {
-    const tenant = await findTenantByHost(host);
-    return {
-      enabledLocales: tenant ? tenant.enabledLocales : [],
-      defaultLocale: tenant ? tenant.defaultLocale : 'en',
-    };
-  });
+  const tenant = await withCache(
+    `tenant_locale:${host}`,
+    async () => {
+      const tenant = await findTenantByHost(host);
+      return {
+        enabledLocales: tenant ? tenant.enabledLocales : [],
+        defaultLocale: tenant ? tenant.defaultLocale : 'en',
+      };
+    },
+    { redis: true, memory: true },
+  );
 
   if (tenant) {
     return new Response(JSON.stringify(tenant), {
