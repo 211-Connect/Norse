@@ -35,7 +35,7 @@
     "autoprefixer": "^10.4.21",
     "dotenv-cli": "^11.0.0",
     "eslint": "^8.57.1",
-    "eslint-config-next": "^15.5.2",
+    "eslint-config-next": "^16.2.0",
     "eslint-config-prettier": "8.8.0",
     "eslint-plugin-import": "2.27.5",
     "eslint-plugin-jsx-a11y": "6.10.2",
