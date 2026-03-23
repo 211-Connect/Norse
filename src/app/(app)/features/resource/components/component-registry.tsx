@@ -2,7 +2,6 @@ import { ComponentType } from 'react';
 import { ResourceComponentId } from '../types/component-ids';
 import { Resource } from '@/types/resource';
 import {
-  HeaderComponent,
   BadgesComponent,
   ResourceNameComponent,
   ServiceNameComponent,
