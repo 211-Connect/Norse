@@ -11,7 +11,6 @@ export * from './email';
 export * from './facets';
 export * from './fees';
 export * from './get-directions';
-export * from './header';
 export * from './hours';
 export * from './interpretation-services';
 export * from './languages';
