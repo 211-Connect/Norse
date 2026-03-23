@@ -275,10 +275,7 @@ export function parseTotalFromResultText(text: string): number {
 }
 
 export async function loginViaKeycloak(page: Page) {
-  const identity =
-    process.env.TEST_USER_EMAIL ||
-    process.env.TEST_USER_USERNAME ||
-    'test-user';
+  const identity = process.env.TEST_USER_EMAIL || 'test@c211.io';
   const password = process.env.TEST_USER_PASSWORD || 'test-password';
 
   await goHome(page);
