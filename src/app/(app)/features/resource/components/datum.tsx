@@ -15,8 +15,10 @@ export interface DatumProps {
   url?: string | null;
   urlTarget?: '_blank' | '_self' | null;
   titleBelow?: boolean | null;
+  singleLine?: boolean;
   size?: 'sm' | 'md' | null;
   shouldParseHtml?: boolean;
+  className?: string;
 }
 
 export function Datum({
@@ -29,8 +31,10 @@ export function Datum({
   url,
   urlTarget = '_self',
   titleBelow,
+  singleLine = false,
   size = 'sm',
   shouldParseHtml = true,
+  className,
 }: DatumProps) {
   const generatedId = id ?? title?.replace(/\s+/g, '-').toLowerCase();
   const parsedDescription =
@@ -38,7 +42,15 @@ export function Datum({
 
   return (
     <div
-      className="flex flex-row gap-2 whitespace-pre-line py-2"
+      className={cn(
+        'flex flex-row whitespace-pre-line py-2',
+        {
+          'gap-2': Boolean(Icon),
+          truncate: singleLine,
+          'items-center': singleLine,
+        },
+        className,
+      )}
       id={generatedId}
     >
       <div>

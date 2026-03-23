@@ -3,10 +3,15 @@
 import { noResultsAtom, resultsAtom } from '@/app/(app)/shared/store/results';
 import { useAtomValue } from 'jotai';
 
-import { Result } from './result';
 import { NoResultsCard } from './no-results-card';
+import { SearchCardLayoutConfig } from '../types/card-layout-config';
+import { CardLayoutRenderer } from './card-layout-renderer';
 
-export function RenderResults() {
+type RenderResultsProps = {
+  cardLayout: SearchCardLayoutConfig;
+};
+
+export function RenderResults({ cardLayout }: RenderResultsProps) {
   const results = useAtomValue(resultsAtom);
   const noResults = useAtomValue(noResultsAtom);
 
@@ -14,7 +19,11 @@ export function RenderResults() {
     <>
       {noResults && <NoResultsCard showAltSubtitle={results?.length === 0} />}
       {results?.map((result) => (
-        <Result key={result._id} data={result} />
+        <CardLayoutRenderer
+          key={result._id}
+          result={result}
+          layout={cardLayout}
+        />
       ))}
     </>
   );

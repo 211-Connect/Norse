@@ -10,6 +10,7 @@ import {
   shouldComponentRender,
 } from './component-registry';
 import { ResourceLayoutConfig } from '../types/layout-config';
+import { cleanSeparators } from '@/app/(app)/shared/utils/layout-utils';
 
 interface LayoutRendererProps {
   layout: ResourceLayoutConfig;
@@ -67,26 +68,7 @@ function ColumnRenderer({ groups, resource }: ColumnRendererProps) {
           (item): item is NonNullable<typeof item> => item !== null,
         );
 
-        const cleanedComponents = withoutNulls.filter((item, index) => {
-          if (!item.isSeparator) {
-            return true;
-          }
-
-          if (index === 0) {
-            return false;
-          }
-
-          if (index === withoutNulls.length - 1) {
-            return false;
-          }
-
-          const nextItem = withoutNulls[index + 1];
-          if (nextItem && nextItem.isSeparator) {
-            return false;
-          }
-
-          return true;
-        });
+        const cleanedComponents = cleanSeparators(withoutNulls);
 
         const renderedComponents = cleanedComponents.map(
           (item) => item.element,

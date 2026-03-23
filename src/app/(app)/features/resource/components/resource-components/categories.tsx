@@ -9,7 +9,11 @@ import { cn } from '@/app/(app)/shared/lib/utils';
 import { Resource, Taxonomy } from '@/types/resource';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
 
-export function CategoriesComponent({ resource }: { resource: Resource }) {
+export function CategoriesComponent({
+  resource,
+}: {
+  resource: Pick<Resource, 'categories'>;
+}) {
   const { t } = useTranslation('page-resource');
   const showCategories = useFlag('showResourceCategories');
   const turnResourceCardTaxonomiesIntoLinks = useFlag(

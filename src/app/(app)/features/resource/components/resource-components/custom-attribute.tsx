@@ -4,11 +4,15 @@ import { Datum } from '../datum';
 import { ResourceComponentProps } from '../component-registry';
 import { useIconComponent } from '@/app/(app)/shared/hooks/useIconComponent';
 import { interpolateResourceProperties } from '@/utils/interpolateResourceProperties';
+import { Resource } from '@/types/resource';
+import { ResultType } from '@/app/(app)/shared/store/results';
 
 export function CustomAttributeComponent({
   resource,
   customAttribute,
-}: ResourceComponentProps) {
+}: Pick<ResourceComponentProps, 'customAttribute'> & {
+  resource: Resource | ResultType;
+}) {
   const IconComponent = useIconComponent(customAttribute?.icon);
 
   if (!customAttribute) {

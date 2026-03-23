@@ -148,7 +148,7 @@ export interface Resource {
   serviceArea: ServiceArea | null;
   transportation: string | null;
   accessibility: string | null;
-  facets: FacetWithTranslation[] | null;
+  facets: FacetWithTranslation[] | null | undefined;
   translations?: Translation[];
   attributeValues?: Record<string, string> | null;
 }

@@ -4,9 +4,13 @@ import { useMemo } from 'react';
 import { Badges } from '@/app/(app)/shared/components/badges';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { getBadgesForResource } from '@/utils/getBadgesForResource';
-import { ResourceComponentProps } from '../component-registry';
+import { Resource } from '@/types/resource';
 
-export function BadgesComponent({ resource }: ResourceComponentProps) {
+export function BadgesComponent({
+  resource,
+}: {
+  resource: Pick<Resource, 'facets' | 'categories'>;
+}) {
   const appConfig = useAppConfig();
   const badgeConfigs = appConfig.badges;
 

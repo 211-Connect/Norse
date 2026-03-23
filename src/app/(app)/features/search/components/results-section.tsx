@@ -10,8 +10,13 @@ import { ResultTotal } from './result-total';
 import { RenderResults } from './render-results';
 import { ResultsPagination } from './results-pagination';
 import { SortSelect } from './sort-select';
+import { SearchCardLayoutConfig } from '../types/card-layout-config';
 
-export function ResultsSection() {
+type ResultsSectionProps = {
+  cardLayout: SearchCardLayoutConfig;
+};
+
+export function ResultsSection({ cardLayout }: ResultsSectionProps) {
   const componentToPrintRef = useRef<HTMLDivElement>(null);
   const noResults = useAtomValue(noResultsAtom);
 
@@ -34,7 +39,7 @@ export function ResultsSection() {
       </div>
 
       <div className="flex flex-col gap-6" ref={componentToPrintRef}>
-        <RenderResults />
+        <RenderResults cardLayout={cardLayout} />
         <ResultsPagination />
       </div>
     </div>
