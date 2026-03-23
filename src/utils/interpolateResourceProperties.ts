@@ -1,9 +1,10 @@
 import { get } from 'radash';
 import { Resource } from '@/types/resource';
+import { ResultType } from '@/app/(app)/shared/store/results';
 
 export function interpolateResourceProperties(
   template: string | null | undefined,
-  resource: Resource,
+  resource: Resource | ResultType,
 ): string {
   if (!template) return '';
 

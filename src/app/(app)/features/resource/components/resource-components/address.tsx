@@ -16,14 +16,24 @@ import {
 } from '@/app/(app)/shared/components/ui/tooltip';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
+import { ResultType } from '@/app/(app)/shared/store/results';
+import { Datum } from '../datum';
+import { MapPin } from 'lucide-react';
 
-export function AddressComponent({ resource }: { resource: Resource }) {
+export function AddressComponent({
+  resource,
+  withIcon = false,
+}: {
+  resource: Resource | ResultType;
+  withIcon?: boolean;
+}) {
   const { t } = useTranslation('common');
   const coords = useAtomValue(userCoordinatesAtom);
 
-  const address = (resource.addresses ?? []).find(
-    ({ type }) => type === 'physical',
-  );
+  const address =
+    'addresses' in resource
+      ? (resource.addresses ?? []).find(({ type }) => type === 'physical')
+      : resource.address;
 
   const distance = useMemo(() => {
     if (!resource.location?.coordinates || (coords?.length ?? 0) !== 2) {
@@ -53,16 +63,28 @@ export function AddressComponent({ resource }: { resource: Resource }) {
     );
   }
 
-  const addressDisplay = formatAddressForDisplay(address);
+  const addressDisplay =
+    typeof address === 'string' ? address : formatAddressForDisplay(address);
   const distanceDisplay = distance
     ? `${distance.toFixed(1)} ${t('search.miles_short')}`
     : null;
 
   return (
     <div className="flex items-center justify-between gap-1">
-      <Typography variant="paragraph" size="md">
-        {addressDisplay}
-      </Typography>
+      {withIcon ? (
+        <Datum
+          icon={MapPin}
+          description={addressDisplay}
+          size="sm"
+          iconColor="text-primary"
+          singleLine
+          className="py-0"
+        />
+      ) : (
+        <Typography variant="paragraph" size="md">
+          {addressDisplay}
+        </Typography>
+      )}
       {distance && (
         <Typography variant="paragraph" size="sm">
           {distanceDisplay}

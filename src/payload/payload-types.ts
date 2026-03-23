@@ -749,6 +749,41 @@ export interface ResourceDirectory {
           id?: string | null;
         }[]
       | null;
+    /**
+     * Enable custom layout for search result cards. When disabled, the default layout will be used.
+     */
+    useCustomCardLayout?: boolean | null;
+    /**
+     * Configure the layout components for search result cards
+     */
+    cardLayout?:
+      | {
+          componentId:
+            | 'badges'
+            | 'resourceName'
+            | 'serviceName'
+            | 'address'
+            | 'phone'
+            | 'website'
+            | 'description'
+            | 'categories'
+            | 'actionButtons'
+            | 'separator'
+            | 'customAttribute';
+          customAttribute?: {
+            title?: string | null;
+            subtitle?: string | null;
+            description?: string | null;
+            icon?: string | null;
+            iconColor?: string | null;
+            size?: ('sm' | 'md') | null;
+            titleBelow?: boolean | null;
+            url?: string | null;
+            urlTarget?: ('_self' | '_blank') | null;
+          };
+          id?: string | null;
+        }[]
+      | null;
     map: {
       center: string;
       zoom: number;
@@ -1386,6 +1421,26 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
               name?: T;
               facet?: T;
               showInDetails?: T;
+              id?: T;
+            };
+        useCustomCardLayout?: T;
+        cardLayout?:
+          | T
+          | {
+              componentId?: T;
+              customAttribute?:
+                | T
+                | {
+                    title?: T;
+                    subtitle?: T;
+                    description?: T;
+                    icon?: T;
+                    iconColor?: T;
+                    size?: T;
+                    titleBelow?: T;
+                    url?: T;
+                    urlTarget?: T;
+                  };
               id?: T;
             };
         map?:

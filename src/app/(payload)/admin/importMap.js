@@ -18,6 +18,7 @@ import { default as default_c4f12422c5b10d814ea4b2b4e4240441 } from '@/payload/c
 import { default as default_165938afea8b83deab0e5a96dea47a38 } from '@/payload/collections/ResourceDirectories/components/CustomLayoutHint'
 import { default as default_3b301e482d0e37c98ec50b2153f0f45d } from '@/payload/collections/ResourceDirectories/components/ResourceLayoutRowLabel'
 import { default as default_f83d96d079111af09b6323bb84c1f19e } from '@/payload/collections/ResourceDirectories/components/FacetsRowLabel'
+import { default as default_a2840d49293f7e4212d4182b1c3febc3 } from '@/payload/collections/ResourceDirectories/components/UseCustomCardLayoutField'
 import { default as default_76ffa28dff37b978c6ada354e1e9e67c } from '@/payload/collections/ResourceDirectories/components/EditViewWrapper'
 import { default as default_7a8b15e24786becdbc27798cd6643e36 } from '@/payload/collections/OrchestrationConfig/components/TenantHeader'
 import { default as default_251fd09bbd0b103ad0dcec7022f13978 } from '@/payload/collections/OrchestrationConfig/components/CustomAttributesRowLabel'
@@ -50,6 +51,7 @@ export const importMap = {
   "@/payload/collections/ResourceDirectories/components/CustomLayoutHint#default": default_165938afea8b83deab0e5a96dea47a38,
   "@/payload/collections/ResourceDirectories/components/ResourceLayoutRowLabel#default": default_3b301e482d0e37c98ec50b2153f0f45d,
   "@/payload/collections/ResourceDirectories/components/FacetsRowLabel#default": default_f83d96d079111af09b6323bb84c1f19e,
+  "@/payload/collections/ResourceDirectories/components/UseCustomCardLayoutField#default": default_a2840d49293f7e4212d4182b1c3febc3,
   "@/payload/collections/ResourceDirectories/components/EditViewWrapper#default": default_76ffa28dff37b978c6ada354e1e9e67c,
   "@/payload/collections/OrchestrationConfig/components/TenantHeader#default": default_7a8b15e24786becdbc27798cd6643e36,
   "@/payload/collections/OrchestrationConfig/components/CustomAttributesRowLabel#default": default_251fd09bbd0b103ad0dcec7022f13978,

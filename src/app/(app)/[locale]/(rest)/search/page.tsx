@@ -19,6 +19,7 @@ import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { forwardGeocode } from '@/app/(app)/shared/serverActions/geocoding/forwardGeocode';
 import { isAdvancedGeoEnabled } from '@/app/(app)/shared/lib/search-utils';
 import { createLogger } from '@/lib/logger';
+import { DEFAULT_SEARCH_CARD_LAYOUT } from '@/app/(app)/features/search/types/card-layout-config';
 
 const log = createLogger('search-page');
 
@@ -150,6 +151,8 @@ const getPageData = cache(async function (
     appConfig.i18n.defaultLocale,
   );
 
+  const cardLayout = appConfig.search.cardLayout ?? DEFAULT_SEARCH_CARD_LAYOUT;
+
   return {
     appConfig,
     filters,
@@ -159,6 +162,7 @@ const getPageData = cache(async function (
     resources,
     t,
     searchQuery,
+    cardLayout,
   };
 });
 
@@ -223,8 +227,15 @@ export default async function SearchPage({
   ]);
   const locale = paramsResult.locale;
 
-  const { filters, results, noResults, totalResults, resources, searchQuery } =
-    await getPageData(locale, searchParamsResult);
+  const {
+    filters,
+    results,
+    noResults,
+    totalResults,
+    resources,
+    searchQuery,
+    cardLayout,
+  } = await getPageData(locale, searchParamsResult);
 
   return (
     <PageWrapper
@@ -253,7 +264,7 @@ export default async function SearchPage({
       <ResultsEvents results={results} totalResults={totalResults} />
       <div className="flex h-full w-full flex-col md:flex-row">
         <FilterPanel />
-        <ResultsSection />
+        <ResultsSection cardLayout={cardLayout} />
         <MapContainer />
       </div>
     </PageWrapper>
