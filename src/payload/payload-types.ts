@@ -72,6 +72,7 @@ export interface Config {
     'tenant-media': TenantMedia;
     'resource-directories': ResourceDirectory;
     'orchestration-config': OrchestrationConfig;
+    analytics: Analytics;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
@@ -85,6 +86,7 @@ export interface Config {
     'tenant-media': TenantMediaSelect<false> | TenantMediaSelect<true>;
     'resource-directories': ResourceDirectoriesSelect<false> | ResourceDirectoriesSelect<true>;
     'orchestration-config': OrchestrationConfigSelect<false> | OrchestrationConfigSelect<true>;
+    analytics: AnalyticsSelect<false> | AnalyticsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -874,6 +876,15 @@ export interface OrchestrationConfig {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics".
+ */
+export interface Analytics {
+  id: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -1016,6 +1027,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'orchestration-config';
         value: string | OrchestrationConfig;
+      } | null)
+    | ({
+        relationTo: 'analytics';
+        value: number | Analytics;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1538,6 +1553,14 @@ export interface OrchestrationConfigSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics_select".
+ */
+export interface AnalyticsSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
 }

@@ -114,6 +114,7 @@
     "react-dom": "^19.2.3",
     "react-i18next": "^15.7.3",
     "react-to-print": "^3.1.1",
+    "recharts": "^3.8.0",
     "sharp": "0.34.5",
     "sonner": "^1.7.4",
     "tailwind-merge": "^2.6.0",

@@ -14,6 +14,7 @@ import { Tenants } from './collections/Tenants';
 import { TenantMedia } from './collections/TenantMedia';
 import { ResourceDirectories } from './collections/ResourceDirectories';
 import { OrchestrationConfig } from './collections/OrchestrationConfig';
+import { Analytics } from './collections/Analytics';
 import { defaultLocale, locales } from './i18n/locales';
 import { getUserTenantIDs } from './utilities/getUserTenantIDs';
 
@@ -23,6 +24,7 @@ import { sendGridTransport } from './utilities/sendgridAdapter';
 import { clearCache } from './endpoints/clearCache';
 import { translateEndpoint } from './endpoints/translate';
 import { duplicateTenant } from './endpoints/duplicateTenant';
+import { umamiProxy } from './endpoints/umamiProxy';
 import { translate } from './jobs/translate';
 import { translateTopics } from './jobs/translateTopics';
 import { warmCache } from './jobs/warmCache';
@@ -34,6 +36,7 @@ const endpoints: Endpoint[] = [
   clearCache,
   translateEndpoint,
   duplicateTenant,
+  umamiProxy,
   seedEndpoint,
 ];
 
@@ -48,6 +51,7 @@ const config = buildConfig({
     TenantMedia,
     ResourceDirectories,
     OrchestrationConfig,
+    Analytics,
   ],
   jobs: {
     tasks: [translateTopics, translate, warmCache],
