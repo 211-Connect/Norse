@@ -9,6 +9,29 @@ export const header: Tab = {
   name: 'header',
   fields: [
     {
+      name: 'position',
+      type: 'select',
+      defaultValue: 'sticky',
+      options: [
+        {
+          label: 'Sticky',
+          value: 'sticky',
+        },
+        {
+          label: 'Static',
+          value: 'static',
+        },
+      ],
+      admin: {
+        description:
+          'Controls whether the header sticks to the top when scrolling or stays static',
+      },
+      access: {
+        create: hasSiteNavigationFieldAccess,
+        update: hasSiteNavigationFieldAccess,
+      },
+    },
+    {
       name: 'customMenu',
       type: 'array',
       localized: true,

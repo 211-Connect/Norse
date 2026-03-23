@@ -61,6 +61,7 @@ export type AppConfig = {
       target?: '_self' | '_blank';
     };
     searchUrl?: string;
+    position: 'sticky' | 'static';
   };
   i18n: {
     defaultLocale: string;

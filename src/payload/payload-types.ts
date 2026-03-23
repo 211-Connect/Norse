@@ -496,6 +496,10 @@ export interface ResourceDirectory {
     };
   };
   header?: {
+    /**
+     * Controls whether the header sticks to the top when scrolling or stays static
+     */
+    position?: ('sticky' | 'static') | null;
     customMenu?:
       | {
           name: string;
@@ -1236,6 +1240,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
   header?:
     | T
     | {
+        position?: T;
         customMenu?:
           | T
           | {
