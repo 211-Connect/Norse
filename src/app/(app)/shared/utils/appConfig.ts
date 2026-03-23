@@ -147,6 +147,7 @@ async function getAppConfigBase(
       },
       header: {
         customMenu: [],
+        position: 'sticky',
       },
       i18n: {
         defaultLocale,
@@ -339,6 +340,7 @@ async function getAppConfigBase(
           }
         : undefined,
       searchUrl: resourceDirectory.header?.searchUrl ?? undefined,
+      position: resourceDirectory.header?.position ?? 'sticky',
     },
     i18n,
     matomoContainerUrl:
