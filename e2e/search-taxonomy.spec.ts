@@ -180,7 +180,13 @@ test.describe('Search Result Pagination', () => {
     const nextBtn = page.getByTestId('pagination-next');
     await nextBtn.click();
 
-    await page.waitForLoadState('networkidle');
+    await page.waitForURL(
+      (url) => {
+        const urlPage = Number(url.searchParams.get('page') ?? '1');
+        return urlPage > beforePage;
+      },
+      { timeout: 10000 },
+    );
 
     const afterUrl = new URL(page.url());
     const afterPage = Number(afterUrl.searchParams.get('page') ?? '1');
