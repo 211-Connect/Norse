@@ -8,8 +8,7 @@ import {
 } from './helpers';
 
 const hasAuth =
-  (!!process.env.TEST_USER_EMAIL || !!process.env.TEST_USER_USERNAME) &&
-  !!process.env.TEST_USER_PASSWORD;
+  !!process.env.TEST_USER_EMAIL && !!process.env.TEST_USER_PASSWORD;
 
 test.describe('Favorites Feature (Authenticated)', () => {
   test.describe.configure({ mode: 'serial' });
