@@ -24,6 +24,7 @@ import { default as default_76ffa28dff37b978c6ada354e1e9e67c } from '@/payload/c
 import { default as default_7a8b15e24786becdbc27798cd6643e36 } from '@/payload/collections/OrchestrationConfig/components/TenantHeader'
 import { default as default_251fd09bbd0b103ad0dcec7022f13978 } from '@/payload/collections/OrchestrationConfig/components/CustomAttributesRowLabel'
 import { default as default_e9d1e9858fa8526951b37594e35d9c62 } from '@/payload/collections/OrchestrationConfig/components/SchemasRowLabel'
+import { default as default_e35e8338b68be9f3c6596c3ebbd4f2f1 } from '@/payload/collections/Analytics/components/AnalyticsDashboard'
 import { GlobalViewRedirect as GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { default as default_4a6586eaa0248cb1fccb2e03335a2b51 } from '@/payload/components/ClearCacheButton'
 import { TenantSelector as TenantSelector_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
@@ -58,6 +59,7 @@ export const importMap = {
   "@/payload/collections/OrchestrationConfig/components/TenantHeader#default": default_7a8b15e24786becdbc27798cd6643e36,
   "@/payload/collections/OrchestrationConfig/components/CustomAttributesRowLabel#default": default_251fd09bbd0b103ad0dcec7022f13978,
   "@/payload/collections/OrchestrationConfig/components/SchemasRowLabel#default": default_e9d1e9858fa8526951b37594e35d9c62,
+  "@/payload/collections/Analytics/components/AnalyticsDashboard#default": default_e35e8338b68be9f3c6596c3ebbd4f2f1,
   "@payloadcms/plugin-multi-tenant/rsc#GlobalViewRedirect": GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62,
   "@/payload/components/ClearCacheButton#default": default_4a6586eaa0248cb1fccb2e03335a2b51,
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelector": TenantSelector_d6d5f193a167989e2ee7d14202901e62,

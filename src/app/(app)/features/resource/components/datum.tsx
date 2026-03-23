@@ -19,6 +19,7 @@ export interface DatumProps {
   size?: 'sm' | 'md' | null;
   shouldParseHtml?: boolean;
   className?: string;
+  onClick?: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void;
 }
 
 export function Datum({
@@ -35,6 +36,7 @@ export function Datum({
   size = 'sm',
   shouldParseHtml = true,
   className,
+  onClick,
 }: DatumProps) {
   const generatedId = id ?? title?.replace(/\s+/g, '-').toLowerCase();
   const parsedDescription =
@@ -42,6 +44,7 @@ export function Datum({
 
   return (
     <div
+      onClick={onClick}
       className={cn(
         'flex flex-row whitespace-pre-line py-2',
         {

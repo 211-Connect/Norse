@@ -40,6 +40,7 @@ export type FindResourcesQuery = {
   bbox?: BBox;
   filters?: Record<string, string[]>;
   sort?: SortOption;
+  widgetId?: string;
 };
 
 type SearchResult = {

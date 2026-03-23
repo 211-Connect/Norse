@@ -3,6 +3,7 @@
 import { Phone } from 'lucide-react';
 import { SearchCardComponentProps } from './types';
 import { Datum } from '../../../resource/components/datum';
+import { trackUmamiEvent, UmamiEvent } from '../../../../shared/lib/umami';
 
 export function PhoneComponent({ result }: SearchCardComponentProps) {
   if (!result.phone) {
@@ -19,6 +20,11 @@ export function PhoneComponent({ result }: SearchCardComponentProps) {
       urlTarget="_self"
       shouldParseHtml={false}
       className="py-0"
+      onClick={() =>
+        trackUmamiEvent(UmamiEvent.PhoneClick, {
+          resourceId: String(result.id),
+        })
+      }
     />
   );
 }

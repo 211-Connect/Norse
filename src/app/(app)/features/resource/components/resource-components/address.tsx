@@ -19,6 +19,7 @@ import { Typography } from '@/app/(app)/shared/components/ui/typography';
 import { ResultType } from '@/app/(app)/shared/store/results';
 import { Datum } from '../datum';
 import { MapPin } from 'lucide-react';
+import { trackUmamiEvent, UmamiEvent } from '../../../../shared/lib/umami';
 
 export function AddressComponent({
   resource,
@@ -57,6 +58,11 @@ export function AddressComponent({
       iconColor="text-primary"
       singleLine
       className="py-0"
+      onClick={() =>
+        trackUmamiEvent(UmamiEvent.DirectionClick, {
+          resourceId: resource.id,
+        })
+      }
     />
   ) : (
     <Typography variant="paragraph" size="md">

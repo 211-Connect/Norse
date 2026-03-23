@@ -6,15 +6,14 @@ import { Button } from '@/app/(app)/shared/components/ui/button';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/app/(app)/shared/components/ui/dialog';
 import { Map } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
 import { cn } from '../lib/utils';
+import { trackUmamiEvent, UmamiEvent } from '../lib/umami';
 
 export function GetDirectionsButton({
   className = '',
@@ -52,13 +51,16 @@ export function GetDirectionsButton({
         e.preventDefault();
         setOpen(true);
       } else {
+        trackUmamiEvent(UmamiEvent.DirectionClick, {
+          resourceId: String(data.id),
+        });
         window.open(
           `https://www.google.com/maps/dir/?api=1&origin=${getOrigin()}&destination=${getDestination()}`,
           '_blank',
         );
       }
     },
-    [getOrigin, getDestination],
+    [getOrigin, getDestination, data.id],
   );
 
   return (
