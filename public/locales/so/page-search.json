@@ -13,5 +13,14 @@
   },
   "pinned": "La xidhay",
   "filters": "Shaandheeyayaasha",
-  "clear_filters": "Nadiifi shaandheeyayaasha"
+  "clear_filters": "Nadiifi shaandheeyayaasha",
+  "sort": {
+    "label": "Ku kala sooc",
+    "options": {
+      "relevance": "Kuwa ugu Muhiimsan",
+      "distance": "Ugu Horeeya",
+      "name": "Magaca Kheyraadka",
+      "organization": "Magaca Bixiyaha"
+    }
+  }
 }

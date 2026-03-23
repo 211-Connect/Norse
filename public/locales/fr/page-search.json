@@ -13,5 +13,14 @@
   },
   "pinned": "Épinglé",
   "filters": "Filtres",
-  "clear_filters": "Filtres d'effacement"
+  "clear_filters": "Filtres d'effacement",
+  "sort": {
+    "label": "Trier par",
+    "options": {
+      "relevance": "Les plus pertinents",
+      "distance": "Du plus proche au plus ancien",
+      "name": "Nom de la ressource",
+      "organization": "Nom du fournisseur"
+    }
+  }
 }

@@ -13,5 +13,14 @@
   },
   "pinned": "고정됨",
   "filters": "필터",
-  "clear_filters": "필터 지우기"
+  "clear_filters": "필터 지우기",
+  "sort": {
+    "label": "정렬 기준",
+    "options": {
+      "relevance": "가장 관련성 높은",
+      "distance": "가장 가까운 첫 번째",
+      "name": "리소스 이름",
+      "organization": "공급자 이름"
+    }
+  }
 }

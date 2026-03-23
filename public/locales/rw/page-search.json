@@ -13,5 +13,14 @@
   },
   "pinned": "Byashyizwemo imigozi",
   "filters": "Akayunguruzo",
-  "clear_filters": "Kuraho amafiriti"
+  "clear_filters": "Kuraho amafiriti",
+  "sort": {
+    "label": "Shyira ku rutonde ukurikije",
+    "options": {
+      "relevance": "Bifite akamaro cyane",
+      "distance": "Icya mbere cya hafi",
+      "name": "Izina ry'umutungo",
+      "organization": "Izina ry'umutanga serivisi"
+    }
+  }
 }

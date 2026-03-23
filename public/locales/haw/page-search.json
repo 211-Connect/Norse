@@ -13,5 +13,14 @@
     "alt_subtitle": "E hoʻāʻo i kahi nīnau a kānana ʻē aʻe",
     "need_help": "Pono kōkua? Ke kū nei nā kānaka ma ʻaneʻi."
   },
-  "pinned": "Hoʻopaʻa ʻia"
+  "pinned": "Hoʻopaʻa ʻia",
+  "sort": {
+    "label": "Hoʻokaʻawale ma o",
+    "options": {
+      "relevance": "Pili Loa",
+      "distance": "ʻO ka mea kokoke loa",
+      "name": "Inoa Kumuwaiwai",
+      "organization": "Inoa Mea Hoʻolako"
+    }
+  }
 }

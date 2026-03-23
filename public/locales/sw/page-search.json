@@ -13,5 +13,14 @@
   },
   "pinned": "Imewekwa",
   "filters": "Vichujio",
-  "clear_filters": "Futa vichujio"
+  "clear_filters": "Futa vichujio",
+  "sort": {
+    "label": "Panga kulingana na",
+    "options": {
+      "relevance": "Muhimu Zaidi",
+      "distance": "Karibu Kwanza",
+      "name": "Jina la Rasilimali",
+      "organization": "Jina la Mtoa Huduma"
+    }
+  }
 }

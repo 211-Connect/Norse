@@ -13,5 +13,14 @@
     "alt_subtitle": "Try a different query or filter",
     "need_help": "Need help? We have people standing by."
   },
-  "pinned": "Pinned"
+  "pinned": "Pinned",
+  "sort": {
+    "label": "Sort by",
+    "options": {
+      "relevance": "Most Relevant",
+      "distance": "Nearest First",
+      "name": "Resource Name",
+      "organization": "Provider Name"
+    }
+  }
 }

@@ -13,5 +13,14 @@
   },
   "pinned": "Prikvačeno",
   "filters": "Filtri",
-  "clear_filters": "Obriši filtere"
+  "clear_filters": "Obriši filtere",
+  "sort": {
+    "label": "Poredaj po",
+    "options": {
+      "relevance": "Najrelevantnije",
+      "distance": "Najbliže prvo",
+      "name": "Naziv resursa",
+      "organization": "Naziv pružatelja usluga"
+    }
+  }
 }

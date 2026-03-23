@@ -13,5 +13,14 @@
   },
   "pinned": "Epingle",
   "filters": "Filtè",
-  "clear_filters": "Efase filtè yo"
+  "clear_filters": "Efase filtè yo",
+  "sort": {
+    "label": "Klase pa",
+    "options": {
+      "relevance": "Ki pi enpòtan",
+      "distance": "Pi Pre Premye",
+      "name": "Non Resous",
+      "organization": "Non Founisè a"
+    }
+  }
 }

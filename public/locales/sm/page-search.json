@@ -13,5 +13,14 @@
     "alt_subtitle": "Taumafai i se isi fesili po'o se faamama",
     "need_help": "Mana'omia se fesoasoani? O loo i ai tagata o loo faatalitali mai."
   },
-  "pinned": "Fa'amauina"
+  "pinned": "Fa'amauina",
+  "sort": {
+    "label": "Fa'avasega e tusa ai",
+    "options": {
+      "relevance": "E sili ona talafeagai",
+      "distance": "Muamua e latalata",
+      "name": "Igoa o le Punaoa",
+      "organization": "Igoa o le Kamupani Tu'uina Atu"
+    }
+  }
 }

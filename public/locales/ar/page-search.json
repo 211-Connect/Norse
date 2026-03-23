@@ -13,5 +13,14 @@
   },
   "pinned": "مثبت",
   "filters": "الفلاتر",
-  "clear_filters": "مساحة فارغة"
+  "clear_filters": "مساحة فارغة",
+  "sort": {
+    "label": "فرز حسب",
+    "options": {
+      "relevance": "الأكثر صلة",
+      "distance": "الأقرب أولاً",
+      "name": "اسم المورد",
+      "organization": "اسم مقدم الخدمة"
+    }
+  }
 }
