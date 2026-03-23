@@ -13,5 +13,14 @@
   },
   "pinned": "បានខ្ទាស់",
   "filters": "តម្រង",
-  "clear_filters": "សម្អាតតម្រង"
+  "clear_filters": "សម្អាតតម្រង",
+  "sort": {
+    "label": "តម្រៀបតាម",
+    "options": {
+      "relevance": "ពាក់ព័ន្ធបំផុត",
+      "distance": "ជិតបំផុតមុនគេ",
+      "name": "ឈ្មោះធនធាន",
+      "organization": "ឈ្មោះអ្នកផ្តល់សេវា"
+    }
+  }
 }

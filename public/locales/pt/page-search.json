@@ -13,5 +13,14 @@
   },
   "pinned": "Fixado",
   "filters": "Filtros",
-  "clear_filters": "Limpar filtros"
+  "clear_filters": "Limpar filtros",
+  "sort": {
+    "label": "Ordenar por",
+    "options": {
+      "relevance": "Mais relevantes",
+      "distance": "Mais próximo primeiro",
+      "name": "Nome do recurso",
+      "organization": "Nome do provedor"
+    }
+  }
 }

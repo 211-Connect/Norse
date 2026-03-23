@@ -13,5 +13,14 @@
   },
   "pinned": "Naka-pin",
   "filters": "Mga Filter",
-  "clear_filters": "I-clear ang mga filter"
+  "clear_filters": "I-clear ang mga filter",
+  "sort": {
+    "label": "Ayusin ayon sa",
+    "options": {
+      "relevance": "Pinaka-may-katuturan",
+      "distance": "Pinakamalapit na Una",
+      "name": "Pangalan ng Mapagkukunan",
+      "organization": "Pangalan ng Tagapagbigay ng Serbisyo"
+    }
+  }
 }

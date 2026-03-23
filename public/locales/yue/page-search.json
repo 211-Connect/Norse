@@ -13,5 +13,14 @@
   },
   "pinned": "固定咗",
   "filters": "過濾器",
-  "clear_filters": "清除篩選器"
+  "clear_filters": "清除篩選器",
+  "sort": {
+    "label": "排序",
+    "options": {
+      "relevance": "最相關",
+      "distance": "最近嘅第一",
+      "name": "資源名稱",
+      "organization": "供應商名稱"
+    }
+  }
 }

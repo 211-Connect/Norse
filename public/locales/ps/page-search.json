@@ -13,5 +13,14 @@
   },
   "pinned": "پنډ شوی",
   "filters": "فلټرونه",
-  "clear_filters": "فلټرونه پاک کړئ"
+  "clear_filters": "فلټرونه پاک کړئ",
+  "sort": {
+    "label": "ترتیب یې کړئ",
+    "options": {
+      "relevance": "ډېر اړونده",
+      "distance": "تر ټولو نږدې لومړی",
+      "name": "د سرچینې نوم",
+      "organization": "د چمتو کونکي نوم"
+    }
+  }
 }

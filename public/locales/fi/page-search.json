@@ -13,5 +13,14 @@
   },
   "pinned": "Kiinnitetty",
   "filters": "Suodattimet",
-  "clear_filters": "Tyhjennä suodattimet"
+  "clear_filters": "Tyhjennä suodattimet",
+  "sort": {
+    "label": "Lajittele",
+    "options": {
+      "relevance": "Olennaisin",
+      "distance": "Lähimpänä ensin",
+      "name": "Resurssin nimi",
+      "organization": "Palveluntarjoajan nimi"
+    }
+  }
 }

@@ -13,5 +13,14 @@
   },
   "pinned": "Przypięte",
   "filters": "Filtry",
-  "clear_filters": "Wyczyść filtry"
+  "clear_filters": "Wyczyść filtry",
+  "sort": {
+    "label": "Sortuj według",
+    "options": {
+      "relevance": "Najbardziej istotne",
+      "distance": "Najbliższy pierwszy",
+      "name": "Nazwa zasobu",
+      "organization": "Nazwa dostawcy"
+    }
+  }
 }

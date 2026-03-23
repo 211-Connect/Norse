@@ -13,5 +13,14 @@
   },
   "pinned": "پین شده",
   "filters": "فیلترها",
-  "clear_filters": "پاک کردن فیلترها"
+  "clear_filters": "پاک کردن فیلترها",
+  "sort": {
+    "label": "مرتب سازی بر اساس",
+    "options": {
+      "relevance": "مرتبط‌ترین",
+      "distance": "نزدیکترین اول",
+      "name": "نام منبع",
+      "organization": "نام ارائه دهنده"
+    }
+  }
 }

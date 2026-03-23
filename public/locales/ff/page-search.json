@@ -13,5 +13,14 @@
   },
   "pinned": "Pinnaama",
   "filters": "Fiiltirɗe",
-  "clear_filters": "Laɓɓin filtoraaji"
+  "clear_filters": "Laɓɓin filtoraaji",
+  "sort": {
+    "label": "Sortu e",
+    "options": {
+      "relevance": "Ɓuri jogaade faayiida",
+      "distance": "Ko ɓuri ɓadaade Ko adii",
+      "name": "Innde Ngalu",
+      "organization": "Innde dokkoowo"
+    }
+  }
 }

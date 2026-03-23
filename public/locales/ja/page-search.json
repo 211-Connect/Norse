@@ -13,5 +13,14 @@
     "alt_subtitle": "別のクエリまたはフィルターを試してください",
     "need_help": "お困りですか？スタッフが待機しております。"
   },
-  "pinned": "ピン留め"
+  "pinned": "ピン留め",
+  "sort": {
+    "label": "並べ替え",
+    "options": {
+      "relevance": "最も関連性の高い",
+      "distance": "最も近い先",
+      "name": "リソース名",
+      "organization": "プロバイダー名"
+    }
+  }
 }
