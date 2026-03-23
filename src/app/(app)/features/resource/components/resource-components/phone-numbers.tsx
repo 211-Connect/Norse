@@ -46,11 +46,11 @@ export function PhoneNumbersComponent({ resource }: { resource: Resource }) {
           subtitle={description}
           description={number}
           url={`tel:${number}`}
-          onClick={() => {
+          onClick={() =>
             trackUmamiEvent(UmamiEvent.PhoneClick, {
-              resourceId: String(resource.id),
-            });
-          }}
+              resourceId: resource.id,
+            })
+          }
           urlTarget="_self"
           titleBelow
           shouldParseHtml={false}

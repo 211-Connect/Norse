@@ -1,4 +1,4 @@
-import type { MetricEntry, ResourceRow, ResourceTitleEntry } from './types';
+import type { MetricEntry, ResourceTitleEntry } from './types';
 
 const SEARCH_RESOURCE_PREFIX = '/search/';
 
@@ -94,7 +94,6 @@ export async function enrichWithResourceTitles(
 
   let titleMap = new Map<string, string>();
   try {
-    console.log('Fetching resource titles for IDs:', ids);
     const response = await fetch('/api/resource-titles', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

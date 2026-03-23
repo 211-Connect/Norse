@@ -21,11 +21,11 @@ export function WebsiteComponent({ resource }: ResourceComponentProps) {
       title={t('website')}
       description={resource.website}
       shouldParseHtml={false}
-      onClick={() => {
+      onClick={() =>
         trackUmamiEvent(UmamiEvent.WebsiteClick, {
-          resourceId: String(resource.id),
-        });
-      }}
+          resourceId: resource.id,
+        })
+      }
     />
   );
 }

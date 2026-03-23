@@ -88,10 +88,6 @@ export const umamiProxy: Endpoint = {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (!isSuperAdmin(req.user) && !isSupport(req.user)) {
-      return Response.json({ error: 'Forbidden' }, { status: 403 });
-    }
-
     const umamiApiUrl = process.env.UMAMI_API_URL;
 
     if (!umamiApiUrl) {

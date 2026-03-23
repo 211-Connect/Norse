@@ -7,7 +7,6 @@ import type {
   UmamiStats,
   UmamiPageviews,
   MetricEntry,
-  ResourceRow,
 } from './types';
 import {
   buildProxyQuery,
@@ -124,8 +123,6 @@ const AnalyticsDashboard = () => {
     fetchData(range, selectedTenantID as string | undefined);
   }, [range, fetchData, selectedTenantID]);
 
-  // Derived state computed during render, memoized to avoid recomputing on unrelated updates
-  // (rerender-derived-state-no-effect)
   const timelineData = useMemo(() => {
     if (!pageviews) return [];
     const fmt = range === 7 ? 'ddd' : 'DD MMM';

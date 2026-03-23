@@ -26,18 +26,6 @@ export const ResultsEvents = ({
     );
   }, [appConfig.sessionId, results, searchParamsObject, totalResults]);
 
-  // // Try to remove useEffect
-  // useEffect(() => {
-  //   if (totalResults === 0) {
-  //     trackUmamiEvent(UmamiEvent.SearchZeroResults, {
-  //       query: String(searchParamsObject.query ?? ''),
-  //       query_label: String(searchParamsObject.query_label ?? ''),
-  //     });
-  //   }
-  // }, [totalResults, searchParamsObject]);
-
-  // Try to remove useEffect
-
   if (totalResults === 0) {
     trackUmamiEvent(UmamiEvent.SearchZeroResults, {
       query: String(searchParamsObject.query ?? ''),

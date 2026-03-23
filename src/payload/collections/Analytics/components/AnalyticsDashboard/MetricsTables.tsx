@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { MetricsTable } from './MetricsTable';
-import type { MetricEntry, ResourceRow } from './types';
+import type { MetricEntry } from './types';
 
 export const MetricsTables = React.memo(function MetricsTables({
   resourceRows,

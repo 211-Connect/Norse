@@ -10,12 +10,6 @@ export interface ResourceTitleEntry {
   displayName: string;
 }
 
-export interface ResourceRow {
-  id: string;
-  displayName: string;
-  count: number;
-}
-
 export interface UmamiPageviews {
   pageviews: MetricEntry[];
   sessions: MetricEntry[];
