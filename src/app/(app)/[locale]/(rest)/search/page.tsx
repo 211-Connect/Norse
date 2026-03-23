@@ -8,6 +8,7 @@ import {
   findResources,
   FindResourcesQuery,
   findResourcesV2,
+  isSortOption,
 } from '@/app/(app)/shared/services/search-service';
 import { getCookies } from 'cookies-next/server';
 import { cookies, headers } from 'next/headers';
@@ -39,6 +40,14 @@ function parseSearchParams(raw: RawSearchParams): FindResourcesQuery {
 
   const coordsStr =
     typeof parsed.coords === 'string' ? parsed.coords : undefined;
+  const coordinates = coordsStr
+    ? coordsStr
+        .split(',')
+        .map(Number)
+        .filter((n) => !isNaN(n))
+    : undefined;
+  const validSort = isSortOption(parsed.sort) ? parsed.sort : undefined;
+  const sort = validSort === 'distance' && !coordinates ? undefined : validSort;
 
   return {
     query:
@@ -55,17 +64,13 @@ function parseSearchParams(raw: RawSearchParams): FindResourcesQuery {
       typeof parsed.location === 'string'
         ? parsed.location || undefined
         : undefined,
-    coordinates: coordsStr
-      ? coordsStr
-          .split(',')
-          .map(Number)
-          .filter((n) => !isNaN(n))
-      : undefined,
+    coordinates,
     distance:
       typeof parsed.distance === 'string'
         ? parsed.distance || undefined
         : undefined,
     filters: parsed.filters as Record<string, string[]> | undefined,
+    sort,
   };
 }
 
