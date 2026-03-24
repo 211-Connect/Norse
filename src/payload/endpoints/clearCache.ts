@@ -1,5 +1,6 @@
 import type { Endpoint } from 'payload';
 import { cacheService } from '@/cacheService';
+import { clearMemoryCache } from '@/utilities/withCache';
 
 const CACHE_SECRET = '7cbde38e-32d8-42e6-8000-9dcf4d57502b';
 
@@ -13,6 +14,7 @@ export const clearCache: Endpoint = {
     }
 
     try {
+      clearMemoryCache();
       await cacheService.clear();
       return Response.json({ status: 'cache cleared' }, { status: 200 });
     } catch (error) {

@@ -35,11 +35,15 @@ const DEFAULT_CACHE_CONFIG: CacheConfig = {
 };
 
 const memoryCache = new LRUCache<CacheKey, string>({
-  max: 500,
+  max: 1000,
   ttl: CACHE_TTL * 1000,
   updateAgeOnGet: true,
   updateAgeOnHas: true,
 });
+
+export const clearMemoryCache = () => {
+  memoryCache.clear();
+};
 
 export const withCache = async <T>(
   key: CacheKey,

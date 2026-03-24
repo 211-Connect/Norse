@@ -2,7 +2,7 @@ import { ResourceDirectory } from '@/payload/payload-types';
 import { cacheService } from '@/cacheService';
 import { findTenantById } from '../../Tenants/actions';
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
-import { CacheKey } from '@/utilities/withCache';
+import { CacheKey, clearMemoryCache } from '@/utilities/withCache';
 import { createLogger } from '@/lib/logger';
 
 const log = createLogger('revalidateCache');
@@ -18,12 +18,10 @@ export async function revalidateCache({
       const tenant = await findTenantById(tenantId);
 
       if (tenant && tenant.trustedDomains) {
-        const cacheKeys = tenant.trustedDomains.map(
-          ({ domain }): CacheKey => {
-            const host = parseHost(domain);
-            return `resource_directory:${host}:*`;
-          },
-        );
+        const cacheKeys = tenant.trustedDomains.map(({ domain }): CacheKey => {
+          const host = parseHost(domain);
+          return `resource_directory:${host}:*`;
+        });
         for (const key of cacheKeys) {
           await cacheService.delPattern(key);
         }
@@ -35,6 +33,8 @@ export async function revalidateCache({
       );
     }
   }
+
+  clearMemoryCache();
 
   return doc;
 }
