@@ -15,7 +15,7 @@ const UseCustomCardLayoutField = ({
 }) => {
   const { value, setValue } = useField<boolean>({ path });
   const cardLayoutField = useField<typeof DEFAULT_SEARCH_CARD_LAYOUT>({
-    path: 'cardLayout',
+    path: 'search.cardLayout',
   });
 
   const handlePopulateDefault = () => {

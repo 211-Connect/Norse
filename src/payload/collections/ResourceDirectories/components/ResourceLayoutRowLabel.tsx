@@ -31,6 +31,8 @@ const COMPONENT_LABELS: Record<string, string> = {
   facets: 'Facets',
   separator: '— Separator —',
   customAttribute: 'Custom Attribute',
+  phone: 'Phone',
+  actionButtons: 'Action Buttons',
 };
 
 const ResourceLayoutRowLabel = ({ path }: { path: string }) => {

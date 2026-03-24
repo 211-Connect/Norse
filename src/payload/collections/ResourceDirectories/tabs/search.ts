@@ -203,6 +203,10 @@ export const search: Tab = {
       admin: {
         condition: (_, siblingData) => siblingData.useCustomCardLayout === true,
         description: 'Configure the layout components for search result cards',
+        components: {
+          RowLabel:
+            '@/payload/collections/ResourceDirectories/components/ResourceLayoutRowLabel',
+        },
       },
       access: {
         create: hasLayoutFieldAccess,
