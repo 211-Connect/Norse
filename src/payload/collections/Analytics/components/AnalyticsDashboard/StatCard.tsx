@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Card, Pill } from '@payloadcms/ui';
+import { Card } from '@payloadcms/ui';
 
 export const StatCard = React.memo(function StatCard({
   label,
@@ -10,14 +10,5 @@ export const StatCard = React.memo(function StatCard({
   label: string;
   value: string;
 }) {
-  return (
-    <Card
-      title={label}
-      actions={
-        <>
-          <strong>{value}</strong>
-        </>
-      }
-    />
-  );
+  return <Card title={label} actions={<strong>{value}</strong>} />;
 });

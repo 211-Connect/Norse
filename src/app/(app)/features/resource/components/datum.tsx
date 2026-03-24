@@ -19,7 +19,7 @@ export interface DatumProps {
   size?: 'sm' | 'md' | null;
   shouldParseHtml?: boolean;
   className?: string;
-  onClick?: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void;
+  onClick?: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void;
 }
 
 export function Datum({
@@ -44,6 +44,7 @@ export function Datum({
 
   return (
     <div
+      onClick={onClick}
       className={cn(
         'flex flex-row whitespace-pre-line py-2',
         {
@@ -72,7 +73,6 @@ export function Datum({
             size={size}
             url={url}
             urlTarget={urlTarget}
-            onClick={onClick}
           >
             {parsedDescription}
           </Typography>
@@ -95,7 +95,6 @@ export function Datum({
             size={size}
             url={url}
             urlTarget={urlTarget}
-            onClick={onClick}
           >
             {parsedDescription}
           </Typography>

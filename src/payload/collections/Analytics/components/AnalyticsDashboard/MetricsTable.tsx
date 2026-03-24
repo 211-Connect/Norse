@@ -23,14 +23,14 @@ export const MetricsTable = React.memo(function MetricsTable({
     {
       accessor: 'label',
       active: true,
-      field: {} as any,
+      field: { name: 'label', type: 'text' },
       Heading: <span>{colLabel}</span>,
       renderedCells: rows.map((r, i) => <span key={i}>{r.x}</span>),
     },
     {
       accessor: 'value',
       active: true,
-      field: {} as any,
+      field: { name: 'value', type: 'text' },
       Heading: <span>{colValue}</span>,
       renderedCells: rows.map((r, i) => (
         <span key={i}>{r.y.toLocaleString()}</span>

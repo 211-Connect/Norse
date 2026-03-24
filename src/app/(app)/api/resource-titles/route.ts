@@ -12,6 +12,13 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  if (!ids.every((id) => typeof id === 'string')) {
+    return NextResponse.json(
+      { error: 'ids must be an array of strings' },
+      { status: 400 },
+    );
+  }
+
   if (!API_URL) {
     return NextResponse.json(
       { error: 'API_URL is not configured' },

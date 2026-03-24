@@ -11,7 +11,6 @@ import type {
 import {
   buildProxyQuery,
   enrichWithResourceTitles,
-  fetchJson,
   parseMetrics,
   sumEventTotals,
 } from './utils';
@@ -21,24 +20,34 @@ import { Chart } from './Chart';
 import { useTenantSelection } from '@payloadcms/plugin-multi-tenant/client';
 import { Banner, Button, Gutter, StaggeredShimmers } from '@payloadcms/ui';
 import { UmamiEvent } from '../../../../../app/(app)/shared/lib/umami';
+import { fetchWrapper } from '../../../../../app/(app)/shared/lib/fetchWrapper';
 
 const DATE_RANGES: DateRange[] = [7, 30, 90];
 
 const AnalyticsDashboard = () => {
   const { selectedTenantID } = useTenantSelection();
-  const [range, setRange] = useState<DateRange>(30);
-  const [pageviews, setPageviews] = useState<UmamiPageviews | null>(null);
-  const [stats, setStats] = useState<UmamiStats | null>(null);
-  const [searchCount, setSearchCount] = useState(0);
-  const [resourceViewCount, setResourceViewCount] = useState(0);
-  const [zeroResultsCount, setZeroResultsCount] = useState(0);
-  const [directionsCount, setDirectionsCount] = useState(0);
-  const [phoneCallsCount, setPhoneCallsCount] = useState(0);
-  const [websiteClicksCount, setWebsiteClicksCount] = useState(0);
-  const [resourceRows, setResourceRows] = useState<MetricEntry[]>([]);
-  const [searchByLabel, setSearchByLabel] = useState<MetricEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<{
+    stats: UmamiStats | null;
+    pageviews: UmamiPageviews | null;
+    resourceRows: MetricEntry[];
+    searchByLabel: MetricEntry[];
+  }>({
+    stats: null,
+    pageviews: null,
+    resourceRows: [],
+    searchByLabel: [],
+  });
+  const [range, setRange] = useState<DateRange>(30);
+  const [metrics, setMetrics] = useState({
+    searchCount: 0,
+    resourceViewCount: 0,
+    zeroResultsCount: 0,
+    directionsCount: 0,
+    phoneCallsCount: 0,
+    websiteClicksCount: 0,
+  });
 
   const fetchData = useCallback(
     async (days: DateRange, tenantId: string | undefined) => {
@@ -51,43 +60,43 @@ const AnalyticsDashboard = () => {
       try {
         const [statsData, metricsData, pvData, queryMetricsData, eventsData] =
           await Promise.all([
-            fetchJson<UmamiStats>(
+            fetchWrapper<UmamiStats>(
               buildProxyQuery('stats', startAt, endAt, tenantId),
             ),
-            fetchJson<MetricEntry[]>(
+            fetchWrapper<MetricEntry[]>(
               buildProxyQuery('metrics', startAt, endAt, tenantId, {
                 type: 'path',
                 limit: '500',
               }),
             ),
-            fetchJson<UmamiPageviews>(
+            fetchWrapper<UmamiPageviews>(
               buildProxyQuery('pageviews', startAt, endAt, tenantId, {
                 unit: 'day',
                 timezone: 'UTC',
               }),
             ),
-            fetchJson<MetricEntry[]>(
+            fetchWrapper<MetricEntry[]>(
               buildProxyQuery('metrics', startAt, endAt, tenantId, {
                 type: 'query',
                 limit: '500',
               }),
             ),
-            fetchJson<MetricEntry[]>(
+            fetchWrapper<MetricEntry[]>(
               buildProxyQuery('events/series', startAt, endAt, tenantId, {
                 timezone: 'UTC',
               }),
             ),
           ]);
 
-        const eventTotals = sumEventTotals(eventsData);
+        const eventTotals = sumEventTotals(eventsData ?? []);
         const zeroResultsTotal = eventTotals[UmamiEvent.SearchZeroResults] ?? 0;
         const directionsTotal = eventTotals[UmamiEvent.DirectionClick] ?? 0;
         const phoneCallCount = eventTotals[UmamiEvent.PhoneClick] ?? 0;
         const websiteClicksCount = eventTotals[UmamiEvent.WebsiteClick] ?? 0;
 
         const { searchCount, resourceMetrics, searchByLabel } = parseMetrics(
-          metricsData,
-          queryMetricsData,
+          metricsData ?? [],
+          queryMetricsData ?? [],
         );
 
         const resourceViewCount = resourceMetrics.reduce(
@@ -100,16 +109,20 @@ const AnalyticsDashboard = () => {
           String(selectedTenantID),
         );
 
-        setStats(statsData);
-        setSearchCount(searchCount);
-        setResourceViewCount(resourceViewCount);
-        setZeroResultsCount(zeroResultsTotal);
-        setDirectionsCount(directionsTotal);
-        setPhoneCallsCount(phoneCallCount);
-        setWebsiteClicksCount(websiteClicksCount);
-        setResourceRows(enrichedResourceRows);
-        setSearchByLabel(searchByLabel);
-        setPageviews(pvData);
+        setData({
+          stats: statsData,
+          pageviews: pvData,
+          resourceRows: enrichedResourceRows,
+          searchByLabel: searchByLabel,
+        });
+        setMetrics({
+          searchCount,
+          resourceViewCount,
+          zeroResultsCount: zeroResultsTotal,
+          directionsCount: directionsTotal,
+          phoneCallsCount: phoneCallCount,
+          websiteClicksCount: websiteClicksCount,
+        });
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error');
       } finally {
@@ -124,13 +137,13 @@ const AnalyticsDashboard = () => {
   }, [range, fetchData, selectedTenantID]);
 
   const timelineData = useMemo(() => {
-    if (!pageviews) return [];
+    if (!data.pageviews) return [];
     const fmt = range === 7 ? 'ddd' : 'DD MMM';
-    return pageviews.pageviews.map((pv) => ({
+    return data.pageviews.pageviews.map((pv) => ({
       date: dayjs(pv.x).format(fmt),
       Pageviews: pv.y,
     }));
-  }, [pageviews, range]);
+  }, [data.pageviews, range]);
 
   return (
     <Gutter>
@@ -169,25 +182,25 @@ const AnalyticsDashboard = () => {
         <div
           style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
         >
-          {stats !== null && (
+          {data.stats !== null && (
             <StatCards
-              stats={stats}
-              searchCount={searchCount}
-              resourceViewCount={resourceViewCount}
-              zeroResultsCount={zeroResultsCount}
-              websiteClicksCount={websiteClicksCount}
-              phoneCallsCount={phoneCallsCount}
-              directionsCount={directionsCount}
+              stats={data.stats}
+              searchCount={metrics.searchCount}
+              resourceViewCount={metrics.resourceViewCount}
+              zeroResultsCount={metrics.zeroResultsCount}
+              websiteClicksCount={metrics.websiteClicksCount}
+              phoneCallsCount={metrics.phoneCallsCount}
+              directionsCount={metrics.directionsCount}
             />
           )}
 
-          {pageviews !== null && (
+          {data.pageviews !== null && (
             <Chart title="Pageviews" data={timelineData} />
           )}
 
           <MetricsTables
-            resourceRows={resourceRows}
-            searchByLabel={searchByLabel}
+            resourceRows={data.resourceRows}
+            searchByLabel={data.searchByLabel}
           />
         </div>
       )}

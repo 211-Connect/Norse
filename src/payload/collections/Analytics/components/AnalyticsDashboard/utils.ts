@@ -4,15 +4,6 @@ const SEARCH_RESOURCE_PREFIX = '/search/';
 
 export const ZERO_RESULTS_EVENT = 'search_zero_results';
 
-export async function fetchJson<T>(url: string): Promise<T> {
-  const res = await fetch(url);
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new Error((body as { error?: string }).error ?? `HTTP ${res.status}`);
-  }
-  return res.json() as Promise<T>;
-}
-
 export function buildProxyQuery(
   endpoint: string,
   startAt: number,
