@@ -23,7 +23,7 @@ export function ResultsSection({ cardLayout }: ResultsSectionProps) {
   return (
     <div
       id="search-container"
-      className="flex w-full flex-col gap-3 overflow-y-auto p-[10px] xl:max-w-[550px]"
+      className="flex w-full flex-col gap-3 overflow-y-auto p-[10px] lg:max-w-[400px] xl:max-w-[550px]"
     >
       <div className="flex flex-col gap-3 print:hidden">
         <div className="flex items-center justify-between">
