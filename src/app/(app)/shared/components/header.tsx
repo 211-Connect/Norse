@@ -324,7 +324,7 @@ export function Header() {
         <nav
           id={HEADER_DESKTOP_ID}
           aria-label="Primary"
-          className="z-[1] ml-auto hidden w-fit justify-end overflow-hidden lg:flex"
+          className="z-[1] ml-auto hidden w-fit justify-end overflow-hidden xl:flex"
         >
           <ul className="flex items-center gap-6 overflow-x-auto overflow-y-hidden">
             {sitemap}
@@ -333,7 +333,7 @@ export function Header() {
 
         <div
           id={HEADER_MOBILE_ID}
-          className="flex w-full flex-1 justify-end lg:hidden"
+          className="flex w-full flex-1 justify-end xl:hidden"
         >
           <Sheet open={opened} onOpenChange={toggle}>
             <SheetTrigger

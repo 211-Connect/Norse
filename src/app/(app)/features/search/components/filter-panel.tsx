@@ -275,7 +275,7 @@ export function FilterPanel() {
   return (
     <div
       className={cn(
-        'w-full self-start overflow-auto p-[10px] md:max-w-[340px] lg:pl-[20px]',
+        'w-full self-start overflow-auto p-[10px] lg:max-w-[300px] lg:pl-[20px] xl:max-w-[340px]',
         appConfig.header?.position === 'sticky' && 'md:sticky md:top-[105px]',
         appConfig.header?.position === 'sticky' &&
           appConfig.newLayout?.enabled &&
