@@ -31,6 +31,7 @@ import {
   CustomAttributeComponent,
 } from './resource-components';
 import { CustomAttributeConfig } from '../types/layout-config';
+import { AppConfig } from '@/types/appConfig';
 
 export interface ResourceComponentProps {
   resource: Resource;
@@ -85,6 +86,7 @@ export function getResourceComponentById(
 export function shouldComponentRender(
   componentId: ResourceComponentId | string,
   resource: Resource,
+  appConfig: AppConfig,
 ): boolean {
   switch (componentId) {
     case ResourceComponentId.SEPARATOR:
@@ -94,7 +96,10 @@ export function shouldComponentRender(
     case ResourceComponentId.RESOURCE_NAME:
       return Boolean(resource.name);
     case ResourceComponentId.SERVICE_NAME:
-      return true;
+      return (
+        appConfig.featureFlags.showSearchAndResourceServiceName &&
+        Boolean(resource.serviceName)
+      );
     case ResourceComponentId.ADDRESS:
       return Boolean(resource.address);
     case ResourceComponentId.TRANSPORTATION:
@@ -146,7 +151,7 @@ export function shouldComponentRender(
         resource.location.coordinates.length === 2,
       );
     case ResourceComponentId.FACETS:
-      return true;
+      return Boolean(resource.facets && resource.facets.length > 0);
     case ResourceComponentId.ORGANIZATION:
       return Boolean(
         resource.organizationName || resource.organizationDescription,

@@ -11,6 +11,7 @@ import {
 } from './component-registry';
 import { ResourceLayoutConfig } from '../types/layout-config';
 import { cleanSeparators } from '@/app/(app)/shared/utils/layout-utils';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 
 interface LayoutRendererProps {
   layout: ResourceLayoutConfig;
@@ -24,6 +25,8 @@ type ColumnRendererProps = {
 };
 
 function ColumnRenderer({ groups, resource }: ColumnRendererProps) {
+  const appConfig = useAppConfig();
+
   if (!groups) {
     return null;
   }
@@ -36,7 +39,7 @@ function ColumnRenderer({ groups, resource }: ColumnRendererProps) {
         }
 
         const itemsToRender = group.items.filter((item) =>
-          shouldComponentRender(item.componentId, resource),
+          shouldComponentRender(item.componentId, resource, appConfig),
         );
 
         const allRenderedComponents = itemsToRender.map((item, itemIndex) => {
