@@ -15,6 +15,7 @@ import {
   hasPropertySettingsFieldAccess,
 } from '../Users/access/permissions';
 import { removeRelatedResources } from './hooks/removeRelatedResources';
+import { invalidateApiCache } from '../ResourceDirectories/hooks/invalidateApiCache';
 
 export const Tenants: CollectionConfig = {
   slug: 'tenants',
@@ -32,7 +33,7 @@ export const Tenants: CollectionConfig = {
     useAsTitle: 'name',
   },
   hooks: {
-    afterChange: [revalidateCache, pushRealmIdToCache],
+    afterChange: [revalidateCache, pushRealmIdToCache, invalidateApiCache],
     beforeDelete: [removeRelatedResources],
     afterDelete: [revalidateCache],
   },
