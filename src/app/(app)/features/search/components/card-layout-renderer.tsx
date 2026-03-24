@@ -42,7 +42,11 @@ export function CardLayoutRenderer({
     return {
       element: (
         <Component
-          key={isSeparator ? `separator-${itemIndex}` : item.componentId}
+          key={
+            isSeparator
+              ? `separator-${itemIndex}`
+              : `${item.componentId}-${itemIndex}`
+          }
           result={result}
           customAttribute={item.customAttribute}
         />

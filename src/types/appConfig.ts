@@ -112,20 +112,7 @@ export type AppConfig = {
       locationInputPlaceholder?: string;
       noResultsFallbackText?: string;
     };
-    cardLayout?: {
-      componentId: string;
-      customAttribute?: {
-        title?: string;
-        subtitle?: string;
-        description?: string;
-        icon?: string;
-        iconColor?: string;
-        size?: 'sm' | 'md';
-        titleBelow?: boolean;
-        url?: string;
-        urlTarget?: '_self' | '_blank';
-      } | null;
-    }[];
+    cardLayout?: NonNullable<ResourceDirectory['search']['cardLayout']>;
   };
   sessionId: string;
   badges: ResourceDirectoryBadgeListItem[];

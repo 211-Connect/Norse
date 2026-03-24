@@ -13,6 +13,7 @@ import { defaultLocale } from '@/payload/i18n/locales';
 import initTranslations from '../i18n/i18n';
 import { SESSION_ID } from '../lib/constants';
 import { DEFAULT_RESOURCE_LAYOUT } from '../../features/resource/types/layout-config';
+import { DEFAULT_SEARCH_CARD_LAYOUT } from '../../features/search/types/card-layout-config';
 
 function getMediaUrl(media?: TenantMedia | number | null): string | undefined {
   if (typeof media === 'number' || !media) return undefined;
@@ -404,6 +405,8 @@ async function getAppConfigBase(
           resourceDirectory.search.texts?.queryInputPlaceholder ?? undefined,
         title: resourceDirectory.search.texts?.title ?? undefined,
       },
+      cardLayout:
+        resourceDirectory.search.cardLayout ?? DEFAULT_SEARCH_CARD_LAYOUT,
     },
     sessionId,
     badges:

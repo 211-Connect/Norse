@@ -117,6 +117,7 @@ function transformSearchHits(
       address: mainAddress,
       location: hit?._source?.location?.point ?? null,
       taxonomies: hit?._source?.taxonomies ?? null,
+      attributeValues: hit?._source?.attribute_values ?? null,
     };
 
     const transformedFacets = transformFacetsToArray(
