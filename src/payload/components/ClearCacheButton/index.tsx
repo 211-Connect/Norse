@@ -16,13 +16,16 @@ const ClearCacheButton = () => {
 
   async function onClick() {
     setLoading(true);
-    await fetchWrapper(
-      '/api/clear-cache?secret=7cbde38e-32d8-42e6-8000-9dcf4d57502b',
-      {
+    try {
+      await fetchWrapper('/api/clear-cache', {
         parseResponse: false,
-      },
-    );
-    setLoading(false);
+        credentials: 'include',
+      });
+    } catch (error) {
+      console.error('Failed to clear cache:', error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   if (loading) {
