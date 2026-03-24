@@ -115,7 +115,7 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
           typographyVariants({ variant, size, textColor, className }),
         )}
         ref={ref}
-        href={url}
+        href={url || null}
         target={urlTarget}
         {...props}
       >
