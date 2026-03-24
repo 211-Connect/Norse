@@ -7,7 +7,9 @@ const log = createLogger('withCache');
 
 type Seconds = number;
 const FIFTEEN_MINUTES: Seconds = 15 * 60;
+const ONE_MINUTE: Seconds = 60;
 const CACHE_TTL = FIFTEEN_MINUTES;
+const MAX_CACHE_ENTRIES = 1000;
 
 type Domain = string;
 type Locale = string;
@@ -35,11 +37,14 @@ const DEFAULT_CACHE_CONFIG: CacheConfig = {
 };
 
 const memoryCache = new LRUCache<CacheKey, string>({
-  max: 500,
-  ttl: CACHE_TTL * 1000,
-  updateAgeOnGet: true,
-  updateAgeOnHas: true,
+  max: MAX_CACHE_ENTRIES,
+  ttl: ONE_MINUTE * 1000, // it's not possible to invalidate memory cache for all instances so use shorter TTL to limit stale data
+  noUpdateTTL: true, // only reset TTL on set, not on get/has, to avoid keeping stale data indefinitely in a long-running instance
 });
+
+export const clearMemoryCache = () => {
+  memoryCache.clear();
+};
 
 export const withCache = async <T>(
   key: CacheKey,
