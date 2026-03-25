@@ -1,11 +1,12 @@
 'use client';
 
-import { useMemo } from 'react';
+import { cache, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SquareCheck } from 'lucide-react';
 import { Resource, FacetWithTranslation } from '@/types/resource';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
+import { AppConfig } from '@/types/appConfig';
 
 const EXCLUDED_TAXONOMY_NAMES = [
   'Area Served by County',
@@ -16,72 +17,78 @@ const EXCLUDED_TAXONOMY_NAMES = [
 interface GroupedFacets {
   [taxonomyName: string]: FacetWithTranslation[];
 }
+const getFacetsOrig = (
+  resource: Resource,
+  facetsConfig: AppConfig['search']['facets'],
+): GroupedFacets | null => {
+  const { facets } = resource ?? {};
+
+  if (!facets || facets.length === 0) {
+    return null;
+  }
+
+  const taxonomyVisibilityMap = new Map(
+    facetsConfig.map((config) => [config.name, config.showInDetails !== false]),
+  );
+
+  const filtered = facets.filter((facet) => {
+    const taxonomyName = facet.taxonomyNameEn ?? facet.taxonomyName;
+
+    if (EXCLUDED_TAXONOMY_NAMES.includes(taxonomyName)) {
+      return false;
+    }
+
+    if (
+      taxonomyVisibilityMap.has(facet.taxonomyName) &&
+      !taxonomyVisibilityMap.get(facet.taxonomyName)
+    ) {
+      return false;
+    }
+
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    return null;
+  }
+
+  const grouped = filtered.reduce<GroupedFacets>((acc, facet) => {
+    if (!acc[facet.taxonomyName]) {
+      acc[facet.taxonomyName] = [];
+    }
+    acc[facet.taxonomyName].push(facet);
+    return acc;
+  }, {});
+
+  const deduplicated = Object.entries(grouped).reduce<GroupedFacets>(
+    (acc, [taxonomyName, facets]) => {
+      const seen = new Set<string>();
+      acc[taxonomyName] = facets.filter((facet) => {
+        if (seen.has(facet.termName)) {
+          return false;
+        }
+        seen.add(facet.termName);
+        return true;
+      });
+      return acc;
+    },
+    {},
+  );
+
+  return deduplicated;
+};
+
+export const getFacets = cache(getFacetsOrig);
 
 export function FacetsComponent({ resource }: { resource: Resource }) {
   const appConfig = useAppConfig();
   const facetsConfig = appConfig.search.facets;
   const { t } = useTranslation('page-resource');
 
-  const filteredFacets = useMemo(() => {
-    const { facets } = resource ?? {};
-
-    if (!facets || facets.length === 0) {
-      return null;
-    }
-
-    const taxonomyVisibilityMap = new Map(
-      facetsConfig.map((config) => [
-        config.name,
-        config.showInDetails !== false,
-      ]),
-    );
-
-    const filtered = facets.filter((facet) => {
-      const taxonomyName = facet.taxonomyNameEn ?? facet.taxonomyName;
-
-      if (EXCLUDED_TAXONOMY_NAMES.includes(taxonomyName)) {
-        return false;
-      }
-
-      if (
-        taxonomyVisibilityMap.has(facet.taxonomyName) &&
-        !taxonomyVisibilityMap.get(facet.taxonomyName)
-      ) {
-        return false;
-      }
-
-      return true;
-    });
-
-    if (filtered.length === 0) {
-      return null;
-    }
-
-    const grouped = filtered.reduce<GroupedFacets>((acc, facet) => {
-      if (!acc[facet.taxonomyName]) {
-        acc[facet.taxonomyName] = [];
-      }
-      acc[facet.taxonomyName].push(facet);
-      return acc;
-    }, {});
-
-    const deduplicated = Object.entries(grouped).reduce<GroupedFacets>(
-      (acc, [taxonomyName, facets]) => {
-        const seen = new Set<string>();
-        acc[taxonomyName] = facets.filter((facet) => {
-          if (seen.has(facet.termName)) {
-            return false;
-          }
-          seen.add(facet.termName);
-          return true;
-        });
-        return acc;
-      },
-      {},
-    );
-
-    return deduplicated;
-  }, [resource, facetsConfig]);
+  const filteredFacets = useMemo(
+    () => getFacets(resource, facetsConfig),
+    [resource, facetsConfig],
+  );
 
   if (!filteredFacets) {
     return null;

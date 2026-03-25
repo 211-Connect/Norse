@@ -29,6 +29,8 @@ import {
   FacetsComponent,
   SeparatorComponent,
   CustomAttributeComponent,
+  getFacets,
+  getCustomAttributeProps,
 } from './resource-components';
 import { CustomAttributeConfig } from '../types/layout-config';
 import { AppConfig } from '@/types/appConfig';
@@ -87,6 +89,7 @@ export function shouldComponentRender(
   componentId: ResourceComponentId | string,
   resource: Resource,
   appConfig: AppConfig,
+  customAttribute: CustomAttributeConfig | null,
 ): boolean {
   switch (componentId) {
     case ResourceComponentId.SEPARATOR:
@@ -151,13 +154,23 @@ export function shouldComponentRender(
         resource.location.coordinates.length === 2,
       );
     case ResourceComponentId.FACETS:
-      return Boolean(resource.facets && resource.facets.length > 0);
+      if (!resource.facets || !resource.facets.length) {
+        return false;
+      }
+      const facets = getFacets(resource, appConfig.search.facets);
+
+      return Boolean(facets);
     case ResourceComponentId.ORGANIZATION:
       return Boolean(
         resource.organizationName || resource.organizationDescription,
       );
     case ResourceComponentId.CUSTOM_ATTRIBUTE:
-      return true; // Custom attribute component handles its own conditional rendering
+      const shouldRender = getCustomAttributeProps({
+        resource,
+        customAttribute,
+      });
+
+      return Boolean(shouldRender);
     default:
       return true;
   }

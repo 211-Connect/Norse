@@ -6,15 +6,20 @@ import { useIconComponent } from '@/app/(app)/shared/hooks/useIconComponent';
 import { interpolateResourceProperties } from '@/utils/interpolateResourceProperties';
 import { Resource } from '@/types/resource';
 import { ResultType } from '@/app/(app)/shared/store/results';
+import { createLogger } from '@/lib/logger';
+import { cache } from 'react';
 
-export function CustomAttributeComponent({
+const log = createLogger('CustomAttributeComponent');
+
+const getCustomAttributePropsOrig = ({
   resource,
   customAttribute,
-}: Pick<ResourceComponentProps, 'customAttribute'> & {
-  resource: Resource | ResultType;
-}) {
-  const IconComponent = useIconComponent(customAttribute?.icon);
-
+}: CustomAttributeComponentProps): {
+  title: string;
+  subtitle: string;
+  description: string;
+  url: string;
+} | null => {
   if (!customAttribute) {
     return null;
   }
@@ -44,8 +49,7 @@ export function CustomAttributeComponent({
       interpolatedUrl,
     ].some((value) => value.includes('{{'))
   ) {
-    console.warn(
-      'Interpolation warning: Some values still contain unreplaced placeholders',
+    log.warn(
       {
         interpolatedTitle,
         interpolatedSubtitle,
@@ -53,19 +57,56 @@ export function CustomAttributeComponent({
         interpolatedUrl,
         customAttribute,
       },
+      'Interpolation warning: Some values still contain unreplaced placeholders',
     );
 
     return null;
   }
 
+  return {
+    title: interpolatedTitle,
+    subtitle: interpolatedSubtitle,
+    description: interpolatedDescription,
+    url: interpolatedUrl,
+  };
+};
+
+export const getCustomAttributeProps = cache(getCustomAttributePropsOrig);
+
+type CustomAttributeComponentProps = Pick<
+  ResourceComponentProps,
+  'customAttribute'
+> & {
+  resource: Resource | ResultType;
+};
+
+export function CustomAttributeComponent({
+  resource,
+  customAttribute,
+}: CustomAttributeComponentProps) {
+  const IconComponent = useIconComponent(customAttribute?.icon);
+
+  if (!customAttribute) {
+    log.warn(
+      'CustomAttributeComponent rendered without customAttribute config',
+    );
+    return null;
+  }
+
+  const customAttributeProps = getCustomAttributeProps({
+    resource,
+    customAttribute,
+  });
+
+  if (!customAttributeProps) {
+    return null;
+  }
+
   return (
     <Datum
-      title={interpolatedTitle}
-      subtitle={interpolatedSubtitle}
-      description={interpolatedDescription}
+      {...customAttributeProps}
       icon={IconComponent}
       iconColor={customAttribute.iconColor}
-      url={interpolatedUrl}
       urlTarget={customAttribute.urlTarget}
       titleBelow={customAttribute.titleBelow}
       size={customAttribute.size}

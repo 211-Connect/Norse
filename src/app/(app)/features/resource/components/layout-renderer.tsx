@@ -12,6 +12,9 @@ import {
 import { ResourceLayoutConfig } from '../types/layout-config';
 import { cleanSeparators } from '@/app/(app)/shared/utils/layout-utils';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('LayoutRenderer');
 
 interface LayoutRendererProps {
   layout: ResourceLayoutConfig;
@@ -39,13 +42,18 @@ function ColumnRenderer({ groups, resource }: ColumnRendererProps) {
         }
 
         const itemsToRender = group.items.filter((item) =>
-          shouldComponentRender(item.componentId, resource, appConfig),
+          shouldComponentRender(
+            item.componentId,
+            resource,
+            appConfig,
+            item.customAttribute,
+          ),
         );
 
         const allRenderedComponents = itemsToRender.map((item, itemIndex) => {
           const Component = getResourceComponentById(item.componentId);
           if (!Component) {
-            console.warn(`Component not found for ID: ${item.componentId}`);
+            log.warn(`No component found for ID: ${item.componentId}`);
             return null;
           }
 
@@ -80,6 +88,8 @@ function ColumnRenderer({ groups, resource }: ColumnRendererProps) {
         if (renderedComponents.length === 0) {
           return null;
         }
+
+        log.debug(renderedComponents, 'Rendered components');
 
         if (group.isCard) {
           return (
