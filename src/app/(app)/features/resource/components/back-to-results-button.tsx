@@ -16,6 +16,9 @@ export function BackToResultsButton() {
   const [useHistory, setUseHistory] = useState(false);
 
   useEffect(() => {
+    // Get the custom base path if configured
+    const basePath = process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || '';
+
     // Regex to match search pages: /search or /search?... (with any locale prefix)
     const searchPagePattern = /\/search(\?|$)/;
 
@@ -30,7 +33,12 @@ export function BackToResultsButton() {
     if (typeof window !== 'undefined' && document.referrer) {
       try {
         const referrerUrl = new URL(document.referrer);
-        const referrerPath = referrerUrl.pathname + referrerUrl.search;
+        let referrerPath = referrerUrl.pathname + referrerUrl.search;
+
+        // Strip the basePath from referrer if it exists
+        if (basePath && referrerPath.startsWith(basePath)) {
+          referrerPath = referrerPath.slice(basePath.length) || '/';
+        }
 
         if (
           referrerUrl.origin === window.location.origin &&
@@ -50,7 +58,7 @@ export function BackToResultsButton() {
       setBackUrl('history');
       setUseHistory(true);
     } else {
-      // Final fallback: go to home
+      // Final fallback: go to home (router will add basePath automatically)
       setBackUrl('/');
       setUseHistory(false);
     }
