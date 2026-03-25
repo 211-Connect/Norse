@@ -1,4 +1,5 @@
 import { test as base, expect, type Page } from '@playwright/test';
+import { baseURL } from '../playwright.config';
 
 export const LOCALE = 'en';
 
@@ -13,7 +14,10 @@ function isAuthHost(urlString: string): boolean {
 }
 
 export async function goHome(page: Page) {
-  await page.goto(`/${LOCALE}`);
+  const base = baseURL.endsWith('/') ? baseURL : `${baseURL}/`;
+  const url = new URL(LOCALE, base).href;
+  await page.goto(url);
+
   await page.waitForLoadState('networkidle');
 }
 
@@ -245,9 +249,10 @@ export async function switchLanguage(page: Page, locale: 'en' | 'es') {
     (url) => {
       const pathname = url.pathname;
       const escapedLocale = toSingleRegexLiteral(locale);
-      const hasExplicitLocale = new RegExp(`^/${escapedLocale}(?:/|$)`).test(
-        pathname,
-      );
+      // Check if locale appears as a complete path segment (handles base paths)
+      const hasExplicitLocale = new RegExp(
+        `(?:^|/)${escapedLocale}(?:/|$)`,
+      ).test(pathname);
 
       if (locale !== LOCALE) {
         return hasExplicitLocale;
@@ -257,8 +262,9 @@ export async function switchLanguage(page: Page, locale: 'en' | 'es') {
         return true;
       }
 
+      // Remove locale from previous pathname (handles base paths)
       const previousWithoutLocale = previousPathname.replace(
-        /^\/[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,4})?(?=\/|$)/,
+        /\/[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,4})?(?=\/|$)/,
         '',
       );
       const expectedDefaultPath = previousWithoutLocale || '/';

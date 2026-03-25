@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
+import NextLink from 'next/link';
 
 import { cn } from '../../lib/utils';
 
@@ -108,6 +109,27 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
     ref,
   ) => {
     const Comp = getElement(as, variant, url);
+    const isNextLink =
+      url &&
+      !url.startsWith('http') &&
+      !url.startsWith('mailto:') &&
+      !url.startsWith('tel:');
+
+    if (isNextLink) {
+      return (
+        <NextLink
+          href={url}
+          className={cn(
+            typographyVariants({ variant, size, textColor, className }),
+          )}
+          ref={ref as React.Ref<HTMLAnchorElement>}
+          target={urlTarget || undefined}
+          {...props}
+        >
+          {children}
+        </NextLink>
+      );
+    }
 
     return (
       <Comp

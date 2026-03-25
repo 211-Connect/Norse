@@ -16,9 +16,17 @@ jobs:
   e2e-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        environment:
+          - name: staging
+            url: ${{ vars.TEST_STG_URL }}
+          - name: development
+            url: ${{ vars.TEST_DEV_URL }}
     env:
       CI: true
-      E2E_BASE_URL: ${{ vars.E2E_BASE_URL }}
+      E2E_BASE_URL: ${{ matrix.environment.url }}
       TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
       TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
 
@@ -45,7 +53,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.environment.name }}
           path: |
             playwright-report/
           if-no-files-found: ignore
