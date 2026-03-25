@@ -9,7 +9,9 @@ export function ResourceNameComponent({ result }: SearchCardComponentProps) {
     return null;
   }
 
-  const url = `/search/${result.id}${process.env.NEXT_PUBLIC_WITH_TRAILING_SLASHES === 'true' ? '/' : ''}`;
+  // For regular <a> tags (not Next.js Link), we need to manually include basePath
+  const basePath = process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || '';
+  const url = `${basePath}/search/${result.id}${process.env.NEXT_PUBLIC_WITH_TRAILING_SLASHES === 'true' ? '/' : ''}`;
 
   return (
     <div className="flex flex-row justify-between gap-2">
