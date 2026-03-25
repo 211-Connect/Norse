@@ -1,4 +1,5 @@
 import { test as base, expect, type Page } from '@playwright/test';
+import { baseURL } from '../playwright.config';
 
 export const LOCALE = 'en';
 
@@ -13,7 +14,9 @@ function isAuthHost(urlString: string): boolean {
 }
 
 export async function goHome(page: Page) {
-  await page.goto(`/${LOCALE}`);
+  const base = baseURL.endsWith('/') ? baseURL : `${baseURL}/`;
+  const url = new URL(LOCALE, base).href;
+  await page.goto(url);
   await page.waitForLoadState('networkidle');
 }
 

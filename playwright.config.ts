@@ -1,6 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const baseURL = process.env.E2E_BASE_URL || 'http://localhost:3000';
+export const baseURL = process.env.E2E_BASE_URL || 'http://localhost:3000';
 
 /**
  * Playwright E2E test configuration for Norse.
