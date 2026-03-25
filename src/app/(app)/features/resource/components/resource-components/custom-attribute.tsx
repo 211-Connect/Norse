@@ -63,6 +63,10 @@ const getCustomAttributePropsOrig = ({
     return null;
   }
 
+  if (!interpolatedTitle && !interpolatedSubtitle && !interpolatedDescription) {
+    return null;
+  }
+
   return {
     title: interpolatedTitle,
     subtitle: interpolatedSubtitle,

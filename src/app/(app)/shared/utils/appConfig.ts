@@ -53,6 +53,49 @@ function getTenantI18n(resourceDirectory: ResourceDirectory): {
   };
 }
 
+type CustomAttributeItem = {
+  componentId: string;
+  customAttribute?: {
+    title?: string | null;
+    subtitle?: string | null;
+    description?: string | null;
+    [key: string]: any;
+  } | null;
+  [key: string]: any;
+};
+
+function mergeCustomAttribute<T extends CustomAttributeItem>(
+  item: T,
+  fallbackItem?: T,
+): T {
+  if (
+    item.componentId !== 'customAttribute' ||
+    !item.customAttribute ||
+    !fallbackItem?.customAttribute
+  ) {
+    return item;
+  }
+
+  return {
+    ...item,
+    customAttribute: {
+      ...item.customAttribute,
+      title:
+        item.customAttribute.title ||
+        fallbackItem.customAttribute.title ||
+        null,
+      subtitle:
+        item.customAttribute.subtitle ||
+        fallbackItem.customAttribute.subtitle ||
+        null,
+      description:
+        item.customAttribute.description ||
+        fallbackItem.customAttribute.description ||
+        null,
+    },
+  };
+}
+
 function applyCustomAttributeFallback(
   column: NonNullable<ResourceDirectory['resource']>['leftColumn'],
   fallbackColumn: NonNullable<ResourceDirectory['resource']>['leftColumn'],
@@ -65,38 +108,24 @@ function applyCustomAttributeFallback(
 
     return {
       ...group,
-      items: group.items.map((item, itemIndex) => {
-        const fallbackItem = fallbackGroup.items?.[itemIndex];
-
-        if (
-          item.componentId !== 'customAttribute' ||
-          !item.customAttribute ||
-          !fallbackItem?.customAttribute
-        ) {
-          return item;
-        }
-
-        return {
-          ...item,
-          customAttribute: {
-            ...item.customAttribute,
-            title:
-              item.customAttribute.title ||
-              fallbackItem.customAttribute.title ||
-              null,
-            subtitle:
-              item.customAttribute.subtitle ||
-              fallbackItem.customAttribute.subtitle ||
-              null,
-            description:
-              item.customAttribute.description ||
-              fallbackItem.customAttribute.description ||
-              null,
-          },
-        };
-      }),
+      items: group.items.map((item, itemIndex) =>
+        mergeCustomAttribute(item, fallbackGroup.items?.[itemIndex]),
+      ),
     };
   });
+}
+
+function applyCardLayoutCustomAttributeFallback(
+  cardLayout: NonNullable<ResourceDirectory['search']['cardLayout']>,
+  fallbackCardLayout?: NonNullable<
+    ResourceDirectory['search']['cardLayout']
+  > | null,
+): NonNullable<ResourceDirectory['search']['cardLayout']> {
+  if (!cardLayout || !fallbackCardLayout) return cardLayout;
+
+  return cardLayout.map((item, itemIndex) =>
+    mergeCustomAttribute(item, fallbackCardLayout[itemIndex]),
+  );
 }
 
 async function getAppConfigBase(
@@ -201,7 +230,11 @@ async function getAppConfigBase(
 
   // Fetch English resource directory for fallback if not English locale
   let englishResourceDirectory: ResourceDirectory | null = null;
-  if (locale !== 'en' && resourceDirectory.resource?.useCustomLayout) {
+  if (
+    locale !== 'en' &&
+    (resourceDirectory.resource?.useCustomLayout ||
+      !resourceDirectory.search.cardLayout)
+  ) {
     englishResourceDirectory = await findResourceDirectoryByHost(host, 'en');
   }
 
@@ -405,8 +438,13 @@ async function getAppConfigBase(
           resourceDirectory.search.texts?.queryInputPlaceholder ?? undefined,
         title: resourceDirectory.search.texts?.title ?? undefined,
       },
-      cardLayout:
-        resourceDirectory.search.cardLayout ?? DEFAULT_SEARCH_CARD_LAYOUT,
+      cardLayout: resourceDirectory.search.cardLayout
+        ? applyCardLayoutCustomAttributeFallback(
+            resourceDirectory.search.cardLayout,
+            englishResourceDirectory?.search.cardLayout,
+          )
+        : (englishResourceDirectory?.search.cardLayout ??
+          DEFAULT_SEARCH_CARD_LAYOUT),
     },
     sessionId,
     badges:
