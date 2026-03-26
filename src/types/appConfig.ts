@@ -40,7 +40,6 @@ export type AppConfig = {
     showHomePageTour: boolean;
     showResourceLastAssuredDate: boolean;
     showPrintButton: boolean;
-    showResourceCategories: boolean;
     showResourceAttribution: boolean;
     showSearchAndResourceServiceName: boolean;
     showSuggestionListTaxonomyBadge: boolean;

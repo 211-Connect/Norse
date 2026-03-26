@@ -47,16 +47,16 @@ export function FavoriteListsSection() {
 
   return (
     <div className="flex w-full flex-col p-[10px] lg:max-w-[550px] lg:pl-[20px]">
-      <div className="flex flex-col md:flex-row w-full items-center gap-2">
-      <CreateAListButton className="self-start h-full" />
-      {(favoriteLists.length > 0 || initialSearch) && (
-        <FavoritesSearchBar
-          className="w-full h-full"
-          placeholder={t('modal.add_to_list.search_list')}
-          initialValue={initialSearch}
-          onChange={handleSearch}
-        />
-      )}
+      <div className="flex w-full flex-col items-center gap-2 md:flex-row">
+        <CreateAListButton className="h-9 self-start" />
+        {(favoriteLists.length > 0 || initialSearch) && (
+          <FavoritesSearchBar
+            className="h-full w-full"
+            placeholder={t('modal.add_to_list.search_list')}
+            initialValue={initialSearch}
+            onChange={handleSearch}
+          />
+        )}
       </div>
 
       <div className="mt-[10px] flex flex-col gap-2">
