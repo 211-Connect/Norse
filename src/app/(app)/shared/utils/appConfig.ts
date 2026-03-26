@@ -164,7 +164,6 @@ async function getAppConfigBase(
         showFeedbackButtonOnResourcePages: false,
         showHomePageTour: false,
         showPrintButton: false,
-        showResourceCategories: false,
         showResourceAttribution: false,
         showResourceLastAssuredDate: false,
         showSearchAndResourceServiceName: false,
@@ -337,8 +336,6 @@ async function getAppConfigBase(
       showPrintButton: resourceDirectory.featureFlags?.showPrintButton ?? false,
       showResourceAttribution:
         resourceDirectory.featureFlags?.showResourceAttribution ?? false,
-      showResourceCategories:
-        resourceDirectory.featureFlags?.showResourceCategories ?? false,
       showResourceLastAssuredDate:
         resourceDirectory.featureFlags?.showResourceLastAssuredDate ?? false,
       showSearchAndResourceServiceName:

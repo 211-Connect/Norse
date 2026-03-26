@@ -15,7 +15,6 @@ export function CategoriesComponent({
   resource: Pick<Resource, 'categories'>;
 }) {
   const { t } = useTranslation('page-resource');
-  const showCategories = useFlag('showResourceCategories');
   const turnResourceCardTaxonomiesIntoLinks = useFlag(
     'turnResourceCardTaxonomiesIntoLinks',
   );
@@ -26,7 +25,7 @@ export function CategoriesComponent({
     );
   }, [resource.categories]);
 
-  if (!showCategories || categories.length === 0) {
+  if (categories.length === 0) {
     return null;
   }
 
