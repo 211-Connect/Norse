@@ -1,5 +1,4 @@
 import type { Endpoint } from 'payload';
-import { isSuperAdmin, isSupport } from '../collections/Users/access/roles';
 
 const ALLOWED_ENDPOINTS = [
   'stats',
@@ -7,6 +6,7 @@ const ALLOWED_ENDPOINTS = [
   'metrics',
   'active',
   'events/series',
+  'sessions',
 ] as const;
 
 const ALLOWED_PARAMS = [

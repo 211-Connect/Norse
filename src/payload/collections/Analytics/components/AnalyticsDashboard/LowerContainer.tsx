@@ -4,7 +4,7 @@ import React from 'react';
 import { MetricsTable } from './MetricsTable';
 import type { MetricEntry } from './types';
 
-export const MetricsTables = React.memo(function MetricsTables({
+export const LowerContainer = React.memo(function LowerContainer({
   resourceRows,
   searchByLabel,
 }: {

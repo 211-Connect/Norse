@@ -7,6 +7,7 @@ import type {
   UmamiStats,
   UmamiPageviews,
   MetricEntry,
+  UmamiSessionResponse,
 } from './types';
 import {
   buildProxyQuery,
@@ -15,12 +16,14 @@ import {
   sumEventTotals,
 } from './utils';
 import { StatCards } from './StatCards';
-import { MetricsTables } from './MetricsTables';
-import { Chart } from './Chart';
+import { LowerContainer } from './LowerContainer';
 import { useTenantSelection } from '@payloadcms/plugin-multi-tenant/client';
 import { Banner, Button, Gutter, StaggeredShimmers } from '@payloadcms/ui';
 import { UmamiEvent } from '../../../../../app/(app)/shared/lib/umami';
 import { fetchWrapper } from '../../../../../app/(app)/shared/lib/fetchWrapper';
+import { UpperContainer } from './UpperContainer';
+import { geocodeSessions } from './geocodeSessions';
+import type { HeatmapPoint } from './AnalyticsMap';
 
 const DATE_RANGES: DateRange[] = [7, 30, 90];
 
@@ -33,11 +36,13 @@ const AnalyticsDashboard = () => {
     pageviews: UmamiPageviews | null;
     resourceRows: MetricEntry[];
     searchByLabel: MetricEntry[];
+    heatmapPoints: HeatmapPoint[];
   }>({
     stats: null,
     pageviews: null,
     resourceRows: [],
     searchByLabel: [],
+    heatmapPoints: [],
   });
   const [range, setRange] = useState<DateRange>(30);
   const [metrics, setMetrics] = useState({
@@ -58,35 +63,46 @@ const AnalyticsDashboard = () => {
       const startAt = dayjs().subtract(days, 'day').valueOf();
 
       try {
-        const [statsData, metricsData, pvData, queryMetricsData, eventsData] =
-          await Promise.all([
-            fetchWrapper<UmamiStats>(
-              buildProxyQuery('stats', startAt, endAt, tenantId),
-            ),
-            fetchWrapper<MetricEntry[]>(
-              buildProxyQuery('metrics', startAt, endAt, tenantId, {
-                type: 'path',
-                limit: '500',
-              }),
-            ),
-            fetchWrapper<UmamiPageviews>(
-              buildProxyQuery('pageviews', startAt, endAt, tenantId, {
-                unit: 'day',
-                timezone: 'UTC',
-              }),
-            ),
-            fetchWrapper<MetricEntry[]>(
-              buildProxyQuery('metrics', startAt, endAt, tenantId, {
-                type: 'query',
-                limit: '500',
-              }),
-            ),
-            fetchWrapper<MetricEntry[]>(
-              buildProxyQuery('events/series', startAt, endAt, tenantId, {
-                timezone: 'UTC',
-              }),
-            ),
-          ]);
+        const [
+          statsData,
+          metricsData,
+          pvData,
+          queryMetricsData,
+          eventsData,
+          sessionsData,
+        ] = await Promise.all([
+          fetchWrapper<UmamiStats>(
+            buildProxyQuery('stats', startAt, endAt, tenantId),
+          ),
+          fetchWrapper<MetricEntry[]>(
+            buildProxyQuery('metrics', startAt, endAt, tenantId, {
+              type: 'path',
+              limit: '500',
+            }),
+          ),
+          fetchWrapper<UmamiPageviews>(
+            buildProxyQuery('pageviews', startAt, endAt, tenantId, {
+              unit: 'day',
+              timezone: 'UTC',
+            }),
+          ),
+          fetchWrapper<MetricEntry[]>(
+            buildProxyQuery('metrics', startAt, endAt, tenantId, {
+              type: 'query',
+              limit: '500',
+            }),
+          ),
+          fetchWrapper<MetricEntry[]>(
+            buildProxyQuery('events/series', startAt, endAt, tenantId, {
+              timezone: 'UTC',
+            }),
+          ),
+          fetchWrapper<UmamiSessionResponse>(
+            buildProxyQuery('sessions', startAt, endAt, tenantId, {
+              limit: '500',
+            }),
+          ),
+        ]);
 
         const eventTotals = sumEventTotals(eventsData ?? []);
         const zeroResultsTotal = eventTotals[UmamiEvent.SearchZeroResults] ?? 0;
@@ -109,11 +125,17 @@ const AnalyticsDashboard = () => {
           String(selectedTenantID),
         );
 
+        const points = await geocodeSessions(
+          sessionsData?.data ?? [],
+          tenantId,
+        );
+
         setData({
           stats: statsData,
           pageviews: pvData,
           resourceRows: enrichedResourceRows,
           searchByLabel: searchByLabel,
+          heatmapPoints: points,
         });
         setMetrics({
           searchCount,
@@ -193,12 +215,12 @@ const AnalyticsDashboard = () => {
               directionsCount={metrics.directionsCount}
             />
           )}
-
-          {data.pageviews !== null && (
-            <Chart title="Pageviews" data={timelineData} />
-          )}
-
-          <MetricsTables
+          <UpperContainer
+            hasPageviews={data.pageviews !== null}
+            timelineData={timelineData}
+            heatmapPoints={data.heatmapPoints}
+          />
+          <LowerContainer
             resourceRows={data.resourceRows}
             searchByLabel={data.searchByLabel}
           />
