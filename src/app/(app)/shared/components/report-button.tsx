@@ -54,7 +54,7 @@ export function ReportButton({
         className,
       )}
     >
-      <TriangleAlert className="size-4" />
+      <TriangleAlert className="size-4" aria-hidden="true" />
       {linkText}
     </Link>
   );
