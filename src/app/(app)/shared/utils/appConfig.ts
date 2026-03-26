@@ -121,7 +121,9 @@ function applyCardLayoutCustomAttributeFallback(
     ResourceDirectory['search']['cardLayout']
   > | null,
 ): NonNullable<ResourceDirectory['search']['cardLayout']> {
-  if (!cardLayout || !fallbackCardLayout) return cardLayout;
+  if (!cardLayout || !fallbackCardLayout) {
+    return DEFAULT_SEARCH_CARD_LAYOUT;
+  }
 
   return cardLayout.map((item, itemIndex) =>
     mergeCustomAttribute(item, fallbackCardLayout[itemIndex]),
@@ -438,13 +440,14 @@ async function getAppConfigBase(
           resourceDirectory.search.texts?.queryInputPlaceholder ?? undefined,
         title: resourceDirectory.search.texts?.title ?? undefined,
       },
-      cardLayout: resourceDirectory.search.cardLayout
-        ? applyCardLayoutCustomAttributeFallback(
-            resourceDirectory.search.cardLayout,
-            englishResourceDirectory?.search.cardLayout,
-          )
-        : (englishResourceDirectory?.search.cardLayout ??
-          DEFAULT_SEARCH_CARD_LAYOUT),
+      cardLayout:
+        resourceDirectory.search.cardLayout &&
+        resourceDirectory.search.useCustomCardLayout
+          ? applyCardLayoutCustomAttributeFallback(
+              resourceDirectory.search.cardLayout,
+              englishResourceDirectory?.search.cardLayout,
+            )
+          : DEFAULT_SEARCH_CARD_LAYOUT,
     },
     sessionId,
     badges:
