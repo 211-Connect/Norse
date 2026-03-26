@@ -22,17 +22,13 @@ jobs:
         environment:
           - name: staging
             url: ${{ vars.TEST_STG_URL }}
-            email: ${{ secrets.TEST_STG_USER_EMAIL }}
-            password: ${{ secrets.TEST_STG_USER_PASSWORD }}
           - name: development
             url: ${{ vars.TEST_DEV_URL }}
-            email: ${{ secrets.TEST_DEV_USER_EMAIL }}
-            password: ${{ secrets.TEST_DEV_USER_PASSWORD }}
     env:
       CI: true
       E2E_BASE_URL: ${{ matrix.environment.url }}
-      TEST_USER_EMAIL: ${{ matrix.environment.email }}
-      TEST_USER_PASSWORD: ${{ matrix.environment.password }}
+      TEST_USER_EMAIL: ${{ matrix.environment.name == 'staging' && secrets.TEST_STG_USER_EMAIL || secrets.TEST_DEV_USER_EMAIL }}
+      TEST_USER_PASSWORD: ${{ matrix.environment.name == 'staging' && secrets.TEST_STG_USER_PASSWORD || secrets.TEST_DEV_USER_PASSWORD }}
 
     steps:
       - name: Checkout code
