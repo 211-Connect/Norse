@@ -2,8 +2,7 @@
 
 import { TriangleAlert } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useMemo } from 'react';
-import { usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
 import { useAppConfig } from '../hooks/use-app-config';
 import { buttonVariants } from './ui/button';
@@ -20,33 +19,33 @@ export function ReportButton({
 }) {
   const appConfig = useAppConfig();
   const { t } = useTranslation('page-resource');
-  const pathname = usePathname();
   const feedbackUrlValue = appConfig?.contact?.feedbackUrl;
   const linkText = customText || t('report');
+  const [href, setHref] = useState<string | null>(null);
 
-  const href = useMemo(() => {
+  useEffect(() => {
     if (!feedbackUrlValue) {
-      return null;
+      return;
     }
 
     const currentUrl = new URL(feedbackUrlValue);
     const baseUrl = currentUrl.toString().split('?')[0];
     const urlParams = new URLSearchParams(currentUrl.searchParams);
 
-    if (typeof window !== 'undefined') {
-      urlParams.set('referring_url', window.location.href);
-    }
+    urlParams.set('referring_url', window.location.href);
 
-    return `${baseUrl}?${urlParams.toString()}`;
-  }, [feedbackUrlValue, pathname]);
+    setHref(`${baseUrl}?${urlParams.toString()}`);
+  }, [feedbackUrlValue]);
 
   if (!feedbackUrlValue) {
     return null;
   }
 
+  const finalHref = href ?? feedbackUrlValue;
+
   return (
     <Link
-      href={href ?? feedbackUrlValue ?? '#'}
+      href={finalHref}
       target="_blank"
       aria-label={`${linkText}${NEW_TAB_WARNING}`}
       className={cn(
