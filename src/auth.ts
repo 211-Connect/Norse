@@ -41,30 +41,23 @@ const createAuthOptions = ({
     },
     session({ session, token }) {
       session.accessToken = token.accessToken;
-      session.idToken = token.idToken;
       session.error = token.error ?? null;
 
-      if (token.sub) {
-        session.user.id = token.sub;
-      }
-
-      session.user = omitNilValues(session.user) as Session['user'];
       return session;
     },
     async jwt({ token, account }) {
-      token = omitNilValues(token);
+      const tokens = {
+        accessToken: token.accessToken,
+        refreshToken: token.refreshToken,
+        expiresAt: token.expiresAt,
+      };
 
       if (account) {
         // Initial sign in - only store necessary fields to minimize attack surface
         // Explicitly avoid spreading all OIDC claims (e.g., nonce) into JWT
         return {
-          sub: token.sub,
-          name: token.name,
-          email: token.email,
-          picture: token.picture,
           accessToken: account.access_token,
           refreshToken: account.refresh_token,
-          idToken: account.id_token,
           expiresAt: account.expires_at,
         };
       }
@@ -78,12 +71,18 @@ const createAuthOptions = ({
       }
 
       if (!token.refreshToken) {
-        return { ...token, error: 'NoRefreshToken' };
+        return {
+          ...tokens,
+          error: 'NoRefreshToken',
+        };
       }
 
       if (isJwtExpired(token.refreshToken)) {
         log.warn('Refresh token has expired');
-        return { ...token, error: 'RefreshTokenExpired' };
+        return {
+          ...tokens,
+          error: 'RefreshTokenExpired',
+        };
       }
 
       try {
@@ -110,7 +109,6 @@ const createAuthOptions = ({
         }
 
         return {
-          ...token,
           accessToken: data.access_token,
           refreshToken: data.refresh_token ?? token.refreshToken,
           expiresAt: Math.floor(Date.now() / 1000 + data.expires_in),
@@ -124,10 +122,16 @@ const createAuthOptions = ({
           err.response?.data?.error === 'invalid_grant'
         ) {
           log.warn('Refresh token is invalid or expired');
-          return { ...token, error: 'RefreshTokenExpired' };
+          return {
+            ...tokens,
+            error: 'RefreshTokenExpired',
+          };
         }
 
-        return { ...token, error: 'RefreshAccessTokenError' };
+        return {
+          ...tokens,
+          error: 'RefreshAccessTokenError',
+        };
       }
     },
   },
