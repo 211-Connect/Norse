@@ -95,7 +95,7 @@ export function NewHomeContent() {
     <div className="relative flex flex-1 justify-center border-t px-3 lg:justify-start lg:pl-8 lg:pr-0">
       <div className="flex min-h-full flex-row px-0">
         <div className="flex flex-col items-start justify-around gap-16 py-6 pl-0 lg:w-[430px] lg:pr-[24px]">
-          <Alert />
+          <Alert itemsDirection="col" />
           <div className="w-full">
             <h2 className="mb-2 whitespace-break-spaces text-2xl font-medium text-primary">
               {appConfig.search.texts?.title ||
