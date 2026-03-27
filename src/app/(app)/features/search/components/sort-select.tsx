@@ -14,6 +14,7 @@ import { useAtomValue } from 'jotai';
 import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
 import { SortOption } from '@/app/(app)/shared/services/search-service';
 import { useTopLoader } from 'nextjs-toploader';
+import { getSortOption } from '@/app/(app)/shared/utils/getSortOption';
 
 const SORT_LABEL: Record<SortOption, string> = {
   relevance: 'Most Relevant',
@@ -31,16 +32,12 @@ export function SortSelect() {
   const showServiceName = useFlag('showSearchAndResourceServiceName');
   const { start } = useTopLoader();
 
-  const currentSort = searchParams.get('sort') || 'relevance';
+  const currentSort = getSortOption(searchParams.get('sort'), coords);
 
   const handleSortChange = (value: string) => {
     const params = new URLSearchParams(searchParams.toString());
 
-    if (value === 'relevance') {
-      params.delete('sort');
-    } else {
-      params.set('sort', value);
-    }
+    params.set('sort', value);
 
     // Reset to page 1 when sorting changes
     params.delete('page');

@@ -20,6 +20,7 @@ import { forwardGeocode } from '@/app/(app)/shared/serverActions/geocoding/forwa
 import { isAdvancedGeoEnabled } from '@/app/(app)/shared/lib/search-utils';
 import { createLogger } from '@/lib/logger';
 import { DEFAULT_SEARCH_CARD_LAYOUT } from '@/app/(app)/features/search/types/card-layout-config';
+import { getSortOption } from '@/app/(app)/shared/utils/getSortOption';
 
 const log = createLogger('search-page');
 
@@ -47,8 +48,7 @@ function parseSearchParams(raw: RawSearchParams): FindResourcesQuery {
         .map(Number)
         .filter((n) => !isNaN(n))
     : undefined;
-  const validSort = isSortOption(parsed.sort) ? parsed.sort : undefined;
-  const sort = validSort === 'distance' && !coordinates ? undefined : validSort;
+  const sort = getSortOption(String(parsed.sort), coordinates);
 
   return {
     query:
