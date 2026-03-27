@@ -1,8 +1,8 @@
 import { bboxPolygon } from '@turf/bbox-polygon';
 import type { Polygon } from 'geojson';
-import { isTaxonomyCode } from '../services/taxonomy-service';
 import { BBox } from '@/types/resource';
 import { FindResourcesQuery } from '../services/search-service';
+import { isTaxonomyCode } from '../utils/is-taxonomy-code';
 
 /**
  * Check if advanced geospatial filtering is enabled via feature flag
