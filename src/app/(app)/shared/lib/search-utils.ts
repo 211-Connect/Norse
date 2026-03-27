@@ -1,8 +1,8 @@
 import { bboxPolygon } from '@turf/bbox-polygon';
 import type { Polygon } from 'geojson';
-import { TaxonomyService } from '../services/taxonomy-service';
 import { BBox } from '@/types/resource';
 import { FindResourcesQuery } from '../services/search-service';
+import { isTaxonomyCode } from '../utils/is-taxonomy-code';
 
 /**
  * Check if advanced geospatial filtering is enabled via feature flag
@@ -208,14 +208,14 @@ export function deriveQueryType(
 
     // 2. Check if entire query is a single taxonomy code
     //    (handles codes with internal commas like Standard:00015795,015)
-    if (TaxonomyService.isTaxonomyCode(normalizedQuery)) {
+    if (isTaxonomyCode(normalizedQuery)) {
       return QueryType.Taxonomy;
     }
 
     // 3. Split by comma and check if all parts are taxonomy codes
     const parts = normalizedQuery.split(',').map((part) => part.trim());
     const allAreTaxonomyCodes = parts.every(
-      (part) => part.length > 0 && TaxonomyService.isTaxonomyCode(part),
+      (part) => part.length > 0 && isTaxonomyCode(part),
     );
 
     if (allAreTaxonomyCodes) {
