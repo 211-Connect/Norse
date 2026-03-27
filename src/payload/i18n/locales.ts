@@ -57,3 +57,7 @@ export function assertValidLocale(
     throw new Error(`Invalid locale: ${locale}`);
   }
 }
+
+export function isValidLocale(locale: unknown): boolean {
+  return typeof locale === 'string' && validLocaleCodes.has(locale);
+}
