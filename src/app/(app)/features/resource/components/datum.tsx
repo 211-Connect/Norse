@@ -73,10 +73,11 @@ export function Datum({
           >
             {parsedDescription}
           </Typography>
-          <div className="flex flex-row">
+          <div className="flex flex-row items-center">
             <Typography variant="label" size="sm">
               {title}
             </Typography>
+            {title && subtitle && <span className="mx-1">·</span>}
             <Typography variant="paragraph" size="sm">
               {subtitle}
             </Typography>
