@@ -17,11 +17,13 @@ import {
 import { SeparatorComponent } from '../../resource/components/resource-components';
 import { AppConfig } from '@/types/appConfig';
 import { getBadgesForResource } from '@/utils/getBadgesForResource';
+import { AttributionComponent } from './search-card-components/attribution';
 
 export const searchCardComponentRegistry: Record<
   SearchCardComponentId,
   ComponentType<SearchCardComponentProps>
 > = {
+  [SearchCardComponentId.ATTRIBUTION]: AttributionComponent,
   [SearchCardComponentId.BADGES]: BadgesComponent,
   [SearchCardComponentId.RESOURCE_NAME]: ResourceNameComponent,
   [SearchCardComponentId.SERVICE_NAME]: ServiceNameComponent,

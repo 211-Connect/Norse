@@ -20,6 +20,7 @@ import qs from 'qs';
 import { createLogger } from '@/lib/logger';
 import { formatAddressForDisplay } from '../lib/utils';
 import { stableHash, withCache } from '@/utilities/withCache';
+import { ResultType } from '../store/results';
 
 const log = createLogger('search');
 
@@ -104,11 +105,18 @@ function transformSearchHits(
     const physicalAddress = hit._source?.location?.physical_address;
     const mainAddress = formatAddressForDisplay(physicalAddress);
 
-    const responseData: Record<string, any> = {
+    const transformedFacets = transformFacetsToArray(
+      hit?._source?.facets,
+      facetDefinitions,
+      locale,
+    );
+
+    const responseData: ResultType = {
       _id: hit._id,
       id: hit?._source?.service_at_location_id ?? null,
       priority: hit?._source?.priority,
       serviceName: hit?._source?.service?.name ?? null,
+      attribution: hit?._source?.attribution ?? null,
       name: hit?._source?.name ?? null,
       summary: hit?._source?.service?.summary ?? null,
       description: hit?._source?.service?.description ?? null,
@@ -118,16 +126,8 @@ function transformSearchHits(
       location: hit?._source?.location?.point ?? null,
       taxonomies: hit?._source?.taxonomies ?? null,
       attributeValues: hit?._source?.attribute_values ?? null,
+      facets: transformedFacets.length > 0 ? transformedFacets : null,
     };
-
-    const transformedFacets = transformFacetsToArray(
-      hit?._source?.facets,
-      facetDefinitions,
-      locale,
-    );
-    if (transformedFacets.length > 0) {
-      responseData.facets = transformedFacets;
-    }
 
     return Object.fromEntries(
       Object.entries(responseData).filter(([_, value]) => value != null),

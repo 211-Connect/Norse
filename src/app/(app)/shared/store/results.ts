@@ -10,11 +10,13 @@ export type ResultType = {
   location: Location | null;
   name: string;
   phone: string;
+  attribution: string | null;
   priority: number;
   serviceName: string;
   website: string;
   taxonomies: Taxonomy[];
   facets: FacetWithTranslation[] | null | undefined;
+  attributeValues: Record<string, string>;
 };
 
 export const resultsAtom = atom<ResultType[]>([]);

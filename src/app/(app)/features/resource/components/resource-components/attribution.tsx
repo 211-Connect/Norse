@@ -5,7 +5,11 @@ import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
 import { Resource } from '@/types/resource';
 import { Datum } from '../datum';
 
-export function AttributionComponent({ resource }: { resource: Resource }) {
+export function AttributionComponent({
+  resource,
+}: {
+  resource: Pick<Resource, 'attribution'>;
+}) {
   const { t } = useTranslation('page-resource');
   const showAttribution = useFlag('showResourceAttribution');
 
