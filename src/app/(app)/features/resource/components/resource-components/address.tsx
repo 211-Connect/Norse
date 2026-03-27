@@ -85,7 +85,7 @@ export function AddressComponent({
     <div className="flex items-center justify-between gap-1">
       {AddressElement}
       {distance && (
-        <Typography variant="paragraph" size="sm">
+        <Typography variant="paragraph" size="sm" className="w-16 text-end">
           {distanceDisplay}
         </Typography>
       )}
