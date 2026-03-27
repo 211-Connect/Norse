@@ -1,4 +1,5 @@
 export enum SearchCardComponentId {
+  ATTRIBUTION = 'attribution',
   BADGES = 'badges',
   RESOURCE_NAME = 'resourceName',
   SERVICE_NAME = 'serviceName',

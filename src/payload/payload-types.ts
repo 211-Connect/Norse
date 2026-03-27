@@ -763,6 +763,7 @@ export interface ResourceDirectory {
     cardLayout?:
       | {
           componentId:
+            | 'attribution'
             | 'badges'
             | 'resourceName'
             | 'serviceName'
