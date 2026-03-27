@@ -67,6 +67,16 @@ export const ResourceDirectories: CollectionConfig = {
   fields: [
     {
       type: 'ui',
+      name: 'cachingAlert',
+      admin: {
+        components: {
+          Field:
+            '@/payload/collections/ResourceDirectories/components/CachingAlert',
+        },
+      },
+    },
+    {
+      type: 'ui',
       name: 'actionButtons',
       admin: {
         position: 'above',
