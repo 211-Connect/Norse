@@ -1,10 +1,13 @@
 'use client';
 
+import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
 import { SearchCardComponentProps } from './types';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
 
 export function ServiceNameComponent({ result }: SearchCardComponentProps) {
-  if (!result.serviceName) {
+  const showServiceName = useFlag('showSearchAndResourceServiceName');
+
+  if (!showServiceName || !result.serviceName) {
     return null;
   }
 
