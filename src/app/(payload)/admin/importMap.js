@@ -3,6 +3,7 @@ import { default as default_feaf6b52f59b1e80713468d4249f1e7d } from '@/payload/c
 import { WatchTenantCollection as WatchTenantCollection_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
 import { TenantField as TenantField_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
 import { AssignTenantFieldTrigger as AssignTenantFieldTrigger_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
+import { default as default_2ccbfbffeb17d03ee37dc047df75b328 } from '@/payload/collections/ResourceDirectories/components/CachingAlert'
 import { default as default_195dd2bf68ebc55b917ae596e82c7581 } from '@/payload/collections/ResourceDirectories/components/ResourceDirectoryActions'
 import { default as default_770fe60ed8029346277f652cebdaf650 } from '@/payload/components/LabelInfoTooltip'
 import { default as default_f772357a6881d7587c9d743ce8b90802 } from '@/payload/components/ColorPicker'
@@ -36,6 +37,7 @@ export const importMap = {
   "@payloadcms/plugin-multi-tenant/client#WatchTenantCollection": WatchTenantCollection_1d0591e3cf4f332c83a86da13a0de59a,
   "@payloadcms/plugin-multi-tenant/client#TenantField": TenantField_1d0591e3cf4f332c83a86da13a0de59a,
   "@payloadcms/plugin-multi-tenant/client#AssignTenantFieldTrigger": AssignTenantFieldTrigger_1d0591e3cf4f332c83a86da13a0de59a,
+  "@/payload/collections/ResourceDirectories/components/CachingAlert#default": default_2ccbfbffeb17d03ee37dc047df75b328,
   "@/payload/collections/ResourceDirectories/components/ResourceDirectoryActions#default": default_195dd2bf68ebc55b917ae596e82c7581,
   "@/payload/components/LabelInfoTooltip#default": default_770fe60ed8029346277f652cebdaf650,
   "@/payload/components/ColorPicker#default": default_f772357a6881d7587c9d743ce8b90802,
