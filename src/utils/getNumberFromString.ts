@@ -2,6 +2,10 @@ export const getNumberFromString = (
   value: string | number | undefined,
   defaultValue: number,
 ): number => {
+  if (value === undefined || value === '') {
+    return defaultValue;
+  }
+
   if (typeof value === 'number') {
     return value;
   }
