@@ -103,12 +103,6 @@ const config = buildConfig({
       connectionString: process.env.DATABASE_URI,
       min: getNumberFromString(process.env.DATABASE_POOL_MIN, 1),
       max: getNumberFromString(process.env.DATABASE_POOL_MAX, 4),
-      idle_in_transaction_session_timeout: 20_000,
-      keepAliveInitialDelayMillis: 10_000,
-      statement_timeout: 15_000,
-      query_timeout: 10_000,
-      idleTimeoutMillis: 30_000,
-      connectionTimeoutMillis: 20_000,
     },
     allowIDOnCreate: true,
     beforeSchemaInit: [
