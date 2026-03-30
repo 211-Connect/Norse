@@ -25,14 +25,7 @@ import { useUncontrolled } from '@/app/(app)/shared/hooks/use-uncontrolled';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { Input, InputProps } from './input';
 import { Separator } from './separator';
-import { SearchIcon, XIcon } from 'lucide-react';
-import { Button } from './button';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from './tooltip';
+import { SearchIcon } from 'lucide-react';
 import { Badge } from './badge';
 import { useOnPointerDownOutside } from '../../hooks/use-on-pointer-down-outside';
 
@@ -117,7 +110,6 @@ export function Autocomplete(props: AutocompleteProps) {
     onChange: onValueChange,
   });
   const [tempValue, setTempValue] = useState(value || '');
-  const clearButtonRef = useRef(null);
 
   const stayOpenOnBlurRef = useRef(false);
 
@@ -439,19 +431,6 @@ export function Autocomplete(props: AutocompleteProps) {
     ],
   );
 
-  const clear = useCallback(
-    (e) => {
-      e?.preventDefault();
-      setCurrentIndex(-1);
-      setValue('');
-      onInputChange?.('');
-      referenceElement?.focus();
-      setOpen(true);
-      setLastManualInput('');
-    },
-    [setValue, onInputChange, referenceElement],
-  );
-
   const handleOptionMouseEnter = useCallback(
     (index: number) => {
       return () => {
@@ -483,10 +462,7 @@ export function Autocomplete(props: AutocompleteProps) {
         }
       }
 
-      if (
-        clearButtonRef.current !== e.relatedTarget &&
-        !stayOpenOnBlurRef.current
-      ) {
+      if (!stayOpenOnBlurRef.current) {
         closeOptions();
       }
     },
@@ -558,31 +534,6 @@ export function Autocomplete(props: AutocompleteProps) {
           }
           role="combobox"
         />
-
-        <TooltipProvider>
-          <Tooltip delayDuration={100}>
-            <TooltipTrigger asChild autoFocus={false} tabIndex={-1}>
-              <Button
-                ref={clearButtonRef}
-                size="icon"
-                variant="ghost"
-                className={cn(
-                  (value?.length ?? 0) > 0 ? 'visible' : 'invisible',
-                  'absolute right-0 top-0 h-full hover:bg-transparent hover:bg-none',
-                )}
-                onClick={clear}
-                aria-label="Clear"
-                data-testid="search-clear-btn"
-                type="button"
-              >
-                <XIcon className={cn('h-4 w-4 shrink-0 opacity-50')} />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              <span>Clear</span>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
 
         {open && (
           <div
