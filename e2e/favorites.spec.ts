@@ -106,11 +106,9 @@ test.describe('Favorites Feature (Authenticated)', () => {
 
     const nameInput = page.locator('#name');
     await expect(nameInput).toBeVisible({ timeout: 5000 });
-    await nameInput.clear();
     await nameInput.fill(updatedListName);
 
     const descInput = page.locator('#description');
-    await descInput.clear();
     await descInput.fill(updatedDescription);
 
     await page.getByTestId('update-list-submit-btn').click();
