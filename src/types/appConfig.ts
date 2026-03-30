@@ -175,7 +175,6 @@ export type AppConfig = {
     target?: '_self' | '_blank';
   }[];
   providersCustomHeading?: string;
-  smsProvider?: 'Twilio';
   topics: {
     iconSize: 'small' | 'medium';
     imageBorderRadius?: number;

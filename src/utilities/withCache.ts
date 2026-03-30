@@ -18,7 +18,7 @@ type TenantId = string;
 type Hash = string;
 
 export type CacheKey =
-  | `tenant:${Domain}`
+  | `tenant:${Domain | TenantId}`
   | `tenant_locale:${Domain}`
   | `resource_directory:${Domain}:${Locale}`
   | `search_results:${TenantId}:${Locale}:${Hash}`

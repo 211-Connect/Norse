@@ -22,7 +22,7 @@ export const pushOrchestrationConfigToCache: CollectionAfterChangeHook<
   }
 
   try {
-    const tenant = await findTenantById(tenantId);
+    const tenant = await findTenantById(tenantId, false);
 
     if (!tenant?.enabledLocales) {
       log.warn(

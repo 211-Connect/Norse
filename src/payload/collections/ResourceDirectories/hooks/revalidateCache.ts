@@ -15,7 +15,7 @@ export async function revalidateCache({
 
   if (typeof tenantId === 'string') {
     try {
-      const tenant = await findTenantById(tenantId);
+      const tenant = await findTenantById(tenantId, false);
 
       if (tenant && tenant.trustedDomains) {
         const cacheKeys = tenant.trustedDomains.map(({ domain }): CacheKey => {

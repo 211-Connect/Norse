@@ -48,11 +48,6 @@ export const common: Tab = {
       ],
     },
     {
-      name: 'smsProvider',
-      type: 'select',
-      options: ['Twilio'],
-    },
-    {
       name: 'customDataProvidersHeading',
       type: 'text',
       localized: true,
