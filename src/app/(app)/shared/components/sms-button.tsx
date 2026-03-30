@@ -3,7 +3,6 @@
 import { Send, Smartphone } from 'lucide-react';
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { useSetAtom } from 'jotai';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
@@ -18,7 +17,6 @@ import {
 } from './ui/dialog';
 import { Input } from './ui/input';
 import { useAppConfig } from '../hooks/use-app-config';
-import { dialogsAtom } from '../store/dialogs';
 import { fetchWrapper } from '../lib/fetchWrapper';
 
 export function SmsButton({ title = '', body = '', shortUrl = '' }) {
@@ -27,7 +25,6 @@ export function SmsButton({ title = '', body = '', shortUrl = '' }) {
   const [phoneNumber, setPhoneNumber] = useState('');
   const appConfig = useAppConfig();
   const session = useSession();
-  const setDialog = useSetAtom(dialogsAtom);
   const [message, setMessage] = useState('');
 
   const phoneNumberSchema = z.string().refine((value) => {
@@ -41,28 +38,7 @@ export function SmsButton({ title = '', body = '', shortUrl = '' }) {
   };
 
   const handleClick = () => {
-    if (!true) {
-      const { userAgent } = navigator;
-      const isIOS = /iPhone|iPad|iPod|Macintosh/i.test(userAgent);
-      let smsLink = '';
-      if (isIOS) {
-        smsLink = `sms:&body=\n${encodeURIComponent(`${title}\n\n${body}\n\n${shortUrl}`)}`;
-      } else {
-        smsLink = `sms:?body=\n${encodeURIComponent(`${title}\n\n${body}\n\n${shortUrl}`)}`;
-      }
-      window.open(smsLink, '_blank');
-    } else if (!session.data) {
-      setOpen(true);
-      // setDialog((prev) => ({
-      //   ...prev,
-      //   promptAuth: {
-      //     ...prev.promptAuth,
-      //     open: true,
-      //   },
-      // }));
-    } else {
-      setOpen(true);
-    }
+    setOpen(true);
   };
 
   const sendSms = async () => {
