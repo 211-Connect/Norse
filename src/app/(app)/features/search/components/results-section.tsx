@@ -11,6 +11,7 @@ import { RenderResults } from './render-results';
 import { ResultsPagination } from './results-pagination';
 import { SortSelect } from './sort-select';
 import { SearchCardLayoutConfig } from '../types/card-layout-config';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 
 type ResultsSectionProps = {
   cardLayout: SearchCardLayoutConfig;
@@ -19,6 +20,9 @@ type ResultsSectionProps = {
 export function ResultsSection({ cardLayout }: ResultsSectionProps) {
   const componentToPrintRef = useRef<HTMLDivElement>(null);
   const noResults = useAtomValue(noResultsAtom);
+  const appConfig = useAppConfig();
+
+  const showSort = !appConfig.search.hybridSemanticSearchEnabled;
 
   return (
     <div
@@ -35,7 +39,7 @@ export function ResultsSection({ cardLayout }: ResultsSectionProps) {
             <ShareButton componentToPrintRef={componentToPrintRef} />
           </div>
         </div>
-        {!noResults && <SortSelect />}
+        {showSort && <SortSelect />}
       </div>
 
       <div className="flex flex-col gap-6" ref={componentToPrintRef}>
