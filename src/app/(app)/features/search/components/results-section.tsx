@@ -11,7 +11,7 @@ import { RenderResults } from './render-results';
 import { ResultsPagination } from './results-pagination';
 import { SortSelect } from './sort-select';
 import { SearchCardLayoutConfig } from '../types/card-layout-config';
-import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { queryTypeAtom } from '@/app/(app)/shared/store/search';
 
 type ResultsSectionProps = {
   cardLayout: SearchCardLayoutConfig;
@@ -20,9 +20,9 @@ type ResultsSectionProps = {
 export function ResultsSection({ cardLayout }: ResultsSectionProps) {
   const componentToPrintRef = useRef<HTMLDivElement>(null);
   const noResults = useAtomValue(noResultsAtom);
-  const appConfig = useAppConfig();
+  const queryType = useAtomValue(queryTypeAtom);
 
-  const showSort = !appConfig.search.hybridSemanticSearchEnabled;
+  const showSort = queryType !== 'hybrid';
 
   return (
     <div
