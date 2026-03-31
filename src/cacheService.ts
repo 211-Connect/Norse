@@ -50,22 +50,23 @@ class CacheService {
     try {
       this.client = new Redis(process.env.CACHE_REDIS_URI!, {
         db: this.db,
-        maxRetriesPerRequest: 3,
+        maxRetriesPerRequest: 1,
         enableReadyCheck: true,
-        enableOfflineQueue: true,
+        enableOfflineQueue: false,
         keepAlive: 30_000,
-        connectTimeout: 10_000,
-        commandTimeout: 5_000,
+        connectTimeout: 3_000,
+        commandTimeout: 1_000,
         lazyConnect: true,
         retryStrategy: (times) => {
-          if (times > 5) {
+          // 0.25s → 0.5s → 0.75s → 1s, then give up (~2.5s total)
+          if (times > 4) {
             log.error(
               { db: this.db, attempts: times },
-              'Redis reconnection failed',
+              'Redis reconnection failed; giving up',
             );
             return null;
           }
-          const delay = Math.pow(2, times) * 1000;
+          const delay = times * 250;
           log.debug(
             { db: this.db, attempt: times, delayMs: delay },
             'Redis will reconnect',
@@ -112,7 +113,6 @@ class CacheService {
       await this.client.flushdb();
     } catch (error) {
       log.error({ err: error, db: this.db }, 'Redis clear error');
-      throw error;
     }
   }
 
@@ -130,7 +130,6 @@ class CacheService {
       }
     } catch (error) {
       log.error({ err: error, db: this.db }, 'Redis set error');
-      throw error;
     }
   }
 
@@ -152,7 +151,6 @@ class CacheService {
       await this.client.del(key);
     } catch (error) {
       log.error({ err: error, db: this.db }, 'Redis del error');
-      throw error;
     }
   }
 
@@ -194,7 +192,7 @@ class CacheService {
       return deletedCount;
     } catch (error) {
       log.error({ err: error, db: this.db }, 'Redis delPattern error');
-      throw error;
+      return 0;
     }
   }
 
