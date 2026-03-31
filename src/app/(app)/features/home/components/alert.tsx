@@ -34,7 +34,9 @@ export default function Alert({ itemsDirection }: AlertProps) {
   const variant = appConfig?.alert?.variant || 'destructive';
 
   return (
-    <div className="flex items-center justify-center p-8">
+    <div
+      className={`flex items-center justify-center p-2 ${itemsDirection === 'col' ? 'lg:p-4' : 'lg:p-8'}`}
+    >
       <AlertComponent variant={variant} className="flex w-auto">
         <div
           className={cn(
