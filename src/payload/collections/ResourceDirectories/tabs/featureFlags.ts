@@ -1,10 +1,9 @@
 import { Tab } from 'payload';
 import {
-  hasFeatureFieldAccess,
-  hasLayoutFieldAccess,
-  hasResourceNavigationFieldAccess,
-  hasSearchFieldAccess,
-} from '../../Users/access/permissions';
+  superAdminFieldAccess,
+  superAdminOrSupportFieldAccess,
+  superAdminOrSupportOrTenantFieldAccess,
+} from '../../Users/access/roles';
 
 export const featureFlags: Tab = {
   name: 'featureFlags',
@@ -14,8 +13,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: hasResourceNavigationFieldAccess,
-        update: hasResourceNavigationFieldAccess,
+        create: superAdminOrSupportOrTenantFieldAccess,
+        update: superAdminOrSupportOrTenantFieldAccess,
       },
     },
     {
@@ -23,8 +22,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
+        create: superAdminFieldAccess,
+        update: superAdminFieldAccess,
       },
     },
     {
@@ -32,8 +31,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
+        create: superAdminFieldAccess,
+        update: superAdminFieldAccess,
       },
     },
     {
@@ -41,8 +40,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
+        create: superAdminFieldAccess,
+        update: superAdminFieldAccess,
       },
     },
     {
@@ -50,8 +49,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
+        create: superAdminFieldAccess,
+        update: superAdminFieldAccess,
       },
     },
     {
@@ -59,8 +58,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: hasFeatureFieldAccess,
-        update: hasFeatureFieldAccess,
+        create: superAdminOrSupportFieldAccess,
+        update: superAdminOrSupportFieldAccess,
       },
     },
     {
@@ -68,8 +67,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: hasSearchFieldAccess,
-        update: hasSearchFieldAccess,
+        create: superAdminOrSupportOrTenantFieldAccess,
+        update: superAdminOrSupportOrTenantFieldAccess,
       },
     },
     {
@@ -77,8 +76,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
+        create: superAdminFieldAccess,
+        update: superAdminFieldAccess,
       },
     },
     {
@@ -86,8 +85,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: hasResourceNavigationFieldAccess,
-        update: hasResourceNavigationFieldAccess,
+        create: superAdminOrSupportOrTenantFieldAccess,
+        update: superAdminOrSupportOrTenantFieldAccess,
       },
     },
     {
@@ -95,8 +94,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: hasFeatureFieldAccess,
-        update: hasFeatureFieldAccess,
+        create: superAdminOrSupportFieldAccess,
+        update: superAdminOrSupportFieldAccess,
       },
     },
     {
@@ -104,8 +103,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: hasFeatureFieldAccess,
-        update: hasFeatureFieldAccess,
+        create: superAdminOrSupportFieldAccess,
+        update: superAdminOrSupportFieldAccess,
       },
     },
     {
@@ -113,8 +112,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: true,
       access: {
-        create: hasFeatureFieldAccess,
-        update: hasFeatureFieldAccess,
+        create: superAdminOrSupportFieldAccess,
+        update: superAdminOrSupportFieldAccess,
       },
     },
     {
@@ -122,8 +121,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: hasFeatureFieldAccess,
-        update: hasFeatureFieldAccess,
+        create: superAdminOrSupportFieldAccess,
+        update: superAdminOrSupportFieldAccess,
       },
     },
     {
@@ -131,8 +130,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: true,
       access: {
-        create: hasFeatureFieldAccess,
-        update: hasFeatureFieldAccess,
+        create: superAdminOrSupportFieldAccess,
+        update: superAdminOrSupportFieldAccess,
       },
     },
   ],

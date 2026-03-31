@@ -1,5 +1,5 @@
 import { Field, Tab } from 'payload';
-import { hasLayoutFieldAccess } from '../../Users/access/permissions';
+import { superAdminOrSupportOrTenantFieldAccess } from '../../Users/access/roles';
 import { ResourceComponentId } from '@/app/(app)/features/resource/types/component-ids';
 import { title } from 'radash';
 import { ResourceDirectory } from '@/payload/payload-types';
@@ -68,8 +68,8 @@ export const resource: Tab = {
       type: 'text',
       localized: true,
       access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
+        create: superAdminOrSupportOrTenantFieldAccess,
+        update: superAdminOrSupportOrTenantFieldAccess,
       },
     },
     {
@@ -85,8 +85,8 @@ export const resource: Tab = {
         },
       },
       access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
+        create: superAdminOrSupportOrTenantFieldAccess,
+        update: superAdminOrSupportOrTenantFieldAccess,
       },
     },
     {
@@ -111,8 +111,8 @@ export const resource: Tab = {
         description: 'Configure groups of components for the left column',
       },
       access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
+        create: superAdminOrSupportOrTenantFieldAccess,
+        update: superAdminOrSupportOrTenantFieldAccess,
       },
       fields: columnGroupFields,
     },
@@ -126,8 +126,8 @@ export const resource: Tab = {
         description: 'Configure groups of components for the right column',
       },
       access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
+        create: superAdminOrSupportOrTenantFieldAccess,
+        update: superAdminOrSupportOrTenantFieldAccess,
       },
       fields: columnGroupFields,
     },

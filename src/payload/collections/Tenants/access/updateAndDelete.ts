@@ -3,6 +3,9 @@ import { getUserTenantIDs } from '@/payload/utilities/getUserTenantIDs';
 import { Access } from 'payload';
 import { isSuperAdmin, isSupport } from '../../Users/access/roles';
 
+/**
+ * Both tenant admins and editors can modify tenant settings
+ */
 export const updateAndDeleteAccess: Access = ({ req }) => {
   if (!req.user) {
     return false;
@@ -14,7 +17,7 @@ export const updateAndDeleteAccess: Access = ({ req }) => {
 
   return {
     id: {
-      in: getUserTenantIDs(req.user, 'tenant-admin'),
+      in: getUserTenantIDs(req.user),
     },
   };
 };

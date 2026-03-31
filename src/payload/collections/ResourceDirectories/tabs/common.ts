@@ -1,8 +1,8 @@
 import { Tab } from 'payload';
 import {
-  hasLayoutFieldAccess,
-  hasResourceNavigationFieldAccess,
-} from '../../Users/access/permissions';
+  superAdminFieldAccess,
+  superAdminOrSupportOrTenantFieldAccess,
+} from '../../Users/access/roles';
 import { generateUrlFields } from '@/payload/fields/urlField';
 
 export const common: Tab = {
@@ -14,8 +14,8 @@ export const common: Tab = {
       localized: true,
       maxRows: 1,
       access: {
-        create: hasResourceNavigationFieldAccess,
-        update: hasResourceNavigationFieldAccess,
+        create: superAdminOrSupportOrTenantFieldAccess,
+        update: superAdminOrSupportOrTenantFieldAccess,
       },
       fields: [
         {
@@ -57,8 +57,8 @@ export const common: Tab = {
       type: 'text',
       localized: true,
       access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
+        create: superAdminFieldAccess,
+        update: superAdminFieldAccess,
       },
       admin: {
         placeholder: 'Provided by',
@@ -73,8 +73,8 @@ export const common: Tab = {
         plural: 'Data Providers',
       },
       access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
+        create: superAdminFieldAccess,
+        update: superAdminFieldAccess,
       },
       fields: [
         {

@@ -1,9 +1,8 @@
 import { Tab } from 'payload';
 import {
-  hasLayoutFieldAccess,
-  hasResourceNavigationFieldAccess,
-  hasSiteNavigationFieldAccess,
-} from '../../Users/access/permissions';
+  superAdminFieldAccess,
+  superAdminOrSupportOrTenantFieldAccess,
+} from '../../Users/access/roles';
 import { generateUrlFields } from '@/payload/fields/urlField';
 
 export const topics: Tab = {
@@ -15,8 +14,8 @@ export const topics: Tab = {
       name: 'backText',
       localized: true,
       access: {
-        create: hasSiteNavigationFieldAccess,
-        update: hasSiteNavigationFieldAccess,
+        create: superAdminOrSupportOrTenantFieldAccess,
+        update: superAdminOrSupportOrTenantFieldAccess,
       },
     },
     {
@@ -29,8 +28,8 @@ export const topics: Tab = {
       },
       localized: true,
       access: {
-        create: hasResourceNavigationFieldAccess,
-        update: hasResourceNavigationFieldAccess,
+        create: superAdminOrSupportOrTenantFieldAccess,
+        update: superAdminOrSupportOrTenantFieldAccess,
       },
     },
     {
@@ -39,24 +38,24 @@ export const topics: Tab = {
       options: ['small', 'medium'],
       defaultValue: 'small',
       access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
+        create: superAdminFieldAccess,
+        update: superAdminFieldAccess,
       },
     },
     {
       name: 'imageBorderRadius',
       type: 'number',
       access: {
-        create: hasResourceNavigationFieldAccess,
-        update: hasResourceNavigationFieldAccess,
+        create: superAdminOrSupportOrTenantFieldAccess,
+        update: superAdminOrSupportOrTenantFieldAccess,
       },
     },
     {
       name: 'list',
       type: 'array',
       access: {
-        create: hasResourceNavigationFieldAccess,
-        update: hasResourceNavigationFieldAccess,
+        create: superAdminOrSupportOrTenantFieldAccess,
+        update: superAdminOrSupportOrTenantFieldAccess,
       },
       admin: {
         components: {

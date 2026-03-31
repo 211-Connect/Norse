@@ -7,11 +7,11 @@ export const isSuperAdmin = (user: Pick<User, 'roles'> | null): boolean => {
   return Boolean(user?.roles?.includes('super-admin'));
 };
 
-export const isSuperAdminAccess: Access = ({ req }): boolean => {
+export const superAdminAccess: Access = ({ req }) => {
   return isSuperAdmin(req.user);
 };
 
-export const isSuperAdminFieldAccess: FieldAccess = ({ req }) => {
+export const superAdminFieldAccess: FieldAccess = ({ req }) => {
   return isSuperAdmin(req.user);
 };
 
@@ -20,32 +20,26 @@ export const isSupport = (user: User | null): boolean => {
   return Boolean(user?.roles?.includes('support'));
 };
 
-export const isSupportAccess: Access = ({ req }): boolean => {
-  return isSupport(req.user);
-};
-
-export const isSupportFieldAccess: FieldAccess = ({ req }) => {
-  return isSupport(req.user);
-};
-
 /* TENANT */
 export const isTenant = (user: User | null): boolean => {
   return Boolean(user?.roles?.includes('tenant'));
 };
 
-export const isTenantAccess: Access = ({ req }): boolean => {
-  return isTenant(req.user);
-};
-
-export const isTenantFieldAccess: FieldAccess = ({ req }) => {
-  return isTenant(req.user);
-};
-
 /* COMBINED ROLES */
-export const isSuperAdminOrSupportAccess: Access = ({ req }): boolean => {
+export const superAdminOrSupportAccess: Access = ({ req }) => {
   return isSuperAdmin(req.user) || isSupport(req.user);
 };
 
-export const isSuperAdminOrSupportFieldAccess: FieldAccess = ({ req }) => {
+export const superAdminOrSupportFieldAccess: FieldAccess = ({ req }) => {
   return isSuperAdmin(req.user) || isSupport(req.user);
+};
+
+export const superAdminOrSupportOrTenantAccess: Access = ({ req }) => {
+  return isSuperAdmin(req.user) || isSupport(req.user) || isTenant(req.user);
+};
+
+export const superAdminOrSupportOrTenantFieldAccess: FieldAccess = ({
+  req,
+}) => {
+  return isSuperAdmin(req.user) || isSupport(req.user) || isTenant(req.user);
 };

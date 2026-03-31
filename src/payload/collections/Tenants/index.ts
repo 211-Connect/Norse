@@ -6,14 +6,11 @@ import { hasResourceDirectory } from './validators/hasResourceDirectory';
 import { revalidateCache } from './hooks/revalidateCache';
 import { pushRealmIdToCache } from './hooks/pushRealmIdToCache';
 import {
-  isSuperAdminAccess,
-  isSuperAdminFieldAccess,
-  isSuperAdminOrSupportFieldAccess,
+  superAdminAccess,
+  superAdminFieldAccess,
+  superAdminOrSupportAccess,
+  superAdminOrSupportFieldAccess,
 } from '../Users/access/roles';
-import {
-  hasFeatureFieldAccess,
-  hasPropertySettingsFieldAccess,
-} from '../Users/access/permissions';
 import { removeRelatedResources } from './hooks/removeRelatedResources';
 import { invalidateApiCache } from '../ResourceDirectories/hooks/invalidateApiCache';
 
@@ -25,7 +22,7 @@ export const Tenants: CollectionConfig = {
     plural: 'Sites',
   },
   access: {
-    create: isSuperAdminAccess,
+    create: superAdminAccess,
     delete: updateAndDeleteAccess,
     update: updateAndDeleteAccess,
   },
@@ -55,8 +52,8 @@ export const Tenants: CollectionConfig = {
       required: true,
       unique: true,
       access: {
-        update: isSuperAdminFieldAccess,
-        create: isSuperAdminFieldAccess,
+        update: superAdminFieldAccess,
+        create: superAdminFieldAccess,
       },
     },
     {
@@ -65,8 +62,8 @@ export const Tenants: CollectionConfig = {
       required: true,
       unique: true,
       access: {
-        update: isSuperAdminOrSupportFieldAccess,
-        create: isSuperAdminOrSupportFieldAccess,
+        update: superAdminOrSupportFieldAccess,
+        create: superAdminOrSupportFieldAccess,
       },
     },
     {
@@ -75,8 +72,8 @@ export const Tenants: CollectionConfig = {
       required: false,
       defaultValue: [],
       access: {
-        update: hasPropertySettingsFieldAccess,
-        create: hasPropertySettingsFieldAccess,
+        update: superAdminFieldAccess,
+        create: superAdminFieldAccess,
       },
       fields: [
         {
@@ -98,8 +95,8 @@ export const Tenants: CollectionConfig = {
           defaultValue: defaultLocale,
           options: locales,
           access: {
-            update: hasPropertySettingsFieldAccess,
-            create: hasPropertySettingsFieldAccess,
+            update: superAdminFieldAccess,
+            create: superAdminFieldAccess,
           },
         },
         {
@@ -109,8 +106,8 @@ export const Tenants: CollectionConfig = {
           defaultValue: defaultLocale,
           options: locales,
           access: {
-            update: hasPropertySettingsFieldAccess,
-            create: hasPropertySettingsFieldAccess,
+            update: superAdminFieldAccess,
+            create: superAdminFieldAccess,
           },
         },
       ],
@@ -126,8 +123,8 @@ export const Tenants: CollectionConfig = {
         },
       },
       access: {
-        create: isSuperAdminOrSupportFieldAccess,
-        update: isSuperAdminOrSupportFieldAccess,
+        create: superAdminOrSupportFieldAccess,
+        update: superAdminOrSupportFieldAccess,
       },
       fields: [
         {
@@ -148,9 +145,9 @@ export const Tenants: CollectionConfig = {
       name: 'auth',
       type: 'group',
       access: {
-        create: isSuperAdminFieldAccess,
-        read: isSuperAdminFieldAccess,
-        update: isSuperAdminFieldAccess,
+        create: superAdminFieldAccess,
+        read: superAdminFieldAccess,
+        update: superAdminFieldAccess,
       },
       fields: [
         {
@@ -192,9 +189,9 @@ export const Tenants: CollectionConfig = {
       type: 'group',
       label: 'Common Settings',
       access: {
-        create: isSuperAdminOrSupportFieldAccess,
-        read: isSuperAdminOrSupportFieldAccess,
-        update: isSuperAdminOrSupportFieldAccess,
+        create: superAdminOrSupportFieldAccess,
+        read: superAdminOrSupportFieldAccess,
+        update: superAdminOrSupportFieldAccess,
       },
       fields: [
         {
@@ -216,8 +213,8 @@ export const Tenants: CollectionConfig = {
       type: 'group',
       label: 'Twilio Settings',
       access: {
-        create: hasFeatureFieldAccess,
-        update: hasFeatureFieldAccess,
+        create: superAdminOrSupportFieldAccess,
+        update: superAdminOrSupportFieldAccess,
       },
       fields: [
         {

@@ -1,5 +1,5 @@
 import { Tab } from 'payload';
-import { hasLayoutFieldAccess } from '../../Users/access/permissions';
+import { superAdminFieldAccess } from '../../Users/access/roles';
 import { generateUrlFields } from '@/payload/fields/urlField';
 
 export const newLayout: Tab = {
@@ -10,8 +10,8 @@ export const newLayout: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
+        create: superAdminFieldAccess,
+        update: superAdminFieldAccess,
       },
     },
     {
@@ -27,8 +27,8 @@ export const newLayout: Tab = {
             },
           },
           access: {
-            create: hasLayoutFieldAccess,
-            update: hasLayoutFieldAccess,
+            create: superAdminFieldAccess,
+            update: superAdminFieldAccess,
           },
         },
         {
@@ -41,8 +41,8 @@ export const newLayout: Tab = {
             },
           },
           access: {
-            create: hasLayoutFieldAccess,
-            update: hasLayoutFieldAccess,
+            create: superAdminFieldAccess,
+            update: superAdminFieldAccess,
           },
         },
       ],
@@ -55,8 +55,8 @@ export const newLayout: Tab = {
           type: 'upload',
           relationTo: 'tenant-media',
           access: {
-            create: hasLayoutFieldAccess,
-            update: hasLayoutFieldAccess,
+            create: superAdminFieldAccess,
+            update: superAdminFieldAccess,
           },
         },
         {
@@ -64,8 +64,8 @@ export const newLayout: Tab = {
           type: 'upload',
           relationTo: 'tenant-media',
           access: {
-            create: hasLayoutFieldAccess,
-            update: hasLayoutFieldAccess,
+            create: superAdminFieldAccess,
+            update: superAdminFieldAccess,
           },
         },
       ],
@@ -84,8 +84,8 @@ export const newLayout: Tab = {
           },
           maxRows: 4,
           access: {
-            create: hasLayoutFieldAccess,
-            update: hasLayoutFieldAccess,
+            create: superAdminFieldAccess,
+            update: superAdminFieldAccess,
           },
           fields: [
             {
@@ -115,8 +115,8 @@ export const newLayout: Tab = {
           type: 'text',
           localized: true,
           access: {
-            create: hasLayoutFieldAccess,
-            update: hasLayoutFieldAccess,
+            create: superAdminFieldAccess,
+            update: superAdminFieldAccess,
           },
         },
       ],

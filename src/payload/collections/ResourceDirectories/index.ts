@@ -19,8 +19,10 @@ import { featureFlags } from './tabs/featureFlags';
 import { privacyPolicyPage } from './tabs/privacyPolicyPage';
 import { termsOfUsePage } from './tabs/termsOfUsePage';
 import { highlights } from './tabs/highlights';
-import { isSuperAdminAccess } from '../Users/access/roles';
-import { hasThemeFieldAccess } from '../Users/access/permissions';
+import {
+  superAdminAccess,
+  superAdminOrSupportOrTenantFieldAccess,
+} from '../Users/access/roles';
 import { resource } from './tabs/resource';
 import { accessibility } from './tabs/accessibility';
 import { badges } from './tabs/badges';
@@ -30,8 +32,8 @@ export const ResourceDirectories: CollectionConfig = {
   // This avoid 63 character limit for some names
   dbName: 'rds',
   access: {
-    create: isSuperAdminAccess,
-    delete: isSuperAdminAccess,
+    create: superAdminAccess,
+    delete: superAdminAccess,
   },
   labels: {
     singular: 'Settings',
@@ -102,8 +104,8 @@ export const ResourceDirectories: CollectionConfig = {
           type: 'text',
           required: true,
           access: {
-            update: hasThemeFieldAccess,
-            create: hasThemeFieldAccess,
+            update: superAdminOrSupportOrTenantFieldAccess,
+            create: superAdminOrSupportOrTenantFieldAccess,
           },
         },
       ],

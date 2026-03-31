@@ -1,9 +1,8 @@
 import { Field, Tab } from 'payload';
 import {
-  hasPropertySettingsFieldAccess,
-  hasSearchFieldAccess,
-  hasLayoutFieldAccess,
-} from '../../Users/access/permissions';
+  superAdminFieldAccess,
+  superAdminOrSupportOrTenantFieldAccess,
+} from '../../Users/access/roles';
 import { SearchCardComponentId } from '@/app/(app)/features/search/types/card-component-ids';
 import { title } from 'radash';
 import { customAttributeFields } from '../fields/customAttributeFields';
@@ -48,8 +47,8 @@ export const search: Tab = {
               type: 'text',
               localized: true,
               access: {
-                create: hasSearchFieldAccess,
-                update: hasSearchFieldAccess,
+                create: superAdminOrSupportOrTenantFieldAccess,
+                update: superAdminOrSupportOrTenantFieldAccess,
               },
             },
             {
@@ -57,8 +56,8 @@ export const search: Tab = {
               type: 'text',
               localized: true,
               access: {
-                create: hasSearchFieldAccess,
-                update: hasSearchFieldAccess,
+                create: superAdminOrSupportOrTenantFieldAccess,
+                update: superAdminOrSupportOrTenantFieldAccess,
               },
             },
           ],
@@ -71,8 +70,8 @@ export const search: Tab = {
               type: 'text',
               localized: true,
               access: {
-                create: hasSearchFieldAccess,
-                update: hasSearchFieldAccess,
+                create: superAdminOrSupportOrTenantFieldAccess,
+                update: superAdminOrSupportOrTenantFieldAccess,
               },
             },
             {
@@ -80,8 +79,8 @@ export const search: Tab = {
               type: 'textarea',
               localized: true,
               access: {
-                create: hasSearchFieldAccess,
-                update: hasSearchFieldAccess,
+                create: superAdminOrSupportOrTenantFieldAccess,
+                update: superAdminOrSupportOrTenantFieldAccess,
               },
             },
           ],
@@ -97,8 +96,8 @@ export const search: Tab = {
           type: 'checkbox',
           defaultValue: false,
           access: {
-            create: hasSearchFieldAccess,
-            update: hasSearchFieldAccess,
+            create: superAdminOrSupportOrTenantFieldAccess,
+            update: superAdminOrSupportOrTenantFieldAccess,
           },
         },
         {
@@ -108,8 +107,8 @@ export const search: Tab = {
           min: 25,
           required: true,
           access: {
-            create: hasSearchFieldAccess,
-            update: hasSearchFieldAccess,
+            create: superAdminOrSupportOrTenantFieldAccess,
+            update: superAdminOrSupportOrTenantFieldAccess,
           },
         },
         {
@@ -120,8 +119,8 @@ export const search: Tab = {
             plural: 'Radius Options',
           },
           access: {
-            create: hasSearchFieldAccess,
-            update: hasSearchFieldAccess,
+            create: superAdminOrSupportOrTenantFieldAccess,
+            update: superAdminOrSupportOrTenantFieldAccess,
           },
           fields: [
             {
@@ -138,8 +137,8 @@ export const search: Tab = {
           name: 'defaultRadius',
           type: 'number',
           access: {
-            create: hasSearchFieldAccess,
-            update: hasSearchFieldAccess,
+            create: superAdminOrSupportOrTenantFieldAccess,
+            update: superAdminOrSupportOrTenantFieldAccess,
           },
         },
       ],
@@ -158,8 +157,8 @@ export const search: Tab = {
         plural: 'Facets',
       },
       access: {
-        create: hasSearchFieldAccess,
-        update: hasSearchFieldAccess,
+        create: superAdminOrSupportOrTenantFieldAccess,
+        update: superAdminOrSupportOrTenantFieldAccess,
       },
       fields: [
         {
@@ -192,8 +191,8 @@ export const search: Tab = {
         },
       },
       access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
+        create: superAdminFieldAccess,
+        update: superAdminFieldAccess,
       },
     },
     {
@@ -209,8 +208,8 @@ export const search: Tab = {
         },
       },
       access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
+        create: superAdminFieldAccess,
+        update: superAdminFieldAccess,
       },
       fields: cardLayoutItemFields,
     },
@@ -218,8 +217,8 @@ export const search: Tab = {
       type: 'group',
       name: 'map',
       access: {
-        create: hasPropertySettingsFieldAccess,
-        update: hasPropertySettingsFieldAccess,
+        create: superAdminFieldAccess,
+        update: superAdminFieldAccess,
       },
       fields: [
         {

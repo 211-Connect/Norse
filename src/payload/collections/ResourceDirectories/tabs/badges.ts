@@ -1,9 +1,9 @@
 import { Tab } from 'payload';
-import { hasSiteNavigationFieldAccess } from '../../Users/access/permissions';
 import {
   parseFilter,
   validateFilterStructure,
 } from '@/utils/badgeFilterEvaluator';
+import { superAdminOrSupportFieldAccess } from '../../Users/access/roles';
 
 export const badges: Tab = {
   label: 'Badges',
@@ -24,8 +24,8 @@ export const badges: Tab = {
       name: 'list',
       type: 'array',
       access: {
-        create: hasSiteNavigationFieldAccess,
-        update: hasSiteNavigationFieldAccess,
+        create: superAdminOrSupportFieldAccess,
+        update: superAdminOrSupportFieldAccess,
       },
       fields: [
         {
