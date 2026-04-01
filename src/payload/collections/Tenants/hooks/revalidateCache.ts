@@ -32,6 +32,9 @@ export async function revalidateCache({
           await cacheService.delPattern(`resource_directory:${host}:*`);
         }),
       );
+      if (doc?.id) {
+        await cacheService.del(`tenant:${doc.id}`);
+      }
     } catch (error) {
       log.error({ err: error }, 'Error invalidating tenant cache');
     }
