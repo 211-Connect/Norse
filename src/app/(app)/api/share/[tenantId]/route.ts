@@ -73,7 +73,11 @@ async function sendViaEMS(
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(`EMS API error: ${errorText}`);
+    log.error(
+      { status: response.status, body: errorText },
+      'EMS API request failed',
+    );
+    throw new Error('Unable to send message via EMS');
   }
 
   const result = await response.json();
