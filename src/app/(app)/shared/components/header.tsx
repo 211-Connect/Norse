@@ -150,9 +150,11 @@ export function Header() {
             </Link>
           </li>
         ) : null,
-        <li key="2" className="hidden sm:flex">
-          <FontSizeToggle />
-        </li>,
+        appConfig.accessibility.fontSize.allowedValues.length > 1 ? (
+          <li key="2" className="hidden sm:flex">
+            <FontSizeToggle />
+          </li>
+        ) : null,
         appConfig.featureFlags.showFeedbackButtonGlobal ? (
           <li key="3">
             <ReportButton
@@ -269,6 +271,7 @@ export function Header() {
         ) : null,
       ].filter(Boolean),
     [
+      appConfig.accessibility.fontSize.allowedValues.length,
       appConfig.header.customHomeUrl,
       appConfig.header.searchUrl,
       appConfig.header.customMenu,
