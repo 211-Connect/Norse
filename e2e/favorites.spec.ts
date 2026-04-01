@@ -3,6 +3,7 @@ import {
   expect,
   performSearch,
   goToFavorites,
+  waitForFavoriteListPage,
   loginViaKeycloak,
   goHome,
 } from './helpers';
@@ -31,12 +32,16 @@ test.describe('Favorites Feature (Authenticated)', () => {
   test('should create a new favorite list', async ({ page }) => {
     await goToFavorites(page);
 
-    await page.getByTestId('create-list-btn').click();
+    const createListBtn = page.getByTestId('create-list-btn');
+    await expect(createListBtn).toBeVisible({ timeout: 5000 });
+    await createListBtn.click();
 
     await page.locator('#name').fill(listName);
     await page.locator('#description').fill(listDescription);
 
-    await page.getByTestId('create-list-submit-btn').click();
+    const createListSubmitBtn = page.getByTestId('create-list-submit-btn');
+    await expect(createListSubmitBtn).toBeVisible({ timeout: 5000 });
+    await createListSubmitBtn.click();
 
     await expect(page.getByText('List created')).toBeVisible({
       timeout: 10000,
@@ -82,12 +87,10 @@ test.describe('Favorites Feature (Authenticated)', () => {
     const listCard = page.getByText(listName).first();
     await listCard.click();
 
-    await page.waitForURL(/\/favorites\//, { timeout: 15000 });
-    await page.waitForLoadState('networkidle');
-
+    await waitForFavoriteListPage(page);
     await expect(page.getByText(listName).first()).toBeVisible();
     await expect(page.getByText(listDescription).first()).toBeVisible();
-    await expect(page.getByTestId('back-to-favorites')).toBeVisible();
+    await waitForFavoriteListPage(page);
   });
 
   test('should update the favorite list name and description', async ({
@@ -97,8 +100,7 @@ test.describe('Favorites Feature (Authenticated)', () => {
 
     const listCard = page.getByText(listName).first();
     await listCard.click();
-    await page.waitForURL(/\/favorites\//, { timeout: 15000 });
-    await page.waitForLoadState('networkidle');
+    await waitForFavoriteListPage(page);
 
     const editBtn = page.getByTestId('edit-list-btn');
     await expect(editBtn).toBeVisible({ timeout: 5000 });
@@ -111,7 +113,9 @@ test.describe('Favorites Feature (Authenticated)', () => {
     const descInput = page.locator('#description');
     await descInput.fill(updatedDescription);
 
-    await page.getByTestId('update-list-submit-btn').click();
+    const updateListSubmitBtn = page.getByTestId('update-list-submit-btn');
+    await expect(updateListSubmitBtn).toBeVisible({ timeout: 5000 });
+    await updateListSubmitBtn.click();
 
     await expect(page.getByText('Updated list')).toBeVisible({
       timeout: 10000,
@@ -131,14 +135,15 @@ test.describe('Favorites Feature (Authenticated)', () => {
 
     const updatedCard = page.getByText(updatedListName).first();
     await updatedCard.click();
-    await page.waitForURL(/\/favorites\//, { timeout: 15000 });
-    await page.waitForLoadState('networkidle');
+    await waitForFavoriteListPage(page);
 
     const removeTrigger = page.getByTestId('remove-favorite-btn').first();
     await expect(removeTrigger).toBeVisible({ timeout: 10_000 });
     await removeTrigger.click();
 
-    await page.getByTestId('remove-favorite-confirm-btn').click();
+    const removeButton = page.getByTestId('remove-favorite-confirm-btn');
+    await expect(removeButton).toBeVisible({ timeout: 5000 });
+    await removeButton.click();
 
     await page.waitForLoadState('networkidle');
     const resourceLinks = page.getByTestId('resource-link');
@@ -150,13 +155,16 @@ test.describe('Favorites Feature (Authenticated)', () => {
 
     const updatedCard = page.getByText(updatedListName).first();
     await updatedCard.click();
-    await page.waitForURL(/\/favorites\//, { timeout: 15000 });
-    await page.waitForLoadState('networkidle');
+    await waitForFavoriteListPage(page);
 
-    await page.getByTestId('delete-list-btn').click();
+    const deleteListBtn = page.getByTestId('delete-list-btn');
+    await expect(deleteListBtn).toBeVisible({ timeout: 5000 });
+    await deleteListBtn.click();
 
-    await page.getByTestId('delete-list-confirm-btn').click();
-    await page.waitForURL(/\/favorites$/, { timeout: 15000 });
+    const deleteListConfirmBtn = page.getByTestId('delete-list-confirm-btn');
+    await expect(deleteListConfirmBtn).toBeVisible({ timeout: 5000 });
+    await deleteListConfirmBtn.click();
+    await waitForFavoriteListPage(page);
 
     await goToFavorites(page);
     await page.waitForLoadState('networkidle');
