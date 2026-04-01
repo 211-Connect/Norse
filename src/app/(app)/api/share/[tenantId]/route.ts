@@ -138,6 +138,10 @@ export async function POST(
         tenant?.sms?.twilio ?? {};
 
       if (!accountSid || !apiKey || !apiKeySid || !phoneNumber) {
+        log.error(
+          { tenantId },
+          'Twilio configuration is missing for tenant. Cannot send message.',
+        );
         return NextResponse.json(
           { error: 'Twilio is not configured for this tenant' },
           { status: 500 },
@@ -154,6 +158,10 @@ export async function POST(
       const { apiKey, shortCode, keyword } = tenant?.sms?.ems ?? {};
 
       if (!apiKey || !shortCode || !keyword) {
+        log.error(
+          { tenantId },
+          'EMS configuration is missing for tenant. Cannot send message.',
+        );
         return NextResponse.json(
           { error: 'EMS is not configured for this tenant' },
           { status: 500 },
