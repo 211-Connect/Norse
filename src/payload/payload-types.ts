@@ -399,11 +399,19 @@ export interface Tenant {
     matomoContainerUrl?: string | null;
     umamiWebsiteId?: string | null;
   };
-  twilio?: {
-    phoneNumber?: string | null;
-    apiKey?: string | null;
-    apiKeySid?: string | null;
-    accountSid?: string | null;
+  sms?: {
+    smsProvider?: ('Twilio' | 'EMS') | null;
+    twilio?: {
+      phoneNumber?: string | null;
+      apiKey?: string | null;
+      apiKeySid?: string | null;
+      accountSid?: string | null;
+    };
+    ems?: {
+      apiKey?: string | null;
+      shortCode?: string | null;
+      keyword?: string | null;
+    };
   };
   updatedAt: string;
   createdAt: string;
@@ -465,7 +473,6 @@ export interface ResourceDirectory {
           id?: string | null;
         }[]
       | null;
-    smsProvider?: 'Twilio' | null;
     customDataProvidersHeading?: string | null;
     dataProviders?:
       | {
@@ -1125,13 +1132,25 @@ export interface TenantsSelect<T extends boolean = true> {
         matomoContainerUrl?: T;
         umamiWebsiteId?: T;
       };
-  twilio?:
+  sms?:
     | T
     | {
-        phoneNumber?: T;
-        apiKey?: T;
-        apiKeySid?: T;
-        accountSid?: T;
+        smsProvider?: T;
+        twilio?:
+          | T
+          | {
+              phoneNumber?: T;
+              apiKey?: T;
+              apiKeySid?: T;
+              accountSid?: T;
+            };
+        ems?:
+          | T
+          | {
+              apiKey?: T;
+              shortCode?: T;
+              keyword?: T;
+            };
       };
   updatedAt?: T;
   createdAt?: T;
@@ -1202,7 +1221,6 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
               variant?: T;
               id?: T;
             };
-        smsProvider?: T;
         customDataProvidersHeading?: T;
         dataProviders?:
           | T

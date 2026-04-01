@@ -100,7 +100,7 @@ export function SmsButton({ title = '', body = '', shortUrl = '' }) {
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
               />
-              <Button className="flex gap-1" onClick={sendSms}>
+              <Button className="flex h-full gap-1" onClick={sendSms}>
                 <Send className="size-4" />
                 Send
               </Button>

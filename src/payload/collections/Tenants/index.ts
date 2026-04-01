@@ -212,29 +212,70 @@ export const Tenants: CollectionConfig = {
       ],
     },
     {
-      name: 'twilio',
+      name: 'sms',
       type: 'group',
-      label: 'Twilio Settings',
+      label: 'SMS Settings',
       access: {
         create: hasFeatureFieldAccess,
         update: hasFeatureFieldAccess,
       },
       fields: [
         {
-          name: 'phoneNumber',
-          type: 'text',
+          name: 'smsProvider',
+          type: 'select',
+          label: 'SMS Provider',
+          options: ['Twilio', 'EMS'],
+          defaultValue: 'Twilio',
         },
         {
-          name: 'apiKey',
-          type: 'text',
+          name: 'twilio',
+          type: 'group',
+          label: 'Twilio Settings',
+          admin: {
+            condition: (data, siblingData) =>
+              siblingData?.smsProvider === 'Twilio',
+          },
+          fields: [
+            {
+              name: 'phoneNumber',
+              type: 'text',
+            },
+            {
+              name: 'apiKey',
+              type: 'text',
+            },
+            {
+              name: 'apiKeySid',
+              type: 'text',
+            },
+            {
+              name: 'accountSid',
+              type: 'text',
+            },
+          ],
         },
         {
-          name: 'apiKeySid',
-          type: 'text',
-        },
-        {
-          name: 'accountSid',
-          type: 'text',
+          name: 'ems',
+          type: 'group',
+          label: 'EMS Settings',
+          admin: {
+            condition: (data, siblingData) =>
+              siblingData?.smsProvider === 'EMS',
+          },
+          fields: [
+            {
+              name: 'apiKey',
+              type: 'text',
+            },
+            {
+              name: 'shortCode',
+              type: 'text',
+            },
+            {
+              name: 'keyword',
+              type: 'text',
+            },
+          ],
         },
       ],
     },

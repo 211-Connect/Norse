@@ -525,7 +525,6 @@ async function getAppConfigBase(
     })),
     providersCustomHeading:
       resourceDirectory.common?.customDataProvidersHeading ?? undefined,
-    smsProvider: resourceDirectory.common?.smsProvider ?? undefined,
   };
 }
 export const getAppConfig = cache(getAppConfigBase);
