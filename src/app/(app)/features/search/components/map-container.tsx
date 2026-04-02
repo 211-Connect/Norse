@@ -9,7 +9,7 @@ import { userCoordinatesAtom } from '@/app/(app)/shared/store/search';
 import {
   cn,
   Coords,
-  distanceBetweenCoordsInKm,
+  distanceBetweenCoordsInMiles,
 } from '@/app/(app)/shared/lib/utils';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 
@@ -38,7 +38,7 @@ export function MapContainer() {
           return undefined;
         }
 
-        return distanceBetweenCoordsInKm(
+        return distanceBetweenCoordsInMiles(
           coords as Coords,
           coordinates as Coords,
         );

@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
 import {
   formatAddressForDisplay,
-  distanceBetweenCoordsInKm,
+  distanceBetweenCoordsInMiles,
 } from '@/app/(app)/shared/lib/utils';
 import { userCoordinatesAtom } from '@/app/(app)/shared/store/search';
 import { Resource } from '@/types/resource';
@@ -41,7 +41,7 @@ export function AddressComponent({
       return null;
     }
 
-    return distanceBetweenCoordsInKm(
+    return distanceBetweenCoordsInMiles(
       coords as [number, number],
       resource.location.coordinates as [number, number],
     );
