@@ -1,0 +1,26 @@
+{
+  "learn_more": "Aʻo hou aku",
+  "filter_results": "Kānana i nā hualoaʻa",
+  "filters": "Nā kānana",
+  "clear_filters": "Holoi i nā kānana",
+  "results": "nā hualoaʻa",
+  "no_query": "ʻAʻohe nīnau i hāʻawi ʻia",
+  "results_for": "nā hualoaʻa i loaʻa no ka nīnau",
+  "of": "o",
+  "no_results": {
+    "title": "ʻAʻohe hopena i loaʻa e kūlike ana me kāu nīnau",
+    "subtitle": "Ua hāʻawi mākou i kekahi mau hopena like ma lalo nei",
+    "alt_subtitle": "E hoʻāʻo i kahi nīnau a kānana ʻē aʻe",
+    "need_help": "Pono kōkua? Ke kū nei nā kānaka ma ʻaneʻi."
+  },
+  "pinned": "Hoʻopaʻa ʻia",
+  "sort": {
+    "label": "Hoʻokaʻawale ma o",
+    "options": {
+      "relevance": "Pili Loa",
+      "distance": "ʻO ka mea kokoke loa",
+      "name": "Inoa Kumuwaiwai",
+      "organization": "Inoa Mea Hoʻolako"
+    }
+  }
+}

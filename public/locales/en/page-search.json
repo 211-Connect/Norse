@@ -1,6 +1,8 @@
 {
   "learn_more": "Learn More",
   "filter_results": "Filter results",
+  "filters": "Filters",
+  "clear_filters": "Clear filters",
   "results": "results",
   "no_query": "No query provided",
   "results_for": "results found for query",
@@ -11,5 +13,14 @@
     "alt_subtitle": "Try a different query or filter",
     "need_help": "Need help? We have people standing by."
   },
-  "pinned": "Pinned"
+  "pinned": "Pinned",
+  "sort": {
+    "label": "Sort by",
+    "options": {
+      "relevance": "Most Relevant",
+      "distance": "Nearest First",
+      "name": "Resource Name",
+      "organization": "Provider Name"
+    }
+  }
 }

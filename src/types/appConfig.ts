@@ -1,5 +1,6 @@
 import { ResourceDirectoryBadgeListItem } from '@/payload/collections/ResourceDirectories/types/badge';
 import { Nullable } from './common';
+import { ResourceDirectory } from '@/payload/payload-types';
 
 type Menu = {
   name: string;
@@ -39,7 +40,6 @@ export type AppConfig = {
     showHomePageTour: boolean;
     showResourceLastAssuredDate: boolean;
     showPrintButton: boolean;
-    showResourceCategories: boolean;
     showResourceAttribution: boolean;
     showSearchAndResourceServiceName: boolean;
     showSuggestionListTaxonomyBadge: boolean;
@@ -60,6 +60,7 @@ export type AppConfig = {
       target?: '_self' | '_blank';
     };
     searchUrl?: string;
+    position: 'sticky' | 'static';
   };
   i18n: {
     defaultLocale: string;
@@ -83,6 +84,10 @@ export type AppConfig = {
   };
   resource: {
     lastAssuredText?: string;
+    layout: {
+      leftColumn: NonNullable<ResourceDirectory['resource']>['leftColumn'];
+      rightColumn: NonNullable<ResourceDirectory['resource']>['rightColumn'];
+    };
   };
   search: {
     facets: {
@@ -106,6 +111,7 @@ export type AppConfig = {
       locationInputPlaceholder?: string;
       noResultsFallbackText?: string;
     };
+    cardLayout?: NonNullable<ResourceDirectory['search']['cardLayout']>;
   };
   sessionId: string;
   badges: ResourceDirectoryBadgeListItem[];
@@ -169,7 +175,6 @@ export type AppConfig = {
     target?: '_self' | '_blank';
   }[];
   providersCustomHeading?: string;
-  smsProvider?: 'Twilio';
   topics: {
     iconSize: 'small' | 'medium';
     imageBorderRadius?: number;

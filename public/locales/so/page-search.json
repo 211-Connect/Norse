@@ -11,5 +11,16 @@
     "alt_subtitle": "Isku day inaad su'aalo ama filter kala duwan",
     "need_help": "Cawinaada u baahan tahay? Waxaanu leenahay dad ag taagan."
   },
-  "pinned": "La xidhay"
+  "pinned": "La xidhay",
+  "filters": "Shaandheeyayaasha",
+  "clear_filters": "Nadiifi shaandheeyayaasha",
+  "sort": {
+    "label": "Ku kala sooc",
+    "options": {
+      "relevance": "Kuwa ugu Muhiimsan",
+      "distance": "Ugu Horeeya",
+      "name": "Magaca Kheyraadka",
+      "organization": "Magaca Bixiyaha"
+    }
+  }
 }

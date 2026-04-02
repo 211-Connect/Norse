@@ -11,5 +11,16 @@
     "alt_subtitle": "የተለየ ጥያቄ ወይም ማጣሪያ ይሞክሩ",
     "need_help": "እርዳታ ያስፈልጋል? ሰዎች አጠገቡ ቆመዋል ።"
   },
-  "pinned": "የተሾሙ"
+  "pinned": "የተሾሙ",
+  "filters": "ማጣሪያዎች",
+  "clear_filters": "ማጣሪያዎችን አጽዳ",
+  "sort": {
+    "label": "ደርድር በ",
+    "options": {
+      "relevance": "በጣም ተገቢ",
+      "distance": "በጣም ቅርብ የሆነው መጀመሪያ",
+      "name": "የንብረት ስም",
+      "organization": "የአቅራቢ ስም"
+    }
+  }
 }

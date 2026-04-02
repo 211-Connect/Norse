@@ -139,5 +139,10 @@
   },
   "footer": {
     "copyright": "© Droits d’auteur {{text}}"
+  },
+  "carousel": {
+    "previous": "Précédent",
+    "next": "Suivant",
+    "go_to": "Allez à"
   }
 }

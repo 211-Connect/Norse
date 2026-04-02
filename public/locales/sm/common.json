@@ -1,0 +1,148 @@
+{
+  "header": {
+    "home": "Aiga",
+    "favorites": "Mea e fiafia i ai",
+    "log_out": "Saini ese j",
+    "language_select_label": "Filifili se gagana e sui ai le gagana a le 'upega tafaʻilagi",
+    "my_stuff": "A'u mea",
+    "search": "Saili",
+    "report": "Tuuina atu ni Manatu Faaalia"
+  },
+  "favorites": {
+    "added_to_list": "Ua fa'aopoopoina i le lisi",
+    "added_to_list_message": "Ua faaopoopo lenei punaoa i lau lisi.",
+    "already_exists": "Ua iai nei",
+    "already_exists_message": "Ua iai lenei punaoa i lau lisi.",
+    "removed_from_list": "Ua aveese mai le lisi",
+    "removed_from_list_message": "Ua aveeseina lenei punaoa mai lau lisi.",
+    "updated_list": "Lisi ua fa'afouina",
+    "updated_list_message": "Ua fa'afouina lau lisi.",
+    "unable_to_update_list": "Le mafai ona fa'afouina le lisi",
+    "unable_to_update_list_message": "E le mafai ona fa'afouina lau lisi.",
+    "deleted_list": "Lisi ua tapeina",
+    "deleted_list_message": "Ua tapeina lau lisi.",
+    "unable_to_delete_list": "Le mafai ona tapeina le lisi",
+    "unable_to_delete_list_message": "E le mafai ona tapeina lau lisi.",
+    "list_created": "Lisi ua faia",
+    "list_created_message": "Ua manuia le fausiaina o lau lisi.",
+    "unable_to_create_list_message": "E le mafai ona fatuina lau lisi."
+  },
+  "search": {
+    "add_my_location": "Fa'aopoopo lo'u nofoaga",
+    "back": "Toe foʻi",
+    "hero_title": "Saili mo punaoa",
+    "query_placeholder": "Mea'ai, fale, ma isi mea faapena...",
+    "location_placeholder": "Aai, setete, po'o le numera ZIP",
+    "radius_placeholder": "Radius",
+    "miles": "Maile",
+    "miles_short": "maila",
+    "any": "So'o se tasi",
+    "taxonomies": "Fa'avasegaga o Taxonomy",
+    "suggestions": "Fautuaga",
+    "use_my_location": "Faaaoga lo'u nofoaga",
+    "confidential_address": "Atonu e faalilolilo lenei nofoaga pe le tatalaina foi i le lautele. Faamolemole filifili se isi auala faafesootai ua saunia mo lenei auaunaga.",
+    "address_unavailable": "Tuatusi e le'i maua",
+    "geocoding_error": "Sese o le fa'avasegaina o le eleele",
+    "geocoding_unsupported": "E le lagolagoina e lau browser le Geolocation",
+    "geocoding_unable_to_retrieve": "Le mafai ona toe maua lou nofoaga. Fa'amolemole siaki tulaga o le nofoaga o lau su'esu'ega ma toe taumafai.",
+    "categories": "Autu",
+    "show_all": "Faaali uma ({{count}})",
+    "show_less": "Faaali itiiti ifo"
+  },
+  "call_to_action": {
+    "call": "Telefoni",
+    "view_website": "Upega Tafaʻilagi",
+    "get_directions": "Fa'atonuga",
+    "view_details": "Va'ai atili",
+    "add_to_list": "E sili ona fiafia i ai",
+    "delete_list": "Tape le lisi",
+    "remove_from_list": "Aveese mai le lisi",
+    "share": "Faasoa atu",
+    "cancel": "Faaleaoga",
+    "create": "Fausia",
+    "update": "Fa'afouga",
+    "delete": "Tape ese",
+    "search": "Saili",
+    "remove": "Aveese",
+    "login": "Ulufale",
+    "show_more": "Faaali atili",
+    "show_less": "Faaali itiiti ifo",
+    "print": "Lolomi"
+  },
+  "list": {
+    "private": "Tumaoti",
+    "public": "Lautele"
+  },
+  "message": {
+    "list_deleted": "Ua tapeina le lisi",
+    "list_deleted_success": "Ua tapeina lau lisi.",
+    "error": "Sese",
+    "list_not_deleted_error": "E le mafai ona tapeina lau lisi."
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "Saili au lisi",
+      "list_name": "Lisi",
+      "list_privacy": "Tulaga Faalilolilo",
+      "add_to_list": "Fa'aopoopo i le lisi",
+      "not_found": "E leai ni lisi na maua",
+      "create_new_list": "Fausia se mea fou?"
+    },
+    "remove_from_list": {
+      "are_you_sure": "E te mautinoa e te manaʻo e aveese lenei mea e te fiafia i ai mai lau lisi?"
+    },
+    "create_list": {
+      "create_a_list": "Fausia se lisi",
+      "list_name": "Igoa",
+      "list_description": "Fa'amatalaga",
+      "make_public": "Fa'asalalau i tagata lautele"
+    },
+    "update_list": {
+      "update_list": "Fa'afou le lisi",
+      "list_name": "Igoa",
+      "list_description": "Fa'amatalaga",
+      "make_public": "Fa'asalalau i tagata lautele"
+    },
+    "delete_list": {
+      "delete_list": "Tape le lisi"
+    },
+    "share": {
+      "share_via": "Faasoa atu lenei mea e ala i",
+      "copy_link": "Kopi le so'otaga",
+      "copy": "Kopi",
+      "facebook": "Facebook",
+      "twitter": "Twitter",
+      "linkedin": "LinkedIn",
+      "sms": "Fa'amatalaga tusitusia",
+      "email": "Imeli",
+      "print": "Lolomi",
+      "copied": "Kopi!",
+      "check_out_this_list": "Siaki le lisi lenei na ou faia!",
+      "check_out_this_resource": "Siaki le punaoa lenei na ou mauaina!",
+      "share_sms": "Ulufale i se numera telefoni e fa'asoa atu e ala i le SMS",
+      "enter_phone_number": "Ulufale i le numera telefoni...",
+      "invalid_phone_number": "Numera telefoni e le aoga",
+      "sms_sending_title": "O lo'o lafoina atu le SMS...",
+      "sms_sending_body": "O loʻo auina atu lau savali.",
+      "sms_send_success_title": "Ua auina atu le SMS!",
+      "sms_send_success_body": "Ua auina atu lau savali.",
+      "sms_send_failed_title": "Ua lē manuia le lafoina o SMS",
+      "sms_send_failed_body": "Ua lē mafai ona lafo lau savali."
+    },
+    "prompt_auth": "Fa'amolemole ulufale e fa'aoga lenei vaega."
+  },
+  "update_location": {
+    "prompt_start_location": "O fea lou nofoaga e amata ai?"
+  },
+  "data_providers": {
+    "provided_by": "Fa'amaumauga na tu'uina mai e"
+  },
+  "carousel": {
+    "previous": "Muamua",
+    "next": "Sosoo ai",
+    "go_to": "Alu i le"
+  },
+  "footer": {
+    "copyright": "© Puletaofia {{text}}"
+  }
+}

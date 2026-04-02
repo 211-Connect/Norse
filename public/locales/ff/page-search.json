@@ -11,5 +11,16 @@
     "alt_subtitle": "Enndu naamnal walla filtirde woɗnde",
     "need_help": "Aɗa yiɗi ballal? En njogii yimɓe dariiɓe."
   },
-  "pinned": "Pinnaama"
+  "pinned": "Pinnaama",
+  "filters": "Fiiltirɗe",
+  "clear_filters": "Laɓɓin filtoraaji",
+  "sort": {
+    "label": "Sortu e",
+    "options": {
+      "relevance": "Ɓuri jogaade faayiida",
+      "distance": "Ko ɓuri ɓadaade Ko adii",
+      "name": "Innde Ngalu",
+      "organization": "Innde dokkoowo"
+    }
+  }
 }

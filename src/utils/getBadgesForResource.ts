@@ -1,4 +1,4 @@
-import type { FacetWithTranslation } from '@/types/resource';
+import type { FacetWithTranslation, Taxonomy } from '@/types/resource';
 import {
   parseFilter,
   evaluateFilter,
@@ -10,20 +10,41 @@ import { createLogger } from '@/lib/logger';
 
 const log = createLogger('getBadgesForResource');
 
+/**
+ * Convert taxonomies to FacetWithTranslation format for badge matching
+ */
+function taxonomiesToFacets(
+  taxonomies: Taxonomy[] | null | undefined,
+): FacetWithTranslation[] {
+  if (!taxonomies || !Array.isArray(taxonomies)) {
+    return [];
+  }
+
+  return taxonomies.map((taxonomy) => ({
+    code: taxonomy.code,
+    taxonomyCode: taxonomy.code,
+    taxonomyName: taxonomy.name,
+    taxonomyNameEn: taxonomy.name,
+    termName: taxonomy.name,
+    termNameEn: taxonomy.name,
+  }));
+}
+
 export function getBadgesForResource(
-  facets: FacetWithTranslation[] | null | undefined,
   badgeConfigs: ResourceDirectoryBadgeListItem[],
+  facets: FacetWithTranslation[] | null | undefined,
+  taxonomies: Taxonomy[] | null,
 ): BadgeProps[] {
   const badges: BadgeProps[] = [];
   const seenLabels = new Set<string>();
 
-  if (
-    !facets ||
-    !badgeConfigs ||
-    badgeConfigs.length === 0 ||
-    !Array.isArray(facets) ||
-    facets.length === 0
-  ) {
+  const taxonomyFacets = taxonomiesToFacets(taxonomies);
+  const allFacets = [
+    ...(Array.isArray(facets) ? facets : []),
+    ...taxonomyFacets,
+  ];
+
+  if (!badgeConfigs || badgeConfigs.length === 0 || allFacets.length === 0) {
     return badges;
   }
 
@@ -31,7 +52,7 @@ export function getBadgesForResource(
     try {
       const filterExpression = parseFilter(config.filter);
 
-      for (const facet of facets) {
+      for (const facet of allFacets) {
         if (evaluateFilter(filterExpression, facet)) {
           const label: string = config.badgeLabel
             ? interpolateProperties(config.badgeLabel, facet)

@@ -3,6 +3,7 @@
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePathname, useRouter } from 'next/navigation';
+import { useTopLoader } from 'nextjs-toploader';
 
 import {
   Select,
@@ -41,6 +42,7 @@ export const LanguageSwitcher = () => {
   const router = useRouter();
   const currentPathname = usePathname();
   const { stringifiedSearchParams } = useClientSearchParams();
+  const { start } = useTopLoader();
 
   const { t, i18n } = useTranslation('common');
 
@@ -53,6 +55,7 @@ export const LanguageSwitcher = () => {
 
   const handleValueChange = useCallback(
     (language: string) => {
+      start();
       if (currentLanguage === appConfig.i18n.defaultLocale) {
         router.push(`/${language}${currentPathname}${stringifiedSearchParams}`);
       } else {
@@ -65,6 +68,7 @@ export const LanguageSwitcher = () => {
       appConfig.i18n.defaultLocale,
       currentLanguage,
       currentPathname,
+      start,
       router,
       stringifiedSearchParams,
     ],
@@ -89,7 +93,7 @@ export const LanguageSwitcher = () => {
           aria-label={t('header.language_select_label')}
         >
           <div className="flex items-center gap-1 overflow-hidden">
-            <LanguagesIcon className="size-4" />
+            <LanguagesIcon className="size-4" aria-hidden="true" />
             <SelectValue placeholder={t('header.language_select_label')}>
               <span className="capitalize">
                 {getLanguageName(currentLanguage)}

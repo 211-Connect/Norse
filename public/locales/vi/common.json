@@ -139,5 +139,10 @@
   },
   "footer": {
     "copyright": "© Bản quyền {{text}}"
+  },
+  "carousel": {
+    "previous": "Trước",
+    "next": "Kế tiếp",
+    "go_to": "Đi đến"
   }
 }

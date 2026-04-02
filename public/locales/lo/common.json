@@ -139,5 +139,10 @@
   },
   "footer": {
     "copyright": "© ລິຂະສິດ {{text}}"
+  },
+  "carousel": {
+    "previous": "ກ່ອນໜ້ານີ້",
+    "next": "ຕໍ່ໄປ",
+    "go_to": "ໄປທີ່"
   }
 }

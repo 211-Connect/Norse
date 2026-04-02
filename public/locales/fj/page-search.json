@@ -1,0 +1,26 @@
+{
+  "learn_more": "Vulica e levu tale na ka",
+  "filter_results": "Vakasavasavataka na macala",
+  "filters": "Veisau",
+  "clear_filters": "Vakasavasavataka na veivakasavasavataki",
+  "results": "macala",
+  "no_query": "Sega ni vakarautaki na taro",
+  "results_for": "macala e kune me baleta na taro",
+  "of": "ni",
+  "no_results": {
+    "title": "E sega ni dua na isau e kune me veiganiti kei na nomu taro",
+    "subtitle": "Eda sa vakarautaka eso na isau tautauvata e ra .",
+    "alt_subtitle": "Tovolea e dua na taro duidui se filter",
+    "need_help": "Gadreva na veivuke? E tiko vei keda na tamata era tucake tu."
+  },
+  "pinned": "Pini",
+  "sort": {
+    "label": "Vakarautaka ena",
+    "options": {
+      "relevance": "Veiganiti duadua",
+      "distance": "Voleka Duadua Taumada",
+      "name": "Yaca ni ivurevure",
+      "organization": "Yaca ni dauveiqaravi"
+    }
+  }
+}

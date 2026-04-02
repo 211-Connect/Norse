@@ -263,6 +263,7 @@ const useScrollOffset = () => {
 };
 
 export function FilterPanel() {
+  const { t } = useTranslation();
   const appConfig = useAppConfig();
   const filters = useAtomValue(filtersAtom);
   const [filtersOpen, setFiltersOpen] = useAtom(filtersOpenAtom);
@@ -274,8 +275,11 @@ export function FilterPanel() {
   return (
     <div
       className={cn(
-        'w-full self-start overflow-auto p-[10px] md:sticky md:top-[105px] md:max-w-[340px] lg:pl-[20px]',
-        appConfig.newLayout?.enabled && 'md:top-[155px]',
+        'w-full self-start overflow-auto p-[10px] lg:max-w-[300px] lg:pl-[20px] xl:max-w-[340px]',
+        appConfig.header?.position === 'sticky' && 'md:sticky md:top-[105px]',
+        appConfig.header?.position === 'sticky' &&
+          appConfig.newLayout?.enabled &&
+          'md:top-[155px]',
       )}
       id="filter-panel"
       style={{
@@ -294,7 +298,7 @@ export function FilterPanel() {
           onClick={() => setFiltersOpen(true)}
         >
           <Filter className="size-4" />
-          Filter
+          {t('search.filter', 'Filter')}
         </Button>
       </div>
       {filterKeys.length > 0 && (

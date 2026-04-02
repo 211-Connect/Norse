@@ -3,6 +3,7 @@ import { Tenant } from '@/payload/payload-types';
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
 import { cacheService } from '@/cacheService';
 import { createLogger } from '@/lib/logger';
+import { clearMemoryCache } from '@/utilities/withCache';
 
 const log = createLogger('revalidateTenantCache');
 
@@ -31,6 +32,9 @@ export async function revalidateCache({
           await cacheService.delPattern(`resource_directory:${host}:*`);
         }),
       );
+      if (doc?.id) {
+        await cacheService.del(`tenant:${doc.id}`);
+      }
     } catch (error) {
       log.error({ err: error }, 'Error invalidating tenant cache');
     }
@@ -40,6 +44,7 @@ export async function revalidateCache({
   cacheOperation().catch((err) => {
     log.error({ err }, 'Unhandled cache error in tenant revalidateCache');
   });
+  clearMemoryCache();
 
   return doc;
 }

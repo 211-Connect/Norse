@@ -1,0 +1,26 @@
+{
+  "learn_more": "Matuto Nang Higit Pa",
+  "filter_results": "Salain ang mga resulta",
+  "filters": "Mga Filter",
+  "clear_filters": "I-clear ang mga filter",
+  "results": "mga resulta",
+  "no_query": "Walang ibinigay na tanong",
+  "results_for": "mga resultang natagpuan para sa query",
+  "of": "ng",
+  "no_results": {
+    "title": "Walang nakitang resulta na tumutugma sa iyong query",
+    "subtitle": "Nagbigay kami ng ilang katulad na resulta sa ibaba",
+    "alt_subtitle": "Subukan ang ibang query o filter",
+    "need_help": "Kailangan mo ba ng tulong? May mga taong nakaabang."
+  },
+  "pinned": "Naka-pin",
+  "sort": {
+    "label": "Ayusin ayon sa",
+    "options": {
+      "relevance": "Pinaka-may-katuturan",
+      "distance": "Pinakamalapit na Una",
+      "name": "Pangalan ng Mapagkukunan",
+      "organization": "Pangalan ng Tagapagbigay ng Serbisyo"
+    }
+  }
+}

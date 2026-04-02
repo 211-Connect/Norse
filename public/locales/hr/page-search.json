@@ -11,5 +11,16 @@
     "alt_subtitle": "Isprobajte drugi upit ili filter",
     "need_help": "Trebate pomoć? Imamo ljude koji su vam na raspolaganju."
   },
-  "pinned": "Prikvačeno"
+  "pinned": "Prikvačeno",
+  "filters": "Filtri",
+  "clear_filters": "Obriši filtere",
+  "sort": {
+    "label": "Poredaj po",
+    "options": {
+      "relevance": "Najrelevantnije",
+      "distance": "Najbliže prvo",
+      "name": "Naziv resursa",
+      "organization": "Naziv pružatelja usluga"
+    }
+  }
 }

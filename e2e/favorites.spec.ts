@@ -8,8 +8,7 @@ import {
 } from './helpers';
 
 const hasAuth =
-  (!!process.env.TEST_USER_EMAIL || !!process.env.TEST_USER_USERNAME) &&
-  !!process.env.TEST_USER_PASSWORD;
+  !!process.env.TEST_USER_EMAIL && !!process.env.TEST_USER_PASSWORD;
 
 test.describe('Favorites Feature (Authenticated)', () => {
   test.describe.configure({ mode: 'serial' });
@@ -107,11 +106,9 @@ test.describe('Favorites Feature (Authenticated)', () => {
 
     const nameInput = page.locator('#name');
     await expect(nameInput).toBeVisible({ timeout: 5000 });
-    await nameInput.clear();
     await nameInput.fill(updatedListName);
 
     const descInput = page.locator('#description');
-    await descInput.clear();
     await descInput.fill(updatedDescription);
 
     await page.getByTestId('update-list-submit-btn').click();

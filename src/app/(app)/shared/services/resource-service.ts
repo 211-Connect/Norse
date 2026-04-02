@@ -2,107 +2,114 @@ import dayjs from 'dayjs';
 import { cache } from 'react';
 
 import { ApiResource, Resource } from '@/types/resource';
-import { RedisCacheKey, withRedisCache } from '@/utilities/withRedisCache';
+import { CacheKey, withCache } from '@/utilities/withCache';
 import { fetchWrapper } from '../lib/fetchWrapper';
 import { INTERNAL_API_KEY, API_URL } from '../lib/constants';
 
 async function fetchAndTransformResourceOrigin(
   url: string,
-  options: { locale: string; tenantId?: string; cacheKey: RedisCacheKey },
+  options: { locale: string; tenantId?: string; cacheKey: CacheKey },
 ): Promise<Resource | null> {
-  return await withRedisCache(options.cacheKey, async () => {
-    const searchParams = new URLSearchParams({
-      locale: options.locale,
-    });
+  return await withCache(
+    options.cacheKey,
+    async () => {
+      const searchParams = new URLSearchParams({
+        locale: options.locale,
+      });
 
-    if (options.tenantId) {
-      searchParams.append('tenant_id', options.tenantId);
-    }
+      if (options.tenantId) {
+        searchParams.append('tenant_id', options.tenantId);
+      }
 
-    const headers: HeadersInit = {
-      'accept-language': options.locale,
-      'x-api-version': '1',
-      'x-api-key': INTERNAL_API_KEY || '',
-    };
+      const headers: HeadersInit = {
+        'accept-language': options.locale,
+        'x-api-version': '1',
+        'x-api-key': INTERNAL_API_KEY || '',
+      };
 
-    if (options.tenantId) {
-      headers['x-tenant-id'] = options.tenantId;
-    }
+      if (options.tenantId) {
+        headers['x-tenant-id'] = options.tenantId;
+      }
 
-    const data: ApiResource | null = await fetchWrapper(
-      `${url}?${searchParams.toString()}`,
-      {
-        headers,
-        cache: 'no-store',
-      },
-    );
+      const data: ApiResource | null = await fetchWrapper(
+        `${url}?${searchParams.toString()}`,
+        {
+          headers,
+          cache: 'no-store',
+        },
+      );
 
-    if (!data) {
-      return null;
-    }
+      if (!data) {
+        return null;
+      }
 
-    const facetsEnMap = new Map(
-      data?.facetsEn?.map((facet) => [facet.code, facet]) ?? [],
-    );
+      const facetsEnMap = new Map(
+        data?.facetsEn?.map((facet) => [facet.code, facet]) ?? [],
+      );
 
-    return {
-      id: data._id,
-      originalId: data?.originalId ?? null,
-      tenantId: data?.tenant_id ?? null,
-      serviceName: data?.translation?.serviceName ?? null,
-      attribution: data?.attribution ?? null,
-      name: data?.translation?.displayName ?? data?.displayName ?? null,
-      description: data?.translation?.serviceDescription ?? null,
-      phone:
-        data?.phone ??
-        data?.displayPhoneNumber ??
-        data?.phoneNumbers?.find((p) => p.rank === 1 && p.type === 'voice')
-          ?.number ??
-        null,
-      website: data?.website ?? null,
-      address:
-        data?.address ??
-        data?.addresses?.find((a) => a.rank === 1)?.address_1 ??
-        null,
-      addresses: data?.addresses ?? null,
-      phoneNumbers:
-        data?.translation?.phoneNumbers ?? data?.phoneNumbers ?? null,
-      email: data?.email ?? null,
-      hours: data?.translation?.hours ?? null,
-      languages: data?.translation?.languages ?? null,
-      interpretationServices: data?.translation?.interpretationServices ?? null,
-      applicationProcess: data?.translation?.applicationProcess ?? null,
-      fees: data?.translation?.fees ?? null,
-      requiredDocuments: data?.translation?.requiredDocuments ?? null,
-      eligibilities: data?.translation?.eligibilities ?? null,
-      serviceAreaDescription: data?.translation?.serviceAreaDescription ?? null,
-      serviceAreaName: data?.serviceAreaName ?? null,
-      categories: data?.translation?.taxonomies ?? null,
-      lastAssuredOn: data?.lastAssuredDate
-        ? dayjs(data.lastAssuredDate).format('MM/DD/YYYY')
-        : '',
-      location: data?.location?.coordinates
-        ? {
-            coordinates: data.location.coordinates,
-          }
-        : null,
-      organizationName: data?.organizationName ?? null,
-      organizationDescription:
-        data?.translation?.organizationDescription ?? null,
-      serviceArea: data?.serviceArea ?? null,
-      transportation: data?.translation?.transportation ?? null,
-      accessibility: data?.translation?.accessibility ?? null,
-      facets:
-        data?.translation?.facets?.map((facet) => {
-          const englishFacet = facetsEnMap.get(facet.code);
-          return {
-            ...facet,
-            taxonomyNameEn: englishFacet?.taxonomyName,
-            termNameEn: englishFacet?.termName,
-          };
-        }) ?? null,
-    };
-  });
+      return {
+        id: data._id,
+        originalId: data?.originalId ?? null,
+        tenantId: data?.tenant_id ?? null,
+        serviceName: data?.translation?.serviceName ?? null,
+        attribution: data?.attribution ?? null,
+        name: data?.translation?.displayName ?? data?.displayName ?? null,
+        description: data?.translation?.serviceDescription ?? null,
+        phone:
+          data?.phone ??
+          data?.displayPhoneNumber ??
+          data?.phoneNumbers?.find((p) => p.rank === 1 && p.type === 'voice')
+            ?.number ??
+          null,
+        website: data?.website ?? null,
+        address:
+          data?.address ??
+          data?.addresses?.find((a) => a.rank === 1)?.address_1 ??
+          null,
+        addresses: data?.addresses ?? null,
+        phoneNumbers:
+          data?.translation?.phoneNumbers ?? data?.phoneNumbers ?? null,
+        email: data?.email ?? null,
+        hours: data?.translation?.hours ?? null,
+        languages: data?.translation?.languages ?? null,
+        interpretationServices:
+          data?.translation?.interpretationServices ?? null,
+        applicationProcess: data?.translation?.applicationProcess ?? null,
+        fees: data?.translation?.fees ?? null,
+        requiredDocuments: data?.translation?.requiredDocuments ?? null,
+        eligibilities: data?.translation?.eligibilities ?? null,
+        serviceAreaDescription:
+          data?.translation?.serviceAreaDescription ?? null,
+        serviceAreaName: data?.serviceAreaName ?? null,
+        categories: data?.translation?.taxonomies ?? null,
+        lastAssuredOn: data?.lastAssuredDate
+          ? dayjs(data.lastAssuredDate).format('MM/DD/YYYY')
+          : '',
+        location: data?.location?.coordinates
+          ? {
+              coordinates: data.location.coordinates,
+            }
+          : null,
+        organizationName: data?.organizationName ?? null,
+        organizationDescription:
+          data?.translation?.organizationDescription ?? null,
+        serviceArea: data?.serviceArea ?? null,
+        transportation: data?.translation?.transportation ?? null,
+        accessibility: data?.translation?.accessibility ?? null,
+        facets:
+          data?.translation?.facets?.map((facet) => {
+            const englishFacet = facetsEnMap.get(facet.code);
+            return {
+              ...facet,
+              taxonomyNameEn: englishFacet?.taxonomyName,
+              termNameEn: englishFacet?.termName,
+            };
+          }) ?? null,
+        attributeValues: data?.translation?.attributeValues ?? null,
+      };
+    },
+    { memory: false, redis: true },
+  );
 }
 
 const fetchAndTransformResource = cache(fetchAndTransformResourceOrigin);

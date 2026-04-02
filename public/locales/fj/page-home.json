@@ -1,0 +1,40 @@
+{
+  "meta_title": "",
+  "meta_description": "",
+  "take_a_tour": "Taumada na gauna eke? Taura e dua na sarasara!",
+  "new": "Vou!",
+  "tour": {
+    "step_1": {
+      "paragraph_1": "Na kato ni vakasaqaqara sa ikoya na backbone ni misini ni vakasaqaqara. E ciqoma na vosa e dau vakayagataki, malanivosa, kei na so tale (i.e. 'pantries ni kakana')",
+      "paragraph_2": "Ni o taipa, na kato ni vakasaqaqara ena vakarautaka na vakatutu e yavutaki ena veimataqali eda vakayagataka ena daku ni veivakasarasarataki. Na vakatutu oqo ena vakarautaka na kena isau dodonu duadua, Ia, e sega ni gadrevi mo vakayagataka.",
+      "paragraph_3": "Kevaka o digitaka mo kakua ni vakayagataka na vakatutu e vakarautaki, keitou na vakayagataka na ivola o vakarautaka me rawati kina na veika dodonu duadua e rawa ni keitou rawata."
+    },
+    "step_2": {
+      "paragraph_1": "Sega soti ni vakadeitaka na ka o vakasaqara tiko? Sa vinaka sara!",
+      "paragraph_2": "Eda vakarautaka e vuqa na veimataqali kei na iwasewase lalai me baleti iko mo vakadikeva. Kiliki ga ena dua vei ira na veitaratara ena iwasewase ni iwasewase me kau ki na veika e vakasaqarai."
+    },
+    "step_3": {
+      "paragraph_1": "So na gauna e dau ramusu na veika, eda sega ni namaka me na ramusu.",
+      "paragraph_2": "Kevaka o sa bau kunea e dua na ka e vakacacani, se vinakata sara mada ga mo vakarautaka eso na vakatutu ena ki na veika e sotavi raraba sa rawa ni o kiliki ena ibulukau ni vakatutu ena dua na gauna."
+    },
+    "step_4": {
+      "paragraph_1": "Kuria na nomu itikotiko eke mo kunea kina na veiqaravi e tiko ena nomu itikotiko. Oqo e vukei keitou me keitou vakaraitaka vei iko ga na digidigi e lako dina mai ki na nomu vanua."
+    }
+  },
+  "categories_title": "Ulutaga",
+  "new_layout": {
+    "topics_section": {
+      "cta": "Vakaraica na ulutaga",
+      "title": "Sega ni vakadeitaki na vanua me tekivu kina"
+    },
+    "callouts": {
+      "list": {
+        "call": "Kaci",
+        "chat": "Veitalanoa",
+        "email": "Imeli",
+        "sms": "SMS"
+      },
+      "title": "E tiko tale eso na sala mo kere veivuke talega kina:"
+    }
+  }
+}

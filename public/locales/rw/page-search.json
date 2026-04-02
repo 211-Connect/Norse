@@ -11,5 +11,16 @@
     "alt_subtitle": "Gerageza ikibazo cyangwa akayunguruzo gatandukanye",
     "need_help": "Ukeneye ubufasha? Dufite abantu bahagaze hafi."
   },
-  "pinned": "Byashyizwemo imigozi"
+  "pinned": "Byashyizwemo imigozi",
+  "filters": "Akayunguruzo",
+  "clear_filters": "Kuraho amafiriti",
+  "sort": {
+    "label": "Shyira ku rutonde ukurikije",
+    "options": {
+      "relevance": "Bifite akamaro cyane",
+      "distance": "Icya mbere cya hafi",
+      "name": "Izina ry'umutungo",
+      "organization": "Izina ry'umutanga serivisi"
+    }
+  }
 }

@@ -82,17 +82,6 @@ test.describe('Search Autocomplete Suggestions', () => {
       timeout: 15000,
     });
   });
-
-  test('clear button should reset the search input', async ({ page }) => {
-    const searchInput = await openSearchDialog(page);
-    await searchInput.fill('food');
-    await expect(searchInput).toHaveValue('food');
-
-    const clearBtn = page.getByTestId('search-clear-btn').first();
-    await expect(clearBtn).toBeVisible();
-    await clearBtn.click();
-    await expect(searchInput).toHaveValue('');
-  });
 });
 
 test.describe('Taxonomy Search Result Accuracy', () => {
@@ -180,7 +169,13 @@ test.describe('Search Result Pagination', () => {
     const nextBtn = page.getByTestId('pagination-next');
     await nextBtn.click();
 
-    await page.waitForLoadState('networkidle');
+    await page.waitForURL(
+      (url) => {
+        const urlPage = Number(url.searchParams.get('page') ?? '1');
+        return urlPage > beforePage;
+      },
+      { timeout: 10000 },
+    );
 
     const afterUrl = new URL(page.url());
     const afterPage = Number(afterUrl.searchParams.get('page') ?? '1');

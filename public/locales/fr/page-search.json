@@ -11,5 +11,16 @@
     "alt_subtitle": "Essayez une autre requête ou un autre filtre",
     "need_help": "Besoin d’aide ? Nous avons des gens qui se tiennent prêts."
   },
-  "pinned": "Épinglé"
+  "pinned": "Épinglé",
+  "filters": "Filtres",
+  "clear_filters": "Filtres d'effacement",
+  "sort": {
+    "label": "Trier par",
+    "options": {
+      "relevance": "Les plus pertinents",
+      "distance": "Du plus proche au plus ancien",
+      "name": "Nom de la ressource",
+      "organization": "Nom du fournisseur"
+    }
+  }
 }

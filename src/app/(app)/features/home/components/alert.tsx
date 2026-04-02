@@ -7,7 +7,25 @@ import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import { Alert as AlertComponent } from '@/app/(app)/shared/components/ui/alert';
 import { LocalizedLink } from '@/app/(app)/shared/components/LocalizedLink';
 
-export default function Alert() {
+type Direction = 'col' | 'row';
+
+const getDirectionClass = (direction: Direction | undefined): string => {
+  if (direction === 'col') {
+    return 'flex-col';
+  }
+
+  if (direction === 'row') {
+    return 'flex-row';
+  }
+
+  return 'flex-col sm:flex-row';
+};
+
+type AlertProps = {
+  itemsDirection?: 'col' | 'row';
+};
+
+export default function Alert({ itemsDirection }: AlertProps) {
   const appConfig = useAppConfig();
 
   if (!appConfig?.alert || Object.keys(appConfig.alert).length === 0)
@@ -16,10 +34,17 @@ export default function Alert() {
   const variant = appConfig?.alert?.variant || 'destructive';
 
   return (
-    <div className="flex items-center justify-center p-8">
+    <div
+      className={`flex items-center justify-center p-2 ${itemsDirection === 'col' ? 'lg:p-4' : 'lg:p-8'}`}
+    >
       <AlertComponent variant={variant} className="flex w-auto">
-        <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-          <AlertCircle className="size-8" />
+        <div
+          className={cn(
+            'flex items-center justify-center gap-4',
+            getDirectionClass(itemsDirection),
+          )}
+        >
+          <AlertCircle className="size-8 shrink-0" />
 
           <p className="text-lg font-semibold">{appConfig.alert.text}</p>
 

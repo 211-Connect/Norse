@@ -1,0 +1,148 @@
+{
+  "header": {
+    "home": "家",
+    "favorites": "お気に入り",
+    "log_out": "ログアウト",
+    "language_select_label": "サイトの言語を変更するには、言語を選択してください。",
+    "my_stuff": "私の持ち物",
+    "search": "検索",
+    "report": "フィードバックを送信"
+  },
+  "favorites": {
+    "added_to_list": "リストに追加されました",
+    "added_to_list_message": "このリソースがリストに追加されました。",
+    "already_exists": "既に存在します",
+    "already_exists_message": "このリソースは既にリストに存在します。",
+    "removed_from_list": "リストから削除されました",
+    "removed_from_list_message": "このリソースはリストから削除されました。",
+    "updated_list": "更新されたリスト",
+    "updated_list_message": "リストが更新されました。",
+    "unable_to_update_list": "リストを更新できません",
+    "unable_to_update_list_message": "リストを更新できませんでした。",
+    "deleted_list": "削除済みリスト",
+    "deleted_list_message": "リストは削除されました。",
+    "unable_to_delete_list": "リストを削除できません",
+    "unable_to_delete_list_message": "リストを削除できませんでした。",
+    "list_created": "リストが作成されました",
+    "list_created_message": "リストが正常に作成されました。",
+    "unable_to_create_list_message": "リストを作成できませんでした。"
+  },
+  "search": {
+    "add_my_location": "現在地を追加",
+    "back": "戻る",
+    "hero_title": "リソースを検索",
+    "query_placeholder": "食料、住居など…",
+    "location_placeholder": "市区町村、州、または郵便番号",
+    "radius_placeholder": "半径",
+    "miles": "マイルズ",
+    "miles_short": "ミ",
+    "any": "どれでも",
+    "taxonomies": "分類法",
+    "suggestions": "提案",
+    "use_my_location": "現在地を使用する",
+    "confidential_address": "この場所は機密情報であるか、一般公開されていない可能性があります。このサービスについては、提供されている別の連絡方法をご利用ください。",
+    "address_unavailable": "住所不明",
+    "geocoding_error": "ジオコーディングエラー",
+    "geocoding_unsupported": "お使いのブラウザは位置情報サービスをサポートしていません",
+    "geocoding_unable_to_retrieve": "現在地情報を取得できませんでした。ブラウザの位置情報設定を確認して、もう一度お試しください。",
+    "categories": "トピック",
+    "show_all": "すべて表示（{{count}}）",
+    "show_less": "表示を減らす"
+  },
+  "call_to_action": {
+    "call": "電話",
+    "view_website": "Webサイト",
+    "get_directions": "方向",
+    "view_details": "もっと見る",
+    "add_to_list": "お気に入り",
+    "delete_list": "リストを削除",
+    "remove_from_list": "リストから削除",
+    "share": "共有",
+    "cancel": "キャンセル",
+    "create": "作成する",
+    "update": "アップデート",
+    "delete": "消去",
+    "search": "検索",
+    "remove": "取り除く",
+    "login": "ログイン",
+    "show_more": "もっと見る",
+    "show_less": "表示を減らす",
+    "print": "印刷"
+  },
+  "list": {
+    "private": "プライベート",
+    "public": "公共"
+  },
+  "message": {
+    "list_deleted": "リストが削除されました",
+    "list_deleted_success": "リストは削除されました。",
+    "error": "エラー",
+    "list_not_deleted_error": "リストを削除できませんでした。"
+  },
+  "modal": {
+    "add_to_list": {
+      "search_list": "リストを検索",
+      "list_name": "リスト",
+      "list_privacy": "プライバシー",
+      "add_to_list": "リストに追加",
+      "not_found": "リストが見つかりませんでした",
+      "create_new_list": "新しいものを作成しますか？"
+    },
+    "remove_from_list": {
+      "are_you_sure": "このお気に入りをリストから削除してもよろしいですか？"
+    },
+    "create_list": {
+      "create_a_list": "リストを作成する",
+      "list_name": "名前",
+      "list_description": "説明",
+      "make_public": "公開する"
+    },
+    "update_list": {
+      "update_list": "更新リスト",
+      "list_name": "名前",
+      "list_description": "説明",
+      "make_public": "公開する"
+    },
+    "delete_list": {
+      "delete_list": "リストを削除"
+    },
+    "share": {
+      "share_via": "これを共有する",
+      "copy_link": "リンクをコピー",
+      "copy": "コピー",
+      "facebook": "Facebook",
+      "twitter": "ツイッター",
+      "linkedin": "LinkedIn",
+      "sms": "SMS",
+      "email": "メール",
+      "print": "印刷",
+      "copied": "コピーしました！",
+      "check_out_this_list": "私が作ったこのリストを見てください！",
+      "check_out_this_resource": "私が見つけたこのリソースをチェックしてみてください！",
+      "share_sms": "SMSで共有する電話番号を入力してください",
+      "enter_phone_number": "電話番号を入力してください...",
+      "invalid_phone_number": "無効な電話番号",
+      "sms_sending_title": "SMSを送信中...",
+      "sms_sending_body": "メッセージは送信中です。",
+      "sms_send_success_title": "SMS送信済み！",
+      "sms_send_success_body": "メッセージが送信されました。",
+      "sms_send_failed_title": "SMS送信に失敗しました",
+      "sms_send_failed_body": "メッセージの送信に失敗しました。"
+    },
+    "prompt_auth": "この機能をご利用いただくには、ログインしてください。"
+  },
+  "update_location": {
+    "prompt_start_location": "出発地はどこですか？"
+  },
+  "data_providers": {
+    "provided_by": "提供元データ"
+  },
+  "carousel": {
+    "previous": "前の",
+    "next": "次",
+    "go_to": "行く"
+  },
+  "footer": {
+    "copyright": "© 著作権 {{text}}"
+  }
+}

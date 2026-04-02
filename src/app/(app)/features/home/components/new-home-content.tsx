@@ -13,6 +13,7 @@ import {
 import { ReactElement, useMemo } from 'react';
 import { Image } from '@/app/(app)/shared/components/image';
 import { Link } from '@/app/(app)/shared/components/link';
+import Alert from './alert';
 
 export function NewHomeContent() {
   const appConfig = useAppConfig();
@@ -93,7 +94,8 @@ export function NewHomeContent() {
   return (
     <div className="relative flex flex-1 justify-center border-t px-3 lg:justify-start lg:pl-8 lg:pr-0">
       <div className="flex min-h-full flex-row px-0">
-        <div className="flex flex-col items-start justify-around gap-16 py-6 pl-0 lg:w-[430px] lg:pr-[24px]">
+        <div className="flex flex-col items-start justify-around gap-4 py-6 pl-0 lg:w-[430px] lg:gap-8 lg:pr-[24px]">
+          <Alert itemsDirection="col" />
           <div className="w-full">
             <h2 className="mb-2 whitespace-break-spaces text-2xl font-medium text-primary">
               {appConfig.search.texts?.title ||
@@ -117,7 +119,9 @@ export function NewHomeContent() {
             <div className="w-full">
               <h3 className="mb-3 whitespace-break-spaces text-xl text-black opacity-50">
                 {appConfig.newLayout?.callouts?.title ||
-                  t('new_layout.other_ways_section.title', { ns: 'page-home' })}
+                  t('new_layout.callouts.title', {
+                    ns: 'page-home',
+                  })}
               </h3>
               <div className="grid grid-cols-[repeat(auto-fit,minmax(min(calc(50%-12px),127px),1fr))] justify-center gap-3 md:justify-start">
                 {callouts.map(

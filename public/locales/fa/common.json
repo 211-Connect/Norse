@@ -139,5 +139,10 @@
   },
   "footer": {
     "copyright": "© حق نشر {{متن}}"
+  },
+  "carousel": {
+    "previous": "قبلی",
+    "next": "بعدی",
+    "go_to": "رفتن به"
   }
 }

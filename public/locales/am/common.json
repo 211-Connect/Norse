@@ -139,5 +139,10 @@
   },
   "footer": {
     "copyright": "© የቅጂ መብት {{text}}"
+  },
+  "carousel": {
+    "previous": "ቀዳሚ",
+    "next": "ቀጣይ",
+    "go_to": "ወደ ይሂዱ"
   }
 }

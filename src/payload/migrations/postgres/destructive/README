@@ -1,0 +1,3 @@
+# Destructive Migrations
+
+Migrations in this folder should be applied **after release** to production. They contain destructive operations (e.g., dropping old columns).

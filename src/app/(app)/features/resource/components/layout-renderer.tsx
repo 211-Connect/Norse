@@ -1,0 +1,135 @@
+'use client';
+
+import { Card, CardContent } from '@/app/(app)/shared/components/ui/card';
+import { Separator } from '@/app/(app)/shared/components/ui/separator';
+import { cn } from '@/app/(app)/shared/lib/utils';
+import { Resource } from '@/types/resource';
+import { ResourceComponentId } from '../types/component-ids';
+import {
+  getResourceComponentById,
+  shouldComponentRender,
+} from './component-registry';
+import { ResourceLayoutConfig } from '../types/layout-config';
+import { cleanSeparators } from '@/app/(app)/shared/utils/layout-utils';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('LayoutRenderer');
+
+interface LayoutRendererProps {
+  layout: ResourceLayoutConfig;
+  resource: Resource;
+  className?: string;
+}
+
+type ColumnRendererProps = {
+  groups: ResourceLayoutConfig['leftColumn' | 'rightColumn'];
+  resource: Resource;
+};
+
+function ColumnRenderer({ groups, resource }: ColumnRendererProps) {
+  const appConfig = useAppConfig();
+
+  if (!groups) {
+    return null;
+  }
+
+  return (
+    <div className="flex flex-1 flex-col gap-4">
+      {groups.map((group, groupIndex) => {
+        if (!group.items) {
+          return null;
+        }
+
+        const itemsToRender = group.items.filter((item) =>
+          shouldComponentRender(
+            item.componentId,
+            resource,
+            appConfig,
+            item.customAttribute,
+          ),
+        );
+
+        const allRenderedComponents = itemsToRender.map((item, itemIndex) => {
+          const Component = getResourceComponentById(item.componentId);
+          if (!Component) {
+            log.warn(`No component found for ID: ${item.componentId}`);
+            return null;
+          }
+
+          const isSeparator =
+            item.componentId === ResourceComponentId.SEPARATOR;
+          return {
+            element: (
+              <Component
+                key={
+                  isSeparator
+                    ? `separator-${groupIndex}-${itemIndex}`
+                    : item.componentId
+                }
+                resource={resource}
+                customAttribute={item.customAttribute}
+              />
+            ),
+            isSeparator,
+          };
+        });
+
+        const withoutNulls = allRenderedComponents.filter(
+          (item): item is NonNullable<typeof item> => item !== null,
+        );
+
+        const cleanedComponents = cleanSeparators(withoutNulls);
+
+        const renderedComponents = cleanedComponents.map(
+          (item) => item.element,
+        );
+
+        if (renderedComponents.length === 0) {
+          return null;
+        }
+
+        log.debug(renderedComponents, 'Rendered components');
+
+        if (group.isCard) {
+          return (
+            <Card
+              key={`group-${groupIndex}`}
+              className="print:border-none print:shadow-none"
+            >
+              <CardContent className="flex flex-col gap-2">
+                {renderedComponents}
+              </CardContent>
+            </Card>
+          );
+        }
+
+        return (
+          <div key={`group-${groupIndex}`} className="flex flex-col gap-2">
+            {renderedComponents}
+          </div>
+        );
+      })}
+
+      <Separator className="hidden border-b border-black print:block" />
+    </div>
+  );
+}
+
+export function LayoutRenderer({
+  layout,
+  resource,
+  className,
+}: LayoutRendererProps) {
+  return (
+    <div
+      className={cn(
+        'grid grid-cols-1 gap-4 font-sans md:grid-cols-2',
+        className,
+      )}
+    >
+      <ColumnRenderer groups={layout.leftColumn} resource={resource} />
+      <ColumnRenderer groups={layout.rightColumn} resource={resource} />
+    </div>
+  );
+}

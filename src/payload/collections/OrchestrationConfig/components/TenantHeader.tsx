@@ -11,7 +11,7 @@ const TenantHeader = () => {
   useEffect(() => {
     if (!id) return;
 
-    findTenantById(String(id))
+    findTenantById(String(id), false)
       .then((tenant) => {
         if (tenant?.name) {
           setTenantName(tenant.name);

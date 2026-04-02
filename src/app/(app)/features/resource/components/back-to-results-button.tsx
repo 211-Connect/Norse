@@ -4,7 +4,6 @@ import { Button } from '@/app/(app)/shared/components/ui/button';
 import { usePrevUrl } from '@/app/(app)/shared/hooks/use-prev-url';
 import { ChevronLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export function BackToResultsButton() {
@@ -12,28 +11,20 @@ export function BackToResultsButton() {
   const prevUrl = usePrevUrl();
   const { t } = useTranslation('page-resource');
 
-  const [backUrl, setBackUrl] = useState('loading');
+  const isSearchPage = prevUrl?.includes('/search');
 
-  useEffect(() => {
-    if (prevUrl && /\/search\/?(\?|$)/.test(prevUrl)) {
-      setBackUrl(prevUrl);
+  const handleClick = () => {
+    if (isSearchPage && prevUrl) {
+      router.push(prevUrl);
     } else {
-      setBackUrl('/');
+      router.back();
     }
-  }, [prevUrl]);
+  };
 
   return (
-    <Button
-      variant="outline"
-      className="flex gap-1"
-      disabled={backUrl === 'loading'}
-      onClick={() => {
-        if (backUrl === 'loading') return;
-        router.push(backUrl);
-      }}
-    >
+    <Button variant="outline" className="flex gap-1" onClick={handleClick}>
       <ChevronLeft className="size-4" />
-      {backUrl === '/' ? t('back_to_home') : t('back_to_results')}
+      {isSearchPage ? t('back_to_results') : t('back_to_home')}
     </Button>
   );
 }

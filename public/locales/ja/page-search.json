@@ -1,0 +1,26 @@
+{
+  "learn_more": "もっと詳しく知る",
+  "filter_results": "結果を絞り込む",
+  "filters": "フィルター",
+  "clear_filters": "フィルターをクリアする",
+  "results": "結果",
+  "no_query": "クエリが指定されていません",
+  "results_for": "クエリに対して結果が見つかりました",
+  "of": "の",
+  "no_results": {
+    "title": "検索条件に一致する結果は見つかりませんでした。",
+    "subtitle": "以下に類似の結果をいくつか示します。",
+    "alt_subtitle": "別のクエリまたはフィルターを試してください",
+    "need_help": "お困りですか？スタッフが待機しております。"
+  },
+  "pinned": "ピン留め",
+  "sort": {
+    "label": "並べ替え",
+    "options": {
+      "relevance": "最も関連性の高い",
+      "distance": "最も近い先",
+      "name": "リソース名",
+      "organization": "プロバイダー名"
+    }
+  }
+}

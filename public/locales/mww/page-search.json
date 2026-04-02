@@ -11,5 +11,16 @@
     "alt_subtitle": "Sim ib qho lus nug lossis lim sib txawv",
     "need_help": "Xav tau kev pab? Peb muaj cov neeg sawv ntawm no."
   },
-  "pinned": "Tau pinned"
+  "pinned": "Tau pinned",
+  "filters": "Cov lim dej",
+  "clear_filters": "Tshem cov lim dej",
+  "sort": {
+    "label": "Xaiv los ntawm",
+    "options": {
+      "relevance": "Tseem Ceeb Tshaj Plaws",
+      "distance": "Qhov ze tshaj plaws ua ntej",
+      "name": "Lub Npe ntawm Cov Khoom Siv",
+      "organization": "Lub Npe Tus Muab Kev Pabcuam"
+    }
+  }
 }

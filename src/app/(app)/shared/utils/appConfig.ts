@@ -12,6 +12,8 @@ import { getHost } from './getHost';
 import { defaultLocale } from '@/payload/i18n/locales';
 import initTranslations from '../i18n/i18n';
 import { SESSION_ID } from '../lib/constants';
+import { DEFAULT_RESOURCE_LAYOUT } from '../../features/resource/types/layout-config';
+import { DEFAULT_SEARCH_CARD_LAYOUT } from '../../features/search/types/card-layout-config';
 
 function getMediaUrl(media?: TenantMedia | number | null): string | undefined {
   if (typeof media === 'number' || !media) return undefined;
@@ -51,6 +53,83 @@ function getTenantI18n(resourceDirectory: ResourceDirectory): {
   };
 }
 
+type CustomAttributeItem = {
+  componentId: string;
+  customAttribute?: {
+    title?: string | null;
+    subtitle?: string | null;
+    description?: string | null;
+    [key: string]: any;
+  } | null;
+  [key: string]: any;
+};
+
+function mergeCustomAttribute<T extends CustomAttributeItem>(
+  item: T,
+  fallbackItem?: T,
+): T {
+  if (
+    item.componentId !== 'customAttribute' ||
+    !item.customAttribute ||
+    !fallbackItem?.customAttribute
+  ) {
+    return item;
+  }
+
+  return {
+    ...item,
+    customAttribute: {
+      ...item.customAttribute,
+      title:
+        item.customAttribute.title ||
+        fallbackItem.customAttribute.title ||
+        null,
+      subtitle:
+        item.customAttribute.subtitle ||
+        fallbackItem.customAttribute.subtitle ||
+        null,
+      description:
+        item.customAttribute.description ||
+        fallbackItem.customAttribute.description ||
+        null,
+    },
+  };
+}
+
+function applyCustomAttributeFallback(
+  column: NonNullable<ResourceDirectory['resource']>['leftColumn'],
+  fallbackColumn: NonNullable<ResourceDirectory['resource']>['leftColumn'],
+): NonNullable<ResourceDirectory['resource']>['leftColumn'] {
+  if (!column || !fallbackColumn) return column;
+
+  return column.map((group, groupIndex) => {
+    const fallbackGroup = fallbackColumn[groupIndex];
+    if (!fallbackGroup || !group.items) return group;
+
+    return {
+      ...group,
+      items: group.items.map((item, itemIndex) =>
+        mergeCustomAttribute(item, fallbackGroup.items?.[itemIndex]),
+      ),
+    };
+  });
+}
+
+function applyCardLayoutCustomAttributeFallback(
+  cardLayout: NonNullable<ResourceDirectory['search']['cardLayout']>,
+  fallbackCardLayout?: NonNullable<
+    ResourceDirectory['search']['cardLayout']
+  > | null,
+): NonNullable<ResourceDirectory['search']['cardLayout']> {
+  if (!cardLayout || !fallbackCardLayout) {
+    return DEFAULT_SEARCH_CARD_LAYOUT;
+  }
+
+  return cardLayout.map((item, itemIndex) =>
+    mergeCustomAttribute(item, fallbackCardLayout[itemIndex]),
+  );
+}
+
 async function getAppConfigBase(
   host: string,
   locale: string,
@@ -87,7 +166,6 @@ async function getAppConfigBase(
         showFeedbackButtonOnResourcePages: false,
         showHomePageTour: false,
         showPrintButton: false,
-        showResourceCategories: false,
         showResourceAttribution: false,
         showResourceLastAssuredDate: false,
         showSearchAndResourceServiceName: false,
@@ -100,6 +178,7 @@ async function getAppConfigBase(
       },
       header: {
         customMenu: [],
+        position: 'sticky',
       },
       i18n: {
         defaultLocale,
@@ -119,6 +198,10 @@ async function getAppConfigBase(
       },
       resource: {
         lastAssuredText: undefined,
+        layout: {
+          leftColumn: [],
+          rightColumn: [],
+        },
       },
       search: {
         facets: [],
@@ -145,6 +228,16 @@ async function getAppConfigBase(
     i18n.locales,
     i18n.defaultLocale,
   );
+
+  // Fetch English resource directory for fallback if not English locale
+  let englishResourceDirectory: ResourceDirectory | null = null;
+  if (
+    locale !== 'en' &&
+    (resourceDirectory.resource?.useCustomLayout ||
+      !resourceDirectory.search.cardLayout)
+  ) {
+    englishResourceDirectory = await findResourceDirectoryByHost(host, 'en');
+  }
 
   const headerList = await headers();
   const cookiesList = await cookies();
@@ -245,8 +338,6 @@ async function getAppConfigBase(
       showPrintButton: resourceDirectory.featureFlags?.showPrintButton ?? false,
       showResourceAttribution:
         resourceDirectory.featureFlags?.showResourceAttribution ?? false,
-      showResourceCategories:
-        resourceDirectory.featureFlags?.showResourceCategories ?? false,
       showResourceLastAssuredDate:
         resourceDirectory.featureFlags?.showResourceLastAssuredDate ?? false,
       showSearchAndResourceServiceName:
@@ -282,6 +373,7 @@ async function getAppConfigBase(
           }
         : undefined,
       searchUrl: resourceDirectory.header?.searchUrl ?? undefined,
+      position: resourceDirectory.header?.position ?? 'sticky',
     },
     i18n,
     matomoContainerUrl:
@@ -306,6 +398,18 @@ async function getAppConfigBase(
     },
     resource: {
       lastAssuredText: resourceDirectory.resource?.lastAssuredText ?? undefined,
+      layout: resourceDirectory.resource?.useCustomLayout
+        ? {
+            leftColumn: applyCustomAttributeFallback(
+              resourceDirectory.resource.leftColumn,
+              englishResourceDirectory?.resource?.leftColumn,
+            ),
+            rightColumn: applyCustomAttributeFallback(
+              resourceDirectory.resource.rightColumn,
+              englishResourceDirectory?.resource?.rightColumn,
+            ),
+          }
+        : DEFAULT_RESOURCE_LAYOUT,
     },
     search: {
       facets: (resourceDirectory.search.facets ?? [])
@@ -333,6 +437,14 @@ async function getAppConfigBase(
           resourceDirectory.search.texts?.queryInputPlaceholder ?? undefined,
         title: resourceDirectory.search.texts?.title ?? undefined,
       },
+      cardLayout:
+        resourceDirectory.search.cardLayout &&
+        resourceDirectory.search.useCustomCardLayout
+          ? applyCardLayoutCustomAttributeFallback(
+              resourceDirectory.search.cardLayout,
+              englishResourceDirectory?.search.cardLayout,
+            )
+          : DEFAULT_SEARCH_CARD_LAYOUT,
     },
     sessionId,
     badges:
@@ -413,7 +525,6 @@ async function getAppConfigBase(
     })),
     providersCustomHeading:
       resourceDirectory.common?.customDataProvidersHeading ?? undefined,
-    smsProvider: resourceDirectory.common?.smsProvider ?? undefined,
   };
 }
 export const getAppConfig = cache(getAppConfigBase);

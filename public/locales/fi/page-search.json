@@ -11,5 +11,16 @@
     "alt_subtitle": "Kokeile eri kyselyä tai suodatinta",
     "need_help": "Tarvitsetko apua? Meillä on ihmisiä valmiina auttamaan."
   },
-  "pinned": "Kiinnitetty"
+  "pinned": "Kiinnitetty",
+  "filters": "Suodattimet",
+  "clear_filters": "Tyhjennä suodattimet",
+  "sort": {
+    "label": "Lajittele",
+    "options": {
+      "relevance": "Olennaisin",
+      "distance": "Lähimpänä ensin",
+      "name": "Resurssin nimi",
+      "organization": "Palveluntarjoajan nimi"
+    }
+  }
 }

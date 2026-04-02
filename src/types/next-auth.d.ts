@@ -30,14 +30,9 @@ declare module 'next-auth' {
 
 declare module 'next-auth/jwt' {
   export interface JWT {
-    name?: string | null;
-    email?: string | null;
-    picture?: string | null;
-    sub?: string;
     error?: string | null;
     accessToken?: string;
     refreshToken?: string;
-    idToken?: string;
     expiresAt?: number;
   }
 }

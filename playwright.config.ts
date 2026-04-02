@@ -1,23 +1,17 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const defaultBaseUrl = process.env.E2E_BASE_URL || 'http://localhost:3000';
-const translationsBaseUrl =
-  process.env.E2E_TRANSLATIONS_BASE_URL || defaultBaseUrl;
+export const baseURL = process.env.E2E_BASE_URL || 'http://localhost:3000';
 
 /**
  * Playwright E2E test configuration for Norse.
  *
  * By default tests run against http://localhost:3000.
- * Override with environment variables:
+ * Override with environment variable:
  *
  *   E2E_BASE_URL=https://staging.example.com
- *   E2E_TRANSLATIONS_BASE_URL=https://preview.example.com
- *
- * `E2E_BASE_URL` remains a global fallback for all projects.
- * `E2E_TRANSLATIONS_BASE_URL` is used by translations.
  *
  * For authenticated tests (Favorites), provide:
- *   TEST_USER_EMAIL=... (or TEST_USER_USERNAME=...)
+ *   TEST_USER_EMAIL=...
  *   TEST_USER_PASSWORD=...
  */
 export default defineConfig({
@@ -29,7 +23,7 @@ export default defineConfig({
   timeout: 60_000,
 
   use: {
-    baseURL: defaultBaseUrl,
+    baseURL,
     launchOptions: {
       slowMo: Number(process.env.PW_SLOWMO ?? 0),
     },
@@ -43,17 +37,17 @@ export default defineConfig({
     {
       name: 'search-taxonomy',
       testMatch: ['**/search-taxonomy.spec.ts'],
-      use: { ...devices['Desktop Chrome'], baseURL: defaultBaseUrl },
+      use: { ...devices['Desktop Chrome'], baseURL },
     },
     {
       name: 'translations',
       testMatch: ['**/translations.spec.ts'],
-      use: { ...devices['Desktop Chrome'], baseURL: translationsBaseUrl },
+      use: { ...devices['Desktop Chrome'], baseURL },
     },
     {
       name: 'favorites',
       testMatch: ['**/favorites.spec.ts'],
-      use: { ...devices['Desktop Chrome'], baseURL: defaultBaseUrl },
+      use: { ...devices['Desktop Chrome'], baseURL },
       workers: 1,
     },
   ],

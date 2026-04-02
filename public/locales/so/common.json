@@ -139,5 +139,10 @@
   },
   "footer": {
     "copyright": "© Xuquuqda daabacaadda {{text}}"
+  },
+  "carousel": {
+    "previous": "Kii hore",
+    "next": "Xiga",
+    "go_to": "Tag"
   }
 }

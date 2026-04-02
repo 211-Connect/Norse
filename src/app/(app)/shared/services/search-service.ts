@@ -19,9 +19,15 @@ import {
 import qs from 'qs';
 import { createLogger } from '@/lib/logger';
 import { formatAddressForDisplay } from '../lib/utils';
-import { stableHash, withRedisCache } from '@/utilities/withRedisCache';
+import { stableHash, withCache } from '@/utilities/withCache';
+import { ResultType } from '../store/results';
 
 const log = createLogger('search');
+
+export type SortOption = 'relevance' | 'distance' | 'name' | 'organization';
+export const isSortOption = (value: unknown): value is SortOption =>
+  typeof value === 'string' &&
+  ['relevance', 'distance', 'name', 'organization'].includes(value);
 
 export type FindResourcesQuery = {
   query?: string;
@@ -33,6 +39,7 @@ export type FindResourcesQuery = {
   placeType?: string[];
   bbox?: BBox;
   filters?: Record<string, string[]>;
+  sort?: SortOption;
 };
 
 type SearchResult = {
@@ -98,11 +105,18 @@ function transformSearchHits(
     const physicalAddress = hit._source?.location?.physical_address;
     const mainAddress = formatAddressForDisplay(physicalAddress);
 
-    const responseData: Record<string, any> = {
+    const transformedFacets = transformFacetsToArray(
+      hit?._source?.facets,
+      facetDefinitions,
+      locale,
+    );
+
+    const responseData: ResultType = {
       _id: hit._id,
       id: hit?._source?.service_at_location_id ?? null,
       priority: hit?._source?.priority,
       serviceName: hit?._source?.service?.name ?? null,
+      attribution: hit?._source?.attribution ?? null,
       name: hit?._source?.name ?? null,
       summary: hit?._source?.service?.summary ?? null,
       description: hit?._source?.service?.description ?? null,
@@ -111,16 +125,9 @@ function transformSearchHits(
       address: mainAddress,
       location: hit?._source?.location?.point ?? null,
       taxonomies: hit?._source?.taxonomies ?? null,
+      attributeValues: hit?._source?.attribute_values ?? null,
+      facets: transformedFacets.length > 0 ? transformedFacets : null,
     };
-
-    const transformedFacets = transformFacetsToArray(
-      hit?._source?.facets,
-      facetDefinitions,
-      locale,
-    );
-    if (transformedFacets.length > 0) {
-      responseData.facets = transformedFacets;
-    }
 
     return Object.fromEntries(
       Object.entries(responseData).filter(([_, value]) => value != null),
@@ -194,6 +201,7 @@ async function findResourcesOrigin({
       ...(query.location?.trim() && { location: query.location.trim() }),
       ...(hasCoords && { coords: query.coordinates!.join(',') }),
       ...(hasCoords && { distance: query.distance?.trim() || '0' }),
+      ...(query.sort && { sort: query.sort }),
       page,
       locale,
       limit,
@@ -264,9 +272,10 @@ export const findResources = (
   limit?: number,
   tenantId?: string,
 ) =>
-  withRedisCache(
+  withCache(
     `search_results:${tenantId}:${locale}:${stableHash({ query, page, limit })}`,
     () => findResourcesOrigin({ query, locale, page, limit, tenantId }),
+    { redis: true, memory: false },
   );
 
 /**
@@ -288,6 +297,7 @@ async function tryFallbackSearch(
       ...(query.location?.trim() && { location: query.location.trim() }),
       ...(hasCoords && { coords: query.coordinates!.join(',') }),
       ...(hasCoords && { distance: query.distance?.trim() || '0' }),
+      ...(query.sort && { sort: query.sort }),
       page,
       locale,
       limit,
@@ -326,6 +336,7 @@ async function tryFallbackSearchV2(
   limit: number,
   tenantId?: string,
   filters?: Record<string, string[]>,
+  sort?: SortOption,
 ): Promise<SearchApiResponse | null> {
   try {
     const fallbackQueryParams = qs.stringify({
@@ -334,6 +345,7 @@ async function tryFallbackSearchV2(
       query_type: 'more_like_this',
       locale,
       limit,
+      ...(sort && { sort }),
       ...(filters && Object.keys(filters).length > 0 ? { filters } : {}),
     });
     const fallbackUrl = `${API_URL}/search?${fallbackQueryParams}`;
@@ -382,6 +394,7 @@ export async function findResourcesV2(
     page,
     locale,
     limit,
+    ...(searchStore.sort && { sort: searchStore.sort }),
     ...(searchStore.filters && Object.keys(searchStore.filters).length > 0
       ? { filters: searchStore.filters }
       : {}),
@@ -430,6 +443,7 @@ export async function findResourcesV2(
         limit,
         tenantId,
         searchStore.filters,
+        searchStore.sort,
       )) ?? data;
     totalResults = extractTotalResults(data);
   }

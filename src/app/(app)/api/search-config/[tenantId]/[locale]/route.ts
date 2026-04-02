@@ -4,7 +4,7 @@ import { SearchConfig } from '@/types/search-config';
 import { TypedLocale } from 'payload';
 import { locales } from '@/payload/i18n/locales';
 import { Tenant } from '@/payload/payload-types';
-import { withRedisCache } from '@/utilities/withRedisCache';
+import { withCache } from '@/utilities/withCache';
 import { createLogger } from '@/lib/logger';
 
 const log = createLogger('search-config');
@@ -35,7 +35,7 @@ export async function GET(
       return NextResponse.json({ error: 'Invalid locale' }, { status: 400 });
     }
 
-    const searchConfig = await withRedisCache(
+    const searchConfig = await withCache(
       `search_config:${tenantId}:${locale}`,
       async () => {
         const resourceDirectory = await findResourceDirectoryByTenantId(
@@ -85,6 +85,7 @@ export async function GET(
 
         return config;
       },
+      { redis: true, memory: true },
     );
 
     if (!searchConfig) {

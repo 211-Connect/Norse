@@ -3,6 +3,7 @@ import { isSuperAdminAccess } from '../Users/access/roles';
 import { schemas } from './tabs/schemas';
 import { pushOrchestrationConfigToCache } from './hooks/pushOrchestrationConfigToCache';
 import { setTenantIdAsId } from '../ResourceDirectories/hooks/setTenantIdAsId';
+import { invalidateApiCache } from '../ResourceDirectories/hooks/invalidateApiCache';
 
 export const OrchestrationConfig: CollectionConfig = {
   slug: 'orchestration-config',
@@ -23,7 +24,7 @@ export const OrchestrationConfig: CollectionConfig = {
   },
   hooks: {
     beforeChange: [setTenantIdAsId],
-    afterChange: [pushOrchestrationConfigToCache],
+    afterChange: [pushOrchestrationConfigToCache, invalidateApiCache],
   },
   fields: [
     {

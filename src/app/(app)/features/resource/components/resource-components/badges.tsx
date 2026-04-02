@@ -1,0 +1,34 @@
+'use client';
+
+import { useMemo } from 'react';
+import { Badges } from '@/app/(app)/shared/components/badges';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { getBadgesForResource } from '@/utils/getBadgesForResource';
+import { Resource } from '@/types/resource';
+
+export function BadgesComponent({
+  resource,
+}: {
+  resource: Pick<Resource, 'facets' | 'categories'>;
+}) {
+  const appConfig = useAppConfig();
+  const badgeConfigs = appConfig.badges;
+
+  const labels = useMemo(() => {
+    if (!resource || !badgeConfigs || badgeConfigs.length === 0) {
+      return [];
+    }
+
+    return getBadgesForResource(
+      badgeConfigs,
+      resource.facets,
+      resource.categories,
+    );
+  }, [resource, badgeConfigs]);
+
+  if (labels.length === 0) {
+    return null;
+  }
+
+  return <Badges items={labels} />;
+}

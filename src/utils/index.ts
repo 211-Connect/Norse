@@ -1,6 +1,7 @@
 export * from './badgeFilterEvaluator';
 export * from './getBadgesForResource';
 export * from './getContrastColor';
+export * from './getNumberFromString';
 export * from './hexToRgba';
 export * from './isJwtExpired';
 export * from './isValidCoordinate';

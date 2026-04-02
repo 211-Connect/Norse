@@ -11,5 +11,16 @@
     "alt_subtitle": "Thử một truy vấn hoặc bộ lọc khác",
     "need_help": "Cần giúp đỡ? Chúng tôi có những người túc trực."
   },
-  "pinned": "Đã ghim"
+  "pinned": "Đã ghim",
+  "filters": "Bộ lọc",
+  "clear_filters": "Xóa bộ lọc",
+  "sort": {
+    "label": "Sắp xếp theo",
+    "options": {
+      "relevance": "Phù hợp nhất",
+      "distance": "Gần nhất",
+      "name": "Tên tài nguyên",
+      "organization": "Tên nhà cung cấp"
+    }
+  }
 }

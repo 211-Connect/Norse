@@ -1,8 +1,37 @@
-import { Tab } from 'payload';
+import { Field, Tab } from 'payload';
 import {
   hasPropertySettingsFieldAccess,
   hasSearchFieldAccess,
+  hasLayoutFieldAccess,
 } from '../../Users/access/permissions';
+import { SearchCardComponentId } from '@/app/(app)/features/search/types/card-component-ids';
+import { title } from 'radash';
+import { customAttributeFields } from '../fields/customAttributeFields';
+
+const CARD_COMPONENT_ID_OPTIONS = Object.values(SearchCardComponentId).map(
+  (id) => ({
+    label: title(id),
+    value: id,
+  }),
+);
+
+const cardLayoutItemFields: Field[] = [
+  {
+    name: 'componentId',
+    type: 'select',
+    required: true,
+    options: CARD_COMPONENT_ID_OPTIONS,
+  },
+  {
+    name: 'customAttribute',
+    type: 'group',
+    admin: {
+      condition: (_, siblingData: any) =>
+        siblingData?.componentId === SearchCardComponentId.CUSTOM_ATTRIBUTE,
+    },
+    fields: customAttributeFields,
+  },
+];
 
 export const search: Tab = {
   name: 'search',
@@ -149,6 +178,41 @@ export const search: Tab = {
           defaultValue: true,
         },
       ],
+    },
+    {
+      name: 'useCustomCardLayout',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        description:
+          'Enable custom layout for search result cards. When disabled, the default layout will be used.',
+        components: {
+          Field:
+            '@/payload/collections/ResourceDirectories/components/UseCustomCardLayoutField',
+        },
+      },
+      access: {
+        create: hasLayoutFieldAccess,
+        update: hasLayoutFieldAccess,
+      },
+    },
+    {
+      name: 'cardLayout',
+      type: 'array',
+      label: 'Card Layout',
+      admin: {
+        condition: (_, siblingData) => siblingData.useCustomCardLayout === true,
+        description: 'Configure the layout components for search result cards',
+        components: {
+          RowLabel:
+            '@/payload/collections/ResourceDirectories/components/ResourceLayoutRowLabel',
+        },
+      },
+      access: {
+        create: hasLayoutFieldAccess,
+        update: hasLayoutFieldAccess,
+      },
+      fields: cardLayoutItemFields,
     },
     {
       type: 'group',

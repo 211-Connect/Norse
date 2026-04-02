@@ -15,6 +15,7 @@ interface FilterBuilderProps {
 }
 
 const PROPERTIES = [
+  { value: 'taxonomyCode', label: 'Taxonomy Code', color: '#8B5CF6' },
   { value: 'taxonomyNameEn', label: 'Taxonomy (English)', color: '#3B82F6' },
   { value: 'taxonomyName', label: 'Taxonomy (Translated)', color: '#3B82F6' },
   { value: 'termNameEn', label: 'Term (English)', color: '#10B981' },

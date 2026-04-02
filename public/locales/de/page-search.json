@@ -11,5 +11,16 @@
     "alt_subtitle": "Versuchen Sie eine andere Abfrage oder einen anderen Filter.",
     "need_help": "Brauchen Sie Hilfe? Wir haben Helfer bereitstehen."
   },
-  "pinned": "Angepinnt"
+  "pinned": "Angepinnt",
+  "filters": "Filter",
+  "clear_filters": "Filter löschen",
+  "sort": {
+    "label": "Sortieren nach",
+    "options": {
+      "relevance": "Am relevantesten",
+      "distance": "Nächstgelegener erster",
+      "name": "Ressourcenname",
+      "organization": "Name des Anbieters"
+    }
+  }
 }

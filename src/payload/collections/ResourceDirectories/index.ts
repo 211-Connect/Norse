@@ -6,6 +6,7 @@ import { revalidateCache } from './hooks/revalidateCache';
 import { disableService } from './hooks/disableResourceDirectoryService';
 import { autoTranslate } from './hooks/autoTranslate';
 import { pushFacetsToCache } from './hooks/pushFacetsToCache';
+import { invalidateApiCache } from './hooks/invalidateApiCache';
 import { brand } from './tabs/brand';
 import { topics } from './tabs/topics';
 import { suggestions } from './tabs/suggestions';
@@ -55,10 +56,25 @@ export const ResourceDirectories: CollectionConfig = {
   },
   hooks: {
     beforeChange: [setTenantIdAsId, preventUpdateInDisabledLocale],
-    afterChange: [revalidateCache, autoTranslate, pushFacetsToCache],
+    afterChange: [
+      revalidateCache,
+      autoTranslate,
+      pushFacetsToCache,
+      invalidateApiCache,
+    ],
     afterDelete: [revalidateCache, disableService],
   },
   fields: [
+    {
+      type: 'ui',
+      name: 'cachingAlert',
+      admin: {
+        components: {
+          Field:
+            '@/payload/collections/ResourceDirectories/components/CachingAlert',
+        },
+      },
+    },
     {
       type: 'ui',
       name: 'actionButtons',

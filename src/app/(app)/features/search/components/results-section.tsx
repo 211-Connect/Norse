@@ -9,28 +9,41 @@ import { ShareButton } from '@/app/(app)/shared/components/share-button';
 import { ResultTotal } from './result-total';
 import { RenderResults } from './render-results';
 import { ResultsPagination } from './results-pagination';
+import { SortSelect } from './sort-select';
+import { SearchCardLayoutConfig } from '../types/card-layout-config';
+import { queryTypeAtom } from '@/app/(app)/shared/store/search';
 
-export function ResultsSection() {
+type ResultsSectionProps = {
+  cardLayout: SearchCardLayoutConfig;
+};
+
+export function ResultsSection({ cardLayout }: ResultsSectionProps) {
   const componentToPrintRef = useRef<HTMLDivElement>(null);
   const noResults = useAtomValue(noResultsAtom);
+  const queryType = useAtomValue(queryTypeAtom);
+
+  const showSort = queryType !== 'hybrid';
 
   return (
     <div
       id="search-container"
-      className="flex w-full flex-col gap-3 overflow-y-auto p-[10px] xl:max-w-[550px]"
+      className="flex w-full flex-col gap-3 overflow-y-auto p-[10px] lg:max-w-[400px] xl:max-w-[550px]"
     >
-      <div className="flex items-center justify-between py-[5.5px] print:hidden">
-        <ResultTotal />
-        <div className="flex gap-[10px]">
-          {!noResults && (
-            <PrintButton componentToPrintRef={componentToPrintRef} />
-          )}
-          <ShareButton componentToPrintRef={componentToPrintRef} />
+      <div className="flex flex-col gap-3 print:hidden">
+        <div className="flex items-center justify-between">
+          <ResultTotal />
+          <div className="flex gap-[10px]">
+            {!noResults && (
+              <PrintButton componentToPrintRef={componentToPrintRef} />
+            )}
+            <ShareButton componentToPrintRef={componentToPrintRef} />
+          </div>
         </div>
+        {showSort && <SortSelect />}
       </div>
 
       <div className="flex flex-col gap-6" ref={componentToPrintRef}>
-        <RenderResults />
+        <RenderResults cardLayout={cardLayout} />
         <ResultsPagination />
       </div>
     </div>

@@ -34,9 +34,9 @@ test.describe('Language Persistence And Results Button', () => {
     expect(r0).toBeGreaterThan(0);
 
     const requiredFilterIds = [
-      'Low Income',
-      'General',
-      'Low-Cost/Sliding Scale',
+      'Housekeeping',
+      'Hennepin County',
+      'Dakota County',
     ];
     await markFiltersByIds(page, requiredFilterIds);
 

@@ -11,5 +11,16 @@
     "alt_subtitle": "Subukan ang ibang query o filter",
     "need_help": "Kailangan mo ba ng tulong? May mga taong nakaabang."
   },
-  "pinned": "Naka-pin"
+  "pinned": "Naka-pin",
+  "filters": "Mga Filter",
+  "clear_filters": "I-clear ang mga filter",
+  "sort": {
+    "label": "Ayusin ayon sa",
+    "options": {
+      "relevance": "Pinaka-may-katuturan",
+      "distance": "Pinakamalapit na Una",
+      "name": "Pangalan ng Mapagkukunan",
+      "organization": "Pangalan ng Tagapagbigay ng Serbisyo"
+    }
+  }
 }

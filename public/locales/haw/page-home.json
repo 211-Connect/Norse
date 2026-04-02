@@ -1,0 +1,40 @@
+{
+  "meta_title": "",
+  "meta_description": "",
+  "take_a_tour": "ʻO kou manawa mua kēia ma ʻaneʻi? E hele i kahi mākaʻikaʻi!",
+  "new": "Hou!",
+  "tour": {
+    "step_1": {
+      "paragraph_1": "ʻO ka pahu huli ke kumu o ka ʻenekini huli. ʻAe ia i nā huaʻōlelo maʻamau, nā māmalaʻōlelo, a me nā mea ʻē aʻe (e laʻa me 'nā hale ʻai')",
+      "paragraph_2": "I kou paʻi ʻana, e hāʻawi ka pahu huli i nā manaʻo e pili ana i nā māhele a mākou e hoʻohana ai ma hope o nā hiʻohiʻona. E hāʻawi kēia mau manaʻo i nā hopena pololei loa, akā naʻe, ʻaʻole pono ʻoe e hoʻohana iā lākou.",
+      "paragraph_3": "Inā koho ʻoe ʻaʻole e hoʻohana i nā manaʻo i hāʻawi ʻia, e hoʻohana mākou i ka kikokikona āu i hāʻawi mai ai e kiʻi i nā hopena pololei loa hiki iā mākou."
+    },
+    "step_2": {
+      "paragraph_1": "ʻAʻole maopopo loa i kāu mea e ʻimi nei? ʻAʻohe pilikia!",
+      "paragraph_2": "Hāʻawi mākou i nā ʻano māhele like ʻole a me nā ʻano mahele liʻiliʻi no ʻoe e ʻimi ai. Kaomi wale ma kekahi o nā loulou ma ka ʻāpana māhele e lawe ʻia i nā hopena hulina."
+    },
+    "step_3": {
+      "paragraph_1": "I kekahi manawa e haki ana kekahi mea, nā mea a mākou i manaʻo ʻole ai e haki.",
+      "paragraph_2": "Inā ʻike ʻoe i kahi mea i haki, a makemake paha e hāʻawi i kekahi manaʻo i loko o ka ʻike holoʻokoʻa a laila hiki iā ʻoe ke kaomi ma ke pihi manaʻo i kēlā me kēia manawa."
+    },
+    "step_4": {
+      "paragraph_1": "E hoʻohui i kou helu wahi ma aneʻi e ʻike i nā lawelawe i loaʻa ma kou kaiāulu. Kōkua kēia iā mākou e hōʻike iā ʻoe i nā koho wale nō e hiki mai ana i kou wahi."
+    }
+  },
+  "categories_title": "Nā Kumuhana",
+  "new_layout": {
+    "topics_section": {
+      "cta": "E nānā i nā kumuhana",
+      "title": "ʻAʻole maopopo kahi e hoʻomaka ai"
+    },
+    "callouts": {
+      "list": {
+        "call": "Kāhea",
+        "chat": "Kamaʻilio",
+        "email": "Leka uila",
+        "sms": "SMS"
+      },
+      "title": "Aia kekahi mau ala ʻē aʻe e noi ai i ke kōkua:"
+    }
+  }
+}

@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { signOut, useSession } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
-import { Fragment, useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useSetAtom } from 'jotai';
 import {
   AlignJustifyIcon,
@@ -13,11 +13,11 @@ import {
   Search,
   UserRound,
 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import { Link } from './link';
 import { useDisclosure } from '../hooks/use-disclosure';
-import { Button } from './ui/button';
+import { Button, buttonVariants } from './ui/button';
 import {
   Sheet,
   SheetContent,
@@ -31,6 +31,8 @@ import {
   HEADER_DESKTOP_ID,
   HEADER_ID,
   HEADER_MOBILE_ID,
+  MAIN_CONTENT_ID,
+  NEW_TAB_WARNING,
 } from '../lib/constants';
 import { dialogsAtom } from '../store/dialogs';
 import {
@@ -47,8 +49,9 @@ import { FontSizeToggle } from './accessibility/font-size-toggle';
 
 export function Header() {
   const appConfig = useAppConfig();
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
   const router = useRouter();
+  const pathname = usePathname();
 
   const session = useSession();
   const setDialogStore = useSetAtom(dialogsAtom);
@@ -71,110 +74,142 @@ export function Header() {
     ],
   );
 
+  const currentPath = useMemo(() => {
+    const normalizedPathname = pathname?.replace(/\/+$/, '') || '/';
+    const localePrefix =
+      i18n.language && i18n.language !== appConfig.i18n.defaultLocale
+        ? `/${i18n.language}`
+        : '';
+
+    if (
+      localePrefix &&
+      (normalizedPathname === localePrefix ||
+        normalizedPathname.startsWith(`${localePrefix}/`))
+    ) {
+      const localizedPath = normalizedPathname.slice(localePrefix.length);
+
+      return localizedPath === '' ? '/' : localizedPath;
+    }
+
+    return normalizedPathname === '' ? '/' : normalizedPathname;
+  }, [appConfig.i18n.defaultLocale, i18n.language, pathname]);
+
+  const getAriaCurrent = useCallback(
+    (href: string | null | undefined) => {
+      if (!href || !href.startsWith('/')) {
+        return undefined;
+      }
+
+      const normalizedHref = href.replace(/\/+$/, '') || '/';
+
+      return currentPath === normalizedHref ? 'page' : undefined;
+    },
+    [currentPath],
+  );
+
   const handleLogoClick = useCallback(() => {
     router.push(appConfig.header?.customHomeUrl || '/');
   }, [appConfig.header?.customHomeUrl, router]);
 
-  const SITEMAP = useMemo(
-    () => [
-      <li key="0">
-        <Link
-          href={appConfig.header.customHomeUrl || '/'}
-          className="flex items-center gap-1 hover:underline"
-        >
-          <Button
-            variant="outline"
+  const logoAlt = useMemo(() => {
+    const brandName = appConfig.brand.name?.trim();
+
+    return brandName ? `${brandName} home page` : (t('header.home') ?? 'Home');
+  }, [appConfig.brand.name, t]);
+
+  const sitemap = useMemo(
+    () =>
+      [
+        <li key="0">
+          <Link
+            href={appConfig.header.customHomeUrl || '/'}
+            aria-current={getAriaCurrent(appConfig.header.customHomeUrl || '/')}
             className={cn(
+              buttonVariants({ variant: 'outline' }),
               'flex items-center gap-[5px]',
               newLayoutEnabled && '!bg-white',
             )}
           >
-            <HomeIcon className="size-4" />
+            <HomeIcon className="size-4" aria-hidden="true" />
             {t('header.home')}
-          </Button>
-        </Link>
-      </li>,
-      <Fragment key="1">
-        {appConfig.header?.searchUrl && (
-          <li>
+          </Link>
+        </li>,
+        appConfig.header?.searchUrl ? (
+          <li key="1">
             <Link
               href={appConfig.header.searchUrl}
-              className="flex items-center gap-1 hover:underline"
+              aria-current={getAriaCurrent(appConfig.header.searchUrl)}
+              className={cn(
+                buttonVariants({ variant: 'outline' }),
+                'flex items-center gap-[5px]',
+                newLayoutEnabled && '!bg-white',
+              )}
             >
+              <Search className="size-4" aria-hidden="true" />
+              {t('header.search')}
+            </Link>
+          </li>
+        ) : null,
+        appConfig.accessibility.fontSize.allowedValues.length > 1 ? (
+          <li key="2" className="hidden sm:flex">
+            <FontSizeToggle />
+          </li>
+        ) : null,
+        appConfig.featureFlags.showFeedbackButtonGlobal ? (
+          <li key="3">
+            <ReportButton
+              customText={t('header.report')}
+              className={newLayoutEnabled ? '!bg-white' : undefined}
+            />
+          </li>
+        ) : null,
+        ...appConfig.header.customMenu
+          .filter((item) => item.href != null)
+          .map((item) => (
+            <li key={item.name}>
+              <Link
+                target={item.openInNewTab ? '_blank' : undefined}
+                aria-label={
+                  item.openInNewTab
+                    ? `${item.name}${NEW_TAB_WARNING}`
+                    : item.name
+                }
+                aria-current={getAriaCurrent(item.href)}
+                href={item.href ?? ''}
+                className={cn(
+                  buttonVariants({ variant: 'outline' }),
+                  newLayoutEnabled && '!bg-white',
+                )}
+              >
+                {item.name}
+                {item.openInNewTab && (
+                  <span className="sr-only">{NEW_TAB_WARNING}</span>
+                )}
+              </Link>
+            </li>
+          )),
+        <LanguageSwitcher key="5" />,
+        <li key="6">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
               <Button
-                variant="outline"
                 className={cn(
                   'flex items-center gap-[5px]',
                   newLayoutEnabled && '!bg-white',
                 )}
+                variant="outline"
+                data-testid="my-stuff-btn"
               >
-                <Search className="size-4" />
-                {t('header.search')}
+                <UserRound className="size-4" aria-hidden="true" />
+                {t('header.my_stuff')}
+                <ChevronDown className="size-4" aria-hidden="true" />
               </Button>
-            </Link>
-          </li>
-        )}
-      </Fragment>,
-      <Fragment key="2">
-        <FontSizeToggle className="hidden sm:flex" />
-      </Fragment>,
-      <Fragment key="3">
-        {appConfig.featureFlags.showFeedbackButtonGlobal && (
-          <ReportButton
-            customText={t('header.report')}
-            className={newLayoutEnabled ? '!bg-white' : undefined}
-          />
-        )}
-      </Fragment>,
-      <Fragment key="4">
-        {appConfig.header.customMenu.length > 0 &&
-          appConfig.header.customMenu.map((item) => {
-            if (item.href == null) return;
-
-            return (
-              <li key={item.name}>
-                <Link
-                  className="hover:underline"
-                  target={item.name}
-                  {...(item.href != null ? { href: item.href } : { href: '' })}
-                >
-                  <Button
-                    variant="outline"
-                    className={cn(newLayoutEnabled && '!bg-white')}
-                  >
-                    {item.name}
-                  </Button>
-                </Link>
-              </li>
-            );
-          })}
-      </Fragment>,
-      <Fragment key="5">
-        <LanguageSwitcher />
-      </Fragment>,
-      <Fragment key="6">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              className={cn(
-                'flex items-center gap-[5px]',
-                newLayoutEnabled && '!bg-white',
-              )}
-              variant="outline"
-              data-testid="my-stuff-btn"
-            >
-              <UserRound className="size-4" />
-              {t('header.my_stuff')}
-              <ChevronDown className="size-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="min-w-[143px]">
-            <Card className="px-0 py-[10px]">
-              <CardContent>
-                <DropdownMenuItem className="!outline-none [&:focus-visible>*]:bg-accent">
-                  <Button
-                    className="w-full justify-start px-[10px] text-primary hover:text-primary"
-                    variant="ghost"
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="min-w-[143px]">
+              <Card className="px-0 py-[10px]">
+                <CardContent>
+                  <DropdownMenuItem
+                    className="cursor-pointer px-[10px] py-2 text-primary !outline-none focus:bg-accent focus:text-primary"
                     data-testid="favorites-btn"
                     onClick={() => {
                       if (session.status === 'unauthenticated') {
@@ -195,43 +230,48 @@ export function Header() {
                     }}
                   >
                     {t('header.favorites')}
-                  </Button>
-                </DropdownMenuItem>
-                {session.status === 'authenticated' && (
-                  <DropdownMenuItem className="!outline-none [&:focus-visible>*]:bg-accent">
-                    <Button
-                      className="w-full justify-start px-[10px] text-primary hover:text-primary"
-                      variant="ghost"
+                  </DropdownMenuItem>
+                  {session.status === 'authenticated' && (
+                    <DropdownMenuItem
+                      className="cursor-pointer px-[10px] py-2 text-primary !outline-none focus:bg-accent focus:text-primary"
                       onClick={() => {
                         signOut({ redirect: true, callbackUrl: '/' });
                       }}
                     >
                       {t('header.log_out')}
-                    </Button>
-                  </DropdownMenuItem>
-                )}
-              </CardContent>
-            </Card>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </Fragment>,
-      <Fragment key="7">
-        {appConfig.header.safeExit?.enabled && (
-          <li>
+                    </DropdownMenuItem>
+                  )}
+                </CardContent>
+              </Card>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </li>,
+        appConfig.header.safeExit?.enabled ? (
+          <li key="7">
             <Link
               target={appConfig.header.safeExit.target}
               href={appConfig.header.safeExit?.url ?? '#'}
+              aria-label={
+                appConfig.header.safeExit.target === '_blank'
+                  ? `${appConfig.header.safeExit?.text}${NEW_TAB_WARNING}`
+                  : appConfig.header.safeExit?.text
+              }
+              className={cn(
+                buttonVariants({ variant: 'outline' }),
+                'flex items-center gap-1',
+              )}
             >
-              <Button className="flex items-center gap-1" variant="outline">
-                {appConfig.header.safeExit?.text}
-                <LogOut className="size-4" />
-              </Button>
+              {appConfig.header.safeExit?.text}
+              <LogOut className="size-4" aria-hidden="true" />
+              {appConfig.header.safeExit.target === '_blank' && (
+                <span className="sr-only">{NEW_TAB_WARNING}</span>
+              )}
             </Link>
           </li>
-        )}
-      </Fragment>,
-    ],
+        ) : null,
+      ].filter(Boolean),
     [
+      appConfig.accessibility.fontSize.allowedValues.length,
       appConfig.header.customHomeUrl,
       appConfig.header.searchUrl,
       appConfig.header.customMenu,
@@ -242,6 +282,7 @@ export function Header() {
       appConfig.featureFlags.showFeedbackButtonGlobal,
       newLayoutEnabled,
       t,
+      getAriaCurrent,
       session.status,
       setDialogStore,
       router,
@@ -252,7 +293,8 @@ export function Header() {
     <header
       id={HEADER_ID}
       className={cn(
-        'sticky top-0 z-[3] px-3 print:hidden',
+        'z-[3] px-3 print:hidden',
+        appConfig.header?.position === 'sticky' && 'sticky top-0',
         newLayoutEnabled ? 'py-[18px] lg:p-8' : 'border-b bg-white',
       )}
     >
@@ -267,13 +309,13 @@ export function Header() {
         <div className="flex h-full items-center">
           <div
             className="flex h-full cursor-pointer items-center"
-            aria-label={t('header.home') || 'Logo'}
+            aria-label={logoAlt}
             onClick={handleLogoClick}
           >
             {logoUrl && (
               <Image
                 src={logoUrl}
-                alt={t('header.home') || 'Logo'}
+                alt={logoAlt}
                 width={400}
                 height={100}
                 className="max-h-full w-auto object-contain lg:max-w-[400px]"
@@ -284,31 +326,39 @@ export function Header() {
 
         <nav
           id={HEADER_DESKTOP_ID}
-          className="z-[1] ml-auto hidden w-fit justify-end overflow-hidden lg:flex"
+          aria-label="Primary"
+          className="z-[1] ml-auto hidden w-fit justify-end overflow-hidden xl:flex"
         >
           <ul className="flex items-center gap-6 overflow-x-auto overflow-y-hidden">
-            {SITEMAP}
+            {sitemap}
           </ul>
         </nav>
 
         <div
           id={HEADER_MOBILE_ID}
-          className="flex w-full flex-1 justify-end lg:hidden"
+          className="flex w-full flex-1 justify-end xl:hidden"
         >
           <Sheet open={opened} onOpenChange={toggle}>
-            <SheetTrigger aria-label="Toggle navigation menu">
+            <SheetTrigger
+              aria-label="Toggle navigation menu"
+              className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
               <AlignJustifyIcon
                 className={cn('size-8', newLayoutEnabled && 'text-white')}
+                aria-hidden="true"
               />
             </SheetTrigger>
             <SheetContent side="left">
               <SheetHeader>
                 <SheetTitle>
-                  <Link href="/" aria-label={t('header.home')}>
-                    {appConfig?.brand?.logoUrl && (
+                  <Link
+                    href={appConfig.header?.customHomeUrl || '/'}
+                    aria-label={logoAlt}
+                  >
+                    {logoUrl && (
                       <Image
-                        src={appConfig.brand.logoUrl}
-                        alt={t('header.home')}
+                        src={logoUrl}
+                        alt={logoAlt}
                         width={200}
                         height={64}
                         style={{
@@ -322,9 +372,17 @@ export function Header() {
                 </SheetTitle>
                 <SheetDescription />
               </SheetHeader>
-              <ul className="flex flex-col items-start gap-2 pt-4">
-                {SITEMAP}
-              </ul>
+              <nav aria-label="Mobile primary">
+                <a
+                  href={`#${MAIN_CONTENT_ID}`}
+                  className="sr-only rounded-md px-3 py-2 text-sm font-medium focus:not-sr-only focus:inline-flex focus:ring-2 focus:ring-ring"
+                >
+                  Skip to content
+                </a>
+                <ul className="flex flex-col items-start gap-2 pt-4">
+                  {sitemap}
+                </ul>
+              </nav>
             </SheetContent>
           </Sheet>
         </div>

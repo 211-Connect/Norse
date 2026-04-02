@@ -11,5 +11,16 @@
     "alt_subtitle": "Gaaffii ykn calaqqee adda ta'e yaali",
     "need_help": "Gargaarsa barbaadduu? Namoota cinaa dhaabbatan qabna."
   },
-  "pinned": "Pinned ta'e"
+  "pinned": "Pinned ta'e",
+  "filters": "Filters",
+  "clear_filters": "Filter qulqulleessi",
+  "sort": {
+    "label": "Akkaataa",
+    "options": {
+      "relevance": "Irra caalaa Barbaachisaa",
+      "distance": "Dhiyeenya Dura",
+      "name": "Maqaa Qabeenyaa",
+      "organization": "Maqaa Dhiyeessaa"
+    }
+  }
 }
