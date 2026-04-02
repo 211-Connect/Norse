@@ -53,7 +53,7 @@ export async function geocodeSessions(
         const geocodeResults = await forwardGeocode(locationString, {
           locale: 'en',
           tenantId,
-          module: 'opencage',
+          provider: 'opencage',
         });
 
         const hit = geocodeResults.find((r) => r.type === 'coordinates');

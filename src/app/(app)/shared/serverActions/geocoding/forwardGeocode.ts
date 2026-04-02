@@ -4,11 +4,11 @@ import { GeocodeResult } from '@/types/resource';
 import { API_URL, INTERNAL_API_KEY } from '../../lib/constants';
 import { fetchWrapper } from '../../lib/fetchWrapper';
 
-type GeocodingModule = 'mapbox' | 'opencage';
+type GeocodingProvider = 'mapbox' | 'opencage';
 
 export async function forwardGeocode(
   address: string,
-  options: { locale: string; tenantId?: string; module?: GeocodingModule },
+  options: { locale: string; tenantId?: string; provider?: GeocodingProvider },
 ): Promise<GeocodeResult[]> {
   const searchParams = new URLSearchParams({
     address: address,
@@ -16,8 +16,8 @@ export async function forwardGeocode(
     limit: '5',
   });
 
-  if (!options.module) {
-    searchParams.append('module', 'mapbox');
+  if (!options.provider) {
+    searchParams.append('provider', 'mapbox');
   }
 
   if (options.tenantId) {
