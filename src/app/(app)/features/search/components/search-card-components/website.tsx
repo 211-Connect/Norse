@@ -3,6 +3,7 @@
 import { Link } from 'lucide-react';
 import { SearchCardComponentProps } from './types';
 import { Datum } from '../../../resource/components/datum';
+import { trackUmamiEvent, UmamiEvent } from '../../../../shared/lib/umami';
 
 export function WebsiteComponent({ result }: SearchCardComponentProps) {
   if (!result.website) {
@@ -19,6 +20,11 @@ export function WebsiteComponent({ result }: SearchCardComponentProps) {
       urlTarget="_blank"
       shouldParseHtml={false}
       className="py-0"
+      onClick={() =>
+        trackUmamiEvent(UmamiEvent.WebsiteClick, {
+          resourceId: result.id,
+        })
+      }
     />
   );
 }

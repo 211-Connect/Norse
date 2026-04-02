@@ -23,6 +23,7 @@ services:
     environment:
       DATABASE_URI: postgresql://norse-ng:norse-ng@postgres:5432/norse-ng
       CACHE_REDIS_URI: redis://:norse-ng@redis:6379
+      UMAMI_API_URL: http://host.docker.internal:4444
 
   postgres:
     image: postgres:17.5

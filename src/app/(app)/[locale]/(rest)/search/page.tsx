@@ -21,6 +21,7 @@ import { isAdvancedGeoEnabled } from '@/app/(app)/shared/lib/search-utils';
 import { createLogger } from '@/lib/logger';
 import { DEFAULT_SEARCH_CARD_LAYOUT } from '@/app/(app)/features/search/types/card-layout-config';
 import { getSortOption } from '@/app/(app)/shared/utils/getSortOption';
+import { trackUmamiEvent, UmamiEvent } from '../../../shared/lib/umami';
 
 const log = createLogger('search-page');
 
@@ -237,6 +238,9 @@ export default async function SearchPage({
     cardLayout,
   } = await getPageData(locale, searchParamsResult);
 
+  if (searchQuery.widgetId) {
+    trackUmamiEvent(UmamiEvent.WidgetSearch);
+  }
   return (
     <PageWrapper
       cookies={cookieList}
