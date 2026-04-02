@@ -164,9 +164,6 @@ test.describe('Favorites Feature (Authenticated)', () => {
     const deleteListConfirmBtn = page.getByTestId('delete-list-confirm-btn');
     await expect(deleteListConfirmBtn).toBeVisible({ timeout: 5000 });
     await deleteListConfirmBtn.click();
-    await waitForFavoriteListPage(page);
-
-    await goToFavorites(page);
     await page.waitForLoadState('networkidle');
 
     const removedCard = page.getByText(updatedListName);
