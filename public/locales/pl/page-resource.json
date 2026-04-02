@@ -26,5 +26,6 @@
   "report": "Raport",
   "providing_organization": "Zapewnianie organizacji",
   "interpretation_services": "Usługi tłumaczeniowe",
-  "other_information": "Inne informacje"
+  "other_information": "Inne informacje",
+  "organization_url": "Adres URL organizacji"
 }

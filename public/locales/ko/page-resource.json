@@ -26,5 +26,6 @@
   "report": "신고",
   "providing_organization": "제공 기관",
   "interpretation_services": "통역 서비스",
-  "other_information": "기타 정보"
+  "other_information": "기타 정보",
+  "organization_url": "조직 URL"
 }

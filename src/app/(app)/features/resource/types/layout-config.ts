@@ -29,6 +29,7 @@ export const DEFAULT_RESOURCE_LAYOUT: AppConfig['resource']['layout'] = {
         { componentId: ResourceComponentId.SEPARATOR },
         { componentId: ResourceComponentId.PHONE_NUMBERS },
         { componentId: ResourceComponentId.WEBSITE },
+        { componentId: ResourceComponentId.ORGANIZATION_URL },
         { componentId: ResourceComponentId.EMAIL },
         { componentId: ResourceComponentId.SEPARATOR },
         { componentId: ResourceComponentId.LANGUAGES },

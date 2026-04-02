@@ -26,5 +26,6 @@
   "report": "Relatório",
   "providing_organization": "Organização de prestação de serviços",
   "interpretation_services": "Serviços de interpretação",
-  "other_information": "Outras informações"
+  "other_information": "Outras informações",
+  "organization_url": "URL da organização"
 }

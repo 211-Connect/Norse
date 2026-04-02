@@ -93,6 +93,7 @@ async function fetchAndTransformResourceOrigin(
         organizationName: data?.organizationName ?? null,
         organizationDescription:
           data?.translation?.organizationDescription ?? null,
+        organizationUrl: data?.organizationUrl ?? null,
         serviceArea: data?.serviceArea ?? null,
         transportation: data?.translation?.transportation ?? null,
         accessibility: data?.translation?.accessibility ?? null,

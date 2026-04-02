@@ -110,6 +110,7 @@ export interface ApiResource {
   originalId?: string | null;
   updatedAt?: string | null;
   website?: string;
+  organizationUrl?: string;
   translation?: Translation;
   translations?: Translation[];
   facetsEn?: Facet[];
@@ -145,6 +146,7 @@ export interface Resource {
   } | null;
   organizationName: string | null;
   organizationDescription: string | null;
+  organizationUrl: string | null;
   serviceArea: ServiceArea | null;
   transportation: string | null;
   accessibility: string | null;

@@ -19,6 +19,7 @@ export enum ResourceComponentId {
   // Contact
   PHONE_NUMBERS = 'phoneNumbers',
   WEBSITE = 'website',
+  ORGANIZATION_URL = 'organizationUrl',
   EMAIL = 'email',
 
   // Services & Details
