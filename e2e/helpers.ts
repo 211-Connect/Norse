@@ -78,6 +78,12 @@ export async function goToFavorites(page: Page) {
   await page.waitForLoadState('networkidle');
 }
 
+export async function waitForFavoriteListPage(page: Page) {
+  await page
+    .getByTestId('back-to-favorites')
+    .waitFor({ state: 'visible', timeout: 15000 });
+}
+
 export async function getResultTotal(page: Page): Promise<string> {
   const resultTotal = page.locator('#result-total');
   await resultTotal.waitFor({ state: 'visible', timeout: 15000 });
