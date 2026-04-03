@@ -77,7 +77,6 @@ export const newLayout: Tab = {
         {
           name: 'options',
           type: 'array',
-          localized: true,
           labels: {
             singular: 'Callout',
             plural: 'Callouts',
@@ -101,10 +100,12 @@ export const newLayout: Tab = {
             },
             {
               name: 'description',
+              localized: true,
               type: 'textarea',
             },
             {
               name: 'title',
+              localized: true,
               type: 'text',
             },
             ...generateUrlFields(),
