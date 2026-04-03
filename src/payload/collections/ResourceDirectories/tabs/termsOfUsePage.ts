@@ -1,11 +1,11 @@
 import { Tab } from 'payload';
-import { hasContentFieldAccess } from '../../Users/access/permissions';
+import { superAdminOrSupportOrTenantAccess } from '../../Users/access/roles';
 
 export const termsOfUsePage: Tab = {
   name: 'termsOfUsePage',
   access: {
-    create: hasContentFieldAccess,
-    update: hasContentFieldAccess,
+    create: superAdminOrSupportOrTenantAccess,
+    update: superAdminOrSupportOrTenantAccess,
   },
   fields: [
     {

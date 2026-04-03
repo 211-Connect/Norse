@@ -1,5 +1,5 @@
 import { Tab } from 'payload';
-import { hasResourceNavigationFieldAccess } from '../../Users/access/permissions';
+import { superAdminOrSupportOrTenantAccess } from '../../Users/access/roles';
 import { generateUrlFields } from '@/payload/fields/urlField';
 
 export const highlights: Tab = {
@@ -17,8 +17,8 @@ export const highlights: Tab = {
       },
       localized: true,
       access: {
-        create: hasResourceNavigationFieldAccess,
-        update: hasResourceNavigationFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
     },
     {
@@ -31,8 +31,8 @@ export const highlights: Tab = {
           'Automatically rotate through highlights when there are more than can fit on screen',
       },
       access: {
-        create: hasResourceNavigationFieldAccess,
-        update: hasResourceNavigationFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
     },
     {
@@ -49,8 +49,8 @@ export const highlights: Tab = {
         },
       },
       access: {
-        create: hasResourceNavigationFieldAccess,
-        update: hasResourceNavigationFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
     },
     {
@@ -71,8 +71,8 @@ export const highlights: Tab = {
         },
       },
       access: {
-        create: hasResourceNavigationFieldAccess,
-        update: hasResourceNavigationFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
       fields: [
         {

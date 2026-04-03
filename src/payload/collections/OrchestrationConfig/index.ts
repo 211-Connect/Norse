@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload';
-import { isSuperAdminAccess } from '../Users/access/roles';
+import { superAdminAccess } from '../Users/access/roles';
 import { schemas } from './tabs/schemas';
 import { pushOrchestrationConfigToCache } from './hooks/pushOrchestrationConfigToCache';
 import { setTenantIdAsId } from '../ResourceDirectories/hooks/setTenantIdAsId';
@@ -10,10 +10,10 @@ export const OrchestrationConfig: CollectionConfig = {
   // Shortened database name to avoid 63 character limit for enum names
   dbName: 'oc',
   access: {
-    create: isSuperAdminAccess,
-    read: isSuperAdminAccess,
-    update: isSuperAdminAccess,
-    delete: isSuperAdminAccess,
+    create: superAdminAccess,
+    read: superAdminAccess,
+    update: superAdminAccess,
+    delete: superAdminAccess,
   },
   labels: {
     singular: 'Orchestration Config',

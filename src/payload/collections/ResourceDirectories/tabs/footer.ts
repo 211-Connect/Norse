@@ -1,8 +1,5 @@
 import { Tab } from 'payload';
-import {
-  hasContentFieldAccess,
-  hasSiteNavigationFieldAccess,
-} from '../../Users/access/permissions';
+import { superAdminOrSupportOrTenantAccess } from '../../Users/access/roles';
 import { generateUrlFields } from '@/payload/fields/urlField';
 
 export const footer: Tab = {
@@ -13,8 +10,8 @@ export const footer: Tab = {
       type: 'textarea',
       localized: true,
       access: {
-        create: hasContentFieldAccess,
-        update: hasContentFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
     },
     {
@@ -26,8 +23,8 @@ export const footer: Tab = {
         plural: 'Menu Items',
       },
       access: {
-        create: hasSiteNavigationFieldAccess,
-        update: hasSiteNavigationFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
       fields: [
         {
