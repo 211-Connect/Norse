@@ -150,8 +150,8 @@ jobs:
     secrets: inherit
 
   notify-build-failure:
-    if: always() && needs.build-and-push.result == 'failure'
-    needs: [build-and-push]
+    if: always() && (needs.build-and-push.result == 'failure' || needs.wait-for-deploy.result == 'failure')
+    needs: [build-and-push, wait-for-deploy]
     runs-on: ubuntu-latest
     steps:
       - name: Send Slack notification - Deploy failed
