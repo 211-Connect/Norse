@@ -291,6 +291,7 @@ export const findResources = (
         hybridSemanticSearchEnabled,
       }),
     { redis: true, memory: false },
+    (value) => value.noResults === false && value.results.length > 0,
   );
 
 /**
