@@ -5,6 +5,7 @@ import { updateAndDeleteAccess } from './access/updateAndDelete';
 import { hasResourceDirectory } from './validators/hasResourceDirectory';
 import { revalidateCache } from './hooks/revalidateCache';
 import { pushRealmIdToCache } from './hooks/pushRealmIdToCache';
+import { pushEnabledLocalesToCache } from './hooks/pushEnabledLocalesToCache';
 import {
   superAdminAccess,
   superAdminOrSupportAccess,
@@ -28,7 +29,12 @@ export const Tenants: CollectionConfig = {
     useAsTitle: 'name',
   },
   hooks: {
-    afterChange: [revalidateCache, pushRealmIdToCache, invalidateApiCache],
+    afterChange: [
+      revalidateCache,
+      pushRealmIdToCache,
+      pushEnabledLocalesToCache,
+      invalidateApiCache,
+    ],
     beforeDelete: [removeRelatedResources],
     afterDelete: [revalidateCache],
   },
