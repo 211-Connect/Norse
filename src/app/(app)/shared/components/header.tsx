@@ -17,6 +17,7 @@ import { usePathname, useRouter } from 'next/navigation';
 
 import { Link } from './link';
 import { useDisclosure } from '../hooks/use-disclosure';
+import { useMinWidth } from '../hooks/use-media-query';
 import { Button, buttonVariants } from './ui/button';
 import {
   Sheet,
@@ -52,6 +53,7 @@ export function Header() {
   const { t, i18n } = useTranslation('common');
   const router = useRouter();
   const pathname = usePathname();
+  const isSmOrLarger = useMinWidth(640);
 
   const session = useSession();
   const setDialogStore = useSetAtom(dialogsAtom);
@@ -151,7 +153,7 @@ export function Header() {
           </li>
         ) : null,
         appConfig.accessibility.fontSize.allowedValues.length > 1 ? (
-          <li key="2" className="hidden sm:flex">
+          <li key="2" className="hidden h-full sm:flex">
             <FontSizeToggle />
           </li>
         ) : null,
@@ -205,7 +207,10 @@ export function Header() {
                 <ChevronDown className="size-4" aria-hidden="true" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="min-w-[143px]">
+            <DropdownMenuContent
+              align={isSmOrLarger ? 'end' : 'start'}
+              className="min-w-[143px] text-xs font-medium"
+            >
               <Card className="px-0 py-[10px]">
                 <CardContent>
                   <DropdownMenuItem
@@ -286,6 +291,7 @@ export function Header() {
       session.status,
       setDialogStore,
       router,
+      isSmOrLarger,
     ],
   );
 
@@ -361,11 +367,7 @@ export function Header() {
                         alt={logoAlt}
                         width={200}
                         height={64}
-                        style={{
-                          height: 'auto',
-                          maxHeight: 64,
-                          maxWidth: '90%',
-                        }}
+                        className="max-h-16 w-auto max-w-[200px] object-contain"
                       />
                     )}
                   </Link>
