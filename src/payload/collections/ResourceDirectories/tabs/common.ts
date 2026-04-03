@@ -7,6 +7,7 @@ import { generateUrlFields } from '@/payload/fields/urlField';
 
 export const common: Tab = {
   name: 'common',
+  label: 'Alerts',
   fields: [
     {
       type: 'array',
