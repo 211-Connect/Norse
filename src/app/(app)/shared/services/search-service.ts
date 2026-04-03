@@ -57,14 +57,16 @@ export function createUrlParamsForSearch(
 ) {
   const hasLocation = searchStore['searchCoordinates']?.length === 2;
 
+  const queryType = deriveQueryType({
+    query: searchStore.query,
+    originQueryType: searchStore.queryType,
+    hybridSemanticSearchEnabled,
+  });
+
   const urlParams = {
     query: searchStore.query?.trim(),
     query_label: searchStore.queryLabel?.trim(),
-    query_type: deriveQueryType(
-      searchStore.query,
-      searchStore.queryType,
-      hybridSemanticSearchEnabled,
-    ),
+    query_type: queryType,
     location: hasLocation ? searchStore.searchLocation?.trim() : null,
     coords: hasLocation
       ? searchStore.searchCoordinates?.join(',')?.trim()
@@ -174,6 +176,7 @@ type FindResourcesOriginArgs = {
   page: number;
   limit?: number;
   tenantId?: string;
+  hybridSemanticSearchEnabled: boolean | undefined;
 };
 
 async function findResourcesOrigin({
@@ -182,15 +185,17 @@ async function findResourcesOrigin({
   page,
   limit,
   tenantId,
+  hybridSemanticSearchEnabled,
 }: FindResourcesOriginArgs): Promise<SearchResult> {
   if (isNaN(page)) page = 1;
   if (!limit || isNaN(limit)) limit = 25;
 
-  const resolvedQueryType = deriveQueryType(
-    query.query,
-    query.queryType,
-    false,
-  );
+  const resolvedQueryType = deriveQueryType({
+    hybridSemanticSearchEnabled,
+    originQueryType: query.queryType,
+    query: query.query,
+  });
+
   const hasCoords = query.coordinates?.length === 2;
 
   let data: SearchApiResponse | null | undefined;
@@ -270,12 +275,21 @@ export const findResources = (
   query: FindResourcesQuery,
   locale: string,
   page: number,
-  limit?: number,
-  tenantId?: string,
+  limit: number | undefined,
+  tenantId: string | undefined,
+  hybridSemanticSearchEnabled: boolean | undefined,
 ) =>
   withCache(
     `search_results:${tenantId}:${locale}:${stableHash({ query, page, limit })}`,
-    () => findResourcesOrigin({ query, locale, page, limit, tenantId }),
+    () =>
+      findResourcesOrigin({
+        query,
+        locale,
+        page,
+        limit,
+        tenantId,
+        hybridSemanticSearchEnabled,
+      }),
     { redis: true, memory: false },
   );
 
@@ -377,19 +391,21 @@ async function tryFallbackSearchV2(
  * @param page - Current page number
  * @param limit - Results per page
  * @param tenantId - Tenant identifier
+ * @param hybridSemanticSearchEnabled - Flag to enable hybrid semantic search which may affect query type derivation
  * @returns Search results with pagination info
  */
 export async function findResourcesV2(
   searchStore: FindResourcesQuery,
   locale: string,
   page: number,
-  limit?: number,
-  tenantId?: string,
+  limit: number | undefined,
+  tenantId: string | undefined,
+  hybridSemanticSearchEnabled: boolean | undefined,
 ): Promise<SearchResult> {
   if (isNaN(page)) page = 1;
   if (!limit || isNaN(limit)) limit = 25;
 
-  const request = buildSearchRequest(searchStore);
+  const request = buildSearchRequest(searchStore, hybridSemanticSearchEnabled);
   const queryParams = qs.stringify({
     ...request.queryParams,
     page,

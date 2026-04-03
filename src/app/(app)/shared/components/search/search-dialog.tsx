@@ -46,7 +46,7 @@ export function SearchDialog({
 
   const [mounted, setMounted] = useState(false);
 
-  const { findCode, getQueryType, locations, search, setSearch } =
+  const { findCode, locations, search, setSearch } =
     useMainSearchLayoutContext();
 
   const onSubmit = useCallback(
@@ -63,7 +63,6 @@ export function SearchDialog({
         }
 
         let query = findCode(search.searchTerm);
-        const queryType = getQueryType(search.searchTerm, query);
 
         const location = locations[0];
         // Only update location params if the user has actually changed the location
@@ -83,7 +82,11 @@ export function SearchDialog({
             ...search,
             ...locationParams,
             query: query || '',
-            queryType: queryType,
+            queryType:
+              search.queryType ||
+              (appConfig.search.hybridSemanticSearchEnabled
+                ? 'hybrid'
+                : 'text'),
           },
           appConfig.search.hybridSemanticSearchEnabled,
         );
@@ -103,7 +106,6 @@ export function SearchDialog({
     },
     [
       findCode,
-      getQueryType,
       locations,
       requireUserLocation,
       router,
