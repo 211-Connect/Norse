@@ -52,10 +52,7 @@ export function CustomPagination({
     newSearchParams.set('page', newPage.toString());
     const newPath = `${pathname}${stringifySearchParams(newSearchParams)}`;
 
-    router.push(newPath, { scroll: false });
-
-    const resultTotal = document.getElementById('result-total');
-    if (resultTotal) resultTotal.scrollIntoView();
+    router.push(newPath);
   };
 
   const getPagination = useCallback(() => {

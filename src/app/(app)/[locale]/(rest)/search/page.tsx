@@ -250,8 +250,8 @@ export default async function SearchPage({
         coords: searchQuery.coordinates?.join(',') ?? '',
         currentPage:
           typeof searchParamsResult.page === 'string'
-            ? searchParamsResult.page
-            : '1',
+            ? parseInt(searchParamsResult.page, 10) || 1
+            : 1,
         device,
         distance: searchQuery.distance ?? '',
         filters,
