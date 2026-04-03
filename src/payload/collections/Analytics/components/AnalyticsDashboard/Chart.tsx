@@ -35,8 +35,12 @@ export const Chart = React.memo(function Chart({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <h3 style={{ margin: '0 0 0.5rem 0' }}>{title}</h3>
-      <div style={{ flex: 1 }}>
-        <ResponsiveContainer width="100%" height="100%">
+      <div style={{ flex: 1, minHeight: 0 }}>
+        <ResponsiveContainer
+          width="100%"
+          height="100%"
+          initialDimension={{ width: 1, height: 1 }}
+        >
           <LineChart data={data} margin={CHART_MARGIN}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
             <XAxis dataKey={xAxisKey} tick={TICK_STYLE} />

@@ -22,7 +22,7 @@ export const StatCards = React.memo(function StatCards({
   const cards = [
     {
       label: 'Total Users',
-      metric: { current: stats.visits, previous: stats.comparison.visits },
+      metric: { current: stats.visitors, previous: stats.comparison.visitors },
     },
     { label: 'Searches', metric: metrics.searches },
     { label: 'Resource Views', metric: metrics.resourceViews },

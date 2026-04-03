@@ -6,8 +6,6 @@ import type {
 
 const SEARCH_RESOURCE_PREFIX = '/search/';
 
-export const ZERO_RESULTS_EVENT = 'search_zero_results';
-
 export function buildProxyQuery(
   endpoint: string,
   startAt: number,
@@ -44,9 +42,9 @@ export function parseMetrics(
   const resourceMetrics: MetricEntry[] = [];
 
   for (const metricData of metricsData) {
-    if (metricData.name === '/search') {
+    if (metricData.name === '/search' || metricData.name.endsWith('/search')) {
       searchCount += metricData.visits;
-    } else if (metricData.name.startsWith('/search/')) {
+    } else if (metricData.name.includes('/search/')) {
       resourceMetrics.push({
         x: metricData.name,
         y: metricData.visits,
@@ -62,7 +60,6 @@ export function parseMetrics(
     if (label === null) continue;
     labelMap.set(label, (labelMap.get(label) ?? 0) + m.y);
   }
-
   const searchByLabel: MetricEntry[] = Array.from(labelMap, ([x, y]) => ({
     x,
     y,
@@ -72,8 +69,9 @@ export function parseMetrics(
 }
 
 export function extractResourceId(path: string): string | null {
-  if (!path.startsWith(SEARCH_RESOURCE_PREFIX)) return null;
-  const id = path.slice(SEARCH_RESOURCE_PREFIX.length);
+  const idx = path.indexOf(SEARCH_RESOURCE_PREFIX);
+  if (idx === -1) return null;
+  const id = path.slice(idx + SEARCH_RESOURCE_PREFIX.length);
   return id.length > 0 ? id : null;
 }
 
