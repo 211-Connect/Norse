@@ -32,6 +32,8 @@ const SEARCH_TEXT_FIELDS = [
   'noResultsFallbackText',
 ] as const;
 
+const CALLOUT_TEXT_FIELDS = ['description', 'title'] as const;
+
 const log = createLogger('translate');
 
 async function executeBatchTranslation(
@@ -361,6 +363,119 @@ export const translate: TaskConfig<'translate'> = {
           });
         });
 
+        // Alert (from common tab)
+        englishResourceDirectory.common?.alert?.forEach(
+          (sourceAlert, index) => {
+            const targetAlert = targetDoc.common?.alert?.[index];
+
+            if (
+              shouldTranslate(
+                sourceAlert.text,
+                targetAlert?.text,
+                `common.alert.${index}.text`,
+              )
+            ) {
+              fieldsToTranslate.push({
+                path: `common.alert.${index}.text`,
+                value: sourceAlert.text!,
+                locale: targetLocale,
+              });
+            }
+
+            if (
+              shouldTranslate(
+                sourceAlert.buttonText,
+                targetAlert?.buttonText,
+                `common.alert.${index}.buttonText`,
+              )
+            ) {
+              fieldsToTranslate.push({
+                path: `common.alert.${index}.buttonText`,
+                value: sourceAlert.buttonText!,
+                locale: targetLocale,
+              });
+            }
+          },
+        );
+
+        // Custom Data Providers Heading (from common tab)
+        if (
+          shouldTranslate(
+            englishResourceDirectory.common?.customDataProvidersHeading,
+            targetDoc.common?.customDataProvidersHeading,
+            'common.customDataProvidersHeading',
+          )
+        ) {
+          fieldsToTranslate.push({
+            path: 'common.customDataProvidersHeading',
+            value: englishResourceDirectory.common!.customDataProvidersHeading!,
+            locale: targetLocale,
+          });
+        }
+
+        // Data Providers (from common tab)
+        englishResourceDirectory.common?.dataProviders?.forEach(
+          (sourceProvider, index) => {
+            const targetProvider = targetDoc.common?.dataProviders?.[index];
+
+            if (
+              shouldTranslate(
+                sourceProvider.name,
+                targetProvider?.name,
+                `common.dataProviders.${index}.name`,
+              )
+            ) {
+              fieldsToTranslate.push({
+                path: `common.dataProviders.${index}.name`,
+                value: sourceProvider.name!,
+                locale: targetLocale,
+              });
+            }
+          },
+        );
+
+        // Callouts (from newLayout tab)
+        englishResourceDirectory.newLayout?.callouts?.options?.forEach(
+          (sourceCallout, index) => {
+            const targetCallout =
+              targetDoc.newLayout?.callouts?.options?.[index];
+
+            CALLOUT_TEXT_FIELDS.forEach((field) => {
+              const sourceValue = sourceCallout[field];
+              const targetValue = targetCallout?.[field];
+
+              if (
+                shouldTranslate(
+                  sourceValue,
+                  targetValue,
+                  `newLayout.callouts.options.${index}.${field}`,
+                )
+              ) {
+                fieldsToTranslate.push({
+                  path: `newLayout.callouts.options.${index}.${field}`,
+                  value: sourceValue!,
+                  locale: targetLocale,
+                });
+              }
+            });
+          },
+        );
+
+        // Callouts Title (from newLayout tab)
+        if (
+          shouldTranslate(
+            englishResourceDirectory.newLayout?.callouts?.title,
+            targetDoc.newLayout?.callouts?.title,
+            'newLayout.callouts.title',
+          )
+        ) {
+          fieldsToTranslate.push({
+            path: 'newLayout.callouts.title',
+            value: englishResourceDirectory.newLayout!.callouts!.title!,
+            locale: targetLocale,
+          });
+        }
+
         if (fieldsToTranslate.length === 0) {
           log.debug(
             { targetLocale, tenantId },
@@ -560,6 +675,119 @@ export const translate: TaskConfig<'translate'> = {
               },
             ),
           };
+        }
+
+        // Alert (from common tab)
+        if (englishResourceDirectory.common?.alert) {
+          updateData.common = {
+            ...targetDoc.common,
+            alert: englishResourceDirectory.common.alert.map(
+              (sourceAlert, index) => {
+                const targetAlert = targetDoc.common?.alert?.[index];
+                const newAlert = {
+                  ...sourceAlert,
+                  ...(targetAlert || {}),
+                };
+
+                const textPath = `common.alert.${index}.text`;
+                if (translationsByPath[textPath]) {
+                  newAlert.text = translationsByPath[textPath];
+                } else if (isEmpty(targetAlert?.text)) {
+                  newAlert.text = sourceAlert.text;
+                }
+
+                const buttonTextPath = `common.alert.${index}.buttonText`;
+                if (translationsByPath[buttonTextPath]) {
+                  newAlert.buttonText = translationsByPath[buttonTextPath];
+                } else if (isEmpty(targetAlert?.buttonText)) {
+                  newAlert.buttonText = sourceAlert.buttonText;
+                }
+
+                return newAlert;
+              },
+            ),
+          };
+        }
+
+        // Custom Data Providers Heading (from common tab)
+        if (translationsByPath['common.customDataProvidersHeading']) {
+          if (!updateData.common) updateData.common = { ...targetDoc.common };
+          updateData.common.customDataProvidersHeading =
+            translationsByPath['common.customDataProvidersHeading'];
+        } else if (isEmpty(targetDoc.common?.customDataProvidersHeading)) {
+          if (!updateData.common) updateData.common = { ...targetDoc.common };
+          updateData.common.customDataProvidersHeading =
+            englishResourceDirectory.common?.customDataProvidersHeading;
+        }
+
+        // Data Providers (from common tab)
+        if (englishResourceDirectory.common?.dataProviders) {
+          if (!updateData.common) updateData.common = { ...targetDoc.common };
+          updateData.common.dataProviders =
+            englishResourceDirectory.common.dataProviders.map(
+              (sourceProvider, index) => {
+                const targetProvider = targetDoc.common?.dataProviders?.[index];
+                const newProvider = {
+                  ...sourceProvider,
+                  ...(targetProvider || {}),
+                };
+
+                const namePath = `common.dataProviders.${index}.name`;
+                if (translationsByPath[namePath]) {
+                  newProvider.name = translationsByPath[namePath];
+                } else if (isEmpty(targetProvider?.name)) {
+                  newProvider.name = sourceProvider.name;
+                }
+
+                return newProvider;
+              },
+            );
+        }
+
+        // Callouts (from newLayout tab)
+        if (englishResourceDirectory.newLayout?.callouts) {
+          updateData.newLayout = {
+            ...targetDoc.newLayout,
+            ...englishResourceDirectory.newLayout,
+            callouts: {
+              ...targetDoc.newLayout?.callouts,
+              ...englishResourceDirectory.newLayout.callouts,
+            },
+          };
+
+          if (englishResourceDirectory.newLayout.callouts.options) {
+            updateData.newLayout!.callouts!.options =
+              englishResourceDirectory.newLayout.callouts.options.map(
+                (sourceCallout, index) => {
+                  const targetCallout =
+                    targetDoc.newLayout?.callouts?.options?.[index];
+                  const newCallout = {
+                    ...sourceCallout,
+                    ...(targetCallout || {}),
+                  };
+
+                  CALLOUT_TEXT_FIELDS.forEach((field) => {
+                    const path = `newLayout.callouts.options.${index}.${field}`;
+                    if (translationsByPath[path]) {
+                      newCallout[field] = translationsByPath[path];
+                    } else if (isEmpty(targetCallout?.[field])) {
+                      newCallout[field] = sourceCallout[field];
+                    }
+                  });
+
+                  return newCallout;
+                },
+              );
+          }
+
+          const calloutsTitle = 'newLayout.callouts.title';
+          if (translationsByPath[calloutsTitle]) {
+            updateData.newLayout!.callouts!.title =
+              translationsByPath[calloutsTitle];
+          } else if (isEmpty(targetDoc.newLayout?.callouts?.title)) {
+            updateData.newLayout!.callouts!.title =
+              englishResourceDirectory.newLayout.callouts.title;
+          }
         }
 
         updateData._translationMeta = {

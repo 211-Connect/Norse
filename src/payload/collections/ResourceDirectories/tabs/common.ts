@@ -11,7 +11,6 @@ export const common: Tab = {
     {
       type: 'array',
       name: 'alert',
-      localized: true,
       maxRows: 1,
       access: {
         create: hasResourceNavigationFieldAccess,
@@ -25,10 +24,12 @@ export const common: Tab = {
               name: 'text',
               type: 'textarea',
               required: true,
+              localized: true,
             },
             {
               name: 'buttonText',
               type: 'text',
+              localized: true,
             },
           ],
         },
