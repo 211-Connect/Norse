@@ -277,6 +277,7 @@ export const findResources = (
     `search_results:${tenantId}:${locale}:${stableHash({ query, page, limit })}`,
     () => findResourcesOrigin({ query, locale, page, limit, tenantId }),
     { redis: true, memory: false },
+    (value) => value.noResults === false && value.results.length > 0,
   );
 
 /**
