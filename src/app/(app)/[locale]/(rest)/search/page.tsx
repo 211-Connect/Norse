@@ -8,7 +8,6 @@ import {
   findResources,
   FindResourcesQuery,
   findResourcesV2,
-  isSortOption,
 } from '@/app/(app)/shared/services/search-service';
 import { getCookies } from 'cookies-next/server';
 import { cookies, headers } from 'next/headers';
@@ -110,6 +109,7 @@ const getPageData = cache(async function (
           page,
           limit,
           appConfig.tenantId,
+          appConfig.search.hybridSemanticSearchEnabled,
         ));
         useFindResourcesV2 = true;
       } catch (error) {
@@ -129,6 +129,7 @@ const getPageData = cache(async function (
       page,
       limit,
       appConfig.tenantId,
+      appConfig.search.hybridSemanticSearchEnabled,
     );
 
     if (!searchResult) {

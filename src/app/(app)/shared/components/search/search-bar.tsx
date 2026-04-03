@@ -26,7 +26,6 @@ export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
   const {
     reducedTopics,
     findCode,
-    getQueryType,
     setSearch,
     suggestions,
     displayTaxonomies: taxonomiesDisplay,
@@ -41,6 +40,7 @@ export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
         Icon: SearchIcon,
         value: option.value,
         group: t('search.suggestions'),
+        queryType: 'taxonomy',
       }))
       .filter((option) =>
         shouldSearch
@@ -55,6 +55,7 @@ export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
         Icon: SearchIcon,
         group: t('search.categories'),
         value: option.name,
+        queryType: option.queryType,
       }))
       .filter((option) =>
         shouldSearch
@@ -68,6 +69,7 @@ export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
       group: t('search.taxonomies'),
       value: option.name,
       label: showTaxonomyBadge ? option.code : undefined,
+      queryType: 'taxonomy',
     }));
 
     const atLeastTwo =
@@ -91,9 +93,9 @@ export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
   ]);
 
   const setSearchTerm = useCallback(
-    (value: string) => {
+    (value: string, option?: { queryType?: string }) => {
       const query = findCode(value);
-      const queryType = getQueryType(value, query);
+      const queryType = option?.queryType ?? 'text';
 
       setShouldSearch(false);
 
@@ -105,7 +107,7 @@ export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
         queryLabel: value,
       }));
     },
-    [findCode, getQueryType, setSearch, setShouldSearch],
+    [findCode, setSearch, setShouldSearch],
   );
 
   const handleInputChange = useCallback(
