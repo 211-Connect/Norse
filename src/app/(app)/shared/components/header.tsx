@@ -17,7 +17,7 @@ import { usePathname, useRouter } from 'next/navigation';
 
 import { Link } from './link';
 import { useDisclosure } from '../hooks/use-disclosure';
-import { useMinWidth } from '../hooks/use-media-query';
+import { useBreakpoint } from '../hooks/use-breakpoint';
 import { Button, buttonVariants } from './ui/button';
 import {
   Sheet,
@@ -53,7 +53,7 @@ export function Header() {
   const { t, i18n } = useTranslation('common');
   const router = useRouter();
   const pathname = usePathname();
-  const isSmOrLarger = useMinWidth(640);
+  const isSmOrLarger = useBreakpoint(640);
 
   const session = useSession();
   const setDialogStore = useSetAtom(dialogsAtom);

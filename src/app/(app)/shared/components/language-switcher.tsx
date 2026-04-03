@@ -15,7 +15,7 @@ import {
 import { LanguagesIcon } from 'lucide-react';
 import { useClientSearchParams } from '../hooks/use-client-search-params';
 import { useAppConfig } from '../hooks/use-app-config';
-import { useMinWidth } from '../hooks/use-media-query';
+import { useBreakpoint } from '../hooks/use-breakpoint';
 import { cn } from '../lib/utils';
 
 const LANGUAGE_NAME = {
@@ -44,7 +44,7 @@ export const LanguageSwitcher = () => {
   const currentPathname = usePathname();
   const { stringifiedSearchParams } = useClientSearchParams();
   const { start } = useTopLoader();
-  const isSmOrLarger = useMinWidth(640);
+  const isSmOrLarger = useBreakpoint(640);
 
   const { t, i18n } = useTranslation('common');
 
