@@ -3,7 +3,7 @@ import {
   parseFilter,
   validateFilterStructure,
 } from '@/utils/badgeFilterEvaluator';
-import { superAdminOrSupportFieldAccess } from '../../Users/access/roles';
+import { superAdminOrSupportAccess } from '../../Users/access/roles';
 
 export const badges: Tab = {
   label: 'Badges',
@@ -24,8 +24,8 @@ export const badges: Tab = {
       name: 'list',
       type: 'array',
       access: {
-        create: superAdminOrSupportFieldAccess,
-        update: superAdminOrSupportFieldAccess,
+        create: superAdminOrSupportAccess,
+        update: superAdminOrSupportAccess,
       },
       fields: [
         {

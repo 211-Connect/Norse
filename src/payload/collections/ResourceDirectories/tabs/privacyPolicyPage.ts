@@ -1,11 +1,11 @@
 import { Tab } from 'payload';
-import { superAdminOrSupportOrTenantFieldAccess } from '../../Users/access/roles';
+import { superAdminOrSupportOrTenantAccess } from '../../Users/access/roles';
 
 export const privacyPolicyPage: Tab = {
   name: 'privacyPolicyPage',
   access: {
-    create: superAdminOrSupportOrTenantFieldAccess,
-    update: superAdminOrSupportOrTenantFieldAccess,
+    create: superAdminOrSupportOrTenantAccess,
+    update: superAdminOrSupportOrTenantAccess,
   },
   fields: [
     {

@@ -7,9 +7,7 @@ import { revalidateCache } from './hooks/revalidateCache';
 import { pushRealmIdToCache } from './hooks/pushRealmIdToCache';
 import {
   superAdminAccess,
-  superAdminFieldAccess,
   superAdminOrSupportAccess,
-  superAdminOrSupportFieldAccess,
 } from '../Users/access/roles';
 import { removeRelatedResources } from './hooks/removeRelatedResources';
 import { invalidateApiCache } from '../ResourceDirectories/hooks/invalidateApiCache';
@@ -52,8 +50,8 @@ export const Tenants: CollectionConfig = {
       required: true,
       unique: true,
       access: {
-        update: superAdminFieldAccess,
-        create: superAdminFieldAccess,
+        update: superAdminAccess,
+        create: superAdminAccess,
       },
     },
     {
@@ -62,8 +60,8 @@ export const Tenants: CollectionConfig = {
       required: true,
       unique: true,
       access: {
-        update: superAdminOrSupportFieldAccess,
-        create: superAdminOrSupportFieldAccess,
+        update: superAdminOrSupportAccess,
+        create: superAdminOrSupportAccess,
       },
     },
     {
@@ -72,8 +70,8 @@ export const Tenants: CollectionConfig = {
       required: false,
       defaultValue: [],
       access: {
-        update: superAdminFieldAccess,
-        create: superAdminFieldAccess,
+        update: superAdminAccess,
+        create: superAdminAccess,
       },
       fields: [
         {
@@ -95,8 +93,8 @@ export const Tenants: CollectionConfig = {
           defaultValue: defaultLocale,
           options: locales,
           access: {
-            update: superAdminFieldAccess,
-            create: superAdminFieldAccess,
+            update: superAdminAccess,
+            create: superAdminAccess,
           },
         },
         {
@@ -106,8 +104,8 @@ export const Tenants: CollectionConfig = {
           defaultValue: defaultLocale,
           options: locales,
           access: {
-            update: superAdminFieldAccess,
-            create: superAdminFieldAccess,
+            update: superAdminAccess,
+            create: superAdminAccess,
           },
         },
       ],
@@ -123,8 +121,8 @@ export const Tenants: CollectionConfig = {
         },
       },
       access: {
-        create: superAdminOrSupportFieldAccess,
-        update: superAdminOrSupportFieldAccess,
+        create: superAdminOrSupportAccess,
+        update: superAdminOrSupportAccess,
       },
       fields: [
         {
@@ -145,9 +143,9 @@ export const Tenants: CollectionConfig = {
       name: 'auth',
       type: 'group',
       access: {
-        create: superAdminFieldAccess,
-        read: superAdminFieldAccess,
-        update: superAdminFieldAccess,
+        create: superAdminAccess,
+        read: superAdminAccess,
+        update: superAdminAccess,
       },
       fields: [
         {
@@ -189,9 +187,9 @@ export const Tenants: CollectionConfig = {
       type: 'group',
       label: 'Common Settings',
       access: {
-        create: superAdminOrSupportFieldAccess,
-        read: superAdminOrSupportFieldAccess,
-        update: superAdminOrSupportFieldAccess,
+        create: superAdminOrSupportAccess,
+        read: superAdminOrSupportAccess,
+        update: superAdminOrSupportAccess,
       },
       fields: [
         {
@@ -213,8 +211,8 @@ export const Tenants: CollectionConfig = {
       type: 'group',
       label: 'Twilio Settings',
       access: {
-        create: superAdminOrSupportFieldAccess,
-        update: superAdminOrSupportFieldAccess,
+        create: superAdminOrSupportAccess,
+        update: superAdminOrSupportAccess,
       },
       fields: [
         {

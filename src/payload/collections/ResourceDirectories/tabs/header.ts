@@ -1,5 +1,5 @@
 import { Tab } from 'payload';
-import { superAdminOrSupportOrTenantFieldAccess } from '../../Users/access/roles';
+import { superAdminOrSupportOrTenantAccess } from '../../Users/access/roles';
 import { generateUrlFields } from '@/payload/fields/urlField';
 
 export const header: Tab = {
@@ -24,8 +24,8 @@ export const header: Tab = {
           'Controls whether the header sticks to the top when scrolling or stays static',
       },
       access: {
-        create: superAdminOrSupportOrTenantFieldAccess,
-        update: superAdminOrSupportOrTenantFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
     },
     {
@@ -37,8 +37,8 @@ export const header: Tab = {
         plural: 'Menu Items',
       },
       access: {
-        create: superAdminOrSupportOrTenantFieldAccess,
-        update: superAdminOrSupportOrTenantFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
       fields: [
         {
@@ -57,8 +57,8 @@ export const header: Tab = {
           type: 'text',
           localized: true,
           access: {
-            create: superAdminOrSupportOrTenantFieldAccess,
-            update: superAdminOrSupportOrTenantFieldAccess,
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
           },
         },
         {
@@ -66,8 +66,8 @@ export const header: Tab = {
           type: 'text',
           localized: true,
           access: {
-            create: superAdminOrSupportOrTenantFieldAccess,
-            update: superAdminOrSupportOrTenantFieldAccess,
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
           },
         },
       ],
@@ -76,8 +76,8 @@ export const header: Tab = {
       name: 'safeExit',
       type: 'group',
       access: {
-        create: superAdminOrSupportOrTenantFieldAccess,
-        update: superAdminOrSupportOrTenantFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
       fields: [
         {

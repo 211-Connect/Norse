@@ -1,5 +1,5 @@
 import { Tab } from 'payload';
-import { superAdminOrSupportOrTenantFieldAccess } from '../../Users/access/roles';
+import { superAdminOrSupportOrTenantAccess } from '../../Users/access/roles';
 
 export const brand: Tab = {
   name: 'brand',
@@ -13,8 +13,8 @@ export const brand: Tab = {
           relationTo: 'tenant-media',
           required: true,
           access: {
-            update: superAdminOrSupportOrTenantFieldAccess,
-            create: superAdminOrSupportOrTenantFieldAccess,
+            update: superAdminOrSupportOrTenantAccess,
+            create: superAdminOrSupportOrTenantAccess,
           },
         },
         {
@@ -23,8 +23,8 @@ export const brand: Tab = {
           relationTo: 'tenant-media',
           required: true,
           access: {
-            update: superAdminOrSupportOrTenantFieldAccess,
-            create: superAdminOrSupportOrTenantFieldAccess,
+            update: superAdminOrSupportOrTenantAccess,
+            create: superAdminOrSupportOrTenantAccess,
           },
           admin: {
             components: {
@@ -43,8 +43,8 @@ export const brand: Tab = {
           type: 'upload',
           relationTo: 'tenant-media',
           access: {
-            update: superAdminOrSupportOrTenantFieldAccess,
-            create: superAdminOrSupportOrTenantFieldAccess,
+            update: superAdminOrSupportOrTenantAccess,
+            create: superAdminOrSupportOrTenantAccess,
           },
         },
         {
@@ -52,8 +52,8 @@ export const brand: Tab = {
           type: 'upload',
           relationTo: 'tenant-media',
           access: {
-            update: superAdminOrSupportOrTenantFieldAccess,
-            create: superAdminOrSupportOrTenantFieldAccess,
+            update: superAdminOrSupportOrTenantAccess,
+            create: superAdminOrSupportOrTenantAccess,
           },
           admin: {
             components: {
@@ -70,16 +70,16 @@ export const brand: Tab = {
           name: 'copyright',
           type: 'text',
           access: {
-            update: superAdminOrSupportOrTenantFieldAccess,
-            create: superAdminOrSupportOrTenantFieldAccess,
+            update: superAdminOrSupportOrTenantAccess,
+            create: superAdminOrSupportOrTenantAccess,
           },
         },
         {
           name: 'feedbackUrl',
           type: 'text',
           access: {
-            create: superAdminOrSupportOrTenantFieldAccess,
-            update: superAdminOrSupportOrTenantFieldAccess,
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
           },
         },
       ],
@@ -91,8 +91,8 @@ export const brand: Tab = {
           name: 'phoneNumber',
           type: 'text',
           access: {
-            create: superAdminOrSupportOrTenantFieldAccess,
-            update: superAdminOrSupportOrTenantFieldAccess,
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
           },
         },
       ],
@@ -115,8 +115,8 @@ export const brand: Tab = {
                 },
               },
               access: {
-                update: superAdminOrSupportOrTenantFieldAccess,
-                create: superAdminOrSupportOrTenantFieldAccess,
+                update: superAdminOrSupportOrTenantAccess,
+                create: superAdminOrSupportOrTenantAccess,
               },
             },
             {
@@ -129,8 +129,8 @@ export const brand: Tab = {
                 },
               },
               access: {
-                update: superAdminOrSupportOrTenantFieldAccess,
-                create: superAdminOrSupportOrTenantFieldAccess,
+                update: superAdminOrSupportOrTenantAccess,
+                create: superAdminOrSupportOrTenantAccess,
               },
             },
             {
@@ -138,8 +138,8 @@ export const brand: Tab = {
               type: 'text',
               required: true,
               access: {
-                update: superAdminOrSupportOrTenantFieldAccess,
-                create: superAdminOrSupportOrTenantFieldAccess,
+                update: superAdminOrSupportOrTenantAccess,
+                create: superAdminOrSupportOrTenantAccess,
               },
             },
           ],
@@ -158,8 +158,8 @@ export const brand: Tab = {
               type: 'text',
               localized: true,
               access: {
-                update: superAdminOrSupportOrTenantFieldAccess,
-                create: superAdminOrSupportOrTenantFieldAccess,
+                update: superAdminOrSupportOrTenantAccess,
+                create: superAdminOrSupportOrTenantAccess,
               },
             },
             {
@@ -167,8 +167,8 @@ export const brand: Tab = {
               type: 'text',
               localized: true,
               access: {
-                update: superAdminOrSupportOrTenantFieldAccess,
-                create: superAdminOrSupportOrTenantFieldAccess,
+                update: superAdminOrSupportOrTenantAccess,
+                create: superAdminOrSupportOrTenantAccess,
               },
             },
           ],

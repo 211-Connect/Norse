@@ -1,7 +1,7 @@
 import { Tab } from 'payload';
 import {
-  superAdminFieldAccess,
-  superAdminOrSupportOrTenantFieldAccess,
+  superAdminAccess,
+  superAdminOrSupportOrTenantAccess,
 } from '../../Users/access/roles';
 import { generateUrlFields } from '@/payload/fields/urlField';
 
@@ -14,8 +14,8 @@ export const topics: Tab = {
       name: 'backText',
       localized: true,
       access: {
-        create: superAdminOrSupportOrTenantFieldAccess,
-        update: superAdminOrSupportOrTenantFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
     },
     {
@@ -28,8 +28,8 @@ export const topics: Tab = {
       },
       localized: true,
       access: {
-        create: superAdminOrSupportOrTenantFieldAccess,
-        update: superAdminOrSupportOrTenantFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
     },
     {
@@ -38,24 +38,24 @@ export const topics: Tab = {
       options: ['small', 'medium'],
       defaultValue: 'small',
       access: {
-        create: superAdminFieldAccess,
-        update: superAdminFieldAccess,
+        create: superAdminAccess,
+        update: superAdminAccess,
       },
     },
     {
       name: 'imageBorderRadius',
       type: 'number',
       access: {
-        create: superAdminOrSupportOrTenantFieldAccess,
-        update: superAdminOrSupportOrTenantFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
     },
     {
       name: 'list',
       type: 'array',
       access: {
-        create: superAdminOrSupportOrTenantFieldAccess,
-        update: superAdminOrSupportOrTenantFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
       admin: {
         components: {

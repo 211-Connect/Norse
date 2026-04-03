@@ -21,7 +21,7 @@ import { termsOfUsePage } from './tabs/termsOfUsePage';
 import { highlights } from './tabs/highlights';
 import {
   superAdminAccess,
-  superAdminOrSupportOrTenantFieldAccess,
+  superAdminOrSupportOrTenantAccess,
 } from '../Users/access/roles';
 import { resource } from './tabs/resource';
 import { accessibility } from './tabs/accessibility';
@@ -104,8 +104,8 @@ export const ResourceDirectories: CollectionConfig = {
           type: 'text',
           required: true,
           access: {
-            update: superAdminOrSupportOrTenantFieldAccess,
-            create: superAdminOrSupportOrTenantFieldAccess,
+            update: superAdminOrSupportOrTenantAccess,
+            create: superAdminOrSupportOrTenantAccess,
           },
         },
       ],

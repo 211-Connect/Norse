@@ -1,5 +1,5 @@
 import { Tab } from 'payload';
-import { superAdminOrSupportOrTenantFieldAccess } from '../../Users/access/roles';
+import { superAdminOrSupportOrTenantAccess } from '../../Users/access/roles';
 import { generateUrlFields } from '@/payload/fields/urlField';
 
 export const footer: Tab = {
@@ -10,8 +10,8 @@ export const footer: Tab = {
       type: 'textarea',
       localized: true,
       access: {
-        create: superAdminOrSupportOrTenantFieldAccess,
-        update: superAdminOrSupportOrTenantFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
     },
     {
@@ -23,8 +23,8 @@ export const footer: Tab = {
         plural: 'Menu Items',
       },
       access: {
-        create: superAdminOrSupportOrTenantFieldAccess,
-        update: superAdminOrSupportOrTenantFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
       fields: [
         {

@@ -1,8 +1,8 @@
 import { Tab } from 'payload';
 import {
-  superAdminFieldAccess,
-  superAdminOrSupportFieldAccess,
-  superAdminOrSupportOrTenantFieldAccess,
+  superAdminAccess,
+  superAdminOrSupportAccess,
+  superAdminOrSupportOrTenantAccess,
 } from '../../Users/access/roles';
 
 export const featureFlags: Tab = {
@@ -13,8 +13,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: superAdminOrSupportOrTenantFieldAccess,
-        update: superAdminOrSupportOrTenantFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
     },
     {
@@ -22,8 +22,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: superAdminFieldAccess,
-        update: superAdminFieldAccess,
+        create: superAdminAccess,
+        update: superAdminAccess,
       },
     },
     {
@@ -31,8 +31,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: superAdminFieldAccess,
-        update: superAdminFieldAccess,
+        create: superAdminAccess,
+        update: superAdminAccess,
       },
     },
     {
@@ -40,8 +40,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: superAdminFieldAccess,
-        update: superAdminFieldAccess,
+        create: superAdminAccess,
+        update: superAdminAccess,
       },
     },
     {
@@ -49,8 +49,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: superAdminFieldAccess,
-        update: superAdminFieldAccess,
+        create: superAdminAccess,
+        update: superAdminAccess,
       },
     },
     {
@@ -58,8 +58,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: superAdminOrSupportFieldAccess,
-        update: superAdminOrSupportFieldAccess,
+        create: superAdminOrSupportAccess,
+        update: superAdminOrSupportAccess,
       },
     },
     {
@@ -67,8 +67,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: superAdminOrSupportOrTenantFieldAccess,
-        update: superAdminOrSupportOrTenantFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
     },
     {
@@ -76,8 +76,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: superAdminFieldAccess,
-        update: superAdminFieldAccess,
+        create: superAdminAccess,
+        update: superAdminAccess,
       },
     },
     {
@@ -85,8 +85,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: superAdminOrSupportOrTenantFieldAccess,
-        update: superAdminOrSupportOrTenantFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
     },
     {
@@ -94,8 +94,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: superAdminOrSupportFieldAccess,
-        update: superAdminOrSupportFieldAccess,
+        create: superAdminOrSupportAccess,
+        update: superAdminOrSupportAccess,
       },
     },
     {
@@ -103,8 +103,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: superAdminOrSupportFieldAccess,
-        update: superAdminOrSupportFieldAccess,
+        create: superAdminOrSupportAccess,
+        update: superAdminOrSupportAccess,
       },
     },
     {
@@ -112,8 +112,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: true,
       access: {
-        create: superAdminOrSupportFieldAccess,
-        update: superAdminOrSupportFieldAccess,
+        create: superAdminOrSupportAccess,
+        update: superAdminOrSupportAccess,
       },
     },
     {
@@ -121,8 +121,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: superAdminOrSupportFieldAccess,
-        update: superAdminOrSupportFieldAccess,
+        create: superAdminOrSupportAccess,
+        update: superAdminOrSupportAccess,
       },
     },
     {
@@ -130,8 +130,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: true,
       access: {
-        create: superAdminOrSupportFieldAccess,
-        update: superAdminOrSupportFieldAccess,
+        create: superAdminOrSupportAccess,
+        update: superAdminOrSupportAccess,
       },
     },
   ],

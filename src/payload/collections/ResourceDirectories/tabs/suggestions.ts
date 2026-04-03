@@ -1,11 +1,11 @@
 import { Tab } from 'payload';
-import { superAdminOrSupportOrTenantFieldAccess } from '../../Users/access/roles';
+import { superAdminOrSupportOrTenantAccess } from '../../Users/access/roles';
 
 export const suggestions: Tab = {
   label: 'Suggestions',
   access: {
-    create: superAdminOrSupportOrTenantFieldAccess,
-    update: superAdminOrSupportOrTenantFieldAccess,
+    create: superAdminOrSupportOrTenantAccess,
+    update: superAdminOrSupportOrTenantAccess,
   },
   fields: [
     {
