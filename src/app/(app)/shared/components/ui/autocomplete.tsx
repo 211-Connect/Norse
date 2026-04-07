@@ -435,6 +435,7 @@ export function Autocomplete(props: AutocompleteProps) {
       lastManualInput,
       popperElement,
       uniqueId,
+      onValueChange,
     ],
   );
 
