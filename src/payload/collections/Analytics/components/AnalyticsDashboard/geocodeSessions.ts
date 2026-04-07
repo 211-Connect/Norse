@@ -43,7 +43,7 @@ export async function geocodeSessions(
   if (viewsByLocation.size === 0) return [];
 
   const uniqueLocations = Array.from(viewsByLocation.entries()); // [locationString, views]
-
+  console.log('Unique locations to geocode:', uniqueLocations);
   const geocoded = await runBatch(
     uniqueLocations,
     5,
@@ -65,6 +65,7 @@ export async function geocodeSessions(
     },
   );
 
+  console.log('Geocoding results:', geocoded);
   const valid = geocoded.filter(
     (r): r is { coordinates: [number, number]; views: number } => r !== null,
   );
