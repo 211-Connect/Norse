@@ -20,11 +20,7 @@ export type ResultType = {
 };
 
 export const resultsAtom = atom<ResultType[]>([]);
-
 export const resultTotalAtom = atom(0);
-
-export const noResultsAtom = atom(false);
-
 export const resultsCurrentPageAtom = atom<number>(0);
 
 export const filtersOpenAtom = atom(false);

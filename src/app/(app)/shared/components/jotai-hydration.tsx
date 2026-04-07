@@ -2,7 +2,6 @@
 
 import {
   filtersAtom,
-  noResultsAtom,
   resultsAtom,
   resultsCurrentPageAtom,
   resultTotalAtom,
@@ -96,7 +95,6 @@ export function JotaiHydration({ cookies = {}, pageProps }) {
         viewingAsOwner: pageProps?.viewingAsOwner ?? false,
       },
     ],
-    [noResultsAtom, pageProps?.noResults ?? false],
     [
       searchAtom,
       {

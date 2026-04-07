@@ -45,7 +45,6 @@ export type FindResourcesQuery = {
 
 type SearchResult = {
   results: Record<string, unknown>[];
-  noResults: boolean;
   totalResults: number;
   page: number;
   filters: FiltersMap;
@@ -163,7 +162,6 @@ function extractFilters(data: SearchApiResponse, locale: string): FiltersMap {
 function createEmptyResult(page: number): SearchResult {
   return {
     results: [],
-    noResults: true,
     totalResults: 0,
     page,
     filters: {},
@@ -241,16 +239,7 @@ async function findResourcesOrigin({
     return createEmptyResult(page);
   }
 
-  let totalResults = extractTotalResults(data);
-  let noResults = false;
-
-  // Try fallback search if no results
-  if (totalResults === 0) {
-    noResults = true;
-    data =
-      (await tryFallbackSearch(query, page, locale, limit, tenantId)) ?? data;
-    totalResults = extractTotalResults(data);
-  }
+  const totalResults = extractTotalResults(data);
 
   const hits = data?.search?.hits?.hits;
   const facetDefinitions = Object.fromEntries(
@@ -264,7 +253,6 @@ async function findResourcesOrigin({
 
   return {
     results,
-    noResults,
     totalResults,
     page,
     filters,
@@ -291,98 +279,8 @@ export const findResources = (
         hybridSemanticSearchEnabled,
       }),
     { redis: true, memory: false },
-    (value) => value.noResults === false && value.results.length > 0,
+    (value) => value.results.length > 0,
   );
-
-/**
- * Try fallback search with more_like_this query type
- */
-async function tryFallbackSearch(
-  query: FindResourcesQuery,
-  page: number,
-  locale: string,
-  limit: number,
-  tenantId?: string,
-): Promise<SearchApiResponse | null> {
-  const hasCoords = query.coordinates?.length === 2;
-  try {
-    const fallbackString = qs.stringify({
-      ...(query.query?.trim() && { query: query.query.trim() }),
-      ...(query.queryLabel?.trim() && { query_label: query.queryLabel.trim() }),
-      query_type: 'more_like_this',
-      ...(query.location?.trim() && { location: query.location.trim() }),
-      ...(hasCoords && { coords: query.coordinates!.join(',') }),
-      ...(hasCoords && { distance: query.distance?.trim() || '0' }),
-      ...(query.sort && { sort: query.sort }),
-      page,
-      locale,
-      limit,
-      ...(tenantId && { tenant_id: tenantId }),
-      ...(query.filters &&
-        Object.keys(query.filters).length > 0 && { filters: query.filters }),
-    });
-
-    const fallbackData = await fetchWrapper(
-      `${API_URL}/search?${fallbackString}`,
-      {
-        headers: {
-          'accept-language': locale,
-          'x-api-version': '1',
-          'x-api-key': INTERNAL_API_KEY || '',
-          ...(tenantId && { 'x-tenant-id': tenantId }),
-        },
-        cache: 'no-store',
-      },
-    );
-
-    return fallbackData?.search ? fallbackData : null;
-  } catch (err) {
-    log.error({ err, tenantId }, 'Fallback search API error');
-    return null;
-  }
-}
-
-/**
- * Try fallback search with more_like_this query type for V2
- */
-async function tryFallbackSearchV2(
-  request: SearchRequestParams,
-  page: number,
-  locale: string,
-  limit: number,
-  tenantId?: string,
-  filters?: Record<string, string[]>,
-  sort?: SortOption,
-): Promise<SearchApiResponse | null> {
-  try {
-    const fallbackQueryParams = qs.stringify({
-      ...request.queryParams,
-      page,
-      query_type: 'more_like_this',
-      locale,
-      limit,
-      ...(sort && { sort }),
-      ...(filters && Object.keys(filters).length > 0 ? { filters } : {}),
-    });
-    const fallbackUrl = `${API_URL}/search?${fallbackQueryParams}`;
-
-    const fallbackData = await fetchWrapper(fallbackUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'accept-language': locale,
-        'x-api-version': '1',
-        ...(tenantId && { 'x-tenant-id': tenantId }),
-      },
-      body: request.body,
-    });
-
-    return fallbackData?.search ? fallbackData : null;
-  } catch (err) {
-    log.error({ err, tenantId }, 'Fallback search API error (V2)');
-    return null;
-  }
-}
 
 /**
  * Find resources using POST endpoint with advanced geospatial filtering
@@ -447,24 +345,7 @@ export async function findResourcesV2(
     return createEmptyResult(page);
   }
 
-  let totalResults = extractTotalResults(data);
-  let noResults = false;
-
-  // Try fallback search if no results
-  if (totalResults === 0) {
-    noResults = true;
-    data =
-      (await tryFallbackSearchV2(
-        request,
-        page,
-        locale,
-        limit,
-        tenantId,
-        searchStore.filters,
-        searchStore.sort,
-      )) ?? data;
-    totalResults = extractTotalResults(data);
-  }
+  const totalResults = extractTotalResults(data);
 
   const hits = data?.search?.hits?.hits;
   const facetDefinitions = Object.fromEntries(
@@ -478,7 +359,6 @@ export async function findResourcesV2(
 
   return {
     results,
-    noResults,
     totalResults,
     page,
     filters,

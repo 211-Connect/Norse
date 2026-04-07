@@ -87,7 +87,7 @@ const getPageData = cache(async function (
   const limit = appConfig.search.resultsLimit;
 
   let useFindResourcesV2 = false;
-  let results, noResults, totalResults, filters;
+  let results, totalResults, filters;
 
   if (isAdvancedGeoEnabled() && searchQuery.location) {
     const [placeMetadata] = await forwardGeocode(searchQuery.location, {
@@ -103,7 +103,7 @@ const getPageData = cache(async function (
       };
 
       try {
-        ({ results, noResults, totalResults, filters } = await findResourcesV2(
+        ({ results, totalResults, filters } = await findResourcesV2(
           geoQuery,
           locale,
           page,
@@ -138,11 +138,10 @@ const getPageData = cache(async function (
         'Search returned no result object; defaulting to empty results',
       );
       results = [];
-      noResults = true;
       totalResults = 0;
       filters = {};
     } else {
-      ({ results, noResults, totalResults, filters } = searchResult);
+      ({ results, totalResults, filters } = searchResult);
     }
   }
 
@@ -159,7 +158,6 @@ const getPageData = cache(async function (
     appConfig,
     filters,
     results,
-    noResults,
     totalResults,
     resources,
     t,
@@ -229,15 +227,8 @@ export default async function SearchPage({
   ]);
   const locale = paramsResult.locale;
 
-  const {
-    filters,
-    results,
-    noResults,
-    totalResults,
-    resources,
-    searchQuery,
-    cardLayout,
-  } = await getPageData(locale, searchParamsResult);
+  const { filters, results, totalResults, resources, searchQuery, cardLayout } =
+    await getPageData(locale, searchParamsResult);
 
   if (searchQuery.widgetId) {
     trackUmamiEvent(UmamiEvent.WidgetSearch);
@@ -256,7 +247,6 @@ export default async function SearchPage({
         distance: searchQuery.distance ?? '',
         filters,
         location: searchQuery.location ?? '',
-        noResults,
         query: searchQuery.query ?? '',
         query_label: searchQuery.queryLabel ?? '',
         query_type: searchQuery.queryType ?? '',

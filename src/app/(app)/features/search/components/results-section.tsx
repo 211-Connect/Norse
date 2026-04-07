@@ -2,7 +2,7 @@
 
 import { useAtomValue } from 'jotai';
 import { useRef } from 'react';
-import { noResultsAtom } from '@/app/(app)/shared/store/results';
+import { resultsAtom } from '@/app/(app)/shared/store/results';
 import { PrintButton } from '@/app/(app)/shared/components/print-button';
 import { ShareButton } from '@/app/(app)/shared/components/share-button';
 
@@ -19,7 +19,7 @@ type ResultsSectionProps = {
 
 export function ResultsSection({ cardLayout }: ResultsSectionProps) {
   const componentToPrintRef = useRef<HTMLDivElement>(null);
-  const noResults = useAtomValue(noResultsAtom);
+  const results = useAtomValue(resultsAtom);
   const queryType = useAtomValue(queryTypeAtom);
 
   const showSort = queryType !== 'hybrid';
@@ -33,7 +33,7 @@ export function ResultsSection({ cardLayout }: ResultsSectionProps) {
         <div className="flex items-center justify-between">
           <ResultTotal />
           <div className="flex gap-[10px]">
-            {!noResults && (
+            {results.length > 0 && (
               <PrintButton componentToPrintRef={componentToPrintRef} />
             )}
             <ShareButton componentToPrintRef={componentToPrintRef} />
