@@ -41,6 +41,8 @@ export function Datum({
   const generatedId = id ?? title?.replace(/\s+/g, '-').toLowerCase();
   const parsedDescription =
     description && shouldParseHtml ? parseHtml(description) : description;
+  const descriptionAs =
+    shouldParseHtml && description !== parsedDescription ? 'div' : undefined;
 
   return (
     <div
@@ -73,6 +75,7 @@ export function Datum({
             size={size}
             url={url}
             urlTarget={urlTarget}
+            as={descriptionAs}
           >
             {parsedDescription}
           </Typography>
@@ -96,6 +99,7 @@ export function Datum({
             size={size}
             url={url}
             urlTarget={urlTarget}
+            as={descriptionAs}
           >
             {parsedDescription}
           </Typography>
