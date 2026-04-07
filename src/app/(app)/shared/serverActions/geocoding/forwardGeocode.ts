@@ -16,8 +16,8 @@ export async function forwardGeocode(
     limit: '5',
   });
 
-  if (!options.provider) {
-    searchParams.append('provider', 'mapbox');
+  if (options.provider) {
+    searchParams.append('provider', options.provider);
   }
 
   if (options.tenantId) {
