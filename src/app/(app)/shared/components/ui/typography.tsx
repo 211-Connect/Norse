@@ -126,6 +126,7 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
           )}
           ref={ref as React.Ref<HTMLAnchorElement>}
           target={urlTarget || undefined}
+          rel="noopener noreferrer"
           {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
         >
           {children}
@@ -141,6 +142,7 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
         ref={ref}
         href={url || null}
         target={urlTarget}
+        rel="noopener noreferrer"
         {...props}
       >
         {children}

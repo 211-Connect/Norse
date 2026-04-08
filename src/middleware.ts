@@ -174,6 +174,22 @@ function generateNonce() {
 export async function middleware(request: NextRequest) {
   const nonce = generateNonce();
 
+  // Validate Origin header to prevent malicious payloads (e.g., JNDI injection attempts)
+  const originHeader = request.headers.get('origin');
+  if (originHeader) {
+    const validOrigin = getOriginFromUrl(originHeader);
+    if (!validOrigin) {
+      edgeLog('warn', 'invalid_origin_header_blocked', {
+        origin: originHeader,
+        url: request.url,
+        method: request.method,
+        userAgent: request.headers.get('user-agent'),
+      });
+      // Return 400 Bad Request for invalid Origin header
+      return new NextResponse('Invalid Origin header', { status: 400 });
+    }
+  }
+
   // Use raw host for headers that require it, but parsed host for logic/identification
   const rawHost = request.headers.get('host') || '';
   const host = parseHost(rawHost);
