@@ -240,21 +240,6 @@ const config = buildConfig({
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
   endpoints,
-  onInit: async (payload) => {
-    payload.logger.info('Queueing warmCache task on startup...');
-    try {
-      const job = await payload.jobs.queue({
-        task: 'warmCache',
-        input: {},
-        queue: 'cache',
-      });
-      payload.logger.info(
-        `warmCache task queued successfully with job ID: ${job.id}`,
-      );
-    } catch (error) {
-      payload.logger.error('Failed to queue warmCache task on startup:', error);
-    }
-  },
 });
 
 export default config;
