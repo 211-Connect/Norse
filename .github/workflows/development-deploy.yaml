@@ -78,10 +78,9 @@ jobs:
         uses: docker/metadata-action@v6
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          flavor: |
-            latest=true
           tags: |
             type=sha,format=short
+            type=raw,value=development
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v7
