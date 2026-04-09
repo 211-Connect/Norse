@@ -1,13 +1,13 @@
 'use client';
 
+import { useTranslation } from 'react-i18next';
 import { SearchCardComponentProps } from './types';
 import { AddToFavoritesButton } from '@/app/(app)/shared/components/add-to-favorites-button';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
 
 export function ResourceNameComponent({ result }: SearchCardComponentProps) {
-  if (!result.name) {
-    return null;
-  }
+  const { t } = useTranslation();
+  const name = result.name || t('name_unavailable', { ns: 'page-search' });
 
   const url = `/search/${result.id}${process.env.NEXT_PUBLIC_WITH_TRAILING_SLASHES === 'true' ? '/' : ''}`;
 
@@ -18,15 +18,16 @@ export function ResourceNameComponent({ result }: SearchCardComponentProps) {
         size="md"
         url={url}
         data-testid="resource-link"
-        className="self-center"
+        className="min-w-0 flex-1 self-center"
       >
-        {result.name}
+        {name}
       </Typography>
-      <div className="print:hidden">
+      <div className="flex flex-shrink-0 items-center print:hidden">
         <AddToFavoritesButton
           size="icon"
           serviceAtLocationId={result.id}
-          resourceName={result.name}
+          currentListId={result.currentListId}
+          onRemoveFromList={result.onRemoveFromList}
         />
       </div>
     </div>

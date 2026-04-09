@@ -22,5 +22,6 @@
       "name": "Naziv resursa",
       "organization": "Naziv pružatelja usluga"
     }
-  }
+  },
+  "name_unavailable": "Ime nije dostupno"
 }

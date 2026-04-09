@@ -130,7 +130,10 @@
       "sms_send_failed_title": "Kutuma ujumbe mfupi wa maandishi kumeshindwa",
       "sms_send_failed_body": "Ujumbe wako umeshindwa kutuma."
     },
-    "prompt_auth": "Tafadhali ingia ili utumie kipengele hiki."
+    "prompt_auth": "Tafadhali ingia ili utumie kipengele hiki.",
+    "manage_favorites": {
+      "title": "Dhibiti vipendwa"
+    }
   },
   "update_location": {
     "prompt_start_location": "Ni nini eneo lako la kuanzia?"

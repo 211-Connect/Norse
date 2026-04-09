@@ -1,20 +1,24 @@
 'use client';
 
-import { Heart, ListPlus, PlusIcon } from 'lucide-react';
+import { Heart, HeartOff, Loader2, PlusIcon } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useSetAtom } from 'jotai';
-import { Fragment, type MouseEvent, useCallback, useEffect, useId, useRef, useState } from 'react';
+import {
+  Fragment,
+  type MouseEvent,
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from 'react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import Link from 'next/link';
 
 import { Button } from './ui/button';
 import { CustomPagination } from './custom-pagination';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from './ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { CreateFavoriteListDialog } from './create-favorite-list-dialog';
 import { FavoritesSearchBar } from './favorites-search-bar';
 import { Separator } from './ui/separator';
@@ -24,8 +28,8 @@ import { dialogsAtom } from '../store/dialogs';
 import { cn } from '../lib/utils';
 import { useAppConfig } from '../hooks/use-app-config';
 import { getFavoriteLists } from '../serverActions/favorites/getFavoriteLists';
-import { createFavoriteList } from '../serverActions/favorites/createFavoriteList';
 import { addToFavoriteList } from '../serverActions/favorites/addToFavoriteList';
+import { removeFavoriteFromList } from '../serverActions/favorites/removeFavoriteFromList';
 import { FavoriteListState } from '@/types/favorites';
 
 type AddToFavoritesButtonProps = {
@@ -34,6 +38,8 @@ type AddToFavoritesButtonProps = {
   resourceName?: string;
   siblings?: number;
   boundaries?: number;
+  currentListId?: string;
+  onRemoveFromList?: (listId: string, favoriteId: string) => void;
 };
 
 export function AddToFavoritesButton({
@@ -42,20 +48,22 @@ export function AddToFavoritesButton({
   resourceName,
   siblings = 1,
   boundaries = 1,
+  currentListId,
+  onRemoveFromList,
 }: AddToFavoritesButtonProps) {
   const appConfig = useAppConfig();
   const session = useSession();
   const setDialog = useSetAtom(dialogsAtom);
-  const { t } = useTranslation('common');
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const dialogId = useId();
+  const { t, i18n } = useTranslation('common');
 
   const [open, setOpen] = useState(false);
   const [createListOpen, setCreateListOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [favoritesState, setFavoritesState] = useState<{
     data: FavoriteListState[];
-    status: 'loading' | 'success';
+    status: 'loading' | 'refreshing' | 'success';
     page: number;
     limit: number;
     totalCount: number;
@@ -66,18 +74,24 @@ export function AddToFavoritesButton({
     limit: 5,
     totalCount: 0,
   });
+  const [refreshingListId, setRefreshingListId] = useState<string | null>(null);
 
   const refreshFavoritesList = useCallback(async () => {
     if (session.status === 'unauthenticated' || session.status === 'loading')
       return;
 
-    setFavoritesState((prev) => ({ ...prev, data: [], status: 'loading' }));
+    setFavoritesState((prev) => ({
+      ...prev,
+      status: prev.data.length > 0 ? 'refreshing' : 'loading',
+    }));
 
     const response = await getFavoriteLists(
       appConfig.tenantId,
       favoritesState.page,
       favoritesState.limit,
       searchValue,
+      i18n.language,
+      serviceAtLocationId,
     );
 
     if (response) {
@@ -94,6 +108,8 @@ export function AddToFavoritesButton({
     appConfig,
     favoritesState.page,
     favoritesState.limit,
+    serviceAtLocationId,
+    i18n.language,
   ]);
 
   useEffect(() => {
@@ -102,30 +118,57 @@ export function AddToFavoritesButton({
     }
   }, [refreshFavoritesList, open]);
 
-  const addToFavoriteListHandler = (listId: string) => {
+  const toggleFavoriteInList = (listId: string, isInList: boolean) => {
     return async () => {
       try {
-        const data = await addToFavoriteList(
-          {
-            resourceId: serviceAtLocationId,
-            favoriteListId: listId,
-          },
-          appConfig.tenantId,
-        );
+        setRefreshingListId(listId);
 
-        if (data) {
-          toast.success(t('favorites.added_to_list'), {
-            description: t('favorites.added_to_list_message'),
+        if (isInList) {
+          await removeFavoriteFromList(
+            {
+              resourceId: serviceAtLocationId,
+              favoriteListId: listId,
+            },
+            appConfig.tenantId,
+          );
+
+          toast.success(t('favorites.removed_from_list'), {
+            description: t('favorites.removed_from_list_message'),
           });
+
+          // If we're viewing this list, notify parent to update UI
+          if (currentListId === listId && onRemoveFromList) {
+            onRemoveFromList(listId, serviceAtLocationId);
+          }
+
+          await refreshFavoritesList();
         } else {
-          toast.error(t('favorites.already_exists'), {
-            description: t('favorites.already_exists_message'),
-          });
+          const data = await addToFavoriteList(
+            {
+              resourceId: serviceAtLocationId,
+              favoriteListId: listId,
+            },
+            appConfig.tenantId,
+          );
+
+          if (data) {
+            toast.success(t('favorites.added_to_list'), {
+              description: t('favorites.added_to_list_message'),
+            });
+
+            await refreshFavoritesList();
+          } else {
+            toast.error(t('favorites.already_exists'), {
+              description: t('favorites.already_exists_message'),
+            });
+          }
         }
       } catch (error) {
         toast.error(t('message.error'), {
           description: t('favorites.unable_to_update_list_message'),
         });
+      } finally {
+        setRefreshingListId(null);
       }
     };
   };
@@ -172,7 +215,10 @@ export function AddToFavoritesButton({
         disabled={session.status === 'loading'}
         data-session-status={session.status}
       >
-        <Heart className={size === 'icon' ? 'size-6' : 'size-4'} aria-hidden="true" />
+        <Heart
+          className={size === 'icon' ? 'size-6' : 'size-4'}
+          aria-hidden="true"
+        />
         {size !== 'icon' && t('call_to_action.add_to_list')}
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -182,7 +228,7 @@ export function AddToFavoritesButton({
           closeLabel={t('call_to_action.close')}
         >
           <DialogHeader>
-            <DialogTitle>{t('modal.add_to_list.search_list')}</DialogTitle>
+            <DialogTitle>{t('modal.manage_favorites.title')}</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-2 sm:flex-row">
@@ -202,7 +248,8 @@ export function AddToFavoritesButton({
               </Button>
             </div>
 
-            {favoritesState.status === 'success' &&
+            {(favoritesState.status === 'success' ||
+              favoritesState.status === 'refreshing') &&
               favoritesState.data.length === 0 &&
               searchValue?.length > 0 && (
                 <p className="text-sm text-muted-foreground">
@@ -231,12 +278,19 @@ export function AddToFavoritesButton({
                 </>
               )}
 
-              {favoritesState.status === 'success' && (
+              {(favoritesState.status === 'success' ||
+                favoritesState.status === 'refreshing') && (
                 <>
                   {favoritesState.data.map((el) => {
+                    const isInList = el.containsResource ?? false;
                     return (
                       <Fragment key={el.id}>
-                        <p className="col-span-2 text-sm">{el.name}</p>
+                        <Link
+                          href={`/${i18n.language}/favorites/${el.id}`}
+                          className="col-span-2 text-sm hover:underline"
+                        >
+                          {el.name}
+                        </Link>
 
                         <div className="col-span-2">
                           <Badge variant="outline">
@@ -250,11 +304,26 @@ export function AddToFavoritesButton({
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={addToFavoriteListHandler(el.id)}
-                            aria-label={`${t('modal.add_to_list.add_to_list')} ${el.name}`}
-                            data-testid="add-to-list-btn"
+                            onClick={toggleFavoriteInList(el.id, isInList)}
+                            aria-label={
+                              isInList
+                                ? t('call_to_action.remove_from_list')
+                                : t('call_to_action.add_to_list')
+                            }
+                            data-testid={
+                              isInList
+                                ? 'remove-from-list-btn'
+                                : 'add-to-list-btn'
+                            }
+                            disabled={refreshingListId === el.id}
                           >
-                            <ListPlus className="size-4" aria-hidden="true" />
+                            {refreshingListId === el.id ? (
+                              <Loader2 className="size-4 animate-spin text-muted-foreground" />
+                            ) : isInList ? (
+                              <HeartOff className="size-4" />
+                            ) : (
+                              <Heart className="size-4" />
+                            )}
                           </Button>
                         </div>
                       </Fragment>
@@ -263,7 +332,8 @@ export function AddToFavoritesButton({
                 </>
               )}
             </div>
-            {favoritesState.status === 'success' &&
+            {(favoritesState.status === 'success' ||
+              favoritesState.status === 'refreshing') &&
               favoritesState.totalCount > favoritesState.limit && (
                 <div className="mt-4 flex justify-center">
                   <CustomPagination

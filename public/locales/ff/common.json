@@ -130,7 +130,10 @@
       "sms_send_failed_title": "Neldude SMS ŋakki",
       "sms_send_failed_body": "Mesaas maa waawaa neldeede."
     },
-    "prompt_auth": "Tiiɗno, naata ngam huutoraade ngalɗoo gollal."
+    "prompt_auth": "Tiiɗno, naata ngam huutoraade ngalɗoo gollal.",
+    "manage_favorites": {
+      "title": "Njuɓɓudi ɓurɓe yiɗeede"
+    }
   },
   "update_location": {
     "prompt_start_location": "Hol nokku ɗo puɗɗorto-ɗaa?"

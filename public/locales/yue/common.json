@@ -130,7 +130,10 @@
       "sms_send_failed_title": "短訊發送失敗",
       "sms_send_failed_body": "你嘅訊息發送唔到。"
     },
-    "prompt_auth": "請登入以使用此功能。"
+    "prompt_auth": "請登入以使用此功能。",
+    "manage_favorites": {
+      "title": "管理最愛"
+    }
   },
   "update_location": {
     "prompt_start_location": "你嘅起點係邊度？"

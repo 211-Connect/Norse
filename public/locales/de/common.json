@@ -130,7 +130,10 @@
       "sms_send_failed_title": "SMS-Versand fehlgeschlagen",
       "sms_send_failed_body": "Ihre Nachricht konnte nicht gesendet werden."
     },
-    "prompt_auth": "Bitte melden Sie sich an, um diese Funktion zu nutzen."
+    "prompt_auth": "Bitte melden Sie sich an, um diese Funktion zu nutzen.",
+    "manage_favorites": {
+      "title": "Favoriten verwalten"
+    }
   },
   "update_location": {
     "prompt_start_location": "Wo starten Sie?"

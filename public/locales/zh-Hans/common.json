@@ -130,7 +130,10 @@
       "sms_send_failed_title": "短信发送失败",
       "sms_send_failed_body": "您的消息发送失败。"
     },
-    "prompt_auth": "请登录才能使用此功能。"
+    "prompt_auth": "请登录才能使用此功能。",
+    "manage_favorites": {
+      "title": "管理收藏夹"
+    }
   },
   "update_location": {
     "prompt_start_location": "你的起点在哪里？"

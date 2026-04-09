@@ -17,6 +17,7 @@ export interface FavoriteListState extends BaseFavoriteList {
   id: string;
   privacy: Privacy;
   ownerId?: string;
+  containsResource?: boolean;
 }
 
 // Norse API `/favorite-list` v1 Request DTOs
@@ -36,6 +37,7 @@ export interface FavoriteListItemDto extends BaseFavoriteList {
   id: string;
   privacy: string;
   ownerId: string;
+  containsResource?: boolean;
 }
 
 export interface PaginationResponseDto {

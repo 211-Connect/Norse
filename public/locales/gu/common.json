@@ -130,7 +130,10 @@
       "sms_send_failed_title": "SMS મોકલવામાં નિષ્ફળ ગયા",
       "sms_send_failed_body": "તમારો સંદેશ મોકલવામાં નિષ્ફળ ગયો."
     },
-    "prompt_auth": "આ સુવિધાનો ઉપયોગ કરવા માટે કૃપા કરીને લોગિન કરો."
+    "prompt_auth": "આ સુવિધાનો ઉપયોગ કરવા માટે કૃપા કરીને લોગિન કરો.",
+    "manage_favorites": {
+      "title": "મનપસંદ મેનેજ કરો"
+    }
   },
   "update_location": {
     "prompt_start_location": "તમારું શરૂઆતનું સ્થાન કયું છે?"

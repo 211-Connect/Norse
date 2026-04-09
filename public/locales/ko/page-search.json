@@ -22,5 +22,6 @@
       "name": "리소스 이름",
       "organization": "공급자 이름"
     }
-  }
+  },
+  "name_unavailable": "이름 알 수 없음"
 }

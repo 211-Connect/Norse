@@ -130,7 +130,10 @@
       "sms_send_failed_title": "ສົ່ງ SMS ບໍ່ສຳເລັດ",
       "sms_send_failed_body": "ສົ່ງຂໍ້ຄວາມຂອງທ່ານບໍ່ສຳເລັດ."
     },
-    "prompt_auth": "ກະລຸນາເຂົ້າສູ່ລະບົບເພື່ອໃຊ້ຄຸນສົມບັດນີ້."
+    "prompt_auth": "ກະລຸນາເຂົ້າສູ່ລະບົບເພື່ອໃຊ້ຄຸນສົມບັດນີ້.",
+    "manage_favorites": {
+      "title": "ຈັດການລາຍການທີ່ມັກ"
+    }
   },
   "update_location": {
     "prompt_start_location": "ສະຖານທີ່ເລີ່ມຕົ້ນຂອງເຈົ້າແມ່ນຫຍັງ?"

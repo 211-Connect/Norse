@@ -130,7 +130,10 @@
       "sms_send_failed_title": "ការផ្ញើសារ SMS បរាជ័យ",
       "sms_send_failed_body": "សាររបស់អ្នកមិនអាចផ្ញើបានទេ។"
     },
-    "prompt_auth": "សូមចូលគណនីដើម្បីប្រើប្រាស់មុខងារនេះ។"
+    "prompt_auth": "សូមចូលគណនីដើម្បីប្រើប្រាស់មុខងារនេះ។",
+    "manage_favorites": {
+      "title": "គ្រប់គ្រង​ចំណូលចិត្ត"
+    }
   },
   "update_location": {
     "prompt_start_location": "តើទីតាំងចាប់ផ្តើមរបស់អ្នកគឺជាអ្វី?"

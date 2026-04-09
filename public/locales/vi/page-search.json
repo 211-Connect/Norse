@@ -22,5 +22,6 @@
       "name": "Tên tài nguyên",
       "organization": "Tên nhà cung cấp"
     }
-  }
+  },
+  "name_unavailable": "Tên không có sẵn"
 }

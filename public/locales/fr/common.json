@@ -130,7 +130,10 @@
       "sms_send_failed_title": "Echec de l’envoi de SMS",
       "sms_send_failed_body": "Votre message n’a pas été envoyé."
     },
-    "prompt_auth": "Veuillez vous connecter pour utiliser cette fonctionnalité."
+    "prompt_auth": "Veuillez vous connecter pour utiliser cette fonctionnalité.",
+    "manage_favorites": {
+      "title": "Gérer les favoris"
+    }
   },
   "update_location": {
     "prompt_start_location": "Quel est votre point de départ ?"

@@ -130,7 +130,10 @@
       "sms_send_failed_title": "Nie udało się wysłać SMS-a",
       "sms_send_failed_body": "Nie udało się wysłać Twojej wiadomości."
     },
-    "prompt_auth": "Zaloguj się, aby skorzystać z tej funkcji."
+    "prompt_auth": "Zaloguj się, aby skorzystać z tej funkcji.",
+    "manage_favorites": {
+      "title": "Zarządzaj ulubionymi"
+    }
   },
   "update_location": {
     "prompt_start_location": "Skąd wyruszysz?"

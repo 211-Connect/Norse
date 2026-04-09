@@ -130,7 +130,10 @@
       "sms_send_failed_title": "Nabigo ang pagpapadala ng SMS",
       "sms_send_failed_body": "Hindi naipadala ang iyong mensahe."
     },
-    "prompt_auth": "Mangyaring mag-login upang magamit ang tampok na ito."
+    "prompt_auth": "Mangyaring mag-login upang magamit ang tampok na ito.",
+    "manage_favorites": {
+      "title": "Pamahalaan ang mga paborito"
+    }
   },
   "update_location": {
     "prompt_start_location": "Saan ang panimulang lokasyon mo?"

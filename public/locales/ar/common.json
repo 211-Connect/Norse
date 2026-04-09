@@ -130,7 +130,10 @@
       "sms_send_failed_title": "فشل إرسال الرسائل القصيرة",
       "sms_send_failed_body": "تعذر إرسال رسالتك."
     },
-    "prompt_auth": "يرجى تسجيل الدخول لاستخدام هذه الميزة."
+    "prompt_auth": "يرجى تسجيل الدخول لاستخدام هذه الميزة.",
+    "manage_favorites": {
+      "title": "إدارة المفضلة"
+    }
   },
   "update_location": {
     "prompt_start_location": "ما هو موقع انطلاقك؟"

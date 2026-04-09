@@ -130,7 +130,10 @@
       "sms_send_failed_title": "Ua hāʻule ka hoʻouna ʻana o ka SMS",
       "sms_send_failed_body": "ʻAʻole i hoʻouna ʻia kāu leka."
     },
-    "prompt_auth": "E ʻoluʻolu e komo e hoʻohana i kēia hiʻona."
+    "prompt_auth": "E ʻoluʻolu e komo e hoʻohana i kēia hiʻona.",
+    "manage_favorites": {
+      "title": "E hoʻokele i nā mea punahele"
+    }
   },
   "update_location": {
     "prompt_start_location": "Ma hea kou wahi hoʻomaka?"

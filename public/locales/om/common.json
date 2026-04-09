@@ -130,7 +130,10 @@
       "sms_send_failed_title": "Ergaa gabaabaa erguun hin milkoofne",
       "sms_send_failed_body": "Ergaan kee erguu dadhabe."
     },
-    "prompt_auth": "Maaloo amala kana fayyadamuuf seena."
+    "prompt_auth": "Maaloo amala kana fayyadamuuf seena.",
+    "manage_favorites": {
+      "title": "Favorites bulchuu"
+    }
   },
   "update_location": {
     "prompt_start_location": "Bakki itti jalqabdan maali?"

@@ -130,7 +130,10 @@
       "sms_send_failed_title": "د ایس ایم ایس لیږل ناکام شول",
       "sms_send_failed_body": "ستاسو پیغام واستول شو."
     },
-    "prompt_auth": "د دې ځانګړتیا کارولو لپاره مهرباني وکړئ ننوتل وکړئ."
+    "prompt_auth": "د دې ځانګړتیا کارولو لپاره مهرباني وکړئ ننوتل وکړئ.",
+    "manage_favorites": {
+      "title": "د خوښې وړ تنظیم کړئ"
+    }
   },
   "update_location": {
     "prompt_start_location": "ستاسو د پیل ځای څه دی؟"

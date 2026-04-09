@@ -130,7 +130,10 @@
       "sms_send_failed_title": "Tekstiviestin lähetys epäonnistui",
       "sms_send_failed_body": "Viestisi lähettäminen epäonnistui."
     },
-    "prompt_auth": "Kirjaudu sisään käyttääksesi tätä ominaisuutta."
+    "prompt_auth": "Kirjaudu sisään käyttääksesi tätä ominaisuutta.",
+    "manage_favorites": {
+      "title": "Hallinnoi suosikkeja"
+    }
   },
   "update_location": {
     "prompt_start_location": "Mikä on lähtöpaikkasi?"
