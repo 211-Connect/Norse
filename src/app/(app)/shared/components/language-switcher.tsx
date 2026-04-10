@@ -15,6 +15,7 @@ import {
 import { LanguagesIcon } from 'lucide-react';
 import { useClientSearchParams } from '../hooks/use-client-search-params';
 import { useAppConfig } from '../hooks/use-app-config';
+import { useBreakpoint } from '../hooks/use-breakpoint';
 import { cn } from '../lib/utils';
 
 const LANGUAGE_NAME = {
@@ -43,6 +44,7 @@ export const LanguageSwitcher = () => {
   const currentPathname = usePathname();
   const { stringifiedSearchParams } = useClientSearchParams();
   const { start } = useTopLoader();
+  const isSmOrLarger = useBreakpoint(640);
 
   const { t, i18n } = useTranslation('common');
 
@@ -79,7 +81,7 @@ export const LanguageSwitcher = () => {
   }
 
   return (
-    <li>
+    <li className="h-full">
       <Select
         aria-label={t('header.language_select_label') as string}
         defaultValue={i18n.language}
@@ -87,7 +89,7 @@ export const LanguageSwitcher = () => {
       >
         <SelectTrigger
           className={cn(
-            'flex w-auto min-w-[140px] items-center gap-[5px]',
+            'flex h-full w-auto min-w-[140px] items-center gap-[5px]',
             newLayoutEnabled && '!bg-white',
           )}
           aria-label={t('header.language_select_label')}
@@ -95,19 +97,21 @@ export const LanguageSwitcher = () => {
           <div className="flex items-center gap-1 overflow-hidden">
             <LanguagesIcon className="size-4" aria-hidden="true" />
             <SelectValue placeholder={t('header.language_select_label')}>
-              <span className="capitalize">
+              <span className="text-xs font-medium capitalize leading-5">
                 {getLanguageName(currentLanguage)}
               </span>
             </SelectValue>
           </div>
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent align={isSmOrLarger ? 'end' : 'start'}>
           {appConfig.i18n.locales.map((locale: string) => {
             const languageName = getLanguageName(locale);
 
             return (
               <SelectItem key={locale} value={locale}>
-                <span className="capitalize">{languageName}</span>
+                <span className="text-xs font-medium capitalize">
+                  {languageName}
+                </span>
                 {` (${locale})`}
               </SelectItem>
             );

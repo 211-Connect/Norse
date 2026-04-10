@@ -26,5 +26,6 @@
   "report": "Informe",
   "providing_organization": "Organización proveedora",
   "interpretation_services": "Servicios de interpretación",
-  "other_information": "Otra información"
+  "other_information": "Otra información",
+  "organization_url": "URL de la organización"
 }

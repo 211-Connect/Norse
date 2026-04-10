@@ -80,7 +80,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=sha,format=short
-            type=raw,value=latest
+            type=raw,value=development
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v7
@@ -154,7 +154,7 @@ jobs:
     needs: [build-and-push]
     runs-on: ubuntu-latest
     steps:
-      - name: Send Slack notification - Deploy failed
+      - name: Send Slack notification - Build & Push Failed
         uses: slackapi/slack-github-action@v2.1.0
         with:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -167,7 +167,31 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": ":x: *Development Build & Push Failed*\nDocker image build or push to registry failed.`\n*Commit:* `${{ github.sha }}`\n*Author:* ${{ github.actor }}"
+                    "text": ":x: *Development Build & Push Failed*\nThe Docker image could not be built or pushed to the registry.\n*Commit:* `${{ github.sha }}`\n*Author:* ${{ github.actor }}"
+                  }
+                }
+              ]
+            }
+
+  notify-activate-failure:
+    if: always() && needs.wait-for-deploy.result == 'failure'
+    needs: [wait-for-deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack notification - Deploy Failed
+        uses: slackapi/slack-github-action@v2.1.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": ":x: *Deploy Failed*",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ":x: *Development Deploy Failed*\nThe new deployment did not become active within the expected timeframe.\n*Commit:* `${{ github.sha }}`\n*Author:* ${{ github.actor }}"
                   }
                 }
               ]
@@ -191,7 +215,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": ":rotating_light: *Development E2E Tests Failed*\nEnd-to-end tests failed after successful deployment.\n*Commit:* `${{ github.sha }}`\n*Author:* ${{ github.actor }}"
+                    "text": ":rotating_light: *Development E2E Tests Failed*\nEnd-to-end tests failed following a successful deployment.\n*Commit:* `${{ github.sha }}`\n*Author:* ${{ github.actor }}"
                   }
                 }
               ]

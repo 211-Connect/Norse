@@ -8,7 +8,6 @@ import {
   findResources,
   FindResourcesQuery,
   findResourcesV2,
-  isSortOption,
 } from '@/app/(app)/shared/services/search-service';
 import { getCookies } from 'cookies-next/server';
 import { cookies, headers } from 'next/headers';
@@ -21,6 +20,7 @@ import { isAdvancedGeoEnabled } from '@/app/(app)/shared/lib/search-utils';
 import { createLogger } from '@/lib/logger';
 import { DEFAULT_SEARCH_CARD_LAYOUT } from '@/app/(app)/features/search/types/card-layout-config';
 import { getSortOption } from '@/app/(app)/shared/utils/getSortOption';
+import { trackUmamiEvent, UmamiEvent } from '../../../shared/lib/umami';
 
 const log = createLogger('search-page');
 
@@ -87,7 +87,7 @@ const getPageData = cache(async function (
   const limit = appConfig.search.resultsLimit;
 
   let useFindResourcesV2 = false;
-  let results, noResults, totalResults, filters;
+  let results, totalResults, filters;
 
   if (isAdvancedGeoEnabled() && searchQuery.location) {
     const [placeMetadata] = await forwardGeocode(searchQuery.location, {
@@ -103,12 +103,13 @@ const getPageData = cache(async function (
       };
 
       try {
-        ({ results, noResults, totalResults, filters } = await findResourcesV2(
+        ({ results, totalResults, filters } = await findResourcesV2(
           geoQuery,
           locale,
           page,
           limit,
           appConfig.tenantId,
+          appConfig.search.hybridSemanticSearchEnabled,
         ));
         useFindResourcesV2 = true;
       } catch (error) {
@@ -128,6 +129,7 @@ const getPageData = cache(async function (
       page,
       limit,
       appConfig.tenantId,
+      appConfig.search.hybridSemanticSearchEnabled,
     );
 
     if (!searchResult) {
@@ -136,11 +138,10 @@ const getPageData = cache(async function (
         'Search returned no result object; defaulting to empty results',
       );
       results = [];
-      noResults = true;
       totalResults = 0;
       filters = {};
     } else {
-      ({ results, noResults, totalResults, filters } = searchResult);
+      ({ results, totalResults, filters } = searchResult);
     }
   }
 
@@ -157,7 +158,6 @@ const getPageData = cache(async function (
     appConfig,
     filters,
     results,
-    noResults,
     totalResults,
     resources,
     t,
@@ -227,16 +227,12 @@ export default async function SearchPage({
   ]);
   const locale = paramsResult.locale;
 
-  const {
-    filters,
-    results,
-    noResults,
-    totalResults,
-    resources,
-    searchQuery,
-    cardLayout,
-  } = await getPageData(locale, searchParamsResult);
+  const { filters, results, totalResults, resources, searchQuery, cardLayout } =
+    await getPageData(locale, searchParamsResult);
 
+  if (searchQuery.widgetId) {
+    trackUmamiEvent(UmamiEvent.WidgetSearch);
+  }
   return (
     <PageWrapper
       cookies={cookieList}
@@ -245,13 +241,12 @@ export default async function SearchPage({
         coords: searchQuery.coordinates?.join(',') ?? '',
         currentPage:
           typeof searchParamsResult.page === 'string'
-            ? searchParamsResult.page
-            : '1',
+            ? parseInt(searchParamsResult.page, 10) || 1
+            : 1,
         device,
         distance: searchQuery.distance ?? '',
         filters,
         location: searchQuery.location ?? '',
-        noResults,
         query: searchQuery.query ?? '',
         query_label: searchQuery.queryLabel ?? '',
         query_type: searchQuery.queryType ?? '',

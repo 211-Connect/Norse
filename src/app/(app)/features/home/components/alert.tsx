@@ -28,8 +28,9 @@ type AlertProps = {
 export default function Alert({ itemsDirection }: AlertProps) {
   const appConfig = useAppConfig();
 
-  if (!appConfig?.alert || Object.keys(appConfig.alert).length === 0)
+  if (!appConfig.alert?.text) {
     return null;
+  }
 
   const variant = appConfig?.alert?.variant || 'destructive';
 

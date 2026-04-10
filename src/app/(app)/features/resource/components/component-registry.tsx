@@ -34,6 +34,7 @@ import {
 } from './resource-components';
 import { CustomAttributeConfig } from '../types/layout-config';
 import { AppConfig } from '@/types/appConfig';
+import { OrganizationUrlComponent } from './resource-components/organization-url';
 
 export interface ResourceComponentProps {
   resource: Resource;
@@ -55,6 +56,7 @@ export const componentRegistry: Record<
   [ResourceComponentId.HOURS]: HoursComponent,
   [ResourceComponentId.PHONE_NUMBERS]: PhoneNumbersComponent,
   [ResourceComponentId.WEBSITE]: WebsiteComponent,
+  [ResourceComponentId.ORGANIZATION_URL]: OrganizationUrlComponent,
   [ResourceComponentId.EMAIL]: EmailComponent,
   [ResourceComponentId.LANGUAGES]: LanguagesComponent,
   [ResourceComponentId.INTERPRETATION_SERVICES]:
@@ -119,6 +121,11 @@ export function shouldComponentRender(
       return Boolean(resource.phoneNumbers && resource.phoneNumbers.length > 0);
     case ResourceComponentId.WEBSITE:
       return Boolean(resource.website);
+    case ResourceComponentId.ORGANIZATION_URL:
+      return Boolean(
+        resource.organizationUrl &&
+        resource.organizationUrl !== resource.website,
+      );
     case ResourceComponentId.EMAIL:
       return Boolean(resource.email);
     case ResourceComponentId.LANGUAGES:

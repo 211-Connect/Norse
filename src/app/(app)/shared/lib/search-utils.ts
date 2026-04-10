@@ -2,7 +2,6 @@ import { bboxPolygon } from '@turf/bbox-polygon';
 import type { Polygon } from 'geojson';
 import { BBox } from '@/types/resource';
 import { FindResourcesQuery } from '../services/search-service';
-import { isTaxonomyCode } from '../utils/is-taxonomy-code';
 
 /**
  * Check if advanced geospatial filtering is enabled via feature flag
@@ -80,6 +79,7 @@ export interface SearchRequestParams {
  */
 export function buildSearchRequest(
   searchStore: FindResourcesQuery,
+  hybridSemanticSearchEnabled: boolean | undefined,
 ): SearchRequestParams {
   const hasLocation = searchStore.coordinates?.length === 2;
   const useBoundary = shouldUseBoundarySearch(
@@ -97,13 +97,11 @@ export function buildSearchRequest(
     baseParams.query_label = searchStore.queryLabel.trim();
   }
 
-  // Derive query type using the same logic as findResources/createUrlParamsForSearch
-  const derivedQueryType = deriveQueryType(
-    searchStore.query,
-    searchStore.queryType,
-    false,
-  );
-  baseParams.query_type = derivedQueryType;
+  baseParams.query_type = deriveQueryType({
+    originQueryType: searchStore.queryType,
+    query: searchStore.query,
+    hybridSemanticSearchEnabled,
+  });
 
   if (hasLocation && searchStore.location?.trim()) {
     baseParams.location = searchStore.location.trim();
@@ -153,86 +151,44 @@ export enum QueryType {
   MoreLikeThis = 'more_like_this',
 }
 
-/**
- * Fuzzy-match a raw string to a QueryType by checking if the string
- * includes one of the known query type values.
- * e.g. "textt" → QueryType.Text, "organization!" → QueryType.Organization
- */
-function fuzzyMatchQueryType(type: string | undefined): QueryType | undefined {
-  if (!type) return undefined;
-  return Object.values(QueryType).find((qt) => type.includes(qt)) as
-    | QueryType
-    | undefined;
+const CODE_PATTERN = /^[a-zA-Z]{1,2}(-\d{1,4}([.-]\d{1,4}){0,3})?$/i;
+const JSON_PATTERN = /^\{.*\}$/;
+
+function isTaxonomyQuery(value: string | undefined): boolean {
+  if (!value) {
+    return false;
+  }
+
+  if (JSON_PATTERN.test(value)) {
+    try {
+      const parsed = JSON.parse(value);
+      return parsed && typeof parsed === 'object';
+    } catch {
+      return false;
+    }
+  }
+
+  return value.split(',').every((part) => CODE_PATTERN.test(part));
 }
 
-/**
- * Determines the correct query type based on the query string.
- *
- * Logic:
- * 1. If query matches a taxonomy code pattern → 'taxonomy'
- * 2. If storedType is a valid query type → storedType
- * 3. Otherwise → 'text' (default)
- *
- * This ensures we never send invalid query types to the API.
- *
- * @param query - The search query string
- * @param storedType - The query type from state (may be invalid user input)
- * @param hybridSemanticSearchEnabled - When true, 'text' falls back to 'hybrid'
- * @returns A valid query type: 'taxonomy', 'hybrid', 'text', 'organization', or 'more_like_this'
- */
-export function deriveQueryType(
-  query: string | undefined,
-  storedType: string | undefined,
-  hybridSemanticSearchEnabled?: boolean,
-): QueryType {
-  const normalizedQuery = query?.trim();
+type DeriveQueryTypeArgs = {
+  hybridSemanticSearchEnabled: boolean | undefined;
+  originQueryType: string | undefined;
+  query: string | undefined;
+};
 
-  // Check if query is a taxonomy code (highest priority)
-  // Handle JSON OR syntax, Standard codes, and comma-separated codes
-  if (normalizedQuery) {
-    // 1. Check JSON OR syntax: {"OR":["code1","code2",...]}
-    // Advanced queries are assumed to be taxonomy
-    if (normalizedQuery.startsWith('{')) {
-      try {
-        const parsed = JSON.parse(normalizedQuery);
-        if (parsed.OR && Array.isArray(parsed.OR)) {
-          return QueryType.Taxonomy;
-        }
-        if (parsed.AND && Array.isArray(parsed.AND)) {
-          return QueryType.Taxonomy;
-        }
-      } catch {
-        // Not valid JSON, continue to other checks
-      }
-    }
-
-    // 2. Check if entire query is a single taxonomy code
-    //    (handles codes with internal commas like Standard:00015795,015)
-    if (isTaxonomyCode(normalizedQuery)) {
-      return QueryType.Taxonomy;
-    }
-
-    // 3. Split by comma and check if all parts are taxonomy codes
-    const parts = normalizedQuery.split(',').map((part) => part.trim());
-    const allAreTaxonomyCodes = parts.every(
-      (part) => part.length > 0 && isTaxonomyCode(part),
-    );
-
-    if (allAreTaxonomyCodes) {
-      return QueryType.Taxonomy;
-    }
+export function deriveQueryType({
+  hybridSemanticSearchEnabled,
+  originQueryType,
+  query,
+}: DeriveQueryTypeArgs): QueryType {
+  if (originQueryType === 'taxonomy') {
+    return QueryType.Taxonomy;
   }
 
-  // Validate and use storedType if it's valid, but never propagate 'taxonomy'
-  // from state — taxonomy must always be re-detected from the query above.
-  // Use fuzzy matching so slightly malformed values like "textt" or "organization!" still resolve.
-  const trimmedType = storedType?.trim();
-  const resolvedType = fuzzyMatchQueryType(trimmedType);
-
-  if (resolvedType && resolvedType !== QueryType.Taxonomy) {
-    return resolvedType;
+  if (isTaxonomyQuery(query)) {
+    return QueryType.Taxonomy;
   }
 
-  // Default to 'hybrid' when enabled, otherwise 'text'
   return hybridSemanticSearchEnabled ? QueryType.Hybrid : QueryType.Text;
 }

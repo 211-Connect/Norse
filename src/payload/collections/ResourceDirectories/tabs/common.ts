@@ -1,21 +1,21 @@
 import { Tab } from 'payload';
 import {
-  hasLayoutFieldAccess,
-  hasResourceNavigationFieldAccess,
-} from '../../Users/access/permissions';
+  superAdminAccess,
+  superAdminOrSupportOrTenantAccess,
+} from '../../Users/access/roles';
 import { generateUrlFields } from '@/payload/fields/urlField';
 
 export const common: Tab = {
   name: 'common',
+  label: 'Alerts',
   fields: [
     {
       type: 'array',
       name: 'alert',
-      localized: true,
       maxRows: 1,
       access: {
-        create: hasResourceNavigationFieldAccess,
-        update: hasResourceNavigationFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
       fields: [
         {
@@ -25,10 +25,12 @@ export const common: Tab = {
               name: 'text',
               type: 'textarea',
               required: true,
+              localized: true,
             },
             {
               name: 'buttonText',
               type: 'text',
+              localized: true,
             },
           ],
         },
@@ -52,8 +54,8 @@ export const common: Tab = {
       type: 'text',
       localized: true,
       access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
+        create: superAdminAccess,
+        update: superAdminAccess,
       },
       admin: {
         placeholder: 'Provided by',
@@ -68,8 +70,8 @@ export const common: Tab = {
         plural: 'Data Providers',
       },
       access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
+        create: superAdminAccess,
+        update: superAdminAccess,
       },
       fields: [
         {

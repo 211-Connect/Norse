@@ -34,6 +34,7 @@ COPY --from=builder --chown=nextjs:nodejs /opt/norse/build/src ./src
 COPY --from=builder --chown=nextjs:nodejs /opt/norse/build/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /opt/norse/build/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /opt/norse/build/public ./public
+COPY --from=builder --chown=nextjs:nodejs /opt/norse/build/bin ./bin
 USER nextjs
 ENV PAYLOAD_CONFIG_PATH=src/payload/payload-config.ts
 ENV HOME=/opt/norse/app

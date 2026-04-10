@@ -17,8 +17,7 @@ export function UmamiScript({
       src={scriptUrl}
       data-website-id={websiteId}
       nonce={nonce}
-      defer
-      async
+      strategy="beforeInteractive"
     />
   );
 }

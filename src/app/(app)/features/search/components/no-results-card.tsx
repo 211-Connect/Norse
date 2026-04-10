@@ -18,7 +18,7 @@ import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 
-export function NoResultsCard({ showAltSubtitle }) {
+export function NoResultsCard() {
   const { t } = useTranslation('page-search');
   const appConfig = useAppConfig();
   const searchParams = useSearchParams();
@@ -43,12 +43,10 @@ export function NoResultsCard({ showAltSubtitle }) {
 
       <CardFooter className="flex flex-col items-center justify-center gap-2">
         <p className="font-semibold">
-          {!showAltSubtitle
-            ? t('no_results.subtitle')
-            : appConfig?.contact?.number
-              ? t('no_results.need_help')
-              : appConfig.search.texts?.noResultsFallbackText ||
-                t('no_results.alt_subtitle')}
+          {appConfig?.contact?.number
+            ? t('no_results.need_help')
+            : appConfig.search.texts?.noResultsFallbackText ||
+              t('no_results.alt_subtitle')}
         </p>
 
         {appConfig?.contact?.number && (

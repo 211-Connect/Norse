@@ -12,7 +12,7 @@ export const warmCache: TaskConfig<'warmCache'> = {
   slug: 'warmCache',
   schedule: [
     {
-      cron: '0 * * * *', // Every hour at minute 0
+      cron: '0 0 * * *', // Every day at midnight
       queue: 'cache',
     },
   ],

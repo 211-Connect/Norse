@@ -26,5 +26,6 @@
   "report": "Сообщить",
   "providing_organization": "Предоставляющая организация",
   "interpretation_services": "Услуги перевода",
-  "other_information": "Прочая информация"
+  "other_information": "Прочая информация",
+  "organization_url": "URL организации"
 }

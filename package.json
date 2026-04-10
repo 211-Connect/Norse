@@ -16,7 +16,8 @@
     "test:e2e": "npx playwright test",
     "test:e2e:favorites": "npx playwright test --project=favorites",
     "test:e2e:translations": "npx playwright test --project=translations",
-    "test:e2e:search-taxonomy": "npx playwright test --project=search-taxonomy"
+    "test:e2e:search-taxonomy": "npx playwright test --project=search-taxonomy",
+    "umami-setup": "dotenv -e .env -- tsx bin/setup-umami.ts"
   },
   "engines": {
     "node": "24.x"
@@ -34,7 +35,6 @@
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
     "autoprefixer": "^10.4.21",
-    "dotenv-cli": "^11.0.0",
     "eslint": "^8.57.1",
     "eslint-config-next": "^15.5.2",
     "eslint-config-prettier": "8.8.0",
@@ -48,7 +48,6 @@
     "prettier-plugin-tailwindcss": "^0.7.2",
     "tailwindcss": "^3.4.17",
     "tailwindcss-animate": "^1.0.7",
-    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },
   "dependencies": {
@@ -88,6 +87,8 @@
     "cross-env": "^10.1.0",
     "dayjs": "^1.11.20",
     "dotenv": "^16.5.0",
+    "dotenv-cli": "^11.0.0",
+    "tsx": "^4.21.0",
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
     "html-react-parser": "^5.2.6",
@@ -115,6 +116,7 @@
     "react-dom": "^19.2.3",
     "react-i18next": "^15.7.3",
     "react-to-print": "^3.1.1",
+    "recharts": "^3.8.0",
     "sharp": "0.34.5",
     "sonner": "^2.0.7",
     "tailwind-merge": "^2.6.0",

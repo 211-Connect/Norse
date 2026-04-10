@@ -50,6 +50,7 @@ export const withCache = async <T>(
   key: CacheKey,
   fetchFunction: () => Promise<T>,
   config: CacheConfig = DEFAULT_CACHE_CONFIG,
+  shouldCache: (value: T) => boolean = () => true,
 ): Promise<T | null> => {
   const {
     redis = DEFAULT_CACHE_CONFIG.redis,
@@ -104,7 +105,7 @@ export const withCache = async <T>(
 
   const value = await fetchFunction();
 
-  if (value != null) {
+  if (value != null && shouldCache(value)) {
     const serialized = JSON.stringify(value);
 
     if (redis) {

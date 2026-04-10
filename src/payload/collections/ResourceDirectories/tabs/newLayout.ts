@@ -1,5 +1,5 @@
 import { Tab } from 'payload';
-import { hasLayoutFieldAccess } from '../../Users/access/permissions';
+import { superAdminAccess } from '../../Users/access/roles';
 import { generateUrlFields } from '@/payload/fields/urlField';
 
 export const newLayout: Tab = {
@@ -10,8 +10,8 @@ export const newLayout: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
+        create: superAdminAccess,
+        update: superAdminAccess,
       },
     },
     {
@@ -27,8 +27,8 @@ export const newLayout: Tab = {
             },
           },
           access: {
-            create: hasLayoutFieldAccess,
-            update: hasLayoutFieldAccess,
+            create: superAdminAccess,
+            update: superAdminAccess,
           },
         },
         {
@@ -41,8 +41,8 @@ export const newLayout: Tab = {
             },
           },
           access: {
-            create: hasLayoutFieldAccess,
-            update: hasLayoutFieldAccess,
+            create: superAdminAccess,
+            update: superAdminAccess,
           },
         },
       ],
@@ -55,8 +55,8 @@ export const newLayout: Tab = {
           type: 'upload',
           relationTo: 'tenant-media',
           access: {
-            create: hasLayoutFieldAccess,
-            update: hasLayoutFieldAccess,
+            create: superAdminAccess,
+            update: superAdminAccess,
           },
         },
         {
@@ -64,8 +64,8 @@ export const newLayout: Tab = {
           type: 'upload',
           relationTo: 'tenant-media',
           access: {
-            create: hasLayoutFieldAccess,
-            update: hasLayoutFieldAccess,
+            create: superAdminAccess,
+            update: superAdminAccess,
           },
         },
       ],
@@ -77,15 +77,14 @@ export const newLayout: Tab = {
         {
           name: 'options',
           type: 'array',
-          localized: true,
           labels: {
             singular: 'Callout',
             plural: 'Callouts',
           },
           maxRows: 4,
           access: {
-            create: hasLayoutFieldAccess,
-            update: hasLayoutFieldAccess,
+            create: superAdminAccess,
+            update: superAdminAccess,
           },
           fields: [
             {
@@ -101,10 +100,12 @@ export const newLayout: Tab = {
             },
             {
               name: 'description',
+              localized: true,
               type: 'textarea',
             },
             {
               name: 'title',
+              localized: true,
               type: 'text',
             },
             ...generateUrlFields(),
@@ -115,8 +116,8 @@ export const newLayout: Tab = {
           type: 'text',
           localized: true,
           access: {
-            create: hasLayoutFieldAccess,
-            update: hasLayoutFieldAccess,
+            create: superAdminAccess,
+            update: superAdminAccess,
           },
         },
       ],

@@ -9,17 +9,12 @@ export function cn(...inputs: ClassValue[]) {
 export type Coords = [number, number]; // [longitude, latitude]
 
 /**
- *
- * @param coords1
- * @param coords2
+ * Calculates the distance between two coordinate pairs using the Haversine formula.
  * @see https://stackoverflow.com/questions/18883601/function-to-calculate-distance-between-two-coordinates
- * @returns
  */
 export function distanceBetweenCoordsInKm(coords1: Coords, coords2: Coords) {
-  const M = 0.621371; // Miles in a kilometer
-
   const R = 6371; // Radius of the earth in km
-  const dLat = deg2rad(coords2[1] - coords1[1]); // deg2rad below
+  const dLat = deg2rad(coords2[1] - coords1[1]);
   const dLon = deg2rad(coords2[0] - coords1[0]);
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
@@ -28,9 +23,13 @@ export function distanceBetweenCoordsInKm(coords1: Coords, coords2: Coords) {
       Math.sin(dLon / 2) *
       Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  const d = R * c; // Distance in km
+  return R * c;
+}
 
-  return d;
+const KM_TO_MILES = 0.621371;
+
+export function distanceBetweenCoordsInMiles(coords1: Coords, coords2: Coords) {
+  return distanceBetweenCoordsInKm(coords1, coords2) * KM_TO_MILES;
 }
 
 function deg2rad(deg: number) {
@@ -46,27 +45,14 @@ export function getGoogleMapsDestinationUrl(
   originCoords: number[] | undefined | null,
   destinationCoords: number[] | undefined | null,
 ) {
-  const getOrigin = () => {
-    if (originCoords) {
-      return originCoords?.slice()?.reverse()?.join(',');
-    }
+  const origin = originCoords?.slice()?.reverse()?.join(',') ?? '';
+  const destination = destinationCoords?.slice()?.reverse()?.join(',') ?? '';
 
-    return '';
-  };
-
-  const getDestination = () => {
-    if (destinationCoords) {
-      return destinationCoords?.slice()?.reverse()?.join(',');
-    }
-
-    return '';
-  };
-
-  if (!getOrigin()) {
-    return `https://www.google.com/maps/dir/?api=1&destination=${getDestination()}`;
-  } else {
-    return `https://www.google.com/maps/dir/?api=1&origin=${getOrigin()}&destination=${getDestination()}`;
+  if (!origin) {
+    return `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
   }
+
+  return `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}`;
 }
 
 export function getScrollbarWidth(): number {
@@ -78,13 +64,9 @@ export function getScrollbarWidth(): number {
 
   if (!hasVerticalScrollbar && !hasHorizontalScrollbar) return 0;
 
-  // dynamiczny pomiar (potencjalna szerokość scrollbara)
   const scrollDiv = document.createElement('div');
-  scrollDiv.style.width = '100px';
-  scrollDiv.style.height = '100px';
-  scrollDiv.style.overflow = 'scroll';
-  scrollDiv.style.position = 'absolute';
-  scrollDiv.style.top = '-9999px';
+  scrollDiv.style.cssText =
+    'width:100px;height:100px;overflow:scroll;position:absolute;top:-9999px';
 
   document.body.appendChild(scrollDiv);
 

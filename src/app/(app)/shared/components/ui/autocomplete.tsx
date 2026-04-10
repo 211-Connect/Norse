@@ -34,6 +34,7 @@ export type AutocompleteOption = {
   value: string;
   group?: string;
   Icon?: ComponentType<{ className?: string }>;
+  queryType?: string;
 };
 
 type AutocompleteOptionWithIndex = AutocompleteOption & { index: number };
@@ -44,7 +45,7 @@ export type AutocompleteProps = {
   options?: AutocompleteOption[];
   className?: string;
   onInputChange?: (value: string) => void;
-  onValueChange?: (value: string) => void;
+  onValueChange?: (value: string, option?: AutocompleteOption) => void;
   value?: string;
   defaultValue?: string;
   autoSelectIndex?: number;
@@ -204,7 +205,7 @@ export function Autocomplete(props: AutocompleteProps) {
   }, []);
 
   const handleValueSelect = useCallback(
-    (value: string) => {
+    (value: string, option?: AutocompleteOption) => {
       return (e?: MouseEvent) => {
         if (e) {
           e.preventDefault();
@@ -216,9 +217,10 @@ export function Autocomplete(props: AutocompleteProps) {
         setCurrentIndex(-1);
         onInputChange?.(value);
         setLastManualInput(value);
+        onValueChange?.(value, option);
       };
     },
-    [setValue, onInputChange],
+    [setValue, onInputChange, onValueChange],
   );
 
   const handleInputChange = useCallback(
@@ -315,6 +317,7 @@ export function Autocomplete(props: AutocompleteProps) {
           if (currentOption) {
             onInputChange?.(currentOption.value);
             setLastManualInput(currentOption.value);
+            onValueChange?.(currentOption.value, currentOption);
           }
           setCurrentIndex(-1);
           nextIndex = -1;
@@ -325,12 +328,14 @@ export function Autocomplete(props: AutocompleteProps) {
           if (currentOption) {
             onInputChange?.(currentOption.value);
             setLastManualInput(currentOption.value);
+            onValueChange?.(currentOption.value, currentOption);
           } else if (autoSelectIndex != null) {
             const defaultOption = rest.options[autoSelectIndex];
             if (defaultOption) {
               onInputChange?.(defaultOption.value);
               setValue(defaultOption.value);
               setLastManualInput(defaultOption.value);
+              onValueChange?.(defaultOption.value, defaultOption);
             }
           }
           setCurrentIndex(-1);
@@ -342,6 +347,7 @@ export function Autocomplete(props: AutocompleteProps) {
           if (currentOption) {
             onInputChange?.(currentOption.value);
             setLastManualInput(currentOption.value);
+            onValueChange?.(currentOption.value, currentOption);
           } else if (autoSelectIndex != null) {
             e.preventDefault();
             const defaultOption = rest.options[autoSelectIndex];
@@ -349,6 +355,7 @@ export function Autocomplete(props: AutocompleteProps) {
               onInputChange?.(defaultOption.value);
               setValue(defaultOption.value);
               setLastManualInput(defaultOption.value);
+              onValueChange?.(defaultOption.value, defaultOption);
             }
             const form = (e.target as HTMLElement).closest('form');
             if (form) {
@@ -428,6 +435,7 @@ export function Autocomplete(props: AutocompleteProps) {
       lastManualInput,
       popperElement,
       uniqueId,
+      onValueChange,
     ],
   );
 
@@ -456,9 +464,9 @@ export function Autocomplete(props: AutocompleteProps) {
   const handleBlur = useCallback(
     (e) => {
       if (autoSelectOnBlurIndex != null && !selectedOption) {
-        const selectedOption = options[0]?.[1]?.[autoSelectOnBlurIndex]?.value;
-        if (selectedOption) {
-          handleValueSelect(selectedOption)();
+        const selectedOptionObj = options[0]?.[1]?.[autoSelectOnBlurIndex];
+        if (selectedOptionObj) {
+          handleValueSelect(selectedOptionObj.value, selectedOptionObj)();
         }
       }
 
@@ -594,6 +602,7 @@ export function Autocomplete(props: AutocompleteProps) {
                           onMouseDown={
                             handleValueSelect(
                               option.value,
+                              option,
                             ) as unknown as MouseEventHandler
                           }
                         >

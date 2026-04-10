@@ -5,7 +5,7 @@ import { buildConfig, Endpoint } from 'payload';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
 import { postgresAdapter } from '@payloadcms/db-postgres';
 import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant';
-import { Config } from './payload-types';
+import { Config, Tenant } from './payload-types';
 import { s3Storage } from '@payloadcms/storage-s3';
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer';
 
@@ -14,6 +14,7 @@ import { Tenants } from './collections/Tenants';
 import { TenantMedia } from './collections/TenantMedia';
 import { ResourceDirectories } from './collections/ResourceDirectories';
 import { OrchestrationConfig } from './collections/OrchestrationConfig';
+import { Analytics } from './collections/Analytics';
 import { defaultLocale, locales } from './i18n/locales';
 import { getUserTenantIDs } from './utilities/getUserTenantIDs';
 
@@ -23,10 +24,15 @@ import { sendGridTransport } from './utilities/sendgridAdapter';
 import { clearCache } from './endpoints/clearCache';
 import { translateEndpoint } from './endpoints/translate';
 import { duplicateTenant } from './endpoints/duplicateTenant';
+import { umamiProxy } from './endpoints/umamiProxy';
 import { translate } from './jobs/translate';
 import { translateTopics } from './jobs/translateTopics';
 import { warmCache } from './jobs/warmCache';
 import { getNumberFromString } from '@/utils/getNumberFromString';
+import {
+  findTenantByHost,
+  findTenantById,
+} from './collections/Tenants/actions';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -35,6 +41,7 @@ const endpoints: Endpoint[] = [
   clearCache,
   translateEndpoint,
   duplicateTenant,
+  umamiProxy,
   seedEndpoint,
 ];
 
@@ -49,6 +56,7 @@ const config = buildConfig({
     TenantMedia,
     ResourceDirectories,
     OrchestrationConfig,
+    Analytics,
   ],
   jobs: {
     tasks: [translateTopics, translate, warmCache],
@@ -131,38 +139,40 @@ const config = buildConfig({
       locales,
       req: { user, payload, host, url },
     }) => {
+      const mapTenantLocales = (tenant: Tenant) =>
+        tenant?.enabledLocales?.map((code: string) => ({
+          code,
+          label: code,
+        })) || locales;
+
+      const extractIdFromUrl = (url: string) => {
+        const urlWithoutQuery = url.split('?')[0];
+        return urlWithoutQuery.split('/').pop() || '';
+      };
+
+      // No user - return default locale only
       if (!user) {
         return [{ code: defaultLocale, label: defaultLocale }];
       }
 
+      // Super admin - return all locales or tenant-specific ones for resource directories
       if (isSuperAdmin(user)) {
+        if (url?.includes('resource-directories')) {
+          const id = extractIdFromUrl(url);
+          if (id) {
+            const tenant = await findTenantById(id);
+            if (tenant) {
+              return mapTenantLocales(tenant);
+            }
+          }
+        }
         return locales;
       }
 
-      const {
-        docs: [resourceDirectory],
-      } = await payload.find({
-        collection: 'resource-directories',
-        depth: 1,
-        where: {
-          and: [
-            { 'tenant.trustedDomains.domain': { equals: host } },
-            { 'tenant.services.resourceDirectory': { equals: true } },
-          ],
-        },
-        limit: 1,
-        pagination: false,
-      });
-
-      if (
-        resourceDirectory?.tenant &&
-        typeof resourceDirectory.tenant === 'object'
-      ) {
-        const tenant = resourceDirectory.tenant;
-        return tenant.enabledLocales.map((code: string) => ({
-          code,
-          label: code,
-        }));
+      // Regular user - get locales from tenant based on host
+      const tenant = await findTenantByHost(host);
+      if (tenant && typeof tenant === 'object') {
+        return mapTenantLocales(tenant);
       }
 
       return locales;
@@ -230,21 +240,6 @@ const config = buildConfig({
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
   endpoints,
-  onInit: async (payload) => {
-    payload.logger.info('Queueing warmCache task on startup...');
-    try {
-      const job = await payload.jobs.queue({
-        task: 'warmCache',
-        input: {},
-        queue: 'cache',
-      });
-      payload.logger.info(
-        `warmCache task queued successfully with job ID: ${job.id}`,
-      );
-    } catch (error) {
-      payload.logger.error('Failed to queue warmCache task on startup:', error);
-    }
-  },
 });
 
 export default config;

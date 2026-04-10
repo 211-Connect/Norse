@@ -109,8 +109,8 @@ test.describe('Language Persistence And Results Button', () => {
     await switchLanguage(page, 'es');
 
     await performSearch(page, {
-      query: 'Necesito comida',
-      query_label: 'Necesito comida',
+      query: 'comida',
+      query_label: 'comida',
       query_type: 'text',
     });
 

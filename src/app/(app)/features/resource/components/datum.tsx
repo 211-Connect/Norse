@@ -19,6 +19,7 @@ export interface DatumProps {
   size?: 'sm' | 'md' | null;
   shouldParseHtml?: boolean;
   className?: string;
+  onClick?: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void;
 }
 
 export function Datum({
@@ -35,13 +36,17 @@ export function Datum({
   size = 'sm',
   shouldParseHtml = true,
   className,
+  onClick,
 }: DatumProps) {
   const generatedId = id ?? title?.replace(/\s+/g, '-').toLowerCase();
   const parsedDescription =
     description && shouldParseHtml ? parseHtml(description) : description;
+  const descriptionAs =
+    shouldParseHtml && description !== parsedDescription ? 'div' : undefined;
 
   return (
     <div
+      onClick={onClick}
       className={cn(
         'flex flex-row whitespace-pre-line py-2',
         {
@@ -70,6 +75,7 @@ export function Datum({
             size={size}
             url={url}
             urlTarget={urlTarget}
+            as={descriptionAs}
           >
             {parsedDescription}
           </Typography>
@@ -93,6 +99,7 @@ export function Datum({
             size={size}
             url={url}
             urlTarget={urlTarget}
+            as={descriptionAs}
           >
             {parsedDescription}
           </Typography>

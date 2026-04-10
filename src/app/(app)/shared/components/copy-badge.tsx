@@ -8,7 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/app/(app)/shared/components/ui/tooltip';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { useTranslation } from 'react-i18next';
 
@@ -21,6 +21,7 @@ type CopyBadgeProps = {
   target?: string;
   className?: string;
   truncate?: boolean;
+  onClick?: (e: React.MouseEvent<HTMLAnchorElement | HTMLDivElement>) => void;
 };
 
 export function CopyBadge({
@@ -30,6 +31,7 @@ export function CopyBadge({
   target,
   truncate = false,
   className,
+  onClick,
 }: CopyBadgeProps) {
   const { t } = useTranslation('common');
   const { copied, copy } = useClipboard({ timeout: 500 });
@@ -45,6 +47,7 @@ export function CopyBadge({
     <WrapperComponent
       href={href!}
       target={target}
+      onClick={onClick}
       className={cn(
         'group overflow-hidden text-xs font-semibold hover:underline',
         truncate && 'flex items-center gap-1',
