@@ -2,7 +2,7 @@
 
 import { TriangleAlert } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 
 import { useAppConfig } from '../hooks/use-app-config';
@@ -43,12 +43,7 @@ export function ReportButton({
   const feedbackUrlValue = appConfig?.contact?.feedbackUrl;
   const linkText = customText || t('report');
 
-  const baseHref = useMemo(
-    () => buildFeedbackHref(feedbackUrlValue),
-    [feedbackUrlValue],
-  );
-
-  const [href, setHref] = useState(baseHref);
+  const [href, setHref] = useState<string | null>(null);
 
   useEffect(() => {
     if (!feedbackUrlValue) {
@@ -70,19 +65,6 @@ export function ReportButton({
       href={finalHref}
       target="_blank"
       aria-label={`${linkText}${NEW_TAB_WARNING}`}
-      onClick={(e) => {
-        const clientHref = buildFeedbackHref(
-          feedbackUrlValue,
-          window.location.href,
-        );
-
-        if (!clientHref) {
-          return;
-        }
-
-        e.preventDefault();
-        window.open(clientHref, '_blank', 'noopener,noreferrer');
-      }}
       className={cn(
         buttonVariants({ variant: 'outline' }),
         'flex gap-1',

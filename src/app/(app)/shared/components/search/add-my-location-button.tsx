@@ -6,12 +6,14 @@ import { Ref } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '../ui/button';
+import { SEARCH_DIALOG_ID } from '../../lib/constants';
+
 export interface AddMyLocationButtonProps {
   className?: string;
   variant?: 'link' | 'ghost';
   location?: string;
   onClick?: () => void;
-  dialogId?: string;
+  /** Optional ref for focus return when a parent dialog closes (e.g. main search layout). */
   buttonRef?: Ref<HTMLButtonElement>;
 }
 
@@ -20,7 +22,6 @@ export function AddMyLocationButton({
   location,
   variant = 'ghost',
   onClick = () => {},
-  dialogId,
   buttonRef,
 }: AddMyLocationButtonProps) {
   const { t } = useTranslation('common');
@@ -42,7 +43,7 @@ export function AddMyLocationButton({
       )}
       variant={variant}
       type="button"
-      aria-controls={dialogId}
+      aria-controls={SEARCH_DIALOG_ID}
       aria-haspopup="dialog"
       aria-label={buttonLabel}
     >

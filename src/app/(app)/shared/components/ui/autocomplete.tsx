@@ -19,6 +19,8 @@ import {
   useEffect,
   useRef,
   MouseEventHandler,
+  useId,
+  type ReactNode,
 } from 'react';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
@@ -48,6 +50,8 @@ export type AutocompleteOption = {
 type AutocompleteOptionWithIndex = AutocompleteOption & { index: number };
 
 export type AutocompleteProps = {
+  /** Visually hidden label wired to the combobox input (required for a11y). */
+  readerLabel: ReactNode;
   Icon?: ComponentType<{ className?: string }>;
   inputProps?: InputProps;
   options?: AutocompleteOption[];
@@ -62,7 +66,8 @@ export type AutocompleteProps = {
   defaultOpen?: boolean;
   blurOnOptionsInteraction?: boolean;
   clearButtonLabel?: string;
-  getSuggestionsStatusMessage?: (count: number) => string;
+  /** Polite live-region text when the list is open (e.g. translated suggestion count). */
+  suggestionsStatusMessage?: string;
   enterKeyBehavior?: 'submit-form' | 'focus-target';
   enterKeyFocusTargetId?: string;
 };
@@ -94,6 +99,7 @@ const useMouseMovement = () => {
 
 export function Autocomplete(props: AutocompleteProps) {
   const {
+    readerLabel,
     inputProps,
     Icon,
     className,
@@ -107,11 +113,15 @@ export function Autocomplete(props: AutocompleteProps) {
     defaultOpen = false,
     blurOnOptionsInteraction = false,
     clearButtonLabel = 'Clear',
-    getSuggestionsStatusMessage,
+    suggestionsStatusMessage: suggestionsStatusMessageProp,
     enterKeyBehavior = 'submit-form',
     enterKeyFocusTargetId,
     ...rest
   } = props;
+
+  const readerLabelId = useId();
+  const fallbackInputId = useId();
+  const effectiveInputId = inputProps?.id ?? fallbackInputId;
 
   const isMouseMoving = useMouseMovement();
   const [lastManualInput, setLastManualInput] = useState(
@@ -198,7 +208,7 @@ export function Autocomplete(props: AutocompleteProps) {
   const totalOptions = rest.options?.length ?? 0;
   const suggestionsStatusMessage =
     open && totalOptions > 0
-      ? (getSuggestionsStatusMessage?.(totalOptions) ??
+      ? (suggestionsStatusMessageProp ??
         `${
           totalOptions === 1 ? '1 suggestion' : `${totalOptions} suggestions`
         } available. Use the up and down arrow keys to review.`)
@@ -570,6 +580,13 @@ export function Autocomplete(props: AutocompleteProps) {
       ref={wrapperElementRef}
     >
       <div className="relative w-full">
+        <label
+          className="sr-only"
+          htmlFor={effectiveInputId}
+          id={readerLabelId}
+        >
+          {readerLabel}
+        </label>
         {Icon ? (
           <Icon
             className="absolute left-2 top-2 size-4 shrink-0 text-primary"
@@ -586,6 +603,7 @@ export function Autocomplete(props: AutocompleteProps) {
         </div>
         <Input
           {...inputProps}
+          id={effectiveInputId}
           className={cn(
             'h-auto w-full rounded-lg border p-0 px-[1.8rem] py-2 text-xs shadow-none focus:border-primary focus-visible:ring-0',
             inputProps?.className,
@@ -601,12 +619,7 @@ export function Autocomplete(props: AutocompleteProps) {
           aria-autocomplete="list"
           aria-controls={open ? uniqueId : undefined}
           aria-haspopup="listbox"
-          aria-label={
-            inputProps?.['aria-labelledby']
-              ? undefined
-              : (inputProps?.['aria-label'] ?? inputProps?.placeholder ?? '')
-          }
-          aria-labelledby={inputProps?.['aria-labelledby']}
+          aria-labelledby={readerLabelId}
           aria-owns={uniqueId}
           aria-expanded={open}
           aria-activedescendant={

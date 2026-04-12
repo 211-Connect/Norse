@@ -17,6 +17,7 @@ import { searchLocationAtom, searchTermAtom } from '../../../store/search';
 import { SEARCH_DIALOG_ID } from '../../../lib/constants';
 import { cn } from '../../../lib/utils';
 import { useAppConfig } from '../../../hooks/use-app-config';
+import { Button } from '../../ui/button';
 import { MainSearchLayoutContextProvider } from './main-search-layout-context';
 
 interface MainSearchLayoutProps {
@@ -63,9 +64,10 @@ export function MainSearchLayout({
     <MainSearchLayoutContextProvider>
       <div className="flex w-full flex-col items-start gap-2">
         <div className={cn('relative w-full', className)}>
-          <button
+          <Button
             ref={searchTriggerRef}
             type="button"
+            variant="outline"
             aria-controls={SEARCH_DIALOG_ID}
             aria-expanded={dialogOpened}
             aria-haspopup="dialog"
@@ -74,7 +76,9 @@ export function MainSearchLayout({
             })}
             data-testid="search-trigger"
             onClick={() => openSearchDialog('search')}
-            className="search-box flex min-h-10 w-full items-center rounded-lg border border-[#00000080] bg-white py-2 pl-[2.7rem] pr-3 text-left text-xs shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            className={cn(
+              'search-box flex h-auto min-h-10 w-full justify-start rounded-lg border-[#00000080] bg-white py-2 pl-[2.7rem] pr-3 text-left text-xs font-normal shadow-sm',
+            )}
           >
             <span
               className={cn(
@@ -86,7 +90,7 @@ export function MainSearchLayout({
             >
               {searchTriggerText}
             </span>
-          </button>
+          </Button>
           <SearchIcon
             className="absolute left-[15px] top-2 size-6 text-primary"
             aria-hidden="true"
@@ -97,7 +101,6 @@ export function MainSearchLayout({
           variant={addMyLocationButtonVariant}
           location={searchLocation}
           onClick={() => openSearchDialog('location')}
-          dialogId={SEARCH_DIALOG_ID}
         />
       </div>
       <SearchDialog

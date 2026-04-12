@@ -13,7 +13,7 @@ import {
 } from '../../store/search';
 import { useDebounce } from '../../hooks/use-debounce';
 import { useLocations } from '../../hooks/api/use-locations';
-import { useCallback, useContext, useId, useState } from 'react';
+import { useCallback, useContext, useMemo, useState } from 'react';
 import { cn } from '../../lib/utils';
 import { Autocomplete } from '../ui/autocomplete';
 import { DistanceSelect } from './distance-select';
@@ -60,7 +60,6 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
   } = props;
   const mode = props.mode || 'integrated';
   const isStandalone = mode === 'standalone';
-  const labelId = useId();
 
   const appConfig = useAppConfig();
   const { t } = useTranslation('common');
@@ -221,19 +220,29 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
     [setSearch, isStandalone],
   );
 
+  const suggestionsStatusMessage = useMemo(() => {
+    if (options.length === 0) {
+      return '';
+    }
+    return t('search.suggestions_status', {
+      count: options.length,
+      defaultValue:
+        options.length === 1
+          ? '1 suggestion available. Use the up and down arrow keys to review.'
+          : `${options.length} suggestions available. Use the up and down arrow keys to review.`,
+    });
+  }, [options.length, t]);
+
   return (
     <div className="location-box flex flex-col gap-4">
-      <label className="sr-only" htmlFor={inputId} id={labelId}>
-        {t('search.location_input_label', {
-          defaultValue: 'Search for a location',
-        })}
-      </label>
       <Autocomplete
         className={cn(className, 'search-box')}
+        readerLabel={t('search.location_input_label', {
+          defaultValue: 'Search for a location',
+        })}
         inputProps={{
           autoFocus: focusByDefault,
           id: inputId,
-          'aria-labelledby': labelId,
           className: validationError ? '!border-red-500' : undefined,
           placeholder:
             appConfig.search.texts?.locationInputPlaceholder ||
@@ -246,15 +255,7 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
         onValueChange={setSearchLocation}
         value={searchLocation}
         clearButtonLabel={t('call_to_action.remove')}
-        getSuggestionsStatusMessage={(count) =>
-          t('search.suggestions_status', {
-            count,
-            defaultValue:
-              count === 1
-                ? '1 suggestion available. Use the up and down arrow keys to review.'
-                : `${count} suggestions available. Use the up and down arrow keys to review.`,
-          })
-        }
+        suggestionsStatusMessage={suggestionsStatusMessage}
         optionsPopoverClassName={`mt-2 max-h-[min(18rem,calc(100dvh-18rem))] ${isStandalone ? 'sm:max-h-[min(20rem,calc(100dvh-16rem))]' : 'sm:max-h-[min(20rem,calc(100dvh-22rem))]'}`}
         autoSelectIndex={coords?.length === 2 ? undefined : 1}
         autoSelectOnBlurIndex={1}
