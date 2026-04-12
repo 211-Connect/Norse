@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 import mapLibreGl, {
+  AttributionControl,
   LngLatBounds,
   LngLatLike,
   Marker,
@@ -69,7 +70,16 @@ export function Map({
         zoom: zoom ?? 7,
         center: center ?? undefined,
         trackResize: true,
+        attributionControl: false,
       });
+      mapLibreMap.current.addControl(
+        new AttributionControl({
+          compact: true,
+          customAttribution:
+            '<a href="https://maplibre.org/" target="_blank">MapLibre</a>',
+        }),
+        'bottom-right',
+      );
 
       mapLibreMap.current.on('error', (e: any) => {
         log.error({ err: e.error ?? e }, 'MapLibre error');

@@ -74,7 +74,7 @@ export function MapContainer() {
         } as CSSProperties
       }
     >
-      <div className="h-full w-full overflow-hidden rounded-lg">
+      <div className="h-full w-full rounded-lg">
         <MapRenderer markers={mapMarkers} />
       </div>
     </div>
