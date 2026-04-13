@@ -12,7 +12,6 @@ import { SearchButton } from './search-button';
 import { Button } from '../ui/button';
 import { useFlag } from '../../hooks/use-flag';
 import { useAppConfig } from '../../hooks/use-app-config';
-import { useRouter } from 'next/navigation';
 import { useClientSearchParams } from '../../hooks/use-client-search-params';
 import { cn, getScrollbarWidth } from '../../lib/utils';
 import {
