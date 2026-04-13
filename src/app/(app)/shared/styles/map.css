@@ -7,3 +7,15 @@
 .maplibregl-popup-tip {
   display: none;
 }
+
+.maplibregl-ctrl-attrib-button:focus-visible,
+.maplibregl-ctrl-attrib summary:focus-visible {
+  outline: 3px solid #0f172a;
+  outline-offset: 2px;
+}
+
+.custom-marker:focus-visible {
+  outline: 3px solid #0f172a;
+  outline-offset: 2px;
+  border-radius: 9999px;
+}

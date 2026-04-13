@@ -1,7 +1,9 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { X } from 'lucide-react';
 import mapLibreGl, {
+  AttributionControl,
   LngLatBounds,
   LngLatLike,
   Marker,
@@ -48,10 +50,15 @@ export function Map({
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapLibreMap = useRef<any>(null);
   const _markers = useRef<maplibregl.Marker[]>([]);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const restoreFocusOnCloseRef = useRef(true);
 
   const [activePopup, setActivePopup] = useState<{
     element: HTMLElement;
     popup: any;
+    popupId: string;
+    label: string;
+    closePopup: () => void;
   } | null>(null);
   const [mapError, setMapError] = useState<string | null>(null);
 
@@ -75,7 +82,16 @@ export function Map({
         zoom: zoom ?? 7,
         center: center ?? undefined,
         trackResize: true,
+        attributionControl: false,
       });
+      mapLibreMap.current.addControl(
+        new AttributionControl({
+          compact: true,
+          customAttribution:
+            '<a href="https://maplibre.org/" target="_blank">MapLibre</a>',
+        }),
+        'bottom-right',
+      );
 
       mapLibreMap.current.on('error', (e: any) => {
         log.error({ err: e.error ?? e }, 'MapLibre error');
@@ -100,6 +116,14 @@ export function Map({
   }, [center, zoom]);
 
   useEffect(() => {
+    if (!activePopup) return;
+
+    requestAnimationFrame(() => {
+      closeButtonRef.current?.focus();
+    });
+  }, [activePopup]);
+
+  useEffect(() => {
     if (!mapLibreMap.current) return;
     const bounds = new LngLatBounds();
 
@@ -107,6 +131,10 @@ export function Map({
 
     _markers.current = markers.map((m) => {
       const marker = new Marker();
+      const markerElement = marker.getElement();
+      const markerLabel = m.label?.trim() || 'resource';
+      const popupId = `map-popup-${m.id}`;
+
       if (m.popup) {
         const popupDiv = document.createElement('div');
         popupDiv.style.minHeight = '200px';
@@ -117,14 +145,27 @@ export function Map({
         }).setDOMContent(popupDiv);
 
         popup.on('open', () => {
+          markerElement.setAttribute('aria-expanded', 'true');
           setActivePopup({
             element: popupDiv,
             popup: m.popup,
+            popupId,
+            label: markerLabel,
+            closePopup: () => {
+              restoreFocusOnCloseRef.current = true;
+              popup.remove();
+            },
           });
         });
 
         popup.on('close', () => {
+          markerElement.setAttribute('aria-expanded', 'false');
           setActivePopup(null);
+          if (restoreFocusOnCloseRef.current) {
+            requestAnimationFrame(() => {
+              markerElement.focus();
+            });
+          }
         });
 
         marker.setPopup(popup);
@@ -134,27 +175,58 @@ export function Map({
 
       if (hasValidCoordinates) {
         marker.setLngLat(m.coordinates!);
-
-        const markerElement = marker.getElement();
         if (marker.getPopup()) {
           markerElement.style.cursor = 'pointer';
-          markerElement.addEventListener('click', () => {
-            setTimeout(() => {
-              const listElement = document.getElementById(m.id);
-              listElement?.scrollIntoView();
-            });
-            _markers.current?.forEach((otherMarker) => {
-              if (otherMarker !== marker) {
-                const otherPopup = otherMarker.getPopup();
-                if (otherPopup && otherPopup.isOpen()) {
-                  otherPopup.remove();
-                }
-              }
-            });
-          });
+          markerElement.setAttribute('tabindex', '0');
+          markerElement.setAttribute('role', 'button');
+          markerElement.setAttribute(
+            'aria-label',
+            `Open map details for ${markerLabel}`,
+          );
+          markerElement.setAttribute('aria-haspopup', 'dialog');
+          markerElement.setAttribute('aria-expanded', 'false');
+          markerElement.setAttribute('aria-controls', popupId);
+          markerElement.removeAttribute('aria-disabled');
+        } else {
+          markerElement.removeAttribute('tabindex');
+          markerElement.removeAttribute('role');
+          markerElement.removeAttribute('aria-label');
+          markerElement.removeAttribute('aria-haspopup');
+          markerElement.removeAttribute('aria-expanded');
+          markerElement.removeAttribute('aria-controls');
+          markerElement.setAttribute('aria-disabled', 'true');
         }
         markerElement.classList.add('custom-marker');
-        applyMarkerSemantics(markerElement, !!marker.getPopup());
+        markerElement.addEventListener('click', () => {
+          setTimeout(() => {
+            const listElement = document.getElementById(m.id);
+            listElement?.scrollIntoView();
+          });
+          restoreFocusOnCloseRef.current = false;
+          _markers.current?.forEach((otherMarker) => {
+            if (otherMarker !== marker) {
+              const otherPopup = otherMarker.getPopup();
+              if (otherPopup && otherPopup.isOpen()) {
+                otherPopup.remove();
+              }
+            }
+          });
+          restoreFocusOnCloseRef.current = true;
+        });
+        markerElement.addEventListener('keydown', (event) => {
+          if (!marker.getPopup()) return;
+
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            markerElement.click();
+          }
+
+          if (event.key === 'Escape' && marker.getPopup()?.isOpen()) {
+            event.preventDefault();
+            restoreFocusOnCloseRef.current = true;
+            marker.getPopup()?.remove();
+          }
+        });
 
         marker.addTo(mapLibreMap.current);
         bounds.extend(m.coordinates!); // Only extend if coordinates are valid
@@ -321,7 +393,37 @@ export function Map({
       ) : (
         <>
           <div ref={mapContainer} className="size-full"></div>
-          {activePopup && createPortal(activePopup.popup, activePopup.element)}
+          {activePopup &&
+            createPortal(
+              <div
+                id={activePopup.popupId}
+                role="dialog"
+                aria-modal="false"
+                aria-label={`${activePopup.label} details`}
+                onKeyDown={(event) => {
+                  if (event.key === 'Escape') {
+                    event.preventDefault();
+                    activePopup.closePopup();
+                  }
+                }}
+              >
+                <div className="relative">
+                  <div className="absolute right-2 top-2 z-10">
+                    <button
+                      ref={closeButtonRef}
+                      type="button"
+                      aria-label={`Close details for ${activePopup.label}`}
+                      className="rounded-md p-1 text-foreground ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      onClick={activePopup.closePopup}
+                    >
+                      <X className="size-4" />
+                    </button>
+                  </div>
+                  {activePopup.popup}
+                </div>
+              </div>,
+              activePopup.element,
+            )}
         </>
       )}
     </div>
