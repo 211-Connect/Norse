@@ -12,9 +12,11 @@ import { useTranslation } from 'react-i18next';
 import { userCoordinatesAtom } from '@/app/(app)/shared/store/search';
 import { useAtomValue } from 'jotai';
 import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
-import { SortOption } from '@/app/(app)/shared/services/search-service';
 import { useTopLoader } from 'nextjs-toploader';
-import { getSortOption } from '@/app/(app)/shared/utils/getSortOption';
+import {
+  getSortOption,
+  SortOption,
+} from '@/app/(app)/shared/utils/getSortOption';
 
 const SORT_LABEL: Record<SortOption, string> = {
   relevance: 'Most Relevant',

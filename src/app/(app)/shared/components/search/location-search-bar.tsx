@@ -13,7 +13,7 @@ import {
 } from '../../store/search';
 import { useDebounce } from '../../hooks/use-debounce';
 import { useLocations } from '../../hooks/api/use-locations';
-import { useCallback, useState, useContext } from 'react';
+import { useCallback, useContext, useMemo, useState } from 'react';
 import { cn } from '../../lib/utils';
 import { Autocomplete } from '../ui/autocomplete';
 import { DistanceSelect } from './distance-select';
@@ -34,6 +34,7 @@ type BaseProps = {
   className?: string;
   focusByDefault?: boolean;
   inputId?: string;
+  enterKeyFocusTargetId?: string;
 };
 
 // Integrated mode - uses global atoms and context
@@ -51,12 +52,17 @@ type StandaloneModeProps = BaseProps & {
 type LocationSearchBarProps = IntegratedModeProps | StandaloneModeProps;
 
 export function LocationSearchBar(props: LocationSearchBarProps) {
-  const { className, focusByDefault = false, inputId } = props;
+  const {
+    className,
+    focusByDefault = false,
+    inputId,
+    enterKeyFocusTargetId,
+  } = props;
   const mode = props.mode || 'integrated';
   const isStandalone = mode === 'standalone';
 
   const appConfig = useAppConfig();
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const [shouldSearch, setShouldSearch] = useState(false);
 
   // Local state for standalone mode
@@ -214,10 +220,22 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
     [setSearch, isStandalone],
   );
 
+  const listStatusMessage = useMemo(() => {
+    if (options.length === 0) {
+      return '';
+    }
+    return t('search.list_status', {
+      count: options.length,
+    });
+  }, [options.length, t]);
+
   return (
     <div className="location-box flex flex-col gap-4">
       <Autocomplete
         className={cn(className, 'search-box')}
+        readerLabel={t('search.location_input_label', {
+          defaultValue: 'Search for a location',
+        })}
         inputProps={{
           autoFocus: focusByDefault,
           id: inputId,
@@ -232,16 +250,22 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
         onInputChange={handleInputChange}
         onValueChange={setSearchLocation}
         value={searchLocation}
-        optionsPopoverClassName={`max-h-[calc(100dvh-190px)] ${isStandalone ? 'mt-[10px] sm:max-h-[calc(100dvh-250px)]' : 'mt-[60px] sm:max-h-[calc(100dvh-310px)]'}`}
+        clearButtonLabel={t('call_to_action.remove')}
+        listStatusMessage={listStatusMessage}
+        optionsPopoverClassName={`mt-2 max-h-[min(18rem,calc(100dvh-18rem))] ${isStandalone ? 'sm:max-h-[min(20rem,calc(100dvh-16rem))]' : 'sm:max-h-[min(20rem,calc(100dvh-22rem))]'}`}
         autoSelectIndex={coords?.length === 2 ? undefined : 1}
         autoSelectOnBlurIndex={1}
+        enterKeyBehavior={
+          enterKeyFocusTargetId ? 'focus-target' : 'submit-form'
+        }
+        enterKeyFocusTargetId={enterKeyFocusTargetId}
         blurOnOptionsInteraction
       />
       {validationError && (
         <p className="min-h-4 px-3 text-xs text-red-500">{validationError}</p>
       )}
       {!isStandalone && (
-        <div className="flex justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <UseMyLocationButton />
           <DistanceSelect className="ml-auto" />
         </div>

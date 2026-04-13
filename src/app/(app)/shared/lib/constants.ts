@@ -28,9 +28,15 @@ export const USER_PREF_POSTCODE = 'user-pref-postcode';
 export const USER_PREF_REGION = 'user-pref-region';
 export const USER_PREF_FONT_SIZE = 'user-pref-font-size';
 
+// Accessibility IDs
 export const HEADER_ID = 'app-header';
 export const HEADER_DESKTOP_ID = 'app-header-desktop';
 export const HEADER_MOBILE_ID = 'app-header-mobile';
 export const MAIN_CONTENT_ID = 'main-content';
+export const SEARCH_DIALOG_ID = 'search-dialog';
+export const SEARCH_INPUT_ID = 'search-input';
+export const LOCATION_INPUT_ID = 'location-input';
+export const SEARCH_DIALOG_TITLE_ID = 'search-dialog-title';
+export const SEARCH_DIALOG_DESCRIPTION_ID = 'search-dialog-description';
 
 export const NEW_TAB_WARNING = ' (opens in a new tab)';
