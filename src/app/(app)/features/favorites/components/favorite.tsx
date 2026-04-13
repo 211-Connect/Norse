@@ -162,9 +162,10 @@ export function Favorite({
                 className="text-sm font-normal"
                 href={data.website}
                 text={data.website}
+                target="_blank"
                 truncate
                 copyLabel={`${t('modal.share.copy', { ns: 'common' })} ${data.website}`}
-                linkAriaLabel={`${t('call_to_action.view_website', { ns: 'common' })} ${translation?.displayName ?? ''}`}
+                linkAriaLabel={`${t('call_to_action.view_website', { ns: 'common' })} ${translation?.displayName ?? ''} ${t('modal.share.opens_in_new_tab', { ns: 'common' })}`}
               >
                 {data.website}
               </CopyBadge>
