@@ -1,8 +1,9 @@
 'use client';
 
-import { Link } from '@/app/(app)/shared/components/link';
+import NextLink from 'next/link';
 import { Button, buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import { cn } from '@/app/(app)/shared/lib/utils';
+import { createLinkEvent } from '@/app/(app)/shared/lib/google-tag-manager';
 import { usePrevUrl } from '@/app/(app)/shared/hooks/use-prev-url';
 import { ChevronLeft } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -32,12 +33,13 @@ export function BackToResultsButton() {
   }
 
   return (
-    <Link
+    <NextLink
       className={cn(buttonVariants({ variant: 'outline' }), 'flex gap-1')}
       href={backUrl}
+      onClick={createLinkEvent}
     >
       <ChevronLeft aria-hidden="true" className="size-4" />
       {backUrl === '/' ? t('back_to_home') : t('back_to_results')}
-    </Link>
+    </NextLink>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useAtomValue, useSetAtom } from 'jotai';
+import { signIn } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
 import { dialogsAtom, promptAuthAtom } from '@/app/(app)/shared/store/dialogs';
 
@@ -24,9 +25,14 @@ export function PromptAuthDialog() {
     }));
   };
 
-  const loginHref = `/api/auth/signin/keycloak?callbackUrl=${encodeURIComponent(
-    typeof window !== 'undefined' ? window.location.href : '',
-  )}`;
+  const callbackUrl = typeof window !== 'undefined' ? window.location.href : '';
+  const loginHref = `/api/auth/signin/keycloak?callbackUrl=${encodeURIComponent(callbackUrl)}`;
+
+  const handleLogin = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    handleOpenChange(false);
+    signIn('keycloak', { callbackUrl });
+  };
 
   return (
     <Dialog open={state.open} onOpenChange={handleOpenChange}>
@@ -43,7 +49,7 @@ export function PromptAuthDialog() {
             className={cn(buttonVariants(), 'inline-flex')}
             href={loginHref}
             data-testid="login-btn"
-            onClick={() => handleOpenChange(false)}
+            onClick={handleLogin}
           >
             {t('call_to_action.login')}
           </a>
