@@ -228,6 +228,9 @@ export interface Config {
     | 'yue'
     | 'zh-Hans'
     | 'zh-Hant';
+  widgets: {
+    collections: CollectionsWidget;
+  };
   user: User;
   jobs: {
     tasks: {
@@ -837,11 +840,6 @@ export interface ResourceDirectory {
     content?: string | null;
   };
   featureFlags?: {
-    hideCategoriesHeading?: boolean | null;
-    hideDataProvidersHeading?: boolean | null;
-    showResourceAttribution?: boolean | null;
-    showResourceCategories?: boolean | null;
-    showResourceLastAssuredDate?: boolean | null;
     showHomePageTour?: boolean | null;
     requireUserLocation?: boolean | null;
     showSearchAndResourceServiceName?: boolean | null;
@@ -1533,11 +1531,6 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
   featureFlags?:
     | T
     | {
-        hideCategoriesHeading?: T;
-        hideDataProvidersHeading?: T;
-        showResourceAttribution?: T;
-        showResourceCategories?: T;
-        showResourceLastAssuredDate?: T;
         showHomePageTour?: T;
         requireUserLocation?: T;
         showSearchAndResourceServiceName?: T;
@@ -1684,6 +1677,16 @@ export interface PayloadJobsStatsSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "collections_widget".
+ */
+export interface CollectionsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'full';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

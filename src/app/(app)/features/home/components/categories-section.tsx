@@ -120,7 +120,6 @@ export function CategoriesSection({
   const { t } = useTranslation();
   const appConfig = useAppConfig();
   const topics = useTopics();
-  const hideCategoriesHeading = useFlag('hideCategoriesHeading');
 
   if (topics.length === 0) return null;
 
@@ -129,23 +128,21 @@ export function CategoriesSection({
 
   return (
     <div className={cn('categories container mx-auto', className)}>
-      {!hideCategoriesHeading && (
-        <div className="mb-10">
-          <h2 className="text-center text-3xl font-bold">
-            {appConfig.topics.customHeading ||
-              t('search.categories', { ns: 'common' })}
-          </h2>
-          <Separator className="my-3" />
-          {backText && (
-            <Link href="/">
-              <Button variant="link" className="">
-                <ChevronLeft className="size-4" />
-                {backText}
-              </Button>
-            </Link>
-          )}
-        </div>
-      )}
+      <div className="mb-10">
+        <h2 className="text-center text-3xl font-bold">
+          {appConfig.topics.customHeading ||
+            t('search.categories', { ns: 'common' })}
+        </h2>
+        <Separator className="my-3" />
+        {backText && (
+          <Link href="/">
+            <Button variant="link" className="">
+              <ChevronLeft className="size-4" />
+              {backText}
+            </Button>
+          </Link>
+        )}
+      </div>
 
       <div className="grid grid-cols-1 justify-center gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {topics.map((topic) => (

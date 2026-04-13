@@ -47,6 +47,8 @@ async function fetchAndTransformResourceOrigin(
         data?.facetsEn?.map((facet) => [facet.code, facet]) ?? [],
       );
 
+      console.log(data);
+
       return {
         id: data._id,
         originalId: data?.originalId ?? null,
