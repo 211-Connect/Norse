@@ -162,7 +162,7 @@ test.describe('Search accessibility preservation', () => {
 
     const listbox = page.getByTestId('autocomplete-listbox');
     await expect(listbox).toBeVisible({ timeout: 10_000 });
-    await expect(searchStatus).toContainText(/suggestion/i);
+    await expect(searchStatus).toContainText(/options available/i);
 
     const metrics = await listbox.evaluate((element) => {
       const style = window.getComputedStyle(element);

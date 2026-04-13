@@ -93,7 +93,7 @@ test.describe('Language Persistence And Results Button', () => {
 
     await page.waitForURL(/\/search\//, { timeout: 20_000 });
 
-    const resultsButton = page.getByRole('button', { name: /^Results$/i });
+    const resultsButton = page.getByRole('link', { name: /^Results$/i });
     await expect(resultsButton).toBeVisible({ timeout: 20_000 });
     await resultsButton.click();
 
@@ -120,7 +120,7 @@ test.describe('Language Persistence And Results Button', () => {
 
     await page.waitForURL(/\/search\//, { timeout: 20_000 });
 
-    const resultsButton = page.getByRole('button', { name: /^Resultados$/i });
+    const resultsButton = page.getByRole('link', { name: /^Resultados$/i });
     await expect(resultsButton).toBeVisible({ timeout: 20_000 });
     await resultsButton.click();
 
