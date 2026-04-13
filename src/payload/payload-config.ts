@@ -183,7 +183,7 @@ const config = buildConfig({
   upload: {
     abortOnLimit: true,
     limits: {
-      fileSize: 5000000,
+      fileSize: 10 * 1024 * 1024, // 10MB
     },
   },
   plugins: [
