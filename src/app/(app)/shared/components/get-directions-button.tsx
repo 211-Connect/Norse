@@ -58,8 +58,10 @@ export function GetDirectionsButton({
         trackUmamiEvent(UmamiEvent.DirectionClick, {
           resourceId: String(data.id),
         });
-        window.location.assign(
+        window.open(
           `https://www.google.com/maps/dir/?api=1&origin=${getOrigin()}&destination=${getDestination()}`,
+          '_blank',
+          'noopener,noreferrer',
         );
       }
     },
@@ -78,7 +80,7 @@ export function GetDirectionsButton({
         variant="highlight"
         aria-controls={needsOrigin ? dialogId : undefined}
         aria-haspopup={needsOrigin ? 'dialog' : undefined}
-        aria-label={`${text || t('call_to_action.get_directions')} ${data.name}`}
+        aria-label={`${text || t('call_to_action.get_directions')}${data.name ? ` ${data.name}` : ''} ${t('modal.share.opens_in_new_tab')}`}
         onClick={onClick}
       >
         <Map className="mr-[5px] size-4" />{' '}
