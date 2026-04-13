@@ -69,3 +69,7 @@ norse-context/
 e2e/.auth/
 playwright-report/
 test-results/
+
+
+#Ignore code quality AI rules
+.cursor/rules/codacy.mdc
