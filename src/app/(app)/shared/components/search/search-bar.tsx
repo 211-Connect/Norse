@@ -131,9 +131,21 @@ export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
     [searchTerm, setShouldSearch, setSearch],
   );
 
+  const listStatusMessage = useMemo(() => {
+    if (options.length === 0) {
+      return '';
+    }
+    return t('search.list_status', {
+      count: options.length,
+    });
+  }, [options.length, t]);
+
   return (
     <Autocomplete
       className="search-box"
+      readerLabel={t('search.query_input_label', {
+        defaultValue: 'Search for resources',
+      })}
       inputProps={{
         autoFocus: focusByDefault,
         id: inputId,
@@ -145,7 +157,9 @@ export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
       options={options}
       onInputChange={handleInputChange}
       onValueChange={setSearchTerm}
-      optionsPopoverClassName="max-h-[calc(var(--vh)-240px)] mt-[110px] sm:max-h-[calc(var(--vh)-360px)]"
+      clearButtonLabel={t('call_to_action.remove')}
+      listStatusMessage={listStatusMessage}
+      optionsPopoverClassName="mt-2 max-h-[min(18rem,calc(100dvh-18rem))] sm:max-h-[min(20rem,calc(100dvh-22rem))]"
       value={searchTerm}
       blurOnOptionsInteraction
     />

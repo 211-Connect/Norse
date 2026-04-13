@@ -125,11 +125,11 @@ export function UseMyLocationButton() {
   return (
     <Button
       onClick={getUserLocation}
-      className="flex gap-1 !text-primary"
+      className="flex h-auto gap-1 whitespace-normal text-left !text-primary"
       variant="ghost"
       type="button"
     >
-      <Locate className="size-4" />
+      <Locate className="size-4" aria-hidden="true" />
       {t('search.use_my_location')}
     </Button>
   );

@@ -2,7 +2,7 @@
 
 import { TriangleAlert } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useAppConfig } from '../hooks/use-app-config';
 import { buttonVariants } from './ui/button';
@@ -21,10 +21,12 @@ export function ReportButton({
   const { t } = useTranslation('page-resource');
   const feedbackUrlValue = appConfig?.contact?.feedbackUrl;
   const linkText = customText || t('report');
+
   const [href, setHref] = useState<string | null>(null);
 
   useEffect(() => {
     if (!feedbackUrlValue) {
+      setHref(null);
       return;
     }
 
