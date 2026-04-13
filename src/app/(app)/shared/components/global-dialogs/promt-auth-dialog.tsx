@@ -2,6 +2,7 @@
 
 import { useAtomValue, useSetAtom } from 'jotai';
 import { signIn } from 'next-auth/react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { dialogsAtom, promptAuthAtom } from '@/app/(app)/shared/store/dialogs';
 
@@ -14,6 +15,17 @@ export function PromptAuthDialog() {
   const setState = useSetAtom(dialogsAtom);
   const state = useAtomValue(promptAuthAtom);
   const { t } = useTranslation('common');
+
+  // Capture the trigger element in a ref when the dialog opens so it survives
+  // the synchronous state reset that happens when handleOpenChange(false) is
+  // called. Without this, restoreFocusElement would already be null by the
+  // time Radix fires onCloseAutoFocus.
+  const focusRestoreRef = useRef<HTMLElement | null>(null);
+  useEffect(() => {
+    if (state.open) {
+      focusRestoreRef.current = state.returnFocusTo;
+    }
+  }, [state.open, state.returnFocusTo]);
 
   const handleOpenChange = (value: boolean) => {
     setState((prev) => ({
@@ -37,7 +49,10 @@ export function PromptAuthDialog() {
 
   return (
     <Dialog open={state.open} onOpenChange={handleOpenChange}>
-      <DialogContent restoreFocusElement={state.returnFocusTo}>
+      <DialogContent
+        restoreFocusElement={focusRestoreRef.current}
+        closeLabel={t('call_to_action.close')}
+      >
         <DialogHeader>
           <DialogTitle>{t('modal.prompt_auth')}</DialogTitle>
         </DialogHeader>

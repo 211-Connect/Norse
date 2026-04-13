@@ -14,7 +14,7 @@ type Props = {
   referralType: 'call_referral' | 'website_referral' | 'directions_referral';
   resourceId: string;
   resourceData: Partial<ResultType>;
-  onClick?: any;
+  onClick?: React.MouseEventHandler;
   className?: string;
   children?: ReactNode;
 };
@@ -29,7 +29,7 @@ export const ReferralButton = React.forwardRef<
   const { searchParamsObject } = useClientSearchParams();
   const appConfig = useAppConfig();
 
-  const handleClick = (e: any) => {
+  const handleClick: React.MouseEventHandler = (e) => {
     createReferralEvent(
       referralType,
       resourceId,

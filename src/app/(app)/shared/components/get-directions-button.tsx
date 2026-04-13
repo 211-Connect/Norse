@@ -73,7 +73,7 @@ export function GetDirectionsButton({
       <ReferralButton
         ref={triggerRef}
         size="sm"
-        className={cn('gap1 flex-1', className)}
+        className={cn('flex-1 gap-1', className)}
         referralType="directions_referral"
         resourceId={data.id}
         resourceData={data}
@@ -83,14 +83,18 @@ export function GetDirectionsButton({
         aria-label={`${text || t('call_to_action.get_directions')}${data.name ? ` ${data.name}` : ''} ${t('modal.share.opens_in_new_tab')}`}
         onClick={onClick}
       >
-        <Map className="mr-[5px] size-4" />{' '}
+        <Map className="size-4 shrink-0" aria-hidden="true" />
         <span className="truncate">
           {text || t('call_to_action.get_directions')}
         </span>
       </ReferralButton>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent id={dialogId} restoreFocusElement={triggerRef.current}>
+        <DialogContent
+          id={dialogId}
+          restoreFocusElement={triggerRef.current}
+          closeLabel={t('call_to_action.close')}
+        >
           <DialogHeader>
             <DialogTitle>
               {t('update_location.prompt_start_location')}
@@ -112,7 +116,7 @@ export function GetDirectionsButton({
             </Button>
 
             <ReferralButton
-              className="flex gap-1"
+              className="gap-1"
               disabled={!getOrigin()}
               referralType="directions_referral"
               resourceId={data.id}
@@ -120,7 +124,7 @@ export function GetDirectionsButton({
               variant="outline"
               onClick={onClick}
             >
-              <Map className="mr-[5px] size-4" />
+              <Map className="size-4 shrink-0" aria-hidden="true" />
               {text || t('call_to_action.get_directions')}
             </ReferralButton>
           </div>

@@ -12,7 +12,6 @@ import { CustomPagination } from './custom-pagination';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from './ui/dialog';
@@ -173,14 +172,17 @@ export function AddToFavoritesButton({
         disabled={session.status === 'loading'}
         data-session-status={session.status}
       >
-        <Heart className={size === 'icon' ? 'size-6' : 'size-4'} />
+        <Heart className={size === 'icon' ? 'size-6' : 'size-4'} aria-hidden="true" />
         {size !== 'icon' && t('call_to_action.add_to_list')}
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent id={dialogId} restoreFocusElement={triggerRef.current}>
+        <DialogContent
+          id={dialogId}
+          restoreFocusElement={triggerRef.current}
+          closeLabel={t('call_to_action.close')}
+        >
           <DialogHeader>
             <DialogTitle>{t('modal.add_to_list.search_list')}</DialogTitle>
-            <DialogDescription />
           </DialogHeader>
           <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-2 sm:flex-row">
@@ -249,10 +251,10 @@ export function AddToFavoritesButton({
                             variant="ghost"
                             size="icon"
                             onClick={addToFavoriteListHandler(el.id)}
-                            aria-label={t('modal.add_to_list.add_to_list')}
+                            aria-label={`${t('modal.add_to_list.add_to_list')} ${el.name}`}
                             data-testid="add-to-list-btn"
                           >
-                            <ListPlus className="size-4" />
+                            <ListPlus className="size-4" aria-hidden="true" />
                           </Button>
                         </div>
                       </Fragment>

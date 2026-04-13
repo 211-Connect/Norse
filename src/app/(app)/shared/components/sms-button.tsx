@@ -1,9 +1,8 @@
 'use client';
 
 import { Send, Smartphone } from 'lucide-react';
-import { useId, useRef, useState } from 'react';
+import { useCallback, useId, useRef, useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { z } from 'zod';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 
@@ -11,13 +10,13 @@ import { Button } from './ui/button';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from './ui/dialog';
 import { Input } from './ui/input';
 import { useAppConfig } from '../hooks/use-app-config';
 import { fetchWrapper } from '../lib/fetchWrapper';
+import { validatePhoneNumber } from '../lib/validators';
 
 export function SmsButton({ title = '', body = '', shortUrl = '' }) {
   const { t } = useTranslation('common');
@@ -31,24 +30,18 @@ export function SmsButton({ title = '', body = '', shortUrl = '' }) {
   const errorId = useId();
   const [message, setMessage] = useState('');
 
-  const phoneNumberSchema = z.string().refine((value) => {
-    const phoneRegex = /^\+?\d{10,15}$/;
-    return phoneRegex.test(value);
-  }, t('modal.share.invalid_phone_number'));
-
-  const validatePhoneNumber = (value: unknown) => {
-    const validationResult = phoneNumberSchema.safeParse(value);
-    return validationResult.success
-      ? null
-      : t('modal.share.invalid_phone_number');
-  };
+  const getPhoneError = useCallback(
+    (value: unknown): string | null =>
+      validatePhoneNumber(value) ? null : t('modal.share.invalid_phone_number'),
+    [t],
+  );
 
   const handleClick = () => {
     setOpen(true);
   };
 
   const sendSms = async () => {
-    const errorMessage = validatePhoneNumber(phoneNumber);
+    const errorMessage = getPhoneError(phoneNumber);
 
     if (errorMessage) {
       setMessage(errorMessage);
@@ -96,15 +89,18 @@ export function SmsButton({ title = '', body = '', shortUrl = '' }) {
         aria-controls={dialogId}
         aria-haspopup="dialog"
       >
-        <Smartphone className="size-4" />
+        <Smartphone className="size-4" aria-hidden="true" />
         {t('modal.share.sms')}
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent id={dialogId} restoreFocusElement={triggerRef.current}>
+        <DialogContent
+          id={dialogId}
+          restoreFocusElement={triggerRef.current}
+          closeLabel={t('call_to_action.close')}
+        >
           <DialogHeader>
             <DialogTitle>{t('modal.share.share_sms')}</DialogTitle>
-            <DialogDescription />
           </DialogHeader>
           <div className="flex flex-col gap-1">
             <div className="flex gap-2">
@@ -125,7 +121,7 @@ export function SmsButton({ title = '', body = '', shortUrl = '' }) {
                 }}
               />
               <Button className="flex h-full gap-1" onClick={sendSms}>
-                <Send className="size-4" />
+                <Send className="size-4" aria-hidden="true" />
                 {t('call_to_action.send')}
               </Button>
             </div>

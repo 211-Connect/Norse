@@ -16,7 +16,6 @@ import { Button } from './ui/button';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from './ui/dialog';
@@ -36,6 +35,7 @@ export function ShareButton({ componentToPrintRef, title = '', body = '' }) {
   const { t } = useTranslation('common');
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const dialogId = useId();
+  const copyStatusId = useId();
 
   const [open, setOpen] = useState(false);
   const [shortUrl, setShortUrl] = useState('');
@@ -65,14 +65,17 @@ export function ShareButton({ componentToPrintRef, title = '', body = '' }) {
             : t('call_to_action.share')
         }
       >
-        <Share2 className="size-4" />
+        <Share2 className="size-4" aria-hidden="true" />
         {t('call_to_action.share')}
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent id={dialogId} restoreFocusElement={triggerRef.current}>
+        <DialogContent
+          id={dialogId}
+          restoreFocusElement={triggerRef.current}
+          closeLabel={t('call_to_action.close')}
+        >
           <DialogHeader>
             <DialogTitle>{t('modal.share.share_via')}</DialogTitle>
-            <DialogDescription />
           </DialogHeader>
 
           <div className="flex flex-col gap-2 overflow-hidden">
@@ -90,7 +93,7 @@ export function ShareButton({ componentToPrintRef, title = '', body = '' }) {
                   );
                 }}
               >
-                <Facebook className="size-4" />
+                <Facebook className="size-4" aria-hidden="true" />
                 {t('modal.share.facebook')}
                 <span className="sr-only">
                   {' '}
@@ -109,7 +112,7 @@ export function ShareButton({ componentToPrintRef, title = '', body = '' }) {
                   );
                 }}
               >
-                <Linkedin className="size-4" />
+                <Linkedin className="size-4" aria-hidden="true" />
                 {t('modal.share.linkedin')}
                 <span className="sr-only">
                   {' '}
@@ -129,7 +132,7 @@ export function ShareButton({ componentToPrintRef, title = '', body = '' }) {
                   );
                 }}
               >
-                <X className="size-4" />X
+                <X className="size-4" aria-hidden="true" />X
                 <span className="sr-only">
                   {' '}
                   {t('modal.share.opens_in_new_tab')}
@@ -141,6 +144,7 @@ export function ShareButton({ componentToPrintRef, title = '', body = '' }) {
               <Button
                 variant="outline"
                 className="flex gap-1"
+                aria-label={`${t('modal.share.email')} ${t('modal.share.opens_in_new_tab')}`}
                 onClick={() => {
                   window.open(
                     `mailto:?subject=${encodeURIComponent(
@@ -149,8 +153,12 @@ export function ShareButton({ componentToPrintRef, title = '', body = '' }) {
                   );
                 }}
               >
-                <Mail className="size-4" />
+                <Mail className="size-4" aria-hidden="true" />
                 {t('modal.share.email')}
+                <span className="sr-only">
+                  {' '}
+                  {t('modal.share.opens_in_new_tab')}
+                </span>
               </Button>
 
               <Button
@@ -158,7 +166,7 @@ export function ShareButton({ componentToPrintRef, title = '', body = '' }) {
                 className="flex gap-1"
                 onClick={handlePrint}
               >
-                <Printer className="size-4" />
+                <Printer className="size-4" aria-hidden="true" />
                 {t('modal.share.print')}
               </Button>
             </div>
@@ -167,17 +175,26 @@ export function ShareButton({ componentToPrintRef, title = '', body = '' }) {
               <Button
                 onClick={() => clipboard.copy(shortUrl)}
                 variant="outline"
-                className="group flex w-full items-center justify-between gap-1"
+                className="flex w-full items-center justify-between gap-1"
                 aria-label={t('modal.share.copy_link')}
+                aria-describedby={copyStatusId}
               >
                 {shortUrl}
 
                 {clipboard.copied ? (
-                  <CheckIcon className="size-4" />
+                  <CheckIcon className="size-4" aria-hidden="true" />
                 ) : (
-                  <ClipboardIcon className="hidden size-4 group-hover:block" />
+                  <ClipboardIcon className="size-4" aria-hidden="true" />
                 )}
               </Button>
+              <span
+                id={copyStatusId}
+                className="sr-only"
+                role="status"
+                aria-live="polite"
+              >
+                {clipboard.copied ? t('modal.share.copied') : ''}
+              </span>
             </div>
           </div>
         </DialogContent>
