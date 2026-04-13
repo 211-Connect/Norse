@@ -1,5 +1,5 @@
 services:
-  app:
+  norse-app:
     build:
       context: .
       dockerfile: Dockerfile
@@ -14,31 +14,30 @@ services:
           cpus: 1
           memory: 2G
     depends_on:
-      postgres:
+      norse-db:
         condition: service_healthy
       redis:
         condition: service_healthy
     ports:
       - 3000:3000
     environment:
-      DATABASE_URI: postgresql://norse-ng:norse-ng@postgres:5432/norse-ng
+      DATABASE_URI: postgresql://norse-ng:norse-ng@norse-db:5432/norse-ng
       CACHE_REDIS_URI: redis://:norse-ng@redis:6379
-      UMAMI_API_URL: http://host.docker.internal:4444
+      UMAMI_API_URL: http://umami:4444
 
-  postgres:
+  norse-db:
     image: postgres:17.5
     restart: always
     environment:
       POSTGRES_USER: norse-ng
       POSTGRES_PASSWORD: norse-ng
       POSTGRES_DB: norse-ng
-    container_name: norse-postgres
     ports:
       - 5432:5432
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U norse-ng"]
+      test: ["CMD-SHELL", "pg_isready -U norse-ng -d norse-ng"]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -72,7 +71,7 @@ services:
       - "--web.console.templates=/etc/prometheus/consoles"
       - "--web.enable-lifecycle"
     depends_on:
-      - app
+      - norse-app
       - pushgateway
 
   pushgateway:
@@ -99,9 +98,43 @@ services:
     depends_on:
       - prometheus
 
+  umami:
+    image: ghcr.io/umami-software/umami:latest
+    ports:
+      - "4444:3000"
+    environment:
+      DATABASE_URL: postgresql://umami:umami@umami-db:5432/umami
+      APP_SECRET: replace-me-with-a-random-string
+    depends_on:
+      umami-db:
+        condition: service_healthy
+    init: true
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl http://localhost:4444/api/heartbeat"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  umami-db:
+    image: postgres:17.5
+    environment:
+      POSTGRES_DB: umami
+      POSTGRES_USER: umami
+      POSTGRES_PASSWORD: umami
+    volumes:
+      - umami-db-data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
 volumes:
   postgres_data:
   redis_data:
   prometheus_data:
   pushgateway_data:
   grafana_data:
+  umami-db-data:
