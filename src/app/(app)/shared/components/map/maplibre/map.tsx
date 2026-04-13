@@ -62,6 +62,18 @@ export function Map({
   } | null>(null);
   const [mapError, setMapError] = useState<string | null>(null);
 
+  const applyMarkerSemantics = (markerElement: HTMLElement, interactive: boolean) => {
+    if (!interactive) {
+      markerElement.removeAttribute('aria-label');
+      markerElement.removeAttribute('role');
+      markerElement.removeAttribute('tabindex');
+      markerElement.setAttribute('aria-hidden', 'true');
+      return;
+    }
+
+    markerElement.removeAttribute('aria-hidden');
+  };
+
   useEffect(() => {
     try {
       mapLibreMap.current = new mapLibreGl.Map({
@@ -235,6 +247,7 @@ export function Map({
 
       const markerElement = marker.getElement();
       markerElement.classList.add('users-location-marker');
+      applyMarkerSemantics(markerElement, false);
       marker.addTo(mapLibreMap.current);
 
       _markers.current.push(marker);

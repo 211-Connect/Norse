@@ -46,6 +46,7 @@ export function PhoneNumbersComponent({ resource }: { resource: Resource }) {
           subtitle={description}
           description={number}
           url={`tel:${number}`}
+          urlAriaLabel={`${label}${description ? ` - ${description}` : ''}: ${number}`}
           onClick={() =>
             trackUmamiEvent(UmamiEvent.PhoneClick, {
               resourceId: resource.id,

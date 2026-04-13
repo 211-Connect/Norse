@@ -11,6 +11,7 @@ import {
   useCallback,
   useState,
   KeyboardEvent,
+  MouseEvent,
   ChangeEvent,
   useMemo,
   Fragment,
@@ -18,6 +19,8 @@ import {
   useEffect,
   useRef,
   MouseEventHandler,
+  useId,
+  type ReactNode,
 } from 'react';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
@@ -25,7 +28,14 @@ import { useUncontrolled } from '@/app/(app)/shared/hooks/use-uncontrolled';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { Input, InputProps } from './input';
 import { Separator } from './separator';
-import { SearchIcon } from 'lucide-react';
+import { SearchIcon, XIcon } from 'lucide-react';
+import { Button } from './button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from './tooltip';
 import { Badge } from './badge';
 import { useOnPointerDownOutside } from '../../hooks/use-on-pointer-down-outside';
 
@@ -40,6 +50,7 @@ export type AutocompleteOption = {
 type AutocompleteOptionWithIndex = AutocompleteOption & { index: number };
 
 export type AutocompleteProps = {
+  readerLabel: ReactNode;
   Icon?: ComponentType<{ className?: string }>;
   inputProps?: InputProps;
   options?: AutocompleteOption[];
@@ -53,6 +64,10 @@ export type AutocompleteProps = {
   optionsPopoverClassName?: string;
   defaultOpen?: boolean;
   blurOnOptionsInteraction?: boolean;
+  clearButtonLabel?: string;
+  listStatusMessage?: string;
+  enterKeyBehavior?: 'submit-form' | 'focus-target';
+  enterKeyFocusTargetId?: string;
 };
 
 const useMouseMovement = () => {
@@ -82,6 +97,7 @@ const useMouseMovement = () => {
 
 export function Autocomplete(props: AutocompleteProps) {
   const {
+    readerLabel,
     inputProps,
     Icon,
     className,
@@ -94,8 +110,16 @@ export function Autocomplete(props: AutocompleteProps) {
     optionsPopoverClassName,
     defaultOpen = false,
     blurOnOptionsInteraction = false,
+    clearButtonLabel = 'Clear',
+    listStatusMessage,
+    enterKeyBehavior = 'submit-form',
+    enterKeyFocusTargetId,
     ...rest
   } = props;
+
+  const readerLabelId = useId();
+  const fallbackInputId = useId();
+  const effectiveInputId = inputProps?.id ?? fallbackInputId;
 
   const isMouseMoving = useMouseMovement();
   const [lastManualInput, setLastManualInput] = useState(
@@ -111,6 +135,7 @@ export function Autocomplete(props: AutocompleteProps) {
     onChange: onValueChange,
   });
   const [tempValue, setTempValue] = useState(value || '');
+  const clearButtonRef = useRef<HTMLButtonElement>(null);
 
   const stayOpenOnBlurRef = useRef(false);
 
@@ -343,13 +368,14 @@ export function Autocomplete(props: AutocompleteProps) {
         }
       } else if (e.key === 'Enter') {
         if (open) {
+          e.preventDefault();
           setOpen(false);
+
           if (currentOption) {
             onInputChange?.(currentOption.value);
             setLastManualInput(currentOption.value);
             onValueChange?.(currentOption.value, currentOption);
           } else if (autoSelectIndex != null) {
-            e.preventDefault();
             const defaultOption = rest.options[autoSelectIndex];
             if (defaultOption) {
               onInputChange?.(defaultOption.value);
@@ -357,15 +383,28 @@ export function Autocomplete(props: AutocompleteProps) {
               setLastManualInput(defaultOption.value);
               onValueChange?.(defaultOption.value, defaultOption);
             }
+          }
+
+          if (enterKeyBehavior === 'focus-target' && enterKeyFocusTargetId) {
+            setTimeout(() => {
+              document.getElementById(enterKeyFocusTargetId)?.focus();
+            }, 0);
+          } else {
             const form = (e.target as HTMLElement).closest('form');
             if (form) {
               setTimeout(() => {
+                if (typeof form.requestSubmit === 'function') {
+                  form.requestSubmit();
+                  return;
+                }
+
                 form.dispatchEvent(
                   new Event('submit', { cancelable: true, bubbles: true }),
                 );
               }, 0);
             }
           }
+
           setCurrentIndex(-1);
           nextIndex = -1;
         }
@@ -436,7 +475,22 @@ export function Autocomplete(props: AutocompleteProps) {
       popperElement,
       uniqueId,
       onValueChange,
+      enterKeyBehavior,
+      enterKeyFocusTargetId,
     ],
+  );
+
+  const clear = useCallback(
+    (e?: MouseEvent) => {
+      e?.preventDefault();
+      setCurrentIndex(-1);
+      setValue('');
+      onInputChange?.('');
+      referenceElement?.focus();
+      setOpen(true);
+      setLastManualInput('');
+    },
+    [setValue, onInputChange, referenceElement],
   );
 
   const handleOptionMouseEnter = useCallback(
@@ -470,7 +524,10 @@ export function Autocomplete(props: AutocompleteProps) {
         }
       }
 
-      if (!stayOpenOnBlurRef.current) {
+      if (
+        clearButtonRef.current !== e.relatedTarget &&
+        !stayOpenOnBlurRef.current
+      ) {
         closeOptions();
       }
     },
@@ -512,13 +569,32 @@ export function Autocomplete(props: AutocompleteProps) {
       ref={wrapperElementRef}
     >
       <div className="relative w-full">
+        <label
+          className="sr-only"
+          htmlFor={effectiveInputId}
+          id={readerLabelId}
+        >
+          {readerLabel}
+        </label>
         {Icon ? (
-          <Icon className="absolute left-2 top-2 size-4 shrink-0 text-primary" />
+          <Icon
+            className="absolute left-2 top-2 size-4 shrink-0 text-primary"
+            aria-hidden="true"
+          />
         ) : (
-          <SearchIcon className="absolute left-2 top-2 size-4 shrink-0 text-primary" />
+          <SearchIcon
+            className="absolute left-2 top-2 size-4 shrink-0 text-primary"
+            aria-hidden="true"
+          />
+        )}
+        {listStatusMessage && (
+          <div className="sr-only" role="status" aria-live="polite">
+            {listStatusMessage}
+          </div>
         )}
         <Input
           {...inputProps}
+          id={effectiveInputId}
           className={cn(
             'h-auto w-full rounded-lg border p-0 px-[1.8rem] py-2 text-xs shadow-none focus:border-primary focus-visible:ring-0',
             inputProps?.className,
@@ -534,7 +610,7 @@ export function Autocomplete(props: AutocompleteProps) {
           aria-autocomplete="list"
           aria-controls={open ? uniqueId : undefined}
           aria-haspopup="listbox"
-          aria-label={inputProps?.placeholder ?? ''}
+          aria-labelledby={readerLabelId}
           aria-owns={uniqueId}
           aria-expanded={open}
           aria-activedescendant={
@@ -542,6 +618,31 @@ export function Autocomplete(props: AutocompleteProps) {
           }
           role="combobox"
         />
+
+        <TooltipProvider>
+          <Tooltip delayDuration={100}>
+            <TooltipTrigger asChild autoFocus={false}>
+              <Button
+                ref={clearButtonRef}
+                size="icon"
+                variant="ghost"
+                className={cn(
+                  (value?.length ?? 0) > 0 ? 'visible' : 'invisible',
+                  'absolute right-0 top-0 h-full hover:bg-transparent hover:bg-none',
+                )}
+                onClick={clear}
+                aria-label={clearButtonLabel}
+                data-testid="search-clear-btn"
+                type="button"
+              >
+                <XIcon className={cn('h-4 w-4 shrink-0 opacity-50')} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              <span>{clearButtonLabel}</span>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
 
         {open && (
           <div
@@ -608,7 +709,10 @@ export function Autocomplete(props: AutocompleteProps) {
                         >
                           <span className="flex items-center gap-2 text-xs font-medium text-primary">
                             {Icon === 'span' ? null : (
-                              <Icon className="size-4 shrink-0" />
+                              <Icon
+                                className="size-4 shrink-0"
+                                aria-hidden="true"
+                              />
                             )}
                             <p>
                               {parse(optionValue, matches).map((text, idx) =>

@@ -1,5 +1,6 @@
 import parse from 'html-react-parser';
 import { createLogger } from '@/lib/logger';
+import { normalizeStructuredContent } from './html-helpers';
 
 const log = createLogger('parse-html');
 
@@ -39,6 +40,7 @@ export function parseHtml(
 ) {
   if (!(html && typeof html === 'string')) return false;
 
+  html = normalizeStructuredContent(html);
   html = markdownLinksToHtml(html);
   html = linkifyHtml(html);
 

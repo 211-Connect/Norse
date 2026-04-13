@@ -102,18 +102,21 @@ export function FacetsComponent({ resource }: { resource: Resource }) {
       <div className="flex flex-col gap-6">
         {Object.entries(filteredFacets).map(([taxonomyName, facets]) => (
           <div key={taxonomyName} className="flex flex-col gap-2">
-            <p className="text-sm font-semibold">{taxonomyName}</p>
-            <div className="flex flex-col gap-2">
+            <h3 className="text-sm font-semibold">{taxonomyName}</h3>
+            <ul className="flex flex-col gap-2">
               {facets.map((facet, index) => (
-                <div
+                <li
                   key={`${facet.code}-${index}`}
                   className="flex items-start gap-2"
                 >
-                  <SquareCheck className="mt-0.5 size-4 shrink-0 text-[#bbbbbb]" />
+                  <SquareCheck
+                    aria-hidden="true"
+                    className="mt-0.5 size-4 shrink-0 text-[#bbbbbb]"
+                  />
                   <span className="text-sm">{facet.termName}</span>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         ))}
       </div>

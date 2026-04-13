@@ -14,6 +14,7 @@ export interface DatumProps {
   iconColor?: string | null;
   url?: string | null;
   urlTarget?: '_blank' | '_self' | null;
+  urlAriaLabel?: string | null;
   titleBelow?: boolean | null;
   singleLine?: boolean;
   size?: 'sm' | 'md' | null;
@@ -31,6 +32,7 @@ export function Datum({
   iconColor,
   url,
   urlTarget = '_self',
+  urlAriaLabel,
   titleBelow,
   singleLine = false,
   size = 'sm',
@@ -61,6 +63,7 @@ export function Datum({
       <div>
         {Icon ? (
           <Icon
+            aria-hidden="true"
             className={cn('my-1 size-4', iconColor)}
             style={
               iconColor?.startsWith('#') ? { color: iconColor } : undefined
@@ -76,6 +79,7 @@ export function Datum({
             url={url}
             urlTarget={urlTarget}
             as={descriptionAs}
+            aria-label={urlAriaLabel ?? undefined}
           >
             {parsedDescription}
           </Typography>
@@ -100,6 +104,7 @@ export function Datum({
             url={url}
             urlTarget={urlTarget}
             as={descriptionAs}
+            aria-label={urlAriaLabel ?? undefined}
           >
             {parsedDescription}
           </Typography>
