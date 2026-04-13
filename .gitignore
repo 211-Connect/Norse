@@ -71,5 +71,5 @@ playwright-report/
 test-results/
 
 
-#Ignore cursor AI rules
+#Ignore code quality AI rules
 .cursor/rules/codacy.mdc

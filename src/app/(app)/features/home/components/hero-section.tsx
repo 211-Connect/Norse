@@ -1,6 +1,6 @@
 'use client';
 
-import { useTour } from '@reactour/tour';
+import { useTour, type StepType, type Position } from '@reactour/tour';
 import { useMemo } from 'react';
 import { createTourEvent } from '@/app/(app)/shared/lib/google-tag-manager';
 import { Button } from '@/app/(app)/shared/components/ui/button';
@@ -12,14 +12,15 @@ import { Image } from '@/app/(app)/shared/components/image';
 
 export function HeroSection() {
   const appConfig = useAppConfig();
-  const { setIsOpen, setSteps } = useTour();
+  const { isOpen, setCurrentStep, setIsOpen, setSteps } = useTour();
   const { t } = useTranslation('page-home');
   const showHomePageTour = useFlag('showHomePageTour');
 
-  const tourSteps = useMemo(() => {
-    const steps = [
+  const tourSteps: StepType[] = useMemo((): StepType[] => {
+    const steps: StepType[] = [
       {
         selector: '.search-box',
+        position: 'center' as Position,
         content: (
           <div className="flex flex-col gap-2">
             <p>{t('tour.step_1.paragraph_1')}</p>
@@ -30,6 +31,7 @@ export function HeroSection() {
       },
       {
         selector: '.categories',
+        position: 'center' as Position,
         content: (
           <div className="flex flex-col gap-2">
             <p>{t('tour.step_2.paragraph_1')}</p>
@@ -47,6 +49,10 @@ export function HeroSection() {
 
     if (setSteps) {
       setSteps(tourSteps);
+    }
+
+    if (setCurrentStep) {
+      setCurrentStep(0);
     }
 
     setIsOpen(true);
@@ -78,7 +84,11 @@ export function HeroSection() {
         <Button
           onClick={enableTour}
           variant="outline"
-          className="hover:bg-primary hover:text-primary-foreground"
+          aria-controls="home-page-tour-dialog"
+          aria-expanded={isOpen ?? false}
+          aria-haspopup="dialog"
+          data-home-tour-trigger="true"
+          className="border-foreground/40 bg-background/95 text-foreground shadow-sm hover:bg-primary hover:text-primary-foreground focus-visible:border-foreground focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2"
         >
           {t('take_a_tour')}
         </Button>

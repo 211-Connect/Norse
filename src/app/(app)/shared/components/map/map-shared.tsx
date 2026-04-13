@@ -8,6 +8,7 @@ export type MarkerDef = {
   id: string;
   coordinates?: [number, number];
   popup?: React.ReactElement;
+  label?: string;
 };
 
 // Shared helpers
