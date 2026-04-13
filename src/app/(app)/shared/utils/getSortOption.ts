@@ -1,4 +1,7 @@
-import { isSortOption, SortOption } from '../services/search-service';
+export type SortOption = 'relevance' | 'distance' | 'name' | 'organization';
+export const isSortOption = (value: unknown): value is SortOption =>
+  typeof value === 'string' &&
+  ['relevance', 'distance', 'name', 'organization'].includes(value);
 
 export const getSortOption = (
   currentSort: string | null,

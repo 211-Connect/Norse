@@ -1,11 +1,6 @@
-import { ExtractAtomValue } from 'jotai';
+'use server';
 
-import {
-  buildSearchRequest,
-  deriveQueryType,
-  SearchRequestParams,
-} from '../lib/search-utils';
-import { searchAtom } from '../store/search';
+import { buildSearchRequest, deriveQueryType } from '../lib/search-utils';
 import { API_URL, INTERNAL_API_KEY } from '../lib/constants';
 import { fetchWrapper } from '../lib/fetchWrapper';
 import { transformFacetsToArray } from '../utils/toFacetsWithTranslation';
@@ -21,13 +16,9 @@ import { createLogger } from '@/lib/logger';
 import { formatAddressForDisplay } from '../lib/utils';
 import { stableHash, withCache } from '@/utilities/withCache';
 import { ResultType } from '../store/results';
+import { SortOption } from '../utils/getSortOption';
 
 const log = createLogger('search');
-
-export type SortOption = 'relevance' | 'distance' | 'name' | 'organization';
-export const isSortOption = (value: unknown): value is SortOption =>
-  typeof value === 'string' &&
-  ['relevance', 'distance', 'name', 'organization'].includes(value);
 
 export type FindResourcesQuery = {
   query?: string;
@@ -49,40 +40,6 @@ type SearchResult = {
   page: number;
   filters: FiltersMap;
 };
-
-export function createUrlParamsForSearch(
-  searchStore: ExtractAtomValue<typeof searchAtom>,
-  hybridSemanticSearchEnabled?: boolean,
-) {
-  const hasLocation = searchStore['searchCoordinates']?.length === 2;
-
-  const queryType = deriveQueryType({
-    query: searchStore.query,
-    originQueryType: searchStore.queryType,
-    hybridSemanticSearchEnabled,
-  });
-
-  const urlParams = {
-    query: searchStore.query?.trim(),
-    query_label: searchStore.queryLabel?.trim(),
-    query_type: queryType,
-    location: hasLocation ? searchStore.searchLocation?.trim() : null,
-    coords: hasLocation
-      ? searchStore.searchCoordinates?.join(',')?.trim()
-      : null,
-    distance:
-      searchStore.searchCoordinates?.length === 2
-        ? searchStore.searchDistance?.trim() || '0'
-        : '',
-  };
-
-  return Object.fromEntries(
-    Object.entries(urlParams).filter(
-      ([_, value]) =>
-        value != null && (typeof value !== 'string' || value.trim() !== ''),
-    ),
-  ) as Record<string, string>;
-}
 
 /**
  * Extract total results count from search response
@@ -259,15 +216,15 @@ async function findResourcesOrigin({
   };
 }
 
-export const findResources = (
+export async function findResources(
   query: FindResourcesQuery,
   locale: string,
   page: number,
   limit: number | undefined,
   tenantId: string | undefined,
   hybridSemanticSearchEnabled: boolean | undefined,
-) =>
-  withCache(
+) {
+  return withCache(
     `search_results:${tenantId}:${locale}:${stableHash({ query, page, limit })}`,
     () =>
       findResourcesOrigin({
@@ -281,6 +238,7 @@ export const findResources = (
     { redis: true, memory: false },
     (value) => value.results.length > 0,
   );
+}
 
 /**
  * Find resources using POST endpoint with advanced geospatial filtering
