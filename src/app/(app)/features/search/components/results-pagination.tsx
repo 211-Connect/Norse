@@ -28,6 +28,7 @@ export function ResultsPagination() {
         activePage={currentPage}
         siblings={1}
         boundaries={1}
+        focusTargetId="search-results-heading"
       />
     </div>
   );
