@@ -49,7 +49,7 @@ const getCustomAttributePropsOrig = ({
       interpolatedUrl,
     ].some((value) => value.includes('{{'))
   ) {
-    log.warn(
+    log.debug(
       {
         interpolatedTitle,
         interpolatedSubtitle,
