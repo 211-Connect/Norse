@@ -220,16 +220,12 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
     [setSearch, isStandalone],
   );
 
-  const suggestionsStatusMessage = useMemo(() => {
+  const listStatusMessage = useMemo(() => {
     if (options.length === 0) {
       return '';
     }
-    return t('search.suggestions_status', {
+    return t('search.list_status', {
       count: options.length,
-      defaultValue:
-        options.length === 1
-          ? '1 suggestion available. Use the up and down arrow keys to review.'
-          : `${options.length} suggestions available. Use the up and down arrow keys to review.`,
     });
   }, [options.length, t]);
 
@@ -255,11 +251,13 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
         onValueChange={setSearchLocation}
         value={searchLocation}
         clearButtonLabel={t('call_to_action.remove')}
-        suggestionsStatusMessage={suggestionsStatusMessage}
+        listStatusMessage={listStatusMessage}
         optionsPopoverClassName={`mt-2 max-h-[min(18rem,calc(100dvh-18rem))] ${isStandalone ? 'sm:max-h-[min(20rem,calc(100dvh-16rem))]' : 'sm:max-h-[min(20rem,calc(100dvh-22rem))]'}`}
         autoSelectIndex={coords?.length === 2 ? undefined : 1}
         autoSelectOnBlurIndex={1}
-        enterKeyBehavior={enterKeyFocusTargetId ? 'focus-target' : 'submit-form'}
+        enterKeyBehavior={
+          enterKeyFocusTargetId ? 'focus-target' : 'submit-form'
+        }
         enterKeyFocusTargetId={enterKeyFocusTargetId}
         blurOnOptionsInteraction
       />

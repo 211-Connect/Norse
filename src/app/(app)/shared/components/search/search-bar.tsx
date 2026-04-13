@@ -131,16 +131,12 @@ export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
     [searchTerm, setShouldSearch, setSearch],
   );
 
-  const suggestionsStatusMessage = useMemo(() => {
+  const listStatusMessage = useMemo(() => {
     if (options.length === 0) {
       return '';
     }
-    return t('search.suggestions_status', {
+    return t('search.list_status', {
       count: options.length,
-      defaultValue:
-        options.length === 1
-          ? '1 suggestion available. Use the up and down arrow keys to review.'
-          : `${options.length} suggestions available. Use the up and down arrow keys to review.`,
     });
   }, [options.length, t]);
 
@@ -162,7 +158,7 @@ export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
       onInputChange={handleInputChange}
       onValueChange={setSearchTerm}
       clearButtonLabel={t('call_to_action.remove')}
-      suggestionsStatusMessage={suggestionsStatusMessage}
+      listStatusMessage={listStatusMessage}
       optionsPopoverClassName="mt-2 max-h-[min(18rem,calc(100dvh-18rem))] sm:max-h-[min(20rem,calc(100dvh-22rem))]"
       value={searchTerm}
       blurOnOptionsInteraction

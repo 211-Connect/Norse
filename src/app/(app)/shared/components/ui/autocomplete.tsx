@@ -50,7 +50,6 @@ export type AutocompleteOption = {
 type AutocompleteOptionWithIndex = AutocompleteOption & { index: number };
 
 export type AutocompleteProps = {
-  /** Visually hidden label wired to the combobox input (required for a11y). */
   readerLabel: ReactNode;
   Icon?: ComponentType<{ className?: string }>;
   inputProps?: InputProps;
@@ -66,8 +65,7 @@ export type AutocompleteProps = {
   defaultOpen?: boolean;
   blurOnOptionsInteraction?: boolean;
   clearButtonLabel?: string;
-  /** Polite live-region text when the list is open (e.g. translated suggestion count). */
-  suggestionsStatusMessage?: string;
+  listStatusMessage?: string;
   enterKeyBehavior?: 'submit-form' | 'focus-target';
   enterKeyFocusTargetId?: string;
 };
@@ -113,7 +111,7 @@ export function Autocomplete(props: AutocompleteProps) {
     defaultOpen = false,
     blurOnOptionsInteraction = false,
     clearButtonLabel = 'Clear',
-    suggestionsStatusMessage: suggestionsStatusMessageProp,
+    listStatusMessage,
     enterKeyBehavior = 'submit-form',
     enterKeyFocusTargetId,
     ...rest
@@ -204,15 +202,6 @@ export function Autocomplete(props: AutocompleteProps) {
   const selectedOption = useMemo(() => {
     return rest.options?.find((option) => option.value === value);
   }, [rest.options, value]);
-
-  const totalOptions = rest.options?.length ?? 0;
-  const suggestionsStatusMessage =
-    open && totalOptions > 0
-      ? (suggestionsStatusMessageProp ??
-        `${
-          totalOptions === 1 ? '1 suggestion' : `${totalOptions} suggestions`
-        } available. Use the up and down arrow keys to review.`)
-      : '';
 
   // Attach refs
   useEffect(() => {
@@ -598,9 +587,11 @@ export function Autocomplete(props: AutocompleteProps) {
             aria-hidden="true"
           />
         )}
-        <div className="sr-only" role="status" aria-live="polite">
-          {suggestionsStatusMessage}
-        </div>
+        {listStatusMessage && (
+          <div className="sr-only" role="status" aria-live="polite">
+            {listStatusMessage}
+          </div>
+        )}
         <Input
           {...inputProps}
           id={effectiveInputId}
