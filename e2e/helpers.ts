@@ -151,6 +151,7 @@ export async function openTopicSearch(page: Page) {
     await expect(page.locator('#search-container')).toBeVisible({
       timeout: 20_000,
     });
+    await page.waitForLoadState('networkidle');
 
     return;
   }

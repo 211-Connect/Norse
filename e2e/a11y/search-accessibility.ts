@@ -191,10 +191,10 @@ test.describe('Search accessibility preservation', () => {
     const searchInput = page.locator('#search-input');
 
     await locationInput.fill('minneapolis');
-    await page.getByTestId('autocomplete-listbox').waitFor({
-      state: 'visible',
-      timeout: 10_000,
-    });
+    await locationInput
+      .locator('..')
+      .getByTestId('autocomplete-listbox')
+      .waitFor({ state: 'visible', timeout: 10_000 });
 
     await locationInput.press('Enter');
 
