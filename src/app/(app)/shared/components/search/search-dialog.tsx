@@ -12,7 +12,7 @@ import { SearchButton } from './search-button';
 import { Button } from '../ui/button';
 import { useFlag } from '../../hooks/use-flag';
 import { useAppConfig } from '../../hooks/use-app-config';
-import { createUrlParamsForSearch } from '../../services/search-service';
+import { useRouter } from 'next/navigation';
 import { useClientSearchParams } from '../../hooks/use-client-search-params';
 import { cn, getScrollbarWidth } from '../../lib/utils';
 import {
@@ -23,7 +23,7 @@ import {
   SEARCH_INPUT_ID,
 } from '../../lib/constants';
 import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
-
+import { createUrlParamsForSearch } from '../../utils/createUrlParamsForSearch';
 export interface SearchDialogProps {
   focusByDefault?: 'search' | 'location';
   open: boolean;
