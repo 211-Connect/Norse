@@ -42,6 +42,21 @@ export function Map({
   const _markers = useRef<mapboxgl.Marker[]>([]);
   const [mapError, setMapError] = useState<string | null>(null);
 
+  const applyMarkerSemantics = (
+    markerElement: HTMLElement,
+    interactive: boolean,
+  ) => {
+    if (!interactive) {
+      markerElement.removeAttribute('aria-label');
+      markerElement.removeAttribute('role');
+      markerElement.removeAttribute('tabindex');
+      markerElement.setAttribute('aria-hidden', 'true');
+      return;
+    }
+
+    markerElement.removeAttribute('aria-hidden');
+  };
+
   useEffect(() => {
     try {
       mapboxMap.current = new mapboxgl.Map({
@@ -96,14 +111,17 @@ export function Map({
       }
 
       const markerElement = marker.getElement();
-      markerElement.style.cursor = 'pointer';
       markerElement.classList.add('custom-marker');
-      markerElement.addEventListener('click', () => {
-        setTimeout(() => {
-          const listElement = document.getElementById(m.id);
-          listElement?.scrollIntoView();
+      if (m.popup) {
+        markerElement.style.cursor = 'pointer';
+        markerElement.addEventListener('click', () => {
+          setTimeout(() => {
+            const listElement = document.getElementById(m.id);
+            listElement?.scrollIntoView();
+          });
         });
-      });
+      }
+      applyMarkerSemantics(markerElement, !!m.popup);
 
       return marker;
     });
@@ -120,6 +138,7 @@ export function Map({
 
       const markerElement = marker.getElement();
       markerElement.classList.add('users-location-marker');
+      applyMarkerSemantics(markerElement, false);
       marker.addTo(mapboxMap.current);
 
       _markers.current.push(marker);
