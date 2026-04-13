@@ -67,7 +67,8 @@
     "login": "መግቢያ",
     "show_more": "ተጨማሪ አሳይ",
     "show_less": "ያነሰ አሳይ",
-    "print": "ህትመት"
+    "print": "ህትመት",
+    "close": "ዝጋ"
   },
   "list": {
     "private": "የግል",

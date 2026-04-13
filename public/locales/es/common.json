@@ -68,7 +68,8 @@
     "login": "Iniciar sesión",
     "show_more": "Mostrar más",
     "show_less": "Mostrar menos",
-    "print": "Impresión"
+    "print": "Imprimir",
+    "close": "Cerrar"
   },
   "list": {
     "private": "Privado",
@@ -117,7 +118,7 @@
       "linkedin": "LinkedIn (en inglés)",
       "sms": "SMS",
       "email": "Correo electrónico",
-      "print": "Impresión",
+      "print": "Imprimir",
       "copied": "¡Copiado!",
       "check_out_this_list": "¡Echa un vistazo a esta lista que hice!",
       "check_out_this_resource": "¡Echa un vistazo a este recurso que encontré!",

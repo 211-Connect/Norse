@@ -67,7 +67,8 @@
     "login": "Kuingia",
     "show_more": "Onyesha zaidi",
     "show_less": "Onyesha chini",
-    "print": "Chapisha"
+    "print": "Chapisha",
+    "close": "Funga"
   },
   "list": {
     "private": "Binafsi",

@@ -67,7 +67,8 @@
     "login": "लॉग इन करें",
     "show_more": "और दिखाएँ",
     "show_less": "कम दिखाएँ",
-    "print": "छाप"
+    "print": "छाप",
+    "close": "बंद"
   },
   "list": {
     "private": "निजी",

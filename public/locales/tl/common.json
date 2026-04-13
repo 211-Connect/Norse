@@ -67,7 +67,8 @@
     "login": "Mag-login",
     "show_more": "Magpakita pa",
     "show_less": "Ipakita nang mas kaunti",
-    "print": "I-print"
+    "print": "I-print",
+    "close": "Isara"
   },
   "list": {
     "private": "Pribado",

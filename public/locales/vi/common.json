@@ -67,7 +67,8 @@
     "login": "Đăng nhập",
     "show_more": "Hiển thị thêm",
     "show_less": "Hiển thị ít hơn",
-    "print": "In"
+    "print": "In",
+    "close": "Đóng"
   },
   "list": {
     "private": "Tư",

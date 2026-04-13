@@ -67,7 +67,8 @@
     "login": "로그인",
     "show_more": "더 보기",
     "show_less": "간단히 보기",
-    "print": "인쇄하다"
+    "print": "인쇄하다",
+    "close": "닫기"
   },
   "list": {
     "private": "민간의",

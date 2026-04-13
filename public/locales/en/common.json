@@ -74,7 +74,8 @@
     "login": "Login",
     "show_more": "Show more",
     "show_less": "Show less",
-    "print": "Print"
+    "print": "Print",
+    "close": "Close"
   },
   "list": {
     "private": "Private",
