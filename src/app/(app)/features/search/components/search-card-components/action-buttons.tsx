@@ -30,12 +30,12 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
             window.open(`tel:${result.phone}`);
           }}
         >
-          <Phone className="size-4" />{' '}
+          <Phone aria-hidden="true" className="size-4" />{' '}
           <span className="truncate"> {t('call_to_action.call')} </span>
         </ReferralButton>
 
         <ReferralButton
-          className="flex-1 gap-1 overflow-hidden"
+          className="min-h-8 flex-1 gap-1 whitespace-normal py-2"
           referralType="website_referral"
           size="sm"
           resourceId={result.id}
@@ -46,12 +46,14 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
             window.open(result.website, '_blank');
           }}
         >
-          <LinkIcon className="size-4" />{' '}
-          <span className="truncate">{t('call_to_action.view_website')}</span>
+          <LinkIcon aria-hidden="true" className="size-4 shrink-0" />{' '}
+          <span className="text-center leading-tight">
+            {t('call_to_action.view_website')}
+          </span>
         </ReferralButton>
 
         <GetDirectionsButton
-          className="overflow-hidden"
+          className="min-h-8 whitespace-normal py-2"
           data={result}
           coords={searchCoords}
         />
@@ -64,6 +66,7 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
             buttonVariants({ variant: 'ghost' }),
           )}
           href={`/search/${result.id}`}
+          aria-label={`${t('call_to_action.view_details')}: ${result.name}`}
         >
           {t('call_to_action.view_details')}
         </Link>
