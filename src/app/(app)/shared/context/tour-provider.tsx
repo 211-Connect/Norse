@@ -86,14 +86,18 @@ function patchDialogRole(popover: HTMLElement, tourLabel: string): void {
     title.className = 'sr-only';
     popover.prepend(title);
   }
-  title.textContent = tourLabel;
+  if (title.textContent !== tourLabel) {
+    title.textContent = tourLabel;
+  }
 }
 
 function patchDialogSizing(popover: HTMLElement): void {
   popover.style.width = 'min(36rem, calc(100vw - 2rem))';
   popover.style.maxWidth = 'calc(100vw - 2rem)';
   popover.style.maxHeight = 'calc(100dvh - 2rem)';
-  popover.style.overflowY = 'auto';
+  // overflow must stay visible so the step-badge (position:absolute; top:-0.8125em)
+  // is not clipped. Setting overflow-y:auto forces overflow-x to auto too, which
+  // creates a clipping context and hides the badge.
 }
 
 function patchCloseButton(popover: HTMLElement): void {
@@ -105,8 +109,20 @@ function patchCloseButton(popover: HTMLElement): void {
   closeButton.setAttribute('type', 'button');
   closeButton.style.width = '44px';
   closeButton.style.height = '44px';
-  closeButton.style.top = '16px';
-  closeButton.style.right = '16px';
+  closeButton.style.top = '8px';
+  closeButton.style.right = '8px';
+  closeButton.style.display = 'flex';
+  closeButton.style.alignItems = 'center';
+  closeButton.style.justifyContent = 'center';
+
+  // Without an explicit size the SVG (display:block) stretches to fill the
+  // 44×44 button, producing an oversized icon. Pin it to a readable size.
+  const svg = closeButton.querySelector<SVGElement>('svg');
+  if (svg) {
+    svg.style.width = '16px';
+    svg.style.height = '16px';
+    svg.style.flexShrink = '0';
+  }
 }
 
 function patchPaginationDots(
@@ -117,10 +133,11 @@ function patchPaginationDots(
     const isActive = index === currentStep;
     button.setAttribute('type', 'button');
     button.setAttribute('aria-current', isActive ? 'step' : 'false');
-    button.style.width = '44px';
-    button.style.height = '44px';
+    button.style.width = '14px';
+    button.style.height = '14px';
     button.style.margin = '0';
     button.style.borderRadius = '9999px';
+    button.style.borderStyle = 'solid';
     button.style.borderWidth = '2px';
     button.style.borderColor = isActive
       ? 'var(--reactour-accent, #005ea2)'
