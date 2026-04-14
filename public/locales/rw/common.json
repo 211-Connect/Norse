@@ -47,7 +47,14 @@
     "geocoding_unable_to_retrieve": "Ntibishoboka kubona aho uherereye. Nyamuneka reba imiterere y'aho uherereye muri mushakisha yawe hanyuma wongere ugerageze.",
     "categories": "Ingingo",
     "show_all": "Erekana byose ({{count}})",
-    "show_less": "Erekana bike"
+    "show_less": "Erekana bike",
+    "query_input_label": "Shakisha amikoro",
+    "location_input_label": "Shakisha ahantu runaka",
+    "change_location_label": "Hindura aho uherereye: {{aho uherereye}}",
+    "open_search_dialog": "Fungura ikiganiro cy'ishakisha",
+    "list_status_one": "Hari uburyo bumwe buhari. Koresha utubuto two hejuru no hasi kugira ngo urebe.",
+    "list_status_other": "Amahitamo ya {{count}} arahari. Koresha utubuto two hejuru no hasi kugira ngo urebe.",
+    "search_dialog_description": "Shakisha amakuru ajyanye n'aho uherereye hanyuma uvugurure aho uherereye."
   },
   "call_to_action": {
     "call": "Hamagara",
@@ -68,7 +75,8 @@
     "show_more": "Erekana byinshi",
     "show_less": "Erekana bike",
     "print": "Capa",
-    "close": "Funga"
+    "close": "Funga",
+    "send": "Ohereza"
   },
   "list": {
     "private": "Ibanga",
@@ -128,7 +136,9 @@
       "sms_send_success_title": "Ubutumwa bugufi bwoherejwe!",
       "sms_send_success_body": "Ubutumwa bwawe bwoherejwe.",
       "sms_send_failed_title": "Kohereza ubutumwa bugufi byanze",
-      "sms_send_failed_body": "Ubutumwa bwawe bwananiwe koherezwa."
+      "sms_send_failed_body": "Ubutumwa bwawe bwananiwe koherezwa.",
+      "opens_in_new_tab": "ifunguka mu gasanduku gashya",
+      "phone_number_label": "Nimero ya terefone"
     },
     "prompt_auth": "Injira kugira ngo ukoreshe iki gikorwa.",
     "manage_favorites": {
@@ -148,5 +158,7 @@
     "previous": "Ibanjirije",
     "next": "Ibikurikiraho",
     "go_to": "Jya kuri"
-  }
+  },
+  "filter_results_count_one": "Ibisubizo bya {{count}}",
+  "filter_results_count_other": "Ibisubizo {{count}}"
 }

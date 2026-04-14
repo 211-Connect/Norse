@@ -47,7 +47,14 @@
     "geocoding_unable_to_retrieve": "無法取得您的位置資訊。請檢查瀏覽器的位置設定並重試。",
     "categories": "主題",
     "show_all": "顯示全部（{{count}}）",
-    "show_less": "顯示更少"
+    "show_less": "顯示更少",
+    "query_input_label": "搜尋資源",
+    "location_input_label": "搜尋位置",
+    "change_location_label": "更改位置：{{location}}",
+    "open_search_dialog": "開啟搜尋對話框",
+    "list_status_one": "僅剩 1 個選項。請使用上下箭頭鍵進行查看。",
+    "list_status_other": "共有 {{count}} 個選項可用。使用上下箭頭鍵進行查看。",
+    "search_dialog_description": "搜尋資源並更新您的位置。"
   },
   "call_to_action": {
     "call": "稱呼",
@@ -68,7 +75,8 @@
     "show_more": "顯示更多",
     "show_less": "顯示更少",
     "print": "列印",
-    "close": "關閉"
+    "close": "關閉",
+    "send": "傳送"
   },
   "list": {
     "private": "私人的",
@@ -128,7 +136,9 @@
       "sms_send_success_title": "簡訊已發送！",
       "sms_send_success_body": "您的訊息已發送。",
       "sms_send_failed_title": "簡訊發送失敗",
-      "sms_send_failed_body": "您的訊息發送失敗。"
+      "sms_send_failed_body": "您的訊息發送失敗。",
+      "opens_in_new_tab": "在新分頁中開啟",
+      "phone_number_label": "電話號碼"
     },
     "prompt_auth": "請登入後使用此功能。",
     "manage_favorites": {
@@ -148,5 +158,7 @@
     "previous": "以前的",
     "next": "下一個",
     "go_to": "前往"
-  }
+  },
+  "filter_results_count_one": "{{count}} 結果",
+  "filter_results_count_other": "{{count}} 個結果"
 }

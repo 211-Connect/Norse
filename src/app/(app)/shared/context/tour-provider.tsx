@@ -156,11 +156,13 @@ function patchNavButtons(
   const previousButton = getPrevButton(controlsDiv);
   const nextButton = getNextButton(controlsDiv);
 
-  const entries: Array<{ button: HTMLButtonElement | null; disabled: boolean }> =
-    [
-      { button: previousButton, disabled: currentStep === 0 },
-      { button: nextButton, disabled: currentStep === stepCount - 1 },
-    ];
+  const entries: Array<{
+    button: HTMLButtonElement | null;
+    disabled: boolean;
+  }> = [
+    { button: previousButton, disabled: currentStep === 0 },
+    { button: nextButton, disabled: currentStep === stepCount - 1 },
+  ];
 
   entries.forEach(({ button, disabled }) => {
     if (!button) return;
@@ -214,7 +216,7 @@ function TourAccessibilityEnhancer() {
     }
 
     const stepCount = steps?.length ?? 0;
-    const tourLabel = t('tour.dialog_title', { defaultValue: 'Site Walkthrough' });
+    const tourLabel = t('tour.dialog_title');
 
     // Re-entrancy guard: DOM mutations from patchTourPopover would otherwise
     // re-trigger the MutationObserver in a loop.

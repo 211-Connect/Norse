@@ -47,7 +47,14 @@
     "geocoding_unable_to_retrieve": "Awoodi kari la'aanta inaad soo celiso goobtaada. Fadlan hubi goobaha goobta biraawsarkaaga oo mar kale isku day.",
     "categories": "Mawduucyada",
     "show_all": "Show all ({{count}})",
-    "show_less": "Show less"
+    "show_less": "Show less",
+    "query_input_label": "Raadi kheyraad",
+    "location_input_label": "Raadi goob",
+    "change_location_label": "Beddel goobta: {{goobta}}",
+    "open_search_dialog": "Fur wadahadalka raadinta",
+    "list_status_one": "1 ikhtiyaar ayaa diyaar ah. Isticmaal furayaasha fallaadha kor iyo hoos si aad u eegto.",
+    "list_status_other": "Ikhtiyaarada {{count}} ayaa diyaar ah. Isticmaal furayaasha fallaadha kor iyo hoos si aad u eegto.",
+    "search_dialog_description": "Raadi kheyraad oo cusbooneysii goobtaada."
   },
   "call_to_action": {
     "call": "Wac",
@@ -68,7 +75,8 @@
     "show_more": "Muuji more",
     "show_less": "muuji wax yar",
     "print": "Haku",
-    "close": "Xidh"
+    "close": "Xidh",
+    "send": "Dir"
   },
   "list": {
     "private": "Private",
@@ -128,7 +136,9 @@
       "sms_send_success_title": "SMS diray!",
       "sms_send_success_body": "Fariin ayaa laguu soo diray.",
       "sms_send_failed_title": "SMS diri fashilmay",
-      "sms_send_failed_body": "Fariintaadu way guul darreysatay in ay dirto."
+      "sms_send_failed_body": "Fariintaadu way guul darreysatay in ay dirto.",
+      "opens_in_new_tab": "wuxuu ku furmayaa tab cusub",
+      "phone_number_label": "Lambarka taleefanka"
     },
     "prompt_auth": "Fadlan gal si aad u isticmaasho habkaani.",
     "manage_favorites": {
@@ -148,5 +158,7 @@
     "previous": "Kii hore",
     "next": "Xiga",
     "go_to": "Tag"
-  }
+  },
+  "filter_results_count_one": "Natiijadii {{tirinta}}",
+  "filter_results_count_other": "Natiijooyinka {{tirinta}}"
 }

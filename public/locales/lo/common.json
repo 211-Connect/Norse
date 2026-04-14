@@ -47,7 +47,14 @@
     "geocoding_unable_to_retrieve": "ບໍ່ສາມາດດຶງຂໍ້ມູນສະຖານທີ່ຂອງທ່ານໄດ້. ກະລຸນາກວດສອບການຕັ້ງຄ່າສະຖານທີ່ຂອງໂປຣແກຣມທ່ອງເວັບຂອງທ່ານ ແລະ ລອງໃໝ່ອີກຄັ້ງ.",
     "categories": "ຫົວຂໍ້ຕ່າງໆ",
     "show_all": "ສະແດງທັງໝົດ ({{count}})",
-    "show_less": "ສະແດງໜ້ອຍລົງ"
+    "show_less": "ສະແດງໜ້ອຍລົງ",
+    "query_input_label": "ຄົ້ນຫາຊັບພະຍາກອນ",
+    "location_input_label": "ຄົ້ນຫາສະຖານທີ່",
+    "change_location_label": "ປ່ຽນສະຖານທີ່: {{location}}",
+    "open_search_dialog": "ເປີດກ່ອງໂຕ້ຕອບການຄົ້ນຫາ",
+    "list_status_one": "ມີ 1 ທາງເລືອກ. ໃຊ້ປຸ່ມລູກສອນຂຶ້ນ ແລະ ລົງເພື່ອກວດສອບ.",
+    "list_status_other": "ມີຕົວເລືອກ {{count}}. ໃຊ້ປຸ່ມລູກສອນຂຶ້ນ ແລະ ລົງເພື່ອທົບທວນຄືນ.",
+    "search_dialog_description": "ຄົ້ນຫາຊັບພະຍາກອນ ແລະ ອັບເດດສະຖານທີ່ຂອງທ່ານ."
   },
   "call_to_action": {
     "call": "ໂທ",
@@ -68,7 +75,8 @@
     "show_more": "ສະແດງເພີ່ມເຕີມ",
     "show_less": "ສະແດງໜ້ອຍລົງ",
     "print": "ພິມ",
-    "close": "ປິດ"
+    "close": "ປິດ",
+    "send": "ສົ່ງ"
   },
   "list": {
     "private": "ສ່ວນຕົວ",
@@ -128,7 +136,9 @@
       "sms_send_success_title": "ສົ່ງ SMS ແລ້ວ!",
       "sms_send_success_body": "ຂໍ້ຄວາມຂອງທ່ານຖືກສົ່ງໄປແລ້ວ.",
       "sms_send_failed_title": "ສົ່ງ SMS ບໍ່ສຳເລັດ",
-      "sms_send_failed_body": "ສົ່ງຂໍ້ຄວາມຂອງທ່ານບໍ່ສຳເລັດ."
+      "sms_send_failed_body": "ສົ່ງຂໍ້ຄວາມຂອງທ່ານບໍ່ສຳເລັດ.",
+      "opens_in_new_tab": "ເປີດໃນແຖບໃໝ່",
+      "phone_number_label": "ເບີໂທລະສັບ"
     },
     "prompt_auth": "ກະລຸນາເຂົ້າສູ່ລະບົບເພື່ອໃຊ້ຄຸນສົມບັດນີ້.",
     "manage_favorites": {
@@ -148,5 +158,7 @@
     "previous": "ກ່ອນໜ້ານີ້",
     "next": "ຕໍ່ໄປ",
     "go_to": "ໄປທີ່"
-  }
+  },
+  "filter_results_count_one": "ຜົນໄດ້ຮັບ {{count}}",
+  "filter_results_count_other": "ຜົນໄດ້ຮັບ {{count}}"
 }

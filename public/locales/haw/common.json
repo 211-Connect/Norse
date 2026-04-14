@@ -47,7 +47,14 @@
     "geocoding_unable_to_retrieve": "ʻAʻole hiki ke kiʻi i kou wahi. E ʻoluʻolu e nānā i nā hoʻonohonoho wahi o kāu polokalamu kele pūnaewele a hoʻāʻo hou.",
     "categories": "Nā Kumuhana",
     "show_all": "Hōʻike i nā mea a pau ({{count}})",
-    "show_less": "Hōʻike emi mai"
+    "show_less": "Hōʻike emi mai",
+    "query_input_label": "E huli i nā kumuwaiwai",
+    "location_input_label": "E huli i kahi wahi",
+    "change_location_label": "Hoʻololi i ka wahi: {{location}}",
+    "open_search_dialog": "E wehe i ka pahu kamaʻilio hulina",
+    "list_status_one": "1 koho i loaʻa. E hoʻohana i nā kī pua i luna a i lalo e loiloi.",
+    "list_status_other": "Loaʻa nā koho {{count}}. E hoʻohana i nā kī pua i luna a i lalo e loiloi.",
+    "search_dialog_description": "E ʻimi i nā kumuwaiwai a hoʻohou i kou wahi."
   },
   "call_to_action": {
     "call": "Kāhea",
@@ -68,7 +75,8 @@
     "show_more": "Hōʻike hou aku",
     "show_less": "Hōʻike emi mai",
     "print": "Paʻi",
-    "close": "Pani"
+    "close": "Pani",
+    "send": "Hoʻouna"
   },
   "list": {
     "private": "Pilikino",
@@ -128,7 +136,9 @@
       "sms_send_success_title": "Ua hoʻouna ʻia ka SMS!",
       "sms_send_success_body": "Ua hoʻouna ʻia kāu leka.",
       "sms_send_failed_title": "Ua hāʻule ka hoʻouna ʻana o ka SMS",
-      "sms_send_failed_body": "ʻAʻole i hoʻouna ʻia kāu leka."
+      "sms_send_failed_body": "ʻAʻole i hoʻouna ʻia kāu leka.",
+      "opens_in_new_tab": "wehe ʻia ma kahi pā hou",
+      "phone_number_label": "Helu kelepona"
     },
     "prompt_auth": "E ʻoluʻolu e komo e hoʻohana i kēia hiʻona.",
     "manage_favorites": {
@@ -148,5 +158,7 @@
   },
   "footer": {
     "copyright": "© Kuleana kope {{text}}"
-  }
+  },
+  "filter_results_count_one": "hopena {{count}}",
+  "filter_results_count_other": "Nā hopena {{count}}"
 }

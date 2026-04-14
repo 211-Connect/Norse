@@ -47,7 +47,14 @@
     "geocoding_unable_to_retrieve": "搵唔到你嘅位置。請檢查瀏覽器嘅位置設定，然後試多一次。",
     "categories": "主題",
     "show_all": "顯示全部（ { { 計數 } } ）",
-    "show_less": "顯示少啲"
+    "show_less": "顯示少啲",
+    "query_input_label": "搵資源",
+    "location_input_label": "搵個位置",
+    "change_location_label": "更改位置： { { 位置 } }",
+    "open_search_dialog": "打開搜尋對話方塊",
+    "list_status_one": "1 個選項可用。用上下箭頭鍵嚟睇返。",
+    "list_status_other": "有 {{ 計數 }} 選項。用上下箭頭鍵嚟睇返。",
+    "search_dialog_description": "搜尋資源同埋更新你嘅位置。"
   },
   "call_to_action": {
     "call": "叫",
@@ -68,7 +75,8 @@
     "show_more": "顯示更多",
     "show_less": "顯示少啲",
     "print": "列印",
-    "close": "關閉"
+    "close": "關閉",
+    "send": "寄送"
   },
   "list": {
     "private": "私人",
@@ -128,7 +136,9 @@
       "sms_send_success_title": "短訊已經發送咗！",
       "sms_send_success_body": "你嘅訊息已經發送咗。",
       "sms_send_failed_title": "短訊發送失敗",
-      "sms_send_failed_body": "你嘅訊息發送唔到。"
+      "sms_send_failed_body": "你嘅訊息發送唔到。",
+      "opens_in_new_tab": "喺新標籤入面打開",
+      "phone_number_label": "電話號碼"
     },
     "prompt_auth": "請登入以使用此功能。",
     "manage_favorites": {
@@ -148,5 +158,7 @@
     "previous": "之前",
     "next": "下一個",
     "go_to": "去到"
-  }
+  },
+  "filter_results_count_one": "{{ 計數 }} 結果",
+  "filter_results_count_other": "{{ 計數 }} 結果"
 }

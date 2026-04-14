@@ -35,6 +35,7 @@
     "query_input_label": "Search for resources",
     "location_placeholder": "City, state, or ZIP code",
     "location_input_label": "Search for a location",
+    "search_dialog_description": "Search for resources and update your location.",
     "radius_placeholder": "Radius",
     "miles": "Miles",
     "miles_short": "mi",
@@ -157,5 +158,7 @@
   },
   "footer": {
     "copyright": "© Copyright {{text}}"
-  }
+  },
+  "filter_results_count_one": "{{count}} result",
+  "filter_results_count_other": "{{count}} results"
 }

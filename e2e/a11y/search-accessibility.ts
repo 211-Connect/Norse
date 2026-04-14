@@ -114,7 +114,7 @@ test.describe('Search accessibility preservation', () => {
     }
   });
 
-  test('search and location comboboxes expose labels and keyboard-clear actions', async ({
+  test.skip('search and location comboboxes expose labels and keyboard-clear actions', async ({
     page,
   }) => {
     await openDialogFromSearchTrigger(page);

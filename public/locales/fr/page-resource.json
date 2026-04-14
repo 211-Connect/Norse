@@ -27,5 +27,6 @@
   "providing_organization": "Organisation fournissant le service",
   "interpretation_services": "Services d'interprétation",
   "other_information": "Autres informations",
-  "organization_url": "URL de l'organisation"
+  "organization_url": "URL de l'organisation",
+  "contacts": "Pour accéder à ce service, veuillez contacter :"
 }

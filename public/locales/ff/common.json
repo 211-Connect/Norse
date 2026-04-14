@@ -47,7 +47,14 @@
     "geocoding_unable_to_retrieve": "Waawaa heɓtude nokku maa. Tiiɗno ƴeewto dottaaɗe nokkuure feerorde maa, enndito-ɗaa kadi.",
     "categories": "Tiitooɗe",
     "show_all": "Hollit fof ({{limto}})",
-    "show_less": "Hollit ko famɗi"
+    "show_less": "Hollit ko famɗi",
+    "query_input_label": "Yiylo jawdi",
+    "location_input_label": "Yiylo nokku",
+    "change_location_label": "Waylu nokku: {{nokku}}",
+    "open_search_dialog": "Uddit kaɓirgol njiylawu",
+    "list_status_one": "1 cuɓal ina woodi. Huutoro jokkorgal dow e les ngam ƴeewtaade.",
+    "list_status_other": "{{limto}} cuɓe ina ngoodi. Huutoro jokkorgal dow e les ngam ƴeewtaade.",
+    "search_dialog_description": "Yiylo geɗe e kesɗitin nokku maa."
   },
   "call_to_action": {
     "call": "Ewnandu",
@@ -68,7 +75,8 @@
     "show_more": "Hollit ko ɓuri ɗum",
     "show_less": "Hollit ko famɗi",
     "print": "Tappirde",
-    "close": "Uddu"
+    "close": "Uddu",
+    "send": "Neldugo"
   },
   "list": {
     "private": "Feerejo",
@@ -128,7 +136,9 @@
       "sms_send_success_title": "SMS neldaama!",
       "sms_send_success_body": "Mesaas maa neldaama.",
       "sms_send_failed_title": "Neldude SMS ŋakki",
-      "sms_send_failed_body": "Mesaas maa waawaa neldeede."
+      "sms_send_failed_body": "Mesaas maa waawaa neldeede.",
+      "opens_in_new_tab": "udditaa e tab keso",
+      "phone_number_label": "Limoore telefoŋ"
     },
     "prompt_auth": "Tiiɗno, naata ngam huutoraade ngalɗoo gollal.",
     "manage_favorites": {
@@ -148,5 +158,7 @@
     "previous": "Je sali",
     "next": "Tokki",
     "go_to": "Yah to"
-  }
+  },
+  "filter_results_count_one": "{{limto}} njeñtudi",
+  "filter_results_count_other": "{{limto}} njeñtudi ndii"
 }

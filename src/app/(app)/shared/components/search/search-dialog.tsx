@@ -247,9 +247,7 @@ export function SearchDialog({
         {t('header.search')}
       </h2>
       <p className="sr-only" id={SEARCH_DIALOG_DESCRIPTION_ID}>
-        {t('search.search_dialog_description', {
-          defaultValue: 'Search for resources and update your location.',
-        })}
+        {t('search.search_dialog_description')}
       </p>
       <div className="flex h-full w-full max-w-full justify-center !rounded-none border-0">
         {open && (
@@ -269,11 +267,13 @@ export function SearchDialog({
               </Button>
               <SearchButton loading={isPending} />
             </div>
-            <SearchBar inputId={SEARCH_INPUT_ID} />
-            <LocationSearchBar
-              inputId={LOCATION_INPUT_ID}
-              enterKeyFocusTargetId={SEARCH_INPUT_ID}
-            />
+            <div id="search-form-inputs">
+              <SearchBar
+                inputId={SEARCH_INPUT_ID}
+                enterKeyFocusTargetId={LOCATION_INPUT_ID}
+              />
+              <LocationSearchBar inputId={LOCATION_INPUT_ID} className="mt-4" />
+            </div>
           </form>
         )}
       </div>

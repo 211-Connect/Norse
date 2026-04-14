@@ -48,9 +48,9 @@ const Filters = ({ filters, filterKeys }: FiltersProps) => {
     Record<string, boolean>
   >({});
   const expandButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
-  const firstHiddenFilterRefs = useRef<Record<string, HTMLButtonElement | null>>(
-    {},
-  );
+  const firstHiddenFilterRefs = useRef<
+    Record<string, HTMLButtonElement | null>
+  >({});
 
   useEffect(() => {
     setIsPending(false);
@@ -180,7 +180,9 @@ const Filters = ({ filters, filterKeys }: FiltersProps) => {
                           aria-label={b.key}
                           id={b.key}
                           disabled={isPending}
-                          checked={currentFilters[key]?.includes(b.key) ?? false}
+                          checked={
+                            currentFilters[key]?.includes(b.key) ?? false
+                          }
                           onCheckedChange={(checked) =>
                             toggleFilter(key, b.key, !!checked)
                           }
@@ -191,21 +193,20 @@ const Filters = ({ filters, filterKeys }: FiltersProps) => {
                         className="bg-[rgba(0,0,0,0.03)]"
                         variant="outline"
                       >
-                        <span id={countId}>
-                          {t('filter_results_count', {
-                            defaultValue: '{{count}} results',
+                        <span
+                          id={countId}
+                          aria-label={t('filter_results_count', {
                             count: b.doc_count,
                           })}
+                        >
+                          {b.doc_count}
                         </span>
                       </Badge>
                     </div>
                   );
                 })}
                 {hiddenList.length > 0 && isExpanded && (
-                  <div
-                    id={expandedListId}
-                    className="flex flex-col gap-2"
-                  >
+                  <div id={expandedListId} className="flex flex-col gap-2">
                     {hiddenList.map((b, index) => {
                       const hiddenIndex = visibleList.length + index;
                       const countId = `filter-count-${sanitizedKey}-${hiddenIndex}`;
@@ -242,11 +243,13 @@ const Filters = ({ filters, filterKeys }: FiltersProps) => {
                             className="bg-[rgba(0,0,0,0.03)]"
                             variant="outline"
                           >
-                            <span id={countId}>
-                              {t('filter_results_count', {
-                                defaultValue: '{{count}} results',
+                            <span
+                              id={countId}
+                              aria-label={t('filter_results_count', {
                                 count: b.doc_count,
                               })}
+                            >
+                              {b.doc_count}
                             </span>
                           </Badge>
                         </div>
