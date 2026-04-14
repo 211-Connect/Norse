@@ -11,6 +11,7 @@ import {
   EligibilityComponent,
   RequiredDocumentsComponent,
   HoursComponent,
+  ContactsComponent,
   PhoneNumbersComponent,
   WebsiteComponent,
   EmailComponent,
@@ -54,6 +55,7 @@ export const componentRegistry: Record<
   [ResourceComponentId.ELIGIBILITY]: EligibilityComponent,
   [ResourceComponentId.REQUIRED_DOCUMENTS]: RequiredDocumentsComponent,
   [ResourceComponentId.HOURS]: HoursComponent,
+  [ResourceComponentId.CONTACTS]: ContactsComponent,
   [ResourceComponentId.PHONE_NUMBERS]: PhoneNumbersComponent,
   [ResourceComponentId.WEBSITE]: WebsiteComponent,
   [ResourceComponentId.ORGANIZATION_URL]: OrganizationUrlComponent,
@@ -117,6 +119,8 @@ export function shouldComponentRender(
       return Boolean(resource.requiredDocuments);
     case ResourceComponentId.HOURS:
       return Boolean(resource.hours);
+    case ResourceComponentId.CONTACTS:
+      return Boolean(resource.contacts && resource.contacts.length > 0);
     case ResourceComponentId.PHONE_NUMBERS:
       return Boolean(resource.phoneNumbers && resource.phoneNumbers.length > 0);
     case ResourceComponentId.WEBSITE:

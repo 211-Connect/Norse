@@ -4,6 +4,7 @@ export * from './application-process';
 export * from './attribution';
 export * from './badges';
 export * from './categories';
+export * from './contacts';
 export * from './custom-attribute';
 export * from './description';
 export * from './eligibility';

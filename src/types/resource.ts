@@ -87,6 +87,14 @@ export interface Translation {
   accessibility?: string;
   facets?: Facet[];
   attributeValues?: Record<string, string>;
+  contacts: Array<{
+    id: string;
+    name: string;
+    title?: string;
+    email?: string;
+    phones?: PhoneNumber[];
+    priority: number;
+  }>;
 }
 
 export interface ApiResource {
@@ -153,4 +161,5 @@ export interface Resource {
   facets: FacetWithTranslation[] | null | undefined;
   translations?: Translation[];
   attributeValues?: Record<string, string> | null;
+  contacts: Translation['contacts'] | null | undefined;
 }

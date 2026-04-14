@@ -37,7 +37,7 @@ export function PhoneNumbersComponent({ resource }: { resource: Resource }) {
   }
 
   return (
-    <div className="flex flex-wrap gap-4">
+    <div className="flex flex-wrap">
       {mappedPhoneNumbers.map(({ description, Icon, label, number }) => (
         <Datum
           key={number}
@@ -54,6 +54,7 @@ export function PhoneNumbersComponent({ resource }: { resource: Resource }) {
           urlTarget="_self"
           titleBelow
           shouldParseHtml={false}
+          className="w-1/2"
         />
       ))}
     </div>

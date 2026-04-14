@@ -17,6 +17,7 @@ export enum ResourceComponentId {
   HOURS = 'hours',
 
   // Contact
+  CONTACTS = 'contacts',
   PHONE_NUMBERS = 'phoneNumbers',
   WEBSITE = 'website',
   ORGANIZATION_URL = 'organizationUrl',
