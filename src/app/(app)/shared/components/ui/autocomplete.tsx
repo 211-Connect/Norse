@@ -57,17 +57,17 @@ export type AutocompleteProps = {
   className?: string;
   onInputChange?: (value: string) => void;
   onValueChange?: (value: string, option?: AutocompleteOption) => void;
+  onClear?: () => void;
   value?: string;
   defaultValue?: string;
   autoSelectIndex?: number;
   autoSelectOnBlurIndex?: number;
-  optionsPopoverClassName?: string;
   defaultOpen?: boolean;
-  blurOnOptionsInteraction?: boolean;
   clearButtonLabel?: string;
   listStatusMessage?: string;
   enterKeyBehavior?: 'submit-form' | 'focus-target';
   enterKeyFocusTargetId?: string;
+  positionBelowElementId?: string;
 };
 
 const useMouseMovement = () => {
@@ -103,17 +103,17 @@ export function Autocomplete(props: AutocompleteProps) {
     className,
     onInputChange,
     onValueChange,
+    onClear,
     defaultValue,
     autoSelectIndex,
     autoSelectOnBlurIndex,
     value: inputValue,
-    optionsPopoverClassName,
     defaultOpen = false,
-    blurOnOptionsInteraction = false,
     clearButtonLabel = 'Clear',
     listStatusMessage,
     enterKeyBehavior = 'submit-form',
     enterKeyFocusTargetId,
+    positionBelowElementId,
     ...rest
   } = props;
 
@@ -128,6 +128,9 @@ export function Autocomplete(props: AutocompleteProps) {
   const [uniqueId, setUniqueId] = useState('');
   const [open, setOpen] = useState(defaultOpen);
   const [currentIndex, setCurrentIndex] = useState(-1);
+  const [referenceWidth, setReferenceWidth] = useState<number | undefined>(
+    undefined,
+  );
   const [value, setValue] = useUncontrolled<string>({
     value: inputValue,
     defaultValue,
@@ -144,47 +147,30 @@ export function Autocomplete(props: AutocompleteProps) {
     if (!options) return [];
 
     let index = 0;
-    const groupedOptions = options
-      .sort((a, b) => {
-        const groupA = a?.group?.toUpperCase();
-        const groupB = b?.group?.toUpperCase();
+    const groupedOptions: Array<[string, AutocompleteOptionWithIndex[]]> = [];
+    const groupMap = new Map<string, AutocompleteOptionWithIndex[]>();
+    const groupOrder: string[] = [];
 
-        if (groupA === undefined && groupB === undefined) {
-          return 0;
-        }
+    // Preserve the original order of groups
+    options.forEach((option) => {
+      const group = option.group ?? '_';
 
-        if (groupA === undefined) {
-          return 1;
-        }
+      if (!groupMap.has(group)) {
+        groupMap.set(group, []);
+        groupOrder.push(group);
+      }
 
-        if (groupB === undefined) {
-          return -1;
-        }
+      const { group: _, ...rest } = option;
+      groupMap.get(group)!.push({ ...rest, index });
+      index++;
+    });
 
-        if (groupA < groupB) {
-          return -1;
-        }
+    // Return groups in the order they were first encountered
+    groupOrder.forEach((group) => {
+      groupedOptions.push([group, groupMap.get(group)!]);
+    });
 
-        if (groupA > groupB) {
-          return 1;
-        }
-
-        return 0;
-      })
-      .reduce<Record<string, AutocompleteOptionWithIndex[]>>((acc, option) => {
-        const group = option.group ?? '_';
-        if (!acc[group]) {
-          acc[group] = [];
-        }
-
-        const { group: _, ...rest } = option;
-
-        acc[group].push({ ...rest, index });
-        index++;
-        return acc;
-      }, {});
-
-    return Object.entries(groupedOptions).map(([key, value]) => [key, value]);
+    return groupedOptions;
   }, [rest.options]);
 
   // Floating UI
@@ -197,6 +183,7 @@ export function Autocomplete(props: AutocompleteProps) {
     placement: 'bottom-start',
     middleware: [offset(4), flip(), shift()],
     whileElementsMounted: autoUpdate,
+    strategy: positionBelowElementId ? 'fixed' : 'absolute',
   });
 
   const selectedOption = useMemo(() => {
@@ -205,10 +192,19 @@ export function Autocomplete(props: AutocompleteProps) {
 
   // Attach refs
   useEffect(() => {
-    if (referenceElement) refs.setReference(referenceElement);
+    if (positionBelowElementId) {
+      const targetElement = document.getElementById(positionBelowElementId);
+      if (targetElement) {
+        refs.setReference(targetElement);
+        setReferenceWidth(targetElement.offsetWidth);
+      }
+    } else if (referenceElement) {
+      refs.setReference(referenceElement);
+      setReferenceWidth(undefined);
+    }
     if (popperElement) refs.setFloating(popperElement);
     if (update) update();
-  }, [referenceElement, popperElement, refs, update]);
+  }, [referenceElement, popperElement, refs, update, positionBelowElementId]);
 
   const wrapperElementRef = useRef<HTMLDivElement>(null);
 
@@ -484,13 +480,19 @@ export function Autocomplete(props: AutocompleteProps) {
     (e?: MouseEvent) => {
       e?.preventDefault();
       setCurrentIndex(-1);
-      setValue('');
-      onInputChange?.('');
+
+      if (onClear) {
+        onClear();
+      } else {
+        setValue('');
+        onInputChange?.('');
+      }
+
       referenceElement?.focus();
       setOpen(true);
       setLastManualInput('');
     },
-    [setValue, onInputChange, referenceElement],
+    [setValue, onInputChange, onClear, referenceElement],
   );
 
   const handleOptionMouseEnter = useCallback(
@@ -548,11 +550,9 @@ export function Autocomplete(props: AutocompleteProps) {
   }, []);
 
   const touchOnList = useCallback(() => {
-    if (blurOnOptionsInteraction) {
-      stayOpenOnBlurRef.current = true;
-      referenceElement?.blur();
-    }
-  }, [blurOnOptionsInteraction, referenceElement]);
+    stayOpenOnBlurRef.current = true;
+    referenceElement?.blur();
+  }, [referenceElement]);
 
   useEffect(() => {
     setTempValue(value ?? '');
@@ -652,9 +652,16 @@ export function Autocomplete(props: AutocompleteProps) {
             aria-multiselectable="false"
             ref={setPopperElement}
             className={cn(
-              'absolute z-10 max-h-56 w-full animate-opacity-in overflow-auto overscroll-contain bg-white',
-              optionsPopoverClassName,
+              'z-10 animate-opacity-in overflow-auto overscroll-contain bg-white',
+              !referenceWidth && 'w-full',
+              'mt-2 max-h-[min(18rem,calc(100dvh-18rem))]',
             )}
+            style={{
+              position: strategy,
+              top: y ?? 0,
+              left: x ?? 0,
+              width: referenceWidth ? `${referenceWidth}px` : undefined,
+            }}
             onTouchStart={touchOnList}
             onMouseDown={touchOnList}
           >

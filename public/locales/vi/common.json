@@ -47,7 +47,14 @@
     "geocoding_unable_to_retrieve": "Không thể truy xuất vị trí của bạn. Vui lòng kiểm tra cài đặt vị trí của trình duyệt và thử lại.",
     "categories": "Chủ đề",
     "show_all": "Hiển thị tất cả ({{count}})",
-    "show_less": "Hiển thị ít hơn"
+    "show_less": "Hiển thị ít hơn",
+    "query_input_label": "Tìm kiếm nguồn lực",
+    "location_input_label": "Tìm kiếm địa điểm",
+    "change_location_label": "Thay đổi vị trí: {{location}}",
+    "open_search_dialog": "Mở hộp thoại tìm kiếm",
+    "list_status_one": "Có 1 tùy chọn. Sử dụng phím mũi tên lên và xuống để xem lại.",
+    "list_status_other": "Có {{count}} tùy chọn. Sử dụng các phím mũi tên lên và xuống để xem lại.",
+    "search_dialog_description": "Tìm kiếm tài nguyên và cập nhật vị trí của bạn."
   },
   "call_to_action": {
     "call": "Gọi",
@@ -68,7 +75,8 @@
     "show_more": "Hiển thị thêm",
     "show_less": "Hiển thị ít hơn",
     "print": "In",
-    "close": "Đóng"
+    "close": "Đóng",
+    "send": "Gửi"
   },
   "list": {
     "private": "Tư",
@@ -128,7 +136,9 @@
       "sms_send_success_title": "SMS đã gửi!",
       "sms_send_success_body": "Tin nhắn của bạn đã được gửi.",
       "sms_send_failed_title": "Gửi SMS không thành công",
-      "sms_send_failed_body": "Tin nhắn của bạn không gửi được."
+      "sms_send_failed_body": "Tin nhắn của bạn không gửi được.",
+      "opens_in_new_tab": "(mở trong tab mới)",
+      "phone_number_label": "Số điện thoại"
     },
     "prompt_auth": "Vui lòng đăng nhập để sử dụng tính năng này.",
     "manage_favorites": {
@@ -148,5 +158,7 @@
     "previous": "Trước",
     "next": "Kế tiếp",
     "go_to": "Đi đến"
-  }
+  },
+  "filter_results_count_one": "{{count}} kết quả",
+  "filter_results_count_other": "{{count}} kết quả"
 }

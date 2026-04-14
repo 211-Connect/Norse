@@ -47,7 +47,14 @@
     "geocoding_unable_to_retrieve": "No se puede recuperar su ubicación. Compruebe la configuración de ubicación de su navegador y vuelva a intentarlo.",
     "categories": "Temas",
     "show_all": "Mostrar todo ({{count}})",
-    "show_less": "Mostrar menos"
+    "show_less": "Mostrar menos",
+    "query_input_label": "Buscar recursos",
+    "location_input_label": "Buscar una ubicación",
+    "change_location_label": "Cambiar ubicación: {{location}}",
+    "open_search_dialog": "Abrir cuadro de diálogo de búsqueda",
+    "list_status_one": "Hay 1 opción disponible. Utilice las teclas de flecha arriba y abajo para revisar.",
+    "list_status_other": "{{count}} opciones disponibles. Utilice las teclas de flecha arriba y abajo para revisarlas.",
+    "search_dialog_description": "Busca recursos y actualiza tu ubicación."
   },
   "call_to_action": {
     "call": "Llamar",
@@ -151,5 +158,7 @@
     "previous": "Anterior",
     "next": "Próximo",
     "go_to": "Ir a"
-  }
+  },
+  "filter_results_count_one": "{{count}} resultado",
+  "filter_results_count_other": "{{count}} resultados"
 }

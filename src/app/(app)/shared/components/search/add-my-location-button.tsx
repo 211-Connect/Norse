@@ -27,7 +27,6 @@ export function AddMyLocationButton({
   const { t } = useTranslation('common');
   const buttonLabel = location
     ? t('search.change_location_label', {
-        defaultValue: 'Change location: {{location}}',
         location,
       })
     : t('search.add_my_location');

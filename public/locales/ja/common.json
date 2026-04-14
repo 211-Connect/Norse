@@ -47,7 +47,14 @@
     "geocoding_unable_to_retrieve": "現在地情報を取得できませんでした。ブラウザの位置情報設定を確認して、もう一度お試しください。",
     "categories": "トピック",
     "show_all": "すべて表示（{{count}}）",
-    "show_less": "表示を減らす"
+    "show_less": "表示を減らす",
+    "query_input_label": "リソースを検索",
+    "location_input_label": "場所を検索",
+    "change_location_label": "場所を変更する: {{location}}",
+    "open_search_dialog": "検索ダイアログを開く",
+    "list_status_one": "選択肢は1つです。上下矢印キーで確認してください。",
+    "list_status_other": "{{count}}個のオプションが利用可能です。上下矢印キーを使用して確認してください。",
+    "search_dialog_description": "リソースを検索し、現在地を更新してください。"
   },
   "call_to_action": {
     "call": "電話",
@@ -68,7 +75,8 @@
     "show_more": "もっと見る",
     "show_less": "表示を減らす",
     "print": "印刷",
-    "close": "閉じる"
+    "close": "閉じる",
+    "send": "送信"
   },
   "list": {
     "private": "プライベート",
@@ -128,7 +136,9 @@
       "sms_send_success_title": "SMS送信済み！",
       "sms_send_success_body": "メッセージが送信されました。",
       "sms_send_failed_title": "SMS送信に失敗しました",
-      "sms_send_failed_body": "メッセージの送信に失敗しました。"
+      "sms_send_failed_body": "メッセージの送信に失敗しました。",
+      "opens_in_new_tab": "新しいタブで開きます",
+      "phone_number_label": "電話番号"
     },
     "prompt_auth": "この機能をご利用いただくには、ログインしてください。",
     "manage_favorites": {
@@ -148,5 +158,7 @@
   },
   "footer": {
     "copyright": "© 著作権 {{text}}"
-  }
+  },
+  "filter_results_count_one": "{{count}}件の結果",
+  "filter_results_count_other": "{{count}}件の結果"
 }

@@ -47,7 +47,14 @@
     "geocoding_unable_to_retrieve": "Pa kapab jwenn kote w ye a. Tanpri verifye paramèt kote navigatè w la epi eseye ankò.",
     "categories": "Sijè yo",
     "show_all": "Montre tout ({{count}})",
-    "show_less": "Montre mwens"
+    "show_less": "Montre mwens",
+    "query_input_label": "Chèche resous",
+    "location_input_label": "Chèche yon kote",
+    "change_location_label": "Chanje kote: {{location}}",
+    "open_search_dialog": "Louvri dyalòg rechèch la",
+    "list_status_one": "1 opsyon disponib. Sèvi ak flèch anlè ak anba yo pou revize.",
+    "list_status_other": "Gen {{count}} opsyon ki disponib. Sèvi ak flèch anlè ak anba yo pou revize.",
+    "search_dialog_description": "Chèche resous epi mete ajou kote w ye a."
   },
   "call_to_action": {
     "call": "Rele",
@@ -68,7 +75,8 @@
     "show_more": "Montre plis",
     "show_less": "Montre mwens",
     "print": "Enprime",
-    "close": "Fèmen"
+    "close": "Fèmen",
+    "send": "Voye"
   },
   "list": {
     "private": "Prive",
@@ -128,7 +136,9 @@
       "sms_send_success_title": "SMS voye!",
       "sms_send_success_body": "Mesaj ou a voye.",
       "sms_send_failed_title": "Voye SMS la echwe",
-      "sms_send_failed_body": "Mesaj ou a pa t rive voye."
+      "sms_send_failed_body": "Mesaj ou a pa t rive voye.",
+      "opens_in_new_tab": "ouvri nan yon nouvo onglet",
+      "phone_number_label": "Nimewo telefòn"
     },
     "prompt_auth": "Tanpri konekte pou itilize fonksyonalite sa a.",
     "manage_favorites": {
@@ -148,5 +158,7 @@
     "previous": "Anvan",
     "next": "Apre",
     "go_to": "Ale nan"
-  }
+  },
+  "filter_results_count_one": "rezilta {{count}}",
+  "filter_results_count_other": "{{count}} rezilta"
 }

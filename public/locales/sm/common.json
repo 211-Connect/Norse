@@ -47,7 +47,14 @@
     "geocoding_unable_to_retrieve": "Le mafai ona toe maua lou nofoaga. Fa'amolemole siaki tulaga o le nofoaga o lau su'esu'ega ma toe taumafai.",
     "categories": "Autu",
     "show_all": "Faaali uma ({{count}})",
-    "show_less": "Faaali itiiti ifo"
+    "show_less": "Faaali itiiti ifo",
+    "query_input_label": "Saili mo punaoa",
+    "location_input_label": "Saili se nofoaga",
+    "change_location_label": "Suia le nofoaga: {{location}}",
+    "open_search_dialog": "Tatala le talanoaga su'esu'e",
+    "list_status_one": "1 filifiliga o lo'o avanoa. Fa'aaoga ki aū i luga ma lalo e toe iloilo ai.",
+    "list_status_other": "{{count}} filifiliga o lo'o avanoa. Fa'aaoga ki o aū i luga ma lalo e toe iloilo ai.",
+    "search_dialog_description": "Saili mo punaoa ma faʻafou lou nofoaga."
   },
   "call_to_action": {
     "call": "Telefoni",
@@ -68,7 +75,8 @@
     "show_more": "Faaali atili",
     "show_less": "Faaali itiiti ifo",
     "print": "Lolomi",
-    "close": "Tapuni"
+    "close": "Tapuni",
+    "send": "Auina atu"
   },
   "list": {
     "private": "Tumaoti",
@@ -128,7 +136,9 @@
       "sms_send_success_title": "Ua auina atu le SMS!",
       "sms_send_success_body": "Ua auina atu lau savali.",
       "sms_send_failed_title": "Ua lē manuia le lafoina o SMS",
-      "sms_send_failed_body": "Ua lē mafai ona lafo lau savali."
+      "sms_send_failed_body": "Ua lē mafai ona lafo lau savali.",
+      "opens_in_new_tab": "tatala i se tab fou",
+      "phone_number_label": "Numera telefoni"
     },
     "prompt_auth": "Fa'amolemole ulufale e fa'aoga lenei vaega.",
     "manage_favorites": {
@@ -148,5 +158,7 @@
   },
   "footer": {
     "copyright": "© Puletaofia {{text}}"
-  }
+  },
+  "filter_results_count_one": "I'uga {{count}}",
+  "filter_results_count_other": "{{count}} taunuuga"
 }

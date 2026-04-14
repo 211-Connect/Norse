@@ -47,7 +47,14 @@
     "geocoding_unable_to_retrieve": "Nije moguće dohvatiti vašu lokaciju. Provjerite postavke lokacije u pregledniku i pokušajte ponovno.",
     "categories": "Teme",
     "show_all": "Prikaži sve ({{count}})",
-    "show_less": "Prikaži manje"
+    "show_less": "Prikaži manje",
+    "query_input_label": "Pretraživanje resursa",
+    "location_input_label": "Pretraživanje lokacije",
+    "change_location_label": "Promjena lokacije: {{location}}",
+    "open_search_dialog": "Otvori dijalog za pretraživanje",
+    "list_status_one": "Dostupna je 1 opcija. Za pregled koristite tipke sa strelicama gore i dolje.",
+    "list_status_other": "Dostupno je {{count}} opcija. Za pregled koristite tipke sa strelicama gore i dolje.",
+    "search_dialog_description": "Pretražite resurse i ažurirajte svoju lokaciju."
   },
   "call_to_action": {
     "call": "Poziv",
@@ -68,7 +75,8 @@
     "show_more": "Prikaži više",
     "show_less": "Prikaži manje",
     "print": "Ispis",
-    "close": "Zatvori"
+    "close": "Zatvori",
+    "send": "Poslati"
   },
   "list": {
     "private": "Privatno",
@@ -128,7 +136,9 @@
       "sms_send_success_title": "SMS poslan!",
       "sms_send_success_body": "Vaša poruka je poslana.",
       "sms_send_failed_title": "Slanje SMS-a nije uspjelo",
-      "sms_send_failed_body": "Slanje vaše poruke nije uspjelo."
+      "sms_send_failed_body": "Slanje vaše poruke nije uspjelo.",
+      "opens_in_new_tab": "otvara se u novoj kartici",
+      "phone_number_label": "Broj telefona"
     },
     "prompt_auth": "Molimo prijavite se kako biste koristili ovu značajku.",
     "manage_favorites": {
@@ -148,5 +158,7 @@
     "previous": "Prethodno",
     "next": "Sljedeći",
     "go_to": "Idi na"
-  }
+  },
+  "filter_results_count_one": "{{count}} rezultat",
+  "filter_results_count_other": "{{count}} rezultata"
 }

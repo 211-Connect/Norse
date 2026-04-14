@@ -220,6 +220,24 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
     [setSearch, isStandalone],
   );
 
+  const handleClear = useCallback(() => {
+    const everywhereText = 'Everywhere';
+
+    if (isStandalone && 'onLocationChange' in props) {
+      setLocalSearchLocation(everywhereText);
+      props.onLocationChange(everywhereText, null);
+    } else {
+      setSearch?.((prev) => ({
+        ...prev,
+        searchCoordinates: [],
+        searchLocation: everywhereText,
+        searchLocationValidationError: '',
+        searchPlaceType: [],
+        searchBbox: null,
+      }));
+    }
+  }, [isStandalone, props, setSearch]);
+
   const listStatusMessage = useMemo(() => {
     if (options.length === 0) {
       return '';
@@ -233,9 +251,7 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
     <div className="location-box flex flex-col gap-4">
       <Autocomplete
         className={cn(className, 'search-box')}
-        readerLabel={t('search.location_input_label', {
-          defaultValue: 'Search for a location',
-        })}
+        readerLabel={t('search.location_input_label')}
         inputProps={{
           autoFocus: focusByDefault,
           id: inputId,
@@ -249,17 +265,17 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
         Icon={MapPin}
         onInputChange={handleInputChange}
         onValueChange={setSearchLocation}
+        onClear={handleClear}
         value={searchLocation}
         clearButtonLabel={t('call_to_action.remove')}
         listStatusMessage={listStatusMessage}
-        optionsPopoverClassName={`mt-2 max-h-[min(18rem,calc(100dvh-18rem))] ${isStandalone ? 'sm:max-h-[min(20rem,calc(100dvh-16rem))]' : 'sm:max-h-[min(20rem,calc(100dvh-22rem))]'}`}
         autoSelectIndex={coords?.length === 2 ? undefined : 1}
         autoSelectOnBlurIndex={1}
         enterKeyBehavior={
-          enterKeyFocusTargetId ? 'focus-target' : 'submit-form'
+          isStandalone && enterKeyFocusTargetId ? 'focus-target' : 'submit-form'
         }
-        enterKeyFocusTargetId={enterKeyFocusTargetId}
-        blurOnOptionsInteraction
+        enterKeyFocusTargetId={isStandalone ? enterKeyFocusTargetId : undefined}
+        positionBelowElementId={isStandalone ? undefined : 'search-form-inputs'}
       />
       {validationError && (
         <p className="min-h-4 px-3 text-xs text-red-500">{validationError}</p>

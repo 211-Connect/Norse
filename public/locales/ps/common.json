@@ -47,7 +47,14 @@
     "geocoding_unable_to_retrieve": "ستاسو ځای بیرته ترلاسه کولو توان نلري. مهرباني وکړئ د خپل براوزر د موقعیت تنظیمات وګورئ او بیا هڅه وکړئ.",
     "categories": "موضوعات",
     "show_all": "ټول وښایاست ({{count}})",
-    "show_less": "لږ وښایاست"
+    "show_less": "لږ وښایاست",
+    "query_input_label": "د سرچینو لټون",
+    "location_input_label": "د ځای لټون وکړئ",
+    "change_location_label": "ځای بدل کړئ: {{ځای}}",
+    "open_search_dialog": "د لټون ډیالوګ پرانیزئ",
+    "list_status_one": "۱ انتخاب شتون لري. د بیاکتنې لپاره پورته او ښکته تیر کیلي وکاروئ.",
+    "list_status_other": "{{count}} انتخابونه شته. د بیاکتنې لپاره پورته او ښکته تیر کیلي وکاروئ.",
+    "search_dialog_description": "د سرچینو لټون وکړئ او خپل موقعیت تازه کړئ."
   },
   "call_to_action": {
     "call": "زنګ ووهئ",
@@ -68,7 +75,8 @@
     "show_more": "نور ښکاره کړئ",
     "show_less": "لږ وښایاست",
     "print": "چاپ",
-    "close": "تړه"
+    "close": "تړه",
+    "send": "ولېږئ"
   },
   "list": {
     "private": "شخصي",
@@ -128,7 +136,9 @@
       "sms_send_success_title": "ایس ایم ایس واستول شو!",
       "sms_send_success_body": "ستاسو پیغام لیږل شوی دی.",
       "sms_send_failed_title": "د ایس ایم ایس لیږل ناکام شول",
-      "sms_send_failed_body": "ستاسو پیغام واستول شو."
+      "sms_send_failed_body": "ستاسو پیغام واستول شو.",
+      "opens_in_new_tab": "په نوي ټب کې پرانیستل کیږي",
+      "phone_number_label": "د تلیفون شمیره"
     },
     "prompt_auth": "د دې ځانګړتیا کارولو لپاره مهرباني وکړئ ننوتل وکړئ.",
     "manage_favorites": {
@@ -148,5 +158,7 @@
     "previous": "مخکینی",
     "next": "بل",
     "go_to": "ورتګ"
-  }
+  },
+  "filter_results_count_one": "{{شمیر}} پایله",
+  "filter_results_count_other": "{{شمیرنه}} پایلې"
 }

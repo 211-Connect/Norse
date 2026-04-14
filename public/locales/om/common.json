@@ -47,7 +47,14 @@
     "geocoding_unable_to_retrieve": "Bakka jirtu deebifachuu hin dandeenye. Maaloo qindaa'ina bakka biraawzari keessanii ilaalaa irra deebi'aa yaalaa.",
     "categories": "Mata dureewwan",
     "show_all": "Hundaa agarsiisi ({{count}})",
-    "show_less": "Xiqqaa agarsiisi"
+    "show_less": "Xiqqaa agarsiisi",
+    "query_input_label": "Qabeenya barbaadi",
+    "location_input_label": "Bakka barbaadi",
+    "change_location_label": "Bakka jijjiiri: {{bakka}}",
+    "open_search_dialog": "Qaaqa barbaacha banaa",
+    "list_status_one": "1 filannoo ni jira. Irra deebi'uuf furtuuwwan xiyyaa olii fi gadi fayyadami.",
+    "list_status_other": "{{count}} filannoowwan jiran. Irra deebi'uuf furtuuwwan xiyyaa olii fi gadi fayyadami.",
+    "search_dialog_description": "Qabeenya barbaadi fi bakka jirtu haaromsi."
   },
   "call_to_action": {
     "call": "Waamuu",
@@ -68,7 +75,8 @@
     "show_more": "Dabalata agarsiisi",
     "show_less": "Xiqqaa agarsiisi",
     "print": "Maxxansa",
-    "close": "Cufii"
+    "close": "Cufii",
+    "send": "Erguu"
   },
   "list": {
     "private": "Dhuunfaa",
@@ -128,7 +136,9 @@
       "sms_send_success_title": "Ergaa gabaabaa ergame!",
       "sms_send_success_body": "Ergaan keessan ergamee jira.",
       "sms_send_failed_title": "Ergaa gabaabaa erguun hin milkoofne",
-      "sms_send_failed_body": "Ergaan kee erguu dadhabe."
+      "sms_send_failed_body": "Ergaan kee erguu dadhabe.",
+      "opens_in_new_tab": "caancala haaraa keessatti banama",
+      "phone_number_label": "Lakkoofsa bilbilaa"
     },
     "prompt_auth": "Maaloo amala kana fayyadamuuf seena.",
     "manage_favorites": {
@@ -148,5 +158,7 @@
     "previous": "Kan duraa",
     "next": "Kan itti aanu",
     "go_to": "Gara"
-  }
+  },
+  "filter_results_count_one": "{{lakkaa'uu}} bu'aa",
+  "filter_results_count_other": "{{lakkaa'uu}} bu'aa"
 }

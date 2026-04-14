@@ -47,7 +47,14 @@
     "geocoding_unable_to_retrieve": "មិនអាចទាញយកទីតាំងរបស់អ្នកបានទេ។ សូមពិនិត្យមើលការកំណត់ទីតាំងរបស់កម្មវិធីរុករកតាមអ៊ីនធឺណិតរបស់អ្នក ហើយព្យាយាមម្តងទៀត។",
     "categories": "ប្រធានបទ",
     "show_all": "បង្ហាញទាំងអស់ ({{count}})",
-    "show_less": "បង្ហាញតិចជាង"
+    "show_less": "បង្ហាញតិចជាង",
+    "query_input_label": "ស្វែងរកធនធាន",
+    "location_input_label": "ស្វែងរកទីតាំង",
+    "change_location_label": "ប្តូរទីតាំង៖ {{location}}",
+    "open_search_dialog": "បើកប្រអប់ស្វែងរក",
+    "list_status_one": "មានជម្រើស 1។ ប្រើគ្រាប់ចុចព្រួញឡើងលើ និងចុះក្រោមដើម្បីពិនិត្យមើល។",
+    "list_status_other": "មានជម្រើស {{count}}។ ប្រើគ្រាប់ចុចព្រួញឡើងលើ និងចុះក្រោមដើម្បីពិនិត្យ។",
+    "search_dialog_description": "ស្វែងរកធនធាន និងធ្វើបច្ចុប្បន្នភាពទីតាំងរបស់អ្នក។"
   },
   "call_to_action": {
     "call": "ហៅទូរសព្ទ",
@@ -68,7 +75,8 @@
     "show_more": "បង្ហាញបន្ថែម",
     "show_less": "បង្ហាញតិចជាង",
     "print": "បោះពុម្ព",
-    "close": "បិទ"
+    "close": "បិទ",
+    "send": "ផ្ញើ"
   },
   "list": {
     "private": "ឯកជន",
@@ -128,7 +136,9 @@
       "sms_send_success_title": "សារ SMS បានផ្ញើហើយ!",
       "sms_send_success_body": "សាររបស់អ្នកត្រូវបានផ្ញើហើយ។",
       "sms_send_failed_title": "ការផ្ញើសារ SMS បរាជ័យ",
-      "sms_send_failed_body": "សាររបស់អ្នកមិនអាចផ្ញើបានទេ។"
+      "sms_send_failed_body": "សាររបស់អ្នកមិនអាចផ្ញើបានទេ។",
+      "opens_in_new_tab": "បើកនៅក្នុងផ្ទាំងថ្មីមួយ",
+      "phone_number_label": "លេខទូរស័ព្ទ"
     },
     "prompt_auth": "សូមចូលគណនីដើម្បីប្រើប្រាស់មុខងារនេះ។",
     "manage_favorites": {
@@ -148,5 +158,7 @@
     "previous": "មុន",
     "next": "បន្ទាប់",
     "go_to": "ចូលទៅកាន់"
-  }
+  },
+  "filter_results_count_one": "លទ្ធផល {{count}}",
+  "filter_results_count_other": "លទ្ធផល {{count}}"
 }

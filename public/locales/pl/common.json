@@ -47,7 +47,14 @@
     "geocoding_unable_to_retrieve": "Nie można pobrać Twojej lokalizacji. Sprawdź ustawienia lokalizacji w przeglądarce i spróbuj ponownie.",
     "categories": "Tematy",
     "show_all": "Pokaż wszystko ({{count}})",
-    "show_less": "Pokaż mniej"
+    "show_less": "Pokaż mniej",
+    "query_input_label": "Wyszukaj zasoby",
+    "location_input_label": "Wyszukaj lokalizację",
+    "change_location_label": "Zmień lokalizację: {{location}}",
+    "open_search_dialog": "Otwórz okno dialogowe wyszukiwania",
+    "list_status_one": "Dostępna jest 1 opcja. Użyj klawiszy strzałek w górę i w dół, aby przejrzeć.",
+    "list_status_other": "Dostępnych jest {{count}} opcji. Użyj klawiszy strzałek w górę i w dół, aby je przejrzeć.",
+    "search_dialog_description": "Wyszukaj zasoby i zaktualizuj swoją lokalizację."
   },
   "call_to_action": {
     "call": "Dzwonić",
@@ -68,7 +75,8 @@
     "show_more": "Pokaż więcej",
     "show_less": "Pokaż mniej",
     "print": "Wydrukować",
-    "close": "Zamknij"
+    "close": "Zamknij",
+    "send": "Wysłać"
   },
   "list": {
     "private": "Prywatny",
@@ -128,7 +136,9 @@
       "sms_send_success_title": "SMS wysłany!",
       "sms_send_success_body": "Twoja wiadomość została wysłana.",
       "sms_send_failed_title": "Nie udało się wysłać SMS-a",
-      "sms_send_failed_body": "Nie udało się wysłać Twojej wiadomości."
+      "sms_send_failed_body": "Nie udało się wysłać Twojej wiadomości.",
+      "opens_in_new_tab": "otwiera się w nowej karcie",
+      "phone_number_label": "Numer telefonu"
     },
     "prompt_auth": "Zaloguj się, aby skorzystać z tej funkcji.",
     "manage_favorites": {
@@ -148,5 +158,7 @@
     "previous": "Poprzedni",
     "next": "Następny",
     "go_to": "Idź do"
-  }
+  },
+  "filter_results_count_one": "{{count}} wynik",
+  "filter_results_count_other": "{{count}} wyników"
 }

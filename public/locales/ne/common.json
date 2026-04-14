@@ -47,7 +47,14 @@
     "geocoding_unable_to_retrieve": "तपाईँको स्थान पुन: प्राप्त गर्न अक्षम । कृपया तपाईँको ब्राउजरको स्थान सेटिङ जाँच गर्नुहोस् र पुन: प्रयास गर्नुहोस् ।",
     "categories": "विषयहरू",
     "show_all": "सबै देखाउनुहोस् ({{count}})",
-    "show_less": "कम देखाउनुहोस्"
+    "show_less": "कम देखाउनुहोस्",
+    "query_input_label": "स्रोतहरू खोज्नुहोस्",
+    "location_input_label": "स्थान खोज्नुहोस्",
+    "change_location_label": "स्थान परिवर्तन गर्नुहोस्: {{location}}",
+    "open_search_dialog": "खोज संवाद खोल्नुहोस्",
+    "list_status_one": "१ विकल्प उपलब्ध छ। समीक्षा गर्न माथि र तल तीर कुञ्जीहरू प्रयोग गर्नुहोस्।",
+    "list_status_other": "{{count}} विकल्पहरू उपलब्ध छन्। समीक्षा गर्न माथि र तल तीर कुञ्जीहरू प्रयोग गर्नुहोस्।",
+    "search_dialog_description": "स्रोतहरू खोज्नुहोस् र आफ्नो स्थान अपडेट गर्नुहोस्।"
   },
   "call_to_action": {
     "call": "कल गर्नुहोस्",
@@ -68,7 +75,8 @@
     "show_more": "थप देखाउनुहोस्",
     "show_less": "कम देखाउनुहोस्",
     "print": "मुद्रण गर्नुहोस्",
-    "close": "बन्द"
+    "close": "बन्द",
+    "send": "पठाउनुहोस्"
   },
   "list": {
     "private": "निजी",
@@ -128,7 +136,9 @@
       "sms_send_success_title": "एसएमएस पठाइयो!",
       "sms_send_success_body": "तपाईँको सन्देश पठाइएको छ ।",
       "sms_send_failed_title": "एसएमएस पठाउन असफल भयो",
-      "sms_send_failed_body": "तपाईँको सन्देश पठाउन असफल भयो ।"
+      "sms_send_failed_body": "तपाईँको सन्देश पठाउन असफल भयो ।",
+      "opens_in_new_tab": "नयाँ ट्याबमा खुल्छ",
+      "phone_number_label": "फोन नम्बर"
     },
     "prompt_auth": "कृपया यो सुविधा प्रयोग गर्न लगइन गर्नुहोस् ।",
     "manage_favorites": {
@@ -148,5 +158,7 @@
     "previous": "अघिल्लो",
     "next": "अर्को",
     "go_to": "जाऊ त्यहाँ"
-  }
+  },
+  "filter_results_count_one": "{{गणना}} परिणाम",
+  "filter_results_count_other": "{{गणना}} परिणामहरू"
 }

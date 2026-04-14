@@ -47,7 +47,14 @@
     "geocoding_unable_to_retrieve": "आपकी लोकेशन का पता नहीं चल पा रहा है। कृपया अपने ब्राउज़र की लोकेशन सेटिंग जांचें और दोबारा कोशिश करें।",
     "categories": "विषय",
     "show_all": "सभी दिखाएँ ({{count}})",
-    "show_less": "कम दिखाएँ"
+    "show_less": "कम दिखाएँ",
+    "query_input_label": "संसाधनों की खोज करें",
+    "location_input_label": "किसी स्थान की खोज करें",
+    "change_location_label": "स्थान बदलें: {{location}}",
+    "open_search_dialog": "खोज संवाद खोलें",
+    "list_status_one": "केवल 1 विकल्प उपलब्ध है। समीक्षा करने के लिए ऊपर और नीचे तीर कुंजियों का उपयोग करें।",
+    "list_status_other": "{{count}} विकल्प उपलब्ध हैं। समीक्षा करने के लिए ऊपर और नीचे तीर कुंजियों का उपयोग करें।",
+    "search_dialog_description": "संसाधनों की खोज करें और अपना स्थान अपडेट करें।"
   },
   "call_to_action": {
     "call": "पुकारना",
@@ -68,7 +75,8 @@
     "show_more": "और दिखाएँ",
     "show_less": "कम दिखाएँ",
     "print": "छाप",
-    "close": "बंद"
+    "close": "बंद",
+    "send": "भेजना"
   },
   "list": {
     "private": "निजी",
@@ -128,7 +136,9 @@
       "sms_send_success_title": "एसएमएस भेज दिया गया!",
       "sms_send_success_body": "आपका संदेश भेज दिया गया है।",
       "sms_send_failed_title": "एसएमएस भेजने में विफल",
-      "sms_send_failed_body": "आपका संदेश भेजने में विफल रहा।"
+      "sms_send_failed_body": "आपका संदेश भेजने में विफल रहा।",
+      "opens_in_new_tab": "नए टैब में खुलता है",
+      "phone_number_label": "फ़ोन नंबर"
     },
     "prompt_auth": "इस विशेष सुविधा का प्रयोग करने के लिए लॉग इन करें।",
     "manage_favorites": {
@@ -148,5 +158,7 @@
     "previous": "पहले का",
     "next": "अगला",
     "go_to": "जाओ"
-  }
+  },
+  "filter_results_count_one": "{{count}} परिणाम",
+  "filter_results_count_other": "{{count}} परिणाम"
 }

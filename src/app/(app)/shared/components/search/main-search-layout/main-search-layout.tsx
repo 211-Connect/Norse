@@ -9,10 +9,7 @@ import {
   AddMyLocationButton,
   AddMyLocationButtonProps,
 } from '../add-my-location-button';
-import {
-  SearchDialog,
-  SearchDialogProps,
-} from '../search-dialog';
+import { SearchDialog, SearchDialogProps } from '../search-dialog';
 import { searchLocationAtom, searchTermAtom } from '../../../store/search';
 import { SEARCH_DIALOG_ID } from '../../../lib/constants';
 import { cn } from '../../../lib/utils';
@@ -71,9 +68,7 @@ export function MainSearchLayout({
             aria-controls={SEARCH_DIALOG_ID}
             aria-expanded={dialogOpened}
             aria-haspopup="dialog"
-            aria-label={t('search.open_search_dialog', {
-              defaultValue: 'Open search dialog',
-            })}
+            aria-label={t('search.open_search_dialog')}
             data-testid="search-trigger"
             onClick={() => openSearchDialog('search')}
             className={cn(

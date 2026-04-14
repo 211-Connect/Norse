@@ -47,7 +47,14 @@
     "geocoding_unable_to_retrieve": "તમારું સ્થાન પુનઃપ્રાપ્ત કરવામાં અસમર્થ. કૃપા કરીને તમારા બ્રાઉઝરની સ્થાન સેટિંગ્સ તપાસો અને ફરી પ્રયાસ કરો.",
     "categories": "વિષયો",
     "show_all": "બધા બતાવો ({{count}})",
-    "show_less": "ઓછું બતાવો"
+    "show_less": "ઓછું બતાવો",
+    "query_input_label": "સંસાધનો શોધો",
+    "location_input_label": "સ્થાન શોધો",
+    "change_location_label": "સ્થાન બદલો: {{location}}",
+    "open_search_dialog": "શોધ સંવાદ ખોલો",
+    "list_status_one": "1 વિકલ્પ ઉપલબ્ધ છે. સમીક્ષા કરવા માટે ઉપર અને નીચે તીર કીનો ઉપયોગ કરો.",
+    "list_status_other": "{{count}} વિકલ્પો ઉપલબ્ધ છે. સમીક્ષા કરવા માટે ઉપર અને નીચે તીર કીનો ઉપયોગ કરો.",
+    "search_dialog_description": "સંસાધનો શોધો અને તમારું સ્થાન અપડેટ કરો."
   },
   "call_to_action": {
     "call": "કૉલ કરો",
@@ -68,7 +75,8 @@
     "show_more": "વધુ બતાવો",
     "show_less": "ઓછું બતાવો",
     "print": "પ્રિંટ",
-    "close": "બંધ"
+    "close": "બંધ",
+    "send": "મોકલો"
   },
   "list": {
     "private": "ખાનગી",
@@ -128,7 +136,9 @@
       "sms_send_success_title": "SMS મોકલ્યો!",
       "sms_send_success_body": "તમારો સંદેશ મોકલવામાં આવ્યો છે.",
       "sms_send_failed_title": "SMS મોકલવામાં નિષ્ફળ ગયા",
-      "sms_send_failed_body": "તમારો સંદેશ મોકલવામાં નિષ્ફળ ગયો."
+      "sms_send_failed_body": "તમારો સંદેશ મોકલવામાં નિષ્ફળ ગયો.",
+      "opens_in_new_tab": "નવા ટેબમાં ખુલે છે",
+      "phone_number_label": "ફોન નંબર"
     },
     "prompt_auth": "આ સુવિધાનો ઉપયોગ કરવા માટે કૃપા કરીને લોગિન કરો.",
     "manage_favorites": {
@@ -148,5 +158,7 @@
   },
   "footer": {
     "copyright": "© કૉપિરાઇટ {{ટેક્સ્ટ}}"
-  }
+  },
+  "filter_results_count_one": "{{ગણતરી}} પરિણામ",
+  "filter_results_count_other": "{{ગણતરી}} પરિણામો"
 }

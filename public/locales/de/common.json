@@ -47,7 +47,14 @@
     "geocoding_unable_to_retrieve": "Ihr Standort konnte nicht ermittelt werden. Bitte überprüfen Sie die Standorteinstellungen Ihres Browsers und versuchen Sie es erneut.",
     "categories": "Themen",
     "show_all": "Alle anzeigen ({{count}})",
-    "show_less": "Weniger anzeigen"
+    "show_less": "Weniger anzeigen",
+    "query_input_label": "Ressourcen suchen",
+    "location_input_label": "Suche nach einem Standort",
+    "change_location_label": "Standort ändern: {{location}}",
+    "open_search_dialog": "Suchdialog öffnen",
+    "list_status_one": "Es steht eine Option zur Verfügung. Verwenden Sie die Pfeiltasten nach oben und unten, um sie anzuzeigen.",
+    "list_status_other": "{{count}} Optionen verfügbar. Verwenden Sie die Pfeiltasten nach oben und unten, um sie anzuzeigen.",
+    "search_dialog_description": "Suchen Sie nach Ressourcen und aktualisieren Sie Ihren Standort."
   },
   "call_to_action": {
     "call": "Anruf",
@@ -68,7 +75,8 @@
     "show_more": "Mehr anzeigen",
     "show_less": "Weniger anzeigen",
     "print": "Drucken",
-    "close": "Schließen"
+    "close": "Schließen",
+    "send": "Schicken"
   },
   "list": {
     "private": "Privat",
@@ -128,7 +136,9 @@
       "sms_send_success_title": "SMS gesendet!",
       "sms_send_success_body": "Ihre Nachricht wurde gesendet.",
       "sms_send_failed_title": "SMS-Versand fehlgeschlagen",
-      "sms_send_failed_body": "Ihre Nachricht konnte nicht gesendet werden."
+      "sms_send_failed_body": "Ihre Nachricht konnte nicht gesendet werden.",
+      "opens_in_new_tab": "wird in einem neuen Tab geöffnet",
+      "phone_number_label": "Telefonnummer"
     },
     "prompt_auth": "Bitte melden Sie sich an, um diese Funktion zu nutzen.",
     "manage_favorites": {
@@ -148,5 +158,7 @@
     "previous": "Vorherige",
     "next": "Nächste",
     "go_to": "Gehe zu"
-  }
+  },
+  "filter_results_count_one": "{{count}} Ergebnis",
+  "filter_results_count_other": "{{count}} Ergebnisse"
 }

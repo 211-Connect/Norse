@@ -47,7 +47,14 @@
     "geocoding_unable_to_retrieve": "Haiwezi kurejesha eneo lako. Tafadhali angalia mipangilio ya eneo la kivinjari chako na ujaribu tena.",
     "categories": "Mada",
     "show_all": "Onyesha yote ({{count}})",
-    "show_less": "Onyesha kidogo"
+    "show_less": "Onyesha kidogo",
+    "query_input_label": "Tafuta rasilimali",
+    "location_input_label": "Tafuta eneo",
+    "change_location_label": "Badilisha eneo: {{location}}",
+    "open_search_dialog": "Fungua kidirisha cha utafutaji",
+    "list_status_one": "Chaguo 1 linapatikana. Tumia vitufe vya mshale wa juu na chini ili kukagua.",
+    "list_status_other": "Chaguo {{count}} zinapatikana. Tumia vitufe vya mshale wa juu na chini ili kukagua.",
+    "search_dialog_description": "Tafuta rasilimali na usasishe eneo lako."
   },
   "call_to_action": {
     "call": "Wito",
@@ -68,7 +75,8 @@
     "show_more": "Onyesha zaidi",
     "show_less": "Onyesha chini",
     "print": "Chapisha",
-    "close": "Funga"
+    "close": "Funga",
+    "send": "Tuma"
   },
   "list": {
     "private": "Binafsi",
@@ -128,7 +136,9 @@
       "sms_send_success_title": "Ujumbe wa SMS!",
       "sms_send_success_body": "Ujumbe wako umetumwa.",
       "sms_send_failed_title": "Kutuma ujumbe mfupi wa maandishi kumeshindwa",
-      "sms_send_failed_body": "Ujumbe wako umeshindwa kutuma."
+      "sms_send_failed_body": "Ujumbe wako umeshindwa kutuma.",
+      "opens_in_new_tab": "hufunguka kwenye kichupo kipya",
+      "phone_number_label": "Nambari ya simu"
     },
     "prompt_auth": "Tafadhali ingia ili utumie kipengele hiki.",
     "manage_favorites": {
@@ -148,5 +158,7 @@
     "previous": "Iliyotangulia",
     "next": "Inayofuata",
     "go_to": "Nenda kwenye"
-  }
+  },
+  "filter_results_count_one": "matokeo ya {{count}}",
+  "filter_results_count_other": "Matokeo ya {{count}}"
 }

@@ -47,7 +47,14 @@
     "geocoding_unable_to_retrieve": "غير قادر على استرداد موقعك. يرجى التحقق من إعدادات الموقع في متصفحك والمحاولة مرة أخرى.",
     "categories": "المواضيع",
     "show_all": "عرض الكل ({{count}})",
-    "show_less": "عرض أقل"
+    "show_less": "عرض أقل",
+    "query_input_label": "ابحث عن الموارد",
+    "location_input_label": "ابحث عن موقع",
+    "change_location_label": "تغيير الموقع: {{location}}",
+    "open_search_dialog": "افتح مربع حوار البحث",
+    "list_status_one": "خيار واحد متاح. استخدم مفاتيح الأسهم لأعلى ولأسفل للمراجعة.",
+    "list_status_other": "{{count}} خيارًا متاحًا. استخدم مفاتيح الأسهم لأعلى ولأسفل للمراجعة.",
+    "search_dialog_description": "ابحث عن الموارد وقم بتحديث موقعك."
   },
   "call_to_action": {
     "call": "دعا",
@@ -68,7 +75,8 @@
     "show_more": "استعراض المزيد",
     "show_less": "عرض أقل",
     "print": "طبع",
-    "close": "إغلاق"
+    "close": "إغلاق",
+    "send": "يرسل"
   },
   "list": {
     "private": "عسكري",
@@ -128,7 +136,9 @@
       "sms_send_success_title": "الرسائل القصيرة!",
       "sms_send_success_body": "تم إرسال رسالتك.",
       "sms_send_failed_title": "فشل إرسال الرسائل القصيرة",
-      "sms_send_failed_body": "تعذر إرسال رسالتك."
+      "sms_send_failed_body": "تعذر إرسال رسالتك.",
+      "opens_in_new_tab": "يفتح في علامة تبويب جديدة",
+      "phone_number_label": "رقم التليفون"
     },
     "prompt_auth": "يرجى تسجيل الدخول لاستخدام هذه الميزة.",
     "manage_favorites": {
@@ -148,5 +158,7 @@
     "previous": "سابق",
     "next": "التالي",
     "go_to": "انتقل إلى"
-  }
+  },
+  "filter_results_count_one": "{{count}} نتيجة",
+  "filter_results_count_other": "{{count}} نتيجة"
 }
