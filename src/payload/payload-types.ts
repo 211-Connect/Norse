@@ -842,11 +842,6 @@ export interface ResourceDirectory {
     content?: string | null;
   };
   featureFlags?: {
-    hideCategoriesHeading?: boolean | null;
-    hideDataProvidersHeading?: boolean | null;
-    showResourceAttribution?: boolean | null;
-    showResourceCategories?: boolean | null;
-    showResourceLastAssuredDate?: boolean | null;
     showHomePageTour?: boolean | null;
     requireUserLocation?: boolean | null;
     showSearchAndResourceServiceName?: boolean | null;
@@ -1538,11 +1533,6 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
   featureFlags?:
     | T
     | {
-        hideCategoriesHeading?: T;
-        hideDataProvidersHeading?: T;
-        showResourceAttribution?: T;
-        showResourceCategories?: T;
-        showResourceLastAssuredDate?: T;
         showHomePageTour?: T;
         requireUserLocation?: T;
         showSearchAndResourceServiceName?: T;

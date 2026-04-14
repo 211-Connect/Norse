@@ -51,7 +51,6 @@ export const DEFAULT_RESOURCE_LAYOUT: AppConfig['resource']['layout'] = {
       items: [
         { componentId: ResourceComponentId.DESCRIPTION },
         { componentId: ResourceComponentId.LAST_ASSURED },
-        { componentId: ResourceComponentId.ATTRIBUTION },
         { componentId: ResourceComponentId.CATEGORIES },
       ],
       isCard: true,

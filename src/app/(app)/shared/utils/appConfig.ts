@@ -159,15 +159,11 @@ async function getAppConfigBase(
       contact: {},
       customBasePath: '',
       featureFlags: {
-        hideCategoriesHeading: false,
-        hideDataProvidersHeading: false,
         requireUserLocation: false,
         showFeedbackButtonGlobal: false,
         showFeedbackButtonOnResourcePages: false,
         showHomePageTour: false,
         showPrintButton: false,
-        showResourceAttribution: false,
-        showResourceLastAssuredDate: false,
         showSearchAndResourceServiceName: false,
         showSuggestionListTaxonomyBadge: false,
         showUseMyLocationButtonOnDesktop: false,
@@ -322,10 +318,6 @@ async function getAppConfigBase(
       locale,
     },
     featureFlags: {
-      hideCategoriesHeading:
-        resourceDirectory.featureFlags?.hideCategoriesHeading ?? false,
-      hideDataProvidersHeading:
-        resourceDirectory.featureFlags?.hideDataProvidersHeading ?? false,
       requireUserLocation:
         resourceDirectory.featureFlags?.requireUserLocation ?? false,
       showFeedbackButtonGlobal:
@@ -336,10 +328,6 @@ async function getAppConfigBase(
       showHomePageTour:
         resourceDirectory.featureFlags?.showHomePageTour ?? false,
       showPrintButton: resourceDirectory.featureFlags?.showPrintButton ?? false,
-      showResourceAttribution:
-        resourceDirectory.featureFlags?.showResourceAttribution ?? false,
-      showResourceLastAssuredDate:
-        resourceDirectory.featureFlags?.showResourceLastAssuredDate ?? false,
       showSearchAndResourceServiceName:
         resourceDirectory.featureFlags?.showSearchAndResourceServiceName ??
         false,
