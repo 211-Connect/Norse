@@ -13,7 +13,7 @@ import {
 } from '../../store/search';
 import { useDebounce } from '../../hooks/use-debounce';
 import { useLocations } from '../../hooks/api/use-locations';
-import { useCallback, useContext, useMemo, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
 import { cn } from '../../lib/utils';
 import { Autocomplete } from '../ui/autocomplete';
 import { DistanceSelect } from './distance-select';
@@ -238,14 +238,6 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
     }
   }, [isStandalone, props, setSearch]);
 
-  const listStatusMessage = useMemo(() => {
-    if (options.length === 0) {
-      return '';
-    }
-    return t('search.list_status', {
-      count: options.length,
-    });
-  }, [options.length, t]);
 
   return (
     <div className="location-box flex flex-col gap-4">
@@ -268,7 +260,6 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
         onClear={handleClear}
         value={searchLocation}
         clearButtonLabel={t('call_to_action.remove')}
-        listStatusMessage={listStatusMessage}
         autoSelectIndex={coords?.length === 2 ? undefined : 1}
         autoSelectOnBlurIndex={1}
         enterKeyBehavior={

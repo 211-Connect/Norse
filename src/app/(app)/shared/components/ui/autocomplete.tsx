@@ -64,7 +64,6 @@ export type AutocompleteProps = {
   autoSelectOnBlurIndex?: number;
   defaultOpen?: boolean;
   clearButtonLabel?: string;
-  listStatusMessage?: string;
   enterKeyBehavior?: 'submit-form' | 'focus-target';
   enterKeyFocusTargetId?: string;
   positionBelowElementId?: string;
@@ -110,7 +109,6 @@ export function Autocomplete(props: AutocompleteProps) {
     value: inputValue,
     defaultOpen = false,
     clearButtonLabel = 'Clear',
-    listStatusMessage,
     enterKeyBehavior = 'submit-form',
     enterKeyFocusTargetId,
     positionBelowElementId,
@@ -139,6 +137,7 @@ export function Autocomplete(props: AutocompleteProps) {
   });
   const [tempValue, setTempValue] = useState(value || '');
   const clearButtonRef = useRef<HTMLButtonElement>(null);
+  const [srStatus, setSrStatus] = useState('');
 
   const stayOpenOnBlurRef = useRef(false);
 
@@ -574,6 +573,22 @@ export function Autocomplete(props: AutocompleteProps) {
     setTempValue(value ?? '');
   }, [value]);
 
+  useEffect(() => {
+    if (!open) {
+      setSrStatus('');
+      return;
+    }
+    const totalOptions = options.reduce(
+      (sum, [, groupOptions]) => sum + groupOptions.length,
+      0,
+    );
+    setSrStatus(
+      totalOptions > 0
+        ? `${totalOptions} result${totalOptions > 1 ? 's' : ''} available.`
+        : 'No results.',
+    );
+  }, [open, options]);
+
   // Set unique ID for component
   useEffect(() => {
     setUniqueId(`search-results-${Math.random().toString(36).substring(2, 9)}`);
@@ -603,11 +618,9 @@ export function Autocomplete(props: AutocompleteProps) {
             aria-hidden="true"
           />
         )}
-        {listStatusMessage && (
-          <div className="sr-only" role="status" aria-live="polite">
-            {listStatusMessage}
-          </div>
-        )}
+        <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+          {srStatus}
+        </div>
         <Input
           {...inputProps}
           id={effectiveInputId}
