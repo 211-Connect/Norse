@@ -67,7 +67,8 @@
     "login": "登录",
     "show_more": "显示更多",
     "show_less": "显示简要信息",
-    "print": "打印"
+    "print": "打印",
+    "close": "关闭"
   },
   "list": {
     "private": "私人",

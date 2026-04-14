@@ -89,9 +89,11 @@ test.describe('Language Persistence And Results Button', () => {
 
     const firstResult = page.getByTestId('resource-link').first();
     await expect(firstResult).toBeVisible({ timeout: 20_000 });
-    await firstResult.click();
 
-    await page.waitForURL(/\/search\//, { timeout: 20_000 });
+    await Promise.all([
+      page.waitForURL(/\/search\//, { timeout: 20_000 }),
+      firstResult.click(),
+    ]);
 
     const resultsButton = page.getByRole('link', { name: /^Results$/i });
     await expect(resultsButton).toBeVisible({ timeout: 20_000 });

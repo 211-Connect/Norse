@@ -23,7 +23,11 @@ export function ResourceNameComponent({ result }: SearchCardComponentProps) {
         {result.name}
       </Typography>
       <div className="print:hidden">
-        <AddToFavoritesButton size="icon" serviceAtLocationId={result.id} />
+        <AddToFavoritesButton
+          size="icon"
+          serviceAtLocationId={result.id}
+          resourceName={result.name}
+        />
       </div>
     </div>
   );

@@ -67,7 +67,8 @@
     "login": "ログイン",
     "show_more": "もっと見る",
     "show_less": "表示を減らす",
-    "print": "印刷"
+    "print": "印刷",
+    "close": "閉じる"
   },
   "list": {
     "private": "プライベート",

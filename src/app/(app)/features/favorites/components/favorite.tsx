@@ -112,6 +112,8 @@ export function Favorite({
                     coords,
                     data?.location?.coordinates || [],
                   )}
+                  copyLabel={`${t('modal.share.copy', { ns: 'common' })} ${displayAddress}`}
+                  linkAriaLabel={`${displayAddress} ${translation?.displayName ?? ''}`}
                 >
                   {displayAddress}
                 </CopyBadge>
@@ -145,6 +147,8 @@ export function Favorite({
                 className="text-sm font-normal"
                 text={data.displayPhoneNumber}
                 href={`tel:${data.displayPhoneNumber}`}
+                copyLabel={`${t('modal.share.copy', { ns: 'common' })} ${data.displayPhoneNumber}`}
+                linkAriaLabel={`${t('call_to_action.call', { ns: 'common' })} ${translation?.displayName ?? ''}`}
               >
                 {data.displayPhoneNumber}
               </CopyBadge>
@@ -160,6 +164,8 @@ export function Favorite({
                 text={data.website}
                 target="_blank"
                 truncate
+                copyLabel={`${t('modal.share.copy', { ns: 'common' })} ${data.website}`}
+                linkAriaLabel={`${t('call_to_action.view_website', { ns: 'common' })} ${translation?.displayName ?? ''} ${t('modal.share.opens_in_new_tab', { ns: 'common' })}`}
               >
                 {data.website}
               </CopyBadge>
@@ -190,43 +196,83 @@ export function Favorite({
         </CardContent>
         <CardFooter className="flex flex-col gap-2 print:hidden">
           <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center">
-            <ReferralButton
-              className="flex-1 gap-1 overflow-hidden"
-              size="sm"
-              disabled={!data.displayPhoneNumber}
-              referralType="call_referral"
-              resourceId={data._id}
-              resourceData={data}
-              variant="highlight"
-              onClick={() => {
-                window.open(`tel:${data.displayPhoneNumber}`);
-              }}
-            >
-              <Phone className="size-4" />{' '}
-              <span className="truncate">
-                {' '}
-                {t('call_to_action.call', { ns: 'common' })}{' '}
-              </span>
-            </ReferralButton>
+            {data.displayPhoneNumber ? (
+              <ReferralButton
+                asChild
+                className="flex-1 gap-1 overflow-hidden"
+                size="sm"
+                referralType="call_referral"
+                resourceId={data._id}
+                resourceData={data}
+                variant="highlight"
+              >
+                <Link
+                  href={`tel:${data.displayPhoneNumber}`}
+                  aria-label={`${t('call_to_action.call', { ns: 'common' })} ${translation?.displayName ?? ''}`}
+                >
+                  <Phone className="size-4" />{' '}
+                  <span className="truncate">
+                    {' '}
+                    {t('call_to_action.call', { ns: 'common' })}{' '}
+                  </span>
+                </Link>
+              </ReferralButton>
+            ) : (
+              <ReferralButton
+                className="flex-1 gap-1 overflow-hidden"
+                size="sm"
+                disabled
+                referralType="call_referral"
+                resourceId={data._id}
+                resourceData={data}
+                variant="highlight"
+              >
+                <Phone className="size-4" />{' '}
+                <span className="truncate">
+                  {' '}
+                  {t('call_to_action.call', { ns: 'common' })}{' '}
+                </span>
+              </ReferralButton>
+            )}
 
-            <ReferralButton
-              className="flex-1 gap-1 overflow-hidden"
-              referralType="website_referral"
-              size="sm"
-              resourceId={data._id}
-              resourceData={data}
-              disabled={!data.website}
-              variant="highlight"
-              onClick={() => {
-                window.open(data.website, '_blank');
-              }}
-            >
-              <LinkIcon className="size-4" />{' '}
-              <span className="truncate">
-                {' '}
-                {t('call_to_action.view_website', { ns: 'common' })}{' '}
-              </span>
-            </ReferralButton>
+            {data.website ? (
+              <ReferralButton
+                asChild
+                className="flex-1 gap-1 overflow-hidden"
+                referralType="website_referral"
+                size="sm"
+                resourceId={data._id}
+                resourceData={data}
+                variant="highlight"
+              >
+                <Link
+                  href={data.website}
+                  aria-label={`${t('call_to_action.view_website', { ns: 'common' })} ${translation?.displayName ?? ''}`}
+                >
+                  <LinkIcon className="size-4" />{' '}
+                  <span className="truncate">
+                    {' '}
+                    {t('call_to_action.view_website', { ns: 'common' })}{' '}
+                  </span>
+                </Link>
+              </ReferralButton>
+            ) : (
+              <ReferralButton
+                className="flex-1 gap-1 overflow-hidden"
+                referralType="website_referral"
+                size="sm"
+                resourceId={data._id}
+                resourceData={data}
+                disabled
+                variant="highlight"
+              >
+                <LinkIcon className="size-4" />{' '}
+                <span className="truncate">
+                  {' '}
+                  {t('call_to_action.view_website', { ns: 'common' })}{' '}
+                </span>
+              </ReferralButton>
+            )}
 
             <GetDirectionsButton
               className="overflow-hidden"

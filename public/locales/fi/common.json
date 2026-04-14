@@ -67,7 +67,8 @@
     "login": "Kirjaudu sisään",
     "show_more": "Näytä lisää",
     "show_less": "Näytä vähemmän",
-    "print": "Painaa"
+    "print": "Tulosta",
+    "close": "Sulje"
   },
   "list": {
     "private": "Yksityinen",
@@ -115,7 +116,7 @@
       "linkedin": "LinkedIn",
       "sms": "Tekstiviesti",
       "email": "Sähköposti",
-      "print": "Painaa",
+      "print": "Tulosta",
       "copied": "Kopioitu!",
       "check_out_this_list": "Katsokaa tätä listaa, jonka tein!",
       "check_out_this_resource": "Katsokaa tätä löytämääni resurssia!",

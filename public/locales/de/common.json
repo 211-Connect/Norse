@@ -67,7 +67,8 @@
     "login": "Login",
     "show_more": "Mehr anzeigen",
     "show_less": "Weniger anzeigen",
-    "print": "Drucken"
+    "print": "Drucken",
+    "close": "Schließen"
   },
   "list": {
     "private": "Privat",

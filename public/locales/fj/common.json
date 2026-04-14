@@ -67,7 +67,8 @@
     "login": "Loma",
     "show_more": "Vakaraitaka eso tale",
     "show_less": "Vakaraitaka lailai",
-    "print": "Tabaka"
+    "print": "Tabaka",
+    "close": "Sogo"
   },
   "list": {
     "private": "Veika e baleti keda",

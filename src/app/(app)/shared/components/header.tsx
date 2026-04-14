@@ -216,14 +216,16 @@ export function Header() {
                   <DropdownMenuItem
                     className="cursor-pointer px-[10px] py-2 text-primary !outline-none focus:bg-accent focus:text-primary"
                     data-testid="favorites-btn"
-                    onClick={() => {
+                    onClick={(event) => {
                       if (session.status === 'unauthenticated') {
+                        const trigger = event.currentTarget;
                         setTimeout(() => {
                           setDialogStore((prev) => ({
                             ...prev,
                             promptAuth: {
                               ...prev.promptAuth,
                               open: true,
+                              returnFocusTo: trigger,
                             },
                           }));
                         });
@@ -333,9 +335,9 @@ export function Header() {
         <nav
           id={HEADER_DESKTOP_ID}
           aria-label="Primary"
-          className="z-[1] ml-auto hidden w-fit justify-end overflow-hidden xl:flex"
+          className="z-[1] ml-auto hidden w-fit justify-end xl:flex"
         >
-          <ul className="flex items-center gap-6 overflow-x-auto overflow-y-hidden">
+          <ul className="flex items-center gap-6 overflow-x-auto px-1 py-2 sm:px-2">
             {sitemap}
           </ul>
         </nav>

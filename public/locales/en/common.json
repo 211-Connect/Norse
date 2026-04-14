@@ -70,10 +70,12 @@
     "delete": "Delete",
     "search": "Search",
     "remove": "Remove",
+    "send": "Send",
     "login": "Login",
     "show_more": "Show more",
     "show_less": "Show less",
-    "print": "Print"
+    "print": "Print",
+    "close": "Close"
   },
   "list": {
     "private": "Private",
@@ -116,6 +118,7 @@
       "share_via": "Share this via",
       "copy_link": "Copy link",
       "copy": "Copy",
+      "opens_in_new_tab": "opens in a new tab",
       "facebook": "Facebook",
       "twitter": "Twitter",
       "linkedin": "LinkedIn",
@@ -126,6 +129,7 @@
       "check_out_this_list": "Check out this list I made!",
       "check_out_this_resource": "Check out this resource I found!",
       "share_sms": "Enter a phone number to share via SMS",
+      "phone_number_label": "Phone number",
       "enter_phone_number": "Enter phone number...",
       "invalid_phone_number": "Invalid phone number",
       "sms_sending_title": "Sending SMS...",

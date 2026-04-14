@@ -28,7 +28,10 @@ export function Navigation({
           title={resource.name ?? undefined}
           body={resource.description ?? undefined}
         />
-        <AddToFavoritesButton serviceAtLocationId={resource.id} />
+        <AddToFavoritesButton
+          serviceAtLocationId={resource.id}
+          resourceName={resource.name ?? undefined}
+        />
         {appConfig.featureFlags.showFeedbackButtonOnResourcePages ? (
           <ReportButton />
         ) : null}

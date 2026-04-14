@@ -1,7 +1,9 @@
+'use client';
+
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
-import NextLink from 'next/link';
 
+import { LocalizedLink } from '../LocalizedLink';
 import { cn } from '../../lib/utils';
 
 const typographyVariants = cva(
@@ -117,17 +119,17 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
 
     if (isNextLink) {
       return (
-        <NextLink
+        <LocalizedLink
           href={url}
           className={cn(
             typographyVariants({ variant, size, textColor, className }),
           )}
           ref={ref as React.Ref<HTMLAnchorElement>}
           target={urlTarget || undefined}
-          {...props}
+          {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
         >
           {children}
-        </NextLink>
+        </LocalizedLink>
       );
     }
 
