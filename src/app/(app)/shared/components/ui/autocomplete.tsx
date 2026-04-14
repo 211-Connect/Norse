@@ -223,6 +223,7 @@ export function Autocomplete(props: AutocompleteProps) {
   const closeOptions = useCallback(() => {
     setOpen(false);
     setCurrentIndex(-1);
+    stayOpenOnBlurRef.current = false;
   }, []);
 
   const handleValueSelect = useCallback(
@@ -258,10 +259,17 @@ export function Autocomplete(props: AutocompleteProps) {
     [onInputChange, setValue, open],
   );
 
-  const handleClickOutside = useCallback(() => {
-    setOpen(false);
-    referenceElement?.blur();
-  }, [referenceElement]);
+  const handleClickOutside = useCallback(
+    (event: PointerEvent) => {
+      // Don't close if clicking on the dropdown itself
+      if (popperElement?.contains(event.target as Node)) {
+        return;
+      }
+      setOpen(false);
+      referenceElement?.blur();
+    },
+    [referenceElement, popperElement],
+  );
 
   useOnPointerDownOutside(wrapperElementRef, handleClickOutside);
 
@@ -295,7 +303,7 @@ export function Autocomplete(props: AutocompleteProps) {
             '';
           setInputSelectionPoint(selectionValue);
           setCurrentIndex(nextState);
-          setValue(selectionValue);
+          setTempValue(selectionValue);
           nextIndex = nextState;
         } else {
           openOptions();
@@ -317,7 +325,7 @@ export function Autocomplete(props: AutocompleteProps) {
 
           setInputSelectionPoint(selectionValue);
           setCurrentIndex(nextState);
-          setValue(selectionValue);
+          setTempValue(selectionValue);
           nextIndex = nextState;
         } else {
           const nextOption = rest.options[currentIndex];
@@ -327,7 +335,7 @@ export function Autocomplete(props: AutocompleteProps) {
         }
       } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
         setCurrentIndex(-1);
-        setValue(lastManualInput);
+        setTempValue(lastManualInput);
         nextIndex = -1;
         if (currentIndex >= 0) {
           setInputSelectionPoint(lastManualInput);
@@ -420,7 +428,7 @@ export function Autocomplete(props: AutocompleteProps) {
 
           setInputSelectionPoint(selectionValue);
           setCurrentIndex(nextState);
-          setValue(selectionValue);
+          setTempValue(selectionValue);
           nextIndex = nextState;
         }
       } else if (e.key === 'End') {
@@ -439,7 +447,7 @@ export function Autocomplete(props: AutocompleteProps) {
 
           setInputSelectionPoint(selectionValue);
           setCurrentIndex(nextState);
-          setValue(selectionValue);
+          setTempValue(selectionValue);
           nextIndex = nextState;
         }
       }
@@ -526,8 +534,15 @@ export function Autocomplete(props: AutocompleteProps) {
         }
       }
 
+      // Don't close if focus moved to the clear button or we're interacting with the dropdown list
+      const isMovingToClearButton = clearButtonRef.current === e.relatedTarget;
+      const isMovingToDropdown = popperElement?.contains(
+        e.relatedTarget as Node,
+      );
+
       if (
-        clearButtonRef.current !== e.relatedTarget &&
+        !isMovingToClearButton &&
+        !isMovingToDropdown &&
         !stayOpenOnBlurRef.current
       ) {
         closeOptions();
@@ -539,6 +554,7 @@ export function Autocomplete(props: AutocompleteProps) {
       handleValueSelect,
       options,
       selectedOption,
+      popperElement,
     ],
   );
 
@@ -652,9 +668,8 @@ export function Autocomplete(props: AutocompleteProps) {
             aria-multiselectable="false"
             ref={setPopperElement}
             className={cn(
-              'z-10 animate-opacity-in overflow-auto overscroll-contain bg-white',
+              'z-10 mt-2 animate-opacity-in overflow-auto overscroll-contain bg-white',
               !referenceWidth && 'w-full',
-              'mt-2 max-h-[min(18rem,calc(100dvh-18rem))]',
             )}
             style={{
               position: strategy,
