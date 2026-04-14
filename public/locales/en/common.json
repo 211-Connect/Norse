@@ -96,6 +96,9 @@
       "not_found": "No lists found",
       "create_new_list": "Create a new one?"
     },
+    "manage_favorites": {
+      "title": "Manage favorites"
+    },
     "remove_from_list": {
       "are_you_sure": "Are you sure you want to remove this favorite from your list?"
     },

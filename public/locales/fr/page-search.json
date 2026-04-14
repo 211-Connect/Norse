@@ -22,5 +22,6 @@
       "name": "Nom de la ressource",
       "organization": "Nom du fournisseur"
     }
-  }
+  },
+  "name_unavailable": "Nom indisponible"
 }

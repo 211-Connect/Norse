@@ -130,7 +130,10 @@
       "sms_send_failed_title": "ارسال پیامک ناموفق بود",
       "sms_send_failed_body": "پیام شما ارسال نشد."
     },
-    "prompt_auth": "برای استفاده از این قابلیت، لطفاً وارد شوید."
+    "prompt_auth": "برای استفاده از این قابلیت، لطفاً وارد شوید.",
+    "manage_favorites": {
+      "title": "مدیریت موارد دلخواه"
+    }
   },
   "update_location": {
     "prompt_start_location": "محل شروع شما کجاست؟"

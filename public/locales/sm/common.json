@@ -130,7 +130,10 @@
       "sms_send_failed_title": "Ua lē manuia le lafoina o SMS",
       "sms_send_failed_body": "Ua lē mafai ona lafo lau savali."
     },
-    "prompt_auth": "Fa'amolemole ulufale e fa'aoga lenei vaega."
+    "prompt_auth": "Fa'amolemole ulufale e fa'aoga lenei vaega.",
+    "manage_favorites": {
+      "title": "Pulea mea e fiafia i ai"
+    }
   },
   "update_location": {
     "prompt_start_location": "O fea lou nofoaga e amata ai?"

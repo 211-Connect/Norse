@@ -50,7 +50,7 @@ export function Datum({
     <div
       onClick={onClick}
       className={cn(
-        'flex flex-row whitespace-pre-line py-2',
+        'flex flex-row py-2',
         {
           'gap-2': Boolean(Icon),
           truncate: singleLine,
@@ -60,7 +60,7 @@ export function Datum({
       )}
       id={generatedId}
     >
-      <div>
+      <div className="flex-shrink-0">
         {Icon ? (
           <Icon
             aria-hidden="true"
@@ -72,7 +72,7 @@ export function Datum({
         ) : null}
       </div>
       {titleBelow ? (
-        <div className="flex flex-col">
+        <div className="flex min-w-0 flex-col">
           <Typography
             variant="paragraph"
             size={size}
@@ -80,6 +80,7 @@ export function Datum({
             urlTarget={urlTarget}
             as={descriptionAs}
             aria-label={urlAriaLabel ?? undefined}
+            className="whitespace-pre-line"
           >
             {parsedDescription}
           </Typography>
@@ -94,7 +95,7 @@ export function Datum({
           </div>
         </div>
       ) : (
-        <div className="flex flex-col">
+        <div className="flex min-w-0 flex-col">
           <Typography variant="label" size={size}>
             {title}
           </Typography>
@@ -105,6 +106,7 @@ export function Datum({
             urlTarget={urlTarget}
             as={descriptionAs}
             aria-label={urlAriaLabel ?? undefined}
+            className="whitespace-pre-line"
           >
             {parsedDescription}
           </Typography>

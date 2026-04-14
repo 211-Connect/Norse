@@ -7,7 +7,7 @@ import { LocalizedLink } from '../LocalizedLink';
 import { cn } from '../../lib/utils';
 
 const typographyVariants = cva(
-  'font-sans leading-none tracking-normal', // Base: Inter font, 100% line-height, 0% letter-spacing
+  'font-sans leading-none tracking-normal break-words', // Base: Inter font, 100% line-height, 0% letter-spacing, word breaking
   {
     variants: {
       variant: {

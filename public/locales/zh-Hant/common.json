@@ -130,7 +130,10 @@
       "sms_send_failed_title": "簡訊發送失敗",
       "sms_send_failed_body": "您的訊息發送失敗。"
     },
-    "prompt_auth": "請登入後使用此功能。"
+    "prompt_auth": "請登入後使用此功能。",
+    "manage_favorites": {
+      "title": "管理收藏夾"
+    }
   },
   "update_location": {
     "prompt_start_location": "你的出發地是哪裡？"

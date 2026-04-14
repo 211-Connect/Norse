@@ -130,7 +130,10 @@
       "sms_send_failed_title": "Slanje SMS-a nije uspjelo",
       "sms_send_failed_body": "Slanje vaše poruke nije uspjelo."
     },
-    "prompt_auth": "Molimo prijavite se kako biste koristili ovu značajku."
+    "prompt_auth": "Molimo prijavite se kako biste koristili ovu značajku.",
+    "manage_favorites": {
+      "title": "Upravljanje favoritima"
+    }
   },
   "update_location": {
     "prompt_start_location": "Koja je vaša početna lokacija?"

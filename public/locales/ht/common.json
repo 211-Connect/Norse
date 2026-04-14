@@ -130,7 +130,10 @@
       "sms_send_failed_title": "Voye SMS la echwe",
       "sms_send_failed_body": "Mesaj ou a pa t rive voye."
     },
-    "prompt_auth": "Tanpri konekte pou itilize fonksyonalite sa a."
+    "prompt_auth": "Tanpri konekte pou itilize fonksyonalite sa a.",
+    "manage_favorites": {
+      "title": "Jere favori yo"
+    }
   },
   "update_location": {
     "prompt_start_location": "Ki kote ou kòmanse?"

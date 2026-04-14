@@ -130,7 +130,10 @@
       "sms_send_failed_title": "ኤስ ኤም ኤስ መላክ አልተሳካለትም",
       "sms_send_failed_body": "የእርስዎ መልዕክት መላክ አልቻለም."
     },
-    "prompt_auth": "ይህን መተግበሪያ ለመጠቀም እባክዎ መግቢያ."
+    "prompt_auth": "ይህን መተግበሪያ ለመጠቀም እባክዎ መግቢያ.",
+    "manage_favorites": {
+      "title": "ተወዳጆችን ያቀናብሩ"
+    }
   },
   "update_location": {
     "prompt_start_location": "መነሻዎ ምንድን ነው?"

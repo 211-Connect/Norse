@@ -130,7 +130,10 @@
       "sms_send_failed_title": "Gửi SMS không thành công",
       "sms_send_failed_body": "Tin nhắn của bạn không gửi được."
     },
-    "prompt_auth": "Vui lòng đăng nhập để sử dụng tính năng này."
+    "prompt_auth": "Vui lòng đăng nhập để sử dụng tính năng này.",
+    "manage_favorites": {
+      "title": "Quản lý mục yêu thích"
+    }
   },
   "update_location": {
     "prompt_start_location": "Vị trí bắt đầu của bạn là gì?"

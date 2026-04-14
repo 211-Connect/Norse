@@ -130,7 +130,10 @@
       "sms_send_failed_title": "SMS diri fashilmay",
       "sms_send_failed_body": "Fariintaadu way guul darreysatay in ay dirto."
     },
-    "prompt_auth": "Fadlan gal si aad u isticmaasho habkaani."
+    "prompt_auth": "Fadlan gal si aad u isticmaasho habkaani.",
+    "manage_favorites": {
+      "title": "Maaree waxyaabaha aad ugu jeceshahay"
+    }
   },
   "update_location": {
     "prompt_start_location": "Waa maxay goobta aad ka bilaabayso?"

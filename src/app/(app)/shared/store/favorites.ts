@@ -34,7 +34,7 @@ export const favoriteListWithFavoritesAtom = atom<FavoriteListWithFavorites>({
   id: '',
   name: '',
   description: '',
-  privacy: 'PRIVATE' as FavoriteListState['privacy'],
+  privacy: 'PRIVATE',
   viewingAsOwner: false,
   favorites: [],
 });

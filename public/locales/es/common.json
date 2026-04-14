@@ -133,7 +133,10 @@
       "sms_send_failed_title": "Error en el envío de SMS",
       "sms_send_failed_body": "No se pudo enviar el mensaje."
     },
-    "prompt_auth": "Inicie sesión para utilizar esta función."
+    "prompt_auth": "Inicie sesión para utilizar esta función.",
+    "manage_favorites": {
+      "title": "Gestionar favoritos"
+    }
   },
   "update_location": {
     "prompt_start_location": "¿Cuál es tu punto de partida?"

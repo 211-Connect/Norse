@@ -130,7 +130,10 @@
       "sms_send_failed_title": "SMS 전송 실패",
       "sms_send_failed_body": "메시지를 보내지 못했습니다."
     },
-    "prompt_auth": "이 기능을 사용하려면 로그인하십시오."
+    "prompt_auth": "이 기능을 사용하려면 로그인하십시오.",
+    "manage_favorites": {
+      "title": "즐겨찾기 관리"
+    }
   },
   "update_location": {
     "prompt_start_location": "시작 위치는 어디입니까?"

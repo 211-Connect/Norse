@@ -22,5 +22,6 @@
       "name": "Ressourcenname",
       "organization": "Name des Anbieters"
     }
-  }
+  },
+  "name_unavailable": "Name nicht verfügbar"
 }

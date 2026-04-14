@@ -130,7 +130,10 @@
       "sms_send_failed_title": "E sega ni rawa ni vakau na SMS",
       "sms_send_failed_body": "E sega ni vakau na nomu itukutuku."
     },
-    "prompt_auth": "Kerekere mo curu mai mo vakayagataka na iwalewale oqo."
+    "prompt_auth": "Kerekere mo curu mai mo vakayagataka na iwalewale oqo.",
+    "manage_favorites": {
+      "title": "Vakatulewataka na veika taleitaki"
+    }
   },
   "update_location": {
     "prompt_start_location": "Na cava na nomu vanua ni tekivu?"

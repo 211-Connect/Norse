@@ -22,5 +22,6 @@
       "name": "نام منبع",
       "organization": "نام ارائه دهنده"
     }
-  }
+  },
+  "name_unavailable": "نام موجود نیست"
 }

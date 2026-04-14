@@ -130,7 +130,10 @@
       "sms_send_failed_title": "एसएमएस भेजने में विफल",
       "sms_send_failed_body": "आपका संदेश भेजने में विफल रहा।"
     },
-    "prompt_auth": "इस विशेष सुविधा का प्रयोग करने के लिए लॉग इन करें।"
+    "prompt_auth": "इस विशेष सुविधा का प्रयोग करने के लिए लॉग इन करें।",
+    "manage_favorites": {
+      "title": "पसंदीदा प्रबंधित करें"
+    }
   },
   "update_location": {
     "prompt_start_location": "आपका शुरुआती स्थान क्या है?"

@@ -130,7 +130,10 @@
       "sms_send_failed_title": "SMS送信に失敗しました",
       "sms_send_failed_body": "メッセージの送信に失敗しました。"
     },
-    "prompt_auth": "この機能をご利用いただくには、ログインしてください。"
+    "prompt_auth": "この機能をご利用いただくには、ログインしてください。",
+    "manage_favorites": {
+      "title": "お気に入りを管理する"
+    }
   },
   "update_location": {
     "prompt_start_location": "出発地はどこですか？"

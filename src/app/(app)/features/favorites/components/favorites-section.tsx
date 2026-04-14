@@ -1,7 +1,7 @@
 'use client';
 
 import { favoriteListWithFavoritesAtom } from '@/app/(app)/shared/store/favorites';
-import { useAtomValue } from 'jotai';
+import { useAtom } from 'jotai';
 import {
   Card,
   CardDescription,
@@ -17,6 +17,7 @@ import { Badge } from '@/app/(app)/shared/components/ui/badge';
 import { fontSans } from '@/app/(app)/shared/styles/fonts';
 import { useTranslation } from 'react-i18next';
 import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
+import { SearchCardLayoutConfig } from '@/app/(app)/features/search/types/card-layout-config';
 
 import { Favorite } from './favorite';
 import { NoFavoritesCard } from './no-favorites-card';
@@ -24,11 +25,26 @@ import { UpdateFavoriteListButton } from './update-favorite-list-button';
 import { DeleteFavoriteListButton } from './delete-favorite-list-button';
 import { Link } from '@/app/(app)/shared/components/link';
 
-export function FavoritesSection() {
+type FavoritesSectionProps = {
+  cardLayout: SearchCardLayoutConfig;
+};
+
+export function FavoritesSection({ cardLayout }: FavoritesSectionProps) {
   const { t } = useTranslation('page-list');
-  const favoriteList = useAtomValue(favoriteListWithFavoritesAtom);
+  const [favoriteList, setFavoriteList] = useAtom(
+    favoriteListWithFavoritesAtom,
+  );
   const componentToPrint = useRef<HTMLDivElement>(null);
   const { stringifiedSearchParams } = useClientSearchParams();
+
+  const handleRemoveFromList = (listId: string, favoriteId: string) => {
+    // Optimistically update the local atom by filtering out the removed favorite
+    setFavoriteList((prev) => ({
+      ...prev,
+      favorites:
+        prev.favorites?.filter((favorite) => favorite._id !== favoriteId) || [],
+    }));
+  };
 
   return (
     <div className="flex w-full flex-col p-[10px] lg:max-w-[550px] lg:pl-[20px]">
@@ -98,8 +114,9 @@ export function FavoritesSection() {
             <Favorite
               key={list._id}
               data={list}
-              viewingAsOwner={favoriteList.viewingAsOwner}
-              favoriteListId={favoriteList.id}
+              cardLayout={cardLayout}
+              currentListId={favoriteList.id}
+              onRemoveFromList={handleRemoveFromList}
             />
           );
         })}

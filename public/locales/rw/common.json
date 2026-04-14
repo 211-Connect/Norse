@@ -130,7 +130,10 @@
       "sms_send_failed_title": "Kohereza ubutumwa bugufi byanze",
       "sms_send_failed_body": "Ubutumwa bwawe bwananiwe koherezwa."
     },
-    "prompt_auth": "Injira kugira ngo ukoreshe iki gikorwa."
+    "prompt_auth": "Injira kugira ngo ukoreshe iki gikorwa.",
+    "manage_favorites": {
+      "title": "Gucunga ibyo ukunda"
+    }
   },
   "update_location": {
     "prompt_start_location": "Aho utangiriye ni he?"

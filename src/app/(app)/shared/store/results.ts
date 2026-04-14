@@ -17,6 +17,8 @@ export type ResultType = {
   taxonomies: Taxonomy[];
   facets: FacetWithTranslation[] | null | undefined;
   attributeValues: Record<string, string>;
+  currentListId?: string;
+  onRemoveFromList?: (listId: string, favoriteId: string) => void;
 };
 
 export const resultsAtom = atom<ResultType[]>([]);

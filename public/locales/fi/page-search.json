@@ -22,5 +22,6 @@
       "name": "Resurssin nimi",
       "organization": "Palveluntarjoajan nimi"
     }
-  }
+  },
+  "name_unavailable": "Nimi ei saatavilla"
 }

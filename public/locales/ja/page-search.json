@@ -22,5 +22,6 @@
       "name": "リソース名",
       "organization": "プロバイダー名"
     }
-  }
+  },
+  "name_unavailable": "名前は不明です"
 }
