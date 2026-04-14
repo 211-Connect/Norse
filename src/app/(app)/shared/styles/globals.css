@@ -15,7 +15,8 @@ a:not(:has(> button:only-child)):not([class*='bg-']):not(.border) {
 }
 
 .reactour__popover.home-tour-popover {
-  padding: 1.5rem 1.5rem 1rem;
+  /* Right padding reserves space for the 44px close button at 8px from the edge. */
+  padding: 1.5rem 3.5rem 1rem 1.5rem;
 }
 
 .home-tour-popover .home-tour-navigation {
