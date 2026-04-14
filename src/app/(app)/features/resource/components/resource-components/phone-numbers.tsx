@@ -54,7 +54,7 @@ export function PhoneNumbersComponent({ resource }: { resource: Resource }) {
           urlTarget="_self"
           titleBelow
           shouldParseHtml={false}
-          className="w-1/2"
+          className="w-full lg:w-1/2"
         />
       ))}
     </div>

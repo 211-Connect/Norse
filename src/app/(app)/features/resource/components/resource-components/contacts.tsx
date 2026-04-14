@@ -33,7 +33,7 @@ export function ContactsComponent({ resource }: { resource: Resource }) {
       </div>
       <div className="flex flex-row flex-wrap gap-y-2">
         {sortedContacts.map((contact) => (
-          <div key={contact.id} className="flex w-1/2 flex-col pl-6">
+          <div key={contact.id} className="flex w-full flex-col pl-6 lg:w-1/2">
             <Datum
               icon={UserRound}
               description={
