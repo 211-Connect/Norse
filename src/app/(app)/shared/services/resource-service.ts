@@ -107,6 +107,7 @@ async function fetchAndTransformResourceOrigin(
             };
           }) ?? null,
         attributeValues: data?.translation?.attributeValues ?? null,
+        contacts: data?.translation?.contacts ?? null,
       };
     },
     { memory: false, redis: true },
