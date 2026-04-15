@@ -39,17 +39,13 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
-      - name: Run blocking E2E tests
+      - name: Run E2E tests
         run: >
           npx playwright test
           --project=search-taxonomy
           --project=translations
           --project=favorites
-
-      - name: Run accessibility preservation tests
-        continue-on-error: true
-        run: npx playwright test --project=accessibility --reporter=list
-
+          --project=accessibility
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v6

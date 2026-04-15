@@ -37,6 +37,7 @@ import {
   TooltipTrigger,
 } from './tooltip';
 import { Badge } from './badge';
+import { useTranslation } from 'react-i18next';
 import { useOnPointerDownOutside } from '../../hooks/use-on-pointer-down-outside';
 
 export type AutocompleteOption = {
@@ -114,6 +115,8 @@ export function Autocomplete(props: AutocompleteProps) {
     positionBelowElementId,
     ...rest
   } = props;
+
+  const { t } = useTranslation('common');
 
   const readerLabelId = useId();
   const fallbackInputId = useId();
@@ -584,10 +587,10 @@ export function Autocomplete(props: AutocompleteProps) {
     );
     setSrStatus(
       totalOptions > 0
-        ? `${totalOptions} result${totalOptions > 1 ? 's' : ''} available.`
-        : 'No results.',
+        ? t('autocomplete.results_available', { count: totalOptions })
+        : t('autocomplete.no_results'),
     );
-  }, [open, options]);
+  }, [open, options, t]);
 
   // Set unique ID for component
   useEffect(() => {
@@ -618,7 +621,12 @@ export function Autocomplete(props: AutocompleteProps) {
             aria-hidden="true"
           />
         )}
-        <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+        <div
+          className="sr-only"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        >
           {srStatus}
         </div>
         <Input

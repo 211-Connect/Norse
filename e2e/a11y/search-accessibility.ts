@@ -114,7 +114,7 @@ test.describe('Search accessibility preservation', () => {
     }
   });
 
-  test.skip('search and location comboboxes expose labels and keyboard-clear actions', async ({
+  test('search and location comboboxes expose labels and keyboard-clear actions', async ({
     page,
   }) => {
     await openDialogFromSearchTrigger(page);
@@ -162,7 +162,7 @@ test.describe('Search accessibility preservation', () => {
 
     const listbox = page.getByTestId('autocomplete-listbox');
     await expect(listbox).toBeVisible({ timeout: 10_000 });
-    await expect(searchStatus).toContainText(/options available/i);
+    await expect(searchStatus).toContainText(/results available/i);
 
     const metrics = await listbox.evaluate((element) => {
       const style = window.getComputedStyle(element);
@@ -181,14 +181,34 @@ test.describe('Search accessibility preservation', () => {
     expect(metrics.scrollHeight).toBeGreaterThanOrEqual(metrics.clientHeight);
   });
 
-  test('pressing Enter in the location autocomplete returns focus to search instead of submitting', async ({
+  test('pressing Enter in the search autocomplete focuses location input instead of submitting', async ({
     page,
   }) => {
     await openDialogFromSearchTrigger(page);
 
     const homeUrl = page.url();
-    const locationInput = page.locator('#location-input');
     const searchInput = page.locator('#search-input');
+    const locationInput = page.locator('#location-input');
+
+    await searchInput.fill('food');
+    await searchInput
+      .locator('..')
+      .getByTestId('autocomplete-listbox')
+      .waitFor({ state: 'visible', timeout: 10_000 });
+
+    await searchInput.press('Enter');
+
+    await expect(locationInput).toBeFocused({ timeout: 5_000 });
+    await expect(page).toHaveURL(homeUrl);
+    await expect(page.getByTestId('search-dialog')).toBeVisible();
+  });
+
+  test('pressing Enter in the location autocomplete submits the form', async ({
+    page,
+  }) => {
+    await openDialogFromSearchTrigger(page);
+
+    const locationInput = page.locator('#location-input');
 
     await locationInput.fill('minneapolis');
     await locationInput
@@ -198,8 +218,101 @@ test.describe('Search accessibility preservation', () => {
 
     await locationInput.press('Enter');
 
-    await expect(searchInput).toBeFocused({ timeout: 5_000 });
-    await expect(page).toHaveURL(homeUrl);
-    await expect(page.getByTestId('search-dialog')).toBeVisible();
+    // Form should submit and navigate to search page
+    await expect(page).toHaveURL(/\/search/, { timeout: 5_000 });
+  });
+
+  test('clicking X on location input sets "Everywhere"', async ({ page }) => {
+    await openDialogFromSearchTrigger(page);
+
+    const locationInput = page.locator('#location-input');
+    const clearButtons = page.getByTestId('search-clear-btn');
+
+    await locationInput.fill('minneapolis');
+    await expect(clearButtons.nth(1)).toBeVisible();
+
+    await clearButtons.nth(1).click();
+
+    await expect(locationInput).toHaveValue('Everywhere');
+  });
+
+  test('autocomplete groups appear in correct order: Suggestions, Topics, Taxonomies', async ({
+    page,
+  }) => {
+    await openDialogFromSearchTrigger(page);
+
+    const searchInput = page.locator('#search-input');
+    await searchInput.fill('o');
+
+    const listbox = page.getByTestId('autocomplete-listbox').first();
+    await expect(listbox).toBeVisible({ timeout: 10_000 });
+
+    const groups = await listbox
+      .locator('[role="presentation"]')
+      .allTextContents();
+
+    // Filter out empty strings
+    const nonEmptyGroups = groups.filter((g) => g.trim().length > 0);
+
+    if (nonEmptyGroups.length >= 2) {
+      // If we have Suggestions, it should come before Topics
+      const suggestionsIndex = nonEmptyGroups.findIndex((g) =>
+        /suggestions/i.test(g),
+      );
+      const topicsIndex = nonEmptyGroups.findIndex((g) =>
+        /categories/i.test(g),
+      );
+      const taxonomiesIndex = nonEmptyGroups.findIndex((g) =>
+        /taxonomies/i.test(g),
+      );
+
+      if (suggestionsIndex >= 0 && topicsIndex >= 0) {
+        expect(suggestionsIndex).toBeLessThan(topicsIndex);
+      }
+      if (topicsIndex >= 0 && taxonomiesIndex >= 0) {
+        expect(topicsIndex).toBeLessThan(taxonomiesIndex);
+      }
+      if (suggestionsIndex >= 0 && taxonomiesIndex >= 0) {
+        expect(suggestionsIndex).toBeLessThan(taxonomiesIndex);
+      }
+    }
+  });
+
+  test('arrow key navigation preserves all autocomplete options without filtering', async ({
+    page,
+  }) => {
+    await openDialogFromSearchTrigger(page);
+
+    const searchInput = page.locator('#search-input');
+    await searchInput.fill('o');
+
+    const listbox = page.getByTestId('autocomplete-listbox').first();
+    await expect(listbox).toBeVisible({ timeout: 10_000 });
+
+    // Get initial option count
+    const initialOptions = await listbox.locator('[role="option"]').count();
+    expect(initialOptions).toBeGreaterThan(1);
+
+    // Navigate down with arrow key
+    await searchInput.press('ArrowDown');
+
+    // Wait a bit for any potential filtering
+    await page.waitForTimeout(300);
+
+    // Option count should remain the same
+    const optionsAfterArrowDown = await listbox
+      .locator('[role="option"]')
+      .count();
+    expect(optionsAfterArrowDown).toBe(initialOptions);
+
+    // Navigate down again
+    await searchInput.press('ArrowDown');
+    await page.waitForTimeout(300);
+
+    // Option count should still be the same
+    const optionsAfterSecondArrow = await listbox
+      .locator('[role="option"]')
+      .count();
+    expect(optionsAfterSecondArrow).toBe(initialOptions);
   });
 });

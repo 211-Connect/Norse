@@ -136,7 +136,6 @@ export function SearchBar({
     [searchTerm, setShouldSearch, setSearch],
   );
 
-
   return (
     <Autocomplete
       className="search-box"

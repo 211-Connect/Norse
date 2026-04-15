@@ -231,12 +231,13 @@ export function SearchDialog({
   return createPortal(
     <div
       ref={dialogRef}
+      id={SEARCH_DIALOG_ID}
       className={cn(
         'fixed bottom-0 left-0 right-0 top-0 z-50 bg-white p-6 transition-opacity duration-300',
         open ? 'opacity-100' : 'pointer-events-none opacity-0',
       )}
       role="dialog"
-      data-testid="search-dialog"
+      data-testid={SEARCH_DIALOG_ID}
       aria-hidden={!open}
       aria-modal={open ? true : undefined}
       aria-labelledby={SEARCH_DIALOG_TITLE_ID}
