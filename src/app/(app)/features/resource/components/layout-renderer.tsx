@@ -65,7 +65,7 @@ function ColumnRenderer({ groups, resource }: ColumnRendererProps) {
                 key={
                   isSeparator
                     ? `separator-${groupIndex}-${itemIndex}`
-                    : item.componentId
+                    : `item-${item.componentId}-${groupIndex}-${itemIndex}`
                 }
                 resource={resource}
                 customAttribute={item.customAttribute}

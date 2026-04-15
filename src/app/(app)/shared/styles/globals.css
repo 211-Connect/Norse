@@ -95,3 +95,15 @@ a:not(:has(> button:only-child)):not([class*='bg-']):not(.border) {
     @apply bg-background text-foreground;
   }
 }
+
+.parsed-html-content ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.parsed-html-content ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
