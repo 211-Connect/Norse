@@ -238,7 +238,6 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
     }
   }, [isStandalone, props, setSearch]);
 
-
   return (
     <div className="location-box flex flex-col gap-4">
       <Autocomplete

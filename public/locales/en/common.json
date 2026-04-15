@@ -45,8 +45,6 @@
     "use_my_location": "Use my location",
     "change_location_label": "Change location: {{location}}",
     "open_search_dialog": "Open search dialog",
-    "list_status_one": "1 option available. Use the up and down arrow keys to review.",
-    "list_status_other": "{{count}} options available. Use the up and down arrow keys to review.",
     "confidential_address": "This location may be confidential or not open to the public. Please choose another provided contact method for this service.",
     "address_unavailable": "Address unavailable",
     "geocoding_error": "Geocoding error",
@@ -160,5 +158,10 @@
     "copyright": "© Copyright {{text}}"
   },
   "filter_results_count_one": "{{count}} result",
-  "filter_results_count_other": "{{count}} results"
+  "filter_results_count_other": "{{count}} results",
+  "autocomplete": {
+    "results_available_one": "{{count}} result available",
+    "results_available_other": "{{count}} results available",
+    "no_results": "No results"
+  }
 }
