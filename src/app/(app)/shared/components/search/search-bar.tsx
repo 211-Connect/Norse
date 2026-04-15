@@ -136,14 +136,6 @@ export function SearchBar({
     [searchTerm, setShouldSearch, setSearch],
   );
 
-  const listStatusMessage = useMemo(() => {
-    if (options.length === 0) {
-      return '';
-    }
-    return t('search.list_status', {
-      count: options.length,
-    });
-  }, [options.length, t]);
 
   return (
     <Autocomplete
@@ -161,7 +153,6 @@ export function SearchBar({
       onInputChange={handleInputChange}
       onValueChange={setSearchTerm}
       clearButtonLabel={t('call_to_action.remove')}
-      listStatusMessage={listStatusMessage}
       value={searchTerm}
       enterKeyBehavior={enterKeyFocusTargetId ? 'focus-target' : 'submit-form'}
       enterKeyFocusTargetId={enterKeyFocusTargetId}
