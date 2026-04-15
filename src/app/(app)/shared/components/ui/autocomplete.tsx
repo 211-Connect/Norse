@@ -39,6 +39,8 @@ import {
 import { Badge } from './badge';
 import { useOnPointerDownOutside } from '../../hooks/use-on-pointer-down-outside';
 
+// scrollable 276
+
 export type AutocompleteOption = {
   label?: string;
   value: string;
@@ -618,7 +620,12 @@ export function Autocomplete(props: AutocompleteProps) {
             aria-hidden="true"
           />
         )}
-        <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+        <div
+          className="sr-only"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        >
           {srStatus}
         </div>
         <Input
@@ -689,6 +696,7 @@ export function Autocomplete(props: AutocompleteProps) {
               top: y ?? 0,
               left: x ?? 0,
               width: referenceWidth ? `${referenceWidth}px` : undefined,
+              maxHeight: 'calc(100vh - 384px)',
             }}
             onTouchStart={touchOnList}
             onMouseDown={touchOnList}
