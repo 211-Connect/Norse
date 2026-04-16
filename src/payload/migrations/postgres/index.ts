@@ -39,6 +39,7 @@ import * as migration_20260403_113334 from './20260403_113334';
 import * as migration_20260403_113334_destructive_1 from './20260403_113334_destructive_1';
 import * as migration_20260403_113334_destructive_2 from './20260403_113334_destructive_2';
 import * as migration_20260403_113334_destructive_3 from './20260403_113334_destructive_3';
+import * as migration_20260416_145039 from './20260416_145039';
 
 export const migrations = [
   {
@@ -245,5 +246,10 @@ export const migrations = [
     up: migration_20260403_113334_destructive_3.up,
     down: migration_20260403_113334_destructive_3.down,
     name: '20260403_113334_destructive_3',
+  },
+  {
+    up: migration_20260416_145039.up,
+    down: migration_20260416_145039.down,
+    name: '20260416_145039'
   },
 ];
