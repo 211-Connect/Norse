@@ -40,3 +40,7 @@ export const SEARCH_DIALOG_TITLE_ID = 'search-dialog-title';
 export const SEARCH_DIALOG_DESCRIPTION_ID = 'search-dialog-description';
 
 export const NEW_TAB_WARNING = ' (opens in a new tab)';
+
+export const LOCATION_SEARCH_DEBOUNCE_DELAY = 500;
+export const SEARCH_DEBOUNCE_DELAY = 500;
+export const FAVORITES_SEARCH_DEBOUNCE_DELAY = 500;

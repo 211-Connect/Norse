@@ -23,6 +23,7 @@ import { DistanceSelect } from './distance-select';
 import { UseMyLocationButton } from './use-my-location-button';
 import { useAppConfig } from '../../hooks/use-app-config';
 import { MainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
+import { LOCATION_SEARCH_DEBOUNCE_DELAY } from '../../lib/constants';
 
 type BaseProps = {
   className?: string;
@@ -81,7 +82,7 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
   const prevSearchLocation = isStandalone
     ? localPrevSearchLocation
     : globalPrevSearchLocation;
-  const debouncedSearchLocation = useDebounce(searchLocation, 1000);
+  const debouncedSearchLocation = useDebounce(searchLocation, LOCATION_SEARCH_DEBOUNCE_DELAY);
   const {
     data: locations,
     options,
