@@ -5,6 +5,7 @@ import { ApiResource, Resource } from '@/types/resource';
 import { CacheKey, withCache } from '@/utilities/withCache';
 import { fetchWrapper } from '../lib/fetchWrapper';
 import { INTERNAL_API_KEY, API_URL } from '../lib/constants';
+import { ensureUrlProtocol } from '@/utils';
 
 async function fetchAndTransformResourceOrigin(
   url: string,
@@ -63,7 +64,7 @@ async function fetchAndTransformResourceOrigin(
           data?.phoneNumbers?.find((p) => p.rank === 1 && p.type === 'voice')
             ?.number ??
           null,
-        website: data?.website ?? null,
+        website: ensureUrlProtocol(data?.website),
         address:
           data?.address ??
           data?.addresses?.find((a) => a.rank === 1)?.address_1 ??

@@ -13,7 +13,7 @@ export type ResultType = {
   attribution: string | null;
   priority: number;
   serviceName: string;
-  website: string;
+  website: string | null;
   taxonomies: Taxonomy[];
   facets: FacetWithTranslation[] | null | undefined;
   attributeValues: Record<string, string>;

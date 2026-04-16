@@ -1,4 +1,5 @@
 export * from './badgeFilterEvaluator';
+export * from './ensureUrlProtocol';
 export * from './getBadgesForResource';
 export * from './getContrastColor';
 export * from './getNumberFromString';
