@@ -398,6 +398,15 @@ export interface Tenant {
     keycloakSecret?: string | null;
     keycloakIssuer?: string | null;
     nextAuthSecret?: string | null;
+    /**
+     * Email domains permitted to authenticate in this realm (e.g. "acme.com"). Validated by Keycloak via the domain-check API at login time.
+     */
+    allowedDomains?:
+      | {
+          domain: string;
+          id?: string | null;
+        }[]
+      | null;
   };
   common?: {
     gtmContainerId?: string | null;
@@ -1141,6 +1150,12 @@ export interface TenantsSelect<T extends boolean = true> {
         keycloakSecret?: T;
         keycloakIssuer?: T;
         nextAuthSecret?: T;
+        allowedDomains?:
+          | T
+          | {
+              domain?: T;
+              id?: T;
+            };
       };
   common?:
     | T
