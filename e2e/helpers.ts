@@ -75,10 +75,12 @@ export async function performSearch(page: Page, params: SearchParams) {
 export async function goToFavorites(page: Page) {
   await page.getByTestId('my-stuff-btn').click();
   await page.getByTestId('favorites-btn').click();
+  await page.waitForURL(/\/favorites(\?|$)/, { timeout: 15000 });
   await page.waitForLoadState('networkidle');
 }
 
 export async function waitForFavoriteListPage(page: Page) {
+  await page.waitForURL(/\/favorites\/[a-f0-9-]{24}/, { timeout: 15000 });
   await page
     .getByTestId('back-to-favorites')
     .waitFor({ state: 'visible', timeout: 15000 });

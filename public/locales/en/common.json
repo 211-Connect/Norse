@@ -13,6 +13,8 @@
     "added_to_list_message": "This resource has been added to your list.",
     "already_exists": "Already exists",
     "already_exists_message": "This resource already exists in your list.",
+    "remove_from_list_title": "Remove from list?",
+    "remove_from_list_description": "This resource will be removed from this list. You can add it back later if needed.",
     "removed_from_list": "Removed from list",
     "removed_from_list_message": "This resource has been removed from your list.",
     "updated_list": "Updated list",

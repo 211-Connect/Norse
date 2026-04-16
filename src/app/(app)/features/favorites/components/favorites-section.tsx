@@ -37,7 +37,7 @@ export function FavoritesSection({ cardLayout }: FavoritesSectionProps) {
   const componentToPrint = useRef<HTMLDivElement>(null);
   const { stringifiedSearchParams } = useClientSearchParams();
 
-  const handleRemoveFromList = (listId: string, favoriteId: string) => {
+  const handleRemoveFromList = (_listId: string, favoriteId: string) => {
     // Optimistically update the local atom by filtering out the removed favorite
     setFavoriteList((prev) => ({
       ...prev,
