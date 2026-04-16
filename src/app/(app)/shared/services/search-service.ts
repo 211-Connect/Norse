@@ -17,6 +17,7 @@ import { formatAddressForDisplay } from '../lib/utils';
 import { stableHash, withCache } from '@/utilities/withCache';
 import { ResultType } from '../store/results';
 import { SortOption } from '../utils/getSortOption';
+import { ensureUrlProtocol } from '@/utils';
 
 const log = createLogger('search');
 
@@ -80,7 +81,7 @@ function transformSearchHits(
       summary: hit?._source?.service?.summary ?? null,
       description: hit?._source?.service?.description ?? null,
       phone: hit?._source?.phone ?? null,
-      website: hit?._source?.url ?? null,
+      website: ensureUrlProtocol(hit?._source?.url),
       address: mainAddress,
       location: hit?._source?.location?.point ?? null,
       taxonomies: hit?._source?.taxonomies ?? null,
