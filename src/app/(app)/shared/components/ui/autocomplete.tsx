@@ -145,6 +145,9 @@ export function Autocomplete(props: AutocompleteProps) {
   const [srStatus, setSrStatus] = useState('');
 
   const stayOpenOnBlurRef = useRef(false);
+  // Prevents the focus handler from re-opening the dropdown when focus is
+  // restored to the input programmatically after the clear button is pressed.
+  const suppressNextFocusOpenRef = useRef(false);
 
   const options: [string, AutocompleteOptionWithIndex[]][] = useMemo(() => {
     const options = rest.options;
@@ -500,8 +503,11 @@ export function Autocomplete(props: AutocompleteProps) {
         onInputChange?.('');
       }
 
+      // Close the dropdown immediately. Suppress the focus handler's auto-open
+      // so focus returning to the input doesn't re-show stale suggestions.
+      suppressNextFocusOpenRef.current = true;
+      setOpen(false);
       referenceElement?.focus();
-      setOpen(true);
       setLastManualInput('');
     },
     [setValue, onInputChange, onClear, referenceElement],
@@ -564,6 +570,10 @@ export function Autocomplete(props: AutocompleteProps) {
 
   const handleFocus = useCallback(() => {
     stayOpenOnBlurRef.current = false;
+    if (suppressNextFocusOpenRef.current) {
+      suppressNextFocusOpenRef.current = false;
+      return;
+    }
     setTimeout(() => {
       setOpen(true);
     }, 100);

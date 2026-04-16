@@ -3,7 +3,10 @@
 import { MapPin } from 'lucide-react';
 import { useAtomValue } from 'jotai';
 import { useTranslation } from 'react-i18next';
-import { deleteCookie, setCookie } from 'cookies-next/client';
+import {
+  clearLocationCookies,
+  setLocationCookies,
+} from '../../lib/location-cookies';
 
 import {
   prevSearchLocationAtom,
@@ -18,15 +21,6 @@ import { cn } from '../../lib/utils';
 import { Autocomplete } from '../ui/autocomplete';
 import { DistanceSelect } from './distance-select';
 import { UseMyLocationButton } from './use-my-location-button';
-import {
-  USER_PREF_COORDS,
-  USER_PREF_LOCATION,
-  USER_PREF_COUNTRY,
-  USER_PREF_DISTRICT,
-  USER_PREF_PLACE,
-  USER_PREF_POSTCODE,
-  USER_PREF_REGION,
-} from '../../lib/constants';
 import { useAppConfig } from '../../hooks/use-app-config';
 import { MainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
 
@@ -113,9 +107,9 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
       if (additionalLocation) return additionalLocation;
 
       return {
-        type: 'invalid',
+        type: 'invalid' as const,
         address: value,
-        coordinates: [0, 0], // Dummy coordinates
+        coordinates: [0, 0] as [number, number],
         place_type: [],
         bbox: undefined,
       };
@@ -127,46 +121,23 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
     (value) => {
       const coords = findCoords(value);
 
-      // We only want to update the user pref cookie for location
-      // IF coordinates are found for a given query.
-      //
-      // This is to prevent the caching of invalid locations
-      // We also update the 2 values so that they are empty if coordinates are not found
+      // Only persist a location preference when we have confirmed coordinates.
+      // Invalid/unrecognised values wipe the stored preference so stale data
+      // is never carried forward into the next search.
       if (coords.type === 'coordinates') {
-        setCookie(USER_PREF_COORDS, coords.coordinates?.join(','), {
-          path: '/',
-        });
-        setCookie(USER_PREF_LOCATION, value, { path: '/' });
-        if ('country' in coords && coords.country) {
-          setCookie(USER_PREF_COUNTRY, coords.country, { path: '/' });
-        }
-        if ('district' in coords && coords.district) {
-          setCookie(USER_PREF_DISTRICT, coords.district, { path: '/' });
-        }
-        if ('place' in coords && coords.place) {
-          setCookie(USER_PREF_PLACE, coords.place, { path: '/' });
-        }
-        if ('postcode' in coords && coords.postcode) {
-          setCookie(USER_PREF_POSTCODE, coords.postcode, { path: '/' });
-        }
-        if ('region' in coords && coords.region) {
-          setCookie(USER_PREF_REGION, coords.region, { path: '/' });
-        }
+        setLocationCookies(value, coords);
       } else {
-        deleteCookie(USER_PREF_COORDS, { path: '/' });
-        deleteCookie(USER_PREF_LOCATION, { path: '/' });
-        deleteCookie(USER_PREF_COUNTRY, { path: '/' });
-        deleteCookie(USER_PREF_DISTRICT, { path: '/' });
-        deleteCookie(USER_PREF_PLACE, { path: '/' });
-        deleteCookie(USER_PREF_POSTCODE, { path: '/' });
-        deleteCookie(USER_PREF_REGION, { path: '/' });
+        clearLocationCookies();
       }
 
       setShouldSearch(false);
 
       if (isStandalone && 'onLocationChange' in props) {
         setLocalSearchLocation(value);
-        props.onLocationChange(value, coords.coordinates || null);
+        props.onLocationChange(
+          value,
+          coords.type === 'invalid' ? null : (coords.coordinates ?? null),
+        );
       } else {
         setSearch?.((prev) => {
           // Ensure we are only providing updated coordinates to prevent unnecessary rerenders
@@ -221,22 +192,13 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
   );
 
   const handleClear = useCallback(() => {
-    const everywhereText = 'Everywhere';
-
-    if (isStandalone && 'onLocationChange' in props) {
-      setLocalSearchLocation(everywhereText);
-      props.onLocationChange(everywhereText, null);
+    setSearchLocation(t('search.everywhere', 'Everywhere'));
+    if (isStandalone) {
+      setLocalPrevSearchLocation('');
     } else {
-      setSearch?.((prev) => ({
-        ...prev,
-        searchCoordinates: [],
-        searchLocation: everywhereText,
-        searchLocationValidationError: '',
-        searchPlaceType: [],
-        searchBbox: null,
-      }));
+      setSearch?.((prev) => ({ ...prev, prevSearchLocation: '' }));
     }
-  }, [isStandalone, props, setSearch]);
+  }, [isStandalone, setSearch, setSearchLocation, t]);
 
   return (
     <div className="location-box flex flex-col gap-4">
