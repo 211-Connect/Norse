@@ -186,6 +186,28 @@ export const Tenants: CollectionConfig = {
             },
           ],
         },
+        {
+          name: 'allowedDomains',
+          label: 'Allowed Email Domains',
+          type: 'array',
+          access: {
+            create: superAdminOrSupportAccess,
+            read: superAdminOrSupportAccess,
+            update: superAdminOrSupportAccess,
+          },
+          admin: {
+            description:
+              'Email domains permitted to authenticate in this realm (e.g. "acme.com"). ' +
+              'Validated by Keycloak via the domain-check API at login time.',
+          },
+          fields: [
+            {
+              name: 'domain',
+              type: 'text',
+              required: true,
+            },
+          ],
+        },
       ],
     },
     {
