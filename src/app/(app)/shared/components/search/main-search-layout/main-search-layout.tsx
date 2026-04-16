@@ -1,7 +1,14 @@
 'use client';
 
 import { SearchIcon } from 'lucide-react';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import {
+  MutableRefObject,
+  Ref,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAtomValue } from 'jotai';
 
@@ -20,11 +27,13 @@ import { MainSearchLayoutContextProvider } from './main-search-layout-context';
 interface MainSearchLayoutProps {
   addMyLocationButtonVariant?: AddMyLocationButtonProps['variant'];
   className?: string;
+  searchTriggerRef?: Ref<HTMLButtonElement>;
 }
 
 export function MainSearchLayout({
   addMyLocationButtonVariant,
   className = '',
+  searchTriggerRef: externalSearchTriggerRef,
 }: MainSearchLayoutProps) {
   const appConfig = useAppConfig();
   const { t } = useTranslation();
@@ -35,8 +44,28 @@ export function MainSearchLayout({
   const [dialogOpened, setDialogOpened] = useState(false);
   const [focusByDefault, setFocusByDefault] =
     useState<SearchDialogProps['focusByDefault']>('search');
-  const searchTriggerRef = useRef<HTMLButtonElement>(null);
-  const addMyLocationButtonRef = useRef<HTMLButtonElement>(null);
+  const searchTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const addMyLocationButtonRef = useRef<HTMLButtonElement | null>(null);
+
+  const setSearchTriggerRef = useCallback(
+    (element: HTMLButtonElement | null) => {
+      searchTriggerRef.current = element;
+
+      if (!externalSearchTriggerRef) {
+        return;
+      }
+
+      if (typeof externalSearchTriggerRef === 'function') {
+        externalSearchTriggerRef(element);
+        return;
+      }
+
+      (
+        externalSearchTriggerRef as MutableRefObject<HTMLButtonElement | null>
+      ).current = element;
+    },
+    [externalSearchTriggerRef],
+  );
 
   const openSearchDialog = useCallback(
     (location: SearchDialogProps['focusByDefault']) => {
@@ -62,7 +91,7 @@ export function MainSearchLayout({
       <div className="flex w-full flex-col items-start gap-2">
         <div className={cn('relative w-full', className)}>
           <Button
-            ref={searchTriggerRef}
+            ref={setSearchTriggerRef}
             type="button"
             variant="outline"
             aria-controls={SEARCH_DIALOG_ID}

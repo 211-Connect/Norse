@@ -21,8 +21,12 @@ const focusableSelector = [
   '[tabindex]:not([tabindex="-1"])',
 ].join(',');
 
+const DISABLED_TOUR_TABINDEX_ATTR = 'data-tour-original-tabindex';
+
 function getTourPopover(): HTMLElement | null {
-  return document.querySelector<HTMLElement>('.reactour__popover');
+  return document.querySelector<HTMLElement>(
+    '.home-tour-popover, .reactour__popover',
+  );
 }
 
 function getFocusableElements(container: HTMLElement): HTMLElement[] {
@@ -43,6 +47,42 @@ function focusTourDialog(): void {
 function returnFocusToTrigger(): void {
   const trigger = document.querySelector<HTMLElement>(TOUR_TRIGGER_SELECTOR);
   trigger?.focus();
+}
+
+function getFocusableOutsidePopover(popover: HTMLElement): HTMLElement[] {
+  return Array.from(document.querySelectorAll<HTMLElement>(focusableSelector))
+    .filter((element) => !popover.contains(element))
+    .filter((element) => element.getAttribute('aria-hidden') !== 'true');
+}
+
+function disableBackgroundFocus(popover: HTMLElement): void {
+  getFocusableOutsidePopover(popover).forEach((element) => {
+    if (!element.hasAttribute(DISABLED_TOUR_TABINDEX_ATTR)) {
+      const currentTabIndex = element.getAttribute('tabindex');
+      element.setAttribute(
+        DISABLED_TOUR_TABINDEX_ATTR,
+        currentTabIndex === null ? '' : currentTabIndex,
+      );
+    }
+
+    element.setAttribute('tabindex', '-1');
+  });
+}
+
+function restoreBackgroundFocus(): void {
+  Array.from(
+    document.querySelectorAll<HTMLElement>(`[${DISABLED_TOUR_TABINDEX_ATTR}]`),
+  ).forEach((element) => {
+    const originalTabIndex = element.getAttribute(DISABLED_TOUR_TABINDEX_ATTR);
+
+    if (originalTabIndex) {
+      element.setAttribute('tabindex', originalTabIndex);
+    } else {
+      element.removeAttribute('tabindex');
+    }
+
+    element.removeAttribute(DISABLED_TOUR_TABINDEX_ATTR);
+  });
 }
 
 // Selects by DOM structure to avoid coupling to @reactour/tour's English aria-labels (e.g. "Go to prev step").
@@ -77,7 +117,6 @@ function patchDialogRole(popover: HTMLElement, tourLabel: string): void {
   popover.setAttribute('role', 'dialog');
   popover.setAttribute('aria-modal', 'true');
   popover.setAttribute('aria-labelledby', TOUR_TITLE_ID);
-  popover.classList.add('home-tour-popover');
 
   let title = popover.querySelector<HTMLElement>(`#${TOUR_TITLE_ID}`);
   if (!title) {
@@ -89,15 +128,6 @@ function patchDialogRole(popover: HTMLElement, tourLabel: string): void {
   if (title.textContent !== tourLabel) {
     title.textContent = tourLabel;
   }
-}
-
-function patchDialogSizing(popover: HTMLElement): void {
-  popover.style.width = 'min(36rem, calc(100vw - 2rem))';
-  popover.style.maxWidth = 'calc(100vw - 2rem)';
-  popover.style.maxHeight = 'calc(100dvh - 2rem)';
-  // overflow must stay visible so the step-badge (position:absolute; top:-0.8125em)
-  // is not clipped. Setting overflow-y:auto forces overflow-x to auto too, which
-  // creates a clipping context and hides the badge.
 }
 
 function patchCloseButton(popover: HTMLElement): void {
@@ -191,7 +221,6 @@ function patchTourPopover(
   if (!popover) return;
 
   patchDialogRole(popover, tourLabel);
-  patchDialogSizing(popover);
   patchCloseButton(popover);
 
   const controlsDiv = getControlsDiv(popover);
@@ -226,6 +255,10 @@ function TourAccessibilityEnhancer() {
       isPatching = true;
       try {
         patchTourPopover(currentStep ?? 0, stepCount, tourLabel);
+        const popover = getTourPopover();
+        if (popover) {
+          disableBackgroundFocus(popover);
+        }
       } finally {
         isPatching = false;
       }
@@ -252,12 +285,22 @@ function TourAccessibilityEnhancer() {
     });
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Tab') return;
-
       const popover = getTourPopover();
       if (!popover) return;
 
       const focusableElements = getFocusableElements(popover);
+      const activeElement = document.activeElement as HTMLElement | null;
+      const isInsidePopover = activeElement
+        ? popover.contains(activeElement)
+        : false;
+
+      if (!isInsidePopover && ['Tab', 'Enter', ' '].includes(event.key)) {
+        event.preventDefault();
+        (focusableElements[0] ?? popover).focus();
+        return;
+      }
+
+      if (event.key !== 'Tab') return;
 
       if (focusableElements.length === 0) {
         event.preventDefault();
@@ -267,10 +310,6 @@ function TourAccessibilityEnhancer() {
 
       const firstElement = focusableElements[0];
       const lastElement = focusableElements[focusableElements.length - 1];
-      const activeElement = document.activeElement as HTMLElement | null;
-      const isInsidePopover = activeElement
-        ? popover.contains(activeElement)
-        : false;
 
       if (!isInsidePopover) {
         event.preventDefault();
@@ -290,13 +329,28 @@ function TourAccessibilityEnhancer() {
       }
     };
 
+    const handleFocusIn = (event: FocusEvent) => {
+      const popover = getTourPopover();
+      if (!popover) return;
+
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      if (popover.contains(target)) return;
+
+      event.preventDefault();
+      focusTourDialog();
+    };
+
     document.addEventListener('keydown', handleKeyDown, true);
+    document.addEventListener('focusin', handleFocusIn, true);
     wasOpenRef.current = true;
 
     return () => {
       observer.disconnect();
       window.cancelAnimationFrame(focusFrame);
       document.removeEventListener('keydown', handleKeyDown, true);
+      document.removeEventListener('focusin', handleFocusIn, true);
+      restoreBackgroundFocus();
     };
   }, [currentStep, isOpen, steps, t]);
 
@@ -309,7 +363,20 @@ const TypedProvider = ReactourProvider as React.ComponentType<ProviderProps>;
 
 export const TourProvider = ({ children }: PropsWithChildren) => {
   return (
-    <TypedProvider steps={[]} scrollSmooth>
+    <TypedProvider
+      steps={[]}
+      className="home-tour-popover"
+      scrollSmooth
+      disableInteraction={({ currentStep }) => currentStep === 0}
+      styles={{
+        popover: (baseStyles) => ({
+          ...baseStyles,
+          width: 'min(36rem, calc(100vw - 2rem))',
+          maxWidth: 'calc(100vw - 2rem)',
+          maxHeight: 'calc(100dvh - 2rem)',
+        }),
+      }}
+    >
       <TourAccessibilityEnhancer />
       {children}
     </TypedProvider>
