@@ -70,6 +70,15 @@ export type AutocompleteProps = {
   enterKeyBehavior?: 'submit-form' | 'focus-target';
   enterKeyFocusTargetId?: string;
   positionBelowElementId?: string;
+  /** Treat a committed (selected) value as an indivisible block. Any printable
+   *  keypress replaces the whole block and starts a fresh search. */
+  blockMode?: boolean;
+  /** Called when the block is burst-cleared by a keypress. Receives the
+   *  character that triggered the clear, or '' for Backspace/Delete. */
+  onDecommit?: (nextValue: string) => void;
+  /** Called when Escape is pressed while the user is typing (no option
+   *  highlighted). Use to reset the field to a known-good state. */
+  onEscape?: () => void;
 };
 
 const useMouseMovement = () => {
@@ -115,6 +124,9 @@ export function Autocomplete(props: AutocompleteProps) {
     enterKeyBehavior = 'submit-form',
     enterKeyFocusTargetId,
     positionBelowElementId,
+    blockMode = false,
+    onDecommit,
+    onEscape,
     ...rest
   } = props;
 
@@ -196,6 +208,8 @@ export function Autocomplete(props: AutocompleteProps) {
   const selectedOption = useMemo(() => {
     return rest.options?.find((option) => option.value === value);
   }, [rest.options, value]);
+
+  const isBlockCommitted = blockMode && !!selectedOption && currentIndex === -1;
 
   // Attach refs
   useEffect(() => {
@@ -293,6 +307,31 @@ export function Autocomplete(props: AutocompleteProps) {
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
       if (!rest.options) return;
+
+      // When a committed value is showing, any printable key or Backspace/Delete
+      // atomically replaces it and starts a fresh search
+      if (isBlockCommitted && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        if (e.key.length === 1) {
+          e.preventDefault();
+          onDecommit?.(e.key);
+          setTempValue(e.key);
+          setLastManualInput(e.key);
+          setCurrentIndex(-1);
+          setOpen(true);
+          return;
+        }
+        if (e.key === 'Backspace' || e.key === 'Delete') {
+          e.preventDefault();
+          onDecommit?.('');
+          setTempValue('');
+          setLastManualInput('');
+          setCurrentIndex(-1);
+          setOpen(false);
+          return;
+        }
+        // Arrow keys, Tab, Enter, Escape — fall through to standard handling
+      }
+
       const currentOption = rest.options[currentIndex];
       let nextIndex;
 
@@ -354,6 +393,10 @@ export function Autocomplete(props: AutocompleteProps) {
             onInputChange?.(currentOption.value);
             setLastManualInput(currentOption.value);
             onValueChange?.(currentOption.value, currentOption);
+          } else {
+            // No option was highlighted — user was mid-typing. Let the caller
+            // decide how to restore the field to a known-good state.
+            onEscape?.();
           }
           setCurrentIndex(-1);
           nextIndex = -1;
@@ -488,6 +531,9 @@ export function Autocomplete(props: AutocompleteProps) {
       onValueChange,
       enterKeyBehavior,
       enterKeyFocusTargetId,
+      isBlockCommitted,
+      onDecommit,
+      onEscape,
     ],
   );
 
@@ -614,7 +660,12 @@ export function Autocomplete(props: AutocompleteProps) {
       className={cn('relative flex items-center', className)}
       ref={wrapperElementRef}
     >
-      <div className="relative w-full">
+      <div
+        className={cn(
+          'relative w-full rounded-lg transition-[box-shadow,background-color] duration-150',
+          isBlockCommitted && 'bg-primary/[0.04] ring-1 ring-primary/20',
+        )}
+      >
         <label
           className="sr-only"
           htmlFor={effectiveInputId}
@@ -624,12 +675,15 @@ export function Autocomplete(props: AutocompleteProps) {
         </label>
         {Icon ? (
           <Icon
-            className="absolute left-2 top-2 size-4 shrink-0 text-primary"
+            className={cn(
+              'absolute left-2 top-2 size-4 shrink-0 text-primary transition-opacity duration-150',
+              isBlockCommitted ? 'opacity-100' : 'opacity-60',
+            )}
             aria-hidden="true"
           />
         ) : (
           <SearchIcon
-            className="absolute left-2 top-2 size-4 shrink-0 text-primary"
+            className="absolute left-2 top-2 size-4 shrink-0 text-primary opacity-60"
             aria-hidden="true"
           />
         )}
@@ -646,6 +700,7 @@ export function Autocomplete(props: AutocompleteProps) {
           id={effectiveInputId}
           className={cn(
             'h-auto w-full rounded-lg border p-0 px-[1.8rem] py-2 text-xs shadow-none focus:border-primary focus-visible:ring-0',
+            isBlockCommitted && 'font-medium',
             inputProps?.className,
           )}
           ref={setReferenceElement}

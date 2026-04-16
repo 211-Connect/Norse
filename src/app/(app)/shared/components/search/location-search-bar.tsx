@@ -16,7 +16,7 @@ import {
 } from '../../store/search';
 import { useDebounce } from '../../hooks/use-debounce';
 import { useLocations } from '../../hooks/api/use-locations';
-import { useCallback, useContext, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { cn } from '../../lib/utils';
 import { Autocomplete } from '../ui/autocomplete';
 import { DistanceSelect } from './distance-select';
@@ -58,6 +58,10 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
   const appConfig = useAppConfig();
   const { t } = useTranslation('common');
   const [shouldSearch, setShouldSearch] = useState(false);
+  // When our own code commits a location (handleDecommit), it sets shouldSearch
+  // intentionally. This ref prevents the external-commit effect below from
+  // overriding that value in the same render cycle.
+  const skipShouldSearchResetRef = useRef(false);
 
   // Local state for standalone mode
   const [localSearchLocation, setLocalSearchLocation] = useState(
@@ -82,9 +86,23 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
     data: locations,
     options,
     additionalLocations,
+    isFetching,
   } = useLocations(
     shouldSearch ? debouncedSearchLocation : prevSearchLocation,
     isStandalone, // Exclude additional locations in standalone mode
+  );
+
+  // While actively searching and awaiting API results, suppress stale geocoded
+  // suggestions so Enter/Tab can never commit a stale location
+  const isPendingResults = shouldSearch && isFetching;
+  const displayOptions = useMemo(
+    () =>
+      isPendingResults
+        ? options.filter((opt) =>
+            additionalLocations.some((loc) => loc.address === opt.value),
+          )
+        : options,
+    [isPendingResults, options, additionalLocations],
   );
   const validationError = useAtomValue(searchLocationValidationErrorAtom);
 
@@ -200,6 +218,49 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
     }
   }, [isStandalone, setSearch, setSearchLocation, t]);
 
+  // Called by Autocomplete when the committed block is burst-cleared by a
+  // keypress. `nextValue` is the triggering character, or '' for Backspace/Delete.
+  // Unlike handleClear, this does NOT route through "Everywhere" — it leaves
+  // the field open for an entirely new address search.
+  const handleDecommit = useCallback(
+    (nextValue: string) => {
+      clearLocationCookies();
+      // Exempt this intentional shouldSearch update from the external-commit
+      // detection effect — we're the one changing searchLocation here.
+      skipShouldSearchResetRef.current = true;
+      setShouldSearch(nextValue.length > 0);
+
+      if (isStandalone && 'onLocationChange' in props) {
+        setLocalSearchLocation(nextValue);
+        setLocalPrevSearchLocation(nextValue);
+      } else {
+        setSearch?.((prev) => ({
+          ...prev,
+          searchCoordinates: [],
+          searchLocation: nextValue,
+          prevSearchLocation: nextValue,
+          searchLocationValidationError: '',
+          searchPlaceType: [],
+          searchBbox: null,
+        }));
+      }
+    },
+    [isStandalone, props, setSearch],
+  );
+
+  // Detect when searchLocation is committed by an external source (currently
+  // only UseMyLocationButton, which writes directly to searchAtom). Our own
+  // handlers (setSearchLocation, handleDecommit, handleClear) already manage
+  // shouldSearch synchronously, so only the external path needs this reset.
+  useEffect(() => {
+    if (isStandalone) return;
+    if (skipShouldSearchResetRef.current) {
+      skipShouldSearchResetRef.current = false;
+      return;
+    }
+    setShouldSearch(false);
+  }, [searchLocation, isStandalone]);
+
   return (
     <div className="location-box flex flex-col gap-4">
       <Autocomplete
@@ -214,11 +275,14 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
             t('search.location_placeholder'),
         }}
         defaultOpen={focusByDefault}
-        options={options}
+        options={displayOptions}
         Icon={MapPin}
         onInputChange={handleInputChange}
         onValueChange={setSearchLocation}
         onClear={handleClear}
+        blockMode
+        onDecommit={handleDecommit}
+        onEscape={handleClear}
         value={searchLocation}
         clearButtonLabel={t('call_to_action.remove')}
         autoSelectIndex={coords?.length === 2 ? undefined : 1}

@@ -12,7 +12,7 @@ export function useLocations(searchTerm: string, excludeEverywhere = false) {
   const adapter = useGeocodingAdapter();
   const { t, i18n } = useTranslation();
 
-  const { data = [] } = useQuery({
+  const { data = [], isFetching } = useQuery({
     placeholderData: (prev) => prev,
     queryKey: ['locations', i18n.language, searchTerm],
     enabled: !!adapter && searchTerm.length > 0,
@@ -60,5 +60,5 @@ export function useLocations(searchTerm: string, excludeEverywhere = false) {
     ];
   }, [data, additionalLocations, excludeEverywhere]);
 
-  return { data, options, additionalLocations };
+  return { data, options, additionalLocations, isFetching };
 }
