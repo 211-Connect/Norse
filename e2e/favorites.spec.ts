@@ -286,7 +286,7 @@ test.describe('Favorites Feature (Authenticated)', () => {
     await firstResourceLink.click();
 
     // Wait for resource page to load
-    await page.waitForURL(/\/search\/[a-f0-9-]{36}/, { timeout: 10_000 });
+    await page.waitForURL(/search\/[a-f0-9-]{36}/, { timeout: 10_000 });
     await page.waitForLoadState('networkidle');
 
     // Add to favorites from resource page
