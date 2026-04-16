@@ -3,6 +3,7 @@
 import { useTranslation } from 'react-i18next';
 import { SearchCardComponentProps } from './types';
 import { AddToFavoritesButton } from '@/app/(app)/shared/components/add-to-favorites-button';
+import { RemoveFromFavoriteListButton } from '@/app/(app)/shared/components/remove-from-favorite-list-button';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
 
 export function ResourceNameComponent({ result }: SearchCardComponentProps) {
@@ -10,6 +11,11 @@ export function ResourceNameComponent({ result }: SearchCardComponentProps) {
   const name = result.name || t('name_unavailable', { ns: 'page-search' });
 
   const url = `/search/${result.id}${process.env.NEXT_PUBLIC_WITH_TRAILING_SLASHES === 'true' ? '/' : ''}`;
+
+  // Render RemoveFromFavoriteListButton when viewing a specific favorite list
+  const isInFavoriteListContext = Boolean(
+    result.currentListId && result.onRemoveFromList,
+  );
 
   return (
     <div className="flex flex-row justify-between gap-2">
@@ -23,12 +29,20 @@ export function ResourceNameComponent({ result }: SearchCardComponentProps) {
         {name}
       </Typography>
       <div className="flex flex-shrink-0 items-center print:hidden">
-        <AddToFavoritesButton
-          size="icon"
-          serviceAtLocationId={result.id}
-          currentListId={result.currentListId}
-          onRemoveFromList={result.onRemoveFromList}
-        />
+        {isInFavoriteListContext ? (
+          <RemoveFromFavoriteListButton
+            serviceAtLocationId={result.id}
+            resourceName={name}
+            currentListId={result.currentListId!}
+            onRemoveFromList={result.onRemoveFromList!}
+          />
+        ) : (
+          <AddToFavoritesButton
+            size="icon"
+            serviceAtLocationId={result.id}
+            resourceName={name}
+          />
+        )}
       </div>
     </div>
   );

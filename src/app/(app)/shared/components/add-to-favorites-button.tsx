@@ -36,20 +36,12 @@ type AddToFavoritesButtonProps = {
   size?: 'default' | 'icon';
   serviceAtLocationId: string;
   resourceName?: string;
-  siblings?: number;
-  boundaries?: number;
-  currentListId?: string;
-  onRemoveFromList?: (listId: string, favoriteId: string) => void;
 };
 
 export function AddToFavoritesButton({
   size = 'default',
   serviceAtLocationId,
   resourceName,
-  siblings = 1,
-  boundaries = 1,
-  currentListId,
-  onRemoveFromList,
 }: AddToFavoritesButtonProps) {
   const appConfig = useAppConfig();
   const session = useSession();
@@ -63,13 +55,13 @@ export function AddToFavoritesButton({
   const [searchValue, setSearchValue] = useState('');
   const [favoritesState, setFavoritesState] = useState<{
     data: FavoriteListState[];
-    status: 'loading' | 'refreshing' | 'success';
+    status: 'idle' | 'refreshing' | 'loading' | 'success';
     page: number;
     limit: number;
     totalCount: number;
   }>({
     data: [],
-    status: 'loading',
+    status: 'idle',
     page: 1,
     limit: 5,
     totalCount: 0,
@@ -103,20 +95,20 @@ export function AddToFavoritesButton({
       }));
     }
   }, [
-    session,
-    searchValue,
-    appConfig,
+    session.status,
+    appConfig.tenantId,
     favoritesState.page,
     favoritesState.limit,
-    serviceAtLocationId,
+    searchValue,
     i18n.language,
+    serviceAtLocationId,
   ]);
 
   useEffect(() => {
     if (open) {
       refreshFavoritesList();
     }
-  }, [refreshFavoritesList, open]);
+  }, [open, refreshFavoritesList]);
 
   const toggleFavoriteInList = (listId: string, isInList: boolean) => {
     return async () => {
@@ -135,11 +127,6 @@ export function AddToFavoritesButton({
           toast.success(t('favorites.removed_from_list'), {
             description: t('favorites.removed_from_list_message'),
           });
-
-          // If we're viewing this list, notify parent to update UI
-          if (currentListId === listId && onRemoveFromList) {
-            onRemoveFromList(listId, serviceAtLocationId);
-          }
 
           await refreshFavoritesList();
         } else {
@@ -237,6 +224,7 @@ export function AddToFavoritesButton({
                 placeholder={t('modal.add_to_list.search_list')}
                 initialValue={searchValue}
                 onChange={setSearchValue}
+                debounceDelay={500}
               />
               <Button
                 variant="outline"
@@ -247,15 +235,6 @@ export function AddToFavoritesButton({
                 {t('modal.create_list.create_a_list')}
               </Button>
             </div>
-
-            {(favoritesState.status === 'success' ||
-              favoritesState.status === 'refreshing') &&
-              favoritesState.data.length === 0 &&
-              searchValue?.length > 0 && (
-                <p className="text-sm text-muted-foreground">
-                  {t('modal.add_to_list.not_found')}
-                </p>
-              )}
 
             <Separator />
 
@@ -270,10 +249,11 @@ export function AddToFavoritesButton({
 
               {favoritesState.status === 'loading' && (
                 <>
+                  <Skeleton
+                    className="col-span-2 h-6"
+                    data-testid="favorites-loading-skeleton"
+                  />
                   <Skeleton className="col-span-2 h-6" />
-
-                  <Skeleton className="col-span-2 h-6" />
-
                   <Skeleton className="h-6" />
                 </>
               )}
@@ -281,6 +261,17 @@ export function AddToFavoritesButton({
               {(favoritesState.status === 'success' ||
                 favoritesState.status === 'refreshing') && (
                 <>
+                  <div data-testid="favorites-list-loaded" className="sr-only">
+                    Favorites loaded
+                  </div>
+
+                  {favoritesState.data.length === 0 &&
+                    searchValue?.length > 0 && (
+                      <p className="col-span-5 text-sm text-muted-foreground">
+                        {t('modal.add_to_list.not_found')}
+                      </p>
+                    )}
+
                   {favoritesState.data.map((el) => {
                     const isInList = el.containsResource ?? false;
                     return (
@@ -342,8 +333,8 @@ export function AddToFavoritesButton({
                     )}
                     totalResults={favoritesState.totalCount}
                     activePage={favoritesState.page}
-                    siblings={siblings}
-                    boundaries={boundaries}
+                    siblings={1}
+                    boundaries={1}
                     onPageChange={(page) =>
                       setFavoritesState((prev) => ({ ...prev, page }))
                     }
