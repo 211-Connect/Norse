@@ -86,6 +86,9 @@ const Filters = ({ filters, filterKeys }: FiltersProps) => {
         ...(newFilters ? { filters: newFilters } : {}),
       };
       if (!newFilters) delete params.filters;
+      if ('page' in params) {
+        delete params.page;
+      }
       const str = qs.stringify(params);
       navigate(`/search${str ? `?${str}` : ''}`);
     },

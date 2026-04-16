@@ -45,7 +45,7 @@ export function ResultsSection({ cardLayout }: ResultsSectionProps) {
 
     window.sessionStorage.removeItem(PENDING_FOCUS_TARGET_STORAGE_KEY);
     resultsHeadingRef.current?.focus({ preventScroll: true });
-    resultsHeadingRef.current?.scrollIntoView({ block: 'start' });
+    window.scrollTo(0, 0);
   }, [currentPage, results.length, totalResults]);
 
   return (
