@@ -54,7 +54,8 @@
     "open_search_dialog": "打开搜索对话框",
     "list_status_one": "仅剩 1 个选项。请使用上下箭头键进行查看。",
     "list_status_other": "共有 {{count}} 个选项可用。使用上下箭头键进行查看。",
-    "search_dialog_description": "搜索资源并更新您的位置。"
+    "search_dialog_description": "搜索资源并更新您的位置。",
+    "everywhere": "所有地区"
   },
   "call_to_action": {
     "call": "叫",

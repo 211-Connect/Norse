@@ -54,7 +54,8 @@
     "open_search_dialog": "Fungua kidirisha cha utafutaji",
     "list_status_one": "Chaguo 1 linapatikana. Tumia vitufe vya mshale wa juu na chini ili kukagua.",
     "list_status_other": "Chaguo {{count}} zinapatikana. Tumia vitufe vya mshale wa juu na chini ili kukagua.",
-    "search_dialog_description": "Tafuta rasilimali na usasishe eneo lako."
+    "search_dialog_description": "Tafuta rasilimali na usasishe eneo lako.",
+    "everywhere": "Kila mahali"
   },
   "call_to_action": {
     "call": "Wito",

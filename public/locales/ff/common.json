@@ -54,7 +54,8 @@
     "open_search_dialog": "Uddit kaɓirgol njiylawu",
     "list_status_one": "1 cuɓal ina woodi. Huutoro jokkorgal dow e les ngam ƴeewtaade.",
     "list_status_other": "{{limto}} cuɓe ina ngoodi. Huutoro jokkorgal dow e les ngam ƴeewtaade.",
-    "search_dialog_description": "Yiylo geɗe e kesɗitin nokku maa."
+    "search_dialog_description": "Yiylo geɗe e kesɗitin nokku maa.",
+    "everywhere": "Fof fow"
   },
   "call_to_action": {
     "call": "Ewnandu",

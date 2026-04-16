@@ -54,7 +54,8 @@
     "open_search_dialog": "Otvori dijalog za pretraživanje",
     "list_status_one": "Dostupna je 1 opcija. Za pregled koristite tipke sa strelicama gore i dolje.",
     "list_status_other": "Dostupno je {{count}} opcija. Za pregled koristite tipke sa strelicama gore i dolje.",
-    "search_dialog_description": "Pretražite resurse i ažurirajte svoju lokaciju."
+    "search_dialog_description": "Pretražite resurse i ažurirajte svoju lokaciju.",
+    "everywhere": "Svugdje"
   },
   "call_to_action": {
     "call": "Poziv",

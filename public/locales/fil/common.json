@@ -54,7 +54,8 @@
     "open_search_dialog": "Buksan ang dialog ng paghahanap",
     "list_status_one": "1 opsyon ang available. Gamitin ang pataas at pababang mga arrow key para mag-review.",
     "list_status_other": "May mga opsyon na {{count}} na magagamit. Gamitin ang pataas at pababang mga arrow key para magrepaso.",
-    "search_dialog_description": "Maghanap ng mga mapagkukunan at i-update ang iyong lokasyon."
+    "search_dialog_description": "Maghanap ng mga mapagkukunan at i-update ang iyong lokasyon.",
+    "everywhere": "Sa lahat ng lugar"
   },
   "call_to_action": {
     "call": "Tumawag",

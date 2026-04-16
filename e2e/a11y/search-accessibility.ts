@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { expect, goHome, test } from '../helpers';
+import enCommon from '../../public/locales/en/common.json';
 
 async function openDialogFromSearchTrigger(page: Page) {
   const trigger = page.getByTestId('search-trigger').first();
@@ -233,7 +234,7 @@ test.describe('Search accessibility preservation', () => {
 
     await clearButtons.nth(1).click();
 
-    await expect(locationInput).toHaveValue('Everywhere');
+    await expect(locationInput).toHaveValue(enCommon.search.everywhere);
   });
 
   test('autocomplete groups appear in correct order: Suggestions, Topics, Taxonomies', async ({

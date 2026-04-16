@@ -54,7 +54,8 @@
     "open_search_dialog": "Ouvrir la boîte de dialogue de recherche",
     "list_status_one": "Une seule option disponible. Utilisez les flèches haut et bas pour la parcourir.",
     "list_status_other": "{{count}} options disponibles. Utilisez les flèches haut et bas pour les consulter.",
-    "search_dialog_description": "Recherchez des ressources et mettez à jour votre localisation."
+    "search_dialog_description": "Recherchez des ressources et mettez à jour votre localisation.",
+    "everywhere": "Partout"
   },
   "call_to_action": {
     "call": "Appeler",

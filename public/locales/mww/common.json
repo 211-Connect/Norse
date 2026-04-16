@@ -54,7 +54,8 @@
     "open_search_dialog": "Qhib lub thawv tshawb nrhiav",
     "list_status_one": "Muaj 1 txoj kev xaiv. Siv cov yuam sij xub nce thiab nqis los tshuaj xyuas.",
     "list_status_other": "Muaj cov kev xaiv {{count}}. Siv cov yuam sij xub nce thiab nqis los tshuaj xyuas.",
-    "search_dialog_description": "Nrhiav cov peev txheej thiab hloov kho koj qhov chaw nyob."
+    "search_dialog_description": "Nrhiav cov peev txheej thiab hloov kho koj qhov chaw nyob.",
+    "everywhere": "Txhua qhov chaw"
   },
   "call_to_action": {
     "call": "Hu xov tooj",

@@ -54,7 +54,8 @@
     "open_search_dialog": "Abrir caixa de diálogo de pesquisa",
     "list_status_one": "1 opção disponível. Use as setas para cima e para baixo para revisar.",
     "list_status_other": "{{count}} opções disponíveis. Use as setas para cima e para baixo para revisar.",
-    "search_dialog_description": "Pesquise recursos e atualize sua localização."
+    "search_dialog_description": "Pesquise recursos e atualize sua localização.",
+    "everywhere": "Em todo lugar"
   },
   "call_to_action": {
     "call": "Chamar",

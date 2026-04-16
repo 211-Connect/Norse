@@ -54,7 +54,8 @@
     "open_search_dialog": "Avaa hakuikkuna",
     "list_status_one": "1 vaihtoehto saatavilla. Tarkista käyttämällä ylös- ja alas-nuolinäppäimiä.",
     "list_status_other": "{{count}} vaihtoehtoa käytettävissä. Tarkista käyttämällä ylä- ja alanuolinäppäimiä.",
-    "search_dialog_description": "Hae resursseja ja päivitä sijaintiasi."
+    "search_dialog_description": "Hae resursseja ja päivitä sijaintiasi.",
+    "everywhere": "Kaikkialla"
   },
   "call_to_action": {
     "call": "Soittaa",

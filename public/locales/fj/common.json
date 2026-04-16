@@ -54,7 +54,8 @@
     "open_search_dialog": "Dolava na veitalanoa ni vakasaqaqara",
     "list_status_one": "1 na digidigi e tiko. Vakayagataka na ki ni matailalai e cake kei na sobu me railesuva.",
     "list_status_other": "{{wiliwili}} digidigi e tiko. Vakayagataka na ki ni matailalai e cake kei na sobu me railesuva.",
-    "search_dialog_description": "Vakasaqara na ivurevure ka vakavoutaka na nomu vanua."
+    "search_dialog_description": "Vakasaqara na ivurevure ka vakavoutaka na nomu vanua.",
+    "everywhere": "Kece ga"
   },
   "call_to_action": {
     "call": "Kaci",

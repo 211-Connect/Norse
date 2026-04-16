@@ -54,7 +54,8 @@
     "open_search_dialog": "افتح مربع حوار البحث",
     "list_status_one": "خيار واحد متاح. استخدم مفاتيح الأسهم لأعلى ولأسفل للمراجعة.",
     "list_status_other": "{{count}} خيارًا متاحًا. استخدم مفاتيح الأسهم لأعلى ولأسفل للمراجعة.",
-    "search_dialog_description": "ابحث عن الموارد وقم بتحديث موقعك."
+    "search_dialog_description": "ابحث عن الموارد وقم بتحديث موقعك.",
+    "everywhere": "في كل مكان"
   },
   "call_to_action": {
     "call": "دعا",

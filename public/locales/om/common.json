@@ -54,7 +54,8 @@
     "open_search_dialog": "Qaaqa barbaacha banaa",
     "list_status_one": "1 filannoo ni jira. Irra deebi'uuf furtuuwwan xiyyaa olii fi gadi fayyadami.",
     "list_status_other": "{{count}} filannoowwan jiran. Irra deebi'uuf furtuuwwan xiyyaa olii fi gadi fayyadami.",
-    "search_dialog_description": "Qabeenya barbaadi fi bakka jirtu haaromsi."
+    "search_dialog_description": "Qabeenya barbaadi fi bakka jirtu haaromsi.",
+    "everywhere": "Bakka hundaa"
   },
   "call_to_action": {
     "call": "Waamuu",
