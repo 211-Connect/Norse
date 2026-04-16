@@ -45,7 +45,7 @@ export function CardLayoutRenderer({
           key={
             isSeparator
               ? `separator-${itemIndex}`
-              : `${item.componentId}-${itemIndex}`
+              : `item-${item.componentId}-${itemIndex}`
           }
           result={result}
           customAttribute={item.customAttribute}
