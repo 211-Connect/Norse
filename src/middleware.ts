@@ -172,6 +172,17 @@ function generateNonce() {
 
 // Add a session_id to the cookies of the user for tracking purposes
 export async function middleware(request: NextRequest) {
+  if (request.method === 'POST' && request.url.includes('/[locale]')) {
+    edgeLog('warn', 'potentially_malicious_request_blocked', {
+      url: request.url,
+      method: request.method,
+      userAgent: request.headers.get('user-agent'),
+      referer: request.headers.get('referer'),
+      xForwardedFor: request.headers.get('x-forwarded-for'),
+    });
+    return new Response('Aborted by middleware', { status: 403 });
+  }
+
   const nonce = generateNonce();
 
   // Validate Origin header to prevent malicious payloads (e.g., JNDI injection attempts)
