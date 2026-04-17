@@ -1,7 +1,7 @@
 'use client';
 
-import { useTour, type StepType, type Position } from '@reactour/tour';
-import { useMemo } from 'react';
+import { useTour, type StepType } from '@reactour/tour';
+import { useCallback, useRef } from 'react';
 import { createTourEvent } from '@/app/(app)/shared/lib/google-tag-manager';
 import { Button } from '@/app/(app)/shared/components/ui/button';
 import { MainSearchLayout } from '@/app/(app)/shared/components/search/main-search-layout/main-search-layout';
@@ -15,12 +15,44 @@ export function HeroSection() {
   const { isOpen, setCurrentStep, setIsOpen, setSteps } = useTour();
   const { t } = useTranslation('page-home');
   const showHomePageTour = useFlag('showHomePageTour');
+  const homeSearchTriggerRef = useRef<HTMLButtonElement | null>(null);
 
-  const tourSteps: StepType[] = useMemo((): StepType[] => {
-    const steps: StepType[] = [
+  const getStepOnePosition = useCallback<
+    Extract<NonNullable<StepType['position']>, (...args: never[]) => unknown>
+  >(
+    ({ windowHeight, windowWidth, top, bottom, left, right, width, height }) => {
+      if (windowWidth < 768) {
+        return 'center';
+      }
+
+      const popoverWidth = width || Math.min(576, windowWidth - 32);
+      const popoverHeight = height || 0;
+      const targetWidth = right - left;
+      const targetCenterX = left + targetWidth / 2;
+      const minInset = 16;
+      const x = Math.min(
+        Math.max(targetCenterX - popoverWidth / 2, minInset),
+        windowWidth - popoverWidth - minInset,
+      );
+      const spaceBelow = windowHeight - bottom;
+      const spaceAbove = top;
+      const y =
+        spaceBelow >= 360 || spaceBelow >= spaceAbove
+          ? bottom + 24
+          : Math.max(top - popoverHeight - 24, minInset);
+
+      return [x, y];
+    },
+    [],
+  );
+
+  const buildTourSteps = useCallback((): StepType[] => {
+    const searchTarget = homeSearchTriggerRef.current;
+
+    return [
       {
-        selector: '.search-box',
-        position: 'center' as Position,
+        selector: searchTarget ?? '.search-box',
+        position: getStepOnePosition,
         content: (
           <div className="flex flex-col gap-2">
             <p>{t('tour.step_1.paragraph_1')}</p>
@@ -31,7 +63,7 @@ export function HeroSection() {
       },
       {
         selector: '.categories',
-        position: 'center' as Position,
+        position: 'center',
         content: (
           <div className="flex flex-col gap-2">
             <p>{t('tour.step_2.paragraph_1')}</p>
@@ -40,12 +72,11 @@ export function HeroSection() {
         ),
       },
     ];
-
-    return steps;
-  }, [t]);
+  }, [getStepOnePosition, t]);
 
   const enableTour = () => {
     createTourEvent(null);
+    const tourSteps = buildTourSteps();
 
     if (setSteps) {
       setSteps(tourSteps);
@@ -77,7 +108,10 @@ export function HeroSection() {
             t('search.hero_title', { ns: 'common' })}
         </h2>
 
-        <MainSearchLayout addMyLocationButtonVariant="link" />
+        <MainSearchLayout
+          addMyLocationButtonVariant="link"
+          searchTriggerRef={homeSearchTriggerRef}
+        />
       </div>
 
       {showHomePageTour && (
