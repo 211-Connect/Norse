@@ -1,7 +1,7 @@
 'use client';
 
 import { AddToFavoritesButton } from '@/app/(app)/shared/components/add-to-favorites-button';
-import { ReportButton } from '@/app/(app)/shared/components/report-button';
+import { ReportButton } from '@/app/(app)/shared/components/report/report-button';
 import { PrintButton } from '@/app/(app)/shared/components/print-button';
 import { ShareButton } from '@/app/(app)/shared/components/share-button';
 
@@ -17,6 +17,11 @@ export function Navigation({
   resource: Resource;
 }) {
   const appConfig = useAppConfig();
+  const { featureFlags } = appConfig;
+
+  const showFeedbackButton =
+    featureFlags.showFeedbackButtonOnResourcePages ||
+    featureFlags.showFeedbackFormButtonOnResourcePages;
 
   return (
     <div className="flex justify-between print:hidden">
@@ -32,9 +37,7 @@ export function Navigation({
           serviceAtLocationId={resource.id}
           resourceName={resource.name ?? undefined}
         />
-        {appConfig.featureFlags.showFeedbackButtonOnResourcePages ? (
-          <ReportButton />
-        ) : null}
+        {showFeedbackButton ? <ReportButton /> : null}
       </div>
     </div>
   );
