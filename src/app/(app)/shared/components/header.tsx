@@ -45,7 +45,7 @@ import {
 import { Card, CardContent } from './ui/card';
 import { cn } from '../lib/utils';
 import { LanguageSwitcher } from './language-switcher';
-import { ReportButton } from './report-button';
+import { ReportButton } from './report/report-button';
 import { FontSizeToggle } from './accessibility/font-size-toggle';
 
 export function Header() {

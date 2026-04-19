@@ -4,11 +4,12 @@ import { TriangleAlert } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 
-import { useAppConfig } from '../hooks/use-app-config';
-import { buttonVariants } from './ui/button';
-import { cn } from '../lib/utils';
-import { Link } from './link';
-import { NEW_TAB_WARNING } from '../lib/constants';
+import { useAppConfig } from '../../hooks/use-app-config';
+import { buttonVariants } from '../ui/button';
+import { cn } from '../../lib/utils';
+import { Link } from '../link';
+import { NEW_TAB_WARNING } from '../../lib/constants';
+import { ReportDialog } from './report-dialog';
 
 export function ReportButton({
   className,
@@ -24,6 +25,9 @@ export function ReportButton({
 
   const [href, setHref] = useState<string | null>(null);
 
+  const useFeedbackForm =
+    appConfig.featureFlags.showFeedbackFormButtonOnResourcePages;
+
   useEffect(() => {
     if (!feedbackUrlValue) {
       setHref(null);
@@ -37,7 +41,11 @@ export function ReportButton({
     urlParams.set('referring_url', window.location.href);
 
     setHref(`${baseUrl}?${urlParams.toString()}`);
-  }, [feedbackUrlValue]);
+  }, [feedbackUrlValue, useFeedbackForm]);
+
+  if (useFeedbackForm) {
+    return <ReportDialog className={className} linkText={linkText} />;
+  }
 
   if (!feedbackUrlValue) {
     return null;
