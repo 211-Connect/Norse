@@ -162,6 +162,7 @@ async function getAppConfigBase(
         requireUserLocation: false,
         showFeedbackButtonGlobal: false,
         showFeedbackButtonOnResourcePages: false,
+        showFeedbackFormButtonOnResourcePages: false,
         showHomePageTour: false,
         showPrintButton: false,
         showSearchAndResourceServiceName: false,
@@ -324,6 +325,9 @@ async function getAppConfigBase(
         resourceDirectory.featureFlags?.showFeedbackButtonGlobal ?? false,
       showFeedbackButtonOnResourcePages:
         resourceDirectory.featureFlags?.showFeedbackButtonOnResourcePages ??
+        false,
+      showFeedbackFormButtonOnResourcePages:
+        resourceDirectory.featureFlags?.showFeedbackFormButtonOnResourcePages ??
         false,
       showHomePageTour:
         resourceDirectory.featureFlags?.showHomePageTour ?? false,

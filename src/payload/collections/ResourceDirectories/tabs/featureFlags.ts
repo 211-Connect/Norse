@@ -89,5 +89,14 @@ export const featureFlags: Tab = {
         update: superAdminOrSupportAccess,
       },
     },
+    {
+      name: 'showFeedbackFormButtonOnResourcePages',
+      type: 'checkbox',
+      defaultValue: false,
+      access: {
+        create: superAdminOrSupportAccess,
+        update: superAdminOrSupportAccess,
+      },
+    },
   ],
 };

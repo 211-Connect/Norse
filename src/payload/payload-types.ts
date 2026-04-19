@@ -851,6 +851,7 @@ export interface ResourceDirectory {
     turnResourceCardTaxonomiesIntoLinks?: boolean | null;
     showFeedbackButtonGlobal?: boolean | null;
     showFeedbackButtonOnResourcePages?: boolean | null;
+    showFeedbackFormButtonOnResourcePages?: boolean | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -1542,6 +1543,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         turnResourceCardTaxonomiesIntoLinks?: T;
         showFeedbackButtonGlobal?: T;
         showFeedbackButtonOnResourcePages?: T;
+        showFeedbackFormButtonOnResourcePages?: T;
       };
   updatedAt?: T;
   createdAt?: T;

@@ -35,6 +35,7 @@ export type AppConfig = {
     requireUserLocation: boolean;
     showFeedbackButtonGlobal: boolean;
     showFeedbackButtonOnResourcePages: boolean;
+    showFeedbackFormButtonOnResourcePages: boolean;
     showHomePageTour: boolean;
     showPrintButton: boolean;
     showSearchAndResourceServiceName: boolean;
