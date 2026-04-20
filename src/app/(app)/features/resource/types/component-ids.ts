@@ -3,6 +3,8 @@ export enum ResourceComponentId {
   BADGES = 'badges',
   RESOURCE_NAME = 'resourceName',
   SERVICE_NAME = 'serviceName',
+  LOCATION_NAME = 'locationName',
+  LOCATION_NAME_SUBTITLE = 'locationNameSubtitle',
 
   // Main info
   ADDRESS = 'address',

@@ -9,6 +9,7 @@ export type ResultType = {
   description: string;
   location: Location | null;
   name: string;
+  locationName: string | null;
   phone: string;
   attribution: string | null;
   priority: number;

@@ -48,8 +48,6 @@ async function fetchAndTransformResourceOrigin(
         data?.facetsEn?.map((facet) => [facet.code, facet]) ?? [],
       );
 
-      console.log(data);
-
       return {
         id: data._id,
         originalId: data?.originalId ?? null,
@@ -57,6 +55,7 @@ async function fetchAndTransformResourceOrigin(
         serviceName: data?.translation?.serviceName ?? null,
         attribution: data?.attribution ?? null,
         name: data?.translation?.displayName ?? data?.displayName ?? null,
+        locationName: data?.locationName ?? null,
         description: data?.translation?.serviceDescription ?? null,
         phone:
           data?.phone ??
