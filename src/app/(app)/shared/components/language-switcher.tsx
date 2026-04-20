@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTopLoader } from 'nextjs-toploader';
@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from './ui/select';
+import { Label } from './ui/label';
 import { LanguagesIcon } from 'lucide-react';
 import { useClientSearchParams } from '../hooks/use-client-search-params';
 import { useAppConfig } from '../hooks/use-app-config';
@@ -24,6 +25,9 @@ const LANGUAGE_NAME = {
   fj: 'Fijian',
   tl: 'Tagalog',
 };
+
+const LANGUAGE_SWITCHER_CONTENT_ID = 'language-switcher-listbox';
+const LANGUAGE_SWITCHER_TRIGGER_ID = 'language-switcher-trigger';
 
 const getLanguageName = (locale: string) => {
   if (LANGUAGE_NAME[locale]) {
@@ -47,6 +51,7 @@ export const LanguageSwitcher = () => {
   const isSmOrLarger = useBreakpoint(640);
 
   const { t, i18n } = useTranslation('common');
+  const [open, setOpen] = useState(false);
 
   const currentLanguage = useMemo(() => i18n.language, [i18n.language]);
 
@@ -82,17 +87,30 @@ export const LanguageSwitcher = () => {
 
   return (
     <li className="h-full">
+      <Label htmlFor={LANGUAGE_SWITCHER_TRIGGER_ID} className="sr-only">
+        {t('header.language_select_label')}
+      </Label>
+      {!open && (
+        <div
+          id={LANGUAGE_SWITCHER_CONTENT_ID}
+          role="listbox"
+          hidden
+          aria-hidden="true"
+        />
+      )}
       <Select
-        aria-label={t('header.language_select_label') as string}
+        contentId={LANGUAGE_SWITCHER_CONTENT_ID}
         defaultValue={i18n.language}
+        open={open}
+        onOpenChange={setOpen}
         onValueChange={handleValueChange}
       >
         <SelectTrigger
+          id={LANGUAGE_SWITCHER_TRIGGER_ID}
           className={cn(
             'flex h-full w-auto min-w-[140px] items-center gap-[5px]',
             newLayoutEnabled && '!bg-white',
           )}
-          aria-label={t('header.language_select_label')}
         >
           <div className="flex items-center gap-1 overflow-hidden">
             <LanguagesIcon className="size-4" aria-hidden="true" />

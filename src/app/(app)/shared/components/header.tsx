@@ -101,10 +101,6 @@ export function Header() {
     [currentPath],
   );
 
-  const handleLogoClick = useCallback(() => {
-    router.push(appConfig.header?.customHomeUrl || '/');
-  }, [appConfig.header?.customHomeUrl, router]);
-
   const logoAlt = useMemo(() => {
     const brandName = appConfig.brand.name?.trim();
 
@@ -299,13 +295,13 @@ export function Header() {
         )}
       >
         <div className="flex h-full items-center">
-          <div
+          <Link
+            href={appConfig.header?.customHomeUrl || '/'}
             className={cn(
               'flex h-full cursor-pointer items-center',
               newLayoutEnabled && 'absolute -left-4 -top-4',
             )}
             aria-label={logoAlt}
-            onClick={handleLogoClick}
           >
             {logoUrl && (
               <Image
@@ -316,7 +312,7 @@ export function Header() {
                 className="max-h-full w-auto object-contain lg:max-w-[400px]"
               />
             )}
-          </div>
+          </Link>
         </div>
 
         <nav
