@@ -100,6 +100,7 @@ export interface Translation {
 export interface ApiResource {
   _id: string;
   location?: Location;
+  locationName?: string;
   addresses?: Address[];
   address?: string;
   attribution?: string;
@@ -131,6 +132,7 @@ export interface Resource {
   serviceName: string | null;
   attribution: string | null;
   name: string | null;
+  locationName: string | null;
   description: string | null;
   phone: string | null;
   website: string | null;

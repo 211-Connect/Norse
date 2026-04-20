@@ -5,6 +5,8 @@ import {
   BadgesComponent,
   ResourceNameComponent,
   ServiceNameComponent,
+  LocationNameComponent,
+  LocationNameSubtitleComponent,
   AddressComponent,
   TransportationComponent,
   AccessibilityComponent,
@@ -49,6 +51,8 @@ export const componentRegistry: Record<
   [ResourceComponentId.BADGES]: BadgesComponent,
   [ResourceComponentId.RESOURCE_NAME]: ResourceNameComponent,
   [ResourceComponentId.SERVICE_NAME]: ServiceNameComponent,
+  [ResourceComponentId.LOCATION_NAME]: LocationNameComponent,
+  [ResourceComponentId.LOCATION_NAME_SUBTITLE]: LocationNameSubtitleComponent,
   [ResourceComponentId.ADDRESS]: AddressComponent,
   [ResourceComponentId.TRANSPORTATION]: TransportationComponent,
   [ResourceComponentId.ACCESSIBILITY]: AccessibilityComponent,
@@ -107,6 +111,10 @@ export function shouldComponentRender(
         appConfig.featureFlags.showSearchAndResourceServiceName &&
         Boolean(resource.serviceName)
       );
+    case ResourceComponentId.LOCATION_NAME:
+      return Boolean(resource.locationName);
+    case ResourceComponentId.LOCATION_NAME_SUBTITLE:
+      return Boolean(resource.locationName);
     case ResourceComponentId.ADDRESS:
       return Boolean(resource.address);
     case ResourceComponentId.TRANSPORTATION:

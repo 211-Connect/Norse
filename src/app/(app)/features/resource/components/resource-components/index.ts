@@ -16,6 +16,8 @@ export * from './hours';
 export * from './interpretation-services';
 export * from './languages';
 export * from './last-assured';
+export * from './location-name';
+export * from './location-name-subtitle';
 export * from './map';
 export * from './organization';
 export * from './phone-numbers';

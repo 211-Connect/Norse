@@ -430,7 +430,9 @@ async function getAppConfigBase(
         resourceDirectory.search.useCustomCardLayout
           ? applyCardLayoutCustomAttributeFallback(
               resourceDirectory.search.cardLayout,
-              englishResourceDirectory?.search.cardLayout,
+              locale === 'en'
+                ? resourceDirectory.search.cardLayout
+                : englishResourceDirectory?.search.cardLayout,
             )
           : DEFAULT_SEARCH_CARD_LAYOUT,
     },
