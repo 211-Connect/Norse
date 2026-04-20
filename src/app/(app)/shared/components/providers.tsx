@@ -25,6 +25,7 @@ export function Providers({ appConfig, children, session }) {
               height={2}
               crawlSpeed={25}
               speed={100}
+              template='<div class="bar" role="progressbar" aria-label="Page loading" aria-valuemin="0" aria-valuemax="100"><div class="peg"></div></div>'
             />
             <PageView />
             {children}
