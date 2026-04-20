@@ -121,7 +121,15 @@ const Filters = ({ filters, filterKeys }: FiltersProps) => {
       }
 
       expandButtonRefs.current[key]?.focus({ preventScroll: true });
-      expandButtonRefs.current[key]?.scrollIntoView({ block: 'nearest' });
+      const el = expandButtonRefs.current[key];
+      if (el) {
+        const header = document.getElementById(HEADER_ID);
+        const headerHeight = header?.offsetHeight ?? 0;
+        const rect = el.getBoundingClientRect();
+        if (rect.top < headerHeight + 8) {
+          window.scrollBy({ top: rect.top - headerHeight - 8, behavior: 'smooth' });
+        }
+      }
     });
   }, []);
 

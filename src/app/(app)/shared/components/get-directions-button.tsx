@@ -84,7 +84,7 @@ export function GetDirectionsButton({
         onClick={onClick}
       >
         <Map className="size-4 shrink-0" aria-hidden="true" />
-        <span className="truncate">
+        <span className="overflow-hidden text-ellipsis break-words">
           {text || t('call_to_action.get_directions')}
         </span>
       </ReferralButton>

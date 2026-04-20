@@ -197,7 +197,7 @@ export function HeroSection() {
           aria-expanded={isOpen ?? false}
           aria-haspopup="dialog"
           data-home-tour-trigger="true"
-          className="border-foreground/40 bg-background/95 text-foreground shadow-sm hover:bg-primary hover:text-primary-foreground focus-visible:border-foreground focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2"
+          className="border-foreground/40 bg-background text-foreground shadow-sm hover:bg-primary hover:text-primary-foreground focus-visible:border-foreground focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-4"
         >
           {takeTourLabel}
         </Button>
