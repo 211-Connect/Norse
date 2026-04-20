@@ -28,7 +28,7 @@ import { useUncontrolled } from '@/app/(app)/shared/hooks/use-uncontrolled';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { Input, InputProps } from './input';
 import { Separator } from './separator';
-import { SearchIcon, XIcon } from 'lucide-react';
+import { XIcon } from 'lucide-react';
 import { Button } from './button';
 import {
   Tooltip,
@@ -39,8 +39,6 @@ import {
 import { Badge } from './badge';
 import { useTranslation } from 'react-i18next';
 import { useOnPointerDownOutside } from '../../hooks/use-on-pointer-down-outside';
-
-// scrollable 276
 
 export type AutocompleteOption = {
   label?: string;
@@ -54,7 +52,7 @@ type AutocompleteOptionWithIndex = AutocompleteOption & { index: number };
 
 export type AutocompleteProps = {
   readerLabel: ReactNode;
-  Icon?: ComponentType<{ className?: string }>;
+  Icon: ComponentType<{ className?: string }>;
   inputProps?: InputProps;
   options?: AutocompleteOption[];
   className?: string;
@@ -660,12 +658,7 @@ export function Autocomplete(props: AutocompleteProps) {
       className={cn('relative flex items-center', className)}
       ref={wrapperElementRef}
     >
-      <div
-        className={cn(
-          'relative w-full rounded-lg transition-[box-shadow,background-color] duration-150',
-          isBlockCommitted && 'bg-primary/[0.04] ring-1 ring-primary/20',
-        )}
-      >
+      <div className="relative w-full rounded-lg">
         <label
           className="sr-only"
           htmlFor={effectiveInputId}
@@ -673,20 +666,10 @@ export function Autocomplete(props: AutocompleteProps) {
         >
           {readerLabel}
         </label>
-        {Icon ? (
-          <Icon
-            className={cn(
-              'absolute left-2 top-2 size-4 shrink-0 text-primary transition-opacity duration-150',
-              isBlockCommitted ? 'opacity-100' : 'opacity-60',
-            )}
-            aria-hidden="true"
-          />
-        ) : (
-          <SearchIcon
-            className="absolute left-2 top-2 size-4 shrink-0 text-primary opacity-60"
-            aria-hidden="true"
-          />
-        )}
+        <Icon
+          className="absolute left-2 top-2 size-4 shrink-0 text-primary"
+          aria-hidden="true"
+        />
         <div
           className="sr-only"
           role="status"
@@ -700,7 +683,6 @@ export function Autocomplete(props: AutocompleteProps) {
           id={effectiveInputId}
           className={cn(
             'h-auto w-full rounded-lg border p-0 px-[1.8rem] py-2 text-xs shadow-none focus:border-primary focus-visible:ring-0',
-            isBlockCommitted && 'font-medium',
             inputProps?.className,
           )}
           ref={setReferenceElement}
