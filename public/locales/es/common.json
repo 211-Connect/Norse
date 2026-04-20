@@ -54,7 +54,8 @@
     "open_search_dialog": "Abrir cuadro de diálogo de búsqueda",
     "list_status_one": "Hay 1 opción disponible. Utilice las teclas de flecha arriba y abajo para revisar.",
     "list_status_other": "{{count}} opciones disponibles. Utilice las teclas de flecha arriba y abajo para revisarlas.",
-    "search_dialog_description": "Busca recursos y actualiza tu ubicación."
+    "search_dialog_description": "Busca recursos y actualiza tu ubicación.",
+    "everywhere": "En todas partes"
   },
   "call_to_action": {
     "call": "Llamar",

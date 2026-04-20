@@ -54,7 +54,8 @@
     "geocoding_unable_to_retrieve": "Unable to retrieve your location. Please check your browser's location settings and try again.",
     "categories": "Topics",
     "show_all": "Show all ({{count}})",
-    "show_less": "Show less"
+    "show_less": "Show less",
+    "everywhere": "Everywhere"
   },
   "call_to_action": {
     "call": "Call",

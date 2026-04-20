@@ -54,7 +54,8 @@
     "open_search_dialog": "검색 대화 상자 열기",
     "list_status_one": "옵션이 1개 있습니다. 위아래 화살표 키를 사용하여 검토하세요.",
     "list_status_other": "사용 가능한 옵션은 {{count}}개입니다. 위아래 화살표 키를 사용하여 검토하세요.",
-    "search_dialog_description": "자료를 검색하고 위치를 업데이트하세요."
+    "search_dialog_description": "자료를 검색하고 위치를 업데이트하세요.",
+    "everywhere": "어디서나"
   },
   "call_to_action": {
     "call": "외침",

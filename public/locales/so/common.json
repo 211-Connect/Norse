@@ -54,7 +54,8 @@
     "open_search_dialog": "Fur wadahadalka raadinta",
     "list_status_one": "1 ikhtiyaar ayaa diyaar ah. Isticmaal furayaasha fallaadha kor iyo hoos si aad u eegto.",
     "list_status_other": "Ikhtiyaarada {{count}} ayaa diyaar ah. Isticmaal furayaasha fallaadha kor iyo hoos si aad u eegto.",
-    "search_dialog_description": "Raadi kheyraad oo cusbooneysii goobtaada."
+    "search_dialog_description": "Raadi kheyraad oo cusbooneysii goobtaada.",
+    "everywhere": "Meel kasta"
   },
   "call_to_action": {
     "call": "Wac",

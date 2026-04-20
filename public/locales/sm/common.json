@@ -54,7 +54,8 @@
     "open_search_dialog": "Tatala le talanoaga su'esu'e",
     "list_status_one": "1 filifiliga o lo'o avanoa. Fa'aaoga ki aū i luga ma lalo e toe iloilo ai.",
     "list_status_other": "{{count}} filifiliga o lo'o avanoa. Fa'aaoga ki o aū i luga ma lalo e toe iloilo ai.",
-    "search_dialog_description": "Saili mo punaoa ma faʻafou lou nofoaga."
+    "search_dialog_description": "Saili mo punaoa ma faʻafou lou nofoaga.",
+    "everywhere": "I mea uma"
   },
   "call_to_action": {
     "call": "Telefoni",

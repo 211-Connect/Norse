@@ -31,6 +31,7 @@ import { getFavoriteLists } from '../serverActions/favorites/getFavoriteLists';
 import { addToFavoriteList } from '../serverActions/favorites/addToFavoriteList';
 import { removeFavoriteFromList } from '../serverActions/favorites/removeFavoriteFromList';
 import { FavoriteListState } from '@/types/favorites';
+import { FAVORITES_SEARCH_DEBOUNCE_DELAY } from '../lib/constants';
 
 type AddToFavoritesButtonProps = {
   size?: 'default' | 'icon';
@@ -224,7 +225,7 @@ export function AddToFavoritesButton({
                 placeholder={t('modal.add_to_list.search_list')}
                 initialValue={searchValue}
                 onChange={setSearchValue}
-                debounceDelay={500}
+                debounceDelay={FAVORITES_SEARCH_DEBOUNCE_DELAY}
               />
               <Button
                 variant="outline"

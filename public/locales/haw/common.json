@@ -54,7 +54,8 @@
     "open_search_dialog": "E wehe i ka pahu kamaʻilio hulina",
     "list_status_one": "1 koho i loaʻa. E hoʻohana i nā kī pua i luna a i lalo e loiloi.",
     "list_status_other": "Loaʻa nā koho {{count}}. E hoʻohana i nā kī pua i luna a i lalo e loiloi.",
-    "search_dialog_description": "E ʻimi i nā kumuwaiwai a hoʻohou i kou wahi."
+    "search_dialog_description": "E ʻimi i nā kumuwaiwai a hoʻohou i kou wahi.",
+    "everywhere": "Ma nā wahi a pau"
   },
   "call_to_action": {
     "call": "Kāhea",

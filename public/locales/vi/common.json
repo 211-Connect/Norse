@@ -54,7 +54,8 @@
     "open_search_dialog": "Mở hộp thoại tìm kiếm",
     "list_status_one": "Có 1 tùy chọn. Sử dụng phím mũi tên lên và xuống để xem lại.",
     "list_status_other": "Có {{count}} tùy chọn. Sử dụng các phím mũi tên lên và xuống để xem lại.",
-    "search_dialog_description": "Tìm kiếm tài nguyên và cập nhật vị trí của bạn."
+    "search_dialog_description": "Tìm kiếm tài nguyên và cập nhật vị trí của bạn.",
+    "everywhere": "Mọi nơi"
   },
   "call_to_action": {
     "call": "Gọi",

@@ -54,7 +54,8 @@
     "open_search_dialog": "د لټون ډیالوګ پرانیزئ",
     "list_status_one": "۱ انتخاب شتون لري. د بیاکتنې لپاره پورته او ښکته تیر کیلي وکاروئ.",
     "list_status_other": "{{count}} انتخابونه شته. د بیاکتنې لپاره پورته او ښکته تیر کیلي وکاروئ.",
-    "search_dialog_description": "د سرچینو لټون وکړئ او خپل موقعیت تازه کړئ."
+    "search_dialog_description": "د سرچینو لټون وکړئ او خپل موقعیت تازه کړئ.",
+    "everywhere": "هر ځای"
   },
   "call_to_action": {
     "call": "زنګ ووهئ",

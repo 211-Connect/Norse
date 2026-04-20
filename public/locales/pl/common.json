@@ -54,7 +54,8 @@
     "open_search_dialog": "Otwórz okno dialogowe wyszukiwania",
     "list_status_one": "Dostępna jest 1 opcja. Użyj klawiszy strzałek w górę i w dół, aby przejrzeć.",
     "list_status_other": "Dostępnych jest {{count}} opcji. Użyj klawiszy strzałek w górę i w dół, aby je przejrzeć.",
-    "search_dialog_description": "Wyszukaj zasoby i zaktualizuj swoją lokalizację."
+    "search_dialog_description": "Wyszukaj zasoby i zaktualizuj swoją lokalizację.",
+    "everywhere": "Wszędzie"
   },
   "call_to_action": {
     "call": "Dzwonić",

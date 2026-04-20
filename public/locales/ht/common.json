@@ -54,7 +54,8 @@
     "open_search_dialog": "Louvri dyalòg rechèch la",
     "list_status_one": "1 opsyon disponib. Sèvi ak flèch anlè ak anba yo pou revize.",
     "list_status_other": "Gen {{count}} opsyon ki disponib. Sèvi ak flèch anlè ak anba yo pou revize.",
-    "search_dialog_description": "Chèche resous epi mete ajou kote w ye a."
+    "search_dialog_description": "Chèche resous epi mete ajou kote w ye a.",
+    "everywhere": "Toupatou"
   },
   "call_to_action": {
     "call": "Rele",

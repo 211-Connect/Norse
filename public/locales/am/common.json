@@ -54,7 +54,8 @@
     "open_search_dialog": "የፍለጋ መገናኛውን ክፈት",
     "list_status_one": "1 አማራጭ ይገኛል። ለመገምገም ወደላይ እና ወደታች የቀስት ቁልፎችን ይጠቀሙ።",
     "list_status_other": "{{count}} አማራጮች አሉ። ለመገምገም ወደላይ እና ወደታች የቀስት ቁልፎችን ይጠቀሙ።",
-    "search_dialog_description": "ሀብቶችን ይፈልጉ እና አካባቢዎን ያዘምኑ።"
+    "search_dialog_description": "ሀብቶችን ይፈልጉ እና አካባቢዎን ያዘምኑ።",
+    "everywhere": "ሁሉም ቦታ"
   },
   "call_to_action": {
     "call": "ይደውሉ",

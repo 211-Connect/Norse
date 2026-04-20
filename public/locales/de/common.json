@@ -54,7 +54,8 @@
     "open_search_dialog": "Suchdialog öffnen",
     "list_status_one": "Es steht eine Option zur Verfügung. Verwenden Sie die Pfeiltasten nach oben und unten, um sie anzuzeigen.",
     "list_status_other": "{{count}} Optionen verfügbar. Verwenden Sie die Pfeiltasten nach oben und unten, um sie anzuzeigen.",
-    "search_dialog_description": "Suchen Sie nach Ressourcen und aktualisieren Sie Ihren Standort."
+    "search_dialog_description": "Suchen Sie nach Ressourcen und aktualisieren Sie Ihren Standort.",
+    "everywhere": "Überall"
   },
   "call_to_action": {
     "call": "Anruf",

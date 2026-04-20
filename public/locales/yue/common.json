@@ -54,7 +54,8 @@
     "open_search_dialog": "打開搜尋對話方塊",
     "list_status_one": "1 個選項可用。用上下箭頭鍵嚟睇返。",
     "list_status_other": "有 {{ 計數 }} 選項。用上下箭頭鍵嚟睇返。",
-    "search_dialog_description": "搜尋資源同埋更新你嘅位置。"
+    "search_dialog_description": "搜尋資源同埋更新你嘅位置。",
+    "everywhere": "所有地方"
   },
   "call_to_action": {
     "call": "叫",

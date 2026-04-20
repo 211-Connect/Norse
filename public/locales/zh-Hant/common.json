@@ -54,7 +54,8 @@
     "open_search_dialog": "開啟搜尋對話框",
     "list_status_one": "僅剩 1 個選項。請使用上下箭頭鍵進行查看。",
     "list_status_other": "共有 {{count}} 個選項可用。使用上下箭頭鍵進行查看。",
-    "search_dialog_description": "搜尋資源並更新您的位置。"
+    "search_dialog_description": "搜尋資源並更新您的位置。",
+    "everywhere": "所有地區"
   },
   "call_to_action": {
     "call": "稱呼",

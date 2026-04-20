@@ -54,7 +54,8 @@
     "open_search_dialog": "検索ダイアログを開く",
     "list_status_one": "選択肢は1つです。上下矢印キーで確認してください。",
     "list_status_other": "{{count}}個のオプションが利用可能です。上下矢印キーを使用して確認してください。",
-    "search_dialog_description": "リソースを検索し、現在地を更新してください。"
+    "search_dialog_description": "リソースを検索し、現在地を更新してください。",
+    "everywhere": "どこでも"
   },
   "call_to_action": {
     "call": "電話",
