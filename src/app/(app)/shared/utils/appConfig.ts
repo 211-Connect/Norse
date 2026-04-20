@@ -14,6 +14,7 @@ import initTranslations from '../i18n/i18n';
 import { SESSION_ID } from '../lib/constants';
 import { DEFAULT_RESOURCE_LAYOUT } from '../../features/resource/types/layout-config';
 import { DEFAULT_SEARCH_CARD_LAYOUT } from '../../features/search/types/card-layout-config';
+import { DEFAULT_BADGE_COLOR } from '../theme/theme-config';
 
 function getMediaUrl(media?: TenantMedia | number | null): string | undefined {
   if (typeof media === 'number' || !media) return undefined;
@@ -518,7 +519,7 @@ async function getAppConfigBase(
         ?.map((badge) => ({
           ...badge,
           style: badge.style || 'bold',
-          color: badge.color || '#0044B5',
+          color: badge.color || DEFAULT_BADGE_COLOR,
           icon: badge.icon,
         })) || [],
     suggestions:

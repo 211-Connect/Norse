@@ -13,6 +13,10 @@ import { getSession } from '../shared/utils/getServerSession';
 import { sanitizeSessionForClient } from '../shared/utils/sanitizeSession';
 import { cookies } from 'next/headers';
 import { USER_PREF_FONT_SIZE } from '../shared/lib/constants';
+import {
+  resolveBrandTheme,
+  resolveHeaderGradient,
+} from '../shared/theme/theme-config';
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -42,12 +46,10 @@ export const generateMetadata = async ({
 async function prepareTheme(appConfig: AppConfig) {
   const cookieList = await cookies();
 
-  const {
-    borderRadius: borderRadiusFromTheme,
-    primaryColor,
-    secondaryColor,
-  } = appConfig.brand.theme;
-  const { headerStart, headerEnd } = appConfig.newLayout ?? {};
+  const { borderRadius, primaryColor, secondaryColor } = resolveBrandTheme(
+    appConfig.brand.theme,
+  );
+  const { headerStart, headerEnd } = resolveHeaderGradient(appConfig.newLayout);
 
   const primary = color(primaryColor).hsl();
   const primaryHsl = primary.array();
@@ -56,8 +58,6 @@ async function prepareTheme(appConfig: AppConfig) {
   const secondary = color(secondaryColor).hsl();
   const secondaryHsl = secondary.array();
   const secondaryForeground = secondary.isDark() ? '0 0% 100%' : '0 0% 0%';
-
-  const borderRadius = borderRadiusFromTheme ?? '0.5rem';
 
   let savedFontSize: string | undefined = undefined;
 
@@ -80,8 +80,8 @@ async function prepareTheme(appConfig: AppConfig) {
     '--secondary': `${secondaryHsl[0]} ${secondaryHsl[1]}% ${secondaryHsl[2]}%`,
     '--secondary-foreground': secondaryForeground,
     '--border-radius': borderRadius,
-    '--header-start': headerStart || '#ffffff',
-    '--header-end': headerEnd || '#ffffff',
+    '--header-start': headerStart,
+    '--header-end': headerEnd,
     'font-size': savedFontSize,
   };
 }

@@ -3,6 +3,7 @@ import {
   parseFilter,
   validateFilterStructure,
 } from '@/utils/badgeFilterEvaluator';
+import { DEFAULT_BADGE_COLOR } from '@/app/(app)/shared/theme/theme-config';
 import { superAdminOrSupportAccess } from '../../Users/access/roles';
 
 export const badges: Tab = {
@@ -95,7 +96,7 @@ export const badges: Tab = {
               name: 'color',
               type: 'text',
               required: true,
-              defaultValue: '#0044B5',
+              defaultValue: DEFAULT_BADGE_COLOR,
               admin: {
                 components: {
                   Field: '@/payload/components/ColorPicker',
