@@ -132,11 +132,12 @@ test.describe('Search accessibility preservation', () => {
     await searchInput.fill('food');
     const clearButtons = page.getByTestId('search-clear-btn');
 
-    await expect(clearButtons.first()).toBeVisible();
+    const clearSearchButton = clearButtons.first();
+    await expect(clearSearchButton).toBeVisible();
+    await expect(clearSearchButton).toHaveAttribute('aria-label', /remove/i);
+    await expect(searchInput).toBeFocused();
     await page.keyboard.press('Tab');
-    await expect(clearButtons.first()).toBeFocused();
-    await expect(clearButtons.first()).toHaveAttribute('aria-label', /remove/i);
-
+    await expect(clearSearchButton).toBeFocused();
     await page.keyboard.press('Enter');
     await expect(searchInput).toHaveValue('');
 
@@ -191,6 +192,7 @@ test.describe('Search accessibility preservation', () => {
     const searchInput = page.locator('#search-input');
     const locationInput = page.locator('#location-input');
 
+    await expect(searchInput).toBeFocused();
     await searchInput.fill('food');
     await searchInput
       .locator('..')
@@ -199,7 +201,7 @@ test.describe('Search accessibility preservation', () => {
 
     await searchInput.press('Enter');
 
-    await expect(locationInput).toBeFocused({ timeout: 5_000 });
+    await expect(locationInput).toBeFocused();
     await expect(page).toHaveURL(homeUrl);
     await expect(page.getByTestId('search-dialog')).toBeVisible();
   });
