@@ -148,6 +148,7 @@ export function SearchBar({
           t('search.query_placeholder'),
       }}
       defaultOpen={focusByDefault}
+      Icon={SearchIcon}
       options={options}
       onInputChange={handleInputChange}
       onValueChange={setSearchTerm}
