@@ -71,6 +71,7 @@ export interface Translation {
   displayName: string;
   fees?: string;
   hours?: string;
+  hoursDescription?: string;
   locale: string;
   taxonomies: Taxonomy[];
   serviceName?: string;
@@ -139,6 +140,7 @@ export interface Resource {
   phoneNumbers: PhoneNumber[] | null;
   email: string | null;
   hours: string | null;
+  hoursDescription: string | null;
   languages: string[] | null;
   interpretationServices: string | null;
   applicationProcess: string | null;

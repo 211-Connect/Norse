@@ -48,8 +48,6 @@ async function fetchAndTransformResourceOrigin(
         data?.facetsEn?.map((facet) => [facet.code, facet]) ?? [],
       );
 
-      console.log(data);
-
       return {
         id: data._id,
         originalId: data?.originalId ?? null,
@@ -74,6 +72,7 @@ async function fetchAndTransformResourceOrigin(
           data?.translation?.phoneNumbers ?? data?.phoneNumbers ?? null,
         email: data?.email ?? null,
         hours: data?.translation?.hours ?? null,
+        hoursDescription: data?.translation?.hoursDescription ?? null,
         languages: data?.translation?.languages ?? null,
         interpretationServices:
           data?.translation?.interpretationServices ?? null,
@@ -81,8 +80,6 @@ async function fetchAndTransformResourceOrigin(
         fees: data?.translation?.fees ?? null,
         requiredDocuments: data?.translation?.requiredDocuments ?? null,
         eligibilities: data?.translation?.eligibilities ?? null,
-        serviceAreaDescription:
-          data?.translation?.serviceAreaDescription ?? null,
         serviceAreaName: data?.serviceAreaName ?? null,
         categories: data?.translation?.taxonomies ?? null,
         lastAssuredOn: data?.lastAssuredDate
@@ -98,6 +95,8 @@ async function fetchAndTransformResourceOrigin(
           data?.translation?.organizationDescription ?? null,
         organizationUrl: data?.organizationUrl ?? null,
         serviceArea: data?.serviceArea ?? null,
+        serviceAreaDescription:
+          data?.translation?.serviceAreaDescription ?? null,
         transportation: data?.translation?.transportation ?? null,
         accessibility: data?.translation?.accessibility ?? null,
         facets:

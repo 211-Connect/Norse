@@ -10,12 +10,21 @@ export function ServiceAreaComponent({ resource }: { resource: Resource }) {
 
   const serviceArea =
     resource.serviceAreaName || resource.serviceAreaDescription;
+  const serviceAreaDetails =
+    resource.serviceAreaName && resource.serviceAreaDescription
+      ? resource.serviceAreaDescription
+      : null;
 
-  if (!serviceArea) {
+  if (!serviceArea && !serviceAreaDetails) {
     return null;
   }
 
   return (
-    <Datum icon={Map} title={t('service_area')} description={serviceArea} />
+    <Datum
+      icon={Map}
+      title={t('service_area')}
+      description={serviceArea}
+      subdescription={serviceAreaDetails}
+    />
   );
 }
