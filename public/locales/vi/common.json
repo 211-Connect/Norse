@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "Tạo danh sách",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Tên",
       "list_description": "Sự miêu tả",
       "make_public": "Công khai"

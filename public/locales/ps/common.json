@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "یو لیست جوړ کړئ",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "نوم",
       "list_description": "تفصیل",
       "make_public": "عامه کړئ"

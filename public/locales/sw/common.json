@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "Unda orodha",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Jina",
       "list_description": "Maelezo",
       "make_public": "Fanya umma"

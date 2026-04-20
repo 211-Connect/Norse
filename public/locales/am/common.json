@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "ዝርዝር ይፍጠሩ",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "ስም",
       "list_description": "መግለጫ",
       "make_public": "ለሕዝብ ይፋ አድርጉ"

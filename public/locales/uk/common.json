@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "Створити список",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Ім'я",
       "list_description": "Опис",
       "make_public": "Зробити загальнодоступним"

@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "एक सूची बनाएं",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "नाम",
       "list_description": "विवरण",
       "make_public": "सार्वजनिक करें"

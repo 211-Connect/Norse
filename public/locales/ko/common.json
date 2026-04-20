@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "목록 만들기",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "이름",
       "list_description": "묘사",
       "make_public": "공개"

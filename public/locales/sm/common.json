@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "Fausia se lisi",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Igoa",
       "list_description": "Fa'amatalaga",
       "make_public": "Fa'asalalau i tagata lautele"

@@ -54,7 +54,9 @@ export function AddToFavoritesButton({
   const session = useSession();
   const setDialog = useSetAtom(dialogsAtom);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const createListTriggerRef = useRef<HTMLButtonElement | null>(null);
   const dialogId = useId();
+  const createListDialogId = useId();
   const { t, i18n } = useTranslation('common');
 
   const [open, setOpen] = useState(false);
@@ -237,11 +239,14 @@ export function AddToFavoritesButton({
                 debounceDelay={FAVORITES_SEARCH_DEBOUNCE_DELAY}
               />
               <Button
+                ref={createListTriggerRef}
                 variant="outline"
                 className="flex h-9 gap-1"
                 onClick={() => setCreateListOpen(true)}
+                aria-haspopup="dialog"
+                aria-controls={createListDialogId}
               >
-                <PlusIcon className="size-4" />
+                <PlusIcon className="size-4" aria-hidden="true" />
                 {t('modal.create_list.create_a_list')}
               </Button>
             </div>
@@ -358,9 +363,11 @@ export function AddToFavoritesButton({
       </Dialog>
 
       <CreateFavoriteListDialog
+        id={createListDialogId}
         open={createListOpen}
         onOpenChange={setCreateListOpen}
         onSuccess={handleCreateListSuccess}
+        restoreFocusElement={createListTriggerRef.current}
       />
     </>
   );

@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "યાદી બનાવો",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "નામ",
       "list_description": "વર્ણન",
       "make_public": "જાહેર કરો"

@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "Crie uma lista",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Nome",
       "list_description": "Descrição",
       "make_public": "Tornar público"

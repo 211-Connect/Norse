@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "Sos doggol",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Inde",
       "list_description": "Limtol",
       "make_public": "Waɗde renndo"

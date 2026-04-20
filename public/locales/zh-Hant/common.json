@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "創建列表",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "姓名",
       "list_description": "描述",
       "make_public": "公開"

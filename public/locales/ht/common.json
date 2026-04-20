@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "Kreye yon lis",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Non",
       "list_description": "Deskripsyon",
       "make_public": "Fè piblik"

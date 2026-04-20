@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "ایجاد یک لیست",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "نام",
       "list_description": "توضیحات",
       "make_public": "عمومی کردن"
