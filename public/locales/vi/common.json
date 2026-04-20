@@ -149,7 +149,8 @@
     }
   },
   "update_location": {
-    "prompt_start_location": "Vị trí bắt đầu của bạn là gì?"
+    "prompt_start_location": "Vị trí bắt đầu của bạn là gì?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Dữ liệu được cung cấp bởi"

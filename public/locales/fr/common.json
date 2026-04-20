@@ -149,7 +149,8 @@
     }
   },
   "update_location": {
-    "prompt_start_location": "Quel est votre point de départ ?"
+    "prompt_start_location": "Quel est votre point de départ ?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Données fournies par"

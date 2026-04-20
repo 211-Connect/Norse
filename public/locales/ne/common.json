@@ -149,7 +149,8 @@
     }
   },
   "update_location": {
-    "prompt_start_location": "तपाईंको प्रारम्भिक स्थान के हो?"
+    "prompt_start_location": "तपाईंको प्रारम्भिक स्थान के हो?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "द्वारा प्रदान गरिएको डेटा"

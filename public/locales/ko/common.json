@@ -149,7 +149,8 @@
     }
   },
   "update_location": {
-    "prompt_start_location": "시작 위치는 어디입니까?"
+    "prompt_start_location": "시작 위치는 어디입니까?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "데이터 제공"

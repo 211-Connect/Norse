@@ -149,7 +149,8 @@
     }
   },
   "update_location": {
-    "prompt_start_location": "Koj qhov chaw pib yog dab tsi?"
+    "prompt_start_location": "Koj qhov chaw pib yog dab tsi?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Cov ntaub ntawv muab los ntawm"

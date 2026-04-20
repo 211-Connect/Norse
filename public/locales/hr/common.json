@@ -149,7 +149,8 @@
     }
   },
   "update_location": {
-    "prompt_start_location": "Koja je vaša početna lokacija?"
+    "prompt_start_location": "Koja je vaša početna lokacija?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Podaci koje je pružio"

@@ -149,7 +149,8 @@
     }
   },
   "update_location": {
-    "prompt_start_location": "你的起点在哪里？"
+    "prompt_start_location": "你的起点在哪里？",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "数据提供"

@@ -149,7 +149,8 @@
     }
   },
   "update_location": {
-    "prompt_start_location": "Hol nokku ɗo puɗɗorto-ɗaa?"
+    "prompt_start_location": "Hol nokku ɗo puɗɗorto-ɗaa?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Dataaji ɗi..."

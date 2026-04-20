@@ -150,7 +150,8 @@
     "prompt_auth_description": "Please sign in to access this feature."
   },
   "update_location": {
-    "prompt_start_location": "What's your starting location?"
+    "prompt_start_location": "What's your starting location?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Data provided by"

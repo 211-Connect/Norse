@@ -149,7 +149,8 @@
     }
   },
   "update_location": {
-    "prompt_start_location": "Saan ang panimulang lokasyon mo?"
+    "prompt_start_location": "Saan ang panimulang lokasyon mo?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Ang datos na ibinigay ni"

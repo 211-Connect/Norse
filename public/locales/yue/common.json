@@ -149,7 +149,8 @@
     }
   },
   "update_location": {
-    "prompt_start_location": "你嘅起點係邊度？"
+    "prompt_start_location": "你嘅起點係邊度？",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "資料由"

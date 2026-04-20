@@ -149,7 +149,8 @@
     }
   },
   "update_location": {
-    "prompt_start_location": "ما هو موقع انطلاقك؟"
+    "prompt_start_location": "ما هو موقع انطلاقك؟",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "البيانات المقدمة من"

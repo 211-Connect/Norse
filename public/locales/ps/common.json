@@ -149,7 +149,8 @@
     }
   },
   "update_location": {
-    "prompt_start_location": "ستاسو د پیل ځای څه دی؟"
+    "prompt_start_location": "ستاسو د پیل ځای څه دی؟",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "معلومات د لخوا چمتو شوي"

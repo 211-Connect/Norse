@@ -149,7 +149,8 @@
     }
   },
   "update_location": {
-    "prompt_start_location": "Qual é o seu ponto de partida?"
+    "prompt_start_location": "Qual é o seu ponto de partida?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Dados fornecidos por"

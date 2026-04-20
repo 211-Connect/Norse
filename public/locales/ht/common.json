@@ -149,7 +149,8 @@
     }
   },
   "update_location": {
-    "prompt_start_location": "Ki kote ou kòmanse?"
+    "prompt_start_location": "Ki kote ou kòmanse?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Done yo bay pa"

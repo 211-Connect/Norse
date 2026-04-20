@@ -149,7 +149,8 @@
     }
   },
   "update_location": {
-    "prompt_start_location": "Na cava na nomu vanua ni tekivu?"
+    "prompt_start_location": "Na cava na nomu vanua ni tekivu?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Na itukutuku e vakarautaka na"

@@ -149,7 +149,8 @@
     }
   },
   "update_location": {
-    "prompt_start_location": "Waa maxay goobta aad ka bilaabayso?"
+    "prompt_start_location": "Waa maxay goobta aad ka bilaabayso?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Macluumaadka ay bixiyaan"

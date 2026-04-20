@@ -149,7 +149,8 @@
     }
   },
   "update_location": {
-    "prompt_start_location": "ສະຖານທີ່ເລີ່ມຕົ້ນຂອງເຈົ້າແມ່ນຫຍັງ?"
+    "prompt_start_location": "ສະຖານທີ່ເລີ່ມຕົ້ນຂອງເຈົ້າແມ່ນຫຍັງ?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "ຂໍ້ມູນສະໜອງໃຫ້ໂດຍ"

@@ -149,7 +149,8 @@
     }
   },
   "update_location": {
-    "prompt_start_location": "Ma hea kou wahi hoʻomaka?"
+    "prompt_start_location": "Ma hea kou wahi hoʻomaka?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "ʻIkepili i hāʻawi ʻia e"

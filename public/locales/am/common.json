@@ -149,7 +149,8 @@
     }
   },
   "update_location": {
-    "prompt_start_location": "መነሻዎ ምንድን ነው?"
+    "prompt_start_location": "መነሻዎ ምንድን ነው?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "የቀረቡ መረጃዎች"

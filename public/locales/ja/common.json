@@ -149,7 +149,8 @@
     }
   },
   "update_location": {
-    "prompt_start_location": "出発地はどこですか？"
+    "prompt_start_location": "出発地はどこですか？",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "提供元データ"

@@ -149,7 +149,8 @@
     }
   },
   "update_location": {
-    "prompt_start_location": "O fea lou nofoaga e amata ai?"
+    "prompt_start_location": "O fea lou nofoaga e amata ai?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Fa'amaumauga na tu'uina mai e"

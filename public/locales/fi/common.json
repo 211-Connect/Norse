@@ -149,7 +149,8 @@
     }
   },
   "update_location": {
-    "prompt_start_location": "Mikä on lähtöpaikkasi?"
+    "prompt_start_location": "Mikä on lähtöpaikkasi?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Tiedot toimittanut"
