@@ -10,6 +10,7 @@ export interface DatumProps {
   title?: string | null;
   subtitle?: string | null;
   description?: string | null;
+  subdescription?: string | null;
   icon?: LucideIcon | null;
   iconColor?: string | null;
   url?: string | null;
@@ -28,6 +29,7 @@ export function Datum({
   title,
   subtitle,
   description,
+  subdescription,
   icon: Icon,
   iconColor,
   url,
@@ -45,6 +47,14 @@ export function Datum({
     description && shouldParseHtml ? parseHtml(description) : description;
   const descriptionAs =
     shouldParseHtml && description !== parsedDescription ? 'div' : undefined;
+  const parsedSubdescription =
+    subdescription && shouldParseHtml
+      ? parseHtml(subdescription)
+      : subdescription;
+  const subdescriptionAs =
+    shouldParseHtml && subdescription !== parsedSubdescription
+      ? 'div'
+      : undefined;
 
   return (
     <div
@@ -72,7 +82,7 @@ export function Datum({
         ) : null}
       </div>
       {titleBelow ? (
-        <div className="flex min-w-0 flex-col">
+        <div className="flex min-w-0 flex-col gap-0.5">
           <Typography
             variant="paragraph"
             size={size}
@@ -84,6 +94,16 @@ export function Datum({
           >
             {parsedDescription}
           </Typography>
+          {parsedSubdescription && (
+            <Typography
+              variant="paragraph"
+              size="xs"
+              as={subdescriptionAs}
+              className="whitespace-pre-line"
+            >
+              {parsedSubdescription}
+            </Typography>
+          )}
           <div className="flex flex-row items-center">
             <Typography variant="label" size="sm">
               {title}
@@ -95,7 +115,7 @@ export function Datum({
           </div>
         </div>
       ) : (
-        <div className="flex min-w-0 flex-col">
+        <div className="flex min-w-0 flex-col gap-0.5">
           <Typography variant="label" size={size}>
             {title}
           </Typography>
@@ -110,6 +130,16 @@ export function Datum({
           >
             {parsedDescription}
           </Typography>
+          {parsedSubdescription && (
+            <Typography
+              variant="paragraph"
+              size="xs"
+              as={subdescriptionAs}
+              className="whitespace-pre-line"
+            >
+              {parsedSubdescription}
+            </Typography>
+          )}
         </div>
       )}
     </div>
