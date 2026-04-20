@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { expect, goHome, test } from '../helpers';
-import enCommon from '../../public/locales/en/common.json';
+import enCommon from '../../public/locales/en/common.json' with { type: 'json' };
 
 async function openDialogFromSearchTrigger(page: Page) {
   const trigger = page.getByTestId('search-trigger').first();
