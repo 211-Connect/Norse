@@ -17,6 +17,10 @@ import { LanguagesIcon } from 'lucide-react';
 import { useClientSearchParams } from '../hooks/use-client-search-params';
 import { useAppConfig } from '../hooks/use-app-config';
 import { useBreakpoint } from '../hooks/use-breakpoint';
+import {
+  LANGUAGE_SWITCHER_CONTENT_ID,
+  LANGUAGE_SWITCHER_TRIGGER_ID,
+} from '../lib/aria-constants';
 import { cn } from '../lib/utils';
 
 const LANGUAGE_NAME = {
@@ -25,9 +29,6 @@ const LANGUAGE_NAME = {
   fj: 'Fijian',
   tl: 'Tagalog',
 };
-
-const LANGUAGE_SWITCHER_CONTENT_ID = 'language-switcher-listbox';
-const LANGUAGE_SWITCHER_TRIGGER_ID = 'language-switcher-trigger';
 
 const getLanguageName = (locale: string) => {
   if (LANGUAGE_NAME[locale]) {

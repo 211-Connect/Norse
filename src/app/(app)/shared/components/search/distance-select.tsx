@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { setCookie, deleteCookie } from 'cookies-next/client';
 import { useTranslation } from 'react-i18next';
@@ -12,12 +13,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
+import { Label } from '../ui/label';
 import { useAppConfig } from '../../hooks/use-app-config';
 import {
   searchAtom,
   searchCoordinatesAtom,
   searchDistanceAtom,
 } from '../../store/search';
+import {
+  DISTANCE_SELECT_CONTENT_ID,
+  DISTANCE_SELECT_TRIGGER_ID,
+} from '../../lib/aria-constants';
 import { USER_PREF_DISTANCE } from '../../lib/constants';
 import { cn } from '../../lib/utils';
 
@@ -27,6 +33,7 @@ export interface DistanceSelectProps {
 
 export function DistanceSelect({ className = '' }: DistanceSelectProps) {
   const { t } = useTranslation('common');
+  const [open, setOpen] = useState(false);
 
   const appConfig = useAppConfig();
   const setSearch = useSetAtom(searchAtom);
@@ -50,15 +57,28 @@ export function DistanceSelect({ className = '' }: DistanceSelectProps) {
 
   return (
     <div className={cn('flex items-center gap-2', className)}>
-      <p className="text-sm font-medium">{t('search.radius_placeholder')}:</p>
+      <Label htmlFor={DISTANCE_SELECT_TRIGGER_ID} className="text-sm font-medium">
+        {t('search.radius_placeholder')}:
+      </Label>
+      {!open && (
+        <div
+          id={DISTANCE_SELECT_CONTENT_ID}
+          role="listbox"
+          hidden
+          aria-hidden="true"
+        />
+      )}
       <Select
+        contentId={DISTANCE_SELECT_CONTENT_ID}
         onValueChange={setDistance}
         value={distance}
         disabled={!hasLocation}
+        open={open}
+        onOpenChange={setOpen}
       >
         <SelectTrigger
+          id={DISTANCE_SELECT_TRIGGER_ID}
           className="w-[125px]"
-          aria-label={t('search.radius_placeholder')}
         >
           <SelectValue placeholder={t('search.radius_placeholder')} />
         </SelectTrigger>

@@ -679,6 +679,9 @@ export function Autocomplete(props: AutocompleteProps) {
         >
           {srStatus}
         </div>
+        {!open && uniqueId ? (
+          <div id={uniqueId} role="listbox" hidden aria-hidden="true" />
+        ) : null}
         <Input
           {...inputProps}
           id={effectiveInputId}
@@ -695,7 +698,7 @@ export function Autocomplete(props: AutocompleteProps) {
           value={tempValue}
           autoComplete="off"
           aria-autocomplete="list"
-          aria-controls={open ? uniqueId : undefined}
+          aria-controls={uniqueId}
           aria-haspopup="listbox"
           aria-labelledby={readerLabelId}
           aria-owns={uniqueId}
