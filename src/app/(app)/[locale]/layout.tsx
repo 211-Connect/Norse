@@ -17,6 +17,7 @@ import {
   resolveBrandTheme,
   resolveHeaderGradient,
 } from '../shared/theme/theme-config';
+import { getContrastColor } from '@/utils';
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -55,6 +56,12 @@ async function prepareTheme(appConfig: AppConfig) {
   const primaryHsl = primary.array();
   const primaryForeground = primary.isDark() ? '0 0% 100%' : '0 0% 0%';
 
+  // Compute a focus-ring color guaranteed to contrast with the primary surface.
+  // getContrastColor applies the WCAG relative-luminance formula and returns
+  // '#FFFFFF' (white) for dark primaries and '#000000' (black) for light ones.
+  const ringOnPrimaryHex = getContrastColor(primaryColor);
+  const ringOnPrimary = ringOnPrimaryHex === '#FFFFFF' ? '0 0% 100%' : '0 0% 3.9%';
+
   const secondary = color(secondaryColor).hsl();
   const secondaryHsl = secondary.array();
   const secondaryForeground = secondary.isDark() ? '0 0% 100%' : '0 0% 0%';
@@ -77,6 +84,7 @@ async function prepareTheme(appConfig: AppConfig) {
   return {
     '--primary': `${primaryHsl[0]} ${primaryHsl[1]}% ${primaryHsl[2]}%`,
     '--primary-foreground': primaryForeground,
+    '--ring-on-primary': ringOnPrimary,
     '--secondary': `${secondaryHsl[0]} ${secondaryHsl[1]}% ${secondaryHsl[2]}%`,
     '--secondary-foreground': secondaryForeground,
     '--border-radius': borderRadius,
