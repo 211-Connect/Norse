@@ -34,6 +34,7 @@ function convertFavoriteToResult(
     summary: translation?.serviceDescription ?? '',
     description: translation?.serviceDescription ?? '',
     location: favorite.location ?? null,
+    locationName: favorite.locationName ?? null,
     name: translation?.displayName ?? favorite.displayName ?? '',
     phone: favorite.displayPhoneNumber ?? '',
     attribution: favorite.attribution ?? null,
