@@ -6,10 +6,18 @@ import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { dialogsAtom, promptAuthAtom } from '@/app/(app)/shared/store/dialogs';
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../ui/dialog';
 import { Button } from '../ui/button';
 import { cn } from '../../lib/utils';
 import { buttonVariants } from '../ui/button';
+import { Label } from '../ui/label';
 
 export function PromptAuthDialog() {
   const setState = useSetAtom(dialogsAtom);
@@ -55,8 +63,14 @@ export function PromptAuthDialog() {
       >
         <DialogHeader>
           <DialogTitle>{t('modal.prompt_auth')}</DialogTitle>
+          <DialogDescription className="sr-only">
+            {t('modal.prompt_auth_description')}
+          </DialogDescription>
         </DialogHeader>
-        <div className="flex justify-end gap-2">
+        <Label className="text-sm font-normal text-muted-foreground">
+          {t('modal.prompt_auth_description')}
+        </Label>
+        <DialogFooter>
           <Button onClick={() => handleOpenChange(false)} variant="outline">
             {t('call_to_action.cancel')}
           </Button>
@@ -69,7 +83,7 @@ export function PromptAuthDialog() {
           >
             {t('call_to_action.login')}
           </a>
-        </div>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

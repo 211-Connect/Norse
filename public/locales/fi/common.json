@@ -141,6 +141,7 @@
       "phone_number_label": "Puhelinnumero"
     },
     "prompt_auth": "Kirjaudu sisään käyttääksesi tätä ominaisuutta.",
+    "prompt_auth_description": "Kirjaudu sisään käyttääksesi tätä ominaisuutta.",
     "manage_favorites": {
       "title": "Hallinnoi suosikkeja"
     }

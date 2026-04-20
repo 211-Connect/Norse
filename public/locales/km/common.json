@@ -141,6 +141,7 @@
       "phone_number_label": "លេខទូរស័ព្ទ"
     },
     "prompt_auth": "សូមចូលគណនីដើម្បីប្រើប្រាស់មុខងារនេះ។",
+    "prompt_auth_description": "សូមចូលគណនីដើម្បីប្រើប្រាស់មុខងារនេះ។",
     "manage_favorites": {
       "title": "គ្រប់គ្រង​ចំណូលចិត្ត"
     }

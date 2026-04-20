@@ -141,6 +141,7 @@
       "phone_number_label": "Lambarka taleefanka"
     },
     "prompt_auth": "Fadlan gal si aad u isticmaasho habkaani.",
+    "prompt_auth_description": "Fadlan gal si aad u isticmaasho habkaani.",
     "manage_favorites": {
       "title": "Maaree waxyaabaha aad ugu jeceshahay"
     }

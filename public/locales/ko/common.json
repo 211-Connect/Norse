@@ -141,6 +141,7 @@
       "phone_number_label": "전화 번호"
     },
     "prompt_auth": "이 기능을 사용하려면 로그인하십시오.",
+    "prompt_auth_description": "이 기능을 사용하려면 로그인하십시오.",
     "manage_favorites": {
       "title": "즐겨찾기 관리"
     }

@@ -141,6 +141,7 @@
       "phone_number_label": "Nambari ya simu"
     },
     "prompt_auth": "Tafadhali ingia ili utumie kipengele hiki.",
+    "prompt_auth_description": "Tafadhali ingia ili utumie kipengele hiki.",
     "manage_favorites": {
       "title": "Dhibiti vipendwa"
     }

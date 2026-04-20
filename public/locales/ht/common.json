@@ -141,6 +141,7 @@
       "phone_number_label": "Nimewo telefòn"
     },
     "prompt_auth": "Tanpri konekte pou itilize fonksyonalite sa a.",
+    "prompt_auth_description": "Tanpri konekte pou itilize fonksyonalite sa a.",
     "manage_favorites": {
       "title": "Jere favori yo"
     }

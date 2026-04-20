@@ -8,7 +8,7 @@ import {
   Printer,
   Share2,
 } from 'lucide-react';
-import { useCallback, useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { useReactToPrint } from 'react-to-print';
 import { useTranslation } from 'react-i18next';
 
@@ -36,18 +36,6 @@ type ShareButtonProps = {
 const SHARE_ACTION_BUTTON_CLASSNAME =
   'flex min-w-0 justify-center gap-2 focus-visible:ring-inset focus-visible:ring-offset-0';
 
-const HIDDEN_FOCUSABLE_SELECTOR = [
-  'a[href]',
-  'button',
-  'input',
-  'select',
-  'textarea',
-  'summary',
-  'iframe',
-  '[contenteditable="true"]',
-  '[tabindex]',
-].join(', ');
-
 export function ShareButton({
   componentToPrintRef,
   title,
@@ -62,18 +50,6 @@ export function ShareButton({
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const dialogId = useId();
   const copyStatusId = useId();
-  const syncingRef = useRef(false);
-  const elementStateRef = useRef(
-    new Map<
-      HTMLElement,
-      {
-        ariaHidden: string | null;
-        inert: boolean;
-        inertAttribute: string | null;
-        tabIndexAttribute: string | null;
-      }
-    >(),
-  );
 
   const [open, setOpen] = useState(false);
   const [shortUrl, setShortUrl] = useState('');
@@ -99,19 +75,6 @@ export function ShareButton({
   // Email: full message (body + URL)
   const emailMessage = [normalizedBody, shortUrl].filter(Boolean).join('\n\n');
 
-  const debugLog = useCallback((message: string, details?: unknown) => {
-    if (process.env.NODE_ENV !== 'development') {
-      return;
-    }
-
-    if (details === undefined) {
-      console.debug(`[share-button] ${message}`);
-      return;
-    }
-
-    console.debug(`[share-button] ${message}`, details);
-  }, []);
-
   useEffect(() => {
     async function getShortUrl() {
       const id = await shortenUrl(window.location.href, appConfig.tenantId);
@@ -121,179 +84,6 @@ export function ShareButton({
 
     getShortUrl();
   }, [appConfig.customBasePath, appConfig.tenantId]);
-
-  const rememberElementState = useCallback((element: HTMLElement) => {
-    if (elementStateRef.current.has(element)) {
-      return;
-    }
-
-    elementStateRef.current.set(element, {
-      ariaHidden: element.getAttribute('aria-hidden'),
-      inert: element.inert,
-      inertAttribute: element.getAttribute('inert'),
-      tabIndexAttribute: element.getAttribute('tabindex'),
-    });
-  }, []);
-
-  const restoreManagedElements = useCallback(() => {
-    elementStateRef.current.forEach((state, element) => {
-      if (state.ariaHidden === null) {
-        element.removeAttribute('aria-hidden');
-      } else {
-        element.setAttribute('aria-hidden', state.ariaHidden);
-      }
-
-      element.inert = state.inert;
-
-      if (state.inertAttribute === null) {
-        element.removeAttribute('inert');
-      } else {
-        element.setAttribute('inert', state.inertAttribute);
-      }
-
-      if (state.tabIndexAttribute === null) {
-        element.removeAttribute('tabindex');
-      } else {
-        element.setAttribute('tabindex', state.tabIndexAttribute);
-      }
-    });
-
-    elementStateRef.current.clear();
-  }, []);
-
-  const syncHiddenTree = useCallback(() => {
-    if (syncingRef.current) {
-      return;
-    }
-
-    const dialogElement = document.getElementById(dialogId);
-
-    if (!dialogElement) {
-      debugLog('sync skipped: dialog element not found');
-      return;
-    }
-
-    syncingRef.current = true;
-
-    try {
-      const overlayElement = dialogElement.previousElementSibling;
-      const keepVisible = new Set<Element>([dialogElement]);
-
-      if (overlayElement) {
-        keepVisible.add(overlayElement);
-      }
-
-      const managedElements = new Set<HTMLElement>();
-
-      const hiddenElements = Array.from(
-        document.querySelectorAll<HTMLElement>(
-          '[data-aria-hidden="true"], [aria-hidden="true"]',
-        ),
-      ).filter((element) => !keepVisible.has(element));
-
-      hiddenElements.forEach((element) => {
-        rememberElementState(element);
-        element.inert = true;
-        element.setAttribute('inert', '');
-        managedElements.add(element);
-      });
-
-      const hiddenFocusableElements = new Set<HTMLElement>();
-
-      hiddenElements.forEach((element) => {
-        if (element.matches(HIDDEN_FOCUSABLE_SELECTOR)) {
-          hiddenFocusableElements.add(element);
-        }
-
-        element
-          .querySelectorAll<HTMLElement>(HIDDEN_FOCUSABLE_SELECTOR)
-          .forEach((child) => hiddenFocusableElements.add(child));
-      });
-
-      Array.from(
-        document.querySelectorAll<HTMLElement>('[data-radix-focus-guard]'),
-      ).forEach((element) => hiddenFocusableElements.add(element));
-
-      hiddenFocusableElements.forEach((element) => {
-        rememberElementState(element);
-        if (element.getAttribute('tabindex') !== '-1') {
-          element.setAttribute('tabindex', '-1');
-        }
-        managedElements.add(element);
-      });
-
-      Array.from(elementStateRef.current.keys()).forEach((element) => {
-        if (!managedElements.has(element)) {
-          const state = elementStateRef.current.get(element);
-
-          if (!state) {
-            return;
-          }
-
-          if (state.ariaHidden === null) {
-            element.removeAttribute('aria-hidden');
-          } else {
-            element.setAttribute('aria-hidden', state.ariaHidden);
-          }
-
-          element.inert = state.inert;
-
-          if (state.inertAttribute === null) {
-            element.removeAttribute('inert');
-          } else {
-            element.setAttribute('inert', state.inertAttribute);
-          }
-
-          if (state.tabIndexAttribute === null) {
-            element.removeAttribute('tabindex');
-          } else {
-            element.setAttribute('tabindex', state.tabIndexAttribute);
-          }
-
-          elementStateRef.current.delete(element);
-        }
-      });
-
-      debugLog('sync complete', {
-        hiddenElements: hiddenElements.length,
-        hiddenFocusableElements: hiddenFocusableElements.size,
-        managedElements: managedElements.size,
-      });
-    } finally {
-      syncingRef.current = false;
-    }
-  }, [debugLog, dialogId, rememberElementState]);
-
-  useEffect(() => {
-    debugLog('open state changed', { open });
-
-    if (!open) {
-      restoreManagedElements();
-      return;
-    }
-
-    const frameId = window.requestAnimationFrame(() => {
-      syncHiddenTree();
-    });
-
-    const observer = new MutationObserver(() => {
-      debugLog('mutation observed');
-      syncHiddenTree();
-    });
-
-    observer.observe(document.body, {
-      subtree: true,
-      childList: true,
-      attributes: true,
-      attributeFilter: ['aria-hidden', 'data-aria-hidden'],
-    });
-
-    return () => {
-      observer.disconnect();
-      window.cancelAnimationFrame(frameId);
-      restoreManagedElements();
-    };
-  }, [debugLog, open, restoreManagedElements, syncHiddenTree]);
 
   return (
     <>

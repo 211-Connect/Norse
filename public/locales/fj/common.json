@@ -141,6 +141,7 @@
       "phone_number_label": "Naba ni talevoni"
     },
     "prompt_auth": "Kerekere mo curu mai mo vakayagataka na iwalewale oqo.",
+    "prompt_auth_description": "Kerekere mo curu mai mo vakayagataka na iwalewale oqo.",
     "manage_favorites": {
       "title": "Vakatulewataka na veika taleitaki"
     }

@@ -141,6 +141,7 @@
       "phone_number_label": "Número de telefone"
     },
     "prompt_auth": "Faça login para usar este recurso.",
+    "prompt_auth_description": "Faça login para usar este recurso.",
     "manage_favorites": {
       "title": "Gerenciar favoritos"
     }

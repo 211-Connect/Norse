@@ -141,6 +141,7 @@
       "phone_number_label": "电话号码"
     },
     "prompt_auth": "请登录才能使用此功能。",
+    "prompt_auth_description": "请登录才能使用此功能。",
     "manage_favorites": {
       "title": "管理收藏夹"
     }

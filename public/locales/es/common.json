@@ -141,6 +141,7 @@
       "sms_send_failed_body": "No se pudo enviar el mensaje."
     },
     "prompt_auth": "Inicie sesión para utilizar esta función.",
+    "prompt_auth_description": "Inicie sesión para utilizar esta función.",
     "manage_favorites": {
       "title": "Gestionar favoritos"
     }

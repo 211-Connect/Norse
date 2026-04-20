@@ -141,6 +141,7 @@
       "phone_number_label": "Tus xov tooj"
     },
     "prompt_auth": "Thov nkag mus rau hauv koj tus account kom siv tau qhov feature no.",
+    "prompt_auth_description": "Thov nkag mus rau hauv koj tus account kom siv tau qhov feature no.",
     "manage_favorites": {
       "title": "Tswj cov nyiam"
     }

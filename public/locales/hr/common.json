@@ -141,6 +141,7 @@
       "phone_number_label": "Broj telefona"
     },
     "prompt_auth": "Molimo prijavite se kako biste koristili ovu značajku.",
+    "prompt_auth_description": "Molimo prijavite se kako biste koristili ovu značajku.",
     "manage_favorites": {
       "title": "Upravljanje favoritima"
     }

@@ -3,7 +3,6 @@
 import {
   useCallback,
   useEffect,
-  useLayoutEffect,
   useRef,
   useState,
   useTransition,
@@ -31,6 +30,7 @@ import {
   USER_PREF_DISTANCE,
 } from '../../lib/constants';
 import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
+import { useBodySiblingsSync } from '../../hooks/use-dialog-aria-sync';
 import { createUrlParamsForSearch } from '../../utils/createUrlParamsForSearch';
 import { useAtomValue } from 'jotai';
 import { searchDistanceAtom } from '../../store/search';
@@ -63,13 +63,8 @@ export function SearchDialog({
   );
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const distance = useAtomValue(searchDistanceAtom);
-  const hiddenSiblingsRef = useRef<
-    Array<{
-      element: HTMLElement;
-      ariaHidden: string | null;
-      inert: boolean;
-    }>
-  >([]);
+
+  useBodySiblingsSync(dialogRef, open);
 
   const { search, setSearch } = useMainSearchLayoutContext();
 
@@ -193,51 +188,6 @@ export function SearchDialog({
     }
   }, [focusByDefault, open]);
 
-  useLayoutEffect(() => {
-    const dialogElement = dialogRef.current;
-
-    if (!open || !dialogElement) {
-      hiddenSiblingsRef.current.forEach(({ element, ariaHidden, inert }) => {
-        if (ariaHidden === null) {
-          element.removeAttribute('aria-hidden');
-        } else {
-          element.setAttribute('aria-hidden', ariaHidden);
-        }
-
-        element.inert = inert;
-      });
-      hiddenSiblingsRef.current = [];
-      return;
-    }
-
-    const siblingsToHide = Array.from(document.body.children).filter(
-      (element): element is HTMLElement => element !== dialogElement,
-    );
-
-    hiddenSiblingsRef.current = siblingsToHide.map((element) => ({
-      element,
-      ariaHidden: element.getAttribute('aria-hidden'),
-      inert: element.inert,
-    }));
-
-    siblingsToHide.forEach((element) => {
-      element.setAttribute('aria-hidden', 'true');
-      element.inert = true;
-    });
-
-    return () => {
-      hiddenSiblingsRef.current.forEach(({ element, ariaHidden, inert }) => {
-        if (ariaHidden === null) {
-          element.removeAttribute('aria-hidden');
-        } else {
-          element.setAttribute('aria-hidden', ariaHidden);
-        }
-
-        element.inert = inert;
-      });
-      hiddenSiblingsRef.current = [];
-    };
-  }, [open]);
 
   const closeDialog = useCallback(() => {
     setOpen?.(false);
@@ -304,16 +254,6 @@ export function SearchDialog({
     setMounted(true);
 
     return () => {
-      hiddenSiblingsRef.current.forEach(({ element, ariaHidden, inert }) => {
-        if (ariaHidden === null) {
-          element.removeAttribute('aria-hidden');
-        } else {
-          element.setAttribute('aria-hidden', ariaHidden);
-        }
-
-        element.inert = inert;
-      });
-      hiddenSiblingsRef.current = [];
       document.body.style.top = '';
       document.body.style.width = '';
       document.body.style.position = '';

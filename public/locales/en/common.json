@@ -144,7 +144,8 @@
       "sms_send_failed_body": "Your message failed to send.",
       "sms_unavailable": "SMS sharing is not available"
     },
-    "prompt_auth": "Please login to use this feature."
+    "prompt_auth": "Sign in required",
+    "prompt_auth_description": "Please sign in to access this feature."
   },
   "update_location": {
     "prompt_start_location": "What's your starting location?"

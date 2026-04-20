@@ -141,6 +141,7 @@
       "phone_number_label": "電話號碼"
     },
     "prompt_auth": "請登入以使用此功能。",
+    "prompt_auth_description": "請登入以使用此功能。",
     "manage_favorites": {
       "title": "管理最愛"
     }

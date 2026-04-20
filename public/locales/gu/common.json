@@ -141,6 +141,7 @@
       "phone_number_label": "ફોન નંબર"
     },
     "prompt_auth": "આ સુવિધાનો ઉપયોગ કરવા માટે કૃપા કરીને લોગિન કરો.",
+    "prompt_auth_description": "આ સુવિધાનો ઉપયોગ કરવા માટે કૃપા કરીને લોગિન કરો.",
     "manage_favorites": {
       "title": "મનપસંદ મેનેજ કરો"
     }

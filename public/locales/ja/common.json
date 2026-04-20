@@ -141,6 +141,7 @@
       "phone_number_label": "電話番号"
     },
     "prompt_auth": "この機能をご利用いただくには、ログインしてください。",
+    "prompt_auth_description": "この機能をご利用いただくには、ログインしてください。",
     "manage_favorites": {
       "title": "お気に入りを管理する"
     }

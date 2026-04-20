@@ -141,6 +141,7 @@
       "phone_number_label": "Numer telefonu"
     },
     "prompt_auth": "Zaloguj się, aby skorzystać z tej funkcji.",
+    "prompt_auth_description": "Zaloguj się, aby skorzystać z tej funkcji.",
     "manage_favorites": {
       "title": "Zarządzaj ulubionymi"
     }

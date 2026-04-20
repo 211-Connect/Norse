@@ -141,6 +141,7 @@
       "phone_number_label": "Telefonnummer"
     },
     "prompt_auth": "Bitte melden Sie sich an, um diese Funktion zu nutzen.",
+    "prompt_auth_description": "Bitte melden Sie sich an, um diese Funktion zu nutzen.",
     "manage_favorites": {
       "title": "Favoriten verwalten"
     }

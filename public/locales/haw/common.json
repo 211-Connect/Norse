@@ -141,6 +141,7 @@
       "phone_number_label": "Helu kelepona"
     },
     "prompt_auth": "E ʻoluʻolu e komo e hoʻohana i kēia hiʻona.",
+    "prompt_auth_description": "E ʻoluʻolu e komo e hoʻohana i kēia hiʻona.",
     "manage_favorites": {
       "title": "E hoʻokele i nā mea punahele"
     }

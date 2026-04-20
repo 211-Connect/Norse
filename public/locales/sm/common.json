@@ -141,6 +141,7 @@
       "phone_number_label": "Numera telefoni"
     },
     "prompt_auth": "Fa'amolemole ulufale e fa'aoga lenei vaega.",
+    "prompt_auth_description": "Fa'amolemole ulufale e fa'aoga lenei vaega.",
     "manage_favorites": {
       "title": "Pulea mea e fiafia i ai"
     }

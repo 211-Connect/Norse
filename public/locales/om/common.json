@@ -141,6 +141,7 @@
       "phone_number_label": "Lakkoofsa bilbilaa"
     },
     "prompt_auth": "Maaloo amala kana fayyadamuuf seena.",
+    "prompt_auth_description": "Maaloo amala kana fayyadamuuf seena.",
     "manage_favorites": {
       "title": "Favorites bulchuu"
     }

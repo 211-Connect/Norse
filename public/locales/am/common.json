@@ -141,6 +141,7 @@
       "phone_number_label": "የስልክ ቁጥር"
     },
     "prompt_auth": "ይህን መተግበሪያ ለመጠቀም እባክዎ መግቢያ.",
+    "prompt_auth_description": "ይህን መተግበሪያ ለመጠቀም እባክዎ መግቢያ.",
     "manage_favorites": {
       "title": "ተወዳጆችን ያቀናብሩ"
     }

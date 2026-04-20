@@ -141,6 +141,7 @@
       "phone_number_label": "Số điện thoại"
     },
     "prompt_auth": "Vui lòng đăng nhập để sử dụng tính năng này.",
+    "prompt_auth_description": "Vui lòng đăng nhập để sử dụng tính năng này.",
     "manage_favorites": {
       "title": "Quản lý mục yêu thích"
     }
