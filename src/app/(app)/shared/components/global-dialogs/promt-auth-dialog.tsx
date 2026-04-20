@@ -2,7 +2,7 @@
 
 import { useAtomValue, useSetAtom } from 'jotai';
 import { signIn } from 'next-auth/react';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { dialogsAtom, promptAuthAtom } from '@/app/(app)/shared/store/dialogs';
 
@@ -24,16 +24,14 @@ export function PromptAuthDialog() {
   const state = useAtomValue(promptAuthAtom);
   const { t } = useTranslation('common');
 
-  // Capture the trigger element in a ref when the dialog opens so it survives
-  // the synchronous state reset that happens when handleOpenChange(false) is
-  // called. Without this, restoreFocusElement would already be null by the
-  // time Radix fires onCloseAutoFocus.
+  // Updating a ref during render is safe — refs don't trigger re-renders.
+  // Capture the trigger element only while the dialog is open so the ref
+  // survives the synchronous state reset that clears returnFocusTo when
+  // handleOpenChange(false) fires before Radix runs onCloseAutoFocus.
   const focusRestoreRef = useRef<HTMLElement | null>(null);
-  useEffect(() => {
-    if (state.open) {
-      focusRestoreRef.current = state.returnFocusTo;
-    }
-  }, [state.open, state.returnFocusTo]);
+  if (state.open) {
+    focusRestoreRef.current = state.returnFocusTo;
+  }
 
   const handleOpenChange = (value: boolean) => {
     setState((prev) => ({
