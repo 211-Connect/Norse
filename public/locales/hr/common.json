@@ -143,7 +143,8 @@
     "prompt_auth": "Molimo prijavite se kako biste koristili ovu značajku.",
     "prompt_auth_description": "Molimo prijavite se kako biste koristili ovu značajku.",
     "manage_favorites": {
-      "title": "Upravljanje favoritima"
+      "title": "Upravljanje favoritima",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {

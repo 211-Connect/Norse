@@ -143,7 +143,8 @@
     "prompt_auth": "Kerekere mo curu mai mo vakayagataka na iwalewale oqo.",
     "prompt_auth_description": "Kerekere mo curu mai mo vakayagataka na iwalewale oqo.",
     "manage_favorites": {
-      "title": "Vakatulewataka na veika taleitaki"
+      "title": "Vakatulewataka na veika taleitaki",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {

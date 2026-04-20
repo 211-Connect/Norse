@@ -143,7 +143,8 @@
     "prompt_auth": "E ʻoluʻolu e komo e hoʻohana i kēia hiʻona.",
     "prompt_auth_description": "E ʻoluʻolu e komo e hoʻohana i kēia hiʻona.",
     "manage_favorites": {
-      "title": "E hoʻokele i nā mea punahele"
+      "title": "E hoʻokele i nā mea punahele",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {

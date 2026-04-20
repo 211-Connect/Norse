@@ -143,7 +143,8 @@
     "prompt_auth": "Faça login para usar este recurso.",
     "prompt_auth_description": "Faça login para usar este recurso.",
     "manage_favorites": {
-      "title": "Gerenciar favoritos"
+      "title": "Gerenciar favoritos",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {

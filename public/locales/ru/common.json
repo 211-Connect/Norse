@@ -143,7 +143,8 @@
     "prompt_auth": "Пожалуйста, войдите в систему, чтобы воспользоваться этой функцией.",
     "prompt_auth_description": "Пожалуйста, войдите в систему, чтобы воспользоваться этой функцией.",
     "manage_favorites": {
-      "title": "Управление избранным"
+      "title": "Управление избранным",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {

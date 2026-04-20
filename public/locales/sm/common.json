@@ -143,7 +143,8 @@
     "prompt_auth": "Fa'amolemole ulufale e fa'aoga lenei vaega.",
     "prompt_auth_description": "Fa'amolemole ulufale e fa'aoga lenei vaega.",
     "manage_favorites": {
-      "title": "Pulea mea e fiafia i ai"
+      "title": "Pulea mea e fiafia i ai",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {

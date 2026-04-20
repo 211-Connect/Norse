@@ -143,7 +143,8 @@
     "prompt_auth": "ଏହି ବୈଶିଷ୍ଟ୍ୟ ବ୍ୟବହାର କରିବାକୁ ଦୟାକରି ଲଗଇନ୍ କରନ୍ତୁ।",
     "prompt_auth_description": "ଏହି ବୈଶିଷ୍ଟ୍ୟ ବ୍ୟବହାର କରିବାକୁ ଦୟାକରି ଲଗଇନ୍ କରନ୍ତୁ।",
     "manage_favorites": {
-      "title": "ପସନ୍ଦଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ"
+      "title": "ପସନ୍ଦଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {

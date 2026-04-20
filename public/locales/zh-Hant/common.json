@@ -143,7 +143,8 @@
     "prompt_auth": "請登入後使用此功能。",
     "prompt_auth_description": "請登入後使用此功能。",
     "manage_favorites": {
-      "title": "管理收藏夾"
+      "title": "管理收藏夾",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {

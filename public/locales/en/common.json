@@ -98,7 +98,8 @@
       "create_new_list": "Create a new one?"
     },
     "manage_favorites": {
-      "title": "Manage favorites"
+      "title": "Manage favorites",
+      "description": "Add this resource to or remove it from your lists."
     },
     "remove_from_list": {
       "are_you_sure": "Are you sure you want to remove this favorite from your list?"

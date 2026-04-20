@@ -143,7 +143,8 @@
     "prompt_auth": "ይህን መተግበሪያ ለመጠቀም እባክዎ መግቢያ.",
     "prompt_auth_description": "ይህን መተግበሪያ ለመጠቀም እባክዎ መግቢያ.",
     "manage_favorites": {
-      "title": "ተወዳጆችን ያቀናብሩ"
+      "title": "ተወዳጆችን ያቀናብሩ",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {

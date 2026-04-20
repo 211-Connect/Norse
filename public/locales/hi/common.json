@@ -143,7 +143,8 @@
     "prompt_auth": "इस विशेष सुविधा का प्रयोग करने के लिए लॉग इन करें।",
     "prompt_auth_description": "इस विशेष सुविधा का प्रयोग करने के लिए लॉग इन करें।",
     "manage_favorites": {
-      "title": "पसंदीदा प्रबंधित करें"
+      "title": "पसंदीदा प्रबंधित करें",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {

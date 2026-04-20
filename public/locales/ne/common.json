@@ -143,7 +143,8 @@
     "prompt_auth": "कृपया यो सुविधा प्रयोग गर्न लगइन गर्नुहोस् ।",
     "prompt_auth_description": "कृपया यो सुविधा प्रयोग गर्न लगइन गर्नुहोस् ।",
     "manage_favorites": {
-      "title": "मनपर्नेहरू व्यवस्थापन गर्नुहोस्"
+      "title": "मनपर्नेहरू व्यवस्थापन गर्नुहोस्",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {

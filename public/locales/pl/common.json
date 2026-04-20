@@ -143,7 +143,8 @@
     "prompt_auth": "Zaloguj się, aby skorzystać z tej funkcji.",
     "prompt_auth_description": "Zaloguj się, aby skorzystać z tej funkcji.",
     "manage_favorites": {
-      "title": "Zarządzaj ulubionymi"
+      "title": "Zarządzaj ulubionymi",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {

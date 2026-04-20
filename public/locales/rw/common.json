@@ -143,7 +143,8 @@
     "prompt_auth": "Injira kugira ngo ukoreshe iki gikorwa.",
     "prompt_auth_description": "Injira kugira ngo ukoreshe iki gikorwa.",
     "manage_favorites": {
-      "title": "Gucunga ibyo ukunda"
+      "title": "Gucunga ibyo ukunda",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {

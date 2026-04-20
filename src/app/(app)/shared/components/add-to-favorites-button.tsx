@@ -18,7 +18,13 @@ import Link from 'next/link';
 
 import { Button } from './ui/button';
 import { CustomPagination } from './custom-pagination';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from './ui/dialog';
 import { CreateFavoriteListDialog } from './create-favorite-list-dialog';
 import { FavoritesSearchBar } from './favorites-search-bar';
 import { Separator } from './ui/separator';
@@ -217,6 +223,9 @@ export function AddToFavoritesButton({
         >
           <DialogHeader>
             <DialogTitle>{t('modal.manage_favorites.title')}</DialogTitle>
+            <DialogDescription className="sr-only">
+              {t('modal.manage_favorites.description')}
+            </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-2 sm:flex-row">

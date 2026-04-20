@@ -143,7 +143,8 @@
     "prompt_auth": "Thov nkag mus rau hauv koj tus account kom siv tau qhov feature no.",
     "prompt_auth_description": "Thov nkag mus rau hauv koj tus account kom siv tau qhov feature no.",
     "manage_favorites": {
-      "title": "Tswj cov nyiam"
+      "title": "Tswj cov nyiam",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {

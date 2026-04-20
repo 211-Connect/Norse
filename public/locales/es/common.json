@@ -143,7 +143,8 @@
     "prompt_auth": "Inicie sesión para utilizar esta función.",
     "prompt_auth_description": "Inicie sesión para utilizar esta función.",
     "manage_favorites": {
-      "title": "Gestionar favoritos"
+      "title": "Gestionar favoritos",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {

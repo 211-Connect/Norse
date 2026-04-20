@@ -143,7 +143,8 @@
     "prompt_auth": "Bitte melden Sie sich an, um diese Funktion zu nutzen.",
     "prompt_auth_description": "Bitte melden Sie sich an, um diese Funktion zu nutzen.",
     "manage_favorites": {
-      "title": "Favoriten verwalten"
+      "title": "Favoriten verwalten",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {

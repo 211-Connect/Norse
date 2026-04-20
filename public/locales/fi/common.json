@@ -143,7 +143,8 @@
     "prompt_auth": "Kirjaudu sisään käyttääksesi tätä ominaisuutta.",
     "prompt_auth_description": "Kirjaudu sisään käyttääksesi tätä ominaisuutta.",
     "manage_favorites": {
-      "title": "Hallinnoi suosikkeja"
+      "title": "Hallinnoi suosikkeja",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {

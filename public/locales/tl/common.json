@@ -143,7 +143,8 @@
     "prompt_auth": "Mangyaring mag-login upang magamit ang tampok na ito.",
     "prompt_auth_description": "Mangyaring mag-login upang magamit ang tampok na ito.",
     "manage_favorites": {
-      "title": "Pamahalaan ang mga paborito"
+      "title": "Pamahalaan ang mga paborito",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
