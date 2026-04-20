@@ -53,12 +53,12 @@ test.describe('Search accessibility preservation', () => {
   test('dialog triggers stay semantic and avoid nested interactive controls', async ({
     page,
   }) => {
-    const { trigger } = await openDialogFromSearchTrigger(page);
-    await expect(trigger).toHaveJSProperty('tagName', 'BUTTON');
-
     const addMyLocationButton = await getAddMyLocationButton(page);
     await expect(addMyLocationButton).toHaveJSProperty('tagName', 'BUTTON');
     await expect(addMyLocationButton.locator('input')).toHaveCount(0);
+
+    const { trigger } = await openDialogFromSearchTrigger(page);
+    await expect(trigger).toHaveJSProperty('tagName', 'BUTTON');
   });
 
   test('search trigger opens a labelled dialog and Escape restores focus', async ({
@@ -81,6 +81,49 @@ test.describe('Search accessibility preservation', () => {
 
     await expect(dialog).toHaveAttribute('aria-hidden', 'true');
     await expect(trigger).toBeFocused();
+  });
+
+  test('background content is hidden from assistive tech while the dialog is open', async ({
+    page,
+  }) => {
+    const { dialog } = await openDialogFromSearchTrigger(page);
+
+    await expect
+      .poll(async () => {
+        return page.locator('#main-content').evaluate((element) => {
+          return (
+            element.closest('[aria-hidden="true"]') instanceof HTMLElement
+          );
+        });
+      })
+      .toBe(true);
+    await expect
+      .poll(async () => {
+        return page.locator('#main-content').evaluate((element) => {
+          return element.closest('[inert]') instanceof HTMLElement;
+        });
+      })
+      .toBe(true);
+    await expect(dialog).not.toHaveAttribute('aria-hidden', 'true');
+
+    await page.keyboard.press('Escape');
+
+    await expect
+      .poll(async () => {
+        return page.locator('#main-content').evaluate((element) => {
+          return (
+            element.closest('[aria-hidden="true"]') instanceof HTMLElement
+          );
+        });
+      })
+      .toBe(false);
+    await expect
+      .poll(async () => {
+        return page.locator('#main-content').evaluate((element) => {
+          return element.closest('[inert]') instanceof HTMLElement;
+        });
+      })
+      .toBe(false);
   });
 
   test('Add my location opens the dialog with focus on the location input', async ({

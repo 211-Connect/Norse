@@ -1,6 +1,13 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  useTransition,
+} from 'react';
 import { createPortal } from 'react-dom';
 import { ChevronLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -56,6 +63,13 @@ export function SearchDialog({
   );
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const distance = useAtomValue(searchDistanceAtom);
+  const hiddenSiblingsRef = useRef<
+    Array<{
+      element: HTMLElement;
+      ariaHidden: string | null;
+      inert: boolean;
+    }>
+  >([]);
 
   const { search, setSearch } = useMainSearchLayoutContext();
 
@@ -179,6 +193,52 @@ export function SearchDialog({
     }
   }, [focusByDefault, open]);
 
+  useLayoutEffect(() => {
+    const dialogElement = dialogRef.current;
+
+    if (!open || !dialogElement) {
+      hiddenSiblingsRef.current.forEach(({ element, ariaHidden, inert }) => {
+        if (ariaHidden === null) {
+          element.removeAttribute('aria-hidden');
+        } else {
+          element.setAttribute('aria-hidden', ariaHidden);
+        }
+
+        element.inert = inert;
+      });
+      hiddenSiblingsRef.current = [];
+      return;
+    }
+
+    const siblingsToHide = Array.from(document.body.children).filter(
+      (element): element is HTMLElement => element !== dialogElement,
+    );
+
+    hiddenSiblingsRef.current = siblingsToHide.map((element) => ({
+      element,
+      ariaHidden: element.getAttribute('aria-hidden'),
+      inert: element.inert,
+    }));
+
+    siblingsToHide.forEach((element) => {
+      element.setAttribute('aria-hidden', 'true');
+      element.inert = true;
+    });
+
+    return () => {
+      hiddenSiblingsRef.current.forEach(({ element, ariaHidden, inert }) => {
+        if (ariaHidden === null) {
+          element.removeAttribute('aria-hidden');
+        } else {
+          element.setAttribute('aria-hidden', ariaHidden);
+        }
+
+        element.inert = inert;
+      });
+      hiddenSiblingsRef.current = [];
+    };
+  }, [open]);
+
   const closeDialog = useCallback(() => {
     setOpen?.(false);
 
@@ -244,6 +304,16 @@ export function SearchDialog({
     setMounted(true);
 
     return () => {
+      hiddenSiblingsRef.current.forEach(({ element, ariaHidden, inert }) => {
+        if (ariaHidden === null) {
+          element.removeAttribute('aria-hidden');
+        } else {
+          element.setAttribute('aria-hidden', ariaHidden);
+        }
+
+        element.inert = inert;
+      });
+      hiddenSiblingsRef.current = [];
       document.body.style.top = '';
       document.body.style.width = '';
       document.body.style.position = '';
