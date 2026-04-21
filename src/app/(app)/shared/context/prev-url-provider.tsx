@@ -11,7 +11,7 @@ import { useClientSearchParams } from '../hooks/use-client-search-params';
 // Track current and previous url
 export const PrevUrlProvider = ({ children }: PropsWithChildren) => {
   const [prevUrl, setPrevUrl] = useState<string>();
-  const currentUrl = useRef<string>();
+  const currentUrl = useRef<string | null>(null);
   const pathname = usePathname();
   const { stringifiedSearchParams } = useClientSearchParams();
 

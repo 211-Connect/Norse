@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
 export function useOnPointerDownOutside(
-  ref: React.RefObject<HTMLElement>,
+  ref: React.RefObject<HTMLElement | null>,
   handler: (event: PointerEvent) => void,
 ) {
   useEffect(() => {
