@@ -114,7 +114,7 @@ export function Header() {
   const favoritesButtonLabel = useMemo(() => {
     const customLabel = appConfig.header.favoritesButtonLabel?.trim();
 
-    return customLabel || t('header.favorites');
+    return customLabel || t('header.my_stuff');
   }, [appConfig.header.favoritesButtonLabel, t]);
 
   const sitemap = useMemo(
