@@ -1,22 +1,11 @@
 'use client';
 
-import {
-  createContext,
-  Dispatch,
-  PropsWithChildren,
-  SetStateAction,
-  useContext,
-  useMemo,
-  useState,
-} from 'react';
+import { createContext, PropsWithChildren, useContext } from 'react';
 import { useSearchResources } from '../../../hooks/use-search-resources';
 
 export interface MainSearchLayoutContextValue extends ReturnType<
   typeof useSearchResources
-> {
-  shouldSearch: boolean;
-  setShouldSearch: Dispatch<SetStateAction<boolean>>;
-}
+> {}
 
 export const MainSearchLayoutContext =
   createContext<MainSearchLayoutContextValue | null>(null);
@@ -24,18 +13,7 @@ export const MainSearchLayoutContext =
 export function MainSearchLayoutContextProvider({
   children,
 }: PropsWithChildren<{}>) {
-  const [shouldSearch, setShouldSearch] = useState(false);
-
-  const searchResources = useSearchResources();
-
-  const value = useMemo(
-    () => ({
-      ...searchResources,
-      shouldSearch,
-      setShouldSearch,
-    }),
-    [searchResources, shouldSearch, setShouldSearch],
-  );
+  const value = useSearchResources();
 
   return (
     <MainSearchLayoutContext.Provider value={value}>

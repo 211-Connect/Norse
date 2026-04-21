@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { useAtomValue } from 'jotai';
 import { SearchIcon } from 'lucide-react';
 
-import { prevSearchTermAtom, searchTermAtom } from '../../store/search';
-import { Autocomplete } from '../ui/autocomplete';
+import { searchTermAtom } from '../../store/search';
+import { Autocomplete, AutocompleteOption } from '../ui/autocomplete';
 import { useFlag } from '../../hooks/use-flag';
 import { useAppConfig } from '../../hooks/use-app-config';
 import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
@@ -24,58 +24,53 @@ export function SearchBar({
 }: SearchBarProps) {
   const appConfig = useAppConfig();
   const { t } = useTranslation('common');
-  const prevSearchTerm = useAtomValue(prevSearchTermAtom);
   const searchTerm = useAtomValue(searchTermAtom);
   const showTaxonomyBadge = useFlag('showSuggestionListTaxonomyBadge');
+  const suggestions = appConfig.suggestions;
+  const topics = appConfig.topics;
 
-  const {
-    reducedTopics,
-    findCode,
-    setSearch,
-    suggestions,
-    displayTaxonomies: taxonomiesDisplay,
-    shouldSearch,
-    setShouldSearch,
-  } = useMainSearchLayoutContext();
+  const { setSearch, displayTaxonomies: taxonomiesDisplay } =
+    useMainSearchLayoutContext();
 
-  // Remap and filter data as needed for the search box
-  const options = useMemo(() => {
-    const suggestionList = suggestions
+  const options = useMemo((): AutocompleteOption[] => {
+    const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+    if (!normalizedSearchTerm) return [];
+
+    const suggestionList: AutocompleteOption[] = suggestions
       .map((option) => ({
         Icon: SearchIcon,
         value: option.value,
+        query: option.taxonomies,
         group: t('search.suggestions'),
         queryType: 'taxonomy',
       }))
       .filter((option) =>
-        shouldSearch
-          ? option?.value?.toLowerCase()?.includes(searchTerm?.toLowerCase())
-          : option?.value
-              ?.toLowerCase()
-              ?.includes(prevSearchTerm?.toLowerCase()),
+        option?.value?.toLowerCase()?.includes(normalizedSearchTerm),
       );
 
-    const topicList = reducedTopics
-      .map((option) => ({
-        Icon: SearchIcon,
-        group: t('search.categories'),
+    const topicList: AutocompleteOption[] = topics.list.flatMap((option) =>
+      option.subtopics
+        .filter((subtopic) =>
+          subtopic.name.toLowerCase().includes(normalizedSearchTerm),
+        )
+        .map((subtopic) => ({
+          Icon: SearchIcon,
+          group: t('search.categories'),
+          value: subtopic.name,
+          query: subtopic.query || subtopic.name,
+          queryType: subtopic.queryType || 'text',
+        })),
+    );
+
+    const taxonomyList: AutocompleteOption[] = taxonomiesDisplay.map(
+      (option) => ({
+        group: t('search.taxonomies'),
         value: option.name,
-        queryType: option.queryType,
-      }))
-      .filter((option) =>
-        shouldSearch
-          ? option?.value?.toLowerCase()?.includes(searchTerm?.toLowerCase())
-          : option?.value
-              ?.toLowerCase()
-              ?.includes(prevSearchTerm?.toLowerCase()),
-      );
-
-    const taxonomyList = taxonomiesDisplay.map((option) => ({
-      group: t('search.taxonomies'),
-      value: option.name,
-      label: showTaxonomyBadge ? option.code : undefined,
-      queryType: 'taxonomy',
-    }));
+        query: option.code,
+        badge: showTaxonomyBadge ? option.code : undefined,
+        queryType: 'taxonomy',
+      }),
+    );
 
     const atLeastTwo =
       [suggestionList, topicList, taxonomyList].filter((a) => a.length)
@@ -88,52 +83,40 @@ export function SearchBar({
     ];
   }, [
     suggestions,
-    reducedTopics,
+    topics,
     taxonomiesDisplay,
     t,
-    shouldSearch,
     searchTerm,
-    prevSearchTerm,
     showTaxonomyBadge,
   ]);
 
   const setSearchTerm = useCallback(
-    (value: string, option?: { queryType?: string }) => {
-      const query = findCode(value);
+    (value: string, option?: AutocompleteOption) => {
+      const query = option?.query ?? value;
       const queryType = option?.queryType ?? 'text';
-
-      setShouldSearch(false);
 
       setSearch((prev) => ({
         ...prev,
-        query: query ?? '',
+        query,
         queryType,
         searchTerm: value,
         queryLabel: value,
       }));
     },
-    [findCode, setSearch, setShouldSearch],
+    [setSearch],
   );
 
   const handleInputChange = useCallback(
     (value: string) => {
-      // If the value hasn't actually changed from the label, preserve existing query state
-      if (value === searchTerm && searchTerm.length > 0) {
-        setSearch((prev) => ({
-          ...prev,
-          searchTerm: value,
-        }));
-        setShouldSearch(true);
-        return;
-      }
-
-      setShouldSearch(true);
       setSearch((prev) => ({
         ...prev,
-        prevSearchTerm: value,
+        query: value,
+        queryType: 'text',
+        searchTerm: value,
+        queryLabel: value,
       }));
     },
-    [searchTerm, setShouldSearch, setSearch],
+    [setSearch],
   );
 
   return (
