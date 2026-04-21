@@ -16,6 +16,7 @@ export const AUTO_TRANSLATED_STRING_PATHS = [
   'search.texts.title',
   'search.texts.queryInputPlaceholder',
   'search.texts.locationInputPlaceholder',
+  'search.texts.viewDetailsText',
   'search.texts.noResultsFallbackText',
 ];
 

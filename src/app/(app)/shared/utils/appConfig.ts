@@ -449,6 +449,11 @@ async function getAppConfigBase(
         queryInputPlaceholder:
           resourceDirectory.search.texts?.queryInputPlaceholder ?? undefined,
         title: resourceDirectory.search.texts?.title ?? undefined,
+        useTextLinkForViewDetails:
+          resourceDirectory.search.texts?.useTextLinkForViewDetails ??
+          undefined,
+        viewDetailsText:
+          resourceDirectory.search.texts?.viewDetailsText ?? undefined,
       },
       cardLayout:
         resourceDirectory.search.cardLayout &&

@@ -29,6 +29,7 @@ const SEARCH_TEXT_FIELDS = [
   'title',
   'queryInputPlaceholder',
   'locationInputPlaceholder',
+  'viewDetailsText',
   'noResultsFallbackText',
 ] as const;
 

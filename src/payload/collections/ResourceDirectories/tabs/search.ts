@@ -75,6 +75,28 @@ export const search: Tab = {
               },
             },
             {
+              name: 'viewDetailsText',
+              type: 'text',
+              localized: true,
+              access: {
+                create: superAdminOrSupportOrTenantAccess,
+                update: superAdminOrSupportOrTenantAccess,
+              },
+            },
+            {
+              name: 'useTextLinkForViewDetails',
+              type: 'checkbox',
+              defaultValue: false,
+              admin: {
+                description:
+                  'Display the View Details action as an underlined text link instead of the default button-style action.',
+              },
+              access: {
+                create: superAdminOrSupportOrTenantAccess,
+                update: superAdminOrSupportOrTenantAccess,
+              },
+            },
+            {
               name: 'noResultsFallbackText',
               type: 'textarea',
               localized: true,

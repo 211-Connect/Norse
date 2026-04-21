@@ -105,6 +105,8 @@ export type AppConfig = {
       title?: string;
       queryInputPlaceholder?: string;
       locationInputPlaceholder?: string;
+      viewDetailsText?: string;
+      useTextLinkForViewDetails?: boolean;
       noResultsFallbackText?: string;
     };
     cardLayout?: NonNullable<ResourceDirectory['search']['cardLayout']>;
