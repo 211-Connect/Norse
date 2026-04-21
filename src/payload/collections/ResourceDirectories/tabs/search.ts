@@ -40,76 +40,54 @@ export const search: Tab = {
       name: 'texts',
       fields: [
         {
-          type: 'row',
+          type: 'group',
+          label: 'Home and Search Bar',
+          admin: {
+            description:
+              'Customize the main search heading and the placeholder text shown on the home page and within the primary search inputs.',
+          },
           fields: [
             {
-              name: 'title',
-              type: 'text',
-              localized: true,
-              access: {
-                create: superAdminOrSupportOrTenantAccess,
-                update: superAdminOrSupportOrTenantAccess,
-              },
+              type: 'row',
+              fields: [
+                {
+                  name: 'title',
+                  type: 'text',
+                  localized: true,
+                  access: {
+                    create: superAdminOrSupportOrTenantAccess,
+                    update: superAdminOrSupportOrTenantAccess,
+                  },
+                },
+                {
+                  name: 'queryInputPlaceholder',
+                  type: 'text',
+                  localized: true,
+                  access: {
+                    create: superAdminOrSupportOrTenantAccess,
+                    update: superAdminOrSupportOrTenantAccess,
+                  },
+                },
+              ],
             },
             {
-              name: 'queryInputPlaceholder',
-              type: 'text',
-              localized: true,
-              access: {
-                create: superAdminOrSupportOrTenantAccess,
-                update: superAdminOrSupportOrTenantAccess,
-              },
-            },
-          ],
-        },
-        {
-          type: 'row',
-          fields: [
-            {
-              name: 'locationInputPlaceholder',
-              type: 'text',
-              localized: true,
-              access: {
-                create: superAdminOrSupportOrTenantAccess,
-                update: superAdminOrSupportOrTenantAccess,
-              },
-            },
-            {
-              name: 'viewDetailsText',
-              type: 'text',
-              localized: true,
-              access: {
-                create: superAdminOrSupportOrTenantAccess,
-                update: superAdminOrSupportOrTenantAccess,
-              },
-            },
-            {
-              name: 'useTextLinkForViewDetails',
-              type: 'checkbox',
-              defaultValue: false,
-              admin: {
-                description:
-                  'Display the View Details action as an underlined text link instead of the default button-style action.',
-              },
-              access: {
-                create: superAdminOrSupportOrTenantAccess,
-                update: superAdminOrSupportOrTenantAccess,
-              },
-            },
-            {
-              name: 'noResultsFallbackText',
-              type: 'textarea',
-              localized: true,
-              access: {
-                create: superAdminOrSupportOrTenantAccess,
-                update: superAdminOrSupportOrTenantAccess,
-              },
+              type: 'row',
+              fields: [
+                {
+                  name: 'locationInputPlaceholder',
+                  type: 'text',
+                  localized: true,
+                  access: {
+                    create: superAdminOrSupportOrTenantAccess,
+                    update: superAdminOrSupportOrTenantAccess,
+                  },
+                },
+              ],
             },
           ],
         },
         {
           type: 'group',
-          name: 'suggestionHeaders',
           label: 'Search Suggestions',
           admin: {
             description:
@@ -117,45 +95,107 @@ export const search: Tab = {
           },
           fields: [
             {
+              type: 'group',
+              name: 'suggestionHeaders',
+              fields: [
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'suggestions',
+                      label: 'Suggestions Heading',
+                      type: 'text',
+                      localized: true,
+                      admin: {
+                        description:
+                          'Shown above free-text search suggestions in the autocomplete dropdown.',
+                      },
+                      access: {
+                        create: superAdminOrSupportOrTenantAccess,
+                        update: superAdminOrSupportOrTenantAccess,
+                      },
+                    },
+                    {
+                      name: 'categories',
+                      label: 'Categories Heading',
+                      type: 'text',
+                      localized: true,
+                      admin: {
+                        description:
+                          'Shown above topic/category matches in the autocomplete dropdown.',
+                      },
+                      access: {
+                        create: superAdminOrSupportOrTenantAccess,
+                        update: superAdminOrSupportOrTenantAccess,
+                      },
+                    },
+                  ],
+                },
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'taxonomies',
+                      label: 'Taxonomies Heading',
+                      type: 'text',
+                      localized: true,
+                      admin: {
+                        description:
+                          'Shown above taxonomy matches in the autocomplete dropdown. This can be renamed to terms like Services.',
+                      },
+                      access: {
+                        create: superAdminOrSupportOrTenantAccess,
+                        update: superAdminOrSupportOrTenantAccess,
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: 'group',
+          label: 'Search Results',
+          admin: {
+            description:
+              'Customize text shown after a search is run, including the call to action on result cards and the fallback message displayed when no results are found.',
+          },
+          fields: [
+            {
               type: 'row',
               fields: [
                 {
-                  name: 'suggestions',
-                  label: 'Suggestions Heading',
+                  name: 'viewDetailsText',
                   type: 'text',
                   localized: true,
-                  admin: {
-                    description:
-                      'Shown above free-text search suggestions in the autocomplete dropdown.',
-                  },
                   access: {
                     create: superAdminOrSupportOrTenantAccess,
                     update: superAdminOrSupportOrTenantAccess,
                   },
                 },
                 {
-                  name: 'categories',
-                  label: 'Categories Heading',
-                  type: 'text',
-                  localized: true,
+                  name: 'useTextLinkForViewDetails',
+                  type: 'checkbox',
+                  defaultValue: false,
                   admin: {
                     description:
-                      'Shown above topic/category matches in the autocomplete dropdown.',
+                      'Display the View Details action as an underlined text link instead of the default button-style action.',
                   },
                   access: {
                     create: superAdminOrSupportOrTenantAccess,
                     update: superAdminOrSupportOrTenantAccess,
                   },
                 },
+              ],
+            },
+            {
+              type: 'row',
+              fields: [
                 {
-                  name: 'taxonomies',
-                  label: 'Taxonomies Heading',
-                  type: 'text',
+                  name: 'noResultsFallbackText',
+                  type: 'textarea',
                   localized: true,
-                  admin: {
-                    description:
-                      'Shown above taxonomy matches in the autocomplete dropdown. This can be renamed to terms like Services.',
-                  },
                   access: {
                     create: superAdminOrSupportOrTenantAccess,
                     update: superAdminOrSupportOrTenantAccess,

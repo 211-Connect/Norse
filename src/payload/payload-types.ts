@@ -749,15 +749,6 @@ export interface ResourceDirectory {
       title?: string | null;
       queryInputPlaceholder?: string | null;
       locationInputPlaceholder?: string | null;
-      viewDetailsText?: string | null;
-      /**
-       * Display the View Details action as an underlined text link instead of the default button-style action.
-       */
-      useTextLinkForViewDetails?: boolean | null;
-      noResultsFallbackText?: string | null;
-      /**
-       * Customize the section titles shown inside the search autocomplete dropdown beneath the main search field. These labels appear above grouped suggestions such as Suggestions, Categories, and Taxonomies/Services.
-       */
       suggestionHeaders?: {
         /**
          * Shown above free-text search suggestions in the autocomplete dropdown.
@@ -772,6 +763,12 @@ export interface ResourceDirectory {
          */
         taxonomies?: string | null;
       };
+      viewDetailsText?: string | null;
+      /**
+       * Display the View Details action as an underlined text link instead of the default button-style action.
+       */
+      useTextLinkForViewDetails?: boolean | null;
+      noResultsFallbackText?: string | null;
     };
     searchSettings: {
       hybridSemanticSearchEnabled?: boolean | null;
@@ -1469,9 +1466,6 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
               title?: T;
               queryInputPlaceholder?: T;
               locationInputPlaceholder?: T;
-              viewDetailsText?: T;
-              useTextLinkForViewDetails?: T;
-              noResultsFallbackText?: T;
               suggestionHeaders?:
                 | T
                 | {
@@ -1479,6 +1473,9 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
                     categories?: T;
                     taxonomies?: T;
                   };
+              viewDetailsText?: T;
+              useTextLinkForViewDetails?: T;
+              noResultsFallbackText?: T;
             };
         searchSettings?:
           | T
