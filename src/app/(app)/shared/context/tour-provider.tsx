@@ -7,10 +7,12 @@ import {
   type ProviderProps,
 } from '@reactour/tour';
 import { useTranslation } from 'react-i18next';
+import { getScrollbarWidth } from '@/app/(app)/shared/lib/utils';
 
 const TOUR_DIALOG_ID = 'home-page-tour-dialog';
 const TOUR_TITLE_ID = 'home-page-tour-title';
 const TOUR_TRIGGER_SELECTOR = '[data-home-tour-trigger="true"]';
+const TOUR_CONTENT_SCROLLABLE_CLASS = 'home-tour-scrollable-content';
 
 const focusableSelector = [
   'button:not([disabled])',
@@ -22,6 +24,8 @@ const focusableSelector = [
 ].join(',');
 
 const DISABLED_TOUR_TABINDEX_ATTR = 'data-tour-original-tabindex';
+
+let lockedBodyScrollY = 0;
 
 function getTourPopover(): HTMLElement | null {
   return document.querySelector<HTMLElement>(
@@ -109,6 +113,49 @@ function getPaginationButtons(controlsDiv: HTMLElement): HTMLButtonElement[] {
   return Array.from(
     controlsDiv.querySelectorAll<HTMLButtonElement>(':scope > div > button'),
   );
+}
+
+function getContentContainer(
+  popover: HTMLElement,
+  controlsDiv: HTMLElement | null,
+): HTMLElement | null {
+  return Array.from(popover.children).find((child) => {
+    if (!(child instanceof HTMLElement)) return false;
+    if (child === controlsDiv) return false;
+    if (child.classList.contains('reactour__close-button')) return false;
+    if (child.tagName === 'SPAN') return false;
+    return true;
+  }) as HTMLElement | null;
+}
+
+function patchPopoverLayout(
+  popover: HTMLElement,
+  controlsDiv: HTMLElement | null,
+): void {
+  popover.style.display = 'flex';
+  popover.style.flexDirection = 'column';
+  popover.style.gap = '1rem';
+  popover.style.overflow = 'visible';
+  popover.style.padding = '1rem 1rem 1.25rem';
+  popover.style.boxSizing = 'border-box';
+
+  const contentContainer = getContentContainer(popover, controlsDiv);
+  if (contentContainer) {
+    contentContainer.classList.add(TOUR_CONTENT_SCROLLABLE_CLASS);
+    contentContainer.style.flex = '1 1 auto';
+    contentContainer.style.minHeight = '0';
+    contentContainer.style.overflowY = 'auto';
+    contentContainer.style.overscrollBehavior = 'contain';
+    contentContainer.style.paddingRight = '0.25rem';
+  }
+
+  if (controlsDiv) {
+    controlsDiv.style.flexShrink = '0';
+    controlsDiv.style.marginTop = '0';
+    controlsDiv.style.paddingTop = '0.75rem';
+    controlsDiv.style.borderTop = '1px solid rgba(15, 23, 42, 0.12)';
+    controlsDiv.style.background = 'inherit';
+  }
 }
 
 function patchDialogRole(popover: HTMLElement, tourLabel: string): void {
@@ -224,10 +271,41 @@ function patchTourPopover(
   patchCloseButton(popover);
 
   const controlsDiv = getControlsDiv(popover);
+  patchPopoverLayout(popover, controlsDiv);
+
   if (controlsDiv) {
     patchPaginationDots(controlsDiv, currentStep);
     patchNavButtons(controlsDiv, currentStep, stepCount);
   }
+}
+
+function lockBodyScroll(): void {
+  lockedBodyScrollY = window.scrollY;
+  const scrollbarWidth = getScrollbarWidth();
+
+  document.body.style.position = 'fixed';
+  document.body.style.top = `-${lockedBodyScrollY}px`;
+  document.body.style.width = '100%';
+  document.body.style.left = '0';
+  document.body.style.right = '0';
+
+  if (scrollbarWidth > 0) {
+    document.body.style.paddingRight = `${scrollbarWidth}px`;
+  }
+}
+
+function unlockBodyScroll(): void {
+  const parsedTop = Number.parseInt(document.body.style.top || '0', 10);
+  const scrollY = Number.isNaN(parsedTop) ? lockedBodyScrollY : -parsedTop;
+
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.width = '';
+  document.body.style.left = '';
+  document.body.style.right = '';
+  document.body.style.paddingRight = '';
+
+  window.scrollTo(0, scrollY);
 }
 
 function TourAccessibilityEnhancer() {
@@ -265,6 +343,7 @@ function TourAccessibilityEnhancer() {
     };
 
     safePatch();
+    const viewport = window.visualViewport;
 
     const popover = getTourPopover();
     const observer = new MutationObserver(safePatch);
@@ -343,6 +422,8 @@ function TourAccessibilityEnhancer() {
 
     document.addEventListener('keydown', handleKeyDown, true);
     document.addEventListener('focusin', handleFocusIn, true);
+    window.addEventListener('resize', safePatch);
+    viewport?.addEventListener('resize', safePatch);
     wasOpenRef.current = true;
 
     return () => {
@@ -350,6 +431,8 @@ function TourAccessibilityEnhancer() {
       window.cancelAnimationFrame(focusFrame);
       document.removeEventListener('keydown', handleKeyDown, true);
       document.removeEventListener('focusin', handleFocusIn, true);
+      window.removeEventListener('resize', safePatch);
+      viewport?.removeEventListener('resize', safePatch);
       restoreBackgroundFocus();
     };
   }, [currentStep, isOpen, steps, t]);
@@ -367,13 +450,22 @@ export const TourProvider = ({ children }: PropsWithChildren) => {
       steps={[]}
       className="home-tour-popover"
       scrollSmooth
+      afterOpen={lockBodyScroll}
+      beforeClose={unlockBodyScroll}
+      inViewThreshold={{ x: 16, y: 24 }}
       disableInteraction={({ currentStep }) => currentStep === 0}
       styles={{
+        badge: (baseStyles) => ({
+          ...baseStyles,
+          top: '-0.625rem',
+          left: '-0.625rem',
+        }),
         popover: (baseStyles) => ({
           ...baseStyles,
           width: 'min(36rem, calc(100vw - 2rem))',
           maxWidth: 'calc(100vw - 2rem)',
           maxHeight: 'calc(100dvh - 2rem)',
+          padding: '1rem 1rem 1.25rem',
         }),
       }}
     >
