@@ -375,6 +375,8 @@ async function getAppConfigBase(
     header: {
       customMenu: resourceDirectory.header?.customMenu ?? [],
       customHomeUrl: resourceDirectory.header?.customHomeUrl ?? undefined,
+      favoritesButtonLabel:
+        resourceDirectory.header?.favoritesButtonLabel ?? undefined,
       safeExit: resourceDirectory.header?.safeExit
         ? {
             enabled: resourceDirectory.header.safeExit.enabled ?? false,

@@ -70,6 +70,15 @@ export const header: Tab = {
             update: superAdminOrSupportOrTenantAccess,
           },
         },
+        {
+          name: 'favoritesButtonLabel',
+          type: 'text',
+          localized: true,
+          access: {
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
+          },
+        },
       ],
     },
     {
