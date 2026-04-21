@@ -36,12 +36,20 @@ export function SearchBar({
     const normalizedSearchTerm = searchTerm.trim().toLowerCase();
     if (!normalizedSearchTerm) return [];
 
+    const suggestionHeaders = appConfig.search.texts?.suggestionHeaders;
+    const suggestionsGroup =
+      suggestionHeaders?.suggestions || t('search.suggestions');
+    const categoriesGroup =
+      suggestionHeaders?.categories || t('search.categories');
+    const taxonomiesGroup =
+      suggestionHeaders?.taxonomies || t('search.taxonomies');
+
     const suggestionList: AutocompleteOption[] = suggestions
       .map((option) => ({
         Icon: SearchIcon,
         value: option.value,
         query: option.taxonomies,
-        group: t('search.suggestions'),
+        group: suggestionsGroup,
         queryType: 'taxonomy',
       }))
       .filter((option) =>
@@ -55,7 +63,7 @@ export function SearchBar({
         )
         .map((subtopic) => ({
           Icon: SearchIcon,
-          group: t('search.categories'),
+          group: categoriesGroup,
           value: subtopic.name,
           query: subtopic.query || subtopic.name,
           queryType: subtopic.queryType || 'text',
@@ -64,7 +72,7 @@ export function SearchBar({
 
     const taxonomyList: AutocompleteOption[] = taxonomiesDisplay.map(
       (option) => ({
-        group: t('search.taxonomies'),
+        group: taxonomiesGroup,
         value: option.name,
         query: option.code,
         badge: showTaxonomyBadge ? option.code : undefined,
@@ -85,6 +93,7 @@ export function SearchBar({
     suggestions,
     topics,
     taxonomiesDisplay,
+    appConfig.search.texts?.suggestionHeaders,
     t,
     searchTerm,
     showTaxonomyBadge,

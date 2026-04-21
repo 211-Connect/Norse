@@ -33,6 +33,12 @@ const SEARCH_TEXT_FIELDS = [
   'noResultsFallbackText',
 ] as const;
 
+const SEARCH_SUGGESTION_HEADER_FIELDS = [
+  'suggestions',
+  'categories',
+  'taxonomies',
+] as const;
+
 const CALLOUT_TEXT_FIELDS = ['description', 'title'] as const;
 
 const HIGHLIGHT_TEXT_FIELDS = ['title', 'description', 'buttonText'] as const;
@@ -306,6 +312,22 @@ export const translate: TaskConfig<'translate'> = {
           const path = `search.texts.${field}`;
           const sourceValue = englishResourceDirectory.search?.texts?.[field];
           const targetValue = targetDoc.search?.texts?.[field];
+
+          if (shouldTranslate(sourceValue, targetValue, path)) {
+            fieldsToTranslate.push({
+              path,
+              value: sourceValue!,
+              locale: targetLocale,
+            });
+          }
+        });
+
+        SEARCH_SUGGESTION_HEADER_FIELDS.forEach((field) => {
+          const path = `search.texts.suggestionHeaders.${field}`;
+          const sourceValue =
+            englishResourceDirectory.search?.texts?.suggestionHeaders?.[field];
+          const targetValue =
+            targetDoc.search?.texts?.suggestionHeaders?.[field];
 
           if (shouldTranslate(sourceValue, targetValue, path)) {
             fieldsToTranslate.push({
@@ -641,7 +663,12 @@ export const translate: TaskConfig<'translate'> = {
         // Search Texts
         updateData.search = {
           ...targetDoc.search,
-          texts: { ...targetDoc.search?.texts },
+          texts: {
+            ...targetDoc.search?.texts,
+            suggestionHeaders: {
+              ...targetDoc.search?.texts?.suggestionHeaders,
+            },
+          },
         };
 
         SEARCH_TEXT_FIELDS.forEach((field) => {
@@ -655,6 +682,32 @@ export const translate: TaskConfig<'translate'> = {
             updateData.search!.texts = {
               ...updateData.search!.texts,
               [field]: englishResourceDirectory.search?.texts?.[field],
+            };
+          }
+        });
+
+        SEARCH_SUGGESTION_HEADER_FIELDS.forEach((field) => {
+          const path = `search.texts.suggestionHeaders.${field}`;
+          if (translationsByPath[path]) {
+            updateData.search!.texts = {
+              ...updateData.search!.texts,
+              suggestionHeaders: {
+                ...updateData.search!.texts?.suggestionHeaders,
+                [field]: translationsByPath[path],
+              },
+            };
+          } else if (
+            isEmpty(targetDoc.search?.texts?.suggestionHeaders?.[field])
+          ) {
+            updateData.search!.texts = {
+              ...updateData.search!.texts,
+              suggestionHeaders: {
+                ...updateData.search!.texts?.suggestionHeaders,
+                [field]:
+                  englishResourceDirectory.search?.texts?.suggestionHeaders?.[
+                    field
+                  ],
+              },
             };
           }
         });

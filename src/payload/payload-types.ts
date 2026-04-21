@@ -755,6 +755,23 @@ export interface ResourceDirectory {
        */
       useTextLinkForViewDetails?: boolean | null;
       noResultsFallbackText?: string | null;
+      /**
+       * Customize the section titles shown inside the search autocomplete dropdown beneath the main search field. These labels appear above grouped suggestions such as Suggestions, Categories, and Taxonomies/Services.
+       */
+      suggestionHeaders?: {
+        /**
+         * Shown above free-text search suggestions in the autocomplete dropdown.
+         */
+        suggestions?: string | null;
+        /**
+         * Shown above topic/category matches in the autocomplete dropdown.
+         */
+        categories?: string | null;
+        /**
+         * Shown above taxonomy matches in the autocomplete dropdown. This can be renamed to terms like Services.
+         */
+        taxonomies?: string | null;
+      };
     };
     searchSettings: {
       hybridSemanticSearchEnabled?: boolean | null;
@@ -1455,6 +1472,13 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
               viewDetailsText?: T;
               useTextLinkForViewDetails?: T;
               noResultsFallbackText?: T;
+              suggestionHeaders?:
+                | T
+                | {
+                    suggestions?: T;
+                    categories?: T;
+                    taxonomies?: T;
+                  };
             };
         searchSettings?:
           | T

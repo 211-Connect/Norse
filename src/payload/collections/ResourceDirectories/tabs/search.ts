@@ -107,6 +107,64 @@ export const search: Tab = {
             },
           ],
         },
+        {
+          type: 'group',
+          name: 'suggestionHeaders',
+          label: 'Search Suggestions',
+          admin: {
+            description:
+              'Customize the section titles shown inside the search autocomplete dropdown beneath the main search field. These labels appear above grouped suggestions such as Suggestions, Categories, and Taxonomies/Services.',
+          },
+          fields: [
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'suggestions',
+                  label: 'Suggestions Heading',
+                  type: 'text',
+                  localized: true,
+                  admin: {
+                    description:
+                      'Shown above free-text search suggestions in the autocomplete dropdown.',
+                  },
+                  access: {
+                    create: superAdminOrSupportOrTenantAccess,
+                    update: superAdminOrSupportOrTenantAccess,
+                  },
+                },
+                {
+                  name: 'categories',
+                  label: 'Categories Heading',
+                  type: 'text',
+                  localized: true,
+                  admin: {
+                    description:
+                      'Shown above topic/category matches in the autocomplete dropdown.',
+                  },
+                  access: {
+                    create: superAdminOrSupportOrTenantAccess,
+                    update: superAdminOrSupportOrTenantAccess,
+                  },
+                },
+                {
+                  name: 'taxonomies',
+                  label: 'Taxonomies Heading',
+                  type: 'text',
+                  localized: true,
+                  admin: {
+                    description:
+                      'Shown above taxonomy matches in the autocomplete dropdown. This can be renamed to terms like Services.',
+                  },
+                  access: {
+                    create: superAdminOrSupportOrTenantAccess,
+                    update: superAdminOrSupportOrTenantAccess,
+                  },
+                },
+              ],
+            },
+          ],
+        },
       ],
     },
     {

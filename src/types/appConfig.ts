@@ -105,6 +105,11 @@ export type AppConfig = {
       title?: string;
       queryInputPlaceholder?: string;
       locationInputPlaceholder?: string;
+      suggestionHeaders?: {
+        suggestions?: string;
+        categories?: string;
+        taxonomies?: string;
+      };
       viewDetailsText?: string;
       useTextLinkForViewDetails?: boolean;
       noResultsFallbackText?: string;
