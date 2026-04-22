@@ -36,6 +36,31 @@ function getTenantId(resourceDirectory: ResourceDirectory): string | undefined {
   return resourceDirectory.tenant?.id;
 }
 
+function getSmsConfig(resourceDirectory: ResourceDirectory): AppConfig['sms'] {
+  const sms = getTenant(resourceDirectory)?.sms;
+
+  if (!sms?.smsProvider) {
+    return null;
+  }
+
+  if (sms.smsProvider === 'Twilio') {
+    const twilio = sms.twilio;
+    const hasTwilioConfig = Boolean(
+      twilio?.phoneNumber ||
+      twilio?.apiKey ||
+      twilio?.apiKeySid ||
+      twilio?.accountSid,
+    );
+
+    return hasTwilioConfig ? { provider: sms.smsProvider } : null;
+  }
+
+  const ems = sms.ems;
+  const hasEmsConfig = Boolean(ems?.apiKey || ems?.shortCode || ems?.keyword);
+
+  return hasEmsConfig ? { provider: sms.smsProvider } : null;
+}
+
 function getTenantI18n(resourceDirectory: ResourceDirectory): {
   defaultLocale: string;
   locales: string[];
@@ -182,6 +207,7 @@ async function getAppConfigBase(
         theme: {},
       },
       contact: {},
+      sms: null,
       customBasePath: '',
       featureFlags: {
         requireUserLocation: false,
@@ -336,6 +362,7 @@ async function getAppConfigBase(
       number: resourceDirectory.brand.phoneNumber ?? undefined,
       feedbackUrl: resourceDirectory.brand.feedbackUrl ?? undefined,
     },
+    sms: getSmsConfig(resourceDirectory),
     customBasePath: process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || '',
     errorTranslationData: {
       errorNamespaces,

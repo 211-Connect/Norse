@@ -13,12 +13,7 @@ import { useReactToPrint } from 'react-to-print';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from './ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from './ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { Facebook } from './icons/facebook';
 import { X } from './icons/x';
 import { shortenUrl } from '../serverActions/shortUrl/shortenUrl';
@@ -26,7 +21,17 @@ import { useClipboard } from '../hooks/use-clipboard';
 import { SmsButton } from './sms-button';
 import { useAppConfig } from '../hooks/use-app-config';
 
-export function ShareButton({ componentToPrintRef, title = '', body = '' }) {
+type ShareButtonProps = {
+  componentToPrintRef?: React.RefObject<HTMLElement>;
+  title: string;
+  body: string;
+};
+
+export function ShareButton({
+  componentToPrintRef,
+  title,
+  body,
+}: ShareButtonProps) {
   const appConfig = useAppConfig();
   const clipboard = useClipboard();
   const handlePrint = useReactToPrint({
@@ -39,11 +44,32 @@ export function ShareButton({ componentToPrintRef, title = '', body = '' }) {
 
   const [open, setOpen] = useState(false);
   const [shortUrl, setShortUrl] = useState('');
+  const metadataTitle =
+    typeof document !== 'undefined' ? document.title.trim() : '';
+  const metadataDescription =
+    typeof document !== 'undefined'
+      ? (document
+          .querySelector('meta[name="description"]')
+          ?.getAttribute('content')
+          ?.trim() ?? '')
+      : '';
+
+  const normalizedTitle = title.trim() || metadataTitle;
+  const normalizedBody = body.trim() || metadataDescription;
+  const shareSubject =
+    normalizedTitle || t('modal.share.check_out_this_resource');
+
+  // SMS: compact message (title + short URL)
+  const smsSummary = shareSubject || t('modal.share.check_out_this_resource');
+  const smsMessage = [smsSummary, shortUrl].filter(Boolean).join('\n\n');
+
+  // Email: full message (body + URL)
+  const emailMessage = [normalizedBody, shortUrl].filter(Boolean).join('\n\n');
 
   useEffect(() => {
     async function getShortUrl() {
       const id = await shortenUrl(window.location.href, appConfig.tenantId);
-      const url = `${window.location.origin}${appConfig.customBasePath}/api/share/${appConfig.tenantId}/${id}`;
+      const url = `${window.location.origin}${appConfig.customBasePath}/share/${id}`;
       setShortUrl(url);
     }
 
@@ -139,7 +165,7 @@ export function ShareButton({ componentToPrintRef, title = '', body = '' }) {
                 </span>
               </Button>
 
-              <SmsButton title={title} body={body} shortUrl={shortUrl} />
+              <SmsButton shareMessage={smsMessage} />
 
               <Button
                 variant="outline"
@@ -148,8 +174,8 @@ export function ShareButton({ componentToPrintRef, title = '', body = '' }) {
                 onClick={() => {
                   window.open(
                     `mailto:?subject=${encodeURIComponent(
-                      title,
-                    )}&body=${encodeURIComponent(body + '\n\n' + shortUrl)}`,
+                      shareSubject,
+                    )}&body=${encodeURIComponent(emailMessage)}`,
                   );
                 }}
               >
