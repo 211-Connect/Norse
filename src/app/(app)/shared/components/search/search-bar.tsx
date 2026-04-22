@@ -36,6 +36,7 @@ export function SearchBar({
     displayTaxonomies: taxonomiesDisplay,
     shouldSearch,
     setShouldSearch,
+    setSearchSource,
   } = useMainSearchLayoutContext();
 
   // Remap and filter data as needed for the search box
@@ -103,6 +104,7 @@ export function SearchBar({
       const queryType = option?.queryType ?? 'text';
 
       setShouldSearch(false);
+      setSearchSource('suggestion');
 
       setSearch((prev) => ({
         ...prev,
@@ -112,7 +114,7 @@ export function SearchBar({
         queryLabel: value,
       }));
     },
-    [findCode, setSearch, setShouldSearch],
+    [findCode, setSearch, setShouldSearch, setSearchSource],
   );
 
   const handleInputChange = useCallback(
@@ -124,16 +126,18 @@ export function SearchBar({
           searchTerm: value,
         }));
         setShouldSearch(true);
+        setSearchSource('manual');
         return;
       }
 
       setShouldSearch(true);
+      setSearchSource('manual');
       setSearch((prev) => ({
         ...prev,
         prevSearchTerm: value,
       }));
     },
-    [searchTerm, setShouldSearch, setSearch],
+    [searchTerm, setShouldSearch, setSearch, setSearchSource],
   );
 
   return (

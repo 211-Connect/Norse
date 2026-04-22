@@ -23,6 +23,7 @@ import {
 } from '../../lib/constants';
 import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
 import { createUrlParamsForSearch } from '../../utils/createUrlParamsForSearch';
+import { trackUmamiEvent, UmamiEvent } from '../../lib/umami';
 export interface SearchDialogProps {
   focusByDefault?: 'search' | 'location';
   open: boolean;
@@ -47,14 +48,28 @@ export function SearchDialog({
   const [mounted, setMounted] = useState(false);
   const dialogRef = useRef<HTMLDivElement | null>(null);
 
-  const { findCode, locations, search, setSearch } =
+  const { findCode, locations, search, setSearch, searchSource } =
     useMainSearchLayoutContext();
 
+  console.log('Search source', searchSource);
   const onSubmit = useCallback(
     async (e) => {
       e.preventDefault();
 
       startTransition(() => {
+        if (searchSource === 'suggestion') {
+          trackUmamiEvent(UmamiEvent.SearchSuggestionClick, {
+            query: search.searchTerm,
+            queryType: search.queryType ?? '',
+            tenantId: appConfig.tenantId ?? '',
+          });
+        } else {
+          trackUmamiEvent(UmamiEvent.SearchManualClick, {
+            query: search.searchTerm,
+            tenantId: appConfig.tenantId ?? '',
+          });
+        }
+
         if (requireUserLocation && search.searchLocation.trim().length === 0) {
           setSearch((prev) => ({
             ...prev,

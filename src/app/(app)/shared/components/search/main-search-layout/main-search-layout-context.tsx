@@ -16,6 +16,8 @@ export interface MainSearchLayoutContextValue extends ReturnType<
 > {
   shouldSearch: boolean;
   setShouldSearch: Dispatch<SetStateAction<boolean>>;
+  searchSource: 'manual' | 'suggestion';
+  setSearchSource: Dispatch<SetStateAction<'manual' | 'suggestion'>>;
 }
 
 export const MainSearchLayoutContext =
@@ -25,6 +27,7 @@ export function MainSearchLayoutContextProvider({
   children,
 }: PropsWithChildren<{}>) {
   const [shouldSearch, setShouldSearch] = useState(false);
+  const [searchSource, setSearchSource] = useState<'manual' | 'suggestion'>('manual');
 
   const searchResources = useSearchResources();
 
@@ -33,8 +36,10 @@ export function MainSearchLayoutContextProvider({
       ...searchResources,
       shouldSearch,
       setShouldSearch,
+      searchSource,
+      setSearchSource,
     }),
-    [searchResources, shouldSearch, setShouldSearch],
+    [searchResources, shouldSearch, setShouldSearch, searchSource, setSearchSource],
   );
 
   return (

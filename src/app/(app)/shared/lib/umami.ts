@@ -4,6 +4,8 @@ export enum UmamiEvent {
   PhoneClick = 'phone_click',
   WebsiteClick = 'website_click',
   WidgetSearch = 'widget_search',
+  SearchManualClick = 'search_manual_click',
+  SearchSuggestionClick = 'search_suggestion_click',
 }
 
 export function trackUmamiEvent(
