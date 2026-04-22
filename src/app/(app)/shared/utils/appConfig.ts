@@ -55,6 +55,7 @@ function getTenantI18n(resourceDirectory: ResourceDirectory): {
 
 type CustomAttributeItem = {
   componentId: string;
+  id?: string | null;
   customAttribute?: {
     title?: string | null;
     subtitle?: string | null;
@@ -63,6 +64,10 @@ type CustomAttributeItem = {
   } | null;
   [key: string]: any;
 };
+
+type LayoutColumnGroup = NonNullable<ResourceDirectory['resource']>['leftColumn'];
+type LayoutGroupItem = NonNullable<NonNullable<LayoutColumnGroup>[number]>;
+type LayoutItem = NonNullable<NonNullable<LayoutGroupItem['items']>[number]>;
 
 function mergeCustomAttribute<T extends CustomAttributeItem>(
   item: T,
@@ -96,6 +101,17 @@ function mergeCustomAttribute<T extends CustomAttributeItem>(
   };
 }
 
+function findFallbackById<T extends { id?: string | null }>(
+  current: T | undefined,
+  fallbackItems: T[] | undefined,
+): T | undefined {
+  if (!current?.id || !fallbackItems?.length) {
+    return undefined;
+  }
+
+  return fallbackItems.find((item) => item.id === current.id);
+}
+
 function applyCustomAttributeFallback(
   column: NonNullable<ResourceDirectory['resource']>['leftColumn'],
   fallbackColumn: NonNullable<ResourceDirectory['resource']>['leftColumn'],
@@ -103,13 +119,19 @@ function applyCustomAttributeFallback(
   if (!column || !fallbackColumn) return column;
 
   return column.map((group, groupIndex) => {
-    const fallbackGroup = fallbackColumn[groupIndex];
+    const fallbackGroup =
+      findFallbackById<LayoutGroupItem>(group, fallbackColumn) ??
+      fallbackColumn[groupIndex];
     if (!fallbackGroup || !group.items) return group;
 
     return {
       ...group,
       items: group.items.map((item, itemIndex) =>
-        mergeCustomAttribute(item, fallbackGroup.items?.[itemIndex]),
+        mergeCustomAttribute(
+          item,
+          findFallbackById<LayoutItem>(item, fallbackGroup.items ?? undefined) ??
+            fallbackGroup.items?.[itemIndex],
+        ),
       ),
     };
   });
@@ -126,7 +148,10 @@ function applyCardLayoutCustomAttributeFallback(
   }
 
   return cardLayout.map((item, itemIndex) =>
-    mergeCustomAttribute(item, fallbackCardLayout[itemIndex]),
+    mergeCustomAttribute(
+      item,
+      findFallbackById(item, fallbackCardLayout) ?? fallbackCardLayout[itemIndex],
+    ),
   );
 }
 
