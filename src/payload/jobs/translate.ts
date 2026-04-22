@@ -210,6 +210,21 @@ export const translate: TaskConfig<'translate'> = {
         const getTargetSuggestion = (id: string) =>
           targetDoc.suggestions?.find((s) => s.id === id);
 
+        // Resource Tab
+        if (
+          shouldTranslate(
+            englishResourceDirectory.resource?.lastAssuredText,
+            targetDoc.resource?.lastAssuredText,
+            'resource.lastAssuredText',
+          )
+        ) {
+          fieldsToTranslate.push({
+            path: 'resource.lastAssuredText',
+            value: englishResourceDirectory.resource!.lastAssuredText!,
+            locale: targetLocale,
+          });
+        }
+
         // Topics Top Level
         if (
           shouldTranslate(
@@ -543,6 +558,19 @@ export const translate: TaskConfig<'translate'> = {
             ...targetDoc.topics,
           },
         };
+
+        // Resource Tab
+        if (translationsByPath['resource.lastAssuredText']) {
+          updateData.resource = {
+            ...targetDoc.resource,
+            lastAssuredText: translationsByPath['resource.lastAssuredText'],
+          };
+        } else if (isEmpty(targetDoc.resource?.lastAssuredText)) {
+          updateData.resource = {
+            ...targetDoc.resource,
+            lastAssuredText: englishResourceDirectory.resource?.lastAssuredText,
+          };
+        }
 
         if (translationsByPath['topics.backText']) {
           updateData.topics!.backText = translationsByPath['topics.backText'];
