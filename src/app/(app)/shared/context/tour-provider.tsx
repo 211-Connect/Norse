@@ -471,7 +471,6 @@ export const TourProvider = ({ children }: PropsWithChildren) => {
           maxHeight: 'calc(100dvh - 2rem)',
           padding: '1rem 1rem 1.25rem',
         }) as CSSProperties,
-        }) as CSSProperties,
       }}
     >
       <TourAccessibilityEnhancer />
