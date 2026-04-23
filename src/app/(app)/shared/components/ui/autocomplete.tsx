@@ -41,10 +41,11 @@ import { useTranslation } from 'react-i18next';
 import { useOnPointerDownOutside } from '../../hooks/use-on-pointer-down-outside';
 
 export type AutocompleteOption = {
-  label?: string;
   value: string;
   group?: string;
   Icon?: ComponentType<{ className?: string }>;
+  badge?: string;
+  query?: string;
   queryType?: string;
 };
 
@@ -827,12 +828,12 @@ export function Autocomplete(props: AutocompleteProps) {
                             </p>
                           </span>
 
-                          {option.label && (
+                          {option.badge && (
                             <Badge
                               variant="outline"
                               className="w-[100px] shrink-0 text-xs"
                             >
-                              <p className="mx-auto truncate">{option.label}</p>
+                              <p className="mx-auto truncate">{option.badge}</p>
                             </Badge>
                           )}
                         </div>
