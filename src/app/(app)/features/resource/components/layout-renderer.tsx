@@ -65,7 +65,7 @@ function ColumnRenderer({ groups, resource }: ColumnRendererProps) {
                 key={
                   isSeparator
                     ? `separator-${groupIndex}-${itemIndex}`
-                    : item.componentId
+                    : `item-${item.componentId}-${groupIndex}-${itemIndex}`
                 }
                 resource={resource}
                 customAttribute={item.customAttribute}
@@ -95,9 +95,9 @@ function ColumnRenderer({ groups, resource }: ColumnRendererProps) {
           return (
             <Card
               key={`group-${groupIndex}`}
-              className="print:border-none print:shadow-none"
+              className="overflow-hidden print:border-none print:shadow-none"
             >
-              <CardContent className="flex flex-col gap-2">
+              <CardContent className="flex min-w-0 flex-col gap-2">
                 {renderedComponents}
               </CardContent>
             </Card>

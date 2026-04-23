@@ -47,7 +47,15 @@
     "geocoding_unable_to_retrieve": "Tsis tuaj yeem nrhiav tau koj qhov chaw nyob. Thov xyuas koj tus browser qhov chaw teeb tsa thiab sim dua.",
     "categories": "Cov Ncauj Lus",
     "show_all": "Qhia tag nrho ({{count}})",
-    "show_less": "Qhia tsawg dua"
+    "show_less": "Qhia tsawg dua",
+    "query_input_label": "Nrhiav cov peev txheej",
+    "location_input_label": "Nrhiav ib qho chaw",
+    "change_location_label": "Hloov qhov chaw: {{location}}",
+    "open_search_dialog": "Qhib lub thawv tshawb nrhiav",
+    "list_status_one": "Muaj 1 txoj kev xaiv. Siv cov yuam sij xub nce thiab nqis los tshuaj xyuas.",
+    "list_status_other": "Muaj cov kev xaiv {{count}}. Siv cov yuam sij xub nce thiab nqis los tshuaj xyuas.",
+    "search_dialog_description": "Nrhiav cov peev txheej thiab hloov kho koj qhov chaw nyob.",
+    "everywhere": "Txhua qhov chaw"
   },
   "call_to_action": {
     "call": "Hu xov tooj",
@@ -67,7 +75,9 @@
     "login": "Nkag mus",
     "show_more": "Qhia ntxiv",
     "show_less": "Qhia tsawg dua",
-    "print": "Luam tawm"
+    "print": "Luam tawm",
+    "close": "Kaw",
+    "send": "Xa"
   },
   "list": {
     "private": "Ntiag tug",
@@ -127,9 +137,14 @@
       "sms_send_success_title": "Xa SMS lawm!",
       "sms_send_success_body": "Koj cov lus tau raug xa mus lawm.",
       "sms_send_failed_title": "Xa SMS tsis tau",
-      "sms_send_failed_body": "Koj cov lus xa tsis tau."
+      "sms_send_failed_body": "Koj cov lus xa tsis tau.",
+      "opens_in_new_tab": "qhib rau hauv ib lub tab tshiab",
+      "phone_number_label": "Tus xov tooj"
     },
-    "prompt_auth": "Thov nkag mus rau hauv koj tus account kom siv tau qhov feature no."
+    "prompt_auth": "Thov nkag mus rau hauv koj tus account kom siv tau qhov feature no.",
+    "manage_favorites": {
+      "title": "Tswj cov nyiam"
+    }
   },
   "update_location": {
     "prompt_start_location": "Koj qhov chaw pib yog dab tsi?"
@@ -144,5 +159,7 @@
     "previous": "Yav tas los",
     "next": "Tom ntej no",
     "go_to": "Mus rau"
-  }
+  },
+  "filter_results_count_one": "qhov tshwm sim {{count}}",
+  "filter_results_count_other": "cov txiaj ntsig {{count}}"
 }

@@ -40,6 +40,7 @@ export function MapPopup({
         )}
         <Link
           href={`/search/${id}`}
+          aria-label={`${t('learn_more', { ns: 'page-search' })}: ${name}`}
           className="py-[5px] text-center text-sm font-medium text-primary hover:underline"
         >
           {t('learn_more', { ns: 'page-search' })}

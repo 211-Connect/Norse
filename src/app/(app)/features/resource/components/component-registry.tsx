@@ -5,12 +5,15 @@ import {
   BadgesComponent,
   ResourceNameComponent,
   ServiceNameComponent,
+  LocationNameComponent,
+  LocationNameSubtitleComponent,
   AddressComponent,
   TransportationComponent,
   AccessibilityComponent,
   EligibilityComponent,
   RequiredDocumentsComponent,
   HoursComponent,
+  ContactsComponent,
   PhoneNumbersComponent,
   WebsiteComponent,
   EmailComponent,
@@ -48,12 +51,15 @@ export const componentRegistry: Record<
   [ResourceComponentId.BADGES]: BadgesComponent,
   [ResourceComponentId.RESOURCE_NAME]: ResourceNameComponent,
   [ResourceComponentId.SERVICE_NAME]: ServiceNameComponent,
+  [ResourceComponentId.LOCATION_NAME]: LocationNameComponent,
+  [ResourceComponentId.LOCATION_NAME_SUBTITLE]: LocationNameSubtitleComponent,
   [ResourceComponentId.ADDRESS]: AddressComponent,
   [ResourceComponentId.TRANSPORTATION]: TransportationComponent,
   [ResourceComponentId.ACCESSIBILITY]: AccessibilityComponent,
   [ResourceComponentId.ELIGIBILITY]: EligibilityComponent,
   [ResourceComponentId.REQUIRED_DOCUMENTS]: RequiredDocumentsComponent,
   [ResourceComponentId.HOURS]: HoursComponent,
+  [ResourceComponentId.CONTACTS]: ContactsComponent,
   [ResourceComponentId.PHONE_NUMBERS]: PhoneNumbersComponent,
   [ResourceComponentId.WEBSITE]: WebsiteComponent,
   [ResourceComponentId.ORGANIZATION_URL]: OrganizationUrlComponent,
@@ -105,6 +111,10 @@ export function shouldComponentRender(
         appConfig.featureFlags.showSearchAndResourceServiceName &&
         Boolean(resource.serviceName)
       );
+    case ResourceComponentId.LOCATION_NAME:
+      return Boolean(resource.locationName);
+    case ResourceComponentId.LOCATION_NAME_SUBTITLE:
+      return Boolean(resource.locationName);
     case ResourceComponentId.ADDRESS:
       return Boolean(resource.address);
     case ResourceComponentId.TRANSPORTATION:
@@ -117,6 +127,8 @@ export function shouldComponentRender(
       return Boolean(resource.requiredDocuments);
     case ResourceComponentId.HOURS:
       return Boolean(resource.hours);
+    case ResourceComponentId.CONTACTS:
+      return Boolean(resource.contacts && resource.contacts.length > 0);
     case ResourceComponentId.PHONE_NUMBERS:
       return Boolean(resource.phoneNumbers && resource.phoneNumbers.length > 0);
     case ResourceComponentId.WEBSITE:

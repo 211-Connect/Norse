@@ -32,6 +32,7 @@ async function initTranslations(
     fallbackNS: namespaces[0],
     ns: namespaces,
     preload: resources ? [] : enabledLocales,
+    showSupportNotice: false,
   });
 
   const resultResources = {

@@ -47,7 +47,15 @@
     "geocoding_unable_to_retrieve": "ቦታህን ማግኘት አትችልም። እባክዎ የድር ጣቢያዎን የቦታ አቀማመጥ ይመልከቱ እና እንደገና ይሞክሩ.",
     "categories": "ርዕሶች",
     "show_all": "ሁሉንም አሳይ ({{count}})",
-    "show_less": "ያነሰ አሳይ"
+    "show_less": "ያነሰ አሳይ",
+    "query_input_label": "ግብዓቶችን ይፈልጉ",
+    "location_input_label": "አካባቢ ይፈልጉ",
+    "change_location_label": "አካባቢ ቀይር፦ {{አካባቢ}}",
+    "open_search_dialog": "የፍለጋ መገናኛውን ክፈት",
+    "list_status_one": "1 አማራጭ ይገኛል። ለመገምገም ወደላይ እና ወደታች የቀስት ቁልፎችን ይጠቀሙ።",
+    "list_status_other": "{{count}} አማራጮች አሉ። ለመገምገም ወደላይ እና ወደታች የቀስት ቁልፎችን ይጠቀሙ።",
+    "search_dialog_description": "ሀብቶችን ይፈልጉ እና አካባቢዎን ያዘምኑ።",
+    "everywhere": "ሁሉም ቦታ"
   },
   "call_to_action": {
     "call": "ይደውሉ",
@@ -67,7 +75,9 @@
     "login": "መግቢያ",
     "show_more": "ተጨማሪ አሳይ",
     "show_less": "ያነሰ አሳይ",
-    "print": "ህትመት"
+    "print": "ህትመት",
+    "close": "ዝጋ",
+    "send": "ላክ"
   },
   "list": {
     "private": "የግል",
@@ -127,9 +137,14 @@
       "sms_send_success_title": "ኤስ ኤም ኤስ ተላከ!",
       "sms_send_success_body": "መልዕክትህ ተልኳል።",
       "sms_send_failed_title": "ኤስ ኤም ኤስ መላክ አልተሳካለትም",
-      "sms_send_failed_body": "የእርስዎ መልዕክት መላክ አልቻለም."
+      "sms_send_failed_body": "የእርስዎ መልዕክት መላክ አልቻለም.",
+      "opens_in_new_tab": "በአዲስ ትር ይከፈታል",
+      "phone_number_label": "የስልክ ቁጥር"
     },
-    "prompt_auth": "ይህን መተግበሪያ ለመጠቀም እባክዎ መግቢያ."
+    "prompt_auth": "ይህን መተግበሪያ ለመጠቀም እባክዎ መግቢያ.",
+    "manage_favorites": {
+      "title": "ተወዳጆችን ያቀናብሩ"
+    }
   },
   "update_location": {
     "prompt_start_location": "መነሻዎ ምንድን ነው?"
@@ -144,5 +159,7 @@
     "previous": "ቀዳሚ",
     "next": "ቀጣይ",
     "go_to": "ወደ ይሂዱ"
-  }
+  },
+  "filter_results_count_one": "{{count}} ውጤት",
+  "filter_results_count_other": "{{count}} ውጤቶች"
 }

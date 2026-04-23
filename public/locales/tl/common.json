@@ -47,7 +47,15 @@
     "geocoding_unable_to_retrieve": "Hindi makuha ang iyong lokasyon. Pakitingnan ang mga setting ng lokasyon ng iyong browser at subukang muli.",
     "categories": "Mga Paksa",
     "show_all": "Ipakita lahat ({{count}})",
-    "show_less": "Ipakita nang mas kaunti"
+    "show_less": "Ipakita nang mas kaunti",
+    "query_input_label": "Maghanap ng mga mapagkukunan",
+    "location_input_label": "Maghanap ng lokasyon",
+    "change_location_label": "Baguhin ang lokasyon: {{location}}",
+    "open_search_dialog": "Buksan ang dialog ng paghahanap",
+    "list_status_one": "1 opsyon ang available. Gamitin ang pataas at pababang mga arrow key para mag-review.",
+    "list_status_other": "May mga opsyon na {{count}} na magagamit. Gamitin ang pataas at pababang mga arrow key para magrepaso.",
+    "search_dialog_description": "Maghanap ng mga mapagkukunan at i-update ang iyong lokasyon.",
+    "everywhere": "Sa lahat ng dako"
   },
   "call_to_action": {
     "call": "Tumawag",
@@ -67,7 +75,9 @@
     "login": "Mag-login",
     "show_more": "Magpakita pa",
     "show_less": "Ipakita nang mas kaunti",
-    "print": "I-print"
+    "print": "I-print",
+    "close": "Isara",
+    "send": "Ipadala"
   },
   "list": {
     "private": "Pribado",
@@ -127,9 +137,14 @@
       "sms_send_success_title": "Naipadala na ang SMS!",
       "sms_send_success_body": "Naipadala na ang iyong mensahe.",
       "sms_send_failed_title": "Nabigo ang pagpapadala ng SMS",
-      "sms_send_failed_body": "Hindi naipadala ang iyong mensahe."
+      "sms_send_failed_body": "Hindi naipadala ang iyong mensahe.",
+      "opens_in_new_tab": "magbubukas sa isang bagong tab",
+      "phone_number_label": "Numero ng telepono"
     },
-    "prompt_auth": "Mangyaring mag-login upang magamit ang tampok na ito."
+    "prompt_auth": "Mangyaring mag-login upang magamit ang tampok na ito.",
+    "manage_favorites": {
+      "title": "Pamahalaan ang mga paborito"
+    }
   },
   "update_location": {
     "prompt_start_location": "Saan ang panimulang lokasyon mo?"
@@ -144,5 +159,7 @@
   },
   "footer": {
     "copyright": "© Karapatang-ari {{text}}"
-  }
+  },
+  "filter_results_count_one": "{{count}} resulta",
+  "filter_results_count_other": "{{count}} resulta"
 }

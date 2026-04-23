@@ -22,5 +22,6 @@
       "name": "Nazwa zasobu",
       "organization": "Nazwa dostawcy"
     }
-  }
+  },
+  "name_unavailable": "Nazwa niedostępna"
 }

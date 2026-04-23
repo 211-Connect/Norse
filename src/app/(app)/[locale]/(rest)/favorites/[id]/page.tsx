@@ -9,6 +9,7 @@ import { cookies, headers } from 'next/headers';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { getSession } from '@/app/(app)/shared/utils/getServerSession';
 import { getFavoriteList } from '@/app/(app)/shared/serverActions/favorites/getFavoriteList';
+import { DEFAULT_SEARCH_CARD_LAYOUT } from '@/app/(app)/features/search/types/card-layout-config';
 
 const i18nNamespaces = ['page-favorites', 'page-list', 'common'];
 
@@ -78,6 +79,8 @@ export default async function FavoritesDetailsPage({ params }) {
     viewingAsOwner = true;
   }
 
+  const cardLayout = appConfig.search.cardLayout ?? DEFAULT_SEARCH_CARD_LAYOUT;
+
   return (
     <PageWrapper
       cookies={cookieList}
@@ -86,7 +89,7 @@ export default async function FavoritesDetailsPage({ params }) {
       nonce={nonce}
     >
       <div className="flex flex-1">
-        <FavoritesSection />
+        <FavoritesSection cardLayout={cardLayout} />
         <FavoriteMapContainer />
       </div>
     </PageWrapper>

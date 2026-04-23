@@ -4,7 +4,7 @@ import { MapRenderer } from '@/app/(app)/shared/components/map/map-renderer';
 import { HEADER_ID } from '@/app/(app)/shared/lib/constants';
 import { resultsAtom } from '@/app/(app)/shared/store/results';
 import { useAtomValue } from 'jotai';
-import { useEffect, useMemo, useState } from 'react';
+import { CSSProperties, useEffect, useMemo, useState } from 'react';
 import { userCoordinatesAtom } from '@/app/(app)/shared/store/search';
 import {
   cn,
@@ -47,6 +47,7 @@ export function MapContainer() {
       return {
         id: result._id,
         coordinates,
+        label: result.name,
         popup: (
           <MapPopup
             distance={distance}
@@ -64,12 +65,16 @@ export function MapContainer() {
   return (
     <div
       className={cn(
-        'sticky top-[105px] hidden h-full w-full flex-1 p-[10px] lg:block',
+        'order-last h-[320px] w-full p-[10px] lg:sticky lg:top-[105px] lg:h-[var(--search-map-height)] lg:flex-1',
         appConfig.newLayout?.enabled && 'xl:top-[144px]',
       )}
-      style={{ height: `calc(100vh - ${headerHeight}px` }}
+      style={
+        {
+          '--search-map-height': `calc(100vh - ${headerHeight}px)`,
+        } as CSSProperties
+      }
     >
-      <div className="h-full w-full overflow-hidden rounded-lg">
+      <div className="h-full w-full rounded-lg">
         <MapRenderer markers={mapMarkers} />
       </div>
     </div>

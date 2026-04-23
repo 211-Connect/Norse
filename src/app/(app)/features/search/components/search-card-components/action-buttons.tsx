@@ -18,40 +18,74 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center">
-        <ReferralButton
-          className="flex-1 gap-1 overflow-hidden"
-          size="sm"
-          disabled={!result.phone}
-          referralType="call_referral"
-          resourceId={result.id}
-          resourceData={result}
-          variant="highlight"
-          onClick={() => {
-            window.open(`tel:${result.phone}`);
-          }}
-        >
-          <Phone className="size-4" />{' '}
-          <span className="truncate"> {t('call_to_action.call')} </span>
-        </ReferralButton>
+        {result.phone ? (
+          <ReferralButton
+            asChild
+            className="flex-1 gap-1 overflow-hidden"
+            size="sm"
+            referralType="call_referral"
+            resourceId={result.id}
+            resourceData={result}
+            variant="highlight"
+          >
+            <Link
+              href={`tel:${result.phone}`}
+              aria-label={`${t('call_to_action.call')} ${result.name}`}
+            >
+              <Phone className="size-4" />{' '}
+              <span className="truncate"> {t('call_to_action.call')} </span>
+            </Link>
+          </ReferralButton>
+        ) : (
+          <ReferralButton
+            className="flex-1 gap-1 overflow-hidden"
+            size="sm"
+            disabled
+            referralType="call_referral"
+            resourceId={result.id}
+            resourceData={result}
+            variant="highlight"
+          >
+            <Phone className="size-4" />{' '}
+            <span className="truncate"> {t('call_to_action.call')} </span>
+          </ReferralButton>
+        )}
 
-        <ReferralButton
-          className="flex-1 gap-1 overflow-hidden"
-          referralType="website_referral"
-          size="sm"
-          resourceId={result.id}
-          resourceData={result}
-          disabled={!result.website}
-          variant="highlight"
-          onClick={() => {
-            window.open(result.website, '_blank');
-          }}
-        >
-          <LinkIcon className="size-4" />{' '}
-          <span className="truncate">{t('call_to_action.view_website')}</span>
-        </ReferralButton>
+        {result.website ? (
+          <ReferralButton
+            asChild
+            className="flex-1 gap-1 overflow-hidden"
+            referralType="website_referral"
+            size="sm"
+            resourceId={result.id}
+            resourceData={result}
+            variant="highlight"
+          >
+            <Link
+              href={result.website}
+              aria-label={`${t('call_to_action.view_website')} ${result.name}`}
+            >
+              <LinkIcon className="size-4" />{' '}
+              <span className="truncate">{t('call_to_action.view_website')}</span>
+            </Link>
+          </ReferralButton>
+        ) : (
+          <ReferralButton
+            className="flex-1 gap-1 overflow-hidden"
+            referralType="website_referral"
+            size="sm"
+            resourceId={result.id}
+            resourceData={result}
+            disabled
+            variant="highlight"
+          >
+            <LinkIcon className="size-4" />{' '}
+            <span className="truncate">{t('call_to_action.view_website')}</span>
+          </ReferralButton>
+        )}
 
         <GetDirectionsButton
-          className="overflow-hidden"
+          className="min-h-8 whitespace-normal py-2"
           data={result}
           coords={searchCoords}
         />
@@ -64,6 +98,7 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
             buttonVariants({ variant: 'ghost' }),
           )}
           href={`/search/${result.id}`}
+          aria-label={`${t('call_to_action.view_details')}: ${result.name}`}
         >
           {t('call_to_action.view_details')}
         </Link>

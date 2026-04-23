@@ -47,7 +47,15 @@
     "geocoding_unable_to_retrieve": "بازیابی موقعیت مکانی شما امکان‌پذیر نیست. لطفاً تنظیمات موقعیت مکانی مرورگر خود را بررسی کرده و دوباره امتحان کنید.",
     "categories": "مباحث",
     "show_all": "نمایش همه ({{count}})",
-    "show_less": "نمایش کمتر"
+    "show_less": "نمایش کمتر",
+    "query_input_label": "جستجوی منابع",
+    "location_input_label": "جستجوی مکان",
+    "change_location_label": "تغییر مکان: {{location}}",
+    "open_search_dialog": "باز کردن کادر محاوره‌ای جستجو",
+    "list_status_one": "۱ گزینه موجود است. برای مرور از کلیدهای جهت بالا و پایین استفاده کنید.",
+    "list_status_other": "{{count}} گزینه موجود است. برای مرور از کلیدهای جهت بالا و پایین استفاده کنید.",
+    "search_dialog_description": "منابع را جستجو کنید و موقعیت مکانی خود را به‌روزرسانی کنید.",
+    "everywhere": "همه جا"
   },
   "call_to_action": {
     "call": "تماس بگیرید",
@@ -67,7 +75,9 @@
     "login": "ورود",
     "show_more": "نمایش بیشتر",
     "show_less": "نمایش کمتر",
-    "print": "چاپ"
+    "print": "چاپ",
+    "close": "بستن",
+    "send": "ارسال"
   },
   "list": {
     "private": "خصوصی",
@@ -127,9 +137,14 @@
       "sms_send_success_title": "پیامک ارسال شد!",
       "sms_send_success_body": "پیام شما ارسال شد.",
       "sms_send_failed_title": "ارسال پیامک ناموفق بود",
-      "sms_send_failed_body": "پیام شما ارسال نشد."
+      "sms_send_failed_body": "پیام شما ارسال نشد.",
+      "opens_in_new_tab": "در یک برگه جدید باز می‌شود",
+      "phone_number_label": "شماره تلفن"
     },
-    "prompt_auth": "برای استفاده از این قابلیت، لطفاً وارد شوید."
+    "prompt_auth": "برای استفاده از این قابلیت، لطفاً وارد شوید.",
+    "manage_favorites": {
+      "title": "مدیریت موارد دلخواه"
+    }
   },
   "update_location": {
     "prompt_start_location": "محل شروع شما کجاست؟"
@@ -144,5 +159,7 @@
     "previous": "قبلی",
     "next": "بعدی",
     "go_to": "رفتن به"
-  }
+  },
+  "filter_results_count_one": "نتیجه {{count}}",
+  "filter_results_count_other": "{{count}} نتایج"
 }

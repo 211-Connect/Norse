@@ -9,51 +9,6 @@ export const featureFlags: Tab = {
   name: 'featureFlags',
   fields: [
     {
-      name: 'hideCategoriesHeading',
-      type: 'checkbox',
-      defaultValue: false,
-      access: {
-        create: superAdminOrSupportOrTenantAccess,
-        update: superAdminOrSupportOrTenantAccess,
-      },
-    },
-    {
-      name: 'hideDataProvidersHeading',
-      type: 'checkbox',
-      defaultValue: false,
-      access: {
-        create: superAdminAccess,
-        update: superAdminAccess,
-      },
-    },
-    {
-      name: 'showResourceAttribution',
-      type: 'checkbox',
-      defaultValue: false,
-      access: {
-        create: superAdminAccess,
-        update: superAdminAccess,
-      },
-    },
-    {
-      name: 'showResourceCategories',
-      type: 'checkbox',
-      defaultValue: false,
-      access: {
-        create: superAdminAccess,
-        update: superAdminAccess,
-      },
-    },
-    {
-      name: 'showResourceLastAssuredDate',
-      type: 'checkbox',
-      defaultValue: false,
-      access: {
-        create: superAdminAccess,
-        update: superAdminAccess,
-      },
-    },
-    {
       name: 'showHomePageTour',
       type: 'checkbox',
       defaultValue: false,

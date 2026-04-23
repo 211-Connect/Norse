@@ -5,6 +5,8 @@ import {
   BadgesComponent,
   ResourceNameComponent,
   ServiceNameComponent,
+  LocationNameComponent,
+  LocationNameSubtitleComponent,
   AddressComponent,
   PhoneComponent,
   WebsiteComponent,
@@ -27,6 +29,8 @@ export const searchCardComponentRegistry: Record<
   [SearchCardComponentId.BADGES]: BadgesComponent,
   [SearchCardComponentId.RESOURCE_NAME]: ResourceNameComponent,
   [SearchCardComponentId.SERVICE_NAME]: ServiceNameComponent,
+  [SearchCardComponentId.LOCATION_NAME]: LocationNameComponent,
+  [SearchCardComponentId.LOCATION_NAME_SUBTITLE]: LocationNameSubtitleComponent,
   [SearchCardComponentId.ADDRESS]: AddressComponent,
   [SearchCardComponentId.PHONE]: PhoneComponent,
   [SearchCardComponentId.WEBSITE]: WebsiteComponent,
@@ -73,6 +77,10 @@ export function shouldSearchCardComponentRender(
       return Boolean(result.name);
     case SearchCardComponentId.SERVICE_NAME:
       return Boolean(result.serviceName);
+    case SearchCardComponentId.LOCATION_NAME:
+      return Boolean(result.locationName);
+    case SearchCardComponentId.LOCATION_NAME_SUBTITLE:
+      return Boolean(result.locationName);
     case SearchCardComponentId.PHONE:
       return Boolean(result.phone);
     case SearchCardComponentId.WEBSITE:

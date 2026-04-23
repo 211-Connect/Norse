@@ -22,5 +22,6 @@
       "name": "資源名稱",
       "organization": "提供者名稱"
     }
-  }
+  },
+  "name_unavailable": "姓名不可用"
 }

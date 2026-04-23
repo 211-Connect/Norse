@@ -13,6 +13,8 @@
     "added_to_list_message": "This resource has been added to your list.",
     "already_exists": "Already exists",
     "already_exists_message": "This resource already exists in your list.",
+    "remove_from_list_title": "Remove from list?",
+    "remove_from_list_description": "This resource will be removed from this list. You can add it back later if needed.",
     "removed_from_list": "Removed from list",
     "removed_from_list_message": "This resource has been removed from your list.",
     "updated_list": "Updated list",
@@ -32,7 +34,10 @@
     "back": "Back",
     "hero_title": "Search for resources",
     "query_placeholder": "Food, housing, etc...",
+    "query_input_label": "Search for resources",
     "location_placeholder": "City, state, or ZIP code",
+    "location_input_label": "Search for a location",
+    "search_dialog_description": "Search for resources and update your location.",
     "radius_placeholder": "Radius",
     "miles": "Miles",
     "miles_short": "mi",
@@ -40,6 +45,8 @@
     "taxonomies": "Taxonomies",
     "suggestions": "Suggestions",
     "use_my_location": "Use my location",
+    "change_location_label": "Change location: {{location}}",
+    "open_search_dialog": "Open search dialog",
     "confidential_address": "This location may be confidential or not open to the public. Please choose another provided contact method for this service.",
     "address_unavailable": "Address unavailable",
     "geocoding_error": "Geocoding error",
@@ -47,7 +54,8 @@
     "geocoding_unable_to_retrieve": "Unable to retrieve your location. Please check your browser's location settings and try again.",
     "categories": "Topics",
     "show_all": "Show all ({{count}})",
-    "show_less": "Show less"
+    "show_less": "Show less",
+    "everywhere": "Everywhere"
   },
   "call_to_action": {
     "call": "Call",
@@ -64,10 +72,12 @@
     "delete": "Delete",
     "search": "Search",
     "remove": "Remove",
+    "send": "Send",
     "login": "Login",
     "show_more": "Show more",
     "show_less": "Show less",
-    "print": "Print"
+    "print": "Print",
+    "close": "Close"
   },
   "list": {
     "private": "Private",
@@ -87,6 +97,9 @@
       "add_to_list": "Add to list",
       "not_found": "No lists found",
       "create_new_list": "Create a new one?"
+    },
+    "manage_favorites": {
+      "title": "Manage favorites"
     },
     "remove_from_list": {
       "are_you_sure": "Are you sure you want to remove this favorite from your list?"
@@ -110,6 +123,7 @@
       "share_via": "Share this via",
       "copy_link": "Copy link",
       "copy": "Copy",
+      "opens_in_new_tab": "opens in a new tab",
       "facebook": "Facebook",
       "twitter": "Twitter",
       "linkedin": "LinkedIn",
@@ -120,6 +134,7 @@
       "check_out_this_list": "Check out this list I made!",
       "check_out_this_resource": "Check out this resource I found!",
       "share_sms": "Enter a phone number to share via SMS",
+      "phone_number_label": "Phone number",
       "enter_phone_number": "Enter phone number...",
       "invalid_phone_number": "Invalid phone number",
       "sms_sending_title": "Sending SMS...",
@@ -144,5 +159,12 @@
   },
   "footer": {
     "copyright": "© Copyright {{text}}"
+  },
+  "filter_results_count_one": "{{count}} result",
+  "filter_results_count_other": "{{count}} results",
+  "autocomplete": {
+    "results_available_one": "{{count}} result available",
+    "results_available_other": "{{count}} results available",
+    "no_results": "No results"
   }
 }

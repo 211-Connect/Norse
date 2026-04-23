@@ -9,14 +9,17 @@ export type ResultType = {
   description: string;
   location: Location | null;
   name: string;
+  locationName: string | null;
   phone: string;
   attribution: string | null;
   priority: number;
   serviceName: string;
-  website: string;
+  website: string | null;
   taxonomies: Taxonomy[];
   facets: FacetWithTranslation[] | null | undefined;
   attributeValues: Record<string, string>;
+  currentListId?: string;
+  onRemoveFromList?: (listId: string, favoriteId: string) => void;
 };
 
 export const resultsAtom = atom<ResultType[]>([]);

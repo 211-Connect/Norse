@@ -1,6 +1,6 @@
 'use client';
 
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import {
   Pagination,
   PaginationContent,
@@ -27,6 +27,7 @@ interface CustomPaginationProps {
   activePage: number;
   totalResults: number;
   onPageChange?: (page: number) => void;
+  focusTargetId?: string;
 }
 
 export function CustomPagination({
@@ -36,24 +37,31 @@ export function CustomPagination({
   activePage,
   totalResults,
   onPageChange,
+  focusTargetId,
 }: CustomPaginationProps) {
   const pathname = usePathname();
   const { stringifiedSearchParams, stringifySearchParams } =
     useClientSearchParams();
-  const router = useRouter();
 
-  const changePage = async (newPage: number) => {
+  const queueFocus = useCallback((targetId?: string) => {
+    if (typeof window === 'undefined' || !targetId) return;
+    window.sessionStorage.setItem('pending-search-focus-target', targetId);
+  }, []);
+
+  const createPageHref = useCallback(
+    (page: number) => {
+      const newSearchParams = new URLSearchParams(stringifiedSearchParams);
+      newSearchParams.set('page', page.toString());
+      return `${pathname}${stringifySearchParams(newSearchParams)}`;
+    },
+    [pathname, stringifiedSearchParams, stringifySearchParams],
+  );
+
+  const changePage = useCallback((newPage: number) => {
     if (onPageChange) {
       onPageChange(newPage);
-      return;
     }
-
-    const newSearchParams = new URLSearchParams(stringifiedSearchParams);
-    newSearchParams.set('page', newPage.toString());
-    const newPath = `${pathname}${stringifySearchParams(newSearchParams)}`;
-
-    router.push(newPath);
-  };
+  }, [onPageChange]);
 
   const getPagination = useCallback(() => {
     const _total = Math.max(Math.trunc(total), 0);
@@ -106,10 +114,15 @@ export function CustomPagination({
           {activePage > 1 && (
             <PaginationItem>
               <PaginationPrevious
-                href=""
-                onClick={async (e) => {
-                  e.preventDefault();
-                  await changePage(activePage - 1);
+                href={createPageHref(activePage - 1)}
+                onClick={(e) => {
+                  if (onPageChange) {
+                    e.preventDefault();
+                    changePage(activePage - 1);
+                    return;
+                  }
+
+                  queueFocus(focusTargetId);
                 }}
               />
             </PaginationItem>
@@ -128,10 +141,20 @@ export function CustomPagination({
               <PaginationItem key={idx}>
                 <PaginationLink
                   className="h-[30px] w-[36px]"
-                  href=""
-                  onClick={async (e) => {
-                    e.preventDefault();
-                    await changePage(Number(val));
+                  href={createPageHref(Number(val))}
+                  aria-label={
+                    val === activePage
+                      ? `Page ${val}, current page`
+                      : `Go to page ${val}`
+                  }
+                  onClick={(e) => {
+                    if (onPageChange) {
+                      e.preventDefault();
+                      changePage(Number(val));
+                      return;
+                    }
+
+                    queueFocus(focusTargetId);
                   }}
                   isActive={val === activePage}
                 >
@@ -141,13 +164,18 @@ export function CustomPagination({
             );
           })}
 
-          {totalResults > 1 && activePage !== total && (
+          {totalResults > 0 && activePage !== total && (
             <PaginationItem>
               <PaginationNext
-                href=""
-                onClick={async (e) => {
-                  e.preventDefault();
-                  await changePage(activePage + 1);
+                href={createPageHref(activePage + 1)}
+                onClick={(e) => {
+                  if (onPageChange) {
+                    e.preventDefault();
+                    changePage(activePage + 1);
+                    return;
+                  }
+
+                  queueFocus(focusTargetId);
                 }}
               />
             </PaginationItem>

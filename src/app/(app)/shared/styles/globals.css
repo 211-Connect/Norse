@@ -14,6 +14,26 @@ a:not(:has(> button:only-child)):not([class*='bg-']):not(.border) {
   text-decoration: underline;
 }
 
+.reactour__popover.home-tour-popover {
+  /* Right padding reserves space for the 44px close button at 8px from the edge. */
+  padding: 1.5rem 3.5rem 1rem 1.5rem;
+}
+
+.home-tour-popover .home-tour-navigation {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.home-tour-popover .home-tour-navigation > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -74,4 +94,16 @@ a:not(:has(> button:only-child)):not([class*='bg-']):not(.border) {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.parsed-html-content ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.parsed-html-content ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
 }

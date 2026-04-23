@@ -32,15 +32,11 @@ export type AppConfig = {
     feedbackUrl?: string;
   };
   featureFlags: {
-    hideCategoriesHeading: boolean;
-    hideDataProvidersHeading: boolean;
     requireUserLocation: boolean;
     showFeedbackButtonGlobal: boolean;
     showFeedbackButtonOnResourcePages: boolean;
     showHomePageTour: boolean;
-    showResourceLastAssuredDate: boolean;
     showPrintButton: boolean;
-    showResourceAttribution: boolean;
     showSearchAndResourceServiceName: boolean;
     showSuggestionListTaxonomyBadge: boolean;
     showUseMyLocationButtonOnDesktop: boolean;

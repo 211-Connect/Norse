@@ -47,7 +47,15 @@
     "geocoding_unable_to_retrieve": "Não foi possível obter sua localização. Verifique as configurações de localização do seu navegador e tente novamente.",
     "categories": "Tópicos",
     "show_all": "Mostrar tudo ({{count}})",
-    "show_less": "Mostrar menos"
+    "show_less": "Mostrar menos",
+    "query_input_label": "Pesquisar recursos",
+    "location_input_label": "Pesquisar localização",
+    "change_location_label": "Alterar localização: {{location}}",
+    "open_search_dialog": "Abrir caixa de diálogo de pesquisa",
+    "list_status_one": "1 opção disponível. Use as setas para cima e para baixo para revisar.",
+    "list_status_other": "{{count}} opções disponíveis. Use as setas para cima e para baixo para revisar.",
+    "search_dialog_description": "Pesquise recursos e atualize sua localização.",
+    "everywhere": "Em todo lugar"
   },
   "call_to_action": {
     "call": "Chamar",
@@ -67,7 +75,9 @@
     "login": "Conecte-se",
     "show_more": "Mostrar mais",
     "show_less": "Mostrar menos",
-    "print": "Imprimir"
+    "print": "Imprimir",
+    "close": "Fechar",
+    "send": "Enviar"
   },
   "list": {
     "private": "Privado",
@@ -127,9 +137,14 @@
       "sms_send_success_title": "SMS enviado!",
       "sms_send_success_body": "Sua mensagem foi enviada.",
       "sms_send_failed_title": "Falha no envio do SMS",
-      "sms_send_failed_body": "Sua mensagem não pôde ser enviada."
+      "sms_send_failed_body": "Sua mensagem não pôde ser enviada.",
+      "opens_in_new_tab": "abre em uma nova aba",
+      "phone_number_label": "Número de telefone"
     },
-    "prompt_auth": "Faça login para usar este recurso."
+    "prompt_auth": "Faça login para usar este recurso.",
+    "manage_favorites": {
+      "title": "Gerenciar favoritos"
+    }
   },
   "update_location": {
     "prompt_start_location": "Qual é o seu ponto de partida?"
@@ -144,5 +159,7 @@
     "previous": "Anterior",
     "next": "Próximo",
     "go_to": "Vá para"
-  }
+  },
+  "filter_results_count_one": "{{count}} resultado",
+  "filter_results_count_other": "{{count}} resultados"
 }

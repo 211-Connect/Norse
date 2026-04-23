@@ -50,12 +50,7 @@ export function DistanceSelect({ className = '' }: DistanceSelectProps) {
 
   return (
     <div className={cn('flex items-center gap-2', className)}>
-      <p className="text-sm font-medium">
-        {t('search.radius_placeholder', {
-          defaultValue: 'radius',
-        })}
-        :
-      </p>
+      <p className="text-sm font-medium">{t('search.radius_placeholder')}:</p>
       <Select
         onValueChange={setDistance}
         value={distance}
@@ -63,15 +58,9 @@ export function DistanceSelect({ className = '' }: DistanceSelectProps) {
       >
         <SelectTrigger
           className="w-[125px]"
-          aria-label={t('search.radius_placeholder', {
-            defaultValue: 'radius',
-          })}
+          aria-label={t('search.radius_placeholder')}
         >
-          <SelectValue
-            placeholder={t('search.radius_placeholder', {
-              defaultValue: 'radius',
-            })}
-          />
+          <SelectValue placeholder={t('search.radius_placeholder')} />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>

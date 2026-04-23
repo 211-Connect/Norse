@@ -45,7 +45,7 @@ export function CardLayoutRenderer({
           key={
             isSeparator
               ? `separator-${itemIndex}`
-              : `${item.componentId}-${itemIndex}`
+              : `item-${item.componentId}-${itemIndex}`
           }
           result={result}
           customAttribute={item.customAttribute}
@@ -69,8 +69,11 @@ export function CardLayoutRenderer({
 
   return (
     <>
-      <Card id={result._id} className="flex flex-col print:border-none">
-        <CardContent className="flex flex-col gap-2">
+      <Card
+        id={result._id}
+        className="flex flex-col overflow-hidden print:border-none"
+      >
+        <CardContent className="flex min-w-0 flex-col gap-2">
           {renderedComponents}
         </CardContent>
       </Card>

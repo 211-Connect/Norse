@@ -12,6 +12,7 @@ import { CreateAListButton } from './create-a-list-button';
 import { FavoriteList } from './favorite-list';
 import { FavoritesPagination } from './favorites-pagination';
 import { NoListsCard } from './no-lists-card';
+import { FAVORITES_SEARCH_DEBOUNCE_DELAY } from '@/app/(app)/shared/lib/constants';
 
 export function FavoriteListsSection() {
   const { data: favoriteLists, totalCount } = useAtomValue(
@@ -55,6 +56,7 @@ export function FavoriteListsSection() {
             placeholder={t('modal.add_to_list.search_list')}
             initialValue={initialSearch}
             onChange={handleSearch}
+            debounceDelay={FAVORITES_SEARCH_DEBOUNCE_DELAY}
           />
         )}
       </div>

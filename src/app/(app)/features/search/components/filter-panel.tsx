@@ -27,6 +27,8 @@ import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { FiltersMap } from '@/types/search';
 
 const MAX_VISIBLE_FILTERS = 6;
+const SEARCH_RESULTS_HEADING_ID = 'search-results-heading';
+const PENDING_FOCUS_TARGET_STORAGE_KEY = 'pending-search-focus-target';
 
 type ActiveFilters = Record<string, string[]>;
 
@@ -45,10 +47,22 @@ const Filters = ({ filters, filterKeys }: FiltersProps) => {
   const [filtersExpanded, setFiltersExpanded] = useState<
     Record<string, boolean>
   >({});
+  const expandButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const firstHiddenFilterRefs = useRef<
+    Record<string, HTMLButtonElement | null>
+  >({});
 
   useEffect(() => {
     setIsPending(false);
   }, [stringifiedSearchParams]);
+
+  const queueResultsFocus = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    window.sessionStorage.setItem(
+      PENDING_FOCUS_TARGET_STORAGE_KEY,
+      SEARCH_RESULTS_HEADING_ID,
+    );
+  }, []);
 
   const navigate = useCallback(
     (url: string) => {
@@ -66,15 +80,19 @@ const Filters = ({ filters, filterKeys }: FiltersProps) => {
 
   const applyFilters = useCallback(
     (newFilters?: ActiveFilters) => {
+      queueResultsFocus();
       const params = {
         ...searchParamsObject,
         ...(newFilters ? { filters: newFilters } : {}),
       };
       if (!newFilters) delete params.filters;
+      if ('page' in params) {
+        delete params.page;
+      }
       const str = qs.stringify(params);
       navigate(`/search${str ? `?${str}` : ''}`);
     },
-    [searchParamsObject, navigate],
+    [searchParamsObject, navigate, queueResultsFocus],
   );
 
   const toggleFilter = useCallback(
@@ -90,8 +108,21 @@ const Filters = ({ filters, filterKeys }: FiltersProps) => {
     [activeFilters, applyFilters],
   );
 
-  const toggleExpanded = useCallback((key: string) => {
-    setFiltersExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
+  const toggleExpanded = useCallback((key: string, expanded: boolean) => {
+    setFiltersExpanded((prev) => ({ ...prev, [key]: expanded }));
+
+    window.requestAnimationFrame(() => {
+      if (expanded) {
+        firstHiddenFilterRefs.current[key]?.focus();
+        firstHiddenFilterRefs.current[key]?.scrollIntoView({
+          block: 'nearest',
+        });
+        return;
+      }
+
+      expandButtonRefs.current[key]?.focus({ preventScroll: true });
+      expandButtonRefs.current[key]?.scrollIntoView({ block: 'nearest' });
+    });
   }, []);
 
   const currentFilters = activeFilters;
@@ -101,7 +132,7 @@ const Filters = ({ filters, filterKeys }: FiltersProps) => {
   return (
     <div className="py-5">
       <div className="flex items-center justify-between">
-        <h3 className="font-bold">{t('filters', 'Filters')}</h3>
+        <h2 className="font-bold">{t('filters', 'Filters')}</h2>
         <Button
           variant="ghost"
           size="sm"
@@ -117,6 +148,7 @@ const Filters = ({ filters, filterKeys }: FiltersProps) => {
       <div className="flex flex-col gap-4">
         {filterKeys.map((key) => {
           const heading = filters[key].name;
+          const sanitizedKey = key.toLowerCase().replace(/[^a-z0-9]+/g, '-');
           const filterList = filters[key].buckets.filter(
             (b) =>
               b.key != null &&
@@ -125,45 +157,120 @@ const Filters = ({ filters, filterKeys }: FiltersProps) => {
               b.display !== '',
           );
           const isExpanded = filtersExpanded[key] ?? false;
-          const visibleList = isExpanded
-            ? filterList
-            : filterList.slice(0, MAX_VISIBLE_FILTERS);
+          const visibleList = filterList.slice(0, MAX_VISIBLE_FILTERS);
+          const hiddenList = filterList.slice(MAX_VISIBLE_FILTERS);
+          const expandedListId = `filter-group-options-${sanitizedKey}`;
 
           return (
-            <div key={key} className="flex flex-col gap-1">
+            <fieldset key={key} className="flex flex-col gap-1">
+              <legend className="sr-only">{heading}</legend>
               <h3 className="font-medium">{heading}</h3>
               <div className="flex flex-col gap-2">
-                {visibleList.map((b) => (
-                  <div
-                    key={b.key}
-                    className="flex items-center justify-between"
-                  >
-                    <label
-                      className="flex items-center gap-2 text-sm"
-                      htmlFor={b.key}
+                {visibleList.map((b, index) => {
+                  const countId = `filter-count-${sanitizedKey}-${index}`;
+
+                  return (
+                    <div
+                      key={b.key}
+                      className="flex items-center justify-between"
                     >
-                      <Checkbox
-                        aria-label={b.key}
-                        id={b.key}
-                        disabled={isPending}
-                        checked={currentFilters[key]?.includes(b.key) ?? false}
-                        onCheckedChange={(checked) =>
-                          toggleFilter(key, b.key, !!checked)
-                        }
-                      />
-                      {b.display}
-                    </label>
-                    <Badge className="bg-[rgba(0,0,0,0.03)]" variant="outline">
-                      {b.doc_count}
-                    </Badge>
+                      <label
+                        className="flex items-center gap-2 text-sm"
+                        htmlFor={b.key}
+                      >
+                        <Checkbox
+                          aria-describedby={countId}
+                          aria-label={b.key}
+                          id={b.key}
+                          disabled={isPending}
+                          checked={
+                            currentFilters[key]?.includes(b.key) ?? false
+                          }
+                          onCheckedChange={(checked) =>
+                            toggleFilter(key, b.key, !!checked)
+                          }
+                        />
+                        {b.display}
+                      </label>
+                      <Badge
+                        className="bg-[rgba(0,0,0,0.03)]"
+                        variant="outline"
+                      >
+                        <span
+                          id={countId}
+                          aria-label={t('filter_results_count', {
+                            count: b.doc_count,
+                          })}
+                        >
+                          {b.doc_count}
+                        </span>
+                      </Badge>
+                    </div>
+                  );
+                })}
+                {hiddenList.length > 0 && isExpanded && (
+                  <div id={expandedListId} className="flex flex-col gap-2">
+                    {hiddenList.map((b, index) => {
+                      const hiddenIndex = visibleList.length + index;
+                      const countId = `filter-count-${sanitizedKey}-${hiddenIndex}`;
+
+                      return (
+                        <div
+                          key={b.key}
+                          className="flex items-center justify-between"
+                        >
+                          <label
+                            className="flex items-center gap-2 text-sm"
+                            htmlFor={b.key}
+                          >
+                            <Checkbox
+                              ref={(element) => {
+                                if (index === 0) {
+                                  firstHiddenFilterRefs.current[key] = element;
+                                }
+                              }}
+                              aria-describedby={countId}
+                              aria-label={b.key}
+                              id={b.key}
+                              disabled={isPending}
+                              checked={
+                                currentFilters[key]?.includes(b.key) ?? false
+                              }
+                              onCheckedChange={(checked) =>
+                                toggleFilter(key, b.key, !!checked)
+                              }
+                            />
+                            {b.display}
+                          </label>
+                          <Badge
+                            className="bg-[rgba(0,0,0,0.03)]"
+                            variant="outline"
+                          >
+                            <span
+                              id={countId}
+                              aria-label={t('filter_results_count', {
+                                count: b.doc_count,
+                              })}
+                            >
+                              {b.doc_count}
+                            </span>
+                          </Badge>
+                        </div>
+                      );
+                    })}
                   </div>
-                ))}
+                )}
                 {filterList.length > MAX_VISIBLE_FILTERS && (
                   <Button
+                    ref={(element) => {
+                      expandButtonRefs.current[key] = element;
+                    }}
                     variant="link"
                     size="sm"
                     className="w-fit px-0"
-                    onClick={() => toggleExpanded(key)}
+                    aria-controls={expandedListId}
+                    aria-expanded={isExpanded}
+                    onClick={() => toggleExpanded(key, !isExpanded)}
                   >
                     {isExpanded
                       ? t('search.show_less', { ns: 'common' })
@@ -174,7 +281,7 @@ const Filters = ({ filters, filterKeys }: FiltersProps) => {
                   </Button>
                 )}
               </div>
-            </div>
+            </fieldset>
           );
         })}
       </div>

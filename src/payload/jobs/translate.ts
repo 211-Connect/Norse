@@ -34,6 +34,8 @@ const SEARCH_TEXT_FIELDS = [
 
 const CALLOUT_TEXT_FIELDS = ['description', 'title'] as const;
 
+const HIGHLIGHT_TEXT_FIELDS = ['title', 'description', 'buttonText'] as const;
+
 const log = createLogger('translate');
 
 async function executeBatchTranslation(
@@ -476,6 +478,47 @@ export const translate: TaskConfig<'translate'> = {
           });
         }
 
+        // Highlights Section Title
+        if (
+          shouldTranslate(
+            englishResourceDirectory.highlights?.sectionTitle,
+            targetDoc.highlights?.sectionTitle,
+            'highlights.sectionTitle',
+          )
+        ) {
+          fieldsToTranslate.push({
+            path: 'highlights.sectionTitle',
+            value: englishResourceDirectory.highlights!.sectionTitle!,
+            locale: targetLocale,
+          });
+        }
+
+        // Highlights Items
+        englishResourceDirectory.highlights?.items?.forEach(
+          (sourceHighlight, index) => {
+            const targetHighlight = targetDoc.highlights?.items?.[index];
+
+            HIGHLIGHT_TEXT_FIELDS.forEach((field) => {
+              const sourceValue = sourceHighlight[field];
+              const targetValue = targetHighlight?.[field];
+
+              if (
+                shouldTranslate(
+                  sourceValue,
+                  targetValue,
+                  `highlights.items.${index}.${field}`,
+                )
+              ) {
+                fieldsToTranslate.push({
+                  path: `highlights.items.${index}.${field}`,
+                  value: sourceValue!,
+                  locale: targetLocale,
+                });
+              }
+            });
+          },
+        );
+
         if (fieldsToTranslate.length === 0) {
           log.debug(
             { targetLocale, tenantId },
@@ -787,6 +830,52 @@ export const translate: TaskConfig<'translate'> = {
           } else if (isEmpty(targetDoc.newLayout?.callouts?.title)) {
             updateData.newLayout!.callouts!.title =
               englishResourceDirectory.newLayout.callouts.title;
+          }
+        }
+
+        // Highlights
+        if (englishResourceDirectory.highlights) {
+          updateData.highlights = {
+            ...targetDoc.highlights,
+            ...englishResourceDirectory.highlights,
+          };
+
+          // Highlights Section Title
+          const sectionTitlePath = 'highlights.sectionTitle';
+          if (translationsByPath[sectionTitlePath]) {
+            updateData.highlights!.sectionTitle =
+              translationsByPath[sectionTitlePath];
+          } else if (isEmpty(targetDoc.highlights?.sectionTitle)) {
+            updateData.highlights!.sectionTitle =
+              englishResourceDirectory.highlights.sectionTitle;
+          }
+
+          // Highlights Items
+          if (englishResourceDirectory.highlights.items) {
+            updateData.highlights!.items =
+              englishResourceDirectory.highlights.items.map(
+                (sourceHighlight, index) => {
+                  const targetHighlight = targetDoc.highlights?.items?.[index];
+                  const newHighlight = {
+                    ...sourceHighlight,
+                    ...(targetHighlight || {}),
+                  };
+
+                  HIGHLIGHT_TEXT_FIELDS.forEach((field) => {
+                    const path = `highlights.items.${index}.${field}`;
+                    if (translationsByPath[path]) {
+                      newHighlight[field] = translationsByPath[path];
+                    } else if (isEmpty(targetHighlight?.[field])) {
+                      const sourceValue = sourceHighlight[field];
+                      if (sourceValue) {
+                        newHighlight[field] = sourceValue;
+                      }
+                    }
+                  });
+
+                  return newHighlight;
+                },
+              );
           }
         }
 

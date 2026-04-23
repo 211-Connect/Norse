@@ -11,19 +11,20 @@ import { searchAtom, searchLocationAtom } from '../store/search';
 import { useLocations } from './api/use-locations';
 import { useAppConfig } from './use-app-config';
 import { SubTopic } from '@/types/topics';
+import { LOCATION_SEARCH_DEBOUNCE_DELAY, SEARCH_DEBOUNCE_DELAY } from '../lib/constants';
 
 export const useSearchResources = () => {
   const search = useAtomValue(searchAtom);
   const setSearch = useSetAtom(searchAtom);
 
-  const debouncedSearchTerm = useDebounce(search.searchTerm, 1000);
+  const debouncedSearchTerm = useDebounce(search.searchTerm, SEARCH_DEBOUNCE_DELAY);
   const { data: taxonomies, displayData: displayTaxonomies } =
     useTaxonomies(debouncedSearchTerm);
   const suggestions = useSuggestions();
   const topics = useTopics();
 
   const searchLocation = useAtomValue(searchLocationAtom);
-  const debouncedSearchLocation = useDebounce(searchLocation, 1000);
+  const debouncedSearchLocation = useDebounce(searchLocation, LOCATION_SEARCH_DEBOUNCE_DELAY);
   const { data: locations } = useLocations(debouncedSearchLocation);
 
   const reducedTopics: {

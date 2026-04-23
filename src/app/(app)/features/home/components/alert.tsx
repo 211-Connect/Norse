@@ -45,7 +45,7 @@ export default function Alert({ itemsDirection }: AlertProps) {
             getDirectionClass(itemsDirection),
           )}
         >
-          <AlertCircle className="size-8 shrink-0" />
+          <AlertCircle className="size-8 shrink-0" aria-hidden="true" />
 
           <p className="text-lg font-semibold">{appConfig.alert.text}</p>
 

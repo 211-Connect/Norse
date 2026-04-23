@@ -119,22 +119,49 @@ export const config = {
   ],
 };
 
+const MINUTE = 60;
+const HOUR = 3600;
+
+const CDN_CACHE_POLICIES = {
+  legal: {
+    pattern: /\/legal\//,
+    cacheControl: `public, max-age=${1 * HOUR}, s-maxage=${24 * HOUR}, stale-while-revalidate=${12 * HOUR}`,
+  },
+  home: {
+    pattern: /^\/[a-z]{2}(\/)?$/,
+    cacheControl: `public, max-age=${10 * MINUTE}, s-maxage=${30 * MINUTE}, stale-while-revalidate=${10 * MINUTE}`,
+  },
+  topics: {
+    pattern: /\/topics(\/)?$/,
+    cacheControl: `public, max-age=${30 * MINUTE}, s-maxage=${1 * HOUR}, stale-while-revalidate=${30 * MINUTE}`,
+  },
+  resourceDetail: {
+    pattern: /\/search\/[^/?]+$/,
+    cacheControl: `public, max-age=${30 * MINUTE}, s-maxage=${1 * HOUR}, stale-while-revalidate=${10 * MINUTE}`,
+  },
+  detailsOriginal: {
+    pattern: /\/details\/original/,
+    cacheControl: `public, max-age=${30 * MINUTE}, s-maxage=${1 * HOUR}, stale-while-revalidate=${10 * MINUTE}`,
+  },
+} as const;
+
 function cacheControlMiddleware(response: NextResponse, pathname: string) {
   const isProduction = process.env.NODE_ENV === 'production';
 
-  const isResourceDetailPage = /\/search\/[^/?]+/.test(pathname);
-  const isDetailsOriginalPage = pathname.includes('/details/original');
-
-  if (isProduction && (isResourceDetailPage || isDetailsOriginalPage)) {
-    response.headers.set(
-      'Cache-Control',
-      'public, max-age=1800, s-maxage=3600, stale-while-revalidate=600',
-    );
-    // Ensure CDN/proxies cache separately per cookie to prevent cross-user data leakage
-    response.headers.set('Vary', 'Cookie');
-  } else {
+  if (!isProduction) {
     response.headers.set('Cache-Control', 'no-cache');
+    return;
   }
+
+  for (const [_name, policy] of Object.entries(CDN_CACHE_POLICIES)) {
+    if (policy.pattern.test(pathname)) {
+      response.headers.set('Cache-Control', policy.cacheControl);
+      response.headers.set('Vary', 'Cookie');
+      return;
+    }
+  }
+
+  response.headers.set('Cache-Control', 'no-cache');
 }
 
 function robotsMiddleware(response: NextResponse, pathname: string) {
@@ -172,7 +199,34 @@ function generateNonce() {
 
 // Add a session_id to the cookies of the user for tracking purposes
 export async function middleware(request: NextRequest) {
+  if (request.method === 'POST' && request.url.includes('/[locale]')) {
+    edgeLog('warn', 'potentially_malicious_request_blocked', {
+      url: request.url,
+      method: request.method,
+      userAgent: request.headers.get('user-agent'),
+      referer: request.headers.get('referer'),
+      xForwardedFor: request.headers.get('x-forwarded-for'),
+    });
+    return new Response('Aborted by middleware', { status: 403 });
+  }
+
   const nonce = generateNonce();
+
+  // Validate Origin header to prevent malicious payloads (e.g., JNDI injection attempts)
+  const originHeader = request.headers.get('origin');
+  if (originHeader) {
+    const validOrigin = getOriginFromUrl(originHeader);
+    if (!validOrigin) {
+      edgeLog('warn', 'invalid_origin_header_blocked', {
+        origin: originHeader,
+        url: request.url,
+        method: request.method,
+        userAgent: request.headers.get('user-agent'),
+      });
+      // Return 400 Bad Request for invalid Origin header
+      return new NextResponse('Invalid Origin header', { status: 400 });
+    }
+  }
 
   // Use raw host for headers that require it, but parsed host for logic/identification
   const rawHost = request.headers.get('host') || '';

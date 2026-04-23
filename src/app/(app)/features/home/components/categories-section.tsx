@@ -12,6 +12,7 @@ import { Button } from '@/app/(app)/shared/components/ui/button';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { Separator } from '@/app/(app)/shared/components/ui/separator';
 import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
+import { NEW_TAB_WARNING } from '@/app/(app)/shared/lib/constants';
 
 type Props = {
   topic: Topic;
@@ -45,33 +46,48 @@ const Category = ({
           />
         )}
 
-        <div className="flex flex-col">
-          <h3 className="break-word mb-1 text-xl font-semibold">{name}</h3>
+        <div className="min-w-0 flex-1">
+          <h3 className="mb-1 break-words text-xl font-semibold">{name}</h3>
 
-          {subtopics.map((el, index) => (
-            <Link
-              className="break-word flex items-center gap-1 rounded-md p-2 pl-1 pr-1 hover:bg-primary/5"
-              key={`${el.name}-${index}`}
-              href={`${
-                el.href
-                  ? el.href
-                  : `/search?query=${encodeURIComponent(
-                      el.query ?? '',
-                    )}&query_label=${encodeURIComponent(
-                      el.name,
-                    )}&query_type=${encodeURIComponent(el.queryType ?? '')}`
-              }`}
-              prefetch={false}
-              target={el.target}
-            >
-              {el.name}
-              {el.target === '_blank' && el.href ? (
-                <ExternalLink className="size-4" />
-              ) : (
-                false
-              )}
-            </Link>
-          ))}
+          <ul className="space-y-1" aria-label={name}>
+            {subtopics.map((el, index) => {
+              const opensInNewTab = el.target === '_blank' && !!el.href;
+
+              return (
+                <li key={el.name}>
+                  <Link
+                    className="flex items-center gap-1 rounded-md px-2 py-2 text-sm break-words hover:bg-primary hover:text-primary-foreground focus-visible:bg-primary focus-visible:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    href={`${
+                      el.href
+                        ? el.href
+                        : `/search?query=${encodeURIComponent(
+                            el.query ?? '',
+                          )}&query_label=${encodeURIComponent(
+                            el.name,
+                          )}&query_type=${encodeURIComponent(
+                            el.queryType ?? '',
+                          )}`
+                    }`}
+                    prefetch={false}
+                    target={el.target}
+                    aria-label={
+                      opensInNewTab
+                        ? `${el.name}${NEW_TAB_WARNING}`
+                        : undefined
+                    }
+                  >
+                    <span className="min-w-0 break-words">{el.name}</span>
+                    {opensInNewTab ? (
+                      <>
+                        <ExternalLink className="size-4 shrink-0" aria-hidden="true" />
+                        <span className="sr-only">({NEW_TAB_WARNING})</span>
+                      </>
+                    ) : null}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
         </div>
       </div>
     );
@@ -120,7 +136,6 @@ export function CategoriesSection({
   const { t } = useTranslation();
   const appConfig = useAppConfig();
   const topics = useTopics();
-  const hideCategoriesHeading = useFlag('hideCategoriesHeading');
 
   if (topics.length === 0) return null;
 
@@ -129,25 +144,23 @@ export function CategoriesSection({
 
   return (
     <div className={cn('categories container mx-auto', className)}>
-      {!hideCategoriesHeading && (
-        <div className="mb-10">
-          <h2 className="text-center text-3xl font-bold">
-            {appConfig.topics.customHeading ||
-              t('search.categories', { ns: 'common' })}
-          </h2>
-          <Separator className="my-3" />
-          {backText && (
-            <Link href="/">
-              <Button variant="link" className="">
-                <ChevronLeft className="size-4" />
-                {backText}
-              </Button>
-            </Link>
-          )}
-        </div>
-      )}
+      <div className="mb-10">
+        <h2 className="text-center text-3xl font-bold">
+          {appConfig.topics.customHeading ||
+            t('search.categories', { ns: 'common' })}
+        </h2>
+        <Separator className="my-3" />
+        {backText && (
+          <Link href="/">
+            <Button variant="link" className="">
+              <ChevronLeft className="size-4" />
+              {backText}
+            </Button>
+          </Link>
+        )}
+      </div>
 
-      <div className="grid grid-cols-1 justify-center gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-1 justify-center gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
         {topics.map((topic) => (
           <Category
             key={topic.name}

@@ -47,7 +47,15 @@
     "geocoding_unable_to_retrieve": "No se puede recuperar su ubicación. Compruebe la configuración de ubicación de su navegador y vuelva a intentarlo.",
     "categories": "Temas",
     "show_all": "Mostrar todo ({{count}})",
-    "show_less": "Mostrar menos"
+    "show_less": "Mostrar menos",
+    "query_input_label": "Buscar recursos",
+    "location_input_label": "Buscar una ubicación",
+    "change_location_label": "Cambiar ubicación: {{location}}",
+    "open_search_dialog": "Abrir cuadro de diálogo de búsqueda",
+    "list_status_one": "Hay 1 opción disponible. Utilice las teclas de flecha arriba y abajo para revisar.",
+    "list_status_other": "{{count}} opciones disponibles. Utilice las teclas de flecha arriba y abajo para revisarlas.",
+    "search_dialog_description": "Busca recursos y actualiza tu ubicación.",
+    "everywhere": "En todas partes"
   },
   "call_to_action": {
     "call": "Llamar",
@@ -64,10 +72,12 @@
     "delete": "Borrar",
     "search": "Buscar",
     "remove": "Eliminar",
+    "send": "Enviar",
     "login": "Iniciar sesión",
     "show_more": "Mostrar más",
     "show_less": "Mostrar menos",
-    "print": "Impresión"
+    "print": "Imprimir",
+    "close": "Cerrar"
   },
   "list": {
     "private": "Privado",
@@ -110,16 +120,18 @@
       "share_via": "Compártelo a través de",
       "copy_link": "Copiar enlace",
       "copy": "Copiar",
+      "opens_in_new_tab": "se abre en una nueva pestaña",
       "facebook": "Facebook (en inglés)",
       "twitter": "Twitter",
       "linkedin": "LinkedIn (en inglés)",
       "sms": "SMS",
       "email": "Correo electrónico",
-      "print": "Impresión",
+      "print": "Imprimir",
       "copied": "¡Copiado!",
       "check_out_this_list": "¡Echa un vistazo a esta lista que hice!",
       "check_out_this_resource": "¡Echa un vistazo a este recurso que encontré!",
       "share_sms": "Ingresa un número de teléfono para compartir a través de SMS",
+      "phone_number_label": "Número de teléfono",
       "enter_phone_number": "Ingresa el número de teléfono...",
       "invalid_phone_number": "Número de teléfono no válido",
       "sms_sending_title": "Envío de SMS...",
@@ -129,7 +141,10 @@
       "sms_send_failed_title": "Error en el envío de SMS",
       "sms_send_failed_body": "No se pudo enviar el mensaje."
     },
-    "prompt_auth": "Inicie sesión para utilizar esta función."
+    "prompt_auth": "Inicie sesión para utilizar esta función.",
+    "manage_favorites": {
+      "title": "Gestionar favoritos"
+    }
   },
   "update_location": {
     "prompt_start_location": "¿Cuál es tu punto de partida?"
@@ -144,5 +159,7 @@
     "previous": "Anterior",
     "next": "Próximo",
     "go_to": "Ir a"
-  }
+  },
+  "filter_results_count_one": "{{count}} resultado",
+  "filter_results_count_other": "{{count}} resultados"
 }

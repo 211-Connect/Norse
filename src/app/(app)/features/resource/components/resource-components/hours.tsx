@@ -12,7 +12,15 @@ export function HoursComponent({ resource }: { resource: Resource }) {
     return null;
   }
 
-  const description = resource.hours.replaceAll(';', '\n');
+  const hours = resource.hours.replaceAll(';', '\n');
+  const hoursDetails = resource.hoursDescription;
 
-  return <Datum icon={Clock} title={t('hours')} description={description} />;
+  return (
+    <Datum
+      icon={Clock}
+      title={t('hours')}
+      description={hours}
+      subdescription={hoursDetails}
+    />
+  );
 }

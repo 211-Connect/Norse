@@ -14,9 +14,14 @@ import { useMainSearchLayoutContext } from './main-search-layout/main-search-lay
 interface SearchBarProps {
   focusByDefault?: boolean;
   inputId?: string;
+  enterKeyFocusTargetId?: string;
 }
 
-export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
+export function SearchBar({
+  focusByDefault = false,
+  inputId,
+  enterKeyFocusTargetId,
+}: SearchBarProps) {
   const appConfig = useAppConfig();
   const { t } = useTranslation('common');
   const prevSearchTerm = useAtomValue(prevSearchTermAtom);
@@ -134,6 +139,7 @@ export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
   return (
     <Autocomplete
       className="search-box"
+      readerLabel={t('search.query_input_label')}
       inputProps={{
         autoFocus: focusByDefault,
         id: inputId,
@@ -142,12 +148,15 @@ export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
           t('search.query_placeholder'),
       }}
       defaultOpen={focusByDefault}
+      Icon={SearchIcon}
       options={options}
       onInputChange={handleInputChange}
       onValueChange={setSearchTerm}
-      optionsPopoverClassName="max-h-[calc(var(--vh)-240px)] mt-[110px] sm:max-h-[calc(var(--vh)-360px)]"
+      clearButtonLabel={t('call_to_action.remove')}
       value={searchTerm}
-      blurOnOptionsInteraction
+      enterKeyBehavior={enterKeyFocusTargetId ? 'focus-target' : 'submit-form'}
+      enterKeyFocusTargetId={enterKeyFocusTargetId}
+      positionBelowElementId="search-form-inputs"
     />
   );
 }

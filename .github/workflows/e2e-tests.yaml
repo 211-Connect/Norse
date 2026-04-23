@@ -40,8 +40,12 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run E2E tests
-        run: npm run test:e2e
-
+        run: >
+          npx playwright test
+          --project=search-taxonomy
+          --project=translations
+          --project=favorites
+          --project=accessibility
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v6

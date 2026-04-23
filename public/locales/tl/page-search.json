@@ -22,5 +22,6 @@
       "name": "Pangalan ng Mapagkukunan",
       "organization": "Pangalan ng Tagapagbigay ng Serbisyo"
     }
-  }
+  },
+  "name_unavailable": "Hindi magagamit ang pangalan"
 }

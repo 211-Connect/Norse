@@ -1,7 +1,14 @@
 'use client';
 
 import { SearchIcon } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import {
+  MutableRefObject,
+  Ref,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAtomValue } from 'jotai';
 
@@ -9,21 +16,24 @@ import {
   AddMyLocationButton,
   AddMyLocationButtonProps,
 } from '../add-my-location-button';
-import { Input } from '../../ui/input';
 import { SearchDialog, SearchDialogProps } from '../search-dialog';
 import { searchLocationAtom, searchTermAtom } from '../../../store/search';
+import { SEARCH_DIALOG_ID } from '../../../lib/constants';
 import { cn } from '../../../lib/utils';
 import { useAppConfig } from '../../../hooks/use-app-config';
+import { Button } from '../../ui/button';
 import { MainSearchLayoutContextProvider } from './main-search-layout-context';
 
 interface MainSearchLayoutProps {
   addMyLocationButtonVariant?: AddMyLocationButtonProps['variant'];
   className?: string;
+  searchTriggerRef?: Ref<HTMLButtonElement>;
 }
 
 export function MainSearchLayout({
   addMyLocationButtonVariant,
   className = '',
+  searchTriggerRef: externalSearchTriggerRef,
 }: MainSearchLayoutProps) {
   const appConfig = useAppConfig();
   const { t } = useTranslation();
@@ -34,13 +44,28 @@ export function MainSearchLayout({
   const [dialogOpened, setDialogOpened] = useState(false);
   const [focusByDefault, setFocusByDefault] =
     useState<SearchDialogProps['focusByDefault']>('search');
+  const searchTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const addMyLocationButtonRef = useRef<HTMLButtonElement | null>(null);
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      setDialogOpened(true);
-    }
-  }, []);
+  const setSearchTriggerRef = useCallback(
+    (element: HTMLButtonElement | null) => {
+      searchTriggerRef.current = element;
+
+      if (!externalSearchTriggerRef) {
+        return;
+      }
+
+      if (typeof externalSearchTriggerRef === 'function') {
+        externalSearchTriggerRef(element);
+        return;
+      }
+
+      (
+        externalSearchTriggerRef as MutableRefObject<HTMLButtonElement | null>
+      ).current = element;
+    },
+    [externalSearchTriggerRef],
+  );
 
   const openSearchDialog = useCallback(
     (location: SearchDialogProps['focusByDefault']) => {
@@ -50,26 +75,53 @@ export function MainSearchLayout({
     [],
   );
 
+  const searchTriggerText = useMemo(() => {
+    if (searchTerm.trim().length > 0) {
+      return searchTerm;
+    }
+
+    return (
+      appConfig.search.texts?.queryInputPlaceholder ||
+      t('search.query_placeholder', { ns: 'common' })
+    );
+  }, [appConfig.search.texts?.queryInputPlaceholder, searchTerm, t]);
+
   return (
     <MainSearchLayoutContextProvider>
       <div className="flex w-full flex-col items-start gap-2">
         <div className={cn('relative w-full', className)}>
-          <Input
-            aria-label="open-search-dialog"
+          <Button
+            ref={setSearchTriggerRef}
+            type="button"
+            variant="outline"
+            aria-controls={SEARCH_DIALOG_ID}
+            aria-expanded={dialogOpened}
+            aria-haspopup="dialog"
+            aria-label={t('search.open_search_dialog')}
             data-testid="search-trigger"
             onClick={() => openSearchDialog('search')}
-            onKeyDown={handleKeyDown}
-            readOnly
-            className="search-box h-10 rounded-lg border-[#00000080] bg-white pl-[2.7rem] focus:border-primary"
-            placeholder={
-              appConfig.search.texts?.queryInputPlaceholder ||
-              t('search.query_placeholder', { ns: 'common' })
-            }
-            value={searchTerm}
+            className={cn(
+              'search-box flex h-auto min-h-10 w-full justify-start rounded-lg border-[#00000080] bg-white py-2 pl-[2.7rem] pr-3 text-left text-xs font-normal shadow-sm hover:bg-white',
+            )}
+          >
+            <span
+              className={cn(
+                'block whitespace-normal break-words',
+                searchTerm.trim().length > 0
+                  ? 'text-foreground'
+                  : 'text-muted-foreground',
+              )}
+            >
+              {searchTriggerText}
+            </span>
+          </Button>
+          <SearchIcon
+            className="absolute left-[15px] top-2 size-6 text-primary"
+            aria-hidden="true"
           />
-          <SearchIcon className="absolute left-[15px] top-2 size-6 text-primary" />
         </div>
         <AddMyLocationButton
+          buttonRef={addMyLocationButtonRef}
           variant={addMyLocationButtonVariant}
           location={searchLocation}
           onClick={() => openSearchDialog('location')}
@@ -79,6 +131,11 @@ export function MainSearchLayout({
         focusByDefault={focusByDefault}
         open={dialogOpened}
         setOpen={setDialogOpened}
+        restoreFocusElement={
+          focusByDefault === 'location'
+            ? addMyLocationButtonRef.current
+            : searchTriggerRef.current
+        }
       />
     </MainSearchLayoutContextProvider>
   );

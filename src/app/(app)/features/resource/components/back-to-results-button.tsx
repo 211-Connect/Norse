@@ -1,30 +1,45 @@
 'use client';
 
-import { Button } from '@/app/(app)/shared/components/ui/button';
+import NextLink from 'next/link';
+import { Button, buttonVariants } from '@/app/(app)/shared/components/ui/button';
+import { cn } from '@/app/(app)/shared/lib/utils';
+import { createLinkEvent } from '@/app/(app)/shared/lib/google-tag-manager';
 import { usePrevUrl } from '@/app/(app)/shared/hooks/use-prev-url';
 import { ChevronLeft } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export function BackToResultsButton() {
-  const router = useRouter();
   const prevUrl = usePrevUrl();
   const { t } = useTranslation('page-resource');
 
-  const isSearchPage = prevUrl?.includes('/search');
+  const [backUrl, setBackUrl] = useState<string | 'loading'>('loading');
 
-  const handleClick = () => {
-    if (isSearchPage && prevUrl) {
-      router.push(prevUrl);
+  useEffect(() => {
+    if (prevUrl && /\/search\/?(\?|$)/.test(prevUrl)) {
+      setBackUrl(prevUrl);
     } else {
-      router.back();
+      setBackUrl('/');
     }
-  };
+  }, [prevUrl]);
+
+  if (backUrl === 'loading') {
+    return (
+      <Button variant="outline" className="flex gap-1" disabled>
+        <ChevronLeft aria-hidden="true" className="size-4" />
+        {t('back_to_results')}
+      </Button>
+    );
+  }
 
   return (
-    <Button variant="outline" className="flex gap-1" onClick={handleClick}>
-      <ChevronLeft className="size-4" />
-      {isSearchPage ? t('back_to_results') : t('back_to_home')}
-    </Button>
+    <NextLink
+      className={cn(buttonVariants({ variant: 'outline' }), 'flex gap-1')}
+      href={backUrl}
+      onClick={createLinkEvent}
+    >
+      <ChevronLeft aria-hidden="true" className="size-4" />
+      {backUrl === '/' ? t('back_to_home') : t('back_to_results')}
+    </NextLink>
   );
 }
