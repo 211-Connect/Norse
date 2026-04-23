@@ -12,6 +12,7 @@ import {
 } from '../Users/access/roles';
 import { removeRelatedResources } from './hooks/removeRelatedResources';
 import { invalidateApiCache } from '../ResourceDirectories/hooks/invalidateApiCache';
+import { createUmamiWebsite } from './hooks/createUmamiWebsite';
 
 export const Tenants: CollectionConfig = {
   slug: 'tenants',
@@ -34,6 +35,7 @@ export const Tenants: CollectionConfig = {
       pushRealmIdToCache,
       pushEnabledLocalesToCache,
       invalidateApiCache,
+      createUmamiWebsite,
     ],
     beforeDelete: [removeRelatedResources],
     afterDelete: [revalidateCache],
