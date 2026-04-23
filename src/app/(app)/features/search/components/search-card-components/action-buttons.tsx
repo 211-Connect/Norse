@@ -4,6 +4,7 @@ import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import { ReferralButton } from '@/app/(app)/shared/components/referral-button';
 import { GetDirectionsButton } from '@/app/(app)/shared/components/get-directions-button';
 import { Link } from '@/app/(app)/shared/components/link';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { searchCoordinatesAtom } from '@/app/(app)/shared/store/search';
 import { useAtomValue } from 'jotai';
@@ -13,7 +14,12 @@ import { SearchCardComponentProps } from './types';
 
 export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
   const { t } = useTranslation('common');
+  const appConfig = useAppConfig();
   const searchCoords = useAtomValue(searchCoordinatesAtom);
+  const viewDetailsText =
+    appConfig.search.texts?.viewDetailsText || t('call_to_action.view_details');
+  const useTextLinkForViewDetails =
+    appConfig.search.texts?.useTextLinkForViewDetails ?? false;
 
   return (
     <div className="flex flex-col gap-2">
@@ -66,7 +72,9 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
               aria-label={`${t('call_to_action.view_website')} ${result.name}`}
             >
               <LinkIcon className="size-4" />{' '}
-              <span className="truncate">{t('call_to_action.view_website')}</span>
+              <span className="truncate">
+                {t('call_to_action.view_website')}
+              </span>
             </Link>
           </ReferralButton>
         ) : (
@@ -94,13 +102,17 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
       <div className="flex w-full items-center gap-2">
         <Link
           className={cn(
-            'flex-1 gap-1 text-primary',
-            buttonVariants({ variant: 'ghost' }),
+            useTextLinkForViewDetails
+              ? 'inline-flex min-h-8 flex-1 items-center justify-center rounded-md px-3 py-2 text-center text-primary underline decoration-1 underline-offset-4 transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
+              : cn(
+                  'flex-1 gap-1 text-primary',
+                  buttonVariants({ variant: 'ghost' }),
+                ),
           )}
           href={`/search/${result.id}`}
-          aria-label={`${t('call_to_action.view_details')}: ${result.name}`}
+          aria-label={`${viewDetailsText}: ${result.name}`}
         >
-          {t('call_to_action.view_details')}
+          {viewDetailsText}
         </Link>
       </div>
     </div>
