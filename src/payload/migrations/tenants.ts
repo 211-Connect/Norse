@@ -474,6 +474,9 @@ async function createResourceDirectory(
         queryInputPlaceholder: populatedAppConfig.search?.queryInputPlaceholder,
         locationInputPlaceholder:
           populatedAppConfig.search?.locationInputPlaceholder,
+        useTextLinkForViewDetails:
+          populatedAppConfig.search?.texts?.useTextLinkForViewDetails,
+        viewDetailsText: populatedAppConfig.search?.viewDetailsText,
         noResultsFallbackText: populatedAppConfig.search?.noResultsFallbackText,
       },
     },
