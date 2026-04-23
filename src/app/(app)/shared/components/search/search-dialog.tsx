@@ -47,8 +47,7 @@ export function SearchDialog({
   const [mounted, setMounted] = useState(false);
   const dialogRef = useRef<HTMLDivElement | null>(null);
 
-  const { findCode, locations, search, setSearch } =
-    useMainSearchLayoutContext();
+  const { search, setSearch } = useMainSearchLayoutContext();
 
   const onSubmit = useCallback(
     async (e) => {
@@ -63,18 +62,15 @@ export function SearchDialog({
           return;
         }
 
-        const query = findCode(search.searchTerm);
+        const query = search.query || search.searchTerm;
 
-        const location = locations[0];
-        const hasLocationChanged =
-          search.searchLocation !== search.prevSearchLocation;
-        const locationParams =
-          hasLocationChanged && location?.address && location?.coordinates
-            ? {
-                searchLocation: location.address,
-                searchCoordinates: location.coordinates,
-              }
-            : {};
+        const hasCoordinates = search.searchCoordinates.length === 2;
+        const locationParams = hasCoordinates
+          ? {
+              searchLocation: search.searchLocation,
+              searchCoordinates: search.searchCoordinates,
+            }
+          : {};
 
         const urlParams = createUrlParamsForSearch(
           {
@@ -105,8 +101,6 @@ export function SearchDialog({
     },
     [
       appConfig.search.hybridSemanticSearchEnabled,
-      findCode,
-      locations,
       requireUserLocation,
       router,
       search,

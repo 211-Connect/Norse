@@ -99,7 +99,6 @@ export function JotaiHydration({ cookies = {}, pageProps }) {
       searchAtom,
       {
         searchTerm: pageProps?.query_label ?? '',
-        prevSearchTerm: pageProps?.query_label ?? '',
         query: pageProps?.query ?? '',
         queryLabel: pageProps?.query_label ?? '',
         queryType: pageProps?.query_type ?? '',
