@@ -32,7 +32,7 @@ export function sumEventTotals(events: MetricEntry[]): Record<string, number> {
 
 export function parseMetrics(
   metricsData: MetricsExpandedEntry[],
-  queryMetricsData: MetricEntry[],
+  queryMetricsData: MetricsExpandedEntry[],
 ): {
   searchCount: number;
   resourceMetrics: MetricEntry[];
@@ -43,11 +43,11 @@ export function parseMetrics(
 
   for (const metricData of metricsData) {
     if (metricData.name === '/search' || metricData.name.endsWith('/search')) {
-      searchCount += metricData.visits;
+      searchCount += Number(metricData.pageviews) || 0;
     } else if (metricData.name.includes('/search/')) {
       resourceMetrics.push({
         x: metricData.name,
-        y: metricData.visits,
+        y: Number(metricData.pageviews) || 0,
       });
     }
   }
@@ -56,9 +56,12 @@ export function parseMetrics(
 
   const labelMap = new Map<string, number>();
   for (const m of queryMetricsData) {
-    const label = new URLSearchParams(m.x).get('query_label');
+    const label = new URLSearchParams(m.name).get('query_label');
     if (label === null) continue;
-    labelMap.set(label, (labelMap.get(label) ?? 0) + m.y);
+    labelMap.set(
+      label,
+      (labelMap.get(label) ?? 0) + (Number(m.pageviews) || 0),
+    );
   }
   const searchByLabel: MetricEntry[] = Array.from(labelMap, ([x, y]) => ({
     x,
