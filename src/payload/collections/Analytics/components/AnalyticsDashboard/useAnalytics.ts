@@ -81,45 +81,40 @@ export function useAnalytics(range: DateRange, tenantId: string | undefined) {
     try {
       const [
         statsData,
-        metricsData,
-        pvData,
+        pageViewsData,
+        pathMetricsData,
         queryMetricsData,
         eventsData,
-        prevEventsData,
-        prevMetricsData,
+        prevPathMetricsData,
         prevQueryMetricsData,
+        prevEventsData,
         sessionsData,
       ] = await Promise.all([
-        fetchWrapper<UmamiStats>(
+        fetchWrapper<UmamiStats>( // total users, total page views
           buildProxyQuery('stats', startAt, endAt, tenantId),
         ),
-        fetchWrapper<MetricsExpandedEntry[]>(
-          buildProxyQuery('metrics/expanded', startAt, endAt, tenantId, {
-            type: 'path',
-          }),
-        ),
-        fetchWrapper<UmamiPageviews>(
+        fetchWrapper<UmamiPageviews>( // page views in time for chart
           buildProxyQuery('pageviews', startAt, endAt, tenantId, {
             unit: 'day',
             timezone: 'UTC',
           }),
         ),
-        fetchWrapper<MetricEntry[]>(
-          buildProxyQuery('metrics', startAt, endAt, tenantId, {
+        fetchWrapper<MetricsExpandedEntry[]>( // metrics for total search count and resources table
+          buildProxyQuery('metrics/expanded', startAt, endAt, tenantId, {
+            type: 'path',
+          }),
+        ),
+        fetchWrapper<MetricsExpandedEntry[]>( // metrics for query labels tables
+          buildProxyQuery('metrics/expanded', startAt, endAt, tenantId, {
             type: 'query',
           }),
         ),
-        fetchWrapper<MetricEntry[]>(
+        fetchWrapper<MetricEntry[]>( // metrics for events totals (zero results, directions, phone calls, website clicks)
           buildProxyQuery('events/series', startAt, endAt, tenantId, {
             timezone: 'UTC',
           }),
         ),
-        fetchWrapper<MetricEntry[]>(
-          buildProxyQuery('events/series', prevStartAt, prevEndAt, tenantId, {
-            timezone: 'UTC',
-          }),
-        ),
-        fetchWrapper<MetricsExpandedEntry[]>(
+        fetchWrapper<MetricsExpandedEntry[]>( // metrics for total search count and resources table for previous period
           buildProxyQuery(
             'metrics/expanded',
             prevStartAt,
@@ -130,15 +125,24 @@ export function useAnalytics(range: DateRange, tenantId: string | undefined) {
             },
           ),
         ),
-        fetchWrapper<MetricEntry[]>(
-          buildProxyQuery('metrics', prevStartAt, prevEndAt, tenantId, {
-            type: 'query',
+        fetchWrapper<MetricsExpandedEntry[]>( // metrics for query labels tables for previous period
+          buildProxyQuery(
+            'metrics/expanded',
+            prevStartAt,
+            prevEndAt,
+            tenantId,
+            {
+              type: 'query',
+            },
+          ),
+        ),
+        fetchWrapper<MetricEntry[]>( // metrics for events totals (zero results, directions, phone calls, website clicks) for previous period
+          buildProxyQuery('events/series', prevStartAt, prevEndAt, tenantId, {
+            timezone: 'UTC',
           }),
         ),
-        fetchWrapper<UmamiSessionResponse>(
-          buildProxyQuery('sessions', startAt, endAt, tenantId, {
-            limit: '500',
-          }),
+        fetchWrapper<UmamiSessionResponse>( // sessions for heatmap
+          buildProxyQuery('sessions', startAt, endAt, tenantId),
         ),
       ]);
 
@@ -146,13 +150,13 @@ export function useAnalytics(range: DateRange, tenantId: string | undefined) {
       const prevEventTotals = sumEventTotals(prevEventsData ?? []);
 
       const { searchCount, resourceMetrics, searchByLabel } = parseMetrics(
-        metricsData ?? [],
+        pathMetricsData ?? [],
         queryMetricsData ?? [],
       );
       const {
         searchCount: prevSearchCount,
         resourceMetrics: prevResourceMetrics,
-      } = parseMetrics(prevMetricsData ?? [], prevQueryMetricsData ?? []);
+      } = parseMetrics(prevPathMetricsData ?? [], prevQueryMetricsData ?? []);
 
       const enrichedResourceRows = await enrichWithResourceTitles(
         resourceMetrics,
@@ -163,7 +167,7 @@ export function useAnalytics(range: DateRange, tenantId: string | undefined) {
 
       setData({
         stats: statsData,
-        pageviews: pvData,
+        pageviews: pageViewsData,
         resourceRows: enrichedResourceRows,
         searchByLabel,
         metrics: {
