@@ -109,7 +109,7 @@ export function useAnalytics(range: DateRange, tenantId: string | undefined) {
             type: 'query',
           }),
         ),
-        fetchWrapper<MetricEntry[]>( // metrics for events totals (zero results, directions, phone calls, website clicks)
+        fetchWrapper<MetricEntry[]>( // metrics for events totals (zero results, directions, phone calls, website clicks, widget searches)
           buildProxyQuery('events/series', startAt, endAt, tenantId, {
             timezone: 'UTC',
           }),
@@ -136,7 +136,7 @@ export function useAnalytics(range: DateRange, tenantId: string | undefined) {
             },
           ),
         ),
-        fetchWrapper<MetricEntry[]>( // metrics for events totals (zero results, directions, phone calls, website clicks) for previous period
+        fetchWrapper<MetricEntry[]>( // metrics for events totals (zero results, directions, phone calls, website clicks, widget searches) for previous period
           buildProxyQuery('events/series', prevStartAt, prevEndAt, tenantId, {
             timezone: 'UTC',
           }),
