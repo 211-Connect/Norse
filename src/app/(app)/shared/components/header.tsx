@@ -308,15 +308,17 @@ export function Header() {
     >
       <div
         className={cn(
-          'relative flex h-[104px] items-center justify-between gap-16 sm:gap-4',
-          newLayoutEnabled
-            ? 'rounded-xl bg-gradient-to-r from-header-start to-header-end p-6'
-            : 'py-3 pr-6',
+          'relative flex h-[104px] items-center justify-between gap-16 px-4 py-2 sm:gap-4 sm:px-6 sm:py-3',
+          newLayoutEnabled &&
+            'rounded-xl bg-gradient-to-r from-header-start to-header-end',
         )}
       >
         <div className="flex h-full items-center">
           <div
-            className="flex h-full cursor-pointer items-center"
+            className={cn(
+              'flex h-full cursor-pointer items-center',
+              newLayoutEnabled && 'absolute -left-4 -top-4',
+            )}
             aria-label={logoAlt}
             onClick={handleLogoClick}
           >
