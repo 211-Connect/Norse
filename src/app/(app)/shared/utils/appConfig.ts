@@ -448,7 +448,23 @@ async function getAppConfigBase(
           resourceDirectory.search.texts?.noResultsFallbackText ?? undefined,
         queryInputPlaceholder:
           resourceDirectory.search.texts?.queryInputPlaceholder ?? undefined,
+        suggestionHeaders: {
+          categories:
+            resourceDirectory.search.texts?.suggestionHeaders?.categories ??
+            undefined,
+          suggestions:
+            resourceDirectory.search.texts?.suggestionHeaders?.suggestions ??
+            undefined,
+          taxonomies:
+            resourceDirectory.search.texts?.suggestionHeaders?.taxonomies ??
+            undefined,
+        },
         title: resourceDirectory.search.texts?.title ?? undefined,
+        useTextLinkForViewDetails:
+          resourceDirectory.search.texts?.useTextLinkForViewDetails ??
+          undefined,
+        viewDetailsText:
+          resourceDirectory.search.texts?.viewDetailsText ?? undefined,
       },
       cardLayout:
         resourceDirectory.search.cardLayout &&

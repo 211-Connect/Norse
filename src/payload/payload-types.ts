@@ -749,6 +749,25 @@ export interface ResourceDirectory {
       title?: string | null;
       queryInputPlaceholder?: string | null;
       locationInputPlaceholder?: string | null;
+      suggestionHeaders?: {
+        /**
+         * Shown above free-text search suggestions in the autocomplete dropdown.
+         */
+        suggestions?: string | null;
+        /**
+         * Shown above topic/category matches in the autocomplete dropdown.
+         */
+        categories?: string | null;
+        /**
+         * Shown above taxonomy matches in the autocomplete dropdown. This can be renamed to terms like Services.
+         */
+        taxonomies?: string | null;
+      };
+      viewDetailsText?: string | null;
+      /**
+       * Display the View Details action as an underlined text link instead of the default button-style action.
+       */
+      useTextLinkForViewDetails?: boolean | null;
       noResultsFallbackText?: string | null;
     };
     searchSettings: {
@@ -1447,6 +1466,15 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
               title?: T;
               queryInputPlaceholder?: T;
               locationInputPlaceholder?: T;
+              suggestionHeaders?:
+                | T
+                | {
+                    suggestions?: T;
+                    categories?: T;
+                    taxonomies?: T;
+                  };
+              viewDetailsText?: T;
+              useTextLinkForViewDetails?: T;
               noResultsFallbackText?: T;
             };
         searchSettings?:
