@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { ChevronLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/navigation';
+import { deleteCookie, setCookie } from 'cookies-next/client';
 
 import { LocationSearchBar } from './location-search-bar';
 import { SearchBar } from './search-bar';
@@ -20,9 +21,13 @@ import {
   SEARCH_DIALOG_ID,
   SEARCH_DIALOG_TITLE_ID,
   SEARCH_INPUT_ID,
+  USER_PREF_DISTANCE,
 } from '../../lib/constants';
 import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
 import { createUrlParamsForSearch } from '../../utils/createUrlParamsForSearch';
+import { useAtomValue } from 'jotai';
+import { searchDistanceAtom } from '../../store/search';
+
 export interface SearchDialogProps {
   focusByDefault?: 'search' | 'location';
   open: boolean;
@@ -46,6 +51,7 @@ export function SearchDialog({
   const initialRenderRef = useRef(true);
   const [mounted, setMounted] = useState(false);
   const dialogRef = useRef<HTMLDivElement | null>(null);
+  const distance = useAtomValue(searchDistanceAtom);
 
   const { search, setSearch } = useMainSearchLayoutContext();
 
@@ -89,6 +95,11 @@ export function SearchDialog({
         const queryParams = stringifySearchParams(
           new URLSearchParams(urlParams),
         );
+        if (distance === '0') {
+          deleteCookie(USER_PREF_DISTANCE, { path: '/' });
+        } else {
+          setCookie(USER_PREF_DISTANCE, distance, { path: '/' });
+        }
 
         router.push(`/search${queryParams}`);
 
@@ -104,6 +115,7 @@ export function SearchDialog({
       requireUserLocation,
       router,
       search,
+      distance,
       setSearch,
       stringifySearchParams,
     ],
