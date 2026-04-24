@@ -39,6 +39,8 @@ const SEARCH_SUGGESTION_HEADER_FIELDS = [
   'taxonomies',
 ] as const;
 
+const HEADER_TEXT_FIELDS = ['favoritesButtonLabel'] as const;
+
 const CALLOUT_TEXT_FIELDS = ['description', 'title'] as const;
 
 const HIGHLIGHT_TEXT_FIELDS = ['title', 'description', 'buttonText'] as const;
@@ -459,6 +461,21 @@ export const translate: TaskConfig<'translate'> = {
           },
         );
 
+        // Header Texts
+        HEADER_TEXT_FIELDS.forEach((field) => {
+          const path = `header.${field}`;
+          const sourceValue = englishResourceDirectory.header?.[field];
+          const targetValue = targetDoc.header?.[field];
+
+          if (shouldTranslate(sourceValue, targetValue, path)) {
+            fieldsToTranslate.push({
+              path,
+              value: sourceValue!,
+              locale: targetLocale,
+            });
+          }
+        });
+
         // Callouts (from newLayout tab)
         englishResourceDirectory.newLayout?.callouts?.options?.forEach(
           (sourceCallout, index) => {
@@ -840,6 +857,21 @@ export const translate: TaskConfig<'translate'> = {
               },
             );
         }
+
+        // Header Texts
+        updateData.header = {
+          ...targetDoc.header,
+        };
+
+        HEADER_TEXT_FIELDS.forEach((field) => {
+          const path = `header.${field}`;
+          if (translationsByPath[path]) {
+            updateData.header![field] = translationsByPath[path];
+          } else if (isEmpty(targetDoc.header?.[field])) {
+            updateData.header![field] =
+              englishResourceDirectory.header?.[field];
+          }
+        });
 
         // Callouts (from newLayout tab)
         if (englishResourceDirectory.newLayout?.callouts) {
