@@ -519,6 +519,7 @@ export interface ResourceDirectory {
       | null;
     customHomeUrl?: string | null;
     searchUrl?: string | null;
+    favoritesButtonLabel?: string | null;
     safeExit?: {
       enabled?: boolean | null;
       url?: string | null;
@@ -1309,6 +1310,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
             };
         customHomeUrl?: T;
         searchUrl?: T;
+        favoritesButtonLabel?: T;
         safeExit?:
           | T
           | {

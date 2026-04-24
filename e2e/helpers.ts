@@ -73,7 +73,6 @@ export async function performSearch(page: Page, params: SearchParams) {
 }
 
 export async function goToFavorites(page: Page) {
-  await page.getByTestId('my-stuff-btn').click();
   await page.getByTestId('favorites-btn').click();
   await page.waitForURL(/favorites\/?(?:\?|$)/, { timeout: 15000 });
   await page.waitForLoadState('networkidle');
@@ -296,7 +295,6 @@ export async function loginViaKeycloak(page: Page) {
   await goHome(page);
   await page.waitForLoadState('networkidle');
 
-  await page.getByTestId('my-stuff-btn').click();
   await page.getByTestId('favorites-btn').click();
   await page.getByTestId('login-btn').click();
 
