@@ -25,7 +25,7 @@ import { Separator } from './ui/separator';
 import { Skeleton } from './ui/skeleton';
 import { Badge } from './ui/badge';
 import { dialogsAtom } from '../store/dialogs';
-import { cn } from '../lib/utils';
+import { cn, withOptionalTrailingSlash } from '../lib/utils';
 import { useAppConfig } from '../hooks/use-app-config';
 import { getFavoriteLists } from '../serverActions/favorites/getFavoriteLists';
 import { addToFavoriteList } from '../serverActions/favorites/addToFavoriteList';
@@ -278,7 +278,9 @@ export function AddToFavoritesButton({
                     return (
                       <Fragment key={el.id}>
                         <Link
-                          href={`/${i18n.language}/favorites/${el.id}`}
+                          href={withOptionalTrailingSlash(
+                            `/${i18n.language}/favorites/${el.id}`,
+                          )}
                           className="col-span-2 text-sm hover:underline"
                         >
                           {el.name}

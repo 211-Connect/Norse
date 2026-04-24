@@ -12,7 +12,7 @@ import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import { ShareButton } from '@/app/(app)/shared/components/share-button';
 import { useRef } from 'react';
 import { ChevronLeft } from 'lucide-react';
-import { cn } from '@/app/(app)/shared/lib/utils';
+import { cn, withOptionalTrailingSlash } from '@/app/(app)/shared/lib/utils';
 import { Badge } from '@/app/(app)/shared/components/ui/badge';
 import { fontSans } from '@/app/(app)/shared/styles/fonts';
 import { useTranslation } from 'react-i18next';
@@ -88,7 +88,9 @@ export function FavoritesSection({ cardLayout }: FavoritesSectionProps) {
               buttonVariants({ variant: 'outline' }),
               'items-center gap-1',
             )}
-            href={`/favorites${stringifiedSearchParams}`}
+            href={withOptionalTrailingSlash(
+              `/favorites${stringifiedSearchParams}`,
+            )}
             data-testid="back-to-favorites"
           >
             <ChevronLeft className="size-4" />
