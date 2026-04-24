@@ -15,12 +15,14 @@ interface SearchBarProps {
   focusByDefault?: boolean;
   inputId?: string;
   enterKeyFocusTargetId?: string;
+  onSearchSourceChange: (source: 'manual' | 'suggestion') => void;
 }
 
 export function SearchBar({
   focusByDefault = false,
   inputId,
   enterKeyFocusTargetId,
+  onSearchSourceChange,
 }: SearchBarProps) {
   const appConfig = useAppConfig();
   const { t } = useTranslation('common');
@@ -101,6 +103,8 @@ export function SearchBar({
 
   const setSearchTerm = useCallback(
     (value: string, option?: AutocompleteOption) => {
+      onSearchSourceChange(option ? 'suggestion' : 'manual');
+
       const query = option?.query ?? value;
       const queryType = option?.queryType ?? 'text';
 
@@ -112,11 +116,13 @@ export function SearchBar({
         queryLabel: value,
       }));
     },
-    [setSearch],
+    [onSearchSourceChange, setSearch],
   );
 
   const handleInputChange = useCallback(
     (value: string) => {
+      onSearchSourceChange('manual');
+
       setSearch((prev) => ({
         ...prev,
         query: value,
@@ -125,7 +131,7 @@ export function SearchBar({
         queryLabel: value,
       }));
     },
-    [setSearch],
+    [onSearchSourceChange, setSearch],
   );
 
   return (
