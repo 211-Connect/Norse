@@ -215,7 +215,9 @@ test.describe('Search Filters', () => {
 
     const firstCheckbox = checkboxes.first();
     await firstCheckbox.click();
-    await page.waitForLoadState('networkidle');
+    await expect(firstCheckbox).toHaveAttribute('data-state', 'checked', {
+      timeout: 20_000,
+    });
 
     await expect(page.locator('#search-container')).toBeVisible();
   });

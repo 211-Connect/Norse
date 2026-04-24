@@ -91,15 +91,16 @@ test.describe('Language Persistence And Results Button', () => {
     await expect(firstResult).toBeVisible({ timeout: 20_000 });
 
     await Promise.all([
-      page.waitForURL(/\/search\//, { timeout: 20_000 }),
+      page.waitForURL(/\/search\//, { timeout: 20_000, waitUntil: 'commit' }),
       firstResult.click(),
     ]);
 
     const resultsButton = page.getByRole('link', { name: /^Results$/i });
     await expect(resultsButton).toBeVisible({ timeout: 20_000 });
-    await resultsButton.click();
-
-    await page.waitForURL(/\/search\?/);
+    await Promise.all([
+      page.waitForURL(/\/search\?/, { timeout: 20_000, waitUntil: 'commit' }),
+      resultsButton.click(),
+    ]);
     await expect(page.locator('#search-container')).toBeVisible({
       timeout: 20_000,
     });
@@ -118,15 +119,17 @@ test.describe('Language Persistence And Results Button', () => {
 
     const firstResult = page.getByTestId('resource-link').first();
     await expect(firstResult).toBeVisible({ timeout: 20_000 });
-    await firstResult.click();
-
-    await page.waitForURL(/\/search\//, { timeout: 20_000 });
+    await Promise.all([
+      page.waitForURL(/\/search\//, { timeout: 20_000, waitUntil: 'commit' }),
+      firstResult.click(),
+    ]);
 
     const resultsButton = page.getByRole('link', { name: /^Resultados$/i });
     await expect(resultsButton).toBeVisible({ timeout: 20_000 });
-    await resultsButton.click();
-
-    await page.waitForURL(/\/search\?/);
+    await Promise.all([
+      page.waitForURL(/\/search\?/, { timeout: 20_000, waitUntil: 'commit' }),
+      resultsButton.click(),
+    ]);
     await expect(page.locator('#search-container')).toBeVisible({
       timeout: 20_000,
     });

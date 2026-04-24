@@ -17,7 +17,6 @@ export async function goHome(page: Page) {
   const base = baseURL.endsWith('/') ? baseURL : `${baseURL}/`;
   const url = new URL(LOCALE, base).href;
   await page.goto(url);
-
   await page.waitForLoadState('networkidle');
 }
 
@@ -66,10 +65,13 @@ export async function performSearch(page: Page, params: SearchParams) {
     await searchInput.fill(params.query ?? '');
   }
 
-  await page.getByTestId('search-submit-btn').click();
-
-  await page.waitForURL(/search\?/);
-  await page.waitForLoadState('networkidle');
+  await Promise.all([
+    page.waitForURL(/search\?/, { waitUntil: 'commit' }),
+    page.getByTestId('search-submit-btn').click(),
+  ]);
+  await expect(page.locator('#search-container')).toBeVisible({
+    timeout: 20_000,
+  });
 }
 
 export async function goToFavorites(page: Page) {
@@ -147,7 +149,6 @@ export async function openTopicSearch(page: Page) {
     const topicLink = page.locator('a[href*="/search?query="]').nth(i);
     await expect(topicLink).toBeVisible({ timeout: 20_000 });
     await topicLink.click();
-
     await page.waitForURL(/search\?/, { timeout: 20_000 });
     await expect(page.locator('#search-container')).toBeVisible({
       timeout: 20_000,
@@ -208,8 +209,10 @@ export async function markFiltersByIds(page: Page, filterIds: string[]) {
     if ((await checkbox.getAttribute('data-state')) !== 'checked') {
       await checkbox.scrollIntoViewIfNeeded();
       await checkbox.click();
-      await page.waitForLoadState('networkidle');
       await expect(checkbox).toHaveAttribute('data-state', 'checked', {
+        timeout: 20_000,
+      });
+      await expect(page.locator('#search-container')).toBeVisible({
         timeout: 20_000,
       });
     }

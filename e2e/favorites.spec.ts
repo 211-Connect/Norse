@@ -152,7 +152,6 @@ test.describe('Favorites Feature (Authenticated)', () => {
       timeout: 10000,
     });
 
-    await page.waitForLoadState('networkidle');
     await expect(page.getByText(updatedListName).first()).toBeVisible({
       timeout: 10_000,
     });
@@ -188,8 +187,6 @@ test.describe('Favorites Feature (Authenticated)', () => {
     await expect(page.getByText('Removed from list')).toBeVisible({
       timeout: 10_000,
     });
-
-    await page.waitForLoadState('networkidle');
 
     // Verify the specific resource is no longer visible (more resilient than checking count)
     await expect(page.getByText(firstResourceName)).toHaveCount(0, {
@@ -286,8 +283,13 @@ test.describe('Favorites Feature (Authenticated)', () => {
     await firstResourceLink.click();
 
     // Wait for resource page to load
-    await page.waitForURL(/search\/[a-f0-9-]{36}/, { timeout: 10_000 });
-    await page.waitForLoadState('networkidle');
+    await page.waitForURL(/search\/[a-f0-9-]{36}/, {
+      timeout: 10_000,
+      waitUntil: 'commit',
+    });
+    await expect(page.getByTestId('favorite-btn').first()).toBeVisible({
+      timeout: 10_000,
+    });
 
     // Add to favorites from resource page
     const favoriteBtn = page.getByTestId('favorite-btn').first();
@@ -418,7 +420,6 @@ test.describe('Favorites Feature (Authenticated)', () => {
     const deleteListConfirmBtn = page.getByTestId('delete-list-confirm-btn');
     await expect(deleteListConfirmBtn).toBeVisible({ timeout: 10_000 });
     await deleteListConfirmBtn.click();
-    await page.waitForLoadState('networkidle');
 
     const removedCard = page.getByText(updatedListName);
 
