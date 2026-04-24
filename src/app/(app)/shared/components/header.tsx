@@ -43,7 +43,7 @@ import {
   DropdownMenuItem,
 } from './ui/dropdown';
 import { Card, CardContent } from './ui/card';
-import { cn } from '../lib/utils';
+import { cn, withOptionalTrailingSlash } from '../lib/utils';
 import { LanguageSwitcher } from './language-switcher';
 import { ReportButton } from './report-button';
 import { FontSizeToggle } from './accessibility/font-size-toggle';
@@ -230,9 +230,7 @@ export function Header() {
                           }));
                         });
                       } else {
-                        router.push(
-                          `/favorites${process.env.NEXT_PUBLIC_WITH_TRAILING_SLASHES === 'true' ? '/' : ''}`,
-                        );
+                        router.push(withOptionalTrailingSlash('/favorites'));
                       }
                     }}
                   >

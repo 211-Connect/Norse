@@ -12,6 +12,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Link } from '@/app/(app)/shared/components/link';
 import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
+import { withOptionalTrailingSlash } from '@/app/(app)/shared/lib/utils';
 
 import { DeleteFavoriteListButton } from './delete-favorite-list-button';
 import { UpdateFavoriteListButton } from './update-favorite-list-button';
@@ -41,7 +42,11 @@ export function FavoriteList({ list }: { list: FavoriteListState }) {
           </div>
         </div>
         <CardTitle>
-          <Link href={`/favorites/${list.id}${stringifiedSearchParams}`}>
+          <Link
+            href={withOptionalTrailingSlash(
+              `/favorites/${list.id}${stringifiedSearchParams}`,
+            )}
+          >
             {list.name}
           </Link>
         </CardTitle>
@@ -50,7 +55,9 @@ export function FavoriteList({ list }: { list: FavoriteListState }) {
       <CardFooter className="flex justify-end">
         <Link
           className={buttonVariants({ variant: 'outline' })}
-          href={`/favorites/${list.id}${stringifiedSearchParams}`}
+          href={withOptionalTrailingSlash(
+            `/favorites/${list.id}${stringifiedSearchParams}`,
+          )}
         >
           {t('view_list')}
         </Link>
