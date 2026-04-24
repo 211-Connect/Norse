@@ -4,6 +4,7 @@ import { Send, Smartphone } from 'lucide-react';
 import { useCallback, useId, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import { useAtomValue } from 'jotai';
 
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
@@ -17,6 +18,7 @@ import {
 import { useAppConfig } from '../hooks/use-app-config';
 import { fetchWrapper } from '../lib/fetchWrapper';
 import { validatePhoneNumber } from '../lib/validators';
+import { deviceAtom } from '../store/device';
 
 type SmsButtonProps = {
   shareMessage: string;
@@ -27,7 +29,10 @@ export function SmsButton({ shareMessage }: SmsButtonProps) {
   const [open, setOpen] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
   const appConfig = useAppConfig();
-  const isDisabled = !appConfig.sms;
+  const device = useAtomValue(deviceAtom);
+  const isSmsProviderConfigured = Boolean(appConfig.sms);
+  const shouldUseNativeSmsApp = !isSmsProviderConfigured && device.isMobile;
+  const isDisabled = !isSmsProviderConfigured && !device.isMobile;
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const dialogId = useId();
   const inputId = useId();
@@ -40,7 +45,20 @@ export function SmsButton({ shareMessage }: SmsButtonProps) {
     [t],
   );
 
+  const openNativeSmsApp = useCallback(() => {
+    if (typeof window === 'undefined') return;
+
+    const isIOS = /iPad|iPhone|iPod/.test(window.navigator.userAgent);
+    const queryPrefix = isIOS ? '&' : '?';
+    window.location.href = `sms:${queryPrefix}body=${encodeURIComponent(shareMessage)}`;
+  }, [shareMessage]);
+
   const handleClick = () => {
+    if (shouldUseNativeSmsApp) {
+      openNativeSmsApp();
+      return;
+    }
+
     setOpen(true);
   };
 
@@ -94,8 +112,12 @@ export function SmsButton({ shareMessage }: SmsButtonProps) {
                 className="flex w-full gap-1"
                 onClick={handleClick}
                 variant="outline"
-                aria-controls={isDisabled ? undefined : dialogId}
-                aria-haspopup={isDisabled ? undefined : 'dialog'}
+                aria-controls={
+                  isDisabled || shouldUseNativeSmsApp ? undefined : dialogId
+                }
+                aria-haspopup={
+                  isDisabled || shouldUseNativeSmsApp ? undefined : 'dialog'
+                }
                 disabled={isDisabled}
               >
                 <Smartphone className="size-4" aria-hidden="true" />
