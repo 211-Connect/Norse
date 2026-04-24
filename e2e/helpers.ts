@@ -200,6 +200,36 @@ export async function deleteAllE2ETestLists(page: Page): Promise<void> {
   }
 }
 
+/**
+ * Deletes all favorite lists whose names start with "E2E Test List".
+ * Loops until no more matching cards are found on the favorites page,
+ * clearing out accumulated lists from previous failed test runs.
+ */
+export async function deleteAllE2ETestLists(page: Page): Promise<void> {
+  await goToFavorites(page);
+
+  for (;;) {
+    await page.waitForLoadState('networkidle');
+
+    const card = page.getByText(/^E2E Test List /).first();
+    const isVisible = await card.isVisible({ timeout: 3_000 }).catch(() => false);
+    if (!isVisible) break;
+
+    await card.click();
+    await waitForFavoriteListPage(page);
+
+    const deleteListBtn = page.getByTestId('delete-list-btn');
+    await deleteListBtn.waitFor({ state: 'visible', timeout: 10_000 });
+    await deleteListBtn.click();
+
+    const deleteListConfirmBtn = page.getByTestId('delete-list-confirm-btn');
+    await deleteListConfirmBtn.waitFor({ state: 'visible', timeout: 10_000 });
+    await deleteListConfirmBtn.click();
+
+    await page.waitForURL(/favorites\/?(?:\?|$)/, { timeout: 15_000 });
+  }
+}
+
 export async function getResultTotal(page: Page): Promise<string> {
   const resultTotal = page.locator('#result-total');
   await resultTotal.waitFor({ state: 'visible', timeout: UI_SHELL_TIMEOUT_MS });
