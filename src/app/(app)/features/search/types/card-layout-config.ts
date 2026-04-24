@@ -17,7 +17,6 @@ export const DEFAULT_SEARCH_CARD_LAYOUT: SearchCardLayoutConfig = [
   { componentId: SearchCardComponentId.PHONE },
   { componentId: SearchCardComponentId.WEBSITE },
   { componentId: SearchCardComponentId.DESCRIPTION },
-  { componentId: SearchCardComponentId.ATTRIBUTION },
   { componentId: SearchCardComponentId.CATEGORIES },
   { componentId: SearchCardComponentId.SEPARATOR },
   { componentId: SearchCardComponentId.ACTION_BUTTONS },
