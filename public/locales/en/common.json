@@ -141,7 +141,8 @@
       "sms_send_success_title": "SMS sent!",
       "sms_send_success_body": "Your message has been sent.",
       "sms_send_failed_title": "SMS send failed",
-      "sms_send_failed_body": "Your message failed to send."
+      "sms_send_failed_body": "Your message failed to send.",
+      "sms_unavailable": "SMS sharing is not available"
     },
     "prompt_auth": "Please login to use this feature."
   },

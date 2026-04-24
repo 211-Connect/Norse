@@ -36,6 +36,31 @@ function getTenantId(resourceDirectory: ResourceDirectory): string | undefined {
   return resourceDirectory.tenant?.id;
 }
 
+function getSmsConfig(resourceDirectory: ResourceDirectory): AppConfig['sms'] {
+  const sms = getTenant(resourceDirectory)?.sms;
+
+  if (!sms?.smsProvider) {
+    return null;
+  }
+
+  if (sms.smsProvider === 'Twilio') {
+    const twilio = sms.twilio;
+    const hasTwilioConfig = Boolean(
+      twilio?.phoneNumber &&
+      twilio?.apiKey &&
+      twilio?.apiKeySid &&
+      twilio?.accountSid,
+    );
+
+    return hasTwilioConfig ? { provider: sms.smsProvider } : null;
+  }
+
+  const ems = sms.ems;
+  const hasEmsConfig = Boolean(ems?.apiKey || ems?.shortCode || ems?.keyword);
+
+  return hasEmsConfig ? { provider: sms.smsProvider } : null;
+}
+
 function getTenantI18n(resourceDirectory: ResourceDirectory): {
   defaultLocale: string;
   locales: string[];
@@ -65,7 +90,9 @@ type CustomAttributeItem = {
   [key: string]: any;
 };
 
-type LayoutColumnGroup = NonNullable<ResourceDirectory['resource']>['leftColumn'];
+type LayoutColumnGroup = NonNullable<
+  ResourceDirectory['resource']
+>['leftColumn'];
 type LayoutGroupItem = NonNullable<NonNullable<LayoutColumnGroup>[number]>;
 type LayoutItem = NonNullable<NonNullable<LayoutGroupItem['items']>[number]>;
 
@@ -129,8 +156,10 @@ function applyCustomAttributeFallback(
       items: group.items.map((item, itemIndex) =>
         mergeCustomAttribute(
           item,
-          findFallbackById<LayoutItem>(item, fallbackGroup.items ?? undefined) ??
-            fallbackGroup.items?.[itemIndex],
+          findFallbackById<LayoutItem>(
+            item,
+            fallbackGroup.items ?? undefined,
+          ) ?? fallbackGroup.items?.[itemIndex],
         ),
       ),
     };
@@ -150,7 +179,8 @@ function applyCardLayoutCustomAttributeFallback(
   return cardLayout.map((item, itemIndex) =>
     mergeCustomAttribute(
       item,
-      findFallbackById(item, fallbackCardLayout) ?? fallbackCardLayout[itemIndex],
+      findFallbackById(item, fallbackCardLayout) ??
+        fallbackCardLayout[itemIndex],
     ),
   );
 }
@@ -182,6 +212,7 @@ async function getAppConfigBase(
         theme: {},
       },
       contact: {},
+      sms: null,
       customBasePath: '',
       featureFlags: {
         requireUserLocation: false,
@@ -336,6 +367,7 @@ async function getAppConfigBase(
       number: resourceDirectory.brand.phoneNumber ?? undefined,
       feedbackUrl: resourceDirectory.brand.feedbackUrl ?? undefined,
     },
+    sms: getSmsConfig(resourceDirectory),
     customBasePath: process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || '',
     errorTranslationData: {
       errorNamespaces,

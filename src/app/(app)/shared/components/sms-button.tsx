@@ -2,33 +2,42 @@
 
 import { Send, Smartphone } from 'lucide-react';
 import { useCallback, useId, useRef, useState } from 'react';
-import { useSession } from 'next-auth/react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import { useAtomValue } from 'jotai';
 
 import { Button } from './ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from './ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { Input } from './ui/input';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from './ui/tooltip';
 import { useAppConfig } from '../hooks/use-app-config';
 import { fetchWrapper } from '../lib/fetchWrapper';
 import { validatePhoneNumber } from '../lib/validators';
+import { deviceAtom } from '../store/device';
 
-export function SmsButton({ title = '', body = '', shortUrl = '' }) {
+type SmsButtonProps = {
+  shareMessage: string;
+};
+
+export function SmsButton({ shareMessage }: SmsButtonProps) {
   const { t } = useTranslation('common');
   const [open, setOpen] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
   const appConfig = useAppConfig();
-  const session = useSession();
+  const device = useAtomValue(deviceAtom);
+  const isSmsProviderConfigured = Boolean(appConfig.sms);
+  const shouldUseNativeSmsApp = !isSmsProviderConfigured && device.isMobile;
+  const isDisabled = !isSmsProviderConfigured && !device.isMobile;
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const dialogId = useId();
   const inputId = useId();
   const errorId = useId();
-  const [message, setMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const getPhoneError = useCallback(
     (value: unknown): string | null =>
@@ -36,7 +45,20 @@ export function SmsButton({ title = '', body = '', shortUrl = '' }) {
     [t],
   );
 
+  const openNativeSmsApp = useCallback(() => {
+    if (typeof window === 'undefined') return;
+
+    const isIOS = /iPad|iPhone|iPod/.test(window.navigator.userAgent);
+    const queryPrefix = isIOS ? '&' : '?';
+    window.location.href = `sms:${queryPrefix}body=${encodeURIComponent(shareMessage)}`;
+  }, [shareMessage]);
+
   const handleClick = () => {
+    if (shouldUseNativeSmsApp) {
+      openNativeSmsApp();
+      return;
+    }
+
     setOpen(true);
   };
 
@@ -44,7 +66,7 @@ export function SmsButton({ title = '', body = '', shortUrl = '' }) {
     const errorMessage = getPhoneError(phoneNumber);
 
     if (errorMessage) {
-      setMessage(errorMessage);
+      setErrorMessage(errorMessage);
       return;
     }
 
@@ -55,7 +77,7 @@ export function SmsButton({ title = '', body = '', shortUrl = '' }) {
       },
       body: {
         phoneNumber: phoneNumber,
-        message: `${title}\n\n${body}\n\n${shortUrl}`,
+        message: shareMessage,
       },
     }).catch((error) => {
       // fetchWrapper returns null for non-FetchError errors
@@ -68,7 +90,7 @@ export function SmsButton({ title = '', body = '', shortUrl = '' }) {
       success: (_res) => {
         setOpen(false);
         setPhoneNumber('');
-        setMessage('');
+        setErrorMessage('');
         return t('modal.share.sms_send_success_body');
       },
       error: (err) => {
@@ -81,17 +103,33 @@ export function SmsButton({ title = '', body = '', shortUrl = '' }) {
 
   return (
     <>
-      <Button
-        ref={triggerRef}
-        className="flex gap-1"
-        onClick={handleClick}
-        variant="outline"
-        aria-controls={dialogId}
-        aria-haspopup="dialog"
-      >
-        <Smartphone className="size-4" aria-hidden="true" />
-        {t('modal.share.sms')}
-      </Button>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span tabIndex={isDisabled ? 0 : undefined}>
+              <Button
+                ref={triggerRef}
+                className="flex w-full gap-1"
+                onClick={handleClick}
+                variant="outline"
+                aria-controls={
+                  isDisabled || shouldUseNativeSmsApp ? undefined : dialogId
+                }
+                aria-haspopup={
+                  isDisabled || shouldUseNativeSmsApp ? undefined : 'dialog'
+                }
+                disabled={isDisabled}
+              >
+                <Smartphone className="size-4" aria-hidden="true" />
+                {t('modal.share.sms')}
+              </Button>
+            </span>
+          </TooltipTrigger>
+          {isDisabled && (
+            <TooltipContent>{t('modal.share.sms_unavailable')}</TooltipContent>
+          )}
+        </Tooltip>
+      </TooltipProvider>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
@@ -109,14 +147,14 @@ export function SmsButton({ title = '', body = '', shortUrl = '' }) {
               </label>
               <Input
                 id={inputId}
-                aria-describedby={message ? errorId : undefined}
-                aria-invalid={message ? true : undefined}
+                aria-describedby={errorMessage ? errorId : undefined}
+                aria-invalid={errorMessage ? true : undefined}
                 placeholder={t('modal.share.enter_phone_number')}
                 value={phoneNumber}
                 onChange={(e) => {
                   setPhoneNumber(e.target.value);
-                  if (message) {
-                    setMessage('');
+                  if (errorMessage) {
+                    setErrorMessage('');
                   }
                 }}
               />
@@ -126,9 +164,9 @@ export function SmsButton({ title = '', body = '', shortUrl = '' }) {
               </Button>
             </div>
 
-            {message && message.length > 0 && (
+            {errorMessage && errorMessage.length > 0 && (
               <p id={errorId} className="text-sm text-red-600" role="alert">
-                {message}
+                {errorMessage}
               </p>
             )}
           </div>
