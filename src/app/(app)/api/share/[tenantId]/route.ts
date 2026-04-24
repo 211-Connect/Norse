@@ -19,12 +19,12 @@ async function sendViaTwilio(
   data: SendSmsBody,
   config: {
     accountSid: string;
-    apiKey: string;
+    apiKeySecret: string;
     apiKeySid: string;
     phoneNumber: string;
   },
 ) {
-  const twilioClient = client(config.apiKeySid, config.apiKey, {
+  const twilioClient = client(config.apiKeySid, config.apiKeySecret, {
     accountSid: config.accountSid,
   });
 
@@ -138,10 +138,14 @@ export async function POST(
     }
 
     if (provider === 'Twilio') {
-      const { accountSid, apiKey, apiKeySid, phoneNumber } =
-        tenant?.sms?.twilio ?? {};
+      const {
+        accountSid,
+        apiKey: apiKeySecret,
+        apiKeySid,
+        phoneNumber,
+      } = tenant?.sms?.twilio ?? {};
 
-      if (!accountSid || !apiKey || !apiKeySid || !phoneNumber) {
+      if (!accountSid || !apiKeySecret || !apiKeySid || !phoneNumber) {
         log.error(
           { tenantId },
           'Twilio configuration is missing for tenant. Cannot send message.',
@@ -154,7 +158,7 @@ export async function POST(
 
       await sendViaTwilio(body, {
         accountSid,
-        apiKey,
+        apiKeySecret,
         apiKeySid,
         phoneNumber,
       });
