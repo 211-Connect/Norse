@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
 import { createLogger } from '@/lib/logger';
+import { withOptionalTrailingSlash } from '@/app/(app)/shared/lib/utils';
 
 const log = createLogger('delete-favorite-list-button');
 
@@ -43,7 +44,9 @@ export function DeleteFavoriteListButton({ id, name }) {
         pathname?.includes('/favorites/') &&
         !pathname.endsWith('/favorites')
       ) {
-        router.push(`/favorites${stringifiedSearchParams}`);
+        router.push(
+          withOptionalTrailingSlash(`/favorites${stringifiedSearchParams}`),
+        );
       } else {
         router.refresh();
       }

@@ -5,12 +5,13 @@ import { SearchCardComponentProps } from './types';
 import { AddToFavoritesButton } from '@/app/(app)/shared/components/add-to-favorites-button';
 import { RemoveFromFavoriteListButton } from '@/app/(app)/shared/components/remove-from-favorite-list-button';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
+import { withOptionalTrailingSlash } from '@/app/(app)/shared/lib/utils';
 
 export function ResourceNameComponent({ result }: SearchCardComponentProps) {
   const { t } = useTranslation();
   const name = result.name || t('name_unavailable', { ns: 'page-search' });
 
-  const url = `/search/${result.id}${process.env.NEXT_PUBLIC_WITH_TRAILING_SLASHES === 'true' ? '/' : ''}`;
+  const url = withOptionalTrailingSlash(`/search/${result.id}`);
 
   // Render RemoveFromFavoriteListButton when viewing a specific favorite list
   const isInFavoriteListContext = Boolean(

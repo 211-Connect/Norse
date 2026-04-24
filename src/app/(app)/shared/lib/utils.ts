@@ -6,6 +6,27 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export function withOptionalTrailingSlash(path: string): string {
+  if (process.env.NEXT_PUBLIC_WITH_TRAILING_SLASHES !== 'true') {
+    return path;
+  }
+
+  const hashIndex = path.indexOf('#');
+  const pathWithoutHash = hashIndex >= 0 ? path.slice(0, hashIndex) : path;
+  const hash = hashIndex >= 0 ? path.slice(hashIndex) : '';
+
+  const queryIndex = pathWithoutHash.indexOf('?');
+  const pathname =
+    queryIndex >= 0 ? pathWithoutHash.slice(0, queryIndex) : pathWithoutHash;
+  const query = queryIndex >= 0 ? pathWithoutHash.slice(queryIndex) : '';
+
+  if (!pathname || pathname === '/' || pathname.endsWith('/')) {
+    return `${pathname || '/'}${query}${hash}`;
+  }
+
+  return `${pathname}/${query}${hash}`;
+}
+
 export type Coords = [number, number]; // [longitude, latitude]
 
 /**
