@@ -34,6 +34,12 @@ export const schemas: Tab = {
           },
           fields: [
             {
+              name: 'source_table',
+              type: 'text',
+              required: true,
+              label: 'Source Table',
+            },
+            {
               name: 'source_column',
               type: 'text',
               required: true,
@@ -63,6 +69,18 @@ export const schemas: Tab = {
               type: 'checkbox',
               defaultValue: true,
               label: 'Searchable',
+            },
+            {
+              name: 'translate_label',
+              type: 'checkbox',
+              defaultValue: false,
+              label: 'Translate Label',
+            },
+            {
+              name: 'translate_value',
+              type: 'checkbox',
+              defaultValue: false,
+              label: 'Translate Value',
             },
           ],
         },
