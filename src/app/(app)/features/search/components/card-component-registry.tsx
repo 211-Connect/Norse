@@ -73,6 +73,8 @@ export function shouldSearchCardComponentRender(
       return showComponent;
     case SearchCardComponentId.ADDRESS:
       return true; // Component handles unavailable addresses
+    case SearchCardComponentId.ATTRIBUTION:
+      return Boolean(result.attribution);
     case SearchCardComponentId.RESOURCE_NAME:
       return Boolean(result.name);
     case SearchCardComponentId.SERVICE_NAME:
