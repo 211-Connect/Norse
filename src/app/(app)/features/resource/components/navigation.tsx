@@ -13,7 +13,7 @@ export function Navigation({
   componentToPrintRef,
   resource,
 }: {
-  componentToPrintRef: unknown;
+  componentToPrintRef: React.RefObject<HTMLElement | null>;
   resource: Resource;
 }) {
   const appConfig = useAppConfig();
@@ -25,8 +25,8 @@ export function Navigation({
         <PrintButton componentToPrintRef={componentToPrintRef} />
         <ShareButton
           componentToPrintRef={componentToPrintRef}
-          title={resource.name ?? undefined}
-          body={resource.description ?? undefined}
+          title={resource.name || ''}
+          body={resource.description || ''}
         />
         <AddToFavoritesButton
           serviceAtLocationId={resource.id}

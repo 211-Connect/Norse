@@ -2,6 +2,7 @@
 
 import { useAtomValue } from 'jotai';
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   resultsAtom,
   resultTotalAtom,
@@ -15,7 +16,11 @@ import { RenderResults } from './render-results';
 import { ResultsPagination } from './results-pagination';
 import { SortSelect } from './sort-select';
 import { SearchCardLayoutConfig } from '../types/card-layout-config';
-import { queryTypeAtom } from '@/app/(app)/shared/store/search';
+import {
+  queryAtom,
+  queryLabelAtom,
+  queryTypeAtom,
+} from '@/app/(app)/shared/store/search';
 
 const SEARCH_RESULTS_HEADING_ID = 'search-results-heading';
 const PENDING_FOCUS_TARGET_STORAGE_KEY = 'pending-search-focus-target';
@@ -25,12 +30,17 @@ type ResultsSectionProps = {
 };
 
 export function ResultsSection({ cardLayout }: ResultsSectionProps) {
+  const { t } = useTranslation('page-search');
   const componentToPrintRef = useRef<HTMLDivElement>(null);
   const resultsHeadingRef = useRef<HTMLHeadingElement>(null);
   const results = useAtomValue(resultsAtom);
   const totalResults = useAtomValue(resultTotalAtom);
   const currentPage = useAtomValue(resultsCurrentPageAtom);
+  const query = useAtomValue(queryAtom);
+  const queryLabel = useAtomValue(queryLabelAtom);
   const queryType = useAtomValue(queryTypeAtom);
+  const shareTitle = queryLabel || query || t('no_query');
+  const shareBody = t('share_body', { count: totalResults, title: shareTitle });
 
   const showSort = queryType !== 'hybrid';
 
@@ -69,7 +79,11 @@ export function ResultsSection({ cardLayout }: ResultsSectionProps) {
             {results.length > 0 && (
               <PrintButton componentToPrintRef={componentToPrintRef} />
             )}
-            <ShareButton componentToPrintRef={componentToPrintRef} />
+            <ShareButton
+              componentToPrintRef={componentToPrintRef}
+              title={shareTitle}
+              body={shareBody}
+            />
           </div>
         </div>
         {showSort && <SortSelect />}

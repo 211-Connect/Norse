@@ -31,6 +31,9 @@ export type AppConfig = {
     number?: string;
     feedbackUrl?: string;
   };
+  sms: {
+    provider: 'Twilio' | 'EMS';
+  } | null;
   featureFlags: {
     requireUserLocation: boolean;
     showFeedbackButtonGlobal: boolean;
