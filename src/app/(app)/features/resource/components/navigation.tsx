@@ -13,7 +13,7 @@ export function Navigation({
   componentToPrintRef,
   resource,
 }: {
-  componentToPrintRef: React.RefObject<HTMLElement>;
+  componentToPrintRef: React.RefObject<HTMLElement | null>;
   resource: Resource;
 }) {
   const appConfig = useAppConfig();
