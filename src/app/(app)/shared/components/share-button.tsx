@@ -22,7 +22,7 @@ import { SmsButton } from './sms-button';
 import { useAppConfig } from '../hooks/use-app-config';
 
 type ShareButtonProps = {
-  componentToPrintRef?: React.RefObject<HTMLElement>;
+  componentToPrintRef?: React.RefObject<HTMLElement | null>;
   title: string;
   body: string;
 };
