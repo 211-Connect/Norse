@@ -27,6 +27,7 @@ import { useMainSearchLayoutContext } from './main-search-layout/main-search-lay
 import { createUrlParamsForSearch } from '../../utils/createUrlParamsForSearch';
 import { useAtomValue } from 'jotai';
 import { searchDistanceAtom } from '../../store/search';
+import { trackUmamiEvent, UmamiEvent } from '../../lib/umami';
 
 export interface SearchDialogProps {
   focusByDefault?: 'search' | 'location';
@@ -50,6 +51,9 @@ export function SearchDialog({
   const scrollPositionRef = useRef(0);
   const initialRenderRef = useRef(true);
   const [mounted, setMounted] = useState(false);
+  const [searchSource, setSearchSource] = useState<'manual' | 'suggestion'>(
+    'manual',
+  );
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const distance = useAtomValue(searchDistanceAtom);
 
@@ -60,6 +64,20 @@ export function SearchDialog({
       e.preventDefault();
 
       startTransition(() => {
+        console.log(searchSource);
+        if (searchSource === 'suggestion') {
+          trackUmamiEvent(UmamiEvent.SearchSuggestionClick, {
+            query: search.searchTerm,
+            queryType: search.queryType ?? '',
+            tenantId: appConfig.tenantId ?? '',
+          });
+        } else {
+          trackUmamiEvent(UmamiEvent.SearchManualClick, {
+            query: search.searchTerm,
+            tenantId: appConfig.tenantId ?? '',
+          });
+        }
+
         if (requireUserLocation && search.searchLocation.trim().length === 0) {
           setSearch((prev) => ({
             ...prev,
@@ -112,9 +130,11 @@ export function SearchDialog({
     },
     [
       appConfig.search.hybridSemanticSearchEnabled,
+      appConfig.tenantId,
       requireUserLocation,
       router,
       search,
+      searchSource,
       distance,
       setSearch,
       stringifySearchParams,
@@ -278,6 +298,7 @@ export function SearchDialog({
               <SearchBar
                 inputId={SEARCH_INPUT_ID}
                 enterKeyFocusTargetId={LOCATION_INPUT_ID}
+                onSearchSourceChange={setSearchSource}
               />
               <LocationSearchBar inputId={LOCATION_INPUT_ID} className="mt-4" />
             </div>
