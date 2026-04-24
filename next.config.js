@@ -43,7 +43,6 @@ const nextConfig = {
   output: 'standalone',
   trailingSlash: process.env.NEXT_PUBLIC_WITH_TRAILING_SLASHES === 'true',
   poweredByHeader: false,
-  skipTrailingSlashRedirect: true,
   cacheMaxMemorySize: 32 * 1024 * 1024, // 32 MB
   // Memory optimization settings
   experimental: {
