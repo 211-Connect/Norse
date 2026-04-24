@@ -6,6 +6,7 @@ import {
   waitForFavoriteListPage,
   loginViaKeycloak,
   goHome,
+  deleteAllE2ETestLists,
 } from './helpers';
 
 const hasAuth =
@@ -18,6 +19,33 @@ test.describe('Favorites Feature (Authenticated)', () => {
     !hasAuth,
     'Skipped — no test credentials (set TEST_USER_EMAIL & TEST_USER_PASSWORD)',
   );
+
+  // Clean up any leftover E2E test lists before the suite runs (from previous
+  // failed runs) so the favorites page doesn't accumulate stale entries.
+  test.beforeAll(async ({ browser }) => {
+    const page = await browser.newPage();
+    try {
+      await loginViaKeycloak(page);
+      // goHome re-navigates so the Next.js session is fully hydrated before
+      // we try to interact with authenticated routes (same as beforeEach does).
+      await goHome(page);
+      await deleteAllE2ETestLists(page);
+    } finally {
+      await page.close();
+    }
+  });
+
+  // Clean up the list created in this run even if tests fail partway through.
+  test.afterAll(async ({ browser }) => {
+    const page = await browser.newPage();
+    try {
+      await loginViaKeycloak(page);
+      await goHome(page);
+      await deleteAllE2ETestLists(page);
+    } finally {
+      await page.close();
+    }
+  });
 
   test.beforeEach(async ({ page }) => {
     await loginViaKeycloak(page);
