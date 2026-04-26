@@ -519,6 +519,9 @@ export interface ResourceDirectory {
       | null;
     customHomeUrl?: string | null;
     searchUrl?: string | null;
+    /**
+     * Leave blank to use the default "My Stuff" label (or locale equivalent)
+     */
     favoritesButtonLabel?: string | null;
     safeExit?: {
       enabled?: boolean | null;
