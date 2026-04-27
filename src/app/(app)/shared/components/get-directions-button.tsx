@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from '@/app/(app)/shared/components/ui/dialog';
 import { Map } from 'lucide-react';
-import { useCallback, useId, useMemo, useRef, useState } from 'react';
+import { useId, useRef, useState, type MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '../lib/utils';
 import { trackUmamiEvent, UmamiEvent } from '../lib/umami';
@@ -33,50 +33,37 @@ export function GetDirectionsButton({
   // True when we don't yet have the user's starting location and must prompt for it
   const needsOrigin = !coords || coords.length !== 2;
 
-  const getOrigin = useCallback(() => {
-    const originCoords = selectedCoordinates || coords;
-    if (originCoords && originCoords.length === 2) {
-      return originCoords?.slice()?.reverse()?.join(',');
-    }
-    return '';
-  }, [coords, selectedCoordinates]);
+  const originCoords = selectedCoordinates ?? coords;
+  const originStr =
+    originCoords && originCoords.length === 2
+      ? originCoords.slice().reverse().join(',')
+      : '';
+  const destinationStr = data?.location?.coordinates?.length
+    ? data.location.coordinates.slice().reverse().join(',')
+    : '';
 
-  const getDestination = useCallback(() => {
-    if (data?.location?.coordinates) {
-      return data.location.coordinates?.slice()?.reverse()?.join(',');
-    }
-    return '';
-  }, [data?.location?.coordinates]);
+  const googleMapsUrl = new URL('https://www.google.com/maps/dir/');
+  googleMapsUrl.searchParams.set('api', '1');
+  googleMapsUrl.searchParams.set('origin', originStr);
+  googleMapsUrl.searchParams.set('destination', destinationStr);
+  const mapsUrl = googleMapsUrl.href;
 
-  // Recomputed whenever origin or destination changes (covers the post-dialog-selection case)
-  const mapsUrl = useMemo(
-    () =>
-      `https://www.google.com/maps/dir/?api=1&origin=${getOrigin()}&destination=${getDestination()}`,
-    [getOrigin, getDestination],
-  );
-
-  // When rendered as <a> — href handles navigation, just fire analytics
-  const onLinkClick = useCallback(() => {
+  function trackDirectionsClick() {
     trackUmamiEvent(UmamiEvent.DirectionClick, { resourceId: String(data.id) });
-  }, [data.id]);
+  }
 
   // When rendered as <button> — open dialog if no origin, otherwise navigate programmatically
-  const onButtonClick = useCallback(
-    (e: React.MouseEvent) => {
-      if (!getOrigin()) {
-        e.preventDefault();
-        triggerRef.current = e.currentTarget as HTMLButtonElement;
-        setOpen(true);
-      } else {
-        trackUmamiEvent(UmamiEvent.DirectionClick, {
-          resourceId: String(data.id),
-        });
-        window.open(mapsUrl, '_blank', 'noopener,noreferrer');
-        setOpen(false);
-      }
-    },
-    [getOrigin, mapsUrl, data.id],
-  );
+  function onButtonClick(e: MouseEvent) {
+    if (!originStr) {
+      e.preventDefault();
+      triggerRef.current = e.currentTarget as HTMLButtonElement;
+      setOpen(true);
+    } else {
+      trackDirectionsClick();
+      window.open(mapsUrl, '_blank', 'noopener,noreferrer');
+      setOpen(false);
+    }
+  }
 
   const buttonContent = (
     <>
@@ -103,7 +90,7 @@ export function GetDirectionsButton({
         aria-haspopup={needsOrigin ? 'dialog' : undefined}
         aria-label={sharedAriaLabel}
         asChild={!needsOrigin}
-        onClick={needsOrigin ? onButtonClick : onLinkClick}
+        onClick={needsOrigin ? onButtonClick : trackDirectionsClick}
       >
         {needsOrigin ? (
           buttonContent
@@ -145,7 +132,7 @@ export function GetDirectionsButton({
 
             <ReferralButton
               className="gap-1"
-              disabled={!getOrigin()}
+              disabled={!originStr}
               referralType="directions_referral"
               resourceId={data.id}
               resourceData={data}
