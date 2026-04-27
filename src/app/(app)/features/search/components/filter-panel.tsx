@@ -204,13 +204,13 @@ const Filters = ({ filters, filterKeys }: FiltersProps) => {
                         className="bg-[rgba(0,0,0,0.03)]"
                         variant="outline"
                       >
-                        <span
-                          id={countId}
-                          aria-label={t('filter_results_count', {
-                            count: b.doc_count,
-                          })}
-                        >
-                          {b.doc_count}
+                        <span id={countId}>
+                          <span aria-hidden="true">{b.doc_count}</span>
+                          <span className="sr-only">
+                            {t('filter_results_count', {
+                              count: b.doc_count,
+                            })}
+                          </span>
                         </span>
                       </Badge>
                     </div>
@@ -254,13 +254,13 @@ const Filters = ({ filters, filterKeys }: FiltersProps) => {
                             className="bg-[rgba(0,0,0,0.03)]"
                             variant="outline"
                           >
-                            <span
-                              id={countId}
-                              aria-label={t('filter_results_count', {
-                                count: b.doc_count,
-                              })}
-                            >
-                              {b.doc_count}
+                            <span id={countId}>
+                              <span aria-hidden="true">{b.doc_count}</span>
+                              <span className="sr-only">
+                                {t('filter_results_count', {
+                                  count: b.doc_count,
+                                })}
+                              </span>
                             </span>
                           </Badge>
                         </div>
