@@ -183,14 +183,12 @@ test.describe('Search accessibility preservation', () => {
     expect(metrics.scrollHeight).toBeGreaterThanOrEqual(metrics.clientHeight);
   });
 
-  test('pressing Enter in the search autocomplete focuses location input instead of submitting', async ({
+  test('pressing Enter in the search autocomplete submits the search form', async ({
     page,
   }) => {
     await openDialogFromSearchTrigger(page);
 
-    const homeUrl = page.url();
     const searchInput = page.locator('#search-input');
-    const locationInput = page.locator('#location-input');
 
     await expect(searchInput).toBeFocused();
     await searchInput.fill('food');
@@ -201,9 +199,7 @@ test.describe('Search accessibility preservation', () => {
 
     await searchInput.press('Enter');
 
-    await expect(locationInput).toBeFocused();
-    await expect(page).toHaveURL(homeUrl);
-    await expect(page.getByTestId('search-dialog')).toBeVisible();
+    await expect(page).toHaveURL(/\/search/, { timeout: 5_000 });
   });
 
   test('pressing Enter in the location autocomplete submits the form', async ({

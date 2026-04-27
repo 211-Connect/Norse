@@ -17,7 +17,6 @@ export async function goHome(page: Page) {
   const base = baseURL.endsWith('/') ? baseURL : `${baseURL}/`;
   const url = new URL(LOCALE, base).href;
   await page.goto(url);
-
   await page.waitForLoadState('networkidle');
 }
 
@@ -66,10 +65,13 @@ export async function performSearch(page: Page, params: SearchParams) {
     await searchInput.fill(params.query ?? '');
   }
 
-  await page.getByTestId('search-submit-btn').click();
-
-  await page.waitForURL(/search\?/);
-  await page.waitForLoadState('networkidle');
+  await Promise.all([
+    page.waitForURL(/search\?/, { waitUntil: 'commit' }),
+    page.getByTestId('search-submit-btn').click(),
+  ]);
+  await expect(page.locator('#search-container')).toBeVisible({
+    timeout: 20_000,
+  });
 }
 
 export async function goToFavorites(page: Page) {
@@ -83,6 +85,36 @@ export async function waitForFavoriteListPage(page: Page) {
   await page
     .getByTestId('back-to-favorites')
     .waitFor({ state: 'visible', timeout: 15000 });
+}
+
+/**
+ * Deletes all favorite lists whose names start with "E2E Test List".
+ * Loops until no more matching cards are found on the favorites page,
+ * clearing out accumulated lists from previous failed test runs.
+ */
+export async function deleteAllE2ETestLists(page: Page): Promise<void> {
+  await goToFavorites(page);
+
+  for (;;) {
+    await page.waitForLoadState('networkidle');
+
+    const card = page.getByText(/^E2E Test List /).first();
+    const isVisible = await card.isVisible({ timeout: 3_000 }).catch(() => false);
+    if (!isVisible) break;
+
+    await card.click();
+    await waitForFavoriteListPage(page);
+
+    const deleteListBtn = page.getByTestId('delete-list-btn');
+    await deleteListBtn.waitFor({ state: 'visible', timeout: 10_000 });
+    await deleteListBtn.click();
+
+    const deleteListConfirmBtn = page.getByTestId('delete-list-confirm-btn');
+    await deleteListConfirmBtn.waitFor({ state: 'visible', timeout: 10_000 });
+    await deleteListConfirmBtn.click();
+
+    await page.waitForURL(/favorites\/?(?:\?|$)/, { timeout: 15_000 });
+  }
 }
 
 export async function getResultTotal(page: Page): Promise<string> {
@@ -147,7 +179,6 @@ export async function openTopicSearch(page: Page) {
     const topicLink = page.locator('a[href*="/search?query="]').nth(i);
     await expect(topicLink).toBeVisible({ timeout: 20_000 });
     await topicLink.click();
-
     await page.waitForURL(/search\?/, { timeout: 20_000 });
     await expect(page.locator('#search-container')).toBeVisible({
       timeout: 20_000,
@@ -208,8 +239,10 @@ export async function markFiltersByIds(page: Page, filterIds: string[]) {
     if ((await checkbox.getAttribute('data-state')) !== 'checked') {
       await checkbox.scrollIntoViewIfNeeded();
       await checkbox.click();
-      await page.waitForLoadState('networkidle');
       await expect(checkbox).toHaveAttribute('data-state', 'checked', {
+        timeout: 20_000,
+      });
+      await expect(page.locator('#search-container')).toBeVisible({
         timeout: 20_000,
       });
     }
