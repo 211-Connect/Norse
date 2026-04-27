@@ -64,7 +64,6 @@ export function SearchDialog({
       e.preventDefault();
 
       startTransition(() => {
-        console.log(searchSource);
         if (searchSource === 'suggestion') {
           trackUmamiEvent(UmamiEvent.SearchSuggestionClick, {
             query: search.searchTerm,
@@ -121,6 +120,10 @@ export function SearchDialog({
 
         router.push(`/search${queryParams}`);
 
+        // Close as soon as navigation is requested so `open` / aria-expanded match
+        // real interactivity (dialog must not sit above the results page).
+        setOpen?.(false);
+
         setSearch((prev) => ({
           ...prev,
           ...locationParams,
@@ -136,16 +139,11 @@ export function SearchDialog({
       search,
       searchSource,
       distance,
+      setOpen,
       setSearch,
       stringifySearchParams,
     ],
   );
-
-  useEffect(() => {
-    if (!isPending) {
-      setOpen?.(false);
-    }
-  }, [isPending, setOpen]);
 
   useEffect(() => {
     if (initialRenderRef.current) return;
