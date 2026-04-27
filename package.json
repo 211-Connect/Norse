@@ -57,7 +57,7 @@
     "@payloadcms/db-postgres": "3.83.0",
     "@payloadcms/email-nodemailer": "3.83.0",
     "@payloadcms/next": "3.83.0",
-    "@payloadcms/plugin-multi-tenant": "3.83.0",
+    "@payloadcms/plugin-multi-tenant": "3.84.1",
     "@payloadcms/richtext-lexical": "3.83.0",
     "@payloadcms/storage-s3": "3.83.0",
     "@payloadcms/ui": "3.83.0",
