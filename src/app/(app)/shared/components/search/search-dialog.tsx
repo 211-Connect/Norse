@@ -297,7 +297,6 @@ export function SearchDialog({
             <div id="search-form-inputs">
               <SearchBar
                 inputId={SEARCH_INPUT_ID}
-                enterKeyFocusTargetId={LOCATION_INPUT_ID}
                 onSearchSourceChange={setSearchSource}
               />
               <LocationSearchBar inputId={LOCATION_INPUT_ID} className="mt-4" />

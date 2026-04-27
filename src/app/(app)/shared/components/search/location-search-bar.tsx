@@ -29,7 +29,6 @@ type BaseProps = {
   className?: string;
   focusByDefault?: boolean;
   inputId?: string;
-  enterKeyFocusTargetId?: string;
 };
 
 // Integrated mode - uses global atoms and context
@@ -47,12 +46,7 @@ type StandaloneModeProps = BaseProps & {
 type LocationSearchBarProps = IntegratedModeProps | StandaloneModeProps;
 
 export function LocationSearchBar(props: LocationSearchBarProps) {
-  const {
-    className,
-    focusByDefault = false,
-    inputId,
-    enterKeyFocusTargetId,
-  } = props;
+  const { className, focusByDefault = false, inputId } = props;
   const mode = props.mode || 'integrated';
   const isStandalone = mode === 'standalone';
 
@@ -288,10 +282,6 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
         clearButtonLabel={t('call_to_action.remove')}
         autoSelectIndex={coords?.length === 2 ? undefined : 1}
         autoSelectOnBlurIndex={1}
-        enterKeyBehavior={
-          isStandalone && enterKeyFocusTargetId ? 'focus-target' : 'submit-form'
-        }
-        enterKeyFocusTargetId={isStandalone ? enterKeyFocusTargetId : undefined}
         positionBelowElementId={isStandalone ? undefined : 'search-form-inputs'}
       />
       {validationError && (

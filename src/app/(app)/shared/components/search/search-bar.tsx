@@ -14,14 +14,12 @@ import { useMainSearchLayoutContext } from './main-search-layout/main-search-lay
 interface SearchBarProps {
   focusByDefault?: boolean;
   inputId?: string;
-  enterKeyFocusTargetId?: string;
   onSearchSourceChange: (source: 'manual' | 'suggestion') => void;
 }
 
 export function SearchBar({
   focusByDefault = false,
   inputId,
-  enterKeyFocusTargetId,
   onSearchSourceChange,
 }: SearchBarProps) {
   const appConfig = useAppConfig();
@@ -152,8 +150,6 @@ export function SearchBar({
       onValueChange={setSearchTerm}
       clearButtonLabel={t('call_to_action.remove')}
       value={searchTerm}
-      enterKeyBehavior={enterKeyFocusTargetId ? 'focus-target' : 'submit-form'}
-      enterKeyFocusTargetId={enterKeyFocusTargetId}
       positionBelowElementId="search-form-inputs"
     />
   );

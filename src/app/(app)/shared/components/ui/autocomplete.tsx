@@ -66,8 +66,6 @@ export type AutocompleteProps = {
   autoSelectOnBlurIndex?: number;
   defaultOpen?: boolean;
   clearButtonLabel?: string;
-  enterKeyBehavior?: 'submit-form' | 'focus-target';
-  enterKeyFocusTargetId?: string;
   positionBelowElementId?: string;
   /** Treat a committed (selected) value as an indivisible block. Any printable
    *  keypress replaces the whole block and starts a fresh search. */
@@ -120,8 +118,6 @@ export function Autocomplete(props: AutocompleteProps) {
     value: inputValue,
     defaultOpen = false,
     clearButtonLabel = 'Clear',
-    enterKeyBehavior = 'submit-form',
-    enterKeyFocusTargetId,
     positionBelowElementId,
     blockMode = false,
     onDecommit,
@@ -438,24 +434,18 @@ export function Autocomplete(props: AutocompleteProps) {
             }
           }
 
-          if (enterKeyBehavior === 'focus-target' && enterKeyFocusTargetId) {
+          const form = (e.target as HTMLElement).closest('form');
+          if (form) {
             setTimeout(() => {
-              document.getElementById(enterKeyFocusTargetId)?.focus();
-            }, 0);
-          } else {
-            const form = (e.target as HTMLElement).closest('form');
-            if (form) {
-              setTimeout(() => {
-                if (typeof form.requestSubmit === 'function') {
-                  form.requestSubmit();
-                  return;
-                }
+              if (typeof form.requestSubmit === 'function') {
+                form.requestSubmit();
+                return;
+              }
 
-                form.dispatchEvent(
-                  new Event('submit', { cancelable: true, bubbles: true }),
-                );
-              }, 0);
-            }
+              form.dispatchEvent(
+                new Event('submit', { cancelable: true, bubbles: true }),
+              );
+            }, 0);
           }
 
           setCurrentIndex(-1);
@@ -528,8 +518,6 @@ export function Autocomplete(props: AutocompleteProps) {
       popperElement,
       uniqueId,
       onValueChange,
-      enterKeyBehavior,
-      enterKeyFocusTargetId,
       isBlockCommitted,
       onDecommit,
       onEscape,
