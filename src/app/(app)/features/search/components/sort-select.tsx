@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import {
   Select,
@@ -38,7 +37,6 @@ export function SortSelect() {
   const coords = useAtomValue(userCoordinatesAtom);
   const showServiceName = useFlag('showSearchAndResourceServiceName');
   const { start } = useTopLoader();
-  const [open, setOpen] = useState(false);
 
   const currentSort = getSortOption(searchParams.get('sort'), coords);
 
@@ -67,23 +65,18 @@ export function SortSelect() {
 
   return (
     <div className="flex items-center gap-2">
-      <Label htmlFor={SORT_SELECT_TRIGGER_ID} className="text-sm font-medium">
-        {t('sort.label', 'Sort by')}:
-      </Label>
-      {!open && (
-        <div
-          id={SORT_SELECT_CONTENT_ID}
-          role="listbox"
-          hidden
-          aria-hidden="true"
-        />
-      )}
       <Select
-        value={currentSort}
-        onValueChange={handleSortChange}
+        a11yLabel={
+          <Label
+            htmlFor={SORT_SELECT_TRIGGER_ID}
+            className="text-sm font-medium"
+          >
+            {t('sort.label', 'Sort by')}:
+          </Label>
+        }
         contentId={SORT_SELECT_CONTENT_ID}
-        open={open}
-        onOpenChange={setOpen}
+        onValueChange={handleSortChange}
+        value={currentSort}
       >
         <SelectTrigger
           id={SORT_SELECT_TRIGGER_ID}

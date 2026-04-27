@@ -1,4 +1,7 @@
+'use client';
+
 import * as React from 'react';
+import { useState } from 'react';
 import { CheckIcon, ChevronUpIcon } from '@radix-ui/react-icons';
 import * as SelectPrimitive from '@radix-ui/react-select';
 import { ChevronDown } from 'lucide-react';
@@ -10,21 +13,94 @@ const SelectContentIdContext = React.createContext<string | undefined>(
   undefined,
 );
 
-type SelectProps = React.ComponentPropsWithoutRef<typeof SelectPrimitive.Root> & {
-  contentId?: string;
-};
+type RadixSelectRootProps = React.ComponentPropsWithoutRef<
+  typeof SelectPrimitive.Root
+>;
 
-const Select = ({
-  children,
-  contentId,
-  ...props
-}: SelectProps) => {
+/**
+ * - **Default:** Radix `Select` with optional `contentId` (for trigger/content id wiring only).
+ * - **With `a11yLabel`:** also enables the VPAT pattern: your label, a hidden
+ *   `role="listbox"` when closed, and internal `open` / `onOpenChange` (requires
+ *   `contentId`). Omit passing `open` / `onOpenChange` in that mode—they are owned here.
+ */
+export type SelectProps =
+  | (RadixSelectRootProps & {
+      contentId?: string;
+      a11yLabel?: undefined;
+    })
+  | (Omit<RadixSelectRootProps, 'open' | 'onOpenChange'> & {
+      /**
+       * e.g. shadcn `Label` with `htmlFor` matching `SelectTrigger`’s `id`. When set,
+       * the closed-menu placeholder listbox and internal open state are applied.
+       */
+      a11yLabel: React.ReactNode;
+      contentId: string;
+    });
+
+const Select = (props: SelectProps) => {
+  if ('a11yLabel' in props && props.a11yLabel != null) {
+    const { a11yLabel, contentId, children, ...rest } = props;
+    return (
+      <SelectA11yBundle
+        a11yLabel={a11yLabel}
+        contentId={contentId}
+        rest={rest}
+      >
+        {children}
+      </SelectA11yBundle>
+    );
+  }
+
+  const { contentId, children, ...rest } = props;
   return (
     <SelectContentIdContext.Provider value={contentId}>
-      <SelectPrimitive.Root {...props}>{children}</SelectPrimitive.Root>
+      <SelectPrimitive.Root {...rest}>{children}</SelectPrimitive.Root>
     </SelectContentIdContext.Provider>
   );
 };
+
+type SelectA11yShellRest = Omit<
+  RadixSelectRootProps,
+  'open' | 'onOpenChange' | 'children'
+>;
+
+/** Internal: open state + closed placeholder, used when `Select` has `a11yLabel` set. */
+function SelectA11yBundle({
+  a11yLabel,
+  contentId,
+  children,
+  rest,
+}: {
+  a11yLabel: React.ReactNode;
+  contentId: string;
+  rest: SelectA11yShellRest;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      {a11yLabel}
+      {!open && (
+        <div
+          id={contentId}
+          role="listbox"
+          hidden
+          aria-hidden="true"
+        />
+      )}
+      <SelectContentIdContext.Provider value={contentId}>
+        <SelectPrimitive.Root
+          open={open}
+          onOpenChange={setOpen}
+          {...rest}
+        >
+          {children}
+        </SelectPrimitive.Root>
+      </SelectContentIdContext.Provider>
+    </>
+  );
+}
 
 const SelectGroup = SelectPrimitive.Group;
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTopLoader } from 'nextjs-toploader';
@@ -52,7 +52,6 @@ export const LanguageSwitcher = () => {
   const isSmOrLarger = useBreakpoint(640);
 
   const { t, i18n } = useTranslation('common');
-  const [open, setOpen] = useState(false);
 
   const currentLanguage = useMemo(() => i18n.language, [i18n.language]);
 
@@ -88,22 +87,14 @@ export const LanguageSwitcher = () => {
 
   return (
     <li className="h-full">
-      <Label htmlFor={LANGUAGE_SWITCHER_TRIGGER_ID} className="sr-only">
-        {t('header.language_select_label')}
-      </Label>
-      {!open && (
-        <div
-          id={LANGUAGE_SWITCHER_CONTENT_ID}
-          role="listbox"
-          hidden
-          aria-hidden="true"
-        />
-      )}
       <Select
+        a11yLabel={
+          <Label htmlFor={LANGUAGE_SWITCHER_TRIGGER_ID} className="sr-only">
+            {t('header.language_select_label')}
+          </Label>
+        }
         contentId={LANGUAGE_SWITCHER_CONTENT_ID}
         defaultValue={i18n.language}
-        open={open}
-        onOpenChange={setOpen}
         onValueChange={handleValueChange}
       >
         <SelectTrigger

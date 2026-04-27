@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { setCookie, deleteCookie } from 'cookies-next/client';
 import { useTranslation } from 'react-i18next';
@@ -33,7 +32,6 @@ export interface DistanceSelectProps {
 
 export function DistanceSelect({ className = '' }: DistanceSelectProps) {
   const { t } = useTranslation('common');
-  const [open, setOpen] = useState(false);
 
   const appConfig = useAppConfig();
   const setSearch = useSetAtom(searchAtom);
@@ -57,24 +55,19 @@ export function DistanceSelect({ className = '' }: DistanceSelectProps) {
 
   return (
     <div className={cn('flex items-center gap-2', className)}>
-      <Label htmlFor={DISTANCE_SELECT_TRIGGER_ID} className="text-sm font-medium">
-        {t('search.radius_placeholder')}:
-      </Label>
-      {!open && (
-        <div
-          id={DISTANCE_SELECT_CONTENT_ID}
-          role="listbox"
-          hidden
-          aria-hidden="true"
-        />
-      )}
       <Select
+        a11yLabel={
+          <Label
+            htmlFor={DISTANCE_SELECT_TRIGGER_ID}
+            className="text-sm font-medium"
+          >
+            {t('search.radius_placeholder')}:
+          </Label>
+        }
         contentId={DISTANCE_SELECT_CONTENT_ID}
+        disabled={!hasLocation}
         onValueChange={setDistance}
         value={distance}
-        disabled={!hasLocation}
-        open={open}
-        onOpenChange={setOpen}
       >
         <SelectTrigger
           id={DISTANCE_SELECT_TRIGGER_ID}
