@@ -893,11 +893,14 @@ export interface OrchestrationConfig {
         schemaName: string;
         customAttributes?:
           | {
+              source_table: string;
               source_column: string;
               link_entity: 'organization' | 'service' | 'location';
               label: string;
               provenance?: string | null;
               searchable?: boolean | null;
+              translate_label?: boolean | null;
+              translate_value?: boolean | null;
               id?: string | null;
             }[]
           | null;
@@ -1593,11 +1596,14 @@ export interface OrchestrationConfigSelect<T extends boolean = true> {
         customAttributes?:
           | T
           | {
+              source_table?: T;
               source_column?: T;
               link_entity?: T;
               label?: T;
               provenance?: T;
               searchable?: T;
+              translate_label?: T;
+              translate_value?: T;
               id?: T;
             };
         id?: T;

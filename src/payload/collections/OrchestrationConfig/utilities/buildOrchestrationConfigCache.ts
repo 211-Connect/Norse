@@ -77,10 +77,13 @@ export async function buildOrchestrationConfigCache(
         if (!attributesMap.has(key)) {
           attributesMap.set(key, {
             source_column: attr.source_column,
+            source_table: attr.source_table,
             link_entity: attr.link_entity,
             label: {},
             provenance: attr.provenance || null,
             searchable: attr.searchable ?? null,
+            translate_label: attr.translate_label ?? null,
+            translate_value: attr.translate_value ?? null,
             id: attr.id || null,
           });
         }
