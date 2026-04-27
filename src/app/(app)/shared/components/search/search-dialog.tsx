@@ -274,8 +274,10 @@ export function SearchDialog({
       )}
       role="dialog"
       data-testid={SEARCH_DIALOG_ID}
-      aria-hidden={!open}
+      aria-hidden={open ? undefined : true}
       aria-modal={open ? true : undefined}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      inert={open ? undefined : ('' as any)}
       aria-labelledby={SEARCH_DIALOG_TITLE_ID}
       aria-describedby={SEARCH_DIALOG_DESCRIPTION_ID}
       onKeyDown={handleDialogKeyDown}

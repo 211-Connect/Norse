@@ -84,6 +84,11 @@ type BodySiblingSnapshot = {
   inert: boolean;
 };
 
+type FocusableDescendantSnapshot = {
+  element: HTMLElement;
+  tabIndex: string | null;
+};
+
 function readBodySiblingSnapshot(element: HTMLElement): BodySiblingSnapshot {
   return {
     element,
@@ -100,6 +105,24 @@ function restoreBodySiblingSnapshot(snapshot: BodySiblingSnapshot): void {
     element.setAttribute('aria-hidden', ariaHidden);
   }
   element.inert = inert;
+}
+
+function readFocusableDescendants(
+  container: HTMLElement,
+): FocusableDescendantSnapshot[] {
+  return Array.from(
+    container.querySelectorAll<HTMLElement>(HIDDEN_FOCUSABLE_SELECTOR),
+  ).map((el) => ({ element: el, tabIndex: el.getAttribute('tabindex') }));
+}
+
+function restoreFocusableDescendant(
+  snapshot: FocusableDescendantSnapshot,
+): void {
+  if (snapshot.tabIndex === null) {
+    snapshot.element.removeAttribute('tabindex');
+  } else {
+    snapshot.element.setAttribute('tabindex', snapshot.tabIndex);
+  }
 }
 
 /** How Radix marks hidden layers after `remember` — matches existing behaviour. */
@@ -269,8 +292,12 @@ export function useBodySiblingsSync(
   open: boolean,
 ) {
   const hiddenSiblingsRef = useRef<BodySiblingSnapshot[]>([]);
+  const hiddenFocusablesRef = useRef<FocusableDescendantSnapshot[]>([]);
 
   const restoreSiblings = useCallback(() => {
+    hiddenFocusablesRef.current.forEach(restoreFocusableDescendant);
+    hiddenFocusablesRef.current = [];
+
     hiddenSiblingsRef.current.forEach((snapshot) => {
       restoreBodySiblingSnapshot(snapshot);
     });
@@ -292,6 +319,16 @@ export function useBodySiblingsSync(
     hiddenSiblingsRef.current = siblingsToHide.map((element) =>
       readBodySiblingSnapshot(element),
     );
+
+    // Snapshot and demote focusable descendants BEFORE hiding the container so
+    // accessibility validators never see aria-hidden on a parent of focusable
+    // elements (WCAG 4.1.2 / axe-core aria-hidden-focus rule).
+    hiddenFocusablesRef.current = siblingsToHide.flatMap(
+      readFocusableDescendants,
+    );
+    hiddenFocusablesRef.current.forEach(({ element }) => {
+      element.setAttribute('tabindex', '-1');
+    });
 
     siblingsToHide.forEach((element) => {
       element.setAttribute('aria-hidden', 'true');
