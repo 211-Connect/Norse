@@ -1,7 +1,28 @@
 import { test as base, expect, type Page } from '@playwright/test';
 import { baseURL } from '../playwright.config';
+import {
+  AUTH_NAV_TIMEOUT_MS,
+  AUTOCOMPLETE_TIMEOUT_MS,
+  PAGE_LOAD_TIMEOUT_MS,
+  SEARCH_NAV_TIMEOUT_MS,
+  UI_SHELL_TIMEOUT_MS,
+} from './timeouts';
 
 export const LOCALE = 'en';
+
+/**
+ * Use instead of `waitForURL` for in-app routes: resolves if the page is
+ * already on a matching URL, and does not depend on a specific readystate.
+ */
+export async function expectPageUrl(
+  page: Page,
+  url: string | RegExp,
+  options?: { timeout?: number },
+) {
+  await expect(page).toHaveURL(url, {
+    timeout: options?.timeout ?? SEARCH_NAV_TIMEOUT_MS,
+  });
+}
 
 function isAuthHost(urlString: string): boolean {
   try {
@@ -16,14 +37,49 @@ function isAuthHost(urlString: string): boolean {
 export async function goHome(page: Page) {
   const base = baseURL.endsWith('/') ? baseURL : `${baseURL}/`;
   const url = new URL(LOCALE, base).href;
-  await page.goto(url);
-  await page.waitForLoadState('networkidle');
+  await page.goto(url, {
+    timeout: PAGE_LOAD_TIMEOUT_MS,
+    waitUntil: 'domcontentloaded',
+  });
+  await page.waitForLoadState('networkidle', { timeout: PAGE_LOAD_TIMEOUT_MS });
 }
 
+/**
+ * Filter checkboxes are `disabled` while a search navigation is in-flight
+ * (`isPending` in filter-panel). Wait until the panel is interactive.
+ */
+export async function waitForFilterPanelInteractive(page: Page) {
+  const first = page.locator('#filter-panel [role="checkbox"]').first();
+  await expect(first).toBeEnabled({ timeout: UI_SHELL_TIMEOUT_MS });
+}
+
+/**
+ * Opens the search dialog and waits until the trigger’s aria-expanded and the
+ * dialog match an open modal (same contract as the app’s a11y wiring).
+ */
 export async function openSearchDialog(page: Page) {
-  await page.getByTestId('search-trigger').first().click();
+  const trigger = page.getByTestId('search-trigger').first();
+  await trigger.waitFor({ state: 'visible', timeout: UI_SHELL_TIMEOUT_MS });
+  await trigger.click();
+  await expect(trigger).toHaveAttribute('aria-expanded', 'true', {
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
   await page.getByTestId('search-dialog').waitFor({ state: 'visible' });
   return page.locator('#search-input');
+}
+
+/**
+ * After submit navigates to /search, the dialog must be dismissed: trigger
+ * collapsed and dialog not visible (matches user-interactable results shell).
+ */
+export async function expectSearchDialogDismissed(page: Page) {
+  const trigger = page.getByTestId('search-trigger').first();
+  await expect(trigger).toHaveAttribute('aria-expanded', 'false', {
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
+  await expect(page.getByTestId('search-dialog')).toBeHidden({
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
 }
 
 export type SearchParams = {
@@ -39,7 +95,7 @@ export async function performSearch(page: Page, params: SearchParams) {
     await searchInput.fill(params.query_label ?? params.query);
 
     const listbox = page.getByTestId('autocomplete-listbox');
-    await listbox.waitFor({ state: 'visible', timeout: 10_000 });
+    await listbox.waitFor({ state: 'visible', timeout: AUTOCOMPLETE_TIMEOUT_MS });
 
     const options = listbox.getByTestId('autocomplete-option');
     const optionCount = await options.count();
@@ -65,26 +121,35 @@ export async function performSearch(page: Page, params: SearchParams) {
     await searchInput.fill(params.query ?? '');
   }
 
+  // Start URL assertion in parallel with submit so the navigation is not missed
+  // (sequential click → expect can leave the main frame on a bad URL in fast/slow-hybrid UIs).
   await Promise.all([
-    page.waitForURL(/search\?/, { waitUntil: 'commit' }),
+    expectPageUrl(page, /search\?/),
     page.getByTestId('search-submit-btn').click(),
   ]);
+  await expectSearchDialogDismissed(page);
   await expect(page.locator('#search-container')).toBeVisible({
-    timeout: 20_000,
+    timeout: UI_SHELL_TIMEOUT_MS,
   });
 }
 
 export async function goToFavorites(page: Page) {
-  await page.getByTestId('favorites-btn').click();
-  await page.waitForURL(/favorites\/?(?:\?|$)/, { timeout: 15000 });
+  // Race navigation with the click so fast client transitions are not missed
+  // (same pattern as performSearch).
+  await Promise.all([
+    page.waitForURL((url) => url.pathname.includes('/favorites'), {
+      timeout: SEARCH_NAV_TIMEOUT_MS,
+    }),
+    page.getByTestId('favorites-btn').click(),
+  ]);
   await page.waitForLoadState('networkidle');
 }
 
 export async function waitForFavoriteListPage(page: Page) {
-  await page.waitForURL(/favorites\/[a-f0-9-]{24}/, { timeout: 15000 });
+  await expectPageUrl(page, /favorites\/[a-f0-9-]{24}/);
   await page
     .getByTestId('back-to-favorites')
-    .waitFor({ state: 'visible', timeout: 15000 });
+    .waitFor({ state: 'visible', timeout: UI_SHELL_TIMEOUT_MS });
 }
 
 /**
@@ -113,13 +178,13 @@ export async function deleteAllE2ETestLists(page: Page): Promise<void> {
     await deleteListConfirmBtn.waitFor({ state: 'visible', timeout: 10_000 });
     await deleteListConfirmBtn.click();
 
-    await page.waitForURL(/favorites\/?(?:\?|$)/, { timeout: 15_000 });
+    await expectPageUrl(page, /favorites\/?(?:\?|$)/);
   }
 }
 
 export async function getResultTotal(page: Page): Promise<string> {
   const resultTotal = page.locator('#result-total');
-  await resultTotal.waitFor({ state: 'visible', timeout: 15000 });
+  await resultTotal.waitFor({ state: 'visible', timeout: UI_SHELL_TIMEOUT_MS });
   return (await resultTotal.textContent()) ?? '';
 }
 
@@ -130,14 +195,14 @@ export function parseTrailingInteger(text: string): number {
 
 export async function getResultTotalNumber(page: Page): Promise<number> {
   const resultTotal = page.locator('#result-total');
-  await expect(resultTotal).toBeVisible({ timeout: 20_000 });
+  await expect(resultTotal).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
   const raw = (await resultTotal.textContent()) ?? '';
   return parseTrailingInteger(raw);
 }
 
 export async function getResultTotalText(page: Page): Promise<string> {
   const resultTotal = page.locator('#result-total');
-  await expect(resultTotal).toBeVisible({ timeout: 20_000 });
+  await expect(resultTotal).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
   return ((await resultTotal.textContent()) ?? '').trim();
 }
 
@@ -146,7 +211,7 @@ export async function getResultTitles(
   limit = 10,
 ): Promise<string[]> {
   const links = page.getByTestId('resource-link');
-  await expect(links.first()).toBeVisible({ timeout: 20_000 });
+  await expect(links.first()).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
   const count = await links.count();
   const capped = Math.min(count, limit);
   const titles: string[] = [];
@@ -165,9 +230,9 @@ export async function openTopicSearch(page: Page) {
     const topicsLink = page
       .locator('a[href$="/topics"], a[href*="/topics?"]')
       .first();
-    await expect(topicsLink).toBeVisible({ timeout: 20_000 });
+    await expect(topicsLink).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
     await topicsLink.click();
-    await page.waitForURL(/topics\/?(?:\?|$)/, { timeout: 20_000 });
+    await expectPageUrl(page, /topics\/?(?:\?|$)/);
     await page.waitForLoadState('networkidle');
   }
 
@@ -177,11 +242,11 @@ export async function openTopicSearch(page: Page) {
 
   for (let i = 0; i < tries; i += 1) {
     const topicLink = page.locator('a[href*="/search?query="]').nth(i);
-    await expect(topicLink).toBeVisible({ timeout: 20_000 });
+    await expect(topicLink).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
     await topicLink.click();
-    await page.waitForURL(/search\?/, { timeout: 20_000 });
+    await expectPageUrl(page, /search\?/);
     await expect(page.locator('#search-container')).toBeVisible({
-      timeout: 20_000,
+      timeout: UI_SHELL_TIMEOUT_MS,
     });
     await page.waitForLoadState('networkidle');
 
@@ -189,6 +254,30 @@ export async function openTopicSearch(page: Page) {
   }
 
   throw new Error('No topic search link found.');
+}
+
+/**
+ * County (and other) facets stay disabled until the user sets a place—same as
+ * the “Add my location” product rule. Fills a stable test city and submits
+ * from the search dialog so the filter panel can be exercised.
+ */
+export async function applyTestLocationOnSearchPage(page: Page) {
+  const addOrChange = page.getByRole('button', {
+    name: /add my location|change location|cambiar ubicación|agregar mi ubicación/i,
+  });
+  await expect(addOrChange.first()).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+  await addOrChange.first().click();
+  const locationInput = page.locator('#location-input');
+  await expect(locationInput).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+  await locationInput.fill('minneapolis');
+  const listbox = page.getByTestId('autocomplete-listbox');
+  await listbox.waitFor({ state: 'visible', timeout: AUTOCOMPLETE_TIMEOUT_MS });
+  await locationInput.press('Enter');
+  await expect(page.locator('#search-container')).toBeVisible({
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
+  await page.waitForLoadState('networkidle');
+  await waitForFilterPanelInteractive(page);
 }
 
 export type AppliedFilter = {
@@ -219,9 +308,11 @@ export async function getSelectedFilterIds(page: Page): Promise<string[]> {
 
   for (let i = 0; i < count; i += 1) {
     const checkbox = selected.nth(i);
+    // Prefer `id` so values stay consistent across EN ↔ ES (labels can change; ids usually do not)
     const filterId =
+      (await checkbox.getAttribute('id')) ??
       (await checkbox.getAttribute('aria-label')) ??
-      (await checkbox.getAttribute('id'));
+      '';
     if (filterId) ids.push(filterId);
   }
 
@@ -230,22 +321,99 @@ export async function getSelectedFilterIds(page: Page): Promise<string[]> {
 
 export async function markFiltersByIds(page: Page, filterIds: string[]) {
   const panel = page.locator('#filter-panel');
-  await expect(panel).toBeVisible({ timeout: 20_000 });
+  await expect(panel).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
 
   for (const filterId of filterIds) {
     const checkbox = getFilterCheckboxById(page, filterId);
-    await expect(checkbox).toBeVisible({ timeout: 20_000 });
+    await expect(checkbox).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
 
     if ((await checkbox.getAttribute('data-state')) !== 'checked') {
       await checkbox.scrollIntoViewIfNeeded();
       await checkbox.click();
       await expect(checkbox).toHaveAttribute('data-state', 'checked', {
-        timeout: 20_000,
+        timeout: UI_SHELL_TIMEOUT_MS,
       });
       await expect(page.locator('#search-container')).toBeVisible({
-        timeout: 20_000,
+        timeout: UI_SHELL_TIMEOUT_MS,
       });
     }
+  }
+}
+
+/**
+ * Checks up to `count` **enabled, unchecked** filter checkboxes in panel order
+ * (skips disabled / greyed options). Use when fixed filter labels are not
+ * reliable across environments.
+ */
+export async function markFirstNEnabledFilters(
+  page: Page,
+  count: number,
+): Promise<void> {
+  const panel = page.locator('#filter-panel');
+  await expect(panel).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+  await waitForFilterPanelInteractive(page);
+  let applied = 0;
+
+  // Re-query the checkbox list after each successful apply: the panel re-renders
+  // and the node count / order can change, so a single upfront `count()` + `nth(i)`
+  // can point past the end (e.g. nth(41) after the list shrinks).
+  while (applied < count) {
+    const checkboxes = panel.locator('[role="checkbox"]');
+    const n = await checkboxes.count();
+    if (n === 0) {
+      break;
+    }
+
+    let progressed = false;
+    for (let i = 0; i < n; i += 1) {
+      const checkbox = checkboxes.nth(i);
+      if (!(await checkbox.isVisible().catch(() => false))) {
+        continue;
+      }
+      if ((await checkbox.getAttribute('data-disabled')) !== null) {
+        continue;
+      }
+      if ((await checkbox.getAttribute('aria-disabled')) === 'true') {
+        continue;
+      }
+      if (await checkbox.isDisabled().catch(() => true)) {
+        continue;
+      }
+      if ((await checkbox.getAttribute('data-state')) === 'checked') {
+        continue;
+      }
+      await checkbox.scrollIntoViewIfNeeded();
+      await checkbox.click();
+      // A no-op click (e.g. still-disabled until location/geo rules resolve) should not burn UI_SHELL_TIMEOUT_MS
+      let toggled: boolean;
+      try {
+        await expect(checkbox).toHaveAttribute('data-state', 'checked', {
+          timeout: UI_SHELL_TIMEOUT_MS,
+        });
+        toggled = true;
+      } catch {
+        toggled = false;
+      }
+      if (!toggled) {
+        continue;
+      }
+      await expect(page.locator('#search-container')).toBeVisible({
+        timeout: UI_SHELL_TIMEOUT_MS,
+      });
+      applied += 1;
+      progressed = true;
+      break;
+    }
+
+    if (!progressed) {
+      break;
+    }
+  }
+
+  if (applied < 1) {
+    throw new Error(
+      'No applicable filter checkboxes: all candidates were disabled or already checked.',
+    );
   }
 }
 
@@ -261,7 +429,7 @@ export async function getCheckedFilterDisplayedCount(
     `#filter-panel [role="checkbox"][aria-label="${filterId}"]`,
   );
   await expect(checkbox).toHaveAttribute('data-state', 'checked', {
-    timeout: 20_000,
+    timeout: UI_SHELL_TIMEOUT_MS,
   });
 
   const row = checkbox.locator(
@@ -274,21 +442,21 @@ export async function getCheckedFilterDisplayedCount(
 export async function switchLanguage(page: Page, locale: 'en' | 'es') {
   const previousPathname = new URL(page.url()).pathname;
 
-  const languageSelect = page
-    .locator('button[aria-label][role="combobox"]')
-    .first();
-  await expect(languageSelect).toBeVisible({ timeout: 20_000 });
+  // Header is the only place with a language Select; search comboboxes are portaled / in main.
+  // Do not match on English "language" — the aria-label is translated (e.g. Spanish uses "idioma").
+  const languageSelect = page.locator('#app-header').getByRole('combobox');
+  await expect(languageSelect).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
   await languageSelect.click();
 
   const option = page.getByRole('option', {
     name: new RegExp(`${toSingleRegexLiteral(locale)}\\)$`, 'i'),
   });
-  await expect(option).toBeVisible({ timeout: 20_000 });
+  await expect(option).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
   await option.click();
 
-  await page.waitForURL(
-    (url) => {
-      const pathname = url.pathname;
+  await expect(page).toHaveURL(
+    (u) => {
+      const pathname = u.pathname;
       const escapedLocale = toSingleRegexLiteral(locale);
       // Check if locale appears as a complete path segment (handles base paths)
       const hasExplicitLocale = new RegExp(
@@ -311,7 +479,7 @@ export async function switchLanguage(page: Page, locale: 'en' | 'es') {
       const expectedDefaultPath = previousWithoutLocale || '/';
       return pathname === expectedDefaultPath;
     },
-    { timeout: 20_000 },
+    { timeout: SEARCH_NAV_TIMEOUT_MS },
   );
   await page.waitForLoadState('networkidle');
 }
@@ -332,9 +500,9 @@ export async function loginViaKeycloak(page: Page) {
   await page.getByTestId('login-btn').click();
 
   await page
-    .waitForURL(/auth\.c211\.io|keycloak/i, { timeout: 60_000 })
+    .waitForURL(/auth\.c211\.io|keycloak/i, { timeout: AUTH_NAV_TIMEOUT_MS })
     .catch(() => null);
-  await page.waitForLoadState('networkidle', { timeout: 60_000 });
+  await page.waitForLoadState('networkidle', { timeout: AUTH_NAV_TIMEOUT_MS });
 
   const url = page.url();
   if (isAuthHost(url)) {
@@ -351,10 +519,13 @@ export async function loginViaKeycloak(page: Page) {
     await passwordInput.fill(password);
 
     await Promise.all([
-      page.waitForURL((url) => !isAuthHost(url.href), { timeout: 60_000 }),
+      page.waitForURL((url) => !isAuthHost(url.href), {
+        timeout: AUTH_NAV_TIMEOUT_MS,
+        waitUntil: 'domcontentloaded',
+      }),
       page.locator('#kc-login').click(),
     ]);
-    await page.waitForLoadState('networkidle', { timeout: 60_000 });
+    await page.waitForLoadState('networkidle', { timeout: AUTH_NAV_TIMEOUT_MS });
   }
 }
 

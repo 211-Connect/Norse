@@ -1,6 +1,12 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { expect, goHome, test } from '../helpers';
+import {
+  AUTOCOMPLETE_TIMEOUT_MS,
+  FOCUS_TIMEOUT_MS,
+  KEYBOARD_UI_STABILITY_MS,
+  SEARCH_NAV_TIMEOUT_MS,
+} from '../timeouts';
 import enCommon from '../../public/locales/en/common.json' with { type: 'json' };
 
 async function openDialogFromSearchTrigger(page: Page) {
@@ -69,7 +75,7 @@ test.describe('Search accessibility preservation', () => {
     const searchInput = page.locator('#search-input');
 
     await expect(labelledDialog).toBeVisible();
-    await expect(searchInput).toBeFocused({ timeout: 5_000 });
+    await expect(searchInput).toBeFocused({ timeout: FOCUS_TIMEOUT_MS });
 
     const descriptionId = await dialog.getAttribute('aria-describedby');
     expect(descriptionId).toBeTruthy();
@@ -93,7 +99,7 @@ test.describe('Search accessibility preservation', () => {
     const locationInput = page.locator('#location-input');
 
     await expect(dialog).toBeVisible();
-    await expect(locationInput).toBeFocused({ timeout: 5_000 });
+    await expect(locationInput).toBeFocused({ timeout: FOCUS_TIMEOUT_MS });
 
     await page.keyboard.press('Escape');
     await expect(addMyLocationButton).toBeFocused();
@@ -163,7 +169,7 @@ test.describe('Search accessibility preservation', () => {
     await searchInput.fill('food');
 
     const listbox = page.getByTestId('autocomplete-listbox');
-    await expect(listbox).toBeVisible({ timeout: 10_000 });
+    await expect(listbox).toBeVisible({ timeout: AUTOCOMPLETE_TIMEOUT_MS });
     await expect(searchStatus).toContainText(/results available/i);
 
     const metrics = await listbox.evaluate((element) => {
@@ -195,7 +201,7 @@ test.describe('Search accessibility preservation', () => {
     await searchInput
       .locator('..')
       .getByTestId('autocomplete-listbox')
-      .waitFor({ state: 'visible', timeout: 10_000 });
+      .waitFor({ state: 'visible', timeout: AUTOCOMPLETE_TIMEOUT_MS });
 
     await searchInput.press('Enter');
 
@@ -213,12 +219,12 @@ test.describe('Search accessibility preservation', () => {
     await locationInput
       .locator('..')
       .getByTestId('autocomplete-listbox')
-      .waitFor({ state: 'visible', timeout: 10_000 });
+      .waitFor({ state: 'visible', timeout: AUTOCOMPLETE_TIMEOUT_MS });
 
     await locationInput.press('Enter');
 
     // Form should submit and navigate to search page
-    await expect(page).toHaveURL(/\/search/, { timeout: 5_000 });
+    await expect(page).toHaveURL(/\/search/, { timeout: SEARCH_NAV_TIMEOUT_MS });
   });
 
   test('clicking X on location input sets "Everywhere"', async ({ page }) => {
@@ -228,7 +234,13 @@ test.describe('Search accessibility preservation', () => {
     const clearButtons = page.getByTestId('search-clear-btn');
 
     await locationInput.fill('minneapolis');
-    await expect(clearButtons.nth(1)).toBeVisible();
+    const listbox = page.getByTestId('autocomplete-listbox');
+    await listbox.waitFor({ state: 'visible', timeout: AUTOCOMPLETE_TIMEOUT_MS });
+    await listbox.getByTestId('autocomplete-option').first().click();
+    // Clear uses committed `value` from context; it stays `invisible` until a real pick.
+    await expect(clearButtons.nth(1)).toBeVisible({
+      timeout: AUTOCOMPLETE_TIMEOUT_MS,
+    });
 
     await clearButtons.nth(1).click();
 
@@ -244,7 +256,7 @@ test.describe('Search accessibility preservation', () => {
     await searchInput.fill('o');
 
     const listbox = page.getByTestId('autocomplete-listbox').first();
-    await expect(listbox).toBeVisible({ timeout: 10_000 });
+    await expect(listbox).toBeVisible({ timeout: AUTOCOMPLETE_TIMEOUT_MS });
 
     const groups = await listbox
       .locator('[role="presentation"]')
@@ -286,7 +298,7 @@ test.describe('Search accessibility preservation', () => {
     await searchInput.fill('o');
 
     const listbox = page.getByTestId('autocomplete-listbox').first();
-    await expect(listbox).toBeVisible({ timeout: 10_000 });
+    await expect(listbox).toBeVisible({ timeout: AUTOCOMPLETE_TIMEOUT_MS });
 
     // Get initial option count
     const initialOptions = await listbox.locator('[role="option"]').count();
@@ -296,7 +308,7 @@ test.describe('Search accessibility preservation', () => {
     await searchInput.press('ArrowDown');
 
     // Wait a bit for any potential filtering
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(KEYBOARD_UI_STABILITY_MS);
 
     // Option count should remain the same
     const optionsAfterArrowDown = await listbox
@@ -306,7 +318,7 @@ test.describe('Search accessibility preservation', () => {
 
     // Navigate down again
     await searchInput.press('ArrowDown');
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(KEYBOARD_UI_STABILITY_MS);
 
     // Option count should still be the same
     const optionsAfterSecondArrow = await listbox

@@ -19,6 +19,12 @@ jobs:
 
     env:
       CI: true
+      # Per-action caps (see e2e/timeouts.ts). Per-test ceiling: E2E_TEST_TIMEOUT_MS.
+      E2E_SEARCH_NAV_TIMEOUT_MS: 20000
+      E2E_PAGE_LOAD_TIMEOUT_MS: 40000
+      E2E_UI_SHELL_TIMEOUT_MS: 20000
+      E2E_DEFAULT_ACTION_TIMEOUT_MS: 20000
+      E2E_TEST_TIMEOUT_MS: 600000
       E2E_BASE_URL: ${{ vars.TEST_STG_URL }}
       TEST_USER_EMAIL: ${{ secrets.TEST_STG_USER_EMAIL }}
       TEST_USER_PASSWORD: ${{ secrets.TEST_STG_USER_PASSWORD }}
