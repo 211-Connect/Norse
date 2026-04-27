@@ -1,11 +1,18 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { expect, goHome, test } from '../helpers';
+import {
+  expect,
+  expectPageUrl,
+  expectSearchDialogDismissed,
+  goHome,
+  isSearchResultsListUrl,
+  test,
+} from '../helpers';
 import {
   AUTOCOMPLETE_TIMEOUT_MS,
   FOCUS_TIMEOUT_MS,
   KEYBOARD_UI_STABILITY_MS,
-  SEARCH_NAV_TIMEOUT_MS,
+  UI_SHELL_TIMEOUT_MS,
 } from '../timeouts';
 import enCommon from '../../public/locales/en/common.json' with { type: 'json' };
 
@@ -17,7 +24,7 @@ async function openDialogFromSearchTrigger(page: Page) {
   await trigger.click();
 
   const dialog = page.getByTestId('search-dialog');
-  await expect(dialog).toBeVisible();
+  await expect(dialog).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
   await expect(dialog).toHaveAttribute('role', 'dialog');
   await expect(dialog).toHaveAttribute('aria-modal', 'true');
 
@@ -74,7 +81,9 @@ test.describe('Search accessibility preservation', () => {
     const labelledDialog = page.getByRole('dialog', { name: /search/i });
     const searchInput = page.locator('#search-input');
 
-    await expect(labelledDialog).toBeVisible();
+    await expect(labelledDialog).toBeVisible({
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
     await expect(searchInput).toBeFocused({ timeout: FOCUS_TIMEOUT_MS });
 
     const descriptionId = await dialog.getAttribute('aria-describedby');
@@ -98,7 +107,7 @@ test.describe('Search accessibility preservation', () => {
     const dialog = page.getByTestId('search-dialog');
     const locationInput = page.locator('#location-input');
 
-    await expect(dialog).toBeVisible();
+    await expect(dialog).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
     await expect(locationInput).toBeFocused({ timeout: FOCUS_TIMEOUT_MS });
 
     await page.keyboard.press('Escape');
@@ -139,7 +148,9 @@ test.describe('Search accessibility preservation', () => {
     const clearButtons = page.getByTestId('search-clear-btn');
 
     const clearSearchButton = clearButtons.first();
-    await expect(clearSearchButton).toBeVisible();
+    await expect(clearSearchButton).toBeVisible({
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
     await expect(clearSearchButton).toHaveAttribute('aria-label', /remove/i);
     await expect(searchInput).toBeFocused();
     await page.keyboard.press('Tab');
@@ -148,7 +159,9 @@ test.describe('Search accessibility preservation', () => {
     await expect(searchInput).toHaveValue('');
 
     await locationInput.fill('minneapolis');
-    await expect(clearButtons.nth(1)).toBeVisible();
+    await expect(clearButtons.nth(1)).toBeVisible({
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
     await locationInput.focus();
     await page.keyboard.press('Tab');
     await expect(clearButtons.nth(1)).toBeFocused();
@@ -203,9 +216,14 @@ test.describe('Search accessibility preservation', () => {
       .getByTestId('autocomplete-listbox')
       .waitFor({ state: 'visible', timeout: AUTOCOMPLETE_TIMEOUT_MS });
 
-    await searchInput.press('Enter');
-
-    await expect(page).toHaveURL(/\/search/, { timeout: 5_000 });
+    await Promise.all([
+      expectPageUrl(page, isSearchResultsListUrl),
+      searchInput.press('Enter'),
+    ]);
+    await expectSearchDialogDismissed(page);
+    await expect(page.locator('#search-container')).toBeVisible({
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
   });
 
   test('pressing Enter in the location autocomplete submits the form', async ({
@@ -221,10 +239,14 @@ test.describe('Search accessibility preservation', () => {
       .getByTestId('autocomplete-listbox')
       .waitFor({ state: 'visible', timeout: AUTOCOMPLETE_TIMEOUT_MS });
 
-    await locationInput.press('Enter');
-
-    // Form should submit and navigate to search page
-    await expect(page).toHaveURL(/\/search/, { timeout: SEARCH_NAV_TIMEOUT_MS });
+    await Promise.all([
+      expectPageUrl(page, isSearchResultsListUrl),
+      locationInput.press('Enter'),
+    ]);
+    await expectSearchDialogDismissed(page);
+    await expect(page.locator('#search-container')).toBeVisible({
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
   });
 
   test('clicking X on location input sets "Everywhere"', async ({ page }) => {
