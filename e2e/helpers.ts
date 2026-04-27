@@ -70,16 +70,18 @@ export async function openSearchDialog(page: Page) {
 
 /**
  * After submit navigates to /search, the dialog must be dismissed: trigger
- * collapsed and dialog not visible (matches user-interactable results shell).
+ * collapsed and dialog closed - assert `aria-hidden` (see SearchDialog).
  */
 export async function expectSearchDialogDismissed(page: Page) {
   const trigger = page.getByTestId('search-trigger').first();
   await expect(trigger).toHaveAttribute('aria-expanded', 'false', {
     timeout: UI_SHELL_TIMEOUT_MS,
   });
-  await expect(page.getByTestId('search-dialog')).toBeHidden({
-    timeout: UI_SHELL_TIMEOUT_MS,
-  });
+  await expect(page.getByTestId('search-dialog')).toHaveAttribute(
+    'aria-hidden',
+    'true',
+    { timeout: UI_SHELL_TIMEOUT_MS },
+  );
 }
 
 export type SearchParams = {
