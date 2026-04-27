@@ -1,23 +1,23 @@
 'use client';
 
 /**
- * Backdrop a11y: two strategies for “page behind the dialog is not in the tab
- * order and is hidden from assistive tech.”
+ * Background / backdrop accessibility: keep content **behind** modals out of the
+ * keyboard tab order and AT exposure.
  *
- * **useDialogAriaSync** — **Radix `Dialog`** (e.g. `DialogContent` from
- * `ui/dialog`). Radix portal content mounts/unmounts with open state and
- * applies `aria-hidden` to the background; it does **not** set `inert` or fix
- * focusable descendants. Use **inside** the dialog surface (where you have
- * the dialog’s **element `id`**, same as `DialogContent`). **Do not** use for
- * a custom full-screen node that is always in the tree with `display`/opacity
- * only — use `useBodySiblingsSync` instead.
+ * **Convention:** do **not** pass **`inert` as a JSX/React prop.** `@types/react`
+ * does not reliably include it; all `inert` / `[inert]` is applied **inside this
+ * module only** (`element.inert`, `setAttribute`), via **`useDialogAriaSync`** or
+ * **`useBodySiblingsSync`** as appropriate — never duplicated on components.
  *
- * **useBodySiblingsSync** — **Custom** dialog that stays mounted as a **direct
- * `child` of `document.body`** and toggles `open` (e.g. `SearchDialog`). There
- * is no Radix-managed `aria-hidden` tree, so this hook sets `aria-hidden` +
- * `inert` on every **other** body child. **Do not** use for standard Radix
- * dialogs (that would double-hide or fight Radix). Pass the **ref** to the
- * dialog root and **`open`**.
+ * **useDialogAriaSync(dialogId)** — **Radix `Dialog`** (`DialogContent` in
+ * `ui/dialog`). Radix sets `aria-hidden` on hidden layers but not `inert`; this
+ * hook syncs `inert` + `tabindex` with that tree.
+ *
+ * **useBodySiblingsSync(dialogRef, open)** — **Custom** dialog portaled as a
+ * **direct child of `document.body`** (e.g. `SearchDialog` when `#app-root` is
+ * `<body>`). `inert`/`aria-modal` on the overlay alone only affect that subtree —
+ * scanners and AT still see **sibling** page chrome unless we mark **other**
+ * `body.children` as `aria-hidden` + `inert` while open (and restore on close).
  *
  * @module use-dialog-aria-sync
  */
@@ -78,53 +78,6 @@ function restoreRadixElementState(
   }
 }
 
-type BodySiblingSnapshot = {
-  element: HTMLElement;
-  ariaHidden: string | null;
-  inert: boolean;
-};
-
-type FocusableDescendantSnapshot = {
-  element: HTMLElement;
-  tabIndex: string | null;
-};
-
-function readBodySiblingSnapshot(element: HTMLElement): BodySiblingSnapshot {
-  return {
-    element,
-    ariaHidden: element.getAttribute('aria-hidden'),
-    inert: element.inert,
-  };
-}
-
-function restoreBodySiblingSnapshot(snapshot: BodySiblingSnapshot): void {
-  const { element, ariaHidden, inert } = snapshot;
-  if (ariaHidden === null) {
-    element.removeAttribute('aria-hidden');
-  } else {
-    element.setAttribute('aria-hidden', ariaHidden);
-  }
-  element.inert = inert;
-}
-
-function readFocusableDescendants(
-  container: HTMLElement,
-): FocusableDescendantSnapshot[] {
-  return Array.from(
-    container.querySelectorAll<HTMLElement>(HIDDEN_FOCUSABLE_SELECTOR),
-  ).map((el) => ({ element: el, tabIndex: el.getAttribute('tabindex') }));
-}
-
-function restoreFocusableDescendant(
-  snapshot: FocusableDescendantSnapshot,
-): void {
-  if (snapshot.tabIndex === null) {
-    snapshot.element.removeAttribute('tabindex');
-  } else {
-    snapshot.element.setAttribute('tabindex', snapshot.tabIndex);
-  }
-}
-
 /** How Radix marks hidden layers after `remember` — matches existing behaviour. */
 function applyRadixInertOverlay(element: HTMLElement): void {
   element.inert = true;
@@ -146,9 +99,6 @@ function applyRadixInertOverlay(element: HTMLElement): void {
  *
  * Call this hook inside a component that is only mounted while the dialog is
  * open (e.g. DialogContent). It restores all original states on unmount.
- *
- * **When not to use:** always-mounted custom overlays that are not Radix
- * `Dialog` — use `useBodySiblingsSync` (see module doc at top of file).
  */
 export function useDialogAriaSync(dialogId: string) {
   const syncingRef = useRef(false);
@@ -275,17 +225,57 @@ export function useDialogAriaSync(dialogId: string) {
   }, [restoreManagedElements, syncHiddenTree]);
 }
 
+type BodySiblingSnapshot = {
+  element: HTMLElement;
+  ariaHidden: string | null;
+  inert: boolean;
+};
+
+type FocusableDescendantSnapshot = {
+  element: HTMLElement;
+  tabIndex: string | null;
+};
+
+function readBodySiblingSnapshot(element: HTMLElement): BodySiblingSnapshot {
+  return {
+    element,
+    ariaHidden: element.getAttribute('aria-hidden'),
+    inert: element.inert,
+  };
+}
+
+function restoreBodySiblingSnapshot(snapshot: BodySiblingSnapshot): void {
+  const { element, ariaHidden, inert } = snapshot;
+  if (ariaHidden === null) {
+    element.removeAttribute('aria-hidden');
+  } else {
+    element.setAttribute('aria-hidden', ariaHidden);
+  }
+  element.inert = inert;
+}
+
+function readFocusableDescendants(
+  container: HTMLElement,
+): FocusableDescendantSnapshot[] {
+  return Array.from(
+    container.querySelectorAll<HTMLElement>(HIDDEN_FOCUSABLE_SELECTOR),
+  ).map((el) => ({ element: el, tabIndex: el.getAttribute('tabindex') }));
+}
+
+function restoreFocusableDescendant(
+  snapshot: FocusableDescendantSnapshot,
+): void {
+  if (snapshot.tabIndex === null) {
+    snapshot.element.removeAttribute('tabindex');
+  } else {
+    snapshot.element.setAttribute('tabindex', snapshot.tabIndex);
+  }
+}
+
 /**
- * Hides all body-level siblings of a custom (non-Radix) portal dialog from
- * both AT and keyboard focus when the dialog is open, and fully restores them
- * when it closes or the component unmounts.
- *
- * **When to use:** the dialog is always mounted as a `body` child and only
- * `open` toggles (e.g. `SearchDialog`).
- *
- * **When not to use:** standard `Dialog` from `ui/dialog` that uses Radix —
- * use `useDialogAriaSync` on `DialogContent` instead; Radix already manages
- * `aria-hidden` on the page and this hook would fight or duplicate that.
+ * Hides every other direct `body` sibling of a custom portal dialog from AT and
+ * keyboard focus when open (see module doc). Sets `inert` on the dialog root when
+ * closed for always-mounted overlays.
  */
 export function useBodySiblingsSync(
   dialogRef: RefObject<HTMLElement | null>,
@@ -307,7 +297,14 @@ export function useBodySiblingsSync(
   useLayoutEffect(() => {
     const dialogElement = dialogRef.current;
 
-    if (!open || !dialogElement) {
+    if (!dialogElement) {
+      restoreSiblings();
+      return;
+    }
+
+    dialogElement.inert = !open;
+
+    if (!open) {
       restoreSiblings();
       return;
     }
@@ -320,9 +317,6 @@ export function useBodySiblingsSync(
       readBodySiblingSnapshot(element),
     );
 
-    // Snapshot and demote focusable descendants BEFORE hiding the container so
-    // accessibility validators never see aria-hidden on a parent of focusable
-    // elements (WCAG 4.1.2 / axe-core aria-hidden-focus rule).
     hiddenFocusablesRef.current = siblingsToHide.flatMap(
       readFocusableDescendants,
     );
