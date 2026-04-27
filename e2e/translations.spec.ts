@@ -12,6 +12,7 @@ import {
   performSearch,
   expectPageUrl,
   applyTestLocationOnSearchPage,
+  isSearchResultsListUrl,
 } from './helpers';
 import { SEARCH_NAV_TIMEOUT_MS, UI_SHELL_TIMEOUT_MS } from './timeouts';
 
@@ -106,7 +107,7 @@ test.describe('Language Persistence And Results Button', () => {
     const resultsButton = page.getByRole('link', { name: /^Results$/i });
     await expect(resultsButton).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
     await resultsButton.click();
-    await expectPageUrl(page, /\/search\?/);
+    await expectPageUrl(page, isSearchResultsListUrl);
     await expect(page.locator('#search-container')).toBeVisible({
       timeout: UI_SHELL_TIMEOUT_MS,
     });
@@ -140,7 +141,7 @@ test.describe('Language Persistence And Results Button', () => {
     const resultsButton = page.getByRole('link', { name: /^Resultados$/i });
     await expect(resultsButton).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
     await resultsButton.click();
-    await expectPageUrl(page, /\/search\?/);
+    await expectPageUrl(page, isSearchResultsListUrl);
     await expect(page.locator('#search-container')).toBeVisible({
       timeout: UI_SHELL_TIMEOUT_MS,
     });

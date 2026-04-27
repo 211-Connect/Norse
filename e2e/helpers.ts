@@ -11,12 +11,28 @@ import {
 export const LOCALE = 'en';
 
 /**
+ * True when the URL is the search **results list** (has query string), not a
+ * resource detail route (`/search/{id}`). Uses pathname segments so it works
+ * with any host, `basePath` (`NEXT_PUBLIC_CUSTOM_BASE_PATH`), locale prefixes,
+ * and `trailingSlash` (`…/search/?query=` vs `…/search?query=`) — see
+ * `next.config.js`.
+ */
+export function isSearchResultsListUrl(url: URL): boolean {
+  const segments = url.pathname.replace(/\/+$/, '').split('/').filter(Boolean);
+  return (
+    segments.length > 0 &&
+    segments.at(-1) === 'search' &&
+    url.search.length > 0
+  );
+}
+
+/**
  * Use instead of `waitForURL` for in-app routes: resolves if the page is
  * already on a matching URL, and does not depend on a specific readystate.
  */
 export async function expectPageUrl(
   page: Page,
-  url: string | RegExp,
+  url: string | RegExp | ((url: URL) => boolean),
   options?: { timeout?: number },
 ) {
   await expect(page).toHaveURL(url, {
@@ -126,7 +142,7 @@ export async function performSearch(page: Page, params: SearchParams) {
   // Start URL assertion in parallel with submit so the navigation is not missed
   // (sequential click → expect can leave the main frame on a bad URL in fast/slow-hybrid UIs).
   await Promise.all([
-    expectPageUrl(page, /search\?/),
+    expectPageUrl(page, isSearchResultsListUrl),
     page.getByTestId('search-submit-btn').click(),
   ]);
   await expectSearchDialogDismissed(page);
@@ -226,8 +242,11 @@ export async function getResultTitles(
   return titles;
 }
 
+/** Matches topic links with or without trailing slash before `?` (Next trailingSlash). */
+const topicSearchLinkSel = 'a[href*="/search"][href*="query="]';
+
 export async function openTopicSearch(page: Page) {
-  const directTopicLinks = page.locator('a[href*="/search?query="]');
+  const directTopicLinks = page.locator(topicSearchLinkSel);
   if ((await directTopicLinks.count()) === 0) {
     const topicsLink = page
       .locator('a[href$="/topics"], a[href*="/topics?"]')
@@ -239,14 +258,14 @@ export async function openTopicSearch(page: Page) {
   }
 
   const maxTries = 10;
-  const linksCount = await page.locator('a[href*="/search?query="]').count();
+  const linksCount = await page.locator(topicSearchLinkSel).count();
   const tries = Math.min(maxTries, linksCount);
 
   for (let i = 0; i < tries; i += 1) {
-    const topicLink = page.locator('a[href*="/search?query="]').nth(i);
+    const topicLink = page.locator(topicSearchLinkSel).nth(i);
     await expect(topicLink).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
     await topicLink.click();
-    await expectPageUrl(page, /search\?/);
+    await expectPageUrl(page, isSearchResultsListUrl);
     await expect(page.locator('#search-container')).toBeVisible({
       timeout: UI_SHELL_TIMEOUT_MS,
     });
