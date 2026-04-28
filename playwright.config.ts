@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
+import { DEFAULT_ACTION_TIMEOUT_MS, TEST_TIMEOUT_MS } from './e2e/timeouts';
+
 export const baseURL = process.env.E2E_BASE_URL || 'http://localhost:3000';
 
 /**
@@ -20,10 +22,24 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   workers: process.env.CI ? 1 : undefined,
   reporter: [['html', { open: 'never' }], ['list']],
-  timeout: 120_000,
+  expect: {
+    /** @see e2e/timeouts `DEFAULT_ACTION_TIMEOUT_MS` / `E2E_DEFAULT_ACTION_TIMEOUT_MS` */
+    timeout: DEFAULT_ACTION_TIMEOUT_MS,
+  },
+  /**
+   * Per-test ceiling only. Each expect/goto uses `e2e/timeouts` (e.g. 20s
+   * `SEARCH_NAV_TIMEOUT_MS` per URL wait) so failures name the action; this
+   * value must be large enough for long flows. @see E2E_TEST_TIMEOUT_MS
+   */
+  timeout: TEST_TIMEOUT_MS,
 
   use: {
     baseURL,
+    /**
+     * Per locator action (click, fill, …). @see e2e/timeouts
+     * `DEFAULT_ACTION_TIMEOUT_MS` — must match `expect.timeout` for consistency.
+     */
+    actionTimeout: DEFAULT_ACTION_TIMEOUT_MS,
     launchOptions: {
       slowMo: Number(process.env.PW_SLOWMO ?? 0),
     },
