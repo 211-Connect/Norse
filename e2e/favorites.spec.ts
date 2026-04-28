@@ -7,6 +7,7 @@ import {
   loginViaKeycloak,
   goHome,
   deleteAllE2ETestLists,
+  expectPageUrl,
 } from './helpers';
 
 const hasAuth =
@@ -311,10 +312,7 @@ test.describe('Favorites Feature (Authenticated)', () => {
     await firstResourceLink.click();
 
     // Wait for resource page to load
-    await page.waitForURL(/search\/[a-f0-9-]{36}/, {
-      timeout: 10_000,
-      waitUntil: 'commit',
-    });
+    await expectPageUrl(page, /search\/[a-f0-9-]{36}/);
     await expect(page.getByTestId('favorite-btn').first()).toBeVisible({
       timeout: 10_000,
     });
