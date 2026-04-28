@@ -3,6 +3,9 @@ import { baseURL } from '../playwright.config';
 import {
   AUTH_NAV_TIMEOUT_MS,
   AUTOCOMPLETE_TIMEOUT_MS,
+  ASYNC_UI_TIMEOUT_MS,
+  expectVisibleEventually,
+  FAVORITES_PERSISTENCE_TIMEOUT_MS,
   PAGE_LOAD_TIMEOUT_MS,
   SEARCH_NAV_TIMEOUT_MS,
   UI_SHELL_TIMEOUT_MS,
@@ -63,6 +66,21 @@ function isAuthHost(urlString: string): boolean {
   }
 }
 
+async function isVisible(locator: ReturnType<Page['locator']>) {
+  return locator.isVisible().catch(() => false);
+}
+
+export async function expectAuthenticatedShell(page: Page) {
+  await goHome(page);
+
+  const favoritesButton = page.getByTestId('favorites-btn');
+  await expect(favoritesButton).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+
+  await expect(
+    page.getByRole('button', { name: /log out/i }),
+  ).toBeVisible({ timeout: AUTH_NAV_TIMEOUT_MS });
+}
+
 export async function goHome(page: Page) {
   const base = baseURL.endsWith('/') ? baseURL : `${baseURL}/`;
   const url = new URL(LOCALE, base).href;
@@ -113,6 +131,53 @@ export async function expectSearchDialogDismissed(page: Page) {
   );
 }
 
+export async function waitForFavoritesDialogReady(page: Page) {
+  await expect(
+    page.getByTestId('favorites-loading-skeleton'),
+  ).not.toBeVisible({ timeout: ASYNC_UI_TIMEOUT_MS });
+  await expect(page.getByTestId('favorites-list-loaded')).toBeAttached({
+    timeout: ASYNC_UI_TIMEOUT_MS,
+  });
+  await expect(page.getByTestId('favorites-search-input')).toBeVisible({
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
+}
+
+export async function filterFavoritesDialogLists(page: Page, listName: string) {
+  const searchBar = page.getByTestId('favorites-search-input');
+  await expect(searchBar).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+  await searchBar.fill(listName);
+  await expect(
+    page.getByTestId('favorites-loading-skeleton'),
+  ).not.toBeVisible({ timeout: ASYNC_UI_TIMEOUT_MS });
+  await expectVisibleEventually(page.getByText(listName).first(), {
+    timeout: ASYNC_UI_TIMEOUT_MS,
+  });
+}
+
+export async function getFavoritesDialogListActionButton(
+  page: Page,
+  listName: string,
+  testId: 'add-to-list-btn' | 'remove-from-list-btn',
+) {
+  const dialog = page.getByRole('dialog', { name: /manage favorites/i });
+  const listLink = dialog.getByRole('link', { name: listName, exact: true });
+  await expect(listLink).toBeVisible({ timeout: ASYNC_UI_TIMEOUT_MS });
+
+  const button = listLink.locator(
+    `xpath=following-sibling::div[2]//*[@data-testid="${testId}"]`,
+  );
+  await expect(button).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+  return button;
+}
+
+export async function closeFavoritesDialog(page: Page) {
+  await page.getByRole('button', { name: 'Close' }).click();
+  await expect(
+    page.getByRole('dialog', { name: /manage favorites/i }),
+  ).toHaveCount(0, { timeout: ASYNC_UI_TIMEOUT_MS });
+}
+
 export type SearchParams = {
   query: string;
   query_label: string;
@@ -152,11 +217,14 @@ export async function performSearch(page: Page, params: SearchParams) {
     await searchInput.fill(params.query ?? '');
   }
 
+  const submitButton = page.getByTestId('search-submit-btn');
+  await expect(submitButton).toBeEnabled({ timeout: UI_SHELL_TIMEOUT_MS });
+
   // Start URL assertion in parallel with submit so the navigation is not missed
   // (sequential click → expect can leave the main frame on a bad URL in fast/slow-hybrid UIs).
   await Promise.all([
     expectPageUrl(page, isSearchResultsListUrl),
-    page.getByTestId('search-submit-btn').click(),
+    submitButton.click(),
   ]);
   await expectSearchDialogDismissed(page);
   await expect(page.locator('#search-container')).toBeVisible({
@@ -166,8 +234,34 @@ export async function performSearch(page: Page, params: SearchParams) {
 
 export async function goToFavorites(page: Page) {
   // In client-side routing, URL can update without a new document "load".
-  // Assert URL state directly and wait for page shell instead of waitForURL(load).
-  await page.getByTestId('favorites-btn').click();
+  // Assert URL state directly and fail fast if auth gating opens a modal instead.
+  const favoritesButton = page.getByTestId('favorites-btn');
+  const authPrompt = page.getByRole('dialog', { name: /sign in required/i });
+
+  await expect(favoritesButton).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+  await favoritesButton.click();
+
+  await expect
+    .poll(
+      async () => {
+        if (await isVisible(authPrompt)) return 'auth-required';
+
+        return page.url().includes('/favorites') ? 'favorites' : 'pending';
+      },
+      {
+        timeout: SEARCH_NAV_TIMEOUT_MS,
+        message:
+          'Expected favorites navigation, but the app either stayed put or opened the auth prompt.',
+      },
+    )
+    .not.toBe('pending');
+
+  if (await isVisible(authPrompt)) {
+    throw new Error(
+      'Favorites navigation was blocked by the "Sign in required" dialog. Ensure loginViaKeycloak() finishes with an authenticated app session before calling goToFavorites().',
+    );
+  }
+
   await expectPageUrl(page, (url) => url.pathname.includes('/favorites'));
   await expect(page.getByTestId('create-list-btn')).toBeVisible({
     timeout: UI_SHELL_TIMEOUT_MS,
@@ -180,6 +274,75 @@ export async function waitForFavoriteListPage(page: Page) {
   await page
     .getByTestId('back-to-favorites')
     .waitFor({ state: 'visible', timeout: UI_SHELL_TIMEOUT_MS });
+}
+
+/**
+ * The favorites detail page is server-rendered and can briefly lag behind a
+ * just-completed add/remove mutation. Reload until the requested favorite is
+ * actually rendered on the page.
+ */
+export async function waitForFavoriteOnListPage(
+  page: Page,
+  resourceName: string,
+) {
+  await expect
+    .poll(
+      async () => {
+        const emptyStateVisible = await page
+          .getByText(/nothing here yet/i)
+          .isVisible()
+          .catch(() => false);
+        const resourceVisible = await page
+          .getByText(resourceName)
+          .first()
+          .isVisible()
+          .catch(() => false);
+
+        if (!resourceVisible) {
+          await page.reload({ waitUntil: 'domcontentloaded' });
+          await waitForFavoriteListPage(page);
+        }
+
+        return {
+          emptyStateVisible,
+          resourceVisible,
+        };
+      },
+      {
+        timeout: FAVORITES_PERSISTENCE_TIMEOUT_MS,
+        intervals: [250, 500, 1_000, 2_000],
+      },
+    )
+    .toEqual({
+      emptyStateVisible: false,
+      resourceVisible: true,
+    });
+}
+
+/**
+ * The inverse of `waitForFavoriteOnListPage`: after a remove mutation, reload
+ * the server-rendered list page until the favorite is no longer present.
+ */
+export async function waitForFavoriteToBeAbsentOnListPage(
+  page: Page,
+  resourceName: string,
+) {
+  await expect
+    .poll(
+      async () => {
+        const matches = await page.getByText(resourceName).count();
+        if (matches > 0) {
+          await page.reload({ waitUntil: 'domcontentloaded' });
+          await waitForFavoriteListPage(page);
+        }
+        return matches;
+      },
+      {
+        timeout: FAVORITES_PERSISTENCE_TIMEOUT_MS,
+        intervals: [250, 500, 1_000, 2_000],
+      },
+    )
+    .toBe(0);
 }
 
 /**
@@ -201,11 +364,17 @@ export async function deleteAllE2ETestLists(page: Page): Promise<void> {
     await waitForFavoriteListPage(page);
 
     const deleteListBtn = page.getByTestId('delete-list-btn');
-    await deleteListBtn.waitFor({ state: 'visible', timeout: 10_000 });
+    await deleteListBtn.waitFor({
+      state: 'visible',
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
     await deleteListBtn.click();
 
     const deleteListConfirmBtn = page.getByTestId('delete-list-confirm-btn');
-    await deleteListConfirmBtn.waitFor({ state: 'visible', timeout: 10_000 });
+    await deleteListConfirmBtn.waitFor({
+      state: 'visible',
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
     await deleteListConfirmBtn.click();
 
     await expectPageUrl(page, /favorites\/?(?:\?|$)/);
@@ -527,7 +696,11 @@ export async function loginViaKeycloak(page: Page) {
   const password = process.env.TEST_USER_PASSWORD || 'test-password';
 
   await goHome(page);
-  await page.waitForLoadState('networkidle');
+
+  const logoutButton = page.getByRole('button', { name: /log out/i });
+  if (await isVisible(logoutButton)) {
+    return;
+  }
 
   await page.getByTestId('favorites-btn').click();
   await page.getByTestId('login-btn').click();
@@ -560,6 +733,8 @@ export async function loginViaKeycloak(page: Page) {
     ]);
     await page.waitForLoadState('networkidle', { timeout: AUTH_NAV_TIMEOUT_MS });
   }
+
+  await expectAuthenticatedShell(page);
 }
 
 export { base as test, expect };
