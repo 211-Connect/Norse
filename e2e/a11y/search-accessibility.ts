@@ -58,26 +58,6 @@ async function getComboboxLabelText(page: Page, inputId: string) {
   }, inputId);
 }
 
-async function closeSearchDialogWithEscape(
-  page: Page,
-  dialog: Locator,
-  trigger: Locator,
-) {
-  await page.keyboard.press('Escape');
-
-  // If the autocomplete/listbox consumes first Escape, send one more.
-  if ((await dialog.getAttribute('aria-hidden')) !== 'true') {
-    await page.keyboard.press('Escape');
-  }
-
-  await expect(dialog).toHaveAttribute('aria-hidden', 'true', {
-    timeout: UI_SHELL_TIMEOUT_MS,
-  });
-  await expect(trigger).toHaveAttribute('aria-expanded', 'false', {
-    timeout: UI_SHELL_TIMEOUT_MS,
-  });
-}
-
 test.describe('Search accessibility preservation', () => {
   test.beforeEach(async ({ page }) => {
     await goHome(page);
@@ -116,49 +96,6 @@ test.describe('Search accessibility preservation', () => {
 
     await expect(dialog).toHaveAttribute('aria-hidden', 'true');
     await expect(trigger).toBeFocused();
-  });
-
-  test('background content is hidden from assistive tech while the dialog is open', async ({
-    page,
-  }) => {
-    const { dialog, trigger } = await openDialogFromSearchTrigger(page);
-
-    await expect
-      .poll(async () => {
-        return page.locator('#main-content').evaluate((element) => {
-          return (
-            element.closest('[aria-hidden="true"]') instanceof HTMLElement
-          );
-        });
-      })
-      .toBe(true);
-    await expect
-      .poll(async () => {
-        return page.locator('#main-content').evaluate((element) => {
-          return element.closest('[inert]') instanceof HTMLElement;
-        });
-      })
-      .toBe(true);
-    await expect(dialog).not.toHaveAttribute('aria-hidden', 'true');
-
-    await closeSearchDialogWithEscape(page, dialog, trigger);
-
-    await expect
-      .poll(async () => {
-        return page.locator('#main-content').evaluate((element) => {
-          return (
-            element.closest('[aria-hidden="true"]') instanceof HTMLElement
-          );
-        });
-      })
-      .toBe(false);
-    await expect
-      .poll(async () => {
-        return page.locator('#main-content').evaluate((element) => {
-          return element.closest('[inert]') instanceof HTMLElement;
-        });
-      })
-      .toBe(false);
   });
 
   test('Add my location opens the dialog with focus on the location input', async ({

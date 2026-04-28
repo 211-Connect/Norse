@@ -29,7 +29,6 @@ import {
   SEARCH_INPUT_ID,
   USER_PREF_DISTANCE,
 } from '../../lib/constants';
-import { useBodySiblingsSync } from '../../hooks/use-body-siblings-sync';
 import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
 import { createUrlParamsForSearch } from '../../utils/createUrlParamsForSearch';
 import { useAtomValue } from 'jotai';
@@ -63,8 +62,6 @@ export function SearchDialog({
   );
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const distance = useAtomValue(searchDistanceAtom);
-
-  useBodySiblingsSync(dialogRef, open);
 
   const { search, setSearch } = useMainSearchLayoutContext();
 
