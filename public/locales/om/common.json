@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "Tarree uumuu",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Maqaa",
       "list_description": "Ibsa",
       "make_public": "Ummataaf ifa godhaa"
@@ -141,12 +142,15 @@
       "phone_number_label": "Lakkoofsa bilbilaa"
     },
     "prompt_auth": "Maaloo amala kana fayyadamuuf seena.",
+    "prompt_auth_description": "Maaloo amala kana fayyadamuuf seena.",
     "manage_favorites": {
-      "title": "Favorites bulchuu"
+      "title": "Favorites bulchuu",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "Bakki itti jalqabdan maali?"
+    "prompt_start_location": "Bakki itti jalqabdan maali?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Daataa kan kenne"

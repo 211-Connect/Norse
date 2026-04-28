@@ -6,11 +6,12 @@ import { Button } from '@/app/(app)/shared/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/app/(app)/shared/components/ui/dialog';
 import { Map } from 'lucide-react';
-import { useCallback, useId, useRef, useState } from 'react';
+import { useId, useRef, useState, type MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '../lib/utils';
 import { trackUmamiEvent, UmamiEvent } from '../lib/umami';
@@ -28,50 +29,57 @@ export function GetDirectionsButton({
   const [selectedCoordinates, setSelectedCoordinates] = useState<
     number[] | null
   >(null);
+
+  // True when we don't yet have the user's starting location and must prompt for it
   const needsOrigin = !coords || coords.length !== 2;
 
-  const getOrigin = useCallback(() => {
-    // Use selected coordinates from dialog if available, otherwise use props
-    const originCoords = selectedCoordinates || coords;
-    if (originCoords && originCoords.length === 2) {
-      return originCoords?.slice()?.reverse()?.join(',');
+  const originCoords = selectedCoordinates ?? coords;
+  const originStr =
+    originCoords && originCoords.length === 2
+      ? originCoords.slice().reverse().join(',')
+      : '';
+  const destinationStr = data?.location?.coordinates?.length
+    ? data.location.coordinates.slice().reverse().join(',')
+    : '';
+
+  const googleMapsUrl = new URL('https://www.google.com/maps/dir/');
+  googleMapsUrl.searchParams.set('api', '1');
+  googleMapsUrl.searchParams.set('origin', originStr);
+  googleMapsUrl.searchParams.set('destination', destinationStr);
+  const mapsUrl = googleMapsUrl.href;
+
+  function trackDirectionsClick() {
+    trackUmamiEvent(UmamiEvent.DirectionClick, { resourceId: String(data.id) });
+  }
+
+  // When rendered as <button> — open dialog if no origin, otherwise navigate programmatically
+  function onButtonClick(e: MouseEvent) {
+    if (!originStr) {
+      e.preventDefault();
+      triggerRef.current = e.currentTarget as HTMLButtonElement;
+      setOpen(true);
+    } else {
+      trackDirectionsClick();
+      window.open(mapsUrl, '_blank', 'noopener,noreferrer');
+      setOpen(false);
     }
+  }
 
-    return '';
-  }, [coords, selectedCoordinates]);
-
-  const getDestination = useCallback(() => {
-    if (data?.location?.coordinates) {
-      return data.location.coordinates?.slice()?.reverse()?.join(',');
-    }
-
-    return '';
-  }, [data?.location?.coordinates]);
-
-  const onClick = useCallback(
-    (e) => {
-      if (!getOrigin()) {
-        e.preventDefault();
-        triggerRef.current = e.currentTarget;
-        setOpen(true);
-      } else {
-        trackUmamiEvent(UmamiEvent.DirectionClick, {
-          resourceId: String(data.id),
-        });
-        window.open(
-          `https://www.google.com/maps/dir/?api=1&origin=${getOrigin()}&destination=${getDestination()}`,
-          '_blank',
-          'noopener,noreferrer',
-        );
-      }
-    },
-    [getOrigin, getDestination, data.id],
+  const buttonContent = (
+    <>
+      <Map className="size-4 shrink-0" aria-hidden="true" />
+      <span className="overflow-hidden text-ellipsis break-words">
+        {text || t('call_to_action.get_directions')}
+      </span>
+    </>
   );
+
+  const sharedAriaLabel = `${text || t('call_to_action.get_directions')}${data.name ? ` ${data.name}` : ''} ${t('modal.share.opens_in_new_tab')}`;
 
   return (
     <>
       <ReferralButton
-        ref={triggerRef}
+        ref={needsOrigin ? triggerRef : undefined}
         size="sm"
         className={cn('flex-1 gap-1', className)}
         referralType="directions_referral"
@@ -80,13 +88,17 @@ export function GetDirectionsButton({
         variant="highlight"
         aria-controls={needsOrigin ? dialogId : undefined}
         aria-haspopup={needsOrigin ? 'dialog' : undefined}
-        aria-label={`${text || t('call_to_action.get_directions')}${data.name ? ` ${data.name}` : ''} ${t('modal.share.opens_in_new_tab')}`}
-        onClick={onClick}
+        aria-label={sharedAriaLabel}
+        asChild={!needsOrigin}
+        onClick={needsOrigin ? onButtonClick : trackDirectionsClick}
       >
-        <Map className="size-4 shrink-0" aria-hidden="true" />
-        <span className="truncate">
-          {text || t('call_to_action.get_directions')}
-        </span>
+        {needsOrigin ? (
+          buttonContent
+        ) : (
+          <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
+            {buttonContent}
+          </a>
+        )}
       </ReferralButton>
 
       <Dialog open={open} onOpenChange={setOpen}>
@@ -99,12 +111,15 @@ export function GetDirectionsButton({
             <DialogTitle>
               {t('update_location.prompt_start_location')}
             </DialogTitle>
+            <DialogDescription className="sr-only">
+              {t('update_location.description')}
+            </DialogDescription>
           </DialogHeader>
 
           <div>
             <LocationSearchBar
               mode="standalone"
-              onLocationChange={(location, coordinates) => {
+              onLocationChange={(_location, coordinates) => {
                 setSelectedCoordinates(coordinates);
               }}
             />
@@ -117,12 +132,12 @@ export function GetDirectionsButton({
 
             <ReferralButton
               className="gap-1"
-              disabled={!getOrigin()}
+              disabled={!originStr}
               referralType="directions_referral"
               resourceId={data.id}
               resourceData={data}
               variant="outline"
-              onClick={onClick}
+              onClick={onButtonClick}
             >
               <Map className="size-4 shrink-0" aria-hidden="true" />
               {text || t('call_to_action.get_directions')}

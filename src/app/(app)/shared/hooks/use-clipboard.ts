@@ -9,7 +9,7 @@ type UseClipboardConfig = {
   timeout?: number;
 };
 
-export function useClipboard(config: UseClipboardConfig = { timeout: 500 }) {
+export function useClipboard(config: UseClipboardConfig = { timeout: 3000 }) {
   const [copied, setCopied] = useState(false);
 
   const copy = useCallback(

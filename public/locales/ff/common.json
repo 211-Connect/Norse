@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "Sos doggol",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Inde",
       "list_description": "Limtol",
       "make_public": "Waɗde renndo"
@@ -141,12 +142,15 @@
       "phone_number_label": "Limoore telefoŋ"
     },
     "prompt_auth": "Tiiɗno, naata ngam huutoraade ngalɗoo gollal.",
+    "prompt_auth_description": "Tiiɗno, naata ngam huutoraade ngalɗoo gollal.",
     "manage_favorites": {
-      "title": "Njuɓɓudi ɓurɓe yiɗeede"
+      "title": "Njuɓɓudi ɓurɓe yiɗeede",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "Hol nokku ɗo puɗɗorto-ɗaa?"
+    "prompt_start_location": "Hol nokku ɗo puɗɗorto-ɗaa?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Dataaji ɗi..."

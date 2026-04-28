@@ -12,10 +12,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from './ui/select';
+import { Label } from './ui/label';
 import { LanguagesIcon } from 'lucide-react';
 import { useClientSearchParams } from '../hooks/use-client-search-params';
 import { useAppConfig } from '../hooks/use-app-config';
 import { useBreakpoint } from '../hooks/use-breakpoint';
+import {
+  LANGUAGE_SWITCHER_CONTENT_ID,
+  LANGUAGE_SWITCHER_TRIGGER_ID,
+} from '../lib/aria-constants';
 import { cn } from '../lib/utils';
 
 const LANGUAGE_NAME = {
@@ -83,16 +88,25 @@ export const LanguageSwitcher = () => {
   return (
     <li className="h-full">
       <Select
-        aria-label={t('header.language_select_label') as string}
+        a11yLabel={
+          <Label htmlFor={LANGUAGE_SWITCHER_TRIGGER_ID} className="sr-only">
+            {t('header.language_select_label')}
+          </Label>
+        }
+        contentId={LANGUAGE_SWITCHER_CONTENT_ID}
         defaultValue={i18n.language}
         onValueChange={handleValueChange}
       >
         <SelectTrigger
+          id={LANGUAGE_SWITCHER_TRIGGER_ID}
           className={cn(
             'flex h-full w-auto min-w-[140px] items-center gap-[5px]',
+            // Match surrounding header buttons visually — the select is identified
+            // by its label + role, not its border, so the softer button border is
+            // appropriate in this toolbar context.
+            'border-input',
             newLayoutEnabled && '!bg-white',
           )}
-          aria-label={t('header.language_select_label')}
         >
           <div className="flex items-center gap-1 overflow-hidden">
             <LanguagesIcon className="size-4" aria-hidden="true" />

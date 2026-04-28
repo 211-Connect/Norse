@@ -667,11 +667,14 @@ export function Autocomplete(props: AutocompleteProps) {
         >
           {srStatus}
         </div>
+        {!open && uniqueId ? (
+          <div id={uniqueId} role="listbox" hidden aria-hidden="true" />
+        ) : null}
         <Input
           {...inputProps}
           id={effectiveInputId}
           className={cn(
-            'h-auto w-full rounded-lg border p-0 px-[1.8rem] py-2 text-xs shadow-none focus:border-primary focus-visible:ring-0',
+            'h-auto w-full rounded-lg border border-control-border p-0 px-[1.8rem] py-2 text-xs shadow-none focus:border-primary focus-visible:ring-0',
             inputProps?.className,
           )}
           ref={setReferenceElement}
@@ -683,7 +686,7 @@ export function Autocomplete(props: AutocompleteProps) {
           value={tempValue}
           autoComplete="off"
           aria-autocomplete="list"
-          aria-controls={open ? uniqueId : undefined}
+          aria-controls={uniqueId}
           aria-haspopup="listbox"
           aria-labelledby={readerLabelId}
           aria-owns={uniqueId}

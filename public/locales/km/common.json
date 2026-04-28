@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "បង្កើតបញ្ជី",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "ឈ្មោះ",
       "list_description": "ការពិពណ៌នា",
       "make_public": "ផ្សព្វផ្សាយជាសាធារណៈ"
@@ -141,12 +142,15 @@
       "phone_number_label": "លេខទូរស័ព្ទ"
     },
     "prompt_auth": "សូមចូលគណនីដើម្បីប្រើប្រាស់មុខងារនេះ។",
+    "prompt_auth_description": "សូមចូលគណនីដើម្បីប្រើប្រាស់មុខងារនេះ។",
     "manage_favorites": {
-      "title": "គ្រប់គ្រង​ចំណូលចិត្ត"
+      "title": "គ្រប់គ្រង​ចំណូលចិត្ត",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "តើទីតាំងចាប់ផ្តើមរបស់អ្នកគឺជាអ្វី?"
+    "prompt_start_location": "តើទីតាំងចាប់ផ្តើមរបស់អ្នកគឺជាអ្វី?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "ទិន្នន័យដែលផ្តល់ដោយ"

@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "创建列表",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "名字",
       "list_description": "描述",
       "make_public": "公"
@@ -141,12 +142,15 @@
       "phone_number_label": "电话号码"
     },
     "prompt_auth": "请登录才能使用此功能。",
+    "prompt_auth_description": "请登录才能使用此功能。",
     "manage_favorites": {
-      "title": "管理收藏夹"
+      "title": "管理收藏夹",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "你的起点在哪里？"
+    "prompt_start_location": "你的起点在哪里？",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "数据提供"

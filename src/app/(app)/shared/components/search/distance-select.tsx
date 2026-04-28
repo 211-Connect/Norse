@@ -12,12 +12,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
+import { Label } from '../ui/label';
 import { useAppConfig } from '../../hooks/use-app-config';
 import {
   searchAtom,
   searchCoordinatesAtom,
   searchDistanceAtom,
 } from '../../store/search';
+import {
+  DISTANCE_SELECT_CONTENT_ID,
+  DISTANCE_SELECT_TRIGGER_ID,
+} from '../../lib/aria-constants';
 import { USER_PREF_DISTANCE } from '../../lib/constants';
 import { cn } from '../../lib/utils';
 
@@ -50,15 +55,23 @@ export function DistanceSelect({ className = '' }: DistanceSelectProps) {
 
   return (
     <div className={cn('flex items-center gap-2', className)}>
-      <p className="text-sm font-medium">{t('search.radius_placeholder')}:</p>
       <Select
+        a11yLabel={
+          <Label
+            htmlFor={DISTANCE_SELECT_TRIGGER_ID}
+            className="text-sm font-medium"
+          >
+            {t('search.radius_placeholder')}:
+          </Label>
+        }
+        contentId={DISTANCE_SELECT_CONTENT_ID}
+        disabled={!hasLocation}
         onValueChange={setDistance}
         value={distance}
-        disabled={!hasLocation}
       >
         <SelectTrigger
+          id={DISTANCE_SELECT_TRIGGER_ID}
           className="w-[125px]"
-          aria-label={t('search.radius_placeholder')}
         >
           <SelectValue placeholder={t('search.radius_placeholder')} />
         </SelectTrigger>

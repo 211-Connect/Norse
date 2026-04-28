@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "Cakava e dua na lisi",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Yaca",
       "list_description": "Ivakamacala",
       "make_public": "Cakava raraba"
@@ -141,12 +142,15 @@
       "phone_number_label": "Naba ni talevoni"
     },
     "prompt_auth": "Kerekere mo curu mai mo vakayagataka na iwalewale oqo.",
+    "prompt_auth_description": "Kerekere mo curu mai mo vakayagataka na iwalewale oqo.",
     "manage_favorites": {
-      "title": "Vakatulewataka na veika taleitaki"
+      "title": "Vakatulewataka na veika taleitaki",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "Na cava na nomu vanua ni tekivu?"
+    "prompt_start_location": "Na cava na nomu vanua ni tekivu?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Na itukutuku e vakarautaka na"

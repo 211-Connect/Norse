@@ -38,6 +38,12 @@ export function AddMyLocationButton({
       className={cn(
         'flex h-auto gap-1 whitespace-normal text-left',
         variant === 'ghost' ? '!text-primary' : '!text-white',
+        // When the button sits on a primary-colored surface (link variant), the
+        // default near-black ring may be invisible against dark brand colours.
+        // --ring-on-primary is computed server-side via getContrastColor and is
+        // always guaranteed to be white or black depending on the tenant primary.
+        variant === 'link' &&
+          'focus-visible:ring-[hsl(var(--ring-on-primary))] focus-visible:ring-offset-[hsl(var(--primary))]',
         className,
       )}
       variant={variant}
