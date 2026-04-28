@@ -13,8 +13,9 @@ import {
   expectPageUrl,
   applyTestLocationOnSearchPage,
   isSearchResultsListUrl,
+  isSearchResourceDetailUrl,
 } from './helpers';
-import { SEARCH_NAV_TIMEOUT_MS, UI_SHELL_TIMEOUT_MS } from './timeouts';
+import { UI_SHELL_TIMEOUT_MS } from './timeouts';
 
 test.describe('Language Persistence And Results Button', () => {
   test.beforeEach(async ({ page }) => {
@@ -97,10 +98,7 @@ test.describe('Language Persistence And Results Button', () => {
     // Resource detail path is /search/{uuid} (not /search? which is the list). Race
     // the URL wait with the click so the client navigation is not missed.
     await Promise.all([
-      page.waitForURL(
-        (url) => /\/search\/[0-9a-f-]{8}-/i.test(url.pathname),
-        { timeout: SEARCH_NAV_TIMEOUT_MS },
-      ),
+      expectPageUrl(page, isSearchResourceDetailUrl),
       firstResult.click(),
     ]);
 
@@ -131,10 +129,7 @@ test.describe('Language Persistence And Results Button', () => {
     await expect(firstResult).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
 
     await Promise.all([
-      page.waitForURL(
-        (url) => /\/search\/[0-9a-f-]{8}-/i.test(url.pathname),
-        { timeout: SEARCH_NAV_TIMEOUT_MS },
-      ),
+      expectPageUrl(page, isSearchResourceDetailUrl),
       firstResult.click(),
     ]);
 

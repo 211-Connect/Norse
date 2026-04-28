@@ -58,6 +58,26 @@ async function getComboboxLabelText(page: Page, inputId: string) {
   }, inputId);
 }
 
+async function closeSearchDialogWithEscape(
+  page: Page,
+  dialog: Locator,
+  trigger: Locator,
+) {
+  await page.keyboard.press('Escape');
+
+  // If the autocomplete/listbox consumes first Escape, send one more.
+  if ((await dialog.getAttribute('aria-hidden')) !== 'true') {
+    await page.keyboard.press('Escape');
+  }
+
+  await expect(dialog).toHaveAttribute('aria-hidden', 'true', {
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
+  await expect(trigger).toHaveAttribute('aria-expanded', 'false', {
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
+}
+
 test.describe('Search accessibility preservation', () => {
   test.beforeEach(async ({ page }) => {
     await goHome(page);
@@ -101,7 +121,7 @@ test.describe('Search accessibility preservation', () => {
   test('background content is hidden from assistive tech while the dialog is open', async ({
     page,
   }) => {
-    const { dialog } = await openDialogFromSearchTrigger(page);
+    const { dialog, trigger } = await openDialogFromSearchTrigger(page);
 
     await expect
       .poll(async () => {
@@ -121,7 +141,7 @@ test.describe('Search accessibility preservation', () => {
       .toBe(true);
     await expect(dialog).not.toHaveAttribute('aria-hidden', 'true');
 
-    await page.keyboard.press('Escape');
+    await closeSearchDialogWithEscape(page, dialog, trigger);
 
     await expect
       .poll(async () => {

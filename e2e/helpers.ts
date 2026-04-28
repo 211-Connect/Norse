@@ -27,6 +27,19 @@ export function isSearchResultsListUrl(url: URL): boolean {
 }
 
 /**
+ * True when the URL is a search resource detail route:
+ * `.../search/{uuid}` (no query string required).
+ */
+export function isSearchResourceDetailUrl(url: URL): boolean {
+  const segments = url.pathname.replace(/\/+$/, '').split('/').filter(Boolean);
+  const last = segments.at(-1) ?? '';
+  const prev = segments.at(-2) ?? '';
+  const uuidV4Like =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return prev === 'search' && uuidV4Like.test(last);
+}
+
+/**
  * Use instead of `waitForURL` for in-app routes: resolves if the page is
  * already on a matching URL, and does not depend on a specific readystate.
  */
@@ -152,14 +165,13 @@ export async function performSearch(page: Page, params: SearchParams) {
 }
 
 export async function goToFavorites(page: Page) {
-  // Race navigation with the click so fast client transitions are not missed
-  // (same pattern as performSearch).
-  await Promise.all([
-    page.waitForURL((url) => url.pathname.includes('/favorites'), {
-      timeout: SEARCH_NAV_TIMEOUT_MS,
-    }),
-    page.getByTestId('favorites-btn').click(),
-  ]);
+  // In client-side routing, URL can update without a new document "load".
+  // Assert URL state directly and wait for page shell instead of waitForURL(load).
+  await page.getByTestId('favorites-btn').click();
+  await expectPageUrl(page, (url) => url.pathname.includes('/favorites'));
+  await expect(page.getByTestId('create-list-btn')).toBeVisible({
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
   await page.waitForLoadState('networkidle');
 }
 
@@ -197,36 +209,6 @@ export async function deleteAllE2ETestLists(page: Page): Promise<void> {
     await deleteListConfirmBtn.click();
 
     await expectPageUrl(page, /favorites\/?(?:\?|$)/);
-  }
-}
-
-/**
- * Deletes all favorite lists whose names start with "E2E Test List".
- * Loops until no more matching cards are found on the favorites page,
- * clearing out accumulated lists from previous failed test runs.
- */
-export async function deleteAllE2ETestLists(page: Page): Promise<void> {
-  await goToFavorites(page);
-
-  for (;;) {
-    await page.waitForLoadState('networkidle');
-
-    const card = page.getByText(/^E2E Test List /).first();
-    const isVisible = await card.isVisible({ timeout: 3_000 }).catch(() => false);
-    if (!isVisible) break;
-
-    await card.click();
-    await waitForFavoriteListPage(page);
-
-    const deleteListBtn = page.getByTestId('delete-list-btn');
-    await deleteListBtn.waitFor({ state: 'visible', timeout: 10_000 });
-    await deleteListBtn.click();
-
-    const deleteListConfirmBtn = page.getByTestId('delete-list-confirm-btn');
-    await deleteListConfirmBtn.waitFor({ state: 'visible', timeout: 10_000 });
-    await deleteListConfirmBtn.click();
-
-    await page.waitForURL(/favorites\/?(?:\?|$)/, { timeout: 15_000 });
   }
 }
 
