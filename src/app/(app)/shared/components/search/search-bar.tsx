@@ -10,6 +10,8 @@ import { Autocomplete, AutocompleteOption } from '../ui/autocomplete';
 import { useFlag } from '../../hooks/use-flag';
 import { useAppConfig } from '../../hooks/use-app-config';
 import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
+import { useDebounce } from '../../hooks/use-debounce';
+import { SEARCH_DEBOUNCE_DELAY } from '../../lib/constants';
 
 interface SearchBarProps {
   focusByDefault?: boolean;
@@ -25,6 +27,7 @@ export function SearchBar({
   const appConfig = useAppConfig();
   const { t } = useTranslation('common');
   const searchTerm = useAtomValue(searchTermAtom);
+  const debouncedSearchTerm = useDebounce(searchTerm, SEARCH_DEBOUNCE_DELAY);
   const showTaxonomyBadge = useFlag('showSuggestionListTaxonomyBadge');
   const suggestions = appConfig.suggestions;
   const topics = appConfig.topics;
@@ -33,9 +36,6 @@ export function SearchBar({
     useMainSearchLayoutContext();
 
   const options = useMemo((): AutocompleteOption[] => {
-    const normalizedSearchTerm = searchTerm.trim().toLowerCase();
-    if (!normalizedSearchTerm) return [];
-
     const suggestionHeaders = appConfig.search.texts?.suggestionHeaders;
     const suggestionsGroup =
       suggestionHeaders?.suggestions || t('search.suggestions');
@@ -43,6 +43,18 @@ export function SearchBar({
       suggestionHeaders?.categories || t('search.categories');
     const taxonomiesGroup =
       suggestionHeaders?.taxonomies || t('search.taxonomies');
+
+    const normalizedSearchTerm = debouncedSearchTerm.trim().toLowerCase();
+
+    if (!normalizedSearchTerm) {
+      return suggestions.map((option) => ({
+        Icon: SearchIcon,
+        value: option.value,
+        query: option.taxonomies,
+        group: suggestionsGroup,
+        queryType: 'taxonomy',
+      }));
+    }
 
     const suggestionList: AutocompleteOption[] = suggestions
       .map((option) => ({
@@ -95,7 +107,7 @@ export function SearchBar({
     taxonomiesDisplay,
     appConfig.search.texts?.suggestionHeaders,
     t,
-    searchTerm,
+    debouncedSearchTerm,
     showTaxonomyBadge,
   ]);
 
