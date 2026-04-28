@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "ایجاد یک لیست",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "نام",
       "list_description": "توضیحات",
       "make_public": "عمومی کردن"
@@ -141,12 +142,15 @@
       "phone_number_label": "شماره تلفن"
     },
     "prompt_auth": "برای استفاده از این قابلیت، لطفاً وارد شوید.",
+    "prompt_auth_description": "برای استفاده از این قابلیت، لطفاً وارد شوید.",
     "manage_favorites": {
-      "title": "مدیریت موارد دلخواه"
+      "title": "مدیریت موارد دلخواه",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "محل شروع شما کجاست؟"
+    "prompt_start_location": "محل شروع شما کجاست؟",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "داده‌های ارائه شده توسط"

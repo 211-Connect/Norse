@@ -1,6 +1,12 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from 'react';
 import { createPortal } from 'react-dom';
 import { ChevronLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -23,6 +29,7 @@ import {
   SEARCH_INPUT_ID,
   USER_PREF_DISTANCE,
 } from '../../lib/constants';
+import { useBodySiblingsSync } from '../../hooks/use-dialog-aria-sync';
 import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
 import { createUrlParamsForSearch } from '../../utils/createUrlParamsForSearch';
 import { useAtomValue } from 'jotai';
@@ -56,6 +63,8 @@ export function SearchDialog({
   );
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const distance = useAtomValue(searchDistanceAtom);
+
+  useBodySiblingsSync(dialogRef, open);
 
   const { search, setSearch } = useMainSearchLayoutContext();
 
@@ -179,6 +188,7 @@ export function SearchDialog({
     }
   }, [focusByDefault, open]);
 
+
   const closeDialog = useCallback(() => {
     setOpen?.(false);
 
@@ -264,7 +274,7 @@ export function SearchDialog({
       )}
       role="dialog"
       data-testid={SEARCH_DIALOG_ID}
-      aria-hidden={!open}
+      aria-hidden={open ? undefined : true}
       aria-modal={open ? true : undefined}
       aria-labelledby={SEARCH_DIALOG_TITLE_ID}
       aria-describedby={SEARCH_DIALOG_DESCRIPTION_ID}

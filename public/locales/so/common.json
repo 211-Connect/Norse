@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "Abuur liis",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "magaca",
       "list_description": "Tilmaan",
       "make_public": "Samee wacyi-gelin"
@@ -141,12 +142,15 @@
       "phone_number_label": "Lambarka taleefanka"
     },
     "prompt_auth": "Fadlan gal si aad u isticmaasho habkaani.",
+    "prompt_auth_description": "Fadlan gal si aad u isticmaasho habkaani.",
     "manage_favorites": {
-      "title": "Maaree waxyaabaha aad ugu jeceshahay"
+      "title": "Maaree waxyaabaha aad ugu jeceshahay",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "Waa maxay goobta aad ka bilaabayso?"
+    "prompt_start_location": "Waa maxay goobta aad ka bilaabayso?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Macluumaadka ay bixiyaan"

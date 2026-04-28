@@ -13,7 +13,13 @@ import { useReactToPrint } from 'react-to-print';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from './ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from './ui/dialog';
 import { Facebook } from './icons/facebook';
 import { X } from './icons/x';
 import { shortenUrl } from '../serverActions/shortUrl/shortenUrl';
@@ -26,6 +32,9 @@ type ShareButtonProps = {
   title: string;
   body: string;
 };
+
+const SHARE_ACTION_BUTTON_CLASSNAME =
+  'flex min-w-0 justify-center gap-2 focus-visible:ring-inset focus-visible:ring-offset-0';
 
 export function ShareButton({
   componentToPrintRef,
@@ -102,13 +111,16 @@ export function ShareButton({
         >
           <DialogHeader>
             <DialogTitle>{t('modal.share.share_via')}</DialogTitle>
+            <DialogDescription className="sr-only">
+              {t('modal.share.share_via')}
+            </DialogDescription>
           </DialogHeader>
 
-          <div className="flex flex-col gap-2 overflow-hidden">
+          <div className="flex min-w-0 flex-col gap-2">
             <div className="grid grid-cols-2 gap-2">
               <Button
                 variant="outline"
-                className="flex gap-1"
+                className={SHARE_ACTION_BUTTON_CLASSNAME}
                 aria-label={`${t('modal.share.facebook')} ${t('modal.share.opens_in_new_tab')}`}
                 onClick={() => {
                   window.open(
@@ -129,7 +141,7 @@ export function ShareButton({
 
               <Button
                 variant="outline"
-                className="flex gap-1"
+                className={SHARE_ACTION_BUTTON_CLASSNAME}
                 aria-label={`${t('modal.share.linkedin')} ${t('modal.share.opens_in_new_tab')}`}
                 onClick={() => {
                   window.open(
@@ -148,7 +160,7 @@ export function ShareButton({
 
               <Button
                 variant="outline"
-                className="flex gap-1"
+                className={SHARE_ACTION_BUTTON_CLASSNAME}
                 aria-label={`X ${t('modal.share.opens_in_new_tab')}`}
                 onClick={() => {
                   window.open(
@@ -169,7 +181,7 @@ export function ShareButton({
 
               <Button
                 variant="outline"
-                className="flex gap-1"
+                className={SHARE_ACTION_BUTTON_CLASSNAME}
                 aria-label={`${t('modal.share.email')} ${t('modal.share.opens_in_new_tab')}`}
                 onClick={() => {
                   window.open(
@@ -189,7 +201,7 @@ export function ShareButton({
 
               <Button
                 variant="outline"
-                className="flex gap-1"
+                className={SHARE_ACTION_BUTTON_CLASSNAME}
                 onClick={handlePrint}
               >
                 <Printer className="size-4" aria-hidden="true" />
@@ -201,11 +213,11 @@ export function ShareButton({
               <Button
                 onClick={() => clipboard.copy(shortUrl)}
                 variant="outline"
-                className="flex w-full items-center justify-between gap-1"
+                className="flex w-full min-w-0 items-center justify-between gap-1 focus-visible:ring-inset focus-visible:ring-offset-0"
                 aria-label={t('modal.share.copy_link')}
                 aria-describedby={copyStatusId}
               >
-                {shortUrl}
+                <span className="min-w-0 truncate text-left">{shortUrl}</span>
 
                 {clipboard.copied ? (
                   <CheckIcon className="size-4" aria-hidden="true" />

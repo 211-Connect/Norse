@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "목록 만들기",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "이름",
       "list_description": "묘사",
       "make_public": "공개"
@@ -141,12 +142,15 @@
       "phone_number_label": "전화 번호"
     },
     "prompt_auth": "이 기능을 사용하려면 로그인하십시오.",
+    "prompt_auth_description": "이 기능을 사용하려면 로그인하십시오.",
     "manage_favorites": {
-      "title": "즐겨찾기 관리"
+      "title": "즐겨찾기 관리",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "시작 위치는 어디입니까?"
+    "prompt_start_location": "시작 위치는 어디입니까?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "데이터 제공"

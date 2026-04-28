@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "Gumawa ng listahan",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Pangalan",
       "list_description": "Paglalarawan",
       "make_public": "Ipubliko"
@@ -141,12 +142,15 @@
       "phone_number_label": "Numero ng telepono"
     },
     "prompt_auth": "Mangyaring mag-login upang magamit ang tampok na ito.",
+    "prompt_auth_description": "Mangyaring mag-login upang magamit ang tampok na ito.",
     "manage_favorites": {
-      "title": "Pamahalaan ang mga paborito"
+      "title": "Pamahalaan ang mga paborito",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "Saan ang panimulang lokasyon mo?"
+    "prompt_start_location": "Saan ang panimulang lokasyon mo?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Ang datos na ibinigay ni"

@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "Luo lista",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Nimi",
       "list_description": "Kuvaus",
       "make_public": "Julkistaa"
@@ -141,12 +142,15 @@
       "phone_number_label": "Puhelinnumero"
     },
     "prompt_auth": "Kirjaudu sisään käyttääksesi tätä ominaisuutta.",
+    "prompt_auth_description": "Kirjaudu sisään käyttääksesi tätä ominaisuutta.",
     "manage_favorites": {
-      "title": "Hallinnoi suosikkeja"
+      "title": "Hallinnoi suosikkeja",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "Mikä on lähtöpaikkasi?"
+    "prompt_start_location": "Mikä on lähtöpaikkasi?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Tiedot toimittanut"

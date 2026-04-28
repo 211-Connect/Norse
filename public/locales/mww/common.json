@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "Tsim ib daim ntawv teev npe",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Lub Npe",
       "list_description": "Kev piav qhia",
       "make_public": "Ua rau pej xeem pom"
@@ -141,12 +142,15 @@
       "phone_number_label": "Tus xov tooj"
     },
     "prompt_auth": "Thov nkag mus rau hauv koj tus account kom siv tau qhov feature no.",
+    "prompt_auth_description": "Thov nkag mus rau hauv koj tus account kom siv tau qhov feature no.",
     "manage_favorites": {
-      "title": "Tswj cov nyiam"
+      "title": "Tswj cov nyiam",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "Koj qhov chaw pib yog dab tsi?"
+    "prompt_start_location": "Koj qhov chaw pib yog dab tsi?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Cov ntaub ntawv muab los ntawm"

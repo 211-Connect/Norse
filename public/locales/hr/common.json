@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "Izradi popis",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Ime",
       "list_description": "Opis",
       "make_public": "Objavi"
@@ -141,12 +142,15 @@
       "phone_number_label": "Broj telefona"
     },
     "prompt_auth": "Molimo prijavite se kako biste koristili ovu značajku.",
+    "prompt_auth_description": "Molimo prijavite se kako biste koristili ovu značajku.",
     "manage_favorites": {
-      "title": "Upravljanje favoritima"
+      "title": "Upravljanje favoritima",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "Koja je vaša početna lokacija?"
+    "prompt_start_location": "Koja je vaša početna lokacija?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Podaci koje je pružio"

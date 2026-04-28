@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "एक सूची बनाएं",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "नाम",
       "list_description": "विवरण",
       "make_public": "सार्वजनिक करें"
@@ -141,12 +142,15 @@
       "phone_number_label": "फ़ोन नंबर"
     },
     "prompt_auth": "इस विशेष सुविधा का प्रयोग करने के लिए लॉग इन करें।",
+    "prompt_auth_description": "इस विशेष सुविधा का प्रयोग करने के लिए लॉग इन करें।",
     "manage_favorites": {
-      "title": "पसंदीदा प्रबंधित करें"
+      "title": "पसंदीदा प्रबंधित करें",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "आपका शुरुआती स्थान क्या है?"
+    "prompt_start_location": "आपका शुरुआती स्थान क्या है?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "द्वारा प्रदान किया गया डेटा"
