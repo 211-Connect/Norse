@@ -4,7 +4,10 @@ import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '@/app/(app)/shared/lib/utils';
-import { getContrastColor } from '@/utils/getContrastColor';
+import {
+  getContrastColor,
+  ensureTextContrastOnWhite,
+} from '@/utils/getContrastColor';
 import { hexToRgba } from '@/utils/hexToRgba';
 import { useIconComponent } from '@/app/(app)/shared/hooks/useIconComponent';
 
@@ -94,13 +97,13 @@ function Badge({
         return {
           backgroundColor: hexToRgba(color, 0.07),
           borderColor: hexToRgba(color, 0.1),
-          color,
+          color: ensureTextContrastOnWhite(color),
         };
 
       case 'outline':
         return {
           borderColor: hexToRgba(color, 0.2),
-          color,
+          color: ensureTextContrastOnWhite(color),
         };
 
       default:

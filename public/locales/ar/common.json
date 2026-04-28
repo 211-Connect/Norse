@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "إنشاء قائمة",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "اسم",
       "list_description": "وصف",
       "make_public": "الإعلان عن الجمهور"
@@ -141,12 +142,15 @@
       "phone_number_label": "رقم التليفون"
     },
     "prompt_auth": "يرجى تسجيل الدخول لاستخدام هذه الميزة.",
+    "prompt_auth_description": "يرجى تسجيل الدخول لاستخدام هذه الميزة.",
     "manage_favorites": {
-      "title": "إدارة المفضلة"
+      "title": "إدارة المفضلة",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "ما هو موقع انطلاقك؟"
+    "prompt_start_location": "ما هو موقع انطلاقك؟",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "البيانات المقدمة من"

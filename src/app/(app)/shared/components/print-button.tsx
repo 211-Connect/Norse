@@ -23,8 +23,9 @@ export function PrintButton({ componentToPrintRef }) {
       className="flex gap-1 print:hidden"
       onClick={handlePrint}
       size="sm"
+      aria-label={t('call_to_action.print')}
     >
-      <Printer className="size-4" />
+      <Printer className="size-4" aria-hidden="true" />
       {t('call_to_action.print')}
     </Button>
   );

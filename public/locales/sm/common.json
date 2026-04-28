@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "Fausia se lisi",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Igoa",
       "list_description": "Fa'amatalaga",
       "make_public": "Fa'asalalau i tagata lautele"
@@ -141,12 +142,15 @@
       "phone_number_label": "Numera telefoni"
     },
     "prompt_auth": "Fa'amolemole ulufale e fa'aoga lenei vaega.",
+    "prompt_auth_description": "Fa'amolemole ulufale e fa'aoga lenei vaega.",
     "manage_favorites": {
-      "title": "Pulea mea e fiafia i ai"
+      "title": "Pulea mea e fiafia i ai",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "O fea lou nofoaga e amata ai?"
+    "prompt_start_location": "O fea lou nofoaga e amata ai?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Fa'amaumauga na tu'uina mai e"

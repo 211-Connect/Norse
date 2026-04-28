@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "Crear una lista",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Nombre",
       "list_description": "Descripción",
       "make_public": "Hacer público"
@@ -141,12 +142,15 @@
       "sms_send_failed_body": "No se pudo enviar el mensaje."
     },
     "prompt_auth": "Inicie sesión para utilizar esta función.",
+    "prompt_auth_description": "Inicie sesión para utilizar esta función.",
     "manage_favorites": {
-      "title": "Gestionar favoritos"
+      "title": "Gestionar favoritos",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "¿Cuál es tu punto de partida?"
+    "prompt_start_location": "¿Cuál es tu punto de partida?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Datos facilitados por"

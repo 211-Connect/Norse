@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "Tạo danh sách",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Tên",
       "list_description": "Sự miêu tả",
       "make_public": "Công khai"
@@ -141,12 +142,15 @@
       "phone_number_label": "Số điện thoại"
     },
     "prompt_auth": "Vui lòng đăng nhập để sử dụng tính năng này.",
+    "prompt_auth_description": "Vui lòng đăng nhập để sử dụng tính năng này.",
     "manage_favorites": {
-      "title": "Quản lý mục yêu thích"
+      "title": "Quản lý mục yêu thích",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "Vị trí bắt đầu của bạn là gì?"
+    "prompt_start_location": "Vị trí bắt đầu của bạn là gì?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Dữ liệu được cung cấp bởi"

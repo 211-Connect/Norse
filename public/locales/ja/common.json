@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "リストを作成する",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "名前",
       "list_description": "説明",
       "make_public": "公開する"
@@ -141,12 +142,15 @@
       "phone_number_label": "電話番号"
     },
     "prompt_auth": "この機能をご利用いただくには、ログインしてください。",
+    "prompt_auth_description": "この機能をご利用いただくには、ログインしてください。",
     "manage_favorites": {
-      "title": "お気に入りを管理する"
+      "title": "お気に入りを管理する",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "出発地はどこですか？"
+    "prompt_start_location": "出発地はどこですか？",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "提供元データ"

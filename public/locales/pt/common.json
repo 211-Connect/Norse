@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "Crie uma lista",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Nome",
       "list_description": "Descrição",
       "make_public": "Tornar público"
@@ -141,12 +142,15 @@
       "phone_number_label": "Número de telefone"
     },
     "prompt_auth": "Faça login para usar este recurso.",
+    "prompt_auth_description": "Faça login para usar este recurso.",
     "manage_favorites": {
-      "title": "Gerenciar favoritos"
+      "title": "Gerenciar favoritos",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "Qual é o seu ponto de partida?"
+    "prompt_start_location": "Qual é o seu ponto de partida?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Dados fornecidos por"

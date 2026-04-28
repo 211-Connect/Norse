@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "Создание списка",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Имя",
       "list_description": "Описание",
       "make_public": "Сделать общедоступным"
@@ -141,12 +142,15 @@
       "phone_number_label": "Номер телефона"
     },
     "prompt_auth": "Пожалуйста, войдите в систему, чтобы воспользоваться этой функцией.",
+    "prompt_auth_description": "Пожалуйста, войдите в систему, чтобы воспользоваться этой функцией.",
     "manage_favorites": {
-      "title": "Управление избранным"
+      "title": "Управление избранным",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "Откуда вы начинаете?"
+    "prompt_start_location": "Откуда вы начинаете?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Данные предоставлены"

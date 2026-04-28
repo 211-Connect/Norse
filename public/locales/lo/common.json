@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "ສ້າງລາຍຊື່",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "ຊື່",
       "list_description": "ລາຍລະອຽດ",
       "make_public": "ເປີດເຜີຍຕໍ່ສາທາລະນະ"
@@ -141,12 +142,15 @@
       "phone_number_label": "ເບີໂທລະສັບ"
     },
     "prompt_auth": "ກະລຸນາເຂົ້າສູ່ລະບົບເພື່ອໃຊ້ຄຸນສົມບັດນີ້.",
+    "prompt_auth_description": "ກະລຸນາເຂົ້າສູ່ລະບົບເພື່ອໃຊ້ຄຸນສົມບັດນີ້.",
     "manage_favorites": {
-      "title": "ຈັດການລາຍການທີ່ມັກ"
+      "title": "ຈັດການລາຍການທີ່ມັກ",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "ສະຖານທີ່ເລີ່ມຕົ້ນຂອງເຈົ້າແມ່ນຫຍັງ?"
+    "prompt_start_location": "ສະຖານທີ່ເລີ່ມຕົ້ນຂອງເຈົ້າແມ່ນຫຍັງ?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "ຂໍ້ມູນສະໜອງໃຫ້ໂດຍ"

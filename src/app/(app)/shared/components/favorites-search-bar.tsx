@@ -40,8 +40,12 @@ export function FavoritesSearchBar({
 
   return (
     <div className={cn('relative', className)}>
+      <label htmlFor="favorites-search-input" className="sr-only">
+        {placeholder ?? 'Search your lists'}
+      </label>
       <MagnifyingGlassIcon className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
       <Input
+        id="favorites-search-input"
         placeholder={placeholder}
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}

@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "Створити список",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Ім'я",
       "list_description": "Опис",
       "make_public": "Зробити загальнодоступним"
@@ -141,12 +142,15 @@
       "phone_number_label": "Номер телефону"
     },
     "prompt_auth": "Будь ласка, увійдіть, щоб скористатися цією функцією.",
+    "prompt_auth_description": "Будь ласка, увійдіть, щоб скористатися цією функцією.",
     "manage_favorites": {
-      "title": "Керування вибраним"
+      "title": "Керування вибраним",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "Яке ваше початкове місцезнаходження?"
+    "prompt_start_location": "Яке ваше початкове місцезнаходження?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Дані, надані"

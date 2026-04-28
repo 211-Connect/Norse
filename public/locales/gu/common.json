@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "યાદી બનાવો",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "નામ",
       "list_description": "વર્ણન",
       "make_public": "જાહેર કરો"
@@ -141,12 +142,15 @@
       "phone_number_label": "ફોન નંબર"
     },
     "prompt_auth": "આ સુવિધાનો ઉપયોગ કરવા માટે કૃપા કરીને લોગિન કરો.",
+    "prompt_auth_description": "આ સુવિધાનો ઉપયોગ કરવા માટે કૃપા કરીને લોગિન કરો.",
     "manage_favorites": {
-      "title": "મનપસંદ મેનેજ કરો"
+      "title": "મનપસંદ મેનેજ કરો",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "તમારું શરૂઆતનું સ્થાન કયું છે?"
+    "prompt_start_location": "તમારું શરૂઆતનું સ્થાન કયું છે?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "દ્વારા પ્રદાન કરાયેલ ડેટા"

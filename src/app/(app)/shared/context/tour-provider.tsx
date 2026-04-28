@@ -1,6 +1,6 @@
 'use client';
 
-import { PropsWithChildren, useEffect, useRef } from 'react';
+import { PropsWithChildren, useEffect, useRef, type CSSProperties } from 'react';
 import {
   TourProvider as ReactourProvider,
   useTour,
@@ -8,6 +8,7 @@ import {
 } from '@reactour/tour';
 import { useTranslation } from 'react-i18next';
 import { getScrollbarWidth } from '@/app/(app)/shared/lib/utils';
+import { ACCESSIBLE_TOUR_ACCENT } from '../theme/theme-config';
 
 const TOUR_DIALOG_ID = 'home-page-tour-dialog';
 const TOUR_TITLE_ID = 'home-page-tour-title';
@@ -217,10 +218,10 @@ function patchPaginationDots(
     button.style.borderStyle = 'solid';
     button.style.borderWidth = '2px';
     button.style.borderColor = isActive
-      ? 'var(--reactour-accent, #005ea2)'
+      ? `var(--reactour-accent, ${ACCESSIBLE_TOUR_ACCENT})`
       : '#5e5e5e';
     button.style.color = isActive
-      ? 'var(--reactour-accent, #005ea2)'
+      ? `var(--reactour-accent, ${ACCESSIBLE_TOUR_ACCENT})`
       : '#5e5e5e';
   });
 }
@@ -459,14 +460,17 @@ export const TourProvider = ({ children }: PropsWithChildren) => {
           ...baseStyles,
           top: '-0.625rem',
           left: '-0.625rem',
+          backgroundColor: ACCESSIBLE_TOUR_ACCENT,
+          color: '#ffffff',
         }),
         popover: (baseStyles) => ({
           ...baseStyles,
+          '--reactour-accent': ACCESSIBLE_TOUR_ACCENT,
           width: 'min(36rem, calc(100vw - 2rem))',
           maxWidth: 'calc(100vw - 2rem)',
           maxHeight: 'calc(100dvh - 2rem)',
           padding: '1rem 1rem 1.25rem',
-        }),
+        }) as CSSProperties,
       }}
     >
       <TourAccessibilityEnhancer />

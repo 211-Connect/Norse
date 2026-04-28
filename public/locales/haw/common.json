@@ -102,6 +102,7 @@
     },
     "create_list": {
       "create_a_list": "E hana i kahi papa inoa",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Inoa",
       "list_description": "Wehewehena",
       "make_public": "E hoʻolaha i ka lehulehu"
@@ -141,12 +142,15 @@
       "phone_number_label": "Helu kelepona"
     },
     "prompt_auth": "E ʻoluʻolu e komo e hoʻohana i kēia hiʻona.",
+    "prompt_auth_description": "E ʻoluʻolu e komo e hoʻohana i kēia hiʻona.",
     "manage_favorites": {
-      "title": "E hoʻokele i nā mea punahele"
+      "title": "E hoʻokele i nā mea punahele",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "Ma hea kou wahi hoʻomaka?"
+    "prompt_start_location": "Ma hea kou wahi hoʻomaka?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "ʻIkepili i hāʻawi ʻia e"

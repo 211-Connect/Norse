@@ -18,6 +18,9 @@ export function HeroSection() {
   const { t } = useTranslation('page-home');
   const showHomePageTour = useFlag('showHomePageTour');
   const homeSearchTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const takeTourLabel =
+    t('take_a_tour', { defaultValue: 'First time here? Take a tour!' }).trim() ||
+    'First time here? Take a tour!';
 
   const getResponsiveTourPosition = useCallback(
     (
@@ -189,13 +192,14 @@ export function HeroSection() {
         <Button
           onClick={enableTour}
           variant="outline"
+          aria-label={takeTourLabel}
           aria-controls="home-page-tour-dialog"
           aria-expanded={isOpen ?? false}
           aria-haspopup="dialog"
           data-home-tour-trigger="true"
-          className="border-foreground/40 bg-background/95 text-foreground shadow-sm hover:bg-primary hover:text-primary-foreground focus-visible:border-foreground focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2"
+          className="border-foreground/40 bg-background text-foreground shadow-sm hover:bg-primary hover:text-primary-foreground focus-visible:border-foreground focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-4"
         >
-          {t('take_a_tour')}
+          {takeTourLabel}
         </Button>
       )}
     </div>
