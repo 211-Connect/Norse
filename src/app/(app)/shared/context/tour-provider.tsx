@@ -133,8 +133,10 @@ function patchPopoverLayout(
   popover: HTMLElement,
   controlsDiv: HTMLElement | null,
 ): void {
-  popover.style.display = 'flex';
-  popover.style.flexDirection = 'column';
+  popover.style.display = 'grid';
+  popover.style.gridTemplateColumns = 'minmax(0, 1fr) auto';
+  popover.style.gridTemplateRows = 'auto auto';
+  popover.style.alignItems = 'start';
   popover.style.gap = '1rem';
   popover.style.overflow = 'visible';
   popover.style.padding = '1rem 1rem 1.25rem';
@@ -143,14 +145,20 @@ function patchPopoverLayout(
   const contentContainer = getContentContainer(popover, controlsDiv);
   if (contentContainer) {
     contentContainer.classList.add(TOUR_CONTENT_SCROLLABLE_CLASS);
-    contentContainer.style.flex = '1 1 auto';
+    contentContainer.style.gridColumn = '1';
+    contentContainer.style.gridRow = '1';
+    contentContainer.style.width = '100%';
+    contentContainer.style.minWidth = '0';
     contentContainer.style.minHeight = '0';
+    contentContainer.style.boxSizing = 'border-box';
     contentContainer.style.overflowY = 'auto';
     contentContainer.style.overscrollBehavior = 'contain';
-    contentContainer.style.paddingRight = '0.25rem';
+    contentContainer.style.paddingRight = '0';
   }
 
   if (controlsDiv) {
+    controlsDiv.style.gridColumn = '1 / -1';
+    controlsDiv.style.gridRow = '2';
     controlsDiv.style.flexShrink = '0';
     controlsDiv.style.marginTop = '0';
     controlsDiv.style.paddingTop = '0.75rem';
@@ -187,11 +195,15 @@ function patchCloseButton(popover: HTMLElement): void {
   closeButton.setAttribute('type', 'button');
   closeButton.style.width = '44px';
   closeButton.style.height = '44px';
-  closeButton.style.top = '8px';
-  closeButton.style.right = '8px';
+  closeButton.style.position = 'static';
+  closeButton.style.gridColumn = '2';
+  closeButton.style.gridRow = '1';
+  closeButton.style.alignSelf = 'start';
+  closeButton.style.justifySelf = 'end';
   closeButton.style.display = 'flex';
   closeButton.style.alignItems = 'center';
   closeButton.style.justifyContent = 'center';
+  closeButton.style.margin = '0';
 
   // Without an explicit size the SVG (display:block) stretches to fill the
   // 44×44 button, producing an oversized icon. Pin it to a readable size.
