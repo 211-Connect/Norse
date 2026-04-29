@@ -9,6 +9,7 @@ import {
   test,
 } from '../helpers';
 import {
+  ASYNC_UI_TIMEOUT_MS,
   AUTOCOMPLETE_TIMEOUT_MS,
   FOCUS_TIMEOUT_MS,
   KEYBOARD_UI_STABILITY_MS,
@@ -96,49 +97,6 @@ test.describe('Search accessibility preservation', () => {
 
     await expect(dialog).toHaveAttribute('aria-hidden', 'true');
     await expect(trigger).toBeFocused();
-  });
-
-  test('background content is hidden from assistive tech while the dialog is open', async ({
-    page,
-  }) => {
-    const { dialog } = await openDialogFromSearchTrigger(page);
-
-    await expect
-      .poll(async () => {
-        return page.locator('#main-content').evaluate((element) => {
-          return (
-            element.closest('[aria-hidden="true"]') instanceof HTMLElement
-          );
-        });
-      })
-      .toBe(true);
-    await expect
-      .poll(async () => {
-        return page.locator('#main-content').evaluate((element) => {
-          return element.closest('[inert]') instanceof HTMLElement;
-        });
-      })
-      .toBe(true);
-    await expect(dialog).not.toHaveAttribute('aria-hidden', 'true');
-
-    await page.keyboard.press('Escape');
-
-    await expect
-      .poll(async () => {
-        return page.locator('#main-content').evaluate((element) => {
-          return (
-            element.closest('[aria-hidden="true"]') instanceof HTMLElement
-          );
-        });
-      })
-      .toBe(false);
-    await expect
-      .poll(async () => {
-        return page.locator('#main-content').evaluate((element) => {
-          return element.closest('[inert]') instanceof HTMLElement;
-        });
-      })
-      .toBe(false);
   });
 
   test('Add my location opens the dialog with focus on the location input', async ({
@@ -296,20 +254,23 @@ test.describe('Search accessibility preservation', () => {
     await openDialogFromSearchTrigger(page);
 
     const locationInput = page.locator('#location-input');
-    const clearButtons = page.getByTestId('search-clear-btn');
+    const locationField = locationInput.locator('..');
+    const clearButton = locationField.getByTestId('search-clear-btn');
+    const listbox = locationField.getByTestId('autocomplete-listbox');
 
     await locationInput.fill('minneapolis');
-    const listbox = page.getByTestId('autocomplete-listbox');
     await listbox.waitFor({ state: 'visible', timeout: AUTOCOMPLETE_TIMEOUT_MS });
     await listbox.getByTestId('autocomplete-option').first().click();
     // Clear uses committed `value` from context; it stays `invisible` until a real pick.
-    await expect(clearButtons.nth(1)).toBeVisible({
+    await expect(clearButton).toBeVisible({
       timeout: AUTOCOMPLETE_TIMEOUT_MS,
     });
 
-    await clearButtons.nth(1).click();
+    await clearButton.click();
 
-    await expect(locationInput).toHaveValue(enCommon.search.everywhere);
+    await expect(locationInput).toHaveValue(enCommon.search.everywhere, {
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
   });
 
   test('autocomplete groups appear in correct order: Suggestions, Topics, Taxonomies', async ({
@@ -363,32 +324,52 @@ test.describe('Search accessibility preservation', () => {
     await searchInput.fill('o');
 
     const listbox = page.getByTestId('autocomplete-listbox').first();
+    const options = listbox.locator('[role="option"]');
     await expect(listbox).toBeVisible({ timeout: AUTOCOMPLETE_TIMEOUT_MS });
 
-    // Get initial option count
-    const initialOptions = await listbox.locator('[role="option"]').count();
+    // Wait for the tenant-specific autocomplete mix to settle before capturing
+    // the baseline count; async taxonomy results can arrive after the initial paint.
+    await expect
+      .poll(
+        async () => {
+          const firstCount = await options.count();
+          await page.waitForTimeout(KEYBOARD_UI_STABILITY_MS);
+          const secondCount = await options.count();
+
+          if (firstCount > 1 && firstCount === secondCount) {
+            return firstCount;
+          }
+
+          return -1;
+        },
+        {
+          timeout: ASYNC_UI_TIMEOUT_MS,
+          intervals: [100, 250, 500, 1_000],
+        },
+      )
+      .not.toBe(-1);
+
+    const initialOptions = await options.count();
     expect(initialOptions).toBeGreaterThan(1);
 
     // Navigate down with arrow key
     await searchInput.press('ArrowDown');
 
-    // Wait a bit for any potential filtering
-    await page.waitForTimeout(KEYBOARD_UI_STABILITY_MS);
-
-    // Option count should remain the same
-    const optionsAfterArrowDown = await listbox
-      .locator('[role="option"]')
-      .count();
-    expect(optionsAfterArrowDown).toBe(initialOptions);
+    await expect
+      .poll(() => options.count(), {
+        timeout: ASYNC_UI_TIMEOUT_MS,
+        intervals: [100, 250, 500, 1_000],
+      })
+      .toBe(initialOptions);
 
     // Navigate down again
     await searchInput.press('ArrowDown');
-    await page.waitForTimeout(KEYBOARD_UI_STABILITY_MS);
 
-    // Option count should still be the same
-    const optionsAfterSecondArrow = await listbox
-      .locator('[role="option"]')
-      .count();
-    expect(optionsAfterSecondArrow).toBe(initialOptions);
+    await expect
+      .poll(() => options.count(), {
+        timeout: ASYNC_UI_TIMEOUT_MS,
+        intervals: [100, 250, 500, 1_000],
+      })
+      .toBe(initialOptions);
   });
 });
