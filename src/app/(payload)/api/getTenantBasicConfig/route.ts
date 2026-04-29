@@ -1,10 +1,15 @@
 import { findTenantByHost } from '@/payload/collections/Tenants/actions';
+import { normalizeAllowedEmailDomains } from '@/utils/normalizeAllowedEmailDomains';
 import { withCache } from '@/utilities/withCache';
 import { TypedLocale } from 'payload';
 
-export type TenantLocaleResponse = {
+export type TenantBasicConfigResponse = {
   enabledLocales: TypedLocale[];
   defaultLocale: string;
+  auth: {
+    requiresLogin: boolean;
+    allowedEmailDomains: string[];
+  };
 };
 
 export const GET = async (request: Request) => {
@@ -20,20 +25,27 @@ export const GET = async (request: Request) => {
     return new Response('Host query parameter is required', { status: 400 });
   }
 
-  const tenant = await withCache(
-    `tenant_locale:${host}`,
+  const tenantBasicConfig = await withCache(
+    `tenant_basic_config:${host}`,
     async () => {
       const tenant = await findTenantByHost(host);
+
       return {
         enabledLocales: tenant ? tenant.enabledLocales : [],
         defaultLocale: tenant ? tenant.defaultLocale : 'en',
+        auth: {
+          requiresLogin: tenant?.auth?.requiresLogin ?? false,
+          allowedEmailDomains: normalizeAllowedEmailDomains(
+            tenant?.auth?.allowedEmailDomains,
+          ),
+        },
       };
     },
     { redis: true, memory: true },
   );
 
-  if (tenant) {
-    return new Response(JSON.stringify(tenant), {
+  if (tenantBasicConfig) {
+    return new Response(JSON.stringify(tenantBasicConfig), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });

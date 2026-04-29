@@ -2,6 +2,7 @@ import { parseHost } from './parseHost';
 import { findTenantByHost } from '@/payload/collections/Tenants/actions/findTenantByHost';
 import { getServerSession } from 'next-auth';
 import { createAuthOptions } from '@/auth';
+import { normalizeAllowedEmailDomains } from '@/utils/normalizeAllowedEmailDomains';
 import { headers } from 'next/headers';
 import { cache } from 'react';
 
@@ -28,6 +29,10 @@ async function getSessionOrigin() {
       clientSecret: tenant?.auth.keycloakSecret ?? undefined,
       issuer: tenant?.auth.keycloakIssuer ?? undefined,
     },
+    requiresLogin: tenant?.auth?.requiresLogin ?? false,
+    allowedEmailDomains: normalizeAllowedEmailDomains(
+      tenant?.auth?.allowedEmailDomains,
+    ),
     secret: tenant?.auth.nextAuthSecret ?? undefined,
   });
 

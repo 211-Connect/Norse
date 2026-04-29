@@ -4,7 +4,7 @@ import { i18nRouter } from 'next-i18n-router';
 
 import { SESSION_ID } from './app/(app)/shared/lib/constants';
 import { searchLinkCorrectionMiddleware } from './middlewares/searchLinkCorrectionMiddleware';
-import { TenantLocaleResponse } from './app/(payload)/api/getTenantLocales/route';
+import { TenantBasicConfigResponse } from './app/(payload)/api/getTenantBasicConfig/route';
 import { parseHost } from './app/(app)/shared/utils/parseHost';
 import { fetchWrapper } from './app/(app)/shared/lib/fetchWrapper';
 
@@ -50,15 +50,15 @@ function edgeLog(
   else console.log(entry);
 }
 
-const LOCALE_CACHE_TTL_MS = 10 * 60 * 1000;
-const LOCALE_CACHE_MAX_ENTRIES = 1_000;
+const TENANT_DATA_CACHE_TTL_MS = 10 * 60 * 1000;
+const TENANT_DATA_CACHE_MAX_ENTRIES = 1_000;
 
-type LocaleCacheEntry = {
-  data: TenantLocaleResponse | null;
+type TenantDataCacheEntry = {
+  data: TenantBasicConfigResponse | null;
   expiresAt: number;
 };
 
-const tenantLocaleCache = new Map<string, LocaleCacheEntry>();
+const tenantDataCache = new Map<string, TenantDataCacheEntry>();
 
 function getOriginFromUrl(url?: string): string | undefined {
   if (!url) return undefined;
@@ -70,10 +70,10 @@ function getOriginFromUrl(url?: string): string | undefined {
   }
 }
 
-function getCachedTenantLocales(
+function getCachedTenantData(
   host: string,
-): TenantLocaleResponse | null | undefined {
-  const entry = tenantLocaleCache.get(host);
+): TenantBasicConfigResponse | null | undefined {
+  const entry = tenantDataCache.get(host);
 
   if (!entry) {
     return undefined;
@@ -81,27 +81,27 @@ function getCachedTenantLocales(
 
   const expired = Date.now() > entry.expiresAt;
   if (expired) {
-    tenantLocaleCache.delete(host);
+    tenantDataCache.delete(host);
     return undefined;
   }
 
   return entry.data;
 }
 
-function setCachedTenantLocales(
+function setCachedTenantData(
   host: string,
-  data: TenantLocaleResponse | null,
+  data: TenantBasicConfigResponse | null,
 ): void {
-  if (tenantLocaleCache.size >= LOCALE_CACHE_MAX_ENTRIES) {
-    const firstKey = tenantLocaleCache.keys().next().value;
+  if (tenantDataCache.size >= TENANT_DATA_CACHE_MAX_ENTRIES) {
+    const firstKey = tenantDataCache.keys().next().value;
     if (firstKey) {
-      tenantLocaleCache.delete(firstKey);
+      tenantDataCache.delete(firstKey);
     }
   }
 
-  tenantLocaleCache.set(host, {
+  tenantDataCache.set(host, {
     data,
-    expiresAt: Date.now() + LOCALE_CACHE_TTL_MS,
+    expiresAt: Date.now() + TENANT_DATA_CACHE_TTL_MS,
   });
 }
 
@@ -197,6 +197,55 @@ function generateNonce() {
   return nonce;
 }
 
+function isAuthPath(pathname: string): boolean {
+  return /\/auth(\/|$)/.test(pathname);
+}
+
+function withCustomBasePath(pathname: string): string {
+  const basePath = process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || '';
+
+  if (
+    !basePath ||
+    pathname.startsWith('http://') ||
+    pathname.startsWith('https://')
+  ) {
+    return pathname;
+  }
+
+  if (pathname === basePath || pathname.startsWith(`${basePath}/`)) {
+    return pathname;
+  }
+
+  if (!pathname.startsWith('/')) {
+    return `${basePath}/${pathname}`;
+  }
+
+  return `${basePath}${pathname}`;
+}
+
+async function hasActiveSession(request: NextRequest): Promise<boolean> {
+  const sessionRoute = getApiRoute(request, 'auth/session');
+
+  try {
+    const response = await fetch(sessionRoute, {
+      headers: {
+        cookie: request.headers.get('cookie') || '',
+        host: request.headers.get('host') || '',
+      },
+      cache: 'no-store',
+    });
+
+    if (!response.ok) {
+      return false;
+    }
+
+    const session = await response.json();
+    return Boolean(session?.user);
+  } catch {
+    return false;
+  }
+}
+
 // Add a session_id to the cookies of the user for tracking purposes
 export async function middleware(request: NextRequest) {
   if (request.method === 'POST' && request.url.includes('/[locale]')) {
@@ -235,45 +284,49 @@ export async function middleware(request: NextRequest) {
   let locales = ['en'];
   let defaultLocale = 'en';
 
-  const cached = getCachedTenantLocales(host);
+  const cached = getCachedTenantData(host);
+  let tenantConfig: TenantBasicConfigResponse | null | undefined;
 
   if (cached !== undefined) {
     // Cache hit (may be null if tenant was not found previously)
     if (cached && cached.enabledLocales.length && cached.defaultLocale) {
       locales = cached.enabledLocales;
       defaultLocale = cached.defaultLocale;
+      tenantConfig = cached;
     }
   } else {
-    const apiRoute = getApiRoute(request, 'getTenantLocales');
+    const apiRoute = getApiRoute(request, 'getTenantBasicConfig');
     let timeoutId: NodeJS.Timeout | undefined;
 
     try {
       const controller = new AbortController();
       timeoutId = setTimeout(() => controller.abort(), 5000);
 
-      const tenantLocales: TenantLocaleResponse | null = await fetchWrapper(
-        `${apiRoute}?host=${host}&secret=${process.env.PAYLOAD_API_ROUTE_SECRET}`,
-        {
-          headers: {
-            host: rawHost,
+      const tenantBasicConfig: TenantBasicConfigResponse | null =
+        await fetchWrapper(
+          `${apiRoute}?host=${host}&secret=${process.env.PAYLOAD_API_ROUTE_SECRET}`,
+          {
+            headers: {
+              host: rawHost,
+            },
+            signal: controller.signal,
+            cache: 'no-store',
           },
-          signal: controller.signal,
-          cache: 'no-store',
-        },
-      );
+        );
 
-      setCachedTenantLocales(host, tenantLocales);
+      setCachedTenantData(host, tenantBasicConfig);
+      tenantConfig = tenantBasicConfig;
 
       if (
-        tenantLocales &&
-        tenantLocales.enabledLocales.length &&
-        tenantLocales.defaultLocale
+        tenantBasicConfig &&
+        tenantBasicConfig.enabledLocales.length &&
+        tenantBasicConfig.defaultLocale
       ) {
-        locales = tenantLocales.enabledLocales;
-        defaultLocale = tenantLocales.defaultLocale;
+        locales = tenantBasicConfig.enabledLocales;
+        defaultLocale = tenantBasicConfig.defaultLocale;
       } else {
-        edgeLog('warn', 'tenant_locales_not_configured', {
-          tenantLocales,
+        edgeLog('warn', 'tenant_basic_config_not_configured', {
+          tenantBasicConfig,
           url: request.url,
           method: request.method,
           host,
@@ -285,9 +338,8 @@ export async function middleware(request: NextRequest) {
       }
     } catch (error) {
       // Cache the failure so we don't retry immediately
-      setCachedTenantLocales(host, null);
-
-      edgeLog('error', 'tenant_locales_fetch_failed', {
+      setCachedTenantData(host, null);
+      edgeLog('error', 'tenant_basic_config_fetch_failed', {
         error: error instanceof Error ? error.message : String(error),
         url: request.url,
         method: request.method,
@@ -310,6 +362,27 @@ export async function middleware(request: NextRequest) {
 
   const url = request.nextUrl.clone();
   const { pathname } = url;
+
+  if (tenantConfig?.auth?.requiresLogin && !isAuthPath(pathname)) {
+    const authenticated = await hasActiveSession(request);
+
+    if (!authenticated) {
+      const signInPath = `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/auth/signin`;
+      const signInUrl = new URL(signInPath, request.url);
+      const redirectTarget = withCustomBasePath(
+        `${request.nextUrl.pathname}${request.nextUrl.search}`,
+      );
+      signInUrl.searchParams.set('redirect', redirectTarget || '/');
+
+      edgeLog('info', 'tenant_loginwall_redirect', {
+        host,
+        path: pathname,
+        signInPath: signInUrl.pathname,
+      });
+
+      return NextResponse.redirect(signInUrl);
+    }
+  }
 
   const searchCorrectionResponse = searchLinkCorrectionMiddleware(request);
   if (searchCorrectionResponse) {

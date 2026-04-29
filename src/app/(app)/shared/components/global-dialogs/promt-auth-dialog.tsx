@@ -45,7 +45,11 @@ export function PromptAuthDialog() {
   };
 
   const callbackUrl = typeof window !== 'undefined' ? window.location.href : '';
-  const loginHref = `/api/auth/signin/keycloak?callbackUrl=${encodeURIComponent(callbackUrl)}`;
+  const redirectTarget =
+    typeof window !== 'undefined'
+      ? `${window.location.pathname}${window.location.search}`
+      : '/';
+  const loginHref = `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/auth/signin?redirect=${encodeURIComponent(redirectTarget)}`;
 
   const handleLogin = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();

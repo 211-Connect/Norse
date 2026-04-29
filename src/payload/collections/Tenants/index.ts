@@ -188,6 +188,38 @@ export const Tenants: CollectionConfig = {
             },
           ],
         },
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'requiresLogin',
+              type: 'checkbox',
+              defaultValue: false,
+            },
+          ],
+        },
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'allowedEmailDomains',
+              type: 'array',
+              fields: [
+                {
+                  name: 'domain',
+                  type: 'text',
+                  required: true,
+                },
+              ],
+              admin: {
+                description:
+                  'Allowed domains to access via OAuth. Add values like acme.org or partner.acme.org.',
+                condition: (data, siblingData) =>
+                  siblingData?.requiresLogin || data?.auth?.requiresLogin,
+              },
+            },
+          ],
+        },
       ],
     },
     {
