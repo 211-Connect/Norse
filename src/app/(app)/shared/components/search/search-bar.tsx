@@ -10,6 +10,7 @@ import { Autocomplete, AutocompleteOption } from '../ui/autocomplete';
 import { useFlag } from '../../hooks/use-flag';
 import { useAppConfig } from '../../hooks/use-app-config';
 import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
+import { useTaxonomies } from '../../hooks/api/use-taxonomies';
 import { useDebounce } from '../../hooks/use-debounce';
 import { SEARCH_DEBOUNCE_DELAY } from '../../lib/constants';
 
@@ -28,12 +29,12 @@ export function SearchBar({
   const { t } = useTranslation('common');
   const searchTerm = useAtomValue(searchTermAtom);
   const debouncedSearchTerm = useDebounce(searchTerm, SEARCH_DEBOUNCE_DELAY);
+  const { setSearch } = useMainSearchLayoutContext();
+  const { displayData: taxonomiesDisplay } = useTaxonomies(debouncedSearchTerm);
+
   const showTaxonomyBadge = useFlag('showSuggestionListTaxonomyBadge');
   const suggestions = appConfig.suggestions;
   const topics = appConfig.topics;
-
-  const { setSearch, displayTaxonomies: taxonomiesDisplay } =
-    useMainSearchLayoutContext();
 
   const options = useMemo((): AutocompleteOption[] => {
     const suggestionHeaders = appConfig.search.texts?.suggestionHeaders;
@@ -44,7 +45,7 @@ export function SearchBar({
     const taxonomiesGroup =
       suggestionHeaders?.taxonomies || t('search.taxonomies');
 
-    const normalizedSearchTerm = debouncedSearchTerm.trim().toLowerCase();
+    const normalizedSearchTerm = searchTerm.trim().toLowerCase();
 
     if (!normalizedSearchTerm) {
       return suggestions.map((option) => ({
@@ -107,7 +108,7 @@ export function SearchBar({
     taxonomiesDisplay,
     appConfig.search.texts?.suggestionHeaders,
     t,
-    debouncedSearchTerm,
+    searchTerm,
     showTaxonomyBadge,
   ]);
 
