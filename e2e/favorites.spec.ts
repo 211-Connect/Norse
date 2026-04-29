@@ -1,14 +1,21 @@
 import {
   test,
   expect,
+  closeFavoritesDialog,
+  filterFavoritesDialogLists,
+  getFavoritesDialogListActionButton,
   performSearch,
   goToFavorites,
+  waitForFavoriteOnListPage,
+  waitForFavoriteToBeAbsentOnListPage,
   waitForFavoriteListPage,
+  waitForFavoritesDialogReady,
   loginViaKeycloak,
   goHome,
   deleteAllE2ETestLists,
   expectPageUrl,
 } from './helpers';
+import { ASYNC_UI_TIMEOUT_MS, UI_SHELL_TIMEOUT_MS } from './timeouts';
 
 const hasAuth =
   !!process.env.TEST_USER_EMAIL && !!process.env.TEST_USER_PASSWORD;
@@ -27,9 +34,6 @@ test.describe('Favorites Feature (Authenticated)', () => {
     const page = await browser.newPage();
     try {
       await loginViaKeycloak(page);
-      // goHome re-navigates so the Next.js session is fully hydrated before
-      // we try to interact with authenticated routes (same as beforeEach does).
-      await goHome(page);
       await deleteAllE2ETestLists(page);
     } finally {
       await page.close();
@@ -41,7 +45,6 @@ test.describe('Favorites Feature (Authenticated)', () => {
     const page = await browser.newPage();
     try {
       await loginViaKeycloak(page);
-      await goHome(page);
       await deleteAllE2ETestLists(page);
     } finally {
       await page.close();
@@ -50,7 +53,6 @@ test.describe('Favorites Feature (Authenticated)', () => {
 
   test.beforeEach(async ({ page }) => {
     await loginViaKeycloak(page);
-    await goHome(page);
   });
 
   const listName = `E2E Test List ${Date.now()}`;
@@ -65,21 +67,25 @@ test.describe('Favorites Feature (Authenticated)', () => {
     await goToFavorites(page);
 
     const createListBtn = page.getByTestId('create-list-btn');
-    await expect(createListBtn).toBeVisible({ timeout: 10_000 });
+    await expect(createListBtn).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
     await createListBtn.click();
 
     await page.locator('#name').fill(listName);
     await page.locator('#description').fill(listDescription);
 
     const createListSubmitBtn = page.getByTestId('create-list-submit-btn');
-    await expect(createListSubmitBtn).toBeVisible({ timeout: 10_000 });
+    await expect(createListSubmitBtn).toBeVisible({
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
     await createListSubmitBtn.click();
 
     await expect(page.getByText('List created')).toBeVisible({
-      timeout: 10000,
+      timeout: ASYNC_UI_TIMEOUT_MS,
     });
 
-    await expect(page.getByText(listName)).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText(listName)).toBeVisible({
+      timeout: ASYNC_UI_TIMEOUT_MS,
+    });
   });
 
   test('should add a resource to the favorite list from search results', async ({
@@ -93,7 +99,7 @@ test.describe('Favorites Feature (Authenticated)', () => {
 
     await page
       .locator('#search-container')
-      .waitFor({ state: 'visible', timeout: 10_000 });
+      .waitFor({ state: 'visible', timeout: UI_SHELL_TIMEOUT_MS });
 
     // Get the first resource name for later validation
     const firstResourceLink = page.getByTestId('resource-link').first();
@@ -104,40 +110,28 @@ test.describe('Favorites Feature (Authenticated)', () => {
     await expect(favoriteBtn).toBeVisible({ timeout: 30_000 });
     await favoriteBtn.click();
 
-    // Wait for the dialog to load (skeleton disappears)
-    await expect(
-      page.getByTestId('favorites-loading-skeleton'),
-    ).not.toBeVisible({ timeout: 10_000 });
-    await expect(page.getByTestId('favorites-list-loaded')).toBeAttached({
-      timeout: 10_000,
-    });
+    await waitForFavoritesDialogReady(page);
+    await filterFavoritesDialogLists(page, listName);
 
-    const searchBar = page.getByTestId('favorites-search-input');
-    await expect(searchBar).toBeVisible({ timeout: 10_000 });
-    await searchBar.fill(listName);
-
-    // Wait for debounce and filtering to complete
-    await page.waitForTimeout(5000);
-    await expect(
-      page.getByTestId('favorites-loading-skeleton'),
-    ).not.toBeVisible({ timeout: 10_000 });
-
-    const listRow = page.getByText(listName).first();
-    await expect(listRow).toBeVisible({ timeout: 10_000 });
-
-    const addBtn = page.getByTestId('add-to-list-btn').first();
-    await expect(addBtn).toBeVisible({ timeout: 10_000 });
+    const addBtn = await getFavoritesDialogListActionButton(
+      page,
+      listName,
+      'add-to-list-btn',
+    );
     await addBtn.click();
 
     await expect(page.getByText('Added to list')).toBeVisible({
-      timeout: 10_000,
+      timeout: ASYNC_UI_TIMEOUT_MS,
     });
 
     // Verify the resource is now marked as in the list (HeartOff icon)
-    const removeBtn = page.getByTestId('remove-from-list-btn').first();
-    await expect(removeBtn).toBeVisible({ timeout: 10_000 });
+    const removeBtn = await getFavoritesDialogListActionButton(
+      page,
+      listName,
+      'remove-from-list-btn',
+    );
 
-    await page.getByRole('button', { name: 'Close' }).click();
+    await closeFavoritesDialog(page);
 
     // Navigate to the favorites list and verify the resource is there
     await goToFavorites(page);
@@ -148,9 +142,7 @@ test.describe('Favorites Feature (Authenticated)', () => {
     await waitForFavoriteListPage(page);
     await expect(page.getByText(listName).first()).toBeVisible();
     await expect(page.getByText(listDescription).first()).toBeVisible();
-    await expect(page.getByText(firstResourceName).first()).toBeVisible({
-      timeout: 10_000,
-    });
+    await waitForFavoriteOnListPage(page, firstResourceName);
   });
 
   test('should update the favorite list name and description', async ({
@@ -163,29 +155,31 @@ test.describe('Favorites Feature (Authenticated)', () => {
     await waitForFavoriteListPage(page);
 
     const editBtn = page.getByTestId('edit-list-btn');
-    await expect(editBtn).toBeVisible({ timeout: 10_000 });
+    await expect(editBtn).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
     await editBtn.click();
 
     const nameInput = page.locator('#name');
-    await expect(nameInput).toBeVisible({ timeout: 10_000 });
+    await expect(nameInput).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
     await nameInput.fill(updatedListName);
 
     const descInput = page.locator('#description');
     await descInput.fill(updatedDescription);
 
     const updateListSubmitBtn = page.getByTestId('update-list-submit-btn');
-    await expect(updateListSubmitBtn).toBeVisible({ timeout: 10_000 });
+    await expect(updateListSubmitBtn).toBeVisible({
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
     await updateListSubmitBtn.click();
 
     await expect(page.getByText('Updated list')).toBeVisible({
-      timeout: 10000,
+      timeout: ASYNC_UI_TIMEOUT_MS,
     });
 
     await expect(page.getByText(updatedListName).first()).toBeVisible({
-      timeout: 10_000,
+      timeout: ASYNC_UI_TIMEOUT_MS,
     });
     await expect(page.getByText(updatedDescription).first()).toBeVisible({
-      timeout: 10_000,
+      timeout: ASYNC_UI_TIMEOUT_MS,
     });
   });
 
@@ -199,28 +193,24 @@ test.describe('Favorites Feature (Authenticated)', () => {
     await waitForFavoriteListPage(page);
 
     // Verify the resource is present before removal
-    await expect(page.getByText(firstResourceName).first()).toBeVisible({
-      timeout: 10_000,
-    });
+    await waitForFavoriteOnListPage(page, firstResourceName);
 
     const removeTrigger = page.getByTestId('remove-from-list-btn').first();
-    await expect(removeTrigger).toBeVisible({ timeout: 10_000 });
+    await expect(removeTrigger).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
     await removeTrigger.click();
 
     const removeButton = page.getByTestId(
       'remove-from-current-list-confirm-btn',
     );
-    await expect(removeButton).toBeVisible({ timeout: 10_000 });
+    await expect(removeButton).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
     await removeButton.click();
 
     await expect(page.getByText('Removed from list')).toBeVisible({
-      timeout: 10_000,
+      timeout: ASYNC_UI_TIMEOUT_MS,
     });
 
     // Verify the specific resource is no longer visible (more resilient than checking count)
-    await expect(page.getByText(firstResourceName)).toHaveCount(0, {
-      timeout: 10_000,
-    });
+    await waitForFavoriteToBeAbsentOnListPage(page, firstResourceName);
   });
 
   test('should add a resource from search results and remove it via dialog', async ({
@@ -234,7 +224,7 @@ test.describe('Favorites Feature (Authenticated)', () => {
 
     await page
       .locator('#search-container')
-      .waitFor({ state: 'visible', timeout: 10_000 });
+      .waitFor({ state: 'visible', timeout: UI_SHELL_TIMEOUT_MS });
 
     // Get resource name
     const resourceLink = page.getByTestId('resource-link').first();
@@ -245,43 +235,34 @@ test.describe('Favorites Feature (Authenticated)', () => {
     const favoriteBtn = page.getByTestId('favorite-btn').first();
     await favoriteBtn.click();
 
-    // Wait for the dialog to load
-    await expect(
-      page.getByTestId('favorites-loading-skeleton'),
-    ).not.toBeVisible({ timeout: 10_000 });
-    await expect(page.getByTestId('favorites-list-loaded')).toBeAttached({
-      timeout: 10_000,
-    });
+    await waitForFavoritesDialogReady(page);
+    await filterFavoritesDialogLists(page, updatedListName);
 
-    const searchBar = page.getByTestId('favorites-search-input');
-    await expect(searchBar).toBeVisible({ timeout: 10_000 });
-    await searchBar.fill(updatedListName);
-
-    // Wait for debounce and filtering to complete
-    await page.waitForTimeout(5000);
-    await expect(
-      page.getByTestId('favorites-loading-skeleton'),
-    ).not.toBeVisible({ timeout: 10_000 });
-
-    const addBtn = page.getByTestId('add-to-list-btn').first();
-    await expect(addBtn).toBeVisible({ timeout: 10_000 });
+    const addBtn = await getFavoritesDialogListActionButton(
+      page,
+      updatedListName,
+      'add-to-list-btn',
+    );
     await addBtn.click();
 
     await expect(page.getByText('Added to list')).toBeVisible({
-      timeout: 10_000,
+      timeout: ASYNC_UI_TIMEOUT_MS,
     });
 
     // Now remove it from dialog (HeartOff button)
-    const removeFromListBtn = page.getByTestId('remove-from-list-btn').first();
-    await expect(removeFromListBtn).toBeVisible({ timeout: 10_000 });
+    const removeFromListBtn = await getFavoritesDialogListActionButton(
+      page,
+      updatedListName,
+      'remove-from-list-btn',
+    );
     await removeFromListBtn.click();
 
     await expect(page.getByText('Removed from list')).toBeVisible({
-      timeout: 10_000,
+      timeout: ASYNC_UI_TIMEOUT_MS,
     });
 
     // Close dialog
-    await page.getByRole('button', { name: 'Close' }).click();
+    await closeFavoritesDialog(page);
 
     // Verify it's not in the list
     await goToFavorites(page);
@@ -289,9 +270,7 @@ test.describe('Favorites Feature (Authenticated)', () => {
     await listCard.click();
     await waitForFavoriteListPage(page);
 
-    await expect(page.getByText(resourceName)).toHaveCount(0, {
-      timeout: 10_000,
-    });
+    await waitForFavoriteToBeAbsentOnListPage(page, resourceName);
   });
 
   test('should add a resource from resource details page', async ({ page }) => {
@@ -303,7 +282,7 @@ test.describe('Favorites Feature (Authenticated)', () => {
 
     await page
       .locator('#search-container')
-      .waitFor({ state: 'visible', timeout: 10_000 });
+      .waitFor({ state: 'visible', timeout: UI_SHELL_TIMEOUT_MS });
 
     // Click on first resource to go to details page
     const firstResourceLink = page.getByTestId('resource-link').first();
@@ -314,41 +293,29 @@ test.describe('Favorites Feature (Authenticated)', () => {
     // Wait for resource page to load
     await expectPageUrl(page, /search\/[a-f0-9-]{36}/);
     await expect(page.getByTestId('favorite-btn').first()).toBeVisible({
-      timeout: 10_000,
+      timeout: UI_SHELL_TIMEOUT_MS,
     });
 
     // Add to favorites from resource page
     const favoriteBtn = page.getByTestId('favorite-btn').first();
-    await expect(favoriteBtn).toBeVisible({ timeout: 10_000 });
+    await expect(favoriteBtn).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
     await favoriteBtn.click();
 
-    // Wait for the dialog to load
-    await expect(
-      page.getByTestId('favorites-loading-skeleton'),
-    ).not.toBeVisible({ timeout: 10_000 });
-    await expect(page.getByTestId('favorites-list-loaded')).toBeAttached({
-      timeout: 10_000,
-    });
+    await waitForFavoritesDialogReady(page);
+    await filterFavoritesDialogLists(page, updatedListName);
 
-    const searchBar = page.getByTestId('favorites-search-input');
-    await expect(searchBar).toBeVisible({ timeout: 10_000 });
-    await searchBar.fill(updatedListName);
-
-    // Wait for debounce and filtering to complete
-    await page.waitForTimeout(5000);
-    await expect(
-      page.getByTestId('favorites-loading-skeleton'),
-    ).not.toBeVisible({ timeout: 10_000 });
-
-    const addBtn = page.getByTestId('add-to-list-btn').first();
-    await expect(addBtn).toBeVisible({ timeout: 10_000 });
+    const addBtn = await getFavoritesDialogListActionButton(
+      page,
+      updatedListName,
+      'add-to-list-btn',
+    );
     await addBtn.click();
 
     await expect(page.getByText('Added to list')).toBeVisible({
-      timeout: 10_000,
+      timeout: ASYNC_UI_TIMEOUT_MS,
     });
 
-    await page.getByRole('button', { name: 'Close' }).click();
+    await closeFavoritesDialog(page);
 
     // Verify it's in the list
     await goToFavorites(page);
@@ -356,9 +323,7 @@ test.describe('Favorites Feature (Authenticated)', () => {
     await listCard.click();
     await waitForFavoriteListPage(page);
 
-    await expect(page.getByText(resourceName).first()).toBeVisible({
-      timeout: 10_000,
-    });
+    await waitForFavoriteOnListPage(page, resourceName);
 
     // Clean up - remove it
     const removeTrigger = page.getByTestId('remove-from-list-btn').first();
@@ -368,7 +333,7 @@ test.describe('Favorites Feature (Authenticated)', () => {
     );
     await removeButton.click();
     await expect(page.getByText('Removed from list')).toBeVisible({
-      timeout: 10_000,
+      timeout: ASYNC_UI_TIMEOUT_MS,
     });
   });
 
@@ -383,53 +348,44 @@ test.describe('Favorites Feature (Authenticated)', () => {
 
     await page
       .locator('#search-container')
-      .waitFor({ state: 'visible', timeout: 10_000 });
+      .waitFor({ state: 'visible', timeout: UI_SHELL_TIMEOUT_MS });
 
     const favoriteBtn = page.getByTestId('favorite-btn').first();
     await favoriteBtn.click();
 
-    // Wait for the dialog to load
-    await expect(
-      page.getByTestId('favorites-loading-skeleton'),
-    ).not.toBeVisible({ timeout: 10_000 });
-    await expect(page.getByTestId('favorites-list-loaded')).toBeAttached({
-      timeout: 10_000,
-    });
-
-    const searchBar = page.getByTestId('favorites-search-input');
-    await expect(searchBar).toBeVisible({ timeout: 10_000 });
-    await searchBar.fill(updatedListName);
-
-    // Wait for debounce and filtering to complete
-    await page.waitForTimeout(5000);
-    await expect(
-      page.getByTestId('favorites-loading-skeleton'),
-    ).not.toBeVisible({ timeout: 10_000 });
+    await waitForFavoritesDialogReady(page);
+    await filterFavoritesDialogLists(page, updatedListName);
 
     // Should show "Add to list" button initially (resource not in list)
-    const addBtn = page.getByTestId('add-to-list-btn').first();
-    await expect(addBtn).toBeVisible({ timeout: 10_000 });
+    const addBtn = await getFavoritesDialogListActionButton(
+      page,
+      updatedListName,
+      'add-to-list-btn',
+    );
 
     // Add it
     await addBtn.click();
     await expect(page.getByText('Added to list')).toBeVisible({
-      timeout: 10_000,
+      timeout: ASYNC_UI_TIMEOUT_MS,
     });
 
     // Should now show "Remove from list" button (resource is in list)
-    const removeBtn = page.getByTestId('remove-from-list-btn').first();
-    await expect(removeBtn).toBeVisible({ timeout: 10_000 });
+    const removeBtn = await getFavoritesDialogListActionButton(
+      page,
+      updatedListName,
+      'remove-from-list-btn',
+    );
 
     // Remove it
     await removeBtn.click();
     await expect(page.getByText('Removed from list')).toBeVisible({
-      timeout: 10_000,
+      timeout: ASYNC_UI_TIMEOUT_MS,
     });
 
     // Should show "Add to list" button again
-    await expect(addBtn).toBeVisible({ timeout: 10_000 });
+    await expect(addBtn).toBeVisible({ timeout: ASYNC_UI_TIMEOUT_MS });
 
-    await page.getByRole('button', { name: 'Close' }).click();
+    await closeFavoritesDialog(page);
   });
 
   test('should delete the favorite list', async ({ page }) => {
@@ -440,15 +396,19 @@ test.describe('Favorites Feature (Authenticated)', () => {
     await waitForFavoriteListPage(page);
 
     const deleteListBtn = page.getByTestId('delete-list-btn');
-    await expect(deleteListBtn).toBeVisible({ timeout: 10_000 });
+    await expect(deleteListBtn).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
     await deleteListBtn.click();
 
     const deleteListConfirmBtn = page.getByTestId('delete-list-confirm-btn');
-    await expect(deleteListConfirmBtn).toBeVisible({ timeout: 10_000 });
+    await expect(deleteListConfirmBtn).toBeVisible({
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
     await deleteListConfirmBtn.click();
 
     const removedCard = page.getByText(updatedListName);
 
-    await expect(removedCard).toHaveCount(0, { timeout: 10_000 });
+    await expect(removedCard).toHaveCount(0, {
+      timeout: ASYNC_UI_TIMEOUT_MS,
+    });
   });
 });

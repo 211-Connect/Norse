@@ -1,3 +1,5 @@
+import { expect, type Locator } from '@playwright/test';
+
 const parseEnvMs = (value: string | undefined, fallback: number): number => {
   if (value == null || value === '') return fallback;
   const n = Number.parseInt(value, 10);
@@ -84,6 +86,31 @@ export const KEYBOARD_UI_STABILITY_MS = parseEnvMs(
 );
 
 /**
+ * Async UI work kicked off by an action: debounced searches, client-side
+ * mutations followed by list refreshes, toast-backed server actions, etc.
+ * Prefer waiting on visible UI completion signals within this budget instead of
+ * using fixed `waitForTimeout(...)` sleeps.
+ *
+ * @see E2E_ASYNC_UI_TIMEOUT_MS
+ */
+export const ASYNC_UI_TIMEOUT_MS = parseEnvMs(
+  process.env.E2E_ASYNC_UI_TIMEOUT_MS,
+  15_000,
+);
+
+/**
+ * Cross-page favorites propagation after add/remove mutations. The write has
+ * succeeded once the toast appears, but the server-rendered `/favorites/:id`
+ * page may require one or more reloads before it reflects the new state.
+ *
+ * @see E2E_FAVORITES_PERSISTENCE_TIMEOUT_MS
+ */
+export const FAVORITES_PERSISTENCE_TIMEOUT_MS = parseEnvMs(
+  process.env.E2E_FAVORITES_PERSISTENCE_TIMEOUT_MS,
+  30_000,
+);
+
+/**
  * Playwright `expect` (default) and `actionTimeout` (clicks, fill, type).
  * Keep aligned with `UI_SHELL` / `SEARCH_NAV` for one logical “step”.
  *
@@ -115,3 +142,22 @@ export const TEST_TIMEOUT_MS = parseEnvMs(
   process.env.E2E_TEST_TIMEOUT_MS,
   300_000,
 );
+
+/**
+ * Poll a locator until it becomes visible. Use after async UI work that may
+ * finish at variable speeds across local runs and CI.
+ */
+export async function expectVisibleEventually(
+  locator: Locator,
+  options?: { timeout?: number },
+) {
+  await expect
+    .poll(
+      async () => locator.isVisible().catch(() => false),
+      {
+        timeout: options?.timeout ?? ASYNC_UI_TIMEOUT_MS,
+        intervals: [100, 250, 500, 1_000],
+      },
+    )
+    .toBe(true);
+}
