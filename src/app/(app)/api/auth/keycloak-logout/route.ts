@@ -1,5 +1,6 @@
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
 import { findTenantByHost } from '@/payload/collections/Tenants/actions';
+import { getKeycloakIssuer } from '@/utils/getKeycloakIssuer';
 import { NextRequest, NextResponse } from 'next/server';
 
 function normalizeNextPath(nextPath: string | null): string {
@@ -38,10 +39,11 @@ export async function GET(request: NextRequest) {
   const baseUrl = `${protocol}://${host}`;
   const postLogoutRedirectUri = new URL(nextPath, baseUrl).toString();
 
-  const issuer = tenant?.auth?.keycloakIssuer;
-  if (!issuer) {
+  if (!tenant?.auth?.realmId) {
     return NextResponse.redirect(postLogoutRedirectUri);
   }
+
+  const issuer = getKeycloakIssuer(tenant.auth.realmId);
 
   const keycloakLogoutUrl = new URL(`${issuer}/protocol/openid-connect/logout`);
   keycloakLogoutUrl.searchParams.set(

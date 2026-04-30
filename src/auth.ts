@@ -7,6 +7,7 @@ import { fetchWrapper } from './app/(app)/shared/lib/fetchWrapper';
 import { isJwtExpired } from './utils/isJwtExpired';
 import { createLogger } from './lib/logger';
 import { normalizeAllowedEmailDomains } from './utils/normalizeAllowedEmailDomains';
+import { getKeycloakIssuer } from './utils/getKeycloakIssuer';
 
 // Helper to remove null/undefined values from object
 const omitNilValues = <T extends Record<string, any>>(obj: T): Partial<T> => {
@@ -313,7 +314,7 @@ const getSession = (
     baseUrl,
     keycloak: {
       clientSecret: authConfig?.keycloakSecret ?? undefined,
-      issuer: authConfig?.keycloakIssuer ?? undefined,
+      issuer: getKeycloakIssuer(authConfig?.realmId ?? ''),
     },
     requiresLogin: authConfig?.requiresLogin ?? false,
     allowedEmailDomains: normalizeAllowedEmailDomains(

@@ -405,7 +405,6 @@ export interface Tenant {
   auth: {
     realmId: string;
     keycloakSecret?: string | null;
-    keycloakIssuer?: string | null;
     nextAuthSecret?: string | null;
     requiresLogin?: boolean | null;
     /**
@@ -1190,7 +1189,6 @@ export interface TenantsSelect<T extends boolean = true> {
     | {
         realmId?: T;
         keycloakSecret?: T;
-        keycloakIssuer?: T;
         nextAuthSecret?: T;
         requiresLogin?: T;
         allowedEmailDomains?:

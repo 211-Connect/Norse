@@ -174,15 +174,6 @@ export const Tenants: CollectionConfig = {
               type: 'text',
             },
             {
-              name: 'keycloakIssuer',
-              type: 'text',
-            },
-          ],
-        },
-        {
-          type: 'row',
-          fields: [
-            {
               name: 'nextAuthSecret',
               type: 'text',
             },

@@ -1,6 +1,7 @@
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
 import { createAuthOptions } from '@/auth';
 import { findTenantByHost } from '@/payload/collections/Tenants/actions';
+import { getKeycloakIssuer } from '@/utils/getKeycloakIssuer';
 import { normalizeAllowedEmailDomains } from '@/utils/normalizeAllowedEmailDomains';
 import NextAuth from 'next-auth';
 import { NextRequest } from 'next/server';
@@ -27,7 +28,7 @@ const handlerFunction = async (req: NextRequest, ctx) => {
       baseUrl,
       keycloak: {
         clientSecret: tenant?.auth.keycloakSecret ?? undefined,
-        issuer: tenant?.auth.keycloakIssuer ?? undefined,
+        issuer: getKeycloakIssuer(tenant?.auth.realmId ?? ''),
       },
       requiresLogin: tenant?.auth?.requiresLogin ?? false,
       allowedEmailDomains: normalizeAllowedEmailDomains(
