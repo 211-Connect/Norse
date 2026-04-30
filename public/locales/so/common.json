@@ -24,7 +24,9 @@
     "unable_to_delete_list_message": "Liiskaaga lama tirtiri karin.",
     "list_created": "Liiska la sameeyay",
     "list_created_message": "Liiskaaga si guul leh ayaa loo sameeyay.",
-    "unable_to_create_list_message": "Liiskaaga lama abuuri karin."
+    "unable_to_create_list_message": "Liiskaaga lama abuuri karin.",
+    "remove_from_list_title": "Liiska ka saar?",
+    "remove_from_list_description": "Kheyraadkan waa laga saari doonaa liiskan. Waad ku dari kartaa hadhow haddii loo baahdo."
   },
   "search": {
     "add_my_location": "Add my location",
@@ -139,7 +141,8 @@
       "sms_send_failed_title": "SMS diri fashilmay",
       "sms_send_failed_body": "Fariintaadu way guul darreysatay in ay dirto.",
       "opens_in_new_tab": "wuxuu ku furmayaa tab cusub",
-      "phone_number_label": "Lambarka taleefanka"
+      "phone_number_label": "Lambarka taleefanka",
+      "sms_unavailable": "La wadaagista SMS-ka lama heli karo"
     },
     "prompt_auth": "Fadlan gal si aad u isticmaasho habkaani.",
     "prompt_auth_description": "Fadlan gal si aad u isticmaasho habkaani.",
@@ -164,5 +167,10 @@
     "go_to": "Tag"
   },
   "filter_results_count_one": "Natiijadii {{tirinta}}",
-  "filter_results_count_other": "Natiijooyinka {{tirinta}}"
+  "filter_results_count_other": "Natiijooyinka {{tirinta}}",
+  "autocomplete": {
+    "results_available_one": "{{count}} natiijo ayaa la heli karaa",
+    "results_available_other": "Natiijooyinka {{count}} ayaa la heli karaa",
+    "no_results": "Natiijooyin ma jiraan"
+  }
 }

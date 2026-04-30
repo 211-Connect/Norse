@@ -24,7 +24,9 @@
     "unable_to_delete_list_message": "የእርስዎ ንዝረት ሊጠፋ አልቻለም.",
     "list_created": "ዝርዝር ተፈጥሯል",
     "list_created_message": "ዝርዝርዎ በተሳካ ሁኔታ ተፈጥሯል።",
-    "unable_to_create_list_message": "ዝርዝርዎ ሊፈጠር አልቻለም።"
+    "unable_to_create_list_message": "ዝርዝርዎ ሊፈጠር አልቻለም።",
+    "remove_from_list_title": "ከዝርዝሩ ይወገድ?",
+    "remove_from_list_description": "ይህ ግብዓት ከዚህ ዝርዝር ይወገዳል። አስፈላጊ ከሆነ በኋላ ላይ ማከል ይችላሉ።"
   },
   "search": {
     "add_my_location": "ቦታዬን ጨምር",
@@ -139,7 +141,8 @@
       "sms_send_failed_title": "ኤስ ኤም ኤስ መላክ አልተሳካለትም",
       "sms_send_failed_body": "የእርስዎ መልዕክት መላክ አልቻለም.",
       "opens_in_new_tab": "በአዲስ ትር ይከፈታል",
-      "phone_number_label": "የስልክ ቁጥር"
+      "phone_number_label": "የስልክ ቁጥር",
+      "sms_unavailable": "የኤስኤምኤስ ማጋራት አይገኝም"
     },
     "prompt_auth": "ይህን መተግበሪያ ለመጠቀም እባክዎ መግቢያ.",
     "prompt_auth_description": "ይህን መተግበሪያ ለመጠቀም እባክዎ መግቢያ.",
@@ -164,5 +167,10 @@
     "go_to": "ወደ ይሂዱ"
   },
   "filter_results_count_one": "{{count}} ውጤት",
-  "filter_results_count_other": "{{count}} ውጤቶች"
+  "filter_results_count_other": "{{count}} ውጤቶች",
+  "autocomplete": {
+    "results_available_one": "{{count}} ውጤት ይገኛል",
+    "results_available_other": "{{count}} ውጤቶች ይገኛሉ",
+    "no_results": "ምንም ውጤቶች የሉም"
+  }
 }

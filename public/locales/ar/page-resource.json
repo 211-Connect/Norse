@@ -28,5 +28,6 @@
   "interpretation_services": "خدمات الترجمة",
   "other_information": "معلومات أخرى",
   "organization_url": "رابط المنظمة",
-  "contacts": "للوصول إلى هذه الخدمة، يرجى الاتصال بما يلي:"
+  "contacts": "للوصول إلى هذه الخدمة، يرجى الاتصال بما يلي:",
+  "location_name": "اسم الموقع"
 }

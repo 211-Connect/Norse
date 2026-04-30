@@ -24,7 +24,9 @@
     "unable_to_delete_list_message": "Orodha yako haikuweza kufutwa.",
     "list_created": "Orodha imeundwa",
     "list_created_message": "Orodha yako imeundwa kwa mafanikio.",
-    "unable_to_create_list_message": "Orodha yako haikuweza kuundwa."
+    "unable_to_create_list_message": "Orodha yako haikuweza kuundwa.",
+    "remove_from_list_title": "Ungependa kuondoa kwenye orodha?",
+    "remove_from_list_description": "Rasilimali hii itaondolewa kwenye orodha hii. Unaweza kuiongeza tena baadaye ikihitajika."
   },
   "search": {
     "add_my_location": "Ongeza eneo langu",
@@ -139,7 +141,8 @@
       "sms_send_failed_title": "Kutuma ujumbe mfupi wa maandishi kumeshindwa",
       "sms_send_failed_body": "Ujumbe wako umeshindwa kutuma.",
       "opens_in_new_tab": "hufunguka kwenye kichupo kipya",
-      "phone_number_label": "Nambari ya simu"
+      "phone_number_label": "Nambari ya simu",
+      "sms_unavailable": "Kushiriki SMS hakupatikani"
     },
     "prompt_auth": "Tafadhali ingia ili utumie kipengele hiki.",
     "prompt_auth_description": "Tafadhali ingia ili utumie kipengele hiki.",
@@ -164,5 +167,10 @@
     "go_to": "Nenda kwenye"
   },
   "filter_results_count_one": "matokeo ya {{count}}",
-  "filter_results_count_other": "Matokeo ya {{count}}"
+  "filter_results_count_other": "Matokeo ya {{count}}",
+  "autocomplete": {
+    "results_available_one": "Matokeo ya {{count}} yanapatikana",
+    "results_available_other": "Matokeo {{count}} yanapatikana",
+    "no_results": "Hakuna matokeo"
+  }
 }

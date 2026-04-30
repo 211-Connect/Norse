@@ -24,7 +24,9 @@
     "unable_to_delete_list_message": "E le mafai ona tapeina lau lisi.",
     "list_created": "Lisi ua faia",
     "list_created_message": "Ua manuia le fausiaina o lau lisi.",
-    "unable_to_create_list_message": "E le mafai ona fatuina lau lisi."
+    "unable_to_create_list_message": "E le mafai ona fatuina lau lisi.",
+    "remove_from_list_title": "Aveese mai le lisi?",
+    "remove_from_list_description": "O le a aveeseina lenei punaoa mai lenei lisi. E mafai ona e toe fa'aopoopoina mulimuli ane pe a mana'omia."
   },
   "search": {
     "add_my_location": "Fa'aopoopo lo'u nofoaga",
@@ -139,7 +141,8 @@
       "sms_send_failed_title": "Ua lē manuia le lafoina o SMS",
       "sms_send_failed_body": "Ua lē mafai ona lafo lau savali.",
       "opens_in_new_tab": "tatala i se tab fou",
-      "phone_number_label": "Numera telefoni"
+      "phone_number_label": "Numera telefoni",
+      "sms_unavailable": "E le avanoa le fa'asoaina o SMS"
     },
     "prompt_auth": "Fa'amolemole ulufale e fa'aoga lenei vaega.",
     "prompt_auth_description": "Fa'amolemole ulufale e fa'aoga lenei vaega.",
@@ -164,5 +167,10 @@
     "copyright": "© Puletaofia {{text}}"
   },
   "filter_results_count_one": "I'uga {{count}}",
-  "filter_results_count_other": "{{count}} taunuuga"
+  "filter_results_count_other": "{{count}} taunuuga",
+  "autocomplete": {
+    "results_available_one": "{{count}} i'uga o lo'o maua",
+    "results_available_other": "{{count}} i'uga o lo'o maua",
+    "no_results": "Leai ni taunuuga"
+  }
 }

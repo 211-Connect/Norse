@@ -24,7 +24,9 @@
     "unable_to_delete_list_message": "Urutonde rwawe ntirwashoboye gusibwa.",
     "list_created": "Urutonde rwakozwe",
     "list_created_message": "Urutonde rwawe rwakozwe neza.",
-    "unable_to_create_list_message": "Urutonde rwawe ntirwashoboye gukorwa."
+    "unable_to_create_list_message": "Urutonde rwawe ntirwashoboye gukorwa.",
+    "remove_from_list_title": "Kura ku rutonde?",
+    "remove_from_list_description": "Iyi nkomoko izakurwa kuri uru rutonde. Ushobora kongera kuyishyiramo nyuma nibiba ngombwa."
   },
   "search": {
     "add_my_location": "Ongeraho aho ndi",
@@ -139,7 +141,8 @@
       "sms_send_failed_title": "Kohereza ubutumwa bugufi byanze",
       "sms_send_failed_body": "Ubutumwa bwawe bwananiwe koherezwa.",
       "opens_in_new_tab": "ifunguka mu gasanduku gashya",
-      "phone_number_label": "Nimero ya terefone"
+      "phone_number_label": "Nimero ya terefone",
+      "sms_unavailable": "Gusangiza SMS ntibiraboneka"
     },
     "prompt_auth": "Injira kugira ngo ukoreshe iki gikorwa.",
     "prompt_auth_description": "Injira kugira ngo ukoreshe iki gikorwa.",
@@ -164,5 +167,10 @@
     "go_to": "Jya kuri"
   },
   "filter_results_count_one": "Ibisubizo bya {{count}}",
-  "filter_results_count_other": "Ibisubizo {{count}}"
+  "filter_results_count_other": "Ibisubizo {{count}}",
+  "autocomplete": {
+    "results_available_one": "Ibisubizo bya {{count}} biraboneka",
+    "results_available_other": "Ibisubizo {{count}} biraboneka",
+    "no_results": "Nta bisubizo"
+  }
 }

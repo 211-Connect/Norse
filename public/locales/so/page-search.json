@@ -23,5 +23,6 @@
       "organization": "Magaca Bixiyaha"
     }
   },
-  "name_unavailable": "Magaca lama heli karo"
+  "name_unavailable": "Magaca lama heli karo",
+  "share_body": "Eeg natiijooyinka raadinta {{count}} ee \"{{title}}\""
 }

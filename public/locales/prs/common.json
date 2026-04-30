@@ -24,7 +24,9 @@
     "unable_to_delete_list_message": "لیست شما قابل حذف نیست.",
     "list_created": "فهرست ایجاد شد",
     "list_created_message": "لیست شما با موفقیت ایجاد شد.",
-    "unable_to_create_list_message": "فهرست شما ایجاد نشد."
+    "unable_to_create_list_message": "فهرست شما ایجاد نشد.",
+    "remove_from_list_title": "از لیست حذف بشه؟",
+    "remove_from_list_description": "این منبع از این لیست حذف خواهد شد. در صورت نیاز می‌توانید بعداً آن را دوباره اضافه کنید."
   },
   "search": {
     "add_my_location": "مکان من را اضافه کنید",
@@ -139,7 +141,8 @@
       "sms_send_failed_title": "ارسال پیامک ناموفق بود",
       "sms_send_failed_body": "پیام شما ارسال نشد.",
       "opens_in_new_tab": "در یک برگه جدید باز می‌شود",
-      "phone_number_label": "شماره تلفن"
+      "phone_number_label": "شماره تلفن",
+      "sms_unavailable": "اشتراک‌گذاری پیامکی امکان‌پذیر نیست"
     },
     "prompt_auth": "برای استفاده از این قابلیت، لطفاً وارد شوید.",
     "prompt_auth_description": "برای استفاده از این قابلیت، لطفاً وارد شوید.",
@@ -164,5 +167,10 @@
     "go_to": "رفتن به"
   },
   "filter_results_count_one": "نتیجه {{count}}",
-  "filter_results_count_other": "{{count}} نتایج"
+  "filter_results_count_other": "{{count}} نتایج",
+  "autocomplete": {
+    "results_available_one": "نتیجه {{count}} موجود است",
+    "results_available_other": "{{count}} نتیجه موجود است",
+    "no_results": "هیچ نتیجه‌ای حاصل نشد"
+  }
 }

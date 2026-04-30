@@ -23,5 +23,6 @@
       "organization": "Inoa Mea Hoʻolako"
     }
   },
-  "name_unavailable": "ʻAʻole i loaʻa ka inoa"
+  "name_unavailable": "ʻAʻole i loaʻa ka inoa",
+  "share_body": "E ʻike i nā hualoaʻa hulina {{count}} no \"{{title}}\""
 }

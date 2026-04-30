@@ -24,7 +24,9 @@
     "unable_to_delete_list_message": "Sua lista não pôde ser excluída.",
     "list_created": "Lista criada",
     "list_created_message": "Sua lista foi criada com sucesso.",
-    "unable_to_create_list_message": "Não foi possível criar sua lista."
+    "unable_to_create_list_message": "Não foi possível criar sua lista.",
+    "remove_from_list_title": "Remover da lista?",
+    "remove_from_list_description": "Este recurso será removido desta lista. Você poderá adicioná-lo novamente mais tarde, se necessário."
   },
   "search": {
     "add_my_location": "Adicionar minha localização",
@@ -139,7 +141,8 @@
       "sms_send_failed_title": "Falha no envio do SMS",
       "sms_send_failed_body": "Sua mensagem não pôde ser enviada.",
       "opens_in_new_tab": "abre em uma nova aba",
-      "phone_number_label": "Número de telefone"
+      "phone_number_label": "Número de telefone",
+      "sms_unavailable": "O compartilhamento de SMS não está disponível."
     },
     "prompt_auth": "Faça login para usar este recurso.",
     "prompt_auth_description": "Faça login para usar este recurso.",
@@ -164,5 +167,10 @@
     "go_to": "Vá para"
   },
   "filter_results_count_one": "{{count}} resultado",
-  "filter_results_count_other": "{{count}} resultados"
+  "filter_results_count_other": "{{count}} resultados",
+  "autocomplete": {
+    "results_available_one": "{{count}} resultados disponíveis",
+    "results_available_other": "{{count}} resultados disponíveis",
+    "no_results": "Nenhum resultado"
+  }
 }

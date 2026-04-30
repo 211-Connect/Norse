@@ -23,5 +23,6 @@
       "organization": "د چمتو کونکي نوم"
     }
   },
-  "name_unavailable": "نوم شتون نلري"
+  "name_unavailable": "نوم شتون نلري",
+  "share_body": "د \"{{title}}\" لپاره د {{count}} لټون پایلې وګورئ"
 }

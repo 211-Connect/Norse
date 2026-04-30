@@ -24,7 +24,9 @@
     "unable_to_delete_list_message": "ບໍ່ສາມາດລຶບລາຍຊື່ຂອງທ່ານໄດ້.",
     "list_created": "ສ້າງລາຍຊື່ແລ້ວ",
     "list_created_message": "ລາຍຊື່ຂອງທ່ານໄດ້ຖືກສ້າງຂຶ້ນສຳເລັດແລ້ວ.",
-    "unable_to_create_list_message": "ບໍ່ສາມາດສ້າງລາຍຊື່ຂອງທ່ານໄດ້."
+    "unable_to_create_list_message": "ບໍ່ສາມາດສ້າງລາຍຊື່ຂອງທ່ານໄດ້.",
+    "remove_from_list_title": "ລຶບອອກຈາກລາຍຊື່ບໍ?",
+    "remove_from_list_description": "ຊັບພະຍາກອນນີ້ຈະຖືກລຶບອອກຈາກລາຍການນີ້. ທ່ານສາມາດເພີ່ມມັນຄືນໄດ້ໃນພາຍຫຼັງຖ້າຈຳເປັນ."
   },
   "search": {
     "add_my_location": "ເພີ່ມສະຖານທີ່ຂອງຂ້ອຍ",
@@ -139,7 +141,8 @@
       "sms_send_failed_title": "ສົ່ງ SMS ບໍ່ສຳເລັດ",
       "sms_send_failed_body": "ສົ່ງຂໍ້ຄວາມຂອງທ່ານບໍ່ສຳເລັດ.",
       "opens_in_new_tab": "ເປີດໃນແຖບໃໝ່",
-      "phone_number_label": "ເບີໂທລະສັບ"
+      "phone_number_label": "ເບີໂທລະສັບ",
+      "sms_unavailable": "ບໍ່ສາມາດແບ່ງປັນ SMS ໄດ້"
     },
     "prompt_auth": "ກະລຸນາເຂົ້າສູ່ລະບົບເພື່ອໃຊ້ຄຸນສົມບັດນີ້.",
     "prompt_auth_description": "ກະລຸນາເຂົ້າສູ່ລະບົບເພື່ອໃຊ້ຄຸນສົມບັດນີ້.",
@@ -164,5 +167,10 @@
     "go_to": "ໄປທີ່"
   },
   "filter_results_count_one": "ຜົນໄດ້ຮັບ {{count}}",
-  "filter_results_count_other": "ຜົນໄດ້ຮັບ {{count}}"
+  "filter_results_count_other": "ຜົນໄດ້ຮັບ {{count}}",
+  "autocomplete": {
+    "results_available_one": "ມີຜົນໄດ້ຮັບ {{count}} ແລ້ວ",
+    "results_available_other": "ມີຜົນໄດ້ຮັບ {{count}}",
+    "no_results": "ບໍ່ມີຜົນໄດ້ຮັບ"
+  }
 }

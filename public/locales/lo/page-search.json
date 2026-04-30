@@ -23,5 +23,6 @@
       "organization": "ຊື່ຜູ້ໃຫ້ບໍລິການ"
     }
   },
-  "name_unavailable": "ຊື່ບໍ່ສາມາດໃຊ້ໄດ້"
+  "name_unavailable": "ຊື່ບໍ່ສາມາດໃຊ້ໄດ້",
+  "share_body": "ເບິ່ງຜົນການຄົ້ນຫາ {{count}} ສຳລັບ \"{{title}}\""
 }

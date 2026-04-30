@@ -24,7 +24,9 @@
     "unable_to_delete_list_message": "Vaš popis nije mogao biti izbrisan.",
     "list_created": "Popis je kreiran",
     "list_created_message": "Vaš popis je uspješno kreiran.",
-    "unable_to_create_list_message": "Vaš popis nije mogao biti kreiran."
+    "unable_to_create_list_message": "Vaš popis nije mogao biti kreiran.",
+    "remove_from_list_title": "Ukloniti s popisa?",
+    "remove_from_list_description": "Ovaj će resurs biti uklonjen s ovog popisa. Možete ga kasnije ponovno dodati ako bude potrebno."
   },
   "search": {
     "add_my_location": "Dodaj moju lokaciju",
@@ -139,7 +141,8 @@
       "sms_send_failed_title": "Slanje SMS-a nije uspjelo",
       "sms_send_failed_body": "Slanje vaše poruke nije uspjelo.",
       "opens_in_new_tab": "otvara se u novoj kartici",
-      "phone_number_label": "Broj telefona"
+      "phone_number_label": "Broj telefona",
+      "sms_unavailable": "Dijeljenje SMS-om nije dostupno"
     },
     "prompt_auth": "Molimo prijavite se kako biste koristili ovu značajku.",
     "prompt_auth_description": "Molimo prijavite se kako biste koristili ovu značajku.",
@@ -164,5 +167,10 @@
     "go_to": "Idi na"
   },
   "filter_results_count_one": "{{count}} rezultat",
-  "filter_results_count_other": "{{count}} rezultata"
+  "filter_results_count_other": "{{count}} rezultata",
+  "autocomplete": {
+    "results_available_one": "Dostupan je {{count}} rezultat",
+    "results_available_other": "Dostupno je {{count}} rezultata",
+    "no_results": "Nema rezultata"
+  }
 }
