@@ -1,3 +1,6 @@
+import Image from 'next/image';
+import { AlertCircle } from 'lucide-react';
+
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { AuthErrorActions } from '@/app/(app)/[locale]/(rest)/auth/error/actions';
@@ -29,7 +32,8 @@ export default async function AuthErrorPage({ params, searchParams }) {
           description: t('auth_error.default_description', { ns: 'common' }),
         };
 
-  const authPath = `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/auth/signin`;
+  const basePath = process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || '';
+  const authPath = `${basePath}/auth/signin`;
 
   const redirectTarget =
     resolvedSearchParams.redirect || resolvedSearchParams.callbackUrl;
@@ -37,19 +41,57 @@ export default async function AuthErrorPage({ params, searchParams }) {
     ? `${authPath}?redirect=${encodeURIComponent(String(redirectTarget))}`
     : authPath;
 
-  const keycloakLogoutPath = `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/api/auth/keycloak-logout?next=${encodeURIComponent(signInPath)}`;
+  const keycloakLogoutPath = `${basePath}/api/auth/keycloak-logout?next=${encodeURIComponent(signInPath)}`;
+
+  const newLayoutEnabled = appConfig?.newLayout?.enabled;
+  const logoUrl = newLayoutEnabled
+    ? appConfig?.newLayout?.logoUrl
+    : appConfig?.brand?.logoUrl;
+  const brandName = appConfig?.brand?.name?.trim() || '';
+  const logoAlt = brandName ? `${brandName} home page` : 'Home';
 
   return (
-    <main className="mx-auto flex min-h-[60vh] max-w-2xl flex-col justify-center px-4 py-12">
-      <div className="flex flex-col items-center rounded-xl border bg-white p-8 shadow-sm">
-        <h1 className="mb-3 text-3xl font-semibold text-foreground">
+    <main className="mx-auto flex min-h-[60vh] max-w-lg flex-col items-center justify-center gap-8 px-4 py-16">
+      <Image
+        src={logoUrl || ''}
+        alt={logoAlt}
+        width={200}
+        height={56}
+        className="max-h-14 w-auto object-contain"
+        priority
+      />
+
+      {/* Card */}
+      <div className="w-full rounded-xl border bg-white p-8 shadow-sm">
+        {/* Icon */}
+        <div className="mb-5 flex justify-center">
+          <span className="flex size-14 items-center justify-center rounded-full bg-destructive/10">
+            <AlertCircle
+              className="size-7 text-destructive"
+              aria-hidden="true"
+            />
+          </span>
+        </div>
+
+        {/* Heading */}
+        <h1 className="mb-2 text-center text-2xl font-semibold text-foreground">
           {content.title}
         </h1>
-        <p className="mb-6 text-muted-foreground">{content.description}</p>
-        <AuthErrorActions
-          keycloakLogoutPath={keycloakLogoutPath}
-          tryAgainLabel={t('auth_error.logout_and_try_again', { ns: 'common' })}
-        />
+
+        {/* Description */}
+        <p className="mb-8 text-center text-base leading-relaxed text-muted-foreground">
+          {content.description}
+        </p>
+
+        {/* Primary action */}
+        <div className="flex flex-col items-center gap-3">
+          <AuthErrorActions
+            keycloakLogoutPath={keycloakLogoutPath}
+            tryAgainLabel={t('auth_error.logout_and_try_again', {
+              ns: 'common',
+            })}
+          />
+        </div>
       </div>
     </main>
   );

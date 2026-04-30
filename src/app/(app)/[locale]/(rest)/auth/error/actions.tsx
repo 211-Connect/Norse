@@ -21,5 +21,9 @@ export function AuthErrorActions({
     }
   };
 
-  return <Button onClick={handleTryAgain}>{tryAgainLabel}</Button>;
+  return (
+    <Button className="w-full" onClick={handleTryAgain}>
+      {tryAgainLabel}
+    </Button>
+  );
 }
