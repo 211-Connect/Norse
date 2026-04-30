@@ -23,5 +23,6 @@
       "organization": "اسم مقدم الخدمة"
     }
   },
-  "name_unavailable": "الاسم غير متوفر"
+  "name_unavailable": "الاسم غير متوفر",
+  "share_body": "اطلع على {{count}} نتيجة بحث عن \"{{title}}\""
 }

@@ -23,5 +23,6 @@
       "organization": "Nom du fournisseur"
     }
   },
-  "name_unavailable": "Nom indisponible"
+  "name_unavailable": "Nom indisponible",
+  "share_body": "Voir {{count}} résultats de recherche pour \"{{title}}\""
 }

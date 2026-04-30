@@ -23,5 +23,6 @@
       "organization": "የአቅራቢ ስም"
     }
   },
-  "name_unavailable": "ስም አይገኝም"
+  "name_unavailable": "ስም አይገኝም",
+  "share_body": "የ\"{{title}}\" የፍለጋ ውጤቶችን {{count}} ይመልከቱ"
 }

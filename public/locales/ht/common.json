@@ -24,7 +24,9 @@
     "unable_to_delete_list_message": "Lis ou a pa t kapab efase.",
     "list_created": "Lis la kreye",
     "list_created_message": "Lis ou a kreye avèk siksè.",
-    "unable_to_create_list_message": "Lis ou a pa t kapab kreye."
+    "unable_to_create_list_message": "Lis ou a pa t kapab kreye.",
+    "remove_from_list_title": "Retire nan lis la?",
+    "remove_from_list_description": "Resous sa a pral retire nan lis sa a. Ou ka ajoute l ankò pita si sa nesesè."
   },
   "search": {
     "add_my_location": "Ajoute kote mwen ye a",
@@ -139,7 +141,8 @@
       "sms_send_failed_title": "Voye SMS la echwe",
       "sms_send_failed_body": "Mesaj ou a pa t rive voye.",
       "opens_in_new_tab": "ouvri nan yon nouvo onglet",
-      "phone_number_label": "Nimewo telefòn"
+      "phone_number_label": "Nimewo telefòn",
+      "sms_unavailable": "Pataj SMS pa disponib"
     },
     "prompt_auth": "Tanpri konekte pou itilize fonksyonalite sa a.",
     "prompt_auth_description": "Tanpri konekte pou itilize fonksyonalite sa a.",
@@ -164,5 +167,10 @@
     "go_to": "Ale nan"
   },
   "filter_results_count_one": "rezilta {{count}}",
-  "filter_results_count_other": "{{count}} rezilta"
+  "filter_results_count_other": "{{count}} rezilta",
+  "autocomplete": {
+    "results_available_one": "{{count}} rezilta disponib",
+    "results_available_other": "{{count}} rezilta disponib",
+    "no_results": "Pa gen rezilta"
+  }
 }

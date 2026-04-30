@@ -24,7 +24,9 @@
     "unable_to_delete_list_message": "Ваш список не может быть удален.",
     "list_created": "Список создан",
     "list_created_message": "Ваш список успешно создан.",
-    "unable_to_create_list_message": "Не удалось создать ваш список."
+    "unable_to_create_list_message": "Не удалось создать ваш список.",
+    "remove_from_list_title": "Удалить из списка?",
+    "remove_from_list_description": "Этот ресурс будет удален из данного списка. При необходимости вы сможете добавить его обратно позже."
   },
   "search": {
     "add_my_location": "Добавить мое местоположение",
@@ -139,7 +141,8 @@
       "sms_send_failed_title": "Не удалось отправить SMS",
       "sms_send_failed_body": "Не удалось отправить сообщение.",
       "opens_in_new_tab": "открывается в новой вкладке",
-      "phone_number_label": "Номер телефона"
+      "phone_number_label": "Номер телефона",
+      "sms_unavailable": "Функция обмена SMS-сообщениями недоступна."
     },
     "prompt_auth": "Пожалуйста, войдите в систему, чтобы воспользоваться этой функцией.",
     "prompt_auth_description": "Пожалуйста, войдите в систему, чтобы воспользоваться этой функцией.",
@@ -164,5 +167,10 @@
     "go_to": "Перейти к"
   },
   "filter_results_count_one": "{{count}} результат",
-  "filter_results_count_other": "{{count}} результатов"
+  "filter_results_count_other": "{{count}} результатов",
+  "autocomplete": {
+    "results_available_one": "{{count}} результатов доступно",
+    "results_available_other": "{{count}} результатов доступно",
+    "no_results": "Результаты отсутствуют"
+  }
 }

@@ -24,7 +24,9 @@
     "unable_to_delete_list_message": "आपकी सूची हटाई नहीं जा सकी।",
     "list_created": "सूची बनाई गई",
     "list_created_message": "आपकी सूची सफलतापूर्वक बना ली गई है।",
-    "unable_to_create_list_message": "आपकी सूची नहीं बनाई जा सकी।"
+    "unable_to_create_list_message": "आपकी सूची नहीं बनाई जा सकी।",
+    "remove_from_list_title": "सूची से हटाना है?",
+    "remove_from_list_description": "इस संसाधन को इस सूची से हटा दिया जाएगा। आवश्यकता पड़ने पर आप इसे बाद में पुनः जोड़ सकते हैं।"
   },
   "search": {
     "add_my_location": "मेरा स्थान जोड़ें",
@@ -139,7 +141,8 @@
       "sms_send_failed_title": "एसएमएस भेजने में विफल",
       "sms_send_failed_body": "आपका संदेश भेजने में विफल रहा।",
       "opens_in_new_tab": "नए टैब में खुलता है",
-      "phone_number_label": "फ़ोन नंबर"
+      "phone_number_label": "फ़ोन नंबर",
+      "sms_unavailable": "एसएमएस शेयरिंग उपलब्ध नहीं है"
     },
     "prompt_auth": "इस विशेष सुविधा का प्रयोग करने के लिए लॉग इन करें।",
     "prompt_auth_description": "इस विशेष सुविधा का प्रयोग करने के लिए लॉग इन करें।",
@@ -164,5 +167,10 @@
     "go_to": "जाओ"
   },
   "filter_results_count_one": "{{count}} परिणाम",
-  "filter_results_count_other": "{{count}} परिणाम"
+  "filter_results_count_other": "{{count}} परिणाम",
+  "autocomplete": {
+    "results_available_one": "{{count}} परिणाम उपलब्ध",
+    "results_available_other": "{{count}} परिणाम उपलब्ध हैं",
+    "no_results": "कोई परिणाम नहीं"
+  }
 }

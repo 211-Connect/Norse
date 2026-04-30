@@ -28,5 +28,6 @@
   "interpretation_services": "Servicios de interpretación",
   "other_information": "Otra información",
   "organization_url": "URL de la organización",
-  "contacts": "Para acceder a este servicio, póngase en contacto con:"
+  "contacts": "Para acceder a este servicio, póngase en contacto con:",
+  "location_name": "Nombre del lugar"
 }

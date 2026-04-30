@@ -24,7 +24,9 @@
     "unable_to_delete_list_message": "Tarreen kee haqamuu hin dandeenye.",
     "list_created": "Tarreen uumame",
     "list_created_message": "Tarreen kee milkaa'inaan uumameera.",
-    "unable_to_create_list_message": "Tarreen kee uumamuu hin dandeenye."
+    "unable_to_create_list_message": "Tarreen kee uumamuu hin dandeenye.",
+    "remove_from_list_title": "Tarree keessaa haquu?",
+    "remove_from_list_description": "Qabeenyi kun tarree kana keessaa ni haqama. Yoo barbaachise booda deebitee dabaluu dandeessa."
   },
   "search": {
     "add_my_location": "Bakka koo itti dabali",
@@ -139,7 +141,8 @@
       "sms_send_failed_title": "Ergaa gabaabaa erguun hin milkoofne",
       "sms_send_failed_body": "Ergaan kee erguu dadhabe.",
       "opens_in_new_tab": "caancala haaraa keessatti banama",
-      "phone_number_label": "Lakkoofsa bilbilaa"
+      "phone_number_label": "Lakkoofsa bilbilaa",
+      "sms_unavailable": "Ergaa gabaabaa qooduun hin jiru"
     },
     "prompt_auth": "Maaloo amala kana fayyadamuuf seena.",
     "prompt_auth_description": "Maaloo amala kana fayyadamuuf seena.",
@@ -164,5 +167,10 @@
     "go_to": "Gara"
   },
   "filter_results_count_one": "{{lakkaa'uu}} bu'aa",
-  "filter_results_count_other": "{{lakkaa'uu}} bu'aa"
+  "filter_results_count_other": "{{lakkaa'uu}} bu'aa",
+  "autocomplete": {
+    "results_available_one": "{{count}} bu'aan argama",
+    "results_available_other": "{{count}} bu'aa argama",
+    "no_results": "Bu'aan hin jiru"
+  }
 }

@@ -28,5 +28,6 @@
   "interpretation_services": "व्याख्या सेवाहरू",
   "other_information": "अन्य जानकारी",
   "organization_url": "संस्थाको URL",
-  "contacts": "यो सेवा पहुँच गर्न, सम्पर्क गर्नुहोस्:"
+  "contacts": "यो सेवा पहुँच गर्न, सम्पर्क गर्नुहोस्:",
+  "location_name": "स्थानको नाम"
 }

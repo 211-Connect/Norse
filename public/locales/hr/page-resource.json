@@ -28,5 +28,6 @@
   "interpretation_services": "Usluge prevođenja",
   "other_information": "Ostale informacije",
   "organization_url": "URL organizacije",
-  "contacts": "Za pristup ovoj usluzi kontaktirajte:"
+  "contacts": "Za pristup ovoj usluzi kontaktirajte:",
+  "location_name": "Naziv lokacije"
 }

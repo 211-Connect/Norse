@@ -23,5 +23,6 @@
       "organization": "ឈ្មោះអ្នកផ្តល់សេវា"
     }
   },
-  "name_unavailable": "ឈ្មោះមិនអាចប្រើបានទេ"
+  "name_unavailable": "ឈ្មោះមិនអាចប្រើបានទេ",
+  "share_body": "មើលលទ្ធផលស្វែងរក {{count}} សម្រាប់ \"{{title}}\""
 }

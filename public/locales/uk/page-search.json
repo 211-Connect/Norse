@@ -23,5 +23,6 @@
       "organization": "Назва постачальника"
     }
   },
-  "name_unavailable": "Ім'я недоступне"
+  "name_unavailable": "Ім'я недоступне",
+  "share_body": "Див. {{count}} результатів пошуку для \"{{title}}\""
 }

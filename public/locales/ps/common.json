@@ -24,7 +24,9 @@
     "unable_to_delete_list_message": "ستاسو لیست حذف نه شو.",
     "list_created": "لیست جوړ شو",
     "list_created_message": "ستاسو لیست په بریالیتوب سره جوړ شو.",
-    "unable_to_create_list_message": "ستاسو لیست نه شو جوړولی."
+    "unable_to_create_list_message": "ستاسو لیست نه شو جوړولی.",
+    "remove_from_list_title": "له لیست څخه لرې کړئ؟",
+    "remove_from_list_description": "دا سرچینه به له دې لیست څخه لرې شي. که اړتیا وي، تاسو کولی شئ دا وروسته بیرته اضافه کړئ."
   },
   "search": {
     "add_my_location": "زما ځای اضافه کړئ",
@@ -139,7 +141,8 @@
       "sms_send_failed_title": "د ایس ایم ایس لیږل ناکام شول",
       "sms_send_failed_body": "ستاسو پیغام واستول شو.",
       "opens_in_new_tab": "په نوي ټب کې پرانیستل کیږي",
-      "phone_number_label": "د تلیفون شمیره"
+      "phone_number_label": "د تلیفون شمیره",
+      "sms_unavailable": "د SMS شریکول شتون نلري"
     },
     "prompt_auth": "د دې ځانګړتیا کارولو لپاره مهرباني وکړئ ننوتل وکړئ.",
     "prompt_auth_description": "د دې ځانګړتیا کارولو لپاره مهرباني وکړئ ننوتل وکړئ.",
@@ -164,5 +167,10 @@
     "go_to": "ورتګ"
   },
   "filter_results_count_one": "{{شمیر}} پایله",
-  "filter_results_count_other": "{{شمیرنه}} پایلې"
+  "filter_results_count_other": "{{شمیرنه}} پایلې",
+  "autocomplete": {
+    "results_available_one": "{{count}} پایله موجوده ده",
+    "results_available_other": "{{count}} پایلې شتون لري",
+    "no_results": "هیڅ پایلې نشته"
+  }
 }

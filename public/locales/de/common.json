@@ -24,7 +24,9 @@
     "unable_to_delete_list_message": "Ihre Liste konnte nicht gelöscht werden.",
     "list_created": "Liste erstellt",
     "list_created_message": "Ihre Liste wurde erfolgreich erstellt.",
-    "unable_to_create_list_message": "Ihre Liste konnte nicht erstellt werden."
+    "unable_to_create_list_message": "Ihre Liste konnte nicht erstellt werden.",
+    "remove_from_list_title": "Aus der Liste entfernen?",
+    "remove_from_list_description": "Diese Ressource wird aus dieser Liste entfernt. Sie können sie bei Bedarf später wieder hinzufügen."
   },
   "search": {
     "add_my_location": "Meinen Standort hinzufügen",
@@ -139,7 +141,8 @@
       "sms_send_failed_title": "SMS-Versand fehlgeschlagen",
       "sms_send_failed_body": "Ihre Nachricht konnte nicht gesendet werden.",
       "opens_in_new_tab": "wird in einem neuen Tab geöffnet",
-      "phone_number_label": "Telefonnummer"
+      "phone_number_label": "Telefonnummer",
+      "sms_unavailable": "SMS-Freigabe ist nicht möglich"
     },
     "prompt_auth": "Bitte melden Sie sich an, um diese Funktion zu nutzen.",
     "prompt_auth_description": "Bitte melden Sie sich an, um diese Funktion zu nutzen.",
@@ -164,5 +167,10 @@
     "go_to": "Gehe zu"
   },
   "filter_results_count_one": "{{count}} Ergebnis",
-  "filter_results_count_other": "{{count}} Ergebnisse"
+  "filter_results_count_other": "{{count}} Ergebnisse",
+  "autocomplete": {
+    "results_available_one": "{{count}} Ergebnisse verfügbar",
+    "results_available_other": "{{count}} Ergebnisse verfügbar",
+    "no_results": "Keine Ergebnisse"
+  }
 }

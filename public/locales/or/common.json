@@ -24,7 +24,9 @@
     "unable_to_delete_list_message": "ଆପଣଙ୍କର ତାଲିକା ଡିଲିଟ୍ କରାଯାଇପାରିଲା ନାହିଁ।",
     "list_created": "ତାଲିକା ତିଆରି କରାଯାଇଛି",
     "list_created_message": "ଆପଣଙ୍କର ତାଲିକା ସଫଳତାର ସହ ତିଆରି ହୋଇଛି।",
-    "unable_to_create_list_message": "ଆପଣଙ୍କର ତାଲିକା ତିଆରି ହୋଇପାରିଲା ନାହିଁ।"
+    "unable_to_create_list_message": "ଆପଣଙ୍କର ତାଲିକା ତିଆରି ହୋଇପାରିଲା ନାହିଁ।",
+    "remove_from_list_title": "ତାଲିକାରୁ କାଢ଼ିବେ?",
+    "remove_from_list_description": "ଏହି ତାଲିକାରୁ ଏହି ଉତ୍ସକୁ କାଢ଼ି ଦିଆଯିବ। ଆବଶ୍ୟକ ହେଲେ ଆପଣ ଏହାକୁ ପରେ ପୁଣି ଯୋଡିପାରିବେ।"
   },
   "search": {
     "add_my_location": "ମୋ ଲୋକେସନ୍ ଯୋଡନ୍ତୁ",
@@ -139,7 +141,8 @@
       "sms_send_failed_title": "SMS ପଠାଇବା ବିଫଳ ହେଲା",
       "sms_send_failed_body": "ଆପଣଙ୍କ ମେସେଜ୍ ପଠାଇହେଲା ନାହିଁ।",
       "opens_in_new_tab": "ଏକ ନୂତନ ଟ୍ୟାବରେ ଖୋଲେ",
-      "phone_number_label": "ଫୋନ୍ ନମ୍ବର"
+      "phone_number_label": "ଫୋନ୍ ନମ୍ବର",
+      "sms_unavailable": "SMS ସେୟାରିଂ ଉପଲବ୍ଧ ନାହିଁ"
     },
     "prompt_auth": "ଏହି ବୈଶିଷ୍ଟ୍ୟ ବ୍ୟବହାର କରିବାକୁ ଦୟାକରି ଲଗଇନ୍ କରନ୍ତୁ।",
     "prompt_auth_description": "ଏହି ବୈଶିଷ୍ଟ୍ୟ ବ୍ୟବହାର କରିବାକୁ ଦୟାକରି ଲଗଇନ୍ କରନ୍ତୁ।",
@@ -164,5 +167,10 @@
     "go_to": "ଏଠାକୁ ଯାଆନ୍ତୁ"
   },
   "filter_results_count_one": "{{ଗଣନା}} ଫଳାଫଳ",
-  "filter_results_count_other": "{{ଗଣନା}} ଫଳାଫଳ"
+  "filter_results_count_other": "{{ଗଣନା}} ଫଳାଫଳ",
+  "autocomplete": {
+    "results_available_one": "{{count}} ଫଳାଫଳ ଉପଲବ୍ଧ ଅଛି",
+    "results_available_other": "{{count}} ଫଳାଫଳ ଉପଲବ୍ଧ ଅଛି",
+    "no_results": "କୌଣସି ଫଳାଫଳ ନାହିଁ"
+  }
 }

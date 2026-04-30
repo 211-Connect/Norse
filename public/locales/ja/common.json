@@ -24,7 +24,9 @@
     "unable_to_delete_list_message": "リストを削除できませんでした。",
     "list_created": "リストが作成されました",
     "list_created_message": "リストが正常に作成されました。",
-    "unable_to_create_list_message": "リストを作成できませんでした。"
+    "unable_to_create_list_message": "リストを作成できませんでした。",
+    "remove_from_list_title": "リストから削除しますか？",
+    "remove_from_list_description": "このリソースはリストから削除されます。必要に応じて後で再度追加できます。"
   },
   "search": {
     "add_my_location": "現在地を追加",
@@ -139,7 +141,8 @@
       "sms_send_failed_title": "SMS送信に失敗しました",
       "sms_send_failed_body": "メッセージの送信に失敗しました。",
       "opens_in_new_tab": "新しいタブで開きます",
-      "phone_number_label": "電話番号"
+      "phone_number_label": "電話番号",
+      "sms_unavailable": "SMS共有は利用できません"
     },
     "prompt_auth": "この機能をご利用いただくには、ログインしてください。",
     "prompt_auth_description": "この機能をご利用いただくには、ログインしてください。",
@@ -164,5 +167,10 @@
     "copyright": "© 著作権 {{text}}"
   },
   "filter_results_count_one": "{{count}}件の結果",
-  "filter_results_count_other": "{{count}}件の結果"
+  "filter_results_count_other": "{{count}}件の結果",
+  "autocomplete": {
+    "results_available_one": "{{count}}件の結果が利用可能です",
+    "results_available_other": "{{count}}件の結果が利用可能です",
+    "no_results": "検索結果なし"
+  }
 }

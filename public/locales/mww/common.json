@@ -24,7 +24,9 @@
     "unable_to_delete_list_message": "Koj daim ntawv teev npe tsis tuaj yeem raug rho tawm.",
     "list_created": "Daim ntawv teev npe tau tsim",
     "list_created_message": "Koj daim ntawv teev npe tau tsim tiav lawm.",
-    "unable_to_create_list_message": "Koj daim ntawv teev npe tsis tau tsim."
+    "unable_to_create_list_message": "Koj daim ntawv teev npe tsis tau tsim.",
+    "remove_from_list_title": "Tshem tawm ntawm daim ntawv teev npe?",
+    "remove_from_list_description": "Cov peev txheej no yuav raug tshem tawm ntawm daim ntawv teev npe no. Koj tuaj yeem ntxiv nws rov qab tom qab yog tias xav tau."
   },
   "search": {
     "add_my_location": "Ntxiv kuv qhov chaw nyob",
@@ -139,7 +141,8 @@
       "sms_send_failed_title": "Xa SMS tsis tau",
       "sms_send_failed_body": "Koj cov lus xa tsis tau.",
       "opens_in_new_tab": "qhib rau hauv ib lub tab tshiab",
-      "phone_number_label": "Tus xov tooj"
+      "phone_number_label": "Tus xov tooj",
+      "sms_unavailable": "Kev sib qhia SMS tsis muaj"
     },
     "prompt_auth": "Thov nkag mus rau hauv koj tus account kom siv tau qhov feature no.",
     "prompt_auth_description": "Thov nkag mus rau hauv koj tus account kom siv tau qhov feature no.",
@@ -164,5 +167,10 @@
     "go_to": "Mus rau"
   },
   "filter_results_count_one": "qhov tshwm sim {{count}}",
-  "filter_results_count_other": "cov txiaj ntsig {{count}}"
+  "filter_results_count_other": "cov txiaj ntsig {{count}}",
+  "autocomplete": {
+    "results_available_one": "muaj qhov tshwm sim {{count}}",
+    "results_available_other": "Muaj cov txiaj ntsig {{count}}",
+    "no_results": "Tsis muaj txiaj ntsig"
+  }
 }
