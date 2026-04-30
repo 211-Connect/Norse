@@ -84,14 +84,24 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     tenants: TenantsSelect<false> | TenantsSelect<true>;
     'tenant-media': TenantMediaSelect<false> | TenantMediaSelect<true>;
-    'resource-directories': ResourceDirectoriesSelect<false> | ResourceDirectoriesSelect<true>;
-    'orchestration-config': OrchestrationConfigSelect<false> | OrchestrationConfigSelect<true>;
+    'resource-directories':
+      | ResourceDirectoriesSelect<false>
+      | ResourceDirectoriesSelect<true>;
+    'orchestration-config':
+      | OrchestrationConfigSelect<false>
+      | OrchestrationConfigSelect<true>;
     analytics: AnalyticsSelect<false> | AnalyticsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
-    'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
-    'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
-    'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
+    'payload-locked-documents':
+      | PayloadLockedDocumentsSelect<false>
+      | PayloadLockedDocumentsSelect<true>;
+    'payload-preferences':
+      | PayloadPreferencesSelect<false>
+      | PayloadPreferencesSelect<true>;
+    'payload-migrations':
+      | PayloadMigrationsSelect<false>
+      | PayloadMigrationsSelect<true>;
   };
   db: {
     defaultIDType: number;
@@ -186,7 +196,9 @@ export interface Config {
     'payload-jobs-stats': PayloadJobsStat;
   };
   globalsSelect: {
-    'payload-jobs-stats': PayloadJobsStatsSelect<false> | PayloadJobsStatsSelect<true>;
+    'payload-jobs-stats':
+      | PayloadJobsStatsSelect<false>
+      | PayloadJobsStatsSelect<true>;
   };
   locale:
     | 'am'
@@ -393,8 +405,17 @@ export interface Tenant {
   auth: {
     realmId: string;
     keycloakSecret?: string | null;
-    keycloakIssuer?: string | null;
     nextAuthSecret?: string | null;
+    requiresLogin?: boolean | null;
+    /**
+     * Allowed domains to access via OAuth. Add values like acme.org or partner.acme.org.
+     */
+    allowedEmailDomains?:
+      | {
+          domain: string;
+          id?: string | null;
+        }[]
+      | null;
   };
   common?: {
     gtmContainerId?: string | null;
@@ -1168,8 +1189,14 @@ export interface TenantsSelect<T extends boolean = true> {
     | {
         realmId?: T;
         keycloakSecret?: T;
-        keycloakIssuer?: T;
         nextAuthSecret?: T;
+        requiresLogin?: T;
+        allowedEmailDomains?:
+          | T
+          | {
+              domain?: T;
+              id?: T;
+            };
       };
   common?:
     | T
@@ -1788,7 +1815,6 @@ export interface TaskWarmCache {
 export interface Auth {
   [k: string]: unknown;
 }
-
 
 declare module 'payload' {
   export interface GeneratedTypes extends Config {}

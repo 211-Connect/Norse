@@ -37,7 +37,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U norse-ng -d norse-ng"]
+      test: ['CMD-SHELL', 'pg_isready -U norse-ng -d norse-ng']
       interval: 5s
       timeout: 3s
       retries: 5
@@ -50,7 +50,7 @@ services:
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 5s
       timeout: 3s
       retries: 5
@@ -65,11 +65,11 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
     command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
-      - "--web.console.libraries=/etc/prometheus/console_libraries"
-      - "--web.console.templates=/etc/prometheus/consoles"
-      - "--web.enable-lifecycle"
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
     depends_on:
       - norse-app
       - pushgateway
@@ -82,7 +82,7 @@ services:
     volumes:
       - pushgateway_data:/data
     command:
-      - "--persistence.file=/data/pushgateway.data"
+      - '--persistence.file=/data/pushgateway.data'
 
   grafana:
     image: grafana/grafana:12.3
@@ -101,7 +101,7 @@ services:
   umami:
     image: ghcr.io/umami-software/umami:latest
     ports:
-      - "4444:3000"
+      - '4444:3000'
     environment:
       DATABASE_URL: postgresql://umami:umami@umami-db:5432/umami
       APP_SECRET: replace-me-with-a-random-string
@@ -111,7 +111,7 @@ services:
     init: true
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "curl http://localhost:4444/api/heartbeat"]
+      test: ['CMD-SHELL', 'curl http://localhost:4444/api/heartbeat']
       interval: 5s
       timeout: 5s
       retries: 5
@@ -126,7 +126,7 @@ services:
       - umami-db-data:/var/lib/postgresql/data
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
       interval: 5s
       timeout: 5s
       retries: 5

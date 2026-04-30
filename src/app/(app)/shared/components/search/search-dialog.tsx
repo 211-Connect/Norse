@@ -1,12 +1,6 @@
 'use client';
 
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  useTransition,
-} from 'react';
+import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import { createPortal } from 'react-dom';
 import { ChevronLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -182,7 +176,6 @@ export function SearchDialog({
       }, 10);
     }
   }, [focusByDefault, open]);
-
 
   const closeDialog = useCallback(() => {
     setOpen?.(false);
