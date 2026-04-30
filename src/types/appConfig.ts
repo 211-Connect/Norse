@@ -31,6 +31,9 @@ export type AppConfig = {
     number?: string;
     feedbackUrl?: string;
   };
+  sms: {
+    provider: 'Twilio' | 'EMS';
+  } | null;
   featureFlags: {
     requireUserLocation: boolean;
     showFeedbackButtonGlobal: boolean;
@@ -49,6 +52,7 @@ export type AppConfig = {
   header: {
     customMenu: Menu[];
     customHomeUrl?: string;
+    favoritesButtonLabel?: string;
     safeExit?: {
       enabled?: boolean;
       text?: string;
@@ -105,6 +109,13 @@ export type AppConfig = {
       title?: string;
       queryInputPlaceholder?: string;
       locationInputPlaceholder?: string;
+      suggestionHeaders?: {
+        suggestions?: string;
+        categories?: string;
+        taxonomies?: string;
+      };
+      viewDetailsText?: string;
+      useTextLinkForViewDetails?: boolean;
       noResultsFallbackText?: string;
     };
     cardLayout?: NonNullable<ResourceDirectory['search']['cardLayout']>;

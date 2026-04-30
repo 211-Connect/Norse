@@ -26,7 +26,6 @@ export const DEFAULT_RESOURCE_LAYOUT: AppConfig['resource']['layout'] = {
         { componentId: ResourceComponentId.ELIGIBILITY },
         { componentId: ResourceComponentId.REQUIRED_DOCUMENTS },
         { componentId: ResourceComponentId.HOURS },
-        { componentId: ResourceComponentId.CONTACTS },
         { componentId: ResourceComponentId.SEPARATOR },
         { componentId: ResourceComponentId.PHONE_NUMBERS },
         { componentId: ResourceComponentId.WEBSITE },

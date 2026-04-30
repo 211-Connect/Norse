@@ -18,7 +18,13 @@ import Link from 'next/link';
 
 import { Button } from './ui/button';
 import { CustomPagination } from './custom-pagination';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from './ui/dialog';
 import { CreateFavoriteListDialog } from './create-favorite-list-dialog';
 import { FavoritesSearchBar } from './favorites-search-bar';
 import { Separator } from './ui/separator';
@@ -48,7 +54,9 @@ export function AddToFavoritesButton({
   const session = useSession();
   const setDialog = useSetAtom(dialogsAtom);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const createListTriggerRef = useRef<HTMLButtonElement | null>(null);
   const dialogId = useId();
+  const createListDialogId = useId();
   const { t, i18n } = useTranslation('common');
 
   const [open, setOpen] = useState(false);
@@ -217,6 +225,9 @@ export function AddToFavoritesButton({
         >
           <DialogHeader>
             <DialogTitle>{t('modal.manage_favorites.title')}</DialogTitle>
+            <DialogDescription className="sr-only">
+              {t('modal.manage_favorites.description')}
+            </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-2 sm:flex-row">
@@ -228,11 +239,14 @@ export function AddToFavoritesButton({
                 debounceDelay={FAVORITES_SEARCH_DEBOUNCE_DELAY}
               />
               <Button
+                ref={createListTriggerRef}
                 variant="outline"
                 className="flex h-9 gap-1"
                 onClick={() => setCreateListOpen(true)}
+                aria-haspopup="dialog"
+                aria-controls={createListDialogId}
               >
-                <PlusIcon className="size-4" />
+                <PlusIcon className="size-4" aria-hidden="true" />
                 {t('modal.create_list.create_a_list')}
               </Button>
             </div>
@@ -349,9 +363,11 @@ export function AddToFavoritesButton({
       </Dialog>
 
       <CreateFavoriteListDialog
+        id={createListDialogId}
         open={createListOpen}
         onOpenChange={setCreateListOpen}
         onSuccess={handleCreateListSuccess}
+        restoreFocusElement={createListTriggerRef.current}
       />
     </>
   );

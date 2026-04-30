@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "Дім",
-    "favorites": "Уподобання",
     "log_out": "Вийти",
     "language_select_label": "Виберіть мову, щоб змінити мову сайту",
     "my_stuff": "Мої речі",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "Ваш список не вдалося видалити.",
     "list_created": "Список створено",
     "list_created_message": "Ваш список успішно створено.",
-    "unable_to_create_list_message": "Не вдалося створити ваш список."
+    "unable_to_create_list_message": "Не вдалося створити ваш список.",
+    "remove_from_list_title": "Видалити зі списку?",
+    "remove_from_list_description": "Цей ресурс буде видалено зі списку. За потреби ви зможете додати його знову пізніше."
   },
   "search": {
     "add_my_location": "Додати моє місцезнаходження",
@@ -103,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "Створити список",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Ім'я",
       "list_description": "Опис",
       "make_public": "Зробити загальнодоступним"
@@ -139,15 +141,19 @@
       "sms_send_failed_title": "Не вдалося відправити SMS",
       "sms_send_failed_body": "Ваше повідомлення не вдалося надіслати.",
       "opens_in_new_tab": "відкривається в новій вкладці",
-      "phone_number_label": "Номер телефону"
+      "phone_number_label": "Номер телефону",
+      "sms_unavailable": "Обмін SMS недоступний"
     },
     "prompt_auth": "Будь ласка, увійдіть, щоб скористатися цією функцією.",
+    "prompt_auth_description": "Будь ласка, увійдіть, щоб скористатися цією функцією.",
     "manage_favorites": {
-      "title": "Керування вибраним"
+      "title": "Керування вибраним",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "Яке ваше початкове місцезнаходження?"
+    "prompt_start_location": "Яке ваше початкове місцезнаходження?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Дані, надані"
@@ -161,5 +167,10 @@
     "go_to": "Перейти до"
   },
   "filter_results_count_one": "результат {{count}}",
-  "filter_results_count_other": "{{count}} результатів"
+  "filter_results_count_other": "{{count}} результатів",
+  "autocomplete": {
+    "results_available_one": "Доступний результат: {{count}}",
+    "results_available_other": "Доступно {{count}} результатів",
+    "no_results": "Немає результатів"
+  }
 }

@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "Kotiin",
-    "favorites": "Suosikit",
     "log_out": "Kirjaudu ulos",
     "language_select_label": "Valitse kieli vaihtaaksesi sivuston kielen",
     "my_stuff": "Minun tavarani",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "Listaasi ei voitu poistaa.",
     "list_created": "Lista luotu",
     "list_created_message": "Listasi on luotu onnistuneesti.",
-    "unable_to_create_list_message": "Listaasi ei voitu luoda."
+    "unable_to_create_list_message": "Listaasi ei voitu luoda.",
+    "remove_from_list_title": "Poistetaanko listalta?",
+    "remove_from_list_description": "Tämä resurssi poistetaan tästä listasta. Voit lisätä sen myöhemmin takaisin tarvittaessa."
   },
   "search": {
     "add_my_location": "Lisää sijaintini",
@@ -103,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "Luo lista",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Nimi",
       "list_description": "Kuvaus",
       "make_public": "Julkistaa"
@@ -139,15 +141,19 @@
       "sms_send_failed_title": "Tekstiviestin lähetys epäonnistui",
       "sms_send_failed_body": "Viestisi lähettäminen epäonnistui.",
       "opens_in_new_tab": "avautuu uuteen välilehteen",
-      "phone_number_label": "Puhelinnumero"
+      "phone_number_label": "Puhelinnumero",
+      "sms_unavailable": "Tekstiviestijako ei ole käytettävissä"
     },
     "prompt_auth": "Kirjaudu sisään käyttääksesi tätä ominaisuutta.",
+    "prompt_auth_description": "Kirjaudu sisään käyttääksesi tätä ominaisuutta.",
     "manage_favorites": {
-      "title": "Hallinnoi suosikkeja"
+      "title": "Hallinnoi suosikkeja",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "Mikä on lähtöpaikkasi?"
+    "prompt_start_location": "Mikä on lähtöpaikkasi?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Tiedot toimittanut"
@@ -161,5 +167,10 @@
     "go_to": "Siirry osoitteeseen"
   },
   "filter_results_count_one": "{{count}} tulos",
-  "filter_results_count_other": "{{count}} tulosta"
+  "filter_results_count_other": "{{count}} tulosta",
+  "autocomplete": {
+    "results_available_one": "{{count}} tulos saatavilla",
+    "results_available_other": "{{count}} tulosta saatavilla",
+    "no_results": "Ei tuloksia"
+  }
 }

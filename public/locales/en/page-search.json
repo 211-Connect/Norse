@@ -15,6 +15,7 @@
   },
   "name_unavailable": "Name unavailable",
   "pinned": "Pinned",
+  "share_body": "See {{count}} search results for \"{{title}}\"",
   "sort": {
     "label": "Sort by",
     "options": {

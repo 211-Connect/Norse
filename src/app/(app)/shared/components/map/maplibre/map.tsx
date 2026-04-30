@@ -62,6 +62,23 @@ export function Map({
   } | null>(null);
   const [mapError, setMapError] = useState<string | null>(null);
 
+  const patchAttributionToggleAccessibility = () => {
+    const attributionToggle = mapContainer.current?.querySelector<HTMLElement>(
+      '.maplibregl-ctrl-attrib-button',
+    );
+
+    if (!attributionToggle) return;
+
+    attributionToggle.removeAttribute('aria-label');
+
+    if (attributionToggle.textContent?.trim()) return;
+
+    const screenReaderLabel = document.createElement('span');
+    screenReaderLabel.className = 'sr-only';
+    screenReaderLabel.textContent = 'Toggle attribution';
+    attributionToggle.append(screenReaderLabel);
+  };
+
   const applyMarkerSemantics = (markerElement: HTMLElement, interactive: boolean) => {
     if (!interactive) {
       markerElement.removeAttribute('aria-label');
@@ -92,6 +109,9 @@ export function Map({
         }),
         'bottom-right',
       );
+      requestAnimationFrame(() => {
+        patchAttributionToggleAccessibility();
+      });
 
       mapLibreMap.current.on('error', (e: any) => {
         log.error({ err: e.error ?? e }, 'MapLibre error');

@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "家",
-    "favorites": "收藏 夹",
     "log_out": "注销",
     "language_select_label": "选择一种语言以更改网站语言",
     "my_stuff": "我的东西",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "无法删除您的列表。",
     "list_created": "已创建列表",
     "list_created_message": "您的列表已成功创建。",
-    "unable_to_create_list_message": "您的列表创建失败。"
+    "unable_to_create_list_message": "您的列表创建失败。",
+    "remove_from_list_title": "从列表中移除？",
+    "remove_from_list_description": "此资源将从列表中移除。如有需要，您可以稍后将其添加回来。"
   },
   "search": {
     "add_my_location": "添加我的位置",
@@ -103,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "创建列表",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "名字",
       "list_description": "描述",
       "make_public": "公"
@@ -139,15 +141,19 @@
       "sms_send_failed_title": "短信发送失败",
       "sms_send_failed_body": "您的消息发送失败。",
       "opens_in_new_tab": "在新标签页中打开",
-      "phone_number_label": "电话号码"
+      "phone_number_label": "电话号码",
+      "sms_unavailable": "短信分享功能不可用"
     },
     "prompt_auth": "请登录才能使用此功能。",
+    "prompt_auth_description": "请登录才能使用此功能。",
     "manage_favorites": {
-      "title": "管理收藏夹"
+      "title": "管理收藏夹",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "你的起点在哪里？"
+    "prompt_start_location": "你的起点在哪里？",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "数据提供"
@@ -161,5 +167,10 @@
     "go_to": "前往"
   },
   "filter_results_count_one": "{{count}} 结果",
-  "filter_results_count_other": "{{count}} 个结果"
+  "filter_results_count_other": "{{count}} 个结果",
+  "autocomplete": {
+    "results_available_one": "{{count}} 个结果可用",
+    "results_available_other": "可用的 {{count}} 个结果",
+    "no_results": "没有结果"
+  }
 }

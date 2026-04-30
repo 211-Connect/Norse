@@ -10,40 +10,112 @@ import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
 import { useTranslation } from 'react-i18next';
 import { Image } from '@/app/(app)/shared/components/image';
 
+type TourPositionPreference = 'above' | 'below';
+
 export function HeroSection() {
   const appConfig = useAppConfig();
   const { isOpen, setCurrentStep, setIsOpen, setSteps } = useTour();
   const { t } = useTranslation('page-home');
   const showHomePageTour = useFlag('showHomePageTour');
   const homeSearchTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const takeTourLabel =
+    t('take_a_tour', { defaultValue: 'First time here? Take a tour!' }).trim() ||
+    'First time here? Take a tour!';
 
-  const getStepOnePosition = useCallback<
-    Extract<NonNullable<StepType['position']>, (...args: never[]) => unknown>
-  >(
-    ({ windowHeight, windowWidth, top, bottom, left, right, width, height }) => {
+  const getResponsiveTourPosition = useCallback(
+    (
+      {
+        windowHeight,
+        windowWidth,
+        top,
+        bottom,
+        left,
+        right,
+        width,
+        height,
+      }: {
+        windowHeight: number;
+        windowWidth: number;
+        top: number;
+        bottom: number;
+        left: number;
+        right: number;
+        width: number;
+        height: number;
+      },
+      preferredDirection: TourPositionPreference,
+    ): 'center' | [number, number] => {
+      const minInset = 16;
+      const gap = 24;
+
       if (windowWidth < 768) {
         return 'center';
       }
 
-      const popoverWidth = width || Math.min(576, windowWidth - 32);
-      const popoverHeight = height || 0;
+      const popoverWidth = width || Math.min(576, windowWidth - minInset * 2);
+      const popoverHeight =
+        height || Math.min(windowHeight - minInset * 2, 24 * 18);
       const targetWidth = right - left;
       const targetCenterX = left + targetWidth / 2;
-      const minInset = 16;
       const x = Math.min(
         Math.max(targetCenterX - popoverWidth / 2, minInset),
         windowWidth - popoverWidth - minInset,
       );
-      const spaceBelow = windowHeight - bottom;
-      const spaceAbove = top;
+      const spaceBelow = windowHeight - bottom - gap - minInset;
+      const spaceAbove = top - gap - minInset;
+
+      if (
+        windowHeight < 720 ||
+        (spaceBelow < popoverHeight && spaceAbove < popoverHeight)
+      ) {
+        return 'center';
+      }
+
+      const preferredY =
+        preferredDirection === 'below'
+          ? bottom + gap
+          : Math.max(top - popoverHeight - gap, minInset);
+      const fallbackY =
+        preferredDirection === 'below'
+          ? Math.max(top - popoverHeight - gap, minInset)
+          : bottom + gap;
+      const canUsePreferred =
+        preferredDirection === 'below'
+          ? spaceBelow >= popoverHeight
+          : spaceAbove >= popoverHeight;
       const y =
-        spaceBelow >= 360 || spaceBelow >= spaceAbove
-          ? bottom + 24
-          : Math.max(top - popoverHeight - 24, minInset);
+        canUsePreferred ||
+        (preferredDirection === 'below'
+          ? spaceBelow >= spaceAbove
+          : spaceAbove >= spaceBelow)
+          ? preferredY
+          : fallbackY;
 
       return [x, y];
     },
     [],
+  );
+
+  const getStepOnePosition = useCallback<
+    Extract<NonNullable<StepType['position']>, (...args: never[]) => unknown>
+  >(
+    (positionProps) => getResponsiveTourPosition(positionProps, 'below'),
+    [getResponsiveTourPosition],
+  );
+
+  const getStepTwoPosition = useCallback<
+    Extract<NonNullable<StepType['position']>, (...args: never[]) => unknown>
+  >(
+    (positionProps) =>
+      getResponsiveTourPosition(
+        {
+          ...positionProps,
+          top: positionProps.top + positionProps.height * 0.15,
+          bottom: positionProps.bottom - positionProps.height * 0.65,
+        },
+        'above',
+      ),
+    [getResponsiveTourPosition],
   );
 
   const buildTourSteps = useCallback((): StepType[] => {
@@ -53,6 +125,7 @@ export function HeroSection() {
       {
         selector: searchTarget ?? '.search-box',
         position: getStepOnePosition,
+        resizeObservables: ['.search-box', '.categories'],
         content: (
           <div className="flex flex-col gap-2">
             <p>{t('tour.step_1.paragraph_1')}</p>
@@ -63,7 +136,8 @@ export function HeroSection() {
       },
       {
         selector: '.categories',
-        position: 'center',
+        position: getStepTwoPosition,
+        resizeObservables: ['.categories'],
         content: (
           <div className="flex flex-col gap-2">
             <p>{t('tour.step_2.paragraph_1')}</p>
@@ -72,7 +146,7 @@ export function HeroSection() {
         ),
       },
     ];
-  }, [getStepOnePosition, t]);
+  }, [getStepOnePosition, getStepTwoPosition, t]);
 
   const enableTour = () => {
     createTourEvent(null);
@@ -118,13 +192,14 @@ export function HeroSection() {
         <Button
           onClick={enableTour}
           variant="outline"
+          aria-label={takeTourLabel}
           aria-controls="home-page-tour-dialog"
           aria-expanded={isOpen ?? false}
           aria-haspopup="dialog"
           data-home-tour-trigger="true"
-          className="border-foreground/40 bg-background/95 text-foreground shadow-sm hover:bg-primary hover:text-primary-foreground focus-visible:border-foreground focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2"
+          className="border-foreground/40 bg-background text-foreground shadow-sm hover:bg-primary hover:text-primary-foreground focus-visible:border-foreground focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-4"
         >
-          {t('take_a_tour')}
+          {takeTourLabel}
         </Button>
       )}
     </div>

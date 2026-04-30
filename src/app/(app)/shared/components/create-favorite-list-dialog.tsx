@@ -24,12 +24,18 @@ type CreateFavoriteListDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void | Promise<void>;
+  /** Passed through to DialogContent so focus returns to the trigger on close. */
+  restoreFocusElement?: HTMLElement | null;
+  /** Passed through to DialogContent for aria-controls linkage on the trigger. */
+  id?: string;
 };
 
 export function CreateFavoriteListDialog({
   open,
   onOpenChange,
   onSuccess,
+  restoreFocusElement,
+  id,
 }: CreateFavoriteListDialogProps) {
   const appConfig = useAppConfig();
   const { t } = useTranslation('common');
@@ -89,10 +95,12 @@ export function CreateFavoriteListDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent>
+      <DialogContent id={id} restoreFocusElement={restoreFocusElement}>
         <DialogHeader>
           <DialogTitle>{t('modal.create_list.create_a_list')}</DialogTitle>
-          <DialogDescription />
+          <DialogDescription className="sr-only">
+            {t('modal.create_list.description')}
+          </DialogDescription>
         </DialogHeader>
 
         <form

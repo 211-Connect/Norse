@@ -14,6 +14,7 @@ import initTranslations from '../i18n/i18n';
 import { SESSION_ID } from '../lib/constants';
 import { DEFAULT_RESOURCE_LAYOUT } from '../../features/resource/types/layout-config';
 import { DEFAULT_SEARCH_CARD_LAYOUT } from '../../features/search/types/card-layout-config';
+import { DEFAULT_BADGE_COLOR } from '../theme/theme-config';
 
 function getMediaUrl(media?: TenantMedia | number | null): string | undefined {
   if (typeof media === 'number' || !media) return undefined;
@@ -34,6 +35,31 @@ function getTenantId(resourceDirectory: ResourceDirectory): string | undefined {
   }
 
   return resourceDirectory.tenant?.id;
+}
+
+function getSmsConfig(resourceDirectory: ResourceDirectory): AppConfig['sms'] {
+  const sms = getTenant(resourceDirectory)?.sms;
+
+  if (!sms?.smsProvider) {
+    return null;
+  }
+
+  if (sms.smsProvider === 'Twilio') {
+    const twilio = sms.twilio;
+    const hasTwilioConfig = Boolean(
+      twilio?.phoneNumber &&
+      twilio?.apiKey &&
+      twilio?.apiKeySid &&
+      twilio?.accountSid,
+    );
+
+    return hasTwilioConfig ? { provider: sms.smsProvider } : null;
+  }
+
+  const ems = sms.ems;
+  const hasEmsConfig = Boolean(ems?.apiKey || ems?.shortCode || ems?.keyword);
+
+  return hasEmsConfig ? { provider: sms.smsProvider } : null;
 }
 
 function getTenantI18n(resourceDirectory: ResourceDirectory): {
@@ -65,7 +91,9 @@ type CustomAttributeItem = {
   [key: string]: any;
 };
 
-type LayoutColumnGroup = NonNullable<ResourceDirectory['resource']>['leftColumn'];
+type LayoutColumnGroup = NonNullable<
+  ResourceDirectory['resource']
+>['leftColumn'];
 type LayoutGroupItem = NonNullable<NonNullable<LayoutColumnGroup>[number]>;
 type LayoutItem = NonNullable<NonNullable<LayoutGroupItem['items']>[number]>;
 
@@ -129,8 +157,10 @@ function applyCustomAttributeFallback(
       items: group.items.map((item, itemIndex) =>
         mergeCustomAttribute(
           item,
-          findFallbackById<LayoutItem>(item, fallbackGroup.items ?? undefined) ??
-            fallbackGroup.items?.[itemIndex],
+          findFallbackById<LayoutItem>(
+            item,
+            fallbackGroup.items ?? undefined,
+          ) ?? fallbackGroup.items?.[itemIndex],
         ),
       ),
     };
@@ -150,7 +180,8 @@ function applyCardLayoutCustomAttributeFallback(
   return cardLayout.map((item, itemIndex) =>
     mergeCustomAttribute(
       item,
-      findFallbackById(item, fallbackCardLayout) ?? fallbackCardLayout[itemIndex],
+      findFallbackById(item, fallbackCardLayout) ??
+        fallbackCardLayout[itemIndex],
     ),
   );
 }
@@ -182,6 +213,7 @@ async function getAppConfigBase(
         theme: {},
       },
       contact: {},
+      sms: null,
       customBasePath: '',
       featureFlags: {
         requireUserLocation: false,
@@ -336,6 +368,7 @@ async function getAppConfigBase(
       number: resourceDirectory.brand.phoneNumber ?? undefined,
       feedbackUrl: resourceDirectory.brand.feedbackUrl ?? undefined,
     },
+    sms: getSmsConfig(resourceDirectory),
     customBasePath: process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || '',
     errorTranslationData: {
       errorNamespaces,
@@ -375,6 +408,8 @@ async function getAppConfigBase(
     header: {
       customMenu: resourceDirectory.header?.customMenu ?? [],
       customHomeUrl: resourceDirectory.header?.customHomeUrl ?? undefined,
+      favoritesButtonLabel:
+        resourceDirectory.header?.favoritesButtonLabel ?? undefined,
       safeExit: resourceDirectory.header?.safeExit
         ? {
             enabled: resourceDirectory.header.safeExit.enabled ?? false,
@@ -448,7 +483,23 @@ async function getAppConfigBase(
           resourceDirectory.search.texts?.noResultsFallbackText ?? undefined,
         queryInputPlaceholder:
           resourceDirectory.search.texts?.queryInputPlaceholder ?? undefined,
+        suggestionHeaders: {
+          categories:
+            resourceDirectory.search.texts?.suggestionHeaders?.categories ??
+            undefined,
+          suggestions:
+            resourceDirectory.search.texts?.suggestionHeaders?.suggestions ??
+            undefined,
+          taxonomies:
+            resourceDirectory.search.texts?.suggestionHeaders?.taxonomies ??
+            undefined,
+        },
         title: resourceDirectory.search.texts?.title ?? undefined,
+        useTextLinkForViewDetails:
+          resourceDirectory.search.texts?.useTextLinkForViewDetails ??
+          undefined,
+        viewDetailsText:
+          resourceDirectory.search.texts?.viewDetailsText ?? undefined,
       },
       cardLayout:
         resourceDirectory.search.cardLayout &&
@@ -468,7 +519,7 @@ async function getAppConfigBase(
         ?.map((badge) => ({
           ...badge,
           style: badge.style || 'bold',
-          color: badge.color || '#0044B5',
+          color: badge.color || DEFAULT_BADGE_COLOR,
           icon: badge.icon,
         })) || [],
     suggestions:

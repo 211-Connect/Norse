@@ -23,5 +23,6 @@
       "organization": "Tên nhà cung cấp"
     }
   },
-  "name_unavailable": "Tên không có sẵn"
+  "name_unavailable": "Tên không có sẵn",
+  "share_body": "Xem {{count}} kết quả tìm kiếm cho \"{{title}}\""
 }

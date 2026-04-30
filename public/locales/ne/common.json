@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "घर",
-    "favorites": "मनपर्नेहरू",
     "log_out": "लग आउट गर्नुहोस्",
     "language_select_label": "साइट भाषा परिवर्तन गर्न भाषा चयन गर्नुहोस्",
     "my_stuff": "मेरो सामान",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "तपाईँको सूची मेट्न सकिएन ।",
     "list_created": "सूची सिर्जना गरियो",
     "list_created_message": "तपाईंको सूची सफलतापूर्वक सिर्जना गरिएको छ।",
-    "unable_to_create_list_message": "तपाईंको सूची सिर्जना गर्न सकिएन।"
+    "unable_to_create_list_message": "तपाईंको सूची सिर्जना गर्न सकिएन।",
+    "remove_from_list_title": "सूचीबाट हटाउने हो?",
+    "remove_from_list_description": "यो स्रोत यस सूचीबाट हटाइनेछ। आवश्यक परेमा तपाईं यसलाई पछि फेरि थप्न सक्नुहुन्छ।"
   },
   "search": {
     "add_my_location": "मेरो स्थान थप्नुहोस्",
@@ -103,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "सूची सिर्जना गर्नुहोस्",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "नाम",
       "list_description": "विवरण",
       "make_public": "सार्वजनिक गर्नुहोस्"
@@ -139,15 +141,19 @@
       "sms_send_failed_title": "एसएमएस पठाउन असफल भयो",
       "sms_send_failed_body": "तपाईँको सन्देश पठाउन असफल भयो ।",
       "opens_in_new_tab": "नयाँ ट्याबमा खुल्छ",
-      "phone_number_label": "फोन नम्बर"
+      "phone_number_label": "फोन नम्बर",
+      "sms_unavailable": "SMS सेयर गर्ने सुविधा उपलब्ध छैन।"
     },
     "prompt_auth": "कृपया यो सुविधा प्रयोग गर्न लगइन गर्नुहोस् ।",
+    "prompt_auth_description": "कृपया यो सुविधा प्रयोग गर्न लगइन गर्नुहोस् ।",
     "manage_favorites": {
-      "title": "मनपर्नेहरू व्यवस्थापन गर्नुहोस्"
+      "title": "मनपर्नेहरू व्यवस्थापन गर्नुहोस्",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "तपाईंको प्रारम्भिक स्थान के हो?"
+    "prompt_start_location": "तपाईंको प्रारम्भिक स्थान के हो?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "द्वारा प्रदान गरिएको डेटा"
@@ -161,5 +167,10 @@
     "go_to": "जाऊ त्यहाँ"
   },
   "filter_results_count_one": "{{गणना}} परिणाम",
-  "filter_results_count_other": "{{गणना}} परिणामहरू"
+  "filter_results_count_other": "{{गणना}} परिणामहरू",
+  "autocomplete": {
+    "results_available_one": "{{count}} नतिजा उपलब्ध छ",
+    "results_available_other": "{{count}} परिणामहरू उपलब्ध छन्",
+    "no_results": "कुनै परिणामहरू छैनन्"
+  }
 }

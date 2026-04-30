@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "Vale",
-    "favorites": "Taleitaki",
     "log_out": "Lako tani",
     "language_select_label": "Digitaka e dua na vosa me veisautaki kina na vosa ni vanua .",
     "my_stuff": "Na noqu iyaya",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "E sega ni rawa ni bokoci na nomu lisi.",
     "list_created": "Sa buli na lisi",
     "list_created_message": "Sa vakarautaki vinaka na nomu lisi.",
-    "unable_to_create_list_message": "E sega ni rawa ni buli na nomu lisi."
+    "unable_to_create_list_message": "E sega ni rawa ni buli na nomu lisi.",
+    "remove_from_list_title": "Kauta laivi mai na lisi?",
+    "remove_from_list_description": "Na ivurevure oqo ena kau laivi mai na lisi oqo. E rawa ni o vakacuruma tale e muri kevaka e gadrevi."
   },
   "search": {
     "add_my_location": "Kuria na noqu vanua",
@@ -103,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "Cakava e dua na lisi",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Yaca",
       "list_description": "Ivakamacala",
       "make_public": "Cakava raraba"
@@ -139,15 +141,19 @@
       "sms_send_failed_title": "E sega ni rawa ni vakau na SMS",
       "sms_send_failed_body": "E sega ni vakau na nomu itukutuku.",
       "opens_in_new_tab": "dolavi ena dua na tabana vou",
-      "phone_number_label": "Naba ni talevoni"
+      "phone_number_label": "Naba ni talevoni",
+      "sms_unavailable": "E sega ni rawa na veiwasei ni SMS ."
     },
     "prompt_auth": "Kerekere mo curu mai mo vakayagataka na iwalewale oqo.",
+    "prompt_auth_description": "Kerekere mo curu mai mo vakayagataka na iwalewale oqo.",
     "manage_favorites": {
-      "title": "Vakatulewataka na veika taleitaki"
+      "title": "Vakatulewataka na veika taleitaki",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "Na cava na nomu vanua ni tekivu?"
+    "prompt_start_location": "Na cava na nomu vanua ni tekivu?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Na itukutuku e vakarautaka na"
@@ -161,5 +167,10 @@
     "copyright": "© Dodonu ni taukeni {{volavola}}"
   },
   "filter_results_count_one": "{{wili}} macala",
-  "filter_results_count_other": "{{wiliwili}} na kena macala"
+  "filter_results_count_other": "{{wiliwili}} na kena macala",
+  "autocomplete": {
+    "results_available_one": "{{wiliwili}} na macala e tiko",
+    "results_available_other": "{{wiliwili}} na macala e tiko",
+    "no_results": "Sega na kena macala"
+  }
 }

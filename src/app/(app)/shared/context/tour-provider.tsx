@@ -1,16 +1,19 @@
 'use client';
 
-import { PropsWithChildren, useEffect, useRef } from 'react';
+import { PropsWithChildren, useEffect, useRef, type CSSProperties } from 'react';
 import {
   TourProvider as ReactourProvider,
   useTour,
   type ProviderProps,
 } from '@reactour/tour';
 import { useTranslation } from 'react-i18next';
+import { getScrollbarWidth } from '@/app/(app)/shared/lib/utils';
+import { ACCESSIBLE_TOUR_ACCENT } from '../theme/theme-config';
 
 const TOUR_DIALOG_ID = 'home-page-tour-dialog';
 const TOUR_TITLE_ID = 'home-page-tour-title';
 const TOUR_TRIGGER_SELECTOR = '[data-home-tour-trigger="true"]';
+const TOUR_CONTENT_SCROLLABLE_CLASS = 'home-tour-scrollable-content';
 
 const focusableSelector = [
   'button:not([disabled])',
@@ -22,6 +25,8 @@ const focusableSelector = [
 ].join(',');
 
 const DISABLED_TOUR_TABINDEX_ATTR = 'data-tour-original-tabindex';
+
+let lockedBodyScrollY = 0;
 
 function getTourPopover(): HTMLElement | null {
   return document.querySelector<HTMLElement>(
@@ -111,6 +116,57 @@ function getPaginationButtons(controlsDiv: HTMLElement): HTMLButtonElement[] {
   );
 }
 
+function getContentContainer(
+  popover: HTMLElement,
+  controlsDiv: HTMLElement | null,
+): HTMLElement | null {
+  return Array.from(popover.children).find((child) => {
+    if (!(child instanceof HTMLElement)) return false;
+    if (child === controlsDiv) return false;
+    if (child.classList.contains('reactour__close-button')) return false;
+    if (child.tagName === 'SPAN') return false;
+    return true;
+  }) as HTMLElement | null;
+}
+
+function patchPopoverLayout(
+  popover: HTMLElement,
+  controlsDiv: HTMLElement | null,
+): void {
+  popover.style.display = 'grid';
+  popover.style.gridTemplateColumns = 'minmax(0, 1fr) auto';
+  popover.style.gridTemplateRows = 'auto auto';
+  popover.style.alignItems = 'start';
+  popover.style.gap = '1rem';
+  popover.style.overflow = 'visible';
+  popover.style.padding = '1rem 1rem 1.25rem';
+  popover.style.boxSizing = 'border-box';
+
+  const contentContainer = getContentContainer(popover, controlsDiv);
+  if (contentContainer) {
+    contentContainer.classList.add(TOUR_CONTENT_SCROLLABLE_CLASS);
+    contentContainer.style.gridColumn = '1';
+    contentContainer.style.gridRow = '1';
+    contentContainer.style.width = '100%';
+    contentContainer.style.minWidth = '0';
+    contentContainer.style.minHeight = '0';
+    contentContainer.style.boxSizing = 'border-box';
+    contentContainer.style.overflowY = 'auto';
+    contentContainer.style.overscrollBehavior = 'contain';
+    contentContainer.style.paddingRight = '0';
+  }
+
+  if (controlsDiv) {
+    controlsDiv.style.gridColumn = '1 / -1';
+    controlsDiv.style.gridRow = '2';
+    controlsDiv.style.flexShrink = '0';
+    controlsDiv.style.marginTop = '0';
+    controlsDiv.style.paddingTop = '0.75rem';
+    controlsDiv.style.borderTop = '1px solid rgba(15, 23, 42, 0.12)';
+    controlsDiv.style.background = 'inherit';
+  }
+}
+
 function patchDialogRole(popover: HTMLElement, tourLabel: string): void {
   popover.id = TOUR_DIALOG_ID;
   popover.tabIndex = -1;
@@ -139,11 +195,15 @@ function patchCloseButton(popover: HTMLElement): void {
   closeButton.setAttribute('type', 'button');
   closeButton.style.width = '44px';
   closeButton.style.height = '44px';
-  closeButton.style.top = '8px';
-  closeButton.style.right = '8px';
+  closeButton.style.position = 'static';
+  closeButton.style.gridColumn = '2';
+  closeButton.style.gridRow = '1';
+  closeButton.style.alignSelf = 'start';
+  closeButton.style.justifySelf = 'end';
   closeButton.style.display = 'flex';
   closeButton.style.alignItems = 'center';
   closeButton.style.justifyContent = 'center';
+  closeButton.style.margin = '0';
 
   // Without an explicit size the SVG (display:block) stretches to fill the
   // 44×44 button, producing an oversized icon. Pin it to a readable size.
@@ -170,10 +230,10 @@ function patchPaginationDots(
     button.style.borderStyle = 'solid';
     button.style.borderWidth = '2px';
     button.style.borderColor = isActive
-      ? 'var(--reactour-accent, #005ea2)'
+      ? `var(--reactour-accent, ${ACCESSIBLE_TOUR_ACCENT})`
       : '#5e5e5e';
     button.style.color = isActive
-      ? 'var(--reactour-accent, #005ea2)'
+      ? `var(--reactour-accent, ${ACCESSIBLE_TOUR_ACCENT})`
       : '#5e5e5e';
   });
 }
@@ -224,10 +284,41 @@ function patchTourPopover(
   patchCloseButton(popover);
 
   const controlsDiv = getControlsDiv(popover);
+  patchPopoverLayout(popover, controlsDiv);
+
   if (controlsDiv) {
     patchPaginationDots(controlsDiv, currentStep);
     patchNavButtons(controlsDiv, currentStep, stepCount);
   }
+}
+
+function lockBodyScroll(): void {
+  lockedBodyScrollY = window.scrollY;
+  const scrollbarWidth = getScrollbarWidth();
+
+  document.body.style.position = 'fixed';
+  document.body.style.top = `-${lockedBodyScrollY}px`;
+  document.body.style.width = '100%';
+  document.body.style.left = '0';
+  document.body.style.right = '0';
+
+  if (scrollbarWidth > 0) {
+    document.body.style.paddingRight = `${scrollbarWidth}px`;
+  }
+}
+
+function unlockBodyScroll(): void {
+  const parsedTop = Number.parseInt(document.body.style.top || '0', 10);
+  const scrollY = Number.isNaN(parsedTop) ? lockedBodyScrollY : -parsedTop;
+
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.width = '';
+  document.body.style.left = '';
+  document.body.style.right = '';
+  document.body.style.paddingRight = '';
+
+  window.scrollTo(0, scrollY);
 }
 
 function TourAccessibilityEnhancer() {
@@ -265,6 +356,7 @@ function TourAccessibilityEnhancer() {
     };
 
     safePatch();
+    const viewport = window.visualViewport;
 
     const popover = getTourPopover();
     const observer = new MutationObserver(safePatch);
@@ -343,6 +435,8 @@ function TourAccessibilityEnhancer() {
 
     document.addEventListener('keydown', handleKeyDown, true);
     document.addEventListener('focusin', handleFocusIn, true);
+    window.addEventListener('resize', safePatch);
+    viewport?.addEventListener('resize', safePatch);
     wasOpenRef.current = true;
 
     return () => {
@@ -350,6 +444,8 @@ function TourAccessibilityEnhancer() {
       window.cancelAnimationFrame(focusFrame);
       document.removeEventListener('keydown', handleKeyDown, true);
       document.removeEventListener('focusin', handleFocusIn, true);
+      window.removeEventListener('resize', safePatch);
+      viewport?.removeEventListener('resize', safePatch);
       restoreBackgroundFocus();
     };
   }, [currentStep, isOpen, steps, t]);
@@ -367,14 +463,26 @@ export const TourProvider = ({ children }: PropsWithChildren) => {
       steps={[]}
       className="home-tour-popover"
       scrollSmooth
+      afterOpen={lockBodyScroll}
+      beforeClose={unlockBodyScroll}
+      inViewThreshold={{ x: 16, y: 24 }}
       disableInteraction={({ currentStep }) => currentStep === 0}
       styles={{
+        badge: (baseStyles) => ({
+          ...baseStyles,
+          top: '-0.625rem',
+          left: '-0.625rem',
+          backgroundColor: ACCESSIBLE_TOUR_ACCENT,
+          color: '#ffffff',
+        }),
         popover: (baseStyles) => ({
           ...baseStyles,
+          '--reactour-accent': ACCESSIBLE_TOUR_ACCENT,
           width: 'min(36rem, calc(100vw - 2rem))',
           maxWidth: 'calc(100vw - 2rem)',
           maxHeight: 'calc(100dvh - 2rem)',
-        }),
+          padding: '1rem 1rem 1.25rem',
+        }) as CSSProperties,
       }}
     >
       <TourAccessibilityEnhancer />

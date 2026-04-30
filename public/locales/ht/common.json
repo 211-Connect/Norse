@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "Lakay",
-    "favorites": "Favori",
     "log_out": "Dekonekte",
     "language_select_label": "Chwazi yon lang pou chanje lang sit la",
     "my_stuff": "Bagay mwen yo",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "Lis ou a pa t kapab efase.",
     "list_created": "Lis la kreye",
     "list_created_message": "Lis ou a kreye avèk siksè.",
-    "unable_to_create_list_message": "Lis ou a pa t kapab kreye."
+    "unable_to_create_list_message": "Lis ou a pa t kapab kreye.",
+    "remove_from_list_title": "Retire nan lis la?",
+    "remove_from_list_description": "Resous sa a pral retire nan lis sa a. Ou ka ajoute l ankò pita si sa nesesè."
   },
   "search": {
     "add_my_location": "Ajoute kote mwen ye a",
@@ -103,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "Kreye yon lis",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Non",
       "list_description": "Deskripsyon",
       "make_public": "Fè piblik"
@@ -139,15 +141,19 @@
       "sms_send_failed_title": "Voye SMS la echwe",
       "sms_send_failed_body": "Mesaj ou a pa t rive voye.",
       "opens_in_new_tab": "ouvri nan yon nouvo onglet",
-      "phone_number_label": "Nimewo telefòn"
+      "phone_number_label": "Nimewo telefòn",
+      "sms_unavailable": "Pataj SMS pa disponib"
     },
     "prompt_auth": "Tanpri konekte pou itilize fonksyonalite sa a.",
+    "prompt_auth_description": "Tanpri konekte pou itilize fonksyonalite sa a.",
     "manage_favorites": {
-      "title": "Jere favori yo"
+      "title": "Jere favori yo",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "Ki kote ou kòmanse?"
+    "prompt_start_location": "Ki kote ou kòmanse?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Done yo bay pa"
@@ -161,5 +167,10 @@
     "go_to": "Ale nan"
   },
   "filter_results_count_one": "rezilta {{count}}",
-  "filter_results_count_other": "{{count}} rezilta"
+  "filter_results_count_other": "{{count}} rezilta",
+  "autocomplete": {
+    "results_available_one": "{{count}} rezilta disponib",
+    "results_available_other": "{{count}} rezilta disponib",
+    "no_results": "Pa gen rezilta"
+  }
 }

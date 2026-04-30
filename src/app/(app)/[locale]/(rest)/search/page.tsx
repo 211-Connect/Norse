@@ -244,7 +244,7 @@ export default async function SearchPage({
             ? parseInt(searchParamsResult.page, 10) || 1
             : 1,
         device,
-        distance: searchQuery.distance ?? '',
+        distance: searchQuery.distance,
         filters,
         location: searchQuery.location ?? '',
         query: searchQuery.query ?? '',

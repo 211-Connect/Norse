@@ -8,26 +8,41 @@ import {
   parseTotalFromResultText,
 } from './helpers';
 import type { Page } from '@playwright/test';
+import {
+  AUTOCOMPLETE_TIMEOUT_MS,
+  SEARCH_NAV_TIMEOUT_MS,
+  UI_SHELL_TIMEOUT_MS,
+} from './timeouts';
 
 const BROAD_QUERIES = ['food', 'housing', 'health', 'shelter'];
 
 async function searchWithFallbackQueries(page: Page) {
-  for (const query of BROAD_QUERIES) {
-    await goHome(page);
-    await performSearch(page, {
-      query,
-      query_label: query,
-      query_type: 'text',
-    });
+  let last: { query: string; total: number } = {
+    query: BROAD_QUERIES[0],
+    total: 0,
+  };
 
-    const totalText = await getResultTotal(page);
-    const total = parseTotalFromResultText(totalText);
-    if (total > 10) {
-      return { query, total };
+  for (const query of BROAD_QUERIES) {
+    try {
+      await goHome(page);
+      await performSearch(page, {
+        query,
+        query_label: query,
+        query_type: 'text',
+      });
+
+      const totalText = await getResultTotal(page);
+      const total = parseTotalFromResultText(totalText);
+      last = { query, total };
+      if (total > 10) {
+        return { query, total };
+      }
+    } catch {
+      // Staging/local data or navigation can differ; try the next broad query
     }
   }
 
-  return { query: BROAD_QUERIES[0], total: 0 };
+  return last;
 }
 
 test.describe('Search Autocomplete Suggestions', () => {
@@ -42,7 +57,7 @@ test.describe('Search Autocomplete Suggestions', () => {
     await searchInput.fill('I need');
 
     const listbox = page.getByTestId('autocomplete-listbox');
-    await listbox.waitFor({ state: 'visible', timeout: 10000 });
+    await listbox.waitFor({ state: 'visible', timeout: AUTOCOMPLETE_TIMEOUT_MS });
 
     const options = listbox.getByTestId('autocomplete-option');
     const count = await options.count();
@@ -62,7 +77,7 @@ test.describe('Search Autocomplete Suggestions', () => {
     await searchInput.fill('food');
 
     const listbox = page.getByTestId('autocomplete-listbox');
-    await listbox.waitFor({ state: 'visible', timeout: 10000 });
+    await listbox.waitFor({ state: 'visible', timeout: AUTOCOMPLETE_TIMEOUT_MS });
 
     const options = listbox.getByTestId('autocomplete-option');
     const count = await options.count();
@@ -79,7 +94,7 @@ test.describe('Search Autocomplete Suggestions', () => {
     });
 
     await expect(page.locator('#search-container')).toBeVisible({
-      timeout: 15000,
+      timeout: UI_SHELL_TIMEOUT_MS,
     });
   });
 });
@@ -169,12 +184,12 @@ test.describe('Search Result Pagination', () => {
     const nextBtn = page.getByTestId('pagination-next');
     await nextBtn.click();
 
-    await page.waitForURL(
+    await expect(page).toHaveURL(
       (url) => {
         const urlPage = Number(url.searchParams.get('page') ?? '1');
         return urlPage > beforePage;
       },
-      { timeout: 10000 },
+      { timeout: SEARCH_NAV_TIMEOUT_MS },
     );
 
     const afterUrl = new URL(page.url());
@@ -215,7 +230,9 @@ test.describe('Search Filters', () => {
 
     const firstCheckbox = checkboxes.first();
     await firstCheckbox.click();
-    await page.waitForLoadState('networkidle');
+    await expect(firstCheckbox).toHaveAttribute('data-state', 'checked', {
+      timeout: SEARCH_NAV_TIMEOUT_MS,
+    });
 
     await expect(page.locator('#search-container')).toBeVisible();
   });

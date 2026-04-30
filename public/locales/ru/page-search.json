@@ -23,5 +23,6 @@
       "organization": "Название поставщика услуг"
     }
   },
-  "name_unavailable": "Имя недоступно"
+  "name_unavailable": "Имя недоступно",
+  "share_body": "См. {{count}} результатов поиска по запросу \"{{title}}\""
 }

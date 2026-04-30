@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "집",
-    "favorites": "즐겨찾기",
     "log_out": "로그아웃",
     "language_select_label": "사이트 언어를 변경할 언어를 선택합니다.",
     "my_stuff": "내 물건",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "목록을 삭제할 수 없습니다.",
     "list_created": "목록이 생성되었습니다",
     "list_created_message": "목록이 성공적으로 생성되었습니다.",
-    "unable_to_create_list_message": "목록을 만들 수 없습니다."
+    "unable_to_create_list_message": "목록을 만들 수 없습니다.",
+    "remove_from_list_title": "목록에서 삭제하시겠습니까?",
+    "remove_from_list_description": "이 자료는 목록에서 삭제될 예정입니다. 필요하시면 나중에 다시 추가하실 수 있습니다."
   },
   "search": {
     "add_my_location": "내 위치 추가",
@@ -103,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "목록 만들기",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "이름",
       "list_description": "묘사",
       "make_public": "공개"
@@ -139,15 +141,19 @@
       "sms_send_failed_title": "SMS 전송 실패",
       "sms_send_failed_body": "메시지를 보내지 못했습니다.",
       "opens_in_new_tab": "새 탭에서 열립니다",
-      "phone_number_label": "전화 번호"
+      "phone_number_label": "전화 번호",
+      "sms_unavailable": "SMS 공유 기능을 사용할 수 없습니다."
     },
     "prompt_auth": "이 기능을 사용하려면 로그인하십시오.",
+    "prompt_auth_description": "이 기능을 사용하려면 로그인하십시오.",
     "manage_favorites": {
-      "title": "즐겨찾기 관리"
+      "title": "즐겨찾기 관리",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "시작 위치는 어디입니까?"
+    "prompt_start_location": "시작 위치는 어디입니까?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "데이터 제공"
@@ -161,5 +167,10 @@
     "go_to": "가다"
   },
   "filter_results_count_one": "{{count}} 결과",
-  "filter_results_count_other": "{{count}} 결과"
+  "filter_results_count_other": "{{count}} 결과",
+  "autocomplete": {
+    "results_available_one": "{{count}}개의 결과가 있습니다.",
+    "results_available_other": "{{count}}개의 결과가 있습니다.",
+    "no_results": "결과가 없습니다"
+  }
 }

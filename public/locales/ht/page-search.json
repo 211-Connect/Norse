@@ -23,5 +23,6 @@
       "organization": "Non Founisè a"
     }
   },
-  "name_unavailable": "Non pa disponib"
+  "name_unavailable": "Non pa disponib",
+  "share_body": "Gade {{count}} rezilta rechèch pou \"{{title}}\""
 }

@@ -16,6 +16,7 @@ import { Button } from './ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from './ui/dialog';
@@ -26,7 +27,20 @@ import { useClipboard } from '../hooks/use-clipboard';
 import { SmsButton } from './sms-button';
 import { useAppConfig } from '../hooks/use-app-config';
 
-export function ShareButton({ componentToPrintRef, title = '', body = '' }) {
+type ShareButtonProps = {
+  componentToPrintRef?: React.RefObject<HTMLElement | null>;
+  title: string;
+  body: string;
+};
+
+const SHARE_ACTION_BUTTON_CLASSNAME =
+  'flex min-w-0 justify-center gap-2 focus-visible:ring-inset focus-visible:ring-offset-0';
+
+export function ShareButton({
+  componentToPrintRef,
+  title,
+  body,
+}: ShareButtonProps) {
   const appConfig = useAppConfig();
   const clipboard = useClipboard();
   const handlePrint = useReactToPrint({
@@ -39,11 +53,32 @@ export function ShareButton({ componentToPrintRef, title = '', body = '' }) {
 
   const [open, setOpen] = useState(false);
   const [shortUrl, setShortUrl] = useState('');
+  const metadataTitle =
+    typeof document !== 'undefined' ? document.title.trim() : '';
+  const metadataDescription =
+    typeof document !== 'undefined'
+      ? (document
+          .querySelector('meta[name="description"]')
+          ?.getAttribute('content')
+          ?.trim() ?? '')
+      : '';
+
+  const normalizedTitle = title.trim() || metadataTitle;
+  const normalizedBody = body.trim() || metadataDescription;
+  const shareSubject =
+    normalizedTitle || t('modal.share.check_out_this_resource');
+
+  // SMS: compact message (title + short URL)
+  const smsSummary = shareSubject || t('modal.share.check_out_this_resource');
+  const smsMessage = [smsSummary, shortUrl].filter(Boolean).join('\n\n');
+
+  // Email: full message (body + URL)
+  const emailMessage = [normalizedBody, shortUrl].filter(Boolean).join('\n\n');
 
   useEffect(() => {
     async function getShortUrl() {
       const id = await shortenUrl(window.location.href, appConfig.tenantId);
-      const url = `${window.location.origin}${appConfig.customBasePath}/api/share/${appConfig.tenantId}/${id}`;
+      const url = `${window.location.origin}${appConfig.customBasePath}/share/${id}`;
       setShortUrl(url);
     }
 
@@ -76,13 +111,16 @@ export function ShareButton({ componentToPrintRef, title = '', body = '' }) {
         >
           <DialogHeader>
             <DialogTitle>{t('modal.share.share_via')}</DialogTitle>
+            <DialogDescription className="sr-only">
+              {t('modal.share.share_via')}
+            </DialogDescription>
           </DialogHeader>
 
-          <div className="flex flex-col gap-2 overflow-hidden">
+          <div className="flex min-w-0 flex-col gap-2">
             <div className="grid grid-cols-2 gap-2">
               <Button
                 variant="outline"
-                className="flex gap-1"
+                className={SHARE_ACTION_BUTTON_CLASSNAME}
                 aria-label={`${t('modal.share.facebook')} ${t('modal.share.opens_in_new_tab')}`}
                 onClick={() => {
                   window.open(
@@ -103,7 +141,7 @@ export function ShareButton({ componentToPrintRef, title = '', body = '' }) {
 
               <Button
                 variant="outline"
-                className="flex gap-1"
+                className={SHARE_ACTION_BUTTON_CLASSNAME}
                 aria-label={`${t('modal.share.linkedin')} ${t('modal.share.opens_in_new_tab')}`}
                 onClick={() => {
                   window.open(
@@ -122,7 +160,7 @@ export function ShareButton({ componentToPrintRef, title = '', body = '' }) {
 
               <Button
                 variant="outline"
-                className="flex gap-1"
+                className={SHARE_ACTION_BUTTON_CLASSNAME}
                 aria-label={`X ${t('modal.share.opens_in_new_tab')}`}
                 onClick={() => {
                   window.open(
@@ -139,17 +177,17 @@ export function ShareButton({ componentToPrintRef, title = '', body = '' }) {
                 </span>
               </Button>
 
-              <SmsButton title={title} body={body} shortUrl={shortUrl} />
+              <SmsButton shareMessage={smsMessage} />
 
               <Button
                 variant="outline"
-                className="flex gap-1"
+                className={SHARE_ACTION_BUTTON_CLASSNAME}
                 aria-label={`${t('modal.share.email')} ${t('modal.share.opens_in_new_tab')}`}
                 onClick={() => {
                   window.open(
                     `mailto:?subject=${encodeURIComponent(
-                      title,
-                    )}&body=${encodeURIComponent(body + '\n\n' + shortUrl)}`,
+                      shareSubject,
+                    )}&body=${encodeURIComponent(emailMessage)}`,
                   );
                 }}
               >
@@ -163,7 +201,7 @@ export function ShareButton({ componentToPrintRef, title = '', body = '' }) {
 
               <Button
                 variant="outline"
-                className="flex gap-1"
+                className={SHARE_ACTION_BUTTON_CLASSNAME}
                 onClick={handlePrint}
               >
                 <Printer className="size-4" aria-hidden="true" />
@@ -175,11 +213,11 @@ export function ShareButton({ componentToPrintRef, title = '', body = '' }) {
               <Button
                 onClick={() => clipboard.copy(shortUrl)}
                 variant="outline"
-                className="flex w-full items-center justify-between gap-1"
+                className="flex w-full min-w-0 items-center justify-between gap-1 focus-visible:ring-inset focus-visible:ring-offset-0"
                 aria-label={t('modal.share.copy_link')}
                 aria-describedby={copyStatusId}
               >
-                {shortUrl}
+                <span className="min-w-0 truncate text-left">{shortUrl}</span>
 
                 {clipboard.copied ? (
                   <CheckIcon className="size-4" aria-hidden="true" />

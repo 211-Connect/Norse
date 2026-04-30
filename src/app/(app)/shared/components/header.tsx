@@ -7,17 +7,16 @@ import { useCallback, useMemo } from 'react';
 import { useSetAtom } from 'jotai';
 import {
   AlignJustifyIcon,
-  ChevronDown,
+  Heart,
   HomeIcon,
   LogOut,
   Search,
-  UserRound,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
+import { useTopLoader } from 'nextjs-toploader';
 
 import { Link } from './link';
 import { useDisclosure } from '../hooks/use-disclosure';
-import { useBreakpoint } from '../hooks/use-breakpoint';
 import { Button, buttonVariants } from './ui/button';
 import {
   Sheet,
@@ -36,13 +35,6 @@ import {
   NEW_TAB_WARNING,
 } from '../lib/constants';
 import { dialogsAtom } from '../store/dialogs';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from './ui/dropdown';
-import { Card, CardContent } from './ui/card';
 import { cn, withOptionalTrailingSlash } from '../lib/utils';
 import { LanguageSwitcher } from './language-switcher';
 import { ReportButton } from './report-button';
@@ -53,7 +45,7 @@ export function Header() {
   const { t, i18n } = useTranslation('common');
   const router = useRouter();
   const pathname = usePathname();
-  const isSmOrLarger = useBreakpoint(640);
+  const { start } = useTopLoader();
 
   const session = useSession();
   const setDialogStore = useSetAtom(dialogsAtom);
@@ -109,15 +101,17 @@ export function Header() {
     [currentPath],
   );
 
-  const handleLogoClick = useCallback(() => {
-    router.push(appConfig.header?.customHomeUrl || '/');
-  }, [appConfig.header?.customHomeUrl, router]);
-
   const logoAlt = useMemo(() => {
     const brandName = appConfig.brand.name?.trim();
 
     return brandName ? `${brandName} home page` : (t('header.home') ?? 'Home');
   }, [appConfig.brand.name, t]);
+
+  const favoritesButtonLabel = useMemo(() => {
+    const customLabel = appConfig.header.favoritesButtonLabel?.trim();
+
+    return customLabel || t('header.my_stuff');
+  }, [appConfig.header.favoritesButtonLabel, t]);
 
   const sitemap = useMemo(
     () =>
@@ -192,67 +186,55 @@ export function Header() {
           )),
         <LanguageSwitcher key="5" />,
         <li key="6">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                className={cn(
-                  'flex items-center gap-[5px]',
-                  newLayoutEnabled && '!bg-white',
-                )}
-                variant="outline"
-                data-testid="my-stuff-btn"
-              >
-                <UserRound className="size-4" aria-hidden="true" />
-                {t('header.my_stuff')}
-                <ChevronDown className="size-4" aria-hidden="true" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align={isSmOrLarger ? 'end' : 'start'}
-              className="min-w-[143px] text-xs font-medium"
-            >
-              <Card className="px-0 py-[10px]">
-                <CardContent>
-                  <DropdownMenuItem
-                    className="cursor-pointer px-[10px] py-2 text-primary !outline-none focus:bg-accent focus:text-primary"
-                    data-testid="favorites-btn"
-                    onClick={(event) => {
-                      if (session.status === 'unauthenticated') {
-                        const trigger = event.currentTarget;
-                        setTimeout(() => {
-                          setDialogStore((prev) => ({
-                            ...prev,
-                            promptAuth: {
-                              ...prev.promptAuth,
-                              open: true,
-                              returnFocusTo: trigger,
-                            },
-                          }));
-                        });
-                      } else {
-                        router.push(withOptionalTrailingSlash('/favorites'));
-                      }
-                    }}
-                  >
-                    {t('header.favorites')}
-                  </DropdownMenuItem>
-                  {session.status === 'authenticated' && (
-                    <DropdownMenuItem
-                      className="cursor-pointer px-[10px] py-2 text-primary !outline-none focus:bg-accent focus:text-primary"
-                      onClick={() => {
-                        signOut({ redirect: true, callbackUrl: '/' });
-                      }}
-                    >
-                      {t('header.log_out')}
-                    </DropdownMenuItem>
-                  )}
-                </CardContent>
-              </Card>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Button
+            className={cn(
+              'flex items-center gap-[5px]',
+              newLayoutEnabled && '!bg-white',
+            )}
+            variant="outline"
+            data-testid="favorites-btn"
+            onClick={(event) => {
+              if (session.status === 'unauthenticated') {
+                const trigger = event.currentTarget as HTMLElement;
+                setTimeout(() => {
+                  setDialogStore((prev) => ({
+                    ...prev,
+                    promptAuth: {
+                      ...prev.promptAuth,
+                      open: true,
+                      returnFocusTo: trigger,
+                    },
+                  }));
+                });
+              } else {
+                start();
+                router.push(withOptionalTrailingSlash('/favorites'));
+              }
+            }}
+          >
+            <Heart className="size-4" aria-hidden="true" />
+            {favoritesButtonLabel}
+          </Button>
         </li>,
-        appConfig.header.safeExit?.enabled ? (
+        session.status === 'authenticated' ? (
           <li key="7">
+            <Button
+              className={cn(
+                'flex items-center gap-[5px]',
+                newLayoutEnabled && '!bg-white',
+              )}
+              variant="outline"
+              onClick={() => {
+                signOut({ redirect: true, callbackUrl: '/' });
+              }}
+            >
+              <LogOut className="size-4" aria-hidden="true" />
+              {t('header.log_out')}
+            </Button>
+          </li>
+        ) : null,
+        appConfig.header.safeExit?.enabled ? (
+          <li key="8">
             <Link
               target={appConfig.header.safeExit.target}
               href={appConfig.header.safeExit?.url ?? '#'}
@@ -287,11 +269,12 @@ export function Header() {
       appConfig.featureFlags.showFeedbackButtonGlobal,
       newLayoutEnabled,
       t,
+      favoritesButtonLabel,
       getAriaCurrent,
       session.status,
       setDialogStore,
       router,
-      isSmOrLarger,
+      start,
     ],
   );
 
@@ -306,17 +289,19 @@ export function Header() {
     >
       <div
         className={cn(
-          'relative flex h-[104px] items-center justify-between gap-16 sm:gap-4',
-          newLayoutEnabled
-            ? 'rounded-xl bg-gradient-to-r from-header-start to-header-end p-6'
-            : 'py-3 pr-6',
+          'relative flex h-[104px] items-center justify-between gap-16 px-4 py-2 sm:gap-4 sm:px-6 sm:py-3',
+          newLayoutEnabled &&
+            'rounded-xl bg-gradient-to-r from-header-start to-header-end',
         )}
       >
         <div className="flex h-full items-center">
-          <div
-            className="flex h-full cursor-pointer items-center"
+          <Link
+            href={appConfig.header?.customHomeUrl || '/'}
+            className={cn(
+              'flex h-full cursor-pointer items-center',
+              newLayoutEnabled && 'absolute -left-4 -top-4',
+            )}
             aria-label={logoAlt}
-            onClick={handleLogoClick}
           >
             {logoUrl && (
               <Image
@@ -327,7 +312,7 @@ export function Header() {
                 className="max-h-full w-auto object-contain lg:max-w-[400px]"
               />
             )}
-          </div>
+          </Link>
         </div>
 
         <nav

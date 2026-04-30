@@ -23,5 +23,6 @@
       "organization": "プロバイダー名"
     }
   },
-  "name_unavailable": "名前は不明です"
+  "name_unavailable": "名前は不明です",
+  "share_body": "「{{title}}」の検索結果を{{count}}件ご覧ください。"
 }

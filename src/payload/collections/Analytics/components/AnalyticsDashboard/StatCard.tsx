@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { ANALYTICS_TREND_COLORS } from '@/app/(app)/shared/theme/theme-config';
 
 export const StatCard = React.memo(function StatCard({
   label,
@@ -13,7 +14,11 @@ export const StatCard = React.memo(function StatCard({
 }) {
   const isPositive = trend !== undefined && trend >= 0;
   const trendColor =
-    trend !== undefined ? (isPositive ? '#16a34a' : '#dc2626') : undefined;
+    trend !== undefined
+      ? isPositive
+        ? ANALYTICS_TREND_COLORS.positive
+        : ANALYTICS_TREND_COLORS.negative
+      : undefined;
 
   return (
     <div

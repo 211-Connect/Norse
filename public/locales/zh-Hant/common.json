@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "家",
-    "favorites": "收藏夾",
     "log_out": "登出登入",
     "language_select_label": "選擇語言以變更網站語言",
     "my_stuff": "我的東西",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "您的清單無法刪除。",
     "list_created": "已建立清單",
     "list_created_message": "您的清單已成功建立。",
-    "unable_to_create_list_message": "您的清單建立失敗。"
+    "unable_to_create_list_message": "您的清單建立失敗。",
+    "remove_from_list_title": "從清單中移除？",
+    "remove_from_list_description": "此資源將從清單中移除。如有需要，您可以稍後將其添加回來。"
   },
   "search": {
     "add_my_location": "添加我的位置",
@@ -103,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "創建列表",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "姓名",
       "list_description": "描述",
       "make_public": "公開"
@@ -139,15 +141,19 @@
       "sms_send_failed_title": "簡訊發送失敗",
       "sms_send_failed_body": "您的訊息發送失敗。",
       "opens_in_new_tab": "在新分頁中開啟",
-      "phone_number_label": "電話號碼"
+      "phone_number_label": "電話號碼",
+      "sms_unavailable": "簡訊分享功能不可用"
     },
     "prompt_auth": "請登入後使用此功能。",
+    "prompt_auth_description": "請登入後使用此功能。",
     "manage_favorites": {
-      "title": "管理收藏夾"
+      "title": "管理收藏夾",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "你的出發地是哪裡？"
+    "prompt_start_location": "你的出發地是哪裡？",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "數據由"
@@ -161,5 +167,10 @@
     "go_to": "前往"
   },
   "filter_results_count_one": "{{count}} 結果",
-  "filter_results_count_other": "{{count}} 個結果"
+  "filter_results_count_other": "{{count}} 個結果",
+  "autocomplete": {
+    "results_available_one": "{{count}} 個結果可用",
+    "results_available_other": "可用的 {{count}} 個結果",
+    "no_results": "沒有結果"
+  }
 }

@@ -2,30 +2,36 @@
 
 import { useAtomValue, useSetAtom } from 'jotai';
 import { signIn } from 'next-auth/react';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { dialogsAtom, promptAuthAtom } from '@/app/(app)/shared/store/dialogs';
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../ui/dialog';
 import { Button } from '../ui/button';
 import { cn } from '../../lib/utils';
 import { buttonVariants } from '../ui/button';
+import { Label } from '../ui/label';
 
 export function PromptAuthDialog() {
   const setState = useSetAtom(dialogsAtom);
   const state = useAtomValue(promptAuthAtom);
   const { t } = useTranslation('common');
 
-  // Capture the trigger element in a ref when the dialog opens so it survives
-  // the synchronous state reset that happens when handleOpenChange(false) is
-  // called. Without this, restoreFocusElement would already be null by the
-  // time Radix fires onCloseAutoFocus.
+  // Updating a ref during render is safe — refs don't trigger re-renders.
+  // Capture the trigger element only while the dialog is open so the ref
+  // survives the synchronous state reset that clears returnFocusTo when
+  // handleOpenChange(false) fires before Radix runs onCloseAutoFocus.
   const focusRestoreRef = useRef<HTMLElement | null>(null);
-  useEffect(() => {
-    if (state.open) {
-      focusRestoreRef.current = state.returnFocusTo;
-    }
-  }, [state.open, state.returnFocusTo]);
+  if (state.open) {
+    focusRestoreRef.current = state.returnFocusTo;
+  }
 
   const handleOpenChange = (value: boolean) => {
     setState((prev) => ({
@@ -55,8 +61,14 @@ export function PromptAuthDialog() {
       >
         <DialogHeader>
           <DialogTitle>{t('modal.prompt_auth')}</DialogTitle>
+          <DialogDescription className="sr-only">
+            {t('modal.prompt_auth_description')}
+          </DialogDescription>
         </DialogHeader>
-        <div className="flex justify-end gap-2">
+        <Label className="text-sm font-normal text-muted-foreground">
+          {t('modal.prompt_auth_description')}
+        </Label>
+        <DialogFooter>
           <Button onClick={() => handleOpenChange(false)} variant="outline">
             {t('call_to_action.cancel')}
           </Button>
@@ -69,7 +81,7 @@ export function PromptAuthDialog() {
           >
             {t('call_to_action.login')}
           </a>
-        </div>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

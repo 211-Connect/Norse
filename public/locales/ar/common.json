@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "وطن",
-    "favorites": "المفضله",
     "log_out": "تسجيل الخروج",
     "language_select_label": "حدد لغة لتغيير لغة الموقع",
     "my_stuff": "أشيائي",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "تعذر حذف قائمتك.",
     "list_created": "تم إنشاء القائمة",
     "list_created_message": "تم إنشاء قائمتك بنجاح.",
-    "unable_to_create_list_message": "تعذر إنشاء قائمتك."
+    "unable_to_create_list_message": "تعذر إنشاء قائمتك.",
+    "remove_from_list_title": "هل تريد إزالة هذا من القائمة؟",
+    "remove_from_list_description": "سيتم حذف هذا المورد من هذه القائمة. يمكنك إضافته مرة أخرى لاحقاً إذا لزم الأمر."
   },
   "search": {
     "add_my_location": "أضف موقعي",
@@ -103,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "إنشاء قائمة",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "اسم",
       "list_description": "وصف",
       "make_public": "الإعلان عن الجمهور"
@@ -139,15 +141,19 @@
       "sms_send_failed_title": "فشل إرسال الرسائل القصيرة",
       "sms_send_failed_body": "تعذر إرسال رسالتك.",
       "opens_in_new_tab": "يفتح في علامة تبويب جديدة",
-      "phone_number_label": "رقم التليفون"
+      "phone_number_label": "رقم التليفون",
+      "sms_unavailable": "مشاركة الرسائل النصية غير متاحة"
     },
     "prompt_auth": "يرجى تسجيل الدخول لاستخدام هذه الميزة.",
+    "prompt_auth_description": "يرجى تسجيل الدخول لاستخدام هذه الميزة.",
     "manage_favorites": {
-      "title": "إدارة المفضلة"
+      "title": "إدارة المفضلة",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "ما هو موقع انطلاقك؟"
+    "prompt_start_location": "ما هو موقع انطلاقك؟",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "البيانات المقدمة من"
@@ -161,5 +167,10 @@
     "go_to": "انتقل إلى"
   },
   "filter_results_count_one": "{{count}} نتيجة",
-  "filter_results_count_other": "{{count}} نتيجة"
+  "filter_results_count_other": "{{count}} نتيجة",
+  "autocomplete": {
+    "results_available_one": "{{count}} نتيجة متاحة",
+    "results_available_other": "{{count}} نتيجة متاحة",
+    "no_results": "لا توجد نتائج"
+  }
 }

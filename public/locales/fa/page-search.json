@@ -23,5 +23,6 @@
       "organization": "نام ارائه دهنده"
     }
   },
-  "name_unavailable": "نام موجود نیست"
+  "name_unavailable": "نام موجود نیست",
+  "share_body": "نتایج جستجوی {{count}} برای \"{{title}}\" را ببینید"
 }

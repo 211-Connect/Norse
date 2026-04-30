@@ -41,10 +41,11 @@ import { useTranslation } from 'react-i18next';
 import { useOnPointerDownOutside } from '../../hooks/use-on-pointer-down-outside';
 
 export type AutocompleteOption = {
-  label?: string;
   value: string;
   group?: string;
   Icon?: ComponentType<{ className?: string }>;
+  badge?: string;
+  query?: string;
   queryType?: string;
 };
 
@@ -65,8 +66,6 @@ export type AutocompleteProps = {
   autoSelectOnBlurIndex?: number;
   defaultOpen?: boolean;
   clearButtonLabel?: string;
-  enterKeyBehavior?: 'submit-form' | 'focus-target';
-  enterKeyFocusTargetId?: string;
   positionBelowElementId?: string;
   /** Treat a committed (selected) value as an indivisible block. Any printable
    *  keypress replaces the whole block and starts a fresh search. */
@@ -119,8 +118,6 @@ export function Autocomplete(props: AutocompleteProps) {
     value: inputValue,
     defaultOpen = false,
     clearButtonLabel = 'Clear',
-    enterKeyBehavior = 'submit-form',
-    enterKeyFocusTargetId,
     positionBelowElementId,
     blockMode = false,
     onDecommit,
@@ -437,24 +434,18 @@ export function Autocomplete(props: AutocompleteProps) {
             }
           }
 
-          if (enterKeyBehavior === 'focus-target' && enterKeyFocusTargetId) {
+          const form = (e.target as HTMLElement).closest('form');
+          if (form) {
             setTimeout(() => {
-              document.getElementById(enterKeyFocusTargetId)?.focus();
-            }, 0);
-          } else {
-            const form = (e.target as HTMLElement).closest('form');
-            if (form) {
-              setTimeout(() => {
-                if (typeof form.requestSubmit === 'function') {
-                  form.requestSubmit();
-                  return;
-                }
+              if (typeof form.requestSubmit === 'function') {
+                form.requestSubmit();
+                return;
+              }
 
-                form.dispatchEvent(
-                  new Event('submit', { cancelable: true, bubbles: true }),
-                );
-              }, 0);
-            }
+              form.dispatchEvent(
+                new Event('submit', { cancelable: true, bubbles: true }),
+              );
+            }, 0);
           }
 
           setCurrentIndex(-1);
@@ -527,8 +518,6 @@ export function Autocomplete(props: AutocompleteProps) {
       popperElement,
       uniqueId,
       onValueChange,
-      enterKeyBehavior,
-      enterKeyFocusTargetId,
       isBlockCommitted,
       onDecommit,
       onEscape,
@@ -678,11 +667,14 @@ export function Autocomplete(props: AutocompleteProps) {
         >
           {srStatus}
         </div>
+        {!open && uniqueId ? (
+          <div id={uniqueId} role="listbox" hidden aria-hidden="true" />
+        ) : null}
         <Input
           {...inputProps}
           id={effectiveInputId}
           className={cn(
-            'h-auto w-full rounded-lg border p-0 px-[1.8rem] py-2 text-xs shadow-none focus:border-primary focus-visible:ring-0',
+            'h-auto w-full rounded-lg border border-control-border p-0 px-[1.8rem] py-2 text-xs shadow-none focus:border-primary focus-visible:ring-0',
             inputProps?.className,
           )}
           ref={setReferenceElement}
@@ -694,7 +686,7 @@ export function Autocomplete(props: AutocompleteProps) {
           value={tempValue}
           autoComplete="off"
           aria-autocomplete="list"
-          aria-controls={open ? uniqueId : undefined}
+          aria-controls={uniqueId}
           aria-haspopup="listbox"
           aria-labelledby={readerLabelId}
           aria-owns={uniqueId}
@@ -827,12 +819,12 @@ export function Autocomplete(props: AutocompleteProps) {
                             </p>
                           </span>
 
-                          {option.label && (
+                          {option.badge && (
                             <Badge
                               variant="outline"
                               className="w-[100px] shrink-0 text-xs"
                             >
-                              <p className="mx-auto truncate">{option.label}</p>
+                              <p className="mx-auto truncate">{option.badge}</p>
                             </Badge>
                           )}
                         </div>

@@ -29,8 +29,17 @@ const SEARCH_TEXT_FIELDS = [
   'title',
   'queryInputPlaceholder',
   'locationInputPlaceholder',
+  'viewDetailsText',
   'noResultsFallbackText',
 ] as const;
+
+const SEARCH_SUGGESTION_HEADER_FIELDS = [
+  'suggestions',
+  'categories',
+  'taxonomies',
+] as const;
+
+const HEADER_TEXT_FIELDS = ['favoritesButtonLabel'] as const;
 
 const CALLOUT_TEXT_FIELDS = ['description', 'title'] as const;
 
@@ -210,6 +219,21 @@ export const translate: TaskConfig<'translate'> = {
         const getTargetSuggestion = (id: string) =>
           targetDoc.suggestions?.find((s) => s.id === id);
 
+        // Resource Tab
+        if (
+          shouldTranslate(
+            englishResourceDirectory.resource?.lastAssuredText,
+            targetDoc.resource?.lastAssuredText,
+            'resource.lastAssuredText',
+          )
+        ) {
+          fieldsToTranslate.push({
+            path: 'resource.lastAssuredText',
+            value: englishResourceDirectory.resource!.lastAssuredText!,
+            locale: targetLocale,
+          });
+        }
+
         // Topics Top Level
         if (
           shouldTranslate(
@@ -305,6 +329,22 @@ export const translate: TaskConfig<'translate'> = {
           const path = `search.texts.${field}`;
           const sourceValue = englishResourceDirectory.search?.texts?.[field];
           const targetValue = targetDoc.search?.texts?.[field];
+
+          if (shouldTranslate(sourceValue, targetValue, path)) {
+            fieldsToTranslate.push({
+              path,
+              value: sourceValue!,
+              locale: targetLocale,
+            });
+          }
+        });
+
+        SEARCH_SUGGESTION_HEADER_FIELDS.forEach((field) => {
+          const path = `search.texts.suggestionHeaders.${field}`;
+          const sourceValue =
+            englishResourceDirectory.search?.texts?.suggestionHeaders?.[field];
+          const targetValue =
+            targetDoc.search?.texts?.suggestionHeaders?.[field];
 
           if (shouldTranslate(sourceValue, targetValue, path)) {
             fieldsToTranslate.push({
@@ -436,6 +476,21 @@ export const translate: TaskConfig<'translate'> = {
           },
         );
 
+        // Header Texts
+        HEADER_TEXT_FIELDS.forEach((field) => {
+          const path = `header.${field}`;
+          const sourceValue = englishResourceDirectory.header?.[field];
+          const targetValue = targetDoc.header?.[field];
+
+          if (shouldTranslate(sourceValue, targetValue, path)) {
+            fieldsToTranslate.push({
+              path,
+              value: sourceValue!,
+              locale: targetLocale,
+            });
+          }
+        });
+
         // Callouts (from newLayout tab)
         englishResourceDirectory.newLayout?.callouts?.options?.forEach(
           (sourceCallout, index) => {
@@ -544,6 +599,19 @@ export const translate: TaskConfig<'translate'> = {
           },
         };
 
+        // Resource Tab
+        if (translationsByPath['resource.lastAssuredText']) {
+          updateData.resource = {
+            ...targetDoc.resource,
+            lastAssuredText: translationsByPath['resource.lastAssuredText'],
+          };
+        } else if (isEmpty(targetDoc.resource?.lastAssuredText)) {
+          updateData.resource = {
+            ...targetDoc.resource,
+            lastAssuredText: englishResourceDirectory.resource?.lastAssuredText,
+          };
+        }
+
         if (translationsByPath['topics.backText']) {
           updateData.topics!.backText = translationsByPath['topics.backText'];
         } else if (isEmpty(targetDoc.topics?.backText)) {
@@ -640,7 +708,12 @@ export const translate: TaskConfig<'translate'> = {
         // Search Texts
         updateData.search = {
           ...targetDoc.search,
-          texts: { ...targetDoc.search?.texts },
+          texts: {
+            ...targetDoc.search?.texts,
+            suggestionHeaders: {
+              ...targetDoc.search?.texts?.suggestionHeaders,
+            },
+          },
         };
 
         SEARCH_TEXT_FIELDS.forEach((field) => {
@@ -654,6 +727,32 @@ export const translate: TaskConfig<'translate'> = {
             updateData.search!.texts = {
               ...updateData.search!.texts,
               [field]: englishResourceDirectory.search?.texts?.[field],
+            };
+          }
+        });
+
+        SEARCH_SUGGESTION_HEADER_FIELDS.forEach((field) => {
+          const path = `search.texts.suggestionHeaders.${field}`;
+          if (translationsByPath[path]) {
+            updateData.search!.texts = {
+              ...updateData.search!.texts,
+              suggestionHeaders: {
+                ...updateData.search!.texts?.suggestionHeaders,
+                [field]: translationsByPath[path],
+              },
+            };
+          } else if (
+            isEmpty(targetDoc.search?.texts?.suggestionHeaders?.[field])
+          ) {
+            updateData.search!.texts = {
+              ...updateData.search!.texts,
+              suggestionHeaders: {
+                ...updateData.search!.texts?.suggestionHeaders,
+                [field]:
+                  englishResourceDirectory.search?.texts?.suggestionHeaders?.[
+                    field
+                  ],
+              },
             };
           }
         });
@@ -786,6 +885,21 @@ export const translate: TaskConfig<'translate'> = {
               },
             );
         }
+
+        // Header Texts
+        updateData.header = {
+          ...targetDoc.header,
+        };
+
+        HEADER_TEXT_FIELDS.forEach((field) => {
+          const path = `header.${field}`;
+          if (translationsByPath[path]) {
+            updateData.header![field] = translationsByPath[path];
+          } else if (isEmpty(targetDoc.header?.[field])) {
+            updateData.header![field] =
+              englishResourceDirectory.header?.[field];
+          }
+        });
 
         // Callouts (from newLayout tab)
         if (englishResourceDirectory.newLayout?.callouts) {

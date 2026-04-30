@@ -228,9 +228,6 @@ export interface Config {
     | 'yue'
     | 'zh-Hans'
     | 'zh-Hant';
-  widgets: {
-    collections: CollectionsWidget;
-  };
   user: User;
   jobs: {
     tasks: {
@@ -522,6 +519,10 @@ export interface ResourceDirectory {
       | null;
     customHomeUrl?: string | null;
     searchUrl?: string | null;
+    /**
+     * Leave blank to use the default "My Stuff" label (or locale equivalent)
+     */
+    favoritesButtonLabel?: string | null;
     safeExit?: {
       enabled?: boolean | null;
       url?: string | null;
@@ -749,6 +750,25 @@ export interface ResourceDirectory {
       title?: string | null;
       queryInputPlaceholder?: string | null;
       locationInputPlaceholder?: string | null;
+      suggestionHeaders?: {
+        /**
+         * Shown above free-text search suggestions in the autocomplete dropdown.
+         */
+        suggestions?: string | null;
+        /**
+         * Shown above topic/category matches in the autocomplete dropdown.
+         */
+        categories?: string | null;
+        /**
+         * Shown above taxonomy matches in the autocomplete dropdown. This can be renamed to terms like Services.
+         */
+        taxonomies?: string | null;
+      };
+      viewDetailsText?: string | null;
+      /**
+       * Display the View Details action as an underlined text link instead of the default button-style action.
+       */
+      useTextLinkForViewDetails?: boolean | null;
       noResultsFallbackText?: string | null;
     };
     searchSettings: {
@@ -876,11 +896,14 @@ export interface OrchestrationConfig {
         schemaName: string;
         customAttributes?:
           | {
+              source_table: string;
               source_column: string;
               link_entity: 'organization' | 'service' | 'location';
               label: string;
               provenance?: string | null;
               searchable?: boolean | null;
+              translate_label?: boolean | null;
+              translate_value?: boolean | null;
               id?: string | null;
             }[]
           | null;
@@ -1293,6 +1316,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
             };
         customHomeUrl?: T;
         searchUrl?: T;
+        favoritesButtonLabel?: T;
         safeExit?:
           | T
           | {
@@ -1447,6 +1471,15 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
               title?: T;
               queryInputPlaceholder?: T;
               locationInputPlaceholder?: T;
+              suggestionHeaders?:
+                | T
+                | {
+                    suggestions?: T;
+                    categories?: T;
+                    taxonomies?: T;
+                  };
+              viewDetailsText?: T;
+              useTextLinkForViewDetails?: T;
               noResultsFallbackText?: T;
             };
         searchSettings?:
@@ -1566,11 +1599,14 @@ export interface OrchestrationConfigSelect<T extends boolean = true> {
         customAttributes?:
           | T
           | {
+              source_table?: T;
               source_column?: T;
               link_entity?: T;
               label?: T;
               provenance?: T;
               searchable?: T;
+              translate_label?: T;
+              translate_value?: T;
               id?: T;
             };
         id?: T;
@@ -1685,16 +1721,6 @@ export interface PayloadJobsStatsSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "collections_widget".
- */
-export interface CollectionsWidget {
-  data?: {
-    [k: string]: unknown;
-  };
-  width: 'full';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

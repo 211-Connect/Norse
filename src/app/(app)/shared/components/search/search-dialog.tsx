@@ -1,10 +1,17 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from 'react';
 import { createPortal } from 'react-dom';
 import { ChevronLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/navigation';
+import { deleteCookie, setCookie } from 'cookies-next/client';
 
 import { LocationSearchBar } from './location-search-bar';
 import { SearchBar } from './search-bar';
@@ -20,9 +27,14 @@ import {
   SEARCH_DIALOG_ID,
   SEARCH_DIALOG_TITLE_ID,
   SEARCH_INPUT_ID,
+  USER_PREF_DISTANCE,
 } from '../../lib/constants';
 import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
 import { createUrlParamsForSearch } from '../../utils/createUrlParamsForSearch';
+import { useAtomValue } from 'jotai';
+import { searchDistanceAtom } from '../../store/search';
+import { trackUmamiEvent, UmamiEvent } from '../../lib/umami';
+
 export interface SearchDialogProps {
   focusByDefault?: 'search' | 'location';
   open: boolean;
@@ -45,16 +57,32 @@ export function SearchDialog({
   const scrollPositionRef = useRef(0);
   const initialRenderRef = useRef(true);
   const [mounted, setMounted] = useState(false);
+  const [searchSource, setSearchSource] = useState<'manual' | 'suggestion'>(
+    'manual',
+  );
   const dialogRef = useRef<HTMLDivElement | null>(null);
+  const distance = useAtomValue(searchDistanceAtom);
 
-  const { findCode, locations, search, setSearch } =
-    useMainSearchLayoutContext();
+  const { search, setSearch } = useMainSearchLayoutContext();
 
   const onSubmit = useCallback(
     async (e) => {
       e.preventDefault();
 
       startTransition(() => {
+        if (searchSource === 'suggestion') {
+          trackUmamiEvent(UmamiEvent.SearchSuggestionClick, {
+            query: search.searchTerm,
+            queryType: search.queryType ?? '',
+            tenantId: appConfig.tenantId ?? '',
+          });
+        } else {
+          trackUmamiEvent(UmamiEvent.SearchManualClick, {
+            query: search.searchTerm,
+            tenantId: appConfig.tenantId ?? '',
+          });
+        }
+
         if (requireUserLocation && search.searchLocation.trim().length === 0) {
           setSearch((prev) => ({
             ...prev,
@@ -63,18 +91,15 @@ export function SearchDialog({
           return;
         }
 
-        const query = findCode(search.searchTerm);
+        const query = search.query || search.searchTerm;
 
-        const location = locations[0];
-        const hasLocationChanged =
-          search.searchLocation !== search.prevSearchLocation;
-        const locationParams =
-          hasLocationChanged && location?.address && location?.coordinates
-            ? {
-                searchLocation: location.address,
-                searchCoordinates: location.coordinates,
-              }
-            : {};
+        const hasCoordinates = search.searchCoordinates.length === 2;
+        const locationParams = hasCoordinates
+          ? {
+              searchLocation: search.searchLocation,
+              searchCoordinates: search.searchCoordinates,
+            }
+          : {};
 
         const urlParams = createUrlParamsForSearch(
           {
@@ -93,8 +118,17 @@ export function SearchDialog({
         const queryParams = stringifySearchParams(
           new URLSearchParams(urlParams),
         );
+        if (distance === '0') {
+          deleteCookie(USER_PREF_DISTANCE, { path: '/' });
+        } else {
+          setCookie(USER_PREF_DISTANCE, distance, { path: '/' });
+        }
 
         router.push(`/search${queryParams}`);
+
+        // Close as soon as navigation is requested so `open` / aria-expanded match
+        // real interactivity (dialog must not sit above the results page).
+        setOpen?.(false);
 
         setSearch((prev) => ({
           ...prev,
@@ -105,21 +139,17 @@ export function SearchDialog({
     },
     [
       appConfig.search.hybridSemanticSearchEnabled,
-      findCode,
-      locations,
+      appConfig.tenantId,
       requireUserLocation,
       router,
       search,
+      searchSource,
+      distance,
+      setOpen,
       setSearch,
       stringifySearchParams,
     ],
   );
-
-  useEffect(() => {
-    if (!isPending) {
-      setOpen?.(false);
-    }
-  }, [isPending, setOpen]);
 
   useEffect(() => {
     if (initialRenderRef.current) return;
@@ -152,6 +182,7 @@ export function SearchDialog({
       }, 10);
     }
   }, [focusByDefault, open]);
+
 
   const closeDialog = useCallback(() => {
     setOpen?.(false);
@@ -238,7 +269,7 @@ export function SearchDialog({
       )}
       role="dialog"
       data-testid={SEARCH_DIALOG_ID}
-      aria-hidden={!open}
+      aria-hidden={open ? undefined : true}
       aria-modal={open ? true : undefined}
       aria-labelledby={SEARCH_DIALOG_TITLE_ID}
       aria-describedby={SEARCH_DIALOG_DESCRIPTION_ID}
@@ -271,7 +302,7 @@ export function SearchDialog({
             <div id="search-form-inputs">
               <SearchBar
                 inputId={SEARCH_INPUT_ID}
-                enterKeyFocusTargetId={LOCATION_INPUT_ID}
+                onSearchSourceChange={setSearchSource}
               />
               <LocationSearchBar inputId={LOCATION_INPUT_ID} className="mt-4" />
             </div>

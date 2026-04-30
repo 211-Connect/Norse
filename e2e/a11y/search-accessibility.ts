@@ -1,6 +1,20 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { expect, goHome, test } from '../helpers';
+import {
+  expect,
+  expectPageUrl,
+  expectSearchDialogDismissed,
+  goHome,
+  isSearchResultsListUrl,
+  test,
+} from '../helpers';
+import {
+  ASYNC_UI_TIMEOUT_MS,
+  AUTOCOMPLETE_TIMEOUT_MS,
+  FOCUS_TIMEOUT_MS,
+  KEYBOARD_UI_STABILITY_MS,
+  UI_SHELL_TIMEOUT_MS,
+} from '../timeouts';
 import enCommon from '../../public/locales/en/common.json' with { type: 'json' };
 
 async function openDialogFromSearchTrigger(page: Page) {
@@ -11,7 +25,7 @@ async function openDialogFromSearchTrigger(page: Page) {
   await trigger.click();
 
   const dialog = page.getByTestId('search-dialog');
-  await expect(dialog).toBeVisible();
+  await expect(dialog).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
   await expect(dialog).toHaveAttribute('role', 'dialog');
   await expect(dialog).toHaveAttribute('aria-modal', 'true');
 
@@ -53,12 +67,12 @@ test.describe('Search accessibility preservation', () => {
   test('dialog triggers stay semantic and avoid nested interactive controls', async ({
     page,
   }) => {
-    const { trigger } = await openDialogFromSearchTrigger(page);
-    await expect(trigger).toHaveJSProperty('tagName', 'BUTTON');
-
     const addMyLocationButton = await getAddMyLocationButton(page);
     await expect(addMyLocationButton).toHaveJSProperty('tagName', 'BUTTON');
     await expect(addMyLocationButton.locator('input')).toHaveCount(0);
+
+    const { trigger } = await openDialogFromSearchTrigger(page);
+    await expect(trigger).toHaveJSProperty('tagName', 'BUTTON');
   });
 
   test('search trigger opens a labelled dialog and Escape restores focus', async ({
@@ -68,8 +82,10 @@ test.describe('Search accessibility preservation', () => {
     const labelledDialog = page.getByRole('dialog', { name: /search/i });
     const searchInput = page.locator('#search-input');
 
-    await expect(labelledDialog).toBeVisible();
-    await expect(searchInput).toBeFocused({ timeout: 5_000 });
+    await expect(labelledDialog).toBeVisible({
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
+    await expect(searchInput).toBeFocused({ timeout: FOCUS_TIMEOUT_MS });
 
     const descriptionId = await dialog.getAttribute('aria-describedby');
     expect(descriptionId).toBeTruthy();
@@ -92,8 +108,8 @@ test.describe('Search accessibility preservation', () => {
     const dialog = page.getByTestId('search-dialog');
     const locationInput = page.locator('#location-input');
 
-    await expect(dialog).toBeVisible();
-    await expect(locationInput).toBeFocused({ timeout: 5_000 });
+    await expect(dialog).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+    await expect(locationInput).toBeFocused({ timeout: FOCUS_TIMEOUT_MS });
 
     await page.keyboard.press('Escape');
     await expect(addMyLocationButton).toBeFocused();
@@ -133,7 +149,9 @@ test.describe('Search accessibility preservation', () => {
     const clearButtons = page.getByTestId('search-clear-btn');
 
     const clearSearchButton = clearButtons.first();
-    await expect(clearSearchButton).toBeVisible();
+    await expect(clearSearchButton).toBeVisible({
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
     await expect(clearSearchButton).toHaveAttribute('aria-label', /remove/i);
     await expect(searchInput).toBeFocused();
     await page.keyboard.press('Tab');
@@ -142,7 +160,9 @@ test.describe('Search accessibility preservation', () => {
     await expect(searchInput).toHaveValue('');
 
     await locationInput.fill('minneapolis');
-    await expect(clearButtons.nth(1)).toBeVisible();
+    await expect(clearButtons.nth(1)).toBeVisible({
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
     await locationInput.focus();
     await page.keyboard.press('Tab');
     await expect(clearButtons.nth(1)).toBeFocused();
@@ -163,7 +183,7 @@ test.describe('Search accessibility preservation', () => {
     await searchInput.fill('food');
 
     const listbox = page.getByTestId('autocomplete-listbox');
-    await expect(listbox).toBeVisible({ timeout: 10_000 });
+    await expect(listbox).toBeVisible({ timeout: AUTOCOMPLETE_TIMEOUT_MS });
     await expect(searchStatus).toContainText(/results available/i);
 
     const metrics = await listbox.evaluate((element) => {
@@ -183,27 +203,28 @@ test.describe('Search accessibility preservation', () => {
     expect(metrics.scrollHeight).toBeGreaterThanOrEqual(metrics.clientHeight);
   });
 
-  test('pressing Enter in the search autocomplete focuses location input instead of submitting', async ({
+  test('pressing Enter in the search autocomplete submits the search form', async ({
     page,
   }) => {
     await openDialogFromSearchTrigger(page);
 
-    const homeUrl = page.url();
     const searchInput = page.locator('#search-input');
-    const locationInput = page.locator('#location-input');
 
     await expect(searchInput).toBeFocused();
     await searchInput.fill('food');
     await searchInput
       .locator('..')
       .getByTestId('autocomplete-listbox')
-      .waitFor({ state: 'visible', timeout: 10_000 });
+      .waitFor({ state: 'visible', timeout: AUTOCOMPLETE_TIMEOUT_MS });
 
-    await searchInput.press('Enter');
-
-    await expect(locationInput).toBeFocused();
-    await expect(page).toHaveURL(homeUrl);
-    await expect(page.getByTestId('search-dialog')).toBeVisible();
+    await Promise.all([
+      expectPageUrl(page, isSearchResultsListUrl),
+      searchInput.press('Enter'),
+    ]);
+    await expectSearchDialogDismissed(page);
+    await expect(page.locator('#search-container')).toBeVisible({
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
   });
 
   test('pressing Enter in the location autocomplete submits the form', async ({
@@ -217,26 +238,39 @@ test.describe('Search accessibility preservation', () => {
     await locationInput
       .locator('..')
       .getByTestId('autocomplete-listbox')
-      .waitFor({ state: 'visible', timeout: 10_000 });
+      .waitFor({ state: 'visible', timeout: AUTOCOMPLETE_TIMEOUT_MS });
 
-    await locationInput.press('Enter');
-
-    // Form should submit and navigate to search page
-    await expect(page).toHaveURL(/\/search/, { timeout: 5_000 });
+    await Promise.all([
+      expectPageUrl(page, isSearchResultsListUrl),
+      locationInput.press('Enter'),
+    ]);
+    await expectSearchDialogDismissed(page);
+    await expect(page.locator('#search-container')).toBeVisible({
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
   });
 
   test('clicking X on location input sets "Everywhere"', async ({ page }) => {
     await openDialogFromSearchTrigger(page);
 
     const locationInput = page.locator('#location-input');
-    const clearButtons = page.getByTestId('search-clear-btn');
+    const locationField = locationInput.locator('..');
+    const clearButton = locationField.getByTestId('search-clear-btn');
+    const listbox = locationField.getByTestId('autocomplete-listbox');
 
     await locationInput.fill('minneapolis');
-    await expect(clearButtons.nth(1)).toBeVisible();
+    await listbox.waitFor({ state: 'visible', timeout: AUTOCOMPLETE_TIMEOUT_MS });
+    await listbox.getByTestId('autocomplete-option').first().click();
+    // Clear uses committed `value` from context; it stays `invisible` until a real pick.
+    await expect(clearButton).toBeVisible({
+      timeout: AUTOCOMPLETE_TIMEOUT_MS,
+    });
 
-    await clearButtons.nth(1).click();
+    await clearButton.click();
 
-    await expect(locationInput).toHaveValue(enCommon.search.everywhere);
+    await expect(locationInput).toHaveValue(enCommon.search.everywhere, {
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
   });
 
   test('autocomplete groups appear in correct order: Suggestions, Topics, Taxonomies', async ({
@@ -248,7 +282,7 @@ test.describe('Search accessibility preservation', () => {
     await searchInput.fill('o');
 
     const listbox = page.getByTestId('autocomplete-listbox').first();
-    await expect(listbox).toBeVisible({ timeout: 10_000 });
+    await expect(listbox).toBeVisible({ timeout: AUTOCOMPLETE_TIMEOUT_MS });
 
     const groups = await listbox
       .locator('[role="presentation"]')
@@ -290,32 +324,52 @@ test.describe('Search accessibility preservation', () => {
     await searchInput.fill('o');
 
     const listbox = page.getByTestId('autocomplete-listbox').first();
-    await expect(listbox).toBeVisible({ timeout: 10_000 });
+    const options = listbox.locator('[role="option"]');
+    await expect(listbox).toBeVisible({ timeout: AUTOCOMPLETE_TIMEOUT_MS });
 
-    // Get initial option count
-    const initialOptions = await listbox.locator('[role="option"]').count();
+    // Wait for the tenant-specific autocomplete mix to settle before capturing
+    // the baseline count; async taxonomy results can arrive after the initial paint.
+    await expect
+      .poll(
+        async () => {
+          const firstCount = await options.count();
+          await page.waitForTimeout(KEYBOARD_UI_STABILITY_MS);
+          const secondCount = await options.count();
+
+          if (firstCount > 1 && firstCount === secondCount) {
+            return firstCount;
+          }
+
+          return -1;
+        },
+        {
+          timeout: ASYNC_UI_TIMEOUT_MS,
+          intervals: [100, 250, 500, 1_000],
+        },
+      )
+      .not.toBe(-1);
+
+    const initialOptions = await options.count();
     expect(initialOptions).toBeGreaterThan(1);
 
     // Navigate down with arrow key
     await searchInput.press('ArrowDown');
 
-    // Wait a bit for any potential filtering
-    await page.waitForTimeout(300);
-
-    // Option count should remain the same
-    const optionsAfterArrowDown = await listbox
-      .locator('[role="option"]')
-      .count();
-    expect(optionsAfterArrowDown).toBe(initialOptions);
+    await expect
+      .poll(() => options.count(), {
+        timeout: ASYNC_UI_TIMEOUT_MS,
+        intervals: [100, 250, 500, 1_000],
+      })
+      .toBe(initialOptions);
 
     // Navigate down again
     await searchInput.press('ArrowDown');
-    await page.waitForTimeout(300);
 
-    // Option count should still be the same
-    const optionsAfterSecondArrow = await listbox
-      .locator('[role="option"]')
-      .count();
-    expect(optionsAfterSecondArrow).toBe(initialOptions);
+    await expect
+      .poll(() => options.count(), {
+        timeout: ASYNC_UI_TIMEOUT_MS,
+        intervals: [100, 250, 500, 1_000],
+      })
+      .toBe(initialOptions);
   });
 });

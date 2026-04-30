@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "屋企",
-    "favorites": "最愛",
     "log_out": "登出",
     "language_select_label": "揀一種語言嚟更改網站語言",
     "my_stuff": "我嘅嘢",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "你嘅清單刪除唔到。",
     "list_created": "建立咗嘅清單",
     "list_created_message": "你嘅清單已經成功建立。",
-    "unable_to_create_list_message": "你個清單建立唔到。"
+    "unable_to_create_list_message": "你個清單建立唔到。",
+    "remove_from_list_title": "喺清單入面移除？",
+    "remove_from_list_description": "呢個資源會喺呢個清單入面移除。如果需要，你遲啲可以加返佢。"
   },
   "search": {
     "add_my_location": "加入我嘅位置",
@@ -103,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "建立一個清單",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "名字",
       "list_description": "描述",
       "make_public": "公開"
@@ -139,15 +141,19 @@
       "sms_send_failed_title": "短訊發送失敗",
       "sms_send_failed_body": "你嘅訊息發送唔到。",
       "opens_in_new_tab": "喺新標籤入面打開",
-      "phone_number_label": "電話號碼"
+      "phone_number_label": "電話號碼",
+      "sms_unavailable": "唔可以用短訊分享"
     },
     "prompt_auth": "請登入以使用此功能。",
+    "prompt_auth_description": "請登入以使用此功能。",
     "manage_favorites": {
-      "title": "管理最愛"
+      "title": "管理最愛",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "你嘅起點係邊度？"
+    "prompt_start_location": "你嘅起點係邊度？",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "資料由"
@@ -161,5 +167,10 @@
     "go_to": "去到"
   },
   "filter_results_count_one": "{{ 計數 }} 結果",
-  "filter_results_count_other": "{{ 計數 }} 結果"
+  "filter_results_count_other": "{{ 計數 }} 結果",
+  "autocomplete": {
+    "results_available_one": "{{ 計數 }} 結果可用",
+    "results_available_other": "有 {{ 計數 }} 結果",
+    "no_results": "冇結果"
+  }
 }

@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "Home",
-    "favorites": "Nā mea punahele",
     "log_out": "Haʻalele",
     "language_select_label": "E koho i kahi ʻōlelo e hoʻololi i ka ʻōlelo o ka pūnaewele",
     "my_stuff": "Kaʻu mau mea",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "ʻAʻole hiki ke holoi ʻia kāu papa inoa.",
     "list_created": "Papa inoa i hana ʻia",
     "list_created_message": "Ua hana pono ʻia kāu papa inoa.",
-    "unable_to_create_list_message": "ʻAʻole hiki ke hana ʻia kāu papa inoa."
+    "unable_to_create_list_message": "ʻAʻole hiki ke hana ʻia kāu papa inoa.",
+    "remove_from_list_title": "Wehe mai ka papa inoa?",
+    "remove_from_list_description": "E wehe ʻia kēia kumuwaiwai mai kēia papa inoa. Hiki iā ʻoe ke hoʻohui hou iā ia ma hope inā pono."
   },
   "search": {
     "add_my_location": "Hoʻohui i koʻu wahi",
@@ -103,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "E hana i kahi papa inoa",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Inoa",
       "list_description": "Wehewehena",
       "make_public": "E hoʻolaha i ka lehulehu"
@@ -139,15 +141,19 @@
       "sms_send_failed_title": "Ua hāʻule ka hoʻouna ʻana o ka SMS",
       "sms_send_failed_body": "ʻAʻole i hoʻouna ʻia kāu leka.",
       "opens_in_new_tab": "wehe ʻia ma kahi pā hou",
-      "phone_number_label": "Helu kelepona"
+      "phone_number_label": "Helu kelepona",
+      "sms_unavailable": "ʻAʻole loaʻa ka kaʻana like ʻana o ka SMS"
     },
     "prompt_auth": "E ʻoluʻolu e komo e hoʻohana i kēia hiʻona.",
+    "prompt_auth_description": "E ʻoluʻolu e komo e hoʻohana i kēia hiʻona.",
     "manage_favorites": {
-      "title": "E hoʻokele i nā mea punahele"
+      "title": "E hoʻokele i nā mea punahele",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "Ma hea kou wahi hoʻomaka?"
+    "prompt_start_location": "Ma hea kou wahi hoʻomaka?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "ʻIkepili i hāʻawi ʻia e"
@@ -161,5 +167,10 @@
     "copyright": "© Kuleana kope {{text}}"
   },
   "filter_results_count_one": "hopena {{count}}",
-  "filter_results_count_other": "Nā hopena {{count}}"
+  "filter_results_count_other": "Nā hopena {{count}}",
+  "autocomplete": {
+    "results_available_one": "Loaʻa ka hopena {{count}}",
+    "results_available_other": "Loaʻa nā hopena {{count}}",
+    "no_results": "ʻAʻohe hopena"
+  }
 }

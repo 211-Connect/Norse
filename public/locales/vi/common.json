@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "Nhà",
-    "favorites": "Yêu thích",
     "log_out": "Đăng xuất",
     "language_select_label": "Chọn ngôn ngữ để thay đổi ngôn ngữ trang web",
     "my_stuff": "Đồ của tôi",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "Không thể xóa danh sách của bạn.",
     "list_created": "Danh sách đã được tạo",
     "list_created_message": "Danh sách của bạn đã được tạo thành công.",
-    "unable_to_create_list_message": "Danh sách của bạn không thể được tạo."
+    "unable_to_create_list_message": "Danh sách của bạn không thể được tạo.",
+    "remove_from_list_title": "Xóa khỏi danh sách?",
+    "remove_from_list_description": "Tài nguyên này sẽ bị xóa khỏi danh sách này. Bạn có thể thêm lại sau nếu cần."
   },
   "search": {
     "add_my_location": "Thêm vị trí của tôi",
@@ -103,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "Tạo danh sách",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Tên",
       "list_description": "Sự miêu tả",
       "make_public": "Công khai"
@@ -139,15 +141,19 @@
       "sms_send_failed_title": "Gửi SMS không thành công",
       "sms_send_failed_body": "Tin nhắn của bạn không gửi được.",
       "opens_in_new_tab": "(mở trong tab mới)",
-      "phone_number_label": "Số điện thoại"
+      "phone_number_label": "Số điện thoại",
+      "sms_unavailable": "Tính năng chia sẻ tin nhắn SMS hiện không khả dụng."
     },
     "prompt_auth": "Vui lòng đăng nhập để sử dụng tính năng này.",
+    "prompt_auth_description": "Vui lòng đăng nhập để sử dụng tính năng này.",
     "manage_favorites": {
-      "title": "Quản lý mục yêu thích"
+      "title": "Quản lý mục yêu thích",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "Vị trí bắt đầu của bạn là gì?"
+    "prompt_start_location": "Vị trí bắt đầu của bạn là gì?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Dữ liệu được cung cấp bởi"
@@ -161,5 +167,10 @@
     "go_to": "Đi đến"
   },
   "filter_results_count_one": "{{count}} kết quả",
-  "filter_results_count_other": "{{count}} kết quả"
+  "filter_results_count_other": "{{count}} kết quả",
+  "autocomplete": {
+    "results_available_one": "{{count}} kết quả có sẵn",
+    "results_available_other": "{{count}} kết quả có sẵn",
+    "no_results": "Không có kết quả"
+  }
 }

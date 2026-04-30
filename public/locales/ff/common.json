@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "Saare",
-    "favorites": "Yiɗɓe",
     "log_out": "Yaltu",
     "language_select_label": "Suɓo ɗemngal ngam waylude ɗemngal lowre ndee",
     "my_stuff": "Geɗe am",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "Doggol maa waawaa momteede.",
     "list_created": "Doggol sosaa",
     "list_created_message": "Doggol maa sosaa ko no moƴƴi.",
-    "unable_to_create_list_message": "Doggol maa ngol waawaa soseede."
+    "unable_to_create_list_message": "Doggol maa ngol waawaa soseede.",
+    "remove_from_list_title": "Ittude e doggol?",
+    "remove_from_list_description": "Ngalɗoo doosgal maa ittu e ndee doggol. Aɗa waawi ɓeydude ɗum caggal so ina haani."
   },
   "search": {
     "add_my_location": "Ɓeydu nokku am",
@@ -103,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "Sos doggol",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Inde",
       "list_description": "Limtol",
       "make_public": "Waɗde renndo"
@@ -139,15 +141,19 @@
       "sms_send_failed_title": "Neldude SMS ŋakki",
       "sms_send_failed_body": "Mesaas maa waawaa neldeede.",
       "opens_in_new_tab": "udditaa e tab keso",
-      "phone_number_label": "Limoore telefoŋ"
+      "phone_number_label": "Limoore telefoŋ",
+      "sms_unavailable": "Feccere SMS alaa"
     },
     "prompt_auth": "Tiiɗno, naata ngam huutoraade ngalɗoo gollal.",
+    "prompt_auth_description": "Tiiɗno, naata ngam huutoraade ngalɗoo gollal.",
     "manage_favorites": {
-      "title": "Njuɓɓudi ɓurɓe yiɗeede"
+      "title": "Njuɓɓudi ɓurɓe yiɗeede",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "Hol nokku ɗo puɗɗorto-ɗaa?"
+    "prompt_start_location": "Hol nokku ɗo puɗɗorto-ɗaa?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Dataaji ɗi..."
@@ -161,5 +167,10 @@
     "go_to": "Yah to"
   },
   "filter_results_count_one": "{{limto}} njeñtudi",
-  "filter_results_count_other": "{{limto}} njeñtudi ndii"
+  "filter_results_count_other": "{{limto}} njeñtudi ndii",
+  "autocomplete": {
+    "results_available_one": "{{limto}} njeñtudi ina woodi",
+    "results_available_other": "{{limto}} njeñtudi ina woodi",
+    "no_results": "Alaa njeñtudi"
+  }
 }

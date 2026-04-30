@@ -6,7 +6,14 @@ export type CustomAttribute = Pick<
       NonNullable<OrchestrationConfig['schemas']>
     >[number]['customAttributes']
   >[number],
-  'source_column' | 'link_entity' | 'provenance' | 'searchable' | 'id'
+  | 'source_table'
+  | 'source_column'
+  | 'link_entity'
+  | 'provenance'
+  | 'searchable'
+  | 'id'
+  | 'translate_label'
+  | 'translate_value'
 > & {
   label: {
     [locale: string]: string;

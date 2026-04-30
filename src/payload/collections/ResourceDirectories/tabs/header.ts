@@ -70,6 +70,19 @@ export const header: Tab = {
             update: superAdminOrSupportOrTenantAccess,
           },
         },
+        {
+          name: 'favoritesButtonLabel',
+          type: 'text',
+          localized: true,
+          admin: {
+            description:
+              'Leave blank to use the default "My Stuff" label (or locale equivalent)',
+          },
+          access: {
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
+          },
+        },
       ],
     },
     {

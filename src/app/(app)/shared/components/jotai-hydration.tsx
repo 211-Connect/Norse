@@ -63,6 +63,11 @@ function getSearchLocation(pageProps, cookies) {
 // This MUST be a child of the Jotai Provider component or hydration will not work
 export function JotaiHydration({ cookies = {}, pageProps }) {
   const appConfig = useAppConfig();
+  const preferredDistance =
+    pageProps?.distance?.trim() ||
+    cookies?.[USER_PREF_DISTANCE]?.trim() ||
+    appConfig?.search?.defaultRadius?.toString()?.trim() ||
+    '0';
 
   useHydrateAndSyncAtoms([
     [accessibilityAtom, { fontSize: cookies[USER_PREF_FONT_SIZE] || '1rem' }],
@@ -99,15 +104,10 @@ export function JotaiHydration({ cookies = {}, pageProps }) {
       searchAtom,
       {
         searchTerm: pageProps?.query_label ?? '',
-        prevSearchTerm: pageProps?.query_label ?? '',
         query: pageProps?.query ?? '',
         queryLabel: pageProps?.query_label ?? '',
         queryType: pageProps?.query_type ?? '',
-        searchDistance:
-          pageProps?.distance ??
-          cookies?.[USER_PREF_DISTANCE] ??
-          appConfig?.search?.defaultRadius?.toString() ??
-          '0',
+        searchDistance: preferredDistance,
         searchLocation: getSearchLocation(pageProps, cookies),
         prevSearchLocation: getSearchLocation(pageProps, cookies),
         searchLocationValidationError: '',

@@ -5,6 +5,7 @@ import { Datum } from '../datum';
 import { useTranslation } from 'react-i18next';
 import { ResourceComponentProps } from '../component-registry';
 import { trackUmamiEvent, UmamiEvent } from '../../../../shared/lib/umami';
+import { getDisplayHost } from '@/utils';
 
 export function WebsiteComponent({ resource }: ResourceComponentProps) {
   const { t } = useTranslation('page-resource');
@@ -13,6 +14,8 @@ export function WebsiteComponent({ resource }: ResourceComponentProps) {
     return null;
   }
 
+  const host = getDisplayHost(resource.website);
+
   return (
     <Datum
       icon={LinkIcon}
@@ -20,6 +23,7 @@ export function WebsiteComponent({ resource }: ResourceComponentProps) {
       urlTarget="_blank"
       title={t('website')}
       description={resource.website}
+      urlAriaLabel={`${t('website')}: ${host}`}
       shouldParseHtml={false}
       onClick={() =>
         trackUmamiEvent(UmamiEvent.WebsiteClick, {

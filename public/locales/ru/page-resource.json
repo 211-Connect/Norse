@@ -28,5 +28,6 @@
   "interpretation_services": "Услуги перевода",
   "other_information": "Прочая информация",
   "organization_url": "URL организации",
-  "contacts": "Для доступа к этой услуге свяжитесь с нами:"
+  "contacts": "Для доступа к этой услуге свяжитесь с нами:",
+  "location_name": "Название местоположения"
 }

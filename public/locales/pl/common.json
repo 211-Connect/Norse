@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "Dom",
-    "favorites": "Ulubione",
     "log_out": "Wyloguj się",
     "language_select_label": "Wybierz język, aby zmienić język witryny",
     "my_stuff": "Moje rzeczy",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "Nie udało się usunąć Twojej listy.",
     "list_created": "Lista utworzona",
     "list_created_message": "Twoja lista została pomyślnie utworzona.",
-    "unable_to_create_list_message": "Nie udało się utworzyć listy."
+    "unable_to_create_list_message": "Nie udało się utworzyć listy.",
+    "remove_from_list_title": "Usunąć z listy?",
+    "remove_from_list_description": "Ten zasób zostanie usunięty z tej listy. Możesz go dodać ponownie później, jeśli zajdzie taka potrzeba."
   },
   "search": {
     "add_my_location": "Dodaj moją lokalizację",
@@ -103,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "Utwórz listę",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Nazwa",
       "list_description": "Opis",
       "make_public": "Upublicznić"
@@ -139,15 +141,19 @@
       "sms_send_failed_title": "Nie udało się wysłać SMS-a",
       "sms_send_failed_body": "Nie udało się wysłać Twojej wiadomości.",
       "opens_in_new_tab": "otwiera się w nowej karcie",
-      "phone_number_label": "Numer telefonu"
+      "phone_number_label": "Numer telefonu",
+      "sms_unavailable": "Udostępnianie SMS-ów nie jest dostępne"
     },
     "prompt_auth": "Zaloguj się, aby skorzystać z tej funkcji.",
+    "prompt_auth_description": "Zaloguj się, aby skorzystać z tej funkcji.",
     "manage_favorites": {
-      "title": "Zarządzaj ulubionymi"
+      "title": "Zarządzaj ulubionymi",
+      "description": "Add this resource to or remove it from your lists."
     }
   },
   "update_location": {
-    "prompt_start_location": "Skąd wyruszysz?"
+    "prompt_start_location": "Skąd wyruszysz?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Dane dostarczone przez"
@@ -161,5 +167,10 @@
     "go_to": "Idź do"
   },
   "filter_results_count_one": "{{count}} wynik",
-  "filter_results_count_other": "{{count}} wyników"
+  "filter_results_count_other": "{{count}} wyników",
+  "autocomplete": {
+    "results_available_one": "{{count}} dostępnych wyników",
+    "results_available_other": "{{count}} dostępnych wyników",
+    "no_results": "Brak wyników"
+  }
 }
