@@ -59,21 +59,39 @@ export function SearchDialog({
 
   const { search, setSearch } = useMainSearchLayoutContext();
 
+  useEffect(() => {
+    if (!open || !navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setSearch((prev) => ({
+          ...prev,
+          userCoordinates: [pos.coords.longitude, pos.coords.latitude],
+        }));
+      },
+      () => {}, // silently ignore errors/denial
+      { enableHighAccuracy: false, timeout: 5000, maximumAge: 60_000 },
+    );
+  }, [open, setSearch]);
+
   const onSubmit = useCallback(
     async (e) => {
       e.preventDefault();
 
       startTransition(() => {
+        const payload = {
+          userCoordinates: search.userCoordinates.join(',') ?? '',
+          searchCoordinates: search.searchCoordinates.join(',') ?? '',
+          tenantId: appConfig.tenantId ?? '',
+          query: search.searchTerm ?? '',
+        };
         if (searchSource === 'suggestion') {
           trackUmamiEvent(UmamiEvent.SearchSuggestionClick, {
-            query: search.searchTerm,
+            ...payload,
             queryType: search.queryType ?? '',
-            tenantId: appConfig.tenantId ?? '',
           });
         } else {
           trackUmamiEvent(UmamiEvent.SearchManualClick, {
-            query: search.searchTerm,
-            tenantId: appConfig.tenantId ?? '',
+            ...payload,
           });
         }
 
@@ -127,7 +145,6 @@ export function SearchDialog({
         setSearch((prev) => ({
           ...prev,
           ...locationParams,
-          userCoordinates: search.searchCoordinates,
         }));
       });
     },
