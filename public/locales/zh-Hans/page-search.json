@@ -23,5 +23,6 @@
       "organization": "提供商名称"
     }
   },
-  "name_unavailable": "姓名不可用"
+  "name_unavailable": "姓名不可用",
+  "share_body": "查看 {{count}} 条关于“{{title}}”的搜索结果"
 }

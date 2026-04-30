@@ -24,7 +24,9 @@
     "unable_to_delete_list_message": "Hindi mabura ang iyong listahan.",
     "list_created": "Nalikha na ang listahan",
     "list_created_message": "Matagumpay na nalikha ang iyong listahan.",
-    "unable_to_create_list_message": "Hindi malikha ang iyong listahan."
+    "unable_to_create_list_message": "Hindi malikha ang iyong listahan.",
+    "remove_from_list_title": "Alisin sa listahan?",
+    "remove_from_list_description": "Aalisin ang mapagkukunang ito sa listahang ito. Maaari mo itong idagdag muli mamaya kung kinakailangan."
   },
   "search": {
     "add_my_location": "Idagdag ang aking lokasyon",
@@ -139,7 +141,8 @@
       "sms_send_failed_title": "Nabigo ang pagpapadala ng SMS",
       "sms_send_failed_body": "Hindi naipadala ang iyong mensahe.",
       "opens_in_new_tab": "magbubukas sa isang bagong tab",
-      "phone_number_label": "Numero ng telepono"
+      "phone_number_label": "Numero ng telepono",
+      "sms_unavailable": "Hindi magagamit ang pagbabahagi ng SMS"
     },
     "prompt_auth": "Mangyaring mag-login upang magamit ang tampok na ito.",
     "prompt_auth_description": "Mangyaring mag-login upang magamit ang tampok na ito.",
@@ -164,5 +167,10 @@
     "copyright": "© Karapatang-ari {{text}}"
   },
   "filter_results_count_one": "{{count}} resulta",
-  "filter_results_count_other": "{{count}} resulta"
+  "filter_results_count_other": "{{count}} resulta",
+  "autocomplete": {
+    "results_available_one": "{{count}} resulta ang makukuha",
+    "results_available_other": "{{count}} resulta ang makukuha",
+    "no_results": "Walang resulta"
+  }
 }

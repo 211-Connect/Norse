@@ -28,5 +28,6 @@
   "interpretation_services": "Dolmetschdienste",
   "other_information": "Sonstige Informationen",
   "organization_url": "Organisations-URL",
-  "contacts": "Um diesen Service zu nutzen, kontaktieren Sie:"
+  "contacts": "Um diesen Service zu nutzen, kontaktieren Sie:",
+  "location_name": "Name des Standorts"
 }

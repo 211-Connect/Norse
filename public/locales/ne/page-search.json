@@ -23,5 +23,6 @@
       "organization": "प्रदायकको नाम"
     }
   },
-  "name_unavailable": "नाम उपलब्ध छैन"
+  "name_unavailable": "नाम उपलब्ध छैन",
+  "share_body": "\"{{title}}\" को लागि {{count}} खोज परिणामहरू हेर्नुहोस्।"
 }

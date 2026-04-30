@@ -24,7 +24,9 @@
     "unable_to_delete_list_message": "មិនអាចលុបបញ្ជីរបស់អ្នកបានទេ។",
     "list_created": "បញ្ជីត្រូវបានបង្កើតឡើង",
     "list_created_message": "បញ្ជីរបស់អ្នកត្រូវបានបង្កើតដោយជោគជ័យ។",
-    "unable_to_create_list_message": "មិនអាចបង្កើតបញ្ជីរបស់អ្នកបានទេ។"
+    "unable_to_create_list_message": "មិនអាចបង្កើតបញ្ជីរបស់អ្នកបានទេ។",
+    "remove_from_list_title": "លុបចេញពីបញ្ជី?",
+    "remove_from_list_description": "ធនធាននេះនឹងត្រូវបានលុបចេញពីបញ្ជីនេះ។ អ្នកអាចបន្ថែមវាមកវិញនៅពេលក្រោយប្រសិនបើចាំបាច់។"
   },
   "search": {
     "add_my_location": "បន្ថែមទីតាំងរបស់ខ្ញុំ",
@@ -139,7 +141,8 @@
       "sms_send_failed_title": "ការផ្ញើសារ SMS បរាជ័យ",
       "sms_send_failed_body": "សាររបស់អ្នកមិនអាចផ្ញើបានទេ។",
       "opens_in_new_tab": "បើកនៅក្នុងផ្ទាំងថ្មីមួយ",
-      "phone_number_label": "លេខទូរស័ព្ទ"
+      "phone_number_label": "លេខទូរស័ព្ទ",
+      "sms_unavailable": "ការចែករំលែកសារ SMS មិនអាចប្រើបានទេ"
     },
     "prompt_auth": "សូមចូលគណនីដើម្បីប្រើប្រាស់មុខងារនេះ។",
     "prompt_auth_description": "សូមចូលគណនីដើម្បីប្រើប្រាស់មុខងារនេះ។",
@@ -164,5 +167,10 @@
     "go_to": "ចូលទៅកាន់"
   },
   "filter_results_count_one": "លទ្ធផល {{count}}",
-  "filter_results_count_other": "លទ្ធផល {{count}}"
+  "filter_results_count_other": "លទ្ធផល {{count}}",
+  "autocomplete": {
+    "results_available_one": "លទ្ធផល {{count}} មានហើយ",
+    "results_available_other": "មានលទ្ធផល {{count}}",
+    "no_results": "គ្មានលទ្ធផលទេ"
+  }
 }

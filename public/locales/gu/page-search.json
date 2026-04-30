@@ -23,5 +23,6 @@
       "organization": "પ્રદાતાનું નામ"
     }
   },
-  "name_unavailable": "નામ ઉપલબ્ધ નથી"
+  "name_unavailable": "નામ ઉપલબ્ધ નથી",
+  "share_body": "\"{{title}}\" માટે {{count}} શોધ પરિણામો જુઓ."
 }

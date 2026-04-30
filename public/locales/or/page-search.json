@@ -23,5 +23,6 @@
       "organization": "ପ୍ରଦାତାଙ୍କ ନାମ"
     }
   },
-  "name_unavailable": "ନାମ ଉପଲବ୍ଧ ନାହିଁ"
+  "name_unavailable": "ନାମ ଉପଲବ୍ଧ ନାହିଁ",
+  "share_body": "\"{{title}}\" ପାଇଁ {{count}} ସନ୍ଧାନ ଫଳାଫଳ ଦେଖନ୍ତୁ।"
 }

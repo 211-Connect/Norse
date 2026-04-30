@@ -24,7 +24,9 @@
     "unable_to_delete_list_message": "તમારી યાદી કાઢી શકાઈ નથી.",
     "list_created": "સૂચિ બનાવી",
     "list_created_message": "તમારી યાદી સફળતાપૂર્વક બનાવવામાં આવી છે.",
-    "unable_to_create_list_message": "તમારી યાદી બનાવી શકાઈ નથી."
+    "unable_to_create_list_message": "તમારી યાદી બનાવી શકાઈ નથી.",
+    "remove_from_list_title": "યાદીમાંથી કાઢી નાખીએ?",
+    "remove_from_list_description": "આ સંસાધન આ સૂચિમાંથી દૂર કરવામાં આવશે. જો જરૂર પડે તો તમે તેને પછીથી પાછું ઉમેરી શકો છો."
   },
   "search": {
     "add_my_location": "મારું સ્થાન ઉમેરો",
@@ -139,7 +141,8 @@
       "sms_send_failed_title": "SMS મોકલવામાં નિષ્ફળ ગયા",
       "sms_send_failed_body": "તમારો સંદેશ મોકલવામાં નિષ્ફળ ગયો.",
       "opens_in_new_tab": "નવા ટેબમાં ખુલે છે",
-      "phone_number_label": "ફોન નંબર"
+      "phone_number_label": "ફોન નંબર",
+      "sms_unavailable": "SMS શેરિંગ ઉપલબ્ધ નથી"
     },
     "prompt_auth": "આ સુવિધાનો ઉપયોગ કરવા માટે કૃપા કરીને લોગિન કરો.",
     "prompt_auth_description": "આ સુવિધાનો ઉપયોગ કરવા માટે કૃપા કરીને લોગિન કરો.",
@@ -164,5 +167,10 @@
     "copyright": "© કૉપિરાઇટ {{ટેક્સ્ટ}}"
   },
   "filter_results_count_one": "{{ગણતરી}} પરિણામ",
-  "filter_results_count_other": "{{ગણતરી}} પરિણામો"
+  "filter_results_count_other": "{{ગણતરી}} પરિણામો",
+  "autocomplete": {
+    "results_available_one": "{{count}} પરિણામ ઉપલબ્ધ છે",
+    "results_available_other": "{{count}} પરિણામો ઉપલબ્ધ છે",
+    "no_results": "કોઈ પરિણામ નથી"
+  }
 }

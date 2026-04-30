@@ -23,5 +23,6 @@
       "organization": "供應商名稱"
     }
   },
-  "name_unavailable": "個名唔可用"
+  "name_unavailable": "個名唔可用",
+  "share_body": "睇 {{count}} 搜尋結果，搵「 { { title } } 」"
 }

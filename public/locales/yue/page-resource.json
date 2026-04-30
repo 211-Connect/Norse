@@ -28,5 +28,6 @@
   "interpretation_services": "口譯服務",
   "other_information": "其他資料",
   "organization_url": "機構網址",
-  "contacts": "如果要使用呢個服務，請聯絡："
+  "contacts": "如果要使用呢個服務，請聯絡：",
+  "location_name": "地點名稱"
 }
