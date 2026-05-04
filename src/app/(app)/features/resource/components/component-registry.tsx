@@ -162,9 +162,10 @@ export function shouldComponentRender(
       return Boolean(resource.categories && resource.categories.length > 0);
     case ResourceComponentId.MAP:
       return Boolean(
-        resource.location &&
-        resource.location.coordinates &&
-        resource.location.coordinates.length === 2,
+        (resource.location &&
+          resource.location.coordinates &&
+          resource.location.coordinates.length === 2) ||
+          (resource.serviceArea && resource.serviceArea.coordinates),
       );
     case ResourceComponentId.GET_DIRECTIONS:
       return Boolean(
