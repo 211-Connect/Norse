@@ -1,4 +1,4 @@
-import { getServerSession, NextAuthOptions, Session } from 'next-auth';
+import { getServerSession, NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import KeycloakProvider from 'next-auth/providers/keycloak';
 
@@ -8,13 +8,6 @@ import { isJwtExpired } from './utils/isJwtExpired';
 import { createLogger } from './lib/logger';
 import { normalizeAllowedEmailDomains } from './utils/normalizeAllowedEmailDomains';
 import { getKeycloakIssuer } from './utils/getKeycloakIssuer';
-
-// Helper to remove null/undefined values from object
-const omitNilValues = <T extends Record<string, any>>(obj: T): Partial<T> => {
-  return Object.fromEntries(
-    Object.entries(obj).filter(([_, value]) => value != null),
-  ) as Partial<T>;
-};
 
 const log = createLogger('auth');
 const isDebug = process.env.NEXTAUTH_DEBUG === 'true';
