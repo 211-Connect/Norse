@@ -10,11 +10,12 @@ export const searchAtom = atom({
   prevSearchLocation: '',
   searchLocationValidationError: '',
   searchDistance: '',
-  userCoordinates: [] as any[],
   // New fields for advanced geospatial filtering
   searchPlaceType: [] as string[],
   searchBbox: null as [number, number, number, number] | null,
 });
+
+export const userCoordinatesAtom = atom([] as number[]);
 
 // Currently searched term (This is the visible value in the input)
 export const searchTermAtom = atom((get) => get(searchAtom).searchTerm);
@@ -37,11 +38,6 @@ export const searchCoordinatesAtom = atom(
 );
 
 export const searchDistanceAtom = atom((get) => get(searchAtom).searchDistance);
-
-// Currently selected user coordinates
-export const userCoordinatesAtom = atom(
-  (get) => get(searchAtom).userCoordinates,
-);
 
 export const searchPlaceTypeAtom = atom(
   (get) => get(searchAtom).searchPlaceType,

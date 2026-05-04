@@ -2,6 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import NextTopLoader from 'nextjs-toploader';
+import { Provider as JotaiProvider } from 'jotai';
 
 import { AppConfigProvider } from '../context/app-config-provider';
 import { PageView } from './page-view';
@@ -18,18 +19,20 @@ export function Providers({ appConfig, children, session }) {
     >
       <QueryClientProvider client={queryClient}>
         <AppConfigProvider value={appConfig}>
-          <PrevUrlProvider>
-            <NextTopLoader
-              color="hsl(var(--primary))"
-              showSpinner={false}
-              height={2}
-              crawlSpeed={25}
-              speed={100}
-              template='<div class="bar" role="bar" aria-hidden="true"><div class="peg"></div></div>'
-            />
-            <PageView />
-            {children}
-          </PrevUrlProvider>
+          <JotaiProvider>
+            <PrevUrlProvider>
+              <NextTopLoader
+                color="hsl(var(--primary))"
+                showSpinner={false}
+                height={2}
+                crawlSpeed={25}
+                speed={100}
+                template='<div class="bar" role="bar" aria-hidden="true"><div class="peg"></div></div>'
+              />
+              <PageView />
+              {children}
+            </PrevUrlProvider>
+          </JotaiProvider>
         </AppConfigProvider>
       </QueryClientProvider>
     </SessionProvider>
