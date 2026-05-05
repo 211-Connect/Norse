@@ -17,9 +17,9 @@ import {
   parseMetrics,
   sumEventTotals,
 } from './utils';
-import { UmamiEvent } from '../../../../../app/(app)/shared/lib/umami';
-import { fetchWrapper } from '../../../../../app/(app)/shared/lib/fetchWrapper';
 import { geocodeSessions } from './geocodeSessions';
+import { fetchWrapper } from '../../../app/(app)/shared/lib/fetchWrapper';
+import { UmamiEvent } from '../../../app/(app)/shared/lib/umami';
 
 export interface Metric {
   current: number;

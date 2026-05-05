@@ -1,4 +1,4 @@
-import { forwardGeocode } from '../../../../../app/(app)/shared/serverActions/geocoding/forwardGeocode';
+import { forwardGeocode } from '../../../app/(app)/shared/serverActions/geocoding/forwardGeocode';
 import type { HeatmapPoint } from './types';
 import { UmamiSession } from './types';
 

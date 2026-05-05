@@ -8,13 +8,13 @@ import { createLogger } from '@/lib/logger';
 const log = createLogger('maplibre');
 import { Protocol } from 'pmtiles';
 import 'maplibre-gl/dist/maplibre-gl.css';
+
+import { HeatmapPoint } from './types';
 import {
   getBoundsFromServiceArea,
   normalizeServiceArea,
   ServiceAreaGeoJSON,
-} from '../../../../../app/(app)/shared/components/map/map-shared';
-import { MapErrorFallback } from '../../../../../app/(app)/shared/components/map/map-error-fallback';
-import { HeatmapPoint } from './types';
+} from '../../../app/(app)/shared/components/map/map-shared';
 
 type MapProps = {
   center?: [number, number];

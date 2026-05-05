@@ -56,7 +56,6 @@ const config = buildConfig({
     TenantMedia,
     ResourceDirectories,
     OrchestrationConfig,
-    Analytics,
   ],
   jobs: {
     tasks: [translateTopics, translate, warmCache],
@@ -95,7 +94,133 @@ const config = buildConfig({
     },
     user: Users.slug,
     components: {
-      afterNavLinks: ['@/payload/components/ClearCacheButton'],
+      afterNavLinks: [
+        '@/payload/components/AnalyticsNavLink',
+        '@/payload/components/ClearCacheButton',
+      ],
+      views: {
+        analytics: {
+          Component: '@/payload/components/AnalyticsView',
+          path: '/analytics',
+          exact: true,
+        },
+        dashboard: {
+          Component: '@/payload/components/MainDashboardView',
+        },
+      },
+    },
+    dashboard: {
+      widgets: [
+        {
+          slug: 'analytics-total-users',
+          Component:
+            '@/payload/components/analytics/widgets/TotalUsersWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-searches',
+          Component:
+            '@/payload/components/analytics/widgets/SearchesWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-resource-views',
+          Component:
+            '@/payload/components/analytics/widgets/ResourceViewsWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-zero-results',
+          Component:
+            '@/payload/components/analytics/widgets/ZeroResultsWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-website-clicks',
+          Component:
+            '@/payload/components/analytics/widgets/WebsiteClicksWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-phone-calls',
+          Component:
+            '@/payload/components/analytics/widgets/PhoneCallsWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-directions',
+          Component:
+            '@/payload/components/analytics/widgets/DirectionsWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-widget-searches',
+          Component:
+            '@/payload/components/analytics/widgets/WidgetSearchesWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-page-views',
+          Component:
+            '@/payload/components/analytics/widgets/PageViewsWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-pageviews-chart',
+          Component:
+            '@/payload/components/analytics/widgets/PageviewsChartWidget#default',
+          minWidth: 'large',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-map',
+          Component:
+            '@/payload/components/analytics/widgets/AnalyticsMapWidget#default',
+          minWidth: 'medium',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-resource-titles',
+          Component:
+            '@/payload/components/analytics/widgets/ResourceTitlesWidget#default',
+          minWidth: 'medium',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-search-queries',
+          Component:
+            '@/payload/components/analytics/widgets/SearchQueriesWidget#default',
+          minWidth: 'medium',
+          maxWidth: 'full',
+        },
+      ],
+      // defaultLayout is the analytics layout so "Reset Layout" on the analytics
+      // page restores the correct widgets. The main /admin dashboard overrides
+      // this via MainDashboardView to show only the collections widget.
+      defaultLayout: [
+        { widgetSlug: 'analytics-total-users', width: 'x-small' as const },
+        { widgetSlug: 'analytics-searches', width: 'x-small' as const },
+        { widgetSlug: 'analytics-resource-views', width: 'x-small' as const },
+        { widgetSlug: 'analytics-zero-results', width: 'x-small' as const },
+        { widgetSlug: 'analytics-website-clicks', width: 'x-small' as const },
+        { widgetSlug: 'analytics-phone-calls', width: 'x-small' as const },
+        { widgetSlug: 'analytics-directions', width: 'x-small' as const },
+        { widgetSlug: 'analytics-widget-searches', width: 'x-small' as const },
+        { widgetSlug: 'analytics-page-views', width: 'x-small' as const },
+        { widgetSlug: 'analytics-pageviews-chart', width: 'large' as const },
+        { widgetSlug: 'analytics-map', width: 'medium' as const },
+        { widgetSlug: 'analytics-resource-titles', width: 'medium' as const },
+        { widgetSlug: 'analytics-search-queries', width: 'medium' as const },
+      ],
     },
   },
   secret: process.env.PAYLOAD_SECRET as string,
