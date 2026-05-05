@@ -186,6 +186,10 @@ export const Tenants: CollectionConfig = {
               name: 'requiresLogin',
               type: 'checkbox',
               defaultValue: false,
+              admin: {
+                description:
+                  '⚠️ WARNING: Enabling this will make the website private. Only authenticated users will be able to access it. Use this setting with caution.',
+              },
             },
           ],
         },
@@ -203,8 +207,6 @@ export const Tenants: CollectionConfig = {
                 },
               ],
               admin: {
-                description:
-                  'Allowed domains to access via OAuth. Add values like acme.org or partner.acme.org.',
                 condition: (data, siblingData) =>
                   siblingData?.requiresLogin || data?.auth?.requiresLogin,
               },
