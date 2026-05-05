@@ -14,8 +14,7 @@ import {
   ServiceAreaGeoJSON,
 } from '../../../../../app/(app)/shared/components/map/map-shared';
 import { MapErrorFallback } from '../../../../../app/(app)/shared/components/map/map-error-fallback';
-
-export type HeatmapPoint = [number, number, number?];
+import { HeatmapPoint } from './types';
 
 type MapProps = {
   center?: [number, number];

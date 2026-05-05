@@ -1,5 +1,5 @@
 import { forwardGeocode } from '../../../../../app/(app)/shared/serverActions/geocoding/forwardGeocode';
-import type { HeatmapPoint } from './AnalyticsMap';
+import type { HeatmapPoint } from './types';
 import { UmamiSession } from './types';
 
 async function runBatch<T, R>(

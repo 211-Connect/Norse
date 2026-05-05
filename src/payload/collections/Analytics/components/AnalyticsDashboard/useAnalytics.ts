@@ -9,6 +9,7 @@ import type {
   UmamiPageviews,
   UmamiSessionResponse,
   UmamiStats,
+  HeatmapPoint,
 } from './types';
 import {
   buildProxyQuery,
@@ -19,7 +20,6 @@ import {
 import { UmamiEvent } from '../../../../../app/(app)/shared/lib/umami';
 import { fetchWrapper } from '../../../../../app/(app)/shared/lib/fetchWrapper';
 import { geocodeSessions } from './geocodeSessions';
-import { HeatmapPoint } from './AnalyticsMap';
 
 export interface Metric {
   current: number;

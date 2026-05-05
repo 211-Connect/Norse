@@ -1,5 +1,7 @@
 export type DateRange = 7 | 30 | 90;
 
+export type HeatmapPoint = [number, number, number?];
+
 export interface MetricEntry {
   x: string;
   y: number;
