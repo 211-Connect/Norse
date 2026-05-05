@@ -25,8 +25,8 @@ import {
 } from '../../lib/constants';
 import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
 import { createUrlParamsForSearch } from '../../utils/createUrlParamsForSearch';
-import { useAtomValue } from 'jotai';
-import { searchDistanceAtom } from '../../store/search';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { searchCoordinatesAtom, searchDistanceAtom, userCoordinatesAtom } from '../../store/search';
 import { trackUmamiEvent, UmamiEvent } from '../../lib/umami';
 
 export interface SearchDialogProps {
@@ -58,22 +58,42 @@ export function SearchDialog({
   const distance = useAtomValue(searchDistanceAtom);
 
   const { search, setSearch } = useMainSearchLayoutContext();
+  const setUserCoordinates = useSetAtom(userCoordinatesAtom);
+  const userCoordinates = useAtomValue(userCoordinatesAtom);
+  const searchCoordinates = useAtomValue(searchCoordinatesAtom);
+
+  useEffect(() => {
+    if (!open || !navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setUserCoordinates([pos.coords.longitude, pos.coords.latitude]);
+      },
+      () => {
+        setUserCoordinates(searchCoordinates);
+      },
+      { enableHighAccuracy: false, timeout: 5000, maximumAge: 60_000 },
+    );
+  }, [open, setUserCoordinates, searchCoordinates]);
 
   const onSubmit = useCallback(
     async (e) => {
       e.preventDefault();
 
       startTransition(() => {
+        const payload = {
+          userCoordinates: userCoordinates.join(',') ?? '',
+          searchCoordinates: search.searchCoordinates.join(',') ?? '',
+          tenantId: appConfig.tenantId ?? '',
+          query: search.searchTerm ?? '',
+        };
         if (searchSource === 'suggestion') {
           trackUmamiEvent(UmamiEvent.SearchSuggestionClick, {
-            query: search.searchTerm,
+            ...payload,
             queryType: search.queryType ?? '',
-            tenantId: appConfig.tenantId ?? '',
           });
         } else {
           trackUmamiEvent(UmamiEvent.SearchManualClick, {
-            query: search.searchTerm,
-            tenantId: appConfig.tenantId ?? '',
+            ...payload,
           });
         }
 
@@ -127,7 +147,6 @@ export function SearchDialog({
         setSearch((prev) => ({
           ...prev,
           ...locationParams,
-          userCoordinates: search.searchCoordinates,
         }));
       });
     },

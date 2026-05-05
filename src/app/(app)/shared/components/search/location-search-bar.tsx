@@ -13,6 +13,7 @@ import {
   searchCoordinatesAtom,
   searchLocationAtom,
   searchLocationValidationErrorAtom,
+  userCoordinatesAtom,
 } from '../../store/search';
 import { useDebounce } from '../../hooks/use-debounce';
 import { useLocations } from '../../hooks/api/use-locations';
@@ -68,6 +69,7 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
   const globalSearchLocation = useAtomValue(searchLocationAtom);
   const coords = useAtomValue(searchCoordinatesAtom);
   const globalPrevSearchLocation = useAtomValue(prevSearchLocationAtom);
+  const userCoordinates = useAtomValue(userCoordinatesAtom);
 
   // Select state based on mode
   const searchLocation = isStandalone
@@ -159,10 +161,10 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
           if (
             coords.type === 'invalid' ||
             (coords.type === 'coordinates' &&
-              coordinates?.[0] !== prev['userCoordinates']?.[0] &&
-              coordinates?.[1] !== prev['userCoordinates']?.[1]) ||
-            (coordinates?.[0] !== prev['userCoordinates']?.[0] &&
-              coordinates?.[1] !== prev['userCoordinates']?.[1])
+              coordinates?.[0] !== userCoordinates?.[0] &&
+              coordinates?.[1] !== userCoordinates?.[1]) ||
+            (coordinates?.[0] !== userCoordinates?.[0] &&
+              coordinates?.[1] !== userCoordinates?.[1])
           ) {
             isNewCoords = true;
           }
@@ -184,7 +186,7 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
         });
       }
     },
-    [findCoords, setSearch, isStandalone, props],
+    [findCoords, setSearch, isStandalone, props, userCoordinates],
   );
 
   const handleInputChange = useCallback(

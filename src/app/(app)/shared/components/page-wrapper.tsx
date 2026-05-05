@@ -1,7 +1,6 @@
 'use client';
 
 import { PropsWithChildren } from 'react';
-import { Provider as JotaiProvider } from 'jotai';
 import { ErrorBoundary } from '@/app/(app)/features/error/components/error-boundary';
 import { TmpCookiesObj } from 'cookies-next';
 
@@ -39,43 +38,41 @@ export const PageWrapper = ({
   const appConfig = useAppConfig();
 
   return (
-    <JotaiProvider>
-      <TranslationsProvider
-        namespaces={translationData.i18nNamespaces}
-        locale={translationData.locale}
-        resources={translationData.resources}
-      >
-        <JotaiHydration cookies={cookies} pageProps={jotaiData} />
-        <ErrorBoundary>
-          <a
-            href={`#${MAIN_CONTENT_ID}`}
-            className="sr-only z-50 m-3 inline-flex rounded-md bg-background px-4 py-2 text-sm font-medium text-foreground focus:not-sr-only focus:absolute focus:left-0 focus:top-0 focus:ring-2 focus:ring-ring"
-          >
-            Skip to content
-          </a>
-          <Header />
-          <main id={MAIN_CONTENT_ID} className="flex flex-1 flex-col">
-            {children}
-          </main>
-          <Footer />
-          <GlobalDialogs />
-          <Toaster />
-          <GoogleTagManagerScript
-            containerId={appConfig.gtmContainerId}
-            nonce={nonce}
-          />
-          <MatomoTagManagerScript
-            matamoContainerUrl={appConfig.matomoContainerUrl}
-            nonce={nonce}
-          />
-          <UmamiScript
-            scriptUrl={process.env.NEXT_PUBLIC_UMAMI_SCRIPT_URL}
-            websiteId={appConfig.umamiWebsiteId}
-            nonce={nonce}
-          />
-          <DynamicHeightListener />
-        </ErrorBoundary>
-      </TranslationsProvider>
-    </JotaiProvider>
+    <TranslationsProvider
+      namespaces={translationData.i18nNamespaces}
+      locale={translationData.locale}
+      resources={translationData.resources}
+    >
+      <JotaiHydration cookies={cookies} pageProps={jotaiData} />
+      <ErrorBoundary>
+        <a
+          href={`#${MAIN_CONTENT_ID}`}
+          className="sr-only z-50 m-3 inline-flex rounded-md bg-background px-4 py-2 text-sm font-medium text-foreground focus:not-sr-only focus:absolute focus:left-0 focus:top-0 focus:ring-2 focus:ring-ring"
+        >
+          Skip to content
+        </a>
+        <Header />
+        <main id={MAIN_CONTENT_ID} className="flex flex-1 flex-col">
+          {children}
+        </main>
+        <Footer />
+        <GlobalDialogs />
+        <Toaster />
+        <GoogleTagManagerScript
+          containerId={appConfig.gtmContainerId}
+          nonce={nonce}
+        />
+        <MatomoTagManagerScript
+          matamoContainerUrl={appConfig.matomoContainerUrl}
+          nonce={nonce}
+        />
+        <UmamiScript
+          scriptUrl={process.env.NEXT_PUBLIC_UMAMI_SCRIPT_URL}
+          websiteId={appConfig.umamiWebsiteId}
+          nonce={nonce}
+        />
+        <DynamicHeightListener />
+      </ErrorBoundary>
+    </TranslationsProvider>
   );
 };
