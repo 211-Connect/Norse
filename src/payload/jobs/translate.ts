@@ -39,7 +39,10 @@ const SEARCH_SUGGESTION_HEADER_FIELDS = [
   'taxonomies',
 ] as const;
 
-const HEADER_TEXT_FIELDS = ['favoritesButtonLabel'] as const;
+const HEADER_TEXT_FIELDS = [
+  'favoritesButtonLabel',
+  'feedbackButtonLabel',
+] as const;
 
 const CALLOUT_TEXT_FIELDS = ['description', 'title'] as const;
 

@@ -544,6 +544,10 @@ export interface ResourceDirectory {
      * Leave blank to use the default "My Stuff" label (or locale equivalent)
      */
     favoritesButtonLabel?: string | null;
+    /**
+     * Leave blank to use the default feedback label (or locale equivalent)
+     */
+    feedbackButtonLabel?: string | null;
     safeExit?: {
       enabled?: boolean | null;
       url?: string | null;
@@ -1344,6 +1348,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         customHomeUrl?: T;
         searchUrl?: T;
         favoritesButtonLabel?: T;
+        feedbackButtonLabel?: T;
         safeExit?:
           | T
           | {

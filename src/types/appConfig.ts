@@ -53,6 +53,7 @@ export type AppConfig = {
     customMenu: Menu[];
     customHomeUrl?: string;
     favoritesButtonLabel?: string;
+    feedbackButtonLabel?: string;
     safeExit?: {
       enabled?: boolean;
       text?: string;

@@ -83,6 +83,19 @@ export const header: Tab = {
             update: superAdminOrSupportOrTenantAccess,
           },
         },
+        {
+          name: 'feedbackButtonLabel',
+          type: 'text',
+          localized: true,
+          admin: {
+            description:
+              'Leave blank to use the default feedback label ("Report" or locale equivalent)',
+          },
+          access: {
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
+          },
+        },
       ],
     },
     {
