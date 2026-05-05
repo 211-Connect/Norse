@@ -22,6 +22,8 @@ export const AUTO_TRANSLATED_STRING_PATHS = [
   'search.texts.suggestionHeaders.taxonomies',
   'search.texts.viewDetailsText',
   'search.texts.noResultsFallbackText',
+  'header.favoritesButtonLabel',
+  'header.feedbackButtonLabel',
 ];
 
 function deepLocalizedDiff(

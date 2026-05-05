@@ -17,6 +17,8 @@ export function Navigation({
   resource: Resource;
 }) {
   const appConfig = useAppConfig();
+  const feedbackButtonLabel =
+    appConfig.header.feedbackButtonLabel?.trim() || undefined;
 
   return (
     <div className="flex justify-between print:hidden">
@@ -33,7 +35,7 @@ export function Navigation({
           resourceName={resource.name ?? undefined}
         />
         {appConfig.featureFlags.showFeedbackButtonOnResourcePages ? (
-          <ReportButton />
+          <ReportButton customText={feedbackButtonLabel} />
         ) : null}
       </div>
     </div>
