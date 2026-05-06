@@ -5,35 +5,8 @@ import { Gutter, HydrateAuthProvider, SetStepNav } from '@payloadcms/ui';
 import type { AdminViewServerProps } from 'payload';
 import DateRange from '../analytics/DateRange';
 
-// The real payload-config defaultLayout is the analytics layout, so
-// "Reset Layout" on this page correctly restores the analytics widgets.
-// We only need to bypass user preferences (which are shared with the main
-// dashboard) by passing a sentinel user ID — the real defaultLayout is used
-// as the fallback automatically.
 export default function AnalyticsView(props: AdminViewServerProps) {
-  // getItemsFromPreferences uses React cache() keyed on (key, payload, userID, collection).
-  // Pass a sentinel userID so no saved main-dashboard preferences are loaded,
-  // forcing fallback to the real defaultLayout (the analytics widgets).
-  // We preserve the real collection slug so the user.relationTo query stays valid.
-  const realUser = props.user ?? (props.initPageResult?.req?.user as any);
-  const fakeUser = realUser
-    ? { ...realUser, id: '__analytics_no_prefs__' }
-    : { id: '__analytics_no_prefs__', collection: 'users' };
-
-  const patchedReq = props.initPageResult?.req
-    ? { ...props.initPageResult.req, user: fakeUser }
-    : undefined;
-
-  const patchedInitPageResult = props.initPageResult
-    ? { ...props.initPageResult, req: patchedReq }
-    : undefined;
-
-  const dashboardProps = {
-    ...props,
-    user: fakeUser,
-    initPageResult: patchedInitPageResult,
-    locale: props.initPageResult?.locale,
-  } as any;
+  const user = props.user ?? (props.initPageResult?.req?.user as any);
 
   return (
     <Fragment>
@@ -69,7 +42,7 @@ export default function AnalyticsView(props: AdminViewServerProps) {
             <DateRange />
           </div>
         </Gutter>
-        <DefaultDashboard {...dashboardProps} />
+        <DefaultDashboard {...(props as any)} user={user} />
       </DefaultTemplate>
     </Fragment>
   );
