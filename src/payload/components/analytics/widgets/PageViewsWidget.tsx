@@ -5,12 +5,12 @@ import { SingleStatCardWidget } from './SingleStatCardWidget';
 export default function PageViewsWidget() {
   return (
     <SingleStatCardWidget
+      dataSource="stats"
       label="Page Views"
-      selector={(data) =>
-        data.stats
-          ? { current: data.stats.pageviews, previous: data.stats.comparison.pageviews }
-          : null
-      }
+      selector={(stats) => ({
+        current: stats.pageviews,
+        previous: stats.comparison.pageviews,
+      })}
     />
   );
 }

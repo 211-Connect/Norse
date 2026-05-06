@@ -5,8 +5,9 @@ import { SingleStatCardWidget } from './SingleStatCardWidget';
 export default function SearchesWidget() {
   return (
     <SingleStatCardWidget
+      dataSource="paths"
       label="Searches"
-      selector={(data) => data.metrics.searches}
+      selector={(paths) => ({ current: paths.searchCount, previous: paths.prevSearchCount })}
     />
   );
 }

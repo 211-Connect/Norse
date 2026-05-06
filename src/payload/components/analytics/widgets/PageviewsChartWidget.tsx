@@ -1,29 +1,21 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { useAtomValue } from 'jotai';
 import { Banner, StaggeredShimmers } from '@payloadcms/ui';
-import { useTenantSelection } from '@payloadcms/plugin-multi-tenant/client';
 import dayjs from 'dayjs';
-import { analyticsDateRangeAtom } from '../DateRange';
 import { Chart } from '../Chart';
-import { useAnalytics } from '../useAnalytics';
+import { usePageviews } from '../useAnalyticsData';
 
 export default function PageviewsChartWidget() {
-  const range = useAtomValue(analyticsDateRangeAtom);
-  const { selectedTenantID } = useTenantSelection();
-  const { loading, error, data } = useAnalytics(
-    range,
-    selectedTenantID as string | undefined,
-  );
+  const { loading, error, data } = usePageviews();
 
   const timelineData = useMemo(() => {
-    if (!data.pageviews) return [];
-    return data.pageviews.pageviews.map((pv) => ({
+    if (!data?.pageviews) return [];
+    return data.pageviews.map((pv) => ({
       date: dayjs(pv.x).format('MMM DD'),
       Pageviews: pv.y,
     }));
-  }, [data.pageviews]);
+  }, [data]);
 
   if (loading) return <StaggeredShimmers count={1} height={400} />;
 

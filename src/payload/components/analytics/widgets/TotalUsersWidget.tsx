@@ -5,12 +5,12 @@ import { SingleStatCardWidget } from './SingleStatCardWidget';
 export default function TotalUsersWidget() {
   return (
     <SingleStatCardWidget
+      dataSource="stats"
       label="Total Users"
-      selector={(data) =>
-        data.stats
-          ? { current: data.stats.visitors, previous: data.stats.comparison.visitors }
-          : null
-      }
+      selector={(stats) => ({
+        current: stats.visitors,
+        previous: stats.comparison.visitors,
+      })}
     />
   );
 }

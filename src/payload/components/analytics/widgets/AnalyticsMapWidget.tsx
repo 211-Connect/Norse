@@ -1,12 +1,9 @@
 'use client';
 
 import React from 'react';
-import { useAtomValue } from 'jotai';
 import { Banner, StaggeredShimmers } from '@payloadcms/ui';
-import { useTenantSelection } from '@payloadcms/plugin-multi-tenant/client';
 import dynamic from 'next/dynamic';
-import { analyticsDateRangeAtom } from '../DateRange';
-import { useAnalytics } from '../useAnalytics';
+import { useSessions } from '../useAnalyticsData';
 
 const MAP_CENTER: [number, number] = [-98.5795, 39.8293];
 const MAP_ZOOM = 3;
@@ -17,12 +14,7 @@ const AnalyticsMap = dynamic(
 );
 
 export default function AnalyticsMapWidget() {
-  const range = useAtomValue(analyticsDateRangeAtom);
-  const { selectedTenantID } = useTenantSelection();
-  const { loading, error, data } = useAnalytics(
-    range,
-    selectedTenantID as string | undefined,
-  );
+  const { loading, error, data } = useSessions();
 
   if (loading) return <StaggeredShimmers count={1} height={400} />;
 
@@ -40,7 +32,7 @@ export default function AnalyticsMapWidget() {
       <AnalyticsMap
         center={MAP_CENTER}
         zoom={MAP_ZOOM}
-        heatmapPoints={data.heatmapPoints}
+        heatmapPoints={data?.heatmapPoints ?? []}
       />
     </div>
   );
