@@ -224,6 +224,7 @@ export function Header() {
               )}
               variant="outline"
               onClick={() => {
+                start();
                 signOut({ redirect: true, callbackUrl: '/' });
               }}
             >
