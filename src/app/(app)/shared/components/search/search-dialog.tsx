@@ -26,8 +26,11 @@ import {
 import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
 import { createUrlParamsForSearch } from '../../utils/createUrlParamsForSearch';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { searchCoordinatesAtom, searchDistanceAtom, userCoordinatesAtom } from '../../store/search';
-import { trackUmamiEvent, UmamiEvent } from '../../lib/umami';
+import {
+  searchCoordinatesAtom,
+  searchDistanceAtom,
+  userCoordinatesAtom,
+} from '../../store/search';
 
 export interface SearchDialogProps {
   focusByDefault?: 'search' | 'location';
@@ -59,7 +62,6 @@ export function SearchDialog({
 
   const { search, setSearch } = useMainSearchLayoutContext();
   const setUserCoordinates = useSetAtom(userCoordinatesAtom);
-  const userCoordinates = useAtomValue(userCoordinatesAtom);
   const searchCoordinates = useAtomValue(searchCoordinatesAtom);
 
   useEffect(() => {
@@ -80,23 +82,6 @@ export function SearchDialog({
       e.preventDefault();
 
       startTransition(() => {
-        const payload = {
-          userCoordinates: userCoordinates.join(',') ?? '',
-          searchCoordinates: search.searchCoordinates.join(',') ?? '',
-          tenantId: appConfig.tenantId ?? '',
-          query: search.searchTerm ?? '',
-        };
-        if (searchSource === 'suggestion') {
-          trackUmamiEvent(UmamiEvent.SearchSuggestionClick, {
-            ...payload,
-            queryType: search.queryType ?? '',
-          });
-        } else {
-          trackUmamiEvent(UmamiEvent.SearchManualClick, {
-            ...payload,
-          });
-        }
-
         if (requireUserLocation && search.searchLocation.trim().length === 0) {
           setSearch((prev) => ({
             ...prev,
