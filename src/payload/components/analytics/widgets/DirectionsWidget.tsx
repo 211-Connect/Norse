@@ -1,4 +1,5 @@
 'use client';
+
 import React from 'react';
 import { SingleStatCardWidget } from './SingleStatCardWidget';
 import { UmamiEvent } from '../../../../app/(app)/shared/lib/umami';
