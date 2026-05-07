@@ -172,5 +172,12 @@
     "results_available_one": "{{count}} natiijo ayaa la heli karaa",
     "results_available_other": "Natiijooyinka {{count}} ayaa la heli karaa",
     "no_results": "Natiijooyin ma jiraan"
+  },
+  "auth_error": {
+    "access_denied_title": "Helitaanka waa la diiday",
+    "access_denied_description": "Si guul leh ayaad u gashay, laakiin akoonkan looma oggola inuu galo boggan. Isku day mar kale akoon kale.",
+    "default_title": "Khalad xaqiijin ah",
+    "default_description": "Ma dhameystiri karno habka soo galitaanka. Fadlan isku day mar kale.",
+    "logout_and_try_again": "Ka bax oo isku day mar kale"
   }
 }

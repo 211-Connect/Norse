@@ -172,5 +172,12 @@
     "results_available_one": "Dostupan je {{count}} rezultat",
     "results_available_other": "Dostupno je {{count}} rezultata",
     "no_results": "Nema rezultata"
+  },
+  "auth_error": {
+    "access_denied_title": "Pristup odbijen",
+    "access_denied_description": "Uspješno ste se prijavili, ali ovom računu nije dopušten pristup ovoj web-lokaciji. Pokušajte ponovno s drugim računom.",
+    "default_title": "Pogreška autentifikacije",
+    "default_description": "Nismo mogli dovršiti postupak prijave. Pokušajte ponovno.",
+    "logout_and_try_again": "Odjavi se i pokušaj ponovno"
   }
 }

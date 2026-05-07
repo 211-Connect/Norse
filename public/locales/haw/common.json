@@ -172,5 +172,12 @@
     "results_available_one": "Loaʻa ka hopena {{count}}",
     "results_available_other": "Loaʻa nā hopena {{count}}",
     "no_results": "ʻAʻohe hopena"
+  },
+  "auth_error": {
+    "access_denied_title": "Ua hōʻole ʻia ke komo ʻana",
+    "access_denied_description": "Ua komo pono ʻoe, akā ʻaʻole ʻae ʻia kēia moʻokāki e komo i kēia pūnaewele. E hoʻāʻo hou me kahi moʻokāki ʻē aʻe.",
+    "default_title": "Hewa hōʻoia",
+    "default_description": "ʻAʻole hiki iā mākou ke hoʻopau i ke kaʻina hana komo. E ʻoluʻolu e hoʻāʻo hou.",
+    "logout_and_try_again": "E puka i waho a hoʻāʻo hou"
   }
 }

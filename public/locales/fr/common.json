@@ -172,5 +172,12 @@
     "results_available_one": "{{count}} résultat disponible",
     "results_available_other": "{{count}} résultats disponibles",
     "no_results": "Aucun résultat"
+  },
+  "auth_error": {
+    "access_denied_title": "Accès refusé",
+    "access_denied_description": "Vous vous êtes connecté avec succès, mais ce compte n'est pas autorisé à accéder à ce site. Veuillez réessayer avec un autre compte.",
+    "default_title": "Erreur d'authentification",
+    "default_description": "Nous n'avons pas pu terminer le processus de connexion. Veuillez réessayer.",
+    "logout_and_try_again": "Déconnectez-vous et réessayez."
   }
 }

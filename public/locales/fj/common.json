@@ -172,5 +172,12 @@
     "results_available_one": "{{wiliwili}} na macala e tiko",
     "results_available_other": "{{wiliwili}} na macala e tiko",
     "no_results": "Sega na kena macala"
+  },
+  "auth_error": {
+    "access_denied_title": "Sa vakatabui na curu",
+    "access_denied_description": "O saini vinaka, ia e sega ni vakatarai na akaude oqo me curu ki na vanua oqo. Tovolea tale ena dua tale na akaude.",
+    "default_title": "Cala ni veivakadeitaki",
+    "default_description": "Keitou sega ni rawa ni vakaotia na iwalewale ni saini. Kerekere mo tovolea tale.",
+    "logout_and_try_again": "Lako tani ka tovolea tale"
   }
 }

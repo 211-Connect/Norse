@@ -172,5 +172,12 @@
     "results_available_one": "{{count}} resulta ang makukuha",
     "results_available_other": "{{count}} resulta ang makukuha",
     "no_results": "Walang resulta"
+  },
+  "auth_error": {
+    "access_denied_title": "Tinanggihan ang pag-access",
+    "access_denied_description": "Matagumpay kang nakapag-sign in, ngunit hindi pinapayagan ang account na ito na ma-access ang site na ito. Subukan muli gamit ang ibang account.",
+    "default_title": "Error sa pagpapatunay",
+    "default_description": "Hindi namin makumpleto ang proseso ng pag-sign in. Pakisubukang muli.",
+    "logout_and_try_again": "Mag-logout at subukan muli"
   }
 }

@@ -172,5 +172,12 @@
     "results_available_one": "{{count}} bu'aan argama",
     "results_available_other": "{{count}} bu'aa argama",
     "no_results": "Bu'aan hin jiru"
+  },
+  "auth_error": {
+    "access_denied_title": "Dhaqqabummaan dhorkame",
+    "access_denied_description": "Milkaa'inaan galteetta, garuu akkaawuntiin kun marsariitii kana akka seenu hin hayyamamu. Akkaawuntii adda ta'een irra deebi'aa yaalaa.",
+    "default_title": "Dogoggora mirkaneessuu",
+    "default_description": "Adeemsa galmee xumuruu hin dandeenye. Mee irra deebi'ii yaalaa.",
+    "logout_and_try_again": "Ba'ii irra deebi'ii yaali"
   }
 }
