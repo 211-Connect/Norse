@@ -41,41 +41,23 @@ export type EventsData = {
 };
 
 export type SessionsData = {
-  heatmapPoints: ReturnType<typeof geocodeSessions> extends Promise<infer T> ? T : never;
+  heatmapPoints: ReturnType<typeof geocodeSessions> extends Promise<infer T>
+    ? T
+    : never;
 };
-
-// ---------------------------------------------------------------------------
-// Cache — module-level Maps keyed by "<range>:<tenantId>"
-// Stores { promise, timestamp } so stale entries are replaced after TTL_MS.
-// All widgets sharing the same key within the TTL get the same Promise
-// instance — one HTTP request per bucket per navigation.
-// ---------------------------------------------------------------------------
 
 const TTL_MS = 5 * 60 * 1000; // 5 minutes
 
 type CacheEntry<T> = { promise: Promise<T>; timestamp: number };
 
+type TimeWindow = ReturnType<typeof timeWindow>;
+
 function isFresh<T>(entry: CacheEntry<T>): boolean {
   return Date.now() - entry.timestamp < TTL_MS;
 }
 
-const statsCache = new Map<string, CacheEntry<UmamiStats>>();
-const pageviewsCache = new Map<string, CacheEntry<UmamiPageviews>>();
-const metricsCache = new Map<string, CacheEntry<MetricsData>>();
-const pathsCache = new Map<string, CacheEntry<PathsData>>();
-const eventsCache = new Map<string, CacheEntry<EventsData>>();
-const sessionsCache = new Map<string, CacheEntry<SessionsData>>();
-
 function cacheKey(range: DateRange, tenantId: string | undefined): string {
   return `${range}:${tenantId ?? ''}`;
-}
-
-function setCache<T>(
-  map: Map<string, CacheEntry<T>>,
-  key: string,
-  promise: Promise<T>,
-): void {
-  map.set(key, { promise, timestamp: Date.now() });
 }
 
 function getCache<T>(
@@ -86,6 +68,14 @@ function getCache<T>(
   return entry && isFresh(entry) ? entry.promise : undefined;
 }
 
+function setCache<T>(
+  map: Map<string, CacheEntry<T>>,
+  key: string,
+  promise: Promise<T>,
+): void {
+  map.set(key, { promise, timestamp: Date.now() });
+}
+
 function timeWindow(range: DateRange) {
   const endAt = dayjs().valueOf();
   const startAt = dayjs().subtract(range, 'day').valueOf();
@@ -94,43 +84,34 @@ function timeWindow(range: DateRange) {
   return { endAt, startAt, prevEndAt, prevStartAt };
 }
 
-// ---------------------------------------------------------------------------
-// Fetch functions — each returns a cached Promise
-// ---------------------------------------------------------------------------
+function makeCachedFetch<T>(
+  cache: Map<string, CacheEntry<T>>,
+  load: (window: TimeWindow, tenantId: string | undefined) => Promise<T>,
+) {
+  return function (range: DateRange, tenantId: string | undefined): Promise<T> {
+    const key = cacheKey(range, tenantId);
+    const cached = getCache(cache, key);
+    if (cached) return cached;
+    const promise = load(timeWindow(range), tenantId);
+    setCache(cache, key, promise);
+    return promise;
+  };
+}
 
-export function fetchStats(
-  range: DateRange,
-  tenantId: string | undefined,
-): Promise<UmamiStats> {
-  const key = cacheKey(range, tenantId);
-  const cached = getCache(statsCache, key);
-  if (cached) return cached;
-
-  const { startAt, endAt } = timeWindow(range);
-
-  const promise = (async () => {
+export const fetchStats = makeCachedFetch(
+  new Map<string, CacheEntry<UmamiStats>>(),
+  async ({ startAt, endAt }, tenantId) => {
     const data = await fetchWrapper<UmamiStats>(
       buildProxyQuery('stats', startAt, endAt, tenantId),
     );
     if (!data) throw new Error('No stats data returned');
     return data;
-  })();
+  },
+);
 
-  setCache(statsCache, key, promise);
-  return promise;
-}
-
-export function fetchPageviews(
-  range: DateRange,
-  tenantId: string | undefined,
-): Promise<UmamiPageviews> {
-  const key = cacheKey(range, tenantId);
-  const cached = getCache(pageviewsCache, key);
-  if (cached) return cached;
-
-  const { startAt, endAt } = timeWindow(range);
-
-  const promise = (async () => {
+export const fetchPageviews = makeCachedFetch(
+  new Map<string, CacheEntry<UmamiPageviews>>(),
+  async ({ startAt, endAt }, tenantId) => {
     const data = await fetchWrapper<UmamiPageviews>(
       buildProxyQuery('pageviews', startAt, endAt, tenantId, {
         unit: 'day',
@@ -139,23 +120,12 @@ export function fetchPageviews(
     );
     if (!data) throw new Error('No pageviews data returned');
     return data;
-  })();
+  },
+);
 
-  setCache(pageviewsCache, key, promise);
-  return promise;
-}
-
-export function fetchMetrics(
-  range: DateRange,
-  tenantId: string | undefined,
-): Promise<MetricsData> {
-  const key = cacheKey(range, tenantId);
-  const cached = getCache(metricsCache, key);
-  if (cached) return cached;
-
-  const { startAt, endAt, prevStartAt, prevEndAt } = timeWindow(range);
-
-  const promise = (async () => {
+export const fetchMetrics = makeCachedFetch(
+  new Map<string, CacheEntry<MetricsData>>(),
+  async ({ startAt, endAt, prevStartAt, prevEndAt }, tenantId) => {
     const [
       pathMetrics,
       queryMetrics,
@@ -247,23 +217,12 @@ export function fetchMetrics(
     };
 
     return { metrics, resourceRows, searchByLabel };
-  })();
+  },
+);
 
-  setCache(metricsCache, key, promise);
-  return promise;
-}
-
-export function fetchPaths(
-  range: DateRange,
-  tenantId: string | undefined,
-): Promise<PathsData> {
-  const key = cacheKey(range, tenantId);
-  const cached = getCache(pathsCache, key);
-  if (cached) return cached;
-
-  const { startAt, endAt, prevStartAt, prevEndAt } = timeWindow(range);
-
-  const promise = (async () => {
+export const fetchPaths = makeCachedFetch(
+  new Map<string, CacheEntry<PathsData>>(),
+  async ({ startAt, endAt, prevStartAt, prevEndAt }, tenantId) => {
     const [pathMetrics, queryMetrics, prevPathMetrics, prevQueryMetrics] =
       await Promise.all([
         fetchWrapper<MetricsExpandedEntry[]>(
@@ -318,23 +277,12 @@ export function fetchPaths(
       prevResourceMetrics,
       searchByLabel,
     };
-  })();
+  },
+);
 
-  setCache(pathsCache, key, promise);
-  return promise;
-}
-
-export function fetchEvents(
-  range: DateRange,
-  tenantId: string | undefined,
-): Promise<EventsData> {
-  const key = cacheKey(range, tenantId);
-  const cached = getCache(eventsCache, key);
-  if (cached) return cached;
-
-  const { startAt, endAt, prevStartAt, prevEndAt } = timeWindow(range);
-
-  const promise = (async () => {
+export const fetchEvents = makeCachedFetch(
+  new Map<string, CacheEntry<EventsData>>(),
+  async ({ startAt, endAt, prevStartAt, prevEndAt }, tenantId) => {
     const [events, prevEvents] = await Promise.all([
       fetchWrapper<MetricEntry[]>(
         buildProxyQuery('events/series', startAt, endAt, tenantId, {
@@ -351,30 +299,16 @@ export function fetchEvents(
     const eventTotals = sumEventTotals(events ?? []);
     const prevEventTotals = sumEventTotals(prevEvents ?? []);
     return { eventTotals, prevEventTotals };
-  })();
+  },
+);
 
-  setCache(eventsCache, key, promise);
-  return promise;
-}
-
-export function fetchSessions(
-  range: DateRange,
-  tenantId: string | undefined,
-): Promise<SessionsData> {
-  const key = cacheKey(range, tenantId);
-  const cached = getCache(sessionsCache, key);
-  if (cached) return cached;
-
-  const { startAt, endAt } = timeWindow(range);
-
-  const promise = (async () => {
+export const fetchSessions = makeCachedFetch(
+  new Map<string, CacheEntry<SessionsData>>(),
+  async ({ startAt, endAt }, tenantId) => {
     const data = await fetchWrapper<UmamiSessionResponse>(
       buildProxyQuery('sessions', startAt, endAt, tenantId),
     );
     const heatmapPoints = await geocodeSessions(data?.data ?? [], tenantId);
     return { heatmapPoints };
-  })();
-
-  setCache(sessionsCache, key, promise);
-  return promise;
-}
+  },
+);

@@ -1,30 +1,33 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { DefaultDashboard } from '@payloadcms/next/views';
+import { Gutter, HydrateAuthProvider, SetStepNav } from '@payloadcms/ui';
 import type { AdminViewServerProps } from 'payload';
+import DateRange from '../analytics/DateRange';
 
-const MAIN_DEFAULT_LAYOUT = [
-  { widgetSlug: 'collections', width: 'full' as const },
-];
-
-// Overrides the main /admin dashboard defaultLayout to show only the
-// collections widget. The real payload-config defaultLayout is set to
-// the analytics layout so that "Reset Layout" on the analytics page works.
 export default function MainDashboardView(props: AdminViewServerProps) {
-  const patchedConfig = {
-    ...props.payload.config,
-    admin: {
-      ...props.payload.config.admin,
-      dashboard: {
-        ...(props.payload.config.admin.dashboard ?? {}),
-        defaultLayout: MAIN_DEFAULT_LAYOUT,
-      },
-    },
-  };
+  const user = props.user ?? (props.initPageResult?.req?.user as any);
 
-  const dashboardProps = {
-    ...props,
-    payload: { ...props.payload, config: patchedConfig },
-  } as any;
-
-  return <DefaultDashboard {...dashboardProps} />;
+  return (
+    <Fragment>
+      <HydrateAuthProvider permissions={props.initPageResult?.permissions} />
+      <SetStepNav nav={[]} />
+      <Gutter>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '1rem',
+            paddingTop: '1.5rem',
+            paddingBottom: '0.5rem',
+          }}
+        >
+          <h1 style={{ margin: 0 }}>Analytics</h1>
+          <DateRange />
+        </div>
+      </Gutter>
+      <DefaultDashboard {...(props as any)} user={user} />
+    </Fragment>
+  );
 }
