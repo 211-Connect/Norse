@@ -172,5 +172,12 @@
     "results_available_one": "{{count}}개의 결과가 있습니다.",
     "results_available_other": "{{count}}개의 결과가 있습니다.",
     "no_results": "결과가 없습니다"
+  },
+  "auth_error": {
+    "access_denied_title": "접근 불가",
+    "access_denied_description": "로그인에 성공했지만, 이 계정으로는 이 사이트에 접속할 수 없습니다. 다른 계정으로 다시 시도해 주세요.",
+    "default_title": "인증 오류",
+    "default_description": "로그인 과정을 완료할 수 없습니다. 다시 시도해 주세요.",
+    "logout_and_try_again": "로그아웃 후 다시 시도하세요."
   }
 }

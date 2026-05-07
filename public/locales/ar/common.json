@@ -172,5 +172,12 @@
     "results_available_one": "{{count}} نتيجة متاحة",
     "results_available_other": "{{count}} نتيجة متاحة",
     "no_results": "لا توجد نتائج"
+  },
+  "auth_error": {
+    "access_denied_title": "تم الرفض",
+    "access_denied_description": "لقد سجلت الدخول بنجاح، ولكن هذا الحساب غير مصرح له بالوصول إلى هذا الموقع. حاول مرة أخرى باستخدام حساب آخر.",
+    "default_title": "خطأ في المصادقة",
+    "default_description": "لم نتمكن من إكمال عملية تسجيل الدخول. يرجى المحاولة مرة أخرى.",
+    "logout_and_try_again": "قم بتسجيل الخروج وحاول مرة أخرى"
   }
 }

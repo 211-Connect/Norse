@@ -172,5 +172,12 @@
     "results_available_one": "muaj qhov tshwm sim {{count}}",
     "results_available_other": "Muaj cov txiaj ntsig {{count}}",
     "no_results": "Tsis muaj txiaj ntsig"
+  },
+  "auth_error": {
+    "access_denied_title": "Kev nkag mus tsis raug cai",
+    "access_denied_description": "Koj tau nkag mus rau hauv lawm, tab sis tus account no tsis raug tso cai nkag mus rau lub xaib no. Sim dua nrog lwm tus account.",
+    "default_title": "Yuam kev lees paub",
+    "default_description": "Peb ua tsis tau tiav cov txheej txheem nkag mus. Thov sim dua.",
+    "logout_and_try_again": "Tawm mus thiab sim dua"
   }
 }

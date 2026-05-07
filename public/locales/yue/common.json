@@ -172,5 +172,12 @@
     "results_available_one": "{{ 計數 }} 結果可用",
     "results_available_other": "有 {{ 計數 }} 結果",
     "no_results": "冇結果"
+  },
+  "auth_error": {
+    "access_denied_title": "存取權被拒絕",
+    "access_denied_description": "你成功登入，但係呢個帳戶唔可以存取呢個網站。用唔同嘅帳戶試多一次。",
+    "default_title": "認證錯誤",
+    "default_description": "我哋完成唔到登入程序。唔該再試多次。",
+    "logout_and_try_again": "登出，然後再試一次"
   }
 }

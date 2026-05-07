@@ -172,5 +172,12 @@
     "results_available_one": "{{count}} 個結果可用",
     "results_available_other": "可用的 {{count}} 個結果",
     "no_results": "沒有結果"
+  },
+  "auth_error": {
+    "access_denied_title": "拒絕訪問",
+    "access_denied_description": "您已成功登錄，但此帳戶無權訪問此網站。請嘗試使用其他帳戶重試。",
+    "default_title": "身份驗證錯誤",
+    "default_description": "登入失敗，請重試。",
+    "logout_and_try_again": "登出並重試"
   }
 }

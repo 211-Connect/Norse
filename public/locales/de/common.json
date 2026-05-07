@@ -172,5 +172,12 @@
     "results_available_one": "{{count}} Ergebnisse verfügbar",
     "results_available_other": "{{count}} Ergebnisse verfügbar",
     "no_results": "Keine Ergebnisse"
+  },
+  "auth_error": {
+    "access_denied_title": "Zugriff verweigert",
+    "access_denied_description": "Sie haben sich erfolgreich angemeldet, aber dieses Konto hat keine Berechtigung für diese Website. Versuchen Sie es mit einem anderen Konto.",
+    "default_title": "Authentifizierungsfehler",
+    "default_description": "Der Anmeldevorgang konnte nicht abgeschlossen werden. Bitte versuchen Sie es erneut.",
+    "logout_and_try_again": "Abmelden und erneut versuchen"
   }
 }

@@ -172,5 +172,12 @@
     "results_available_one": "{{count}} پایله موجوده ده",
     "results_available_other": "{{count}} پایلې شتون لري",
     "no_results": "هیڅ پایلې نشته"
+  },
+  "auth_error": {
+    "access_denied_title": "لاسرسی رد شو",
+    "access_denied_description": "تاسو په بریالیتوب سره ننوتل، خو دا حساب دې سایټ ته د لاسرسي اجازه نلري. د بل حساب سره بیا هڅه وکړئ.",
+    "default_title": "د تصدیق تېروتنه",
+    "default_description": "موږ د ننوتلو پروسه بشپړه نشوه کړای. مهرباني وکړئ بیا هڅه وکړئ.",
+    "logout_and_try_again": "ننوتل او بیا هڅه وکړئ"
   }
 }

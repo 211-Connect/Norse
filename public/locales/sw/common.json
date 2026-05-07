@@ -172,5 +172,12 @@
     "results_available_one": "Matokeo ya {{count}} yanapatikana",
     "results_available_other": "Matokeo {{count}} yanapatikana",
     "no_results": "Hakuna matokeo"
+  },
+  "auth_error": {
+    "access_denied_title": "Ufikiaji umekataliwa",
+    "access_denied_description": "Umeingia kwa mafanikio, lakini akaunti hii hairuhusiwi kufikia tovuti hii. Jaribu tena ukitumia akaunti tofauti.",
+    "default_title": "Hitilafu ya uthibitishaji",
+    "default_description": "Hatukuweza kukamilisha mchakato wa kuingia. Tafadhali jaribu tena.",
+    "logout_and_try_again": "Toka na ujaribu tena"
   }
 }

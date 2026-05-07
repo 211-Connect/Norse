@@ -172,5 +172,12 @@
     "results_available_one": "{{count}} પરિણામ ઉપલબ્ધ છે",
     "results_available_other": "{{count}} પરિણામો ઉપલબ્ધ છે",
     "no_results": "કોઈ પરિણામ નથી"
+  },
+  "auth_error": {
+    "access_denied_title": "ઍક્સેસ નકારાઈ",
+    "access_denied_description": "તમે સફળતાપૂર્વક સાઇન ઇન કર્યું છે, પરંતુ આ એકાઉન્ટને આ સાઇટ ઍક્સેસ કરવાની મંજૂરી નથી. બીજા એકાઉન્ટથી ફરી પ્રયાસ કરો.",
+    "default_title": "પ્રમાણીકરણ ભૂલ",
+    "default_description": "અમે સાઇન-ઇન પ્રક્રિયા પૂર્ણ કરી શક્યા નથી. કૃપા કરીને ફરી પ્રયાસ કરો.",
+    "logout_and_try_again": "લોગઆઉટ કરો અને ફરી પ્રયાસ કરો"
   }
 }

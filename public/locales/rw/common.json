@@ -172,5 +172,12 @@
     "results_available_one": "Ibisubizo bya {{count}} biraboneka",
     "results_available_other": "Ibisubizo {{count}} biraboneka",
     "no_results": "Nta bisubizo"
+  },
+  "auth_error": {
+    "access_denied_title": "Kubona uburenganzira byanze",
+    "access_denied_description": "Winjiye neza, ariko iyi konti ntiyemerewe kwinjira kuri uru rubuga. Ongera ugerageze ukoresheje indi konti.",
+    "default_title": "Ikosa ryo kwemeza",
+    "default_description": "Ntitwashoboye kurangiza inzira yo kwinjira. Nyamuneka ongera ugerageze.",
+    "logout_and_try_again": "Sohoka wongere ugerageze"
   }
 }
