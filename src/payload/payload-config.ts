@@ -103,9 +103,6 @@ const config = buildConfig({
           path: '/analytics',
           exact: true,
         },
-        dashboard: {
-          Component: '@/payload/components/MainDashboardView',
-        },
       },
     },
     dashboard: {

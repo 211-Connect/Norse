@@ -31,7 +31,6 @@ import { TenantSelector as TenantSelector_d6d5f193a167989e2ee7d14202901e62 } fro
 import { TenantSelectionProvider as TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 import { default as default_c5dffe636895d753138026b95fe2f960 } from '@/payload/components/AnalyticsView'
-import { default as default_fb3137ccc8d6aa026b3e8a35279b6105 } from '@/payload/components/MainDashboardView'
 import { default as default_89b0fc1c15499fa299fab63bf28229b4 } from '@/payload/components/analytics/widgets/TotalUsersWidget'
 import { default as default_f8df26be7e7afb6ec18139b4a17451c4 } from '@/payload/components/analytics/widgets/SearchesWidget'
 import { default as default_340cec3ca5bd6af056111595c6a6de39 } from '@/payload/components/analytics/widgets/ResourceViewsWidget'
@@ -82,7 +81,6 @@ export const importMap = {
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelectionProvider": TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
   "@/payload/components/AnalyticsView#default": default_c5dffe636895d753138026b95fe2f960,
-  "@/payload/components/MainDashboardView#default": default_fb3137ccc8d6aa026b3e8a35279b6105,
   "@/payload/components/analytics/widgets/TotalUsersWidget#default": default_89b0fc1c15499fa299fab63bf28229b4,
   "@/payload/components/analytics/widgets/SearchesWidget#default": default_f8df26be7e7afb6ec18139b4a17451c4,
   "@/payload/components/analytics/widgets/ResourceViewsWidget#default": default_340cec3ca5bd6af056111595c6a6de39,
