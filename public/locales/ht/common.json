@@ -172,5 +172,12 @@
     "results_available_one": "{{count}} rezilta disponib",
     "results_available_other": "{{count}} rezilta disponib",
     "no_results": "Pa gen rezilta"
+  },
+  "auth_error": {
+    "access_denied_title": "Aksè refize",
+    "access_denied_description": "Ou konekte avèk siksè, men kont sa a pa gen dwa jwenn aksè nan sit sa a. Eseye ankò avèk yon lòt kont.",
+    "default_title": "Erè otantifikasyon",
+    "default_description": "Nou pa t kapab fini pwosesis koneksyon an. Tanpri eseye ankò.",
+    "logout_and_try_again": "Dekonekte epi eseye ankò"
   }
 }

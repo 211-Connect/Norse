@@ -172,5 +172,12 @@
     "results_available_one": "{{count}} i'uga o lo'o maua",
     "results_available_other": "{{count}} i'uga o lo'o maua",
     "no_results": "Leai ni taunuuga"
+  },
+  "auth_error": {
+    "access_denied_title": "Ua teena le ulufale",
+    "access_denied_description": "Ua e saini i totonu ma le manuia, ae e le fa'atagaina lenei teugatupe e ulufale i lenei 'upega tafa'ilagi. Toe taumafai i se isi teugatupe.",
+    "default_title": "Sese o le fa'amaoniga",
+    "default_description": "E le'i mafai ona matou fa'amae'aina le faiga e saini ai i totonu. Fa'amolemole toe taumafai.",
+    "logout_and_try_again": "Alu ese ma toe taumafai"
   }
 }

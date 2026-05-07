@@ -172,5 +172,12 @@
     "results_available_one": "{{count}} 个结果可用",
     "results_available_other": "可用的 {{count}} 个结果",
     "no_results": "没有结果"
+  },
+  "auth_error": {
+    "access_denied_title": "拒绝访问",
+    "access_denied_description": "您已成功登录，但此帐户无权访问此网站。请尝试使用其他帐户重试。",
+    "default_title": "身份验证错误",
+    "default_description": "登录失败，请重试。",
+    "logout_and_try_again": "注销并重试"
   }
 }

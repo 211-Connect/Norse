@@ -172,5 +172,12 @@
     "results_available_one": "{{count}} dostępnych wyników",
     "results_available_other": "{{count}} dostępnych wyników",
     "no_results": "Brak wyników"
+  },
+  "auth_error": {
+    "access_denied_title": "Odmowa dostępu",
+    "access_denied_description": "Zalogowałeś się pomyślnie, ale to konto nie ma uprawnień dostępu do tej witryny. Spróbuj ponownie, używając innego konta.",
+    "default_title": "Błąd uwierzytelniania",
+    "default_description": "Nie udało się dokończyć procesu logowania. Spróbuj ponownie.",
+    "logout_and_try_again": "Wyloguj się i spróbuj ponownie"
   }
 }

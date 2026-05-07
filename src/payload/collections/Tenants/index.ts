@@ -174,7 +174,7 @@ export const Tenants: CollectionConfig = {
               type: 'text',
             },
             {
-              name: 'keycloakIssuer',
+              name: 'nextAuthSecret',
               type: 'text',
             },
           ],
@@ -183,8 +183,33 @@ export const Tenants: CollectionConfig = {
           type: 'row',
           fields: [
             {
-              name: 'nextAuthSecret',
-              type: 'text',
+              name: 'requiresLogin',
+              type: 'checkbox',
+              defaultValue: false,
+              admin: {
+                description:
+                  '⚠️ WARNING: Enabling this will make the website private. Only authenticated users will be able to access it. Use this setting with caution.',
+              },
+            },
+          ],
+        },
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'allowedEmailDomains',
+              type: 'array',
+              fields: [
+                {
+                  name: 'domain',
+                  type: 'text',
+                  required: true,
+                },
+              ],
+              admin: {
+                condition: (data, siblingData) =>
+                  siblingData?.requiresLogin || data?.auth?.requiresLogin,
+              },
             },
           ],
         },

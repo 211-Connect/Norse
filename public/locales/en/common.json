@@ -161,6 +161,13 @@
     "next": "Next",
     "go_to": "Go to"
   },
+  "auth_error": {
+    "access_denied_title": "Access denied",
+    "access_denied_description": "You signed in successfully, but this account is not allowed to access this site. Try again with a different account.",
+    "default_title": "Authentication error",
+    "default_description": "We could not complete the sign-in process. Please try again.",
+    "logout_and_try_again": "Logout and try again"
+  },
   "footer": {
     "copyright": "© Copyright {{text}}"
   },

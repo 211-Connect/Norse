@@ -2,10 +2,10 @@ export enum UmamiEvent {
   SearchZeroResults = 'search_zero_results',
   DirectionClick = 'direction_click',
   PhoneClick = 'phone_click',
-  SearchSuggestionClick = 'search_suggestion_click',
-  SearchManualClick = 'search_manual_click',
   WebsiteClick = 'website_click',
   WidgetSearch = 'widget_search',
+  SearchTaxonomy = 'search_taxonomy',
+  SearchText = 'search_text',
 }
 
 export function trackUmamiEvent(

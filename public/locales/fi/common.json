@@ -172,5 +172,12 @@
     "results_available_one": "{{count}} tulos saatavilla",
     "results_available_other": "{{count}} tulosta saatavilla",
     "no_results": "Ei tuloksia"
+  },
+  "auth_error": {
+    "access_denied_title": "Käyttö estetty",
+    "access_denied_description": "Kirjauduit sisään onnistuneesti, mutta tällä tilillä ei ole oikeutta käyttää tätä sivustoa. Yritä uudelleen toisella tilillä.",
+    "default_title": "Todennusvirhe",
+    "default_description": "Kirjautumisprosessia ei voitu suorittaa loppuun. Yritä uudelleen.",
+    "logout_and_try_again": "Kirjaudu ulos ja yritä uudelleen"
   }
 }

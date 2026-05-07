@@ -107,11 +107,10 @@ export function Header() {
     return brandName ? `${brandName} home page` : (t('header.home') ?? 'Home');
   }, [appConfig.brand.name, t]);
 
-  const favoritesButtonLabel = useMemo(() => {
-    const customLabel = appConfig.header.favoritesButtonLabel?.trim();
-
-    return customLabel || t('header.my_stuff');
-  }, [appConfig.header.favoritesButtonLabel, t]);
+  const favoritesButtonLabel =
+    appConfig.header.favoritesButtonLabel?.trim() || t('header.my_stuff');
+  const feedbackButtonLabel =
+    appConfig.header.feedbackButtonLabel?.trim() || t('header.report');
 
   const sitemap = useMemo(
     () =>
@@ -154,7 +153,7 @@ export function Header() {
         appConfig.featureFlags.showFeedbackButtonGlobal ? (
           <li key="3">
             <ReportButton
-              customText={t('header.report')}
+              customText={feedbackButtonLabel}
               className={newLayoutEnabled ? '!bg-white' : undefined}
             />
           </li>
@@ -225,6 +224,7 @@ export function Header() {
               )}
               variant="outline"
               onClick={() => {
+                start();
                 signOut({ redirect: true, callbackUrl: '/' });
               }}
             >
@@ -259,17 +259,12 @@ export function Header() {
       ].filter(Boolean),
     [
       appConfig.accessibility.fontSize.allowedValues.length,
-      appConfig.header.customHomeUrl,
-      appConfig.header.searchUrl,
-      appConfig.header.customMenu,
-      appConfig.header.safeExit?.enabled,
-      appConfig.header.safeExit?.target,
-      appConfig.header.safeExit?.url,
-      appConfig.header.safeExit?.text,
+      appConfig.header,
       appConfig.featureFlags.showFeedbackButtonGlobal,
       newLayoutEnabled,
       t,
       favoritesButtonLabel,
+      feedbackButtonLabel,
       getAriaCurrent,
       session.status,
       setDialogStore,

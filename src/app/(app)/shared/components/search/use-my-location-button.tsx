@@ -43,19 +43,19 @@ export function UseMyLocationButton() {
         success: (data) => {
           const location = data?.[0];
           if (location) {
-            setLocationCookies(location.address, location);
+              setLocationCookies(location.address, location);
 
-            setSearch((prev) => ({
-              ...prev,
-              searchLocation: location.address,
-              searchCoordinates: location.coordinates,
-              // Seed prevSearchLocation so useLocations fetches the address
-              // and the Autocomplete block UX can activate on the result.
-              prevSearchLocation: location.address,
-              searchLocationValidationError: '',
-              searchPlaceType: location.place_type ?? [],
-              searchBbox: location.bbox ?? null,
-            }));
+              setSearch((prev) => ({
+                ...prev,
+                searchLocation: location.address,
+                searchCoordinates: location.coordinates,
+                // Seed prevSearchLocation so useLocations fetches the address
+                // and the Autocomplete block UX can activate on the result.
+                prevSearchLocation: location.address,
+                searchLocationValidationError: '',
+                searchPlaceType: location.place_type ?? [],
+                searchBbox: location.bbox ?? null,
+              }));
 
             return 'Successfully fetched your location';
           } else {

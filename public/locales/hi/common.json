@@ -172,5 +172,12 @@
     "results_available_one": "{{count}} परिणाम उपलब्ध",
     "results_available_other": "{{count}} परिणाम उपलब्ध हैं",
     "no_results": "कोई परिणाम नहीं"
+  },
+  "auth_error": {
+    "access_denied_title": "पहुंच अस्वीकृत",
+    "access_denied_description": "आपने सफलतापूर्वक लॉग इन कर लिया है, लेकिन इस खाते को इस साइट तक पहुँचने की अनुमति नहीं है। कृपया किसी दूसरे खाते से पुनः प्रयास करें।",
+    "default_title": "प्रमाणीकरण त्रुटि",
+    "default_description": "लॉग इन करने की प्रक्रिया पूरी नहीं हो सकी। कृपया पुनः प्रयास करें।",
+    "logout_and_try_again": "लॉगआउट करें और दोबारा प्रयास करें"
   }
 }

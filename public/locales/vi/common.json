@@ -172,5 +172,12 @@
     "results_available_one": "{{count}} kết quả có sẵn",
     "results_available_other": "{{count}} kết quả có sẵn",
     "no_results": "Không có kết quả"
+  },
+  "auth_error": {
+    "access_denied_title": "Quyền truy cập bị từ chối",
+    "access_denied_description": "Bạn đã đăng nhập thành công, nhưng tài khoản này không được phép truy cập trang web này. Vui lòng thử lại với một tài khoản khác.",
+    "default_title": "Lỗi xác thực",
+    "default_description": "Chúng tôi không thể hoàn tất quá trình đăng nhập. Vui lòng thử lại.",
+    "logout_and_try_again": "Đăng xuất và thử lại."
   }
 }

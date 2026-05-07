@@ -2,8 +2,10 @@ import { parseHost } from './parseHost';
 import { findTenantByHost } from '@/payload/collections/Tenants/actions/findTenantByHost';
 import { getServerSession } from 'next-auth';
 import { createAuthOptions } from '@/auth';
+import { normalizeAllowedEmailDomains } from '@/utils/normalizeAllowedEmailDomains';
 import { headers } from 'next/headers';
 import { cache } from 'react';
+import { getKeycloakIssuer } from '@/utils/getKeycloakIssuer';
 
 async function getSessionOrigin() {
   const headerList = await headers();
@@ -26,8 +28,12 @@ async function getSessionOrigin() {
     baseUrl,
     keycloak: {
       clientSecret: tenant?.auth.keycloakSecret ?? undefined,
-      issuer: tenant?.auth.keycloakIssuer ?? undefined,
+      issuer: getKeycloakIssuer(tenant?.auth?.realmId ?? ''),
     },
+    requiresLogin: tenant?.auth?.requiresLogin ?? false,
+    allowedEmailDomains: normalizeAllowedEmailDomains(
+      tenant?.auth?.allowedEmailDomains,
+    ),
     secret: tenant?.auth.nextAuthSecret ?? undefined,
   });
 

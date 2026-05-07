@@ -1,12 +1,6 @@
 'use client';
 
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  useTransition,
-} from 'react';
+import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import { createPortal } from 'react-dom';
 import { ChevronLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -31,9 +25,12 @@ import {
 } from '../../lib/constants';
 import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
 import { createUrlParamsForSearch } from '../../utils/createUrlParamsForSearch';
-import { useAtomValue } from 'jotai';
-import { searchDistanceAtom } from '../../store/search';
-import { trackUmamiEvent, UmamiEvent } from '../../lib/umami';
+import { useAtomValue, useSetAtom } from 'jotai';
+import {
+  searchCoordinatesAtom,
+  searchDistanceAtom,
+  userCoordinatesAtom,
+} from '../../store/search';
 
 export interface SearchDialogProps {
   focusByDefault?: 'search' | 'location';
@@ -64,25 +61,27 @@ export function SearchDialog({
   const distance = useAtomValue(searchDistanceAtom);
 
   const { search, setSearch } = useMainSearchLayoutContext();
+  const setUserCoordinates = useSetAtom(userCoordinatesAtom);
+  const searchCoordinates = useAtomValue(searchCoordinatesAtom);
+
+  useEffect(() => {
+    if (!open || !navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setUserCoordinates([pos.coords.longitude, pos.coords.latitude]);
+      },
+      () => {
+        setUserCoordinates(searchCoordinates);
+      },
+      { enableHighAccuracy: false, timeout: 5000, maximumAge: 60_000 },
+    );
+  }, [open, setUserCoordinates, searchCoordinates]);
 
   const onSubmit = useCallback(
     async (e) => {
       e.preventDefault();
 
       startTransition(() => {
-        if (searchSource === 'suggestion') {
-          trackUmamiEvent(UmamiEvent.SearchSuggestionClick, {
-            query: search.searchTerm,
-            queryType: search.queryType ?? '',
-            tenantId: appConfig.tenantId ?? '',
-          });
-        } else {
-          trackUmamiEvent(UmamiEvent.SearchManualClick, {
-            query: search.searchTerm,
-            tenantId: appConfig.tenantId ?? '',
-          });
-        }
-
         if (requireUserLocation && search.searchLocation.trim().length === 0) {
           setSearch((prev) => ({
             ...prev,
@@ -133,7 +132,6 @@ export function SearchDialog({
         setSearch((prev) => ({
           ...prev,
           ...locationParams,
-          userCoordinates: search.searchCoordinates,
         }));
       });
     },
@@ -182,7 +180,6 @@ export function SearchDialog({
       }, 10);
     }
   }, [focusByDefault, open]);
-
 
   const closeDialog = useCallback(() => {
     setOpen?.(false);

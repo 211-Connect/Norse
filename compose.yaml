@@ -37,7 +37,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U norse-ng -d norse-ng"]
+      test: [ "CMD-SHELL", "pg_isready -U norse-ng -d norse-ng" ]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -50,7 +50,7 @@ services:
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -111,7 +111,7 @@ services:
     init: true
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "curl http://localhost:4444/api/heartbeat"]
+      test: [ "CMD-SHELL", "curl http://localhost:4444/api/heartbeat" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -122,11 +122,13 @@ services:
       POSTGRES_DB: umami
       POSTGRES_USER: umami
       POSTGRES_PASSWORD: umami
+    ports:
+      - "5431:5432"
     volumes:
       - umami-db-data:/var/lib/postgresql/data
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
       interval: 5s
       timeout: 5s
       retries: 5

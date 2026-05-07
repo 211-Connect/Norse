@@ -393,8 +393,17 @@ export interface Tenant {
   auth: {
     realmId: string;
     keycloakSecret?: string | null;
-    keycloakIssuer?: string | null;
     nextAuthSecret?: string | null;
+    requiresLogin?: boolean | null;
+    /**
+     * Allowed domains to access via OAuth. Add values like acme.org or partner.acme.org.
+     */
+    allowedEmailDomains?:
+      | {
+          domain: string;
+          id?: string | null;
+        }[]
+      | null;
   };
   common?: {
     gtmContainerId?: string | null;
@@ -523,6 +532,10 @@ export interface ResourceDirectory {
      * Leave blank to use the default "My Stuff" label (or locale equivalent)
      */
     favoritesButtonLabel?: string | null;
+    /**
+     * Leave blank to use the default feedback label (or locale equivalent)
+     */
+    feedbackButtonLabel?: string | null;
     safeExit?: {
       enabled?: boolean | null;
       url?: string | null;
@@ -1168,8 +1181,14 @@ export interface TenantsSelect<T extends boolean = true> {
     | {
         realmId?: T;
         keycloakSecret?: T;
-        keycloakIssuer?: T;
         nextAuthSecret?: T;
+        requiresLogin?: T;
+        allowedEmailDomains?:
+          | T
+          | {
+              domain?: T;
+              id?: T;
+            };
       };
   common?:
     | T
@@ -1317,6 +1336,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         customHomeUrl?: T;
         searchUrl?: T;
         favoritesButtonLabel?: T;
+        feedbackButtonLabel?: T;
         safeExit?:
           | T
           | {

@@ -172,5 +172,12 @@
     "results_available_one": "{{count}} ውጤት ይገኛል",
     "results_available_other": "{{count}} ውጤቶች ይገኛሉ",
     "no_results": "ምንም ውጤቶች የሉም"
+  },
+  "auth_error": {
+    "access_denied_title": "መዳረሻ ተከልክሏል",
+    "access_denied_description": "በተሳካ ሁኔታ ገብተዋል፣ ነገር ግን ይህ መለያ ወደዚህ ጣቢያ እንዲደርስ አልተፈቀደለትም። በተለየ መለያ እንደገና ይሞክሩ።",
+    "default_title": "የማረጋገጫ ስህተት",
+    "default_description": "የመግቢያ ሂደቱን ማጠናቀቅ አልቻልንም። እባክዎ እንደገና ይሞክሩ።",
+    "logout_and_try_again": "ውጣና እንደገና ሞክር"
   }
 }

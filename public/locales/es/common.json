@@ -172,5 +172,12 @@
     "results_available_one": "{{count}} resultado disponible",
     "results_available_other": "{{count}} resultados disponibles",
     "no_results": "No hay resultados"
+  },
+  "auth_error": {
+    "access_denied_title": "Acceso denegado",
+    "access_denied_description": "Has iniciado sesión correctamente, pero esta cuenta no tiene permiso para acceder a este sitio. Inténtalo de nuevo con otra cuenta.",
+    "default_title": "Error de autenticación",
+    "default_description": "No pudimos completar el proceso de inicio de sesión. Por favor, inténtelo de nuevo.",
+    "logout_and_try_again": "Cierra sesión e inténtalo de nuevo."
   }
 }

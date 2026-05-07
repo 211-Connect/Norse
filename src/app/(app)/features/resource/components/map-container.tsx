@@ -9,7 +9,7 @@ export function MapContainer({ resource }: { resource: Resource }) {
 
   const serviceArea = resource?.serviceArea; // Expecting a GeoJSON-like { type, coordinates }
 
-  if (!(hasValidPoint && serviceArea)) {
+  if (!hasValidPoint && !serviceArea) {
     return null;
   }
 
@@ -26,7 +26,7 @@ export function MapContainer({ resource }: { resource: Resource }) {
               ]
             : []
         }
-        serviceArea={!hasValidPoint ? serviceArea : undefined}
+        serviceArea={!hasValidPoint && serviceArea ? serviceArea : undefined}
         disableUserLocation
       />
     </div>

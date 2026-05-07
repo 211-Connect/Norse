@@ -172,5 +172,12 @@
     "results_available_one": "{{limto}} njeñtudi ina woodi",
     "results_available_other": "{{limto}} njeñtudi ina woodi",
     "no_results": "Alaa njeñtudi"
+  },
+  "auth_error": {
+    "access_denied_title": "Heɓde haɗaama",
+    "access_denied_description": "A naatii no moƴƴi, kono ngoo konte yamiraaka naatde e ndee lowre. Enndu kadi e konte goɗɗe.",
+    "default_title": "Juumre hoolkiso",
+    "default_description": "Min mbaawaano timminde golle naatnugol ɗee. Tiiɗno enndu kadi.",
+    "logout_and_try_again": "Yaltu e ƴeewde kadi"
   }
 }

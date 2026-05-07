@@ -172,5 +172,12 @@
     "results_available_one": "{{count}}件の結果が利用可能です",
     "results_available_other": "{{count}}件の結果が利用可能です",
     "no_results": "検索結果なし"
+  },
+  "auth_error": {
+    "access_denied_title": "アクセスが拒否されました",
+    "access_denied_description": "ログインは成功しましたが、このアカウントではこのサイトへのアクセスが許可されていません。別のアカウントで再度お試しください。",
+    "default_title": "認証エラー",
+    "default_description": "ログイン処理を完了できませんでした。もう一度お試しください。",
+    "logout_and_try_again": "ログアウトしてもう一度お試しください。"
   }
 }

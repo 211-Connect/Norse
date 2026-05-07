@@ -1,4 +1,4 @@
-import { getServerSession, NextAuthOptions, Session } from 'next-auth';
+import { getServerSession, NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import KeycloakProvider from 'next-auth/providers/keycloak';
 
@@ -6,16 +6,23 @@ import { Tenant } from './payload/payload-types';
 import { fetchWrapper } from './app/(app)/shared/lib/fetchWrapper';
 import { isJwtExpired } from './utils/isJwtExpired';
 import { createLogger } from './lib/logger';
-
-// Helper to remove null/undefined values from object
-const omitNilValues = <T extends Record<string, any>>(obj: T): Partial<T> => {
-  return Object.fromEntries(
-    Object.entries(obj).filter(([_, value]) => value != null),
-  ) as Partial<T>;
-};
+import { normalizeAllowedEmailDomains } from './utils/normalizeAllowedEmailDomains';
+import { getKeycloakIssuer } from './utils/getKeycloakIssuer';
 
 const log = createLogger('auth');
 const isDebug = process.env.NEXTAUTH_DEBUG === 'true';
+
+function normalizeRelativeRedirect(url: string, basePath: string): string {
+  if (!basePath || url === basePath || url.startsWith(`${basePath}/`)) {
+    return url;
+  }
+
+  if (!url.startsWith('/')) {
+    return `${basePath}/${url}`;
+  }
+
+  return `${basePath}${url}`;
+}
 
 export interface CreateAuthOptionsProps {
   baseUrl?: string;
@@ -23,27 +30,84 @@ export interface CreateAuthOptionsProps {
     issuer?: string;
     clientSecret?: string;
   };
+  requiresLogin?: boolean;
+  allowedEmailDomains?: string[];
   secret?: string;
 }
 
 const createAuthOptions = ({
   baseUrl,
   keycloak,
+  requiresLogin,
+  allowedEmailDomains,
   secret,
 }: CreateAuthOptionsProps): NextAuthOptions => ({
   callbacks: {
     async redirect({ url, baseUrl: _baseUrl }) {
-      if (!baseUrl) return _baseUrl;
+      const effectiveBaseUrl = baseUrl ?? _baseUrl;
 
-      if (url.startsWith('/')) return `${baseUrl}${url}`;
-      if (new URL(url).origin === baseUrl) return url;
-      return baseUrl;
+      const resolvedBaseUrl = new URL(effectiveBaseUrl);
+      const basePath =
+        resolvedBaseUrl.pathname === '/' ? '' : resolvedBaseUrl.pathname;
+
+      if (url.startsWith('/')) {
+        const normalizedUrl = normalizeRelativeRedirect(url, basePath);
+        return `${resolvedBaseUrl.origin}${normalizedUrl}`;
+      }
+
+      try {
+        const resolvedUrl = new URL(url);
+
+        if (resolvedUrl.origin !== resolvedBaseUrl.origin) {
+          return effectiveBaseUrl;
+        }
+
+        if (
+          basePath &&
+          resolvedUrl.pathname !== basePath &&
+          !resolvedUrl.pathname.startsWith(`${basePath}/`)
+        ) {
+          resolvedUrl.pathname = normalizeRelativeRedirect(
+            resolvedUrl.pathname,
+            basePath,
+          );
+        }
+
+        return resolvedUrl.toString();
+      } catch {
+        return effectiveBaseUrl;
+      }
     },
     session({ session, token }) {
       session.accessToken = token.accessToken;
       session.error = token.error ?? null;
 
       return session;
+    },
+    async signIn({ user }) {
+      if (!requiresLogin) {
+        return true;
+      }
+
+      if (!allowedEmailDomains?.length) {
+        return true;
+      }
+
+      const email = user?.email?.trim().toLowerCase();
+      if (!email) {
+        return false;
+      }
+
+      const domain = email.split('@')[1]?.toLowerCase();
+      if (!domain) {
+        return false;
+      }
+
+      const allowedDomainSet = new Set(
+        allowedEmailDomains.map((value) => value.toLowerCase()),
+      );
+
+      return allowedDomainSet.has(domain);
     },
     async jwt({ token, account }) {
       const tokens = {
@@ -200,7 +264,7 @@ const createAuthOptions = ({
   pages: {
     error: `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/auth/error`,
     newUser: `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/auth/new-user`,
-    signIn: `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/auth/sign-in`,
+    signIn: `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/auth/signin`,
     signOut: `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/auth/sign-out`,
     verifyRequest: `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/auth/verify-request`,
   },
@@ -243,8 +307,12 @@ const getSession = (
     baseUrl,
     keycloak: {
       clientSecret: authConfig?.keycloakSecret ?? undefined,
-      issuer: authConfig?.keycloakIssuer ?? undefined,
+      issuer: getKeycloakIssuer(authConfig?.realmId ?? ''),
     },
+    requiresLogin: authConfig?.requiresLogin ?? false,
+    allowedEmailDomains: normalizeAllowedEmailDomains(
+      authConfig?.allowedEmailDomains,
+    ),
     secret: authConfig?.nextAuthSecret ?? undefined,
   });
 
