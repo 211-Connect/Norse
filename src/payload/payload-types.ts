@@ -72,7 +72,6 @@ export interface Config {
     'tenant-media': TenantMedia;
     'resource-directories': ResourceDirectory;
     'orchestration-config': OrchestrationConfig;
-    analytics: Analytics;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
@@ -84,24 +83,13 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     tenants: TenantsSelect<false> | TenantsSelect<true>;
     'tenant-media': TenantMediaSelect<false> | TenantMediaSelect<true>;
-    'resource-directories':
-      | ResourceDirectoriesSelect<false>
-      | ResourceDirectoriesSelect<true>;
-    'orchestration-config':
-      | OrchestrationConfigSelect<false>
-      | OrchestrationConfigSelect<true>;
-    analytics: AnalyticsSelect<false> | AnalyticsSelect<true>;
+    'resource-directories': ResourceDirectoriesSelect<false> | ResourceDirectoriesSelect<true>;
+    'orchestration-config': OrchestrationConfigSelect<false> | OrchestrationConfigSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
-    'payload-locked-documents':
-      | PayloadLockedDocumentsSelect<false>
-      | PayloadLockedDocumentsSelect<true>;
-    'payload-preferences':
-      | PayloadPreferencesSelect<false>
-      | PayloadPreferencesSelect<true>;
-    'payload-migrations':
-      | PayloadMigrationsSelect<false>
-      | PayloadMigrationsSelect<true>;
+    'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
+    'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
+    'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
     defaultIDType: number;
@@ -196,9 +184,7 @@ export interface Config {
     'payload-jobs-stats': PayloadJobsStat;
   };
   globalsSelect: {
-    'payload-jobs-stats':
-      | PayloadJobsStatsSelect<false>
-      | PayloadJobsStatsSelect<true>;
+    'payload-jobs-stats': PayloadJobsStatsSelect<false> | PayloadJobsStatsSelect<true>;
   };
   locale:
     | 'am'
@@ -240,6 +226,22 @@ export interface Config {
     | 'yue'
     | 'zh-Hans'
     | 'zh-Hant';
+  widgets: {
+    'analytics-total-users': AnalyticsTotalUsersWidget;
+    'analytics-searches': AnalyticsSearchesWidget;
+    'analytics-resource-views': AnalyticsResourceViewsWidget;
+    'analytics-zero-results': AnalyticsZeroResultsWidget;
+    'analytics-website-clicks': AnalyticsWebsiteClicksWidget;
+    'analytics-phone-calls': AnalyticsPhoneCallsWidget;
+    'analytics-directions': AnalyticsDirectionsWidget;
+    'analytics-widget-searches': AnalyticsWidgetSearchesWidget;
+    'analytics-page-views': AnalyticsPageViewsWidget;
+    'analytics-pageviews-chart': AnalyticsPageviewsChartWidget;
+    'analytics-map': AnalyticsMapWidget;
+    'analytics-resource-titles': AnalyticsResourceTitlesWidget;
+    'analytics-search-queries': AnalyticsSearchQueriesWidget;
+    collections: CollectionsWidget;
+  };
   user: User;
   jobs: {
     tasks: {
@@ -941,15 +943,6 @@ export interface OrchestrationConfig {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "analytics".
- */
-export interface Analytics {
-  id: number;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -1092,10 +1085,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'orchestration-config';
         value: string | OrchestrationConfig;
-      } | null)
-    | ({
-        relationTo: 'analytics';
-        value: number | Analytics;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1650,14 +1639,6 @@ export interface OrchestrationConfigSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "analytics_select".
- */
-export interface AnalyticsSelect<T extends boolean = true> {
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -1758,6 +1739,146 @@ export interface PayloadJobsStatsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-total-users_widget".
+ */
+export interface AnalyticsTotalUsersWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-searches_widget".
+ */
+export interface AnalyticsSearchesWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-resource-views_widget".
+ */
+export interface AnalyticsResourceViewsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-zero-results_widget".
+ */
+export interface AnalyticsZeroResultsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-website-clicks_widget".
+ */
+export interface AnalyticsWebsiteClicksWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-phone-calls_widget".
+ */
+export interface AnalyticsPhoneCallsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-directions_widget".
+ */
+export interface AnalyticsDirectionsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-widget-searches_widget".
+ */
+export interface AnalyticsWidgetSearchesWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-page-views_widget".
+ */
+export interface AnalyticsPageViewsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-pageviews-chart_widget".
+ */
+export interface AnalyticsPageviewsChartWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-map_widget".
+ */
+export interface AnalyticsMapWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-resource-titles_widget".
+ */
+export interface AnalyticsResourceTitlesWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-search-queries_widget".
+ */
+export interface AnalyticsSearchQueriesWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "collections_widget".
+ */
+export interface CollectionsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "TaskTranslateTopics".
  */
 export interface TaskTranslateTopics {
@@ -1822,6 +1943,7 @@ export interface TaskWarmCache {
 export interface Auth {
   [k: string]: unknown;
 }
+
 
 declare module 'payload' {
   export interface GeneratedTypes extends Config {}
