@@ -5,8 +5,39 @@ import { Gutter, HydrateAuthProvider, SetStepNav } from '@payloadcms/ui';
 import type { AdminViewServerProps } from 'payload';
 import DateRange from '../analytics/DateRange';
 
+const ANALYTICS_DEFAULT_LAYOUT = [
+  { widgetSlug: 'analytics-total-users', width: 'x-small' as const },
+  { widgetSlug: 'analytics-searches', width: 'x-small' as const },
+  { widgetSlug: 'analytics-resource-views', width: 'x-small' as const },
+  { widgetSlug: 'analytics-zero-results', width: 'x-small' as const },
+  { widgetSlug: 'analytics-website-clicks', width: 'x-small' as const },
+  { widgetSlug: 'analytics-phone-calls', width: 'x-small' as const },
+  { widgetSlug: 'analytics-directions', width: 'x-small' as const },
+  { widgetSlug: 'analytics-page-views', width: 'x-small' as const },
+  { widgetSlug: 'analytics-pageviews-chart', width: 'medium' as const },
+  { widgetSlug: 'analytics-map', width: 'medium' as const },
+  { widgetSlug: 'analytics-resource-titles', width: 'medium' as const },
+  { widgetSlug: 'analytics-search-queries', width: 'medium' as const },
+];
+
 export default function AnalyticsView(props: AdminViewServerProps) {
   const user = props.user ?? (props.initPageResult?.req?.user as any);
+
+  const patchedConfig = {
+    ...props.payload.config,
+    admin: {
+      ...props.payload.config.admin,
+      dashboard: {
+        ...(props.payload.config.admin.dashboard ?? {}),
+        defaultLayout: ANALYTICS_DEFAULT_LAYOUT,
+      },
+    },
+  };
+
+  const patchedProps = {
+    ...props,
+    payload: { ...props.payload, config: patchedConfig },
+  } as any;
 
   return (
     <Fragment>
@@ -42,7 +73,7 @@ export default function AnalyticsView(props: AdminViewServerProps) {
             <DateRange />
           </div>
         </Gutter>
-        <DefaultDashboard {...(props as any)} user={user} />
+        <DefaultDashboard {...patchedProps} user={user} />
       </DefaultTemplate>
     </Fragment>
   );

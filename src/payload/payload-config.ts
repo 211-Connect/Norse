@@ -14,7 +14,6 @@ import { Tenants } from './collections/Tenants';
 import { TenantMedia } from './collections/TenantMedia';
 import { ResourceDirectories } from './collections/ResourceDirectories';
 import { OrchestrationConfig } from './collections/OrchestrationConfig';
-import { Analytics } from './collections/Analytics';
 import { defaultLocale, locales } from './i18n/locales';
 import { getUserTenantIDs } from './utilities/getUserTenantIDs';
 
@@ -203,23 +202,7 @@ const config = buildConfig({
           maxWidth: 'full',
         },
       ],
-      // defaultLayout is the analytics layout so "Reset Layout" on the analytics
-      // page restores the correct widgets. The main /admin dashboard overrides
-      // this via MainDashboardView to show only the collections widget.
-      defaultLayout: [
-        { widgetSlug: 'analytics-total-users', width: 'x-small' as const },
-        { widgetSlug: 'analytics-searches', width: 'x-small' as const },
-        { widgetSlug: 'analytics-resource-views', width: 'x-small' as const },
-        { widgetSlug: 'analytics-zero-results', width: 'x-small' as const },
-        { widgetSlug: 'analytics-website-clicks', width: 'x-small' as const },
-        { widgetSlug: 'analytics-phone-calls', width: 'x-small' as const },
-        { widgetSlug: 'analytics-directions', width: 'x-small' as const },
-        { widgetSlug: 'analytics-page-views', width: 'x-small' as const },
-        { widgetSlug: 'analytics-pageviews-chart', width: 'medium' as const },
-        { widgetSlug: 'analytics-map', width: 'medium' as const },
-        { widgetSlug: 'analytics-resource-titles', width: 'medium' as const },
-        { widgetSlug: 'analytics-search-queries', width: 'medium' as const },
-      ],
+      defaultLayout: [{ widgetSlug: 'collections', width: 'full' as const }],
     },
   },
   secret: process.env.PAYLOAD_SECRET as string,
