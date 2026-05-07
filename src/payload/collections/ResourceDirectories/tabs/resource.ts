@@ -73,6 +73,15 @@ export const resource: Tab = {
       },
     },
     {
+      name: 'categoriesText',
+      type: 'text',
+      localized: true,
+      access: {
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
+      },
+    },
+    {
       name: 'useCustomLayout',
       type: 'checkbox',
       defaultValue: false,

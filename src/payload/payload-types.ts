@@ -84,14 +84,24 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     tenants: TenantsSelect<false> | TenantsSelect<true>;
     'tenant-media': TenantMediaSelect<false> | TenantMediaSelect<true>;
-    'resource-directories': ResourceDirectoriesSelect<false> | ResourceDirectoriesSelect<true>;
-    'orchestration-config': OrchestrationConfigSelect<false> | OrchestrationConfigSelect<true>;
+    'resource-directories':
+      | ResourceDirectoriesSelect<false>
+      | ResourceDirectoriesSelect<true>;
+    'orchestration-config':
+      | OrchestrationConfigSelect<false>
+      | OrchestrationConfigSelect<true>;
     analytics: AnalyticsSelect<false> | AnalyticsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
-    'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
-    'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
-    'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
+    'payload-locked-documents':
+      | PayloadLockedDocumentsSelect<false>
+      | PayloadLockedDocumentsSelect<true>;
+    'payload-preferences':
+      | PayloadPreferencesSelect<false>
+      | PayloadPreferencesSelect<true>;
+    'payload-migrations':
+      | PayloadMigrationsSelect<false>
+      | PayloadMigrationsSelect<true>;
   };
   db: {
     defaultIDType: number;
@@ -186,7 +196,9 @@ export interface Config {
     'payload-jobs-stats': PayloadJobsStat;
   };
   globalsSelect: {
-    'payload-jobs-stats': PayloadJobsStatsSelect<false> | PayloadJobsStatsSelect<true>;
+    'payload-jobs-stats':
+      | PayloadJobsStatsSelect<false>
+      | PayloadJobsStatsSelect<true>;
   };
   locale:
     | 'am'
@@ -394,10 +406,10 @@ export interface Tenant {
     realmId: string;
     keycloakSecret?: string | null;
     nextAuthSecret?: string | null;
-    requiresLogin?: boolean | null;
     /**
-     * Allowed domains to access via OAuth. Add values like acme.org or partner.acme.org.
+     * ⚠️ WARNING: Enabling this will make the website private. Only authenticated users will be able to access it. Use this setting with caution.
      */
+    requiresLogin?: boolean | null;
     allowedEmailDomains?:
       | {
           domain: string;
@@ -533,7 +545,7 @@ export interface ResourceDirectory {
      */
     favoritesButtonLabel?: string | null;
     /**
-     * Leave blank to use the default feedback label (or locale equivalent)
+     * Leave blank to use the default feedback label ("Report" or locale equivalent)
      */
     feedbackButtonLabel?: string | null;
     safeExit?: {
@@ -639,6 +651,7 @@ export interface ResourceDirectory {
   };
   resource?: {
     lastAssuredText?: string | null;
+    categoriesText?: string | null;
     /**
      * Enable custom layout for resource pages. When disabled, the default layout will be used.
      */
@@ -1430,6 +1443,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
     | T
     | {
         lastAssuredText?: T;
+        categoriesText?: T;
         useCustomLayout?: T;
         leftColumn?:
           | T
@@ -1808,7 +1822,6 @@ export interface TaskWarmCache {
 export interface Auth {
   [k: string]: unknown;
 }
-
 
 declare module 'payload' {
   export interface GeneratedTypes extends Config {}

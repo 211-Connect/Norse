@@ -225,6 +225,20 @@ export const translate: TaskConfig<'translate'> = {
         // Resource Tab
         if (
           shouldTranslate(
+            englishResourceDirectory.resource?.categoriesText,
+            targetDoc.resource?.categoriesText,
+            'resource.categoriesText',
+          )
+        ) {
+          fieldsToTranslate.push({
+            path: 'resource.categoriesText',
+            value: englishResourceDirectory.resource!.categoriesText!,
+            locale: targetLocale,
+          });
+        }
+
+        if (
+          shouldTranslate(
             englishResourceDirectory.resource?.lastAssuredText,
             targetDoc.resource?.lastAssuredText,
             'resource.lastAssuredText',
@@ -603,14 +617,26 @@ export const translate: TaskConfig<'translate'> = {
         };
 
         // Resource Tab
-        if (translationsByPath['resource.lastAssuredText']) {
+        if (translationsByPath['resource.categoriesText']) {
           updateData.resource = {
             ...targetDoc.resource,
+            categoriesText: translationsByPath['resource.categoriesText'],
+          };
+        } else if (isEmpty(targetDoc.resource?.categoriesText)) {
+          updateData.resource = {
+            ...targetDoc.resource,
+            categoriesText: englishResourceDirectory.resource?.categoriesText,
+          };
+        }
+
+        if (translationsByPath['resource.lastAssuredText']) {
+          updateData.resource = {
+            ...(updateData.resource ?? targetDoc.resource),
             lastAssuredText: translationsByPath['resource.lastAssuredText'],
           };
         } else if (isEmpty(targetDoc.resource?.lastAssuredText)) {
           updateData.resource = {
-            ...targetDoc.resource,
+            ...(updateData.resource ?? targetDoc.resource),
             lastAssuredText: englishResourceDirectory.resource?.lastAssuredText,
           };
         }

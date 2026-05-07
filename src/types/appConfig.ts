@@ -84,6 +84,7 @@ export type AppConfig = {
     };
   };
   resource: {
+    categoriesText?: string;
     lastAssuredText?: string;
     layout: {
       leftColumn: NonNullable<ResourceDirectory['resource']>['leftColumn'];
