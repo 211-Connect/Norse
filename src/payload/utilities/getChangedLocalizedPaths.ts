@@ -11,6 +11,7 @@ interface ChangeDetail {
 }
 
 export const AUTO_TRANSLATED_STRING_PATHS = [
+  'resource.categoriesText',
   'resource.lastAssuredText',
   'topics.backText',
   'topics.customHeading',

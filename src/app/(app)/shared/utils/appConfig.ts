@@ -250,6 +250,7 @@ async function getAppConfigBase(
         },
       },
       resource: {
+        categoriesText: undefined,
         lastAssuredText: undefined,
         layout: {
           leftColumn: [],
@@ -447,6 +448,7 @@ async function getAppConfigBase(
       },
     },
     resource: {
+      categoriesText: resourceDirectory.resource?.categoriesText ?? undefined,
       lastAssuredText: resourceDirectory.resource?.lastAssuredText ?? undefined,
       layout: resourceDirectory.resource?.useCustomLayout
         ? {
