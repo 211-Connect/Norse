@@ -17,14 +17,9 @@ import { SEARCH_DEBOUNCE_DELAY } from '../../lib/constants';
 interface SearchBarProps {
   focusByDefault?: boolean;
   inputId?: string;
-  onSearchSourceChange: (source: 'manual' | 'suggestion') => void;
 }
 
-export function SearchBar({
-  focusByDefault = false,
-  inputId,
-  onSearchSourceChange,
-}: SearchBarProps) {
+export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
   const appConfig = useAppConfig();
   const { t } = useTranslation('common');
   const searchTerm = useAtomValue(searchTermAtom);
@@ -114,8 +109,6 @@ export function SearchBar({
 
   const setSearchTerm = useCallback(
     (value: string, option?: AutocompleteOption) => {
-      onSearchSourceChange(option ? 'suggestion' : 'manual');
-
       const query = option?.query ?? value;
       const queryType = option?.queryType ?? 'text';
 
@@ -127,13 +120,11 @@ export function SearchBar({
         queryLabel: value,
       }));
     },
-    [onSearchSourceChange, setSearch],
+    [setSearch],
   );
 
   const handleInputChange = useCallback(
     (value: string) => {
-      onSearchSourceChange('manual');
-
       setSearch((prev) => ({
         ...prev,
         query: value,
@@ -142,7 +133,7 @@ export function SearchBar({
         queryLabel: value,
       }));
     },
-    [onSearchSourceChange, setSearch],
+    [setSearch],
   );
 
   return (

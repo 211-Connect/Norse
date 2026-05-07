@@ -1,6 +1,13 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
+import {
+  SubmitEventHandler,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from 'react';
 import { createPortal } from 'react-dom';
 import { ChevronLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -55,9 +62,6 @@ export function SearchDialog({
   const scrollPositionRef = useRef(0);
   const initialRenderRef = useRef(true);
   const [mounted, setMounted] = useState(false);
-  const [searchSource, setSearchSource] = useState<'manual' | 'suggestion'>(
-    'manual',
-  );
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const distance = useAtomValue(searchDistanceAtom);
 
@@ -80,7 +84,7 @@ export function SearchDialog({
 
   const userCoordinates = useAtomValue(userCoordinatesAtom);
 
-  const onSubmit = useCallback(
+  const onSubmit: SubmitEventHandler<HTMLFormElement> = useCallback(
     async (e) => {
       e.preventDefault();
 
@@ -162,8 +166,9 @@ export function SearchDialog({
       requireUserLocation,
       router,
       search,
-      searchSource,
+      searchCoordinates,
       distance,
+      userCoordinates,
       setOpen,
       setSearch,
       stringifySearchParams,
@@ -318,10 +323,7 @@ export function SearchDialog({
               <SearchButton loading={isPending} />
             </div>
             <div id="search-form-inputs">
-              <SearchBar
-                inputId={SEARCH_INPUT_ID}
-                onSearchSourceChange={setSearchSource}
-              />
+              <SearchBar inputId={SEARCH_INPUT_ID} />
               <LocationSearchBar inputId={LOCATION_INPUT_ID} className="mt-4" />
             </div>
           </form>
