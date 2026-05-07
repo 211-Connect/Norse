@@ -14,7 +14,6 @@ import { Tenants } from './collections/Tenants';
 import { TenantMedia } from './collections/TenantMedia';
 import { ResourceDirectories } from './collections/ResourceDirectories';
 import { OrchestrationConfig } from './collections/OrchestrationConfig';
-import { Analytics } from './collections/Analytics';
 import { defaultLocale, locales } from './i18n/locales';
 import { getUserTenantIDs } from './utilities/getUserTenantIDs';
 
@@ -56,7 +55,6 @@ const config = buildConfig({
     TenantMedia,
     ResourceDirectories,
     OrchestrationConfig,
-    Analytics,
   ],
   jobs: {
     tasks: [translateTopics, translate, warmCache],
@@ -95,7 +93,113 @@ const config = buildConfig({
     },
     user: Users.slug,
     components: {
-      afterNavLinks: ['@/payload/components/ClearCacheButton'],
+      afterNavLinks: [
+        '@/payload/components/AnalyticsNavLink',
+        '@/payload/components/ClearCacheButton',
+      ],
+      views: {
+        analytics: {
+          Component: '@/payload/components/AnalyticsView',
+          path: '/analytics',
+          exact: true,
+        },
+      },
+    },
+    dashboard: {
+      widgets: [
+        {
+          slug: 'analytics-total-users',
+          Component:
+            '@/payload/components/analytics/widgets/TotalUsersWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-searches',
+          Component:
+            '@/payload/components/analytics/widgets/SearchesWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-resource-views',
+          Component:
+            '@/payload/components/analytics/widgets/ResourceViewsWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-zero-results',
+          Component:
+            '@/payload/components/analytics/widgets/ZeroResultsWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-website-clicks',
+          Component:
+            '@/payload/components/analytics/widgets/WebsiteClicksWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-phone-calls',
+          Component:
+            '@/payload/components/analytics/widgets/PhoneCallsWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-directions',
+          Component:
+            '@/payload/components/analytics/widgets/DirectionsWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-widget-searches',
+          Component:
+            '@/payload/components/analytics/widgets/WidgetSearchesWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-page-views',
+          Component:
+            '@/payload/components/analytics/widgets/PageViewsWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-pageviews-chart',
+          Component:
+            '@/payload/components/analytics/widgets/PageviewsChartWidget#default',
+          minWidth: 'large',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-map',
+          Component:
+            '@/payload/components/analytics/widgets/AnalyticsMapWidget#default',
+          minWidth: 'medium',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-resource-titles',
+          Component:
+            '@/payload/components/analytics/widgets/ResourceTitlesWidget#default',
+          minWidth: 'medium',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-search-queries',
+          Component:
+            '@/payload/components/analytics/widgets/SearchQueriesWidget#default',
+          minWidth: 'medium',
+          maxWidth: 'full',
+        },
+      ],
+      defaultLayout: [{ widgetSlug: 'collections', width: 'full' as const }],
     },
   },
   secret: process.env.PAYLOAD_SECRET as string,

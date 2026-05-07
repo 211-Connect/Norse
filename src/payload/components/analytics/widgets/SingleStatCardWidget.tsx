@@ -1,0 +1,59 @@
+'use client';
+
+import React from 'react';
+import { Banner, StaggeredShimmers } from '@payloadcms/ui';
+import { useStats, usePaths, useEvents } from '../useAnalyticsData';
+import type { AsyncData } from '../useAnalyticsData';
+import { StatCard } from '../StatCard';
+import type { UmamiStats } from '../types';
+import type { PathsData, EventsData } from '../analyticsCache';
+
+type Metric = { current: number; previous: number };
+
+type StatsSelector = (data: UmamiStats) => Metric | null;
+type PathsSelector = (data: PathsData) => Metric | null;
+type EventsSelector = (data: EventsData) => Metric | null;
+
+export type SingleStatCardWidgetProps =
+  | { label: string; dataSource: 'stats'; selector: StatsSelector }
+  | { label: string; dataSource: 'paths'; selector: PathsSelector }
+  | { label: string; dataSource: 'events'; selector: EventsSelector };
+
+function toTrend(current: number, previous: number): number | undefined {
+  if (!previous) return undefined;
+  return ((current - previous) / previous) * 100;
+}
+
+function StatCardFromData<T>({
+  label,
+  useData,
+  selector,
+}: {
+  label: string;
+  useData: () => AsyncData<T>;
+  selector: (data: T) => Metric | null;
+}) {
+  const { loading, error, data } = useData();
+
+  if (loading) return <StaggeredShimmers count={1} height={80} />;
+  if (error) return <Banner type="error"><strong>Could not load {label}.</strong></Banner>;
+
+  const metric = data ? selector(data) : null;
+  if (!metric) return null;
+
+  return (
+    <StatCard
+      label={label}
+      value={metric.current.toLocaleString()}
+      trend={toTrend(metric.current, metric.previous)}
+    />
+  );
+}
+
+export function SingleStatCardWidget(props: SingleStatCardWidgetProps) {
+  if (props.dataSource === 'stats')
+    return <StatCardFromData label={props.label} useData={useStats} selector={props.selector} />;
+  if (props.dataSource === 'paths')
+    return <StatCardFromData label={props.label} useData={usePaths} selector={props.selector} />;
+  return <StatCardFromData label={props.label} useData={useEvents} selector={props.selector} />;
+}

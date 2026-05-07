@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { Chart, type LineChartDataPoint } from './Chart';
-import type { HeatmapPoint } from './AnalyticsMap';
 import dynamic from 'next/dynamic';
+import { HeatmapPoint } from './types';
 
 const MAP_CENTER: [number, number] = [-98.5795, 39.8293];
 const MAP_ZOOM = 3;
