@@ -31,6 +31,7 @@ import {
   searchDistanceAtom,
   userCoordinatesAtom,
 } from '../../store/search';
+import { trackUmamiEvent, UmamiEvent } from '../../lib/umami';
 
 export interface SearchDialogProps {
   focusByDefault?: 'search' | 'location';
@@ -77,6 +78,8 @@ export function SearchDialog({
     );
   }, [open, setUserCoordinates, searchCoordinates]);
 
+  const userCoordinates = useAtomValue(userCoordinatesAtom);
+
   const onSubmit = useCallback(
     async (e) => {
       e.preventDefault();
@@ -121,6 +124,24 @@ export function SearchDialog({
           deleteCookie(USER_PREF_DISTANCE, { path: '/' });
         } else {
           setCookie(USER_PREF_DISTANCE, distance, { path: '/' });
+        }
+
+        const effectiveQueryType = search.queryType;
+
+        const umamiPayload = {
+          query: String(query ?? ''),
+          queryLabel: String(search.queryLabel ?? ''),
+          tenantId: appConfig.tenantId ?? '',
+          userCoordinates: userCoordinates.join(',') ?? '',
+          searchCoordinates: searchCoordinates.join(',') ?? '',
+        };
+
+        if (effectiveQueryType === 'text') {
+          trackUmamiEvent(UmamiEvent.SearchText, umamiPayload);
+        }
+
+        if (effectiveQueryType === 'taxonomy') {
+          trackUmamiEvent(UmamiEvent.SearchTaxonomy, umamiPayload);
         }
 
         router.push(`/search${queryParams}`);
