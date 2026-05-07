@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from '@/app/(app)/shared/components/link';
 import { Badge, badgeVariants } from '@/app/(app)/shared/components/ui/badge';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { Resource, Taxonomy } from '@/types/resource';
@@ -15,6 +16,7 @@ export function CategoriesComponent({
   resource: Pick<Resource, 'categories'>;
 }) {
   const { t } = useTranslation('page-resource');
+  const appConfig = useAppConfig();
   const turnResourceCardTaxonomiesIntoLinks = useFlag(
     'turnResourceCardTaxonomiesIntoLinks',
   );
@@ -32,7 +34,7 @@ export function CategoriesComponent({
   return (
     <div>
       <Typography variant="label" size="sm">
-        {t('categories_title')}
+        {appConfig.resource.categoriesText || t('categories_title')}
       </Typography>
       <div className="flex flex-wrap gap-1">
         {categories.map((el: Taxonomy) => {
