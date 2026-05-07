@@ -15,6 +15,7 @@ import {
   normalizeServiceArea,
   ServiceAreaGeoJSON,
 } from '../../../app/(app)/shared/components/map/map-shared';
+import { MapErrorFallback } from '../../../app/(app)/shared/components/map/map-error-fallback';
 
 type MapProps = {
   center?: [number, number];
