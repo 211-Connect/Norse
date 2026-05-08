@@ -1,5 +1,5 @@
-import { Redis } from 'ioredis';
 import { createLogger } from '@/lib/logger';
+import { Redis } from 'ioredis';
 
 const log = createLogger('cache');
 

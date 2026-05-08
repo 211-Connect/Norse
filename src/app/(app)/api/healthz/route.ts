@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
-import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
 import { cacheService } from '@/cacheService';
 import { createLogger } from '@/lib/logger';
+import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
+import { NextResponse } from 'next/server';
 
 const log = createLogger('healthz');
 

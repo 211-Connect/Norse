@@ -1,32 +1,32 @@
 import type { CollectionConfig } from 'payload';
 
-import { setTenantIdAsId } from './hooks/setTenantIdAsId';
-import { preventUpdateInDisabledLocale } from './hooks/preventUpdateInDisabledLocale';
-import { revalidateCache } from './hooks/revalidateCache';
-import { disableService } from './hooks/disableResourceDirectoryService';
-import { autoTranslate } from './hooks/autoTranslate';
-import { pushFacetsToCache } from './hooks/pushFacetsToCache';
-import { invalidateApiCache } from './hooks/invalidateApiCache';
-import { syncKeycloakRealmBrandingAfterChange } from './hooks/syncKeycloakBrandingAfterChange';
-import { brand } from './tabs/brand';
-import { topics } from './tabs/topics';
-import { suggestions } from './tabs/suggestions';
-import { search } from './tabs/search';
-import { common } from './tabs/common';
-import { newLayout } from './tabs/newLayout';
-import { header } from './tabs/header';
-import { footer } from './tabs/footer';
-import { featureFlags } from './tabs/featureFlags';
-import { privacyPolicyPage } from './tabs/privacyPolicyPage';
-import { termsOfUsePage } from './tabs/termsOfUsePage';
-import { highlights } from './tabs/highlights';
 import {
   superAdminAccess,
   superAdminOrSupportOrTenantAccess,
 } from '../Users/access/roles';
-import { resource } from './tabs/resource';
+import { autoTranslate } from './hooks/autoTranslate';
+import { disableService } from './hooks/disableResourceDirectoryService';
+import { invalidateApiCache } from './hooks/invalidateApiCache';
+import { preventUpdateInDisabledLocale } from './hooks/preventUpdateInDisabledLocale';
+import { pushFacetsToCache } from './hooks/pushFacetsToCache';
+import { revalidateCache } from './hooks/revalidateCache';
+import { setTenantIdAsId } from './hooks/setTenantIdAsId';
+import { syncKeycloakRealmBrandingAfterChange } from './hooks/syncKeycloakBrandingAfterChange';
 import { accessibility } from './tabs/accessibility';
 import { badges } from './tabs/badges';
+import { brand } from './tabs/brand';
+import { common } from './tabs/common';
+import { featureFlags } from './tabs/featureFlags';
+import { footer } from './tabs/footer';
+import { header } from './tabs/header';
+import { highlights } from './tabs/highlights';
+import { newLayout } from './tabs/newLayout';
+import { privacyPolicyPage } from './tabs/privacyPolicyPage';
+import { resource } from './tabs/resource';
+import { search } from './tabs/search';
+import { suggestions } from './tabs/suggestions';
+import { termsOfUsePage } from './tabs/termsOfUsePage';
+import { topics } from './tabs/topics';
 
 export const ResourceDirectories: CollectionConfig = {
   slug: 'resource-directories',

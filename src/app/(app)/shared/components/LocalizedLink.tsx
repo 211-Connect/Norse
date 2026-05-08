@@ -3,6 +3,7 @@
 import Link, { LinkProps as NextLinkProps } from 'next/link';
 import { Ref, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { useAppConfig } from '../hooks/use-app-config';
 
 export interface LinkProps extends NextLinkProps {

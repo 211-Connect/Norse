@@ -1,6 +1,7 @@
 'use client';
 
 import { ArrayRowLabel } from '@/payload/components/ArrayRowLabel';
+
 import { useLocalizedRowLabel } from './useLocalizedRowLabel';
 
 interface LocalizedRowLabelProps {

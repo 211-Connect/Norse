@@ -1,5 +1,5 @@
-import { PayloadRequest } from 'payload';
 import { createLogger } from '@/lib/logger';
+import { PayloadRequest } from 'payload';
 
 const log = createLogger('removeRelatedResources');
 

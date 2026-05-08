@@ -1,6 +1,7 @@
 import { ResourceDirectoryBadgeListItem } from '@/payload/collections/ResourceDirectories/types/badge';
-import { Nullable } from './common';
 import { ResourceDirectory } from '@/payload/payload-types';
+
+import { Nullable } from './common';
 
 type Menu = {
   name: string;

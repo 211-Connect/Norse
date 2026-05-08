@@ -428,8 +428,17 @@ export interface Tenant {
     smsProvider?: ('Twilio' | 'EMS') | null;
     twilio?: {
       phoneNumber?: string | null;
+      /**
+       * Random string
+       */
       apiKey?: string | null;
+      /**
+       * Starts with 'SK' followed by random string
+       */
       apiKeySid?: string | null;
+      /**
+       * Starts with 'AC' followed by random string
+       */
       accountSid?: string | null;
     };
     ems?: {

@@ -1,10 +1,11 @@
 'use client';
 
-import { Send } from 'lucide-react';
 import { Link } from '@/app/(app)/shared/components/link';
 import { Resource } from '@/types/resource';
-import { Datum } from '../datum';
+import { Send } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+
+import { Datum } from '../datum';
 
 export function EmailComponent({ resource }: { resource: Resource }) {
   const { t } = useTranslation('page-resource');

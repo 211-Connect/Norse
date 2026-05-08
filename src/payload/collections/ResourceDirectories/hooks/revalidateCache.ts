@@ -1,9 +1,10 @@
-import { ResourceDirectory } from '@/payload/payload-types';
-import { cacheService } from '@/cacheService';
-import { findTenantById } from '../../Tenants/actions';
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
-import { CacheKey, clearMemoryCache } from '@/utilities/withCache';
+import { cacheService } from '@/cacheService';
 import { createLogger } from '@/lib/logger';
+import { ResourceDirectory } from '@/payload/payload-types';
+import { CacheKey, clearMemoryCache } from '@/utilities/withCache';
+
+import { findTenantById } from '../../Tenants/actions';
 
 const log = createLogger('revalidateCache');
 

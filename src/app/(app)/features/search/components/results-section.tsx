@@ -1,26 +1,26 @@
 'use client';
 
-import { useAtomValue } from 'jotai';
-import { useEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
-import {
-  resultsAtom,
-  resultTotalAtom,
-  resultsCurrentPageAtom,
-} from '@/app/(app)/shared/store/results';
 import { PrintButton } from '@/app/(app)/shared/components/print-button';
 import { ShareButton } from '@/app/(app)/shared/components/share-button';
-
-import { ResultTotal } from './result-total';
-import { RenderResults } from './render-results';
-import { ResultsPagination } from './results-pagination';
-import { SortSelect } from './sort-select';
-import { SearchCardLayoutConfig } from '../types/card-layout-config';
+import {
+  resultTotalAtom,
+  resultsAtom,
+  resultsCurrentPageAtom,
+} from '@/app/(app)/shared/store/results';
 import {
   queryAtom,
   queryLabelAtom,
   queryTypeAtom,
 } from '@/app/(app)/shared/store/search';
+import { useAtomValue } from 'jotai';
+import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { SearchCardLayoutConfig } from '../types/card-layout-config';
+import { RenderResults } from './render-results';
+import { ResultTotal } from './result-total';
+import { ResultsPagination } from './results-pagination';
+import { SortSelect } from './sort-select';
 
 const SEARCH_RESULTS_HEADING_ID = 'search-results-heading';
 const PENDING_FOCUS_TARGET_STORAGE_KEY = 'pending-search-focus-target';

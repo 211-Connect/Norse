@@ -1,5 +1,6 @@
-import parse from 'html-react-parser';
 import { createLogger } from '@/lib/logger';
+import parse from 'html-react-parser';
+
 import { normalizeStructuredContent } from './html-helpers';
 
 const log = createLogger('parse-html');

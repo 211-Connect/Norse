@@ -1,4 +1,5 @@
 import { ExtractAtomValue } from 'jotai';
+
 import { deriveQueryType } from '../lib/search-utils';
 import { searchAtom } from '../store/search';
 

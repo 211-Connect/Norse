@@ -1,13 +1,14 @@
 'use server';
 
+import { FavoriteListItemDto } from '@/types/favorites';
+
+import { getAuthHeaders } from '../../lib/authHeaders';
 import {
   API_URL,
   FAVORITES_LIST_ENDPOINT,
   INTERNAL_API_KEY,
 } from '../../lib/constants';
-import { getAuthHeaders } from '../../lib/authHeaders';
 import { fetchWrapper } from '../../lib/fetchWrapper';
-import { FavoriteListItemDto } from '@/types/favorites';
 
 export async function getFavoriteList(
   id: string,
@@ -22,18 +23,15 @@ export async function getFavoriteList(
   }
 
   const url = `${API_URL}/${FAVORITES_LIST_ENDPOINT}/${id}?${searchParams.toString()}`;
-  const response = await fetchWrapper<FavoriteListItemDto>(
-    url,
-    {
-      headers: {
-        ...authHeaders,
-        'accept-language': locale,
-        'x-api-version': '1',
-        'x-api-key': INTERNAL_API_KEY || '',
-      },
-      cache: 'no-store',
+  const response = await fetchWrapper<FavoriteListItemDto>(url, {
+    headers: {
+      ...authHeaders,
+      'accept-language': locale,
+      'x-api-version': '1',
+      'x-api-key': INTERNAL_API_KEY || '',
     },
-  );
+    cache: 'no-store',
+  });
 
   if (!response) {
     return null;

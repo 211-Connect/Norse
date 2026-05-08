@@ -1,23 +1,24 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useAtomValue } from 'jotai';
 import { useTenantSelection } from '@payloadcms/plugin-multi-tenant/client';
+import { useAtomValue } from 'jotai';
+import { useEffect, useState } from 'react';
+
 import { analyticsDateRangeAtom } from './DateRange';
 import {
+  type EventsData,
   type MetricsData,
   type PathsData,
-  type EventsData,
   type SessionsData,
-  fetchStats,
-  fetchPageviews,
-  fetchMetrics,
-  fetchPaths,
   fetchEvents,
+  fetchMetrics,
+  fetchPageviews,
+  fetchPaths,
   fetchSessions,
+  fetchStats,
 } from './analyticsCache';
 import type { DateRange } from './types';
-import type { UmamiStats, UmamiPageviews } from './types';
+import type { UmamiPageviews, UmamiStats } from './types';
 
 export type { MetricsData, PathsData, EventsData, SessionsData };
 
@@ -27,24 +28,44 @@ export type AsyncData<T> = {
   data: T | null;
 };
 
-function useAnalyticsParams(): { range: DateRange; tenantId: string | undefined } {
+function useAnalyticsParams(): {
+  range: DateRange;
+  tenantId: string | undefined;
+} {
   const range = useAtomValue(analyticsDateRangeAtom);
   const { selectedTenantID } = useTenantSelection();
   return { range, tenantId: selectedTenantID as string | undefined };
 }
 
-function makeAsyncHook<T>(fetcher: (range: DateRange, tenantId: string | undefined) => Promise<T>) {
+function makeAsyncHook<T>(
+  fetcher: (range: DateRange, tenantId: string | undefined) => Promise<T>,
+) {
   return function useAsyncData(): AsyncData<T> {
     const { range, tenantId } = useAnalyticsParams();
-    const [state, setState] = useState<AsyncData<T>>({ loading: true, error: null, data: null });
+    const [state, setState] = useState<AsyncData<T>>({
+      loading: true,
+      error: null,
+      data: null,
+    });
 
     useEffect(() => {
       let cancelled = false;
       setState({ loading: true, error: null, data: null });
       fetcher(range, tenantId)
-        .then((data) => { if (!cancelled) setState({ loading: false, error: null, data }); })
-        .catch((err) => { if (!cancelled) setState({ loading: false, error: err instanceof Error ? err.message : String(err), data: null }); });
-      return () => { cancelled = true; };
+        .then((data) => {
+          if (!cancelled) setState({ loading: false, error: null, data });
+        })
+        .catch((err) => {
+          if (!cancelled)
+            setState({
+              loading: false,
+              error: err instanceof Error ? err.message : String(err),
+              data: null,
+            });
+        });
+      return () => {
+        cancelled = true;
+      };
     }, [range, tenantId]);
 
     return state;

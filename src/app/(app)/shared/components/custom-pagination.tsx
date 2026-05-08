@@ -1,6 +1,9 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
+import { useCallback } from 'react';
+
+import { useClientSearchParams } from '../hooks/use-client-search-params';
 import {
   Pagination,
   PaginationContent,
@@ -10,8 +13,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from './ui/pagination';
-import { useCallback } from 'react';
-import { useClientSearchParams } from '../hooks/use-client-search-params';
 
 const DOTS = 'dots';
 
@@ -57,11 +58,14 @@ export function CustomPagination({
     [pathname, stringifiedSearchParams, stringifySearchParams],
   );
 
-  const changePage = useCallback((newPage: number) => {
-    if (onPageChange) {
-      onPageChange(newPage);
-    }
-  }, [onPageChange]);
+  const changePage = useCallback(
+    (newPage: number) => {
+      if (onPageChange) {
+        onPageChange(newPage);
+      }
+    },
+    [onPageChange],
+  );
 
   const getPagination = useCallback(() => {
     const _total = Math.max(Math.trunc(total), 0);

@@ -1,12 +1,13 @@
 'use client';
 
-import React from 'react';
 import { Banner, StaggeredShimmers } from '@payloadcms/ui';
-import { useStats, usePaths, useEvents } from '../useAnalyticsData';
-import type { AsyncData } from '../useAnalyticsData';
+import React from 'react';
+
 import { StatCard } from '../StatCard';
+import type { EventsData, PathsData } from '../analyticsCache';
 import type { UmamiStats } from '../types';
-import type { PathsData, EventsData } from '../analyticsCache';
+import { useEvents, usePaths, useStats } from '../useAnalyticsData';
+import type { AsyncData } from '../useAnalyticsData';
 
 type Metric = { current: number; previous: number };
 
@@ -36,7 +37,12 @@ function StatCardFromData<T>({
   const { loading, error, data } = useData();
 
   if (loading) return <StaggeredShimmers count={1} height={80} />;
-  if (error) return <Banner type="error"><strong>Could not load {label}.</strong></Banner>;
+  if (error)
+    return (
+      <Banner type="error">
+        <strong>Could not load {label}.</strong>
+      </Banner>
+    );
 
   const metric = data ? selector(data) : null;
   if (!metric) return null;
@@ -52,8 +58,26 @@ function StatCardFromData<T>({
 
 export function SingleStatCardWidget(props: SingleStatCardWidgetProps) {
   if (props.dataSource === 'stats')
-    return <StatCardFromData label={props.label} useData={useStats} selector={props.selector} />;
+    return (
+      <StatCardFromData
+        label={props.label}
+        useData={useStats}
+        selector={props.selector}
+      />
+    );
   if (props.dataSource === 'paths')
-    return <StatCardFromData label={props.label} useData={usePaths} selector={props.selector} />;
-  return <StatCardFromData label={props.label} useData={useEvents} selector={props.selector} />;
+    return (
+      <StatCardFromData
+        label={props.label}
+        useData={usePaths}
+        selector={props.selector}
+      />
+    );
+  return (
+    <StatCardFromData
+      label={props.label}
+      useData={useEvents}
+      selector={props.selector}
+    />
+  );
 }

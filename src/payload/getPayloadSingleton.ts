@@ -1,4 +1,5 @@
-import { getPayload, Payload } from 'payload';
+import { Payload, getPayload } from 'payload';
+
 import config from './payload-config';
 
 /**

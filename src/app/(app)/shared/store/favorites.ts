@@ -1,6 +1,6 @@
-import { atom } from 'jotai';
-import { ApiResource, Address, Translation } from '@/types/resource';
 import { FavoriteListState } from '@/types/favorites';
+import { Address, ApiResource, Translation } from '@/types/resource';
+import { atom } from 'jotai';
 
 export interface Favorite extends ApiResource {
   addresses: Address[];

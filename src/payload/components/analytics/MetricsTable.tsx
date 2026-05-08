@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
-import type { Column } from 'payload';
 import { Table } from '@payloadcms/ui';
+import type { Column } from 'payload';
+import React from 'react';
+
 import type { MetricEntry } from './types';
 
 type Row = MetricEntry;

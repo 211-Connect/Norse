@@ -1,18 +1,18 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useAtomValue } from 'jotai';
 import { SearchIcon } from 'lucide-react';
+import { useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import { useTaxonomies } from '../../hooks/api/use-taxonomies';
+import { useAppConfig } from '../../hooks/use-app-config';
+import { useDebounce } from '../../hooks/use-debounce';
+import { useFlag } from '../../hooks/use-flag';
+import { SEARCH_DEBOUNCE_DELAY } from '../../lib/constants';
 import { searchTermAtom } from '../../store/search';
 import { Autocomplete, AutocompleteOption } from '../ui/autocomplete';
-import { useFlag } from '../../hooks/use-flag';
-import { useAppConfig } from '../../hooks/use-app-config';
 import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
-import { useTaxonomies } from '../../hooks/api/use-taxonomies';
-import { useDebounce } from '../../hooks/use-debounce';
-import { SEARCH_DEBOUNCE_DELAY } from '../../lib/constants';
 
 interface SearchBarProps {
   focusByDefault?: boolean;

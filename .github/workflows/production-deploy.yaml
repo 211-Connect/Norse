@@ -10,7 +10,7 @@ permissions:
 on:
   push:
     tags:
-      - "v*"
+      - 'v*'
 
 env:
   REGISTRY: registry.digitalocean.com

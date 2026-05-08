@@ -1,6 +1,6 @@
 import { MapRenderer } from '@/app/(app)/shared/components/map/map-renderer';
-import { isValidCoordinate } from '@/utils/isValidCoordinate';
 import { Resource } from '@/types/resource';
+import { isValidCoordinate } from '@/utils/isValidCoordinate';
 
 export function MapContainer({ resource }: { resource: Resource }) {
   const coordinates = resource?.location?.coordinates;

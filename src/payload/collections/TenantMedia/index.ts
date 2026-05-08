@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload';
+
 import { setTenantIdPrefix } from './hooks/setTenantIdPrefix';
 
 export const TenantMedia: CollectionConfig = {

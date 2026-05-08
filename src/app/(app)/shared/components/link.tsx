@@ -1,8 +1,9 @@
 'use client';
 
-import * as React from 'react';
-import { LinkProps as NextLinkProps } from 'next/link';
 import { createLinkEvent } from '@/app/(app)/shared/lib/google-tag-manager';
+import { LinkProps as NextLinkProps } from 'next/link';
+import * as React from 'react';
+
 import { LocalizedLink } from './LocalizedLink';
 
 export interface LinkProps extends NextLinkProps {

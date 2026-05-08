@@ -1,6 +1,7 @@
 'use client';
 
-import { createContext, PropsWithChildren, useContext } from 'react';
+import { PropsWithChildren, createContext, useContext } from 'react';
+
 import { useSearchResources } from '../../../hooks/use-search-resources';
 
 export interface MainSearchLayoutContextValue extends ReturnType<

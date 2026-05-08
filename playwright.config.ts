@@ -52,7 +52,10 @@ export default defineConfig({
   projects: [
     {
       name: 'search-taxonomy',
-      testMatch: ['**/search-taxonomy.spec.ts', '**/search-suggestions.spec.ts'],
+      testMatch: [
+        '**/search-taxonomy.spec.ts',
+        '**/search-suggestions.spec.ts',
+      ],
       use: { ...devices['Desktop Chrome'], baseURL },
     },
     {

@@ -1,12 +1,12 @@
 'use client';
 
-import { Locate } from 'lucide-react';
 import { cn } from '@/app/(app)/shared/lib/utils';
+import { Locate } from 'lucide-react';
 import { Ref } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '../ui/button';
 import { SEARCH_DIALOG_ID } from '../../lib/constants';
+import { Button } from '../ui/button';
 
 export interface AddMyLocationButtonProps {
   className?: string;

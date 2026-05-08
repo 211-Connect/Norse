@@ -1,14 +1,14 @@
 'use client';
 
-import { useTour, type StepType } from '@reactour/tour';
-import { useCallback, useRef } from 'react';
-import { createTourEvent } from '@/app/(app)/shared/lib/google-tag-manager';
-import { Button } from '@/app/(app)/shared/components/ui/button';
+import { Image } from '@/app/(app)/shared/components/image';
 import { MainSearchLayout } from '@/app/(app)/shared/components/search/main-search-layout/main-search-layout';
+import { Button } from '@/app/(app)/shared/components/ui/button';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
+import { createTourEvent } from '@/app/(app)/shared/lib/google-tag-manager';
+import { type StepType, useTour } from '@reactour/tour';
+import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image } from '@/app/(app)/shared/components/image';
 
 type TourPositionPreference = 'above' | 'below';
 
@@ -19,8 +19,9 @@ export function HeroSection() {
   const showHomePageTour = useFlag('showHomePageTour');
   const homeSearchTriggerRef = useRef<HTMLButtonElement | null>(null);
   const takeTourLabel =
-    t('take_a_tour', { defaultValue: 'First time here? Take a tour!' }).trim() ||
-    'First time here? Take a tour!';
+    t('take_a_tour', {
+      defaultValue: 'First time here? Take a tour!',
+    }).trim() || 'First time here? Take a tour!';
 
   const getResponsiveTourPosition = useCallback(
     (

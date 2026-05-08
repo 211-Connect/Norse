@@ -1,14 +1,15 @@
-import { test as base, expect, type Page } from '@playwright/test';
+import { type Page, test as base, expect } from '@playwright/test';
+
 import { baseURL } from '../playwright.config';
 import {
+  ASYNC_UI_TIMEOUT_MS,
   AUTH_NAV_TIMEOUT_MS,
   AUTOCOMPLETE_TIMEOUT_MS,
-  ASYNC_UI_TIMEOUT_MS,
-  expectVisibleEventually,
   FAVORITES_PERSISTENCE_TIMEOUT_MS,
   PAGE_LOAD_TIMEOUT_MS,
   SEARCH_NAV_TIMEOUT_MS,
   UI_SHELL_TIMEOUT_MS,
+  expectVisibleEventually,
 } from './timeouts';
 
 export const LOCALE = 'en';
@@ -23,9 +24,7 @@ export const LOCALE = 'en';
 export function isSearchResultsListUrl(url: URL): boolean {
   const segments = url.pathname.replace(/\/+$/, '').split('/').filter(Boolean);
   return (
-    segments.length > 0 &&
-    segments.at(-1) === 'search' &&
-    url.search.length > 0
+    segments.length > 0 && segments.at(-1) === 'search' && url.search.length > 0
   );
 }
 
@@ -76,9 +75,9 @@ export async function expectAuthenticatedShell(page: Page) {
   const favoritesButton = page.getByTestId('favorites-btn');
   await expect(favoritesButton).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
 
-  await expect(
-    page.getByRole('button', { name: /log out/i }),
-  ).toBeVisible({ timeout: AUTH_NAV_TIMEOUT_MS });
+  await expect(page.getByRole('button', { name: /log out/i })).toBeVisible({
+    timeout: AUTH_NAV_TIMEOUT_MS,
+  });
 }
 
 export async function goHome(page: Page) {
@@ -132,9 +131,9 @@ export async function expectSearchDialogDismissed(page: Page) {
 }
 
 export async function waitForFavoritesDialogReady(page: Page) {
-  await expect(
-    page.getByTestId('favorites-loading-skeleton'),
-  ).not.toBeVisible({ timeout: ASYNC_UI_TIMEOUT_MS });
+  await expect(page.getByTestId('favorites-loading-skeleton')).not.toBeVisible({
+    timeout: ASYNC_UI_TIMEOUT_MS,
+  });
   await expect(page.getByTestId('favorites-list-loaded')).toBeAttached({
     timeout: ASYNC_UI_TIMEOUT_MS,
   });
@@ -147,9 +146,9 @@ export async function filterFavoritesDialogLists(page: Page, listName: string) {
   const searchBar = page.getByTestId('favorites-search-input');
   await expect(searchBar).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
   await searchBar.fill(listName);
-  await expect(
-    page.getByTestId('favorites-loading-skeleton'),
-  ).not.toBeVisible({ timeout: ASYNC_UI_TIMEOUT_MS });
+  await expect(page.getByTestId('favorites-loading-skeleton')).not.toBeVisible({
+    timeout: ASYNC_UI_TIMEOUT_MS,
+  });
   await expectVisibleEventually(page.getByText(listName).first(), {
     timeout: ASYNC_UI_TIMEOUT_MS,
   });
@@ -191,7 +190,10 @@ export async function performSearch(page: Page, params: SearchParams) {
     await searchInput.fill(params.query_label ?? params.query);
 
     const listbox = page.getByTestId('autocomplete-listbox');
-    await listbox.waitFor({ state: 'visible', timeout: AUTOCOMPLETE_TIMEOUT_MS });
+    await listbox.waitFor({
+      state: 'visible',
+      timeout: AUTOCOMPLETE_TIMEOUT_MS,
+    });
 
     const options = listbox.getByTestId('autocomplete-option');
     const optionCount = await options.count();
@@ -357,7 +359,9 @@ export async function deleteAllE2ETestLists(page: Page): Promise<void> {
     await page.waitForLoadState('networkidle');
 
     const card = page.getByText(/^E2E Test List /).first();
-    const isVisible = await card.isVisible({ timeout: 3_000 }).catch(() => false);
+    const isVisible = await card
+      .isVisible({ timeout: 3_000 })
+      .catch(() => false);
     if (!isVisible) break;
 
     await card.click();
@@ -467,7 +471,9 @@ export async function applyTestLocationOnSearchPage(page: Page) {
   const addOrChange = page.getByRole('button', {
     name: /add my location|change location|cambiar ubicación|agregar mi ubicación/i,
   });
-  await expect(addOrChange.first()).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+  await expect(addOrChange.first()).toBeVisible({
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
   await addOrChange.first().click();
   const locationInput = page.locator('#location-input');
   await expect(locationInput).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
@@ -731,7 +737,9 @@ export async function loginViaKeycloak(page: Page) {
       }),
       page.locator('#kc-login').click(),
     ]);
-    await page.waitForLoadState('networkidle', { timeout: AUTH_NAV_TIMEOUT_MS });
+    await page.waitForLoadState('networkidle', {
+      timeout: AUTH_NAV_TIMEOUT_MS,
+    });
   }
 
   await expectAuthenticatedShell(page);

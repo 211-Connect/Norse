@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
 import { Banner, StaggeredShimmers } from '@payloadcms/ui';
+import React from 'react';
+
 import { MetricsTable } from '../MetricsTable';
 import { usePaths } from '../useAnalyticsData';
 

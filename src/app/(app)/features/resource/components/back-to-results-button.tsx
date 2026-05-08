@@ -1,11 +1,14 @@
 'use client';
 
-import NextLink from 'next/link';
-import { Button, buttonVariants } from '@/app/(app)/shared/components/ui/button';
-import { cn } from '@/app/(app)/shared/lib/utils';
-import { createLinkEvent } from '@/app/(app)/shared/lib/google-tag-manager';
+import {
+  Button,
+  buttonVariants,
+} from '@/app/(app)/shared/components/ui/button';
 import { usePrevUrl } from '@/app/(app)/shared/hooks/use-prev-url';
+import { createLinkEvent } from '@/app/(app)/shared/lib/google-tag-manager';
+import { cn } from '@/app/(app)/shared/lib/utils';
 import { ChevronLeft } from 'lucide-react';
+import NextLink from 'next/link';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

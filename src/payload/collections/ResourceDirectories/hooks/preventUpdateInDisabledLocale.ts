@@ -1,8 +1,8 @@
 import { locales } from '@/payload/i18n/locales';
 import {
   APIError,
-  TypedLocale,
   type CollectionBeforeChangeHook,
+  TypedLocale,
 } from 'payload';
 import { extractID } from 'payload/shared';
 

@@ -1,4 +1,5 @@
 import { AppConfig } from '@/types/appConfig';
+
 import { ResourceComponentId } from './component-ids';
 
 export type ResourceLayoutConfig = AppConfig['resource']['layout'];

@@ -2,10 +2,11 @@
 
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+import { defaultLocale, locales } from '../src/payload/i18n/locales';
 import { batchTranslate } from '../src/payload/services/translationService';
-import { locales, defaultLocale } from '../src/payload/i18n/locales';
 import type { BatchTranslationInput } from '../src/payload/services/translationService';
 
 const __filename = fileURLToPath(import.meta.url);

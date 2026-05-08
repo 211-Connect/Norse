@@ -1,34 +1,35 @@
 'use client';
 
+import { useHydrateAndSyncAtoms } from '@/app/(app)/shared/hooks/use-hydrate-and-sync-atoms';
 import {
   filtersAtom,
+  resultTotalAtom,
   resultsAtom,
   resultsCurrentPageAtom,
-  resultTotalAtom,
 } from '@/app/(app)/shared/store/results';
-import { useHydrateAndSyncAtoms } from '@/app/(app)/shared/hooks/use-hydrate-and-sync-atoms';
 import {
   searchAtom,
   searchCoordinatesAtom,
   userCoordinatesAtom,
 } from '@/app/(app)/shared/store/search';
+import { deleteCookie, setCookie } from 'cookies-next';
+import { useAtomValue } from 'jotai';
+import { useEffect, useMemo } from 'react';
+
 import { useAppConfig } from '../hooks/use-app-config';
-import { setCookie, deleteCookie } from 'cookies-next';
 import {
   USER_PREF_COORDS,
   USER_PREF_DISTANCE,
   USER_PREF_FONT_SIZE,
   USER_PREF_LOCATION,
 } from '../lib/constants';
-import {
-  favoriteListsStateAtom,
-  favoriteListWithFavoritesAtom,
-} from '../store/favorites';
-import { deviceAtom } from '../store/device';
 import { validateCoordsString } from '../lib/validators';
 import { accessibilityAtom } from '../store/accessibility';
-import { useAtomValue } from 'jotai';
-import { useEffect, useMemo } from 'react';
+import { deviceAtom } from '../store/device';
+import {
+  favoriteListWithFavoritesAtom,
+  favoriteListsStateAtom,
+} from '../store/favorites';
 
 function getCoordinates(pageProps, cookies) {
   if (pageProps.coords) {

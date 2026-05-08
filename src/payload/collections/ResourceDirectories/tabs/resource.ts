@@ -1,8 +1,9 @@
-import { Field, Tab } from 'payload';
-import { superAdminOrSupportOrTenantAccess } from '../../Users/access/roles';
 import { ResourceComponentId } from '@/app/(app)/features/resource/types/component-ids';
-import { title } from 'radash';
 import { ResourceDirectory } from '@/payload/payload-types';
+import { Field, Tab } from 'payload';
+import { title } from 'radash';
+
+import { superAdminOrSupportOrTenantAccess } from '../../Users/access/roles';
 import { customAttributeFields } from '../fields/customAttributeFields';
 
 type ResourceConfig = NonNullable<ResourceDirectory['resource']>;

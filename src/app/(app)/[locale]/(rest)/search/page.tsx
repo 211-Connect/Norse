@@ -2,25 +2,26 @@ import { FilterPanel } from '@/app/(app)/features/search/components/filter-panel
 import { MapContainer } from '@/app/(app)/features/search/components/map-container';
 import { ResultsEvents } from '@/app/(app)/features/search/components/results-events';
 import { ResultsSection } from '@/app/(app)/features/search/components/results-section';
+import { DEFAULT_SEARCH_CARD_LAYOUT } from '@/app/(app)/features/search/types/card-layout-config';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
+import { isAdvancedGeoEnabled } from '@/app/(app)/shared/lib/search-utils';
+import { forwardGeocode } from '@/app/(app)/shared/serverActions/geocoding/forwardGeocode';
 import {
-  findResources,
   FindResourcesQuery,
+  findResources,
   findResourcesV2,
 } from '@/app/(app)/shared/services/search-service';
+import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
+import { getSortOption } from '@/app/(app)/shared/utils/getSortOption';
+import { createLogger } from '@/lib/logger';
 import { getCookies } from 'cookies-next/server';
 import { cookies, headers } from 'next/headers';
 import { Metadata } from 'next/types';
-import { cache } from 'react';
 import qs from 'qs';
-import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
-import { forwardGeocode } from '@/app/(app)/shared/serverActions/geocoding/forwardGeocode';
-import { isAdvancedGeoEnabled } from '@/app/(app)/shared/lib/search-utils';
-import { createLogger } from '@/lib/logger';
-import { DEFAULT_SEARCH_CARD_LAYOUT } from '@/app/(app)/features/search/types/card-layout-config';
-import { getSortOption } from '@/app/(app)/shared/utils/getSortOption';
-import { trackUmamiEvent, UmamiEvent } from '../../../shared/lib/umami';
+import { cache } from 'react';
+
+import { UmamiEvent, trackUmamiEvent } from '../../../shared/lib/umami';
 
 const log = createLogger('search-page');
 

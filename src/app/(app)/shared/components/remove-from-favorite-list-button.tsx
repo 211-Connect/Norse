@@ -2,9 +2,12 @@
 
 import { HeartOff, Loader2 } from 'lucide-react';
 import { useRef, useState } from 'react';
-import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 
+import { useAppConfig } from '../hooks/use-app-config';
+import { cn } from '../lib/utils';
+import { removeFavoriteFromList } from '../serverActions/favorites/removeFavoriteFromList';
 import { Button } from './ui/button';
 import {
   Dialog,
@@ -14,9 +17,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from './ui/dialog';
-import { cn } from '../lib/utils';
-import { useAppConfig } from '../hooks/use-app-config';
-import { removeFavoriteFromList } from '../serverActions/favorites/removeFavoriteFromList';
 
 type RemoveFromFavoriteListButtonProps = {
   serviceAtLocationId: string;

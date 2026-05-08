@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
-import { Chart, type LineChartDataPoint } from './Chart';
 import dynamic from 'next/dynamic';
+import React from 'react';
+
+import { Chart, type LineChartDataPoint } from './Chart';
 import { HeatmapPoint } from './types';
 
 const MAP_CENTER: [number, number] = [-98.5795, 39.8293];
