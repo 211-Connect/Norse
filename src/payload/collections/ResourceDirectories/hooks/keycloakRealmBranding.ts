@@ -21,8 +21,8 @@ function requireEnv(name: string): string {
 
 async function getKeycloakAccessToken(): Promise<string> {
   const keycloakBaseUrl = requireEnv('KEYCLOAK_BASE_URL');
-  const clientId = requireEnv('KEYCLOAK_CLIENT_ID');
-  const clientSecret = requireEnv('KEYCLOAK_CLIENT_SECRET');
+  const clientId = requireEnv('KEYCLOAK_ADMIN_CLIENT_ID');
+  const clientSecret = requireEnv('KEYCLOAK_ADMIN_SECRET');
 
   const tokenEndpoint = `${keycloakBaseUrl.replace(/\/$/, '')}/realms/master/protocol/openid-connect/token`;
   const body = new URLSearchParams({

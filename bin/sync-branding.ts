@@ -125,8 +125,8 @@ function buildBrandingAttributes(
 }
 
 async function getKeycloakAccessToken(baseUrl: string): Promise<string> {
-  const clientId = requireEnv('KEYCLOAK_CLIENT_ID');
-  const clientSecret = requireEnv('KEYCLOAK_CLIENT_SECRET');
+  const clientId = requireEnv('KEYCLOAK_ADMIN_CLIENT_ID');
+  const clientSecret = requireEnv('KEYCLOAK_ADMIN_SECRET');
 
   const tokenUrl = `${baseUrl}/realms/master/protocol/openid-connect/token`;
   const body = new URLSearchParams({
