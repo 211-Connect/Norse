@@ -214,7 +214,6 @@ async function getAppConfigBase(
       },
       contact: {},
       sms: null,
-      customBasePath: '',
       featureFlags: {
         requireUserLocation: false,
         showFeedbackButtonGlobal: false,
@@ -370,7 +369,6 @@ async function getAppConfigBase(
       feedbackUrl: resourceDirectory.brand.feedbackUrl ?? undefined,
     },
     sms: getSmsConfig(resourceDirectory),
-    customBasePath: process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || '',
     errorTranslationData: {
       errorNamespaces,
       resources,

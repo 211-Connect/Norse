@@ -271,14 +271,23 @@ export const Tenants: CollectionConfig = {
             {
               name: 'apiKey',
               type: 'text',
+              admin: {
+                description: 'Random string',
+              },
             },
             {
               name: 'apiKeySid',
               type: 'text',
+              admin: {
+                description: "Starts with 'SK' followed by random string",
+              },
             },
             {
               name: 'accountSid',
               type: 'text',
+              admin: {
+                description: "Starts with 'AC' followed by random string",
+              },
             },
           ],
         },

@@ -8,6 +8,7 @@ import { isJwtExpired } from './utils/isJwtExpired';
 import { createLogger } from './lib/logger';
 import { normalizeAllowedEmailDomains } from './utils/normalizeAllowedEmailDomains';
 import { getKeycloakIssuer } from './utils/getKeycloakIssuer';
+import { withOptionalCustomBasePath } from './app/(app)/shared/lib/utils';
 
 const log = createLogger('auth');
 const isDebug = process.env.NEXTAUTH_DEBUG === 'true';
@@ -262,11 +263,11 @@ const createAuthOptions = ({
     }),
   ],
   pages: {
-    error: `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/auth/error`,
-    newUser: `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/auth/new-user`,
-    signIn: `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/auth/signin`,
-    signOut: `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/auth/sign-out`,
-    verifyRequest: `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/auth/verify-request`,
+    error: withOptionalCustomBasePath('/auth/error'),
+    newUser: withOptionalCustomBasePath('/auth/new-user'),
+    signIn: withOptionalCustomBasePath('/auth/signin'),
+    signOut: withOptionalCustomBasePath('/auth/sign-out'),
+    verifyRequest: withOptionalCustomBasePath('/auth/verify-request'),
   },
   cookies: {
     sessionToken: {
@@ -301,7 +302,7 @@ const getSession = (
   host: string,
   authConfig?: Tenant['auth'],
 ) => {
-  const baseUrl = `${protocol}://${host}${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}`;
+  const baseUrl = withOptionalCustomBasePath(`${protocol}://${host}`);
 
   const authOptions = createAuthOptions({
     baseUrl,

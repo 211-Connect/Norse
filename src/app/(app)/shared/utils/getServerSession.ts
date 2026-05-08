@@ -6,6 +6,7 @@ import { normalizeAllowedEmailDomains } from '@/utils/normalizeAllowedEmailDomai
 import { headers } from 'next/headers';
 import { cache } from 'react';
 import { getKeycloakIssuer } from '@/utils/getKeycloakIssuer';
+import { withOptionalCustomBasePath } from '../lib/utils';
 
 async function getSessionOrigin() {
   const headerList = await headers();
@@ -22,7 +23,7 @@ async function getSessionOrigin() {
 
   const parsedHost = parseHost(host);
   const tenant = await findTenantByHost(parsedHost);
-  const baseUrl = `${protocol}://${host}${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}`;
+  const baseUrl = withOptionalCustomBasePath(`${protocol}://${host}`);
 
   const authOptions = createAuthOptions({
     baseUrl,
