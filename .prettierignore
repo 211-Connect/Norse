@@ -5,4 +5,5 @@
 /.claude
 /docs
 /src/payload/migrations/**/*
+/src/payload/payload-types.ts
 /src/app/(payload)/admin/importMap.js

@@ -83,23 +83,13 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     tenants: TenantsSelect<false> | TenantsSelect<true>;
     'tenant-media': TenantMediaSelect<false> | TenantMediaSelect<true>;
-    'resource-directories':
-      | ResourceDirectoriesSelect<false>
-      | ResourceDirectoriesSelect<true>;
-    'orchestration-config':
-      | OrchestrationConfigSelect<false>
-      | OrchestrationConfigSelect<true>;
+    'resource-directories': ResourceDirectoriesSelect<false> | ResourceDirectoriesSelect<true>;
+    'orchestration-config': OrchestrationConfigSelect<false> | OrchestrationConfigSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
-    'payload-locked-documents':
-      | PayloadLockedDocumentsSelect<false>
-      | PayloadLockedDocumentsSelect<true>;
-    'payload-preferences':
-      | PayloadPreferencesSelect<false>
-      | PayloadPreferencesSelect<true>;
-    'payload-migrations':
-      | PayloadMigrationsSelect<false>
-      | PayloadMigrationsSelect<true>;
+    'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
+    'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
+    'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
     defaultIDType: number;
@@ -194,9 +184,7 @@ export interface Config {
     'payload-jobs-stats': PayloadJobsStat;
   };
   globalsSelect: {
-    'payload-jobs-stats':
-      | PayloadJobsStatsSelect<false>
-      | PayloadJobsStatsSelect<true>;
+    'payload-jobs-stats': PayloadJobsStatsSelect<false> | PayloadJobsStatsSelect<true>;
   };
   locale:
     | 'am'
@@ -440,8 +428,17 @@ export interface Tenant {
     smsProvider?: ('Twilio' | 'EMS') | null;
     twilio?: {
       phoneNumber?: string | null;
+      /**
+       * Random string
+       */
       apiKey?: string | null;
+      /**
+       * Starts with 'SK' followed by random string
+       */
       apiKeySid?: string | null;
+      /**
+       * Starts with 'AC' followed by random string
+       */
       accountSid?: string | null;
     };
     ems?: {
@@ -1955,6 +1952,7 @@ export interface TaskWarmCache {
 export interface Auth {
   [k: string]: unknown;
 }
+
 
 declare module 'payload' {
   export interface GeneratedTypes extends Config {}
