@@ -1,9 +1,9 @@
 'use server';
 
+import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
 import { defaultLocale } from '@/payload/i18n/locales';
 import { ResourceDirectory } from '@/payload/payload-types';
 import { TypedLocale } from 'payload';
-import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
 
 export async function findResourceDirectoryByTenantId(
   tenantId: string,

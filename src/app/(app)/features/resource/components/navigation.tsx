@@ -1,13 +1,13 @@
 'use client';
 
 import { AddToFavoritesButton } from '@/app/(app)/shared/components/add-to-favorites-button';
-import { ReportButton } from '@/app/(app)/shared/components/report-button';
 import { PrintButton } from '@/app/(app)/shared/components/print-button';
+import { ReportButton } from '@/app/(app)/shared/components/report-button';
 import { ShareButton } from '@/app/(app)/shared/components/share-button';
-
-import { BackToResultsButton } from './back-to-results-button';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { Resource } from '@/types/resource';
+
+import { BackToResultsButton } from './back-to-results-button';
 
 export function Navigation({
   componentToPrintRef,

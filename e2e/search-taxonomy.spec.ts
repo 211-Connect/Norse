@@ -1,13 +1,14 @@
-import {
-  test,
-  expect,
-  goHome,
-  performSearch,
-  openSearchDialog,
-  getResultTotal,
-  parseTotalFromResultText,
-} from './helpers';
 import type { Page } from '@playwright/test';
+
+import {
+  expect,
+  getResultTotal,
+  goHome,
+  openSearchDialog,
+  parseTotalFromResultText,
+  performSearch,
+  test,
+} from './helpers';
 import {
   AUTOCOMPLETE_TIMEOUT_MS,
   SEARCH_NAV_TIMEOUT_MS,
@@ -57,7 +58,10 @@ test.describe('Search Autocomplete Suggestions', () => {
     await searchInput.fill('I need');
 
     const listbox = page.getByTestId('autocomplete-listbox');
-    await listbox.waitFor({ state: 'visible', timeout: AUTOCOMPLETE_TIMEOUT_MS });
+    await listbox.waitFor({
+      state: 'visible',
+      timeout: AUTOCOMPLETE_TIMEOUT_MS,
+    });
 
     const options = listbox.getByTestId('autocomplete-option');
     const count = await options.count();
@@ -77,7 +81,10 @@ test.describe('Search Autocomplete Suggestions', () => {
     await searchInput.fill('food');
 
     const listbox = page.getByTestId('autocomplete-listbox');
-    await listbox.waitFor({ state: 'visible', timeout: AUTOCOMPLETE_TIMEOUT_MS });
+    await listbox.waitFor({
+      state: 'visible',
+      timeout: AUTOCOMPLETE_TIMEOUT_MS,
+    });
 
     const options = listbox.getByTestId('autocomplete-option');
     const count = await options.count();

@@ -1,44 +1,45 @@
 'use client';
 
-import {
-  useFloating,
-  offset,
-  flip,
-  shift,
-  autoUpdate,
-} from '@floating-ui/react';
-import {
-  useCallback,
-  useState,
-  KeyboardEvent,
-  MouseEvent,
-  ChangeEvent,
-  useMemo,
-  Fragment,
-  ComponentType,
-  useEffect,
-  useRef,
-  MouseEventHandler,
-  useId,
-  type ReactNode,
-} from 'react';
-import match from 'autosuggest-highlight/match';
-import parse from 'autosuggest-highlight/parse';
 import { useUncontrolled } from '@/app/(app)/shared/hooks/use-uncontrolled';
 import { cn } from '@/app/(app)/shared/lib/utils';
+import {
+  autoUpdate,
+  flip,
+  offset,
+  shift,
+  useFloating,
+} from '@floating-ui/react';
+import match from 'autosuggest-highlight/match';
+import parse from 'autosuggest-highlight/parse';
+import { XIcon } from 'lucide-react';
+import {
+  ChangeEvent,
+  ComponentType,
+  Fragment,
+  KeyboardEvent,
+  MouseEvent,
+  MouseEventHandler,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { useOnPointerDownOutside } from '../../hooks/use-on-pointer-down-outside';
+import { Badge } from './badge';
+import { Button } from './button';
 import { Input, InputProps } from './input';
 import { Separator } from './separator';
-import { XIcon } from 'lucide-react';
-import { Button } from './button';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from './tooltip';
-import { Badge } from './badge';
-import { useTranslation } from 'react-i18next';
-import { useOnPointerDownOutside } from '../../hooks/use-on-pointer-down-outside';
 
 export type AutocompleteOption = {
   value: string;

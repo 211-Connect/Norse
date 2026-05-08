@@ -1,7 +1,8 @@
-import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
-import { SignInTrigger } from './signin-trigger';
-import { createLogger } from '@/lib/logger';
 import { withOptionalCustomBasePath } from '@/app/(app)/shared/lib/utils';
+import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
+import { createLogger } from '@/lib/logger';
+
+import { SignInTrigger } from './signin-trigger';
 
 const log = createLogger('signin-page');
 

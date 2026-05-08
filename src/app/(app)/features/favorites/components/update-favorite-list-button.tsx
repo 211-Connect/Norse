@@ -15,12 +15,12 @@ import { Switch } from '@/app/(app)/shared/components/ui/switch';
 import { Textarea } from '@/app/(app)/shared/components/ui/textarea';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { updateFavoriteList } from '@/app/(app)/shared/serverActions/favorites/updateFavoriteList';
+import { createLogger } from '@/lib/logger';
 import { SquarePen } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { createLogger } from '@/lib/logger';
 
 const log = createLogger('update-favorite-list-button');
 

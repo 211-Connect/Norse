@@ -1,12 +1,12 @@
 'use client';
 
-import { type Favorite } from '@/app/(app)/shared/store/favorites';
-import { useTranslation } from 'react-i18next';
-import { SearchCardLayoutConfig } from '@/app/(app)/features/search/types/card-layout-config';
 import { CardLayoutRenderer } from '@/app/(app)/features/search/components/card-layout-renderer';
-import { ResultType } from '@/app/(app)/shared/store/results';
+import { SearchCardLayoutConfig } from '@/app/(app)/features/search/types/card-layout-config';
 import { formatAddressForDisplay } from '@/app/(app)/shared/lib/utils';
+import { type Favorite } from '@/app/(app)/shared/store/favorites';
+import { ResultType } from '@/app/(app)/shared/store/results';
 import { transformFacetsToArray } from '@/app/(app)/shared/utils/toFacetsWithTranslation';
+import { useTranslation } from 'react-i18next';
 
 function convertFavoriteToResult(
   favorite: Favorite,

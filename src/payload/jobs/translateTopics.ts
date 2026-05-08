@@ -1,10 +1,11 @@
+import { createLogger } from '@/lib/logger';
 import type { TaskConfig } from 'payload';
+import { retry } from 'radash';
+
+import { assertValidLocale } from '../i18n/locales';
 import type { TranslationEngine } from '../services/translationService';
 import { batchTranslate } from '../services/translationService';
-import { retry } from 'radash';
-import { assertValidLocale } from '../i18n/locales';
 import { isEmpty } from '../utilities/isEmpty';
-import { createLogger } from '@/lib/logger';
 
 interface FieldToTranslate {
   path: string; // e.g., "backText", "list.0.name", "list.0.subtopics.1.name"

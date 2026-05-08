@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { Input } from './ui/input';
-import { useDebounce } from '../hooks/use-debounce';
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
+import { useEffect, useRef, useState } from 'react';
+
+import { useDebounce } from '../hooks/use-debounce';
 import { cn } from '../lib/utils';
+import { Input } from './ui/input';
 
 interface FavoritesSearchBarProps {
   placeholder?: string;

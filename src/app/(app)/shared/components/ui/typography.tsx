@@ -1,10 +1,10 @@
 'use client';
 
+import { type VariantProps, cva } from 'class-variance-authority';
 import * as React from 'react';
-import { cva, type VariantProps } from 'class-variance-authority';
 
-import { LocalizedLink } from '../LocalizedLink';
 import { cn } from '../../lib/utils';
+import { LocalizedLink } from '../LocalizedLink';
 
 const typographyVariants = cva(
   'font-sans leading-none tracking-normal break-words', // Base: Inter font, 100% line-height, 0% letter-spacing, word breaking

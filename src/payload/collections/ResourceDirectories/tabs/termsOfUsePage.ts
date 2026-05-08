@@ -1,4 +1,5 @@
 import { Tab } from 'payload';
+
 import { superAdminOrSupportOrTenantAccess } from '../../Users/access/roles';
 
 export const termsOfUsePage: Tab = {

@@ -1,6 +1,8 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { MAPLIBRE_STYLE_URL } from '@/app/(app)/shared/lib/constants';
+import { createLogger } from '@/lib/logger';
+import { isValidCoordinate } from '@/utils/isValidCoordinate';
 import { X } from 'lucide-react';
 import mapLibreGl, {
   AttributionControl,
@@ -9,21 +11,20 @@ import mapLibreGl, {
   Marker,
   Popup,
 } from 'maplibre-gl';
-import { MAPLIBRE_STYLE_URL } from '@/app/(app)/shared/lib/constants';
-import { createLogger } from '@/lib/logger';
+import 'maplibre-gl/dist/maplibre-gl.css';
+import { Protocol } from 'pmtiles';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+
+import { MapErrorFallback } from '../map-error-fallback';
+import {
+  MarkerDef,
+  ServiceAreaGeoJSON,
+  getBoundsFromServiceArea,
+  normalizeServiceArea,
+} from '../map-shared';
 
 const log = createLogger('maplibre');
-import { Protocol } from 'pmtiles';
-import 'maplibre-gl/dist/maplibre-gl.css';
-import {
-  ServiceAreaGeoJSON,
-  normalizeServiceArea,
-  getBoundsFromServiceArea,
-  MarkerDef,
-} from '../map-shared';
-import { createPortal } from 'react-dom';
-import { isValidCoordinate } from '@/utils/isValidCoordinate';
-import { MapErrorFallback } from '../map-error-fallback';
 
 type MapProps = {
   center?: [number, number];
@@ -79,7 +80,10 @@ export function Map({
     attributionToggle.append(screenReaderLabel);
   };
 
-  const applyMarkerSemantics = (markerElement: HTMLElement, interactive: boolean) => {
+  const applyMarkerSemantics = (
+    markerElement: HTMLElement,
+    interactive: boolean,
+  ) => {
     if (!interactive) {
       markerElement.removeAttribute('aria-label');
       markerElement.removeAttribute('role');

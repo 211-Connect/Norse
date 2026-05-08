@@ -1,13 +1,13 @@
 'use client';
 
-import { useRef } from 'react';
-import { fontSans } from '@/app/(app)/shared/styles/fonts';
 import { cn } from '@/app/(app)/shared/lib/utils';
-
-import { Navigation } from './navigation';
-import { Resource } from '@/types/resource';
-import { LayoutRenderer } from './layout-renderer';
+import { fontSans } from '@/app/(app)/shared/styles/fonts';
 import { AppConfig } from '@/types/appConfig';
+import { Resource } from '@/types/resource';
+import { useRef } from 'react';
+
+import { LayoutRenderer } from './layout-renderer';
+import { Navigation } from './navigation';
 
 type ResourcePageContentProps = {
   resource: Resource;

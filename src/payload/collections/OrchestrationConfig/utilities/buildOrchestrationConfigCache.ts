@@ -1,12 +1,12 @@
-import type { Payload } from 'payload';
+import { createLogger } from '@/lib/logger';
+import { assertValidLocale } from '@/payload/i18n/locales';
+import type { OrchestrationConfig } from '@/payload/payload-types';
 import type {
   CustomAttribute,
   OrchestrationConfigCache,
   SchemaConfig,
 } from '@/types/customAttributes';
-import type { OrchestrationConfig } from '@/payload/payload-types';
-import { assertValidLocale } from '@/payload/i18n/locales';
-import { createLogger } from '@/lib/logger';
+import type { Payload } from 'payload';
 
 const log = createLogger('buildOrchestrationConfigCache');
 

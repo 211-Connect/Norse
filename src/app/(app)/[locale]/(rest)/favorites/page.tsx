@@ -1,16 +1,16 @@
-import initTranslations from '@/app/(app)/shared/i18n/i18n';
-import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
-import { redirect } from 'next/navigation';
-import { Metadata } from 'next/types';
 import { FavoriteListsSection } from '@/app/(app)/features/favorites/components/favorite-lists-section';
 import { MapContainer } from '@/app/(app)/features/favorites/components/map-container';
-import { getCookies } from 'cookies-next/server';
-import { cookies, headers } from 'next/headers';
+import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
+import initTranslations from '@/app/(app)/shared/i18n/i18n';
+import { getFavoriteLists } from '@/app/(app)/shared/serverActions/favorites/getFavoriteLists';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { getSession } from '@/app/(app)/shared/utils/getServerSession';
-import { getFavoriteLists } from '@/app/(app)/shared/serverActions/favorites/getFavoriteLists';
-import { FavoritesPageProps } from '@/types/favorites';
 import { createLogger } from '@/lib/logger';
+import { FavoritesPageProps } from '@/types/favorites';
+import { getCookies } from 'cookies-next/server';
+import { cookies, headers } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { Metadata } from 'next/types';
 
 const log = createLogger('favorites-page');
 

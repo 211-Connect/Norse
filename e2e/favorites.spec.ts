@@ -1,19 +1,19 @@
 import {
-  test,
-  expect,
   closeFavoritesDialog,
+  deleteAllE2ETestLists,
+  expect,
+  expectPageUrl,
   filterFavoritesDialogLists,
   getFavoritesDialogListActionButton,
-  performSearch,
+  goHome,
   goToFavorites,
+  loginViaKeycloak,
+  performSearch,
+  test,
+  waitForFavoriteListPage,
   waitForFavoriteOnListPage,
   waitForFavoriteToBeAbsentOnListPage,
-  waitForFavoriteListPage,
   waitForFavoritesDialogReady,
-  loginViaKeycloak,
-  goHome,
-  deleteAllE2ETestLists,
-  expectPageUrl,
 } from './helpers';
 import { ASYNC_UI_TIMEOUT_MS, UI_SHELL_TIMEOUT_MS } from './timeouts';
 

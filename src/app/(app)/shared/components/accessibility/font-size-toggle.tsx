@@ -1,13 +1,14 @@
 'use client';
 
 import { ToggleGroup, ToggleGroupItem } from '@radix-ui/react-toggle-group';
-import { useEffect } from 'react';
-import { setCookie, deleteCookie, getCookie } from 'cookies-next';
-import { USER_PREF_FONT_SIZE } from '../../lib/constants';
-import { useAppConfig } from '../../hooks/use-app-config';
+import { deleteCookie, getCookie, setCookie } from 'cookies-next';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { accessibilityAtom } from '../../store/accessibility';
+import { useEffect } from 'react';
+
+import { useAppConfig } from '../../hooks/use-app-config';
+import { USER_PREF_FONT_SIZE } from '../../lib/constants';
 import { cn } from '../../lib/utils';
+import { accessibilityAtom } from '../../store/accessibility';
 
 export const FontSizeToggle = ({ className }: { className?: string }) => {
   const accessibility = useAtomValue(accessibilityAtom);

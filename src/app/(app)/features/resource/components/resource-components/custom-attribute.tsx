@@ -1,13 +1,14 @@
 'use client';
 
-import { Datum } from '../datum';
-import { ResourceComponentProps } from '../component-registry';
 import { useIconComponent } from '@/app/(app)/shared/hooks/useIconComponent';
-import { interpolateResourceProperties } from '@/utils/interpolateResourceProperties';
-import { Resource } from '@/types/resource';
 import { ResultType } from '@/app/(app)/shared/store/results';
 import { createLogger } from '@/lib/logger';
+import { Resource } from '@/types/resource';
+import { interpolateResourceProperties } from '@/utils/interpolateResourceProperties';
 import { cache } from 'react';
+
+import { ResourceComponentProps } from '../component-registry';
+import { Datum } from '../datum';
 
 const log = createLogger('CustomAttributeComponent');
 

@@ -1,6 +1,6 @@
 import { findTenantByHost } from '@/payload/collections/Tenants/actions';
-import { normalizeAllowedEmailDomains } from '@/utils/normalizeAllowedEmailDomains';
 import { withCache } from '@/utilities/withCache';
+import { normalizeAllowedEmailDomains } from '@/utils/normalizeAllowedEmailDomains';
 import { TypedLocale } from 'payload';
 
 export type TenantBasicConfigResponse = {

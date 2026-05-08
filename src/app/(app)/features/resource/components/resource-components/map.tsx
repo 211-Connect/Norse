@@ -1,6 +1,7 @@
 'use client';
 
 import { Resource } from '@/types/resource';
+
 import { MapContainer } from '../map-container';
 
 export function MapComponent({ resource }: { resource: Resource }) {

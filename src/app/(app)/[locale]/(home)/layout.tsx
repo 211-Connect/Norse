@@ -1,4 +1,5 @@
 import { cn } from '@/app/(app)/shared/lib/utils';
+
 import { getAppConfigWithoutHost } from '../../shared/utils/appConfig';
 
 export default async function HomeLayout({

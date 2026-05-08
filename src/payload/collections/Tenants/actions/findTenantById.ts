@@ -1,7 +1,7 @@
 'use server';
 
-import { Tenant } from '@/payload/payload-types';
 import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
+import { Tenant } from '@/payload/payload-types';
 import { withCache } from '@/utilities/withCache';
 
 async function findTenantByIdOrig(tenantId: string): Promise<Tenant | null> {

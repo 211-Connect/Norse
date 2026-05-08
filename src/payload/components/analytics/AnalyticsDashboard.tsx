@@ -1,14 +1,15 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import dayjs from 'dayjs';
-import type { DateRange } from './types';
-import { useAnalytics } from './useAnalytics';
-import { StatCards } from './StatCards';
-import { LowerContainer } from './LowerContainer';
 import { useTenantSelection } from '@payloadcms/plugin-multi-tenant/client';
 import { Banner, Button, Gutter, StaggeredShimmers } from '@payloadcms/ui';
+import dayjs from 'dayjs';
+import React, { useMemo, useState } from 'react';
+
+import { LowerContainer } from './LowerContainer';
+import { StatCards } from './StatCards';
 import { UpperContainer } from './UpperContainer';
+import type { DateRange } from './types';
+import { useAnalytics } from './useAnalytics';
 
 const DATE_RANGES: DateRange[] = [7, 30, 90];
 

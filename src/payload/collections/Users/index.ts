@@ -2,9 +2,9 @@ import type { CollectionConfig } from 'payload';
 
 import { createAccess } from './access/create';
 import { readAccess } from './access/read';
+import { isSuperAdmin, isSupport } from './access/roles';
 import { updateAndDeleteAccess } from './access/updateAndDelete';
 import { setCookieBasedOnDomain } from './hooks/setCookieBasedOnDomain';
-import { isSuperAdmin, isSupport } from './access/roles';
 
 export const Users: CollectionConfig = {
   slug: 'users',

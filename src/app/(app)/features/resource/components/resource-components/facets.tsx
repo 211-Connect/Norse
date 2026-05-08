@@ -1,12 +1,12 @@
 'use client';
 
+import { Typography } from '@/app/(app)/shared/components/ui/typography';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { AppConfig } from '@/types/appConfig';
+import { FacetWithTranslation, Resource } from '@/types/resource';
+import { SquareCheck } from 'lucide-react';
 import { cache, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { SquareCheck } from 'lucide-react';
-import { Resource, FacetWithTranslation } from '@/types/resource';
-import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
-import { Typography } from '@/app/(app)/shared/components/ui/typography';
-import { AppConfig } from '@/types/appConfig';
 
 const EXCLUDED_TAXONOMY_NAMES = [
   'Area Served by County',

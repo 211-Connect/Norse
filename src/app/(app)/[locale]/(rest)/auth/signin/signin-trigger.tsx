@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
 import { signIn } from 'next-auth/react';
+import { useEffect } from 'react';
 
 interface SignInTriggerProps {
   callbackUrl: string;

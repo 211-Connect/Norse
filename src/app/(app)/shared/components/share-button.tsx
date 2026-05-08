@@ -9,9 +9,16 @@ import {
   Share2,
 } from 'lucide-react';
 import { useEffect, useId, useRef, useState } from 'react';
-import { useReactToPrint } from 'react-to-print';
 import { useTranslation } from 'react-i18next';
+import { useReactToPrint } from 'react-to-print';
 
+import { useAppConfig } from '../hooks/use-app-config';
+import { useClipboard } from '../hooks/use-clipboard';
+import { withOptionalCustomBasePath } from '../lib/utils';
+import { shortenUrl } from '../serverActions/shortUrl/shortenUrl';
+import { Facebook } from './icons/facebook';
+import { X } from './icons/x';
+import { SmsButton } from './sms-button';
 import { Button } from './ui/button';
 import {
   Dialog,
@@ -20,13 +27,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from './ui/dialog';
-import { Facebook } from './icons/facebook';
-import { X } from './icons/x';
-import { shortenUrl } from '../serverActions/shortUrl/shortenUrl';
-import { useClipboard } from '../hooks/use-clipboard';
-import { SmsButton } from './sms-button';
-import { useAppConfig } from '../hooks/use-app-config';
-import { withOptionalCustomBasePath } from '../lib/utils';
 
 type ShareButtonProps = {
   componentToPrintRef?: React.RefObject<HTMLElement | null>;

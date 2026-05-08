@@ -1,10 +1,11 @@
+import { createLogger } from '@/lib/logger';
 import type { TaskConfig } from 'payload';
-import { findTenantByHost } from '../collections/Tenants/actions';
+
 import {
   findResourceDirectoryByHost,
   findResourceDirectoryByTenantId,
 } from '../collections/ResourceDirectories/actions';
-import { createLogger } from '@/lib/logger';
+import { findTenantByHost } from '../collections/Tenants/actions';
 
 const log = createLogger('warmCache');
 
