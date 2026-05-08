@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Button, toast, Modal, useModal } from '@payloadcms/ui';
 import { TaskTranslate } from '@/payload/payload-types';
 import { fetchWrapper } from '@/app/(app)/shared/lib/fetchWrapper';
+import { withOptionalCustomBasePath } from '@/app/(app)/shared/lib/utils';
 import { createLogger } from '@/lib/logger';
 
 const log = createLogger('translate-modal');
@@ -59,7 +60,7 @@ export const TranslateModal: React.FC<TranslateModalProps> = ({
 
     try {
       const result = await fetchWrapper(
-        `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/api/translate`,
+        withOptionalCustomBasePath('/api/translate'),
         {
           method: 'POST',
           headers: {

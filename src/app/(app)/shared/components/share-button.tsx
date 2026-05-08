@@ -26,6 +26,7 @@ import { shortenUrl } from '../serverActions/shortUrl/shortenUrl';
 import { useClipboard } from '../hooks/use-clipboard';
 import { SmsButton } from './sms-button';
 import { useAppConfig } from '../hooks/use-app-config';
+import { withOptionalCustomBasePath } from '../lib/utils';
 
 type ShareButtonProps = {
   componentToPrintRef?: React.RefObject<HTMLElement | null>;
@@ -78,12 +79,14 @@ export function ShareButton({
   useEffect(() => {
     async function getShortUrl() {
       const id = await shortenUrl(window.location.href, appConfig.tenantId);
-      const url = `${window.location.origin}${appConfig.customBasePath}/share/${id}`;
+      const url = withOptionalCustomBasePath(
+        `${window.location.origin}/share/${id}`,
+      );
       setShortUrl(url);
     }
 
     getShortUrl();
-  }, [appConfig.customBasePath, appConfig.tenantId]);
+  }, [appConfig.tenantId]);
 
   return (
     <>

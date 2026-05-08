@@ -19,6 +19,7 @@ import { useAppConfig } from '../hooks/use-app-config';
 import { fetchWrapper } from '../lib/fetchWrapper';
 import { validatePhoneNumber } from '../lib/validators';
 import { deviceAtom } from '../store/device';
+import { withOptionalCustomBasePath } from '../lib/utils';
 
 type SmsButtonProps = {
   shareMessage: string;
@@ -70,7 +71,8 @@ export function SmsButton({ shareMessage }: SmsButtonProps) {
       return;
     }
 
-    const promise = fetchWrapper(`/api/share/${appConfig.tenantId}`, {
+    const url = withOptionalCustomBasePath(`/api/share/${appConfig.tenantId}`);
+    const promise = fetchWrapper(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
