@@ -7,6 +7,7 @@ import { searchLinkCorrectionMiddleware } from './middlewares/searchLinkCorrecti
 import { TenantBasicConfigResponse } from './app/(payload)/api/getTenantBasicConfig/route';
 import { parseHost } from './app/(app)/shared/utils/parseHost';
 import { fetchWrapper } from './app/(app)/shared/lib/fetchWrapper';
+import { withOptionalCustomBasePath } from './app/(app)/shared/lib/utils';
 
 const DOMAINS_WITH_CSP = ['localhost', 'therc.vdh.virginia.gov'];
 
@@ -189,7 +190,7 @@ function getApiRoute(request: NextRequest, target: string) {
     ? 'http'
     : request.headers.get('x-forwarded-proto') || 'http';
 
-  return `${proto}://${host}${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/api/${target}`;
+  return withOptionalCustomBasePath(`${proto}://${host}/api/${target}`);
 }
 
 function generateNonce() {
@@ -199,28 +200,6 @@ function generateNonce() {
 
 function isAuthPath(pathname: string): boolean {
   return /\/auth(\/|$)/.test(pathname);
-}
-
-function withCustomBasePath(pathname: string): string {
-  const basePath = process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || '';
-
-  if (
-    !basePath ||
-    pathname.startsWith('http://') ||
-    pathname.startsWith('https://')
-  ) {
-    return pathname;
-  }
-
-  if (pathname === basePath || pathname.startsWith(`${basePath}/`)) {
-    return pathname;
-  }
-
-  if (!pathname.startsWith('/')) {
-    return `${basePath}/${pathname}`;
-  }
-
-  return `${basePath}${pathname}`;
 }
 
 async function hasActiveSession(request: NextRequest): Promise<boolean> {
@@ -367,14 +346,14 @@ export async function middleware(request: NextRequest) {
     const authenticated = await hasActiveSession(request);
 
     if (!authenticated) {
-      const signInPath = `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/auth/signin`;
+      const signInPath = withOptionalCustomBasePath('/auth/signin');
       const signInUrl = new URL(signInPath, request.url);
-      const redirectTarget = withCustomBasePath(
+      const redirectTarget = withOptionalCustomBasePath(
         `${request.nextUrl.pathname}${request.nextUrl.search}`,
       );
       signInUrl.searchParams.set('redirect', redirectTarget || '/');
 
-      edgeLog('info', 'tenant_loginwall_redirect', {
+      edgeLog('debug', 'tenant_loginwall_redirect', {
         host,
         path: pathname,
         signInPath: signInUrl.pathname,
