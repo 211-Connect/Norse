@@ -15,6 +15,7 @@ import { XIcon } from 'lucide-react';
 import {
   ChangeEvent,
   ComponentType,
+  CompositionEvent,
   Fragment,
   KeyboardEvent,
   MouseEvent,
@@ -139,6 +140,7 @@ export function Autocomplete(props: AutocompleteProps) {
   const [uniqueId, setUniqueId] = useState('');
   const [open, setOpen] = useState(defaultOpen);
   const [currentIndex, setCurrentIndex] = useState(-1);
+  const isComposingRef = useRef(false);
   const [referenceWidth, setReferenceWidth] = useState<number | undefined>(
     undefined,
   );
@@ -264,6 +266,14 @@ export function Autocomplete(props: AutocompleteProps) {
 
   const handleInputChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
+      // Skip search updates during IME composition (Chinese, Japanese, etc.).
+      // Keep tempValue in sync so the controlled input mirrors composition text.
+      const nativeInputEvent = e.nativeEvent as InputEvent;
+      if (isComposingRef.current || nativeInputEvent.isComposing) {
+        setTempValue(e.target.value);
+        return;
+      }
+
       setCurrentIndex(-1);
       setLastManualInput(e.target.value);
       setValue(e.target.value);
@@ -274,6 +284,28 @@ export function Autocomplete(props: AutocompleteProps) {
       }
     },
     [onInputChange, setValue, open],
+  );
+
+  const handleCompositionStart = useCallback(() => {
+    isComposingRef.current = true;
+  }, []);
+
+  const handleCompositionEnd = useCallback(
+    (e: CompositionEvent<HTMLInputElement>) => {
+      isComposingRef.current = false;
+
+      const nextValue = e.currentTarget.value;
+      setCurrentIndex(-1);
+      setLastManualInput(nextValue);
+      setTempValue(nextValue);
+      setValue(nextValue);
+      onInputChange?.(nextValue);
+
+      if (!open) {
+        setOpen(true);
+      }
+    },
+    [onInputChange, open, setValue],
   );
 
   const handleClickOutside = useCallback(
@@ -303,6 +335,16 @@ export function Autocomplete(props: AutocompleteProps) {
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
       if (!rest.options) return;
+
+      // IME uses key events (including arrows) for candidate selection.
+      const nativeKeyboardEvent = e.nativeEvent as globalThis.KeyboardEvent;
+      if (
+        isComposingRef.current ||
+        nativeKeyboardEvent.isComposing ||
+        e.key === 'Process'
+      ) {
+        return;
+      }
 
       // When a committed value is showing, any printable key or Backspace/Delete
       // atomically replaces it and starts a fresh search
@@ -684,6 +726,8 @@ export function Autocomplete(props: AutocompleteProps) {
           onBlur={handleBlur}
           onFocus={handleFocus}
           onChange={handleInputChange}
+          onCompositionStart={handleCompositionStart}
+          onCompositionEnd={handleCompositionEnd}
           value={tempValue}
           autoComplete="off"
           aria-autocomplete="list"
