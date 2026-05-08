@@ -8,7 +8,9 @@ import { useCallback, useEffect } from 'react';
  * @url https://github.com/pmndrs/jotai/discussions/669#discussioncomment-1244421
  */
 export function useHydrateAndSyncAtoms(values) {
-  useHydrateAtoms(values);
+  useHydrateAtoms(values, {
+    dangerouslyForceHydrate: true,
+  });
 
   const sync = useAtomCallback(
     useCallback(
