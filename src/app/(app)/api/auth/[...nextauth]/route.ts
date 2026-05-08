@@ -1,9 +1,9 @@
+import { withOptionalCustomBasePath } from '@/app/(app)/shared/lib/utils';
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
 import { createAuthOptions } from '@/auth';
 import { findTenantByHost } from '@/payload/collections/Tenants/actions';
 import { getKeycloakIssuer } from '@/utils/getKeycloakIssuer';
 import { normalizeAllowedEmailDomains } from '@/utils/normalizeAllowedEmailDomains';
-import { withOptionalCustomBasePath } from '@/app/(app)/shared/lib/utils';
 import NextAuth from 'next-auth';
 import { NextRequest } from 'next/server';
 

@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
-import { atom, useAtom } from 'jotai';
 import { Button } from '@payloadcms/ui';
+import { atom, useAtom } from 'jotai';
+import React from 'react';
+
 import type { DateRange } from './types';
 
 const DATE_RANGES: DateRange[] = [7, 30, 90];

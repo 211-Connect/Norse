@@ -1,9 +1,5 @@
 'use client';
 
-import Image from 'next/image';
-import { signOut, useSession } from 'next-auth/react';
-import { useTranslation } from 'react-i18next';
-import { useCallback, useMemo } from 'react';
 import { useSetAtom } from 'jotai';
 import {
   AlignJustifyIcon,
@@ -12,11 +8,28 @@ import {
   LogOut,
   Search,
 } from 'lucide-react';
+import { signOut, useSession } from 'next-auth/react';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTopLoader } from 'nextjs-toploader';
+import { useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { Link } from './link';
+import { useAppConfig } from '../hooks/use-app-config';
 import { useDisclosure } from '../hooks/use-disclosure';
+import {
+  HEADER_DESKTOP_ID,
+  HEADER_ID,
+  HEADER_MOBILE_ID,
+  MAIN_CONTENT_ID,
+  NEW_TAB_WARNING,
+} from '../lib/constants';
+import { cn, withOptionalTrailingSlash } from '../lib/utils';
+import { dialogsAtom } from '../store/dialogs';
+import { FontSizeToggle } from './accessibility/font-size-toggle';
+import { LanguageSwitcher } from './language-switcher';
+import { Link } from './link';
+import { ReportButton } from './report-button';
 import { Button, buttonVariants } from './ui/button';
 import {
   Sheet,
@@ -26,19 +39,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from './ui/sheet';
-import { useAppConfig } from '../hooks/use-app-config';
-import {
-  HEADER_DESKTOP_ID,
-  HEADER_ID,
-  HEADER_MOBILE_ID,
-  MAIN_CONTENT_ID,
-  NEW_TAB_WARNING,
-} from '../lib/constants';
-import { dialogsAtom } from '../store/dialogs';
-import { cn, withOptionalTrailingSlash } from '../lib/utils';
-import { LanguageSwitcher } from './language-switcher';
-import { ReportButton } from './report-button';
-import { FontSizeToggle } from './accessibility/font-size-toggle';
 
 export function Header() {
   const appConfig = useAppConfig();

@@ -1,9 +1,10 @@
+import { generateUrlFields } from '@/payload/fields/urlField';
 import { Tab } from 'payload';
+
 import {
   superAdminAccess,
   superAdminOrSupportOrTenantAccess,
 } from '../../Users/access/roles';
-import { generateUrlFields } from '@/payload/fields/urlField';
 
 export const topics: Tab = {
   label: 'Topics',

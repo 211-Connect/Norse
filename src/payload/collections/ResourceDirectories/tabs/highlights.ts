@@ -1,6 +1,7 @@
-import { Tab } from 'payload';
-import { superAdminOrSupportOrTenantAccess } from '../../Users/access/roles';
 import { generateUrlFields } from '@/payload/fields/urlField';
+import { Tab } from 'payload';
+
+import { superAdminOrSupportOrTenantAccess } from '../../Users/access/roles';
 
 export const highlights: Tab = {
   label: 'Highlights',

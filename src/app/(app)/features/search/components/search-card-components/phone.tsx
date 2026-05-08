@@ -1,9 +1,10 @@
 'use client';
 
 import { Phone } from 'lucide-react';
-import { SearchCardComponentProps } from './types';
+
+import { UmamiEvent, trackUmamiEvent } from '../../../../shared/lib/umami';
 import { Datum } from '../../../resource/components/datum';
-import { trackUmamiEvent, UmamiEvent } from '../../../../shared/lib/umami';
+import { SearchCardComponentProps } from './types';
 
 export function PhoneComponent({ result }: SearchCardComponentProps) {
   if (!result.phone) {

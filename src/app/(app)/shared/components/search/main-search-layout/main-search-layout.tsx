@@ -1,5 +1,6 @@
 'use client';
 
+import { useAtomValue } from 'jotai';
 import { SearchIcon } from 'lucide-react';
 import {
   MutableRefObject,
@@ -10,18 +11,17 @@ import {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAtomValue } from 'jotai';
 
+import { useAppConfig } from '../../../hooks/use-app-config';
+import { SEARCH_DIALOG_ID } from '../../../lib/constants';
+import { cn } from '../../../lib/utils';
+import { searchLocationAtom, searchTermAtom } from '../../../store/search';
+import { Button } from '../../ui/button';
 import {
   AddMyLocationButton,
   AddMyLocationButtonProps,
 } from '../add-my-location-button';
 import { SearchDialog, SearchDialogProps } from '../search-dialog';
-import { searchLocationAtom, searchTermAtom } from '../../../store/search';
-import { SEARCH_DIALOG_ID } from '../../../lib/constants';
-import { cn } from '../../../lib/utils';
-import { useAppConfig } from '../../../hooks/use-app-config';
-import { Button } from '../../ui/button';
 import { MainSearchLayoutContextProvider } from './main-search-layout-context';
 
 interface MainSearchLayoutProps {

@@ -1,23 +1,23 @@
-import { Metadata, Viewport } from 'next/types';
-
+import { fontSans } from '@/app/(app)/shared/styles/fonts';
 import '@/app/(app)/shared/styles/globals.css';
 import '@/app/(app)/shared/styles/map.css';
-import { fontSans } from '@/app/(app)/shared/styles/fonts';
-import { cn } from '../shared/lib/utils';
-import color from 'color';
-import { getAppConfigWithoutHost } from '../shared/utils/appConfig';
 import { AppConfig } from '@/types/appConfig';
-import { notFound } from 'next/navigation';
-import { Providers } from '../shared/components/providers';
-import { getSession } from '../shared/utils/getServerSession';
-import { sanitizeSessionForClient } from '../shared/utils/sanitizeSession';
+import { getContrastColor } from '@/utils';
+import color from 'color';
 import { cookies } from 'next/headers';
+import { notFound } from 'next/navigation';
+import { Metadata, Viewport } from 'next/types';
+
+import { Providers } from '../shared/components/providers';
 import { USER_PREF_FONT_SIZE } from '../shared/lib/constants';
+import { cn } from '../shared/lib/utils';
 import {
   resolveBrandTheme,
   resolveHeaderGradient,
 } from '../shared/theme/theme-config';
-import { getContrastColor } from '@/utils';
+import { getAppConfigWithoutHost } from '../shared/utils/appConfig';
+import { getSession } from '../shared/utils/getServerSession';
+import { sanitizeSessionForClient } from '../shared/utils/sanitizeSession';
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -60,7 +60,8 @@ async function prepareTheme(appConfig: AppConfig) {
   // getContrastColor applies the WCAG relative-luminance formula and returns
   // '#FFFFFF' (white) for dark primaries and '#000000' (black) for light ones.
   const ringOnPrimaryHex = getContrastColor(primaryColor);
-  const ringOnPrimary = ringOnPrimaryHex === '#FFFFFF' ? '0 0% 100%' : '0 0% 3.9%';
+  const ringOnPrimary =
+    ringOnPrimaryHex === '#FFFFFF' ? '0 0% 100%' : '0 0% 3.9%';
 
   const secondary = color(secondaryColor).hsl();
   const secondaryHsl = secondary.array();

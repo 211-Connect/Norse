@@ -1,12 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { withOptionalCustomBasePath } from '@/app/(app)/shared/lib/utils';
+import { createLogger } from '@/lib/logger';
 import { findResourceDirectoryByTenantId } from '@/payload/collections/ResourceDirectories/actions';
-import { SearchConfig } from '@/types/search-config';
-import { TypedLocale } from 'payload';
 import { locales } from '@/payload/i18n/locales';
 import { Tenant } from '@/payload/payload-types';
+import { SearchConfig } from '@/types/search-config';
 import { withCache } from '@/utilities/withCache';
-import { createLogger } from '@/lib/logger';
-import { withOptionalCustomBasePath } from '@/app/(app)/shared/lib/utils';
 
 const log = createLogger('search-config');
 

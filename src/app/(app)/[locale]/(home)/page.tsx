@@ -1,15 +1,15 @@
-import initTranslations from '@/app/(app)/shared/i18n/i18n';
-import { Metadata } from 'next/types';
-import { TourProvider } from '@/app/(app)/shared/context/tour-provider';
-import { HeroSection } from '@/app/(app)/features/home/components/hero-section';
 import Alert from '@/app/(app)/features/home/components/alert';
 import { CategoriesSection } from '@/app/(app)/features/home/components/categories-section';
+import { HeroSection } from '@/app/(app)/features/home/components/hero-section';
 import { HighlightsSection } from '@/app/(app)/features/home/components/highlights-section';
 import { DataProviders } from '@/app/(app)/shared/components/data-providers';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
-import { cookies, headers } from 'next/headers';
+import { TourProvider } from '@/app/(app)/shared/context/tour-provider';
+import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { getServerDevice } from '@/app/(app)/shared/lib/get-server-device';
 import { getCookies } from 'cookies-next/server';
+import { cookies, headers } from 'next/headers';
+import { Metadata } from 'next/types';
 
 import { NewHomeContent } from '../../features/home/components/new-home-content';
 import { getAppConfigWithoutHost } from '../../shared/utils/appConfig';

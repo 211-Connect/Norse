@@ -1,6 +1,10 @@
 'use client';
 
 import dayjs from 'dayjs';
+
+import { fetchWrapper } from '../../../app/(app)/shared/lib/fetchWrapper';
+import { UmamiEvent } from '../../../app/(app)/shared/lib/umami';
+import { geocodeSessions } from './geocodeSessions';
 import type {
   DateRange,
   MetricEntry,
@@ -9,16 +13,13 @@ import type {
   UmamiSessionResponse,
   UmamiStats,
 } from './types';
+import type { AnalyticsMetrics, Metric } from './useAnalytics';
 import {
   buildProxyQuery,
   enrichWithResourceTitles,
   parseMetrics,
   sumEventTotals,
 } from './utils';
-import { geocodeSessions } from './geocodeSessions';
-import { fetchWrapper } from '../../../app/(app)/shared/lib/fetchWrapper';
-import { UmamiEvent } from '../../../app/(app)/shared/lib/umami';
-import type { AnalyticsMetrics, Metric } from './useAnalytics';
 
 export type MetricsData = {
   metrics: AnalyticsMetrics;

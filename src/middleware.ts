@@ -1,11 +1,8 @@
+import { i18nRouter } from 'next-i18n-router';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { i18nRouter } from 'next-i18n-router';
 
 import { SESSION_ID } from './app/(app)/shared/lib/constants';
-import { searchLinkCorrectionMiddleware } from './middlewares/searchLinkCorrectionMiddleware';
-import { TenantBasicConfigResponse } from './app/(payload)/api/getTenantBasicConfig/route';
-import { parseHost } from './app/(app)/shared/utils/parseHost';
 import { fetchWrapper } from './app/(app)/shared/lib/fetchWrapper';
 import { withOptionalCustomBasePath } from './app/(app)/shared/lib/utils';
 

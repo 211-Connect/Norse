@@ -4,8 +4,8 @@ import { MapRenderer } from '@/app/(app)/shared/components/map/map-renderer';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { HEADER_ID } from '@/app/(app)/shared/lib/constants';
 import { cn } from '@/app/(app)/shared/lib/utils';
-import { isValidCoordinate } from '@/utils/isValidCoordinate';
 import { favoriteListWithFavoritesAtom } from '@/app/(app)/shared/store/favorites';
+import { isValidCoordinate } from '@/utils/isValidCoordinate';
 import { useAtomValue } from 'jotai';
 import { useEffect, useMemo, useState } from 'react';
 

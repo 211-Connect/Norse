@@ -1,10 +1,10 @@
 'use client';
 
-import * as React from 'react';
-import { useState } from 'react';
 import { CheckIcon, ChevronUpIcon } from '@radix-ui/react-icons';
 import * as SelectPrimitive from '@radix-ui/react-select';
 import { ChevronDown } from 'lucide-react';
+import * as React from 'react';
+import { useState } from 'react';
 
 import { cn } from '../../lib/utils';
 import { fontSans } from '../../styles/fonts';
@@ -41,11 +41,7 @@ const Select = (props: SelectProps) => {
   if ('a11yLabel' in props && props.a11yLabel != null) {
     const { a11yLabel, contentId, children, ...rest } = props;
     return (
-      <SelectA11yBundle
-        a11yLabel={a11yLabel}
-        contentId={contentId}
-        rest={rest}
-      >
+      <SelectA11yBundle a11yLabel={a11yLabel} contentId={contentId} rest={rest}>
         {children}
       </SelectA11yBundle>
     );
@@ -81,20 +77,9 @@ function SelectA11yBundle({
   return (
     <>
       {a11yLabel}
-      {!open && (
-        <div
-          id={contentId}
-          role="listbox"
-          hidden
-          aria-hidden="true"
-        />
-      )}
+      {!open && <div id={contentId} role="listbox" hidden aria-hidden="true" />}
       <SelectContentIdContext.Provider value={contentId}>
-        <SelectPrimitive.Root
-          open={open}
-          onOpenChange={setOpen}
-          {...rest}
-        >
+        <SelectPrimitive.Root open={open} onOpenChange={setOpen} {...rest}>
           {children}
         </SelectPrimitive.Root>
       </SelectContentIdContext.Provider>

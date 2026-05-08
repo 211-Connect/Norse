@@ -9,19 +9,11 @@ import {
   useTransition,
 } from 'react';
 import { createPortal } from 'react-dom';
-import { ChevronLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useRouter } from 'next/navigation';
-import { deleteCookie, setCookie } from 'cookies-next/client';
 
-import { LocationSearchBar } from './location-search-bar';
-import { SearchBar } from './search-bar';
-import { SearchButton } from './search-button';
-import { Button } from '../ui/button';
-import { useFlag } from '../../hooks/use-flag';
 import { useAppConfig } from '../../hooks/use-app-config';
 import { useClientSearchParams } from '../../hooks/use-client-search-params';
-import { cn, getScrollbarWidth } from '../../lib/utils';
+import { useFlag } from '../../hooks/use-flag';
 import {
   LOCATION_INPUT_ID,
   SEARCH_DIALOG_DESCRIPTION_ID,
@@ -30,15 +22,19 @@ import {
   SEARCH_INPUT_ID,
   USER_PREF_DISTANCE,
 } from '../../lib/constants';
-import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
-import { createUrlParamsForSearch } from '../../utils/createUrlParamsForSearch';
-import { useAtomValue, useSetAtom } from 'jotai';
+import { UmamiEvent, trackUmamiEvent } from '../../lib/umami';
+import { cn, getScrollbarWidth } from '../../lib/utils';
 import {
   searchCoordinatesAtom,
   searchDistanceAtom,
   userCoordinatesAtom,
 } from '../../store/search';
-import { trackUmamiEvent, UmamiEvent } from '../../lib/umami';
+import { createUrlParamsForSearch } from '../../utils/createUrlParamsForSearch';
+import { Button } from '../ui/button';
+import { LocationSearchBar } from './location-search-bar';
+import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
+import { SearchBar } from './search-bar';
+import { SearchButton } from './search-button';
 
 export interface SearchDialogProps {
   focusByDefault?: 'search' | 'location';

@@ -2,17 +2,17 @@
 
 import { Image } from '@/app/(app)/shared/components/image';
 import { Link } from '@/app/(app)/shared/components/link';
+import { Button } from '@/app/(app)/shared/components/ui/button';
 import { Card, CardContent } from '@/app/(app)/shared/components/ui/card';
+import { Separator } from '@/app/(app)/shared/components/ui/separator';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
 import { useTopics } from '@/app/(app)/shared/hooks/use-topics';
+import { NEW_TAB_WARNING } from '@/app/(app)/shared/lib/constants';
+import { cn } from '@/app/(app)/shared/lib/utils';
 import { Topic } from '@/types/topics';
 import { ChevronLeft, ExternalLink } from 'lucide-react';
-import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/app/(app)/shared/components/ui/button';
-import { cn } from '@/app/(app)/shared/lib/utils';
-import { Separator } from '@/app/(app)/shared/components/ui/separator';
-import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
-import { NEW_TAB_WARNING } from '@/app/(app)/shared/lib/constants';
 
 type Props = {
   topic: Topic;
@@ -56,7 +56,7 @@ const Category = ({
               return (
                 <li key={el.name}>
                   <Link
-                    className="flex items-center gap-1 rounded-md px-2 py-2 text-sm break-words hover:bg-primary hover:text-primary-foreground focus-visible:bg-primary focus-visible:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    className="flex items-center gap-1 break-words rounded-md px-2 py-2 text-sm hover:bg-primary hover:text-primary-foreground focus-visible:bg-primary focus-visible:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     href={`${
                       el.href
                         ? el.href
@@ -71,15 +71,16 @@ const Category = ({
                     prefetch={false}
                     target={el.target}
                     aria-label={
-                      opensInNewTab
-                        ? `${el.name}${NEW_TAB_WARNING}`
-                        : undefined
+                      opensInNewTab ? `${el.name}${NEW_TAB_WARNING}` : undefined
                     }
                   >
                     <span className="min-w-0 break-words">{el.name}</span>
                     {opensInNewTab ? (
                       <>
-                        <ExternalLink className="size-4 shrink-0" aria-hidden="true" />
+                        <ExternalLink
+                          className="size-4 shrink-0"
+                          aria-hidden="true"
+                        />
                         <span className="sr-only">({NEW_TAB_WARNING})</span>
                       </>
                     ) : null}

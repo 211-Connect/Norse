@@ -1,11 +1,14 @@
 'use client';
 
+import { dialogsAtom, promptAuthAtom } from '@/app/(app)/shared/store/dialogs';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { signIn } from 'next-auth/react';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { dialogsAtom, promptAuthAtom } from '@/app/(app)/shared/store/dialogs';
 
+import { cn, withOptionalCustomBasePath } from '../../lib/utils';
+import { Button } from '../ui/button';
+import { buttonVariants } from '../ui/button';
 import {
   Dialog,
   DialogContent,
@@ -14,9 +17,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../ui/dialog';
-import { Button } from '../ui/button';
-import { cn, withOptionalCustomBasePath } from '../../lib/utils';
-import { buttonVariants } from '../ui/button';
 import { Label } from '../ui/label';
 
 export function PromptAuthDialog() {

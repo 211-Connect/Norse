@@ -1,24 +1,25 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import mapboxgl, { LngLatBounds, LngLatLike, Marker, Popup } from 'mapbox-gl';
 import {
   MAPBOX_API_KEY,
   MAPBOX_STYLE_URL,
 } from '@/app/(app)/shared/lib/constants';
 import { createLogger } from '@/lib/logger';
+import { isValidCoordinate } from '@/utils/isValidCoordinate';
+import mapboxgl, { LngLatBounds, LngLatLike, Marker, Popup } from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
+import { useEffect, useRef, useState } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+
+import { MapErrorFallback } from '../map-error-fallback';
+import {
+  MarkerDef,
+  ServiceAreaGeoJSON,
+  getBoundsFromServiceArea,
+  normalizeServiceArea,
+} from '../map-shared';
 
 const log = createLogger('mapbox');
-import { renderToStaticMarkup } from 'react-dom/server';
-import 'mapbox-gl/dist/mapbox-gl.css';
-import {
-  ServiceAreaGeoJSON,
-  normalizeServiceArea,
-  getBoundsFromServiceArea,
-  MarkerDef,
-} from '../map-shared';
-import { isValidCoordinate } from '@/utils/isValidCoordinate';
-import { MapErrorFallback } from '../map-error-fallback';
 
 type MapProps = {
   center?: [number, number];

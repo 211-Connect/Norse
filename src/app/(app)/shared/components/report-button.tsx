@@ -1,14 +1,14 @@
 'use client';
 
 import { TriangleAlert } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useAppConfig } from '../hooks/use-app-config';
-import { buttonVariants } from './ui/button';
+import { NEW_TAB_WARNING } from '../lib/constants';
 import { cn } from '../lib/utils';
 import { Link } from './link';
-import { NEW_TAB_WARNING } from '../lib/constants';
+import { buttonVariants } from './ui/button';
 
 export function ReportButton({
   className,

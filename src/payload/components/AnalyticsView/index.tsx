@@ -1,8 +1,9 @@
-import React, { Fragment } from 'react';
-import { DefaultDashboard } from '@payloadcms/next/views';
 import { DefaultTemplate } from '@payloadcms/next/templates';
+import { DefaultDashboard } from '@payloadcms/next/views';
 import { Gutter, HydrateAuthProvider, SetStepNav } from '@payloadcms/ui';
 import type { AdminViewServerProps } from 'payload';
+import React, { Fragment } from 'react';
+
 import DateRange from '../analytics/DateRange';
 
 const ANALYTICS_DEFAULT_LAYOUT = [

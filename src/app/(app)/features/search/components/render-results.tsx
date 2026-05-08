@@ -3,9 +3,9 @@
 import { resultsAtom } from '@/app/(app)/shared/store/results';
 import { useAtomValue } from 'jotai';
 
-import { NoResultsCard } from './no-results-card';
 import { SearchCardLayoutConfig } from '../types/card-layout-config';
 import { CardLayoutRenderer } from './card-layout-renderer';
+import { NoResultsCard } from './no-results-card';
 
 type RenderResultsProps = {
   cardLayout: SearchCardLayoutConfig;

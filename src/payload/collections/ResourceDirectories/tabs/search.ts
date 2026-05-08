@@ -1,10 +1,11 @@
+import { SearchCardComponentId } from '@/app/(app)/features/search/types/card-component-ids';
 import { Field, Tab } from 'payload';
+import { title } from 'radash';
+
 import {
   superAdminAccess,
   superAdminOrSupportOrTenantAccess,
 } from '../../Users/access/roles';
-import { SearchCardComponentId } from '@/app/(app)/features/search/types/card-component-ids';
-import { title } from 'radash';
 import { customAttributeFields } from '../fields/customAttributeFields';
 
 const CARD_COMPONENT_ID_OPTIONS = Object.values(SearchCardComponentId).map(

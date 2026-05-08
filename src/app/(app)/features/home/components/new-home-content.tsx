@@ -1,8 +1,9 @@
 'use client';
 
-import { useTranslation } from 'react-i18next';
-import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { Image } from '@/app/(app)/shared/components/image';
+import { Link } from '@/app/(app)/shared/components/link';
 import { MainSearchLayout } from '@/app/(app)/shared/components/search/main-search-layout/main-search-layout';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import {
   LayoutGrid,
   Mail,
@@ -11,8 +12,8 @@ import {
   Smartphone,
 } from 'lucide-react';
 import { ReactElement, useMemo } from 'react';
-import { Image } from '@/app/(app)/shared/components/image';
-import { Link } from '@/app/(app)/shared/components/link';
+import { useTranslation } from 'react-i18next';
+
 import Alert from './alert';
 
 export function NewHomeContent() {

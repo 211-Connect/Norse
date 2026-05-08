@@ -1,11 +1,11 @@
-import { parseHost } from './parseHost';
-import { findTenantByHost } from '@/payload/collections/Tenants/actions/findTenantByHost';
-import { getServerSession } from 'next-auth';
 import { createAuthOptions } from '@/auth';
+import { findTenantByHost } from '@/payload/collections/Tenants/actions/findTenantByHost';
+import { getKeycloakIssuer } from '@/utils/getKeycloakIssuer';
 import { normalizeAllowedEmailDomains } from '@/utils/normalizeAllowedEmailDomains';
+import { getServerSession } from 'next-auth';
 import { headers } from 'next/headers';
 import { cache } from 'react';
-import { getKeycloakIssuer } from '@/utils/getKeycloakIssuer';
+
 import { withOptionalCustomBasePath } from '../lib/utils';
 
 async function getSessionOrigin() {

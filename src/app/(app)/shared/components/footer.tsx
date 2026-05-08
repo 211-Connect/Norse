@@ -3,11 +3,11 @@
 import { useTranslation } from 'react-i18next';
 
 import { useAppConfig } from '../hooks/use-app-config';
+import { NEW_TAB_WARNING } from '../lib/constants';
+import { parseHtml } from '../lib/parse-html';
+import { cn } from '../lib/utils';
 import { Link } from './link';
 import { buttonVariants } from './ui/button';
-import { cn } from '../lib/utils';
-import { parseHtml } from '../lib/parse-html';
-import { NEW_TAB_WARNING } from '../lib/constants';
 
 export function Footer() {
   const appConfig = useAppConfig();

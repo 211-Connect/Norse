@@ -1,37 +1,32 @@
-import sharp from 'sharp';
-import { fileURLToPath } from 'node:url';
-import path from 'node:path';
-import { buildConfig, Endpoint } from 'payload';
-import { lexicalEditor } from '@payloadcms/richtext-lexical';
+import { getNumberFromString } from '@/utils/getNumberFromString';
 import { postgresAdapter } from '@payloadcms/db-postgres';
-import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant';
-import { Config, Tenant } from './payload-types';
-import { s3Storage } from '@payloadcms/storage-s3';
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer';
+import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant';
+import { lexicalEditor } from '@payloadcms/richtext-lexical';
+import { s3Storage } from '@payloadcms/storage-s3';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { Endpoint, buildConfig } from 'payload';
+import sharp from 'sharp';
 
-import { Users } from './collections/Users';
-import { Tenants } from './collections/Tenants';
-import { TenantMedia } from './collections/TenantMedia';
-import { ResourceDirectories } from './collections/ResourceDirectories';
 import { OrchestrationConfig } from './collections/OrchestrationConfig';
-import { defaultLocale, locales } from './i18n/locales';
-import { getUserTenantIDs } from './utilities/getUserTenantIDs';
-
-import { seedEndpoint, addLocalAdminEndpoint } from './migrations';
+import { ResourceDirectories } from './collections/ResourceDirectories';
+import { TenantMedia } from './collections/TenantMedia';
+import { Tenants } from './collections/Tenants';
+import { Users } from './collections/Users';
 import { isSuperAdmin, isSupport } from './collections/Users/access/roles';
-import { sendGridTransport } from './utilities/sendgridAdapter';
 import { clearCache } from './endpoints/clearCache';
-import { translateEndpoint } from './endpoints/translate';
 import { duplicateTenant } from './endpoints/duplicateTenant';
+import { translateEndpoint } from './endpoints/translate';
 import { umamiProxy } from './endpoints/umamiProxy';
+import { defaultLocale, locales } from './i18n/locales';
 import { translate } from './jobs/translate';
 import { translateTopics } from './jobs/translateTopics';
 import { warmCache } from './jobs/warmCache';
-import { getNumberFromString } from '@/utils/getNumberFromString';
-import {
-  findTenantByHost,
-  findTenantById,
-} from './collections/Tenants/actions';
+import { addLocalAdminEndpoint, seedEndpoint } from './migrations';
+import { Config, Tenant } from './payload-types';
+import { getUserTenantIDs } from './utilities/getUserTenantIDs';
+import { sendGridTransport } from './utilities/sendgridAdapter';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);

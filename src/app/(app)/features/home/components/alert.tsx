@@ -1,11 +1,11 @@
 'use client';
 
-import { AlertCircle } from 'lucide-react';
+import { LocalizedLink } from '@/app/(app)/shared/components/LocalizedLink';
+import { Alert as AlertComponent } from '@/app/(app)/shared/components/ui/alert';
+import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { cn } from '@/app/(app)/shared/lib/utils';
-import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
-import { Alert as AlertComponent } from '@/app/(app)/shared/components/ui/alert';
-import { LocalizedLink } from '@/app/(app)/shared/components/LocalizedLink';
+import { AlertCircle } from 'lucide-react';
 
 type Direction = 'col' | 'row';
 

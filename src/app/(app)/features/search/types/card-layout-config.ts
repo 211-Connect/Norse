@@ -1,4 +1,5 @@
 import { AppConfig } from '@/types/appConfig';
+
 import { SearchCardComponentId } from './card-component-ids';
 
 export type SearchCardLayoutConfig = NonNullable<

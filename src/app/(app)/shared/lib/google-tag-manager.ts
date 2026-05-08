@@ -1,6 +1,8 @@
 'use client';
 
 import { getCookies } from 'cookies-next/client';
+
+import { ResultType } from '../store/results';
 import {
   USER_PREF_COUNTRY,
   USER_PREF_DISTRICT,
@@ -8,7 +10,6 @@ import {
   USER_PREF_POSTCODE,
   USER_PREF_REGION,
 } from './constants';
-import { ResultType } from '../store/results';
 
 export interface ReferralEventProps {
   event: string;

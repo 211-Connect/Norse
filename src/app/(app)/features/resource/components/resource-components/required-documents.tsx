@@ -1,9 +1,10 @@
 'use client';
 
-import { useTranslation } from 'react-i18next';
 import { FileCheck2 } from 'lucide-react';
-import { Datum } from '../datum';
+import { useTranslation } from 'react-i18next';
+
 import { ResourceComponentProps } from '../component-registry';
+import { Datum } from '../datum';
 
 export function RequiredDocumentsComponent({
   resource,

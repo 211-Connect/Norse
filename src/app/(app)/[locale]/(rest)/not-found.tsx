@@ -1,10 +1,11 @@
-import { cookies, headers } from 'next/headers';
-import initTranslations from '@/app/(app)/shared/i18n/i18n';
-import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
-import Image from 'next/image';
-import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import { LocalizedLink } from '@/app/(app)/shared/components/LocalizedLink';
+import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
+import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
+import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { getCookies } from 'cookies-next/server';
+import { cookies, headers } from 'next/headers';
+import Image from 'next/image';
+
 import { getAppConfigWithoutHost } from '../../shared/utils/appConfig';
 import { getImageUrl } from '../../shared/utils/getImageUrl';
 

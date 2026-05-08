@@ -1,7 +1,8 @@
 'use client';
 
-import { useAppConfig } from './use-app-config';
 import { AppConfig } from '@/types/appConfig';
+
+import { useAppConfig } from './use-app-config';
 
 export function useFlag(flag: keyof AppConfig['featureFlags']) {
   const appConfig = useAppConfig();

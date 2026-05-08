@@ -1,4 +1,4 @@
-import { expect, type Locator } from '@playwright/test';
+import { type Locator, expect } from '@playwright/test';
 
 const parseEnvMs = (value: string | undefined, fallback: number): number => {
   if (value == null || value === '') return fallback;
@@ -152,12 +152,9 @@ export async function expectVisibleEventually(
   options?: { timeout?: number },
 ) {
   await expect
-    .poll(
-      async () => locator.isVisible().catch(() => false),
-      {
-        timeout: options?.timeout ?? ASYNC_UI_TIMEOUT_MS,
-        intervals: [100, 250, 500, 1_000],
-      },
-    )
+    .poll(async () => locator.isVisible().catch(() => false), {
+      timeout: options?.timeout ?? ASYNC_UI_TIMEOUT_MS,
+      intervals: [100, 250, 500, 1_000],
+    })
     .toBe(true);
 }

@@ -1,9 +1,22 @@
 'use client';
 
+import { deleteCookie, setCookie } from 'cookies-next/client';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { setCookie, deleteCookie } from 'cookies-next/client';
 import { useTranslation } from 'react-i18next';
 
+import { useAppConfig } from '../../hooks/use-app-config';
+import {
+  DISTANCE_SELECT_CONTENT_ID,
+  DISTANCE_SELECT_TRIGGER_ID,
+} from '../../lib/aria-constants';
+import { USER_PREF_DISTANCE } from '../../lib/constants';
+import { cn } from '../../lib/utils';
+import {
+  searchAtom,
+  searchCoordinatesAtom,
+  searchDistanceAtom,
+} from '../../store/search';
+import { Label } from '../ui/label';
 import {
   Select,
   SelectContent,
@@ -12,19 +25,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
-import { Label } from '../ui/label';
-import { useAppConfig } from '../../hooks/use-app-config';
-import {
-  searchAtom,
-  searchCoordinatesAtom,
-  searchDistanceAtom,
-} from '../../store/search';
-import {
-  DISTANCE_SELECT_CONTENT_ID,
-  DISTANCE_SELECT_TRIGGER_ID,
-} from '../../lib/aria-constants';
-import { USER_PREF_DISTANCE } from '../../lib/constants';
-import { cn } from '../../lib/utils';
 
 export interface DistanceSelectProps {
   className?: string;
@@ -69,10 +69,7 @@ export function DistanceSelect({ className = '' }: DistanceSelectProps) {
         onValueChange={setDistance}
         value={distance}
       >
-        <SelectTrigger
-          id={DISTANCE_SELECT_TRIGGER_ID}
-          className="w-[125px]"
-        >
+        <SelectTrigger id={DISTANCE_SELECT_TRIGGER_ID} className="w-[125px]">
           <SelectValue placeholder={t('search.radius_placeholder')} />
         </SelectTrigger>
         <SelectContent>

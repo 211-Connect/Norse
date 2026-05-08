@@ -2,8 +2,8 @@
 
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import {
-  resultsCurrentPageAtom,
   resultTotalAtom,
+  resultsCurrentPageAtom,
 } from '@/app/(app)/shared/store/results';
 import { useAtomValue } from 'jotai';
 import { useTranslation } from 'react-i18next';

@@ -1,21 +1,18 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import mapLibreGl from 'maplibre-gl';
 import { MAPLIBRE_STYLE_URL } from '@/app/(app)/shared/lib/constants';
-import { createLogger } from '@/lib/logger';
-
-const log = createLogger('maplibre');
-import { Protocol } from 'pmtiles';
+import mapLibreGl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { Protocol } from 'pmtiles';
+import { useEffect, useRef, useState } from 'react';
 
-import { HeatmapPoint } from './types';
+import { MapErrorFallback } from '../../../app/(app)/shared/components/map/map-error-fallback';
 import {
+  ServiceAreaGeoJSON,
   getBoundsFromServiceArea,
   normalizeServiceArea,
-  ServiceAreaGeoJSON,
 } from '../../../app/(app)/shared/components/map/map-shared';
-import { MapErrorFallback } from '../../../app/(app)/shared/components/map/map-error-fallback';
+import { HeatmapPoint } from './types';
 
 type MapProps = {
   center?: [number, number];

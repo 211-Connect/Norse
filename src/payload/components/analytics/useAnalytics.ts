@@ -1,15 +1,19 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
 import dayjs from 'dayjs';
+import { useCallback, useEffect, useState } from 'react';
+
+import { fetchWrapper } from '../../../app/(app)/shared/lib/fetchWrapper';
+import { UmamiEvent } from '../../../app/(app)/shared/lib/umami';
+import { geocodeSessions } from './geocodeSessions';
 import type {
   DateRange,
+  HeatmapPoint,
   MetricEntry,
   MetricsExpandedEntry,
   UmamiPageviews,
   UmamiSessionResponse,
   UmamiStats,
-  HeatmapPoint,
 } from './types';
 import {
   buildProxyQuery,
@@ -17,9 +21,6 @@ import {
   parseMetrics,
   sumEventTotals,
 } from './utils';
-import { geocodeSessions } from './geocodeSessions';
-import { fetchWrapper } from '../../../app/(app)/shared/lib/fetchWrapper';
-import { UmamiEvent } from '../../../app/(app)/shared/lib/umami';
 
 export interface Metric {
   current: number;

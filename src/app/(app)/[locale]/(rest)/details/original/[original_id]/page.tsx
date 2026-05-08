@@ -1,15 +1,15 @@
-import { Metadata } from 'next/types';
-import initTranslations from '@/app/(app)/shared/i18n/i18n';
-import { getResourceByOriginalId } from '@/app/(app)/shared/services/resource-service';
-import { FetchError } from '@/app/(app)/shared/lib/fetchError';
-import { notFound, permanentRedirect, RedirectType } from 'next/navigation';
-import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import { ResourcePageContent } from '@/app/(app)/features/resource/components/content';
+import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
+import initTranslations from '@/app/(app)/shared/i18n/i18n';
+import { FetchError } from '@/app/(app)/shared/lib/fetchError';
+import { getResourceByOriginalId } from '@/app/(app)/shared/services/resource-service';
+import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
+import { createLogger } from '@/lib/logger';
+import { Resource } from '@/types/resource';
 import { getCookies } from 'cookies-next/server';
 import { cookies, headers } from 'next/headers';
-import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
-import { Resource } from '@/types/resource';
-import { createLogger } from '@/lib/logger';
+import { RedirectType, notFound, permanentRedirect } from 'next/navigation';
+import { Metadata } from 'next/types';
 
 const log = createLogger('original-details-page');
 

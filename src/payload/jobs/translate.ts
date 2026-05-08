@@ -1,13 +1,14 @@
-import { TaskConfig } from 'payload';
-import {
-  batchTranslate,
-  TranslationEngine,
-} from '../services/translationService';
-import { retry } from 'radash';
-import { assertValidLocale } from '../i18n/locales';
-import { isEmpty } from '../utilities/isEmpty';
-import { OrchestrationConfig, ResourceDirectory } from '../payload-types';
 import { createLogger } from '@/lib/logger';
+import { TaskConfig } from 'payload';
+import { retry } from 'radash';
+
+import { assertValidLocale } from '../i18n/locales';
+import { OrchestrationConfig, ResourceDirectory } from '../payload-types';
+import {
+  TranslationEngine,
+  batchTranslate,
+} from '../services/translationService';
+import { isEmpty } from '../utilities/isEmpty';
 
 interface FieldToTranslate {
   path: string;

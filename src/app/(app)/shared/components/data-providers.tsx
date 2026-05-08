@@ -4,10 +4,10 @@ import { Image } from '@/app/(app)/shared/components/image';
 import { useTranslation } from 'react-i18next';
 
 import { useAppConfig } from '../hooks/use-app-config';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Separator } from './ui/separator';
 import { cn } from '../lib/utils';
 import { LocalizedLink } from './LocalizedLink';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Separator } from './ui/separator';
 
 export function DataProviders() {
   const appConfig = useAppConfig();

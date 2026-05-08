@@ -1,13 +1,12 @@
 'use client';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import NextTopLoader from 'nextjs-toploader';
 import { Provider as JotaiProvider } from 'jotai';
+import { SessionProvider } from 'next-auth/react';
+import NextTopLoader from 'nextjs-toploader';
 
 import { AppConfigProvider } from '../context/app-config-provider';
-import { PageView } from './page-view';
 import { PrevUrlProvider } from '../context/prev-url-provider';
-import { SessionProvider } from 'next-auth/react';
 import { withOptionalCustomBasePath } from '../lib/utils';
 
 const queryClient = new QueryClient();

@@ -1,7 +1,8 @@
 'use client';
 
-import { SearchCardComponentProps } from './types';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
+
+import { SearchCardComponentProps } from './types';
 
 export function LocationNameSubtitleComponent({
   result,

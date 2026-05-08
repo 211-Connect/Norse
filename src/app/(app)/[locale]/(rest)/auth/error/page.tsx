@@ -1,8 +1,3 @@
-import Image from 'next/image';
-import { AlertCircle } from 'lucide-react';
-
-import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
-import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { AuthErrorActions } from '@/app/(app)/[locale]/(rest)/auth/error/actions';
 import { withOptionalCustomBasePath } from '@/app/(app)/shared/lib/utils';
 

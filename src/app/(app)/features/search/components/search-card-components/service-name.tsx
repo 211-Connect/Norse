@@ -1,8 +1,9 @@
 'use client';
 
-import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
-import { SearchCardComponentProps } from './types';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
+import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
+
+import { SearchCardComponentProps } from './types';
 
 export function ServiceNameComponent({ result }: SearchCardComponentProps) {
   const showServiceName = useFlag('showSearchAndResourceServiceName');

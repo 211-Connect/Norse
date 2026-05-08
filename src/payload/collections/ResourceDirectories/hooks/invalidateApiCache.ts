@@ -1,5 +1,5 @@
-import { ResourceDirectory } from '@/payload/payload-types';
 import { createLogger } from '@/lib/logger';
+import { ResourceDirectory } from '@/payload/payload-types';
 
 const log = createLogger('invalidateApiCache');
 

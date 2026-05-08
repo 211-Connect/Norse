@@ -1,18 +1,18 @@
-import type { CollectionConfig } from 'payload';
 import { defaultLocale, locales } from '@/payload/i18n/locales';
+import type { CollectionConfig } from 'payload';
 
-import { updateAndDeleteAccess } from './access/updateAndDelete';
-import { hasResourceDirectory } from './validators/hasResourceDirectory';
-import { revalidateCache } from './hooks/revalidateCache';
-import { pushRealmIdToCache } from './hooks/pushRealmIdToCache';
-import { pushEnabledLocalesToCache } from './hooks/pushEnabledLocalesToCache';
+import { invalidateApiCache } from '../ResourceDirectories/hooks/invalidateApiCache';
 import {
   superAdminAccess,
   superAdminOrSupportAccess,
 } from '../Users/access/roles';
-import { removeRelatedResources } from './hooks/removeRelatedResources';
-import { invalidateApiCache } from '../ResourceDirectories/hooks/invalidateApiCache';
+import { updateAndDeleteAccess } from './access/updateAndDelete';
 import { createUmamiWebsite } from './hooks/createUmamiWebsite';
+import { pushEnabledLocalesToCache } from './hooks/pushEnabledLocalesToCache';
+import { pushRealmIdToCache } from './hooks/pushRealmIdToCache';
+import { removeRelatedResources } from './hooks/removeRelatedResources';
+import { revalidateCache } from './hooks/revalidateCache';
+import { hasResourceDirectory } from './validators/hasResourceDirectory';
 
 export const Tenants: CollectionConfig = {
   slug: 'tenants',

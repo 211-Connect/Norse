@@ -1,13 +1,19 @@
 'use client';
 
-import { PropsWithChildren, useEffect, useRef, type CSSProperties } from 'react';
+import { getScrollbarWidth } from '@/app/(app)/shared/lib/utils';
 import {
+  type ProviderProps,
   TourProvider as ReactourProvider,
   useTour,
-  type ProviderProps,
 } from '@reactour/tour';
+import {
+  type CSSProperties,
+  PropsWithChildren,
+  useEffect,
+  useRef,
+} from 'react';
 import { useTranslation } from 'react-i18next';
-import { getScrollbarWidth } from '@/app/(app)/shared/lib/utils';
+
 import { ACCESSIBLE_TOUR_ACCENT } from '../theme/theme-config';
 
 const TOUR_DIALOG_ID = 'home-page-tour-dialog';
@@ -475,14 +481,15 @@ export const TourProvider = ({ children }: PropsWithChildren) => {
           backgroundColor: ACCESSIBLE_TOUR_ACCENT,
           color: '#ffffff',
         }),
-        popover: (baseStyles) => ({
-          ...baseStyles,
-          '--reactour-accent': ACCESSIBLE_TOUR_ACCENT,
-          width: 'min(36rem, calc(100vw - 2rem))',
-          maxWidth: 'calc(100vw - 2rem)',
-          maxHeight: 'calc(100dvh - 2rem)',
-          padding: '1rem 1rem 1.25rem',
-        }) as CSSProperties,
+        popover: (baseStyles) =>
+          ({
+            ...baseStyles,
+            '--reactour-accent': ACCESSIBLE_TOUR_ACCENT,
+            width: 'min(36rem, calc(100vw - 2rem))',
+            maxWidth: 'calc(100vw - 2rem)',
+            maxHeight: 'calc(100dvh - 2rem)',
+            padding: '1rem 1rem 1.25rem',
+          }) as CSSProperties,
       }}
     >
       <TourAccessibilityEnhancer />
