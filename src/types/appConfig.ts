@@ -136,7 +136,6 @@ export type AppConfig = {
     target?: '_self' | '_blank';
     variant?: 'destructive' | 'default';
   };
-  customBasePath?: string;
   errorTranslationData?: {
     errorNamespaces: string[];
     resources: Record<string, Record<string, unknown>>;

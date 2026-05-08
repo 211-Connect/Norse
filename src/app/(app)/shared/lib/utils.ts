@@ -27,6 +27,63 @@ export function withOptionalTrailingSlash(path: string): string {
   return `${pathname}/${query}${hash}`;
 }
 
+export function withOptionalCustomBasePath(path: string): string {
+  const configuredBasePath = process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH;
+  const normalizedBasePath = configuredBasePath
+    ? `/${configuredBasePath.replace(/^\/+|\/+$/g, '')}`
+    : '';
+
+  if (!normalizedBasePath) {
+    return path;
+  }
+
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    try {
+      const url = new URL(path);
+      if (
+        url.pathname === normalizedBasePath ||
+        url.pathname.startsWith(`${normalizedBasePath}/`)
+      ) {
+        return url.toString();
+      }
+
+      url.pathname = url.pathname.startsWith('/')
+        ? `${normalizedBasePath}${url.pathname}`
+        : `${normalizedBasePath}/${url.pathname}`;
+
+      return url.toString();
+    } catch {
+      return path;
+    }
+  }
+
+  const hashIndex = path.indexOf('#');
+  const pathWithoutHash = hashIndex >= 0 ? path.slice(0, hashIndex) : path;
+  const hash = hashIndex >= 0 ? path.slice(hashIndex) : '';
+
+  const queryIndex = pathWithoutHash.indexOf('?');
+  const pathname =
+    queryIndex >= 0 ? pathWithoutHash.slice(0, queryIndex) : pathWithoutHash;
+  const query = queryIndex >= 0 ? pathWithoutHash.slice(queryIndex) : '';
+
+  if (
+    pathname === normalizedBasePath ||
+    pathname.startsWith(`${normalizedBasePath}/`)
+  ) {
+    return `${pathname}${query}${hash}`;
+  }
+
+  if (!pathname) {
+    return `${normalizedBasePath}${query}${hash}`;
+  }
+
+  if (!pathname.startsWith('/')) {
+    return `${normalizedBasePath}/${pathname}${query}${hash}`;
+  }
+
+  return `${normalizedBasePath}${pathname}${query}${hash}`;
+}
+
 export type Coords = [number, number]; // [longitude, latitude]
 
 /**
