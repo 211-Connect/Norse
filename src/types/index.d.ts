@@ -17,8 +17,12 @@ declare global {
       NEXT_PUBLIC_MAPBOX_STYLE_URL?: string;
       NEXT_PUBLIC_MAPLIBRE_STYLE_URL?: string;
 
-      // Required Keycloak environment variables
+      // Keycloak
+      KEYCLOAK_BASE_URL?: string;
       KEYCLOAK_CLIENT_ID?: string;
+      KEYCLOAK_INTERNAL_SECRET?: string;
+      KEYCLOAK_ADMIN_CLIENT_ID?: string;
+      KEYCLOAK_ADMIN_SECRET?: string;
 
       // Strapi
       STRAPI_URL?: string;
