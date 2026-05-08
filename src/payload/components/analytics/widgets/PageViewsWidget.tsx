@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+
 import { SingleStatCardWidget } from './SingleStatCardWidget';
 
 export default function PageViewsWidget() {

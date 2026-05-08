@@ -1,11 +1,11 @@
 'use client';
 
-import { Tooltip, FieldLabel } from '@payloadcms/ui';
-import { useRef, useState } from 'react';
+import { FieldLabel, Tooltip } from '@payloadcms/ui';
+import { InfoIcon } from 'lucide-react';
 import type { TextFieldLabelClientComponent } from 'payload';
+import { useRef, useState } from 'react';
 
 import './styles.css';
-import { InfoIcon } from 'lucide-react';
 
 const TOOLTIP_MAPPER: Record<string, string> = {
   favicon: "A small icon displayed in user's browser",

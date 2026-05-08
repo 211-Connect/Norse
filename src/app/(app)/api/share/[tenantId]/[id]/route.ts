@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
 import { expandShortUrl } from '@/app/(app)/shared/serverActions/shortUrl/expandShortUrl';
+import { NextResponse } from 'next/server';
 
 /**
  * @deprecated This route is only used for backward compatibility of old short URLs, which have `/api` and tenant ID in the path.

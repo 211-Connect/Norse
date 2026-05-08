@@ -1,7 +1,7 @@
 'use client';
 
-import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { Image } from '@/app/(app)/shared/components/image';
+import { Link } from '@/app/(app)/shared/components/link';
 import { Button } from '@/app/(app)/shared/components/ui/button';
 import {
   Card,
@@ -11,12 +11,12 @@ import {
   CardTitle,
 } from '@/app/(app)/shared/components/ui/card';
 import { Separator } from '@/app/(app)/shared/components/ui/separator';
-import { Link } from '@/app/(app)/shared/components/link';
-import { useTranslation } from 'react-i18next';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import Autoplay from 'embla-carousel-autoplay';
+import useEmblaCarousel from 'embla-carousel-react';
 import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
-import useEmblaCarousel from 'embla-carousel-react';
-import Autoplay from 'embla-carousel-autoplay';
+import { useTranslation } from 'react-i18next';
 
 export function HighlightsSection() {
   const appConfig = useAppConfig();

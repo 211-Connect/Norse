@@ -1,8 +1,9 @@
 import { get } from 'radash';
-import { ResourceDirectory } from '../payload-types';
-import { ResourceDirectoryTopicListItem } from '../collections/ResourceDirectories/types/topic';
-import { ResourceDirectorySuggestionListItem } from '../collections/ResourceDirectories/types/suggestion';
+
 import { ResourceDirectoryBadgeListItem } from '../collections/ResourceDirectories/types/badge';
+import { ResourceDirectorySuggestionListItem } from '../collections/ResourceDirectories/types/suggestion';
+import { ResourceDirectoryTopicListItem } from '../collections/ResourceDirectories/types/topic';
+import { ResourceDirectory } from '../payload-types';
 
 interface ChangeDetail {
   path: string;

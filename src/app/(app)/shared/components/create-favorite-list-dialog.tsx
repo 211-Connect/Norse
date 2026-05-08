@@ -1,8 +1,13 @@
 'use client';
 
+import { CreateFavoriteListDto } from '@/types/favorites';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+
+import { useAppConfig } from '../hooks/use-app-config';
+import { createFavoriteList } from '../serverActions/favorites/createFavoriteList';
+import { Button } from './ui/button';
 import {
   Dialog,
   DialogContent,
@@ -11,14 +16,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from './ui/dialog';
-import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
-import { Textarea } from './ui/textarea';
 import { Switch } from './ui/switch';
-import { useAppConfig } from '../hooks/use-app-config';
-import { createFavoriteList } from '../serverActions/favorites/createFavoriteList';
-import { CreateFavoriteListDto } from '@/types/favorites';
+import { Textarea } from './ui/textarea';
 
 type CreateFavoriteListDialogProps = {
   open: boolean;

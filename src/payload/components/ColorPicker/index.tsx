@@ -1,6 +1,6 @@
 'use client';
 
-import { useField, TextInput } from '@payloadcms/ui';
+import { TextInput, useField } from '@payloadcms/ui';
 
 import './styles.css';
 

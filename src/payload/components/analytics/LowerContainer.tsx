@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+
 import { MetricsTable } from './MetricsTable';
 import type { MetricEntry } from './types';
 

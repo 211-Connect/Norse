@@ -1,5 +1,5 @@
-import { FacetWithTranslation } from '@/types/resource';
 import { createLogger } from '@/lib/logger';
+import { FacetWithTranslation } from '@/types/resource';
 
 const log = createLogger('toFacetsWithTranslation');
 

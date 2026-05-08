@@ -1,8 +1,7 @@
-import { Tenant } from '@/payload/payload-types';
-
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
 import { cacheService } from '@/cacheService';
 import { createLogger } from '@/lib/logger';
+import { Tenant } from '@/payload/payload-types';
 import { clearMemoryCache } from '@/utilities/withCache';
 
 const log = createLogger('revalidateTenantCache');

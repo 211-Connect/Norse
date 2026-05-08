@@ -1,13 +1,14 @@
 'use server';
 
+import { createLogger } from '@/lib/logger';
+
+import { getAuthHeaders } from '../../lib/authHeaders';
 import {
   API_URL,
   FAVORITES_BASE_ENDPOINT,
   INTERNAL_API_KEY,
 } from '../../lib/constants';
-import { getAuthHeaders } from '../../lib/authHeaders';
 import { fetchWrapper } from '../../lib/fetchWrapper';
-import { createLogger } from '@/lib/logger';
 
 const log = createLogger('addToFavoriteList');
 

@@ -1,14 +1,14 @@
-import { getServerSession, NextAuthOptions } from 'next-auth';
+import { NextAuthOptions, getServerSession } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import KeycloakProvider from 'next-auth/providers/keycloak';
 
-import { Tenant } from './payload/payload-types';
 import { fetchWrapper } from './app/(app)/shared/lib/fetchWrapper';
-import { isJwtExpired } from './utils/isJwtExpired';
-import { createLogger } from './lib/logger';
-import { normalizeAllowedEmailDomains } from './utils/normalizeAllowedEmailDomains';
-import { getKeycloakIssuer } from './utils/getKeycloakIssuer';
 import { withOptionalCustomBasePath } from './app/(app)/shared/lib/utils';
+import { createLogger } from './lib/logger';
+import { Tenant } from './payload/payload-types';
+import { getKeycloakIssuer } from './utils/getKeycloakIssuer';
+import { isJwtExpired } from './utils/isJwtExpired';
+import { normalizeAllowedEmailDomains } from './utils/normalizeAllowedEmailDomains';
 
 const log = createLogger('auth');
 const isDebug = process.env.NEXTAUTH_DEBUG === 'true';

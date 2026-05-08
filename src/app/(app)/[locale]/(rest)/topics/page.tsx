@@ -1,12 +1,12 @@
-import initTranslations from '@/app/(app)/shared/i18n/i18n';
-import { Metadata } from 'next/types';
 import { CategoriesSection } from '@/app/(app)/features/home/components/categories-section';
-import { redirect } from 'next/navigation';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
-import { getCookies } from 'cookies-next/server';
-import { cookies, headers } from 'next/headers';
+import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { getServerDevice } from '@/app/(app)/shared/lib/get-server-device';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
+import { getCookies } from 'cookies-next/server';
+import { cookies, headers } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { Metadata } from 'next/types';
 
 const i18nNamespaces = ['common'];
 

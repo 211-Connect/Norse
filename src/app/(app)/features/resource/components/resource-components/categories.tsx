@@ -1,14 +1,14 @@
 'use client';
 
-import { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Link } from '@/app/(app)/shared/components/link';
 import { Badge, badgeVariants } from '@/app/(app)/shared/components/ui/badge';
+import { Typography } from '@/app/(app)/shared/components/ui/typography';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { Resource, Taxonomy } from '@/types/resource';
-import { Typography } from '@/app/(app)/shared/components/ui/typography';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export function CategoriesComponent({
   resource,

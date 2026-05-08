@@ -1,3 +1,8 @@
 # Add files here to ignore them from prettier formatting
 /dist
 /coverage
+/.agents
+/.claude
+/docs
+/src/payload/migrations/**/*
+/src/app/(payload)/admin/importMap.js

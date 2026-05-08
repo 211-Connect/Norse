@@ -1,13 +1,26 @@
 'use client';
 
-import { MapPin } from 'lucide-react';
 import { useAtomValue } from 'jotai';
+import { MapPin } from 'lucide-react';
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { useLocations } from '../../hooks/api/use-locations';
+import { useAppConfig } from '../../hooks/use-app-config';
+import { useDebounce } from '../../hooks/use-debounce';
+import { LOCATION_SEARCH_DEBOUNCE_DELAY } from '../../lib/constants';
 import {
   clearLocationCookies,
   setLocationCookies,
 } from '../../lib/location-cookies';
-
+import { cn } from '../../lib/utils';
 import {
   prevSearchLocationAtom,
   searchCoordinatesAtom,
@@ -15,16 +28,10 @@ import {
   searchLocationValidationErrorAtom,
   userCoordinatesAtom,
 } from '../../store/search';
-import { useDebounce } from '../../hooks/use-debounce';
-import { useLocations } from '../../hooks/api/use-locations';
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { cn } from '../../lib/utils';
 import { Autocomplete } from '../ui/autocomplete';
 import { DistanceSelect } from './distance-select';
-import { UseMyLocationButton } from './use-my-location-button';
-import { useAppConfig } from '../../hooks/use-app-config';
 import { MainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
-import { LOCATION_SEARCH_DEBOUNCE_DELAY } from '../../lib/constants';
+import { UseMyLocationButton } from './use-my-location-button';
 
 type BaseProps = {
   className?: string;
@@ -78,7 +85,10 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
   const prevSearchLocation = isStandalone
     ? localPrevSearchLocation
     : globalPrevSearchLocation;
-  const debouncedSearchLocation = useDebounce(searchLocation, LOCATION_SEARCH_DEBOUNCE_DELAY);
+  const debouncedSearchLocation = useDebounce(
+    searchLocation,
+    LOCATION_SEARCH_DEBOUNCE_DELAY,
+  );
   const {
     data: locations,
     options,

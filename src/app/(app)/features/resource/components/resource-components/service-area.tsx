@@ -1,8 +1,9 @@
 'use client';
 
-import { useTranslation } from 'react-i18next';
-import { Map } from 'lucide-react';
 import { Resource } from '@/types/resource';
+import { Map } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+
 import { Datum } from '../datum';
 
 export function ServiceAreaComponent({ resource }: { resource: Resource }) {

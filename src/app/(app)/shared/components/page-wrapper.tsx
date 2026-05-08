@@ -1,21 +1,21 @@
 'use client';
 
-import { PropsWithChildren } from 'react';
 import { ErrorBoundary } from '@/app/(app)/features/error/components/error-boundary';
 import { TmpCookiesObj } from 'cookies-next';
+import { PropsWithChildren } from 'react';
 
+import { useAppConfig } from '../hooks/use-app-config';
+import TranslationsProvider from '../i18n/TranslationsProvider';
+import { MAIN_CONTENT_ID } from '../lib/constants';
+import { DynamicHeightListener } from './dynamic-height-listener';
+import { Footer } from './footer';
 import { GlobalDialogs } from './global-dialogs/global-dialogs';
+import { GoogleTagManagerScript } from './google-tag-manager-script';
 import { Header } from './header';
 import { JotaiHydration } from './jotai-hydration';
-import { Footer } from './footer';
-import { Toaster } from './ui/sonner';
-import TranslationsProvider from '../i18n/TranslationsProvider';
-import { GoogleTagManagerScript } from './google-tag-manager-script';
 import { MatomoTagManagerScript } from './matomo-tag-manager-script';
+import { Toaster } from './ui/sonner';
 import { UmamiScript } from './umami-script';
-import { useAppConfig } from '../hooks/use-app-config';
-import { DynamicHeightListener } from './dynamic-height-listener';
-import { MAIN_CONTENT_ID } from '../lib/constants';
 
 interface PageWrapperProps {
   cookies?: TmpCookiesObj;

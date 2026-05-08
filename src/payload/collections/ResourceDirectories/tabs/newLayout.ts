@@ -1,6 +1,7 @@
-import { Tab } from 'payload';
-import { superAdminAccess } from '../../Users/access/roles';
 import { generateUrlFields } from '@/payload/fields/urlField';
+import { Tab } from 'payload';
+
+import { superAdminAccess } from '../../Users/access/roles';
 
 export const newLayout: Tab = {
   name: 'newLayout',

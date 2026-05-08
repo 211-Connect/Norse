@@ -1,8 +1,9 @@
-import { Tenant } from '@/payload/payload-types';
 import { apiConfigCacheService } from '@/cacheService';
-import { getRealmIdKey } from '../utilities/getRealmIdKey';
-import { CollectionAfterChangeHook } from 'payload';
 import { createLogger } from '@/lib/logger';
+import { Tenant } from '@/payload/payload-types';
+import { CollectionAfterChangeHook } from 'payload';
+
+import { getRealmIdKey } from '../utilities/getRealmIdKey';
 
 const log = createLogger('pushRealmIdToCache');
 

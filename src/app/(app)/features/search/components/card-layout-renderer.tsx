@@ -2,15 +2,16 @@
 
 import { Card, CardContent } from '@/app/(app)/shared/components/ui/card';
 import { Separator } from '@/app/(app)/shared/components/ui/separator';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { ResultType } from '@/app/(app)/shared/store/results';
+import { cleanSeparators } from '@/app/(app)/shared/utils/layout-utils';
+
 import { SearchCardComponentId } from '../types/card-component-ids';
+import { SearchCardLayoutConfig } from '../types/card-layout-config';
 import {
   getSearchCardComponentById,
   shouldSearchCardComponentRender,
 } from './card-component-registry';
-import { SearchCardLayoutConfig } from '../types/card-layout-config';
-import { cleanSeparators } from '@/app/(app)/shared/utils/layout-utils';
-import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 
 interface CardLayoutRendererProps {
   layout: SearchCardLayoutConfig;

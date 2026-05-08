@@ -1,11 +1,12 @@
 'use client';
 
-import { useTranslation } from 'react-i18next';
-import { SearchCardComponentProps } from './types';
 import { AddToFavoritesButton } from '@/app/(app)/shared/components/add-to-favorites-button';
 import { RemoveFromFavoriteListButton } from '@/app/(app)/shared/components/remove-from-favorite-list-button';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
 import { withOptionalTrailingSlash } from '@/app/(app)/shared/lib/utils';
+import { useTranslation } from 'react-i18next';
+
+import { SearchCardComponentProps } from './types';
 
 export function ResourceNameComponent({ result }: SearchCardComponentProps) {
   const { t } = useTranslation();

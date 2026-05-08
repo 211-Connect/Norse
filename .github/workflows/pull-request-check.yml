@@ -9,7 +9,7 @@ on:
       - development
 
 jobs:
-  lint-and-docker-build:
+  lint-format-build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -26,6 +26,9 @@ jobs:
 
       - name: Run linter
         run: npm run lint
+
+      - name: Run prettier check
+        run: npm run prettier:check
 
       - name: Build project
         run: npm run build

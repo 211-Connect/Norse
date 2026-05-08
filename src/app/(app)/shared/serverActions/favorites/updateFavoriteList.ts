@@ -1,13 +1,14 @@
 'use server';
 
+import { FavoriteListItemDto, UpdateFavoriteListDto } from '@/types/favorites';
+
+import { getAuthHeaders } from '../../lib/authHeaders';
 import {
   API_URL,
   FAVORITES_LIST_ENDPOINT,
   INTERNAL_API_KEY,
 } from '../../lib/constants';
-import { getAuthHeaders } from '../../lib/authHeaders';
 import { fetchWrapper } from '../../lib/fetchWrapper';
-import { UpdateFavoriteListDto, FavoriteListItemDto } from '@/types/favorites';
 
 export const updateFavoriteList = async (
   id: string,

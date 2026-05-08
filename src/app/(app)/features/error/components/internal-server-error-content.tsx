@@ -1,11 +1,11 @@
 'use client';
 
-import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import { Link } from '@/app/(app)/shared/components/link';
+import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
+import { getImageUrl } from '@/app/(app)/shared/utils/getImageUrl';
 import Head from 'next/head';
 import Image from 'next/image';
 import { useTranslation } from 'react-i18next';
-import { getImageUrl } from '@/app/(app)/shared/utils/getImageUrl';
 
 export function InternalServerErrorContent() {
   const { t, i18n } = useTranslation('page-500');

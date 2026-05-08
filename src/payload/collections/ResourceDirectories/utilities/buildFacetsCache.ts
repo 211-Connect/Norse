@@ -1,8 +1,8 @@
-import type { Payload } from 'payload';
-import type { FacetsCache, FacetConfig } from '@/types/facets';
-import type { ResourceDirectory } from '@/payload/payload-types';
-import { assertValidLocale } from '@/payload/i18n/locales';
 import { createLogger } from '@/lib/logger';
+import { assertValidLocale } from '@/payload/i18n/locales';
+import type { ResourceDirectory } from '@/payload/payload-types';
+import type { FacetConfig, FacetsCache } from '@/types/facets';
+import type { Payload } from 'payload';
 
 const log = createLogger('buildFacetsCache');
 
