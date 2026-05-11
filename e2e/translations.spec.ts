@@ -14,6 +14,7 @@ import {
   performSearch,
   switchLanguage,
   test,
+  waitForPageStabilized,
 } from './helpers';
 import { UI_SHELL_TIMEOUT_MS } from './timeouts';
 
@@ -28,6 +29,9 @@ test.describe('Language Persistence And Results Button', () => {
     await openTopicSearch(page);
     await applyTestLocationOnSearchPage(page);
 
+    // Wait for page to fully stabilize after location application
+    await waitForPageStabilized(page);
+
     const availableFilters = await page
       .locator('#filter-panel [role="checkbox"]')
       .count();
@@ -40,6 +44,9 @@ test.describe('Language Persistence And Results Button', () => {
     expect(r0).toBeGreaterThan(0);
 
     await markFirstNEnabledFilters(page, 3);
+
+    // Wait for results to update after filter changes
+    await waitForPageStabilized(page);
 
     const r2 = await getResultTotalNumber(page);
     expect(r2).toBeLessThanOrEqual(r0);
@@ -57,6 +64,9 @@ test.describe('Language Persistence And Results Button', () => {
 
     await switchLanguage(page, 'es');
 
+    // Wait for language switch and results to stabilize
+    await waitForPageStabilized(page);
+
     const r2InSpanish = await getResultTotalNumber(page);
     expect(r2InSpanish).toBe(r2);
 
@@ -70,6 +80,9 @@ test.describe('Language Persistence And Results Button', () => {
     expect(r2TitlesSpanish.length).toBeGreaterThan(0);
 
     await switchLanguage(page, 'en');
+
+    // Wait for language switch back to English and results to stabilize
+    await waitForPageStabilized(page);
 
     const r2BackInEnglish = await getResultTotalNumber(page);
     expect(r2BackInEnglish).toBe(r2);
