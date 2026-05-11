@@ -51,7 +51,7 @@
     "show_less": "لږ وښایاست",
     "query_input_label": "د سرچینو لټون",
     "location_input_label": "د ځای لټون وکړئ",
-    "change_location_label": "ځای بدل کړئ: {{ځای}}",
+    "change_location_label": "ځای بدل کړئ: {{location}}",
     "open_search_dialog": "د لټون ډیالوګ پرانیزئ",
     "list_status_one": "۱ انتخاب شتون لري. د بیاکتنې لپاره پورته او ښکته تیر کیلي وکاروئ.",
     "list_status_other": "{{count}} انتخابونه شته. د بیاکتنې لپاره پورته او ښکته تیر کیلي وکاروئ.",
@@ -159,15 +159,15 @@
     "provided_by": "معلومات د لخوا چمتو شوي"
   },
   "footer": {
-    "copyright": "© د چاپ حق {{متن}}"
+    "copyright": "© د چاپ حق {{text}}"
   },
   "carousel": {
     "previous": "مخکینی",
     "next": "بل",
     "go_to": "ورتګ"
   },
-  "filter_results_count_one": "{{شمیر}} پایله",
-  "filter_results_count_other": "{{شمیرنه}} پایلې",
+  "filter_results_count_one": "{{count}} پایله",
+  "filter_results_count_other": "{{count}} پایلې",
   "autocomplete": {
     "results_available_one": "{{count}} پایله موجوده ده",
     "results_available_other": "{{count}} پایلې شتون لري",

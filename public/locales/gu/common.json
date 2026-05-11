@@ -164,10 +164,10 @@
     "go_to": "પર જાઓ"
   },
   "footer": {
-    "copyright": "© કૉપિરાઇટ {{ટેક્સ્ટ}}"
+    "copyright": "© કૉપિરાઇટ {{text}}"
   },
-  "filter_results_count_one": "{{ગણતરી}} પરિણામ",
-  "filter_results_count_other": "{{ગણતરી}} પરિણામો",
+  "filter_results_count_one": "{{count}} પરિણામ",
+  "filter_results_count_other": "{{count}} પરિણામો",
   "autocomplete": {
     "results_available_one": "{{count}} પરિણામ ઉપલબ્ધ છે",
     "results_available_other": "{{count}} પરિણામો ઉપલબ્ધ છે",

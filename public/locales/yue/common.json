@@ -47,11 +47,11 @@
     "geocoding_unsupported": "你嘅瀏覽器唔支援地理位置",
     "geocoding_unable_to_retrieve": "搵唔到你嘅位置。請檢查瀏覽器嘅位置設定，然後試多一次。",
     "categories": "主題",
-    "show_all": "顯示全部（ { { 計數 } } ）",
+    "show_all": "顯示全部（{{count}}）",
     "show_less": "顯示少啲",
     "query_input_label": "搵資源",
     "location_input_label": "搵個位置",
-    "change_location_label": "更改位置： { { 位置 } }",
+    "change_location_label": "更改位置： {{location}}",
     "open_search_dialog": "打開搜尋對話方塊",
     "list_status_one": "1 個選項可用。用上下箭頭鍵嚟睇返。",
     "list_status_other": "有 {{ 計數 }} 選項。用上下箭頭鍵嚟睇返。",
@@ -159,18 +159,18 @@
     "provided_by": "資料由"
   },
   "footer": {
-    "copyright": "© 版權所有 { { 文字 } }"
+    "copyright": "© 版權所有 {{text}}"
   },
   "carousel": {
     "previous": "之前",
     "next": "下一個",
     "go_to": "去到"
   },
-  "filter_results_count_one": "{{ 計數 }} 結果",
-  "filter_results_count_other": "{{ 計數 }} 結果",
+  "filter_results_count_one": "{{count}} 結果",
+  "filter_results_count_other": "{{count}} 結果",
   "autocomplete": {
-    "results_available_one": "{{ 計數 }} 結果可用",
-    "results_available_other": "有 {{ 計數 }} 結果",
+    "results_available_one": "{{count}} 結果可用",
+    "results_available_other": "有 {{count}} 結果",
     "no_results": "冇結果"
   },
   "auth_error": {
