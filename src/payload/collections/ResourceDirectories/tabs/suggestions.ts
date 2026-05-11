@@ -10,6 +10,20 @@ export const suggestions: Tab = {
   },
   fields: [
     {
+      type: 'ui',
+      name: 'suggestionsImportExport',
+      admin: {
+        components: {
+          Field: {
+            path: '@/payload/collections/ResourceDirectories/components/BulkCsvImportExport',
+            clientProps: {
+              kind: 'suggestions',
+            },
+          },
+        },
+      },
+    },
+    {
       name: 'suggestions',
       type: 'array',
       required: true,

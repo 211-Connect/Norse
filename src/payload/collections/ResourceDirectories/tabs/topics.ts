@@ -53,6 +53,20 @@ export const topics: Tab = {
       },
     },
     {
+      type: 'ui',
+      name: 'topicsImportExport',
+      admin: {
+        components: {
+          Field: {
+            path: '@/payload/collections/ResourceDirectories/components/BulkCsvImportExport',
+            clientProps: {
+              kind: 'topics',
+            },
+          },
+        },
+      },
+    },
+    {
       name: 'list',
       type: 'array',
       access: {
