@@ -3,7 +3,7 @@
 import { useTenantSelection } from '@payloadcms/plugin-multi-tenant/client';
 import { Button } from '@payloadcms/ui';
 import { atom, useAtom } from 'jotai';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { fetchWrapper } from '@/app/(app)/shared/lib/fetchWrapper';
 
@@ -11,7 +11,7 @@ import type { DateRange as DateRangeType } from './types';
 
 const DATE_RANGES: DateRangeType[] = [7, 30, 90];
 
-export const analyticsDateRangeAtom = atom<DateRange>(30);
+export const analyticsDateRangeAtom = atom<DateRangeType>(30);
 export const analyticsSelectedWebsiteIdsAtom = atom<string[]>([]);
 
 type TenantWebsiteConfig = {
