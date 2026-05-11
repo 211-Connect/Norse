@@ -52,7 +52,10 @@ export const umamiWebsites: Endpoint = {
 
     const tenantId = req.query?.tenantId as string | undefined;
     if (!tenantId) {
-      return Response.json({ error: 'Missing tenantId parameter.' }, { status: 400 });
+      return Response.json(
+        { error: 'Missing tenantId parameter.' },
+        { status: 400 },
+      );
     }
 
     const userTenantIDs = getUserTenantIDs(req.user);
@@ -92,7 +95,8 @@ export const umamiWebsites: Endpoint = {
     if (invalidWebsiteIds.length > 0) {
       return Response.json(
         {
-          error: 'Some requested website IDs are not configured for this tenant.',
+          error:
+            'Some requested website IDs are not configured for this tenant.',
           invalidWebsiteIds,
         },
         { status: 400 },
@@ -113,13 +117,16 @@ export const umamiWebsites: Endpoint = {
     const websites = await Promise.all(
       selectedWebsiteIds.map(async (websiteId): Promise<UmamiWebsite> => {
         try {
-          const response = await fetch(`${umamiApiUrl}/api/websites/${websiteId}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              Accept: 'application/json',
+          const response = await fetch(
+            `${umamiApiUrl}/api/websites/${websiteId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/json',
+              },
+              signal: AbortSignal.timeout(10_000),
             },
-            signal: AbortSignal.timeout(10_000),
-          });
+          );
 
           if (!response.ok) {
             return { id: websiteId, name: null };

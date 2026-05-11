@@ -8,8 +8,8 @@ import { geocodeSessions } from './geocodeSessions';
 import type {
   AnalyticsMetrics,
   DateRange,
-  MetricEntry,
   Metric,
+  MetricEntry,
   MetricsExpandedEntry,
   UmamiPageviews,
   UmamiSessionResponse,
@@ -132,10 +132,17 @@ export const fetchPageviews = makeCachedFetch(
   new Map<string, CacheEntry<UmamiPageviews>>(),
   async ({ startAt, endAt }, tenantId, websiteIds) => {
     const data = await fetchWrapper<UmamiPageviews>(
-      buildProxyQuery('pageviews', startAt, endAt, tenantId, {
-        unit: 'day',
-        timezone: 'UTC',
-      }, websiteIds),
+      buildProxyQuery(
+        'pageviews',
+        startAt,
+        endAt,
+        tenantId,
+        {
+          unit: 'day',
+          timezone: 'UTC',
+        },
+        websiteIds,
+      ),
     );
     if (!data) throw new Error('No pageviews data returned');
     return data;
@@ -154,34 +161,76 @@ export const fetchMetrics = makeCachedFetch(
       prevEvents,
     ] = await Promise.all([
       fetchWrapper<MetricsExpandedEntry[]>(
-        buildProxyQuery('metrics/expanded', startAt, endAt, tenantId, {
-          type: 'path',
-        }, websiteIds),
+        buildProxyQuery(
+          'metrics/expanded',
+          startAt,
+          endAt,
+          tenantId,
+          {
+            type: 'path',
+          },
+          websiteIds,
+        ),
       ),
       fetchWrapper<MetricsExpandedEntry[]>(
-        buildProxyQuery('metrics/expanded', startAt, endAt, tenantId, {
-          type: 'query',
-        }, websiteIds),
+        buildProxyQuery(
+          'metrics/expanded',
+          startAt,
+          endAt,
+          tenantId,
+          {
+            type: 'query',
+          },
+          websiteIds,
+        ),
       ),
       fetchWrapper<MetricEntry[]>(
-        buildProxyQuery('events/series', startAt, endAt, tenantId, {
-          timezone: 'UTC',
-        }, websiteIds),
+        buildProxyQuery(
+          'events/series',
+          startAt,
+          endAt,
+          tenantId,
+          {
+            timezone: 'UTC',
+          },
+          websiteIds,
+        ),
       ),
       fetchWrapper<MetricsExpandedEntry[]>(
-        buildProxyQuery('metrics/expanded', prevStartAt, prevEndAt, tenantId, {
-          type: 'path',
-        }, websiteIds),
+        buildProxyQuery(
+          'metrics/expanded',
+          prevStartAt,
+          prevEndAt,
+          tenantId,
+          {
+            type: 'path',
+          },
+          websiteIds,
+        ),
       ),
       fetchWrapper<MetricsExpandedEntry[]>(
-        buildProxyQuery('metrics/expanded', prevStartAt, prevEndAt, tenantId, {
-          type: 'query',
-        }, websiteIds),
+        buildProxyQuery(
+          'metrics/expanded',
+          prevStartAt,
+          prevEndAt,
+          tenantId,
+          {
+            type: 'query',
+          },
+          websiteIds,
+        ),
       ),
       fetchWrapper<MetricEntry[]>(
-        buildProxyQuery('events/series', prevStartAt, prevEndAt, tenantId, {
-          timezone: 'UTC',
-        }, websiteIds),
+        buildProxyQuery(
+          'events/series',
+          prevStartAt,
+          prevEndAt,
+          tenantId,
+          {
+            timezone: 'UTC',
+          },
+          websiteIds,
+        ),
       ),
     ]);
 
@@ -245,14 +294,28 @@ export const fetchPaths = makeCachedFetch(
     const [pathMetrics, queryMetrics, prevPathMetrics, prevQueryMetrics] =
       await Promise.all([
         fetchWrapper<MetricsExpandedEntry[]>(
-          buildProxyQuery('metrics/expanded', startAt, endAt, tenantId, {
-            type: 'path',
-          }, websiteIds),
+          buildProxyQuery(
+            'metrics/expanded',
+            startAt,
+            endAt,
+            tenantId,
+            {
+              type: 'path',
+            },
+            websiteIds,
+          ),
         ),
         fetchWrapper<MetricsExpandedEntry[]>(
-          buildProxyQuery('metrics/expanded', startAt, endAt, tenantId, {
-            type: 'query',
-          }, websiteIds),
+          buildProxyQuery(
+            'metrics/expanded',
+            startAt,
+            endAt,
+            tenantId,
+            {
+              type: 'query',
+            },
+            websiteIds,
+          ),
         ),
         fetchWrapper<MetricsExpandedEntry[]>(
           buildProxyQuery(
@@ -306,14 +369,28 @@ export const fetchEvents = makeCachedFetch(
   async ({ startAt, endAt, prevStartAt, prevEndAt }, tenantId, websiteIds) => {
     const [events, prevEvents] = await Promise.all([
       fetchWrapper<MetricEntry[]>(
-        buildProxyQuery('events/series', startAt, endAt, tenantId, {
-          timezone: 'UTC',
-        }, websiteIds),
+        buildProxyQuery(
+          'events/series',
+          startAt,
+          endAt,
+          tenantId,
+          {
+            timezone: 'UTC',
+          },
+          websiteIds,
+        ),
       ),
       fetchWrapper<MetricEntry[]>(
-        buildProxyQuery('events/series', prevStartAt, prevEndAt, tenantId, {
-          timezone: 'UTC',
-        }, websiteIds),
+        buildProxyQuery(
+          'events/series',
+          prevStartAt,
+          prevEndAt,
+          tenantId,
+          {
+            timezone: 'UTC',
+          },
+          websiteIds,
+        ),
       ),
     ]);
 
@@ -327,7 +404,14 @@ export const fetchSessions = makeCachedFetch(
   new Map<string, CacheEntry<SessionsData>>(),
   async ({ startAt, endAt }, tenantId, websiteIds) => {
     const data = await fetchWrapper<UmamiSessionResponse>(
-      buildProxyQuery('sessions', startAt, endAt, tenantId, undefined, websiteIds),
+      buildProxyQuery(
+        'sessions',
+        startAt,
+        endAt,
+        tenantId,
+        undefined,
+        websiteIds,
+      ),
     );
     const heatmapPoints = await geocodeSessions(data?.data ?? [], tenantId);
     return { heatmapPoints };

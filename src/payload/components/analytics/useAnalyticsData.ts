@@ -4,7 +4,10 @@ import { useTenantSelection } from '@payloadcms/plugin-multi-tenant/client';
 import { useAtomValue } from 'jotai';
 import { useEffect, useState } from 'react';
 
-import { analyticsDateRangeAtom, analyticsSelectedWebsiteIdsAtom } from './DateRange';
+import {
+  analyticsDateRangeAtom,
+  analyticsSelectedWebsiteIdsAtom,
+} from './DateRange';
 import {
   type EventsData,
   type MetricsData,
