@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useCallback, useMemo } from 'react';
 import { Button, useField, useForm, useFormFields } from '@payloadcms/ui';
+import React, { useCallback, useMemo } from 'react';
+
+import './BulkEditButtons.css';
 import {
   type CsvRow,
   generateCSV,
@@ -12,7 +14,6 @@ import {
   parseSuggestionsCSV,
   parseTopicsCSV,
 } from './csvUtils';
-import './BulkEditButtons.css';
 
 type BulkCsvKind = 'topics' | 'suggestions' | 'facets';
 
