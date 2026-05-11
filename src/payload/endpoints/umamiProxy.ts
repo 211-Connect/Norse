@@ -1,5 +1,11 @@
 import type { Endpoint } from 'payload';
 
+import { isSuperAdmin, isSupport } from '../collections/Users/access/roles';
+import {
+  MetricEntry,
+  MetricsExpandedEntry,
+} from '../components/analytics/types';
+import { getUserTenantIDs } from '../utilities/getUserTenantIDs';
 import { getUmamiToken } from '../utilities/umamiAuth';
 
 const ALLOWED_ENDPOINTS = [
@@ -21,6 +27,152 @@ const ALLOWED_PARAMS = [
   'limit',
   'eventName',
 ] as const;
+
+function parseRequestedWebsiteIds(raw: string | undefined): string[] {
+  if (!raw) return [];
+  return Array.from(
+    new Set(
+      raw
+        .split(',')
+        .map((id) => id.trim())
+        .filter(Boolean),
+    ),
+  );
+}
+
+function configuredWebsiteIds(tenant: any): string[] {
+  const websiteIds = Array.isArray(tenant?.common?.umamiWebsiteIds)
+    ? tenant.common.umamiWebsiteIds
+        .map((row: { websiteId?: string | null }) => row?.websiteId?.trim())
+        .filter((id: string | undefined): id is string => Boolean(id))
+    : [];
+
+  return Array.from(new Set(websiteIds));
+}
+
+function mergeMetricEntries(entriesList: MetricEntry[][]): MetricEntry[] {
+  const merged = new Map<string, number>();
+
+  for (const entries of entriesList) {
+    for (const entry of entries) {
+      merged.set(entry.x, (merged.get(entry.x) ?? 0) + (entry.y ?? 0));
+    }
+  }
+
+  return Array.from(merged, ([x, y]) => ({ x, y }));
+}
+
+function mergeMetricsExpanded(
+  dataList: MetricsExpandedEntry[][],
+): MetricsExpandedEntry[] {
+  const merged = new Map<
+    string,
+    {
+      pageviews: number;
+      visitors: number;
+      visits: number;
+      bounces: number;
+      totaltime: number;
+    }
+  >();
+
+  for (const rows of dataList) {
+    for (const row of rows) {
+      const current = merged.get(row.name) ?? {
+        pageviews: 0,
+        visitors: 0,
+        visits: 0,
+        bounces: 0,
+        totaltime: 0,
+      };
+
+      current.pageviews += Number(row.pageviews) || 0;
+      current.visitors += Number(row.visitors) || 0;
+      current.visits += Number(row.visits) || 0;
+      current.bounces += Number(row.bounces) || 0;
+      current.totaltime += Number(row.totaltime) || 0;
+
+      merged.set(row.name, current);
+    }
+  }
+
+  return Array.from(merged, ([name, totals]) => ({
+    name,
+    pageviews: String(totals.pageviews),
+    visitors: totals.visitors,
+    visits: totals.visits,
+    bounces: totals.bounces,
+    totaltime: String(totals.totaltime),
+  }));
+}
+
+function mergeStats(dataList: any[]): any {
+  return dataList.reduce(
+    (acc, row) => ({
+      bounces: acc.bounces + (Number(row?.bounces) || 0),
+      pageviews: acc.pageviews + (Number(row?.pageviews) || 0),
+      totaltime: acc.totaltime + (Number(row?.totaltime) || 0),
+      visitors: acc.visitors + (Number(row?.visitors) || 0),
+      visits: acc.visits + (Number(row?.visits) || 0),
+      comparison: {
+        bounces:
+          acc.comparison.bounces + (Number(row?.comparison?.bounces) || 0),
+        pageviews:
+          acc.comparison.pageviews + (Number(row?.comparison?.pageviews) || 0),
+        totaltime:
+          acc.comparison.totaltime + (Number(row?.comparison?.totaltime) || 0),
+        visitors:
+          acc.comparison.visitors + (Number(row?.comparison?.visitors) || 0),
+        visits: acc.comparison.visits + (Number(row?.comparison?.visits) || 0),
+      },
+    }),
+    {
+      bounces: 0,
+      pageviews: 0,
+      totaltime: 0,
+      visitors: 0,
+      visits: 0,
+      comparison: {
+        bounces: 0,
+        pageviews: 0,
+        totaltime: 0,
+        visitors: 0,
+        visits: 0,
+      },
+    },
+  );
+}
+
+function aggregateByEndpoint(endpoint: string, responses: any[]): any {
+  if (responses.length === 1) return responses[0];
+
+  if (endpoint === 'stats') {
+    return mergeStats(responses);
+  }
+
+  if (endpoint === 'pageviews') {
+    return {
+      pageviews: mergeMetricEntries(responses.map((r) => r?.pageviews ?? [])),
+      sessions: mergeMetricEntries(responses.map((r) => r?.sessions ?? [])),
+    };
+  }
+
+  if (endpoint === 'events/series') {
+    return mergeMetricEntries(responses);
+  }
+
+  if (endpoint === 'metrics/expanded') {
+    return mergeMetricsExpanded(responses);
+  }
+
+  if (endpoint === 'sessions') {
+    return {
+      data: responses.flatMap((r) => r?.data ?? []),
+    };
+  }
+
+  return responses[0];
+}
 
 export const umamiProxy: Endpoint = {
   path: '/umami-proxy',
@@ -61,34 +213,67 @@ export const umamiProxy: Endpoint = {
       if (value) forwardedParams.set(param, value);
     }
 
-    // Resolve Umami website ID from the tenant passed by the client,
-    // fall back to the user's first tenant, then to the env var.
-    let umamiWebsiteId: string | undefined;
     const tenantId = query?.tenantId as string | undefined;
 
-    if (tenantId) {
-      try {
-        const tenant = await req.payload.findByID({
-          collection: 'tenants',
-          id: tenantId,
-          overrideAccess: true,
-        });
-        umamiWebsiteId = tenant.common?.umamiWebsiteId ?? undefined;
-      } catch (err) {
-        console.warn(`[umamiProxy] Failed to look up tenant "${tenantId}".`);
-      }
+    if (!tenantId) {
+      return Response.json(
+        { error: 'Missing tenantId parameter.' },
+        { status: 400 },
+      );
     }
 
-    if (!umamiWebsiteId) {
+    const userTenantIDs = getUserTenantIDs(req.user);
+    const canReadAnyTenant = isSuperAdmin(req.user) || isSupport(req.user);
+
+    if (!canReadAnyTenant && !userTenantIDs.includes(tenantId)) {
+      return Response.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    let tenant: any;
+
+    try {
+      tenant = await req.payload.findByID({
+        collection: 'tenants',
+        id: tenantId,
+        overrideAccess: true,
+      });
+    } catch (err) {
+      console.warn(`[umamiProxy] Failed to look up tenant "${tenantId}".`);
+      return Response.json({ error: 'Tenant not found.' }, { status: 404 });
+    }
+
+    const allowedWebsiteIds = configuredWebsiteIds(tenant);
+
+    if (allowedWebsiteIds.length === 0) {
       return Response.json(
-        { error: 'No Umami website ID configured for this tenant.' },
+        { error: 'No Umami website IDs configured for this tenant.' },
         { status: 503 },
       );
     }
 
-    const apiPath = `/api/websites/${umamiWebsiteId}/${endpoint}`;
-    const qs = forwardedParams.toString();
-    const targetUrl = `${umamiApiUrl}${apiPath}${qs ? `?${qs}` : ''}`;
+    const requestedWebsiteIds = parseRequestedWebsiteIds(
+      query?.websiteIds as string | undefined,
+    );
+
+    const selectedWebsiteIds =
+      requestedWebsiteIds.length > 0
+        ? requestedWebsiteIds
+        : [allowedWebsiteIds[0]];
+
+    const invalidWebsiteIds = selectedWebsiteIds.filter(
+      (websiteId) => !allowedWebsiteIds.includes(websiteId),
+    );
+
+    if (invalidWebsiteIds.length > 0) {
+      return Response.json(
+        {
+          error:
+            'Some requested website IDs are not configured for this tenant.',
+          invalidWebsiteIds,
+        },
+        { status: 400 },
+      );
+    }
 
     let token: string;
     try {
@@ -102,24 +287,34 @@ export const umamiProxy: Endpoint = {
     }
 
     try {
-      const response = await fetch(targetUrl, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/json',
-        },
-        signal: AbortSignal.timeout(10_000),
-      });
+      const qs = forwardedParams.toString();
 
-      if (!response.ok) {
-        const body = await response.text();
-        return Response.json(
-          { error: 'Umami API error', detail: body },
-          { status: response.status },
-        );
-      }
+      const responses = await Promise.all(
+        selectedWebsiteIds.map(async (websiteId) => {
+          const apiPath = `/api/websites/${websiteId}/${endpoint}`;
+          const targetUrl = `${umamiApiUrl}${apiPath}${qs ? `?${qs}` : ''}`;
 
-      const data = await response.json();
-      return Response.json(data);
+          const response = await fetch(targetUrl, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: 'application/json',
+            },
+            signal: AbortSignal.timeout(10_000),
+          });
+
+          if (!response.ok) {
+            const body = await response.text();
+            throw new Error(
+              `Umami API error for website ${websiteId} (${response.status}): ${body}`,
+            );
+          }
+
+          return response.json();
+        }),
+      );
+
+      const aggregated = aggregateByEndpoint(endpoint, responses);
+      return Response.json(aggregated);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown error';
       return Response.json(

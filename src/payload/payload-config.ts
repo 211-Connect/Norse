@@ -24,6 +24,7 @@ import { clearCache } from './endpoints/clearCache';
 import { duplicateTenant } from './endpoints/duplicateTenant';
 import { translateEndpoint } from './endpoints/translate';
 import { umamiProxy } from './endpoints/umamiProxy';
+import { umamiWebsites } from './endpoints/umamiWebsites';
 import { defaultLocale, locales } from './i18n/locales';
 import { translate } from './jobs/translate';
 import { translateTopics } from './jobs/translateTopics';
@@ -41,6 +42,7 @@ const endpoints: Endpoint[] = [
   translateEndpoint,
   duplicateTenant,
   umamiProxy,
+  umamiWebsites,
   seedEndpoint,
 ];
 
