@@ -1,5 +1,9 @@
 'use client';
 
+import { useAtomValue } from 'jotai';
+import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { PrintButton } from '@/app/(app)/shared/components/print-button';
 import { ShareButton } from '@/app/(app)/shared/components/share-button';
 import {
@@ -12,9 +16,6 @@ import {
   queryLabelAtom,
   queryTypeAtom,
 } from '@/app/(app)/shared/store/search';
-import { useAtomValue } from 'jotai';
-import { useEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { SearchCardLayoutConfig } from '../types/card-layout-config';
 import { RenderResults } from './render-results';

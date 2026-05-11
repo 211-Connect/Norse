@@ -1,3 +1,8 @@
+import { getCookies } from 'cookies-next/server';
+import { cookies, headers } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { Metadata } from 'next/types';
+
 import { FavoriteListsSection } from '@/app/(app)/features/favorites/components/favorite-lists-section';
 import { MapContainer } from '@/app/(app)/features/favorites/components/map-container';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
@@ -7,10 +12,6 @@ import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { getSession } from '@/app/(app)/shared/utils/getServerSession';
 import { createLogger } from '@/lib/logger';
 import { FavoritesPageProps } from '@/types/favorites';
-import { getCookies } from 'cookies-next/server';
-import { cookies, headers } from 'next/headers';
-import { redirect } from 'next/navigation';
-import { Metadata } from 'next/types';
 
 const log = createLogger('favorites-page');
 

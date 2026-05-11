@@ -1,9 +1,10 @@
+import { AlertCircle } from 'lucide-react';
+import Image from 'next/image';
+
 import { AuthErrorActions } from '@/app/(app)/[locale]/(rest)/auth/error/actions';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { withOptionalCustomBasePath } from '@/app/(app)/shared/lib/utils';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
-import { AlertCircle } from 'lucide-react';
-import Image from 'next/image';
 
 const i18nNamespaces = ['common'];
 

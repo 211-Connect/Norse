@@ -32,7 +32,7 @@ export function parseFilter(filterString: string): FilterExpression {
 
   // Detect logic operator (default to AND if not specified)
   let logic: 'AND' | 'OR' = 'AND';
-  let conditionStrings: string[] = [];
+  let conditionStrings: string[];
 
   // Check for OR first (case-insensitive)
   if (/ OR /i.test(trimmed)) {

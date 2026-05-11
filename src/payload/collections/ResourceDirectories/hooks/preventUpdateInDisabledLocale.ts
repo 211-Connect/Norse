@@ -1,10 +1,11 @@
-import { locales } from '@/payload/i18n/locales';
 import {
   APIError,
   type CollectionBeforeChangeHook,
   TypedLocale,
 } from 'payload';
 import { extractID } from 'payload/shared';
+
+import { locales } from '@/payload/i18n/locales';
 
 export const preventUpdateInDisabledLocale: CollectionBeforeChangeHook =
   async ({ data, req: { payload, locale }, operation, originalDoc }) => {

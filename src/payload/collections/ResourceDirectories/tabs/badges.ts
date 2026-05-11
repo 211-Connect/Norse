@@ -1,9 +1,10 @@
+import { Tab } from 'payload';
+
 import { DEFAULT_BADGE_COLOR } from '@/app/(app)/shared/theme/theme-config';
 import {
   parseFilter,
   validateFilterStructure,
 } from '@/utils/badgeFilterEvaluator';
-import { Tab } from 'payload';
 
 import { superAdminOrSupportAccess } from '../../Users/access/roles';
 

@@ -1,6 +1,5 @@
 'use client';
 
-import { FavoriteListState } from '@/types/favorites';
 import { useSetAtom } from 'jotai';
 import { Heart, HeartOff, Loader2, PlusIcon } from 'lucide-react';
 import { useSession } from 'next-auth/react';
@@ -16,6 +15,8 @@ import {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+
+import { FavoriteListState } from '@/types/favorites';
 
 import { useAppConfig } from '../hooks/use-app-config';
 import { FAVORITES_SEARCH_DEBOUNCE_DELAY } from '../lib/constants';

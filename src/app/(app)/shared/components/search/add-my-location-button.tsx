@@ -1,9 +1,10 @@
 'use client';
 
-import { cn } from '@/app/(app)/shared/lib/utils';
 import { Locate } from 'lucide-react';
 import { Ref } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { cn } from '@/app/(app)/shared/lib/utils';
 
 import { SEARCH_DIALOG_ID } from '../../lib/constants';
 import { Button } from '../ui/button';

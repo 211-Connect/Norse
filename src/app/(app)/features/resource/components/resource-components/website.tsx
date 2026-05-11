@@ -1,8 +1,9 @@
 'use client';
 
-import { getDisplayHost } from '@/utils';
 import { LinkIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+
+import { getDisplayHost } from '@/utils';
 
 import { UmamiEvent, trackUmamiEvent } from '../../../../shared/lib/umami';
 import { ResourceComponentProps } from '../component-registry';

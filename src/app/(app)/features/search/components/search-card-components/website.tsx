@@ -1,8 +1,9 @@
 'use client';
 
-import { getDisplayHost } from '@/utils/getDisplayHost';
 import { Link } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+
+import { getDisplayHost } from '@/utils/getDisplayHost';
 
 import { UmamiEvent, trackUmamiEvent } from '../../../../shared/lib/umami';
 import { Datum } from '../../../resource/components/datum';

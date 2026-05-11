@@ -1,11 +1,12 @@
 'use client';
 
-import { MapService } from '@/app/(app)/shared/services/map-service';
-import { GeocodeResult } from '@/types/resource';
 import { useQuery } from '@tanstack/react-query';
 import { EarthIcon } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { MapService } from '@/app/(app)/shared/services/map-service';
+import { GeocodeResult } from '@/types/resource';
 
 import { useGeocodingAdapter } from '../use-geocoding-adapter';
 

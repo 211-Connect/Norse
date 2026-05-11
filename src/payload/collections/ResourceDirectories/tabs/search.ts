@@ -1,6 +1,7 @@
-import { SearchCardComponentId } from '@/app/(app)/features/search/types/card-component-ids';
 import { Field, Tab } from 'payload';
 import { title } from 'radash';
+
+import { SearchCardComponentId } from '@/app/(app)/features/search/types/card-component-ids';
 
 import {
   superAdminAccess,

@@ -1,8 +1,9 @@
+import dayjs from 'dayjs';
+import { cache } from 'react';
+
 import { ApiResource, Resource } from '@/types/resource';
 import { CacheKey, withCache } from '@/utilities/withCache';
 import { ensureUrlProtocol } from '@/utils';
-import dayjs from 'dayjs';
-import { cache } from 'react';
 
 import { API_URL, INTERNAL_API_KEY } from '../lib/constants';
 import { fetchWrapper } from '../lib/fetchWrapper';

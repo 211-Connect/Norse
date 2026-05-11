@@ -1,5 +1,11 @@
 'use client';
 
+import { Trash2 } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
+
 import { Button } from '@/app/(app)/shared/components/ui/button';
 import {
   Dialog,
@@ -14,11 +20,6 @@ import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-searc
 import { withOptionalTrailingSlash } from '@/app/(app)/shared/lib/utils';
 import { deleteFavoriteList } from '@/app/(app)/shared/serverActions/favorites/deleteFavoriteList';
 import { createLogger } from '@/lib/logger';
-import { Trash2 } from 'lucide-react';
-import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
 
 const log = createLogger('delete-favorite-list-button');
 

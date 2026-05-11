@@ -1,5 +1,9 @@
 'use client';
 
+import { useAtomValue } from 'jotai';
+import { LinkIcon, Phone } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+
 import { GetDirectionsButton } from '@/app/(app)/shared/components/get-directions-button';
 import { Link } from '@/app/(app)/shared/components/link';
 import { ReferralButton } from '@/app/(app)/shared/components/referral-button';
@@ -7,9 +11,6 @@ import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { searchCoordinatesAtom } from '@/app/(app)/shared/store/search';
-import { useAtomValue } from 'jotai';
-import { LinkIcon, Phone } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 
 import { SearchCardComponentProps } from './types';
 

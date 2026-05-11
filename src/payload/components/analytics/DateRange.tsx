@@ -2,13 +2,12 @@
 
 import { Button } from '@payloadcms/ui';
 import { atom, useAtom } from 'jotai';
-import React from 'react';
 
-import type { DateRange } from './types';
+import type { DateRange as DateRangeType } from './types';
 
-const DATE_RANGES: DateRange[] = [7, 30, 90];
+const DATE_RANGES: DateRangeType[] = [7, 30, 90];
 
-export const analyticsDateRangeAtom = atom<DateRange>(30);
+export const analyticsDateRangeAtom = atom<DateRangeType>(30);
 
 export default function DateRange() {
   const [range, setRange] = useAtom(analyticsDateRangeAtom);

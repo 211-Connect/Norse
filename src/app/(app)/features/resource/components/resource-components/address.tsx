@@ -1,5 +1,10 @@
 'use client';
 
+import { useAtomValue } from 'jotai';
+import { MapPin } from 'lucide-react';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import {
   Tooltip,
   TooltipContent,
@@ -14,10 +19,6 @@ import {
 import { ResultType } from '@/app/(app)/shared/store/results';
 import { userCoordinatesAtom } from '@/app/(app)/shared/store/search';
 import { Resource } from '@/types/resource';
-import { useAtomValue } from 'jotai';
-import { MapPin } from 'lucide-react';
-import { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { UmamiEvent, trackUmamiEvent } from '../../../../shared/lib/umami';
 import { Datum } from '../datum';

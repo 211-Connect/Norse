@@ -1,10 +1,11 @@
 'use client';
 
-import { fetchWrapper } from '@/app/(app)/shared/lib/fetchWrapper';
-import { createLogger } from '@/lib/logger';
 import { Button, toast, useAuth, useDocumentInfo } from '@payloadcms/ui';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
+
+import { fetchWrapper } from '@/app/(app)/shared/lib/fetchWrapper';
+import { createLogger } from '@/lib/logger';
 
 const log = createLogger('tenant-actions');
 

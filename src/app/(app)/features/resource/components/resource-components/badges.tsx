@@ -1,10 +1,11 @@
 'use client';
 
+import { useMemo } from 'react';
+
 import { Badges } from '@/app/(app)/shared/components/badges';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { Resource } from '@/types/resource';
 import { getBadgesForResource } from '@/utils/getBadgesForResource';
-import { useMemo } from 'react';
 
 export function BadgesComponent({
   resource,

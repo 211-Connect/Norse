@@ -1,9 +1,10 @@
+import { TypedLocale } from 'payload';
+
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
 import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
 import { locales } from '@/payload/i18n/locales';
 import { ResourceDirectory } from '@/payload/payload-types';
 import { withCache } from '@/utilities/withCache';
-import { TypedLocale } from 'payload';
 
 async function findResourceDirectoryByHostOrig(
   host: string,

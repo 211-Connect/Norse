@@ -1,11 +1,12 @@
 'use client';
 
-import { MAPLIBRE_STYLE_URL } from '@/app/(app)/shared/lib/constants';
-import { createLogger } from '@/lib/logger';
 import mapLibreGl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { Protocol } from 'pmtiles';
 import { useEffect, useRef, useState } from 'react';
+
+import { MAPLIBRE_STYLE_URL } from '@/app/(app)/shared/lib/constants';
+import { createLogger } from '@/lib/logger';
 
 import { MapErrorFallback } from '../../../app/(app)/shared/components/map/map-error-fallback';
 import {

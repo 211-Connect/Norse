@@ -1,6 +1,7 @@
-import { createLogger } from '@/lib/logger';
 import type { TaskConfig } from 'payload';
 import { retry } from 'radash';
+
+import { createLogger } from '@/lib/logger';
 
 import { assertValidLocale } from '../i18n/locales';
 import type { TranslationEngine } from '../services/translationService';

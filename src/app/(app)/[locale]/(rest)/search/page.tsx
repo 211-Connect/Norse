@@ -1,3 +1,9 @@
+import { getCookies } from 'cookies-next/server';
+import { cookies, headers } from 'next/headers';
+import { Metadata } from 'next/types';
+import qs from 'qs';
+import { cache } from 'react';
+
 import { FilterPanel } from '@/app/(app)/features/search/components/filter-panel';
 import { MapContainer } from '@/app/(app)/features/search/components/map-container';
 import { ResultsEvents } from '@/app/(app)/features/search/components/results-events';
@@ -15,11 +21,6 @@ import {
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { getSortOption } from '@/app/(app)/shared/utils/getSortOption';
 import { createLogger } from '@/lib/logger';
-import { getCookies } from 'cookies-next/server';
-import { cookies, headers } from 'next/headers';
-import { Metadata } from 'next/types';
-import qs from 'qs';
-import { cache } from 'react';
 
 import { UmamiEvent, trackUmamiEvent } from '../../../shared/lib/umami';
 

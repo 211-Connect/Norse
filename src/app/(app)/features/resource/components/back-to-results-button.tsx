@@ -1,5 +1,10 @@
 'use client';
 
+import { ChevronLeft } from 'lucide-react';
+import NextLink from 'next/link';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import {
   Button,
   buttonVariants,
@@ -7,10 +12,6 @@ import {
 import { usePrevUrl } from '@/app/(app)/shared/hooks/use-prev-url';
 import { createLinkEvent } from '@/app/(app)/shared/lib/google-tag-manager';
 import { cn } from '@/app/(app)/shared/lib/utils';
-import { ChevronLeft } from 'lucide-react';
-import NextLink from 'next/link';
-import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
 export function BackToResultsButton() {
   const prevUrl = usePrevUrl();

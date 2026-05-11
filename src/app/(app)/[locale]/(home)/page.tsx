@@ -1,3 +1,7 @@
+import { getCookies } from 'cookies-next/server';
+import { cookies, headers } from 'next/headers';
+import { Metadata } from 'next/types';
+
 import Alert from '@/app/(app)/features/home/components/alert';
 import { CategoriesSection } from '@/app/(app)/features/home/components/categories-section';
 import { HeroSection } from '@/app/(app)/features/home/components/hero-section';
@@ -7,9 +11,6 @@ import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import { TourProvider } from '@/app/(app)/shared/context/tour-provider';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { getServerDevice } from '@/app/(app)/shared/lib/get-server-device';
-import { getCookies } from 'cookies-next/server';
-import { cookies, headers } from 'next/headers';
-import { Metadata } from 'next/types';
 
 import { NewHomeContent } from '../../features/home/components/new-home-content';
 import { getAppConfigWithoutHost } from '../../shared/utils/appConfig';

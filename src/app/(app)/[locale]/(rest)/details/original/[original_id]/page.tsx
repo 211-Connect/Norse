@@ -1,3 +1,8 @@
+import { getCookies } from 'cookies-next/server';
+import { cookies, headers } from 'next/headers';
+import { RedirectType, notFound, permanentRedirect } from 'next/navigation';
+import { Metadata } from 'next/types';
+
 import { ResourcePageContent } from '@/app/(app)/features/resource/components/content';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
@@ -6,10 +11,6 @@ import { getResourceByOriginalId } from '@/app/(app)/shared/services/resource-se
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { createLogger } from '@/lib/logger';
 import { Resource } from '@/types/resource';
-import { getCookies } from 'cookies-next/server';
-import { cookies, headers } from 'next/headers';
-import { RedirectType, notFound, permanentRedirect } from 'next/navigation';
-import { Metadata } from 'next/types';
 
 const log = createLogger('original-details-page');
 
