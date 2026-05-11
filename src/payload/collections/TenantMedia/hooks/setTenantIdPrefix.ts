@@ -14,7 +14,7 @@ export const setTenantIdPrefix: CollectionBeforeOperationHook = async ({
   if (
     !(
       args.data &&
-      'tenant' in args?.data &&
+      'tenant' in args.data &&
       typeof args.data.tenant === 'string'
     )
   ) {

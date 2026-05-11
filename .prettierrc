@@ -5,7 +5,7 @@
   "printWidth": 80,
   "trailingComma": "all",
   "endOfLine": "lf",
-  "importOrder": ["^@core/(.*)$", "^@server/(.*)$", "^@ui/(.*)$", "^[./]"],
+  "importOrder": ["^@/(.*)$", "^[./]"],
   "importOrderSeparation": true,
   "importOrderSortSpecifiers": true,
   "plugins": [
