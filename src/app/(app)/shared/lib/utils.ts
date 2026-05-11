@@ -47,9 +47,12 @@ export function withOptionalCustomBasePath(path: string): string {
         return url.toString();
       }
 
-      url.pathname = url.pathname.startsWith('/')
-        ? `${normalizedBasePath}${url.pathname}`
-        : `${normalizedBasePath}/${url.pathname}`;
+      url.pathname =
+        url.pathname === '/'
+          ? normalizedBasePath
+          : url.pathname.startsWith('/')
+            ? `${normalizedBasePath}${url.pathname}`
+            : `${normalizedBasePath}/${url.pathname}`;
 
       return url.toString();
     } catch {
