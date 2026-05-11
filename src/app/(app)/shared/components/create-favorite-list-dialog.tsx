@@ -1,9 +1,10 @@
 'use client';
 
-import { CreateFavoriteListDto } from '@/types/favorites';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+
+import { CreateFavoriteListDto } from '@/types/favorites';
 
 import { useAppConfig } from '../hooks/use-app-config';
 import { createFavoriteList } from '../serverActions/favorites/createFavoriteList';

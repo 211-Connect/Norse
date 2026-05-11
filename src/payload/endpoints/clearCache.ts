@@ -1,7 +1,8 @@
+import type { Endpoint } from 'payload';
+
 import { cacheService } from '@/cacheService';
 import { createLogger } from '@/lib/logger';
 import { clearMemoryCache } from '@/utilities/withCache';
-import type { Endpoint } from 'payload';
 
 import { isSuperAdmin } from '../collections/Users/access/roles';
 

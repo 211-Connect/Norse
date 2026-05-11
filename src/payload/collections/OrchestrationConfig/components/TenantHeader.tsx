@@ -1,8 +1,9 @@
 'use client';
 
-import { findTenantById } from '@/payload/collections/Tenants/actions/findTenantById';
 import { useDocumentInfo } from '@payloadcms/ui';
 import { useEffect, useState } from 'react';
+
+import { findTenantById } from '@/payload/collections/Tenants/actions/findTenantById';
 
 const TenantHeader = () => {
   const { id } = useDocumentInfo();

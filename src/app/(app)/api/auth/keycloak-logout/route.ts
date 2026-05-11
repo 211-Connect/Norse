@@ -1,7 +1,8 @@
+import { NextRequest, NextResponse } from 'next/server';
+
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
 import { findTenantByHost } from '@/payload/collections/Tenants/actions';
 import { getKeycloakIssuer } from '@/utils/getKeycloakIssuer';
-import { NextRequest, NextResponse } from 'next/server';
 
 function normalizeNextPath(nextPath: string | null): string {
   if (!nextPath) {

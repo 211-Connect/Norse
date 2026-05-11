@@ -1,7 +1,5 @@
 'use client';
 
-import { useUncontrolled } from '@/app/(app)/shared/hooks/use-uncontrolled';
-import { cn } from '@/app/(app)/shared/lib/utils';
 import {
   autoUpdate,
   flip,
@@ -28,6 +26,9 @@ import {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { useUncontrolled } from '@/app/(app)/shared/hooks/use-uncontrolled';
+import { cn } from '@/app/(app)/shared/lib/utils';
 
 import { useOnPointerDownOutside } from '../../hooks/use-on-pointer-down-outside';
 import { Badge } from './badge';

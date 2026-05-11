@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslation } from 'react-i18next';
+
 import { Link } from '@/app/(app)/shared/components/link';
 import { Badge } from '@/app/(app)/shared/components/ui/badge';
 import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
@@ -13,7 +15,6 @@ import {
 import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
 import { withOptionalTrailingSlash } from '@/app/(app)/shared/lib/utils';
 import { FavoriteListState } from '@/types/favorites';
-import { useTranslation } from 'react-i18next';
 
 import { DeleteFavoriteListButton } from './delete-favorite-list-button';
 import { UpdateFavoriteListButton } from './update-favorite-list-button';

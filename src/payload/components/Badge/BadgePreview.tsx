@@ -1,9 +1,10 @@
 'use client';
 
-import { Badge } from '@/app/(app)/shared/components/ui/badge';
-import { ResourceDirectoryBadgeListItem } from '@/payload/collections/ResourceDirectories/types/badge';
 import { useWatchForm } from '@payloadcms/ui';
 import { type FC, useMemo } from 'react';
+
+import { Badge } from '@/app/(app)/shared/components/ui/badge';
+import { ResourceDirectoryBadgeListItem } from '@/payload/collections/ResourceDirectories/types/badge';
 
 import './styles.css';
 

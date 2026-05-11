@@ -1,8 +1,9 @@
 'use client';
 
-import { Badge } from '@/app/(app)/shared/components/ui/badge';
 import { Pin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+
+import { Badge } from '@/app/(app)/shared/components/ui/badge';
 
 import { BadgesComponent as ResourceBadgesComponent } from '../../../resource/components/resource-components';
 import { SearchCardComponentProps } from './types';

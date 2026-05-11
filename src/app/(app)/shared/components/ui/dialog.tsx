@@ -1,8 +1,9 @@
-import { cn } from '@/app/(app)/shared/lib/utils';
-import { fontSans } from '@/app/(app)/shared/styles/fonts';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import * as React from 'react';
+
+import { cn } from '@/app/(app)/shared/lib/utils';
+import { fontSans } from '@/app/(app)/shared/styles/fonts';
 
 const Dialog = DialogPrimitive.Root;
 

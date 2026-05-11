@@ -1,6 +1,7 @@
+import { notFound } from 'next/navigation';
+
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
-import { notFound } from 'next/navigation';
 
 const i18nNamespaces = ['common', 'page-404'];
 

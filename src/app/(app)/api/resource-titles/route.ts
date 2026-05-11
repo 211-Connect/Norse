@@ -1,5 +1,6 @@
-import { API_URL, INTERNAL_API_KEY } from '@/app/(app)/shared/lib/constants';
 import { NextRequest, NextResponse } from 'next/server';
+
+import { API_URL, INTERNAL_API_KEY } from '@/app/(app)/shared/lib/constants';
 
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null);

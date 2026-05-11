@@ -1,10 +1,11 @@
 'use client';
 
+import { useRef } from 'react';
+
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { fontSans } from '@/app/(app)/shared/styles/fonts';
 import { AppConfig } from '@/types/appConfig';
 import { Resource } from '@/types/resource';
-import { useRef } from 'react';
 
 import { LayoutRenderer } from './layout-renderer';
 import { Navigation } from './navigation';

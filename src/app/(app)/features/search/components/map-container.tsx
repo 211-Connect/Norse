@@ -1,5 +1,8 @@
 'use client';
 
+import { useAtomValue } from 'jotai';
+import { CSSProperties, useEffect, useMemo, useState } from 'react';
+
 import { MapRenderer } from '@/app/(app)/shared/components/map/map-renderer';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { HEADER_ID } from '@/app/(app)/shared/lib/constants';
@@ -10,8 +13,6 @@ import {
 } from '@/app/(app)/shared/lib/utils';
 import { resultsAtom } from '@/app/(app)/shared/store/results';
 import { userCoordinatesAtom } from '@/app/(app)/shared/store/search';
-import { useAtomValue } from 'jotai';
-import { CSSProperties, useEffect, useMemo, useState } from 'react';
 
 import { MapPopup } from './map-popup';
 

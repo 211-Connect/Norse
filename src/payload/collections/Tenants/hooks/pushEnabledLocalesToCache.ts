@@ -1,7 +1,8 @@
+import { CollectionAfterChangeHook } from 'payload';
+
 import { apiConfigCacheService } from '@/cacheService';
 import { createLogger } from '@/lib/logger';
 import { Tenant } from '@/payload/payload-types';
-import { CollectionAfterChangeHook } from 'payload';
 
 import { getEnabledLocalesKey } from '../utilities/getEnabledLocalesKey';
 

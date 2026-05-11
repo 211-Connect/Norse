@@ -1,7 +1,8 @@
 'use client';
 
-import { ANALYTICS_TREND_COLORS } from '@/app/(app)/shared/theme/theme-config';
 import React from 'react';
+
+import { ANALYTICS_TREND_COLORS } from '@/app/(app)/shared/theme/theme-config';
 
 export const StatCard = React.memo(function StatCard({
   label,

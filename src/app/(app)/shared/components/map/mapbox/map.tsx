@@ -1,15 +1,16 @@
 'use client';
 
+import mapboxgl, { LngLatBounds, LngLatLike, Marker, Popup } from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
+import { useEffect, useRef, useState } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+
 import {
   MAPBOX_API_KEY,
   MAPBOX_STYLE_URL,
 } from '@/app/(app)/shared/lib/constants';
 import { createLogger } from '@/lib/logger';
 import { isValidCoordinate } from '@/utils/isValidCoordinate';
-import mapboxgl, { LngLatBounds, LngLatLike, Marker, Popup } from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
-import { useEffect, useRef, useState } from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
 
 import { MapErrorFallback } from '../map-error-fallback';
 import {

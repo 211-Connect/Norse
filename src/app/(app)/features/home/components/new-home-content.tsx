@@ -1,9 +1,5 @@
 'use client';
 
-import { Image } from '@/app/(app)/shared/components/image';
-import { Link } from '@/app/(app)/shared/components/link';
-import { MainSearchLayout } from '@/app/(app)/shared/components/search/main-search-layout/main-search-layout';
-import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import {
   LayoutGrid,
   Mail,
@@ -13,6 +9,11 @@ import {
 } from 'lucide-react';
 import { ReactElement, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { Image } from '@/app/(app)/shared/components/image';
+import { Link } from '@/app/(app)/shared/components/link';
+import { MainSearchLayout } from '@/app/(app)/shared/components/search/main-search-layout/main-search-layout';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 
 import Alert from './alert';
 
@@ -32,7 +33,7 @@ export function NewHomeContent() {
               ns: 'page-home',
             });
 
-          let icon: ReactElement | null = null;
+          let icon: ReactElement | null;
 
           if (customImg) {
             icon = (

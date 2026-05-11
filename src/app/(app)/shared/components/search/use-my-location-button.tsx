@@ -1,11 +1,12 @@
 'use client';
 
-import { createLogger } from '@/lib/logger';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { Locate } from 'lucide-react';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+
+import { createLogger } from '@/lib/logger';
 
 import { useAppConfig } from '../../hooks/use-app-config';
 import { useGeocodingAdapter } from '../../hooks/use-geocoding-adapter';

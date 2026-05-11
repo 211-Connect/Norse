@@ -1,9 +1,10 @@
 'use client';
 
+import { type LucideIcon } from 'lucide-react';
+
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
 import { parseHtml } from '@/app/(app)/shared/lib/parse-html';
 import { cn } from '@/app/(app)/shared/lib/utils';
-import { type LucideIcon } from 'lucide-react';
 
 export interface DatumProps {
   id?: string | null;

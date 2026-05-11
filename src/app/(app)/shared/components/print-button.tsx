@@ -1,10 +1,11 @@
 'use client';
 
-import { Button } from '@/app/(app)/shared/components/ui/button';
-import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
 import { Printer } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useReactToPrint } from 'react-to-print';
+
+import { Button } from '@/app/(app)/shared/components/ui/button';
+import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
 
 export function PrintButton({ componentToPrintRef }) {
   const { t } = useTranslation('common');

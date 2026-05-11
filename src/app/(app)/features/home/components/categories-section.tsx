@@ -1,5 +1,8 @@
 'use client';
 
+import { ChevronLeft, ExternalLink } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+
 import { Image } from '@/app/(app)/shared/components/image';
 import { Link } from '@/app/(app)/shared/components/link';
 import { Button } from '@/app/(app)/shared/components/ui/button';
@@ -11,8 +14,6 @@ import { useTopics } from '@/app/(app)/shared/hooks/use-topics';
 import { NEW_TAB_WARNING } from '@/app/(app)/shared/lib/constants';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { Topic } from '@/types/topics';
-import { ChevronLeft, ExternalLink } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 
 type Props = {
   topic: Topic;

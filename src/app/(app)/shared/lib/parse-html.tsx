@@ -1,5 +1,6 @@
-import { createLogger } from '@/lib/logger';
 import parse from 'html-react-parser';
+
+import { createLogger } from '@/lib/logger';
 
 import { normalizeStructuredContent } from './html-helpers';
 
@@ -17,7 +18,7 @@ export function markdownLinksToHtml(text: string): string {
 export function linkifyHtml(text: string): string {
   if (!text) return '';
 
-  const urlRegex = /((https?:\/\/|www\.)[^\s<>()]+[^\s<>()\.,;!?])/gi;
+  const urlRegex = /((https?:\/\/|www\.)[^\s<>()]+[^\s<>().,;!?])/gi;
 
   return text
     .split(/(<a [^>]+>.*?<\/a>)/gi)

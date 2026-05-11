@@ -1,7 +1,8 @@
+import { ComponentType } from 'react';
+
 import { ResultType } from '@/app/(app)/shared/store/results';
 import { AppConfig } from '@/types/appConfig';
 import { getBadgesForResource } from '@/utils/getBadgesForResource';
-import { ComponentType } from 'react';
 
 import { SeparatorComponent } from '../../resource/components/resource-components';
 import { SearchCardComponentId } from '../types/card-component-ids';
@@ -63,7 +64,7 @@ export function shouldSearchCardComponentRender(
   switch (componentId) {
     case SearchCardComponentId.SEPARATOR:
       return true;
-    case SearchCardComponentId.BADGES:
+    case SearchCardComponentId.BADGES: {
       const badges = getBadgesForResource(
         appConfig.badges,
         result.facets,
@@ -72,6 +73,7 @@ export function shouldSearchCardComponentRender(
       const showComponent = badges.length > 0 || result.priority === 1;
 
       return showComponent;
+    }
     case SearchCardComponentId.ADDRESS:
       return true; // Component handles unavailable addresses
     case SearchCardComponentId.ATTRIBUTION:

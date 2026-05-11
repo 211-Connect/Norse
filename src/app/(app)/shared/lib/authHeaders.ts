@@ -1,5 +1,6 @@
-import { createLogger } from '@/lib/logger';
 import { cookies } from 'next/headers';
+
+import { createLogger } from '@/lib/logger';
 
 import { getSession } from '../utils/getServerSession';
 import { SESSION_ID } from './constants';

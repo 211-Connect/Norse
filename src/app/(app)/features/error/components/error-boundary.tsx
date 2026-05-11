@@ -1,12 +1,13 @@
 'use client';
 
 /* eslint-disable @next/next/no-html-link-for-pages */
+import Image from 'next/image';
+import React, { ReactNode } from 'react';
+
 import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import { fetchWrapper } from '@/app/(app)/shared/lib/fetchWrapper';
 import { getImageUrl } from '@/app/(app)/shared/utils/getImageUrl';
 import { createLogger } from '@/lib/logger';
-import Image from 'next/image';
-import React, { ReactNode } from 'react';
 
 const log = createLogger('error-boundary');
 

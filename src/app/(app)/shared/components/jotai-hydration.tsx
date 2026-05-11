@@ -1,5 +1,9 @@
 'use client';
 
+import { deleteCookie, setCookie } from 'cookies-next';
+import { useAtomValue } from 'jotai';
+import { useEffect, useMemo } from 'react';
+
 import { useHydrateAndSyncAtoms } from '@/app/(app)/shared/hooks/use-hydrate-and-sync-atoms';
 import {
   filtersAtom,
@@ -12,9 +16,6 @@ import {
   searchCoordinatesAtom,
   userCoordinatesAtom,
 } from '@/app/(app)/shared/store/search';
-import { deleteCookie, setCookie } from 'cookies-next';
-import { useAtomValue } from 'jotai';
-import { useEffect, useMemo } from 'react';
 
 import { useAppConfig } from '../hooks/use-app-config';
 import {

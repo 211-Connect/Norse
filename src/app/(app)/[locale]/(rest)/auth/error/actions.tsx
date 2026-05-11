@@ -1,7 +1,8 @@
 'use client';
 
-import { Button } from '@/app/(app)/shared/components/ui/button';
 import { signOut } from 'next-auth/react';
+
+import { Button } from '@/app/(app)/shared/components/ui/button';
 
 type AuthErrorActionsProps = {
   keycloakLogoutPath: string;

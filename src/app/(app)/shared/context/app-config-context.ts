@@ -1,7 +1,8 @@
 'use client';
 
-import { AppConfig } from '@/types/appConfig';
 import { createContext } from 'react';
+
+import { AppConfig } from '@/types/appConfig';
 
 const appConfigContext = createContext<AppConfig | null>(null);
 

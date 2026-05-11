@@ -1,3 +1,7 @@
+import { cookies, headers } from 'next/headers';
+import { TypedLocale } from 'payload';
+import { cache } from 'react';
+
 import { findResourceDirectoryByHost } from '@/payload/collections/ResourceDirectories/actions';
 import { defaultLocale } from '@/payload/i18n/locales';
 import {
@@ -6,9 +10,6 @@ import {
   TenantMedia,
 } from '@/payload/payload-types';
 import { AppConfig } from '@/types/appConfig';
-import { cookies, headers } from 'next/headers';
-import { TypedLocale } from 'payload';
-import { cache } from 'react';
 
 import { DEFAULT_RESOURCE_LAYOUT } from '../../features/resource/types/layout-config';
 import { DEFAULT_SEARCH_CARD_LAYOUT } from '../../features/search/types/card-layout-config';

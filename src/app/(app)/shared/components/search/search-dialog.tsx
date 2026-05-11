@@ -5,6 +5,7 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { ChevronLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import {
+  KeyboardEvent,
   SubmitEventHandler,
   useCallback,
   useEffect,
@@ -218,7 +219,7 @@ export function SearchDialog({
   }, [restoreFocusElement, setOpen]);
 
   const handleDialogKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLDivElement>) => {
+    (event: KeyboardEvent<HTMLDivElement>) => {
       if (event.key === 'Escape') {
         event.preventDefault();
         closeDialog();

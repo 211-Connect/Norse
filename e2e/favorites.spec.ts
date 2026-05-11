@@ -5,7 +5,6 @@ import {
   expectPageUrl,
   filterFavoritesDialogLists,
   getFavoritesDialogListActionButton,
-  goHome,
   goToFavorites,
   loginViaKeycloak,
   performSearch,

@@ -1,6 +1,7 @@
+import { ComponentType } from 'react';
+
 import { AppConfig } from '@/types/appConfig';
 import { Resource } from '@/types/resource';
-import { ComponentType } from 'react';
 
 import { ResourceComponentId } from '../types/component-ids';
 import { CustomAttributeConfig } from '../types/layout-config';
@@ -174,24 +175,26 @@ export function shouldComponentRender(
         resource.location.coordinates &&
         resource.location.coordinates.length === 2,
       );
-    case ResourceComponentId.FACETS:
+    case ResourceComponentId.FACETS: {
       if (!resource.facets || !resource.facets.length) {
         return false;
       }
       const facets = getFacets(resource, appConfig.search.facets);
 
       return Boolean(facets);
+    }
     case ResourceComponentId.ORGANIZATION:
       return Boolean(
         resource.organizationName || resource.organizationDescription,
       );
-    case ResourceComponentId.CUSTOM_ATTRIBUTE:
+    case ResourceComponentId.CUSTOM_ATTRIBUTE: {
       const shouldRender = getCustomAttributeProps({
         resource,
         customAttribute,
       });
 
       return Boolean(shouldRender);
+    }
     default:
       return true;
   }

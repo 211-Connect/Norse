@@ -1,7 +1,8 @@
+import { TypedLocale } from 'payload';
+
 import { findTenantByHost } from '@/payload/collections/Tenants/actions';
 import { withCache } from '@/utilities/withCache';
 import { normalizeAllowedEmailDomains } from '@/utils/normalizeAllowedEmailDomains';
-import { TypedLocale } from 'payload';
 
 export type TenantBasicConfigResponse = {
   enabledLocales: TypedLocale[];

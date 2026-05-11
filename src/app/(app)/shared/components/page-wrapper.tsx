@@ -1,8 +1,9 @@
 'use client';
 
-import { ErrorBoundary } from '@/app/(app)/features/error/components/error-boundary';
 import { TmpCookiesObj } from 'cookies-next';
 import { PropsWithChildren } from 'react';
+
+import { ErrorBoundary } from '@/app/(app)/features/error/components/error-boundary';
 
 import { useAppConfig } from '../hooks/use-app-config';
 import TranslationsProvider from '../i18n/TranslationsProvider';

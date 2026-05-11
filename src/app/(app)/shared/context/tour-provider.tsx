@@ -1,6 +1,5 @@
 'use client';
 
-import { getScrollbarWidth } from '@/app/(app)/shared/lib/utils';
 import {
   type ProviderProps,
   TourProvider as ReactourProvider,
@@ -13,6 +12,8 @@ import {
   useRef,
 } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { getScrollbarWidth } from '@/app/(app)/shared/lib/utils';
 
 import { ACCESSIBLE_TOUR_ACCENT } from '../theme/theme-config';
 

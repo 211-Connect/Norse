@@ -1,9 +1,10 @@
 'use client';
 
-import { Resource } from '@/types/resource';
 import { Phone, Printer } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { Resource } from '@/types/resource';
 
 import { UmamiEvent, trackUmamiEvent } from '../../../../shared/lib/umami';
 import { Datum } from '../datum';

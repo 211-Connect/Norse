@@ -1,5 +1,6 @@
-import { createLogger } from '@/lib/logger';
 import { Redis } from 'ioredis';
+
+import { createLogger } from '@/lib/logger';
 
 const log = createLogger('cache');
 
@@ -255,5 +256,6 @@ if (typeof process !== 'undefined' && !cleanupRegistered) {
 
   process.once('SIGTERM', cleanup);
   process.once('SIGINT', cleanup);
+  // eslint-disable-next-line no-useless-assignment
   cleanupRegistered = true;
 }

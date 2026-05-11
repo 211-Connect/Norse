@@ -1,8 +1,9 @@
 'use client';
 
+import { useTranslation } from 'react-i18next';
+
 import { ResultType } from '@/app/(app)/shared/store/results';
 import { Resource } from '@/types/resource';
-import { useTranslation } from 'react-i18next';
 
 import { Datum } from '../datum';
 

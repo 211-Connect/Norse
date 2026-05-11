@@ -1,5 +1,6 @@
-import { GeocodeResult } from '@/types/resource';
 import { deleteCookie, setCookie } from 'cookies-next/client';
+
+import { GeocodeResult } from '@/types/resource';
 
 import {
   USER_PREF_COORDS,

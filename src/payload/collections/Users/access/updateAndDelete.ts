@@ -1,5 +1,6 @@
-import { getUserTenantIDs } from '@/payload/utilities/getUserTenantIDs';
 import type { Access } from 'payload';
+
+import { getUserTenantIDs } from '@/payload/utilities/getUserTenantIDs';
 
 import { isAccessingSelf } from './isAccessingSelf';
 import { isSuperAdmin, isSupport } from './roles';

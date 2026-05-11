@@ -1,6 +1,7 @@
-import { createLogger } from '@/lib/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { collectDefaultMetrics, register } from 'prom-client';
+
+import { createLogger } from '@/lib/logger';
 
 const log = createLogger('metrics');
 

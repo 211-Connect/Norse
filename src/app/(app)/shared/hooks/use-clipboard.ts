@@ -1,7 +1,8 @@
 'use client';
 
-import { createLogger } from '@/lib/logger';
 import { useCallback, useState } from 'react';
+
+import { createLogger } from '@/lib/logger';
 
 const log = createLogger('use-clipboard');
 

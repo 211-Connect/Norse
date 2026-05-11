@@ -1,13 +1,14 @@
 'use client';
 
+import { useField } from '@payloadcms/ui';
+import { Code, Eye, GripVertical, Plus, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
 import type { FilterCondition } from '@/utils/badgeFilterEvaluator';
 import {
   parseFilter,
   validateFilterStructure,
 } from '@/utils/badgeFilterEvaluator';
-import { useField } from '@payloadcms/ui';
-import { Code, Eye, GripVertical, Plus, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
 
 import './style.css';
 

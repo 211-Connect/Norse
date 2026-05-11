@@ -1,6 +1,7 @@
-import { createLogger } from '@/lib/logger';
 import { randomUUID } from 'crypto';
 import type { Endpoint } from 'payload';
+
+import { createLogger } from '@/lib/logger';
 
 import { isSuperAdmin } from '../collections/Users/access/roles';
 import { ResourceDirectory, Tenant } from '../payload-types';
