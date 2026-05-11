@@ -1,6 +1,7 @@
+import { NextResponse } from 'next/server';
+
 import { createLogger } from '@/lib/logger';
 import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
-import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 

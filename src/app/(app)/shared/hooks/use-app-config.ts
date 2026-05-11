@@ -1,5 +1,6 @@
-import { AppConfig } from '@/types/appConfig';
 import { useContext } from 'react';
+
+import { AppConfig } from '@/types/appConfig';
 
 import { appConfigContext } from '../context/app-config-context';
 

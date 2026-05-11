@@ -1,6 +1,7 @@
+import { ComponentType } from 'react';
+
 import { AppConfig } from '@/types/appConfig';
 import { Resource } from '@/types/resource';
-import { ComponentType } from 'react';
 
 import { ResourceComponentId } from '../types/component-ids';
 import { CustomAttributeConfig } from '../types/layout-config';

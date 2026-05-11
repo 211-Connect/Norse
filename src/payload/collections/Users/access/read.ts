@@ -1,8 +1,9 @@
+import { getTenantFromCookie } from '@payloadcms/plugin-multi-tenant/utilities';
+import type { Access, Where } from 'payload';
+
 import type { User } from '@/payload/payload-types';
 import { getCollectionIDType } from '@/payload/utilities/getCollectionIDType';
 import { getUserTenantIDs } from '@/payload/utilities/getUserTenantIDs';
-import { getTenantFromCookie } from '@payloadcms/plugin-multi-tenant/utilities';
-import type { Access, Where } from 'payload';
 
 import { isAccessingSelf } from './isAccessingSelf';
 import { isSuperAdmin, isSupport } from './roles';

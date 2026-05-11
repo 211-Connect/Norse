@@ -1,5 +1,6 @@
-import { defaultLocale, locales } from '@/payload/i18n/locales';
 import type { CollectionConfig } from 'payload';
+
+import { defaultLocale, locales } from '@/payload/i18n/locales';
 
 import { invalidateApiCache } from '../ResourceDirectories/hooks/invalidateApiCache';
 import {

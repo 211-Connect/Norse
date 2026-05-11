@@ -1,5 +1,6 @@
-import type { User } from '@/payload/payload-types';
 import type { Access } from 'payload';
+
+import type { User } from '@/payload/payload-types';
 
 import { isSuperAdmin, isSupport } from './roles';
 

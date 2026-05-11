@@ -1,7 +1,8 @@
 'use client';
 
-import { DEFAULT_RESOURCE_LAYOUT } from '@/app/(app)/features/resource/types/layout-config';
 import { Button, CheckboxInput, useField } from '@payloadcms/ui';
+
+import { DEFAULT_RESOURCE_LAYOUT } from '@/app/(app)/features/resource/types/layout-config';
 
 import './UseCustomLayoutField.css';
 

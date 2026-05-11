@@ -1,12 +1,13 @@
 'use client';
 
+import { useAtomValue } from 'jotai';
+
 import { CustomPagination } from '@/app/(app)/shared/components/custom-pagination';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import {
   resultTotalAtom,
   resultsCurrentPageAtom,
 } from '@/app/(app)/shared/store/results';
-import { useAtomValue } from 'jotai';
 
 export function ResultsPagination() {
   const appConfig = useAppConfig();

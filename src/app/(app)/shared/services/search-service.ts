@@ -1,5 +1,7 @@
 'use server';
 
+import qs from 'qs';
+
 import { createLogger } from '@/lib/logger';
 import { BBox } from '@/types/resource';
 import {
@@ -10,7 +12,6 @@ import {
 } from '@/types/search';
 import { stableHash, withCache } from '@/utilities/withCache';
 import { ensureUrlProtocol } from '@/utils';
-import qs from 'qs';
 
 import { API_URL, INTERNAL_API_KEY } from '../lib/constants';
 import { fetchWrapper } from '../lib/fetchWrapper';

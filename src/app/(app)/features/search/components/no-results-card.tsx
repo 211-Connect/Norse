@@ -1,5 +1,10 @@
 'use client';
 
+import { Phone } from 'lucide-react';
+import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
+
 import { LocalizedLink } from '@/app/(app)/shared/components/LocalizedLink';
 import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import {
@@ -13,10 +18,6 @@ import {
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { getImageUrl } from '@/app/(app)/shared/utils/getImageUrl';
-import { Phone } from 'lucide-react';
-import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
-import { useTranslation } from 'react-i18next';
 
 export function NoResultsCard() {
   const { t } = useTranslation('page-search');

@@ -1,5 +1,13 @@
 'use client';
 
+import { useAtom, useAtomValue } from 'jotai';
+import { Filter } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useTopLoader } from 'nextjs-toploader';
+import qs from 'qs';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { MainSearchLayout } from '@/app/(app)/shared/components/search/main-search-layout/main-search-layout';
 import { Badge } from '@/app/(app)/shared/components/ui/badge';
 import { Button } from '@/app/(app)/shared/components/ui/button';
@@ -18,13 +26,6 @@ import { HEADER_ID } from '@/app/(app)/shared/lib/constants';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { filtersAtom, filtersOpenAtom } from '@/app/(app)/shared/store/results';
 import { FiltersMap } from '@/types/search';
-import { useAtom, useAtomValue } from 'jotai';
-import { Filter } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useTopLoader } from 'nextjs-toploader';
-import qs from 'qs';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
 const MAX_VISIBLE_FILTERS = 6;
 const SEARCH_RESULTS_HEADING_ID = 'search-results-heading';

@@ -1,5 +1,6 @@
-import { generateUrlFields } from '@/payload/fields/urlField';
 import { Tab } from 'payload';
+
+import { generateUrlFields } from '@/payload/fields/urlField';
 
 import {
   superAdminAccess,

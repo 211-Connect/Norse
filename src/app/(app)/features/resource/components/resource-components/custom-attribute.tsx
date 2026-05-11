@@ -1,11 +1,12 @@
 'use client';
 
+import { cache } from 'react';
+
 import { useIconComponent } from '@/app/(app)/shared/hooks/useIconComponent';
 import { ResultType } from '@/app/(app)/shared/store/results';
 import { createLogger } from '@/lib/logger';
 import { Resource } from '@/types/resource';
 import { interpolateResourceProperties } from '@/utils/interpolateResourceProperties';
-import { cache } from 'react';
 
 import { ResourceComponentProps } from '../component-registry';
 import { Datum } from '../datum';

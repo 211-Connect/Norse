@@ -1,4 +1,3 @@
-import { getNumberFromString } from '@/utils/getNumberFromString';
 import { postgresAdapter } from '@payloadcms/db-postgres';
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer';
 import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant';
@@ -8,6 +7,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Endpoint, buildConfig } from 'payload';
 import sharp from 'sharp';
+
+import { getNumberFromString } from '@/utils/getNumberFromString';
 
 import { OrchestrationConfig } from './collections/OrchestrationConfig';
 import { ResourceDirectories } from './collections/ResourceDirectories';

@@ -1,5 +1,10 @@
 'use client';
 
+import { useAtomValue } from 'jotai';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useTopLoader } from 'nextjs-toploader';
+import { useTranslation } from 'react-i18next';
+
 import { Label } from '@/app/(app)/shared/components/ui/label';
 import {
   Select,
@@ -14,10 +19,6 @@ import {
   SortOption,
   getSortOption,
 } from '@/app/(app)/shared/utils/getSortOption';
-import { useAtomValue } from 'jotai';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useTopLoader } from 'nextjs-toploader';
-import { useTranslation } from 'react-i18next';
 
 const SORT_LABEL: Record<SortOption, string> = {
   relevance: 'Most Relevant',

@@ -1,5 +1,6 @@
-import { FacetWithTranslation, Location, Taxonomy } from '@/types/resource';
 import { atom } from 'jotai';
+
+import { FacetWithTranslation, Location, Taxonomy } from '@/types/resource';
 
 export type ResultType = {
   _id: string;

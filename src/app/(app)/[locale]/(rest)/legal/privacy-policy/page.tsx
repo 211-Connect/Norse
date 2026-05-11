@@ -1,9 +1,10 @@
-import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
-import initTranslations from '@/app/(app)/shared/i18n/i18n';
-import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { getCookies } from 'cookies-next/server';
 import { cookies, headers } from 'next/headers';
 import { notFound } from 'next/navigation';
+
+import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
+import initTranslations from '@/app/(app)/shared/i18n/i18n';
+import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 
 const i18nNamespaces = ['common', 'page-404'];
 

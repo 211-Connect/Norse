@@ -1,5 +1,6 @@
-import { createLogger } from '@/lib/logger';
 import type { TaskConfig } from 'payload';
+
+import { createLogger } from '@/lib/logger';
 
 import {
   findResourceDirectoryByHost,

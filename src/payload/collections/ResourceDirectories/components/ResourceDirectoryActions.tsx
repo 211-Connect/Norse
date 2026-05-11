@@ -1,8 +1,9 @@
 'use client';
 
-import { createLogger } from '@/lib/logger';
 import { Button, toast, useField } from '@payloadcms/ui';
 import React, { useState } from 'react';
+
+import { createLogger } from '@/lib/logger';
 
 import { getTenantTrustedDomain } from '../../Tenants/actions/getTenantTrustedDomain';
 import { TranslateButton } from './TranslateButton';

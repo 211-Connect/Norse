@@ -1,11 +1,12 @@
 'use client';
 
-import { Typography } from '@/app/(app)/shared/components/ui/typography';
-import { UmamiEvent, trackUmamiEvent } from '@/app/(app)/shared/lib/umami';
-import { Resource } from '@/types/resource';
 import { IdCard, Phone, Send, UserRound } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { Typography } from '@/app/(app)/shared/components/ui/typography';
+import { UmamiEvent, trackUmamiEvent } from '@/app/(app)/shared/lib/umami';
+import { Resource } from '@/types/resource';
 
 import { Datum } from '../datum';
 

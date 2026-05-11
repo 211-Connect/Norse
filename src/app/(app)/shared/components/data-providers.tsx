@@ -1,7 +1,8 @@
 'use client';
 
-import { Image } from '@/app/(app)/shared/components/image';
 import { useTranslation } from 'react-i18next';
+
+import { Image } from '@/app/(app)/shared/components/image';
 
 import { useAppConfig } from '../hooks/use-app-config';
 import { cn } from '../lib/utils';

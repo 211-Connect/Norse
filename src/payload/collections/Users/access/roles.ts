@@ -1,5 +1,6 @@
-import { User } from '@/payload/payload-types';
 import type { PayloadRequest } from 'payload';
+
+import { User } from '@/payload/payload-types';
 
 export const isSuperAdmin = (user: Pick<User, 'roles'> | null): boolean => {
   return Boolean(user?.roles?.includes('super-admin'));

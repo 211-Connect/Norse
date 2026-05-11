@@ -1,12 +1,13 @@
 'use client';
 
+import { useAtomValue } from 'jotai';
+import { useTranslation } from 'react-i18next';
+
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import {
   resultTotalAtom,
   resultsCurrentPageAtom,
 } from '@/app/(app)/shared/store/results';
-import { useAtomValue } from 'jotai';
-import { useTranslation } from 'react-i18next';
 
 export function ResultTotal() {
   const { t } = useTranslation('page-search');

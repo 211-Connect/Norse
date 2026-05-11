@@ -1,6 +1,7 @@
+import { get } from 'radash';
+
 import { ResultType } from '@/app/(app)/shared/store/results';
 import { Resource } from '@/types/resource';
-import { get } from 'radash';
 
 export function interpolateResourceProperties(
   template: string | null | undefined,

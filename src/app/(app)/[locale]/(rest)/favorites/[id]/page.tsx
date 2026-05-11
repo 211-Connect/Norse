@@ -1,3 +1,8 @@
+import { getCookies } from 'cookies-next/server';
+import { cookies, headers } from 'next/headers';
+import { notFound, redirect } from 'next/navigation';
+import { Metadata } from 'next/types';
+
 import { FavoriteMapContainer } from '@/app/(app)/features/favorites/components/favorite-map-container';
 import { FavoritesSection } from '@/app/(app)/features/favorites/components/favorites-section';
 import { DEFAULT_SEARCH_CARD_LAYOUT } from '@/app/(app)/features/search/types/card-layout-config';
@@ -6,10 +11,6 @@ import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { getFavoriteList } from '@/app/(app)/shared/serverActions/favorites/getFavoriteList';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { getSession } from '@/app/(app)/shared/utils/getServerSession';
-import { getCookies } from 'cookies-next/server';
-import { cookies, headers } from 'next/headers';
-import { notFound, redirect } from 'next/navigation';
-import { Metadata } from 'next/types';
 
 const i18nNamespaces = ['page-favorites', 'page-list', 'common'];
 

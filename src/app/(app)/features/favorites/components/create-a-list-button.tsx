@@ -1,15 +1,16 @@
 'use client';
 
-import { CreateFavoriteListDialog } from '@/app/(app)/shared/components/create-favorite-list-dialog';
-import { Button } from '@/app/(app)/shared/components/ui/button';
-import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
-import { cn } from '@/app/(app)/shared/lib/utils';
-import { favoriteListsStateAtom } from '@/app/(app)/shared/store/favorites';
 import { useAtomValue } from 'jotai';
 import { PlusIcon } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { CreateFavoriteListDialog } from '@/app/(app)/shared/components/create-favorite-list-dialog';
+import { Button } from '@/app/(app)/shared/components/ui/button';
+import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
+import { cn } from '@/app/(app)/shared/lib/utils';
+import { favoriteListsStateAtom } from '@/app/(app)/shared/store/favorites';
 
 export function CreateAListButton({ className = '' }: { className?: string }) {
   const { t } = useTranslation('common');

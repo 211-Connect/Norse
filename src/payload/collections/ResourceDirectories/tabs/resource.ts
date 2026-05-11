@@ -1,7 +1,8 @@
-import { ResourceComponentId } from '@/app/(app)/features/resource/types/component-ids';
-import { ResourceDirectory } from '@/payload/payload-types';
 import { Field, Tab } from 'payload';
 import { title } from 'radash';
+
+import { ResourceComponentId } from '@/app/(app)/features/resource/types/component-ids';
+import { ResourceDirectory } from '@/payload/payload-types';
 
 import { superAdminOrSupportOrTenantAccess } from '../../Users/access/roles';
 import { customAttributeFields } from '../fields/customAttributeFields';

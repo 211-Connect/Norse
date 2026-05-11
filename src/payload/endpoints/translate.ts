@@ -1,5 +1,6 @@
-import { createLogger } from '@/lib/logger';
 import { Endpoint } from 'payload';
+
+import { createLogger } from '@/lib/logger';
 
 import {
   isSuperAdmin,

@@ -1,8 +1,9 @@
 'use client';
 
-import { Resource } from '@/types/resource';
 import { Languages } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+
+import { Resource } from '@/types/resource';
 
 import { Datum } from '../datum';
 

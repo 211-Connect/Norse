@@ -1,9 +1,10 @@
 'use client';
 
-import { SUPPORTED_ICONS, SUPPORTED_ICON_NAMES } from '@/utils/supportedIcons';
 import { useField } from '@payloadcms/ui';
 import { Info } from 'lucide-react';
 import { useMemo, useRef, useState } from 'react';
+
+import { SUPPORTED_ICONS, SUPPORTED_ICON_NAMES } from '@/utils/supportedIcons';
 
 import './styles.css';
 

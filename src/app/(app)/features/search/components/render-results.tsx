@@ -1,7 +1,8 @@
 'use client';
 
-import { resultsAtom } from '@/app/(app)/shared/store/results';
 import { useAtomValue } from 'jotai';
+
+import { resultsAtom } from '@/app/(app)/shared/store/results';
 
 import { SearchCardLayoutConfig } from '../types/card-layout-config';
 import { CardLayoutRenderer } from './card-layout-renderer';

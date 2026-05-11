@@ -1,14 +1,15 @@
 'use client';
 
+import { type StepType, useTour } from '@reactour/tour';
+import { useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { Image } from '@/app/(app)/shared/components/image';
 import { MainSearchLayout } from '@/app/(app)/shared/components/search/main-search-layout/main-search-layout';
 import { Button } from '@/app/(app)/shared/components/ui/button';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
 import { createTourEvent } from '@/app/(app)/shared/lib/google-tag-manager';
-import { type StepType, useTour } from '@reactour/tour';
-import { useCallback, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
 
 type TourPositionPreference = 'above' | 'below';
 

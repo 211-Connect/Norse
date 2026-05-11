@@ -1,6 +1,5 @@
 'use client';
 
-import { createLogger } from '@/lib/logger';
 import { useLocale } from '@payloadcms/ui';
 import {
   ReactNode,
@@ -9,6 +8,8 @@ import {
   useEffect,
   useState,
 } from 'react';
+
+import { createLogger } from '@/lib/logger';
 
 import { getEnglishData } from '../actions/getEnglishData';
 

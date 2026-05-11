@@ -1,8 +1,5 @@
 'use client';
 
-import { MAPLIBRE_STYLE_URL } from '@/app/(app)/shared/lib/constants';
-import { createLogger } from '@/lib/logger';
-import { isValidCoordinate } from '@/utils/isValidCoordinate';
 import { X } from 'lucide-react';
 import mapLibreGl, {
   AttributionControl,
@@ -15,6 +12,10 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { Protocol } from 'pmtiles';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+
+import { MAPLIBRE_STYLE_URL } from '@/app/(app)/shared/lib/constants';
+import { createLogger } from '@/lib/logger';
+import { isValidCoordinate } from '@/utils/isValidCoordinate';
 
 import { MapErrorFallback } from '../map-error-fallback';
 import {

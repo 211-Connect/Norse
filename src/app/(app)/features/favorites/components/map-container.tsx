@@ -1,11 +1,12 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { MapRenderer } from '@/app/(app)/shared/components/map/map-renderer';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { HEADER_ID } from '@/app/(app)/shared/lib/constants';
 import { cn } from '@/app/(app)/shared/lib/utils';
-import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
 export function MapContainer() {
   const appConfig = useAppConfig();
