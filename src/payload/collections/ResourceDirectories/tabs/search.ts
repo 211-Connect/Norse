@@ -266,6 +266,20 @@ export const search: Tab = {
       ],
     },
     {
+      name: 'facetsImportExport',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: {
+            path: '@/payload/collections/ResourceDirectories/components/BulkCsvImportExport',
+            clientProps: {
+              kind: 'facets',
+            },
+          },
+        },
+      },
+    },
+    {
       name: 'facets',
       type: 'array',
       admin: {

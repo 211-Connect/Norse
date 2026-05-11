@@ -7,6 +7,7 @@ import { default as default_2ccbfbffeb17d03ee37dc047df75b328 } from '@/payload/c
 import { default as default_195dd2bf68ebc55b917ae596e82c7581 } from '@/payload/collections/ResourceDirectories/components/ResourceDirectoryActions'
 import { default as default_770fe60ed8029346277f652cebdaf650 } from '@/payload/components/LabelInfoTooltip'
 import { default as default_f772357a6881d7587c9d743ce8b90802 } from '@/payload/components/ColorPicker'
+import { default as default_6f3710df7542a6bbe74cd5ef05a7bbb5 } from '@/payload/collections/ResourceDirectories/components/BulkCsvImportExport'
 import { default as default_e1dfdb6347d608fbc226068dad2ea010 } from '@/payload/collections/ResourceDirectories/components/SuggestionsRowLabel'
 import { default as default_ca7d93146a02f18039f3d89f97316881 } from '@/payload/collections/ResourceDirectories/components/TopicsLabelInfoTooltip'
 import { default as default_765ef9987a5d1fd11dffcca1049fc6a0 } from '@/payload/collections/ResourceDirectories/components/TopicsRowLabel'
@@ -57,6 +58,7 @@ export const importMap = {
   "@/payload/collections/ResourceDirectories/components/ResourceDirectoryActions#default": default_195dd2bf68ebc55b917ae596e82c7581,
   "@/payload/components/LabelInfoTooltip#default": default_770fe60ed8029346277f652cebdaf650,
   "@/payload/components/ColorPicker#default": default_f772357a6881d7587c9d743ce8b90802,
+  "@/payload/collections/ResourceDirectories/components/BulkCsvImportExport#default": default_6f3710df7542a6bbe74cd5ef05a7bbb5,
   "@/payload/collections/ResourceDirectories/components/SuggestionsRowLabel#default": default_e1dfdb6347d608fbc226068dad2ea010,
   "@/payload/collections/ResourceDirectories/components/TopicsLabelInfoTooltip#default": default_ca7d93146a02f18039f3d89f97316881,
   "@/payload/collections/ResourceDirectories/components/TopicsRowLabel#default": default_765ef9987a5d1fd11dffcca1049fc6a0,
