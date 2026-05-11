@@ -89,7 +89,7 @@ export function JotaiHydration({ cookies = {}, pageProps }) {
     ) {
       deleteCookie(USER_PREF_COORDS, { path: '/' });
     }
-  }, [coordsKey]);
+  }, [cookies, coordsKey, pageProps]);
 
   useEffect(() => {
     if (pageProps?.location) {
@@ -97,7 +97,7 @@ export function JotaiHydration({ cookies = {}, pageProps }) {
         path: '/',
       });
     }
-  }, [locationKey]);
+  }, [locationKey, pageProps.location]);
 
   // Stable atom values — only recomputed when actual input values change
   const atomValues = useMemo(
