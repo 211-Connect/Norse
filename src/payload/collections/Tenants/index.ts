@@ -235,8 +235,15 @@ export const Tenants: CollectionConfig = {
           type: 'text',
         },
         {
-          name: 'umamiWebsiteId',
-          type: 'text',
+          name: 'umamiWebsiteIds',
+          type: 'array',
+          fields: [
+            {
+              name: 'websiteId',
+              type: 'text',
+              required: true,
+            },
+          ],
         },
       ],
     },

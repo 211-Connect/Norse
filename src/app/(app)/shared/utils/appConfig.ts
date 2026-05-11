@@ -39,6 +39,18 @@ function getTenantId(resourceDirectory: ResourceDirectory): string | undefined {
   return resourceDirectory.tenant?.id;
 }
 
+function getTenantMainUmamiWebsiteId(
+  resourceDirectory: ResourceDirectory,
+): string | undefined {
+  const websiteIds = getTenant(resourceDirectory)?.common?.umamiWebsiteIds;
+
+  if (!Array.isArray(websiteIds) || websiteIds.length === 0) {
+    return undefined;
+  }
+
+  return websiteIds[0]?.websiteId ?? undefined;
+}
+
 function getSmsConfig(resourceDirectory: ResourceDirectory): AppConfig['sms'] {
   const sms = getTenant(resourceDirectory)?.sms;
 
@@ -417,8 +429,7 @@ async function getAppConfigBase(
     i18n,
     matomoContainerUrl:
       getTenant(resourceDirectory)?.common?.matomoContainerUrl ?? undefined,
-    umamiWebsiteId:
-      getTenant(resourceDirectory)?.common?.umamiWebsiteId ?? undefined,
+    umamiWebsiteId: getTenantMainUmamiWebsiteId(resourceDirectory),
     meta: {
       description: resourceDirectory.brand.meta?.description ?? '',
       title: resourceDirectory.brand.meta?.title ?? '',

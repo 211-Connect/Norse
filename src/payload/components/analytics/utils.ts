@@ -12,6 +12,7 @@ export function buildProxyQuery(
   endAt: number,
   tenantId?: string | null,
   extra?: Record<string, string>,
+  websiteIds?: string[],
 ): string {
   const params = new URLSearchParams({
     endpoint,
@@ -20,6 +21,11 @@ export function buildProxyQuery(
     ...extra,
     ...(tenantId ? { tenantId } : {}),
   });
+
+  if (websiteIds && websiteIds.length > 0) {
+    params.set('websiteIds', websiteIds.join(','));
+  }
+
   return `/api/umami-proxy?${params.toString()}`;
 }
 
