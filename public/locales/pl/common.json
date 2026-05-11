@@ -159,7 +159,7 @@
     "provided_by": "Dane dostarczone przez"
   },
   "footer": {
-    "copyright": "© Prawa autorskie {{tekst}}"
+    "copyright": "© Prawa autorskie {{text}}"
   },
   "carousel": {
     "previous": "Poprzedni",

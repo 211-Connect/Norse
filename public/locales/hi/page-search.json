@@ -24,5 +24,5 @@
     }
   },
   "name_unavailable": "नाम उपलब्ध नहीं है",
-  "share_body": "\"{{title}}\" के लिए {{count}} खोज परिणाम देखें"
+  "share_body": "\"{{count}}\" के लिए {{title}} खोज परिणाम देखें"
 }

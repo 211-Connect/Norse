@@ -24,5 +24,5 @@
     }
   },
   "name_unavailable": "名前は不明です",
-  "share_body": "「{{title}}」の検索結果を{{count}}件ご覧ください。"
+  "share_body": "「{{count}}」の検索結果を{{title}}件ご覧ください。"
 }

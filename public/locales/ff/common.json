@@ -47,11 +47,11 @@
     "geocoding_unsupported": "Geolocation jaɓaaka e feerorde maa",
     "geocoding_unable_to_retrieve": "Waawaa heɓtude nokku maa. Tiiɗno ƴeewto dottaaɗe nokkuure feerorde maa, enndito-ɗaa kadi.",
     "categories": "Tiitooɗe",
-    "show_all": "Hollit fof ({{limto}})",
+    "show_all": "Hollit fof ({{count}})",
     "show_less": "Hollit ko famɗi",
     "query_input_label": "Yiylo jawdi",
     "location_input_label": "Yiylo nokku",
-    "change_location_label": "Waylu nokku: {{nokku}}",
+    "change_location_label": "Waylu nokku: {{location}}",
     "open_search_dialog": "Uddit kaɓirgol njiylawu",
     "list_status_one": "1 cuɓal ina woodi. Huutoro jokkorgal dow e les ngam ƴeewtaade.",
     "list_status_other": "{{limto}} cuɓe ina ngoodi. Huutoro jokkorgal dow e les ngam ƴeewtaade.",
@@ -159,18 +159,18 @@
     "provided_by": "Dataaji ɗi..."
   },
   "footer": {
-    "copyright": "© Hakkeeji {{binndol}}"
+    "copyright": "© Hakkeeji {{text}}"
   },
   "carousel": {
     "previous": "Je sali",
     "next": "Tokki",
     "go_to": "Yah to"
   },
-  "filter_results_count_one": "{{limto}} njeñtudi",
-  "filter_results_count_other": "{{limto}} njeñtudi ndii",
+  "filter_results_count_one": "{{count}} njeñtudi",
+  "filter_results_count_other": "{{count}} njeñtudi ndii",
   "autocomplete": {
-    "results_available_one": "{{limto}} njeñtudi ina woodi",
-    "results_available_other": "{{limto}} njeñtudi ina woodi",
+    "results_available_one": "{{count}} njeñtudi ina woodi",
+    "results_available_other": "{{count}} njeñtudi ina woodi",
     "no_results": "Alaa njeñtudi"
   },
   "auth_error": {

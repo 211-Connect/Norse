@@ -51,7 +51,7 @@
     "show_less": "ያነሰ አሳይ",
     "query_input_label": "ግብዓቶችን ይፈልጉ",
     "location_input_label": "አካባቢ ይፈልጉ",
-    "change_location_label": "አካባቢ ቀይር፦ {{አካባቢ}}",
+    "change_location_label": "አካባቢ ቀይር፦ {{location}}",
     "open_search_dialog": "የፍለጋ መገናኛውን ክፈት",
     "list_status_one": "1 አማራጭ ይገኛል። ለመገምገም ወደላይ እና ወደታች የቀስት ቁልፎችን ይጠቀሙ።",
     "list_status_other": "{{count}} አማራጮች አሉ። ለመገምገም ወደላይ እና ወደታች የቀስት ቁልፎችን ይጠቀሙ።",
