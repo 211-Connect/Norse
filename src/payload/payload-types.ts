@@ -422,7 +422,12 @@ export interface Tenant {
   common?: {
     gtmContainerId?: string | null;
     matomoContainerUrl?: string | null;
-    umamiWebsiteId?: string | null;
+    umamiWebsiteIds?:
+      | {
+          websiteId: string;
+          id?: string | null;
+        }[]
+      | null;
   };
   sms?: {
     smsProvider?: ('Twilio' | 'EMS') | null;
@@ -1206,7 +1211,12 @@ export interface TenantsSelect<T extends boolean = true> {
     | {
         gtmContainerId?: T;
         matomoContainerUrl?: T;
-        umamiWebsiteId?: T;
+        umamiWebsiteIds?:
+          | T
+          | {
+              websiteId?: T;
+              id?: T;
+            };
       };
   sms?:
     | T

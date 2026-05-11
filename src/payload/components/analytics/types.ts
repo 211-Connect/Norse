@@ -63,3 +63,18 @@ export interface UmamiStats {
   visitors: number;
   visits: number;
 }
+
+export interface AnalyticsMetrics {
+  searches: Metric;
+  resourceViews: Metric;
+  zeroResults: Metric;
+  directions: Metric;
+  phoneCalls: Metric;
+  websiteClicks: Metric;
+  widgetSearches: Metric;
+}
+
+export interface Metric {
+  current: number;
+  previous: number;
+}

@@ -4,7 +4,10 @@ import { useTenantSelection } from '@payloadcms/plugin-multi-tenant/client';
 import { useAtomValue } from 'jotai';
 import { useEffect, useState } from 'react';
 
-import { analyticsDateRangeAtom } from './DateRange';
+import {
+  analyticsDateRangeAtom,
+  analyticsSelectedWebsiteIdsAtom,
+} from './DateRange';
 import {
   type EventsData,
   type MetricsData,
@@ -31,17 +34,27 @@ export type AsyncData<T> = {
 function useAnalyticsParams(): {
   range: DateRange;
   tenantId: string | undefined;
+  websiteIds: string[];
 } {
   const range = useAtomValue(analyticsDateRangeAtom);
+  const websiteIds = useAtomValue(analyticsSelectedWebsiteIdsAtom);
   const { selectedTenantID } = useTenantSelection();
-  return { range, tenantId: selectedTenantID as string | undefined };
+  return {
+    range,
+    tenantId: selectedTenantID as string | undefined,
+    websiteIds,
+  };
 }
 
 function makeAsyncHook<T>(
-  fetcher: (range: DateRange, tenantId: string | undefined) => Promise<T>,
+  fetcher: (
+    range: DateRange,
+    tenantId: string | undefined,
+    websiteIds?: string[],
+  ) => Promise<T>,
 ) {
   return function useAsyncData(): AsyncData<T> {
-    const { range, tenantId } = useAnalyticsParams();
+    const { range, tenantId, websiteIds } = useAnalyticsParams();
     const [state, setState] = useState<AsyncData<T>>({
       loading: true,
       error: null,
@@ -50,8 +63,14 @@ function makeAsyncHook<T>(
 
     useEffect(() => {
       let cancelled = false;
+
+      if (!tenantId) {
+        setState({ loading: false, error: null, data: null });
+        return;
+      }
+
       setState({ loading: true, error: null, data: null });
-      fetcher(range, tenantId)
+      fetcher(range, tenantId, websiteIds)
         .then((data) => {
           if (!cancelled) setState({ loading: false, error: null, data });
         })
@@ -66,7 +85,7 @@ function makeAsyncHook<T>(
       return () => {
         cancelled = true;
       };
-    }, [range, tenantId]);
+    }, [range, tenantId, websiteIds]);
 
     return state;
   };

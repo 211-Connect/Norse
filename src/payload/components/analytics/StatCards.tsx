@@ -3,8 +3,7 @@
 import React from 'react';
 
 import { StatCard } from './StatCard';
-import type { UmamiStats } from './types';
-import type { AnalyticsMetrics, Metric } from './useAnalytics';
+import type { AnalyticsMetrics, Metric, UmamiStats } from './types';
 
 interface StatCardsProps {
   stats: UmamiStats;
