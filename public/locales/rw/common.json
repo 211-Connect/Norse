@@ -51,7 +51,7 @@
     "show_less": "Erekana bike",
     "query_input_label": "Shakisha amikoro",
     "location_input_label": "Shakisha ahantu runaka",
-    "change_location_label": "Hindura aho uherereye: {{aho uherereye}}",
+    "change_location_label": "Hindura aho uherereye: {{location}}",
     "open_search_dialog": "Fungura ikiganiro cy'ishakisha",
     "list_status_one": "Hari uburyo bumwe buhari. Koresha utubuto two hejuru no hasi kugira ngo urebe.",
     "list_status_other": "Amahitamo ya {{count}} arahari. Koresha utubuto two hejuru no hasi kugira ngo urebe.",

@@ -51,7 +51,7 @@
     "show_less": "Show less",
     "query_input_label": "Raadi kheyraad",
     "location_input_label": "Raadi goob",
-    "change_location_label": "Beddel goobta: {{goobta}}",
+    "change_location_label": "Beddel goobta: {{location}}",
     "open_search_dialog": "Fur wadahadalka raadinta",
     "list_status_one": "1 ikhtiyaar ayaa diyaar ah. Isticmaal furayaasha fallaadha kor iyo hoos si aad u eegto.",
     "list_status_other": "Ikhtiyaarada {{count}} ayaa diyaar ah. Isticmaal furayaasha fallaadha kor iyo hoos si aad u eegto.",
@@ -166,8 +166,8 @@
     "next": "Xiga",
     "go_to": "Tag"
   },
-  "filter_results_count_one": "Natiijadii {{tirinta}}",
-  "filter_results_count_other": "Natiijooyinka {{tirinta}}",
+  "filter_results_count_one": "Natiijadii {{count}}",
+  "filter_results_count_other": "Natiijooyinka {{count}}",
   "autocomplete": {
     "results_available_one": "{{count}} natiijo ayaa la heli karaa",
     "results_available_other": "Natiijooyinka {{count}} ayaa la heli karaa",

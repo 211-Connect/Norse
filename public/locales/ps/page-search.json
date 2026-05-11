@@ -24,5 +24,5 @@
     }
   },
   "name_unavailable": "نوم شتون نلري",
-  "share_body": "د \"{{title}}\" لپاره د {{count}} لټون پایلې وګورئ"
+  "share_body": "د \"{{count}}\" لپاره د {{title}} لټون پایلې وګورئ"
 }

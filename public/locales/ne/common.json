@@ -166,8 +166,8 @@
     "next": "अर्को",
     "go_to": "जाऊ त्यहाँ"
   },
-  "filter_results_count_one": "{{गणना}} परिणाम",
-  "filter_results_count_other": "{{गणना}} परिणामहरू",
+  "filter_results_count_one": "{{count}} परिणाम",
+  "filter_results_count_other": "{{count}} परिणामहरू",
   "autocomplete": {
     "results_available_one": "{{count}} नतिजा उपलब्ध छ",
     "results_available_other": "{{count}} परिणामहरू उपलब्ध छन्",

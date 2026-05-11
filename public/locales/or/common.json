@@ -51,7 +51,7 @@
     "show_less": "କମ୍ ଦେଖାନ୍ତୁ",
     "query_input_label": "ଉତ୍ସଗୁଡ଼ିକୁ ସନ୍ଧାନ କରନ୍ତୁ",
     "location_input_label": "ଏକ ଲୋକେସନ୍ ଖୋଜନ୍ତୁ",
-    "change_location_label": "ସ୍ଥାନ ପରିବର୍ତ୍ତନ କରନ୍ତୁ: {{ସ୍ଥାନ}}",
+    "change_location_label": "ସ୍ଥାନ ପରିବର୍ତ୍ତନ କରନ୍ତୁ: {{location}}",
     "open_search_dialog": "ସର୍ଚ୍ଚ ଡାଏଲଗ୍‌ ଖୋଲନ୍ତୁ",
     "list_status_one": "1ଟି ବିକଳ୍ପ ଉପଲବ୍ଧ ଅଛି। ସମୀକ୍ଷା କରିବାକୁ ଉପର ଏବଂ ତଳ ତୀର କୀ ବ୍ୟବହାର କରନ୍ତୁ।",
     "list_status_other": "{{count}} ବିକଳ୍ପ ଉପଲବ୍ଧ। ସମୀକ୍ଷା କରିବା ପାଇଁ ଉପର ଏବଂ ତଳ ତୀର କୀ ବ୍ୟବହାର କରନ୍ତୁ।",
@@ -159,15 +159,15 @@
     "provided_by": "ଦ୍ଵାରା ପ୍ରଦାନ କରାଯାଇଥିବା ଡାଟା"
   },
   "footer": {
-    "copyright": "© କପିରାଇଟ୍ {{ଟେକ୍ସଟ୍}}"
+    "copyright": "© କପିରାଇଟ୍ {{text}}"
   },
   "carousel": {
     "previous": "ପୂର୍ବବର୍ତ୍ତୀ",
     "next": "ପରବର୍ତ୍ତୀ",
     "go_to": "ଏଠାକୁ ଯାଆନ୍ତୁ"
   },
-  "filter_results_count_one": "{{ଗଣନା}} ଫଳାଫଳ",
-  "filter_results_count_other": "{{ଗଣନା}} ଫଳାଫଳ",
+  "filter_results_count_one": "{{count}} ଫଳାଫଳ",
+  "filter_results_count_other": "{{count}} ଫଳାଫଳ",
   "autocomplete": {
     "results_available_one": "{{count}} ଫଳାଫଳ ଉପଲବ୍ଧ ଅଛି",
     "results_available_other": "{{count}} ଫଳାଫଳ ଉପଲବ୍ଧ ଅଛି",
