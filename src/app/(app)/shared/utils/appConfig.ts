@@ -275,13 +275,6 @@ async function getAppConfigBase(
   }
 
   const i18n = getTenantI18n(resourceDirectory);
-  const errorNamespaces = ['page-500', 'common'];
-  const { resources } = await initTranslations(
-    locale,
-    errorNamespaces,
-    i18n.locales,
-    i18n.defaultLocale,
-  );
 
   // Fetch English resource directory for fallback if not English locale
   let englishResourceDirectory: ResourceDirectory | null = null;
@@ -370,11 +363,6 @@ async function getAppConfigBase(
       feedbackUrl: resourceDirectory.brand.feedbackUrl ?? undefined,
     },
     sms: getSmsConfig(resourceDirectory),
-    errorTranslationData: {
-      errorNamespaces,
-      resources,
-      locale,
-    },
     featureFlags: {
       requireUserLocation:
         resourceDirectory.featureFlags?.requireUserLocation ?? false,

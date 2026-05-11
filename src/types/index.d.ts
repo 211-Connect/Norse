@@ -29,6 +29,7 @@ declare global {
       STRAPI_TOKEN?: string;
 
       // Payload
+      PAYLOAD_APP_CONFIG_API_KEY?: string;
       PAYLOAD_API_ROUTE_SECRET?: string;
       PAYLOAD_SECRET?: string;
       DATABASE_URI?: string;
@@ -39,6 +40,13 @@ declare global {
       MEDIA_S3_REGION?: string;
       MEDIA_S3_FORCE_PATH_STYLE?: string;
 
+      // Database pool
+      DATABASE_POOL_MIN?: string;
+      DATABASE_POOL_MAX?: string;
+
+      // Cache service
+      CACHE_REDIS_URI?: string;
+
       // Translation script
       REDIS_HOST?: string;
       REDIS_PORT?: string;
@@ -47,12 +55,32 @@ declare global {
       AZURE_TRANSLATE_API_KEY?: string;
 
       // Translation service (auto-translation feature)
+      AZURE_TRANSLATOR_ENDPOINT?: string;
       AZURE_TRANSLATOR_KEY?: string;
       AZURE_TRANSLATOR_REGION?: string;
       GOOGLE_TRANSLATE_CREDENTIALS_BASE64?: string;
 
       // Alerting
       WEBHOOK_ALERT_URL?: string;
+
+      // Email service
+      SENDGRID_API_KEY?: string;
+
+      // Auth
+      NEXTAUTH_URL?: string;
+
+      // Analytics (Umami)
+      NEXT_PUBLIC_UMAMI_SCRIPT_URL?: string;
+      UMAMI_API_URL?: string;
+      UMAMI_TEAM_ID?: string;
+      UMAMI_USERNAME?: string;
+      UMAMI_PASSWORD?: string;
+
+      // EMS
+      EMS_SERVICE_URL?: string;
+
+      // Logging
+      NEXT_PUBLIC_LOG_LEVEL?: string;
 
       // These are only used in prebuild/build scripts and are
       // not required to run the application

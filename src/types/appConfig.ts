@@ -137,11 +137,6 @@ export type AppConfig = {
     target?: '_self' | '_blank';
     variant?: 'destructive' | 'default';
   };
-  errorTranslationData?: {
-    errorNamespaces: string[];
-    resources: Record<string, Record<string, unknown>>;
-    locale: string;
-  };
   gtmContainerId?: string;
   heroUrl?: string;
   highlights?: {
