@@ -1,6 +1,7 @@
-import { Address } from '@/types/resource';
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+
+import { Address } from '@/types/resource';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -47,9 +48,12 @@ export function withOptionalCustomBasePath(path: string): string {
         return url.toString();
       }
 
-      url.pathname = url.pathname.startsWith('/')
-        ? `${normalizedBasePath}${url.pathname}`
-        : `${normalizedBasePath}/${url.pathname}`;
+      url.pathname =
+        url.pathname === '/'
+          ? normalizedBasePath
+          : url.pathname.startsWith('/')
+            ? `${normalizedBasePath}${url.pathname}`
+            : `${normalizedBasePath}/${url.pathname}`;
 
       return url.toString();
     } catch {
