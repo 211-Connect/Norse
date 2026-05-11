@@ -202,13 +202,15 @@ const config = buildConfig({
     },
   },
   secret: process.env.PAYLOAD_SECRET as string,
-  email: nodemailerAdapter({
-    defaultFromAddress: 'support@connect211.com',
-    defaultFromName: 'Connect 211 Support Team',
-    transportOptions: sendGridTransport({
-      apiKey: process.env.SENDGRID_API_KEY || '',
-    }),
-  }),
+  email: process.env.SENDGRID_API_KEY
+    ? nodemailerAdapter({
+        defaultFromAddress: 'support@connect211.com',
+        defaultFromName: 'Connect 211 Support Team',
+        transportOptions: sendGridTransport({
+          apiKey: process.env.SENDGRID_API_KEY,
+        }),
+      })
+    : undefined,
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URI,
