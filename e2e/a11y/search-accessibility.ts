@@ -154,6 +154,9 @@ test.describe('Search accessibility preservation', () => {
     });
     await expect(clearSearchButton).toHaveAttribute('aria-label', /remove/i);
     await expect(searchInput).toBeFocused();
+
+    await page.waitForTimeout(500);
+
     await page.keyboard.press('Tab');
     await expect(clearSearchButton).toBeFocused();
     await page.keyboard.press('Enter');
