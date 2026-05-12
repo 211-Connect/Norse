@@ -35,6 +35,7 @@ export function ResultsSection({ cardLayout }: ResultsSectionProps) {
   const componentToPrintRef = useRef<HTMLDivElement>(null);
   const resultsHeadingRef = useRef<HTMLHeadingElement>(null);
   const results = useAtomValue(resultsAtom);
+  const resultsCount = results?.length ?? 0;
   const totalResults = useAtomValue(resultTotalAtom);
   const currentPage = useAtomValue(resultsCurrentPageAtom);
   const query = useAtomValue(queryAtom);
@@ -57,7 +58,7 @@ export function ResultsSection({ cardLayout }: ResultsSectionProps) {
     window.sessionStorage.removeItem(PENDING_FOCUS_TARGET_STORAGE_KEY);
     resultsHeadingRef.current?.focus({ preventScroll: true });
     window.scrollTo(0, 0);
-  }, [currentPage, results.length, totalResults]);
+  }, [currentPage, resultsCount, totalResults]);
 
   return (
     <section
@@ -77,7 +78,7 @@ export function ResultsSection({ cardLayout }: ResultsSectionProps) {
         <div className="flex items-center justify-between">
           <ResultTotal />
           <div className="flex gap-[10px]">
-            {results.length > 0 && (
+            {resultsCount > 0 && (
               <PrintButton componentToPrintRef={componentToPrintRef} />
             )}
             <ShareButton

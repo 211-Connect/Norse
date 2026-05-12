@@ -14,11 +14,13 @@ type RenderResultsProps = {
 
 export function RenderResults({ cardLayout }: RenderResultsProps) {
   const results = useAtomValue(resultsAtom);
+  const hasHydratedResults = results !== null;
+  const items = results ?? [];
 
   return (
     <>
-      {results?.length === 0 && <NoResultsCard />}
-      {results?.map((result) => (
+      {hasHydratedResults && items.length === 0 && <NoResultsCard />}
+      {items.map((result) => (
         <CardLayoutRenderer
           key={result._id}
           result={result}

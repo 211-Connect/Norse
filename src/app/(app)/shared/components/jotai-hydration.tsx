@@ -1,7 +1,6 @@
 'use client';
 
 import { deleteCookie, setCookie } from 'cookies-next';
-import { useAtomValue } from 'jotai';
 import { useEffect, useMemo } from 'react';
 
 import { useHydrateAndSyncAtoms } from '@/app/(app)/shared/hooks/use-hydrate-and-sync-atoms';
@@ -11,11 +10,7 @@ import {
   resultsAtom,
   resultsCurrentPageAtom,
 } from '@/app/(app)/shared/store/results';
-import {
-  searchAtom,
-  searchCoordinatesAtom,
-  userCoordinatesAtom,
-} from '@/app/(app)/shared/store/search';
+import { searchAtom } from '@/app/(app)/shared/store/search';
 
 import { useAppConfig } from '../hooks/use-app-config';
 import {
@@ -116,7 +111,7 @@ export function JotaiHydration({ cookies = {}, pageProps }) {
             isDesktop: false,
           },
         ],
-        [resultsAtom, pageProps?.results ?? []],
+        [resultsAtom, pageProps?.results ?? null],
         [resultsCurrentPageAtom, pageProps?.currentPage ?? 0],
         [resultTotalAtom, pageProps?.totalResults ?? 0],
         [filtersAtom, pageProps?.filters ?? {}],
