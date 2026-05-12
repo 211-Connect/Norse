@@ -170,7 +170,6 @@ export function Map({
         }).setDOMContent(popupDiv);
 
         popup.on('open', () => {
-          markerElement.setAttribute('aria-expanded', 'true');
           setActivePopup({
             element: popupDiv,
             popup: m.popup,
@@ -184,7 +183,6 @@ export function Map({
         });
 
         popup.on('close', () => {
-          markerElement.setAttribute('aria-expanded', 'false');
           setActivePopup(null);
           if (restoreFocusOnCloseRef.current) {
             requestAnimationFrame(() => {
@@ -206,10 +204,9 @@ export function Map({
           markerElement.setAttribute('role', 'button');
           markerElement.setAttribute(
             'aria-label',
-            `Open map details for ${markerLabel}`,
+            `Map marker for ${markerLabel}`,
           );
           markerElement.setAttribute('aria-haspopup', 'dialog');
-          markerElement.setAttribute('aria-expanded', 'false');
           markerElement.setAttribute('aria-controls', popupId);
           markerElement.removeAttribute('aria-disabled');
         } else {
@@ -217,7 +214,6 @@ export function Map({
           markerElement.removeAttribute('role');
           markerElement.removeAttribute('aria-label');
           markerElement.removeAttribute('aria-haspopup');
-          markerElement.removeAttribute('aria-expanded');
           markerElement.removeAttribute('aria-controls');
           markerElement.setAttribute('aria-disabled', 'true');
         }

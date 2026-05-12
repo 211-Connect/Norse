@@ -117,7 +117,11 @@ export function Datum({
         </div>
       ) : (
         <div className="flex min-w-0 flex-col gap-0.5">
-          <Typography variant="label" size={size}>
+          <Typography
+            variant="label"
+            size={size}
+            as={title && description ? 'h4' : undefined}
+          >
             {title}
           </Typography>
           <Typography

@@ -13,6 +13,9 @@ const SelectContentIdContext = React.createContext<string | undefined>(
   undefined,
 );
 
+export const SELECT_INTERACTIVE_ACTIVE_CLASSNAME =
+  'bg-primary text-primary-foreground';
+
 type RadixSelectRootProps = React.ComponentPropsWithoutRef<
   typeof SelectPrimitive.Root
 >;
@@ -208,7 +211,7 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+      'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none transition-colors focus:bg-primary focus:text-primary-foreground data-[disabled]:pointer-events-none data-[highlighted]:bg-primary data-[state=checked]:font-medium data-[highlighted]:text-primary-foreground data-[disabled]:opacity-50',
       className,
     )}
     {...props}
