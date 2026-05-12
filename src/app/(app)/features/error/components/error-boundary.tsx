@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-html-link-for-pages */
 import Image from 'next/image';
-import React, { ReactNode } from 'react';
+import { Component, ReactNode } from 'react';
 
 import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import { fetchWrapper } from '@/app/(app)/shared/lib/fetchWrapper';
@@ -38,7 +38,7 @@ type State = {
   hasError: false;
 };
 
-class ErrorBoundary extends React.Component<Props, State> {
+class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
@@ -46,7 +46,7 @@ class ErrorBoundary extends React.Component<Props, State> {
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(error: any) {
+  static getDerivedStateFromError(_error: any) {
     // Update state so the next render will show the fallback UI
 
     return { hasError: true };
@@ -58,7 +58,7 @@ class ErrorBoundary extends React.Component<Props, State> {
       const gl =
         canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
       return !!gl;
-    } catch (e) {
+    } catch {
       return false;
     }
   }
@@ -74,7 +74,7 @@ class ErrorBoundary extends React.Component<Props, State> {
         }
       }
       return 'unknown';
-    } catch (e) {
+    } catch {
       return 'unavailable';
     }
   }

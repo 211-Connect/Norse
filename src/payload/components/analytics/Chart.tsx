@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import { memo } from 'react';
 import {
   CartesianGrid,
   Line,
@@ -26,7 +26,7 @@ const CHART_MARGIN = { top: 5, right: 20, left: 0, bottom: 5 };
 const TICK_STYLE = { fontSize: 12 };
 const LINE_ACTIVE_DOT = { r: 4 };
 
-export const Chart = React.memo(function Chart({
+export const Chart = memo(function Chart({
   title,
   xAxisKey = 'date',
   data,

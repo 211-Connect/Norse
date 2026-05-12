@@ -2,7 +2,6 @@
 
 import { Banner, StaggeredShimmers } from '@payloadcms/ui';
 import dynamic from 'next/dynamic';
-import React from 'react';
 
 import { useSessionHeatmap } from '../useAnalyticsData';
 

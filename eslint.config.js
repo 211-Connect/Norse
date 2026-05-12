@@ -20,6 +20,7 @@ const eslintConfig = [
       'src/payload/migrations/**',
       'src/payload/payload-types.ts',
       'src/app/(payload)/admin/importMap.js',
+      'src/app/(payload)/layout.tsx',
       'test-results/**',
       'docs/**',
       'public/**',
@@ -56,12 +57,29 @@ const eslintConfig = [
     rules: {
       'no-undef': 'off', // Handled by TypeScript
       'no-unused-vars': 'off', // Handled by TypeScript
+      'no-restricted-imports': [
+        'warn',
+        {
+          paths: [
+            {
+              name: 'react',
+              importNames: ['default'],
+              message:
+                'Default React import is not needed in TSX. Remove it or use named imports.',
+            },
+          ],
+        },
+      ],
       '@typescript-eslint/no-unused-vars': [
         'warn',
         {
-          args: 'none',
+          vars: 'all',
+          args: 'after-used',
           varsIgnorePattern: '^_',
+          argsIgnorePattern: '^_',
+          caughtErrors: 'all',
           caughtErrorsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
           ignoreRestSiblings: true,
         },
       ],

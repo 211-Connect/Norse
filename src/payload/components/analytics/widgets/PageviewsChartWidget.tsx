@@ -2,7 +2,7 @@
 
 import { Banner, StaggeredShimmers } from '@payloadcms/ui';
 import dayjs from 'dayjs';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { Chart } from '../Chart';
 import { usePageviews } from '../useAnalyticsData';

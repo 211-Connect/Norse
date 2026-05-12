@@ -42,7 +42,7 @@ export default async function TopicsView({ params }) {
 
   const appConfig = await getAppConfigWithoutHost(locale);
 
-  const { t, resources } = await initTranslations(
+  const { resources } = await initTranslations(
     locale,
     i18nNamespaces,
     appConfig.i18n.locales,

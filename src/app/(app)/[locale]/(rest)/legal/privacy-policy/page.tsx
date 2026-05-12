@@ -63,7 +63,7 @@ export default async function PrivacyPolicyPage({ params }) {
   }
 
   const cookieList = await getCookies({ cookies });
-  const { t, i18n, resources } = await initTranslations(
+  const { resources } = await initTranslations(
     locale,
     i18nNamespaces,
     appConfig.i18n.locales,

@@ -1,7 +1,6 @@
 'use client';
 
 import { Banner, StaggeredShimmers } from '@payloadcms/ui';
-import React from 'react';
 
 import { StatCard } from '../StatCard';
 import type { EventsData, PathsData } from '../analyticsCache';

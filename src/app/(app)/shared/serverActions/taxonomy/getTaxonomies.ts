@@ -1,7 +1,7 @@
 'use server';
 
 import { createLogger } from '@/lib/logger';
-import { assertValidLocale, isValidLocale } from '@/payload/i18n/locales';
+import { isValidLocale } from '@/payload/i18n/locales';
 
 import { API_URL, INTERNAL_API_KEY } from '../../lib/constants';
 import { fetchWrapper } from '../../lib/fetchWrapper';

@@ -1,7 +1,7 @@
 import { Slot } from '@radix-ui/react-slot';
 import { type VariantProps, cva } from 'class-variance-authority';
 import { LoaderCircle } from 'lucide-react';
-import * as React from 'react';
+import { forwardRef } from 'react';
 
 import { cn } from '../../lib/utils';
 
@@ -45,7 +45,7 @@ export interface ButtonProps
   loading?: boolean;
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     { className, variant, size, asChild = false, loading, children, ...props },
     ref,

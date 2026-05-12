@@ -1,7 +1,7 @@
 'use client';
 
 import { type VariantProps, cva } from 'class-variance-authority';
-import * as React from 'react';
+import { useRef, useState } from 'react';
 
 import { useIconComponent } from '@/app/(app)/shared/hooks/useIconComponent';
 import { cn } from '@/app/(app)/shared/lib/utils';
@@ -54,12 +54,12 @@ function Badge({
   children,
   ...props
 }: BadgeProps) {
-  const [showTooltip, setShowTooltip] = React.useState(false);
-  const [tooltipPosition, setTooltipPosition] = React.useState<{
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [tooltipPosition, setTooltipPosition] = useState<{
     top: number;
     left: number;
   } | null>(null);
-  const badgeRef = React.useRef<HTMLSpanElement>(null);
+  const badgeRef = useRef<HTMLSpanElement>(null);
   const IconComponent = useIconComponent(icon);
 
   const handleMouseEnter = () => {

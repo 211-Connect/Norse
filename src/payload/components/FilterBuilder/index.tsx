@@ -98,7 +98,6 @@ export const FilterBuilder = ({ path }: FilterBuilderProps) => {
         );
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conditions, logic, mode]);
 
   const handleTextChange = (newValue: string) => {

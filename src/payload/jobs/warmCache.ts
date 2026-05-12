@@ -123,7 +123,6 @@ export const warmCache: TaskConfig<'warmCache'> = {
     }
 
     const duration = Date.now() - startTime;
-    const durationSeconds = (duration / 1000).toFixed(2);
 
     log.info(
       {

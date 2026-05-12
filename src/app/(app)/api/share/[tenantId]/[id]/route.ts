@@ -18,7 +18,7 @@ export async function GET(
     } else {
       return NextResponse.redirect('/404', 302);
     }
-  } catch (err) {
+  } catch {
     return NextResponse.redirect('/404', 302);
   }
 }
