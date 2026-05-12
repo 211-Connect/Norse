@@ -16,9 +16,7 @@ import { FavoritesPagination } from './favorites-pagination';
 import { NoListsCard } from './no-lists-card';
 
 export function FavoriteListsSection() {
-  const { data: favoriteLists, totalCount } = useAtomValue(
-    favoriteListsStateAtom,
-  );
+  const { data: favoriteLists } = useAtomValue(favoriteListsStateAtom);
   const { t } = useTranslation('common');
   const router = useRouter();
   const pathname = usePathname();

@@ -61,7 +61,7 @@ export function CreateFavoriteListDialog({
         handleClose();
         await onSuccess?.();
       }
-    } catch (error) {
+    } catch {
       toast.error(t('message.error'), {
         description: t('favorites.unable_to_create_list_message'),
       });

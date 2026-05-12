@@ -70,7 +70,19 @@ const eslintConfig = [
           ],
         },
       ],
-      '@typescript-eslint/no-unused-vars': 'warn',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          vars: 'all',
+          args: 'after-used',
+          varsIgnorePattern: '^_',
+          argsIgnorePattern: '^_',
+          caughtErrors: 'all',
+          caughtErrorsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+        },
+      ],
     },
   },
   {

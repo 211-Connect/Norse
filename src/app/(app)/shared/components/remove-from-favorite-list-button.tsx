@@ -58,7 +58,7 @@ export function RemoveFromFavoriteListButton({
       onRemoveFromList(currentListId, serviceAtLocationId);
 
       setRemoveConfirmOpen(false);
-    } catch (error) {
+    } catch {
       toast.error(t('message.error'), {
         description: t('favorites.unable_to_update_list_message'),
       });

@@ -60,7 +60,7 @@ export default async function TermsOfUsePage({ params }) {
   }
 
   const cookieList = await getCookies({ cookies });
-  const { t, resources } = await initTranslations(
+  const { resources } = await initTranslations(
     locale,
     i18nNamespaces,
     appConfig.i18n.locales,

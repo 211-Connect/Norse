@@ -34,7 +34,6 @@ export interface BatchTranslationResult {
   fromCache: boolean;
 }
 
-const CACHE_DB = 1;
 const CACHE_TTL = 31536000; // 1 year in seconds
 
 function createTextHash(text: string): string {

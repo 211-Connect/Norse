@@ -257,10 +257,7 @@ const config = buildConfig({
     locales,
     defaultLocale,
     fallback: false,
-    filterAvailableLocales: async ({
-      locales,
-      req: { user, payload, host, url },
-    }) => {
+    filterAvailableLocales: async ({ locales, req: { user, host, url } }) => {
       const mapTenantLocales = (tenant: Tenant) =>
         tenant?.enabledLocales?.map((code: string) => ({
           code,

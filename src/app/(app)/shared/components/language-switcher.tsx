@@ -38,7 +38,7 @@ const getLanguageName = (locale: string) => {
     return new Intl.DisplayNames([locale], {
       type: 'language',
     }).of(locale);
-  } catch (error) {
+  } catch {
     return locale;
   }
 };

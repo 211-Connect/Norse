@@ -315,14 +315,6 @@ export function Map({
       markers.some((m) => isValidCoordinate(m.coordinates));
     let cancelled = false;
 
-    const safeHasLayer = (id: string) => {
-      try {
-        return !!map?.style && !!map.getLayer(id);
-      } catch {
-        return false;
-      }
-    };
-
     // Cleanup helper with guards (map may be removed before style load)
     const cleanup = () => {
       try {

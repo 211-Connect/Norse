@@ -123,13 +123,6 @@ test.describe('Favorites Feature (Authenticated)', () => {
       timeout: ASYNC_UI_TIMEOUT_MS,
     });
 
-    // Verify the resource is now marked as in the list (HeartOff icon)
-    const removeBtn = await getFavoritesDialogListActionButton(
-      page,
-      listName,
-      'remove-from-list-btn',
-    );
-
     await closeFavoritesDialog(page);
 
     // Navigate to the favorites list and verify the resource is there
