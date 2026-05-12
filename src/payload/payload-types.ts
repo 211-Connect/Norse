@@ -242,6 +242,7 @@ export interface Config {
     'analytics-resource-titles': AnalyticsResourceTitlesWidget;
     'analytics-search-queries': AnalyticsSearchQueriesWidget;
     'analytics-session-quality': AnalyticsSessionQualityWidget;
+    'analytics-safe-exit-clicks': AnalyticsSafeExitClicksWidget;
     collections: CollectionsWidget;
   };
   user: User;
@@ -1903,6 +1904,16 @@ export interface AnalyticsSearchQueriesWidget {
  * via the `definition` "analytics-session-quality_widget".
  */
 export interface AnalyticsSessionQualityWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-safe-exit-clicks_widget".
+ */
+export interface AnalyticsSafeExitClicksWidget {
   data?: {
     [k: string]: unknown;
   };
