@@ -101,7 +101,6 @@ const Typography = forwardRef<HTMLElement, TypographyProps>(
       variant,
       size,
       textColor,
-      asChild = false,
       as,
       children,
       url,
