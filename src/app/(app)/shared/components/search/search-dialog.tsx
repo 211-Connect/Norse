@@ -1,6 +1,5 @@
 'use client';
 
-import { deleteCookie, setCookie } from 'cookies-next/client';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { ChevronLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -25,8 +24,8 @@ import {
   SEARCH_DIALOG_ID,
   SEARCH_DIALOG_TITLE_ID,
   SEARCH_INPUT_ID,
-  USER_PREF_DISTANCE,
 } from '../../lib/constants';
+import { persistSearchDistancePreference } from '../../lib/search-distance-preference';
 import { UmamiEvent, trackUmamiEvent } from '../../lib/umami';
 import { cn, getScrollbarWidth } from '../../lib/utils';
 import {
@@ -64,25 +63,11 @@ export function SearchDialog({
   const initialRenderRef = useRef(true);
   const [mounted, setMounted] = useState(false);
   const dialogRef = useRef<HTMLDivElement | null>(null);
-  const distance = useAtomValue(searchDistanceAtom);
 
+  const distance = useAtomValue(searchDistanceAtom);
   const { search, setSearch } = useMainSearchLayoutContext();
   const setUserCoordinates = useSetAtom(userCoordinatesAtom);
   const searchCoordinates = useAtomValue(searchCoordinatesAtom);
-
-  useEffect(() => {
-    if (!open || !navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setUserCoordinates([pos.coords.longitude, pos.coords.latitude]);
-      },
-      () => {
-        setUserCoordinates(searchCoordinates);
-      },
-      { enableHighAccuracy: false, timeout: 5000, maximumAge: 60_000 },
-    );
-  }, [open, setUserCoordinates, searchCoordinates]);
-
   const userCoordinates = useAtomValue(userCoordinatesAtom);
 
   const onSubmit: SubmitEventHandler<HTMLFormElement> = useCallback(
@@ -125,11 +110,7 @@ export function SearchDialog({
         const queryParams = stringifySearchParams(
           new URLSearchParams(urlParams),
         );
-        if (distance === '0') {
-          deleteCookie(USER_PREF_DISTANCE, { path: '/' });
-        } else {
-          setCookie(USER_PREF_DISTANCE, distance, { path: '/' });
-        }
+        persistSearchDistancePreference(distance);
 
         const effectiveQueryType = search.queryType;
 
@@ -175,6 +156,19 @@ export function SearchDialog({
       stringifySearchParams,
     ],
   );
+
+  useEffect(() => {
+    if (!open || !navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setUserCoordinates([pos.coords.longitude, pos.coords.latitude]);
+      },
+      () => {
+        setUserCoordinates(searchCoordinates);
+      },
+      { enableHighAccuracy: false, timeout: 5000, maximumAge: 60_000 },
+    );
+  }, [open, setUserCoordinates, searchCoordinates]);
 
   useEffect(() => {
     if (initialRenderRef.current) return;
