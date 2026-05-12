@@ -122,84 +122,88 @@ export function ShareButton({
           <div className="flex min-w-0 flex-col gap-2">
             <div className="grid grid-cols-2 gap-2">
               <Button
+                asChild
                 variant="outline"
                 className={SHARE_ACTION_BUTTON_CLASSNAME}
                 aria-label={`${t('modal.share.facebook')} ${t('modal.share.opens_in_new_tab')}`}
-                onClick={() => {
-                  window.open(
-                    `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-                      shortUrl,
-                    )}`,
-                    '_blank',
-                  );
-                }}
               >
-                <Facebook className="size-4" aria-hidden="true" />
-                {t('modal.share.facebook')}
-                <span className="sr-only">
-                  {' '}
-                  {t('modal.share.opens_in_new_tab')}
-                </span>
+                <a
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+                    shortUrl,
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Facebook className="size-4" aria-hidden="true" />
+                  {t('modal.share.facebook')}
+                  <span className="sr-only">
+                    {' '}
+                    {t('modal.share.opens_in_new_tab')}
+                  </span>
+                </a>
               </Button>
 
               <Button
+                asChild
                 variant="outline"
                 className={SHARE_ACTION_BUTTON_CLASSNAME}
                 aria-label={`${t('modal.share.linkedin')} ${t('modal.share.opens_in_new_tab')}`}
-                onClick={() => {
-                  window.open(
-                    `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shortUrl)}`,
-                    '_blank',
-                  );
-                }}
               >
-                <Linkedin className="size-4" aria-hidden="true" />
-                {t('modal.share.linkedin')}
-                <span className="sr-only">
-                  {' '}
-                  {t('modal.share.opens_in_new_tab')}
-                </span>
+                <a
+                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shortUrl)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Linkedin className="size-4" aria-hidden="true" />
+                  {t('modal.share.linkedin')}
+                  <span className="sr-only">
+                    {' '}
+                    {t('modal.share.opens_in_new_tab')}
+                  </span>
+                </a>
               </Button>
 
               <Button
+                asChild
                 variant="outline"
                 className={SHARE_ACTION_BUTTON_CLASSNAME}
                 aria-label={`X ${t('modal.share.opens_in_new_tab')}`}
-                onClick={() => {
-                  window.open(
-                    `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-                      title + '\n' + shortUrl,
-                    )}`,
-                  );
-                }}
               >
-                <X className="size-4" aria-hidden="true" />X
-                <span className="sr-only">
-                  {' '}
-                  {t('modal.share.opens_in_new_tab')}
-                </span>
+                <a
+                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                    title + '\n' + shortUrl,
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <X className="size-4" aria-hidden="true" />X
+                  <span className="sr-only">
+                    {' '}
+                    {t('modal.share.opens_in_new_tab')}
+                  </span>
+                </a>
               </Button>
 
               <SmsButton shareMessage={smsMessage} />
 
               <Button
+                asChild
                 variant="outline"
                 className={SHARE_ACTION_BUTTON_CLASSNAME}
                 aria-label={`${t('modal.share.email')} ${t('modal.share.opens_in_new_tab')}`}
-                onClick={() => {
-                  window.open(
-                    `mailto:?subject=${encodeURIComponent(
-                      shareSubject,
-                    )}&body=${encodeURIComponent(emailMessage)}`,
-                  );
-                }}
               >
-                <Mail className="size-4" aria-hidden="true" />
-                {t('modal.share.email')}
-                <span className="sr-only">
-                  {' '}
-                  {t('modal.share.opens_in_new_tab')}
-                </span>
+                <a
+                  href={`mailto:?subject=${encodeURIComponent(
+                    shareSubject,
+                  )}&body=${encodeURIComponent(emailMessage)}`}
+                >
+                  <Mail className="size-4" aria-hidden="true" />
+                  {t('modal.share.email')}
+                  <span className="sr-only">
+                    {' '}
+                    {t('modal.share.opens_in_new_tab')}
+                  </span>
+                </a>
               </Button>
 
               <Button

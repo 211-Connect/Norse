@@ -20,12 +20,6 @@ import { getAppConfigWithoutHost } from '../shared/utils/appConfig';
 import { getSession } from '../shared/utils/getServerSession';
 import { sanitizeSessionForClient } from '../shared/utils/sanitizeSession';
 
-export const viewport: Viewport = {
-  width: 'device-width',
-  initialScale: 1,
-  maximumScale: 1,
-};
-
 export const generateMetadata = async ({
   params,
 }: {

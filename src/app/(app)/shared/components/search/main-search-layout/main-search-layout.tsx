@@ -95,7 +95,6 @@ export function MainSearchLayout({
             type="button"
             variant="outline"
             aria-controls={SEARCH_DIALOG_ID}
-            aria-expanded={dialogOpened}
             aria-haspopup="dialog"
             aria-label={t('search.open_search_dialog')}
             data-testid="search-trigger"

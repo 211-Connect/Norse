@@ -151,8 +151,8 @@ export function SearchDialog({
 
         router.push(`/search${queryParams}`);
 
-        // Close as soon as navigation is requested so `open` / aria-expanded match
-        // real interactivity (dialog must not sit above the results page).
+        // Close as soon as navigation is requested so trigger and dialog state
+        // match real interactivity (dialog must not sit above the results page).
         setOpen?.(false);
 
         setSearch((prev) => ({
@@ -288,7 +288,7 @@ export function SearchDialog({
       ref={dialogRef}
       id={SEARCH_DIALOG_ID}
       className={cn(
-        'fixed bottom-0 left-0 right-0 top-0 z-50 bg-white p-6 transition-opacity duration-300',
+        'fixed bottom-0 left-0 right-0 top-0 z-50 overflow-y-auto overscroll-contain bg-white p-6 transition-opacity duration-300',
         open ? 'opacity-100' : 'pointer-events-none opacity-0',
       )}
       role="dialog"
@@ -305,11 +305,11 @@ export function SearchDialog({
       <p className="sr-only" id={SEARCH_DIALOG_DESCRIPTION_ID}>
         {t('search.search_dialog_description')}
       </p>
-      <div className="flex h-full w-full max-w-full justify-center !rounded-none border-0">
+      <div className="flex min-h-full w-full max-w-full items-start justify-center !rounded-none border-0">
         {open && (
           <form
             onSubmit={onSubmit}
-            className="flex w-full max-w-[25rem] flex-col gap-4 sm:mt-[120px]"
+            className="flex w-full max-w-[25rem] flex-col gap-4 overflow-y-auto pb-6 pt-6 [@media(min-width:640px)_and_(min-height:600px)]:pt-[120px]"
           >
             <div className="flex flex-row justify-between gap-4">
               <Button
@@ -323,7 +323,7 @@ export function SearchDialog({
               </Button>
               <SearchButton loading={isPending} />
             </div>
-            <div id="search-form-inputs">
+            <div id="search-form-inputs" className="overflow-y-auto">
               <SearchBar inputId={SEARCH_INPUT_ID} />
               <LocationSearchBar inputId={LOCATION_INPUT_ID} className="mt-4" />
             </div>

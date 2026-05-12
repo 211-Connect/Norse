@@ -9,7 +9,6 @@ import { Button } from '@/app/(app)/shared/components/ui/button';
 import { Card, CardContent } from '@/app/(app)/shared/components/ui/card';
 import { Separator } from '@/app/(app)/shared/components/ui/separator';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
-import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
 import { useTopics } from '@/app/(app)/shared/hooks/use-topics';
 import { NEW_TAB_WARNING } from '@/app/(app)/shared/lib/constants';
 import { cn } from '@/app/(app)/shared/lib/utils';
@@ -48,7 +47,12 @@ const Category = ({
         )}
 
         <div className="min-w-0 flex-1">
-          <h3 className="mb-1 break-words text-xl font-semibold">{name}</h3>
+          <h3
+            className="mb-1 break-words text-xl font-semibold"
+            style={{ wordBreak: 'break-word' }}
+          >
+            {name}
+          </h3>
 
           <ul className="space-y-1" aria-label={name}>
             {subtopics.map((el, index) => {
