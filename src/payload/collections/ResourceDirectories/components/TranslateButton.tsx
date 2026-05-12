@@ -1,10 +1,12 @@
 'use client';
 
+import { Button, toast, useModal } from '@payloadcms/ui';
 import React, { useState } from 'react';
-import { toast, Button, useModal } from '@payloadcms/ui';
-import { TranslateModal } from './TranslateModal';
-import { getTenantLocales } from '../../Tenants/components/actions/getTenantLocales';
+
 import { createLogger } from '@/lib/logger';
+
+import { getTenantLocales } from '../../Tenants/components/actions/getTenantLocales';
+import { TranslateModal } from './TranslateModal';
 
 const log = createLogger('translate-button');
 

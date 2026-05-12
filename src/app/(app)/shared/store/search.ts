@@ -5,21 +5,20 @@ export const searchAtom = atom({
   queryLabel: '',
   queryType: '',
   searchTerm: '',
-  prevSearchTerm: '',
   searchLocation: '',
   searchCoordinates: [] as any[],
   prevSearchLocation: '',
   searchLocationValidationError: '',
   searchDistance: '',
-  userCoordinates: [] as any[],
   // New fields for advanced geospatial filtering
   searchPlaceType: [] as string[],
   searchBbox: null as [number, number, number, number] | null,
 });
 
+export const userCoordinatesAtom = atom([] as number[]);
+
 // Currently searched term (This is the visible value in the input)
 export const searchTermAtom = atom((get) => get(searchAtom).searchTerm);
-export const prevSearchTermAtom = atom((get) => get(searchAtom).prevSearchTerm);
 
 // The below values are used specifically for the query parameters and are separate from the search term
 export const queryAtom = atom((get) => get(searchAtom).query);
@@ -39,11 +38,6 @@ export const searchCoordinatesAtom = atom(
 );
 
 export const searchDistanceAtom = atom((get) => get(searchAtom).searchDistance);
-
-// Currently selected user coordinates
-export const userCoordinatesAtom = atom(
-  (get) => get(searchAtom).userCoordinates,
-);
 
 export const searchPlaceTypeAtom = atom(
   (get) => get(searchAtom).searchPlaceType,

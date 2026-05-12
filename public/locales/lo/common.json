@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "ບ້ານ",
-    "favorites": "ລາຍການທີ່ມັກ",
     "log_out": "ອອກຈາກລະບົບ",
     "language_select_label": "ເລືອກພາສາເພື່ອປ່ຽນພາສາເວັບໄຊ",
     "my_stuff": "ສິ່ງຂອງຂອງຂ້ອຍ",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "ບໍ່ສາມາດລຶບລາຍຊື່ຂອງທ່ານໄດ້.",
     "list_created": "ສ້າງລາຍຊື່ແລ້ວ",
     "list_created_message": "ລາຍຊື່ຂອງທ່ານໄດ້ຖືກສ້າງຂຶ້ນສຳເລັດແລ້ວ.",
-    "unable_to_create_list_message": "ບໍ່ສາມາດສ້າງລາຍຊື່ຂອງທ່ານໄດ້."
+    "unable_to_create_list_message": "ບໍ່ສາມາດສ້າງລາຍຊື່ຂອງທ່ານໄດ້.",
+    "remove_from_list_title": "ລຶບອອກຈາກລາຍຊື່ບໍ?",
+    "remove_from_list_description": "ຊັບພະຍາກອນນີ້ຈະຖືກລຶບອອກຈາກລາຍການນີ້. ທ່ານສາມາດເພີ່ມມັນຄືນໄດ້ໃນພາຍຫຼັງຖ້າຈຳເປັນ."
   },
   "search": {
     "add_my_location": "ເພີ່ມສະຖານທີ່ຂອງຂ້ອຍ",
@@ -47,7 +48,15 @@
     "geocoding_unable_to_retrieve": "ບໍ່ສາມາດດຶງຂໍ້ມູນສະຖານທີ່ຂອງທ່ານໄດ້. ກະລຸນາກວດສອບການຕັ້ງຄ່າສະຖານທີ່ຂອງໂປຣແກຣມທ່ອງເວັບຂອງທ່ານ ແລະ ລອງໃໝ່ອີກຄັ້ງ.",
     "categories": "ຫົວຂໍ້ຕ່າງໆ",
     "show_all": "ສະແດງທັງໝົດ ({{count}})",
-    "show_less": "ສະແດງໜ້ອຍລົງ"
+    "show_less": "ສະແດງໜ້ອຍລົງ",
+    "query_input_label": "ຄົ້ນຫາຊັບພະຍາກອນ",
+    "location_input_label": "ຄົ້ນຫາສະຖານທີ່",
+    "change_location_label": "ປ່ຽນສະຖານທີ່: {{location}}",
+    "open_search_dialog": "ເປີດກ່ອງໂຕ້ຕອບການຄົ້ນຫາ",
+    "list_status_one": "ມີ 1 ທາງເລືອກ. ໃຊ້ປຸ່ມລູກສອນຂຶ້ນ ແລະ ລົງເພື່ອກວດສອບ.",
+    "list_status_other": "ມີຕົວເລືອກ {{count}}. ໃຊ້ປຸ່ມລູກສອນຂຶ້ນ ແລະ ລົງເພື່ອທົບທວນຄືນ.",
+    "search_dialog_description": "ຄົ້ນຫາຊັບພະຍາກອນ ແລະ ອັບເດດສະຖານທີ່ຂອງທ່ານ.",
+    "everywhere": "ທຸກບ່ອນ"
   },
   "call_to_action": {
     "call": "ໂທ",
@@ -67,7 +76,9 @@
     "login": "ເຂົ້າສູ່ລະບົບ",
     "show_more": "ສະແດງເພີ່ມເຕີມ",
     "show_less": "ສະແດງໜ້ອຍລົງ",
-    "print": "ພິມ"
+    "print": "ພິມ",
+    "close": "ປິດ",
+    "send": "ສົ່ງ"
   },
   "list": {
     "private": "ສ່ວນຕົວ",
@@ -93,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "ສ້າງລາຍຊື່",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "ຊື່",
       "list_description": "ລາຍລະອຽດ",
       "make_public": "ເປີດເຜີຍຕໍ່ສາທາລະນະ"
@@ -127,12 +139,21 @@
       "sms_send_success_title": "ສົ່ງ SMS ແລ້ວ!",
       "sms_send_success_body": "ຂໍ້ຄວາມຂອງທ່ານຖືກສົ່ງໄປແລ້ວ.",
       "sms_send_failed_title": "ສົ່ງ SMS ບໍ່ສຳເລັດ",
-      "sms_send_failed_body": "ສົ່ງຂໍ້ຄວາມຂອງທ່ານບໍ່ສຳເລັດ."
+      "sms_send_failed_body": "ສົ່ງຂໍ້ຄວາມຂອງທ່ານບໍ່ສຳເລັດ.",
+      "opens_in_new_tab": "ເປີດໃນແຖບໃໝ່",
+      "phone_number_label": "ເບີໂທລະສັບ",
+      "sms_unavailable": "ບໍ່ສາມາດແບ່ງປັນ SMS ໄດ້"
     },
-    "prompt_auth": "ກະລຸນາເຂົ້າສູ່ລະບົບເພື່ອໃຊ້ຄຸນສົມບັດນີ້."
+    "prompt_auth": "ກະລຸນາເຂົ້າສູ່ລະບົບເພື່ອໃຊ້ຄຸນສົມບັດນີ້.",
+    "prompt_auth_description": "ກະລຸນາເຂົ້າສູ່ລະບົບເພື່ອໃຊ້ຄຸນສົມບັດນີ້.",
+    "manage_favorites": {
+      "title": "ຈັດການລາຍການທີ່ມັກ",
+      "description": "Add this resource to or remove it from your lists."
+    }
   },
   "update_location": {
-    "prompt_start_location": "ສະຖານທີ່ເລີ່ມຕົ້ນຂອງເຈົ້າແມ່ນຫຍັງ?"
+    "prompt_start_location": "ສະຖານທີ່ເລີ່ມຕົ້ນຂອງເຈົ້າແມ່ນຫຍັງ?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "ຂໍ້ມູນສະໜອງໃຫ້ໂດຍ"
@@ -144,5 +165,19 @@
     "previous": "ກ່ອນໜ້ານີ້",
     "next": "ຕໍ່ໄປ",
     "go_to": "ໄປທີ່"
+  },
+  "filter_results_count_one": "ຜົນໄດ້ຮັບ {{count}}",
+  "filter_results_count_other": "ຜົນໄດ້ຮັບ {{count}}",
+  "autocomplete": {
+    "results_available_one": "ມີຜົນໄດ້ຮັບ {{count}} ແລ້ວ",
+    "results_available_other": "ມີຜົນໄດ້ຮັບ {{count}}",
+    "no_results": "ບໍ່ມີຜົນໄດ້ຮັບ"
+  },
+  "auth_error": {
+    "access_denied_title": "ປະຕິເສດການເຂົ້າເຖິງ",
+    "access_denied_description": "ທ່ານໄດ້ເຂົ້າສູ່ລະບົບສຳເລັດແລ້ວ, ແຕ່ບັນຊີນີ້ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ເຂົ້າເຖິງເວັບໄຊນີ້. ລອງອີກຄັ້ງດ້ວຍບັນຊີອື່ນ.",
+    "default_title": "ການກວດສອບຄວາມຖືກຕ້ອງຜິດພາດ",
+    "default_description": "ພວກເຮົາບໍ່ສາມາດເຮັດສຳເລັດຂະບວນການເຂົ້າສູ່ລະບົບໄດ້. ກະລຸນາລອງໃໝ່ອີກຄັ້ງ.",
+    "logout_and_try_again": "ອອກຈາກລະບົບ ແລະ ລອງໃໝ່ອີກຄັ້ງ"
   }
 }

@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "Dom",
-    "favorites": "Ulubione",
     "log_out": "Wyloguj się",
     "language_select_label": "Wybierz język, aby zmienić język witryny",
     "my_stuff": "Moje rzeczy",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "Nie udało się usunąć Twojej listy.",
     "list_created": "Lista utworzona",
     "list_created_message": "Twoja lista została pomyślnie utworzona.",
-    "unable_to_create_list_message": "Nie udało się utworzyć listy."
+    "unable_to_create_list_message": "Nie udało się utworzyć listy.",
+    "remove_from_list_title": "Usunąć z listy?",
+    "remove_from_list_description": "Ten zasób zostanie usunięty z tej listy. Możesz go dodać ponownie później, jeśli zajdzie taka potrzeba."
   },
   "search": {
     "add_my_location": "Dodaj moją lokalizację",
@@ -47,7 +48,15 @@
     "geocoding_unable_to_retrieve": "Nie można pobrać Twojej lokalizacji. Sprawdź ustawienia lokalizacji w przeglądarce i spróbuj ponownie.",
     "categories": "Tematy",
     "show_all": "Pokaż wszystko ({{count}})",
-    "show_less": "Pokaż mniej"
+    "show_less": "Pokaż mniej",
+    "query_input_label": "Wyszukaj zasoby",
+    "location_input_label": "Wyszukaj lokalizację",
+    "change_location_label": "Zmień lokalizację: {{location}}",
+    "open_search_dialog": "Otwórz okno dialogowe wyszukiwania",
+    "list_status_one": "Dostępna jest 1 opcja. Użyj klawiszy strzałek w górę i w dół, aby przejrzeć.",
+    "list_status_other": "Dostępnych jest {{count}} opcji. Użyj klawiszy strzałek w górę i w dół, aby je przejrzeć.",
+    "search_dialog_description": "Wyszukaj zasoby i zaktualizuj swoją lokalizację.",
+    "everywhere": "Wszędzie"
   },
   "call_to_action": {
     "call": "Dzwonić",
@@ -67,7 +76,9 @@
     "login": "Login",
     "show_more": "Pokaż więcej",
     "show_less": "Pokaż mniej",
-    "print": "Wydrukować"
+    "print": "Wydrukować",
+    "close": "Zamknij",
+    "send": "Wysłać"
   },
   "list": {
     "private": "Prywatny",
@@ -93,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "Utwórz listę",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Nazwa",
       "list_description": "Opis",
       "make_public": "Upublicznić"
@@ -127,22 +139,45 @@
       "sms_send_success_title": "SMS wysłany!",
       "sms_send_success_body": "Twoja wiadomość została wysłana.",
       "sms_send_failed_title": "Nie udało się wysłać SMS-a",
-      "sms_send_failed_body": "Nie udało się wysłać Twojej wiadomości."
+      "sms_send_failed_body": "Nie udało się wysłać Twojej wiadomości.",
+      "opens_in_new_tab": "otwiera się w nowej karcie",
+      "phone_number_label": "Numer telefonu",
+      "sms_unavailable": "Udostępnianie SMS-ów nie jest dostępne"
     },
-    "prompt_auth": "Zaloguj się, aby skorzystać z tej funkcji."
+    "prompt_auth": "Zaloguj się, aby skorzystać z tej funkcji.",
+    "prompt_auth_description": "Zaloguj się, aby skorzystać z tej funkcji.",
+    "manage_favorites": {
+      "title": "Zarządzaj ulubionymi",
+      "description": "Add this resource to or remove it from your lists."
+    }
   },
   "update_location": {
-    "prompt_start_location": "Skąd wyruszysz?"
+    "prompt_start_location": "Skąd wyruszysz?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Dane dostarczone przez"
   },
   "footer": {
-    "copyright": "© Prawa autorskie {{tekst}}"
+    "copyright": "© Prawa autorskie {{text}}"
   },
   "carousel": {
     "previous": "Poprzedni",
     "next": "Następny",
     "go_to": "Idź do"
+  },
+  "filter_results_count_one": "{{count}} wynik",
+  "filter_results_count_other": "{{count}} wyników",
+  "autocomplete": {
+    "results_available_one": "{{count}} dostępnych wyników",
+    "results_available_other": "{{count}} dostępnych wyników",
+    "no_results": "Brak wyników"
+  },
+  "auth_error": {
+    "access_denied_title": "Odmowa dostępu",
+    "access_denied_description": "Zalogowałeś się pomyślnie, ale to konto nie ma uprawnień dostępu do tej witryny. Spróbuj ponownie, używając innego konta.",
+    "default_title": "Błąd uwierzytelniania",
+    "default_description": "Nie udało się dokończyć procesu logowania. Spróbuj ponownie.",
+    "logout_and_try_again": "Wyloguj się i spróbuj ponownie"
   }
 }

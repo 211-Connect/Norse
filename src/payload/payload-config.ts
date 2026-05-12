@@ -1,36 +1,38 @@
-import sharp from 'sharp';
-import { fileURLToPath } from 'node:url';
-import path from 'node:path';
-import { buildConfig, Endpoint } from 'payload';
-import { lexicalEditor } from '@payloadcms/richtext-lexical';
 import { postgresAdapter } from '@payloadcms/db-postgres';
-import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant';
-import { Config, Tenant } from './payload-types';
-import { s3Storage } from '@payloadcms/storage-s3';
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer';
+import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant';
+import { lexicalEditor } from '@payloadcms/richtext-lexical';
+import { s3Storage } from '@payloadcms/storage-s3';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { Endpoint, buildConfig } from 'payload';
+import sharp from 'sharp';
 
-import { Users } from './collections/Users';
-import { Tenants } from './collections/Tenants';
-import { TenantMedia } from './collections/TenantMedia';
-import { ResourceDirectories } from './collections/ResourceDirectories';
-import { OrchestrationConfig } from './collections/OrchestrationConfig';
-import { defaultLocale, locales } from './i18n/locales';
-import { getUserTenantIDs } from './utilities/getUserTenantIDs';
-
-import { seedEndpoint, addLocalAdminEndpoint } from './migrations';
-import { isSuperAdmin, isSupport } from './collections/Users/access/roles';
-import { sendGridTransport } from './utilities/sendgridAdapter';
-import { clearCache } from './endpoints/clearCache';
-import { translateEndpoint } from './endpoints/translate';
-import { duplicateTenant } from './endpoints/duplicateTenant';
-import { translate } from './jobs/translate';
-import { translateTopics } from './jobs/translateTopics';
-import { warmCache } from './jobs/warmCache';
 import { getNumberFromString } from '@/utils/getNumberFromString';
+
+import { OrchestrationConfig } from './collections/OrchestrationConfig';
+import { ResourceDirectories } from './collections/ResourceDirectories';
+import { TenantMedia } from './collections/TenantMedia';
+import { Tenants } from './collections/Tenants';
 import {
   findTenantByHost,
   findTenantById,
 } from './collections/Tenants/actions';
+import { Users } from './collections/Users';
+import { isSuperAdmin, isSupport } from './collections/Users/access/roles';
+import { clearCache } from './endpoints/clearCache';
+import { duplicateTenant } from './endpoints/duplicateTenant';
+import { translateEndpoint } from './endpoints/translate';
+import { umamiProxy } from './endpoints/umamiProxy';
+import { umamiWebsites } from './endpoints/umamiWebsites';
+import { defaultLocale, locales } from './i18n/locales';
+import { translate } from './jobs/translate';
+import { translateTopics } from './jobs/translateTopics';
+import { warmCache } from './jobs/warmCache';
+import { addLocalAdminEndpoint, seedEndpoint } from './migrations';
+import { Config, Tenant } from './payload-types';
+import { getUserTenantIDs } from './utilities/getUserTenantIDs';
+import { sendGridTransport } from './utilities/sendgridAdapter';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -39,6 +41,8 @@ const endpoints: Endpoint[] = [
   clearCache,
   translateEndpoint,
   duplicateTenant,
+  umamiProxy,
+  umamiWebsites,
   seedEndpoint,
 ];
 
@@ -91,18 +95,126 @@ const config = buildConfig({
     },
     user: Users.slug,
     components: {
-      afterNavLinks: ['@/payload/components/ClearCacheButton'],
+      afterNavLinks: [
+        '@/payload/components/AnalyticsNavLink',
+        '@/payload/components/ClearCacheButton',
+      ],
+      views: {
+        analytics: {
+          Component: '@/payload/components/AnalyticsView',
+          path: '/analytics',
+          exact: true,
+        },
+      },
+    },
+    dashboard: {
+      widgets: [
+        {
+          slug: 'analytics-total-users',
+          Component:
+            '@/payload/components/analytics/widgets/TotalUsersWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-searches',
+          Component:
+            '@/payload/components/analytics/widgets/SearchesWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-resource-views',
+          Component:
+            '@/payload/components/analytics/widgets/ResourceViewsWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-zero-results',
+          Component:
+            '@/payload/components/analytics/widgets/ZeroResultsWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-website-clicks',
+          Component:
+            '@/payload/components/analytics/widgets/WebsiteClicksWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-phone-calls',
+          Component:
+            '@/payload/components/analytics/widgets/PhoneCallsWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-directions',
+          Component:
+            '@/payload/components/analytics/widgets/DirectionsWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-widget-searches',
+          Component:
+            '@/payload/components/analytics/widgets/WidgetSearchesWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-page-views',
+          Component:
+            '@/payload/components/analytics/widgets/PageViewsWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-pageviews-chart',
+          Component:
+            '@/payload/components/analytics/widgets/PageviewsChartWidget#default',
+          minWidth: 'large',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-map',
+          Component:
+            '@/payload/components/analytics/widgets/AnalyticsMapWidget#default',
+          minWidth: 'medium',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-resource-titles',
+          Component:
+            '@/payload/components/analytics/widgets/ResourceTitlesWidget#default',
+          minWidth: 'medium',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-search-queries',
+          Component:
+            '@/payload/components/analytics/widgets/SearchQueriesWidget#default',
+          minWidth: 'medium',
+          maxWidth: 'full',
+        },
+      ],
+      defaultLayout: [{ widgetSlug: 'collections', width: 'full' as const }],
     },
   },
   serverURL: process.env.PAYLOAD_SERVER_URL || 'http://localhost:3000',
   secret: process.env.PAYLOAD_SECRET as string,
-  email: nodemailerAdapter({
-    defaultFromAddress: 'support@connect211.com',
-    defaultFromName: 'Connect 211 Support Team',
-    transportOptions: sendGridTransport({
-      apiKey: process.env.SENDGRID_API_KEY || '',
-    }),
-  }),
+  email: process.env.SENDGRID_API_KEY
+    ? nodemailerAdapter({
+        defaultFromAddress: 'support@connect211.com',
+        defaultFromName: 'Connect 211 Support Team',
+        transportOptions: sendGridTransport({
+          apiKey: process.env.SENDGRID_API_KEY,
+        }),
+      })
+    : undefined,
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URI,
@@ -180,7 +292,7 @@ const config = buildConfig({
   upload: {
     abortOnLimit: true,
     limits: {
-      fileSize: 5000000,
+      fileSize: 10 * 1024 * 1024, // 10MB
     },
   },
   plugins: [
@@ -237,21 +349,6 @@ const config = buildConfig({
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
   endpoints,
-  onInit: async (payload) => {
-    payload.logger.info('Queueing warmCache task on startup...');
-    try {
-      const job = await payload.jobs.queue({
-        task: 'warmCache',
-        input: {},
-        queue: 'cache',
-      });
-      payload.logger.info(
-        `warmCache task queued successfully with job ID: ${job.id}`,
-      );
-    } catch (error) {
-      payload.logger.error('Failed to queue warmCache task on startup:', error);
-    }
-  },
 });
 
 export default config;

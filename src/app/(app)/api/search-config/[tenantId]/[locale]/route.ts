@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { findResourceDirectoryByTenantId } from '@/payload/collections/ResourceDirectories/actions';
-import { SearchConfig } from '@/types/search-config';
 import { TypedLocale } from 'payload';
+
+import { withOptionalCustomBasePath } from '@/app/(app)/shared/lib/utils';
+import { createLogger } from '@/lib/logger';
+import { findResourceDirectoryByTenantId } from '@/payload/collections/ResourceDirectories/actions';
 import { locales } from '@/payload/i18n/locales';
 import { Tenant } from '@/payload/payload-types';
+import { SearchConfig } from '@/types/search-config';
 import { withCache } from '@/utilities/withCache';
-import { createLogger } from '@/lib/logger';
 
 const log = createLogger('search-config');
 
@@ -48,7 +50,9 @@ export async function GET(
         }
 
         const tenant = resourceDirectory.tenant as Tenant;
-        const domain = `${tenant?.trustedDomains?.[0]?.domain ?? ''}${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}`;
+        const domain = withOptionalCustomBasePath(
+          `${tenant?.trustedDomains?.[0]?.domain ?? ''}`,
+        );
 
         const subtopics =
           resourceDirectory.topics?.list?.flatMap((topic) =>

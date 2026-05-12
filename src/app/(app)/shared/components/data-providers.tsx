@@ -1,13 +1,14 @@
 'use client';
 
-import { Image } from '@/app/(app)/shared/components/image';
 import { useTranslation } from 'react-i18next';
 
+import { Image } from '@/app/(app)/shared/components/image';
+
 import { useAppConfig } from '../hooks/use-app-config';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Separator } from './ui/separator';
 import { cn } from '../lib/utils';
 import { LocalizedLink } from './LocalizedLink';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Separator } from './ui/separator';
 
 export function DataProviders() {
   const appConfig = useAppConfig();
@@ -25,16 +26,11 @@ export function DataProviders() {
   return (
     <>
       <div className="container mx-auto flex flex-col pb-8 pt-8">
-        {!appConfig.featureFlags.hideDataProvidersHeading && (
-          <>
-            <h3 className="text-center text-lg font-bold">
-              {appConfig.providersCustomHeading ||
-                t('data_providers.provided_by')}
-            </h3>
+        <h3 className="text-center text-lg font-bold">
+          {appConfig.providersCustomHeading || t('data_providers.provided_by')}
+        </h3>
 
-            <Separator className="mb-4 mt-3" />
-          </>
-        )}
+        <Separator className="mb-4 mt-3" />
 
         <div
           className={cn(

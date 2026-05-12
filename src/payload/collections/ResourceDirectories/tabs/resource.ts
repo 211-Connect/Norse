@@ -1,8 +1,10 @@
 import { Field, Tab } from 'payload';
-import { hasLayoutFieldAccess } from '../../Users/access/permissions';
-import { ResourceComponentId } from '@/app/(app)/features/resource/types/component-ids';
 import { title } from 'radash';
+
+import { ResourceComponentId } from '@/app/(app)/features/resource/types/component-ids';
 import { ResourceDirectory } from '@/payload/payload-types';
+
+import { superAdminOrSupportOrTenantAccess } from '../../Users/access/roles';
 import { customAttributeFields } from '../fields/customAttributeFields';
 
 type ResourceConfig = NonNullable<ResourceDirectory['resource']>;
@@ -68,8 +70,17 @@ export const resource: Tab = {
       type: 'text',
       localized: true,
       access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
+      },
+    },
+    {
+      name: 'categoriesText',
+      type: 'text',
+      localized: true,
+      access: {
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
     },
     {
@@ -85,8 +96,8 @@ export const resource: Tab = {
         },
       },
       access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
     },
     {
@@ -111,8 +122,8 @@ export const resource: Tab = {
         description: 'Configure groups of components for the left column',
       },
       access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
       fields: columnGroupFields,
     },
@@ -126,8 +137,8 @@ export const resource: Tab = {
         description: 'Configure groups of components for the right column',
       },
       access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
       fields: columnGroupFields,
     },

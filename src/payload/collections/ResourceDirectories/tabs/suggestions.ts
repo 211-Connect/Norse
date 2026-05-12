@@ -1,13 +1,28 @@
 import { Tab } from 'payload';
-import { hasResourceNavigationFieldAccess } from '../../Users/access/permissions';
+
+import { superAdminOrSupportOrTenantAccess } from '../../Users/access/roles';
 
 export const suggestions: Tab = {
   label: 'Suggestions',
   access: {
-    create: hasResourceNavigationFieldAccess,
-    update: hasResourceNavigationFieldAccess,
+    create: superAdminOrSupportOrTenantAccess,
+    update: superAdminOrSupportOrTenantAccess,
   },
   fields: [
+    {
+      type: 'ui',
+      name: 'suggestionsImportExport',
+      admin: {
+        components: {
+          Field: {
+            path: '@/payload/collections/ResourceDirectories/components/BulkCsvImportExport',
+            clientProps: {
+              kind: 'suggestions',
+            },
+          },
+        },
+      },
+    },
     {
       name: 'suggestions',
       type: 'array',

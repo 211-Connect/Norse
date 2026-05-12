@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "Saare",
-    "favorites": "Yiɗɓe",
     "log_out": "Yaltu",
     "language_select_label": "Suɓo ɗemngal ngam waylude ɗemngal lowre ndee",
     "my_stuff": "Geɗe am",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "Doggol maa waawaa momteede.",
     "list_created": "Doggol sosaa",
     "list_created_message": "Doggol maa sosaa ko no moƴƴi.",
-    "unable_to_create_list_message": "Doggol maa ngol waawaa soseede."
+    "unable_to_create_list_message": "Doggol maa ngol waawaa soseede.",
+    "remove_from_list_title": "Ittude e doggol?",
+    "remove_from_list_description": "Ngalɗoo doosgal maa ittu e ndee doggol. Aɗa waawi ɓeydude ɗum caggal so ina haani."
   },
   "search": {
     "add_my_location": "Ɓeydu nokku am",
@@ -46,8 +47,16 @@
     "geocoding_unsupported": "Geolocation jaɓaaka e feerorde maa",
     "geocoding_unable_to_retrieve": "Waawaa heɓtude nokku maa. Tiiɗno ƴeewto dottaaɗe nokkuure feerorde maa, enndito-ɗaa kadi.",
     "categories": "Tiitooɗe",
-    "show_all": "Hollit fof ({{limto}})",
-    "show_less": "Hollit ko famɗi"
+    "show_all": "Hollit fof ({{count}})",
+    "show_less": "Hollit ko famɗi",
+    "query_input_label": "Yiylo jawdi",
+    "location_input_label": "Yiylo nokku",
+    "change_location_label": "Waylu nokku: {{location}}",
+    "open_search_dialog": "Uddit kaɓirgol njiylawu",
+    "list_status_one": "1 cuɓal ina woodi. Huutoro jokkorgal dow e les ngam ƴeewtaade.",
+    "list_status_other": "{{limto}} cuɓe ina ngoodi. Huutoro jokkorgal dow e les ngam ƴeewtaade.",
+    "search_dialog_description": "Yiylo geɗe e kesɗitin nokku maa.",
+    "everywhere": "Fof fow"
   },
   "call_to_action": {
     "call": "Ewnandu",
@@ -67,7 +76,9 @@
     "login": "Naatde",
     "show_more": "Hollit ko ɓuri ɗum",
     "show_less": "Hollit ko famɗi",
-    "print": "Tappirde"
+    "print": "Tappirde",
+    "close": "Uddu",
+    "send": "Neldugo"
   },
   "list": {
     "private": "Feerejo",
@@ -93,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "Sos doggol",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Inde",
       "list_description": "Limtol",
       "make_public": "Waɗde renndo"
@@ -127,22 +139,45 @@
       "sms_send_success_title": "SMS neldaama!",
       "sms_send_success_body": "Mesaas maa neldaama.",
       "sms_send_failed_title": "Neldude SMS ŋakki",
-      "sms_send_failed_body": "Mesaas maa waawaa neldeede."
+      "sms_send_failed_body": "Mesaas maa waawaa neldeede.",
+      "opens_in_new_tab": "udditaa e tab keso",
+      "phone_number_label": "Limoore telefoŋ",
+      "sms_unavailable": "Feccere SMS alaa"
     },
-    "prompt_auth": "Tiiɗno, naata ngam huutoraade ngalɗoo gollal."
+    "prompt_auth": "Tiiɗno, naata ngam huutoraade ngalɗoo gollal.",
+    "prompt_auth_description": "Tiiɗno, naata ngam huutoraade ngalɗoo gollal.",
+    "manage_favorites": {
+      "title": "Njuɓɓudi ɓurɓe yiɗeede",
+      "description": "Add this resource to or remove it from your lists."
+    }
   },
   "update_location": {
-    "prompt_start_location": "Hol nokku ɗo puɗɗorto-ɗaa?"
+    "prompt_start_location": "Hol nokku ɗo puɗɗorto-ɗaa?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Dataaji ɗi..."
   },
   "footer": {
-    "copyright": "© Hakkeeji {{binndol}}"
+    "copyright": "© Hakkeeji {{text}}"
   },
   "carousel": {
     "previous": "Je sali",
     "next": "Tokki",
     "go_to": "Yah to"
+  },
+  "filter_results_count_one": "{{count}} njeñtudi",
+  "filter_results_count_other": "{{count}} njeñtudi ndii",
+  "autocomplete": {
+    "results_available_one": "{{count}} njeñtudi ina woodi",
+    "results_available_other": "{{count}} njeñtudi ina woodi",
+    "no_results": "Alaa njeñtudi"
+  },
+  "auth_error": {
+    "access_denied_title": "Heɓde haɗaama",
+    "access_denied_description": "A naatii no moƴƴi, kono ngoo konte yamiraaka naatde e ndee lowre. Enndu kadi e konte goɗɗe.",
+    "default_title": "Juumre hoolkiso",
+    "default_description": "Min mbaawaano timminde golle naatnugol ɗee. Tiiɗno enndu kadi.",
+    "logout_and_try_again": "Yaltu e ƴeewde kadi"
   }
 }

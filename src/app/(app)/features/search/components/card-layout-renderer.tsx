@@ -2,15 +2,16 @@
 
 import { Card, CardContent } from '@/app/(app)/shared/components/ui/card';
 import { Separator } from '@/app/(app)/shared/components/ui/separator';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { ResultType } from '@/app/(app)/shared/store/results';
+import { cleanSeparators } from '@/app/(app)/shared/utils/layout-utils';
+
 import { SearchCardComponentId } from '../types/card-component-ids';
+import { SearchCardLayoutConfig } from '../types/card-layout-config';
 import {
   getSearchCardComponentById,
   shouldSearchCardComponentRender,
 } from './card-component-registry';
-import { SearchCardLayoutConfig } from '../types/card-layout-config';
-import { cleanSeparators } from '@/app/(app)/shared/utils/layout-utils';
-import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 
 interface CardLayoutRendererProps {
   layout: SearchCardLayoutConfig;
@@ -45,7 +46,7 @@ export function CardLayoutRenderer({
           key={
             isSeparator
               ? `separator-${itemIndex}`
-              : `${item.componentId}-${itemIndex}`
+              : `item-${item.componentId}-${itemIndex}`
           }
           result={result}
           customAttribute={item.customAttribute}
@@ -69,8 +70,11 @@ export function CardLayoutRenderer({
 
   return (
     <>
-      <Card id={result._id} className="flex flex-col print:border-none">
-        <CardContent className="flex flex-col gap-2">
+      <Card
+        id={result._id}
+        className="flex flex-col overflow-hidden print:border-none"
+      >
+        <CardContent className="flex min-w-0 flex-col gap-2">
           {renderedComponents}
         </CardContent>
       </Card>

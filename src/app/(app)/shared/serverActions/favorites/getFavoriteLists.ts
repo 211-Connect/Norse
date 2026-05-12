@@ -1,17 +1,18 @@
 'use server';
 
 import {
-  API_URL,
-  FAVORITES_LIST_ENDPOINT,
-  INTERNAL_API_KEY,
-} from '../../lib/constants';
-import { getAuthHeaders } from '../../lib/authHeaders';
-import { fetchWrapper } from '../../lib/fetchWrapper';
-import {
   FavoriteListResponseDto,
   GetFavoriteListsResponse,
   Privacy,
 } from '@/types/favorites';
+
+import { getAuthHeaders } from '../../lib/authHeaders';
+import {
+  API_URL,
+  FAVORITES_LIST_ENDPOINT,
+  INTERNAL_API_KEY,
+} from '../../lib/constants';
+import { fetchWrapper } from '../../lib/fetchWrapper';
 
 export async function getFavoriteLists(
   tenantId?: string,
@@ -19,6 +20,7 @@ export async function getFavoriteLists(
   limit: number = 10,
   search: string = '',
   locale: string = 'en',
+  resourceId?: string,
 ): Promise<GetFavoriteListsResponse> {
   const authHeaders = await getAuthHeaders(tenantId);
 
@@ -31,6 +33,9 @@ export async function getFavoriteLists(
   if (search) {
     searchParams.append('search', search);
   }
+  if (resourceId) {
+    searchParams.append('resource_id', resourceId);
+  }
 
   const url = `${API_URL}/${FAVORITES_LIST_ENDPOINT}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
 
@@ -42,7 +47,7 @@ export async function getFavoriteLists(
       'x-api-key': INTERNAL_API_KEY || '',
     },
     cache: 'no-store',
-  })
+  });
 
   const items = response?.items || [];
   const totalCount = response?.total || 0;
@@ -53,6 +58,7 @@ export async function getFavoriteLists(
     description: item.description,
     privacy: item.privacy as Privacy,
     ownerId: item.ownerId,
+    containsResource: item.containsResource,
   }));
 
   return { data, totalCount };

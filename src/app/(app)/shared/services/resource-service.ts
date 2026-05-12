@@ -3,8 +3,10 @@ import { cache } from 'react';
 
 import { ApiResource, Resource } from '@/types/resource';
 import { CacheKey, withCache } from '@/utilities/withCache';
+import { ensureUrlProtocol } from '@/utils';
+
+import { API_URL, INTERNAL_API_KEY } from '../lib/constants';
 import { fetchWrapper } from '../lib/fetchWrapper';
-import { INTERNAL_API_KEY, API_URL } from '../lib/constants';
 
 async function fetchAndTransformResourceOrigin(
   url: string,
@@ -54,6 +56,7 @@ async function fetchAndTransformResourceOrigin(
         serviceName: data?.translation?.serviceName ?? null,
         attribution: data?.attribution ?? null,
         name: data?.translation?.displayName ?? data?.displayName ?? null,
+        locationName: data?.locationName ?? null,
         description: data?.translation?.serviceDescription ?? null,
         phone:
           data?.phone ??
@@ -61,7 +64,7 @@ async function fetchAndTransformResourceOrigin(
           data?.phoneNumbers?.find((p) => p.rank === 1 && p.type === 'voice')
             ?.number ??
           null,
-        website: data?.website ?? null,
+        website: ensureUrlProtocol(data?.website),
         address:
           data?.address ??
           data?.addresses?.find((a) => a.rank === 1)?.address_1 ??
@@ -71,6 +74,7 @@ async function fetchAndTransformResourceOrigin(
           data?.translation?.phoneNumbers ?? data?.phoneNumbers ?? null,
         email: data?.email ?? null,
         hours: data?.translation?.hours ?? null,
+        hoursDescription: data?.translation?.hoursDescription ?? null,
         languages: data?.translation?.languages ?? null,
         interpretationServices:
           data?.translation?.interpretationServices ?? null,
@@ -78,8 +82,6 @@ async function fetchAndTransformResourceOrigin(
         fees: data?.translation?.fees ?? null,
         requiredDocuments: data?.translation?.requiredDocuments ?? null,
         eligibilities: data?.translation?.eligibilities ?? null,
-        serviceAreaDescription:
-          data?.translation?.serviceAreaDescription ?? null,
         serviceAreaName: data?.serviceAreaName ?? null,
         categories: data?.translation?.taxonomies ?? null,
         lastAssuredOn: data?.lastAssuredDate
@@ -93,7 +95,10 @@ async function fetchAndTransformResourceOrigin(
         organizationName: data?.organizationName ?? null,
         organizationDescription:
           data?.translation?.organizationDescription ?? null,
+        organizationUrl: data?.organizationUrl ?? null,
         serviceArea: data?.serviceArea ?? null,
+        serviceAreaDescription:
+          data?.translation?.serviceAreaDescription ?? null,
         transportation: data?.translation?.transportation ?? null,
         accessibility: data?.translation?.accessibility ?? null,
         facets:
@@ -106,6 +111,7 @@ async function fetchAndTransformResourceOrigin(
             };
           }) ?? null,
         attributeValues: data?.translation?.attributeValues ?? null,
+        contacts: data?.translation?.contacts ?? null,
       };
     },
     { memory: false, redis: true },

@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "Heim",
-    "favorites": "Favoriten",
     "log_out": "Abmelden",
     "language_select_label": "Wählen Sie eine Sprache aus, um die Website-Sprache zu ändern.",
     "my_stuff": "Meine Sachen",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "Ihre Liste konnte nicht gelöscht werden.",
     "list_created": "Liste erstellt",
     "list_created_message": "Ihre Liste wurde erfolgreich erstellt.",
-    "unable_to_create_list_message": "Ihre Liste konnte nicht erstellt werden."
+    "unable_to_create_list_message": "Ihre Liste konnte nicht erstellt werden.",
+    "remove_from_list_title": "Aus der Liste entfernen?",
+    "remove_from_list_description": "Diese Ressource wird aus dieser Liste entfernt. Sie können sie bei Bedarf später wieder hinzufügen."
   },
   "search": {
     "add_my_location": "Meinen Standort hinzufügen",
@@ -47,7 +48,15 @@
     "geocoding_unable_to_retrieve": "Ihr Standort konnte nicht ermittelt werden. Bitte überprüfen Sie die Standorteinstellungen Ihres Browsers und versuchen Sie es erneut.",
     "categories": "Themen",
     "show_all": "Alle anzeigen ({{count}})",
-    "show_less": "Weniger anzeigen"
+    "show_less": "Weniger anzeigen",
+    "query_input_label": "Ressourcen suchen",
+    "location_input_label": "Suche nach einem Standort",
+    "change_location_label": "Standort ändern: {{location}}",
+    "open_search_dialog": "Suchdialog öffnen",
+    "list_status_one": "Es steht eine Option zur Verfügung. Verwenden Sie die Pfeiltasten nach oben und unten, um sie anzuzeigen.",
+    "list_status_other": "{{count}} Optionen verfügbar. Verwenden Sie die Pfeiltasten nach oben und unten, um sie anzuzeigen.",
+    "search_dialog_description": "Suchen Sie nach Ressourcen und aktualisieren Sie Ihren Standort.",
+    "everywhere": "Überall"
   },
   "call_to_action": {
     "call": "Anruf",
@@ -67,7 +76,9 @@
     "login": "Login",
     "show_more": "Mehr anzeigen",
     "show_less": "Weniger anzeigen",
-    "print": "Drucken"
+    "print": "Drucken",
+    "close": "Schließen",
+    "send": "Schicken"
   },
   "list": {
     "private": "Privat",
@@ -93,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "Liste erstellen",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Name",
       "list_description": "Beschreibung",
       "make_public": "Veröffentlichen"
@@ -127,12 +139,21 @@
       "sms_send_success_title": "SMS gesendet!",
       "sms_send_success_body": "Ihre Nachricht wurde gesendet.",
       "sms_send_failed_title": "SMS-Versand fehlgeschlagen",
-      "sms_send_failed_body": "Ihre Nachricht konnte nicht gesendet werden."
+      "sms_send_failed_body": "Ihre Nachricht konnte nicht gesendet werden.",
+      "opens_in_new_tab": "wird in einem neuen Tab geöffnet",
+      "phone_number_label": "Telefonnummer",
+      "sms_unavailable": "SMS-Freigabe ist nicht möglich"
     },
-    "prompt_auth": "Bitte melden Sie sich an, um diese Funktion zu nutzen."
+    "prompt_auth": "Bitte melden Sie sich an, um diese Funktion zu nutzen.",
+    "prompt_auth_description": "Bitte melden Sie sich an, um diese Funktion zu nutzen.",
+    "manage_favorites": {
+      "title": "Favoriten verwalten",
+      "description": "Add this resource to or remove it from your lists."
+    }
   },
   "update_location": {
-    "prompt_start_location": "Wo starten Sie?"
+    "prompt_start_location": "Wo starten Sie?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Daten bereitgestellt von"
@@ -144,5 +165,19 @@
     "previous": "Vorherige",
     "next": "Nächste",
     "go_to": "Gehe zu"
+  },
+  "filter_results_count_one": "{{count}} Ergebnis",
+  "filter_results_count_other": "{{count}} Ergebnisse",
+  "autocomplete": {
+    "results_available_one": "{{count}} Ergebnisse verfügbar",
+    "results_available_other": "{{count}} Ergebnisse verfügbar",
+    "no_results": "Keine Ergebnisse"
+  },
+  "auth_error": {
+    "access_denied_title": "Zugriff verweigert",
+    "access_denied_description": "Sie haben sich erfolgreich angemeldet, aber dieses Konto hat keine Berechtigung für diese Website. Versuchen Sie es mit einem anderen Konto.",
+    "default_title": "Authentifizierungsfehler",
+    "default_description": "Der Anmeldevorgang konnte nicht abgeschlossen werden. Bitte versuchen Sie es erneut.",
+    "logout_and_try_again": "Abmelden und erneut versuchen"
   }
 }

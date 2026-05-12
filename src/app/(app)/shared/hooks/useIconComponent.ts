@@ -1,12 +1,13 @@
-import * as React from 'react';
 import { type LucideIcon } from 'lucide-react';
-import { createLogger } from '@/lib/logger';
+import * as React from 'react';
 
-const log = createLogger('useIconComponent');
+import { createLogger } from '@/lib/logger';
 import {
   SUPPORTED_ICONS,
   type SupportedIconName,
 } from '@/utils/supportedIcons';
+
+const log = createLogger('useIconComponent');
 
 /**
  * Returns a Lucide icon component by name from the supported icons list.

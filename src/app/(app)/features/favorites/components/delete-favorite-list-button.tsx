@@ -1,5 +1,11 @@
 'use client';
 
+import { Trash2 } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
+
 import { Button } from '@/app/(app)/shared/components/ui/button';
 import {
   Dialog,
@@ -10,13 +16,9 @@ import {
   DialogTitle,
 } from '@/app/(app)/shared/components/ui/dialog';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
-import { deleteFavoriteList } from '@/app/(app)/shared/serverActions/favorites/deleteFavoriteList';
-import { Trash2 } from 'lucide-react';
-import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
 import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
+import { withOptionalTrailingSlash } from '@/app/(app)/shared/lib/utils';
+import { deleteFavoriteList } from '@/app/(app)/shared/serverActions/favorites/deleteFavoriteList';
 import { createLogger } from '@/lib/logger';
 
 const log = createLogger('delete-favorite-list-button');
@@ -43,7 +45,9 @@ export function DeleteFavoriteListButton({ id, name }) {
         pathname?.includes('/favorites/') &&
         !pathname.endsWith('/favorites')
       ) {
-        router.push(`/favorites${stringifiedSearchParams}`);
+        router.push(
+          withOptionalTrailingSlash(`/favorites${stringifiedSearchParams}`),
+        );
       } else {
         router.refresh();
       }

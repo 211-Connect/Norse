@@ -22,5 +22,7 @@
       "name": "Naziv resursa",
       "organization": "Naziv pružatelja usluga"
     }
-  }
+  },
+  "name_unavailable": "Ime nije dostupno",
+  "share_body": "Pogledajte {{count}} rezultata pretraživanja za \"{{title}}\""
 }

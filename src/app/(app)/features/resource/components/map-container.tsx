@@ -1,6 +1,6 @@
 import { MapRenderer } from '@/app/(app)/shared/components/map/map-renderer';
-import { isValidCoordinate } from '@/utils/isValidCoordinate';
 import { Resource } from '@/types/resource';
+import { isValidCoordinate } from '@/utils/isValidCoordinate';
 
 export function MapContainer({ resource }: { resource: Resource }) {
   const coordinates = resource?.location?.coordinates;
@@ -9,7 +9,7 @@ export function MapContainer({ resource }: { resource: Resource }) {
 
   const serviceArea = resource?.serviceArea; // Expecting a GeoJSON-like { type, coordinates }
 
-  if (!(hasValidPoint && serviceArea)) {
+  if (!hasValidPoint && !serviceArea) {
     return null;
   }
 
@@ -26,7 +26,7 @@ export function MapContainer({ resource }: { resource: Resource }) {
               ]
             : []
         }
-        serviceArea={!hasValidPoint ? serviceArea : undefined}
+        serviceArea={!hasValidPoint && serviceArea ? serviceArea : undefined}
         disableUserLocation
       />
     </div>

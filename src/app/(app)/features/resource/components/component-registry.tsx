@@ -1,39 +1,45 @@
 import { ComponentType } from 'react';
-import { ResourceComponentId } from '../types/component-ids';
-import { Resource } from '@/types/resource';
-import {
-  BadgesComponent,
-  ResourceNameComponent,
-  ServiceNameComponent,
-  AddressComponent,
-  TransportationComponent,
-  AccessibilityComponent,
-  EligibilityComponent,
-  RequiredDocumentsComponent,
-  HoursComponent,
-  PhoneNumbersComponent,
-  WebsiteComponent,
-  EmailComponent,
-  LanguagesComponent,
-  InterpretationServicesComponent,
-  ApplicationProcessComponent,
-  FeesComponent,
-  ServiceAreaComponent,
-  DescriptionComponent,
-  CategoriesComponent,
-  LastAssuredComponent,
-  AttributionComponent,
-  MapComponent,
-  GetDirectionsComponent,
-  OrganizationComponent,
-  FacetsComponent,
-  SeparatorComponent,
-  CustomAttributeComponent,
-  getFacets,
-  getCustomAttributeProps,
-} from './resource-components';
-import { CustomAttributeConfig } from '../types/layout-config';
+
 import { AppConfig } from '@/types/appConfig';
+import { Resource } from '@/types/resource';
+
+import { ResourceComponentId } from '../types/component-ids';
+import { CustomAttributeConfig } from '../types/layout-config';
+import {
+  AccessibilityComponent,
+  AddressComponent,
+  ApplicationProcessComponent,
+  AttributionComponent,
+  BadgesComponent,
+  CategoriesComponent,
+  ContactsComponent,
+  CustomAttributeComponent,
+  DescriptionComponent,
+  EligibilityComponent,
+  EmailComponent,
+  FacetsComponent,
+  FeesComponent,
+  GetDirectionsComponent,
+  HoursComponent,
+  InterpretationServicesComponent,
+  LanguagesComponent,
+  LastAssuredComponent,
+  LocationNameComponent,
+  LocationNameSubtitleComponent,
+  MapComponent,
+  OrganizationComponent,
+  PhoneNumbersComponent,
+  RequiredDocumentsComponent,
+  ResourceNameComponent,
+  SeparatorComponent,
+  ServiceAreaComponent,
+  ServiceNameComponent,
+  TransportationComponent,
+  WebsiteComponent,
+  getCustomAttributeProps,
+  getFacets,
+} from './resource-components';
+import { OrganizationUrlComponent } from './resource-components/organization-url';
 
 export interface ResourceComponentProps {
   resource: Resource;
@@ -47,14 +53,18 @@ export const componentRegistry: Record<
   [ResourceComponentId.BADGES]: BadgesComponent,
   [ResourceComponentId.RESOURCE_NAME]: ResourceNameComponent,
   [ResourceComponentId.SERVICE_NAME]: ServiceNameComponent,
+  [ResourceComponentId.LOCATION_NAME]: LocationNameComponent,
+  [ResourceComponentId.LOCATION_NAME_SUBTITLE]: LocationNameSubtitleComponent,
   [ResourceComponentId.ADDRESS]: AddressComponent,
   [ResourceComponentId.TRANSPORTATION]: TransportationComponent,
   [ResourceComponentId.ACCESSIBILITY]: AccessibilityComponent,
   [ResourceComponentId.ELIGIBILITY]: EligibilityComponent,
   [ResourceComponentId.REQUIRED_DOCUMENTS]: RequiredDocumentsComponent,
   [ResourceComponentId.HOURS]: HoursComponent,
+  [ResourceComponentId.CONTACTS]: ContactsComponent,
   [ResourceComponentId.PHONE_NUMBERS]: PhoneNumbersComponent,
   [ResourceComponentId.WEBSITE]: WebsiteComponent,
+  [ResourceComponentId.ORGANIZATION_URL]: OrganizationUrlComponent,
   [ResourceComponentId.EMAIL]: EmailComponent,
   [ResourceComponentId.LANGUAGES]: LanguagesComponent,
   [ResourceComponentId.INTERPRETATION_SERVICES]:
@@ -103,6 +113,10 @@ export function shouldComponentRender(
         appConfig.featureFlags.showSearchAndResourceServiceName &&
         Boolean(resource.serviceName)
       );
+    case ResourceComponentId.LOCATION_NAME:
+      return Boolean(resource.locationName);
+    case ResourceComponentId.LOCATION_NAME_SUBTITLE:
+      return Boolean(resource.locationName);
     case ResourceComponentId.ADDRESS:
       return Boolean(resource.address);
     case ResourceComponentId.TRANSPORTATION:
@@ -115,10 +129,17 @@ export function shouldComponentRender(
       return Boolean(resource.requiredDocuments);
     case ResourceComponentId.HOURS:
       return Boolean(resource.hours);
+    case ResourceComponentId.CONTACTS:
+      return Boolean(resource.contacts && resource.contacts.length > 0);
     case ResourceComponentId.PHONE_NUMBERS:
       return Boolean(resource.phoneNumbers && resource.phoneNumbers.length > 0);
     case ResourceComponentId.WEBSITE:
       return Boolean(resource.website);
+    case ResourceComponentId.ORGANIZATION_URL:
+      return Boolean(
+        resource.organizationUrl &&
+        resource.organizationUrl !== resource.website,
+      );
     case ResourceComponentId.EMAIL:
       return Boolean(resource.email);
     case ResourceComponentId.LANGUAGES:
@@ -143,9 +164,10 @@ export function shouldComponentRender(
       return Boolean(resource.categories && resource.categories.length > 0);
     case ResourceComponentId.MAP:
       return Boolean(
-        resource.location &&
-        resource.location.coordinates &&
-        resource.location.coordinates.length === 2,
+        (resource.location &&
+          resource.location.coordinates &&
+          resource.location.coordinates.length === 2) ||
+        (resource.serviceArea && resource.serviceArea.coordinates),
       );
     case ResourceComponentId.GET_DIRECTIONS:
       return Boolean(
@@ -153,24 +175,26 @@ export function shouldComponentRender(
         resource.location.coordinates &&
         resource.location.coordinates.length === 2,
       );
-    case ResourceComponentId.FACETS:
+    case ResourceComponentId.FACETS: {
       if (!resource.facets || !resource.facets.length) {
         return false;
       }
       const facets = getFacets(resource, appConfig.search.facets);
 
       return Boolean(facets);
+    }
     case ResourceComponentId.ORGANIZATION:
       return Boolean(
         resource.organizationName || resource.organizationDescription,
       );
-    case ResourceComponentId.CUSTOM_ATTRIBUTE:
+    case ResourceComponentId.CUSTOM_ATTRIBUTE: {
       const shouldRender = getCustomAttributeProps({
         resource,
         customAttribute,
       });
 
       return Boolean(shouldRender);
+    }
     default:
       return true;
   }

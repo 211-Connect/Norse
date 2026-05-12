@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "keycloak-admin",
+  "owner": "lobbi-docs",
+  "repo": "claude",
+  "path": "plugins/lobbi-platform-manager/skills/keycloak-admin",
+  "branch": "main",
+  "sha": "80c9d49c89f0efb3e39b820566614c0c3d0e2f11",
+  "source": "manual"
+}

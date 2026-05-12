@@ -19,9 +19,9 @@
     },
     "step_4": {
       "paragraph_1": "Lisää osoitteesi tähän löytääksesi lähialueellasi saatavilla olevia palveluita. Näin voimme näyttää sinulle vain ne vaihtoehdot, jotka todella tulevat alueellesi."
-    }
+    },
+    "dialog_title": "Sivuston läpikäynti"
   },
-  "categories_title": "Aiheet",
   "new_layout": {
     "topics_section": {
       "cta": "Selaa aiheita",

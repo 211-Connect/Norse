@@ -1,18 +1,20 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { MapService } from '@/app/(app)/shared/services/map-service';
-import { useGeocodingAdapter } from '../use-geocoding-adapter';
-import { useMemo } from 'react';
 import { EarthIcon } from 'lucide-react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { MapService } from '@/app/(app)/shared/services/map-service';
 import { GeocodeResult } from '@/types/resource';
+
+import { useGeocodingAdapter } from '../use-geocoding-adapter';
 
 export function useLocations(searchTerm: string, excludeEverywhere = false) {
   const adapter = useGeocodingAdapter();
   const { t, i18n } = useTranslation();
 
-  const { data = [] } = useQuery({
+  const { data = [], isFetching } = useQuery({
     placeholderData: (prev) => prev,
     queryKey: ['locations', i18n.language, searchTerm],
     enabled: !!adapter && searchTerm.length > 0,
@@ -60,5 +62,5 @@ export function useLocations(searchTerm: string, excludeEverywhere = false) {
     ];
   }, [data, additionalLocations, excludeEverywhere]);
 
-  return { data, options, additionalLocations };
+  return { data, options, additionalLocations, isFetching };
 }

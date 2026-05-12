@@ -1,11 +1,12 @@
 import { Field, Tab } from 'payload';
-import {
-  hasPropertySettingsFieldAccess,
-  hasSearchFieldAccess,
-  hasLayoutFieldAccess,
-} from '../../Users/access/permissions';
-import { SearchCardComponentId } from '@/app/(app)/features/search/types/card-component-ids';
 import { title } from 'radash';
+
+import { SearchCardComponentId } from '@/app/(app)/features/search/types/card-component-ids';
+
+import {
+  superAdminAccess,
+  superAdminOrSupportOrTenantAccess,
+} from '../../Users/access/roles';
 import { customAttributeFields } from '../fields/customAttributeFields';
 
 const CARD_COMPONENT_ID_OPTIONS = Object.values(SearchCardComponentId).map(
@@ -41,48 +42,168 @@ export const search: Tab = {
       name: 'texts',
       fields: [
         {
-          type: 'row',
+          type: 'group',
+          label: 'Home and Search Bar',
+          admin: {
+            description:
+              'Customize the main search heading and the placeholder text shown on the home page and within the primary search inputs.',
+          },
           fields: [
             {
-              name: 'title',
-              type: 'text',
-              localized: true,
-              access: {
-                create: hasSearchFieldAccess,
-                update: hasSearchFieldAccess,
-              },
+              type: 'row',
+              fields: [
+                {
+                  name: 'title',
+                  type: 'text',
+                  localized: true,
+                  access: {
+                    create: superAdminOrSupportOrTenantAccess,
+                    update: superAdminOrSupportOrTenantAccess,
+                  },
+                },
+                {
+                  name: 'queryInputPlaceholder',
+                  type: 'text',
+                  localized: true,
+                  access: {
+                    create: superAdminOrSupportOrTenantAccess,
+                    update: superAdminOrSupportOrTenantAccess,
+                  },
+                },
+              ],
             },
             {
-              name: 'queryInputPlaceholder',
-              type: 'text',
-              localized: true,
-              access: {
-                create: hasSearchFieldAccess,
-                update: hasSearchFieldAccess,
-              },
+              type: 'row',
+              fields: [
+                {
+                  name: 'locationInputPlaceholder',
+                  type: 'text',
+                  localized: true,
+                  access: {
+                    create: superAdminOrSupportOrTenantAccess,
+                    update: superAdminOrSupportOrTenantAccess,
+                  },
+                },
+              ],
             },
           ],
         },
         {
-          type: 'row',
+          type: 'group',
+          label: 'Search Suggestions',
+          admin: {
+            description:
+              'Customize the section titles shown inside the search autocomplete dropdown beneath the main search field. These labels appear above grouped suggestions such as Suggestions, Categories, and Taxonomies/Services.',
+          },
           fields: [
             {
-              name: 'locationInputPlaceholder',
-              type: 'text',
-              localized: true,
-              access: {
-                create: hasSearchFieldAccess,
-                update: hasSearchFieldAccess,
-              },
+              type: 'group',
+              name: 'suggestionHeaders',
+              fields: [
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'suggestions',
+                      label: 'Suggestions Heading',
+                      type: 'text',
+                      localized: true,
+                      admin: {
+                        description:
+                          'Shown above free-text search suggestions in the autocomplete dropdown.',
+                      },
+                      access: {
+                        create: superAdminOrSupportOrTenantAccess,
+                        update: superAdminOrSupportOrTenantAccess,
+                      },
+                    },
+                    {
+                      name: 'categories',
+                      label: 'Categories Heading',
+                      type: 'text',
+                      localized: true,
+                      admin: {
+                        description:
+                          'Shown above topic/category matches in the autocomplete dropdown.',
+                      },
+                      access: {
+                        create: superAdminOrSupportOrTenantAccess,
+                        update: superAdminOrSupportOrTenantAccess,
+                      },
+                    },
+                  ],
+                },
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'taxonomies',
+                      label: 'Taxonomies Heading',
+                      type: 'text',
+                      localized: true,
+                      admin: {
+                        description:
+                          'Shown above taxonomy matches in the autocomplete dropdown. This can be renamed to terms like Services.',
+                      },
+                      access: {
+                        create: superAdminOrSupportOrTenantAccess,
+                        update: superAdminOrSupportOrTenantAccess,
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: 'group',
+          label: 'Search Results',
+          admin: {
+            description:
+              'Customize text shown after a search is run, including the call to action on result cards and the fallback message displayed when no results are found.',
+          },
+          fields: [
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'viewDetailsText',
+                  type: 'text',
+                  localized: true,
+                  access: {
+                    create: superAdminOrSupportOrTenantAccess,
+                    update: superAdminOrSupportOrTenantAccess,
+                  },
+                },
+                {
+                  name: 'useTextLinkForViewDetails',
+                  type: 'checkbox',
+                  defaultValue: false,
+                  admin: {
+                    description:
+                      'Display the View Details action as an underlined text link instead of the default button-style action.',
+                  },
+                  access: {
+                    create: superAdminOrSupportOrTenantAccess,
+                    update: superAdminOrSupportOrTenantAccess,
+                  },
+                },
+              ],
             },
             {
-              name: 'noResultsFallbackText',
-              type: 'textarea',
-              localized: true,
-              access: {
-                create: hasSearchFieldAccess,
-                update: hasSearchFieldAccess,
-              },
+              type: 'row',
+              fields: [
+                {
+                  name: 'noResultsFallbackText',
+                  type: 'textarea',
+                  localized: true,
+                  access: {
+                    create: superAdminOrSupportOrTenantAccess,
+                    update: superAdminOrSupportOrTenantAccess,
+                  },
+                },
+              ],
             },
           ],
         },
@@ -97,8 +218,8 @@ export const search: Tab = {
           type: 'checkbox',
           defaultValue: false,
           access: {
-            create: hasSearchFieldAccess,
-            update: hasSearchFieldAccess,
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
           },
         },
         {
@@ -108,8 +229,8 @@ export const search: Tab = {
           min: 25,
           required: true,
           access: {
-            create: hasSearchFieldAccess,
-            update: hasSearchFieldAccess,
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
           },
         },
         {
@@ -120,8 +241,8 @@ export const search: Tab = {
             plural: 'Radius Options',
           },
           access: {
-            create: hasSearchFieldAccess,
-            update: hasSearchFieldAccess,
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
           },
           fields: [
             {
@@ -138,11 +259,25 @@ export const search: Tab = {
           name: 'defaultRadius',
           type: 'number',
           access: {
-            create: hasSearchFieldAccess,
-            update: hasSearchFieldAccess,
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
           },
         },
       ],
+    },
+    {
+      name: 'facetsImportExport',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: {
+            path: '@/payload/collections/ResourceDirectories/components/BulkCsvImportExport',
+            clientProps: {
+              kind: 'facets',
+            },
+          },
+        },
+      },
     },
     {
       name: 'facets',
@@ -158,8 +293,8 @@ export const search: Tab = {
         plural: 'Facets',
       },
       access: {
-        create: hasSearchFieldAccess,
-        update: hasSearchFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
       fields: [
         {
@@ -192,8 +327,8 @@ export const search: Tab = {
         },
       },
       access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
+        create: superAdminAccess,
+        update: superAdminAccess,
       },
     },
     {
@@ -209,8 +344,8 @@ export const search: Tab = {
         },
       },
       access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
+        create: superAdminAccess,
+        update: superAdminAccess,
       },
       fields: cardLayoutItemFields,
     },
@@ -218,8 +353,8 @@ export const search: Tab = {
       type: 'group',
       name: 'map',
       access: {
-        create: hasPropertySettingsFieldAccess,
-        update: hasPropertySettingsFieldAccess,
+        create: superAdminAccess,
+        update: superAdminAccess,
       },
       fields: [
         {

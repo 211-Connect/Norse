@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "Mana",
-    "favorites": "Kan jaallataman",
     "log_out": "Ba'aa",
     "language_select_label": "Afaan saayitii jijjiiruuf afaan filadhu",
     "my_stuff": "Waan koo",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "Tarreen kee haqamuu hin dandeenye.",
     "list_created": "Tarreen uumame",
     "list_created_message": "Tarreen kee milkaa'inaan uumameera.",
-    "unable_to_create_list_message": "Tarreen kee uumamuu hin dandeenye."
+    "unable_to_create_list_message": "Tarreen kee uumamuu hin dandeenye.",
+    "remove_from_list_title": "Tarree keessaa haquu?",
+    "remove_from_list_description": "Qabeenyi kun tarree kana keessaa ni haqama. Yoo barbaachise booda deebitee dabaluu dandeessa."
   },
   "search": {
     "add_my_location": "Bakka koo itti dabali",
@@ -47,7 +48,15 @@
     "geocoding_unable_to_retrieve": "Bakka jirtu deebifachuu hin dandeenye. Maaloo qindaa'ina bakka biraawzari keessanii ilaalaa irra deebi'aa yaalaa.",
     "categories": "Mata dureewwan",
     "show_all": "Hundaa agarsiisi ({{count}})",
-    "show_less": "Xiqqaa agarsiisi"
+    "show_less": "Xiqqaa agarsiisi",
+    "query_input_label": "Qabeenya barbaadi",
+    "location_input_label": "Bakka barbaadi",
+    "change_location_label": "Bakka jijjiiri: {{location}}",
+    "open_search_dialog": "Qaaqa barbaacha banaa",
+    "list_status_one": "1 filannoo ni jira. Irra deebi'uuf furtuuwwan xiyyaa olii fi gadi fayyadami.",
+    "list_status_other": "{{count}} filannoowwan jiran. Irra deebi'uuf furtuuwwan xiyyaa olii fi gadi fayyadami.",
+    "search_dialog_description": "Qabeenya barbaadi fi bakka jirtu haaromsi.",
+    "everywhere": "Bakka hundaa"
   },
   "call_to_action": {
     "call": "Waamuu",
@@ -67,7 +76,9 @@
     "login": "Galmaa'i",
     "show_more": "Dabalata agarsiisi",
     "show_less": "Xiqqaa agarsiisi",
-    "print": "Maxxansa"
+    "print": "Maxxansa",
+    "close": "Cufii",
+    "send": "Erguu"
   },
   "list": {
     "private": "Dhuunfaa",
@@ -93,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "Tarree uumuu",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Maqaa",
       "list_description": "Ibsa",
       "make_public": "Ummataaf ifa godhaa"
@@ -127,12 +139,21 @@
       "sms_send_success_title": "Ergaa gabaabaa ergame!",
       "sms_send_success_body": "Ergaan keessan ergamee jira.",
       "sms_send_failed_title": "Ergaa gabaabaa erguun hin milkoofne",
-      "sms_send_failed_body": "Ergaan kee erguu dadhabe."
+      "sms_send_failed_body": "Ergaan kee erguu dadhabe.",
+      "opens_in_new_tab": "caancala haaraa keessatti banama",
+      "phone_number_label": "Lakkoofsa bilbilaa",
+      "sms_unavailable": "Ergaa gabaabaa qooduun hin jiru"
     },
-    "prompt_auth": "Maaloo amala kana fayyadamuuf seena."
+    "prompt_auth": "Maaloo amala kana fayyadamuuf seena.",
+    "prompt_auth_description": "Maaloo amala kana fayyadamuuf seena.",
+    "manage_favorites": {
+      "title": "Favorites bulchuu",
+      "description": "Add this resource to or remove it from your lists."
+    }
   },
   "update_location": {
-    "prompt_start_location": "Bakki itti jalqabdan maali?"
+    "prompt_start_location": "Bakki itti jalqabdan maali?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Daataa kan kenne"
@@ -144,5 +165,19 @@
     "previous": "Kan duraa",
     "next": "Kan itti aanu",
     "go_to": "Gara"
+  },
+  "filter_results_count_one": "{{count}} bu'aa",
+  "filter_results_count_other": "{{count}} bu'aa",
+  "autocomplete": {
+    "results_available_one": "{{count}} bu'aan argama",
+    "results_available_other": "{{count}} bu'aa argama",
+    "no_results": "Bu'aan hin jiru"
+  },
+  "auth_error": {
+    "access_denied_title": "Dhaqqabummaan dhorkame",
+    "access_denied_description": "Milkaa'inaan galteetta, garuu akkaawuntiin kun marsariitii kana akka seenu hin hayyamamu. Akkaawuntii adda ta'een irra deebi'aa yaalaa.",
+    "default_title": "Dogoggora mirkaneessuu",
+    "default_description": "Adeemsa galmee xumuruu hin dandeenye. Mee irra deebi'ii yaalaa.",
+    "logout_and_try_again": "Ba'ii irra deebi'ii yaali"
   }
 }

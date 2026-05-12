@@ -22,5 +22,7 @@
       "name": "Igoa o le Punaoa",
       "organization": "Igoa o le Kamupani Tu'uina Atu"
     }
-  }
+  },
+  "name_unavailable": "E le'i maua le igoa",
+  "share_body": "Va'ai i le {{count}} i'uga o le sailiga mo le \"{{title}}\""
 }

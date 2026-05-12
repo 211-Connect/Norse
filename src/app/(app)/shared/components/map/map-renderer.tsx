@@ -1,9 +1,10 @@
 'use client';
 
-import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
-import { userCoordinatesAtom } from '@/app/(app)/shared/store/search';
 import { useAtomValue } from 'jotai';
 import dynamic from 'next/dynamic';
+
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { userCoordinatesAtom } from '@/app/(app)/shared/store/search';
 
 const renderers = {
   mapbox: dynamic(() => import('./mapbox/map').then((mod) => mod.Map)),
@@ -15,6 +16,7 @@ export interface MarkerDef {
   coordinates?: [number, number];
   popup?: any;
   popupData?: any;
+  label?: string;
 }
 
 export interface ServiceAreaGeoJSON {

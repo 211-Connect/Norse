@@ -1,14 +1,14 @@
 'use client';
 
 import { TriangleAlert } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useState, useEffect } from 'react';
 
 import { useAppConfig } from '../hooks/use-app-config';
-import { buttonVariants } from './ui/button';
+import { NEW_TAB_WARNING } from '../lib/constants';
 import { cn } from '../lib/utils';
 import { Link } from './link';
-import { NEW_TAB_WARNING } from '../lib/constants';
+import { buttonVariants } from './ui/button';
 
 export function ReportButton({
   className,
@@ -21,10 +21,12 @@ export function ReportButton({
   const { t } = useTranslation('page-resource');
   const feedbackUrlValue = appConfig?.contact?.feedbackUrl;
   const linkText = customText || t('report');
+
   const [href, setHref] = useState<string | null>(null);
 
   useEffect(() => {
     if (!feedbackUrlValue) {
+      setHref(null);
       return;
     }
 

@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "家",
-    "favorites": "お気に入り",
     "log_out": "ログアウト",
     "language_select_label": "サイトの言語を変更するには、言語を選択してください。",
     "my_stuff": "私の持ち物",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "リストを削除できませんでした。",
     "list_created": "リストが作成されました",
     "list_created_message": "リストが正常に作成されました。",
-    "unable_to_create_list_message": "リストを作成できませんでした。"
+    "unable_to_create_list_message": "リストを作成できませんでした。",
+    "remove_from_list_title": "リストから削除しますか？",
+    "remove_from_list_description": "このリソースはリストから削除されます。必要に応じて後で再度追加できます。"
   },
   "search": {
     "add_my_location": "現在地を追加",
@@ -47,7 +48,15 @@
     "geocoding_unable_to_retrieve": "現在地情報を取得できませんでした。ブラウザの位置情報設定を確認して、もう一度お試しください。",
     "categories": "トピック",
     "show_all": "すべて表示（{{count}}）",
-    "show_less": "表示を減らす"
+    "show_less": "表示を減らす",
+    "query_input_label": "リソースを検索",
+    "location_input_label": "場所を検索",
+    "change_location_label": "場所を変更する: {{location}}",
+    "open_search_dialog": "検索ダイアログを開く",
+    "list_status_one": "選択肢は1つです。上下矢印キーで確認してください。",
+    "list_status_other": "{{count}}個のオプションが利用可能です。上下矢印キーを使用して確認してください。",
+    "search_dialog_description": "リソースを検索し、現在地を更新してください。",
+    "everywhere": "どこでも"
   },
   "call_to_action": {
     "call": "電話",
@@ -67,7 +76,9 @@
     "login": "ログイン",
     "show_more": "もっと見る",
     "show_less": "表示を減らす",
-    "print": "印刷"
+    "print": "印刷",
+    "close": "閉じる",
+    "send": "送信"
   },
   "list": {
     "private": "プライベート",
@@ -93,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "リストを作成する",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "名前",
       "list_description": "説明",
       "make_public": "公開する"
@@ -127,12 +139,21 @@
       "sms_send_success_title": "SMS送信済み！",
       "sms_send_success_body": "メッセージが送信されました。",
       "sms_send_failed_title": "SMS送信に失敗しました",
-      "sms_send_failed_body": "メッセージの送信に失敗しました。"
+      "sms_send_failed_body": "メッセージの送信に失敗しました。",
+      "opens_in_new_tab": "新しいタブで開きます",
+      "phone_number_label": "電話番号",
+      "sms_unavailable": "SMS共有は利用できません"
     },
-    "prompt_auth": "この機能をご利用いただくには、ログインしてください。"
+    "prompt_auth": "この機能をご利用いただくには、ログインしてください。",
+    "prompt_auth_description": "この機能をご利用いただくには、ログインしてください。",
+    "manage_favorites": {
+      "title": "お気に入りを管理する",
+      "description": "Add this resource to or remove it from your lists."
+    }
   },
   "update_location": {
-    "prompt_start_location": "出発地はどこですか？"
+    "prompt_start_location": "出発地はどこですか？",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "提供元データ"
@@ -144,5 +165,19 @@
   },
   "footer": {
     "copyright": "© 著作権 {{text}}"
+  },
+  "filter_results_count_one": "{{count}}件の結果",
+  "filter_results_count_other": "{{count}}件の結果",
+  "autocomplete": {
+    "results_available_one": "{{count}}件の結果が利用可能です",
+    "results_available_other": "{{count}}件の結果が利用可能です",
+    "no_results": "検索結果なし"
+  },
+  "auth_error": {
+    "access_denied_title": "アクセスが拒否されました",
+    "access_denied_description": "ログインは成功しましたが、このアカウントではこのサイトへのアクセスが許可されていません。別のアカウントで再度お試しください。",
+    "default_title": "認証エラー",
+    "default_description": "ログイン処理を完了できませんでした。もう一度お試しください。",
+    "logout_and_try_again": "ログアウトしてもう一度お試しください。"
   }
 }

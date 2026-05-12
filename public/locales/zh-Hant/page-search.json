@@ -22,5 +22,7 @@
       "name": "資源名稱",
       "organization": "提供者名稱"
     }
-  }
+  },
+  "name_unavailable": "姓名不可用",
+  "share_body": "查看 {{count}} 條關於「{{title}}」的搜尋結果"
 }

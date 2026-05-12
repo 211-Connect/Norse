@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "Tsev",
-    "favorites": "Cov nyiam",
     "log_out": "Tawm mus",
     "language_select_label": "Xaiv ib hom lus los hloov hom lus ntawm lub xaib",
     "my_stuff": "Kuv cov khoom",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "Koj daim ntawv teev npe tsis tuaj yeem raug rho tawm.",
     "list_created": "Daim ntawv teev npe tau tsim",
     "list_created_message": "Koj daim ntawv teev npe tau tsim tiav lawm.",
-    "unable_to_create_list_message": "Koj daim ntawv teev npe tsis tau tsim."
+    "unable_to_create_list_message": "Koj daim ntawv teev npe tsis tau tsim.",
+    "remove_from_list_title": "Tshem tawm ntawm daim ntawv teev npe?",
+    "remove_from_list_description": "Cov peev txheej no yuav raug tshem tawm ntawm daim ntawv teev npe no. Koj tuaj yeem ntxiv nws rov qab tom qab yog tias xav tau."
   },
   "search": {
     "add_my_location": "Ntxiv kuv qhov chaw nyob",
@@ -47,7 +48,15 @@
     "geocoding_unable_to_retrieve": "Tsis tuaj yeem nrhiav tau koj qhov chaw nyob. Thov xyuas koj tus browser qhov chaw teeb tsa thiab sim dua.",
     "categories": "Cov Ncauj Lus",
     "show_all": "Qhia tag nrho ({{count}})",
-    "show_less": "Qhia tsawg dua"
+    "show_less": "Qhia tsawg dua",
+    "query_input_label": "Nrhiav cov peev txheej",
+    "location_input_label": "Nrhiav ib qho chaw",
+    "change_location_label": "Hloov qhov chaw: {{location}}",
+    "open_search_dialog": "Qhib lub thawv tshawb nrhiav",
+    "list_status_one": "Muaj 1 txoj kev xaiv. Siv cov yuam sij xub nce thiab nqis los tshuaj xyuas.",
+    "list_status_other": "Muaj cov kev xaiv {{count}}. Siv cov yuam sij xub nce thiab nqis los tshuaj xyuas.",
+    "search_dialog_description": "Nrhiav cov peev txheej thiab hloov kho koj qhov chaw nyob.",
+    "everywhere": "Txhua qhov chaw"
   },
   "call_to_action": {
     "call": "Hu xov tooj",
@@ -67,7 +76,9 @@
     "login": "Nkag mus",
     "show_more": "Qhia ntxiv",
     "show_less": "Qhia tsawg dua",
-    "print": "Luam tawm"
+    "print": "Luam tawm",
+    "close": "Kaw",
+    "send": "Xa"
   },
   "list": {
     "private": "Ntiag tug",
@@ -93,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "Tsim ib daim ntawv teev npe",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Lub Npe",
       "list_description": "Kev piav qhia",
       "make_public": "Ua rau pej xeem pom"
@@ -127,12 +139,21 @@
       "sms_send_success_title": "Xa SMS lawm!",
       "sms_send_success_body": "Koj cov lus tau raug xa mus lawm.",
       "sms_send_failed_title": "Xa SMS tsis tau",
-      "sms_send_failed_body": "Koj cov lus xa tsis tau."
+      "sms_send_failed_body": "Koj cov lus xa tsis tau.",
+      "opens_in_new_tab": "qhib rau hauv ib lub tab tshiab",
+      "phone_number_label": "Tus xov tooj",
+      "sms_unavailable": "Kev sib qhia SMS tsis muaj"
     },
-    "prompt_auth": "Thov nkag mus rau hauv koj tus account kom siv tau qhov feature no."
+    "prompt_auth": "Thov nkag mus rau hauv koj tus account kom siv tau qhov feature no.",
+    "prompt_auth_description": "Thov nkag mus rau hauv koj tus account kom siv tau qhov feature no.",
+    "manage_favorites": {
+      "title": "Tswj cov nyiam",
+      "description": "Add this resource to or remove it from your lists."
+    }
   },
   "update_location": {
-    "prompt_start_location": "Koj qhov chaw pib yog dab tsi?"
+    "prompt_start_location": "Koj qhov chaw pib yog dab tsi?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Cov ntaub ntawv muab los ntawm"
@@ -144,5 +165,19 @@
     "previous": "Yav tas los",
     "next": "Tom ntej no",
     "go_to": "Mus rau"
+  },
+  "filter_results_count_one": "qhov tshwm sim {{count}}",
+  "filter_results_count_other": "cov txiaj ntsig {{count}}",
+  "autocomplete": {
+    "results_available_one": "muaj qhov tshwm sim {{count}}",
+    "results_available_other": "Muaj cov txiaj ntsig {{count}}",
+    "no_results": "Tsis muaj txiaj ntsig"
+  },
+  "auth_error": {
+    "access_denied_title": "Kev nkag mus tsis raug cai",
+    "access_denied_description": "Koj tau nkag mus rau hauv lawm, tab sis tus account no tsis raug tso cai nkag mus rau lub xaib no. Sim dua nrog lwm tus account.",
+    "default_title": "Yuam kev lees paub",
+    "default_description": "Peb ua tsis tau tiav cov txheej txheem nkag mus. Thov sim dua.",
+    "logout_and_try_again": "Tawm mus thiab sim dua"
   }
 }

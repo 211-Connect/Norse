@@ -1,25 +1,102 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+
 import { Address } from '@/types/resource';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export function withOptionalTrailingSlash(path: string): string {
+  if (process.env.NEXT_PUBLIC_WITH_TRAILING_SLASHES !== 'true') {
+    return path;
+  }
+
+  const hashIndex = path.indexOf('#');
+  const pathWithoutHash = hashIndex >= 0 ? path.slice(0, hashIndex) : path;
+  const hash = hashIndex >= 0 ? path.slice(hashIndex) : '';
+
+  const queryIndex = pathWithoutHash.indexOf('?');
+  const pathname =
+    queryIndex >= 0 ? pathWithoutHash.slice(0, queryIndex) : pathWithoutHash;
+  const query = queryIndex >= 0 ? pathWithoutHash.slice(queryIndex) : '';
+
+  if (!pathname || pathname === '/' || pathname.endsWith('/')) {
+    return `${pathname || '/'}${query}${hash}`;
+  }
+
+  return `${pathname}/${query}${hash}`;
+}
+
+export function withOptionalCustomBasePath(path: string): string {
+  const configuredBasePath = process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH;
+  const normalizedBasePath = configuredBasePath
+    ? `/${configuredBasePath.replace(/^\/+|\/+$/g, '')}`
+    : '';
+
+  if (!normalizedBasePath) {
+    return path;
+  }
+
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    try {
+      const url = new URL(path);
+      if (
+        url.pathname === normalizedBasePath ||
+        url.pathname.startsWith(`${normalizedBasePath}/`)
+      ) {
+        return url.toString();
+      }
+
+      url.pathname =
+        url.pathname === '/'
+          ? normalizedBasePath
+          : url.pathname.startsWith('/')
+            ? `${normalizedBasePath}${url.pathname}`
+            : `${normalizedBasePath}/${url.pathname}`;
+
+      return url.toString();
+    } catch {
+      return path;
+    }
+  }
+
+  const hashIndex = path.indexOf('#');
+  const pathWithoutHash = hashIndex >= 0 ? path.slice(0, hashIndex) : path;
+  const hash = hashIndex >= 0 ? path.slice(hashIndex) : '';
+
+  const queryIndex = pathWithoutHash.indexOf('?');
+  const pathname =
+    queryIndex >= 0 ? pathWithoutHash.slice(0, queryIndex) : pathWithoutHash;
+  const query = queryIndex >= 0 ? pathWithoutHash.slice(queryIndex) : '';
+
+  if (
+    pathname === normalizedBasePath ||
+    pathname.startsWith(`${normalizedBasePath}/`)
+  ) {
+    return `${pathname}${query}${hash}`;
+  }
+
+  if (!pathname) {
+    return `${normalizedBasePath}${query}${hash}`;
+  }
+
+  if (!pathname.startsWith('/')) {
+    return `${normalizedBasePath}/${pathname}${query}${hash}`;
+  }
+
+  return `${normalizedBasePath}${pathname}${query}${hash}`;
+}
+
 export type Coords = [number, number]; // [longitude, latitude]
 
 /**
- *
- * @param coords1
- * @param coords2
+ * Calculates the distance between two coordinate pairs using the Haversine formula.
  * @see https://stackoverflow.com/questions/18883601/function-to-calculate-distance-between-two-coordinates
- * @returns
  */
 export function distanceBetweenCoordsInKm(coords1: Coords, coords2: Coords) {
-  const M = 0.621371; // Miles in a kilometer
-
   const R = 6371; // Radius of the earth in km
-  const dLat = deg2rad(coords2[1] - coords1[1]); // deg2rad below
+  const dLat = deg2rad(coords2[1] - coords1[1]);
   const dLon = deg2rad(coords2[0] - coords1[0]);
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
@@ -28,9 +105,13 @@ export function distanceBetweenCoordsInKm(coords1: Coords, coords2: Coords) {
       Math.sin(dLon / 2) *
       Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  const d = R * c; // Distance in km
+  return R * c;
+}
 
-  return d;
+const KM_TO_MILES = 0.621371;
+
+export function distanceBetweenCoordsInMiles(coords1: Coords, coords2: Coords) {
+  return distanceBetweenCoordsInKm(coords1, coords2) * KM_TO_MILES;
 }
 
 function deg2rad(deg: number) {
@@ -46,27 +127,14 @@ export function getGoogleMapsDestinationUrl(
   originCoords: number[] | undefined | null,
   destinationCoords: number[] | undefined | null,
 ) {
-  const getOrigin = () => {
-    if (originCoords) {
-      return originCoords?.slice()?.reverse()?.join(',');
-    }
+  const origin = originCoords?.slice()?.reverse()?.join(',') ?? '';
+  const destination = destinationCoords?.slice()?.reverse()?.join(',') ?? '';
 
-    return '';
-  };
-
-  const getDestination = () => {
-    if (destinationCoords) {
-      return destinationCoords?.slice()?.reverse()?.join(',');
-    }
-
-    return '';
-  };
-
-  if (!getOrigin()) {
-    return `https://www.google.com/maps/dir/?api=1&destination=${getDestination()}`;
-  } else {
-    return `https://www.google.com/maps/dir/?api=1&origin=${getOrigin()}&destination=${getDestination()}`;
+  if (!origin) {
+    return `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
   }
+
+  return `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}`;
 }
 
 export function getScrollbarWidth(): number {
@@ -78,13 +146,9 @@ export function getScrollbarWidth(): number {
 
   if (!hasVerticalScrollbar && !hasHorizontalScrollbar) return 0;
 
-  // dynamiczny pomiar (potencjalna szerokość scrollbara)
   const scrollDiv = document.createElement('div');
-  scrollDiv.style.width = '100px';
-  scrollDiv.style.height = '100px';
-  scrollDiv.style.overflow = 'scroll';
-  scrollDiv.style.position = 'absolute';
-  scrollDiv.style.top = '-9999px';
+  scrollDiv.style.cssText =
+    'width:100px;height:100px;overflow:scroll;position:absolute;top:-9999px';
 
   document.body.appendChild(scrollDiv);
 

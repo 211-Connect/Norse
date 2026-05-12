@@ -22,5 +22,7 @@
       "name": "સંસાધનનું નામ",
       "organization": "પ્રદાતાનું નામ"
     }
-  }
+  },
+  "name_unavailable": "નામ ઉપલબ્ધ નથી",
+  "share_body": "\"{{count}}\" માટે {{title}} શોધ પરિણામો જુઓ."
 }

@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "Lakay",
-    "favorites": "Favori",
     "log_out": "Dekonekte",
     "language_select_label": "Chwazi yon lang pou chanje lang sit la",
     "my_stuff": "Bagay mwen yo",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "Lis ou a pa t kapab efase.",
     "list_created": "Lis la kreye",
     "list_created_message": "Lis ou a kreye avèk siksè.",
-    "unable_to_create_list_message": "Lis ou a pa t kapab kreye."
+    "unable_to_create_list_message": "Lis ou a pa t kapab kreye.",
+    "remove_from_list_title": "Retire nan lis la?",
+    "remove_from_list_description": "Resous sa a pral retire nan lis sa a. Ou ka ajoute l ankò pita si sa nesesè."
   },
   "search": {
     "add_my_location": "Ajoute kote mwen ye a",
@@ -47,7 +48,15 @@
     "geocoding_unable_to_retrieve": "Pa kapab jwenn kote w ye a. Tanpri verifye paramèt kote navigatè w la epi eseye ankò.",
     "categories": "Sijè yo",
     "show_all": "Montre tout ({{count}})",
-    "show_less": "Montre mwens"
+    "show_less": "Montre mwens",
+    "query_input_label": "Chèche resous",
+    "location_input_label": "Chèche yon kote",
+    "change_location_label": "Chanje kote: {{location}}",
+    "open_search_dialog": "Louvri dyalòg rechèch la",
+    "list_status_one": "1 opsyon disponib. Sèvi ak flèch anlè ak anba yo pou revize.",
+    "list_status_other": "Gen {{count}} opsyon ki disponib. Sèvi ak flèch anlè ak anba yo pou revize.",
+    "search_dialog_description": "Chèche resous epi mete ajou kote w ye a.",
+    "everywhere": "Toupatou"
   },
   "call_to_action": {
     "call": "Rele",
@@ -67,7 +76,9 @@
     "login": "Konekte",
     "show_more": "Montre plis",
     "show_less": "Montre mwens",
-    "print": "Enprime"
+    "print": "Enprime",
+    "close": "Fèmen",
+    "send": "Voye"
   },
   "list": {
     "private": "Prive",
@@ -93,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "Kreye yon lis",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Non",
       "list_description": "Deskripsyon",
       "make_public": "Fè piblik"
@@ -127,22 +139,45 @@
       "sms_send_success_title": "SMS voye!",
       "sms_send_success_body": "Mesaj ou a voye.",
       "sms_send_failed_title": "Voye SMS la echwe",
-      "sms_send_failed_body": "Mesaj ou a pa t rive voye."
+      "sms_send_failed_body": "Mesaj ou a pa t rive voye.",
+      "opens_in_new_tab": "ouvri nan yon nouvo onglet",
+      "phone_number_label": "Nimewo telefòn",
+      "sms_unavailable": "Pataj SMS pa disponib"
     },
-    "prompt_auth": "Tanpri konekte pou itilize fonksyonalite sa a."
+    "prompt_auth": "Tanpri konekte pou itilize fonksyonalite sa a.",
+    "prompt_auth_description": "Tanpri konekte pou itilize fonksyonalite sa a.",
+    "manage_favorites": {
+      "title": "Jere favori yo",
+      "description": "Add this resource to or remove it from your lists."
+    }
   },
   "update_location": {
-    "prompt_start_location": "Ki kote ou kòmanse?"
+    "prompt_start_location": "Ki kote ou kòmanse?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Done yo bay pa"
   },
   "footer": {
-    "copyright": "© Dwa otè {{tèks}}"
+    "copyright": "© Dwa otè {{text}}"
   },
   "carousel": {
     "previous": "Anvan",
     "next": "Apre",
     "go_to": "Ale nan"
+  },
+  "filter_results_count_one": "rezilta {{count}}",
+  "filter_results_count_other": "{{count}} rezilta",
+  "autocomplete": {
+    "results_available_one": "{{count}} rezilta disponib",
+    "results_available_other": "{{count}} rezilta disponib",
+    "no_results": "Pa gen rezilta"
+  },
+  "auth_error": {
+    "access_denied_title": "Aksè refize",
+    "access_denied_description": "Ou konekte avèk siksè, men kont sa a pa gen dwa jwenn aksè nan sit sa a. Eseye ankò avèk yon lòt kont.",
+    "default_title": "Erè otantifikasyon",
+    "default_description": "Nou pa t kapab fini pwosesis koneksyon an. Tanpri eseye ankò.",
+    "logout_and_try_again": "Dekonekte epi eseye ankò"
   }
 }

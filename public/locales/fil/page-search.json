@@ -22,5 +22,7 @@
       "name": "Pangalan ng Mapagkukunan",
       "organization": "Pangalan ng Tagapagbigay ng Serbisyo"
     }
-  }
+  },
+  "name_unavailable": "Hindi magagamit ang pangalan",
+  "share_body": "Tingnan ang mga resulta ng paghahanap para sa {{count}} para sa \"{{title}}\""
 }

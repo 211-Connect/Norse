@@ -1,8 +1,9 @@
-import type { User } from '@/payload/payload-types';
-import type { Access, Where } from 'payload';
 import { getTenantFromCookie } from '@payloadcms/plugin-multi-tenant/utilities';
-import { getUserTenantIDs } from '@/payload/utilities/getUserTenantIDs';
+import type { Access, Where } from 'payload';
+
+import type { User } from '@/payload/payload-types';
 import { getCollectionIDType } from '@/payload/utilities/getCollectionIDType';
+import { getUserTenantIDs } from '@/payload/utilities/getUserTenantIDs';
 
 import { isAccessingSelf } from './isAccessingSelf';
 import { isSuperAdmin, isSupport } from './roles';
@@ -27,12 +28,13 @@ export const readAccess: Access<User> = ({ req, id }) => {
     req.headers,
     getCollectionIDType({ payload: req.payload, collectionSlug: 'tenants' }),
   );
+
+  // Only tenant admins can view other users in their tenant
   const adminTenantAccessIDs = getUserTenantIDs(req.user, 'tenant-admin');
 
   if (selectedTenant) {
-    // If it's a super admin, or they have access to the tenant ID set in cookie
-    const hasTenantAccess = adminTenantAccessIDs.some(
-      (id) => id === selectedTenant,
+    const hasTenantAccess = adminTenantAccessIDs.includes(
+      String(selectedTenant),
     );
     if (hasTenantAccess) {
       return {
@@ -52,7 +54,7 @@ export const readAccess: Access<User> = ({ req, id }) => {
       },
       {
         'tenants.tenant': {
-          in: adminTenantAccessIDs,
+          in: adminTenantAccessIDs.map(String),
         },
       },
     ],

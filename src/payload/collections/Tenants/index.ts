@@ -1,21 +1,19 @@
 import type { CollectionConfig } from 'payload';
+
 import { defaultLocale, locales } from '@/payload/i18n/locales';
 
-import { updateAndDeleteAccess } from './access/updateAndDelete';
-import { hasResourceDirectory } from './validators/hasResourceDirectory';
-import { revalidateCache } from './hooks/revalidateCache';
-import { pushRealmIdToCache } from './hooks/pushRealmIdToCache';
-import {
-  isSuperAdminAccess,
-  isSuperAdminFieldAccess,
-  isSuperAdminOrSupportFieldAccess,
-} from '../Users/access/roles';
-import {
-  hasFeatureFieldAccess,
-  hasPropertySettingsFieldAccess,
-} from '../Users/access/permissions';
-import { removeRelatedResources } from './hooks/removeRelatedResources';
 import { invalidateApiCache } from '../ResourceDirectories/hooks/invalidateApiCache';
+import {
+  superAdminAccess,
+  superAdminOrSupportAccess,
+} from '../Users/access/roles';
+import { updateAndDeleteAccess } from './access/updateAndDelete';
+import { createUmamiWebsite } from './hooks/createUmamiWebsite';
+import { pushEnabledLocalesToCache } from './hooks/pushEnabledLocalesToCache';
+import { pushRealmIdToCache } from './hooks/pushRealmIdToCache';
+import { removeRelatedResources } from './hooks/removeRelatedResources';
+import { revalidateCache } from './hooks/revalidateCache';
+import { hasResourceDirectory } from './validators/hasResourceDirectory';
 
 export const Tenants: CollectionConfig = {
   slug: 'tenants',
@@ -25,7 +23,7 @@ export const Tenants: CollectionConfig = {
     plural: 'Sites',
   },
   access: {
-    create: isSuperAdminAccess,
+    create: superAdminAccess,
     delete: updateAndDeleteAccess,
     update: updateAndDeleteAccess,
   },
@@ -33,7 +31,13 @@ export const Tenants: CollectionConfig = {
     useAsTitle: 'name',
   },
   hooks: {
-    afterChange: [revalidateCache, pushRealmIdToCache, invalidateApiCache],
+    afterChange: [
+      revalidateCache,
+      pushRealmIdToCache,
+      pushEnabledLocalesToCache,
+      invalidateApiCache,
+      createUmamiWebsite,
+    ],
     beforeDelete: [removeRelatedResources],
     afterDelete: [revalidateCache],
   },
@@ -55,8 +59,8 @@ export const Tenants: CollectionConfig = {
       required: true,
       unique: true,
       access: {
-        update: isSuperAdminFieldAccess,
-        create: isSuperAdminFieldAccess,
+        update: superAdminAccess,
+        create: superAdminAccess,
       },
     },
     {
@@ -65,8 +69,8 @@ export const Tenants: CollectionConfig = {
       required: true,
       unique: true,
       access: {
-        update: isSuperAdminOrSupportFieldAccess,
-        create: isSuperAdminOrSupportFieldAccess,
+        update: superAdminOrSupportAccess,
+        create: superAdminOrSupportAccess,
       },
     },
     {
@@ -75,8 +79,8 @@ export const Tenants: CollectionConfig = {
       required: false,
       defaultValue: [],
       access: {
-        update: hasPropertySettingsFieldAccess,
-        create: hasPropertySettingsFieldAccess,
+        update: superAdminAccess,
+        create: superAdminAccess,
       },
       fields: [
         {
@@ -98,8 +102,8 @@ export const Tenants: CollectionConfig = {
           defaultValue: defaultLocale,
           options: locales,
           access: {
-            update: hasPropertySettingsFieldAccess,
-            create: hasPropertySettingsFieldAccess,
+            update: superAdminAccess,
+            create: superAdminAccess,
           },
         },
         {
@@ -109,8 +113,8 @@ export const Tenants: CollectionConfig = {
           defaultValue: defaultLocale,
           options: locales,
           access: {
-            update: hasPropertySettingsFieldAccess,
-            create: hasPropertySettingsFieldAccess,
+            update: superAdminAccess,
+            create: superAdminAccess,
           },
         },
       ],
@@ -126,8 +130,8 @@ export const Tenants: CollectionConfig = {
         },
       },
       access: {
-        create: isSuperAdminOrSupportFieldAccess,
-        update: isSuperAdminOrSupportFieldAccess,
+        create: superAdminOrSupportAccess,
+        update: superAdminOrSupportAccess,
       },
       fields: [
         {
@@ -148,9 +152,9 @@ export const Tenants: CollectionConfig = {
       name: 'auth',
       type: 'group',
       access: {
-        create: isSuperAdminFieldAccess,
-        read: isSuperAdminFieldAccess,
-        update: isSuperAdminFieldAccess,
+        create: superAdminAccess,
+        read: superAdminAccess,
+        update: superAdminAccess,
       },
       fields: [
         {
@@ -171,7 +175,7 @@ export const Tenants: CollectionConfig = {
               type: 'text',
             },
             {
-              name: 'keycloakIssuer',
+              name: 'nextAuthSecret',
               type: 'text',
             },
           ],
@@ -180,8 +184,33 @@ export const Tenants: CollectionConfig = {
           type: 'row',
           fields: [
             {
-              name: 'nextAuthSecret',
-              type: 'text',
+              name: 'requiresLogin',
+              type: 'checkbox',
+              defaultValue: false,
+              admin: {
+                description:
+                  '⚠️ WARNING: Enabling this will make the website private. Only authenticated users will be able to access it. Use this setting with caution.',
+              },
+            },
+          ],
+        },
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'allowedEmailDomains',
+              type: 'array',
+              fields: [
+                {
+                  name: 'domain',
+                  type: 'text',
+                  required: true,
+                },
+              ],
+              admin: {
+                condition: (data, siblingData) =>
+                  siblingData?.requiresLogin || data?.auth?.requiresLogin,
+              },
             },
           ],
         },
@@ -192,9 +221,9 @@ export const Tenants: CollectionConfig = {
       type: 'group',
       label: 'Common Settings',
       access: {
-        create: isSuperAdminOrSupportFieldAccess,
-        read: isSuperAdminOrSupportFieldAccess,
-        update: isSuperAdminOrSupportFieldAccess,
+        create: superAdminOrSupportAccess,
+        read: superAdminOrSupportAccess,
+        update: superAdminOrSupportAccess,
       },
       fields: [
         {
@@ -206,8 +235,15 @@ export const Tenants: CollectionConfig = {
           type: 'text',
         },
         {
-          name: 'umamiWebsiteId',
-          type: 'text',
+          name: 'umamiWebsiteIds',
+          type: 'array',
+          fields: [
+            {
+              name: 'websiteId',
+              type: 'text',
+              required: true,
+            },
+          ],
         },
       ],
     },
@@ -216,8 +252,8 @@ export const Tenants: CollectionConfig = {
       type: 'group',
       label: 'SMS Settings',
       access: {
-        create: hasFeatureFieldAccess,
-        update: hasFeatureFieldAccess,
+        create: superAdminOrSupportAccess,
+        update: superAdminOrSupportAccess,
       },
       fields: [
         {
@@ -243,14 +279,23 @@ export const Tenants: CollectionConfig = {
             {
               name: 'apiKey',
               type: 'text',
+              admin: {
+                description: 'Random string',
+              },
             },
             {
               name: 'apiKeySid',
               type: 'text',
+              admin: {
+                description: "Starts with 'SK' followed by random string",
+              },
             },
             {
               name: 'accountSid',
               type: 'text',
+              admin: {
+                description: "Starts with 'AC' followed by random string",
+              },
             },
           ],
         },

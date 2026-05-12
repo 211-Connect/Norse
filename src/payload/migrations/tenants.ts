@@ -454,6 +454,7 @@ async function createResourceDirectory(
       ),
     },
     resource: {
+      categoriesText: populatedAppConfig.categoriesText || null,
       lastAssuredText: populatedAppConfig.lastAssuredText || null,
     },
     search: {
@@ -474,6 +475,9 @@ async function createResourceDirectory(
         queryInputPlaceholder: populatedAppConfig.search?.queryInputPlaceholder,
         locationInputPlaceholder:
           populatedAppConfig.search?.locationInputPlaceholder,
+        useTextLinkForViewDetails:
+          populatedAppConfig.search?.texts?.useTextLinkForViewDetails,
+        viewDetailsText: populatedAppConfig.search?.viewDetailsText,
         noResultsFallbackText: populatedAppConfig.search?.noResultsFallbackText,
       },
     },

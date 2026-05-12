@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "Domicile",
-    "favorites": "Favoris",
     "log_out": "Se déconnecter",
     "language_select_label": "Sélectionnez une langue pour modifier la langue du site",
     "my_stuff": "Mes affaires",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "Votre liste n’a pas pu être supprimée.",
     "list_created": "Liste créée",
     "list_created_message": "Votre liste a été créée avec succès.",
-    "unable_to_create_list_message": "Impossible de créer votre liste."
+    "unable_to_create_list_message": "Impossible de créer votre liste.",
+    "remove_from_list_title": "Supprimer de la liste ?",
+    "remove_from_list_description": "Cette ressource sera retirée de cette liste. Vous pourrez la rajouter ultérieurement si nécessaire."
   },
   "search": {
     "add_my_location": "Ajouter ma position",
@@ -47,7 +48,15 @@
     "geocoding_unable_to_retrieve": "Impossible de récupérer votre position. Veuillez vérifier les paramètres de localisation de votre navigateur et réessayer.",
     "categories": "Sujets",
     "show_all": "Tout afficher ({{count}})",
-    "show_less": "Afficher moins"
+    "show_less": "Afficher moins",
+    "query_input_label": "Recherche de ressources",
+    "location_input_label": "Rechercher un lieu",
+    "change_location_label": "Changer de lieu : {{location}}",
+    "open_search_dialog": "Ouvrir la boîte de dialogue de recherche",
+    "list_status_one": "Une seule option disponible. Utilisez les flèches haut et bas pour la parcourir.",
+    "list_status_other": "{{count}} options disponibles. Utilisez les flèches haut et bas pour les consulter.",
+    "search_dialog_description": "Recherchez des ressources et mettez à jour votre localisation.",
+    "everywhere": "Partout"
   },
   "call_to_action": {
     "call": "Appeler",
@@ -67,7 +76,9 @@
     "login": "Connectez-vous",
     "show_more": "Afficher plus",
     "show_less": "Afficher moins",
-    "print": "Imprimer"
+    "print": "Imprimer",
+    "close": "Fermer",
+    "send": "Envoyer"
   },
   "list": {
     "private": "Privé",
@@ -93,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "Créer une liste",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Nom",
       "list_description": "Description",
       "make_public": "Rendre public"
@@ -127,12 +139,21 @@
       "sms_send_success_title": "SMS envoyés !",
       "sms_send_success_body": "Votre message a bien été envoyé.",
       "sms_send_failed_title": "Echec de l’envoi de SMS",
-      "sms_send_failed_body": "Votre message n’a pas été envoyé."
+      "sms_send_failed_body": "Votre message n’a pas été envoyé.",
+      "opens_in_new_tab": "ouvre dans un nouvel onglet",
+      "phone_number_label": "Numéro de téléphone",
+      "sms_unavailable": "Le partage de SMS n'est pas disponible."
     },
-    "prompt_auth": "Veuillez vous connecter pour utiliser cette fonctionnalité."
+    "prompt_auth": "Veuillez vous connecter pour utiliser cette fonctionnalité.",
+    "prompt_auth_description": "Veuillez vous connecter pour utiliser cette fonctionnalité.",
+    "manage_favorites": {
+      "title": "Gérer les favoris",
+      "description": "Add this resource to or remove it from your lists."
+    }
   },
   "update_location": {
-    "prompt_start_location": "Quel est votre point de départ ?"
+    "prompt_start_location": "Quel est votre point de départ ?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Données fournies par"
@@ -144,5 +165,19 @@
     "previous": "Précédent",
     "next": "Suivant",
     "go_to": "Allez à"
+  },
+  "filter_results_count_one": "{{count}} résultat",
+  "filter_results_count_other": "{{count}} résultats",
+  "autocomplete": {
+    "results_available_one": "{{count}} résultat disponible",
+    "results_available_other": "{{count}} résultats disponibles",
+    "no_results": "Aucun résultat"
+  },
+  "auth_error": {
+    "access_denied_title": "Accès refusé",
+    "access_denied_description": "Vous vous êtes connecté avec succès, mais ce compte n'est pas autorisé à accéder à ce site. Veuillez réessayer avec un autre compte.",
+    "default_title": "Erreur d'authentification",
+    "default_description": "Nous n'avons pas pu terminer le processus de connexion. Veuillez réessayer.",
+    "logout_and_try_again": "Déconnectez-vous et réessayez."
   }
 }

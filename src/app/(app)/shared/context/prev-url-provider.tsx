@@ -1,17 +1,17 @@
 'use client';
 
-import { useEffect, useRef, PropsWithChildren, useState, useMemo } from 'react';
 import { getCookie, setCookie } from 'cookies-next/client';
+import { usePathname } from 'next/navigation';
+import { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
 
+import { useClientSearchParams } from '../hooks/use-client-search-params';
 import { PREV_URL } from '../lib/constants';
 import { prevUrlContext } from './prev-url-context';
-import { usePathname } from 'next/navigation';
-import { useClientSearchParams } from '../hooks/use-client-search-params';
 
 // Track current and previous url
 export const PrevUrlProvider = ({ children }: PropsWithChildren) => {
   const [prevUrl, setPrevUrl] = useState<string>();
-  const currentUrl = useRef<string>();
+  const currentUrl = useRef<string | null>(null);
   const pathname = usePathname();
   const { stringifiedSearchParams } = useClientSearchParams();
 

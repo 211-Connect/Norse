@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+
 import { BaseGeocoderAdapter } from '../adapters/geocoder/base-geocoder-adapter';
 
 const geocoders = {

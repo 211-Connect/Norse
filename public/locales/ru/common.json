@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "Дом",
-    "favorites": "Избранное",
     "log_out": "Выходить",
     "language_select_label": "Выберите язык для изменения языка сайта",
     "my_stuff": "Мои вещи",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "Ваш список не может быть удален.",
     "list_created": "Список создан",
     "list_created_message": "Ваш список успешно создан.",
-    "unable_to_create_list_message": "Не удалось создать ваш список."
+    "unable_to_create_list_message": "Не удалось создать ваш список.",
+    "remove_from_list_title": "Удалить из списка?",
+    "remove_from_list_description": "Этот ресурс будет удален из данного списка. При необходимости вы сможете добавить его обратно позже."
   },
   "search": {
     "add_my_location": "Добавить мое местоположение",
@@ -47,7 +48,15 @@
     "geocoding_unable_to_retrieve": "Не удается восстановить ваше местоположение. Проверьте настройки местоположения вашего браузера и повторите попытку.",
     "categories": "Темы",
     "show_all": "Показать все ({{count}})",
-    "show_less": "Показать меньше"
+    "show_less": "Показать меньше",
+    "query_input_label": "Поиск ресурсов",
+    "location_input_label": "Поиск местоположения",
+    "change_location_label": "Изменить местоположение: {{location}}",
+    "open_search_dialog": "Открыть диалоговое окно поиска",
+    "list_status_one": "Доступен 1 ​​вариант. Используйте клавиши со стрелками вверх и вниз для просмотра.",
+    "list_status_other": "Доступно {{count}} вариантов. Используйте клавиши со стрелками вверх и вниз для просмотра.",
+    "search_dialog_description": "Найдите необходимые ресурсы и обновите свое местоположение.",
+    "everywhere": "Везде"
   },
   "call_to_action": {
     "call": "Звать",
@@ -67,7 +76,9 @@
     "login": "Логин",
     "show_more": "Показать больше",
     "show_less": "Свернуть",
-    "print": "Печатать"
+    "print": "Печатать",
+    "close": "Закрыть",
+    "send": "Отправлять"
   },
   "list": {
     "private": "Частный",
@@ -93,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "Создание списка",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Имя",
       "list_description": "Описание",
       "make_public": "Сделать общедоступным"
@@ -127,12 +139,21 @@
       "sms_send_success_title": "СМС отправлено!",
       "sms_send_success_body": "Ваше сообщение отправлено.",
       "sms_send_failed_title": "Не удалось отправить SMS",
-      "sms_send_failed_body": "Не удалось отправить сообщение."
+      "sms_send_failed_body": "Не удалось отправить сообщение.",
+      "opens_in_new_tab": "открывается в новой вкладке",
+      "phone_number_label": "Номер телефона",
+      "sms_unavailable": "Функция обмена SMS-сообщениями недоступна."
     },
-    "prompt_auth": "Пожалуйста, войдите в систему, чтобы воспользоваться этой функцией."
+    "prompt_auth": "Пожалуйста, войдите в систему, чтобы воспользоваться этой функцией.",
+    "prompt_auth_description": "Пожалуйста, войдите в систему, чтобы воспользоваться этой функцией.",
+    "manage_favorites": {
+      "title": "Управление избранным",
+      "description": "Add this resource to or remove it from your lists."
+    }
   },
   "update_location": {
-    "prompt_start_location": "Откуда вы начинаете?"
+    "prompt_start_location": "Откуда вы начинаете?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Данные предоставлены"
@@ -144,5 +165,19 @@
     "previous": "Предыдущий",
     "next": "Следующий",
     "go_to": "Перейти к"
+  },
+  "filter_results_count_one": "{{count}} результат",
+  "filter_results_count_other": "{{count}} результатов",
+  "autocomplete": {
+    "results_available_one": "{{count}} результатов доступно",
+    "results_available_other": "{{count}} результатов доступно",
+    "no_results": "Результаты отсутствуют"
+  },
+  "auth_error": {
+    "access_denied_title": "Доступ запрещен",
+    "access_denied_description": "Вы успешно вошли в систему, но этому аккаунту запрещен доступ к сайту. Попробуйте еще раз с другим аккаунтом.",
+    "default_title": "Ошибка аутентификации",
+    "default_description": "Нам не удалось завершить процесс входа в систему. Пожалуйста, попробуйте еще раз.",
+    "logout_and_try_again": "Выйдите из системы и попробуйте снова."
   }
 }

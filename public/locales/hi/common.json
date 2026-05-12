@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "घर",
-    "favorites": "पसंदीदा",
     "log_out": "लॉग आउट",
     "language_select_label": "साइट की भाषा बदलने के लिए भाषा चुनें",
     "my_stuff": "मेरा सामान",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "आपकी सूची हटाई नहीं जा सकी।",
     "list_created": "सूची बनाई गई",
     "list_created_message": "आपकी सूची सफलतापूर्वक बना ली गई है।",
-    "unable_to_create_list_message": "आपकी सूची नहीं बनाई जा सकी।"
+    "unable_to_create_list_message": "आपकी सूची नहीं बनाई जा सकी।",
+    "remove_from_list_title": "सूची से हटाना है?",
+    "remove_from_list_description": "इस संसाधन को इस सूची से हटा दिया जाएगा। आवश्यकता पड़ने पर आप इसे बाद में पुनः जोड़ सकते हैं।"
   },
   "search": {
     "add_my_location": "मेरा स्थान जोड़ें",
@@ -47,7 +48,15 @@
     "geocoding_unable_to_retrieve": "आपकी लोकेशन का पता नहीं चल पा रहा है। कृपया अपने ब्राउज़र की लोकेशन सेटिंग जांचें और दोबारा कोशिश करें।",
     "categories": "विषय",
     "show_all": "सभी दिखाएँ ({{count}})",
-    "show_less": "कम दिखाएँ"
+    "show_less": "कम दिखाएँ",
+    "query_input_label": "संसाधनों की खोज करें",
+    "location_input_label": "किसी स्थान की खोज करें",
+    "change_location_label": "स्थान बदलें: {{location}}",
+    "open_search_dialog": "खोज संवाद खोलें",
+    "list_status_one": "केवल 1 विकल्प उपलब्ध है। समीक्षा करने के लिए ऊपर और नीचे तीर कुंजियों का उपयोग करें।",
+    "list_status_other": "{{count}} विकल्प उपलब्ध हैं। समीक्षा करने के लिए ऊपर और नीचे तीर कुंजियों का उपयोग करें।",
+    "search_dialog_description": "संसाधनों की खोज करें और अपना स्थान अपडेट करें।",
+    "everywhere": "हर जगह"
   },
   "call_to_action": {
     "call": "पुकारना",
@@ -67,7 +76,9 @@
     "login": "लॉग इन करें",
     "show_more": "और दिखाएँ",
     "show_less": "कम दिखाएँ",
-    "print": "छाप"
+    "print": "छाप",
+    "close": "बंद",
+    "send": "भेजना"
   },
   "list": {
     "private": "निजी",
@@ -93,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "एक सूची बनाएं",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "नाम",
       "list_description": "विवरण",
       "make_public": "सार्वजनिक करें"
@@ -127,12 +139,21 @@
       "sms_send_success_title": "एसएमएस भेज दिया गया!",
       "sms_send_success_body": "आपका संदेश भेज दिया गया है।",
       "sms_send_failed_title": "एसएमएस भेजने में विफल",
-      "sms_send_failed_body": "आपका संदेश भेजने में विफल रहा।"
+      "sms_send_failed_body": "आपका संदेश भेजने में विफल रहा।",
+      "opens_in_new_tab": "नए टैब में खुलता है",
+      "phone_number_label": "फ़ोन नंबर",
+      "sms_unavailable": "एसएमएस शेयरिंग उपलब्ध नहीं है"
     },
-    "prompt_auth": "इस विशेष सुविधा का प्रयोग करने के लिए लॉग इन करें।"
+    "prompt_auth": "इस विशेष सुविधा का प्रयोग करने के लिए लॉग इन करें।",
+    "prompt_auth_description": "इस विशेष सुविधा का प्रयोग करने के लिए लॉग इन करें।",
+    "manage_favorites": {
+      "title": "पसंदीदा प्रबंधित करें",
+      "description": "Add this resource to or remove it from your lists."
+    }
   },
   "update_location": {
-    "prompt_start_location": "आपका शुरुआती स्थान क्या है?"
+    "prompt_start_location": "आपका शुरुआती स्थान क्या है?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "द्वारा प्रदान किया गया डेटा"
@@ -144,5 +165,19 @@
     "previous": "पहले का",
     "next": "अगला",
     "go_to": "जाओ"
+  },
+  "filter_results_count_one": "{{count}} परिणाम",
+  "filter_results_count_other": "{{count}} परिणाम",
+  "autocomplete": {
+    "results_available_one": "{{count}} परिणाम उपलब्ध",
+    "results_available_other": "{{count}} परिणाम उपलब्ध हैं",
+    "no_results": "कोई परिणाम नहीं"
+  },
+  "auth_error": {
+    "access_denied_title": "पहुंच अस्वीकृत",
+    "access_denied_description": "आपने सफलतापूर्वक लॉग इन कर लिया है, लेकिन इस खाते को इस साइट तक पहुँचने की अनुमति नहीं है। कृपया किसी दूसरे खाते से पुनः प्रयास करें।",
+    "default_title": "प्रमाणीकरण त्रुटि",
+    "default_description": "लॉग इन करने की प्रक्रिया पूरी नहीं हो सकी। कृपया पुनः प्रयास करें।",
+    "logout_and_try_again": "लॉगआउट करें और दोबारा प्रयास करें"
   }
 }

@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "집",
-    "favorites": "즐겨찾기",
     "log_out": "로그아웃",
     "language_select_label": "사이트 언어를 변경할 언어를 선택합니다.",
     "my_stuff": "내 물건",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "목록을 삭제할 수 없습니다.",
     "list_created": "목록이 생성되었습니다",
     "list_created_message": "목록이 성공적으로 생성되었습니다.",
-    "unable_to_create_list_message": "목록을 만들 수 없습니다."
+    "unable_to_create_list_message": "목록을 만들 수 없습니다.",
+    "remove_from_list_title": "목록에서 삭제하시겠습니까?",
+    "remove_from_list_description": "이 자료는 목록에서 삭제될 예정입니다. 필요하시면 나중에 다시 추가하실 수 있습니다."
   },
   "search": {
     "add_my_location": "내 위치 추가",
@@ -47,7 +48,15 @@
     "geocoding_unable_to_retrieve": "위치를 검색할 수 없습니다. 브라우저의 위치 설정을 확인하고 다시 시도하십시오.",
     "categories": "주제",
     "show_all": "모두 보기 ({{count}})",
-    "show_less": "간단히 보기"
+    "show_less": "간단히 보기",
+    "query_input_label": "자료를 검색하세요",
+    "location_input_label": "위치를 검색하세요",
+    "change_location_label": "위치 변경: {{location}}",
+    "open_search_dialog": "검색 대화 상자 열기",
+    "list_status_one": "옵션이 1개 있습니다. 위아래 화살표 키를 사용하여 검토하세요.",
+    "list_status_other": "사용 가능한 옵션은 {{count}}개입니다. 위아래 화살표 키를 사용하여 검토하세요.",
+    "search_dialog_description": "자료를 검색하고 위치를 업데이트하세요.",
+    "everywhere": "어디서나"
   },
   "call_to_action": {
     "call": "외침",
@@ -67,7 +76,9 @@
     "login": "로그인",
     "show_more": "더 보기",
     "show_less": "간단히 보기",
-    "print": "인쇄하다"
+    "print": "인쇄하다",
+    "close": "닫기",
+    "send": "보내다"
   },
   "list": {
     "private": "민간의",
@@ -93,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "목록 만들기",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "이름",
       "list_description": "묘사",
       "make_public": "공개"
@@ -127,12 +139,21 @@
       "sms_send_success_title": "SMS가 전송되었습니다!",
       "sms_send_success_body": "메시지가 전송되었습니다.",
       "sms_send_failed_title": "SMS 전송 실패",
-      "sms_send_failed_body": "메시지를 보내지 못했습니다."
+      "sms_send_failed_body": "메시지를 보내지 못했습니다.",
+      "opens_in_new_tab": "새 탭에서 열립니다",
+      "phone_number_label": "전화 번호",
+      "sms_unavailable": "SMS 공유 기능을 사용할 수 없습니다."
     },
-    "prompt_auth": "이 기능을 사용하려면 로그인하십시오."
+    "prompt_auth": "이 기능을 사용하려면 로그인하십시오.",
+    "prompt_auth_description": "이 기능을 사용하려면 로그인하십시오.",
+    "manage_favorites": {
+      "title": "즐겨찾기 관리",
+      "description": "Add this resource to or remove it from your lists."
+    }
   },
   "update_location": {
-    "prompt_start_location": "시작 위치는 어디입니까?"
+    "prompt_start_location": "시작 위치는 어디입니까?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "데이터 제공"
@@ -144,5 +165,19 @@
     "previous": "이전의",
     "next": "다음",
     "go_to": "가다"
+  },
+  "filter_results_count_one": "{{count}} 결과",
+  "filter_results_count_other": "{{count}} 결과",
+  "autocomplete": {
+    "results_available_one": "{{count}}개의 결과가 있습니다.",
+    "results_available_other": "{{count}}개의 결과가 있습니다.",
+    "no_results": "결과가 없습니다"
+  },
+  "auth_error": {
+    "access_denied_title": "접근 불가",
+    "access_denied_description": "로그인에 성공했지만, 이 계정으로는 이 사이트에 접속할 수 없습니다. 다른 계정으로 다시 시도해 주세요.",
+    "default_title": "인증 오류",
+    "default_description": "로그인 과정을 완료할 수 없습니다. 다시 시도해 주세요.",
+    "logout_and_try_again": "로그아웃 후 다시 시도하세요."
   }
 }

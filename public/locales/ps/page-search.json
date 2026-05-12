@@ -22,5 +22,7 @@
       "name": "د سرچینې نوم",
       "organization": "د چمتو کونکي نوم"
     }
-  }
+  },
+  "name_unavailable": "نوم شتون نلري",
+  "share_body": "د \"{{count}}\" لپاره د {{title}} لټون پایلې وګورئ"
 }

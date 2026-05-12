@@ -1,66 +1,21 @@
 import { Tab } from 'payload';
+
 import {
-  hasFeatureFieldAccess,
-  hasLayoutFieldAccess,
-  hasResourceNavigationFieldAccess,
-  hasSearchFieldAccess,
-} from '../../Users/access/permissions';
+  superAdminAccess,
+  superAdminOrSupportAccess,
+  superAdminOrSupportOrTenantAccess,
+} from '../../Users/access/roles';
 
 export const featureFlags: Tab = {
   name: 'featureFlags',
   fields: [
     {
-      name: 'hideCategoriesHeading',
-      type: 'checkbox',
-      defaultValue: false,
-      access: {
-        create: hasResourceNavigationFieldAccess,
-        update: hasResourceNavigationFieldAccess,
-      },
-    },
-    {
-      name: 'hideDataProvidersHeading',
-      type: 'checkbox',
-      defaultValue: false,
-      access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
-      },
-    },
-    {
-      name: 'showResourceAttribution',
-      type: 'checkbox',
-      defaultValue: false,
-      access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
-      },
-    },
-    {
-      name: 'showResourceCategories',
-      type: 'checkbox',
-      defaultValue: false,
-      access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
-      },
-    },
-    {
-      name: 'showResourceLastAssuredDate',
-      type: 'checkbox',
-      defaultValue: false,
-      access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
-      },
-    },
-    {
       name: 'showHomePageTour',
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: hasFeatureFieldAccess,
-        update: hasFeatureFieldAccess,
+        create: superAdminOrSupportAccess,
+        update: superAdminOrSupportAccess,
       },
     },
     {
@@ -68,8 +23,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: hasSearchFieldAccess,
-        update: hasSearchFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
     },
     {
@@ -77,8 +32,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
+        create: superAdminAccess,
+        update: superAdminAccess,
       },
     },
     {
@@ -86,8 +41,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: hasResourceNavigationFieldAccess,
-        update: hasResourceNavigationFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
     },
     {
@@ -95,8 +50,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: hasFeatureFieldAccess,
-        update: hasFeatureFieldAccess,
+        create: superAdminOrSupportAccess,
+        update: superAdminOrSupportAccess,
       },
     },
     {
@@ -104,8 +59,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: hasFeatureFieldAccess,
-        update: hasFeatureFieldAccess,
+        create: superAdminOrSupportAccess,
+        update: superAdminOrSupportAccess,
       },
     },
     {
@@ -113,8 +68,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: true,
       access: {
-        create: hasFeatureFieldAccess,
-        update: hasFeatureFieldAccess,
+        create: superAdminOrSupportAccess,
+        update: superAdminOrSupportAccess,
       },
     },
     {
@@ -122,8 +77,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        create: hasFeatureFieldAccess,
-        update: hasFeatureFieldAccess,
+        create: superAdminOrSupportAccess,
+        update: superAdminOrSupportAccess,
       },
     },
     {
@@ -131,8 +86,8 @@ export const featureFlags: Tab = {
       type: 'checkbox',
       defaultValue: true,
       access: {
-        create: hasFeatureFieldAccess,
-        update: hasFeatureFieldAccess,
+        create: superAdminOrSupportAccess,
+        update: superAdminOrSupportAccess,
       },
     },
   ],

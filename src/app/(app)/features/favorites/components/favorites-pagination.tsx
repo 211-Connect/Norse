@@ -1,8 +1,9 @@
 'use client';
 
+import { useAtomValue } from 'jotai';
+
 import { CustomPagination } from '@/app/(app)/shared/components/custom-pagination';
 import { favoriteListsStateAtom } from '@/app/(app)/shared/store/favorites';
-import { useAtomValue } from 'jotai';
 
 export interface FavoritesPaginationProps {
   siblings?: number;

@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "Dom",
-    "favorites": "Favoriti",
     "log_out": "Odjava",
     "language_select_label": "Odaberite jezik za promjenu jezika web-mjesta",
     "my_stuff": "Moje stvari",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "Vaš popis nije mogao biti izbrisan.",
     "list_created": "Popis je kreiran",
     "list_created_message": "Vaš popis je uspješno kreiran.",
-    "unable_to_create_list_message": "Vaš popis nije mogao biti kreiran."
+    "unable_to_create_list_message": "Vaš popis nije mogao biti kreiran.",
+    "remove_from_list_title": "Ukloniti s popisa?",
+    "remove_from_list_description": "Ovaj će resurs biti uklonjen s ovog popisa. Možete ga kasnije ponovno dodati ako bude potrebno."
   },
   "search": {
     "add_my_location": "Dodaj moju lokaciju",
@@ -47,7 +48,15 @@
     "geocoding_unable_to_retrieve": "Nije moguće dohvatiti vašu lokaciju. Provjerite postavke lokacije u pregledniku i pokušajte ponovno.",
     "categories": "Teme",
     "show_all": "Prikaži sve ({{count}})",
-    "show_less": "Prikaži manje"
+    "show_less": "Prikaži manje",
+    "query_input_label": "Pretraživanje resursa",
+    "location_input_label": "Pretraživanje lokacije",
+    "change_location_label": "Promjena lokacije: {{location}}",
+    "open_search_dialog": "Otvori dijalog za pretraživanje",
+    "list_status_one": "Dostupna je 1 opcija. Za pregled koristite tipke sa strelicama gore i dolje.",
+    "list_status_other": "Dostupno je {{count}} opcija. Za pregled koristite tipke sa strelicama gore i dolje.",
+    "search_dialog_description": "Pretražite resurse i ažurirajte svoju lokaciju.",
+    "everywhere": "Svugdje"
   },
   "call_to_action": {
     "call": "Poziv",
@@ -67,7 +76,9 @@
     "login": "Prijava",
     "show_more": "Prikaži više",
     "show_less": "Prikaži manje",
-    "print": "Ispis"
+    "print": "Ispis",
+    "close": "Zatvori",
+    "send": "Poslati"
   },
   "list": {
     "private": "Privatno",
@@ -93,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "Izradi popis",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Ime",
       "list_description": "Opis",
       "make_public": "Objavi"
@@ -127,12 +139,21 @@
       "sms_send_success_title": "SMS poslan!",
       "sms_send_success_body": "Vaša poruka je poslana.",
       "sms_send_failed_title": "Slanje SMS-a nije uspjelo",
-      "sms_send_failed_body": "Slanje vaše poruke nije uspjelo."
+      "sms_send_failed_body": "Slanje vaše poruke nije uspjelo.",
+      "opens_in_new_tab": "otvara se u novoj kartici",
+      "phone_number_label": "Broj telefona",
+      "sms_unavailable": "Dijeljenje SMS-om nije dostupno"
     },
-    "prompt_auth": "Molimo prijavite se kako biste koristili ovu značajku."
+    "prompt_auth": "Molimo prijavite se kako biste koristili ovu značajku.",
+    "prompt_auth_description": "Molimo prijavite se kako biste koristili ovu značajku.",
+    "manage_favorites": {
+      "title": "Upravljanje favoritima",
+      "description": "Add this resource to or remove it from your lists."
+    }
   },
   "update_location": {
-    "prompt_start_location": "Koja je vaša početna lokacija?"
+    "prompt_start_location": "Koja je vaša početna lokacija?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Podaci koje je pružio"
@@ -144,5 +165,19 @@
     "previous": "Prethodno",
     "next": "Sljedeći",
     "go_to": "Idi na"
+  },
+  "filter_results_count_one": "{{count}} rezultat",
+  "filter_results_count_other": "{{count}} rezultata",
+  "autocomplete": {
+    "results_available_one": "Dostupan je {{count}} rezultat",
+    "results_available_other": "Dostupno je {{count}} rezultata",
+    "no_results": "Nema rezultata"
+  },
+  "auth_error": {
+    "access_denied_title": "Pristup odbijen",
+    "access_denied_description": "Uspješno ste se prijavili, ali ovom računu nije dopušten pristup ovoj web-lokaciji. Pokušajte ponovno s drugim računom.",
+    "default_title": "Pogreška autentifikacije",
+    "default_description": "Nismo mogli dovršiti postupak prijave. Pokušajte ponovno.",
+    "logout_and_try_again": "Odjavi se i pokušaj ponovno"
   }
 }

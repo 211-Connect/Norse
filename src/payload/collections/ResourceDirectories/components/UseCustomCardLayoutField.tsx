@@ -1,7 +1,9 @@
 'use client';
 
 import { Button, CheckboxInput, useField } from '@payloadcms/ui';
+
 import { DEFAULT_SEARCH_CARD_LAYOUT } from '@/app/(app)/features/search/types/card-layout-config';
+
 import './UseCustomLayoutField.css';
 
 const UseCustomCardLayoutField = ({

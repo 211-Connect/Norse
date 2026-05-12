@@ -1,9 +1,11 @@
 'use client';
 
 import { useField } from '@payloadcms/ui';
-import { useState, useMemo, useRef } from 'react';
-import { SUPPORTED_ICONS, SUPPORTED_ICON_NAMES } from '@/utils/supportedIcons';
 import { Info } from 'lucide-react';
+import { useMemo, useRef, useState } from 'react';
+
+import { SUPPORTED_ICONS, SUPPORTED_ICON_NAMES } from '@/utils/supportedIcons';
+
 import './styles.css';
 
 const IconPicker = ({

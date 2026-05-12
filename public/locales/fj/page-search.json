@@ -22,5 +22,7 @@
       "name": "Yaca ni ivurevure",
       "organization": "Yaca ni dauveiqaravi"
     }
-  }
+  },
+  "name_unavailable": "Yaca sega ni rawati",
+  "share_body": "Raica na {{count}} na isau ni vakasaqaqara me baleta na \"{{title}}\""
 }

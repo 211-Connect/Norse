@@ -1,7 +1,59 @@
-import { test as base, expect, type Page } from '@playwright/test';
+import { type Page, test as base, expect } from '@playwright/test';
+
 import { baseURL } from '../playwright.config';
+import {
+  ASYNC_UI_TIMEOUT_MS,
+  AUTH_NAV_TIMEOUT_MS,
+  AUTOCOMPLETE_TIMEOUT_MS,
+  FAVORITES_PERSISTENCE_TIMEOUT_MS,
+  PAGE_LOAD_TIMEOUT_MS,
+  SEARCH_NAV_TIMEOUT_MS,
+  UI_SHELL_TIMEOUT_MS,
+  expectVisibleEventually,
+} from './timeouts';
 
 export const LOCALE = 'en';
+
+/**
+ * True when the URL is the search **results list** (has query string), not a
+ * resource detail route (`/search/{id}`). Uses pathname segments so it works
+ * with any host, `basePath` (`NEXT_PUBLIC_CUSTOM_BASE_PATH`), locale prefixes,
+ * and `trailingSlash` (`…/search/?query=` vs `…/search?query=`) — see
+ * `next.config.js`.
+ */
+export function isSearchResultsListUrl(url: URL): boolean {
+  const segments = url.pathname.replace(/\/+$/, '').split('/').filter(Boolean);
+  return (
+    segments.length > 0 && segments.at(-1) === 'search' && url.search.length > 0
+  );
+}
+
+/**
+ * True when the URL is a search resource detail route:
+ * `.../search/{uuid}` (no query string required).
+ */
+export function isSearchResourceDetailUrl(url: URL): boolean {
+  const segments = url.pathname.replace(/\/+$/, '').split('/').filter(Boolean);
+  const last = segments.at(-1) ?? '';
+  const prev = segments.at(-2) ?? '';
+  const uuidV4Like =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return prev === 'search' && uuidV4Like.test(last);
+}
+
+/**
+ * Use instead of `waitForURL` for in-app routes: resolves if the page is
+ * already on a matching URL, and does not depend on a specific readystate.
+ */
+export async function expectPageUrl(
+  page: Page,
+  url: string | RegExp | ((url: URL) => boolean),
+  options?: { timeout?: number },
+) {
+  await expect(page).toHaveURL(url, {
+    timeout: options?.timeout ?? SEARCH_NAV_TIMEOUT_MS,
+  });
+}
 
 function isAuthHost(urlString: string): boolean {
   try {
@@ -13,18 +65,116 @@ function isAuthHost(urlString: string): boolean {
   }
 }
 
+async function isVisible(locator: ReturnType<Page['locator']>) {
+  return locator.isVisible().catch(() => false);
+}
+
+export async function expectAuthenticatedShell(page: Page) {
+  await goHome(page);
+
+  const favoritesButton = page.getByTestId('favorites-btn');
+  await expect(favoritesButton).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+
+  await expect(page.getByRole('button', { name: /log out/i })).toBeVisible({
+    timeout: AUTH_NAV_TIMEOUT_MS,
+  });
+}
+
 export async function goHome(page: Page) {
   const base = baseURL.endsWith('/') ? baseURL : `${baseURL}/`;
   const url = new URL(LOCALE, base).href;
-  await page.goto(url);
-
-  await page.waitForLoadState('networkidle');
+  await page.goto(url, {
+    timeout: PAGE_LOAD_TIMEOUT_MS,
+    waitUntil: 'domcontentloaded',
+  });
+  await page.waitForLoadState('networkidle', { timeout: PAGE_LOAD_TIMEOUT_MS });
 }
 
+/**
+ * Filter checkboxes are `disabled` while a search navigation is in-flight
+ * (`isPending` in filter-panel). Wait until the panel is interactive.
+ */
+export async function waitForFilterPanelInteractive(page: Page) {
+  const first = page.locator('#filter-panel [role="checkbox"]').first();
+  await expect(first).toBeEnabled({ timeout: UI_SHELL_TIMEOUT_MS });
+}
+
+/**
+ * Opens the search dialog and waits until the trigger’s aria-expanded and the
+ * dialog match an open modal (same contract as the app’s a11y wiring).
+ */
 export async function openSearchDialog(page: Page) {
-  await page.getByTestId('search-trigger').first().click();
+  const trigger = page.getByTestId('search-trigger').first();
+  await trigger.waitFor({ state: 'visible', timeout: UI_SHELL_TIMEOUT_MS });
+  await trigger.click();
+  await expect(trigger).toHaveAttribute('aria-expanded', 'true', {
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
   await page.getByTestId('search-dialog').waitFor({ state: 'visible' });
   return page.locator('#search-input');
+}
+
+/**
+ * After submit navigates to /search, the dialog must be dismissed: trigger
+ * collapsed and dialog closed - assert `aria-hidden` (see SearchDialog).
+ */
+export async function expectSearchDialogDismissed(page: Page) {
+  const trigger = page.getByTestId('search-trigger').first();
+  await expect(trigger).toHaveAttribute('aria-expanded', 'false', {
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
+  await expect(page.getByTestId('search-dialog')).toHaveAttribute(
+    'aria-hidden',
+    'true',
+    { timeout: UI_SHELL_TIMEOUT_MS },
+  );
+}
+
+export async function waitForFavoritesDialogReady(page: Page) {
+  await expect(page.getByTestId('favorites-loading-skeleton')).not.toBeVisible({
+    timeout: ASYNC_UI_TIMEOUT_MS,
+  });
+  await expect(page.getByTestId('favorites-list-loaded')).toBeAttached({
+    timeout: ASYNC_UI_TIMEOUT_MS,
+  });
+  await expect(page.getByTestId('favorites-search-input')).toBeVisible({
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
+}
+
+export async function filterFavoritesDialogLists(page: Page, listName: string) {
+  const searchBar = page.getByTestId('favorites-search-input');
+  await expect(searchBar).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+  await searchBar.fill(listName);
+  await expect(page.getByTestId('favorites-loading-skeleton')).not.toBeVisible({
+    timeout: ASYNC_UI_TIMEOUT_MS,
+  });
+  await expectVisibleEventually(page.getByText(listName).first(), {
+    timeout: ASYNC_UI_TIMEOUT_MS,
+  });
+}
+
+export async function getFavoritesDialogListActionButton(
+  page: Page,
+  listName: string,
+  testId: 'add-to-list-btn' | 'remove-from-list-btn',
+) {
+  const dialog = page.getByRole('dialog', { name: /manage favorites/i });
+  const listLink = dialog.getByRole('link', { name: listName, exact: true });
+  await expect(listLink).toBeVisible({ timeout: ASYNC_UI_TIMEOUT_MS });
+
+  const button = listLink.locator(
+    `xpath=following-sibling::div[2]//*[@data-testid="${testId}"]`,
+  );
+  await expect(button).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+  return button;
+}
+
+export async function closeFavoritesDialog(page: Page) {
+  await page.getByRole('button', { name: 'Close' }).click();
+  await expect(
+    page.getByRole('dialog', { name: /manage favorites/i }),
+  ).toHaveCount(0, { timeout: ASYNC_UI_TIMEOUT_MS });
 }
 
 export type SearchParams = {
@@ -40,7 +190,10 @@ export async function performSearch(page: Page, params: SearchParams) {
     await searchInput.fill(params.query_label ?? params.query);
 
     const listbox = page.getByTestId('autocomplete-listbox');
-    await listbox.waitFor({ state: 'visible', timeout: 10_000 });
+    await listbox.waitFor({
+      state: 'visible',
+      timeout: AUTOCOMPLETE_TIMEOUT_MS,
+    });
 
     const options = listbox.getByTestId('autocomplete-option');
     const optionCount = await options.count();
@@ -66,27 +219,175 @@ export async function performSearch(page: Page, params: SearchParams) {
     await searchInput.fill(params.query ?? '');
   }
 
-  await page.getByTestId('search-submit-btn').click();
+  const submitButton = page.getByTestId('search-submit-btn');
+  await expect(submitButton).toBeEnabled({ timeout: UI_SHELL_TIMEOUT_MS });
 
-  await page.waitForURL(/\/search\?/);
-  await page.waitForLoadState('networkidle');
+  // Start URL assertion in parallel with submit so the navigation is not missed
+  // (sequential click → expect can leave the main frame on a bad URL in fast/slow-hybrid UIs).
+  await Promise.all([
+    expectPageUrl(page, isSearchResultsListUrl),
+    submitButton.click(),
+  ]);
+  await expectSearchDialogDismissed(page);
+  await expect(page.locator('#search-container')).toBeVisible({
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
 }
 
 export async function goToFavorites(page: Page) {
-  await page.getByTestId('my-stuff-btn').click();
-  await page.getByTestId('favorites-btn').click();
+  // In client-side routing, URL can update without a new document "load".
+  // Assert URL state directly and fail fast if auth gating opens a modal instead.
+  const favoritesButton = page.getByTestId('favorites-btn');
+  const authPrompt = page.getByRole('dialog', { name: /sign in required/i });
+
+  await expect(favoritesButton).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+  await favoritesButton.click();
+
+  await expect
+    .poll(
+      async () => {
+        if (await isVisible(authPrompt)) return 'auth-required';
+
+        return page.url().includes('/favorites') ? 'favorites' : 'pending';
+      },
+      {
+        timeout: SEARCH_NAV_TIMEOUT_MS,
+        message:
+          'Expected favorites navigation, but the app either stayed put or opened the auth prompt.',
+      },
+    )
+    .not.toBe('pending');
+
+  if (await isVisible(authPrompt)) {
+    throw new Error(
+      'Favorites navigation was blocked by the "Sign in required" dialog. Ensure loginViaKeycloak() finishes with an authenticated app session before calling goToFavorites().',
+    );
+  }
+
+  await expectPageUrl(page, (url) => url.pathname.includes('/favorites'));
+  await expect(page.getByTestId('create-list-btn')).toBeVisible({
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
   await page.waitForLoadState('networkidle');
 }
 
 export async function waitForFavoriteListPage(page: Page) {
+  await expectPageUrl(page, /favorites\/[a-f0-9-]{24}/);
   await page
     .getByTestId('back-to-favorites')
-    .waitFor({ state: 'visible', timeout: 15000 });
+    .waitFor({ state: 'visible', timeout: UI_SHELL_TIMEOUT_MS });
+}
+
+/**
+ * The favorites detail page is server-rendered and can briefly lag behind a
+ * just-completed add/remove mutation. Reload until the requested favorite is
+ * actually rendered on the page.
+ */
+export async function waitForFavoriteOnListPage(
+  page: Page,
+  resourceName: string,
+) {
+  await expect
+    .poll(
+      async () => {
+        const emptyStateVisible = await page
+          .getByText(/nothing here yet/i)
+          .isVisible()
+          .catch(() => false);
+        const resourceVisible = await page
+          .getByText(resourceName)
+          .first()
+          .isVisible()
+          .catch(() => false);
+
+        if (!resourceVisible) {
+          await page.reload({ waitUntil: 'domcontentloaded' });
+          await waitForFavoriteListPage(page);
+        }
+
+        return {
+          emptyStateVisible,
+          resourceVisible,
+        };
+      },
+      {
+        timeout: FAVORITES_PERSISTENCE_TIMEOUT_MS,
+        intervals: [250, 500, 1_000, 2_000],
+      },
+    )
+    .toEqual({
+      emptyStateVisible: false,
+      resourceVisible: true,
+    });
+}
+
+/**
+ * The inverse of `waitForFavoriteOnListPage`: after a remove mutation, reload
+ * the server-rendered list page until the favorite is no longer present.
+ */
+export async function waitForFavoriteToBeAbsentOnListPage(
+  page: Page,
+  resourceName: string,
+) {
+  await expect
+    .poll(
+      async () => {
+        const matches = await page.getByText(resourceName).count();
+        if (matches > 0) {
+          await page.reload({ waitUntil: 'domcontentloaded' });
+          await waitForFavoriteListPage(page);
+        }
+        return matches;
+      },
+      {
+        timeout: FAVORITES_PERSISTENCE_TIMEOUT_MS,
+        intervals: [250, 500, 1_000, 2_000],
+      },
+    )
+    .toBe(0);
+}
+
+/**
+ * Deletes all favorite lists whose names start with "E2E Test List".
+ * Loops until no more matching cards are found on the favorites page,
+ * clearing out accumulated lists from previous failed test runs.
+ */
+export async function deleteAllE2ETestLists(page: Page): Promise<void> {
+  await goToFavorites(page);
+
+  for (;;) {
+    await page.waitForLoadState('networkidle');
+
+    const card = page.getByText(/^E2E Test List /).first();
+    const isVisible = await card
+      .isVisible({ timeout: 3_000 })
+      .catch(() => false);
+    if (!isVisible) break;
+
+    await card.click();
+    await waitForFavoriteListPage(page);
+
+    const deleteListBtn = page.getByTestId('delete-list-btn');
+    await deleteListBtn.waitFor({
+      state: 'visible',
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
+    await deleteListBtn.click();
+
+    const deleteListConfirmBtn = page.getByTestId('delete-list-confirm-btn');
+    await deleteListConfirmBtn.waitFor({
+      state: 'visible',
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
+    await deleteListConfirmBtn.click();
+
+    await expectPageUrl(page, /favorites\/?(?:\?|$)/);
+  }
 }
 
 export async function getResultTotal(page: Page): Promise<string> {
   const resultTotal = page.locator('#result-total');
-  await resultTotal.waitFor({ state: 'visible', timeout: 15000 });
+  await resultTotal.waitFor({ state: 'visible', timeout: UI_SHELL_TIMEOUT_MS });
   return (await resultTotal.textContent()) ?? '';
 }
 
@@ -97,14 +398,14 @@ export function parseTrailingInteger(text: string): number {
 
 export async function getResultTotalNumber(page: Page): Promise<number> {
   const resultTotal = page.locator('#result-total');
-  await expect(resultTotal).toBeVisible({ timeout: 20_000 });
+  await expect(resultTotal).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
   const raw = (await resultTotal.textContent()) ?? '';
   return parseTrailingInteger(raw);
 }
 
 export async function getResultTotalText(page: Page): Promise<string> {
   const resultTotal = page.locator('#result-total');
-  await expect(resultTotal).toBeVisible({ timeout: 20_000 });
+  await expect(resultTotal).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
   return ((await resultTotal.textContent()) ?? '').trim();
 }
 
@@ -113,7 +414,7 @@ export async function getResultTitles(
   limit = 10,
 ): Promise<string[]> {
   const links = page.getByTestId('resource-link');
-  await expect(links.first()).toBeVisible({ timeout: 20_000 });
+  await expect(links.first()).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
   const count = await links.count();
   const capped = Math.min(count, limit);
   const titles: string[] = [];
@@ -126,36 +427,65 @@ export async function getResultTitles(
   return titles;
 }
 
+/** Matches topic links with or without trailing slash before `?` (Next trailingSlash). */
+const topicSearchLinkSel = 'a[href*="/search"][href*="query="]';
+
 export async function openTopicSearch(page: Page) {
-  const directTopicLinks = page.locator('a[href*="/search?query="]');
+  const directTopicLinks = page.locator(topicSearchLinkSel);
   if ((await directTopicLinks.count()) === 0) {
     const topicsLink = page
       .locator('a[href$="/topics"], a[href*="/topics?"]')
       .first();
-    await expect(topicsLink).toBeVisible({ timeout: 20_000 });
+    await expect(topicsLink).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
     await topicsLink.click();
-    await page.waitForURL(/\/topics(\?|$)/, { timeout: 20_000 });
+    await expectPageUrl(page, /topics\/?(?:\?|$)/);
     await page.waitForLoadState('networkidle');
   }
 
   const maxTries = 10;
-  const linksCount = await page.locator('a[href*="/search?query="]').count();
+  const linksCount = await page.locator(topicSearchLinkSel).count();
   const tries = Math.min(maxTries, linksCount);
 
   for (let i = 0; i < tries; i += 1) {
-    const topicLink = page.locator('a[href*="/search?query="]').nth(i);
-    await expect(topicLink).toBeVisible({ timeout: 20_000 });
+    const topicLink = page.locator(topicSearchLinkSel).nth(i);
+    await expect(topicLink).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
     await topicLink.click();
-
-    await page.waitForURL(/\/search\?/, { timeout: 20_000 });
+    await expectPageUrl(page, isSearchResultsListUrl);
     await expect(page.locator('#search-container')).toBeVisible({
-      timeout: 20_000,
+      timeout: UI_SHELL_TIMEOUT_MS,
     });
+    await page.waitForLoadState('networkidle');
 
     return;
   }
 
   throw new Error('No topic search link found.');
+}
+
+/**
+ * County (and other) facets stay disabled until the user sets a place—same as
+ * the “Add my location” product rule. Fills a stable test city and submits
+ * from the search dialog so the filter panel can be exercised.
+ */
+export async function applyTestLocationOnSearchPage(page: Page) {
+  const addOrChange = page.getByRole('button', {
+    name: /add my location|change location|cambiar ubicación|agregar mi ubicación/i,
+  });
+  await expect(addOrChange.first()).toBeVisible({
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
+  await addOrChange.first().click();
+  const locationInput = page.locator('#location-input');
+  await expect(locationInput).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+  await locationInput.fill('minneapolis');
+  const listbox = page.getByTestId('autocomplete-listbox');
+  await listbox.waitFor({ state: 'visible', timeout: AUTOCOMPLETE_TIMEOUT_MS });
+  await locationInput.press('Enter');
+  await expect(page.locator('#search-container')).toBeVisible({
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
+  await page.waitForLoadState('networkidle');
+  await waitForFilterPanelInteractive(page);
 }
 
 export type AppliedFilter = {
@@ -186,9 +516,11 @@ export async function getSelectedFilterIds(page: Page): Promise<string[]> {
 
   for (let i = 0; i < count; i += 1) {
     const checkbox = selected.nth(i);
+    // Prefer `id` so values stay consistent across EN ↔ ES (labels can change; ids usually do not)
     const filterId =
+      (await checkbox.getAttribute('id')) ??
       (await checkbox.getAttribute('aria-label')) ??
-      (await checkbox.getAttribute('id'));
+      '';
     if (filterId) ids.push(filterId);
   }
 
@@ -197,20 +529,99 @@ export async function getSelectedFilterIds(page: Page): Promise<string[]> {
 
 export async function markFiltersByIds(page: Page, filterIds: string[]) {
   const panel = page.locator('#filter-panel');
-  await expect(panel).toBeVisible({ timeout: 20_000 });
+  await expect(panel).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
 
   for (const filterId of filterIds) {
     const checkbox = getFilterCheckboxById(page, filterId);
-    await expect(checkbox).toBeVisible({ timeout: 20_000 });
+    await expect(checkbox).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
 
     if ((await checkbox.getAttribute('data-state')) !== 'checked') {
       await checkbox.scrollIntoViewIfNeeded();
       await checkbox.click();
-      await page.waitForLoadState('networkidle');
       await expect(checkbox).toHaveAttribute('data-state', 'checked', {
-        timeout: 20_000,
+        timeout: UI_SHELL_TIMEOUT_MS,
+      });
+      await expect(page.locator('#search-container')).toBeVisible({
+        timeout: UI_SHELL_TIMEOUT_MS,
       });
     }
+  }
+}
+
+/**
+ * Checks up to `count` **enabled, unchecked** filter checkboxes in panel order
+ * (skips disabled / greyed options). Use when fixed filter labels are not
+ * reliable across environments.
+ */
+export async function markFirstNEnabledFilters(
+  page: Page,
+  count: number,
+): Promise<void> {
+  const panel = page.locator('#filter-panel');
+  await expect(panel).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+  await waitForFilterPanelInteractive(page);
+  let applied = 0;
+
+  // Re-query the checkbox list after each successful apply: the panel re-renders
+  // and the node count / order can change, so a single upfront `count()` + `nth(i)`
+  // can point past the end (e.g. nth(41) after the list shrinks).
+  while (applied < count) {
+    const checkboxes = panel.locator('[role="checkbox"]');
+    const n = await checkboxes.count();
+    if (n === 0) {
+      break;
+    }
+
+    let progressed = false;
+    for (let i = 0; i < n; i += 1) {
+      const checkbox = checkboxes.nth(i);
+      if (!(await checkbox.isVisible().catch(() => false))) {
+        continue;
+      }
+      if ((await checkbox.getAttribute('data-disabled')) !== null) {
+        continue;
+      }
+      if ((await checkbox.getAttribute('aria-disabled')) === 'true') {
+        continue;
+      }
+      if (await checkbox.isDisabled().catch(() => true)) {
+        continue;
+      }
+      if ((await checkbox.getAttribute('data-state')) === 'checked') {
+        continue;
+      }
+      await checkbox.scrollIntoViewIfNeeded();
+      await checkbox.click();
+      // A no-op click (e.g. still-disabled until location/geo rules resolve) should not burn UI_SHELL_TIMEOUT_MS
+      let toggled: boolean;
+      try {
+        await expect(checkbox).toHaveAttribute('data-state', 'checked', {
+          timeout: UI_SHELL_TIMEOUT_MS,
+        });
+        toggled = true;
+      } catch {
+        toggled = false;
+      }
+      if (!toggled) {
+        continue;
+      }
+      await expect(page.locator('#search-container')).toBeVisible({
+        timeout: UI_SHELL_TIMEOUT_MS,
+      });
+      applied += 1;
+      progressed = true;
+      break;
+    }
+
+    if (!progressed) {
+      break;
+    }
+  }
+
+  if (applied < 1) {
+    throw new Error(
+      'No applicable filter checkboxes: all candidates were disabled or already checked.',
+    );
   }
 }
 
@@ -226,7 +637,7 @@ export async function getCheckedFilterDisplayedCount(
     `#filter-panel [role="checkbox"][aria-label="${filterId}"]`,
   );
   await expect(checkbox).toHaveAttribute('data-state', 'checked', {
-    timeout: 20_000,
+    timeout: UI_SHELL_TIMEOUT_MS,
   });
 
   const row = checkbox.locator(
@@ -239,21 +650,21 @@ export async function getCheckedFilterDisplayedCount(
 export async function switchLanguage(page: Page, locale: 'en' | 'es') {
   const previousPathname = new URL(page.url()).pathname;
 
-  const languageSelect = page
-    .locator('button[aria-label][role="combobox"]')
-    .first();
-  await expect(languageSelect).toBeVisible({ timeout: 20_000 });
+  // Header is the only place with a language Select; search comboboxes are portaled / in main.
+  // Do not match on English "language" — the aria-label is translated (e.g. Spanish uses "idioma").
+  const languageSelect = page.locator('#app-header').getByRole('combobox');
+  await expect(languageSelect).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
   await languageSelect.click();
 
   const option = page.getByRole('option', {
     name: new RegExp(`${toSingleRegexLiteral(locale)}\\)$`, 'i'),
   });
-  await expect(option).toBeVisible({ timeout: 20_000 });
+  await expect(option).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
   await option.click();
 
-  await page.waitForURL(
-    (url) => {
-      const pathname = url.pathname;
+  await expect(page).toHaveURL(
+    (u) => {
+      const pathname = u.pathname;
       const escapedLocale = toSingleRegexLiteral(locale);
       // Check if locale appears as a complete path segment (handles base paths)
       const hasExplicitLocale = new RegExp(
@@ -276,7 +687,7 @@ export async function switchLanguage(page: Page, locale: 'en' | 'es') {
       const expectedDefaultPath = previousWithoutLocale || '/';
       return pathname === expectedDefaultPath;
     },
-    { timeout: 20_000 },
+    { timeout: SEARCH_NAV_TIMEOUT_MS },
   );
   await page.waitForLoadState('networkidle');
 }
@@ -291,16 +702,19 @@ export async function loginViaKeycloak(page: Page) {
   const password = process.env.TEST_USER_PASSWORD || 'test-password';
 
   await goHome(page);
-  await page.waitForLoadState('networkidle');
 
-  await page.getByTestId('my-stuff-btn').click();
+  const logoutButton = page.getByRole('button', { name: /log out/i });
+  if (await isVisible(logoutButton)) {
+    return;
+  }
+
   await page.getByTestId('favorites-btn').click();
   await page.getByTestId('login-btn').click();
 
   await page
-    .waitForURL(/auth\.c211\.io|keycloak/i, { timeout: 60_000 })
+    .waitForURL(/auth\.c211\.io|keycloak/i, { timeout: AUTH_NAV_TIMEOUT_MS })
     .catch(() => null);
-  await page.waitForLoadState('networkidle', { timeout: 60_000 });
+  await page.waitForLoadState('networkidle', { timeout: AUTH_NAV_TIMEOUT_MS });
 
   const url = page.url();
   if (isAuthHost(url)) {
@@ -317,11 +731,18 @@ export async function loginViaKeycloak(page: Page) {
     await passwordInput.fill(password);
 
     await Promise.all([
-      page.waitForURL((url) => !isAuthHost(url.href), { timeout: 60_000 }),
+      page.waitForURL((url) => !isAuthHost(url.href), {
+        timeout: AUTH_NAV_TIMEOUT_MS,
+        waitUntil: 'domcontentloaded',
+      }),
       page.locator('#kc-login').click(),
     ]);
-    await page.waitForLoadState('networkidle', { timeout: 60_000 });
+    await page.waitForLoadState('networkidle', {
+      timeout: AUTH_NAV_TIMEOUT_MS,
+    });
   }
+
+  await expectAuthenticatedShell(page);
 }
 
 export { base as test, expect };

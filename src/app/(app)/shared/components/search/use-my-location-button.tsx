@@ -1,28 +1,20 @@
 'use client';
 
-import { useCallback } from 'react';
-import { toast } from 'sonner';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { Locate } from 'lucide-react';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { setCookie } from 'cookies-next/client';
+import { toast } from 'sonner';
 
-import { useGeocodingAdapter } from '../../hooks/use-geocoding-adapter';
-import { MapService } from '../../services/map-service';
-import { searchAtom } from '../../store/search';
-import {
-  USER_PREF_COORDS,
-  USER_PREF_LOCATION,
-  USER_PREF_COUNTRY,
-  USER_PREF_DISTRICT,
-  USER_PREF_PLACE,
-  USER_PREF_POSTCODE,
-  USER_PREF_REGION,
-} from '../../lib/constants';
-import { Button } from '../ui/button';
-import { deviceAtom } from '../../store/device';
-import { useAppConfig } from '../../hooks/use-app-config';
 import { createLogger } from '@/lib/logger';
+
+import { useAppConfig } from '../../hooks/use-app-config';
+import { useGeocodingAdapter } from '../../hooks/use-geocoding-adapter';
+import { setLocationCookies } from '../../lib/location-cookies';
+import { MapService } from '../../services/map-service';
+import { deviceAtom } from '../../store/device';
+import { searchAtom } from '../../store/search';
+import { Button } from '../ui/button';
 
 const log = createLogger('use-my-location-button');
 
@@ -53,38 +45,18 @@ export function UseMyLocationButton() {
         success: (data) => {
           const location = data?.[0];
           if (location) {
-            setCookie(USER_PREF_LOCATION, location.address, {
-              path: '/',
-            });
-
-            setCookie(USER_PREF_COORDS, location.coordinates.join(','), {
-              path: '/',
-            });
-
-            setCookie(USER_PREF_COUNTRY, location.country, {
-              path: '/',
-            });
-
-            setCookie(USER_PREF_DISTRICT, location.district, {
-              path: '/',
-            });
-
-            setCookie(USER_PREF_PLACE, location.place, {
-              path: '/',
-            });
-
-            setCookie(USER_PREF_POSTCODE, location.postcode, {
-              path: '/',
-            });
-
-            setCookie(USER_PREF_REGION, location.region, {
-              path: '/',
-            });
+            setLocationCookies(location.address, location);
 
             setSearch((prev) => ({
               ...prev,
               searchLocation: location.address,
               searchCoordinates: location.coordinates,
+              // Seed prevSearchLocation so useLocations fetches the address
+              // and the Autocomplete block UX can activate on the result.
+              prevSearchLocation: location.address,
+              searchLocationValidationError: '',
+              searchPlaceType: location.place_type ?? [],
+              searchBbox: location.bbox ?? null,
             }));
 
             return 'Successfully fetched your location';
@@ -125,11 +97,11 @@ export function UseMyLocationButton() {
   return (
     <Button
       onClick={getUserLocation}
-      className="flex gap-1 !text-primary"
+      className="flex h-auto gap-1 whitespace-normal text-left !text-primary"
       variant="ghost"
       type="button"
     >
-      <Locate className="size-4" />
+      <Locate className="size-4" aria-hidden="true" />
       {t('search.use_my_location')}
     </Button>
   );

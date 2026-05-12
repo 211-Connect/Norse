@@ -1,7 +1,7 @@
-import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
-import { cva, type VariantProps } from 'class-variance-authority';
+import { type VariantProps, cva } from 'class-variance-authority';
 import { LoaderCircle } from 'lucide-react';
+import * as React from 'react';
 
 import { cn } from '../../lib/utils';
 
@@ -38,7 +38,8 @@ const buttonVariants = cva(
 );
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   loading?: boolean;
@@ -49,26 +50,30 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     { className, variant, size, asChild = false, loading, children, ...props },
     ref,
   ) => {
-    const Comp = asChild ? Slot : 'button';
+    const buttonClass = cn(buttonVariants({ variant, size, className }));
+
+    if (asChild) {
+      return (
+        <Slot className={buttonClass} ref={ref} {...props}>
+          {children}
+        </Slot>
+      );
+    }
+
     return (
-      <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        disabled={loading}
-        {...props}
-      >
+      <button className={buttonClass} ref={ref} disabled={loading} {...props}>
         {children}
         {loading && (
           <div
             className={cn(
-              buttonVariants({ variant, size, className }),
+              buttonClass,
               'absolute m-0 flex h-full w-full items-center justify-center border-0 p-0 shadow-none',
             )}
           >
             <LoaderCircle className="size-4 animate-spin" />
           </div>
         )}
-      </Comp>
+      </button>
     );
   },
 );

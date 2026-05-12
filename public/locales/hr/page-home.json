@@ -19,9 +19,9 @@
     },
     "step_4": {
       "paragraph_1": "Dodajte svoju adresu ovdje kako biste pronašli usluge dostupne u vašem susjedstvu. To nam pomaže da vam prikažemo samo opcije koje su stvarno dostupne u vašem području."
-    }
+    },
+    "dialog_title": "Pregled stranice"
   },
-  "categories_title": "Teme",
   "new_layout": {
     "topics_section": {
       "cta": "Pregledaj teme",

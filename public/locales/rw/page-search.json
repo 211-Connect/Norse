@@ -22,5 +22,7 @@
       "name": "Izina ry'umutungo",
       "organization": "Izina ry'umutanga serivisi"
     }
-  }
+  },
+  "name_unavailable": "Izina ntiriboneka",
+  "share_body": "Reba ibisubizo by'ishakisha rya {{count}} kuri \"{{title}}\""
 }

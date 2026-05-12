@@ -22,5 +22,7 @@
       "name": "Resurssin nimi",
       "organization": "Palveluntarjoajan nimi"
     }
-  }
+  },
+  "name_unavailable": "Nimi ei saatavilla",
+  "share_body": "Katso {{count}} hakutulosta haulle \"{{title}}\""
 }

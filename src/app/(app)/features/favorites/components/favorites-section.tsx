@@ -1,34 +1,51 @@
 'use client';
 
-import { favoriteListWithFavoritesAtom } from '@/app/(app)/shared/store/favorites';
-import { useAtomValue } from 'jotai';
+import { useAtom } from 'jotai';
+import { ChevronLeft } from 'lucide-react';
+import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { SearchCardLayoutConfig } from '@/app/(app)/features/search/types/card-layout-config';
+import { Link } from '@/app/(app)/shared/components/link';
+import { ShareButton } from '@/app/(app)/shared/components/share-button';
+import { Badge } from '@/app/(app)/shared/components/ui/badge';
+import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
 } from '@/app/(app)/shared/components/ui/card';
-import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
-import { ShareButton } from '@/app/(app)/shared/components/share-button';
-import { useRef } from 'react';
-import { ChevronLeft } from 'lucide-react';
-import { cn } from '@/app/(app)/shared/lib/utils';
-import { Badge } from '@/app/(app)/shared/components/ui/badge';
-import { fontSans } from '@/app/(app)/shared/styles/fonts';
-import { useTranslation } from 'react-i18next';
 import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
+import { cn, withOptionalTrailingSlash } from '@/app/(app)/shared/lib/utils';
+import { favoriteListWithFavoritesAtom } from '@/app/(app)/shared/store/favorites';
+import { fontSans } from '@/app/(app)/shared/styles/fonts';
 
+import { DeleteFavoriteListButton } from './delete-favorite-list-button';
 import { Favorite } from './favorite';
 import { NoFavoritesCard } from './no-favorites-card';
 import { UpdateFavoriteListButton } from './update-favorite-list-button';
-import { DeleteFavoriteListButton } from './delete-favorite-list-button';
-import { Link } from '@/app/(app)/shared/components/link';
 
-export function FavoritesSection() {
+type FavoritesSectionProps = {
+  cardLayout: SearchCardLayoutConfig;
+};
+
+export function FavoritesSection({ cardLayout }: FavoritesSectionProps) {
   const { t } = useTranslation('page-list');
-  const favoriteList = useAtomValue(favoriteListWithFavoritesAtom);
+  const [favoriteList, setFavoriteList] = useAtom(
+    favoriteListWithFavoritesAtom,
+  );
   const componentToPrint = useRef<HTMLDivElement>(null);
   const { stringifiedSearchParams } = useClientSearchParams();
+
+  const handleRemoveFromList = (_listId: string, favoriteId: string) => {
+    // Optimistically update the local atom by filtering out the removed favorite
+    setFavoriteList((prev) => ({
+      ...prev,
+      favorites:
+        prev.favorites?.filter((favorite) => favorite._id !== favoriteId) || [],
+    }));
+  };
 
   return (
     <div className="flex w-full flex-col p-[10px] lg:max-w-[550px] lg:pl-[20px]">
@@ -72,7 +89,9 @@ export function FavoritesSection() {
               buttonVariants({ variant: 'outline' }),
               'items-center gap-1',
             )}
-            href={`/favorites${stringifiedSearchParams}`}
+            href={withOptionalTrailingSlash(
+              `/favorites${stringifiedSearchParams}`,
+            )}
             data-testid="back-to-favorites"
           >
             <ChevronLeft className="size-4" />
@@ -98,8 +117,9 @@ export function FavoritesSection() {
             <Favorite
               key={list._id}
               data={list}
-              viewingAsOwner={favoriteList.viewingAsOwner}
-              favoriteListId={favoriteList.id}
+              cardLayout={cardLayout}
+              currentListId={favoriteList.id}
+              onRemoveFromList={handleRemoveFromList}
             />
           );
         })}

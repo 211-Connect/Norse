@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "Aiga",
-    "favorites": "Mea e fiafia i ai",
     "log_out": "Saini ese j",
     "language_select_label": "Filifili se gagana e sui ai le gagana a le 'upega tafaʻilagi",
     "my_stuff": "A'u mea",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "E le mafai ona tapeina lau lisi.",
     "list_created": "Lisi ua faia",
     "list_created_message": "Ua manuia le fausiaina o lau lisi.",
-    "unable_to_create_list_message": "E le mafai ona fatuina lau lisi."
+    "unable_to_create_list_message": "E le mafai ona fatuina lau lisi.",
+    "remove_from_list_title": "Aveese mai le lisi?",
+    "remove_from_list_description": "O le a aveeseina lenei punaoa mai lenei lisi. E mafai ona e toe fa'aopoopoina mulimuli ane pe a mana'omia."
   },
   "search": {
     "add_my_location": "Fa'aopoopo lo'u nofoaga",
@@ -47,7 +48,15 @@
     "geocoding_unable_to_retrieve": "Le mafai ona toe maua lou nofoaga. Fa'amolemole siaki tulaga o le nofoaga o lau su'esu'ega ma toe taumafai.",
     "categories": "Autu",
     "show_all": "Faaali uma ({{count}})",
-    "show_less": "Faaali itiiti ifo"
+    "show_less": "Faaali itiiti ifo",
+    "query_input_label": "Saili mo punaoa",
+    "location_input_label": "Saili se nofoaga",
+    "change_location_label": "Suia le nofoaga: {{location}}",
+    "open_search_dialog": "Tatala le talanoaga su'esu'e",
+    "list_status_one": "1 filifiliga o lo'o avanoa. Fa'aaoga ki aū i luga ma lalo e toe iloilo ai.",
+    "list_status_other": "{{count}} filifiliga o lo'o avanoa. Fa'aaoga ki o aū i luga ma lalo e toe iloilo ai.",
+    "search_dialog_description": "Saili mo punaoa ma faʻafou lou nofoaga.",
+    "everywhere": "I mea uma"
   },
   "call_to_action": {
     "call": "Telefoni",
@@ -67,7 +76,9 @@
     "login": "Ulufale",
     "show_more": "Faaali atili",
     "show_less": "Faaali itiiti ifo",
-    "print": "Lolomi"
+    "print": "Lolomi",
+    "close": "Tapuni",
+    "send": "Auina atu"
   },
   "list": {
     "private": "Tumaoti",
@@ -93,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "Fausia se lisi",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Igoa",
       "list_description": "Fa'amatalaga",
       "make_public": "Fa'asalalau i tagata lautele"
@@ -127,12 +139,21 @@
       "sms_send_success_title": "Ua auina atu le SMS!",
       "sms_send_success_body": "Ua auina atu lau savali.",
       "sms_send_failed_title": "Ua lē manuia le lafoina o SMS",
-      "sms_send_failed_body": "Ua lē mafai ona lafo lau savali."
+      "sms_send_failed_body": "Ua lē mafai ona lafo lau savali.",
+      "opens_in_new_tab": "tatala i se tab fou",
+      "phone_number_label": "Numera telefoni",
+      "sms_unavailable": "E le avanoa le fa'asoaina o SMS"
     },
-    "prompt_auth": "Fa'amolemole ulufale e fa'aoga lenei vaega."
+    "prompt_auth": "Fa'amolemole ulufale e fa'aoga lenei vaega.",
+    "prompt_auth_description": "Fa'amolemole ulufale e fa'aoga lenei vaega.",
+    "manage_favorites": {
+      "title": "Pulea mea e fiafia i ai",
+      "description": "Add this resource to or remove it from your lists."
+    }
   },
   "update_location": {
-    "prompt_start_location": "O fea lou nofoaga e amata ai?"
+    "prompt_start_location": "O fea lou nofoaga e amata ai?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Fa'amaumauga na tu'uina mai e"
@@ -144,5 +165,19 @@
   },
   "footer": {
     "copyright": "© Puletaofia {{text}}"
+  },
+  "filter_results_count_one": "I'uga {{count}}",
+  "filter_results_count_other": "{{count}} taunuuga",
+  "autocomplete": {
+    "results_available_one": "{{count}} i'uga o lo'o maua",
+    "results_available_other": "{{count}} i'uga o lo'o maua",
+    "no_results": "Leai ni taunuuga"
+  },
+  "auth_error": {
+    "access_denied_title": "Ua teena le ulufale",
+    "access_denied_description": "Ua e saini i totonu ma le manuia, ae e le fa'atagaina lenei teugatupe e ulufale i lenei 'upega tafa'ilagi. Toe taumafai i se isi teugatupe.",
+    "default_title": "Sese o le fa'amaoniga",
+    "default_description": "E le'i mafai ona matou fa'amae'aina le faiga e saini ai i totonu. Fa'amolemole toe taumafai.",
+    "logout_and_try_again": "Alu ese ma toe taumafai"
   }
 }

@@ -1,24 +1,26 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
 import mapboxgl, { LngLatBounds, LngLatLike, Marker, Popup } from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
+import { useEffect, useRef, useState } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+
 import {
   MAPBOX_API_KEY,
   MAPBOX_STYLE_URL,
 } from '@/app/(app)/shared/lib/constants';
 import { createLogger } from '@/lib/logger';
+import { isValidCoordinate } from '@/utils/isValidCoordinate';
+
+import { MapErrorFallback } from '../map-error-fallback';
+import {
+  MarkerDef,
+  ServiceAreaGeoJSON,
+  getBoundsFromServiceArea,
+  normalizeServiceArea,
+} from '../map-shared';
 
 const log = createLogger('mapbox');
-import { renderToStaticMarkup } from 'react-dom/server';
-import 'mapbox-gl/dist/mapbox-gl.css';
-import {
-  ServiceAreaGeoJSON,
-  normalizeServiceArea,
-  getBoundsFromServiceArea,
-  MarkerDef,
-} from '../map-shared';
-import { isValidCoordinate } from '@/utils/isValidCoordinate';
-import { MapErrorFallback } from '../map-error-fallback';
 
 type MapProps = {
   center?: [number, number];
@@ -41,6 +43,21 @@ export function Map({
   const mapboxMap = useRef<any>(null);
   const _markers = useRef<mapboxgl.Marker[]>([]);
   const [mapError, setMapError] = useState<string | null>(null);
+
+  const applyMarkerSemantics = (
+    markerElement: HTMLElement,
+    interactive: boolean,
+  ) => {
+    if (!interactive) {
+      markerElement.removeAttribute('aria-label');
+      markerElement.removeAttribute('role');
+      markerElement.removeAttribute('tabindex');
+      markerElement.setAttribute('aria-hidden', 'true');
+      return;
+    }
+
+    markerElement.removeAttribute('aria-hidden');
+  };
 
   useEffect(() => {
     try {
@@ -96,14 +113,17 @@ export function Map({
       }
 
       const markerElement = marker.getElement();
-      markerElement.style.cursor = 'pointer';
       markerElement.classList.add('custom-marker');
-      markerElement.addEventListener('click', () => {
-        setTimeout(() => {
-          const listElement = document.getElementById(m.id);
-          listElement?.scrollIntoView();
+      if (m.popup) {
+        markerElement.style.cursor = 'pointer';
+        markerElement.addEventListener('click', () => {
+          setTimeout(() => {
+            const listElement = document.getElementById(m.id);
+            listElement?.scrollIntoView();
+          });
         });
-      });
+      }
+      applyMarkerSemantics(markerElement, !!m.popup);
 
       return marker;
     });
@@ -120,6 +140,7 @@ export function Map({
 
       const markerElement = marker.getElement();
       markerElement.classList.add('users-location-marker');
+      applyMarkerSemantics(markerElement, false);
       marker.addTo(mapboxMap.current);
 
       _markers.current.push(marker);

@@ -3,6 +3,12 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+
+import { CreateFavoriteListDto } from '@/types/favorites';
+
+import { useAppConfig } from '../hooks/use-app-config';
+import { createFavoriteList } from '../serverActions/favorites/createFavoriteList';
+import { Button } from './ui/button';
 import {
   Dialog,
   DialogContent,
@@ -11,25 +17,27 @@ import {
   DialogHeader,
   DialogTitle,
 } from './ui/dialog';
-import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
-import { Textarea } from './ui/textarea';
 import { Switch } from './ui/switch';
-import { useAppConfig } from '../hooks/use-app-config';
-import { createFavoriteList } from '../serverActions/favorites/createFavoriteList';
-import { CreateFavoriteListDto } from '@/types/favorites';
+import { Textarea } from './ui/textarea';
 
 type CreateFavoriteListDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void | Promise<void>;
+  /** Passed through to DialogContent so focus returns to the trigger on close. */
+  restoreFocusElement?: HTMLElement | null;
+  /** Passed through to DialogContent for aria-controls linkage on the trigger. */
+  id?: string;
 };
 
 export function CreateFavoriteListDialog({
   open,
   onOpenChange,
   onSuccess,
+  restoreFocusElement,
+  id,
 }: CreateFavoriteListDialogProps) {
   const appConfig = useAppConfig();
   const { t } = useTranslation('common');
@@ -89,10 +97,12 @@ export function CreateFavoriteListDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent>
+      <DialogContent id={id} restoreFocusElement={restoreFocusElement}>
         <DialogHeader>
           <DialogTitle>{t('modal.create_list.create_a_list')}</DialogTitle>
-          <DialogDescription />
+          <DialogDescription className="sr-only">
+            {t('modal.create_list.description')}
+          </DialogDescription>
         </DialogHeader>
 
         <form

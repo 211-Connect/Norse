@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "Kotiin",
-    "favorites": "Suosikit",
     "log_out": "Kirjaudu ulos",
     "language_select_label": "Valitse kieli vaihtaaksesi sivuston kielen",
     "my_stuff": "Minun tavarani",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "Listaasi ei voitu poistaa.",
     "list_created": "Lista luotu",
     "list_created_message": "Listasi on luotu onnistuneesti.",
-    "unable_to_create_list_message": "Listaasi ei voitu luoda."
+    "unable_to_create_list_message": "Listaasi ei voitu luoda.",
+    "remove_from_list_title": "Poistetaanko listalta?",
+    "remove_from_list_description": "Tämä resurssi poistetaan tästä listasta. Voit lisätä sen myöhemmin takaisin tarvittaessa."
   },
   "search": {
     "add_my_location": "Lisää sijaintini",
@@ -47,7 +48,15 @@
     "geocoding_unable_to_retrieve": "Sijaintiasi ei voitu hakea. Tarkista selaimesi sijaintiasetukset ja yritä uudelleen.",
     "categories": "Aiheet",
     "show_all": "Näytä kaikki ({{count}})",
-    "show_less": "Näytä vähemmän"
+    "show_less": "Näytä vähemmän",
+    "query_input_label": "Hae resursseja",
+    "location_input_label": "Hae sijaintia",
+    "change_location_label": "Vaihda sijaintia: {{location}}",
+    "open_search_dialog": "Avaa hakuikkuna",
+    "list_status_one": "1 vaihtoehto saatavilla. Tarkista käyttämällä ylös- ja alas-nuolinäppäimiä.",
+    "list_status_other": "{{count}} vaihtoehtoa käytettävissä. Tarkista käyttämällä ylä- ja alanuolinäppäimiä.",
+    "search_dialog_description": "Hae resursseja ja päivitä sijaintiasi.",
+    "everywhere": "Kaikkialla"
   },
   "call_to_action": {
     "call": "Soittaa",
@@ -67,7 +76,9 @@
     "login": "Kirjaudu sisään",
     "show_more": "Näytä lisää",
     "show_less": "Näytä vähemmän",
-    "print": "Painaa"
+    "print": "Tulosta",
+    "close": "Sulje",
+    "send": "Lähetä"
   },
   "list": {
     "private": "Yksityinen",
@@ -93,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "Luo lista",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Nimi",
       "list_description": "Kuvaus",
       "make_public": "Julkistaa"
@@ -115,7 +127,7 @@
       "linkedin": "LinkedIn",
       "sms": "Tekstiviesti",
       "email": "Sähköposti",
-      "print": "Painaa",
+      "print": "Tulosta",
       "copied": "Kopioitu!",
       "check_out_this_list": "Katsokaa tätä listaa, jonka tein!",
       "check_out_this_resource": "Katsokaa tätä löytämääni resurssia!",
@@ -127,12 +139,21 @@
       "sms_send_success_title": "Tekstiviesti lähetetty!",
       "sms_send_success_body": "Viestisi on lähetetty.",
       "sms_send_failed_title": "Tekstiviestin lähetys epäonnistui",
-      "sms_send_failed_body": "Viestisi lähettäminen epäonnistui."
+      "sms_send_failed_body": "Viestisi lähettäminen epäonnistui.",
+      "opens_in_new_tab": "avautuu uuteen välilehteen",
+      "phone_number_label": "Puhelinnumero",
+      "sms_unavailable": "Tekstiviestijako ei ole käytettävissä"
     },
-    "prompt_auth": "Kirjaudu sisään käyttääksesi tätä ominaisuutta."
+    "prompt_auth": "Kirjaudu sisään käyttääksesi tätä ominaisuutta.",
+    "prompt_auth_description": "Kirjaudu sisään käyttääksesi tätä ominaisuutta.",
+    "manage_favorites": {
+      "title": "Hallinnoi suosikkeja",
+      "description": "Add this resource to or remove it from your lists."
+    }
   },
   "update_location": {
-    "prompt_start_location": "Mikä on lähtöpaikkasi?"
+    "prompt_start_location": "Mikä on lähtöpaikkasi?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Tiedot toimittanut"
@@ -144,5 +165,19 @@
     "previous": "Edellinen",
     "next": "Seuraava",
     "go_to": "Siirry osoitteeseen"
+  },
+  "filter_results_count_one": "{{count}} tulos",
+  "filter_results_count_other": "{{count}} tulosta",
+  "autocomplete": {
+    "results_available_one": "{{count}} tulos saatavilla",
+    "results_available_other": "{{count}} tulosta saatavilla",
+    "no_results": "Ei tuloksia"
+  },
+  "auth_error": {
+    "access_denied_title": "Käyttö estetty",
+    "access_denied_description": "Kirjauduit sisään onnistuneesti, mutta tällä tilillä ei ole oikeutta käyttää tätä sivustoa. Yritä uudelleen toisella tilillä.",
+    "default_title": "Todennusvirhe",
+    "default_description": "Kirjautumisprosessia ei voitu suorittaa loppuun. Yritä uudelleen.",
+    "logout_and_try_again": "Kirjaudu ulos ja yritä uudelleen"
   }
 }

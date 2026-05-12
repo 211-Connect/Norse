@@ -1,10 +1,20 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
+import { LanguagesIcon } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTopLoader } from 'nextjs-toploader';
+import { useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import { useAppConfig } from '../hooks/use-app-config';
+import { useBreakpoint } from '../hooks/use-breakpoint';
+import { useClientSearchParams } from '../hooks/use-client-search-params';
+import {
+  LANGUAGE_SWITCHER_CONTENT_ID,
+  LANGUAGE_SWITCHER_TRIGGER_ID,
+} from '../lib/aria-constants';
+import { cn } from '../lib/utils';
+import { Label } from './ui/label';
 import {
   Select,
   SelectContent,
@@ -12,10 +22,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from './ui/select';
-import { LanguagesIcon } from 'lucide-react';
-import { useClientSearchParams } from '../hooks/use-client-search-params';
-import { useAppConfig } from '../hooks/use-app-config';
-import { cn } from '../lib/utils';
 
 const LANGUAGE_NAME = {
   ff: 'Fulfulde',
@@ -43,6 +49,7 @@ export const LanguageSwitcher = () => {
   const currentPathname = usePathname();
   const { stringifiedSearchParams } = useClientSearchParams();
   const { start } = useTopLoader();
+  const isSmOrLarger = useBreakpoint(640);
 
   const { t, i18n } = useTranslation('common');
 
@@ -79,35 +86,46 @@ export const LanguageSwitcher = () => {
   }
 
   return (
-    <li>
+    <li className="h-full">
       <Select
-        aria-label={t('header.language_select_label') as string}
+        a11yLabel={
+          <Label htmlFor={LANGUAGE_SWITCHER_TRIGGER_ID} className="sr-only">
+            {t('header.language_select_label')}
+          </Label>
+        }
+        contentId={LANGUAGE_SWITCHER_CONTENT_ID}
         defaultValue={i18n.language}
         onValueChange={handleValueChange}
       >
         <SelectTrigger
+          id={LANGUAGE_SWITCHER_TRIGGER_ID}
           className={cn(
-            'flex w-auto min-w-[140px] items-center gap-[5px]',
+            'flex h-full w-auto min-w-[140px] items-center gap-[5px]',
+            // Match surrounding header buttons visually — the select is identified
+            // by its label + role, not its border, so the softer button border is
+            // appropriate in this toolbar context.
+            'border-input',
             newLayoutEnabled && '!bg-white',
           )}
-          aria-label={t('header.language_select_label')}
         >
           <div className="flex items-center gap-1 overflow-hidden">
             <LanguagesIcon className="size-4" aria-hidden="true" />
             <SelectValue placeholder={t('header.language_select_label')}>
-              <span className="capitalize">
+              <span className="text-xs font-medium capitalize leading-5">
                 {getLanguageName(currentLanguage)}
               </span>
             </SelectValue>
           </div>
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent align={isSmOrLarger ? 'end' : 'start'}>
           {appConfig.i18n.locales.map((locale: string) => {
             const languageName = getLanguageName(locale);
 
             return (
               <SelectItem key={locale} value={locale}>
-                <span className="capitalize">{languageName}</span>
+                <span className="text-xs font-medium capitalize">
+                  {languageName}
+                </span>
                 {` (${locale})`}
               </SelectItem>
             );

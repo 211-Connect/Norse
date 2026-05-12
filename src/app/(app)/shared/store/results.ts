@@ -1,5 +1,6 @@
 import { atom } from 'jotai';
-import { Location, Taxonomy, FacetWithTranslation } from '@/types/resource';
+
+import { FacetWithTranslation, Location, Taxonomy } from '@/types/resource';
 
 export type ResultType = {
   _id: string;
@@ -9,23 +10,22 @@ export type ResultType = {
   description: string;
   location: Location | null;
   name: string;
+  locationName: string | null;
   phone: string;
   attribution: string | null;
   priority: number;
   serviceName: string;
-  website: string;
+  website: string | null;
   taxonomies: Taxonomy[];
   facets: FacetWithTranslation[] | null | undefined;
   attributeValues: Record<string, string>;
+  currentListId?: string;
+  onRemoveFromList?: (listId: string, favoriteId: string) => void;
 };
 
 export const resultsAtom = atom<ResultType[]>([]);
-
 export const resultTotalAtom = atom(0);
-
-export const noResultsAtom = atom(false);
-
-export const resultsCurrentPageAtom = atom(0);
+export const resultsCurrentPageAtom = atom<number>(0);
 
 export const filtersOpenAtom = atom(false);
 export const filtersAtom = atom({});

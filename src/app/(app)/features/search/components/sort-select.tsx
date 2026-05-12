@@ -1,6 +1,11 @@
 'use client';
 
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useAtomValue } from 'jotai';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useTopLoader } from 'nextjs-toploader';
+import { useTranslation } from 'react-i18next';
+
+import { Label } from '@/app/(app)/shared/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -8,13 +13,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/app/(app)/shared/components/ui/select';
-import { useTranslation } from 'react-i18next';
-import { userCoordinatesAtom } from '@/app/(app)/shared/store/search';
-import { useAtomValue } from 'jotai';
 import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
-import { SortOption } from '@/app/(app)/shared/services/search-service';
-import { useTopLoader } from 'nextjs-toploader';
-import { getSortOption } from '@/app/(app)/shared/utils/getSortOption';
+import { userCoordinatesAtom } from '@/app/(app)/shared/store/search';
+import {
+  SortOption,
+  getSortOption,
+} from '@/app/(app)/shared/utils/getSortOption';
 
 const SORT_LABEL: Record<SortOption, string> = {
   relevance: 'Most Relevant',
@@ -22,6 +26,9 @@ const SORT_LABEL: Record<SortOption, string> = {
   organization: 'Provider Name',
   distance: 'Nearest First',
 };
+
+const SORT_SELECT_TRIGGER_ID = 'sort-select';
+const SORT_SELECT_CONTENT_ID = 'sort-select-content';
 
 export function SortSelect() {
   const { t } = useTranslation('page-search');
@@ -59,11 +66,23 @@ export function SortSelect() {
 
   return (
     <div className="flex items-center gap-2">
-      <label htmlFor="sort-select" className="text-sm font-medium">
-        {t('sort.label', 'Sort by')}:
-      </label>
-      <Select value={currentSort} onValueChange={handleSortChange}>
-        <SelectTrigger id="sort-select" className="h-8 w-[180px] bg-white">
+      <Select
+        a11yLabel={
+          <Label
+            htmlFor={SORT_SELECT_TRIGGER_ID}
+            className="text-sm font-medium"
+          >
+            {t('sort.label', 'Sort by')}:
+          </Label>
+        }
+        contentId={SORT_SELECT_CONTENT_ID}
+        onValueChange={handleSortChange}
+        value={currentSort}
+      >
+        <SelectTrigger
+          id={SORT_SELECT_TRIGGER_ID}
+          className="h-8 w-[180px] bg-white"
+        >
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

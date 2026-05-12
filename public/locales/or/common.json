@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "ଘର",
-    "favorites": "ପସନ୍ଦିତ",
     "log_out": "ଲଗ୍ ଆଉଟ୍",
     "language_select_label": "ସାଇଟର ଭାଷା ପରିବର୍ତ୍ତନ କରିବାକୁ ଏକ ଭାଷା ଚୟନ କରନ୍ତୁ।",
     "my_stuff": "ମୋ ଜିନିଷ",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "ଆପଣଙ୍କର ତାଲିକା ଡିଲିଟ୍ କରାଯାଇପାରିଲା ନାହିଁ।",
     "list_created": "ତାଲିକା ତିଆରି କରାଯାଇଛି",
     "list_created_message": "ଆପଣଙ୍କର ତାଲିକା ସଫଳତାର ସହ ତିଆରି ହୋଇଛି।",
-    "unable_to_create_list_message": "ଆପଣଙ୍କର ତାଲିକା ତିଆରି ହୋଇପାରିଲା ନାହିଁ।"
+    "unable_to_create_list_message": "ଆପଣଙ୍କର ତାଲିକା ତିଆରି ହୋଇପାରିଲା ନାହିଁ।",
+    "remove_from_list_title": "ତାଲିକାରୁ କାଢ଼ିବେ?",
+    "remove_from_list_description": "ଏହି ତାଲିକାରୁ ଏହି ଉତ୍ସକୁ କାଢ଼ି ଦିଆଯିବ। ଆବଶ୍ୟକ ହେଲେ ଆପଣ ଏହାକୁ ପରେ ପୁଣି ଯୋଡିପାରିବେ।"
   },
   "search": {
     "add_my_location": "ମୋ ଲୋକେସନ୍ ଯୋଡନ୍ତୁ",
@@ -47,7 +48,15 @@
     "geocoding_unable_to_retrieve": "ଆପଣଙ୍କ ଲୋକେସନ୍ ପୁନରୁଦ୍ଧାର କରିହେଲା ନାହିଁ। ଦୟାକରି ଆପଣଙ୍କ ବ୍ରାଉଜରର ଲୋକେସନ୍ ସେଟିଂସ ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।",
     "categories": "ବିଷୟଗୁଡ଼ିକ",
     "show_all": "ସବୁ ଦେଖାନ୍ତୁ ({{count}})",
-    "show_less": "କମ୍ ଦେଖାନ୍ତୁ"
+    "show_less": "କମ୍ ଦେଖାନ୍ତୁ",
+    "query_input_label": "ଉତ୍ସଗୁଡ଼ିକୁ ସନ୍ଧାନ କରନ୍ତୁ",
+    "location_input_label": "ଏକ ଲୋକେସନ୍ ଖୋଜନ୍ତୁ",
+    "change_location_label": "ସ୍ଥାନ ପରିବର୍ତ୍ତନ କରନ୍ତୁ: {{location}}",
+    "open_search_dialog": "ସର୍ଚ୍ଚ ଡାଏଲଗ୍‌ ଖୋଲନ୍ତୁ",
+    "list_status_one": "1ଟି ବିକଳ୍ପ ଉପଲବ୍ଧ ଅଛି। ସମୀକ୍ଷା କରିବାକୁ ଉପର ଏବଂ ତଳ ତୀର କୀ ବ୍ୟବହାର କରନ୍ତୁ।",
+    "list_status_other": "{{count}} ବିକଳ୍ପ ଉପଲବ୍ଧ। ସମୀକ୍ଷା କରିବା ପାଇଁ ଉପର ଏବଂ ତଳ ତୀର କୀ ବ୍ୟବହାର କରନ୍ତୁ।",
+    "search_dialog_description": "ସମ୍ବଳ ଖୋଜନ୍ତୁ ଏବଂ ଆପଣଙ୍କର ସ୍ଥାନ ଅପଡେଟ୍ କରନ୍ତୁ।",
+    "everywhere": "ସବୁ ଜାଗା"
   },
   "call_to_action": {
     "call": "କଲ୍ କରନ୍ତୁ",
@@ -67,7 +76,9 @@
     "login": "ଲଗ୍ଇନ୍",
     "show_more": "ଅଧିକ ଦେଖାନ୍ତୁ",
     "show_less": "କମ୍ ଦେଖାନ୍ତୁ",
-    "print": "ପ୍ରିଣ୍ଟ କରନ୍ତୁ"
+    "print": "ପ୍ରିଣ୍ଟ କରନ୍ତୁ",
+    "close": "ବନ୍ଦ",
+    "send": "ପଠାନ୍ତୁ"
   },
   "list": {
     "private": "ଗୋପନୀୟ",
@@ -93,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "ଏକ ତାଲିକା ତିଆରି କରନ୍ତୁ",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "ନାମ",
       "list_description": "ବର୍ଣ୍ଣନା",
       "make_public": "ସାର୍ବଜନିକ କରନ୍ତୁ"
@@ -127,22 +139,45 @@
       "sms_send_success_title": "SMS ପଠାଗଲା!",
       "sms_send_success_body": "ଆପଣଙ୍କର ବାର୍ତ୍ତା ପଠାଯାଇଛି।",
       "sms_send_failed_title": "SMS ପଠାଇବା ବିଫଳ ହେଲା",
-      "sms_send_failed_body": "ଆପଣଙ୍କ ମେସେଜ୍ ପଠାଇହେଲା ନାହିଁ।"
+      "sms_send_failed_body": "ଆପଣଙ୍କ ମେସେଜ୍ ପଠାଇହେଲା ନାହିଁ।",
+      "opens_in_new_tab": "ଏକ ନୂତନ ଟ୍ୟାବରେ ଖୋଲେ",
+      "phone_number_label": "ଫୋନ୍ ନମ୍ବର",
+      "sms_unavailable": "SMS ସେୟାରିଂ ଉପଲବ୍ଧ ନାହିଁ"
     },
-    "prompt_auth": "ଏହି ବୈଶିଷ୍ଟ୍ୟ ବ୍ୟବହାର କରିବାକୁ ଦୟାକରି ଲଗଇନ୍ କରନ୍ତୁ।"
+    "prompt_auth": "ଏହି ବୈଶିଷ୍ଟ୍ୟ ବ୍ୟବହାର କରିବାକୁ ଦୟାକରି ଲଗଇନ୍ କରନ୍ତୁ।",
+    "prompt_auth_description": "ଏହି ବୈଶିଷ୍ଟ୍ୟ ବ୍ୟବହାର କରିବାକୁ ଦୟାକରି ଲଗଇନ୍ କରନ୍ତୁ।",
+    "manage_favorites": {
+      "title": "ପସନ୍ଦଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ",
+      "description": "Add this resource to or remove it from your lists."
+    }
   },
   "update_location": {
-    "prompt_start_location": "ଆପଣଙ୍କର ଆରମ୍ଭ ସ୍ଥାନ କେଉଁଠାରୁ?"
+    "prompt_start_location": "ଆପଣଙ୍କର ଆରମ୍ଭ ସ୍ଥାନ କେଉଁଠାରୁ?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "ଦ୍ଵାରା ପ୍ରଦାନ କରାଯାଇଥିବା ଡାଟା"
   },
   "footer": {
-    "copyright": "© କପିରାଇଟ୍ {{ଟେକ୍ସଟ୍}}"
+    "copyright": "© କପିରାଇଟ୍ {{text}}"
   },
   "carousel": {
     "previous": "ପୂର୍ବବର୍ତ୍ତୀ",
     "next": "ପରବର୍ତ୍ତୀ",
     "go_to": "ଏଠାକୁ ଯାଆନ୍ତୁ"
+  },
+  "filter_results_count_one": "{{count}} ଫଳାଫଳ",
+  "filter_results_count_other": "{{count}} ଫଳାଫଳ",
+  "autocomplete": {
+    "results_available_one": "{{count}} ଫଳାଫଳ ଉପଲବ୍ଧ ଅଛି",
+    "results_available_other": "{{count}} ଫଳାଫଳ ଉପଲବ୍ଧ ଅଛି",
+    "no_results": "କୌଣସି ଫଳାଫଳ ନାହିଁ"
+  },
+  "auth_error": {
+    "access_denied_title": "ପ୍ରବେଶ ନିଷେଧ",
+    "access_denied_description": "ଆପଣ ସଫଳତାର ସହ ସାଇନ୍ ଇନ୍ କରିଛନ୍ତି, କିନ୍ତୁ ଏହି ଆକାଉଣ୍ଟକୁ ଏହି ସାଇଟ୍‌କୁ ଆକ୍ସେସ୍ କରିବା ପାଇଁ ଅନୁମତି ନାହିଁ। ଏକ ଭିନ୍ନ ଆକାଉଣ୍ଟ ସହିତ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।",
+    "default_title": "ପ୍ରାମାଣିକତା ତ୍ରୁଟି",
+    "default_description": "ଆମେ ସାଇନ୍-ଇନ୍ ପ୍ରକ୍ରିୟା ସମାପ୍ତ କରିପାରିଲୁ ନାହିଁ। ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।",
+    "logout_and_try_again": "ଲଗଆଉଟ୍ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।"
   }
 }

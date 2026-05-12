@@ -1,10 +1,11 @@
 import { Tab } from 'payload';
-import {
-  hasLayoutFieldAccess,
-  hasResourceNavigationFieldAccess,
-  hasSiteNavigationFieldAccess,
-} from '../../Users/access/permissions';
+
 import { generateUrlFields } from '@/payload/fields/urlField';
+
+import {
+  superAdminAccess,
+  superAdminOrSupportOrTenantAccess,
+} from '../../Users/access/roles';
 
 export const topics: Tab = {
   label: 'Topics',
@@ -15,8 +16,8 @@ export const topics: Tab = {
       name: 'backText',
       localized: true,
       access: {
-        create: hasSiteNavigationFieldAccess,
-        update: hasSiteNavigationFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
     },
     {
@@ -29,8 +30,8 @@ export const topics: Tab = {
       },
       localized: true,
       access: {
-        create: hasResourceNavigationFieldAccess,
-        update: hasResourceNavigationFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
     },
     {
@@ -39,24 +40,38 @@ export const topics: Tab = {
       options: ['small', 'medium'],
       defaultValue: 'small',
       access: {
-        create: hasLayoutFieldAccess,
-        update: hasLayoutFieldAccess,
+        create: superAdminAccess,
+        update: superAdminAccess,
       },
     },
     {
       name: 'imageBorderRadius',
       type: 'number',
       access: {
-        create: hasResourceNavigationFieldAccess,
-        update: hasResourceNavigationFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
+      },
+    },
+    {
+      type: 'ui',
+      name: 'topicsImportExport',
+      admin: {
+        components: {
+          Field: {
+            path: '@/payload/collections/ResourceDirectories/components/BulkCsvImportExport',
+            clientProps: {
+              kind: 'topics',
+            },
+          },
+        },
       },
     },
     {
       name: 'list',
       type: 'array',
       access: {
-        create: hasResourceNavigationFieldAccess,
-        update: hasResourceNavigationFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
       admin: {
         components: {

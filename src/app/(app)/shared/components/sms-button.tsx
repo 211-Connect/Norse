@@ -1,62 +1,85 @@
 'use client';
 
+import { useAtomValue } from 'jotai';
 import { Send, Smartphone } from 'lucide-react';
-import { useState } from 'react';
-import { useSession } from 'next-auth/react';
-import { z } from 'zod';
-import { toast } from 'sonner';
+import { useCallback, useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 
-import { Button } from './ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from './ui/dialog';
-import { Input } from './ui/input';
 import { useAppConfig } from '../hooks/use-app-config';
 import { fetchWrapper } from '../lib/fetchWrapper';
+import { withOptionalCustomBasePath } from '../lib/utils';
+import { validatePhoneNumber } from '../lib/validators';
+import { deviceAtom } from '../store/device';
+import { Button } from './ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import { Input } from './ui/input';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from './ui/tooltip';
 
-export function SmsButton({ title = '', body = '', shortUrl = '' }) {
+type SmsButtonProps = {
+  shareMessage: string;
+};
+
+export function SmsButton({ shareMessage }: SmsButtonProps) {
   const { t } = useTranslation('common');
   const [open, setOpen] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
   const appConfig = useAppConfig();
-  const session = useSession();
-  const [message, setMessage] = useState('');
+  const device = useAtomValue(deviceAtom);
+  const isSmsProviderConfigured = Boolean(appConfig.sms);
+  const shouldUseNativeSmsApp = !isSmsProviderConfigured && device.isMobile;
+  const isDisabled = !isSmsProviderConfigured && !device.isMobile;
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const dialogId = useId();
+  const inputId = useId();
+  const errorId = useId();
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const phoneNumberSchema = z.string().refine((value) => {
-    const phoneRegex = /^\+?\d{10,15}$/;
-    return phoneRegex.test(value);
-  }, t('modal.share.invalid_phone_number'));
+  const getPhoneError = useCallback(
+    (value: unknown): string | null =>
+      validatePhoneNumber(value) ? null : t('modal.share.invalid_phone_number'),
+    [t],
+  );
 
-  const validatePhoneNumber = (value: unknown) => {
-    const validationResult = phoneNumberSchema.safeParse(value);
-    return validationResult.success ? null : 'Invalid phone number';
-  };
+  const openNativeSmsApp = useCallback(() => {
+    if (typeof window === 'undefined') return;
+
+    const isIOS = /iPad|iPhone|iPod/.test(window.navigator.userAgent);
+    const queryPrefix = isIOS ? '&' : '?';
+    window.location.href = `sms:${queryPrefix}body=${encodeURIComponent(shareMessage)}`;
+  }, [shareMessage]);
 
   const handleClick = () => {
+    if (shouldUseNativeSmsApp) {
+      openNativeSmsApp();
+      return;
+    }
+
     setOpen(true);
   };
 
   const sendSms = async () => {
-    const errorMessage = validatePhoneNumber(phoneNumber);
+    const errorMessage = getPhoneError(phoneNumber);
 
     if (errorMessage) {
-      setMessage(errorMessage);
+      setErrorMessage(errorMessage);
       return;
     }
 
-    const promise = fetchWrapper(`/api/share/${appConfig.tenantId}`, {
+    const url = withOptionalCustomBasePath(`/api/share/${appConfig.tenantId}`);
+    const promise = fetchWrapper(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: {
         phoneNumber: phoneNumber,
-        message: `${title}\n\n${body}\n\n${shortUrl}`,
+        message: shareMessage,
       },
     }).catch((error) => {
       // fetchWrapper returns null for non-FetchError errors
@@ -69,7 +92,7 @@ export function SmsButton({ title = '', body = '', shortUrl = '' }) {
       success: (_res) => {
         setOpen(false);
         setPhoneNumber('');
-        setMessage('');
+        setErrorMessage('');
         return t('modal.share.sms_send_success_body');
       },
       error: (err) => {
@@ -82,32 +105,71 @@ export function SmsButton({ title = '', body = '', shortUrl = '' }) {
 
   return (
     <>
-      <Button className="flex gap-1" onClick={handleClick} variant="outline">
-        <Smartphone className="size-4" />
-        {t('modal.share.sms')}
-      </Button>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span tabIndex={isDisabled ? 0 : undefined}>
+              <Button
+                ref={triggerRef}
+                className="flex w-full gap-1"
+                onClick={handleClick}
+                variant="outline"
+                aria-controls={
+                  isDisabled || shouldUseNativeSmsApp ? undefined : dialogId
+                }
+                aria-haspopup={
+                  isDisabled || shouldUseNativeSmsApp ? undefined : 'dialog'
+                }
+                disabled={isDisabled}
+              >
+                <Smartphone className="size-4" aria-hidden="true" />
+                {t('modal.share.sms')}
+              </Button>
+            </span>
+          </TooltipTrigger>
+          {isDisabled && (
+            <TooltipContent>{t('modal.share.sms_unavailable')}</TooltipContent>
+          )}
+        </Tooltip>
+      </TooltipProvider>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
+        <DialogContent
+          id={dialogId}
+          restoreFocusElement={triggerRef.current}
+          closeLabel={t('call_to_action.close')}
+        >
           <DialogHeader>
             <DialogTitle>{t('modal.share.share_sms')}</DialogTitle>
-            <DialogDescription />
           </DialogHeader>
           <div className="flex flex-col gap-1">
             <div className="flex gap-2">
+              <label className="sr-only" htmlFor={inputId}>
+                {t('modal.share.phone_number_label')}
+              </label>
               <Input
+                id={inputId}
+                aria-describedby={errorMessage ? errorId : undefined}
+                aria-invalid={errorMessage ? true : undefined}
                 placeholder={t('modal.share.enter_phone_number')}
                 value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
+                onChange={(e) => {
+                  setPhoneNumber(e.target.value);
+                  if (errorMessage) {
+                    setErrorMessage('');
+                  }
+                }}
               />
               <Button className="flex h-full gap-1" onClick={sendSms}>
-                <Send className="size-4" />
-                Send
+                <Send className="size-4" aria-hidden="true" />
+                {t('call_to_action.send')}
               </Button>
             </div>
 
-            {message && message.length > 0 && (
-              <p className="text-sm text-red-600">{message}</p>
+            {errorMessage && errorMessage.length > 0 && (
+              <p id={errorId} className="text-sm text-red-600" role="alert">
+                {errorMessage}
+              </p>
             )}
           </div>
         </DialogContent>

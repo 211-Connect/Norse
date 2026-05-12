@@ -22,5 +22,7 @@
       "name": "Nazwa zasobu",
       "organization": "Nazwa dostawcy"
     }
-  }
+  },
+  "name_unavailable": "Nazwa niedostępna",
+  "share_body": "Zobacz {{count}} wyników wyszukiwania dla „{{title}}”"
 }

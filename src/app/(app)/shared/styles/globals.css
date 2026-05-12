@@ -14,6 +14,26 @@ a:not(:has(> button:only-child)):not([class*='bg-']):not(.border) {
   text-decoration: underline;
 }
 
+.reactour__popover.home-tour-popover {
+  /* Right padding reserves space for the 44px close button at 8px from the edge. */
+  padding: 1.5rem 3.5rem 1rem 1.5rem;
+}
+
+.home-tour-popover .home-tour-navigation {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.home-tour-popover .home-tour-navigation > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -24,8 +44,8 @@ a:not(:has(> button:only-child)):not([class*='bg-']):not(.border) {
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
     --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 0 0% 88%;
     --accent-foreground: 0 0% 9%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
@@ -34,7 +54,8 @@ a:not(:has(> button:only-child)):not([class*='bg-']):not(.border) {
     --custom-blue: 224, 100%, 58%;
     --custom-blue-foreground: 0 0% 3.9%;
     --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
+    --input: 0 0% 80%;
+    --control-border: 0 0% 57%;
     --ring: 0 0% 3.9%;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
@@ -57,7 +78,8 @@ a:not(:has(> button:only-child)):not([class*='bg-']):not(.border) {
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
+    --input: 0 0% 30%;
+    --control-border: 0 0% 40%;
     --ring: 0 0% 83.1%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
@@ -74,4 +96,16 @@ a:not(:has(> button:only-child)):not([class*='bg-']):not(.border) {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.parsed-html-content ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.parsed-html-content ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
 }

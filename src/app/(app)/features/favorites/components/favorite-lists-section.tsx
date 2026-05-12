@@ -1,6 +1,5 @@
 'use client';
 
-import { favoriteListsStateAtom } from '@/app/(app)/shared/store/favorites';
 import { useAtomValue } from 'jotai';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useMemo } from 'react';
@@ -8,6 +7,9 @@ import { useTranslation } from 'react-i18next';
 
 import { FavoritesSearchBar } from '@/app/(app)/shared/components/favorites-search-bar';
 import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
+import { FAVORITES_SEARCH_DEBOUNCE_DELAY } from '@/app/(app)/shared/lib/constants';
+import { favoriteListsStateAtom } from '@/app/(app)/shared/store/favorites';
+
 import { CreateAListButton } from './create-a-list-button';
 import { FavoriteList } from './favorite-list';
 import { FavoritesPagination } from './favorites-pagination';
@@ -55,6 +57,7 @@ export function FavoriteListsSection() {
             placeholder={t('modal.add_to_list.search_list')}
             initialValue={initialSearch}
             onChange={handleSearch}
+            debounceDelay={FAVORITES_SEARCH_DEBOUNCE_DELAY}
           />
         )}
       </div>

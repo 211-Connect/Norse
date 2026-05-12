@@ -1,34 +1,37 @@
 'use client';
 
-import { MapPin } from 'lucide-react';
 import { useAtomValue } from 'jotai';
+import { MapPin } from 'lucide-react';
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
-import { deleteCookie, setCookie } from 'cookies-next/client';
 
+import { useLocations } from '../../hooks/api/use-locations';
+import { useAppConfig } from '../../hooks/use-app-config';
+import { useDebounce } from '../../hooks/use-debounce';
+import { LOCATION_SEARCH_DEBOUNCE_DELAY } from '../../lib/constants';
+import {
+  clearLocationCookies,
+  setLocationCookies,
+} from '../../lib/location-cookies';
+import { cn } from '../../lib/utils';
 import {
   prevSearchLocationAtom,
   searchCoordinatesAtom,
   searchLocationAtom,
   searchLocationValidationErrorAtom,
+  userCoordinatesAtom,
 } from '../../store/search';
-import { useDebounce } from '../../hooks/use-debounce';
-import { useLocations } from '../../hooks/api/use-locations';
-import { useCallback, useState, useContext } from 'react';
-import { cn } from '../../lib/utils';
 import { Autocomplete } from '../ui/autocomplete';
 import { DistanceSelect } from './distance-select';
-import { UseMyLocationButton } from './use-my-location-button';
-import {
-  USER_PREF_COORDS,
-  USER_PREF_LOCATION,
-  USER_PREF_COUNTRY,
-  USER_PREF_DISTRICT,
-  USER_PREF_PLACE,
-  USER_PREF_POSTCODE,
-  USER_PREF_REGION,
-} from '../../lib/constants';
-import { useAppConfig } from '../../hooks/use-app-config';
 import { MainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
+import { UseMyLocationButton } from './use-my-location-button';
 
 type BaseProps = {
   className?: string;
@@ -56,8 +59,12 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
   const isStandalone = mode === 'standalone';
 
   const appConfig = useAppConfig();
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const [shouldSearch, setShouldSearch] = useState(false);
+  // When our own code commits a location (handleDecommit), it sets shouldSearch
+  // intentionally. This ref prevents the external-commit effect below from
+  // overriding that value in the same render cycle.
+  const skipShouldSearchResetRef = useRef(false);
 
   // Local state for standalone mode
   const [localSearchLocation, setLocalSearchLocation] = useState(
@@ -69,6 +76,7 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
   const globalSearchLocation = useAtomValue(searchLocationAtom);
   const coords = useAtomValue(searchCoordinatesAtom);
   const globalPrevSearchLocation = useAtomValue(prevSearchLocationAtom);
+  const userCoordinates = useAtomValue(userCoordinatesAtom);
 
   // Select state based on mode
   const searchLocation = isStandalone
@@ -77,14 +85,31 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
   const prevSearchLocation = isStandalone
     ? localPrevSearchLocation
     : globalPrevSearchLocation;
-  const debouncedSearchLocation = useDebounce(searchLocation, 1000);
+  const debouncedSearchLocation = useDebounce(
+    searchLocation,
+    LOCATION_SEARCH_DEBOUNCE_DELAY,
+  );
   const {
     data: locations,
     options,
     additionalLocations,
+    isFetching,
   } = useLocations(
     shouldSearch ? debouncedSearchLocation : prevSearchLocation,
     isStandalone, // Exclude additional locations in standalone mode
+  );
+
+  // While actively searching and awaiting API results, suppress stale geocoded
+  // suggestions so Enter/Tab can never commit a stale location
+  const isPendingResults = shouldSearch && isFetching;
+  const displayOptions = useMemo(
+    () =>
+      isPendingResults
+        ? options.filter((opt) =>
+            additionalLocations.some((loc) => loc.address === opt.value),
+          )
+        : options,
+    [isPendingResults, options, additionalLocations],
   );
   const validationError = useAtomValue(searchLocationValidationErrorAtom);
 
@@ -107,9 +132,9 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
       if (additionalLocation) return additionalLocation;
 
       return {
-        type: 'invalid',
+        type: 'invalid' as const,
         address: value,
-        coordinates: [0, 0], // Dummy coordinates
+        coordinates: [0, 0] as [number, number],
         place_type: [],
         bbox: undefined,
       };
@@ -121,46 +146,23 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
     (value) => {
       const coords = findCoords(value);
 
-      // We only want to update the user pref cookie for location
-      // IF coordinates are found for a given query.
-      //
-      // This is to prevent the caching of invalid locations
-      // We also update the 2 values so that they are empty if coordinates are not found
+      // Only persist a location preference when we have confirmed coordinates.
+      // Invalid/unrecognised values wipe the stored preference so stale data
+      // is never carried forward into the next search.
       if (coords.type === 'coordinates') {
-        setCookie(USER_PREF_COORDS, coords.coordinates?.join(','), {
-          path: '/',
-        });
-        setCookie(USER_PREF_LOCATION, value, { path: '/' });
-        if ('country' in coords && coords.country) {
-          setCookie(USER_PREF_COUNTRY, coords.country, { path: '/' });
-        }
-        if ('district' in coords && coords.district) {
-          setCookie(USER_PREF_DISTRICT, coords.district, { path: '/' });
-        }
-        if ('place' in coords && coords.place) {
-          setCookie(USER_PREF_PLACE, coords.place, { path: '/' });
-        }
-        if ('postcode' in coords && coords.postcode) {
-          setCookie(USER_PREF_POSTCODE, coords.postcode, { path: '/' });
-        }
-        if ('region' in coords && coords.region) {
-          setCookie(USER_PREF_REGION, coords.region, { path: '/' });
-        }
+        setLocationCookies(value, coords);
       } else {
-        deleteCookie(USER_PREF_COORDS, { path: '/' });
-        deleteCookie(USER_PREF_LOCATION, { path: '/' });
-        deleteCookie(USER_PREF_COUNTRY, { path: '/' });
-        deleteCookie(USER_PREF_DISTRICT, { path: '/' });
-        deleteCookie(USER_PREF_PLACE, { path: '/' });
-        deleteCookie(USER_PREF_POSTCODE, { path: '/' });
-        deleteCookie(USER_PREF_REGION, { path: '/' });
+        clearLocationCookies();
       }
 
       setShouldSearch(false);
 
       if (isStandalone && 'onLocationChange' in props) {
         setLocalSearchLocation(value);
-        props.onLocationChange(value, coords.coordinates || null);
+        props.onLocationChange(
+          value,
+          coords.type === 'invalid' ? null : (coords.coordinates ?? null),
+        );
       } else {
         setSearch?.((prev) => {
           // Ensure we are only providing updated coordinates to prevent unnecessary rerenders
@@ -169,10 +171,10 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
           if (
             coords.type === 'invalid' ||
             (coords.type === 'coordinates' &&
-              coordinates?.[0] !== prev['userCoordinates']?.[0] &&
-              coordinates?.[1] !== prev['userCoordinates']?.[1]) ||
-            (coordinates?.[0] !== prev['userCoordinates']?.[0] &&
-              coordinates?.[1] !== prev['userCoordinates']?.[1])
+              coordinates?.[0] !== userCoordinates?.[0] &&
+              coordinates?.[1] !== userCoordinates?.[1]) ||
+            (coordinates?.[0] !== userCoordinates?.[0] &&
+              coordinates?.[1] !== userCoordinates?.[1])
           ) {
             isNewCoords = true;
           }
@@ -194,7 +196,7 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
         });
       }
     },
-    [findCoords, setSearch, isStandalone, props],
+    [findCoords, setSearch, isStandalone, props, userCoordinates],
   );
 
   const handleInputChange = useCallback(
@@ -214,10 +216,63 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
     [setSearch, isStandalone],
   );
 
+  const handleClear = useCallback(() => {
+    setSearchLocation(t('search.everywhere', 'Everywhere'));
+    if (isStandalone) {
+      setLocalPrevSearchLocation('');
+    } else {
+      setSearch?.((prev) => ({ ...prev, prevSearchLocation: '' }));
+    }
+  }, [isStandalone, setSearch, setSearchLocation, t]);
+
+  // Called by Autocomplete when the committed block is burst-cleared by a
+  // keypress. `nextValue` is the triggering character, or '' for Backspace/Delete.
+  // Unlike handleClear, this does NOT route through "Everywhere" — it leaves
+  // the field open for an entirely new address search.
+  const handleDecommit = useCallback(
+    (nextValue: string) => {
+      clearLocationCookies();
+      // Exempt this intentional shouldSearch update from the external-commit
+      // detection effect — we're the one changing searchLocation here.
+      skipShouldSearchResetRef.current = true;
+      setShouldSearch(nextValue.length > 0);
+
+      if (isStandalone && 'onLocationChange' in props) {
+        setLocalSearchLocation(nextValue);
+        setLocalPrevSearchLocation(nextValue);
+      } else {
+        setSearch?.((prev) => ({
+          ...prev,
+          searchCoordinates: [],
+          searchLocation: nextValue,
+          prevSearchLocation: nextValue,
+          searchLocationValidationError: '',
+          searchPlaceType: [],
+          searchBbox: null,
+        }));
+      }
+    },
+    [isStandalone, props, setSearch],
+  );
+
+  // Detect when searchLocation is committed by an external source (currently
+  // only UseMyLocationButton, which writes directly to searchAtom). Our own
+  // handlers (setSearchLocation, handleDecommit, handleClear) already manage
+  // shouldSearch synchronously, so only the external path needs this reset.
+  useEffect(() => {
+    if (isStandalone) return;
+    if (skipShouldSearchResetRef.current) {
+      skipShouldSearchResetRef.current = false;
+      return;
+    }
+    setShouldSearch(false);
+  }, [searchLocation, isStandalone]);
+
   return (
     <div className="location-box flex flex-col gap-4">
       <Autocomplete
         className={cn(className, 'search-box')}
+        readerLabel={t('search.location_input_label')}
         inputProps={{
           autoFocus: focusByDefault,
           id: inputId,
@@ -227,21 +282,25 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
             t('search.location_placeholder'),
         }}
         defaultOpen={focusByDefault}
-        options={options}
+        options={displayOptions}
         Icon={MapPin}
         onInputChange={handleInputChange}
         onValueChange={setSearchLocation}
+        onClear={handleClear}
+        blockMode
+        onDecommit={handleDecommit}
+        onEscape={handleClear}
         value={searchLocation}
-        optionsPopoverClassName={`max-h-[calc(100dvh-190px)] ${isStandalone ? 'mt-[10px] sm:max-h-[calc(100dvh-250px)]' : 'mt-[60px] sm:max-h-[calc(100dvh-310px)]'}`}
+        clearButtonLabel={t('call_to_action.remove')}
         autoSelectIndex={coords?.length === 2 ? undefined : 1}
         autoSelectOnBlurIndex={1}
-        blurOnOptionsInteraction
+        positionBelowElementId={isStandalone ? undefined : 'search-form-inputs'}
       />
       {validationError && (
         <p className="min-h-4 px-3 text-xs text-red-500">{validationError}</p>
       )}
       {!isStandalone && (
-        <div className="flex justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <UseMyLocationButton />
           <DistanceSelect className="ml-auto" />
         </div>

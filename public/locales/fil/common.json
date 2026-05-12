@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "Tahanan",
-    "favorites": "Mga Paborito",
     "log_out": "Mag-log out",
     "language_select_label": "Pumili ng wika para baguhin ang wika ng site",
     "my_stuff": "Mga gamit ko",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "Hindi mabura ang iyong listahan.",
     "list_created": "Nalikha na ang listahan",
     "list_created_message": "Matagumpay na nalikha ang iyong listahan.",
-    "unable_to_create_list_message": "Hindi malikha ang iyong listahan."
+    "unable_to_create_list_message": "Hindi malikha ang iyong listahan.",
+    "remove_from_list_title": "Alisin sa listahan?",
+    "remove_from_list_description": "Aalisin ang mapagkukunang ito sa listahang ito. Maaari mo itong idagdag muli mamaya kung kinakailangan."
   },
   "search": {
     "add_my_location": "Idagdag ang aking lokasyon",
@@ -47,7 +48,15 @@
     "geocoding_unable_to_retrieve": "Hindi makuha ang iyong lokasyon. Pakitingnan ang mga setting ng lokasyon ng iyong browser at subukang muli.",
     "categories": "Mga Paksa",
     "show_all": "Ipakita lahat ({{count}})",
-    "show_less": "Ipakita nang mas kaunti"
+    "show_less": "Ipakita nang mas kaunti",
+    "query_input_label": "Maghanap ng mga mapagkukunan",
+    "location_input_label": "Maghanap ng lokasyon",
+    "change_location_label": "Baguhin ang lokasyon: {{location}}",
+    "open_search_dialog": "Buksan ang dialog ng paghahanap",
+    "list_status_one": "1 opsyon ang available. Gamitin ang pataas at pababang mga arrow key para mag-review.",
+    "list_status_other": "May mga opsyon na {{count}} na magagamit. Gamitin ang pataas at pababang mga arrow key para magrepaso.",
+    "search_dialog_description": "Maghanap ng mga mapagkukunan at i-update ang iyong lokasyon.",
+    "everywhere": "Sa lahat ng lugar"
   },
   "call_to_action": {
     "call": "Tumawag",
@@ -67,7 +76,9 @@
     "login": "Mag-login",
     "show_more": "Magpakita pa",
     "show_less": "Ipakita nang mas kaunti",
-    "print": "I-print"
+    "print": "I-print",
+    "close": "Isara",
+    "send": "Ipadala"
   },
   "list": {
     "private": "Pribado",
@@ -93,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "Gumawa ng listahan",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Pangalan",
       "list_description": "Paglalarawan",
       "make_public": "Ipubliko"
@@ -127,12 +139,21 @@
       "sms_send_success_title": "Naipadala na ang SMS!",
       "sms_send_success_body": "Naipadala na ang iyong mensahe.",
       "sms_send_failed_title": "Nabigo ang pagpapadala ng SMS",
-      "sms_send_failed_body": "Hindi naipadala ang iyong mensahe."
+      "sms_send_failed_body": "Hindi naipadala ang iyong mensahe.",
+      "opens_in_new_tab": "magbubukas sa isang bagong tab",
+      "phone_number_label": "Numero ng telepono",
+      "sms_unavailable": "Hindi magagamit ang pagbabahagi ng SMS"
     },
-    "prompt_auth": "Mangyaring mag-login upang magamit ang tampok na ito."
+    "prompt_auth": "Mangyaring mag-login upang magamit ang tampok na ito.",
+    "prompt_auth_description": "Mangyaring mag-login upang magamit ang tampok na ito.",
+    "manage_favorites": {
+      "title": "Pamahalaan ang mga paborito",
+      "description": "Add this resource to or remove it from your lists."
+    }
   },
   "update_location": {
-    "prompt_start_location": "Saan ang panimulang lokasyon mo?"
+    "prompt_start_location": "Saan ang panimulang lokasyon mo?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Ang datos na ibinigay ni"
@@ -144,5 +165,19 @@
     "previous": "Nakaraan",
     "next": "Susunod",
     "go_to": "Pumunta sa"
+  },
+  "filter_results_count_one": "{{count}} resulta",
+  "filter_results_count_other": "{{count}} resulta",
+  "autocomplete": {
+    "results_available_one": "{{count}} resulta ang makukuha",
+    "results_available_other": "{{count}} resulta ang makukuha",
+    "no_results": "Walang resulta"
+  },
+  "auth_error": {
+    "access_denied_title": "Tinanggihan ang pag-access",
+    "access_denied_description": "Matagumpay kang nakapag-sign in, ngunit hindi pinapayagan ang account na ito na ma-access ang site na ito. Subukan muli gamit ang ibang account.",
+    "default_title": "Error sa pagpapatunay",
+    "default_description": "Hindi namin makumpleto ang proseso ng pag-sign in. Pakisubukang muli.",
+    "logout_and_try_again": "Mag-logout at subukan muli"
   }
 }

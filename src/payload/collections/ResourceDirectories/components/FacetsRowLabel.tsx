@@ -1,7 +1,8 @@
 'use client';
 
-import { ArrayRowLabel } from '@/payload/components/ArrayRowLabel';
 import { useRowLabel, useWatchForm } from '@payloadcms/ui';
+
+import { ArrayRowLabel } from '@/payload/components/ArrayRowLabel';
 
 const FacetsRowLabel = ({ path }) => {
   const { rowNumber } = useRowLabel();

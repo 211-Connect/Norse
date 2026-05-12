@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "کور",
-    "favorites": "خوښې",
     "log_out": "وتل",
     "language_select_label": "د سایټ ژبه بدلولو لپاره ژبه غوره کړئ",
     "my_stuff": "زما سامانونه",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "ستاسو لیست حذف نه شو.",
     "list_created": "لیست جوړ شو",
     "list_created_message": "ستاسو لیست په بریالیتوب سره جوړ شو.",
-    "unable_to_create_list_message": "ستاسو لیست نه شو جوړولی."
+    "unable_to_create_list_message": "ستاسو لیست نه شو جوړولی.",
+    "remove_from_list_title": "له لیست څخه لرې کړئ؟",
+    "remove_from_list_description": "دا سرچینه به له دې لیست څخه لرې شي. که اړتیا وي، تاسو کولی شئ دا وروسته بیرته اضافه کړئ."
   },
   "search": {
     "add_my_location": "زما ځای اضافه کړئ",
@@ -47,7 +48,15 @@
     "geocoding_unable_to_retrieve": "ستاسو ځای بیرته ترلاسه کولو توان نلري. مهرباني وکړئ د خپل براوزر د موقعیت تنظیمات وګورئ او بیا هڅه وکړئ.",
     "categories": "موضوعات",
     "show_all": "ټول وښایاست ({{count}})",
-    "show_less": "لږ وښایاست"
+    "show_less": "لږ وښایاست",
+    "query_input_label": "د سرچینو لټون",
+    "location_input_label": "د ځای لټون وکړئ",
+    "change_location_label": "ځای بدل کړئ: {{location}}",
+    "open_search_dialog": "د لټون ډیالوګ پرانیزئ",
+    "list_status_one": "۱ انتخاب شتون لري. د بیاکتنې لپاره پورته او ښکته تیر کیلي وکاروئ.",
+    "list_status_other": "{{count}} انتخابونه شته. د بیاکتنې لپاره پورته او ښکته تیر کیلي وکاروئ.",
+    "search_dialog_description": "د سرچینو لټون وکړئ او خپل موقعیت تازه کړئ.",
+    "everywhere": "هر ځای"
   },
   "call_to_action": {
     "call": "زنګ ووهئ",
@@ -67,7 +76,9 @@
     "login": "ننوتل",
     "show_more": "نور ښکاره کړئ",
     "show_less": "لږ وښایاست",
-    "print": "چاپ"
+    "print": "چاپ",
+    "close": "تړه",
+    "send": "ولېږئ"
   },
   "list": {
     "private": "شخصي",
@@ -93,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "یو لیست جوړ کړئ",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "نوم",
       "list_description": "تفصیل",
       "make_public": "عامه کړئ"
@@ -127,22 +139,45 @@
       "sms_send_success_title": "ایس ایم ایس واستول شو!",
       "sms_send_success_body": "ستاسو پیغام لیږل شوی دی.",
       "sms_send_failed_title": "د ایس ایم ایس لیږل ناکام شول",
-      "sms_send_failed_body": "ستاسو پیغام واستول شو."
+      "sms_send_failed_body": "ستاسو پیغام واستول شو.",
+      "opens_in_new_tab": "په نوي ټب کې پرانیستل کیږي",
+      "phone_number_label": "د تلیفون شمیره",
+      "sms_unavailable": "د SMS شریکول شتون نلري"
     },
-    "prompt_auth": "د دې ځانګړتیا کارولو لپاره مهرباني وکړئ ننوتل وکړئ."
+    "prompt_auth": "د دې ځانګړتیا کارولو لپاره مهرباني وکړئ ننوتل وکړئ.",
+    "prompt_auth_description": "د دې ځانګړتیا کارولو لپاره مهرباني وکړئ ننوتل وکړئ.",
+    "manage_favorites": {
+      "title": "د خوښې وړ تنظیم کړئ",
+      "description": "Add this resource to or remove it from your lists."
+    }
   },
   "update_location": {
-    "prompt_start_location": "ستاسو د پیل ځای څه دی؟"
+    "prompt_start_location": "ستاسو د پیل ځای څه دی؟",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "معلومات د لخوا چمتو شوي"
   },
   "footer": {
-    "copyright": "© د چاپ حق {{متن}}"
+    "copyright": "© د چاپ حق {{text}}"
   },
   "carousel": {
     "previous": "مخکینی",
     "next": "بل",
     "go_to": "ورتګ"
+  },
+  "filter_results_count_one": "{{count}} پایله",
+  "filter_results_count_other": "{{count}} پایلې",
+  "autocomplete": {
+    "results_available_one": "{{count}} پایله موجوده ده",
+    "results_available_other": "{{count}} پایلې شتون لري",
+    "no_results": "هیڅ پایلې نشته"
+  },
+  "auth_error": {
+    "access_denied_title": "لاسرسی رد شو",
+    "access_denied_description": "تاسو په بریالیتوب سره ننوتل، خو دا حساب دې سایټ ته د لاسرسي اجازه نلري. د بل حساب سره بیا هڅه وکړئ.",
+    "default_title": "د تصدیق تېروتنه",
+    "default_description": "موږ د ننوتلو پروسه بشپړه نشوه کړای. مهرباني وکړئ بیا هڅه وکړئ.",
+    "logout_and_try_again": "ننوتل او بیا هڅه وکړئ"
   }
 }

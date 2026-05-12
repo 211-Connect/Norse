@@ -1,5 +1,8 @@
 'use client';
 
+import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
+
 import {
   Card,
   CardContent,
@@ -7,8 +10,6 @@ import {
   CardTitle,
 } from '@/app/(app)/shared/components/ui/card';
 import { getImageUrl } from '@/app/(app)/shared/utils/getImageUrl';
-import Image from 'next/image';
-import { useTranslation } from 'react-i18next';
 
 export function NoListsCard() {
   const { t } = useTranslation('page-favorites');

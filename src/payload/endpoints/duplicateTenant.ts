@@ -1,9 +1,11 @@
-import type { Endpoint } from 'payload';
-import { isSuperAdmin } from '../collections/Users/access/roles';
-import { generateRandomKey } from '../utilities';
 import { randomUUID } from 'crypto';
-import { ResourceDirectory, Tenant } from '../payload-types';
+import type { Endpoint } from 'payload';
+
 import { createLogger } from '@/lib/logger';
+
+import { isSuperAdmin } from '../collections/Users/access/roles';
+import { ResourceDirectory, Tenant } from '../payload-types';
+import { generateRandomKey } from '../utilities';
 
 const log = createLogger('duplicateTenant');
 

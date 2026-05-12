@@ -26,5 +26,8 @@
   "report": "신고",
   "providing_organization": "제공 기관",
   "interpretation_services": "통역 서비스",
-  "other_information": "기타 정보"
+  "other_information": "기타 정보",
+  "organization_url": "조직 URL",
+  "contacts": "이 서비스를 이용하시려면 다음 연락처로 문의하십시오.",
+  "location_name": "위치 이름"
 }

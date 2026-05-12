@@ -1,8 +1,10 @@
 'use client';
 
-import { useTranslation } from 'react-i18next';
 import { Languages } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+
 import { Resource } from '@/types/resource';
+
 import { Datum } from '../datum';
 
 export function LanguagesComponent({ resource }: { resource: Resource }) {

@@ -1,22 +1,35 @@
 'use client';
 
-import Image from 'next/image';
-import { signOut, useSession } from 'next-auth/react';
-import { useTranslation } from 'react-i18next';
-import { useCallback, useMemo } from 'react';
 import { useSetAtom } from 'jotai';
 import {
   AlignJustifyIcon,
-  ChevronDown,
+  Heart,
   HomeIcon,
   LogOut,
   Search,
-  UserRound,
 } from 'lucide-react';
+import { signOut, useSession } from 'next-auth/react';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
+import { useTopLoader } from 'nextjs-toploader';
+import { useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { Link } from './link';
+import { useAppConfig } from '../hooks/use-app-config';
 import { useDisclosure } from '../hooks/use-disclosure';
+import {
+  HEADER_DESKTOP_ID,
+  HEADER_ID,
+  HEADER_MOBILE_ID,
+  MAIN_CONTENT_ID,
+  NEW_TAB_WARNING,
+} from '../lib/constants';
+import { cn, withOptionalTrailingSlash } from '../lib/utils';
+import { dialogsAtom } from '../store/dialogs';
+import { FontSizeToggle } from './accessibility/font-size-toggle';
+import { LanguageSwitcher } from './language-switcher';
+import { Link } from './link';
+import { ReportButton } from './report-button';
 import { Button, buttonVariants } from './ui/button';
 import {
   Sheet,
@@ -26,32 +39,13 @@ import {
   SheetTitle,
   SheetTrigger,
 } from './ui/sheet';
-import { useAppConfig } from '../hooks/use-app-config';
-import {
-  HEADER_DESKTOP_ID,
-  HEADER_ID,
-  HEADER_MOBILE_ID,
-  MAIN_CONTENT_ID,
-  NEW_TAB_WARNING,
-} from '../lib/constants';
-import { dialogsAtom } from '../store/dialogs';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from './ui/dropdown';
-import { Card, CardContent } from './ui/card';
-import { cn } from '../lib/utils';
-import { LanguageSwitcher } from './language-switcher';
-import { ReportButton } from './report-button';
-import { FontSizeToggle } from './accessibility/font-size-toggle';
 
 export function Header() {
   const appConfig = useAppConfig();
   const { t, i18n } = useTranslation('common');
   const router = useRouter();
   const pathname = usePathname();
+  const { start } = useTopLoader();
 
   const session = useSession();
   const setDialogStore = useSetAtom(dialogsAtom);
@@ -107,15 +101,16 @@ export function Header() {
     [currentPath],
   );
 
-  const handleLogoClick = useCallback(() => {
-    router.push(appConfig.header?.customHomeUrl || '/');
-  }, [appConfig.header?.customHomeUrl, router]);
-
   const logoAlt = useMemo(() => {
     const brandName = appConfig.brand.name?.trim();
 
     return brandName ? `${brandName} home page` : (t('header.home') ?? 'Home');
   }, [appConfig.brand.name, t]);
+
+  const favoritesButtonLabel =
+    appConfig.header.favoritesButtonLabel?.trim() || t('header.my_stuff');
+  const feedbackButtonLabel =
+    appConfig.header.feedbackButtonLabel?.trim() || t('header.report');
 
   const sitemap = useMemo(
     () =>
@@ -151,14 +146,14 @@ export function Header() {
           </li>
         ) : null,
         appConfig.accessibility.fontSize.allowedValues.length > 1 ? (
-          <li key="2" className="hidden sm:flex">
+          <li key="2" className="hidden h-full sm:flex">
             <FontSizeToggle />
           </li>
         ) : null,
         appConfig.featureFlags.showFeedbackButtonGlobal ? (
           <li key="3">
             <ReportButton
-              customText={t('header.report')}
+              customText={feedbackButtonLabel}
               className={newLayoutEnabled ? '!bg-white' : undefined}
             />
           </li>
@@ -190,64 +185,56 @@ export function Header() {
           )),
         <LanguageSwitcher key="5" />,
         <li key="6">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                className={cn(
-                  'flex items-center gap-[5px]',
-                  newLayoutEnabled && '!bg-white',
-                )}
-                variant="outline"
-                data-testid="my-stuff-btn"
-              >
-                <UserRound className="size-4" aria-hidden="true" />
-                {t('header.my_stuff')}
-                <ChevronDown className="size-4" aria-hidden="true" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="min-w-[143px]">
-              <Card className="px-0 py-[10px]">
-                <CardContent>
-                  <DropdownMenuItem
-                    className="cursor-pointer px-[10px] py-2 text-primary !outline-none focus:bg-accent focus:text-primary"
-                    data-testid="favorites-btn"
-                    onClick={() => {
-                      if (session.status === 'unauthenticated') {
-                        setTimeout(() => {
-                          setDialogStore((prev) => ({
-                            ...prev,
-                            promptAuth: {
-                              ...prev.promptAuth,
-                              open: true,
-                            },
-                          }));
-                        });
-                      } else {
-                        router.push(
-                          `/favorites${process.env.NEXT_PUBLIC_WITH_TRAILING_SLASHES === 'true' ? '/' : ''}`,
-                        );
-                      }
-                    }}
-                  >
-                    {t('header.favorites')}
-                  </DropdownMenuItem>
-                  {session.status === 'authenticated' && (
-                    <DropdownMenuItem
-                      className="cursor-pointer px-[10px] py-2 text-primary !outline-none focus:bg-accent focus:text-primary"
-                      onClick={() => {
-                        signOut({ redirect: true, callbackUrl: '/' });
-                      }}
-                    >
-                      {t('header.log_out')}
-                    </DropdownMenuItem>
-                  )}
-                </CardContent>
-              </Card>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Button
+            className={cn(
+              'flex items-center gap-[5px]',
+              newLayoutEnabled && '!bg-white',
+            )}
+            variant="outline"
+            data-testid="favorites-btn"
+            onClick={(event) => {
+              if (session.status === 'unauthenticated') {
+                const trigger = event.currentTarget as HTMLElement;
+                setTimeout(() => {
+                  setDialogStore((prev) => ({
+                    ...prev,
+                    promptAuth: {
+                      ...prev.promptAuth,
+                      open: true,
+                      returnFocusTo: trigger,
+                    },
+                  }));
+                });
+              } else {
+                start();
+                router.push(withOptionalTrailingSlash('/favorites'));
+              }
+            }}
+          >
+            <Heart className="size-4" aria-hidden="true" />
+            {favoritesButtonLabel}
+          </Button>
         </li>,
-        appConfig.header.safeExit?.enabled ? (
+        session.status === 'authenticated' ? (
           <li key="7">
+            <Button
+              className={cn(
+                'flex items-center gap-[5px]',
+                newLayoutEnabled && '!bg-white',
+              )}
+              variant="outline"
+              onClick={() => {
+                start();
+                signOut({ redirect: true, callbackUrl: '/' });
+              }}
+            >
+              <LogOut className="size-4" aria-hidden="true" />
+              {t('header.log_out')}
+            </Button>
+          </li>
+        ) : null,
+        appConfig.header.safeExit?.enabled ? (
+          <li key="8">
             <Link
               target={appConfig.header.safeExit.target}
               href={appConfig.header.safeExit?.url ?? '#'}
@@ -272,20 +259,17 @@ export function Header() {
       ].filter(Boolean),
     [
       appConfig.accessibility.fontSize.allowedValues.length,
-      appConfig.header.customHomeUrl,
-      appConfig.header.searchUrl,
-      appConfig.header.customMenu,
-      appConfig.header.safeExit?.enabled,
-      appConfig.header.safeExit?.target,
-      appConfig.header.safeExit?.url,
-      appConfig.header.safeExit?.text,
+      appConfig.header,
       appConfig.featureFlags.showFeedbackButtonGlobal,
       newLayoutEnabled,
       t,
+      favoritesButtonLabel,
+      feedbackButtonLabel,
       getAriaCurrent,
       session.status,
       setDialogStore,
       router,
+      start,
     ],
   );
 
@@ -300,17 +284,19 @@ export function Header() {
     >
       <div
         className={cn(
-          'relative flex h-[104px] items-center justify-between gap-16 sm:gap-4',
-          newLayoutEnabled
-            ? 'rounded-xl bg-gradient-to-r from-header-start to-header-end p-6'
-            : 'py-3 pr-6',
+          'relative flex h-[104px] items-center justify-between gap-16 px-4 py-2 sm:gap-4 sm:px-6 sm:py-3',
+          newLayoutEnabled &&
+            'rounded-xl bg-gradient-to-r from-header-start to-header-end',
         )}
       >
         <div className="flex h-full items-center">
-          <div
-            className="flex h-full cursor-pointer items-center"
+          <Link
+            href={appConfig.header?.customHomeUrl || '/'}
+            className={cn(
+              'flex h-full cursor-pointer items-center',
+              newLayoutEnabled && 'absolute -left-4 -top-4',
+            )}
             aria-label={logoAlt}
-            onClick={handleLogoClick}
           >
             {logoUrl && (
               <Image
@@ -321,15 +307,15 @@ export function Header() {
                 className="max-h-full w-auto object-contain lg:max-w-[400px]"
               />
             )}
-          </div>
+          </Link>
         </div>
 
         <nav
           id={HEADER_DESKTOP_ID}
           aria-label="Primary"
-          className="z-[1] ml-auto hidden w-fit justify-end overflow-hidden xl:flex"
+          className="z-[1] ml-auto hidden w-fit justify-end xl:flex"
         >
-          <ul className="flex items-center gap-6 overflow-x-auto overflow-y-hidden">
+          <ul className="flex items-center gap-6 overflow-x-auto px-1 py-2 sm:px-2">
             {sitemap}
           </ul>
         </nav>
@@ -361,11 +347,7 @@ export function Header() {
                         alt={logoAlt}
                         width={200}
                         height={64}
-                        style={{
-                          height: 'auto',
-                          maxHeight: 64,
-                          maxWidth: '90%',
-                        }}
+                        className="max-h-16 w-auto max-w-[200px] object-contain"
                       />
                     )}
                   </Link>

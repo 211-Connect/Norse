@@ -22,5 +22,7 @@
       "name": "Ressourcenname",
       "organization": "Name des Anbieters"
     }
-  }
+  },
+  "name_unavailable": "Name nicht verfügbar",
+  "share_body": "Siehe {{count}} Suchergebnisse für \"{{title}}\""
 }

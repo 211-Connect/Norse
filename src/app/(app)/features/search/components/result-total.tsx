@@ -1,12 +1,13 @@
 'use client';
 
-import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
-import {
-  resultsCurrentPageAtom,
-  resultTotalAtom,
-} from '@/app/(app)/shared/store/results';
 import { useAtomValue } from 'jotai';
 import { useTranslation } from 'react-i18next';
+
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import {
+  resultTotalAtom,
+  resultsCurrentPageAtom,
+} from '@/app/(app)/shared/store/results';
 
 export function ResultTotal() {
   const { t } = useTranslation('page-search');
@@ -27,7 +28,12 @@ export function ResultTotal() {
   );
 
   return (
-    <div id="result-total" className="text-sm">
+    <div
+      id="result-total"
+      className="text-sm"
+      aria-live="polite"
+      aria-atomic="true"
+    >
       {counterStart}-{counterEnd}
       {` `}
       {t('of')}

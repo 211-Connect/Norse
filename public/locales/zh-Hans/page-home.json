@@ -19,9 +19,9 @@
     },
     "step_4": {
       "paragraph_1": "在此处添加您的地址以查找您所在地区可用的服务。这有助于我们仅向您显示您所在地区实际出现的选项。"
-    }
+    },
+    "dialog_title": "网站概览"
   },
-  "categories_title": "主题",
   "new_layout": {
     "topics_section": {
       "cta": "浏览主题",

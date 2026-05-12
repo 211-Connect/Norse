@@ -1,42 +1,90 @@
 'use client';
 
 import { useAtomValue } from 'jotai';
-import { useRef } from 'react';
-import { noResultsAtom } from '@/app/(app)/shared/store/results';
+import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { PrintButton } from '@/app/(app)/shared/components/print-button';
 import { ShareButton } from '@/app/(app)/shared/components/share-button';
+import {
+  resultTotalAtom,
+  resultsAtom,
+  resultsCurrentPageAtom,
+} from '@/app/(app)/shared/store/results';
+import {
+  queryAtom,
+  queryLabelAtom,
+  queryTypeAtom,
+} from '@/app/(app)/shared/store/search';
 
-import { ResultTotal } from './result-total';
+import { SearchCardLayoutConfig } from '../types/card-layout-config';
 import { RenderResults } from './render-results';
+import { ResultTotal } from './result-total';
 import { ResultsPagination } from './results-pagination';
 import { SortSelect } from './sort-select';
-import { SearchCardLayoutConfig } from '../types/card-layout-config';
-import { queryTypeAtom } from '@/app/(app)/shared/store/search';
+
+const SEARCH_RESULTS_HEADING_ID = 'search-results-heading';
+const PENDING_FOCUS_TARGET_STORAGE_KEY = 'pending-search-focus-target';
 
 type ResultsSectionProps = {
   cardLayout: SearchCardLayoutConfig;
 };
 
 export function ResultsSection({ cardLayout }: ResultsSectionProps) {
+  const { t } = useTranslation('page-search');
   const componentToPrintRef = useRef<HTMLDivElement>(null);
-  const noResults = useAtomValue(noResultsAtom);
+  const resultsHeadingRef = useRef<HTMLHeadingElement>(null);
+  const results = useAtomValue(resultsAtom);
+  const totalResults = useAtomValue(resultTotalAtom);
+  const currentPage = useAtomValue(resultsCurrentPageAtom);
+  const query = useAtomValue(queryAtom);
+  const queryLabel = useAtomValue(queryLabelAtom);
   const queryType = useAtomValue(queryTypeAtom);
+  const shareTitle = queryLabel || query || t('no_query');
+  const shareBody = t('share_body', { count: totalResults, title: shareTitle });
 
   const showSort = queryType !== 'hybrid';
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const pendingTarget = window.sessionStorage.getItem(
+      PENDING_FOCUS_TARGET_STORAGE_KEY,
+    );
+
+    if (pendingTarget !== SEARCH_RESULTS_HEADING_ID) return;
+
+    window.sessionStorage.removeItem(PENDING_FOCUS_TARGET_STORAGE_KEY);
+    resultsHeadingRef.current?.focus({ preventScroll: true });
+    window.scrollTo(0, 0);
+  }, [currentPage, results.length, totalResults]);
+
   return (
-    <div
+    <section
       id="search-container"
+      aria-labelledby={SEARCH_RESULTS_HEADING_ID}
       className="flex w-full flex-col gap-3 overflow-y-auto p-[10px] lg:max-w-[400px] xl:max-w-[550px]"
     >
+      <h2
+        id={SEARCH_RESULTS_HEADING_ID}
+        ref={resultsHeadingRef}
+        className="sr-only"
+        tabIndex={-1}
+      >
+        Search Results
+      </h2>
       <div className="flex flex-col gap-3 print:hidden">
         <div className="flex items-center justify-between">
           <ResultTotal />
           <div className="flex gap-[10px]">
-            {!noResults && (
+            {results.length > 0 && (
               <PrintButton componentToPrintRef={componentToPrintRef} />
             )}
-            <ShareButton componentToPrintRef={componentToPrintRef} />
+            <ShareButton
+              componentToPrintRef={componentToPrintRef}
+              title={shareTitle}
+              body={shareBody}
+            />
           </div>
         </div>
         {showSort && <SortSelect />}
@@ -46,6 +94,6 @@ export function ResultsSection({ cardLayout }: ResultsSectionProps) {
         <RenderResults cardLayout={cardLayout} />
         <ResultsPagination />
       </div>
-    </div>
+    </section>
   );
 }

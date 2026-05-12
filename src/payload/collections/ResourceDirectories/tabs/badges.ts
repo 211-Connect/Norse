@@ -1,9 +1,12 @@
 import { Tab } from 'payload';
-import { hasSiteNavigationFieldAccess } from '../../Users/access/permissions';
+
+import { DEFAULT_BADGE_COLOR } from '@/app/(app)/shared/theme/theme-config';
 import {
   parseFilter,
   validateFilterStructure,
 } from '@/utils/badgeFilterEvaluator';
+
+import { superAdminOrSupportAccess } from '../../Users/access/roles';
 
 export const badges: Tab = {
   label: 'Badges',
@@ -24,8 +27,8 @@ export const badges: Tab = {
       name: 'list',
       type: 'array',
       access: {
-        create: hasSiteNavigationFieldAccess,
-        update: hasSiteNavigationFieldAccess,
+        create: superAdminOrSupportAccess,
+        update: superAdminOrSupportAccess,
       },
       fields: [
         {
@@ -95,7 +98,7 @@ export const badges: Tab = {
               name: 'color',
               type: 'text',
               required: true,
-              defaultValue: '#0044B5',
+              defaultValue: DEFAULT_BADGE_COLOR,
               admin: {
                 components: {
                   Field: '@/payload/components/ColorPicker',

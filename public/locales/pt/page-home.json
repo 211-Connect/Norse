@@ -19,9 +19,9 @@
     },
     "step_4": {
       "paragraph_1": "Adicione seu endereço aqui para encontrar os serviços disponíveis em sua vizinhança. Isso nos ajuda a mostrar apenas as opções que realmente atendem à sua região."
-    }
+    },
+    "dialog_title": "Visita guiada ao local"
   },
-  "categories_title": "Tópicos",
   "new_layout": {
     "topics_section": {
       "cta": "Navegue pelos tópicos",

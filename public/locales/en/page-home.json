@@ -4,6 +4,7 @@
   "take_a_tour": "First time here? Take a tour!",
   "new": "New!",
   "tour": {
+    "dialog_title": "Site Walkthrough",
     "step_1": {
       "paragraph_1": "The search box is the backbone of the search engine. It accepts common words, phrases, etc (i.e. 'food pantries')",
       "paragraph_2": "As you type, the search box will provide suggestions based on categories we use behind the scenes. These suggestions will provide the most accurate results, however you aren't required to use them.",
@@ -21,7 +22,6 @@
       "paragraph_1": "Add your address here to find services available in your neighborhood. This helps us show you only the options that actually come to your area."
     }
   },
-  "categories_title": "Topics",
   "new_layout": {
     "topics_section": {
       "cta": "Browse topics",

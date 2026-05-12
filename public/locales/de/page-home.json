@@ -19,9 +19,9 @@
     },
     "step_4": {
       "paragraph_1": "Tragen Sie hier Ihre Adresse ein, um Dienstleistungen in Ihrer Nähe zu finden. So können wir Ihnen nur die Angebote anzeigen, die tatsächlich in Ihrer Region verfügbar sind."
-    }
+    },
+    "dialog_title": "Rundgang durch das Gelände"
   },
-  "categories_title": "Themen",
   "new_layout": {
     "topics_section": {
       "cta": "Themen durchsuchen",

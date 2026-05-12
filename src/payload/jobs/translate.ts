@@ -1,13 +1,15 @@
 import { TaskConfig } from 'payload';
-import {
-  batchTranslate,
-  TranslationEngine,
-} from '../services/translationService';
 import { retry } from 'radash';
-import { assertValidLocale } from '../i18n/locales';
-import { isEmpty } from '../utilities/isEmpty';
-import { OrchestrationConfig, ResourceDirectory } from '../payload-types';
+
 import { createLogger } from '@/lib/logger';
+
+import { assertValidLocale } from '../i18n/locales';
+import { OrchestrationConfig, ResourceDirectory } from '../payload-types';
+import {
+  TranslationEngine,
+  batchTranslate,
+} from '../services/translationService';
+import { isEmpty } from '../utilities/isEmpty';
 
 interface FieldToTranslate {
   path: string;
@@ -29,8 +31,24 @@ const SEARCH_TEXT_FIELDS = [
   'title',
   'queryInputPlaceholder',
   'locationInputPlaceholder',
+  'viewDetailsText',
   'noResultsFallbackText',
 ] as const;
+
+const SEARCH_SUGGESTION_HEADER_FIELDS = [
+  'suggestions',
+  'categories',
+  'taxonomies',
+] as const;
+
+const HEADER_TEXT_FIELDS = [
+  'favoritesButtonLabel',
+  'feedbackButtonLabel',
+] as const;
+
+const CALLOUT_TEXT_FIELDS = ['description', 'title'] as const;
+
+const HIGHLIGHT_TEXT_FIELDS = ['title', 'description', 'buttonText'] as const;
 
 const log = createLogger('translate');
 
@@ -206,6 +224,35 @@ export const translate: TaskConfig<'translate'> = {
         const getTargetSuggestion = (id: string) =>
           targetDoc.suggestions?.find((s) => s.id === id);
 
+        // Resource Tab
+        if (
+          shouldTranslate(
+            englishResourceDirectory.resource?.categoriesText,
+            targetDoc.resource?.categoriesText,
+            'resource.categoriesText',
+          )
+        ) {
+          fieldsToTranslate.push({
+            path: 'resource.categoriesText',
+            value: englishResourceDirectory.resource!.categoriesText!,
+            locale: targetLocale,
+          });
+        }
+
+        if (
+          shouldTranslate(
+            englishResourceDirectory.resource?.lastAssuredText,
+            targetDoc.resource?.lastAssuredText,
+            'resource.lastAssuredText',
+          )
+        ) {
+          fieldsToTranslate.push({
+            path: 'resource.lastAssuredText',
+            value: englishResourceDirectory.resource!.lastAssuredText!,
+            locale: targetLocale,
+          });
+        }
+
         // Topics Top Level
         if (
           shouldTranslate(
@@ -311,6 +358,22 @@ export const translate: TaskConfig<'translate'> = {
           }
         });
 
+        SEARCH_SUGGESTION_HEADER_FIELDS.forEach((field) => {
+          const path = `search.texts.suggestionHeaders.${field}`;
+          const sourceValue =
+            englishResourceDirectory.search?.texts?.suggestionHeaders?.[field];
+          const targetValue =
+            targetDoc.search?.texts?.suggestionHeaders?.[field];
+
+          if (shouldTranslate(sourceValue, targetValue, path)) {
+            fieldsToTranslate.push({
+              path,
+              value: sourceValue!,
+              locale: targetLocale,
+            });
+          }
+        });
+
         // Search Facets
         englishResourceDirectory.search?.facets?.forEach(
           (sourceFacet, index) => {
@@ -361,6 +424,175 @@ export const translate: TaskConfig<'translate'> = {
           });
         });
 
+        // Alert (from common tab)
+        englishResourceDirectory.common?.alert?.forEach(
+          (sourceAlert, index) => {
+            const targetAlert = targetDoc.common?.alert?.[index];
+
+            if (
+              shouldTranslate(
+                sourceAlert.text,
+                targetAlert?.text,
+                `common.alert.${index}.text`,
+              )
+            ) {
+              fieldsToTranslate.push({
+                path: `common.alert.${index}.text`,
+                value: sourceAlert.text!,
+                locale: targetLocale,
+              });
+            }
+
+            if (
+              shouldTranslate(
+                sourceAlert.buttonText,
+                targetAlert?.buttonText,
+                `common.alert.${index}.buttonText`,
+              )
+            ) {
+              fieldsToTranslate.push({
+                path: `common.alert.${index}.buttonText`,
+                value: sourceAlert.buttonText!,
+                locale: targetLocale,
+              });
+            }
+          },
+        );
+
+        // Custom Data Providers Heading (from common tab)
+        if (
+          shouldTranslate(
+            englishResourceDirectory.common?.customDataProvidersHeading,
+            targetDoc.common?.customDataProvidersHeading,
+            'common.customDataProvidersHeading',
+          )
+        ) {
+          fieldsToTranslate.push({
+            path: 'common.customDataProvidersHeading',
+            value: englishResourceDirectory.common!.customDataProvidersHeading!,
+            locale: targetLocale,
+          });
+        }
+
+        // Data Providers (from common tab)
+        englishResourceDirectory.common?.dataProviders?.forEach(
+          (sourceProvider, index) => {
+            const targetProvider = targetDoc.common?.dataProviders?.[index];
+
+            if (
+              shouldTranslate(
+                sourceProvider.name,
+                targetProvider?.name,
+                `common.dataProviders.${index}.name`,
+              )
+            ) {
+              fieldsToTranslate.push({
+                path: `common.dataProviders.${index}.name`,
+                value: sourceProvider.name!,
+                locale: targetLocale,
+              });
+            }
+          },
+        );
+
+        // Header Texts
+        HEADER_TEXT_FIELDS.forEach((field) => {
+          const path = `header.${field}`;
+          const sourceValue = englishResourceDirectory.header?.[field];
+          const targetValue = targetDoc.header?.[field];
+
+          if (shouldTranslate(sourceValue, targetValue, path)) {
+            fieldsToTranslate.push({
+              path,
+              value: sourceValue!,
+              locale: targetLocale,
+            });
+          }
+        });
+
+        // Callouts (from newLayout tab)
+        englishResourceDirectory.newLayout?.callouts?.options?.forEach(
+          (sourceCallout, index) => {
+            const targetCallout =
+              targetDoc.newLayout?.callouts?.options?.[index];
+
+            CALLOUT_TEXT_FIELDS.forEach((field) => {
+              const sourceValue = sourceCallout[field];
+              const targetValue = targetCallout?.[field];
+
+              if (
+                shouldTranslate(
+                  sourceValue,
+                  targetValue,
+                  `newLayout.callouts.options.${index}.${field}`,
+                )
+              ) {
+                fieldsToTranslate.push({
+                  path: `newLayout.callouts.options.${index}.${field}`,
+                  value: sourceValue!,
+                  locale: targetLocale,
+                });
+              }
+            });
+          },
+        );
+
+        // Callouts Title (from newLayout tab)
+        if (
+          shouldTranslate(
+            englishResourceDirectory.newLayout?.callouts?.title,
+            targetDoc.newLayout?.callouts?.title,
+            'newLayout.callouts.title',
+          )
+        ) {
+          fieldsToTranslate.push({
+            path: 'newLayout.callouts.title',
+            value: englishResourceDirectory.newLayout!.callouts!.title!,
+            locale: targetLocale,
+          });
+        }
+
+        // Highlights Section Title
+        if (
+          shouldTranslate(
+            englishResourceDirectory.highlights?.sectionTitle,
+            targetDoc.highlights?.sectionTitle,
+            'highlights.sectionTitle',
+          )
+        ) {
+          fieldsToTranslate.push({
+            path: 'highlights.sectionTitle',
+            value: englishResourceDirectory.highlights!.sectionTitle!,
+            locale: targetLocale,
+          });
+        }
+
+        // Highlights Items
+        englishResourceDirectory.highlights?.items?.forEach(
+          (sourceHighlight, index) => {
+            const targetHighlight = targetDoc.highlights?.items?.[index];
+
+            HIGHLIGHT_TEXT_FIELDS.forEach((field) => {
+              const sourceValue = sourceHighlight[field];
+              const targetValue = targetHighlight?.[field];
+
+              if (
+                shouldTranslate(
+                  sourceValue,
+                  targetValue,
+                  `highlights.items.${index}.${field}`,
+                )
+              ) {
+                fieldsToTranslate.push({
+                  path: `highlights.items.${index}.${field}`,
+                  value: sourceValue!,
+                  locale: targetLocale,
+                });
+              }
+            });
+          },
+        );
+
         if (fieldsToTranslate.length === 0) {
           log.debug(
             { targetLocale, tenantId },
@@ -385,6 +617,31 @@ export const translate: TaskConfig<'translate'> = {
             ...targetDoc.topics,
           },
         };
+
+        // Resource Tab
+        if (translationsByPath['resource.categoriesText']) {
+          updateData.resource = {
+            ...targetDoc.resource,
+            categoriesText: translationsByPath['resource.categoriesText'],
+          };
+        } else if (isEmpty(targetDoc.resource?.categoriesText)) {
+          updateData.resource = {
+            ...targetDoc.resource,
+            categoriesText: englishResourceDirectory.resource?.categoriesText,
+          };
+        }
+
+        if (translationsByPath['resource.lastAssuredText']) {
+          updateData.resource = {
+            ...(updateData.resource ?? targetDoc.resource),
+            lastAssuredText: translationsByPath['resource.lastAssuredText'],
+          };
+        } else if (isEmpty(targetDoc.resource?.lastAssuredText)) {
+          updateData.resource = {
+            ...(updateData.resource ?? targetDoc.resource),
+            lastAssuredText: englishResourceDirectory.resource?.lastAssuredText,
+          };
+        }
 
         if (translationsByPath['topics.backText']) {
           updateData.topics!.backText = translationsByPath['topics.backText'];
@@ -482,7 +739,12 @@ export const translate: TaskConfig<'translate'> = {
         // Search Texts
         updateData.search = {
           ...targetDoc.search,
-          texts: { ...targetDoc.search?.texts },
+          texts: {
+            ...targetDoc.search?.texts,
+            suggestionHeaders: {
+              ...targetDoc.search?.texts?.suggestionHeaders,
+            },
+          },
         };
 
         SEARCH_TEXT_FIELDS.forEach((field) => {
@@ -496,6 +758,32 @@ export const translate: TaskConfig<'translate'> = {
             updateData.search!.texts = {
               ...updateData.search!.texts,
               [field]: englishResourceDirectory.search?.texts?.[field],
+            };
+          }
+        });
+
+        SEARCH_SUGGESTION_HEADER_FIELDS.forEach((field) => {
+          const path = `search.texts.suggestionHeaders.${field}`;
+          if (translationsByPath[path]) {
+            updateData.search!.texts = {
+              ...updateData.search!.texts,
+              suggestionHeaders: {
+                ...updateData.search!.texts?.suggestionHeaders,
+                [field]: translationsByPath[path],
+              },
+            };
+          } else if (
+            isEmpty(targetDoc.search?.texts?.suggestionHeaders?.[field])
+          ) {
+            updateData.search!.texts = {
+              ...updateData.search!.texts,
+              suggestionHeaders: {
+                ...updateData.search!.texts?.suggestionHeaders,
+                [field]:
+                  englishResourceDirectory.search?.texts?.suggestionHeaders?.[
+                    field
+                  ],
+              },
             };
           }
         });
@@ -560,6 +848,180 @@ export const translate: TaskConfig<'translate'> = {
               },
             ),
           };
+        }
+
+        // Alert (from common tab)
+        if (englishResourceDirectory.common?.alert) {
+          updateData.common = {
+            ...targetDoc.common,
+            alert: englishResourceDirectory.common.alert.map(
+              (sourceAlert, index) => {
+                const targetAlert = targetDoc.common?.alert?.[index];
+                const newAlert = {
+                  ...sourceAlert,
+                  ...(targetAlert || {}),
+                };
+
+                const textPath = `common.alert.${index}.text`;
+                if (translationsByPath[textPath]) {
+                  newAlert.text = translationsByPath[textPath];
+                } else if (isEmpty(targetAlert?.text)) {
+                  newAlert.text = sourceAlert.text;
+                }
+
+                const buttonTextPath = `common.alert.${index}.buttonText`;
+                if (translationsByPath[buttonTextPath]) {
+                  newAlert.buttonText = translationsByPath[buttonTextPath];
+                } else if (isEmpty(targetAlert?.buttonText)) {
+                  newAlert.buttonText = sourceAlert.buttonText;
+                }
+
+                return newAlert;
+              },
+            ),
+          };
+        }
+
+        // Custom Data Providers Heading (from common tab)
+        if (translationsByPath['common.customDataProvidersHeading']) {
+          if (!updateData.common) updateData.common = { ...targetDoc.common };
+          updateData.common.customDataProvidersHeading =
+            translationsByPath['common.customDataProvidersHeading'];
+        } else if (isEmpty(targetDoc.common?.customDataProvidersHeading)) {
+          if (!updateData.common) updateData.common = { ...targetDoc.common };
+          updateData.common.customDataProvidersHeading =
+            englishResourceDirectory.common?.customDataProvidersHeading;
+        }
+
+        // Data Providers (from common tab)
+        if (englishResourceDirectory.common?.dataProviders) {
+          if (!updateData.common) updateData.common = { ...targetDoc.common };
+          updateData.common.dataProviders =
+            englishResourceDirectory.common.dataProviders.map(
+              (sourceProvider, index) => {
+                const targetProvider = targetDoc.common?.dataProviders?.[index];
+                const newProvider = {
+                  ...sourceProvider,
+                  ...(targetProvider || {}),
+                };
+
+                const namePath = `common.dataProviders.${index}.name`;
+                if (translationsByPath[namePath]) {
+                  newProvider.name = translationsByPath[namePath];
+                } else if (isEmpty(targetProvider?.name)) {
+                  newProvider.name = sourceProvider.name;
+                }
+
+                return newProvider;
+              },
+            );
+        }
+
+        // Header Texts
+        updateData.header = {
+          ...targetDoc.header,
+        };
+
+        HEADER_TEXT_FIELDS.forEach((field) => {
+          const path = `header.${field}`;
+          if (translationsByPath[path]) {
+            updateData.header![field] = translationsByPath[path];
+          } else if (isEmpty(targetDoc.header?.[field])) {
+            updateData.header![field] =
+              englishResourceDirectory.header?.[field];
+          }
+        });
+
+        // Callouts (from newLayout tab)
+        if (englishResourceDirectory.newLayout?.callouts) {
+          updateData.newLayout = {
+            ...targetDoc.newLayout,
+            ...englishResourceDirectory.newLayout,
+            callouts: {
+              ...targetDoc.newLayout?.callouts,
+              ...englishResourceDirectory.newLayout.callouts,
+            },
+          };
+
+          if (englishResourceDirectory.newLayout.callouts.options) {
+            updateData.newLayout!.callouts!.options =
+              englishResourceDirectory.newLayout.callouts.options.map(
+                (sourceCallout, index) => {
+                  const targetCallout =
+                    targetDoc.newLayout?.callouts?.options?.[index];
+                  const newCallout = {
+                    ...sourceCallout,
+                    ...(targetCallout || {}),
+                  };
+
+                  CALLOUT_TEXT_FIELDS.forEach((field) => {
+                    const path = `newLayout.callouts.options.${index}.${field}`;
+                    if (translationsByPath[path]) {
+                      newCallout[field] = translationsByPath[path];
+                    } else if (isEmpty(targetCallout?.[field])) {
+                      newCallout[field] = sourceCallout[field];
+                    }
+                  });
+
+                  return newCallout;
+                },
+              );
+          }
+
+          const calloutsTitle = 'newLayout.callouts.title';
+          if (translationsByPath[calloutsTitle]) {
+            updateData.newLayout!.callouts!.title =
+              translationsByPath[calloutsTitle];
+          } else if (isEmpty(targetDoc.newLayout?.callouts?.title)) {
+            updateData.newLayout!.callouts!.title =
+              englishResourceDirectory.newLayout.callouts.title;
+          }
+        }
+
+        // Highlights
+        if (englishResourceDirectory.highlights) {
+          updateData.highlights = {
+            ...targetDoc.highlights,
+            ...englishResourceDirectory.highlights,
+          };
+
+          // Highlights Section Title
+          const sectionTitlePath = 'highlights.sectionTitle';
+          if (translationsByPath[sectionTitlePath]) {
+            updateData.highlights!.sectionTitle =
+              translationsByPath[sectionTitlePath];
+          } else if (isEmpty(targetDoc.highlights?.sectionTitle)) {
+            updateData.highlights!.sectionTitle =
+              englishResourceDirectory.highlights.sectionTitle;
+          }
+
+          // Highlights Items
+          if (englishResourceDirectory.highlights.items) {
+            updateData.highlights!.items =
+              englishResourceDirectory.highlights.items.map(
+                (sourceHighlight, index) => {
+                  const targetHighlight = targetDoc.highlights?.items?.[index];
+                  const newHighlight = {
+                    ...sourceHighlight,
+                    ...(targetHighlight || {}),
+                  };
+
+                  HIGHLIGHT_TEXT_FIELDS.forEach((field) => {
+                    const path = `highlights.items.${index}.${field}`;
+                    if (translationsByPath[path]) {
+                      newHighlight[field] = translationsByPath[path];
+                    } else if (isEmpty(targetHighlight?.[field])) {
+                      const sourceValue = sourceHighlight[field];
+                      if (sourceValue) {
+                        newHighlight[field] = sourceValue;
+                      }
+                    }
+                  });
+
+                  return newHighlight;
+                },
+              );
+          }
         }
 
         updateData._translationMeta = {

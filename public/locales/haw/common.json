@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "Home",
-    "favorites": "Nā mea punahele",
     "log_out": "Haʻalele",
     "language_select_label": "E koho i kahi ʻōlelo e hoʻololi i ka ʻōlelo o ka pūnaewele",
     "my_stuff": "Kaʻu mau mea",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "ʻAʻole hiki ke holoi ʻia kāu papa inoa.",
     "list_created": "Papa inoa i hana ʻia",
     "list_created_message": "Ua hana pono ʻia kāu papa inoa.",
-    "unable_to_create_list_message": "ʻAʻole hiki ke hana ʻia kāu papa inoa."
+    "unable_to_create_list_message": "ʻAʻole hiki ke hana ʻia kāu papa inoa.",
+    "remove_from_list_title": "Wehe mai ka papa inoa?",
+    "remove_from_list_description": "E wehe ʻia kēia kumuwaiwai mai kēia papa inoa. Hiki iā ʻoe ke hoʻohui hou iā ia ma hope inā pono."
   },
   "search": {
     "add_my_location": "Hoʻohui i koʻu wahi",
@@ -47,7 +48,15 @@
     "geocoding_unable_to_retrieve": "ʻAʻole hiki ke kiʻi i kou wahi. E ʻoluʻolu e nānā i nā hoʻonohonoho wahi o kāu polokalamu kele pūnaewele a hoʻāʻo hou.",
     "categories": "Nā Kumuhana",
     "show_all": "Hōʻike i nā mea a pau ({{count}})",
-    "show_less": "Hōʻike emi mai"
+    "show_less": "Hōʻike emi mai",
+    "query_input_label": "E huli i nā kumuwaiwai",
+    "location_input_label": "E huli i kahi wahi",
+    "change_location_label": "Hoʻololi i ka wahi: {{location}}",
+    "open_search_dialog": "E wehe i ka pahu kamaʻilio hulina",
+    "list_status_one": "1 koho i loaʻa. E hoʻohana i nā kī pua i luna a i lalo e loiloi.",
+    "list_status_other": "Loaʻa nā koho {{count}}. E hoʻohana i nā kī pua i luna a i lalo e loiloi.",
+    "search_dialog_description": "E ʻimi i nā kumuwaiwai a hoʻohou i kou wahi.",
+    "everywhere": "Ma nā wahi a pau"
   },
   "call_to_action": {
     "call": "Kāhea",
@@ -67,7 +76,9 @@
     "login": "E komo",
     "show_more": "Hōʻike hou aku",
     "show_less": "Hōʻike emi mai",
-    "print": "Paʻi"
+    "print": "Paʻi",
+    "close": "Pani",
+    "send": "Hoʻouna"
   },
   "list": {
     "private": "Pilikino",
@@ -93,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "E hana i kahi papa inoa",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Inoa",
       "list_description": "Wehewehena",
       "make_public": "E hoʻolaha i ka lehulehu"
@@ -127,12 +139,21 @@
       "sms_send_success_title": "Ua hoʻouna ʻia ka SMS!",
       "sms_send_success_body": "Ua hoʻouna ʻia kāu leka.",
       "sms_send_failed_title": "Ua hāʻule ka hoʻouna ʻana o ka SMS",
-      "sms_send_failed_body": "ʻAʻole i hoʻouna ʻia kāu leka."
+      "sms_send_failed_body": "ʻAʻole i hoʻouna ʻia kāu leka.",
+      "opens_in_new_tab": "wehe ʻia ma kahi pā hou",
+      "phone_number_label": "Helu kelepona",
+      "sms_unavailable": "ʻAʻole loaʻa ka kaʻana like ʻana o ka SMS"
     },
-    "prompt_auth": "E ʻoluʻolu e komo e hoʻohana i kēia hiʻona."
+    "prompt_auth": "E ʻoluʻolu e komo e hoʻohana i kēia hiʻona.",
+    "prompt_auth_description": "E ʻoluʻolu e komo e hoʻohana i kēia hiʻona.",
+    "manage_favorites": {
+      "title": "E hoʻokele i nā mea punahele",
+      "description": "Add this resource to or remove it from your lists."
+    }
   },
   "update_location": {
-    "prompt_start_location": "Ma hea kou wahi hoʻomaka?"
+    "prompt_start_location": "Ma hea kou wahi hoʻomaka?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "ʻIkepili i hāʻawi ʻia e"
@@ -144,5 +165,19 @@
   },
   "footer": {
     "copyright": "© Kuleana kope {{text}}"
+  },
+  "filter_results_count_one": "hopena {{count}}",
+  "filter_results_count_other": "Nā hopena {{count}}",
+  "autocomplete": {
+    "results_available_one": "Loaʻa ka hopena {{count}}",
+    "results_available_other": "Loaʻa nā hopena {{count}}",
+    "no_results": "ʻAʻohe hopena"
+  },
+  "auth_error": {
+    "access_denied_title": "Ua hōʻole ʻia ke komo ʻana",
+    "access_denied_description": "Ua komo pono ʻoe, akā ʻaʻole ʻae ʻia kēia moʻokāki e komo i kēia pūnaewele. E hoʻāʻo hou me kahi moʻokāki ʻē aʻe.",
+    "default_title": "Hewa hōʻoia",
+    "default_description": "ʻAʻole hiki iā mākou ke hoʻopau i ke kaʻina hana komo. E ʻoluʻolu e hoʻāʻo hou.",
+    "logout_and_try_again": "E puka i waho a hoʻāʻo hou"
   }
 }

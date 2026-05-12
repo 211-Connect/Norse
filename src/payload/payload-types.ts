@@ -226,6 +226,22 @@ export interface Config {
     | 'yue'
     | 'zh-Hans'
     | 'zh-Hant';
+  widgets: {
+    'analytics-total-users': AnalyticsTotalUsersWidget;
+    'analytics-searches': AnalyticsSearchesWidget;
+    'analytics-resource-views': AnalyticsResourceViewsWidget;
+    'analytics-zero-results': AnalyticsZeroResultsWidget;
+    'analytics-website-clicks': AnalyticsWebsiteClicksWidget;
+    'analytics-phone-calls': AnalyticsPhoneCallsWidget;
+    'analytics-directions': AnalyticsDirectionsWidget;
+    'analytics-widget-searches': AnalyticsWidgetSearchesWidget;
+    'analytics-page-views': AnalyticsPageViewsWidget;
+    'analytics-pageviews-chart': AnalyticsPageviewsChartWidget;
+    'analytics-map': AnalyticsMapWidget;
+    'analytics-resource-titles': AnalyticsResourceTitlesWidget;
+    'analytics-search-queries': AnalyticsSearchQueriesWidget;
+    collections: CollectionsWidget;
+  };
   user: User;
   jobs: {
     tasks: {
@@ -391,20 +407,43 @@ export interface Tenant {
   auth: {
     realmId: string;
     keycloakSecret?: string | null;
-    keycloakIssuer?: string | null;
     nextAuthSecret?: string | null;
+    /**
+     * ⚠️ WARNING: Enabling this will make the website private. Only authenticated users will be able to access it. Use this setting with caution.
+     */
+    requiresLogin?: boolean | null;
+    allowedEmailDomains?:
+      | {
+          domain: string;
+          id?: string | null;
+        }[]
+      | null;
   };
   common?: {
     gtmContainerId?: string | null;
     matomoContainerUrl?: string | null;
-    umamiWebsiteId?: string | null;
+    umamiWebsiteIds?:
+      | {
+          websiteId: string;
+          id?: string | null;
+        }[]
+      | null;
   };
   sms?: {
     smsProvider?: ('Twilio' | 'EMS') | null;
     twilio?: {
       phoneNumber?: string | null;
+      /**
+       * Random string
+       */
       apiKey?: string | null;
+      /**
+       * Starts with 'SK' followed by random string
+       */
       apiKeySid?: string | null;
+      /**
+       * Starts with 'AC' followed by random string
+       */
       accountSid?: string | null;
     };
     ems?: {
@@ -517,6 +556,14 @@ export interface ResourceDirectory {
       | null;
     customHomeUrl?: string | null;
     searchUrl?: string | null;
+    /**
+     * Leave blank to use the default "My Stuff" label (or locale equivalent)
+     */
+    favoritesButtonLabel?: string | null;
+    /**
+     * Leave blank to use the default feedback label ("Report" or locale equivalent)
+     */
+    feedbackButtonLabel?: string | null;
     safeExit?: {
       enabled?: boolean | null;
       url?: string | null;
@@ -620,6 +667,7 @@ export interface ResourceDirectory {
   };
   resource?: {
     lastAssuredText?: string | null;
+    categoriesText?: string | null;
     /**
      * Enable custom layout for resource pages. When disabled, the default layout will be used.
      */
@@ -636,14 +684,18 @@ export interface ResourceDirectory {
                   | 'badges'
                   | 'resourceName'
                   | 'serviceName'
+                  | 'locationName'
+                  | 'locationNameSubtitle'
                   | 'address'
                   | 'transportation'
                   | 'accessibility'
                   | 'eligibility'
                   | 'requiredDocuments'
                   | 'hours'
+                  | 'contacts'
                   | 'phoneNumbers'
                   | 'website'
+                  | 'organizationUrl'
                   | 'email'
                   | 'languages'
                   | 'interpretationServices'
@@ -689,14 +741,18 @@ export interface ResourceDirectory {
                   | 'badges'
                   | 'resourceName'
                   | 'serviceName'
+                  | 'locationName'
+                  | 'locationNameSubtitle'
                   | 'address'
                   | 'transportation'
                   | 'accessibility'
                   | 'eligibility'
                   | 'requiredDocuments'
                   | 'hours'
+                  | 'contacts'
                   | 'phoneNumbers'
                   | 'website'
+                  | 'organizationUrl'
                   | 'email'
                   | 'languages'
                   | 'interpretationServices'
@@ -736,6 +792,25 @@ export interface ResourceDirectory {
       title?: string | null;
       queryInputPlaceholder?: string | null;
       locationInputPlaceholder?: string | null;
+      suggestionHeaders?: {
+        /**
+         * Shown above free-text search suggestions in the autocomplete dropdown.
+         */
+        suggestions?: string | null;
+        /**
+         * Shown above topic/category matches in the autocomplete dropdown.
+         */
+        categories?: string | null;
+        /**
+         * Shown above taxonomy matches in the autocomplete dropdown. This can be renamed to terms like Services.
+         */
+        taxonomies?: string | null;
+      };
+      viewDetailsText?: string | null;
+      /**
+       * Display the View Details action as an underlined text link instead of the default button-style action.
+       */
+      useTextLinkForViewDetails?: boolean | null;
       noResultsFallbackText?: string | null;
     };
     searchSettings: {
@@ -774,6 +849,8 @@ export interface ResourceDirectory {
             | 'badges'
             | 'resourceName'
             | 'serviceName'
+            | 'locationName'
+            | 'locationNameSubtitle'
             | 'address'
             | 'phone'
             | 'website'
@@ -833,11 +910,6 @@ export interface ResourceDirectory {
     content?: string | null;
   };
   featureFlags?: {
-    hideCategoriesHeading?: boolean | null;
-    hideDataProvidersHeading?: boolean | null;
-    showResourceAttribution?: boolean | null;
-    showResourceCategories?: boolean | null;
-    showResourceLastAssuredDate?: boolean | null;
     showHomePageTour?: boolean | null;
     requireUserLocation?: boolean | null;
     showSearchAndResourceServiceName?: boolean | null;
@@ -866,11 +938,14 @@ export interface OrchestrationConfig {
         schemaName: string;
         customAttributes?:
           | {
+              source_table: string;
               source_column: string;
               link_entity: 'organization' | 'service' | 'location';
               label: string;
               provenance?: string | null;
               searchable?: boolean | null;
+              translate_label?: boolean | null;
+              translate_value?: boolean | null;
               id?: string | null;
             }[]
           | null;
@@ -1122,15 +1197,26 @@ export interface TenantsSelect<T extends boolean = true> {
     | {
         realmId?: T;
         keycloakSecret?: T;
-        keycloakIssuer?: T;
         nextAuthSecret?: T;
+        requiresLogin?: T;
+        allowedEmailDomains?:
+          | T
+          | {
+              domain?: T;
+              id?: T;
+            };
       };
   common?:
     | T
     | {
         gtmContainerId?: T;
         matomoContainerUrl?: T;
-        umamiWebsiteId?: T;
+        umamiWebsiteIds?:
+          | T
+          | {
+              websiteId?: T;
+              id?: T;
+            };
       };
   sms?:
     | T
@@ -1270,6 +1356,8 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
             };
         customHomeUrl?: T;
         searchUrl?: T;
+        favoritesButtonLabel?: T;
+        feedbackButtonLabel?: T;
         safeExit?:
           | T
           | {
@@ -1363,6 +1451,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
     | T
     | {
         lastAssuredText?: T;
+        categoriesText?: T;
         useCustomLayout?: T;
         leftColumn?:
           | T
@@ -1424,6 +1513,15 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
               title?: T;
               queryInputPlaceholder?: T;
               locationInputPlaceholder?: T;
+              suggestionHeaders?:
+                | T
+                | {
+                    suggestions?: T;
+                    categories?: T;
+                    taxonomies?: T;
+                  };
+              viewDetailsText?: T;
+              useTextLinkForViewDetails?: T;
               noResultsFallbackText?: T;
             };
         searchSettings?:
@@ -1516,11 +1614,6 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
   featureFlags?:
     | T
     | {
-        hideCategoriesHeading?: T;
-        hideDataProvidersHeading?: T;
-        showResourceAttribution?: T;
-        showResourceCategories?: T;
-        showResourceLastAssuredDate?: T;
         showHomePageTour?: T;
         requireUserLocation?: T;
         showSearchAndResourceServiceName?: T;
@@ -1548,11 +1641,14 @@ export interface OrchestrationConfigSelect<T extends boolean = true> {
         customAttributes?:
           | T
           | {
+              source_table?: T;
               source_column?: T;
               link_entity?: T;
               label?: T;
               provenance?: T;
               searchable?: T;
+              translate_label?: T;
+              translate_value?: T;
               id?: T;
             };
         id?: T;
@@ -1659,6 +1755,146 @@ export interface PayloadJobsStatsSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-total-users_widget".
+ */
+export interface AnalyticsTotalUsersWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-searches_widget".
+ */
+export interface AnalyticsSearchesWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-resource-views_widget".
+ */
+export interface AnalyticsResourceViewsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-zero-results_widget".
+ */
+export interface AnalyticsZeroResultsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-website-clicks_widget".
+ */
+export interface AnalyticsWebsiteClicksWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-phone-calls_widget".
+ */
+export interface AnalyticsPhoneCallsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-directions_widget".
+ */
+export interface AnalyticsDirectionsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-widget-searches_widget".
+ */
+export interface AnalyticsWidgetSearchesWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-page-views_widget".
+ */
+export interface AnalyticsPageViewsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-pageviews-chart_widget".
+ */
+export interface AnalyticsPageviewsChartWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-map_widget".
+ */
+export interface AnalyticsMapWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-resource-titles_widget".
+ */
+export interface AnalyticsResourceTitlesWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-search-queries_widget".
+ */
+export interface AnalyticsSearchQueriesWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "collections_widget".
+ */
+export interface CollectionsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'full';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

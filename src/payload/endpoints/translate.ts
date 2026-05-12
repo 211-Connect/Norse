@@ -1,10 +1,12 @@
 import { Endpoint } from 'payload';
+
+import { createLogger } from '@/lib/logger';
+
 import {
   isSuperAdmin,
   isSupport,
   isTenant,
 } from '../collections/Users/access/roles';
-import { createLogger } from '@/lib/logger';
 
 const log = createLogger('translateEndpoint');
 

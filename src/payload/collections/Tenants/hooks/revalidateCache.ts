@@ -1,8 +1,7 @@
-import { Tenant } from '@/payload/payload-types';
-
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
 import { cacheService } from '@/cacheService';
 import { createLogger } from '@/lib/logger';
+import { Tenant } from '@/payload/payload-types';
 import { clearMemoryCache } from '@/utilities/withCache';
 
 const log = createLogger('revalidateTenantCache');
@@ -27,7 +26,7 @@ export async function revalidateCache({
       await Promise.all(
         trustedDomains.map(async (domain) => {
           const host = parseHost(domain);
-          await cacheService.delPattern(`tenant_locale:${host}`);
+          await cacheService.delPattern(`tenant_basic_config:${host}`);
           await cacheService.del(`tenant:${host}`);
           await cacheService.delPattern(`resource_directory:${host}:*`);
         }),

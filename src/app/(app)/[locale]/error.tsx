@@ -1,28 +1,36 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
+import { getCookies } from 'cookies-next/client';
+import { useParams } from 'next/navigation';
+
 import { InternalServerErrorContent } from '@/app/(app)/features/error/components/internal-server-error-content';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
-import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
-import { getCookies } from 'cookies-next/client';
+import { getErrorTranslationData } from '@/app/(app)/shared/serverActions/i18n/getErrorTranslationData';
+import { defaultLocale } from '@/payload/i18n/locales';
 
 export default function InternalServerError() {
-  const appConfig = useAppConfig();
+  const params = useParams<{ locale?: string }>();
   const cookies = getCookies();
+  const locale = params?.locale ?? defaultLocale;
 
-  if (!appConfig?.errorTranslationData) {
+  const { data: translationData } = useQuery({
+    queryKey: ['errorTranslationData', locale],
+    queryFn: () => getErrorTranslationData(locale),
+  });
+
+  if (!translationData) {
     return null;
   }
-
-  const {
-    errorNamespaces: i18nNamespaces,
-    resources,
-    locale,
-  } = appConfig.errorTranslationData;
 
   return (
     <PageWrapper
       cookies={cookies}
-      translationData={{ i18nNamespaces, locale, resources }}
+      translationData={{
+        i18nNamespaces: translationData.i18nNamespaces,
+        locale: translationData.locale,
+        resources: translationData.resources,
+      }}
     >
       <InternalServerErrorContent />
     </PageWrapper>

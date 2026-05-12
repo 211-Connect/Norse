@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "ઘર",
-    "favorites": "મનપસંદ",
     "log_out": "લોગ આઉટ કરો",
     "language_select_label": "સાઇટની ભાષા બદલવા માટે ભાષા પસંદ કરો",
     "my_stuff": "મારી વસ્તુઓ",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "તમારી યાદી કાઢી શકાઈ નથી.",
     "list_created": "સૂચિ બનાવી",
     "list_created_message": "તમારી યાદી સફળતાપૂર્વક બનાવવામાં આવી છે.",
-    "unable_to_create_list_message": "તમારી યાદી બનાવી શકાઈ નથી."
+    "unable_to_create_list_message": "તમારી યાદી બનાવી શકાઈ નથી.",
+    "remove_from_list_title": "યાદીમાંથી કાઢી નાખીએ?",
+    "remove_from_list_description": "આ સંસાધન આ સૂચિમાંથી દૂર કરવામાં આવશે. જો જરૂર પડે તો તમે તેને પછીથી પાછું ઉમેરી શકો છો."
   },
   "search": {
     "add_my_location": "મારું સ્થાન ઉમેરો",
@@ -47,7 +48,15 @@
     "geocoding_unable_to_retrieve": "તમારું સ્થાન પુનઃપ્રાપ્ત કરવામાં અસમર્થ. કૃપા કરીને તમારા બ્રાઉઝરની સ્થાન સેટિંગ્સ તપાસો અને ફરી પ્રયાસ કરો.",
     "categories": "વિષયો",
     "show_all": "બધા બતાવો ({{count}})",
-    "show_less": "ઓછું બતાવો"
+    "show_less": "ઓછું બતાવો",
+    "query_input_label": "સંસાધનો શોધો",
+    "location_input_label": "સ્થાન શોધો",
+    "change_location_label": "સ્થાન બદલો: {{location}}",
+    "open_search_dialog": "શોધ સંવાદ ખોલો",
+    "list_status_one": "1 વિકલ્પ ઉપલબ્ધ છે. સમીક્ષા કરવા માટે ઉપર અને નીચે તીર કીનો ઉપયોગ કરો.",
+    "list_status_other": "{{count}} વિકલ્પો ઉપલબ્ધ છે. સમીક્ષા કરવા માટે ઉપર અને નીચે તીર કીનો ઉપયોગ કરો.",
+    "search_dialog_description": "સંસાધનો શોધો અને તમારું સ્થાન અપડેટ કરો.",
+    "everywhere": "દરેક જગ્યા"
   },
   "call_to_action": {
     "call": "કૉલ કરો",
@@ -67,7 +76,9 @@
     "login": "લૉગિન",
     "show_more": "વધુ બતાવો",
     "show_less": "ઓછું બતાવો",
-    "print": "પ્રિંટ"
+    "print": "પ્રિંટ",
+    "close": "બંધ",
+    "send": "મોકલો"
   },
   "list": {
     "private": "ખાનગી",
@@ -93,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "યાદી બનાવો",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "નામ",
       "list_description": "વર્ણન",
       "make_public": "જાહેર કરો"
@@ -127,12 +139,21 @@
       "sms_send_success_title": "SMS મોકલ્યો!",
       "sms_send_success_body": "તમારો સંદેશ મોકલવામાં આવ્યો છે.",
       "sms_send_failed_title": "SMS મોકલવામાં નિષ્ફળ ગયા",
-      "sms_send_failed_body": "તમારો સંદેશ મોકલવામાં નિષ્ફળ ગયો."
+      "sms_send_failed_body": "તમારો સંદેશ મોકલવામાં નિષ્ફળ ગયો.",
+      "opens_in_new_tab": "નવા ટેબમાં ખુલે છે",
+      "phone_number_label": "ફોન નંબર",
+      "sms_unavailable": "SMS શેરિંગ ઉપલબ્ધ નથી"
     },
-    "prompt_auth": "આ સુવિધાનો ઉપયોગ કરવા માટે કૃપા કરીને લોગિન કરો."
+    "prompt_auth": "આ સુવિધાનો ઉપયોગ કરવા માટે કૃપા કરીને લોગિન કરો.",
+    "prompt_auth_description": "આ સુવિધાનો ઉપયોગ કરવા માટે કૃપા કરીને લોગિન કરો.",
+    "manage_favorites": {
+      "title": "મનપસંદ મેનેજ કરો",
+      "description": "Add this resource to or remove it from your lists."
+    }
   },
   "update_location": {
-    "prompt_start_location": "તમારું શરૂઆતનું સ્થાન કયું છે?"
+    "prompt_start_location": "તમારું શરૂઆતનું સ્થાન કયું છે?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "દ્વારા પ્રદાન કરાયેલ ડેટા"
@@ -143,6 +164,20 @@
     "go_to": "પર જાઓ"
   },
   "footer": {
-    "copyright": "© કૉપિરાઇટ {{ટેક્સ્ટ}}"
+    "copyright": "© કૉપિરાઇટ {{text}}"
+  },
+  "filter_results_count_one": "{{count}} પરિણામ",
+  "filter_results_count_other": "{{count}} પરિણામો",
+  "autocomplete": {
+    "results_available_one": "{{count}} પરિણામ ઉપલબ્ધ છે",
+    "results_available_other": "{{count}} પરિણામો ઉપલબ્ધ છે",
+    "no_results": "કોઈ પરિણામ નથી"
+  },
+  "auth_error": {
+    "access_denied_title": "ઍક્સેસ નકારાઈ",
+    "access_denied_description": "તમે સફળતાપૂર્વક સાઇન ઇન કર્યું છે, પરંતુ આ એકાઉન્ટને આ સાઇટ ઍક્સેસ કરવાની મંજૂરી નથી. બીજા એકાઉન્ટથી ફરી પ્રયાસ કરો.",
+    "default_title": "પ્રમાણીકરણ ભૂલ",
+    "default_description": "અમે સાઇન-ઇન પ્રક્રિયા પૂર્ણ કરી શક્યા નથી. કૃપા કરીને ફરી પ્રયાસ કરો.",
+    "logout_and_try_again": "લોગઆઉટ કરો અને ફરી પ્રયાસ કરો"
   }
 }

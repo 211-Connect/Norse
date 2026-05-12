@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { Input } from './ui/input';
-import { useDebounce } from '../hooks/use-debounce';
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
+import { useEffect, useRef, useState } from 'react';
+
+import { useDebounce } from '../hooks/use-debounce';
 import { cn } from '../lib/utils';
+import { Input } from './ui/input';
 
 interface FavoritesSearchBarProps {
   placeholder?: string;
@@ -40,8 +41,12 @@ export function FavoritesSearchBar({
 
   return (
     <div className={cn('relative', className)}>
+      <label htmlFor="favorites-search-input" className="sr-only">
+        {placeholder ?? 'Search your lists'}
+      </label>
       <MagnifyingGlassIcon className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
       <Input
+        id="favorites-search-input"
         placeholder={placeholder}
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}

@@ -1,10 +1,11 @@
+import { NextRequest, NextResponse } from 'next/server';
+
 import {
   USER_PREF_COORDS,
   USER_PREF_DISTANCE,
   USER_PREF_LOCATION,
 } from '@/app/(app)/shared/lib/constants';
 import { validateCoordsString } from '@/app/(app)/shared/lib/validators';
-import { NextRequest, NextResponse } from 'next/server';
 
 export function searchLinkCorrectionMiddleware(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;

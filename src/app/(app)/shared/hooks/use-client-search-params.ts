@@ -1,8 +1,8 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { useCallback, useMemo } from 'react';
 import qs from 'qs';
+import { useCallback, useMemo } from 'react';
 
 export const useClientSearchParams = () => {
   const searchParams = useSearchParams();

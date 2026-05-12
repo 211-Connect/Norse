@@ -26,7 +26,6 @@ export async function fetchWrapper<T = any>(
   options: FetchWrapperOptions = {},
 ): Promise<T | null> {
   const { parseResponse = true, body, ...fetchOptions } = options;
-  const method = (fetchOptions.method ?? 'GET').toUpperCase();
 
   try {
     const response = await fetch(url, {

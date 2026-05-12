@@ -1,17 +1,18 @@
-import * as React from 'react';
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   DotsHorizontalIcon,
 } from '@radix-ui/react-icons';
+import * as React from 'react';
 
 import { cn } from '../../lib/utils';
+import { Link } from '../link';
 import { ButtonProps, buttonVariants } from './button';
 
 const Pagination = ({ className, ...props }: React.ComponentProps<'nav'>) => (
   <nav
     role="navigation"
-    aria-label="pagination"
+    aria-label="Pagination"
     data-testid="pagination"
     className={cn('mx-auto flex w-full justify-center', className)}
     {...props}
@@ -42,16 +43,18 @@ PaginationItem.displayName = 'PaginationItem';
 type PaginationLinkProps = {
   isActive?: boolean;
 } & Pick<ButtonProps, 'variant' | 'size'> &
-  React.ComponentProps<'a'>;
+  Omit<React.ComponentProps<typeof Link>, 'variant' | 'size'>;
 
 const PaginationLink = ({
   className,
   isActive,
   size = 'icon',
   variant,
+  href,
   ...props
 }: PaginationLinkProps) => (
-  <a
+  <Link
+    href={href || '#'}
     aria-current={isActive ? 'page' : undefined}
     className={cn(
       buttonVariants({

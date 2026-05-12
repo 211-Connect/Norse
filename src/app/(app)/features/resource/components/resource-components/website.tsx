@@ -1,9 +1,13 @@
 'use client';
 
 import { LinkIcon } from 'lucide-react';
-import { Datum } from '../datum';
 import { useTranslation } from 'react-i18next';
+
+import { getDisplayHost } from '@/utils';
+
+import { UmamiEvent, trackUmamiEvent } from '../../../../shared/lib/umami';
 import { ResourceComponentProps } from '../component-registry';
+import { Datum } from '../datum';
 
 export function WebsiteComponent({ resource }: ResourceComponentProps) {
   const { t } = useTranslation('page-resource');
@@ -12,6 +16,8 @@ export function WebsiteComponent({ resource }: ResourceComponentProps) {
     return null;
   }
 
+  const host = getDisplayHost(resource.website);
+
   return (
     <Datum
       icon={LinkIcon}
@@ -19,7 +25,13 @@ export function WebsiteComponent({ resource }: ResourceComponentProps) {
       urlTarget="_blank"
       title={t('website')}
       description={resource.website}
+      urlAriaLabel={`${t('website')}: ${host}`}
       shouldParseHtml={false}
+      onClick={() =>
+        trackUmamiEvent(UmamiEvent.WebsiteClick, {
+          resourceId: resource.id,
+        })
+      }
     />
   );
 }

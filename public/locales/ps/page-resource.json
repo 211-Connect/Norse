@@ -26,5 +26,8 @@
   "report": "راپور",
   "providing_organization": "د سازمان چمتو کول",
   "interpretation_services": "د ژباړې خدمتونه",
-  "other_information": "نور معلومات"
+  "other_information": "نور معلومات",
+  "organization_url": "د سازمان URL",
+  "contacts": "دې خدمت ته د لاسرسي لپاره، اړیکه ونیسئ:",
+  "location_name": "د ځای نوم"
 }

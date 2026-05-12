@@ -3,6 +3,8 @@ export enum ResourceComponentId {
   BADGES = 'badges',
   RESOURCE_NAME = 'resourceName',
   SERVICE_NAME = 'serviceName',
+  LOCATION_NAME = 'locationName',
+  LOCATION_NAME_SUBTITLE = 'locationNameSubtitle',
 
   // Main info
   ADDRESS = 'address',
@@ -17,8 +19,10 @@ export enum ResourceComponentId {
   HOURS = 'hours',
 
   // Contact
+  CONTACTS = 'contacts',
   PHONE_NUMBERS = 'phoneNumbers',
   WEBSITE = 'website',
+  ORGANIZATION_URL = 'organizationUrl',
   EMAIL = 'email',
 
   // Services & Details

@@ -1,6 +1,7 @@
 import { atom } from 'jotai';
-import { ApiResource, Address, Translation } from '@/types/resource';
+
 import { FavoriteListState } from '@/types/favorites';
+import { Address, ApiResource, Translation } from '@/types/resource';
 
 export interface Favorite extends ApiResource {
   addresses: Address[];
@@ -34,7 +35,7 @@ export const favoriteListWithFavoritesAtom = atom<FavoriteListWithFavorites>({
   id: '',
   name: '',
   description: '',
-  privacy: 'PRIVATE' as FavoriteListState['privacy'],
+  privacy: 'PRIVATE',
   viewingAsOwner: false,
   favorites: [],
 });

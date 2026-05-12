@@ -1,24 +1,27 @@
 'use client';
 
-import { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
-import {
-  formatAddressForDisplay,
-  distanceBetweenCoordsInKm,
-} from '@/app/(app)/shared/lib/utils';
-import { userCoordinatesAtom } from '@/app/(app)/shared/store/search';
-import { Resource } from '@/types/resource';
+import { MapPin } from 'lucide-react';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@/app/(app)/shared/components/ui/tooltip';
-import { useTranslation } from 'react-i18next';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
+import {
+  distanceBetweenCoordsInMiles,
+  formatAddressForDisplay,
+} from '@/app/(app)/shared/lib/utils';
 import { ResultType } from '@/app/(app)/shared/store/results';
+import { userCoordinatesAtom } from '@/app/(app)/shared/store/search';
+import { Resource } from '@/types/resource';
+
+import { UmamiEvent, trackUmamiEvent } from '../../../../shared/lib/umami';
 import { Datum } from '../datum';
-import { MapPin } from 'lucide-react';
 
 export function AddressComponent({
   resource,
@@ -40,7 +43,7 @@ export function AddressComponent({
       return null;
     }
 
-    return distanceBetweenCoordsInKm(
+    return distanceBetweenCoordsInMiles(
       coords as [number, number],
       resource.location.coordinates as [number, number],
     );
@@ -57,6 +60,11 @@ export function AddressComponent({
       iconColor="text-primary"
       singleLine
       className="py-0"
+      onClick={() =>
+        trackUmamiEvent(UmamiEvent.DirectionClick, {
+          resourceId: resource.id,
+        })
+      }
     />
   ) : (
     <Typography variant="paragraph" size="md">

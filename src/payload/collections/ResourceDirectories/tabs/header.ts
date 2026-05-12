@@ -1,9 +1,8 @@
 import { Tab } from 'payload';
-import {
-  hasFeatureFieldAccess,
-  hasSiteNavigationFieldAccess,
-} from '../../Users/access/permissions';
+
 import { generateUrlFields } from '@/payload/fields/urlField';
+
+import { superAdminOrSupportOrTenantAccess } from '../../Users/access/roles';
 
 export const header: Tab = {
   name: 'header',
@@ -27,8 +26,8 @@ export const header: Tab = {
           'Controls whether the header sticks to the top when scrolling or stays static',
       },
       access: {
-        create: hasSiteNavigationFieldAccess,
-        update: hasSiteNavigationFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
     },
     {
@@ -40,8 +39,8 @@ export const header: Tab = {
         plural: 'Menu Items',
       },
       access: {
-        create: hasSiteNavigationFieldAccess,
-        update: hasSiteNavigationFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
       fields: [
         {
@@ -60,8 +59,8 @@ export const header: Tab = {
           type: 'text',
           localized: true,
           access: {
-            create: hasSiteNavigationFieldAccess,
-            update: hasSiteNavigationFieldAccess,
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
           },
         },
         {
@@ -69,8 +68,34 @@ export const header: Tab = {
           type: 'text',
           localized: true,
           access: {
-            create: hasSiteNavigationFieldAccess,
-            update: hasSiteNavigationFieldAccess,
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
+          },
+        },
+        {
+          name: 'favoritesButtonLabel',
+          type: 'text',
+          localized: true,
+          admin: {
+            description:
+              'Leave blank to use the default "My Stuff" label (or locale equivalent)',
+          },
+          access: {
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
+          },
+        },
+        {
+          name: 'feedbackButtonLabel',
+          type: 'text',
+          localized: true,
+          admin: {
+            description:
+              'Leave blank to use the default feedback label ("Report" or locale equivalent)',
+          },
+          access: {
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
           },
         },
       ],
@@ -79,8 +104,8 @@ export const header: Tab = {
       name: 'safeExit',
       type: 'group',
       access: {
-        create: hasFeatureFieldAccess,
-        update: hasFeatureFieldAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
       fields: [
         {

@@ -1,7 +1,9 @@
 import { cookies } from 'next/headers';
-import { SESSION_ID } from './constants';
-import { getSession } from '../utils/getServerSession';
+
 import { createLogger } from '@/lib/logger';
+
+import { getSession } from '../utils/getServerSession';
+import { SESSION_ID } from './constants';
 
 const log = createLogger('authHeaders');
 

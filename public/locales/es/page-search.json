@@ -22,5 +22,7 @@
       "name": "Nombre del recurso",
       "organization": "Nombre del proveedor"
     }
-  }
+  },
+  "name_unavailable": "Nombre no disponible",
+  "share_body": "Ver {{count}} resultados de búsqueda para \"{{title}}\""
 }

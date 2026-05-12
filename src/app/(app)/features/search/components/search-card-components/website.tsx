@@ -1,13 +1,22 @@
 'use client';
 
 import { Link } from 'lucide-react';
-import { SearchCardComponentProps } from './types';
+import { useTranslation } from 'react-i18next';
+
+import { getDisplayHost } from '@/utils/getDisplayHost';
+
+import { UmamiEvent, trackUmamiEvent } from '../../../../shared/lib/umami';
 import { Datum } from '../../../resource/components/datum';
+import { SearchCardComponentProps } from './types';
 
 export function WebsiteComponent({ result }: SearchCardComponentProps) {
+  const { t } = useTranslation('page-resource');
+
   if (!result.website) {
     return null;
   }
+
+  const host = getDisplayHost(result.website);
 
   return (
     <Datum
@@ -17,8 +26,14 @@ export function WebsiteComponent({ result }: SearchCardComponentProps) {
       description={result.website}
       url={result.website}
       urlTarget="_blank"
+      urlAriaLabel={`${t('website')}: ${host}`}
       shouldParseHtml={false}
       className="py-0"
+      onClick={() =>
+        trackUmamiEvent(UmamiEvent.WebsiteClick, {
+          resourceId: result.id,
+        })
+      }
     />
   );
 }

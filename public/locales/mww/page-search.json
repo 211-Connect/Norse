@@ -22,5 +22,7 @@
       "name": "Lub Npe ntawm Cov Khoom Siv",
       "organization": "Lub Npe Tus Muab Kev Pabcuam"
     }
-  }
+  },
+  "name_unavailable": "Lub npe tsis muaj",
+  "share_body": "Saib cov txiaj ntsig tshawb nrhiav {{count}} rau \"{{title}}\""
 }

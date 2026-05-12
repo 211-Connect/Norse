@@ -26,5 +26,8 @@
   "report": "報告",
   "providing_organization": "組織を提供する",
   "interpretation_services": "通訳サービス",
-  "other_information": "その他の情報"
+  "other_information": "その他の情報",
+  "organization_url": "組織のURL",
+  "contacts": "このサービスをご利用になるには、下記までお問い合わせください。",
+  "location_name": "場所名"
 }

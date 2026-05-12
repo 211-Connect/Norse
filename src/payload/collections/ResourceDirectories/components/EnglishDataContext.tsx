@@ -1,15 +1,17 @@
 'use client';
 
+import { useLocale } from '@payloadcms/ui';
 import {
+  ReactNode,
   createContext,
   useContext,
   useEffect,
   useState,
-  ReactNode,
 } from 'react';
-import { useLocale } from '@payloadcms/ui';
-import { getEnglishData } from '../actions/getEnglishData';
+
 import { createLogger } from '@/lib/logger';
+
+import { getEnglishData } from '../actions/getEnglishData';
 
 const log = createLogger('english-data-context');
 

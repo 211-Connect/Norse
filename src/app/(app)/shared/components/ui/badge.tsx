@@ -1,12 +1,15 @@
 'use client';
 
+import { type VariantProps, cva } from 'class-variance-authority';
 import * as React from 'react';
-import { cva, type VariantProps } from 'class-variance-authority';
 
-import { cn } from '@/app/(app)/shared/lib/utils';
-import { getContrastColor } from '@/utils/getContrastColor';
-import { hexToRgba } from '@/utils/hexToRgba';
 import { useIconComponent } from '@/app/(app)/shared/hooks/useIconComponent';
+import { cn } from '@/app/(app)/shared/lib/utils';
+import {
+  ensureTextContrastOnWhite,
+  getContrastColor,
+} from '@/utils/getContrastColor';
+import { hexToRgba } from '@/utils/hexToRgba';
 
 const badgeVariants = cva(
   'inline-flex items-center rounded-md border px-[6px] text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
@@ -94,13 +97,13 @@ function Badge({
         return {
           backgroundColor: hexToRgba(color, 0.07),
           borderColor: hexToRgba(color, 0.1),
-          color,
+          color: ensureTextContrastOnWhite(color),
         };
 
       case 'outline':
         return {
           borderColor: hexToRgba(color, 0.2),
-          color,
+          color: ensureTextContrastOnWhite(color),
         };
 
       default:

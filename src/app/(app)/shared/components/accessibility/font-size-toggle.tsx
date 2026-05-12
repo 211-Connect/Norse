@@ -1,13 +1,14 @@
 'use client';
 
 import { ToggleGroup, ToggleGroupItem } from '@radix-ui/react-toggle-group';
-import { useEffect } from 'react';
-import { setCookie, deleteCookie, getCookie } from 'cookies-next';
-import { USER_PREF_FONT_SIZE } from '../../lib/constants';
-import { useAppConfig } from '../../hooks/use-app-config';
+import { deleteCookie, getCookie, setCookie } from 'cookies-next';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { accessibilityAtom } from '../../store/accessibility';
+import { useEffect } from 'react';
+
+import { useAppConfig } from '../../hooks/use-app-config';
+import { USER_PREF_FONT_SIZE } from '../../lib/constants';
 import { cn } from '../../lib/utils';
+import { accessibilityAtom } from '../../store/accessibility';
 
 export const FontSizeToggle = ({ className }: { className?: string }) => {
   const accessibility = useAtomValue(accessibilityAtom);
@@ -38,12 +39,15 @@ export const FontSizeToggle = ({ className }: { className?: string }) => {
     return null;
   }
 
+  const toggleItemClass =
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background';
+
   return (
     <ToggleGroup
       type="single"
       aria-label="Font size toggle"
       className={cn(
-        'flex flex-shrink-0 overflow-hidden rounded bg-white font-medium text-foreground [&>*[data-state=on]]:bg-background-highlight [&>*]:cursor-pointer [&>*]:rounded [&>*]:p-[7px]',
+        'flex flex-shrink-0 gap-1 rounded bg-white p-0.5 font-medium text-foreground [&>*[data-state=on]]:bg-background-highlight [&>*]:cursor-pointer [&>*]:rounded [&>*]:p-[7px]',
         className,
       )}
       value={accessibility.fontSize}
@@ -52,14 +56,14 @@ export const FontSizeToggle = ({ className }: { className?: string }) => {
       }}
     >
       <ToggleGroupItem
-        className="text-xs"
+        className={cn('text-xs', toggleItemClass)}
         value={appConfig.accessibility.fontSize.allowedValues[0]}
         aria-label="Normal font size"
       >
         A
       </ToggleGroupItem>
       <ToggleGroupItem
-        className="text-lg leading-4"
+        className={cn('text-lg leading-4', toggleItemClass)}
         value={appConfig.accessibility.fontSize.allowedValues[1]}
         aria-label="Larger font size"
       >

@@ -26,5 +26,8 @@
   "report": "Ulat",
   "providing_organization": "Nagbibigay ng organisasyon",
   "interpretation_services": "Mga serbisyo sa interpretasyon",
-  "other_information": "Iba pang Impormasyon"
+  "other_information": "Iba pang Impormasyon",
+  "organization_url": "URL ng Organisasyon",
+  "contacts": "Para ma-access ang serbisyong ito, makipag-ugnayan sa:",
+  "location_name": "Pangalan ng Lokasyon"
 }

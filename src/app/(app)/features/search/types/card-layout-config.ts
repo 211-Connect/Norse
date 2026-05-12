@@ -1,4 +1,5 @@
 import { AppConfig } from '@/types/appConfig';
+
 import { SearchCardComponentId } from './card-component-ids';
 
 export type SearchCardLayoutConfig = NonNullable<
@@ -17,7 +18,6 @@ export const DEFAULT_SEARCH_CARD_LAYOUT: SearchCardLayoutConfig = [
   { componentId: SearchCardComponentId.PHONE },
   { componentId: SearchCardComponentId.WEBSITE },
   { componentId: SearchCardComponentId.DESCRIPTION },
-  { componentId: SearchCardComponentId.ATTRIBUTION },
   { componentId: SearchCardComponentId.CATEGORIES },
   { componentId: SearchCardComponentId.SEPARATOR },
   { componentId: SearchCardComponentId.ACTION_BUTTONS },

@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "Nhà",
-    "favorites": "Yêu thích",
     "log_out": "Đăng xuất",
     "language_select_label": "Chọn ngôn ngữ để thay đổi ngôn ngữ trang web",
     "my_stuff": "Đồ của tôi",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "Không thể xóa danh sách của bạn.",
     "list_created": "Danh sách đã được tạo",
     "list_created_message": "Danh sách của bạn đã được tạo thành công.",
-    "unable_to_create_list_message": "Danh sách của bạn không thể được tạo."
+    "unable_to_create_list_message": "Danh sách của bạn không thể được tạo.",
+    "remove_from_list_title": "Xóa khỏi danh sách?",
+    "remove_from_list_description": "Tài nguyên này sẽ bị xóa khỏi danh sách này. Bạn có thể thêm lại sau nếu cần."
   },
   "search": {
     "add_my_location": "Thêm vị trí của tôi",
@@ -47,7 +48,15 @@
     "geocoding_unable_to_retrieve": "Không thể truy xuất vị trí của bạn. Vui lòng kiểm tra cài đặt vị trí của trình duyệt và thử lại.",
     "categories": "Chủ đề",
     "show_all": "Hiển thị tất cả ({{count}})",
-    "show_less": "Hiển thị ít hơn"
+    "show_less": "Hiển thị ít hơn",
+    "query_input_label": "Tìm kiếm nguồn lực",
+    "location_input_label": "Tìm kiếm địa điểm",
+    "change_location_label": "Thay đổi vị trí: {{location}}",
+    "open_search_dialog": "Mở hộp thoại tìm kiếm",
+    "list_status_one": "Có 1 tùy chọn. Sử dụng phím mũi tên lên và xuống để xem lại.",
+    "list_status_other": "Có {{count}} tùy chọn. Sử dụng các phím mũi tên lên và xuống để xem lại.",
+    "search_dialog_description": "Tìm kiếm tài nguyên và cập nhật vị trí của bạn.",
+    "everywhere": "Mọi nơi"
   },
   "call_to_action": {
     "call": "Gọi",
@@ -67,7 +76,9 @@
     "login": "Đăng nhập",
     "show_more": "Hiển thị thêm",
     "show_less": "Hiển thị ít hơn",
-    "print": "In"
+    "print": "In",
+    "close": "Đóng",
+    "send": "Gửi"
   },
   "list": {
     "private": "Tư",
@@ -93,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "Tạo danh sách",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Tên",
       "list_description": "Sự miêu tả",
       "make_public": "Công khai"
@@ -127,12 +139,21 @@
       "sms_send_success_title": "SMS đã gửi!",
       "sms_send_success_body": "Tin nhắn của bạn đã được gửi.",
       "sms_send_failed_title": "Gửi SMS không thành công",
-      "sms_send_failed_body": "Tin nhắn của bạn không gửi được."
+      "sms_send_failed_body": "Tin nhắn của bạn không gửi được.",
+      "opens_in_new_tab": "(mở trong tab mới)",
+      "phone_number_label": "Số điện thoại",
+      "sms_unavailable": "Tính năng chia sẻ tin nhắn SMS hiện không khả dụng."
     },
-    "prompt_auth": "Vui lòng đăng nhập để sử dụng tính năng này."
+    "prompt_auth": "Vui lòng đăng nhập để sử dụng tính năng này.",
+    "prompt_auth_description": "Vui lòng đăng nhập để sử dụng tính năng này.",
+    "manage_favorites": {
+      "title": "Quản lý mục yêu thích",
+      "description": "Add this resource to or remove it from your lists."
+    }
   },
   "update_location": {
-    "prompt_start_location": "Vị trí bắt đầu của bạn là gì?"
+    "prompt_start_location": "Vị trí bắt đầu của bạn là gì?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Dữ liệu được cung cấp bởi"
@@ -144,5 +165,19 @@
     "previous": "Trước",
     "next": "Kế tiếp",
     "go_to": "Đi đến"
+  },
+  "filter_results_count_one": "{{count}} kết quả",
+  "filter_results_count_other": "{{count}} kết quả",
+  "autocomplete": {
+    "results_available_one": "{{count}} kết quả có sẵn",
+    "results_available_other": "{{count}} kết quả có sẵn",
+    "no_results": "Không có kết quả"
+  },
+  "auth_error": {
+    "access_denied_title": "Quyền truy cập bị từ chối",
+    "access_denied_description": "Bạn đã đăng nhập thành công, nhưng tài khoản này không được phép truy cập trang web này. Vui lòng thử lại với một tài khoản khác.",
+    "default_title": "Lỗi xác thực",
+    "default_description": "Chúng tôi không thể hoàn tất quá trình đăng nhập. Vui lòng thử lại.",
+    "logout_and_try_again": "Đăng xuất và thử lại."
   }
 }

@@ -2,17 +2,18 @@
 
 import { Card, CardContent } from '@/app/(app)/shared/components/ui/card';
 import { Separator } from '@/app/(app)/shared/components/ui/separator';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { cn } from '@/app/(app)/shared/lib/utils';
+import { cleanSeparators } from '@/app/(app)/shared/utils/layout-utils';
+import { createLogger } from '@/lib/logger';
 import { Resource } from '@/types/resource';
+
 import { ResourceComponentId } from '../types/component-ids';
+import { ResourceLayoutConfig } from '../types/layout-config';
 import {
   getResourceComponentById,
   shouldComponentRender,
 } from './component-registry';
-import { ResourceLayoutConfig } from '../types/layout-config';
-import { cleanSeparators } from '@/app/(app)/shared/utils/layout-utils';
-import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
-import { createLogger } from '@/lib/logger';
 
 const log = createLogger('LayoutRenderer');
 
@@ -65,7 +66,7 @@ function ColumnRenderer({ groups, resource }: ColumnRendererProps) {
                 key={
                   isSeparator
                     ? `separator-${groupIndex}-${itemIndex}`
-                    : item.componentId
+                    : `item-${item.componentId}-${groupIndex}-${itemIndex}`
                 }
                 resource={resource}
                 customAttribute={item.customAttribute}
@@ -95,9 +96,9 @@ function ColumnRenderer({ groups, resource }: ColumnRendererProps) {
           return (
             <Card
               key={`group-${groupIndex}`}
-              className="print:border-none print:shadow-none"
+              className="overflow-hidden print:border-none print:shadow-none"
             >
-              <CardContent className="flex flex-col gap-2">
+              <CardContent className="flex min-w-0 flex-col gap-2">
                 {renderedComponents}
               </CardContent>
             </Card>

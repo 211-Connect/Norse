@@ -71,6 +71,7 @@ export interface Translation {
   displayName: string;
   fees?: string;
   hours?: string;
+  hoursDescription?: string;
   locale: string;
   taxonomies: Taxonomy[];
   serviceName?: string;
@@ -87,11 +88,20 @@ export interface Translation {
   accessibility?: string;
   facets?: Facet[];
   attributeValues?: Record<string, string>;
+  contacts: Array<{
+    id: string;
+    name: string;
+    title?: string;
+    email?: string;
+    phones?: PhoneNumber[];
+    priority: number;
+  }>;
 }
 
 export interface ApiResource {
   _id: string;
   location?: Location;
+  locationName?: string;
   addresses?: Address[];
   address?: string;
   attribution?: string;
@@ -110,6 +120,7 @@ export interface ApiResource {
   originalId?: string | null;
   updatedAt?: string | null;
   website?: string;
+  organizationUrl?: string;
   translation?: Translation;
   translations?: Translation[];
   facetsEn?: Facet[];
@@ -122,6 +133,7 @@ export interface Resource {
   serviceName: string | null;
   attribution: string | null;
   name: string | null;
+  locationName: string | null;
   description: string | null;
   phone: string | null;
   website: string | null;
@@ -130,6 +142,7 @@ export interface Resource {
   phoneNumbers: PhoneNumber[] | null;
   email: string | null;
   hours: string | null;
+  hoursDescription: string | null;
   languages: string[] | null;
   interpretationServices: string | null;
   applicationProcess: string | null;
@@ -145,10 +158,12 @@ export interface Resource {
   } | null;
   organizationName: string | null;
   organizationDescription: string | null;
+  organizationUrl: string | null;
   serviceArea: ServiceArea | null;
   transportation: string | null;
   accessibility: string | null;
   facets: FacetWithTranslation[] | null | undefined;
   translations?: Translation[];
   attributeValues?: Record<string, string> | null;
+  contacts: Translation['contacts'] | null | undefined;
 }

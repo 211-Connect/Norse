@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "Lar",
-    "favorites": "Favoritos",
     "log_out": "Sair",
     "language_select_label": "Selecione um idioma para alterar o idioma do site.",
     "my_stuff": "Minhas coisas",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "Sua lista não pôde ser excluída.",
     "list_created": "Lista criada",
     "list_created_message": "Sua lista foi criada com sucesso.",
-    "unable_to_create_list_message": "Não foi possível criar sua lista."
+    "unable_to_create_list_message": "Não foi possível criar sua lista.",
+    "remove_from_list_title": "Remover da lista?",
+    "remove_from_list_description": "Este recurso será removido desta lista. Você poderá adicioná-lo novamente mais tarde, se necessário."
   },
   "search": {
     "add_my_location": "Adicionar minha localização",
@@ -47,7 +48,15 @@
     "geocoding_unable_to_retrieve": "Não foi possível obter sua localização. Verifique as configurações de localização do seu navegador e tente novamente.",
     "categories": "Tópicos",
     "show_all": "Mostrar tudo ({{count}})",
-    "show_less": "Mostrar menos"
+    "show_less": "Mostrar menos",
+    "query_input_label": "Pesquisar recursos",
+    "location_input_label": "Pesquisar localização",
+    "change_location_label": "Alterar localização: {{location}}",
+    "open_search_dialog": "Abrir caixa de diálogo de pesquisa",
+    "list_status_one": "1 opção disponível. Use as setas para cima e para baixo para revisar.",
+    "list_status_other": "{{count}} opções disponíveis. Use as setas para cima e para baixo para revisar.",
+    "search_dialog_description": "Pesquise recursos e atualize sua localização.",
+    "everywhere": "Em todo lugar"
   },
   "call_to_action": {
     "call": "Chamar",
@@ -67,7 +76,9 @@
     "login": "Conecte-se",
     "show_more": "Mostrar mais",
     "show_less": "Mostrar menos",
-    "print": "Imprimir"
+    "print": "Imprimir",
+    "close": "Fechar",
+    "send": "Enviar"
   },
   "list": {
     "private": "Privado",
@@ -93,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "Crie uma lista",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "Nome",
       "list_description": "Descrição",
       "make_public": "Tornar público"
@@ -127,12 +139,21 @@
       "sms_send_success_title": "SMS enviado!",
       "sms_send_success_body": "Sua mensagem foi enviada.",
       "sms_send_failed_title": "Falha no envio do SMS",
-      "sms_send_failed_body": "Sua mensagem não pôde ser enviada."
+      "sms_send_failed_body": "Sua mensagem não pôde ser enviada.",
+      "opens_in_new_tab": "abre em uma nova aba",
+      "phone_number_label": "Número de telefone",
+      "sms_unavailable": "O compartilhamento de SMS não está disponível."
     },
-    "prompt_auth": "Faça login para usar este recurso."
+    "prompt_auth": "Faça login para usar este recurso.",
+    "prompt_auth_description": "Faça login para usar este recurso.",
+    "manage_favorites": {
+      "title": "Gerenciar favoritos",
+      "description": "Add this resource to or remove it from your lists."
+    }
   },
   "update_location": {
-    "prompt_start_location": "Qual é o seu ponto de partida?"
+    "prompt_start_location": "Qual é o seu ponto de partida?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Dados fornecidos por"
@@ -144,5 +165,19 @@
     "previous": "Anterior",
     "next": "Próximo",
     "go_to": "Vá para"
+  },
+  "filter_results_count_one": "{{count}} resultado",
+  "filter_results_count_other": "{{count}} resultados",
+  "autocomplete": {
+    "results_available_one": "{{count}} resultados disponíveis",
+    "results_available_other": "{{count}} resultados disponíveis",
+    "no_results": "Nenhum resultado"
+  },
+  "auth_error": {
+    "access_denied_title": "Acesso negado",
+    "access_denied_description": "Você fez login com sucesso, mas esta conta não tem permissão para acessar este site. Tente novamente com uma conta diferente.",
+    "default_title": "Erro de autenticação",
+    "default_description": "Não foi possível concluir o processo de login. Tente novamente.",
+    "logout_and_try_again": "Saia da sua conta e tente novamente."
   }
 }

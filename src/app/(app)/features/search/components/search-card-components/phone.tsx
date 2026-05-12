@@ -1,8 +1,10 @@
 'use client';
 
 import { Phone } from 'lucide-react';
-import { SearchCardComponentProps } from './types';
+
+import { UmamiEvent, trackUmamiEvent } from '../../../../shared/lib/umami';
 import { Datum } from '../../../resource/components/datum';
+import { SearchCardComponentProps } from './types';
 
 export function PhoneComponent({ result }: SearchCardComponentProps) {
   if (!result.phone) {
@@ -19,6 +21,11 @@ export function PhoneComponent({ result }: SearchCardComponentProps) {
       urlTarget="_self"
       shouldParseHtml={false}
       className="py-0"
+      onClick={() =>
+        trackUmamiEvent(UmamiEvent.PhoneClick, {
+          resourceId: String(result.id),
+        })
+      }
     />
   );
 }

@@ -1,12 +1,13 @@
 'use client';
 
+import { SquareCheck } from 'lucide-react';
 import { cache, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { SquareCheck } from 'lucide-react';
-import { Resource, FacetWithTranslation } from '@/types/resource';
-import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { AppConfig } from '@/types/appConfig';
+import { FacetWithTranslation, Resource } from '@/types/resource';
 
 const EXCLUDED_TAXONOMY_NAMES = [
   'Area Served by County',
@@ -102,18 +103,21 @@ export function FacetsComponent({ resource }: { resource: Resource }) {
       <div className="flex flex-col gap-6">
         {Object.entries(filteredFacets).map(([taxonomyName, facets]) => (
           <div key={taxonomyName} className="flex flex-col gap-2">
-            <p className="text-sm font-semibold">{taxonomyName}</p>
-            <div className="flex flex-col gap-2">
+            <h3 className="text-sm font-semibold">{taxonomyName}</h3>
+            <ul className="flex flex-col gap-2">
               {facets.map((facet, index) => (
-                <div
+                <li
                   key={`${facet.code}-${index}`}
                   className="flex items-start gap-2"
                 >
-                  <SquareCheck className="mt-0.5 size-4 shrink-0 text-[#bbbbbb]" />
+                  <SquareCheck
+                    aria-hidden="true"
+                    className="mt-0.5 size-4 shrink-0 text-muted-foreground"
+                  />
                   <span className="text-sm">{facet.termName}</span>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         ))}
       </div>

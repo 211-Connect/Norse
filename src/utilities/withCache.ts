@@ -1,7 +1,8 @@
-import { cacheService } from '@/cacheService';
-import { createLogger } from '@/lib/logger';
 import { createHash, randomUUID } from 'crypto';
 import { LRUCache } from 'lru-cache';
+
+import { cacheService } from '@/cacheService';
+import { createLogger } from '@/lib/logger';
 
 const log = createLogger('withCache');
 
@@ -19,7 +20,7 @@ type Hash = string;
 
 export type CacheKey =
   | `tenant:${Domain | TenantId}`
-  | `tenant_locale:${Domain}`
+  | `tenant_basic_config:${Domain}`
   | `resource_directory:${Domain}:${Locale}`
   | `search_results:${TenantId}:${Locale}:${Hash}`
   | `resource:${ResourceId}:${Locale}`
@@ -50,6 +51,7 @@ export const withCache = async <T>(
   key: CacheKey,
   fetchFunction: () => Promise<T>,
   config: CacheConfig = DEFAULT_CACHE_CONFIG,
+  shouldCache: (value: T) => boolean = () => true,
 ): Promise<T | null> => {
   const {
     redis = DEFAULT_CACHE_CONFIG.redis,
@@ -104,7 +106,7 @@ export const withCache = async <T>(
 
   const value = await fetchFunction();
 
-  if (value != null) {
+  if (value != null && shouldCache(value)) {
     const serialized = JSON.stringify(value);
 
     if (redis) {

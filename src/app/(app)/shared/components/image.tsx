@@ -1,6 +1,7 @@
 'use client';
 
 import NextImage from 'next/image';
+
 import { useAppConfig } from '../hooks/use-app-config';
 
 export function Image(props: React.ComponentProps<typeof NextImage>) {

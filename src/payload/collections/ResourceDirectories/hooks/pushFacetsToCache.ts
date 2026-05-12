@@ -1,10 +1,12 @@
-import { ResourceDirectory } from '@/payload/payload-types';
+import { CollectionAfterChangeHook } from 'payload';
+
 import { apiConfigCacheService } from '@/cacheService';
+import { createLogger } from '@/lib/logger';
+import { ResourceDirectory } from '@/payload/payload-types';
+
 import { findTenantById } from '../../Tenants/actions';
 import { buildFacetsCache } from '../utilities/buildFacetsCache';
 import { getFacetsKey } from '../utilities/getFacetsKey';
-import { CollectionAfterChangeHook } from 'payload';
-import { createLogger } from '@/lib/logger';
 
 const log = createLogger('pushFacetsToCache');
 

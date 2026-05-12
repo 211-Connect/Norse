@@ -4,6 +4,8 @@ export * from './badges';
 export * from './categories';
 export * from './custom-attribute';
 export * from './description';
+export * from './location-name';
+export * from './location-name-subtitle';
 export * from './phone';
 export * from './resource-name';
 export * from './service-name';

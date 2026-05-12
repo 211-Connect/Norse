@@ -1,10 +1,12 @@
 import type { TaskConfig } from 'payload';
-import { findTenantByHost } from '../collections/Tenants/actions';
+
+import { createLogger } from '@/lib/logger';
+
 import {
   findResourceDirectoryByHost,
   findResourceDirectoryByTenantId,
 } from '../collections/ResourceDirectories/actions';
-import { createLogger } from '@/lib/logger';
+import { findTenantByHost } from '../collections/Tenants/actions';
 
 const log = createLogger('warmCache');
 
@@ -12,7 +14,7 @@ export const warmCache: TaskConfig<'warmCache'> = {
   slug: 'warmCache',
   schedule: [
     {
-      cron: '0 * * * *', // Every hour at minute 0
+      cron: '0 0 * * *', // Every day at midnight
       queue: 'cache',
     },
   ],

@@ -2,10 +2,11 @@
 
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+import { defaultLocale, locales } from '../src/payload/i18n/locales';
 import { batchTranslate } from '../src/payload/services/translationService';
-import { locales, defaultLocale } from '../src/payload/i18n/locales';
 import type { BatchTranslationInput } from '../src/payload/services/translationService';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -15,6 +16,7 @@ interface TranslationStats {
   locale: string;
   file: string;
   translated: number;
+  placeholdersFixed: number;
   preserved: number;
   total: number;
 }
@@ -26,6 +28,76 @@ const FILE_BLACKLIST = new Set([
 ]);
 
 type NestedObject = { [key: string]: string | NestedObject };
+
+const PLACEHOLDER_REGEX = /{{\s*[^{}]+\s*}}/g;
+
+interface MaskedText {
+  text: string;
+  placeholders: string[];
+}
+
+function extractPlaceholders(text: string): string[] {
+  return text.match(PLACEHOLDER_REGEX) ?? [];
+}
+
+/**
+ * Replace placeholders with sentinel values before translation.
+ */
+function maskPlaceholders(text: string): MaskedText {
+  const placeholders: string[] = [];
+  const maskedText = text.replace(PLACEHOLDER_REGEX, (match) => {
+    const index = placeholders.push(match) - 1;
+    return `@@__PH_${index}__@@`;
+  });
+
+  return { text: maskedText, placeholders };
+}
+
+/**
+ * Restore sentinel values to original placeholders after translation.
+ */
+function unmaskPlaceholders(text: string, placeholders: string[]): string {
+  return text.replace(/@@__PH_(\d+)__@@/g, (match, rawIndex) => {
+    const index = Number(rawIndex);
+    return Number.isInteger(index) && placeholders[index]
+      ? placeholders[index]
+      : match;
+  });
+}
+
+/**
+ * Ensures placeholder tokens in translated text exactly match source text.
+ */
+function alignPlaceholders(source: string, target: string): string {
+  const sourcePlaceholders = extractPlaceholders(source);
+
+  if (sourcePlaceholders.length === 0) {
+    return target;
+  }
+
+  const normalizedTarget = target
+    .replace(/\{\s+\{/g, '{{')
+    .replace(/\}\s+\}/g, '}}');
+
+  let index = 0;
+
+  let aligned = normalizedTarget.replace(PLACEHOLDER_REGEX, (match) => {
+    if (index < sourcePlaceholders.length) {
+      const replacement = sourcePlaceholders[index];
+      index++;
+      return replacement;
+    }
+
+    return match;
+  });
+
+  if (index < sourcePlaceholders.length) {
+    const missing = sourcePlaceholders.slice(index).join(' ');
+    aligned = `${aligned.trimEnd()} ${missing}`.trim();
+  }
+
+  return aligned;
+}
 
 /**
  * Flattens nested JSON object into dot-notation keys
@@ -133,28 +205,52 @@ async function syncTranslationFile(
     const existingData = loadJsonFile(localePath);
     const flatExistingData = flatten(existingData);
 
+    let placeholdersFixed = 0;
+
+    for (const [key, sourceValue] of Object.entries(flatEnData)) {
+      const currentValue = flatExistingData[key];
+
+      if (typeof currentValue !== 'string' || currentValue.trim() === '') {
+        continue;
+      }
+
+      const alignedValue = alignPlaceholders(sourceValue, currentValue);
+      if (alignedValue !== currentValue) {
+        flatExistingData[key] = alignedValue;
+        placeholdersFixed++;
+      }
+    }
+
     // Find missing keys
     const missingKeys = findMissingKeys(flatEnData, flatExistingData);
 
-    if (missingKeys.length === 0) {
+    if (missingKeys.length === 0 && placeholdersFixed === 0) {
       console.log(`   ✅ ${locale}: Already complete`);
       stats.push({
         locale,
         file: fileName,
         translated: 0,
+        placeholdersFixed: 0,
         preserved: Object.keys(flatExistingData).length,
         total: Object.keys(flatEnData).length,
       });
       continue;
     }
 
-    console.log(
-      `   🔄 ${locale}: Translating ${missingKeys.length} missing keys...`,
-    );
+    if (missingKeys.length > 0) {
+      console.log(
+        `   🔄 ${locale}: Translating ${missingKeys.length} missing keys...`,
+      );
+    } else {
+      console.log(
+        `   🔧 ${locale}: Fixing ${placeholdersFixed} placeholder value(s)...`,
+      );
+    }
 
     // Prepare batch translation inputs, filtering out empty strings
     const translationInputs: BatchTranslationInput[] = [];
     const emptyKeys: string[] = [];
+    const placeholderMap = new Map<string, string[]>();
 
     for (const key of missingKeys) {
       const text = flatEnData[key];
@@ -163,9 +259,11 @@ async function syncTranslationFile(
         flatExistingData[key] = '';
         emptyKeys.push(key);
       } else {
+        const masked = maskPlaceholders(text);
+        placeholderMap.set(key, masked.placeholders);
         translationInputs.push({
           id: key,
-          text,
+          text: masked.text,
           targetLocale: locale,
         });
       }
@@ -187,7 +285,15 @@ async function syncTranslationFile(
 
         for (const result of results) {
           if (result.id) {
-            flatExistingData[result.id] = result.translatedText;
+            const placeholders = placeholderMap.get(result.id) ?? [];
+            const unmaskedValue = unmaskPlaceholders(
+              result.translatedText,
+              placeholders,
+            );
+            flatExistingData[result.id] = alignPlaceholders(
+              flatEnData[result.id],
+              unmaskedValue,
+            );
             translatedCount++;
           }
         }
@@ -218,14 +324,15 @@ async function syncTranslationFile(
       locale,
       file: fileName,
       translated: translatedCount,
+      placeholdersFixed,
       preserved: Object.keys(flatExistingData).length - translatedCount,
       total: Object.keys(flatEnData).length,
     });
 
     const emptyCount = emptyKeys.length;
-    if (emptyCount > 0) {
+    if (emptyCount > 0 || placeholdersFixed > 0) {
       console.log(
-        `   ✅ ${locale}: Translated ${translatedCount} keys, ${emptyCount} empty`,
+        `   ✅ ${locale}: Translated ${translatedCount} keys, ${emptyCount} empty, ${placeholdersFixed} placeholders fixed`,
       );
     } else {
       console.log(`   ✅ ${locale}: Translated ${translatedCount} keys`);
@@ -280,10 +387,15 @@ async function syncAllTranslations() {
 
   for (const [locale, stats] of Object.entries(byLocale)) {
     const totalTranslated = stats.reduce((sum, s) => sum + s.translated, 0);
+    const totalPlaceholdersFixed = stats.reduce(
+      (sum, s) => sum + s.placeholdersFixed,
+      0,
+    );
     const totalPreserved = stats.reduce((sum, s) => sum + s.preserved, 0);
 
     console.log(`\n${locale}:`);
     console.log(`  🆕 New translations: ${totalTranslated}`);
+    console.log(`  🔧 Placeholders fixed: ${totalPlaceholdersFixed}`);
     console.log(`  ♻️  Preserved existing: ${totalPreserved}`);
     console.log(`  📄 Files processed: ${stats.length}`);
   }

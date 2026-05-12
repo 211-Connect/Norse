@@ -1,10 +1,12 @@
 'use client';
 
+import { Button, toast, useField } from '@payloadcms/ui';
 import React, { useState } from 'react';
-import { toast, Button, useField } from '@payloadcms/ui';
+
+import { createLogger } from '@/lib/logger';
+
 import { getTenantTrustedDomain } from '../../Tenants/actions/getTenantTrustedDomain';
 import { TranslateButton } from './TranslateButton';
-import { createLogger } from '@/lib/logger';
 
 const log = createLogger('resource-directory-actions');
 

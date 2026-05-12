@@ -1,57 +1,84 @@
 'use client';
 
 import {
-  useFloating,
-  offset,
-  flip,
-  shift,
   autoUpdate,
+  flip,
+  offset,
+  shift,
+  useFloating,
 } from '@floating-ui/react';
-import {
-  useCallback,
-  useState,
-  KeyboardEvent,
-  ChangeEvent,
-  useMemo,
-  Fragment,
-  ComponentType,
-  useEffect,
-  useRef,
-  MouseEventHandler,
-} from 'react';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
+import { XIcon } from 'lucide-react';
+import {
+  ChangeEvent,
+  ComponentType,
+  CompositionEvent,
+  Fragment,
+  KeyboardEvent,
+  MouseEvent,
+  MouseEventHandler,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { useUncontrolled } from '@/app/(app)/shared/hooks/use-uncontrolled';
 import { cn } from '@/app/(app)/shared/lib/utils';
+
+import { useOnPointerDownOutside } from '../../hooks/use-on-pointer-down-outside';
+import { Badge } from './badge';
+import { Button } from './button';
 import { Input, InputProps } from './input';
 import { Separator } from './separator';
-import { SearchIcon } from 'lucide-react';
-import { Badge } from './badge';
-import { useOnPointerDownOutside } from '../../hooks/use-on-pointer-down-outside';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from './tooltip';
 
 export type AutocompleteOption = {
-  label?: string;
   value: string;
   group?: string;
   Icon?: ComponentType<{ className?: string }>;
+  badge?: string;
+  query?: string;
+  queryType?: string;
 };
 
 type AutocompleteOptionWithIndex = AutocompleteOption & { index: number };
 
 export type AutocompleteProps = {
-  Icon?: ComponentType<{ className?: string }>;
+  readerLabel: ReactNode;
+  Icon: ComponentType<{ className?: string }>;
   inputProps?: InputProps;
   options?: AutocompleteOption[];
   className?: string;
   onInputChange?: (value: string) => void;
-  onValueChange?: (value: string) => void;
+  onValueChange?: (value: string, option?: AutocompleteOption) => void;
+  onClear?: () => void;
   value?: string;
   defaultValue?: string;
   autoSelectIndex?: number;
   autoSelectOnBlurIndex?: number;
-  optionsPopoverClassName?: string;
   defaultOpen?: boolean;
-  blurOnOptionsInteraction?: boolean;
+  clearButtonLabel?: string;
+  positionBelowElementId?: string;
+  /** Treat a committed (selected) value as an indivisible block. Any printable
+   *  keypress replaces the whole block and starts a fresh search. */
+  blockMode?: boolean;
+  /** Called when the block is burst-cleared by a keypress. Receives the
+   *  character that triggered the clear, or '' for Backspace/Delete. */
+  onDecommit?: (nextValue: string) => void;
+  /** Called when Escape is pressed while the user is typing (no option
+   *  highlighted). Use to reset the field to a known-good state. */
+  onEscape?: () => void;
 };
 
 const useMouseMovement = () => {
@@ -81,20 +108,31 @@ const useMouseMovement = () => {
 
 export function Autocomplete(props: AutocompleteProps) {
   const {
+    readerLabel,
     inputProps,
     Icon,
     className,
     onInputChange,
     onValueChange,
+    onClear,
     defaultValue,
     autoSelectIndex,
     autoSelectOnBlurIndex,
     value: inputValue,
-    optionsPopoverClassName,
     defaultOpen = false,
-    blurOnOptionsInteraction = false,
+    clearButtonLabel = 'Clear',
+    positionBelowElementId,
+    blockMode = false,
+    onDecommit,
+    onEscape,
     ...rest
   } = props;
+
+  const { t } = useTranslation('common');
+
+  const readerLabelId = useId();
+  const fallbackInputId = useId();
+  const effectiveInputId = inputProps?.id ?? fallbackInputId;
 
   const isMouseMoving = useMouseMovement();
   const [lastManualInput, setLastManualInput] = useState(
@@ -103,6 +141,10 @@ export function Autocomplete(props: AutocompleteProps) {
   const [uniqueId, setUniqueId] = useState('');
   const [open, setOpen] = useState(defaultOpen);
   const [currentIndex, setCurrentIndex] = useState(-1);
+  const isComposingRef = useRef(false);
+  const [referenceWidth, setReferenceWidth] = useState<number | undefined>(
+    undefined,
+  );
   const [value, setValue] = useUncontrolled<string>({
     value: inputValue,
     defaultValue,
@@ -110,55 +152,43 @@ export function Autocomplete(props: AutocompleteProps) {
     onChange: onValueChange,
   });
   const [tempValue, setTempValue] = useState(value || '');
+  const clearButtonRef = useRef<HTMLButtonElement>(null);
+  const [srStatus, setSrStatus] = useState('');
 
   const stayOpenOnBlurRef = useRef(false);
+  // Prevents the focus handler from re-opening the dropdown when focus is
+  // restored to the input programmatically after the clear button is pressed.
+  const suppressNextFocusOpenRef = useRef(false);
 
   const options: [string, AutocompleteOptionWithIndex[]][] = useMemo(() => {
     const options = rest.options;
     if (!options) return [];
 
     let index = 0;
-    const groupedOptions = options
-      .sort((a, b) => {
-        const groupA = a?.group?.toUpperCase();
-        const groupB = b?.group?.toUpperCase();
+    const groupedOptions: Array<[string, AutocompleteOptionWithIndex[]]> = [];
+    const groupMap = new Map<string, AutocompleteOptionWithIndex[]>();
+    const groupOrder: string[] = [];
 
-        if (groupA === undefined && groupB === undefined) {
-          return 0;
-        }
+    // Preserve the original order of groups
+    options.forEach((option) => {
+      const group = option.group ?? '_';
 
-        if (groupA === undefined) {
-          return 1;
-        }
+      if (!groupMap.has(group)) {
+        groupMap.set(group, []);
+        groupOrder.push(group);
+      }
 
-        if (groupB === undefined) {
-          return -1;
-        }
+      const { group: _, ...rest } = option;
+      groupMap.get(group)!.push({ ...rest, index });
+      index++;
+    });
 
-        if (groupA < groupB) {
-          return -1;
-        }
+    // Return groups in the order they were first encountered
+    groupOrder.forEach((group) => {
+      groupedOptions.push([group, groupMap.get(group)!]);
+    });
 
-        if (groupA > groupB) {
-          return 1;
-        }
-
-        return 0;
-      })
-      .reduce<Record<string, AutocompleteOptionWithIndex[]>>((acc, option) => {
-        const group = option.group ?? '_';
-        if (!acc[group]) {
-          acc[group] = [];
-        }
-
-        const { group: _, ...rest } = option;
-
-        acc[group].push({ ...rest, index });
-        index++;
-        return acc;
-      }, {});
-
-    return Object.entries(groupedOptions).map(([key, value]) => [key, value]);
+    return groupedOptions;
   }, [rest.options]);
 
   // Floating UI
@@ -171,18 +201,30 @@ export function Autocomplete(props: AutocompleteProps) {
     placement: 'bottom-start',
     middleware: [offset(4), flip(), shift()],
     whileElementsMounted: autoUpdate,
+    strategy: positionBelowElementId ? 'fixed' : 'absolute',
   });
 
   const selectedOption = useMemo(() => {
     return rest.options?.find((option) => option.value === value);
   }, [rest.options, value]);
 
+  const isBlockCommitted = blockMode && !!selectedOption && currentIndex === -1;
+
   // Attach refs
   useEffect(() => {
-    if (referenceElement) refs.setReference(referenceElement);
+    if (positionBelowElementId) {
+      const targetElement = document.getElementById(positionBelowElementId);
+      if (targetElement) {
+        refs.setReference(targetElement);
+        setReferenceWidth(targetElement.offsetWidth);
+      }
+    } else if (referenceElement) {
+      refs.setReference(referenceElement);
+      setReferenceWidth(undefined);
+    }
     if (popperElement) refs.setFloating(popperElement);
     if (update) update();
-  }, [referenceElement, popperElement, refs, update]);
+  }, [referenceElement, popperElement, refs, update, positionBelowElementId]);
 
   const wrapperElementRef = useRef<HTMLDivElement>(null);
 
@@ -201,10 +243,11 @@ export function Autocomplete(props: AutocompleteProps) {
   const closeOptions = useCallback(() => {
     setOpen(false);
     setCurrentIndex(-1);
+    stayOpenOnBlurRef.current = false;
   }, []);
 
   const handleValueSelect = useCallback(
-    (value: string) => {
+    (value: string, option?: AutocompleteOption) => {
       return (e?: MouseEvent) => {
         if (e) {
           e.preventDefault();
@@ -216,13 +259,22 @@ export function Autocomplete(props: AutocompleteProps) {
         setCurrentIndex(-1);
         onInputChange?.(value);
         setLastManualInput(value);
+        onValueChange?.(value, option);
       };
     },
-    [setValue, onInputChange],
+    [setValue, onInputChange, onValueChange],
   );
 
   const handleInputChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
+      // Skip search updates during IME composition (Chinese, Japanese, etc.).
+      // Keep tempValue in sync so the controlled input mirrors composition text.
+      const nativeInputEvent = e.nativeEvent as InputEvent;
+      if (isComposingRef.current || nativeInputEvent.isComposing) {
+        setTempValue(e.target.value);
+        return;
+      }
+
       setCurrentIndex(-1);
       setLastManualInput(e.target.value);
       setValue(e.target.value);
@@ -235,10 +287,39 @@ export function Autocomplete(props: AutocompleteProps) {
     [onInputChange, setValue, open],
   );
 
-  const handleClickOutside = useCallback(() => {
-    setOpen(false);
-    referenceElement?.blur();
-  }, [referenceElement]);
+  const handleCompositionStart = useCallback(() => {
+    isComposingRef.current = true;
+  }, []);
+
+  const handleCompositionEnd = useCallback(
+    (e: CompositionEvent<HTMLInputElement>) => {
+      isComposingRef.current = false;
+
+      const nextValue = e.currentTarget.value;
+      setCurrentIndex(-1);
+      setLastManualInput(nextValue);
+      setTempValue(nextValue);
+      setValue(nextValue);
+      onInputChange?.(nextValue);
+
+      if (!open) {
+        setOpen(true);
+      }
+    },
+    [onInputChange, open, setValue],
+  );
+
+  const handleClickOutside = useCallback(
+    (event: PointerEvent) => {
+      // Don't close if clicking on the dropdown itself
+      if (popperElement?.contains(event.target as Node)) {
+        return;
+      }
+      setOpen(false);
+      referenceElement?.blur();
+    },
+    [referenceElement, popperElement],
+  );
 
   useOnPointerDownOutside(wrapperElementRef, handleClickOutside);
 
@@ -255,6 +336,41 @@ export function Autocomplete(props: AutocompleteProps) {
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
       if (!rest.options) return;
+
+      // IME uses key events (including arrows) for candidate selection.
+      const nativeKeyboardEvent = e.nativeEvent as globalThis.KeyboardEvent;
+      if (
+        isComposingRef.current ||
+        nativeKeyboardEvent.isComposing ||
+        e.key === 'Process'
+      ) {
+        return;
+      }
+
+      // When a committed value is showing, any printable key or Backspace/Delete
+      // atomically replaces it and starts a fresh search
+      if (isBlockCommitted && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        if (e.key.length === 1) {
+          e.preventDefault();
+          onDecommit?.(e.key);
+          setTempValue(e.key);
+          setLastManualInput(e.key);
+          setCurrentIndex(-1);
+          setOpen(true);
+          return;
+        }
+        if (e.key === 'Backspace' || e.key === 'Delete') {
+          e.preventDefault();
+          onDecommit?.('');
+          setTempValue('');
+          setLastManualInput('');
+          setCurrentIndex(-1);
+          setOpen(false);
+          return;
+        }
+        // Arrow keys, Tab, Enter, Escape — fall through to standard handling
+      }
+
       const currentOption = rest.options[currentIndex];
       let nextIndex;
 
@@ -272,7 +388,7 @@ export function Autocomplete(props: AutocompleteProps) {
             '';
           setInputSelectionPoint(selectionValue);
           setCurrentIndex(nextState);
-          setValue(selectionValue);
+          setTempValue(selectionValue);
           nextIndex = nextState;
         } else {
           openOptions();
@@ -294,7 +410,7 @@ export function Autocomplete(props: AutocompleteProps) {
 
           setInputSelectionPoint(selectionValue);
           setCurrentIndex(nextState);
-          setValue(selectionValue);
+          setTempValue(selectionValue);
           nextIndex = nextState;
         } else {
           const nextOption = rest.options[currentIndex];
@@ -304,7 +420,7 @@ export function Autocomplete(props: AutocompleteProps) {
         }
       } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
         setCurrentIndex(-1);
-        setValue(lastManualInput);
+        setTempValue(lastManualInput);
         nextIndex = -1;
         if (currentIndex >= 0) {
           setInputSelectionPoint(lastManualInput);
@@ -315,6 +431,11 @@ export function Autocomplete(props: AutocompleteProps) {
           if (currentOption) {
             onInputChange?.(currentOption.value);
             setLastManualInput(currentOption.value);
+            onValueChange?.(currentOption.value, currentOption);
+          } else {
+            // No option was highlighted — user was mid-typing. Let the caller
+            // decide how to restore the field to a known-good state.
+            onEscape?.();
           }
           setCurrentIndex(-1);
           nextIndex = -1;
@@ -325,12 +446,14 @@ export function Autocomplete(props: AutocompleteProps) {
           if (currentOption) {
             onInputChange?.(currentOption.value);
             setLastManualInput(currentOption.value);
+            onValueChange?.(currentOption.value, currentOption);
           } else if (autoSelectIndex != null) {
             const defaultOption = rest.options[autoSelectIndex];
             if (defaultOption) {
               onInputChange?.(defaultOption.value);
               setValue(defaultOption.value);
               setLastManualInput(defaultOption.value);
+              onValueChange?.(defaultOption.value, defaultOption);
             }
           }
           setCurrentIndex(-1);
@@ -338,27 +461,37 @@ export function Autocomplete(props: AutocompleteProps) {
         }
       } else if (e.key === 'Enter') {
         if (open) {
+          e.preventDefault();
           setOpen(false);
+
           if (currentOption) {
             onInputChange?.(currentOption.value);
             setLastManualInput(currentOption.value);
+            onValueChange?.(currentOption.value, currentOption);
           } else if (autoSelectIndex != null) {
-            e.preventDefault();
             const defaultOption = rest.options[autoSelectIndex];
             if (defaultOption) {
               onInputChange?.(defaultOption.value);
               setValue(defaultOption.value);
               setLastManualInput(defaultOption.value);
-            }
-            const form = (e.target as HTMLElement).closest('form');
-            if (form) {
-              setTimeout(() => {
-                form.dispatchEvent(
-                  new Event('submit', { cancelable: true, bubbles: true }),
-                );
-              }, 0);
+              onValueChange?.(defaultOption.value, defaultOption);
             }
           }
+
+          const form = (e.target as HTMLElement).closest('form');
+          if (form) {
+            setTimeout(() => {
+              if (typeof form.requestSubmit === 'function') {
+                form.requestSubmit();
+                return;
+              }
+
+              form.dispatchEvent(
+                new Event('submit', { cancelable: true, bubbles: true }),
+              );
+            }, 0);
+          }
+
           setCurrentIndex(-1);
           nextIndex = -1;
         }
@@ -378,7 +511,7 @@ export function Autocomplete(props: AutocompleteProps) {
 
           setInputSelectionPoint(selectionValue);
           setCurrentIndex(nextState);
-          setValue(selectionValue);
+          setTempValue(selectionValue);
           nextIndex = nextState;
         }
       } else if (e.key === 'End') {
@@ -397,7 +530,7 @@ export function Autocomplete(props: AutocompleteProps) {
 
           setInputSelectionPoint(selectionValue);
           setCurrentIndex(nextState);
-          setValue(selectionValue);
+          setTempValue(selectionValue);
           nextIndex = nextState;
         }
       }
@@ -428,7 +561,33 @@ export function Autocomplete(props: AutocompleteProps) {
       lastManualInput,
       popperElement,
       uniqueId,
+      onValueChange,
+      isBlockCommitted,
+      onDecommit,
+      onEscape,
     ],
+  );
+
+  const clear = useCallback(
+    (e?: MouseEvent) => {
+      e?.preventDefault();
+      setCurrentIndex(-1);
+
+      if (onClear) {
+        onClear();
+      } else {
+        setValue('');
+        onInputChange?.('');
+      }
+
+      // Close the dropdown immediately. Suppress the focus handler's auto-open
+      // so focus returning to the input doesn't re-show stale suggestions.
+      suppressNextFocusOpenRef.current = true;
+      setOpen(false);
+      referenceElement?.focus();
+      setLastManualInput('');
+    },
+    [setValue, onInputChange, onClear, referenceElement],
   );
 
   const handleOptionMouseEnter = useCallback(
@@ -456,13 +615,23 @@ export function Autocomplete(props: AutocompleteProps) {
   const handleBlur = useCallback(
     (e) => {
       if (autoSelectOnBlurIndex != null && !selectedOption) {
-        const selectedOption = options[0]?.[1]?.[autoSelectOnBlurIndex]?.value;
-        if (selectedOption) {
-          handleValueSelect(selectedOption)();
+        const selectedOptionObj = options[0]?.[1]?.[autoSelectOnBlurIndex];
+        if (selectedOptionObj) {
+          handleValueSelect(selectedOptionObj.value, selectedOptionObj)();
         }
       }
 
-      if (!stayOpenOnBlurRef.current) {
+      // Don't close if focus moved to the clear button or we're interacting with the dropdown list
+      const isMovingToClearButton = clearButtonRef.current === e.relatedTarget;
+      const isMovingToDropdown = popperElement?.contains(
+        e.relatedTarget as Node,
+      );
+
+      if (
+        !isMovingToClearButton &&
+        !isMovingToDropdown &&
+        !stayOpenOnBlurRef.current
+      ) {
         closeOptions();
       }
     },
@@ -472,26 +641,45 @@ export function Autocomplete(props: AutocompleteProps) {
       handleValueSelect,
       options,
       selectedOption,
+      popperElement,
     ],
   );
 
   const handleFocus = useCallback(() => {
     stayOpenOnBlurRef.current = false;
+    if (suppressNextFocusOpenRef.current) {
+      suppressNextFocusOpenRef.current = false;
+      return;
+    }
     setTimeout(() => {
       setOpen(true);
     }, 100);
   }, []);
 
   const touchOnList = useCallback(() => {
-    if (blurOnOptionsInteraction) {
-      stayOpenOnBlurRef.current = true;
-      referenceElement?.blur();
-    }
-  }, [blurOnOptionsInteraction, referenceElement]);
+    stayOpenOnBlurRef.current = true;
+    referenceElement?.blur();
+  }, [referenceElement]);
 
   useEffect(() => {
     setTempValue(value ?? '');
   }, [value]);
+
+  useEffect(() => {
+    if (!open) {
+      setSrStatus('');
+      return;
+    }
+    const totalOptions = options.reduce(
+      (sum, [, groupOptions]) => sum + groupOptions.length,
+      0,
+    );
+    setSrStatus(
+      totalOptions > 0
+        ? t('autocomplete.results_available', { count: totalOptions })
+        : t('autocomplete.no_results'),
+    );
+  }, [open, options, t]);
 
   // Set unique ID for component
   useEffect(() => {
@@ -503,16 +691,34 @@ export function Autocomplete(props: AutocompleteProps) {
       className={cn('relative flex items-center', className)}
       ref={wrapperElementRef}
     >
-      <div className="relative w-full">
-        {Icon ? (
-          <Icon className="absolute left-2 top-2 size-4 shrink-0 text-primary" />
-        ) : (
-          <SearchIcon className="absolute left-2 top-2 size-4 shrink-0 text-primary" />
-        )}
+      <div className="relative w-full rounded-lg">
+        <label
+          className="sr-only"
+          htmlFor={effectiveInputId}
+          id={readerLabelId}
+        >
+          {readerLabel}
+        </label>
+        <Icon
+          className="absolute left-2 top-2 size-4 shrink-0 text-primary"
+          aria-hidden="true"
+        />
+        <div
+          className="sr-only"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          {srStatus}
+        </div>
+        {!open && uniqueId ? (
+          <div id={uniqueId} role="listbox" hidden aria-hidden="true" />
+        ) : null}
         <Input
           {...inputProps}
+          id={effectiveInputId}
           className={cn(
-            'h-auto w-full rounded-lg border p-0 px-[1.8rem] py-2 text-xs shadow-none focus:border-primary focus-visible:ring-0',
+            'h-auto w-full rounded-lg border border-control-border p-0 px-[1.8rem] py-2 text-xs shadow-none focus:border-primary focus-visible:ring-0',
             inputProps?.className,
           )}
           ref={setReferenceElement}
@@ -521,12 +727,14 @@ export function Autocomplete(props: AutocompleteProps) {
           onBlur={handleBlur}
           onFocus={handleFocus}
           onChange={handleInputChange}
+          onCompositionStart={handleCompositionStart}
+          onCompositionEnd={handleCompositionEnd}
           value={tempValue}
           autoComplete="off"
           aria-autocomplete="list"
-          aria-controls={open ? uniqueId : undefined}
+          aria-controls={uniqueId}
           aria-haspopup="listbox"
-          aria-label={inputProps?.placeholder ?? ''}
+          aria-labelledby={readerLabelId}
           aria-owns={uniqueId}
           aria-expanded={open}
           aria-activedescendant={
@@ -534,6 +742,31 @@ export function Autocomplete(props: AutocompleteProps) {
           }
           role="combobox"
         />
+
+        <TooltipProvider>
+          <Tooltip delayDuration={100}>
+            <TooltipTrigger asChild autoFocus={false}>
+              <Button
+                ref={clearButtonRef}
+                size="icon"
+                variant="ghost"
+                className={cn(
+                  (value?.length ?? 0) > 0 ? 'visible' : 'invisible',
+                  'absolute right-0 top-0 h-full hover:bg-transparent hover:bg-none',
+                )}
+                onClick={clear}
+                aria-label={clearButtonLabel}
+                data-testid="search-clear-btn"
+                type="button"
+              >
+                <XIcon className={cn('h-4 w-4 shrink-0 opacity-50')} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              <span>{clearButtonLabel}</span>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
 
         {open && (
           <div
@@ -543,9 +776,16 @@ export function Autocomplete(props: AutocompleteProps) {
             aria-multiselectable="false"
             ref={setPopperElement}
             className={cn(
-              'absolute z-10 max-h-56 w-full animate-opacity-in overflow-auto overscroll-contain bg-white',
-              optionsPopoverClassName,
+              'z-10 mt-2 animate-opacity-in overflow-auto overscroll-contain bg-white',
+              !referenceWidth && 'w-full',
             )}
+            style={{
+              position: strategy,
+              top: y ?? 0,
+              left: x ?? 0,
+              width: referenceWidth ? `${referenceWidth}px` : undefined,
+              maxHeight: 'calc(100vh - 384px)',
+            }}
             onTouchStart={touchOnList}
             onMouseDown={touchOnList}
           >
@@ -594,12 +834,16 @@ export function Autocomplete(props: AutocompleteProps) {
                           onMouseDown={
                             handleValueSelect(
                               option.value,
+                              option,
                             ) as unknown as MouseEventHandler
                           }
                         >
                           <span className="flex items-center gap-2 text-xs font-medium text-primary">
                             {Icon === 'span' ? null : (
-                              <Icon className="size-4 shrink-0" />
+                              <Icon
+                                className="size-4 shrink-0"
+                                aria-hidden="true"
+                              />
                             )}
                             <p>
                               {parse(optionValue, matches).map((text, idx) =>
@@ -621,12 +865,12 @@ export function Autocomplete(props: AutocompleteProps) {
                             </p>
                           </span>
 
-                          {option.label && (
+                          {option.badge && (
                             <Badge
                               variant="outline"
                               className="w-[100px] shrink-0 text-xs"
                             >
-                              <p className="mx-auto truncate">{option.label}</p>
+                              <p className="mx-auto truncate">{option.badge}</p>
                             </Badge>
                           )}
                         </div>

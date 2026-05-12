@@ -1,11 +1,12 @@
 'use client';
 
 import { AlertCircle } from 'lucide-react';
+
+import { LocalizedLink } from '@/app/(app)/shared/components/LocalizedLink';
+import { Alert as AlertComponent } from '@/app/(app)/shared/components/ui/alert';
+import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { cn } from '@/app/(app)/shared/lib/utils';
-import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
-import { Alert as AlertComponent } from '@/app/(app)/shared/components/ui/alert';
-import { LocalizedLink } from '@/app/(app)/shared/components/LocalizedLink';
 
 type Direction = 'col' | 'row';
 
@@ -28,8 +29,9 @@ type AlertProps = {
 export default function Alert({ itemsDirection }: AlertProps) {
   const appConfig = useAppConfig();
 
-  if (!appConfig?.alert || Object.keys(appConfig.alert).length === 0)
+  if (!appConfig.alert?.text) {
     return null;
+  }
 
   const variant = appConfig?.alert?.variant || 'destructive';
 
@@ -44,7 +46,7 @@ export default function Alert({ itemsDirection }: AlertProps) {
             getDirectionClass(itemsDirection),
           )}
         >
-          <AlertCircle className="size-8 shrink-0" />
+          <AlertCircle className="size-8 shrink-0" aria-hidden="true" />
 
           <p className="text-lg font-semibold">{appConfig.alert.text}</p>
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
+
 import { createLogger } from '@/lib/logger';
 
 const log = createLogger('use-clipboard');
@@ -9,7 +10,7 @@ type UseClipboardConfig = {
   timeout?: number;
 };
 
-export function useClipboard(config: UseClipboardConfig = { timeout: 500 }) {
+export function useClipboard(config: UseClipboardConfig = { timeout: 3000 }) {
   const [copied, setCopied] = useState(false);
 
   const copy = useCallback(

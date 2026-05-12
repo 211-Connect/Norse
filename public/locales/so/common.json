@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "Haku",
-    "favorites": "favorites",
     "log_out": "Log out",
     "language_select_label": "Dooro luqad si ay u beddelaan luqada bogga",
     "my_stuff": "My stuff",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "Liiskaaga lama tirtiri karin.",
     "list_created": "Liiska la sameeyay",
     "list_created_message": "Liiskaaga si guul leh ayaa loo sameeyay.",
-    "unable_to_create_list_message": "Liiskaaga lama abuuri karin."
+    "unable_to_create_list_message": "Liiskaaga lama abuuri karin.",
+    "remove_from_list_title": "Liiska ka saar?",
+    "remove_from_list_description": "Kheyraadkan waa laga saari doonaa liiskan. Waad ku dari kartaa hadhow haddii loo baahdo."
   },
   "search": {
     "add_my_location": "Add my location",
@@ -47,7 +48,15 @@
     "geocoding_unable_to_retrieve": "Awoodi kari la'aanta inaad soo celiso goobtaada. Fadlan hubi goobaha goobta biraawsarkaaga oo mar kale isku day.",
     "categories": "Mawduucyada",
     "show_all": "Show all ({{count}})",
-    "show_less": "Show less"
+    "show_less": "Show less",
+    "query_input_label": "Raadi kheyraad",
+    "location_input_label": "Raadi goob",
+    "change_location_label": "Beddel goobta: {{location}}",
+    "open_search_dialog": "Fur wadahadalka raadinta",
+    "list_status_one": "1 ikhtiyaar ayaa diyaar ah. Isticmaal furayaasha fallaadha kor iyo hoos si aad u eegto.",
+    "list_status_other": "Ikhtiyaarada {{count}} ayaa diyaar ah. Isticmaal furayaasha fallaadha kor iyo hoos si aad u eegto.",
+    "search_dialog_description": "Raadi kheyraad oo cusbooneysii goobtaada.",
+    "everywhere": "Meel kasta"
   },
   "call_to_action": {
     "call": "Wac",
@@ -67,7 +76,9 @@
     "login": "Gudagal",
     "show_more": "Muuji more",
     "show_less": "muuji wax yar",
-    "print": "Haku"
+    "print": "Haku",
+    "close": "Xidh",
+    "send": "Dir"
   },
   "list": {
     "private": "Private",
@@ -93,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "Abuur liis",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "magaca",
       "list_description": "Tilmaan",
       "make_public": "Samee wacyi-gelin"
@@ -127,12 +139,21 @@
       "sms_send_success_title": "SMS diray!",
       "sms_send_success_body": "Fariin ayaa laguu soo diray.",
       "sms_send_failed_title": "SMS diri fashilmay",
-      "sms_send_failed_body": "Fariintaadu way guul darreysatay in ay dirto."
+      "sms_send_failed_body": "Fariintaadu way guul darreysatay in ay dirto.",
+      "opens_in_new_tab": "wuxuu ku furmayaa tab cusub",
+      "phone_number_label": "Lambarka taleefanka",
+      "sms_unavailable": "La wadaagista SMS-ka lama heli karo"
     },
-    "prompt_auth": "Fadlan gal si aad u isticmaasho habkaani."
+    "prompt_auth": "Fadlan gal si aad u isticmaasho habkaani.",
+    "prompt_auth_description": "Fadlan gal si aad u isticmaasho habkaani.",
+    "manage_favorites": {
+      "title": "Maaree waxyaabaha aad ugu jeceshahay",
+      "description": "Add this resource to or remove it from your lists."
+    }
   },
   "update_location": {
-    "prompt_start_location": "Waa maxay goobta aad ka bilaabayso?"
+    "prompt_start_location": "Waa maxay goobta aad ka bilaabayso?",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "Macluumaadka ay bixiyaan"
@@ -144,5 +165,19 @@
     "previous": "Kii hore",
     "next": "Xiga",
     "go_to": "Tag"
+  },
+  "filter_results_count_one": "Natiijadii {{count}}",
+  "filter_results_count_other": "Natiijooyinka {{count}}",
+  "autocomplete": {
+    "results_available_one": "{{count}} natiijo ayaa la heli karaa",
+    "results_available_other": "Natiijooyinka {{count}} ayaa la heli karaa",
+    "no_results": "Natiijooyin ma jiraan"
+  },
+  "auth_error": {
+    "access_denied_title": "Helitaanka waa la diiday",
+    "access_denied_description": "Si guul leh ayaad u gashay, laakiin akoonkan looma oggola inuu galo boggan. Isku day mar kale akoon kale.",
+    "default_title": "Khalad xaqiijin ah",
+    "default_description": "Ma dhameystiri karno habka soo galitaanka. Fadlan isku day mar kale.",
+    "logout_and_try_again": "Ka bax oo isku day mar kale"
   }
 }

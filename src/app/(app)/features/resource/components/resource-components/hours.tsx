@@ -1,8 +1,10 @@
 'use client';
 
-import { useTranslation } from 'react-i18next';
 import { Clock } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+
 import { Resource } from '@/types/resource';
+
 import { Datum } from '../datum';
 
 export function HoursComponent({ resource }: { resource: Resource }) {
@@ -12,7 +14,15 @@ export function HoursComponent({ resource }: { resource: Resource }) {
     return null;
   }
 
-  const description = resource.hours.replaceAll(';', '\n');
+  const hours = resource.hours.replaceAll(';', '\n');
+  const hoursDetails = resource.hoursDescription;
 
-  return <Datum icon={Clock} title={t('hours')} description={description} />;
+  return (
+    <Datum
+      icon={Clock}
+      title={t('hours')}
+      description={hours}
+      subdescription={hoursDetails}
+    />
+  );
 }

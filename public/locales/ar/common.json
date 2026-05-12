@@ -1,7 +1,6 @@
 {
   "header": {
     "home": "وطن",
-    "favorites": "المفضله",
     "log_out": "تسجيل الخروج",
     "language_select_label": "حدد لغة لتغيير لغة الموقع",
     "my_stuff": "أشيائي",
@@ -25,7 +24,9 @@
     "unable_to_delete_list_message": "تعذر حذف قائمتك.",
     "list_created": "تم إنشاء القائمة",
     "list_created_message": "تم إنشاء قائمتك بنجاح.",
-    "unable_to_create_list_message": "تعذر إنشاء قائمتك."
+    "unable_to_create_list_message": "تعذر إنشاء قائمتك.",
+    "remove_from_list_title": "هل تريد إزالة هذا من القائمة؟",
+    "remove_from_list_description": "سيتم حذف هذا المورد من هذه القائمة. يمكنك إضافته مرة أخرى لاحقاً إذا لزم الأمر."
   },
   "search": {
     "add_my_location": "أضف موقعي",
@@ -47,7 +48,15 @@
     "geocoding_unable_to_retrieve": "غير قادر على استرداد موقعك. يرجى التحقق من إعدادات الموقع في متصفحك والمحاولة مرة أخرى.",
     "categories": "المواضيع",
     "show_all": "عرض الكل ({{count}})",
-    "show_less": "عرض أقل"
+    "show_less": "عرض أقل",
+    "query_input_label": "ابحث عن الموارد",
+    "location_input_label": "ابحث عن موقع",
+    "change_location_label": "تغيير الموقع: {{location}}",
+    "open_search_dialog": "افتح مربع حوار البحث",
+    "list_status_one": "خيار واحد متاح. استخدم مفاتيح الأسهم لأعلى ولأسفل للمراجعة.",
+    "list_status_other": "{{count}} خيارًا متاحًا. استخدم مفاتيح الأسهم لأعلى ولأسفل للمراجعة.",
+    "search_dialog_description": "ابحث عن الموارد وقم بتحديث موقعك.",
+    "everywhere": "في كل مكان"
   },
   "call_to_action": {
     "call": "دعا",
@@ -67,7 +76,9 @@
     "login": "تسجيل الدخول",
     "show_more": "استعراض المزيد",
     "show_less": "عرض أقل",
-    "print": "طبع"
+    "print": "طبع",
+    "close": "إغلاق",
+    "send": "يرسل"
   },
   "list": {
     "private": "عسكري",
@@ -93,6 +104,7 @@
     },
     "create_list": {
       "create_a_list": "إنشاء قائمة",
+      "description": "Fill in the details below to create a new list.",
       "list_name": "اسم",
       "list_description": "وصف",
       "make_public": "الإعلان عن الجمهور"
@@ -127,12 +139,21 @@
       "sms_send_success_title": "الرسائل القصيرة!",
       "sms_send_success_body": "تم إرسال رسالتك.",
       "sms_send_failed_title": "فشل إرسال الرسائل القصيرة",
-      "sms_send_failed_body": "تعذر إرسال رسالتك."
+      "sms_send_failed_body": "تعذر إرسال رسالتك.",
+      "opens_in_new_tab": "يفتح في علامة تبويب جديدة",
+      "phone_number_label": "رقم التليفون",
+      "sms_unavailable": "مشاركة الرسائل النصية غير متاحة"
     },
-    "prompt_auth": "يرجى تسجيل الدخول لاستخدام هذه الميزة."
+    "prompt_auth": "يرجى تسجيل الدخول لاستخدام هذه الميزة.",
+    "prompt_auth_description": "يرجى تسجيل الدخول لاستخدام هذه الميزة.",
+    "manage_favorites": {
+      "title": "إدارة المفضلة",
+      "description": "Add this resource to or remove it from your lists."
+    }
   },
   "update_location": {
-    "prompt_start_location": "ما هو موقع انطلاقك؟"
+    "prompt_start_location": "ما هو موقع انطلاقك؟",
+    "description": "Enter your starting address to get directions."
   },
   "data_providers": {
     "provided_by": "البيانات المقدمة من"
@@ -144,5 +165,19 @@
     "previous": "سابق",
     "next": "التالي",
     "go_to": "انتقل إلى"
+  },
+  "filter_results_count_one": "{{count}} نتيجة",
+  "filter_results_count_other": "{{count}} نتيجة",
+  "autocomplete": {
+    "results_available_one": "{{count}} نتيجة متاحة",
+    "results_available_other": "{{count}} نتيجة متاحة",
+    "no_results": "لا توجد نتائج"
+  },
+  "auth_error": {
+    "access_denied_title": "تم الرفض",
+    "access_denied_description": "لقد سجلت الدخول بنجاح، ولكن هذا الحساب غير مصرح له بالوصول إلى هذا الموقع. حاول مرة أخرى باستخدام حساب آخر.",
+    "default_title": "خطأ في المصادقة",
+    "default_description": "لم نتمكن من إكمال عملية تسجيل الدخول. يرجى المحاولة مرة أخرى.",
+    "logout_and_try_again": "قم بتسجيل الخروج وحاول مرة أخرى"
   }
 }

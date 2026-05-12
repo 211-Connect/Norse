@@ -3,7 +3,10 @@
 import { Phone, Printer } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { Resource } from '@/types/resource';
+
+import { UmamiEvent, trackUmamiEvent } from '../../../../shared/lib/umami';
 import { Datum } from '../datum';
 
 export function PhoneNumbersComponent({ resource }: { resource: Resource }) {
@@ -36,7 +39,7 @@ export function PhoneNumbersComponent({ resource }: { resource: Resource }) {
   }
 
   return (
-    <div className="flex flex-wrap gap-4">
+    <div className="flex flex-wrap">
       {mappedPhoneNumbers.map(({ description, Icon, label, number }) => (
         <Datum
           key={number}
@@ -45,9 +48,16 @@ export function PhoneNumbersComponent({ resource }: { resource: Resource }) {
           subtitle={description}
           description={number}
           url={`tel:${number}`}
+          urlAriaLabel={`${label}${description ? ` - ${description}` : ''}: ${number}`}
+          onClick={() =>
+            trackUmamiEvent(UmamiEvent.PhoneClick, {
+              resourceId: resource.id,
+            })
+          }
           urlTarget="_self"
           titleBelow
           shouldParseHtml={false}
+          className="w-full lg:w-1/2"
         />
       ))}
     </div>

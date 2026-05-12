@@ -1,14 +1,8 @@
-import { ExtractAtomValue } from 'jotai';
+'use server';
 
-import {
-  buildSearchRequest,
-  deriveQueryType,
-  SearchRequestParams,
-} from '../lib/search-utils';
-import { searchAtom } from '../store/search';
-import { API_URL, INTERNAL_API_KEY } from '../lib/constants';
-import { fetchWrapper } from '../lib/fetchWrapper';
-import { transformFacetsToArray } from '../utils/toFacetsWithTranslation';
+import qs from 'qs';
+
+import { createLogger } from '@/lib/logger';
 import { BBox } from '@/types/resource';
 import {
   FiltersMap,
@@ -16,18 +10,18 @@ import {
   SearchFacet,
   SearchHit,
 } from '@/types/search';
-import qs from 'qs';
-import { createLogger } from '@/lib/logger';
-import { formatAddressForDisplay } from '../lib/utils';
 import { stableHash, withCache } from '@/utilities/withCache';
+import { ensureUrlProtocol } from '@/utils';
+
+import { API_URL, INTERNAL_API_KEY } from '../lib/constants';
+import { fetchWrapper } from '../lib/fetchWrapper';
+import { buildSearchRequest, deriveQueryType } from '../lib/search-utils';
+import { formatAddressForDisplay } from '../lib/utils';
 import { ResultType } from '../store/results';
+import { SortOption } from '../utils/getSortOption';
+import { transformFacetsToArray } from '../utils/toFacetsWithTranslation';
 
 const log = createLogger('search');
-
-export type SortOption = 'relevance' | 'distance' | 'name' | 'organization';
-export const isSortOption = (value: unknown): value is SortOption =>
-  typeof value === 'string' &&
-  ['relevance', 'distance', 'name', 'organization'].includes(value);
 
 export type FindResourcesQuery = {
   query?: string;
@@ -40,47 +34,15 @@ export type FindResourcesQuery = {
   bbox?: BBox;
   filters?: Record<string, string[]>;
   sort?: SortOption;
+  widgetId?: string;
 };
 
 type SearchResult = {
   results: Record<string, unknown>[];
-  noResults: boolean;
   totalResults: number;
   page: number;
   filters: FiltersMap;
 };
-
-export function createUrlParamsForSearch(
-  searchStore: ExtractAtomValue<typeof searchAtom>,
-  hybridSemanticSearchEnabled?: boolean,
-) {
-  const hasLocation = searchStore['searchCoordinates']?.length === 2;
-
-  const urlParams = {
-    query: searchStore.query?.trim(),
-    query_label: searchStore.queryLabel?.trim(),
-    query_type: deriveQueryType(
-      searchStore.query,
-      searchStore.queryType,
-      hybridSemanticSearchEnabled,
-    ),
-    location: hasLocation ? searchStore.searchLocation?.trim() : null,
-    coords: hasLocation
-      ? searchStore.searchCoordinates?.join(',')?.trim()
-      : null,
-    distance:
-      searchStore.searchCoordinates?.length === 2
-        ? searchStore.searchDistance?.trim() || '0'
-        : '',
-  };
-
-  return Object.fromEntries(
-    Object.entries(urlParams).filter(
-      ([_, value]) =>
-        value != null && (typeof value !== 'string' || value.trim() !== ''),
-    ),
-  ) as Record<string, string>;
-}
 
 /**
  * Extract total results count from search response
@@ -118,10 +80,11 @@ function transformSearchHits(
       serviceName: hit?._source?.service?.name ?? null,
       attribution: hit?._source?.attribution ?? null,
       name: hit?._source?.name ?? null,
+      locationName: hit?._source?.location?.name ?? null,
       summary: hit?._source?.service?.summary ?? null,
       description: hit?._source?.service?.description ?? null,
       phone: hit?._source?.phone ?? null,
-      website: hit?._source?.url ?? null,
+      website: ensureUrlProtocol(hit?._source?.url),
       address: mainAddress,
       location: hit?._source?.location?.point ?? null,
       taxonomies: hit?._source?.taxonomies ?? null,
@@ -160,7 +123,6 @@ function extractFilters(data: SearchApiResponse, locale: string): FiltersMap {
 function createEmptyResult(page: number): SearchResult {
   return {
     results: [],
-    noResults: true,
     totalResults: 0,
     page,
     filters: {},
@@ -173,6 +135,7 @@ type FindResourcesOriginArgs = {
   page: number;
   limit?: number;
   tenantId?: string;
+  hybridSemanticSearchEnabled: boolean | undefined;
 };
 
 async function findResourcesOrigin({
@@ -181,15 +144,17 @@ async function findResourcesOrigin({
   page,
   limit,
   tenantId,
+  hybridSemanticSearchEnabled,
 }: FindResourcesOriginArgs): Promise<SearchResult> {
   if (isNaN(page)) page = 1;
   if (!limit || isNaN(limit)) limit = 25;
 
-  const resolvedQueryType = deriveQueryType(
-    query.query,
-    query.queryType,
-    false,
-  );
+  const resolvedQueryType = deriveQueryType({
+    hybridSemanticSearchEnabled,
+    originQueryType: query.queryType,
+    query: query.query,
+  });
+
   const hasCoords = query.coordinates?.length === 2;
 
   let data: SearchApiResponse | null | undefined;
@@ -235,16 +200,7 @@ async function findResourcesOrigin({
     return createEmptyResult(page);
   }
 
-  let totalResults = extractTotalResults(data);
-  let noResults = false;
-
-  // Try fallback search if no results
-  if (totalResults === 0) {
-    noResults = true;
-    data =
-      (await tryFallbackSearch(query, page, locale, limit, tenantId)) ?? data;
-    totalResults = extractTotalResults(data);
-  }
+  const totalResults = extractTotalResults(data);
 
   const hits = data?.search?.hits?.hits;
   const facetDefinitions = Object.fromEntries(
@@ -258,114 +214,34 @@ async function findResourcesOrigin({
 
   return {
     results,
-    noResults,
     totalResults,
     page,
     filters,
   };
 }
 
-export const findResources = (
+export async function findResources(
   query: FindResourcesQuery,
   locale: string,
   page: number,
-  limit?: number,
-  tenantId?: string,
-) =>
-  withCache(
+  limit: number | undefined,
+  tenantId: string | undefined,
+  hybridSemanticSearchEnabled: boolean | undefined,
+) {
+  return withCache(
     `search_results:${tenantId}:${locale}:${stableHash({ query, page, limit })}`,
-    () => findResourcesOrigin({ query, locale, page, limit, tenantId }),
+    () =>
+      findResourcesOrigin({
+        query,
+        locale,
+        page,
+        limit,
+        tenantId,
+        hybridSemanticSearchEnabled,
+      }),
     { redis: true, memory: false },
+    (value) => value.results.length > 0,
   );
-
-/**
- * Try fallback search with more_like_this query type
- */
-async function tryFallbackSearch(
-  query: FindResourcesQuery,
-  page: number,
-  locale: string,
-  limit: number,
-  tenantId?: string,
-): Promise<SearchApiResponse | null> {
-  const hasCoords = query.coordinates?.length === 2;
-  try {
-    const fallbackString = qs.stringify({
-      ...(query.query?.trim() && { query: query.query.trim() }),
-      ...(query.queryLabel?.trim() && { query_label: query.queryLabel.trim() }),
-      query_type: 'more_like_this',
-      ...(query.location?.trim() && { location: query.location.trim() }),
-      ...(hasCoords && { coords: query.coordinates!.join(',') }),
-      ...(hasCoords && { distance: query.distance?.trim() || '0' }),
-      ...(query.sort && { sort: query.sort }),
-      page,
-      locale,
-      limit,
-      ...(tenantId && { tenant_id: tenantId }),
-      ...(query.filters &&
-        Object.keys(query.filters).length > 0 && { filters: query.filters }),
-    });
-
-    const fallbackData = await fetchWrapper(
-      `${API_URL}/search?${fallbackString}`,
-      {
-        headers: {
-          'accept-language': locale,
-          'x-api-version': '1',
-          'x-api-key': INTERNAL_API_KEY || '',
-          ...(tenantId && { 'x-tenant-id': tenantId }),
-        },
-        cache: 'no-store',
-      },
-    );
-
-    return fallbackData?.search ? fallbackData : null;
-  } catch (err) {
-    log.error({ err, tenantId }, 'Fallback search API error');
-    return null;
-  }
-}
-
-/**
- * Try fallback search with more_like_this query type for V2
- */
-async function tryFallbackSearchV2(
-  request: SearchRequestParams,
-  page: number,
-  locale: string,
-  limit: number,
-  tenantId?: string,
-  filters?: Record<string, string[]>,
-  sort?: SortOption,
-): Promise<SearchApiResponse | null> {
-  try {
-    const fallbackQueryParams = qs.stringify({
-      ...request.queryParams,
-      page,
-      query_type: 'more_like_this',
-      locale,
-      limit,
-      ...(sort && { sort }),
-      ...(filters && Object.keys(filters).length > 0 ? { filters } : {}),
-    });
-    const fallbackUrl = `${API_URL}/search?${fallbackQueryParams}`;
-
-    const fallbackData = await fetchWrapper(fallbackUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'accept-language': locale,
-        'x-api-version': '1',
-        ...(tenantId && { 'x-tenant-id': tenantId }),
-      },
-      body: request.body,
-    });
-
-    return fallbackData?.search ? fallbackData : null;
-  } catch (err) {
-    log.error({ err, tenantId }, 'Fallback search API error (V2)');
-    return null;
-  }
 }
 
 /**
@@ -376,19 +252,21 @@ async function tryFallbackSearchV2(
  * @param page - Current page number
  * @param limit - Results per page
  * @param tenantId - Tenant identifier
+ * @param hybridSemanticSearchEnabled - Flag to enable hybrid semantic search which may affect query type derivation
  * @returns Search results with pagination info
  */
 export async function findResourcesV2(
   searchStore: FindResourcesQuery,
   locale: string,
   page: number,
-  limit?: number,
-  tenantId?: string,
+  limit: number | undefined,
+  tenantId: string | undefined,
+  hybridSemanticSearchEnabled: boolean | undefined,
 ): Promise<SearchResult> {
   if (isNaN(page)) page = 1;
   if (!limit || isNaN(limit)) limit = 25;
 
-  const request = buildSearchRequest(searchStore);
+  const request = buildSearchRequest(searchStore, hybridSemanticSearchEnabled);
   const queryParams = qs.stringify({
     ...request.queryParams,
     page,
@@ -429,24 +307,7 @@ export async function findResourcesV2(
     return createEmptyResult(page);
   }
 
-  let totalResults = extractTotalResults(data);
-  let noResults = false;
-
-  // Try fallback search if no results
-  if (totalResults === 0) {
-    noResults = true;
-    data =
-      (await tryFallbackSearchV2(
-        request,
-        page,
-        locale,
-        limit,
-        tenantId,
-        searchStore.filters,
-        searchStore.sort,
-      )) ?? data;
-    totalResults = extractTotalResults(data);
-  }
+  const totalResults = extractTotalResults(data);
 
   const hits = data?.search?.hits?.hits;
   const facetDefinitions = Object.fromEntries(
@@ -460,7 +321,6 @@ export async function findResourcesV2(
 
   return {
     results,
-    noResults,
     totalResults,
     page,
     filters,

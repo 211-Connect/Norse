@@ -1,22 +1,26 @@
 import { ComponentType } from 'react';
-import { SearchCardComponentId } from '../types/card-component-ids';
+
 import { ResultType } from '@/app/(app)/shared/store/results';
-import {
-  BadgesComponent,
-  ResourceNameComponent,
-  ServiceNameComponent,
-  AddressComponent,
-  PhoneComponent,
-  WebsiteComponent,
-  DescriptionComponent,
-  CategoriesComponent,
-  ActionButtonsComponent,
-  SearchCardComponentProps,
-  CustomAttributeComponent,
-} from './search-card-components';
-import { SeparatorComponent } from '../../resource/components/resource-components';
 import { AppConfig } from '@/types/appConfig';
 import { getBadgesForResource } from '@/utils/getBadgesForResource';
+
+import { SeparatorComponent } from '../../resource/components/resource-components';
+import { SearchCardComponentId } from '../types/card-component-ids';
+import {
+  ActionButtonsComponent,
+  AddressComponent,
+  BadgesComponent,
+  CategoriesComponent,
+  CustomAttributeComponent,
+  DescriptionComponent,
+  LocationNameComponent,
+  LocationNameSubtitleComponent,
+  PhoneComponent,
+  ResourceNameComponent,
+  SearchCardComponentProps,
+  ServiceNameComponent,
+  WebsiteComponent,
+} from './search-card-components';
 import { AttributionComponent } from './search-card-components/attribution';
 
 export const searchCardComponentRegistry: Record<
@@ -27,6 +31,8 @@ export const searchCardComponentRegistry: Record<
   [SearchCardComponentId.BADGES]: BadgesComponent,
   [SearchCardComponentId.RESOURCE_NAME]: ResourceNameComponent,
   [SearchCardComponentId.SERVICE_NAME]: ServiceNameComponent,
+  [SearchCardComponentId.LOCATION_NAME]: LocationNameComponent,
+  [SearchCardComponentId.LOCATION_NAME_SUBTITLE]: LocationNameSubtitleComponent,
   [SearchCardComponentId.ADDRESS]: AddressComponent,
   [SearchCardComponentId.PHONE]: PhoneComponent,
   [SearchCardComponentId.WEBSITE]: WebsiteComponent,
@@ -58,7 +64,7 @@ export function shouldSearchCardComponentRender(
   switch (componentId) {
     case SearchCardComponentId.SEPARATOR:
       return true;
-    case SearchCardComponentId.BADGES:
+    case SearchCardComponentId.BADGES: {
       const badges = getBadgesForResource(
         appConfig.badges,
         result.facets,
@@ -67,12 +73,19 @@ export function shouldSearchCardComponentRender(
       const showComponent = badges.length > 0 || result.priority === 1;
 
       return showComponent;
+    }
     case SearchCardComponentId.ADDRESS:
       return true; // Component handles unavailable addresses
+    case SearchCardComponentId.ATTRIBUTION:
+      return Boolean(result.attribution);
     case SearchCardComponentId.RESOURCE_NAME:
       return Boolean(result.name);
     case SearchCardComponentId.SERVICE_NAME:
       return Boolean(result.serviceName);
+    case SearchCardComponentId.LOCATION_NAME:
+      return Boolean(result.locationName);
+    case SearchCardComponentId.LOCATION_NAME_SUBTITLE:
+      return Boolean(result.locationName);
     case SearchCardComponentId.PHONE:
       return Boolean(result.phone);
     case SearchCardComponentId.WEBSITE:

@@ -26,5 +26,8 @@
   "report": "Повідомити",
   "providing_organization": "Організація, що надає послугу",
   "interpretation_services": "Послуги перекладу",
-  "other_information": "Інша інформація"
+  "other_information": "Інша інформація",
+  "organization_url": "URL-адреса організації",
+  "contacts": "Щоб отримати доступ до цієї послуги, зверніться до:",
+  "location_name": "Назва місця розташування"
 }

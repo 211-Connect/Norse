@@ -26,5 +26,8 @@
   "report": "Bericht",
   "providing_organization": "Bereitstellung von Organisation",
   "interpretation_services": "Dolmetschdienste",
-  "other_information": "Sonstige Informationen"
+  "other_information": "Sonstige Informationen",
+  "organization_url": "Organisations-URL",
+  "contacts": "Um diesen Service zu nutzen, kontaktieren Sie:",
+  "location_name": "Name des Standorts"
 }

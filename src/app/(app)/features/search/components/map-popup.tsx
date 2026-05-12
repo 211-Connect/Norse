@@ -1,8 +1,9 @@
-import { Card, CardContent } from '@/app/(app)/shared/components/ui/card';
-import { Badges } from '@/app/(app)/shared/components/badges';
 import { ChevronRight, MapPin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+
+import { Badges } from '@/app/(app)/shared/components/badges';
 import { Link } from '@/app/(app)/shared/components/link';
+import { Card, CardContent } from '@/app/(app)/shared/components/ui/card';
 
 interface MapPopupProps {
   id: string;
@@ -40,6 +41,7 @@ export function MapPopup({
         )}
         <Link
           href={`/search/${id}`}
+          aria-label={`${t('learn_more', { ns: 'page-search' })}: ${name}`}
           className="py-[5px] text-center text-sm font-medium text-primary hover:underline"
         >
           {t('learn_more', { ns: 'page-search' })}

@@ -22,5 +22,7 @@
       "name": "Maqaa Qabeenyaa",
       "organization": "Maqaa Dhiyeessaa"
     }
-  }
+  },
+  "name_unavailable": "Maqaan hin argamu",
+  "share_body": "Bu'aa barbaacha {{count}} \"{{title}}\" ilaali."
 }

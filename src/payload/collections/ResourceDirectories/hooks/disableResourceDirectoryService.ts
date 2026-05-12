@@ -1,6 +1,7 @@
 import { CollectionAfterDeleteHook } from 'payload';
-import { ResourceDirectory } from '@/payload/payload-types';
 import { extractID } from 'payload/shared';
+
+import { ResourceDirectory } from '@/payload/payload-types';
 
 export const disableService: CollectionAfterDeleteHook<
   ResourceDirectory

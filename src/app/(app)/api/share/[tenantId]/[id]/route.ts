@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
+
 import { expandShortUrl } from '@/app/(app)/shared/serverActions/shortUrl/expandShortUrl';
 
+/**
+ * @deprecated This route is only used for backward compatibility of old short URLs, which have `/api` and tenant ID in the path.
+ * New short URLs should be handled by `src/app/(app)/[locale]/share/[shortCode]/page.tsx`
+ */
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string; tenantId?: string }> },

@@ -1,4 +1,5 @@
 import { AppConfig } from '@/types/appConfig';
+
 import { ResourceComponentId } from './component-ids';
 
 export type ResourceLayoutConfig = AppConfig['resource']['layout'];
@@ -29,6 +30,7 @@ export const DEFAULT_RESOURCE_LAYOUT: AppConfig['resource']['layout'] = {
         { componentId: ResourceComponentId.SEPARATOR },
         { componentId: ResourceComponentId.PHONE_NUMBERS },
         { componentId: ResourceComponentId.WEBSITE },
+        { componentId: ResourceComponentId.ORGANIZATION_URL },
         { componentId: ResourceComponentId.EMAIL },
         { componentId: ResourceComponentId.SEPARATOR },
         { componentId: ResourceComponentId.LANGUAGES },
@@ -49,7 +51,6 @@ export const DEFAULT_RESOURCE_LAYOUT: AppConfig['resource']['layout'] = {
       items: [
         { componentId: ResourceComponentId.DESCRIPTION },
         { componentId: ResourceComponentId.LAST_ASSURED },
-        { componentId: ResourceComponentId.ATTRIBUTION },
         { componentId: ResourceComponentId.CATEGORIES },
       ],
       isCard: true,

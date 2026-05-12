@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
-import { toast, Button, useDocumentInfo, useAuth } from '@payloadcms/ui';
+import { Button, toast, useAuth, useDocumentInfo } from '@payloadcms/ui';
 import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
+
 import { fetchWrapper } from '@/app/(app)/shared/lib/fetchWrapper';
 import { createLogger } from '@/lib/logger';
 

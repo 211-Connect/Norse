@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
-import { createPageViewEvent } from '../lib/google-tag-manager';
 import { usePathname } from 'next/navigation';
+import { useEffect } from 'react';
+
 import { useAppConfig } from '../hooks/use-app-config';
+import { createPageViewEvent } from '../lib/google-tag-manager';
 
 export function PageView() {
   const pathName = usePathname();

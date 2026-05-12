@@ -1,19 +1,22 @@
+import { cookies, headers } from 'next/headers';
+import { TypedLocale } from 'payload';
+import { cache } from 'react';
+
+import { findResourceDirectoryByHost } from '@/payload/collections/ResourceDirectories/actions';
+import { defaultLocale } from '@/payload/i18n/locales';
 import {
   ResourceDirectory,
   Tenant,
   TenantMedia,
 } from '@/payload/payload-types';
-import { TypedLocale } from 'payload';
-import { findResourceDirectoryByHost } from '@/payload/collections/ResourceDirectories/actions';
-import { cache } from 'react';
 import { AppConfig } from '@/types/appConfig';
-import { cookies, headers } from 'next/headers';
-import { getHost } from './getHost';
-import { defaultLocale } from '@/payload/i18n/locales';
-import initTranslations from '../i18n/i18n';
-import { SESSION_ID } from '../lib/constants';
+
 import { DEFAULT_RESOURCE_LAYOUT } from '../../features/resource/types/layout-config';
 import { DEFAULT_SEARCH_CARD_LAYOUT } from '../../features/search/types/card-layout-config';
+import initTranslations from '../i18n/i18n';
+import { SESSION_ID } from '../lib/constants';
+import { DEFAULT_BADGE_COLOR } from '../theme/theme-config';
+import { getHost } from './getHost';
 
 function getMediaUrl(media?: TenantMedia | number | null): string | undefined {
   if (typeof media === 'number' || !media) return undefined;
@@ -36,6 +39,43 @@ function getTenantId(resourceDirectory: ResourceDirectory): string | undefined {
   return resourceDirectory.tenant?.id;
 }
 
+function getTenantMainUmamiWebsiteId(
+  resourceDirectory: ResourceDirectory,
+): string | undefined {
+  const websiteIds = getTenant(resourceDirectory)?.common?.umamiWebsiteIds;
+
+  if (!Array.isArray(websiteIds) || websiteIds.length === 0) {
+    return undefined;
+  }
+
+  return websiteIds[0]?.websiteId ?? undefined;
+}
+
+function getSmsConfig(resourceDirectory: ResourceDirectory): AppConfig['sms'] {
+  const sms = getTenant(resourceDirectory)?.sms;
+
+  if (!sms?.smsProvider) {
+    return null;
+  }
+
+  if (sms.smsProvider === 'Twilio') {
+    const twilio = sms.twilio;
+    const hasTwilioConfig = Boolean(
+      twilio?.phoneNumber &&
+      twilio?.apiKey &&
+      twilio?.apiKeySid &&
+      twilio?.accountSid,
+    );
+
+    return hasTwilioConfig ? { provider: sms.smsProvider } : null;
+  }
+
+  const ems = sms.ems;
+  const hasEmsConfig = Boolean(ems?.apiKey || ems?.shortCode || ems?.keyword);
+
+  return hasEmsConfig ? { provider: sms.smsProvider } : null;
+}
+
 function getTenantI18n(resourceDirectory: ResourceDirectory): {
   defaultLocale: string;
   locales: string[];
@@ -55,6 +95,7 @@ function getTenantI18n(resourceDirectory: ResourceDirectory): {
 
 type CustomAttributeItem = {
   componentId: string;
+  id?: string | null;
   customAttribute?: {
     title?: string | null;
     subtitle?: string | null;
@@ -63,6 +104,12 @@ type CustomAttributeItem = {
   } | null;
   [key: string]: any;
 };
+
+type LayoutColumnGroup = NonNullable<
+  ResourceDirectory['resource']
+>['leftColumn'];
+type LayoutGroupItem = NonNullable<NonNullable<LayoutColumnGroup>[number]>;
+type LayoutItem = NonNullable<NonNullable<LayoutGroupItem['items']>[number]>;
 
 function mergeCustomAttribute<T extends CustomAttributeItem>(
   item: T,
@@ -96,6 +143,17 @@ function mergeCustomAttribute<T extends CustomAttributeItem>(
   };
 }
 
+function findFallbackById<T extends { id?: string | null }>(
+  current: T | undefined,
+  fallbackItems: T[] | undefined,
+): T | undefined {
+  if (!current?.id || !fallbackItems?.length) {
+    return undefined;
+  }
+
+  return fallbackItems.find((item) => item.id === current.id);
+}
+
 function applyCustomAttributeFallback(
   column: NonNullable<ResourceDirectory['resource']>['leftColumn'],
   fallbackColumn: NonNullable<ResourceDirectory['resource']>['leftColumn'],
@@ -103,13 +161,21 @@ function applyCustomAttributeFallback(
   if (!column || !fallbackColumn) return column;
 
   return column.map((group, groupIndex) => {
-    const fallbackGroup = fallbackColumn[groupIndex];
+    const fallbackGroup =
+      findFallbackById<LayoutGroupItem>(group, fallbackColumn) ??
+      fallbackColumn[groupIndex];
     if (!fallbackGroup || !group.items) return group;
 
     return {
       ...group,
       items: group.items.map((item, itemIndex) =>
-        mergeCustomAttribute(item, fallbackGroup.items?.[itemIndex]),
+        mergeCustomAttribute(
+          item,
+          findFallbackById<LayoutItem>(
+            item,
+            fallbackGroup.items ?? undefined,
+          ) ?? fallbackGroup.items?.[itemIndex],
+        ),
       ),
     };
   });
@@ -126,7 +192,11 @@ function applyCardLayoutCustomAttributeFallback(
   }
 
   return cardLayout.map((item, itemIndex) =>
-    mergeCustomAttribute(item, fallbackCardLayout[itemIndex]),
+    mergeCustomAttribute(
+      item,
+      findFallbackById(item, fallbackCardLayout) ??
+        fallbackCardLayout[itemIndex],
+    ),
   );
 }
 
@@ -157,17 +227,13 @@ async function getAppConfigBase(
         theme: {},
       },
       contact: {},
-      customBasePath: '',
+      sms: null,
       featureFlags: {
-        hideCategoriesHeading: false,
-        hideDataProvidersHeading: false,
         requireUserLocation: false,
         showFeedbackButtonGlobal: false,
         showFeedbackButtonOnResourcePages: false,
         showHomePageTour: false,
         showPrintButton: false,
-        showResourceAttribution: false,
-        showResourceLastAssuredDate: false,
         showSearchAndResourceServiceName: false,
         showSuggestionListTaxonomyBadge: false,
         showUseMyLocationButtonOnDesktop: false,
@@ -197,6 +263,7 @@ async function getAppConfigBase(
         },
       },
       resource: {
+        categoriesText: undefined,
         lastAssuredText: undefined,
         layout: {
           leftColumn: [],
@@ -221,13 +288,6 @@ async function getAppConfigBase(
   }
 
   const i18n = getTenantI18n(resourceDirectory);
-  const errorNamespaces = ['page-500', 'common'];
-  const { resources } = await initTranslations(
-    locale,
-    errorNamespaces,
-    i18n.locales,
-    i18n.defaultLocale,
-  );
 
   // Fetch English resource directory for fallback if not English locale
   let englishResourceDirectory: ResourceDirectory | null = null;
@@ -315,17 +375,8 @@ async function getAppConfigBase(
       number: resourceDirectory.brand.phoneNumber ?? undefined,
       feedbackUrl: resourceDirectory.brand.feedbackUrl ?? undefined,
     },
-    customBasePath: process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || '',
-    errorTranslationData: {
-      errorNamespaces,
-      resources,
-      locale,
-    },
+    sms: getSmsConfig(resourceDirectory),
     featureFlags: {
-      hideCategoriesHeading:
-        resourceDirectory.featureFlags?.hideCategoriesHeading ?? false,
-      hideDataProvidersHeading:
-        resourceDirectory.featureFlags?.hideDataProvidersHeading ?? false,
       requireUserLocation:
         resourceDirectory.featureFlags?.requireUserLocation ?? false,
       showFeedbackButtonGlobal:
@@ -336,10 +387,6 @@ async function getAppConfigBase(
       showHomePageTour:
         resourceDirectory.featureFlags?.showHomePageTour ?? false,
       showPrintButton: resourceDirectory.featureFlags?.showPrintButton ?? false,
-      showResourceAttribution:
-        resourceDirectory.featureFlags?.showResourceAttribution ?? false,
-      showResourceLastAssuredDate:
-        resourceDirectory.featureFlags?.showResourceLastAssuredDate ?? false,
       showSearchAndResourceServiceName:
         resourceDirectory.featureFlags?.showSearchAndResourceServiceName ??
         false,
@@ -362,6 +409,10 @@ async function getAppConfigBase(
     header: {
       customMenu: resourceDirectory.header?.customMenu ?? [],
       customHomeUrl: resourceDirectory.header?.customHomeUrl ?? undefined,
+      favoritesButtonLabel:
+        resourceDirectory.header?.favoritesButtonLabel ?? undefined,
+      feedbackButtonLabel:
+        resourceDirectory.header?.feedbackButtonLabel ?? undefined,
       safeExit: resourceDirectory.header?.safeExit
         ? {
             enabled: resourceDirectory.header.safeExit.enabled ?? false,
@@ -378,8 +429,7 @@ async function getAppConfigBase(
     i18n,
     matomoContainerUrl:
       getTenant(resourceDirectory)?.common?.matomoContainerUrl ?? undefined,
-    umamiWebsiteId:
-      getTenant(resourceDirectory)?.common?.umamiWebsiteId ?? undefined,
+    umamiWebsiteId: getTenantMainUmamiWebsiteId(resourceDirectory),
     meta: {
       description: resourceDirectory.brand.meta?.description ?? '',
       title: resourceDirectory.brand.meta?.title ?? '',
@@ -397,6 +447,7 @@ async function getAppConfigBase(
       },
     },
     resource: {
+      categoriesText: resourceDirectory.resource?.categoriesText ?? undefined,
       lastAssuredText: resourceDirectory.resource?.lastAssuredText ?? undefined,
       layout: resourceDirectory.resource?.useCustomLayout
         ? {
@@ -435,14 +486,32 @@ async function getAppConfigBase(
           resourceDirectory.search.texts?.noResultsFallbackText ?? undefined,
         queryInputPlaceholder:
           resourceDirectory.search.texts?.queryInputPlaceholder ?? undefined,
+        suggestionHeaders: {
+          categories:
+            resourceDirectory.search.texts?.suggestionHeaders?.categories ??
+            undefined,
+          suggestions:
+            resourceDirectory.search.texts?.suggestionHeaders?.suggestions ??
+            undefined,
+          taxonomies:
+            resourceDirectory.search.texts?.suggestionHeaders?.taxonomies ??
+            undefined,
+        },
         title: resourceDirectory.search.texts?.title ?? undefined,
+        useTextLinkForViewDetails:
+          resourceDirectory.search.texts?.useTextLinkForViewDetails ??
+          undefined,
+        viewDetailsText:
+          resourceDirectory.search.texts?.viewDetailsText ?? undefined,
       },
       cardLayout:
         resourceDirectory.search.cardLayout &&
         resourceDirectory.search.useCustomCardLayout
           ? applyCardLayoutCustomAttributeFallback(
               resourceDirectory.search.cardLayout,
-              englishResourceDirectory?.search.cardLayout,
+              locale === 'en'
+                ? resourceDirectory.search.cardLayout
+                : englishResourceDirectory?.search.cardLayout,
             )
           : DEFAULT_SEARCH_CARD_LAYOUT,
     },
@@ -453,7 +522,7 @@ async function getAppConfigBase(
         ?.map((badge) => ({
           ...badge,
           style: badge.style || 'bold',
-          color: badge.color || '#0044B5',
+          color: badge.color || DEFAULT_BADGE_COLOR,
           icon: badge.icon,
         })) || [],
     suggestions:
