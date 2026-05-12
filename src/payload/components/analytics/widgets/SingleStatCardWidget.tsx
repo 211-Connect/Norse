@@ -59,7 +59,11 @@ function StatCardFromData<T>({
   return (
     <StatCard
       label={label}
-      value={formatValue ? formatValue(metric.current) : metric.current.toLocaleString()}
+      value={
+        formatValue
+          ? formatValue(metric.current)
+          : metric.current.toLocaleString()
+      }
       trend={toTrend(metric.current, metric.previous)}
     />
   );
