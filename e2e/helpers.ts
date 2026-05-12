@@ -69,6 +69,20 @@ async function isVisible(locator: ReturnType<Page['locator']>) {
   return locator.isVisible().catch(() => false);
 }
 
+/**
+ * Wait for the page to fully stabilize after navigation or state changes.
+ * Waits for network idle and ensures the toploader is hidden.
+ */
+export async function waitForPageStabilized(page: Page) {
+  await page.waitForLoadState('networkidle', {
+    timeout: SEARCH_NAV_TIMEOUT_MS,
+  });
+  await page
+    .getByTestId('toploader-bar')
+    .waitFor({ state: 'hidden', timeout: UI_SHELL_TIMEOUT_MS })
+    .catch(() => null);
+}
+
 export async function expectAuthenticatedShell(page: Page) {
   await goHome(page);
 
@@ -397,8 +411,23 @@ export function parseTrailingInteger(text: string): number {
 }
 
 export async function getResultTotalNumber(page: Page): Promise<number> {
+  // Ensure results container is visible first
+  await expect(page.locator('#search-container')).toBeVisible({
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
+
   const resultTotal = page.locator('#result-total');
   await expect(resultTotal).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+
+  // Wait for at least one result link to be visible (ensures results are rendered)
+  const resultLinks = page.getByTestId('resource-link');
+  await expect(resultLinks.first()).toBeVisible({
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
+
+  // Give the DOM a moment to fully settle
+  await page.waitForTimeout(100);
+
   const raw = (await resultTotal.textContent()) ?? '';
   return parseTrailingInteger(raw);
 }
