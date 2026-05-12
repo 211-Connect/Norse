@@ -211,7 +211,7 @@ const config = buildConfig({
           slug: 'analytics-session-quality',
           Component:
             '@/payload/components/analytics/widgets/SessionQualityWidget#default',
-          minWidth: 'medium',
+          minWidth: 'x-small',
           maxWidth: 'full',
         },
       ],

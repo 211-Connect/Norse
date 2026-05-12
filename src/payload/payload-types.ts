@@ -1906,7 +1906,7 @@ export interface AnalyticsSessionQualityWidget {
   data?: {
     [k: string]: unknown;
   };
-  width: 'medium' | 'large' | 'x-large' | 'full';
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
