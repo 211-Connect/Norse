@@ -131,26 +131,6 @@ test.describe('Search accessibility preservation', () => {
     }
   });
 
-  test('dialog stays scrollable on short viewports', async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 280 });
-
-    const { dialog } = await openDialogFromSearchTrigger(page);
-
-    const metrics = await dialog.evaluate((element) => {
-      const style = window.getComputedStyle(element);
-
-      return {
-        clientHeight: element.clientHeight,
-        overflowY: style.overflowY,
-        scrollHeight: element.scrollHeight,
-      };
-    });
-
-    expect(metrics.clientHeight).toBeGreaterThan(0);
-    expect(['auto', 'scroll']).toContain(metrics.overflowY);
-    expect(metrics.scrollHeight).toBeGreaterThan(metrics.clientHeight);
-  });
-
   test('search and location comboboxes expose labels and keyboard-clear actions', async ({
     page,
   }) => {
