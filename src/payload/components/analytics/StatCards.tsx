@@ -19,7 +19,11 @@ export const StatCards = React.memo(function StatCards({
   stats,
   metrics,
 }: StatCardsProps) {
-  const cards = [
+  const cards: {
+    label: string;
+    metric: Metric;
+    format?: (n: number) => string;
+  }[] = [
     {
       label: 'Total Users',
       metric: { current: stats.visitors, previous: stats.comparison.visitors },
@@ -49,11 +53,13 @@ export const StatCards = React.memo(function StatCards({
         justifyItems: 'center',
       }}
     >
-      {cards.map(({ label, metric }) => (
+      {cards.map(({ label, metric, format }) => (
         <StatCard
           key={label}
           label={label}
-          value={metric.current.toLocaleString()}
+          value={
+            format ? format(metric.current) : metric.current.toLocaleString()
+          }
           trend={toTrend(metric)}
         />
       ))}

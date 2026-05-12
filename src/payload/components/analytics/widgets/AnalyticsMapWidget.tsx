@@ -4,7 +4,7 @@ import { Banner, StaggeredShimmers } from '@payloadcms/ui';
 import dynamic from 'next/dynamic';
 import React from 'react';
 
-import { useSessions } from '../useAnalyticsData';
+import { useSessionHeatmap } from '../useAnalyticsData';
 
 const MAP_CENTER: [number, number] = [-98.5795, 39.8293];
 const MAP_ZOOM = 3;
@@ -15,7 +15,7 @@ const AnalyticsMap = dynamic(
 );
 
 export default function AnalyticsMapWidget() {
-  const { loading, error, data } = useSessions();
+  const { loading, error, data } = useSessionHeatmap();
 
   if (loading) return <StaggeredShimmers count={1} height={400} />;
 

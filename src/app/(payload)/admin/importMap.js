@@ -34,6 +34,7 @@ import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc056
 import { default as default_c5dffe636895d753138026b95fe2f960 } from '@/payload/components/AnalyticsView'
 import { default as default_89b0fc1c15499fa299fab63bf28229b4 } from '@/payload/components/analytics/widgets/TotalUsersWidget'
 import { default as default_f8df26be7e7afb6ec18139b4a17451c4 } from '@/payload/components/analytics/widgets/SearchesWidget'
+import { default as default_63e5b605e54fd69aab31fee4d094a24c } from '@/payload/components/analytics/widgets/AnalyticsAverageSerachesWidget'
 import { default as default_340cec3ca5bd6af056111595c6a6de39 } from '@/payload/components/analytics/widgets/ResourceViewsWidget'
 import { default as default_543e87190703f0fc451b5ed80bd5d2b2 } from '@/payload/components/analytics/widgets/ZeroResultsWidget'
 import { default as default_fbae18a1b95cdd13335fb245375b9f73 } from '@/payload/components/analytics/widgets/WebsiteClicksWidget'
@@ -85,6 +86,7 @@ export const importMap = {
   "@/payload/components/AnalyticsView#default": default_c5dffe636895d753138026b95fe2f960,
   "@/payload/components/analytics/widgets/TotalUsersWidget#default": default_89b0fc1c15499fa299fab63bf28229b4,
   "@/payload/components/analytics/widgets/SearchesWidget#default": default_f8df26be7e7afb6ec18139b4a17451c4,
+  "@/payload/components/analytics/widgets/AnalyticsAverageSerachesWidget#default": default_63e5b605e54fd69aab31fee4d094a24c,
   "@/payload/components/analytics/widgets/ResourceViewsWidget#default": default_340cec3ca5bd6af056111595c6a6de39,
   "@/payload/components/analytics/widgets/ZeroResultsWidget#default": default_543e87190703f0fc451b5ed80bd5d2b2,
   "@/payload/components/analytics/widgets/WebsiteClicksWidget#default": default_fbae18a1b95cdd13335fb245375b9f73,

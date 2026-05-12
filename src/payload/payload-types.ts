@@ -229,6 +229,7 @@ export interface Config {
   widgets: {
     'analytics-total-users': AnalyticsTotalUsersWidget;
     'analytics-searches': AnalyticsSearchesWidget;
+    'analytics-average-searches': AnalyticsAverageSearchesWidget;
     'analytics-resource-views': AnalyticsResourceViewsWidget;
     'analytics-zero-results': AnalyticsZeroResultsWidget;
     'analytics-website-clicks': AnalyticsWebsiteClicksWidget;
@@ -1771,6 +1772,16 @@ export interface AnalyticsTotalUsersWidget {
  * via the `definition` "analytics-searches_widget".
  */
 export interface AnalyticsSearchesWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-average-searches_widget".
+ */
+export interface AnalyticsAverageSearchesWidget {
   data?: {
     [k: string]: unknown;
   };
