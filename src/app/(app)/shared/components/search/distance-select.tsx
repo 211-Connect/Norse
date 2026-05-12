@@ -2,6 +2,7 @@
 
 import { deleteCookie, setCookie } from 'cookies-next/client';
 import { useAtomValue, useSetAtom } from 'jotai';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useAppConfig } from '../../hooks/use-app-config';
@@ -37,10 +38,20 @@ export function DistanceSelect({ className = '' }: DistanceSelectProps) {
   const setSearch = useSetAtom(searchAtom);
   const coords = useAtomValue(searchCoordinatesAtom);
   const distance = useAtomValue(searchDistanceAtom);
+  const radiusOptions = useMemo(() => {
+    const configuredRadiusOptions =
+      appConfig?.search?.radiusOptions
+        ?.map((option) => option.value)
+        .filter((value): value is number => typeof value === 'number') ?? [];
+
+    return configuredRadiusOptions.length > 0
+      ? configuredRadiusOptions
+      : [15, 30, 45];
+  }, [appConfig?.search?.radiusOptions]);
 
   const hasLocation = coords?.length == 2;
 
-  const setDistance = (value) => {
+  const setDistance = (value: string) => {
     if (value === '0') {
       deleteCookie(USER_PREF_DISTANCE, { path: '/' });
     } else {
@@ -75,20 +86,11 @@ export function DistanceSelect({ className = '' }: DistanceSelectProps) {
         <SelectContent>
           <SelectGroup>
             <SelectItem value="0">{t('search.any')}</SelectItem>
-            {appConfig?.search?.radiusOptions?.length > 0 ? (
-              appConfig?.search?.radiusOptions?.map((el: any) => (
-                <SelectItem
-                  key={el.value.toString()}
-                  value={el.value.toString()}
-                >{`${el.value} ${t('search.miles')}`}</SelectItem>
-              ))
-            ) : (
-              <>
-                <SelectItem value="15">{`15 ${t('search.miles')}`}</SelectItem>
-                <SelectItem value="30">{`30 ${t('search.miles')}`}</SelectItem>
-                <SelectItem value="45">{`45 ${t('search.miles')}`}</SelectItem>
-              </>
-            )}
+            {radiusOptions.map((radius) => (
+              <SelectItem key={radius} value={radius.toString()}>
+                {`${radius} ${t('search.miles')}`}
+              </SelectItem>
+            ))}
           </SelectGroup>
         </SelectContent>
       </Select>

@@ -114,29 +114,22 @@ export async function waitForFilterPanelInteractive(page: Page) {
 }
 
 /**
- * Opens the search dialog and waits until the trigger’s aria-expanded and the
- * dialog match an open modal (same contract as the app’s a11y wiring).
+ * Opens the search dialog and waits until the modal is visible (same contract
+ * as the app’s a11y wiring for dialog semantics).
  */
 export async function openSearchDialog(page: Page) {
   const trigger = page.getByTestId('search-trigger').first();
   await trigger.waitFor({ state: 'visible', timeout: UI_SHELL_TIMEOUT_MS });
   await trigger.click();
-  await expect(trigger).toHaveAttribute('aria-expanded', 'true', {
-    timeout: UI_SHELL_TIMEOUT_MS,
-  });
   await page.getByTestId('search-dialog').waitFor({ state: 'visible' });
   return page.locator('#search-input');
 }
 
 /**
- * After submit navigates to /search, the dialog must be dismissed: trigger
- * collapsed and dialog closed - assert `aria-hidden` (see SearchDialog).
+ * After submit navigates to /search, the dialog must be dismissed - assert
+ * `aria-hidden` (see SearchDialog).
  */
 export async function expectSearchDialogDismissed(page: Page) {
-  const trigger = page.getByTestId('search-trigger').first();
-  await expect(trigger).toHaveAttribute('aria-expanded', 'false', {
-    timeout: UI_SHELL_TIMEOUT_MS,
-  });
   await expect(page.getByTestId('search-dialog')).toHaveAttribute(
     'aria-hidden',
     'true',

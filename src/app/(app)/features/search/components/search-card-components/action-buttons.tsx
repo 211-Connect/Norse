@@ -25,11 +25,11 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center">
+      <div className="grid w-full grid-cols-1 gap-2 lg:grid-cols-3">
         {result.phone ? (
           <ReferralButton
             asChild
-            className="flex-1 gap-1 overflow-hidden"
+            className="w-full gap-1 overflow-hidden"
             size="sm"
             referralType="call_referral"
             resourceId={result.id}
@@ -46,7 +46,7 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
           </ReferralButton>
         ) : (
           <ReferralButton
-            className="flex-1 gap-1 overflow-hidden"
+            className="w-full gap-1 overflow-hidden"
             size="sm"
             disabled
             referralType="call_referral"
@@ -62,7 +62,7 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
         {result.website ? (
           <ReferralButton
             asChild
-            className="flex-1 gap-1 overflow-hidden"
+            className="w-full gap-1 overflow-hidden"
             referralType="website_referral"
             size="sm"
             resourceId={result.id}
@@ -81,7 +81,7 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
           </ReferralButton>
         ) : (
           <ReferralButton
-            className="flex-1 gap-1 overflow-hidden"
+            className="w-full gap-1 overflow-hidden"
             referralType="website_referral"
             size="sm"
             resourceId={result.id}

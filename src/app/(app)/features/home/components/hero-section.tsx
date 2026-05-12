@@ -15,7 +15,7 @@ type TourPositionPreference = 'above' | 'below';
 
 export function HeroSection() {
   const appConfig = useAppConfig();
-  const { isOpen, setCurrentStep, setIsOpen, setSteps } = useTour();
+  const { setCurrentStep, setIsOpen, setSteps } = useTour();
   const { t } = useTranslation('page-home');
   const showHomePageTour = useFlag('showHomePageTour');
   const homeSearchTriggerRef = useRef<HTMLButtonElement | null>(null);
@@ -196,7 +196,6 @@ export function HeroSection() {
           variant="outline"
           aria-label={takeTourLabel}
           aria-controls="home-page-tour-dialog"
-          aria-expanded={isOpen ?? false}
           aria-haspopup="dialog"
           data-home-tour-trigger="true"
           className="border-foreground/40 bg-background text-foreground shadow-sm hover:bg-primary hover:text-primary-foreground focus-visible:border-foreground focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-4"

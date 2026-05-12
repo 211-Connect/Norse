@@ -31,10 +31,12 @@ import { useTranslation } from 'react-i18next';
 import { useUncontrolled } from '@/app/(app)/shared/hooks/use-uncontrolled';
 import { cn } from '@/app/(app)/shared/lib/utils';
 
+import { useAppConfig } from '../../hooks/use-app-config';
 import { useOnPointerDownOutside } from '../../hooks/use-on-pointer-down-outside';
 import { Badge } from './badge';
 import { Button } from './button';
 import { Input, InputProps } from './input';
+import { SELECT_INTERACTIVE_ACTIVE_CLASSNAME } from './select';
 import { Separator } from './separator';
 import {
   Tooltip,
@@ -53,6 +55,9 @@ export type AutocompleteOption = {
 };
 
 type AutocompleteOptionWithIndex = AutocompleteOption & { index: number };
+
+const AUTOCOMPLETE_OPTION_ACTIVE_CLASSNAME =
+  SELECT_INTERACTIVE_ACTIVE_CLASSNAME;
 
 export type AutocompleteProps = {
   readerLabel: ReactNode;
@@ -130,6 +135,8 @@ export function Autocomplete(props: AutocompleteProps) {
 
   const { t } = useTranslation('common');
 
+  const appConfig = useAppConfig();
+
   const readerLabelId = useId();
   const fallbackInputId = useId();
   const effectiveInputId = inputProps?.id ?? fallbackInputId;
@@ -203,6 +210,14 @@ export function Autocomplete(props: AutocompleteProps) {
     whileElementsMounted: autoUpdate,
     strategy: positionBelowElementId ? 'fixed' : 'absolute',
   });
+
+  const listboxMaxHeight = useMemo(() => {
+    if (y == null) {
+      return 'calc(100vh - 8rem)';
+    }
+
+    return `calc(100vh - ${Math.max(0, Math.ceil(y) + 8)}px)`;
+  }, [y]);
 
   const selectedOption = useMemo(() => {
     return rest.options?.find((option) => option.value === value);
@@ -784,7 +799,7 @@ export function Autocomplete(props: AutocompleteProps) {
               top: y ?? 0,
               left: x ?? 0,
               width: referenceWidth ? `${referenceWidth}px` : undefined,
-              maxHeight: 'calc(100vh - 384px)',
+              maxHeight: listboxMaxHeight,
             }}
             onTouchStart={touchOnList}
             onMouseDown={touchOnList}
@@ -826,8 +841,12 @@ export function Autocomplete(props: AutocompleteProps) {
                           data-testid="autocomplete-option"
                           className={cn(
                             'flex cursor-pointer justify-between gap-2 px-3 py-2',
-                            currentIndex === option.index && 'bg-primary/5',
+                            currentIndex === option.index &&
+                              AUTOCOMPLETE_OPTION_ACTIVE_CLASSNAME,
                           )}
+                          style={{
+                            borderRadius: appConfig.brand.theme.borderRadius,
+                          }}
                           aria-selected={currentIndex === option.index}
                           onMouseEnter={handleOptionMouseEnter(option.index)}
                           onMouseLeave={handleOptionMouseExit()}
@@ -838,7 +857,14 @@ export function Autocomplete(props: AutocompleteProps) {
                             ) as unknown as MouseEventHandler
                           }
                         >
-                          <span className="flex items-center gap-2 text-xs font-medium text-primary">
+                          <span
+                            className={cn(
+                              'flex items-center gap-2 text-xs font-medium',
+                              currentIndex === option.index
+                                ? 'text-primary-foreground'
+                                : 'text-primary',
+                            )}
+                          >
                             {Icon === 'span' ? null : (
                               <Icon
                                 className="size-4 shrink-0"
@@ -868,7 +894,11 @@ export function Autocomplete(props: AutocompleteProps) {
                           {option.badge && (
                             <Badge
                               variant="outline"
-                              className="w-[100px] shrink-0 text-xs"
+                              className={cn(
+                                'w-[100px] shrink-0 text-xs',
+                                currentIndex === option.index &&
+                                  'border-primary-foreground/30 bg-primary-foreground/10 text-primary-foreground',
+                              )}
                             >
                               <p className="mx-auto truncate">{option.badge}</p>
                             </Badge>
