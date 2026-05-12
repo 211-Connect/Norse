@@ -3,7 +3,6 @@
 import { Send } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { Link } from '@/app/(app)/shared/components/link';
 import { Resource } from '@/types/resource';
 
 import { Datum } from '../datum';

@@ -1,7 +1,7 @@
 'use client';
 
 import { Button, toast, useField } from '@payloadcms/ui';
-import React, { useState } from 'react';
+import { FC, useState } from 'react';
 
 import { createLogger } from '@/lib/logger';
 
@@ -10,7 +10,7 @@ import { TranslateButton } from './TranslateButton';
 
 const log = createLogger('resource-directory-actions');
 
-const ResourceDirectoryActions: React.FC = () => {
+const ResourceDirectoryActions: FC = () => {
   const [isLoadingWebpage, setIsLoadingWebpage] = useState(false);
   const tenantId = useField({ path: 'tenant' }).value;
 

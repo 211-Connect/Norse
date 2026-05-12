@@ -1,6 +1,6 @@
 'use client';
 
-import { HeartOff, Loader2 } from 'lucide-react';
+import { HeartOff } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';

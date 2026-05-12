@@ -1,7 +1,7 @@
 'use client';
 
 import { type VariantProps, cva } from 'class-variance-authority';
-import * as React from 'react';
+import { forwardRef } from 'react';
 
 import { cn } from '../../lib/utils';
 import { LocalizedLink } from '../LocalizedLink';
@@ -94,7 +94,7 @@ export interface TypographyProps
   urlTarget?: '_blank' | '_self' | null;
 }
 
-const Typography = React.forwardRef<HTMLElement, TypographyProps>(
+const Typography = forwardRef<HTMLElement, TypographyProps>(
   (
     {
       className,

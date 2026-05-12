@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-html-link-for-pages */
 import Image from 'next/image';
-import React, { ReactNode } from 'react';
+import { Component, ReactNode } from 'react';
 
 import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import { fetchWrapper } from '@/app/(app)/shared/lib/fetchWrapper';
@@ -38,7 +38,7 @@ type State = {
   hasError: false;
 };
 
-class ErrorBoundary extends React.Component<Props, State> {
+class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
 

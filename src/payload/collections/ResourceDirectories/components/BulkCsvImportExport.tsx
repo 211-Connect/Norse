@@ -1,7 +1,7 @@
 'use client';
 
 import { Button, useField, useForm, useFormFields } from '@payloadcms/ui';
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import './BulkEditButtons.css';
 import {

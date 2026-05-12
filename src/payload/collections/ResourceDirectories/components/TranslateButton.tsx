@@ -1,7 +1,7 @@
 'use client';
 
 import { Button, toast, useModal } from '@payloadcms/ui';
-import React, { useState } from 'react';
+import { FC, useState } from 'react';
 
 import { createLogger } from '@/lib/logger';
 
@@ -14,9 +14,7 @@ interface TranslateButtonProps {
   tenantId: string;
 }
 
-export const TranslateButton: React.FC<TranslateButtonProps> = ({
-  tenantId,
-}) => {
+export const TranslateButton: FC<TranslateButtonProps> = ({ tenantId }) => {
   const [targetLocales, setTargetLocales] = useState<string[]>([]);
   const [isLoadingTranslate, setIsLoadingTranslate] = useState(false);
   const { openModal } = useModal();
