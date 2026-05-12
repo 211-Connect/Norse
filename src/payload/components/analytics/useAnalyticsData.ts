@@ -12,11 +12,13 @@ import {
   type EventsData,
   type MetricsData,
   type PathsData,
+  type SessionHeatmapData,
   type SessionsData,
   fetchEvents,
   fetchMetrics,
   fetchPageviews,
   fetchPaths,
+  fetchSessionHeatmap,
   fetchSessions,
   fetchStats,
 } from './analyticsCache';
@@ -24,6 +26,7 @@ import type { DateRange } from './types';
 import type { UmamiPageviews, UmamiStats } from './types';
 
 export type { MetricsData, PathsData, EventsData, SessionsData };
+export type { SessionHeatmapData };
 
 export type AsyncData<T> = {
   loading: boolean;
@@ -97,3 +100,5 @@ export const useMetrics = makeAsyncHook<MetricsData>(fetchMetrics);
 export const usePaths = makeAsyncHook<PathsData>(fetchPaths);
 export const useEvents = makeAsyncHook<EventsData>(fetchEvents);
 export const useSessions = makeAsyncHook<SessionsData>(fetchSessions);
+export const useSessionHeatmap =
+  makeAsyncHook<SessionHeatmapData>(fetchSessionHeatmap);

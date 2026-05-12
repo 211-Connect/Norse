@@ -8,10 +8,12 @@ import { geocodeSessions } from './geocodeSessions';
 import type {
   AnalyticsMetrics,
   DateRange,
+  HeatmapPoint,
   Metric,
   MetricEntry,
   MetricsExpandedEntry,
   UmamiPageviews,
+  UmamiSession,
   UmamiSessionResponse,
   UmamiStats,
 } from './types';
@@ -43,9 +45,11 @@ export type EventsData = {
 };
 
 export type SessionsData = {
-  heatmapPoints: ReturnType<typeof geocodeSessions> extends Promise<infer T>
-    ? T
-    : never;
+  sessions: UmamiSession[];
+};
+
+export type SessionHeatmapData = {
+  heatmapPoints: HeatmapPoint[];
 };
 
 const TTL_MS = 5 * 60 * 1000; // 5 minutes
@@ -413,7 +417,25 @@ export const fetchSessions = makeCachedFetch(
         websiteIds,
       ),
     );
-    const heatmapPoints = await geocodeSessions(data?.data ?? [], tenantId);
+    return { sessions: data?.data ?? [] };
+  },
+);
+
+export const fetchSessionHeatmap = makeCachedFetch(
+  new Map<string, CacheEntry<SessionHeatmapData>>(),
+  async ({ startAt, endAt }, tenantId, websiteIds) => {
+    const data = await fetchWrapper<UmamiSessionResponse>(
+      buildProxyQuery(
+        'sessions',
+        startAt,
+        endAt,
+        tenantId,
+        undefined,
+        websiteIds,
+      ),
+    );
+    const sessions = data?.data ?? [];
+    const heatmapPoints = await geocodeSessions(sessions, tenantId);
     return { heatmapPoints };
   },
 );

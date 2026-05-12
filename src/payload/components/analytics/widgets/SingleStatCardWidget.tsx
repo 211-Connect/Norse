@@ -18,7 +18,14 @@ type EventsSelector = (data: EventsData) => Metric | null;
 export type SingleStatCardWidgetProps =
   | { label: string; dataSource: 'stats'; selector: StatsSelector }
   | { label: string; dataSource: 'paths'; selector: PathsSelector }
-  | { label: string; dataSource: 'events'; selector: EventsSelector };
+  | { label: string; dataSource: 'events'; selector: EventsSelector }
+  | {
+      label: string;
+      dataSource: 'custom';
+      useData: () => AsyncData<unknown>;
+      selector: (data: unknown) => Metric | null;
+      formatValue?: (value: number) => string;
+    };
 
 function toTrend(current: number, previous: number): number | undefined {
   if (!previous) return undefined;
@@ -29,10 +36,12 @@ function StatCardFromData<T>({
   label,
   useData,
   selector,
+  formatValue,
 }: {
   label: string;
   useData: () => AsyncData<T>;
   selector: (data: T) => Metric | null;
+  formatValue?: (value: number) => string;
 }) {
   const { loading, error, data } = useData();
 
@@ -50,13 +59,26 @@ function StatCardFromData<T>({
   return (
     <StatCard
       label={label}
-      value={metric.current.toLocaleString()}
+      value={
+        formatValue
+          ? formatValue(metric.current)
+          : metric.current.toLocaleString()
+      }
       trend={toTrend(metric.current, metric.previous)}
     />
   );
 }
 
 export function SingleStatCardWidget(props: SingleStatCardWidgetProps) {
+  if (props.dataSource === 'custom')
+    return (
+      <StatCardFromData
+        label={props.label}
+        useData={props.useData}
+        selector={props.selector}
+        formatValue={props.formatValue}
+      />
+    );
   if (props.dataSource === 'stats')
     return (
       <StatCardFromData

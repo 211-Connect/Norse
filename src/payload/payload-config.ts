@@ -124,6 +124,13 @@ const config = buildConfig({
           maxWidth: 'full',
         },
         {
+          slug: 'analytics-average-searches',
+          Component:
+            '@/payload/components/analytics/widgets/AnalyticsAverageSerachesWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
           slug: 'analytics-resource-views',
           Component:
             '@/payload/components/analytics/widgets/ResourceViewsWidget#default',
