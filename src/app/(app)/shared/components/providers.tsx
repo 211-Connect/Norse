@@ -28,7 +28,7 @@ export function Providers({ appConfig, children, session }) {
                 height={2}
                 crawlSpeed={25}
                 speed={100}
-                template='<div class="bar" role="bar" aria-hidden="true"><div class="peg"></div></div>'
+                template='<div class="bar" role="bar" aria-hidden="true" data-testid="toploader-bar"><div class="peg"></div></div>'
               />
               <PageView />
               {children}
