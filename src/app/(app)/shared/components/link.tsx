@@ -1,7 +1,7 @@
 'use client';
 
 import { LinkProps as NextLinkProps } from 'next/link';
-import * as React from 'react';
+import { forwardRef } from 'react';
 
 import { createLinkEvent } from '@/app/(app)/shared/lib/google-tag-manager';
 
@@ -13,7 +13,7 @@ export interface LinkProps extends NextLinkProps {
   target?: string;
   tabIndex?: number;
 }
-const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
+const Link = forwardRef<HTMLAnchorElement, LinkProps>(
   ({ children, ...props }, ref) => {
     const handleLink = (e: any) => {
       createLinkEvent(e);

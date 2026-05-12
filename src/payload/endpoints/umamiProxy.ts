@@ -237,7 +237,7 @@ export const umamiProxy: Endpoint = {
         id: tenantId,
         overrideAccess: true,
       });
-    } catch (err) {
+    } catch {
       console.warn(`[umamiProxy] Failed to look up tenant "${tenantId}".`);
       return Response.json({ error: 'Tenant not found.' }, { status: 404 });
     }

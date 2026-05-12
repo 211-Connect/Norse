@@ -98,7 +98,7 @@ function transformSearchHits(
   });
 }
 
-function extractFilters(data: SearchApiResponse, locale: string): FiltersMap {
+function extractFilters(data: SearchApiResponse, _locale: string): FiltersMap {
   const facets: SearchFacet[] = data?.facets ?? [];
   return Object.fromEntries(
     facets

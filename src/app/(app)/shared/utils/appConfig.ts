@@ -13,7 +13,6 @@ import { AppConfig } from '@/types/appConfig';
 
 import { DEFAULT_RESOURCE_LAYOUT } from '../../features/resource/types/layout-config';
 import { DEFAULT_SEARCH_CARD_LAYOUT } from '../../features/search/types/card-layout-config';
-import initTranslations from '../i18n/i18n';
 import { SESSION_ID } from '../lib/constants';
 import { DEFAULT_BADGE_COLOR } from '../theme/theme-config';
 import { getHost } from './getHost';

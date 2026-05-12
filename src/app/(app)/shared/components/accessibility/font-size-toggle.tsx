@@ -1,7 +1,7 @@
 'use client';
 
 import { ToggleGroup, ToggleGroupItem } from '@radix-ui/react-toggle-group';
-import { deleteCookie, getCookie, setCookie } from 'cookies-next';
+import { deleteCookie, setCookie } from 'cookies-next';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { useEffect } from 'react';
 

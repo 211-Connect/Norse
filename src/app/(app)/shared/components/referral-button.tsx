@@ -1,7 +1,6 @@
 'use client';
 
-import * as React from 'react';
-import { ReactNode } from 'react';
+import { ReactNode, forwardRef } from 'react';
 
 import { useAppConfig } from '../hooks/use-app-config';
 import { useClientSearchParams } from '../hooks/use-client-search-params';
@@ -19,7 +18,7 @@ type Props = {
   children?: ReactNode;
 };
 
-export const ReferralButton = React.forwardRef<
+export const ReferralButton = forwardRef<
   HTMLButtonElement,
   Props & ButtonProps
 >(function ReferralButton(

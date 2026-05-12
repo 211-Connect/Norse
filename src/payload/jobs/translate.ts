@@ -4,7 +4,7 @@ import { retry } from 'radash';
 import { createLogger } from '@/lib/logger';
 
 import { assertValidLocale } from '../i18n/locales';
-import { OrchestrationConfig, ResourceDirectory } from '../payload-types';
+import { ResourceDirectory } from '../payload-types';
 import {
   TranslationEngine,
   batchTranslate,

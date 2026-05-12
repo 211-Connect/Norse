@@ -1,10 +1,10 @@
 'use client';
 
-import React from 'react';
+import { FC } from 'react';
 
 import './CachingAlert.css';
 
-const CachingAlert: React.FC = () => {
+const CachingAlert: FC = () => {
   return (
     <div className="caching-alert">
       <div className="caching-alert-icon">ℹ️</div>

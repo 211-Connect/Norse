@@ -1,7 +1,7 @@
 'use client';
 
 import { Button, Modal, toast, useModal } from '@payloadcms/ui';
-import React, { useState } from 'react';
+import { FC, useState } from 'react';
 
 import { fetchWrapper } from '@/app/(app)/shared/lib/fetchWrapper';
 import { withOptionalCustomBasePath } from '@/app/(app)/shared/lib/utils';
@@ -15,7 +15,7 @@ interface TranslateModalProps {
   availableLocales: string[];
 }
 
-export const TranslateModal: React.FC<TranslateModalProps> = ({
+export const TranslateModal: FC<TranslateModalProps> = ({
   resourceDirectoryId,
   availableLocales,
 }) => {

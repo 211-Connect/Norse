@@ -8,10 +8,7 @@ import { findTenantById } from '../../Tenants/actions';
 
 const log = createLogger('revalidateCache');
 
-export async function revalidateCache({
-  doc,
-  req,
-}): Promise<ResourceDirectory> {
+export async function revalidateCache({ doc }): Promise<ResourceDirectory> {
   const tenantId = doc.tenant;
 
   if (typeof tenantId === 'string') {

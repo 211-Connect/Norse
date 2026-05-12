@@ -1,7 +1,7 @@
 'use client';
 
 import { type VariantProps, cva } from 'class-variance-authority';
-import * as React from 'react';
+import { forwardRef } from 'react';
 
 import { cn } from '../../lib/utils';
 import { LocalizedLink } from '../LocalizedLink';
@@ -88,20 +88,18 @@ export interface TypographyProps
   extends
     React.HTMLAttributes<HTMLElement>,
     VariantProps<typeof typographyVariants> {
-  asChild?: boolean;
   as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span' | 'div' | 'label';
   url?: string | null;
   urlTarget?: '_blank' | '_self' | null;
 }
 
-const Typography = React.forwardRef<HTMLElement, TypographyProps>(
+const Typography = forwardRef<HTMLElement, TypographyProps>(
   (
     {
       className,
       variant,
       size,
       textColor,
-      asChild = false,
       as,
       children,
       url,

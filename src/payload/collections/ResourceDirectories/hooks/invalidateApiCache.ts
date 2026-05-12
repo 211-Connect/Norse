@@ -3,10 +3,7 @@ import { ResourceDirectory } from '@/payload/payload-types';
 
 const log = createLogger('invalidateApiCache');
 
-export async function invalidateApiCache({
-  doc,
-  req,
-}): Promise<ResourceDirectory> {
+export async function invalidateApiCache({ doc }): Promise<ResourceDirectory> {
   const tenantId = doc.tenantId || doc.id;
 
   log.debug({ tenantId }, 'Invalidating API cache for tenant');

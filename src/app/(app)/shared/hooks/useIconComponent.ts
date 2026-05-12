@@ -1,5 +1,5 @@
 import { type LucideIcon } from 'lucide-react';
-import * as React from 'react';
+import { useMemo } from 'react';
 
 import { createLogger } from '@/lib/logger';
 import {
@@ -19,7 +19,7 @@ const log = createLogger('useIconComponent');
 export function useIconComponent(
   iconName: string | null | undefined,
 ): LucideIcon | null {
-  return React.useMemo(() => {
+  return useMemo(() => {
     if (!iconName) {
       return null;
     }

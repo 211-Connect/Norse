@@ -1,5 +1,4 @@
-import NextAuth, { TokenSet } from 'next-auth';
-import { JWT } from 'next-auth/jwt';
+import { TokenSet } from 'next-auth';
 
 declare module 'next-auth' {
   export interface Session {

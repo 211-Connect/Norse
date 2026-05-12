@@ -55,7 +55,7 @@ const Category = ({
           </h3>
 
           <ul className="space-y-1" aria-label={name}>
-            {subtopics.map((el, index) => {
+            {subtopics.map((el) => {
               const opensInNewTab = el.target === '_blank' && !!el.href;
 
               return (

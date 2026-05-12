@@ -2,14 +2,14 @@
 
 import { Button, toast, useAuth, useDocumentInfo } from '@payloadcms/ui';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import { FC, useState } from 'react';
 
 import { fetchWrapper } from '@/app/(app)/shared/lib/fetchWrapper';
 import { createLogger } from '@/lib/logger';
 
 const log = createLogger('tenant-actions');
 
-const TenantActions: React.FC = () => {
+const TenantActions: FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { id } = useDocumentInfo();
   const { user } = useAuth();

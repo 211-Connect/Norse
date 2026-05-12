@@ -2,13 +2,13 @@
 
 import { Table } from '@payloadcms/ui';
 import type { Column } from 'payload';
-import React from 'react';
+import { memo } from 'react';
 
 import type { MetricEntry } from './types';
 
 type Row = MetricEntry;
 
-export const MetricsTable = React.memo(function MetricsTable({
+export const MetricsTable = memo(function MetricsTable({
   colLabel,
   colValue,
   rows,
