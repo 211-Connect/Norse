@@ -1,8 +1,6 @@
 'use client';
 
-import React from 'react';
-
-import { usePageviews, usePaths } from '../useAnalyticsData';
+import { usePaths, useSessions } from '../useAnalyticsData';
 import { SingleStatCardWidget } from './SingleStatCardWidget';
 
 type AverageSearchesData = {
@@ -12,11 +10,10 @@ type AverageSearchesData = {
 
 function useAverageSearchesData() {
   const paths = usePaths();
-  const pageviews = usePageviews();
+  const sessions = useSessions();
 
   const currentSearchCount = paths.data?.searchCount ?? 0;
-  const currentSessionCount =
-    pageviews.data?.sessions?.reduce((sum, session) => sum + session.y, 0) ?? 0;
+  const currentSessionCount = sessions.data?.sessions?.length ?? 0;
 
   const data: AverageSearchesData = {
     current:
@@ -25,8 +22,8 @@ function useAverageSearchesData() {
   };
 
   return {
-    loading: paths.loading || pageviews.loading,
-    error: paths.error ?? pageviews.error,
+    loading: paths.loading || sessions.loading,
+    error: paths.error ?? sessions.error,
     data,
   };
 }
