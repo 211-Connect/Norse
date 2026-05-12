@@ -3,6 +3,7 @@ export enum UmamiEvent {
   DirectionClick = 'direction_click',
   PhoneClick = 'phone_click',
   WebsiteClick = 'website_click',
+  SafeExitClick = 'safe_exit_click',
   WidgetSearch = 'widget_search',
   SearchTaxonomy = 'search_taxonomy',
   SearchText = 'search_text',
