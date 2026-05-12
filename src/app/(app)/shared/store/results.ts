@@ -23,7 +23,7 @@ export type ResultType = {
   onRemoveFromList?: (listId: string, favoriteId: string) => void;
 };
 
-export const resultsAtom = atom<ResultType[]>([]);
+export const resultsAtom = atom<ResultType[] | null>(null);
 export const resultTotalAtom = atom(0);
 export const resultsCurrentPageAtom = atom<number>(0);
 
