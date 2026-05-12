@@ -24,7 +24,7 @@ import {
   MAIN_CONTENT_ID,
   NEW_TAB_WARNING,
 } from '../lib/constants';
-import { trackUmamiEvent, UmamiEvent } from '../lib/umami';
+import { UmamiEvent, trackUmamiEvent } from '../lib/umami';
 import { cn, withOptionalTrailingSlash } from '../lib/utils';
 import { dialogsAtom } from '../store/dialogs';
 import { FontSizeToggle } from './accessibility/font-size-toggle';
