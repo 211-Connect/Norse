@@ -241,6 +241,7 @@ export interface Config {
     'analytics-map': AnalyticsMapWidget;
     'analytics-resource-titles': AnalyticsResourceTitlesWidget;
     'analytics-search-queries': AnalyticsSearchQueriesWidget;
+    'analytics-session-quality': AnalyticsSessionQualityWidget;
     collections: CollectionsWidget;
   };
   user: User;
@@ -1896,6 +1897,16 @@ export interface AnalyticsSearchQueriesWidget {
     [k: string]: unknown;
   };
   width: 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-session-quality_widget".
+ */
+export interface AnalyticsSessionQualityWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
