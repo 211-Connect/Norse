@@ -94,6 +94,7 @@ const config = buildConfig({
       afterNavLinks: ['@/payload/components/ClearCacheButton'],
     },
   },
+  serverURL: process.env.PAYLOAD_SERVER_URL || 'http://localhost:3000',
   secret: process.env.PAYLOAD_SECRET as string,
   email: nodemailerAdapter({
     defaultFromAddress: 'support@connect211.com',

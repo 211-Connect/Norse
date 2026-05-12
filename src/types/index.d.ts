@@ -27,6 +27,7 @@ declare global {
       // Payload
       PAYLOAD_API_ROUTE_SECRET?: string;
       PAYLOAD_SECRET?: string;
+      PAYLOAD_SERVER_URL?: string;
       DATABASE_URI?: string;
       MEDIA_S3_BUCKET?: string;
       MEDIA_S3_ACCESS_KEY_ID?: string;
