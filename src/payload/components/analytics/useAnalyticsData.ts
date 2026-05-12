@@ -100,6 +100,5 @@ export const useMetrics = makeAsyncHook<MetricsData>(fetchMetrics);
 export const usePaths = makeAsyncHook<PathsData>(fetchPaths);
 export const useEvents = makeAsyncHook<EventsData>(fetchEvents);
 export const useSessions = makeAsyncHook<SessionsData>(fetchSessions);
-export const useSessionHeatmap = makeAsyncHook<SessionHeatmapData>(
-  fetchSessionHeatmap,
-);
+export const useSessionHeatmap =
+  makeAsyncHook<SessionHeatmapData>(fetchSessionHeatmap);
