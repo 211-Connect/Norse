@@ -214,6 +214,13 @@ const config = buildConfig({
           minWidth: 'x-small',
           maxWidth: 'full',
         },
+        {
+          slug: 'analytics-safe-exit-clicks',
+          Component:
+            '@/payload/components/analytics/widgets/SafeExitClicksWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
       ],
       defaultLayout: [{ widgetSlug: 'collections', width: 'full' as const }],
     },
