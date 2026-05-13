@@ -48,9 +48,9 @@ function toMetricEntries(
       y: Number(row.total) || 0,
     }))
     .filter((row) => row.x.length > 0 && row.y > 0)
-    .sort((a, b) => b.y - a.y)
-    .slice(0, 25);
+    .sort((a, b) => b.y - a.y);
 }
+
 function normalizeWebsiteIds(websiteIds: string[] | undefined): string {
   if (!websiteIds || websiteIds.length === 0) return '';
   return [...websiteIds].sort().join(',');
