@@ -1,13 +1,16 @@
 'use client';
 
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Eraser } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { CardLayoutRenderer } from '@/app/(app)/features/search/components/card-layout-renderer';
 import { SearchCardLayoutConfig } from '@/app/(app)/features/search/types/card-layout-config';
 import { Link } from '@/app/(app)/shared/components/link';
-import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
+import {
+  Button,
+  buttonVariants,
+} from '@/app/(app)/shared/components/ui/button';
 import {
   Card,
   CardContent,
@@ -25,6 +28,7 @@ import {
   RemoveFromListHandler,
   resourceToLocalFavoriteResult,
 } from '../utils/favorite-result-transformers';
+import { PurgeConfirmDialog } from './purge-confirm-dialog';
 
 type LocalFavoritesSectionProps = {
   cardLayout: SearchCardLayoutConfig;
@@ -38,10 +42,15 @@ export function LocalFavoritesSection({
   tenantId,
 }: LocalFavoritesSectionProps) {
   const { t } = useTranslation('page-list');
-  const { localFavoriteIds, removeLocalFavorite, isLocalFavorite } =
-    useLocalFavorites();
+  const {
+    localFavoriteIds,
+    removeLocalFavorite,
+    isLocalFavorite,
+    clearLocalFavorites,
+  } = useLocalFavorites();
   const [resources, setResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(true);
+  const [clearConfirmOpen, setClearConfirmOpen] = useState(false);
   const componentToPrint = useRef<HTMLDivElement>(null);
 
   // Fetch resources whenever the stored IDs change
@@ -82,15 +91,8 @@ export function LocalFavoritesSection({
     <div className="flex w-full flex-col p-6 lg:max-w-[550px] lg:pl-[20px]">
       <Card className="rounded-none border-none bg-transparent p-0 shadow-none">
         <CardHeader>
-          <CardTitle>
-            {t('local_list.title', { defaultValue: 'My Saved Resources' })}
-          </CardTitle>
-          <CardDescription>
-            {t('local_list.description', {
-              defaultValue:
-                'Resources you save here are stored in your browser. Sign in to keep them across devices.',
-            })}
-          </CardDescription>
+          <CardTitle>{t('local_list.title')}</CardTitle>
+          <CardDescription>{t('local_list.description')}</CardDescription>
         </CardHeader>
       </Card>
 
@@ -104,31 +106,44 @@ export function LocalFavoritesSection({
           data-testid="back-to-home"
         >
           <ChevronLeft className="size-4" />
-          {t('back_to_home', { defaultValue: 'Back to Home' })}
+          {t('back_to_home')}
         </Link>
+
+        {results.length > 0 && (
+          <Button
+            variant="outline"
+            className="gap-2"
+            onClick={() => setClearConfirmOpen(true)}
+            data-testid="purge-local-list-btn"
+          >
+            <Eraser className="size-4" />
+            {t('purge_list.label')}
+          </Button>
+        )}
       </div>
+
+      <PurgeConfirmDialog
+        open={clearConfirmOpen}
+        onOpenChange={setClearConfirmOpen}
+        onConfirm={() => {
+          clearLocalFavorites();
+          setResources([]);
+          setClearConfirmOpen(false);
+        }}
+      />
 
       {loading && localFavoriteIds.length > 0 && (
         <div className="mt-4 text-sm text-muted-foreground">
-          {t('local_list.loading', {
-            defaultValue: 'Loading saved resources…',
-          })}
+          {t('local_list.loading')}
         </div>
       )}
 
       {!loading && results.length === 0 && (
         <Card className="mt-4">
           <CardContent className="flex flex-col items-center gap-2 py-8 text-center">
-            <p className="font-semibold">
-              {t('local_list.empty_title', {
-                defaultValue: 'No saved resources yet',
-              })}
-            </p>
+            <p className="font-semibold">{t('local_list.empty_title')}</p>
             <p className="text-sm text-muted-foreground">
-              {t('local_list.empty_description', {
-                defaultValue:
-                  'Click the heart icon on any resource to add it here. Your selections are saved in this browser.',
-              })}
+              {t('local_list.empty_description')}
             </p>
           </CardContent>
         </Card>

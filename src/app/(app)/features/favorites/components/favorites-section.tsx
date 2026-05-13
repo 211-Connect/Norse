@@ -10,12 +10,6 @@ import { Link } from '@/app/(app)/shared/components/link';
 import { ShareButton } from '@/app/(app)/shared/components/share-button';
 import { Badge } from '@/app/(app)/shared/components/ui/badge';
 import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/app/(app)/shared/components/ui/card';
 import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
 import { cn, withOptionalTrailingSlash } from '@/app/(app)/shared/lib/utils';
 import { favoriteListWithFavoritesAtom } from '@/app/(app)/shared/store/favorites';
@@ -24,6 +18,7 @@ import { fontSans } from '@/app/(app)/shared/styles/fonts';
 import { DeleteFavoriteListButton } from './delete-favorite-list-button';
 import { Favorite } from './favorite';
 import { NoFavoritesCard } from './no-favorites-card';
+import { PurgeFavoriteListButton } from './purge-favorite-list-button';
 import { UpdateFavoriteListButton } from './update-favorite-list-button';
 
 type FavoritesSectionProps = {
@@ -47,43 +42,15 @@ export function FavoritesSection({ cardLayout }: FavoritesSectionProps) {
     }));
   };
 
+  const handlePurge = () => {
+    setFavoriteList((prev) => ({ ...prev, favorites: [] }));
+  };
+
   return (
     <div className="flex w-full flex-col p-[10px] lg:max-w-[550px] lg:pl-[20px]">
-      <Card className="rounded-none border-none bg-transparent p-0 shadow-none">
-        <CardHeader>
-          <div className="flex items-center justify-between print:hidden">
-            <Badge variant="outline" className="bg-white">
-              {t(`list.${favoriteList?.privacy?.toLowerCase()}`, {
-                ns: 'common',
-              })}
-            </Badge>
-
-            <div className="flex gap-2">
-              <UpdateFavoriteListButton
-                id={favoriteList.id}
-                name={favoriteList.name}
-                description={favoriteList.description}
-                privacy={favoriteList.privacy}
-              />
-
-              <DeleteFavoriteListButton
-                id={favoriteList.id}
-                name={favoriteList.name}
-              />
-            </div>
-          </div>
-          <CardTitle>{favoriteList.name}</CardTitle>
-          <CardDescription>{favoriteList.description}</CardDescription>
-        </CardHeader>
-      </Card>
-
-      <div
-        className={cn(
-          'mt-2 flex items-center print:hidden',
-          !favoriteList.viewingAsOwner ? 'justify-end' : 'justify-between',
-        )}
-      >
-        {favoriteList.viewingAsOwner && (
+      {/* Row 1: navigation + list actions */}
+      <div className="flex items-center justify-between print:hidden">
+        {favoriteList.viewingAsOwner ? (
           <Link
             className={cn(
               buttonVariants({ variant: 'outline' }),
@@ -97,16 +64,55 @@ export function FavoritesSection({ cardLayout }: FavoritesSectionProps) {
             <ChevronLeft className="size-4" />
             {t('back_to_favorites')}
           </Link>
+        ) : (
+          <span />
         )}
 
-        {favoriteList.privacy === 'PUBLIC' && (
+        <div className="flex items-center gap-2">
+          <UpdateFavoriteListButton
+            id={favoriteList.id}
+            name={favoriteList.name}
+            description={favoriteList.description}
+            privacy={favoriteList.privacy}
+          />
+
+          <PurgeFavoriteListButton id={favoriteList.id} onPurge={handlePurge} />
+
+          <DeleteFavoriteListButton
+            id={favoriteList.id}
+            name={favoriteList.name}
+          />
+        </div>
+      </div>
+
+      {/* Row 2: list name + privacy badge */}
+      <div className="mt-3 flex items-center gap-2">
+        <h1 className="text-2xl font-semibold leading-tight">
+          {favoriteList.name}
+        </h1>
+        <Badge variant="outline" className="bg-white">
+          {t(`list.${favoriteList?.privacy?.toLowerCase()}`, {
+            ns: 'common',
+          })}
+        </Badge>
+      </div>
+
+      {favoriteList.description && (
+        <p className="mt-1 text-sm text-muted-foreground">
+          {favoriteList.description}
+        </p>
+      )}
+
+      {/* Share button row (public lists only) */}
+      {favoriteList.privacy === 'PUBLIC' && (
+        <div className="mt-2 flex justify-end print:hidden">
           <ShareButton
             title={favoriteList.name}
             body={favoriteList.description}
             componentToPrintRef={componentToPrint}
           />
-        )}
-      </div>
+        </div>
+      )}
 
       <div
         className={cn('mt-2 flex flex-col gap-2 font-sans', fontSans.variable)}

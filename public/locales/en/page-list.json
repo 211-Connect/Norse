@@ -1,9 +1,25 @@
 {
   "meta_title": "Viewing list",
   "back_to_favorites": "Back to favorites",
+  "back_to_home": "Back to Home",
   "favorites": "Favorites",
   "no_favorites": {
     "title": "Nothing here yet :(",
     "subtitle": "Add some favorites on the search page to see them here"
+  },
+  "local_list": {
+    "title": "My Saved Resources",
+    "description": "Resources you save here are stored in your browser. Sign in to keep them across devices.",
+    "loading": "Loading saved resources\u2026",
+    "empty_title": "No saved resources yet",
+    "empty_description": "Click the heart icon on any resource to add it here. Your selections are saved in this browser."
+  },
+  "purge_list": {
+    "label": "Clear all",
+    "confirm_title": "Are you sure?",
+    "confirm_description": "This will remove all resources from the list. The list itself will remain.",
+    "cancel": "Cancel",
+    "success": "All favorites cleared",
+    "error": "Failed to clear favorites"
   }
 }
