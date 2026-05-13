@@ -53,6 +53,10 @@ export default async function FavoritesPage({
   );
 
   if (!session || session.error) {
+    if (appConfig.featureFlags.anonymousCollectionsEnabled) {
+      redirect(`/${locale}/favorites/local`);
+    }
+
     redirect(
       `/${locale}/auth/signin?redirect=${encodeURIComponent('/favorites')}`,
     );

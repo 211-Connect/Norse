@@ -5,6 +5,7 @@ import {
   AlignJustifyIcon,
   Heart,
   HomeIcon,
+  LogIn,
   LogOut,
   Search,
 } from 'lucide-react';
@@ -51,6 +52,9 @@ export function Header() {
   const session = useSession();
   const setDialogStore = useSetAtom(dialogsAtom);
   const [opened, { toggle }] = useDisclosure(false);
+
+  const anonymousCollectionsEnabled =
+    appConfig.featureFlags.anonymousCollectionsEnabled;
 
   const newLayoutEnabled = useMemo(
     () => appConfig?.newLayout?.enabled,
@@ -116,7 +120,7 @@ export function Header() {
   const sitemap = useMemo(
     () =>
       [
-        <li key="0">
+        <li key="item-home-0">
           <Link
             href={appConfig.header.customHomeUrl || '/'}
             aria-current={getAriaCurrent(appConfig.header.customHomeUrl || '/')}
@@ -131,7 +135,7 @@ export function Header() {
           </Link>
         </li>,
         appConfig.header?.searchUrl ? (
-          <li key="1">
+          <li key="item-search-1">
             <Link
               href={appConfig.header.searchUrl}
               aria-current={getAriaCurrent(appConfig.header.searchUrl)}
@@ -147,12 +151,12 @@ export function Header() {
           </li>
         ) : null,
         appConfig.accessibility.fontSize.allowedValues.length > 1 ? (
-          <li key="2" className="hidden h-full sm:flex">
+          <li key="item-font-size-2" className="hidden h-full sm:flex">
             <FontSizeToggle />
           </li>
         ) : null,
         appConfig.featureFlags.showFeedbackButtonGlobal ? (
-          <li key="3">
+          <li key="item-feedback-3">
             <ReportButton
               customText={feedbackButtonLabel}
               className={newLayoutEnabled ? '!bg-white' : undefined}
@@ -184,8 +188,8 @@ export function Header() {
               </Link>
             </li>
           )),
-        <LanguageSwitcher key="5" />,
-        <li key="6">
+        <LanguageSwitcher key="item-language-5" />,
+        <li key="item-favorites-6">
           <Button
             className={cn(
               'flex items-center gap-[5px]',
@@ -195,17 +199,22 @@ export function Header() {
             data-testid="favorites-btn"
             onClick={(event) => {
               if (session.status === 'unauthenticated') {
-                const trigger = event.currentTarget as HTMLElement;
-                setTimeout(() => {
-                  setDialogStore((prev) => ({
-                    ...prev,
-                    promptAuth: {
-                      ...prev.promptAuth,
-                      open: true,
-                      returnFocusTo: trigger,
-                    },
-                  }));
-                });
+                if (anonymousCollectionsEnabled) {
+                  start();
+                  router.push(withOptionalTrailingSlash('/favorites/local'));
+                } else {
+                  const trigger = event.currentTarget as HTMLElement;
+                  setTimeout(() => {
+                    setDialogStore((prev) => ({
+                      ...prev,
+                      promptAuth: {
+                        ...prev.promptAuth,
+                        open: true,
+                        returnFocusTo: trigger,
+                      },
+                    }));
+                  });
+                }
               } else {
                 start();
                 router.push(withOptionalTrailingSlash('/favorites'));
@@ -216,8 +225,29 @@ export function Header() {
             {favoritesButtonLabel}
           </Button>
         </li>,
+        anonymousCollectionsEnabled && session.status === 'unauthenticated' ? (
+          <li key="item-login-6">
+            <Button
+              className={cn(
+                'flex items-center gap-[5px]',
+                newLayoutEnabled && '!bg-white',
+              )}
+              variant="outline"
+              data-testid="header-sign-in-btn"
+              onClick={() => {
+                start();
+                router.push(
+                  withOptionalTrailingSlash('/auth/signin?redirect=/favorites'),
+                );
+              }}
+            >
+              <LogIn className="size-4" aria-hidden="true" />
+              {t('call_to_action.login')}
+            </Button>
+          </li>
+        ) : null,
         session.status === 'authenticated' ? (
-          <li key="7">
+          <li key="item-logout-7">
             <Button
               className={cn(
                 'flex items-center gap-[5px]',
@@ -235,7 +265,7 @@ export function Header() {
           </li>
         ) : null,
         appConfig.header.safeExit?.enabled ? (
-          <li key="8">
+          <li key="item-safe-exit-8">
             <Link
               target={appConfig.header.safeExit.target}
               href={appConfig.header.safeExit?.url ?? '#'}
@@ -271,6 +301,7 @@ export function Header() {
       feedbackButtonLabel,
       getAriaCurrent,
       session.status,
+      anonymousCollectionsEnabled,
       setDialogStore,
       router,
       start,
