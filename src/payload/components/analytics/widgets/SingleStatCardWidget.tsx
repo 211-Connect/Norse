@@ -3,10 +3,8 @@
 import { Banner, StaggeredShimmers } from '@payloadcms/ui';
 
 import { StatCard } from '../StatCard';
-import type { EventsData, PathsData } from '../analyticsCache';
-import type { UmamiStats } from '../types';
-import { useEvents, usePaths, useStats } from '../useAnalyticsData';
-import type { AsyncData } from '../useAnalyticsData';
+import { EventsData, PathsData, UmamiStats } from '../types';
+import { AsyncData, useEvents, usePaths, useStats } from '../useAnalyticsData';
 
 type Metric = { current: number; previous: number };
 
