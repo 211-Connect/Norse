@@ -47,6 +47,7 @@ import { default as default_ae2d726342a3a45563bf3152abfad607 } from '@/payload/c
 import { default as default_40e5d1b279d66a0c65b1a98e988971c4 } from '@/payload/components/analytics/widgets/AnalyticsMapWidget'
 import { default as default_98e4c30b1a18b3c28aae84e3179686a8 } from '@/payload/components/analytics/widgets/ResourceTitlesWidget'
 import { default as default_0ae513c5abfd52badf519fd932b469e9 } from '@/payload/components/analytics/widgets/SearchQueriesWidget'
+import { default as default_5b09f0601dd3ec05f01e8891f1fe392d } from '@/payload/components/analytics/widgets/ZeroResultQueriesWidget'
 import { default as default_dff8148f4762311d2641cb1e1929028b } from '@/payload/components/analytics/widgets/SessionQualityWidget'
 import { default as default_51bd228fe0b59c4ed5086ecb34d7183c } from '@/payload/components/analytics/widgets/SafeExitClicksWidget'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
@@ -102,6 +103,7 @@ export const importMap = {
   "@/payload/components/analytics/widgets/AnalyticsMapWidget#default": default_40e5d1b279d66a0c65b1a98e988971c4,
   "@/payload/components/analytics/widgets/ResourceTitlesWidget#default": default_98e4c30b1a18b3c28aae84e3179686a8,
   "@/payload/components/analytics/widgets/SearchQueriesWidget#default": default_0ae513c5abfd52badf519fd932b469e9,
+  "@/payload/components/analytics/widgets/ZeroResultQueriesWidget#default": default_5b09f0601dd3ec05f01e8891f1fe392d,
   "@/payload/components/analytics/widgets/SessionQualityWidget#default": default_dff8148f4762311d2641cb1e1929028b,
   "@/payload/components/analytics/widgets/SafeExitClicksWidget#default": default_51bd228fe0b59c4ed5086ecb34d7183c,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1

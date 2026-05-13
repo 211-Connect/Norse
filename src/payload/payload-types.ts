@@ -241,6 +241,7 @@ export interface Config {
     'analytics-map': AnalyticsMapWidget;
     'analytics-resource-titles': AnalyticsResourceTitlesWidget;
     'analytics-search-queries': AnalyticsSearchQueriesWidget;
+    'analytics-zero-result-queries': AnalyticsZeroResultQueriesWidget;
     'analytics-session-quality': AnalyticsSessionQualityWidget;
     'analytics-safe-exit-clicks': AnalyticsSafeExitClicksWidget;
     collections: CollectionsWidget;
@@ -1894,6 +1895,16 @@ export interface AnalyticsResourceTitlesWidget {
  * via the `definition` "analytics-search-queries_widget".
  */
 export interface AnalyticsSearchQueriesWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-zero-result-queries_widget".
+ */
+export interface AnalyticsZeroResultQueriesWidget {
   data?: {
     [k: string]: unknown;
   };

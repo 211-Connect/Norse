@@ -211,6 +211,13 @@ const config = buildConfig({
           maxWidth: 'full',
         },
         {
+          slug: 'analytics-zero-result-queries',
+          Component:
+            '@/payload/components/analytics/widgets/ZeroResultQueriesWidget#default',
+          minWidth: 'medium',
+          maxWidth: 'full',
+        },
+        {
           slug: 'analytics-session-quality',
           Component:
             '@/payload/components/analytics/widgets/SessionQualityWidget#default',
