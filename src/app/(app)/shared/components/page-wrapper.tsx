@@ -15,6 +15,7 @@ import { GoogleTagManagerScript } from './google-tag-manager-script';
 import { Header } from './header';
 import { JotaiHydration } from './jotai-hydration';
 import { MatomoTagManagerScript } from './matomo-tag-manager-script';
+import { SyncLocalFavoritesOnAuthEffect } from './sync-local-favorites-on-auth-effect';
 import { Toaster } from './ui/sonner';
 import { UmamiScript } from './umami-script';
 
@@ -44,6 +45,7 @@ export const PageWrapper = ({
       locale={translationData.locale}
       resources={translationData.resources}
     >
+      <SyncLocalFavoritesOnAuthEffect />
       <JotaiHydration cookies={cookies} pageProps={jotaiData} />
       <ErrorBoundary>
         <a
