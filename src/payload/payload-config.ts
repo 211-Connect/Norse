@@ -225,7 +225,6 @@ const config = buildConfig({
       defaultLayout: [{ widgetSlug: 'collections', width: 'full' as const }],
     },
   },
-  serverURL: process.env.PAYLOAD_SERVER_URL || 'http://localhost:3000',
   secret: process.env.PAYLOAD_SECRET as string,
   email: process.env.SENDGRID_API_KEY
     ? nodemailerAdapter({
