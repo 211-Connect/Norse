@@ -1,0 +1,32 @@
+'use server';
+
+import { getAuthHeaders } from '../../lib/authHeaders';
+import {
+  API_URL,
+  FAVORITES_LIST_ENDPOINT,
+  INTERNAL_API_KEY,
+} from '../../lib/constants';
+import { fetchWrapper } from '../../lib/fetchWrapper';
+
+export const purgeFavoriteList = async (
+  id: string,
+  tenantId?: string,
+): Promise<void | null> => {
+  const authHeaders = await getAuthHeaders(tenantId);
+
+  const searchParams = new URLSearchParams();
+  if (tenantId) {
+    searchParams.append('tenant_id', tenantId);
+  }
+
+  const url = `${API_URL}/${FAVORITES_LIST_ENDPOINT}/${id}/favorites${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
+  return fetchWrapper<void>(url, {
+    method: 'DELETE',
+    headers: {
+      ...authHeaders,
+      'x-api-version': '1',
+      'x-api-key': INTERNAL_API_KEY || '',
+    },
+    cache: 'no-store',
+  });
+};
