@@ -78,7 +78,7 @@ export default async function HomePage({ params }) {
 
             <HighlightsSection />
 
-            <CategoriesSection className="py-8" />
+            <CategoriesSection className="p-4 sm:p-8" />
 
             <DataProviders />
           </>
