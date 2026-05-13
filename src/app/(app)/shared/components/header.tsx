@@ -235,9 +235,15 @@ export function Header() {
               variant="outline"
               data-testid="header-sign-in-btn"
               onClick={() => {
+                const redirectTarget =
+                  typeof window !== 'undefined'
+                    ? `${window.location.pathname}${window.location.search}`
+                    : '/';
                 start();
                 router.push(
-                  withOptionalTrailingSlash('/auth/signin?redirect=/favorites'),
+                  withOptionalTrailingSlash(
+                    `/auth/signin?redirect=${encodeURIComponent(redirectTarget)}`,
+                  ),
                 );
               }}
             >
