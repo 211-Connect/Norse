@@ -81,13 +81,6 @@ export interface UmamiSessionResponse {
   data: UmamiSession[];
 }
 
-export interface UmamiEventRow {
-  id?: string;
-  createdAt?: string;
-  eventName?: string;
-  data?: Record<string, unknown>;
-}
-
 export interface UmamiEventDataValue {
   value: string;
   total: number;
