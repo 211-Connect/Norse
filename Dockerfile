@@ -2,7 +2,7 @@ FROM node:24-bookworm-slim AS base
 
 FROM base AS dependency-installer
 WORKDIR /opt/norse/deps
-COPY package*.json ./
+COPY package*.json .npmrc ./
 RUN npm ci && npm install --include=optional sharp@0.34.5
 
 FROM base AS builder
