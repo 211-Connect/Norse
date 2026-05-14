@@ -11,6 +11,7 @@ import { ResultsSection } from '@/app/(app)/features/search/components/results-s
 import { DEFAULT_SEARCH_CARD_LAYOUT } from '@/app/(app)/features/search/types/card-layout-config';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
+import { getServerDevice } from '@/app/(app)/shared/lib/get-server-device';
 import { isAdvancedGeoEnabled } from '@/app/(app)/shared/lib/search-utils';
 import { forwardGeocode } from '@/app/(app)/shared/serverActions/geocoding/forwardGeocode';
 import {
@@ -220,7 +221,7 @@ export default async function SearchPage({
 }) {
   const headersList = await headers();
   const nonce = headersList.get('x-nonce') ?? '';
-  const device = headersList.get('user-agent') ?? '';
+  const device = getServerDevice(headersList.get('user-agent') ?? '');
 
   const [paramsResult, searchParamsResult, cookieList] = await Promise.all([
     await params,
