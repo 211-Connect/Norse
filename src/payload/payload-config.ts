@@ -22,6 +22,7 @@ import { Users } from './collections/Users';
 import { isSuperAdmin, isSupport } from './collections/Users/access/roles';
 import { clearCache } from './endpoints/clearCache';
 import { duplicateTenant } from './endpoints/duplicateTenant';
+import { populateApiConfigCache } from './endpoints/populateApiConfigCache';
 import { translateEndpoint } from './endpoints/translate';
 import { umamiProxy } from './endpoints/umamiProxy';
 import { umamiWebsites } from './endpoints/umamiWebsites';
@@ -39,6 +40,7 @@ const dirname = path.dirname(filename);
 
 const endpoints: Endpoint[] = [
   clearCache,
+  populateApiConfigCache,
   translateEndpoint,
   duplicateTenant,
   umamiProxy,
@@ -97,6 +99,7 @@ const config = buildConfig({
     components: {
       afterNavLinks: [
         '@/payload/components/AnalyticsNavLink',
+        '@/payload/components/PopulateApiConfigCacheButton',
         '@/payload/components/ClearCacheButton',
       ],
       views: {

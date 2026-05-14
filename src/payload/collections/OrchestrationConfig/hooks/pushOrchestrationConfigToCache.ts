@@ -1,4 +1,4 @@
-import { CollectionAfterChangeHook } from 'payload';
+import { CollectionAfterChangeHook, PayloadRequest } from 'payload';
 
 import { apiConfigCacheService } from '@/cacheService';
 import { createLogger } from '@/lib/logger';
@@ -10,9 +10,11 @@ import { getOrchestrationConfigKey } from '../utilities/getOrchestrationConfigKe
 
 const log = createLogger('pushOrchestrationConfigToCache');
 
-export const pushOrchestrationConfigToCache: CollectionAfterChangeHook<
-  OrchestrationConfig
-> = async ({ doc, req }): Promise<OrchestrationConfig> => {
+export const pushOrchestrationConfigToCache = async (
+  doc: OrchestrationConfig,
+  req: PayloadRequest,
+  locale: string | undefined = req.locale,
+): Promise<OrchestrationConfig> => {
   const tenantId = typeof doc.tenant === 'string' ? doc.tenant : doc.tenant?.id;
 
   if (typeof tenantId !== 'string') {
@@ -41,7 +43,7 @@ export const pushOrchestrationConfigToCache: CollectionAfterChangeHook<
       tenantId,
       tenant.enabledLocales,
       doc,
-      req.locale,
+      locale,
     );
 
     if (!orchestrationConfigCache) {
@@ -71,3 +73,7 @@ export const pushOrchestrationConfigToCache: CollectionAfterChangeHook<
 
   return doc;
 };
+
+export const pushOrchestrationConfigToCacheAfterChangeHook: CollectionAfterChangeHook<
+  OrchestrationConfig
+> = ({ doc, req }) => pushOrchestrationConfigToCache(doc, req);

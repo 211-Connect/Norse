@@ -3,7 +3,7 @@ import type { CollectionConfig } from 'payload';
 import { invalidateApiCache } from '../ResourceDirectories/hooks/invalidateApiCache';
 import { setTenantIdAsId } from '../ResourceDirectories/hooks/setTenantIdAsId';
 import { superAdminAccess } from '../Users/access/roles';
-import { pushOrchestrationConfigToCache } from './hooks/pushOrchestrationConfigToCache';
+import { pushOrchestrationConfigToCacheAfterChangeHook } from './hooks/pushOrchestrationConfigToCache';
 import { schemas } from './tabs/schemas';
 
 export const OrchestrationConfig: CollectionConfig = {
@@ -25,7 +25,10 @@ export const OrchestrationConfig: CollectionConfig = {
   },
   hooks: {
     beforeChange: [setTenantIdAsId],
-    afterChange: [pushOrchestrationConfigToCache, invalidateApiCache],
+    afterChange: [
+      pushOrchestrationConfigToCacheAfterChangeHook,
+      invalidateApiCache,
+    ],
   },
   fields: [
     {
