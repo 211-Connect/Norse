@@ -1,5 +1,9 @@
 'use client';
 
+import { Map } from 'lucide-react';
+import { type MouseEvent, useId, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { ReferralButton } from '@/app/(app)/shared/components/referral-button';
 import { LocationSearchBar } from '@/app/(app)/shared/components/search/location-search-bar';
 import { Button } from '@/app/(app)/shared/components/ui/button';
@@ -10,11 +14,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/app/(app)/shared/components/ui/dialog';
-import { Map } from 'lucide-react';
-import { useId, useRef, useState, type MouseEvent } from 'react';
-import { useTranslation } from 'react-i18next';
+
+import { UmamiEvent, trackUmamiEvent } from '../lib/umami';
 import { cn } from '../lib/utils';
-import { trackUmamiEvent, UmamiEvent } from '../lib/umami';
 
 export function GetDirectionsButton({
   className = '',

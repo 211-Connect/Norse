@@ -1,6 +1,8 @@
 import { bboxPolygon } from '@turf/bbox-polygon';
 import type { Polygon } from 'geojson';
+
 import { BBox } from '@/types/resource';
+
 import { FindResourcesQuery } from '../services/search-service';
 
 /**

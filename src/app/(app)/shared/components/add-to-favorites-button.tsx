@@ -1,8 +1,9 @@
 'use client';
 
+import { useSetAtom } from 'jotai';
 import { Heart, HeartOff, Loader2, PlusIcon } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import { useSetAtom } from 'jotai';
+import Link from 'next/link';
 import {
   Fragment,
   type MouseEvent,
@@ -12,12 +13,23 @@ import {
   useRef,
   useState,
 } from 'react';
-import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
-import Link from 'next/link';
+import { toast } from 'sonner';
 
-import { Button } from './ui/button';
+import { FavoriteListState } from '@/types/favorites';
+
+import { useAppConfig } from '../hooks/use-app-config';
+import { FAVORITES_SEARCH_DEBOUNCE_DELAY } from '../lib/constants';
+import { cn, withOptionalTrailingSlash } from '../lib/utils';
+import { addToFavoriteList } from '../serverActions/favorites/addToFavoriteList';
+import { getFavoriteLists } from '../serverActions/favorites/getFavoriteLists';
+import { removeFavoriteFromList } from '../serverActions/favorites/removeFavoriteFromList';
+import { dialogsAtom } from '../store/dialogs';
+import { CreateFavoriteListDialog } from './create-favorite-list-dialog';
 import { CustomPagination } from './custom-pagination';
+import { FavoritesSearchBar } from './favorites-search-bar';
+import { Badge } from './ui/badge';
+import { Button } from './ui/button';
 import {
   Dialog,
   DialogContent,
@@ -25,19 +37,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from './ui/dialog';
-import { CreateFavoriteListDialog } from './create-favorite-list-dialog';
-import { FavoritesSearchBar } from './favorites-search-bar';
 import { Separator } from './ui/separator';
 import { Skeleton } from './ui/skeleton';
-import { Badge } from './ui/badge';
-import { dialogsAtom } from '../store/dialogs';
-import { cn, withOptionalTrailingSlash } from '../lib/utils';
-import { useAppConfig } from '../hooks/use-app-config';
-import { getFavoriteLists } from '../serverActions/favorites/getFavoriteLists';
-import { addToFavoriteList } from '../serverActions/favorites/addToFavoriteList';
-import { removeFavoriteFromList } from '../serverActions/favorites/removeFavoriteFromList';
-import { FavoriteListState } from '@/types/favorites';
-import { FAVORITES_SEARCH_DEBOUNCE_DELAY } from '../lib/constants';
 
 type AddToFavoritesButtonProps = {
   size?: 'default' | 'icon';
@@ -159,7 +160,7 @@ export function AddToFavoritesButton({
             });
           }
         }
-      } catch (error) {
+      } catch {
         toast.error(t('message.error'), {
           description: t('favorites.unable_to_update_list_message'),
         });

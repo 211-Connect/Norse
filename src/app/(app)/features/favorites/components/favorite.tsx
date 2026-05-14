@@ -1,15 +1,16 @@
 'use client';
 
-import { type Favorite } from '@/app/(app)/shared/store/favorites';
 import { useTranslation } from 'react-i18next';
-import { SearchCardLayoutConfig } from '@/app/(app)/features/search/types/card-layout-config';
+
 import { CardLayoutRenderer } from '@/app/(app)/features/search/components/card-layout-renderer';
-import { ResultType } from '@/app/(app)/shared/store/results';
+import { SearchCardLayoutConfig } from '@/app/(app)/features/search/types/card-layout-config';
 import { formatAddressForDisplay } from '@/app/(app)/shared/lib/utils';
+import { type Favorite as FavoriteType } from '@/app/(app)/shared/store/favorites';
+import { ResultType } from '@/app/(app)/shared/store/results';
 import { transformFacetsToArray } from '@/app/(app)/shared/utils/toFacetsWithTranslation';
 
 function convertFavoriteToResult(
-  favorite: Favorite,
+  favorite: FavoriteType,
   locale: string,
   currentListId?: string,
   onRemoveFromList?: (listId: string, favoriteId: string) => void,
@@ -55,7 +56,7 @@ export function Favorite({
   currentListId,
   onRemoveFromList,
 }: {
-  data: Favorite;
+  data: FavoriteType;
   cardLayout: SearchCardLayoutConfig;
   currentListId?: string;
   onRemoveFromList?: (listId: string, favoriteId: string) => void;

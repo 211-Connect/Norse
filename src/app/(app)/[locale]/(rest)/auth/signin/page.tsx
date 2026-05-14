@@ -1,34 +1,10 @@
+import { withOptionalCustomBasePath } from '@/app/(app)/shared/lib/utils';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
-import { SignInTrigger } from './signin-trigger';
 import { createLogger } from '@/lib/logger';
 
+import { SignInTrigger } from './signin-trigger';
+
 const log = createLogger('signin-page');
-
-function normalizeCallbackUrl(callbackUrl: string): string {
-  const basePath = process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || '';
-
-  if (
-    !callbackUrl ||
-    callbackUrl.startsWith('http://') ||
-    callbackUrl.startsWith('https://')
-  ) {
-    return callbackUrl;
-  }
-
-  if (
-    !basePath ||
-    callbackUrl === basePath ||
-    callbackUrl.startsWith(`${basePath}/`)
-  ) {
-    return callbackUrl;
-  }
-
-  if (!callbackUrl.startsWith('/')) {
-    return `${basePath}/${callbackUrl}`;
-  }
-
-  return `${basePath}${callbackUrl}`;
-}
 
 export default async function SignInPage({ params, searchParams }) {
   const { locale } = await params;
@@ -40,7 +16,7 @@ export default async function SignInPage({ params, searchParams }) {
       ? '/favorites'
       : `/${locale}/favorites`;
 
-  const callbackUrl = normalizeCallbackUrl(
+  const callbackUrl = withOptionalCustomBasePath(
     resolvedSearchParams.redirect ||
       resolvedSearchParams.callbackUrl ||
       defaultCallbackUrl,

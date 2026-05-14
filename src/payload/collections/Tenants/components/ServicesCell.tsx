@@ -1,5 +1,5 @@
-import React from 'react';
 import { DefaultServerCellComponentProps } from 'payload';
+
 import { Tenant } from '@/payload/payload-types';
 
 type Services = Tenant['services'];

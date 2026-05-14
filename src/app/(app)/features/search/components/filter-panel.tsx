@@ -1,29 +1,30 @@
 'use client';
 
+import { useAtom, useAtomValue } from 'jotai';
+import { Filter } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useTopLoader } from 'nextjs-toploader';
+import qs from 'qs';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { MainSearchLayout } from '@/app/(app)/shared/components/search/main-search-layout/main-search-layout';
 import { Badge } from '@/app/(app)/shared/components/ui/badge';
+import { Button } from '@/app/(app)/shared/components/ui/button';
 import { Checkbox } from '@/app/(app)/shared/components/ui/checkbox';
 import { ScrollArea } from '@/app/(app)/shared/components/ui/scroll-area';
+import { Separator } from '@/app/(app)/shared/components/ui/separator';
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
 } from '@/app/(app)/shared/components/ui/sheet';
-import { filtersAtom, filtersOpenAtom } from '@/app/(app)/shared/store/results';
-import { useAtom, useAtomValue } from 'jotai';
-import qs from 'qs';
-import { Separator } from '@/app/(app)/shared/components/ui/separator';
-import { Button } from '@/app/(app)/shared/components/ui/button';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { MainSearchLayout } from '@/app/(app)/shared/components/search/main-search-layout/main-search-layout';
-import { cn } from '@/app/(app)/shared/lib/utils';
-import { Filter } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useTopLoader } from 'nextjs-toploader';
-import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
-import { useTranslation } from 'react-i18next';
-import { HEADER_ID } from '@/app/(app)/shared/lib/constants';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
+import { HEADER_ID } from '@/app/(app)/shared/lib/constants';
+import { cn } from '@/app/(app)/shared/lib/utils';
+import { filtersAtom, filtersOpenAtom } from '@/app/(app)/shared/store/results';
 import { FiltersMap } from '@/types/search';
 
 const MAX_VISIBLE_FILTERS = 6;
@@ -127,7 +128,10 @@ const Filters = ({ filters, filterKeys }: FiltersProps) => {
         const headerHeight = header?.offsetHeight ?? 0;
         const rect = el.getBoundingClientRect();
         if (rect.top < headerHeight + 8) {
-          window.scrollBy({ top: rect.top - headerHeight - 8, behavior: 'smooth' });
+          window.scrollBy({
+            top: rect.top - headerHeight - 8,
+            behavior: 'smooth',
+          });
         }
       }
     });

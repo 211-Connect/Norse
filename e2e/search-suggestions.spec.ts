@@ -1,8 +1,5 @@
 import { expect, goHome, openSearchDialog, test } from './helpers';
-import {
-  ASYNC_UI_TIMEOUT_MS,
-  AUTOCOMPLETE_TIMEOUT_MS,
-} from './timeouts';
+import { ASYNC_UI_TIMEOUT_MS, AUTOCOMPLETE_TIMEOUT_MS } from './timeouts';
 
 function normalizeOptionText(text: string): string {
   return text.replace(/\s+/g, ' ').trim();
@@ -68,9 +65,7 @@ test.describe('Search suggestions', () => {
 
           return (
             nextTexts.length > 0 &&
-            nextTexts.some((text) =>
-              text.toLowerCase().includes(typedProbe),
-            )
+            nextTexts.some((text) => text.toLowerCase().includes(typedProbe))
           );
         },
         {
@@ -97,7 +92,7 @@ test.describe('Search suggestions', () => {
 
           return {
             count: nextTexts.length,
-            changedFromTyped: nextTexts.join(' | ') !== typedSignature.signature,
+            changedFromTyped: nextTexts.join(' | ') !== typedSignature,
           };
         },
         {

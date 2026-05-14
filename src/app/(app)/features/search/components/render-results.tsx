@@ -1,11 +1,12 @@
 'use client';
 
-import { resultsAtom } from '@/app/(app)/shared/store/results';
 import { useAtomValue } from 'jotai';
 
-import { NoResultsCard } from './no-results-card';
+import { resultsAtom } from '@/app/(app)/shared/store/results';
+
 import { SearchCardLayoutConfig } from '../types/card-layout-config';
 import { CardLayoutRenderer } from './card-layout-renderer';
+import { NoResultsCard } from './no-results-card';
 
 type RenderResultsProps = {
   cardLayout: SearchCardLayoutConfig;
@@ -13,11 +14,13 @@ type RenderResultsProps = {
 
 export function RenderResults({ cardLayout }: RenderResultsProps) {
   const results = useAtomValue(resultsAtom);
+  const hasHydratedResults = results !== null;
+  const items = results ?? [];
 
   return (
     <>
-      {results?.length === 0 && <NoResultsCard />}
-      {results?.map((result) => (
+      {hasHydratedResults && items.length === 0 && <NoResultsCard />}
+      {items.map((result) => (
         <CardLayoutRenderer
           key={result._id}
           result={result}

@@ -3,24 +3,25 @@
 import { useAtomValue } from 'jotai';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  resultsAtom,
-  resultTotalAtom,
-  resultsCurrentPageAtom,
-} from '@/app/(app)/shared/store/results';
+
 import { PrintButton } from '@/app/(app)/shared/components/print-button';
 import { ShareButton } from '@/app/(app)/shared/components/share-button';
-
-import { ResultTotal } from './result-total';
-import { RenderResults } from './render-results';
-import { ResultsPagination } from './results-pagination';
-import { SortSelect } from './sort-select';
-import { SearchCardLayoutConfig } from '../types/card-layout-config';
+import {
+  resultTotalAtom,
+  resultsAtom,
+  resultsCurrentPageAtom,
+} from '@/app/(app)/shared/store/results';
 import {
   queryAtom,
   queryLabelAtom,
   queryTypeAtom,
 } from '@/app/(app)/shared/store/search';
+
+import { SearchCardLayoutConfig } from '../types/card-layout-config';
+import { RenderResults } from './render-results';
+import { ResultTotal } from './result-total';
+import { ResultsPagination } from './results-pagination';
+import { SortSelect } from './sort-select';
 
 const SEARCH_RESULTS_HEADING_ID = 'search-results-heading';
 const PENDING_FOCUS_TARGET_STORAGE_KEY = 'pending-search-focus-target';
@@ -34,6 +35,7 @@ export function ResultsSection({ cardLayout }: ResultsSectionProps) {
   const componentToPrintRef = useRef<HTMLDivElement>(null);
   const resultsHeadingRef = useRef<HTMLHeadingElement>(null);
   const results = useAtomValue(resultsAtom);
+  const resultsCount = results?.length ?? 0;
   const totalResults = useAtomValue(resultTotalAtom);
   const currentPage = useAtomValue(resultsCurrentPageAtom);
   const query = useAtomValue(queryAtom);
@@ -56,7 +58,7 @@ export function ResultsSection({ cardLayout }: ResultsSectionProps) {
     window.sessionStorage.removeItem(PENDING_FOCUS_TARGET_STORAGE_KEY);
     resultsHeadingRef.current?.focus({ preventScroll: true });
     window.scrollTo(0, 0);
-  }, [currentPage, results.length, totalResults]);
+  }, [currentPage, resultsCount, totalResults]);
 
   return (
     <section
@@ -76,7 +78,7 @@ export function ResultsSection({ cardLayout }: ResultsSectionProps) {
         <div className="flex items-center justify-between">
           <ResultTotal />
           <div className="flex gap-[10px]">
-            {results.length > 0 && (
+            {resultsCount > 0 && (
               <PrintButton componentToPrintRef={componentToPrintRef} />
             )}
             <ShareButton

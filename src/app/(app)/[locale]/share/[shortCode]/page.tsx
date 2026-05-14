@@ -1,4 +1,5 @@
-import { redirect, notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
+
 import { expandShortUrl } from '@/app/(app)/shared/serverActions/shortUrl/expandShortUrl';
 import { createLogger } from '@/lib/logger';
 

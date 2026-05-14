@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+
 import { expandShortUrl } from '@/app/(app)/shared/serverActions/shortUrl/expandShortUrl';
 
 /**
@@ -17,7 +18,7 @@ export async function GET(
     } else {
       return NextResponse.redirect('/404', 302);
     }
-  } catch (err) {
+  } catch {
     return NextResponse.redirect('/404', 302);
   }
 }

@@ -9,9 +9,16 @@ import {
   Share2,
 } from 'lucide-react';
 import { useEffect, useId, useRef, useState } from 'react';
-import { useReactToPrint } from 'react-to-print';
 import { useTranslation } from 'react-i18next';
+import { useReactToPrint } from 'react-to-print';
 
+import { useAppConfig } from '../hooks/use-app-config';
+import { useClipboard } from '../hooks/use-clipboard';
+import { withOptionalCustomBasePath } from '../lib/utils';
+import { shortenUrl } from '../serverActions/shortUrl/shortenUrl';
+import { Facebook } from './icons/facebook';
+import { X } from './icons/x';
+import { SmsButton } from './sms-button';
 import { Button } from './ui/button';
 import {
   Dialog,
@@ -20,12 +27,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from './ui/dialog';
-import { Facebook } from './icons/facebook';
-import { X } from './icons/x';
-import { shortenUrl } from '../serverActions/shortUrl/shortenUrl';
-import { useClipboard } from '../hooks/use-clipboard';
-import { SmsButton } from './sms-button';
-import { useAppConfig } from '../hooks/use-app-config';
 
 type ShareButtonProps = {
   componentToPrintRef?: React.RefObject<HTMLElement | null>;
@@ -78,12 +79,14 @@ export function ShareButton({
   useEffect(() => {
     async function getShortUrl() {
       const id = await shortenUrl(window.location.href, appConfig.tenantId);
-      const url = `${window.location.origin}${appConfig.customBasePath}/share/${id}`;
+      const url = withOptionalCustomBasePath(
+        `${window.location.origin}/share/${id}`,
+      );
       setShortUrl(url);
     }
 
     getShortUrl();
-  }, [appConfig.customBasePath, appConfig.tenantId]);
+  }, [appConfig.tenantId]);
 
   return (
     <>
@@ -119,84 +122,88 @@ export function ShareButton({
           <div className="flex min-w-0 flex-col gap-2">
             <div className="grid grid-cols-2 gap-2">
               <Button
+                asChild
                 variant="outline"
                 className={SHARE_ACTION_BUTTON_CLASSNAME}
                 aria-label={`${t('modal.share.facebook')} ${t('modal.share.opens_in_new_tab')}`}
-                onClick={() => {
-                  window.open(
-                    `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-                      shortUrl,
-                    )}`,
-                    '_blank',
-                  );
-                }}
               >
-                <Facebook className="size-4" aria-hidden="true" />
-                {t('modal.share.facebook')}
-                <span className="sr-only">
-                  {' '}
-                  {t('modal.share.opens_in_new_tab')}
-                </span>
+                <a
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+                    shortUrl,
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Facebook className="size-4" aria-hidden="true" />
+                  {t('modal.share.facebook')}
+                  <span className="sr-only">
+                    {' '}
+                    {t('modal.share.opens_in_new_tab')}
+                  </span>
+                </a>
               </Button>
 
               <Button
+                asChild
                 variant="outline"
                 className={SHARE_ACTION_BUTTON_CLASSNAME}
                 aria-label={`${t('modal.share.linkedin')} ${t('modal.share.opens_in_new_tab')}`}
-                onClick={() => {
-                  window.open(
-                    `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shortUrl)}`,
-                    '_blank',
-                  );
-                }}
               >
-                <Linkedin className="size-4" aria-hidden="true" />
-                {t('modal.share.linkedin')}
-                <span className="sr-only">
-                  {' '}
-                  {t('modal.share.opens_in_new_tab')}
-                </span>
+                <a
+                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shortUrl)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Linkedin className="size-4" aria-hidden="true" />
+                  {t('modal.share.linkedin')}
+                  <span className="sr-only">
+                    {' '}
+                    {t('modal.share.opens_in_new_tab')}
+                  </span>
+                </a>
               </Button>
 
               <Button
+                asChild
                 variant="outline"
                 className={SHARE_ACTION_BUTTON_CLASSNAME}
                 aria-label={`X ${t('modal.share.opens_in_new_tab')}`}
-                onClick={() => {
-                  window.open(
-                    `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-                      title + '\n' + shortUrl,
-                    )}`,
-                  );
-                }}
               >
-                <X className="size-4" aria-hidden="true" />X
-                <span className="sr-only">
-                  {' '}
-                  {t('modal.share.opens_in_new_tab')}
-                </span>
+                <a
+                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                    title + '\n' + shortUrl,
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <X className="size-4" aria-hidden="true" />X
+                  <span className="sr-only">
+                    {' '}
+                    {t('modal.share.opens_in_new_tab')}
+                  </span>
+                </a>
               </Button>
 
               <SmsButton shareMessage={smsMessage} />
 
               <Button
+                asChild
                 variant="outline"
                 className={SHARE_ACTION_BUTTON_CLASSNAME}
                 aria-label={`${t('modal.share.email')} ${t('modal.share.opens_in_new_tab')}`}
-                onClick={() => {
-                  window.open(
-                    `mailto:?subject=${encodeURIComponent(
-                      shareSubject,
-                    )}&body=${encodeURIComponent(emailMessage)}`,
-                  );
-                }}
               >
-                <Mail className="size-4" aria-hidden="true" />
-                {t('modal.share.email')}
-                <span className="sr-only">
-                  {' '}
-                  {t('modal.share.opens_in_new_tab')}
-                </span>
+                <a
+                  href={`mailto:?subject=${encodeURIComponent(
+                    shareSubject,
+                  )}&body=${encodeURIComponent(emailMessage)}`}
+                >
+                  <Mail className="size-4" aria-hidden="true" />
+                  {t('modal.share.email')}
+                  <span className="sr-only">
+                    {' '}
+                    {t('modal.share.opens_in_new_tab')}
+                  </span>
+                </a>
               </Button>
 
               <Button

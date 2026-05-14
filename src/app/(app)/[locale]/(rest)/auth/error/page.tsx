@@ -1,9 +1,10 @@
-import Image from 'next/image';
 import { AlertCircle } from 'lucide-react';
+import Image from 'next/image';
 
-import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
-import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { AuthErrorActions } from '@/app/(app)/[locale]/(rest)/auth/error/actions';
+import initTranslations from '@/app/(app)/shared/i18n/i18n';
+import { withOptionalCustomBasePath } from '@/app/(app)/shared/lib/utils';
+import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 
 const i18nNamespaces = ['common'];
 
@@ -32,8 +33,7 @@ export default async function AuthErrorPage({ params, searchParams }) {
           description: t('auth_error.default_description', { ns: 'common' }),
         };
 
-  const basePath = process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || '';
-  const authPath = `${basePath}/auth/signin`;
+  const authPath = withOptionalCustomBasePath('/auth/signin');
 
   const redirectTarget =
     resolvedSearchParams.redirect || resolvedSearchParams.callbackUrl;
@@ -41,7 +41,9 @@ export default async function AuthErrorPage({ params, searchParams }) {
     ? `${authPath}?redirect=${encodeURIComponent(String(redirectTarget))}`
     : authPath;
 
-  const keycloakLogoutPath = `${basePath}/api/auth/keycloak-logout?next=${encodeURIComponent(signInPath)}`;
+  const keycloakLogoutPath = withOptionalCustomBasePath(
+    `/api/auth/keycloak-logout?next=${encodeURIComponent(signInPath)}`,
+  );
 
   const newLayoutEnabled = appConfig?.newLayout?.enabled;
   const logoUrl = newLayoutEnabled

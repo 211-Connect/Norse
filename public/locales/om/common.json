@@ -51,7 +51,7 @@
     "show_less": "Xiqqaa agarsiisi",
     "query_input_label": "Qabeenya barbaadi",
     "location_input_label": "Bakka barbaadi",
-    "change_location_label": "Bakka jijjiiri: {{bakka}}",
+    "change_location_label": "Bakka jijjiiri: {{location}}",
     "open_search_dialog": "Qaaqa barbaacha banaa",
     "list_status_one": "1 filannoo ni jira. Irra deebi'uuf furtuuwwan xiyyaa olii fi gadi fayyadami.",
     "list_status_other": "{{count}} filannoowwan jiran. Irra deebi'uuf furtuuwwan xiyyaa olii fi gadi fayyadami.",
@@ -166,8 +166,8 @@
     "next": "Kan itti aanu",
     "go_to": "Gara"
   },
-  "filter_results_count_one": "{{lakkaa'uu}} bu'aa",
-  "filter_results_count_other": "{{lakkaa'uu}} bu'aa",
+  "filter_results_count_one": "{{count}} bu'aa",
+  "filter_results_count_other": "{{count}} bu'aa",
   "autocomplete": {
     "results_available_one": "{{count}} bu'aan argama",
     "results_available_other": "{{count}} bu'aa argama",

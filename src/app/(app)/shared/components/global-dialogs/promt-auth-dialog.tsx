@@ -4,8 +4,12 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { signIn } from 'next-auth/react';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { dialogsAtom, promptAuthAtom } from '@/app/(app)/shared/store/dialogs';
 
+import { cn, withOptionalCustomBasePath } from '../../lib/utils';
+import { Button } from '../ui/button';
+import { buttonVariants } from '../ui/button';
 import {
   Dialog,
   DialogContent,
@@ -14,9 +18,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../ui/dialog';
-import { Button } from '../ui/button';
-import { cn } from '../../lib/utils';
-import { buttonVariants } from '../ui/button';
 import { Label } from '../ui/label';
 
 export function PromptAuthDialog() {
@@ -49,7 +50,9 @@ export function PromptAuthDialog() {
     typeof window !== 'undefined'
       ? `${window.location.pathname}${window.location.search}`
       : '/';
-  const loginHref = `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/auth/signin?redirect=${encodeURIComponent(redirectTarget)}`;
+  const loginHref = withOptionalCustomBasePath(
+    `/auth/signin?redirect=${encodeURIComponent(redirectTarget)}`,
+  );
 
   const handleLogin = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();

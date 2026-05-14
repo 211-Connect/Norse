@@ -1,6 +1,11 @@
 'use client';
 
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useAtomValue } from 'jotai';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useTopLoader } from 'nextjs-toploader';
+import { useTranslation } from 'react-i18next';
+
+import { Label } from '@/app/(app)/shared/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -8,15 +13,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/app/(app)/shared/components/ui/select';
-import { Label } from '@/app/(app)/shared/components/ui/label';
-import { useTranslation } from 'react-i18next';
-import { userCoordinatesAtom } from '@/app/(app)/shared/store/search';
-import { useAtomValue } from 'jotai';
 import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
-import { useTopLoader } from 'nextjs-toploader';
+import { userCoordinatesAtom } from '@/app/(app)/shared/store/search';
 import {
-  getSortOption,
   SortOption,
+  getSortOption,
 } from '@/app/(app)/shared/utils/getSortOption';
 
 const SORT_LABEL: Record<SortOption, string> = {

@@ -56,10 +56,7 @@ const nextConfig = {
   serverExternalPackages: ['pino', 'pino-pretty'],
   // Disable source maps in production to save memory
   productionBrowserSourceMaps: false,
-  webpack: (
-    config,
-    { buildId, dev, isServer, defaultLoaders, nextRuntime, webpack },
-  ) => {
+  webpack: (config, { dev, isServer }) => {
     // Optimize webpack cache for production
     if (config.cache && !dev) {
       config.cache = Object.freeze({

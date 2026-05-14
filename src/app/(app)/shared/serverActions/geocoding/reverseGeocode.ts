@@ -1,6 +1,7 @@
 'use server';
 
 import { GeocodeResult } from '@/types/resource';
+
 import { API_URL, INTERNAL_API_KEY } from '../../lib/constants';
 import { fetchWrapper } from '../../lib/fetchWrapper';
 

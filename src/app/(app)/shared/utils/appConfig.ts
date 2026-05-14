@@ -1,20 +1,21 @@
+import { cookies, headers } from 'next/headers';
+import { TypedLocale } from 'payload';
+import { cache } from 'react';
+
+import { findResourceDirectoryByHost } from '@/payload/collections/ResourceDirectories/actions';
+import { defaultLocale } from '@/payload/i18n/locales';
 import {
   ResourceDirectory,
   Tenant,
   TenantMedia,
 } from '@/payload/payload-types';
-import { TypedLocale } from 'payload';
-import { findResourceDirectoryByHost } from '@/payload/collections/ResourceDirectories/actions';
-import { cache } from 'react';
 import { AppConfig } from '@/types/appConfig';
-import { cookies, headers } from 'next/headers';
-import { getHost } from './getHost';
-import { defaultLocale } from '@/payload/i18n/locales';
-import initTranslations from '../i18n/i18n';
-import { SESSION_ID } from '../lib/constants';
+
 import { DEFAULT_RESOURCE_LAYOUT } from '../../features/resource/types/layout-config';
 import { DEFAULT_SEARCH_CARD_LAYOUT } from '../../features/search/types/card-layout-config';
+import { SESSION_ID } from '../lib/constants';
 import { DEFAULT_BADGE_COLOR } from '../theme/theme-config';
+import { getHost } from './getHost';
 
 function getMediaUrl(media?: TenantMedia | number | null): string | undefined {
   if (typeof media === 'number' || !media) return undefined;
@@ -35,6 +36,18 @@ function getTenantId(resourceDirectory: ResourceDirectory): string | undefined {
   }
 
   return resourceDirectory.tenant?.id;
+}
+
+function getTenantMainUmamiWebsiteId(
+  resourceDirectory: ResourceDirectory,
+): string | undefined {
+  const websiteIds = getTenant(resourceDirectory)?.common?.umamiWebsiteIds;
+
+  if (!Array.isArray(websiteIds) || websiteIds.length === 0) {
+    return undefined;
+  }
+
+  return websiteIds[0]?.websiteId ?? undefined;
 }
 
 function getSmsConfig(resourceDirectory: ResourceDirectory): AppConfig['sms'] {
@@ -214,7 +227,6 @@ async function getAppConfigBase(
       },
       contact: {},
       sms: null,
-      customBasePath: '',
       featureFlags: {
         requireUserLocation: false,
         showFeedbackButtonGlobal: false,
@@ -250,6 +262,7 @@ async function getAppConfigBase(
         },
       },
       resource: {
+        categoriesText: undefined,
         lastAssuredText: undefined,
         layout: {
           leftColumn: [],
@@ -274,13 +287,6 @@ async function getAppConfigBase(
   }
 
   const i18n = getTenantI18n(resourceDirectory);
-  const errorNamespaces = ['page-500', 'common'];
-  const { resources } = await initTranslations(
-    locale,
-    errorNamespaces,
-    i18n.locales,
-    i18n.defaultLocale,
-  );
 
   // Fetch English resource directory for fallback if not English locale
   let englishResourceDirectory: ResourceDirectory | null = null;
@@ -369,12 +375,6 @@ async function getAppConfigBase(
       feedbackUrl: resourceDirectory.brand.feedbackUrl ?? undefined,
     },
     sms: getSmsConfig(resourceDirectory),
-    customBasePath: process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || '',
-    errorTranslationData: {
-      errorNamespaces,
-      resources,
-      locale,
-    },
     featureFlags: {
       requireUserLocation:
         resourceDirectory.featureFlags?.requireUserLocation ?? false,
@@ -428,8 +428,7 @@ async function getAppConfigBase(
     i18n,
     matomoContainerUrl:
       getTenant(resourceDirectory)?.common?.matomoContainerUrl ?? undefined,
-    umamiWebsiteId:
-      getTenant(resourceDirectory)?.common?.umamiWebsiteId ?? undefined,
+    umamiWebsiteId: getTenantMainUmamiWebsiteId(resourceDirectory),
     meta: {
       description: resourceDirectory.brand.meta?.description ?? '',
       title: resourceDirectory.brand.meta?.title ?? '',
@@ -447,6 +446,7 @@ async function getAppConfigBase(
       },
     },
     resource: {
+      categoriesText: resourceDirectory.resource?.categoriesText ?? undefined,
       lastAssuredText: resourceDirectory.resource?.lastAssuredText ?? undefined,
       layout: resourceDirectory.resource?.useCustomLayout
         ? {

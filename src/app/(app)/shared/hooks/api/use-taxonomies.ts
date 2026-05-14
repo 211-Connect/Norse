@@ -1,8 +1,10 @@
 'use client';
 
-import { getTaxonomies } from '@/app/(app)/shared/serverActions/taxonomy/getTaxonomies';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+
+import { getTaxonomies } from '@/app/(app)/shared/serverActions/taxonomy/getTaxonomies';
+
 import { useAppConfig } from '../use-app-config';
 
 export function useTaxonomies(searchTerm: string = '') {

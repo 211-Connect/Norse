@@ -1,18 +1,20 @@
 'use client';
 
-import { useCallback } from 'react';
-import { toast } from 'sonner';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { Locate } from 'lucide-react';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { setLocationCookies } from '../../lib/location-cookies';
+import { toast } from 'sonner';
+
+import { createLogger } from '@/lib/logger';
+
+import { useAppConfig } from '../../hooks/use-app-config';
 import { useGeocodingAdapter } from '../../hooks/use-geocoding-adapter';
+import { setLocationCookies } from '../../lib/location-cookies';
 import { MapService } from '../../services/map-service';
+import { deviceAtom } from '../../store/device';
 import { searchAtom } from '../../store/search';
 import { Button } from '../ui/button';
-import { deviceAtom } from '../../store/device';
-import { useAppConfig } from '../../hooks/use-app-config';
-import { createLogger } from '@/lib/logger';
 
 const log = createLogger('use-my-location-button');
 
@@ -43,19 +45,19 @@ export function UseMyLocationButton() {
         success: (data) => {
           const location = data?.[0];
           if (location) {
-              setLocationCookies(location.address, location);
+            setLocationCookies(location.address, location);
 
-              setSearch((prev) => ({
-                ...prev,
-                searchLocation: location.address,
-                searchCoordinates: location.coordinates,
-                // Seed prevSearchLocation so useLocations fetches the address
-                // and the Autocomplete block UX can activate on the result.
-                prevSearchLocation: location.address,
-                searchLocationValidationError: '',
-                searchPlaceType: location.place_type ?? [],
-                searchBbox: location.bbox ?? null,
-              }));
+            setSearch((prev) => ({
+              ...prev,
+              searchLocation: location.address,
+              searchCoordinates: location.coordinates,
+              // Seed prevSearchLocation so useLocations fetches the address
+              // and the Autocomplete block UX can activate on the result.
+              prevSearchLocation: location.address,
+              searchLocationValidationError: '',
+              searchPlaceType: location.place_type ?? [],
+              searchBbox: location.bbox ?? null,
+            }));
 
             return 'Successfully fetched your location';
           } else {

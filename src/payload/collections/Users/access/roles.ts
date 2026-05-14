@@ -1,4 +1,5 @@
 import type { PayloadRequest } from 'payload';
+
 import { User } from '@/payload/payload-types';
 
 export const isSuperAdmin = (user: Pick<User, 'roles'> | null): boolean => {

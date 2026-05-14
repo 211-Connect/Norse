@@ -1,5 +1,8 @@
 'use client';
 
+import { useTranslation } from 'react-i18next';
+
+import { Link } from '@/app/(app)/shared/components/link';
 import { Badge } from '@/app/(app)/shared/components/ui/badge';
 import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import {
@@ -9,14 +12,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/app/(app)/shared/components/ui/card';
-import { useTranslation } from 'react-i18next';
-import { Link } from '@/app/(app)/shared/components/link';
 import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
 import { withOptionalTrailingSlash } from '@/app/(app)/shared/lib/utils';
+import { FavoriteListState } from '@/types/favorites';
 
 import { DeleteFavoriteListButton } from './delete-favorite-list-button';
 import { UpdateFavoriteListButton } from './update-favorite-list-button';
-import { FavoriteListState } from '@/types/favorites';
 
 export function FavoriteList({ list }: { list: FavoriteListState }) {
   const { t } = useTranslation('page-favorites');

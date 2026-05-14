@@ -1,25 +1,27 @@
 'use client';
 
-import { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
-import {
-  formatAddressForDisplay,
-  distanceBetweenCoordsInMiles,
-} from '@/app/(app)/shared/lib/utils';
-import { userCoordinatesAtom } from '@/app/(app)/shared/store/search';
-import { Resource } from '@/types/resource';
+import { MapPin } from 'lucide-react';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@/app/(app)/shared/components/ui/tooltip';
-import { useTranslation } from 'react-i18next';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
+import {
+  distanceBetweenCoordsInMiles,
+  formatAddressForDisplay,
+} from '@/app/(app)/shared/lib/utils';
 import { ResultType } from '@/app/(app)/shared/store/results';
+import { userCoordinatesAtom } from '@/app/(app)/shared/store/search';
+import { Resource } from '@/types/resource';
+
+import { UmamiEvent, trackUmamiEvent } from '../../../../shared/lib/umami';
 import { Datum } from '../datum';
-import { MapPin } from 'lucide-react';
-import { trackUmamiEvent, UmamiEvent } from '../../../../shared/lib/umami';
 
 export function AddressComponent({
   resource,

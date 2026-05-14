@@ -1,30 +1,25 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useAtomValue } from 'jotai';
 import { SearchIcon } from 'lucide-react';
+import { useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import { useTaxonomies } from '../../hooks/api/use-taxonomies';
+import { useAppConfig } from '../../hooks/use-app-config';
+import { useDebounce } from '../../hooks/use-debounce';
+import { useFlag } from '../../hooks/use-flag';
+import { SEARCH_DEBOUNCE_DELAY } from '../../lib/constants';
 import { searchTermAtom } from '../../store/search';
 import { Autocomplete, AutocompleteOption } from '../ui/autocomplete';
-import { useFlag } from '../../hooks/use-flag';
-import { useAppConfig } from '../../hooks/use-app-config';
 import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
-import { useTaxonomies } from '../../hooks/api/use-taxonomies';
-import { useDebounce } from '../../hooks/use-debounce';
-import { SEARCH_DEBOUNCE_DELAY } from '../../lib/constants';
 
 interface SearchBarProps {
   focusByDefault?: boolean;
   inputId?: string;
-  onSearchSourceChange: (source: 'manual' | 'suggestion') => void;
 }
 
-export function SearchBar({
-  focusByDefault = false,
-  inputId,
-  onSearchSourceChange,
-}: SearchBarProps) {
+export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
   const appConfig = useAppConfig();
   const { t } = useTranslation('common');
   const searchTerm = useAtomValue(searchTermAtom);
@@ -114,8 +109,6 @@ export function SearchBar({
 
   const setSearchTerm = useCallback(
     (value: string, option?: AutocompleteOption) => {
-      onSearchSourceChange(option ? 'suggestion' : 'manual');
-
       const query = option?.query ?? value;
       const queryType = option?.queryType ?? 'text';
 
@@ -127,13 +120,11 @@ export function SearchBar({
         queryLabel: value,
       }));
     },
-    [onSearchSourceChange, setSearch],
+    [setSearch],
   );
 
   const handleInputChange = useCallback(
     (value: string) => {
-      onSearchSourceChange('manual');
-
       setSearch((prev) => ({
         ...prev,
         query: value,
@@ -142,7 +133,7 @@ export function SearchBar({
         queryLabel: value,
       }));
     },
-    [onSearchSourceChange, setSearch],
+    [setSearch],
   );
 
   return (

@@ -1,12 +1,14 @@
 'use client';
 
-import { UserRound, Phone, Send, IdCard } from 'lucide-react';
+import { IdCard, Phone, Send, UserRound } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Resource } from '@/types/resource';
-import { Datum } from '../datum';
+
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
-import { trackUmamiEvent, UmamiEvent } from '@/app/(app)/shared/lib/umami';
+import { UmamiEvent, trackUmamiEvent } from '@/app/(app)/shared/lib/umami';
+import { Resource } from '@/types/resource';
+
+import { Datum } from '../datum';
 
 export function ContactsComponent({ resource }: { resource: Resource }) {
   const { t } = useTranslation('page-resource');

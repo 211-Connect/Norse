@@ -1,11 +1,13 @@
 'use client';
 
 import { LinkIcon } from 'lucide-react';
-import { Datum } from '../datum';
 import { useTranslation } from 'react-i18next';
-import { ResourceComponentProps } from '../component-registry';
-import { trackUmamiEvent, UmamiEvent } from '../../../../shared/lib/umami';
+
 import { getDisplayHost } from '@/utils';
+
+import { UmamiEvent, trackUmamiEvent } from '../../../../shared/lib/umami';
+import { ResourceComponentProps } from '../component-registry';
+import { Datum } from '../datum';
 
 export function WebsiteComponent({ resource }: ResourceComponentProps) {
   const { t } = useTranslation('page-resource');

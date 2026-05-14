@@ -1,6 +1,7 @@
 import { ResourceDirectoryBadgeListItem } from '@/payload/collections/ResourceDirectories/types/badge';
-import { Nullable } from './common';
 import { ResourceDirectory } from '@/payload/payload-types';
+
+import { Nullable } from './common';
 
 type Menu = {
   name: string;
@@ -84,6 +85,7 @@ export type AppConfig = {
     };
   };
   resource: {
+    categoriesText?: string;
     lastAssuredText?: string;
     layout: {
       leftColumn: NonNullable<ResourceDirectory['resource']>['leftColumn'];
@@ -134,12 +136,6 @@ export type AppConfig = {
     url?: string;
     target?: '_self' | '_blank';
     variant?: 'destructive' | 'default';
-  };
-  customBasePath?: string;
-  errorTranslationData?: {
-    errorNamespaces: string[];
-    resources: Record<string, Record<string, unknown>>;
-    locale: string;
   };
   gtmContainerId?: string;
   heroUrl?: string;

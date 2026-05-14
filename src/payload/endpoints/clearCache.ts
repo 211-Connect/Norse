@@ -1,7 +1,9 @@
 import type { Endpoint } from 'payload';
+
 import { cacheService } from '@/cacheService';
-import { clearMemoryCache } from '@/utilities/withCache';
 import { createLogger } from '@/lib/logger';
+import { clearMemoryCache } from '@/utilities/withCache';
+
 import { isSuperAdmin } from '../collections/Users/access/roles';
 
 const log = createLogger('clearCacheEndpoint');

@@ -1,9 +1,10 @@
 'use client';
 
 import { type LucideIcon } from 'lucide-react';
-import { cn } from '@/app/(app)/shared/lib/utils';
+
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
 import { parseHtml } from '@/app/(app)/shared/lib/parse-html';
+import { cn } from '@/app/(app)/shared/lib/utils';
 
 export interface DatumProps {
   id?: string | null;
@@ -116,7 +117,11 @@ export function Datum({
         </div>
       ) : (
         <div className="flex min-w-0 flex-col gap-0.5">
-          <Typography variant="label" size={size}>
+          <Typography
+            variant="label"
+            size={size}
+            as={title && description ? 'h4' : undefined}
+          >
             {title}
           </Typography>
           <Typography

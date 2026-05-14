@@ -1,11 +1,14 @@
-import { parseHost } from './parseHost';
-import { findTenantByHost } from '@/payload/collections/Tenants/actions/findTenantByHost';
 import { getServerSession } from 'next-auth';
-import { createAuthOptions } from '@/auth';
-import { normalizeAllowedEmailDomains } from '@/utils/normalizeAllowedEmailDomains';
 import { headers } from 'next/headers';
 import { cache } from 'react';
+
+import { createAuthOptions } from '@/auth';
+import { findTenantByHost } from '@/payload/collections/Tenants/actions/findTenantByHost';
 import { getKeycloakIssuer } from '@/utils/getKeycloakIssuer';
+import { normalizeAllowedEmailDomains } from '@/utils/normalizeAllowedEmailDomains';
+
+import { withOptionalCustomBasePath } from '../lib/utils';
+import { parseHost } from './parseHost';
 
 async function getSessionOrigin() {
   const headerList = await headers();
@@ -22,7 +25,7 @@ async function getSessionOrigin() {
 
   const parsedHost = parseHost(host);
   const tenant = await findTenantByHost(parsedHost);
-  const baseUrl = `${protocol}://${host}${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}`;
+  const baseUrl = withOptionalCustomBasePath(`${protocol}://${host}`);
 
   const authOptions = createAuthOptions({
     baseUrl,

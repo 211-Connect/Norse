@@ -1,26 +1,28 @@
 'use client';
 
-import { useTour, type StepType } from '@reactour/tour';
+import { type StepType, useTour } from '@reactour/tour';
 import { useCallback, useRef } from 'react';
-import { createTourEvent } from '@/app/(app)/shared/lib/google-tag-manager';
-import { Button } from '@/app/(app)/shared/components/ui/button';
+import { useTranslation } from 'react-i18next';
+
+import { Image } from '@/app/(app)/shared/components/image';
 import { MainSearchLayout } from '@/app/(app)/shared/components/search/main-search-layout/main-search-layout';
+import { Button } from '@/app/(app)/shared/components/ui/button';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
-import { useTranslation } from 'react-i18next';
-import { Image } from '@/app/(app)/shared/components/image';
+import { createTourEvent } from '@/app/(app)/shared/lib/google-tag-manager';
 
 type TourPositionPreference = 'above' | 'below';
 
 export function HeroSection() {
   const appConfig = useAppConfig();
-  const { isOpen, setCurrentStep, setIsOpen, setSteps } = useTour();
+  const { setCurrentStep, setIsOpen, setSteps } = useTour();
   const { t } = useTranslation('page-home');
   const showHomePageTour = useFlag('showHomePageTour');
   const homeSearchTriggerRef = useRef<HTMLButtonElement | null>(null);
   const takeTourLabel =
-    t('take_a_tour', { defaultValue: 'First time here? Take a tour!' }).trim() ||
-    'First time here? Take a tour!';
+    t('take_a_tour', {
+      defaultValue: 'First time here? Take a tour!',
+    }).trim() || 'First time here? Take a tour!';
 
   const getResponsiveTourPosition = useCallback(
     (
@@ -194,7 +196,6 @@ export function HeroSection() {
           variant="outline"
           aria-label={takeTourLabel}
           aria-controls="home-page-tour-dialog"
-          aria-expanded={isOpen ?? false}
           aria-haspopup="dialog"
           data-home-tour-trigger="true"
           className="border-foreground/40 bg-background text-foreground shadow-sm hover:bg-primary hover:text-primary-foreground focus-visible:border-foreground focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-4"

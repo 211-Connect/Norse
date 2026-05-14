@@ -17,6 +17,25 @@ a:not(:has(> button:only-child)):not([class*='bg-']):not(.border) {
 .reactour__popover.home-tour-popover {
   /* Right padding reserves space for the 44px close button at 8px from the edge. */
   padding: 1.5rem 3.5rem 1rem 1.5rem;
+  /* Ensure modal stays within viewport at all zoom levels */
+  max-width: calc(100vw - 2rem) !important;
+  max-height: calc(100dvh - 2rem) !important;
+  width: min(36rem, calc(100vw - 2rem)) !important;
+  box-sizing: border-box !important;
+  overflow: auto !important;
+  overscroll-behavior: contain !important;
+  /* Center modal on screen when at extreme zoom */
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+.home-tour-popover .home-tour-scrollable-content {
+  max-height: calc(100dvh - 10rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
 }
 
 .home-tour-popover .home-tour-navigation {
@@ -25,6 +44,7 @@ a:not(:has(> button:only-child)):not([class*='bg-']):not(.border) {
   flex-wrap: wrap;
   gap: 0.75rem;
   justify-content: space-between;
+  flex-shrink: 0;
 }
 
 .home-tour-popover .home-tour-navigation > div {
@@ -32,6 +52,15 @@ a:not(:has(> button:only-child)):not([class*='bg-']):not(.border) {
   flex-wrap: wrap;
   gap: 0.5rem;
   justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Ensure modal controls remain accessible at extreme zoom (200%+) */
+@media (max-width: 768px) {
+  .reactour__popover.home-tour-popover {
+    width: calc(100vw - 2rem) !important;
+    max-width: calc(100vw - 2rem) !important;
+  }
 }
 
 @layer base {

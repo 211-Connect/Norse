@@ -1,5 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
+import enCommon from '../../public/locales/en/common.json' with { type: 'json' };
 import {
   expect,
   expectPageUrl,
@@ -15,7 +16,6 @@ import {
   KEYBOARD_UI_STABILITY_MS,
   UI_SHELL_TIMEOUT_MS,
 } from '../timeouts';
-import enCommon from '../../public/locales/en/common.json' with { type: 'json' };
 
 async function openDialogFromSearchTrigger(page: Page) {
   const trigger = page.getByTestId('search-trigger').first();
@@ -154,6 +154,9 @@ test.describe('Search accessibility preservation', () => {
     });
     await expect(clearSearchButton).toHaveAttribute('aria-label', /remove/i);
     await expect(searchInput).toBeFocused();
+
+    await page.waitForTimeout(500);
+
     await page.keyboard.press('Tab');
     await expect(clearSearchButton).toBeFocused();
     await page.keyboard.press('Enter');
@@ -259,7 +262,10 @@ test.describe('Search accessibility preservation', () => {
     const listbox = locationField.getByTestId('autocomplete-listbox');
 
     await locationInput.fill('minneapolis');
-    await listbox.waitFor({ state: 'visible', timeout: AUTOCOMPLETE_TIMEOUT_MS });
+    await listbox.waitFor({
+      state: 'visible',
+      timeout: AUTOCOMPLETE_TIMEOUT_MS,
+    });
     await listbox.getByTestId('autocomplete-option').first().click();
     // Clear uses committed `value` from context; it stays `invisible` until a real pick.
     await expect(clearButton).toBeVisible({

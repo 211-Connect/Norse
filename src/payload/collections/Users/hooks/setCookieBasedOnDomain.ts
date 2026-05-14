@@ -1,7 +1,9 @@
-import { Tenant } from '@/payload/payload-types';
 import type { CollectionAfterLoginHook } from 'payload';
-import { mergeHeaders, generateCookie, getCookieExpiration } from 'payload';
+import { generateCookie, getCookieExpiration, mergeHeaders } from 'payload';
+
 import { defaultLocale } from '@/payload/i18n/locales';
+import { Tenant } from '@/payload/payload-types';
+
 import { findResourceDirectoryByHost } from '../../ResourceDirectories/actions';
 
 export const setCookieBasedOnDomain: CollectionAfterLoginHook = async ({

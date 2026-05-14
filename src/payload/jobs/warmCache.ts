@@ -1,10 +1,12 @@
 import type { TaskConfig } from 'payload';
-import { findTenantByHost } from '../collections/Tenants/actions';
+
+import { createLogger } from '@/lib/logger';
+
 import {
   findResourceDirectoryByHost,
   findResourceDirectoryByTenantId,
 } from '../collections/ResourceDirectories/actions';
-import { createLogger } from '@/lib/logger';
+import { findTenantByHost } from '../collections/Tenants/actions';
 
 const log = createLogger('warmCache');
 
@@ -121,7 +123,6 @@ export const warmCache: TaskConfig<'warmCache'> = {
     }
 
     const duration = Date.now() - startTime;
-    const durationSeconds = (duration / 1000).toFixed(2);
 
     log.info(
       {

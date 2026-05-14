@@ -1,18 +1,18 @@
 'use client';
 
+import { ChevronLeft, ExternalLink } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+
 import { Image } from '@/app/(app)/shared/components/image';
 import { Link } from '@/app/(app)/shared/components/link';
-import { Card, CardContent } from '@/app/(app)/shared/components/ui/card';
-import { useTopics } from '@/app/(app)/shared/hooks/use-topics';
-import { Topic } from '@/types/topics';
-import { ChevronLeft, ExternalLink } from 'lucide-react';
-import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
-import { useTranslation } from 'react-i18next';
 import { Button } from '@/app/(app)/shared/components/ui/button';
-import { cn } from '@/app/(app)/shared/lib/utils';
+import { Card, CardContent } from '@/app/(app)/shared/components/ui/card';
 import { Separator } from '@/app/(app)/shared/components/ui/separator';
-import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { useTopics } from '@/app/(app)/shared/hooks/use-topics';
 import { NEW_TAB_WARNING } from '@/app/(app)/shared/lib/constants';
+import { cn } from '@/app/(app)/shared/lib/utils';
+import { Topic } from '@/types/topics';
 
 type Props = {
   topic: Topic;
@@ -47,16 +47,21 @@ const Category = ({
         )}
 
         <div className="min-w-0 flex-1">
-          <h3 className="mb-1 break-words text-xl font-semibold">{name}</h3>
+          <h3
+            className="mb-1 break-words text-xl font-semibold"
+            style={{ wordBreak: 'break-word' }}
+          >
+            {name}
+          </h3>
 
           <ul className="space-y-1" aria-label={name}>
-            {subtopics.map((el, index) => {
+            {subtopics.map((el) => {
               const opensInNewTab = el.target === '_blank' && !!el.href;
 
               return (
                 <li key={el.name}>
                   <Link
-                    className="flex items-center gap-1 rounded-md px-2 py-2 text-sm break-words hover:bg-primary hover:text-primary-foreground focus-visible:bg-primary focus-visible:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    className="flex items-center gap-1 break-words rounded-md px-2 py-2 text-sm hover:bg-primary hover:text-primary-foreground focus-visible:bg-primary focus-visible:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     href={`${
                       el.href
                         ? el.href
@@ -71,15 +76,16 @@ const Category = ({
                     prefetch={false}
                     target={el.target}
                     aria-label={
-                      opensInNewTab
-                        ? `${el.name}${NEW_TAB_WARNING}`
-                        : undefined
+                      opensInNewTab ? `${el.name}${NEW_TAB_WARNING}` : undefined
                     }
                   >
                     <span className="min-w-0 break-words">{el.name}</span>
                     {opensInNewTab ? (
                       <>
-                        <ExternalLink className="size-4 shrink-0" aria-hidden="true" />
+                        <ExternalLink
+                          className="size-4 shrink-0"
+                          aria-hidden="true"
+                        />
                         <span className="sr-only">({NEW_TAB_WARNING})</span>
                       </>
                     ) : null}
@@ -144,7 +150,7 @@ export function CategoriesSection({
 
   return (
     <div className={cn('categories container mx-auto', className)}>
-      <div className="mb-10">
+      <div className="mb-4 sm:mb-8">
         <h2 className="text-center text-3xl font-bold">
           {appConfig.topics.customHeading ||
             t('search.categories', { ns: 'common' })}
@@ -160,7 +166,7 @@ export function CategoriesSection({
         )}
       </div>
 
-      <div className="grid grid-cols-1 justify-center gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+      <div className="grid grid-cols-1 justify-center gap-4 p-2 sm:grid-cols-2 sm:p-4 lg:grid-cols-3 2xl:grid-cols-4">
         {topics.map((topic) => (
           <Category
             key={topic.name}

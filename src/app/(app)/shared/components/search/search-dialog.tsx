@@ -1,20 +1,24 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
-import { createPortal } from 'react-dom';
-import { ChevronLeft } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { useRouter } from 'next/navigation';
 import { deleteCookie, setCookie } from 'cookies-next/client';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { ChevronLeft } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import {
+  KeyboardEvent,
+  SubmitEventHandler,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from 'react';
+import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 
-import { LocationSearchBar } from './location-search-bar';
-import { SearchBar } from './search-bar';
-import { SearchButton } from './search-button';
-import { Button } from '../ui/button';
-import { useFlag } from '../../hooks/use-flag';
 import { useAppConfig } from '../../hooks/use-app-config';
 import { useClientSearchParams } from '../../hooks/use-client-search-params';
-import { cn, getScrollbarWidth } from '../../lib/utils';
+import { useFlag } from '../../hooks/use-flag';
 import {
   LOCATION_INPUT_ID,
   SEARCH_DIALOG_DESCRIPTION_ID,
@@ -23,15 +27,19 @@ import {
   SEARCH_INPUT_ID,
   USER_PREF_DISTANCE,
 } from '../../lib/constants';
-import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
-import { createUrlParamsForSearch } from '../../utils/createUrlParamsForSearch';
-import { useAtomValue, useSetAtom } from 'jotai';
+import { UmamiEvent, trackUmamiEvent } from '../../lib/umami';
+import { cn, getScrollbarWidth } from '../../lib/utils';
 import {
   searchCoordinatesAtom,
   searchDistanceAtom,
   userCoordinatesAtom,
 } from '../../store/search';
-import { trackUmamiEvent, UmamiEvent } from '../../lib/umami';
+import { createUrlParamsForSearch } from '../../utils/createUrlParamsForSearch';
+import { Button } from '../ui/button';
+import { LocationSearchBar } from './location-search-bar';
+import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
+import { SearchBar } from './search-bar';
+import { SearchButton } from './search-button';
 
 export interface SearchDialogProps {
   focusByDefault?: 'search' | 'location';
@@ -55,9 +63,6 @@ export function SearchDialog({
   const scrollPositionRef = useRef(0);
   const initialRenderRef = useRef(true);
   const [mounted, setMounted] = useState(false);
-  const [searchSource, setSearchSource] = useState<'manual' | 'suggestion'>(
-    'manual',
-  );
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const distance = useAtomValue(searchDistanceAtom);
 
@@ -80,7 +85,7 @@ export function SearchDialog({
 
   const userCoordinates = useAtomValue(userCoordinatesAtom);
 
-  const onSubmit = useCallback(
+  const onSubmit: SubmitEventHandler<HTMLFormElement> = useCallback(
     async (e) => {
       e.preventDefault();
 
@@ -146,8 +151,8 @@ export function SearchDialog({
 
         router.push(`/search${queryParams}`);
 
-        // Close as soon as navigation is requested so `open` / aria-expanded match
-        // real interactivity (dialog must not sit above the results page).
+        // Close as soon as navigation is requested so trigger and dialog state
+        // match real interactivity (dialog must not sit above the results page).
         setOpen?.(false);
 
         setSearch((prev) => ({
@@ -162,8 +167,9 @@ export function SearchDialog({
       requireUserLocation,
       router,
       search,
-      searchSource,
+      searchCoordinates,
       distance,
+      userCoordinates,
       setOpen,
       setSearch,
       stringifySearchParams,
@@ -213,7 +219,7 @@ export function SearchDialog({
   }, [restoreFocusElement, setOpen]);
 
   const handleDialogKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLDivElement>) => {
+    (event: KeyboardEvent<HTMLDivElement>) => {
       if (event.key === 'Escape') {
         event.preventDefault();
         closeDialog();
@@ -282,7 +288,7 @@ export function SearchDialog({
       ref={dialogRef}
       id={SEARCH_DIALOG_ID}
       className={cn(
-        'fixed bottom-0 left-0 right-0 top-0 z-50 bg-white p-6 transition-opacity duration-300',
+        'fixed bottom-0 left-0 right-0 top-0 z-50 overflow-y-auto overscroll-contain bg-white p-6 transition-opacity duration-300',
         open ? 'opacity-100' : 'pointer-events-none opacity-0',
       )}
       role="dialog"
@@ -299,11 +305,11 @@ export function SearchDialog({
       <p className="sr-only" id={SEARCH_DIALOG_DESCRIPTION_ID}>
         {t('search.search_dialog_description')}
       </p>
-      <div className="flex h-full w-full max-w-full justify-center !rounded-none border-0">
+      <div className="flex min-h-full w-full max-w-full items-start justify-center !rounded-none border-0">
         {open && (
           <form
             onSubmit={onSubmit}
-            className="flex w-full max-w-[25rem] flex-col gap-4 sm:mt-[120px]"
+            className="flex w-full max-w-[25rem] flex-col gap-4 overflow-y-auto pb-6 pt-6 [@media(min-width:640px)_and_(min-height:600px)]:pt-[120px]"
           >
             <div className="flex flex-row justify-between gap-4">
               <Button
@@ -317,11 +323,8 @@ export function SearchDialog({
               </Button>
               <SearchButton loading={isPending} />
             </div>
-            <div id="search-form-inputs">
-              <SearchBar
-                inputId={SEARCH_INPUT_ID}
-                onSearchSourceChange={setSearchSource}
-              />
+            <div id="search-form-inputs" className="overflow-y-auto">
+              <SearchBar inputId={SEARCH_INPUT_ID} />
               <LocationSearchBar inputId={LOCATION_INPUT_ID} className="mt-4" />
             </div>
           </form>

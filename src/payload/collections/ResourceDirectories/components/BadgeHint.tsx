@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { useState } from 'react';
+
 import './BadgeHint.css';
 
 const BadgeHint = () => {

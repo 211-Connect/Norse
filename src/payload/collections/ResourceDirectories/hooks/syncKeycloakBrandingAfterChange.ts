@@ -1,6 +1,8 @@
 import type { CollectionAfterChangeHook } from 'payload';
-import type { ResourceDirectory } from '@/payload/payload-types';
+
 import { createLogger } from '@/lib/logger';
+import type { ResourceDirectory } from '@/payload/payload-types';
+
 import { syncKeycloakRealmBrandingAttributes } from './keycloakRealmBranding';
 
 const log = createLogger('syncKeycloakRealmBrandingAfterChange');

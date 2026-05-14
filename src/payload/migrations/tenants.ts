@@ -454,6 +454,7 @@ async function createResourceDirectory(
       ),
     },
     resource: {
+      categoriesText: populatedAppConfig.categoriesText || null,
       lastAssuredText: populatedAppConfig.lastAssuredText || null,
     },
     search: {

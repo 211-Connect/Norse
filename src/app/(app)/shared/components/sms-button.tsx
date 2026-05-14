@@ -1,11 +1,16 @@
 'use client';
 
+import { useAtomValue } from 'jotai';
 import { Send, Smartphone } from 'lucide-react';
 import { useCallback, useId, useRef, useState } from 'react';
-import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
-import { useAtomValue } from 'jotai';
+import { toast } from 'sonner';
 
+import { useAppConfig } from '../hooks/use-app-config';
+import { fetchWrapper } from '../lib/fetchWrapper';
+import { withOptionalCustomBasePath } from '../lib/utils';
+import { validatePhoneNumber } from '../lib/validators';
+import { deviceAtom } from '../store/device';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { Input } from './ui/input';
@@ -15,10 +20,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from './ui/tooltip';
-import { useAppConfig } from '../hooks/use-app-config';
-import { fetchWrapper } from '../lib/fetchWrapper';
-import { validatePhoneNumber } from '../lib/validators';
-import { deviceAtom } from '../store/device';
 
 type SmsButtonProps = {
   shareMessage: string;
@@ -70,7 +71,8 @@ export function SmsButton({ shareMessage }: SmsButtonProps) {
       return;
     }
 
-    const promise = fetchWrapper(`/api/share/${appConfig.tenantId}`, {
+    const url = withOptionalCustomBasePath(`/api/share/${appConfig.tenantId}`);
+    const promise = fetchWrapper(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -1,8 +1,10 @@
 import { Field, Tab } from 'payload';
-import { superAdminOrSupportOrTenantAccess } from '../../Users/access/roles';
-import { ResourceComponentId } from '@/app/(app)/features/resource/types/component-ids';
 import { title } from 'radash';
+
+import { ResourceComponentId } from '@/app/(app)/features/resource/types/component-ids';
 import { ResourceDirectory } from '@/payload/payload-types';
+
+import { superAdminOrSupportOrTenantAccess } from '../../Users/access/roles';
 import { customAttributeFields } from '../fields/customAttributeFields';
 
 type ResourceConfig = NonNullable<ResourceDirectory['resource']>;
@@ -65,6 +67,15 @@ export const resource: Tab = {
   fields: [
     {
       name: 'lastAssuredText',
+      type: 'text',
+      localized: true,
+      access: {
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
+      },
+    },
+    {
+      name: 'categoriesText',
       type: 'text',
       localized: true,
       access: {

@@ -29,9 +29,10 @@ export function resolveBrandTheme(
   };
 }
 
-export function resolveHeaderGradient(
-  newLayout?: AppConfig['newLayout'],
-): { headerStart: string; headerEnd: string } {
+export function resolveHeaderGradient(newLayout?: AppConfig['newLayout']): {
+  headerStart: string;
+  headerEnd: string;
+} {
   return {
     headerStart: newLayout?.headerStart ?? DEFAULT_HEADER_GRADIENT.start,
     headerEnd: newLayout?.headerEnd ?? DEFAULT_HEADER_GRADIENT.end,

@@ -1,29 +1,30 @@
 'use client';
 
-import { favoriteListWithFavoritesAtom } from '@/app/(app)/shared/store/favorites';
 import { useAtom } from 'jotai';
+import { ChevronLeft } from 'lucide-react';
+import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { SearchCardLayoutConfig } from '@/app/(app)/features/search/types/card-layout-config';
+import { Link } from '@/app/(app)/shared/components/link';
+import { ShareButton } from '@/app/(app)/shared/components/share-button';
+import { Badge } from '@/app/(app)/shared/components/ui/badge';
+import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
 } from '@/app/(app)/shared/components/ui/card';
-import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
-import { ShareButton } from '@/app/(app)/shared/components/share-button';
-import { useRef } from 'react';
-import { ChevronLeft } from 'lucide-react';
-import { cn, withOptionalTrailingSlash } from '@/app/(app)/shared/lib/utils';
-import { Badge } from '@/app/(app)/shared/components/ui/badge';
-import { fontSans } from '@/app/(app)/shared/styles/fonts';
-import { useTranslation } from 'react-i18next';
 import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
-import { SearchCardLayoutConfig } from '@/app/(app)/features/search/types/card-layout-config';
+import { cn, withOptionalTrailingSlash } from '@/app/(app)/shared/lib/utils';
+import { favoriteListWithFavoritesAtom } from '@/app/(app)/shared/store/favorites';
+import { fontSans } from '@/app/(app)/shared/styles/fonts';
 
+import { DeleteFavoriteListButton } from './delete-favorite-list-button';
 import { Favorite } from './favorite';
 import { NoFavoritesCard } from './no-favorites-card';
 import { UpdateFavoriteListButton } from './update-favorite-list-button';
-import { DeleteFavoriteListButton } from './delete-favorite-list-button';
-import { Link } from '@/app/(app)/shared/components/link';
 
 type FavoritesSectionProps = {
   cardLayout: SearchCardLayoutConfig;

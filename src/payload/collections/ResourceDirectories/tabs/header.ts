@@ -1,6 +1,8 @@
 import { Tab } from 'payload';
-import { superAdminOrSupportOrTenantAccess } from '../../Users/access/roles';
+
 import { generateUrlFields } from '@/payload/fields/urlField';
+
+import { superAdminOrSupportOrTenantAccess } from '../../Users/access/roles';
 
 export const header: Tab = {
   name: 'header',

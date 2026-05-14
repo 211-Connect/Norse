@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 import mapLibreGl, {
   AttributionControl,
@@ -9,21 +8,24 @@ import mapLibreGl, {
   Marker,
   Popup,
 } from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
+import { Protocol } from 'pmtiles';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+
 import { MAPLIBRE_STYLE_URL } from '@/app/(app)/shared/lib/constants';
 import { createLogger } from '@/lib/logger';
+import { isValidCoordinate } from '@/utils/isValidCoordinate';
+
+import { MapErrorFallback } from '../map-error-fallback';
+import {
+  MarkerDef,
+  ServiceAreaGeoJSON,
+  getBoundsFromServiceArea,
+  normalizeServiceArea,
+} from '../map-shared';
 
 const log = createLogger('maplibre');
-import { Protocol } from 'pmtiles';
-import 'maplibre-gl/dist/maplibre-gl.css';
-import {
-  ServiceAreaGeoJSON,
-  normalizeServiceArea,
-  getBoundsFromServiceArea,
-  MarkerDef,
-} from '../map-shared';
-import { createPortal } from 'react-dom';
-import { isValidCoordinate } from '@/utils/isValidCoordinate';
-import { MapErrorFallback } from '../map-error-fallback';
 
 type MapProps = {
   center?: [number, number];
@@ -79,7 +81,10 @@ export function Map({
     attributionToggle.append(screenReaderLabel);
   };
 
-  const applyMarkerSemantics = (markerElement: HTMLElement, interactive: boolean) => {
+  const applyMarkerSemantics = (
+    markerElement: HTMLElement,
+    interactive: boolean,
+  ) => {
     if (!interactive) {
       markerElement.removeAttribute('aria-label');
       markerElement.removeAttribute('role');
@@ -165,7 +170,6 @@ export function Map({
         }).setDOMContent(popupDiv);
 
         popup.on('open', () => {
-          markerElement.setAttribute('aria-expanded', 'true');
           setActivePopup({
             element: popupDiv,
             popup: m.popup,
@@ -179,7 +183,6 @@ export function Map({
         });
 
         popup.on('close', () => {
-          markerElement.setAttribute('aria-expanded', 'false');
           setActivePopup(null);
           if (restoreFocusOnCloseRef.current) {
             requestAnimationFrame(() => {
@@ -201,10 +204,9 @@ export function Map({
           markerElement.setAttribute('role', 'button');
           markerElement.setAttribute(
             'aria-label',
-            `Open map details for ${markerLabel}`,
+            `Map marker for ${markerLabel}`,
           );
           markerElement.setAttribute('aria-haspopup', 'dialog');
-          markerElement.setAttribute('aria-expanded', 'false');
           markerElement.setAttribute('aria-controls', popupId);
           markerElement.removeAttribute('aria-disabled');
         } else {
@@ -212,7 +214,6 @@ export function Map({
           markerElement.removeAttribute('role');
           markerElement.removeAttribute('aria-label');
           markerElement.removeAttribute('aria-haspopup');
-          markerElement.removeAttribute('aria-expanded');
           markerElement.removeAttribute('aria-controls');
           markerElement.setAttribute('aria-disabled', 'true');
         }
@@ -313,14 +314,6 @@ export function Map({
       Array.isArray(markers) &&
       markers.some((m) => isValidCoordinate(m.coordinates));
     let cancelled = false;
-
-    const safeHasLayer = (id: string) => {
-      try {
-        return !!map?.style && !!map.getLayer(id);
-      } catch {
-        return false;
-      }
-    };
 
     // Cleanup helper with guards (map may be removed before style load)
     const cleanup = () => {

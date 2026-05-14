@@ -1,10 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Button, toast, Modal, useModal } from '@payloadcms/ui';
-import { TaskTranslate } from '@/payload/payload-types';
+import { Button, Modal, toast, useModal } from '@payloadcms/ui';
+import { FC, useState } from 'react';
+
 import { fetchWrapper } from '@/app/(app)/shared/lib/fetchWrapper';
+import { withOptionalCustomBasePath } from '@/app/(app)/shared/lib/utils';
 import { createLogger } from '@/lib/logger';
+import { TaskTranslate } from '@/payload/payload-types';
 
 const log = createLogger('translate-modal');
 
@@ -13,7 +15,7 @@ interface TranslateModalProps {
   availableLocales: string[];
 }
 
-export const TranslateModal: React.FC<TranslateModalProps> = ({
+export const TranslateModal: FC<TranslateModalProps> = ({
   resourceDirectoryId,
   availableLocales,
 }) => {
@@ -59,7 +61,7 @@ export const TranslateModal: React.FC<TranslateModalProps> = ({
 
     try {
       const result = await fetchWrapper(
-        `${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}/api/translate`,
+        withOptionalCustomBasePath('/api/translate'),
         {
           method: 'POST',
           headers: {

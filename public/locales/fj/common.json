@@ -47,11 +47,11 @@
     "geocoding_unsupported": "Na Geolocation e sega ni tokoni ena nomu barausa .",
     "geocoding_unable_to_retrieve": "E sega ni rawa ni vakasukai na nomu vanua. Yalovinaka raica na ituvatuva ni vanua ni nomu barausa ka tovolea tale.",
     "categories": "Ulutaga",
-    "show_all": "Vakaraitaka kece ({{wiliwili}})",
+    "show_all": "Vakaraitaka kece ({{count}})",
     "show_less": "Vakaraitaka lailai",
     "query_input_label": "Vakasaqara na ivurevure .",
     "location_input_label": "Vakasaqara e dua na vanua .",
-    "change_location_label": "Veisautaka na vanua: {{vanua}}",
+    "change_location_label": "Veisautaka na vanua: {{location}}",
     "open_search_dialog": "Dolava na veitalanoa ni vakasaqaqara",
     "list_status_one": "1 na digidigi e tiko. Vakayagataka na ki ni matailalai e cake kei na sobu me railesuva.",
     "list_status_other": "{{wiliwili}} digidigi e tiko. Vakayagataka na ki ni matailalai e cake kei na sobu me railesuva.",
@@ -164,13 +164,13 @@
     "go_to": "Lako ki na"
   },
   "footer": {
-    "copyright": "© Dodonu ni taukeni {{volavola}}"
+    "copyright": "© Dodonu ni taukeni {{text}}"
   },
-  "filter_results_count_one": "{{wili}} macala",
-  "filter_results_count_other": "{{wiliwili}} na kena macala",
+  "filter_results_count_one": "{{count}} macala",
+  "filter_results_count_other": "{{count}} na kena macala",
   "autocomplete": {
-    "results_available_one": "{{wiliwili}} na macala e tiko",
-    "results_available_other": "{{wiliwili}} na macala e tiko",
+    "results_available_one": "{{count}} na macala e tiko",
+    "results_available_other": "{{count}} na macala e tiko",
     "no_results": "Sega na kena macala"
   },
   "auth_error": {

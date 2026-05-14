@@ -1,42 +1,44 @@
 import { ComponentType } from 'react';
-import { ResourceComponentId } from '../types/component-ids';
+
+import { AppConfig } from '@/types/appConfig';
 import { Resource } from '@/types/resource';
+
+import { ResourceComponentId } from '../types/component-ids';
+import { CustomAttributeConfig } from '../types/layout-config';
 import {
+  AccessibilityComponent,
+  AddressComponent,
+  ApplicationProcessComponent,
+  AttributionComponent,
   BadgesComponent,
-  ResourceNameComponent,
-  ServiceNameComponent,
+  CategoriesComponent,
+  ContactsComponent,
+  CustomAttributeComponent,
+  DescriptionComponent,
+  EligibilityComponent,
+  EmailComponent,
+  FacetsComponent,
+  FeesComponent,
+  GetDirectionsComponent,
+  HoursComponent,
+  InterpretationServicesComponent,
+  LanguagesComponent,
+  LastAssuredComponent,
   LocationNameComponent,
   LocationNameSubtitleComponent,
-  AddressComponent,
-  TransportationComponent,
-  AccessibilityComponent,
-  EligibilityComponent,
-  RequiredDocumentsComponent,
-  HoursComponent,
-  ContactsComponent,
-  PhoneNumbersComponent,
-  WebsiteComponent,
-  EmailComponent,
-  LanguagesComponent,
-  InterpretationServicesComponent,
-  ApplicationProcessComponent,
-  FeesComponent,
-  ServiceAreaComponent,
-  DescriptionComponent,
-  CategoriesComponent,
-  LastAssuredComponent,
-  AttributionComponent,
   MapComponent,
-  GetDirectionsComponent,
   OrganizationComponent,
-  FacetsComponent,
+  PhoneNumbersComponent,
+  RequiredDocumentsComponent,
+  ResourceNameComponent,
   SeparatorComponent,
-  CustomAttributeComponent,
-  getFacets,
+  ServiceAreaComponent,
+  ServiceNameComponent,
+  TransportationComponent,
+  WebsiteComponent,
   getCustomAttributeProps,
+  getFacets,
 } from './resource-components';
-import { CustomAttributeConfig } from '../types/layout-config';
-import { AppConfig } from '@/types/appConfig';
 import { OrganizationUrlComponent } from './resource-components/organization-url';
 
 export interface ResourceComponentProps {
@@ -165,7 +167,7 @@ export function shouldComponentRender(
         (resource.location &&
           resource.location.coordinates &&
           resource.location.coordinates.length === 2) ||
-          (resource.serviceArea && resource.serviceArea.coordinates),
+        (resource.serviceArea && resource.serviceArea.coordinates),
       );
     case ResourceComponentId.GET_DIRECTIONS:
       return Boolean(
@@ -173,24 +175,26 @@ export function shouldComponentRender(
         resource.location.coordinates &&
         resource.location.coordinates.length === 2,
       );
-    case ResourceComponentId.FACETS:
+    case ResourceComponentId.FACETS: {
       if (!resource.facets || !resource.facets.length) {
         return false;
       }
       const facets = getFacets(resource, appConfig.search.facets);
 
       return Boolean(facets);
+    }
     case ResourceComponentId.ORGANIZATION:
       return Boolean(
         resource.organizationName || resource.organizationDescription,
       );
-    case ResourceComponentId.CUSTOM_ATTRIBUTE:
+    case ResourceComponentId.CUSTOM_ATTRIBUTE: {
       const shouldRender = getCustomAttributeProps({
         resource,
         customAttribute,
       });
 
       return Boolean(shouldRender);
+    }
     default:
       return true;
   }

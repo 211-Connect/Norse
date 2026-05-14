@@ -1,12 +1,13 @@
-import type { FacetWithTranslation, Taxonomy } from '@/types/resource';
-import {
-  parseFilter,
-  evaluateFilter,
-  interpolateProperties,
-} from './badgeFilterEvaluator';
-import { ResourceDirectoryBadgeListItem } from '@/payload/collections/ResourceDirectories/types/badge';
 import type { BadgeProps } from '@/app/(app)/shared/components/ui/badge';
 import { createLogger } from '@/lib/logger';
+import { ResourceDirectoryBadgeListItem } from '@/payload/collections/ResourceDirectories/types/badge';
+import type { FacetWithTranslation, Taxonomy } from '@/types/resource';
+
+import {
+  evaluateFilter,
+  interpolateProperties,
+  parseFilter,
+} from './badgeFilterEvaluator';
 
 const log = createLogger('getBadgesForResource');
 

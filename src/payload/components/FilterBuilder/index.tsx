@@ -1,13 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Plus, Trash2, GripVertical, Eye, Code } from 'lucide-react';
 import { useField } from '@payloadcms/ui';
+import { Code, Eye, GripVertical, Plus, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
 import type { FilterCondition } from '@/utils/badgeFilterEvaluator';
 import {
   parseFilter,
   validateFilterStructure,
 } from '@/utils/badgeFilterEvaluator';
+
 import './style.css';
 
 interface FilterBuilderProps {
@@ -96,7 +98,6 @@ export const FilterBuilder = ({ path }: FilterBuilderProps) => {
         );
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conditions, logic, mode]);
 
   const handleTextChange = (newValue: string) => {

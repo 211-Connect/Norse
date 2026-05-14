@@ -3,9 +3,11 @@
 import { Phone, Printer } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { Resource } from '@/types/resource';
+
+import { UmamiEvent, trackUmamiEvent } from '../../../../shared/lib/umami';
 import { Datum } from '../datum';
-import { trackUmamiEvent, UmamiEvent } from '../../../../shared/lib/umami';
 
 export function PhoneNumbersComponent({ resource }: { resource: Resource }) {
   const { t } = useTranslation('page-resource');

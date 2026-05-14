@@ -1,8 +1,9 @@
 'use client';
 
 import { BusFront } from 'lucide-react';
-import { Datum } from '../datum';
+
 import { ResourceComponentProps } from '../component-registry';
+import { Datum } from '../datum';
 
 export function TransportationComponent({ resource }: ResourceComponentProps) {
   if (!resource.transportation) {

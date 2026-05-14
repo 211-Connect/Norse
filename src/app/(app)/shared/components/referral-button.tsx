@@ -1,14 +1,13 @@
 'use client';
 
-import * as React from 'react';
-import { ReactNode } from 'react';
+import { ReactNode, forwardRef } from 'react';
 
+import { useAppConfig } from '../hooks/use-app-config';
+import { useClientSearchParams } from '../hooks/use-client-search-params';
 import { createReferralEvent } from '../lib/google-tag-manager';
 import { cn } from '../lib/utils';
-import { Button, ButtonProps } from './ui/button';
 import { ResultType } from '../store/results';
-import { useClientSearchParams } from '../hooks/use-client-search-params';
-import { useAppConfig } from '../hooks/use-app-config';
+import { Button, ButtonProps } from './ui/button';
 
 type Props = {
   referralType: 'call_referral' | 'website_referral' | 'directions_referral';
@@ -19,7 +18,7 @@ type Props = {
   children?: ReactNode;
 };
 
-export const ReferralButton = React.forwardRef<
+export const ReferralButton = forwardRef<
   HTMLButtonElement,
   Props & ButtonProps
 >(function ReferralButton(

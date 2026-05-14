@@ -1,9 +1,8 @@
 'use server';
 
-import { buildSearchRequest, deriveQueryType } from '../lib/search-utils';
-import { API_URL, INTERNAL_API_KEY } from '../lib/constants';
-import { fetchWrapper } from '../lib/fetchWrapper';
-import { transformFacetsToArray } from '../utils/toFacetsWithTranslation';
+import qs from 'qs';
+
+import { createLogger } from '@/lib/logger';
 import { BBox } from '@/types/resource';
 import {
   FiltersMap,
@@ -11,13 +10,16 @@ import {
   SearchFacet,
   SearchHit,
 } from '@/types/search';
-import qs from 'qs';
-import { createLogger } from '@/lib/logger';
-import { formatAddressForDisplay } from '../lib/utils';
 import { stableHash, withCache } from '@/utilities/withCache';
+import { ensureUrlProtocol } from '@/utils';
+
+import { API_URL, INTERNAL_API_KEY } from '../lib/constants';
+import { fetchWrapper } from '../lib/fetchWrapper';
+import { buildSearchRequest, deriveQueryType } from '../lib/search-utils';
+import { formatAddressForDisplay } from '../lib/utils';
 import { ResultType } from '../store/results';
 import { SortOption } from '../utils/getSortOption';
-import { ensureUrlProtocol } from '@/utils';
+import { transformFacetsToArray } from '../utils/toFacetsWithTranslation';
 
 const log = createLogger('search');
 
@@ -96,7 +98,7 @@ function transformSearchHits(
   });
 }
 
-function extractFilters(data: SearchApiResponse, locale: string): FiltersMap {
+function extractFilters(data: SearchApiResponse, _locale: string): FiltersMap {
   const facets: SearchFacet[] = data?.facets ?? [];
   return Object.fromEntries(
     facets

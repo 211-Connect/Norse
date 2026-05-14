@@ -1,34 +1,31 @@
 'use client';
 
-import {
-  filtersAtom,
-  resultsAtom,
-  resultsCurrentPageAtom,
-  resultTotalAtom,
-} from '@/app/(app)/shared/store/results';
+import { deleteCookie, setCookie } from 'cookies-next';
+import { useEffect, useMemo } from 'react';
+
 import { useHydrateAndSyncAtoms } from '@/app/(app)/shared/hooks/use-hydrate-and-sync-atoms';
 import {
-  searchAtom,
-  searchCoordinatesAtom,
-  userCoordinatesAtom,
-} from '@/app/(app)/shared/store/search';
+  filtersAtom,
+  resultTotalAtom,
+  resultsAtom,
+  resultsCurrentPageAtom,
+} from '@/app/(app)/shared/store/results';
+import { searchAtom } from '@/app/(app)/shared/store/search';
+
 import { useAppConfig } from '../hooks/use-app-config';
-import { setCookie, deleteCookie } from 'cookies-next';
 import {
   USER_PREF_COORDS,
   USER_PREF_DISTANCE,
   USER_PREF_FONT_SIZE,
   USER_PREF_LOCATION,
 } from '../lib/constants';
-import {
-  favoriteListsStateAtom,
-  favoriteListWithFavoritesAtom,
-} from '../store/favorites';
-import { deviceAtom } from '../store/device';
 import { validateCoordsString } from '../lib/validators';
 import { accessibilityAtom } from '../store/accessibility';
-import { useAtomValue } from 'jotai';
-import { useEffect, useMemo } from 'react';
+import { deviceAtom } from '../store/device';
+import {
+  favoriteListWithFavoritesAtom,
+  favoriteListsStateAtom,
+} from '../store/favorites';
 
 function getCoordinates(pageProps, cookies) {
   if (pageProps.coords) {
@@ -88,7 +85,7 @@ export function JotaiHydration({ cookies = {}, pageProps }) {
     ) {
       deleteCookie(USER_PREF_COORDS, { path: '/' });
     }
-  }, [coordsKey]);
+  }, [cookies, coordsKey, pageProps]);
 
   useEffect(() => {
     if (pageProps?.location) {
@@ -96,7 +93,7 @@ export function JotaiHydration({ cookies = {}, pageProps }) {
         path: '/',
       });
     }
-  }, [locationKey]);
+  }, [locationKey, pageProps.location]);
 
   // Stable atom values — only recomputed when actual input values change
   const atomValues = useMemo(
@@ -114,7 +111,7 @@ export function JotaiHydration({ cookies = {}, pageProps }) {
             isDesktop: false,
           },
         ],
-        [resultsAtom, pageProps?.results ?? []],
+        [resultsAtom, pageProps?.results ?? null],
         [resultsCurrentPageAtom, pageProps?.currentPage ?? 0],
         [resultTotalAtom, pageProps?.totalResults ?? 0],
         [filtersAtom, pageProps?.filters ?? {}],

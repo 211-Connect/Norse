@@ -1,14 +1,15 @@
 'use client';
 
-import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
-import { Link } from '@/app/(app)/shared/components/link';
 import Head from 'next/head';
 import Image from 'next/image';
 import { useTranslation } from 'react-i18next';
+
+import { Link } from '@/app/(app)/shared/components/link';
+import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import { getImageUrl } from '@/app/(app)/shared/utils/getImageUrl';
 
 export function InternalServerErrorContent() {
-  const { t, i18n } = useTranslation('page-500');
+  const { t } = useTranslation('page-500');
 
   return (
     <div className="flex flex-1">
@@ -17,7 +18,7 @@ export function InternalServerErrorContent() {
         <meta name="description" content={t('meta_description')} />
       </Head>
 
-      <div className="relative flex flex-1 flex-col">
+      <div className="relative flex min-h-[calc(100vh-196px)] flex-1 flex-col">
         <Image
           fill
           src={getImageUrl('undraw_500.svg')}

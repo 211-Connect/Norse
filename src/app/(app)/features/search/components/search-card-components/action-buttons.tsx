@@ -1,15 +1,17 @@
 'use client';
 
-import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
-import { ReferralButton } from '@/app/(app)/shared/components/referral-button';
-import { GetDirectionsButton } from '@/app/(app)/shared/components/get-directions-button';
-import { Link } from '@/app/(app)/shared/components/link';
-import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
-import { cn } from '@/app/(app)/shared/lib/utils';
-import { searchCoordinatesAtom } from '@/app/(app)/shared/store/search';
 import { useAtomValue } from 'jotai';
 import { LinkIcon, Phone } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+
+import { GetDirectionsButton } from '@/app/(app)/shared/components/get-directions-button';
+import { Link } from '@/app/(app)/shared/components/link';
+import { ReferralButton } from '@/app/(app)/shared/components/referral-button';
+import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { cn } from '@/app/(app)/shared/lib/utils';
+import { searchCoordinatesAtom } from '@/app/(app)/shared/store/search';
+
 import { SearchCardComponentProps } from './types';
 
 export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
@@ -23,11 +25,11 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center">
+      <div className="grid w-full grid-cols-1 gap-2 lg:grid-cols-3">
         {result.phone ? (
           <ReferralButton
             asChild
-            className="flex-1 gap-1 overflow-hidden"
+            className="w-full gap-1 overflow-hidden"
             size="sm"
             referralType="call_referral"
             resourceId={result.id}
@@ -44,7 +46,7 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
           </ReferralButton>
         ) : (
           <ReferralButton
-            className="flex-1 gap-1 overflow-hidden"
+            className="w-full gap-1 overflow-hidden"
             size="sm"
             disabled
             referralType="call_referral"
@@ -60,7 +62,7 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
         {result.website ? (
           <ReferralButton
             asChild
-            className="flex-1 gap-1 overflow-hidden"
+            className="w-full gap-1 overflow-hidden"
             referralType="website_referral"
             size="sm"
             resourceId={result.id}
@@ -79,7 +81,7 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
           </ReferralButton>
         ) : (
           <ReferralButton
-            className="flex-1 gap-1 overflow-hidden"
+            className="w-full gap-1 overflow-hidden"
             referralType="website_referral"
             size="sm"
             resourceId={result.id}

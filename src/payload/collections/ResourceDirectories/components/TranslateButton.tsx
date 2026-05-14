@@ -1,10 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
-import { toast, Button, useModal } from '@payloadcms/ui';
-import { TranslateModal } from './TranslateModal';
-import { getTenantLocales } from '../../Tenants/components/actions/getTenantLocales';
+import { Button, toast, useModal } from '@payloadcms/ui';
+import { FC, useState } from 'react';
+
 import { createLogger } from '@/lib/logger';
+
+import { getTenantLocales } from '../../Tenants/components/actions/getTenantLocales';
+import { TranslateModal } from './TranslateModal';
 
 const log = createLogger('translate-button');
 
@@ -12,9 +14,7 @@ interface TranslateButtonProps {
   tenantId: string;
 }
 
-export const TranslateButton: React.FC<TranslateButtonProps> = ({
-  tenantId,
-}) => {
+export const TranslateButton: FC<TranslateButtonProps> = ({ tenantId }) => {
   const [targetLocales, setTargetLocales] = useState<string[]>([]);
   const [isLoadingTranslate, setIsLoadingTranslate] = useState(false);
   const { openModal } = useModal();

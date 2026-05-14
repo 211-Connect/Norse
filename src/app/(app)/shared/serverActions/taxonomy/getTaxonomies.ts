@@ -1,9 +1,10 @@
 'use server';
 
-import { assertValidLocale, isValidLocale } from '@/payload/i18n/locales';
+import { createLogger } from '@/lib/logger';
+import { isValidLocale } from '@/payload/i18n/locales';
+
 import { API_URL, INTERNAL_API_KEY } from '../../lib/constants';
 import { fetchWrapper } from '../../lib/fetchWrapper';
-import { createLogger } from '@/lib/logger';
 
 const log = createLogger('getTaxonomies');
 

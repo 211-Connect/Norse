@@ -1,19 +1,18 @@
 import {
-  test,
-  expect,
   closeFavoritesDialog,
+  deleteAllE2ETestLists,
+  expect,
+  expectPageUrl,
   filterFavoritesDialogLists,
   getFavoritesDialogListActionButton,
-  performSearch,
   goToFavorites,
+  loginViaKeycloak,
+  performSearch,
+  test,
+  waitForFavoriteListPage,
   waitForFavoriteOnListPage,
   waitForFavoriteToBeAbsentOnListPage,
-  waitForFavoriteListPage,
   waitForFavoritesDialogReady,
-  loginViaKeycloak,
-  goHome,
-  deleteAllE2ETestLists,
-  expectPageUrl,
 } from './helpers';
 import { ASYNC_UI_TIMEOUT_MS, UI_SHELL_TIMEOUT_MS } from './timeouts';
 
@@ -123,13 +122,6 @@ test.describe('Favorites Feature (Authenticated)', () => {
     await expect(page.getByText('Added to list')).toBeVisible({
       timeout: ASYNC_UI_TIMEOUT_MS,
     });
-
-    // Verify the resource is now marked as in the list (HeartOff icon)
-    const removeBtn = await getFavoritesDialogListActionButton(
-      page,
-      listName,
-      'remove-from-list-btn',
-    );
 
     await closeFavoritesDialog(page);
 

@@ -1,13 +1,20 @@
 'use client';
 
-import { PropsWithChildren, useEffect, useRef, type CSSProperties } from 'react';
 import {
+  type ProviderProps,
   TourProvider as ReactourProvider,
   useTour,
-  type ProviderProps,
 } from '@reactour/tour';
+import {
+  type CSSProperties,
+  PropsWithChildren,
+  useEffect,
+  useRef,
+} from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { getScrollbarWidth } from '@/app/(app)/shared/lib/utils';
+
 import { ACCESSIBLE_TOUR_ACCENT } from '../theme/theme-config';
 
 const TOUR_DIALOG_ID = 'home-page-tour-dialog';
@@ -138,9 +145,12 @@ function patchPopoverLayout(
   popover.style.gridTemplateRows = 'auto auto';
   popover.style.alignItems = 'start';
   popover.style.gap = '1rem';
-  popover.style.overflow = 'visible';
+  popover.style.overflow = 'auto';
+  popover.style.overscrollBehavior = 'contain';
   popover.style.padding = '1rem 1rem 1.25rem';
   popover.style.boxSizing = 'border-box';
+  popover.style.maxHeight = 'calc(100dvh - 2rem)';
+  popover.style.maxWidth = 'calc(100vw - 2rem)';
 
   const contentContainer = getContentContainer(popover, controlsDiv);
   if (contentContainer) {
@@ -149,9 +159,11 @@ function patchPopoverLayout(
     contentContainer.style.gridRow = '1';
     contentContainer.style.width = '100%';
     contentContainer.style.minWidth = '0';
+    contentContainer.style.maxHeight = 'calc(100dvh - 10rem)';
     contentContainer.style.minHeight = '0';
     contentContainer.style.boxSizing = 'border-box';
     contentContainer.style.overflowY = 'auto';
+    contentContainer.style.overflowX = 'hidden';
     contentContainer.style.overscrollBehavior = 'contain';
     contentContainer.style.paddingRight = '0';
   }
@@ -223,8 +235,14 @@ function patchPaginationDots(
     const isActive = index === currentStep;
     button.setAttribute('type', 'button');
     button.setAttribute('aria-current', isActive ? 'step' : 'false');
-    button.style.width = '14px';
-    button.style.height = '14px';
+    button.style.width = '24px';
+    button.style.height = '24px';
+    button.style.minWidth = '24px';
+    button.style.minHeight = '24px';
+    button.style.display = 'inline-flex';
+    button.style.alignItems = 'center';
+    button.style.justifyContent = 'center';
+    button.style.padding = '0';
     button.style.margin = '0';
     button.style.borderRadius = '9999px';
     button.style.borderStyle = 'solid';
@@ -475,14 +493,15 @@ export const TourProvider = ({ children }: PropsWithChildren) => {
           backgroundColor: ACCESSIBLE_TOUR_ACCENT,
           color: '#ffffff',
         }),
-        popover: (baseStyles) => ({
-          ...baseStyles,
-          '--reactour-accent': ACCESSIBLE_TOUR_ACCENT,
-          width: 'min(36rem, calc(100vw - 2rem))',
-          maxWidth: 'calc(100vw - 2rem)',
-          maxHeight: 'calc(100dvh - 2rem)',
-          padding: '1rem 1rem 1.25rem',
-        }) as CSSProperties,
+        popover: (baseStyles) =>
+          ({
+            ...baseStyles,
+            '--reactour-accent': ACCESSIBLE_TOUR_ACCENT,
+            width: 'min(36rem, calc(100vw - 2rem))',
+            maxWidth: 'calc(100vw - 2rem)',
+            maxHeight: 'calc(100dvh - 2rem)',
+            padding: '1rem 1rem 1.25rem',
+          }) as CSSProperties,
       }}
     >
       <TourAccessibilityEnhancer />

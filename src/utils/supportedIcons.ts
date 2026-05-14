@@ -4,7 +4,6 @@
  *
  * To request additional icons, please contact support.
  */
-
 import {
   Accessibility,
   AlertCircle,
@@ -39,6 +38,7 @@ import {
   Info,
   Locate,
   Lock,
+  type LucideIcon,
   Mail,
   Map,
   MapPin,
@@ -64,7 +64,6 @@ import {
   Video,
   X,
   XCircle,
-  type LucideIcon,
 } from 'lucide-react';
 
 export const SUPPORTED_ICONS = {

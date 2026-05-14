@@ -1,10 +1,20 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
+import { LanguagesIcon } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTopLoader } from 'nextjs-toploader';
+import { useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import { useAppConfig } from '../hooks/use-app-config';
+import { useBreakpoint } from '../hooks/use-breakpoint';
+import { useClientSearchParams } from '../hooks/use-client-search-params';
+import {
+  LANGUAGE_SWITCHER_CONTENT_ID,
+  LANGUAGE_SWITCHER_TRIGGER_ID,
+} from '../lib/aria-constants';
+import { cn } from '../lib/utils';
+import { Label } from './ui/label';
 import {
   Select,
   SelectContent,
@@ -12,16 +22,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from './ui/select';
-import { Label } from './ui/label';
-import { LanguagesIcon } from 'lucide-react';
-import { useClientSearchParams } from '../hooks/use-client-search-params';
-import { useAppConfig } from '../hooks/use-app-config';
-import { useBreakpoint } from '../hooks/use-breakpoint';
-import {
-  LANGUAGE_SWITCHER_CONTENT_ID,
-  LANGUAGE_SWITCHER_TRIGGER_ID,
-} from '../lib/aria-constants';
-import { cn } from '../lib/utils';
 
 const LANGUAGE_NAME = {
   ff: 'Fulfulde',
@@ -38,7 +38,7 @@ const getLanguageName = (locale: string) => {
     return new Intl.DisplayNames([locale], {
       type: 'language',
     }).of(locale);
-  } catch (error) {
+  } catch {
     return locale;
   }
 };

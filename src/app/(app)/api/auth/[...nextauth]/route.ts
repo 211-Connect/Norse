@@ -1,10 +1,12 @@
+import NextAuth from 'next-auth';
+import { NextRequest } from 'next/server';
+
+import { withOptionalCustomBasePath } from '@/app/(app)/shared/lib/utils';
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
 import { createAuthOptions } from '@/auth';
 import { findTenantByHost } from '@/payload/collections/Tenants/actions';
 import { getKeycloakIssuer } from '@/utils/getKeycloakIssuer';
 import { normalizeAllowedEmailDomains } from '@/utils/normalizeAllowedEmailDomains';
-import NextAuth from 'next-auth';
-import { NextRequest } from 'next/server';
 
 const handlerFunction = async (req: NextRequest, ctx) => {
   const host =
@@ -18,7 +20,7 @@ const handlerFunction = async (req: NextRequest, ctx) => {
 
   const parsedHost = parseHost(host ?? '');
 
-  const baseUrl = `${protocol}://${host}${process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH || ''}`;
+  const baseUrl = withOptionalCustomBasePath(`${protocol}://${host}`);
   const tenant = await findTenantByHost(parsedHost);
 
   return NextAuth(

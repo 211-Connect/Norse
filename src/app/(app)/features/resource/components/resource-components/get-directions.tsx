@@ -1,7 +1,8 @@
 'use client';
 
-import { useTranslation } from 'react-i18next';
 import { useAtomValue } from 'jotai';
+import { useTranslation } from 'react-i18next';
+
 import { GetDirectionsButton } from '@/app/(app)/shared/components/get-directions-button';
 import { userCoordinatesAtom } from '@/app/(app)/shared/store/search';
 import { Resource } from '@/types/resource';

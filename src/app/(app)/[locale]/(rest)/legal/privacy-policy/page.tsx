@@ -1,8 +1,9 @@
-import initTranslations from '@/app/(app)/shared/i18n/i18n';
-import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
-import { notFound } from 'next/navigation';
 import { getCookies } from 'cookies-next/server';
 import { cookies, headers } from 'next/headers';
+import { notFound } from 'next/navigation';
+
+import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
+import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 
 const i18nNamespaces = ['common', 'page-404'];
@@ -62,7 +63,7 @@ export default async function PrivacyPolicyPage({ params }) {
   }
 
   const cookieList = await getCookies({ cookies });
-  const { t, i18n, resources } = await initTranslations(
+  const { resources } = await initTranslations(
     locale,
     i18nNamespaces,
     appConfig.i18n.locales,

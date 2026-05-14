@@ -1,8 +1,9 @@
-import crypto from 'crypto';
 import TextTranslationClient, {
   isUnexpected,
 } from '@azure-rest/ai-translation-text';
 import { TranslationServiceClient } from '@google-cloud/translate';
+import crypto from 'crypto';
+
 import { translationCacheService } from '@/cacheService';
 
 // Google does not support some language codes - especially dialects.
@@ -33,7 +34,6 @@ export interface BatchTranslationResult {
   fromCache: boolean;
 }
 
-const CACHE_DB = 1;
 const CACHE_TTL = 31536000; // 1 year in seconds
 
 function createTextHash(text: string): string {

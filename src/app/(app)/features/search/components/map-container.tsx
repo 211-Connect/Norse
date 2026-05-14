@@ -1,17 +1,18 @@
 'use client';
 
-import { MapRenderer } from '@/app/(app)/shared/components/map/map-renderer';
-import { HEADER_ID } from '@/app/(app)/shared/lib/constants';
-import { resultsAtom } from '@/app/(app)/shared/store/results';
 import { useAtomValue } from 'jotai';
 import { CSSProperties, useEffect, useMemo, useState } from 'react';
-import { userCoordinatesAtom } from '@/app/(app)/shared/store/search';
+
+import { MapRenderer } from '@/app/(app)/shared/components/map/map-renderer';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { HEADER_ID } from '@/app/(app)/shared/lib/constants';
 import {
-  cn,
   Coords,
+  cn,
   distanceBetweenCoordsInMiles,
 } from '@/app/(app)/shared/lib/utils';
-import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { resultsAtom } from '@/app/(app)/shared/store/results';
+import { userCoordinatesAtom } from '@/app/(app)/shared/store/search';
 
 import { MapPopup } from './map-popup';
 
@@ -31,7 +32,7 @@ export function MapContainer() {
 
   // Memoize to prevent unecessary map re-renders
   const mapMarkers = useMemo(() => {
-    return results.map((result) => {
+    return (results ?? []).map((result) => {
       const coordinates = result?.location?.coordinates as Coords | undefined;
       const distance = (() => {
         if (!coordinates || (coords?.length ?? 0) !== 2) {

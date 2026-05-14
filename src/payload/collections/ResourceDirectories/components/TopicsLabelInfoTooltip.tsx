@@ -1,9 +1,9 @@
 'use client';
 
+import { useWatchForm } from '@payloadcms/ui';
 import type { TextFieldLabelClientComponent } from 'payload';
 
 import LabelInfoTooltip from '@/payload/components/LabelInfoTooltip';
-import { useWatchForm } from '@payloadcms/ui';
 
 const TopicsLabelInfoTooltip: TextFieldLabelClientComponent = ({
   field,

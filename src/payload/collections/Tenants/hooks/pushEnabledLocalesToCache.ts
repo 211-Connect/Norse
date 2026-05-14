@@ -1,8 +1,10 @@
-import { Tenant } from '@/payload/payload-types';
-import { apiConfigCacheService } from '@/cacheService';
-import { getEnabledLocalesKey } from '../utilities/getEnabledLocalesKey';
 import { CollectionAfterChangeHook } from 'payload';
+
+import { apiConfigCacheService } from '@/cacheService';
 import { createLogger } from '@/lib/logger';
+import { Tenant } from '@/payload/payload-types';
+
+import { getEnabledLocalesKey } from '../utilities/getEnabledLocalesKey';
 
 const log = createLogger('pushEnabledLocalesToCache');
 

@@ -1,8 +1,10 @@
 'use client';
 
-import { useTranslation } from 'react-i18next';
 import { Clock } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+
 import { Resource } from '@/types/resource';
+
 import { Datum } from '../datum';
 
 export function HoursComponent({ resource }: { resource: Resource }) {

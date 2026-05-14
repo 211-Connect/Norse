@@ -1,17 +1,18 @@
-import initTranslations from '@/app/(app)/shared/i18n/i18n';
-import { Metadata } from 'next/types';
-import { getResource } from '@/app/(app)/shared/services/resource-service';
-import { FetchError } from '@/app/(app)/shared/lib/fetchError';
-import { permanentRedirect, notFound, RedirectType } from 'next/navigation';
-import { ResourcePageContent } from '@/app/(app)/features/resource/components/content';
-import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import { getCookies } from 'cookies-next/server';
 import { cookies, headers } from 'next/headers';
+import { RedirectType, notFound, permanentRedirect } from 'next/navigation';
+import { Metadata } from 'next/types';
+
+import { ResourcePageContent } from '@/app/(app)/features/resource/components/content';
+import { DEFAULT_RESOURCE_LAYOUT } from '@/app/(app)/features/resource/types/layout-config';
+import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
+import initTranslations from '@/app/(app)/shared/i18n/i18n';
+import { FetchError } from '@/app/(app)/shared/lib/fetchError';
+import { getResource } from '@/app/(app)/shared/services/resource-service';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { isValidUUID } from '@/app/(app)/shared/utils/uuid';
-import { Resource } from '@/types/resource';
 import { createLogger } from '@/lib/logger';
-import { DEFAULT_RESOURCE_LAYOUT } from '@/app/(app)/features/resource/types/layout-config';
+import { Resource } from '@/types/resource';
 
 const log = createLogger('resource-page');
 

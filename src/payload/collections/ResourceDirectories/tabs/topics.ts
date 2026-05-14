@@ -1,9 +1,11 @@
 import { Tab } from 'payload';
+
+import { generateUrlFields } from '@/payload/fields/urlField';
+
 import {
   superAdminAccess,
   superAdminOrSupportOrTenantAccess,
 } from '../../Users/access/roles';
-import { generateUrlFields } from '@/payload/fields/urlField';
 
 export const topics: Tab = {
   label: 'Topics',
@@ -48,6 +50,20 @@ export const topics: Tab = {
       access: {
         create: superAdminOrSupportOrTenantAccess,
         update: superAdminOrSupportOrTenantAccess,
+      },
+    },
+    {
+      type: 'ui',
+      name: 'topicsImportExport',
+      admin: {
+        components: {
+          Field: {
+            path: '@/payload/collections/ResourceDirectories/components/BulkCsvImportExport',
+            clientProps: {
+              kind: 'topics',
+            },
+          },
+        },
       },
     },
     {

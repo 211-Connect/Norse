@@ -3,9 +3,10 @@ import { cache } from 'react';
 
 import { ApiResource, Resource } from '@/types/resource';
 import { CacheKey, withCache } from '@/utilities/withCache';
-import { fetchWrapper } from '../lib/fetchWrapper';
-import { INTERNAL_API_KEY, API_URL } from '../lib/constants';
 import { ensureUrlProtocol } from '@/utils';
+
+import { API_URL, INTERNAL_API_KEY } from '../lib/constants';
+import { fetchWrapper } from '../lib/fetchWrapper';
 
 async function fetchAndTransformResourceOrigin(
   url: string,

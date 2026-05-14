@@ -1,10 +1,11 @@
 'use client';
 
+import { useEffect } from 'react';
+
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
 import { createResultsEvent } from '@/app/(app)/shared/lib/google-tag-manager';
-import { trackUmamiEvent, UmamiEvent } from '@/app/(app)/shared/lib/umami';
-import { useEffect } from 'react';
+import { UmamiEvent, trackUmamiEvent } from '@/app/(app)/shared/lib/umami';
 
 interface ResultsEventsProps {
   results: any;

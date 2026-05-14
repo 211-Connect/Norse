@@ -1,11 +1,13 @@
 'use client';
 
-import { useTranslation } from 'react-i18next';
 import { Link } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+
 import { getDisplayHost } from '@/utils/getDisplayHost';
-import { SearchCardComponentProps } from './types';
+
+import { UmamiEvent, trackUmamiEvent } from '../../../../shared/lib/umami';
 import { Datum } from '../../../resource/components/datum';
-import { trackUmamiEvent, UmamiEvent } from '../../../../shared/lib/umami';
+import { SearchCardComponentProps } from './types';
 
 export function WebsiteComponent({ result }: SearchCardComponentProps) {
   const { t } = useTranslation('page-resource');

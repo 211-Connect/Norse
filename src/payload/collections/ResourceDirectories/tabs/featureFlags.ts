@@ -1,4 +1,5 @@
 import { Tab } from 'payload';
+
 import {
   superAdminAccess,
   superAdminOrSupportAccess,

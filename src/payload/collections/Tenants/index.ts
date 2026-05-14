@@ -1,18 +1,19 @@
 import type { CollectionConfig } from 'payload';
+
 import { defaultLocale, locales } from '@/payload/i18n/locales';
 
-import { updateAndDeleteAccess } from './access/updateAndDelete';
-import { hasResourceDirectory } from './validators/hasResourceDirectory';
-import { revalidateCache } from './hooks/revalidateCache';
-import { pushRealmIdToCache } from './hooks/pushRealmIdToCache';
-import { pushEnabledLocalesToCache } from './hooks/pushEnabledLocalesToCache';
+import { invalidateApiCache } from '../ResourceDirectories/hooks/invalidateApiCache';
 import {
   superAdminAccess,
   superAdminOrSupportAccess,
 } from '../Users/access/roles';
-import { removeRelatedResources } from './hooks/removeRelatedResources';
-import { invalidateApiCache } from '../ResourceDirectories/hooks/invalidateApiCache';
+import { updateAndDeleteAccess } from './access/updateAndDelete';
 import { createUmamiWebsite } from './hooks/createUmamiWebsite';
+import { pushEnabledLocalesToCache } from './hooks/pushEnabledLocalesToCache';
+import { pushRealmIdToCache } from './hooks/pushRealmIdToCache';
+import { removeRelatedResources } from './hooks/removeRelatedResources';
+import { revalidateCache } from './hooks/revalidateCache';
+import { hasResourceDirectory } from './validators/hasResourceDirectory';
 
 export const Tenants: CollectionConfig = {
   slug: 'tenants',
@@ -234,8 +235,15 @@ export const Tenants: CollectionConfig = {
           type: 'text',
         },
         {
-          name: 'umamiWebsiteId',
-          type: 'text',
+          name: 'umamiWebsiteIds',
+          type: 'array',
+          fields: [
+            {
+              name: 'websiteId',
+              type: 'text',
+              required: true,
+            },
+          ],
         },
       ],
     },
@@ -271,14 +279,23 @@ export const Tenants: CollectionConfig = {
             {
               name: 'apiKey',
               type: 'text',
+              admin: {
+                description: 'Random string',
+              },
             },
             {
               name: 'apiKeySid',
               type: 'text',
+              admin: {
+                description: "Starts with 'SK' followed by random string",
+              },
             },
             {
               name: 'accountSid',
               type: 'text',
+              admin: {
+                description: "Starts with 'AC' followed by random string",
+              },
             },
           ],
         },

@@ -1,12 +1,13 @@
-import * as React from 'react';
 import { type LucideIcon } from 'lucide-react';
-import { createLogger } from '@/lib/logger';
+import { useMemo } from 'react';
 
-const log = createLogger('useIconComponent');
+import { createLogger } from '@/lib/logger';
 import {
   SUPPORTED_ICONS,
   type SupportedIconName,
 } from '@/utils/supportedIcons';
+
+const log = createLogger('useIconComponent');
 
 /**
  * Returns a Lucide icon component by name from the supported icons list.
@@ -18,7 +19,7 @@ import {
 export function useIconComponent(
   iconName: string | null | undefined,
 ): LucideIcon | null {
-  return React.useMemo(() => {
+  return useMemo(() => {
     if (!iconName) {
       return null;
     }

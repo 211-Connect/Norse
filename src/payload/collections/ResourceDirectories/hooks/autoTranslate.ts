@@ -1,11 +1,12 @@
 import { CollectionAfterChangeHook } from 'payload';
 import { get } from 'radash';
+
+import { createLogger } from '@/lib/logger';
+import { ResourceDirectory } from '@/payload/payload-types';
 import {
   AUTO_TRANSLATED_STRING_PATHS,
   getChangedLocalizedPaths,
 } from '@/payload/utilities/getChangedLocalizedPaths';
-import { ResourceDirectory } from '@/payload/payload-types';
-import { createLogger } from '@/lib/logger';
 
 const log = createLogger('autoTranslate');
 
