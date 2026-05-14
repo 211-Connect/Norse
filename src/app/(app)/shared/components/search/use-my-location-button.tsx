@@ -91,8 +91,9 @@ export function UseMyLocationButton() {
     }
   }, [convertGeoLocation, t]);
 
-  if (showUseMyLocationButtonOnDesktop == false && device.isDesktop)
+  if (!device.isDesktop || showUseMyLocationButtonOnDesktop === false) {
     return false;
+  }
 
   return (
     <Button
