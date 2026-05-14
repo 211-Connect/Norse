@@ -150,7 +150,7 @@ export function CategoriesSection({
 
   return (
     <div className={cn('categories container mx-auto', className)}>
-      <div className="mb-10">
+      <div className="mb-4 sm:mb-8">
         <h2 className="text-center text-3xl font-bold">
           {appConfig.topics.customHeading ||
             t('search.categories', { ns: 'common' })}
@@ -166,7 +166,7 @@ export function CategoriesSection({
         )}
       </div>
 
-      <div className="grid grid-cols-1 justify-center gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+      <div className="grid grid-cols-1 justify-center gap-4 p-2 sm:grid-cols-2 sm:p-4 lg:grid-cols-3 2xl:grid-cols-4">
         {topics.map((topic) => (
           <Category
             key={topic.name}
