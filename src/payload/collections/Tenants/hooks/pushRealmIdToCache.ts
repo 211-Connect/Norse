@@ -8,9 +8,7 @@ import { getRealmIdKey } from '../utilities/getRealmIdKey';
 
 const log = createLogger('pushRealmIdToCache');
 
-export const pushRealmIdToCache: CollectionAfterChangeHook<Tenant> = async ({
-  doc,
-}): Promise<Tenant> => {
+export const pushRealmIdToCache = async (doc: Tenant): Promise<Tenant> => {
   const tenantId = doc.id;
 
   if (typeof tenantId !== 'string') {
@@ -44,3 +42,7 @@ export const pushRealmIdToCache: CollectionAfterChangeHook<Tenant> = async ({
 
   return doc;
 };
+
+export const pushRealmIdToCacheAfterChangeHook: CollectionAfterChangeHook<
+  Tenant
+> = ({ doc }) => pushRealmIdToCache(doc);

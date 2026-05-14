@@ -9,8 +9,8 @@ import {
 } from '../Users/access/roles';
 import { updateAndDeleteAccess } from './access/updateAndDelete';
 import { createUmamiWebsite } from './hooks/createUmamiWebsite';
-import { pushEnabledLocalesToCache } from './hooks/pushEnabledLocalesToCache';
-import { pushRealmIdToCache } from './hooks/pushRealmIdToCache';
+import { pushEnabledLocalesToCacheAfterChangeHook } from './hooks/pushEnabledLocalesToCache';
+import { pushRealmIdToCacheAfterChangeHook } from './hooks/pushRealmIdToCache';
 import { removeRelatedResources } from './hooks/removeRelatedResources';
 import { revalidateCache } from './hooks/revalidateCache';
 import { hasResourceDirectory } from './validators/hasResourceDirectory';
@@ -33,8 +33,8 @@ export const Tenants: CollectionConfig = {
   hooks: {
     afterChange: [
       revalidateCache,
-      pushRealmIdToCache,
-      pushEnabledLocalesToCache,
+      pushRealmIdToCacheAfterChangeHook,
+      pushEnabledLocalesToCacheAfterChangeHook,
       invalidateApiCache,
       createUmamiWebsite,
     ],
