@@ -14,6 +14,7 @@ const ALLOWED_ENDPOINTS = [
   'metrics',
   'active',
   'events/series',
+  'event-data/values',
   'sessions',
   'metrics/expanded',
 ] as const;
@@ -25,7 +26,11 @@ const ALLOWED_PARAMS = [
   'timezone',
   'type',
   'limit',
+  'page',
+  'orderBy',
   'eventName',
+  'event',
+  'propertyName',
 ] as const;
 
 function parseRequestedWebsiteIds(raw: string | undefined): string[] {
@@ -159,6 +164,26 @@ function aggregateByEndpoint(endpoint: string, responses: any[]): any {
 
   if (endpoint === 'events/series') {
     return mergeMetricEntries(responses);
+  }
+
+  if (endpoint === 'event-data/values') {
+    const merged = new Map<string, number>();
+
+    for (const response of responses) {
+      for (const row of response ?? []) {
+        const value = String(row?.value ?? '').trim();
+        if (!value) continue;
+        merged.set(value, (merged.get(value) ?? 0) + (Number(row?.total) || 0));
+      }
+    }
+
+    const values = Array.from(merged, ([value, total]) => ({
+      value,
+      total,
+    }));
+
+    values.sort((a, b) => b.total - a.total);
+    return values;
   }
 
   if (endpoint === 'metrics/expanded') {

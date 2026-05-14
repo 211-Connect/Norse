@@ -2,6 +2,38 @@ export type DateRange = 7 | 30 | 90;
 
 export type HeatmapPoint = [number, number, number?];
 
+export type MetricsData = {
+  metrics: AnalyticsMetrics;
+  resourceRows: MetricEntry[];
+  searchByLabel: MetricEntry[];
+};
+
+export type PathsData = {
+  searchCount: number;
+  prevSearchCount: number;
+  resourceRows: MetricEntry[];
+  resourceMetrics: MetricEntry[];
+  prevResourceMetrics: MetricEntry[];
+  searchByLabel: MetricEntry[];
+};
+
+export type EventsData = {
+  eventTotals: Record<string, number>;
+  prevEventTotals: Record<string, number>;
+};
+
+export type ZeroResultQueriesData = {
+  zeroResultQueries: MetricEntry[];
+};
+
+export type SessionsData = {
+  sessions: UmamiSession[];
+};
+
+export type SessionHeatmapData = {
+  heatmapPoints: HeatmapPoint[];
+};
+
 export interface MetricEntry {
   x: string;
   y: number;
@@ -47,6 +79,11 @@ export interface UmamiSession {
 
 export interface UmamiSessionResponse {
   data: UmamiSession[];
+}
+
+export interface UmamiEventDataValue {
+  value: string;
+  total: number;
 }
 
 export interface UmamiStats {
