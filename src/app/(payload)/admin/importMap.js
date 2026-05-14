@@ -27,6 +27,7 @@ import { default as default_251fd09bbd0b103ad0dcec7022f13978 } from '@/payload/c
 import { default as default_e9d1e9858fa8526951b37594e35d9c62 } from '@/payload/collections/OrchestrationConfig/components/SchemasRowLabel'
 import { GlobalViewRedirect as GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { default as default_2e07f7087ae6aa13d1fded4684728076 } from '@/payload/components/AnalyticsNavLink'
+import { default as default_516dbf33cc3b162579335bb6874ed173 } from '@/payload/components/PopulateApiConfigCacheButton'
 import { default as default_4a6586eaa0248cb1fccb2e03335a2b51 } from '@/payload/components/ClearCacheButton'
 import { TenantSelector as TenantSelector_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { TenantSelectionProvider as TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
@@ -81,6 +82,7 @@ export const importMap = {
   "@/payload/collections/OrchestrationConfig/components/SchemasRowLabel#default": default_e9d1e9858fa8526951b37594e35d9c62,
   "@payloadcms/plugin-multi-tenant/rsc#GlobalViewRedirect": GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62,
   "@/payload/components/AnalyticsNavLink#default": default_2e07f7087ae6aa13d1fded4684728076,
+  "@/payload/components/PopulateApiConfigCacheButton#default": default_516dbf33cc3b162579335bb6874ed173,
   "@/payload/components/ClearCacheButton#default": default_4a6586eaa0248cb1fccb2e03335a2b51,
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelector": TenantSelector_d6d5f193a167989e2ee7d14202901e62,
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelectionProvider": TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62,

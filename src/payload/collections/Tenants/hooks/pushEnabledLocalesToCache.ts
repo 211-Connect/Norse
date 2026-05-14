@@ -8,9 +8,9 @@ import { getEnabledLocalesKey } from '../utilities/getEnabledLocalesKey';
 
 const log = createLogger('pushEnabledLocalesToCache');
 
-export const pushEnabledLocalesToCache: CollectionAfterChangeHook<
-  Tenant
-> = async ({ doc }): Promise<Tenant> => {
+export const pushEnabledLocalesToCache = async (
+  doc: Tenant,
+): Promise<Tenant> => {
   const tenantId = doc.id;
 
   if (typeof tenantId !== 'string') {
@@ -59,3 +59,7 @@ export const pushEnabledLocalesToCache: CollectionAfterChangeHook<
 
   return doc;
 };
+
+export const pushEnabledLocalesToCacheAfterChangeHook: CollectionAfterChangeHook<
+  Tenant
+> = ({ doc }) => pushEnabledLocalesToCache(doc);

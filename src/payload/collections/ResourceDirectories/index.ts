@@ -8,7 +8,7 @@ import { autoTranslate } from './hooks/autoTranslate';
 import { disableService } from './hooks/disableResourceDirectoryService';
 import { invalidateApiCache } from './hooks/invalidateApiCache';
 import { preventUpdateInDisabledLocale } from './hooks/preventUpdateInDisabledLocale';
-import { pushFacetsToCache } from './hooks/pushFacetsToCache';
+import { pushFacetsToCacheAfterChangeHook } from './hooks/pushFacetsToCache';
 import { revalidateCache } from './hooks/revalidateCache';
 import { setTenantIdAsId } from './hooks/setTenantIdAsId';
 import { syncKeycloakRealmBrandingAfterChange } from './hooks/syncKeycloakBrandingAfterChange';
@@ -62,7 +62,7 @@ export const ResourceDirectories: CollectionConfig = {
     afterChange: [
       revalidateCache,
       autoTranslate,
-      pushFacetsToCache,
+      pushFacetsToCacheAfterChangeHook,
       syncKeycloakRealmBrandingAfterChange,
       invalidateApiCache,
     ],

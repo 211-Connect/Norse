@@ -1,4 +1,4 @@
-import { CollectionAfterChangeHook } from 'payload';
+import { CollectionAfterChangeHook, PayloadRequest } from 'payload';
 
 import { apiConfigCacheService } from '@/cacheService';
 import { createLogger } from '@/lib/logger';
@@ -10,9 +10,11 @@ import { getFacetsKey } from '../utilities/getFacetsKey';
 
 const log = createLogger('pushFacetsToCache');
 
-export const pushFacetsToCache: CollectionAfterChangeHook<
-  ResourceDirectory
-> = async ({ doc, req }): Promise<ResourceDirectory> => {
+export const pushFacetsToCache = async (
+  doc: ResourceDirectory,
+  req: PayloadRequest,
+  locale: string | undefined = req.locale,
+): Promise<ResourceDirectory> => {
   const tenantId = typeof doc.tenant === 'string' ? doc.tenant : doc.tenant?.id;
 
   if (typeof tenantId !== 'string') {
@@ -38,7 +40,7 @@ export const pushFacetsToCache: CollectionAfterChangeHook<
       tenantId,
       tenant.enabledLocales,
       doc,
-      req.locale,
+      locale,
     );
 
     if (!facetsCache) {
@@ -62,3 +64,7 @@ export const pushFacetsToCache: CollectionAfterChangeHook<
 
   return doc;
 };
+
+export const pushFacetsToCacheAfterChangeHook: CollectionAfterChangeHook<
+  ResourceDirectory
+> = ({ doc, req }) => pushFacetsToCache(doc, req);
