@@ -1,7 +1,6 @@
 'use client';
 
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
-
+import { PieChartWidget } from '../PieChartWidget';
 import { useSessions } from '../useAnalyticsData';
 
 export interface SessionQuality {
@@ -25,7 +24,6 @@ const DURATION_THRESHOLDS = {
 export default function SessionQualityWidget() {
   const sessionsData = useSessions();
   const sessions = sessionsData?.data?.sessions ?? [];
-  let sessionQuality: SessionQuality | null = null;
   let short = 0;
   let balanced = 0;
   let meaningful = 0;
@@ -37,105 +35,44 @@ export default function SessionQualityWidget() {
     else meaningful++;
   }
   const total = sessions.length;
-  sessionQuality = {
+
+  if (total === 0) {
+    return (
+      <span style={{ color: 'var(--theme-elevation-400)', fontSize: '0.875rem' }}>
+        No data
+      </span>
+    );
+  }
+
+  const sessionQuality: SessionQuality = {
     short: Math.round((short / total) * 100),
     balanced: Math.round((balanced / total) * 100),
     meaningful: Math.round((meaningful / total) * 100),
   };
 
-  const chartData = sessionQuality
-    ? SEGMENTS.map(({ key, label }) => ({
-        name: label,
-        value: sessionQuality[key],
-      }))
-    : [];
+  const segmentCounts: SessionQuality = {
+    short,
+    balanced,
+    meaningful,
+  };
+
+  const segments = SEGMENTS.map(({ key, label, color }) => ({
+    key,
+    label,
+    color,
+    value: sessionQuality[key],
+    rawValue: segmentCounts[key],
+  }));
 
   return (
-    <div>
-      {sessionQuality === null ? (
-        <span
-          style={{ color: 'var(--theme-elevation-400)', fontSize: '0.875rem' }}
-        >
-          No data
-        </span>
-      ) : (
-        <>
-          <ResponsiveContainer width="100%" height={180}>
-            <PieChart>
-              <Pie
-                data={chartData}
-                cx="50%"
-                cy="50%"
-                innerRadius="55%"
-                outerRadius="80%"
-                dataKey="value"
-                paddingAngle={2}
-              >
-                {SEGMENTS.map(({ key, color }) => (
-                  <Cell key={key} fill={color} />
-                ))}
-              </Pie>
-              <Tooltip
-                formatter={(value: number) => [`${value}%`]}
-                contentStyle={{
-                  background: 'var(--theme-elevation-50)',
-                  border: '1px solid var(--theme-elevation-150)',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                }}
-              />
-            </PieChart>
-          </ResponsiveContainer>
-
-          {/* Legend */}
-          <div
-            style={{
-              display: 'flex',
-              gap: '1.25rem',
-              flexWrap: 'wrap',
-              justifyContent: 'center',
-            }}
-          >
-            {SEGMENTS.map(({ key, label, color }) => (
-              <div
-                key={key}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.375rem',
-                }}
-              >
-                <div
-                  style={{
-                    width: '0.625rem',
-                    height: '0.625rem',
-                    borderRadius: '50%',
-                    background: color,
-                    flexShrink: 0,
-                  }}
-                />
-                <span
-                  style={{
-                    fontSize: '0.875rem',
-                    color: 'var(--theme-elevation-500)',
-                  }}
-                >
-                  {label}
-                </span>
-                <span
-                  style={{
-                    fontSize: '0.875rem',
-                    fontWeight: 700,
-                    color: 'var(--theme-text)',
-                  }}
-                >
-                  {sessionQuality[key]}%
-                </span>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
-    </div>
+    <PieChartWidget
+      segments={segments}
+      formatValue={(segment) =>
+        `${segment.value}% (${(segment.rawValue ?? 0).toLocaleString()})`
+      }
+      formatTooltip={(segment) =>
+        `${segment.label}: ${segment.value}% (${(segment.rawValue ?? 0).toLocaleString()})`
+      }
+    />
   );
 }
