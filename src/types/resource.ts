@@ -126,6 +126,22 @@ export interface ApiResource {
   facetsEn?: Facet[];
 }
 
+export interface ApiResourceBatchError {
+  id: string;
+  reason: string;
+  statusCode: number;
+}
+
+export interface ApiResourceBatchResponse {
+  data: Record<string, ApiResource>;
+  errors: ApiResourceBatchError[];
+  meta: {
+    requested: number;
+    successful: number;
+    failed: number;
+  };
+}
+
 export interface Resource {
   id: string;
   originalId: string | null;
