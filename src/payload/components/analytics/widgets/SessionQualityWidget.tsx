@@ -38,7 +38,9 @@ export default function SessionQualityWidget() {
 
   if (total === 0) {
     return (
-      <span style={{ color: 'var(--theme-elevation-400)', fontSize: '0.875rem' }}>
+      <span
+        style={{ color: 'var(--theme-elevation-400)', fontSize: '0.875rem' }}
+      >
         No data
       </span>
     );
