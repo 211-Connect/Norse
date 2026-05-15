@@ -243,6 +243,7 @@ export interface Config {
     'analytics-search-queries': AnalyticsSearchQueriesWidget;
     'analytics-zero-result-queries': AnalyticsZeroResultQueriesWidget;
     'analytics-session-quality': AnalyticsSessionQualityWidget;
+    'analytics-device-types': AnalyticsDeviceTypesWidget;
     'analytics-safe-exit-clicks': AnalyticsSafeExitClicksWidget;
     collections: CollectionsWidget;
   };
@@ -1919,6 +1920,16 @@ export interface AnalyticsSessionQualityWidget {
     [k: string]: unknown;
   };
   width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-device-types_widget".
+ */
+export interface AnalyticsDeviceTypesWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'medium' | 'large' | 'x-large' | 'full';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -225,6 +225,13 @@ const config = buildConfig({
           maxWidth: 'full',
         },
         {
+          slug: 'analytics-device-types',
+          Component:
+            '@/payload/components/analytics/widgets/DeviceTypesWidget#default',
+          minWidth: 'medium',
+          maxWidth: 'full',
+        },
+        {
           slug: 'analytics-safe-exit-clicks',
           Component:
             '@/payload/components/analytics/widgets/SafeExitClicksWidget#default',
