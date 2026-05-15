@@ -8,10 +8,13 @@ export const StatCard = memo(function StatCard({
   label,
   value,
   trend,
+  height = 80,
 }: {
   label: string;
   value: string;
   trend?: number;
+  width?: string | number;
+  height?: string | number;
 }) {
   const isPositive = trend !== undefined && trend >= 0;
   const trendColor =
@@ -33,7 +36,7 @@ export const StatCard = memo(function StatCard({
         alignItems: 'center',
         justifyContent: 'space-between',
         gap: '1rem',
-        width: '100%',
+        minHeight: height,
       }}
     >
       <div
