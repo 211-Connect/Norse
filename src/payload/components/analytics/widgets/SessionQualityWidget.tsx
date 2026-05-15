@@ -1,7 +1,8 @@
 'use client';
 
-import { PieChartWidget } from '../PieChartWidget';
-import { useSessions } from '../useAnalyticsData';
+import { PieChartWidgetSegment } from '../PieChartWidget';
+import { UmamiSession } from '../types';
+import { SessionsPieWidget } from './SessionsPieWidget';
 
 export interface SessionQuality {
   short: number;
@@ -22,49 +23,47 @@ const DURATION_THRESHOLDS = {
 };
 
 export default function SessionQualityWidget() {
-  const sessionsData = useSessions();
-  const sessions = sessionsData?.data?.sessions ?? [];
-  let short = 0;
-  let balanced = 0;
-  let meaningful = 0;
-  for (const session of sessions) {
-    const duration =
-      new Date(session.lastAt).getTime() - new Date(session.firstAt).getTime();
-    if (duration < DURATION_THRESHOLDS.short) short++;
-    else if (duration <= DURATION_THRESHOLDS.balanced) balanced++;
-    else meaningful++;
-  }
-  const total = sessions.length;
+  const buildSegments = (sessions: UmamiSession[]): PieChartWidgetSegment[] => {
+    let short = 0;
+    let balanced = 0;
+    let meaningful = 0;
 
-  if (total === 0) {
-    return (
-      <span
-        style={{ color: 'var(--theme-elevation-400)', fontSize: '0.875rem' }}
-      >
-        No data
-      </span>
-    );
-  }
+    for (const session of sessions) {
+      const duration =
+        new Date(session.lastAt).getTime() -
+        new Date(session.firstAt).getTime();
+      if (duration < DURATION_THRESHOLDS.short) short++;
+      else if (duration <= DURATION_THRESHOLDS.balanced) balanced++;
+      else meaningful++;
+    }
 
-  const sessionQuality: SessionQuality = {
-    short: Math.round((short / total) * 100),
-    balanced: Math.round((balanced / total) * 100),
-    meaningful: Math.round((meaningful / total) * 100),
+    const total = sessions.length;
+
+    const sessionQuality: SessionQuality = {
+      short: Math.round((short / total) * 100),
+      balanced: Math.round((balanced / total) * 100),
+      meaningful: Math.round((meaningful / total) * 100),
+    };
+
+    const segmentCounts: SessionQuality = {
+      short,
+      balanced,
+      meaningful,
+    };
+
+    return SEGMENTS.map(({ key, label, color }) => ({
+      key,
+      label,
+      color,
+      value: sessionQuality[key],
+      rawValue: segmentCounts[key],
+    }));
   };
 
-  const segmentCounts: SessionQuality = {
-    short,
-    balanced,
-    meaningful,
-  };
-
-  const segments = SEGMENTS.map(({ key, label, color }) => ({
-    key,
-    label,
-    color,
-    value: sessionQuality[key],
-    rawValue: segmentCounts[key],
-  }));
-
-  return <PieChartWidget segments={segments} />;
+  return (
+    <SessionsPieWidget
+      buildSegments={buildSegments}
+      errorTitle="Could not load session quality."
+    />
+  );
 }

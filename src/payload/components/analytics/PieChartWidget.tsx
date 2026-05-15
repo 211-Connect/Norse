@@ -70,20 +70,23 @@ export function PieChartWidget({
   formatValue = defaultFormatValue,
   formatTooltip = defaultFormatTooltip,
 }: PieChartWidgetProps) {
+  const visibleSegments = segments.filter((segment) => segment.value > 0);
+
   return (
     <>
       <ResponsiveContainer width="100%" height={height}>
         <PieChart>
           <Pie
-            data={segments}
+            data={visibleSegments}
             cx="50%"
             cy="50%"
             innerRadius="55%"
             outerRadius="80%"
             dataKey="value"
+            nameKey="label"
             paddingAngle={2}
           >
-            {segments.map((segment) => (
+            {visibleSegments.map((segment) => (
               <Cell key={segment.key} fill={segment.color} />
             ))}
           </Pie>
@@ -100,7 +103,7 @@ export function PieChartWidget({
       </ResponsiveContainer>
 
       <div style={LEGEND_CONTAINER_STYLE}>
-        {segments.map((segment) => (
+        {visibleSegments.map((segment) => (
           <div key={segment.key} style={LEGEND_ITEM_STYLE}>
             <div
               style={{

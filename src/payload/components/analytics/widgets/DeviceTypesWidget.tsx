@@ -1,9 +1,8 @@
 'use client';
 
-import { Banner, StaggeredShimmers } from '@payloadcms/ui';
-
-import { PieChartWidget } from '../PieChartWidget';
-import { useSessions } from '../useAnalyticsData';
+import { PieChartWidgetSegment } from '../PieChartWidget';
+import { UmamiSession } from '../types';
+import { SessionsPieWidget } from './SessionsPieWidget';
 
 const DEVICE_COLORS = ['#60a5fa', '#34d399', '#f59e0b', '#f472b6', '#a78bfa'];
 const OTHER_COLOR = '#9ca3af';
@@ -15,62 +14,49 @@ function toDeviceLabel(device: string): string {
 }
 
 export default function DeviceTypesWidget() {
-  const { loading, error, data } = useSessions();
+  const buildSegments = (sessions: UmamiSession[]): PieChartWidgetSegment[] => {
+    const total = sessions.length;
 
-  if (loading) return <StaggeredShimmers count={1} height={220} />;
+    const counts = new Map<string, number>();
+    for (const session of sessions) {
+      const normalized =
+        (session.device ?? '').trim().toLowerCase() || 'unknown';
+      counts.set(normalized, (counts.get(normalized) ?? 0) + 1);
+    }
 
-  if (error) {
-    return (
-      <Banner type="error">
-        <strong>Could not load device types.</strong> Please contact the support
-        team.
-      </Banner>
-    );
-  }
+    const sortedDevices = Array.from(counts, ([key, count]) => ({ key, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, MAX_DEVICE_SEGMENTS);
 
-  const sessions = data?.sessions ?? [];
-  const total = sessions.length;
+    const shownCount = sortedDevices.reduce((sum, row) => sum + row.count, 0);
+    const otherCount = total - shownCount;
 
-  if (total === 0) {
-    return (
-      <span
-        style={{ color: 'var(--theme-elevation-400)', fontSize: '0.875rem' }}
-      >
-        No data
-      </span>
-    );
-  }
+    const segments = sortedDevices.map((row, index) => ({
+      key: row.key,
+      label: toDeviceLabel(row.key),
+      color: DEVICE_COLORS[index % DEVICE_COLORS.length],
+      value: Math.round((row.count / total) * 100),
+      rawValue: row.count,
+    }));
 
-  const counts = new Map<string, number>();
-  for (const session of sessions) {
-    const normalized = (session.device ?? '').trim().toLowerCase() || 'unknown';
-    counts.set(normalized, (counts.get(normalized) ?? 0) + 1);
-  }
+    if (otherCount > 0) {
+      segments.push({
+        key: 'other',
+        label: 'Other',
+        color: OTHER_COLOR,
+        value: Math.round((otherCount / total) * 100),
+        rawValue: otherCount,
+      });
+    }
 
-  const sortedDevices = Array.from(counts, ([key, count]) => ({ key, count }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, MAX_DEVICE_SEGMENTS);
+    return segments;
+  };
 
-  const shownCount = sortedDevices.reduce((sum, row) => sum + row.count, 0);
-  const otherCount = total - shownCount;
-
-  const segments = sortedDevices.map((row, index) => ({
-    key: row.key,
-    label: toDeviceLabel(row.key),
-    color: DEVICE_COLORS[index % DEVICE_COLORS.length],
-    value: Math.round((row.count / total) * 100),
-    rawValue: row.count,
-  }));
-
-  if (otherCount > 0) {
-    segments.push({
-      key: 'other',
-      label: 'Other',
-      color: OTHER_COLOR,
-      value: Math.round((otherCount / total) * 100),
-      rawValue: otherCount,
-    });
-  }
-
-  return <PieChartWidget segments={segments} />;
+  return (
+    <SessionsPieWidget
+      buildSegments={buildSegments}
+      errorTitle="Could not load device types."
+      errorDescription="Please contact the support team."
+    />
+  );
 }
