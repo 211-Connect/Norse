@@ -21,9 +21,9 @@ export default function SearchQueriesWidget() {
 
   return (
     <MetricsTable
-      title="Searches by Query Label"
-      colLabel="Query Label"
-      colValue="Searches"
+      title="Searches hit"
+      colLabel="Query"
+      colValue="Referrals"
       rows={data?.searchByLabel ?? []}
     />
   );

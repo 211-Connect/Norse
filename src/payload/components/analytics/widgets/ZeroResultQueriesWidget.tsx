@@ -21,9 +21,9 @@ export default function ZeroResultQueriesWidget() {
 
   return (
     <MetricsTable
-      title="Zero Results by Query"
+      title="No result searches"
       colLabel="Query"
-      colValue="Zero-result Searches"
+      colValue="Referrals"
       rows={data?.zeroResultQueries ?? []}
     />
   );
