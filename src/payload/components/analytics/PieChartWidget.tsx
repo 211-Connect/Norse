@@ -12,7 +12,6 @@ export type PieChartWidgetSegment = {
 
 type PieChartWidgetProps = {
   segments: PieChartWidgetSegment[];
-  emptyText?: string;
   height?: number;
   formatValue?: (segment: PieChartWidgetSegment) => string;
   formatTooltip?: (segment: PieChartWidgetSegment) => string;
@@ -67,21 +66,10 @@ function defaultFormatTooltip(segment: PieChartWidgetSegment): string {
 
 export function PieChartWidget({
   segments,
-  emptyText = 'No data',
   height = 180,
   formatValue = defaultFormatValue,
   formatTooltip = defaultFormatTooltip,
 }: PieChartWidgetProps) {
-  if (segments.length === 0) {
-    return (
-      <span
-        style={{ color: 'var(--theme-elevation-400)', fontSize: '0.875rem' }}
-      >
-        {emptyText}
-      </span>
-    );
-  }
-
   return (
     <>
       <ResponsiveContainer width="100%" height={height}>
