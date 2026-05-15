@@ -1,5 +1,4 @@
 import { Field, Tab } from 'payload';
-import { title } from 'radash';
 
 import { SearchCardComponentId } from '@/app/(app)/features/search/types/card-component-ids';
 
@@ -8,10 +7,11 @@ import {
   superAdminOrSupportOrTenantAccess,
 } from '../../Users/access/roles';
 import { customAttributeFields } from '../fields/customAttributeFields';
+import { getCustomLayoutComponentLabel } from './resource';
 
 const CARD_COMPONENT_ID_OPTIONS = Object.values(SearchCardComponentId).map(
   (id) => ({
-    label: title(id),
+    label: getCustomLayoutComponentLabel(id),
     value: id,
   }),
 );
@@ -109,6 +109,7 @@ export const search: Tab = {
                       type: 'text',
                       localized: true,
                       admin: {
+                        placeholder: 'Suggestions',
                         description:
                           'Shown above free-text search suggestions in the autocomplete dropdown.',
                       },
@@ -119,10 +120,11 @@ export const search: Tab = {
                     },
                     {
                       name: 'categories',
-                      label: 'Categories Heading',
+                      label: 'Topics Heading',
                       type: 'text',
                       localized: true,
                       admin: {
+                        placeholder: 'Topics',
                         description:
                           'Shown above topic/category matches in the autocomplete dropdown.',
                       },
@@ -142,6 +144,7 @@ export const search: Tab = {
                       type: 'text',
                       localized: true,
                       admin: {
+                        placeholder: 'Taxonomies',
                         description:
                           'Shown above taxonomy matches in the autocomplete dropdown. This can be renamed to terms like Services.',
                       },
@@ -171,6 +174,9 @@ export const search: Tab = {
                   name: 'viewDetailsText',
                   type: 'text',
                   localized: true,
+                  admin: {
+                    placeholder: 'See more',
+                  },
                   access: {
                     create: superAdminOrSupportOrTenantAccess,
                     update: superAdminOrSupportOrTenantAccess,
@@ -198,6 +204,9 @@ export const search: Tab = {
                   name: 'noResultsFallbackText',
                   type: 'textarea',
                   localized: true,
+                  admin: {
+                    placeholder: 'Try a different query or filter',
+                  },
                   access: {
                     create: superAdminOrSupportOrTenantAccess,
                     update: superAdminOrSupportOrTenantAccess,

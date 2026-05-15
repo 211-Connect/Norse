@@ -77,6 +77,7 @@ export const header: Tab = {
           type: 'text',
           localized: true,
           admin: {
+            placeholder: 'My stuff',
             description:
               'Leave blank to use the default "My Stuff" label (or locale equivalent)',
           },
@@ -90,6 +91,7 @@ export const header: Tab = {
           type: 'text',
           localized: true,
           admin: {
+            placeholder: 'Submit Feedback',
             description:
               'Leave blank to use the default feedback label ("Report" or locale equivalent)',
           },

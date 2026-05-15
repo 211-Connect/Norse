@@ -15,6 +15,9 @@ export const topics: Tab = {
       type: 'text',
       name: 'backText',
       localized: true,
+      admin: {
+        placeholder: 'Back',
+      },
       access: {
         create: superAdminOrSupportOrTenantAccess,
         update: superAdminOrSupportOrTenantAccess,
