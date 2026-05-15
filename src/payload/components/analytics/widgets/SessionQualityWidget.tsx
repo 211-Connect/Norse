@@ -66,15 +66,5 @@ export default function SessionQualityWidget() {
     rawValue: segmentCounts[key],
   }));
 
-  return (
-    <PieChartWidget
-      segments={segments}
-      formatValue={(segment) =>
-        `${segment.value}% (${(segment.rawValue ?? 0).toLocaleString()})`
-      }
-      formatTooltip={(segment) =>
-        `${segment.label}: ${segment.value}% (${(segment.rawValue ?? 0).toLocaleString()})`
-      }
-    />
-  );
+  return <PieChartWidget segments={segments} />;
 }

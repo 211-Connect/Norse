@@ -57,13 +57,12 @@ const LEGEND_VALUE_STYLE = {
 };
 
 function defaultFormatValue(segment: PieChartWidgetSegment): string {
-  const count = segment.rawValue ?? segment.value;
-  return `${segment.value}% (${count.toLocaleString()})`;
+  return `${segment.value}%`;
 }
 
 function defaultFormatTooltip(segment: PieChartWidgetSegment): string {
   const count = segment.rawValue ?? segment.value;
-  return `${segment.value}% (${count.toLocaleString()})`;
+  return `${segment.label} ${segment.value}% (${count.toLocaleString()})`;
 }
 
 export function PieChartWidget({
@@ -122,6 +121,7 @@ export function PieChartWidget({
               }}
             />
             <span style={LEGEND_LABEL_STYLE}>{segment.label}</span>
+            <span style={LEGEND_VALUE_STYLE}>{formatValue(segment)}</span>
           </div>
         ))}
       </div>
