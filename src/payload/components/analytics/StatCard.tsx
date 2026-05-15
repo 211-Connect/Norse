@@ -13,7 +13,6 @@ export const StatCard = memo(function StatCard({
   label: string;
   value: string;
   trend?: number;
-  width?: string | number;
   height?: string | number;
 }) {
   const isPositive = trend !== undefined && trend >= 0;
