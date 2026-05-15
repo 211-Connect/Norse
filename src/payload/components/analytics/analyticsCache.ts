@@ -22,12 +22,7 @@ import type {
   UmamiStats,
   ZeroResultQueriesData,
 } from './types';
-import {
-  buildProxyQuery,
-  enrichWithResourceTitles,
-  parseMetrics,
-  sumEventTotals,
-} from './utils';
+import { buildProxyQuery, parseMetrics, sumEventTotals } from './utils';
 
 const TTL_MS = 5 * 60 * 1000; // 5 minutes
 
@@ -239,11 +234,6 @@ export const fetchMetrics = makeCachedFetch(
       resourceMetrics: prevResourceMetrics,
     } = parseMetrics(prevPathMetrics ?? [], prevQueryMetrics ?? []);
 
-    const resourceRows = await enrichWithResourceTitles(
-      resourceMetrics,
-      tenantId ?? '',
-    );
-
     const metric = (current: number, previous: number): Metric => ({
       current,
       previous,
@@ -277,7 +267,7 @@ export const fetchMetrics = makeCachedFetch(
       ),
     };
 
-    return { metrics, resourceRows, searchByLabel };
+    return { metrics, resourceMetrics, searchByLabel };
   },
 );
 
@@ -341,15 +331,10 @@ export const fetchPaths = makeCachedFetch(
       resourceMetrics: prevResourceMetrics,
     } = parseMetrics(prevPathMetrics ?? [], prevQueryMetrics ?? []);
 
-    const resourceRows = await enrichWithResourceTitles(
-      resourceMetrics,
-      tenantId ?? '',
-    );
-
     return {
+      tenantId,
       searchCount,
       prevSearchCount,
-      resourceRows,
       resourceMetrics,
       prevResourceMetrics,
       searchByLabel,

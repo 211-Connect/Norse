@@ -4,14 +4,14 @@ export type HeatmapPoint = [number, number, number?];
 
 export type MetricsData = {
   metrics: AnalyticsMetrics;
-  resourceRows: MetricEntry[];
+  resourceMetrics: MetricEntry[];
   searchByLabel: MetricEntry[];
 };
 
 export type PathsData = {
+  tenantId?: string;
   searchCount: number;
   prevSearchCount: number;
-  resourceRows: MetricEntry[];
   resourceMetrics: MetricEntry[];
   prevResourceMetrics: MetricEntry[];
   searchByLabel: MetricEntry[];
