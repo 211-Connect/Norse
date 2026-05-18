@@ -20,6 +20,7 @@ import { FavoriteListState } from '@/types/favorites';
 
 import { useAppConfig } from '../hooks/use-app-config';
 import { FAVORITES_SEARCH_DEBOUNCE_DELAY } from '../lib/constants';
+import { UmamiEvent, trackUmamiEvent } from '../lib/umami';
 import { cn, withOptionalTrailingSlash } from '../lib/utils';
 import { addToFavoriteList } from '../serverActions/favorites/addToFavoriteList';
 import { getFavoriteLists } from '../serverActions/favorites/getFavoriteLists';
@@ -149,6 +150,11 @@ export function AddToFavoritesButton({
           );
 
           if (data) {
+            trackUmamiEvent(UmamiEvent.FavoriteAddToList, {
+              resourceId: serviceAtLocationId,
+              favoriteListId: listId,
+            });
+
             toast.success(t('favorites.added_to_list'), {
               description: t('favorites.added_to_list_message'),
             });

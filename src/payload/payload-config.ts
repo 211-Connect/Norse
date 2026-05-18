@@ -245,6 +245,13 @@ const config = buildConfig({
           minWidth: 'medium',
           maxWidth: 'full',
         },
+        {
+          slug: 'analytics-favorite-add-to-list',
+          Component:
+            '@/payload/components/analytics/widgets/FavoriteAddToListWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
       ],
       defaultLayout: [{ widgetSlug: 'collections', width: 'full' as const }],
     },
