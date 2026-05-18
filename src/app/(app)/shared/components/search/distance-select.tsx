@@ -1,6 +1,5 @@
 'use client';
 
-import { deleteCookie, setCookie } from 'cookies-next/client';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,7 +9,7 @@ import {
   DISTANCE_SELECT_CONTENT_ID,
   DISTANCE_SELECT_TRIGGER_ID,
 } from '../../lib/aria-constants';
-import { USER_PREF_DISTANCE } from '../../lib/constants';
+import { persistSearchDistancePreference } from '../../lib/search-distance-preference';
 import { cn } from '../../lib/utils';
 import {
   searchAtom,
@@ -29,9 +28,15 @@ import {
 
 export interface DistanceSelectProps {
   className?: string;
+  disabled?: boolean;
+  onValueChange?: (value: string) => void;
 }
 
-export function DistanceSelect({ className = '' }: DistanceSelectProps) {
+export function DistanceSelect({
+  className = '',
+  disabled = false,
+  onValueChange,
+}: DistanceSelectProps) {
   const { t } = useTranslation('common');
 
   const appConfig = useAppConfig();
@@ -52,16 +57,14 @@ export function DistanceSelect({ className = '' }: DistanceSelectProps) {
   const hasLocation = coords?.length == 2;
 
   const setDistance = (value: string) => {
-    if (value === '0') {
-      deleteCookie(USER_PREF_DISTANCE, { path: '/' });
-    } else {
-      setCookie(USER_PREF_DISTANCE, value, { path: '/' });
-    }
+    persistSearchDistancePreference(value);
 
     setSearch((prev) => ({
       ...prev,
       searchDistance: value,
     }));
+
+    onValueChange?.(value);
   };
 
   return (
@@ -76,7 +79,7 @@ export function DistanceSelect({ className = '' }: DistanceSelectProps) {
           </Label>
         }
         contentId={DISTANCE_SELECT_CONTENT_ID}
-        disabled={!hasLocation}
+        disabled={!hasLocation || disabled}
         onValueChange={setDistance}
         value={distance}
       >
