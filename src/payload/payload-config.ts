@@ -238,6 +238,13 @@ const config = buildConfig({
           minWidth: 'x-small',
           maxWidth: 'full',
         },
+        {
+          slug: 'analytics-language-switch-destinations',
+          Component:
+            '@/payload/components/analytics/widgets/LanguageSwitchDestinationsWidget#default',
+          minWidth: 'medium',
+          maxWidth: 'full',
+        },
       ],
       defaultLayout: [{ widgetSlug: 'collections', width: 'full' as const }],
     },

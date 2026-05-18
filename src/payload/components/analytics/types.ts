@@ -26,6 +26,10 @@ export type ZeroResultQueriesData = {
   zeroResultQueries: MetricEntry[];
 };
 
+export type LanguageSwitchDestinationsData = {
+  languageSwitchDestinations: MetricEntry[];
+};
+
 export type SessionsData = {
   sessions: UmamiSession[];
 };
