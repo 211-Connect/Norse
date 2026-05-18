@@ -1,4 +1,5 @@
 export enum UmamiEvent {
+  LanguageSwitch = 'language_switch',
   SearchZeroResults = 'search_zero_results',
   DirectionClick = 'direction_click',
   PhoneClick = 'phone_click',

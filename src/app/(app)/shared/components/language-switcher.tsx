@@ -13,6 +13,8 @@ import {
   LANGUAGE_SWITCHER_CONTENT_ID,
   LANGUAGE_SWITCHER_TRIGGER_ID,
 } from '../lib/aria-constants';
+import { getLanguageName } from '../lib/language-names';
+import { UmamiEvent, trackUmamiEvent } from '../lib/umami';
 import { cn } from '../lib/utils';
 import { Label } from './ui/label';
 import {
@@ -22,26 +24,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from './ui/select';
-
-const LANGUAGE_NAME = {
-  ff: 'Fulfulde',
-  mww: 'Hmong',
-  fj: 'Fijian',
-  tl: 'Tagalog',
-};
-
-const getLanguageName = (locale: string) => {
-  if (LANGUAGE_NAME[locale]) {
-    return LANGUAGE_NAME[locale];
-  }
-  try {
-    return new Intl.DisplayNames([locale], {
-      type: 'language',
-    }).of(locale);
-  } catch {
-    return locale;
-  }
-};
 
 export const LanguageSwitcher = () => {
   const appConfig = useAppConfig();
@@ -62,6 +44,12 @@ export const LanguageSwitcher = () => {
 
   const handleValueChange = useCallback(
     (language: string) => {
+      if (language !== currentLanguage) {
+        trackUmamiEvent(UmamiEvent.LanguageSwitch, {
+          destinationLanguage: language,
+        });
+      }
+
       start();
       if (currentLanguage === appConfig.i18n.defaultLocale) {
         router.push(`/${language}${currentPathname}${stringifiedSearchParams}`);

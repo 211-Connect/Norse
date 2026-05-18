@@ -10,6 +10,7 @@ import {
 } from './DateRange';
 import {
   fetchEvents,
+  fetchLanguageSwitchDestinations,
   fetchMetrics,
   fetchPageviews,
   fetchPaths,
@@ -21,6 +22,7 @@ import {
 import {
   DateRange,
   EventsData,
+  LanguageSwitchDestinationsData,
   MetricsData,
   PathsData,
   SessionHeatmapData,
@@ -104,6 +106,10 @@ export const useEvents = makeAsyncHook<EventsData>(fetchEvents);
 export const useZeroResultQueries = makeAsyncHook<ZeroResultQueriesData>(
   fetchZeroResultQueries,
 );
+export const useLanguageSwitchDestinations =
+  makeAsyncHook<LanguageSwitchDestinationsData>(
+    fetchLanguageSwitchDestinations,
+  );
 export const useSessions = makeAsyncHook<SessionsData>(fetchSessions);
 export const useSessionHeatmap =
   makeAsyncHook<SessionHeatmapData>(fetchSessionHeatmap);

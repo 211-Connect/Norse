@@ -9,6 +9,7 @@ import type {
   AnalyticsMetrics,
   DateRange,
   EventsData,
+  LanguageSwitchDestinationsData,
   Metric,
   MetricEntry,
   MetricsData,
@@ -402,6 +403,37 @@ export const fetchZeroResultQueries = makeCachedFetch(
     const zeroResultQueries = toMetricEntries(zeroResultQueriesRaw);
 
     return { zeroResultQueries };
+  },
+);
+
+export const fetchLanguageSwitchDestinations = makeCachedFetch(
+  new Map<string, CacheEntry<LanguageSwitchDestinationsData>>(),
+  async ({ startAt, endAt }, tenantId, websiteIds) => {
+    const languageSwitchDestinationsRaw = await fetchWrapper<
+      UmamiEventDataValue[]
+    >(
+      buildProxyQuery(
+        'event-data/values',
+        startAt,
+        endAt,
+        tenantId,
+        {
+          event: UmamiEvent.LanguageSwitch,
+          propertyName: 'destinationLanguage',
+        },
+        websiteIds,
+      ),
+    );
+
+    if (!languageSwitchDestinationsRaw) {
+      return { languageSwitchDestinations: [] };
+    }
+
+    const languageSwitchDestinations = toMetricEntries(
+      languageSwitchDestinationsRaw,
+    );
+
+    return { languageSwitchDestinations };
   },
 );
 

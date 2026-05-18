@@ -245,6 +245,7 @@ export interface Config {
     'analytics-session-quality': AnalyticsSessionQualityWidget;
     'analytics-device-types': AnalyticsDeviceTypesWidget;
     'analytics-safe-exit-clicks': AnalyticsSafeExitClicksWidget;
+    'analytics-language-switch-destinations': AnalyticsLanguageSwitchDestinationsWidget;
     collections: CollectionsWidget;
   };
   user: User;
@@ -1940,6 +1941,16 @@ export interface AnalyticsSafeExitClicksWidget {
     [k: string]: unknown;
   };
   width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-language-switch-destinations_widget".
+ */
+export interface AnalyticsLanguageSwitchDestinationsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'medium' | 'large' | 'x-large' | 'full';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
