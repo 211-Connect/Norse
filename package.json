@@ -92,7 +92,7 @@
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
     "globals": "^17.6.0",
-    "html-react-parser": "^5.2.6",
+    "html-react-parser": "^6.1.1",
     "i18next": "^25.8.18",
     "i18next-resources-to-backend": "^1.2.1",
     "ioredis": "^5.8.2",
