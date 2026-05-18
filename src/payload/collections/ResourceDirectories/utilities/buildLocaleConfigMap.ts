@@ -18,7 +18,11 @@ export async function buildLocaleConfigMap<T>(
   enabledLocales: string[],
   currentDoc: ResourceDirectory,
   currentLocale: string | undefined,
-  buildForLocale: (resourceDirectory: ResourceDirectory, tenantId: string, locale: string) => T,
+  buildForLocale: (
+    resourceDirectory: ResourceDirectory,
+    tenantId: string,
+    locale: string,
+  ) => T,
   logLabel: string,
 ): Promise<Map<string, T> | null> {
   const results = new Map<string, T>();

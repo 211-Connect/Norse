@@ -100,7 +100,10 @@ export async function buildBrandingConfigCache(
       continue;
     }
 
-    results.set(locale, buildBrandingForLocale(resourceDirectory, tenantId, locale));
+    results.set(
+      locale,
+      buildBrandingForLocale(resourceDirectory, tenantId, locale),
+    );
   }
 
   if (results.size === 0) {

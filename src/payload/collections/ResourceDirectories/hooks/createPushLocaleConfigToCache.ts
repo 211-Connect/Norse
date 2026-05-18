@@ -1,4 +1,8 @@
-import type { CollectionAfterChangeHook, Payload, PayloadRequest } from 'payload';
+import type {
+  CollectionAfterChangeHook,
+  Payload,
+  PayloadRequest,
+} from 'payload';
 
 import { apiConfigCacheService } from '@/cacheService';
 import { createLogger } from '@/lib/logger';
@@ -36,10 +40,14 @@ export function createPushLocaleConfigToCache<T>(
     req: PayloadRequest,
     locale: string | undefined = req.locale,
   ): Promise<ResourceDirectory> => {
-    const tenantId = typeof doc.tenant === 'string' ? doc.tenant : doc.tenant?.id;
+    const tenantId =
+      typeof doc.tenant === 'string' ? doc.tenant : doc.tenant?.id;
 
     if (typeof tenantId !== 'string') {
-      log.warn({ tenantId }, `Invalid tenant ID; skipping ${configLabel} cache update`);
+      log.warn(
+        { tenantId },
+        `Invalid tenant ID; skipping ${configLabel} cache update`,
+      );
       return doc;
     }
 
@@ -55,10 +63,19 @@ export function createPushLocaleConfigToCache<T>(
       }
 
       const { payload } = req;
-      const byLocale = await buildFn(payload, tenantId, tenant.enabledLocales, doc, locale);
+      const byLocale = await buildFn(
+        payload,
+        tenantId,
+        tenant.enabledLocales,
+        doc,
+        locale,
+      );
 
       if (!byLocale) {
-        log.info({ tenantId }, `No ${configLabel} built for tenant; skipping cache update`);
+        log.info(
+          { tenantId },
+          `No ${configLabel} built for tenant; skipping cache update`,
+        );
         return doc;
       }
 
@@ -67,16 +84,24 @@ export function createPushLocaleConfigToCache<T>(
         await apiConfigCacheService.set(cacheKey, JSON.stringify(config));
       }
 
-      log.info({ tenantId, localeCount: byLocale.size }, `${configLabel} cache updated`);
+      log.info(
+        { tenantId, localeCount: byLocale.size },
+        `${configLabel} cache updated`,
+      );
     } catch (error) {
-      log.error({ err: error, tenantId }, `Error pushing ${configLabel} to cache`);
+      log.error(
+        { err: error, tenantId },
+        `Error pushing ${configLabel} to cache`,
+      );
     }
 
     return doc;
   };
 
-  const afterChangeHook: CollectionAfterChangeHook<ResourceDirectory> = ({ doc, req }) =>
-    pushToCache(doc, req);
+  const afterChangeHook: CollectionAfterChangeHook<ResourceDirectory> = ({
+    doc,
+    req,
+  }) => pushToCache(doc, req);
 
   return { pushToCache, afterChangeHook };
 }

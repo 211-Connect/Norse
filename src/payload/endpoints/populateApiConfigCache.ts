@@ -91,7 +91,11 @@ export const populateApiConfigCache: Endpoint = {
         if (resourceDirectory) {
           await pushFacetsToCache(resourceDirectory, req, defaultLocale);
           facetsTriggered++;
-          await pushBrandingConfigToCache(resourceDirectory, req, defaultLocale);
+          await pushBrandingConfigToCache(
+            resourceDirectory,
+            req,
+            defaultLocale,
+          );
           brandingTriggered++;
           await pushLegalConfigToCache(resourceDirectory, req, defaultLocale);
           legalTriggered++;
