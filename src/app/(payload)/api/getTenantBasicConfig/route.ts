@@ -30,7 +30,6 @@ export const GET = async (request: Request) => {
     `tenant_basic_config:${host}`,
     async () => {
       const tenant = await findTenantByHost(host);
-
       return {
         enabledLocales: tenant ? tenant.enabledLocales : [],
         defaultLocale: tenant ? tenant.defaultLocale : 'en',

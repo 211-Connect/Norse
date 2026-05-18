@@ -5,7 +5,9 @@ import { defaultLocale } from '@/payload/i18n/locales';
 import { Tenant } from '@/payload/payload-types';
 
 import { pushOrchestrationConfigToCache } from '../collections/OrchestrationConfig/hooks/pushOrchestrationConfigToCache';
+import { pushBrandingConfigToCache } from '../collections/ResourceDirectories/hooks/pushBrandingConfigToCache';
 import { pushFacetsToCache } from '../collections/ResourceDirectories/hooks/pushFacetsToCache';
+import { pushLegalConfigToCache } from '../collections/ResourceDirectories/hooks/pushLegalConfigToCache';
 import { pushEnabledLocalesToCache } from '../collections/Tenants/hooks/pushEnabledLocalesToCache';
 import { pushRealmIdToCache } from '../collections/Tenants/hooks/pushRealmIdToCache';
 import { isSuperAdmin } from '../collections/Users/access/roles';
@@ -32,9 +34,9 @@ export const populateApiConfigCache: Endpoint = {
       );
     }
 
-    const { payload } = req;
-
     try {
+      const { payload } = req;
+
       const tenants: Tenant[] = [];
       let page = 1;
       let hasNextPage = true;
@@ -55,6 +57,8 @@ export const populateApiConfigCache: Endpoint = {
       let realmIdTriggered = 0;
       let enabledLocalesTriggered = 0;
       let facetsTriggered = 0;
+      let brandingTriggered = 0;
+      let legalTriggered = 0;
       let orchestrationConfigTriggered = 0;
 
       for (const tenant of tenants) {
@@ -87,6 +91,10 @@ export const populateApiConfigCache: Endpoint = {
         if (resourceDirectory) {
           await pushFacetsToCache(resourceDirectory, req, defaultLocale);
           facetsTriggered++;
+          await pushBrandingConfigToCache(resourceDirectory, req, defaultLocale);
+          brandingTriggered++;
+          await pushLegalConfigToCache(resourceDirectory, req, defaultLocale);
+          legalTriggered++;
         }
 
         const [orchestrationConfig] = await payload
@@ -119,6 +127,8 @@ export const populateApiConfigCache: Endpoint = {
           realmIdTriggered,
           enabledLocalesTriggered,
           facetsTriggered,
+          brandingTriggered,
+          legalTriggered,
           orchestrationConfigTriggered,
         },
         'API config cache population completed',
@@ -131,6 +141,8 @@ export const populateApiConfigCache: Endpoint = {
           realmIdTriggered,
           enabledLocalesTriggered,
           facetsTriggered,
+          brandingTriggered,
+          legalTriggered,
           orchestrationConfigTriggered,
         },
         { status: 200 },
