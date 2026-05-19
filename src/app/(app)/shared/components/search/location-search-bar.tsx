@@ -29,7 +29,6 @@ import {
   userCoordinatesAtom,
 } from '../../store/search';
 import { Autocomplete } from '../ui/autocomplete';
-import { DistanceSelect } from './distance-select';
 import { MainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
 import { UseMyLocationButton } from './use-my-location-button';
 
@@ -300,9 +299,8 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
         <p className="min-h-4 px-3 text-xs text-red-500">{validationError}</p>
       )}
       {!isStandalone && (
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
           <UseMyLocationButton />
-          <DistanceSelect className="ml-auto" />
         </div>
       )}
     </div>
