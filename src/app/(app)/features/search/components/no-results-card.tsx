@@ -24,6 +24,12 @@ export function NoResultsCard() {
   const appConfig = useAppConfig();
   const searchParams = useSearchParams();
 
+  const text =
+    appConfig.search.texts?.noResultsFallbackText ||
+    (appConfig?.contact?.number
+      ? t('no_results.need_help')
+      : t('no_results.alt_subtitle'));
+
   return (
     <Card data-testid="no-results-card">
       <CardHeader className="text-center">
@@ -43,12 +49,7 @@ export function NoResultsCard() {
       </CardContent>
 
       <CardFooter className="flex flex-col items-center justify-center gap-2">
-        <p className="font-semibold">
-          {appConfig?.contact?.number
-            ? t('no_results.need_help')
-            : appConfig.search.texts?.noResultsFallbackText ||
-              t('no_results.alt_subtitle')}
-        </p>
+        <p className="font-semibold">{text}</p>
 
         {appConfig?.contact?.number && (
           <LocalizedLink
