@@ -48,7 +48,7 @@ export function NoResultsCard() {
         />
       </CardContent>
 
-      <CardFooter className="flex flex-col items-center justify-center gap-2">
+      <CardFooter className="flex flex-col items-center justify-center gap-2 text-center">
         <p className="font-semibold">{text}</p>
 
         {appConfig?.contact?.number && (
