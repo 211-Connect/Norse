@@ -69,6 +69,7 @@ export interface ServiceArea {
 
 export interface Translation {
   displayName: string;
+  displaySummary?: string;
   fees?: string;
   hours?: string;
   hoursDescription?: string;
@@ -76,7 +77,9 @@ export interface Translation {
   taxonomies: Taxonomy[];
   serviceName?: string;
   serviceDescription?: string;
+  serviceSummary?: string;
   organizationDescription?: string;
+  organizationSummary?: string;
   languages?: string[];
   interpretationServices?: string;
   applicationProcess?: string;
@@ -88,6 +91,7 @@ export interface Translation {
   accessibility?: string;
   facets?: Facet[];
   attributeValues?: Record<string, string>;
+  locationSummary?: string;
   contacts: Array<{
     id: string;
     name: string;
