@@ -246,6 +246,7 @@ export interface Config {
     'analytics-device-types': AnalyticsDeviceTypesWidget;
     'analytics-safe-exit-clicks': AnalyticsSafeExitClicksWidget;
     'analytics-language-switch-destinations': AnalyticsLanguageSwitchDestinationsWidget;
+    'analytics-favorite-add-to-list': AnalyticsFavoriteAddToListWidget;
     collections: CollectionsWidget;
   };
   user: User;
@@ -1951,6 +1952,16 @@ export interface AnalyticsLanguageSwitchDestinationsWidget {
     [k: string]: unknown;
   };
   width: 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-favorite-add-to-list_widget".
+ */
+export interface AnalyticsFavoriteAddToListWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

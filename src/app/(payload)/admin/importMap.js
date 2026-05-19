@@ -52,6 +52,7 @@ import { default as default_dff8148f4762311d2641cb1e1929028b } from '@/payload/c
 import { default as default_766646900752ab034ee1e2479ffe7a52 } from '@/payload/components/analytics/widgets/DeviceTypesWidget'
 import { default as default_51bd228fe0b59c4ed5086ecb34d7183c } from '@/payload/components/analytics/widgets/SafeExitClicksWidget'
 import { default as default_031b76669fd92b1dd6e8bc08fe4d7309 } from '@/payload/components/analytics/widgets/LanguageSwitchDestinationsWidget'
+import { default as default_0498effad1df9bb7659c094484ba586c } from '@/payload/components/analytics/widgets/FavoriteAddToListWidget'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
@@ -110,5 +111,6 @@ export const importMap = {
   "@/payload/components/analytics/widgets/DeviceTypesWidget#default": default_766646900752ab034ee1e2479ffe7a52,
   "@/payload/components/analytics/widgets/SafeExitClicksWidget#default": default_51bd228fe0b59c4ed5086ecb34d7183c,
   "@/payload/components/analytics/widgets/LanguageSwitchDestinationsWidget#default": default_031b76669fd92b1dd6e8bc08fe4d7309,
+  "@/payload/components/analytics/widgets/FavoriteAddToListWidget#default": default_0498effad1df9bb7659c094484ba586c,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }
