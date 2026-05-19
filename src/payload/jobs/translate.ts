@@ -606,10 +606,24 @@ export const translate: TaskConfig<'translate'> = {
           'Translating fields',
         );
 
-        const translationsByPath = await executeBatchTranslation(
-          fieldsToTranslate,
-          engine,
-        );
+        let translationsByPath: Record<string, string>;
+
+        try {
+          translationsByPath = await executeBatchTranslation(
+            fieldsToTranslate,
+            engine,
+          );
+        } catch (error) {
+          log.warn(
+            {
+              targetLocale,
+              tenantId,
+              err: error,
+            },
+            'Translation failed for locale; skipping',
+          );
+          continue;
+        }
 
         const updateData: Partial<ResourceDirectory> = {
           ...targetDoc,
