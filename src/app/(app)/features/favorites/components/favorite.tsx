@@ -32,7 +32,7 @@ function convertFavoriteToResult(
     _id: favorite._id,
     id: favorite._id,
     address: displayAddress ?? '',
-    summary: translation?.serviceDescription ?? '',
+    summary: translation?.serviceSummary ?? '',
     description: translation?.serviceDescription ?? '',
     location: favorite.location ?? null,
     locationName: favorite.locationName ?? null,

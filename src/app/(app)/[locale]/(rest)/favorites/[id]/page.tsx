@@ -12,7 +12,12 @@ import { getFavoriteList } from '@/app/(app)/shared/serverActions/favorites/getF
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { getSession } from '@/app/(app)/shared/utils/getServerSession';
 
-const i18nNamespaces = ['page-favorites', 'page-list', 'common'];
+const i18nNamespaces = [
+  'page-favorites',
+  'page-list',
+  'common',
+  'page-resource',
+];
 
 export const generateMetadata = async ({ params }): Promise<Metadata> => {
   const { locale } = await params;
