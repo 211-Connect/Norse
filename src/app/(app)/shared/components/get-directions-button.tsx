@@ -118,7 +118,7 @@ export function GetDirectionsButton({
             </DialogDescription>
           </DialogHeader>
 
-          <div>
+          <div className="min-h-60">
             <LocationSearchBar
               mode="standalone"
               onLocationChange={(_location, coordinates) => {
