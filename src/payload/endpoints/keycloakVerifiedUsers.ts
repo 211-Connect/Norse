@@ -1,6 +1,7 @@
 import type { Endpoint } from 'payload';
 
 import { isSuperAdmin, isSupport } from '../collections/Users/access/roles';
+import type { Tenant } from '../payload-types';
 import { getUserTenantIDs } from '../utilities/getUserTenantIDs';
 import { getVerifiedEnabledUsersCount } from '../utilities/keycloakAdmin';
 
@@ -28,7 +29,7 @@ export const keycloakVerifiedUsers: Endpoint = {
       return Response.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    let tenant: any;
+    let tenant: Tenant;
 
     try {
       tenant = await req.payload.findByID({
