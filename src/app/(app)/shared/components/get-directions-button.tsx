@@ -14,16 +14,52 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/app/(app)/shared/components/ui/dialog';
+import { ResultType } from '@/app/(app)/shared/store/results';
+import { Address, Resource } from '@/types/resource';
 
 import { UmamiEvent, trackUmamiEvent } from '../lib/umami';
 import { cn } from '../lib/utils';
+
+interface GetDirectionsButtonProps {
+  className?: string;
+  data: Resource | ResultType;
+  coords?: number[] | null;
+  text?: string;
+}
+
+function buildAddressString(data: Resource | ResultType): string {
+  if (data.address) return data.address;
+
+  const addresses = 'addresses' in data ? data.addresses : null;
+  const primary =
+    addresses?.find((a: Address) => a.rank === 1) ?? addresses?.[0];
+  if (!primary) return '';
+
+  return [
+    primary.address_1,
+    primary.address_2,
+    primary.city,
+    primary.stateProvince,
+    primary.postalCode,
+  ]
+    .filter(Boolean)
+    .join(', ');
+}
+
+function buildMapsUrl(originStr: string, destinationStr: string): string {
+  const url = new URL('https://www.google.com/maps/dir/');
+  url.searchParams.set('api', '1');
+  if (originStr) url.searchParams.set('origin', originStr);
+  url.searchParams.set('destination', destinationStr);
+  return url.href;
+}
 
 export function GetDirectionsButton({
   className = '',
   data,
   coords,
   text = '',
-}) {
+}: GetDirectionsButtonProps) {
   const { t } = useTranslation('common');
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
@@ -38,17 +74,12 @@ export function GetDirectionsButton({
   const originCoords = selectedCoordinates ?? coords;
   const originStr =
     originCoords && originCoords.length === 2
-      ? originCoords.slice().reverse().join(',')
+      ? `${originCoords[1]},${originCoords[0]}`
       : '';
-  const destinationStr = data?.location?.coordinates?.length
-    ? data.location.coordinates.slice().reverse().join(',')
-    : '';
 
-  const googleMapsUrl = new URL('https://www.google.com/maps/dir/');
-  googleMapsUrl.searchParams.set('api', '1');
-  googleMapsUrl.searchParams.set('origin', originStr);
-  googleMapsUrl.searchParams.set('destination', destinationStr);
-  const mapsUrl = googleMapsUrl.href;
+  const destinationStr = buildAddressString(data);
+
+  const mapsUrl = buildMapsUrl(originStr, destinationStr);
 
   function trackDirectionsClick() {
     trackUmamiEvent(UmamiEvent.DirectionClick, { resourceId: String(data.id) });
