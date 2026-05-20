@@ -98,9 +98,7 @@ function FilterPills({
               fontSize: '0.875rem',
               fontWeight: active ? 600 : 400,
               cursor: 'pointer',
-              background: active
-                ? 'var(--theme-elevation-100)'
-                : 'transparent',
+              background: active ? 'var(--theme-elevation-100)' : 'transparent',
               color: active
                 ? 'var(--theme-text)'
                 : 'var(--theme-elevation-500)',

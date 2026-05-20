@@ -329,8 +329,10 @@ export const fetchPaths = makeCachedFetch(
         ),
       ]);
 
-    const { searchCount, resourceMetrics, searchByLabelByType } =
-      parseMetrics(pathMetrics ?? [], queryMetrics ?? []);
+    const { searchCount, resourceMetrics, searchByLabelByType } = parseMetrics(
+      pathMetrics ?? [],
+      queryMetrics ?? [],
+    );
     const {
       searchCount: prevSearchCount,
       resourceMetrics: prevResourceMetrics,

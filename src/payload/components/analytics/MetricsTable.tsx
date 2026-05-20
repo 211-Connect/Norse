@@ -2,7 +2,7 @@
 
 import { Table } from '@payloadcms/ui';
 import type { Column } from 'payload';
-import { memo, type ReactNode, useEffect, useMemo, useState } from 'react';
+import { type ReactNode, memo, useEffect, useMemo, useState } from 'react';
 
 import type { MetricEntry } from './types';
 
