@@ -228,7 +228,7 @@ async function getAppConfigBase(
       contact: {},
       sms: null,
       featureFlags: {
-        anonymousCollectionsEnabled: true,
+        anonymousCollectionsEnabled: false,
         requireUserLocation: false,
         showFeedbackButtonGlobal: false,
         showFeedbackButtonOnResourcePages: false,
@@ -377,7 +377,8 @@ async function getAppConfigBase(
     },
     sms: getSmsConfig(resourceDirectory),
     featureFlags: {
-      anonymousCollectionsEnabled: true,
+      anonymousCollectionsEnabled:
+        resourceDirectory.featureFlags?.anonymousCollectionsEnabled ?? false,
       requireUserLocation:
         resourceDirectory.featureFlags?.requireUserLocation ?? false,
       showFeedbackButtonGlobal:
