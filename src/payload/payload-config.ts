@@ -42,7 +42,6 @@ const dirname = path.dirname(filename);
 const endpoints: Endpoint[] = [
   clearCache,
   populateApiConfigCache,
-  populateApiConfigCache,
   translateEndpoint,
   duplicateTenant,
   umamiProxy,
