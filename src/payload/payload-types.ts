@@ -241,8 +241,13 @@ export interface Config {
     'analytics-map': AnalyticsMapWidget;
     'analytics-resource-titles': AnalyticsResourceTitlesWidget;
     'analytics-search-queries': AnalyticsSearchQueriesWidget;
+    'analytics-zero-result-queries': AnalyticsZeroResultQueriesWidget;
     'analytics-session-quality': AnalyticsSessionQualityWidget;
+    'analytics-device-types': AnalyticsDeviceTypesWidget;
     'analytics-safe-exit-clicks': AnalyticsSafeExitClicksWidget;
+    'analytics-language-switch-destinations': AnalyticsLanguageSwitchDestinationsWidget;
+    'analytics-favorite-add-to-list': AnalyticsFavoriteAddToListWidget;
+    'analytics-verified-users': AnalyticsVerifiedUsersWidget;
     collections: CollectionsWidget;
   };
   user: User;
@@ -1901,6 +1906,16 @@ export interface AnalyticsSearchQueriesWidget {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-zero-result-queries_widget".
+ */
+export interface AnalyticsZeroResultQueriesWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "analytics-session-quality_widget".
  */
 export interface AnalyticsSessionQualityWidget {
@@ -1911,9 +1926,49 @@ export interface AnalyticsSessionQualityWidget {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-device-types_widget".
+ */
+export interface AnalyticsDeviceTypesWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "analytics-safe-exit-clicks_widget".
  */
 export interface AnalyticsSafeExitClicksWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-language-switch-destinations_widget".
+ */
+export interface AnalyticsLanguageSwitchDestinationsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-favorite-add-to-list_widget".
+ */
+export interface AnalyticsFavoriteAddToListWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-verified-users_widget".
+ */
+export interface AnalyticsVerifiedUsersWidget {
   data?: {
     [k: string]: unknown;
   };

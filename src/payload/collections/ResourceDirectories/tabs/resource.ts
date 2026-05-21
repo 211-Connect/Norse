@@ -13,8 +13,19 @@ type LayoutColumnGroup = NonNullable<
 >[number];
 type LayoutItemField = NonNullable<LayoutColumnGroup['items']>[number];
 
+export const getCustomLayoutComponentLabel = (componentId: string) => {
+  switch (componentId) {
+    case ResourceComponentId.ATTRIBUTION:
+      return 'Data Attribution';
+    case ResourceComponentId.CATEGORIES:
+      return 'Taxonomies';
+    default:
+      return title(componentId);
+  }
+};
+
 const COMPONENT_ID_OPTIONS = Object.values(ResourceComponentId).map((id) => ({
-  label: title(id),
+  label: getCustomLayoutComponentLabel(id),
   value: id,
 }));
 
@@ -69,6 +80,10 @@ export const resource: Tab = {
       name: 'lastAssuredText',
       type: 'text',
       localized: true,
+      label: 'Last Assured Text',
+      admin: {
+        placeholder: 'Last assured',
+      },
       access: {
         create: superAdminOrSupportOrTenantAccess,
         update: superAdminOrSupportOrTenantAccess,
@@ -78,6 +93,10 @@ export const resource: Tab = {
       name: 'categoriesText',
       type: 'text',
       localized: true,
+      label: 'Taxonomies Text',
+      admin: {
+        placeholder: "What's Here",
+      },
       access: {
         create: superAdminOrSupportOrTenantAccess,
         update: superAdminOrSupportOrTenantAccess,

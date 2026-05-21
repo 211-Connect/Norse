@@ -1,4 +1,6 @@
 export enum UmamiEvent {
+  FavoriteAddToList = 'favorite_add_to_list',
+  LanguageSwitch = 'language_switch',
   SearchZeroResults = 'search_zero_results',
   DirectionClick = 'direction_click',
   PhoneClick = 'phone_click',

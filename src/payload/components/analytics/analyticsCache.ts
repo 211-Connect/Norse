@@ -8,49 +8,22 @@ import { geocodeSessions } from './geocodeSessions';
 import type {
   AnalyticsMetrics,
   DateRange,
-  HeatmapPoint,
+  EventsData,
+  LanguageSwitchDestinationsData,
   Metric,
   MetricEntry,
+  MetricsData,
   MetricsExpandedEntry,
+  PathsData,
+  SessionHeatmapData,
+  SessionsData,
+  UmamiEventDataValue,
   UmamiPageviews,
-  UmamiSession,
   UmamiSessionResponse,
   UmamiStats,
+  ZeroResultQueriesData,
 } from './types';
-import {
-  buildProxyQuery,
-  enrichWithResourceTitles,
-  parseMetrics,
-  sumEventTotals,
-} from './utils';
-
-export type MetricsData = {
-  metrics: AnalyticsMetrics;
-  resourceRows: MetricEntry[];
-  searchByLabel: MetricEntry[];
-};
-
-export type PathsData = {
-  searchCount: number;
-  prevSearchCount: number;
-  resourceRows: MetricEntry[];
-  resourceMetrics: MetricEntry[];
-  prevResourceMetrics: MetricEntry[];
-  searchByLabel: MetricEntry[];
-};
-
-export type EventsData = {
-  eventTotals: Record<string, number>;
-  prevEventTotals: Record<string, number>;
-};
-
-export type SessionsData = {
-  sessions: UmamiSession[];
-};
-
-export type SessionHeatmapData = {
-  heatmapPoints: HeatmapPoint[];
-};
+import { buildProxyQuery, parseMetrics, sumEventTotals } from './utils';
 
 const TTL_MS = 5 * 60 * 1000; // 5 minutes
 
@@ -60,6 +33,18 @@ type TimeWindow = ReturnType<typeof timeWindow>;
 
 function isFresh<T>(entry: CacheEntry<T>): boolean {
   return Date.now() - entry.timestamp < TTL_MS;
+}
+
+function toMetricEntries(
+  rows: UmamiEventDataValue[] | undefined,
+): MetricEntry[] {
+  return (rows ?? [])
+    .map((row) => ({
+      x: String(row.value ?? '').trim(),
+      y: Number(row.total) || 0,
+    }))
+    .filter((row) => row.x.length > 0 && row.y > 0)
+    .sort((a, b) => b.y - a.y);
 }
 
 function normalizeWebsiteIds(websiteIds: string[] | undefined): string {
@@ -250,11 +235,6 @@ export const fetchMetrics = makeCachedFetch(
       resourceMetrics: prevResourceMetrics,
     } = parseMetrics(prevPathMetrics ?? [], prevQueryMetrics ?? []);
 
-    const resourceRows = await enrichWithResourceTitles(
-      resourceMetrics,
-      tenantId ?? '',
-    );
-
     const metric = (current: number, previous: number): Metric => ({
       current,
       previous,
@@ -288,7 +268,7 @@ export const fetchMetrics = makeCachedFetch(
       ),
     };
 
-    return { metrics, resourceRows, searchByLabel };
+    return { metrics, resourceMetrics, searchByLabel };
   },
 );
 
@@ -352,15 +332,10 @@ export const fetchPaths = makeCachedFetch(
       resourceMetrics: prevResourceMetrics,
     } = parseMetrics(prevPathMetrics ?? [], prevQueryMetrics ?? []);
 
-    const resourceRows = await enrichWithResourceTitles(
-      resourceMetrics,
-      tenantId ?? '',
-    );
-
     return {
+      tenantId,
       searchCount,
       prevSearchCount,
-      resourceRows,
       resourceMetrics,
       prevResourceMetrics,
       searchByLabel,
@@ -400,7 +375,65 @@ export const fetchEvents = makeCachedFetch(
 
     const eventTotals = sumEventTotals(events ?? []);
     const prevEventTotals = sumEventTotals(prevEvents ?? []);
+
     return { eventTotals, prevEventTotals };
+  },
+);
+
+export const fetchZeroResultQueries = makeCachedFetch(
+  new Map<string, CacheEntry<ZeroResultQueriesData>>(),
+  async ({ startAt, endAt }, tenantId, websiteIds) => {
+    const zeroResultQueriesRaw = await fetchWrapper<UmamiEventDataValue[]>(
+      buildProxyQuery(
+        'event-data/values',
+        startAt,
+        endAt,
+        tenantId,
+        {
+          event: UmamiEvent.SearchZeroResults,
+          propertyName: 'query',
+        },
+        websiteIds,
+      ),
+    );
+
+    if (!zeroResultQueriesRaw) {
+      return { zeroResultQueries: [] };
+    }
+    const zeroResultQueries = toMetricEntries(zeroResultQueriesRaw);
+
+    return { zeroResultQueries };
+  },
+);
+
+export const fetchLanguageSwitchDestinations = makeCachedFetch(
+  new Map<string, CacheEntry<LanguageSwitchDestinationsData>>(),
+  async ({ startAt, endAt }, tenantId, websiteIds) => {
+    const languageSwitchDestinationsRaw = await fetchWrapper<
+      UmamiEventDataValue[]
+    >(
+      buildProxyQuery(
+        'event-data/values',
+        startAt,
+        endAt,
+        tenantId,
+        {
+          event: UmamiEvent.LanguageSwitch,
+          propertyName: 'destinationLanguage',
+        },
+        websiteIds,
+      ),
+    );
+
+    if (!languageSwitchDestinationsRaw) {
+      return { languageSwitchDestinations: [] };
+    }
+
+    const languageSwitchDestinations = toMetricEntries(
+      languageSwitchDestinationsRaw,
+    );
+
+    return { languageSwitchDestinations };
   },
 );
 

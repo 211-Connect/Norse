@@ -9,6 +9,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MainSearchLayout } from '@/app/(app)/shared/components/search/main-search-layout/main-search-layout';
+import { SearchLocationActions } from '@/app/(app)/shared/components/search/search-location-actions';
 import { Badge } from '@/app/(app)/shared/components/ui/badge';
 import { Button } from '@/app/(app)/shared/components/ui/button';
 import { Checkbox } from '@/app/(app)/shared/components/ui/checkbox';
@@ -25,6 +26,7 @@ import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-searc
 import { HEADER_ID } from '@/app/(app)/shared/lib/constants';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { filtersAtom, filtersOpenAtom } from '@/app/(app)/shared/store/results';
+import { searchCoordinatesAtom } from '@/app/(app)/shared/store/search';
 import { FiltersMap } from '@/types/search';
 
 const MAX_VISIBLE_FILTERS = 6;
@@ -36,15 +38,67 @@ type ActiveFilters = Record<string, string[]>;
 type FiltersProps = {
   filters: FiltersMap;
   filterKeys: string[];
+  isPending: boolean;
+  searchParamsObject: Record<string, unknown>;
+  updateSearchParams: (
+    updater: (params: Record<string, unknown>) => Record<string, unknown>,
+  ) => void;
 };
 
-const Filters = ({ filters, filterKeys }: FiltersProps) => {
-  const { t } = useTranslation();
+function queueResultsFocus() {
+  if (typeof window === 'undefined') return;
+
+  window.sessionStorage.setItem(
+    PENDING_FOCUS_TARGET_STORAGE_KEY,
+    SEARCH_RESULTS_HEADING_ID,
+  );
+}
+
+function useSearchResultsNavigation() {
   const router = useRouter();
   const { stringifiedSearchParams, searchParamsObject } =
     useClientSearchParams();
   const { start } = useTopLoader();
   const [isPending, setIsPending] = useState(false);
+
+  useEffect(() => {
+    setIsPending(false);
+  }, [stringifiedSearchParams]);
+
+  const updateSearchParams = useCallback(
+    (updater: (params: Record<string, unknown>) => Record<string, unknown>) => {
+      queueResultsFocus();
+
+      const nextParams = updater({ ...searchParamsObject });
+
+      if ('page' in nextParams) {
+        delete nextParams.page;
+      }
+
+      const search = qs.stringify(nextParams);
+
+      setIsPending(true);
+      start();
+      router.push(`/search${search ? `?${search}` : ''}`);
+    },
+    [router, searchParamsObject, start],
+  );
+
+  return {
+    isPending,
+    searchParamsObject,
+    updateSearchParams,
+  };
+}
+
+const Filters = ({
+  filters,
+  filterKeys,
+  isPending,
+  searchParamsObject,
+  updateSearchParams,
+}: FiltersProps) => {
+  const { t } = useTranslation();
   const [filtersExpanded, setFiltersExpanded] = useState<
     Record<string, boolean>
   >({});
@@ -53,27 +107,6 @@ const Filters = ({ filters, filterKeys }: FiltersProps) => {
     Record<string, HTMLButtonElement | null>
   >({});
 
-  useEffect(() => {
-    setIsPending(false);
-  }, [stringifiedSearchParams]);
-
-  const queueResultsFocus = useCallback(() => {
-    if (typeof window === 'undefined') return;
-    window.sessionStorage.setItem(
-      PENDING_FOCUS_TARGET_STORAGE_KEY,
-      SEARCH_RESULTS_HEADING_ID,
-    );
-  }, []);
-
-  const navigate = useCallback(
-    (url: string) => {
-      setIsPending(true);
-      start();
-      router.push(url);
-    },
-    [router, start],
-  );
-
   const activeFilters = useMemo(
     () => (searchParamsObject.filters ?? {}) as ActiveFilters,
     [searchParamsObject.filters],
@@ -81,19 +114,19 @@ const Filters = ({ filters, filterKeys }: FiltersProps) => {
 
   const applyFilters = useCallback(
     (newFilters?: ActiveFilters) => {
-      queueResultsFocus();
-      const params = {
-        ...searchParamsObject,
-        ...(newFilters ? { filters: newFilters } : {}),
-      };
-      if (!newFilters) delete params.filters;
-      if ('page' in params) {
-        delete params.page;
-      }
-      const str = qs.stringify(params);
-      navigate(`/search${str ? `?${str}` : ''}`);
+      updateSearchParams((params) => {
+        if (!newFilters) {
+          delete params.filters;
+          return params;
+        }
+
+        return {
+          ...params,
+          filters: newFilters,
+        };
+      });
     },
-    [searchParamsObject, navigate, queueResultsFocus],
+    [updateSearchParams],
   );
 
   const toggleFilter = useCallback(
@@ -385,11 +418,25 @@ export function FilterPanel() {
   const { t } = useTranslation();
   const appConfig = useAppConfig();
   const filters = useAtomValue(filtersAtom);
+  const searchCoordinates = useAtomValue(searchCoordinatesAtom);
   const [filtersOpen, setFiltersOpen] = useAtom(filtersOpenAtom);
 
   const filterKeys = useMemo(() => Object.keys(filters), [filters]);
+  const hasSearchCoordinates = searchCoordinates.length === 2;
 
   const { scrollOffset } = useScrollOffset();
+  const { isPending, searchParamsObject, updateSearchParams } =
+    useSearchResultsNavigation();
+
+  const handleDistanceChange = useCallback(
+    (distance: string) => {
+      updateSearchParams((params) => ({
+        ...params,
+        distance,
+      }));
+    },
+    [updateSearchParams],
+  );
 
   return (
     <div
@@ -420,10 +467,27 @@ export function FilterPanel() {
           {t('search.filter', 'Filter')}
         </Button>
       </div>
+      {hasSearchCoordinates && (
+        <SearchLocationActions
+          className="mt-3 print:hidden"
+          showUseMyLocationButton={false}
+          distanceSelectProps={{
+            className: '',
+            disabled: isPending,
+            onValueChange: handleDistanceChange,
+          }}
+        />
+      )}
       {filterKeys.length > 0 && (
         <>
           <div className="hidden w-full md:block print:hidden">
-            <Filters filters={filters} filterKeys={filterKeys} />
+            <Filters
+              filters={filters}
+              filterKeys={filterKeys}
+              isPending={isPending}
+              searchParamsObject={searchParamsObject}
+              updateSearchParams={updateSearchParams}
+            />
           </div>
           <Sheet onOpenChange={setFiltersOpen} open={filtersOpen}>
             <SheetContent
@@ -434,7 +498,13 @@ export function FilterPanel() {
                 <SheetTitle></SheetTitle>
               </SheetHeader>
               <ScrollArea>
-                <Filters filters={filters} filterKeys={filterKeys} />
+                <Filters
+                  filters={filters}
+                  filterKeys={filterKeys}
+                  isPending={isPending}
+                  searchParamsObject={searchParamsObject}
+                  updateSearchParams={updateSearchParams}
+                />
               </ScrollArea>
             </SheetContent>
           </Sheet>

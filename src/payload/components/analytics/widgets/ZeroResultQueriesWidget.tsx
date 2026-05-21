@@ -3,17 +3,17 @@
 import { Banner, StaggeredShimmers } from '@payloadcms/ui';
 
 import { MetricsTable } from '../MetricsTable';
-import { usePaths } from '../useAnalyticsData';
+import { useZeroResultQueries } from '../useAnalyticsData';
 
-export default function SearchQueriesWidget() {
-  const { loading, error, data } = usePaths();
+export default function ZeroResultQueriesWidget() {
+  const { loading, error, data } = useZeroResultQueries();
 
   if (loading) return <StaggeredShimmers count={5} height={40} />;
 
   if (error) {
     return (
       <Banner type="error">
-        <strong>Could not load search queries.</strong> Please contact the
+        <strong>Could not load zero-result queries.</strong> Please contact the
         support team.
       </Banner>
     );
@@ -21,10 +21,10 @@ export default function SearchQueriesWidget() {
 
   return (
     <MetricsTable
-      title="Searches hit"
+      title="No result searches"
       colLabel="Query"
       colValue="Referrals"
-      rows={data?.searchByLabel ?? []}
+      rows={data?.zeroResultQueries ?? []}
     />
   );
 }

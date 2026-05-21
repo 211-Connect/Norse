@@ -9,24 +9,28 @@ import {
   analyticsSelectedWebsiteIdsAtom,
 } from './DateRange';
 import {
-  type EventsData,
-  type MetricsData,
-  type PathsData,
-  type SessionHeatmapData,
-  type SessionsData,
   fetchEvents,
+  fetchLanguageSwitchDestinations,
   fetchMetrics,
   fetchPageviews,
   fetchPaths,
   fetchSessionHeatmap,
   fetchSessions,
   fetchStats,
+  fetchZeroResultQueries,
 } from './analyticsCache';
-import type { DateRange } from './types';
-import type { UmamiPageviews, UmamiStats } from './types';
-
-export type { MetricsData, PathsData, EventsData, SessionsData };
-export type { SessionHeatmapData };
+import {
+  DateRange,
+  EventsData,
+  LanguageSwitchDestinationsData,
+  MetricsData,
+  PathsData,
+  SessionHeatmapData,
+  SessionsData,
+  UmamiPageviews,
+  UmamiStats,
+  ZeroResultQueriesData,
+} from './types';
 
 export type AsyncData<T> = {
   loading: boolean;
@@ -99,6 +103,13 @@ export const usePageviews = makeAsyncHook<UmamiPageviews>(fetchPageviews);
 export const useMetrics = makeAsyncHook<MetricsData>(fetchMetrics);
 export const usePaths = makeAsyncHook<PathsData>(fetchPaths);
 export const useEvents = makeAsyncHook<EventsData>(fetchEvents);
+export const useZeroResultQueries = makeAsyncHook<ZeroResultQueriesData>(
+  fetchZeroResultQueries,
+);
+export const useLanguageSwitchDestinations =
+  makeAsyncHook<LanguageSwitchDestinationsData>(
+    fetchLanguageSwitchDestinations,
+  );
 export const useSessions = makeAsyncHook<SessionsData>(fetchSessions);
 export const useSessionHeatmap =
   makeAsyncHook<SessionHeatmapData>(fetchSessionHeatmap);

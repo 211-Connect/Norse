@@ -22,6 +22,7 @@ import { Users } from './collections/Users';
 import { isSuperAdmin, isSupport } from './collections/Users/access/roles';
 import { clearCache } from './endpoints/clearCache';
 import { duplicateTenant } from './endpoints/duplicateTenant';
+import { keycloakVerifiedUsers } from './endpoints/keycloakVerifiedUsers';
 import { populateApiConfigCache } from './endpoints/populateApiConfigCache';
 import { translateEndpoint } from './endpoints/translate';
 import { umamiProxy } from './endpoints/umamiProxy';
@@ -45,6 +46,7 @@ const endpoints: Endpoint[] = [
   duplicateTenant,
   umamiProxy,
   umamiWebsites,
+  keycloakVerifiedUsers,
   seedEndpoint,
 ];
 
@@ -211,6 +213,13 @@ const config = buildConfig({
           maxWidth: 'full',
         },
         {
+          slug: 'analytics-zero-result-queries',
+          Component:
+            '@/payload/components/analytics/widgets/ZeroResultQueriesWidget#default',
+          minWidth: 'medium',
+          maxWidth: 'full',
+        },
+        {
           slug: 'analytics-session-quality',
           Component:
             '@/payload/components/analytics/widgets/SessionQualityWidget#default',
@@ -218,9 +227,37 @@ const config = buildConfig({
           maxWidth: 'full',
         },
         {
+          slug: 'analytics-device-types',
+          Component:
+            '@/payload/components/analytics/widgets/DeviceTypesWidget#default',
+          minWidth: 'medium',
+          maxWidth: 'full',
+        },
+        {
           slug: 'analytics-safe-exit-clicks',
           Component:
             '@/payload/components/analytics/widgets/SafeExitClicksWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-language-switch-destinations',
+          Component:
+            '@/payload/components/analytics/widgets/LanguageSwitchDestinationsWidget#default',
+          minWidth: 'medium',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-favorite-add-to-list',
+          Component:
+            '@/payload/components/analytics/widgets/FavoriteAddToListWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-verified-users',
+          Component:
+            '@/payload/components/analytics/widgets/VerifiedUsersWidget#default',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
