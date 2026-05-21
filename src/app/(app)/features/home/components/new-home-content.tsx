@@ -14,6 +14,7 @@ import { Image } from '@/app/(app)/shared/components/image';
 import { Link } from '@/app/(app)/shared/components/link';
 import { MainSearchLayout } from '@/app/(app)/shared/components/search/main-search-layout/main-search-layout';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { UmamiEvent, trackUmamiEvent } from '@/app/(app)/shared/lib/umami';
 
 import Alert from './alert';
 
@@ -137,6 +138,9 @@ export function NewHomeContent() {
                         target={urlTarget}
                         className="flex flex-col items-center gap-[10px] px-4 py-[10px] [&>p]:hover:underline"
                         key={`${type}-${index}`}
+                        onClick={() =>
+                          trackUmamiEvent(UmamiEvent.CalloutClick, { type })
+                        }
                       >
                         {icon}
                         <p className="text-center text-xl font-semibold">

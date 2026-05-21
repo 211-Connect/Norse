@@ -117,6 +117,7 @@ export interface AnalyticsMetrics {
   phoneCalls: Metric;
   websiteClicks: Metric;
   widgetSearches: Metric;
+  calloutClicks: Metric;
 }
 
 export interface Metric {
