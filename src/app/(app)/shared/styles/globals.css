@@ -137,3 +137,137 @@ a:not(:has(> button:only-child)):not([class*='bg-']):not(.border) {
   padding-left: 1.5rem;
   margin: 0.5rem 0;
 }
+
+/* Print-specific styles */
+@media print {
+  /* Use full page canvas and control spacing from content wrappers */
+  @page {
+    margin: 0;
+    size: letter;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body,
+  html {
+    font-family: Inter, sans-serif !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .print-document {
+    position: relative;
+    padding: 0 !important;
+  }
+
+  .print-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  .print-document.print-phone-book .print-table {
+    height: 100vh;
+  }
+
+  .print-document.print-phone-book .print-table tbody {
+    height: 100%;
+  }
+
+  .print-document.print-phone-book .print-table tbody > tr {
+    height: 100%;
+  }
+
+  .print-table thead {
+    display: table-header-group;
+  }
+
+  .print-table tfoot {
+    display: table-footer-group;
+  }
+
+  .print-table-cell {
+    padding: 0;
+    margin: 0;
+    border: 0;
+    vertical-align: top;
+  }
+
+  .print-header {
+    padding: 0.4in 0.4in 0.08in;
+    background: white;
+  }
+
+  /* Two-line separator under header */
+  .print-header-separator {
+    margin-top: 8px;
+    margin-bottom: 8px;
+    height: 3px;
+    border-top: 1px solid #555555;
+    border-bottom: 1px solid #a6a6a6;
+  }
+
+  .print-content {
+    padding: 0.1in 0.4in;
+  }
+
+  .print-footer {
+    padding: 0.08in 0.4in 0.28in;
+    background: white;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Item indentation - indent all content except the title */
+  .print-item-content {
+    padding-left: 24px;
+  }
+
+  /* Ensure items don't break badly across pages */
+  .print-item {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    orphans: 2; /* Minimum lines at bottom of page */
+    widows: 2; /* Minimum lines at top of page */
+  }
+
+  .parsed-html-content,
+  .parsed-html-content * {
+    font-family: inherit !important;
+  }
+
+  .parsed-html-content a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+
+  .parsed-html-content a::after {
+    content: none !important;
+  }
+
+  .parsed-html-content ul,
+  .parsed-html-content ol {
+    margin: 0.25rem 0 !important;
+    padding-left: 1rem !important;
+    page-break-inside: avoid;
+  }
+
+  .parsed-html-content li {
+    page-break-inside: avoid;
+  }
+
+  .parsed-html-content p {
+    margin: 0.25rem 0 !important;
+    orphans: 2;
+    widows: 2;
+  }
+
+  img {
+    max-width: 100% !important;
+    height: auto !important;
+    page-break-inside: avoid;
+  }
+}

@@ -21,5 +21,16 @@
     "cancel": "Cancel",
     "success": "All favorites cleared",
     "error": "Failed to clear favorites"
-  }
+  },
+  "print_directory": "Print",
+  "print_dialog": {
+    "title": "Print Directory",
+    "select_format": "Select print format",
+    "phone_book": "Phone Book",
+    "phone_book_desc": "Compact format with essential contact information",
+    "all_info": "All Information",
+    "all_info_desc": "Detailed format including descriptions",
+    "print_button": "Print"
+  },
+  "print_footer_disclaimer": "{{brandName}} provides this information as a public service and makes no warranties regarding its accuracy, completeness, or timeliness. {{brandName}} is not responsible for how this information is used and assumes no liability for any outcomes arising from its use. The distribution of this printout does not imply endorsement by or affiliation with {{brandName}}."
 }

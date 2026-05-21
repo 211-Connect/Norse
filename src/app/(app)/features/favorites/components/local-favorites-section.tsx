@@ -1,7 +1,7 @@
 'use client';
 
 import { ChevronLeft, Eraser } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { CardLayoutRenderer } from '@/app/(app)/features/search/components/card-layout-renderer';
@@ -28,6 +28,8 @@ import {
   RemoveFromListHandler,
   resourceToLocalFavoriteResult,
 } from '../utils/favorite-result-transformers';
+import { localResourcesToPrintableDirectory } from '../utils/printable-directory-transformers';
+import { FavoritesDirectoryPrintControl } from './favorites-directory-print-control';
 import { PurgeConfirmDialog } from './purge-confirm-dialog';
 
 type LocalFavoritesSectionProps = {
@@ -51,7 +53,6 @@ export function LocalFavoritesSection({
   const [resources, setResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(true);
   const [clearConfirmOpen, setClearConfirmOpen] = useState(false);
-  const componentToPrint = useRef<HTMLDivElement>(null);
 
   // Fetch resources whenever the stored IDs change
   useEffect(() => {
@@ -87,6 +88,21 @@ export function LocalFavoritesSection({
     .filter((r) => isLocalFavorite(r.id))
     .map((r) => resourceToLocalFavoriteResult(r, handleRemoveFromList));
 
+  const localFavoriteResources = useMemo(
+    () => resources.filter((resource) => isLocalFavorite(resource.id)),
+    [resources, isLocalFavorite],
+  );
+
+  const printableDirectoryData = useMemo(
+    () =>
+      localResourcesToPrintableDirectory(
+        localFavoriteResources,
+        locale,
+        t('local_list.title'),
+      ),
+    [localFavoriteResources, locale, t],
+  );
+
   return (
     <div className="flex w-full flex-col p-6 lg:max-w-[550px] lg:pl-[20px]">
       <Card className="rounded-none border-none bg-transparent p-0 shadow-none">
@@ -110,15 +126,22 @@ export function LocalFavoritesSection({
         </Link>
 
         {results.length > 0 && (
-          <Button
-            variant="outline"
-            className="gap-2"
-            onClick={() => setClearConfirmOpen(true)}
-            data-testid="purge-local-list-btn"
-          >
-            <Eraser className="size-4" />
-            {t('purge_list.label')}
-          </Button>
+          <div className="flex items-center gap-2">
+            <FavoritesDirectoryPrintControl
+              data={printableDirectoryData}
+              testId="print-local-directory-btn"
+              showLabel={true}
+            />
+            <Button
+              variant="outline"
+              className="gap-2"
+              onClick={() => setClearConfirmOpen(true)}
+              data-testid="purge-local-list-btn"
+            >
+              <Eraser className="size-4" />
+              {t('purge_list.label')}
+            </Button>
+          </div>
         )}
       </div>
 
@@ -151,7 +174,6 @@ export function LocalFavoritesSection({
 
       <div
         className={cn('mt-2 flex flex-col gap-2 font-sans', fontSans.variable)}
-        ref={componentToPrint}
       >
         {results.map((result) => (
           <CardLayoutRenderer

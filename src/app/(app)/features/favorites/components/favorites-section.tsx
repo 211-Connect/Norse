@@ -2,9 +2,10 @@
 
 import { useAtom } from 'jotai';
 import { ChevronLeft } from 'lucide-react';
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { favoriteListToPrintableDirectory } from '@/app/(app)/features/favorites/utils/printable-directory-transformers';
 import { SearchCardLayoutConfig } from '@/app/(app)/features/search/types/card-layout-config';
 import { Link } from '@/app/(app)/shared/components/link';
 import { ShareButton } from '@/app/(app)/shared/components/share-button';
@@ -17,6 +18,7 @@ import { fontSans } from '@/app/(app)/shared/styles/fonts';
 
 import { DeleteFavoriteListButton } from './delete-favorite-list-button';
 import { Favorite } from './favorite';
+import { FavoritesDirectoryPrintControl } from './favorites-directory-print-control';
 import { NoFavoritesCard } from './no-favorites-card';
 import { PurgeFavoriteListButton } from './purge-favorite-list-button';
 import { UpdateFavoriteListButton } from './update-favorite-list-button';
@@ -26,12 +28,16 @@ type FavoritesSectionProps = {
 };
 
 export function FavoritesSection({ cardLayout }: FavoritesSectionProps) {
-  const { t } = useTranslation('page-list');
+  const { t, i18n } = useTranslation('page-list');
   const [favoriteList, setFavoriteList] = useAtom(
     favoriteListWithFavoritesAtom,
   );
   const componentToPrint = useRef<HTMLDivElement>(null);
   const { stringifiedSearchParams } = useClientSearchParams();
+  const printableDirectoryData = useMemo(
+    () => favoriteListToPrintableDirectory(favoriteList, i18n.language),
+    [favoriteList, i18n.language],
+  );
 
   const handleRemoveFromList = (_listId: string, favoriteId: string) => {
     // Optimistically update the local atom by filtering out the removed favorite
@@ -69,6 +75,8 @@ export function FavoritesSection({ cardLayout }: FavoritesSectionProps) {
         )}
 
         <div className="flex items-center gap-2">
+          <FavoritesDirectoryPrintControl data={printableDirectoryData} />
+
           <UpdateFavoriteListButton
             id={favoriteList.id}
             name={favoriteList.name}
