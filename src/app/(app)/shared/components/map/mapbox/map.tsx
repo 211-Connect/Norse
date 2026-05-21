@@ -1,6 +1,12 @@
 'use client';
 
-import mapboxgl, { LngLatBounds, LngLatLike, Marker, Popup } from 'mapbox-gl';
+import {
+  LngLatBounds,
+  LngLatLike,
+  Map as MapboxMap,
+  Marker,
+  Popup,
+} from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useEffect, useRef, useState } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -40,8 +46,8 @@ export function Map({
   serviceArea,
 }: MapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const mapboxMap = useRef<any>(null);
-  const _markers = useRef<mapboxgl.Marker[]>([]);
+  const mapboxMap = useRef<MapboxMap | null>(null);
+  const _markers = useRef<Marker[]>([]);
   const [mapError, setMapError] = useState<string | null>(null);
 
   const applyMarkerSemantics = (
@@ -61,7 +67,7 @@ export function Map({
 
   useEffect(() => {
     try {
-      mapboxMap.current = new mapboxgl.Map({
+      mapboxMap.current = new MapboxMap({
         container: mapContainer.current || '',
         style: MAPBOX_STYLE_URL,
         zoom: zoom ?? 7,
@@ -108,7 +114,9 @@ export function Map({
 
       if (hasValidCoordinates) {
         marker.setLngLat(m.coordinates as [number, number]);
-        marker.addTo(mapboxMap.current);
+        if (mapboxMap.current) {
+          marker.addTo(mapboxMap.current);
+        }
         bounds.extend(m.coordinates as [number, number]);
       }
 
