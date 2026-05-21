@@ -48,7 +48,7 @@ export const PageWrapper = ({
       <ErrorBoundary>
         <a
           href={`#${MAIN_CONTENT_ID}`}
-          className="sr-only z-50 m-3 inline-flex rounded-md bg-background px-4 py-2 text-sm font-medium text-foreground focus:not-sr-only focus:absolute focus:left-0 focus:top-0 focus:ring-2 focus:ring-ring"
+          className="bg-background text-foreground focus:ring-ring sr-only z-50 m-3 inline-flex rounded-md px-4 py-2 text-sm font-medium focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:ring-2"
         >
           Skip to content
         </a>

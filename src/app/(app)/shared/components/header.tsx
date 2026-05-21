@@ -290,7 +290,7 @@ export function Header() {
         className={cn(
           'relative flex h-[104px] items-center justify-between gap-16 px-4 py-2 sm:gap-4 sm:px-6 sm:py-3',
           newLayoutEnabled &&
-            'rounded-xl bg-gradient-to-r from-header-start to-header-end',
+            'from-header-start to-header-end rounded-xl bg-gradient-to-r',
         )}
       >
         <div className="flex h-full items-center">
@@ -298,7 +298,7 @@ export function Header() {
             href={appConfig.header?.customHomeUrl || '/'}
             className={cn(
               'flex h-full cursor-pointer items-center',
-              newLayoutEnabled && 'absolute -left-4 -top-4',
+              newLayoutEnabled && 'absolute -top-4 -left-4',
             )}
             aria-label={logoAlt}
           >
@@ -331,7 +331,7 @@ export function Header() {
           <Sheet open={opened} onOpenChange={toggle}>
             <SheetTrigger
               aria-label="Toggle navigation menu"
-              className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="focus-visible:ring-ring rounded-md focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
             >
               <AlignJustifyIcon
                 className={cn('size-8', newLayoutEnabled && 'text-white')}
@@ -361,7 +361,7 @@ export function Header() {
               <nav aria-label="Mobile primary">
                 <a
                   href={`#${MAIN_CONTENT_ID}`}
-                  className="sr-only rounded-md px-3 py-2 text-sm font-medium focus:not-sr-only focus:inline-flex focus:ring-2 focus:ring-ring"
+                  className="focus:ring-ring sr-only rounded-md px-3 py-2 text-sm font-medium focus:not-sr-only focus:inline-flex focus:ring-2"
                 >
                   Skip to content
                 </a>

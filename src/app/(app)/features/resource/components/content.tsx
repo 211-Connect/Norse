@@ -22,7 +22,7 @@ export const ResourcePageContent = ({
   const componentToPrintRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div className="container mx-auto flex flex-col gap-2 pb-2 pt-2">
+    <div className="container mx-auto flex flex-col gap-2 pt-2 pb-2">
       <Navigation
         componentToPrintRef={componentToPrintRef}
         resource={resource}

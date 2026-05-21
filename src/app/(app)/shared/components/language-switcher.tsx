@@ -99,7 +99,7 @@ export const LanguageSwitcher = () => {
           <div className="flex items-center gap-1 overflow-hidden">
             <LanguagesIcon className="size-4" aria-hidden="true" />
             <SelectValue placeholder={t('header.language_select_label')}>
-              <span className="text-xs font-medium capitalize leading-5">
+              <span className="text-xs leading-5 font-medium capitalize">
                 {getLanguageName(currentLanguage)}
               </span>
             </SelectValue>

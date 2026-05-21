@@ -25,12 +25,12 @@ export function DataProviders() {
 
   return (
     <>
-      <div className="container mx-auto flex flex-col pb-8 pt-8">
+      <div className="container mx-auto flex flex-col pt-8 pb-8">
         <h3 className="text-center text-lg font-bold">
           {appConfig.providersCustomHeading || t('data_providers.provided_by')}
         </h3>
 
-        <Separator className="mb-4 mt-3" />
+        <Separator className="mt-3 mb-4" />
 
         <div
           className={cn(

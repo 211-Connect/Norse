@@ -72,7 +72,7 @@ export function PromptAuthDialog() {
             {t('modal.prompt_auth_description')}
           </DialogDescription>
         </DialogHeader>
-        <Label className="text-sm font-normal text-muted-foreground">
+        <Label className="text-muted-foreground text-sm font-normal">
           {t('modal.prompt_auth_description')}
         </Label>
         <DialogFooter>

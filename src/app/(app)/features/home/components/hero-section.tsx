@@ -176,7 +176,7 @@ export function HeroSection() {
       />
 
       <div
-        className="flex w-full max-w-[31rem] flex-col gap-2 rounded-lg bg-primary p-3"
+        className="bg-primary flex w-full max-w-[31rem] flex-col gap-2 rounded-lg p-3"
         role="search"
       >
         <h2 className="text-2xl font-medium text-white">
@@ -198,7 +198,7 @@ export function HeroSection() {
           aria-controls="home-page-tour-dialog"
           aria-haspopup="dialog"
           data-home-tour-trigger="true"
-          className="border-foreground/40 bg-background text-foreground shadow-sm hover:bg-primary hover:text-primary-foreground focus-visible:border-foreground focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-4"
+          className="border-foreground/40 bg-background text-foreground hover:bg-primary hover:text-primary-foreground focus-visible:border-foreground focus-visible:ring-foreground shadow-sm focus-visible:ring-2 focus-visible:ring-offset-4"
         >
           {takeTourLabel}
         </Button>
