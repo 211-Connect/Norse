@@ -9,6 +9,7 @@ export enum UmamiEvent {
   WidgetSearch = 'widget_search',
   SearchTaxonomy = 'search_taxonomy',
   SearchText = 'search_text',
+  CalloutClick = 'callout_click',
 }
 
 export function trackUmamiEvent(

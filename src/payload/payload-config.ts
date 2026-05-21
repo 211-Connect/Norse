@@ -178,6 +178,13 @@ const config = buildConfig({
           maxWidth: 'full',
         },
         {
+          slug: 'analytics-callout-clicks',
+          Component:
+            '@/payload/components/analytics/widgets/CalloutClicksWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
           slug: 'analytics-page-views',
           Component:
             '@/payload/components/analytics/widgets/PageViewsWidget#default',

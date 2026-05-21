@@ -272,6 +272,10 @@ export const fetchMetrics = makeCachedFetch(
         eventTotals[UmamiEvent.WidgetSearch] ?? 0,
         prevEventTotals[UmamiEvent.WidgetSearch] ?? 0,
       ),
+      calloutClicks: metric(
+        eventTotals[UmamiEvent.CalloutClick] ?? 0,
+        prevEventTotals[UmamiEvent.CalloutClick] ?? 0,
+      ),
     };
 
     return { metrics, resourceMetrics, searchByLabel };

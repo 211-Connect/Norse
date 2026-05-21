@@ -236,6 +236,7 @@ export interface Config {
     'analytics-phone-calls': AnalyticsPhoneCallsWidget;
     'analytics-directions': AnalyticsDirectionsWidget;
     'analytics-widget-searches': AnalyticsWidgetSearchesWidget;
+    'analytics-callout-clicks': AnalyticsCalloutClicksWidget;
     'analytics-page-views': AnalyticsPageViewsWidget;
     'analytics-pageviews-chart': AnalyticsPageviewsChartWidget;
     'analytics-map': AnalyticsMapWidget;
@@ -1849,6 +1850,16 @@ export interface AnalyticsDirectionsWidget {
  * via the `definition` "analytics-widget-searches_widget".
  */
 export interface AnalyticsWidgetSearchesWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-callout-clicks_widget".
+ */
+export interface AnalyticsCalloutClicksWidget {
   data?: {
     [k: string]: unknown;
   };
