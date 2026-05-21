@@ -1,13 +1,6 @@
 'use client';
 
-import {
-  CheckIcon,
-  ClipboardIcon,
-  Linkedin,
-  Mail,
-  Printer,
-  Share2,
-} from 'lucide-react';
+import { CheckIcon, ClipboardIcon, Mail, Printer, Share2 } from 'lucide-react';
 import { useEffect, useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useReactToPrint } from 'react-to-print';
@@ -17,6 +10,7 @@ import { useClipboard } from '../hooks/use-clipboard';
 import { withOptionalCustomBasePath } from '../lib/utils';
 import { shortenUrl } from '../serverActions/shortUrl/shortenUrl';
 import { Facebook } from './icons/facebook';
+import { LinkedIn } from './icons/linkedin';
 import { X } from './icons/x';
 import { SmsButton } from './sms-button';
 import { Button } from './ui/button';
@@ -154,7 +148,7 @@ export function ShareButton({
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <Linkedin className="size-4" aria-hidden="true" />
+                  <LinkedIn className="size-4" aria-hidden="true" />
                   {t('modal.share.linkedin')}
                   <span className="sr-only">
                     {' '}
@@ -220,7 +214,7 @@ export function ShareButton({
               <Button
                 onClick={() => clipboard.copy(shortUrl)}
                 variant="outline"
-                className="flex w-full min-w-0 items-center justify-between gap-1 focus-visible:ring-inset focus-visible:ring-offset-0"
+                className="flex w-full min-w-0 items-center justify-between gap-1 focus-visible:ring-offset-0 focus-visible:ring-inset"
                 aria-label={t('modal.share.copy_link')}
                 aria-describedby={copyStatusId}
               >

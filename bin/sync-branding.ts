@@ -1,8 +1,10 @@
 #!/usr/bin/env tsx
 
-import 'dotenv/config';
+import dotenv from 'dotenv';
 
 import type { ResourceDirectory, Tenant } from '../src/payload/payload-types';
+
+dotenv.config({ quiet: true });
 
 type TenantDoc = Pick<Tenant, 'id' | 'auth'>;
 
