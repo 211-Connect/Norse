@@ -2,7 +2,7 @@
 
 import { Table } from '@payloadcms/ui';
 import type { Column } from 'payload';
-import { memo, useEffect, useMemo, useState } from 'react';
+import { type ReactNode, memo, useEffect, useMemo, useState } from 'react';
 
 import type { MetricEntry } from './types';
 
@@ -15,6 +15,8 @@ export const MetricsTable = memo(function MetricsTable({
   rows,
   pageSize = 10,
   onPageRowsChange,
+  footerStart,
+  emptyState,
 }: {
   title: string;
   colLabel: string;
@@ -22,8 +24,10 @@ export const MetricsTable = memo(function MetricsTable({
   rows: Row[];
   pageSize?: number;
   onPageRowsChange?: (rows: Row[]) => void;
+  footerStart?: ReactNode;
+  emptyState?: ReactNode;
 }) {
-  if (rows.length === 0) return null;
+  if (rows.length === 0 && !emptyState) return null;
 
   const [page, setPage] = useState(1);
 
@@ -105,7 +109,11 @@ export const MetricsTable = memo(function MetricsTable({
           {title}
         </h4>
         <div style={{ flex: 1, overflow: 'auto' }}>
-          <Table columns={columns} data={data} appearance="condensed" />
+          {rows.length === 0 ? (
+            emptyState
+          ) : (
+            <Table columns={columns} data={data} appearance="condensed" />
+          )}
         </div>
         <div
           style={{
@@ -113,17 +121,12 @@ export const MetricsTable = memo(function MetricsTable({
             justifyContent: 'space-between',
             alignItems: 'center',
             gap: '0.75rem',
+            flexWrap: 'wrap',
           }}
         >
-          <span
-            style={{
-              color: 'var(--theme-elevation-500)',
-              fontSize: '0.875rem',
-            }}
-          >
-            Showing {(page - 1) * pageSize + 1}-
-            {Math.min(page * pageSize, rows.length)} of {rows.length}
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', minHeight: 0 }}>
+            {footerStart}
+          </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <button
               type="button"

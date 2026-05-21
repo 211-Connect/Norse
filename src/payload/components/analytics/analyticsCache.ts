@@ -23,7 +23,12 @@ import type {
   UmamiStats,
   ZeroResultQueriesData,
 } from './types';
-import { buildProxyQuery, parseMetrics, sumEventTotals } from './utils';
+import {
+  buildProxyQuery,
+  mergeSearchByLabelBuckets,
+  parseMetrics,
+  sumEventTotals,
+} from './utils';
 
 const TTL_MS = 5 * 60 * 1000; // 5 minutes
 
@@ -226,10 +231,11 @@ export const fetchMetrics = makeCachedFetch(
     const eventTotals = sumEventTotals(events ?? []);
     const prevEventTotals = sumEventTotals(prevEvents ?? []);
 
-    const { searchCount, resourceMetrics, searchByLabel } = parseMetrics(
+    const { searchCount, resourceMetrics, searchByLabelByType } = parseMetrics(
       pathMetrics ?? [],
       queryMetrics ?? [],
     );
+    const searchByLabel = mergeSearchByLabelBuckets(searchByLabelByType);
     const {
       searchCount: prevSearchCount,
       resourceMetrics: prevResourceMetrics,
@@ -323,7 +329,7 @@ export const fetchPaths = makeCachedFetch(
         ),
       ]);
 
-    const { searchCount, resourceMetrics, searchByLabel } = parseMetrics(
+    const { searchCount, resourceMetrics, searchByLabelByType } = parseMetrics(
       pathMetrics ?? [],
       queryMetrics ?? [],
     );
@@ -338,7 +344,7 @@ export const fetchPaths = makeCachedFetch(
       prevSearchCount,
       resourceMetrics,
       prevResourceMetrics,
-      searchByLabel,
+      searchByLabelByType,
     };
   },
 );

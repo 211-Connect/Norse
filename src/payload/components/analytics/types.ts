@@ -2,6 +2,10 @@ export type DateRange = 7 | 30 | 90;
 
 export type HeatmapPoint = [number, number, number?];
 
+export type SearchQueryType = 'text' | 'taxonomy' | 'hybrid';
+
+export type SearchByLabelByType = Record<SearchQueryType, MetricEntry[]>;
+
 export type MetricsData = {
   metrics: AnalyticsMetrics;
   resourceMetrics: MetricEntry[];
@@ -14,7 +18,7 @@ export type PathsData = {
   prevSearchCount: number;
   resourceMetrics: MetricEntry[];
   prevResourceMetrics: MetricEntry[];
-  searchByLabel: MetricEntry[];
+  searchByLabelByType: SearchByLabelByType;
 };
 
 export type EventsData = {

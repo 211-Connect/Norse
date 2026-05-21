@@ -2,9 +2,23 @@ import type {
   MetricEntry,
   MetricsExpandedEntry,
   ResourceTitleEntry,
+  SearchByLabelByType,
+  SearchQueryType,
 } from './types';
 
 const SEARCH_RESOURCE_PREFIX = '/search/';
+
+const SEARCH_QUERY_TYPES: readonly SearchQueryType[] = [
+  'text',
+  'taxonomy',
+  'hybrid',
+] as const;
+
+function isSearchQueryType(value: string | null): value is SearchQueryType {
+  return (
+    value !== null && (SEARCH_QUERY_TYPES as readonly string[]).includes(value)
+  );
+}
 
 export function buildProxyQuery(
   endpoint: string,
@@ -42,7 +56,7 @@ export function parseMetrics(
 ): {
   searchCount: number;
   resourceMetrics: MetricEntry[];
-  searchByLabel: MetricEntry[];
+  searchByLabelByType: SearchByLabelByType;
 } {
   let searchCount = 0;
   const resourceMetrics: MetricEntry[] = [];
@@ -60,21 +74,46 @@ export function parseMetrics(
 
   resourceMetrics.sort((a, b) => b.y - a.y);
 
-  const labelMap = new Map<string, number>();
-  for (const m of queryMetricsData) {
-    const label = new URLSearchParams(m.name).get('query_label');
-    if (label === null) continue;
-    labelMap.set(
-      label,
-      (labelMap.get(label) ?? 0) + (Number(m.pageviews) || 0),
-    );
-  }
-  const searchByLabel: MetricEntry[] = Array.from(labelMap, ([x, y]) => ({
-    x,
-    y,
-  })).sort((a, b) => b.y - a.y);
+  const labelByTypeMaps: Record<SearchQueryType, Map<string, number>> = {
+    text: new Map<string, number>(),
+    taxonomy: new Map<string, number>(),
+    hybrid: new Map<string, number>(),
+  };
 
-  return { searchCount, resourceMetrics, searchByLabel };
+  for (const m of queryMetricsData) {
+    const params = new URLSearchParams(m.name);
+    const label = params.get('query_label');
+    if (label === null) continue;
+    const rawType = params.get('query_type');
+    if (!isSearchQueryType(rawType)) continue;
+    const views = Number(m.pageviews) || 0;
+    const bucket = labelByTypeMaps[rawType];
+    bucket.set(label, (bucket.get(label) ?? 0) + views);
+  }
+
+  const toSortedEntries = (map: Map<string, number>): MetricEntry[] =>
+    Array.from(map, ([x, y]) => ({ x, y })).sort((a, b) => b.y - a.y);
+
+  const searchByLabelByType: SearchByLabelByType = {
+    text: toSortedEntries(labelByTypeMaps.text),
+    taxonomy: toSortedEntries(labelByTypeMaps.taxonomy),
+    hybrid: toSortedEntries(labelByTypeMaps.hybrid),
+  };
+
+  return { searchCount, resourceMetrics, searchByLabelByType };
+}
+
+export function mergeSearchByLabelBuckets(
+  byType: SearchByLabelByType | undefined,
+): MetricEntry[] {
+  if (!byType) return [];
+  const totals = new Map<string, number>();
+  for (const type of ['text', 'taxonomy', 'hybrid'] as const) {
+    for (const entry of byType[type]) {
+      totals.set(entry.x, (totals.get(entry.x) ?? 0) + entry.y);
+    }
+  }
+  return Array.from(totals, ([x, y]) => ({ x, y })).sort((a, b) => b.y - a.y);
 }
 
 export function extractResourceId(path: string): string | null {
