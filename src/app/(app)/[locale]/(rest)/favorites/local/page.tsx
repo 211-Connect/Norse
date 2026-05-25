@@ -7,6 +7,7 @@ import { DEFAULT_SEARCH_CARD_LAYOUT } from '@/app/(app)/features/search/types/ca
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
+import { getSession } from '@/app/(app)/shared/utils/getServerSession';
 
 import { LocalFavoritesSection } from '../../../../features/favorites/components/local-favorites-section';
 
@@ -53,6 +54,11 @@ export default async function LocalFavoritesPage({
   const cardLayout = appConfig.search.cardLayout ?? DEFAULT_SEARCH_CARD_LAYOUT;
 
   if (!appConfig.featureFlags.anonymousCollectionsEnabled) {
+    redirect(`/${locale}/favorites`);
+  }
+
+  const session = await getSession();
+  if (session) {
     redirect(`/${locale}/favorites`);
   }
 

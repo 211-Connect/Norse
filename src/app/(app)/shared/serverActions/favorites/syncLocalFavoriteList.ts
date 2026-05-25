@@ -10,10 +10,15 @@ import { fetchWrapper } from '../../lib/fetchWrapper';
 
 export type SyncLocalFavoriteListResult = 'created' | 'exists';
 
+const MAX_LOCAL_FAVORITES_SYNC = 100;
+
 export const syncLocalFavoriteList = async (
   resourceIds: string[],
   tenantId?: string,
 ): Promise<SyncLocalFavoriteListResult> => {
+  // Cap incoming resourceIds to prevent unbounded API work
+  const cappedResourceIds = resourceIds.slice(0, MAX_LOCAL_FAVORITES_SYNC);
+
   const authHeaders = await getAuthHeaders(tenantId);
 
   const searchParams = new URLSearchParams();
@@ -32,7 +37,7 @@ export const syncLocalFavoriteList = async (
       'x-api-key': INTERNAL_API_KEY || '',
     },
     body: {
-      resourceIds,
+      resourceIds: cappedResourceIds,
     },
     cache: 'no-store',
     parseResponse: false,

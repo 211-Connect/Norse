@@ -46,6 +46,11 @@ export function PrintDirectoryDialog({
   const handlePrintClick = () => {
     handlePrint();
     onOpenChange(false);
+    // Restore focus after dialog unmounts and print dialog closes
+    // The browser's print dialog can interfere with normal focus restoration
+    setTimeout(() => {
+      restoreFocusElement?.focus();
+    }, 100);
   };
 
   return (
@@ -83,7 +88,7 @@ export function PrintDirectoryDialog({
                 )}
               >
                 {selectedVariant === 'phone-book' && (
-                  <Check className="size-3 text-primary-foreground" />
+                  <Check className="text-primary-foreground size-3" />
                 )}
               </div>
               <div className="flex-1">
@@ -116,7 +121,7 @@ export function PrintDirectoryDialog({
                 )}
               >
                 {selectedVariant === 'all-info' && (
-                  <Check className="size-3 text-primary-foreground" />
+                  <Check className="text-primary-foreground size-3" />
                 )}
               </div>
               <div className="flex-1">

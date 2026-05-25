@@ -192,7 +192,7 @@ export function Header() {
         <li key="item-favorites-6">
           <Button
             className={cn(
-              'flex items-center gap-[5px]',
+              'flex items-center gap-[5px] hover:cursor-pointer',
               newLayoutEnabled && '!bg-white',
             )}
             variant="outline"

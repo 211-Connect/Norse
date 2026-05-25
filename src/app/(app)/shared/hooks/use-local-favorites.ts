@@ -6,6 +6,7 @@ import { useAppConfig } from './use-app-config';
 
 const LOCAL_FAVORITES_KEY = 'local-favorites';
 const LOCAL_FAVORITES_UPDATED_EVENT = 'local-favorites-updated';
+const MAX_LOCAL_FAVORITES = 100;
 
 function readFromStorage(): string[] {
   if (typeof window === 'undefined') return [];
@@ -14,7 +15,11 @@ function readFromStorage(): string[] {
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
-    return parsed.filter((value): value is string => typeof value === 'string');
+    const validStrings = parsed.filter(
+      (value): value is string => typeof value === 'string',
+    );
+    // Cap at MAX_LOCAL_FAVORITES to prevent unbounded storage
+    return validStrings.slice(0, MAX_LOCAL_FAVORITES);
   } catch {
     return [];
   }
@@ -35,11 +40,13 @@ export function useLocalFavorites() {
   const anonymousCollectionsEnabled =
     appConfig.featureFlags.anonymousCollectionsEnabled;
   const [ids, setIds] = useState<string[]>([]);
+  const [hydrated, setHydrated] = useState(false);
 
   // Hydrate from localStorage on mount (client only)
   useEffect(() => {
     if (!anonymousCollectionsEnabled) {
       setIds([]);
+      setHydrated(true);
       return;
     }
 
@@ -48,6 +55,7 @@ export function useLocalFavorites() {
     };
 
     syncFromStorage();
+    setHydrated(true);
 
     window.addEventListener('storage', syncFromStorage);
     window.addEventListener(LOCAL_FAVORITES_UPDATED_EVENT, syncFromStorage);
@@ -67,6 +75,14 @@ export function useLocalFavorites() {
 
       const current = readFromStorage();
       if (current.includes(id)) return;
+
+      // Enforce cap before adding
+      if (current.length >= MAX_LOCAL_FAVORITES) {
+        console.warn(
+          `Cannot add more than ${MAX_LOCAL_FAVORITES} local favorites`,
+        );
+        return;
+      }
 
       const next = [...current, id];
       writeToStorage(next);
@@ -110,5 +126,6 @@ export function useLocalFavorites() {
     removeLocalFavorite,
     isLocalFavorite,
     clearLocalFavorites,
+    hydrated,
   };
 }

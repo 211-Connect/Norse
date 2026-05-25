@@ -32,6 +32,8 @@ import { localResourcesToPrintableDirectory } from '../utils/printable-directory
 import { FavoritesDirectoryPrintControl } from './favorites-directory-print-control';
 import { PurgeConfirmDialog } from './purge-confirm-dialog';
 
+const MAX_LOCAL_FAVORITES_FETCH = 100;
+
 type LocalFavoritesSectionProps = {
   cardLayout: SearchCardLayoutConfig;
   locale: string;
@@ -49,6 +51,7 @@ export function LocalFavoritesSection({
     removeLocalFavorite,
     isLocalFavorite,
     clearLocalFavorites,
+    hydrated,
   } = useLocalFavorites();
   const [resources, setResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(true);
@@ -56,25 +59,28 @@ export function LocalFavoritesSection({
 
   // Fetch resources whenever the stored IDs change
   useEffect(() => {
+    // Wait for hydration to avoid fetching with empty array
+    if (!hydrated) return;
+
     let cancelled = false;
 
     async function load() {
       setLoading(true);
-      const fetched = await getResources(localFavoriteIds, locale, tenantId);
+      // Cap IDs to prevent unbounded API work
+      const cappedIds = localFavoriteIds.slice(0, MAX_LOCAL_FAVORITES_FETCH);
+      const fetched = await getResources(cappedIds, locale, tenantId);
       if (!cancelled) {
         setResources(fetched);
         setLoading(false);
       }
     }
 
-    // Don't fetch on initial render before localStorage has hydrated
-    // (localFavoriteIds starts as [] from SSR, becomes the real array after mount)
     load();
 
     return () => {
       cancelled = true;
     };
-  }, [localFavoriteIds.join(','), locale, tenantId]);
+  }, [hydrated, localFavoriteIds.join(','), locale, tenantId]);
 
   const handleRemoveFromList = useCallback<RemoveFromListHandler>(
     (_listId: string, favoriteId: string) => {
@@ -156,7 +162,7 @@ export function LocalFavoritesSection({
       />
 
       {loading && localFavoriteIds.length > 0 && (
-        <div className="mt-4 text-sm text-muted-foreground">
+        <div className="text-muted-foreground mt-4 text-sm">
           {t('local_list.loading')}
         </div>
       )}
@@ -165,7 +171,7 @@ export function LocalFavoritesSection({
         <Card className="mt-4">
           <CardContent className="flex flex-col items-center gap-2 py-8 text-center">
             <p className="font-semibold">{t('local_list.empty_title')}</p>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               {t('local_list.empty_description')}
             </p>
           </CardContent>
