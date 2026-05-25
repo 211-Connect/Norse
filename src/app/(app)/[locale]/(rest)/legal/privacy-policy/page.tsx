@@ -76,7 +76,7 @@ export default async function PrivacyPolicyPage({ params }) {
       translationData={{ i18nNamespaces, locale, resources }}
       nonce={nonce}
     >
-      <div className="container mx-auto pb-8 pt-8">
+      <div className="container mx-auto pt-8 pb-8">
         <h1 className="mb-2 text-3xl font-bold">
           {appConfig.pages.privacyPolicyPage.title}
         </h1>
@@ -96,7 +96,7 @@ export default async function PrivacyPolicyPage({ params }) {
               an account).
             </p>
 
-            <h2 className="mb-2 mt-4 text-xl font-bold">
+            <h2 className="mt-4 mb-2 text-xl font-bold">
               What data we collect
             </h2>
 
@@ -116,7 +116,7 @@ export default async function PrivacyPolicyPage({ params }) {
               list.
             </p>
 
-            <h2 className="mb-2 mt-4 text-xl font-bold">Why we collect data</h2>
+            <h2 className="mt-4 mb-2 text-xl font-bold">Why we collect data</h2>
             <p className="mb-2">
               User accounts are, of course, collected so that you can save
               settings and resources for later access.
@@ -126,7 +126,7 @@ export default async function PrivacyPolicyPage({ params }) {
               experience, and determine how effective our tools are.
             </p>
 
-            <h2 className="mb-2 mt-4 text-xl font-bold">How we collect data</h2>
+            <h2 className="mt-4 mb-2 text-xl font-bold">How we collect data</h2>
             <p className="mb-2">Data is collected one of two ways:</p>
             <ol className="mb-2 list-disc pl-8">
               <li>Anonymously using Google Analytics tracking scripts.</li>
@@ -135,7 +135,7 @@ export default async function PrivacyPolicyPage({ params }) {
               </li>
             </ol>
 
-            <h2 className="mb-2 mt-4 text-xl font-bold">
+            <h2 className="mt-4 mb-2 text-xl font-bold">
               Who we share your data with
             </h2>
             <p className="mb-2">
@@ -152,7 +152,7 @@ export default async function PrivacyPolicyPage({ params }) {
               parties without your express consent.
             </p>
 
-            <h2 className="mb-2 mt-4 text-xl font-bold">
+            <h2 className="mt-4 mb-2 text-xl font-bold">
               How to have your data removed
             </h2>
             <p className="mb-2">

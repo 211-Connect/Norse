@@ -31,7 +31,7 @@ export function MapPopup({
         {address && (
           <div className="flex flex-col gap-[10px]">
             <div className="flex gap-[6px]">
-              <MapPin className="mt-[2px] size-4 text-primary" />
+              <MapPin className="text-primary mt-[2px] size-4" />
               <p className="flex-1 text-sm">{address}</p>
             </div>
             {distance && (
@@ -42,7 +42,7 @@ export function MapPopup({
         <Link
           href={`/search/${id}`}
           aria-label={`${t('learn_more', { ns: 'page-search' })}: ${name}`}
-          className="py-[5px] text-center text-sm font-medium text-primary hover:underline"
+          className="text-primary py-[5px] text-center text-sm font-medium hover:underline"
         >
           {t('learn_more', { ns: 'page-search' })}
           <ChevronRight className="ml-1 inline-block size-4" />

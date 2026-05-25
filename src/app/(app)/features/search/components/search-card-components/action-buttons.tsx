@@ -95,7 +95,7 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
         )}
 
         <GetDirectionsButton
-          className="min-h-8 whitespace-normal py-2"
+          className="min-h-8 py-2 whitespace-normal"
           data={result}
           coords={searchCoords}
         />
@@ -105,9 +105,9 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
         <Link
           className={cn(
             useTextLinkForViewDetails
-              ? 'inline-flex min-h-8 flex-1 items-center justify-center rounded-md px-3 py-2 text-center text-primary underline decoration-1 underline-offset-4 transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
+              ? 'text-primary hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring inline-flex min-h-8 flex-1 items-center justify-center rounded-md px-3 py-2 text-center underline decoration-1 underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none'
               : cn(
-                  'flex-1 gap-1 text-primary',
+                  'text-primary flex-1 gap-1',
                   buttonVariants({ variant: 'ghost' }),
                 ),
           )}

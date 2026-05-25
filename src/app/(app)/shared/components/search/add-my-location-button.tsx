@@ -37,7 +37,7 @@ export function AddMyLocationButton({
       ref={buttonRef}
       onClick={onClick}
       className={cn(
-        'flex h-auto gap-1 whitespace-normal text-left',
+        'flex h-auto gap-1 text-left whitespace-normal',
         variant === 'ghost' ? '!text-primary' : '!text-white',
         // When the button sits on a primary-colored surface (link variant), the
         // default near-black ring may be invisible against dark brand colours.

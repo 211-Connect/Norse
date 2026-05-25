@@ -4,6 +4,6 @@ export default async function RestLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen flex-col bg-primary/5">{children}</div>
+    <div className="bg-primary/5 flex min-h-screen flex-col">{children}</div>
   );
 }

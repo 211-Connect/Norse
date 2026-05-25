@@ -715,7 +715,7 @@ export function Autocomplete(props: AutocompleteProps) {
           {readerLabel}
         </label>
         <Icon
-          className="absolute left-2 top-2 size-4 shrink-0 text-primary"
+          className="text-primary absolute top-2 left-2 size-4 shrink-0"
           aria-hidden="true"
         />
         <div
@@ -733,7 +733,7 @@ export function Autocomplete(props: AutocompleteProps) {
           {...inputProps}
           id={effectiveInputId}
           className={cn(
-            'h-auto w-full rounded-lg border border-control-border p-0 px-[1.8rem] py-2 text-xs shadow-none focus:border-primary focus-visible:ring-0',
+            'border-control-border focus:border-primary h-auto w-full rounded-lg border p-0 px-[1.8rem] py-2 text-xs shadow-none focus-visible:ring-0',
             inputProps?.className,
           )}
           ref={setReferenceElement}
@@ -767,7 +767,7 @@ export function Autocomplete(props: AutocompleteProps) {
                 variant="ghost"
                 className={cn(
                   (value?.length ?? 0) > 0 ? 'visible' : 'invisible',
-                  'absolute right-0 top-0 h-full hover:bg-transparent hover:bg-none',
+                  'absolute top-0 right-0 h-full hover:bg-transparent hover:bg-none',
                 )}
                 onClick={clear}
                 aria-label={clearButtonLabel}
@@ -791,7 +791,7 @@ export function Autocomplete(props: AutocompleteProps) {
             aria-multiselectable="false"
             ref={setPopperElement}
             className={cn(
-              'z-10 mt-2 animate-opacity-in overflow-auto overscroll-contain bg-white',
+              'animate-opacity-in z-10 mt-2 overflow-auto overscroll-contain bg-white',
               !referenceWidth && 'w-full',
             )}
             style={{

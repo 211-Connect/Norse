@@ -70,7 +70,7 @@ export function GetDirectionsButton({
   const buttonContent = (
     <>
       <Map className="size-4 shrink-0" aria-hidden="true" />
-      <span className="overflow-hidden text-ellipsis break-words">
+      <span className="overflow-hidden break-words text-ellipsis">
         {text || t('call_to_action.get_directions')}
       </span>
     </>

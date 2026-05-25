@@ -17,7 +17,7 @@ export default async function HomeLayout({
   return (
     <div
       className={cn(
-        'flex min-h-screen flex-col bg-primary/5',
+        'bg-primary/5 flex min-h-screen flex-col',
         newLayoutEnabled && 'bg-white',
       )}
     >

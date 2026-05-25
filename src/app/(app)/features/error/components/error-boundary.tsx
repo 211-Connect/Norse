@@ -131,7 +131,7 @@ class ErrorBoundary extends Component<Props, State> {
             }}
           />
 
-          <div className="flex h-screen flex-col items-center justify-center bg-black/50 pb-28 pt-28">
+          <div className="flex h-screen flex-col items-center justify-center bg-black/50 pt-28 pb-28">
             <h1 className="text-xl font-bold text-white">
               An error has occurred
             </h1>

@@ -289,7 +289,7 @@ export function AddToFavoritesButton({
 
                   {favoritesState.data.length === 0 &&
                     searchValue?.length > 0 && (
-                      <p className="col-span-5 text-sm text-muted-foreground">
+                      <p className="text-muted-foreground col-span-5 text-sm">
                         {t('modal.add_to_list.not_found')}
                       </p>
                     )}
@@ -333,7 +333,7 @@ export function AddToFavoritesButton({
                             disabled={refreshingListId === el.id}
                           >
                             {refreshingListId === el.id ? (
-                              <Loader2 className="size-4 animate-spin text-muted-foreground" />
+                              <Loader2 className="text-muted-foreground size-4 animate-spin" />
                             ) : isInList ? (
                               <HeartOff className="size-4" />
                             ) : (

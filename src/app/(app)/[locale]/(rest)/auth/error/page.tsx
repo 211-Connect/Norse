@@ -67,21 +67,21 @@ export default async function AuthErrorPage({ params, searchParams }) {
       <div className="w-full rounded-xl border bg-white p-8 shadow-sm">
         {/* Icon */}
         <div className="mb-5 flex justify-center">
-          <span className="flex size-14 items-center justify-center rounded-full bg-destructive/10">
+          <span className="bg-destructive/10 flex size-14 items-center justify-center rounded-full">
             <AlertCircle
-              className="size-7 text-destructive"
+              className="text-destructive size-7"
               aria-hidden="true"
             />
           </span>
         </div>
 
         {/* Heading */}
-        <h1 className="mb-2 text-center text-2xl font-semibold text-foreground">
+        <h1 className="text-foreground mb-2 text-center text-2xl font-semibold">
           {content.title}
         </h1>
 
         {/* Description */}
-        <p className="mb-8 text-center text-base leading-relaxed text-muted-foreground">
+        <p className="text-muted-foreground mb-8 text-center text-base leading-relaxed">
           {content.description}
         </p>
 

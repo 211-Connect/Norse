@@ -140,7 +140,7 @@ function Badge({
         style={getDynamicStyles()}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={() => setShowTooltip(false)}
-        className={cn('min-w-0 max-w-full', className)}
+        className={cn('max-w-full min-w-0', className)}
         {...props}
       >
         <span className="min-w-0 truncate">{label || children}</span>
@@ -167,7 +167,7 @@ function Badge({
         >
           {tooltip}
           <span
-            className="absolute left-1/2 top-full -translate-x-1/2"
+            className="absolute top-full left-1/2 -translate-x-1/2"
             style={{
               borderWidth: '4px',
               borderStyle: 'solid',

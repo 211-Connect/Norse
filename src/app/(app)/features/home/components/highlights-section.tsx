@@ -68,7 +68,7 @@ export function HighlightsSection() {
   }
 
   return (
-    <div className="container z-[2] mx-auto py-8">
+    <div className="z-[2] container mx-auto py-8">
       {sectionTitle && (
         <div className="mb-6">
           <h2 className="text-center text-3xl font-bold">{sectionTitle}</h2>
@@ -82,7 +82,7 @@ export function HighlightsSection() {
           <Button
             variant="outline"
             size="icon"
-            className="absolute left-4 top-1/2 z-10 hidden -translate-y-1/2 rounded-full shadow-lg sm:inline-flex"
+            className="absolute top-1/2 left-4 z-10 hidden -translate-y-1/2 rounded-full shadow-lg sm:inline-flex"
             onClick={scrollPrev}
             aria-label={t('carousel.previous', 'Previous')}
           >
@@ -94,7 +94,7 @@ export function HighlightsSection() {
           <Button
             variant="outline"
             size="icon"
-            className="absolute right-4 top-1/2 z-10 hidden -translate-y-1/2 rounded-full shadow-lg sm:inline-flex"
+            className="absolute top-1/2 right-4 z-10 hidden -translate-y-1/2 rounded-full shadow-lg sm:inline-flex"
             onClick={scrollNext}
             aria-label={t('carousel.next', 'Next')}
           >
@@ -133,7 +133,7 @@ export function HighlightsSection() {
 
                     {highlight.description && (
                       <CardContent className="flex-grow">
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-muted-foreground text-sm">
                           {highlight.description}
                         </p>
                       </CardContent>
