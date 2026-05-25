@@ -34,6 +34,10 @@ export type LanguageSwitchDestinationsData = {
   languageSwitchDestinations: MetricEntry[];
 };
 
+export type ResourceByEntryData = {
+  resourceByEntry: MetricEntry[];
+};
+
 export type SessionsData = {
   sessions: UmamiSession[];
 };

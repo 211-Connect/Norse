@@ -14,6 +14,7 @@ import {
   fetchMetrics,
   fetchPageviews,
   fetchPaths,
+  fetchResourceByEntry,
   fetchSessionHeatmap,
   fetchSessions,
   fetchStats,
@@ -25,6 +26,7 @@ import {
   LanguageSwitchDestinationsData,
   MetricsData,
   PathsData,
+  ResourceByEntryData,
   SessionHeatmapData,
   SessionsData,
   UmamiPageviews,
@@ -113,3 +115,5 @@ export const useLanguageSwitchDestinations =
 export const useSessions = makeAsyncHook<SessionsData>(fetchSessions);
 export const useSessionHeatmap =
   makeAsyncHook<SessionHeatmapData>(fetchSessionHeatmap);
+export const useResourceByEntry =
+  makeAsyncHook<ResourceByEntryData>(fetchResourceByEntry);

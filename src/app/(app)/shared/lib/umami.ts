@@ -10,6 +10,25 @@ export enum UmamiEvent {
   SearchTaxonomy = 'search_taxonomy',
   SearchText = 'search_text',
   CalloutClick = 'callout_click',
+  ResourceViewed = 'resource_viewed',
+}
+
+export enum ResourceEntry {
+  SearchCard = 'search_card',
+  TopicCard = 'topic_card',
+  DeepLink = 'deep_link',
+  Unknown = 'unknown',
+}
+
+const RESOURCE_ENTRY_VALUES = new Set<string>(Object.values(ResourceEntry));
+
+export function resolveResourceEntry(
+  rawEntry: string | undefined | null,
+): ResourceEntry {
+  if (rawEntry == null || rawEntry === '') return ResourceEntry.DeepLink;
+  return RESOURCE_ENTRY_VALUES.has(rawEntry)
+    ? (rawEntry as ResourceEntry)
+    : ResourceEntry.Unknown;
 }
 
 export function trackUmamiEvent(

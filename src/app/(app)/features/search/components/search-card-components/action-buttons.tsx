@@ -2,6 +2,7 @@
 
 import { useAtomValue } from 'jotai';
 import { LinkIcon, Phone } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 
 import { GetDirectionsButton } from '@/app/(app)/shared/components/get-directions-button';
@@ -9,6 +10,7 @@ import { Link } from '@/app/(app)/shared/components/link';
 import { ReferralButton } from '@/app/(app)/shared/components/referral-button';
 import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { ResourceEntry } from '@/app/(app)/shared/lib/umami';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { searchCoordinatesAtom } from '@/app/(app)/shared/store/search';
 
@@ -18,6 +20,8 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
   const { t } = useTranslation('common');
   const appConfig = useAppConfig();
   const searchCoords = useAtomValue(searchCoordinatesAtom);
+  const searchParams = useSearchParams();
+  const entry = searchParams.get('entry') ?? ResourceEntry.SearchCard;
   const viewDetailsText =
     appConfig.search.texts?.viewDetailsText || t('call_to_action.view_details');
   const useTextLinkForViewDetails =
@@ -111,7 +115,7 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
                   buttonVariants({ variant: 'ghost' }),
                 ),
           )}
-          href={`/search/${result.id}`}
+          href={`/search/${result.id}?entry=${entry}`}
           aria-label={`${viewDetailsText}: ${result.name}`}
         >
           {viewDetailsText}

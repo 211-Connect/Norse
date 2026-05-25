@@ -8,6 +8,7 @@ import { DEFAULT_RESOURCE_LAYOUT } from '@/app/(app)/features/resource/types/lay
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { FetchError } from '@/app/(app)/shared/lib/fetchError';
+import { resolveResourceEntry } from '@/app/(app)/shared/lib/umami';
 import { getResource } from '@/app/(app)/shared/services/resource-service';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { isValidUUID } from '@/app/(app)/shared/utils/uuid';
@@ -53,8 +54,11 @@ export const generateMetadata = async ({ params }): Promise<Metadata> => {
   };
 };
 
-export default async function ResourcePage({ params }) {
+export default async function ResourcePage({ params, searchParams }) {
   const { id, locale } = await params;
+  const sp = (await searchParams) ?? {};
+  const rawEntry = typeof sp.entry === 'string' ? sp.entry : undefined;
+  const resolvedEntry = resolveResourceEntry(rawEntry);
 
   const headersList = await headers();
   const nonce = headersList.get('x-nonce') ?? '';
@@ -112,7 +116,13 @@ export default async function ResourcePage({ params }) {
       translationData={{ i18nNamespaces, locale, resources }}
       nonce={nonce}
     >
-      <ResourcePageContent resource={resource} layout={layout} />
+      <ResourcePageContent
+        resource={resource}
+        layout={layout}
+        entry={resolvedEntry}
+        resourceId={id}
+        tenantId={appConfig.tenantId ?? ''}
+      />
     </PageWrapper>
   );
 }

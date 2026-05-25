@@ -7,6 +7,7 @@ import { ResourcePageContent } from '@/app/(app)/features/resource/components/co
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { FetchError } from '@/app/(app)/shared/lib/fetchError';
+import { resolveResourceEntry } from '@/app/(app)/shared/lib/umami';
 import { getResourceByOriginalId } from '@/app/(app)/shared/services/resource-service';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { createLogger } from '@/lib/logger';
@@ -60,11 +61,14 @@ export const generateMetadata = async ({ params }) => {
   return metadata;
 };
 
-export default async function OriginalDetailsPage({ params }) {
+export default async function OriginalDetailsPage({ params, searchParams }) {
   const cookieList = await getCookies({ cookies });
   const headersList = await headers();
   const nonce = headersList.get('x-nonce') ?? '';
   const { original_id, locale } = await params;
+  const sp = (await searchParams) ?? {};
+  const rawEntry = typeof sp.entry === 'string' ? sp.entry : undefined;
+  const resolvedEntry = resolveResourceEntry(rawEntry);
   const appConfig = await getAppConfigWithoutHost(locale);
   const { resources } = await initTranslations(
     locale,
@@ -110,6 +114,9 @@ export default async function OriginalDetailsPage({ params }) {
       <ResourcePageContent
         resource={resource}
         layout={appConfig.resource.layout}
+        entry={resolvedEntry}
+        resourceId={resource.id ?? original_id}
+        tenantId={appConfig.tenantId ?? ''}
       />
     </PageWrapper>
   );

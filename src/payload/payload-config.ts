@@ -220,6 +220,13 @@ const config = buildConfig({
           maxWidth: 'full',
         },
         {
+          slug: 'analytics-resource-entry-points',
+          Component:
+            '@/payload/components/analytics/widgets/ResourceEntryPointsWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
           slug: 'analytics-zero-result-queries',
           Component:
             '@/payload/components/analytics/widgets/ZeroResultQueriesWidget#default',
