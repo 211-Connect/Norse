@@ -95,7 +95,7 @@ export function FavoritesSection({ cardLayout }: FavoritesSectionProps) {
 
       {/* Row 2: list name + privacy badge */}
       <div className="mt-3 flex items-center gap-2">
-        <h1 className="text-2xl font-semibold leading-tight">
+        <h1 className="text-2xl leading-tight font-semibold">
           {favoriteList.name}
         </h1>
         <Badge variant="outline" className="bg-white">
@@ -106,7 +106,7 @@ export function FavoritesSection({ cardLayout }: FavoritesSectionProps) {
       </div>
 
       {favoriteList.description && (
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="text-muted-foreground mt-1 text-sm">
           {favoriteList.description}
         </p>
       )}

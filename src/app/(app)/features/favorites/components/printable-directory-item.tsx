@@ -30,7 +30,7 @@ export function PrintableDirectoryItem({
         <Typography
           variant="heading"
           size="xs"
-          className="text-[16px] font-bold leading-tight"
+          className="text-[16px] leading-tight font-bold"
         >
           {displayName}
         </Typography>
@@ -41,7 +41,7 @@ export function PrintableDirectoryItem({
           <Typography
             variant="paragraph"
             size="sm"
-            className="mt-1.5 text-[14px] font-semibold leading-tight"
+            className="mt-1.5 text-[14px] leading-tight font-semibold"
           >
             {serviceName}
           </Typography>
@@ -55,7 +55,7 @@ export function PrintableDirectoryItem({
               <Typography
                 variant="paragraph"
                 size="sm"
-                className="mt-1.5 text-[14px] font-normal leading-tight"
+                className="mt-1.5 text-[14px] leading-tight font-normal"
               >
                 {displayAddress}
               </Typography>
@@ -64,13 +64,13 @@ export function PrintableDirectoryItem({
             {hours && (
               <div className="mt-1.5 flex items-start gap-1">
                 <Clock
-                  className="size-3 shrink-0 text-muted-foreground"
+                  className="text-muted-foreground size-3 shrink-0"
                   aria-hidden="true"
                 />
                 <Typography
                   variant="paragraph"
                   size="sm"
-                  className="text-[12px] font-normal leading-tight"
+                  className="text-[12px] leading-tight font-normal"
                 >
                   {hours}
                 </Typography>
@@ -82,7 +82,7 @@ export function PrintableDirectoryItem({
                 variant="paragraph"
                 size="xs"
                 textColor="secondary"
-                className="mt-1.5 text-[12px] font-normal leading-tight underline"
+                className="mt-1.5 text-[12px] leading-tight font-normal underline"
               >
                 {website}
               </Typography>
@@ -90,12 +90,12 @@ export function PrintableDirectoryItem({
           </div>
 
           {/* Right column: phone, email */}
-          <div className="shrink-0 whitespace-nowrap text-right">
+          <div className="shrink-0 text-right whitespace-nowrap">
             {phone && (
               <Typography
                 variant="paragraph"
                 size="sm"
-                className="mt-1.5 text-[14px] font-normal leading-tight"
+                className="mt-1.5 text-[14px] leading-tight font-normal"
               >
                 {phone}
               </Typography>
@@ -106,7 +106,7 @@ export function PrintableDirectoryItem({
                 variant="paragraph"
                 size="xs"
                 textColor="secondary"
-                className="mt-1.5 text-[12px] font-normal leading-tight"
+                className="mt-1.5 text-[12px] leading-tight font-normal"
               >
                 {email}
               </Typography>
@@ -115,7 +115,7 @@ export function PrintableDirectoryItem({
         </div>
 
         {variant === 'all-info' && description && (
-          <div className="parsed-html-content mt-1.5 text-[12px] font-normal leading-tight">
+          <div className="parsed-html-content mt-1.5 text-[12px] leading-tight font-normal">
             {parseHtml(description, { parseLineBreaks: true })}
           </div>
         )}

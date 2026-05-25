@@ -36,7 +36,7 @@ export const PrintableDirectory = forwardRef<
   return (
     <div
       ref={ref}
-      className={`print-document bg-white font-sans text-foreground ${
+      className={`print-document text-foreground bg-white font-sans ${
         variant === 'phone-book' ? 'print-phone-book' : ''
       }`}
     >
@@ -49,7 +49,7 @@ export const PrintableDirectory = forwardRef<
                   <Typography
                     variant="heading"
                     size="md"
-                    className="text-left text-[20px] text-lg font-semibold"
+                    className="text-left text-lg text-[20px] font-semibold"
                   >
                     {data.name}
                   </Typography>
@@ -57,14 +57,14 @@ export const PrintableDirectory = forwardRef<
                     <Typography
                       variant="paragraph"
                       size="sm"
-                      className="text-right text-[14px] font-normal leading-tight text-black"
+                      className="text-right text-[14px] leading-tight font-normal text-black"
                     >
                       {currentDate}
                     </Typography>
                     <Typography
                       variant="paragraph"
                       size="sm"
-                      className="text-right text-[14px] font-medium leading-tight text-black"
+                      className="text-right text-[14px] leading-tight font-medium text-black"
                     >
                       {currentDomain}
                     </Typography>
