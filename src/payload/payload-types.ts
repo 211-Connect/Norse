@@ -242,6 +242,7 @@ export interface Config {
     'analytics-map': AnalyticsMapWidget;
     'analytics-resource-titles': AnalyticsResourceTitlesWidget;
     'analytics-search-queries': AnalyticsSearchQueriesWidget;
+    'analytics-resource-entry-points': AnalyticsResourceEntryPointsWidget;
     'analytics-zero-result-queries': AnalyticsZeroResultQueriesWidget;
     'analytics-session-quality': AnalyticsSessionQualityWidget;
     'analytics-device-types': AnalyticsDeviceTypesWidget;
@@ -1914,6 +1915,16 @@ export interface AnalyticsSearchQueriesWidget {
     [k: string]: unknown;
   };
   width: 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-resource-entry-points_widget".
+ */
+export interface AnalyticsResourceEntryPointsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

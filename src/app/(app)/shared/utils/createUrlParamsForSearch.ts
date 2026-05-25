@@ -1,6 +1,7 @@
 import { ExtractAtomValue } from 'jotai';
 
 import { deriveQueryType } from '../lib/search-utils';
+import { ResourceEntry } from '../lib/umami';
 import { searchAtom } from '../store/search';
 
 export function createUrlParamsForSearch(
@@ -27,6 +28,7 @@ export function createUrlParamsForSearch(
       searchStore.searchCoordinates?.length === 2
         ? searchStore.searchDistance?.trim() || '0'
         : '',
+    entry: ResourceEntry.SearchCard,
   };
 
   return Object.fromEntries(

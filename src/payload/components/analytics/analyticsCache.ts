@@ -15,6 +15,7 @@ import type {
   MetricsData,
   MetricsExpandedEntry,
   PathsData,
+  ResourceByEntryData,
   SessionHeatmapData,
   SessionsData,
   UmamiEventDataValue,
@@ -444,6 +445,31 @@ export const fetchLanguageSwitchDestinations = makeCachedFetch(
     );
 
     return { languageSwitchDestinations };
+  },
+);
+
+export const fetchResourceByEntry = makeCachedFetch(
+  new Map<string, CacheEntry<ResourceByEntryData>>(),
+  async ({ startAt, endAt }, tenantId, websiteIds) => {
+    const raw = await fetchWrapper<UmamiEventDataValue[]>(
+      buildProxyQuery(
+        'event-data/values',
+        startAt,
+        endAt,
+        tenantId,
+        {
+          event: UmamiEvent.ResourceViewed,
+          propertyName: 'entry',
+        },
+        websiteIds,
+      ),
+    );
+
+    if (!raw) {
+      return { resourceByEntry: [] };
+    }
+
+    return { resourceByEntry: toMetricEntries(raw) };
   },
 );
 

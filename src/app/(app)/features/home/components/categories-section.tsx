@@ -14,6 +14,8 @@ import { NEW_TAB_WARNING } from '@/app/(app)/shared/lib/constants';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { Topic } from '@/types/topics';
 
+import { ResourceEntry } from '../../../shared/lib/umami';
+
 type Props = {
   topic: Topic;
   iconSize: 'small' | 'medium';
@@ -71,7 +73,7 @@ const Category = ({
                             el.name,
                           )}&query_type=${encodeURIComponent(
                             el.queryType ?? '',
-                          )}`
+                          )}&entry=${ResourceEntry.TopicCard}`
                     }`}
                     prefetch={false}
                     target={el.target}
