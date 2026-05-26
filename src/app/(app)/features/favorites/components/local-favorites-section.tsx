@@ -1,7 +1,13 @@
 'use client';
 
 import { ChevronLeft, Eraser } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { CardLayoutRenderer } from '@/app/(app)/features/search/components/card-layout-renderer';
@@ -20,7 +26,6 @@ import {
 } from '@/app/(app)/shared/components/ui/card';
 import { useLocalFavorites } from '@/app/(app)/shared/hooks/use-local-favorites';
 import { cn, withOptionalTrailingSlash } from '@/app/(app)/shared/lib/utils';
-import { getResources } from '@/app/(app)/shared/services/resource-service';
 import { fontSans } from '@/app/(app)/shared/styles/fonts';
 import { Resource } from '@/types/resource';
 
@@ -32,85 +37,48 @@ import { localResourcesToPrintableDirectory } from '../utils/printable-directory
 import { FavoritesDirectoryPrintControl } from './favorites-directory-print-control';
 import { PurgeConfirmDialog } from './purge-confirm-dialog';
 
-const MAX_LOCAL_FAVORITES_FETCH = 100;
-
 type LocalFavoritesSectionProps = {
   cardLayout: SearchCardLayoutConfig;
-  locale: string;
-  tenantId?: string;
+  resources: Resource[];
+  loading: boolean;
+  setResources: Dispatch<SetStateAction<Resource[]>>;
 };
 
 export function LocalFavoritesSection({
   cardLayout,
-  locale,
-  tenantId,
+  resources,
+  loading,
+  setResources,
 }: LocalFavoritesSectionProps) {
-  const { t } = useTranslation('page-list');
-  const {
-    localFavoriteIds,
-    removeLocalFavorite,
-    isLocalFavorite,
-    clearLocalFavorites,
-    hydrated,
-  } = useLocalFavorites();
-  const [resources, setResources] = useState<Resource[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { t, i18n } = useTranslation('page-list');
+  const { localFavoriteIds, removeLocalFavorite, clearLocalFavorites } =
+    useLocalFavorites();
   const [clearConfirmOpen, setClearConfirmOpen] = useState(false);
-
-  // Fetch resources whenever the stored IDs change
-  useEffect(() => {
-    // Wait for hydration to avoid fetching with empty array
-    if (!hydrated) return;
-
-    let cancelled = false;
-
-    async function load() {
-      setLoading(true);
-      // Cap IDs to prevent unbounded API work
-      const cappedIds = localFavoriteIds.slice(0, MAX_LOCAL_FAVORITES_FETCH);
-      const fetched = await getResources(cappedIds, locale, tenantId);
-      if (!cancelled) {
-        setResources(fetched);
-        setLoading(false);
-      }
-    }
-
-    load();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [hydrated, localFavoriteIds.join(','), locale, tenantId]);
 
   const handleRemoveFromList = useCallback<RemoveFromListHandler>(
     (_listId: string, favoriteId: string) => {
       removeLocalFavorite(favoriteId);
       setResources((prev) => prev.filter((r) => r.id !== favoriteId));
     },
-    [removeLocalFavorite],
+    [removeLocalFavorite, setResources],
   );
 
-  const results = resources
-    .filter((r) => isLocalFavorite(r.id))
-    .map((r) => resourceToLocalFavoriteResult(r, handleRemoveFromList));
-
-  const localFavoriteResources = useMemo(
-    () => resources.filter((resource) => isLocalFavorite(resource.id)),
-    [resources, isLocalFavorite],
+  const results = resources.map((r) =>
+    resourceToLocalFavoriteResult(r, handleRemoveFromList),
   );
 
   const printableDirectoryData = useMemo(
     () =>
       localResourcesToPrintableDirectory(
-        localFavoriteResources,
-        locale,
+        resources,
+        i18n.language,
         t('local_list.title'),
       ),
-    [localFavoriteResources, locale, t],
+    [resources, i18n.language, t],
   );
 
   return (
-    <div className="flex w-full flex-col p-6 lg:max-w-[550px] lg:pl-[20px]">
+    <div className="flex w-full flex-col p-6 lg:max-w-137.5 lg:pl-5">
       <Card className="rounded-none border-none bg-transparent p-0 shadow-none">
         <CardHeader>
           <CardTitle>{t('local_list.title')}</CardTitle>

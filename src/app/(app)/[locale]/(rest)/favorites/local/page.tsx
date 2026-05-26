@@ -9,7 +9,7 @@ import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { getSession } from '@/app/(app)/shared/utils/getServerSession';
 
-import { LocalFavoritesSection } from '../../../../features/favorites/components/local-favorites-section';
+import { LocalFavoritesWithMap } from '../../../../features/favorites/components/local-favorites-with-map';
 
 const i18nNamespaces = ['page-favorites', 'page-list', 'common'];
 
@@ -68,7 +68,7 @@ export default async function LocalFavoritesPage({
       translationData={{ i18nNamespaces, locale, resources }}
       nonce={nonce}
     >
-      <LocalFavoritesSection
+      <LocalFavoritesWithMap
         cardLayout={cardLayout}
         locale={locale}
         tenantId={appConfig.tenantId}

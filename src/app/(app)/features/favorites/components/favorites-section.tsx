@@ -11,6 +11,12 @@ import { Link } from '@/app/(app)/shared/components/link';
 import { ShareButton } from '@/app/(app)/shared/components/share-button';
 import { Badge } from '@/app/(app)/shared/components/ui/badge';
 import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/app/(app)/shared/components/ui/tooltip';
 import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
 import { cn, withOptionalTrailingSlash } from '@/app/(app)/shared/lib/utils';
 import { favoriteListWithFavoritesAtom } from '@/app/(app)/shared/store/favorites';
@@ -75,21 +81,70 @@ export function FavoritesSection({ cardLayout }: FavoritesSectionProps) {
         )}
 
         <div className="flex items-center gap-2">
-          <FavoritesDirectoryPrintControl data={printableDirectoryData} />
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div>
+                  <FavoritesDirectoryPrintControl
+                    data={printableDirectoryData}
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{t('tooltips.print')}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
-          <UpdateFavoriteListButton
-            id={favoriteList.id}
-            name={favoriteList.name}
-            description={favoriteList.description}
-            privacy={favoriteList.privacy}
-          />
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div>
+                  <UpdateFavoriteListButton
+                    id={favoriteList.id}
+                    name={favoriteList.name}
+                    description={favoriteList.description}
+                    privacy={favoriteList.privacy}
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{t('tooltips.update')}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
-          <PurgeFavoriteListButton id={favoriteList.id} onPurge={handlePurge} />
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div>
+                  <PurgeFavoriteListButton
+                    id={favoriteList.id}
+                    onPurge={handlePurge}
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{t('tooltips.purge')}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
-          <DeleteFavoriteListButton
-            id={favoriteList.id}
-            name={favoriteList.name}
-          />
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div>
+                  <DeleteFavoriteListButton
+                    id={favoriteList.id}
+                    name={favoriteList.name}
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{t('tooltips.delete')}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
 
