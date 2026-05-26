@@ -2,6 +2,9 @@ import { formatAddressForDisplay } from '@/app/(app)/shared/lib/utils';
 import { type FavoriteListWithFavorites } from '@/app/(app)/shared/store/favorites';
 import { type Resource } from '@/types/resource';
 
+/**
+ * Represents a single item in a printable directory
+ */
 export type PrintableDirectoryItemData = {
   id: string;
   displayName: string;
@@ -14,11 +17,21 @@ export type PrintableDirectoryItemData = {
   website: string;
 };
 
+/**
+ * Represents a complete printable directory with header and items
+ */
 export type PrintableDirectoryData = {
   name: string;
   items: PrintableDirectoryItemData[];
 };
 
+/**
+ * Normalizes multi-line hours text into a single semicolon-separated string
+ * suitable for PDF rendering
+ *
+ * @example
+ * normalizePrintableHours("Mon 9-5\nTue 9-5") // "Mon 9-5; Tue 9-5"
+ */
 function normalizePrintableHours(hours: string): string {
   return hours
     .split('\n')
@@ -38,6 +51,13 @@ function getAddressFromResource(resource: Resource): string {
   return formatAddressForDisplay(primaryAddress) ?? resource.address ?? '';
 }
 
+/**
+ * Transforms a favorite list with its items into a printable directory format
+ *
+ * @param favoriteList - The favorite list containing favorites to print
+ * @param locale - The locale for translations (e.g., 'en', 'es')
+ * @returns Formatted data ready for PDF generation
+ */
 export function favoriteListToPrintableDirectory(
   favoriteList: FavoriteListWithFavorites,
   locale: string,
@@ -68,6 +88,14 @@ export function favoriteListToPrintableDirectory(
   };
 }
 
+/**
+ * Transforms local resources into a printable directory format
+ *
+ * @param resources - Array of resources to include in the directory
+ * @param locale - The locale for translations (e.g., 'en', 'es')
+ * @param listName - The name to display in the directory header
+ * @returns Formatted data ready for PDF generation
+ */
 export function localResourcesToPrintableDirectory(
   resources: Resource[],
   locale: string,

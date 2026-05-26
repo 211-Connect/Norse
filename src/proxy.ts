@@ -414,7 +414,7 @@ export async function proxy(request: NextRequest) {
     style-src 'self' 'unsafe-inline' https://api.mapbox.com https://fonts.googleapis.com;
     img-src 'self' blob: data: https://api.mapbox.com https://*.tiles.mapbox.com https://events.mapbox.com https://cdn.c211.io *.digitaloceanspaces.com *.feathr.co www.googletagmanager.com;
     font-src 'self' data: https://fonts.gstatic.com;
-    connect-src 'self' https://api.mapbox.com https://*.tiles.mapbox.com https://events.mapbox.com *.digitaloceanspaces.com *.feathr.co https://*.google-analytics.com https://cdn.matomo.cloud https://api.c211.io https://maps.c211.io www.googletagmanager.com www.google.com ${umamiScriptOrigin ?? ''} ${isProduction ? '' : 'http://localhost:* ws://localhost:*'};
+    connect-src 'self' data: https://api.mapbox.com https://*.tiles.mapbox.com https://events.mapbox.com *.digitaloceanspaces.com *.feathr.co https://*.google-analytics.com https://cdn.matomo.cloud https://api.c211.io https://maps.c211.io www.googletagmanager.com www.google.com ${umamiScriptOrigin ?? ''} ${isProduction ? '' : 'http://localhost:* ws://localhost:*'};
     worker-src 'self' blob:;
     child-src 'self' blob:;
     frame-src 'self' blob:;

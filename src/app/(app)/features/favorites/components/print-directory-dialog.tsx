@@ -1,10 +1,12 @@
 'use client';
 
+import { pdf } from '@react-pdf/renderer';
 import { Check } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useReactToPrint } from 'react-to-print';
+import { toast } from 'sonner';
 
+import { PDFDirectory } from '@/app/(app)/features/favorites/components/pdf-directory';
 import { type PrintableDirectoryData } from '@/app/(app)/features/favorites/utils/printable-directory-transformers';
 import { Button } from '@/app/(app)/shared/components/ui/button';
 import {
@@ -16,9 +18,8 @@ import {
   DialogTitle,
 } from '@/app/(app)/shared/components/ui/dialog';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { cn } from '@/app/(app)/shared/lib/utils';
-
-import { PrintableDirectory } from './printable-directory';
 
 type PrintDirectoryDialogProps = {
   open: boolean;
@@ -34,23 +35,74 @@ export function PrintDirectoryDialog({
   restoreFocusElement,
 }: PrintDirectoryDialogProps) {
   const { t } = useTranslation('page-list');
+  const appConfig = useAppConfig();
   const [selectedVariant, setSelectedVariant] = useState<
     'phone-book' | 'all-info'
   >('phone-book');
-  const componentToPrintRef = useRef<HTMLDivElement>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
-  const handlePrint = useReactToPrint({
-    contentRef: componentToPrintRef,
-  });
+  const handlePrintPDF = async () => {
+    setIsGenerating(true);
 
-  const handlePrintClick = () => {
-    handlePrint();
-    onOpenChange(false);
-    // Restore focus after dialog unmounts and print dialog closes
-    // The browser's print dialog can interfere with normal focus restoration
-    setTimeout(() => {
-      restoreFocusElement?.focus();
-    }, 100);
+    try {
+      // Get current domain and date
+      const currentDomain = window.location.hostname;
+      const currentDate = new Date().toLocaleDateString('en-US', {
+        month: '2-digit',
+        day: '2-digit',
+        year: 'numeric',
+      });
+
+      // Generate PDF in browser
+      const blob = await pdf(
+        <PDFDirectory
+          data={data}
+          variant={selectedVariant}
+          currentDomain={currentDomain}
+          currentDate={currentDate}
+          brandLogoUrl={appConfig.brand.logoUrl}
+          disclaimerText={t('print_footer_disclaimer', {
+            brandName: appConfig.brand.name,
+          })}
+        />,
+      ).toBlob();
+
+      // Open PDF in new window and trigger print dialog
+      const url = window.URL.createObjectURL(blob);
+      const printWindow = window.open(url, '_blank');
+
+      if (printWindow) {
+        // Wait for PDF to load before triggering print
+        printWindow.addEventListener('load', () => {
+          setTimeout(() => {
+            printWindow.print();
+          }, 250);
+        });
+
+        // Cleanup when window is closed
+        const cleanup = () => window.URL.revokeObjectURL(url);
+        printWindow.addEventListener('beforeunload', cleanup);
+
+        // Fallback cleanup after 5 minutes
+        setTimeout(cleanup, 5 * 60 * 1000);
+      } else {
+        // Popup blocked - cleanup immediately
+        window.URL.revokeObjectURL(url);
+        toast.error(t('print_dialog.popup_blocked'));
+      }
+
+      onOpenChange(false);
+      // Restore focus after dialog closes
+      setTimeout(() => {
+        restoreFocusElement?.focus();
+      }, 100);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      // Error is logged - user will see browser's popup blocker message if that's the issue
+      // For other errors, the print window simply won't open
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   return (
@@ -73,7 +125,7 @@ export function PrintDirectoryDialog({
               type="button"
               onClick={() => setSelectedVariant('phone-book')}
               className={cn(
-                'flex items-start gap-3 rounded-lg border-2 p-4 text-left transition-colors',
+                'flex cursor-pointer items-start gap-3 rounded-lg border-2 p-4 text-left transition-colors',
                 selectedVariant === 'phone-book'
                   ? 'border-primary bg-primary/5'
                   : 'border-border hover:border-primary/50',
@@ -106,7 +158,7 @@ export function PrintDirectoryDialog({
               type="button"
               onClick={() => setSelectedVariant('all-info')}
               className={cn(
-                'flex items-start gap-3 rounded-lg border-2 p-4 text-left transition-colors',
+                'flex cursor-pointer items-start gap-3 rounded-lg border-2 p-4 text-left transition-colors',
                 selectedVariant === 'all-info'
                   ? 'border-primary bg-primary/5'
                   : 'border-border hover:border-primary/50',
@@ -140,24 +192,22 @@ export function PrintDirectoryDialog({
               variant="outline"
               onClick={() => onOpenChange(false)}
               type="button"
+              disabled={isGenerating}
             >
               {t('call_to_action.cancel', { ns: 'common' })}
             </Button>
-            <Button onClick={handlePrintClick} type="button">
-              {t('print_dialog.print_button')}
+            <Button
+              onClick={handlePrintPDF}
+              type="button"
+              disabled={isGenerating}
+            >
+              {isGenerating
+                ? t('print_dialog.generating')
+                : t('print_dialog.print_button')}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      {/* Hidden printable content */}
-      <div className="hidden">
-        <PrintableDirectory
-          ref={componentToPrintRef}
-          data={data}
-          variant={selectedVariant}
-        />
-      </div>
     </>
   );
 }
