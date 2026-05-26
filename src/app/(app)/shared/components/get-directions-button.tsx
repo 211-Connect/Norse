@@ -83,7 +83,7 @@ export function GetDirectionsButton({
       <ReferralButton
         ref={needsOrigin ? triggerRef : undefined}
         size="sm"
-        className={cn('flex-1 gap-1', className)}
+        className={cn('flex-1 gap-1 print:hidden', className)}
         referralType="directions_referral"
         resourceId={data.id}
         resourceData={data}

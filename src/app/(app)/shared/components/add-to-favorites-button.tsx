@@ -19,6 +19,7 @@ import { toast } from 'sonner';
 import { FavoriteListState } from '@/types/favorites';
 
 import { useAppConfig } from '../hooks/use-app-config';
+import { useLocalFavorites } from '../hooks/use-local-favorites';
 import { FAVORITES_SEARCH_DEBOUNCE_DELAY } from '../lib/constants';
 import { UmamiEvent, trackUmamiEvent } from '../lib/umami';
 import { cn, withOptionalTrailingSlash } from '../lib/utils';
@@ -55,6 +56,10 @@ export function AddToFavoritesButton({
   const appConfig = useAppConfig();
   const session = useSession();
   const setDialog = useSetAtom(dialogsAtom);
+  const anonymousCollectionsEnabled =
+    appConfig.featureFlags.anonymousCollectionsEnabled;
+  const { isLocalFavorite, addLocalFavorite, removeLocalFavorite } =
+    useLocalFavorites();
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const createListTriggerRef = useRef<HTMLButtonElement | null>(null);
   const dialogId = useId();
@@ -185,15 +190,23 @@ export function AddToFavoritesButton({
       triggerRef.current = event.currentTarget;
       setOpen(true);
     } else if (session.status === 'unauthenticated') {
-      const trigger = event.currentTarget;
-      setDialog((prev) => ({
-        ...prev,
-        promptAuth: {
-          ...prev.promptAuth,
-          open: true,
-          returnFocusTo: trigger,
-        },
-      }));
+      if (anonymousCollectionsEnabled) {
+        if (isLocalFavorite(serviceAtLocationId)) {
+          removeLocalFavorite(serviceAtLocationId);
+        } else {
+          addLocalFavorite(serviceAtLocationId);
+        }
+      } else {
+        const trigger = event.currentTarget;
+        setDialog((prev) => ({
+          ...prev,
+          promptAuth: {
+            ...prev.promptAuth,
+            open: true,
+            returnFocusTo: trigger,
+          },
+        }));
+      }
     }
     // While session is 'loading', ignore the click — avoids showing
     // a login prompt to users whose session is still hydrating.
@@ -211,15 +224,25 @@ export function AddToFavoritesButton({
             ? `${t('call_to_action.add_to_list')} ${resourceName}`
             : t('call_to_action.add_to_list')
         }
-        aria-haspopup="dialog"
-        aria-controls={dialogId}
+        aria-haspopup={
+          session.status === 'authenticated' ? 'dialog' : undefined
+        }
+        aria-controls={
+          session.status === 'authenticated' ? dialogId : undefined
+        }
         data-testid="favorite-btn"
         onClick={handleClick}
         disabled={session.status === 'loading'}
         data-session-status={session.status}
       >
         <Heart
-          className={size === 'icon' ? 'size-6' : 'size-4'}
+          className={cn(
+            size === 'icon' ? 'size-6' : 'size-4',
+            anonymousCollectionsEnabled &&
+              session.status === 'unauthenticated' &&
+              isLocalFavorite(serviceAtLocationId) &&
+              'fill-current',
+          )}
           aria-hidden="true"
         />
         {size !== 'icon' && t('call_to_action.add_to_list')}

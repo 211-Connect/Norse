@@ -28,7 +28,7 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
     appConfig.search.texts?.useTextLinkForViewDetails ?? false;
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 print:hidden">
       <div className="grid w-full grid-cols-1 gap-2 lg:grid-cols-3">
         {result.phone ? (
           <ReferralButton

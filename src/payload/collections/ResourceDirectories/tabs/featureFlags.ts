@@ -90,5 +90,14 @@ export const featureFlags: Tab = {
         update: superAdminOrSupportAccess,
       },
     },
+    {
+      name: 'anonymousCollectionsEnabled',
+      type: 'checkbox',
+      defaultValue: false,
+      access: {
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
+      },
+    },
   ],
 };
