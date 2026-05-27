@@ -43,7 +43,7 @@ export function FavoritesDirectoryPrintControl({
         open={open}
         onOpenChange={setOpen}
         data={data}
-        restoreFocusElement={triggerRef.current}
+        onRestoreFocus={() => triggerRef.current?.focus()}
       />
     </>
   );
