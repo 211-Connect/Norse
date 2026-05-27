@@ -27,6 +27,20 @@ function extractTextContent(node: any): string {
 }
 
 /**
+ * Repeatedly strip HTML-like tags until no more changes occur.
+ * This avoids incomplete multi-character sanitization in malformed inputs.
+ */
+function stripHtmlTagsSafely(input: string): string {
+  let previous: string;
+  let current = input;
+  do {
+    previous = current;
+    current = current.replace(/<[^>]*>/g, '');
+  } while (current !== previous);
+  return current;
+}
+
+/**
  * Renders HTML/Markdown content for PDF using react-pdf components
  * Handles text, links, lists, and basic formatting
  */
@@ -152,6 +166,6 @@ export function PDFHtmlRenderer({
     return <View style={style}>{parsed}</View>;
   } catch (e) {
     console.error('PDF HTML rendering failed:', e);
-    return <Text style={style}>{processed.replace(/<[^>]*>/g, '')}</Text>;
+    return <Text style={style}>{stripHtmlTagsSafely(processed)}</Text>;
   }
 }

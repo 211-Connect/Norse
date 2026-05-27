@@ -25,14 +25,14 @@ type PrintDirectoryDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   data: PrintableDirectoryData;
-  restoreFocusElement?: HTMLElement | null;
+  onRestoreFocus?: () => void;
 };
 
 export function PrintDirectoryDialog({
   open,
   onOpenChange,
   data,
-  restoreFocusElement,
+  onRestoreFocus,
 }: PrintDirectoryDialogProps) {
   const { t } = useTranslation('page-list');
   const appConfig = useAppConfig();
@@ -94,12 +94,11 @@ export function PrintDirectoryDialog({
       onOpenChange(false);
       // Restore focus after dialog closes
       setTimeout(() => {
-        restoreFocusElement?.focus();
+        onRestoreFocus?.();
       }, 100);
     } catch (error) {
       console.error('Error generating PDF:', error);
-      // Error is logged - user will see browser's popup blocker message if that's the issue
-      // For other errors, the print window simply won't open
+      toast.error(t('print_dialog.error'));
     } finally {
       setIsGenerating(false);
     }
@@ -108,10 +107,7 @@ export function PrintDirectoryDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent
-          restoreFocusElement={restoreFocusElement}
-          closeLabel={t('call_to_action.close', { ns: 'common' })}
-        >
+        <DialogContent closeLabel={t('call_to_action.close', { ns: 'common' })}>
           <DialogHeader>
             <DialogTitle>{t('print_dialog.title')}</DialogTitle>
             <DialogDescription>
