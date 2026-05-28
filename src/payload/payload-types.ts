@@ -432,7 +432,10 @@ export interface Tenant {
   common?: {
     gtmContainerId?: string | null;
     matomoContainerUrl?: string | null;
-    umamiWebsiteIds?:
+  };
+  analytics?: {
+    umamiWebsiteId?: string | null;
+    additionalWebsiteIds?:
       | {
           websiteId: string;
           id?: string | null;
@@ -1222,7 +1225,12 @@ export interface TenantsSelect<T extends boolean = true> {
     | {
         gtmContainerId?: T;
         matomoContainerUrl?: T;
-        umamiWebsiteIds?:
+      };
+  analytics?:
+    | T
+    | {
+        umamiWebsiteId?: T;
+        additionalWebsiteIds?:
           | T
           | {
               websiteId?: T;
