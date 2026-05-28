@@ -41,6 +41,7 @@ export function BackToResultsButton() {
       className={cn(buttonVariants({ variant: 'outline' }), 'flex gap-1')}
       href={backUrl}
       onClick={createLinkEvent}
+      prefetch={false}
     >
       <ChevronLeft aria-hidden="true" className="size-4" />
       {backUrl === '/' ? t('back_to_home') : t('back_to_results')}

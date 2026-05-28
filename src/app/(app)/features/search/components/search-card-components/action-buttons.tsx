@@ -43,6 +43,7 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
             <Link
               href={`tel:${result.phone}`}
               aria-label={`${t('call_to_action.call')} ${result.name}`}
+              prefetch={false}
             >
               <Phone className="size-4" />{' '}
               <span className="truncate"> {t('call_to_action.call')} </span>
@@ -76,6 +77,7 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
             <Link
               href={result.website}
               aria-label={`${t('call_to_action.view_website')} ${result.name}`}
+              prefetch={false}
             >
               <LinkIcon className="size-4" />{' '}
               <span className="truncate">
