@@ -1,20 +1,8 @@
-import { forwardGeocode } from '../../../app/(app)/shared/serverActions/geocoding/forwardGeocode';
+import { forwardGeocodeBatch } from '../../../app/(app)/shared/serverActions/geocoding/forwardGeocodeBatch';
 import type { HeatmapPoint } from './types';
 import { UmamiSession } from './types';
 
-async function runBatch<T, R>(
-  items: T[],
-  batchSize: number,
-  fn: (item: T) => Promise<R>,
-): Promise<R[]> {
-  const results: R[] = [];
-  for (let i = 0; i < items.length; i += batchSize) {
-    const batch = items.slice(i, i + batchSize);
-    const batchResults = await Promise.all(batch.map(fn));
-    results.push(...batchResults);
-  }
-  return results;
-}
+const BATCH_SIZE = 50; // API maximum per request
 
 function normalizeToHeatmapPoints(
   valid: { coordinates: [number, number]; views: number }[],
@@ -44,30 +32,35 @@ export async function geocodeSessions(
 
   const uniqueLocations = Array.from(viewsByLocation.entries()); // [locationString, views]
 
-  const geocoded = await runBatch(
-    uniqueLocations,
-    5,
-    async ([locationString, views]) => {
-      try {
-        // TODO: We should be able to send batch request
-        const geocodeResults = await forwardGeocode(locationString, {
-          locale: 'en',
-          tenantId,
-          provider: 'opencage',
-        });
+  // Split into chunks of BATCH_SIZE and call the batch API sequentially
+  const valid: { coordinates: [number, number]; views: number }[] = [];
 
-        const hit = geocodeResults.find((r) => r.type === 'coordinates');
-        if (!hit) return null;
-        return { coordinates: hit.coordinates, views };
-      } catch {
-        return null;
-      }
-    },
-  );
+  for (let i = 0; i < uniqueLocations.length; i += BATCH_SIZE) {
+    const chunk = uniqueLocations.slice(i, i + BATCH_SIZE);
+    const addresses = chunk.map(([locationString]) => locationString);
 
-  const valid = geocoded.filter(
-    (r): r is { coordinates: [number, number]; views: number } => r !== null,
-  );
+    let batchResults;
+    try {
+      batchResults = await forwardGeocodeBatch(addresses, {
+        locale: 'en',
+        tenantId,
+        provider: 'opencage',
+      });
+    } catch {
+      // If the whole batch request fails, skip this chunk
+      continue;
+    }
+
+    for (const item of batchResults) {
+      if (item.error) continue;
+
+      const hit = item.results.find((r) => r.type === 'coordinates');
+      if (!hit) continue;
+
+      const views = viewsByLocation.get(item.address) ?? 1;
+      valid.push({ coordinates: hit.coordinates, views });
+    }
+  }
 
   if (valid.length === 0) return [];
 
