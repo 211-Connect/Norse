@@ -2,6 +2,8 @@
 
 import { getCookies } from 'cookies-next/client';
 
+import { Resource } from '@/types/resource';
+
 import { ResultType } from '../store/results';
 import {
   USER_PREF_COUNTRY,
@@ -100,7 +102,7 @@ export const createPageViewEvent = (e: any, sessionId: string) => {
 export const createReferralEvent = (
   referralType: 'call_referral' | 'website_referral' | 'directions_referral',
   resourceId: string,
-  resource: Partial<ResultType>,
+  resource: Partial<ResultType> | Partial<Resource>,
   query: any,
   sessionId: string,
 ) => {
