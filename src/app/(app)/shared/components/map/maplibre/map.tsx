@@ -421,12 +421,12 @@ export function Map({
                 }}
               >
                 <div className="relative">
-                  <div className="absolute right-2 top-2 z-10">
+                  <div className="absolute top-2 right-2 z-10">
                     <button
                       ref={closeButtonRef}
                       type="button"
                       aria-label={`Close details for ${activePopup.label}`}
-                      className="rounded-md p-1 text-foreground ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      className="text-foreground ring-offset-background hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring rounded-md p-1 transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
                       onClick={activePopup.closePopup}
                     >
                       <X className="size-4" />

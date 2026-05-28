@@ -60,7 +60,7 @@ const PaginationLink = ({
         variant: variant || 'outline',
         size,
       }),
-      'rounded-[5px] border-primary text-xs text-primary',
+      'border-primary text-primary rounded-[5px] text-xs',
       isActive && 'bg-background-highlight',
       className,
     )}

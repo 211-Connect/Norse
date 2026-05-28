@@ -15,6 +15,7 @@ import type {
   MetricsData,
   MetricsExpandedEntry,
   PathsData,
+  ResourceByEntryData,
   SessionHeatmapData,
   SessionsData,
   UmamiEventDataValue,
@@ -23,7 +24,12 @@ import type {
   UmamiStats,
   ZeroResultQueriesData,
 } from './types';
-import { buildProxyQuery, parseMetrics, sumEventTotals } from './utils';
+import {
+  buildProxyQuery,
+  mergeSearchByLabelBuckets,
+  parseMetrics,
+  sumEventTotals,
+} from './utils';
 
 const TTL_MS = 5 * 60 * 1000; // 5 minutes
 
@@ -226,10 +232,11 @@ export const fetchMetrics = makeCachedFetch(
     const eventTotals = sumEventTotals(events ?? []);
     const prevEventTotals = sumEventTotals(prevEvents ?? []);
 
-    const { searchCount, resourceMetrics, searchByLabel } = parseMetrics(
+    const { searchCount, resourceMetrics, searchByLabelByType } = parseMetrics(
       pathMetrics ?? [],
       queryMetrics ?? [],
     );
+    const searchByLabel = mergeSearchByLabelBuckets(searchByLabelByType);
     const {
       searchCount: prevSearchCount,
       resourceMetrics: prevResourceMetrics,
@@ -265,6 +272,10 @@ export const fetchMetrics = makeCachedFetch(
       widgetSearches: metric(
         eventTotals[UmamiEvent.WidgetSearch] ?? 0,
         prevEventTotals[UmamiEvent.WidgetSearch] ?? 0,
+      ),
+      calloutClicks: metric(
+        eventTotals[UmamiEvent.CalloutClick] ?? 0,
+        prevEventTotals[UmamiEvent.CalloutClick] ?? 0,
       ),
     };
 
@@ -323,7 +334,7 @@ export const fetchPaths = makeCachedFetch(
         ),
       ]);
 
-    const { searchCount, resourceMetrics, searchByLabel } = parseMetrics(
+    const { searchCount, resourceMetrics, searchByLabelByType } = parseMetrics(
       pathMetrics ?? [],
       queryMetrics ?? [],
     );
@@ -338,7 +349,7 @@ export const fetchPaths = makeCachedFetch(
       prevSearchCount,
       resourceMetrics,
       prevResourceMetrics,
-      searchByLabel,
+      searchByLabelByType,
     };
   },
 );
@@ -434,6 +445,31 @@ export const fetchLanguageSwitchDestinations = makeCachedFetch(
     );
 
     return { languageSwitchDestinations };
+  },
+);
+
+export const fetchResourceByEntry = makeCachedFetch(
+  new Map<string, CacheEntry<ResourceByEntryData>>(),
+  async ({ startAt, endAt }, tenantId, websiteIds) => {
+    const raw = await fetchWrapper<UmamiEventDataValue[]>(
+      buildProxyQuery(
+        'event-data/values',
+        startAt,
+        endAt,
+        tenantId,
+        {
+          event: UmamiEvent.ResourceViewed,
+          propertyName: 'entry',
+        },
+        websiteIds,
+      ),
+    );
+
+    if (!raw) {
+      return { resourceByEntry: [] };
+    }
+
+    return { resourceByEntry: toMetricEntries(raw) };
   },
 );
 

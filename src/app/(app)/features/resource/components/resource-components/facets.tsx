@@ -112,7 +112,7 @@ export function FacetsComponent({ resource }: { resource: Resource }) {
                 >
                   <SquareCheck
                     aria-hidden="true"
-                    className="mt-0.5 size-4 shrink-0 text-muted-foreground"
+                    className="text-muted-foreground mt-0.5 size-4 shrink-0"
                   />
                   <span className="text-sm">{facet.termName}</span>
                 </li>

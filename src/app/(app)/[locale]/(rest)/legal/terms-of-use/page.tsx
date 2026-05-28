@@ -73,7 +73,7 @@ export default async function TermsOfUsePage({ params }) {
       translationData={{ i18nNamespaces, locale, resources }}
       nonce={nonce}
     >
-      <div className="container mx-auto pb-8 pt-8">
+      <div className="container mx-auto pt-8 pb-8">
         <h1 className="mb-2 text-3xl font-bold">
           {appConfig.pages.termsOfUsePage.title}
         </h1>

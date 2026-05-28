@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import client from 'twilio';
+import { Twilio } from 'twilio';
 
 import { createLogger } from '@/lib/logger';
 import { findTenantById } from '@/payload/collections/Tenants/actions';
@@ -25,7 +25,7 @@ async function sendViaTwilio(
     phoneNumber: string;
   },
 ) {
-  const twilioClient = client(config.apiKeySid, config.apiKey, {
+  const twilioClient = new Twilio(config.apiKeySid, config.apiKey, {
     accountSid: config.accountSid,
   });
 

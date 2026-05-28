@@ -5,5 +5,42 @@
   "no_favorites": {
     "title": "這裡還沒有任何東西 :(",
     "subtitle": "在搜尋頁面上新增一些收藏，即可在此處查看。"
+  },
+  "back_to_home": "回首頁",
+  "local_list": {
+    "title": "我保存的資源",
+    "description": "您在此處保存的資源將儲存在您的瀏覽器中。登入即可在不同裝置上保存這些資源。",
+    "loading": "正在載入已儲存的資源…",
+    "empty_title": "尚未保存任何資源",
+    "empty_description": "點擊任何資源上的心形圖示即可將其新增至此處。您的選擇將保存在此瀏覽器中。"
+  },
+  "purge_list": {
+    "label": "全部清除",
+    "confirm_title": "你確定嗎？",
+    "confirm_description": "這將從清單中移除所有資源。列表本身將保留。",
+    "cancel": "取消",
+    "success": "所有收藏已清除",
+    "error": "清除收藏失敗"
+  },
+  "print_directory": "列印",
+  "print_dialog": {
+    "title": "列印目錄",
+    "select_format": "選擇列印格式",
+    "phone_book": "電話簿",
+    "phone_book_desc": "格式簡潔，包含必要的聯絡訊息",
+    "all_info": "所有資訊",
+    "all_info_desc": "詳細格式，包括描述",
+    "print_button": "列印",
+    "generating": "正在生成PDF文件...",
+    "popup_blocked": "彈出視窗已被阻止。請允許彈出視窗以查看 PDF 檔案。",
+    "error": "PDF生成失敗，請重試。"
+  },
+  "print_footer_disclaimer": "{{brandName}} 提供此資訊作為公共服務，但不對其準確性、完整性或及時性作任何保證。 {{brandName}} 對此資訊的使用方式概不負責，也不對因使用此資訊而產生的任何後果承擔責任。分發此列印件並不表示 {{brandName}} 對此資訊表示認可或與其有任何關聯。",
+  "print_page_counter": "第 {{current}} 頁，共 {{total}} 頁",
+  "tooltips": {
+    "print": "列印此列表",
+    "update": "更新列表詳情",
+    "purge": "從此清單中清除所有收藏夾",
+    "delete": "刪除此列表"
   }
 }

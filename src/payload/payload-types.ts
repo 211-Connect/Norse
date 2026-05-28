@@ -236,11 +236,13 @@ export interface Config {
     'analytics-phone-calls': AnalyticsPhoneCallsWidget;
     'analytics-directions': AnalyticsDirectionsWidget;
     'analytics-widget-searches': AnalyticsWidgetSearchesWidget;
+    'analytics-callout-clicks': AnalyticsCalloutClicksWidget;
     'analytics-page-views': AnalyticsPageViewsWidget;
     'analytics-pageviews-chart': AnalyticsPageviewsChartWidget;
     'analytics-map': AnalyticsMapWidget;
     'analytics-resource-titles': AnalyticsResourceTitlesWidget;
     'analytics-search-queries': AnalyticsSearchQueriesWidget;
+    'analytics-resource-entry-points': AnalyticsResourceEntryPointsWidget;
     'analytics-zero-result-queries': AnalyticsZeroResultQueriesWidget;
     'analytics-session-quality': AnalyticsSessionQualityWidget;
     'analytics-device-types': AnalyticsDeviceTypesWidget;
@@ -927,6 +929,7 @@ export interface ResourceDirectory {
     turnResourceCardTaxonomiesIntoLinks?: boolean | null;
     showFeedbackButtonGlobal?: boolean | null;
     showFeedbackButtonOnResourcePages?: boolean | null;
+    anonymousCollectionsEnabled?: boolean | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -1631,6 +1634,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         turnResourceCardTaxonomiesIntoLinks?: T;
         showFeedbackButtonGlobal?: T;
         showFeedbackButtonOnResourcePages?: T;
+        anonymousCollectionsEnabled?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -1856,6 +1860,16 @@ export interface AnalyticsWidgetSearchesWidget {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-callout-clicks_widget".
+ */
+export interface AnalyticsCalloutClicksWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "analytics-page-views_widget".
  */
 export interface AnalyticsPageViewsWidget {
@@ -1903,6 +1917,16 @@ export interface AnalyticsSearchQueriesWidget {
     [k: string]: unknown;
   };
   width: 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-resource-entry-points_widget".
+ */
+export interface AnalyticsResourceEntryPointsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

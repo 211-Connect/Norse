@@ -36,6 +36,7 @@ export type AppConfig = {
     provider: 'Twilio' | 'EMS';
   } | null;
   featureFlags: {
+    anonymousCollectionsEnabled: boolean;
     requireUserLocation: boolean;
     showFeedbackButtonGlobal: boolean;
     showFeedbackButtonOnResourcePages: boolean;

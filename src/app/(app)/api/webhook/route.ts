@@ -69,7 +69,7 @@ export async function POST(request: Request) {
 
     if (error instanceof z.ZodError) {
       log.warn(
-        { errors: error.errors },
+        { errors: error.issues },
         'Webhook Zod validation failed; sending fallback',
       );
 

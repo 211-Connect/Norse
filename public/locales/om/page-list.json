@@ -5,5 +5,42 @@
   "no_favorites": {
     "title": "Hanga ammaatti homaa asitti hin jiru :(",
     "subtitle": "Fuula barbaacha irratti jaallatamtoota tokko tokko dabaluudhaan asitti arguu dandeessu"
+  },
+  "back_to_home": "Gara Manaatti Deebi'aa",
+  "local_list": {
+    "title": "Qabeenya Koo Qusate",
+    "description": "Qabeenyi ati asitti qusattu biraawzari kee keessatti kuufameera. Meeshaalee hunda akka hin dabarreef galmaa'i.",
+    "loading": "Qabeenya qusatame fe'aa jira...",
+    "empty_title": "Qabeenyi hanga ammaatti qusatame hin jiru",
+    "empty_description": "Qabeenya kamiyyuu irratti mallattoo onnee cuqaasuun asitti dabaluu dandeessa. Filannoon kee biraawzari kana keessatti kuufameera."
+  },
+  "purge_list": {
+    "label": "Hundaa qulqulleessi",
+    "confirm_title": "Mirkaneeffatteettaa?",
+    "confirm_description": "Kunis qabeenya hunda tarree keessaa ni haqa. Tarreen mataan isaa ni hafa.",
+    "cancel": "Haquu",
+    "success": "Favorites hundi qulqullaa'aniiru",
+    "error": "Favorites qulqulleessuu hin dandeenye"
+  },
+  "print_directory": "Maxxansa",
+  "print_dialog": {
+    "title": "Galmee Maxxansaa",
+    "select_format": "Akkaataa maxxansaa fili",
+    "phone_book": "Kitaaba Bilbilaa",
+    "phone_book_desc": "Bifa kompaaktii odeeffannoo quunnamtii barbaachisaa ta’e waliin",
+    "all_info": "Odeeffannoo Hunda",
+    "all_info_desc": "Ibsa dabalatee bifa bal’aa",
+    "print_button": "Maxxansa",
+    "generating": "PDF maddisiisuu...",
+    "popup_blocked": "Popup cufame. Maaloo popups PDF akka ilaalan hayyamaa.",
+    "error": "PDF uumuu hin dandeenye. Mee irra deebi'ii yaalaa."
+  },
+  "print_footer_disclaimer": "{{brandName}} odeeffannoo kana akka tajaajila mootummaatti kan kennu yoo ta’u, sirrii ta’uu isaa, guutuu ta’uu isaa, ykn yeroon isaa ilaalchisee wabii hin kennu. {{brandName}} akkaataa odeeffannoon kun itti fayyadamuuf itti gaafatamummaa kan hin qabnee fi bu’aa itti fayyadama isaa irraa maddu kamiifuu itti gaafatamummaa hin fudhatu. Raabsiin maxxansaa kanaa {{brandName}} irraa deeggarsa ykn walitti dhufeenya qabaachuu kan agarsiisu miti.",
+  "print_page_counter": "Fuula {{current}} kan {{total}}",
+  "tooltips": {
+    "print": "Tarree kana maxxansaa",
+    "update": "Bal'ina tarree haaromsi",
+    "purge": "Tarree kana keessaa jaallatamtoota hunda qulqulleessi",
+    "delete": "Tarree kana haqi"
   }
 }

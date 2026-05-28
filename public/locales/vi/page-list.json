@@ -5,5 +5,42 @@
   "no_favorites": {
     "title": "Chưa có gì ở đây :(",
     "subtitle": "Thêm một số mục yêu thích trên trang tìm kiếm để xem chúng ở đây"
+  },
+  "back_to_home": "Trở về Trang chủ",
+  "local_list": {
+    "title": "Tài nguyên đã lưu của tôi",
+    "description": "Các tài liệu bạn lưu ở đây sẽ được lưu trữ trong trình duyệt của bạn. Hãy đăng nhập để giữ chúng trên mọi thiết bị.",
+    "loading": "Đang tải các tài nguyên đã lưu…",
+    "empty_title": "Chưa có tài nguyên nào được lưu",
+    "empty_description": "Nhấp vào biểu tượng trái tim trên bất kỳ tài nguyên nào để thêm nó vào đây. Các lựa chọn của bạn sẽ được lưu trong trình duyệt này."
+  },
+  "purge_list": {
+    "label": "Xóa tất cả",
+    "confirm_title": "Bạn chắc chắn chứ?",
+    "confirm_description": "Thao tác này sẽ xóa tất cả tài nguyên khỏi danh sách. Danh sách vẫn sẽ được giữ nguyên.",
+    "cancel": "Hủy bỏ",
+    "success": "Tất cả mục yêu thích đã được xóa",
+    "error": "Không thể xóa mục yêu thích"
+  },
+  "print_directory": "In",
+  "print_dialog": {
+    "title": "Thư mục in",
+    "select_format": "Chọn định dạng in",
+    "phone_book": "Danh bạ điện thoại",
+    "phone_book_desc": "Định dạng nhỏ gọn với thông tin liên hệ cần thiết.",
+    "all_info": "Tất cả thông tin",
+    "all_info_desc": "Định dạng chi tiết bao gồm mô tả",
+    "print_button": "In",
+    "generating": "Đang tạo PDF...",
+    "popup_blocked": "Cửa sổ bật lên bị chặn. Vui lòng cho phép cửa sổ bật lên để xem PDF.",
+    "error": "Không thể tạo PDF. Vui lòng thử lại."
+  },
+  "print_footer_disclaimer": "{{brandName}} cung cấp thông tin này như một dịch vụ công cộng và không đảm bảo về tính chính xác, đầy đủ hoặc kịp thời của nó. {{brandName}} không chịu trách nhiệm về cách thức sử dụng thông tin này và không chịu trách nhiệm pháp lý đối với bất kỳ hậu quả nào phát sinh từ việc sử dụng nó. Việc phân phát bản in này không ngụ ý sự chứng thực hoặc liên kết với {{brandName}}.",
+  "print_page_counter": "Trang {{current}} của {{total}}",
+  "tooltips": {
+    "print": "In danh sách này",
+    "update": "Cập nhật chi tiết danh sách",
+    "purge": "Xóa tất cả mục yêu thích khỏi danh sách này",
+    "delete": "Xóa danh sách này"
   }
 }

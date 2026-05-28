@@ -100,12 +100,12 @@ export function MainSearchLayout({
             data-testid="search-trigger"
             onClick={() => openSearchDialog('search')}
             className={cn(
-              'search-box flex h-auto min-h-10 w-full justify-start rounded-lg border-[#00000080] bg-white py-2 pl-[2.7rem] pr-3 text-left text-xs font-normal shadow-sm hover:bg-white',
+              'search-box flex h-auto min-h-10 w-full justify-start rounded-lg border-[#00000080] bg-white py-2 pr-3 pl-[2.7rem] text-left text-xs font-normal shadow-sm hover:bg-white',
             )}
           >
             <span
               className={cn(
-                'block whitespace-normal break-words',
+                'block break-words whitespace-normal',
                 searchTerm.trim().length > 0
                   ? 'text-foreground'
                   : 'text-muted-foreground',
@@ -115,7 +115,7 @@ export function MainSearchLayout({
             </span>
           </Button>
           <SearchIcon
-            className="absolute left-[15px] top-2 size-6 text-primary"
+            className="text-primary absolute top-2 left-[15px] size-6"
             aria-hidden="true"
           />
         </div>

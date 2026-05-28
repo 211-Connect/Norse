@@ -178,6 +178,13 @@ const config = buildConfig({
           maxWidth: 'full',
         },
         {
+          slug: 'analytics-callout-clicks',
+          Component:
+            '@/payload/components/analytics/widgets/CalloutClicksWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
           slug: 'analytics-page-views',
           Component:
             '@/payload/components/analytics/widgets/PageViewsWidget#default',
@@ -210,6 +217,13 @@ const config = buildConfig({
           Component:
             '@/payload/components/analytics/widgets/SearchQueriesWidget#default',
           minWidth: 'medium',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-resource-entry-points',
+          Component:
+            '@/payload/components/analytics/widgets/ResourceEntryPointsWidget#default',
+          minWidth: 'x-small',
           maxWidth: 'full',
         },
         {

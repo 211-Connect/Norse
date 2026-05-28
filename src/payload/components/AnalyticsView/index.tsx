@@ -24,6 +24,10 @@ const ANALYTICS_DEFAULT_LAYOUT = [
 export default function AnalyticsView(props: AdminViewServerProps) {
   const user = props.user ?? (props.initPageResult?.req?.user as any);
 
+  if (!user) {
+    return null;
+  }
+
   const patchedConfig = {
     ...props.payload.config,
     admin: {

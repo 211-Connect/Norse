@@ -14,6 +14,7 @@ import { Image } from '@/app/(app)/shared/components/image';
 import { Link } from '@/app/(app)/shared/components/link';
 import { MainSearchLayout } from '@/app/(app)/shared/components/search/main-search-layout/main-search-layout';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { UmamiEvent, trackUmamiEvent } from '@/app/(app)/shared/lib/umami';
 
 import Alert from './alert';
 
@@ -51,7 +52,7 @@ export function NewHomeContent() {
                 icon = (
                   <PhoneOutgoing
                     strokeWidth={1}
-                    className="size-12 text-primary"
+                    className="text-primary size-12"
                   />
                 );
                 break;
@@ -59,7 +60,7 @@ export function NewHomeContent() {
                 icon = (
                   <Smartphone
                     strokeWidth={1}
-                    className="size-12 text-primary"
+                    className="text-primary size-12"
                   />
                 );
                 break;
@@ -67,13 +68,13 @@ export function NewHomeContent() {
                 icon = (
                   <MessageCircleMore
                     strokeWidth={1}
-                    className="size-12 text-primary"
+                    className="text-primary size-12"
                   />
                 );
                 break;
               case 'email':
                 icon = (
-                  <Mail strokeWidth={1} className="size-12 text-primary" />
+                  <Mail strokeWidth={1} className="text-primary size-12" />
                 );
                 break;
               default:
@@ -94,19 +95,19 @@ export function NewHomeContent() {
   }, [appConfig.newLayout?.callouts?.options, t]);
 
   return (
-    <div className="relative flex flex-1 justify-center border-t px-3 lg:justify-start lg:pl-8 lg:pr-0">
+    <div className="relative flex flex-1 justify-center border-t px-3 lg:justify-start lg:pr-0 lg:pl-8">
       <div className="flex min-h-full flex-row px-0">
         <div className="flex flex-col items-start justify-around gap-4 py-6 pl-0 lg:w-[430px] lg:gap-8 lg:pr-[24px]">
           <Alert itemsDirection="col" />
           <div className="w-full">
-            <h2 className="mb-2 whitespace-break-spaces text-2xl font-medium text-primary">
+            <h2 className="text-primary mb-2 text-2xl font-medium whitespace-break-spaces">
               {appConfig.search.texts?.title ||
                 t('search.hero_title', { ns: 'common' })}
             </h2>
             <MainSearchLayout />
           </div>
           <div>
-            <h3 className="whitespace-break-spaces text-xl text-black opacity-50">
+            <h3 className="text-xl whitespace-break-spaces text-black opacity-50">
               {t('new_layout.topics_section.title', { ns: 'page-home' })}
             </h3>
             <Link
@@ -114,12 +115,12 @@ export function NewHomeContent() {
               className="flex items-center gap-3 text-3xl font-medium hover:underline"
             >
               {t('new_layout.topics_section.cta', { ns: 'page-home' })}
-              <LayoutGrid strokeWidth={1} className="size-12 text-primary" />
+              <LayoutGrid strokeWidth={1} className="text-primary size-12" />
             </Link>
           </div>
           {callouts.length > 0 && (
             <div className="w-full">
-              <h3 className="mb-3 whitespace-break-spaces text-xl text-black opacity-50">
+              <h3 className="mb-3 text-xl whitespace-break-spaces text-black opacity-50">
                 {appConfig.newLayout?.callouts?.title ||
                   t('new_layout.callouts.title', {
                     ns: 'page-home',
@@ -137,13 +138,16 @@ export function NewHomeContent() {
                         target={urlTarget}
                         className="flex flex-col items-center gap-[10px] px-4 py-[10px] [&>p]:hover:underline"
                         key={`${type}-${index}`}
+                        onClick={() =>
+                          trackUmamiEvent(UmamiEvent.CalloutClick, { type })
+                        }
                       >
                         {icon}
                         <p className="text-center text-xl font-semibold">
                           {title}
                         </p>
                         {description && (
-                          <p className="whitespace-pre-wrap text-center text-sm">
+                          <p className="text-center text-sm whitespace-pre-wrap">
                             {description}
                           </p>
                         )}
@@ -158,7 +162,7 @@ export function NewHomeContent() {
                           {title}
                         </p>
                         {description && (
-                          <p className="whitespace-pre-wrap text-center text-sm">
+                          <p className="text-center text-sm whitespace-pre-wrap">
                             {description}
                           </p>
                         )}

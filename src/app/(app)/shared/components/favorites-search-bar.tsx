@@ -44,7 +44,7 @@ export function FavoritesSearchBar({
       <label htmlFor="favorites-search-input" className="sr-only">
         {placeholder ?? 'Search your lists'}
       </label>
-      <MagnifyingGlassIcon className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+      <MagnifyingGlassIcon className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
       <Input
         id="favorites-search-input"
         placeholder={placeholder}

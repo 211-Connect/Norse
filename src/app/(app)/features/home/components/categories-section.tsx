@@ -14,6 +14,8 @@ import { NEW_TAB_WARNING } from '@/app/(app)/shared/lib/constants';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { Topic } from '@/types/topics';
 
+import { ResourceEntry } from '../../../shared/lib/umami';
+
 type Props = {
   topic: Topic;
   iconSize: 'small' | 'medium';
@@ -48,7 +50,7 @@ const Category = ({
 
         <div className="min-w-0 flex-1">
           <h3
-            className="mb-1 break-words text-xl font-semibold"
+            className="mb-1 text-xl font-semibold break-words"
             style={{ wordBreak: 'break-word' }}
           >
             {name}
@@ -61,7 +63,7 @@ const Category = ({
               return (
                 <li key={el.name}>
                   <Link
-                    className="flex items-center gap-1 break-words rounded-md px-2 py-2 text-sm hover:bg-primary hover:text-primary-foreground focus-visible:bg-primary focus-visible:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    className="hover:bg-primary hover:text-primary-foreground focus-visible:bg-primary focus-visible:text-primary-foreground focus-visible:ring-ring flex items-center gap-1 rounded-md px-2 py-2 text-sm break-words focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
                     href={`${
                       el.href
                         ? el.href
@@ -71,7 +73,7 @@ const Category = ({
                             el.name,
                           )}&query_type=${encodeURIComponent(
                             el.queryType ?? '',
-                          )}`
+                          )}&entry=${ResourceEntry.TopicCard}`
                     }`}
                     prefetch={false}
                     target={el.target}
@@ -104,9 +106,9 @@ const Category = ({
       <Card>
         <CardContent>
           {image && (
-            <div className="flex flex-col items-center justify-center pb-8 pt-8">
+            <div className="flex flex-col items-center justify-center pt-8 pb-8">
               <div
-                className="relative mb-4 mt-4 h-20 w-20 overflow-hidden"
+                className="relative mt-4 mb-4 h-20 w-20 overflow-hidden"
                 style={{
                   borderRadius: imageBorderRadius ?? undefined,
                 }}

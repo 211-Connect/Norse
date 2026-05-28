@@ -47,7 +47,7 @@ export const FontSizeToggle = ({ className }: { className?: string }) => {
       type="single"
       aria-label="Font size toggle"
       className={cn(
-        'flex flex-shrink-0 gap-1 rounded bg-white p-0.5 font-medium text-foreground [&>*[data-state=on]]:bg-background-highlight [&>*]:cursor-pointer [&>*]:rounded [&>*]:p-[7px]',
+        'text-foreground [&>*[data-state=on]]:bg-background-highlight flex flex-shrink-0 gap-1 rounded bg-white p-0.5 font-medium [&>*]:cursor-pointer [&>*]:rounded [&>*]:p-[7px]',
         className,
       )}
       value={accessibility.fontSize}

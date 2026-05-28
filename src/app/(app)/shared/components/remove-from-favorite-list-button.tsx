@@ -42,13 +42,15 @@ export function RemoveFromFavoriteListButton({
     try {
       setIsRemoving(true);
 
-      await removeFavoriteFromList(
-        {
-          resourceId: serviceAtLocationId,
-          favoriteListId: currentListId,
-        },
-        appConfig.tenantId,
-      );
+      if (currentListId !== 'local') {
+        await removeFavoriteFromList(
+          {
+            resourceId: serviceAtLocationId,
+            favoriteListId: currentListId,
+          },
+          appConfig.tenantId,
+        );
+      }
 
       toast.success(t('favorites.removed_from_list'), {
         description: t('favorites.removed_from_list_message'),

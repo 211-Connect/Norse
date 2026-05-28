@@ -282,7 +282,7 @@ export function SearchDialog({
       ref={dialogRef}
       id={SEARCH_DIALOG_ID}
       className={cn(
-        'fixed bottom-0 left-0 right-0 top-0 z-50 overflow-y-auto overscroll-contain bg-white p-6 transition-opacity duration-300',
+        'fixed top-0 right-0 bottom-0 left-0 z-50 overflow-y-auto overscroll-contain bg-white p-6 transition-opacity duration-300',
         open ? 'opacity-100' : 'pointer-events-none opacity-0',
       )}
       role="dialog"
@@ -303,7 +303,7 @@ export function SearchDialog({
         {open && (
           <form
             onSubmit={onSubmit}
-            className="flex w-full max-w-[25rem] flex-col gap-4 overflow-y-auto pb-6 pt-6 [@media(min-width:640px)_and_(min-height:600px)]:pt-[120px]"
+            className="flex w-full max-w-[25rem] flex-col gap-4 overflow-y-auto pt-6 pb-6 [@media(min-width:640px)_and_(min-height:600px)]:pt-[120px]"
           >
             <div className="flex flex-row justify-between gap-4">
               <Button
@@ -312,7 +312,7 @@ export function SearchDialog({
                 variant="highlight"
                 onClick={closeDialog}
               >
-                <ChevronLeft className="size-4 text-primary" />
+                <ChevronLeft className="text-primary size-4" />
                 {t('search.back')}
               </Button>
               <SearchButton loading={isPending} />
