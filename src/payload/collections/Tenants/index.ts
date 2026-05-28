@@ -234,9 +234,27 @@ export const Tenants: CollectionConfig = {
           name: 'matomoContainerUrl',
           type: 'text',
         },
+      ],
+    },
+    {
+      name: 'analytics',
+      type: 'group',
+      label: 'Analytics Settings',
+      access: {
+        create: superAdminOrSupportAccess,
+        read: () => true,
+        update: superAdminOrSupportAccess,
+      },
+      fields: [
         {
-          name: 'umamiWebsiteIds',
+          name: 'umamiWebsiteId',
+          type: 'text',
+          label: 'Main website',
+        },
+        {
+          name: 'additionalWebsiteIds',
           type: 'array',
+          label: 'Other websites',
           fields: [
             {
               name: 'websiteId',

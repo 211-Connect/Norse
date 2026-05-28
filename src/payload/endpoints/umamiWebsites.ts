@@ -1,6 +1,7 @@
 import type { Endpoint } from 'payload';
 
 import { isSuperAdmin, isSupport } from '../collections/Users/access/roles';
+import { getConfiguredWebsiteIds } from '../utilities/getConfiguredWebsiteIds';
 import { getUserTenantIDs } from '../utilities/getUserTenantIDs';
 import { getUmamiToken } from '../utilities/umamiAuth';
 
@@ -19,16 +20,6 @@ function parseRequestedWebsiteIds(raw: string | undefined): string[] {
         .filter(Boolean),
     ),
   );
-}
-
-function configuredWebsiteIds(tenant: any): string[] {
-  const websiteIds = Array.isArray(tenant?.common?.umamiWebsiteIds)
-    ? tenant.common.umamiWebsiteIds
-        .map((row: { websiteId?: string | null }) => row?.websiteId?.trim())
-        .filter((id: string | undefined): id is string => Boolean(id))
-    : [];
-
-  return Array.from(new Set(websiteIds));
 }
 
 export const umamiWebsites: Endpoint = {
@@ -76,7 +67,7 @@ export const umamiWebsites: Endpoint = {
       return Response.json({ error: 'Tenant not found.' }, { status: 404 });
     }
 
-    const allowedWebsiteIds = configuredWebsiteIds(tenant);
+    const allowedWebsiteIds = getConfiguredWebsiteIds(tenant?.analytics);
     if (allowedWebsiteIds.length === 0) {
       return Response.json({ websites: [] as UmamiWebsite[] });
     }

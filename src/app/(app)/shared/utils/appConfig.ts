@@ -41,13 +41,13 @@ function getTenantId(resourceDirectory: ResourceDirectory): string | undefined {
 function getTenantMainUmamiWebsiteId(
   resourceDirectory: ResourceDirectory,
 ): string | undefined {
-  const websiteIds = getTenant(resourceDirectory)?.common?.umamiWebsiteIds;
+  const websiteId = getTenant(resourceDirectory)?.analytics?.umamiWebsiteId;
 
-  if (!Array.isArray(websiteIds) || websiteIds.length === 0) {
+  if (!websiteId) {
     return undefined;
   }
 
-  return websiteIds[0]?.websiteId ?? undefined;
+  return websiteId.trim() || undefined;
 }
 
 function getSmsConfig(resourceDirectory: ResourceDirectory): AppConfig['sms'] {

@@ -74,13 +74,9 @@ export const createUmamiWebsite: CollectionAfterChangeHook<Tenant> = async ({
 }) => {
   if (operation !== 'create') return doc;
 
-  const existingWebsiteIds = Array.isArray(doc.common?.umamiWebsiteIds)
-    ? doc.common.umamiWebsiteIds
-        .map((row) => row?.websiteId)
-        .filter((id): id is string => Boolean(id))
-    : [];
+  const existingWebsiteId = doc.analytics?.umamiWebsiteId?.trim();
 
-  if (existingWebsiteIds.length > 0) return doc;
+  if (existingWebsiteId) return doc;
 
   const umamiApiUrl = process.env.UMAMI_API_URL;
   const teamId = process.env.UMAMI_TEAM_ID;
@@ -113,8 +109,8 @@ export const createUmamiWebsite: CollectionAfterChangeHook<Tenant> = async ({
       collection: 'tenants',
       id: doc.id,
       data: {
-        common: {
-          umamiWebsiteIds: [{ websiteId }],
+        analytics: {
+          umamiWebsiteId: websiteId,
         },
       },
       overrideAccess: true,
@@ -123,9 +119,9 @@ export const createUmamiWebsite: CollectionAfterChangeHook<Tenant> = async ({
 
     return {
       ...doc,
-      common: {
-        ...doc.common,
-        umamiWebsiteIds: [{ websiteId }],
+      analytics: {
+        ...doc.analytics,
+        umamiWebsiteId: websiteId,
       },
     };
   } catch (err) {
