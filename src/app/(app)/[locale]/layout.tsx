@@ -30,12 +30,28 @@ export const generateMetadata = async ({
 
   const favicon = appConfig.brand.faviconUrl ?? '/favicon.ico';
 
+  // Block search engines in production unless explicitly allowed
+  const isProduction = process.env.NODE_ENV === 'production';
+  const allowSearchEngines =
+    process.env.NEXT_PUBLIC_ALLOW_SEARCH_ENGINES === 'true';
+  const shouldBlockCrawlers = isProduction && !allowSearchEngines;
+
   return {
     description: appConfig.meta.description,
     icons: {
       icon: favicon,
     },
     title: appConfig.meta.title,
+    ...(shouldBlockCrawlers && {
+      robots: {
+        index: false,
+        follow: false,
+        googleBot: {
+          index: false,
+          follow: false,
+        },
+      },
+    }),
   };
 };
 
