@@ -48,6 +48,7 @@ export function CategoriesComponent({
               )}&query_label=${encodeURIComponent(
                 el?.name,
               )}&query_type=taxonomy`}
+              prefetch={false}
             >
               {el?.name}
             </Link>

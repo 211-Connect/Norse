@@ -113,6 +113,7 @@ export function NewHomeContent() {
             <Link
               href="/topics"
               className="flex items-center gap-3 text-3xl font-medium hover:underline"
+              prefetch={false}
             >
               {t('new_layout.topics_section.cta', { ns: 'page-home' })}
               <LayoutGrid strokeWidth={1} className="text-primary size-12" />
@@ -141,6 +142,7 @@ export function NewHomeContent() {
                         onClick={() =>
                           trackUmamiEvent(UmamiEvent.CalloutClick, { type })
                         }
+                        prefetch={false}
                       >
                         {icon}
                         <p className="text-center text-xl font-semibold">
