@@ -5,5 +5,42 @@
   "no_favorites": {
     "title": "Nada aquí todavía :(",
     "subtitle": "Agregue algunos favoritos en la página de búsqueda para verlos aquí"
+  },
+  "back_to_home": "Volver a la página principal",
+  "local_list": {
+    "title": "Mis recursos guardados",
+    "description": "Los recursos que guardes aquí se almacenarán en tu navegador. Inicia sesión para conservarlos en todos tus dispositivos.",
+    "loading": "Cargando recursos guardados…",
+    "empty_title": "Aún no hay recursos guardados",
+    "empty_description": "Haz clic en el icono del corazón de cualquier recurso para añadirlo aquí. Tus selecciones se guardarán en este navegador."
+  },
+  "purge_list": {
+    "label": "Borrar todo",
+    "confirm_title": "¿Está seguro?",
+    "confirm_description": "Esto eliminará todos los recursos de la lista. La lista en sí permanecerá.",
+    "cancel": "Cancelar",
+    "success": "Todos los favoritos borrados",
+    "error": "No se pudieron borrar los favoritos."
+  },
+  "print_directory": "Imprimir",
+  "print_dialog": {
+    "title": "Directorio impreso",
+    "select_format": "Seleccione el formato de impresión",
+    "phone_book": "Guía telefónica",
+    "phone_book_desc": "Formato compacto con información de contacto esencial.",
+    "all_info": "Toda la información",
+    "all_info_desc": "Formato detallado que incluye descripciones",
+    "print_button": "Imprimir",
+    "generating": "Generando PDF...",
+    "popup_blocked": "Ventana emergente bloqueada. Permita las ventanas emergentes para ver el PDF.",
+    "error": "No se pudo generar el PDF. Inténtelo de nuevo."
+  },
+  "print_footer_disclaimer": "{{brandName}} proporciona esta información como un servicio público y no ofrece garantías respecto a su exactitud, integridad o actualidad. {{brandName}} no se responsabiliza del uso que se le dé a esta información y no asume ninguna responsabilidad por las consecuencias derivadas de su uso. La distribución de esta impresión no implica el respaldo ni la afiliación con {{brandName}}.",
+  "print_page_counter": "Página {{current}} de {{total}}",
+  "tooltips": {
+    "print": "Imprime esta lista",
+    "update": "Actualizar detalles de la lista",
+    "purge": "Borrar todos los favoritos de esta lista",
+    "delete": "Eliminar esta lista"
   }
 }

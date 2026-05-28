@@ -5,5 +5,42 @@
   "no_favorites": {
     "title": "Nada aqui todavía :(",
     "subtitle": "Kuria eso na ka taleitaki ena tabana ni vakasaqaqara mo raica kina eke ."
+  },
+  "back_to_home": "Lesu tale ki Vale",
+  "local_list": {
+    "title": "Noqu iVurevure Vakabulai",
+    "description": "Na ivurevure o maroroya eke e maroroi tu ena nomu barausa. Saini me maroroi ira ena veimataqali misini.",
+    "loading": "Vakavodoki tiko na ivurevure maroroi...",
+    "empty_title": "Se bera ni maroroi na ivurevure",
+    "empty_description": "Kiliki ena ivakatakilakila ni yalo ena dua na ivurevure me vakacurumi kina eke. Na nomu digidigi e maroroi ena barausa oqo."
+  },
+  "purge_list": {
+    "label": "Bokoca kece",
+    "confirm_title": "O sa vakadeitaka?",
+    "confirm_description": "Oqo ena kauta laivi na ivurevure kece mai na lisi. Na lisi sara ga ena tiko ga.",
+    "cancel": "Biuta laivi",
+    "success": "Sa vakasavasavataki na veika taleitaki kece",
+    "error": "Sega ni rawa ni bokoci na veika e taleitaki"
+  },
+  "print_directory": "Tabaka",
+  "print_dialog": {
+    "title": "Dairekita ni tabaki",
+    "select_format": "Digitaka na ivakarau ni tabaki",
+    "phone_book": "iVola ni talevoni",
+    "phone_book_desc": "Na ituvatuva ni veitaratara kei na itukutuku bibi ni veitaratara",
+    "all_info": "Na itukutuku kece",
+    "all_info_desc": "Na ituvatuva matailalai oka kina na ivakamacala",
+    "print_button": "Tabaka",
+    "generating": "Vakarautaka na PDF...",
+    "popup_blocked": "Sa tarovi na popup. Yalovinaka vakatara na popups me raica na PDF.",
+    "error": "E sega ni rawa ni vakatuburi na PDF. Kerekere mo tovolea tale."
+  },
+  "print_footer_disclaimer": "{{brandName}} e vakarautaka na itukutuku oqo me vaka e dua na veiqaravi raraba ka sega ni dua na veivakadeitaki me baleta na kena dodonu, taucoko, se kena gauna dodonu. E sega ni vakaitavitaki koya na {{brandName}} ena kena vakayagataki na itukutuku oqo ka sega ni vakaitavitaki koya ena dua na ka e rawa ni yaco mai na kena vakayagataki. Na kena veisoliyaki na ivola tabaki oqo e sega ni kena ibalebale ni vakadonuya se veiwekani kei na {{brandName}}.",
+  "print_page_counter": "Página {{current}} de {{total}}",
+  "tooltips": {
+    "print": "Tabaka na lisi oqo",
+    "update": "Vakavoutaka na itukutuku matailalai ni lisi",
+    "purge": "Bokoca na veika taleitaki kece mai na lisi oqo",
+    "delete": "Bokoca na lisi oqo"
   }
 }

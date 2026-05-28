@@ -5,5 +5,42 @@
   "no_favorites": {
     "title": "Alaa ko woni ɗoo tawo :(",
     "subtitle": "Ɓeydu heen ɓure ɓurɗe yiɗeede e hello njiylawu ngam yiyde ɗe ɗoo"
+  },
+  "back_to_home": "Hootde to Galle",
+  "local_list": {
+    "title": "Resooji am Hisnaaɗi",
+    "description": "Ngalu ngu resndu-ɗaa ɗoo ina mooftaa e feerorde maa. Naat ngam jogaade ɗi e nder kaɓirɗe.",
+    "loading": "Lowde kaɓirɗe hisnaaɗe...",
+    "empty_title": "Alaa jawdi hisnaandi tawo",
+    "empty_description": "Ɓoɗɗu nate ɓernde e kala resource ngam ɓeydude ɗum ɗoo. Suɓagol maa ina hisnee e ndee feerorde."
+  },
+  "purge_list": {
+    "label": "Laɓɓin fof",
+    "confirm_title": "Aɗa hoolii?",
+    "confirm_description": "Ɗuum maa ittu denndaangal kaɓirɗe e doggol ngol. Doggol ngol e hoore mum maa heddo.",
+    "cancel": "Willugo",
+    "success": "Yiɗdeeji ɗii fof laaɓtinaama",
+    "error": "Waawaa laɓɓinde ɓurɓe yiɗeede"
+  },
+  "print_directory": "Tappirde",
+  "print_dialog": {
+    "title": "Reggindo tappirde",
+    "select_format": "Suɓo mbaadi tappirde",
+    "phone_book": "Deftere Telefoŋ",
+    "phone_book_desc": "Format compact e kabaruuji jokkondirɗi potɗi",
+    "all_info": "Kabaaru fof",
+    "all_info_desc": "Fotde laaɓtunde ina waɗi sifaaji",
+    "print_button": "Tappirde",
+    "generating": "Waɗde PDF...",
+    "popup_blocked": "Popup oo haɗaama. Tiiɗno, accu popups ngam yiyde PDF.",
+    "error": "Waawaa feewnude PDF. Tiiɗno enndu kadi."
+  },
+  "print_footer_disclaimer": "{{brandName}} ina rokka ɗeen kabaruuji no gollal laamu nii, tee alaa ko rokkata ɗum so wonaa laaɓal mum, timmugol mum, walla sahaa mum. {{brandName}} alaa ko toppitii so wonaa no ɗeen kabaruuji kuutortee, tee alaa ko toppitii so wonaa batte kuutoragol mum en. Feccere ndee winndannde firtaani ko {{brandName}} jaɓi walla jokkondiri e mum.",
+  "print_page_counter": "Hello {{current}} mo {{total}}",
+  "tooltips": {
+    "print": "Tappir ndee doggol",
+    "update": "Hesɗitin defte doggol",
+    "purge": "Laɓɓin denndaangal ɓurɓe yiɗeede e ndee doggol",
+    "delete": "Mumtu ndee doggol"
   }
 }

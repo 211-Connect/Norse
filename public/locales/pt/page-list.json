@@ -5,5 +5,42 @@
   "no_favorites": {
     "title": "Nada por aqui ainda :(",
     "subtitle": "Adicione alguns favoritos na página de pesquisa para vê-los aqui."
+  },
+  "back_to_home": "Voltar para a página inicial",
+  "local_list": {
+    "title": "Meus recursos salvos",
+    "description": "Os recursos que você salva aqui são armazenados no seu navegador. Faça login para mantê-los em todos os seus dispositivos.",
+    "loading": "Carregando recursos salvos…",
+    "empty_title": "Nenhum recurso salvo ainda",
+    "empty_description": "Clique no ícone de coração em qualquer recurso para adicioná-lo aqui. Suas seleções serão salvas neste navegador."
+  },
+  "purge_list": {
+    "label": "Limpar tudo",
+    "confirm_title": "Tem certeza?",
+    "confirm_description": "Isso removerá todos os recursos da lista. A lista em si permanecerá.",
+    "cancel": "Cancelar",
+    "success": "Todos os favoritos foram removidos.",
+    "error": "Falha ao limpar os favoritos"
+  },
+  "print_directory": "Imprimir",
+  "print_dialog": {
+    "title": "Imprimir catálogo",
+    "select_format": "Selecione o formato de impressão",
+    "phone_book": "Lista telefônica",
+    "phone_book_desc": "Formato compacto com informações de contato essenciais",
+    "all_info": "Todas as informações",
+    "all_info_desc": "Formato detalhado incluindo descrições",
+    "print_button": "Imprimir",
+    "generating": "Gerando PDF...",
+    "popup_blocked": "Janela pop-up bloqueada. Por favor, permita pop-ups para visualizar o PDF.",
+    "error": "Não foi possível gerar o PDF. Tente novamente."
+  },
+  "print_footer_disclaimer": "{{brandName}} fornece esta informação como um serviço público e não oferece garantias quanto à sua exatidão, integridade ou atualidade. {{brandName}} não se responsabiliza pela forma como esta informação é utilizada e não assume qualquer responsabilidade por quaisquer consequências decorrentes da sua utilização. A distribuição deste material impresso não implica endosso ou afiliação com {{brandName}}.",
+  "print_page_counter": "Página {{current}} de {{total}}",
+  "tooltips": {
+    "print": "Imprima esta lista",
+    "update": "Atualizar detalhes da lista",
+    "purge": "Limpar todos os favoritos desta lista",
+    "delete": "Excluir esta lista"
   }
 }

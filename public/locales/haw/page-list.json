@@ -5,5 +5,42 @@
   "no_favorites": {
     "title": "ʻAʻohe mea ma ʻaneʻi i kēia manawa :(",
     "subtitle": "E hoʻohui i kekahi mau mea punahele ma ka ʻaoʻao hulina e ʻike iā lākou ma aneʻi"
+  },
+  "back_to_home": "Hoʻi i ka Home",
+  "local_list": {
+    "title": "Kaʻu mau kumuwaiwai i mālama ʻia",
+    "description": "Ua mālama ʻia nā kumuwaiwai āu e mālama ai ma ʻaneʻi i kāu polokalamu kele pūnaewele. E komo e mālama iā lākou ma nā polokalamu āpau.",
+    "loading": "Ke hoʻouka nei i nā kumuwaiwai i mālama ʻia…",
+    "empty_title": "ʻAʻohe kumuwaiwai i mālama ʻia i kēia manawa",
+    "empty_description": "Kaomi i ka ikona puʻuwai ma kekahi kumuwaiwai e hoʻohui iā ia ma aneʻi. Mālama ʻia kāu mau koho ma kēia polokalamu kele pūnaewele."
+  },
+  "purge_list": {
+    "label": "Holoi i nā mea a pau",
+    "confirm_title": "He ʻoiaʻiʻo kēnā?",
+    "confirm_description": "E wehe kēia i nā kumuwaiwai āpau mai ka papa inoa. E mau ana ka papa inoa ponoʻī.",
+    "cancel": "Hoʻōki",
+    "success": "Ua holoi ʻia nā punahele a pau",
+    "error": "ʻAʻole i holo pono nā mea punahele"
+  },
+  "print_directory": "Paʻi",
+  "print_dialog": {
+    "title": "Papa Kuhikuhi Paʻi",
+    "select_format": "Koho i ke ʻano paʻi",
+    "phone_book": "Puke Kelepona",
+    "phone_book_desc": "ʻAno liʻiliʻi me ka ʻike pili koʻikoʻi",
+    "all_info": "ʻIke āpau",
+    "all_info_desc": "ʻAno kikoʻī me nā wehewehe",
+    "print_button": "Paʻi",
+    "generating": "Ke hana nei i ka PDF...",
+    "popup_blocked": "Ua ālai ʻia ka popup. E ʻoluʻolu e ʻae i nā popups e nānā i ka PDF.",
+    "error": "ʻAʻole i hiki ke hana i ka PDF. E ʻoluʻolu e hoʻāʻo hou."
+  },
+  "print_footer_disclaimer": "Hāʻawi ʻo {{brandName}} i kēia ʻike ma ke ʻano he lawelawe lehulehu a ʻaʻole ia e hāʻawi i nā palapala hōʻoia e pili ana i kona pololei, piha, a i ʻole ka manawa kūpono. ʻAʻole kuleana ʻo {{brandName}} no ke ʻano o ka hoʻohana ʻia ʻana o kēia ʻike a ʻaʻole ia e lawe i ke kuleana no nā hopena e kū mai ana mai kona hoʻohana ʻana. ʻAʻole hōʻike ka hoʻolaha ʻana o kēia paʻi i ka ʻae ʻia e {{brandName}} a i ʻole ka pilina me {{brandName}}.",
+  "print_page_counter": "ʻAoʻao {{current}} o {{total}}",
+  "tooltips": {
+    "print": "E paʻi i kēia papa inoa",
+    "update": "Hoʻohou i nā kikoʻī o ka papa inoa",
+    "purge": "Holoi i nā punahele a pau mai kēia papa inoa",
+    "delete": "Holoi i kēia papa inoa"
   }
 }

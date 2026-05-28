@@ -5,5 +5,42 @@
   "no_favorites": {
     "title": "E leai se mea iinei :(",
     "subtitle": "Fa'aopoopo ni mea e fiafia i ai i le itulau su'esu'e e va'ai i ai iinei"
+  },
+  "back_to_home": "Toe foʻi i le Aiga",
+  "local_list": {
+    "title": "O'u Punaoa ua Fa'asaoina",
+    "description": "O punaoa e te sefeina iinei e teuina i lau su'esu'ega i luga o le initaneti. Saini i totonu e teu ai i masini eseese.",
+    "loading": "O loʻo utaina punaoa ua sefeina…",
+    "empty_title": "Leai ni punaoa ua sefeina",
+    "empty_description": "Kiliki le faailoga o le fatu i luga o soʻo se punaoa e faʻaopoopo i ai iinei. O au filifiliga o loʻo sefe i totonu o lenei suʻesuʻega."
+  },
+  "purge_list": {
+    "label": "Tape uma",
+    "confirm_title": "E mo'i lava oe?",
+    "confirm_description": "O le a aveese ai punaoa uma mai le lisi. O le a tumau pea le lisi lava ia.",
+    "cancel": "Faaleaoga",
+    "success": "Ua tape uma mea e fiafia i ai",
+    "error": "Ua le mafai ona tapeina mea e fiafia i ai"
+  },
+  "print_directory": "Lolomi",
+  "print_dialog": {
+    "title": "Fa'asinomaga Lolomi",
+    "select_format": "Filifili le faatulagaga lolomi",
+    "phone_book": "Tusi Telefoni",
+    "phone_book_desc": "Fa'atulagaga la'ititi ma fa'amatalaga fa'afeso'ota'i taua",
+    "all_info": "Fa'amatalaga Uma",
+    "all_info_desc": "Fa'atulagaga auiliili e aofia ai fa'amatalaga",
+    "print_button": "Lolomi",
+    "generating": "O lo'o faia le PDF...",
+    "popup_blocked": "Ua poloka le popup. Fa'amolemole fa'ataga popups e matamata i le PDF.",
+    "error": "Ua le manuia le fatuina o le PDF. Fa'amolemole toe taumafai."
+  },
+  "print_footer_disclaimer": "{{brandName}} e tuʻuina atu nei faʻamatalaga o se auaunaga lautele ma e leai se faʻamaoniga e uiga i lona saʻo, atoatoa, poʻo le taimi atofaina. E le tali atu le {{brandName}} i le faʻaaogaina o nei faʻamatalaga ma e leai se noataga mo soʻo se taunuuga e tulaʻi mai i lona faʻaaogaina. O le tufatufaina atu o lenei lomiga e le faʻaalia ai le faʻamaoniaina poʻo le fesoʻotaʻi ma le {{brandName}}.",
+  "print_page_counter": "Itūlau {{current}} o le {{total}}",
+  "tooltips": {
+    "print": "Lolomi lenei lisi",
+    "update": "Fa'afou fa'amatalaga o le lisi",
+    "purge": "Tape ese mea uma e fiafia i ai mai lenei lisi",
+    "delete": "Tape ese lenei lisi"
   }
 }

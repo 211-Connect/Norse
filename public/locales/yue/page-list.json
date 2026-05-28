@@ -5,5 +5,42 @@
   "no_favorites": {
     "title": "呢度仲未有嘢：（",
     "subtitle": "喺搜尋頁面加入一啲最愛，就可以喺呢度睇到"
+  },
+  "back_to_home": "返去屋企",
+  "local_list": {
+    "title": "我儲存咗嘅資源",
+    "description": "你喺呢度儲存嘅資源會儲存喺你嘅瀏覽器入面。登入就可以喺唔同裝置上面保留佢哋。",
+    "loading": "載入緊儲存咗嘅資源⋯",
+    "empty_title": "仲未有儲存嘅資源",
+    "empty_description": "撳任何資源上面嘅心形圖示就可以喺呢度加入。你嘅選擇會儲存喺呢個瀏覽器入面。"
+  },
+  "purge_list": {
+    "label": "清除所有",
+    "confirm_title": "你肯定？",
+    "confirm_description": "噉樣會喺清單入面移除所有資源。呢個清單本身會保留。",
+    "cancel": "取消",
+    "success": "所有最愛都清除咗",
+    "error": "清除唔到最愛"
+  },
+  "print_directory": "列印",
+  "print_dialog": {
+    "title": "列印目錄",
+    "select_format": "揀列印格式",
+    "phone_book": "電話簿",
+    "phone_book_desc": "格式緊湊，有必要嘅聯絡資料",
+    "all_info": "所有資料",
+    "all_info_desc": "詳細格式，包括描述",
+    "print_button": "列印",
+    "generating": "生成緊 PDF …",
+    "popup_blocked": "彈出式視窗被封鎖。請允許彈出式視窗睇 PDF 。",
+    "error": "生成唔到 PDF 。唔該再試多次。"
+  },
+  "print_footer_disclaimer": "{{brandName}} 作為公共服務提供呢啲資料，而且對佢嘅準確性、完整性或者及時性冇任何保證。 {{brandName}} 對呢啲資料嘅使用方式唔負責，亦唔會對由於呢啲資料嘅使用而引起嘅任何結果負責。呢份印刷品嘅分發唔代表 {{brandName}} 認可或者同佢有關係。",
+  "print_page_counter": "{{current}} 頁 {{total}}",
+  "tooltips": {
+    "print": "列印呢個清單",
+    "update": "更新清單詳情",
+    "purge": "喺呢個清單入面清除所有最愛",
+    "delete": "刪除呢個清單"
   }
 }

@@ -5,5 +5,42 @@
   "no_favorites": {
     "title": "Hakuna kitu hapa bado :(",
     "subtitle": "Ongeza vipendwa kwenye ukurasa wa utafutaji ili uone hapa"
+  },
+  "back_to_home": "Rudi Nyumbani",
+  "local_list": {
+    "title": "Rasilimali Zangu Zilizohifadhiwa",
+    "description": "Rasilimali unazohifadhi hapa zimehifadhiwa kwenye kivinjari chako. Ingia ili kuzihifadhi kwenye vifaa vyote.",
+    "loading": "Inapakia nyenzo zilizohifadhiwa…",
+    "empty_title": "Hakuna rasilimali zilizohifadhiwa bado",
+    "empty_description": "Bofya aikoni ya moyo kwenye rasilimali yoyote ili kuiongeza hapa. Chaguo zako zimehifadhiwa kwenye kivinjari hiki."
+  },
+  "purge_list": {
+    "label": "Futa yote",
+    "confirm_title": "Una uhakika?",
+    "confirm_description": "Hii itaondoa rasilimali zote kutoka kwenye orodha. Orodha yenyewe itabaki.",
+    "cancel": "Ghairi",
+    "success": "Vipendwa vyote vimefutwa",
+    "error": "Imeshindwa kufuta vipendwa"
+  },
+  "print_directory": "Chapisha",
+  "print_dialog": {
+    "title": "Saraka ya Uchapishaji",
+    "select_format": "Chagua umbizo la kuchapisha",
+    "phone_book": "Kitabu cha Simu",
+    "phone_book_desc": "Muundo mdogo wenye taarifa muhimu za mawasiliano",
+    "all_info": "Taarifa Zote",
+    "all_info_desc": "Muundo wa kina ikijumuisha maelezo",
+    "print_button": "Chapisha",
+    "generating": "Inazalisha PDF...",
+    "popup_blocked": "Ibukizi imezuiwa. Tafadhali ruhusu ibukizi zione PDF.",
+    "error": "Imeshindwa kutengeneza PDF. Tafadhali jaribu tena."
+  },
+  "print_footer_disclaimer": "{{brandName}} hutoa taarifa hii kama huduma ya umma na haitoi dhamana yoyote kuhusu usahihi, ukamilifu, au wakati wake. {{brandName}} haina jukumu la jinsi taarifa hii inavyotumika na haichukui dhima yoyote kwa matokeo yoyote yanayotokana na matumizi yake. Usambazaji wa chapisho hili haumaanishi kuidhinishwa au kuhusishwa na {{brandName}}.",
+  "print_page_counter": "Ukurasa {{current}} wa {{total}}",
+  "tooltips": {
+    "print": "Chapisha orodha hii",
+    "update": "Sasisha maelezo ya orodha",
+    "purge": "Futa vipendwa vyote kutoka kwenye orodha hii",
+    "delete": "Futa orodha hii"
   }
 }

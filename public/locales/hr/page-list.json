@@ -5,5 +5,42 @@
   "no_favorites": {
     "title": "Ovdje još ništa :(",
     "subtitle": "Dodajte neke favorite na stranicu za pretraživanje da biste ih vidjeli ovdje"
+  },
+  "back_to_home": "Natrag na početnu stranicu",
+  "local_list": {
+    "title": "Moji spremljeni resursi",
+    "description": "Resursi koje ovdje spremite pohranjeni su u vašem pregledniku. Prijavite se da biste ih sačuvali na svim uređajima.",
+    "loading": "Učitavanje spremljenih resursa…",
+    "empty_title": "Još nema spremljenih resursa",
+    "empty_description": "Kliknite ikonu srca na bilo kojem resursu da biste ga dodali ovdje. Vaši odabiri spremaju se u ovom pregledniku."
+  },
+  "purge_list": {
+    "label": "Obriši sve",
+    "confirm_title": "Jesi li siguran/sigurna?",
+    "confirm_description": "Ovim će se ukloniti svi resursi s popisa. Sam popis će ostati.",
+    "cancel": "Otkazati",
+    "success": "Svi favoriti su izbrisani",
+    "error": "Brisanje favorita nije uspjelo"
+  },
+  "print_directory": "Ispis",
+  "print_dialog": {
+    "title": "Ispis imenika",
+    "select_format": "Odaberite format ispisa",
+    "phone_book": "Telefonski imenik",
+    "phone_book_desc": "Kompaktni format s bitnim kontaktnim podacima",
+    "all_info": "Sve informacije",
+    "all_info_desc": "Detaljan format, uključujući opise",
+    "print_button": "Ispis",
+    "generating": "Generiranje PDF-a...",
+    "popup_blocked": "Skočni prozor blokiran. Molimo vas da omogućite skočne prozore za pregled PDF-a.",
+    "error": "Nije uspjelo generiranje PDF-a. Pokušajte ponovno."
+  },
+  "print_footer_disclaimer": "{{brandName}} pruža ove informacije kao javnu uslugu i ne daje nikakva jamstva u pogledu njihove točnosti, potpunosti ili pravovremenosti. {{brandName}} nije odgovoran za način na koji se ove informacije koriste i ne preuzima nikakvu odgovornost za bilo kakve posljedice koje proizlaze iz njihove upotrebe. Distribucija ovog ispisa ne podrazumijeva odobrenje ili povezanost s {{brandName}}.",
+  "print_page_counter": "Stranica {{current}} od {{total}}",
+  "tooltips": {
+    "print": "Ispis ovog popisa",
+    "update": "Ažuriraj detalje popisa",
+    "purge": "Izbriši sve favorite s ovog popisa",
+    "delete": "Izbriši ovaj popis"
   }
 }
