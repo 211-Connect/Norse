@@ -5,5 +5,42 @@
   "no_favorites": {
     "title": "Wala pa rin dito :(",
     "subtitle": "Magdagdag ng ilang paborito sa pahina ng paghahanap para makita ang mga ito rito"
+  },
+  "back_to_home": "Balik sa Bahay",
+  "local_list": {
+    "title": "Aking Mga Naka-save na Mapagkukunan",
+    "description": "Ang mga mapagkukunang sine-save mo rito ay nakaimbak sa iyong browser. Mag-sign in para mapanatili ang mga ito sa iba't ibang device.",
+    "loading": "Naglo-load ng mga naka-save na resources…",
+    "empty_title": "Wala pang naka-save na mga mapagkukunan",
+    "empty_description": "I-click ang icon na puso sa anumang mapagkukunan upang idagdag ito rito. Ang iyong mga napili ay naka-save sa browser na ito."
+  },
+  "purge_list": {
+    "label": "I-clear lahat",
+    "confirm_title": "Sigurado ka ba?",
+    "confirm_description": "Aalisin nito ang lahat ng resources mula sa listahan. Mananatili ang listahan mismo.",
+    "cancel": "Kanselahin",
+    "success": "Nabura na ang lahat ng paborito",
+    "error": "Nabigong linisin ang mga paborito"
+  },
+  "print_directory": "I-print",
+  "print_dialog": {
+    "title": "Direktoryo ng Pag-print",
+    "select_format": "Pumili ng format ng pag-print",
+    "phone_book": "Libro ng Telepono",
+    "phone_book_desc": "Compact na format na may mahahalagang impormasyon sa pakikipag-ugnayan",
+    "all_info": "Lahat ng Impormasyon",
+    "all_info_desc": "Detalyadong format kasama ang mga paglalarawan",
+    "print_button": "I-print",
+    "generating": "Gumagawa ng PDF...",
+    "popup_blocked": "Na-block ang popup. Paki-payagan ang mga popup na tingnan ang PDF.",
+    "error": "Nabigong makabuo ng PDF. Pakisubukang muli."
+  },
+  "print_footer_disclaimer": "Ang {{brandName}} ay nagbibigay ng impormasyong ito bilang isang serbisyo publiko at walang ginagawang garantiya tungkol sa katumpakan, pagkakumpleto, o pagiging napapanahon nito. Ang {{brandName}} ay hindi mananagot sa kung paano ginagamit ang impormasyong ito at hindi mananagot para sa anumang mga resultang magmumula sa paggamit nito. Ang pamamahagi ng printout na ito ay hindi nagpapahiwatig ng pag-endorso o kaugnayan sa {{brandName}}.",
+  "print_page_counter": "Pahina {{current}} ng {{total}}",
+  "tooltips": {
+    "print": "I-print ang listahang ito",
+    "update": "I-update ang mga detalye ng listahan",
+    "purge": "Burahin ang lahat ng paborito mula sa listahang ito",
+    "delete": "Burahin ang listahang ito"
   }
 }

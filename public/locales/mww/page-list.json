@@ -5,5 +5,42 @@
   "no_favorites": {
     "title": "Tsis muaj dab tsi nyob ntawm no :(",
     "subtitle": "Ntxiv qee cov nyiam rau ntawm nplooj ntawv tshawb nrhiav kom pom lawv ntawm no"
+  },
+  "back_to_home": "Rov qab mus rau Tsev",
+  "local_list": {
+    "title": "Kuv Cov Kev Pabcuam Uas Kuv Tau Khaws Cia",
+    "description": "Cov peev txheej uas koj khaws cia ntawm no khaws cia rau hauv koj tus browser. Sau npe kom khaws cia rau txhua lub cuab yeej.",
+    "loading": "Tab tom thauj cov peev txheej uas tau khaws cia lawm...",
+    "empty_title": "Tsis tau muaj cov peev txheej khaws cia tseem",
+    "empty_description": "Nyem lub cim plawv ntawm txhua qhov chaw muab kev pab kom ntxiv nws rau ntawm no. Koj cov kev xaiv tau khaws cia rau hauv qhov browser no."
+  },
+  "purge_list": {
+    "label": "Tshem tawm tag nrho",
+    "confirm_title": "Koj puas paub tseeb?",
+    "confirm_description": "Qhov no yuav tshem tawm tag nrho cov peev txheej ntawm daim ntawv teev npe. Daim ntawv teev npe nws tus kheej yuav nyob.",
+    "cancel": "Tshem tawm",
+    "success": "Tshem tawm tag nrho cov nyiam",
+    "error": "Tsis tau tshem tawm cov nyiam"
+  },
+  "print_directory": "Luam tawm",
+  "print_dialog": {
+    "title": "Luam Tawm Phau Ntawv Qhia",
+    "select_format": "Xaiv hom ntawv luam tawm",
+    "phone_book": "Phau Ntawv Xov Tooj",
+    "phone_book_desc": "Hom ntawv me me nrog cov ntaub ntawv tiv tauj tseem ceeb",
+    "all_info": "Txhua Cov Ntaub Ntawv",
+    "all_info_desc": "Hom ntawv qhia txog suav nrog cov lus piav qhia",
+    "print_button": "Luam tawm",
+    "generating": "Tsim PDF...",
+    "popup_blocked": "Cov qhov rais qhib tau raug thaiv. Thov tso cai rau cov qhov rais qhib kom pom cov PDF.",
+    "error": "Tsim PDF tsis tau. Thov sim dua."
+  },
+  "print_footer_disclaimer": "{{brandName}} muab cov ntaub ntawv no ua kev pabcuam rau pej xeem thiab tsis muaj kev lees paub txog nws qhov tseeb, kev ua tiav, lossis kev ua tiav raws sijhawm. {{brandName}} tsis muaj lub luag haujlwm rau kev siv cov ntaub ntawv no li cas thiab tsis lees paub lub luag haujlwm rau txhua qhov tshwm sim los ntawm kev siv nws. Kev faib tawm ntawm daim ntawv luam tawm no tsis txhais tau tias pom zoo los ntawm lossis koom nrog {{brandName}}.",
+  "print_page_counter": "Nplooj {{current}} ntawm {{total}}",
+  "tooltips": {
+    "print": "Luam daim ntawv teev npe no",
+    "update": "Hloov kho cov ntaub ntawv teev npe",
+    "purge": "Tshem tawm txhua yam nyiam ntawm daim ntawv teev npe no",
+    "delete": "Tshem daim ntawv teev npe no"
   }
 }

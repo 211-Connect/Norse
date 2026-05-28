@@ -5,5 +5,42 @@
   "no_favorites": {
     "title": "Halkan weli ma jiraan :(",
     "subtitle": "Ku dar qaar ka mid ah jecel on bogga search si aad u aragto halkan"
+  },
+  "back_to_home": "Ku Laabo Guriga",
+  "local_list": {
+    "title": "Kheyraadkayga La Keydiyay",
+    "description": "Agabka aad halkan ku kaydiso waxaa lagu kaydiyaa biraawsarkaaga. Soo gal si aad ugu hayso aaladaha oo dhan.",
+    "loading": "Soo raraya agabka la keydiyay…",
+    "empty_title": "Wali ma jiraan ilo kaydsan",
+    "empty_description": "Guji astaanta wadnaha ee ku taal kheyraad kasta si aad halkan ugu darto. Xulashooyinkaaga waxaa lagu keydiyaa biraawsarkan."
+  },
+  "purge_list": {
+    "label": "Dhammaan tirtir",
+    "confirm_title": "Ma hubtaa?",
+    "confirm_description": "Tani waxay ka saari doontaa dhammaan agabka liiska. Liiska laftiisa ayaa sii jiri doona.",
+    "cancel": "Jooji",
+    "success": "Dhammaan kuwa ugu cadcad waa la nadiifiyay",
+    "error": "Ku guuldareystay in la tirtiro waxyaabaha aad ugu jeceshahay"
+  },
+  "print_directory": "Daabac",
+  "print_dialog": {
+    "title": "Daabac Buugga Tilmaamaha",
+    "select_format": "Dooro qaabka daabacaadda",
+    "phone_book": "Buugga Telefoonka",
+    "phone_book_desc": "Qaab yar oo leh macluumaadka xiriirka ee lagama maarmaanka ah",
+    "all_info": "Dhammaan Macluumaadka",
+    "all_info_desc": "Qaab faahfaahsan oo ay ku jiraan sharraxaado",
+    "print_button": "Daabac",
+    "generating": "Samaynta PDF...",
+    "popup_blocked": "Soo-boodka ayaa la xiray. Fadlan u oggolow in soo-boodayaasha ay arkaan PDF-ka.",
+    "error": "Ku guuldareystay in la soo saaro PDF. Fadlan isku day mar kale."
+  },
+  "print_footer_disclaimer": "{{brandName}} waxay macluumaadkan u bixisaa adeeg dadweyne mana bixiso wax dammaanad ah oo ku saabsan saxnaantiisa, dhammaystirnaantiisa, ama waqtigiisa. {{brandName}} mas'uul kama aha sida macluumaadkan loo isticmaalo mana qaadanayso mas'uuliyad natiijooyinka ka dhasha isticmaalkiisa. Qaybinta daabacaaddan macnaheedu maaha inay taageerto ama ku xiran tahay {{brandName}}.",
+  "print_page_counter": "Bogga {{current}} ee {{total}}",
+  "tooltips": {
+    "print": "Daabac liiskan",
+    "update": "Cusboonaysii faahfaahinta liiska",
+    "purge": "Ka tirtir dhammaan kuwa aad jeceshahay liiskan",
+    "delete": "Tirtir liiskan"
   }
 }

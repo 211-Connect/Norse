@@ -5,5 +5,42 @@
   "no_favorites": {
     "title": "Hier ist noch nichts zu sehen :(",
     "subtitle": "Fügen Sie auf der Suchseite einige Favoriten hinzu, um sie hier anzuzeigen."
+  },
+  "back_to_home": "Zurück zur Startseite",
+  "local_list": {
+    "title": "Meine gespeicherten Ressourcen",
+    "description": "Die hier gespeicherten Ressourcen werden in Ihrem Browser gespeichert. Melden Sie sich an, um sie geräteübergreifend nutzen zu können.",
+    "loading": "Gespeicherte Ressourcen werden geladen…",
+    "empty_title": "Noch keine Ressourcen gespeichert",
+    "empty_description": "Klicken Sie auf das Herzsymbol bei einer beliebigen Ressource, um sie hier hinzuzufügen. Ihre Auswahl wird in diesem Browser gespeichert."
+  },
+  "purge_list": {
+    "label": "Alles löschen",
+    "confirm_title": "Bist du sicher?",
+    "confirm_description": "Dadurch werden alle Ressourcen aus der Liste entfernt. Die Liste selbst bleibt erhalten.",
+    "cancel": "Stornieren",
+    "success": "Alle Favoriten gelöscht",
+    "error": "Favoriten nicht löschen"
+  },
+  "print_directory": "Drucken",
+  "print_dialog": {
+    "title": "Druckverzeichnis",
+    "select_format": "Druckformat auswählen",
+    "phone_book": "Telefonbuch",
+    "phone_book_desc": "Kompaktes Format mit den wichtigsten Kontaktinformationen",
+    "all_info": "Alle Informationen",
+    "all_info_desc": "Detailliertes Format inklusive Beschreibungen",
+    "print_button": "Drucken",
+    "generating": "PDF wird generiert...",
+    "popup_blocked": "Popup blockiert. Bitte erlauben Sie Popups, um die PDF-Datei anzuzeigen.",
+    "error": "Die PDF-Datei konnte nicht generiert werden. Bitte versuchen Sie es erneut."
+  },
+  "print_footer_disclaimer": "{{brandName}} stellt diese Informationen als öffentlichen Service zur Verfügung und übernimmt keine Gewähr für deren Richtigkeit, Vollständigkeit oder Aktualität. {{brandName}} ist nicht verantwortlich für die Verwendung dieser Informationen und haftet nicht für etwaige Folgen ihrer Verwendung. Die Verteilung dieses Ausdrucks impliziert weder eine Billigung noch eine Zugehörigkeit zu {{brandName}}.",
+  "print_page_counter": "Seite {{current}} von {{total}}",
+  "tooltips": {
+    "print": "Diese Liste ausdrucken",
+    "update": "Details der Aktualisierungsliste",
+    "purge": "Alle Favoriten aus dieser Liste entfernen",
+    "delete": "Diese Liste löschen"
   }
 }

@@ -5,5 +5,42 @@
   "no_favorites": {
     "title": "아직 아무것도 :(",
     "subtitle": "검색 페이지에 즐겨찾기를 추가하여 여기에서 확인하세요"
+  },
+  "back_to_home": "홈으로 돌아가기",
+  "local_list": {
+    "title": "내가 저장한 리소스",
+    "description": "여기에 저장한 리소스는 브라우저에 저장됩니다. 여러 기기에서 사용하려면 로그인하세요.",
+    "loading": "저장된 리소스를 불러오는 중…",
+    "empty_title": "아직 저장된 리소스가 없습니다.",
+    "empty_description": "원하는 자료의 하트 아이콘을 클릭하여 여기에 추가하세요. 선택한 자료는 이 브라우저에 저장됩니다."
+  },
+  "purge_list": {
+    "label": "모두 지우기",
+    "confirm_title": "정말 확실해요?",
+    "confirm_description": "이렇게 하면 목록에서 모든 리소스가 제거됩니다. 목록 자체는 그대로 유지됩니다.",
+    "cancel": "취소",
+    "success": "즐겨찾기 모두 삭제됨",
+    "error": "유력 후보를 제압하는 데 실패했습니다."
+  },
+  "print_directory": "인쇄",
+  "print_dialog": {
+    "title": "인쇄 안내",
+    "select_format": "인쇄 형식을 선택하세요",
+    "phone_book": "전화번호부",
+    "phone_book_desc": "필수 연락처 정보가 담긴 간편한 형식",
+    "all_info": "모든 정보",
+    "all_info_desc": "설명을 포함한 상세 형식",
+    "print_button": "인쇄",
+    "generating": "PDF 생성 중...",
+    "popup_blocked": "팝업이 차단되었습니다. PDF를 보려면 팝업을 허용해 주세요.",
+    "error": "PDF 생성에 실패했습니다. 다시 시도해 주세요."
+  },
+  "print_footer_disclaimer": "{{brandName}}는 이 정보를 공공 서비스 차원에서 제공하며, 정보의 정확성, 완전성 또는 시의성에 대해 어떠한 보증도 하지 않습니다. {{brandName}}는 이 정보의 사용 방식에 대해 책임을 지지 않으며, 사용으로 인해 발생하는 어떠한 결과에 대해서도 책임을 지지 않습니다. 이 인쇄물의 배포는 {{brandName}}의 지지 또는 제휴를 의미하지 않습니다.",
+  "print_page_counter": "페이지 {{current}} {{total}}",
+  "tooltips": {
+    "print": "이 목록을 인쇄하세요",
+    "update": "업데이트된 목록 세부 정보",
+    "purge": "이 목록에서 즐겨찾기를 모두 지우세요",
+    "delete": "이 목록을 삭제하세요"
   }
 }

@@ -5,5 +5,42 @@
   "no_favorites": {
     "title": "Jeszcze nic tu nie ma :(",
     "subtitle": "Dodaj kilka ulubionych na stronie wyszukiwania, aby je tutaj zobaczyć"
+  },
+  "back_to_home": "Powrót do strony głównej",
+  "local_list": {
+    "title": "Moje zapisane zasoby",
+    "description": "Zasoby, które tu zapiszesz, są przechowywane w Twojej przeglądarce. Zaloguj się, aby zachować je na różnych urządzeniach.",
+    "loading": "Ładowanie zapisanych zasobów…",
+    "empty_title": "Brak zapisanych zasobów",
+    "empty_description": "Kliknij ikonę serca przy dowolnym zasobie, aby go tutaj dodać. Twoje wybory zostaną zapisane w tej przeglądarce."
+  },
+  "purge_list": {
+    "label": "Wyczyść wszystko",
+    "confirm_title": "Jesteś pewien?",
+    "confirm_description": "Spowoduje to usunięcie wszystkich zasobów z listy. Sama lista pozostanie.",
+    "cancel": "Anulować",
+    "success": "Wszystkie ulubione zostały wyczyszczone",
+    "error": "Nie udało się wyczyścić ulubionych"
+  },
+  "print_directory": "Wydrukować",
+  "print_dialog": {
+    "title": "Katalog drukowany",
+    "select_format": "Wybierz format wydruku",
+    "phone_book": "Książka telefoniczna",
+    "phone_book_desc": "Kompaktowy format z najważniejszymi danymi kontaktowymi",
+    "all_info": "Wszystkie informacje",
+    "all_info_desc": "Szczegółowy format, w tym opisy",
+    "print_button": "Wydrukować",
+    "generating": "Generowanie pliku PDF...",
+    "popup_blocked": "Wyskakujące okienko zablokowane. Zezwól na wyskakujące okienka, aby wyświetlić plik PDF.",
+    "error": "Nie udało się wygenerować pliku PDF. Spróbuj ponownie."
+  },
+  "print_footer_disclaimer": "{{brandName}} udostępnia te informacje w ramach usługi publicznej i nie udziela żadnych gwarancji co do ich dokładności, kompletności ani aktualności. {{brandName}} nie ponosi odpowiedzialności za sposób wykorzystania tych informacji ani nie ponosi odpowiedzialności za jakiekolwiek skutki wynikające z ich wykorzystania. Rozpowszechnianie niniejszego wydruku nie oznacza poparcia ani powiązania z {{brandName}}.",
+  "print_page_counter": "Strona {{current}} z {{total}}",
+  "tooltips": {
+    "print": "Wydrukuj tę listę",
+    "update": "Aktualizuj szczegóły listy",
+    "purge": "Wyczyść wszystkie ulubione z tej listy",
+    "delete": "Usuń tę listę"
   }
 }

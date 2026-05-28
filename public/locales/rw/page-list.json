@@ -5,5 +5,42 @@
   "no_favorites": {
     "title": "Nta kintu kiri hano :(",
     "subtitle": "Ongeraho ibyo ukunda ku ipaji yo gushakisha kugira ngo ubibone hano"
+  },
+  "back_to_home": "Gusubira mu rugo",
+  "local_list": {
+    "title": "Ibintu nabitse",
+    "description": "Ibikoresho ubitse hano bibikwa muri mushakisha yawe. Injira kugira ngo ubikomeze mu bikoresho bitandukanye.",
+    "loading": "Gushyiramo ibikoresho byabitswe…",
+    "empty_title": "Nta bikoresho byabitswe kugeza ubu",
+    "empty_description": "Kanda ku gishushanyo cy'umutima ku isoko iryo ari ryo ryose kugira ngo wongereho hano. Amahitamo yawe abikwa muri iyi porogaramu."
+  },
+  "purge_list": {
+    "label": "Siba byose",
+    "confirm_title": "Urabizi neza?",
+    "confirm_description": "Ibi bizakuraho umutungo wose kuri urwo rutonde. Urutonde ubwarwo ruzagumaho.",
+    "cancel": "Hagarika",
+    "success": "Ibyakunzwe byose byakuweho",
+    "error": "Yananiwe gukuraho ibyo wakundaga"
+  },
+  "print_directory": "Capa",
+  "print_dialog": {
+    "title": "Ububiko bw'Icapiro",
+    "select_format": "Hitamo imiterere yo gucapa",
+    "phone_book": "Igitabo cya terefone",
+    "phone_book_desc": "Imiterere mito irimo amakuru y'ingenzi yo guhamagara",
+    "all_info": "Amakuru yose",
+    "all_info_desc": "Imiterere irambuye irimo ibisobanuro",
+    "print_button": "Capa",
+    "generating": "Irimo gukora PDF...",
+    "popup_blocked": "Idirishya ryafunzwe. Nyamuneka emera ko idirishya ryakira imbonerahamwe ya PDF.",
+    "error": "Byananiwe gukora PDF. Nyamuneka ongera ugerageze."
+  },
+  "print_footer_disclaimer": "{{brandName}} itanga aya makuru nk'urwego rushinzwe rubanda kandi nta garanti itanga ku bijyanye n'ukuri kwayo, ubuziranenge bwayo, cyangwa igihe cyayo. {{brandName}} ntabwo ari we ubishinzwe uburyo aya makuru akoreshwa kandi nta ngaruka afite ku biva mu kuyakoresha. Gukwirakwiza iyi nyandiko ntibivuze ko yemejwe cyangwa ifitanye isano na {{brandName}}.",
+  "print_page_counter": "Urupapuro {{current}} rwa {{total}}",
+  "tooltips": {
+    "print": "Capa uru rutonde",
+    "update": "Kuvugurura amakuru arambuye ku rutonde",
+    "purge": "Kuraho ibyo ukunda byose kuri uru rutonde",
+    "delete": "Siba uru rutonde"
   }
 }

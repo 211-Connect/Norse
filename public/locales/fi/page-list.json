@@ -5,5 +5,42 @@
   "no_favorites": {
     "title": "Ei täällä vielä mitään :(",
     "subtitle": "Lisää suosikkeja hakusivulle nähdäksesi ne täällä"
+  },
+  "back_to_home": "Takaisin kotisivulle",
+  "local_list": {
+    "title": "Tallennetut resurssini",
+    "description": "Täällä tallentamasi resurssit tallennetaan selaimeesi. Kirjaudu sisään säilyttääksesi ne eri laitteilla.",
+    "loading": "Ladataan tallennettuja resursseja…",
+    "empty_title": "Ei vielä tallennettuja resursseja",
+    "empty_description": "Lisää resurssi tähän napsauttamalla sen sydänkuvaketta. Valintasi tallennetaan tähän selaimeen."
+  },
+  "purge_list": {
+    "label": "Tyhjennä kaikki",
+    "confirm_title": "Oletko varma?",
+    "confirm_description": "Tämä poistaa kaikki resurssit listalta. Lista itsessään säilyy.",
+    "cancel": "Peruuttaa",
+    "success": "Kaikki suosikit tyhjennetty",
+    "error": "Suosikkien tyhjentäminen epäonnistui"
+  },
+  "print_directory": "Painaa",
+  "print_dialog": {
+    "title": "Tulostushakemisto",
+    "select_format": "Valitse tulostusmuoto",
+    "phone_book": "Puhelinluettelo",
+    "phone_book_desc": "Tiivis muoto tärkeillä yhteystiedoilla",
+    "all_info": "Kaikki tiedot",
+    "all_info_desc": "Yksityiskohtainen muoto kuvauksineen",
+    "print_button": "Painaa",
+    "generating": "PDF-tiedoston luominen...",
+    "popup_blocked": "Ponnahdusikkunat estetty. Salli ponnahdusikkunat PDF-tiedoston tarkastelemiseksi.",
+    "error": "PDF-tiedoston luominen epäonnistui. Yritä uudelleen."
+  },
+  "print_footer_disclaimer": "{{brandName}} tarjoaa nämä tiedot julkisena palveluna eikä anna takuita niiden tarkkuudesta, täydellisyydestä tai ajantasaisuudesta. {{brandName}} ei ole vastuussa siitä, miten näitä tietoja käytetään, eikä ota vastuuta mistään niiden käytöstä aiheutuvista tuloksista. Tämän tulosteen jakelu ei tarkoita, että {{brandName}} hyväksyisi tai olisi yhteydessä niihin.",
+  "print_page_counter": "Sivu {{current}} / {{total}}",
+  "tooltips": {
+    "print": "Tulosta tämä lista",
+    "update": "Päivitä listan tiedot",
+    "purge": "Tyhjennä kaikki suosikit tästä listasta",
+    "delete": "Poista tämä lista"
   }
 }

@@ -5,5 +5,42 @@
   "no_favorites": {
     "title": "Pa gen anyen isit la ankò :(",
     "subtitle": "Ajoute kèk nan favoris ou yo sou paj rechèch la pou wè yo isit la."
+  },
+  "back_to_home": "Retounen lakay",
+  "local_list": {
+    "title": "Resous mwen anrejistre yo",
+    "description": "Resous ou sove isit la estoke nan navigatè w la. Konekte pou konsève yo sou tout aparèy yo.",
+    "loading": "Ap chaje resous ki anrejistre yo…",
+    "empty_title": "Pa gen resous anrejistre ankò",
+    "empty_description": "Klike sou ikòn kè a sou nenpòt resous pou ajoute li isit la. Seleksyon ou yo sove nan navigatè sa a."
+  },
+  "purge_list": {
+    "label": "Efase tout",
+    "confirm_title": "Èske ou sèten?",
+    "confirm_description": "Sa ap retire tout resous yo nan lis la. Lis la li menm ap rete la.",
+    "cancel": "Anile",
+    "success": "Tout favori yo efase",
+    "error": "Echèk pou efase favoris yo"
+  },
+  "print_directory": "Enprime",
+  "print_dialog": {
+    "title": "Enprime Anyè",
+    "select_format": "Chwazi fòma enprime a",
+    "phone_book": "Liv Telefòn",
+    "phone_book_desc": "Fòma kontra enfòmèl ant ak enfòmasyon kontak esansyèl",
+    "all_info": "Tout Enfòmasyon",
+    "all_info_desc": "Fòma detaye ki gen ladan deskripsyon yo",
+    "print_button": "Enprime",
+    "generating": "Ap jenere PDF...",
+    "popup_blocked": "Fenèt popup bloke. Tanpri pèmèt fenèt popup yo pou wè PDF la.",
+    "error": "Echèk pou jenere PDF la. Tanpri eseye ankò."
+  },
+  "print_footer_disclaimer": "{{brandName}} bay enfòmasyon sa a kòm yon sèvis piblik epi li pa bay okenn garanti konsènan presizyon, konplè, oswa aktyalite li. {{brandName}} pa responsab pou fason enfòmasyon sa a itilize epi li pa pran okenn responsablite pou okenn rezilta ki soti nan itilizasyon li. Distribisyon dokiman enprime sa a pa vle di apwobasyon oswa afilyasyon ak {{brandName}}.",
+  "print_page_counter": "Paj {{current}} nan {{total}}",
+  "tooltips": {
+    "print": "Enprime lis sa a",
+    "update": "Mizajou detay lis la",
+    "purge": "Efase tout favoris yo nan lis sa a",
+    "delete": "Efase lis sa a"
   }
 }
