@@ -15,7 +15,7 @@ import { FavoritesPageProps } from '@/types/favorites';
 
 const log = createLogger('favorites-page');
 
-const i18nNamespaces = ['page-favorites', 'common'];
+const i18nNamespaces = ['page-favorites', 'page-resource', 'common'];
 
 export const generateMetadata = async ({ params }): Promise<Metadata> => {
   const { locale } = await params;
