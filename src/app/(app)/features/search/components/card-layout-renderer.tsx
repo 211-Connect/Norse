@@ -42,15 +42,16 @@ export function CardLayoutRenderer({
     const isSeparator = item.componentId === SearchCardComponentId.SEPARATOR;
     return {
       element: (
-        <Component
+        <div
           key={
             isSeparator
               ? `separator-${itemIndex}`
               : `item-${item.componentId}-${itemIndex}`
           }
-          result={result}
-          customAttribute={item.customAttribute}
-        />
+          data-component-id={item.componentId}
+        >
+          <Component result={result} customAttribute={item.customAttribute} />
+        </div>
       ),
       isSeparator,
     };

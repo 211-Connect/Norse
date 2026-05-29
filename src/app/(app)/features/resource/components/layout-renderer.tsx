@@ -62,15 +62,19 @@ function ColumnRenderer({ groups, resource }: ColumnRendererProps) {
             item.componentId === ResourceComponentId.SEPARATOR;
           return {
             element: (
-              <Component
+              <div
                 key={
                   isSeparator
                     ? `separator-${groupIndex}-${itemIndex}`
                     : `item-${item.componentId}-${groupIndex}-${itemIndex}`
                 }
-                resource={resource}
-                customAttribute={item.customAttribute}
-              />
+                data-component-id={item.componentId}
+              >
+                <Component
+                  resource={resource}
+                  customAttribute={item.customAttribute}
+                />
+              </div>
             ),
             isSeparator,
           };
