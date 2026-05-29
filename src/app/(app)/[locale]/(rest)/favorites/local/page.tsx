@@ -11,7 +11,12 @@ import { getSession } from '@/app/(app)/shared/utils/getServerSession';
 
 import { LocalFavoritesWithMap } from '../../../../features/favorites/components/local-favorites-with-map';
 
-const i18nNamespaces = ['page-favorites', 'page-list', 'page-resource', 'common'];
+const i18nNamespaces = [
+  'page-favorites',
+  'page-list',
+  'page-resource',
+  'common',
+];
 
 export async function generateMetadata({
   params,
