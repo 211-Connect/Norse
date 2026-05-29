@@ -53,14 +53,11 @@ export default async function LocalFavoritesPage({
 
   const cardLayout = appConfig.search.cardLayout ?? DEFAULT_SEARCH_CARD_LAYOUT;
 
-  if (!appConfig.featureFlags.anonymousCollectionsEnabled) {
+  const session = await getSession();
+  if (appConfig.featureFlags.requireAuthenticationForFavorites || session) {
     redirect(`/${locale}/favorites`);
   }
 
-  const session = await getSession();
-  if (session) {
-    redirect(`/${locale}/favorites`);
-  }
 
   return (
     <PageWrapper

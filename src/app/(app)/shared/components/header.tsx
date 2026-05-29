@@ -53,8 +53,8 @@ export function Header() {
   const setDialogStore = useSetAtom(dialogsAtom);
   const [opened, { toggle }] = useDisclosure(false);
 
-  const anonymousCollectionsEnabled =
-    appConfig.featureFlags.anonymousCollectionsEnabled;
+  const requireAuthenticationForFavorites =
+    appConfig.featureFlags.requireAuthenticationForFavorites;
 
   const newLayoutEnabled = useMemo(
     () => appConfig?.newLayout?.enabled,
@@ -199,7 +199,7 @@ export function Header() {
             data-testid="favorites-btn"
             onClick={(event) => {
               if (session.status === 'unauthenticated') {
-                if (anonymousCollectionsEnabled) {
+                if (!requireAuthenticationForFavorites) {
                   start();
                   router.push(withOptionalTrailingSlash('/favorites/local'));
                 } else {
@@ -225,7 +225,7 @@ export function Header() {
             {favoritesButtonLabel}
           </Button>
         </li>,
-        anonymousCollectionsEnabled && session.status === 'unauthenticated' ? (
+        !requireAuthenticationForFavorites && session.status === 'unauthenticated' ? (
           <li key="item-login-6">
             <Button
               className={cn(
@@ -307,7 +307,7 @@ export function Header() {
       feedbackButtonLabel,
       getAriaCurrent,
       session.status,
-      anonymousCollectionsEnabled,
+      requireAuthenticationForFavorites,
       setDialogStore,
       router,
       start,

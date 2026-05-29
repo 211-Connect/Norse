@@ -56,8 +56,7 @@ export function AddToFavoritesButton({
   const appConfig = useAppConfig();
   const session = useSession();
   const setDialog = useSetAtom(dialogsAtom);
-  const anonymousCollectionsEnabled =
-    appConfig.featureFlags.anonymousCollectionsEnabled;
+  const requireAuthenticationForFavorites = appConfig.featureFlags.requireAuthenticationForFavorites;
   const { isLocalFavorite, addLocalFavorite, removeLocalFavorite } =
     useLocalFavorites();
   const triggerRef = useRef<HTMLButtonElement | null>(null);
@@ -190,13 +189,7 @@ export function AddToFavoritesButton({
       triggerRef.current = event.currentTarget;
       setOpen(true);
     } else if (session.status === 'unauthenticated') {
-      if (anonymousCollectionsEnabled) {
-        if (isLocalFavorite(serviceAtLocationId)) {
-          removeLocalFavorite(serviceAtLocationId);
-        } else {
-          addLocalFavorite(serviceAtLocationId);
-        }
-      } else {
+      if (requireAuthenticationForFavorites) {
         const trigger = event.currentTarget;
         setDialog((prev) => ({
           ...prev,
@@ -206,6 +199,12 @@ export function AddToFavoritesButton({
             returnFocusTo: trigger,
           },
         }));
+      } else {
+        if (isLocalFavorite(serviceAtLocationId)) {
+          removeLocalFavorite(serviceAtLocationId);
+        } else {
+          addLocalFavorite(serviceAtLocationId);
+        }
       }
     }
     // While session is 'loading', ignore the click — avoids showing
@@ -238,7 +237,7 @@ export function AddToFavoritesButton({
         <Heart
           className={cn(
             size === 'icon' ? 'size-6' : 'size-4',
-            anonymousCollectionsEnabled &&
+            !requireAuthenticationForFavorites &&
               session.status === 'unauthenticated' &&
               isLocalFavorite(serviceAtLocationId) &&
               'fill-current',

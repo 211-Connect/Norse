@@ -932,7 +932,7 @@ export interface ResourceDirectory {
     turnResourceCardTaxonomiesIntoLinks?: boolean | null;
     showFeedbackButtonGlobal?: boolean | null;
     showFeedbackButtonOnResourcePages?: boolean | null;
-    anonymousCollectionsEnabled?: boolean | null;
+    requireAuthenticationForFavorites?: boolean | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -1642,7 +1642,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         turnResourceCardTaxonomiesIntoLinks?: T;
         showFeedbackButtonGlobal?: T;
         showFeedbackButtonOnResourcePages?: T;
-        anonymousCollectionsEnabled?: T;
+        requireAuthenticationForFavorites?: T;
       };
   updatedAt?: T;
   createdAt?: T;
