@@ -65,7 +65,7 @@ export default defineConfig({
     },
     {
       name: 'favorites',
-      testMatch: ['**/favorites.spec.ts'],
+      testMatch: ['**/favorites.spec.ts', '**/local-favorites.spec.ts'],
       use: { ...devices['Desktop Chrome'], baseURL },
       workers: 1,
     },
