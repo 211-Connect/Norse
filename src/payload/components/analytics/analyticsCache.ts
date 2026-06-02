@@ -63,7 +63,8 @@ function cacheKey(
   tenantId: string | undefined,
   websiteIds: string[] | undefined,
 ): string {
-  const rangeKey = typeof range === 'number' ? range : JSON.stringify(range);
+  const rangeKey =
+    typeof range === 'number' ? range : `${range.start}:${range.end}`;
   return `${rangeKey}:${tenantId ?? ''}:${normalizeWebsiteIds(websiteIds)}`;
 }
 
