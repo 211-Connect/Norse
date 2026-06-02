@@ -278,6 +278,47 @@ export async function goToFavorites(page: Page) {
   await page.waitForLoadState('networkidle');
 }
 
+export async function resetLocalFavoritesStorage(page: Page) {
+  await page.evaluate(() => {
+    window.localStorage.removeItem('local-favorites');
+  });
+}
+
+export async function goToLocalFavorites(page: Page) {
+  const favoritesButton = page.getByTestId('favorites-btn');
+  const authPrompt = page.getByRole('dialog', { name: /sign in required/i });
+
+  await expect(favoritesButton).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+  await favoritesButton.click();
+
+  await expect
+    .poll(
+      async () => {
+        if (await isVisible(authPrompt)) return 'auth-required';
+        return page.url().includes('/favorites/local')
+          ? 'local-favorites'
+          : 'pending';
+      },
+      {
+        timeout: SEARCH_NAV_TIMEOUT_MS,
+        message:
+          'Expected anonymous favorites navigation to local favorites page.',
+      },
+    )
+    .not.toBe('pending');
+
+  if (await isVisible(authPrompt)) {
+    throw new Error(
+      'Anonymous favorites navigation was blocked by the "Sign in required" dialog.',
+    );
+  }
+
+  await expectPageUrl(page, (url) => url.pathname.includes('/favorites/local'));
+  await expect(page.getByTestId('back-to-home')).toBeVisible({
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
+}
+
 export async function waitForFavoriteListPage(page: Page) {
   await expectPageUrl(page, /favorites\/[a-f0-9-]{24}/);
   await page
@@ -730,8 +771,13 @@ export async function loginViaKeycloak(page: Page) {
     return;
   }
 
-  await page.getByTestId('favorites-btn').click();
-  await page.getByTestId('login-btn').click();
+  const headerSignInButton = page.getByTestId('header-sign-in-btn');
+  if (await isVisible(headerSignInButton)) {
+    await headerSignInButton.click();
+  } else {
+    await page.getByTestId('favorites-btn').click();
+    await page.getByTestId('login-btn').click();
+  }
 
   await page
     .waitForURL(/auth\.c211\.io|keycloak/i, { timeout: AUTH_NAV_TIMEOUT_MS })
