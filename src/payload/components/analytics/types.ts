@@ -1,4 +1,4 @@
-export type DateRange = 7 | 30 | 90;
+export type DateRange = 7 | 30 | 90 | { start: string; end: string };
 
 export type HeatmapPoint = [number, number, number?];
 
