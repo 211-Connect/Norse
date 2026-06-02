@@ -315,7 +315,7 @@ export const umamiProxy: Endpoint = {
               Authorization: `Bearer ${token}`,
               Accept: 'application/json',
             },
-            signal: AbortSignal.timeout(10_000),
+            signal: AbortSignal.timeout(60_000),
           });
 
           if (!response.ok) {
