@@ -13,9 +13,9 @@ import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { getSession } from '@/app/(app)/shared/utils/getServerSession';
 
 const i18nNamespaces = [
+  'common',
   'page-favorites',
   'page-list',
-  'common',
   'page-resource',
 ];
 
