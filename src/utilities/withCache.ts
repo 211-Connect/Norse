@@ -23,6 +23,7 @@ export type CacheKey =
   | `tenant_basic_config:${Domain}`
   | `resource_directory:${Domain}:${Locale}`
   | `search_results:${TenantId}:${Locale}:${Hash}`
+  | `reverse_geocode:${Hash}`
   | `resource:${ResourceId}:${Locale}`
   | `resource_batch:${TenantId | 'public'}:${Locale}:${Hash}`
   | `search_config:${TenantId}:${Locale}`
