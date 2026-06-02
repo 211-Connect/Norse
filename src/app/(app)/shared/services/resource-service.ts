@@ -8,7 +8,12 @@ import {
   ApiResourceBatchResponse,
   Resource,
 } from '@/types/resource';
-import { CacheKey, stableHash, withCache } from '@/utilities/withCache';
+import {
+  CacheKey,
+  ONE_HOUR,
+  stableHash,
+  withCache,
+} from '@/utilities/withCache';
 import { ensureUrlProtocol } from '@/utils';
 
 import { API_URL, INTERNAL_API_KEY } from '../lib/constants';
@@ -157,7 +162,7 @@ async function fetchAndTransformResourceOrigin(
 
       return transformApiResource(data);
     },
-    { memory: false, redis: true },
+    { memory: false, redis: true, ttl: ONE_HOUR },
   );
 }
 
@@ -198,7 +203,7 @@ async function fetchAndTransformResourcesOrigin(
         ]),
       );
     },
-    { memory: false, redis: true },
+    { memory: false, redis: true, ttl: ONE_HOUR },
   );
 
   return resources ?? {};

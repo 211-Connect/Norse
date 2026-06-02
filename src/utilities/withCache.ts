@@ -8,8 +8,9 @@ const log = createLogger('withCache');
 
 type Seconds = number;
 const FIFTEEN_MINUTES: Seconds = 15 * 60;
+export const ONE_MONTH: Seconds = 30 * 24 * 60 * 60;
+export const ONE_HOUR: Seconds = 60 * 60;
 const ONE_MINUTE: Seconds = 60;
-const CACHE_TTL = FIFTEEN_MINUTES;
 const MAX_CACHE_ENTRIES = 1000;
 
 type Domain = string;
@@ -32,11 +33,13 @@ export type CacheKey =
 export type CacheConfig = {
   redis?: boolean;
   memory?: boolean;
+  ttl?: Seconds;
 };
 
 const DEFAULT_CACHE_CONFIG: CacheConfig = {
   redis: true,
   memory: false,
+  ttl: FIFTEEN_MINUTES,
 };
 
 const memoryCache = new LRUCache<CacheKey, string>({
@@ -113,7 +116,7 @@ export const withCache = async <T>(
 
     if (redis) {
       try {
-        await cacheService.set(key, serialized, CACHE_TTL);
+        await cacheService.set(key, serialized, config.ttl ?? FIFTEEN_MINUTES);
       } catch (error) {
         log.error({ err: error, key }, 'Error writing to Redis cache');
       }

@@ -1,7 +1,7 @@
 'use server';
 
 import { GeocodeResult } from '@/types/resource';
-import { stableHash, withCache } from '@/utilities/withCache';
+import { ONE_MONTH, stableHash, withCache } from '@/utilities/withCache';
 
 import { API_URL, INTERNAL_API_KEY } from '../../lib/constants';
 import { fetchWrapper } from '../../lib/fetchWrapper';
@@ -49,7 +49,7 @@ export async function reverseGeocode(
       // The API proxy already returns the data in the expected format
       return response || [];
     },
-    { redis: true, memory: false },
+    { redis: true, memory: false, ttl: ONE_MONTH },
   );
 
   return data || [];
