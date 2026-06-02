@@ -53,13 +53,13 @@ export default async function FavoritesPage({
   );
 
   if (!session || session.error) {
-    if (appConfig.featureFlags.anonymousCollectionsEnabled) {
-      redirect(`/${locale}/favorites/local`);
+    if (appConfig.featureFlags.requireAuthenticationForFavorites) {
+      redirect(
+        `/${locale}/auth/signin?redirect=${encodeURIComponent('/favorites')}`,
+      );
     }
 
-    redirect(
-      `/${locale}/auth/signin?redirect=${encodeURIComponent('/favorites')}`,
-    );
+    redirect(`/${locale}/favorites/local`);
   }
 
   const pageParam = Array.isArray(page) ? page[0] : page;
