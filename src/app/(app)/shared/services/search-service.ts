@@ -10,7 +10,7 @@ import {
   SearchFacet,
   SearchHit,
 } from '@/types/search';
-import { stableHash, withCache } from '@/utilities/withCache';
+import { ONE_HOUR, stableHash, withCache } from '@/utilities/withCache';
 import { ensureUrlProtocol } from '@/utils';
 
 import { API_URL, INTERNAL_API_KEY } from '../lib/constants';
@@ -239,7 +239,7 @@ export async function findResources(
         tenantId,
         hybridSemanticSearchEnabled,
       }),
-    { redis: true, memory: false },
+    { redis: true, memory: false, ttl: ONE_HOUR },
     (value) => value.results.length > 0,
   );
 }

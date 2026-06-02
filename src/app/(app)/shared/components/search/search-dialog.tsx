@@ -25,6 +25,7 @@ import {
   SEARCH_DIALOG_TITLE_ID,
   SEARCH_INPUT_ID,
 } from '../../lib/constants';
+import { buildSearchLocationPayload } from '../../lib/search-location-meta';
 import { persistSearchDistancePreference } from '../../lib/search-distance-preference';
 import { UmamiEvent, trackUmamiEvent } from '../../lib/umami';
 import { cn, getScrollbarWidth } from '../../lib/utils';
@@ -74,15 +75,21 @@ export function SearchDialog({
     async (e) => {
       e.preventDefault();
 
-      startTransition(() => {
-        if (requireUserLocation && search.searchLocation.trim().length === 0) {
-          setSearch((prev) => ({
-            ...prev,
-            searchLocationValidationError: 'Address is required.',
-          }));
-          return;
-        }
+      if (requireUserLocation && search.searchLocation.trim().length === 0) {
+        setSearch((prev) => ({
+          ...prev,
+          searchLocationValidationError: 'Address is required.',
+        }));
+        return;
+      }
 
+      const locationPayload = await buildSearchLocationPayload(
+        searchCoordinates,
+        userCoordinates,
+        appConfig.tenantId,
+      );
+
+      startTransition(() => {
         const query = search.query || search.searchTerm;
 
         const hasCoordinates = search.searchCoordinates.length === 2;
@@ -118,8 +125,7 @@ export function SearchDialog({
           query: String(query ?? ''),
           queryLabel: String(search.queryLabel ?? ''),
           tenantId: appConfig.tenantId ?? '',
-          userCoordinates: userCoordinates.join(',') ?? '',
-          searchCoordinates: searchCoordinates.join(',') ?? '',
+          ...locationPayload,
         };
 
         if (effectiveQueryType === 'text') {
