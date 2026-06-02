@@ -58,7 +58,6 @@ export default async function LocalFavoritesPage({
     redirect(`/${locale}/favorites`);
   }
 
-
   return (
     <PageWrapper
       cookies={cookieList}

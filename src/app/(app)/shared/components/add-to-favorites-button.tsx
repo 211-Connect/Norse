@@ -56,7 +56,8 @@ export function AddToFavoritesButton({
   const appConfig = useAppConfig();
   const session = useSession();
   const setDialog = useSetAtom(dialogsAtom);
-  const requireAuthenticationForFavorites = appConfig.featureFlags.requireAuthenticationForFavorites;
+  const requireAuthenticationForFavorites =
+    appConfig.featureFlags.requireAuthenticationForFavorites;
   const { isLocalFavorite, addLocalFavorite, removeLocalFavorite } =
     useLocalFavorites();
   const triggerRef = useRef<HTMLButtonElement | null>(null);

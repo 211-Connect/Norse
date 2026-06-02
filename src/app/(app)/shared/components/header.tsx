@@ -225,7 +225,8 @@ export function Header() {
             {favoritesButtonLabel}
           </Button>
         </li>,
-        !requireAuthenticationForFavorites && session.status === 'unauthenticated' ? (
+        !requireAuthenticationForFavorites &&
+        session.status === 'unauthenticated' ? (
           <li key="item-login-6">
             <Button
               className={cn(

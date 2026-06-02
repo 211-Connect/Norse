@@ -378,7 +378,8 @@ async function getAppConfigBase(
     sms: getSmsConfig(resourceDirectory),
     featureFlags: {
       requireAuthenticationForFavorites:
-        resourceDirectory.featureFlags?.requireAuthenticationForFavorites ?? false,
+        resourceDirectory.featureFlags?.requireAuthenticationForFavorites ??
+        false,
       requireUserLocation:
         resourceDirectory.featureFlags?.requireUserLocation ?? false,
       showFeedbackButtonGlobal:
