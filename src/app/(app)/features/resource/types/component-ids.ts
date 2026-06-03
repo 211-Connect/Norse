@@ -45,6 +45,9 @@ export enum ResourceComponentId {
   // Organization
   ORGANIZATION = 'organization',
 
+  // Quality
+  QUALITY = 'quality',
+
   // Complex sections (not using Datum)
   FACETS = 'facets',
 

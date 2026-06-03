@@ -722,6 +722,7 @@ export interface ResourceDirectory {
                   | 'map'
                   | 'getDirections'
                   | 'organization'
+                  | 'quality'
                   | 'facets'
                   | 'separator'
                   | 'customAttribute';
@@ -779,6 +780,7 @@ export interface ResourceDirectory {
                   | 'map'
                   | 'getDirections'
                   | 'organization'
+                  | 'quality'
                   | 'facets'
                   | 'separator'
                   | 'customAttribute';
