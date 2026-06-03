@@ -21,6 +21,7 @@ export * from './location-name-subtitle';
 export * from './map';
 export * from './organization';
 export * from './phone-numbers';
+export * from './quality';
 export * from './required-documents';
 export * from './resource-name';
 export * from './separator';

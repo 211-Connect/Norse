@@ -38,6 +38,11 @@ export interface PhoneNumber {
   description?: string;
 }
 
+export interface QualityLink {
+  url: string;
+  displayText: string;
+}
+
 export type Coordinates = [number, number];
 
 export type BBox = [number, number, number, number];
@@ -91,6 +96,7 @@ export interface Translation {
   accessibility?: string;
   facets?: Facet[];
   attributeValues?: Record<string, string>;
+  linkQualityUrls?: QualityLink[];
   locationSummary?: string;
   contacts: Array<{
     id: string;
@@ -185,5 +191,6 @@ export interface Resource {
   facets: FacetWithTranslation[] | null | undefined;
   translations?: Translation[];
   attributeValues?: Record<string, string> | null;
+  linkQualityUrls: QualityLink[] | null;
   contacts: Translation['contacts'] | null | undefined;
 }

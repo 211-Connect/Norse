@@ -98,6 +98,21 @@ function transformApiResource(data: ApiResource): Resource {
         };
       }) ?? null,
     attributeValues: data?.translation?.attributeValues ?? null,
+    linkQualityUrls:
+      data?.translation?.linkQualityUrls
+        ?.map((qualityLink) => {
+          const normalizedUrl = ensureUrlProtocol(qualityLink.url);
+
+          if (!normalizedUrl) {
+            return null;
+          }
+
+          return {
+            ...qualityLink,
+            url: normalizedUrl,
+          };
+        })
+        .filter((qualityLink) => qualityLink !== null) ?? null,
     contacts: data?.translation?.contacts ?? null,
   };
 }

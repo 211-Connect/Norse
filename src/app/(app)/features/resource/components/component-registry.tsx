@@ -29,6 +29,7 @@ import {
   MapComponent,
   OrganizationComponent,
   PhoneNumbersComponent,
+  QualityComponent,
   RequiredDocumentsComponent,
   ResourceNameComponent,
   SeparatorComponent,
@@ -63,6 +64,7 @@ export const componentRegistry: Record<
   [ResourceComponentId.HOURS]: HoursComponent,
   [ResourceComponentId.CONTACTS]: ContactsComponent,
   [ResourceComponentId.PHONE_NUMBERS]: PhoneNumbersComponent,
+  [ResourceComponentId.QUALITY]: QualityComponent,
   [ResourceComponentId.WEBSITE]: WebsiteComponent,
   [ResourceComponentId.ORGANIZATION_URL]: OrganizationUrlComponent,
   [ResourceComponentId.EMAIL]: EmailComponent,
@@ -133,6 +135,10 @@ export function shouldComponentRender(
       return Boolean(resource.contacts && resource.contacts.length > 0);
     case ResourceComponentId.PHONE_NUMBERS:
       return Boolean(resource.phoneNumbers && resource.phoneNumbers.length > 0);
+    case ResourceComponentId.QUALITY:
+      return Boolean(
+        resource.linkQualityUrls && resource.linkQualityUrls.length > 0,
+      );
     case ResourceComponentId.WEBSITE:
       return Boolean(resource.website);
     case ResourceComponentId.ORGANIZATION_URL:
