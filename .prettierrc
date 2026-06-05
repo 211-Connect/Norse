@@ -8,8 +8,13 @@
   "importOrder": ["^@/(.*)$", "^[./]"],
   "importOrderSeparation": true,
   "importOrderSortSpecifiers": true,
+  "embeddedSqlTags": ["sql"],
+  "language": "postgresql",
+  "keywordCase": "upper",
   "plugins": [
     "@trivago/prettier-plugin-sort-imports",
-    "prettier-plugin-tailwindcss"
+    "prettier-plugin-tailwindcss",
+    "prettier-plugin-embed",
+    "prettier-plugin-sql"
   ]
 }

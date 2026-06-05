@@ -41,13 +41,13 @@ function getTenantId(resourceDirectory: ResourceDirectory): string | undefined {
 function getTenantMainUmamiWebsiteId(
   resourceDirectory: ResourceDirectory,
 ): string | undefined {
-  const websiteIds = getTenant(resourceDirectory)?.common?.umamiWebsiteIds;
+  const websiteId = getTenant(resourceDirectory)?.analytics?.umamiWebsiteId;
 
-  if (!Array.isArray(websiteIds) || websiteIds.length === 0) {
+  if (!websiteId) {
     return undefined;
   }
 
-  return websiteIds[0]?.websiteId ?? undefined;
+  return websiteId.trim() || undefined;
 }
 
 function getSmsConfig(resourceDirectory: ResourceDirectory): AppConfig['sms'] {
@@ -228,7 +228,7 @@ async function getAppConfigBase(
       contact: {},
       sms: null,
       featureFlags: {
-        anonymousCollectionsEnabled: false,
+        requireAuthenticationForFavorites: false,
         requireUserLocation: false,
         showFeedbackButtonGlobal: false,
         showFeedbackButtonOnResourcePages: false,
@@ -377,8 +377,9 @@ async function getAppConfigBase(
     },
     sms: getSmsConfig(resourceDirectory),
     featureFlags: {
-      anonymousCollectionsEnabled:
-        resourceDirectory.featureFlags?.anonymousCollectionsEnabled ?? false,
+      requireAuthenticationForFavorites:
+        resourceDirectory.featureFlags?.requireAuthenticationForFavorites ??
+        false,
       requireUserLocation:
         resourceDirectory.featureFlags?.requireUserLocation ?? false,
       showFeedbackButtonGlobal:

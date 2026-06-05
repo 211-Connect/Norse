@@ -5,6 +5,7 @@ import {
   MetricEntry,
   MetricsExpandedEntry,
 } from '../components/analytics/types';
+import { getConfiguredWebsiteIds } from '../utilities/getConfiguredWebsiteIds';
 import { getUserTenantIDs } from '../utilities/getUserTenantIDs';
 import { getUmamiToken } from '../utilities/umamiAuth';
 
@@ -43,16 +44,6 @@ function parseRequestedWebsiteIds(raw: string | undefined): string[] {
         .filter(Boolean),
     ),
   );
-}
-
-function configuredWebsiteIds(tenant: any): string[] {
-  const websiteIds = Array.isArray(tenant?.common?.umamiWebsiteIds)
-    ? tenant.common.umamiWebsiteIds
-        .map((row: { websiteId?: string | null }) => row?.websiteId?.trim())
-        .filter((id: string | undefined): id is string => Boolean(id))
-    : [];
-
-  return Array.from(new Set(websiteIds));
 }
 
 function mergeMetricEntries(entriesList: MetricEntry[][]): MetricEntry[] {
@@ -267,7 +258,7 @@ export const umamiProxy: Endpoint = {
       return Response.json({ error: 'Tenant not found.' }, { status: 404 });
     }
 
-    const allowedWebsiteIds = configuredWebsiteIds(tenant);
+    const allowedWebsiteIds = getConfiguredWebsiteIds(tenant?.analytics);
 
     if (allowedWebsiteIds.length === 0) {
       return Response.json(
@@ -324,7 +315,7 @@ export const umamiProxy: Endpoint = {
               Authorization: `Bearer ${token}`,
               Accept: 'application/json',
             },
-            signal: AbortSignal.timeout(10_000),
+            signal: AbortSignal.timeout(60_000),
           });
 
           if (!response.ok) {

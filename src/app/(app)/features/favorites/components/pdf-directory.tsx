@@ -199,39 +199,66 @@ const styles = StyleSheet.create({
   },
 });
 
+/**
+ * Remove service name from display name if it's duplicated at start or end
+ */
+function getDisplayName(
+  displayName: string | undefined,
+  serviceName: string | undefined,
+): string | undefined {
+  if (!displayName || !serviceName) {
+    return displayName;
+  }
+
+  let result = displayName;
+
+  // Remove service name from the end if duplicated
+  if (result.endsWith(serviceName)) {
+    result = result
+      .slice(0, -serviceName.length)
+      .trim()
+      .replace(/[-–—]\s*$/, '')
+      .trim();
+  }
+  // Remove service name from the start if duplicated
+  else if (result.startsWith(serviceName)) {
+    result = result
+      .slice(serviceName.length)
+      .trim()
+      .replace(/^[-–—]\s*/, '')
+      .trim();
+  }
+
+  return result;
+}
+
+/**
+ * Show domain only if URL is longer than 80 characters to prevent overflow
+ */
+function getTruncatedWebsite(website: string | undefined): string | undefined {
+  if (!website || website.length <= 80) {
+    return website;
+  }
+
+  try {
+    const url = new URL(
+      website.startsWith('http') ? website : `https://${website}`,
+    );
+    return url.hostname;
+  } catch {
+    // If URL parsing fails, keep original
+    return website;
+  }
+}
+
 type PDFDirectoryItemProps = {
   item: PrintableDirectoryData['items'][number];
   variant: 'phone-book' | 'all-info';
 };
 
 function PDFDirectoryItem({ item, variant }: PDFDirectoryItemProps) {
-  // Remove service name from display name if it's duplicated at the end
-  const displayName =
-    item.displayName &&
-    item.serviceName &&
-    item.displayName.endsWith(item.serviceName)
-      ? item.displayName
-          .slice(0, -item.serviceName.length)
-          .trim()
-          .replace(/[-–—]\s*$/, '')
-          .trim()
-      : item.displayName;
-
-  // Show domain only if URL is longer than 80 characters to prevent overflow
-  let truncatedWebsite = item.website;
-  if (item.website && item.website.length > 80) {
-    try {
-      const url = new URL(
-        item.website.startsWith('http')
-          ? item.website
-          : `https://${item.website}`,
-      );
-      truncatedWebsite = url.hostname;
-    } catch {
-      // If URL parsing fails, keep original
-      truncatedWebsite = item.website;
-    }
-  }
+  const displayName = getDisplayName(item.displayName, item.serviceName);
+  const truncatedWebsite = getTruncatedWebsite(item.website);
 
   return (
     <View style={styles.item} wrap={false}>

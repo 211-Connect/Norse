@@ -1,3 +1,6 @@
+import dayjs from 'dayjs';
+
+import { withOptionalCustomBasePath } from '@/app/(app)/shared/lib/utils';
 import type {
   MetricEntry,
   MetricsExpandedEntry,
@@ -13,6 +16,41 @@ const SEARCH_QUERY_TYPES: readonly SearchQueryType[] = [
   'taxonomy',
   'hybrid',
 ] as const;
+
+/**
+ * Validates a custom date range.
+ * @param start - Start date in YYYY-MM-DD format
+ * @param end - End date in YYYY-MM-DD format
+ * @returns Error message if invalid, null if valid
+ */
+export function validateDateRange(start: string, end: string): string | null {
+  if (!start || !end) {
+    return 'Both start and end dates are required';
+  }
+
+  const startDate = dayjs(start);
+  const endDate = dayjs(end);
+  const today = dayjs();
+
+  if (!startDate.isValid() || !endDate.isValid()) {
+    return 'Invalid date format';
+  }
+
+  if (endDate.isBefore(startDate)) {
+    return 'End date must be after start date';
+  }
+
+  if (startDate.isAfter(today) || endDate.isAfter(today)) {
+    return 'Dates cannot be in the future';
+  }
+
+  const daysDiff = endDate.diff(startDate, 'day');
+  if (daysDiff > 365) {
+    return 'Date range cannot exceed one year (365 days)';
+  }
+
+  return null;
+}
 
 function isSearchQueryType(value: string | null): value is SearchQueryType {
   return (
@@ -40,7 +78,7 @@ export function buildProxyQuery(
     params.set('websiteIds', websiteIds.join(','));
   }
 
-  return `/api/umami-proxy?${params.toString()}`;
+  return withOptionalCustomBasePath(`/api/umami-proxy?${params.toString()}`);
 }
 
 export function sumEventTotals(events: MetricEntry[]): Record<string, number> {

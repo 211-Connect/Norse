@@ -8,7 +8,12 @@ import {
   ApiResourceBatchResponse,
   Resource,
 } from '@/types/resource';
-import { CacheKey, stableHash, withCache } from '@/utilities/withCache';
+import {
+  CacheKey,
+  ONE_HOUR,
+  stableHash,
+  withCache,
+} from '@/utilities/withCache';
 import { ensureUrlProtocol } from '@/utils';
 
 import { API_URL, INTERNAL_API_KEY } from '../lib/constants';
@@ -93,6 +98,21 @@ function transformApiResource(data: ApiResource): Resource {
         };
       }) ?? null,
     attributeValues: data?.translation?.attributeValues ?? null,
+    linkQualityUrls:
+      data?.translation?.linkQualityUrls
+        ?.map((qualityLink) => {
+          const normalizedUrl = ensureUrlProtocol(qualityLink.url);
+
+          if (!normalizedUrl) {
+            return null;
+          }
+
+          return {
+            ...qualityLink,
+            url: normalizedUrl,
+          };
+        })
+        .filter((qualityLink) => qualityLink !== null) ?? null,
     contacts: data?.translation?.contacts ?? null,
   };
 }
@@ -157,7 +177,7 @@ async function fetchAndTransformResourceOrigin(
 
       return transformApiResource(data);
     },
-    { memory: false, redis: true },
+    { memory: false, redis: true, ttl: ONE_HOUR },
   );
 }
 
@@ -198,7 +218,7 @@ async function fetchAndTransformResourcesOrigin(
         ]),
       );
     },
-    { memory: false, redis: true },
+    { memory: false, redis: true, ttl: ONE_HOUR },
   );
 
   return resources ?? {};

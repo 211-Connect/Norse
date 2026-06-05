@@ -36,7 +36,6 @@ export type AppConfig = {
     provider: 'Twilio' | 'EMS';
   } | null;
   featureFlags: {
-    anonymousCollectionsEnabled: boolean;
     requireUserLocation: boolean;
     showFeedbackButtonGlobal: boolean;
     showFeedbackButtonOnResourcePages: boolean;
@@ -46,6 +45,7 @@ export type AppConfig = {
     showSuggestionListTaxonomyBadge: boolean;
     showUseMyLocationButtonOnDesktop: boolean;
     turnResourceCardTaxonomiesIntoLinks: boolean;
+    requireAuthenticationForFavorites: boolean;
   };
   footer: {
     customMenu: Menu[];

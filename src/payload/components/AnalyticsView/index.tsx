@@ -5,6 +5,7 @@ import type { AdminViewServerProps } from 'payload';
 import { Fragment } from 'react';
 
 import DateRange from '../analytics/DateRange';
+import TenantAutoSelect from '../analytics/TenantAutoSelect';
 
 const ANALYTICS_DEFAULT_LAYOUT = [
   { widgetSlug: 'analytics-total-users', width: 'x-small' as const },
@@ -62,6 +63,7 @@ export default function AnalyticsView(props: AdminViewServerProps) {
           globals: props.initPageResult?.visibleEntities?.globals,
         }}
       >
+        <TenantAutoSelect />
         <Gutter>
           <div
             style={{

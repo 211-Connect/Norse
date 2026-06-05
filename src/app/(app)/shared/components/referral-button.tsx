@@ -2,6 +2,8 @@
 
 import { ReactNode, forwardRef } from 'react';
 
+import { Resource } from '@/types/resource';
+
 import { useAppConfig } from '../hooks/use-app-config';
 import { useClientSearchParams } from '../hooks/use-client-search-params';
 import { createReferralEvent } from '../lib/google-tag-manager';
@@ -12,7 +14,7 @@ import { Button, ButtonProps } from './ui/button';
 type Props = {
   referralType: 'call_referral' | 'website_referral' | 'directions_referral';
   resourceId: string;
-  resourceData: Partial<ResultType>;
+  resourceData: Partial<ResultType> | Partial<Resource>;
   onClick?: React.MouseEventHandler;
   className?: string;
   children?: ReactNode;

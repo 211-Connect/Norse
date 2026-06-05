@@ -11,7 +11,12 @@ import { getSession } from '@/app/(app)/shared/utils/getServerSession';
 
 import { LocalFavoritesWithMap } from '../../../../features/favorites/components/local-favorites-with-map';
 
-const i18nNamespaces = ['page-favorites', 'page-list', 'common'];
+const i18nNamespaces = [
+  'page-favorites',
+  'page-list',
+  'page-resource',
+  'common',
+];
 
 export async function generateMetadata({
   params,
@@ -53,12 +58,8 @@ export default async function LocalFavoritesPage({
 
   const cardLayout = appConfig.search.cardLayout ?? DEFAULT_SEARCH_CARD_LAYOUT;
 
-  if (!appConfig.featureFlags.anonymousCollectionsEnabled) {
-    redirect(`/${locale}/favorites`);
-  }
-
   const session = await getSession();
-  if (session) {
+  if (appConfig.featureFlags.requireAuthenticationForFavorites || session) {
     redirect(`/${locale}/favorites`);
   }
 

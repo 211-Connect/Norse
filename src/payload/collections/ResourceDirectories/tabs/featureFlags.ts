@@ -91,7 +91,7 @@ export const featureFlags: Tab = {
       },
     },
     {
-      name: 'anonymousCollectionsEnabled',
+      name: 'requireAuthenticationForFavorites',
       type: 'checkbox',
       defaultValue: false,
       access: {

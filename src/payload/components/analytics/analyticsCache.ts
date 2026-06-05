@@ -63,7 +63,9 @@ function cacheKey(
   tenantId: string | undefined,
   websiteIds: string[] | undefined,
 ): string {
-  return `${range}:${tenantId ?? ''}:${normalizeWebsiteIds(websiteIds)}`;
+  const rangeKey =
+    typeof range === 'number' ? range : `${range.start}:${range.end}`;
+  return `${rangeKey}:${tenantId ?? ''}:${normalizeWebsiteIds(websiteIds)}`;
 }
 
 function getCache<T>(
@@ -83,10 +85,26 @@ function setCache<T>(
 }
 
 function timeWindow(range: DateRange) {
-  const endAt = dayjs().valueOf();
-  const startAt = dayjs().subtract(range, 'day').valueOf();
+  let endAt: number;
+  let startAt: number;
+  let rangeDays: number;
+
+  if (typeof range === 'number') {
+    // Preset range: use current time as end
+    endAt = dayjs().valueOf();
+    startAt = dayjs().subtract(range, 'day').valueOf();
+    rangeDays = range;
+  } else {
+    // Custom range: use specified dates
+    endAt = dayjs(range.end).endOf('day').valueOf();
+    startAt = dayjs(range.start).startOf('day').valueOf();
+    rangeDays = dayjs(range.end).diff(dayjs(range.start), 'day');
+  }
+
+  // Calculate previous period for comparison
   const prevEndAt = startAt;
-  const prevStartAt = dayjs(startAt).subtract(range, 'day').valueOf();
+  const prevStartAt = dayjs(startAt).subtract(rangeDays, 'day').valueOf();
+
   return { endAt, startAt, prevEndAt, prevStartAt };
 }
 

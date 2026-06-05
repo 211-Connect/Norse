@@ -37,14 +37,14 @@ function emitLocalFavoritesUpdated() {
 
 export function useLocalFavorites() {
   const appConfig = useAppConfig();
-  const anonymousCollectionsEnabled =
-    appConfig.featureFlags.anonymousCollectionsEnabled;
+  const requireAuthenticationForFavorites =
+    appConfig.featureFlags.requireAuthenticationForFavorites;
   const [ids, setIds] = useState<string[]>([]);
   const [hydrated, setHydrated] = useState(false);
 
   // Hydrate from localStorage on mount (client only)
   useEffect(() => {
-    if (!anonymousCollectionsEnabled) {
+    if (requireAuthenticationForFavorites) {
       setIds([]);
       setHydrated(true);
       return;
@@ -67,11 +67,11 @@ export function useLocalFavorites() {
         syncFromStorage,
       );
     };
-  }, [anonymousCollectionsEnabled]);
+  }, [requireAuthenticationForFavorites]);
 
   const addLocalFavorite = useCallback(
     (id: string) => {
-      if (!anonymousCollectionsEnabled) return;
+      if (requireAuthenticationForFavorites) return;
 
       const current = readFromStorage();
       if (current.includes(id)) return;
@@ -89,12 +89,12 @@ export function useLocalFavorites() {
       setIds(next);
       emitLocalFavoritesUpdated();
     },
-    [anonymousCollectionsEnabled],
+    [requireAuthenticationForFavorites],
   );
 
   const removeLocalFavorite = useCallback(
     (id: string) => {
-      if (!anonymousCollectionsEnabled) return;
+      if (requireAuthenticationForFavorites) return;
 
       const current = readFromStorage();
       const next = current.filter((value) => value !== id);
@@ -102,23 +102,23 @@ export function useLocalFavorites() {
       setIds(next);
       emitLocalFavoritesUpdated();
     },
-    [anonymousCollectionsEnabled],
+    [requireAuthenticationForFavorites],
   );
 
   const isLocalFavorite = useCallback(
-    (id: string) => anonymousCollectionsEnabled && ids.includes(id),
-    [anonymousCollectionsEnabled, ids],
+    (id: string) => !requireAuthenticationForFavorites && ids.includes(id),
+    [requireAuthenticationForFavorites, ids],
   );
 
   const clearLocalFavorites = useCallback(() => {
-    if (!anonymousCollectionsEnabled) return;
+    if (requireAuthenticationForFavorites) return;
 
     setIds([]);
     if (typeof window !== 'undefined') {
       window.localStorage.removeItem(LOCAL_FAVORITES_KEY);
       emitLocalFavoritesUpdated();
     }
-  }, [anonymousCollectionsEnabled]);
+  }, [requireAuthenticationForFavorites]);
 
   return {
     localFavoriteIds: ids,

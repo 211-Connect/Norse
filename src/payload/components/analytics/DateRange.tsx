@@ -1,131 +1,65 @@
 'use client';
 
-import { useTenantSelection } from '@payloadcms/plugin-multi-tenant/client';
 import { Button } from '@payloadcms/ui';
+import dayjs from 'dayjs';
 import { atom, useAtom } from 'jotai';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
-import { fetchWrapper } from '@/app/(app)/shared/lib/fetchWrapper';
-
+import { validateDateRange } from './utils';
+import WebsitePicker from './WebsitePicker';
 import type { DateRange as DateRangeType } from './types';
 
-const DATE_RANGES: DateRangeType[] = [7, 30, 90];
+const DATE_RANGES: (7 | 30 | 90)[] = [7, 30, 90];
 
 export const analyticsDateRangeAtom = atom<DateRangeType>(30);
 export const analyticsSelectedWebsiteIdsAtom = atom<string[]>([]);
 
-type TenantWebsiteConfig = {
-  common?: {
-    umamiWebsiteIds?: { websiteId?: string | null }[] | null;
-  } | null;
-};
-
-type UmamiWebsiteListResponse = {
-  websites: {
-    id: string;
-    name: string | null;
-  }[];
-};
-
-function extractWebsiteIds(tenant: TenantWebsiteConfig | null): string[] {
-  const websiteIds = Array.isArray(tenant?.common?.umamiWebsiteIds)
-    ? tenant.common.umamiWebsiteIds
-        .map((item) => item?.websiteId?.trim())
-        .filter((id): id is string => Boolean(id))
-    : [];
-
-  return Array.from(new Set(websiteIds));
-}
-
 export default function DateRange() {
   const [range, setRange] = useAtom(analyticsDateRangeAtom);
-  const [selectedWebsiteIds, setSelectedWebsiteIds] = useAtom(
-    analyticsSelectedWebsiteIdsAtom,
-  );
-  const { selectedTenantID } = useTenantSelection();
-  const [websiteIds, setWebsiteIds] = useState<string[]>([]);
-  const [websiteNames, setWebsiteNames] = useState<Record<string, string>>({});
 
-  useEffect(() => {
-    let cancelled = false;
-
-    const loadTenantWebsiteIds = async () => {
-      if (!selectedTenantID) {
-        setWebsiteIds([]);
-        setWebsiteNames({});
-        setSelectedWebsiteIds([]);
-        return;
-      }
-
-      try {
-        const tenant = await fetchWrapper<TenantWebsiteConfig>(
-          `/api/tenants/${selectedTenantID}?depth=0`,
-        );
-
-        if (cancelled) return;
-
-        const ids = extractWebsiteIds(tenant);
-        setWebsiteIds(ids);
-        setWebsiteNames({});
-        setSelectedWebsiteIds(ids.length > 0 ? [ids[0]] : []);
-
-        if (ids.length > 0) {
-          try {
-            const websiteData = await fetchWrapper<UmamiWebsiteListResponse>(
-              `/api/umami-websites?tenantId=${encodeURIComponent(selectedTenantID)}&websiteIds=${encodeURIComponent(ids.join(','))}`,
-            );
-
-            if (cancelled) return;
-
-            const nameMap = (websiteData?.websites ?? []).reduce<
-              Record<string, string>
-            >((acc, website) => {
-              if (website.name) {
-                acc[website.id] = website.name;
-              }
-              return acc;
-            }, {});
-
-            setWebsiteNames(nameMap);
-          } catch {
-            if (cancelled) return;
-            setWebsiteNames({});
-          }
-        }
-      } catch {
-        if (cancelled) return;
-        setWebsiteIds([]);
-        setWebsiteNames({});
-        setSelectedWebsiteIds([]);
-      }
-    };
-
-    loadTenantWebsiteIds();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [selectedTenantID, setSelectedWebsiteIds]);
-
-  const toggleWebsite = (websiteId: string, checked: boolean) => {
-    setSelectedWebsiteIds((current) => {
-      if (checked) {
-        return current.includes(websiteId) ? current : [...current, websiteId];
-      }
-
-      if (current.length === 1 && current[0] === websiteId) {
-        return current;
-      }
-
-      return current.filter((id) => id !== websiteId);
-    });
+  // Initialize date inputs with current range
+  const getInitialDates = () => {
+    if (typeof range === 'number') {
+      return {
+        start: dayjs().subtract(range, 'day').format('YYYY-MM-DD'),
+        end: dayjs().format('YYYY-MM-DD'),
+      };
+    }
+    return { start: range.start, end: range.end };
   };
 
-  const mainWebsiteId = websiteIds[0];
-  const orderedWebsiteIds =
-    mainWebsiteId === undefined
-      ? websiteIds
-      : [mainWebsiteId, ...websiteIds.filter((id) => id !== mainWebsiteId)];
+  const [startDate, setStartDate] = useState(getInitialDates().start);
+  const [endDate, setEndDate] = useState(getInitialDates().end);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const handlePresetClick = (days: 7 | 30 | 90) => {
+    const end = dayjs().format('YYYY-MM-DD');
+    const start = dayjs().subtract(days, 'day').format('YYYY-MM-DD');
+    setStartDate(start);
+    setEndDate(end);
+    setErrorMessage(null);
+  };
+
+  const handleApply = () => {
+    const error = validateDateRange(startDate, endDate);
+    if (error) {
+      setErrorMessage(error);
+      return;
+    }
+
+    setErrorMessage(null);
+    setRange({ start: startDate, end: endDate });
+  };
+
+  const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setStartDate(e.target.value);
+    setErrorMessage(null);
+  };
+
+  const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEndDate(e.target.value);
+    setErrorMessage(null);
+  };
 
   return (
     <div
@@ -136,54 +70,89 @@ export default function DateRange() {
         alignItems: 'flex-end',
       }}
     >
-      <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
+      <div
+        style={{
+          display: 'flex',
+          gap: '0.5rem',
+          flexShrink: 0,
+          flexWrap: 'wrap',
+          alignItems: 'center',
+        }}
+      >
+        <div
+          style={{
+            color: 'var(--theme-error-500, #dc2626)',
+            fontSize: '0.75rem',
+            fontWeight: 500,
+          }}
+        >
+          {errorMessage}
+        </div>
+
         {DATE_RANGES.map((d) => (
           <Button
             key={d}
-            buttonStyle={range === d ? 'primary' : 'secondary'}
+            buttonStyle="secondary"
             size="small"
-            onClick={() => setRange(d)}
+            onClick={() => handlePresetClick(d)}
           >
             Last {d} days
           </Button>
         ))}
+
+        <div
+          style={{
+            display: 'flex',
+            gap: '0.25rem',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+          }}
+        >
+          <input
+            type="date"
+            value={startDate}
+            onChange={handleStartDateChange}
+            max={dayjs().format('YYYY-MM-DD')}
+            style={{
+              padding: '0.375rem 0.5rem',
+              fontSize: '0.875rem',
+              borderRadius: '0.25rem',
+              border: '1px solid var(--theme-elevation-200)',
+              backgroundColor: 'var(--theme-elevation-50)',
+              color: 'var(--theme-text)',
+              height: '2rem',
+            }}
+          />
+          <span style={{ color: 'var(--theme-text)', fontSize: '0.875rem' }}>
+            to
+          </span>
+          <input
+            type="date"
+            value={endDate}
+            onChange={handleEndDateChange}
+            max={dayjs().format('YYYY-MM-DD')}
+            style={{
+              padding: '0.375rem 0.5rem',
+              fontSize: '0.875rem',
+              borderRadius: '0.25rem',
+              border: '1px solid var(--theme-elevation-200)',
+              backgroundColor: 'var(--theme-elevation-50)',
+              color: 'var(--theme-text)',
+              height: '2rem',
+            }}
+          />
+          <Button
+            buttonStyle="primary"
+            size="small"
+            onClick={handleApply}
+            disabled={!startDate || !endDate}
+          >
+            Apply
+          </Button>
+        </div>
       </div>
 
-      {websiteIds.length > 0 && (
-        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-          {orderedWebsiteIds.map((websiteId, index) => (
-            <label
-              key={websiteId}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.35rem',
-                cursor: 'pointer',
-                fontSize: '0.875rem',
-              }}
-            >
-              <input
-                type="checkbox"
-                checked={selectedWebsiteIds.includes(websiteId)}
-                onChange={(event) =>
-                  toggleWebsite(websiteId, event.currentTarget.checked)
-                }
-              />
-              {websiteNames[websiteId] ?? `Website ${index + 1}`}
-              {websiteId === mainWebsiteId && (
-                <span
-                  style={{
-                    fontSize: '0.75rem',
-                    color: 'var(--theme-elevation-600)',
-                  }}
-                >
-                  (Main website)
-                </span>
-              )}
-            </label>
-          ))}
-        </div>
-      )}
+      <WebsitePicker />
     </div>
   );
 }

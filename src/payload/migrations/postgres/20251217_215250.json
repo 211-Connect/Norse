@@ -71,12 +71,8 @@
           "name": "users_roles_parent_fk",
           "tableFrom": "users_roles",
           "tableTo": "users",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -154,12 +150,8 @@
           "name": "users_tenants_roles_parent_fk",
           "tableFrom": "users_tenants_roles",
           "tableTo": "users_tenants",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -251,12 +243,8 @@
           "name": "users_tenants_tenant_id_tenants_id_fk",
           "tableFrom": "users_tenants",
           "tableTo": "tenants",
-          "columnsFrom": [
-            "tenant_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["tenant_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -264,12 +252,8 @@
           "name": "users_tenants_parent_id_fk",
           "tableFrom": "users_tenants",
           "tableTo": "users",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -352,12 +336,8 @@
           "name": "users_sessions_parent_id_fk",
           "tableFrom": "users_sessions",
           "tableTo": "users",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -556,12 +536,8 @@
           "name": "tenants_trusted_domains_parent_id_fk",
           "tableFrom": "tenants_trusted_domains",
           "tableTo": "tenants",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -639,12 +615,8 @@
           "name": "tenants_enabled_locales_parent_fk",
           "tableFrom": "tenants_enabled_locales",
           "tableTo": "tenants",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1031,12 +1003,8 @@
           "name": "tenant_media_tenant_id_tenants_id_fk",
           "tableFrom": "tenant_media",
           "tableTo": "tenants",
-          "columnsFrom": [
-            "tenant_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["tenant_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -1162,12 +1130,8 @@
           "name": "rds_common_alert_parent_id_fk",
           "tableFrom": "rds_common_alert",
           "tableTo": "rds",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1300,12 +1264,8 @@
           "name": "rds_common_data_providers_logo_id_tenant_media_id_fk",
           "tableFrom": "rds_common_data_providers",
           "tableTo": "tenant_media",
-          "columnsFrom": [
-            "logo_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["logo_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -1313,12 +1273,8 @@
           "name": "rds_common_data_providers_parent_id_fk",
           "tableFrom": "rds_common_data_providers",
           "tableTo": "rds",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1430,12 +1386,8 @@
           "name": "rds_header_custom_menu_parent_id_fk",
           "tableFrom": "rds_header_custom_menu",
           "tableTo": "rds",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1547,12 +1499,8 @@
           "name": "rds_footer_custom_menu_parent_id_fk",
           "tableFrom": "rds_footer_custom_menu",
           "tableTo": "rds",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1657,12 +1605,8 @@
           "name": "rds_suggestions_parent_id_fk",
           "tableFrom": "rds_suggestions",
           "tableTo": "rds",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1787,12 +1731,8 @@
           "name": "rds_topics_list_subtopics_parent_id_fk",
           "tableFrom": "rds_topics_list_subtopics",
           "tableTo": "rds_topics_list",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1925,12 +1865,8 @@
           "name": "rds_topics_list_image_id_tenant_media_id_fk",
           "tableFrom": "rds_topics_list",
           "tableTo": "tenant_media",
-          "columnsFrom": [
-            "image_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["image_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -1938,12 +1874,8 @@
           "name": "rds_topics_list_parent_id_fk",
           "tableFrom": "rds_topics_list",
           "tableTo": "rds",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2020,12 +1952,8 @@
           "name": "rds_search_search_settings_radius_select_values_parent_id_fk",
           "tableFrom": "rds_search_search_settings_radius_select_values",
           "tableTo": "rds",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2102,12 +2030,8 @@
           "name": "rds_search_facets_parent_id_fk",
           "tableFrom": "rds_search_facets",
           "tableTo": "rds",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2176,12 +2100,8 @@
           "name": "rds_search_facets_locales_parent_id_fk",
           "tableFrom": "rds_search_facets_locales",
           "tableTo": "rds_search_facets",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2327,12 +2247,8 @@
           "name": "rds_new_layout_callouts_options_custom_img_id_tenant_media_id_fk",
           "tableFrom": "rds_new_layout_callouts_options",
           "tableTo": "tenant_media",
-          "columnsFrom": [
-            "custom_img_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["custom_img_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -2340,12 +2256,8 @@
           "name": "rds_new_layout_callouts_options_parent_id_fk",
           "tableFrom": "rds_new_layout_callouts_options",
           "tableTo": "rds",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2808,12 +2720,8 @@
           "name": "rds_tenant_id_tenants_id_fk",
           "tableFrom": "rds",
           "tableTo": "tenants",
-          "columnsFrom": [
-            "tenant_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["tenant_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -2821,12 +2729,8 @@
           "name": "rds_brand_logo_id_tenant_media_id_fk",
           "tableFrom": "rds",
           "tableTo": "tenant_media",
-          "columnsFrom": [
-            "brand_logo_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["brand_logo_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -2834,12 +2738,8 @@
           "name": "rds_brand_favicon_id_tenant_media_id_fk",
           "tableFrom": "rds",
           "tableTo": "tenant_media",
-          "columnsFrom": [
-            "brand_favicon_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["brand_favicon_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -2847,12 +2747,8 @@
           "name": "rds_brand_hero_id_tenant_media_id_fk",
           "tableFrom": "rds",
           "tableTo": "tenant_media",
-          "columnsFrom": [
-            "brand_hero_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["brand_hero_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -2860,12 +2756,8 @@
           "name": "rds_brand_open_graph_id_tenant_media_id_fk",
           "tableFrom": "rds",
           "tableTo": "tenant_media",
-          "columnsFrom": [
-            "brand_open_graph_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["brand_open_graph_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -2873,12 +2765,8 @@
           "name": "rds_new_layout_hero_id_tenant_media_id_fk",
           "tableFrom": "rds",
           "tableTo": "tenant_media",
-          "columnsFrom": [
-            "new_layout_hero_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["new_layout_hero_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -2886,12 +2774,8 @@
           "name": "rds_new_layout_logo_id_tenant_media_id_fk",
           "tableFrom": "rds",
           "tableTo": "tenant_media",
-          "columnsFrom": [
-            "new_layout_logo_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["new_layout_logo_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -3058,12 +2942,8 @@
           "name": "rds_locales_parent_id_fk",
           "tableFrom": "rds_locales",
           "tableTo": "rds",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -3195,12 +3075,8 @@
           "name": "_rds_v_version_common_alert_parent_id_fk",
           "tableFrom": "_rds_v_version_common_alert",
           "tableTo": "_rds_v",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -3339,12 +3215,8 @@
           "name": "_rds_v_version_common_data_providers_logo_id_tenant_media_id_fk",
           "tableFrom": "_rds_v_version_common_data_providers",
           "tableTo": "tenant_media",
-          "columnsFrom": [
-            "logo_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["logo_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -3352,12 +3224,8 @@
           "name": "_rds_v_version_common_data_providers_parent_id_fk",
           "tableFrom": "_rds_v_version_common_data_providers",
           "tableTo": "_rds_v",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -3475,12 +3343,8 @@
           "name": "_rds_v_version_header_custom_menu_parent_id_fk",
           "tableFrom": "_rds_v_version_header_custom_menu",
           "tableTo": "_rds_v",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -3598,12 +3462,8 @@
           "name": "_rds_v_version_footer_custom_menu_parent_id_fk",
           "tableFrom": "_rds_v_version_footer_custom_menu",
           "tableTo": "_rds_v",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -3714,12 +3574,8 @@
           "name": "_rds_v_version_suggestions_parent_id_fk",
           "tableFrom": "_rds_v_version_suggestions",
           "tableTo": "_rds_v",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -3850,12 +3706,8 @@
           "name": "_rds_v_version_topics_list_subtopics_parent_id_fk",
           "tableFrom": "_rds_v_version_topics_list_subtopics",
           "tableTo": "_rds_v_version_topics_list",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -3994,12 +3846,8 @@
           "name": "_rds_v_version_topics_list_image_id_tenant_media_id_fk",
           "tableFrom": "_rds_v_version_topics_list",
           "tableTo": "tenant_media",
-          "columnsFrom": [
-            "image_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["image_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -4007,12 +3855,8 @@
           "name": "_rds_v_version_topics_list_parent_id_fk",
           "tableFrom": "_rds_v_version_topics_list",
           "tableTo": "_rds_v",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -4095,12 +3939,8 @@
           "name": "_rds_v_version_search_search_settings_radius_select_values_parent_id_fk",
           "tableFrom": "_rds_v_version_search_search_settings_radius_select_values",
           "tableTo": "_rds_v",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -4183,12 +4023,8 @@
           "name": "_rds_v_version_search_facets_parent_id_fk",
           "tableFrom": "_rds_v_version_search_facets",
           "tableTo": "_rds_v",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -4257,12 +4093,8 @@
           "name": "_rds_v_version_search_facets_locales_parent_id_fk",
           "tableFrom": "_rds_v_version_search_facets_locales",
           "tableTo": "_rds_v_version_search_facets",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -4414,12 +4246,8 @@
           "name": "_rds_v_version_new_layout_callouts_options_custom_img_id_tenant_media_id_fk",
           "tableFrom": "_rds_v_version_new_layout_callouts_options",
           "tableTo": "tenant_media",
-          "columnsFrom": [
-            "custom_img_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["custom_img_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -4427,12 +4255,8 @@
           "name": "_rds_v_version_new_layout_callouts_options_parent_id_fk",
           "tableFrom": "_rds_v_version_new_layout_callouts_options",
           "tableTo": "_rds_v",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -4958,12 +4782,8 @@
           "name": "_rds_v_parent_id_rds_id_fk",
           "tableFrom": "_rds_v",
           "tableTo": "rds",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -4971,12 +4791,8 @@
           "name": "_rds_v_version_tenant_id_tenants_id_fk",
           "tableFrom": "_rds_v",
           "tableTo": "tenants",
-          "columnsFrom": [
-            "version_tenant_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["version_tenant_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -4984,12 +4800,8 @@
           "name": "_rds_v_version_brand_logo_id_tenant_media_id_fk",
           "tableFrom": "_rds_v",
           "tableTo": "tenant_media",
-          "columnsFrom": [
-            "version_brand_logo_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["version_brand_logo_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -4997,12 +4809,8 @@
           "name": "_rds_v_version_brand_favicon_id_tenant_media_id_fk",
           "tableFrom": "_rds_v",
           "tableTo": "tenant_media",
-          "columnsFrom": [
-            "version_brand_favicon_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["version_brand_favicon_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -5010,12 +4818,8 @@
           "name": "_rds_v_version_brand_hero_id_tenant_media_id_fk",
           "tableFrom": "_rds_v",
           "tableTo": "tenant_media",
-          "columnsFrom": [
-            "version_brand_hero_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["version_brand_hero_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -5023,12 +4827,8 @@
           "name": "_rds_v_version_brand_open_graph_id_tenant_media_id_fk",
           "tableFrom": "_rds_v",
           "tableTo": "tenant_media",
-          "columnsFrom": [
-            "version_brand_open_graph_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["version_brand_open_graph_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -5036,12 +4836,8 @@
           "name": "_rds_v_version_new_layout_hero_id_tenant_media_id_fk",
           "tableFrom": "_rds_v",
           "tableTo": "tenant_media",
-          "columnsFrom": [
-            "version_new_layout_hero_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["version_new_layout_hero_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -5049,12 +4845,8 @@
           "name": "_rds_v_version_new_layout_logo_id_tenant_media_id_fk",
           "tableFrom": "_rds_v",
           "tableTo": "tenant_media",
-          "columnsFrom": [
-            "version_new_layout_logo_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["version_new_layout_logo_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -5221,12 +5013,8 @@
           "name": "_rds_v_locales_parent_id_fk",
           "tableFrom": "_rds_v_locales",
           "tableTo": "_rds_v",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -5487,12 +5275,8 @@
           "name": "payload_locked_documents_rels_parent_fk",
           "tableFrom": "payload_locked_documents_rels",
           "tableTo": "payload_locked_documents",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -5500,12 +5284,8 @@
           "name": "payload_locked_documents_rels_users_fk",
           "tableFrom": "payload_locked_documents_rels",
           "tableTo": "users",
-          "columnsFrom": [
-            "users_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["users_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -5513,12 +5293,8 @@
           "name": "payload_locked_documents_rels_tenants_fk",
           "tableFrom": "payload_locked_documents_rels",
           "tableTo": "tenants",
-          "columnsFrom": [
-            "tenants_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["tenants_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -5526,12 +5302,8 @@
           "name": "payload_locked_documents_rels_tenant_media_fk",
           "tableFrom": "payload_locked_documents_rels",
           "tableTo": "tenant_media",
-          "columnsFrom": [
-            "tenant_media_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["tenant_media_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -5539,12 +5311,8 @@
           "name": "payload_locked_documents_rels_resource_directories_fk",
           "tableFrom": "payload_locked_documents_rels",
           "tableTo": "rds",
-          "columnsFrom": [
-            "rds_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["rds_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -5748,12 +5516,8 @@
           "name": "payload_preferences_rels_parent_fk",
           "tableFrom": "payload_preferences_rels",
           "tableTo": "payload_preferences",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -5761,12 +5525,8 @@
           "name": "payload_preferences_rels_users_fk",
           "tableFrom": "payload_preferences_rels",
           "tableTo": "users",
-          "columnsFrom": [
-            "users_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["users_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -5888,19 +5648,12 @@
     "public.enum_users_roles": {
       "name": "enum_users_roles",
       "schema": "public",
-      "values": [
-        "super-admin",
-        "support",
-        "tenant"
-      ]
+      "values": ["super-admin", "support", "tenant"]
     },
     "public.enum_users_tenants_roles": {
       "name": "enum_users_tenants_roles",
       "schema": "public",
-      "values": [
-        "tenant-admin",
-        "tenant-editor"
-      ]
+      "values": ["tenant-admin", "tenant-editor"]
     },
     "public.enum_tenants_enabled_locales": {
       "name": "enum_tenants_enabled_locales",
@@ -5965,86 +5718,52 @@
     "public.enum_rds_common_alert_variant": {
       "name": "enum_rds_common_alert_variant",
       "schema": "public",
-      "values": [
-        "destructive",
-        "default"
-      ]
+      "values": ["destructive", "default"]
     },
     "public.enum_rds_topics_list_subtopics_query_type": {
       "name": "enum_rds_topics_list_subtopics_query_type",
       "schema": "public",
-      "values": [
-        "taxonomy",
-        "text",
-        "link"
-      ]
+      "values": ["taxonomy", "text", "link"]
     },
     "public.enum_rds_new_layout_callouts_options_type": {
       "name": "enum_rds_new_layout_callouts_options_type",
       "schema": "public",
-      "values": [
-        "Call",
-        "SMS",
-        "Chat",
-        "Email"
-      ]
+      "values": ["Call", "SMS", "Chat", "Email"]
     },
     "public.enum_rds_common_sms_provider": {
       "name": "enum_rds_common_sms_provider",
       "schema": "public",
-      "values": [
-        "Twilio"
-      ]
+      "values": ["Twilio"]
     },
     "public.enum_rds_topics_icon_size": {
       "name": "enum_rds_topics_icon_size",
       "schema": "public",
-      "values": [
-        "small",
-        "medium"
-      ]
+      "values": ["small", "medium"]
     },
     "public.enum__rds_v_version_common_alert_variant": {
       "name": "enum__rds_v_version_common_alert_variant",
       "schema": "public",
-      "values": [
-        "destructive",
-        "default"
-      ]
+      "values": ["destructive", "default"]
     },
     "public.enum__rds_v_version_topics_list_subtopics_query_type": {
       "name": "enum__rds_v_version_topics_list_subtopics_query_type",
       "schema": "public",
-      "values": [
-        "taxonomy",
-        "text",
-        "link"
-      ]
+      "values": ["taxonomy", "text", "link"]
     },
     "public.enum__rds_v_version_new_layout_callouts_options_type": {
       "name": "enum__rds_v_version_new_layout_callouts_options_type",
       "schema": "public",
-      "values": [
-        "Call",
-        "SMS",
-        "Chat",
-        "Email"
-      ]
+      "values": ["Call", "SMS", "Chat", "Email"]
     },
     "public.enum__rds_v_version_common_sms_provider": {
       "name": "enum__rds_v_version_common_sms_provider",
       "schema": "public",
-      "values": [
-        "Twilio"
-      ]
+      "values": ["Twilio"]
     },
     "public.enum__rds_v_version_topics_icon_size": {
       "name": "enum__rds_v_version_topics_icon_size",
       "schema": "public",
-      "values": [
-        "small",
-        "medium"
-      ]
+      "values": ["small", "medium"]
     }
   },
   "schemas": {},

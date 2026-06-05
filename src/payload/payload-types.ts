@@ -432,7 +432,10 @@ export interface Tenant {
   common?: {
     gtmContainerId?: string | null;
     matomoContainerUrl?: string | null;
-    umamiWebsiteIds?:
+  };
+  analytics?: {
+    umamiWebsiteId?: string | null;
+    additionalWebsiteIds?:
       | {
           websiteId: string;
           id?: string | null;
@@ -719,6 +722,7 @@ export interface ResourceDirectory {
                   | 'map'
                   | 'getDirections'
                   | 'organization'
+                  | 'quality'
                   | 'facets'
                   | 'separator'
                   | 'customAttribute';
@@ -776,6 +780,7 @@ export interface ResourceDirectory {
                   | 'map'
                   | 'getDirections'
                   | 'organization'
+                  | 'quality'
                   | 'facets'
                   | 'separator'
                   | 'customAttribute';
@@ -929,7 +934,7 @@ export interface ResourceDirectory {
     turnResourceCardTaxonomiesIntoLinks?: boolean | null;
     showFeedbackButtonGlobal?: boolean | null;
     showFeedbackButtonOnResourcePages?: boolean | null;
-    anonymousCollectionsEnabled?: boolean | null;
+    requireAuthenticationForFavorites?: boolean | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -1222,7 +1227,12 @@ export interface TenantsSelect<T extends boolean = true> {
     | {
         gtmContainerId?: T;
         matomoContainerUrl?: T;
-        umamiWebsiteIds?:
+      };
+  analytics?:
+    | T
+    | {
+        umamiWebsiteId?: T;
+        additionalWebsiteIds?:
           | T
           | {
               websiteId?: T;
@@ -1634,7 +1644,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         turnResourceCardTaxonomiesIntoLinks?: T;
         showFeedbackButtonGlobal?: T;
         showFeedbackButtonOnResourcePages?: T;
-        anonymousCollectionsEnabled?: T;
+        requireAuthenticationForFavorites?: T;
       };
   updatedAt?: T;
   createdAt?: T;
