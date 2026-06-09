@@ -35,6 +35,7 @@ export type FindResourcesQuery = {
   filters?: Record<string, string[]>;
   sort?: SortOption;
   widgetId?: string;
+  age?: number;
 };
 
 type SearchResult = {
@@ -173,6 +174,7 @@ async function findResourcesOrigin({
       ...(tenantId && { tenant_id: tenantId }),
       ...(query.filters &&
         Object.keys(query.filters).length > 0 && { filters: query.filters }),
+      ...(query.age !== undefined && { age: query.age }),
     });
 
     data = await fetchWrapper(`${API_URL}/search?${searchString}`, {
@@ -276,6 +278,7 @@ export async function findResourcesV2(
     ...(searchStore.filters && Object.keys(searchStore.filters).length > 0
       ? { filters: searchStore.filters }
       : {}),
+    ...(searchStore.age !== undefined && { age: searchStore.age }),
   });
   const searchUrl = `${API_URL}/search?${queryParams}`;
 

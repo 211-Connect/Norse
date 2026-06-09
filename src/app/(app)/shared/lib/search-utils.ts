@@ -99,6 +99,10 @@ export function buildSearchRequest(
     baseParams.query_label = searchStore.queryLabel.trim();
   }
 
+  if (searchStore.age !== undefined) {
+    baseParams.age = String(searchStore.age);
+  }
+
   baseParams.query_type = deriveQueryType({
     originQueryType: searchStore.queryType,
     query: searchStore.query,

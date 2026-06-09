@@ -230,6 +230,7 @@ async function getAppConfigBase(
       featureFlags: {
         requireAuthenticationForFavorites: false,
         requireUserLocation: false,
+        showAgeFilter: false,
         showFeedbackButtonGlobal: false,
         showFeedbackButtonOnResourcePages: false,
         showHomePageTour: false,
@@ -402,6 +403,7 @@ async function getAppConfigBase(
       turnResourceCardTaxonomiesIntoLinks:
         resourceDirectory.featureFlags?.turnResourceCardTaxonomiesIntoLinks ??
         true,
+      showAgeFilter: resourceDirectory.featureFlags?.showAgeFilter ?? false,
     },
     gtmContainerId:
       getTenant(resourceDirectory)?.common?.gtmContainerId ?? undefined,
@@ -468,10 +470,13 @@ async function getAppConfigBase(
     search: {
       facets: (resourceDirectory.search.facets ?? [])
         .filter(({ name }) => name)
-        .map(({ name, facet, showInDetails }) => ({
+        .map(({ name, facet, showInDetails, excludeValues }) => ({
           name: name!,
           facet,
           showInDetails: Boolean(showInDetails ?? true),
+          excludeValues: (excludeValues ?? [])
+            .map((e) => e.value)
+            .filter(Boolean) as string[],
         })),
       map,
       radiusOptions:

@@ -3,6 +3,8 @@
   "filter_results": "Filter results",
   "filters": "Filters",
   "clear_filters": "Clear filters",
+  "age_filter_label": "Filter by age",
+  "age_filter_placeholder": "Enter age",
   "results": "results",
   "no_query": "No query provided",
   "results_for": "results found for query",
