@@ -847,6 +847,12 @@ export interface ResourceDirectory {
           name?: string | null;
           facet: string;
           showInDetails?: boolean | null;
+          excludeValues?:
+            | {
+                value: string;
+                id?: string | null;
+              }[]
+            | null;
           id?: string | null;
         }[]
       | null;
@@ -935,6 +941,7 @@ export interface ResourceDirectory {
     showFeedbackButtonGlobal?: boolean | null;
     showFeedbackButtonOnResourcePages?: boolean | null;
     requireAuthenticationForFavorites?: boolean | null;
+    showAgeFilter?: boolean | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -1564,6 +1571,12 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
               name?: T;
               facet?: T;
               showInDetails?: T;
+              excludeValues?:
+                | T
+                | {
+                    value?: T;
+                    id?: T;
+                  };
               id?: T;
             };
         useCustomCardLayout?: T;
@@ -1645,6 +1658,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         showFeedbackButtonGlobal?: T;
         showFeedbackButtonOnResourcePages?: T;
         requireAuthenticationForFavorites?: T;
+        showAgeFilter?: T;
       };
   updatedAt?: T;
   createdAt?: T;

@@ -75,6 +75,10 @@ function parseSearchParams(raw: RawSearchParams): FindResourcesQuery {
         : undefined,
     filters: parsed.filters as Record<string, string[]> | undefined,
     sort,
+    age:
+      typeof parsed.age === 'string' && parsed.age
+        ? parseInt(parsed.age, 10) || undefined
+        : undefined,
   };
 }
 

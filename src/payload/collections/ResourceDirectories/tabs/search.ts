@@ -321,6 +321,22 @@ export const search: Tab = {
           type: 'checkbox',
           defaultValue: true,
         },
+        {
+          name: 'excludeValues',
+          type: 'array',
+          label: 'Exclude Filter Values',
+          access: {
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
+          },
+          fields: [
+            {
+              name: 'value',
+              type: 'text',
+              required: true,
+            },
+          ],
+        },
       ],
     },
     {
