@@ -123,20 +123,6 @@ export function stringToBooleanOrUndefined(str?: string): boolean | undefined {
   return str.toLowerCase() === 'true';
 }
 
-export function getGoogleMapsDestinationUrl(
-  originCoords: number[] | undefined | null,
-  destinationCoords: number[] | undefined | null,
-) {
-  const origin = originCoords?.slice()?.reverse()?.join(',') ?? '';
-  const destination = destinationCoords?.slice()?.reverse()?.join(',') ?? '';
-
-  if (!origin) {
-    return `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
-  }
-
-  return `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}`;
-}
-
 export function getScrollbarWidth(): number {
   if (typeof window === 'undefined') return 0;
 
