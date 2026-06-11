@@ -24,5 +24,7 @@
     }
   },
   "name_unavailable": "Jina halipatikani",
-  "share_body": "Tazama matokeo ya utafutaji wa {{count}} wa \"{{title}}\""
+  "share_body": "Tazama matokeo ya utafutaji wa {{count}} wa \"{{title}}\"",
+  "age_filter_label": "Chuja kwa umri",
+  "age_filter_placeholder": "Ingiza umri"
 }

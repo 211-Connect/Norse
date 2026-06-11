@@ -37,6 +37,7 @@ export type AppConfig = {
   } | null;
   featureFlags: {
     requireUserLocation: boolean;
+    showAgeFilter: boolean;
     showFeedbackButtonGlobal: boolean;
     showFeedbackButtonOnResourcePages: boolean;
     showHomePageTour: boolean;
@@ -98,6 +99,7 @@ export type AppConfig = {
       name: string;
       facet: string;
       showInDetails?: boolean;
+      excludeValues?: string[];
     }[];
     map: {
       center: [number, number];

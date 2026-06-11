@@ -24,5 +24,7 @@
     }
   },
   "name_unavailable": "Ime nije dostupno",
-  "share_body": "Pogledajte {{count}} rezultata pretraživanja za \"{{title}}\""
+  "share_body": "Pogledajte {{count}} rezultata pretraživanja za \"{{title}}\"",
+  "age_filter_label": "Filtriraj po dobi",
+  "age_filter_placeholder": "Unesite dob"
 }

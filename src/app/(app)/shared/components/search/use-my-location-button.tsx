@@ -98,7 +98,7 @@ export function UseMyLocationButton() {
   return (
     <Button
       onClick={getUserLocation}
-      className="!text-primary flex h-auto gap-1 text-left whitespace-normal"
+      className="text-primary hover:bg-primary hover:text-primary-foreground flex h-auto gap-1 text-left whitespace-normal"
       variant="ghost"
       type="button"
     >

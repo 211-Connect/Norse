@@ -99,5 +99,14 @@ export const featureFlags: Tab = {
         update: superAdminOrSupportOrTenantAccess,
       },
     },
+    {
+      name: 'showAgeFilter',
+      type: 'checkbox',
+      defaultValue: false,
+      access: {
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
+      },
+    },
   ],
 };

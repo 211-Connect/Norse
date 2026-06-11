@@ -24,5 +24,7 @@
     }
   },
   "name_unavailable": "Izina ntiriboneka",
-  "share_body": "Reba ibisubizo by'ishakisha rya {{count}} kuri \"{{title}}\""
+  "share_body": "Reba ibisubizo by'ishakisha rya {{count}} kuri \"{{title}}\"",
+  "age_filter_label": "Hindura ukurikije imyaka",
+  "age_filter_placeholder": "Shyiramo imyaka"
 }

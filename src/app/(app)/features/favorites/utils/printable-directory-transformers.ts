@@ -15,6 +15,12 @@ export type PrintableDirectoryItemData = {
   phone: string;
   email: string;
   website: string;
+  transportation: string;
+  accessibility: string;
+  eligibility: string;
+  requiredDocuments: string;
+  languages: string;
+  fees: string;
 };
 
 /**
@@ -25,22 +31,24 @@ export type PrintableDirectoryData = {
   items: PrintableDirectoryItemData[];
 };
 
-/**
- * Normalizes multi-line hours text into a single semicolon-separated string
- * suitable for PDF rendering
- *
- * @example
- * normalizePrintableHours("Mon 9-5\nTue 9-5") // "Mon 9-5; Tue 9-5"
- */
 function normalizePrintableHours(hours: string): string {
   return hours
     .split('\n')
     .map((line) => line.trim())
     .filter(Boolean)
-    .join('; ')
-    .replace(/(?:\s*;\s*){2,}/g, '; ')
-    .replace(/^\s*;\s*|\s*;\s*$/g, '')
+    .join('\n')
     .trim();
+}
+
+function normalizePrintableList(items?: string[] | null): string {
+  if (!items?.length) {
+    return '';
+  }
+
+  return items
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .join(', ');
 }
 
 function getAddressFromResource(resource: Resource): string {
@@ -83,6 +91,14 @@ export function favoriteListToPrintableDirectory(
           phone: favorite.displayPhoneNumber ?? '',
           email: favorite.email ?? '',
           website: favorite.website ?? '',
+          transportation: translation?.transportation ?? '',
+          accessibility: translation?.accessibility ?? '',
+          eligibility: translation?.eligibilities ?? '',
+          requiredDocuments: normalizePrintableList(
+            translation?.requiredDocuments,
+          ),
+          languages: normalizePrintableList(translation?.languages),
+          fees: translation?.fees ?? '',
         };
       }) ?? [],
   };
@@ -121,6 +137,18 @@ export function localResourcesToPrintableDirectory(
         phone: resource.phone ?? '',
         email: resource.email ?? '',
         website: resource.website ?? '',
+        transportation:
+          translation?.transportation ?? resource.transportation ?? '',
+        accessibility:
+          translation?.accessibility ?? resource.accessibility ?? '',
+        eligibility: translation?.eligibilities ?? resource.eligibilities ?? '',
+        requiredDocuments: normalizePrintableList(
+          translation?.requiredDocuments ?? resource.requiredDocuments,
+        ),
+        languages: normalizePrintableList(
+          translation?.languages ?? resource.languages,
+        ),
+        fees: translation?.fees ?? resource.fees ?? '',
       };
     }),
   };

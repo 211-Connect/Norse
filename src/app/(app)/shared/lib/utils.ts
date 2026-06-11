@@ -123,20 +123,6 @@ export function stringToBooleanOrUndefined(str?: string): boolean | undefined {
   return str.toLowerCase() === 'true';
 }
 
-export function getGoogleMapsDestinationUrl(
-  originCoords: number[] | undefined | null,
-  destinationCoords: number[] | undefined | null,
-) {
-  const origin = originCoords?.slice()?.reverse()?.join(',') ?? '';
-  const destination = destinationCoords?.slice()?.reverse()?.join(',') ?? '';
-
-  if (!origin) {
-    return `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
-  }
-
-  return `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}`;
-}
-
 export function getScrollbarWidth(): number {
   if (typeof window === 'undefined') return 0;
 
@@ -159,26 +145,28 @@ export function getScrollbarWidth(): number {
   return scrollbarWidth;
 }
 
-const isValidPart = (part: string | undefined | null) => {
-  return part && part !== 'null' && part.trim() !== '';
+const isValidPart = (part: string | undefined | null): part is string => {
+  return Boolean(part && part !== 'null' && part.trim() !== '');
 };
+
+const withHardSpaces = (value: string) =>
+  value.trim().replace(/\s+/g, '\u00A0');
 
 export function formatAddressForDisplay(
   address: Partial<Address> | undefined | null,
 ): string {
   if (!address) return '';
 
-  return [
-    address.address_1,
-    address.address_2,
-    address.city,
-    [
-      'state' in address ? address.state : address.stateProvince,
-      'postal_code' in address ? address.postal_code : address.postalCode,
-    ]
-      .filter(isValidPart)
-      .join(' '),
-  ]
+  const city = isValidPart(address.city) ? withHardSpaces(address.city) : '';
+  const state = 'state' in address ? address.state : address.stateProvince;
+  const postalCode =
+    'postal_code' in address ? address.postal_code : address.postalCode;
+  const statePostal = [state, postalCode]
+    .filter(isValidPart)
+    .map((part) => withHardSpaces(part))
+    .join('\u00A0');
+
+  return [address.address_1, address.address_2, city, statePostal]
     .filter(isValidPart)
     .join(', ');
 }

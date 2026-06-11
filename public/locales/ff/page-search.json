@@ -24,5 +24,7 @@
     }
   },
   "name_unavailable": "Innde nde heɓaaka",
-  "share_body": "Ƴeew {{count}} njeñtudi njiylawu wonande \"{{title}}\""
+  "share_body": "Ƴeew {{count}} njeñtudi njiylawu wonande \"{{title}}\"",
+  "age_filter_label": "Fiiltirde e duuɓi",
+  "age_filter_placeholder": "Naatnu duuɓi"
 }

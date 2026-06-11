@@ -6,7 +6,6 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
-import { PDFDirectory } from '@/app/(app)/features/favorites/components/pdf-directory';
 import { type PrintableDirectoryData } from '@/app/(app)/features/favorites/utils/printable-directory-transformers';
 import { Button } from '@/app/(app)/shared/components/ui/button';
 import {
@@ -20,6 +19,8 @@ import {
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { cn } from '@/app/(app)/shared/lib/utils';
+
+import { PDFDirectory } from './pdf-directory';
 
 type PrintDirectoryDialogProps = {
   open: boolean;
@@ -37,8 +38,11 @@ export function PrintDirectoryDialog({
   const { t } = useTranslation('page-list');
   const appConfig = useAppConfig();
   const [selectedVariant, setSelectedVariant] = useState<
-    'phone-book' | 'all-info'
-  >('phone-book');
+    'line-listing' | 'summary-listing' | 'full-listing'
+  >('line-listing');
+  const [fontSizeMode, setFontSizeMode] = useState<'default' | 'large'>(
+    'default',
+  );
   const [isGenerating, setIsGenerating] = useState(false);
 
   const handlePrintPDF = async () => {
@@ -58,6 +62,7 @@ export function PrintDirectoryDialog({
         <PDFDirectory
           data={data}
           variant={selectedVariant}
+          fontSizeMode={fontSizeMode}
           currentDomain={currentDomain}
           currentDate={currentDate}
           brandLogoUrl={appConfig.brand.logoUrl}
@@ -116,13 +121,13 @@ export function PrintDirectoryDialog({
           </DialogHeader>
 
           <div className="flex flex-col gap-3">
-            {/* Phone Book Option */}
+            {/* Line Listing Option */}
             <button
               type="button"
-              onClick={() => setSelectedVariant('phone-book')}
+              onClick={() => setSelectedVariant('line-listing')}
               className={cn(
                 'flex cursor-pointer items-start gap-3 rounded-lg border-2 p-4 text-left transition-colors',
-                selectedVariant === 'phone-book'
+                selectedVariant === 'line-listing'
                   ? 'border-primary bg-primary/5'
                   : 'border-border hover:border-primary/50',
               )}
@@ -130,32 +135,32 @@ export function PrintDirectoryDialog({
               <div
                 className={cn(
                   'mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border-2',
-                  selectedVariant === 'phone-book'
+                  selectedVariant === 'line-listing'
                     ? 'border-primary bg-primary'
                     : 'border-muted-foreground',
                 )}
               >
-                {selectedVariant === 'phone-book' && (
+                {selectedVariant === 'line-listing' && (
                   <Check className="text-primary-foreground size-3" />
                 )}
               </div>
               <div className="flex-1">
                 <Typography variant="heading" size="sm" className="mb-1">
-                  {t('print_dialog.phone_book')}
+                  {t('print_dialog.line_listing')}
                 </Typography>
                 <Typography variant="paragraph" size="sm" textColor="secondary">
-                  {t('print_dialog.phone_book_desc')}
+                  {t('print_dialog.line_listing_desc')}
                 </Typography>
               </div>
             </button>
 
-            {/* All Info Option */}
+            {/* Summary Listing Option */}
             <button
               type="button"
-              onClick={() => setSelectedVariant('all-info')}
+              onClick={() => setSelectedVariant('summary-listing')}
               className={cn(
                 'flex cursor-pointer items-start gap-3 rounded-lg border-2 p-4 text-left transition-colors',
-                selectedVariant === 'all-info'
+                selectedVariant === 'summary-listing'
                   ? 'border-primary bg-primary/5'
                   : 'border-border hover:border-primary/50',
               )}
@@ -163,24 +168,115 @@ export function PrintDirectoryDialog({
               <div
                 className={cn(
                   'mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border-2',
-                  selectedVariant === 'all-info'
+                  selectedVariant === 'summary-listing'
                     ? 'border-primary bg-primary'
                     : 'border-muted-foreground',
                 )}
               >
-                {selectedVariant === 'all-info' && (
+                {selectedVariant === 'summary-listing' && (
                   <Check className="text-primary-foreground size-3" />
                 )}
               </div>
               <div className="flex-1">
                 <Typography variant="heading" size="sm" className="mb-1">
-                  {t('print_dialog.all_info')}
+                  {t('print_dialog.summary_listing')}
                 </Typography>
                 <Typography variant="paragraph" size="sm" textColor="secondary">
-                  {t('print_dialog.all_info_desc')}
+                  {t('print_dialog.summary_listing_desc')}
                 </Typography>
               </div>
             </button>
+
+            {/* Full Listing Option */}
+            <button
+              type="button"
+              onClick={() => setSelectedVariant('full-listing')}
+              className={cn(
+                'flex cursor-pointer items-start gap-3 rounded-lg border-2 p-4 text-left transition-colors',
+                selectedVariant === 'full-listing'
+                  ? 'border-primary bg-primary/5'
+                  : 'border-border hover:border-primary/50',
+              )}
+            >
+              <div
+                className={cn(
+                  'mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border-2',
+                  selectedVariant === 'full-listing'
+                    ? 'border-primary bg-primary'
+                    : 'border-muted-foreground',
+                )}
+              >
+                {selectedVariant === 'full-listing' && (
+                  <Check className="text-primary-foreground size-3" />
+                )}
+              </div>
+              <div className="flex-1">
+                <Typography variant="heading" size="sm" className="mb-1">
+                  {t('print_dialog.full_listing')}
+                </Typography>
+                <Typography variant="paragraph" size="sm" textColor="secondary">
+                  {t('print_dialog.full_listing_desc')}
+                </Typography>
+              </div>
+            </button>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <Typography variant="heading" size="sm">
+              {t('print_dialog.font_size_title')}
+            </Typography>
+
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setFontSizeMode('default')}
+                className={cn(
+                  'flex cursor-pointer items-center gap-2 rounded-lg border-2 px-3 py-2 text-left text-sm transition-colors',
+                  fontSizeMode === 'default'
+                    ? 'border-primary bg-primary/5'
+                    : 'border-border hover:border-primary/50',
+                )}
+              >
+                <div
+                  className={cn(
+                    'flex size-4 shrink-0 items-center justify-center rounded-full border-2',
+                    fontSizeMode === 'default'
+                      ? 'border-primary bg-primary'
+                      : 'border-muted-foreground',
+                  )}
+                >
+                  {fontSizeMode === 'default' && (
+                    <Check className="text-primary-foreground size-2.5" />
+                  )}
+                </div>
+                {t('print_dialog.font_size_standard')}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setFontSizeMode('large')}
+                className={cn(
+                  'flex cursor-pointer items-center gap-2 rounded-lg border-2 px-3 py-2 text-left text-sm transition-colors',
+                  fontSizeMode === 'large'
+                    ? 'border-primary bg-primary/5'
+                    : 'border-border hover:border-primary/50',
+                )}
+              >
+                <div
+                  className={cn(
+                    'flex size-4 shrink-0 items-center justify-center rounded-full border-2',
+                    fontSizeMode === 'large'
+                      ? 'border-primary bg-primary'
+                      : 'border-muted-foreground',
+                  )}
+                >
+                  {fontSizeMode === 'large' && (
+                    <Check className="text-primary-foreground size-2.5" />
+                  )}
+                </div>
+                {t('print_dialog.font_size_large')}
+              </button>
+            </div>
           </div>
 
           <DialogFooter>

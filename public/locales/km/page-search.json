@@ -24,5 +24,7 @@
     }
   },
   "name_unavailable": "ឈ្មោះមិនអាចប្រើបានទេ",
-  "share_body": "មើលលទ្ធផលស្វែងរក {{count}} សម្រាប់ \"{{title}}\""
+  "share_body": "មើលលទ្ធផលស្វែងរក {{count}} សម្រាប់ \"{{title}}\"",
+  "age_filter_label": "ត្រងតាមអាយុ",
+  "age_filter_placeholder": "បញ្ចូលអាយុ"
 }

@@ -34,10 +34,6 @@ export const MetricsTable = memo(function MetricsTable({
   const totalPages = Math.max(1, Math.ceil(rows.length / pageSize));
 
   useEffect(() => {
-    setPage(1);
-  }, [rows]);
-
-  useEffect(() => {
     if (page > totalPages) {
       setPage(totalPages);
     }

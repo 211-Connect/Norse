@@ -29,6 +29,8 @@ import { filtersAtom, filtersOpenAtom } from '@/app/(app)/shared/store/results';
 import { searchCoordinatesAtom } from '@/app/(app)/shared/store/search';
 import { FiltersMap } from '@/types/search';
 
+import { AgeFilter } from './age-filter';
+
 const MAX_VISIBLE_FILTERS = 6;
 const SEARCH_RESULTS_HEADING_ID = 'search-results-heading';
 const PENDING_FOCUS_TARGET_STORAGE_KEY = 'pending-search-focus-target';
@@ -43,6 +45,7 @@ type FiltersProps = {
   updateSearchParams: (
     updater: (params: Record<string, unknown>) => Record<string, unknown>,
   ) => void;
+  excludedValues: Map<string, Set<string>>;
 };
 
 function queueResultsFocus() {
@@ -97,6 +100,7 @@ const Filters = ({
   isPending,
   searchParamsObject,
   updateSearchParams,
+  excludedValues,
 }: FiltersProps) => {
   const { t } = useTranslation();
   const [filtersExpanded, setFiltersExpanded] = useState<
@@ -194,13 +198,18 @@ const Filters = ({
         {filterKeys.map((key) => {
           const heading = filters[key].name;
           const sanitizedKey = key.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-          const filterList = filters[key].buckets.filter(
-            (b) =>
-              b.key != null &&
-              b.key !== '' &&
-              b.display != null &&
-              b.display !== '',
-          );
+          const excludedForKey = excludedValues.get(key);
+          const filterList = filters[key].buckets
+            .filter(
+              (b) =>
+                b.key != null &&
+                b.key !== '' &&
+                b.display != null &&
+                b.display !== '',
+            )
+            .filter(
+              (b) => !excludedForKey?.has(b.key.trim().toLocaleLowerCase()),
+            );
           const isExpanded = filtersExpanded[key] ?? false;
           const visibleList = filterList.slice(0, MAX_VISIBLE_FILTERS);
           const hiddenList = filterList.slice(MAX_VISIBLE_FILTERS);
@@ -417,11 +426,29 @@ const useScrollOffset = () => {
 export function FilterPanel() {
   const { t } = useTranslation();
   const appConfig = useAppConfig();
+  const showAgeFilter = appConfig.featureFlags.showAgeFilter;
   const filters = useAtomValue(filtersAtom);
   const searchCoordinates = useAtomValue(searchCoordinatesAtom);
   const [filtersOpen, setFiltersOpen] = useAtom(filtersOpenAtom);
 
   const filterKeys = useMemo(() => Object.keys(filters), [filters]);
+
+  const excludedValues = useMemo(() => {
+    const map = new Map<string, Set<string>>();
+    for (const facetConfig of appConfig.search.facets) {
+      if (facetConfig.excludeValues?.length) {
+        map.set(
+          facetConfig.facet,
+          new Set(
+            facetConfig.excludeValues.map((value) =>
+              value.trim().toLocaleLowerCase(),
+            ),
+          ),
+        );
+      }
+    }
+    return map;
+  }, [appConfig.search.facets]);
   const hasSearchCoordinates = searchCoordinates.length === 2;
 
   const { scrollOffset } = useScrollOffset();
@@ -458,7 +485,9 @@ export function FilterPanel() {
           size="sm"
           variant="ghost"
           className={cn(
-            filterKeys.length > 0 ? 'flex md:hidden' : 'hidden',
+            filterKeys.length > 0 || showAgeFilter
+              ? 'flex md:hidden'
+              : 'hidden',
             'mt-1 gap-1 self-start',
           )}
           onClick={() => setFiltersOpen(true)}
@@ -478,16 +507,28 @@ export function FilterPanel() {
           }}
         />
       )}
-      {filterKeys.length > 0 && (
+      {showAgeFilter && (
+        <div className="mt-3 print:hidden">
+          <AgeFilter
+            isPending={isPending}
+            searchParamsObject={searchParamsObject}
+            updateSearchParams={updateSearchParams}
+          />
+        </div>
+      )}
+      {(filterKeys.length > 0 || showAgeFilter) && (
         <>
           <div className="hidden w-full md:block print:hidden">
-            <Filters
-              filters={filters}
-              filterKeys={filterKeys}
-              isPending={isPending}
-              searchParamsObject={searchParamsObject}
-              updateSearchParams={updateSearchParams}
-            />
+            {filterKeys.length > 0 && (
+              <Filters
+                filters={filters}
+                filterKeys={filterKeys}
+                isPending={isPending}
+                searchParamsObject={searchParamsObject}
+                updateSearchParams={updateSearchParams}
+                excludedValues={excludedValues}
+              />
+            )}
           </div>
           <Sheet onOpenChange={setFiltersOpen} open={filtersOpen}>
             <SheetContent
@@ -498,13 +539,16 @@ export function FilterPanel() {
                 <SheetTitle></SheetTitle>
               </SheetHeader>
               <ScrollArea>
-                <Filters
-                  filters={filters}
-                  filterKeys={filterKeys}
-                  isPending={isPending}
-                  searchParamsObject={searchParamsObject}
-                  updateSearchParams={updateSearchParams}
-                />
+                {filterKeys.length > 0 && (
+                  <Filters
+                    filters={filters}
+                    filterKeys={filterKeys}
+                    isPending={isPending}
+                    searchParamsObject={searchParamsObject}
+                    updateSearchParams={updateSearchParams}
+                    excludedValues={excludedValues}
+                  />
+                )}
               </ScrollArea>
             </SheetContent>
           </Sheet>

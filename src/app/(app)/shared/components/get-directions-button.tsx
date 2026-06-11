@@ -28,8 +28,12 @@ interface GetDirectionsButtonProps {
 }
 
 function buildAddressString(data: Resource | ResultType): string {
-  if (data.address) return data.address;
+  if (!('addresses' in data)) {
+    // `ResultType` in search card
+    return data.address;
+  }
 
+  // `Resource` in resource card
   const addresses = 'addresses' in data ? data.addresses : null;
   const primary =
     addresses?.find((a: Address) => a.rank === 1) ?? addresses?.[0];

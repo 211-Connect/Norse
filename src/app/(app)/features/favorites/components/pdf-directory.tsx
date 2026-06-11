@@ -3,69 +3,94 @@ import {
   Font,
   Image,
   Page,
-  Path,
   StyleSheet,
-  Svg,
   Text,
+  Styles,
   View,
 } from '@react-pdf/renderer';
+import { useTranslation } from 'react-i18next';
 
 import { type PrintableDirectoryData } from '@/app/(app)/features/favorites/utils/printable-directory-transformers';
 
 import { PDFHtmlRenderer } from './pdf-html-renderer';
 
-// Disable hyphenation for all fonts to prevent word breaking issues
+type PdfStyle = Styles[string];
+
 Font.registerHyphenationCallback((word) => [word]);
 
-// Color constants
 const COLORS = {
   primary: '#000',
   secondary: '#444',
-  tertiary: '#666',
+  tertiary: '#888',
 } as const;
-const ITEM_GAP = 6;
 
-/**
- * Clock icon for displaying hours - converted from lucide-react to react-pdf Svg
- */
-function ClockIcon({ size = 10 }: { size?: number }) {
-  return (
-    <Svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      style={{ marginRight: 4 }}
-    >
-      <Path
-        d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"
-        stroke={COLORS.secondary}
-        strokeWidth={2}
-        fill="none"
-      />
-      <Path
-        d="M12 6v6l4 2"
-        stroke={COLORS.secondary}
-        strokeWidth={2}
-        fill="none"
-        strokeLinecap="round"
-      />
-    </Svg>
-  );
+const BASE_FONT = {
+  title: 16,
+  heading: 12,
+  subtitle: 11,
+  body: 10,
+  small: 8,
+} as const;
+
+const DATUM_LABEL_WIDTH = 60;
+
+type PrintVariant = 'line-listing' | 'summary-listing' | 'full-listing';
+type FontSizeMode = 'default' | 'large';
+
+type DatumLabels = {
+  phone: string;
+  hours: string;
+  email: string;
+  website: string;
+  address: string;
+  transportation: string;
+  accessibility: string;
+  eligibility: string;
+  requiredDocuments: string;
+  languages: string;
+  fees: string;
+  dial211: string;
+};
+
+function useDatumLabels(): DatumLabels {
+  const { t } = useTranslation('page-list');
+
+  return {
+    phone: t('print_dialog.datum_phone'),
+    hours: t('print_dialog.datum_hours'),
+    email: t('print_dialog.datum_email'),
+    website: t('print_dialog.datum_website'),
+    address: t('print_dialog.datum_address'),
+    transportation: t('print_dialog.datum_transportation'),
+    accessibility: t('print_dialog.datum_accessibility'),
+    eligibility: t('print_dialog.datum_eligibility'),
+    requiredDocuments: t('print_dialog.datum_required_documents'),
+    languages: t('print_dialog.datum_languages'),
+    fees: t('print_dialog.datum_fees'),
+    dial211: t('print_dialog.dial_211'),
+  };
 }
 
 const styles = StyleSheet.create({
-  page: {
+  pageWithHeader: {
     flexDirection: 'column',
     paddingTop: 85,
     paddingBottom: 100,
-    paddingHorizontal: 50,
+    paddingHorizontal: 40,
+    fontFamily: 'Helvetica',
+  },
+  pageNoHeader: {
+    flexDirection: 'column',
+    paddingTop: 40,
+    paddingBottom: 100,
+    paddingHorizontal: 40,
     fontFamily: 'Helvetica',
   },
   header: {
     position: 'absolute',
     top: 30,
-    left: 50,
-    right: 50,
+    left: 40,
+    right: 40,
   },
   headerContent: {
     flexDirection: 'row',
@@ -74,108 +99,211 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   headerTitle: {
-    fontSize: 16,
+    fontSize: BASE_FONT.title,
     fontFamily: 'Helvetica-Bold',
     color: COLORS.primary,
   },
   headerMeta: {
     flexDirection: 'column',
-    gap: 4,
     alignItems: 'flex-end',
   },
   headerDate: {
-    fontSize: 11,
+    fontSize: BASE_FONT.subtitle,
     color: COLORS.primary,
     fontFamily: 'Helvetica',
   },
   headerDomain: {
-    fontSize: 11,
+    fontSize: BASE_FONT.subtitle,
     color: COLORS.primary,
     fontFamily: 'Helvetica-Bold',
   },
   headerSeparator: {
     borderTopWidth: 1,
-    borderTopColor: COLORS.primary,
+    borderTopColor: COLORS.secondary,
     height: 3,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.tertiary,
   },
   content: {
     flex: 1,
+    paddingBottom: 8,
   },
-  item: {
-    marginBottom: 12,
-    paddingBottom: 12,
+  resourceGridTwoColumns: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    width: '100%',
   },
-  itemDisplayName: {
-    fontSize: 12,
+  resourceColumn: {
+    flex: 1,
+    flexDirection: 'column',
+  },
+  resourceColumnLeft: {
+    paddingRight: 10,
+  },
+  resourceColumnRight: {
+    paddingLeft: 10,
+  },
+  resourceColumnSeparator: {
+    width: 1,
+    borderLeftWidth: 1,
+    borderLeftColor: COLORS.tertiary,
+    alignSelf: 'stretch',
+  },
+  resourceGridOneColumn: {
+    flexDirection: 'column',
+  },
+  lineItemBase: {
+    paddingTop: 2,
+    paddingBottom: 10,
+    marginBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.tertiary,
+  },
+  lineItemTitle: {
+    fontSize: BASE_FONT.subtitle,
     fontFamily: 'Helvetica-Bold',
     color: COLORS.primary,
   },
-  itemContent: {
-    paddingLeft: 24,
-  },
-  itemServiceName: {
-    fontSize: 11,
-    marginTop: ITEM_GAP,
-    fontFamily: 'Helvetica-Bold',
-    color: COLORS.primary,
-  },
-  itemColumns: {
+  lineItemDetailRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-  },
-  itemLeftColumn: {
-    flex: 1,
-    paddingRight: 20,
-  },
-  itemRightColumn: {
-    flexShrink: 0,
-    alignItems: 'flex-end',
-  },
-  itemAddress: {
-    fontSize: 11,
-    color: COLORS.primary,
-    marginTop: ITEM_GAP,
-  },
-  itemHoursRow: {
-    flexDirection: 'row',
     alignItems: 'flex-start',
-    marginTop: ITEM_GAP,
+    marginTop: 6,
   },
-  itemHours: {
-    fontSize: 10,
-    color: COLORS.primary,
-  },
-  itemWebsite: {
-    fontSize: 10,
+  lineItemAddress: {
+    fontSize: BASE_FONT.body,
     color: COLORS.secondary,
-    marginTop: ITEM_GAP,
-    textDecoration: 'underline',
+    flex: 1,
+    paddingRight: 12,
   },
-  itemPhone: {
-    fontSize: 11,
+  lineItemPhone: {
+    fontSize: BASE_FONT.body,
     color: COLORS.primary,
-    marginTop: ITEM_GAP,
+    fontFamily: 'Helvetica-Bold',
   },
-  itemEmail: {
-    fontSize: 10,
+  summaryItem: {
+    marginBottom: 14,
+    paddingBottom: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.tertiary,
+  },
+  summaryItemNoSeparator: {
+    marginBottom: 14,
+    paddingBottom: 14,
+    borderBottomWidth: 0,
+  },
+  resourceTitle: {
+    fontSize: BASE_FONT.heading,
+    fontFamily: 'Helvetica-Bold',
+    color: COLORS.primary,
+  },
+  resourceSubtitle: {
+    fontSize: BASE_FONT.subtitle,
     color: COLORS.secondary,
-    marginTop: ITEM_GAP,
+    marginTop: 2,
   },
-  itemDescription: {
-    fontSize: 10,
+  resourceDescription: {
+    fontSize: BASE_FONT.body,
     color: COLORS.primary,
-    marginTop: ITEM_GAP,
+    marginTop: 8,
+    marginBottom: 4,
   },
-  footer: {
+  datumRow: {
+    flexDirection: 'row',
+    marginTop: 4,
+  },
+  datumLabel: {
+    width: DATUM_LABEL_WIDTH,
+    fontSize: BASE_FONT.body,
+    color: COLORS.tertiary,
+    paddingRight: 8,
+  },
+  datumValue: {
+    flex: 1,
+    fontSize: BASE_FONT.body,
+    color: COLORS.primary,
+  },
+  datumPhoneValue: {
+    flex: 1,
+    fontSize: BASE_FONT.body,
+    color: COLORS.primary,
+    fontFamily: 'Helvetica-Bold',
+  },
+  fullPageBody: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  fullPageLeftMeta: {
+    width: 170,
+    paddingRight: 16,
+    marginRight: 16,
+    borderRightWidth: 1,
+    borderRightColor: COLORS.tertiary,
+    flexDirection: 'column',
+  },
+  fullPageLeftLogo: {
+    width: '100%',
+    height: 50,
+    objectFit: 'contain',
+    marginBottom: 8,
+  },
+  fullPageLeftLogoSeparator: {
+    borderTopWidth: 1,
+    borderTopColor: COLORS.tertiary,
+    marginBottom: 10,
+  },
+  fullPageLeftName: {
+    fontSize: BASE_FONT.title,
+    color: COLORS.primary,
+    fontFamily: 'Helvetica-Bold',
+    marginBottom: 6,
+    lineHeight: 1.25,
+  },
+  fullPageLeftDate: {
+    fontSize: BASE_FONT.body,
+    color: COLORS.secondary,
+  },
+  fullPageLeftSpacer: {
+    flex: 1,
+  },
+  fullPageLeftBottomSeparator: {
+    borderTopWidth: 1,
+    borderTopColor: COLORS.tertiary,
+    marginBottom: 8,
+  },
+  fullPageLeftDial: {
+    fontSize: BASE_FONT.heading,
+    color: COLORS.primary,
+    fontFamily: 'Helvetica-Bold',
+    marginBottom: 2,
+  },
+  fullPageLeftDomain: {
+    fontSize: BASE_FONT.body,
+    color: COLORS.secondary,
+  },
+  fullPageRightContent: {
+    flex: 1,
+    flexDirection: 'column',
+  },
+  fullItem: {
+    marginBottom: 16,
+    paddingBottom: 10,
+    borderBottomWidth: 0,
+  },
+  footerWithLogo: {
     position: 'absolute',
-    bottom: 50,
-    left: 50,
-    right: 50,
+    bottom: 40,
+    left: 40,
+    right: 40,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 20,
+  },
+  footerTextOnly: {
+    position: 'absolute',
+    bottom: 40,
+    left: 40,
+    right: 40,
   },
   footerLogo: {
     width: 100,
@@ -183,14 +311,14 @@ const styles = StyleSheet.create({
     objectFit: 'contain',
   },
   footerText: {
-    fontSize: 8,
+    fontSize: BASE_FONT.small,
     color: COLORS.secondary,
     flex: 1,
     lineHeight: 1.25,
   },
   pageNumber: {
     position: 'absolute',
-    fontSize: 10,
+    fontSize: BASE_FONT.body,
     bottom: 22,
     left: 0,
     right: 0,
@@ -199,172 +327,545 @@ const styles = StyleSheet.create({
   },
 });
 
-/**
- * Remove service name from display name if it's duplicated at start or end
- */
-function getDisplayName(
-  displayName: string | undefined,
-  serviceName: string | undefined,
-): string | undefined {
-  if (!displayName || !serviceName) {
-    return displayName;
-  }
-
-  let result = displayName;
-
-  // Remove service name from the end if duplicated
-  if (result.endsWith(serviceName)) {
-    result = result
-      .slice(0, -serviceName.length)
-      .trim()
-      .replace(/[-–—]\s*$/, '')
-      .trim();
-  }
-  // Remove service name from the start if duplicated
-  else if (result.startsWith(serviceName)) {
-    result = result
-      .slice(serviceName.length)
-      .trim()
-      .replace(/^[-–—]\s*/, '')
-      .trim();
-  }
-
-  return result;
+function getFontScale(mode: FontSizeMode): number {
+  return mode === 'large' ? 2 : 1;
 }
 
-/**
- * Show domain only if URL is longer than 80 characters to prevent overflow
- */
-function getTruncatedWebsite(website: string | undefined): string | undefined {
-  if (!website || website.length <= 80) {
-    return website;
+function scaleStyle(
+  baseStyle: PdfStyle,
+  fontScale: number,
+  scaleWidth?: boolean,
+): PdfStyle {
+  if (fontScale === 1) {
+    return baseStyle;
   }
 
-  try {
-    const url = new URL(
-      website.startsWith('http') ? website : `https://${website}`,
-    );
-    return url.hostname;
-  } catch {
-    // If URL parsing fails, keep original
-    return website;
+  const scaledStyle = { ...baseStyle };
+
+  if (typeof baseStyle.fontSize === 'number') {
+    scaledStyle.fontSize = baseStyle.fontSize * fontScale;
   }
+
+  if (
+    scaleWidth &&
+    typeof baseStyle.width === 'number' &&
+    baseStyle.width > 0
+  ) {
+    scaledStyle.width = baseStyle.width * fontScale;
+  }
+
+  return scaledStyle;
 }
 
-type PDFDirectoryItemProps = {
-  item: PrintableDirectoryData['items'][number];
-  variant: 'phone-book' | 'all-info';
+function formatWebsiteForDisplay(value: string, variant: PrintVariant): string {
+  if (!value) return value;
+
+  if (variant === 'summary-listing') {
+    // Hostname only: strip protocol, www, path, query
+    try {
+      const url = new URL(
+        value.startsWith('http') ? value : `https://${value}`,
+      );
+      return url.hostname.replace(/^www\./i, '');
+    } catch {
+      // Fallback: strip protocol and www manually
+      return value
+        .replace(/^https?:\/\//i, '')
+        .replace(/^www\./i, '')
+        .split('/')[0]
+        .split('?')[0]
+        .trim();
+    }
+  }
+
+  if (variant === 'full-listing') {
+    // Keep subdomain + path, strip protocol and query params
+    try {
+      const url = new URL(
+        value.startsWith('http') ? value : `https://${value}`,
+      );
+      return (url.hostname + url.pathname).replace(/\/$/, '');
+    } catch {
+      // Fallback: strip protocol and query params manually
+      return value
+        .replace(/^https?:\/\//i, '')
+        .split('?')[0]
+        .trim();
+    }
+  }
+
+  return value;
+}
+
+function normalizeForComparison(value: string): string {
+  return value.replace(/\s+/g, ' ').trim().toLowerCase();
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function getDisplayTitleAndSubtitle(
+  item: PrintableDirectoryData['items'][number],
+): {
+  title: string;
+  subtitle: string;
+} {
+  const title = item.displayName;
+  const subtitle = item.serviceName;
+
+  const normalizedTitle = normalizeForComparison(title);
+  const normalizedSubtitle = normalizeForComparison(subtitle);
+
+  if (!normalizedTitle || !normalizedSubtitle) {
+    return { title, subtitle };
+  }
+
+  if (!normalizedTitle.includes(normalizedSubtitle)) {
+    return { title, subtitle };
+  }
+
+  const escapedSubtitle = normalizeForComparison(subtitle)
+    .split(' ')
+    .map((part) => escapeRegExp(part))
+    .join('\\s+');
+
+  const cleanedTitle = title
+    .replace(new RegExp(escapedSubtitle, 'ig'), ' ')
+    .replace(/\s*[|,;:\-–—]\s*/g, ' ')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+
+  if (!cleanedTitle) {
+    // Title was entirely composed of subtitle — show org name once, no duplicate subtitle
+    return { title: subtitle, subtitle: '' };
+  }
+
+  return {
+    title: cleanedTitle,
+    subtitle,
+  };
+}
+
+type PrintDatumProps = {
+  label: string;
+  value: string;
+  isPhone?: boolean;
+  fontScale: number;
 };
 
-function PDFDirectoryItem({ item, variant }: PDFDirectoryItemProps) {
-  const displayName = getDisplayName(item.displayName, item.serviceName);
-  const truncatedWebsite = getTruncatedWebsite(item.website);
+type PrintDatumHtmlProps = {
+  label: string;
+  value: string;
+  fontScale: number;
+};
+
+function PrintDatumHtml({ label, value, fontScale }: PrintDatumHtmlProps) {
+  if (!value) {
+    return null;
+  }
 
   return (
-    <View style={styles.item} wrap={false}>
-      {displayName && <Text style={styles.itemDisplayName}>{displayName}</Text>}
+    <View style={styles.datumRow} wrap={false}>
+      <Text style={scaleStyle(styles.datumLabel, fontScale, true)}>
+        {label}
+      </Text>
+      <PDFHtmlRenderer
+        html={value}
+        style={scaleStyle(styles.datumValue, fontScale)}
+      />
+    </View>
+  );
+}
 
-      <View style={styles.itemContent}>
-        {item.serviceName && (
-          <Text style={styles.itemServiceName}>{item.serviceName}</Text>
+function PrintDatum({
+  label,
+  value,
+  isPhone = false,
+  fontScale,
+}: PrintDatumProps) {
+  if (!value) {
+    return null;
+  }
+
+  return (
+    <View style={styles.datumRow} wrap={false}>
+      <Text style={scaleStyle(styles.datumLabel, fontScale, true)}>
+        {label}
+      </Text>
+      <Text
+        style={scaleStyle(
+          isPhone ? styles.datumPhoneValue : styles.datumValue,
+          fontScale,
         )}
+      >
+        {value}
+      </Text>
+    </View>
+  );
+}
 
-        <View style={styles.itemColumns}>
-          <View style={styles.itemLeftColumn}>
-            {item.address && (
-              <Text style={styles.itemAddress}>{item.address}</Text>
-            )}
+type LineListingItemProps = {
+  item: PrintableDirectoryData['items'][number];
+  fontScale: number;
+};
 
-            {item.hours && (
-              <View style={styles.itemHoursRow}>
-                <ClockIcon size={10} />
-                <Text style={styles.itemHours}>{item.hours}</Text>
-              </View>
-            )}
+function LineListingItem({ item, fontScale }: LineListingItemProps) {
+  const itemTitle = item.displayName || item.serviceName;
 
-            {truncatedWebsite && (
-              <Text style={styles.itemWebsite}>{truncatedWebsite}</Text>
-            )}
-          </View>
+  return (
+    <View style={styles.lineItemBase} wrap={false}>
+      {itemTitle && (
+        <Text style={scaleStyle(styles.lineItemTitle, fontScale)}>
+          {itemTitle}
+        </Text>
+      )}
 
-          <View style={styles.itemRightColumn}>
-            {item.phone && <Text style={styles.itemPhone}>{item.phone}</Text>}
-
-            {item.email && <Text style={styles.itemEmail}>{item.email}</Text>}
-          </View>
-        </View>
-
-        {variant === 'all-info' && item.description && (
-          <View>
-            <PDFHtmlRenderer
-              html={item.description}
-              style={styles.itemDescription}
-            />
-          </View>
-        )}
+      <View style={styles.lineItemDetailRow}>
+        <Text style={scaleStyle(styles.lineItemAddress, fontScale)}>
+          {item.address}
+        </Text>
+        <Text style={scaleStyle(styles.lineItemPhone, fontScale)}>
+          {item.phone}
+        </Text>
       </View>
     </View>
   );
 }
 
-type PDFDirectoryProps = {
-  /** The directory data to render */
-  data: PrintableDirectoryData;
-  /** Print format variant: 'phone-book' (contact info only) or 'all-info' (includes descriptions) */
-  variant: 'phone-book' | 'all-info';
-  /** Current domain to display in header */
-  currentDomain: string;
-  /** Current date to display in header (formatted as MM/DD/YYYY) */
+type SummaryListingItemProps = {
+  item: PrintableDirectoryData['items'][number];
+  labels: DatumLabels;
+  fontScale: number;
+  showSeparator: boolean;
+};
+
+function SummaryListingItem({
+  item,
+  labels,
+  fontScale,
+  showSeparator,
+}: SummaryListingItemProps) {
+  const { title, subtitle } = getDisplayTitleAndSubtitle(item);
+
+  return (
+    <View
+      style={
+        showSeparator
+          ? styles.summaryItem
+          : [styles.summaryItem, styles.summaryItemNoSeparator]
+      }
+      wrap={false}
+    >
+      {title && (
+        <Text style={scaleStyle(styles.resourceTitle, fontScale)}>{title}</Text>
+      )}
+      {subtitle && (
+        <Text style={scaleStyle(styles.resourceSubtitle, fontScale)}>
+          {subtitle}
+        </Text>
+      )}
+
+      <PrintDatum
+        label={labels.phone}
+        value={item.phone}
+        isPhone
+        fontScale={fontScale}
+      />
+      <PrintDatum
+        label={labels.hours}
+        value={item.hours}
+        fontScale={fontScale}
+      />
+      <PrintDatum
+        label={labels.email}
+        value={item.email}
+        fontScale={fontScale}
+      />
+      <PrintDatum
+        label={labels.website}
+        value={formatWebsiteForDisplay(item.website, 'summary-listing')}
+        fontScale={fontScale}
+      />
+      <PrintDatum
+        label={labels.address}
+        value={item.address}
+        fontScale={fontScale}
+      />
+    </View>
+  );
+}
+
+type FullListingItemProps = {
+  item: PrintableDirectoryData['items'][number];
+  labels: DatumLabels;
+  fontScale: number;
+};
+
+function FullListingItem({ item, labels, fontScale }: FullListingItemProps) {
+  const { title, subtitle } = getDisplayTitleAndSubtitle(item);
+
+  return (
+    <View style={styles.fullItem}>
+      <View wrap={fontScale > 1}>
+        {title && (
+          <Text style={scaleStyle(styles.resourceTitle, fontScale)}>
+            {title}
+          </Text>
+        )}
+
+        {subtitle && (
+          <Text style={scaleStyle(styles.resourceSubtitle, fontScale)}>
+            {subtitle}
+          </Text>
+        )}
+
+        {item.description && (
+          <PDFHtmlRenderer
+            html={item.description}
+            style={scaleStyle(styles.resourceDescription, fontScale)}
+          />
+        )}
+      </View>
+
+      <PrintDatum
+        label={labels.phone}
+        value={item.phone}
+        isPhone
+        fontScale={fontScale}
+      />
+      <PrintDatum
+        label={labels.hours}
+        value={item.hours}
+        fontScale={fontScale}
+      />
+      <PrintDatum
+        label={labels.email}
+        value={item.email}
+        fontScale={fontScale}
+      />
+      <PrintDatum
+        label={labels.website}
+        value={formatWebsiteForDisplay(item.website, 'full-listing')}
+        fontScale={fontScale}
+      />
+      <PrintDatum
+        label={labels.address}
+        value={item.address}
+        fontScale={fontScale}
+      />
+      <PrintDatum
+        label={labels.transportation}
+        value={item.transportation}
+        fontScale={fontScale}
+      />
+      <PrintDatum
+        label={labels.accessibility}
+        value={item.accessibility}
+        fontScale={fontScale}
+      />
+      <PrintDatumHtml
+        label={labels.eligibility}
+        value={item.eligibility}
+        fontScale={fontScale}
+      />
+      <PrintDatum
+        label={labels.requiredDocuments}
+        value={item.requiredDocuments}
+        fontScale={fontScale}
+      />
+      <PrintDatum
+        label={labels.languages}
+        value={item.languages}
+        fontScale={fontScale}
+      />
+      <PrintDatum label={labels.fees} value={item.fees} fontScale={fontScale} />
+    </View>
+  );
+}
+
+type DirectoryHeaderProps = {
+  listName: string;
   currentDate: string;
-  /** Optional brand logo URL for footer */
+  currentDomain: string;
+};
+
+function DirectoryHeader({
+  listName,
+  currentDate,
+  currentDomain,
+}: DirectoryHeaderProps) {
+  return (
+    <View style={styles.header} fixed>
+      <View style={styles.headerContent}>
+        <Text style={styles.headerTitle}>{listName}</Text>
+        <View style={styles.headerMeta}>
+          <Text style={styles.headerDate}>{currentDate}</Text>
+          <Text style={styles.headerDomain}>{currentDomain}</Text>
+        </View>
+      </View>
+      <View style={styles.headerSeparator} />
+    </View>
+  );
+}
+
+type DirectoryFooterProps = {
+  disclaimerText: string;
+  showLogo: boolean;
   brandLogoUrl?: string;
-  /** Footer disclaimer text */
+};
+
+function DirectoryFooter({
+  disclaimerText,
+  showLogo,
+  brandLogoUrl,
+}: DirectoryFooterProps) {
+  return (
+    <View
+      style={showLogo ? styles.footerWithLogo : styles.footerTextOnly}
+      fixed
+    >
+      {showLogo && brandLogoUrl && (
+        <Image style={styles.footerLogo} src={brandLogoUrl} />
+      )}
+      <Text style={styles.footerText}>{disclaimerText}</Text>
+    </View>
+  );
+}
+
+function splitItemsIntoColumns<T>(items: T[]): [T[], T[]] {
+  const leftCount = Math.ceil(items.length / 2);
+  return [items.slice(0, leftCount), items.slice(leftCount)];
+}
+
+type PDFDirectoryProps = {
+  data: PrintableDirectoryData;
+  variant: PrintVariant;
+  fontSizeMode: FontSizeMode;
+  currentDomain: string;
+  currentDate: string;
+  brandLogoUrl?: string;
   disclaimerText: string;
 };
 
-/**
- * Main PDF directory component that renders a printable directory document
- * with repeating headers, footers, and page numbers on each page
- */
 export function PDFDirectory({
   data,
   variant,
+  fontSizeMode,
   currentDomain,
   currentDate,
   brandLogoUrl,
   disclaimerText,
 }: PDFDirectoryProps) {
+  const fontScale = getFontScale(fontSizeMode);
+  const datumLabels = useDatumLabels();
+
+  // Sidebar layout only for full-listing at default font size.
+  // full-listing at large font uses the standard top-header layout.
+  const useSidebarLayout =
+    variant === 'full-listing' && fontSizeMode !== 'large';
+  const isTwoColumn = fontSizeMode !== 'large' && variant !== 'full-listing';
+  const [leftItems, rightItems] = splitItemsIntoColumns(data.items);
+
+  const renderItem = (item: PrintableDirectoryData['items'][number]) => {
+    if (variant === 'line-listing')
+      return (
+        <LineListingItem key={item.id} item={item} fontScale={fontScale} />
+      );
+    if (variant === 'summary-listing')
+      return (
+        <SummaryListingItem
+          key={item.id}
+          item={item}
+          labels={datumLabels}
+          fontScale={fontScale}
+          showSeparator={fontSizeMode === 'default'}
+        />
+      );
+    return (
+      <FullListingItem
+        key={item.id}
+        item={item}
+        labels={datumLabels}
+        fontScale={fontScale}
+      />
+    );
+  };
+
   return (
     <Document>
-      <Page size="LETTER" style={styles.page}>
-        {/* Fixed header on every page */}
-        <View style={styles.header} fixed>
-          <View style={styles.headerContent}>
-            <Text style={styles.headerTitle}>{data.name}</Text>
-            <View style={styles.headerMeta}>
-              <Text style={styles.headerDate}>{currentDate}</Text>
-              <Text style={styles.headerDomain}>{currentDomain}</Text>
+      <Page
+        size="LETTER"
+        style={useSidebarLayout ? styles.pageNoHeader : styles.pageWithHeader}
+      >
+        {!useSidebarLayout && (
+          <DirectoryHeader
+            listName={data.name}
+            currentDate={currentDate}
+            currentDomain={currentDomain}
+          />
+        )}
+
+        {useSidebarLayout ? (
+          <View style={styles.fullPageBody}>
+            <View style={styles.fullPageLeftMeta} fixed>
+              {brandLogoUrl && (
+                <Image style={styles.fullPageLeftLogo} src={brandLogoUrl} />
+              )}
+              <View style={styles.fullPageLeftLogoSeparator} />
+              <Text style={scaleStyle(styles.fullPageLeftName, fontScale)}>
+                {data.name}
+              </Text>
+              <Text style={scaleStyle(styles.fullPageLeftDate, fontScale)}>
+                {currentDate}
+              </Text>
+              <View style={styles.fullPageLeftSpacer} />
+              <View style={styles.fullPageLeftBottomSeparator} />
+              <Text style={scaleStyle(styles.fullPageLeftDial, fontScale)}>
+                {datumLabels.dial211}
+              </Text>
+              <Text style={scaleStyle(styles.fullPageLeftDomain, fontScale)}>
+                {currentDomain}
+              </Text>
+            </View>
+            <View style={styles.fullPageRightContent}>
+              {data.items.map(renderItem)}
             </View>
           </View>
-          <View style={styles.headerSeparator} />
-        </View>
+        ) : (
+          <View style={styles.content}>
+            {isTwoColumn ? (
+              <View style={styles.resourceGridTwoColumns}>
+                <View
+                  style={[styles.resourceColumn, styles.resourceColumnLeft]}
+                >
+                  {leftItems.map(renderItem)}
+                </View>
+                {rightItems.length > 0 && (
+                  <View style={styles.resourceColumnSeparator} />
+                )}
+                {rightItems.length > 0 && (
+                  <View
+                    style={[styles.resourceColumn, styles.resourceColumnRight]}
+                  >
+                    {rightItems.map(renderItem)}
+                  </View>
+                )}
+              </View>
+            ) : (
+              <View style={styles.resourceGridOneColumn}>
+                {data.items.map(renderItem)}
+              </View>
+            )}
+          </View>
+        )}
 
-        {/* Content */}
-        <View style={styles.content}>
-          {data.items.map((item) => (
-            <PDFDirectoryItem key={item.id} item={item} variant={variant} />
-          ))}
-        </View>
+        <DirectoryFooter
+          disclaimerText={disclaimerText}
+          showLogo={!useSidebarLayout}
+          brandLogoUrl={brandLogoUrl}
+        />
 
-        {/* Fixed footer on every page */}
-        <View style={styles.footer} fixed>
-          {brandLogoUrl && (
-            <Image style={styles.footerLogo} src={brandLogoUrl} />
-          )}
-          <Text style={styles.footerText}>{disclaimerText}</Text>
-        </View>
-
-        {/* Page numbers on every page */}
         <Text
           style={styles.pageNumber}
           render={({ pageNumber, totalPages }) =>
