@@ -24,5 +24,7 @@
     }
   },
   "name_unavailable": "Nimi ei saatavilla",
-  "share_body": "Katso {{count}} hakutulosta haulle \"{{title}}\""
+  "share_body": "Katso {{count}} hakutulosta haulle \"{{title}}\"",
+  "age_filter_label": "Suodata iän mukaan",
+  "age_filter_placeholder": "Anna ikä"
 }

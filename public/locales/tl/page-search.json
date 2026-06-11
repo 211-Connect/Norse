@@ -24,5 +24,7 @@
     }
   },
   "name_unavailable": "Hindi magagamit ang pangalan",
-  "share_body": "Tingnan ang mga resulta ng paghahanap para sa {{count}} para sa \"{{title}}\""
+  "share_body": "Tingnan ang mga resulta ng paghahanap para sa {{count}} para sa \"{{title}}\"",
+  "age_filter_label": "Salain ayon sa edad",
+  "age_filter_placeholder": "Ilagay ang edad"
 }

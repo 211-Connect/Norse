@@ -24,5 +24,7 @@
     }
   },
   "name_unavailable": "姓名不可用",
-  "share_body": "查看 {{count}} 條關於「{{title}}」的搜尋結果"
+  "share_body": "查看 {{count}} 條關於「{{title}}」的搜尋結果",
+  "age_filter_label": "依年齡篩選",
+  "age_filter_placeholder": "輸入年齡"
 }

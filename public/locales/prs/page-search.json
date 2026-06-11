@@ -24,5 +24,7 @@
     }
   },
   "name_unavailable": "نام موجود نیست",
-  "share_body": "نتایج جستجوی {{count}} برای \"{{title}}\" را ببینید"
+  "share_body": "نتایج جستجوی {{count}} برای \"{{title}}\" را ببینید",
+  "age_filter_label": "فیلتر بر اساس سن",
+  "age_filter_placeholder": "سن را وارد کنید"
 }
