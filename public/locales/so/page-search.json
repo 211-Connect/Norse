@@ -24,5 +24,7 @@
     }
   },
   "name_unavailable": "Magaca lama heli karo",
-  "share_body": "Eeg natiijooyinka raadinta {{count}} ee \"{{title}}\""
+  "share_body": "Eeg natiijooyinka raadinta {{count}} ee \"{{title}}\"",
+  "age_filter_label": "Shaandhee da' ahaan",
+  "age_filter_placeholder": "Geli da'da"
 }

@@ -24,5 +24,7 @@
     }
   },
   "name_unavailable": "Nom indisponible",
-  "share_body": "Voir {{count}} résultats de recherche pour \"{{title}}\""
+  "share_body": "Voir {{count}} résultats de recherche pour \"{{title}}\"",
+  "age_filter_label": "Filtrer par âge",
+  "age_filter_placeholder": "Indiquez l'âge"
 }

@@ -24,5 +24,7 @@
     }
   },
   "name_unavailable": "Yaca sega ni rawati",
-  "share_body": "Raica na {{count}} na isau ni vakasaqaqara me baleta na \"{{title}}\""
+  "share_body": "Raica na {{count}} na isau ni vakasaqaqara me baleta na \"{{title}}\"",
+  "age_filter_label": "Vakasavasavataka na yabaki",
+  "age_filter_placeholder": "Vakacuruma na yabaki"
 }

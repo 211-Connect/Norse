@@ -24,5 +24,7 @@
     }
   },
   "name_unavailable": "E le'i maua le igoa",
-  "share_body": "Va'ai i le {{count}} i'uga o le sailiga mo le \"{{title}}\""
+  "share_body": "Va'ai i le {{count}} i'uga o le sailiga mo le \"{{title}}\"",
+  "age_filter_label": "Fa'amama e tusa ai ma tausaga",
+  "age_filter_placeholder": "Ulufale tausaga"
 }

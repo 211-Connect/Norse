@@ -24,5 +24,7 @@
     }
   },
   "name_unavailable": "ନାମ ଉପଲବ୍ଧ ନାହିଁ",
-  "share_body": "\"{{count}}\" ପାଇଁ {{title}} ସନ୍ଧାନ ଫଳାଫଳ ଦେଖନ୍ତୁ।"
+  "share_body": "\"{{count}}\" ପାଇଁ {{title}} ସନ୍ଧାନ ଫଳାଫଳ ଦେଖନ୍ତୁ।",
+  "age_filter_label": "ବୟସ ଅନୁସାରେ ଫିଲ୍ଟର୍ କରନ୍ତୁ",
+  "age_filter_placeholder": "ବୟସ ଲେଖନ୍ତୁ"
 }

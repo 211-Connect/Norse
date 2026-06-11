@@ -24,5 +24,7 @@
     }
   },
   "name_unavailable": "Ім'я недоступне",
-  "share_body": "Див. {{count}} результатів пошуку для \"{{title}}\""
+  "share_body": "Див. {{count}} результатів пошуку для \"{{title}}\"",
+  "age_filter_label": "Фільтрувати за віком",
+  "age_filter_placeholder": "Введіть вік"
 }

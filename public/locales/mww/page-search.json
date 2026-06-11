@@ -24,5 +24,7 @@
     }
   },
   "name_unavailable": "Lub npe tsis muaj",
-  "share_body": "Saib cov txiaj ntsig tshawb nrhiav {{count}} rau \"{{title}}\""
+  "share_body": "Saib cov txiaj ntsig tshawb nrhiav {{count}} rau \"{{title}}\"",
+  "age_filter_label": "Lim los ntawm hnub nyoog",
+  "age_filter_placeholder": "Sau hnub nyoog"
 }

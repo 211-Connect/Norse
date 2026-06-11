@@ -24,5 +24,7 @@
     }
   },
   "name_unavailable": "નામ ઉપલબ્ધ નથી",
-  "share_body": "\"{{count}}\" માટે {{title}} શોધ પરિણામો જુઓ."
+  "share_body": "\"{{count}}\" માટે {{title}} શોધ પરિણામો જુઓ.",
+  "age_filter_label": "ઉંમર પ્રમાણે ફિલ્ટર કરો",
+  "age_filter_placeholder": "ઉંમર દાખલ કરો"
 }

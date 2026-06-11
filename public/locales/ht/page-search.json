@@ -24,5 +24,7 @@
     }
   },
   "name_unavailable": "Non pa disponib",
-  "share_body": "Gade {{count}} rezilta rechèch pou \"{{title}}\""
+  "share_body": "Gade {{count}} rezilta rechèch pou \"{{title}}\"",
+  "age_filter_label": "Filtre pa laj",
+  "age_filter_placeholder": "Antre laj"
 }

@@ -24,5 +24,7 @@
     }
   },
   "name_unavailable": "Имя недоступно",
-  "share_body": "См. {{count}} результатов поиска по запросу \"{{title}}\""
+  "share_body": "См. {{count}} результатов поиска по запросу \"{{title}}\"",
+  "age_filter_label": "Фильтр по возрасту",
+  "age_filter_placeholder": "Введите возраст"
 }
