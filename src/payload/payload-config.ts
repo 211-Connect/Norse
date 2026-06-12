@@ -220,6 +220,20 @@ const config = buildConfig({
           maxWidth: 'full',
         },
         {
+          slug: 'analytics-zip-code-searches',
+          Component:
+            '@/payload/components/analytics/widgets/ZipCodeSearchesWidget#default',
+          minWidth: 'medium',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-county-searches',
+          Component:
+            '@/payload/components/analytics/widgets/CountySearchesWidget#default',
+          minWidth: 'medium',
+          maxWidth: 'full',
+        },
+        {
           slug: 'analytics-resource-entry-points',
           Component:
             '@/payload/components/analytics/widgets/ResourceEntryPointsWidget#default',

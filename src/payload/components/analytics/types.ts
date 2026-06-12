@@ -38,6 +38,18 @@ export type ResourceByEntryData = {
   resourceByEntry: MetricEntry[];
 };
 
+export type AreaMetricsRow = {
+  area: string;
+  totalSearches: number;
+  zeroSearches: number;
+  zeroRate: number;
+};
+
+export type AreaSearchMetricsData = {
+  zipCodeRows: AreaMetricsRow[];
+  countyRows: AreaMetricsRow[];
+};
+
 export type SessionsData = {
   sessions: UmamiSession[];
 };

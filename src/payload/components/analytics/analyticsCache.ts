@@ -7,6 +7,8 @@ import { UmamiEvent } from '../../../app/(app)/shared/lib/umami';
 import { geocodeSessions } from './geocodeSessions';
 import type {
   AnalyticsMetrics,
+  AreaMetricsRow,
+  AreaSearchMetricsData,
   DateRange,
   EventsData,
   LanguageSwitchDestinationsData,
@@ -128,6 +130,84 @@ function makeCachedFetch<T>(
     setCache(cache, key, promise);
     return promise;
   };
+}
+
+function normalizeAreaValue(value: string): string {
+  return value.trim().toLowerCase();
+}
+
+function buildAreaRows(
+  textEntries: MetricEntry[],
+  taxonomyEntries: MetricEntry[],
+  zeroEntries: MetricEntry[],
+): AreaMetricsRow[] {
+  const table = new Map<
+    string,
+    {
+      area: string;
+      text: number;
+      taxonomy: number;
+      zero: number;
+    }
+  >();
+
+  const touch = (area: string) => {
+    const normalized = normalizeAreaValue(area);
+    if (!normalized) return null;
+    const existing = table.get(normalized);
+    if (existing) return existing;
+
+    const created = {
+      area: area.trim(),
+      text: 0,
+      taxonomy: 0,
+      zero: 0,
+    };
+    table.set(normalized, created);
+    return created;
+  };
+
+  for (const entry of textEntries) {
+    const row = touch(entry.x);
+    if (!row) continue;
+    row.text += entry.y;
+  }
+
+  for (const entry of taxonomyEntries) {
+    const row = touch(entry.x);
+    if (!row) continue;
+    row.taxonomy += entry.y;
+  }
+
+  for (const entry of zeroEntries) {
+    const row = touch(entry.x);
+    if (!row) continue;
+    row.zero += entry.y;
+  }
+
+  return Array.from(table.values())
+    .map((row) => {
+      const totalSearches = row.text + row.taxonomy;
+      const denominator = totalSearches + row.zero;
+      return {
+        area: row.area,
+        totalSearches,
+        zeroSearches: row.zero,
+        zeroRate: denominator > 0 ? row.zero / denominator : 0,
+      };
+    })
+    .sort((a, b) => {
+      if (b.zeroRate !== a.zeroRate) {
+        return b.zeroRate - a.zeroRate;
+      }
+      if (b.zeroSearches !== a.zeroSearches) {
+        return b.zeroSearches - a.zeroSearches;
+      }
+      if (b.totalSearches !== a.totalSearches) {
+        return b.totalSearches - a.totalSearches;
+      }
+      return a.area.localeCompare(b.area);
+    });
 }
 
 export const fetchStats = makeCachedFetch(
@@ -432,6 +512,123 @@ export const fetchZeroResultQueries = makeCachedFetch(
     const zeroResultQueries = toMetricEntries(zeroResultQueriesRaw);
 
     return { zeroResultQueries };
+  },
+);
+
+export const fetchAreaSearchMetrics = makeCachedFetch(
+  new Map<string, CacheEntry<AreaSearchMetricsData>>(),
+  async ({ startAt, endAt }, tenantId, websiteIds) => {
+    const [
+      zipTextRaw,
+      zipTaxonomyRaw,
+      zipZeroRaw,
+      countyTextRaw,
+      countyTaxonomyRaw,
+      countyZeroRaw,
+    ] = await Promise.all([
+      fetchWrapper<UmamiEventDataValue[]>(
+        buildProxyQuery(
+          'event-data/values',
+          startAt,
+          endAt,
+          tenantId,
+          {
+            event: UmamiEvent.SearchText,
+            propertyName: 'searchZipCode',
+          },
+          websiteIds,
+        ),
+      ),
+      fetchWrapper<UmamiEventDataValue[]>(
+        buildProxyQuery(
+          'event-data/values',
+          startAt,
+          endAt,
+          tenantId,
+          {
+            event: UmamiEvent.SearchTaxonomy,
+            propertyName: 'searchZipCode',
+          },
+          websiteIds,
+        ),
+      ),
+      fetchWrapper<UmamiEventDataValue[]>(
+        buildProxyQuery(
+          'event-data/values',
+          startAt,
+          endAt,
+          tenantId,
+          {
+            event: UmamiEvent.SearchZeroResults,
+            propertyName: 'searchZipCode',
+          },
+          websiteIds,
+        ),
+      ),
+      fetchWrapper<UmamiEventDataValue[]>(
+        buildProxyQuery(
+          'event-data/values',
+          startAt,
+          endAt,
+          tenantId,
+          {
+            event: UmamiEvent.SearchText,
+            propertyName: 'searchCounty',
+          },
+          websiteIds,
+        ),
+      ),
+      fetchWrapper<UmamiEventDataValue[]>(
+        buildProxyQuery(
+          'event-data/values',
+          startAt,
+          endAt,
+          tenantId,
+          {
+            event: UmamiEvent.SearchTaxonomy,
+            propertyName: 'searchCounty',
+          },
+          websiteIds,
+        ),
+      ),
+      fetchWrapper<UmamiEventDataValue[]>(
+        buildProxyQuery(
+          'event-data/values',
+          startAt,
+          endAt,
+          tenantId,
+          {
+            event: UmamiEvent.SearchZeroResults,
+            propertyName: 'searchCounty',
+          },
+          websiteIds,
+        ),
+      ),
+    ]);
+
+    const zipText = zipTextRaw ?? [];
+    const zipTaxonomy = zipTaxonomyRaw ?? [];
+    const zipZero = zipZeroRaw ?? [];
+    const countyText = countyTextRaw ?? [];
+    const countyTaxonomy = countyTaxonomyRaw ?? [];
+    const countyZero = countyZeroRaw ?? [];
+
+    const zipCodeRows = buildAreaRows(
+      toMetricEntries(zipText),
+      toMetricEntries(zipTaxonomy),
+      toMetricEntries(zipZero),
+    );
+
+    const countyRows = buildAreaRows(
+      toMetricEntries(countyText),
+      toMetricEntries(countyTaxonomy),
+      toMetricEntries(countyZero),
+    );
+
+    return {
+      zipCodeRows,
+      countyRows,
+    };
   },
 );
 

@@ -242,6 +242,8 @@ export interface Config {
     'analytics-map': AnalyticsMapWidget;
     'analytics-resource-titles': AnalyticsResourceTitlesWidget;
     'analytics-search-queries': AnalyticsSearchQueriesWidget;
+    'analytics-zip-code-searches': AnalyticsZipCodeSearchesWidget;
+    'analytics-county-searches': AnalyticsCountySearchesWidget;
     'analytics-resource-entry-points': AnalyticsResourceEntryPointsWidget;
     'analytics-zero-result-queries': AnalyticsZeroResultQueriesWidget;
     'analytics-session-quality': AnalyticsSessionQualityWidget;
@@ -1937,6 +1939,26 @@ export interface AnalyticsResourceTitlesWidget {
  * via the `definition` "analytics-search-queries_widget".
  */
 export interface AnalyticsSearchQueriesWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-zip-code-searches_widget".
+ */
+export interface AnalyticsZipCodeSearchesWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-county-searches_widget".
+ */
+export interface AnalyticsCountySearchesWidget {
   data?: {
     [k: string]: unknown;
   };
