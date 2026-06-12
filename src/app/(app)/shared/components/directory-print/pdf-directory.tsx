@@ -10,9 +10,7 @@ import {
 } from '@react-pdf/renderer';
 import { useTranslation } from 'react-i18next';
 
-import { type PrintableDirectoryData } from '@/app/(app)/features/favorites/utils/printable-directory-transformers';
-
-import { PDFHtmlRenderer } from './pdf-html-renderer';
+import { type PrintableDirectoryData } from '@/app/(app)/shared/utils/printable-directory-transformers';
 
 type PdfStyle = Styles[string];
 
@@ -32,7 +30,7 @@ const BASE_FONT = {
   small: 8,
 } as const;
 
-const DATUM_LABEL_WIDTH = 60;
+const DATUM_LABEL_WIDTH = 72;
 
 type PrintVariant = 'line-listing' | 'summary-listing' | 'full-listing';
 type FontSizeMode = 'default' | 'large';
@@ -357,18 +355,29 @@ function scaleStyle(
   return scaledStyle;
 }
 
+function getDatumLabelStyle(fontScale: number): PdfStyle {
+  const scaledStyle = scaleStyle(styles.datumLabel, fontScale, true);
+
+  if (fontScale > 1 && typeof scaledStyle.width === 'number') {
+    return {
+      ...scaledStyle,
+      width: scaledStyle.width + 8,
+    };
+  }
+
+  return scaledStyle;
+}
+
 function formatWebsiteForDisplay(value: string, variant: PrintVariant): string {
   if (!value) return value;
 
   if (variant === 'summary-listing') {
-    // Hostname only: strip protocol, www, path, query
     try {
       const url = new URL(
         value.startsWith('http') ? value : `https://${value}`,
       );
       return url.hostname.replace(/^www\./i, '');
     } catch {
-      // Fallback: strip protocol and www manually
       return value
         .replace(/^https?:\/\//i, '')
         .replace(/^www\./i, '')
@@ -379,14 +388,12 @@ function formatWebsiteForDisplay(value: string, variant: PrintVariant): string {
   }
 
   if (variant === 'full-listing') {
-    // Keep subdomain + path, strip protocol and query params
     try {
       const url = new URL(
         value.startsWith('http') ? value : `https://${value}`,
       );
       return (url.hostname + url.pathname).replace(/\/$/, '');
     } catch {
-      // Fallback: strip protocol and query params manually
       return value
         .replace(/^https?:\/\//i, '')
         .split('?')[0]
@@ -437,7 +444,6 @@ function getDisplayTitleAndSubtitle(
     .trim();
 
   if (!cleanedTitle) {
-    // Title was entirely composed of subtitle — show org name once, no duplicate subtitle
     return { title: subtitle, subtitle: '' };
   }
 
@@ -460,20 +466,49 @@ type PrintDatumHtmlProps = {
   fontScale: number;
 };
 
+function decodeHtmlEntities(value: string): string {
+  return value
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'");
+}
+
+function htmlToPrintableText(value: string): string {
+  return decodeHtmlEntities(value)
+    .replace(/<br\s*\/?\s*>/gi, '\n')
+    .replace(/<\/?p[^>]*>/gi, '\n')
+    .replace(/<\/?div[^>]*>/gi, '\n')
+    .replace(/<li[^>]*>/gi, '\n- ')
+    .replace(/<\/li>/gi, '')
+    .replace(/<\/?ul[^>]*>/gi, '\n')
+    .replace(/<\/?ol[^>]*>/gi, '\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/\n-\s*\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .replace(/[ \t]+\n/g, '\n')
+    .trim();
+}
+
 function PrintDatumHtml({ label, value, fontScale }: PrintDatumHtmlProps) {
   if (!value) {
     return null;
   }
 
+  const printableValue = htmlToPrintableText(value);
+
+  if (!printableValue) {
+    return null;
+  }
+
   return (
-    <View style={styles.datumRow} wrap={false}>
-      <Text style={scaleStyle(styles.datumLabel, fontScale, true)}>
-        {label}
+    <View style={styles.datumRow}>
+      <Text style={getDatumLabelStyle(fontScale)}>{label}</Text>
+      <Text style={scaleStyle(styles.datumValue, fontScale)}>
+        {printableValue}
       </Text>
-      <PDFHtmlRenderer
-        html={value}
-        style={scaleStyle(styles.datumValue, fontScale)}
-      />
     </View>
   );
 }
@@ -490,9 +525,7 @@ function PrintDatum({
 
   return (
     <View style={styles.datumRow} wrap={false}>
-      <Text style={scaleStyle(styles.datumLabel, fontScale, true)}>
-        {label}
-      </Text>
+      <Text style={getDatumLabelStyle(fontScale)}>{label}</Text>
       <Text
         style={scaleStyle(
           isPhone ? styles.datumPhoneValue : styles.datumValue,
@@ -604,6 +637,9 @@ type FullListingItemProps = {
 
 function FullListingItem({ item, labels, fontScale }: FullListingItemProps) {
   const { title, subtitle } = getDisplayTitleAndSubtitle(item);
+  const printableDescription = item.description
+    ? htmlToPrintableText(item.description)
+    : '';
 
   return (
     <View style={styles.fullItem}>
@@ -620,11 +656,10 @@ function FullListingItem({ item, labels, fontScale }: FullListingItemProps) {
           </Text>
         )}
 
-        {item.description && (
-          <PDFHtmlRenderer
-            html={item.description}
-            style={scaleStyle(styles.resourceDescription, fontScale)}
-          />
+        {printableDescription && (
+          <Text style={scaleStyle(styles.resourceDescription, fontScale)}>
+            {printableDescription}
+          </Text>
         )}
       </View>
 
@@ -760,8 +795,6 @@ export function PDFDirectory({
   const fontScale = getFontScale(fontSizeMode);
   const datumLabels = useDatumLabels();
 
-  // Sidebar layout only for full-listing at default font size.
-  // full-listing at large font uses the standard top-header layout.
   const useSidebarLayout =
     variant === 'full-listing' && fontSizeMode !== 'large';
   const isTwoColumn = fontSizeMode !== 'large' && variant !== 'full-listing';

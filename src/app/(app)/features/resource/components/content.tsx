@@ -5,6 +5,7 @@ import { useRef } from 'react';
 import { ResourceEntry } from '@/app/(app)/shared/lib/umami';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { fontSans } from '@/app/(app)/shared/styles/fonts';
+import { resourcesToPrintableDirectory } from '@/app/(app)/shared/utils/printable-directory-transformers';
 import { AppConfig } from '@/types/appConfig';
 import { Resource } from '@/types/resource';
 
@@ -18,6 +19,7 @@ type ResourcePageContentProps = {
   entry: ResourceEntry;
   resourceId: string;
   tenantId: string;
+  locale: string;
 };
 
 export const ResourcePageContent = ({
@@ -26,8 +28,14 @@ export const ResourcePageContent = ({
   entry,
   resourceId,
   tenantId,
+  locale,
 }: ResourcePageContentProps) => {
   const componentToPrintRef = useRef<HTMLDivElement>(null);
+  const printableDirectoryData = resourcesToPrintableDirectory(
+    [resource],
+    locale,
+    resource.name?.trim() || resource.serviceName?.trim() || '',
+  );
 
   useResourceViewTracking({ entry, resourceId, tenantId });
 
@@ -36,6 +44,7 @@ export const ResourcePageContent = ({
       <Navigation
         componentToPrintRef={componentToPrintRef}
         resource={resource}
+        printableDirectoryData={printableDirectoryData}
       />
 
       <div ref={componentToPrintRef}>

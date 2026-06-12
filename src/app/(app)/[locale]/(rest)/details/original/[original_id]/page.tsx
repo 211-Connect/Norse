@@ -15,7 +15,7 @@ import { Resource } from '@/types/resource';
 
 const log = createLogger('original-details-page');
 
-const i18nNamespaces = ['page-resource', 'page-404', 'common'];
+const i18nNamespaces = ['page-resource', 'page-list', 'page-404', 'common'];
 
 export const generateMetadata = async ({ params }) => {
   const { original_id, locale } = await params;
@@ -117,6 +117,7 @@ export default async function OriginalDetailsPage({ params, searchParams }) {
         entry={resolvedEntry}
         resourceId={resource.id ?? original_id}
         tenantId={appConfig.tenantId ?? ''}
+        locale={locale}
       />
     </PageWrapper>
   );
