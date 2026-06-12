@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 
 import { CardLayoutRenderer } from '@/app/(app)/features/search/components/card-layout-renderer';
 import { SearchCardLayoutConfig } from '@/app/(app)/features/search/types/card-layout-config';
+import { DirectoryPrintControl } from '@/app/(app)/shared/components/directory-print/directory-print-control';
 import { Link } from '@/app/(app)/shared/components/link';
 import {
   Button,
@@ -27,14 +28,13 @@ import {
 import { useLocalFavorites } from '@/app/(app)/shared/hooks/use-local-favorites';
 import { cn, withOptionalTrailingSlash } from '@/app/(app)/shared/lib/utils';
 import { fontSans } from '@/app/(app)/shared/styles/fonts';
+import { resourcesToPrintableDirectory } from '@/app/(app)/shared/utils/printable-directory-transformers';
 import { Resource } from '@/types/resource';
 
 import {
   RemoveFromListHandler,
   resourceToLocalFavoriteResult,
 } from '../utils/favorite-result-transformers';
-import { localResourcesToPrintableDirectory } from '../utils/printable-directory-transformers';
-import { FavoritesDirectoryPrintControl } from './favorites-directory-print-control';
 import { PurgeConfirmDialog } from './purge-confirm-dialog';
 
 type LocalFavoritesSectionProps = {
@@ -69,7 +69,7 @@ export function LocalFavoritesSection({
 
   const printableDirectoryData = useMemo(
     () =>
-      localResourcesToPrintableDirectory(
+      resourcesToPrintableDirectory(
         resources,
         i18n.language,
         t('local_list.title'),
@@ -101,10 +101,9 @@ export function LocalFavoritesSection({
 
         {results.length > 0 && (
           <div className="flex items-center gap-2">
-            <FavoritesDirectoryPrintControl
+            <DirectoryPrintControl
               data={printableDirectoryData}
               testId="print-local-directory-btn"
-              showLabel={true}
             />
             <Button
               variant="outline"

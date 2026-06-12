@@ -1,5 +1,6 @@
 import { formatAddressForDisplay } from '@/app/(app)/shared/lib/utils';
 import { type FavoriteListWithFavorites } from '@/app/(app)/shared/store/favorites';
+import { type ResultType } from '@/app/(app)/shared/store/results';
 import { type Resource } from '@/types/resource';
 
 /**
@@ -61,10 +62,6 @@ function getAddressFromResource(resource: Resource): string {
 
 /**
  * Transforms a favorite list with its items into a printable directory format
- *
- * @param favoriteList - The favorite list containing favorites to print
- * @param locale - The locale for translations (e.g., 'en', 'es')
- * @returns Formatted data ready for PDF generation
  */
 export function favoriteListToPrintableDirectory(
   favoriteList: FavoriteListWithFavorites,
@@ -105,14 +102,9 @@ export function favoriteListToPrintableDirectory(
 }
 
 /**
- * Transforms local resources into a printable directory format
- *
- * @param resources - Array of resources to include in the directory
- * @param locale - The locale for translations (e.g., 'en', 'es')
- * @param listName - The name to display in the directory header
- * @returns Formatted data ready for PDF generation
+ * Transforms resources into a printable directory format
  */
-export function localResourcesToPrintableDirectory(
+export function resourcesToPrintableDirectory(
   resources: Resource[],
   locale: string,
   listName: string,
@@ -151,5 +143,34 @@ export function localResourcesToPrintableDirectory(
         fees: translation?.fees ?? resource.fees ?? '',
       };
     }),
+  };
+}
+
+/**
+ * Transforms lightweight search result records into a printable directory format
+ */
+export function resultsToPrintableDirectory(
+  results: ResultType[],
+  listName: string,
+): PrintableDirectoryData {
+  return {
+    name: listName,
+    items: results.map((result) => ({
+      id: result.id ?? result._id,
+      displayName: result.name ?? '',
+      serviceName: result.serviceName ?? '',
+      description: result.description ?? '',
+      hours: '',
+      address: result.address ?? '',
+      phone: result.phone ?? '',
+      email: '',
+      website: result.website ?? '',
+      transportation: '',
+      accessibility: '',
+      eligibility: '',
+      requiredDocuments: '',
+      languages: '',
+      fees: '',
+    })),
   };
 }

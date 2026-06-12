@@ -17,7 +17,7 @@ import { Resource } from '@/types/resource';
 
 const log = createLogger('resource-page');
 
-const i18nNamespaces = ['page-resource', 'common'];
+const i18nNamespaces = ['page-resource', 'page-list', 'common'];
 
 export const generateMetadata = async ({ params }): Promise<Metadata> => {
   const { id, locale } = await params;
@@ -122,6 +122,7 @@ export default async function ResourcePage({ params, searchParams }) {
         entry={resolvedEntry}
         resourceId={id}
         tenantId={appConfig.tenantId ?? ''}
+        locale={locale}
       />
     </PageWrapper>
   );

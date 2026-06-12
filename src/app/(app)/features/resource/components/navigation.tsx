@@ -1,10 +1,11 @@
 'use client';
 
 import { AddToFavoritesButton } from '@/app/(app)/shared/components/add-to-favorites-button';
-import { PrintButton } from '@/app/(app)/shared/components/print-button';
+import { DirectoryPrintControl } from '@/app/(app)/shared/components/directory-print/directory-print-control';
 import { ReportButton } from '@/app/(app)/shared/components/report-button';
 import { ShareButton } from '@/app/(app)/shared/components/share-button';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { PrintableDirectoryData } from '@/app/(app)/shared/utils/printable-directory-transformers';
 import { Resource } from '@/types/resource';
 
 import { BackToResultsButton } from './back-to-results-button';
@@ -12,9 +13,11 @@ import { BackToResultsButton } from './back-to-results-button';
 export function Navigation({
   componentToPrintRef,
   resource,
+  printableDirectoryData,
 }: {
   componentToPrintRef: React.RefObject<HTMLElement | null>;
   resource: Resource;
+  printableDirectoryData: PrintableDirectoryData;
 }) {
   const appConfig = useAppConfig();
   const feedbackButtonLabel =
@@ -24,7 +27,7 @@ export function Navigation({
     <div className="flex justify-between print:hidden">
       <BackToResultsButton />
       <div className="flex gap-2">
-        <PrintButton componentToPrintRef={componentToPrintRef} />
+        <DirectoryPrintControl data={printableDirectoryData} />
         <ShareButton
           componentToPrintRef={componentToPrintRef}
           title={resource.name || ''}
