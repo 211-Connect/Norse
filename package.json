@@ -97,7 +97,7 @@
     "html-react-parser": "^6.1.1",
     "i18next": "^26.2.0",
     "i18next-resources-to-backend": "^1.2.1",
-    "ioredis": "^5.8.2",
+    "ioredis": "^5.11.1",
     "jotai": "^2.12.5",
     "lru-cache": "^11.3.5",
     "lucide-react": "^1.16.0",
