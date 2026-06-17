@@ -832,6 +832,7 @@ export interface ResourceDirectory {
     };
     searchSettings: {
       hybridSemanticSearchEnabled?: boolean | null;
+      aiClassificationEnabled?: boolean | null;
       resultsLimit: number;
       radiusSelectValues?:
         | {
@@ -1558,6 +1559,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
           | T
           | {
               hybridSemanticSearchEnabled?: T;
+              aiClassificationEnabled?: T;
               resultsLimit?: T;
               radiusSelectValues?:
                 | T

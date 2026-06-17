@@ -1,22 +1,22 @@
 'use client';
 
 import { useAtomValue, useSetAtom } from 'jotai';
-import { ChevronLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import {
+  FormEvent,
   KeyboardEvent,
-  SubmitEventHandler,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
   useTransition,
 } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 
 import { useAppConfig } from '../../hooks/use-app-config';
-import { useClientSearchParams } from '../../hooks/use-client-search-params';
 import { useFlag } from '../../hooks/use-flag';
 import {
   LOCATION_INPUT_ID,
@@ -30,16 +30,26 @@ import { persistSearchDistancePreference } from '../../lib/search-distance-prefe
 import { UmamiEvent, trackUmamiEvent } from '../../lib/umami';
 import { cn, getScrollbarWidth } from '../../lib/utils';
 import {
+  AiPredictOption,
+  predictSearchNeeds,
+  reRankSearchNeeds,
+} from '../../services/ai-classification-search-service';
+import {
   searchCoordinatesAtom,
   searchDistanceAtom,
   userCoordinatesAtom,
 } from '../../store/search';
+import {
+  buildAiSearchUrl,
+  normalizeHsisTaxonomies,
+} from '../../utils/ai-search';
 import { createUrlParamsForSearch } from '../../utils/createUrlParamsForSearch';
-import { Button } from '../ui/button';
+import { AiClassificationOptions } from './ai-classification-options';
 import { LocationSearchBar } from './location-search-bar';
+import { NEED_CODES } from './search-dialog-constants';
+import { SearchDialogHeaderActions } from './search-dialog-header-actions';
 import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
 import { SearchBar } from './search-bar';
-import { SearchButton } from './search-button';
 
 export interface SearchDialogProps {
   focusByDefault?: 'search' | 'location';
@@ -54,9 +64,8 @@ export function SearchDialog({
   setOpen,
   restoreFocusElement,
 }: SearchDialogProps) {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
   const [isPending, startTransition] = useTransition();
-  const { stringifySearchParams } = useClientSearchParams();
   const router = useRouter();
   const appConfig = useAppConfig();
   const requireUserLocation = useFlag('requireUserLocation');
@@ -70,25 +79,27 @@ export function SearchDialog({
   const setUserCoordinates = useSetAtom(userCoordinatesAtom);
   const searchCoordinates = useAtomValue(searchCoordinatesAtom);
   const userCoordinates = useAtomValue(userCoordinatesAtom);
+  const [isPredictLoading, setIsPredictLoading] = useState(false);
+  const [isSkipLoading, setIsSkipLoading] = useState(false);
+  const [isConfirmLoading, setIsConfirmLoading] = useState(false);
+  const [clarifyVisible, setClarifyVisible] = useState(false);
+  const [clarifyOptions, setClarifyOptions] = useState<AiPredictOption[]>([]);
+  const [selectedClarifyCodes, setSelectedClarifyCodes] = useState<string[]>(
+    [],
+  );
+  const [clarifyValidationError, setClarifyValidationError] = useState('');
 
-  const onSubmit: SubmitEventHandler<HTMLFormElement> = useCallback(
-    async (e) => {
-      e.preventDefault();
+  const allNeedCodes = useMemo(() => [...NEED_CODES], []);
 
-      if (requireUserLocation && search.searchLocation.trim().length === 0) {
-        setSearch((prev) => ({
-          ...prev,
-          searchLocationValidationError: 'Address is required.',
-        }));
-        return;
-      }
+  const clearAiState = useCallback(() => {
+    setClarifyVisible(false);
+    setClarifyOptions([]);
+    setSelectedClarifyCodes([]);
+    setClarifyValidationError('');
+  }, []);
 
-      const locationPayload = await buildSearchLocationPayload(
-        searchCoordinates,
-        userCoordinates,
-        appConfig.tenantId,
-      );
-
+  const navigateClassicSearch = useCallback(
+    async (locationPayload: Record<string, unknown>) => {
       startTransition(() => {
         const query = search.query || search.searchTerm;
 
@@ -114,9 +125,7 @@ export function SearchDialog({
           appConfig.search.hybridSemanticSearchEnabled,
         );
 
-        const queryParams = stringifySearchParams(
-          new URLSearchParams(urlParams),
-        );
+        const queryParams = new URLSearchParams(urlParams).toString();
         persistSearchDistancePreference(distance);
 
         const effectiveQueryType = search.queryType;
@@ -136,11 +145,8 @@ export function SearchDialog({
           trackUmamiEvent(UmamiEvent.SearchTaxonomy, umamiPayload);
         }
 
-        router.push(`/search${queryParams}`);
-
-        // Close as soon as navigation is requested so trigger and dialog state
-        // match real interactivity (dialog must not sit above the results page).
         setOpen?.(false);
+        router.push(`/search${queryParams ? `?${queryParams}` : ''}`);
 
         setSearch((prev) => ({
           ...prev,
@@ -151,17 +157,260 @@ export function SearchDialog({
     [
       appConfig.search.hybridSemanticSearchEnabled,
       appConfig.tenantId,
-      requireUserLocation,
+      distance,
       router,
       search,
-      searchCoordinates,
-      distance,
-      userCoordinates,
       setOpen,
       setSearch,
-      stringifySearchParams,
+      startTransition,
     ],
   );
+
+  const navigateAiSearch = useCallback(
+    ({
+      alert,
+      taxonomies,
+    }: { alert?: boolean; taxonomies?: string[] } = {}) => {
+      const query = (search.query || search.searchTerm || '').trim();
+      if (!query) {
+        return;
+      }
+
+      const url = buildAiSearchUrl({
+        alert,
+        query,
+        queryLabel: search.queryLabel,
+        taxonomies,
+      });
+
+      persistSearchDistancePreference(distance);
+      setOpen?.(false);
+      router.push(url);
+    },
+    [
+      distance,
+      router,
+      search.query,
+      search.queryLabel,
+      search.searchTerm,
+      setOpen,
+    ],
+  );
+
+  const onSubmit = useCallback(
+    async (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+
+      if (isPredictLoading || isSkipLoading || isConfirmLoading) {
+        return;
+      }
+
+      if (requireUserLocation && search.searchLocation.trim().length === 0) {
+        setSearch((prev) => ({
+          ...prev,
+          searchLocationValidationError: 'Address is required.',
+        }));
+        return;
+      }
+
+      const locationPayload = await buildSearchLocationPayload(
+        searchCoordinates,
+        userCoordinates,
+        appConfig.tenantId,
+      );
+
+      if (!appConfig.search.aiClassificationEnabled) {
+        await navigateClassicSearch(locationPayload);
+        return;
+      }
+
+      const query = (search.query || search.searchTerm || '').trim();
+      if (!query) {
+        await navigateClassicSearch(locationPayload);
+        return;
+      }
+
+      setIsPredictLoading(true);
+      setClarifyValidationError('');
+
+      const predictResponse = await predictSearchNeeds(
+        { query },
+        i18n.language,
+        appConfig.tenantId,
+      );
+
+      setIsPredictLoading(false);
+
+      if (!predictResponse) {
+        await navigateClassicSearch(locationPayload);
+        return;
+      }
+
+      const taxonomies = normalizeHsisTaxonomies(
+        predictResponse.hsis_taxonomies,
+      );
+
+      if (predictResponse.scenario === 'search') {
+        navigateAiSearch({ taxonomies });
+        return;
+      }
+
+      if (predictResponse.scenario === 'search_and_notify') {
+        navigateAiSearch({ taxonomies, alert: true });
+        return;
+      }
+
+      const options = Array.isArray(predictResponse.options)
+        ? predictResponse.options
+        : [];
+      setClarifyOptions(options);
+      setSelectedClarifyCodes(
+        options
+          .filter((option) => option.pre_selected)
+          .map((option) => option.code),
+      );
+      setClarifyVisible(true);
+    },
+    [
+      appConfig.search.aiClassificationEnabled,
+      appConfig.tenantId,
+      isConfirmLoading,
+      isPredictLoading,
+      isSkipLoading,
+      navigateAiSearch,
+      navigateClassicSearch,
+      requireUserLocation,
+      search.query,
+      search.searchLocation,
+      search.searchTerm,
+      searchCoordinates,
+      setSearch,
+      userCoordinates,
+    ],
+  );
+
+  const handleToggleClarifyCode = useCallback((code: string) => {
+    setClarifyValidationError('');
+    setSelectedClarifyCodes((prev) =>
+      prev.includes(code)
+        ? prev.filter((value) => value !== code)
+        : [...prev, code],
+    );
+  }, []);
+
+  const handleSkipClarify = useCallback(async () => {
+    if (isPredictLoading || isConfirmLoading || isSkipLoading) {
+      return;
+    }
+
+    setIsSkipLoading(true);
+    try {
+      await Promise.resolve();
+      navigateAiSearch();
+    } finally {
+      setIsSkipLoading(false);
+    }
+  }, [isConfirmLoading, isPredictLoading, isSkipLoading, navigateAiSearch]);
+
+  const handleConfirmClarify = useCallback(async () => {
+    if (isPredictLoading || isConfirmLoading || isSkipLoading) {
+      return;
+    }
+
+    if (selectedClarifyCodes.length === 0) {
+      setClarifyValidationError(t('search.ai_validation_select_or_skip'));
+      return;
+    }
+
+    const optionsByCode = new Map(
+      clarifyOptions.map((option) => [option.code, option]),
+    );
+
+    const needWeightsEntries = new Map<string, number>();
+
+    for (const option of clarifyOptions) {
+      const isSelected = selectedClarifyCodes.includes(option.code);
+
+      if (isSelected) {
+        if (option.pre_selected) {
+          if (
+            typeof option.score === 'number' &&
+            Number.isFinite(option.score)
+          ) {
+            needWeightsEntries.set(option.code, option.score);
+          }
+        } else {
+          needWeightsEntries.set(option.code, 0.6);
+        }
+      } else if (option.pre_selected) {
+        needWeightsEntries.set(option.code, 0.1);
+      }
+    }
+
+    for (const code of selectedClarifyCodes) {
+      if (needWeightsEntries.has(code)) {
+        continue;
+      }
+
+      const option = optionsByCode.get(code);
+      if (!option) {
+        needWeightsEntries.set(code, 0.6);
+      }
+    }
+
+    const need_weights = Object.fromEntries(
+      [...needWeightsEntries.entries()].filter(
+        ([, value]) => typeof value === 'number' && Number.isFinite(value),
+      ),
+    );
+
+    if (Object.keys(need_weights).length === 0) {
+      setClarifyValidationError(t('search.ai_validation_select_or_skip'));
+      return;
+    }
+
+    setClarifyValidationError('');
+    setIsConfirmLoading(true);
+
+    const reRankResponse = await reRankSearchNeeds(
+      { need_weights },
+      i18n.language,
+      appConfig.tenantId,
+    );
+
+    setIsConfirmLoading(false);
+
+    if (!reRankResponse) {
+      toast.error(t('message.error'));
+      return;
+    }
+
+    const rerankedTaxonomies = normalizeHsisTaxonomies(
+      reRankResponse.hsis_taxonomies,
+    );
+    navigateAiSearch({ taxonomies: rerankedTaxonomies });
+  }, [
+    appConfig.tenantId,
+    clarifyOptions,
+    isConfirmLoading,
+    isPredictLoading,
+    isSkipLoading,
+    navigateAiSearch,
+    selectedClarifyCodes,
+    t,
+    i18n.language,
+  ]);
+
+  const isMainSearchLoading = isPredictLoading || isPending;
+  const disableSearchControls =
+    isPredictLoading || isConfirmLoading || isSkipLoading;
+  const handleSearchInputChange = useCallback(() => {
+    if (!clarifyVisible) {
+      return;
+    }
+
+    clearAiState();
+  }, [clarifyVisible, clearAiState]);
 
   useEffect(() => {
     if (!open || !navigator.geolocation) return;
@@ -305,27 +554,44 @@ export function SearchDialog({
       <p className="sr-only" id={SEARCH_DIALOG_DESCRIPTION_ID}>
         {t('search.search_dialog_description')}
       </p>
-      <div className="flex min-h-full w-full max-w-full items-start justify-center !rounded-none border-0">
+      <div className="flex min-h-full w-full max-w-full items-start justify-center rounded-none! border-0">
         {open && (
           <form
             onSubmit={onSubmit}
-            className="flex w-full max-w-[25rem] flex-col gap-4 overflow-y-auto pt-6 pb-6 [@media(min-width:640px)_and_(min-height:600px)]:pt-[120px]"
+            className="flex w-full max-w-100 flex-col gap-4 overflow-y-auto pt-6 pb-6 [@media(min-width:640px)_and_(min-height:600px)]:pt-30"
           >
             <div className="flex flex-row justify-between gap-4">
-              <Button
-                type="button"
-                className="self-start"
-                variant="highlight"
-                onClick={closeDialog}
-              >
-                <ChevronLeft className="text-primary size-4" />
-                {t('search.back')}
-              </Button>
-              <SearchButton loading={isPending} />
+              <SearchDialogHeaderActions
+                clarifyVisible={clarifyVisible}
+                disableSearchControls={disableSearchControls}
+                isMainSearchLoading={isMainSearchLoading}
+                isSkipLoading={isSkipLoading}
+                isConfirmLoading={isConfirmLoading}
+                onClose={closeDialog}
+                onSkipClarify={handleSkipClarify}
+                onConfirmClarify={handleConfirmClarify}
+              />
             </div>
             <div id="search-form-inputs" className="overflow-y-auto">
-              <SearchBar inputId={SEARCH_INPUT_ID} />
+              <SearchBar
+                inputId={SEARCH_INPUT_ID}
+                hideOptions={clarifyVisible}
+                onQueryInputChange={handleSearchInputChange}
+              />
               <LocationSearchBar inputId={LOCATION_INPUT_ID} className="mt-4" />
+
+              {clarifyVisible && (
+                <>
+                  <AiClassificationOptions
+                    allNeedCodes={allNeedCodes}
+                    selectedCodes={selectedClarifyCodes}
+                    options={clarifyOptions}
+                    onToggle={handleToggleClarifyCode}
+                    validationMessage={clarifyValidationError}
+                    disabled={disableSearchControls}
+                  />
+                </>
+              )}
             </div>
           </form>
         )}
