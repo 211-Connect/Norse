@@ -25,7 +25,12 @@ export const AgeFilter = ({
 
   const applyAge = useCallback(
     (value: string) => {
+      if (value === currentAge) {
+        return;
+      }
+
       const parsed = parseInt(value, 10);
+
       updateSearchParams((params) => {
         if (!value || isNaN(parsed)) {
           const next = { ...params };
@@ -36,7 +41,7 @@ export const AgeFilter = ({
         return { ...params, age: String(normalized) };
       });
     },
-    [updateSearchParams],
+    [updateSearchParams, currentAge],
   );
 
   return (
