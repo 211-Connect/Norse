@@ -58,6 +58,7 @@
     "ai_clarify_title": "Help us narrow your search",
     "ai_skip": "Skip",
     "ai_confirm": "Confirm",
+    "ai_show_more_categories": "Show more categories",
     "ai_validation_select_or_skip": "Select at least one option or skip.",
     "ai_option_results_count_one": "{{count}} related resource",
     "ai_option_results_count_other": "{{count}} related resources"
