@@ -54,7 +54,10 @@
     "datum_required_documents": "Pepa aloaia e manaʻomia",
     "datum_languages": "Gagana",
     "datum_fees": "Totogifuapauina",
-    "dial_211": "Vili le 2-1-1"
+    "dial_211": "Vili le 2-1-1",
+    "loading_resources": "O lo'o utaina fa'amatalaga o punaoa...",
+    "load_error": "E le mafai ona utaina fa'amatalaga o punaoa e mafai ona lolomi. Fa'amolemole toe taumafai.",
+    "retry": "Toe taumafai"
   },
   "print_footer_disclaimer": "{{brandName}} e tuʻuina atu nei faʻamatalaga o se auaunaga lautele ma e leai se faʻamaoniga e uiga i lona saʻo, atoatoa, poʻo le taimi atofaina. E le tali atu le {{brandName}} i le faʻaaogaina o nei faʻamatalaga ma e leai se noataga mo soʻo se taunuuga e tulaʻi mai i lona faʻaaogaina. O le tufatufaina atu o lenei lomiga e le faʻaalia ai le faʻamaoniaina poʻo le fesoʻotaʻi ma le {{brandName}}.",
   "print_page_counter": "Itūlau {{current}} o le {{total}}",

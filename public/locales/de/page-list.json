@@ -54,7 +54,10 @@
     "datum_required_documents": "Erforderliche Dokumente",
     "datum_languages": "Sprachen",
     "datum_fees": "Gebühren",
-    "dial_211": "Wählen Sie 2-1-1"
+    "dial_211": "Wählen Sie 2-1-1",
+    "loading_resources": "Ressourcendetails werden geladen...",
+    "load_error": "Die Details der druckbaren Ressource konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
+    "retry": "Wiederholen"
   },
   "print_footer_disclaimer": "{{brandName}} stellt diese Informationen als öffentlichen Service zur Verfügung und übernimmt keine Gewähr für deren Richtigkeit, Vollständigkeit oder Aktualität. {{brandName}} ist nicht verantwortlich für die Verwendung dieser Informationen und haftet nicht für etwaige Folgen ihrer Verwendung. Die Verteilung dieses Ausdrucks impliziert weder eine Billigung noch eine Zugehörigkeit zu {{brandName}}.",
   "print_page_counter": "Seite {{current}} von {{total}}",

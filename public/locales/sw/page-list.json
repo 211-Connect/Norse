@@ -54,7 +54,10 @@
     "datum_required_documents": "Nyaraka zinazohitajika",
     "datum_languages": "Lugha",
     "datum_fees": "Ada",
-    "dial_211": "Piga 2-1-1"
+    "dial_211": "Piga 2-1-1",
+    "loading_resources": "Inapakia maelezo ya rasilimali...",
+    "load_error": "Haiwezi kupakia maelezo ya rasilimali yanayoweza kuchapishwa. Tafadhali jaribu tena.",
+    "retry": "Jaribu tena"
   },
   "print_footer_disclaimer": "{{brandName}} hutoa taarifa hii kama huduma ya umma na haitoi dhamana yoyote kuhusu usahihi, ukamilifu, au wakati wake. {{brandName}} haina jukumu la jinsi taarifa hii inavyotumika na haichukui dhima yoyote kwa matokeo yoyote yanayotokana na matumizi yake. Usambazaji wa chapisho hili haumaanishi kuidhinishwa au kuhusishwa na {{brandName}}.",
   "print_page_counter": "Ukurasa {{current}} wa {{total}}",

@@ -54,7 +54,10 @@
     "datum_required_documents": "Documentos requeridos",
     "datum_languages": "Idiomas",
     "datum_fees": "Honorarios",
-    "dial_211": "Marque 2-1-1"
+    "dial_211": "Marque 2-1-1",
+    "loading_resources": "Cargando detalles del recurso...",
+    "load_error": "No se pudieron cargar los detalles del recurso imprimible. Inténtelo de nuevo.",
+    "retry": "Rever"
   },
   "print_footer_disclaimer": "{{brandName}} proporciona esta información como un servicio público y no ofrece garantías respecto a su exactitud, integridad o actualidad. {{brandName}} no se responsabiliza del uso que se le dé a esta información y no asume ninguna responsabilidad por las consecuencias derivadas de su uso. La distribución de esta impresión no implica el respaldo ni la afiliación con {{brandName}}.",
   "print_page_counter": "Página {{current}} de {{total}}",

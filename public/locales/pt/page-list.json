@@ -54,7 +54,10 @@
     "datum_required_documents": "Documentos necessários",
     "datum_languages": "Línguas",
     "datum_fees": "Tarifas",
-    "dial_211": "Disque 2-1-1"
+    "dial_211": "Disque 2-1-1",
+    "loading_resources": "Carregando detalhes do recurso...",
+    "load_error": "Não foi possível carregar os detalhes do recurso para impressão. Tente novamente.",
+    "retry": "Tentar novamente"
   },
   "print_footer_disclaimer": "{{brandName}} fornece esta informação como um serviço público e não oferece garantias quanto à sua exatidão, integridade ou atualidade. {{brandName}} não se responsabiliza pela forma como esta informação é utilizada e não assume qualquer responsabilidade por quaisquer consequências decorrentes da sua utilização. A distribuição deste material impresso não implica endosso ou afiliação com {{brandName}}.",
   "print_page_counter": "Página {{current}} de {{total}}",

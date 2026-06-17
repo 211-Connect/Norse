@@ -54,7 +54,10 @@
     "datum_required_documents": "Kaayitaaji ɗaɓɓaaɗi",
     "datum_languages": "Ɗemɗe",
     "datum_fees": "Feere",
-    "dial_211": "Noddu 2-1-1"
+    "dial_211": "Noddu 2-1-1",
+    "loading_resources": "Lowde detaayuuji ngalu...",
+    "load_error": "Waawaa loowde defte kuutorɗe tappirɗe. Tiiɗno enndu kadi.",
+    "retry": "Enndu kadi"
   },
   "print_footer_disclaimer": "{{brandName}} ina rokka ɗeen kabaruuji no gollal laamu nii, tee alaa ko rokkata ɗum so wonaa laaɓal mum, timmugol mum, walla sahaa mum. {{brandName}} alaa ko toppitii so wonaa no ɗeen kabaruuji kuutortee, tee alaa ko toppitii so wonaa batte kuutoragol mum en. Feccere ndee winndannde firtaani ko {{brandName}} jaɓi walla jokkondiri e mum.",
   "print_page_counter": "Hello {{current}} mo {{total}}",

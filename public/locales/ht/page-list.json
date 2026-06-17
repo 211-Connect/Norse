@@ -54,7 +54,10 @@
     "datum_required_documents": "Dokiman obligatwa yo",
     "datum_languages": "Lang",
     "datum_fees": "Frè yo",
-    "dial_211": "Rele 2-1-1"
+    "dial_211": "Rele 2-1-1",
+    "loading_resources": "Ap chaje detay resous yo...",
+    "load_error": "Pa kapab chaje detay resous ki ka enprime a. Tanpri eseye ankò.",
+    "retry": "Eseye ankò"
   },
   "print_footer_disclaimer": "{{brandName}} bay enfòmasyon sa a kòm yon sèvis piblik epi li pa bay okenn garanti konsènan presizyon, konplè, oswa aktyalite li. {{brandName}} pa responsab pou fason enfòmasyon sa a itilize epi li pa pran okenn responsablite pou okenn rezilta ki soti nan itilizasyon li. Distribisyon dokiman enprime sa a pa vle di apwobasyon oswa afilyasyon ak {{brandName}}.",
   "print_page_counter": "Paj {{current}} nan {{total}}",
