@@ -478,6 +478,18 @@ function decodeHtmlEntities(value: string): string {
 
 function htmlToPrintableText(value: string): string {
   return decodeHtmlEntities(value)
+    .replace(/<a[^>]*href=["'][^"']*["'][^>]*>([\s\S]*?)<\/a>/gi, '$1')
+    .replace(/!\[([^\]]*)\]\((?:[^)\s]+)(?:\))?/g, '$1')
+    .replace(/\[([^\]]+)\]\((?:[^)\s]+)(?:\))?/g, '$1')
+    .replace(/\]\((?:https?:\/\/|www\.)[^)\s]+\)?/gi, '')
+    .replace(/^\s{0,3}#{1,6}\s+/gm, '')
+    .replace(/^\s{0,3}(?:[*+-])\s+/gm, '- ')
+    .replace(/^(\s{0,3})\d+\.\s+/gm, '$11. ')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/__([^_]+)__/g, '$1')
+    .replace(/~~([^~]+)~~/g, '$1')
+    .replace(/(^|\W)\*([^*]+)\*(?=\W|$)/g, '$1$2')
+    .replace(/(^|\W)_([^_]+)_(?=\W|$)/g, '$1$2')
     .replace(/<br\s*\/?\s*>/gi, '\n')
     .replace(/<\/?p[^>]*>/gi, '\n')
     .replace(/<\/?div[^>]*>/gi, '\n')
@@ -486,9 +498,11 @@ function htmlToPrintableText(value: string): string {
     .replace(/<\/?ul[^>]*>/gi, '\n')
     .replace(/<\/?ol[^>]*>/gi, '\n')
     .replace(/<[^>]+>/g, '')
+    .replace(/^\s*[-*+]\s*$/gm, '')
     .replace(/\n-\s*\n/g, '\n')
     .replace(/\n{3,}/g, '\n\n')
     .replace(/[ \t]+\n/g, '\n')
+    .replace(/^\s+|\s+$/g, '')
     .trim();
 }
 
