@@ -12,6 +12,11 @@ import { useTranslation } from 'react-i18next';
 
 import { type PrintableDirectoryData } from '@/app/(app)/shared/utils/printable-directory-transformers';
 
+import {
+  addLineBreaksToLongWords,
+  toPdfPrintableText,
+} from './pdf-text-normalizer';
+
 type PdfStyle = Styles[string];
 
 Font.registerHyphenationCallback((word) => [word]);
@@ -460,73 +465,6 @@ type PrintDatumProps = {
   fontScale: number;
 };
 
-type PrintDatumHtmlProps = {
-  label: string;
-  value: string;
-  fontScale: number;
-};
-
-function decodeHtmlEntities(value: string): string {
-  return value
-    .replace(/&nbsp;/gi, ' ')
-    .replace(/&amp;/gi, '&')
-    .replace(/&lt;/gi, '<')
-    .replace(/&gt;/gi, '>')
-    .replace(/&quot;/gi, '"')
-    .replace(/&#39;/gi, "'");
-}
-
-function htmlToPrintableText(value: string): string {
-  return decodeHtmlEntities(value)
-    .replace(/<a[^>]*href=["'][^"']*["'][^>]*>([\s\S]*?)<\/a>/gi, '$1')
-    .replace(/!\[([^\]]*)\]\((?:[^)\s]+)(?:\))?/g, '$1')
-    .replace(/\[([^\]]+)\]\((?:[^)\s]+)(?:\))?/g, '$1')
-    .replace(/\]\((?:https?:\/\/|www\.)[^)\s]+\)?/gi, '')
-    .replace(/^\s{0,3}#{1,6}\s+/gm, '')
-    .replace(/^\s{0,3}(?:[*+-])\s+/gm, '- ')
-    .replace(/^(\s{0,3})\d+\.\s+/gm, '$11. ')
-    .replace(/\*\*([^*]+)\*\*/g, '$1')
-    .replace(/__([^_]+)__/g, '$1')
-    .replace(/~~([^~]+)~~/g, '$1')
-    .replace(/(^|\W)\*([^*]+)\*(?=\W|$)/g, '$1$2')
-    .replace(/(^|\W)_([^_]+)_(?=\W|$)/g, '$1$2')
-    .replace(/<br\s*\/?\s*>/gi, '\n')
-    .replace(/<\/?p[^>]*>/gi, '\n')
-    .replace(/<\/?div[^>]*>/gi, '\n')
-    .replace(/<li[^>]*>/gi, '\n- ')
-    .replace(/<\/li>/gi, '')
-    .replace(/<\/?ul[^>]*>/gi, '\n')
-    .replace(/<\/?ol[^>]*>/gi, '\n')
-    .replace(/<[^>]+>/g, '')
-    .replace(/^\s*[-*+]\s*$/gm, '')
-    .replace(/\n-\s*\n/g, '\n')
-    .replace(/\n{3,}/g, '\n\n')
-    .replace(/[ \t]+\n/g, '\n')
-    .replace(/^\s+|\s+$/g, '')
-    .trim();
-}
-
-function PrintDatumHtml({ label, value, fontScale }: PrintDatumHtmlProps) {
-  if (!value) {
-    return null;
-  }
-
-  const printableValue = htmlToPrintableText(value);
-
-  if (!printableValue) {
-    return null;
-  }
-
-  return (
-    <View style={styles.datumRow}>
-      <Text style={getDatumLabelStyle(fontScale)}>{label}</Text>
-      <Text style={scaleStyle(styles.datumValue, fontScale)}>
-        {printableValue}
-      </Text>
-    </View>
-  );
-}
-
 function PrintDatum({
   label,
   value,
@@ -546,7 +484,7 @@ function PrintDatum({
           fontScale,
         )}
       >
-        {value}
+        {addLineBreaksToLongWords(value)}
       </Text>
     </View>
   );
@@ -570,10 +508,10 @@ function LineListingItem({ item, fontScale }: LineListingItemProps) {
 
       <View style={styles.lineItemDetailRow}>
         <Text style={scaleStyle(styles.lineItemAddress, fontScale)}>
-          {item.address}
+          {addLineBreaksToLongWords(item.address)}
         </Text>
         <Text style={scaleStyle(styles.lineItemPhone, fontScale)}>
-          {item.phone}
+          {addLineBreaksToLongWords(item.phone)}
         </Text>
       </View>
     </View>
@@ -651,9 +589,8 @@ type FullListingItemProps = {
 
 function FullListingItem({ item, labels, fontScale }: FullListingItemProps) {
   const { title, subtitle } = getDisplayTitleAndSubtitle(item);
-  const printableDescription = item.description
-    ? htmlToPrintableText(item.description)
-    : '';
+  const printableDescription = toPdfPrintableText(item.description);
+  const printableEligibility = toPdfPrintableText(item.eligibility);
 
   return (
     <View style={styles.fullItem}>
@@ -672,7 +609,7 @@ function FullListingItem({ item, labels, fontScale }: FullListingItemProps) {
 
         {printableDescription && (
           <Text style={scaleStyle(styles.resourceDescription, fontScale)}>
-            {printableDescription}
+            {addLineBreaksToLongWords(printableDescription)}
           </Text>
         )}
       </View>
@@ -713,9 +650,9 @@ function FullListingItem({ item, labels, fontScale }: FullListingItemProps) {
         value={item.accessibility}
         fontScale={fontScale}
       />
-      <PrintDatumHtml
+      <PrintDatum
         label={labels.eligibility}
-        value={item.eligibility}
+        value={printableEligibility}
         fontScale={fontScale}
       />
       <PrintDatum
