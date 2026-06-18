@@ -54,7 +54,10 @@
     "datum_required_documents": "Cov ntaub ntawv xav tau",
     "datum_languages": "Cov lus",
     "datum_fees": "Cov nqi",
-    "dial_211": "Hu rau 2-1-1"
+    "dial_211": "Hu rau 2-1-1",
+    "loading_resources": "Thauj cov ntaub ntawv qhia txog cov peev txheej...",
+    "load_error": "Tsis tuaj yeem thauj cov ntaub ntawv qhia txog cov peev txheej uas luam tawm tau. Thov sim dua.",
+    "retry": "Rov sim dua"
   },
   "print_footer_disclaimer": "{{brandName}} muab cov ntaub ntawv no ua kev pabcuam rau pej xeem thiab tsis muaj kev lees paub txog nws qhov tseeb, kev ua tiav, lossis kev ua tiav raws sijhawm. {{brandName}} tsis muaj lub luag haujlwm rau kev siv cov ntaub ntawv no li cas thiab tsis lees paub lub luag haujlwm rau txhua qhov tshwm sim los ntawm kev siv nws. Kev faib tawm ntawm daim ntawv luam tawm no tsis txhais tau tias pom zoo los ntawm lossis koom nrog {{brandName}}.",
   "print_page_counter": "Nplooj {{current}} ntawm {{total}}",

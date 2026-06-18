@@ -54,7 +54,10 @@
     "datum_required_documents": "Mga kinakailangang dokumento",
     "datum_languages": "Mga Wika",
     "datum_fees": "Mga Bayarin",
-    "dial_211": "I-dial ang 2-1-1"
+    "dial_211": "I-dial ang 2-1-1",
+    "loading_resources": "Naglo-load ng mga detalye ng mapagkukunan...",
+    "load_error": "Hindi ma-load ang mga detalye ng napi-print na mapagkukunan. Pakisubukang muli.",
+    "retry": "Subukan muli"
   },
   "print_footer_disclaimer": "Ang {{brandName}} ay nagbibigay ng impormasyong ito bilang isang serbisyo publiko at walang ginagawang garantiya tungkol sa katumpakan, pagkakumpleto, o pagiging napapanahon nito. Ang {{brandName}} ay hindi mananagot sa kung paano ginagamit ang impormasyong ito at hindi mananagot para sa anumang mga resultang magmumula sa paggamit nito. Ang pamamahagi ng printout na ito ay hindi nagpapahiwatig ng pag-endorso o kaugnayan sa {{brandName}}.",
   "print_page_counter": "Pahina {{current}} ng {{total}}",

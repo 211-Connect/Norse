@@ -54,7 +54,10 @@
     "datum_required_documents": "Inyandiko zisabwa",
     "datum_languages": "Indimi",
     "datum_fees": "Amafaranga y'ikiguzi",
-    "dial_211": "Hamagara 2-1-1"
+    "dial_211": "Hamagara 2-1-1",
+    "loading_resources": "Irimo gupakira amakuru arambuye ku miterere...",
+    "load_error": "Ntibishoboka gufungura amakuru arambuye ku bijyanye n'ibikoresho bishobora gucapwa. Ongera ugerageze.",
+    "retry": "Ongera ugerageze"
   },
   "print_footer_disclaimer": "{{brandName}} itanga aya makuru nk'urwego rushinzwe rubanda kandi nta garanti itanga ku bijyanye n'ukuri kwayo, ubuziranenge bwayo, cyangwa igihe cyayo. {{brandName}} ntabwo ari we ubishinzwe uburyo aya makuru akoreshwa kandi nta ngaruka afite ku biva mu kuyakoresha. Gukwirakwiza iyi nyandiko ntibivuze ko yemejwe cyangwa ifitanye isano na {{brandName}}.",
   "print_page_counter": "Urupapuro {{current}} rwa {{total}}",

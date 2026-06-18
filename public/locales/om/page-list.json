@@ -54,7 +54,10 @@
     "datum_required_documents": "Sanadoota barbaachisan",
     "datum_languages": "Afaanota",
     "datum_fees": "Kaffaltii",
-    "dial_211": "2-1-1 bilbilaa"
+    "dial_211": "2-1-1 bilbilaa",
+    "loading_resources": "Bal'ina qabeenya fe'amaa jira...",
+    "load_error": "Bal'ina qabeenya maxxanfamuu danda'u fe'uu hin dandeenye. Mee irra deebi'ii yaalaa.",
+    "retry": "Irra deebi'ii yaali"
   },
   "print_footer_disclaimer": "{{brandName}} odeeffannoo kana akka tajaajila mootummaatti kan kennu yoo ta’u, sirrii ta’uu isaa, guutuu ta’uu isaa, ykn yeroon isaa ilaalchisee wabii hin kennu. {{brandName}} akkaataa odeeffannoon kun itti fayyadamuuf itti gaafatamummaa kan hin qabnee fi bu’aa itti fayyadama isaa irraa maddu kamiifuu itti gaafatamummaa hin fudhatu. Raabsiin maxxansaa kanaa {{brandName}} irraa deeggarsa ykn walitti dhufeenya qabaachuu kan agarsiisu miti.",
   "print_page_counter": "Fuula {{current}} kan {{total}}",
