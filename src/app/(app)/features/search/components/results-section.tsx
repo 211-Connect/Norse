@@ -1,10 +1,12 @@
 'use client';
 
 import { useAtomValue } from 'jotai';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { PrintButton } from '@/app/(app)/shared/components/print-button';
+import { DirectoryPrintControl } from '@/app/(app)/shared/components/directory-print/directory-print-control';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { getPrintableDirectoryData } from '@/app/(app)/shared/serverActions/search/getPrintableDirectoryData';
 import { ShareButton } from '@/app/(app)/shared/components/share-button';
 import {
   resultTotalAtom,
@@ -32,6 +34,8 @@ type ResultsSectionProps = {
 
 export function ResultsSection({ cardLayout }: ResultsSectionProps) {
   const { t } = useTranslation('page-search');
+  const { i18n } = useTranslation();
+  const appConfig = useAppConfig();
   const componentToPrintRef = useRef<HTMLDivElement>(null);
   const resultsHeadingRef = useRef<HTMLHeadingElement>(null);
   const results = useAtomValue(resultsAtom);
@@ -43,8 +47,22 @@ export function ResultsSection({ cardLayout }: ResultsSectionProps) {
   const queryType = useAtomValue(queryTypeAtom);
   const shareTitle = queryLabel || query || t('no_query');
   const shareBody = t('share_body', { count: totalResults, title: shareTitle });
+  const printableListName = shareTitle;
 
   const showSort = queryType !== 'hybrid';
+
+  const loadPrintableData = useCallback(async () => {
+    const ids = (results ?? [])
+      .map((result) => result.id || result._id)
+      .filter(Boolean);
+
+    return getPrintableDirectoryData(
+      ids,
+      i18n.language,
+      appConfig.tenantId,
+      printableListName,
+    );
+  }, [results, i18n.language, appConfig.tenantId, printableListName]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -64,7 +82,7 @@ export function ResultsSection({ cardLayout }: ResultsSectionProps) {
     <section
       id="search-container"
       aria-labelledby={SEARCH_RESULTS_HEADING_ID}
-      className="flex w-full flex-col gap-3 overflow-y-auto p-[10px] lg:max-w-[400px] xl:max-w-[550px]"
+      className="flex w-full flex-col gap-3 overflow-y-auto p-2.5 lg:max-w-100 xl:max-w-137.5"
     >
       <h2
         id={SEARCH_RESULTS_HEADING_ID}
@@ -77,9 +95,9 @@ export function ResultsSection({ cardLayout }: ResultsSectionProps) {
       <div className="flex flex-col gap-3 print:hidden">
         <div className="flex items-center justify-between">
           <ResultTotal />
-          <div className="flex gap-[10px]">
+          <div className="flex gap-2.5">
             {resultsCount > 0 && (
-              <PrintButton componentToPrintRef={componentToPrintRef} />
+              <DirectoryPrintControl data={null} loadData={loadPrintableData} />
             )}
             <ShareButton
               componentToPrintRef={componentToPrintRef}

@@ -19,6 +19,7 @@ import {
   findResources,
   findResourcesV2,
 } from '@/app/(app)/shared/services/search-service';
+import { type ResultType } from '@/app/(app)/shared/store/results';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { getSortOption } from '@/app/(app)/shared/utils/getSortOption';
 import { createLogger } from '@/lib/logger';
@@ -27,7 +28,7 @@ import { UmamiEvent, trackUmamiEvent } from '../../../shared/lib/umami';
 
 const log = createLogger('search-page');
 
-const i18nNamespaces = ['page-search', 'page-resource', 'common'];
+const i18nNamespaces = ['page-search', 'page-resource', 'page-list', 'common'];
 
 type RawSearchParams = Record<string, string | string[] | undefined>;
 
@@ -94,7 +95,9 @@ const getPageData = cache(async function (
   const limit = appConfig.search.resultsLimit;
 
   let useFindResourcesV2 = false;
-  let results, totalResults, filters;
+  let results: ResultType[] = [];
+  let totalResults = 0;
+  let filters: Record<string, unknown> = {};
 
   if (isAdvancedGeoEnabled() && searchQuery.location) {
     const [placeMetadata] = await forwardGeocode(searchQuery.location, {
@@ -110,14 +113,17 @@ const getPageData = cache(async function (
       };
 
       try {
-        ({ results, totalResults, filters } = await findResourcesV2(
+        const v2Result = await findResourcesV2(
           geoQuery,
           locale,
           page,
           limit,
           appConfig.tenantId,
           appConfig.search.hybridSemanticSearchEnabled,
-        ));
+        );
+        results = v2Result.results as ResultType[];
+        totalResults = v2Result.totalResults;
+        filters = v2Result.filters;
         useFindResourcesV2 = true;
       } catch (error) {
         log.error(
@@ -148,7 +154,9 @@ const getPageData = cache(async function (
       totalResults = 0;
       filters = {};
     } else {
-      ({ results, totalResults, filters } = searchResult);
+      results = searchResult.results as ResultType[];
+      totalResults = searchResult.totalResults;
+      filters = searchResult.filters;
     }
   }
 

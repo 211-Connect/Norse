@@ -48,6 +48,9 @@
     "datum_fees": "Fees",
     "print_button": "Print",
     "generating": "Generating PDF...",
+    "loading_resources": "Loading resource details...",
+    "load_error": "Unable to load printable resource details. Please try again.",
+    "retry": "Retry",
     "popup_blocked": "Popup blocked. Please allow popups to view the PDF.",
     "error": "Failed to generate PDF. Please try again.",
     "dial_211": "Dial 2-1-1"

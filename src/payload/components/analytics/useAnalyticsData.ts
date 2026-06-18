@@ -9,6 +9,7 @@ import {
   analyticsSelectedWebsiteIdsAtom,
 } from './DateRange';
 import {
+  fetchAreaSearchMetrics,
   fetchEvents,
   fetchLanguageSwitchDestinations,
   fetchMetrics,
@@ -21,6 +22,7 @@ import {
   fetchZeroResultQueries,
 } from './analyticsCache';
 import {
+  AreaSearchMetricsData,
   DateRange,
   EventsData,
   LanguageSwitchDestinationsData,
@@ -117,3 +119,6 @@ export const useSessionHeatmap =
   makeAsyncHook<SessionHeatmapData>(fetchSessionHeatmap);
 export const useResourceByEntry =
   makeAsyncHook<ResourceByEntryData>(fetchResourceByEntry);
+export const useAreaSearchMetrics = makeAsyncHook<AreaSearchMetricsData>(
+  fetchAreaSearchMetrics,
+);

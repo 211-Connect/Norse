@@ -5,8 +5,8 @@ import { ChevronLeft } from 'lucide-react';
 import { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { favoriteListToPrintableDirectory } from '@/app/(app)/features/favorites/utils/printable-directory-transformers';
 import { SearchCardLayoutConfig } from '@/app/(app)/features/search/types/card-layout-config';
+import { DirectoryPrintControl } from '@/app/(app)/shared/components/directory-print/directory-print-control';
 import { Link } from '@/app/(app)/shared/components/link';
 import { ShareButton } from '@/app/(app)/shared/components/share-button';
 import { Badge } from '@/app/(app)/shared/components/ui/badge';
@@ -21,10 +21,10 @@ import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-searc
 import { cn, withOptionalTrailingSlash } from '@/app/(app)/shared/lib/utils';
 import { favoriteListWithFavoritesAtom } from '@/app/(app)/shared/store/favorites';
 import { fontSans } from '@/app/(app)/shared/styles/fonts';
+import { favoriteListToPrintableDirectory } from '@/app/(app)/shared/utils/printable-directory-transformers';
 
 import { DeleteFavoriteListButton } from './delete-favorite-list-button';
 import { Favorite } from './favorite';
-import { FavoritesDirectoryPrintControl } from './favorites-directory-print-control';
 import { NoFavoritesCard } from './no-favorites-card';
 import { PurgeFavoriteListButton } from './purge-favorite-list-button';
 import { UpdateFavoriteListButton } from './update-favorite-list-button';
@@ -85,9 +85,7 @@ export function FavoritesSection({ cardLayout }: FavoritesSectionProps) {
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <FavoritesDirectoryPrintControl
-                    data={printableDirectoryData}
-                  />
+                  <DirectoryPrintControl data={printableDirectoryData} />
                 </div>
               </TooltipTrigger>
               <TooltipContent>
