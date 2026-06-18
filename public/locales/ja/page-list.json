@@ -54,7 +54,10 @@
     "datum_required_documents": "必要書類",
     "datum_languages": "言語",
     "datum_fees": "料金",
-    "dial_211": "2-1-1にダイヤルしてください"
+    "dial_211": "2-1-1にダイヤルしてください",
+    "loading_resources": "リソースの詳細を読み込んでいます...",
+    "load_error": "印刷可能なリソースの詳細を読み込めませんでした。もう一度お試しください。",
+    "retry": "リトライ"
   },
   "print_footer_disclaimer": "{{brandName}} は、この情報を公共サービスとして提供するものであり、その正確性、完全性、適時性についていかなる保証も行いません。{{brandName}} は、この情報の使用方法について責任を負わず、その使用から生じるいかなる結果についても責任を負いません。この印刷物の配布は、{{brandName}} による承認または提携を意味するものではありません。",
   "print_page_counter": "{{current}} / {{total}} ページ {{current}} / {{total}}",

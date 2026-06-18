@@ -54,7 +54,10 @@
     "datum_required_documents": "Các tài liệu cần thiết",
     "datum_languages": "Ngôn ngữ",
     "datum_fees": "Phí",
-    "dial_211": "Quay số 2-1-1"
+    "dial_211": "Quay số 2-1-1",
+    "loading_resources": "Đang tải thông tin chi tiết tài nguyên...",
+    "load_error": "Không thể tải thông tin chi tiết tài liệu in. Vui lòng thử lại.",
+    "retry": "Thử lại"
   },
   "print_footer_disclaimer": "{{brandName}} cung cấp thông tin này như một dịch vụ công cộng và không đảm bảo về tính chính xác, đầy đủ hoặc kịp thời của nó. {{brandName}} không chịu trách nhiệm về cách thức sử dụng thông tin này và không chịu trách nhiệm pháp lý đối với bất kỳ hậu quả nào phát sinh từ việc sử dụng nó. Việc phân phát bản in này không ngụ ý sự chứng thực hoặc liên kết với {{brandName}}.",
   "print_page_counter": "Trang {{current}} của {{total}}",

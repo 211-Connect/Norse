@@ -54,7 +54,10 @@
     "datum_required_documents": "所需文件",
     "datum_languages": "語言",
     "datum_fees": "費用",
-    "dial_211": "撥打2-1-1"
+    "dial_211": "撥打2-1-1",
+    "loading_resources": "載入緊資源詳情 ...",
+    "load_error": "載入唔到可列印嘅資源詳情。唔該再試多次。",
+    "retry": "重試"
   },
   "print_footer_disclaimer": "{{brandName}} 作為公共服務提供呢啲資料，而且對佢嘅準確性、完整性或者及時性冇任何保證。 {{brandName}} 對呢啲資料嘅使用方式唔負責，亦唔會對由於呢啲資料嘅使用而引起嘅任何結果負責。呢份印刷品嘅分發唔代表 {{brandName}} 認可或者同佢有關係。",
   "print_page_counter": "{{current}} 頁 {{total}}",

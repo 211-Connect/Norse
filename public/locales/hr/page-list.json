@@ -54,7 +54,10 @@
     "datum_required_documents": "Potrebni dokumenti",
     "datum_languages": "Jezici",
     "datum_fees": "Naknade",
-    "dial_211": "Birajte 2-1-1"
+    "dial_211": "Birajte 2-1-1",
+    "loading_resources": "Učitavanje detalja resursa...",
+    "load_error": "Nije moguće učitati detalje resursa za ispis. Pokušajte ponovno.",
+    "retry": "Pokušaj ponovno"
   },
   "print_footer_disclaimer": "{{brandName}} pruža ove informacije kao javnu uslugu i ne daje nikakva jamstva u pogledu njihove točnosti, potpunosti ili pravovremenosti. {{brandName}} nije odgovoran za način na koji se ove informacije koriste i ne preuzima nikakvu odgovornost za bilo kakve posljedice koje proizlaze iz njihove upotrebe. Distribucija ovog ispisa ne podrazumijeva odobrenje ili povezanost s {{brandName}}.",
   "print_page_counter": "Stranica {{current}} od {{total}}",

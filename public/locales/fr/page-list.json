@@ -54,7 +54,10 @@
     "datum_required_documents": "Documents requis",
     "datum_languages": "Langues",
     "datum_fees": "Frais",
-    "dial_211": "Composez le 2-1-1"
+    "dial_211": "Composez le 2-1-1",
+    "loading_resources": "Chargement des détails de la ressource...",
+    "load_error": "Impossible de charger les détails de la ressource imprimable. Veuillez réessayer.",
+    "retry": "Réessayer"
   },
   "print_footer_disclaimer": "{{brandName}} fournit ces informations à titre de service public et n'offre aucune garantie quant à leur exactitude, leur exhaustivité ou leur actualité. {{brandName}} décline toute responsabilité quant à l'utilisation de ces informations et aux conséquences qui pourraient en découler. La distribution de ce document n'implique aucune approbation ni affiliation de la part de {{brandName}}.",
   "print_page_counter": "Page {{current}} de {{total}}",

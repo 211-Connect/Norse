@@ -54,7 +54,10 @@
     "datum_required_documents": "所需文件",
     "datum_languages": "语言",
     "datum_fees": "费用",
-    "dial_211": "拨打 2-1-1"
+    "dial_211": "拨打 2-1-1",
+    "loading_resources": "正在加载资源详情……",
+    "load_error": "无法加载可打印资源详情。请重试。",
+    "retry": "重试"
   },
   "print_footer_disclaimer": "{{brandName}} 提供此信息作为一项公共服务，但不对其准确性、完整性或及时性作任何保证。{{brandName}} 对此信息的使用方式概不负责，亦不对因使用此信息而产生的任何后果承担责任。分发此打印件并不意味着 {{brandName}} 对此信息表示认可或与其存在任何关联。",
   "print_page_counter": "第 {{current}} 页，共 {{total}} 页",
