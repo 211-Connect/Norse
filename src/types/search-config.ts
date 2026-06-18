@@ -9,6 +9,7 @@ export type SearchConfig = {
   radiusSelectValues: number[];
   defaultRadius: number;
   hybridSemanticSearchEnabled: boolean;
+  aiClassificationEnabled: boolean;
   suggestions: ResourceDirectory['suggestions'];
   subtopics: {
     name: string;

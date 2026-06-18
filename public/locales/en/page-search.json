@@ -26,5 +26,6 @@
       "name": "Resource Name",
       "organization": "Provider Name"
     }
-  }
+  },
+  "ai_broadened_results_alert": "We showed broader results because your request may need more detail. You can refine using topics or suggestions."
 }

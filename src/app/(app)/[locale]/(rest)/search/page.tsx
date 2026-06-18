@@ -22,6 +22,7 @@ import {
 import { type ResultType } from '@/app/(app)/shared/store/results';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { getSortOption } from '@/app/(app)/shared/utils/getSortOption';
+import { parseCommaSeparatedValues } from '@/app/(app)/shared/utils/parseCommaSeparatedValues';
 import { createLogger } from '@/lib/logger';
 
 import { UmamiEvent, trackUmamiEvent } from '../../../shared/lib/umami';
@@ -74,6 +75,7 @@ function parseSearchParams(raw: RawSearchParams): FindResourcesQuery {
       typeof parsed.distance === 'string'
         ? parsed.distance || undefined
         : undefined,
+    taxonomy: parseCommaSeparatedValues(raw.taxonomy),
     filters: parsed.filters as Record<string, string[]> | undefined,
     sort,
     age:
@@ -241,6 +243,7 @@ export default async function SearchPage({
     getCookies({ cookies }),
   ]);
   const locale = paramsResult.locale;
+  const showAiBroadenedResultsAlert = searchParamsResult.a === '1';
 
   const { filters, results, totalResults, resources, searchQuery, cardLayout } =
     await getPageData(locale, searchParamsResult);
@@ -274,7 +277,10 @@ export default async function SearchPage({
       <ResultsEvents results={results} totalResults={totalResults} />
       <div className="flex h-full w-full flex-col md:flex-row">
         <FilterPanel />
-        <ResultsSection cardLayout={cardLayout} />
+        <ResultsSection
+          cardLayout={cardLayout}
+          showAiBroadenedResultsAlert={showAiBroadenedResultsAlert}
+        />
         <MapContainer />
       </div>
     </PageWrapper>

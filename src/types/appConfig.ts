@@ -110,6 +110,7 @@ export type AppConfig = {
     }[];
     defaultRadius?: number;
     hybridSemanticSearchEnabled: boolean;
+    aiClassificationEnabled: boolean;
     resultsLimit: number;
     texts?: {
       title?: string;

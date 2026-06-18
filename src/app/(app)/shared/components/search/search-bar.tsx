@@ -17,9 +17,16 @@ import { useMainSearchLayoutContext } from './main-search-layout/main-search-lay
 interface SearchBarProps {
   focusByDefault?: boolean;
   inputId?: string;
+  hideOptions?: boolean;
+  onQueryInputChange?: () => void;
 }
 
-export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
+export function SearchBar({
+  focusByDefault = false,
+  inputId,
+  hideOptions = false,
+  onQueryInputChange,
+}: SearchBarProps) {
   const appConfig = useAppConfig();
   const { t } = useTranslation('common');
   const searchTerm = useAtomValue(searchTermAtom);
@@ -125,6 +132,8 @@ export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
 
   const handleInputChange = useCallback(
     (value: string) => {
+      onQueryInputChange?.();
+
       setSearch((prev) => ({
         ...prev,
         query: value,
@@ -133,7 +142,7 @@ export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
         queryLabel: value,
       }));
     },
-    [setSearch],
+    [setSearch, onQueryInputChange],
   );
 
   return (
@@ -149,7 +158,7 @@ export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
       }}
       defaultOpen={focusByDefault}
       Icon={SearchIcon}
-      options={options}
+      options={hideOptions ? [] : options}
       onInputChange={handleInputChange}
       onValueChange={setSearchTerm}
       clearButtonLabel={t('call_to_action.remove')}

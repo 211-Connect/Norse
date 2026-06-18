@@ -276,6 +276,7 @@ async function getAppConfigBase(
         map,
         radiusOptions: [],
         hybridSemanticSearchEnabled: false,
+        aiClassificationEnabled: false,
         resultsLimit: 25,
       },
       sessionId: '',
@@ -485,6 +486,9 @@ async function getAppConfigBase(
         resourceDirectory.search.searchSettings.defaultRadius ?? undefined,
       hybridSemanticSearchEnabled:
         resourceDirectory.search.searchSettings.hybridSemanticSearchEnabled ??
+        false,
+      aiClassificationEnabled:
+        resourceDirectory.search.searchSettings.aiClassificationEnabled ??
         false,
       resultsLimit: resourceDirectory.search.searchSettings.resultsLimit ?? 25,
       texts: {

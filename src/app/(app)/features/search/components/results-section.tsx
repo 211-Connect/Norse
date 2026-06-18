@@ -9,6 +9,10 @@ import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { getPrintableDirectoryData } from '@/app/(app)/shared/serverActions/search/getPrintableDirectoryData';
 import { ShareButton } from '@/app/(app)/shared/components/share-button';
 import {
+  Alert,
+  AlertDescription,
+} from '@/app/(app)/shared/components/ui/alert';
+import {
   resultTotalAtom,
   resultsAtom,
   resultsCurrentPageAtom,
@@ -30,9 +34,13 @@ const PENDING_FOCUS_TARGET_STORAGE_KEY = 'pending-search-focus-target';
 
 type ResultsSectionProps = {
   cardLayout: SearchCardLayoutConfig;
+  showAiBroadenedResultsAlert?: boolean;
 };
 
-export function ResultsSection({ cardLayout }: ResultsSectionProps) {
+export function ResultsSection({
+  cardLayout,
+  showAiBroadenedResultsAlert = false,
+}: ResultsSectionProps) {
   const { t } = useTranslation('page-search');
   const { i18n } = useTranslation();
   const appConfig = useAppConfig();
@@ -93,6 +101,13 @@ export function ResultsSection({ cardLayout }: ResultsSectionProps) {
         Search Results
       </h2>
       <div className="flex flex-col gap-3 print:hidden">
+        {showAiBroadenedResultsAlert && (
+          <Alert>
+            <AlertDescription>
+              {t('ai_broadened_results_alert')}
+            </AlertDescription>
+          </Alert>
+        )}
         <div className="flex items-center justify-between">
           <ResultTotal />
           <div className="flex gap-2.5">

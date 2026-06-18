@@ -83,6 +83,9 @@ export async function GET(
           hybridSemanticSearchEnabled:
             resourceDirectory.search.searchSettings
               .hybridSemanticSearchEnabled ?? false,
+          aiClassificationEnabled:
+            resourceDirectory.search.searchSettings.aiClassificationEnabled ??
+            false,
           suggestions: resourceDirectory.suggestions,
           subtopics,
         };

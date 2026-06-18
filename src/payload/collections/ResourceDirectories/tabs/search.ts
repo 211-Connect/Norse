@@ -232,6 +232,15 @@ export const search: Tab = {
           },
         },
         {
+          name: 'aiClassificationEnabled',
+          type: 'checkbox',
+          defaultValue: false,
+          access: {
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
+          },
+        },
+        {
           name: 'resultsLimit',
           type: 'number',
           defaultValue: 25,
