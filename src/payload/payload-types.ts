@@ -443,6 +443,10 @@ export interface Tenant {
           id?: string | null;
         }[]
       | null;
+    /**
+     * Api key for accessing analytics data in Norse API
+     */
+    apiKey?: string | null;
   };
   sms?: {
     smsProvider?: ('Twilio' | 'EMS') | null;
@@ -1247,6 +1251,7 @@ export interface TenantsSelect<T extends boolean = true> {
               websiteId?: T;
               id?: T;
             };
+        apiKey?: T;
       };
   sms?:
     | T
