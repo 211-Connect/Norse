@@ -83,6 +83,8 @@ export function resourceToLocalFavoriteResult(
     taxonomies: resource.categories ?? [],
     facets: resource.facets ?? null,
     attributeValues: resource.attributeValues ?? {},
+    applicationProcess: resource.applicationProcess ?? null,
+    eligibility: resource.eligibilities ?? null,
     currentListId: LOCAL_LIST_ID,
     onRemoveFromList,
   };
