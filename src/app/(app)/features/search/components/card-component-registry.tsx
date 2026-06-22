@@ -6,6 +6,8 @@ import { getBadgesForResource } from '@/utils/getBadgesForResource';
 
 import { SeparatorComponent } from '../../resource/components/resource-components';
 import { SearchCardComponentId } from '../types/card-component-ids';
+import { ApplicationProcessComponent } from './search-card-components/application-process';
+import { EligibilityComponent } from './search-card-components/eligibility';
 import {
   ActionButtonsComponent,
   AddressComponent,
@@ -31,6 +33,8 @@ export const searchCardComponentRegistry: Record<
   [SearchCardComponentId.BADGES]: BadgesComponent,
   [SearchCardComponentId.RESOURCE_NAME]: ResourceNameComponent,
   [SearchCardComponentId.SERVICE_NAME]: ServiceNameComponent,
+  [SearchCardComponentId.ELIGIBILITY]: EligibilityComponent,
+  [SearchCardComponentId.APPLICATION_PROCESS]: ApplicationProcessComponent,
   [SearchCardComponentId.LOCATION_NAME]: LocationNameComponent,
   [SearchCardComponentId.LOCATION_NAME_SUBTITLE]: LocationNameSubtitleComponent,
   [SearchCardComponentId.ADDRESS]: AddressComponent,
@@ -81,7 +85,14 @@ export function shouldSearchCardComponentRender(
     case SearchCardComponentId.RESOURCE_NAME:
       return Boolean(result.name);
     case SearchCardComponentId.SERVICE_NAME:
-      return Boolean(result.serviceName);
+      return (
+        appConfig.featureFlags.showSearchAndResourceServiceName &&
+        Boolean(result.serviceName)
+      );
+    case SearchCardComponentId.ELIGIBILITY:
+      return Boolean(result.eligibility);
+    case SearchCardComponentId.APPLICATION_PROCESS:
+      return Boolean(result.applicationProcess);
     case SearchCardComponentId.LOCATION_NAME:
       return Boolean(result.locationName);
     case SearchCardComponentId.LOCATION_NAME_SUBTITLE:

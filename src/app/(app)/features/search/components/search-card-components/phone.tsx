@@ -20,7 +20,7 @@ export function PhoneComponent({ result }: SearchCardComponentProps) {
       url={`tel:${result.phone}`}
       urlTarget="_self"
       shouldParseHtml={false}
-      className="py-0"
+      withPadding={false}
       onClick={() =>
         trackUmamiEvent(UmamiEvent.PhoneClick, {
           resourceId: String(result.id),

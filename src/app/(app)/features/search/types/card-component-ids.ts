@@ -3,6 +3,8 @@ export enum SearchCardComponentId {
   BADGES = 'badges',
   RESOURCE_NAME = 'resourceName',
   SERVICE_NAME = 'serviceName',
+  ELIGIBILITY = 'eligibility',
+  APPLICATION_PROCESS = 'applicationProcess',
   LOCATION_NAME = 'locationName',
   LOCATION_NAME_SUBTITLE = 'locationNameSubtitle',
   ADDRESS = 'address',

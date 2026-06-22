@@ -59,7 +59,7 @@ export function AddressComponent({
       size="sm"
       iconColor="text-primary"
       singleLine
-      className="py-0"
+      withPadding={false}
       onClick={() =>
         trackUmamiEvent(UmamiEvent.DirectionClick, {
           resourceId: resource.id,
@@ -76,7 +76,9 @@ export function AddressComponent({
     return (
       <TooltipProvider>
         <Tooltip>
-          <TooltipTrigger className="w-fit">{AddressElement}</TooltipTrigger>
+          <TooltipTrigger asChild>
+            <div className="w-fit">{AddressElement}</div>
+          </TooltipTrigger>
           <TooltipContent className="max-w-64" side="right">
             <p>{t('search.confidential_address')}</p>
           </TooltipContent>
