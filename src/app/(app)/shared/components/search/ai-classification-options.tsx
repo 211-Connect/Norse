@@ -126,7 +126,9 @@ export function AiClassificationOptions({
                   {t(`needs.${code}.name`, { defaultValue: code })}
                 </Typography>
                 <Typography variant="paragraph" size="xs" textColor="secondary">
-                  {t(`needs.${code}.description`, { defaultValue: code })}
+                  {t([`needs.${code}.displayDescription`], {
+                    defaultValue: code,
+                  })}
                 </Typography>
                 {isFiniteNonNegative(details?.resultsCount) && (
                   <Typography
