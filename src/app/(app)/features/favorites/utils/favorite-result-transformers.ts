@@ -50,6 +50,8 @@ export function favoriteToResult(
     taxonomies: translation?.taxonomies ?? [],
     facets: transformedFacets.length > 0 ? transformedFacets : null,
     attributeValues: translation?.attributeValues ?? {},
+    applicationProcess: translation?.applicationProcess ?? null,
+    eligibility: translation?.eligibilities ?? null,
     currentListId,
     onRemoveFromList,
   };
