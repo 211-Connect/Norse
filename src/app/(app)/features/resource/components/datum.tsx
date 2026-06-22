@@ -21,6 +21,7 @@ export interface DatumProps {
   singleLine?: boolean;
   size?: 'sm' | 'md' | null;
   shouldParseHtml?: boolean;
+  withPadding?: boolean;
   className?: string;
   onClick?: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void;
 }
@@ -40,6 +41,7 @@ export function Datum({
   singleLine = false,
   size = 'sm',
   shouldParseHtml = true,
+  withPadding = true,
   className,
   onClick,
 }: DatumProps) {
@@ -65,6 +67,7 @@ export function Datum({
         {
           'gap-2': Boolean(Icon),
           truncate: singleLine,
+          'py-0': !withPadding,
           'items-center': singleLine,
         },
         className,

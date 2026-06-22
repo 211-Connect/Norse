@@ -128,17 +128,15 @@ export function shouldComponentRender(
     case ResourceComponentId.ELIGIBILITY:
       return Boolean(resource.eligibilities);
     case ResourceComponentId.REQUIRED_DOCUMENTS:
-      return Boolean(resource.requiredDocuments);
+      return Boolean(resource.requiredDocuments?.length);
     case ResourceComponentId.HOURS:
       return Boolean(resource.hours);
     case ResourceComponentId.CONTACTS:
-      return Boolean(resource.contacts && resource.contacts.length > 0);
+      return Boolean(resource.contacts?.length);
     case ResourceComponentId.PHONE_NUMBERS:
-      return Boolean(resource.phoneNumbers && resource.phoneNumbers.length > 0);
+      return Boolean(resource.phoneNumbers?.length);
     case ResourceComponentId.QUALITY:
-      return Boolean(
-        resource.linkQualityUrls && resource.linkQualityUrls.length > 0,
-      );
+      return Boolean(resource.linkQualityUrls?.length);
     case ResourceComponentId.WEBSITE:
       return Boolean(resource.website);
     case ResourceComponentId.ORGANIZATION_URL:
@@ -149,7 +147,7 @@ export function shouldComponentRender(
     case ResourceComponentId.EMAIL:
       return Boolean(resource.email);
     case ResourceComponentId.LANGUAGES:
-      return Boolean(resource.languages && resource.languages.length > 0);
+      return Boolean(resource.languages?.length);
     case ResourceComponentId.INTERPRETATION_SERVICES:
       return Boolean(resource.interpretationServices);
     case ResourceComponentId.APPLICATION_PROCESS:
@@ -167,7 +165,7 @@ export function shouldComponentRender(
     case ResourceComponentId.ATTRIBUTION:
       return Boolean(resource.attribution);
     case ResourceComponentId.CATEGORIES:
-      return Boolean(resource.categories && resource.categories.length > 0);
+      return Boolean(resource.categories?.length);
     case ResourceComponentId.MAP:
       return Boolean(
         (resource.location &&

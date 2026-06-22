@@ -28,7 +28,7 @@ export function WebsiteComponent({ result }: SearchCardComponentProps) {
       urlTarget="_blank"
       urlAriaLabel={`${t('website')}: ${host}`}
       shouldParseHtml={false}
-      className="py-0"
+      withPadding={false}
       onClick={() =>
         trackUmamiEvent(UmamiEvent.WebsiteClick, {
           resourceId: result.id,

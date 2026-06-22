@@ -873,6 +873,8 @@ export interface ResourceDirectory {
             | 'badges'
             | 'resourceName'
             | 'serviceName'
+            | 'eligibility'
+            | 'applicationProcess'
             | 'locationName'
             | 'locationNameSubtitle'
             | 'address'

@@ -11,6 +11,7 @@ export function CustomAttributeComponent({
     <ResourceCustomAttributeComponent
       resource={result}
       customAttribute={customAttribute}
+      withPadding={false}
     />
   );
 }
