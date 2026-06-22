@@ -56,7 +56,7 @@
     "@azure-rest/ai-translation-text": "^1.0.1",
     "@floating-ui/react": "^0.27.18",
     "@google-cloud/translate": "^9.4.1",
-    "@payloadcms/db-postgres": "3.84.1",
+    "@payloadcms/db-postgres": "3.85.1",
     "@payloadcms/email-nodemailer": "3.84.1",
     "@payloadcms/next": "3.84.1",
     "@payloadcms/plugin-multi-tenant": "3.84.1",
