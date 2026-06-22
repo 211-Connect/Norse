@@ -30,6 +30,7 @@ import { persistSearchDistancePreference } from '../../lib/search-distance-prefe
 import { UmamiEvent, trackUmamiEvent } from '../../lib/umami';
 import { cn, getScrollbarWidth } from '../../lib/utils';
 import {
+  AiClassificationScenario,
   AiPredictOption,
   predictSearchNeeds,
   reRankSearchNeeds,
@@ -84,6 +85,8 @@ export function SearchDialog({
   const [isConfirmLoading, setIsConfirmLoading] = useState(false);
   const [clarifyVisible, setClarifyVisible] = useState(false);
   const [clarifyOptions, setClarifyOptions] = useState<AiPredictOption[]>([]);
+  const [aiSearchScenario, setAiSearchScenario] =
+    useState<AiClassificationScenario>();
   const [selectedClarifyCodes, setSelectedClarifyCodes] = useState<string[]>(
     [],
   );
@@ -168,16 +171,19 @@ export function SearchDialog({
 
   const navigateAiSearch = useCallback(
     ({
-      alert,
+      scenario,
       taxonomies,
-    }: { alert?: boolean; taxonomies?: string[] } = {}) => {
+    }: {
+      scenario?: AiClassificationScenario;
+      taxonomies?: string[];
+    } = {}) => {
       const query = (search.query || search.searchTerm || '').trim();
       if (!query) {
         return;
       }
 
       const url = buildAiSearchUrl({
-        alert,
+        scenario,
         query,
         queryLabel: search.queryLabel,
         taxonomies,
@@ -245,6 +251,8 @@ export function SearchDialog({
         await navigateClassicSearch(locationPayload);
         return;
       }
+      const scenario = predictResponse.scenario;
+      setAiSearchScenario(scenario);
 
       const taxonomies = normalizeHsisTaxonomies(
         predictResponse.hsis_taxonomies,
@@ -255,8 +263,11 @@ export function SearchDialog({
         return;
       }
 
-      if (predictResponse.scenario === 'search_and_notify') {
-        navigateAiSearch({ taxonomies, alert: true });
+      if (
+        scenario === 'search_and_notify_low_confidence' ||
+        scenario === 'search_and_notify_low_info'
+      ) {
+        navigateAiSearch({ taxonomies, scenario });
         return;
       }
 
@@ -586,6 +597,7 @@ export function SearchDialog({
                     allNeedCodes={allNeedCodes}
                     selectedCodes={selectedClarifyCodes}
                     options={clarifyOptions}
+                    scenario={aiSearchScenario}
                     onToggle={handleToggleClarifyCode}
                     validationMessage={clarifyValidationError}
                     disabled={disableSearchControls}

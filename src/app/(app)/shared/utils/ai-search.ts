@@ -1,8 +1,9 @@
 import { ResourceEntry } from '../lib/umami';
+import { AiClassificationScenario } from '../services/ai-classification-search-service';
 import { parseCommaSeparatedValues } from './parseCommaSeparatedValues';
 
 type BuildAiSearchUrlArgs = {
-  alert?: boolean;
+  scenario?: AiClassificationScenario;
   query: string;
   queryLabel?: string;
   taxonomies?: string[] | null | undefined;
@@ -15,7 +16,7 @@ export function normalizeHsisTaxonomies(
 }
 
 export function buildAiSearchUrl({
-  alert = false,
+  scenario,
   query,
   queryLabel,
   taxonomies,
@@ -40,8 +41,10 @@ export function buildAiSearchUrl({
     params.set('taxonomy', normalizedTaxonomies.join(','));
   }
 
-  if (alert) {
-    params.set('a', '1');
+  if (scenario === 'search_and_notify_low_info') {
+    params.set('a', 'low_info');
+  } else if (scenario === 'search_and_notify_low_confidence') {
+    params.set('a', 'low_confidence');
   }
 
   const queryString = params.toString();

@@ -56,6 +56,8 @@
     "show_less": "Show less",
     "everywhere": "Everywhere",
     "ai_clarify_title": "Help us narrow your search",
+    "ai_clarify_title_low_info": "Tell us a bit more so we can narrow your search",
+    "ai_clarify_title_multiple_labels": "Which type of help best matches what you need?",
     "ai_skip": "Skip",
     "ai_confirm": "Confirm",
     "ai_show_more_categories": "Show more categories",

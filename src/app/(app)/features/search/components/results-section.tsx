@@ -32,14 +32,32 @@ import { SortSelect } from './sort-select';
 const SEARCH_RESULTS_HEADING_ID = 'search-results-heading';
 const PENDING_FOCUS_TARGET_STORAGE_KEY = 'pending-search-focus-target';
 
+export type AiAlertType = 'low_info' | 'low_confidence' | 'general';
+
 type ResultsSectionProps = {
   cardLayout: SearchCardLayoutConfig;
-  showAiBroadenedResultsAlert?: boolean;
+  aiSearchAlert?: string;
+};
+
+const getAiAlertMessageKey = (aiSearchAlert?: string): string | undefined => {
+  if (aiSearchAlert === 'low_info') {
+    return 'ai_broadened_results_alert_low_info';
+  }
+
+  if (aiSearchAlert === 'low_confidence') {
+    return 'ai_broadened_results_alert_low_confidence';
+  }
+
+  if (aiSearchAlert) {
+    return 'ai_broadened_results_alert';
+  }
+
+  return undefined;
 };
 
 export function ResultsSection({
   cardLayout,
-  showAiBroadenedResultsAlert = false,
+  aiSearchAlert,
 }: ResultsSectionProps) {
   const { t } = useTranslation('page-search');
   const { i18n } = useTranslation();
@@ -56,6 +74,7 @@ export function ResultsSection({
   const shareTitle = queryLabel || query || t('no_query');
   const shareBody = t('share_body', { count: totalResults, title: shareTitle });
   const printableListName = shareTitle;
+  const aiAlertMessageKey = getAiAlertMessageKey(aiSearchAlert);
 
   const showSort = queryType !== 'hybrid';
 
@@ -101,11 +120,9 @@ export function ResultsSection({
         Search Results
       </h2>
       <div className="flex flex-col gap-3 print:hidden">
-        {showAiBroadenedResultsAlert && (
+        {aiAlertMessageKey && (
           <Alert>
-            <AlertDescription>
-              {t('ai_broadened_results_alert')}
-            </AlertDescription>
+            <AlertDescription>{t(aiAlertMessageKey)}</AlertDescription>
           </Alert>
         )}
         <div className="flex items-center justify-between">

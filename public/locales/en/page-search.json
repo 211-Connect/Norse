@@ -27,5 +27,7 @@
       "organization": "Provider Name"
     }
   },
-  "ai_broadened_results_alert": "We showed broader results because your request may need more detail. You can refine using topics or suggestions."
+  "ai_broadened_results_alert": "We showed broader results because your request may need more detail. You can refine using topics or suggestions.",
+  "ai_broadened_results_alert_low_info": "We showed broader results because your search may need more detail. You can refine using topics or suggestions.",
+  "ai_broadened_results_alert_low_confidence": "We showed broader results because we were not confident about the best match. You can refine using topics or suggestions."
 }
