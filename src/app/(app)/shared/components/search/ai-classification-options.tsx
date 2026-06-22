@@ -4,7 +4,10 @@ import { Check } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { AiPredictOption } from '@/app/(app)/shared/services/ai-classification-search-service';
+import {
+  AiClassificationScenario,
+  AiPredictOption,
+} from '@/app/(app)/shared/services/ai-classification-search-service';
 
 import { cn } from '../../lib/utils';
 import { Typography } from '../ui/typography';
@@ -18,6 +21,7 @@ type AiClassificationOptionView = {
 
 type AiClassificationOptionsProps = {
   allNeedCodes: string[];
+  scenario: AiClassificationScenario | undefined;
   selectedCodes: string[];
   options: AiPredictOption[];
   onToggle: (code: string) => void;
@@ -35,9 +39,21 @@ function getUniqueCodes(codes: string[]): string[] {
   return [...new Set(codes.filter((code) => code.trim().length > 0))];
 }
 
+const SCENARIO_TO_CLARIFY_TITLE_KEY_MAP: Record<
+  AiClassificationScenario,
+  string
+> = {
+  search: 'search.ai_clarify_title',
+  clarify_low_info: 'search.ai_clarify_title_low_info',
+  clarify_multiple_labels: 'search.ai_clarify_title_multiple_labels',
+  search_and_notify_low_info: 'search.ai_clarify_title_low_info',
+  search_and_notify_low_confidence: 'search.ai_clarify_title',
+};
+
 export function AiClassificationOptions({
   allNeedCodes,
   selectedCodes,
+  scenario,
   options,
   onToggle,
   validationMessage,
@@ -80,13 +96,17 @@ export function AiClassificationOptions({
   const shouldShowMoreButton =
     !showAllCategories && orderedCodes.length > options.length;
 
+  const clarifyTitleKey = scenario
+    ? SCENARIO_TO_CLARIFY_TITLE_KEY_MAP[scenario]
+    : 'search.ai_clarify_title';
+
   return (
     <div
       className="mt-4 flex flex-col gap-3"
       data-testid="ai-classification-options"
     >
       <Typography variant="heading" size="sm">
-        {t('search.ai_clarify_title')}
+        {t(clarifyTitleKey)}
       </Typography>
 
       <div className="flex flex-col gap-3">

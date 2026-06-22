@@ -243,7 +243,8 @@ export default async function SearchPage({
     getCookies({ cookies }),
   ]);
   const locale = paramsResult.locale;
-  const showAiBroadenedResultsAlert = searchParamsResult.a === '1';
+  const aiSearchAlert =
+    typeof searchParamsResult.a === 'string' ? searchParamsResult.a : undefined;
 
   const { filters, results, totalResults, resources, searchQuery, cardLayout } =
     await getPageData(locale, searchParamsResult);
@@ -277,10 +278,7 @@ export default async function SearchPage({
       <ResultsEvents results={results} totalResults={totalResults} />
       <div className="flex h-full w-full flex-col md:flex-row">
         <FilterPanel />
-        <ResultsSection
-          cardLayout={cardLayout}
-          showAiBroadenedResultsAlert={showAiBroadenedResultsAlert}
-        />
+        <ResultsSection cardLayout={cardLayout} aiSearchAlert={aiSearchAlert} />
         <MapContainer />
       </div>
     </PageWrapper>

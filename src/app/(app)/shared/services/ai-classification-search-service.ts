@@ -8,9 +8,11 @@ import { fetchWrapper } from '../lib/fetchWrapper';
 const log = createLogger('ai-classification-search-service');
 
 export type AiClassificationScenario =
-  | 'clarify'
   | 'search'
-  | 'search_and_notify';
+  | 'clarify_low_info'
+  | 'clarify_multiple_labels'
+  | 'search_and_notify_low_info'
+  | 'search_and_notify_low_confidence';
 
 export type AiPredictOption = {
   code: string;
