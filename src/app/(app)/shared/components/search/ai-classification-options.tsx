@@ -11,10 +11,10 @@ import {
 
 import { cn } from '../../lib/utils';
 import { Typography } from '../ui/typography';
-import { NEED_CODES } from './search-dialog-constants';
 
 type AiClassificationItem = {
   code: string;
+  score: number;
   resultsCount: number | null;
 };
 
@@ -59,6 +59,10 @@ export function AiClassificationOptions({
     () =>
       options.map((option) => ({
         code: option.code,
+        score:
+          typeof option.score === 'number' && Number.isFinite(option.score)
+            ? option.score
+            : 0,
         resultsCount:
           typeof option.results_count === 'number' &&
           Number.isFinite(option.results_count)
@@ -68,22 +72,18 @@ export function AiClassificationOptions({
     [options],
   );
 
-  const additionalItems = useMemo<AiClassificationItem[]>(() => {
-    const optionCodes = new Set(optionItems.map((item) => item.code));
-
-    return NEED_CODES.filter((code) => !optionCodes.has(code)).map((code) => ({
-      code,
-      resultsCount: null,
-    }));
-  }, [optionItems]);
-
-  const visibleItems = useMemo(
-    () =>
-      showAllCategories ? [...optionItems, ...additionalItems] : optionItems,
-    [additionalItems, optionItems, showAllCategories],
+  const defaultVisibleItems = useMemo<AiClassificationItem[]>(
+    () => optionItems.filter((item) => item.score > 0.1).slice(0, 4),
+    [optionItems],
   );
 
-  const shouldShowMoreButton = !showAllCategories && additionalItems.length > 0;
+  const visibleItems = useMemo(
+    () => (showAllCategories ? optionItems : defaultVisibleItems),
+    [defaultVisibleItems, optionItems, showAllCategories],
+  );
+
+  const shouldShowMoreButton =
+    !showAllCategories && defaultVisibleItems.length < optionItems.length;
 
   const clarifyTitleKey = scenario
     ? SCENARIO_TO_CLARIFY_TITLE_KEY_MAP[scenario]
