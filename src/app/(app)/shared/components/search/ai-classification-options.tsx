@@ -11,16 +11,14 @@ import {
 
 import { cn } from '../../lib/utils';
 import { Typography } from '../ui/typography';
+import { NEED_CODES } from './search-dialog-constants';
 
-type AiClassificationOptionView = {
+type AiClassificationItem = {
   code: string;
-  preSelected: boolean;
-  score: number | null;
   resultsCount: number | null;
 };
 
 type AiClassificationOptionsProps = {
-  allNeedCodes: string[];
   scenario: AiClassificationScenario | undefined;
   selectedCodes: string[];
   options: AiPredictOption[];
@@ -35,10 +33,6 @@ function isFiniteNonNegative(
   return typeof value === 'number' && Number.isFinite(value) && value >= 0;
 }
 
-function getUniqueCodes(codes: string[]): string[] {
-  return [...new Set(codes.filter((code) => code.trim().length > 0))];
-}
-
 const SCENARIO_TO_CLARIFY_TITLE_KEY_MAP: Record<
   AiClassificationScenario,
   string
@@ -51,7 +45,6 @@ const SCENARIO_TO_CLARIFY_TITLE_KEY_MAP: Record<
 };
 
 export function AiClassificationOptions({
-  allNeedCodes,
   selectedCodes,
   scenario,
   options,
@@ -62,39 +55,35 @@ export function AiClassificationOptions({
   const { t } = useTranslation('common');
   const [showAllCategories, setShowAllCategories] = useState(false);
 
-  const optionsByCode = useMemo(
+  const optionItems = useMemo<AiClassificationItem[]>(
     () =>
-      new Map(
-        options.map((option) => [
-          option.code,
-          {
-            code: option.code,
-            preSelected: option.pre_selected,
-            score: option.score,
-            resultsCount:
-              typeof option.results_count === 'number' &&
-              Number.isFinite(option.results_count)
-                ? option.results_count
-                : null,
-          } satisfies AiClassificationOptionView,
-        ]),
-      ),
+      options.map((option) => ({
+        code: option.code,
+        resultsCount:
+          typeof option.results_count === 'number' &&
+          Number.isFinite(option.results_count)
+            ? option.results_count
+            : null,
+      })),
     [options],
   );
 
-  const orderedCodes = useMemo(() => {
-    const backendCodes = options.map((option) => option.code);
-    return getUniqueCodes([...backendCodes, ...allNeedCodes]);
-  }, [allNeedCodes, options]);
+  const additionalItems = useMemo<AiClassificationItem[]>(() => {
+    const optionCodes = new Set(optionItems.map((item) => item.code));
 
-  const visibleCodes = useMemo(
+    return NEED_CODES.filter((code) => !optionCodes.has(code)).map((code) => ({
+      code,
+      resultsCount: null,
+    }));
+  }, [optionItems]);
+
+  const visibleItems = useMemo(
     () =>
-      showAllCategories ? orderedCodes : options.map((option) => option.code),
-    [orderedCodes, options, showAllCategories],
+      showAllCategories ? [...optionItems, ...additionalItems] : optionItems,
+    [additionalItems, optionItems, showAllCategories],
   );
 
-  const shouldShowMoreButton =
-    !showAllCategories && orderedCodes.length > options.length;
+  const shouldShowMoreButton = !showAllCategories && additionalItems.length > 0;
 
   const clarifyTitleKey = scenario
     ? SCENARIO_TO_CLARIFY_TITLE_KEY_MAP[scenario]
@@ -102,7 +91,7 @@ export function AiClassificationOptions({
 
   return (
     <div
-      className="mt-4 flex flex-col gap-3"
+      className="animate-opacity-in mt-4 flex flex-col gap-3"
       data-testid="ai-classification-options"
     >
       <Typography variant="heading" size="sm">
@@ -110,16 +99,15 @@ export function AiClassificationOptions({
       </Typography>
 
       <div className="flex flex-col gap-3">
-        {visibleCodes.map((code) => {
-          const details = optionsByCode.get(code);
-          const checked = selectedCodes.includes(code);
+        {visibleItems.map((item) => {
+          const checked = selectedCodes.includes(item.code);
 
           return (
             <button
-              key={code}
+              key={item.code}
               type="button"
               disabled={disabled}
-              onClick={() => onToggle(code)}
+              onClick={() => onToggle(item.code)}
               className={cn(
                 'flex cursor-pointer items-start gap-3 rounded-lg border-2 p-4 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-60',
                 checked
@@ -143,14 +131,14 @@ export function AiClassificationOptions({
 
               <div className="flex-1">
                 <Typography variant="heading" size="xs" className="mb-1">
-                  {t(`needs.${code}.name`, { defaultValue: code })}
+                  {t(`needs.${item.code}.name`, { defaultValue: item.code })}
                 </Typography>
                 <Typography variant="paragraph" size="xs" textColor="secondary">
-                  {t([`needs.${code}.displayDescription`], {
-                    defaultValue: code,
+                  {t([`needs.${item.code}.displayDescription`], {
+                    defaultValue: item.code,
                   })}
                 </Typography>
-                {isFiniteNonNegative(details?.resultsCount) && (
+                {isFiniteNonNegative(item.resultsCount) && (
                   <Typography
                     variant="paragraph"
                     size="xs"
@@ -158,7 +146,7 @@ export function AiClassificationOptions({
                     className="mt-1"
                   >
                     {t('search.ai_option_results_count', {
-                      count: details.resultsCount,
+                      count: item.resultsCount,
                     })}
                   </Typography>
                 )}

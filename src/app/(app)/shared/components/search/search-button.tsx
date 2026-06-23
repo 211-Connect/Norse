@@ -12,12 +12,7 @@ export function SearchButton({ loading = false }: SearchButtonProps) {
   const { t } = useTranslation('common');
 
   return (
-    <Button
-      className="!m-0"
-      type="submit"
-      loading={loading}
-      data-testid="search-submit-btn"
-    >
+    <Button type="submit" loading={loading} data-testid="search-submit-btn">
       {t('call_to_action.search')}
     </Button>
   );

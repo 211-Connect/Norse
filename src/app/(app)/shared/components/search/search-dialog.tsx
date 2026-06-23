@@ -3,11 +3,11 @@
 import { useAtomValue, useSetAtom } from 'jotai';
 import { useRouter } from 'next/navigation';
 import {
+  FocusEvent,
   FormEvent,
   KeyboardEvent,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
   useTransition,
@@ -41,13 +41,13 @@ import {
   userCoordinatesAtom,
 } from '../../store/search';
 import {
+  buildAiNeedWeights,
   buildAiSearchUrl,
   normalizeHsisTaxonomies,
 } from '../../utils/ai-search';
 import { createUrlParamsForSearch } from '../../utils/createUrlParamsForSearch';
 import { AiClassificationOptions } from './ai-classification-options';
 import { LocationSearchBar } from './location-search-bar';
-import { NEED_CODES } from './search-dialog-constants';
 import { SearchDialogHeaderActions } from './search-dialog-header-actions';
 import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
 import { SearchBar } from './search-bar';
@@ -80,23 +80,26 @@ export function SearchDialog({
   const setUserCoordinates = useSetAtom(userCoordinatesAtom);
   const searchCoordinates = useAtomValue(searchCoordinatesAtom);
   const userCoordinates = useAtomValue(userCoordinatesAtom);
-  const [isPredictLoading, setIsPredictLoading] = useState(false);
-  const [isSkipLoading, setIsSkipLoading] = useState(false);
-  const [isConfirmLoading, setIsConfirmLoading] = useState(false);
-  const [clarifyVisible, setClarifyVisible] = useState(false);
-  const [clarifyOptions, setClarifyOptions] = useState<AiPredictOption[]>([]);
   const [aiSearchScenario, setAiSearchScenario] =
     useState<AiClassificationScenario>();
+  const [activeAiAction, setActiveAiAction] = useState<
+    'predict' | 'skip' | 'confirm' | null
+  >(null);
+  const [isLocationActive, setIsLocationActive] = useState(false);
+  const [clarifyOptions, setClarifyOptions] = useState<
+    AiPredictOption[] | null
+  >(null);
   const [selectedClarifyCodes, setSelectedClarifyCodes] = useState<string[]>(
     [],
   );
   const [clarifyValidationError, setClarifyValidationError] = useState('');
 
-  const allNeedCodes = useMemo(() => [...NEED_CODES], []);
+  const clarifyVisible = clarifyOptions !== null;
+  const effectiveClarifyOptions = clarifyOptions ?? [];
+  const isPredictLoading = activeAiAction === 'predict';
 
   const clearAiState = useCallback(() => {
-    setClarifyVisible(false);
-    setClarifyOptions([]);
+    setClarifyOptions(null);
     setSelectedClarifyCodes([]);
     setClarifyValidationError('');
   }, []);
@@ -179,7 +182,7 @@ export function SearchDialog({
     } = {}) => {
       const query = (search.query || search.searchTerm || '').trim();
       if (!query) {
-        return;
+        return false;
       }
 
       const url = buildAiSearchUrl({
@@ -190,8 +193,12 @@ export function SearchDialog({
       });
 
       persistSearchDistancePreference(distance);
-      setOpen?.(false);
-      router.push(url);
+      startTransition(() => {
+        setOpen?.(false);
+        router.push(url);
+      });
+
+      return true;
     },
     [
       distance,
@@ -200,6 +207,7 @@ export function SearchDialog({
       search.queryLabel,
       search.searchTerm,
       setOpen,
+      startTransition,
     ],
   );
 
@@ -207,7 +215,7 @@ export function SearchDialog({
     async (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
-      if (isPredictLoading || isSkipLoading || isConfirmLoading) {
+      if (activeAiAction) {
         return;
       }
 
@@ -236,7 +244,7 @@ export function SearchDialog({
         return;
       }
 
-      setIsPredictLoading(true);
+      setActiveAiAction('predict');
       setClarifyValidationError('');
 
       const predictResponse = await predictSearchNeeds(
@@ -245,7 +253,7 @@ export function SearchDialog({
         appConfig.tenantId,
       );
 
-      setIsPredictLoading(false);
+      setActiveAiAction(null);
 
       if (!predictResponse) {
         await navigateClassicSearch(locationPayload);
@@ -280,17 +288,15 @@ export function SearchDialog({
           .filter((option) => option.pre_selected)
           .map((option) => option.code),
       );
-      setClarifyVisible(true);
     },
     [
       appConfig.search.aiClassificationEnabled,
       appConfig.tenantId,
-      isConfirmLoading,
-      isPredictLoading,
-      isSkipLoading,
+      activeAiAction,
       navigateAiSearch,
       navigateClassicSearch,
       requireUserLocation,
+      i18n.language,
       search.query,
       search.searchLocation,
       search.searchTerm,
@@ -310,21 +316,20 @@ export function SearchDialog({
   }, []);
 
   const handleSkipClarify = useCallback(async () => {
-    if (isPredictLoading || isConfirmLoading || isSkipLoading) {
+    if (activeAiAction || isPending) {
       return;
     }
 
-    setIsSkipLoading(true);
-    try {
-      await Promise.resolve();
-      navigateAiSearch();
-    } finally {
-      setIsSkipLoading(false);
+    setActiveAiAction('skip');
+    await Promise.resolve();
+    const didNavigate = navigateAiSearch();
+    if (!didNavigate) {
+      setActiveAiAction(null);
     }
-  }, [isConfirmLoading, isPredictLoading, isSkipLoading, navigateAiSearch]);
+  }, [activeAiAction, isPending, navigateAiSearch]);
 
   const handleConfirmClarify = useCallback(async () => {
-    if (isPredictLoading || isConfirmLoading || isSkipLoading) {
+    if (activeAiAction || isPending) {
       return;
     }
 
@@ -333,65 +338,27 @@ export function SearchDialog({
       return;
     }
 
-    const optionsByCode = new Map(
-      clarifyOptions.map((option) => [option.code, option]),
+    const needWeights = buildAiNeedWeights(
+      effectiveClarifyOptions,
+      selectedClarifyCodes,
     );
 
-    const needWeightsEntries = new Map<string, number>();
-
-    for (const option of clarifyOptions) {
-      const isSelected = selectedClarifyCodes.includes(option.code);
-
-      if (isSelected) {
-        if (option.pre_selected) {
-          if (
-            typeof option.score === 'number' &&
-            Number.isFinite(option.score)
-          ) {
-            needWeightsEntries.set(option.code, option.score);
-          }
-        } else {
-          needWeightsEntries.set(option.code, 0.6);
-        }
-      } else if (option.pre_selected) {
-        needWeightsEntries.set(option.code, 0.1);
-      }
-    }
-
-    for (const code of selectedClarifyCodes) {
-      if (needWeightsEntries.has(code)) {
-        continue;
-      }
-
-      const option = optionsByCode.get(code);
-      if (!option) {
-        needWeightsEntries.set(code, 0.6);
-      }
-    }
-
-    const need_weights = Object.fromEntries(
-      [...needWeightsEntries.entries()].filter(
-        ([, value]) => typeof value === 'number' && Number.isFinite(value),
-      ),
-    );
-
-    if (Object.keys(need_weights).length === 0) {
+    if (Object.keys(needWeights).length === 0) {
       setClarifyValidationError(t('search.ai_validation_select_or_skip'));
       return;
     }
 
     setClarifyValidationError('');
-    setIsConfirmLoading(true);
+    setActiveAiAction('confirm');
 
     const reRankResponse = await reRankSearchNeeds(
-      { need_weights },
+      { need_weights: needWeights },
       i18n.language,
       appConfig.tenantId,
     );
 
-    setIsConfirmLoading(false);
-
     if (!reRankResponse) {
+      setActiveAiAction(null);
       toast.error(t('message.error'));
       return;
     }
@@ -401,20 +368,59 @@ export function SearchDialog({
     );
     navigateAiSearch({ taxonomies: rerankedTaxonomies });
   }, [
+    activeAiAction,
     appConfig.tenantId,
-    clarifyOptions,
-    isConfirmLoading,
-    isPredictLoading,
-    isSkipLoading,
+    effectiveClarifyOptions,
+    isPending,
     navigateAiSearch,
     selectedClarifyCodes,
     t,
     i18n.language,
   ]);
 
+  useEffect(() => {
+    if (isPending) {
+      return;
+    }
+
+    setActiveAiAction(null);
+  }, [isPending]);
+
   const isMainSearchLoading = isPredictLoading || isPending;
-  const disableSearchControls =
-    isPredictLoading || isConfirmLoading || isSkipLoading;
+  const disableSearchControls = Boolean(activeAiAction) || isPending;
+  const isSkipButtonLoading = activeAiAction === 'skip';
+  const isConfirmButtonLoading = activeAiAction === 'confirm';
+  const showAiClassificationOptions = clarifyVisible && !isLocationActive;
+
+  const handleSearchFormFocusCapture = useCallback(
+    (event: FocusEvent<HTMLDivElement>) => {
+      const target = event.target as HTMLElement | null;
+      if (!target) {
+        return;
+      }
+
+      if (target.id === LOCATION_INPUT_ID) {
+        setIsLocationActive(true);
+        return;
+      }
+
+      if (target.id === SEARCH_INPUT_ID) {
+        setIsLocationActive(false);
+      }
+    },
+    [],
+  );
+
+  const handleSearchFormBlurCapture = useCallback(() => {
+    window.requestAnimationFrame(() => {
+      const activeElement = document.activeElement as HTMLElement | null;
+      const isLocationInputFocused = activeElement?.id === LOCATION_INPUT_ID;
+      if (!isLocationInputFocused) {
+        setIsLocationActive(false);
+      }
+    });
+  }, []);
+
   const handleSearchInputChange = useCallback(() => {
     if (!clarifyVisible) {
       return;
@@ -576,14 +582,19 @@ export function SearchDialog({
                 clarifyVisible={clarifyVisible}
                 disableSearchControls={disableSearchControls}
                 isMainSearchLoading={isMainSearchLoading}
-                isSkipLoading={isSkipLoading}
-                isConfirmLoading={isConfirmLoading}
+                isSkipLoading={isSkipButtonLoading}
+                isConfirmLoading={isConfirmButtonLoading}
                 onClose={closeDialog}
                 onSkipClarify={handleSkipClarify}
                 onConfirmClarify={handleConfirmClarify}
               />
             </div>
-            <div id="search-form-inputs" className="overflow-y-auto">
+            <div
+              id="search-form-inputs"
+              className="overflow-y-auto"
+              onFocusCapture={handleSearchFormFocusCapture}
+              onBlurCapture={handleSearchFormBlurCapture}
+            >
               <SearchBar
                 inputId={SEARCH_INPUT_ID}
                 hideOptions={clarifyVisible}
@@ -591,18 +602,15 @@ export function SearchDialog({
               />
               <LocationSearchBar inputId={LOCATION_INPUT_ID} className="mt-4" />
 
-              {clarifyVisible && (
-                <>
-                  <AiClassificationOptions
-                    allNeedCodes={allNeedCodes}
-                    selectedCodes={selectedClarifyCodes}
-                    options={clarifyOptions}
-                    scenario={aiSearchScenario}
-                    onToggle={handleToggleClarifyCode}
-                    validationMessage={clarifyValidationError}
-                    disabled={disableSearchControls}
-                  />
-                </>
+              {showAiClassificationOptions && (
+                <AiClassificationOptions
+                  selectedCodes={selectedClarifyCodes}
+                  options={effectiveClarifyOptions}
+                  onToggle={handleToggleClarifyCode}
+                  scenario={aiSearchScenario}
+                  validationMessage={clarifyValidationError}
+                  disabled={disableSearchControls}
+                />
               )}
             </div>
           </form>
