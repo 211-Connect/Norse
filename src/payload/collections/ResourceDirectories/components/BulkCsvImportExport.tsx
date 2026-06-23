@@ -87,17 +87,22 @@ const BULK_CSV_CONFIG: Record<
     exportFilePrefix: 'facets',
     itemLabel: 'facets',
     templateCSV: generateCSV(
-      ['name', 'facet', 'showInDetails'],
+      ['name', 'facet', 'showInDetails', 'sortBy', 'valueOrder'],
       [
         {
           name: 'Hours of Operation',
           facet: 'hours',
           showInDetails: 'true',
+          sortBy: 'count',
+          valueOrder: '',
         },
         {
-          name: 'Languages Spoken',
-          facet: 'languages',
+          name: 'Days Of The Week',
+          facet: 'daysofweek',
           showInDetails: 'false',
+          sortBy: 'valueOrder',
+          valueOrder:
+            'Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday',
         },
       ],
     ),
@@ -193,6 +198,16 @@ const BulkCsvImportExport: React.FC<BulkCsvImportExportProps> = ({ kind }) => {
           name: getRowFieldValue(rowPath, 'name'),
           facet: getRowFieldValue(rowPath, 'facet'),
           showInDetails: Boolean(getFieldValue(`${rowPath}.showInDetails`)),
+          sortBy: getRowFieldValue(rowPath, 'sortBy') || 'count',
+          valueOrder: mapRows(
+            getFieldRows(`${rowPath}.valueOrder`),
+            (valueRow) => {
+              const valuePath = getRowPath(valueRow);
+              return {
+                value: getRowFieldValue(valuePath, 'value'),
+              };
+            },
+          ),
         };
       });
     }

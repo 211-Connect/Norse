@@ -189,11 +189,26 @@ export const parseFacetsCSV = (csvText: string): any[] => {
   if (lines.length < 2) return [];
 
   const headers = lines[0].map((h) => h.toLowerCase());
+  const parseValueOrder = (raw: string): string[] =>
+    raw
+      .split('|')
+      .map((value) => value.trim())
+      .filter(Boolean);
+
+  const getSortByValue = (raw: string): 'count' | 'name' | 'valueOrder' => {
+    const normalized = raw.toLowerCase();
+    if (normalized === 'name') return 'name';
+    if (normalized === 'valueorder') return 'valueOrder';
+    return 'count';
+  };
+
   const items: Array<{
     id: string;
     name: string;
     facet: string;
     showInDetails: boolean;
+    sortBy: 'count' | 'name' | 'valueOrder';
+    valueOrder: { value: string }[];
   }> = [];
 
   for (let i = 1; i < lines.length; i++) {
@@ -204,6 +219,10 @@ export const parseFacetsCSV = (csvText: string): any[] => {
       const rawValue = row[index] || '';
       if (header === 'showindetails') {
         item[header] = rawValue.toLowerCase() === 'true';
+      } else if (header === 'sortby') {
+        item[header] = getSortByValue(rawValue);
+      } else if (header === 'valueorder') {
+        item[header] = parseValueOrder(rawValue);
       } else {
         item[header] = rawValue;
       }
@@ -216,6 +235,8 @@ export const parseFacetsCSV = (csvText: string): any[] => {
         name: item.name || '',
         facet: item.facet || '',
         showInDetails: item.showindetails !== false,
+        sortBy: getSortByValue(item.sortby || ''),
+        valueOrder: (item.valueorder || []).map((value: string) => ({ value })),
       });
     }
   }
@@ -224,11 +245,21 @@ export const parseFacetsCSV = (csvText: string): any[] => {
 };
 
 export const generateFacetsCSV = (items: any[]): string => {
-  const headers = ['name', 'facet', 'showInDetails'];
+  const headers = ['name', 'facet', 'showInDetails', 'sortBy', 'valueOrder'];
   const data = items.map((item) => ({
     name: item.name || '',
     facet: item.facet || '',
     showInDetails: item.showInDetails ? 'true' : 'false',
+    sortBy:
+      item.sortBy === 'name'
+        ? 'name'
+        : item.sortBy === 'valueOrder'
+          ? 'valueOrder'
+          : 'count',
+    valueOrder: (item.valueOrder || [])
+      .map((entry: any) => entry?.value)
+      .filter(Boolean)
+      .join('|'),
   }));
   return generateCSV(headers, data);
 };
