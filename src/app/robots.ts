@@ -1,11 +1,16 @@
 import { MetadataRoute } from 'next';
+import { headers } from 'next/headers';
 
-export default function robots(): MetadataRoute.Robots {
-  // Block all search engines in production unless explicitly allowed
-  const isProduction = process.env.NODE_ENV === 'production';
-  const allowSearchEngines =
-    process.env.NEXT_PUBLIC_ALLOW_SEARCH_ENGINES === 'true';
-  const shouldBlockCrawlers = isProduction && !allowSearchEngines;
+import { findTenantByHost } from '@/payload/collections/Tenants/actions';
+
+export default async function robots(): Promise<MetadataRoute.Robots> {
+  const headerList = await headers();
+  const hostHeader = headerList.get('host') || '';
+  const host = hostHeader.split(':')[0];
+
+  const tenant = host ? await findTenantByHost(host) : null;
+  const shouldBlockCrawlers =
+    tenant?.crawlerSettings?.allowSearchEngines === false;
 
   if (shouldBlockCrawlers) {
     return {

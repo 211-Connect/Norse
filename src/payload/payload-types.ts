@@ -435,6 +435,12 @@ export interface Tenant {
     gtmContainerId?: string | null;
     matomoContainerUrl?: string | null;
   };
+  crawlerSettings?: {
+    /**
+     * Disabling this blocks crawlers via robots and noindex metadata.
+     */
+    allowSearchEngines?: boolean | null;
+  };
   analytics?: {
     umamiWebsiteId?: string | null;
     additionalWebsiteIds?:
@@ -1237,6 +1243,11 @@ export interface TenantsSelect<T extends boolean = true> {
     | {
         gtmContainerId?: T;
         matomoContainerUrl?: T;
+      };
+  crawlerSettings?:
+    | T
+    | {
+        allowSearchEngines?: T;
       };
   analytics?:
     | T

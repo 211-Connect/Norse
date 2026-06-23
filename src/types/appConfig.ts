@@ -32,6 +32,9 @@ export type AppConfig = {
     number?: string;
     feedbackUrl?: string;
   };
+  crawlerSettings: {
+    allowSearchEngines: boolean;
+  };
   sms: {
     provider: 'Twilio' | 'EMS';
   } | null;

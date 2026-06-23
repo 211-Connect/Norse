@@ -1,0 +1,11 @@
+import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
+
+export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
+  await db.execute(sql`
+   ALTER TABLE "tenants" ADD COLUMN "crawler_settings_allow_search_engines" boolean DEFAULT true;`)
+}
+
+export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
+  await db.execute(sql`
+   ALTER TABLE "tenants" DROP COLUMN "crawler_settings_allow_search_engines";`)
+}

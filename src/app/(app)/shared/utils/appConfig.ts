@@ -226,6 +226,9 @@ async function getAppConfigBase(
         theme: {},
       },
       contact: {},
+      crawlerSettings: {
+        allowSearchEngines: true,
+      },
       sms: null,
       featureFlags: {
         requireAuthenticationForFavorites: false,
@@ -376,6 +379,11 @@ async function getAppConfigBase(
     contact: {
       number: resourceDirectory.brand.phoneNumber ?? undefined,
       feedbackUrl: resourceDirectory.brand.feedbackUrl ?? undefined,
+    },
+    crawlerSettings: {
+      allowSearchEngines:
+        getTenant(resourceDirectory)?.crawlerSettings?.allowSearchEngines ??
+        true,
     },
     sms: getSmsConfig(resourceDirectory),
     featureFlags: {

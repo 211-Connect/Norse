@@ -237,6 +237,26 @@ export const Tenants: CollectionConfig = {
       ],
     },
     {
+      name: 'crawlerSettings',
+      label: 'Crawler Settings',
+      type: 'group',
+      access: {
+        create: superAdminOrSupportAccess,
+        update: superAdminOrSupportAccess,
+      },
+      fields: [
+        {
+          name: 'allowSearchEngines',
+          type: 'checkbox',
+          defaultValue: true,
+          admin: {
+            description:
+              'Disabling this blocks crawlers via robots and noindex metadata.',
+          },
+        },
+      ],
+    },
+    {
       name: 'analytics',
       type: 'group',
       label: 'Analytics Settings',
