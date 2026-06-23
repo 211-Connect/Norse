@@ -471,14 +471,32 @@ async function getAppConfigBase(
     search: {
       facets: (resourceDirectory.search.facets ?? [])
         .filter(({ name }) => name)
-        .map(({ name, facet, showInDetails, excludeValues }) => ({
-          name: name!,
-          facet,
-          showInDetails: Boolean(showInDetails ?? true),
-          excludeValues: (excludeValues ?? [])
-            .map((e) => e.value)
-            .filter(Boolean) as string[],
-        })),
+        .map(
+          ({
+            name,
+            facet,
+            showInDetails,
+            sortBy,
+            valueOrder,
+            excludeValues,
+          }) => ({
+            name: name!,
+            facet,
+            showInDetails: Boolean(showInDetails ?? true),
+            sortBy:
+              sortBy === 'name'
+                ? 'name'
+                : sortBy === 'valueOrder'
+                  ? 'valueOrder'
+                  : 'count',
+            valueOrder: (valueOrder ?? [])
+              .map((entry) => entry.value?.trim())
+              .filter(Boolean) as string[],
+            excludeValues: (excludeValues ?? [])
+              .map((e) => e.value)
+              .filter(Boolean) as string[],
+          }),
+        ),
       map,
       radiusOptions:
         resourceDirectory.search.searchSettings.radiusSelectValues ?? [],

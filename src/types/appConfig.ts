@@ -99,6 +99,8 @@ export type AppConfig = {
       name: string;
       facet: string;
       showInDetails?: boolean;
+      sortBy?: 'count' | 'name' | 'valueOrder';
+      valueOrder?: string[];
       excludeValues?: string[];
     }[];
     map: {

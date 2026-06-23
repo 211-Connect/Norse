@@ -6,20 +6,12 @@ import { useTranslation } from 'react-i18next';
 import { Input } from '@/app/(app)/shared/components/ui/input';
 import { Label } from '@/app/(app)/shared/components/ui/label';
 
-export type AgeFilterProps = {
-  isPending: boolean;
-  searchParamsObject: Record<string, unknown>;
-  updateSearchParams: (
-    updater: (params: Record<string, unknown>) => Record<string, unknown>,
-  ) => void;
-};
+import { useSearchResultsNavigation } from './use-search-results-navigation';
 
-export const AgeFilter = ({
-  isPending,
-  searchParamsObject,
-  updateSearchParams,
-}: AgeFilterProps) => {
+export const AgeFilter = () => {
   const { t } = useTranslation();
+  const { isPending, searchParamsObject, updateSearchParams } =
+    useSearchResultsNavigation();
   const currentAge =
     typeof searchParamsObject.age === 'string' ? searchParamsObject.age : '';
 

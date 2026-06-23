@@ -854,6 +854,19 @@ export interface ResourceDirectory {
           name?: string | null;
           facet: string;
           showInDetails?: boolean | null;
+          /**
+           * Count keeps API-provided order. Name sorts by localized label. Custom Value Order sorts by the configured English/raw facet values.
+           */
+          sortBy?: ('count' | 'name' | 'valueOrder') | null;
+          /**
+           * Order values by English/raw facet values from the search API (e.g. Sunday|Monday...). Values not listed appear after listed values.
+           */
+          valueOrder?:
+            | {
+                value: string;
+                id?: string | null;
+              }[]
+            | null;
           excludeValues?:
             | {
                 value: string;
@@ -1582,6 +1595,13 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
               name?: T;
               facet?: T;
               showInDetails?: T;
+              sortBy?: T;
+              valueOrder?:
+                | T
+                | {
+                    value?: T;
+                    id?: T;
+                  };
               excludeValues?:
                 | T
                 | {

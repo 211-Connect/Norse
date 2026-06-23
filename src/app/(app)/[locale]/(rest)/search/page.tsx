@@ -4,7 +4,7 @@ import { Metadata } from 'next/types';
 import qs from 'qs';
 import { cache } from 'react';
 
-import { FilterPanel } from '@/app/(app)/features/search/components/filter-panel';
+import { FilterPanel } from '@/app/(app)/features/search/components/filter/filter-panel';
 import { MapContainer } from '@/app/(app)/features/search/components/map-container';
 import { ResultsEvents } from '@/app/(app)/features/search/components/results-events';
 import { ResultsSection } from '@/app/(app)/features/search/components/results-section';
