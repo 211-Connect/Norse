@@ -60,18 +60,16 @@ export function SearchDialogHeaderActions({
         <Button
           type="button"
           variant="outline"
-          className="self-start"
           loading={isSkipLoading}
-          disabled={disableSearchControls && !isSkipLoading}
+          disabled={disableSearchControls}
           onClick={onSkipClarify}
         >
           {t('search.ai_skip')}
         </Button>
         <Button
           type="button"
-          className="self-start"
           loading={isConfirmLoading}
-          disabled={disableSearchControls && !isConfirmLoading}
+          disabled={disableSearchControls}
           onClick={onConfirmClarify}
         >
           {t('search.ai_confirm')}
