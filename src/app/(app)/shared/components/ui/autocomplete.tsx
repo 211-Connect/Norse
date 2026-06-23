@@ -52,6 +52,8 @@ export type AutocompleteOption = {
   badge?: string;
   query?: string;
   queryType?: string;
+  href?: string;
+  target?: '_self' | '_blank';
 };
 
 type AutocompleteOptionWithIndex = AutocompleteOption & { index: number };

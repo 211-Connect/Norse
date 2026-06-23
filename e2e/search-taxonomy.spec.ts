@@ -51,6 +51,41 @@ test.describe('Search Autocomplete Suggestions', () => {
     await goHome(page);
   });
 
+  test('typing "food shelves" and submitting first topic suggestion returns results', async ({
+    page,
+  }) => {
+    const searchInput = await openSearchDialog(page);
+    await searchInput.fill('food shelves');
+
+    const listbox = page.getByTestId('autocomplete-listbox');
+    await listbox.waitFor({
+      state: 'visible',
+      timeout: AUTOCOMPLETE_TIMEOUT_MS,
+    });
+
+    const options = listbox.getByTestId('autocomplete-option');
+    await expect
+      .poll(async () => options.count(), {
+        timeout: AUTOCOMPLETE_TIMEOUT_MS,
+        intervals: [100, 250, 500],
+      })
+      .toBeGreaterThan(0);
+
+    const foodShelvesTopic = options.filter({ hasText: /food shelves/i });
+    await expect(foodShelvesTopic.first()).toBeVisible({
+      timeout: AUTOCOMPLETE_TIMEOUT_MS,
+    });
+    await foodShelvesTopic.first().click();
+
+    const submitButton = page.getByTestId('search-submit-btn');
+    await expect(submitButton).toBeEnabled({ timeout: UI_SHELL_TIMEOUT_MS });
+    await submitButton.click();
+
+    const totalText = await getResultTotal(page);
+    const total = parseTotalFromResultText(totalText);
+    expect(total).toBeGreaterThan(0);
+  });
+
   test('should show suggestion options when typing a matching phrase', async ({
     page,
   }) => {
@@ -230,10 +265,7 @@ test.describe('Search Filters', () => {
 
     const checkboxes = filterPanel.getByRole('checkbox');
     const checkboxCount = await checkboxes.count();
-    test.skip(
-      checkboxCount === 0,
-      'No filter checkboxes available in current UI/dataset',
-    );
+    expect(checkboxCount).toBeGreaterThan(0);
 
     const firstCheckbox = checkboxes.first();
     await firstCheckbox.click();
