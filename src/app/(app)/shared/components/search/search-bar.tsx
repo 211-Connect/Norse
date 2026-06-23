@@ -80,8 +80,10 @@ export function SearchBar({
           Icon: SearchIcon,
           group: categoriesGroup,
           value: subtopic.name,
-          query: subtopic.query || subtopic.name,
+          query: subtopic.queryType === 'link' ? undefined : subtopic.query,
           queryType: subtopic.queryType || 'text',
+          href: subtopic.queryType === 'link' ? subtopic.href : undefined,
+          target: subtopic.queryType === 'link' ? subtopic.target : undefined,
         })),
     );
 
@@ -116,13 +118,17 @@ export function SearchBar({
 
   const setSearchTerm = useCallback(
     (value: string, option?: AutocompleteOption) => {
-      const query = option?.query ?? value;
+      const query = option?.query ?? '';
       const queryType = option?.queryType ?? 'text';
+      const href = queryType === 'link' ? (option?.href ?? '') : '';
+      const target = queryType === 'link' ? (option?.target ?? '') : '';
 
       setSearch((prev) => ({
         ...prev,
         query,
         queryType,
+        href,
+        target,
         searchTerm: value,
         queryLabel: value,
       }));
@@ -138,6 +144,8 @@ export function SearchBar({
         ...prev,
         query: value,
         queryType: 'text',
+        href: '',
+        target: '',
         searchTerm: value,
         queryLabel: value,
       }));

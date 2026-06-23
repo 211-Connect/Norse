@@ -219,6 +219,19 @@ export function SearchDialog({
         return;
       }
 
+      if (search.queryType === 'link' && search.href) {
+        const opensInNewTab = search.target === '_blank';
+        setOpen?.(false);
+
+        if (opensInNewTab) {
+          window.open(search.href, '_blank', 'noopener,noreferrer');
+        } else {
+          window.location.assign(search.href);
+        }
+
+        return;
+      }
+
       if (requireUserLocation && search.searchLocation.trim().length === 0) {
         setSearch((prev) => ({
           ...prev,
@@ -233,13 +246,12 @@ export function SearchDialog({
         appConfig.tenantId,
       );
 
-      if (!appConfig.search.aiClassificationEnabled) {
-        await navigateClassicSearch(locationPayload);
-        return;
-      }
-
       const query = (search.query || search.searchTerm || '').trim();
-      if (!query) {
+      if (
+        !appConfig.search.aiClassificationEnabled ||
+        search.queryType === 'taxonomy' ||
+        !query
+      ) {
         await navigateClassicSearch(locationPayload);
         return;
       }
@@ -298,10 +310,14 @@ export function SearchDialog({
       requireUserLocation,
       i18n.language,
       search.query,
+      search.href,
       search.searchLocation,
       search.searchTerm,
+      search.target,
+      search.queryType,
       searchCoordinates,
       setSearch,
+      setOpen,
       userCoordinates,
     ],
   );
