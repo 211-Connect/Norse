@@ -8,6 +8,7 @@ import { pushOrchestrationConfigToCache } from '../collections/OrchestrationConf
 import { pushFacetsToCache } from '../collections/ResourceDirectories/hooks/pushFacetsToCache';
 import { pushEnabledLocalesToCache } from '../collections/Tenants/hooks/pushEnabledLocalesToCache';
 import { pushRealmIdToCache } from '../collections/Tenants/hooks/pushRealmIdToCache';
+import { pushAnalyticsConfigToCache } from '../collections/Tenants/hooks/pushAnalyticsConfig';
 import { isSuperAdmin } from '../collections/Users/access/roles';
 
 const log = createLogger('populateApiConfigCacheEndpoint');
@@ -56,6 +57,7 @@ export const populateApiConfigCache: Endpoint = {
       let enabledLocalesTriggered = 0;
       let facetsTriggered = 0;
       let orchestrationConfigTriggered = 0;
+      let analyticsConfigTriggered = 0;
 
       for (const tenant of tenants) {
         const tenantId = tenant.id;
@@ -70,6 +72,9 @@ export const populateApiConfigCache: Endpoint = {
 
         await pushEnabledLocalesToCache(tenant);
         enabledLocalesTriggered++;
+
+        await pushAnalyticsConfigToCache(tenant);
+        analyticsConfigTriggered++;
 
         const [resourceDirectory] = await payload
           .find({
@@ -120,6 +125,7 @@ export const populateApiConfigCache: Endpoint = {
           enabledLocalesTriggered,
           facetsTriggered,
           orchestrationConfigTriggered,
+          analyticsConfigTriggered,
         },
         'API config cache population completed',
       );
@@ -132,6 +138,7 @@ export const populateApiConfigCache: Endpoint = {
           enabledLocalesTriggered,
           facetsTriggered,
           orchestrationConfigTriggered,
+          analyticsConfigTriggered,
         },
         { status: 200 },
       );
