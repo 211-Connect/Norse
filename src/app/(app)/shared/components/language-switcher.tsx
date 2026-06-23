@@ -88,12 +88,8 @@ export const LanguageSwitcher = () => {
         <SelectTrigger
           id={LANGUAGE_SWITCHER_TRIGGER_ID}
           className={cn(
-            'flex h-full w-auto min-w-[140px] items-center gap-[5px]',
-            // Match surrounding header buttons visually — the select is identified
-            // by its label + role, not its border, so the softer button border is
-            // appropriate in this toolbar context.
-            'border-input',
-            newLayoutEnabled && '!bg-white',
+            'flex border-input h-full w-auto min-w-36 cursor-pointer items-center gap-1',
+            newLayoutEnabled && 'bg-white!',
           )}
         >
           <div className="flex items-center gap-1 overflow-hidden">
