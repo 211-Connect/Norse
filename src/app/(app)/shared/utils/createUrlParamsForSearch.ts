@@ -1,4 +1,5 @@
 import { ExtractAtomValue } from 'jotai';
+import { SearchEngine } from '@/types/appConfig';
 
 import { deriveQueryType } from '../lib/search-utils';
 import { ResourceEntry } from '../lib/umami';
@@ -6,14 +7,14 @@ import { searchAtom } from '../store/search';
 
 export function createUrlParamsForSearch(
   searchStore: ExtractAtomValue<typeof searchAtom>,
-  hybridSemanticSearchEnabled?: boolean,
+  searchEngine: SearchEngine,
 ) {
   const hasLocation = searchStore['searchCoordinates']?.length === 2;
 
   const queryType = deriveQueryType({
     query: searchStore.query,
     originQueryType: searchStore.queryType,
-    hybridSemanticSearchEnabled,
+    searchEngine,
   });
 
   const urlParams = {

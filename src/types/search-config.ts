@@ -1,4 +1,5 @@
 import { ResourceDirectory } from '@/payload/payload-types';
+import { SearchEngine } from '@/types/appConfig';
 
 export type SearchConfig = {
   primaryColor: string;
@@ -8,8 +9,7 @@ export type SearchConfig = {
   resultsLimit: number;
   radiusSelectValues: number[];
   defaultRadius: number;
-  hybridSemanticSearchEnabled: boolean;
-  aiClassificationEnabled: boolean;
+  searchEngine: SearchEngine;
   suggestions: ResourceDirectory['suggestions'];
   subtopics: {
     name: string;

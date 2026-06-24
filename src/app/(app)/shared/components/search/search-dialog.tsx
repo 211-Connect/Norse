@@ -124,11 +124,9 @@ export function SearchDialog({
             query: query || '',
             queryType:
               search.queryType ||
-              (appConfig.search.hybridSemanticSearchEnabled
-                ? 'hybrid'
-                : 'text'),
+              (appConfig.search.searchEngine === 'hybrid' ? 'hybrid' : 'text'),
           },
-          appConfig.search.hybridSemanticSearchEnabled,
+          appConfig.search.searchEngine,
         );
 
         const queryParams = new URLSearchParams(urlParams).toString();
@@ -161,7 +159,7 @@ export function SearchDialog({
       });
     },
     [
-      appConfig.search.hybridSemanticSearchEnabled,
+      appConfig.search.searchEngine,
       appConfig.tenantId,
       distance,
       router,
@@ -248,7 +246,7 @@ export function SearchDialog({
 
       const query = (search.query || search.searchTerm || '').trim();
       if (
-        !appConfig.search.aiClassificationEnabled ||
+        appConfig.search.searchEngine !== 'ai_classification' ||
         search.queryType === 'taxonomy' ||
         !query
       ) {
@@ -302,7 +300,7 @@ export function SearchDialog({
       );
     },
     [
-      appConfig.search.aiClassificationEnabled,
+      appConfig.search.searchEngine,
       appConfig.tenantId,
       activeAiAction,
       navigateAiSearch,
