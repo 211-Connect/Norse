@@ -19,6 +19,8 @@ export type ResultType = {
   taxonomies: Taxonomy[];
   facets: FacetWithTranslation[] | null | undefined;
   attributeValues: Record<string, string>;
+  eligibility: string | null;
+  applicationProcess: string | null;
   currentListId?: string;
   onRemoveFromList?: (listId: string, favoriteId: string) => void;
 };

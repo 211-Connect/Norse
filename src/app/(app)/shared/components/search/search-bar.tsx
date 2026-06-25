@@ -17,9 +17,16 @@ import { useMainSearchLayoutContext } from './main-search-layout/main-search-lay
 interface SearchBarProps {
   focusByDefault?: boolean;
   inputId?: string;
+  hideOptions?: boolean;
+  onQueryInputChange?: () => void;
 }
 
-export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
+export function SearchBar({
+  focusByDefault = false,
+  inputId,
+  hideOptions = false,
+  onQueryInputChange,
+}: SearchBarProps) {
   const appConfig = useAppConfig();
   const { t } = useTranslation('common');
   const searchTerm = useAtomValue(searchTermAtom);
@@ -73,8 +80,10 @@ export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
           Icon: SearchIcon,
           group: categoriesGroup,
           value: subtopic.name,
-          query: subtopic.query || subtopic.name,
+          query: subtopic.queryType === 'link' ? undefined : subtopic.query,
           queryType: subtopic.queryType || 'text',
+          href: subtopic.queryType === 'link' ? subtopic.href : undefined,
+          target: subtopic.queryType === 'link' ? subtopic.target : undefined,
         })),
     );
 
@@ -109,13 +118,17 @@ export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
 
   const setSearchTerm = useCallback(
     (value: string, option?: AutocompleteOption) => {
-      const query = option?.query ?? value;
+      const query = option?.query ?? '';
       const queryType = option?.queryType ?? 'text';
+      const href = queryType === 'link' ? (option?.href ?? '') : '';
+      const target = queryType === 'link' ? (option?.target ?? '') : '';
 
       setSearch((prev) => ({
         ...prev,
         query,
         queryType,
+        href,
+        target,
         searchTerm: value,
         queryLabel: value,
       }));
@@ -125,15 +138,19 @@ export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
 
   const handleInputChange = useCallback(
     (value: string) => {
+      onQueryInputChange?.();
+
       setSearch((prev) => ({
         ...prev,
         query: value,
         queryType: 'text',
+        href: '',
+        target: '',
         searchTerm: value,
         queryLabel: value,
       }));
     },
-    [setSearch],
+    [setSearch, onQueryInputChange],
   );
 
   return (
@@ -149,7 +166,7 @@ export function SearchBar({ focusByDefault = false, inputId }: SearchBarProps) {
       }}
       defaultOpen={focusByDefault}
       Icon={SearchIcon}
-      options={options}
+      options={hideOptions ? [] : options}
       onInputChange={handleInputChange}
       onValueChange={setSearchTerm}
       clearButtonLabel={t('call_to_action.remove')}

@@ -84,11 +84,13 @@ type CustomAttributeComponentProps = Pick<
   'customAttribute'
 > & {
   resource: Resource | ResultType;
+  withPadding?: boolean;
 };
 
 export function CustomAttributeComponent({
   resource,
   customAttribute,
+  withPadding,
 }: CustomAttributeComponentProps) {
   const IconComponent = useIconComponent(customAttribute?.icon);
 
@@ -111,6 +113,7 @@ export function CustomAttributeComponent({
   return (
     <Datum
       {...customAttributeProps}
+      withPadding={withPadding}
       icon={IconComponent}
       iconColor={customAttribute.iconColor}
       urlTarget={customAttribute.urlTarget}

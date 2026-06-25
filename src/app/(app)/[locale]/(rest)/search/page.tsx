@@ -4,7 +4,7 @@ import { Metadata } from 'next/types';
 import qs from 'qs';
 import { cache } from 'react';
 
-import { FilterPanel } from '@/app/(app)/features/search/components/filter-panel';
+import { FilterPanel } from '@/app/(app)/features/search/components/filter/filter-panel';
 import { MapContainer } from '@/app/(app)/features/search/components/map-container';
 import { ResultsEvents } from '@/app/(app)/features/search/components/results-events';
 import { ResultsSection } from '@/app/(app)/features/search/components/results-section';
@@ -22,6 +22,7 @@ import {
 import { type ResultType } from '@/app/(app)/shared/store/results';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { getSortOption } from '@/app/(app)/shared/utils/getSortOption';
+import { parseCommaSeparatedValues } from '@/app/(app)/shared/utils/parseCommaSeparatedValues';
 import { createLogger } from '@/lib/logger';
 
 import { UmamiEvent, trackUmamiEvent } from '../../../shared/lib/umami';
@@ -74,6 +75,7 @@ function parseSearchParams(raw: RawSearchParams): FindResourcesQuery {
       typeof parsed.distance === 'string'
         ? parsed.distance || undefined
         : undefined,
+    taxonomy: parseCommaSeparatedValues(raw.taxonomy),
     filters: parsed.filters as Record<string, string[]> | undefined,
     sort,
     age:
@@ -241,6 +243,8 @@ export default async function SearchPage({
     getCookies({ cookies }),
   ]);
   const locale = paramsResult.locale;
+  const aiSearchAlert =
+    typeof searchParamsResult.a === 'string' ? searchParamsResult.a : undefined;
 
   const { filters, results, totalResults, resources, searchQuery, cardLayout } =
     await getPageData(locale, searchParamsResult);
@@ -274,7 +278,7 @@ export default async function SearchPage({
       <ResultsEvents results={results} totalResults={totalResults} />
       <div className="flex h-full w-full flex-col md:flex-row">
         <FilterPanel />
-        <ResultsSection cardLayout={cardLayout} />
+        <ResultsSection cardLayout={cardLayout} aiSearchAlert={aiSearchAlert} />
         <MapContainer />
       </div>
     </PageWrapper>

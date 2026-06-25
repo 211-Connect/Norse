@@ -99,6 +99,8 @@ export type AppConfig = {
       name: string;
       facet: string;
       showInDetails?: boolean;
+      sortBy?: 'count' | 'name' | 'valueOrder';
+      valueOrder?: string[];
       excludeValues?: string[];
     }[];
     map: {
@@ -110,6 +112,7 @@ export type AppConfig = {
     }[];
     defaultRadius?: number;
     hybridSemanticSearchEnabled: boolean;
+    aiClassificationEnabled: boolean;
     resultsLimit: number;
     texts?: {
       title?: string;

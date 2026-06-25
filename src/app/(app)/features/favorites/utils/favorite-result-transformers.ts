@@ -50,6 +50,8 @@ export function favoriteToResult(
     taxonomies: translation?.taxonomies ?? [],
     facets: transformedFacets.length > 0 ? transformedFacets : null,
     attributeValues: translation?.attributeValues ?? {},
+    applicationProcess: translation?.applicationProcess ?? null,
+    eligibility: translation?.eligibilities ?? null,
     currentListId,
     onRemoveFromList,
   };
@@ -81,6 +83,8 @@ export function resourceToLocalFavoriteResult(
     taxonomies: resource.categories ?? [],
     facets: resource.facets ?? null,
     attributeValues: resource.attributeValues ?? {},
+    applicationProcess: resource.applicationProcess ?? null,
+    eligibility: resource.eligibilities ?? null,
     currentListId: LOCAL_LIST_ID,
     onRemoveFromList,
   };

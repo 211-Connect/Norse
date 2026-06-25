@@ -232,6 +232,15 @@ export const search: Tab = {
           },
         },
         {
+          name: 'aiClassificationEnabled',
+          type: 'checkbox',
+          defaultValue: false,
+          access: {
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
+          },
+        },
+        {
           name: 'resultsLimit',
           type: 'number',
           defaultValue: 25,
@@ -320,6 +329,54 @@ export const search: Tab = {
           name: 'showInDetails',
           type: 'checkbox',
           defaultValue: true,
+        },
+        {
+          name: 'sortBy',
+          type: 'select',
+          defaultValue: 'count',
+          admin: {
+            description:
+              'Count keeps API-provided order. Name sorts by localized label. Custom Value Order sorts by the configured English/raw facet values.',
+          },
+          access: {
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
+          },
+          options: [
+            {
+              label: 'Count',
+              value: 'count',
+            },
+            {
+              label: 'Name',
+              value: 'name',
+            },
+            {
+              label: 'Custom Value Order',
+              value: 'valueOrder',
+            },
+          ],
+        },
+        {
+          name: 'valueOrder',
+          type: 'array',
+          label: 'Custom Value Order',
+          admin: {
+            condition: (_, siblingData) => siblingData?.sortBy === 'valueOrder',
+            description:
+              'Order values by English/raw facet values from the search API (e.g. Sunday|Monday...). Values not listed appear after listed values.',
+          },
+          access: {
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
+          },
+          fields: [
+            {
+              name: 'value',
+              type: 'text',
+              required: true,
+            },
+          ],
         },
         {
           name: 'excludeValues',

@@ -44,7 +44,7 @@ export function ContactsComponent({ resource }: { resource: Resource }) {
                   : contact.name
               }
               shouldParseHtml={false}
-              className="py-0"
+              withPadding={false}
             />
             {contact.email && (
               <Datum
@@ -52,8 +52,8 @@ export function ContactsComponent({ resource }: { resource: Resource }) {
                 description={contact.email}
                 url={`mailto:${contact.email}`}
                 shouldParseHtml={false}
+                withPadding={false}
                 size="sm"
-                className="py-0"
               />
             )}
             {contact.phones && contact.phones.length > 0 && (
@@ -75,8 +75,8 @@ export function ContactsComponent({ resource }: { resource: Resource }) {
                     }
                     urlTarget="_self"
                     shouldParseHtml={false}
+                    withPadding={false}
                     size="sm"
-                    className="py-0"
                   />
                 ))}
               </div>

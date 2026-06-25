@@ -1,11 +1,11 @@
 'use client';
 
 import { useAtomValue, useSetAtom } from 'jotai';
-import { ChevronLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import {
+  FocusEvent,
+  FormEvent,
   KeyboardEvent,
-  SubmitEventHandler,
   useCallback,
   useEffect,
   useRef,
@@ -14,9 +14,9 @@ import {
 } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 
 import { useAppConfig } from '../../hooks/use-app-config';
-import { useClientSearchParams } from '../../hooks/use-client-search-params';
 import { useFlag } from '../../hooks/use-flag';
 import {
   LOCATION_INPUT_ID,
@@ -30,16 +30,27 @@ import { persistSearchDistancePreference } from '../../lib/search-distance-prefe
 import { UmamiEvent, trackUmamiEvent } from '../../lib/umami';
 import { cn, getScrollbarWidth } from '../../lib/utils';
 import {
+  AiClassificationScenario,
+  AiPredictOption,
+  predictSearchNeeds,
+  reRankSearchNeeds,
+} from '../../services/ai-classification-search-service';
+import {
   searchCoordinatesAtom,
   searchDistanceAtom,
   userCoordinatesAtom,
 } from '../../store/search';
+import {
+  buildAiNeedWeights,
+  buildAiSearchUrl,
+  normalizeHsisTaxonomies,
+} from '../../utils/ai-search';
 import { createUrlParamsForSearch } from '../../utils/createUrlParamsForSearch';
-import { Button } from '../ui/button';
+import { AiClassificationOptions } from './ai-classification-options';
 import { LocationSearchBar } from './location-search-bar';
+import { SearchDialogHeaderActions } from './search-dialog-header-actions';
 import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
 import { SearchBar } from './search-bar';
-import { SearchButton } from './search-button';
 
 export interface SearchDialogProps {
   focusByDefault?: 'search' | 'location';
@@ -54,9 +65,8 @@ export function SearchDialog({
   setOpen,
   restoreFocusElement,
 }: SearchDialogProps) {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
   const [isPending, startTransition] = useTransition();
-  const { stringifySearchParams } = useClientSearchParams();
   const router = useRouter();
   const appConfig = useAppConfig();
   const requireUserLocation = useFlag('requireUserLocation');
@@ -70,25 +80,32 @@ export function SearchDialog({
   const setUserCoordinates = useSetAtom(userCoordinatesAtom);
   const searchCoordinates = useAtomValue(searchCoordinatesAtom);
   const userCoordinates = useAtomValue(userCoordinatesAtom);
+  const [aiSearchScenario, setAiSearchScenario] =
+    useState<AiClassificationScenario>();
+  const [activeAiAction, setActiveAiAction] = useState<
+    'predict' | 'skip' | 'confirm' | null
+  >(null);
+  const [isLocationActive, setIsLocationActive] = useState(false);
+  const [clarifyOptions, setClarifyOptions] = useState<
+    AiPredictOption[] | null
+  >(null);
+  const [selectedClarifyCodes, setSelectedClarifyCodes] = useState<string[]>(
+    [],
+  );
+  const [clarifyValidationError, setClarifyValidationError] = useState('');
 
-  const onSubmit: SubmitEventHandler<HTMLFormElement> = useCallback(
-    async (e) => {
-      e.preventDefault();
+  const clarifyVisible = clarifyOptions !== null;
+  const effectiveClarifyOptions = clarifyOptions ?? [];
+  const isPredictLoading = activeAiAction === 'predict';
 
-      if (requireUserLocation && search.searchLocation.trim().length === 0) {
-        setSearch((prev) => ({
-          ...prev,
-          searchLocationValidationError: 'Address is required.',
-        }));
-        return;
-      }
+  const clearAiState = useCallback(() => {
+    setClarifyOptions(null);
+    setSelectedClarifyCodes([]);
+    setClarifyValidationError('');
+  }, []);
 
-      const locationPayload = await buildSearchLocationPayload(
-        searchCoordinates,
-        userCoordinates,
-        appConfig.tenantId,
-      );
-
+  const navigateClassicSearch = useCallback(
+    async (locationPayload: Record<string, unknown>) => {
       startTransition(() => {
         const query = search.query || search.searchTerm;
 
@@ -114,9 +131,7 @@ export function SearchDialog({
           appConfig.search.hybridSemanticSearchEnabled,
         );
 
-        const queryParams = stringifySearchParams(
-          new URLSearchParams(urlParams),
-        );
+        const queryParams = new URLSearchParams(urlParams).toString();
         persistSearchDistancePreference(distance);
 
         const effectiveQueryType = search.queryType;
@@ -136,11 +151,8 @@ export function SearchDialog({
           trackUmamiEvent(UmamiEvent.SearchTaxonomy, umamiPayload);
         }
 
-        router.push(`/search${queryParams}`);
-
-        // Close as soon as navigation is requested so trigger and dialog state
-        // match real interactivity (dialog must not sit above the results page).
         setOpen?.(false);
+        router.push(`/search${queryParams ? `?${queryParams}` : ''}`);
 
         setSearch((prev) => ({
           ...prev,
@@ -151,17 +163,287 @@ export function SearchDialog({
     [
       appConfig.search.hybridSemanticSearchEnabled,
       appConfig.tenantId,
-      requireUserLocation,
+      distance,
       router,
       search,
-      searchCoordinates,
-      distance,
-      userCoordinates,
       setOpen,
       setSearch,
-      stringifySearchParams,
+      startTransition,
     ],
   );
+
+  const navigateAiSearch = useCallback(
+    ({
+      scenario,
+      taxonomies,
+    }: {
+      scenario?: AiClassificationScenario;
+      taxonomies?: string[];
+    } = {}) => {
+      const query = (search.query || search.searchTerm || '').trim();
+      if (!query) {
+        return false;
+      }
+
+      const url = buildAiSearchUrl({
+        scenario,
+        query,
+        queryLabel: search.queryLabel,
+        taxonomies,
+      });
+
+      persistSearchDistancePreference(distance);
+      startTransition(() => {
+        setOpen?.(false);
+        router.push(url);
+      });
+
+      return true;
+    },
+    [
+      distance,
+      router,
+      search.query,
+      search.queryLabel,
+      search.searchTerm,
+      setOpen,
+      startTransition,
+    ],
+  );
+
+  const onSubmit = useCallback(
+    async (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+
+      if (activeAiAction) {
+        return;
+      }
+
+      if (search.queryType === 'link' && search.href) {
+        const opensInNewTab = search.target === '_blank';
+        setOpen?.(false);
+
+        if (opensInNewTab) {
+          window.open(search.href, '_blank', 'noopener,noreferrer');
+        } else {
+          window.location.assign(search.href);
+        }
+
+        return;
+      }
+
+      if (requireUserLocation && search.searchLocation.trim().length === 0) {
+        setSearch((prev) => ({
+          ...prev,
+          searchLocationValidationError: 'Address is required.',
+        }));
+        return;
+      }
+
+      const locationPayload = await buildSearchLocationPayload(
+        searchCoordinates,
+        userCoordinates,
+        appConfig.tenantId,
+      );
+
+      const query = (search.query || search.searchTerm || '').trim();
+      if (
+        !appConfig.search.aiClassificationEnabled ||
+        search.queryType === 'taxonomy' ||
+        !query
+      ) {
+        await navigateClassicSearch(locationPayload);
+        return;
+      }
+
+      setActiveAiAction('predict');
+      setClarifyValidationError('');
+
+      const predictResponse = await predictSearchNeeds(
+        { query },
+        i18n.language,
+        appConfig.tenantId,
+      );
+
+      setActiveAiAction(null);
+
+      if (!predictResponse) {
+        await navigateClassicSearch(locationPayload);
+        return;
+      }
+      const scenario = predictResponse.scenario;
+      setAiSearchScenario(scenario);
+
+      const taxonomies = normalizeHsisTaxonomies(
+        predictResponse.hsis_taxonomies,
+      );
+
+      if (predictResponse.scenario === 'search') {
+        navigateAiSearch({ taxonomies });
+        return;
+      }
+
+      if (
+        scenario === 'search_and_notify_low_confidence' ||
+        scenario === 'search_and_notify_low_info'
+      ) {
+        navigateAiSearch({ taxonomies, scenario });
+        return;
+      }
+
+      const options = Array.isArray(predictResponse.options)
+        ? predictResponse.options
+        : [];
+      setClarifyOptions(options);
+      setSelectedClarifyCodes(
+        options
+          .filter((option) => option.pre_selected)
+          .map((option) => option.code),
+      );
+    },
+    [
+      appConfig.search.aiClassificationEnabled,
+      appConfig.tenantId,
+      activeAiAction,
+      navigateAiSearch,
+      navigateClassicSearch,
+      requireUserLocation,
+      i18n.language,
+      search.query,
+      search.href,
+      search.searchLocation,
+      search.searchTerm,
+      search.target,
+      search.queryType,
+      searchCoordinates,
+      setSearch,
+      setOpen,
+      userCoordinates,
+    ],
+  );
+
+  const handleToggleClarifyCode = useCallback((code: string) => {
+    setClarifyValidationError('');
+    setSelectedClarifyCodes((prev) =>
+      prev.includes(code)
+        ? prev.filter((value) => value !== code)
+        : [...prev, code],
+    );
+  }, []);
+
+  const handleSkipClarify = useCallback(async () => {
+    if (activeAiAction || isPending) {
+      return;
+    }
+
+    setActiveAiAction('skip');
+    await Promise.resolve();
+    const didNavigate = navigateAiSearch();
+    if (!didNavigate) {
+      setActiveAiAction(null);
+    }
+  }, [activeAiAction, isPending, navigateAiSearch]);
+
+  const handleConfirmClarify = useCallback(async () => {
+    if (activeAiAction || isPending) {
+      return;
+    }
+
+    if (selectedClarifyCodes.length === 0) {
+      setClarifyValidationError(t('search.ai_validation_select_or_skip'));
+      return;
+    }
+
+    const needWeights = buildAiNeedWeights(
+      effectiveClarifyOptions,
+      selectedClarifyCodes,
+    );
+
+    if (Object.keys(needWeights).length === 0) {
+      setClarifyValidationError(t('search.ai_validation_select_or_skip'));
+      return;
+    }
+
+    setClarifyValidationError('');
+    setActiveAiAction('confirm');
+
+    const reRankResponse = await reRankSearchNeeds(
+      { need_weights: needWeights },
+      i18n.language,
+      appConfig.tenantId,
+    );
+
+    if (!reRankResponse) {
+      setActiveAiAction(null);
+      toast.error(t('message.error'));
+      return;
+    }
+
+    const rerankedTaxonomies = normalizeHsisTaxonomies(
+      reRankResponse.hsis_taxonomies,
+    );
+    navigateAiSearch({ taxonomies: rerankedTaxonomies });
+  }, [
+    activeAiAction,
+    appConfig.tenantId,
+    effectiveClarifyOptions,
+    isPending,
+    navigateAiSearch,
+    selectedClarifyCodes,
+    t,
+    i18n.language,
+  ]);
+
+  useEffect(() => {
+    if (isPending) {
+      return;
+    }
+
+    setActiveAiAction(null);
+  }, [isPending]);
+
+  const isMainSearchLoading = isPredictLoading || isPending;
+  const disableSearchControls = Boolean(activeAiAction) || isPending;
+  const isSkipButtonLoading = activeAiAction === 'skip';
+  const isConfirmButtonLoading = activeAiAction === 'confirm';
+  const showAiClassificationOptions = clarifyVisible && !isLocationActive;
+
+  const handleSearchFormFocusCapture = useCallback(
+    (event: FocusEvent<HTMLDivElement>) => {
+      const target = event.target as HTMLElement | null;
+      if (!target) {
+        return;
+      }
+
+      if (target.id === LOCATION_INPUT_ID) {
+        setIsLocationActive(true);
+        return;
+      }
+
+      if (target.id === SEARCH_INPUT_ID) {
+        setIsLocationActive(false);
+      }
+    },
+    [],
+  );
+
+  const handleSearchFormBlurCapture = useCallback(() => {
+    window.requestAnimationFrame(() => {
+      const activeElement = document.activeElement as HTMLElement | null;
+      const isLocationInputFocused = activeElement?.id === LOCATION_INPUT_ID;
+      if (!isLocationInputFocused) {
+        setIsLocationActive(false);
+      }
+    });
+  }, []);
+
+  const handleSearchInputChange = useCallback(() => {
+    if (!clarifyVisible) {
+      return;
+    }
+
+    clearAiState();
+  }, [clarifyVisible, clearAiState]);
 
   useEffect(() => {
     if (!open || !navigator.geolocation) return;
@@ -305,27 +587,47 @@ export function SearchDialog({
       <p className="sr-only" id={SEARCH_DIALOG_DESCRIPTION_ID}>
         {t('search.search_dialog_description')}
       </p>
-      <div className="flex min-h-full w-full max-w-full items-start justify-center !rounded-none border-0">
+      <div className="flex min-h-full w-full max-w-full items-start justify-center rounded-none! border-0">
         {open && (
           <form
             onSubmit={onSubmit}
-            className="flex w-full max-w-[25rem] flex-col gap-4 overflow-y-auto pt-6 pb-6 [@media(min-width:640px)_and_(min-height:600px)]:pt-[120px]"
+            className="flex w-full max-w-100 flex-col gap-4 overflow-y-auto pt-6 pb-6 [@media(min-width:640px)_and_(min-height:600px)]:pt-30"
           >
             <div className="flex flex-row justify-between gap-4">
-              <Button
-                type="button"
-                className="self-start"
-                variant="highlight"
-                onClick={closeDialog}
-              >
-                <ChevronLeft className="text-primary size-4" />
-                {t('search.back')}
-              </Button>
-              <SearchButton loading={isPending} />
+              <SearchDialogHeaderActions
+                clarifyVisible={clarifyVisible}
+                disableSearchControls={disableSearchControls}
+                isMainSearchLoading={isMainSearchLoading}
+                isSkipLoading={isSkipButtonLoading}
+                isConfirmLoading={isConfirmButtonLoading}
+                onClose={closeDialog}
+                onSkipClarify={handleSkipClarify}
+                onConfirmClarify={handleConfirmClarify}
+              />
             </div>
-            <div id="search-form-inputs" className="overflow-y-auto">
-              <SearchBar inputId={SEARCH_INPUT_ID} />
+            <div
+              id="search-form-inputs"
+              className="overflow-y-auto"
+              onFocusCapture={handleSearchFormFocusCapture}
+              onBlurCapture={handleSearchFormBlurCapture}
+            >
+              <SearchBar
+                inputId={SEARCH_INPUT_ID}
+                hideOptions={clarifyVisible}
+                onQueryInputChange={handleSearchInputChange}
+              />
               <LocationSearchBar inputId={LOCATION_INPUT_ID} className="mt-4" />
+
+              {showAiClassificationOptions && (
+                <AiClassificationOptions
+                  selectedCodes={selectedClarifyCodes}
+                  options={effectiveClarifyOptions}
+                  onToggle={handleToggleClarifyCode}
+                  scenario={aiSearchScenario}
+                  validationMessage={clarifyValidationError}
+                  disabled={disableSearchControls}
+                />
+              )}
             </div>
           </form>
         )}

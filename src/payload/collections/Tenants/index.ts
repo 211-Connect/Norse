@@ -11,6 +11,7 @@ import { updateAndDeleteAccess } from './access/updateAndDelete';
 import { createUmamiWebsite } from './hooks/createUmamiWebsite';
 import { pushEnabledLocalesToCacheAfterChangeHook } from './hooks/pushEnabledLocalesToCache';
 import { pushRealmIdToCacheAfterChangeHook } from './hooks/pushRealmIdToCache';
+import { pushAnalyticsConfigToCacheAfterChangeHook } from './hooks/pushAnalyticsConfig';
 import { removeRelatedResources } from './hooks/removeRelatedResources';
 import { revalidateCache } from './hooks/revalidateCache';
 import { hasResourceDirectory } from './validators/hasResourceDirectory';
@@ -35,6 +36,7 @@ export const Tenants: CollectionConfig = {
       revalidateCache,
       pushRealmIdToCacheAfterChangeHook,
       pushEnabledLocalesToCacheAfterChangeHook,
+      pushAnalyticsConfigToCacheAfterChangeHook,
       invalidateApiCache,
       createUmamiWebsite,
     ],
@@ -262,6 +264,14 @@ export const Tenants: CollectionConfig = {
               required: true,
             },
           ],
+        },
+        {
+          name: 'apiKey',
+          type: 'text',
+          label: 'API Key',
+          admin: {
+            description: 'Api key for accessing analytics data in Norse API',
+          },
         },
       ],
     },

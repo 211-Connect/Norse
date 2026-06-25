@@ -443,6 +443,10 @@ export interface Tenant {
           id?: string | null;
         }[]
       | null;
+    /**
+     * Api key for accessing analytics data in Norse API
+     */
+    apiKey?: string | null;
   };
   sms?: {
     smsProvider?: ('Twilio' | 'EMS') | null;
@@ -832,6 +836,7 @@ export interface ResourceDirectory {
     };
     searchSettings: {
       hybridSemanticSearchEnabled?: boolean | null;
+      aiClassificationEnabled?: boolean | null;
       resultsLimit: number;
       radiusSelectValues?:
         | {
@@ -849,6 +854,19 @@ export interface ResourceDirectory {
           name?: string | null;
           facet: string;
           showInDetails?: boolean | null;
+          /**
+           * Count keeps API-provided order. Name sorts by localized label. Custom Value Order sorts by the configured English/raw facet values.
+           */
+          sortBy?: ('count' | 'name' | 'valueOrder') | null;
+          /**
+           * Order values by English/raw facet values from the search API (e.g. Sunday|Monday...). Values not listed appear after listed values.
+           */
+          valueOrder?:
+            | {
+                value: string;
+                id?: string | null;
+              }[]
+            | null;
           excludeValues?:
             | {
                 value: string;
@@ -872,6 +890,8 @@ export interface ResourceDirectory {
             | 'badges'
             | 'resourceName'
             | 'serviceName'
+            | 'eligibility'
+            | 'applicationProcess'
             | 'locationName'
             | 'locationNameSubtitle'
             | 'address'
@@ -1247,6 +1267,7 @@ export interface TenantsSelect<T extends boolean = true> {
               websiteId?: T;
               id?: T;
             };
+        apiKey?: T;
       };
   sms?:
     | T
@@ -1558,6 +1579,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
           | T
           | {
               hybridSemanticSearchEnabled?: T;
+              aiClassificationEnabled?: T;
               resultsLimit?: T;
               radiusSelectValues?:
                 | T
@@ -1573,6 +1595,13 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
               name?: T;
               facet?: T;
               showInDetails?: T;
+              sortBy?: T;
+              valueOrder?:
+                | T
+                | {
+                    value?: T;
+                    id?: T;
+                  };
               excludeValues?:
                 | T
                 | {

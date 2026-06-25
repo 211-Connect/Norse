@@ -16,17 +16,17 @@ services:
     depends_on:
       norse-db:
         condition: service_healthy
-      redis:
+      valkey:
         condition: service_healthy
     ports:
       - 3000:3000
     environment:
       DATABASE_URI: postgresql://norse-ng:norse-ng@norse-db:5432/norse-ng
-      CACHE_REDIS_URI: redis://:norse-ng@redis:6379
+      CACHE_REDIS_URI: redis://:norse-ng@valkey:6379
       UMAMI_API_URL: http://umami:4444
 
   norse-db:
-    image: postgres:17.5
+    image: postgres:18
     restart: always
     environment:
       POSTGRES_USER: norse-ng
@@ -35,26 +35,26 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U norse-ng -d norse-ng']
       interval: 5s
       timeout: 3s
       retries: 5
 
-  redis:
-    image: redis:7.4
+  valkey:
+    image: valkey/valkey:8.1
     restart: always
     ports:
       - 6379:6379
     volumes:
-      - redis_data:/data
+      - valkey_data:/data
     healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
+      test: ['CMD', 'valkey-cli', 'ping']
       interval: 5s
       timeout: 3s
       retries: 5
-    command: redis-server --appendonly yes --requirepass norse-ng
+    command: valkey-server --appendonly yes --requirepass norse-ng
 
   prometheus:
     image: prom/prometheus:v3.9.1
@@ -135,7 +135,7 @@ services:
 
 volumes:
   postgres_data:
-  redis_data:
+  valkey_data:
   prometheus_data:
   pushgateway_data:
   grafana_data:

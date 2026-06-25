@@ -9,6 +9,10 @@ import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { getPrintableDirectoryData } from '@/app/(app)/shared/serverActions/search/getPrintableDirectoryData';
 import { ShareButton } from '@/app/(app)/shared/components/share-button';
 import {
+  Alert,
+  AlertDescription,
+} from '@/app/(app)/shared/components/ui/alert';
+import {
   resultTotalAtom,
   resultsAtom,
   resultsCurrentPageAtom,
@@ -28,11 +32,33 @@ import { SortSelect } from './sort-select';
 const SEARCH_RESULTS_HEADING_ID = 'search-results-heading';
 const PENDING_FOCUS_TARGET_STORAGE_KEY = 'pending-search-focus-target';
 
+export type AiAlertType = 'low_info' | 'low_confidence' | 'general';
+
 type ResultsSectionProps = {
   cardLayout: SearchCardLayoutConfig;
+  aiSearchAlert?: string;
 };
 
-export function ResultsSection({ cardLayout }: ResultsSectionProps) {
+const getAiAlertMessageKey = (aiSearchAlert?: string): string | undefined => {
+  if (aiSearchAlert === 'low_info') {
+    return 'ai_broadened_results_alert_low_info';
+  }
+
+  if (aiSearchAlert === 'low_confidence') {
+    return 'ai_broadened_results_alert_low_confidence';
+  }
+
+  if (aiSearchAlert) {
+    return 'ai_broadened_results_alert';
+  }
+
+  return undefined;
+};
+
+export function ResultsSection({
+  cardLayout,
+  aiSearchAlert,
+}: ResultsSectionProps) {
   const { t } = useTranslation('page-search');
   const { i18n } = useTranslation();
   const appConfig = useAppConfig();
@@ -48,6 +74,7 @@ export function ResultsSection({ cardLayout }: ResultsSectionProps) {
   const shareTitle = queryLabel || query || t('no_query');
   const shareBody = t('share_body', { count: totalResults, title: shareTitle });
   const printableListName = shareTitle;
+  const aiAlertMessageKey = getAiAlertMessageKey(aiSearchAlert);
 
   const showSort = queryType !== 'hybrid';
 
@@ -93,6 +120,11 @@ export function ResultsSection({ cardLayout }: ResultsSectionProps) {
         Search Results
       </h2>
       <div className="flex flex-col gap-3 print:hidden">
+        {aiAlertMessageKey && (
+          <Alert>
+            <AlertDescription>{t(aiAlertMessageKey)}</AlertDescription>
+          </Alert>
+        )}
         <div className="flex items-center justify-between">
           <ResultTotal />
           <div className="flex gap-2.5">

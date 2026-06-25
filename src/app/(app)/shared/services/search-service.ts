@@ -27,6 +27,7 @@ export type FindResourcesQuery = {
   query?: string;
   queryLabel?: string;
   queryType?: string;
+  taxonomy?: string[];
   location?: string;
   coordinates?: number[];
   distance?: string;
@@ -89,6 +90,8 @@ function transformSearchHits(
       address: mainAddress,
       location: hit?._source?.location?.point ?? null,
       taxonomies: hit?._source?.taxonomies ?? null,
+      eligibility: hit?._source?.service?.eligibility ?? null,
+      applicationProcess: hit?._source?.service?.application_process ?? null,
       attributeValues: hit?._source?.attribute_values ?? null,
       facets: transformedFacets.length > 0 ? transformedFacets : null,
     };
@@ -164,6 +167,8 @@ async function findResourcesOrigin({
       ...(query.query?.trim() && { query: query.query.trim() }),
       ...(query.queryLabel?.trim() && { query_label: query.queryLabel.trim() }),
       query_type: resolvedQueryType,
+      ...(Array.isArray(query.taxonomy) &&
+        query.taxonomy.length > 0 && { taxonomy: query.taxonomy.join(',') }),
       ...(query.location?.trim() && { location: query.location.trim() }),
       ...(hasCoords && { coords: query.coordinates!.join(',') }),
       ...(hasCoords && { distance: query.distance?.trim() || '0' }),
@@ -275,6 +280,9 @@ export async function findResourcesV2(
     locale,
     limit,
     ...(searchStore.sort && { sort: searchStore.sort }),
+    ...(Array.isArray(searchStore.taxonomy) && searchStore.taxonomy.length > 0
+      ? { taxonomy: searchStore.taxonomy.join(',') }
+      : {}),
     ...(searchStore.filters && Object.keys(searchStore.filters).length > 0
       ? { filters: searchStore.filters }
       : {}),

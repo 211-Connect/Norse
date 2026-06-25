@@ -276,6 +276,7 @@ async function getAppConfigBase(
         map,
         radiusOptions: [],
         hybridSemanticSearchEnabled: false,
+        aiClassificationEnabled: false,
         resultsLimit: 25,
       },
       sessionId: '',
@@ -470,14 +471,32 @@ async function getAppConfigBase(
     search: {
       facets: (resourceDirectory.search.facets ?? [])
         .filter(({ name }) => name)
-        .map(({ name, facet, showInDetails, excludeValues }) => ({
-          name: name!,
-          facet,
-          showInDetails: Boolean(showInDetails ?? true),
-          excludeValues: (excludeValues ?? [])
-            .map((e) => e.value)
-            .filter(Boolean) as string[],
-        })),
+        .map(
+          ({
+            name,
+            facet,
+            showInDetails,
+            sortBy,
+            valueOrder,
+            excludeValues,
+          }) => ({
+            name: name!,
+            facet,
+            showInDetails: Boolean(showInDetails ?? true),
+            sortBy:
+              sortBy === 'name'
+                ? 'name'
+                : sortBy === 'valueOrder'
+                  ? 'valueOrder'
+                  : 'count',
+            valueOrder: (valueOrder ?? [])
+              .map((entry) => entry.value?.trim())
+              .filter(Boolean) as string[],
+            excludeValues: (excludeValues ?? [])
+              .map((e) => e.value)
+              .filter(Boolean) as string[],
+          }),
+        ),
       map,
       radiusOptions:
         resourceDirectory.search.searchSettings.radiusSelectValues ?? [],
@@ -485,6 +504,9 @@ async function getAppConfigBase(
         resourceDirectory.search.searchSettings.defaultRadius ?? undefined,
       hybridSemanticSearchEnabled:
         resourceDirectory.search.searchSettings.hybridSemanticSearchEnabled ??
+        false,
+      aiClassificationEnabled:
+        resourceDirectory.search.searchSettings.aiClassificationEnabled ??
         false,
       resultsLimit: resourceDirectory.search.searchSettings.resultsLimit ?? 25,
       texts: {

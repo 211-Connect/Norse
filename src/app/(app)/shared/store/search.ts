@@ -4,6 +4,8 @@ export const searchAtom = atom({
   query: '',
   queryLabel: '',
   queryType: '',
+  href: '',
+  target: '' as '' | '_self' | '_blank',
   searchTerm: '',
   searchLocation: '',
   searchCoordinates: [] as any[],

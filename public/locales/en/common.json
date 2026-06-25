@@ -54,7 +54,16 @@
     "categories": "Topics",
     "show_all": "Show all ({{count}})",
     "show_less": "Show less",
-    "everywhere": "Everywhere"
+    "everywhere": "Everywhere",
+    "ai_clarify_title": "Help us narrow your search",
+    "ai_clarify_title_low_info": "Tell us a bit more so we can narrow your search",
+    "ai_clarify_title_multiple_labels": "Which type of help best matches what you need?",
+    "ai_skip": "Skip",
+    "ai_confirm": "Confirm",
+    "ai_show_more_categories": "Show more categories",
+    "ai_validation_select_or_skip": "Select at least one option or skip.",
+    "ai_option_results_count_one": "{{count}} related resource",
+    "ai_option_results_count_other": "{{count}} related resources"
   },
   "call_to_action": {
     "call": "Call",
@@ -177,5 +186,102 @@
     "results_available_one": "{{count}} result available",
     "results_available_other": "{{count}} results available",
     "no_results": "No results"
+  },
+  "needs": {
+    "AR-100": {
+      "name": "Arts, Culture and Recreation",
+      "description": "The need for meaningful participation in creative, cultural, and recreational life. Encompasses needs related to artistic expression, engagement with cultural heritage, leisure activities, and community-based recreation. Distinct from therapeutic or social support goals — this reflects the intrinsic human need to create, celebrate, play, and belong to a cultural community.",
+      "displayDescription": "Get help finding fun things to do like art, music, sports, or community events. Everyone deserves time to play, create, and celebrate."
+    },
+    "CL-150": {
+      "name": "Clothing/Personal/Household Needs",
+      "description": "The need for adequate clothing, personal care items, and the material goods required to maintain a functional household. Includes needs for apparel appropriate to weather, work, or school; hygiene and personal care products; and basic furnishings or supplies that make a living space habitable and dignified.",
+      "displayDescription": "Get help finding clothes, personal care items, or things you need for your home. We can help you get what you need to feel clean and comfortable."
+    },
+    "DI-180": {
+      "name": "Disaster Services",
+      "description": "The need for support arising from a declared or experienced disaster event, whether natural or human-caused. Encompasses needs that emerge before, during, and after disasters — including preparedness, emergency response, and recovery. Distinct from ongoing personal safety needs; centered on acute community-level disruption and its aftermath.",
+      "displayDescription": "Get help before, during, or after a disaster like a flood, fire, or storm. We can connect you with people who are ready to help in an emergency."
+    },
+    "DV-190": {
+      "name": "Domestic Violence / Personal Safety",
+      "description": "The need for safety and protection from interpersonal harm, abuse, coercion, or threat. Encompasses needs related to domestic violence, intimate partner violence, stalking, trafficking, and other situations where a person's physical or emotional safety is at risk due to the actions of another person. Distinct from disaster-related safety needs or general public safety infrastructure.",
+      "displayDescription": "Get help if you or someone you know feels unsafe at home or is being hurt. You deserve to feel safe, and there are people ready to help right now."
+    },
+    "ED-170": {
+      "name": "Education",
+      "description": "The need for access to learning, skill development, and educational attainment across all life stages. Encompasses needs related to early childhood learning, K–12 schooling, post-secondary education, adult literacy, English language acquisition, digital literacy, and vocational training. The need exists regardless of where someone is in their educational journey or what barriers they face in accessing it.",
+      "displayDescription": "Get help with learning — for kids, teens, or adults. Whether you need school help, job training, or want to learn English, we can help you find it."
+    },
+    "EM-180": {
+      "name": "Employment",
+      "description": "The need for access to stable, adequate work and the conditions that make employment possible. Encompasses needs related to finding work, retaining work, developing job skills, and navigating workplace rights and transitions such as unemployment. Reflects the economic and social dimensions of work as a human need, not the services themselves.",
+      "displayDescription": "Get help finding a job, keeping a job, or building new skills. Everyone deserves a chance to earn a living and feel good about their work."
+    },
+    "FO-200": {
+      "name": "Food/Meals",
+      "description": "The need for consistent, adequate, and nutritious food. Encompasses needs related to accessing enough food to eat, obtaining food that meets nutritional or dietary needs, and understanding how to sustain healthy eating. The need exists whether it arises from poverty, crisis, chronic food insecurity, or situational disruption.",
+      "displayDescription": "Get help finding food for you and your family. Whether you need a meal today or help getting groceries, we can connect you with food near you."
+    },
+    "HC-300": {
+      "name": "Health Care",
+      "description": "The need for access to physical health services, preventive care, medical treatment, and the goods and navigation support required to manage one's health. Encompasses needs across the full continuum of physical health — from routine wellness and screenings to acute care, chronic disease management, rehabilitation, and long-term care. Mental health and substance use needs are addressed separately.",
+      "displayDescription": "Get help finding a doctor, dentist, or other health care. Everyone deserves to stay healthy and get the care they need."
+    },
+    "HO-300": {
+      "name": "Housing",
+      "description": "The need for a safe, stable, and appropriate place to live. Encompasses needs across the full spectrum of housing — from immediate shelter in a crisis to long-term affordable housing, supportive living arrangements, and the stability supports that help people remain housed. The nature of the housing need varies by urgency and circumstance, but the underlying need is consistent: a place to call home.",
+      "displayDescription": "Get help finding a safe place to live. Whether you need a place to sleep tonight or help staying in your home, we can connect you with support."
+    },
+    "IC-330": {
+      "name": "Income Support/Assistance",
+      "description": "The need for financial resources to meet basic living costs when income is insufficient or absent. Encompasses needs related to cash assistance, income replacement, public benefit access, and financial stability supports. Reflects the economic dimension of wellbeing — the need to have enough resources to cover essential needs — separate from the specific programs or mechanisms that may address it.",
+      "displayDescription": "Get help paying for the things you need when money is tight. We can connect you with programs that help cover bills and everyday costs."
+    },
+    "IF-330": {
+      "name": "Individual, Family and Community Support",
+      "description": "The need for relational, caregiving, and community-level support that sustains individuals and families through everyday life and difficult circumstances. Encompasses needs related to parenting, caregiving for dependents, navigating family complexity, building community connections, and accessing peer or social support. Reflects the reality that human wellbeing is deeply tied to the strength of the relationships and networks surrounding a person.",
+      "displayDescription": "Get help for your family or someone you care for. Whether you need parenting support, help for an older adult, or someone to talk to, we can help."
+    },
+    "IS-330": {
+      "name": "Information Services",
+      "description": "The need to understand what resources exist and how to access them. Encompasses needs related to finding relevant services, understanding eligibility and processes, navigating complex systems, and connecting with the right support at the right time. This is a meta-need — the prerequisite to meeting many other needs effectively — and is distinct from the services themselves.",
+      "displayDescription": "Not sure where to start? We can help you figure out what services are out there and which ones are right for you."
+    },
+    "LE-450": {
+      "name": "Legal, Consumer and Public Safety",
+      "description": "The need for legal protection, justice system navigation, consumer rights, and public safety. Encompasses needs related to civil legal matters, criminal justice involvement, immigration status, consumer harm, and protection under the law. Reflects situations where a person's rights, safety, or standing under legal systems are at stake and where legal knowledge or assistance is required.",
+      "displayDescription": "Get help with legal questions, understanding your rights, or staying safe. We can connect you with people who know the law and can help."
+    },
+    "MH-500": {
+      "name": "Addictions",
+      "description": "The need for support in addressing substance use, dependency, and addiction. Encompasses needs related to managing or recovering from problematic use of alcohol, drugs, or other substances — including acute stabilization, treatment, and ongoing recovery support. Recognized as a distinct category of need from mental health, though the two frequently co-occur.",
+      "displayDescription": "Get help if you or someone you love is struggling with alcohol or drug use. Recovery is possible, and there are caring people ready to support you."
+    },
+    "AD-510": {
+      "name": "Mental Health",
+      "description": "The need for support in maintaining, restoring, or managing one's mental and emotional wellbeing. Encompasses needs related to emotional distress, psychiatric conditions, behavioral health, crisis situations, and the ongoing support required to live well with mental health challenges. Distinct from substance use needs, though co-occurring presentations are common.",
+      "displayDescription": "Get help if you're feeling sad, anxious, or overwhelmed. Your mental health matters, and there are people who can listen and help."
+    },
+    "OT-600": {
+      "name": "Other Governmental/Economic Services",
+      "description": "The need for access to government programs, civic services, and economic supports that do not fall neatly into other categories. Encompasses needs related to navigating public agencies, accessing governmental benefits or entitlements, small business support, tax assistance, and other economic services that support individual and community stability.",
+      "displayDescription": "Get help with government programs, benefits, or other services that are hard to find elsewhere. We can help you figure out where to go."
+    },
+    "TR-850": {
+      "name": "Transportation",
+      "description": "The need for the ability to travel reliably to meet other needs — work, healthcare, education, food, services, and social connection. Encompasses needs related to accessing rides, affording transportation costs, maintaining a vehicle, and traveling safely. Transportation is a foundational enabler: its absence compounds nearly every other unmet need.",
+      "displayDescription": "Get help getting where you need to go — to a doctor, job, school, or store. We can help you find rides or affordable ways to travel."
+    },
+    "UT-900": {
+      "name": "Utilities",
+      "description": "The need for access to essential home utilities — electricity, gas, water, and telecommunications — that make a living space safe, habitable, and connected. Encompasses needs related to maintaining utility service, affording utility costs, reducing consumption, and accessing phone or internet connectivity. Utility need is closely linked to housing stability and health.",
+      "displayDescription": "Get help paying for electricity, gas, water, or phone and internet service. We can connect you with programs that help keep your home running."
+    },
+    "VO-900": {
+      "name": "Volunteer & Donation",
+      "description": "The need to give or receive through community generosity — whether a person needs donated goods, or has the capacity and desire to contribute time, skills, or resources to others. Encompasses needs on both sides of civic exchange: individuals seeking material donations or donated services, and individuals or organizations seeking to connect volunteers and donors with meaningful opportunities to help.",
+      "displayDescription": "Need donated goods or want to help others? We can connect people who want to give with people who need a hand."
+    }
   }
 }
