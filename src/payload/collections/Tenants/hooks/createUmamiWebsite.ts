@@ -2,6 +2,7 @@ import type { CollectionAfterChangeHook } from 'payload';
 
 import type { Tenant } from '../../../payload-types';
 import { getUmamiToken } from '../../../utilities/umamiAuth';
+import { FETCH_TIMEOUT } from '@/app/(app)/shared/lib/constants';
 
 async function verifyUmamiTeam(
   umamiApiUrl: string,
@@ -13,7 +14,7 @@ async function verifyUmamiTeam(
       Authorization: `Bearer ${token}`,
       Accept: 'application/json',
     },
-    signal: AbortSignal.timeout(10_000),
+    signal: AbortSignal.timeout(FETCH_TIMEOUT),
   });
 
   if (!res.ok) {
@@ -41,7 +42,7 @@ async function createUmamiWebsiteRequest(
       Accept: 'application/json',
     },
     body: JSON.stringify({ name, domain, teamId }),
-    signal: AbortSignal.timeout(10_000),
+    signal: AbortSignal.timeout(FETCH_TIMEOUT),
   });
 
   if (!res.ok) {

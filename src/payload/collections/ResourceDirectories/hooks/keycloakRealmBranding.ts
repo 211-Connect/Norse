@@ -1,3 +1,4 @@
+import { FETCH_TIMEOUT } from '@/app/(app)/shared/lib/constants';
 import { createLogger } from '@/lib/logger';
 import {
   getKeycloakAdminAccessToken,
@@ -28,7 +29,7 @@ export async function syncKeycloakRealmBrandingAttributes(
       Authorization: `Bearer ${token}`,
       Accept: 'application/json',
     },
-    signal: AbortSignal.timeout(15_000),
+    signal: AbortSignal.timeout(FETCH_TIMEOUT),
   });
 
   if (!realmResponse.ok) {
@@ -57,7 +58,7 @@ export async function syncKeycloakRealmBrandingAttributes(
       ...realmRepresentation,
       attributes: mergedAttributes,
     }),
-    signal: AbortSignal.timeout(15_000),
+    signal: AbortSignal.timeout(FETCH_TIMEOUT),
   });
 
   if (!updateResponse.ok) {

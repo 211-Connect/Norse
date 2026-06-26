@@ -1,3 +1,5 @@
+import { FETCH_TIMEOUT } from '@/app/(app)/shared/lib/constants';
+
 function requireEnv(name: string): string {
   const value = process.env[name];
 
@@ -30,7 +32,7 @@ export async function getKeycloakAdminAccessToken(): Promise<string> {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body,
-    signal: AbortSignal.timeout(15_000),
+    signal: AbortSignal.timeout(FETCH_TIMEOUT),
   });
 
   if (!response.ok) {
@@ -62,7 +64,7 @@ export async function getVerifiedEnabledUsersCount(
       Authorization: `Bearer ${token}`,
       Accept: 'application/json',
     },
-    signal: AbortSignal.timeout(15_000),
+    signal: AbortSignal.timeout(FETCH_TIMEOUT),
   });
 
   if (!response.ok) {
