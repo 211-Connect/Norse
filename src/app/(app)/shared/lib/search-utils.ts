@@ -197,5 +197,7 @@ export function deriveQueryType({
     return QueryType.Taxonomy;
   }
 
-  return searchEngine === 'hybrid' ? QueryType.Hybrid : QueryType.Text;
+  return searchEngine === 'hybrid' || searchEngine === 'ai_classification'
+    ? QueryType.Hybrid
+    : QueryType.Text;
 }
