@@ -260,7 +260,7 @@ export const generateFacetsCSV = (items: any[]): string => {
           ? 'valueOrder'
           : item.sortBy === 'dayOfWeek'
             ? 'dayOfWeek'
-          : 'count',
+            : 'count',
     valueOrder: (item.valueOrder || [])
       .map((entry: any) => entry?.value)
       .filter(Boolean)
