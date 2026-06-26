@@ -526,8 +526,7 @@ async function getAppConfigBase(
         },
         title: resourceDirectory.search.texts?.title ?? undefined,
         viewDetailsButtonVariant:
-          resourceDirectory.search.texts?.viewDetailsButtonVariant ??
-          undefined,
+          resourceDirectory.search.texts?.viewDetailsButtonVariant ?? undefined,
         viewDetailsText:
           resourceDirectory.search.texts?.viewDetailsText ?? undefined,
       },
