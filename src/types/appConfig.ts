@@ -125,7 +125,7 @@ export type AppConfig = {
         taxonomies?: string;
       };
       viewDetailsText?: string;
-      useTextLinkForViewDetails?: boolean;
+      viewDetailsButtonVariant?: 'default' | 'secondary' | 'ghost' | 'link';
       noResultsFallbackText?: string;
     };
     cardLayout?: NonNullable<ResourceDirectory['search']['cardLayout']>;
