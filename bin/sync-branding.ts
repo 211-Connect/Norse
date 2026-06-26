@@ -3,6 +3,7 @@
 import dotenv from 'dotenv';
 
 import type { ResourceDirectory, Tenant } from '../src/payload/payload-types';
+import { FETCH_TIMEOUT } from '@/app/(app)/shared/lib/constants';
 
 dotenv.config({ quiet: true });
 
@@ -143,7 +144,7 @@ async function getKeycloakAccessToken(baseUrl: string): Promise<string> {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body,
-    signal: AbortSignal.timeout(20_000),
+    signal: AbortSignal.timeout(FETCH_TIMEOUT),
   });
 
   if (!response.ok) {
@@ -173,7 +174,7 @@ async function getPayloadToken(payloadApiUrl: string): Promise<string> {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
-    signal: AbortSignal.timeout(20_000),
+    signal: AbortSignal.timeout(FETCH_TIMEOUT),
   });
 
   if (!response.ok) {
@@ -207,7 +208,7 @@ async function fetchAllDocs<T>(url: string, token: string): Promise<T[]> {
         Accept: 'application/json',
         Authorization: `JWT ${token}`,
       },
-      signal: AbortSignal.timeout(20_000),
+      signal: AbortSignal.timeout(FETCH_TIMEOUT),
     });
 
     if (!response.ok) {
@@ -247,7 +248,7 @@ async function updateRealmAttributes(
       Authorization: `Bearer ${token}`,
       Accept: 'application/json',
     },
-    signal: AbortSignal.timeout(20_000),
+    signal: AbortSignal.timeout(FETCH_TIMEOUT),
   });
 
   if (!realmResponse.ok) {
@@ -276,7 +277,7 @@ async function updateRealmAttributes(
         ...attributes,
       },
     }),
-    signal: AbortSignal.timeout(20_000),
+    signal: AbortSignal.timeout(FETCH_TIMEOUT),
   });
 
   if (!updateResponse.ok) {
