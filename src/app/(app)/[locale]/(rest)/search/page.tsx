@@ -121,7 +121,7 @@ const getPageData = cache(async function (
           page,
           limit,
           appConfig.tenantId,
-          appConfig.search.hybridSemanticSearchEnabled,
+          appConfig.search.searchEngine,
         );
         results = v2Result.results as ResultType[];
         totalResults = v2Result.totalResults;
@@ -144,7 +144,7 @@ const getPageData = cache(async function (
       page,
       limit,
       appConfig.tenantId,
-      appConfig.search.hybridSemanticSearchEnabled,
+      appConfig.search.searchEngine,
     );
 
     if (!searchResult) {

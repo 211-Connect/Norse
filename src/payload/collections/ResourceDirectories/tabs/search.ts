@@ -223,18 +223,23 @@ export const search: Tab = {
       name: 'searchSettings',
       fields: [
         {
-          name: 'hybridSemanticSearchEnabled',
-          type: 'checkbox',
-          defaultValue: false,
-          access: {
-            create: superAdminOrSupportOrTenantAccess,
-            update: superAdminOrSupportOrTenantAccess,
-          },
-        },
-        {
-          name: 'aiClassificationEnabled',
-          type: 'checkbox',
-          defaultValue: false,
+          name: 'searchEngine',
+          type: 'select',
+          defaultValue: 'classic',
+          options: [
+            {
+              label: 'Classic',
+              value: 'classic',
+            },
+            {
+              label: 'Hybrid',
+              value: 'hybrid',
+            },
+            {
+              label: 'AI Classification',
+              value: 'ai_classification',
+            },
+          ],
           access: {
             create: superAdminOrSupportOrTenantAccess,
             update: superAdminOrSupportOrTenantAccess,

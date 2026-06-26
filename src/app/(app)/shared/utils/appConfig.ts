@@ -275,8 +275,7 @@ async function getAppConfigBase(
         facets: [],
         map,
         radiusOptions: [],
-        hybridSemanticSearchEnabled: false,
-        aiClassificationEnabled: false,
+        searchEngine: 'classic',
         resultsLimit: 25,
       },
       sessionId: '',
@@ -502,12 +501,8 @@ async function getAppConfigBase(
         resourceDirectory.search.searchSettings.radiusSelectValues ?? [],
       defaultRadius:
         resourceDirectory.search.searchSettings.defaultRadius ?? undefined,
-      hybridSemanticSearchEnabled:
-        resourceDirectory.search.searchSettings.hybridSemanticSearchEnabled ??
-        false,
-      aiClassificationEnabled:
-        resourceDirectory.search.searchSettings.aiClassificationEnabled ??
-        false,
+      searchEngine:
+        resourceDirectory.search.searchSettings.searchEngine ?? 'classic',
       resultsLimit: resourceDirectory.search.searchSettings.resultsLimit ?? 25,
       texts: {
         locationInputPlaceholder:

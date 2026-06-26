@@ -835,8 +835,7 @@ export interface ResourceDirectory {
       noResultsFallbackText?: string | null;
     };
     searchSettings: {
-      hybridSemanticSearchEnabled?: boolean | null;
-      aiClassificationEnabled?: boolean | null;
+      searchEngine?: ('classic' | 'hybrid' | 'ai_classification') | null;
       resultsLimit: number;
       radiusSelectValues?:
         | {
@@ -1578,8 +1577,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         searchSettings?:
           | T
           | {
-              hybridSemanticSearchEnabled?: T;
-              aiClassificationEnabled?: T;
+              searchEngine?: T;
               resultsLimit?: T;
               radiusSelectValues?:
                 | T

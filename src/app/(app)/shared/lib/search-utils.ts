@@ -1,6 +1,7 @@
 import { bboxPolygon } from '@turf/bbox-polygon';
 import type { Polygon } from 'geojson';
 
+import { SearchEngine } from '@/types/appConfig';
 import { BBox } from '@/types/resource';
 
 import { FindResourcesQuery } from '../services/search-service';
@@ -81,7 +82,7 @@ export interface SearchRequestParams {
  */
 export function buildSearchRequest(
   searchStore: FindResourcesQuery,
-  hybridSemanticSearchEnabled: boolean | undefined,
+  searchEngine: SearchEngine,
 ): SearchRequestParams {
   const hasLocation = searchStore.coordinates?.length === 2;
   const useBoundary = shouldUseBoundarySearch(
@@ -106,7 +107,7 @@ export function buildSearchRequest(
   baseParams.query_type = deriveQueryType({
     originQueryType: searchStore.queryType,
     query: searchStore.query,
-    hybridSemanticSearchEnabled,
+    searchEngine,
   });
 
   if (hasLocation && searchStore.location?.trim()) {
@@ -178,13 +179,13 @@ function isTaxonomyQuery(value: string | undefined): boolean {
 }
 
 type DeriveQueryTypeArgs = {
-  hybridSemanticSearchEnabled: boolean | undefined;
+  searchEngine: SearchEngine;
   originQueryType: string | undefined;
   query: string | undefined;
 };
 
 export function deriveQueryType({
-  hybridSemanticSearchEnabled,
+  searchEngine,
   originQueryType,
   query,
 }: DeriveQueryTypeArgs): QueryType {
@@ -196,5 +197,5 @@ export function deriveQueryType({
     return QueryType.Taxonomy;
   }
 
-  return hybridSemanticSearchEnabled ? QueryType.Hybrid : QueryType.Text;
+  return searchEngine === 'hybrid' ? QueryType.Hybrid : QueryType.Text;
 }
