@@ -854,9 +854,9 @@ export interface ResourceDirectory {
           facet: string;
           showInDetails?: boolean | null;
           /**
-           * Count keeps API-provided order. Name sorts by localized label. Custom Value Order sorts by the configured English/raw facet values.
+           * Count keeps API-provided order. Name sorts by localized label. Custom Value Order sorts by configured English/raw facet values. Day of Week sorts Sunday to Saturday and supports values like Sunday/Sun, Monday/Mon, etc.
            */
-          sortBy?: ('count' | 'name' | 'valueOrder') | null;
+          sortBy?: ('count' | 'name' | 'valueOrder' | 'dayOfWeek') | null;
           /**
            * Order values by English/raw facet values from the search API (e.g. Sunday|Monday...). Values not listed appear after listed values.
            */

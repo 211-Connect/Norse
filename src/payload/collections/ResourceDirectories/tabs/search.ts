@@ -341,7 +341,7 @@ export const search: Tab = {
           defaultValue: 'count',
           admin: {
             description:
-              'Count keeps API-provided order. Name sorts by localized label. Custom Value Order sorts by the configured English/raw facet values.',
+              'Count keeps API-provided order. Name sorts by localized label. Custom Value Order sorts by configured English/raw facet values. Day of Week sorts Sunday to Saturday and supports values like Sunday/Sun, Monday/Mon, etc.',
           },
           access: {
             create: superAdminOrSupportOrTenantAccess,
@@ -359,6 +359,10 @@ export const search: Tab = {
             {
               label: 'Custom Value Order',
               value: 'valueOrder',
+            },
+            {
+              label: 'Day of Week',
+              value: 'dayOfWeek',
             },
           ],
         },

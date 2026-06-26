@@ -101,7 +101,7 @@ export type AppConfig = {
       name: string;
       facet: string;
       showInDetails?: boolean;
-      sortBy?: 'count' | 'name' | 'valueOrder';
+      sortBy?: 'count' | 'name' | 'valueOrder' | 'dayOfWeek';
       valueOrder?: string[];
       excludeValues?: string[];
     }[];
