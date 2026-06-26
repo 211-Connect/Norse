@@ -941,6 +941,11 @@ export interface ResourceDirectory {
       title?: string | null;
     };
   };
+  accessibilityPage?: {
+    enabled?: boolean | null;
+    title?: string | null;
+    content?: string | null;
+  };
   privacyPolicyPage?: {
     enabled?: boolean | null;
     title?: string | null;
@@ -1659,6 +1664,13 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
                   };
               title?: T;
             };
+      };
+  accessibilityPage?:
+    | T
+    | {
+        enabled?: T;
+        title?: T;
+        content?: T;
       };
   privacyPolicyPage?:
     | T
