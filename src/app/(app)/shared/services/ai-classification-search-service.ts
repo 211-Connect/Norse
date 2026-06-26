@@ -41,6 +41,8 @@ type ReRankRequestBody = {
   need_weights: NeedWeights;
 };
 
+const DEFAULT_TOP_K = 150;
+
 function createAiHeaders(
   locale: string,
   tenantId?: string,
@@ -66,13 +68,16 @@ export async function predictSearchNeeds(
   }
 
   try {
+    const queryParams = new URLSearchParams({
+      query,
+      top_k: String(DEFAULT_TOP_K),
+    }).toString();
+
     const response = await fetchWrapper<AiPredictResponse>(
-      `${API_URL}/search/predict`,
+      `${API_URL}/search/predict?${queryParams}`,
       {
-        method: 'POST',
+        method: 'GET',
         headers: createAiHeaders(locale, tenantId),
-        body: { query },
-        cache: 'no-store',
       },
     );
 
@@ -96,13 +101,16 @@ export async function reRankSearchNeeds(
   tenantId?: string,
 ): Promise<AiReRankResponse | null> {
   try {
+    const queryParams = new URLSearchParams({
+      need_weights: JSON.stringify(body.need_weights),
+      top_k: String(DEFAULT_TOP_K),
+    }).toString();
+
     const response = await fetchWrapper<AiReRankResponse>(
-      `${API_URL}/search/re-rank`,
+      `${API_URL}/search/re-rank?${queryParams}`,
       {
-        method: 'POST',
+        method: 'GET',
         headers: createAiHeaders(locale, tenantId),
-        body,
-        cache: 'no-store',
       },
     );
 
@@ -110,9 +118,7 @@ export async function reRankSearchNeeds(
       return null;
     }
 
-    return {
-      hsis_taxonomies: response.hsis_taxonomies,
-    };
+    return response;
   } catch (error) {
     log.error(
       { err: error, tenantId, locale },
