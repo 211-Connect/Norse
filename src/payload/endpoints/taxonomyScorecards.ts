@@ -81,7 +81,8 @@ async function assertAuthorizedAndEnabled(
 
   const resourceDirectory = await findResourceDirectoryByTenantId(tenantId);
   const aiClassificationEnabled =
-    resourceDirectory?.search?.searchSettings?.aiClassificationEnabled === true;
+    resourceDirectory?.search?.searchSettings?.searchEngine ===
+    'ai_classification';
 
   if (!aiClassificationEnabled) {
     throw new Response(
@@ -174,8 +175,8 @@ export const taxonomyScorecardsStatus: Endpoint = {
 
       const resourceDirectory = await findResourceDirectoryByTenantId(tenantId);
       const aiClassificationEnabled =
-        resourceDirectory?.search?.searchSettings?.aiClassificationEnabled ===
-        true;
+        resourceDirectory?.search?.searchSettings?.searchEngine ===
+        'ai_classification';
 
       return Response.json({
         tenantId,
