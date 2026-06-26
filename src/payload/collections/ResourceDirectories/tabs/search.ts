@@ -183,12 +183,30 @@ export const search: Tab = {
                   },
                 },
                 {
-                  name: 'useTextLinkForViewDetails',
-                  type: 'checkbox',
-                  defaultValue: false,
+                  name: 'viewDetailsButtonVariant',
+                  type: 'select',
+                  defaultValue: 'ghost',
+                  options: [
+                    {
+                      label: 'Default',
+                      value: 'default',
+                    },
+                    {
+                      label: 'Secondary',
+                      value: 'secondary',
+                    },
+                    {
+                      label: 'Ghost',
+                      value: 'ghost',
+                    },
+                    {
+                      label: 'Link',
+                      value: 'link',
+                    },
+                  ],
                   admin: {
                     description:
-                      'Display the View Details action as an underlined text link instead of the default button-style action.',
+                      'Choose how the View Details action is displayed on search result cards.',
                   },
                   access: {
                     create: superAdminOrSupportOrTenantAccess,

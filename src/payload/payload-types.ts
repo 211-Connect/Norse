@@ -829,9 +829,9 @@ export interface ResourceDirectory {
       };
       viewDetailsText?: string | null;
       /**
-       * Display the View Details action as an underlined text link instead of the default button-style action.
+       * Choose how the View Details action is displayed on search result cards.
        */
-      useTextLinkForViewDetails?: boolean | null;
+      viewDetailsButtonVariant?: ('default' | 'secondary' | 'ghost' | 'link') | null;
       noResultsFallbackText?: string | null;
     };
     searchSettings: {
@@ -1571,7 +1571,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
                     taxonomies?: T;
                   };
               viewDetailsText?: T;
-              useTextLinkForViewDetails?: T;
+              viewDetailsButtonVariant?: T;
               noResultsFallbackText?: T;
             };
         searchSettings?:

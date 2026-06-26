@@ -24,8 +24,8 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
   const entry = searchParams.get('entry') ?? ResourceEntry.SearchCard;
   const viewDetailsText =
     appConfig.search.texts?.viewDetailsText || t('call_to_action.view_details');
-  const useTextLinkForViewDetails =
-    appConfig.search.texts?.useTextLinkForViewDetails ?? false;
+  const viewDetailsButtonVariant =
+    appConfig.search.texts?.viewDetailsButtonVariant ?? 'ghost';
 
   return (
     <div className="flex flex-col gap-2 print:hidden">
@@ -110,12 +110,10 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
       <div className="flex w-full items-center gap-2">
         <Link
           className={cn(
-            useTextLinkForViewDetails
-              ? 'text-primary hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring inline-flex min-h-8 flex-1 items-center justify-center rounded-md px-3 py-2 text-center underline decoration-1 underline-offset-4 transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none'
-              : cn(
-                  'text-primary flex-1 gap-1',
-                  buttonVariants({ variant: 'ghost' }),
-                ),
+            'text-primary flex-1 gap-1',
+            buttonVariants({
+              variant: viewDetailsButtonVariant,
+            }),
           )}
           href={`/search/${result.id}?entry=${entry}`}
           aria-label={`${viewDetailsText}: ${result.name}`}
