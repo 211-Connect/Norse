@@ -18,7 +18,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#text-equiv-all">
                     1.1.1 Non-text Content
-                  </a>{' '}(Level A)
+                  </a>{' '}
+                  (Level A)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -62,7 +63,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#media-equiv-av-only-alt">
                     1.2.1 Audio-only and Video-only (Prerecorded)
-                  </a>{' '}(Level A)
+                  </a>{' '}
+                  (Level A)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -100,7 +102,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#media-equiv-captions">
                     1.2.2 Captions (Prerecorded)
-                  </a>{' '}(Level A)
+                  </a>{' '}
+                  (Level A)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -138,7 +141,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#media-equiv-audio-desc">
                     1.2.3 Audio Description or Media Alternative (Prerecorded)
-                  </a>{' '}(Level A)
+                  </a>{' '}
+                  (Level A)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -176,7 +180,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#content-structure-separation-programmatic">
                     1.3.1 Info and Relationships
-                  </a>{' '}(Level A)
+                  </a>{' '}
+                  (Level A)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -219,7 +224,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#content-structure-separation-sequence">
                     1.3.2 Meaningful Sequence
-                  </a>{' '}(Level A)
+                  </a>{' '}
+                  (Level A)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -261,7 +267,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#content-structure-separation-understanding">
                     1.3.3 Sensory Characteristics
-                  </a>{' '}(Level A)
+                  </a>{' '}
+                  (Level A)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -304,7 +311,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#visual-audio-contrast-without-color">
                     1.4.1 Use of Color
-                  </a>{' '}(Level A)
+                  </a>{' '}
+                  (Level A)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -348,7 +356,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#visual-audio-contrast-dis-audio">
                     1.4.2 Audio Control
-                  </a>{' '}(Level A)
+                  </a>{' '}
+                  (Level A)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -386,7 +395,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#keyboard-operation-keyboard-operable">
                     2.1.1 Keyboard
-                  </a>{' '}(Level A)
+                  </a>{' '}
+                  (Level A)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -428,7 +438,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#keyboard-operation-trapping">
                     2.1.2 No Keyboard Trap
-                  </a>{' '}(Level A)
+                  </a>{' '}
+                  (Level A)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -466,7 +477,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="https://www.w3.org/TR/WCAG21/#character-key-shortcuts">
                     2.1.4 Character Key Shortcuts
-                  </a>{' '}(Level A 2.1 and 2.2)
+                  </a>{' '}
+                  (Level A 2.1 and 2.2)
                 </p>
                 <p>Also applies to:</p>
                 <p>EN 301 549 Criteria</p>
@@ -493,7 +505,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#time-limits-required-behaviors">
                     2.2.1 Timing Adjustable
-                  </a>{' '}(Level A)
+                  </a>{' '}
+                  (Level A)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -533,7 +546,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#time-limits-pause">
                     2.2.2 Pause, Stop, Hide
-                  </a>{' '}(Level A)
+                  </a>{' '}
+                  (Level A)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -574,7 +588,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#seizure-does-not-violate">
                     2.3.1 Three Flashes or Below Threshold
-                  </a>{' '}(Level A)
+                  </a>{' '}
+                  (Level A)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -615,7 +630,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#navigation-mechanisms-skip">
                     2.4.1 Bypass Blocks
-                  </a>{' '}(Level A)
+                  </a>{' '}
+                  (Level A)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -637,7 +653,8 @@ export function DefaultAccessibilityContent() {
                     Revised Section 508
                     <ul>
                       <li>
-                        501 (Web) (Software) – Does not apply to non-web software
+                        501 (Web) (Software) – Does not apply to non-web
+                        software
                       </li>
                       <li>504.2 (Authoring Tool)</li>
                       <li>
@@ -662,7 +679,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#navigation-mechanisms-title">
                     2.4.2 Page Titled
-                  </a>{' '}(Level A)
+                  </a>{' '}
+                  (Level A)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -706,7 +724,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#navigation-mechanisms-focus-order">
                     2.4.3 Focus Order
-                  </a>{' '}(Level A)
+                  </a>{' '}
+                  (Level A)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -748,7 +767,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#navigation-mechanisms-refs">
                     2.4.4 Link Purpose (In Context)
-                  </a>{' '}(Level A)
+                  </a>{' '}
+                  (Level A)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -790,7 +810,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="https://www.w3.org/TR/WCAG21/#pointer-gestures">
                     2.5.1 Pointer Gestures
-                  </a>{' '}(Level A 2.1 and 2.2)
+                  </a>{' '}
+                  (Level A 2.1 and 2.2)
                 </p>
                 <p>Also applies to:</p>
                 <p>EN 301 549 Criteria</p>
@@ -820,7 +841,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="https://www.w3.org/TR/WCAG21/#pointer-cancellation">
                     2.5.2 Pointer Cancellation
-                  </a>{' '}(Level A 2.1 and 2.2)
+                  </a>{' '}
+                  (Level A 2.1 and 2.2)
                 </p>
                 <p>Also applies to:</p>
                 <p>EN 301 549 Criteria</p>
@@ -851,7 +873,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="https://www.w3.org/TR/WCAG21/#label-in-name">
                     2.5.3 Label in Name
-                  </a>{' '}(Level A 2.1 and 2.2)
+                  </a>{' '}
+                  (Level A 2.1 and 2.2)
                 </p>
                 <p>Also applies to:</p>
                 <p>EN 301 549 Criteria</p>
@@ -883,7 +906,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="https://www.w3.org/TR/WCAG21/#motion-actuation">
                     2.5.4 Motion Actuation
-                  </a>{' '}(Level A 2.1 and 2.2)
+                  </a>{' '}
+                  (Level A 2.1 and 2.2)
                 </p>
                 <p>Also applies to:</p>
                 <p>EN 301 549 Criteria</p>
@@ -913,7 +937,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#meaning-doc-lang-id">
                     3.1.1 Language of Page
-                  </a>{' '}(Level A)
+                  </a>{' '}
+                  (Level A)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -956,7 +981,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#consistent-behavior-receive-focus">
                     3.2.1 On Focus
-                  </a>{' '}(Level A)
+                  </a>{' '}
+                  (Level A)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -997,7 +1023,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#consistent-behavior-unpredictable-change">
                     3.2.2 On Input
-                  </a>{' '}(Level A)
+                  </a>{' '}
+                  (Level A)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -1039,7 +1066,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="https://www.w3.org/TR/WCAG22/#consistent-help">
                     3.2.6 Consistent Help
-                  </a>{' '}(Level A 2.2 only)
+                  </a>{' '}
+                  (Level A 2.2 only)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -1060,7 +1088,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#minimize-error-identified">
                     3.3.1 Error Identification
-                  </a>{' '}(Level A)
+                  </a>{' '}
+                  (Level A)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -1102,7 +1131,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#minimize-error-cues">
                     3.3.2 Labels or Instructions
-                  </a>{' '}(Level A)
+                  </a>{' '}
+                  (Level A)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -1144,7 +1174,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="https://www.w3.org/TR/WCAG22/#redundant-entry">
                     3.3.7 Redundant Entry
-                  </a>{' '}(Level A 2.2 only)
+                  </a>{' '}
+                  (Level A 2.2 only)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -1168,7 +1199,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#ensure-compat-parses">
                     4.1.1 Parsing
-                  </a>{' '}(Level A)
+                  </a>{' '}
+                  (Level A)
                 </p>
                 <p>Applies to:</p>
                 <p>WCAG 2.0 and 2.1 – Always answer ‘Supports’</p>
@@ -1220,7 +1252,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#ensure-compat-rsv">
                     4.1.2 Name, Role, Value
-                  </a>{' '}(Level A)
+                  </a>{' '}
+                  (Level A)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -1280,7 +1313,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#media-equiv-real-time-captions">
                     1.2.4 Captions (Live)
-                  </a>{' '}(Level AA)
+                  </a>{' '}
+                  (Level AA)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -1318,7 +1352,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#media-equiv-audio-desc-only">
                     1.2.5 Audio Description (Prerecorded)
-                  </a>{' '}(Level AA)
+                  </a>{' '}
+                  (Level AA)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -1356,7 +1391,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="https://www.w3.org/TR/WCAG21/#orientation">
                     1.3.4 Orientation
-                  </a>{' '}(Level AA 2.1 and 2.2)
+                  </a>{' '}
+                  (Level AA 2.1 and 2.2)
                 </p>
                 <p>Also applies to:</p>
                 <p>EN 301 549 Criteria</p>
@@ -1388,7 +1424,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="https://www.w3.org/TR/WCAG21/#identify-input-purpose">
                     1.3.5 Identify Input Purpose
-                  </a>{' '}(Level AA 2.1 and 2.2)
+                  </a>{' '}
+                  (Level AA 2.1 and 2.2)
                 </p>
                 <p>Also applies to:</p>
                 <p>EN 301 549 Criteria</p>
@@ -1419,7 +1456,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#visual-audio-contrast-contrast">
                     1.4.3 Contrast (Minimum)
-                  </a>{' '}(Level AA)
+                  </a>{' '}
+                  (Level AA)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -1460,7 +1498,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#visual-audio-contrast-scale">
                     1.4.4 Resize text
-                  </a>{' '}(Level AA)
+                  </a>{' '}
+                  (Level AA)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -1501,7 +1540,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#visual-audio-contrast-text-presentation">
                     1.4.5 Images of Text
-                  </a>{' '}(Level AA)
+                  </a>{' '}
+                  (Level AA)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -1539,7 +1579,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="https://www.w3.org/TR/WCAG21/#reflow">
                     1.4.10 Reflow
-                  </a>{' '}(Level AA 2.1 and 2.2)
+                  </a>{' '}
+                  (Level AA 2.1 and 2.2)
                 </p>
                 <p>Also applies to:</p>
                 <p>EN 301 549 Criteria</p>
@@ -1569,7 +1610,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="https://www.w3.org/TR/WCAG21/#non-text-contrast">
                     1.4.11 Non-text Contrast
-                  </a>{' '}(Level AA 2.1 and 2.2)
+                  </a>{' '}
+                  (Level AA 2.1 and 2.2)
                 </p>
                 <p>Also applies to:</p>
                 <p>EN 301 549 Criteria</p>
@@ -1600,7 +1642,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="https://www.w3.org/TR/WCAG21/#text-spacing">
                     1.4.12 Text Spacing
-                  </a>{' '}(Level AA 2.1 and 2.2)
+                  </a>{' '}
+                  (Level AA 2.1 and 2.2)
                 </p>
                 <p>Also applies to:</p>
                 <p>EN 301 549 Criteria</p>
@@ -1631,7 +1674,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="https://www.w3.org/TR/WCAG21/#content-on-hover-or-focus">
                     1.4.13 Content on Hover or Focus
-                  </a>{' '}(Level AA 2.1 and 2.2)
+                  </a>{' '}
+                  (Level AA 2.1 and 2.2)
                 </p>
                 <p>Also applies to:</p>
                 <p>EN 301 549 Criteria</p>
@@ -1661,7 +1705,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#navigation-mechanisms-mult-loc">
                     2.4.5 Multiple Ways
-                  </a>{' '}(Level AA)
+                  </a>{' '}
+                  (Level AA)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -1683,7 +1728,8 @@ export function DefaultAccessibilityContent() {
                     Revised Section 508
                     <ul>
                       <li>
-                        501 (Web) (Software) – Does not apply to non-web software
+                        501 (Web) (Software) – Does not apply to non-web
+                        software
                       </li>
                       <li>504.2 (Authoring Tool)</li>
                       <li>
@@ -1705,7 +1751,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#navigation-mechanisms-descriptive">
                     2.4.6 Headings and Labels
-                  </a>{' '}(Level AA)
+                  </a>{' '}
+                  (Level AA)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -1746,7 +1793,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#navigation-mechanisms-focus-visible">
                     2.4.7 Focus Visible
-                  </a>{' '}(Level AA)
+                  </a>{' '}
+                  (Level AA)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -1786,7 +1834,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="https://www.w3.org/TR/WCAG22/#focus-not-obscured-minimum">
                     2.4.11 Focus Not Obscured (Minimum)
-                  </a>{' '}(Level AA 2.2 only)
+                  </a>{' '}
+                  (Level AA 2.2 only)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -1807,7 +1856,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="https://www.w3.org/TR/WCAG22/#dragging-movements">
                     2.5.7 Dragging Movements
-                  </a>{' '}(Level AA 2.2 only)
+                  </a>{' '}
+                  (Level AA 2.2 only)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -1827,7 +1877,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="https://www.w3.org/TR/WCAG22/#target-size-minimum">
                     2.5.8 Target Size (Minimum)
-                  </a>{' '}(Level AA 2.2 only)
+                  </a>{' '}
+                  (Level AA 2.2 only)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -1848,7 +1899,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#meaning-other-lang-id">
                     3.1.2 Language of Parts
-                  </a>{' '}(Level AA)
+                  </a>{' '}
+                  (Level AA)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -1891,7 +1943,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#consistent-behavior-consistent-locations">
                     3.2.3 Consistent Navigation
-                  </a>{' '}(Level AA)
+                  </a>{' '}
+                  (Level AA)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -1913,7 +1966,8 @@ export function DefaultAccessibilityContent() {
                     Revised Section 508
                     <ul>
                       <li>
-                        501 (Web) (Software) – Does not apply to non-web software
+                        501 (Web) (Software) – Does not apply to non-web
+                        software
                       </li>
                       <li>504.2 (Authoring Tool)</li>
                       <li>
@@ -1939,7 +1993,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#consistent-behavior-consistent-functionality">
                     3.2.4 Consistent Identification
-                  </a>{' '}(Level AA)
+                  </a>{' '}
+                  (Level AA)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -1961,7 +2016,8 @@ export function DefaultAccessibilityContent() {
                     Revised Section 508
                     <ul>
                       <li>
-                        501 (Web) (Software) – Does not apply to non-web software
+                        501 (Web) (Software) – Does not apply to non-web
+                        software
                       </li>
                       <li>504.2 (Authoring Tool)</li>
                       <li>
@@ -1986,7 +2042,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#minimize-error-suggestions">
                     3.3.3 Error Suggestion
-                  </a>{' '}(Level AA)
+                  </a>{' '}
+                  (Level AA)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -2028,7 +2085,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#minimize-error-reversible">
                     3.3.4 Error Prevention (Legal, Financial, Data)
-                  </a>{' '}(Level AA)
+                  </a>{' '}
+                  (Level AA)
                 </p>
                 <p>Also applies to:</p>
                 <ul>
@@ -2071,7 +2129,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="https://www.w3.org/TR/WCAG22/#accessible-authentication-minimum">
                     3.3.8 Accessible Authentication (Minimum)
-                  </a>{' '}(Level AA 2.2 only)
+                  </a>{' '}
+                  (Level AA 2.2 only)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2093,7 +2152,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="https://www.w3.org/TR/WCAG21/#status-messages">
                     4.1.3 Status Messages
-                  </a>{' '}(Level AA 2.1 and 2.2)
+                  </a>{' '}
+                  (Level AA 2.1 and 2.2)
                 </p>
                 <p>Also applies to:</p>
                 <p>EN 301 549 Criteria</p>
@@ -2141,7 +2201,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#media-equiv-sign">
                     1.2.6 Sign Language (Prerecorded)
-                  </a>{' '}(Level AAA)
+                  </a>{' '}
+                  (Level AAA)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2158,7 +2219,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#media-equiv-extended-ad">
                     1.2.7 Extended Audio Description (Prerecorded)
-                  </a>{' '}(Level AAA)
+                  </a>{' '}
+                  (Level AAA)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2175,7 +2237,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#media-equiv-text-doc">
                     1.2.8 Media Alternative (Prerecorded)
-                  </a>{' '}(Level AAA)
+                  </a>{' '}
+                  (Level AAA)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2192,7 +2255,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#media-equiv-live-audio-only">
                     1.2.9 Audio-only (Live)
-                  </a>{' '}(Level AAA)
+                  </a>{' '}
+                  (Level AAA)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2209,7 +2273,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="https://www.w3.org/TR/WCAG21/#identify-purpose">
                     1.3.6 Identify Purpose
-                  </a>{' '}(Level AAA 2.1 and 2.2)
+                  </a>{' '}
+                  (Level AAA 2.1 and 2.2)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2231,7 +2296,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#visual-audio-contrast7">
                     1.4.6 Contrast (Enhanced)
-                  </a>{' '}(Level AAA)
+                  </a>{' '}
+                  (Level AAA)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2251,7 +2317,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#visual-audio-contrast-noaudio">
                     1.4.7 Low or No Background Audio
-                  </a>{' '}(Level AAA)
+                  </a>{' '}
+                  (Level AAA)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2268,7 +2335,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#visual-audio-contrast-visual-presentation">
                     1.4.8 Visual Presentation
-                  </a>{' '}(Level AAA)
+                  </a>{' '}
+                  (Level AAA)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2290,7 +2358,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#visual-audio-contrast-text-images">
                     1.4.9 Images of Text (No Exception)
-                  </a>{' '}(Level AAA)
+                  </a>{' '}
+                  (Level AAA)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2307,7 +2376,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#keyboard-operation-all-funcs">
                     2.1.3 Keyboard (No Exception)
-                  </a>{' '}(Level AAA)
+                  </a>{' '}
+                  (Level AAA)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2328,7 +2398,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#time-limits-no-exceptions">
                     2.2.3 No Timing
-                  </a>{' '}(Level AAA)
+                  </a>{' '}
+                  (Level AAA)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2348,7 +2419,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#time-limits-postponed">
                     2.2.4 Interruptions
-                  </a>{' '}(Level AAA)
+                  </a>{' '}
+                  (Level AAA)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2368,7 +2440,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#time-limits-server-timeout">
                     2.2.5 Re-authenticating
-                  </a>{' '}(Level AAA)
+                  </a>{' '}
+                  (Level AAA)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2388,7 +2461,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="https://www.w3.org/TR/WCAG21/#timeouts">
                     2.2.6 Timeouts
-                  </a>{' '}(Level AAA 2.1 and 2.2)
+                  </a>{' '}
+                  (Level AAA 2.1 and 2.2)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2408,7 +2482,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#seizure-three-times">
                     2.3.2 Three Flashes
-                  </a>{' '}(Level AAA)
+                  </a>{' '}
+                  (Level AAA)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2428,7 +2503,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="https://www.w3.org/TR/WCAG21/#animation-from-interactions">
                     2.3.3 Animation from Interactions
-                  </a>{' '}(Level AAA 2.1 and 2.2)
+                  </a>{' '}
+                  (Level AAA 2.1 and 2.2)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2447,7 +2523,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#navigation-mechanisms-location">
                     2.4.8 Location
-                  </a>{' '}(Level AAA)
+                  </a>{' '}
+                  (Level AAA)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2469,7 +2546,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#navigation-mechanisms-link">
                     2.4.9 Link Purpose (Link Only)
-                  </a>{' '}(Level AAA)
+                  </a>{' '}
+                  (Level AAA)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2489,7 +2567,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#navigation-mechanisms-headings">
                     2.4.10 Section Headings
-                  </a>{' '}(Level AAA)
+                  </a>{' '}
+                  (Level AAA)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2510,7 +2589,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="https://www.w3.org/TR/WCAG22/#focus-not-obscured-enhanced">
                     2.4.12 Focus Not Obscured (Enhanced)
-                  </a>{' '}(Level AAA 2.2 only)
+                  </a>{' '}
+                  (Level AAA 2.2 only)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2531,7 +2611,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="https://www.w3.org/TR/WCAG22/#focus-appearance">
                     2.4.13 Focus Appearance
-                  </a>{' '}(Level AAA 2.2 only)
+                  </a>{' '}
+                  (Level AAA 2.2 only)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2553,7 +2634,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="https://www.w3.org/TR/WCAG21/#target-size">
                     2.5.5 Target Size
-                  </a>{' '}(Level AAA 2.1 and 2.2)
+                  </a>{' '}
+                  (Level AAA 2.1 and 2.2)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2570,7 +2652,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="https://www.w3.org/TR/WCAG21/#concurrent-input-mechanisms">
                     2.5.6 Concurrent Input Mechanisms
-                  </a>{' '}(Level AAA 2.1 and 2.2)
+                  </a>{' '}
+                  (Level AAA 2.1 and 2.2)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2592,7 +2675,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#meaning-idioms">
                     3.1.3 Unusual Words
-                  </a>{' '}(Level AAA)
+                  </a>{' '}
+                  (Level AAA)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2612,7 +2696,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#meaning-located">
                     3.1.4 Abbreviations
-                  </a>{' '}(Level AAA)
+                  </a>{' '}
+                  (Level AAA)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2629,7 +2714,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#meaning-supplements">
                     3.1.5 Reading Level
-                  </a>{' '}(Level AAA)
+                  </a>{' '}
+                  (Level AAA)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2650,7 +2736,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#meaning-pronunciation">
                     3.1.6 Pronunciation
-                  </a>{' '}(Level AAA)
+                  </a>{' '}
+                  (Level AAA)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2670,7 +2757,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#consistent-behavior-no-extreme-changes-context">
                     3.2.5 Change on Request
-                  </a>{' '}(Level AAA)
+                  </a>{' '}
+                  (Level AAA)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2691,7 +2779,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#minimize-error-context-help">
                     3.3.5 Help
-                  </a>{' '}(Level AAA)
+                  </a>{' '}
+                  (Level AAA)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2712,7 +2801,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="http://www.w3.org/TR/WCAG20/#minimize-error-reversible-all">
                     3.3.6 Error Prevention (All)
-                  </a>{' '}(Level AAA)
+                  </a>{' '}
+                  (Level AAA)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
@@ -2732,7 +2822,8 @@ export function DefaultAccessibilityContent() {
                 <p>
                   <a href="https://www.w3.org/TR/WCAG22/#accessible-authentication-enhanced">
                     3.3.9 Accessible Authentication (Enhanced)
-                  </a>{' '}(Level AAA 2.2 only)
+                  </a>{' '}
+                  (Level AAA 2.2 only)
                 </p>
                 <p>EN 301 549 Criteria – Does not apply</p>
                 <p>Revised Section 508 – Does not apply</p>
