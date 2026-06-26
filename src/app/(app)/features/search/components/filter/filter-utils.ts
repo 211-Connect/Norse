@@ -76,3 +76,58 @@ export const sortBucketsByCustomValueOrder = (
     return 0;
   });
 };
+
+const DAY_OF_WEEK_ALIASES = [
+  ['sunday', 'sun'],
+  ['monday', 'mon'],
+  ['tuesday', 'tue', 'tues'],
+  ['wednesday', 'wed'],
+  ['thursday', 'thu', 'thur', 'thurs'],
+  ['friday', 'fri'],
+  ['saturday', 'sat'],
+] as const;
+
+const DAY_OF_WEEK_INDEX_MAP = DAY_OF_WEEK_ALIASES.reduce(
+  (map, aliases, index) => {
+    aliases.forEach((alias) => map.set(alias, index));
+    return map;
+  },
+  new Map<string, number>(),
+);
+
+const normalizeDayToken = (value?: string | null): string =>
+  value?.trim().toLocaleLowerCase() ?? '';
+
+const getDayOfWeekSortIndex = (bucket: FilterBucket): number | undefined => {
+  const keyIndex = DAY_OF_WEEK_INDEX_MAP.get(normalizeDayToken(bucket.key));
+  if (keyIndex !== undefined) {
+    return keyIndex;
+  }
+
+  return DAY_OF_WEEK_INDEX_MAP.get(normalizeDayToken(bucket.display));
+};
+
+export const sortBucketsByDayOfWeek = (
+  buckets: FilterBucket[],
+): FilterBucket[] =>
+  [...buckets].sort((left, right) => {
+    const leftIndex = getDayOfWeekSortIndex(left);
+    const rightIndex = getDayOfWeekSortIndex(right);
+
+    const leftKnown = leftIndex !== undefined;
+    const rightKnown = rightIndex !== undefined;
+
+    if (leftKnown && rightKnown) {
+      return leftIndex - rightIndex;
+    }
+
+    if (leftKnown) {
+      return -1;
+    }
+
+    if (rightKnown) {
+      return 1;
+    }
+
+    return 0;
+  });

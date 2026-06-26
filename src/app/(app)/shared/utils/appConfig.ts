@@ -487,6 +487,8 @@ async function getAppConfigBase(
                 ? 'name'
                 : sortBy === 'valueOrder'
                   ? 'valueOrder'
+                  : sortBy === 'dayOfWeek'
+                    ? 'dayOfWeek'
                   : 'count',
             valueOrder: (valueOrder ?? [])
               .map((entry) => entry.value?.trim())

@@ -4,7 +4,7 @@ export type ActiveFilters = Record<string, string[]>;
 
 export type FacetUiConfig = {
   excludedValues: Map<string, Set<string>>;
-  sortModes: Map<string, 'count' | 'name' | 'valueOrder'>;
+  sortModes: Map<string, 'count' | 'name' | 'valueOrder' | 'dayOfWeek'>;
   customValueOrders: Map<string, string[]>;
 };
 
@@ -34,6 +34,6 @@ export type FilterGroupProps = {
   currentFilters: ActiveFilters;
   isPending: boolean;
   onToggle: (facetKey: string, value: string, checked: boolean) => void;
-  sortMode: 'count' | 'name' | 'valueOrder';
+  sortMode: 'count' | 'name' | 'valueOrder' | 'dayOfWeek';
   customValueOrder?: string[];
 };

@@ -100,9 +100,8 @@ const BULK_CSV_CONFIG: Record<
           name: 'Days Of The Week',
           facet: 'daysofweek',
           showInDetails: 'false',
-          sortBy: 'valueOrder',
-          valueOrder:
-            'Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday',
+          sortBy: 'dayOfWeek',
+          valueOrder: '',
         },
       ],
     ),
