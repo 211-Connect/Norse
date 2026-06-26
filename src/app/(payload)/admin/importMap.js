@@ -27,12 +27,14 @@ import { default as default_251fd09bbd0b103ad0dcec7022f13978 } from '@/payload/c
 import { default as default_e9d1e9858fa8526951b37594e35d9c62 } from '@/payload/collections/OrchestrationConfig/components/SchemasRowLabel'
 import { GlobalViewRedirect as GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { default as default_2e07f7087ae6aa13d1fded4684728076 } from '@/payload/components/AnalyticsNavLink'
+import { default as default_f4855407f4109e46fff942e4b3f7606f } from '@/payload/components/ScorecardsNavLink'
 import { default as default_516dbf33cc3b162579335bb6874ed173 } from '@/payload/components/PopulateApiConfigCacheButton'
 import { default as default_4a6586eaa0248cb1fccb2e03335a2b51 } from '@/payload/components/ClearCacheButton'
 import { TenantSelector as TenantSelector_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { TenantSelectionProvider as TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 import { default as default_c5dffe636895d753138026b95fe2f960 } from '@/payload/components/AnalyticsView'
+import { default as default_31be5857ede30a47c40f3a0eb21d716a } from '@/payload/components/ScorecardsView'
 import { default as default_89b0fc1c15499fa299fab63bf28229b4 } from '@/payload/components/analytics/widgets/TotalUsersWidget'
 import { default as default_f8df26be7e7afb6ec18139b4a17451c4 } from '@/payload/components/analytics/widgets/SearchesWidget'
 import { default as default_63e5b605e54fd69aab31fee4d094a24c } from '@/payload/components/analytics/widgets/AnalyticsAverageSerachesWidget'
@@ -91,12 +93,14 @@ export const importMap = {
   "@/payload/collections/OrchestrationConfig/components/SchemasRowLabel#default": default_e9d1e9858fa8526951b37594e35d9c62,
   "@payloadcms/plugin-multi-tenant/rsc#GlobalViewRedirect": GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62,
   "@/payload/components/AnalyticsNavLink#default": default_2e07f7087ae6aa13d1fded4684728076,
+  "@/payload/components/ScorecardsNavLink#default": default_f4855407f4109e46fff942e4b3f7606f,
   "@/payload/components/PopulateApiConfigCacheButton#default": default_516dbf33cc3b162579335bb6874ed173,
   "@/payload/components/ClearCacheButton#default": default_4a6586eaa0248cb1fccb2e03335a2b51,
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelector": TenantSelector_d6d5f193a167989e2ee7d14202901e62,
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelectionProvider": TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
   "@/payload/components/AnalyticsView#default": default_c5dffe636895d753138026b95fe2f960,
+  "@/payload/components/ScorecardsView#default": default_31be5857ede30a47c40f3a0eb21d716a,
   "@/payload/components/analytics/widgets/TotalUsersWidget#default": default_89b0fc1c15499fa299fab63bf28229b4,
   "@/payload/components/analytics/widgets/SearchesWidget#default": default_f8df26be7e7afb6ec18139b4a17451c4,
   "@/payload/components/analytics/widgets/AnalyticsAverageSerachesWidget#default": default_63e5b605e54fd69aab31fee4d094a24c,

@@ -1,0 +1,8 @@
+.scorecards-search-table .scorecards-search-row {
+  cursor: pointer;
+  transition: background-color 120ms ease-in-out;
+}
+
+.scorecards-search-table .scorecards-search-row:hover {
+  background: var(--theme-elevation-100);
+}
