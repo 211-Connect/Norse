@@ -26,5 +26,8 @@
   "name_unavailable": "Izina ntiriboneka",
   "share_body": "Reba ibisubizo by'ishakisha rya {{count}} kuri \"{{title}}\"",
   "age_filter_label": "Hindura ukurikije imyaka",
-  "age_filter_placeholder": "Shyiramo imyaka"
+  "age_filter_placeholder": "Shyiramo imyaka",
+  "ai_broadened_results_alert": "Twagaragaje ibisubizo byagutse kuko icyifuzo cyawe gishobora gukenera ibisobanuro birambuye. Ushobora kunoza ukoresheje ingingo cyangwa ibyifuzo.",
+  "ai_broadened_results_alert_low_info": "Twagaragaje ibisubizo byagutse kuko ubushakashatsi bwawe bushobora gukenera ibisobanuro birambuye. Ushobora kunoza ukoresheje ingingo cyangwa ibyifuzo.",
+  "ai_broadened_results_alert_low_confidence": "Twagaragaje umusaruro wagutse kuko tutari twizeye uwo duhuje neza. Ushobora kunoza ukoresheje ingingo cyangwa ibitekerezo."
 }

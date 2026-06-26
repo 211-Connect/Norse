@@ -56,7 +56,16 @@
     "list_status_one": "Chaguo 1 linapatikana. Tumia vitufe vya mshale wa juu na chini ili kukagua.",
     "list_status_other": "Chaguo {{count}} zinapatikana. Tumia vitufe vya mshale wa juu na chini ili kukagua.",
     "search_dialog_description": "Tafuta rasilimali na usasishe eneo lako.",
-    "everywhere": "Kila mahali"
+    "everywhere": "Kila mahali",
+    "ai_clarify_title": "Tusaidie kupunguza utafutaji wako",
+    "ai_clarify_title_low_info": "Tuambie zaidi ili tuweze kupunguza utafutaji wako",
+    "ai_clarify_title_multiple_labels": "Ni aina gani ya usaidizi inayolingana vyema na kile unachohitaji?",
+    "ai_skip": "Ruka",
+    "ai_confirm": "Thibitisha",
+    "ai_show_more_categories": "Onyesha kategoria zaidi",
+    "ai_validation_select_or_skip": "Chagua angalau chaguo moja au ruka.",
+    "ai_option_results_count_one": "Rasilimali inayohusiana na {{count}}",
+    "ai_option_results_count_other": "Rasilimali zinazohusiana na {{count}}"
   },
   "call_to_action": {
     "call": "Wito",
@@ -179,5 +188,102 @@
     "default_title": "Hitilafu ya uthibitishaji",
     "default_description": "Hatukuweza kukamilisha mchakato wa kuingia. Tafadhali jaribu tena.",
     "logout_and_try_again": "Toka na ujaribu tena"
+  },
+  "needs": {
+    "AR-100": {
+      "name": "Sanaa, Utamaduni na Burudani",
+      "description": "Haja ya ushiriki wenye maana katika maisha ya ubunifu, kitamaduni, na burudani. Inajumuisha mahitaji yanayohusiana na usemi wa kisanii, ushiriki katika urithi wa kitamaduni, shughuli za burudani, na burudani inayotegemea jamii. Tofauti na malengo ya matibabu au usaidizi wa kijamii — hii inaonyesha hitaji la ndani la mwanadamu la kuunda, kusherehekea, kucheza, na kuwa sehemu ya jamii ya kitamaduni.",
+      "displayDescription": "Pata usaidizi wa kupata mambo ya kufurahisha ya kufanya kama vile sanaa, muziki, michezo, au matukio ya kijamii. Kila mtu anastahili muda wa kucheza, kubuni, na kusherehekea."
+    },
+    "CL-150": {
+      "name": "Mavazi/Mahitaji ya Kibinafsi/Kaya",
+      "description": "Uhitaji wa nguo za kutosha, vitu vya utunzaji wa kibinafsi, na vifaa vinavyohitajika ili kudumisha familia inayofanya kazi vizuri. Inajumuisha mahitaji ya nguo zinazofaa kwa hali ya hewa, kazi, au shule; bidhaa za usafi na utunzaji wa kibinafsi; na fanicha au vifaa vya msingi vinavyofanya nafasi ya kuishi iweze kukaliwa na kuheshimiwa.",
+      "displayDescription": "Pata usaidizi wa kupata nguo, vitu vya utunzaji wa kibinafsi, au vitu unavyohitaji kwa ajili ya nyumba yako. Tunaweza kukusaidia kupata unachohitaji ili uhisi safi na vizuri."
+    },
+    "DI-180": {
+      "name": "Huduma za Maafa",
+      "description": "Haja ya usaidizi inayotokana na tukio la maafa lililotangazwa au lililotokea, iwe la asili au linalosababishwa na binadamu. Hujumuisha mahitaji yanayojitokeza kabla, wakati, na baada ya maafa — ikiwa ni pamoja na maandalizi, majibu ya dharura, na uokoaji. Tofauti na mahitaji yanayoendelea ya usalama binafsi; yanayozingatia usumbufu mkubwa katika ngazi ya jamii na matokeo yake.",
+      "displayDescription": "Pata usaidizi kabla, wakati, au baada ya janga kama vile mafuriko, moto, au dhoruba. Tunaweza kukuunganisha na watu walio tayari kusaidia wakati wa dharura."
+    },
+    "DV-190": {
+      "name": "Ukatili wa Nyumbani / Usalama Binafsi",
+      "description": "Haja ya usalama na ulinzi dhidi ya madhara ya kibinadamu, unyanyasaji, kulazimishwa, au tishio. Inajumuisha mahitaji yanayohusiana na vurugu za nyumbani, vurugu za wapenzi wa karibu, kuwindwa, usafirishaji haramu wa binadamu, na hali zingine ambapo usalama wa kimwili au kihisia wa mtu uko hatarini kutokana na matendo ya mtu mwingine. Tofauti na mahitaji ya usalama yanayohusiana na maafa au miundombinu ya usalama wa umma kwa ujumla.",
+      "displayDescription": "Pata msaada ikiwa wewe au mtu unayemjua anahisi salama nyumbani au anaumia. Unastahili kujisikia salama, na kuna watu walio tayari kusaidia hivi sasa."
+    },
+    "ED-170": {
+      "name": "Elimu",
+      "description": "Haja ya kupata elimu, ukuzaji wa ujuzi, na kufikia elimu katika hatua zote za maisha. Inajumuisha mahitaji yanayohusiana na ujifunzaji wa utotoni, elimu ya K-12, elimu ya baada ya sekondari, kusoma na kuandika kwa watu wazima, kujifunza lugha ya Kiingereza, kusoma na kuandika kidijitali, na mafunzo ya ufundi. Haja hiyo ipo bila kujali mtu yuko wapi katika safari yake ya kielimu au ni vikwazo gani anavyokabiliana navyo katika kuipata.",
+      "displayDescription": "Pata usaidizi wa kujifunza — kwa watoto, vijana, au watu wazima. Ikiwa unahitaji msaada wa shule, mafunzo ya kazi, au unataka kujifunza Kiingereza, tunaweza kukusaidia kuupata."
+    },
+    "EM-180": {
+      "name": "Ajira",
+      "description": "Haja ya kupata kazi imara na ya kutosha na masharti yanayowezesha ajira. Inajumuisha mahitaji yanayohusiana na kutafuta kazi, kudumisha kazi, kukuza ujuzi wa kazi, na kukabiliana na haki na mabadiliko ya mahali pa kazi kama vile ukosefu wa ajira. Inaonyesha vipimo vya kiuchumi na kijamii vya kazi kama hitaji la mwanadamu, si huduma zenyewe.",
+      "displayDescription": "Pata usaidizi wa kupata kazi, kudumisha kazi, au kujenga ujuzi mpya. Kila mtu anastahili nafasi ya kupata riziki na kujisikia vizuri kuhusu kazi yake."
+    },
+    "FO-200": {
+      "name": "Chakula/Milo",
+      "description": "Haja ya chakula thabiti, cha kutosha, na chenye lishe. Inajumuisha mahitaji yanayohusiana na kupata chakula cha kutosha cha kula, kupata chakula kinachokidhi mahitaji ya lishe au lishe, na kuelewa jinsi ya kudumisha ulaji wenye afya. Haja hiyo ipo iwe inatokana na umaskini, mgogoro, ukosefu wa uhakika wa chakula, au usumbufu wa hali.",
+      "displayDescription": "Pata usaidizi wa kupata chakula kwa ajili yako na familia yako. Iwe unahitaji mlo leo au usaidie kupata mboga, tunaweza kukuunganisha na chakula kilicho karibu nawe."
+    },
+    "HC-300": {
+      "name": "Huduma ya Afya",
+      "description": "Haja ya kupata huduma za afya ya kimwili, huduma ya kinga, matibabu, na bidhaa na usaidizi wa urambazaji unaohitajika ili kudhibiti afya ya mtu. Inajumuisha mahitaji katika mwendelezo mzima wa afya ya kimwili - kuanzia ustawi wa kawaida na uchunguzi hadi huduma ya papo hapo, usimamizi wa magonjwa sugu, ukarabati, na huduma ya muda mrefu. Mahitaji ya afya ya akili na matumizi ya dawa za kulevya yanashughulikiwa kando.",
+      "displayDescription": "Pata usaidizi wa kupata daktari, daktari wa meno, au huduma nyingine ya afya. Kila mtu anastahili kuwa na afya njema na kupata huduma anayohitaji."
+    },
+    "HO-300": {
+      "name": "Nyumba",
+      "description": "Haja ya mahali salama, imara, na panapofaa pa kuishi. Inajumuisha mahitaji katika wigo mzima wa makazi - kuanzia makazi ya haraka wakati wa mgogoro hadi makazi ya bei nafuu ya muda mrefu, mipango ya maisha ya usaidizi, na usaidizi wa utulivu unaowasaidia watu kubaki na makazi. Asili ya hitaji la makazi hutofautiana kulingana na dharura na hali, lakini hitaji la msingi ni thabiti: mahali pa kuiita nyumbani.",
+      "displayDescription": "Pata usaidizi wa kupata mahali salama pa kuishi. Iwe unahitaji mahali pa kulala usiku wa leo au usaidizi wa kukaa nyumbani kwako, tunaweza kukuunganisha na usaidizi."
+    },
+    "IC-330": {
+      "name": "Usaidizi/Usaidizi wa Kipato",
+      "description": "Haja ya rasilimali za kifedha ili kukidhi gharama za msingi za maisha wakati mapato hayatoshi au hayapo. Inajumuisha mahitaji yanayohusiana na usaidizi wa pesa taslimu, uingizwaji wa mapato, ufikiaji wa manufaa ya umma, na usaidizi wa utulivu wa kifedha. Inaonyesha mwelekeo wa kiuchumi wa ustawi - hitaji la kuwa na rasilimali za kutosha kukidhi mahitaji muhimu - tofauti na programu au mifumo maalum inayoweza kushughulikia hilo.",
+      "displayDescription": "Pata usaidizi wa kulipia vitu unavyohitaji wakati pesa ni chache. Tunaweza kukuunganisha na programu zinazosaidia kufidia bili na gharama za kila siku."
+    },
+    "IF-330": {
+      "name": "Usaidizi wa Mtu Binafsi, Familia na Jamii",
+      "description": "Uhitaji wa usaidizi wa kimahusiano, ulezi, na kiwango cha jamii unaowasaidia watu binafsi na familia katika maisha ya kila siku na hali ngumu. Hujumuisha mahitaji yanayohusiana na malezi, ulezi kwa wategemezi, kukabiliana na ugumu wa kifamilia, kujenga miunganisho ya kijamii, na kupata usaidizi wa rika au kijamii. Huonyesha ukweli kwamba ustawi wa binadamu umefungamana sana na nguvu ya mahusiano na mitandao inayomzunguka mtu.",
+      "displayDescription": "Pata msaada kwa ajili ya familia yako au mtu unayemjali. Ikiwa unahitaji usaidizi wa wazazi, msaada kwa mtu mzima, au mtu wa kuzungumza naye, tunaweza kukusaidia."
+    },
+    "IS-330": {
+      "name": "Huduma za Habari",
+      "description": "Haja ya kuelewa ni rasilimali gani zilizopo na jinsi ya kuzifikia. Inajumuisha mahitaji yanayohusiana na kupata huduma zinazofaa, kuelewa ustahiki na michakato, kuvinjari mifumo tata, na kuungana na usaidizi unaofaa kwa wakati unaofaa. Hii ni meta-need — sharti la kukidhi mahitaji mengine mengi kwa ufanisi — na ni tofauti na huduma zenyewe.",
+      "displayDescription": "Hujui pa kuanzia? Tunaweza kukusaidia kujua ni huduma gani zilizopo na zipi zinazokufaa."
+    },
+    "LE-450": {
+      "name": "Kisheria, Usalama wa Mtumiaji na Umma",
+      "description": "Haja ya ulinzi wa kisheria, urambazaji wa mfumo wa haki, haki za watumiaji, na usalama wa umma. Inajumuisha mahitaji yanayohusiana na masuala ya kisheria ya kiraia, ushiriki wa haki ya jinai, hali ya uhamiaji, madhara ya watumiaji, na ulinzi chini ya sheria. Inaonyesha hali ambapo haki za mtu, usalama, au msimamo wake chini ya mifumo ya kisheria uko hatarini na ambapo ujuzi au usaidizi wa kisheria unahitajika.",
+      "displayDescription": "Pata usaidizi kuhusu maswali ya kisheria, kuelewa haki zako, au kuwa salama. Tunaweza kukuunganisha na watu wanaojua sheria na wanaweza kukusaidia."
+    },
+    "MH-500": {
+      "name": "Uraibu",
+      "description": "Haja ya usaidizi katika kushughulikia matumizi ya dawa za kulevya, utegemezi, na uraibu. Inajumuisha mahitaji yanayohusiana na kudhibiti au kupona kutokana na matumizi mabaya ya pombe, dawa za kulevya, au vitu vingine — ikiwa ni pamoja na utulivu wa papo hapo, matibabu, na usaidizi unaoendelea wa kupona. Inatambuliwa kama aina tofauti ya hitaji kutoka kwa afya ya akili, ingawa hizi mbili hutokea mara kwa mara.",
+      "displayDescription": "Pata msaada ikiwa wewe au mtu unayempenda anapambana na matumizi ya pombe au dawa za kulevya. Kupona kunawezekana, na kuna watu wanaojali walio tayari kukusaidia."
+    },
+    "AD-510": {
+      "name": "Afya ya Akili",
+      "description": "Uhitaji wa usaidizi katika kudumisha, kurejesha, au kudhibiti ustawi wa kiakili na kihisia wa mtu. Hujumuisha mahitaji yanayohusiana na dhiki ya kihisia, hali za akili, afya ya kitabia, hali za mgogoro, na usaidizi unaoendelea unaohitajika ili kuishi vizuri na changamoto za afya ya akili. Tofauti na mahitaji ya matumizi ya dawa za kulevya, ingawa mawasilisho yanayotokea pamoja ni ya kawaida.",
+      "displayDescription": "Pata msaada ikiwa una huzuni, wasiwasi, au umezidiwa. Afya yako ya akili ni muhimu, na kuna watu ambao wanaweza kusikiliza na kusaidia."
+    },
+    "OT-600": {
+      "name": "Huduma Nyingine za Kiserikali/Kiuchumi",
+      "description": "Haja ya kupata programu za serikali, huduma za kiraia, na usaidizi wa kiuchumi ambao hauangukii katika makundi mengine. Inajumuisha mahitaji yanayohusiana na kuelekeza mashirika ya umma, kupata manufaa au haki za serikali, usaidizi wa biashara ndogo, usaidizi wa kodi, na huduma zingine za kiuchumi zinazounga mkono utulivu wa mtu binafsi na jamii.",
+      "displayDescription": "Pata usaidizi kuhusu programu za serikali, marupurupu, au huduma zingine ambazo ni vigumu kupata kwingineko. Tunaweza kukusaidia kujua wapi pa kwenda."
+    },
+    "TR-850": {
+      "name": "Usafiri",
+      "description": "Haja ya uwezo wa kusafiri kwa uhakika ili kukidhi mahitaji mengine — kazi, huduma ya afya, elimu, chakula, huduma, na muunganisho wa kijamii. Inajumuisha mahitaji yanayohusiana na kupata usafiri, kumudu gharama za usafiri, kutunza gari, na kusafiri salama. Usafiri ni tegemeo la msingi: kutokuwepo kwake huchangia karibu kila hitaji lingine ambalo halijatimizwa.",
+      "displayDescription": "Pata usaidizi wa kufika unakohitaji kwenda — kwa daktari, kazini, shuleni, au dukani. Tunaweza kukusaidia kupata usafiri au njia za usafiri za bei nafuu."
+    },
+    "UT-900": {
+      "name": "Huduma za umma",
+      "description": "Haja ya upatikanaji wa huduma muhimu za nyumbani — umeme, gesi, maji, na mawasiliano ya simu — zinazofanya nafasi ya kuishi iwe salama, inayoweza kukaliwa, na kuunganishwa. Inajumuisha mahitaji yanayohusiana na kudumisha huduma za huduma, kumudu gharama za huduma, kupunguza matumizi, na kufikia muunganisho wa simu au intaneti. Haja ya huduma za nyumbani inahusiana kwa karibu na utulivu na afya ya nyumba.",
+      "displayDescription": "Pata usaidizi wa kulipia huduma ya umeme, gesi, maji, au simu na intaneti. Tunaweza kukuunganisha na programu zinazosaidia kudumisha nyumba yako."
+    },
+    "VO-900": {
+      "name": "Kujitolea na Mchango",
+      "description": "Haja ya kutoa au kupokea kupitia ukarimu wa jamii — iwe mtu anahitaji bidhaa zilizotolewa, au ana uwezo na hamu ya kuchangia muda, ujuzi, au rasilimali kwa wengine. Inajumuisha mahitaji ya pande zote mbili za ubadilishanaji wa kiraia: watu binafsi wanaotafuta michango ya vifaa au huduma zilizotolewa, na watu binafsi au mashirika yanayotafuta kuwaunganisha watu wa kujitolea na wafadhili na fursa zenye maana za kusaidia.",
+      "displayDescription": "Unahitaji bidhaa zilizotolewa au unataka kuwasaidia wengine? Tunaweza kuwaunganisha watu wanaotaka kutoa na watu wanaohitaji msaada."
+    }
   }
 }

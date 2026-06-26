@@ -26,5 +26,8 @@
   "name_unavailable": "ስም አይገኝም",
   "share_body": "የ\"{{count}}\" የፍለጋ ውጤቶችን {{title}} ይመልከቱ",
   "age_filter_label": "በዕድሜ አጣራ",
-  "age_filter_placeholder": "ዕድሜ ያስገቡ"
+  "age_filter_placeholder": "ዕድሜ ያስገቡ",
+  "ai_broadened_results_alert": "ጥያቄዎ ተጨማሪ ዝርዝር ሊፈልግ ስለሚችል ሰፋ ያሉ ውጤቶችን አሳይተናል። ርዕሶችን ወይም ጥቆማዎችን በመጠቀም ማሻሻል ይችላሉ።",
+  "ai_broadened_results_alert_low_info": "ፍለጋዎ የበለጠ ዝርዝር መረጃ ሊፈልግ ስለሚችል ሰፋ ያሉ ውጤቶችን አሳይተናል። ርዕሶችን ወይም ጥቆማዎችን በመጠቀም ማሻሻል ይችላሉ።",
+  "ai_broadened_results_alert_low_confidence": "ስለ ምርጡ ተዛማጅነት እርግጠኛ ስላልነበርን ሰፋ ያሉ ውጤቶችን አሳይተናል። ርዕሶችን ወይም አስተያየቶችን በመጠቀም ማሻሻል ይችላሉ።"
 }

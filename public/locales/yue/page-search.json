@@ -26,5 +26,8 @@
   "name_unavailable": "個名唔可用",
   "share_body": "睇 {{count}} 搜尋結果，搵「{{title}}」",
   "age_filter_label": "按年齡過濾",
-  "age_filter_placeholder": "輸入年齡"
+  "age_filter_placeholder": "輸入年齡",
+  "ai_broadened_results_alert": "我哋顯示咗更廣泛嘅結果，因為你嘅要求可能需要更多詳細資料。你可以用主題或者建議去細化。",
+  "ai_broadened_results_alert_low_info": "我哋顯示咗更廣泛嘅結果，因為你嘅搜尋可能需要更多詳細資料。你可以用主題或者建議去細化。",
+  "ai_broadened_results_alert_low_confidence": "我哋顯示咗更廣泛嘅結果，因為我哋對最佳配對冇信心。你可以用主題或者建議去細化。"
 }

@@ -56,7 +56,16 @@
     "list_status_one": "Dostępna jest 1 opcja. Użyj klawiszy strzałek w górę i w dół, aby przejrzeć.",
     "list_status_other": "Dostępnych jest {{count}} opcji. Użyj klawiszy strzałek w górę i w dół, aby je przejrzeć.",
     "search_dialog_description": "Wyszukaj zasoby i zaktualizuj swoją lokalizację.",
-    "everywhere": "Wszędzie"
+    "everywhere": "Wszędzie",
+    "ai_clarify_title": "Pomóż nam zawęzić Twoje wyszukiwanie",
+    "ai_clarify_title_low_info": "Powiedz nam trochę więcej, abyśmy mogli zawęzić zakres wyszukiwania",
+    "ai_clarify_title_multiple_labels": "Jaki rodzaj pomocy najlepiej odpowiada Twoim potrzebom?",
+    "ai_skip": "Pominąć",
+    "ai_confirm": "Potwierdzać",
+    "ai_show_more_categories": "Pokaż więcej kategorii",
+    "ai_validation_select_or_skip": "Wybierz co najmniej jedną opcję lub pomiń.",
+    "ai_option_results_count_one": "{{count}} powiązany zasób",
+    "ai_option_results_count_other": "{{count}} powiązane zasoby"
   },
   "call_to_action": {
     "call": "Dzwonić",
@@ -179,5 +188,102 @@
     "default_title": "Błąd uwierzytelniania",
     "default_description": "Nie udało się dokończyć procesu logowania. Spróbuj ponownie.",
     "logout_and_try_again": "Wyloguj się i spróbuj ponownie"
+  },
+  "needs": {
+    "AR-100": {
+      "name": "Sztuka, kultura i rekreacja",
+      "description": "Potrzeba wartościowego uczestnictwa w życiu twórczym, kulturalnym i rekreacyjnym. Obejmuje potrzeby związane z ekspresją artystyczną, zaangażowaniem w dziedzictwo kulturowe, aktywnością rekreacyjną i rekreacją w społeczności. W odróżnieniu od celów terapeutycznych czy wsparcia społecznego – odzwierciedla wrodzoną ludzką potrzebę tworzenia, celebrowania, zabawy i przynależności do wspólnoty kulturowej.",
+      "displayDescription": "Uzyskaj pomoc w znalezieniu ciekawych zajęć, takich jak sztuka, muzyka, sport czy wydarzenia społeczne. Każdy zasługuje na czas na zabawę, tworzenie i świętowanie."
+    },
+    "CL-150": {
+      "name": "Odzież/Rzeczy osobiste/Gospodarstwo domowe",
+      "description": "Potrzeba odpowiedniej odzieży, artykułów higieny osobistej i dóbr materialnych niezbędnych do utrzymania funkcjonalnego gospodarstwa domowego. Obejmuje to potrzebę odzieży odpowiedniej do warunków atmosferycznych, pracy lub szkoły; produktów higienicznych i higieny osobistej; oraz podstawowych mebli i materiałów, które sprawiają, że przestrzeń życiowa jest zdatna do zamieszkania i godna.",
+      "displayDescription": "Skorzystaj z pomocy w znalezieniu ubrań, artykułów higieny osobistej lub rzeczy potrzebnych do domu. Pomożemy Ci znaleźć to, czego potrzebujesz, aby czuć się czysto i komfortowo."
+    },
+    "DI-180": {
+      "name": "Usługi katastroficzne",
+      "description": "Potrzeba wsparcia wynikająca z ogłoszonej lub doświadczonej katastrofy, zarówno naturalnej, jak i spowodowanej przez człowieka. Obejmuje potrzeby pojawiające się przed, w trakcie i po katastrofach – w tym gotowość, reagowanie kryzysowe i odbudowę. Odróżnia się od bieżących potrzeb w zakresie bezpieczeństwa osobistego; koncentruje się na ostrych zakłóceniach na poziomie społeczności i ich następstwach.",
+      "displayDescription": "Uzyskaj pomoc przed, w trakcie lub po katastrofie, takiej jak powódź, pożar czy burza. Pomożemy Ci znaleźć osoby gotowe do pomocy w nagłych wypadkach."
+    },
+    "DV-190": {
+      "name": "Przemoc domowa / Bezpieczeństwo osobiste",
+      "description": "Potrzeba bezpieczeństwa i ochrony przed krzywdą interpersonalną, nadużyciami, przymusem lub groźbami. Obejmuje potrzeby związane z przemocą domową, przemocą w związku partnerskim, stalkingiem, handlem ludźmi i innymi sytuacjami, w których fizyczne lub emocjonalne bezpieczeństwo danej osoby jest zagrożone z powodu działań innej osoby. Odróżnia się od potrzeb bezpieczeństwa związanych z katastrofami lub ogólną infrastrukturą bezpieczeństwa publicznego.",
+      "displayDescription": "Zwróć się o pomoc, jeśli Ty lub ktoś, kogo znasz, czuje się niebezpiecznie w domu lub doznaje krzywdy. Zasługujesz na to, by czuć się bezpiecznie, a są ludzie gotowi Ci pomóc już teraz."
+    },
+    "ED-170": {
+      "name": "Edukacja",
+      "description": "Potrzeba dostępu do nauki, rozwoju umiejętności i osiągnięć edukacyjnych na wszystkich etapach życia. Obejmuje potrzeby związane z wczesną edukacją, edukacją wczesnoszkolną, szkolnictwem wyższym, umiejętnością czytania i pisania dla dorosłych, nauką języka angielskiego, kompetencjami cyfrowymi i szkoleniem zawodowym. Potrzeba ta istnieje niezależnie od etapu edukacji i barier, jakie napotykamy w dostępie do niej.",
+      "displayDescription": "Uzyskaj pomoc w nauce — dla dzieci, nastolatków i dorosłych. Niezależnie od tego, czy potrzebujesz pomocy w szkole, szkolenia zawodowego, czy chcesz nauczyć się angielskiego, pomożemy Ci ją znaleźć."
+    },
+    "EM-180": {
+      "name": "Zatrudnienie",
+      "description": "Potrzeba dostępu do stabilnej, odpowiedniej pracy i warunków umożliwiających zatrudnienie. Obejmuje potrzeby związane ze znalezieniem pracy, jej utrzymaniem, rozwojem umiejętności zawodowych oraz korzystaniem z praw pracowniczych i transformacji, takich jak bezrobocie. Odzwierciedla ekonomiczny i społeczny wymiar pracy jako potrzeby człowieka, a nie same usługi.",
+      "displayDescription": "Uzyskaj pomoc w znalezieniu pracy, utrzymaniu pracy lub rozwijaniu nowych umiejętności. Każdy zasługuje na szansę zarabiania na życie i zadowolenia z pracy."
+    },
+    "FO-200": {
+      "name": "Jedzenie/Posiłki",
+      "description": "Potrzeba stałego, odpowiedniego i pożywnego pożywienia. Obejmuje potrzeby związane z dostępem do wystarczającej ilości pożywienia, pozyskiwaniem pożywienia zaspokajającego potrzeby żywieniowe lub dietetyczne oraz zrozumieniem, jak utrzymać zdrowe odżywianie. Potrzeba ta istnieje niezależnie od tego, czy wynika z ubóstwa, kryzysu, chronicznego braku bezpieczeństwa żywnościowego, czy zakłóceń sytuacyjnych.",
+      "displayDescription": "Uzyskaj pomoc w znalezieniu jedzenia dla siebie i swojej rodziny. Niezależnie od tego, czy potrzebujesz posiłku dzisiaj, czy pomocy w zrobieniu zakupów spożywczych, pomożemy Ci znaleźć jedzenie w Twojej okolicy."
+    },
+    "HC-300": {
+      "name": "Opieka zdrowotna",
+      "description": "Potrzeba dostępu do usług zdrowia fizycznego, opieki profilaktycznej, leczenia oraz dóbr i wsparcia nawigacyjnego niezbędnych do dbania o zdrowie. Obejmuje potrzeby w całym kontinuum zdrowia fizycznego — od rutynowej opieki zdrowotnej i badań przesiewowych, przez opiekę doraźną, leczenie chorób przewlekłych, rehabilitację, po opiekę długoterminową. Potrzeby w zakresie zdrowia psychicznego i używania substancji psychoaktywnych są omawiane oddzielnie.",
+      "displayDescription": "Uzyskaj pomoc w znalezieniu lekarza, dentysty lub innej opieki zdrowotnej. Każdy zasługuje na zdrowie i opiekę, której potrzebuje."
+    },
+    "HO-300": {
+      "name": "Mieszkania",
+      "description": "Potrzeba bezpiecznego, stabilnego i odpowiedniego miejsca do życia. Obejmuje ona potrzeby z całego spektrum mieszkaniowego – od natychmiastowego schronienia w kryzysie, przez długoterminowe, przystępne cenowo mieszkania, po wsparcie w postaci mieszkań wspomaganych i wsparcie stabilizacji, które pomaga ludziom utrzymać mieszkanie. Charakter potrzeby mieszkaniowej różni się w zależności od pilności i okoliczności, ale podstawowa potrzeba jest niezmienna: miejsce, które można nazwać domem.",
+      "displayDescription": "Uzyskaj pomoc w znalezieniu bezpiecznego miejsca do życia. Niezależnie od tego, czy potrzebujesz noclegu na noc, czy pomocy w pozostaniu w domu, pomożemy Ci znaleźć wsparcie."
+    },
+    "IC-330": {
+      "name": "Wsparcie/pomoc dochodowa",
+      "description": "Potrzeba zasobów finansowych na pokrycie podstawowych kosztów utrzymania w przypadku niewystarczających lub zerowych dochodów. Obejmuje potrzeby związane z pomocą pieniężną, dochodami zastępczymi, dostępem do świadczeń publicznych oraz wsparciem stabilności finansowej. Odzwierciedla ekonomiczny wymiar dobrostanu – potrzebę posiadania wystarczających zasobów na pokrycie podstawowych potrzeb – niezależnie od konkretnych programów lub mechanizmów, które mogą go uwzględniać.",
+      "displayDescription": "Uzyskaj pomoc w opłacaniu potrzebnych rzeczy, gdy brakuje Ci pieniędzy. Pomożemy Ci znaleźć programy, które pomogą Ci pokryć rachunki i codzienne wydatki."
+    },
+    "IF-330": {
+      "name": "Wsparcie indywidualne, rodzinne i społecznościowe",
+      "description": "Potrzeba wsparcia relacyjnego, opiekuńczego i społecznego, które wspiera jednostki i rodziny w życiu codziennym i trudnych sytuacjach. Obejmuje potrzeby związane z rodzicielstwem, opieką nad osobami zależnymi, radzeniem sobie ze złożonością rodziny, budowaniem więzi społecznych oraz dostępem do wsparcia rówieśniczego lub społecznego. Odzwierciedla fakt, że dobrostan człowieka jest głęboko związany z siłą relacji i sieci otaczających daną osobę.",
+      "displayDescription": "Uzyskaj pomoc dla swojej rodziny lub osoby, na której Ci zależy. Niezależnie od tego, czy potrzebujesz wsparcia rodzicielskiego, pomocy dla osoby starszej, czy kogoś, z kim możesz porozmawiać, możemy Ci pomóc."
+    },
+    "IS-330": {
+      "name": "Usługi informacyjne",
+      "description": "Potrzeba zrozumienia, jakie zasoby istnieją i jak do nich dotrzeć. Obejmuje potrzeby związane ze znalezieniem odpowiednich usług, zrozumieniem kwalifikowalności i procesów, poruszaniem się po złożonych systemach oraz kontaktem z odpowiednim wsparciem we właściwym czasie. Jest to metapotrzeba – warunek konieczny do skutecznego zaspokojenia wielu innych potrzeb – i różni się od samych usług.",
+      "displayDescription": "Nie wiesz, od czego zacząć? Pomożemy Ci dowiedzieć się, jakie usługi są dostępne i które z nich są dla Ciebie odpowiednie."
+    },
+    "LE-450": {
+      "name": "Prawo, Konsumenci i Bezpieczeństwo Publiczne",
+      "description": "Potrzeba ochrony prawnej, poruszania się po systemie wymiaru sprawiedliwości, praw konsumentów i bezpieczeństwa publicznego. Obejmuje potrzeby związane z prawem cywilnym, udziałem w procesie karnym, statusem imigracyjnym, szkodami ponoszonymi przez konsumentów oraz ochroną prawną. Odzwierciedla sytuacje, w których zagrożone są prawa, bezpieczeństwo lub pozycja danej osoby w systemie prawnym i w których wymagana jest wiedza prawna lub pomoc prawna.",
+      "displayDescription": "Uzyskaj pomoc w kwestiach prawnych, zrozumieniu swoich praw lub zapewnieniu sobie bezpieczeństwa. Połączymy Cię z osobami znającymi się na prawie, które mogą Ci pomóc."
+    },
+    "MH-500": {
+      "name": "Uzależnienia",
+      "description": "Potrzeba wsparcia w radzeniu sobie z używaniem substancji psychoaktywnych, uzależnieniem i nałogiem. Obejmuje potrzeby związane z zarządzaniem lub rekonwalescencją po problemowym używaniu alkoholu, narkotyków lub innych substancji – w tym doraźną stabilizację, leczenie i stałe wsparcie w powrocie do zdrowia. Uznawana za odrębną kategorię potrzeb w porównaniu ze zdrowiem psychicznym, chociaż te dwie sfery często współwystępują.",
+      "displayDescription": "Skorzystaj z pomocy, jeśli Ty lub ktoś z Twoich bliskich zmaga się z uzależnieniem od alkoholu lub narkotyków. Wyzdrowienie jest możliwe, a są ludzie, którzy chętnie Cię wesprą."
+    },
+    "AD-510": {
+      "name": "Zdrowie psychiczne",
+      "description": "Potrzeba wsparcia w utrzymaniu, przywróceniu lub zarządzaniu dobrostanem psychicznym i emocjonalnym. Obejmuje potrzeby związane z cierpieniem emocjonalnym, zaburzeniami psychicznymi, zdrowiem psychicznym, sytuacjami kryzysowymi oraz stałym wsparciem niezbędnym do dobrego życia z problemami zdrowia psychicznego. Różni się od potrzeb związanych z używaniem substancji psychoaktywnych, choć często występują u nich objawy współwystępujące.",
+      "displayDescription": "Skorzystaj z pomocy, jeśli czujesz się smutny, niespokojny lub przytłoczony. Twoje zdrowie psychiczne jest ważne, a są ludzie, którzy mogą cię wysłuchać i pomóc."
+    },
+    "OT-600": {
+      "name": "Inne usługi rządowe/gospodarcze",
+      "description": "Potrzeba dostępu do programów rządowych, usług obywatelskich i wsparcia ekonomicznego, które nie mieszczą się w innych kategoriach. Obejmuje potrzeby związane z poruszaniem się po instytucjach publicznych, dostępem do świadczeń lub uprawnień rządowych, wsparciem dla małych firm, pomocą podatkową i innymi usługami ekonomicznymi, które wspierają stabilność jednostki i społeczności.",
+      "displayDescription": "Uzyskaj pomoc w zakresie programów rządowych, świadczeń i innych usług, których trudno znaleźć gdzie indziej. Pomożemy Ci znaleźć dogodny dla Ciebie adres."
+    },
+    "TR-850": {
+      "name": "Transport",
+      "description": "Potrzeba możliwości niezawodnego podróżowania w celu zaspokojenia innych potrzeb – pracy, opieki zdrowotnej, edukacji, wyżywienia, usług i kontaktów społecznych. Obejmuje potrzeby związane z dostępem do przejazdów, pokryciem kosztów transportu, utrzymaniem pojazdu i bezpiecznym podróżowaniem. Transport jest fundamentalnym czynnikiem umożliwiającym: jego brak potęguje niemal każdą inną niezaspokojoną potrzebę.",
+      "displayDescription": "Uzyskaj pomoc w dotarciu do celu — do lekarza, pracy, szkoły lub sklepu. Pomożemy Ci znaleźć transport lub niedrogie sposoby podróżowania."
+    },
+    "UT-900": {
+      "name": "Usługi komunalne",
+      "description": "Potrzeba dostępu do podstawowych mediów domowych – prądu, gazu, wody i telekomunikacji – które zapewniają bezpieczeństwo, przydatność do zamieszkania i łączność w przestrzeni życiowej. Obejmuje potrzeby związane z utrzymaniem usług komunalnych, pokrywaniem kosztów mediów, ograniczaniem zużycia oraz dostępem do telefonu lub internetu. Potrzeba dostępu do mediów jest ściśle związana ze stabilnością mieszkaniową i zdrowiem.",
+      "displayDescription": "Uzyskaj pomoc w opłacaniu rachunków za prąd, gaz, wodę, telefon i internet. Pomożemy Ci znaleźć programy, które pomogą Ci utrzymać dom w dobrym stanie."
+    },
+    "VO-900": {
+      "name": "Wolontariat i darowizny",
+      "description": "Potrzeba dawania lub otrzymywania w ramach hojności społeczności – niezależnie od tego, czy dana osoba potrzebuje darów, czy też ma możliwości i chęć poświęcenia czasu, umiejętności lub zasobów innym. Obejmuje potrzeby obu stron wymiany obywatelskiej: osób poszukujących darowizn materialnych lub usług, a także osób lub organizacji poszukujących możliwości łączenia wolontariuszy i darczyńców z wartościowymi możliwościami pomocy.",
+      "displayDescription": "Potrzebujesz darowizny lub chcesz pomóc innym? Łączymy osoby, które chcą coś dać, z osobami, które potrzebują pomocy."
+    }
   }
 }

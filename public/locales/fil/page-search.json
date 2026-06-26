@@ -26,5 +26,8 @@
   "name_unavailable": "Hindi magagamit ang pangalan",
   "share_body": "Tingnan ang mga resulta ng paghahanap para sa {{count}} para sa \"{{title}}\"",
   "age_filter_label": "Salain ayon sa edad",
-  "age_filter_placeholder": "Ilagay ang edad"
+  "age_filter_placeholder": "Ilagay ang edad",
+  "ai_broadened_results_alert": "Nagpakita kami ng mas malawak na mga resulta dahil maaaring kailanganin ng iyong kahilingan ng mas detalyadong impormasyon. Maaari mong pinuhin gamit ang mga paksa o mungkahi.",
+  "ai_broadened_results_alert_low_info": "Nagpakita kami ng mas malawak na mga resulta dahil maaaring kailanganin ng iyong paghahanap ng mas detalyadong impormasyon. Maaari mong pinuhin gamit ang mga paksa o mungkahi.",
+  "ai_broadened_results_alert_low_confidence": "Nagpakita kami ng mas malawak na mga resulta dahil hindi kami sigurado sa pinakamahusay na tugma. Maaari mong pinuhin gamit ang mga paksa o mungkahi."
 }

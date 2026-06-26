@@ -26,5 +26,8 @@
   "name_unavailable": "Jina halipatikani",
   "share_body": "Tazama matokeo ya utafutaji wa {{count}} wa \"{{title}}\"",
   "age_filter_label": "Chuja kwa umri",
-  "age_filter_placeholder": "Ingiza umri"
+  "age_filter_placeholder": "Ingiza umri",
+  "ai_broadened_results_alert": "Tulionyesha matokeo mapana zaidi kwa sababu ombi lako linaweza kuhitaji maelezo zaidi. Unaweza kuboresha kwa kutumia mada au mapendekezo.",
+  "ai_broadened_results_alert_low_info": "Tulionyesha matokeo mapana zaidi kwa sababu utafutaji wako unaweza kuhitaji maelezo zaidi. Unaweza kuboresha kwa kutumia mada au mapendekezo.",
+  "ai_broadened_results_alert_low_confidence": "Tulionyesha matokeo mapana zaidi kwa sababu hatukuwa na uhakika kuhusu ulinganifu bora. Unaweza kuboresha kwa kutumia mada au mapendekezo."
 }

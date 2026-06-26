@@ -26,5 +26,8 @@
   "name_unavailable": "Tên không có sẵn",
   "share_body": "Xem {{count}} kết quả tìm kiếm cho \"{{title}}\"",
   "age_filter_label": "Lọc theo độ tuổi",
-  "age_filter_placeholder": "Nhập tuổi"
+  "age_filter_placeholder": "Nhập tuổi",
+  "ai_broadened_results_alert": "Chúng tôi hiển thị kết quả tổng quát hơn vì yêu cầu của bạn có thể cần thêm chi tiết. Bạn có thể tinh chỉnh bằng cách sử dụng chủ đề hoặc đề xuất.",
+  "ai_broadened_results_alert_low_info": "Chúng tôi hiển thị kết quả tổng quát hơn vì tìm kiếm của bạn có thể cần nhiều chi tiết hơn. Bạn có thể tinh chỉnh bằng cách sử dụng chủ đề hoặc đề xuất.",
+  "ai_broadened_results_alert_low_confidence": "Chúng tôi đã hiển thị kết quả tổng quát hơn vì chúng tôi chưa chắc chắn về kết quả phù hợp nhất. Bạn có thể tinh chỉnh bằng cách sử dụng chủ đề hoặc đề xuất."
 }

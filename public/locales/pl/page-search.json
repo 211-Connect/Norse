@@ -26,5 +26,8 @@
   "name_unavailable": "Nazwa niedostępna",
   "share_body": "Zobacz {{count}} wyników wyszukiwania dla „{{title}}”",
   "age_filter_label": "Filtruj według wieku",
-  "age_filter_placeholder": "Podaj wiek"
+  "age_filter_placeholder": "Podaj wiek",
+  "ai_broadened_results_alert": "Pokazaliśmy szersze wyniki, ponieważ Twoje zapytanie może wymagać więcej szczegółów. Możesz je doprecyzować, korzystając z tematów lub sugestii.",
+  "ai_broadened_results_alert_low_info": "Wyświetliliśmy szersze wyniki, ponieważ Twoje wyszukiwanie może wymagać więcej szczegółów. Możesz zawęzić wyszukiwanie, korzystając z tematów lub sugestii.",
+  "ai_broadened_results_alert_low_confidence": "Pokazaliśmy szersze wyniki, ponieważ nie byliśmy pewni najlepszego dopasowania. Możesz doprecyzować, korzystając z tematów lub sugestii."
 }

@@ -56,7 +56,16 @@
     "list_status_one": "Muaj 1 txoj kev xaiv. Siv cov yuam sij xub nce thiab nqis los tshuaj xyuas.",
     "list_status_other": "Muaj cov kev xaiv {{count}}. Siv cov yuam sij xub nce thiab nqis los tshuaj xyuas.",
     "search_dialog_description": "Nrhiav cov peev txheej thiab hloov kho koj qhov chaw nyob.",
-    "everywhere": "Txhua qhov chaw"
+    "everywhere": "Txhua qhov chaw",
+    "ai_clarify_title": "Pab peb ua kom koj txoj kev tshawb nrhiav nqaim dua",
+    "ai_clarify_title_low_info": "Qhia peb ntxiv me ntsis kom peb thiaj li nrhiav tau koj qhov kev tshawb nrhiav kom meej dua",
+    "ai_clarify_title_multiple_labels": "Hom kev pab twg zoo tshaj plaws rau qhov koj xav tau?",
+    "ai_skip": "Dhia mus",
+    "ai_confirm": "Paub meej",
+    "ai_show_more_categories": "Qhia ntau pawg",
+    "ai_validation_select_or_skip": "Xaiv tsawg kawg ib qho kev xaiv los yog hla mus.",
+    "ai_option_results_count_one": "{{count}} cov peev txheej ntsig txog",
+    "ai_option_results_count_other": "{{count}} cov peev txheej cuam tshuam"
   },
   "call_to_action": {
     "call": "Hu xov tooj",
@@ -179,5 +188,102 @@
     "default_title": "Yuam kev lees paub",
     "default_description": "Peb ua tsis tau tiav cov txheej txheem nkag mus. Thov sim dua.",
     "logout_and_try_again": "Tawm mus thiab sim dua"
+  },
+  "needs": {
+    "AR-100": {
+      "name": "Kev Ua Yeeb Yam, Kev Cai thiab Kev Lom Zem",
+      "description": "Qhov xav tau kev koom tes tseem ceeb hauv kev muaj tswv yim, kev coj noj coj ua, thiab kev lom zem. suav nrog cov kev xav tau ntsig txog kev qhia tawm kev kos duab, kev koom tes nrog cov cuab yeej cuab tam kab lis kev cai, kev ua si lom zem, thiab kev lom zem hauv zej zog. Txawv ntawm cov hom phiaj kho mob lossis kev txhawb nqa hauv zej zog - qhov no qhia txog qhov xav tau ntawm tib neeg los tsim, ua kev zoo siab, ua si, thiab koom nrog hauv zej zog kab lis kev cai.",
+      "displayDescription": "Tau kev pab nrhiav tej yam lom zem ua xws li kos duab, suab paj nruag, kis las, lossis tej kev ua ub ua no hauv zej zog. Txhua tus neeg tsim nyog muaj sijhawm ua si, tsim, thiab ua kev zoo siab."
+    },
+    "CL-150": {
+      "name": "Khaub Ncaws/Kev Xav Tau Tus Kheej/Kev Xav Tau Hauv Tsev Neeg",
+      "description": "Qhov xav tau khaub ncaws txaus, khoom siv rau tus kheej, thiab cov khoom siv uas yuav tsum tau siv los ua kom tsev neeg siv tau zoo. Xws li qhov xav tau khaub ncaws uas haum rau huab cua, ua haujlwm, lossis kawm ntawv; cov khoom siv tu cev thiab khoom siv rau tus kheej; thiab cov rooj tog lossis cov khoom siv yooj yim uas ua rau qhov chaw nyob zoo thiab muaj kev hwm.",
+      "displayDescription": "Tau kev pab nrhiav khaub ncaws, khoom siv rau koj tus kheej, lossis tej yam koj xav tau rau koj lub tsev. Peb tuaj yeem pab koj tau txais yam koj xav tau kom huv si thiab xis nyob."
+    },
+    "DI-180": {
+      "name": "Kev Pabcuam Thaum Muaj Xwm Ceev",
+      "description": "Qhov xav tau kev pab txhawb nqa los ntawm qhov xwm txheej puas tsuaj uas tau tshaj tawm lossis tau ntsib, txawm tias yog ntuj tsim lossis tib neeg ua rau. suav nrog cov kev xav tau uas tshwm sim ua ntej, thaum lub sijhawm, thiab tom qab muaj kev puas tsuaj - suav nrog kev npaj, kev teb rau xwm txheej ceev, thiab kev rov zoo. Txawv ntawm cov kev xav tau kev nyab xeeb ntawm tus kheej uas tseem niaj hnub ua; tsom mus rau kev cuam tshuam loj heev hauv zej zog thiab nws cov kev cuam tshuam tom qab.",
+      "displayDescription": "Tau kev pab ua ntej, thaum muaj xwm txheej, lossis tom qab muaj kev puas tsuaj xws li dej nyab, hluav taws, lossis cua daj cua dub. Peb tuaj yeem txuas koj nrog cov neeg uas npaj txhij los pab thaum muaj xwm txheej ceev."
+    },
+    "DV-190": {
+      "name": "Kev Ua Phem Hauv Tsev Neeg / Kev Nyab Xeeb Tus Kheej",
+      "description": "Qhov xav tau kev nyab xeeb thiab kev tiv thaiv ntawm kev raug mob ntawm tus kheej, kev tsim txom, kev yuam, lossis kev hem thawj. suav nrog cov kev xav tau ntsig txog kev ua phem hauv tsev neeg, kev ua phem rau tus khub, kev caum cuag, kev ua lag luam, thiab lwm yam xwm txheej uas tus neeg lub cev lossis lub siab muaj kev pheej hmoo vim yog kev ua ntawm lwm tus neeg. Txawv ntawm cov kev xav tau kev nyab xeeb ntsig txog kev puas tsuaj lossis cov chaw muaj kev nyab xeeb rau pej xeem.",
+      "displayDescription": "Nrhiav kev pab yog tias koj lossis ib tus neeg koj paub xav tias tsis muaj kev nyab xeeb hauv tsev lossis raug mob. Koj tsim nyog tau kev nyab xeeb, thiab muaj cov neeg npaj txhij los pab tam sim no."
+    },
+    "ED-170": {
+      "name": "Kev Kawm Ntawv",
+      "description": "Qhov xav tau kev nkag mus rau kev kawm, kev txhim kho kev txawj, thiab kev kawm tiav hauv txhua theem ntawm lub neej. suav nrog cov kev xav tau ntsig txog kev kawm thaum yau, kev kawm ntawv K-12, kev kawm tom qab kawm tiav theem siab, kev nyeem ntawv rau cov neeg laus, kev kawm lus Askiv, kev nyeem ntawv digital, thiab kev cob qhia ua haujlwm. Qhov xav tau muaj nyob tsis hais tus neeg nyob qhov twg hauv lawv txoj kev kawm lossis lawv ntsib teeb meem dab tsi hauv kev nkag mus rau nws.",
+      "displayDescription": "Tau kev pab txog kev kawm - rau cov menyuam yaus, cov hluas, lossis cov neeg laus. Txawm koj xav tau kev pab hauv tsev kawm ntawv, kev cob qhia ua haujlwm, lossis xav kawm lus Askiv, peb tuaj yeem pab koj nrhiav nws."
+    },
+    "EM-180": {
+      "name": "Kev Ua Haujlwm",
+      "description": "Qhov xav tau kev nkag mus rau txoj haujlwm ruaj khov thiab txaus thiab cov xwm txheej uas ua rau muaj kev ua haujlwm tau. suav nrog cov kev xav tau ntsig txog kev nrhiav haujlwm, khaws txoj haujlwm, kev txhim kho kev txawj ua haujlwm, thiab kev taug kev cov cai hauv chaw ua haujlwm thiab kev hloov pauv xws li kev poob haujlwm. Qhia txog kev lag luam thiab kev sib raug zoo ntawm kev ua haujlwm raws li tib neeg xav tau, tsis yog cov kev pabcuam lawv tus kheej.",
+      "displayDescription": "Nrhiav kev pab nrhiav haujlwm, ua haujlwm kom ruaj khov, lossis txhim kho cov txuj ci tshiab. Txhua tus neeg tsim nyog muaj lub sijhawm los khwv tau nyiaj thiab xav tias zoo siab rau lawv txoj haujlwm."
+    },
+    "FO-200": {
+      "name": "Khoom Noj/Pluas Noj",
+      "description": "Qhov xav tau zaub mov kom txaus, tsis tu ncua, thiab muaj txiaj ntsig zoo. suav nrog cov kev xav tau txog kev tau txais zaub mov txaus noj, kev tau txais zaub mov uas ua tau raws li qhov xav tau ntawm kev noj haus lossis kev noj zaub mov, thiab kev nkag siab txog kev noj zaub mov kom noj qab nyob zoo. Qhov kev xav tau no muaj nyob txawm tias nws tshwm sim los ntawm kev txom nyem, kev kub ntxhov, kev tsis muaj zaub mov noj mus ntev, lossis kev cuam tshuam ntawm qhov xwm txheej.",
+      "displayDescription": "Tau kev pab nrhiav zaub mov rau koj thiab koj tsev neeg. Txawm koj xav tau pluas mov hnub no lossis kev pab nrhiav khoom noj, peb tuaj yeem txuas koj nrog cov zaub mov nyob ze koj."
+    },
+    "HC-300": {
+      "name": "Kev Kho Mob",
+      "description": "Qhov xav tau kev pab cuam kev noj qab haus huv lub cev, kev tiv thaiv kab mob, kev kho mob, thiab cov khoom siv thiab kev txhawb nqa kev taw qhia uas xav tau los tswj hwm tus kheej txoj kev noj qab haus huv. suav nrog cov kev xav tau thoob plaws hauv kev noj qab haus huv lub cev - txij li kev noj qab haus huv niaj hnub thiab kev kuaj mob mus rau kev kho mob ceev, kev tswj hwm kab mob ntev, kev kho kom rov zoo, thiab kev saib xyuas mus sij hawm ntev. Kev noj qab haus huv ntawm lub hlwb thiab kev siv tshuaj yeeb dej cawv raug daws teeb meem sib cais.",
+      "displayDescription": "Nrhiav kev pab nrhiav kws kho mob, kws kho hniav, lossis lwm yam kev kho mob. Txhua tus neeg tsim nyog kom muaj kev noj qab haus huv thiab tau txais kev kho mob uas lawv xav tau."
+    },
+    "HO-300": {
+      "name": "Tsev nyob",
+      "description": "Qhov xav tau ib qho chaw nyob uas muaj kev nyab xeeb, ruaj khov, thiab tsim nyog. Muaj ntau yam kev xav tau thoob plaws txhua yam kev xav tau vaj tse - txij li kev nyob tam sim ntawd thaum muaj teeb meem mus txog rau kev nyob ntev uas pheej yig, kev npaj nyob uas txhawb nqa, thiab kev txhawb nqa kom ruaj khov uas pab tib neeg nyob hauv tsev. Qhov xwm txheej ntawm qhov xav tau vaj tse sib txawv raws li qhov ceev thiab qhov xwm txheej, tab sis qhov xav tau tseem ceeb yog qhov sib xws: ib qho chaw hu ua tsev.",
+      "displayDescription": "Tau kev pab nrhiav qhov chaw nyob nyab xeeb. Txawm koj xav tau qhov chaw pw hmo no lossis kev pab nyob hauv koj lub tsev, peb tuaj yeem txuas koj nrog kev txhawb nqa."
+    },
+    "IC-330": {
+      "name": "Kev Txhawb Nqa/Kev Pab Nyiaj Tau Los",
+      "description": "Qhov xav tau nyiaj txiag los them rau cov nqi tseem ceeb ntawm kev ua neej thaum cov nyiaj tau los tsis txaus lossis tsis muaj. suav nrog cov kev xav tau ntsig txog kev pab nyiaj ntsuab, kev hloov nyiaj tau los, kev nkag mus rau cov txiaj ntsig pej xeem, thiab kev txhawb nqa kev ruaj ntseg nyiaj txiag. Qhia txog qhov kev lag luam ntawm kev noj qab haus huv - qhov xav tau kom muaj nyiaj txaus los them rau cov kev xav tau tseem ceeb - sib cais los ntawm cov kev pab cuam lossis cov txheej txheem tshwj xeeb uas yuav daws tau nws.",
+      "displayDescription": "Tau kev pab them rau tej yam koj xav tau thaum nyiaj tsis txaus. Peb tuaj yeem txuas koj nrog cov kev pab cuam uas pab them cov nqi thiab cov nqi txhua hnub."
+    },
+    "IF-330": {
+      "name": "Kev Txhawb Nqa Tus Kheej, Tsev Neeg thiab Zej Zog",
+      "description": "Qhov xav tau kev sib raug zoo, kev saib xyuas, thiab kev txhawb nqa hauv zej zog uas txhawb nqa cov tib neeg thiab tsev neeg thoob plaws lub neej txhua hnub thiab tej xwm txheej nyuaj. suav nrog cov kev xav tau ntsig txog kev ua niam txiv, kev saib xyuas cov neeg uas lawv vam khom, kev daws teeb meem nyuaj hauv tsev neeg, kev tsim kev sib raug zoo hauv zej zog, thiab kev nkag mus rau kev txhawb nqa los ntawm cov phooj ywg lossis kev sib raug zoo hauv zej zog. Qhia txog qhov tseeb tias kev noj qab haus huv ntawm tib neeg yog khi tob rau lub zog ntawm kev sib raug zoo thiab kev sib txuas lus nyob ib puag ncig tus neeg.",
+      "displayDescription": "Nrhiav kev pab rau koj tsev neeg lossis ib tus neeg uas koj saib xyuas. Txawm koj xav tau kev txhawb nqa niam txiv, kev pab rau ib tus neeg laus, lossis ib tus neeg uas koj xav tham nrog, peb tuaj yeem pab tau."
+    },
+    "IS-330": {
+      "name": "Cov Kev Pabcuam Xov Xwm",
+      "description": "Qhov xav tau kom nkag siab txog cov peev txheej twg muaj thiab yuav ua li cas nkag mus rau lawv. suav nrog cov kev xav tau ntsig txog kev nrhiav cov kev pabcuam cuam tshuam, nkag siab txog kev tsim nyog thiab cov txheej txheem, kev taug kev hauv cov txheej txheem nyuaj, thiab kev sib txuas lus nrog kev txhawb nqa zoo rau lub sijhawm zoo. Qhov no yog qhov xav tau meta - qhov yuav tsum tau ua ua ntej kom ua tau raws li ntau lwm yam kev xav tau zoo - thiab nws txawv ntawm cov kev pabcuam nws tus kheej.",
+      "displayDescription": "Tsis paub tseeb tias yuav pib qhov twg? Peb tuaj yeem pab koj xam seb muaj cov kev pabcuam twg thiab cov twg yog rau koj."
+    },
+    "LE-450": {
+      "name": "Kev Cai Lij Choj, Cov Neeg Siv Khoom thiab Kev Nyab Xeeb Rau Pej Xeem",
+      "description": "Qhov xav tau kev tiv thaiv raws li txoj cai, kev taug kev ntawm lub tsev hais plaub, cov cai ntawm cov neeg siv khoom, thiab kev nyab xeeb rau pej xeem. Muaj cov kev xav tau ntsig txog cov teeb meem kev cai lij choj pej xeem, kev koom tes hauv kev ncaj ncees txhaum cai, kev nkag tebchaws, kev raug mob ntawm cov neeg siv khoom, thiab kev tiv thaiv raws li txoj cai. Qhia txog cov xwm txheej uas tus neeg txoj cai, kev nyab xeeb, lossis kev sawv hauv qab txoj cai raug cuam tshuam thiab qhov twg xav tau kev paub txog kev cai lij choj lossis kev pab.",
+      "displayDescription": "Tau kev pab txog cov lus nug txog kev cai lij choj, kev nkag siab txog koj cov cai, lossis kev nyob kom muaj kev nyab xeeb. Peb tuaj yeem txuas koj nrog cov neeg uas paub txog txoj cai thiab tuaj yeem pab tau."
+    },
+    "MH-500": {
+      "name": "Kev quav yeeb quav tshuaj",
+      "description": "Qhov xav tau kev pab txhawb nqa hauv kev daws teeb meem kev siv tshuaj yeeb dej cawv, kev vam khom, thiab kev quav yeeb quav tshuaj. suav nrog cov kev xav tau ntsig txog kev tswj hwm lossis rov zoo los ntawm kev siv dej cawv, tshuaj yeeb, lossis lwm yam tshuaj yeeb dej cawv uas muaj teeb meem - suav nrog kev ruaj khov sai, kev kho mob, thiab kev txhawb nqa kev rov zoo tas mus li. Pom zoo tias yog ib pawg ntawm kev xav tau sib txawv ntawm kev noj qab haus huv ntawm lub hlwb, txawm hais tias ob qho tib si feem ntau tshwm sim ua ke.",
+      "displayDescription": "Nrhiav kev pab yog tias koj lossis ib tus neeg koj hlub tab tom muaj teeb meem haus dej cawv lossis siv yeeb tshuaj. Kev kho mob zoo tuaj yeem ua tau, thiab muaj cov neeg mob siab rau koj uas npaj txhij los txhawb koj."
+    },
+    "AD-510": {
+      "name": "Kev Noj Qab Haus Huv ntawm Lub Siab",
+      "description": "Qhov xav tau kev txhawb nqa hauv kev tswj hwm, kho dua tshiab, lossis tswj hwm tus kheej lub hlwb thiab kev noj qab haus huv. suav nrog cov kev xav tau ntsig txog kev ntxhov siab, kev mob hlwb, kev noj qab haus huv tus cwj pwm, xwm txheej kub ntxhov, thiab kev txhawb nqa tas mus li uas xav tau los ua neej zoo nrog cov teeb meem kev noj qab haus huv ntawm lub hlwb. Txawv ntawm kev xav tau kev siv tshuaj yeeb dej cawv, txawm hais tias cov tsos mob sib xws yog qhov tshwm sim ntau.",
+      "displayDescription": "Nrhiav kev pab yog tias koj tu siab, ntxhov siab, lossis ntxhov siab heev. Koj txoj kev noj qab haus huv ntawm lub hlwb tseem ceeb, thiab muaj cov neeg uas tuaj yeem mloog thiab pab tau."
+    },
+    "OT-600": {
+      "name": "Lwm Cov Kev Pabcuam Tsoomfwv/Kev Lag Luam",
+      "description": "Qhov xav tau kev pab cuam los ntawm tsoomfwv, cov kev pabcuam pej xeem, thiab kev txhawb nqa kev lag luam uas tsis poob rau hauv lwm pawg. suav nrog cov kev xav tau ntsig txog kev mus ncig ua haujlwm rau cov koom haum pej xeem, kev nkag mus rau cov txiaj ntsig lossis cov cai ntawm tsoomfwv, kev txhawb nqa cov lag luam me, kev pab them se, thiab lwm yam kev pabcuam kev lag luam uas txhawb nqa kev ruaj ntseg ntawm tus kheej thiab zej zog.",
+      "displayDescription": "Tau kev pab txog cov kev pab cuam ntawm tsoomfwv, cov txiaj ntsig, lossis lwm yam kev pabcuam uas nyuaj nrhiav lwm qhov. Peb tuaj yeem pab koj nrhiav qhov chaw mus."
+    },
+    "TR-850": {
+      "name": "Kev Thauj Mus Los",
+      "description": "Qhov xav tau kev mus ncig ua si kom ruaj khov kom tau raws li lwm yam kev xav tau - kev ua haujlwm, kev kho mob, kev kawm, zaub mov, kev pabcuam, thiab kev sib txuas lus hauv zej zog. suav nrog cov kev xav tau ntsig txog kev nkag mus rau kev caij tsheb, them nqi thauj mus los, kev tswj hwm lub tsheb, thiab kev mus ncig kom muaj kev nyab xeeb. Kev thauj mus los yog lub hauv paus tseem ceeb: nws tsis muaj ua rau yuav luag txhua yam kev xav tau uas tsis tau txais kev pab.",
+      "displayDescription": "Tau kev pab kom mus txog qhov chaw uas koj xav mus - mus ntsib kws kho mob, mus ua haujlwm, mus kawm ntawv, lossis mus yuav khoom. Peb tuaj yeem pab koj nrhiav kev caij tsheb lossis kev mus ncig uas pheej yig."
+    },
+    "UT-900": {
+      "name": "Cov Khoom Siv",
+      "description": "Qhov xav tau kev siv cov khoom siv hauv tsev tseem ceeb - hluav taws xob, roj av, dej, thiab kev sib txuas lus - uas ua rau qhov chaw nyob muaj kev nyab xeeb, nyob tau, thiab sib txuas lus. suav nrog cov kev xav tau ntsig txog kev tswj hwm kev pabcuam hluav taws xob, them tus nqi hluav taws xob, txo kev siv, thiab nkag mus rau kev sib txuas lus xov tooj lossis internet. Kev xav tau hluav taws xob muaj feem cuam tshuam nrog kev ruaj khov ntawm vaj tse thiab kev noj qab haus huv.",
+      "displayDescription": "Tau kev pab them nqi hluav taws xob, roj av, dej, lossis kev pabcuam xov tooj thiab internet. Peb tuaj yeem txuas koj nrog cov kev pab cuam uas pab kom koj lub tsev khiav tau."
+    },
+    "VO-900": {
+      "name": "Kev Pab Dawb & Kev Pub Nyiaj",
+      "description": "Qhov xav tau kev pub lossis txais los ntawm kev siab dawb siab zoo hauv zej zog - txawm tias ib tus neeg xav tau cov khoom pub dawb, lossis muaj peev xwm thiab xav pab sijhawm, kev txawj, lossis cov peev txheej rau lwm tus. suav nrog cov kev xav tau ntawm ob sab ntawm kev sib pauv pej xeem: cov tib neeg nrhiav kev pub dawb lossis cov kev pabcuam pub dawb, thiab cov tib neeg lossis cov koom haum nrhiav kev txuas cov neeg ua haujlwm pab dawb thiab cov neeg pub dawb nrog cov cib fim tseem ceeb los pab.",
+      "displayDescription": "Xav tau khoom pub dawb los yog xav pab lwm tus? Peb tuaj yeem txuas cov neeg uas xav pub dawb nrog cov neeg uas xav tau kev pab."
+    }
   }
 }

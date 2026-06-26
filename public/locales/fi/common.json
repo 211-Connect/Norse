@@ -56,7 +56,16 @@
     "list_status_one": "1 vaihtoehto saatavilla. Tarkista käyttämällä ylös- ja alas-nuolinäppäimiä.",
     "list_status_other": "{{count}} vaihtoehtoa käytettävissä. Tarkista käyttämällä ylä- ja alanuolinäppäimiä.",
     "search_dialog_description": "Hae resursseja ja päivitä sijaintiasi.",
-    "everywhere": "Kaikkialla"
+    "everywhere": "Kaikkialla",
+    "ai_clarify_title": "Auta meitä rajaamaan hakuasi",
+    "ai_clarify_title_low_info": "Kerro meille hieman lisää, jotta voimme rajata hakuasi",
+    "ai_clarify_title_multiple_labels": "Minkä tyyppinen apu vastaa parhaiten tarpeitasi?",
+    "ai_skip": "Ohita",
+    "ai_confirm": "Vahvistaa",
+    "ai_show_more_categories": "Näytä lisää luokkia",
+    "ai_validation_select_or_skip": "Valitse vähintään yksi vaihtoehto tai ohita.",
+    "ai_option_results_count_one": "{{count}} aiheeseen liittyvä resurssi",
+    "ai_option_results_count_other": "{{count}} aiheeseen liittyvät resurssit"
   },
   "call_to_action": {
     "call": "Soittaa",
@@ -179,5 +188,102 @@
     "default_title": "Todennusvirhe",
     "default_description": "Kirjautumisprosessia ei voitu suorittaa loppuun. Yritä uudelleen.",
     "logout_and_try_again": "Kirjaudu ulos ja yritä uudelleen"
+  },
+  "needs": {
+    "AR-100": {
+      "name": "Taide, kulttuuri ja virkistys",
+      "description": "Tarve merkitykselliseen osallistumiseen luovaan, kulttuuriseen ja virkistystoimintaan. Kattaa taiteelliseen ilmaisuun, kulttuuriperintöön osallistumiseen, vapaa-ajan aktiviteetteihin ja yhteisöpohjaiseen virkistykseen liittyvät tarpeet. Eroaa terapeuttisista tai sosiaalisen tuen tavoitteista – tämä heijastaa ihmisen luontaista tarvetta luoda, juhlia, leikkiä ja kuulua kulttuuriyhteisöön.",
+      "displayDescription": "Hae apua hauskojen aktiviteettien, kuten taiteen, musiikin, urheilun tai yhteisötapahtumien, löytämiseen. Jokaisella on oltava aikaa leikkiä, luoda ja juhlia."
+    },
+    "CL-150": {
+      "name": "Vaatteet/Henkilökohtaiset/Kotitaloustarpeet",
+      "description": "Riittävien vaatteiden, henkilökohtaisen hygienian tuotteiden ja kotitalouden toiminnan ylläpitämiseen tarvittavien aineellisten hyödykkeiden tarve. Sisältää säähän, työhön tai kouluun sopivan vaatetuksen, hygienia- ja henkilökohtaisen hygienian tuotteet sekä peruskalusteet tai -tarvikkeet, jotka tekevät asuintilasta asumiskelpoisen ja arvokkaan.",
+      "displayDescription": "Apua vaatteiden, hygieniatuotteiden tai muiden kotiisi tarvittavien asioiden löytämiseen. Voimme auttaa sinua saamaan kaiken tarvitsemasi puhtaaseen ja mukavaan oloon."
+    },
+    "DI-180": {
+      "name": "Katastrofipalvelut",
+      "description": "Tuen tarve, joka johtuu ilmoitetusta tai koetusta katastrofista, olipa se sitten luonnonkatastrofi tai ihmisen aiheuttama. Kattaa tarpeet, jotka ilmenevät ennen katastrofeja, niiden aikana ja niiden jälkeen – mukaan lukien valmius, hätätilanteisiin reagointi ja toipuminen. Eroaa jatkuvista henkilökohtaisen turvallisuuden tarpeista; keskittyy akuutteihin yhteisötason häiriöihin ja niiden jälkimaininkeihin.",
+      "displayDescription": "Hae apua ennen katastrofia, kuten tulvaa, tulipaloa tai myrskyä, sen aikana tai sen jälkeen. Voimme yhdistää sinut ihmisiin, jotka ovat valmiita auttamaan hätätilanteessa."
+    },
+    "DV-190": {
+      "name": "Perheväkivalta / Henkilökohtainen turvallisuus",
+      "description": "Turvallisuuden ja suojelun tarve ihmissuhteiden aiheuttamilta vahingoilta, väkivallalta, pakottamiselta tai uhkailulta. Kattaa tarpeet, jotka liittyvät perheväkivaltaan, parisuhdeväkivaltaan, vainoamiseen, ihmiskauppaan ja muihin tilanteisiin, joissa henkilön fyysinen tai emotionaalinen turvallisuus on vaarassa toisen henkilön toimien vuoksi. Eroaa katastrofeihin liittyvistä turvallisuustarpeista tai yleisestä julkisesta turvallisuusinfrastruktuurista.",
+      "displayDescription": "Hae apua, jos sinä tai joku tuntemasi henkilö tuntee olonsa turvattomaksi kotona tai häntä satutetaan. Sinulla on oikeus tuntea olosi turvalliseksi, ja on ihmisiä, jotka ovat valmiita auttamaan juuri nyt."
+    },
+    "ED-170": {
+      "name": "Koulutus",
+      "description": "Tarve oppimiseen, taitojen kehittämiseen ja koulutustasoon kaikissa elämänvaiheissa. Kattaa varhaiskasvatukseen, peruskoulutukseen, korkeakoulutukseen, aikuisten lukutaitoon, englannin kielen oppimiseen, digitaaliseen lukutaitoon ja ammatilliseen koulutukseen liittyvät tarpeet. Tarve on olemassa riippumatta siitä, missä vaiheessa koulutusta henkilö on tai mitä esteitä hän kohtaa koulutuksen saamisessa.",
+      "displayDescription": "Hae apua oppimiseen – lapsille, nuorille tai aikuisille. Tarvitsetpa sitten apua koulunkäyntiin, työharjoitteluun tai haluat oppia englantia, me voimme auttaa sinua löytämään sen."
+    },
+    "EM-180": {
+      "name": "Työllisyys",
+      "description": "Tarve saada vakaata ja riittävää työtä sekä työllisyyden mahdollistavia olosuhteita. Kattaa työn löytämiseen, työssä pysymiseen, työtaitojen kehittämiseen sekä työpaikan oikeuksien ja siirtymien, kuten työttömyyden, hallintaan liittyvät tarpeet. Heijastaa työn taloudellisia ja sosiaalisia ulottuvuuksia inhimillisenä tarpeena, ei itse palveluita.",
+      "displayDescription": "Hae apua työpaikan löytämiseen, työpaikan säilyttämiseen tai uusien taitojen kehittämiseen. Jokaisella on oikeus ansaita elantonsa ja tuntea olonsa hyväksi työssään."
+    },
+    "FO-200": {
+      "name": "Ruoka/Ateriat",
+      "description": "Tarve säännölliselle, riittävälle ja ravitsevalle ruoalle. Kattaa tarpeet, jotka liittyvät riittävän ruoan saatavuuteen, ravitsemukselliset tai ruokavalioon liittyvät tarpeet täyttävän ruoan hankkimiseen ja terveellisen ruokailun ylläpitämisen ymmärtämiseen. Tarve on olemassa riippumatta siitä, johtuuko se köyhyydestä, kriisistä, kroonisesta ruokaturvattomuudesta tai tilanteen aiheuttamasta häiriöstä.",
+      "displayDescription": "Apua ruoan löytämiseen itsellesi ja perheellesi. Tarvitsetpa sitten aterian tänään tai apua ruokaostoksissa, voimme yhdistää sinut lähelläsi olevaan ruokaan."
+    },
+    "HC-300": {
+      "name": "Terveydenhuolto",
+      "description": "Tarve saada fyysisiä terveyspalveluita, ennaltaehkäisevää hoitoa, lääketieteellistä hoitoa sekä terveyden hallintaan tarvittavia hyödykkeitä ja navigointitukea. Kattaa tarpeet koko fyysisen terveyden alueella – rutiininomaisista hyvinvoinnista ja seulonnoista akuuttihoitoon, kroonisten sairauksien hallintaan, kuntoutukseen ja pitkäaikaishoitoon. Mielenterveys- ja päihdetarpeita käsitellään erikseen.",
+      "displayDescription": "Hae apua lääkärin, hammaslääkärin tai muun terveydenhuollon palvelun löytämiseen. Jokaisella on oikeus pysyä terveenä ja saada tarvitsemaansa hoitoa."
+    },
+    "HO-300": {
+      "name": "Asuminen",
+      "description": "Tarve turvalliselle, vakaalle ja sopivalle asuinpaikalle. Kattaa koko asumisen kirjon tarpeet – välittömästä suojasta kriisitilanteessa pitkäaikaiseen kohtuuhintaiseen asumiseen, tukeviin asumisjärjestelyihin ja vakautta edistäviin tukiin, jotka auttavat ihmisiä pysymään asunnossaan. Asuntotarpeen luonne vaihtelee kiireellisyyden ja olosuhteiden mukaan, mutta taustalla oleva tarve on johdonmukainen: paikka, jota voi kutsua kodiksi.",
+      "displayDescription": "Hae apua turvallisen asuinpaikan löytämiseen. Tarvitsetpa sitten paikkaa nukkua yöksi tai apua kotona pysymiseen, voimme yhdistää sinut tukeen."
+    },
+    "IC-330": {
+      "name": "Toimeentulotuki/avustus",
+      "description": "Tarve taloudellisille resursseille peruselinkustannusten kattamiseksi, kun tulot ovat riittämättömät tai niitä ei ole lainkaan. Kattaa tarpeet, jotka liittyvät rahalliseen tukeen, tulojen korvaamiseen, julkisten etuuksien saatavuuteen ja taloudellisen vakauden tukeen. Heijastaa hyvinvoinnin taloudellista ulottuvuutta – tarvetta saada riittävästi resursseja välttämättömien tarpeiden kattamiseksi – erillään erityisistä ohjelmista tai mekanismeista, jotka saattavat vastata siihen.",
+      "displayDescription": "Saat apua tarvitsemiesi asioiden maksamiseen, kun raha on tiukassa. Voimme yhdistää sinut ohjelmiin, jotka auttavat kattamaan laskuja ja päivittäisiä kuluja."
+    },
+    "IF-330": {
+      "name": "Yksilö-, perhe- ja yhteisötuki",
+      "description": "Tarve ihmissuhteisiin, hoivaan ja yhteisötasoiseen tukeen, joka tukee yksilöitä ja perheitä arjessa ja vaikeissa olosuhteissa. Kattaa vanhemmuuteen, huollettavien hoitamiseen, perheen monimutkaisuuden selviämiseen, yhteisöllisten yhteyksien rakentamiseen sekä vertaistuen tai sosiaalisen tuen saamiseen liittyvät tarpeet. Heijastaa sitä todellisuutta, että ihmisen hyvinvointi on syvästi sidoksissa ihmistä ympäröivien ihmissuhteiden ja verkostojen vahvuuteen.",
+      "displayDescription": "Hae apua perheellesi tai läheisellesi. Tarvitsetpa sitten vanhemmuuden tukea, apua ikääntyneelle tai keskustelukumppania, me voimme auttaa."
+    },
+    "IS-330": {
+      "name": "Tietopalvelut",
+      "description": "Tarve ymmärtää, mitä resursseja on olemassa ja miten niitä voi käyttää. Kattaa tarpeet, jotka liittyvät asiaankuuluvien palveluiden löytämiseen, kelpoisuuden ja prosessien ymmärtämiseen, monimutkaisissa järjestelmissä navigointiin ja oikean tuen saamiseen oikeaan aikaan. Tämä on metatarve – edellytys monien muiden tarpeiden tehokkaalle täyttämiselle – ja se on erillinen itse palveluista.",
+      "displayDescription": "Etkö ole varma, mistä aloittaa? Voimme auttaa sinua selvittämään, mitä palveluita on saatavilla ja mitkä niistä sopivat sinulle."
+    },
+    "LE-450": {
+      "name": "Oikeudellinen, kuluttaja- ja yleinen turvallisuus",
+      "description": "Oikeussuojan tarve, oikeusjärjestelmän käyttö, kuluttajien oikeudet ja yleinen turvallisuus. Kattaa siviilioikeudellisiin asioihin, rikosoikeudelliseen osallistumiseen, maahanmuuttostatukseen, kuluttajille aiheutuneisiin vahinkoihin ja lain suojaan liittyvät tarpeet. Heijastaa tilanteita, joissa henkilön oikeudet, turvallisuus tai asema oikeusjärjestelmien nojalla ovat vaakalaudalla ja joissa tarvitaan oikeudellista tietämystä tai apua.",
+      "displayDescription": "Saat apua oikeudellisiin kysymyksiin, oikeuksiesi ymmärtämiseen tai turvallisuudessa pysymiseen. Voimme yhdistää sinut ihmisiin, jotka tuntevat lain ja voivat auttaa."
+    },
+    "MH-500": {
+      "name": "Riippuvuudet",
+      "description": "Tuen tarve päihteiden käytön, riippuvuuden ja addiktion käsittelyssä. Kattaa tarpeet, jotka liittyvät alkoholin, huumeiden tai muiden päihteiden ongelmakäytön hallintaan tai siitä toipumiseen – mukaan lukien akuutti vakauttaminen, hoito ja jatkuva toipumistuki. Tunnustetaan mielenterveydestä erilliseksi tarpeiden kategoriaksi, vaikka ne esiintyvät usein yhdessä.",
+      "displayDescription": "Hae apua, jos sinä tai joku läheisesi kamppailee alkoholin tai huumeiden käytön kanssa. Toipuminen on mahdollista, ja on olemassa välittäviä ihmisiä, jotka ovat valmiita tukemaan sinua."
+    },
+    "AD-510": {
+      "name": "Mielenterveys",
+      "description": "Tarve tuelle henkisen ja emotionaalisen hyvinvoinnin ylläpitämiseksi, palauttamiseksi tai hallitsemiseksi. Kattaa tarpeet, jotka liittyvät emotionaaliseen ahdinkoon, psykiatrisiin tiloihin, käyttäytymisterveyteen, kriisitilanteisiin ja jatkuvaan tukeen, jota tarvitaan mielenterveyshaasteiden kanssa elämiseen. Eroaa päihteiden käytön tarpeista, vaikka samanaikaiset oireet ovat yleisiä.",
+      "displayDescription": "Hae apua, jos tunnet olosi surulliseksi, ahdistuneeksi tai ylikuormitetuksi. Mielenterveytesi on tärkeää, ja on ihmisiä, jotka voivat kuunnella ja auttaa."
+    },
+    "OT-600": {
+      "name": "Muut valtion/taloudelliset palvelut",
+      "description": "Tarve saada valtion ohjelmia, yhteiskunnallisia palveluita ja taloudellista tukea, joka ei kuulu siististi muihin luokkiin. Kattaa tarpeet, jotka liittyvät julkisten virastojen toimintaan, valtion etuuksien tai oikeuksien saamiseen, pienyritysten tukeen, verotukeen ja muihin yksilön ja yhteisön vakautta tukeviin taloudellisiin palveluihin.",
+      "displayDescription": "Hae apua valtion ohjelmiin, etuuksiin tai muihin palveluihin, joita on vaikea löytää muualta. Voimme auttaa sinua selvittämään, minne mennä."
+    },
+    "TR-850": {
+      "name": "Kuljetus",
+      "description": "Tarve matkustaa luotettavasti muiden tarpeiden – työn, terveydenhuollon, koulutuksen, ruoan, palvelujen ja sosiaalisten yhteyksien – tyydyttämiseksi. Kattaa kyytien saatavuuteen, kuljetuskustannusten kattamiseen, ajoneuvon ylläpitoon ja turvalliseen matkustamiseen liittyvät tarpeet. Liikenne on perustavanlaatuinen mahdollistaja: sen puute pahentaa lähes kaikkia muita tyydyttämättömiä tarpeita.",
+      "displayDescription": "Hae apua päästäksesi minne haluat – lääkäriin, töihin, kouluun tai kauppaan. Voimme auttaa sinua löytämään kyytejä tai edullisia tapoja matkustaa."
+    },
+    "UT-900": {
+      "name": "Apuohjelmat",
+      "description": "Tarve saada pääsyn välttämättömiin kodin peruspalveluihin – sähköön, kaasuun, veteen ja tietoliikenteeseen – jotka tekevät asuintilasta turvallisen, asumiskelpoisen ja yhteydessä olevan. Kattaa tarpeet, jotka liittyvät yleishyödyllisten palvelujen ylläpitämiseen, yleishyödyllisten kustannusten kattamiseen, kulutuksen vähentämiseen sekä puhelin- tai internetyhteyden saatavuuteen. Yleishyödyllisten palvelujen tarve liittyy läheisesti asumisen vakauteen ja terveyteen.",
+      "displayDescription": "Apua sähkön, kaasun, veden tai puhelin- ja internet-palvelun maksamiseen. Voimme yhdistää sinut ohjelmiin, jotka auttavat pitämään kotisi toiminnassa."
+    },
+    "VO-900": {
+      "name": "Vapaaehtoistyö ja lahjoitukset",
+      "description": "Tarve antaa tai saada yhteisön anteliaisuuden kautta – riippumatta siitä, tarvitseeko henkilö lahjoitettuja tavaroita vai onko hänellä kykyä ja halua lahjoittaa aikaa, taitoja tai resursseja muille. Kattaa tarpeet molemmilla puolilla kansalaisyhteiskuntaa: yksilöt, jotka etsivät aineellisia lahjoituksia tai lahjoitettuja palveluita, ja yksilöt tai organisaatiot, jotka pyrkivät yhdistämään vapaaehtoisia ja lahjoittajia merkityksellisiin auttamismahdollisuuksiin.",
+      "displayDescription": "Tarvitsetko lahjoitettuja tavaroita tai haluatko auttaa muita? Voimme yhdistää ihmiset, jotka haluavat antaa, ihmisiin, jotka tarvitsevat apua."
+    }
   }
 }

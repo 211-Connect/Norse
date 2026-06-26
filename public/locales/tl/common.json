@@ -56,7 +56,16 @@
     "list_status_one": "1 opsyon ang available. Gamitin ang pataas at pababang mga arrow key para mag-review.",
     "list_status_other": "May mga opsyon na {{count}} na magagamit. Gamitin ang pataas at pababang mga arrow key para magrepaso.",
     "search_dialog_description": "Maghanap ng mga mapagkukunan at i-update ang iyong lokasyon.",
-    "everywhere": "Sa lahat ng dako"
+    "everywhere": "Sa lahat ng dako",
+    "ai_clarify_title": "Tulungan kaming paliitin ang iyong paghahanap",
+    "ai_clarify_title_low_info": "Magkwento ka pa nang kaunti para mapaliit namin ang iyong paghahanap",
+    "ai_clarify_title_multiple_labels": "Aling uri ng tulong ang pinakaangkop sa iyong kailangan?",
+    "ai_skip": "Laktawan",
+    "ai_confirm": "Kumpirmahin",
+    "ai_show_more_categories": "Magpakita ng higit pang mga kategorya",
+    "ai_validation_select_or_skip": "Pumili ng kahit isang opsyon o laktawan.",
+    "ai_option_results_count_one": "{{count}} kaugnay na mapagkukunan",
+    "ai_option_results_count_other": "{{count}} mga kaugnay na mapagkukunan"
   },
   "call_to_action": {
     "call": "Tumawag",
@@ -179,5 +188,102 @@
     "default_title": "Error sa pagpapatunay",
     "default_description": "Hindi namin makumpleto ang proseso ng pag-sign in. Pakisubukang muli.",
     "logout_and_try_again": "Mag-logout at subukan muli"
+  },
+  "needs": {
+    "AR-100": {
+      "name": "Sining, Kultura at Libangan",
+      "description": "Ang pangangailangan para sa makabuluhang pakikilahok sa malikhain, kultural, at libangan. Saklaw nito ang mga pangangailangang may kaugnayan sa masining na pagpapahayag, pakikipag-ugnayan sa pamana ng kultura, mga aktibidad sa paglilibang, at libangan na nakabatay sa komunidad. Naiiba sa mga layunin ng therapeutic o panlipunang suporta — ito ay sumasalamin sa likas na pangangailangan ng tao na lumikha, magdiwang, maglaro, at mapabilang sa isang kultural na komunidad.",
+      "displayDescription": "Humingi ng tulong sa paghahanap ng mga masasayang bagay na maaaring gawin tulad ng sining, musika, palakasan, o mga kaganapan sa komunidad. Lahat ay nararapat na magkaroon ng oras upang maglaro, lumikha, at magdiwang."
+    },
+    "CL-150": {
+      "name": "Mga Pangangailangan sa Pananamit/Personal/Pantahanan",
+      "description": "Ang pangangailangan para sa sapat na damit, mga gamit sa pangangalaga sa sarili, at mga materyal na bagay na kinakailangan upang mapanatili ang isang maayos na sambahayan. Kabilang dito ang mga pangangailangan para sa damit na angkop sa panahon, trabaho, o paaralan; mga produkto para sa kalinisan at pangangalaga sa sarili; at mga pangunahing kagamitan o suplay na ginagawang matitirhan at marangal ang isang espasyong tinitirhan.",
+      "displayDescription": "Humingi ng tulong sa paghahanap ng mga damit, mga gamit sa pangangalaga sa sarili, o mga bagay na kailangan mo para sa iyong tahanan. Matutulungan ka naming makuha ang kailangan mo para maging malinis at komportable."
+    },
+    "DI-180": {
+      "name": "Mga Serbisyo sa Sakuna",
+      "description": "Ang pangangailangan para sa suporta na nagmumula sa isang idineklarang o naranasang sakuna, natural man o dulot ng tao. Saklaw nito ang mga pangangailangang lumilitaw bago, habang, at pagkatapos ng mga sakuna — kabilang ang kahandaan, pagtugon sa emerhensiya, at pagbangon. Naiiba sa patuloy na mga pangangailangan sa personal na kaligtasan; nakasentro sa matinding pagkagambala sa antas ng komunidad at mga kasunod nito.",
+      "displayDescription": "Humingi ng tulong bago, habang, o pagkatapos ng isang sakuna tulad ng baha, sunog, o bagyo. Maaari ka naming ikonekta sa mga taong handang tumulong sa panahon ng emergency."
+    },
+    "DV-190": {
+      "name": "Karahasan sa Tahanan / Kaligtasan sa Sarili",
+      "description": "Ang pangangailangan para sa kaligtasan at proteksyon mula sa interpersonal na pinsala, pang-aabuso, pamimilit, o pagbabanta. Saklaw nito ang mga pangangailangang may kaugnayan sa karahasan sa tahanan, karahasan sa matalik na kapareha, paniniktik, trafficking, at iba pang mga sitwasyon kung saan ang pisikal o emosyonal na kaligtasan ng isang tao ay nasa panganib dahil sa mga aksyon ng ibang tao. Naiiba sa mga pangangailangan sa kaligtasan na may kaugnayan sa sakuna o pangkalahatang imprastraktura ng kaligtasan ng publiko.",
+      "displayDescription": "Humingi ng tulong kung ikaw o ang isang kakilala mo ay nakakaramdam ng kawalan ng seguridad sa bahay o nasasaktan. Karapat-dapat kang makaramdam ng kaligtasan, at may mga taong handang tumulong ngayon."
+    },
+    "ED-170": {
+      "name": "Edukasyon",
+      "description": "Ang pangangailangan para sa access sa pagkatuto, pagpapaunlad ng kasanayan, at pagkamit ng edukasyon sa lahat ng yugto ng buhay. Saklaw nito ang mga pangangailangang may kaugnayan sa pagkatuto sa maagang pagkabata, pag-aaral sa K–12, edukasyon pagkatapos ng sekondarya, literasiya para sa matatanda, pagkatuto ng wikang Ingles, digital literacy, at pagsasanay sa bokasyonal. Ang pangangailangang ito ay umiiral kahit nasaan man ang isang tao sa kanilang paglalakbay sa edukasyon o anumang mga hadlang na kanilang kinakaharap sa pag-access dito.",
+      "displayDescription": "Humingi ng tulong sa pag-aaral — para sa mga bata, tinedyer, o matatanda. Kailangan mo man ng tulong sa paaralan, pagsasanay sa trabaho, o gustong matuto ng Ingles, matutulungan ka naming mahanap ito."
+    },
+    "EM-180": {
+      "name": "Trabaho",
+      "description": "Ang pangangailangan para sa access sa matatag at sapat na trabaho at ang mga kondisyon na nagbibigay-daan sa pagkakaroon ng trabaho. Saklaw nito ang mga pangangailangang may kaugnayan sa paghahanap ng trabaho, pagpapanatili ng trabaho, pagpapaunlad ng mga kasanayan sa trabaho, at pag-navigate sa mga karapatan at transisyon sa lugar ng trabaho tulad ng kawalan ng trabaho. Sinasalamin nito ang mga aspetong pang-ekonomiya at panlipunan ng trabaho bilang isang pangangailangan ng tao, hindi ang mga serbisyo mismo.",
+      "displayDescription": "Humingi ng tulong sa paghahanap ng trabaho, pagpapanatili ng trabaho, o pagbuo ng mga bagong kasanayan. Lahat ay karapat-dapat sa pagkakataong kumita at maging maayos ang pakiramdam sa kanilang trabaho."
+    },
+    "FO-200": {
+      "name": "Pagkain/Mga Pagkain",
+      "description": "Ang pangangailangan para sa palagian, sapat, at masustansyang pagkain. Saklaw nito ang mga pangangailangang may kaugnayan sa pag-access ng sapat na pagkain, pagkuha ng pagkain na nakakatugon sa mga pangangailangan sa nutrisyon o pagkain, at pag-unawa kung paano mapanatili ang malusog na pagkain. Ang pangangailangan ay umiiral maging ito man ay nagmumula sa kahirapan, krisis, talamak na kawalan ng seguridad sa pagkain, o kaguluhan sa sitwasyon.",
+      "displayDescription": "Humingi ng tulong sa paghahanap ng pagkain para sa iyo at sa iyong pamilya. Kailangan mo man ng pagkain ngayon o tulong sa pagbili ng mga groseri, maaari ka naming ikonekta sa pagkain na malapit sa iyo."
+    },
+    "HC-300": {
+      "name": "Pangangalaga sa Kalusugan",
+      "description": "Ang pangangailangan para sa access sa mga serbisyong pangkalusugang pisikal, pangangalagang pang-iwas, medikal na paggamot, at ang mga produkto at suporta sa nabigasyon na kinakailangan upang pamahalaan ang kalusugan ng isang tao. Saklaw nito ang mga pangangailangan sa buong continuum ng pisikal na kalusugan — mula sa regular na kagalingan at mga screening hanggang sa talamak na pangangalaga, pamamahala ng malalang sakit, rehabilitasyon, at pangmatagalang pangangalaga. Ang mga pangangailangan sa kalusugang pangkaisipan at paggamit ng droga ay tinutugunan nang hiwalay.",
+      "displayDescription": "Humingi ng tulong sa paghahanap ng doktor, dentista, o iba pang pangangalagang pangkalusugan. Lahat ay nararapat na manatiling malusog at makatanggap ng pangangalagang kailangan nila."
+    },
+    "HO-300": {
+      "name": "Pabahay",
+      "description": "Ang pangangailangan para sa isang ligtas, matatag, at angkop na lugar na matitirhan. Saklaw nito ang mga pangangailangan sa buong saklaw ng pabahay — mula sa agarang tirahan sa panahon ng krisis hanggang sa pangmatagalang abot-kayang pabahay, mga sumusuportang kaayusan sa pamumuhay, at mga suporta sa katatagan na tumutulong sa mga tao na manatiling may tirahan. Ang uri ng pangangailangan sa pabahay ay nag-iiba ayon sa pagkaapurahan at sitwasyon, ngunit ang pinagbabatayang pangangailangan ay pare-pareho: isang lugar na matatawag na tahanan.",
+      "displayDescription": "Humingi ng tulong sa paghahanap ng ligtas na matitirhan. Kailangan mo man ng matutulugan ngayong gabi o tulong sa pananatili sa iyong tahanan, maaari ka naming ikonekta sa pamamagitan ng suporta."
+    },
+    "IC-330": {
+      "name": "Suporta/Tulong sa Kita",
+      "description": "Ang pangangailangan para sa mga mapagkukunang pinansyal upang matugunan ang mga pangunahing gastusin sa pamumuhay kapag ang kita ay hindi sapat o wala. Saklaw nito ang mga pangangailangang may kaugnayan sa tulong pinansyal, kapalit ng kita, pag-access sa mga benepisyong pampubliko, at mga suporta sa katatagang pinansyal. Sinasalamin nito ang dimensyong pang-ekonomiya ng kagalingan — ang pangangailangang magkaroon ng sapat na mapagkukunan upang matugunan ang mga mahahalagang pangangailangan — hiwalay sa mga partikular na programa o mekanismo na maaaring tumutugon dito.",
+      "displayDescription": "Humingi ng tulong sa pagbabayad ng mga bagay na kailangan mo kapag kapos ka sa pera. Maaari ka naming ikonekta sa mga programang makakatulong sa pagbabayad ng mga bayarin at pang-araw-araw na gastusin."
+    },
+    "IF-330": {
+      "name": "Suporta sa Indibidwal, Pamilya at Komunidad",
+      "description": "Ang pangangailangan para sa suporta sa relasyon, pangangalaga, at antas ng komunidad na sumusuporta sa mga indibidwal at pamilya sa pang-araw-araw na buhay at mahihirap na sitwasyon. Saklaw nito ang mga pangangailangang may kaugnayan sa pagiging magulang, pangangalaga sa mga umaasa, pagharap sa mga komplikasyon ng pamilya, pagbuo ng mga koneksyon sa komunidad, at pag-access sa suporta ng mga kapantay o panlipunan. Ipinapakita nito ang katotohanan na ang kapakanan ng tao ay malalim na nakaugnay sa lakas ng mga relasyon at network na nakapalibot sa isang tao.",
+      "displayDescription": "Humingi ng tulong para sa iyong pamilya o sa isang taong inaalagaan mo. Kailangan mo man ng suporta sa pagiging magulang, tulong para sa isang nakatatanda, o isang taong makakausap, matutulungan ka namin."
+    },
+    "IS-330": {
+      "name": "Mga Serbisyo ng Impormasyon",
+      "description": "Ang pangangailangang maunawaan kung anong mga mapagkukunan ang umiiral at kung paano ma-access ang mga ito. Saklaw nito ang mga pangangailangang may kaugnayan sa paghahanap ng mga kaugnay na serbisyo, pag-unawa sa pagiging karapat-dapat at mga proseso, pag-navigate sa mga kumplikadong sistema, at pagkonekta sa tamang suporta sa tamang oras. Ito ay isang meta-pangangailangan — ang kinakailangan upang matugunan nang epektibo ang maraming iba pang mga pangangailangan — at naiiba sa mga serbisyo mismo.",
+      "displayDescription": "Hindi sigurado kung saan magsisimula? Matutulungan ka naming malaman kung anong mga serbisyo ang available at alin ang tama para sa iyo."
+    },
+    "LE-450": {
+      "name": "Legal, Mamimili at Kaligtasan ng Publiko",
+      "description": "Ang pangangailangan para sa legal na proteksyon, nabigasyon sa sistema ng hustisya, mga karapatan ng mamimili, at kaligtasan ng publiko. Saklaw nito ang mga pangangailangang may kaugnayan sa mga sibil na legal na usapin, pakikilahok sa hustisyang kriminal, katayuan sa imigrasyon, pinsala sa mamimili, at proteksyon sa ilalim ng batas. Sinasalamin nito ang mga sitwasyon kung saan nakataya ang mga karapatan, kaligtasan, o katayuan ng isang tao sa ilalim ng mga legal na sistema at kung saan kinakailangan ang kaalaman o tulong sa legal.",
+      "displayDescription": "Humingi ng tulong sa mga legal na katanungan, pag-unawa sa iyong mga karapatan, o pananatiling ligtas. Maaari ka naming ikonekta sa mga taong may alam sa batas at makakatulong."
+    },
+    "MH-500": {
+      "name": "Mga adiksyon",
+      "description": "Ang pangangailangan para sa suporta sa pagtugon sa paggamit ng droga, dependency, at adiksyon. Saklaw nito ang mga pangangailangang may kaugnayan sa pamamahala o paggaling mula sa problematikong paggamit ng alkohol, droga, o iba pang mga sangkap — kabilang ang acute stabilization, paggamot, at patuloy na suporta sa paggaling. Kinikilala bilang isang natatanging kategorya ng pangangailangan mula sa kalusugang pangkaisipan, bagama't ang dalawa ay madalas na nangyayari nang sabay.",
+      "displayDescription": "Humingi ng tulong kung ikaw o ang isang taong mahal mo sa buhay ay nahihirapan sa paggamit ng alkohol o droga. Posible ang paggaling, at may mga taong mapagmalasakit na handang sumuporta sa iyo."
+    },
+    "AD-510": {
+      "name": "Kalusugang Pangkaisipan",
+      "description": "Ang pangangailangan para sa suporta sa pagpapanatili, pagpapanumbalik, o pamamahala ng mental at emosyonal na kagalingan ng isang tao. Saklaw nito ang mga pangangailangang may kaugnayan sa emosyonal na pagkabalisa, mga kondisyong saykayatriko, kalusugan ng pag-uugali, mga sitwasyon ng krisis, at ang patuloy na suportang kinakailangan upang mabuhay nang maayos sa mga hamon sa kalusugang pangkaisipan. Naiiba sa mga pangangailangan sa paggamit ng droga, bagama't karaniwan ang mga sabay na pagpapakita.",
+      "displayDescription": "Humingi ng tulong kung ikaw ay nalulungkot, nababalisa, o labis na nabibigatan. Mahalaga ang iyong kalusugang pangkaisipan, at may mga taong maaaring makinig at tumulong."
+    },
+    "OT-600": {
+      "name": "Iba Pang Serbisyong Pampamahalaan/Pang-ekonomiya",
+      "description": "Ang pangangailangan para sa access sa mga programa ng gobyerno, mga serbisyong sibiko, at mga suportang pang-ekonomiya na hindi nabibilang sa ibang mga kategorya. Saklaw nito ang mga pangangailangang may kaugnayan sa pag-navigate sa mga pampublikong ahensya, pag-access sa mga benepisyo o karapatan ng gobyerno, suporta sa maliliit na negosyo, tulong sa buwis, at iba pang mga serbisyong pang-ekonomiya na sumusuporta sa katatagan ng indibidwal at komunidad.",
+      "displayDescription": "Humingi ng tulong sa mga programa, benepisyo, o iba pang serbisyo ng gobyerno na mahirap mahanap sa ibang lugar. Matutulungan ka naming malaman kung saan pupunta."
+    },
+    "TR-850": {
+      "name": "Transportasyon",
+      "description": "Ang pangangailangan para sa kakayahang maglakbay nang maaasahan upang matugunan ang iba pang mga pangangailangan — trabaho, pangangalagang pangkalusugan, edukasyon, pagkain, serbisyo, at koneksyon sa lipunan. Saklaw nito ang mga pangangailangang may kaugnayan sa pag-access ng mga sakay, pagsagot sa mga gastos sa transportasyon, pagpapanatili ng sasakyan, at ligtas na paglalakbay. Ang transportasyon ay isang pundamental na tagapagtaguyod: ang kawalan nito ay nagpapalala sa halos lahat ng iba pang hindi natutugunan na pangangailangan.",
+      "displayDescription": "Humingi ng tulong sa pagpunta sa lugar na kailangan mong puntahan — sa doktor, trabaho, paaralan, o tindahan. Matutulungan ka naming makahanap ng masasakyan o abot-kayang paraan ng paglalakbay."
+    },
+    "UT-900": {
+      "name": "Mga Utility",
+      "description": "Ang pangangailangan para sa access sa mga mahahalagang kagamitan sa bahay — kuryente, gas, tubig, at telekomunikasyon — na siyang dahilan kung bakit ligtas, matitirhan, at konektado ang isang espasyong tinitirhan. Saklaw nito ang mga pangangailangang may kaugnayan sa pagpapanatili ng serbisyo ng utility, pagbabayad ng mga gastos sa utility, pagbabawas ng pagkonsumo, at pag-access sa koneksyon sa telepono o internet. Ang pangangailangan sa utility ay malapit na nauugnay sa katatagan at kalusugan ng pabahay.",
+      "displayDescription": "Humingi ng tulong sa pagbabayad ng kuryente, gas, tubig, o serbisyo ng telepono at internet. Maaari ka naming ikonekta sa mga programang makakatulong na mapanatiling tumatakbo ang iyong tahanan."
+    },
+    "VO-900": {
+      "name": "Boluntaryo at Donasyon",
+      "description": "Ang pangangailangang magbigay o tumanggap sa pamamagitan ng pagkabukas-palad ng komunidad — maging ang isang tao ay nangangailangan ng mga donasyong kalakal, o may kakayahan at pagnanais na mag-ambag ng oras, kasanayan, o mga mapagkukunan sa iba. Saklaw nito ang mga pangangailangan sa magkabilang panig ng palitang sibiko: mga indibidwal na naghahanap ng mga materyal na donasyon o mga serbisyong naibigay, at mga indibidwal o organisasyon na naghahangad na ikonekta ang mga boluntaryo at donor sa mga makabuluhang pagkakataon upang makatulong.",
+      "displayDescription": "Kailangan mo ba ng mga donasyon o gustong tumulong sa iba? Maaari nating ikonekta ang mga taong gustong magbigay sa mga taong nangangailangan."
+    }
   }
 }

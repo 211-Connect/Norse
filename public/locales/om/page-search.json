@@ -26,5 +26,8 @@
   "name_unavailable": "Maqaan hin argamu",
   "share_body": "Bu'aa barbaacha {{count}} \"{{title}}\" ilaali.",
   "age_filter_label": "Umuriidhaan calaluu",
-  "age_filter_placeholder": "Umurii galchi"
+  "age_filter_placeholder": "Umurii galchi",
+  "ai_broadened_results_alert": "Gaaffiin keessan bal'inaan waan barbaaduuf bu'aa bal'aa agarsiifne. Mata duree ykn yaada fayyadamuun fooyyessuu dandeessa.",
+  "ai_broadened_results_alert_low_info": "Barbaacha keessan bal'inaan waan barbaaduuf bu'aa bal'aa agarsiifne. Mata duree ykn yaada fayyadamuun fooyyessuu dandeessa.",
+  "ai_broadened_results_alert_low_confidence": "Tapha gaarii ta'e irratti ofitti amanamummaa waan hin qabneef bu'aa bal'aa agarsiifne. Mata duree ykn yaada fayyadamuun fooyyessuu dandeessa."
 }

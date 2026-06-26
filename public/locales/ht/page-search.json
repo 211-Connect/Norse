@@ -26,5 +26,8 @@
   "name_unavailable": "Non pa disponib",
   "share_body": "Gade {{count}} rezilta rechèch pou \"{{title}}\"",
   "age_filter_label": "Filtre pa laj",
-  "age_filter_placeholder": "Antre laj"
+  "age_filter_placeholder": "Antre laj",
+  "ai_broadened_results_alert": "Nou te montre rezilta ki pi laj paske demann ou an ka bezwen plis detay. Ou ka rafine l avèk sijè oswa sijesyon.",
+  "ai_broadened_results_alert_low_info": "Nou te montre rezilta ki pi laj paske rechèch ou a ka bezwen plis detay. Ou ka rafine l avèk sijè oswa sijesyon.",
+  "ai_broadened_results_alert_low_confidence": "Nou te montre rezilta ki pi laj paske nou pa t sèten sou pi bon match la. Ou ka rafine lè w sèvi ak sijè oswa sijesyon."
 }
