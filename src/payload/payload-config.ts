@@ -307,6 +307,14 @@ const config = buildConfig({
           minWidth: 'x-small',
           maxWidth: 'full',
         },
+        {
+          slug: 'analytics-event-card',
+          Component:
+            '@/payload/components/analytics/widgets/EventCardWidget#default',
+          label: 'Event card',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
       ],
       defaultLayout: [{ widgetSlug: 'collections', width: 'full' as const }],
     },

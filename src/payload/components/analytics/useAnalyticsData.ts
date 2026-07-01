@@ -10,6 +10,7 @@ import {
 } from './DateRange';
 import {
   fetchAreaSearchMetrics,
+  fetchEventDataValues,
   fetchEvents,
   fetchLanguageSwitchDestinations,
   fetchMetrics,
@@ -24,6 +25,7 @@ import {
 import {
   AreaSearchMetricsData,
   DateRange,
+  EventDataValuesData,
   EventsData,
   LanguageSwitchDestinationsData,
   MetricsData,
@@ -122,3 +124,45 @@ export const useResourceByEntry =
 export const useAreaSearchMetrics = makeAsyncHook<AreaSearchMetricsData>(
   fetchAreaSearchMetrics,
 );
+
+export function useEventDataValues(
+  event: string,
+  propertyName: string,
+): AsyncData<EventDataValuesData> {
+  const { range, tenantId, websiteIds } = useAnalyticsParams();
+  const [state, setState] = useState<AsyncData<EventDataValuesData>>({
+    loading: true,
+    error: null,
+    data: null,
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!tenantId || !event || !propertyName) {
+      setState({ loading: false, error: null, data: null });
+      return;
+    }
+
+    setState({ loading: true, error: null, data: null });
+    fetchEventDataValues(range, tenantId, websiteIds, { event, propertyName })
+      .then((data) => {
+        if (!cancelled) setState({ loading: false, error: null, data });
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setState({
+            loading: false,
+            error: err instanceof Error ? err.message : String(err),
+            data: null,
+          });
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [range, tenantId, websiteIds, event, propertyName]);
+
+  return state;
+}
