@@ -252,6 +252,7 @@ export interface Config {
     'analytics-language-switch-destinations': AnalyticsLanguageSwitchDestinationsWidget;
     'analytics-favorite-add-to-list': AnalyticsFavoriteAddToListWidget;
     'analytics-verified-users': AnalyticsVerifiedUsersWidget;
+    'analytics-event-card': AnalyticsEventCardWidget;
     collections: CollectionsWidget;
   };
   user: User;
@@ -2068,6 +2069,16 @@ export interface AnalyticsFavoriteAddToListWidget {
  * via the `definition` "analytics-verified-users_widget".
  */
 export interface AnalyticsVerifiedUsersWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-event-card_widget".
+ */
+export interface AnalyticsEventCardWidget {
   data?: {
     [k: string]: unknown;
   };

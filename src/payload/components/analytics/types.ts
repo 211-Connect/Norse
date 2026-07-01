@@ -26,6 +26,18 @@ export type EventsData = {
   prevEventTotals: Record<string, number>;
 };
 
+export type EventDataValuesData = {
+  values: MetricEntry[];
+};
+
+export type EventNamesData = {
+  eventNames: MetricEntry[];
+};
+
+export type EventPropertiesData = {
+  eventProperties: { eventName: string; propertyName: string; total: number }[];
+};
+
 export type ZeroResultQueriesData = {
   zeroResultQueries: MetricEntry[];
 };
