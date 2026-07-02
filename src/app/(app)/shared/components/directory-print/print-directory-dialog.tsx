@@ -76,6 +76,7 @@ export function PrintDirectoryDialog({
           brandLogoUrl={appConfig.brand.logoUrl}
           disclaimerText={t('print_footer_disclaimer', {
             brandName: appConfig.brand.name,
+            interpolation: { escapeValue: false },
           })}
         />,
       ).toBlob();
