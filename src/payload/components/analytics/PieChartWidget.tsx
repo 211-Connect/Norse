@@ -29,6 +29,7 @@ const LEGEND_CONTAINER_STYLE = {
   gap: '1.25rem',
   flexWrap: 'wrap' as const,
   justifyContent: 'center',
+  marginTop: '0.5rem',
 };
 
 const LEGEND_ITEM_STYLE = {

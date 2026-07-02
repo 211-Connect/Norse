@@ -3,6 +3,8 @@ import { ResourceDirectory } from '@/payload/payload-types';
 
 import { Nullable } from './common';
 
+export type SearchEngine = 'classic' | 'hybrid' | 'ai_classification';
+
 type Menu = {
   name: string;
   href?: Nullable<string>;
@@ -75,6 +77,11 @@ export type AppConfig = {
     title: string;
   };
   pages: {
+    accessibilityPage: {
+      enabled: boolean;
+      title?: string;
+      content?: string;
+    };
     privacyPolicyPage: {
       enabled: boolean;
       title?: string;
@@ -99,7 +106,7 @@ export type AppConfig = {
       name: string;
       facet: string;
       showInDetails?: boolean;
-      sortBy?: 'count' | 'name' | 'valueOrder';
+      sortBy?: 'count' | 'name' | 'valueOrder' | 'dayOfWeek';
       valueOrder?: string[];
       excludeValues?: string[];
     }[];
@@ -111,8 +118,7 @@ export type AppConfig = {
       value?: number;
     }[];
     defaultRadius?: number;
-    hybridSemanticSearchEnabled: boolean;
-    aiClassificationEnabled: boolean;
+    searchEngine: SearchEngine;
     resultsLimit: number;
     texts?: {
       title?: string;
@@ -124,7 +130,7 @@ export type AppConfig = {
         taxonomies?: string;
       };
       viewDetailsText?: string;
-      useTextLinkForViewDetails?: boolean;
+      viewDetailsButtonVariant?: 'default' | 'secondary' | 'ghost' | 'link';
       noResultsFallbackText?: string;
     };
     cardLayout?: NonNullable<ResourceDirectory['search']['cardLayout']>;

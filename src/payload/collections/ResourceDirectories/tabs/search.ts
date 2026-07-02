@@ -183,12 +183,30 @@ export const search: Tab = {
                   },
                 },
                 {
-                  name: 'useTextLinkForViewDetails',
-                  type: 'checkbox',
-                  defaultValue: false,
+                  name: 'viewDetailsButtonVariant',
+                  type: 'select',
+                  defaultValue: 'ghost',
+                  options: [
+                    {
+                      label: 'Default',
+                      value: 'default',
+                    },
+                    {
+                      label: 'Secondary',
+                      value: 'secondary',
+                    },
+                    {
+                      label: 'Ghost',
+                      value: 'ghost',
+                    },
+                    {
+                      label: 'Link',
+                      value: 'link',
+                    },
+                  ],
                   admin: {
                     description:
-                      'Display the View Details action as an underlined text link instead of the default button-style action.',
+                      'Choose how the View Details action is displayed on search result cards.',
                   },
                   access: {
                     create: superAdminOrSupportOrTenantAccess,
@@ -223,18 +241,23 @@ export const search: Tab = {
       name: 'searchSettings',
       fields: [
         {
-          name: 'hybridSemanticSearchEnabled',
-          type: 'checkbox',
-          defaultValue: false,
-          access: {
-            create: superAdminOrSupportOrTenantAccess,
-            update: superAdminOrSupportOrTenantAccess,
-          },
-        },
-        {
-          name: 'aiClassificationEnabled',
-          type: 'checkbox',
-          defaultValue: false,
+          name: 'searchEngine',
+          type: 'select',
+          defaultValue: 'classic',
+          options: [
+            {
+              label: 'Classic',
+              value: 'classic',
+            },
+            {
+              label: 'Hybrid',
+              value: 'hybrid',
+            },
+            {
+              label: 'AI Classification',
+              value: 'ai_classification',
+            },
+          ],
           access: {
             create: superAdminOrSupportOrTenantAccess,
             update: superAdminOrSupportOrTenantAccess,
@@ -336,7 +359,7 @@ export const search: Tab = {
           defaultValue: 'count',
           admin: {
             description:
-              'Count keeps API-provided order. Name sorts by localized label. Custom Value Order sorts by the configured English/raw facet values.',
+              'Count keeps API-provided order. Name sorts by localized label. Custom Value Order sorts by configured English/raw facet values. Day of Week sorts Sunday to Saturday and supports values like Sunday/Sun, Monday/Mon, etc.',
           },
           access: {
             create: superAdminOrSupportOrTenantAccess,
@@ -354,6 +377,10 @@ export const search: Tab = {
             {
               label: 'Custom Value Order',
               value: 'valueOrder',
+            },
+            {
+              label: 'Day of Week',
+              value: 'dayOfWeek',
             },
           ],
         },

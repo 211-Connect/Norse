@@ -10,6 +10,9 @@ import type {
   AreaMetricsRow,
   AreaSearchMetricsData,
   DateRange,
+  EventDataValuesData,
+  EventNamesData,
+  EventPropertiesData,
   EventsData,
   LanguageSwitchDestinationsData,
   Metric,
@@ -44,7 +47,7 @@ function isFresh<T>(entry: CacheEntry<T>): boolean {
 }
 
 function toMetricEntries(
-  rows: UmamiEventDataValue[] | undefined,
+  rows: UmamiEventDataValue[] | null | undefined,
 ): MetricEntry[] {
   return (rows ?? [])
     .map((row) => ({
@@ -127,6 +130,31 @@ function makeCachedFetch<T>(
     const cached = getCache(cache, key);
     if (cached) return cached;
     const promise = load(timeWindow(range), tenantId, websiteIds);
+    setCache(cache, key, promise);
+    return promise;
+  };
+}
+
+function makeCachedFetchWithArgs<T, A extends Record<string, string>>(
+  cache: Map<string, CacheEntry<T>>,
+  argsToKey: (args: A) => string,
+  load: (
+    window: TimeWindow,
+    tenantId: string | undefined,
+    websiteIds: string[] | undefined,
+    args: A,
+  ) => Promise<T>,
+) {
+  return function (
+    range: DateRange,
+    tenantId: string | undefined,
+    websiteIds: string[] | undefined,
+    args: A,
+  ): Promise<T> {
+    const key = `${cacheKey(range, tenantId, websiteIds)}:${argsToKey(args)}`;
+    const cached = getCache(cache, key);
+    if (cached) return cached;
+    const promise = load(timeWindow(range), tenantId, websiteIds, args);
     setCache(cache, key, promise);
     return promise;
   };
@@ -486,6 +514,80 @@ export const fetchEvents = makeCachedFetch(
     const prevEventTotals = sumEventTotals(prevEvents ?? []);
 
     return { eventTotals, prevEventTotals };
+  },
+);
+
+export const fetchEventDataValues = makeCachedFetchWithArgs<
+  EventDataValuesData,
+  { event: string; propertyName: string }
+>(
+  new Map<string, CacheEntry<EventDataValuesData>>(),
+  ({ event, propertyName }) => `${event}:${propertyName}`,
+  async ({ startAt, endAt }, tenantId, websiteIds, { event, propertyName }) => {
+    const raw = await fetchWrapper<UmamiEventDataValue[]>(
+      buildProxyQuery(
+        'event-data/values',
+        startAt,
+        endAt,
+        tenantId,
+        { event, propertyName },
+        websiteIds,
+      ),
+    );
+
+    return { values: toMetricEntries(raw) };
+  },
+);
+
+export const fetchEventNames = makeCachedFetch(
+  new Map<string, CacheEntry<EventNamesData>>(),
+  async ({ startAt, endAt }, tenantId, websiteIds) => {
+    const raw = await fetchWrapper<MetricEntry[]>(
+      buildProxyQuery(
+        'events/series',
+        startAt,
+        endAt,
+        tenantId,
+        {
+          timezone: 'UTC',
+        },
+        websiteIds,
+      ),
+    );
+
+    const eventNames = (raw ?? [])
+      .map((row) => ({
+        x: String(row.x ?? '').trim(),
+        y: Number(row.y) || 0,
+      }))
+      .filter((row) => row.x.length > 0 && row.y > 0)
+      .sort((a, b) => b.y - a.y);
+
+    return { eventNames };
+  },
+);
+
+export const fetchEventProperties = makeCachedFetchWithArgs<
+  EventPropertiesData,
+  { event?: string }
+>(
+  new Map<string, CacheEntry<EventPropertiesData>>(),
+  ({ event }) => event ?? '__all',
+  async ({ startAt, endAt }, tenantId, websiteIds, { event }) => {
+    const raw = await fetchWrapper<
+      { eventName: string; propertyName: string; total: number }[]
+    >(
+      buildProxyQuery(
+        'event-data/properties',
+        startAt,
+        endAt,
+        tenantId,
+        event ? { event } : undefined,
+        websiteIds,
+      ),
+    );
+
+    return { eventProperties: raw ?? [] };
   },
 );
 

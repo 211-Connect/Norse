@@ -56,7 +56,16 @@
     "list_status_one": "Es steht eine Option zur Verfügung. Verwenden Sie die Pfeiltasten nach oben und unten, um sie anzuzeigen.",
     "list_status_other": "{{count}} Optionen verfügbar. Verwenden Sie die Pfeiltasten nach oben und unten, um sie anzuzeigen.",
     "search_dialog_description": "Suchen Sie nach Ressourcen und aktualisieren Sie Ihren Standort.",
-    "everywhere": "Überall"
+    "everywhere": "Überall",
+    "ai_clarify_title": "Helfen Sie uns, Ihre Suche einzugrenzen",
+    "ai_clarify_title_low_info": "Erzählen Sie uns etwas mehr, damit wir Ihre Suche eingrenzen können.",
+    "ai_clarify_title_multiple_labels": "Welche Art von Hilfe passt am besten zu Ihren Bedürfnissen?",
+    "ai_skip": "Überspringen",
+    "ai_confirm": "Bestätigen",
+    "ai_show_more_categories": "Weitere Kategorien anzeigen",
+    "ai_validation_select_or_skip": "Wählen Sie mindestens eine Option aus oder überspringen Sie diesen Schritt.",
+    "ai_option_results_count_one": "{{count}} zugehörige Ressource",
+    "ai_option_results_count_other": "{{count}} verwandte Ressourcen"
   },
   "call_to_action": {
     "call": "Anruf",
@@ -179,5 +188,102 @@
     "default_title": "Authentifizierungsfehler",
     "default_description": "Der Anmeldevorgang konnte nicht abgeschlossen werden. Bitte versuchen Sie es erneut.",
     "logout_and_try_again": "Abmelden und erneut versuchen"
+  },
+  "needs": {
+    "AR-100": {
+      "name": "Kunst, Kultur und Freizeit",
+      "description": "Das Bedürfnis nach sinnvoller Teilhabe am kreativen, kulturellen und Freizeitleben. Dazu gehören Bedürfnisse im Zusammenhang mit künstlerischem Ausdruck, der Auseinandersetzung mit dem kulturellen Erbe, Freizeitaktivitäten und gemeinschaftlicher Freizeitgestaltung. Anders als therapeutische oder soziale Unterstützungsziele spiegelt dies das ureigene menschliche Bedürfnis wider, zu gestalten, zu feiern, zu spielen und einer kulturellen Gemeinschaft anzugehören.",
+      "displayDescription": "Wir helfen Ihnen dabei, unterhaltsame Aktivitäten wie Kunst, Musik, Sport oder Gemeinschaftsveranstaltungen zu finden. Jeder verdient Zeit zum Spielen, Kreativsein und Feiern."
+    },
+    "CL-150": {
+      "name": "Kleidung/Persönliche/Haushaltsbedürfnisse",
+      "description": "Der Bedarf an angemessener Kleidung, Körperpflegeartikeln und den materiellen Gütern, die für einen funktionsfähigen Haushalt notwendig sind. Dazu gehören wetter-, arbeits- oder schulgerechte Kleidung, Hygiene- und Körperpflegeprodukte sowie grundlegende Einrichtungsgegenstände oder Gebrauchsgegenstände, die einen Wohnraum bewohnbar und würdevoll machen.",
+      "displayDescription": "Wir helfen Ihnen gerne bei der Suche nach Kleidung, Hygieneartikeln oder Haushaltswaren. Wir unterstützen Sie dabei, alles zu finden, was Sie für ein sauberes und angenehmes Gefühl benötigen."
+    },
+    "DI-180": {
+      "name": "Katastrophenschutz",
+      "description": "Der Unterstützungsbedarf, der durch ein Katastrophenereignis – ob natürlichen oder menschlichen Ursprungs – entsteht. Er umfasst Bedürfnisse, die vor, während und nach Katastrophen auftreten – einschließlich Vorbereitung, Notfallmaßnahmen und Wiederaufbau. Er unterscheidet sich von den laufenden Bedürfnissen der persönlichen Sicherheit und konzentriert sich auf akute Beeinträchtigungen auf Gemeindeebene und deren Folgen.",
+      "displayDescription": "Holen Sie sich Hilfe vor, während oder nach einer Katastrophe wie Überschwemmung, Brand oder Sturm. Wir können Sie mit Menschen in Kontakt bringen, die im Notfall bereit sind zu helfen."
+    },
+    "DV-190": {
+      "name": "Häusliche Gewalt / Persönliche Sicherheit",
+      "description": "Das Bedürfnis nach Sicherheit und Schutz vor zwischenmenschlicher Gewalt, Missbrauch, Nötigung oder Bedrohung. Dies umfasst Bedürfnisse im Zusammenhang mit häuslicher Gewalt, Gewalt in Partnerschaften, Stalking, Menschenhandel und anderen Situationen, in denen die körperliche oder seelische Sicherheit einer Person durch das Handeln einer anderen Person gefährdet ist. Es unterscheidet sich von Sicherheitsbedürfnissen im Katastrophenfall oder der allgemeinen öffentlichen Sicherheitsinfrastruktur.",
+      "displayDescription": "Holen Sie sich Hilfe, wenn Sie oder jemand, den Sie kennen, sich zu Hause unsicher fühlt oder verletzt wird. Sie haben ein Recht darauf, sich sicher zu fühlen, und es gibt Menschen, die Ihnen jetzt helfen wollen."
+    },
+    "ED-170": {
+      "name": "Ausbildung",
+      "description": "Der Bedarf an Zugang zu Bildung, Kompetenzentwicklung und Bildungserfolg in allen Lebensphasen umfasst Bedürfnisse im Zusammenhang mit frühkindlicher Bildung, Schulbildung (K-12), Hochschulbildung, Alphabetisierung Erwachsener, Englischlernen, digitaler Kompetenz und beruflicher Ausbildung. Dieser Bedarf besteht unabhängig davon, wo sich jemand in seinem Bildungsweg befindet oder welche Zugangsbarrieren bestehen.",
+      "displayDescription": "Hilfe beim Lernen – für Kinder, Jugendliche und Erwachsene. Ob schulische Unterstützung, Berufsausbildung oder Englischkurse – wir helfen Ihnen, das Richtige zu finden."
+    },
+    "EM-180": {
+      "name": "Anstellung",
+      "description": "Das Bedürfnis nach Zugang zu stabiler, angemessener Arbeit und den dafür notwendigen Arbeitsbedingungen umfasst Bedürfnisse im Zusammenhang mit der Arbeitssuche, dem Erhalt des Arbeitsplatzes, der Entwicklung beruflicher Kompetenzen sowie der Wahrnehmung von Rechten am Arbeitsplatz und Übergängen wie Arbeitslosigkeit. Es spiegelt die wirtschaftlichen und sozialen Dimensionen von Arbeit als menschliches Bedürfnis wider, nicht die Dienstleistungen selbst.",
+      "displayDescription": "Wir helfen Ihnen, einen Job zu finden, Ihren Job zu behalten oder neue Fähigkeiten zu erwerben. Jeder verdient die Chance, seinen Lebensunterhalt zu verdienen und mit seiner Arbeit zufrieden zu sein."
+    },
+    "FO-200": {
+      "name": "Essen/Mahlzeiten",
+      "description": "Der Bedarf an regelmäßiger, ausreichender und nahrhafter Nahrung. Dazu gehören Bedürfnisse im Zusammenhang mit dem Zugang zu genügend Nahrungsmitteln, dem Bezug von Nahrungsmitteln, die den Nährstoffbedarf decken, und dem Verständnis, wie man sich gesund ernährt. Dieser Bedarf besteht unabhängig davon, ob er durch Armut, Krisen, chronische Ernährungsunsicherheit oder situative Notlagen entsteht.",
+      "displayDescription": "Wir helfen Ihnen, Lebensmittel für Sie und Ihre Familie zu finden. Ob Sie heute eine Mahlzeit benötigen oder Hilfe beim Einkaufen – wir können Sie mit Lebensmittelgeschäften in Ihrer Nähe in Verbindung bringen."
+    },
+    "HC-300": {
+      "name": "Gesundheitspflege",
+      "description": "Der Bedarf an Zugang zu Leistungen der körperlichen Gesundheitsversorgung, Prävention, medizinischer Behandlung sowie den notwendigen Gütern und Unterstützungsangeboten zur Gesundheitsvorsorge umfasst alle Bereiche der körperlichen Gesundheit – von routinemäßigen Vorsorgeuntersuchungen und Screenings bis hin zu Akutversorgung, dem Management chronischer Erkrankungen, Rehabilitation und Langzeitpflege. Bedürfnisse im Bereich der psychischen Gesundheit und des Suchtmittelkonsums werden gesondert behandelt.",
+      "displayDescription": "Wir helfen Ihnen bei der Suche nach einem Arzt, Zahnarzt oder anderen Gesundheitsdienstleistern. Jeder hat das Recht, gesund zu bleiben und die benötigte Versorgung zu erhalten."
+    },
+    "HO-300": {
+      "name": "Gehäuse",
+      "description": "Das Bedürfnis nach einem sicheren, stabilen und angemessenen Wohnort umfasst alle Bedürfnisse rund ums Wohnen – von der sofortigen Unterbringung in Krisensituationen bis hin zu langfristigem, bezahlbarem Wohnraum, betreutem Wohnen und Unterstützungsangeboten, die Menschen helfen, ihre Wohnung zu behalten. Die Art des Wohnbedarfs variiert je nach Dringlichkeit und Umständen, doch das grundlegende Bedürfnis bleibt gleich: ein Zuhause.",
+      "displayDescription": "Wir helfen Ihnen, eine sichere Unterkunft zu finden. Ob Sie einen Schlafplatz für heute Nacht benötigen oder Unterstützung beim Verbleib in Ihrer Wohnung wünschen – wir vermitteln Ihnen die passende Hilfe."
+    },
+    "IC-330": {
+      "name": "Einkommensunterstützung/Hilfe",
+      "description": "Der Bedarf an finanziellen Mitteln zur Deckung der grundlegenden Lebenshaltungskosten bei unzureichendem oder fehlendem Einkommen. Dies umfasst Bedürfnisse im Zusammenhang mit finanzieller Unterstützung, Einkommensersatz, Zugang zu Sozialleistungen und Maßnahmen zur finanziellen Stabilisierung. Es spiegelt die wirtschaftliche Dimension des Wohlbefindens wider – das Bedürfnis, über ausreichende Ressourcen zur Deckung der Grundbedürfnisse zu verfügen – unabhängig von den spezifischen Programmen oder Mechanismen, die dieses Bedürfnis adressieren.",
+      "displayDescription": "Wenn Ihr Geld knapp ist, erhalten Sie Unterstützung bei der Finanzierung Ihrer Ausgaben. Wir können Sie mit Programmen in Verbindung bringen, die Ihnen helfen, Rechnungen und alltägliche Kosten zu decken."
+    },
+    "IF-330": {
+      "name": "Unterstützung für Einzelpersonen, Familien und die Gemeinschaft",
+      "description": "Der Bedarf an Beziehungs-, Betreuungs- und gemeinschaftsbezogener Unterstützung, die Einzelpersonen und Familien im Alltag und in schwierigen Lebenslagen trägt. Dies umfasst Bedürfnisse im Zusammenhang mit Elternschaft, Pflege von Angehörigen, dem Umgang mit familiären Herausforderungen, dem Aufbau sozialer Kontakte und dem Zugang zu Unterstützung durch Gleichaltrige oder andere soziale Gruppen. Es spiegelt die Tatsache wider, dass menschliches Wohlbefinden eng mit der Stärke der Beziehungen und Netzwerke im Umfeld einer Person verbunden ist.",
+      "displayDescription": "Holen Sie sich Hilfe für Ihre Familie oder eine Ihnen nahestehende Person. Ob Sie Unterstützung bei Erziehungsfragen, Hilfe für einen älteren Menschen oder einfach jemanden zum Reden benötigen – wir können Ihnen helfen."
+    },
+    "IS-330": {
+      "name": "Informationsdienste",
+      "description": "Es besteht die Notwendigkeit, zu verstehen, welche Ressourcen existieren und wie man darauf zugreifen kann. Dies umfasst Bedürfnisse im Zusammenhang mit der Suche nach relevanten Dienstleistungen, dem Verständnis von Anspruchsberechtigung und Verfahren, der Navigation durch komplexe Systeme und der Kontaktaufnahme mit der richtigen Unterstützung zum richtigen Zeitpunkt. Dies ist ein übergeordnetes Bedürfnis – die Voraussetzung für die effektive Erfüllung vieler anderer Bedürfnisse – und unterscheidet sich von den Dienstleistungen selbst.",
+      "displayDescription": "Sie wissen nicht, wo Sie anfangen sollen? Wir helfen Ihnen herauszufinden, welche Dienstleistungen es gibt und welche für Sie die richtigen sind."
+    },
+    "LE-450": {
+      "name": "Recht, Verbraucherschutz und öffentliche Sicherheit",
+      "description": "Der Bedarf an Rechtsschutz, die Orientierung im Justizsystem, Verbraucherrechte und öffentliche Sicherheit. Dies umfasst Bedürfnisse im Zusammenhang mit zivilrechtlichen Angelegenheiten, Strafverfolgung, Aufenthaltsstatus, Verbraucherschäden und dem Schutz durch das Gesetz. Es spiegelt Situationen wider, in denen die Rechte, die Sicherheit oder die Stellung einer Person vor dem Gesetz gefährdet sind und in denen juristisches Wissen oder Unterstützung erforderlich ist.",
+      "displayDescription": "Sie erhalten Hilfe bei rechtlichen Fragen, beim Verständnis Ihrer Rechte oder bei Fragen zur Sicherheit. Wir können Sie mit Rechtsexperten in Kontakt bringen, die Ihnen weiterhelfen können."
+    },
+    "MH-500": {
+      "name": "Süchte",
+      "description": "Der Bedarf an Unterstützung im Umgang mit Substanzkonsum, Abhängigkeit und Sucht umfasst Bedürfnisse im Zusammenhang mit der Bewältigung oder Genesung von problematischem Alkohol-, Drogen- oder anderem Substanzkonsum – einschließlich akuter Stabilisierung, Behandlung und fortlaufender Unterstützung im Genesungsprozess. Dies wird als eigenständige Bedarfskategorie neben der psychischen Gesundheit anerkannt, obwohl beide häufig gemeinsam auftreten.",
+      "displayDescription": "Suchen Sie Hilfe, wenn Sie oder ein Ihnen nahestehender Mensch mit Alkohol- oder Drogenproblemen zu kämpfen hat. Eine Genesung ist möglich, und es gibt mitfühlende Menschen, die Sie dabei unterstützen."
+    },
+    "AD-510": {
+      "name": "Psychische Gesundheit",
+      "description": "Das Bedürfnis nach Unterstützung bei der Erhaltung, Wiederherstellung oder Bewältigung des eigenen psychischen und emotionalen Wohlbefindens. Dies umfasst Bedürfnisse im Zusammenhang mit emotionaler Belastung, psychiatrischen Erkrankungen, Verhaltensauffälligkeiten, Krisensituationen und der fortlaufenden Unterstützung, die für ein gutes Leben mit psychischen Belastungen erforderlich ist. Es unterscheidet sich von Bedürfnissen im Zusammenhang mit Substanzkonsum, obwohl ein gleichzeitiges Auftreten häufig vorkommt.",
+      "displayDescription": "Wenn Sie traurig, ängstlich oder überfordert sind, suchen Sie sich Hilfe. Ihre psychische Gesundheit ist wichtig, und es gibt Menschen, die Ihnen zuhören und helfen können."
+    },
+    "OT-600": {
+      "name": "Sonstige staatliche/wirtschaftliche Dienstleistungen",
+      "description": "Der Bedarf an Zugang zu staatlichen Programmen, Bürgerdiensten und wirtschaftlichen Fördermaßnahmen, die sich nicht eindeutig anderen Kategorien zuordnen lassen. Dazu gehören Bedürfnisse im Zusammenhang mit der Orientierung in Behörden, dem Zugang zu staatlichen Leistungen und Ansprüchen, der Unterstützung kleiner Unternehmen, Steuerhilfen und anderen wirtschaftlichen Dienstleistungen, die die Stabilität von Einzelpersonen und Gemeinschaften fördern.",
+      "displayDescription": "Wir helfen Ihnen bei der Beantragung von staatlichen Programmen, Sozialleistungen oder anderen Dienstleistungen, die sonst schwer zu finden sind. Wir unterstützen Sie dabei, die richtige Anlaufstelle zu finden."
+    },
+    "TR-850": {
+      "name": "Transport",
+      "description": "Die Notwendigkeit, zuverlässig reisen zu können, um andere Bedürfnisse zu befriedigen – Arbeit, Gesundheitsversorgung, Bildung, Nahrung, Dienstleistungen und soziale Kontakte – umfasst Bedürfnisse im Zusammenhang mit dem Zugang zu Mitfahrgelegenheiten, der Bezahlbarkeit der Transportkosten, der Instandhaltung eines Fahrzeugs und der Sicherheit beim Reisen. Mobilität ist eine grundlegende Voraussetzung: Ihr Fehlen verschärft nahezu alle anderen unerfüllten Bedürfnisse.",
+      "displayDescription": "Wir helfen Ihnen, Ihr Ziel zu erreichen – sei es ein Arzttermin, ein Termin am Arbeitsplatz, eine Schulveranstaltung oder ein Einkaufsbummel. Wir unterstützen Sie bei der Suche nach Mitfahrgelegenheiten oder anderen günstigen Reisemöglichkeiten."
+    },
+    "UT-900": {
+      "name": "Versorgungsunternehmen",
+      "description": "Der Bedarf an grundlegenden Haushaltsressourcen – Strom, Gas, Wasser und Telekommunikation – ermöglicht es, einen Wohnraum sicher, bewohnbar und vernetzt zu gestalten. Dazu gehören Bedürfnisse im Zusammenhang mit der Aufrechterhaltung der Versorgung, der Bezahlbarkeit der Kosten, der Reduzierung des Verbrauchs und dem Zugang zu Telefon- oder Internetverbindungen. Der Bedarf an diesen Ressourcen ist eng mit Wohnsicherheit und Gesundheit verknüpft.",
+      "displayDescription": "Wir helfen Ihnen bei der Bezahlung Ihrer Strom-, Gas-, Wasser- oder Telefon- und Internetkosten. Wir vermitteln Ihnen Programme, die Ihnen helfen, Ihr Zuhause am Laufen zu halten."
+    },
+    "VO-900": {
+      "name": "Freiwilligenarbeit & Spenden",
+      "description": "Das Bedürfnis, durch gemeinschaftliche Großzügigkeit zu geben oder zu empfangen – sei es durch Sachspenden oder durch die Möglichkeit und den Wunsch, Zeit, Fähigkeiten oder Ressourcen für andere einzusetzen. Es umfasst die Bedürfnisse beider Seiten des bürgerschaftlichen Austauschs: Einzelpersonen, die Sachspenden oder Dienstleistungen benötigen, und Einzelpersonen oder Organisationen, die Freiwillige und Spender mit sinnvollen Hilfsmöglichkeiten zusammenbringen möchten.",
+      "displayDescription": "Benötigen Sie Sachspenden oder möchten Sie anderen helfen? Wir können Menschen, die spenden möchten, mit Menschen in Kontakt bringen, die Hilfe benötigen."
+    }
   }
 }

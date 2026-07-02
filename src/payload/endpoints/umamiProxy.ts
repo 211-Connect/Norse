@@ -15,6 +15,7 @@ const ALLOWED_ENDPOINTS = [
   'metrics',
   'active',
   'events/series',
+  'event-data/properties',
   'event-data/values',
   'sessions',
   'metrics/expanded',
@@ -155,6 +156,34 @@ function aggregateByEndpoint(endpoint: string, responses: any[]): any {
 
   if (endpoint === 'events/series') {
     return mergeMetricEntries(responses);
+  }
+
+  if (endpoint === 'event-data/properties') {
+    const merged = new Map<
+      string,
+      { eventName: string; propertyName: string; total: number }
+    >();
+
+    for (const response of responses) {
+      for (const row of response ?? []) {
+        const eventName = String(row?.eventName ?? '').trim();
+        const propertyName = String(row?.propertyName ?? '').trim();
+        if (!eventName || !propertyName) continue;
+        const key = `${eventName}:${propertyName}`;
+        const existing = merged.get(key) ?? {
+          eventName,
+          propertyName,
+          total: 0,
+        };
+        existing.total += Number(row?.total) || 0;
+        merged.set(key, existing);
+      }
+    }
+
+    const properties = Array.from(merged.values()).sort(
+      (a, b) => b.total - a.total,
+    );
+    return properties;
   }
 
   if (endpoint === 'event-data/values') {

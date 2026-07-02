@@ -56,7 +56,16 @@
     "list_status_one": "1 na digidigi e tiko. Vakayagataka na ki ni matailalai e cake kei na sobu me railesuva.",
     "list_status_other": "{{wiliwili}} digidigi e tiko. Vakayagataka na ki ni matailalai e cake kei na sobu me railesuva.",
     "search_dialog_description": "Vakasaqara na ivurevure ka vakavoutaka na nomu vanua.",
-    "everywhere": "Kece ga"
+    "everywhere": "Kece ga",
+    "ai_clarify_title": "Vukei keitou me keitou vakalailaitaka na nomu vakasaqaqara",
+    "ai_clarify_title_low_info": "Tukuna vei keitou e dua na ka me rawa ni keitou vakalailaitaka na nomu vakasaqaqara",
+    "ai_clarify_title_multiple_labels": "Na mataqali veivuke cava e veiganiti vinaka kei na ka o gadreva?",
+    "ai_skip": "Sivita",
+    "ai_confirm": "Vakadeitaka",
+    "ai_show_more_categories": "Vakaraitaka eso tale na iwasewase",
+    "ai_validation_select_or_skip": "Digitaka e dua na digidigi se skip.",
+    "ai_option_results_count_one": "@@__PH_0_@@ ivurevure veiwekani {{count}}",
+    "ai_option_results_count_other": "{{count}} ivurevure veiwekani"
   },
   "call_to_action": {
     "call": "Kaci",
@@ -179,5 +188,102 @@
     "default_title": "Cala ni veivakadeitaki",
     "default_description": "Keitou sega ni rawa ni vakaotia na iwalewale ni saini. Kerekere mo tovolea tale.",
     "logout_and_try_again": "Lako tani ka tovolea tale"
+  },
+  "needs": {
+    "AR-100": {
+      "name": "Cakacaka ni Liga, iTovo kei na Veivakamarautaki",
+      "description": "Na kena gadrevi na vakaitavi vakaibalebale ena bula ni veibuli, itovo vakavanua, kei na veivakamarautaki. E okati kina na gagadre me baleta na vakaraitaki ni droini, veimaliwai kei na itovo vakavanua, itaviqaravi ni galala, kei na veivakamarautaki ni veivanua. Duidui mai na takete ni veivakabulabulataki se veitokoni ni bula raraba — oqo e vakaraitaka na gagadre ni tamata intrinsic me bulia, marautaka, qito, ka lewena e dua na itikotiko ni itovo vakavanua.",
+      "displayDescription": "Raica na veivuke ena kena kunei na veika marautaki me caka me vaka na droini, ivakatagi, qito, se soqo ni veivanua. E dodonu me tiko vei ira na tamata kecega na gauna me ra qito, bulia, ka marautaka."
+    },
+    "CL-150": {
+      "name": "Na isulu/Ka e Gadrevi Vakatamata/Vale",
+      "description": "Na kena gadrevi na isulu e veiganiti, na iyaya ni qaravi koya, kei na iyaya vakayago e gadrevi me maroroi kina e dua na vuvale e cakacaka vinaka. E okati kina na gagadre ni isulu e veiganiti kei na draki, cakacaka, se koronivuli; na veiqaravi ni savasava kei na veiqaravi vakatamata; kei na yavu ni iyaya se iyaya e vakavuna me rawa ni vakaitikotiko kina e dua na vanua ni bula ka dokai.",
+      "displayDescription": "Raica na veivuke ena kena kunei na isulu, iyaya ni qaravi iko, se na veika o gadreva me baleta na nomu itikotiko. Eda rawa ni vukei iko mo rawata na veika o gadreva mo vakila na savasava kei na vakacegu."
+    },
+    "DI-180": {
+      "name": "Veiqaravi ni Leqa tubukoso",
+      "description": "Na gadrevi ni veitokoni e basika mai na dua na leqa tubukoso e vakaraitaki se sotavi, se mani vakayago se vakavuna na tamata. E okati kina na gagadre e basika mai ni bera, ena gauna, kei na oti na leqa tubukoso — oka kina na vakavakarau, veivuke vakatotolo, kei na veivakabulabulataki. Duidui mai na gagadre ni veitaqomaki vakatamata e tomani tikoga; vakanamata ki na veivakacacani bibi ni veivanua kei na kena itinitini.",
+      "displayDescription": "Raica na veivuke ni bera, ena gauna, se ni oti e dua na leqa tubukoso me vaka na waluvu, bukawaqa, se cagilaba. Eda rawa ni semati iko vei ira na tamata era sa tu vakarau me ra veivuke ena dua na leqa tubukoso."
+    },
+    "DV-190": {
+      "name": "Veivakacacani e Vale / Veitaqomaki Vakatamata",
+      "description": "Na kena gadrevi na veitaqomaki kei na veitaqomaki mai na veivakacacani vakaveiwekani, veivakalolomataki, veivakasaurarataki, se veivakarerei. E okati kina na gagadre e semati ki na ivalavala kaukauwa e vale, ivalavala kaukauwa ni veiwatini voleka, veivakacacani, veivolitaka, kei na ituvaki tale eso e vakaleqai kina na nona taqomaki vakayago se vakasama e dua na tamata ena vuku ni nona ivalavala e dua tale na tamata. Duidui mai na gagadre ni veitaqomaki ka baleta na leqa tubukoso se na veivakatorocaketaki raraba ni veitaqomaki raraba.",
+      "displayDescription": "Raica na veivuke kevaka o iko se dua o kila e vakila ni sega ni taqomaki e vale se sa vakaleqai tiko. E dodonu mo vakila na taqomaki, ka ra tu na tamata era tu vakarau me ra veivuke ena gauna oqo."
+    },
+    "ED-170": {
+      "name": "Vuli",
+      "description": "Na kena gadrevi me rawati na vuli, vakatorocaketaki ni kila ka, kei na rawati ni vuli ena veitaba kece ni bula. E okati kina na gagadre me baleta na vuli ni gonelalai, vuli K–12, vuli ni oti na vuli torocake, vuli wilivola vei ira na qase, vulici ni vosa vakavavalagi, vuli digitaki, kei na vuli cakacaka. Na gagadre e tiko veitalia na vanua e tiko kina e dua ena nona ilakolako ni vuli se na veivakataotaki cava e sotava ena kena rawati.",
+      "displayDescription": "Raica na veivuke ena vuli — vei ira na gone, itabagone, se qase. Se o gadreva na veivuke ni vuli, vuli cakacaka, se vinakata mo vulica na vosa vakavavalagi, keitou rawa ni vukei iko mo kunea."
+    },
+    "EM-180": {
+      "name": "Cakacaka",
+      "description": "Na kena gadrevi me rawati na cakacaka tudei, veiganiti kei na ituvaki e rawa kina na cakacaka. E okati kina na gagadre me baleta na kunei ni cakacaka, maroroi ni cakacaka, vakatorocaketaka na kila ni cakacaka, kei na veivakayarayarataki ni dodonu ni vanua ni cakacaka kei na veisau me vaka na sega ni cakacaka. E vakaraitaka na veitiki ni bula vakailavo kei na bula raraba ni cakacaka me vaka e dua na gagadre vakatamata, sega ni veiqaravi vakataki koya.",
+      "displayDescription": "Raica na veivuke ena kena kunei e dua na cakacaka, maroroya e dua na cakacaka, se tara cake na kila vou. E dodonu me dua na madigi ni tamata kecega me rawa ilavo ka vakila vinaka na nodra cakacaka."
+    },
+    "FO-200": {
+      "name": "Kakana/Kakana",
+      "description": "Na kena gadrevi na kakana tudei, veiganiti, ka bulabula. E okati kina na gagadre e semati ki na kena rawati na kakana e rauta me laukana, rawati na kakana e sotava na gagadre ni kakana se kakana, kei na kena kilai na sala me maroroi kina na kakana bulabula. E tiko na gagadre se basika mai na dravudravua, leqa, sega ni rawati ni kakana tudei, se vakaleqai ni ituvaki.",
+      "displayDescription": "Raica na veivuke ena kena kunei na kakana me baleti iko kei na nomu matavuvale. Se o gadreva e dua na kakana nikua se veivuke ena kena rawati na volivolitaki, e rawa ni keitou semati iko ki na kakana volekati iko."
+    },
+    "HC-300": {
+      "name": "Qaravi ni Bula",
+      "description": "Na kena gadrevi me rawati na veiqaravi ni bula vakayago, veiqaravi ni veitaqomaki, veiqaravi vakavuniwai, kei na iyaya kei na veitokoni ni veilakoyaki e gadrevi me qaravi kina na nona bula e dua. E okati kina na gagadre ena taucoko ni tomani tikoga ni bula vakayago — mai na bula vinaka kei na veisele vakawasoma ki na veiqaravi vakavuniwai, qaravi ni mate veitauvi, veivakabulabulataki, kei na veiqaravi balavu. Na bula vakasama kei na gagadre ni vakayagataki ni wainimate gaga e vakamacalataki vakatikitiki.",
+      "displayDescription": "Raica na veivuke ena kena kunei e dua na vuniwai, vuniwai ni bati, se so tale na veiqaravi ni bula. E dodonu me bulabula vinaka na tamata kecega ka rawata na veiqaravi era gadreva."
+    },
+    "HO-300": {
+      "name": "Vale",
+      "description": "Na kena gadrevi e dua na vanua taqomaki, dei, ka veiganiti me tiko kina. E okati kina na gagadre ena taucoko ni spectrum ni vale — mai na itikotiko totolo ena dua na leqa ki na vale balavu e rawarawa, veitokoni ni ituvatuva ni bula, kei na veitokoni ni tudei ka vukei ira na tamata me ra tiko ga ena vale. Na ituvaki ni gagadre ni vale e duidui ena kena totolo kei na ituvaki, ia na gagadre taumada e tudei: e dua na vanua me kacivi me vale.",
+      "displayDescription": "Raica na veivuke ena kena kunei e dua na vanua taqomaki mo tiko kina. Se o gadreva e dua na vanua mo moce kina ena bogi nikua se veivuke ena nomu itikotiko, e rawa ni keitou semati iko ena veitokoni."
+    },
+    "IC-330": {
+      "name": "Veitokoni ni ilavo/veivuke",
+      "description": "Na kena gadrevi na ivurevure vakailavo me sotava na yavu ni bula ena gauna e sega ni rauta se sega kina na ilavo. E okati kina na gagadre me baleta na veivuke vakailavo, veisautaki ni ilavo, rawati ni veivuke raraba, kei na veitokoni ni tudei vakailavo. E vakaraitaka na ivakatagedegede ni bula vakailavo ni bula vinaka — na kena gadrevi me tiko na ivurevure e rauta me qaravi kina na gagadre bibi — ka tawasei mai na parokaramu se iwalewale vakatabakidua e rawa ni wali kina.",
+      "displayDescription": "Raica na veivuke ena kena saumi na veika o gadreva ni sa lailai na ilavo. Eda rawa ni semati iko ki na parokaramu e vukea na kena saumi na bili kei na isau ni veisiga."
+    },
+    "IF-330": {
+      "name": "Veitokoni ni tamata yadua, matavuvale kei na veivanua",
+      "description": "Na kena gadrevi na veitokoni ni veimaliwai, veiqaravi, kei na veivanua ka tokoni ira na tamata yadua kei na matavuvale ena bula ni veisiga kei na ituvaki dredre. E okati kina na gagadre me baleta na veisusu, qaravi ira na vakararavi, veilakoyaki ena vereverea ni matavuvale, tara cake na veiwekani ni veivanua, kei na rawati ni veitokoni ni veitokani se veimaliwai. E vakaraitaka na dina ni bula vinaka ni tamata e semati vakatitobu ki na kaukauwa ni veimaliwai kei na rede e wavolita e dua na tamata.",
+      "displayDescription": "Raica na veivuke me baleta na nomu matavuvale se dua o qarava. Se o gadreva na veitokoni ni itubutubu, veivuke me baleta e dua na qase, se dua mo vosa vua, keitou rawa ni veivuke."
+    },
+    "IS-330": {
+      "name": "Veiqaravi ni itukutuku",
+      "description": "Na kena gadrevi me kilai na ivurevure cava e tiko kei na sala me rawati kina. E okati kina na gagadre me baleta na kena kunei na veiqaravi veiganiti, kila na dodonu kei na iwalewale, navigating na ivakarau vereverea, kei na veitaratara kei na veitokoni dodonu ena gauna dodonu. Oqo e dua na meta-gagadre — na ka e gadrevi taumada me sotavi kina e vuqa tale na gagadre vakavinaka — ka duidui mai na veiqaravi vakataki ira.",
+      "displayDescription": "Sega ni vakadeitaka na vanua mo tekivu kina? Eda rawa ni vukei iko mo kila na veiqaravi cava e tiko e kea kei na kena e dodonu vei iko."
+    },
+    "LE-450": {
+      "name": "Lawa, Dauvolivoli kei na Veitaqomaki ni Lewenivanua",
+      "description": "Na kena gadrevi na veitaqomaki vakalawa, na veivakayarayarataki ni ivakarau ni lewa dodonu, na dodonu ni dauvolivoli, kei na taqomaki ni lewenivanua. E okati kina na gagadre me baleta na veika vakalawa vakamatanitu, vakaitavi ena lewa dodonu ni cala, ituvaki ni veicurumaki, vakacacani ni dauvolivoli, kei na veitaqomaki ena ruku ni lawa. E vakaraitaka na ituvaki e vakaleqai kina na dodonu ni dua na tamata, nona taqomaki, se nona tu ena ruku ni veivakarau vakalawa ka gadrevi kina na kila vakalawa se veivuke.",
+      "displayDescription": "Raica na veivuke ena taro vakalawa, kila na nomu dodonu, se tiko taqomaki. E rawa ni keitou semati iko vei ira na tamata era kila na lawa ka rawa ni veivuke."
+    },
+    "MH-500": {
+      "name": "Veivakabobulataki",
+      "description": "Na kena gadrevi na veitokoni ena kena wali na vakayagataki ni wainimate gaga, vakararavi, kei na veivakabobulataki. E okati kina na gagadre me baleta na kena qaravi se vakabulabulataki mai na leqa ni vakayagataki ni alakaolo, wainimate gaga, se so tale na ka — oka kina na vakadeitaki ni acute, veiqaravi, kei na veitokoni ni vakabulabulataki tikoga. Kilai me vaka e dua na iwasewase duidui ni gagadre mai na bula vakasama, e dina ga ni rua e dau co-yaco.",
+      "displayDescription": "Raica na veivuke kevaka o iko se dua o lomana e sasagataka tiko na vakayagataki ni alakaolo se wainimate gaga. E rawa ni vakabulabulataki, ka ra tu na tamata dauveikauaitaki era tu vakarau me ra tokoni iko."
+    },
+    "AD-510": {
+      "name": "Bula Vakayalo",
+      "description": "Na kena gadrevi na veitokoni ena kena maroroi, vakalesui mai, se qaravi na nona bula vakasama kei na yalo e dua. E okati kina na gagadre e semati ki na lomaocaoca, ituvaki ni vakasama, bula ni itovo, ituvaki ni leqa, kei na veitokoni tomani tikoga e gadrevi me bula vinaka kina na veibolebole ni bula vakasama. Duidui mai na gagadre ni vakayagataki ni wainimate gaga, e dina ga ni dau yaco vata na ivakamacala.",
+      "displayDescription": "Raica na veivuke kevaka o vakila tiko na rarawa, lomaocaoca, se vakaloloma. E bibi na nomu bula vakasama, era tiko tale ga na tamata era rawa ni vakarorogo ra qai veivuke."
+    },
+    "OT-600": {
+      "name": "Veiqaravi tale eso ni Matanitu/Vakailavo",
+      "description": "Na kena gadrevi me rawati na parokaramu ni matanitu, veiqaravi vakamatanitu, kei na veitokoni vakailavo ka sega ni lutu vakavinaka ki na veimataqali tale eso. E okati kina na gagadre me baleta na veivakayarayarataki ni veitabana ni matanitu, rawata na veivuke se dodonu ni matanitu, veitokoni ni bisinisi lalai, veivuke ni ivakacavacava, kei na veiqaravi vakailavo tale eso ka tokona na tudei ni tamata yadua kei na veivanua.",
+      "displayDescription": "Raica na veivuke ena parokaramu ni matanitu, veivuke, se veiqaravi tale eso e dredre me kunei ena dua tale na vanua. Eda rawa ni vukei iko mo kila na vanua mo lako kina."
+    },
+    "TR-850": {
+      "name": "Isulu",
+      "description": "Na kena gadrevi na rawa ni veilakoyaki vakanuinui me sotava na gagadre tale eso — cakacaka, veiqaravi ni bula, vuli, kakana, veiqaravi, kei na veimaliwai vakaveiwekani. E okati kina na gagadre me baleta na rawati ni rides, saumi na isau ni veilakoyaki, maroroi ni dua na motoka, kei na veilakoyaki taqomaki. Na veilakoyaki e dua na yavu ni veivakayarayarataki: na kena yali e vakavuna voleka ni gagadre kece tale eso e sega ni vakayacori.",
+      "displayDescription": "Raica na veivuke mo rawata kina na vanua o gadreva mo lako kina — ki na dua na vuniwai, cakacaka, koronivuli, se sitoa. Eda rawa ni vukei iko mo kunea na rides se sala sau rawarawa ni veilakoyaki."
+    },
+    "UT-900": {
+      "name": "Na veiqaravi",
+      "description": "Na kena gadrevi me rawati na veiqaravi bibi ni vale — livaliva, kasi, wai, kei na veitaratara — ka cakava e dua na vanua ni bula me taqomaki, vakaitikotiko, ka semati. E okati kina na gagadre me baleta na maroroi ni veiqaravi ni veiqaravi, rawata na isau ni veiqaravi, vakalailaitaka na vakayagataki, kei na rawati ni talevoni se initaneti. Na gagadre ni veiqaravi e semati voleka sara ki na tudei ni vale kei na bulabula.",
+      "displayDescription": "Raica na veivuke ena kena saumi na livaliva, kasi, wai, se veiqaravi ni talevoni kei na initaneti. E rawa ni keitou semati iko ki na parokaramu e vukea me cici tikoga na nomu vale."
+    },
+    "VO-900": {
+      "name": "Volivolitaki & Soli",
+      "description": "Na kena gadrevi me soli se ciqomi ena lomasoli ni veivanua — se dua na tamata e gadreva na iyaya e soli, se tu vua na kaukauwa kei na gagadre me solia na gauna, kila, se ivurevure vei ira na tani. E okati kina na gagadre ena yasana ruarua ni veisau vakamatanitu: na tamata yadua era vakasaqara na cau vakayago se veiqaravi soli, kei na tamata yadua se isoqosoqo era vakasaqara me ra semati ira na dauveiqaravi kei na dausoli ka ena madigi vakaibalebale me ra veivuke.",
+      "displayDescription": "Gadreva na iyaya soli se vinakata mo vukei ira tale eso? E rawa ni da semati ira na tamata era vinakata me ra soli kei ira na tamata era gadreva e dua na liga."
+    }
   }
 }

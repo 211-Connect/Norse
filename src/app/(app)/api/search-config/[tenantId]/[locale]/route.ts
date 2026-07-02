@@ -80,12 +80,8 @@ export async function GET(
             ) ?? [],
           defaultRadius:
             resourceDirectory.search.searchSettings.defaultRadius ?? 10,
-          hybridSemanticSearchEnabled:
-            resourceDirectory.search.searchSettings
-              .hybridSemanticSearchEnabled ?? false,
-          aiClassificationEnabled:
-            resourceDirectory.search.searchSettings.aiClassificationEnabled ??
-            false,
+          searchEngine:
+            resourceDirectory.search.searchSettings.searchEngine ?? 'classic',
           suggestions: resourceDirectory.suggestions,
           subtopics,
         };

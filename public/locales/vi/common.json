@@ -56,7 +56,16 @@
     "list_status_one": "Có 1 tùy chọn. Sử dụng phím mũi tên lên và xuống để xem lại.",
     "list_status_other": "Có {{count}} tùy chọn. Sử dụng các phím mũi tên lên và xuống để xem lại.",
     "search_dialog_description": "Tìm kiếm tài nguyên và cập nhật vị trí của bạn.",
-    "everywhere": "Mọi nơi"
+    "everywhere": "Mọi nơi",
+    "ai_clarify_title": "Hãy giúp chúng tôi thu hẹp phạm vi tìm kiếm của bạn.",
+    "ai_clarify_title_low_info": "Hãy cho chúng tôi biết thêm chi tiết để chúng tôi có thể thu hẹp phạm vi tìm kiếm của bạn.",
+    "ai_clarify_title_multiple_labels": "Loại hỗ trợ nào phù hợp nhất với nhu cầu của bạn?",
+    "ai_skip": "Nhảy",
+    "ai_confirm": "Xác nhận",
+    "ai_show_more_categories": "Hiển thị thêm danh mục",
+    "ai_validation_select_or_skip": "Chọn ít nhất một tùy chọn hoặc bỏ qua.",
+    "ai_option_results_count_one": "{{count}} tài nguyên liên quan",
+    "ai_option_results_count_other": "{{count}} tài nguyên liên quan"
   },
   "call_to_action": {
     "call": "Gọi",
@@ -179,5 +188,102 @@
     "default_title": "Lỗi xác thực",
     "default_description": "Chúng tôi không thể hoàn tất quá trình đăng nhập. Vui lòng thử lại.",
     "logout_and_try_again": "Đăng xuất và thử lại."
+  },
+  "needs": {
+    "AR-100": {
+      "name": "Nghệ thuật, Văn hóa và Giải trí",
+      "description": "Nhu cầu tham gia có ý nghĩa vào đời sống sáng tạo, văn hóa và giải trí. Bao gồm các nhu cầu liên quan đến biểu hiện nghệ thuật, gắn kết với di sản văn hóa, các hoạt động giải trí và giải trí cộng đồng. Khác với các mục tiêu trị liệu hoặc hỗ trợ xã hội — điều này phản ánh nhu cầu nội tại của con người về việc sáng tạo, ăn mừng, vui chơi và thuộc về một cộng đồng văn hóa.",
+      "displayDescription": "Hãy tìm kiếm những hoạt động thú vị như nghệ thuật, âm nhạc, thể thao hoặc các sự kiện cộng đồng. Ai cũng xứng đáng có thời gian để vui chơi, sáng tạo và tận hưởng."
+    },
+    "CL-150": {
+      "name": "Quần áo/Đồ dùng cá nhân/Đồ dùng gia đình",
+      "description": "Nhu cầu về quần áo đầy đủ, đồ dùng chăm sóc cá nhân và các vật dụng thiết yếu để duy trì một hộ gia đình hoạt động hiệu quả. Bao gồm nhu cầu về quần áo phù hợp với thời tiết, công việc hoặc trường học; sản phẩm vệ sinh và chăm sóc cá nhân; và đồ nội thất hoặc vật dụng cơ bản giúp không gian sống trở nên dễ chịu và trang nhã.",
+      "displayDescription": "Hãy để chúng tôi giúp bạn tìm quần áo, đồ dùng chăm sóc cá nhân hoặc những vật dụng cần thiết cho gia đình. Chúng tôi có thể giúp bạn có được những thứ cần thiết để cảm thấy sạch sẽ và thoải mái."
+    },
+    "DI-180": {
+      "name": "Dịch vụ ứng phó thảm họa",
+      "description": "Nhu cầu hỗ trợ phát sinh từ một sự kiện thảm họa đã được tuyên bố hoặc xảy ra, dù là do thiên nhiên hay con người gây ra. Bao gồm các nhu cầu phát sinh trước, trong và sau thảm họa — bao gồm công tác chuẩn bị, ứng phó khẩn cấp và phục hồi. Khác với các nhu cầu an toàn cá nhân thường trực; tập trung vào sự gián đoạn cấp tính ở cấp cộng đồng và hậu quả của nó.",
+      "displayDescription": "Hãy tìm kiếm sự trợ giúp trước, trong hoặc sau thảm họa như lũ lụt, hỏa hoạn hoặc bão. Chúng tôi có thể kết nối bạn với những người sẵn sàng giúp đỡ trong trường hợp khẩn cấp."
+    },
+    "DV-190": {
+      "name": "Bạo lực gia đình / An toàn cá nhân",
+      "description": "Nhu cầu về sự an toàn và bảo vệ khỏi các hành vi gây hại, lạm dụng, cưỡng bức hoặc đe dọa từ người khác. Bao gồm các nhu cầu liên quan đến bạo lực gia đình, bạo lực giữa các đối tác thân mật, rình rập, buôn bán người và các tình huống khác mà sự an toàn về thể chất hoặc tinh thần của một người bị đe dọa do hành động của người khác. Khác biệt với nhu cầu an toàn liên quan đến thảm họa hoặc cơ sở hạ tầng an toàn công cộng nói chung.",
+      "displayDescription": "Hãy tìm kiếm sự giúp đỡ nếu bạn hoặc người quen của bạn cảm thấy không an toàn ở nhà hoặc đang bị tổn hại. Bạn xứng đáng được cảm thấy an toàn, và có những người sẵn sàng giúp đỡ ngay bây giờ."
+    },
+    "ED-170": {
+      "name": "Giáo dục",
+      "description": "Nhu cầu tiếp cận học tập, phát triển kỹ năng và đạt được trình độ học vấn ở mọi giai đoạn cuộc đời. Bao gồm các nhu cầu liên quan đến học tập ở giai đoạn đầu đời, giáo dục từ mẫu giáo đến lớp 12, giáo dục sau trung học, xóa mù chữ cho người lớn, học tiếng Anh, kỹ năng số và đào tạo nghề. Nhu cầu này tồn tại bất kể ai đó đang ở giai đoạn nào trong hành trình học tập của họ hoặc gặp phải những rào cản nào trong việc tiếp cận giáo dục.",
+      "displayDescription": "Nhận hỗ trợ học tập — dành cho trẻ em, thanh thiếu niên hoặc người lớn. Cho dù bạn cần trợ giúp học tập, đào tạo nghề nghiệp hay muốn học tiếng Anh, chúng tôi đều có thể giúp bạn tìm được giải pháp."
+    },
+    "EM-180": {
+      "name": "Thuê người làm",
+      "description": "Nhu cầu được tiếp cận với công việc ổn định, đủ sống và các điều kiện tạo điều kiện cho việc làm. Bao gồm các nhu cầu liên quan đến việc tìm việc, giữ việc, phát triển kỹ năng nghề nghiệp và điều hướng các quyền lợi tại nơi làm việc cũng như các giai đoạn chuyển đổi như thất nghiệp. Phản ánh các khía cạnh kinh tế và xã hội của công việc như một nhu cầu của con người, chứ không phải bản thân các dịch vụ.",
+      "displayDescription": "Hãy tìm kiếm sự hỗ trợ để tìm việc làm, giữ việc làm hoặc trau dồi kỹ năng mới. Ai cũng xứng đáng có cơ hội kiếm sống và cảm thấy hài lòng về công việc của mình."
+    },
+    "FO-200": {
+      "name": "Thức ăn/Bữa ăn",
+      "description": "Nhu cầu về thực phẩm đầy đủ, ổn định và giàu dinh dưỡng. Bao gồm các nhu cầu liên quan đến việc tiếp cận đủ thực phẩm để ăn, có được thực phẩm đáp ứng nhu cầu dinh dưỡng hoặc chế độ ăn uống, và hiểu cách duy trì chế độ ăn uống lành mạnh. Nhu cầu này tồn tại bất kể xuất phát từ nghèo đói, khủng hoảng, tình trạng thiếu an ninh lương thực mãn tính hay sự gián đoạn do hoàn cảnh.",
+      "displayDescription": "Hãy để chúng tôi giúp bạn tìm thực phẩm cho bạn và gia đình. Cho dù bạn cần một bữa ăn ngay hôm nay hay cần giúp đỡ mua thực phẩm, chúng tôi đều có thể kết nối bạn với các nguồn cung cấp thực phẩm gần bạn."
+    },
+    "HC-300": {
+      "name": "Chăm sóc sức khỏe",
+      "description": "Nhu cầu tiếp cận các dịch vụ chăm sóc sức khỏe thể chất, chăm sóc dự phòng, điều trị y tế, cũng như các sản phẩm và hỗ trợ định hướng cần thiết để quản lý sức khỏe của bản thân. Bao gồm các nhu cầu trên toàn bộ chu trình chăm sóc sức khỏe thể chất — từ khám sức khỏe định kỳ và sàng lọc đến chăm sóc cấp tính, quản lý bệnh mãn tính, phục hồi chức năng và chăm sóc dài hạn. Nhu cầu về sức khỏe tâm thần và lạm dụng chất gây nghiện được giải quyết riêng.",
+      "displayDescription": "Hãy tìm sự trợ giúp để tìm bác sĩ, nha sĩ hoặc các dịch vụ chăm sóc sức khỏe khác. Ai cũng xứng đáng được khỏe mạnh và nhận được sự chăm sóc cần thiết."
+    },
+    "HO-300": {
+      "name": "Nhà ở",
+      "description": "Nhu cầu về một nơi ở an toàn, ổn định và phù hợp bao gồm tất cả các nhu cầu trong lĩnh vực nhà ở — từ chỗ trú ẩn khẩn cấp trong trường hợp khủng hoảng đến nhà ở giá rẻ dài hạn, các hình thức sinh hoạt hỗ trợ và các biện pháp hỗ trợ ổn định giúp người dân có chỗ ở. Bản chất của nhu cầu nhà ở thay đổi tùy theo mức độ khẩn cấp và hoàn cảnh, nhưng nhu cầu cơ bản vẫn nhất quán: một nơi để gọi là nhà.",
+      "displayDescription": "Hãy tìm sự trợ giúp để có một nơi ở an toàn. Cho dù bạn cần một chỗ ngủ qua đêm hay cần sự giúp đỡ để được ở lại nhà, chúng tôi đều có thể kết nối bạn với các nguồn hỗ trợ."
+    },
+    "IC-330": {
+      "name": "Hỗ trợ thu nhập/Trợ cấp",
+      "description": "Nhu cầu về nguồn tài chính để đáp ứng chi phí sinh hoạt cơ bản khi thu nhập không đủ hoặc không có. Bao gồm các nhu cầu liên quan đến trợ cấp tiền mặt, bù đắp thu nhập, tiếp cận các phúc lợi công cộng và hỗ trợ ổn định tài chính. Phản ánh khía cạnh kinh tế của phúc lợi — nhu cầu có đủ nguồn lực để trang trải các nhu cầu thiết yếu — tách biệt khỏi các chương trình hoặc cơ chế cụ thể có thể giải quyết vấn đề đó.",
+      "displayDescription": "Nhận hỗ trợ chi trả cho những nhu cầu thiết yếu khi tài chính eo hẹp. Chúng tôi có thể kết nối bạn với các chương trình hỗ trợ thanh toán hóa đơn và chi phí sinh hoạt hàng ngày."
+    },
+    "IF-330": {
+      "name": "Hỗ trợ cá nhân, gia đình và cộng đồng",
+      "description": "Nhu cầu về hỗ trợ về mặt quan hệ, chăm sóc và cộng đồng giúp duy trì sự ổn định cho cá nhân và gia đình trong cuộc sống hàng ngày và những hoàn cảnh khó khăn. Bao gồm các nhu cầu liên quan đến việc nuôi dạy con cái, chăm sóc người phụ thuộc, giải quyết những phức tạp trong gia đình, xây dựng kết nối cộng đồng và tiếp cận sự hỗ trợ từ bạn bè hoặc xã hội. Phản ánh thực tế rằng hạnh phúc của con người gắn bó mật thiết với sức mạnh của các mối quan hệ và mạng lưới xung quanh một người.",
+      "displayDescription": "Hãy tìm sự trợ giúp cho gia đình bạn hoặc người thân yêu. Cho dù bạn cần hỗ trợ về nuôi dạy con cái, giúp đỡ người lớn tuổi, hay chỉ cần người để trò chuyện, chúng tôi đều có thể giúp đỡ."
+    },
+    "IS-330": {
+      "name": "Dịch vụ thông tin",
+      "description": "Nhu cầu hiểu rõ các nguồn lực hiện có và cách tiếp cận chúng. Bao gồm các nhu cầu liên quan đến việc tìm kiếm các dịch vụ phù hợp, hiểu rõ điều kiện và quy trình, điều hướng các hệ thống phức tạp và kết nối với sự hỗ trợ phù hợp vào đúng thời điểm. Đây là một nhu cầu tổng quát — điều kiện tiên quyết để đáp ứng hiệu quả nhiều nhu cầu khác — và khác biệt với bản thân các dịch vụ.",
+      "displayDescription": "Bạn không biết bắt đầu từ đâu? Chúng tôi có thể giúp bạn tìm hiểu các dịch vụ hiện có và lựa chọn dịch vụ phù hợp với nhu cầu của bạn."
+    },
+    "LE-450": {
+      "name": "An toàn pháp lý, người tiêu dùng và công cộng",
+      "description": "Nhu cầu về bảo vệ pháp lý, định hướng hệ thống tư pháp, quyền lợi người tiêu dùng và an toàn công cộng. Bao gồm các nhu cầu liên quan đến các vấn đề pháp lý dân sự, sự can thiệp của hệ thống tư pháp hình sự, tình trạng nhập cư, thiệt hại người tiêu dùng và sự bảo vệ theo pháp luật. Phản ánh những tình huống mà quyền lợi, sự an toàn hoặc vị thế của một người theo hệ thống pháp luật bị đe dọa và cần đến kiến ​​thức hoặc sự hỗ trợ pháp lý.",
+      "displayDescription": "Hãy tìm sự trợ giúp về các vấn đề pháp lý, hiểu rõ quyền lợi của bạn hoặc đảm bảo an toàn. Chúng tôi có thể kết nối bạn với những người am hiểu luật pháp và có thể giúp đỡ."
+    },
+    "MH-500": {
+      "name": "Nghiện ngập",
+      "description": "Nhu cầu hỗ trợ trong việc giải quyết vấn đề sử dụng chất gây nghiện, sự phụ thuộc và nghiện ngập. Bao gồm các nhu cầu liên quan đến việc quản lý hoặc phục hồi sau khi sử dụng rượu, ma túy hoặc các chất khác một cách có vấn đề — bao gồm ổn định cấp tính, điều trị và hỗ trợ phục hồi liên tục. Được công nhận là một loại nhu cầu riêng biệt so với sức khỏe tâm thần, mặc dù hai loại này thường xuyên cùng tồn tại.",
+      "displayDescription": "Hãy tìm kiếm sự giúp đỡ nếu bạn hoặc người thân của bạn đang gặp khó khăn với việc sử dụng rượu hoặc ma túy. Phục hồi là điều hoàn toàn có thể, và có những người quan tâm sẵn sàng hỗ trợ bạn."
+    },
+    "AD-510": {
+      "name": "Sức khỏe tâm thần",
+      "description": "Nhu cầu hỗ trợ trong việc duy trì, phục hồi hoặc quản lý sức khỏe tinh thần và cảm xúc. Bao gồm các nhu cầu liên quan đến rối loạn cảm xúc, các bệnh lý tâm thần, sức khỏe hành vi, các tình huống khủng hoảng và sự hỗ trợ liên tục cần thiết để sống tốt khi đối mặt với các thách thức về sức khỏe tâm thần. Khác biệt với nhu cầu liên quan đến lạm dụng chất gây nghiện, mặc dù các biểu hiện đồng thời khá phổ biến.",
+      "displayDescription": "Hãy tìm kiếm sự giúp đỡ nếu bạn cảm thấy buồn bã, lo lắng hoặc quá tải. Sức khỏe tinh thần của bạn rất quan trọng, và có những người sẵn sàng lắng nghe và giúp đỡ bạn."
+    },
+    "OT-600": {
+      "name": "Các dịch vụ chính phủ/kinh tế khác",
+      "description": "Nhu cầu tiếp cận các chương trình của chính phủ, dịch vụ công cộng và hỗ trợ kinh tế không thuộc các danh mục khác. Bao gồm các nhu cầu liên quan đến việc làm quen với các cơ quan công quyền, tiếp cận các phúc lợi hoặc quyền lợi của chính phủ, hỗ trợ doanh nghiệp nhỏ, hỗ trợ thuế và các dịch vụ kinh tế khác hỗ trợ sự ổn định của cá nhân và cộng đồng.",
+      "displayDescription": "Nhận hỗ trợ về các chương trình, phúc lợi của chính phủ hoặc các dịch vụ khác khó tìm thấy ở nơi khác. Chúng tôi có thể giúp bạn tìm ra nơi cần đến."
+    },
+    "TR-850": {
+      "name": "Vận tải",
+      "description": "Nhu cầu về khả năng di chuyển đáng tin cậy để đáp ứng các nhu cầu khác — công việc, chăm sóc sức khỏe, giáo dục, thực phẩm, dịch vụ và kết nối xã hội. Bao gồm các nhu cầu liên quan đến việc tìm phương tiện di chuyển, chi trả chi phí đi lại, bảo trì phương tiện và di chuyển an toàn. Giao thông vận tải là yếu tố cơ bản: sự thiếu hụt của nó làm trầm trọng thêm hầu hết mọi nhu cầu chưa được đáp ứng khác.",
+      "displayDescription": "Hãy để chúng tôi giúp bạn đến được nơi bạn cần đến — bác sĩ, nơi làm việc, trường học hoặc cửa hàng. Chúng tôi có thể giúp bạn tìm phương tiện di chuyển hoặc những cách đi lại tiết kiệm chi phí."
+    },
+    "UT-900": {
+      "name": "Tiện ích",
+      "description": "Nhu cầu tiếp cận các tiện ích thiết yếu tại nhà — điện, gas, nước và viễn thông — giúp tạo nên không gian sống an toàn, dễ chịu và kết nối. Bao gồm các nhu cầu liên quan đến việc duy trì dịch vụ tiện ích, chi trả chi phí tiện ích, giảm tiêu thụ và truy cập kết nối điện thoại hoặc internet. Nhu cầu về tiện ích có liên quan mật thiết đến sự ổn định nhà ở và sức khỏe.",
+      "displayDescription": "Nhận hỗ trợ thanh toán tiền điện, gas, nước, hoặc dịch vụ điện thoại và internet. Chúng tôi có thể kết nối bạn với các chương trình giúp duy trì hoạt động của ngôi nhà bạn."
+    },
+    "VO-900": {
+      "name": "Tình nguyện viên & Quyên góp",
+      "description": "Nhu cầu cho đi hoặc nhận lại thông qua lòng hào phóng của cộng đồng — cho dù một người cần hàng hóa quyên góp, hay có khả năng và mong muốn đóng góp thời gian, kỹ năng hoặc nguồn lực cho người khác. Bao gồm nhu cầu ở cả hai phía của sự trao đổi công dân: các cá nhân tìm kiếm sự quyên góp vật chất hoặc dịch vụ được tặng, và các cá nhân hoặc tổ chức tìm cách kết nối các tình nguyện viên và nhà tài trợ với những cơ hội giúp đỡ có ý nghĩa.",
+      "displayDescription": "Bạn cần đồ quyên góp hoặc muốn giúp đỡ người khác? Chúng tôi có thể kết nối những người muốn cho đi với những người cần giúp đỡ."
+    }
   }
 }

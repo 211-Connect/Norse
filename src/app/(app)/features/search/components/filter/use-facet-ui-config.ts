@@ -11,7 +11,10 @@ export function useFacetUiConfig(
 ): FacetUiConfig {
   return useMemo(() => {
     const excludedValuesMap = new Map<string, Set<string>>();
-    const sortModesMap = new Map<string, 'count' | 'name' | 'valueOrder'>();
+    const sortModesMap = new Map<
+      string,
+      'count' | 'name' | 'valueOrder' | 'dayOfWeek'
+    >();
     const customValueOrdersMap = new Map<string, string[]>();
 
     for (const facetConfig of facets) {

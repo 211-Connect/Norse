@@ -46,11 +46,25 @@ export function Footer() {
                   <Link
                     className={cn(
                       buttonVariants({ variant: 'link' }),
-                      '!text-primary whitespace-pre-wrap',
+                      'text-primary! whitespace-pre-wrap',
                     )}
                     href="/legal/terms-of-use"
                   >
                     {appConfig.pages.termsOfUsePage.title}
+                  </Link>
+                </li>
+              )}
+
+              {appConfig.pages.accessibilityPage.enabled && (
+                <li>
+                  <Link
+                    className={cn(
+                      buttonVariants({ variant: 'link' }),
+                      'text-primary! whitespace-pre-wrap',
+                    )}
+                    href="/legal/accessibility"
+                  >
+                    {appConfig.pages.accessibilityPage.title}
                   </Link>
                 </li>
               )}
@@ -60,7 +74,7 @@ export function Footer() {
                   <Link
                     className={cn(
                       buttonVariants({ variant: 'link' }),
-                      '!text-primary flex items-center gap-3 whitespace-pre-wrap',
+                      'text-primary! flex items-center gap-3 whitespace-pre-wrap',
                     )}
                     target={el.openInNewTab ? '_blank' : undefined}
                     {...(el.openInNewTab && {

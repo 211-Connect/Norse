@@ -11,6 +11,7 @@ import {
   getRenderableBuckets,
   sanitizeFacetKey,
   sortBucketsByCustomValueOrder,
+  sortBucketsByDayOfWeek,
   sortBucketsByDisplayName,
 } from './filter-utils';
 import { FilterOptionRow } from './filter-option-row';
@@ -47,6 +48,10 @@ export function FilterGroup({
 
     if (sortMode === 'valueOrder') {
       return sortBucketsByCustomValueOrder(renderableBuckets, customValueOrder);
+    }
+
+    if (sortMode === 'dayOfWeek') {
+      return sortBucketsByDayOfWeek(renderableBuckets);
     }
 
     return renderableBuckets;

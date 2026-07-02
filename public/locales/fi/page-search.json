@@ -26,5 +26,8 @@
   "name_unavailable": "Nimi ei saatavilla",
   "share_body": "Katso {{count}} hakutulosta haulle \"{{title}}\"",
   "age_filter_label": "Suodata iän mukaan",
-  "age_filter_placeholder": "Anna ikä"
+  "age_filter_placeholder": "Anna ikä",
+  "ai_broadened_results_alert": "Näytimme laajempia tuloksia, koska pyyntösi saattaa vaatia lisätietoja. Voit tarkentaa hakua aiheiden tai ehdotusten avulla.",
+  "ai_broadened_results_alert_low_info": "Näytimme laajempia tuloksia, koska hakusi saattaa vaatia enemmän yksityiskohtia. Voit tarkentaa hakua aiheiden tai ehdotusten avulla.",
+  "ai_broadened_results_alert_low_confidence": "Näytimme laajempia tuloksia, koska emme olleet varmoja parhaasta osumasta. Voit tarkentaa hakua aiheiden tai ehdotusten avulla."
 }

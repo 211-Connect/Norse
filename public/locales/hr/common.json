@@ -56,7 +56,16 @@
     "list_status_one": "Dostupna je 1 opcija. Za pregled koristite tipke sa strelicama gore i dolje.",
     "list_status_other": "Dostupno je {{count}} opcija. Za pregled koristite tipke sa strelicama gore i dolje.",
     "search_dialog_description": "Pretražite resurse i ažurirajte svoju lokaciju.",
-    "everywhere": "Svugdje"
+    "everywhere": "Svugdje",
+    "ai_clarify_title": "Pomozite nam suziti pretragu",
+    "ai_clarify_title_low_info": "Recite nam nešto više kako bismo mogli suziti vašu pretragu",
+    "ai_clarify_title_multiple_labels": "Koja vrsta pomoći najbolje odgovara vašim potrebama?",
+    "ai_skip": "Preskočiti",
+    "ai_confirm": "Potvrdi",
+    "ai_show_more_categories": "Prikaži više kategorija",
+    "ai_validation_select_or_skip": "Odaberite barem jednu opciju ili preskočite.",
+    "ai_option_results_count_one": "{{count}} povezani resurs",
+    "ai_option_results_count_other": "{{count}} povezani resursi"
   },
   "call_to_action": {
     "call": "Poziv",
@@ -179,5 +188,102 @@
     "default_title": "Pogreška autentifikacije",
     "default_description": "Nismo mogli dovršiti postupak prijave. Pokušajte ponovno.",
     "logout_and_try_again": "Odjavi se i pokušaj ponovno"
+  },
+  "needs": {
+    "AR-100": {
+      "name": "Umjetnost, kultura i rekreacija",
+      "description": "Potreba za smislenim sudjelovanjem u kreativnom, kulturnom i rekreacijskom životu. Obuhvaća potrebe povezane s umjetničkim izražavanjem, angažmanom s kulturnom baštinom, aktivnostima u slobodno vrijeme i rekreacijom u zajednici. Razlikuje se od terapijskih ili ciljeva socijalne podrške - ovo odražava intrinzičnu ljudsku potrebu za stvaranjem, slavljenjem, igrom i pripadanjem kulturnoj zajednici.",
+      "displayDescription": "Potražite pomoć u pronalaženju zabavnih aktivnosti poput umjetnosti, glazbe, sporta ili društvenih događanja. Svatko zaslužuje vrijeme za igru, stvaranje i slavlje."
+    },
+    "CL-150": {
+      "name": "Odjeća/Osobne/Kućanske potrebe",
+      "description": "Potreba za odgovarajućom odjećom, predmetima za osobnu njegu i materijalnim dobrima potrebnim za održavanje funkcionalnog kućanstva. Uključuje potrebe za odjećom primjerenom vremenskim uvjetima, poslu ili školi; higijenskim proizvodima i proizvodima za osobnu njegu; te osnovnim namještajem ili potrepštinama koje životni prostor čine ugodnim za stanovanje i dostojanstvenim.",
+      "displayDescription": "Zatražite pomoć u pronalaženju odjeće, predmeta za osobnu njegu ili stvari koje su vam potrebne za vaš dom. Možemo vam pomoći da nabavite ono što vam je potrebno da se osjećate čisto i ugodno."
+    },
+    "DI-180": {
+      "name": "Usluge za katastrofe",
+      "description": "Potreba za podrškom koja proizlazi iz proglašene ili doživljene katastrofe, bilo prirodne ili uzrokovane ljudskim djelovanjem. Obuhvaća potrebe koje se javljaju prije, tijekom i nakon katastrofa - uključujući pripremljenost, odgovor na hitne slučajeve i oporavak. Razlikuje se od tekućih potreba za osobnom sigurnošću; usmjereno na akutne poremećaje na razini zajednice i njihove posljedice.",
+      "displayDescription": "Zatražite pomoć prije, tijekom ili nakon katastrofe poput poplave, požara ili oluje. Možemo vas povezati s ljudima koji su spremni pomoći u hitnim slučajevima."
+    },
+    "DV-190": {
+      "name": "Obiteljsko nasilje / Osobna sigurnost",
+      "description": "Potreba za sigurnošću i zaštitom od međuljudske štete, zlostavljanja, prisile ili prijetnje. Obuhvaća potrebe povezane s obiteljskim nasiljem, nasiljem intimnog partnera, uhođenjem, trgovinom ljudima i drugim situacijama u kojima je fizička ili emocionalna sigurnost osobe ugrožena zbog postupaka druge osobe. Razlikuje se od sigurnosnih potreba povezanih s katastrofama ili opće infrastrukture javne sigurnosti.",
+      "displayDescription": "Potražite pomoć ako se vi ili netko koga poznajete osjećate nesigurno kod kuće ili je ozlijeđen. Zaslužujete se osjećati sigurno, a postoje ljudi koji su vam spremni pomoći upravo sada."
+    },
+    "ED-170": {
+      "name": "Obrazovanje",
+      "description": "Potreba za pristupom učenju, razvoju vještina i obrazovnim postignućima u svim životnim fazama. Obuhvaća potrebe vezane uz učenje u ranom djetinjstvu, školovanje od vrtića do 12. razreda, visoko obrazovanje, pismenost odraslih, usvajanje engleskog jezika, digitalnu pismenost i strukovno osposobljavanje. Potreba postoji bez obzira na to gdje se netko nalazi na svom obrazovnom putu ili s kojim se preprekama suočava u pristupu istom.",
+      "displayDescription": "Zatražite pomoć s učenjem - za djecu, tinejdžere ili odrasle. Trebate li pomoć u školi, osposobljavanje za posao ili želite naučiti engleski, mi vam možemo pomoći da je pronađete."
+    },
+    "EM-180": {
+      "name": "Zapošljavanje",
+      "description": "Potreba za pristupom stabilnom, odgovarajućem poslu i uvjetima koji omogućuju zapošljavanje. Obuhvaća potrebe vezane uz pronalaženje posla, zadržavanje posla, razvoj radnih vještina i snalaženje u pravima na radnom mjestu i prijelazima poput nezaposlenosti. Odražava ekonomske i društvene dimenzije rada kao ljudske potrebe, a ne same usluge.",
+      "displayDescription": "Zatražite pomoć u pronalaženju posla, zadržavanju posla ili stjecanju novih vještina. Svatko zaslužuje priliku zarađivati ​​za život i osjećati se dobro u vezi sa svojim poslom."
+    },
+    "FO-200": {
+      "name": "Hrana/Obroci",
+      "description": "Potreba za dosljednom, adekvatnom i hranjivom hranom. Obuhvaća potrebe vezane uz pristup dovoljnoj količini hrane za jelo, dobivanje hrane koja zadovoljava prehrambene ili dijetalne potrebe i razumijevanje kako održati zdravu prehranu. Potreba postoji bez obzira proizlazi li iz siromaštva, krize, kronične nesigurnosti opskrbe hranom ili situacijskih poremećaja.",
+      "displayDescription": "Zatražite pomoć u pronalaženju hrane za vas i vašu obitelj. Trebate li obrok danas ili pomoć u nabavci namirnica, možemo vas povezati s hranom u vašoj blizini."
+    },
+    "HC-300": {
+      "name": "Zdravstvena skrb",
+      "description": "Potreba za pristupom uslugama fizičkog zdravlja, preventivnoj skrbi, liječenju te dobrima i navigacijskoj podršci potrebnoj za upravljanje vlastitim zdravljem. Obuhvaća potrebe u cijelom kontinuumu fizičkog zdravlja - od rutinskih pregleda i pregleda do akutne skrbi, liječenja kroničnih bolesti, rehabilitacije i dugotrajne skrbi. Potrebe za mentalnim zdravljem i zlouporabom droga obrađuju se zasebno.",
+      "displayDescription": "Zatražite pomoć u pronalaženju liječnika, stomatologa ili druge zdravstvene skrbi. Svatko zaslužuje ostati zdrav i dobiti potrebnu skrb."
+    },
+    "HO-300": {
+      "name": "Kućište",
+      "description": "Potreba za sigurnim, stabilnim i prikladnim mjestom za život. Obuhvaća potrebe u cijelom spektru stanovanja - od trenutnog skloništa u krizi do dugoročnog pristupačnog stanovanja, podržavajućih životnih aranžmana i stabilne podrške koja pomaže ljudima da ostanu smješteni. Priroda stambene potrebe varira ovisno o hitnosti i okolnostima, ali temeljna potreba je dosljedna: mjesto koje se može nazvati domom.",
+      "displayDescription": "Zatražite pomoć u pronalaženju sigurnog mjesta za život. Trebate li mjesto za spavanje večeras ili pomoć da ostanete u svom domu, možemo vas povezati s podrškom."
+    },
+    "IC-330": {
+      "name": "Pomoć/dohodovna podrška",
+      "description": "Potreba za financijskim sredstvima za podmirivanje osnovnih životnih troškova kada je prihod nedostatan ili ga nema. Obuhvaća potrebe vezane uz novčanu pomoć, zamjenu prihoda, pristup javnim naknadama i podršku financijskoj stabilnosti. Odražava ekonomsku dimenziju blagostanja - potrebu za dovoljno resursa za pokrivanje osnovnih potreba - odvojeno od specifičnih programa ili mehanizama koji se time mogu pozabaviti.",
+      "displayDescription": "Zatražite pomoć pri plaćanju stvari koje su vam potrebne kada vam je novac ograničen. Možemo vas povezati s programima koji vam pomažu u pokrivanju računa i svakodnevnih troškova."
+    },
+    "IF-330": {
+      "name": "Individualna, obiteljska i društvena podrška",
+      "description": "Potreba za relacijskom, brižnom i podrškom na razini zajednice koja podržava pojedince i obitelji kroz svakodnevni život i teške okolnosti. Obuhvaća potrebe vezane uz roditeljstvo, brigu za uzdržavane osobe, snalaženje u složenosti obitelji, izgradnju veza u zajednici i pristup vršnjačkoj ili društvenoj podršci. Odražava stvarnost da je ljudska dobrobit duboko povezana sa snagom odnosa i mreža koje okružuju osobu.",
+      "displayDescription": "Zatražite pomoć za svoju obitelj ili nekoga do koga vam je stalo. Trebate li podršku za roditelje, pomoć za stariju odraslu osobu ili nekoga s kim možete razgovarati, mi vam možemo pomoći."
+    },
+    "IS-330": {
+      "name": "Informacijske usluge",
+      "description": "Potreba za razumijevanjem koji resursi postoje i kako im pristupiti. Obuhvaća potrebe vezane uz pronalaženje relevantnih usluga, razumijevanje podobnosti i procesa, snalaženje u složenim sustavima i povezivanje s pravom podrškom u pravo vrijeme. Ovo je meta-potreba - preduvjet za učinkovito zadovoljavanje mnogih drugih potreba - i razlikuje se od samih usluga.",
+      "displayDescription": "Niste sigurni odakle početi? Možemo vam pomoći da shvatite koje usluge postoje i koje su prave za vas."
+    },
+    "LE-450": {
+      "name": "Pravna, potrošačka i javna sigurnost",
+      "description": "Potreba za pravnom zaštitom, snalaženje u pravosudnom sustavu, prava potrošača i javna sigurnost. Obuhvaća potrebe vezane uz građanskopravne stvari, sudjelovanje u kaznenom pravosuđu, imigracijski status, štetu za potrošače i zaštitu prema zakonu. Odražava situacije u kojima su ugrožena prava, sigurnost ili status osobe prema pravnim sustavima i gdje je potrebno pravno znanje ili pomoć.",
+      "displayDescription": "Zatražite pomoć s pravnim pitanjima, razumijevanjem svojih prava ili očuvanjem sigurnosti. Možemo vas povezati s ljudima koji poznaju zakon i mogu vam pomoći."
+    },
+    "MH-500": {
+      "name": "Ovisnosti",
+      "description": "Potreba za podrškom u rješavanju problema zlouporabe droga, ovisnosti i ovisnosti. Obuhvaća potrebe povezane s upravljanjem ili oporavkom od problematične zlouporabe alkohola, droga ili drugih droga - uključujući akutnu stabilizaciju, liječenje i kontinuiranu podršku u oporavku. Prepoznata je kao zasebna kategorija potreba od mentalnog zdravlja, iako se te dvije često javljaju zajedno.",
+      "displayDescription": "Potražite pomoć ako vi ili netko koga volite ima problema s alkoholom ili drogama. Oporavak je moguć i postoje brižni ljudi koji su vam spremni pružiti podršku."
+    },
+    "AD-510": {
+      "name": "Mentalno zdravlje",
+      "description": "Potreba za podrškom u održavanju, obnavljanju ili upravljanju vlastitom mentalnom i emocionalnom dobrobiti. Obuhvaća potrebe povezane s emocionalnom nevoljom, psihijatrijskim stanjima, mentalnim zdravljem, kriznim situacijama i kontinuiranom podrškom potrebnom za dobar život s izazovima mentalnog zdravlja. Razlikuje se od potreba za zlouporabom droga, iako su istodobne pojave česte.",
+      "displayDescription": "Potražite pomoć ako se osjećate tužno, tjeskobno ili preopterećeno. Vaše mentalno zdravlje je važno i postoje ljudi koji vas mogu saslušati i pomoći."
+    },
+    "OT-600": {
+      "name": "Ostale vladine/gospodarske usluge",
+      "description": "Potreba za pristupom vladinim programima, građanskim uslugama i ekonomskoj podršci koja ne spada uredno u druge kategorije. Obuhvaća potrebe vezane uz snalaženje u javnim agencijama, pristup vladinim naknadama ili pravima, podršku malim poduzećima, poreznu pomoć i druge ekonomske usluge koje podržavaju stabilnost pojedinca i zajednice.",
+      "displayDescription": "Zatražite pomoć s vladinim programima, beneficijama ili drugim uslugama koje je teško pronaći negdje drugdje. Možemo vam pomoći da shvatite kamo se obratiti."
+    },
+    "TR-850": {
+      "name": "Prijevoz",
+      "description": "Potreba za pouzdanim putovanjem radi zadovoljavanja drugih potreba - posla, zdravstvene zaštite, obrazovanja, hrane, usluga i društvenih veza. Obuhvaća potrebe vezane uz pristup prijevozu, podmirivanje troškova prijevoza, održavanje vozila i sigurno putovanje. Prijevoz je temeljni omogućivač: njegova odsutnost pogoršava gotovo svaku drugu nezadovoljenu potrebu.",
+      "displayDescription": "Zatražite pomoć da stignete kamo god trebate - do liječnika, na posao, u školu ili u trgovinu. Možemo vam pomoći pronaći prijevoz ili pristupačne načine putovanja."
+    },
+    "UT-900": {
+      "name": "Komunalne usluge",
+      "description": "Potreba za pristupom osnovnim kućanskim uslugama - električnoj energiji, plinu, vodi i telekomunikacijama - koje životni prostor čine sigurnim, useljivim i povezanim. Obuhvaća potrebe vezane uz održavanje komunalnih usluga, podmirivanje troškova komunalnih usluga, smanjenje potrošnje i pristup telefonskoj ili internetskoj povezivosti. Potreba za komunalnim uslugama usko je povezana sa stabilnošću i zdravljem stanovanja.",
+      "displayDescription": "Zatražite pomoć pri plaćanju struje, plina, vode ili telefonskih i internetskih usluga. Možemo vas povezati s programima koji će vam pomoći u održavanju funkcionalnog doma."
+    },
+    "VO-900": {
+      "name": "Volontiranje i donacije",
+      "description": "Potreba za davanjem ili primanjem kroz velikodušnost zajednice - bez obzira treba li osoba donirana roba ili ima sposobnost i želju doprinijeti vremenom, vještinama ili resursima drugima. Obuhvaća potrebe na obje strane građanske razmjene: pojedince koji traže materijalne donacije ili donirane usluge i pojedince ili organizacije koje žele povezati volontere i donatore sa značajnim prilikama za pomoć.",
+      "displayDescription": "Trebate donirane stvari ili želite pomoći drugima? Možemo povezati ljude koji žele dati s ljudima kojima je potrebna pomoć."
+    }
   }
 }

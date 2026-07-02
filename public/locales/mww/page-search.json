@@ -26,5 +26,8 @@
   "name_unavailable": "Lub npe tsis muaj",
   "share_body": "Saib cov txiaj ntsig tshawb nrhiav {{count}} rau \"{{title}}\"",
   "age_filter_label": "Lim los ntawm hnub nyoog",
-  "age_filter_placeholder": "Sau hnub nyoog"
+  "age_filter_placeholder": "Sau hnub nyoog",
+  "ai_broadened_results_alert": "Peb tau pom cov txiaj ntsig dav dua vim tias koj qhov kev thov yuav xav tau cov ntaub ntawv ntxiv. Koj tuaj yeem kho kom zoo dua los ntawm kev siv cov ncauj lus lossis cov lus qhia.",
+  "ai_broadened_results_alert_low_info": "Peb tau pom cov txiaj ntsig dav dua vim tias koj qhov kev tshawb nrhiav yuav xav tau cov ntaub ntawv ntxiv. Koj tuaj yeem txhim kho los ntawm kev siv cov ncauj lus lossis cov lus qhia.",
+  "ai_broadened_results_alert_low_confidence": "Peb tau pom cov txiaj ntsig dav dua vim peb tsis ntseeg siab txog qhov sib phim zoo tshaj plaws. Koj tuaj yeem txhim kho siv cov ncauj lus lossis cov lus qhia."
 }

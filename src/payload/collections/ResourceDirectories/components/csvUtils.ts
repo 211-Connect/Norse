@@ -195,10 +195,13 @@ export const parseFacetsCSV = (csvText: string): any[] => {
       .map((value) => value.trim())
       .filter(Boolean);
 
-  const getSortByValue = (raw: string): 'count' | 'name' | 'valueOrder' => {
+  const getSortByValue = (
+    raw: string,
+  ): 'count' | 'name' | 'valueOrder' | 'dayOfWeek' => {
     const normalized = raw.toLowerCase();
     if (normalized === 'name') return 'name';
     if (normalized === 'valueorder') return 'valueOrder';
+    if (normalized === 'dayofweek') return 'dayOfWeek';
     return 'count';
   };
 
@@ -207,7 +210,7 @@ export const parseFacetsCSV = (csvText: string): any[] => {
     name: string;
     facet: string;
     showInDetails: boolean;
-    sortBy: 'count' | 'name' | 'valueOrder';
+    sortBy: 'count' | 'name' | 'valueOrder' | 'dayOfWeek';
     valueOrder: { value: string }[];
   }> = [];
 
@@ -255,7 +258,9 @@ export const generateFacetsCSV = (items: any[]): string => {
         ? 'name'
         : item.sortBy === 'valueOrder'
           ? 'valueOrder'
-          : 'count',
+          : item.sortBy === 'dayOfWeek'
+            ? 'dayOfWeek'
+            : 'count',
     valueOrder: (item.valueOrder || [])
       .map((entry: any) => entry?.value)
       .filter(Boolean)

@@ -252,6 +252,7 @@ export interface Config {
     'analytics-language-switch-destinations': AnalyticsLanguageSwitchDestinationsWidget;
     'analytics-favorite-add-to-list': AnalyticsFavoriteAddToListWidget;
     'analytics-verified-users': AnalyticsVerifiedUsersWidget;
+    'analytics-event-card': AnalyticsEventCardWidget;
     collections: CollectionsWidget;
   };
   user: User;
@@ -829,14 +830,13 @@ export interface ResourceDirectory {
       };
       viewDetailsText?: string | null;
       /**
-       * Display the View Details action as an underlined text link instead of the default button-style action.
+       * Choose how the View Details action is displayed on search result cards.
        */
-      useTextLinkForViewDetails?: boolean | null;
+      viewDetailsButtonVariant?: ('default' | 'secondary' | 'ghost' | 'link') | null;
       noResultsFallbackText?: string | null;
     };
     searchSettings: {
-      hybridSemanticSearchEnabled?: boolean | null;
-      aiClassificationEnabled?: boolean | null;
+      searchEngine?: ('classic' | 'hybrid' | 'ai_classification') | null;
       resultsLimit: number;
       radiusSelectValues?:
         | {
@@ -855,9 +855,9 @@ export interface ResourceDirectory {
           facet: string;
           showInDetails?: boolean | null;
           /**
-           * Count keeps API-provided order. Name sorts by localized label. Custom Value Order sorts by the configured English/raw facet values.
+           * Count keeps API-provided order. Name sorts by localized label. Custom Value Order sorts by configured English/raw facet values. Day of Week sorts Sunday to Saturday and supports values like Sunday/Sun, Monday/Mon, etc.
            */
-          sortBy?: ('count' | 'name' | 'valueOrder') | null;
+          sortBy?: ('count' | 'name' | 'valueOrder' | 'dayOfWeek') | null;
           /**
            * Order values by English/raw facet values from the search API (e.g. Sunday|Monday...). Values not listed appear after listed values.
            */
@@ -941,6 +941,11 @@ export interface ResourceDirectory {
         | null;
       title?: string | null;
     };
+  };
+  accessibilityPage?: {
+    enabled?: boolean | null;
+    title?: string | null;
+    content?: string | null;
   };
   privacyPolicyPage?: {
     enabled?: boolean | null;
@@ -1572,14 +1577,13 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
                     taxonomies?: T;
                   };
               viewDetailsText?: T;
-              useTextLinkForViewDetails?: T;
+              viewDetailsButtonVariant?: T;
               noResultsFallbackText?: T;
             };
         searchSettings?:
           | T
           | {
-              hybridSemanticSearchEnabled?: T;
-              aiClassificationEnabled?: T;
+              searchEngine?: T;
               resultsLimit?: T;
               radiusSelectValues?:
                 | T
@@ -1661,6 +1665,13 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
                   };
               title?: T;
             };
+      };
+  accessibilityPage?:
+    | T
+    | {
+        enabled?: T;
+        title?: T;
+        content?: T;
       };
   privacyPolicyPage?:
     | T
@@ -2068,6 +2079,16 @@ export interface AnalyticsFavoriteAddToListWidget {
  * via the `definition` "analytics-verified-users_widget".
  */
 export interface AnalyticsVerifiedUsersWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-event-card_widget".
+ */
+export interface AnalyticsEventCardWidget {
   data?: {
     [k: string]: unknown;
   };

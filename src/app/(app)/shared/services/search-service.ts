@@ -3,6 +3,7 @@
 import qs from 'qs';
 
 import { createLogger } from '@/lib/logger';
+import { SearchEngine } from '@/types/appConfig';
 import { BBox } from '@/types/resource';
 import {
   FiltersMap,
@@ -139,7 +140,7 @@ type FindResourcesOriginArgs = {
   page: number;
   limit?: number;
   tenantId?: string;
-  hybridSemanticSearchEnabled: boolean | undefined;
+  searchEngine: SearchEngine;
 };
 
 async function findResourcesOrigin({
@@ -148,13 +149,13 @@ async function findResourcesOrigin({
   page,
   limit,
   tenantId,
-  hybridSemanticSearchEnabled,
+  searchEngine,
 }: FindResourcesOriginArgs): Promise<SearchResult> {
   if (isNaN(page)) page = 1;
   if (!limit || isNaN(limit)) limit = 25;
 
   const resolvedQueryType = deriveQueryType({
-    hybridSemanticSearchEnabled,
+    searchEngine,
     originQueryType: query.queryType,
     query: query.query,
   });
@@ -233,10 +234,10 @@ export async function findResources(
   page: number,
   limit: number | undefined,
   tenantId: string | undefined,
-  hybridSemanticSearchEnabled: boolean | undefined,
+  searchEngine: SearchEngine,
 ) {
   return withCache(
-    `search_results:${tenantId}:${locale}:${stableHash({ query, page, limit })}`,
+    `search_results:${tenantId}:${locale}:${stableHash({ query, page, limit, searchEngine })}`,
     () =>
       findResourcesOrigin({
         query,
@@ -244,7 +245,7 @@ export async function findResources(
         page,
         limit,
         tenantId,
-        hybridSemanticSearchEnabled,
+        searchEngine,
       }),
     { redis: true, memory: false, ttl: ONE_HOUR },
     (value) => value.results.length > 0,
@@ -259,7 +260,7 @@ export async function findResources(
  * @param page - Current page number
  * @param limit - Results per page
  * @param tenantId - Tenant identifier
- * @param hybridSemanticSearchEnabled - Flag to enable hybrid semantic search which may affect query type derivation
+ * @param searchEngine - Active search engine mode
  * @returns Search results with pagination info
  */
 export async function findResourcesV2(
@@ -268,12 +269,12 @@ export async function findResourcesV2(
   page: number,
   limit: number | undefined,
   tenantId: string | undefined,
-  hybridSemanticSearchEnabled: boolean | undefined,
+  searchEngine: SearchEngine,
 ): Promise<SearchResult> {
   if (isNaN(page)) page = 1;
   if (!limit || isNaN(limit)) limit = 25;
 
-  const request = buildSearchRequest(searchStore, hybridSemanticSearchEnabled);
+  const request = buildSearchRequest(searchStore, searchEngine);
   const queryParams = qs.stringify({
     ...request.queryParams,
     page,

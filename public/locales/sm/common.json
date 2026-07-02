@@ -56,7 +56,16 @@
     "list_status_one": "1 filifiliga o lo'o avanoa. Fa'aaoga ki aū i luga ma lalo e toe iloilo ai.",
     "list_status_other": "{{count}} filifiliga o lo'o avanoa. Fa'aaoga ki o aū i luga ma lalo e toe iloilo ai.",
     "search_dialog_description": "Saili mo punaoa ma faʻafou lou nofoaga.",
-    "everywhere": "I mea uma"
+    "everywhere": "I mea uma",
+    "ai_clarify_title": "Fesoasoani mai ia matou e fa'aitiitia lau sailiga",
+    "ai_clarify_title_low_info": "Ta'u mai nisi fa'amatalaga ina ia mafai ona matou fa'aitiitia lau sailiga",
+    "ai_clarify_title_multiple_labels": "O le fea ituaiga fesoasoani e sili ona fetaui ma le mea o loʻo e manaʻomia?",
+    "ai_skip": "Faase'e",
+    "ai_confirm": "Fa'amaonia",
+    "ai_show_more_categories": "Faaali nisi vaega",
+    "ai_validation_select_or_skip": "Filifili ia le itiiti ifo ma le tasi le filifiliga pe faamisi.",
+    "ai_option_results_count_one": "{{count}} punaoa e feso'ota'i",
+    "ai_option_results_count_other": "{{count}} punaoa e feso'ota'i"
   },
   "call_to_action": {
     "call": "Telefoni",
@@ -179,5 +188,102 @@
     "default_title": "Sese o le fa'amaoniga",
     "default_description": "E le'i mafai ona matou fa'amae'aina le faiga e saini ai i totonu. Fa'amolemole toe taumafai.",
     "logout_and_try_again": "Alu ese ma toe taumafai"
+  },
+  "needs": {
+    "AR-100": {
+      "name": "Faatufugaga, Aganuu ma Faafiafiaga",
+      "description": "O le manaʻomia o le auai anoa i le olaga fatufatuaʻi, faʻaleaganuʻu, ma faʻafiafiaga. E aofia ai manaʻoga e fesoʻotaʻi ma le faʻaalia o faatufugaga, auai i le tofi faʻaleaganuʻu, gaoioiga faʻafiafia, ma faʻafiafiaga faʻale-nuʻu. E ese mai sini faʻamalolo poʻo le lagolago faʻaagafesootai — o lenei mea e atagia ai le manaʻoga totino o le tagata e fatufatu, faʻamanatu, taʻalo, ma auai i se faʻalapotopotoga faʻaleaganuʻu.",
+      "displayDescription": "Saili se fesoasoani e su'e ai ni mea malie e fai e pei o faatufugaga, musika, ta'aloga, po'o ni fa'atasiga fa'alenu'u. E tatau i tagata uma ona maua le taimi e ta'alo ai, fatufatua'i, ma fa'amanatu ai."
+    },
+    "CL-150": {
+      "name": "Laei/Manaoga Patino/Faleaiga",
+      "description": "O le manaʻomia o lavalava talafeagai, mea e tausi ai le tagata lava ia, ma mea faaletino e manaʻomia e tausia ai se aiga e aoga. E aofia ai manaʻoga mo lavalava e talafeagai ma le tau, galuega, poʻo le aʻoga; oloa tau tumama ma le tausiga o le tagata lava ia; ma meaafale poʻo sapalai masani e faʻafaigofie ai ona nonofo ai ma mamalu.",
+      "displayDescription": "Saili se fesoasoani e su'e ai lavalava, mea e tausi ai oe lava, po'o mea e te mana'omia mo lou fale. E mafai ona matou fesoasoani atu ia te oe e maua mea e te mana'omia e te lagona ai le mamā ma le mafanafana."
+    },
+    "DI-180": {
+      "name": "Auaunaga mo Faalavelave Tutupu Faafuasei",
+      "description": "O le manaʻomia o le lagolago e mafua mai i se faʻalavelave faʻafuaseʻi ua faʻalauiloaina pe ua oʻo i ai, pe faʻalenatura pe mafua mai i tagata. E aofia ai manaʻoga e tulaʻi mai aʻo leʻi, i le taimi o faʻalavelave, ma ina ua maeʻa faʻalavelave - e aofia ai le sauniuni, tali atu i faʻalavelave faʻafuaseʻi, ma le toe faʻaleleia. E ese mai manaʻoga faifai pea mo le saogalemu o le tagata lava ia; e taulaʻi i faʻalavelave faʻafuaseʻi i le lotoifale ma ona taunuuga.",
+      "displayDescription": "Ia maua se fesoasoani a'o le'i tupu se fa'alavelave fa'afuase'i, i le taimi o se fa'alavelave fa'afuase'i, pe a mae'a fo'i se lologa, afi, po'o se afa. E mafai ona matou fa'afeso'ota'i oe ma tagata ua sauni e fesoasoani i se fa'alavelave fa'afuase'i."
+    },
+    "DV-190": {
+      "name": "Sauāga Fa'aleaiga / Saogalemu Patino",
+      "description": "O le manaʻoga mo le saogalemu ma le puipuiga mai le faʻaleagaina o tagata, sauaga, faʻamalosi, poʻo le taufaʻamataʻu. E aofia ai manaʻoga e fesoʻotaʻi ma sauaga i totonu o aiga, sauaga a le paʻaga vavalalata, faʻataʻitaʻi, fefaʻatauaʻiga faʻatau, ma isi tulaga e lamatia ai le saogalemu faaletino poʻo le lagona o se tagata ona o gaioiga a se isi tagata. E ese mai manaʻoga saogalemu e fesoʻotaʻi ma faʻalavelave faʻafuaseʻi poʻo atinaʻe lautele mo le saogalemu.",
+      "displayDescription": "Saili se fesoasoani pe afai e te lagona le le saogalemu pe ua manu'a fo'i se tasi e te iloa i lou fale. E tatau ona e lagona le saogalemu, ma o lo'o i ai tagata ua sauni e fesoasoani i le taimi nei."
+    },
+    "ED-170": {
+      "name": "A'oa'oga",
+      "description": "O le manaʻoga mo le avanoa i le aʻoaʻoina, atinaʻeina o tomai, ma le ausiaina o aʻoaʻoga i laʻasaga uma o le olaga. E aofia ai manaʻoga e fesoʻotaʻi ma le aʻoaʻoina o tamaiti laiti, aʻoga K-12, aʻoaʻoga maualuluga, faitau ma tusitusi mo tagata matutua, aʻoaʻoina o le gagana Peretania, faitau ma tusitusi faatekinolosi, ma aʻoaʻoga faʻapitoa. E iai lava le manaʻoga e tusa lava po o fea o iai se tasi i lana malaga faʻaleaʻoaʻoga pe o a faʻalavelave latou te feagai i le mauaina.",
+      "displayDescription": "Saili se fesoasoani i le aʻoaʻoina — mo tamaiti, talavou, poʻo tagata matutua. Pe e te manaʻomia se fesoasoani i le aʻoga, aʻoaʻoga faigaluega, pe e te manaʻo e aʻoaʻo le Igilisi, e mafai ona matou fesoasoani ia te oe e suʻe."
+    },
+    "EM-180": {
+      "name": "Galuega",
+      "description": "O le manaʻoga mo le mauaina o galuega mautu ma talafeagai ma tulaga e mafai ai ona maua ni galuega. E aofia ai manaʻoga e fesoʻotaʻi ma le sailia o galuega, taofia o galuega, atiina ae o tomai faigaluega, ma le faʻatautaia o aia tatau i le galuega ma suiga e pei o le leai o ni galuega. E atagia ai itu tau tamaoaiga ma agafesootai o le galuega o se manaʻoga faaletagata, ae le o auaunaga lava ia.",
+      "displayDescription": "Saili se fesoasoani e su'e ai se galuega, tausia o se galuega, pe fausia ni tomai fou. E tatau i tagata uma ona maua se avanoa e maua ai se tupe ma lagona le fiafia i a latou galuega."
+    },
+    "FO-200": {
+      "name": "Mea'ai/Taumafataga",
+      "description": "O le manaʻomia o meaʻai e masani, lava, ma lelei. E aofia ai manaʻoga e fesoʻotaʻi ma le mauaina o meaʻai e lava e 'ai ai, mauaina o meaʻai e fetaui ma manaʻoga tau meaʻai, ma le malamalama i le auala e faʻatumauina ai le taumafa maloloina. E iai le manaʻoga pe a mafua mai i le mativa, faʻalavelave faʻafuaseʻi, le le lava o meaʻai, poʻo le faʻalavelave faʻafuaseʻi.",
+      "displayDescription": "Ia maua se fesoasoani e su'e ai mea'ai mo oe ma lou aiga. Pe e te mana'omia se mea'ai i le asō pe fesoasoani e fa'atau mea'ai, e mafai ona matou fa'afeso'ota'i oe i mea'ai e lata ane ia te oe."
+    },
+    "HC-300": {
+      "name": "Soifua lelei",
+      "description": "O le manaʻomia o le mauaina o auaunaga tau soifua maloloina faaletino, tausiga puipuia, togafitiga faafomaʻi, ma oloa ma le lagolago tau femalagaaiga e manaʻomia e pulea ai le soifua maloloina o le tagata. E aofia ai manaʻoga i le faʻasologa atoa o le soifua maloloina faaletino - mai le soifua maloloina masani ma suʻesuʻega i le tausiga faʻafuaseʻi, pulega o faʻamaʻi tumau, toe faʻaleleia, ma le tausiga mo se taimi umi. O manaʻoga tau soifua maloloina o le mafaufau ma le faʻaaogaina o fualaau faasaina e faʻatalanoaina eseese.",
+      "displayDescription": "Saili se fesoasoani e su'e ai se foma'i, foma'i nifo, po'o se isi lava tausiga fa'alesoifua maloloina. E tatau i tagata uma ona soifua maloloina ma maua le tausiga latou te mana'omia."
+    },
+    "HO-300": {
+      "name": "Fale",
+      "description": "O le manaʻoga mo se nofoaga saogalemu, mautu, ma talafeagai e nonofo ai. E aofia ai manaʻoga i le tele o vaega o fale — mai le malutaga vave i se taimi o faʻalavelave faʻafuaseʻi i fale taugofie mo se taimi umi, faʻatulagaga lagolago mo le soifuaga, ma lagolago mautu e fesoasoani i tagata e nonofo ai pea i o latou fale. E eseese le natura o le manaʻoga mo fale e tusa ai ma le faanatinati ma tulaga, ae o le manaʻoga autū e tutusa lava: o se nofoaga e taʻua o le aiga.",
+      "displayDescription": "Saili se fesoasoani e su'e ai se nofoaga saogalemu e te nofo ai. Pe e te mana'omia se nofoaga e te moe ai i le po nei pe fesoasoani e te nofo ai i lou fale, e mafai ona matou fa'afeso'ota'i oe i le lagolago."
+    },
+    "IC-330": {
+      "name": "Lagolago/Fesoasoani i Tupe Maua",
+      "description": "O le manaʻomia o punaoa tau tupe e faʻafetaui ai tau o le soifuaga masani pe a le lava pe leai foʻi se tupe maua. E aofia ai manaʻoga e fesoʻotaʻi ma fesoasoani tau tupe, sui o tupe maua, avanoa i faʻamanuiaga a le lautele, ma lagolago mo le mautu tau tupe. E atagia ai le itu tau tamaoaiga o le soifua manuia — le manaʻoga ia lava punaoa e faʻafetaui ai manaʻoga taua — e ese mai polokalame poʻo auala faʻapitoa e ono faʻafetaui ai.",
+      "displayDescription": "Saili se fesoasoani e totogi ai mea e te manaʻomia pe a faigata lau tupe. E mafai ona matou faʻafesoʻotaʻi oe i polokalame e fesoasoani e totogi ai pili ma tau o aso uma."
+    },
+    "IF-330": {
+      "name": "Lagolago a Tagata Taitoatasi, Aiga ma le Nu'u",
+      "description": "O le manaʻomia o le lagolago faʻale-agafesootai, tausiga, ma le lagolago i le tulaga faʻale-nuʻu e lagolagoina ai tagata taʻitoʻatasi ma aiga i le olaga i aso faisoo ma tulaga faigata. E aofia ai manaʻoga e fesoʻotaʻi ma le tausiga o fanau, tausiga o ē o loʻo faʻalagolago i ai, faʻatautaia o faigata o le aiga, fausiaina o fesoʻotaʻiga faʻale-nuʻu, ma le mauaina o le lagolago a tupulaga poʻo agafesootai. E atagia ai le mea moni o le soifua manuia o le tagata e matua fesoʻotaʻi lava ma le malosi o mafutaga ma fesoʻotaʻiga o loʻo siomia ai se tagata.",
+      "displayDescription": "Saili se fesoasoani mo lou aiga po'o se tasi e te tausia. Pe e te mana'omia le lagolago fa'amatua, fesoasoani mo se tagata matua, po'o se tasi e talanoa i ai, e mafai ona matou fesoasoani."
+    },
+    "IS-330": {
+      "name": "Auaunaga Fa'amatalaga",
+      "description": "O le manaʻoga e malamalama i punaʻoa o loʻo iai ma le auala e maua ai. E aofia ai manaʻoga e fesoʻotaʻi ma le sailia o auaunaga talafeagai, malamalama i le agavaʻa ma faiga, faʻatautaia o faiga faigata, ma le fesoʻotaʻi ma le lagolago saʻo i le taimi saʻo. O se manaʻoga-meta lea — o le mea e manaʻomia muamua e faʻafetaiaʻia ai le tele o isi manaʻoga i se auala lelei — ma e ese mai auaunaga lava ia.",
+      "displayDescription": "E te le o mautinoa po o fea e amata ai? E mafai ona matou fesoasoani atu ia te oe e iloa po o a auaunaga o loʻo iai ma po o fea e fetaui ma oe."
+    },
+    "LE-450": {
+      "name": "Tulafono, Tagata Fa'atau ma le Saogalemu Lautele",
+      "description": "O le manaʻomia o le puipuiga faaletulafono, faʻatautaia o le faiga faʻamasino, aia tatau a tagata faʻatau, ma le saogalemu lautele. E aofia ai manaʻoga e fesoʻotaʻi ma mataupu faʻaletulafono tau le va o tagata, aʻafia i faʻamasinoga tau solitulafono, tulaga o femalagaaʻiga, faʻaleagaina o tagata faʻatau, ma le puipuiga i lalo o le tulafono. E atagia ai tulaga o loʻo lamatia ai aia tatau a se tagata, saogalemu, poʻo lona tulaga i lalo o faiga faʻaletulafono ma e manaʻomia ai le malamalama faʻaletulafono poʻo le fesoasoani.",
+      "displayDescription": "Ia maua se fesoasoani i fesili faaletulafono, malamalama i ou aia tatau, po'o le saogalemu. E mafai ona matou fa'afeso'ota'i oe ma tagata e iloa le tulafono ma e mafai ona fesoasoani."
+    },
+    "MH-500": {
+      "name": "Vaisu",
+      "description": "O le manaʻomia o le lagolago i le taulimaina o le faʻaaogaina o fualaau faʻasaina, faʻalagolago, ma le vaisu. E aofia ai manaʻoga e fesoʻotaʻi ma le puleaina poʻo le toe faʻaleleia mai le faʻaaogaina faigata o le ava malosi, fualaau faʻasaina, poʻo isi fualaau faʻasaina - e aofia ai le faʻamautuina faʻafuaseʻi, togafitiga, ma le lagolago faifai pea mo le toe faʻaleleia. Ua iloa o se vaega tulaga ese o manaʻoga mai le soifua maloloina o le mafaufau, e ui lava e masani ona tutupu faʻatasi ia mea e lua.",
+      "displayDescription": "Saili se fesoasoani pe afai o oe po'o se tasi e te alofa i ai o lo'o tauivi ma le fa'aaogaina o le 'ava malosi po'o fualaau fa'asaina. E mafai ona toe fa'aleleia, ma o lo'o i ai tagata alolofa ua sauni e lagolagoina oe."
+    },
+    "AD-510": {
+      "name": "Soifua Maloloina o le Mafaufau",
+      "description": "O le manaʻomia o le lagolago i le tausia, toe faʻaleleia, poʻo le puleaina o le soifua manuia o le mafaufau ma lagona. E aofia ai manaʻoga e fesoʻotaʻi ma le atuatuvalega faʻalagona, tulaga faʻalemafaufau, soifua maloloina o amioga, tulaga faʻalavelave, ma le lagolago faifai pea e manaʻomia e ola lelei ai ma luʻitau o le soifua maloloina o le mafaufau. E ese mai manaʻoga o le faʻaaogaina o fualaau faʻasaina, e ui o faʻaaliga e masani ona tutupu faʻatasi.",
+      "displayDescription": "Saili se fesoasoani pe afai o e lagona le faanoanoa, popole, po o le lofituina. E tāua lou soifua maloloina faalemafaufau, ma e iai tagata e mafai ona faalogo ma fesoasoani."
+    },
+    "OT-600": {
+      "name": "Isi Auaunaga a le Malo/Tamaoaiga",
+      "description": "O le manaʻomia o le avanoa i polokalame a le malo, auaunaga faʻalemalo, ma lagolago tau tamaoaiga e le pa'ū tonu i isi vaega. E aofia ai manaʻoga e fesoʻotaʻi ma le faʻatautaia o ofisa a le malo, mauaina o faʻamanuiaga poʻo aia tatau a le malo, lagolago a pisinisi laiti, fesoasoani tau lafoga, ma isi auaunaga tau tamaoaiga e lagolagoina ai le mautu o tagata taʻitoʻatasi ma le nuʻu.",
+      "displayDescription": "Ia maua se fesoasoani i polokalame a le malo, penefiti, po'o isi auaunaga e faigata ona maua i se isi lava nofoaga. E mafai ona matou fesoasoani ia te oe e fuafua po'o fea e te alu i ai."
+    },
+    "TR-850": {
+      "name": "Felauaiga",
+      "description": "O le manaʻomia o le mafai ona malaga ma le faʻatuatuaina e faʻafetaui ai isi manaʻoga - galuega, tausiga o le soifua maloloina, aʻoaʻoga, meaʻai, tautua, ma fesoʻotaʻiga faʻaagafesootai. E aofia ai manaʻoga e fesoʻotaʻi ma le mauaina o taʻavale, totogiina o tau o felauaiga, tausiga o se taʻavale, ma femalagaaʻi ma le saogalemu. O felauaiga o se faʻavae autu lea e mafai ai: o lona leai o se mea e faʻaopoopoina ai toetoe lava o isi manaʻoga uma e leʻi faʻataunuʻuina.",
+      "displayDescription": "Saili se fesoasoani e te alu i ai i le mea e te manaʻomia — i se fomaʻi, galuega, aʻoga, poʻo se faleoloa. E mafai ona matou fesoasoani ia te oe e suʻe ni taʻavale poʻo ni auala taugofie e malaga ai."
+    },
+    "UT-900": {
+      "name": "Auaunaga",
+      "description": "O le manaʻomia o le mauaina o mea taua i totonu o le fale — eletise, kesi, vai, ma fesoʻotaʻiga — e faʻamautinoa ai le saogalemu o se nofoaga e nonofo ai, e mafai ona nonofo ai, ma fesoʻotaʻi ai. E aofia ai manaʻoga e fesoʻotaʻi ma le tausia o auaunaga a le eletise, le totogiina o tau o eletise, le faʻaitiitia o le faʻaaogaina o mea, ma le maua o fesoʻotaʻiga telefoni poʻo le initaneti. O le manaʻoga mo mea taua e fesoʻotaʻi vavalalata ma le mautu ma le soifua maloloina o fale.",
+      "displayDescription": "Ia maua se fesoasoani e totogi ai le eletise, kesi, vai, po'o le telefoni ma le initaneti. E mafai ona matou fa'afeso'ota'i oe i polokalame e fesoasoani e fa'agaoioia ai lou fale."
+    },
+    "VO-900": {
+      "name": "Volenitia & Foa'i",
+      "description": "O le manaʻoga e foaʻi pe maua mai e ala i le agalelei o le nuʻu — pe manaʻomia e se tagata ni mea foaʻi, pe iai le gafatia ma le naunautaʻiga e foaʻi atu le taimi, tomai, poʻo punaoa i isi. E aofia ai manaʻoga i itu uma e lua o fefaʻatauaʻiga faʻalemalo: tagata taʻitoʻatasi o loʻo sailia foaʻi faaletino poʻo auaunaga foaʻi, ma tagata taʻitoʻatasi poʻo faʻalapotopotoga o loʻo sailia le faʻafesoʻotaʻi o volenitia ma ē foaʻi i avanoa taua e fesoasoani ai.",
+      "displayDescription": "E te manaʻomia ni mea foaʻi pe e te fia fesoasoani i isi? E mafai ona tatou faʻafesoʻotaʻi tagata e fia foaʻi ma tagata e manaʻomia se fesoasoani."
+    }
   }
 }

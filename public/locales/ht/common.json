@@ -56,7 +56,16 @@
     "list_status_one": "1 opsyon disponib. Sèvi ak flèch anlè ak anba yo pou revize.",
     "list_status_other": "Gen {{count}} opsyon ki disponib. Sèvi ak flèch anlè ak anba yo pou revize.",
     "search_dialog_description": "Chèche resous epi mete ajou kote w ye a.",
-    "everywhere": "Toupatou"
+    "everywhere": "Toupatou",
+    "ai_clarify_title": "Ede nou rafine rechèch ou a",
+    "ai_clarify_title_low_info": "Di nou yon ti kras plis pou nou ka rafine rechèch ou a",
+    "ai_clarify_title_multiple_labels": "Ki kalite èd ki pi byen koresponn ak sa ou bezwen an?",
+    "ai_skip": "Sote",
+    "ai_confirm": "Konfime",
+    "ai_show_more_categories": "Montre plis kategori",
+    "ai_validation_select_or_skip": "Chwazi omwen yon opsyon oubyen sote li.",
+    "ai_option_results_count_one": "Resous ki gen rapò ak {{count}}",
+    "ai_option_results_count_other": "{{count}} resous ki gen rapò"
   },
   "call_to_action": {
     "call": "Rele",
@@ -179,5 +188,102 @@
     "default_title": "Erè otantifikasyon",
     "default_description": "Nou pa t kapab fini pwosesis koneksyon an. Tanpri eseye ankò.",
     "logout_and_try_again": "Dekonekte epi eseye ankò"
+  },
+  "needs": {
+    "AR-100": {
+      "name": "Atizay, Kilti ak Lwazi",
+      "description": "Bezwen pou yon patisipasyon siyifikatif nan lavi kreyatif, kiltirèl ak lwazi. Li anglobe bezwen ki gen rapò ak ekspresyon atistik, angajman ak eritaj kiltirèl, aktivite lwazi ak lwazi nan kominote a. Li diferan de objektif sipò terapetik oswa sosyal — sa reflete bezwen intrinsèk imen an pou kreye, selebre, jwe epi fè pati yon kominote kiltirèl.",
+      "displayDescription": "Jwenn èd pou jwenn aktivite amizan pou fè tankou atizay, mizik, espò, oswa evènman kominotè. Tout moun merite tan pou jwe, kreye, epi selebre."
+    },
+    "CL-150": {
+      "name": "Rad/Bezwen pèsonèl/Bezwen kay la",
+      "description": "Bezwen pou rad ki apwopriye, pwodui swen pèsonèl, ak byen materyèl ki nesesè pou kenbe yon kay fonksyonèl. Sa gen ladan l bezwen pou rad ki apwopriye pou move tan an, travay, oswa lekòl; pwodui ijyèn ak swen pèsonèl; ak mèb oswa founiti debaz ki fè yon espas pou viv abitab e diy.",
+      "displayDescription": "Jwenn èd pou jwenn rad, pwodui swen pèsonèl, oswa bagay ou bezwen pou kay ou. Nou ka ede w jwenn sa w bezwen pou w santi w pwòp e alèz."
+    },
+    "DI-180": {
+      "name": "Sèvis Dezas",
+      "description": "Bezwen pou sipò ki rive akoz yon evènman katastwòf deklare oswa ki te fèt, kit se natirèl oswa koze pa moun. Li anglobe bezwen ki parèt anvan, pandan ak apre katastwòf yo — tankou preparasyon, repons ijans ak rekiperasyon. Li diferan de bezwen sekirite pèsonèl kontinyèl; li santre sou dezòd egi nan nivo kominote a ak konsekans li yo.",
+      "displayDescription": "Jwenn èd anvan, pandan, oswa apre yon katastwòf tankou yon inondasyon, yon dife, oswa yon tanpèt. Nou ka mete ou an kontak ak moun ki pare pou ede nan yon ijans."
+    },
+    "DV-190": {
+      "name": "Vyolans Domestik / Sekirite Pèsonèl",
+      "description": "Bezwen pou sekirite ak pwoteksyon kont domaj entèpèsonèl, abi, presyon, oswa menas. Li anglobe bezwen ki gen rapò ak vyolans domestik, vyolans patnè entim, pèsekisyon, trafik, ak lòt sitiyasyon kote sekirite fizik oswa emosyonèl yon moun an danje akòz aksyon yon lòt moun. Li diferan de bezwen sekirite ki gen rapò ak katastwòf oswa enfrastrikti sekirite piblik an jeneral.",
+      "displayDescription": "Chèche èd si ou menm oswa yon moun ou konnen santi li pa an sekirite lakay li oswa si l ap soufri. Ou merite santi w an sekirite, epi gen moun ki pare pou ede w kounye a."
+    },
+    "ED-170": {
+      "name": "Edikasyon",
+      "description": "Bezwen pou gen aksè a aprantisaj, devlopman konpetans, ak reyalizasyon edikasyonèl nan tout etap lavi a. Li anglobe bezwen ki gen rapò ak aprantisaj timoun piti, lekòl K-12, edikasyon apre segondè, alfabetizasyon pou granmoun, akizisyon lang angle, alfabetizasyon dijital, ak fòmasyon pwofesyonèl. Bezwen an egziste kèlkeswa kote yon moun ye nan vwayaj edikasyonèl li oswa ki baryè li rankontre pou jwenn aksè a li.",
+      "displayDescription": "Jwenn èd pou aprann — pou timoun, adolesan, oswa granmoun. Kit ou bezwen èd lekòl, fòmasyon pwofesyonèl, oswa ou vle aprann angle, nou ka ede w jwenn li."
+    },
+    "EM-180": {
+      "name": "Anplwa",
+      "description": "Bezwen pou jwenn aksè a yon travay ki estab e adekwa, ansanm ak kondisyon ki fè travay posib. Li anglobe bezwen ki gen rapò ak jwenn travay, kenbe travay, devlope konpetans pwofesyonèl, ak navige nan dwa ak tranzisyon nan travay tankou chomaj. Li reflete dimansyon ekonomik ak sosyal travay kòm yon bezwen imen, pa sèvis yo menm.",
+      "displayDescription": "Jwenn èd pou jwenn yon travay, kenbe yon travay, oswa devlope nouvo konpetans. Tout moun merite yon chans pou yo touche lajan epi santi yo byen nan travay yo."
+    },
+    "FO-200": {
+      "name": "Manje/Repas",
+      "description": "Bezwen pou manje ki konsistan, adekwa, epi nourisan. Li gen ladan l bezwen ki gen rapò ak jwenn ase manje pou manje, jwenn manje ki satisfè bezwen nitrisyonèl oswa dyetetik yo, epi konprann kijan pou kenbe yon alimantasyon ki an sante. Bezwen an egziste kit li soti nan povrete, kriz, ensekirite alimantè kwonik, oswa dezòd sitiyasyonèl.",
+      "displayDescription": "Jwenn èd pou jwenn manje pou ou menm ak fanmi ou. Kit ou bezwen yon repa jodi a oswa ou bezwen èd pou achte manje, nou ka mete ou an kontak ak manje toupre ou."
+    },
+    "HC-300": {
+      "name": "Swen Sante",
+      "description": "Bezwen pou gen aksè a sèvis sante fizik, swen prevantif, tretman medikal, ak machandiz ak sipò navigasyon ki nesesè pou jere sante yon moun. Li anglobe bezwen atravè tout kontinyòm sante fizik la — soti nan byennèt ak depistaj woutin rive nan swen egi, jesyon maladi kwonik, reyabilitasyon, ak swen alontèm. Bezwen sante mantal ak itilizasyon sibstans yo adrese separeman.",
+      "displayDescription": "Jwenn èd pou jwenn yon doktè, yon dantis, oswa lòt swen sante. Tout moun merite rete an sante epi jwenn swen yo bezwen an."
+    },
+    "HO-300": {
+      "name": "Lojman",
+      "description": "Bezwen pou yon kote pou moun rete ki an sekirite, ki estab, epi ki apwopriye. Li anglobe tout bezwen lojman yo — soti nan abri imedya nan yon kriz rive nan lojman abòdab alontèm, aranjman pou moun viv ak sipò, ak sipò estabilite ki ede moun yo rete nan kay yo. Natir bezwen lojman an varye selon ijans ak sikonstans yo, men bezwen fondamantal la rete menm: yon kote pou moun rele lakay yo.",
+      "displayDescription": "Jwenn èd pou jwenn yon kote ki an sekirite pou w rete. Kit ou bezwen yon kote pou dòmi aswè a oswa èd pou rete lakay ou, nou ka mete w an kontak ak sipò."
+    },
+    "IC-330": {
+      "name": "Sipò/Asistans Revni",
+      "description": "Bezwen pou resous finansye pou satisfè depans debaz pou lavi lè revni an pa sifi oswa li pa la. Li anglobe bezwen ki gen rapò ak asistans lajan kach, ranplasman revni, aksè a benefis piblik, ak sipò estabilite finansyè. Li reflete dimansyon ekonomik byennèt la — nesesite pou gen ase resous pou kouvri bezwen esansyèl yo — separeman de pwogram espesifik oswa mekanis ki ka adrese li.",
+      "displayDescription": "Jwenn èd pou peye bagay ou bezwen yo lè ou pa gen anpil lajan. Nou ka mete ou an kontak ak pwogram ki ede kouvri bòdwo ak depans chak jou yo."
+    },
+    "IF-330": {
+      "name": "Sipò Endividyèl, Fanmi ak Kominotè",
+      "description": "Bezwen pou sipò nan domèn relasyon, swen, ak kominote a ki soutni moun ak fanmi yo nan lavi chak jou ak nan sikonstans difisil yo. Li anglobe bezwen ki gen rapò ak paran, swen moun ki sou kont yo, navige nan konpleksite familyal, bati koneksyon kominotè, ak jwenn aksè a sipò ant kanmarad oswa sosyal. Li reflete reyalite ke byennèt moun lye pwofondman ak fòs relasyon ak rezo ki antoure yon moun.",
+      "displayDescription": "Jwenn èd pou fanmi w oswa yon moun w ap pran swen. Kit ou bezwen sipò pou paran, èd pou yon granmoun aje, oswa yon moun pou pale avè l, nou ka ede w."
+    },
+    "IS-330": {
+      "name": "Sèvis Enfòmasyon",
+      "description": "Bezwen pou konprann ki resous ki egziste ak kijan pou jwenn aksè a yo. Li anglobe bezwen ki gen rapò ak jwenn sèvis ki enpòtan yo, konprann kalifikasyon ak pwosesis yo, navige nan sistèm konplèks yo, epi konekte ak bon sipò a nan bon moman an. Sa a se yon meta-bezwen — yon kondisyon esansyèl pou satisfè anpil lòt bezwen efektivman — epi li diferan de sèvis yo menm.",
+      "displayDescription": "Ou pa sèten ki kote pou kòmanse? Nou ka ede w konnen ki sèvis ki disponib e kilès ki bon pou ou."
+    },
+    "LE-450": {
+      "name": "Sekirite Legal, Konsomatè ak Piblik",
+      "description": "Bezwen pou pwoteksyon legal, navigasyon sistèm jistis la, dwa konsomatè yo, ak sekirite piblik. Li anglobe bezwen ki gen rapò ak zafè legal sivil, patisipasyon nan jistis kriminèl, sitiyasyon imigrasyon, domaj konsomatè yo, ak pwoteksyon anba lalwa. Li reflete sitiyasyon kote dwa, sekirite, oswa pozisyon yon moun anba sistèm legal yo an danje epi kote konesans oswa asistans legal nesesè.",
+      "displayDescription": "Jwenn èd pou kesyon legal, pou konprann dwa ou, oswa pou rete an sekirite. Nou ka mete ou an kontak ak moun ki konnen lalwa epi ki ka ede ou."
+    },
+    "MH-500": {
+      "name": "Depandans",
+      "description": "Bezwen pou sipò pou adrese itilizasyon sibstans, depandans, ak adiksyon. Li anglobe bezwen ki gen rapò ak jere oswa rekipere apre yon pwoblèm itilizasyon alkòl, dwòg, oswa lòt sibstans — tankou estabilizasyon egi, tretman, ak sipò rekiperasyon kontinyèl. Li rekonèt kòm yon kategori bezwen diferan de sante mantal, byenke de yo souvan rive ansanm.",
+      "displayDescription": "Chèche èd si ou menm oswa yon moun ou renmen ap lite ak itilizasyon alkòl oswa dwòg. Gerizon posib, epi gen moun ki gen sousi pou ou ki pare pou sipòte ou."
+    },
+    "AD-510": {
+      "name": "Sante Mantal",
+      "description": "Bezwen pou sipò pou kenbe, retabli, oswa jere byennèt mantal ak emosyonèl yon moun. Li gen ladan l bezwen ki gen rapò ak detrès emosyonèl, pwoblèm sikyatrik, sante mantal, sitiyasyon kriz, ak sipò kontinyèl ki nesesè pou viv byen ak pwoblèm sante mantal. Li diferan de bezwen itilizasyon sibstans, byenke prezantasyon ko-okiran yo komen.",
+      "displayDescription": "Chèche èd si w santi w tris, enkyè, oswa akable. Sante mantal ou enpòtan, epi gen moun ki ka koute w epi ede w."
+    },
+    "OT-600": {
+      "name": "Lòt sèvis gouvènmantal/ekonomik",
+      "description": "Bezwen pou jwenn aksè a pwogram gouvènman an, sèvis sivik, ak sipò ekonomik ki pa tonbe byen nan lòt kategori yo. Li gen ladan l bezwen ki gen rapò ak navige nan ajans piblik yo, aksè a benefis oswa dwa gouvènman an, sipò pou ti biznis, asistans fiskal, ak lòt sèvis ekonomik ki sipòte estabilite endividyèl ak kominotè a.",
+      "displayDescription": "Jwenn èd avèk pwogram gouvènman yo, benefis yo, oswa lòt sèvis ki difisil pou jwenn lòt kote. Nou ka ede w konnen ki kote pou w ale."
+    },
+    "TR-850": {
+      "name": "Transpò",
+      "description": "Bezwen pou kapasite pou vwayaje yon fason fyab pou satisfè lòt bezwen - travay, swen sante, edikasyon, manje, sèvis ak koneksyon sosyal. Li anglobe bezwen ki gen rapò ak jwenn mwayen transpò, peye pri transpò, antreteni yon machin ak vwayaje an sekirite. Transpò se yon eleman fondamantal: absans li agrave prèske tout lòt bezwen ki pa satisfè.",
+      "displayDescription": "Jwenn èd pou rive kote ou bezwen ale a — nan yon doktè, travay, lekòl, oswa magazen. Nou ka ede w jwenn transpò oswa mwayen abòdab pou vwayaje."
+    },
+    "UT-900": {
+      "name": "Sèvis piblik yo",
+      "description": "Bezwen pou gen aksè a sèvis piblik esansyèl nan kay la — elektrisite, gaz, dlo, ak telekominikasyon — ki fè yon espas pou viv an sekirite, abitab, epi konekte. Li anglobe bezwen ki gen rapò ak mentni sèvis piblik yo, peye depans sèvis piblik yo, diminye konsomasyon, ak aksè a koneksyon telefòn oswa entènèt. Bezwen sèvis piblik yo lye ak estabilite ak sante lojman.",
+      "displayDescription": "Jwenn èd pou peye pou elektrisite, gaz, dlo, oswa sèvis telefòn ak entènèt. Nou ka mete w an kontak ak pwogram ki ede w kenbe kay ou an fonksyon."
+    },
+    "VO-900": {
+      "name": "Volontè ak Donasyon",
+      "description": "Bezwen pou bay oswa resevwa atravè jenewozite kominote a — kit yon moun bezwen machandiz ki soti nan don, oswa li gen kapasite ak dezi pou kontribye tan, konpetans, oswa resous bay lòt moun. Li anglobe bezwen nan tou de bò echanj sivik la: moun k ap chèche don materyèl oswa sèvis ki soti nan don, ak moun oswa òganizasyon k ap chèche konekte volontè ak donatè ak opòtinite ki gen sans pou ede.",
+      "displayDescription": "Bezwen machandiz ki soti nan don oswa ou vle ede lòt moun? Nou ka mete moun ki vle bay ak moun ki bezwen yon koutmen."
+    }
   }
 }

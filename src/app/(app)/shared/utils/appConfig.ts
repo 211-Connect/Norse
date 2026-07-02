@@ -256,6 +256,9 @@ async function getAppConfigBase(
         title: '',
       },
       pages: {
+        accessibilityPage: {
+          enabled: false,
+        },
         privacyPolicyPage: {
           enabled: false,
         },
@@ -275,8 +278,7 @@ async function getAppConfigBase(
         facets: [],
         map,
         radiusOptions: [],
-        hybridSemanticSearchEnabled: false,
-        aiClassificationEnabled: false,
+        searchEngine: 'classic',
         resultsLimit: 25,
       },
       sessionId: '',
@@ -441,6 +443,11 @@ async function getAppConfigBase(
       title: resourceDirectory.brand.meta?.title ?? '',
     },
     pages: {
+      accessibilityPage: {
+        content: resourceDirectory.accessibilityPage?.content ?? undefined,
+        enabled: resourceDirectory.accessibilityPage?.enabled ?? true,
+        title: resourceDirectory.accessibilityPage?.title ?? 'Accessibility',
+      },
       privacyPolicyPage: {
         content: resourceDirectory.privacyPolicyPage?.content ?? undefined,
         enabled: resourceDirectory.privacyPolicyPage?.enabled ?? true,
@@ -488,7 +495,9 @@ async function getAppConfigBase(
                 ? 'name'
                 : sortBy === 'valueOrder'
                   ? 'valueOrder'
-                  : 'count',
+                  : sortBy === 'dayOfWeek'
+                    ? 'dayOfWeek'
+                    : 'count',
             valueOrder: (valueOrder ?? [])
               .map((entry) => entry.value?.trim())
               .filter(Boolean) as string[],
@@ -502,12 +511,8 @@ async function getAppConfigBase(
         resourceDirectory.search.searchSettings.radiusSelectValues ?? [],
       defaultRadius:
         resourceDirectory.search.searchSettings.defaultRadius ?? undefined,
-      hybridSemanticSearchEnabled:
-        resourceDirectory.search.searchSettings.hybridSemanticSearchEnabled ??
-        false,
-      aiClassificationEnabled:
-        resourceDirectory.search.searchSettings.aiClassificationEnabled ??
-        false,
+      searchEngine:
+        resourceDirectory.search.searchSettings.searchEngine ?? 'classic',
       resultsLimit: resourceDirectory.search.searchSettings.resultsLimit ?? 25,
       texts: {
         locationInputPlaceholder:
@@ -528,9 +533,8 @@ async function getAppConfigBase(
             undefined,
         },
         title: resourceDirectory.search.texts?.title ?? undefined,
-        useTextLinkForViewDetails:
-          resourceDirectory.search.texts?.useTextLinkForViewDetails ??
-          undefined,
+        viewDetailsButtonVariant:
+          resourceDirectory.search.texts?.viewDetailsButtonVariant ?? undefined,
         viewDetailsText:
           resourceDirectory.search.texts?.viewDetailsText ?? undefined,
       },

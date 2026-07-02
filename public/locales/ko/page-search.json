@@ -26,5 +26,8 @@
   "name_unavailable": "이름 알 수 없음",
   "share_body": "\"{{count}}\"에 대한 {{title}}개의 검색 결과를 확인하세요.",
   "age_filter_label": "나이별로 필터링",
-  "age_filter_placeholder": "나이를 입력하세요"
+  "age_filter_placeholder": "나이를 입력하세요",
+  "ai_broadened_results_alert": "요청에 더 자세한 정보가 필요할 수 있으므로 더 광범위한 결과를 보여드렸습니다. 주제 또는 제안을 사용하여 검색 결과를 구체화할 수 있습니다.",
+  "ai_broadened_results_alert_low_info": "검색에 더 자세한 정보가 필요할 수 있으므로 더 광범위한 결과를 보여드렸습니다. 주제 또는 추천 항목을 사용하여 검색 결과를 좁힐 수 있습니다.",
+  "ai_broadened_results_alert_low_confidence": "최적의 결과를 확신할 수 없었기 때문에 더 광범위한 결과를 보여드렸습니다. 주제나 제안을 사용하여 검색 결과를 구체화할 수 있습니다."
 }

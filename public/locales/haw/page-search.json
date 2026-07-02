@@ -26,5 +26,8 @@
   "name_unavailable": "ʻAʻole i loaʻa ka inoa",
   "share_body": "E ʻike i nā hualoaʻa hulina {{count}} no \"{{title}}\"",
   "age_filter_label": "Kānana ma ka makahiki",
-  "age_filter_placeholder": "E hoʻokomo i ka makahiki"
+  "age_filter_placeholder": "E hoʻokomo i ka makahiki",
+  "ai_broadened_results_alert": "Ua hōʻike mākou i nā hopena ākea no ka mea e pono paha kāu noi i nā kikoʻī hou aku. Hiki iā ʻoe ke hoʻomaikaʻi me ka hoʻohana ʻana i nā kumuhana a i ʻole nā ​​​​manaʻo.",
+  "ai_broadened_results_alert_low_info": "Ua hōʻike mākou i nā hualoaʻa ākea no ka mea e pono paha kāu hulina i nā kikoʻī hou aku. Hiki iā ʻoe ke hoʻomaikaʻi me ka hoʻohana ʻana i nā kumuhana a i ʻole nā ​​​​manaʻo.",
+  "ai_broadened_results_alert_low_confidence": "Ua hōʻike mākou i nā hopena ākea no ka mea ʻaʻole mākou i hilinaʻi e pili ana i ka hoʻokūkū maikaʻi loa. Hiki iā ʻoe ke hoʻomaikaʻi me ka hoʻohana ʻana i nā kumuhana a i ʻole nā ​​​​manaʻo."
 }

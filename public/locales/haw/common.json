@@ -56,7 +56,16 @@
     "list_status_one": "1 koho i loaʻa. E hoʻohana i nā kī pua i luna a i lalo e loiloi.",
     "list_status_other": "Loaʻa nā koho {{count}}. E hoʻohana i nā kī pua i luna a i lalo e loiloi.",
     "search_dialog_description": "E ʻimi i nā kumuwaiwai a hoʻohou i kou wahi.",
-    "everywhere": "Ma nā wahi a pau"
+    "everywhere": "Ma nā wahi a pau",
+    "ai_clarify_title": "E kōkua mai iā mākou e hoʻohaiki i kāu hulina",
+    "ai_clarify_title_low_info": "E haʻi mai iā mākou i mea hou aʻe i hiki iā mākou ke hoʻohaiki i kāu hulina",
+    "ai_clarify_title_multiple_labels": "ʻO wai ke ʻano kōkua e kūpono loa i kāu mea e pono ai?",
+    "ai_skip": "Hōʻalo",
+    "ai_confirm": "E hōʻoia",
+    "ai_show_more_categories": "Hōʻike i nā māhele hou aku",
+    "ai_validation_select_or_skip": "E koho i hoʻokahi koho a i ʻole e hōʻalo.",
+    "ai_option_results_count_one": "{{count}} kumuwaiwai pili",
+    "ai_option_results_count_other": "{{count}} nā kumuwaiwai pili"
   },
   "call_to_action": {
     "call": "Kāhea",
@@ -179,5 +188,102 @@
     "default_title": "Hewa hōʻoia",
     "default_description": "ʻAʻole hiki iā mākou ke hoʻopau i ke kaʻina hana komo. E ʻoluʻolu e hoʻāʻo hou.",
     "logout_and_try_again": "E puka i waho a hoʻāʻo hou"
+  },
+  "needs": {
+    "AR-100": {
+      "name": "Nā Hana Noʻeau, Moʻomeheu a me ka Hoʻonanea",
+      "description": "ʻO ka pono no ke komo ʻana i ke ola hana noʻeau, moʻomeheu, a me ka leʻaleʻa. Hoʻopuni i nā pono e pili ana i ka hōʻike kiʻi, ke komo ʻana me ka hoʻoilina moʻomeheu, nā hana leʻaleʻa, a me ka leʻaleʻa ma ke kaiāulu. ʻOkoʻa mai nā pahuhopu kākoʻo therapeutic a i ʻole ka nohona - hōʻike kēia i ka pono kūloko o ke kanaka e hana, hoʻolauleʻa, pāʻani, a pili i kahi kaiāulu moʻomeheu.",
+      "displayDescription": "E kiʻi i ke kōkua e ʻimi i nā mea leʻaleʻa e hana ai e like me ke kiʻi, ke mele, nā haʻuki, a i ʻole nā ​​​​hanana kaiāulu. Pono nā kānaka a pau i ka manawa e pāʻani ai, e hana, a e hoʻolauleʻa ai."
+    },
+    "CL-150": {
+      "name": "Nā Pono Lole/Pilikino/ʻOhana",
+      "description": "ʻO ka pono no nā lole kūpono, nā mea mālama pilikino, a me nā mea waiwai e pono ai e mālama i kahi hale hana. Hoʻokomo pū ʻia nā pono no nā lole kūpono i ke aniau, ka hana, a i ʻole ke kula; nā huahana hoʻomaʻemaʻe a me ka mālama pilikino; a me nā lako a i ʻole nā ​​​​lako kumu e hoʻolilo ai i kahi noho i wahi noho a hanohano.",
+      "displayDescription": "E kiʻi i ke kōkua e ʻimi i nā lole, nā mea mālama pilikino, a i ʻole nā ​​mea āu e pono ai no kou home. Hiki iā mākou ke kōkua iā ʻoe e loaʻa i nā mea āu e pono ai e maʻemaʻe a ʻoluʻolu hoʻi."
+    },
+    "DI-180": {
+      "name": "Nā lawelawe pōpilikia",
+      "description": "ʻO ka pono no ke kākoʻo e kū mai ana mai kahi hanana pōʻino i haʻi ʻia a i ʻike ʻia paha, inā he kūlohelohe a he kanaka paha. Hoʻopuni i nā pono e kū mai ana ma mua, i ka wā, a ma hope o nā pōʻino - me ka mākaukau, ka pane ʻana i nā pilikia, a me ka hoʻōla ʻana. ʻOkoʻa mai nā pono palekana pilikino e hoʻomau nei; e kālele ana i ka hoʻopilikia koʻikoʻi ma ka pae kaiāulu a me kona hopena.",
+      "displayDescription": "E kiʻi i ke kōkua ma mua, i ka wā, a ma hope paha o kahi pōʻino e like me ke kahe, ke ahi, a i ʻole ka ʻino. Hiki iā mākou ke hoʻopili iā ʻoe me nā poʻe i mākaukau e kōkua i ka wā pilikia."
+    },
+    "DV-190": {
+      "name": "Ka Hana ʻino ma ka Home / Palekana Pilikino",
+      "description": "ʻO ka pono no ka palekana a me ka pale ʻana mai ka pōʻino pilikino, ka hana ʻino, ka hoʻokau ʻana, a i ʻole ka hoʻoweliweli. Hoʻopuni i nā pono e pili ana i ka hana ʻino i ka home, ka hana ʻino a ka hoa pili, ka hahai ʻana, ke kālepa ʻana, a me nā kūlana ʻē aʻe kahi e pilikia ai ka palekana kino a naʻau paha o ke kanaka ma muli o nā hana a kekahi kanaka. ʻOkoʻa mai nā pono palekana e pili ana i ka pōʻino a i ʻole nā ​​​​​​kahua palekana lehulehu.",
+      "displayDescription": "E kiʻi i ke kōkua inā manaʻo ʻoe a i ʻole kekahi āu i ʻike ai ua palekana ʻole ʻoe ma ka home a i ʻole e hōʻeha ʻia ana. Pono ʻoe e palekana, a aia kekahi poʻe e mākaukau e kōkua i kēia manawa."
+    },
+    "ED-170": {
+      "name": "Hoʻonaʻauao",
+      "description": "ʻO ka pono no ke komo ʻana i ke aʻo ʻana, ka hoʻomohala ʻana i nā mākau, a me ka hoʻokō ʻana i ka hoʻonaʻauao ma nā pae āpau o ke ola. Hoʻopuni i nā pono e pili ana i ke aʻo ʻana i nā kamaliʻi mua, ke kula K-12, ka hoʻonaʻauao ma hope o ke kula kiʻekiʻe, ka heluhelu ʻana o nā mākua, ka loaʻa ʻana o ka ʻōlelo Pelekania, ka heluhelu kikohoʻe, a me ke aʻo ʻana i ka ʻoihana. Loaʻa ka pono me ka nānā ʻole i kahi o kekahi i kā lākou huakaʻi hoʻonaʻauao a i ʻole nā ​​​​​​ala e kū nei iā lākou i ke komo ʻana.",
+      "displayDescription": "E kiʻi i ke kōkua me ke aʻo ʻana - no nā keiki, nā ʻōpio, a i ʻole nā ​​mākua. Inā makemake ʻoe i ke kōkua kula, ke aʻo hana, a i ʻole makemake e aʻo i ka ʻōlelo Pelekania, hiki iā mākou ke kōkua iā ʻoe e loaʻa."
+    },
+    "EM-180": {
+      "name": "Hana",
+      "description": "ʻO ka pono no ke komo ʻana i ka hana paʻa a kūpono hoʻi a me nā kūlana e hiki ai ke hana. Hoʻopuni i nā pono e pili ana i ka loaʻa ʻana o ka hana, ka mālama ʻana i ka hana, ka hoʻomohala ʻana i nā mākau hana, a me ka hoʻokele ʻana i nā pono hana a me nā hoʻololi e like me ka nele i ka hana. Hōʻike i nā ʻano waiwai a me ka nohona o ka hana ma ke ʻano he pono kanaka, ʻaʻole nā ​​​​lawelawe ponoʻī.",
+      "displayDescription": "E kiʻi i ke kōkua no ka loaʻa ʻana o kahi hana, ka mālama ʻana i kahi hana, a i ʻole ke kūkulu ʻana i nā mākau hou. Pono nā kānaka a pau i ka manawa kūpono e loaʻa ai kahi ola a me ka manaʻo maikaʻi e pili ana i kā lākou hana."
+    },
+    "FO-200": {
+      "name": "Meaʻai/Nā Pāʻina",
+      "description": "ʻO ka pono no ka meaʻai mau, lawa, a momona. Hoʻopuni i nā pono e pili ana i ka loaʻa ʻana o ka meaʻai lawa e ʻai ai, ka loaʻa ʻana o ka meaʻai e kūpono i nā pono meaʻai a meaʻai paha, a me ka hoʻomaopopo ʻana pehea e hoʻomau ai i ka ʻai olakino. Loaʻa ka pono inā paha e kū mai ana mai ka ʻilihune, ka pilikia, ka palekana ʻole o ka meaʻai, a i ʻole ka hoʻopilikia ʻana o ke kūlana.",
+      "displayDescription": "E kiʻi i ke kōkua i ka loaʻa ʻana o ka meaʻai na ʻoe a me kou ʻohana. Inā makemake ʻoe i kahi meaʻai i kēia lā a i ʻole ke kōkua i ka loaʻa ʻana o nā meaʻai, hiki iā mākou ke hoʻopili iā ʻoe me ka meaʻai kokoke iā ʻoe."
+    },
+    "HC-300": {
+      "name": "Papahana mālama ola kino",
+      "description": "ʻO ka pono no ke komo ʻana i nā lawelawe olakino kino, ka mālama pale, ka mālama olakino, a me nā waiwai a me ke kākoʻo hoʻokele e pono ai e mālama i ke olakino o kekahi. Hoʻopuni i nā pono ma o ka hoʻomau piha o ke olakino kino - mai ke olakino maʻamau a me nā nānā ʻana i ka mālama koʻikoʻi, ka hoʻokele maʻi mau, ka hoʻoponopono hou ʻana, a me ka mālama lōʻihi. Hoʻoponopono ʻokoʻa ʻia nā pono olakino noʻonoʻo a me ka hoʻohana ʻana i nā mea ʻona.",
+      "displayDescription": "E kiʻi i ke kōkua e ʻimi i ke kauka, kauka niho, a i ʻole kekahi ʻano mālama ola kino ʻē aʻe. Pono nā kānaka a pau e noho olakino a loaʻa ka mālama e pono ai."
+    },
+    "HO-300": {
+      "name": "Hale noho",
+      "description": "ʻO ka pono no kahi palekana, paʻa, a kūpono hoʻi e noho ai. Hoʻopuni i nā pono ma nā ʻano hale āpau - mai kahi palekana koke i ka wā pilikia a hiki i kahi hale noho kūpono no ka manawa lōʻihi, nā hoʻonohonoho noho kākoʻo, a me nā kākoʻo kūpaʻa e kōkua ai i ka poʻe e noho i loko o ka hale. ʻOkoʻa ke ʻano o ka pono hale ma muli o ka wikiwiki a me ke kūlana, akā kūlike ka pono kumu: kahi e kapa ʻia he home.",
+      "displayDescription": "E kiʻi i ke kōkua no ka loaʻa ʻana o kahi palekana e noho ai. Inā makemake ʻoe i kahi e hiamoe ai i kēia pō a i ʻole ke kōkua e noho ai ma kou home, hiki iā mākou ke hoʻopili iā ʻoe me ke kākoʻo."
+    },
+    "IC-330": {
+      "name": "Kākoʻo/Kōkua Loaʻa kālā",
+      "description": "ʻO ka pono o nā kumuwaiwai kālā e hoʻokō ai i nā koina ola kumu ke lawa ʻole a nele paha ka loaʻa kālā. Hoʻopuni i nā pono e pili ana i ke kōkua kālā, ka hoʻololi kālā, ke komo ʻana i nā pono lehulehu, a me nā kākoʻo kūpaʻa kālā. Hōʻike i ka ʻaoʻao hoʻokele waiwai o ka nohona maikaʻi - ka pono e loaʻa nā kumuwaiwai lawa e uhi i nā pono koʻikoʻi - hoʻokaʻawale ʻia mai nā papahana kikoʻī a i ʻole nā ​​​​​​ʻano hana e hoʻoponopono ai.",
+      "displayDescription": "E kiʻi i ke kōkua no ka uku ʻana i nā mea āu e pono ai ke pilikia ke kālā. Hiki iā mākou ke hoʻopili iā ʻoe me nā polokalamu e kōkua i ka uhi ʻana i nā bila a me nā koina o kēlā me kēia lā."
+    },
+    "IF-330": {
+      "name": "Kākoʻo pilikino, ʻohana a me ke kaiāulu",
+      "description": "ʻO ka pono no ke kākoʻo pili, mālama, a me ke kākoʻo kaiāulu e kākoʻo ana i nā kānaka a me nā ʻohana ma o ke ola o kēlā me kēia lā a me nā kūlana paʻakikī. Hoʻopuni i nā pono e pili ana i ka makua, ka mālama ʻana i nā mea hilinaʻi, ka hoʻokele ʻana i ka paʻakikī o ka ʻohana, ke kūkulu ʻana i nā pilina kaiāulu, a me ke komo ʻana i ke kākoʻo hoa a i ʻole ke kākoʻo kaiaulu. Hōʻike i ka ʻoiaʻiʻo ua pili pono ke olakino kanaka i ka ikaika o nā pilina a me nā pūnaewele e hoʻopuni ana i ke kanaka.",
+      "displayDescription": "E kiʻi i ke kōkua no kou ʻohana a i ʻole kekahi āu e mālama ai. Inā ʻoe e pono i ke kākoʻo makua, ke kōkua no kahi pākeke, a i ʻole kekahi e kamaʻilio pū me, hiki iā mākou ke kōkua."
+    },
+    "IS-330": {
+      "name": "Nā lawelawe ʻike",
+      "description": "ʻO ka pono e hoʻomaopopo i nā kumuwaiwai e loaʻa ana a pehea e komo ai iā lākou. Hoʻopuni i nā pono e pili ana i ka loaʻa ʻana o nā lawelawe kūpono, ka hoʻomaopopo ʻana i ke kūpono a me nā kaʻina hana, ka hoʻokele ʻana i nā ʻōnaehana paʻakikī, a me ka hoʻopili ʻana me ke kākoʻo kūpono i ka manawa kūpono. He meta-pono kēia - ke koi mua no ka hoʻokō pono ʻana i nā pono ʻē aʻe he nui - a he ʻokoʻa ia mai nā lawelawe ponoʻī.",
+      "displayDescription": "ʻAʻole maopopo i kahi e hoʻomaka ai? Hiki iā mākou ke kōkua iā ʻoe e ʻike i nā lawelawe e loaʻa ana a me nā mea kūpono iā ʻoe."
+    },
+    "LE-450": {
+      "name": "Kānāwai, Mea kūʻai aku a me ka palekana o ka lehulehu",
+      "description": "ʻO ka pono no ka palekana kānāwai, ka hoʻokele ʻana i ka ʻōnaehana hoʻopono, nā pono o ka mea kūʻai aku, a me ka palekana o ka lehulehu. Hoʻopuni i nā pono e pili ana i nā hihia kānāwai kīwila, ke komo ʻana o ka hoʻopono kalaima, ke kūlana neʻe malihini, ka hōʻino o ka mea kūʻai aku, a me ka palekana ma lalo o ke kānāwai. Hōʻike i nā kūlana kahi e pilikia ai nā pono o ke kanaka, ka palekana, a i ʻole ke kūlana ma lalo o nā ʻōnaehana kānāwai a kahi e pono ai ka ʻike kānāwai a i ʻole ke kōkua.",
+      "displayDescription": "E kiʻi i ke kōkua me nā nīnau kānāwai, e hoʻomaopopo ana i kou mau pono, a i ʻole e noho palekana. Hiki iā mākou ke hoʻopili iā ʻoe me ka poʻe i ʻike i ke kānāwai a hiki ke kōkua."
+    },
+    "MH-500": {
+      "name": "Nā mea ʻona",
+      "description": "ʻO ka pono no ke kākoʻo i ka hoʻoponopono ʻana i ka hoʻohana ʻana i nā mea ʻona, ka hilinaʻi, a me ka ʻona. Hoʻopuni i nā pono e pili ana i ka hoʻokele ʻana a i ʻole ka hoʻōla ʻana mai ka hoʻohana pilikia ʻana i ka waiʻona, nā lāʻau lapaʻau, a i ʻole nā ​​​​mea ʻē aʻe - me ka hoʻopaʻa koke ʻana, ka mālama ʻana, a me ke kākoʻo hoʻōla mau. Ua ʻike ʻia he ʻano ʻokoʻa o ka pono mai ke olakino noʻonoʻo, ʻoiai ʻo nā mea ʻelua e hui pū pinepine.",
+      "displayDescription": "E kiʻi i ke kōkua inā ʻoe a i ʻole kekahi āu e aloha ai e hakakā nei me ka hoʻohana ʻana i ka waiʻona a i ʻole ka lāʻau lapaʻau. Hiki ke ho'ōla ʻia, a aia nā poʻe mālama e mākaukau e kākoʻo iā ʻoe."
+    },
+    "AD-510": {
+      "name": "Ola Kino",
+      "description": "ʻO ka pono no ke kākoʻo i ka mālama ʻana, hoʻihoʻi ʻana, a i ʻole ka hoʻokele ʻana i ka pono o ka noʻonoʻo a me ka naʻau. Hoʻopuni i nā pono e pili ana i ka pilikia o ka naʻau, nā kūlana noʻonoʻo, ke olakino noʻonoʻo, nā kūlana pilikia, a me ke kākoʻo mau e pono ai e ola maikaʻi me nā pilikia olakino noʻonoʻo. ʻOkoʻa mai nā pono hoʻohana mea ʻona, ʻoiai he mea maʻamau nā hōʻike like.",
+      "displayDescription": "E kiʻi i ke kōkua inā ʻoe e kaumaha ana, hopohopo, a kaumaha paha. He mea nui kou olakino noʻonoʻo, a aia kekahi poʻe e hiki ke hoʻolohe a kōkua."
+    },
+    "OT-600": {
+      "name": "Nā lawelawe aupuni/hoʻokele waiwai ʻē aʻe",
+      "description": "ʻO ka pono no ke komo ʻana i nā papahana aupuni, nā lawelawe kīwila, a me nā kākoʻo hoʻokele waiwai i hāʻule ʻole i loko o nā ʻano ʻē aʻe. Hoʻopuni i nā pono e pili ana i ka hoʻokele ʻana i nā keʻena aupuni, ke komo ʻana i nā pono a i ʻole nā ​​kuleana aupuni, ke kākoʻo ʻoihana liʻiliʻi, ke kōkua ʻauhau, a me nā lawelawe hoʻokele waiwai ʻē aʻe e kākoʻo ana i ke kūpaʻa o kēlā me kēia kanaka a me ke kaiāulu.",
+      "displayDescription": "E kiʻi i ke kōkua me nā papahana aupuni, nā pono, a i ʻole nā ​​lawelawe ʻē aʻe i paʻakikī ke loaʻa ma kahi ʻē. Hiki iā mākou ke kōkua iā ʻoe e ʻike i kahi e hele ai."
+    },
+    "TR-850": {
+      "name": "Ka halihali",
+      "description": "ʻO ka pono no ka hiki ke hele pono e hoʻokō i nā pono ʻē aʻe - ka hana, ka mālama ola kino, ka hoʻonaʻauao, ka meaʻai, nā lawelawe, a me ka pilina pili kanaka. Hoʻopuni i nā pono e pili ana i ke komo ʻana i nā holo, ka uku ʻana i nā kumukūʻai halihali, ka mālama ʻana i kahi kaʻa, a me ka hele palekana. ʻO ka halihali kahi mea hiki ke hoʻokumu: ʻo kona nele e hoʻohui pū i nā pono ʻē aʻe i hoʻokō ʻole ʻia.",
+      "displayDescription": "E kiʻi i ke kōkua no ka hiki ʻana i kahi āu e pono ai e hele - i ke kauka, ka hana, ke kula, a i ʻole ka hale kūʻai. Hiki iā mākou ke kōkua iā ʻoe e ʻimi i nā holo a i ʻole nā ​​ala huakaʻi kūpono."
+    },
+    "UT-900": {
+      "name": "Nā Pono Hana",
+      "description": "ʻO ka pono no ke komo ʻana i nā pono hana home koʻikoʻi - ka uila, ke kinoea, ka wai, a me nā kamaʻilio - e hoʻolilo i kahi noho i palekana, noho ʻia, a pili pū. Hoʻopuni ia i nā pono e pili ana i ka mālama ʻana i ka lawelawe pono, ka uku ʻana i nā kumukūʻai pono, ka hōʻemi ʻana i ka hoʻohana ʻana, a me ke komo ʻana i ka pilina kelepona a i ʻole ka pūnaewele. Pili loa ka pono o ka pono i ka paʻa o ka hale a me ke olakino.",
+      "displayDescription": "E kiʻi i ke kōkua no ka uku ʻana no ka uila, ke kinoea, ka wai, a i ʻole ke kelepona a me ka lawelawe pūnaewele. Hiki iā mākou ke hoʻopili iā ʻoe me nā polokalamu e kōkua ai e hoʻomau i ka holo ʻana o kou home."
+    },
+    "VO-900": {
+      "name": "Hana Manawaleʻa & Hāʻawi",
+      "description": "ʻO ka pono e hāʻawi a loaʻa paha ma o ka lokomaikaʻi o ke kaiāulu - inā paha he pono i kahi kanaka nā waiwai i hāʻawi ʻia, a i ʻole he hiki a me ka makemake e hāʻawi i ka manawa, nā mākau, a i ʻole nā ​​​​kumuwaiwai i nā poʻe ʻē aʻe. Hoʻopuni i nā pono ma nā ʻaoʻao ʻelua o ka hoʻololi kīwila: nā kānaka e ʻimi nei i nā hāʻawi waiwai a i ʻole nā ​​​​lawelawe i hāʻawi ʻia, a me nā kānaka a i ʻole nā ​​​​hui e ʻimi nei e hoʻopili i nā mea manawaleʻa a me nā mea hāʻawi me nā manawa kūpono e kōkua.",
+      "displayDescription": "Pono nā waiwai i hāʻawi ʻia a makemake paha e kōkua i nā poʻe ʻē aʻe? Hiki iā mākou ke hoʻopili i ka poʻe makemake e hāʻawi me ka poʻe e pono ai ke kōkua."
+    }
   }
 }

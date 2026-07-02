@@ -26,5 +26,8 @@
   "name_unavailable": "Nome não disponível",
   "share_body": "Veja {{count}} resultados da pesquisa para \"{{title}}\"",
   "age_filter_label": "Filtrar por idade",
-  "age_filter_placeholder": "Insira a idade"
+  "age_filter_placeholder": "Insira a idade",
+  "ai_broadened_results_alert": "Apresentamos resultados mais abrangentes porque sua solicitação pode exigir mais detalhes. Você pode refinar sua busca usando tópicos ou sugestões.",
+  "ai_broadened_results_alert_low_info": "Exibimos resultados mais abrangentes porque sua pesquisa pode exigir mais detalhes. Você pode refinar sua busca usando tópicos ou sugestões.",
+  "ai_broadened_results_alert_low_confidence": "Apresentamos resultados mais abrangentes porque não tínhamos certeza sobre a melhor correspondência. Você pode refinar usando tópicos ou sugestões."
 }

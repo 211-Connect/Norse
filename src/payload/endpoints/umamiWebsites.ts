@@ -4,6 +4,7 @@ import { isSuperAdmin, isSupport } from '../collections/Users/access/roles';
 import { getConfiguredWebsiteIds } from '../utilities/getConfiguredWebsiteIds';
 import { getUserTenantIDs } from '../utilities/getUserTenantIDs';
 import { getUmamiToken } from '../utilities/umamiAuth';
+import { FETCH_TIMEOUT } from '@/app/(app)/shared/lib/constants';
 
 type UmamiWebsite = {
   id: string;
@@ -115,7 +116,7 @@ export const umamiWebsites: Endpoint = {
                 Authorization: `Bearer ${token}`,
                 Accept: 'application/json',
               },
-              signal: AbortSignal.timeout(10_000),
+              signal: AbortSignal.timeout(FETCH_TIMEOUT),
             },
           );
 

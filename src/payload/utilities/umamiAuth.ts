@@ -1,3 +1,5 @@
+import { FETCH_TIMEOUT } from '@/app/(app)/shared/lib/constants';
+
 let cachedToken: string | null = null;
 
 async function isTokenValid(
@@ -11,7 +13,7 @@ async function isTokenValid(
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
       },
-      signal: AbortSignal.timeout(5_000),
+      signal: AbortSignal.timeout(FETCH_TIMEOUT),
     });
     return res.ok;
   } catch {
@@ -33,7 +35,7 @@ async function login(umamiApiUrl: string): Promise<string> {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username, password }),
-    signal: AbortSignal.timeout(10_000),
+    signal: AbortSignal.timeout(FETCH_TIMEOUT),
   });
 
   if (!res.ok) {

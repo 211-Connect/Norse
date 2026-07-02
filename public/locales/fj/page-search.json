@@ -26,5 +26,8 @@
   "name_unavailable": "Yaca sega ni rawati",
   "share_body": "Raica na {{count}} na isau ni vakasaqaqara me baleta na \"{{title}}\"",
   "age_filter_label": "Vakasavasavataka na yabaki",
-  "age_filter_placeholder": "Vakacuruma na yabaki"
+  "age_filter_placeholder": "Vakacuruma na yabaki",
+  "ai_broadened_results_alert": "Keitou vakaraitaka na kena isau raraba baleta ni nomu kerekere ena gadrevi kina eso tale na itukutuku matailalai. E rawa ni o vakavinakataka ena nomu vakayagataka na ulutaga se vakatutu.",
+  "ai_broadened_results_alert_low_info": "Keitou vakaraitaka na isau raraba baleta ni nomu vakasaqaqara ena gadreva eso tale na itukutuku matailalai. E rawa ni o vakavinakataka ena nomu vakayagataka na ulutaga se vakatutu.",
+  "ai_broadened_results_alert_low_confidence": "Keitou vakaraitaka na vua raraba baleta ni keitou sega ni nuidei me baleta na veitau vinaka duadua. E rawa ni o vakavinakataka ena nomu vakayagataka na ulutaga se vakatutu."
 }

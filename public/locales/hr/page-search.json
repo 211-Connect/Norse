@@ -26,5 +26,8 @@
   "name_unavailable": "Ime nije dostupno",
   "share_body": "Pogledajte {{count}} rezultata pretraživanja za \"{{title}}\"",
   "age_filter_label": "Filtriraj po dobi",
-  "age_filter_placeholder": "Unesite dob"
+  "age_filter_placeholder": "Unesite dob",
+  "ai_broadened_results_alert": "Prikazali smo šire rezultate jer vaš zahtjev možda zahtijeva više detalja. Možete ih precizirati pomoću tema ili prijedloga.",
+  "ai_broadened_results_alert_low_info": "Prikazali smo šire rezultate jer vaša pretraga možda zahtijeva više detalja. Možete ih precizirati pomoću tema ili prijedloga.",
+  "ai_broadened_results_alert_low_confidence": "Prikazali smo šire rezultate jer nismo bili sigurni u najbolje podudaranje. Možete ih precizirati pomoću tema ili prijedloga."
 }

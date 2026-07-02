@@ -56,7 +56,16 @@
     "list_status_one": "1 ikhtiyaar ayaa diyaar ah. Isticmaal furayaasha fallaadha kor iyo hoos si aad u eegto.",
     "list_status_other": "Ikhtiyaarada {{count}} ayaa diyaar ah. Isticmaal furayaasha fallaadha kor iyo hoos si aad u eegto.",
     "search_dialog_description": "Raadi kheyraad oo cusbooneysii goobtaada.",
-    "everywhere": "Meel kasta"
+    "everywhere": "Meel kasta",
+    "ai_clarify_title": "Naga caawi inaan soo koobno ​​raadintaada",
+    "ai_clarify_title_low_info": "Noo sheeg wax yar si aan u soo koobno ​​raadintaada",
+    "ai_clarify_title_multiple_labels": "Noocee caawimo ah ayaa ugu habboon waxaad u baahan tahay?",
+    "ai_skip": "Ka bood",
+    "ai_confirm": "Xaqiiji",
+    "ai_show_more_categories": "Muuji qaybo badan",
+    "ai_validation_select_or_skip": "Dooro ugu yaraan hal ikhtiyaar ama ka bood.",
+    "ai_option_results_count_one": "{{count}} kheyraadka la xiriira",
+    "ai_option_results_count_other": "{{count}} kheyraadka la xiriira"
   },
   "call_to_action": {
     "call": "Wac",
@@ -179,5 +188,102 @@
     "default_title": "Khalad xaqiijin ah",
     "default_description": "Ma dhameystiri karno habka soo galitaanka. Fadlan isku day mar kale.",
     "logout_and_try_again": "Ka bax oo isku day mar kale"
+  },
+  "needs": {
+    "AR-100": {
+      "name": "Farshaxanka, Dhaqanka iyo Madadaalada",
+      "description": "Baahida loo qabo ka qaybgal macno leh oo ku saabsan nolosha hal-abuurka, dhaqanka, iyo madadaalada. Waxay daboolaysaa baahiyaha la xiriira muujinta farshaxanka, ka-qaybgalka dhaxalka dhaqanka, hawlaha madadaalada, iyo madadaalada ku salaysan bulshada. Ka duwan yoolalka daaweynta ama taageerada bulshada - tani waxay ka tarjumaysaa baahida aadanaha ee dabiiciga ah ee ah in la abuuro, la dabaaldego, la ciyaaro, iyo in laga mid noqdo bulsho dhaqameed.",
+      "displayDescription": "Hel caawimo si aad u hesho waxyaabo xiiso leh oo aad qabato sida farshaxanka, muusikada, ciyaaraha, ama dhacdooyinka bulshada. Qof kastaa wuxuu u qalmaa waqti uu ku ciyaaro, ku abuuro, oo uu u dabaaldego."
+    },
+    "CL-150": {
+      "name": "Baahiyaha Dharka/Shaqsiga/Guryaha",
+      "description": "Baahida loo qabo dhar ku filan, agabka daryeelka shaqsiga, iyo agabka agabka ah ee loo baahan yahay si loo ilaaliyo guri shaqeynaya. Waxaa ka mid ah baahiyaha dharka ku habboon cimilada, shaqada, ama dugsiga; alaabta nadaafadda iyo daryeelka shaqsiga; iyo agabka aasaasiga ah ama agabka ka dhigaya meel la degi karo oo sharaf leh.",
+      "displayDescription": "Hel caawimo ku saabsan sidii aad u heli lahayd dharka, alaabta daryeelka shakhsi ahaaneed, ama waxyaabaha aad ugu baahan tahay gurigaaga. Waxaan kaa caawin karnaa inaad hesho waxaad u baahan tahay si aad u dareento nadiif iyo raaxo."
+    },
+    "DI-180": {
+      "name": "Adeegyada Musiibooyinka",
+      "description": "Baahida loo qabo taageero ka dhalata dhacdo masiibo ah oo la shaaciyay ama la soo maray, ha ahaato mid dabiici ah ama mid aadame. Waxay daboolaysaa baahiyaha soo ifbaxa ka hor, inta lagu jiro, iyo ka dib masiibooyinka - oo ay ku jiraan diyaargarowga, jawaab celinta degdegga ah, iyo soo kabashada. Ka duwan baahiyaha badbaadada shaqsiyeed ee socda; oo ku salaysan carqaladeyn heer bulsho oo ba'an iyo cawaaqibkeeda.",
+      "displayDescription": "Kaalmo raadso ka hor, inta lagu jiro, ama ka dib masiibo sida daad, dab, ama duufaan. Waxaan kula xiriiri karnaa dadka diyaarka u ah inay caawiyaan xaaladaha degdegga ah."
+    },
+    "DV-190": {
+      "name": "Rabshadaha Guriga / Badbaadada Shaqsiga",
+      "description": "Baahida loo qabo badbaadada iyo ilaalinta waxyeelada dadka dhexdooda, xadgudubka, qasabka, ama hanjabaadda. Waxay daboolaysaa baahiyaha la xiriira rabshadaha qoyska, rabshadaha lammaanaha dhow, daba-galka, tahriibinta, iyo xaaladaha kale ee badbaadada jireed ama shucuureed ee qofka ay halis ugu jirto falalka qof kale. Ka duwan baahiyaha badbaadada ee la xiriira masiibooyinka ama kaabayaasha guud ee badbaadada dadweynaha.",
+      "displayDescription": "Hel caawimo haddii adiga ama qof aad taqaan uu dareemo ammaan darro guriga ama la dhaawacayo. Waxaad mudan tahay inaad dareento ammaan, waxaana jira dad diyaar u ah inay caawiyaan hadda."
+    },
+    "ED-170": {
+      "name": "Waxbarashada",
+      "description": "Baahida loo qabo helitaanka waxbarasho, horumarinta xirfadaha, iyo gaaritaanka waxbarashada dhammaan marxaladaha nolosha. Waxay ka kooban tahay baahiyaha la xiriira waxbarashada carruurnimada hore, waxbarashada K-12, waxbarashada dugsiga sare kadib, aqoonta dadka waaweyn, barashada luqadda Ingiriisiga, aqoonta dijitaalka ah, iyo tababarka xirfadeed. Baahidu way jirtaa iyadoon loo eegin meesha qof uu ku jiro safarkiisa waxbarasho ama caqabadaha uu la kulmo si uu u galo.",
+      "displayDescription": "Ka hel caawimo waxbarashada - carruurta, dhallinyarada, ama dadka waaweyn. Hadday tahay caawimo dugsi, tababar shaqo, ama aad rabto inaad barato Ingiriisiga, waan kaa caawin karnaa inaad hesho."
+    },
+    "EM-180": {
+      "name": "Shaqada",
+      "description": "Baahida loo qabo helitaanka shaqo deggan oo ku filan iyo xaaladaha suurtagalka ah ee shaqada suurtogal ka dhigaya. Waxay daboolaysaa baahiyaha la xiriira helitaanka shaqada, ilaalinta shaqada, horumarinta xirfadaha shaqada, iyo hagitaanka xuquuqda goobta shaqada iyo kala-guurka sida shaqo la'aanta. Waxay muujinaysaa dhinacyada dhaqaale iyo bulsho ee shaqada oo ah baahi aadane, ee maaha adeegyada laftooda.",
+      "displayDescription": "Hel caawimo shaqo raadinta, haysashada shaqo, ama dhisidda xirfado cusub. Qof kastaa wuxuu u qalmaa fursad uu ku kasbado nolol maalmeedkiisa oo uu ku dareemo wanaag shaqadiisa."
+    },
+    "FO-200": {
+      "name": "Cunto/Cunto",
+      "description": "Baahida loo qabo cunto joogto ah, ku filan, oo nafaqo leh. Waxay daboolaysaa baahiyaha la xiriira helitaanka cunto ku filan oo la cuno, helitaanka cunto buuxisa baahiyaha nafaqada ama cuntada, iyo fahamka sida loo ilaaliyo cunista caafimaadka leh. Baahidu way jirtaa haddii ay ka timaaddo saboolnimo, dhibaato, cunto la'aan joogto ah, ama khalkhal xaaladeed.",
+      "displayDescription": "Hel caawimo aad ku hesho cunto adiga iyo qoyskaagaba. Hadday tahay inaad maanta cunto u baahan tahay ama aad caawimo ka hesho helitaanka raashinka, waxaan kugu xiri karnaa cuntada kuu dhow."
+    },
+    "HC-300": {
+      "name": "Daryeelka Caafimaadka",
+      "description": "Baahida loo qabo helitaanka adeegyada caafimaadka jirka, daryeelka ka hortagga, daaweynta caafimaadka, iyo alaabta iyo taageerada hagitaanka ee loo baahan yahay si loo maareeyo caafimaadka qofka. Waxay daboolaysaa baahiyaha oo dhan ee caafimaadka jirka oo dhan - laga bilaabo fayoobaanta joogtada ah iyo baaritaannada ilaa daryeelka degdegga ah, maaraynta cudurrada daba-dheeraada, dhaqancelinta, iyo daryeelka muddada-dheer. Baahida caafimaadka dhimirka iyo isticmaalka maandooriyaha si gaar ah ayaa loo xalliyaa.",
+      "displayDescription": "Hel caawimo helitaanka dhakhtar, dhakhtar ilko, ama daryeel caafimaad oo kale. Qof kastaa wuxuu mudan yahay inuu caafimaad qabo oo uu helo daryeelka uu u baahan yahay."
+    },
+    "HO-300": {
+      "name": "Guryaha",
+      "description": "Baahida loo qabo meel ammaan ah, deggan, iyo ku habboon in lagu noolaado. Waxay daboolaysaa baahiyaha dhammaan noocyada guryaha - laga bilaabo hoyga degdegga ah ee dhibaatada ilaa guryaha muddada dheer la awoodi karo, habaynta nolosha taageerada leh, iyo taageerooyinka xasilloonida ee ka caawiya dadka inay sii joogaan hoy. Dabeecadda baahida guryaha waxay ku kala duwan tahay degdegga iyo duruufaha, laakiin baahida hoose waa mid joogto ah: meel loogu yeero guri.",
+      "displayDescription": "Hel caawimo si aad u hesho meel ammaan ah oo aad ku noolaato. Hadday tahay inaad u baahan tahay meel aad seexato caawa ama aad u baahan tahay caawimo aad ku joogto gurigaaga, waxaan kula xiriiri karnaa taageero."
+    },
+    "IC-330": {
+      "name": "Taageerada Dakhliga/Caawinta",
+      "description": "Baahida loo qabo ilaha dhaqaale si loo daboolo kharashyada nolosha aasaasiga ah marka dakhligu aanu ku filnayn ama aanu jirin. Waxay daboolaysaa baahiyaha la xiriira gargaarka lacagta caddaanka ah, beddelka dakhliga, helitaanka faa'iidooyinka dadweynaha, iyo taageerooyinka xasilloonida dhaqaale. Waxay muujinaysaa dhinaca dhaqaale ee fayoobida - baahida loo qabo in la helo ilo ku filan oo lagu daboolo baahiyaha lagama maarmaanka ah - oo ka duwan barnaamijyada ama farsamooyinka gaarka ah ee wax ka qaban kara.",
+      "displayDescription": "Hel caawimaad ku saabsan bixinta waxyaabaha aad u baahan tahay marka lacagtu cidhiidhi tahay. Waxaan kula xiriiri karnaa barnaamijyo kaa caawinaya daboolida biilasha iyo kharashyada maalinlaha ah."
+    },
+    "IF-330": {
+      "name": "Taageerada Shaqsiga, Qoyska iyo Bulshada",
+      "description": "Baahida loo qabo taageero xiriir, daryeel, iyo heer bulsho ah oo siisa shakhsiyaadka iyo qoysaska nolol maalmeedka iyo duruufaha adag. Waxay daboolaysaa baahiyaha la xiriira waalidnimada, daryeelka dadka ku tiirsan, maaraynta isku-dhafka qoyska, dhisidda xiriirka bulshada, iyo helitaanka taageerada asxaabta ama bulshada. Waxay muujinaysaa xaqiiqda ah in wanaagga aadanaha uu si qoto dheer ugu xiran yahay xoogga xiriirka iyo shabakadaha ku xeeran qofka.",
+      "displayDescription": "Raadi caawimo qoyskaaga ama qof aad daryeesho. Hadday tahay inaad u baahan tahay taageero waalidnimo, caawimo qof waayeel ah, ama qof aad la hadasho, waan ku caawin karnaa."
+    },
+    "IS-330": {
+      "name": "Adeegyada Macluumaadka",
+      "description": "Baahida loo qabo in la fahmo waxa kheyraadka jira iyo sida loo heli karo. Waxay daboolaysaa baahiyaha la xiriira helitaanka adeegyada khuseeya, fahamka u-qalmitaanka iyo hababka, hagitaanka nidaamyada adag, iyo ku xidhitaanka taageerada saxda ah waqtiga saxda ah. Tani waa baahi-badan - shuruud u ah in si wax ku ool ah loo daboolo baahiyo kale oo badan - waana mid ka duwan adeegyada laftooda.",
+      "displayDescription": "Ma hubtid meesha aad ka bilaabi lahayd? Waxaan kaa caawin karnaa inaad ogaato adeegyada jira iyo kuwa adiga kugu habboon."
+    },
+    "LE-450": {
+      "name": "Badbaadada Sharciga, Macaamiisha iyo Dadweynaha",
+      "description": "Baahida loo qabo ilaalinta sharciga, habka garsoorka, xuquuqda macaamiisha, iyo badbaadada dadweynaha. Waxay daboolaysaa baahiyaha la xiriira arrimaha sharciga madaniga ah, ka qaybgalka cadaaladda dambiyada, xaaladda socdaalka, waxyeelada macaamiisha, iyo ilaalinta sharciga. Waxay ka tarjumaysaa xaaladaha ay xuquuqda qofka, badbaadada, ama istaagga nidaamyada sharciga ay halis ku jiraan iyo halka aqoonta sharciga ama caawinta looga baahan yahay.",
+      "displayDescription": "Ka hel caawimo su'aalaha sharciga, fahamka xuquuqdaada, ama ilaalinta badqabka. Waxaan kula xiriiri karnaa dad yaqaan sharciga oo ku caawin kara."
+    },
+    "MH-500": {
+      "name": "Maandooriyeyaasha",
+      "description": "Baahida loo qabo taageero wax ka qabashada isticmaalka maandooriyaha, ku tiirsanaanta, iyo balwadda. Waxay daboolaysaa baahiyaha la xiriira maaraynta ama ka soo kabashada isticmaalka dhibaatada leh ee khamriga, daroogada, ama walxaha kale - oo ay ku jiraan xasillooni degdeg ah, daaweyn, iyo taageero soo kabasho oo joogto ah. Waxaa loo aqoonsaday qayb ka mid ah baahida ka timaadda caafimaadka dhimirka, inkastoo labadoodu ay inta badan isku mar dhacaan.",
+      "displayDescription": "Hel caawimo haddii adiga ama qof aad jeceshahay uu la halgamayo isticmaalka khamriga ama daroogada. Soo kabasho waa suurtagal, waxaana jira dad daryeel leh oo diyaar u ah inay ku taageeraan."
+    },
+    "AD-510": {
+      "name": "Caafimaadka Dhimirka",
+      "description": "Baahida loo qabo taageero ku saabsan ilaalinta, soo celinta, ama maaraynta fayoobaanta maskaxda iyo shucuurta qofka. Waxay daboolaysaa baahiyaha la xiriira walbahaarka shucuureed, xaaladaha dhimirka, caafimaadka dabeecadda, xaaladaha dhibaatooyinka, iyo taageerada joogtada ah ee loo baahan yahay si loogu noolaado si wanaagsan iyadoo lala socdo caqabadaha caafimaadka dhimirka. Ka duwan baahiyaha isticmaalka maandooriyaha, inkastoo bandhigyada isku mar dhaca ay yihiin kuwo caadi ah.",
+      "displayDescription": "Raadi caawimo haddii aad dareemayso murugo, walaac, ama aad culays badan dareemayso. Caafimaadkaaga maskaxeed waa muhiim, waxaana jira dad dhegeysan kara oo caawin kara."
+    },
+    "OT-600": {
+      "name": "Adeegyada Kale ee Dowladda/Dhaqaalaha",
+      "description": "Baahida loo qabo helitaanka barnaamijyada dowladda, adeegyada bulshada, iyo taageerada dhaqaale ee aan si fiican ugu dhicin qaybaha kale. Waxay daboolaysaa baahiyaha la xiriira hagitaanka hay'adaha dadweynaha, helitaanka faa'iidooyinka ama xuquuqda dowladda, taageerada ganacsiyada yaryar, kaalmada canshuurta, iyo adeegyada kale ee dhaqaale ee taageera xasilloonida shaqsiga iyo bulshada.",
+      "displayDescription": "Ka hel caawimo barnaamijyada dowladda, faa'iidooyinka, ama adeegyada kale ee ay adag tahay in meel kale laga helo. Waxaan kaa caawin karnaa inaad ogaato meesha aad aadi karto."
+    },
+    "TR-850": {
+      "name": "Gaadiidka",
+      "description": "Baahida loo qabo awoodda loo leeyahay in si kalsooni leh loogu safro si loo daboolo baahiyaha kale - shaqada, daryeelka caafimaadka, waxbarashada, cuntada, adeegyada, iyo xiriirka bulshada. Waxay daboolaysaa baahiyaha la xiriira helitaanka gaadiidka, bixinta kharashyada gaadiidka, dayactirka gaariga, iyo safarka si ammaan ah. Gaadiidku waa awood aasaasi ah: maqnaanshuhu wuxuu isku daraa ku dhawaad ​​​​baahi kasta oo kale oo aan la dabooli karin.",
+      "displayDescription": "Ka hel caawimo aad ku gaarto meesha aad u baahan tahay inaad tagto - dhakhtar, shaqo, dugsi, ama dukaan. Waxaan kaa caawin karnaa inaad hesho safarro ama siyaabo la awoodi karo oo aad ku safarto."
+    },
+    "UT-900": {
+      "name": "Adeegyada",
+      "description": "Baahida loo qabo helitaanka adeegyada guryaha ee muhiimka ah - korontada, gaaska, biyaha, iyo isgaarsiinta - kuwaas oo ka dhigaya meel lagu noolaado mid ammaan ah, la degi karo, oo isku xiran. Waxay daboolaysaa baahiyaha la xiriira ilaalinta adeegga korontada, bixinta kharashyada korontada, yaraynta isticmaalka, iyo helitaanka isku xirka taleefanka ama internetka. Baahida adeegyada korontada waxay si dhow ula xiriirtaa xasilloonida guryaha iyo caafimaadka.",
+      "displayDescription": "Ka hel caawimo bixinta adeegga korontada, gaaska, biyaha, ama taleefanka iyo internetka. Waxaan kula xiriiri karnaa barnaamijyo kaa caawinaya inaad gurigaaga sii wadato."
+    },
+    "VO-900": {
+      "name": "Iskaa wax u qabso iyo Deeq",
+      "description": "Baahida loo qabo in la bixiyo ama la helo iyada oo loo marayo deeqsinimada bulshada - ha ahaato qof u baahan alaab la deeqay, ama uu leeyahay awood iyo rabitaan uu waqti, xirfado, ama agab ugu deeqo dadka kale. Waxay daboolaysaa baahiyaha labada dhinac ee is-weydaarsiga bulshada: shakhsiyaadka raadinaya deeqo agab ama adeegyo la deeqay, iyo shakhsiyaadka ama ururada doonaya inay isku xiraan mutadawiciinta iyo deeq-bixiyeyaasha fursado macno leh oo ay ku caawiyaan.",
+      "displayDescription": "Ma u baahan tahay alaab la deeqay ama ma rabtaa inaad caawiso dadka kale? Waxaan isku xiri karnaa dadka doonaya inay wax bixiyaan iyo dadka u baahan gacan."
+    }
   }
 }

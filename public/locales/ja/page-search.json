@@ -26,5 +26,8 @@
   "name_unavailable": "名前は不明です",
   "share_body": "「{{count}}」の検索結果を{{title}}件ご覧ください。",
   "age_filter_label": "年齢で絞り込む",
-  "age_filter_placeholder": "年齢を入力してください"
+  "age_filter_placeholder": "年齢を入力してください",
+  "ai_broadened_results_alert": "ご要望の内容にさらに詳しい情報が必要な場合があるため、より広範囲な検索結果を表示しました。トピックや提案機能を使って絞り込むことができます。",
+  "ai_broadened_results_alert_low_info": "検索内容にさらに詳細な情報が必要な場合があるため、より広範囲な結果を表示しました。トピックや提案機能を使って絞り込むことができます。",
+  "ai_broadened_results_alert_low_confidence": "最適な一致が確信できなかったため、より広範囲な結果を表示しました。トピックや提案を使用して絞り込むことができます。"
 }

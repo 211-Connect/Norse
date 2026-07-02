@@ -25,6 +25,13 @@ import { duplicateTenant } from './endpoints/duplicateTenant';
 import { keycloakVerifiedUsers } from './endpoints/keycloakVerifiedUsers';
 import { populateApiConfigCache } from './endpoints/populateApiConfigCache';
 import { translateEndpoint } from './endpoints/translate';
+import {
+  taxonomyScorecardsGet,
+  taxonomyScorecardsEnable,
+  taxonomyScorecardsSearch,
+  taxonomyScorecardsStatus,
+  taxonomyScorecardsUpdate,
+} from './endpoints/taxonomyScorecards';
 import { umamiProxy } from './endpoints/umamiProxy';
 import { umamiWebsites } from './endpoints/umamiWebsites';
 import { defaultLocale, locales } from './i18n/locales';
@@ -46,6 +53,11 @@ const endpoints: Endpoint[] = [
   duplicateTenant,
   umamiProxy,
   umamiWebsites,
+  taxonomyScorecardsStatus,
+  taxonomyScorecardsSearch,
+  taxonomyScorecardsGet,
+  taxonomyScorecardsUpdate,
+  taxonomyScorecardsEnable,
   keycloakVerifiedUsers,
   seedEndpoint,
 ];
@@ -101,6 +113,7 @@ const config = buildConfig({
     components: {
       afterNavLinks: [
         '@/payload/components/AnalyticsNavLink',
+        '@/payload/components/ScorecardsNavLink',
         '@/payload/components/PopulateApiConfigCacheButton',
         '@/payload/components/ClearCacheButton',
       ],
@@ -108,6 +121,11 @@ const config = buildConfig({
         analytics: {
           Component: '@/payload/components/AnalyticsView',
           path: '/analytics',
+          exact: true,
+        },
+        scorecards: {
+          Component: '@/payload/components/ScorecardsView',
+          path: '/scorecards',
           exact: true,
         },
       },
@@ -286,6 +304,14 @@ const config = buildConfig({
           slug: 'analytics-verified-users',
           Component:
             '@/payload/components/analytics/widgets/VerifiedUsersWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'analytics-event-card',
+          Component:
+            '@/payload/components/analytics/widgets/EventCardWidget#default',
+          label: 'Event card',
           minWidth: 'x-small',
           maxWidth: 'full',
         },

@@ -26,5 +26,8 @@
   "name_unavailable": "Magaca lama heli karo",
   "share_body": "Eeg natiijooyinka raadinta {{count}} ee \"{{title}}\"",
   "age_filter_label": "Shaandhee da' ahaan",
-  "age_filter_placeholder": "Geli da'da"
+  "age_filter_placeholder": "Geli da'da",
+  "ai_broadened_results_alert": "Waxaan soo bandhignay natiijooyin ballaaran sababtoo ah codsigaagu wuxuu u baahan karaa faahfaahin dheeraad ah. Waxaad sifeyn kartaa adoo adeegsanaya mowduucyo ama talooyin.",
+  "ai_broadened_results_alert_low_info": "Waxaan soo bandhignay natiijooyin ballaaran sababtoo ah raadintaadu waxay u baahan kartaa faahfaahin dheeraad ah. Waxaad sifeyn kartaa adoo adeegsanaya mowduucyo ama talooyin.",
+  "ai_broadened_results_alert_low_confidence": "Waxaan soo bandhignay natiijooyin ballaaran sababtoo ah kalsooni kuma qabno nooca ugu fiican ee la ciyaari karo. Waxaad sifeyn kartaa adoo adeegsanaya mowduucyo ama talooyin."
 }

@@ -56,7 +56,16 @@
     "list_status_one": "Une seule option disponible. Utilisez les flèches haut et bas pour la parcourir.",
     "list_status_other": "{{count}} options disponibles. Utilisez les flèches haut et bas pour les consulter.",
     "search_dialog_description": "Recherchez des ressources et mettez à jour votre localisation.",
-    "everywhere": "Partout"
+    "everywhere": "Partout",
+    "ai_clarify_title": "Aidez-nous à affiner votre recherche",
+    "ai_clarify_title_low_info": "Dites-nous-en un peu plus afin que nous puissions affiner votre recherche.",
+    "ai_clarify_title_multiple_labels": "Quel type d'aide correspond le mieux à vos besoins ?",
+    "ai_skip": "Sauter",
+    "ai_confirm": "Confirmer",
+    "ai_show_more_categories": "Afficher plus de catégories",
+    "ai_validation_select_or_skip": "Sélectionnez au moins une option ou passez votre chemin.",
+    "ai_option_results_count_one": "{{count}} ressource associée",
+    "ai_option_results_count_other": "Ressources connexes {{count}}"
   },
   "call_to_action": {
     "call": "Appeler",
@@ -179,5 +188,102 @@
     "default_title": "Erreur d'authentification",
     "default_description": "Nous n'avons pas pu terminer le processus de connexion. Veuillez réessayer.",
     "logout_and_try_again": "Déconnectez-vous et réessayez."
+  },
+  "needs": {
+    "AR-100": {
+      "name": "Arts, culture et loisirs",
+      "description": "Le besoin de participer pleinement à la vie créative, culturelle et récréative. Cela englobe les besoins liés à l'expression artistique, à la connaissance du patrimoine culturel, aux activités de loisirs et aux activités récréatives communautaires. À ne pas confondre avec les objectifs de soutien thérapeutique ou social, ce besoin reflète le besoin humain fondamental de créer, de célébrer, de jouer et d'appartenir à une communauté culturelle.",
+      "displayDescription": "Trouvez des activités amusantes comme l'art, la musique, le sport ou des événements communautaires. Chacun mérite de prendre du temps pour jouer, créer et faire la fête."
+    },
+    "CL-150": {
+      "name": "Vêtements/Besoins personnels/ménagers",
+      "description": "Le besoin de vêtements adéquats, d'articles de soins personnels et de biens matériels nécessaires au bon fonctionnement du foyer. Cela inclut les vêtements adaptés aux conditions météorologiques, au travail ou à l'école ; les produits d'hygiène et de soins personnels ; et le mobilier ou les fournitures de base qui rendent un espace de vie habitable et digne.",
+      "displayDescription": "Besoin d'aide pour trouver des vêtements, des produits d'hygiène ou tout ce dont vous avez besoin pour votre maison ? Nous vous aidons à trouver ce qu'il vous faut pour vous sentir propre et à l'aise."
+    },
+    "DI-180": {
+      "name": "Services d'intervention en cas de catastrophe",
+      "description": "Les besoins de soutien découlant d'une catastrophe déclarée ou subie, qu'elle soit naturelle ou d'origine humaine. Ils englobent les besoins qui émergent avant, pendant et après les catastrophes, notamment la préparation, l'intervention d'urgence et le rétablissement. Ils se distinguent des besoins de sécurité personnelle courants et sont axés sur les perturbations aiguës au niveau communautaire et leurs conséquences.",
+      "displayDescription": "Obtenez de l'aide avant, pendant ou après une catastrophe comme une inondation, un incendie ou une tempête. Nous pouvons vous mettre en relation avec des personnes prêtes à intervenir en cas d'urgence."
+    },
+    "DV-190": {
+      "name": "Violence domestique / Sécurité personnelle",
+      "description": "Le besoin de sécurité et de protection contre les violences interpersonnelles, les abus, la coercition ou les menaces. Ce besoin englobe les violences conjugales, les violences entre partenaires intimes, le harcèlement, la traite des êtres humains et toute autre situation où la sécurité physique ou psychologique d'une personne est menacée par les agissements d'autrui. Il se distingue des besoins de sécurité liés aux catastrophes et des infrastructures de sécurité publique en général.",
+      "displayDescription": "N'hésitez pas à demander de l'aide si vous ou une personne de votre entourage vous sentez en danger chez vous ou êtes victime de violence. Vous méritez de vous sentir en sécurité, et des personnes sont prêtes à vous aider dès maintenant."
+    },
+    "ED-170": {
+      "name": "Éducation",
+      "description": "L’accès à l’apprentissage, au développement des compétences et à la formation est essentiel à toutes les étapes de la vie. Cela englobe les besoins liés à l’éducation préscolaire, à l’enseignement primaire et secondaire, à l’enseignement supérieur, à l’alphabétisation des adultes, à l’apprentissage de l’anglais, à la culture numérique et à la formation professionnelle. Ce besoin existe quel que soit le niveau d’études atteint ou les obstacles rencontrés pour y accéder.",
+      "displayDescription": "Besoin d'aide pour vos études ? Que vous soyez enfant, adolescent ou adulte, nous avons la solution. Soutien scolaire, formation professionnelle ou apprentissage de l'anglais : nous pouvons vous accompagner."
+    },
+    "EM-180": {
+      "name": "Emploi",
+      "description": "Le besoin d'accéder à un travail stable et adéquat, ainsi qu'aux conditions qui le rendent possible. Cela englobe les besoins liés à la recherche d'emploi, au maintien en emploi, au développement des compétences professionnelles et à la connaissance des droits et des transitions professionnelles, comme le chômage. Il s'agit des dimensions économiques et sociales du travail en tant que besoin humain, et non des services eux-mêmes.",
+      "displayDescription": "Obtenez de l'aide pour trouver un emploi, le conserver ou acquérir de nouvelles compétences. Chacun mérite de gagner sa vie et d'être fier de son travail."
+    },
+    "FO-200": {
+      "name": "Nourriture/Repas",
+      "description": "Le besoin d'une alimentation régulière, suffisante et nutritive. Ce besoin englobe l'accès à une alimentation suffisante, la fourniture d'aliments répondant aux besoins nutritionnels et diététiques, et la compréhension des bonnes pratiques alimentaires. Il existe qu'il soit lié à la pauvreté, aux crises, à l'insécurité alimentaire chronique ou à des perturbations situationnelles.",
+      "displayDescription": "Besoin d'aide pour trouver de la nourriture pour vous et votre famille ? Que ce soit pour un repas aujourd'hui ou pour faire vos courses, nous pouvons vous mettre en relation avec des fournisseurs près de chez vous."
+    },
+    "HC-300": {
+      "name": "Soins de santé",
+      "description": "Le besoin d'accès aux services de santé physique, aux soins préventifs, aux traitements médicaux, ainsi qu'aux biens et services d'accompagnement nécessaires à la gestion de sa santé. Ce besoin couvre l'ensemble du continuum de la santé physique : des bilans de santé et dépistages de routine aux soins aigus, à la prise en charge des maladies chroniques, à la réadaptation et aux soins de longue durée. Les besoins en matière de santé mentale et de toxicomanie sont traités séparément.",
+      "displayDescription": "Obtenez de l'aide pour trouver un médecin, un dentiste ou d'autres professionnels de la santé. Chacun mérite de rester en bonne santé et de recevoir les soins dont il a besoin."
+    },
+    "HO-300": {
+      "name": "Logement",
+      "description": "Le besoin d'un logement sûr, stable et convenable. Ce besoin englobe tous les aspects du logement : de l'hébergement d'urgence en cas de crise au logement abordable à long terme, en passant par les solutions de vie accompagnées et les dispositifs de maintien à domicile. La nature de ce besoin varie selon l'urgence et les circonstances, mais le besoin fondamental demeure : un chez-soi.",
+      "displayDescription": "Trouvez un logement sûr grâce à notre aide. Que vous ayez besoin d'un endroit où dormir ce soir ou d'aide pour rester chez vous, nous pouvons vous mettre en relation avec des services de soutien."
+    },
+    "IC-330": {
+      "name": "Aide au revenu",
+      "description": "Le besoin de ressources financières pour subvenir aux besoins essentiels lorsque les revenus sont insuffisants ou inexistants. Cela englobe les besoins liés à l'aide financière directe, au remplacement du revenu, à l'accès aux prestations sociales et aux mesures de soutien à la stabilité financière. Cela reflète la dimension économique du bien-être — le besoin de disposer de ressources suffisantes pour couvrir les besoins essentiels — indépendamment des programmes ou mécanismes spécifiques qui peuvent y répondre.",
+      "displayDescription": "Obtenez de l'aide pour payer vos besoins essentiels lorsque votre budget est serré. Nous pouvons vous mettre en relation avec des programmes qui vous aident à régler vos factures et vos dépenses quotidiennes."
+    },
+    "IF-330": {
+      "name": "Soutien individuel, familial et communautaire",
+      "description": "Le besoin de soutien relationnel, d'aide et de solidarité communautaire pour accompagner les individus et les familles au quotidien et face aux difficultés. Cela englobe les besoins liés à la parentalité, aux soins des personnes dépendantes, à la gestion des complexités familiales, au développement des liens communautaires et à l'accès au soutien social et entre pairs. Cela reflète le fait que le bien-être humain est profondément lié à la solidité des relations et des réseaux qui entourent une personne.",
+      "displayDescription": "Obtenez de l'aide pour votre famille ou un proche. Que vous ayez besoin de soutien parental, d'aide pour une personne âgée ou simplement d'une oreille attentive, nous sommes là pour vous."
+    },
+    "IS-330": {
+      "name": "Services d'information",
+      "description": "Il est essentiel de comprendre les ressources disponibles et comment y accéder. Cela englobe les besoins liés à la recherche de services pertinents, à la compréhension des critères d'admissibilité et des procédures, à la navigation dans des systèmes complexes et à l'obtention du soutien adéquat au moment opportun. Il s'agit d'un méta-besoin – condition préalable à la satisfaction efficace de nombreux autres besoins – distinct des services eux-mêmes.",
+      "displayDescription": "Vous ne savez pas par où commencer ? Nous pouvons vous aider à identifier les services disponibles et à choisir ceux qui vous conviennent."
+    },
+    "LE-450": {
+      "name": "Droit, consommation et sécurité publique",
+      "description": "Le besoin de protection juridique, d'accès au système judiciaire, de droits des consommateurs et de sécurité publique. Englobe les besoins liés aux affaires juridiques civiles, aux procédures pénales, au statut d'immigration, aux préjudices subis par les consommateurs et à la protection de la loi. Reflète les situations où les droits, la sécurité ou la situation juridique d'une personne sont en jeu et où des connaissances ou une assistance juridiques sont nécessaires.",
+      "displayDescription": "Besoin d'aide pour vos questions juridiques, pour comprendre vos droits ou pour assurer votre sécurité ? Nous pouvons vous mettre en relation avec des personnes compétentes en droit qui pourront vous aider."
+    },
+    "MH-500": {
+      "name": "Dépendances",
+      "description": "Le besoin de soutien face à la consommation de substances, à la dépendance et à l'addiction. Ce besoin englobe les besoins liés à la gestion ou au rétablissement suite à une consommation problématique d'alcool, de drogues ou d'autres substances – y compris la stabilisation en phase aiguë, le traitement et le soutien continu au rétablissement. Il s'agit d'une catégorie de besoins distincte de celle des problèmes de santé mentale, bien que les deux soient fréquemment concomitants.",
+      "displayDescription": "N'hésitez pas à demander de l'aide si vous ou un proche avez des problèmes d'alcool ou de drogue. La guérison est possible et des personnes bienveillantes sont prêtes à vous soutenir."
+    },
+    "AD-510": {
+      "name": "Santé mentale",
+      "description": "Le besoin de soutien pour maintenir, rétablir ou gérer son bien-être mental et émotionnel. Cela englobe les besoins liés à la détresse émotionnelle, aux troubles psychiatriques, à la santé mentale et comportementale, aux situations de crise et au soutien continu nécessaire pour bien vivre avec des difficultés de santé mentale. Ce besoin se distingue des besoins liés à la consommation de substances, bien que les troubles concomitants soient fréquents.",
+      "displayDescription": "N'hésitez pas à demander de l'aide si vous vous sentez triste, anxieux ou dépassé. Votre santé mentale est importante, et il existe des personnes prêtes à vous écouter et à vous soutenir."
+    },
+    "OT-600": {
+      "name": "Autres services gouvernementaux/économiques",
+      "description": "Le besoin d'accéder aux programmes gouvernementaux, aux services civiques et aux aides économiques qui ne se rangent pas facilement dans d'autres catégories. Cela englobe les besoins liés à l'orientation dans les organismes publics, à l'accès aux prestations et aux droits gouvernementaux, au soutien aux petites entreprises, à l'aide fiscale et à d'autres services économiques qui contribuent à la stabilité individuelle et collective.",
+      "displayDescription": "Obtenez de l'aide pour accéder aux programmes gouvernementaux, aux prestations ou à d'autres services difficiles à trouver ailleurs. Nous pouvons vous aider à trouver les ressources nécessaires."
+    },
+    "TR-850": {
+      "name": "Transport",
+      "description": "Le besoin de pouvoir se déplacer de manière fiable pour répondre à d'autres besoins – travail, santé, éducation, alimentation, services et liens sociaux – est fondamental. Cela englobe les besoins liés à l'accès aux transports, au financement des déplacements, à l'entretien d'un véhicule et à la sécurité des déplacements. Le transport est un facteur essentiel : son absence aggrave presque tous les autres besoins non satisfaits.",
+      "displayDescription": "Besoin d'aide pour vous déplacer ? Rendez-vous chez le médecin, au travail, à l'école ou au magasin ? Nous pouvons vous aider à trouver un covoiturage ou des moyens de transport abordables."
+    },
+    "UT-900": {
+      "name": "Services publics",
+      "description": "L’accès aux services essentiels du logement – ​​électricité, gaz, eau et télécommunications – est indispensable pour un logement sûr, habitable et connecté. Cela inclut les besoins liés au maintien de ces services, au paiement des factures, à la réduction de la consommation et à l’accès au téléphone ou à internet. Ces besoins sont étroitement liés à la stabilité du logement et à la santé.",
+      "displayDescription": "Obtenez de l'aide pour payer vos factures d'électricité, de gaz, d'eau, de téléphone et d'internet. Nous pouvons vous mettre en relation avec des programmes qui vous permettent de maintenir le bon fonctionnement de votre logement."
+    },
+    "VO-900": {
+      "name": "Bénévolat et dons",
+      "description": "Le besoin de donner ou de recevoir grâce à la générosité communautaire – qu’une personne ait besoin de biens donnés ou qu’elle ait la capacité et le désir de contribuer de son temps, de ses compétences ou de ses ressources – englobe les besoins des deux côtés de l’échange civique : les personnes qui recherchent des dons matériels ou des services bénévoles, et les personnes ou organisations qui cherchent à mettre en relation bénévoles et donateurs avec des opportunités d’aide significatives.",
+      "displayDescription": "Vous avez besoin de dons ou vous souhaitez aider les autres ? Nous pouvons mettre en relation les personnes qui veulent donner avec celles qui ont besoin d’aide."
+    }
   }
 }
