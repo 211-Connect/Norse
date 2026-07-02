@@ -12,6 +12,7 @@ export type TaxonomyScorecardDocument = {
   versions?: Record<string, TaxonomyScorecardVersion>;
   version_metadata?: TaxonomyScorecardVersionMetadata;
   updated_at?: string;
+  updated_by_email?: string | null;
 };
 
 export type TaxonomyScorecard = {
@@ -39,6 +40,7 @@ export type TaxonomyScorecardVersion = {
   scorecard: TaxonomyScorecard;
   source?: TaxonomyScorecardSource;
   created_at: string;
+  created_by_email?: string | null;
 };
 
 export type TaxonomyScorecardVersionMetadata = {
@@ -66,6 +68,7 @@ export type UpdateTaxonomyScorecardRequest = {
   include_children?: boolean;
   include_siblings?: boolean;
   draft?: boolean;
+  updated_by_email?: string;
 };
 
 export type UpdateTaxonomyScorecardResponse = {
