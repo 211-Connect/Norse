@@ -45,6 +45,7 @@ export function PhoneNumbersComponent({ resource }: { resource: Resource }) {
           key={number}
           icon={Icon}
           title={label}
+          labelAs="h3"
           subtitle={description}
           description={number}
           url={`tel:${number}`}

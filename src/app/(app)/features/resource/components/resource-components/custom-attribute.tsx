@@ -9,7 +9,7 @@ import { Resource } from '@/types/resource';
 import { interpolateResourceProperties } from '@/utils/interpolateResourceProperties';
 
 import { ResourceComponentProps } from '../component-registry';
-import { Datum } from '../datum';
+import { Datum, type DatumProps } from '../datum';
 
 const log = createLogger('CustomAttributeComponent');
 
@@ -85,12 +85,14 @@ type CustomAttributeComponentProps = Pick<
 > & {
   resource: Resource | ResultType;
   withPadding?: boolean;
+  labelAs?: DatumProps['labelAs'] | null;
 };
 
 export function CustomAttributeComponent({
   resource,
   customAttribute,
   withPadding,
+  labelAs = 'h3',
 }: CustomAttributeComponentProps) {
   const IconComponent = useIconComponent(customAttribute?.icon);
 
@@ -119,6 +121,7 @@ export function CustomAttributeComponent({
       urlTarget={customAttribute.urlTarget}
       titleBelow={customAttribute.titleBelow}
       size={customAttribute.size}
+      labelAs={labelAs ?? undefined}
       shouldParseHtml={false}
     />
   );

@@ -14,6 +14,11 @@ export function FeesComponent({ resource }: ResourceComponentProps) {
   }
 
   return (
-    <Datum icon={DollarSign} title={t('fee')} description={resource.fees} />
+    <Datum
+      icon={DollarSign}
+      title={t('fee')}
+      labelAs="h3"
+      description={resource.fees}
+    />
   );
 }

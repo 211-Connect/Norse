@@ -23,6 +23,7 @@ export function RequiredDocumentsComponent({
     <Datum
       icon={FileCheck2}
       title={t('required_documents')}
+      labelAs="h3"
       description={content}
     />
   );

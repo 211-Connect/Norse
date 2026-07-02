@@ -12,6 +12,7 @@ export function CustomAttributeComponent({
       resource={result}
       customAttribute={customAttribute}
       withPadding={false}
+      labelAs={null}
     />
   );
 }

@@ -17,6 +17,11 @@ export function LanguagesComponent({ resource }: { resource: Resource }) {
   const languages = resource.languages.join(', ');
 
   return (
-    <Datum icon={Languages} title={t('languages')} description={languages} />
+    <Datum
+      icon={Languages}
+      title={t('languages')}
+      labelAs="h3"
+      description={languages}
+    />
   );
 }

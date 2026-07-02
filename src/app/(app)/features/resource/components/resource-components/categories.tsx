@@ -34,7 +34,7 @@ export function CategoriesComponent({
 
   return (
     <div>
-      <Typography variant="label" size="sm">
+      <Typography variant="label" size="sm" as="h3">
         {appConfig.resource.categoriesText || t('categories_title')}
       </Typography>
       <div className="flex flex-wrap gap-1">

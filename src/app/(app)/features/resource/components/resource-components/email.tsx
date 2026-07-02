@@ -18,6 +18,7 @@ export function EmailComponent({ resource }: { resource: Resource }) {
     <Datum
       icon={Send}
       title={t('email')}
+      labelAs="h3"
       description={resource.email}
       url={`mailto:${resource.email}`}
       shouldParseHtml={false}

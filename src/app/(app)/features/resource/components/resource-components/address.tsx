@@ -93,6 +93,7 @@ export function AddressComponent({
 
   return (
     <div className="flex items-center justify-between gap-1">
+      {!withIcon && <h3 className="sr-only">{t('address')}</h3>}
       {AddressElement}
       {distance && (
         <Typography variant="paragraph" size="sm" className="w-16 text-end">
