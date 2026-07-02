@@ -13,6 +13,7 @@ import { revalidateCache } from './hooks/revalidateCache';
 import { setTenantIdAsId } from './hooks/setTenantIdAsId';
 import { syncKeycloakRealmBrandingAfterChange } from './hooks/syncKeycloakBrandingAfterChange';
 import { accessibility } from './tabs/accessibility';
+import { accessibilityPage } from './tabs/accessibilityPage';
 import { badges } from './tabs/badges';
 import { brand } from './tabs/brand';
 import { common } from './tabs/common';
@@ -150,6 +151,7 @@ export const ResourceDirectories: CollectionConfig = {
         resource,
         search,
         newLayout,
+        accessibilityPage,
         privacyPolicyPage,
         termsOfUsePage,
         featureFlags,

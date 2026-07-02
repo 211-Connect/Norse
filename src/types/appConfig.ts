@@ -77,6 +77,11 @@ export type AppConfig = {
     title: string;
   };
   pages: {
+    accessibilityPage: {
+      enabled: boolean;
+      title?: string;
+      content?: string;
+    };
     privacyPolicyPage: {
       enabled: boolean;
       title?: string;

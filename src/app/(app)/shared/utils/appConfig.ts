@@ -256,6 +256,9 @@ async function getAppConfigBase(
         title: '',
       },
       pages: {
+        accessibilityPage: {
+          enabled: false,
+        },
         privacyPolicyPage: {
           enabled: false,
         },
@@ -440,6 +443,11 @@ async function getAppConfigBase(
       title: resourceDirectory.brand.meta?.title ?? '',
     },
     pages: {
+      accessibilityPage: {
+        content: resourceDirectory.accessibilityPage?.content ?? undefined,
+        enabled: resourceDirectory.accessibilityPage?.enabled ?? true,
+        title: resourceDirectory.accessibilityPage?.title ?? 'Accessibility',
+      },
       privacyPolicyPage: {
         content: resourceDirectory.privacyPolicyPage?.content ?? undefined,
         enabled: resourceDirectory.privacyPolicyPage?.enabled ?? true,
