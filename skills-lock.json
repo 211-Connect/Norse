@@ -11,6 +11,12 @@
       "sourceType": "github",
       "computedHash": "354414a934957f9d54a71468abe81888304d35b47a4fe8e27fff08f60b457d53"
     },
+    "arcjet": {
+      "source": "arcjet/skills",
+      "sourceType": "github",
+      "skillPath": "arcjet/SKILL.md",
+      "computedHash": "f324f03a6100576bbd2f51870c525bb7b25c80b90c612406107c1b25473f36f4"
+    },
     "audit": {
       "source": "pbakaus/impeccable",
       "sourceType": "github",
