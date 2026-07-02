@@ -42,6 +42,7 @@ export function QualityComponent({ resource }: { resource: Resource }) {
     <Datum
       icon={ShieldCheck}
       title={t('quality', { defaultValue: 'Quality' })}
+      labelAs="h3"
       description={`<div class="flex flex-col gap-1">${qualityLinksMarkup}</div>`}
     />
   );

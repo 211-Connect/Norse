@@ -25,6 +25,7 @@ export function ApplicationProcessComponent({
     <Datum
       icon={Edit}
       title={t('application_process')}
+      labelAs="h3"
       description={resource.applicationProcess}
       withPadding={withPadding}
     />

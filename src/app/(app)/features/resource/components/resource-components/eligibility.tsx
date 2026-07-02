@@ -29,6 +29,7 @@ export function EligibilityComponent({
       iconColor="text-destructive"
       withPadding={withPadding}
       title={t('eligibility')}
+      labelAs="h3"
       description={eligibility}
     />
   );

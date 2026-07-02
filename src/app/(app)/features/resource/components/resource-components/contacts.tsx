@@ -29,7 +29,7 @@ export function ContactsComponent({ resource }: { resource: Resource }) {
     <div className="flex flex-col">
       <div className="flex items-center gap-2">
         <IdCard className="size-4" />
-        <Typography variant="label" size="sm">
+        <Typography variant="label" size="sm" as="h3">
           {t('contacts')}
         </Typography>
       </div>

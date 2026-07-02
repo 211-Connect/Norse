@@ -23,6 +23,7 @@ export function OrganizationUrlComponent({ resource }: ResourceComponentProps) {
       url={resource.organizationUrl}
       urlTarget="_blank"
       title={t('organization_url')}
+      labelAs="h3"
       description={resource.organizationUrl}
       shouldParseHtml={false}
     />

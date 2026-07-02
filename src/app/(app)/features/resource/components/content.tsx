@@ -39,8 +39,12 @@ export const ResourcePageContent = ({
 
   useResourceViewTracking({ entry, resourceId, tenantId });
 
+  const pageHeadingText =
+    resource.name?.trim() || resource.serviceName?.trim() || 'Resource details';
+
   return (
     <div className="container mx-auto flex flex-col gap-2 pt-2 pb-2">
+      <h1 className="sr-only">{pageHeadingText}</h1>
       <Navigation
         componentToPrintRef={componentToPrintRef}
         resource={resource}

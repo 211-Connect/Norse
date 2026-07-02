@@ -19,6 +19,10 @@ export function LocationNameComponent({
   }
 
   return (
-    <Datum title={t('location_name')} description={resource.locationName} />
+    <Datum
+      title={t('location_name')}
+      labelAs="h3"
+      description={resource.locationName}
+    />
   );
 }

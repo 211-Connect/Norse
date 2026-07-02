@@ -21,6 +21,7 @@ export function OrganizationComponent({ resource }: { resource: Resource }) {
         <Datum
           description={organizationName}
           title={t('providing_organization')}
+          labelAs="h3"
         />
       )}
       {organizationDescription && (

@@ -21,6 +21,7 @@ export function HoursComponent({ resource }: { resource: Resource }) {
     <Datum
       icon={Clock}
       title={t('hours')}
+      labelAs="h3"
       description={hours}
       subdescription={hoursDetails}
     />

@@ -2,7 +2,10 @@
 
 import { type LucideIcon } from 'lucide-react';
 
-import { Typography } from '@/app/(app)/shared/components/ui/typography';
+import {
+  Typography,
+  type TypographyProps,
+} from '@/app/(app)/shared/components/ui/typography';
 import { parseHtml } from '@/app/(app)/shared/lib/parse-html';
 import { cn } from '@/app/(app)/shared/lib/utils';
 
@@ -20,6 +23,8 @@ export interface DatumProps {
   titleBelow?: boolean | null;
   singleLine?: boolean;
   size?: 'sm' | 'md' | null;
+  labelAs?: TypographyProps['as'];
+  labelSrOnly?: boolean;
   shouldParseHtml?: boolean;
   withPadding?: boolean;
   className?: string;
@@ -40,6 +45,8 @@ export function Datum({
   titleBelow,
   singleLine = false,
   size = 'sm',
+  labelAs,
+  labelSrOnly = false,
   shouldParseHtml = true,
   withPadding = true,
   className,
@@ -74,7 +81,7 @@ export function Datum({
       )}
       id={generatedId}
     >
-      <div className="flex-shrink-0">
+      <div className="shrink-0">
         {Icon ? (
           <Icon
             aria-hidden="true"
@@ -109,10 +116,17 @@ export function Datum({
             </Typography>
           )}
           <div className="flex flex-row items-center">
-            <Typography variant="label" size="sm">
+            <Typography
+              variant="label"
+              size="sm"
+              as={labelAs}
+              className={cn({ 'sr-only': labelSrOnly })}
+            >
               {title}
             </Typography>
-            {title && subtitle && <span className="mx-1">·</span>}
+            {title && subtitle && !labelSrOnly && (
+              <span className="mx-1">·</span>
+            )}
             <Typography variant="paragraph" size="sm">
               {subtitle}
             </Typography>
@@ -123,7 +137,8 @@ export function Datum({
           <Typography
             variant="label"
             size={size}
-            as={title && description ? 'h4' : undefined}
+            as={labelAs ?? (title && description ? 'h4' : undefined)}
+            className={cn({ 'sr-only': labelSrOnly })}
           >
             {title}
           </Typography>
