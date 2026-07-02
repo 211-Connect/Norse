@@ -2,105 +2,60 @@
 
 import { useTranslation } from 'react-i18next';
 
-import { Image } from '@/app/(app)/shared/components/image';
+import { AppConfig } from '@/types/appConfig';
 
 import { useAppConfig } from '../hooks/use-app-config';
-import { cn } from '../lib/utils';
+import { getStableKey } from '../lib/get-stable-key';
 import { LocalizedLink } from './LocalizedLink';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Separator } from './ui/separator';
+import { MediaCard } from './media-card';
+import { SectionCarousel } from './section-carousel';
+
+type Provider = NonNullable<AppConfig['providers']>[number];
 
 export function DataProviders() {
   const appConfig = useAppConfig();
   const { t } = useTranslation('common');
 
   const validProviders =
-    appConfig.providers?.filter(
-      (provider: any) => provider.name || provider.logo,
+    appConfig.providers?.filter((provider): provider is Provider =>
+      Boolean(provider?.name || provider?.logo),
     ) || [];
 
   if (validProviders.length === 0) {
     return null;
   }
 
-  return (
-    <>
-      <div className="container mx-auto flex flex-col pt-8 pb-8">
-        <h3 className="text-center text-lg font-bold">
-          {appConfig.providersCustomHeading || t('data_providers.provided_by')}
-        </h3>
+  const items = validProviders.map((provider, index) => {
+    const key = getStableKey(
+      [provider.href, provider.name, provider.logo],
+      `provider-${index}`,
+    );
 
-        <Separator className="mt-3 mb-4" />
-
-        <div
-          className={cn(
-            validProviders.length >= 4 &&
-              'grid-cols-1 justify-center sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
-            validProviders.length === 3 &&
-              'mx-auto max-w-fit grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
-            validProviders.length === 2 &&
-              'mx-auto max-w-fit grid-cols-1 sm:grid-cols-2',
-            validProviders.length === 1 && 'mx-auto max-w-fit grid-cols-1',
-            'grid gap-4',
-          )}
-        >
-          {validProviders.map((el: any) => {
-            const key = el.name || `provider-${Math.random()}`;
-            const CardNameAndLogoComponent = (
-              <Card className="h-full transition-all group-hover:shadow-sm">
-                <CardHeader className="transition-all group-hover:translate-x-1">
-                  <CardTitle>{el.name}</CardTitle>
-                </CardHeader>
-                <CardContent className="transition-all group-hover:translate-x-1">
-                  <Image
-                    src={el.logo}
-                    alt=""
-                    width={200}
-                    height={0}
-                    style={{ width: '200px', height: 'auto' }}
-                  />
-                </CardContent>
-              </Card>
-            );
-            const CardNameOrLogoComponent = (
-              <Card className="flex h-full items-center justify-center transition-all group-hover:shadow-sm">
-                <CardHeader className="transition-all group-hover:translate-x-1">
-                  {el.name && <CardTitle>{el.name}</CardTitle>}
-                  {el.logo && (
-                    <Image
-                      src={el.logo}
-                      alt=""
-                      width={200}
-                      height={0}
-                      style={{ width: '200px', height: 'auto' }}
-                    />
-                  )}
-                </CardHeader>
-              </Card>
-            );
-
-            const CardComponent =
-              el.name && el.logo
-                ? CardNameAndLogoComponent
-                : CardNameOrLogoComponent;
-
-            return el.href ? (
-              <LocalizedLink
-                key={key}
-                href={el.href}
-                target={el.target}
-                className="group self-stretch hover:underline"
-              >
-                {CardComponent}
-              </LocalizedLink>
-            ) : (
-              <div key={key} className="group self-stretch">
-                {CardComponent}
-              </div>
-            );
-          })}
-        </div>
+    return provider.href ? (
+      <LocalizedLink key={key} href={provider.href} target={provider.target}>
+        <MediaCard
+          title={provider.name}
+          image={provider.logo}
+          imageAlt={provider.name || ''}
+        />
+      </LocalizedLink>
+    ) : (
+      <div key={key}>
+        <MediaCard
+          title={provider.name}
+          image={provider.logo}
+          imageAlt={provider.name || ''}
+        />
       </div>
-    </>
+    );
+  });
+
+  return (
+    <SectionCarousel
+      title={
+        appConfig.providersCustomHeading || t('data_providers.provided_by')
+      }
+      items={items}
+    />
   );
 }
