@@ -97,6 +97,7 @@ export async function updateScorecard(params: {
         weights: params.body.weights,
         include_children: params.body.include_children,
         include_siblings: params.body.include_siblings,
+        updated_by_email: params.body.updated_by_email,
       }),
       headers: toRequestHeaders(),
       cache: 'no-store',

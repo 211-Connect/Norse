@@ -134,6 +134,10 @@ export function ScorecardEditorModal({
                 {formatDateTime(scorecardState.response.updated_at)}
               </p>
               <p style={{ margin: 0 }}>
+                <strong>Last published update by:</strong>{' '}
+                {scorecardState.response.updated_by_email ?? '—'}
+              </p>
+              <p style={{ margin: 0 }}>
                 <strong>Last action:</strong>{' '}
                 {scorecardState.response.version_metadata?.last_action ?? '—'}
               </p>
