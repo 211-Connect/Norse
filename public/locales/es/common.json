@@ -56,7 +56,16 @@
     "list_status_one": "Hay 1 opción disponible. Utilice las teclas de flecha arriba y abajo para revisar.",
     "list_status_other": "{{count}} opciones disponibles. Utilice las teclas de flecha arriba y abajo para revisarlas.",
     "search_dialog_description": "Busca recursos y actualiza tu ubicación.",
-    "everywhere": "En todas partes"
+    "everywhere": "En todas partes",
+    "ai_clarify_title": "Ayúdanos a acotar tu búsqueda",
+    "ai_clarify_title_low_info": "Cuéntanos un poco más para que podamos acotar tu búsqueda.",
+    "ai_clarify_title_multiple_labels": "¿Qué tipo de ayuda se ajusta mejor a sus necesidades?",
+    "ai_skip": "Saltar",
+    "ai_confirm": "Confirmar",
+    "ai_show_more_categories": "Mostrar más categorías",
+    "ai_validation_select_or_skip": "Seleccione al menos una opción o sáltese esta.",
+    "ai_option_results_count_one": "{{count}} recurso relacionado",
+    "ai_option_results_count_other": "Recursos relacionados con {{count}}"
   },
   "call_to_action": {
     "call": "Llamar",
@@ -179,5 +188,102 @@
     "default_title": "Error de autenticación",
     "default_description": "No pudimos completar el proceso de inicio de sesión. Por favor, inténtelo de nuevo.",
     "logout_and_try_again": "Cierra sesión e inténtalo de nuevo."
+  },
+  "needs": {
+    "AR-100": {
+      "name": "Artes, cultura y recreación",
+      "description": "La necesidad de una participación significativa en la vida creativa, cultural y recreativa. Engloba las necesidades relacionadas con la expresión artística, la conexión con el patrimonio cultural, las actividades de ocio y la recreación comunitaria. A diferencia de los objetivos terapéuticos o de apoyo social, esto refleja la necesidad humana intrínseca de crear, celebrar, jugar y pertenecer a una comunidad cultural.",
+      "displayDescription": "Busca ayuda para encontrar actividades divertidas como arte, música, deportes o eventos comunitarios. Todos merecen tiempo para jugar, crear y celebrar."
+    },
+    "CL-150": {
+      "name": "Ropa/Artículos personales/Artículos para el hogar",
+      "description": "La necesidad de contar con ropa adecuada, artículos de cuidado personal y los bienes materiales necesarios para mantener un hogar funcional. Incluye prendas apropiadas para el clima, el trabajo o la escuela; productos de higiene y cuidado personal; y mobiliario o suministros básicos que hagan que un espacio habitable sea digno.",
+      "displayDescription": "Te ayudamos a encontrar ropa, artículos de cuidado personal o lo que necesitas para tu hogar. Te ayudamos a conseguir lo que necesitas para sentirte limpio y cómodo."
+    },
+    "DI-180": {
+      "name": "Servicios de desastre",
+      "description": "La necesidad de apoyo derivada de un desastre declarado o experimentado, ya sea natural o provocado por el ser humano. Abarca las necesidades que surgen antes, durante y después de los desastres, incluyendo la preparación, la respuesta a emergencias y la recuperación. Se distingue de las necesidades de seguridad personal habituales; se centra en la interrupción aguda a nivel comunitario y sus consecuencias.",
+      "displayDescription": "Obtén ayuda antes, durante o después de un desastre como una inundación, un incendio o una tormenta. Podemos ponerte en contacto con personas dispuestas a ayudarte en caso de emergencia."
+    },
+    "DV-190": {
+      "name": "Violencia doméstica / Seguridad personal",
+      "description": "La necesidad de seguridad y protección frente a daños interpersonales, abusos, coacción o amenazas. Abarca necesidades relacionadas con la violencia doméstica, la violencia de pareja, el acoso, la trata de personas y otras situaciones en las que la seguridad física o emocional de una persona está en riesgo debido a las acciones de otra persona. Se distingue de las necesidades de seguridad relacionadas con desastres o la infraestructura general de seguridad pública.",
+      "displayDescription": "Si tú o alguien que conoces se siente inseguro en casa o está sufriendo algún daño, busca ayuda. Mereces sentirte seguro y hay personas dispuestas a ayudarte ahora mismo."
+    },
+    "ED-170": {
+      "name": "Educación",
+      "description": "La necesidad de acceso al aprendizaje, al desarrollo de habilidades y al logro educativo en todas las etapas de la vida. Abarca necesidades relacionadas con el aprendizaje en la primera infancia, la educación primaria y secundaria, la educación postsecundaria, la alfabetización de adultos, la adquisición del idioma inglés, la alfabetización digital y la formación profesional. Esta necesidad existe independientemente de la etapa educativa en la que se encuentre una persona o de las barreras que enfrente para acceder a ella.",
+      "displayDescription": "Obtén ayuda para aprender: niños, adolescentes y adultos. Ya sea que necesites apoyo escolar, capacitación laboral o quieras aprender inglés, podemos ayudarte a encontrarla."
+    },
+    "EM-180": {
+      "name": "Empleo",
+      "description": "La necesidad de acceso a un trabajo estable y adecuado, así como a las condiciones que lo posibilitan. Abarca las necesidades relacionadas con la búsqueda y el mantenimiento del empleo, el desarrollo de habilidades laborales y la gestión de los derechos laborales y las transiciones como el desempleo. Refleja las dimensiones económicas y sociales del trabajo como una necesidad humana, no los servicios en sí mismos.",
+      "displayDescription": "Obtén ayuda para encontrar trabajo, conservarlo o adquirir nuevas habilidades. Todos merecen la oportunidad de ganarse la vida y sentirse bien con su trabajo."
+    },
+    "FO-200": {
+      "name": "Comidas",
+      "description": "La necesidad de alimentos consistentes, suficientes y nutritivos. Abarca las necesidades relacionadas con el acceso a suficiente comida, la obtención de alimentos que satisfagan las necesidades nutricionales o dietéticas y la comprensión de cómo mantener una alimentación saludable. Esta necesidad existe independientemente de que surja de la pobreza, una crisis, la inseguridad alimentaria crónica o una situación de crisis.",
+      "displayDescription": "Obtén ayuda para encontrar alimentos para ti y tu familia. Ya sea que necesites una comida hoy o ayuda para comprar víveres, podemos conectarte con proveedores de alimentos cerca de ti."
+    },
+    "HC-300": {
+      "name": "Cuidado de la salud",
+      "description": "La necesidad de acceso a servicios de salud física, atención preventiva, tratamiento médico y los bienes y el apoyo necesarios para gestionar la propia salud. Abarca las necesidades en todo el espectro de la salud física, desde el bienestar rutinario y las revisiones médicas hasta la atención de urgencias, el manejo de enfermedades crónicas, la rehabilitación y los cuidados a largo plazo. Las necesidades relacionadas con la salud mental y el consumo de sustancias se abordan por separado.",
+      "displayDescription": "Obtén ayuda para encontrar un médico, dentista u otro profesional de la salud. Todos merecen gozar de buena salud y recibir la atención que necesitan."
+    },
+    "HO-300": {
+      "name": "Alojamiento",
+      "description": "La necesidad de un lugar seguro, estable y adecuado para vivir. Abarca todas las necesidades de vivienda, desde el refugio inmediato en caso de crisis hasta la vivienda asequible a largo plazo, los programas de apoyo y las ayudas para la estabilidad que permiten a las personas conservar su hogar. La naturaleza de la necesidad de vivienda varía según la urgencia y las circunstancias, pero la necesidad fundamental es siempre la misma: un lugar al que llamar hogar.",
+      "displayDescription": "Obtén ayuda para encontrar un lugar seguro donde vivir. Ya sea que necesites un lugar donde dormir esta noche o ayuda para conservar tu hogar, podemos conectarte con el apoyo que necesitas."
+    },
+    "IC-330": {
+      "name": "Apoyo/Asistencia económica",
+      "description": "La necesidad de recursos financieros para cubrir los gastos básicos de subsistencia cuando los ingresos son insuficientes o inexistentes. Abarca necesidades relacionadas con asistencia monetaria, reemplazo de ingresos, acceso a beneficios públicos y apoyo a la estabilidad financiera. Refleja la dimensión económica del bienestar: la necesidad de contar con recursos suficientes para cubrir las necesidades esenciales, independientemente de los programas o mecanismos específicos que puedan abordarla.",
+      "displayDescription": "Obtén ayuda para pagar tus necesidades cuando el dinero escasea. Podemos conectarte con programas que te ayudan a cubrir facturas y gastos cotidianos."
+    },
+    "IF-330": {
+      "name": "Apoyo individual, familiar y comunitario",
+      "description": "La necesidad de apoyo relacional, asistencial y comunitario que sostenga a las personas y familias en el día a día y ante las dificultades. Abarca necesidades relacionadas con la crianza, el cuidado de personas dependientes, la gestión de la complejidad familiar, la creación de vínculos comunitarios y el acceso a apoyo social o entre pares. Refleja la realidad de que el bienestar humano está profundamente ligado a la solidez de las relaciones y redes que rodean a una persona.",
+      "displayDescription": "Obtén ayuda para tu familia o para alguien a quien cuidas. Ya sea que necesites apoyo para la crianza de los hijos, ayuda para un adulto mayor o alguien con quien hablar, podemos ayudarte."
+    },
+    "IS-330": {
+      "name": "Servicios de información",
+      "description": "La necesidad de comprender qué recursos existen y cómo acceder a ellos. Engloba necesidades relacionadas con la búsqueda de servicios pertinentes, la comprensión de los requisitos y los procesos, la navegación por sistemas complejos y la conexión con el apoyo adecuado en el momento oportuno. Esta es una metanecesidad —el requisito previo para satisfacer eficazmente muchas otras necesidades— y es distinta de los servicios en sí mismos.",
+      "displayDescription": "¿No sabes por dónde empezar? Podemos ayudarte a descubrir qué servicios existen y cuáles son los más adecuados para ti."
+    },
+    "LE-450": {
+      "name": "Asuntos legales, protección del consumidor y seguridad pública",
+      "description": "La necesidad de protección legal, acceso al sistema judicial, derechos del consumidor y seguridad pública. Abarca necesidades relacionadas con asuntos legales civiles, participación en el sistema de justicia penal, estatus migratorio, perjuicios al consumidor y protección legal. Refleja situaciones en las que los derechos, la seguridad o la posición jurídica de una persona están en riesgo y donde se requiere conocimiento o asistencia legal.",
+      "displayDescription": "Obtén ayuda con tus dudas legales, para comprender tus derechos o para mantenerte a salvo. Podemos ponerte en contacto con personas que conocen la ley y pueden ayudarte."
+    },
+    "MH-500": {
+      "name": "Adicciones",
+      "description": "La necesidad de apoyo para abordar el consumo de sustancias, la dependencia y la adicción. Abarca las necesidades relacionadas con el manejo o la recuperación del consumo problemático de alcohol, drogas u otras sustancias, incluyendo la estabilización aguda, el tratamiento y el apoyo continuo para la recuperación. Se reconoce como una categoría de necesidad distinta de la salud mental, aunque ambas suelen presentarse simultáneamente.",
+      "displayDescription": "Si usted o un ser querido está luchando contra el consumo de alcohol o drogas, busque ayuda. La recuperación es posible y hay personas comprensivas dispuestas a brindarle apoyo."
+    },
+    "AD-510": {
+      "name": "Salud mental",
+      "description": "La necesidad de apoyo para mantener, recuperar o gestionar el bienestar mental y emocional. Abarca necesidades relacionadas con el malestar emocional, trastornos psiquiátricos, salud conductual, situaciones de crisis y el apoyo continuo necesario para convivir con problemas de salud mental. Se distingue de las necesidades relacionadas con el consumo de sustancias, aunque es frecuente que se presenten de forma conjunta.",
+      "displayDescription": "Si te sientes triste, ansioso o abrumado, busca ayuda. Tu salud mental es importante y hay personas que pueden escucharte y ayudarte."
+    },
+    "OT-600": {
+      "name": "Otros servicios gubernamentales/económicos",
+      "description": "La necesidad de acceso a programas gubernamentales, servicios cívicos y apoyos económicos que no se ajustan fácilmente a otras categorías. Abarca necesidades relacionadas con la gestión de trámites con organismos públicos, el acceso a prestaciones o derechos gubernamentales, el apoyo a pequeñas empresas, la asistencia fiscal y otros servicios económicos que contribuyen a la estabilidad individual y comunitaria.",
+      "displayDescription": "Obtén ayuda con programas gubernamentales, beneficios u otros servicios difíciles de encontrar en otros lugares. Podemos ayudarte a encontrar lo que necesitas."
+    },
+    "TR-850": {
+      "name": "Transporte",
+      "description": "La necesidad de poder desplazarse con fiabilidad para satisfacer otras necesidades —trabajo, salud, educación, alimentación, servicios y relaciones sociales— abarca necesidades relacionadas con el acceso al transporte, la asequibilidad de los gastos de transporte, el mantenimiento de un vehículo y los viajes seguros. El transporte es un elemento fundamental: su ausencia agrava prácticamente todas las demás necesidades insatisfechas.",
+      "displayDescription": "Obtén ayuda para llegar a donde necesitas ir: al médico, al trabajo, a la escuela o a la tienda. Podemos ayudarte a encontrar transporte o formas económicas de viajar."
+    },
+    "UT-900": {
+      "name": "Servicios públicos",
+      "description": "La necesidad de acceso a los servicios básicos del hogar —electricidad, gas, agua y telecomunicaciones— que hacen que un espacio habitable sea seguro, confortable y esté conectado. Incluye las necesidades relacionadas con el mantenimiento del servicio, el pago de los costos, la reducción del consumo y el acceso a la telefonía o internet. La necesidad de estos servicios está estrechamente ligada a la estabilidad de la vivienda y la salud.",
+      "displayDescription": "Obtén ayuda para pagar la electricidad, el gas, el agua o el servicio de teléfono e internet. Podemos conectarte con programas que te ayudarán a mantener tu hogar funcionando."
+    },
+    "VO-900": {
+      "name": "Voluntariado y donaciones",
+      "description": "La necesidad de dar o recibir a través de la generosidad comunitaria, ya sea que una persona necesite donaciones de bienes o tenga la capacidad y el deseo de contribuir con su tiempo, habilidades o recursos a los demás. Abarca las necesidades de ambas partes del intercambio cívico: personas que buscan donaciones materiales o servicios, y personas u organizaciones que buscan conectar a voluntarios y donantes con oportunidades significativas para ayudar.",
+      "displayDescription": "¿Necesitas donaciones o quieres ayudar a los demás? Podemos poner en contacto a quienes desean donar con quienes necesitan ayuda."
+    }
   }
 }

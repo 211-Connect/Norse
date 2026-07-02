@@ -26,5 +26,8 @@
   "name_unavailable": "Innde nde heɓaaka",
   "share_body": "Ƴeew {{count}} njeñtudi njiylawu wonande \"{{title}}\"",
   "age_filter_label": "Fiiltirde e duuɓi",
-  "age_filter_placeholder": "Naatnu duuɓi"
+  "age_filter_placeholder": "Naatnu duuɓi",
+  "ai_broadened_results_alert": "Min kollitii njeñtudi ɓurndi yaajde sabu ɗaɓɓaande maa ina waawi jogaade ko ɓuri laaɓtude. Aɗa waawi laaɓtinde huutoraade toɓɓe walla miijooji.",
+  "ai_broadened_results_alert_low_info": "Min kollitii njeñtudi ɓurndi yaajde sabu njiylawu maa ina waawi yiɗde laaɓtude. Aɗa waawi laaɓtinde huutoraade toɓɓe walla miijooji.",
+  "ai_broadened_results_alert_low_confidence": "Min kollitii njeñtudi ɓurndi yaajde sabu min ngonaano hoolaare e pottital ɓurngal moƴƴude. Aɗa waawi laaɓtinde huutoraade toɓɓe walla miijooji."
 }

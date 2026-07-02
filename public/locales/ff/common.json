@@ -56,7 +56,16 @@
     "list_status_one": "1 cuɓal ina woodi. Huutoro jokkorgal dow e les ngam ƴeewtaade.",
     "list_status_other": "{{limto}} cuɓe ina ngoodi. Huutoro jokkorgal dow e les ngam ƴeewtaade.",
     "search_dialog_description": "Yiylo geɗe e kesɗitin nokku maa.",
-    "everywhere": "Fof fow"
+    "everywhere": "Fof fow",
+    "ai_clarify_title": "Wallu min ustude njiylawu maa",
+    "ai_clarify_title_low_info": "Haalan min seeɗa mbele min mbaawa ustude njiylawu maa",
+    "ai_clarify_title_multiple_labels": "Hol sifaa ballal ɓurngal yahdude e ko njiɗɗaa?",
+    "ai_skip": "Juwugo",
+    "ai_confirm": "Jabbugo",
+    "ai_show_more_categories": "Hollit cate goɗɗe",
+    "ai_validation_select_or_skip": "Suɓo ko famɗi fof cuɓal gootal walla ƴakku.",
+    "ai_option_results_count_one": "{{count}} ko jokkondiri e ngaluuji",
+    "ai_option_results_count_other": "{{count}} ko jokkondiri e kaɓirɗe"
   },
   "call_to_action": {
     "call": "Ewnandu",
@@ -179,5 +188,102 @@
     "default_title": "Juumre hoolkiso",
     "default_description": "Min mbaawaano timminde golle naatnugol ɗee. Tiiɗno enndu kadi.",
     "logout_and_try_again": "Yaltu e ƴeewde kadi"
+  },
+  "needs": {
+    "AR-100": {
+      "name": "Naalankaagal, Pinal e Fijooji",
+      "description": "Haajuuji tawtoreede ko laaɓti e nguurndam tago, pinal, e wellitaare. Ina hawra e haajuuji jowitiiɗi e baylagol naalankaagal, jokkondiral e ndonaandi pinal, golle njuɓɓudi, e wellitaare renndo. Seerti e paandaale ballal terapi walla renndo — ɗum ina hollita haaju neɗɗo e nder mum ngam tafde, mawninde, fiyde, e jeyde renndo pinal.",
+      "displayDescription": "Heɓ ballal ngam heɓde geɗe welɗe ngam waɗde ko wayi no naalankaagal, jimɗi, pijirlooji, walla kewuuji renndo. Gooto fof ina foti jogaade waktu ngam fijde, tafde, e mawninde."
+    },
+    "CL-150": {
+      "name": "Haajuuji Koɗki/Neɗɗo/Galle",
+      "description": "Haajuuji comci keewɗi, geɗe toppitiiɗe neɗɗo, e geɗe baawɗe huutoreede ngam jogaade galle golloowo. Ina heen haajuuji koltu potɗi e weeyo, golle, walla duɗal ; geɗe cellal e toppitagol neɗɗo ; e kaɓirɗe walla kaɓirɗe baɗɗe faayiida baɗɗe nokku hoɗorde e teddungal.",
+      "displayDescription": "Heɓ ballal ngam heɓde kolte, geɗe toppitiiɗe hoore maa, walla geɗe ɗe njiɗɗaa ngam galle maa. Min mbaawi wallude ma heɓde ko njiɗɗaa ngam heɓde laaɓal e weltaare."
+    },
+    "DI-180": {
+      "name": "Sarwisaaji musibbaaji",
+      "description": "Haajuuji ballal ummoriiɗi e musiiba bayyinaango walla keɓaaɗo, so tawii ko tagoore walla ko neɗɗo saabii ɗum. Ina hawra e haajuuji peeñɗi ko adii, e nder, e caggal musiibaaji — ina jeyaa heen peewnugol, jaabawol e nder caɗeele, e cellal. Ceertuɗo e haajuuji kisal neɗɗo jokkondirɗi ; tuugnii ko e jiiɓru tiiɗndu to bannge renndo e batte mum.",
+      "displayDescription": "Heɓ ballal ko adii, e nder, walla caggal musiiba hono ilam, yiite, walla henndu. Min mbaawi jokkondirde e yimɓe waawɓe wallude e nder caɗeele."
+    },
+    "DV-190": {
+      "name": "Fitinaaji nder galleeji / Kisal neɗɗo",
+      "description": "Haajuuji kisal e reende e bonanndeeji hakkunde yimɓe, tooñanngeeji, doole, walla kulhuli. Ina hawra e haajuuji jowitiiɗi e fitinaaji nder galleeji, fitinaaji hakkunde sehilaaɓe, ƴaañgol, njulaagu, e ngonkaaji goɗɗi ɗo kisal neɗɗo e nder ɓanndu walla e nder ɓernde mum woni e baasal sabu golle neɗɗo goɗɗo. Seerti e haajuuji kisal jowitiiɗi e musiiba walla e njuɓɓudi kisal renndo kuuɓtodinndi.",
+      "displayDescription": "Heɓ ballal so tawii ko aan walla neɗɗo mo ngannduɗaa ina wondi e caɗeele e nder galle walla ina wondi e caɗeele. Aɗa foti heɓde kisal, kadi ina woodi yimɓe waawɓe wallude jooni jooni."
+    },
+    "ED-170": {
+      "name": "Jaangirde",
+      "description": "Haajuuji heɓde jaŋde, ƴellitaare karallaagal, e heɓde jaŋde e nder denndaangal fannuuji nguurndam. Ina hawra e haajuuji jowitiiɗi e jaŋde sukaaɓe tokosɓe, jaŋde K–12, jaŋde caggal duɗal jaaɓi haaɗtirde, jaŋde mawɓe, jaŋde ɗemngal Engele, jaŋde dijital, e jaŋde golle. Haajuuji ɗii ina ngoodi tawa neɗɗo ina woni e njillu mum jaŋde walla hol caɗeele ɗe o jogori dañde e heɓde ɗum.",
+      "displayDescription": "Heɓ ballal e janngude — ngam sukaaɓe, sukaaɓe, walla mawɓe. So tawii aɗa yiɗi ballal duɗal, janngude golle, walla aɗa yiɗi janngude Engele, min mbaawi wallude ma heɓde ɗum."
+    },
+    "EM-180": {
+      "name": "Kugal",
+      "description": "Haajuuji heɓde golle dartiiɗe, keewɗe e sarɗiiji baawɗi addande golle. Ina hawra e haajuuji jowitiiɗi e heɓde golle, jogaade golle, ƴellitde karallaagal golle, e naftoraade hakkeeji e waylooji nokkuuji golle ko wayi no ŋakkeende golle. Ina hollita geɗe faggudu e renndo golle ko haajuuji aadee, wonaa sarwisaaji ɗii e koye mum en.",
+      "displayDescription": "Heɓde ballal ngam heɓde golle, jogaade golle, walla mahde karallaagal kesal. Gooto fof ina foti dañde ko wuuri, weltoo e golle mum."
+    },
+    "FO-200": {
+      "name": "Nyaamdu/Nyaamdu",
+      "description": "Haajuuji nguura jokkondirɗo, keewɗo, ɓuuɓɗo. Ina hawra e haajuuji jowitiiɗi e heɓde nguura keewka ngam ñaamde, heɓde nguura kañum e haajuuji ñamri walla ñamri, e faamde no ñaamdu cellundu jogori jogaade. Haajuuji ɗii ina ngoodi so tawii ko baasal, kiris, ŋakkeende nguura duumiinde, walla ŋakkeende ngonka.",
+      "displayDescription": "Heɓ ballal ngam heɓde nguura ngam maa e ɓesngu maa. So aɗa yiɗi nyaamde hannde walla wallude heɓde kosam, min mbaawi jokkondirde e maa e nyaamdu sara maa."
+    },
+    "HC-300": {
+      "name": "Cellal",
+      "description": "Haajuuji heɓde sarwisaaji cellal ɓalli, toppitagol, safaara, e ballal marsandiis e navigation potngal huutoreede ngam ƴellitde cellal neɗɗo. Ina hawra e haajuuji e nder jokkondire timmuɗe e cellal ɓanndu — gila e wellitaare e ƴeewndorɗe haa e toppitagol ɓuuɓngol, toppitagol ñawuuji ɓuuɓɗi, moƴƴitingol, e toppitagol juutngol. Haajuuji cellal hakkille e kuutoragol geɗe ina ƴeewtee ceertuɗe.",
+      "displayDescription": "Heɓ ballal ngam heɓde doktoor, dentist, walla toppitagol cellal goɗɗo. Gooto fof ina foti jogaade cellal, heɓa toppitagol ngol haani."
+    },
+    "HO-300": {
+      "name": "Koɗki",
+      "description": "Haajuuji nokku kisal, deeƴɗo, potɗo hoɗde. Ina hawra e haajuuji e nder denndaangal koɗki — gila e hoɗorde ko yaawi e nder caɗeele haa e koɗorɗe juutɗe, peeje nguurndam ballitooje, e ballal deeƴre ballooje yimɓe heddaade e koɗki. Nafoore haajuuji galleeji ina ceerti fawaade e yaawre e ngonka, kono haajuuji gonɗi les ɗii ina ngoodi : nokku ɗo noddirtee galle.",
+      "displayDescription": "Heɓde ballal ngam heɓde nokku ɗo hoɗirta. So tawii aɗa yiɗi nokku ɗo ɗaaniɗaa jamma hannde oo walla wallude hoɗde e galle maa, min mbaawi jokkondirde e maa e ballal."
+    },
+    "IC-330": {
+      "name": "Ballal/Ballal Ngalu",
+      "description": "Haajuuji kaalis ngam heblude ko yowitii e nguurndam so tawii ngalu ina ŋakki walla ina ŋakki. Ina hawra e haajuuji jowitiiɗi e ballal kaalis, lomtinande ngalu, heɓde nafooje renndo, e ballal deeƴre kaalis. Ina hollita dimensiyonal faggudu wellitaare — haaju jogaade ngalu keewngu ngam huutoraade haajuuji potɗi — seertude e porogaraamuuji walla laabi keertiiɗi baawɗi huutoraade ɗum.",
+      "displayDescription": "Heɓ ballal yoɓde geɗe ɗe njiɗɗaa so kaalis ina famɗi. Min mbaawi jokkondirde e mon e porogaraamuuji ballooji ngam yoɓde billets e njoɓdi ñalnde kala."
+    },
+    "IF-330": {
+      "name": "Ballal Neɗɗo, Galle e Renndo",
+      "description": "Haaju ballal jokkondiral, toppitagol, e renndo, jogorngal jogaade yimɓe e ɓesnguuji e nder nguurndam ñalnde kala e nder ngonkaaji caɗtuɗi. Ina hawra e haajuuji jowitiiɗi e nehdi, toppitagol sukaaɓe, naatde e caɗeele ɓesngu, mahde jokkondiral renndo, e heɓde ballal banndiraaɓe walla renndo. Ina hollita goonga wonde wellitaare aadee ina jokkondiri no feewi e doole jokkondiral e jokkondire taariiɗe neɗɗo.",
+      "displayDescription": "Heɓ ballal ngam ɓesngu maa walla neɗɗo mo njiɗɗaa. So tawii aɗa yiɗi ballal jibinannde, ballal mawɗo, walla neɗɗo mo kaalduɗaa, min mbaawi wallude."
+    },
+    "IS-330": {
+      "name": "Sarwisaaji kabaruuji",
+      "description": "Haajuuji faamde hol jawdi woodi e no heɓirtee. Ina hawra e haajuuji jowitiiɗi e yiytude sarwisaaji jowitiiɗi e ɗuum, faamde fotdeeji e peeje, naatde e njuɓɓudiiji caɗtuɗi, e jokkondirde e ballal potngal e sahaa potɗo. Ɗum ko meta-haajuuji — sarɗiiji ngam heɓde haajuuji goɗɗi keewɗi no moƴƴi — kadi ina seerti e sarwisaaji ɗii e koye mum en.",
+      "displayDescription": "A anndaa to puɗɗorto-ɗaa? Min mbaawi wallude ma anndude hol sarwisaaji gonɗi toon e hol ɗi moƴƴi e maa."
+    },
+    "LE-450": {
+      "name": "Kisal sariya, njulaagu e kisal renndo",
+      "description": "Haajuuji ndeenka sariya, naatgol e njuɓɓudi ñaawoore, hakkeeji ñamlooɓe, e kisal renndo. Ina hawra e haajuuji jowitiiɗi e geɗe sariya siwil, naatgol e nder ñaawoore, ngonka immigration, bonnugol ñamlooɓe, e ndeenka e nder sariya. Ina hollita ngonkaaji ɗo hakkeeji neɗɗo, kisal mum, walla darnde mum e nder njuɓɓudi sariyaaji, ɗo ganndal sariya walla ballal ina ɗaɓɓiree.",
+      "displayDescription": "Heɓ ballal e naamne sariya, faamde hakkeeji maa, walla jogaade kisal. Min mbaawi jokkondirde e yimɓe annduɓe sariya, waawɓe wallude."
+    },
+    "MH-500": {
+      "name": "Addiiji",
+      "description": "Haajuuji ballal e haɓaade kuutoragol geɗe, fawaade e koye mum en, e jokkere enɗam. Ina hawra e haajuuji jowitiiɗi e njuɓɓudi walla cellal e kuutoragol alkol, dorog, walla geɗe goɗɗe — ina jeyaa heen ustude ɓuuɓri, safrude, e ballal cellal jokkondirngal. Anndaama wonde ko cate ceertuɗe e haajuuji e cellal hakkille, hay so tawii noon ɗiɗo ɓee ina keewi waɗde.",
+      "displayDescription": "Heɓ ballal so tawii ko aan walla neɗɗo mo njiɗɗaa ina wondi e caɗeele e huutoraade alkol walla dorog. Sellude ina waawi, kadi ina woodi yimɓe toppitiiɓe ma, hesɓe wallude ma."
+    },
+    "AD-510": {
+      "name": "Cellal hakkille",
+      "description": "Haajuuji ballal e jogaade, moƴƴitinde, walla jogaade wellitaare hakkille e ɓernde neɗɗo. Ina hawra e haajuuji jowitiiɗi e mettere ɓernde, ngonka hakkille, cellal jikkuuji, ngonkaaji kiris, e ballal jokkondire potɗe huutoreede ngam wuurde no moƴƴi e caɗeele cellal hakkille. Seerti e haajuuji kuutoragol geɗe, hay so tawii noon kollirɗe co-occurring ina keewi.",
+      "displayDescription": "Heɓ ballal so aɗa wondi e sunaare, aɗa wondi e sunaare, walla aɗa wondi e tampere. Cellal hakkille maa ina haani, kadi ina woodi yimɓe waawɓe heɗaade e wallude."
+    },
+    "OT-600": {
+      "name": "Sarwisaaji laamu/faggudu goɗɗi",
+      "description": "Haajuuji heɓde porogaraamuuji laamu, sarwisaaji siwil, e ballal faggudu ngal fawaaki no moƴƴi e cate goɗɗe. Ina hawra e haajuuji jowitiiɗi e naatgol e nder gollorɗe laamu, heɓde nafooje walla hakkeeji laamu, ballal njulaagu tokoosi, ballal to bannge njoɓdi, e sarwisaaji faggudu goɗɗi ballooji deeƴre neɗɗo e renndo.",
+      "displayDescription": "Heɓde ballal e porogaraamuuji laamu, nafooje, walla golle goɗɗe ɗe caɗtuɗe heɓde e nokkuuji goɗɗi. Min mbaawi wallude ma anndude ɗo njahataa."
+    },
+    "TR-850": {
+      "name": "Hortol",
+      "description": "Haajuuji baawɗi yahde e hoolaare ngam heɓde haajuuji goɗɗi — golle, cellal, jaŋde, nguura, kuuɗe, e jokkondiral renndo. Ina hawra e haajuuji jowitiiɗi e heɓde otooji, jogaade njoɓdi yah-ngartaa, jogaade oto, e yahde e kisal. Jaɓɓugol ko baawngol teskinngol : ŋakkeende mum ina addana fotde kala haajuuji goɗɗi ɗi keɓaaka.",
+      "displayDescription": "Heɓ ballal ngam heɓugo to a haani yahugo — haa doktoor, kuugal, janngirde, malla suudu defte. Min mbaawi wallude ma heɓde rides walla laabi ɗi ngalaa njoɓdi ngam yahde."
+    },
+    "UT-900": {
+      "name": "Nafooje",
+      "description": "Haajuuji heɓde kuutorɗe galleeji baawɗe wonde — kuuraa, gaas, ndiyam, e telefoŋaaji — baɗooji nokku nguurndam kisal, hoɗorde, e jokkondirde. Ina hawra e haajuuji jowitiiɗi e jogaade sarwiis kuutorɗe, jogaade njoɓdi kuutorɗe, ustude njaru, e heɓde jokkondiral telefoŋ walla internet. Haajuuji utility ina njokkondiri no feewi e deeƴre galleeji e cellal.",
+      "displayDescription": "Heɓde ballal ngam yoɓde kuuraa, gaas, ndiyam, walla telefoŋ e internet. Min mbaawi jokkondirde e maa e porogaraamuuji ballooji ngam jokkude golle galle maa."
+    },
+    "VO-900": {
+      "name": "Wonirde & Dokkal",
+      "description": "Haajuuji hokkugo walla heɓugo bee yaafuye rento — to neɗɗo ɗon mari haaje jawdi dokkaandi, walla woodi bawɗe e yidde hokkugo wakkati, anndal, malla jawdi ngam woɓɓe. Ina hawra e haajuuji banngeeji ɗiɗi ɗii fof e mbayliigu siwil : yimɓe yiɗɓe dokke kaalis walla sarwisaaji dokke, e yimɓe walla juɓɓule yiɗɓe jokkondirde e wallidiiɓe e dokkuɓe fartaŋŋeeji baɗɗi faayiida ngam wallitde.",
+      "displayDescription": "Haajaade jawdi dokkaandi walla yiɗde wallude woɗɓe? Eɗen mbaawi jokkondirde e yimɓe yiɗɓe rokkude e yimɓe haajuuji junngo."
+    }
   }
 }

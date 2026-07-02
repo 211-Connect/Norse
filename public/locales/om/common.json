@@ -56,7 +56,16 @@
     "list_status_one": "1 filannoo ni jira. Irra deebi'uuf furtuuwwan xiyyaa olii fi gadi fayyadami.",
     "list_status_other": "{{count}} filannoowwan jiran. Irra deebi'uuf furtuuwwan xiyyaa olii fi gadi fayyadami.",
     "search_dialog_description": "Qabeenya barbaadi fi bakka jirtu haaromsi.",
-    "everywhere": "Bakka hundaa"
+    "everywhere": "Bakka hundaa",
+    "ai_clarify_title": "Barbaacha keessan akka dhiphifnu nu gargaaraa",
+    "ai_clarify_title_low_info": "Barbaacha keessan akka dhiphisnuuf xiqqoo nuuf himaa",
+    "ai_clarify_title_multiple_labels": "Gargaarsa gosa kamtu waan si barbaachisu waliin walsimu?",
+    "ai_skip": "Irra darbuu",
+    "ai_confirm": "Mirkaneessuu",
+    "ai_show_more_categories": "Ramaddiiwwan dabalataa agarsiisi",
+    "ai_validation_select_or_skip": "Yoo xiqqaate filannoo tokko filadhu ykn darbi.",
+    "ai_option_results_count_one": "{{count}} qabeenya walqabatee",
+    "ai_option_results_count_other": "{{count}} qabeenya walqabatu"
   },
   "call_to_action": {
     "call": "Waamuu",
@@ -179,5 +188,102 @@
     "default_title": "Dogoggora mirkaneessuu",
     "default_description": "Adeemsa galmee xumuruu hin dandeenye. Mee irra deebi'ii yaalaa.",
     "logout_and_try_again": "Ba'ii irra deebi'ii yaali"
+  },
+  "needs": {
+    "AR-100": {
+      "name": "Aartii, Aadaa fi Bashannana",
+      "description": "Barbaachisummaa hirmaannaa hiika qabu jireenya kalaqaa, aadaa fi bashannanaa keessatti. Fedhiiwwan ibsa aartii, hambaalee aadaa waliin hirmaachuu, sochiiwwan boqonnaa, fi bashannana hawaasa irratti hundaa’uun walqabatan kan hammatudha. Galmoota deeggarsa wal’aansaa ykn hawaasummaa irraa adda — kun fedhii keessaa dhala namaa uumuu, kabajuu, taphachuu fi hawaasa aadaa keessaa ta’uu calaqqisiisa.",
+      "displayDescription": "Wantoota nama gammachiisan kan akka aartii, muuziqaa, ispoortii, ykn taateewwan hawaasaa argachuuf gargaarsa argadhu. Namni kamiyyuu yeroon taphachuu, uumuu fi kabajuu mala."
+    },
+    "CL-150": {
+      "name": "Uffata/Fedhii Dhuunfaa/Maatii",
+      "description": "Uffata gahaa, meeshaalee kunuunsa dhuunfaa fi meeshaalee qaamaa maatii hojiirra oolu kunuunsuuf barbaachisan barbaachisuu. Fedhii uffata haala qilleensaa, hojii ykn mana barumsaa wajjin walsimu ni dabalata; oomishaalee qulqullinaa fi kunuunsa dhuunfaa; fi meeshaalee manaa ykn dhiyeessii bu’uuraa iddoo jireenyaa tokko jiraachuu fi kabaja qabeessa taasisan.",
+      "displayDescription": "Uffata, meeshaalee kunuunsa dhuunfaa ykn wantoota mana keessaniif barbaachisan argachuuf gargaarsa argadhaa. Qulqullinaa fi mijataa ta'ee akka sitti dhaga'amuuf waan isin barbaachisu akka argattan isin gargaaruu dandeenya."
+    },
+    "DI-180": {
+      "name": "Tajaajila Balaa",
+      "description": "Barbaachisummaa deeggarsa taatee balaa labsame ykn mudate irraa maddu, uumamaanis ta’e kan namaa. Fedhiiwwan balaa duraa, yeroo fi booda uumaman kan hammatudha — qophii, deebii hatattamaa, fi fayyuu dabalatee. Fedhii nageenya dhuunfaa itti fufee jiru irraa adda; jeequmsa sadarkaa hawaasaa cimaa fi bu’aa isaa irratti xiyyeeffate.",
+      "displayDescription": "Balaa akka lolaa, ibiddaa ykn obomboleettii dura, yeroo ykn booda gargaarsa argadhu. Namoota yeroo hatattamaa gargaaruuf qophaa'an waliin isin wal qunnamsiisuu dandeenya."
+    },
+    "DV-190": {
+      "name": "Jeequmsa Maatii / Nageenya Dhuunfaa",
+      "description": "Barbaachisummaa nageenyaa fi eegumsa miidhaa namoota gidduutti, miidhaa, dirqisiisuu, ykn doorsisa irraa. Fedhiiwwan jeequmsa maatii, jeequmsa hiriyaa gaa’elaa walitti dhiyeenyaa, hordoffii, daldala namaa, fi haalawwan biroo sababa gocha nama biraatiin nageenyi qaamaa ykn miiraa nama tokkoo balaadhaaf saaxilamu kan hammatudha. Fedhii nageenyaa balaa waliin walqabatee ykn bu’uuraalee nageenya ummataa waliigalaa irraa adda.",
+      "displayDescription": "Yoo ati ykn namni ati beektu mana keessatti nageenyi yoo sitti dhaga’ame ykn miidhamaa jiraate gargaarsa argadhu. Nageenyi sitti dhaga’amuun siif mala, yeroo ammaa kana namoonni gargaaruuf qophaa’an jiru."
+    },
+    "ED-170": {
+      "name": "Barumsa",
+      "description": "Barbaachisummaa qaqqabummaa barumsaa, guddina ogummaa, fi ga’umsa barnootaa sadarkaa jireenyaa hunda keessatti. Fedhiiwwan barumsa daa’imman jalqabaa, mana barumsaa K–12, barnoota sadarkaa lammaffaa boodaa, dubbisuu fi barreessuu ga’eessotaa, afaan Ingiliffaa horachuu, dubbisuu fi barreessuu dijitaalaa, fi leenjii ogummaa wajjin walqabatan kan hammatudha. Barbaachisummaan isaa namni tokko imala barnootaa isaa keessatti eessa akka jirus ta’e sana argachuuf gufuu akkamii akka isa mudatu osoo hin ilaalin jira.",
+      "displayDescription": "Gargaarsa barumsaa argadhu — ijoollee, dargaggoota, ykn ga’eessotaaf. Gargaarsa mana barumsaa, leenjii hojii, ykn Afaan Ingiliffaa barachuu yoo barbaadde, akka argattu si gargaaruu dandeenya."
+    },
+    "EM-180": {
+      "name": "Hojii",
+      "description": "Barbaachisummaa hojii tasgabbaa’aa, gahaa ta’e argachuu fi haalawwan hojiin akka danda’amu taasisan. Fedhiiwwan hojii argachuu, hojii tursiisuu, dandeettii hojii guddisuu, fi mirga bakka hojii fi ce’umsa kan akka hoji dhabdummaa keessa deemuu wajjin walqabatan ni hammata. Hojiin akka fedhii namaatti malee tajaajiloota ofii isaanii osoo hin taane gama dinagdee fi hawaasummaa calaqqisiisa.",
+      "displayDescription": "Hojii argachuuf, hojii qabachuuf ykn dandeettii haaraa ijaaruuf gargaarsa argadhu. Namni kamiyyuu carraan jireenya isaa gaggeessuu fi hojii isaa irratti miira gaarii qabaachuu isaaf mala."
+    },
+    "FO-200": {
+      "name": "Nyaata/Nyaata",
+      "description": "Nyaata wal irraa hin cinne, gahaa fi soorataa ta’e barbaachisuu. Fedhiiwwan nyaata gahaa nyaatamuu danda’an argachuu, nyaata fedhii soorataa ykn nyaataa guutu argachuu, fi akkaataa nyaata fayya qabeessa itti fufsiisan hubachuu wajjin walqabatan kan hammatudha. Barbaachisummaan hiyyummaa, muddama, wabii nyaataa yeroo dheeraa irraa kan ka’e yookaan jeequmsa haalaa irraa kan ka’e ta’us ni jira.",
+      "displayDescription": "Nyaata siifi maatii keetiif argachuuf gargaarsa argadhu. Har'a nyaata barbaaddanis ta'e mi'a gurgurtaa argachuuf gargaaruu, nyaata naannoo keessan jiru waliin isin wal qunnamsiisuu dandeenya."
+    },
+    "HC-300": {
+      "name": "Kunuunsa Fayyaa",
+      "description": "Barbaachisummaa tajaajila fayyaa qaamaa, kunuunsa ittisaa, wal’aansa fayyaa, fi meeshaalee fi deeggarsa navigeeshinii fayyaa ofii bulchuuf barbaachisan argachuu. Fedhiiwwan walitti fufiinsa guutuu fayyaa qaamaa hunda hammata — fayyaa fi qorannoo idilee irraa kaasee hanga kunuunsa cimaa, bulchiinsa dhukkuba yeroo dheeraa, deebisanii dhaabuu, fi kunuunsa yeroo dheeraa. Fedhiin fayyaa sammuu fi itti fayyadama wantootaa adda addaan ilaalama.",
+      "displayDescription": "Doktora, ogeessa ilkaan ykn kunuunsa fayyaa biroo argachuuf gargaarsa argadhu. Namni kamiyyuu fayyaa ta'ee kunuunsa barbaachisu argachuun isaaf mala."
+    },
+    "HO-300": {
+      "name": "Mana jireenyaa",
+      "description": "Bakka jireenyaa nageenya qabu, tasgabbaa’aa fi mijaawaa ta’e barbaachisuu. Fedhii mana jireenyaa guutuu kan hammatedha — rakkoo keessatti gaaddisa battalaa irraa kaasee hanga mana jireenyaa yeroo dheeraa gatii madaalawaa, qophii jireenyaa deggersaa, fi deeggarsa tasgabbii namoonni mana jireenyaa akka jiraatan gargaaru. Maalummaa fedhii mana jireenyaa ariifannaa fi haalaan garaagarummaa qaba, garuu fedhiin bu’uuraa walfakkaataadha: bakka mana itti waamaman.",
+      "displayDescription": "Bakka jireenyaa nageenya qabu argachuuf gargaarsa argadhu. Halkan kana bakka itti ciisan yoo barbaaddan ykn mana keessan keessa turuuf gargaaruu yoo barbaaddan deeggarsa waliin isin wal qunnamsiisuu dandeenya."
+    },
+    "IC-330": {
+      "name": "Deeggarsa/Gargarsa Galii",
+      "description": "Yeroo galiin gahaa hin taane ykn hin jirretti baasii jireenyaa bu’uuraa guutuuf qabeenya maallaqaa barbaachisuu. Fedhiiwwan gargaarsa maallaqaa, bakka bu’iinsa galii, faayidaa ummataa argachuu, fi deeggarsa tasgabbii faayinaansii wajjin walqabatan ni hammata. Dimshaashumatti gama dinagdee fayyaa gaarii calaqqisiisa — fedhiiwwan barbaachisoo ta’an uwwisuuf qabeenya gahaa qabaachuu — sagantaalee ykn mala addaa isa furuu danda’an irraa adda.",
+      "displayDescription": "Yeroo maallaqni si dhiphatu wantoota si barbaachisan kaffaluuf gargaarsa argadhu. Sagantaa kaffaltii fi baasii guyyaa guyyaa uwwisuuf gargaaraniin isin wal qunnamsiisuu dandeenya."
+    },
+    "IF-330": {
+      "name": "Deeggarsa Dhuunfaa, Maatii fi Hawaasa",
+      "description": "Barbaachisummaa deeggarsa hariiroo, kunuunsaa fi sadarkaa hawaasaa kan namoota dhuunfaa fi maatii jireenya guyyaa guyyaa fi haala rakkisaa keessatti itti fufsiisu. Fedhiiwwan warra ta’uu, hirkattoota kunuunsuu, walxaxiinsa maatii keessa darbuu, walitti dhufeenya hawaasaa ijaaruu, fi deeggarsa hiriyaa ykn hawaasummaa argachuu wajjin walqabatan kan hammatudha. Nageenyi namaa cimina hariiroo fi toora nama tokko marsee jiruun gadi fageenyaan kan hidhamee ta’uu isaa dhugaa jiru calaqqisiisa.",
+      "displayDescription": "Maatii keessaniif ykn nama kunuunsaniif gargaarsa argadhaa. Deeggarsa warraa yoo barbaadde, gargaarsa nama ga’eessota umuriin isaa guddaa ta’eef, ykn nama waliin haasoftu yoo barbaadde, nuti gargaaruu dandeenya."
+    },
+    "IS-330": {
+      "name": "Tajaajila Odeeffannoo",
+      "description": "Qabeenyi maal akka jiruu fi akkamitti akka argamu hubachuun barbaachisaa ta’uu isaa. Fedhiiwwan tajaajila barbaachisoo ta’an argachuu, ulaagaa guutuu fi adeemsa hubachuu, sirnoota walxaxaa keessa deemuu, fi yeroo sirrii ta’etti deeggarsa sirrii ta’een wal qunnamsiisuu wajjin walqabatan kan hammatudha. Kun fedhii meetaa ti — fedhiiwwan biroo hedduu bu’a qabeessa ta’een guutuuf haal-duree ta’e — fi tajaajiloota ofii isaanii irraa adda.",
+      "displayDescription": "Eessaa akka jalqabdu hin beektu? Tajaajiloonni maal akka ta’anii fi kamtu akka siif ta’u adda baasuuf si gargaaruu dandeenya."
+    },
+    "LE-450": {
+      "name": "Seera, Fayyadamtootaa fi Nageenya Hawaasaa",
+      "description": "Barbaachisummaa eegumsa seeraa, navigeeshinii sirna haqaa, mirga fayyadamtootaa, fi nageenya hawaasaa. Fedhiiwwan dhimmoota seeraa siviilii, hirmaannaa haqaa yakkaa, haala immigireeshinii, miidhaa fayyadamtootaa, fi eegumsa seeraatiin walqabatan kan hammatudha. Haalota mirgi, nageenyi, ykn sirna seeraa jala dhaabbachuun nama tokkoo balaadhaaf saaxilamee fi beekumsi seeraa ykn gargaarsi barbaachisu kan calaqqisiisudha.",
+      "displayDescription": "Gaaffii seeraa, mirga kee hubachuu ykn nageenya kee eeguuf gargaarsa argadhu. Namoota seera beekanii fi gargaaruu danda'an waliin isin wal qunnamsiisuu dandeenya."
+    },
+    "MH-500": {
+      "name": "Araada",
+      "description": "Fayyadama wantootaa, hirkattummaa fi araada furuu keessatti deeggarsa barbaachisuu. Fedhiiwwan fayyadama alkoolii, qoricha sammuu namaa hadoochu, ykn wantoota biroo rakkoo qaban bulchuu ykn irraa fayyuu wajjin walqabatan kan hammatudha — tasgabbii cimaa, wal’aansa, fi deeggarsa fayyina itti fufiinsa qabu dabalatee. Fayyaa sammuu irraa akka gosa fedhii adda ta’etti beekamtii kan argate yoo ta’ellee, lamaan isaanii yeroo baay’ee waliin kan uumaman.",
+      "displayDescription": "Yoo ati ykn namni ati jaallattu dhugaatii alkoolii ykn qoricha sammuu namaa hadoochu fayyadamuu wajjin rakkachaa jiraate gargaarsa argadhu. Fayyuun ni danda’ama, namoonni kunuunsan si deggeruuf qophaa’anis jiru."
+    },
+    "AD-510": {
+      "name": "Fayyaa Sammuu",
+      "description": "Barbaachisummaa deeggarsa fayyaa sammuu fi miiraa nama tokkoo eeguu, deebisuuf ykn bulchuu. Fedhiiwwan dhiphina miiraa, haalawwan sammuu, fayyaa amala, haalawwan muddama, fi deeggarsa itti fufiinsa qabu qormaata fayyaa sammuu wajjin akka gaariitti jiraachuuf barbaachisu kan hammatudha. Fedhii itti fayyadama wantootaa irraa adda ta’us, dhiheessiin waliin uumamu kan barame ta’us.",
+      "displayDescription": "Yoo gaddi, yaaddoon ykn humna ol taʼe sitti dhagaʼame gargaarsa argadhu. Fayyaan sammuu kee dhimma qaba, namoonni dhaggeeffachuu fi gargaaruu danda'anis jiru."
+    },
+    "OT-600": {
+      "name": "Tajaajila Mootummaa/Dinagdee Biroo",
+      "description": "Barbaachisummaa sagantaalee mootummaa, tajaajila lammummaa, fi deeggarsa dinagdee sirnaan gosoota biroo keessatti hin kufne argachuu. Fedhiiwwan dhaabbilee mootummaa keessa naanna’uu, faayidaa ykn mirga mootummaa argachuu, deeggarsa daldala xixiqqaa, gargaarsa gibiraa, fi tajaajiloota dinagdee biroo tasgabbii dhuunfaa fi hawaasaa deeggaran waliin walqabatan ni hammata.",
+      "displayDescription": "Sagantaa mootummaa, faayidaa ykn tajaajila biroo bakka biraatti argachuun rakkisaa ta’e irratti gargaarsa argadhu. Bakka deemtu akka beektu si gargaaruu dandeenya."
+    },
+    "TR-850": {
+      "name": "Geejjibuu",
+      "description": "Fedhii biroo guutuuf dandeettii amanamummaadhaan imaluu barbaachisuu — hojii, eegumsa fayyaa, barnoota, nyaata, tajaajila, fi walitti dhufeenya hawaasummaa. Fedhiiwwan yaabbannoo argachuu, baasii geejjibaa kaffaluu, konkolaataa kunuunsuu fi nagaadhaan imaluu wajjin walqabatan kan hammatudha. Geejjibni dandeessistuu bu’uuraati: dhabamuun isaa fedhii hin guutamne kan biraa hunda jechuun ni danda’ama.",
+      "displayDescription": "Bakka deemuun qabdu ga’uuf gargaarsa argadhu — gara doktora, hojii, mana barumsaa, ykn mana daldalaa. Yaabbannoo ykn karaa imala gatii madaalawaa ta'e akka argattan isin gargaaruu dandeenya."
+    },
+    "UT-900": {
+      "name": "Faayidaa",
+      "description": "Barbaachisummaa meeshaalee manaa barbaachisoo ta’an — ibsaa, gaazii, bishaanii, fi telekoomii — kanneen iddoo jireenyaa nageenya qabu, jireenyaaf mijataa ta’ee fi walitti hidhame taasisan argachuu. Fedhiiwwan tajaajila faayidaa eeguu, baasii faayidaa kennuu, fayyadama hir’isuu, fi qunnamtii bilbilaa ykn interneetii argachuu wajjin walqabatan kan hammatudha. Fedhiin faayidaa tasgabbii mana jireenyaa fi fayyaa waliin walitti hidhata guddaa qaba.",
+      "displayDescription": "Tajaajila ibsaa, gaazii, bishaanii, ykn bilbilaa fi interneetii kaffaluuf gargaarsa argadhu. Sagantaa mana keessan akka hojjetu gargaaraniin isin wal qunnamsiisuu dandeenya."
+    },
+    "VO-900": {
+      "name": "Tola Ooltummaa & Arjooma",
+      "description": "Barbaachisummaa arjummaa hawaasaatiin kennuu ykn fudhachuu — namni tokko meeshaalee arjoomaman yoo barbaadu, ykn dandeettii fi fedhii yeroo, dandeettii, ykn qabeenya namoota biroof gumaachuu yoo qabaate. Fedhiiwwan gama lamaan jijjiirraa lammummaa ni hammata: namoota dhuunfaa arjooma meeshaa barbaadan ykn tajaajila arjoomame, fi namoota dhuunfaa ykn dhaabbilee tola ooltotaa fi arjoomtoota carraa gargaarsaa hiika qabu waliin walqabsiisuu barbaadan.",
+      "displayDescription": "Meeshaalee arjoomaman barbaadduu moo namoota biroo gargaaruu barbaadduu? Namoota kennuu barbaadan namoota harka barbaadan waliin wal qunnamsiisuu dandeenya."
+    }
   }
 }

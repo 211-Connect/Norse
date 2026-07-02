@@ -56,7 +56,16 @@
     "list_status_one": "Hari uburyo bumwe buhari. Koresha utubuto two hejuru no hasi kugira ngo urebe.",
     "list_status_other": "Amahitamo ya {{count}} arahari. Koresha utubuto two hejuru no hasi kugira ngo urebe.",
     "search_dialog_description": "Shakisha amakuru ajyanye n'aho uherereye hanyuma uvugurure aho uherereye.",
-    "everywhere": "Ahantu hose"
+    "everywhere": "Ahantu hose",
+    "ai_clarify_title": "Dufashe kugabanya ibyo ushakisha",
+    "ai_clarify_title_low_info": "Tubwire byinshi kugira ngo tubashe kugabanya ibyo ushaka",
+    "ai_clarify_title_multiple_labels": "Ni ubuhe bwoko bw'ubufasha buhuye neza n'ibyo ukeneye?",
+    "ai_skip": "Simbuka",
+    "ai_confirm": "Emeza",
+    "ai_show_more_categories": "Erekana ibyiciro byinshi",
+    "ai_validation_select_or_skip": "Hitamo nibura uburyo bumwe cyangwa usimbuke.",
+    "ai_option_results_count_one": "{{count}} umutungo ujyanye",
+    "ai_option_results_count_other": "{{count}} ibikoresho bifitanye isano"
   },
   "call_to_action": {
     "call": "Hamagara",
@@ -179,5 +188,102 @@
     "default_title": "Ikosa ryo kwemeza",
     "default_description": "Ntitwashoboye kurangiza inzira yo kwinjira. Nyamuneka ongera ugerageze.",
     "logout_and_try_again": "Sohoka wongere ugerageze"
+  },
+  "needs": {
+    "AR-100": {
+      "name": "Ubuhanzi, Umuco n'Imyidagaduro",
+      "description": "Gukenera kugira uruhare rufatika mu buzima bwo guhanga, umuco, n'imyidagaduro. Bikubiyemo ibikenewe bijyanye no kugaragaza ubuhanzi, kwitabira umurage w'umuco, ibikorwa byo kwidagadura, n'imyidagaduro ishingiye ku baturage. Bitandukanye n'intego zo kuvura cyangwa inkunga y'imibereho myiza - ibi bigaragaza icyifuzo cy'umuntu cyo guhanga, kwishimira, gukina no kuba mu muryango w'umuco.",
+      "displayDescription": "Shaka ubufasha bwo gushaka ibintu bishimishije byo gukora nk'ubuhanzi, umuziki, siporo, cyangwa ibikorwa by'abaturage. Buri wese akwiye umwanya wo gukina, guhanga no kwizihiza."
+    },
+    "CL-150": {
+      "name": "Imyenda/Ibikenewe ku giti cyawe/mu rugo",
+      "description": "Gukenera imyenda ihagije, ibikoresho byo kwiyitaho, n'ibikoresho bikenewe kugira ngo urugo rube rukora neza. Harimo imyenda ijyanye n'ikirere, akazi, cyangwa ishuri; ibikoresho by'isuku n'iby'isuku; n'ibikoresho by'ibanze cyangwa ibikoresho bituma aho kuba haba hashobora guturwa no kuba heza.",
+      "displayDescription": "Shaka ubufasha bwo kubona imyenda, ibikoresho byo kwiyitaho, cyangwa ibintu ukeneye mu rugo rwawe. Dushobora kugufasha kubona ibyo ukeneye kugira ngo wumve umeze neza kandi umeze neza."
+    },
+    "DI-180": {
+      "name": "Serivisi z'ibiza",
+      "description": "Gukenera inkunga ikomoka ku ibiza byatangajwe cyangwa byagaragaye, byaba ari ibisanzwe cyangwa ibyatewe n'abantu. Bikubiyemo ibikenewe mbere, mu gihe na nyuma y'ibiza - harimo kwitegura, gutabara mu gihe cy'impanuka no gukira. Bitandukanye n'ibikenewe mu mutekano w'umuntu ku giti cye; bishingiye ku ihungabana rikomeye ku rwego rw'abaturage n'ingaruka zaryo.",
+      "displayDescription": "Shaka ubufasha mbere, mu gihe, cyangwa nyuma y'ibiza nk'umwuzure, inkongi y'umuriro, cyangwa inkubi y'umuyaga. Dushobora kuguhuza n'abantu biteguye gufasha mu gihe cy'impanuka."
+    },
+    "DV-190": {
+      "name": "Ihohoterwa ryo mu ngo / Umutekano w'umuntu ku giti cye",
+      "description": "Gukenera umutekano no kurindwa ibikomere ku bantu, ihohoterwa, agahato, cyangwa iterabwoba. Bikubiyemo ibikenewe bijyanye n'ihohoterwa ryo mu ngo, ihohoterwa rishingiye ku gitsina, gukurikiranwa, icuruzwa ry'abantu, n'ibindi bihe aho umutekano w'umuntu ku mubiri cyangwa mu marangamutima ugeramiwe bitewe n'ibikorwa by'undi muntu. Bitandukanye n'ibikenewe ku mutekano ushingiye ku ibiza cyangwa ibikorwa remezo rusange by'umutekano rusange.",
+      "displayDescription": "Shaka ubufasha niba wowe cyangwa undi muntu uzi wumva ufite umutekano uri mu rugo cyangwa arimo gukomereka. Ukwiye kumva ufite umutekano, kandi hari abantu biteguye kugufasha muri iki gihe."
+    },
+    "ED-170": {
+      "name": "Uburezi",
+      "description": "Gukenera kubona ubumenyi, guteza imbere ubumenyingiro, no kugera ku burezi mu byiciro byose by'ubuzima. Bikubiyemo ibikenewe bijyanye n'imyigire y'abana bato, amashuri ya K-12, amashuri yisumbuye, gusoma no kwandika ku bakuru, kwiga Icyongereza, gusoma no kwandika mu ikoranabuhanga, n'amahugurwa y'imyuga. Ibikenewe birahari hatitawe aho umuntu ari mu rugendo rwe rw'uburezi cyangwa inzitizi ahura nazo mu kubyinjiramo.",
+      "displayDescription": "Shaka ubufasha mu bijyanye no kwiga — ku bana, ingimbi, cyangwa abantu bakuru. Waba ukeneye ubufasha ku ishuri, amahugurwa y'akazi, cyangwa ushaka kwiga Icyongereza, dushobora kugufasha kugishakisha."
+    },
+    "EM-180": {
+      "name": "Akazi",
+      "description": "Gukenera kubona akazi gahamye kandi gahagije n'imiterere ituma akazi gashoboka. Bikubiyemo ibikenewe bijyanye no gushaka akazi, kugumana akazi, guteza imbere ubumenyi mu kazi, no kunyura mu burenganzira n'impinduka mu kazi nko kubura akazi. Bigaragaza urwego rw'ubukungu n'imibereho myiza rw'akazi nk'ibikenewe n'abantu, ntabwo ari serivisi ubwazo.",
+      "displayDescription": "Shaka ubufasha mu gushaka akazi, gukomeza akazi, cyangwa kubaka ubumenyi bushya. Buri wese akwiye amahirwe yo kubona imibereho no kumva amerewe neza n'akazi ke."
+    },
+    "FO-200": {
+      "name": "Ibiryo/Amafunguro",
+      "description": "Gukenera ibiryo bihoraho, bihagije kandi bifite intungamubiri. Bikubiyemo ibikenewe bijyanye no kubona ibiryo bihagije, kubona ibiryo bihuye n'ibyo umuntu akeneye mu mirire cyangwa mu mirire, no gusobanukirwa uburyo bwo gukomeza kurya neza. Ibikenewe bibaho byaba biterwa n'ubukene, ibibazo, ibura ry'ibiribwa rirambye, cyangwa ihungabana ry'imimerere.",
+      "displayDescription": "Shaka ubufasha bwo kubona ibiryo byawe n'umuryango wawe. Waba ukeneye ifunguro uyu munsi cyangwa ukeneye ibiribwa, dushobora kuguhuza n'ibiryo biri hafi yawe."
+    },
+    "HC-300": {
+      "name": "Ubuvuzi",
+      "description": "Gukenera serivisi z'ubuzima bw'umubiri, ubuvuzi bwo kwirinda indwara, ubuvuzi, hamwe n'ibicuruzwa n'ubufasha bwo mu ngendo bikenewe kugira ngo umuntu acunge ubuzima bwe. Bikubiyemo ibikenewe mu buzima bw'umubiri bwose - kuva ku buzima busanzwe no gusuzumwa kugeza ku buvuzi bwihuse, imicungire y'indwara zidakira, gusana no kwitabwaho igihe kirekire. Ibikenewe ku buzima bwo mu mutwe no gukoresha ibiyobyabwenge byitabwaho ukwabyo.",
+      "displayDescription": "Shaka ubufasha bwo kubona umuganga, umuganga w'amenyo, cyangwa ubundi buvuzi. Buri wese akwiye kugira ubuzima bwiza no kubona ubuvuzi akeneye."
+    },
+    "HO-300": {
+      "name": "Amazu",
+      "description": "Gukenera ahantu hatekanye, hahamye kandi hakwiye ho kuba. Hakubiyemo ibikenewe mu macumbi yose - kuva ku icumbi ryihuse mu gihe cy'ibibazo kugeza ku macumbi ahendutse y'igihe kirekire, uburyo bwo gutura bufasha abantu gukomeza kuba mu mazu meza. Imiterere y'ubukene bw'amazu iratandukanye bitewe n'ubwihutirwe n'imimerere, ariko igikenewe ni kimwe: ahantu ho kwita icumbi.",
+      "displayDescription": "Shaka ubufasha bwo kubona ahantu hatekanye ho kuba. Waba ukeneye aho kurara iri joro cyangwa ukaba ukeneye kurara iwawe, dushobora kuguhuza n'ubufasha."
+    },
+    "IC-330": {
+      "name": "Inkunga/Ubufasha ku mushahara",
+      "description": "Gukenera amafaranga kugira ngo umuntu yihutishe ikiguzi cy’ibanze mu mibereho ye iyo amafaranga adahagije cyangwa adahari. Bikubiyemo ibikenewe bijyanye n’inkunga y’amafaranga, gusimbuza amafaranga, kubona inyungu rusange, no gushyigikira mu buryo burambye mu by’imari. Bigaragaza urwego rw’ubukungu rw’imibereho myiza - gukenera amafaranga ahagije yo guhaza ibikenewe by’ingenzi - bitandukanye na gahunda cyangwa uburyo bwihariye bushobora kubikemura.",
+      "displayDescription": "Shaka ubufasha bwo kwishyura ibintu ukeneye mu gihe amafaranga ari make. Dushobora kuguhuza na gahunda zigufasha kwishyura fagitire n'ibiciro bya buri munsi."
+    },
+    "IF-330": {
+      "name": "Inkunga y'umuntu ku giti cye, umuryango n'abaturage",
+      "description": "Gukenera ubufasha mu mibanire, kwita ku bandi, no gufasha abantu mu muryango mu buryo bufasha mu mibereho yabo ya buri munsi no mu bihe bigoye. Bikubiyemo ibikenewe mu burezi, kwita ku babyeyi babo, guhangana n'ibibazo by'umuryango, kubaka umubano w'umuryango, no kubona ubufasha mu mibanire y'abantu. Bigaragaza ukuri ko imibereho myiza y'abantu ifitanye isano rikomeye n'imbaraga z'imibanire n'abantu bafitanye isano.",
+      "displayDescription": "Shaka ubufasha ku muryango wawe cyangwa umuntu witaho. Twagufasha twaba dukeneye ubufasha ku babyeyi, ubufasha ku muntu mukuru, cyangwa uwo kuganira nawe."
+    },
+    "IS-330": {
+      "name": "Serivisi z'amakuru",
+      "description": "Gukenera gusobanukirwa umutungo uhari n'uburyo bwo kuwugeraho. Bikubiyemo ibikenewe bijyanye no gushaka serivisi zijyanye nawo, gusobanukirwa ibisabwa n'inzira, gukoresha sisitemu zigoye, no guhuza n'ubufasha bukwiye mu gihe gikwiye. Iki ni ikintu gikenewe cyane - icyangombwa cyo guhaza ibindi byinshi bikenewe neza - kandi gitandukanye na serivisi ubwazo.",
+      "displayDescription": "Ntuzi aho gutangirira? Dushobora kugufasha kumenya serivisi zihari n'izikubereye."
+    },
+    "LE-450": {
+      "name": "Amategeko, Umutekano w'Abaguzi n'Ubwishingizi bw'Imari rusange",
+      "description": "Gukenera uburinzi bw'amategeko, kugenzura imikorere y'ubutabera, uburenganzira bw'umuguzi, n'umutekano rusange. Bikubiyemo ibikenewe bijyanye n'amategeko mbonezamubano, uruhare mu butabera mpanabyaha, aho abimukira babarizwa, kwangirika kw'umuguzi, no kurindwa n'amategeko. Bigaragaza imimerere aho uburenganzira bw'umuntu, umutekano we, cyangwa aho ahagaze mu mategeko ari mu kaga kandi aho ubumenyi cyangwa ubufasha mu by'amategeko bukenewe.",
+      "displayDescription": "Shaka ubufasha ku bibazo by’amategeko, gusobanukirwa uburenganzira bwawe, cyangwa kugira umutekano. Dushobora kuguhuza n’abantu bazi amategeko kandi bashobora kugufasha."
+    },
+    "MH-500": {
+      "name": "Ibiyobyabwenge",
+      "description": "Gukenera ubufasha mu gukemura ikibazo cyo gukoresha ibiyobyabwenge, kuba imbata y'ibiyobyabwenge no kubikoresha nabi. Bikubiyemo ibikenewe bijyanye no guhangana cyangwa gukira indwara iterwa n'inzoga, ibiyobyabwenge cyangwa ibindi bintu - harimo no kugarura ubuyanja, kuvurwa, no gukomeza gukira. Bizwi nk'icyiciro cyihariye cy'ibikenewe mu buzima bwo mu mutwe, nubwo byombi bikunze kubaho rimwe.",
+      "displayDescription": "Shaka ubufasha niba wowe cyangwa umuntu ukunda ahanganye n'ikibazo cyo kunywa inzoga cyangwa ibiyobyabwenge. Gukira birashoboka, kandi hari abantu bakwitaho biteguye kugufasha."
+    },
+    "AD-510": {
+      "name": "Ubuzima bwo mu mutwe",
+      "description": "Gukenera ubufasha mu kubungabunga, kugarura, cyangwa gucunga imibereho myiza yo mu mutwe no mu marangamutima. Bikubiyemo ibyo umuntu akeneye bijyanye n'ihungabana ry'amarangamutima, indwara zo mu mutwe, ubuzima bw'imyitwarire, ibihe by'ibibazo, n'inkunga ihoraho ikenewe kugira ngo abeho neza mu bibazo by'ubuzima bwo mu mutwe. Bitandukanye n'ibyo umuntu akeneye mu gukoresha ibiyobyabwenge, nubwo ibyo umuntu asabwa byose ari ibintu bisanzwe.",
+      "displayDescription": "Shaka ubufasha niba wumva ubabaye, uhangayitse, cyangwa uremerewe. Ubuzima bwawe bwo mu mutwe ni ingenzi, kandi hari abantu bashobora kugutega amatwi no kugufasha."
+    },
+    "OT-600": {
+      "name": "Izindi serivisi za Leta/Ubukungu",
+      "description": "Gukenera kubona gahunda za leta, serivisi za leta, n'inkunga z'ubukungu zitari mu bindi byiciro. Bikubiyemo ibikenewe bijyanye no kugenzura ibigo bya leta, kubona inyungu cyangwa uburenganzira bwa leta, inkunga y'ubucuruzi buto, inkunga y'imisoro, n'izindi serivisi z'ubukungu zishyigikira umutekano w'abantu ku giti cyabo n'uw'abaturage.",
+      "displayDescription": "Shaka ubufasha kuri gahunda za leta, inyungu, cyangwa izindi serivisi bigoye kuzibona ahandi. Dushobora kugufasha kumenya aho werekeza."
+    },
+    "TR-850": {
+      "name": "Ubwikorezi",
+      "description": "Gukenera ubushobozi bwo gukora ingendo mu buryo bwizewe kugira ngo uhaze ibindi bikenewe - akazi, ubuvuzi, uburezi, ibiryo, serivisi, n'imibanire myiza. Bikubiyemo ibikenewe bijyanye no kugera ku ngendo, kwishyura amafaranga yo gutwara abantu, kubungabunga imodoka, no kugenda mu mutekano. Gutwara abantu ni ikintu cy'ibanze gifasha: kubura kwayo bitera ibindi bintu hafi ya byose bitaragerwaho.",
+      "displayDescription": "Shaka ubufasha bwo kugera aho ukeneye kujya - kwa muganga, ku kazi, ku ishuri, cyangwa mu iduka. Dushobora kugufasha kubona ingendo cyangwa uburyo buhendutse bwo kugenda."
+    },
+    "UT-900": {
+      "name": "Ibikoresho by'ikoranabuhanga",
+      "description": "Gukenera kubona ibikoresho by'ingenzi byo mu rugo - amashanyarazi, gazi, amazi n'itumanaho - bituma aho kuba haba umutekano, guturwa no guhuzwa. Bikubiyemo ibikenewe bijyanye no kubungabunga serivisi z'amashanyarazi, kwishyura ikiguzi cy'ibikorwa remezo, kugabanya ikoreshwa ry'ibikoresho, no kubona umurongo wa telefoni cyangwa interineti. Gukenera ibikoresho bifitanye isano rya hafi no kubungabunga ubuzima n'imibereho myiza y'abaturage.",
+      "displayDescription": "Shaka ubufasha bwo kwishyura amashanyarazi, lisansi, amazi, cyangwa serivisi ya terefone na interineti. Dushobora kuguhuza na gahunda zigufasha gukomeza gukora neza mu rugo rwawe."
+    },
+    "VO-900": {
+      "name": "Ubukorerabushake n'impano",
+      "description": "Gukenera gutanga cyangwa kwakira binyuze mu bufasha bw'abaturage - yaba umuntu akeneye ibintu byatanzwe, cyangwa afite ubushobozi n'ubushake bwo gutanga umwanya, ubuhanga, cyangwa umutungo ku bandi. Bikubiyemo ibikenewe ku mpande zombi z'ihanahana ry'abaturage: abantu bashaka impano z'ibikoresho cyangwa serivisi zatanzwe, hamwe n'abantu ku giti cyabo cyangwa imiryango ishaka guhuza abakorerabushake n'abaterankunga n'amahirwe afite akamaro yo gufasha.",
+      "displayDescription": "Ukeneye ibintu byatanzwe cyangwa wifuza gufasha abandi? Dushobora guhuza abantu bashaka gutanga n'abantu bakeneye ubufasha."
+    }
   }
 }

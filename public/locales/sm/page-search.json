@@ -26,5 +26,8 @@
   "name_unavailable": "E le'i maua le igoa",
   "share_body": "Va'ai i le {{count}} i'uga o le sailiga mo le \"{{title}}\"",
   "age_filter_label": "Fa'amama e tusa ai ma tausaga",
-  "age_filter_placeholder": "Ulufale tausaga"
+  "age_filter_placeholder": "Ulufale tausaga",
+  "ai_broadened_results_alert": "Na matou faʻaalia ni taunuuga lautele auā e ono manaʻomia nisi faʻamatalaga auiliili i lau talosaga. E mafai ona e faʻaleleia atili e ala i le faʻaaogaina o autu poʻo ni fautuaga.",
+  "ai_broadened_results_alert_low_info": "Na matou faʻaalia ni taunuuga lautele auā e ono manaʻomia e lau sailiga nisi faʻamatalaga auiliili. E mafai ona e faʻaleleia atili e ala i le faʻaaogaina o autu poʻo fautuaga.",
+  "ai_broadened_results_alert_low_confidence": "Na matou faʻaalia ni taunuuga lautele ona matou te leʻi mautinoa i le fetaui sili ona lelei. E mafai ona e faʻaleleia atili e ala i le faʻaaogaina o autu poʻo fautuaga."
 }
