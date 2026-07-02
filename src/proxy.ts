@@ -7,6 +7,7 @@ import { fetchWrapper } from './app/(app)/shared/lib/fetchWrapper';
 import { withOptionalCustomBasePath } from './app/(app)/shared/lib/utils';
 import { parseHost } from './app/(app)/shared/utils/parseHost';
 import { TenantBasicConfigResponse } from './app/(payload)/api/getTenantBasicConfig/route';
+import { aj } from '@/lib/arcjet';
 import { searchLinkCorrectionMiddleware } from './middlewares/searchLinkCorrectionMiddleware';
 
 const DOMAINS_WITH_CSP = ['localhost', 'therc.vdh.virginia.gov'];
@@ -109,13 +110,17 @@ function setCachedTenantData(
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
+     * Match all request paths except for static assets and a small set of
+     * internal/service endpoints. Those endpoints have their own auth or are
+     * called by the proxy itself, so applying Arcjet here would either block
+     * legitimate service callers (monitors, Keycloak SPI) or self-throttle the
+     * proxy (getTenantBasicConfig, auth/session internal fetches).
+     *
+     * Everything else — pages, public API routes, Payload admin/REST API, and
+     * NextAuth signin/callback — is protected by Arcjet shield + bot detection
+     * + a per-IP fixed-window rate limit.
      */
-    '/((?!admin|api/auth|chrome.devtools|api|_next/static|_next/image|images|favicon.ico|robots.txt|sitemap.xml).*)',
+    '/((?!api/getTenantBasicConfig|api/auth/session|api/health|api/healthz|api/metrics|api/keycloak/domain-check|chrome.devtools|_next/static|_next/image|images|favicon.ico|robots.txt|sitemap.xml).*)',
     { source: '/' },
   ],
 };
@@ -225,8 +230,8 @@ async function hasActiveSession(request: NextRequest): Promise<boolean> {
   }
 }
 
-// Add a session_id to the cookies of the user for tracking purposes
 export async function proxy(request: NextRequest) {
+  aj.protect(request);
   if (request.method === 'POST' && request.url.includes('/[locale]')) {
     edgeLog('warn', 'potentially_malicious_request_blocked', {
       url: request.url,

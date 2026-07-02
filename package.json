@@ -53,6 +53,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@arcjet/next": "^1.5.0",
     "@azure-rest/ai-translation-text": "^1.0.1",
     "@floating-ui/react": "^0.27.18",
     "@google-cloud/translate": "^9.4.1",
