@@ -1,4 +1,11 @@
-import arcjet, { detectBot, shield } from '@arcjet/next';
+import arcjet, { detectBot, request, shield } from '@arcjet/next';
+import { notFound } from 'next/navigation';
+
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('arcjet');
+
+type ArcjetHeader = Record<string, string | string[] | undefined> | Headers;
 
 const CLOUD_FLARE_IP_RANGES = [
   '173.245.48.0/20',
@@ -32,4 +39,48 @@ const aj = arcjet({
   ],
 });
 
-export { aj };
+/**
+ * Protect a server-rendered page with Arcjet. If the request is denied,
+ * logs a structured warning and returns a 404 via next/navigation's notFound().
+ */
+function getRequestHeader(
+  headers: ArcjetHeader,
+  name: string,
+): string | undefined {
+  if (!headers) return undefined;
+  if (typeof headers.get === 'function') {
+    return headers.get(name) ?? undefined;
+  }
+  const value = headers[name];
+  return Array.isArray(value) ? value[0] : value;
+}
+
+export async function arcjetProtectPage(): Promise<void> {
+  const req = await request();
+  const decision = await aj.protect(req);
+  if (decision) {
+    const reason = decision.reason.isBot()
+      ? 'bot'
+      : decision.reason.isShield()
+        ? 'shield'
+        : 'unknown';
+
+    log.warn(
+      {
+        event: 'arcjet_denied',
+        path: req.url,
+        reason,
+        ip:
+          getRequestHeader(req.headers as ArcjetHeader, 'x-forwarded-for') ??
+          getRequestHeader(req.headers as ArcjetHeader, 'x-real-ip') ??
+          'unknown',
+        userAgent:
+          getRequestHeader(req.headers as ArcjetHeader, 'user-agent') ??
+          'unknown',
+      },
+      'Arcjet denied request',
+    );
+
+    notFound();
+  }
+}
