@@ -7,6 +7,7 @@ import { ResourceComponentId } from '../types/component-ids';
 import { CustomAttributeConfig } from '../types/layout-config';
 import {
   AccessibilityComponent,
+  AlertComponent,
   AddressComponent,
   ApplicationProcessComponent,
   AttributionComponent,
@@ -84,6 +85,7 @@ export const componentRegistry: Record<
   [ResourceComponentId.FACETS]: FacetsComponent,
   [ResourceComponentId.SEPARATOR]: SeparatorComponent,
   [ResourceComponentId.CUSTOM_ATTRIBUTE]: CustomAttributeComponent,
+  [ResourceComponentId.ALERT]: AlertComponent,
 };
 
 export function getResourceComponentById(
@@ -199,6 +201,8 @@ export function shouldComponentRender(
 
       return Boolean(shouldRender);
     }
+    case ResourceComponentId.ALERT:
+      return Boolean(resource.alert);
     default:
       return true;
   }

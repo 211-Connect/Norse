@@ -5,6 +5,7 @@ import { FacetWithTranslation, Location, Taxonomy } from '@/types/resource';
 export type ResultType = {
   _id: string;
   id: string;
+  alert: string | null;
   address: string;
   summary: string;
   description: string;

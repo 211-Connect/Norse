@@ -1,5 +1,6 @@
 export * from './accessibility';
 export * from './address';
+export * from './alert';
 export * from './application-process';
 export * from './attribution';
 export * from './badges';

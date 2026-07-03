@@ -98,6 +98,7 @@ export interface Translation {
   attributeValues?: Record<string, string>;
   linkQualityUrls?: QualityLink[];
   locationSummary?: string;
+  alert?: string;
   contacts: Array<{
     id: string;
     name: string;
@@ -156,6 +157,7 @@ export interface Resource {
   id: string;
   originalId: string | null;
   tenantId: string | null;
+  alert: string | null;
   serviceName: string | null;
   attribution: string | null;
   name: string | null;

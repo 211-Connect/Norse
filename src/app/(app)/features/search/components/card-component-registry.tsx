@@ -7,6 +7,7 @@ import { getBadgesForResource } from '@/utils/getBadgesForResource';
 import { SeparatorComponent } from '../../resource/components/resource-components';
 import { SearchCardComponentId } from '../types/card-component-ids';
 import { ApplicationProcessComponent } from './search-card-components/application-process';
+import { AlertComponent } from './search-card-components/alert';
 import { EligibilityComponent } from './search-card-components/eligibility';
 import {
   ActionButtonsComponent,
@@ -45,6 +46,7 @@ export const searchCardComponentRegistry: Record<
   [SearchCardComponentId.ACTION_BUTTONS]: ActionButtonsComponent,
   [SearchCardComponentId.SEPARATOR]: SeparatorComponent,
   [SearchCardComponentId.CUSTOM_ATTRIBUTE]: CustomAttributeComponent,
+  [SearchCardComponentId.ALERT]: AlertComponent,
 };
 
 export function getSearchCardComponentById(
@@ -109,6 +111,8 @@ export function shouldSearchCardComponentRender(
       return true;
     case SearchCardComponentId.CUSTOM_ATTRIBUTE:
       return true; // Component itself handles its own rendering
+    case SearchCardComponentId.ALERT:
+      return Boolean(result.alert);
     default:
       return true;
   }
