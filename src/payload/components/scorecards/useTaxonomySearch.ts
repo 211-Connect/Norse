@@ -2,7 +2,7 @@ import { useEffect, useMemo, useReducer } from 'react';
 
 import { getErrorMessage } from '@/app/(app)/shared/lib/getErrorMessage';
 import { useDebounce } from '@/app/(app)/shared/hooks/use-debounce';
-import { TaxonomySearchItem } from '@/types/taxonomyScorecard';
+import { ScorecardTaxonomyItemDto } from '@/lib/api/generated/data-contracts';
 
 import { searchTaxonomyItems } from './api';
 import { ManagerError } from './types';
@@ -11,14 +11,14 @@ type SearchStatus = 'idle' | 'loading' | 'success' | 'error';
 
 type SearchState = {
   status: SearchStatus;
-  items: TaxonomySearchItem[];
+  items: ScorecardTaxonomyItemDto[];
   error: ManagerError | null;
 };
 
 type SearchAction =
   | { type: 'reset' }
   | { type: 'loading' }
-  | { type: 'success'; items: TaxonomySearchItem[] }
+  | { type: 'success'; items: ScorecardTaxonomyItemDto[] }
   | { type: 'error'; message: string };
 
 const initialState: SearchState = {

@@ -4,7 +4,7 @@ import { useTenantSelection } from '@payloadcms/plugin-multi-tenant/client';
 import { useEffect, useState } from 'react';
 
 import { getErrorMessage } from '@/app/(app)/shared/lib/getErrorMessage';
-import { TaxonomySearchItem } from '@/types/taxonomyScorecard';
+import { ScorecardTaxonomyItemDto } from '@/lib/api/generated/data-contracts';
 import { fetchStatus } from './api';
 import { ScorecardEditorModal } from './ScorecardEditorModal';
 import { SearchTaxonomiesPanel } from './SearchTaxonomiesPanel';
@@ -25,7 +25,7 @@ export default function ScorecardsManager() {
   });
 
   const [selectedTaxonomy, setSelectedTaxonomy] =
-    useState<TaxonomySearchItem | null>(null);
+    useState<ScorecardTaxonomyItemDto | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -65,7 +65,7 @@ export default function ScorecardsManager() {
     };
   }, [tenantId]);
 
-  const openTaxonomy = async (item: TaxonomySearchItem) => {
+  const openTaxonomy = async (item: ScorecardTaxonomyItemDto) => {
     setSelectedTaxonomy(item);
   };
 

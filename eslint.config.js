@@ -24,6 +24,7 @@ const eslintConfig = [
       'test-results/**',
       'docs/**',
       'public/**',
+      'src/lib/api/generated/**',
       'widget/**',
       'next-env.d.ts',
     ],

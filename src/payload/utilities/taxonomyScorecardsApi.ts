@@ -1,137 +1,110 @@
+import { taxonomyScorecardApiClient } from '@/lib/api/clients';
 import {
-  EnableTaxonomyScorecardRequest,
-  EnableTaxonomyScorecardResponse,
-  GetTaxonomyScorecardResponse,
-  SearchTaxonomiesResponse,
-  UpdateTaxonomyScorecardRequest,
-  UpdateTaxonomyScorecardResponse,
-} from '@/types/taxonomyScorecard';
-import { fetchWrapper } from '@/app/(app)/shared/lib/fetchWrapper';
-import { API_URL, INTERNAL_API_KEY } from '@/app/(app)/shared/lib/constants';
+  EnableTaxonomyScorecardDto,
+  TaxonomyScorecardControllerEnableTaxonomyScorecardVersionData,
+  TaxonomyScorecardControllerGetTaxonomyConfigurationData,
+  TaxonomyScorecardControllerSearchTaxonomiesData,
+  TaxonomyScorecardControllerUpdateTaxonomyConfigurationData,
+  UpdateTaxonomyScorecardDto,
+} from '@/lib/api/generated/data-contracts';
 
-function toRequestHeaders(headers?: HeadersInit): Headers {
-  const output = new Headers(headers);
-
-  if (!output.has('Content-Type')) {
-    output.set('Content-Type', 'application/json');
-  }
-
-  if (!INTERNAL_API_KEY) {
-    throw new Error('INTERNAL_API_KEY is not set in environment variables.');
-  }
-
-  output.set('x-api-version', '1');
-  output.set('x-internal-api-key', INTERNAL_API_KEY);
-
-  return output;
-}
+type UpdateTaxonomyScorecardRequest = UpdateTaxonomyScorecardDto & {
+  draft?: boolean;
+};
 
 export async function searchTaxonomies(params: {
   tenantId: string;
   query: string;
   page?: number;
   limit?: number;
-}): Promise<SearchTaxonomiesResponse> {
-  const searchParams = new URLSearchParams({
-    tenant_id: params.tenantId,
-    query: params.query,
-    page: String(params.page ?? 1),
-    limit: String(params.limit ?? 20),
-  });
+}): Promise<TaxonomyScorecardControllerSearchTaxonomiesData> {
+  const response =
+    await taxonomyScorecardApiClient.taxonomyScorecardControllerSearchTaxonomies(
+      {
+        tenant_id: params.tenantId,
+        query: params.query,
+        page: params.page ?? 1,
+        limit: params.limit ?? 20,
+      },
+    );
 
-  const result = await fetchWrapper<SearchTaxonomiesResponse>(
-    `${API_URL}/taxonomy-scorecard/taxonomies?${searchParams.toString()}`,
-    {
-      method: 'GET',
-      headers: toRequestHeaders(),
-      cache: 'no-store',
-    },
-  );
-
-  if (result === null) {
+  if (response.data === null) {
     throw new Error('Failed to connect to Norse API.');
   }
 
-  return result;
+  return response.data;
 }
 
 export async function getScorecard(params: {
   tenantId: string;
   hsisCode: string;
-}): Promise<GetTaxonomyScorecardResponse> {
-  const tenantId = encodeURIComponent(params.tenantId);
-  const hsisCode = encodeURIComponent(params.hsisCode);
+}): Promise<TaxonomyScorecardControllerGetTaxonomyConfigurationData> {
+  const response =
+    await taxonomyScorecardApiClient.taxonomyScorecardControllerGetTaxonomyConfiguration(
+      {
+        tenantId: params.tenantId,
+        hsisCode: params.hsisCode,
+      },
+    );
 
-  const result = await fetchWrapper<GetTaxonomyScorecardResponse>(
-    `${API_URL}/taxonomy-scorecard/tenants/${tenantId}/taxonomies/${hsisCode}`,
-    {
-      method: 'GET',
-      headers: toRequestHeaders(),
-      cache: 'no-store',
-    },
-  );
-
-  if (result === null) {
+  if (response.data === null) {
     throw new Error('Failed to connect to Norse API.');
   }
 
-  return result;
+  return response.data;
 }
 
 export async function updateScorecard(params: {
   tenantId: string;
   hsisCode: string;
   body: UpdateTaxonomyScorecardRequest;
-}): Promise<UpdateTaxonomyScorecardResponse> {
-  const tenantId = encodeURIComponent(params.tenantId);
-  const hsisCode = encodeURIComponent(params.hsisCode);
-  const searchParams = new URLSearchParams({
-    draft: params.body.draft ? 'true' : 'false',
-  });
+}): Promise<TaxonomyScorecardControllerUpdateTaxonomyConfigurationData> {
+  const query = {
+    tenantId: params.tenantId,
+    hsisCode: params.hsisCode,
+    draft: params.body.draft ?? false,
+  };
 
-  const result = await fetchWrapper<UpdateTaxonomyScorecardResponse>(
-    `${API_URL}/taxonomy-scorecard/tenants/${tenantId}/taxonomies/${hsisCode}?${searchParams.toString()}`,
-    {
-      method: 'PUT',
-      body: JSON.stringify({
-        weights: params.body.weights,
-        include_children: params.body.include_children,
-        include_siblings: params.body.include_siblings,
-        updated_by_email: params.body.updated_by_email,
-      }),
-      headers: toRequestHeaders(),
-      cache: 'no-store',
-    },
-  );
+  const body: UpdateTaxonomyScorecardDto = {
+    weights: params.body.weights,
+    include_children: params.body.include_children,
+    include_siblings: params.body.include_siblings,
+  };
 
-  if (result === null) {
+  const response =
+    await taxonomyScorecardApiClient.taxonomyScorecardControllerUpdateTaxonomyConfiguration(
+      query,
+      body,
+    );
+
+  if (response.data === null) {
     throw new Error('Failed to connect to Norse API.');
   }
 
-  return result;
+  return response.data;
 }
 
 export async function enableScorecard(params: {
   tenantId: string;
   hsisCode: string;
-  body: EnableTaxonomyScorecardRequest;
-}): Promise<EnableTaxonomyScorecardResponse> {
-  const tenantId = encodeURIComponent(params.tenantId);
-  const hsisCode = encodeURIComponent(params.hsisCode);
+  body: EnableTaxonomyScorecardDto;
+}): Promise<TaxonomyScorecardControllerEnableTaxonomyScorecardVersionData> {
+  const body: EnableTaxonomyScorecardDto = {
+    version_id: params.body.version_id,
+  };
 
-  const result = await fetchWrapper<EnableTaxonomyScorecardResponse>(
-    `${API_URL}/taxonomy-scorecard/tenants/${tenantId}/taxonomies/${hsisCode}/enable`,
-    {
-      method: 'POST',
-      body: JSON.stringify(params.body),
-      headers: toRequestHeaders(),
-      cache: 'no-store',
-    },
-  );
+  const response =
+    await taxonomyScorecardApiClient.taxonomyScorecardControllerEnableTaxonomyScorecardVersion(
+      {
+        tenantId: params.tenantId,
+        hsisCode: params.hsisCode,
+      },
+      body,
+    );
 
-  if (result === null) {
+  if (response.data === null) {
     throw new Error('Failed to connect to Norse API.');
   }
 
-  return result;
+  return response.data;
 }

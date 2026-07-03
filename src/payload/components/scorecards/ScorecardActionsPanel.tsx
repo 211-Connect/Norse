@@ -1,6 +1,6 @@
 import { Button } from '@payloadcms/ui';
 
-import { UpdateTaxonomyScorecardResponse } from '@/types/taxonomyScorecard';
+import { UpdateTaxonomyScorecardResponseDto } from '@/lib/api/generated/data-contracts';
 
 type ScorecardActionsPanelProps = {
   taxonomyCode: string;
@@ -12,7 +12,7 @@ type ScorecardActionsPanelProps = {
   scorecardLoading: boolean;
   onSave: () => void;
   onSaveDraft: () => void;
-  saveResult: UpdateTaxonomyScorecardResponse | null;
+  saveResult: UpdateTaxonomyScorecardResponseDto | null;
 };
 
 export function ScorecardActionsPanel({

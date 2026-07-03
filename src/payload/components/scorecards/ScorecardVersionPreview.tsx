@@ -1,10 +1,10 @@
 import { Button } from '@payloadcms/ui';
 
-import { TaxonomyScorecardVersion } from '@/types/taxonomyScorecard';
+import { ScorecardVersionEntryResponseDto } from '@/lib/api/generated/data-contracts';
 import { NEED_DEFINITIONS } from './constants';
 
 type ScorecardVersionPreviewProps = {
-  previewVersion: TaxonomyScorecardVersion;
+  previewVersion: ScorecardVersionEntryResponseDto;
   onClosePreview: () => void;
 };
 

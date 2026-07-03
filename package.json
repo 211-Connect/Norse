@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "migrate": "payload -- migrate",
     "create-migration": "payload migrate:create",
+    "generate:api-sdk": "tsx bin/generate-api-sdk.ts",
     "generate:importmap": "payload generate:importmap",
     "generate:types": "payload generate:types",
     "sync-translations": "dotenv -e .env -- tsx bin/sync-translations.ts",
@@ -48,6 +49,7 @@
     "prettier-plugin-embed": "^0.5.1",
     "prettier-plugin-sql": "^0.20.0",
     "prettier-plugin-tailwindcss": "^0.7.2",
+    "swagger-typescript-api": "^13.12.4",
     "tailwindcss": "^4.1.16",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^5.9.3"

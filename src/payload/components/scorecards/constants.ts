@@ -1,5 +1,10 @@
-import { NeedDefinition } from '@/types/taxonomyScorecard';
 import commonEn from '../../../../public/locales/en/common.json';
+
+type NeedDefinition = {
+  code: string;
+  name: string;
+  description: string;
+};
 
 type CommonNeedsDictionary = Record<
   string,

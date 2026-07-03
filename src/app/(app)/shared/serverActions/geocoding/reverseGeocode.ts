@@ -1,10 +1,16 @@
 'use server';
 
+import { geocodingApiClient } from '@/lib/api/clients';
+import { GeocodingControllerReverseGeocodeData } from '@/lib/api/generated/data-contracts';
 import { GeocodeResult } from '@/types/resource';
-import { ONE_MONTH, stableHash, withCache } from '@/utilities/withCache';
+import {
+  CacheKey,
+  ONE_MONTH,
+  stableHash,
+  withCache,
+} from '@/utilities/withCache';
 
-import { API_URL, INTERNAL_API_KEY } from '../../lib/constants';
-import { fetchWrapper } from '../../lib/fetchWrapper';
+import { INTERNAL_API_KEY } from '../../lib/constants';
 
 type GeocodingProvider = 'mapbox' | 'opencage';
 
@@ -17,37 +23,30 @@ export async function reverseGeocode(
     locale: options.locale,
     provider: options.provider ?? 'mapbox',
   });
-  const cacheKey = `reverse_geocode:${hash}` as const;
+  const cacheKey: CacheKey = `reverse_geocode:${hash}`;
 
   const data = await withCache(
     cacheKey,
     async () => {
-      const searchParams = new URLSearchParams({
-        coordinates: coords,
-        locale: options.locale,
+      const response = await geocodingApiClient.request<
+        GeocodingControllerReverseGeocodeData,
+        void
+      >({
+        path: '/geocoding/reverse',
+        method: 'GET',
+        query: {
+          coordinates: coords,
+          ...(options.provider ? { provider: options.provider } : {}),
+        },
+        format: 'json',
+        headers: {
+          'accept-language': options.locale,
+          ...(options.tenantId ? { 'x-tenant-id': options.tenantId } : {}),
+        },
+        cache: 'no-store',
       });
 
-      if (options.provider) {
-        searchParams.append('provider', options.provider);
-      }
-
-      if (options.tenantId) {
-        searchParams.append('tenant_id', options.tenantId);
-      }
-
-      const response = await fetchWrapper<GeocodeResult[]>(
-        `${API_URL}/geocoding/reverse?${searchParams.toString()}`,
-        {
-          headers: {
-            'x-api-version': '1',
-            'x-api-key': INTERNAL_API_KEY || '',
-            ...(options.tenantId && { 'x-tenant-id': options.tenantId }),
-          },
-        },
-      );
-
-      // The API proxy already returns the data in the expected format
-      return response || [];
+      return response.data || [];
     },
     { redis: true, memory: false, ttl: ONE_MONTH },
   );
