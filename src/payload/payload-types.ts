@@ -730,6 +730,7 @@ export interface ResourceDirectory {
                   | 'getDirections'
                   | 'organization'
                   | 'quality'
+                  | 'alert'
                   | 'facets'
                   | 'separator'
                   | 'customAttribute';
@@ -788,6 +789,7 @@ export interface ResourceDirectory {
                   | 'getDirections'
                   | 'organization'
                   | 'quality'
+                  | 'alert'
                   | 'facets'
                   | 'separator'
                   | 'customAttribute';
@@ -901,7 +903,8 @@ export interface ResourceDirectory {
             | 'categories'
             | 'actionButtons'
             | 'separator'
-            | 'customAttribute';
+            | 'customAttribute'
+            | 'alert';
           customAttribute?: {
             title?: string | null;
             subtitle?: string | null;

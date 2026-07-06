@@ -15,4 +15,5 @@ export enum SearchCardComponentId {
   ACTION_BUTTONS = 'actionButtons',
   SEPARATOR = 'separator',
   CUSTOM_ATTRIBUTE = 'customAttribute',
+  ALERT = 'alert',
 }

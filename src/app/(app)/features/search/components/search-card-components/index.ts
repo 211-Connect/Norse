@@ -1,5 +1,6 @@
 export * from './action-buttons';
 export * from './address';
+export * from './alert';
 export * from './application-process';
 export * from './badges';
 export * from './categories';
