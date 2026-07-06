@@ -58,7 +58,7 @@ function getRequestHeader(
 export async function arcjetProtectPage(): Promise<void> {
   const req = await request();
   const decision = await aj.protect(req);
-  if (decision) {
+  if (decision.isDenied()) {
     const reason = decision.reason.isBot()
       ? 'bot'
       : decision.reason.isShield()
