@@ -25,6 +25,7 @@ import { getSortOption } from '@/app/(app)/shared/utils/getSortOption';
 import { parseCommaSeparatedValues } from '@/app/(app)/shared/utils/parseCommaSeparatedValues';
 import { createLogger } from '@/lib/logger';
 import { toBbox } from '@/app/(app)/shared/lib/utils';
+import { arcjetProtectPage } from '@/lib/arcjet';
 
 import { UmamiEvent, trackUmamiEvent } from '../../../shared/lib/umami';
 
@@ -234,6 +235,8 @@ export default async function SearchPage({
   params: Promise<{ locale: string }>;
   searchParams: Promise<RawSearchParams>;
 }) {
+  await arcjetProtectPage();
+
   const headersList = await headers();
   const nonce = headersList.get('x-nonce') ?? '';
   const device = getServerDevice(headersList.get('user-agent') ?? '');
