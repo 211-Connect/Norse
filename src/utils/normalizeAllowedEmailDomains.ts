@@ -1,9 +1,5 @@
 export type AllowedEmailDomainValue =
-  | { domain?: string | null }[]
-  | string[]
-  | string
-  | null
-  | undefined;
+  { domain?: string | null }[] | string[] | string | null | undefined;
 
 export function normalizeAllowedEmailDomains(
   value: AllowedEmailDomainValue,

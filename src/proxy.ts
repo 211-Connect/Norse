@@ -120,7 +120,8 @@ export const config = {
      * NextAuth signin/callback — is protected by Arcjet shield + bot detection
      * + a per-IP fixed-window rate limit.
      */
-    '/((?!admin|api/getTenantBasicConfig|api/auth/session|api/health|api/healthz|api/metrics|api/keycloak/domain-check|chrome.devtools|_next/static|_next/image|images|favicon.ico|robots.txt|sitemap.xml).*)',
+
+    '/((?!admin|api/auth|chrome.devtools|api|_next/static|_next/image|images|favicon.ico|robots.txt|sitemap.xml).*)',
     { source: '/' },
   ],
 };
