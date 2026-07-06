@@ -1,5 +1,4 @@
 import { NextAuthOptions, getServerSession } from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
 import KeycloakProvider from 'next-auth/providers/keycloak';
 
 import { fetchWrapper } from './app/(app)/shared/lib/fetchWrapper';
@@ -246,20 +245,6 @@ const createAuthOptions = ({
       clientId: process.env?.KEYCLOAK_CLIENT_ID ?? '',
       clientSecret: keycloak?.clientSecret ?? '',
       issuer: keycloak?.issuer,
-    }),
-    // TODO :: Implement custom Keycloak integration so we can have integrated signup/signout pages
-    CredentialsProvider({
-      name: 'CustomKeycloak',
-      credentials: {
-        email: {
-          label: 'email',
-          type: 'email',
-          placeholder: 'hello world',
-        },
-      },
-      async authorize(_credentials, _req) {
-        throw new Error('Not implemented yet.');
-      },
     }),
   ],
   pages: {
