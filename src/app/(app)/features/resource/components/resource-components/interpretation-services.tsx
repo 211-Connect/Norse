@@ -19,6 +19,7 @@ export function InterpretationServicesComponent({
     <Datum
       icon={Handshake}
       title={t('interpretation_services')}
+      labelAs="h3"
       description={resource.interpretationServices}
     />
   );

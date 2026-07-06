@@ -24,6 +24,7 @@ export function WebsiteComponent({ resource }: ResourceComponentProps) {
       url={resource.website}
       urlTarget="_blank"
       title={t('website')}
+      labelAs="h3"
       description={resource.website}
       urlAriaLabel={`${t('website')}: ${host}`}
       shouldParseHtml={false}

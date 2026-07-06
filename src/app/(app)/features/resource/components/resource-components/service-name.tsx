@@ -12,7 +12,7 @@ export function ServiceNameComponent({ resource }: { resource: Resource }) {
   }
 
   return (
-    <Typography variant="heading" size="sm" textColor="secondary">
+    <Typography variant="heading" size="sm" textColor="secondary" as="h3">
       {resource.serviceName}
     </Typography>
   );

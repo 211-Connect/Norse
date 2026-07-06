@@ -9,6 +9,7 @@
   "last_assured": "Last assured",
   "hours": "Hours",
   "location_name": "Location Name",
+  "resource_name": "Resource Name",
   "required_documents": "Required documents",
   "mail": "Mailing Address",
   "location": "Physical Address",
