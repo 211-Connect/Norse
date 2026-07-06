@@ -347,6 +347,9 @@ async function getAppConfigBase(
 
   const heroUrl =
     newLayout?.heroUrl ?? getMediaUrl(resourceDirectory.brand.hero);
+  const activeAlerts = (resourceDirectory.common?.alert ?? []).filter(
+    (alert) => alert.isActive !== false,
+  );
 
   let a11yAllowedFontSizes: string[] = ['1rem'];
   if (resourceDirectory.accessibility?.fontSizeAdjustment) {
@@ -591,17 +594,13 @@ async function getAppConfigBase(
         }),
       ),
     },
-    alert: resourceDirectory.common?.alert?.[0]
-      ? {
-          text: resourceDirectory.common.alert[0].text,
-          buttonText: resourceDirectory.common.alert[0].buttonText ?? undefined,
-          target: resourceDirectory.common.alert[0].openInNewTab
-            ? '_blank'
-            : undefined,
-          url: resourceDirectory.common.alert[0].url ?? undefined,
-          variant: resourceDirectory.common.alert[0].variant ?? undefined,
-        }
-      : undefined,
+    alerts: activeAlerts.map((alert) => ({
+      text: alert.text,
+      buttonText: alert.buttonText ?? undefined,
+      target: alert.openInNewTab ? '_blank' : undefined,
+      url: alert.url ?? undefined,
+      variant: alert.variant ?? undefined,
+    })),
     heroUrl,
     highlights: resourceDirectory.highlights
       ? {
@@ -609,14 +608,16 @@ async function getAppConfigBase(
           enableCarouselAutoplay:
             resourceDirectory.highlights.enableCarouselAutoplay ?? false,
           autoplayInterval: resourceDirectory.highlights.autoplayInterval ?? 5,
-          items: (resourceDirectory.highlights.items ?? []).map((item) => ({
-            image: getMediaUrl(item.image),
-            title: item.title,
-            description: item.description ?? undefined,
-            buttonText: item.buttonText ?? undefined,
-            buttonUrl: item.buttonUrl ?? undefined,
-            openInNewTab: item.openInNewTab ?? false,
-          })),
+          items: (resourceDirectory.highlights.items ?? [])
+            .filter((item) => item.isActive !== false)
+            .map((item) => ({
+              image: getMediaUrl(item.image),
+              title: item.title,
+              description: item.description ?? undefined,
+              buttonText: item.buttonText ?? undefined,
+              buttonUrl: item.buttonUrl ?? undefined,
+              openInNewTab: item.openInNewTab ?? false,
+            })),
         }
       : undefined,
     newLayout,

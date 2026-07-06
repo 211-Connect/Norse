@@ -524,6 +524,10 @@ export interface ResourceDirectory {
   common?: {
     alert?:
       | {
+          /**
+           * Show this alert on the home page
+           */
+          isActive?: boolean | null;
           text: string;
           buttonText?: string | null;
           url?: string | null;
@@ -650,6 +654,10 @@ export interface ResourceDirectory {
      */
     items?:
       | {
+          /**
+           * Show this highlight in the highlights section
+           */
+          isActive?: boolean | null;
           /**
            * Image for the highlight card
            */
@@ -1359,6 +1367,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         alert?:
           | T
           | {
+              isActive?: T;
               text?: T;
               buttonText?: T;
               url?: T;
@@ -1482,6 +1491,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         items?:
           | T
           | {
+              isActive?: T;
               image?: T;
               title?: T;
               description?: T;

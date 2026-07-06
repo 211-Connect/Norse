@@ -78,6 +78,15 @@ export const highlights: Tab = {
       },
       fields: [
         {
+          name: 'isActive',
+          type: 'checkbox',
+          defaultValue: true,
+          label: 'Active',
+          admin: {
+            description: 'Show this highlight in the highlights section',
+          },
+        },
+        {
           type: 'row',
           fields: [
             {
