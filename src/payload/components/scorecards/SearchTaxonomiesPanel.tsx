@@ -1,4 +1,4 @@
-import { TaxonomySearchItem } from '@/types/taxonomyScorecard';
+import { ScorecardTaxonomyItemDto } from '@/lib/api/generated/data-contracts';
 import './styles.css';
 import { useState } from 'react';
 import { useTenantSelection } from '@payloadcms/plugin-multi-tenant/client';
@@ -9,7 +9,7 @@ import { TaxonomyResultsTable } from './TaxonomyResultsTable';
 import { useTaxonomySearch } from './useTaxonomySearch';
 
 type SearchTaxonomiesPanelProps = {
-  openTaxonomy: (item: TaxonomySearchItem) => Promise<void>;
+  openTaxonomy: (item: ScorecardTaxonomyItemDto) => Promise<void>;
 };
 
 export function SearchTaxonomiesPanel({
@@ -24,7 +24,7 @@ export function SearchTaxonomiesPanel({
 
   const { items, loading, error } = useTaxonomySearch(tenantId, query);
 
-  const onOpenTaxonomy = (item: TaxonomySearchItem) => {
+  const onOpenTaxonomy = (item: ScorecardTaxonomyItemDto) => {
     void openTaxonomy(item);
   };
 

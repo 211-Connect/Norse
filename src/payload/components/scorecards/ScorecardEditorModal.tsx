@@ -1,4 +1,4 @@
-import { TaxonomySearchItem } from '@/types/taxonomyScorecard';
+import { ScorecardTaxonomyItemDto } from '@/lib/api/generated/data-contracts';
 
 import { ScorecardActionsPanel } from './ScorecardActionsPanel';
 import { ScorecardEditorHeader } from './ScorecardEditorHeader';
@@ -13,6 +13,10 @@ const formatVersionLabel = (value: string | null | undefined): string => {
   }
 
   return String(value).trim() === '0' ? 'Default' : value;
+};
+
+const normalizeVersionId = (value: unknown): string | null => {
+  return typeof value === 'string' ? value : null;
 };
 
 const formatDateTime = (value: string | null | undefined): string => {
@@ -32,7 +36,7 @@ const formatDateTime = (value: string | null | undefined): string => {
 };
 
 type ScorecardEditorModalProps = {
-  selectedTaxonomy: TaxonomySearchItem;
+  selectedTaxonomy: ScorecardTaxonomyItemDto;
   onClose: () => void;
 };
 
@@ -126,7 +130,9 @@ export function ScorecardEditorModal({
               <p style={{ margin: 0 }}>
                 <strong>Active version:</strong>{' '}
                 {formatVersionLabel(
-                  scorecardState.response.version_metadata?.active_version,
+                  normalizeVersionId(
+                    scorecardState.response.version_metadata?.active_version,
+                  ),
                 )}
               </p>
               <p style={{ margin: 0 }}>
@@ -135,7 +141,7 @@ export function ScorecardEditorModal({
               </p>
               <p style={{ margin: 0 }}>
                 <strong>Last published update by:</strong>{' '}
-                {scorecardState.response.updated_by_email ?? '—'}
+                {String(scorecardState.response.updated_by_email ?? '—')}
               </p>
               <p style={{ margin: 0 }}>
                 <strong>Last action:</strong>{' '}
@@ -183,9 +189,9 @@ export function ScorecardEditorModal({
 
             <ScorecardVersionHistory
               versions={versions}
-              activeVersionId={
-                scorecardState.response.version_metadata?.active_version
-              }
+              activeVersionId={normalizeVersionId(
+                scorecardState.response.version_metadata?.active_version,
+              )}
               enablingVersionId={enablingVersionId}
               onPreviewVersion={setPreviewVersion}
               onEnable={(versionId) => void handleEnable(versionId)}

@@ -13,3 +13,14 @@ When working on a Payload feature, follow this workflow:
 7. Prefer additive, backward-compatible changes. Do not push destructive migrations directly unless there is a clear, intentional reason and the change has been reviewed with backward compatibility in mind.
 
 For simple extensions, expect the work to include both the admin schema change and the generated migration/types so deployed environments can boot cleanly and apply `payload migrate` successfully.
+
+## OpenAPI SDK Workflow
+
+For internal API integrations, treat OpenAPI as source of truth and use generated SDK clients.
+
+1. Generate SDK with `npm run generate:api-sdk`.
+2. Use shared clients from `src/lib/api/clients.ts` instead of creating ad-hoc SDK instances in feature files.
+3. Prefer generated DTOs from `src/lib/api/generated/data-contracts.ts` for API contracts.
+4. Remove duplicate hand-written API request/response types when the generated type already exists.
+5. Keep app-specific UI/domain types when they represent transformed view models (not raw API contracts).
+6. If API behavior and generated types diverge, update the OpenAPI spec first, then regenerate.

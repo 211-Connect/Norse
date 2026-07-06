@@ -24,6 +24,7 @@ import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { getSortOption } from '@/app/(app)/shared/utils/getSortOption';
 import { parseCommaSeparatedValues } from '@/app/(app)/shared/utils/parseCommaSeparatedValues';
 import { createLogger } from '@/lib/logger';
+import { toBbox } from '@/app/(app)/shared/lib/utils';
 
 import { UmamiEvent, trackUmamiEvent } from '../../../shared/lib/umami';
 
@@ -111,7 +112,7 @@ const getPageData = cache(async function (
         ...searchQuery,
         coordinates: searchQuery.coordinates ?? placeMetadata.coordinates,
         placeType: placeMetadata.place_type,
-        bbox: placeMetadata.bbox,
+        bbox: toBbox(placeMetadata.bbox),
       };
 
       try {

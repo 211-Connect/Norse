@@ -1,6 +1,8 @@
-import { NeedWeights } from '@/types/taxonomyScorecard';
+import { UpdateTaxonomyScorecardDto } from '@/lib/api/generated/data-contracts';
 
 import { NEED_DEFINITIONS } from './constants';
+
+type NeedWeights = UpdateTaxonomyScorecardDto['weights'];
 
 export function validateScorecardWeights(
   weightInputs: Record<string, string>,

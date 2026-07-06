@@ -1,10 +1,10 @@
 import { Button } from '@payloadcms/ui';
 
-import { TaxonomySearchItem } from '@/types/taxonomyScorecard';
+import { ScorecardTaxonomyItemDto } from '@/lib/api/generated/data-contracts';
 
 type TaxonomyResultsTableProps = {
-  items: TaxonomySearchItem[];
-  onOpenTaxonomy: (item: TaxonomySearchItem) => void;
+  items: ScorecardTaxonomyItemDto[];
+  onOpenTaxonomy: (item: ScorecardTaxonomyItemDto) => void;
 };
 
 export function TaxonomyResultsTable({

@@ -1,12 +1,12 @@
 import { Button } from '@payloadcms/ui';
 
-import { TaxonomyScorecardVersion } from '@/types/taxonomyScorecard';
+import { ScorecardVersionEntryResponseDto } from '@/lib/api/generated/data-contracts';
 
 type ScorecardVersionHistoryProps = {
-  versions: TaxonomyScorecardVersion[];
-  activeVersionId: string | null | undefined;
+  versions: ScorecardVersionEntryResponseDto[];
+  activeVersionId: unknown;
   enablingVersionId: string | null;
-  onPreviewVersion: (version: TaxonomyScorecardVersion) => void;
+  onPreviewVersion: (version: ScorecardVersionEntryResponseDto) => void;
   onEnable: (versionId: string) => void;
   formatDateTime: (value: string | null | undefined) => string;
   formatVersionLabel: (value: string | null | undefined) => string;
@@ -21,7 +21,8 @@ export function ScorecardVersionHistory({
   formatDateTime,
   formatVersionLabel,
 }: ScorecardVersionHistoryProps) {
-  const normalizedActiveVersionId = String(activeVersionId ?? '').trim();
+  const normalizedActiveVersionId =
+    typeof activeVersionId === 'string' ? activeVersionId.trim() : '';
 
   return (
     <div style={{ display: 'grid', gap: '0.5rem' }}>
@@ -88,7 +89,12 @@ export function ScorecardVersionHistory({
                       </div>
                     </td>
                     <td>{formatDateTime(version.created_at)}</td>
-                    <td>{version.scorecard?.need?.top_category_code ?? '—'}</td>
+                    <td>
+                      {typeof version.scorecard?.need?.top_category_code ===
+                      'string'
+                        ? version.scorecard.need.top_category_code
+                        : '—'}
+                    </td>
                     <td>{Object.keys(versionWeights).length}</td>
                     <td>
                       <div

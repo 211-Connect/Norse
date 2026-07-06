@@ -1,9 +1,9 @@
 import { Button } from '@payloadcms/ui';
 
-import { TaxonomySearchItem } from '@/types/taxonomyScorecard';
+import { ScorecardTaxonomyItemDto } from '@/lib/api/generated/data-contracts';
 
 type ScorecardEditorHeaderProps = {
-  selectedTaxonomy: TaxonomySearchItem;
+  selectedTaxonomy: ScorecardTaxonomyItemDto;
   onClose: () => void;
 };
 
