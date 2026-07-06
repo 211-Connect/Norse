@@ -142,13 +142,13 @@ export type AppConfig = {
     taxonomies: string;
   }[];
   tenantId?: string;
-  alert?: {
+  alerts?: {
     text: string;
     buttonText?: string;
     url?: string;
     target?: '_self' | '_blank';
     variant?: 'destructive' | 'default';
-  };
+  }[];
   gtmContainerId?: string;
   heroUrl?: string;
   highlights?: {

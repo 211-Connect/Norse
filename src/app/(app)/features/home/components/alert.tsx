@@ -28,40 +28,53 @@ type AlertProps = {
 
 export default function Alert({ itemsDirection }: AlertProps) {
   const appConfig = useAppConfig();
+  const alerts = appConfig.alerts ?? [];
 
-  if (!appConfig.alert?.text) {
+  if (alerts.length === 0) {
     return null;
   }
 
-  const variant = appConfig?.alert?.variant || 'destructive';
-
   return (
     <div
-      className={`flex items-center justify-center p-2 ${itemsDirection === 'col' ? 'lg:p-4' : 'lg:p-8'}`}
+      className={cn(
+        'p-2',
+        itemsDirection === 'col' ? 'lg:p-4' : 'lg:p-8',
+        'space-y-3',
+      )}
     >
-      <AlertComponent variant={variant} className="flex w-auto">
-        <div
-          className={cn(
-            'flex items-center justify-center gap-4',
-            getDirectionClass(itemsDirection),
-          )}
-        >
-          <AlertCircle className="size-8 shrink-0" aria-hidden="true" />
+      {alerts.map((alert, index) => {
+        const variant = alert.variant || 'destructive';
 
-          <p className="text-lg font-semibold">{appConfig.alert.text}</p>
-
-          {appConfig.alert?.buttonText != null &&
-            appConfig.alert?.url != null && (
-              <LocalizedLink
-                className={cn(buttonVariants({ variant }))}
-                href={appConfig.alert.url}
-                target={appConfig.alert.target}
+        return (
+          <div
+            key={`${alert.text}-${alert.url ?? ''}-${index}`}
+            className="flex items-center justify-center"
+          >
+            <AlertComponent variant={variant} className="flex w-auto">
+              <div
+                className={cn(
+                  'flex items-center justify-center gap-4',
+                  getDirectionClass(itemsDirection),
+                )}
               >
-                {appConfig.alert.buttonText}
-              </LocalizedLink>
-            )}
-        </div>
-      </AlertComponent>
+                <AlertCircle className="size-8 shrink-0" aria-hidden="true" />
+
+                <p className="text-lg font-semibold">{alert.text}</p>
+
+                {alert.buttonText != null && alert.url != null && (
+                  <LocalizedLink
+                    className={cn(buttonVariants({ variant }))}
+                    href={alert.url}
+                    target={alert.target}
+                  >
+                    {alert.buttonText}
+                  </LocalizedLink>
+                )}
+              </div>
+            </AlertComponent>
+          </div>
+        );
+      })}
     </div>
   );
 }
