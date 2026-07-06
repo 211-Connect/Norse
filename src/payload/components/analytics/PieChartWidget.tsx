@@ -94,8 +94,7 @@ export function PieChartWidget({
           <Tooltip
             formatter={(_, __, payload) => {
               const segment = payload?.payload as
-                | PieChartWidgetSegment
-                | undefined;
+                PieChartWidgetSegment | undefined;
               return segment ? [formatTooltip(segment)] : [''];
             }}
             contentStyle={TOOLTIP_STYLE}
