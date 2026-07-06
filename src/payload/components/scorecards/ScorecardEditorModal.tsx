@@ -141,7 +141,7 @@ export function ScorecardEditorModal({
               </p>
               <p style={{ margin: 0 }}>
                 <strong>Last published update by:</strong>{' '}
-                {scorecardState.response.updated_by_email ?? '—'}
+                {String(scorecardState.response.updated_by_email ?? '—')}
               </p>
               <p style={{ margin: 0 }}>
                 <strong>Last action:</strong>{' '}

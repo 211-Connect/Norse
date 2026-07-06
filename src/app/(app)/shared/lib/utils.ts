@@ -1,7 +1,7 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-import { Address } from '@/types/resource';
+import { Address, BBox } from '@/types/resource';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -170,3 +170,9 @@ export function formatAddressForDisplay(
     .filter(isValidPart)
     .join(', ');
 }
+
+export const toBbox = (coords: number[] | undefined): BBox | undefined => {
+  if (!coords || coords.length !== 4) return undefined;
+
+  return [coords[0], coords[1], coords[2], coords[3]];
+};

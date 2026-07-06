@@ -45,6 +45,7 @@ export interface TaxonomyResponseDto {
 
 export interface ServiceDto {
   name: string;
+  alert: object | null;
   alternate_name: object | null;
   description: object | null;
   summary: object | null;
@@ -783,6 +784,8 @@ export interface TaxonomyScorecardResponseDto {
   /** @example {"0":{"version_id":"0","scorecard":{"need":{"weights":{"FO-200":0.9},"top_category_code":"FO-200","top_weight":0.9,"need_categories_present":["FO-200"]},"target_population":null,"urgency":null},"source":{"owner":"tenant-1","customization_version":null,"isProduction":true,"published_at":"2026-06-05T12:00:00.000Z"},"created_at":"2026-06-05T12:00:00.000Z"}} */
   versions: Record<string, ScorecardVersionEntryResponseDto>;
   version_metadata: VersionMetadataResponseDto;
+  /** @example "admin@payload.local" */
+  updated_by_email?: object | null;
   /** @example "2026-06-05T12:00:00.000Z" */
   updated_at: string;
 }
@@ -794,6 +797,8 @@ export interface ScorecardVersionEntryResponseDto {
   source: TaxonomySourceResponseDto;
   /** @example "2026-06-05T12:00:00.000Z" */
   created_at: string;
+  /** @example "admin@payload.local" */
+  created_by_email?: object | null;
 }
 
 export interface ScorecardTaxonomyItemDto {
@@ -829,6 +834,11 @@ export interface UpdateTaxonomyScorecardDto {
    * @default false
    */
   include_siblings?: boolean;
+  /**
+   * Updater email for published saves. Ignored for draft saves.
+   * @example "admin@payload.local"
+   */
+  updated_by_email?: string | null;
 }
 
 export interface UpdateTaxonomyScorecardResponseDto {
@@ -1235,7 +1245,7 @@ export interface GeocodingControllerReverseGeocodeParams {
    * Coordinates in format "longitude,latitude"
    * @example "-74.006,40.7128"
    */
-  coordinates: any[];
+  coordinates: string;
   /**
    * Geocoding module to query
    * @default "mapbox"

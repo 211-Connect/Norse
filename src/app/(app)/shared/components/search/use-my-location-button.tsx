@@ -15,6 +15,7 @@ import { MapService } from '../../services/map-service';
 import { deviceAtom } from '../../store/device';
 import { searchAtom } from '../../store/search';
 import { Button } from '../ui/button';
+import { toBbox } from '../../lib/utils';
 
 const log = createLogger('use-my-location-button');
 
@@ -56,7 +57,7 @@ export function UseMyLocationButton() {
               prevSearchLocation: location.address,
               searchLocationValidationError: '',
               searchPlaceType: location.place_type ?? [],
-              searchBbox: location.bbox ?? null,
+              searchBbox: toBbox(location.bbox) ?? null,
             }));
 
             return 'Successfully fetched your location';
