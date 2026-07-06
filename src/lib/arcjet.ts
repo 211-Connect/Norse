@@ -2,7 +2,6 @@ import arcjet, { detectBot, request, shield } from '@arcjet/next';
 import { notFound } from 'next/navigation';
 
 import { createLogger } from '@/lib/logger';
-
 const log = createLogger('arcjet');
 
 type ArcjetHeader = Record<string, string | string[] | undefined> | Headers;
@@ -55,9 +54,21 @@ function getRequestHeader(
   return Array.isArray(value) ? value[0] : value;
 }
 
-export async function arcjetProtectPage(): Promise<void> {
+export async function arcjetProtectPage(pathname?: string): Promise<void> {
   const req = await request();
+
+  const host =
+    getRequestHeader(req.headers as ArcjetHeader, 'x-forwarded-host') ??
+    getRequestHeader(req.headers as ArcjetHeader, 'host') ??
+    'localhost';
+  const proto =
+    getRequestHeader(req.headers as ArcjetHeader, 'x-forwarded-proto') ??
+    'https';
+
+  const url = pathname ? `${proto}://${host}${pathname}` : `${proto}://${host}`;
+
   const decision = await aj.protect(req);
+
   if (decision.isDenied()) {
     const reason = decision.reason.isBot()
       ? 'bot'
@@ -68,14 +79,11 @@ export async function arcjetProtectPage(): Promise<void> {
     log.warn(
       {
         event: 'arcjet_denied',
-        path: req.url,
+        path: url,
         reason,
         ip:
           getRequestHeader(req.headers as ArcjetHeader, 'x-forwarded-for') ??
           getRequestHeader(req.headers as ArcjetHeader, 'x-real-ip') ??
-          'unknown',
-        userAgent:
-          getRequestHeader(req.headers as ArcjetHeader, 'user-agent') ??
           'unknown',
       },
       'Arcjet denied request',
