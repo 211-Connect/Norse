@@ -1,5 +1,4 @@
 import arcjet, { detectBot, request, shield } from '@arcjet/next';
-import { notFound } from 'next/navigation';
 
 import { createLogger } from '@/lib/logger';
 const log = createLogger('arcjet');
@@ -88,7 +87,5 @@ export async function arcjetProtectPage(pathname?: string): Promise<void> {
       },
       'Arcjet denied request',
     );
-
-    notFound();
   }
 }
