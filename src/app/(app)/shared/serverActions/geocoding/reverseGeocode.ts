@@ -10,8 +10,6 @@ import {
   withCache,
 } from '@/utilities/withCache';
 
-import { INTERNAL_API_KEY } from '../../lib/constants';
-
 type GeocodingProvider = 'mapbox' | 'opencage';
 
 export async function reverseGeocode(
