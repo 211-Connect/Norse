@@ -1,7 +1,10 @@
 import { DefaultMantineColor, Tuple } from '@mantine/core';
 
 type ExtendedCustomColors =
-  'primary' | 'secondary' | 'background' | DefaultMantineColor;
+  | 'primary'
+  | 'secondary'
+  | 'background'
+  | DefaultMantineColor;
 
 declare module '@mantine/core' {
   export interface MantineThemeOther {

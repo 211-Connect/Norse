@@ -11,11 +11,13 @@ export const setTenantIdPrefix: CollectionBeforeOperationHook = async ({
     return args;
   }
 
-  if (!(
-    args.data &&
-    'tenant' in args.data &&
-    typeof args.data.tenant === 'string'
-  )) {
+  if (
+    !(
+      args.data &&
+      'tenant' in args.data &&
+      typeof args.data.tenant === 'string'
+    )
+  ) {
     throw new Error('Tenant is required to manipulate tenant-media collection');
   }
 

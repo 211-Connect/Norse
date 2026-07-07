@@ -49,8 +49,7 @@ export default function ResourceTitlesWidget() {
         new Set(
           ids.filter(
             (id) =>
-              !titleCacheRef.current.has(id) &&
-              !requestedRef.current.has(id),
+              !titleCacheRef.current.has(id) && !requestedRef.current.has(id),
           ),
         ),
       );

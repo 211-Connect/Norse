@@ -473,7 +473,8 @@ export function SearchDialog({
       setTimeout(() => {
         (
           document.querySelector(`#${elementToSelect}`) as
-            HTMLInputElement | undefined
+            | HTMLInputElement
+            | undefined
         )?.focus();
       }, 100);
     } else {
