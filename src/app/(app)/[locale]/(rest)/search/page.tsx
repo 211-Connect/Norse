@@ -235,7 +235,7 @@ export default async function SearchPage({
   params: Promise<{ locale: string }>;
   searchParams: Promise<RawSearchParams>;
 }) {
-  await arcjetProtectPage('/search');
+  await arcjetProtectPage();
 
   const headersList = await headers();
   const nonce = headersList.get('x-nonce') ?? '';
