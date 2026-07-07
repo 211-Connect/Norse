@@ -42,7 +42,6 @@ export async function arcjetProtectPage(): Promise<void> {
 
   const decision = await aj.protect(req);
 
-  console.log(JSON.stringify(decision));
   if (decision.isDenied()) {
     log.warn({
       event: 'arcjet_denied',
