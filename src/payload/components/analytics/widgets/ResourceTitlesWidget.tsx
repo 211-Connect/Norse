@@ -12,6 +12,7 @@ export default function ResourceTitlesWidget() {
   const { loading, error, data } = usePaths();
   const [titleMap, setTitleMap] = useState<Record<string, string>>({});
   const titleCacheRef = useRef<Map<string, string>>(new Map());
+  const requestedRef = useRef<Set<string>>(new Set());
 
   const tenantId = useMemo(() => {
     return data?.tenantId;
@@ -20,6 +21,7 @@ export default function ResourceTitlesWidget() {
   useEffect(() => {
     setTitleMap({});
     titleCacheRef.current.clear();
+    requestedRef.current.clear();
   }, [tenantId]);
 
   const rowsWithResolvedTitles = useMemo(() => {
@@ -44,10 +46,20 @@ export default function ResourceTitlesWidget() {
       }
 
       const uniqueMissingIds = Array.from(
-        new Set(ids.filter((id) => !titleCacheRef.current.has(id))),
+        new Set(
+          ids.filter(
+            (id) =>
+              !titleCacheRef.current.has(id) && !requestedRef.current.has(id),
+          ),
+        ),
       );
 
+      let addedCount = 0;
       if (uniqueMissingIds.length > 0) {
+        for (const id of uniqueMissingIds) {
+          requestedRef.current.add(id);
+        }
+
         try {
           const response = await fetch('/api/resource-titles', {
             method: 'POST',
@@ -58,6 +70,9 @@ export default function ResourceTitlesWidget() {
           if (response.ok) {
             const titles: ResourceTitleEntry[] = await response.json();
             for (const entry of titles) {
+              if (!titleCacheRef.current.has(entry.id)) {
+                addedCount++;
+              }
               titleCacheRef.current.set(entry.id, entry.displayName);
             }
           }
@@ -66,13 +81,17 @@ export default function ResourceTitlesWidget() {
         }
       }
 
-      setTitleMap((prev) => {
-        const next = { ...prev };
-        for (const [id, title] of titleCacheRef.current.entries()) {
-          next[id] = title;
-        }
-        return next;
-      });
+      // Only update state when the cache actually gained new entries,
+      // breaking the render feedback loop with MetricsTable.
+      if (addedCount > 0) {
+        setTitleMap((prev) => {
+          const next = { ...prev };
+          for (const [id, title] of titleCacheRef.current.entries()) {
+            next[id] = title;
+          }
+          return next;
+        });
+      }
     },
     [tenantId],
   );

@@ -15,6 +15,7 @@ const ANALYTICS_DEFAULT_LAYOUT = [
   { widgetSlug: 'analytics-website-clicks', width: 'x-small' as const },
   { widgetSlug: 'analytics-phone-calls', width: 'x-small' as const },
   { widgetSlug: 'analytics-directions', width: 'x-small' as const },
+  { widgetSlug: 'analytics-total-referrals', width: 'x-small' as const },
   { widgetSlug: 'analytics-page-views', width: 'x-small' as const },
   { widgetSlug: 'analytics-pageviews-chart', width: 'medium' as const },
   { widgetSlug: 'analytics-map', width: 'medium' as const },

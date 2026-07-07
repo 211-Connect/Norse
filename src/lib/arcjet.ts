@@ -3,8 +3,6 @@ import arcjet, { detectBot, request, shield } from '@arcjet/next';
 import { createLogger } from '@/lib/logger';
 const log = createLogger('arcjet');
 
-type ArcjetHeader = Record<string, string | string[] | undefined> | Headers;
-
 const CLOUD_FLARE_IP_RANGES = [
   '173.245.48.0/20',
   '103.21.244.0/22',

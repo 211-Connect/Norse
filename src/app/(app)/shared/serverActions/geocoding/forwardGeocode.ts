@@ -4,8 +4,6 @@ import { geocodingApiClient } from '@/lib/api/clients';
 import { GeocodingControllerForwardGeocodeParams } from '@/lib/api/generated/data-contracts';
 import { GeocodeResult } from '@/types/resource';
 
-import { INTERNAL_API_KEY } from '../../lib/constants';
-
 type GeocodingProvider = 'mapbox' | 'opencage';
 
 export async function forwardGeocode(
