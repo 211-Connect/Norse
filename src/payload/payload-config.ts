@@ -189,6 +189,13 @@ const config = buildConfig({
           maxWidth: 'full',
         },
         {
+          slug: 'analytics-total-referrals',
+          Component:
+            '@/payload/components/analytics/widgets/TotalReferralsWidget#default',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
           slug: 'analytics-widget-searches',
           Component:
             '@/payload/components/analytics/widgets/WidgetSearchesWidget#default',
