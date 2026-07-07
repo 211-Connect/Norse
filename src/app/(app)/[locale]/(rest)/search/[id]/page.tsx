@@ -55,7 +55,7 @@ export const generateMetadata = async ({ params }): Promise<Metadata> => {
 
 export default async function ResourcePage({ params, searchParams }) {
   const { id, locale } = await params;
-  await arcjetProtectPage(`/search/${id}`);
+  await arcjetProtectPage();
 
   const sp = (await searchParams) ?? {};
   const rawEntry = typeof sp.entry === 'string' ? sp.entry : undefined;
