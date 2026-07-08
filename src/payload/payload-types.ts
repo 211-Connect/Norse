@@ -609,6 +609,9 @@ export interface ResourceDirectory {
   }[];
   topics?: {
     backText?: string | null;
+    /**
+     * This heading is used in both the Topics section and the Search suggestions Topics heading.
+     */
     customHeading?: string | null;
     iconSize?: ('small' | 'medium') | null;
     imageBorderRadius?: number | null;
@@ -822,7 +825,7 @@ export interface ResourceDirectory {
          */
         suggestions?: string | null;
         /**
-         * Shown above topic/category matches in the autocomplete dropdown.
+         * Deprecated: this value is now synced from Topics tab > Topics Heading Text.
          */
         categories?: string | null;
         /**

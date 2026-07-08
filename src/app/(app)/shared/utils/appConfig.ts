@@ -522,9 +522,7 @@ async function getAppConfigBase(
         queryInputPlaceholder:
           resourceDirectory.search.texts?.queryInputPlaceholder ?? undefined,
         suggestionHeaders: {
-          categories:
-            resourceDirectory.search.texts?.suggestionHeaders?.categories ??
-            undefined,
+          categories: resourceDirectory.topics?.customHeading ?? undefined,
           suggestions:
             resourceDirectory.search.texts?.suggestionHeaders?.suggestions ??
             undefined,

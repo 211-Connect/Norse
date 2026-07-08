@@ -30,6 +30,8 @@ export const topics: Tab = {
       defaultValue: 'Topics',
       admin: {
         placeholder: 'Topics',
+        description:
+          'This heading is used in both the Topics section and the Search suggestions Topics heading.',
       },
       localized: true,
       access: {

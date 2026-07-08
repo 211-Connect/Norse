@@ -126,7 +126,8 @@ export const search: Tab = {
                       admin: {
                         placeholder: 'Topics',
                         description:
-                          'Shown above topic/category matches in the autocomplete dropdown.',
+                          'Deprecated: this value is now synced from Topics tab > Topics Heading Text.',
+                        readOnly: true,
                       },
                       access: {
                         create: superAdminOrSupportOrTenantAccess,
