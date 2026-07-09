@@ -54,7 +54,7 @@ export default function SearchQueriesWidget() {
     <MetricsTable
       title={title}
       colLabel="Query"
-      colValue="Referrals"
+      colValue="Count"
       rows={rows}
       footerStart={<FilterPills value={filter} onChange={setFilter} />}
       emptyState={<EmptyState message={emptyMessage} />}
