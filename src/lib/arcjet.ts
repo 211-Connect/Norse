@@ -1,4 +1,4 @@
-import arcjet, { cloudflare, detectBot, request, shield } from '@arcjet/next';
+import arcjet, { cloudflare, detectBot, request } from '@arcjet/next';
 
 import { createLogger } from '@/lib/logger';
 
