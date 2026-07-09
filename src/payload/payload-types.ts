@@ -235,6 +235,7 @@ export interface Config {
     'analytics-website-clicks': AnalyticsWebsiteClicksWidget;
     'analytics-phone-calls': AnalyticsPhoneCallsWidget;
     'analytics-directions': AnalyticsDirectionsWidget;
+    'analytics-total-referrals': AnalyticsTotalReferralsWidget;
     'analytics-widget-searches': AnalyticsWidgetSearchesWidget;
     'analytics-callout-clicks': AnalyticsCalloutClicksWidget;
     'analytics-page-views': AnalyticsPageViewsWidget;
@@ -524,6 +525,10 @@ export interface ResourceDirectory {
   common?: {
     alert?:
       | {
+          /**
+           * Show this alert on the home page
+           */
+          isActive?: boolean | null;
           text: string;
           buttonText?: string | null;
           url?: string | null;
@@ -651,6 +656,10 @@ export interface ResourceDirectory {
     items?:
       | {
           /**
+           * Show this highlight in the highlights section
+           */
+          isActive?: boolean | null;
+          /**
            * Image for the highlight card
            */
           image?: (number | null) | TenantMedia;
@@ -730,6 +739,7 @@ export interface ResourceDirectory {
                   | 'getDirections'
                   | 'organization'
                   | 'quality'
+                  | 'alert'
                   | 'facets'
                   | 'separator'
                   | 'customAttribute';
@@ -788,6 +798,7 @@ export interface ResourceDirectory {
                   | 'getDirections'
                   | 'organization'
                   | 'quality'
+                  | 'alert'
                   | 'facets'
                   | 'separator'
                   | 'customAttribute';
@@ -901,7 +912,8 @@ export interface ResourceDirectory {
             | 'categories'
             | 'actionButtons'
             | 'separator'
-            | 'customAttribute';
+            | 'customAttribute'
+            | 'alert';
           customAttribute?: {
             title?: string | null;
             subtitle?: string | null;
@@ -1356,6 +1368,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         alert?:
           | T
           | {
+              isActive?: T;
               text?: T;
               buttonText?: T;
               url?: T;
@@ -1479,6 +1492,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         items?:
           | T
           | {
+              isActive?: T;
               image?: T;
               title?: T;
               description?: T;
@@ -1909,6 +1923,16 @@ export interface AnalyticsPhoneCallsWidget {
  * via the `definition` "analytics-directions_widget".
  */
 export interface AnalyticsDirectionsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-total-referrals_widget".
+ */
+export interface AnalyticsTotalReferralsWidget {
   data?: {
     [k: string]: unknown;
   };

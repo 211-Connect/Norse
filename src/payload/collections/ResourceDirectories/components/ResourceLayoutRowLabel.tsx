@@ -34,6 +34,7 @@ const COMPONENT_LABELS: Record<string, string> = {
   customAttribute: 'Custom Attribute',
   phone: 'Phone',
   actionButtons: 'Action Buttons',
+  alert: 'Alert',
 };
 
 const ResourceLayoutRowLabel = ({ path }: { path: string }) => {

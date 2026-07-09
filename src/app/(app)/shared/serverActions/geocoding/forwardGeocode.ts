@@ -1,9 +1,8 @@
 'use server';
 
+import { geocodingApiClient } from '@/lib/api/clients';
+import { GeocodingControllerForwardGeocodeParams } from '@/lib/api/generated/data-contracts';
 import { GeocodeResult } from '@/types/resource';
-
-import { API_URL, INTERNAL_API_KEY } from '../../lib/constants';
-import { fetchWrapper } from '../../lib/fetchWrapper';
 
 type GeocodingProvider = 'mapbox' | 'opencage';
 
@@ -11,31 +10,22 @@ export async function forwardGeocode(
   address: string,
   options: { locale: string; tenantId?: string; provider?: GeocodingProvider },
 ): Promise<GeocodeResult[]> {
-  const searchParams = new URLSearchParams({
-    address: address,
-    locale: options.locale,
-    limit: '5',
-  });
+  const query: GeocodingControllerForwardGeocodeParams = {
+    address,
+    limit: 5,
+    ...(options.provider ? { provider: options.provider } : {}),
+  };
 
-  if (options.provider) {
-    searchParams.append('provider', options.provider);
-  }
-
-  if (options.tenantId) {
-    searchParams.append('tenant_id', options.tenantId);
-  }
-
-  const data = await fetchWrapper(
-    `${API_URL}/geocoding/forward?${searchParams.toString()}`,
+  const response = await geocodingApiClient.geocodingControllerForwardGeocode(
+    query,
     {
       headers: {
-        'x-api-version': '1',
-        'x-api-key': INTERNAL_API_KEY || '',
-        ...(options.tenantId && { 'x-tenant-id': options.tenantId }),
+        'accept-language': options.locale,
+        ...(options.tenantId ? { 'x-tenant-id': options.tenantId } : {}),
       },
+      cache: 'no-store',
     },
   );
 
-  // The API proxy already returns the data in the expected format
-  return data || [];
+  return response.data || [];
 }

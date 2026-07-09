@@ -1,11 +1,11 @@
 import {
-  NeedWeights,
-  TaxonomyScorecardVersion,
-} from '@/types/taxonomyScorecard';
+  ScorecardVersionEntryResponseDto,
+  UpdateTaxonomyScorecardDto,
+} from '@/lib/api/generated/data-contracts';
 import { NEED_DEFINITIONS } from './constants';
 
 export function buildInitialWeights(
-  weights: NeedWeights | undefined,
+  weights: UpdateTaxonomyScorecardDto['weights'] | undefined,
 ): Record<string, string> {
   const state: Record<string, string> = {};
 
@@ -19,8 +19,8 @@ export function buildInitialWeights(
 }
 
 export function sortVersions(
-  versions: Record<string, TaxonomyScorecardVersion> | undefined,
-): TaxonomyScorecardVersion[] {
+  versions: Record<string, ScorecardVersionEntryResponseDto> | undefined,
+): ScorecardVersionEntryResponseDto[] {
   if (!versions) {
     return [];
   }

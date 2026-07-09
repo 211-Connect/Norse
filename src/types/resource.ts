@@ -1,3 +1,5 @@
+import type { ForwardGeocodeResponseDto } from '@/lib/api/generated/data-contracts';
+
 export interface Taxonomy {
   _id?: string;
   code: string;
@@ -43,22 +45,9 @@ export interface QualityLink {
   displayText: string;
 }
 
-export type Coordinates = [number, number];
-
 export type BBox = [number, number, number, number];
 
-export interface GeocodeResult {
-  type: 'coordinates' | 'invalid';
-  address: string;
-  coordinates: Coordinates;
-  country?: string;
-  district?: string;
-  place?: string;
-  postcode?: string;
-  region?: string;
-  place_type?: string[];
-  bbox?: BBox;
-}
+export type GeocodeResult = ForwardGeocodeResponseDto;
 
 export interface Location {
   type: 'Point';
@@ -98,6 +87,7 @@ export interface Translation {
   attributeValues?: Record<string, string>;
   linkQualityUrls?: QualityLink[];
   locationSummary?: string;
+  alert?: string;
   contacts: Array<{
     id: string;
     name: string;
@@ -156,6 +146,7 @@ export interface Resource {
   id: string;
   originalId: string | null;
   tenantId: string | null;
+  alert: string | null;
   serviceName: string | null;
   attribution: string | null;
   name: string | null;

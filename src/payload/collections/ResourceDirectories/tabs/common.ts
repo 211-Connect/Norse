@@ -21,6 +21,15 @@ export const common: Tab = {
       },
       fields: [
         {
+          name: 'isActive',
+          type: 'checkbox',
+          defaultValue: true,
+          label: 'Active',
+          admin: {
+            description: 'Show this alert on the home page',
+          },
+        },
+        {
           type: 'row',
           fields: [
             {

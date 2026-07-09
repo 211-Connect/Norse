@@ -20,7 +20,7 @@ import {
   clearLocationCookies,
   setLocationCookies,
 } from '../../lib/location-cookies';
-import { cn } from '../../lib/utils';
+import { cn, toBbox } from '../../lib/utils';
 import {
   prevSearchLocationAtom,
   searchCoordinatesAtom,
@@ -191,7 +191,7 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
             searchLocationValidationError: '',
             // Capture place metadata for advanced geospatial filtering
             searchPlaceType: coords.place_type ?? [],
-            searchBbox: coords.bbox ?? null,
+            searchBbox: toBbox(coords.bbox) ?? null,
           };
         });
       }

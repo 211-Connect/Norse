@@ -3,8 +3,7 @@ import { FetchError } from './fetchError';
 export function getErrorMessage(error: unknown): string {
   if (error instanceof FetchError) {
     const data = error.response?.data as
-      | { error?: string; detail?: unknown; message?: unknown }
-      | undefined;
+      { error?: string; detail?: unknown; message?: unknown } | undefined;
 
     if (typeof data?.error === 'string' && data.error.trim()) {
       return data.error;

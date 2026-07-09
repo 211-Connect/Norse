@@ -2,7 +2,6 @@ import { getCookies } from 'cookies-next/server';
 import { cookies, headers } from 'next/headers';
 import { RedirectType, notFound, permanentRedirect } from 'next/navigation';
 import { Metadata } from 'next/types';
-
 import { ResourcePageContent } from '@/app/(app)/features/resource/components/content';
 import { DEFAULT_RESOURCE_LAYOUT } from '@/app/(app)/features/resource/types/layout-config';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
@@ -13,6 +12,7 @@ import { getResource } from '@/app/(app)/shared/services/resource-service';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { isValidUUID } from '@/app/(app)/shared/utils/uuid';
 import { createLogger } from '@/lib/logger';
+import { arcjetProtectPage } from '@/lib/arcjet';
 import { Resource } from '@/types/resource';
 
 const log = createLogger('resource-page');
@@ -21,7 +21,6 @@ const i18nNamespaces = ['page-resource', 'page-list', 'common'];
 
 export const generateMetadata = async ({ params }): Promise<Metadata> => {
   const { id, locale } = await params;
-
   const appConfig = await getAppConfigWithoutHost(locale);
 
   let resource: Resource | null = null;
@@ -78,6 +77,8 @@ export default async function ResourcePage({ params, searchParams }) {
     getCookies({ cookies }),
     getAppConfigWithoutHost(locale),
   ]);
+
+  await arcjetProtectPage(`/search/${id}`, appConfig.tenantId || 'unknown');
 
   const { resources } = await initTranslations(
     locale,

@@ -14,6 +14,7 @@ export function LastAssuredComponent({ resource }: { resource: Resource }) {
   return (
     <Datum
       title={appConfig.resource.lastAssuredText || t('last_assured')}
+      labelAs="h3"
       description={resource.lastAssuredOn || t('unknown')}
     />
   );

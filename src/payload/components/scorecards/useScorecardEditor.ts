@@ -1,25 +1,25 @@
 import { toast } from '@payloadcms/ui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTenantSelection } from '@payloadcms/plugin-multi-tenant/client';
 
 import { getErrorMessage } from '@/app/(app)/shared/lib/getErrorMessage';
 import {
-  GetTaxonomyScorecardResponse,
-  TaxonomyScorecardVersion,
-  TaxonomySearchItem,
-  UpdateTaxonomyScorecardResponse,
-} from '@/types/taxonomyScorecard';
+  ScorecardTaxonomyItemDto,
+  ScorecardVersionEntryResponseDto,
+  TaxonomyScorecardResponseDto,
+  UpdateTaxonomyScorecardResponseDto,
+} from '@/lib/api/generated/data-contracts';
 
 import { enableScorecardVersion, fetchScorecard, saveScorecard } from './api';
 import { ManagerError } from './types';
 import { buildInitialWeights, sortVersions } from './utils';
-import { useTenantSelection } from '@payloadcms/plugin-multi-tenant/client';
 import {
   parseVersionId,
   validateScorecardWeights,
 } from './scorecardEditorHelpers';
 
 type UseScorecardEditorArgs = {
-  selectedTaxonomy: TaxonomySearchItem;
+  selectedTaxonomy: ScorecardTaxonomyItemDto;
 };
 
 export function useScorecardEditor({
@@ -28,7 +28,7 @@ export function useScorecardEditor({
   const { selectedTenantID } = useTenantSelection();
   const tenantId = String(selectedTenantID);
   const [scorecardState, setScorecardState] = useState<{
-    response: GetTaxonomyScorecardResponse | null;
+    response: TaxonomyScorecardResponseDto | null;
     loading: boolean;
     error: ManagerError | null;
   }>({
@@ -45,9 +45,9 @@ export function useScorecardEditor({
   const [includeSiblings, setIncludeSiblings] = useState(false);
   const [saveLoading, setSaveLoading] = useState(false);
   const [saveResult, setSaveResult] =
-    useState<UpdateTaxonomyScorecardResponse | null>(null);
+    useState<UpdateTaxonomyScorecardResponseDto | null>(null);
   const [previewVersion, setPreviewVersion] =
-    useState<TaxonomyScorecardVersion | null>(null);
+    useState<ScorecardVersionEntryResponseDto | null>(null);
   const [enablingVersionId, setEnablingVersionId] = useState<string | null>(
     null,
   );

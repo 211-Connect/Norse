@@ -1,33 +1,46 @@
 import { fetchWrapper } from '@/app/(app)/shared/lib/fetchWrapper';
+import { withOptionalCustomBasePath } from '@/app/(app)/shared/lib/utils';
 import {
-  GetTaxonomyScorecardResponse,
-  TaxonomySearchItem,
-  UpdateTaxonomyScorecardRequest,
-  UpdateTaxonomyScorecardResponse,
-} from '@/types/taxonomyScorecard';
+  ScorecardTaxonomyItemDto,
+  TaxonomyScorecardResponseDto,
+  UpdateTaxonomyScorecardDto,
+  UpdateTaxonomyScorecardResponseDto,
+} from '@/lib/api/generated/data-contracts';
 
 import { ScorecardsSearchResult, ScorecardsStatusResponse } from './types';
 
+type UpdateTaxonomyScorecardRequest = UpdateTaxonomyScorecardDto & {
+  draft?: boolean;
+};
+
 function buildStatusPath(tenantId: string): string {
-  return `/api/taxonomy-scorecards/status?tenantId=${encodeURIComponent(tenantId)}`;
+  return withOptionalCustomBasePath(
+    `/api/taxonomy-scorecards/status?tenantId=${encodeURIComponent(tenantId)}`,
+  );
 }
 
 function buildTaxonomySearchPath(tenantId: string, query: string): string {
-  return `/api/taxonomy-scorecards/taxonomies?tenantId=${encodeURIComponent(tenantId)}&query=${encodeURIComponent(query)}&page=1&limit=100`;
+  return withOptionalCustomBasePath(
+    `/api/taxonomy-scorecards/taxonomies?tenantId=${encodeURIComponent(tenantId)}&query=${encodeURIComponent(query)}&page=1&limit=100`,
+  );
 }
 
 function buildTaxonomyScorecardPath(
   tenantId: string,
   hsisCode: string,
 ): string {
-  return `/api/taxonomy-scorecards/tenants/${encodeURIComponent(tenantId)}/taxonomies/${encodeURIComponent(hsisCode)}`;
+  return withOptionalCustomBasePath(
+    `/api/taxonomy-scorecards/tenants/${encodeURIComponent(tenantId)}/taxonomies/${encodeURIComponent(hsisCode)}`,
+  );
 }
 
 function buildTaxonomyScorecardEnablePath(
   tenantId: string,
   hsisCode: string,
 ): string {
-  return `/api/taxonomy-scorecards/tenants/${encodeURIComponent(tenantId)}/taxonomies/${encodeURIComponent(hsisCode)}/enable`;
+  return withOptionalCustomBasePath(
+    `/api/taxonomy-scorecards/tenants/${encodeURIComponent(tenantId)}/taxonomies/${encodeURIComponent(hsisCode)}/enable`,
+  );
 }
 
 export async function fetchStatus(
@@ -48,7 +61,7 @@ export async function searchTaxonomyItems(
   tenantId: string,
   query: string,
   options?: RequestInit,
-): Promise<TaxonomySearchItem[]> {
+): Promise<ScorecardTaxonomyItemDto[]> {
   const result = await fetchWrapper<ScorecardsSearchResult>(
     buildTaxonomySearchPath(tenantId, query),
     options,
@@ -64,8 +77,8 @@ export async function searchTaxonomyItems(
 export async function fetchScorecard(
   tenantId: string,
   hsisCode: string,
-): Promise<GetTaxonomyScorecardResponse> {
-  const result = await fetchWrapper<GetTaxonomyScorecardResponse>(
+): Promise<TaxonomyScorecardResponseDto> {
+  const result = await fetchWrapper<TaxonomyScorecardResponseDto>(
     buildTaxonomyScorecardPath(tenantId, hsisCode),
   );
 
@@ -80,12 +93,12 @@ export async function saveScorecard(
   tenantId: string,
   hsisCode: string,
   body: UpdateTaxonomyScorecardRequest,
-): Promise<UpdateTaxonomyScorecardResponse> {
+): Promise<UpdateTaxonomyScorecardResponseDto> {
   const queryParams = new URLSearchParams({
     draft: body.draft ? 'true' : 'false',
   });
 
-  const result = await fetchWrapper<UpdateTaxonomyScorecardResponse>(
+  const result = await fetchWrapper<UpdateTaxonomyScorecardResponseDto>(
     `${buildTaxonomyScorecardPath(tenantId, hsisCode)}?${queryParams.toString()}`,
     {
       method: 'PUT',

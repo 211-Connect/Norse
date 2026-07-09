@@ -1,4 +1,4 @@
-import { TaxonomySearchItem } from '@/types/taxonomyScorecard';
+import { ScorecardTaxonomyItemDto } from '@/lib/api/generated/data-contracts';
 
 export type ScorecardsStatusResponse = {
   tenantId: string;
@@ -10,5 +10,5 @@ export type ManagerError = {
 };
 
 export type ScorecardsSearchResult = {
-  items: TaxonomySearchItem[];
+  items: ScorecardTaxonomyItemDto[];
 };

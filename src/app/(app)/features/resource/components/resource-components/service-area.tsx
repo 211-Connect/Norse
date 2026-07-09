@@ -25,6 +25,7 @@ export function ServiceAreaComponent({ resource }: { resource: Resource }) {
     <Datum
       icon={Map}
       title={t('service_area')}
+      labelAs="h3"
       description={serviceArea}
       subdescription={serviceAreaDetails}
     />

@@ -289,6 +289,10 @@ export const taxonomyScorecardsUpdate: Endpoint = {
         typeof req.query?.draft === 'string'
           ? req.query.draft.trim().toLowerCase() === 'true'
           : false;
+      const updatedByEmail =
+        !draft && typeof req.user?.email === 'string' && req.user.email.trim()
+          ? req.user.email.trim()
+          : undefined;
 
       const result = await updateScorecard({
         tenantId,
@@ -298,6 +302,7 @@ export const taxonomyScorecardsUpdate: Endpoint = {
           include_children: includeChildren,
           include_siblings: includeSiblings,
           draft,
+          updated_by_email: updatedByEmail,
         },
       });
 

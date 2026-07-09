@@ -225,7 +225,6 @@ async function hasActiveSession(request: NextRequest): Promise<boolean> {
   }
 }
 
-// Add a session_id to the cookies of the user for tracking purposes
 export async function proxy(request: NextRequest) {
   if (request.method === 'POST' && request.url.includes('/[locale]')) {
     edgeLog('warn', 'potentially_malicious_request_blocked', {

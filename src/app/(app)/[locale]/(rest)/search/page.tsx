@@ -24,6 +24,8 @@ import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { getSortOption } from '@/app/(app)/shared/utils/getSortOption';
 import { parseCommaSeparatedValues } from '@/app/(app)/shared/utils/parseCommaSeparatedValues';
 import { createLogger } from '@/lib/logger';
+import { toBbox } from '@/app/(app)/shared/lib/utils';
+import { arcjetProtectPage } from '@/lib/arcjet';
 
 import { UmamiEvent, trackUmamiEvent } from '../../../shared/lib/umami';
 
@@ -111,7 +113,7 @@ const getPageData = cache(async function (
         ...searchQuery,
         coordinates: searchQuery.coordinates ?? placeMetadata.coordinates,
         placeType: placeMetadata.place_type,
-        bbox: placeMetadata.bbox,
+        bbox: toBbox(placeMetadata.bbox),
       };
 
       try {
@@ -233,16 +235,26 @@ export default async function SearchPage({
   params: Promise<{ locale: string }>;
   searchParams: Promise<RawSearchParams>;
 }) {
+  const [paramsResult, searchParamsResult, cookieList] = await Promise.all([
+    params,
+    searchParams,
+    getCookies({ cookies }),
+  ]);
+
+  const queryString = qs.stringify(searchParamsResult, {
+    addQueryPrefix: true,
+  });
+  const locale = paramsResult.locale;
+  const appConfig = await getAppConfigWithoutHost(locale);
+  await arcjetProtectPage(
+    `/search${queryString}`,
+    appConfig.tenantId || 'unknown',
+  );
+
   const headersList = await headers();
   const nonce = headersList.get('x-nonce') ?? '';
   const device = getServerDevice(headersList.get('user-agent') ?? '');
 
-  const [paramsResult, searchParamsResult, cookieList] = await Promise.all([
-    await params,
-    await searchParams,
-    getCookies({ cookies }),
-  ]);
-  const locale = paramsResult.locale;
   const aiSearchAlert =
     typeof searchParamsResult.a === 'string' ? searchParamsResult.a : undefined;
 
