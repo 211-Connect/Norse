@@ -56,15 +56,13 @@ export const ResultsEvents = ({
         locationContext,
       );
 
-      if (totalResults !== 0) {
-        return;
+      if (totalResults) {
+        trackUmamiEvent(UmamiEvent.SearchZeroResults, {
+          query: String(searchParamsObject.query ?? ''),
+          query_label: String(searchParamsObject.query_label ?? ''),
+          ...locationPayload,
+        });
       }
-
-      trackUmamiEvent(UmamiEvent.SearchZeroResults, {
-        query: String(searchParamsObject.query ?? ''),
-        query_label: String(searchParamsObject.query_label ?? ''),
-        ...locationPayload,
-      });
     };
 
     void trackSearchEvents();
