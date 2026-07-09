@@ -5,7 +5,10 @@ import { useEffect } from 'react';
 
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
-import { createResultsEvent } from '@/app/(app)/shared/lib/google-tag-manager';
+import {
+  createResultsEvent,
+  SearchLocationContext,
+} from '@/app/(app)/shared/lib/google-tag-manager';
 import { buildSearchLocationPayload } from '@/app/(app)/shared/lib/search-location-meta';
 import { UmamiEvent, trackUmamiEvent } from '@/app/(app)/shared/lib/umami';
 import {
@@ -30,17 +33,7 @@ export const ResultsEvents = ({
   useEffect(() => {
     let isCancelled = false;
 
-    createResultsEvent(
-      { results, total: totalResults },
-      searchParamsObject,
-      appConfig.sessionId,
-    );
-
-    const trackZeroResults = async () => {
-      if (totalResults !== 0) {
-        return;
-      }
-
+    const trackSearchEvents = async () => {
       const locationPayload = await buildSearchLocationPayload(
         searchCoordinates,
         userCoordinates,
@@ -51,6 +44,22 @@ export const ResultsEvents = ({
         return;
       }
 
+      const locationContext: SearchLocationContext = {
+        place: locationPayload?.searchCity || null,
+        postcode: locationPayload?.searchZipCode || null,
+      };
+
+      createResultsEvent(
+        { results, total: totalResults },
+        searchParamsObject,
+        appConfig.sessionId,
+        locationContext,
+      );
+
+      if (totalResults !== 0) {
+        return;
+      }
+
       trackUmamiEvent(UmamiEvent.SearchZeroResults, {
         query: String(searchParamsObject.query ?? ''),
         query_label: String(searchParamsObject.query_label ?? ''),
@@ -58,7 +67,7 @@ export const ResultsEvents = ({
       });
     };
 
-    void trackZeroResults();
+    void trackSearchEvents();
 
     return () => {
       isCancelled = true;
