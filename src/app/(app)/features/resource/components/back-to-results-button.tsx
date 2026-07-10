@@ -10,7 +10,6 @@ import {
   buttonVariants,
 } from '@/app/(app)/shared/components/ui/button';
 import { usePrevUrl } from '@/app/(app)/shared/hooks/use-prev-url';
-import { createLinkEvent } from '@/app/(app)/shared/lib/google-tag-manager';
 import { cn } from '@/app/(app)/shared/lib/utils';
 
 export function BackToResultsButton() {
@@ -40,7 +39,6 @@ export function BackToResultsButton() {
     <NextLink
       className={cn(buttonVariants({ variant: 'outline' }), 'flex gap-1')}
       href={backUrl}
-      onClick={createLinkEvent}
       prefetch={false}
     >
       <ChevronLeft aria-hidden="true" className="size-4" />
