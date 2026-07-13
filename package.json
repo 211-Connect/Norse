@@ -126,7 +126,7 @@
     "react-to-print": "^3.1.1",
     "recharts": "^3.8.0",
     "remove-markdown": "~0.6.4",
-    "sharp": "0.35.2",
+    "sharp": "0.35.3",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.6.0",
     "tslib": "^2.8.1",
