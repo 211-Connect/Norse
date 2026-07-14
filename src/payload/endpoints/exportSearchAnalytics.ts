@@ -7,6 +7,7 @@ import { analyticsApiClient } from '@/lib/api/clients';
 import { isSuperAdmin, isSupport } from '../collections/Users/access/roles';
 import { getConfiguredWebsiteIds } from '../utilities/getConfiguredWebsiteIds';
 import { getUserTenantIDs } from '../utilities/getUserTenantIDs';
+import { Tenant } from '../payload-types';
 
 dayjs.extend(utc);
 
@@ -91,7 +92,7 @@ export const exportSearchAnalytics: Endpoint = {
       return Response.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    let tenant: any;
+    let tenant: Tenant;
     try {
       tenant = await req.payload.findByID({
         collection: 'tenants',
