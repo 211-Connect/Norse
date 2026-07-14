@@ -11,7 +11,6 @@
  */
 
 import {
-  GeocodingControllerClearCacheData,
   GeocodingControllerForwardGeocodeData,
   GeocodingControllerForwardGeocodeParams,
   GeocodingControllerReverseGeocodeData,
@@ -57,21 +56,6 @@ export class Geocoding<
       path: `/geocoding/reverse`,
       method: "GET",
       query: query,
-      format: "json",
-      ...params,
-    });
-  /**
-   * @description Clears all cached geocoding results. This endpoint requires internal API authentication.
-   *
-   * @tags Geocoding
-   * @name GeocodingControllerClearCache
-   * @summary Clear geocoding cache
-   * @request DELETE:/geocoding/cache
-   */
-  geocodingControllerClearCache = (params: RequestParams = {}) =>
-    this.request<GeocodingControllerClearCacheData, void>({
-      path: `/geocoding/cache`,
-      method: "DELETE",
       format: "json",
       ...params,
     });

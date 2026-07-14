@@ -22,6 +22,7 @@ import { Users } from './collections/Users';
 import { isSuperAdmin, isSupport } from './collections/Users/access/roles';
 import { clearCache } from './endpoints/clearCache';
 import { duplicateTenant } from './endpoints/duplicateTenant';
+import { exportSearchAnalytics } from './endpoints/exportSearchAnalytics';
 import { keycloakVerifiedUsers } from './endpoints/keycloakVerifiedUsers';
 import { populateApiConfigCache } from './endpoints/populateApiConfigCache';
 import { translateEndpoint } from './endpoints/translate';
@@ -51,6 +52,7 @@ const endpoints: Endpoint[] = [
   populateApiConfigCache,
   translateEndpoint,
   duplicateTenant,
+  exportSearchAnalytics,
   umamiProxy,
   umamiWebsites,
   taxonomyScorecardsStatus,
