@@ -4,6 +4,7 @@ import { Table } from '@payloadcms/ui';
 import type { Column } from 'payload';
 import { type ReactNode, memo, useEffect, useMemo, useState } from 'react';
 
+import { WidgetInfoButton } from './WidgetInfoButton';
 import type { MetricEntry } from './types';
 
 type Row = MetricEntry;
@@ -17,6 +18,7 @@ export const MetricsTable = memo(function MetricsTable({
   onPageRowsChange,
   footerStart,
   emptyState,
+  description,
 }: {
   title: string;
   colLabel: string;
@@ -26,6 +28,7 @@ export const MetricsTable = memo(function MetricsTable({
   onPageRowsChange?: (rows: Row[]) => void;
   footerStart?: ReactNode;
   emptyState?: ReactNode;
+  description?: string;
 }) {
   if (rows.length === 0 && !emptyState) return null;
 
@@ -97,12 +100,16 @@ export const MetricsTable = memo(function MetricsTable({
         <h4
           style={{
             margin: 0,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.375rem',
             fontSize: '1rem',
             fontWeight: 600,
             color: 'var(--theme-text)',
           }}
         >
           {title}
+          <WidgetInfoButton description={description} />
         </h4>
         <div style={{ flex: 1, overflow: 'auto' }}>
           {rows.length === 0 ? (

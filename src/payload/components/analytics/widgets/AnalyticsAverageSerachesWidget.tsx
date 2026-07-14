@@ -2,6 +2,7 @@
 
 import { usePaths, useSessions } from '../useAnalyticsData';
 import { SingleStatCardWidget } from './SingleStatCardWidget';
+import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 
 type AverageSearchesData = {
   current: number;
@@ -31,6 +32,7 @@ function useAverageSearchesData() {
 export default function AnalyticsAverageSearchesWidget() {
   return (
     <SingleStatCardWidget
+      description={WIDGET_INFO[WidgetSlug.AverageSearches]}
       label="Average Searches / Session"
       dataSource="custom"
       useData={useAverageSearchesData}

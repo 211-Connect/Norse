@@ -5,6 +5,7 @@ import { Banner, StaggeredShimmers } from '@payloadcms/ui';
 import { getLanguageName } from '../../../../app/(app)/shared/lib/language-names';
 import { MetricsTable } from '../MetricsTable';
 import { useLanguageSwitchDestinations } from '../useAnalyticsData';
+import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 
 export default function LanguageSwitchDestinationsWidget() {
   const { loading, error, data } = useLanguageSwitchDestinations();
@@ -32,6 +33,7 @@ export default function LanguageSwitchDestinationsWidget() {
   return (
     <MetricsTable
       title="Language switches by destination"
+      description={WIDGET_INFO[WidgetSlug.LanguageSwitchDestinations]}
       colLabel="Destination language"
       colValue="Count"
       rows={rows}

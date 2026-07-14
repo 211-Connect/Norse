@@ -7,6 +7,7 @@ import { MetricsTable } from '../MetricsTable';
 import { MetricEntry, ResourceTitleEntry } from '../types';
 import { usePaths } from '../useAnalyticsData';
 import { extractResourceId } from '../utils';
+import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 
 export default function ResourceTitlesWidget() {
   const { loading, error, data } = usePaths();
@@ -110,6 +111,7 @@ export default function ResourceTitlesWidget() {
   return (
     <MetricsTable
       title="Resource clicks"
+      description={WIDGET_INFO[WidgetSlug.ResourceTitles]}
       colLabel="Resource"
       colValue="Referrals"
       rows={rowsWithResolvedTitles}

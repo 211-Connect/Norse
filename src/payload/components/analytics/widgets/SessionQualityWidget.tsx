@@ -2,6 +2,7 @@
 
 import { PieChartWidgetSegment } from '../PieChartWidget';
 import { UmamiSession } from '../types';
+import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 import { SessionsPieWidget } from './SessionsPieWidget';
 
 export interface SessionQuality {
@@ -64,6 +65,8 @@ export default function SessionQualityWidget() {
     <SessionsPieWidget
       buildSegments={buildSegments}
       errorTitle="Could not load session quality."
+      title="Session Quality"
+      description={WIDGET_INFO[WidgetSlug.SessionQuality]}
     />
   );
 }

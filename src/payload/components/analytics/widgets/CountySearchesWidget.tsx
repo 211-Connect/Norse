@@ -4,6 +4,7 @@ import { Banner, StaggeredShimmers } from '@payloadcms/ui';
 
 import { AreaSearchesTable } from '../AreaSearchesTable';
 import { useAreaSearchMetrics } from '../useAnalyticsData';
+import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 
 export default function CountySearchesWidget() {
   const { loading, error, data } = useAreaSearchMetrics();
@@ -25,6 +26,7 @@ export default function CountySearchesWidget() {
       areaLabel="County"
       rows={data?.countyRows ?? []}
       emptyMessage="No county search data in this period."
+      description={WIDGET_INFO[WidgetSlug.CountySearches]}
     />
   );
 }

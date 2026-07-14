@@ -11,6 +11,8 @@ import {
   YAxis,
 } from 'recharts';
 
+import { WidgetInfoButton } from './WidgetInfoButton';
+
 export interface LineChartDataPoint {
   [key: string]: string | number;
 }
@@ -20,6 +22,7 @@ interface ChartProps {
   xAxisKey?: string;
   data: LineChartDataPoint[];
   color?: string;
+  description?: string;
 }
 
 const CHART_MARGIN = { top: 5, right: 20, left: 0, bottom: 5 };
@@ -31,10 +34,21 @@ export const Chart = memo(function Chart({
   xAxisKey = 'date',
   data,
   color = '#4f46e5',
+  description,
 }: ChartProps) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <h3 style={{ margin: '0 0 0.5rem 0' }}>{title}</h3>
+      <h3
+        style={{
+          margin: '0 0 0.5rem 0',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.375rem',
+        }}
+      >
+        {title}
+        <WidgetInfoButton description={description} />
+      </h3>
       <div style={{ flex: 1, minHeight: 0 }}>
         <ResponsiveContainer
           width="100%"

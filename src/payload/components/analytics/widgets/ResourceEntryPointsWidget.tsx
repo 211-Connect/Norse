@@ -5,6 +5,7 @@ import { Banner, StaggeredShimmers } from '@payloadcms/ui';
 import { ResourceEntry } from '../../../../app/(app)/shared/lib/umami';
 import { MetricsTable } from '../MetricsTable';
 import { useResourceByEntry } from '../useAnalyticsData';
+import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 
 const ENTRY_LABELS: Record<string, string> = {
   [ResourceEntry.SearchCard]: 'Search results card',
@@ -57,6 +58,7 @@ export default function ResourceEntryPointsWidget() {
   return (
     <MetricsTable
       title="Resource page entry points"
+      description={WIDGET_INFO[WidgetSlug.ResourceEntryPoints]}
       colLabel="Source"
       colValue="Views"
       rows={rows}

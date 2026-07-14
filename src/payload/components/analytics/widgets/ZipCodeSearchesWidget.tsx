@@ -4,6 +4,7 @@ import { Banner, StaggeredShimmers } from '@payloadcms/ui';
 
 import { AreaSearchesTable } from '../AreaSearchesTable';
 import { useAreaSearchMetrics } from '../useAnalyticsData';
+import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 
 export default function ZipCodeSearchesWidget() {
   const { loading, error, data } = useAreaSearchMetrics();
@@ -25,6 +26,7 @@ export default function ZipCodeSearchesWidget() {
       areaLabel="Zip code"
       rows={data?.zipCodeRows ?? []}
       emptyMessage="No zip code search data in this period."
+      description={WIDGET_INFO[WidgetSlug.ZipCodeSearches]}
     />
   );
 }

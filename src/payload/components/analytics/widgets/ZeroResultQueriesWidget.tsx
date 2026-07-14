@@ -4,6 +4,7 @@ import { Banner, StaggeredShimmers } from '@payloadcms/ui';
 
 import { MetricsTable } from '../MetricsTable';
 import { useZeroResultQueries } from '../useAnalyticsData';
+import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 
 export default function ZeroResultQueriesWidget() {
   const { loading, error, data } = useZeroResultQueries();
@@ -22,8 +23,9 @@ export default function ZeroResultQueriesWidget() {
   return (
     <MetricsTable
       title="No result searches"
+      description={WIDGET_INFO[WidgetSlug.ZeroResultQueries]}
       colLabel="Query"
-      colValue="Referrals"
+      colValue="Count"
       rows={data?.zeroResultQueries ?? []}
     />
   );

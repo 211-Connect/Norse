@@ -4,6 +4,8 @@ import { Banner, StaggeredShimmers } from '@payloadcms/ui';
 import dynamic from 'next/dynamic';
 
 import { useSessionHeatmap } from '../useAnalyticsData';
+import { WidgetInfoButton } from '../WidgetInfoButton';
+import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 
 const MAP_CENTER: [number, number] = [-98.5795, 39.8293];
 const MAP_ZOOM = 3;
@@ -28,12 +30,25 @@ export default function AnalyticsMapWidget() {
   }
 
   return (
-    <div style={{ height: '400px' }}>
-      <AnalyticsMap
-        center={MAP_CENTER}
-        zoom={MAP_ZOOM}
-        heatmapPoints={data?.heatmapPoints ?? []}
-      />
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+      <h3
+        style={{
+          margin: 0,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.375rem',
+        }}
+      >
+        Heat Map
+        <WidgetInfoButton description={WIDGET_INFO[WidgetSlug.Map]} />
+      </h3>
+      <div style={{ height: '400px' }}>
+        <AnalyticsMap
+          center={MAP_CENTER}
+          zoom={MAP_ZOOM}
+          heatmapPoints={data?.heatmapPoints ?? []}
+        />
+      </div>
     </div>
   );
 }
