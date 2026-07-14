@@ -10,6 +10,7 @@ import sharp from 'sharp';
 
 import { getNumberFromString } from '@/utils/getNumberFromString';
 
+import { WidgetSlug } from './components/analytics/widgetInfo';
 import { OrchestrationConfig } from './collections/OrchestrationConfig';
 import { ResourceDirectories } from './collections/ResourceDirectories';
 import { TenantMedia } from './collections/TenantMedia';
@@ -135,182 +136,182 @@ const config = buildConfig({
     dashboard: {
       widgets: [
         {
-          slug: 'analytics-total-users',
+          slug: WidgetSlug.TotalUsers,
           Component:
             '@/payload/components/analytics/widgets/TotalUsersWidget#default',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
         {
-          slug: 'analytics-searches',
+          slug: WidgetSlug.Searches,
           Component:
             '@/payload/components/analytics/widgets/SearchesWidget#default',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
         {
-          slug: 'analytics-average-searches',
+          slug: WidgetSlug.AverageSearches,
           Component:
             '@/payload/components/analytics/widgets/AnalyticsAverageSerachesWidget#default',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
         {
-          slug: 'analytics-resource-views',
+          slug: WidgetSlug.ResourceViews,
           Component:
             '@/payload/components/analytics/widgets/ResourceViewsWidget#default',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
         {
-          slug: 'analytics-zero-results',
+          slug: WidgetSlug.ZeroResults,
           Component:
             '@/payload/components/analytics/widgets/ZeroResultsWidget#default',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
         {
-          slug: 'analytics-website-clicks',
+          slug: WidgetSlug.WebsiteClicks,
           Component:
             '@/payload/components/analytics/widgets/WebsiteClicksWidget#default',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
         {
-          slug: 'analytics-phone-calls',
+          slug: WidgetSlug.PhoneCalls,
           Component:
             '@/payload/components/analytics/widgets/PhoneCallsWidget#default',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
         {
-          slug: 'analytics-directions',
+          slug: WidgetSlug.Directions,
           Component:
             '@/payload/components/analytics/widgets/DirectionsWidget#default',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
         {
-          slug: 'analytics-total-referrals',
+          slug: WidgetSlug.TotalReferrals,
           Component:
             '@/payload/components/analytics/widgets/TotalReferralsWidget#default',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
         {
-          slug: 'analytics-widget-searches',
+          slug: WidgetSlug.WidgetSearches,
           Component:
             '@/payload/components/analytics/widgets/WidgetSearchesWidget#default',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
         {
-          slug: 'analytics-callout-clicks',
+          slug: WidgetSlug.CalloutClicks,
           Component:
             '@/payload/components/analytics/widgets/CalloutClicksWidget#default',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
         {
-          slug: 'analytics-page-views',
+          slug: WidgetSlug.PageViews,
           Component:
             '@/payload/components/analytics/widgets/PageViewsWidget#default',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
         {
-          slug: 'analytics-pageviews-chart',
+          slug: WidgetSlug.PageviewsChart,
           Component:
             '@/payload/components/analytics/widgets/PageviewsChartWidget#default',
           minWidth: 'large',
           maxWidth: 'full',
         },
         {
-          slug: 'analytics-map',
+          slug: WidgetSlug.Map,
           Component:
             '@/payload/components/analytics/widgets/AnalyticsMapWidget#default',
           minWidth: 'medium',
           maxWidth: 'full',
         },
         {
-          slug: 'analytics-resource-titles',
+          slug: WidgetSlug.ResourceTitles,
           Component:
             '@/payload/components/analytics/widgets/ResourceTitlesWidget#default',
           minWidth: 'medium',
           maxWidth: 'full',
         },
         {
-          slug: 'analytics-search-queries',
+          slug: WidgetSlug.SearchQueries,
           Component:
             '@/payload/components/analytics/widgets/SearchQueriesWidget#default',
           minWidth: 'medium',
           maxWidth: 'full',
         },
         {
-          slug: 'analytics-zip-code-searches',
+          slug: WidgetSlug.ZipCodeSearches,
           Component:
             '@/payload/components/analytics/widgets/ZipCodeSearchesWidget#default',
           minWidth: 'medium',
           maxWidth: 'full',
         },
         {
-          slug: 'analytics-county-searches',
+          slug: WidgetSlug.CountySearches,
           Component:
             '@/payload/components/analytics/widgets/CountySearchesWidget#default',
           minWidth: 'medium',
           maxWidth: 'full',
         },
         {
-          slug: 'analytics-resource-entry-points',
+          slug: WidgetSlug.ResourceEntryPoints,
           Component:
             '@/payload/components/analytics/widgets/ResourceEntryPointsWidget#default',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
         {
-          slug: 'analytics-zero-result-queries',
+          slug: WidgetSlug.ZeroResultQueries,
           Component:
             '@/payload/components/analytics/widgets/ZeroResultQueriesWidget#default',
           minWidth: 'medium',
           maxWidth: 'full',
         },
         {
-          slug: 'analytics-session-quality',
+          slug: WidgetSlug.SessionQuality,
           Component:
             '@/payload/components/analytics/widgets/SessionQualityWidget#default',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
         {
-          slug: 'analytics-device-types',
+          slug: WidgetSlug.DeviceTypes,
           Component:
             '@/payload/components/analytics/widgets/DeviceTypesWidget#default',
           minWidth: 'medium',
           maxWidth: 'full',
         },
         {
-          slug: 'analytics-safe-exit-clicks',
+          slug: WidgetSlug.SafeExitClicks,
           Component:
             '@/payload/components/analytics/widgets/SafeExitClicksWidget#default',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
         {
-          slug: 'analytics-language-switch-destinations',
+          slug: WidgetSlug.LanguageSwitchDestinations,
           Component:
             '@/payload/components/analytics/widgets/LanguageSwitchDestinationsWidget#default',
           minWidth: 'medium',
           maxWidth: 'full',
         },
         {
-          slug: 'analytics-favorite-add-to-list',
+          slug: WidgetSlug.FavoriteAddToList,
           Component:
             '@/payload/components/analytics/widgets/FavoriteAddToListWidget#default',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
         {
-          slug: 'analytics-verified-users',
+          slug: WidgetSlug.VerifiedUsers,
           Component:
             '@/payload/components/analytics/widgets/VerifiedUsersWidget#default',
           minWidth: 'x-small',

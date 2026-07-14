@@ -5,6 +5,7 @@ import type { Column } from 'payload';
 import { memo, useEffect, useMemo, useState } from 'react';
 
 import type { AreaMetricsRow } from './types';
+import { WidgetInfoButton } from './WidgetInfoButton';
 
 type SortKey = 'area' | 'totalSearches' | 'zeroSearches' | 'zeroRate';
 type SortDirection = 'asc' | 'desc';
@@ -15,16 +16,18 @@ export const AreaSearchesTable = memo(function AreaSearchesTable({
   rows,
   emptyMessage,
   pageSize = 10,
+  description,
 }: {
   title: string;
   areaLabel: string;
   rows: AreaMetricsRow[];
   emptyMessage: string;
   pageSize?: number;
+  description?: string;
 }) {
   if (rows.length === 0) {
     return (
-      <Container title={title}>
+      <Container title={title} description={description}>
         <EmptyState message={emptyMessage} />
       </Container>
     );
@@ -149,7 +152,7 @@ export const AreaSearchesTable = memo(function AreaSearchesTable({
   const canGoNext = page < totalPages;
 
   return (
-    <Container title={title}>
+    <Container title={title} description={description}>
       <div style={{ flex: 1, overflow: 'auto' }}>
         <Table columns={columns} data={data} appearance="condensed" />
       </div>
@@ -208,9 +211,11 @@ export const AreaSearchesTable = memo(function AreaSearchesTable({
 
 function Container({
   title,
+  description,
   children,
 }: {
   title: string;
+  description?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -234,12 +239,16 @@ function Container({
         <h4
           style={{
             margin: 0,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.375rem',
             fontSize: '1rem',
             fontWeight: 600,
             color: 'var(--theme-text)',
           }}
         >
           {title}
+          <WidgetInfoButton description={description} />
         </h4>
         {children}
       </div>

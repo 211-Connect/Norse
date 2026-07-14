@@ -13,15 +13,31 @@ type PathsSelector = (data: PathsData) => Metric | null;
 type EventsSelector = (data: EventsData) => Metric | null;
 
 export type SingleStatCardWidgetProps =
-  | { label: string; dataSource: 'stats'; selector: StatsSelector }
-  | { label: string; dataSource: 'paths'; selector: PathsSelector }
-  | { label: string; dataSource: 'events'; selector: EventsSelector }
+  | {
+      label: string;
+      dataSource: 'stats';
+      selector: StatsSelector;
+      description?: string;
+    }
+  | {
+      label: string;
+      dataSource: 'paths';
+      selector: PathsSelector;
+      description?: string;
+    }
+  | {
+      label: string;
+      dataSource: 'events';
+      selector: EventsSelector;
+      description?: string;
+    }
   | {
       label: string;
       dataSource: 'custom';
       useData: () => AsyncData<unknown>;
       selector: (data: unknown) => Metric | null;
       formatValue?: (value: number) => string;
+      description?: string;
     };
 
 function toTrend(current: number, previous: number): number | undefined {
@@ -34,11 +50,13 @@ function StatCardFromData<T>({
   useData,
   selector,
   formatValue,
+  description,
 }: {
   label: string;
   useData: () => AsyncData<T>;
   selector: (data: T) => Metric | null;
   formatValue?: (value: number) => string;
+  description?: string;
 }) {
   const { loading, error, data } = useData();
 
@@ -62,6 +80,7 @@ function StatCardFromData<T>({
           : metric.current.toLocaleString()
       }
       trend={toTrend(metric.current, metric.previous)}
+      description={description}
     />
   );
 }
@@ -74,6 +93,7 @@ export function SingleStatCardWidget(props: SingleStatCardWidgetProps) {
         useData={props.useData}
         selector={props.selector}
         formatValue={props.formatValue}
+        description={props.description}
       />
     );
   if (props.dataSource === 'stats')
@@ -82,6 +102,7 @@ export function SingleStatCardWidget(props: SingleStatCardWidgetProps) {
         label={props.label}
         useData={useStats}
         selector={props.selector}
+        description={props.description}
       />
     );
   if (props.dataSource === 'paths')
@@ -90,6 +111,7 @@ export function SingleStatCardWidget(props: SingleStatCardWidgetProps) {
         label={props.label}
         useData={usePaths}
         selector={props.selector}
+        description={props.description}
       />
     );
   return (
@@ -97,6 +119,7 @@ export function SingleStatCardWidget(props: SingleStatCardWidgetProps) {
       label={props.label}
       useData={useEvents}
       selector={props.selector}
+      description={props.description}
     />
   );
 }

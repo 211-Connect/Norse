@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 
 import type { AsyncData } from '../useAnalyticsData';
 import { SingleStatCardWidget } from './SingleStatCardWidget';
+import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 
 type VerifiedUsersData = {
   verifiedUsers: number;
@@ -68,6 +69,7 @@ function useVerifiedUsersData(): AsyncData<VerifiedUsersData> {
 export default function VerifiedUsersWidget() {
   return (
     <SingleStatCardWidget
+      description={WIDGET_INFO[WidgetSlug.VerifiedUsers]}
       label="Verified User Accounts"
       dataSource="custom"
       useData={useVerifiedUsersData}

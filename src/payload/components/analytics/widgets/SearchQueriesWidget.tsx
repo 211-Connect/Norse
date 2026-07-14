@@ -7,6 +7,7 @@ import { MetricsTable } from '../MetricsTable';
 import type { MetricEntry, SearchQueryType } from '../types';
 import { usePaths } from '../useAnalyticsData';
 import { mergeSearchByLabelBuckets } from '../utils';
+import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 
 type Filter = 'all' | SearchQueryType;
 
@@ -58,6 +59,7 @@ export default function SearchQueriesWidget() {
       rows={rows}
       footerStart={<FilterPills value={filter} onChange={setFilter} />}
       emptyState={<EmptyState message={emptyMessage} />}
+      description={WIDGET_INFO[WidgetSlug.SearchQueries]}
     />
   );
 }

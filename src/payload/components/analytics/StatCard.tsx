@@ -4,16 +4,20 @@ import { memo } from 'react';
 
 import { ANALYTICS_TREND_COLORS } from '@/app/(app)/shared/theme/theme-config';
 
+import { WidgetInfoButton } from './WidgetInfoButton';
+
 export const StatCard = memo(function StatCard({
   label,
   value,
   trend,
   height = 80,
+  description,
 }: {
   label: string;
   value: string;
   trend?: number;
   height?: string | number;
+  description?: string;
 }) {
   const isPositive = trend !== undefined && trend >= 0;
   const trendColor =
@@ -43,6 +47,9 @@ export const StatCard = memo(function StatCard({
       >
         <span
           style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.375rem',
             fontSize: '1.00rem',
             fontWeight: 700,
             textTransform: 'uppercase',
@@ -51,6 +58,7 @@ export const StatCard = memo(function StatCard({
           }}
         >
           {label}
+          <WidgetInfoButton description={description} />
         </span>
         {trend !== undefined && trend !== 0.0 && (
           <span

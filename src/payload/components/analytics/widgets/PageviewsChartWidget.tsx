@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 
 import { Chart } from '../Chart';
 import { usePageviews } from '../useAnalyticsData';
+import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 
 export default function PageviewsChartWidget() {
   const { loading, error, data } = usePageviews();
@@ -31,7 +32,11 @@ export default function PageviewsChartWidget() {
 
   return (
     <div style={{ height: '400px' }}>
-      <Chart title="Pageviews" data={timelineData} />
+      <Chart
+        title="Pageviews"
+        data={timelineData}
+        description={WIDGET_INFO[WidgetSlug.PageviewsChart]}
+      />
     </div>
   );
 }
