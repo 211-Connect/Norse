@@ -5,6 +5,7 @@ import type { AdminViewServerProps } from 'payload';
 import { Fragment } from 'react';
 
 import DateRange from '../analytics/DateRange';
+import ExportCSVButton from '../analytics/ExportCSVButton';
 import TenantAutoSelect from '../analytics/TenantAutoSelect';
 
 const ANALYTICS_DEFAULT_LAYOUT = [
@@ -78,7 +79,16 @@ export default function AnalyticsView(props: AdminViewServerProps) {
             }}
           >
             <h1 style={{ margin: 0 }}>Analytics</h1>
-            <DateRange />
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '0.75rem',
+              }}
+            >
+              <ExportCSVButton />
+              <DateRange />
+            </div>
           </div>
         </Gutter>
         <DefaultDashboard {...patchedProps} user={user} />
