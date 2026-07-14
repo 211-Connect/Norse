@@ -79,7 +79,13 @@ export default function AnalyticsView(props: AdminViewServerProps) {
             }}
           >
             <h1 style={{ margin: 0 }}>Analytics</h1>
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '0.75rem',
+              }}
+            >
               <ExportCSVButton />
               <DateRange />
             </div>
