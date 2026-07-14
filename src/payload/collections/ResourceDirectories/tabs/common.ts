@@ -14,7 +14,6 @@ export const common: Tab = {
     {
       type: 'array',
       name: 'alert',
-      maxRows: 1,
       access: {
         create: superAdminOrSupportOrTenantAccess,
         update: superAdminOrSupportOrTenantAccess,
