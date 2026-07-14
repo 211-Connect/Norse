@@ -2,10 +2,7 @@ import { Tab } from 'payload';
 
 import { generateUrlFields } from '@/payload/fields/urlField';
 
-import {
-  superAdminAccess,
-  superAdminOrSupportOrTenantAccess,
-} from '../../Users/access/roles';
+import { superAdminOrSupportOrTenantAccess } from '../../Users/access/roles';
 
 export const common: Tab = {
   name: 'common',
@@ -65,8 +62,8 @@ export const common: Tab = {
       type: 'text',
       localized: true,
       access: {
-        create: superAdminAccess,
-        update: superAdminAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
       admin: {
         placeholder: 'Provided by',
@@ -81,8 +78,8 @@ export const common: Tab = {
         plural: 'Data Providers',
       },
       access: {
-        create: superAdminAccess,
-        update: superAdminAccess,
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
       },
       fields: [
         {
