@@ -23,7 +23,7 @@ export default function ZeroResultQueriesWidget() {
     <MetricsTable
       title="No result searches"
       colLabel="Query"
-      colValue="Referrals"
+      colValue="Count"
       rows={data?.zeroResultQueries ?? []}
     />
   );
