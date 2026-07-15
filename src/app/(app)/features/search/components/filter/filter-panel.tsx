@@ -29,9 +29,13 @@ import { useSearchResultsNavigation } from './use-search-results-navigation';
 
 type FilterPanelProps = {
   legacyAiClarifyState?: LegacyAiClarifyState;
+  onLegacyAiClarifyAction: () => void;
 };
 
-export function FilterPanel({ legacyAiClarifyState }: FilterPanelProps) {
+export function FilterPanel({
+  legacyAiClarifyState,
+  onLegacyAiClarifyAction,
+}: FilterPanelProps) {
   const { t } = useTranslation();
   const appConfig = useAppConfig();
   const showAgeFilter = appConfig.featureFlags.showAgeFilter;
@@ -88,6 +92,7 @@ export function FilterPanel({ legacyAiClarifyState }: FilterPanelProps) {
         <MainSearchLayout
           className="flex-1"
           legacyAiClarifyState={legacyAiClarifyState}
+          onLegacyAiClarifyAction={onLegacyAiClarifyAction}
         />
         <Button
           size="sm"

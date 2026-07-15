@@ -4,10 +4,8 @@ import { Metadata } from 'next/types';
 import qs from 'qs';
 import { cache } from 'react';
 
-import { FilterPanel } from '@/app/(app)/features/search/components/filter/filter-panel';
-import { MapContainer } from '@/app/(app)/features/search/components/map-container';
+import { SearchPageShell } from '@/app/(app)/features/search/components/search-page-shell';
 import { ResultsEvents } from '@/app/(app)/features/search/components/results-events';
-import { ResultsSection } from '@/app/(app)/features/search/components/results-section';
 import { DEFAULT_SEARCH_CARD_LAYOUT } from '@/app/(app)/features/search/types/card-layout-config';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
@@ -245,11 +243,11 @@ export default async function SearchPage({
     >
       <h1 className="sr-only">View Search Results</h1>
       <ResultsEvents results={results} totalResults={totalResults} />
-      <div className="flex h-full w-full flex-col md:flex-row">
-        <FilterPanel legacyAiClarifyState={legacyAiClarifyState ?? undefined} />
-        <ResultsSection cardLayout={cardLayout} aiSearchAlert={aiSearchAlert} />
-        <MapContainer />
-      </div>
+      <SearchPageShell
+        legacyAiClarifyState={legacyAiClarifyState ?? undefined}
+        cardLayout={cardLayout}
+        aiSearchAlert={aiSearchAlert}
+      />
     </PageWrapper>
   );
 }

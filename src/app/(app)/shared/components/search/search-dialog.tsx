@@ -45,6 +45,7 @@ export interface SearchDialogProps {
     clarifyOptions: AiPredictOption[];
     selectedClarifyCodes: string[];
   }>;
+  onLegacyAiClarifyAction?: () => void;
   open: boolean;
   setOpen?: (open: boolean) => void;
   restoreFocusElement?: HTMLElement | null;
@@ -55,6 +56,7 @@ export type AiAction = 'predict' | 'skip' | 'confirm';
 export function SearchDialog({
   focusByDefault = 'search',
   initialAiState,
+  onLegacyAiClarifyAction,
   open,
   setOpen,
   restoreFocusElement,
@@ -123,6 +125,7 @@ export function SearchDialog({
       return;
     }
 
+    onLegacyAiClarifyAction?.();
     setActiveAiAction('skip');
     await Promise.resolve();
     const didNavigate = navigateAiSearch();
@@ -141,6 +144,7 @@ export function SearchDialog({
       return;
     }
 
+    onLegacyAiClarifyAction?.();
     const needWeights = buildAiNeedWeights(
       effectiveClarifyOptions,
       selectedClarifyCodes,
@@ -264,6 +268,7 @@ export function SearchDialog({
   }, [focusByDefault, open]);
 
   const closeDialog = useCallback(() => {
+    onLegacyAiClarifyAction?.();
     setOpen?.(false);
 
     if (restoreFocusElement) {
@@ -271,7 +276,7 @@ export function SearchDialog({
         restoreFocusElement.focus({ preventScroll: true });
       }, 20);
     }
-  }, [restoreFocusElement, setOpen]);
+  }, [onLegacyAiClarifyAction, restoreFocusElement, setOpen]);
 
   const handleDialogKeyDown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>) => {
