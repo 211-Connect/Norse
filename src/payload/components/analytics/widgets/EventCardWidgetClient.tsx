@@ -1,6 +1,6 @@
 'use client';
 
-import { StaggeredShimmers, usePreferences } from '@payloadcms/ui';
+import { usePreferences } from '@payloadcms/ui';
 import { useTenantSelection } from '@payloadcms/plugin-multi-tenant/client';
 import dayjs from 'dayjs';
 import { PREFERENCE_KEYS } from 'payload/shared';
@@ -22,6 +22,7 @@ import type { MetricEntry } from '../types';
 import { useEventDataValues, useEvents } from '../useAnalyticsData';
 import { useWidgetId } from '../useWidgetId';
 import { WidgetErrorState } from '../WidgetErrorState';
+import { WidgetSkeleton } from '../WidgetSkeleton';
 
 const SEGMENT_COLORS = [
   '#60a5fa',
@@ -339,11 +340,7 @@ export default function EventCardWidgetClient({
   }
 
   if (contentLoading) {
-    return (
-      <WidgetContainer ref={rootRef}>
-        <StaggeredShimmers count={1} height={80} />
-      </WidgetContainer>
-    );
+    return <WidgetSkeleton height="100%" count={1} shimmerHeight={80} />;
   }
 
   if (contentError) {

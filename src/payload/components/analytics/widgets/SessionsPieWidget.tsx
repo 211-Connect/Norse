@@ -1,18 +1,16 @@
 'use client';
 
-import { StaggeredShimmers } from '@payloadcms/ui';
-
 import { PieChartWidget, PieChartWidgetSegment } from '../PieChartWidget';
 import { UmamiSession } from '../types';
 import { useSessions } from '../useAnalyticsData';
 import { WidgetCard } from '../WidgetCard';
 import { WidgetErrorState } from '../WidgetErrorState';
+import { WidgetSkeleton } from '../WidgetSkeleton';
 
 type SessionsPieWidgetProps = {
   buildSegments: (sessions: UmamiSession[]) => PieChartWidgetSegment[];
   errorTitle: string;
   errorDescription?: string;
-  shimmerHeight?: number;
   title: string;
   description?: string;
 };
@@ -21,11 +19,14 @@ export function SessionsPieWidget({
   buildSegments,
   errorTitle,
   errorDescription,
-  shimmerHeight = 220,
   title,
   description,
 }: SessionsPieWidgetProps) {
   const { loading, error, data, refetch } = useSessions();
+
+  if (loading) {
+    return <WidgetSkeleton height={220} count={1} shimmerHeight={180} />;
+  }
 
   const sessions = data?.sessions ?? [];
 
@@ -42,11 +43,7 @@ export function SessionsPieWidget({
 
   return (
     <WidgetCard title={title} description={description}>
-      {loading ? (
-        <StaggeredShimmers count={1} height={shimmerHeight} />
-      ) : (
-        <PieChartWidget segments={buildSegments(sessions)} />
-      )}
+      <PieChartWidget segments={buildSegments(sessions)} />
     </WidgetCard>
   );
 }

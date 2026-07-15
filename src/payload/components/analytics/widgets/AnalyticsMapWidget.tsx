@@ -1,11 +1,11 @@
 'use client';
 
-import { StaggeredShimmers } from '@payloadcms/ui';
 import dynamic from 'next/dynamic';
 
 import { useSessionHeatmap } from '../useAnalyticsData';
 import { WidgetCard } from '../WidgetCard';
 import { WidgetErrorState } from '../WidgetErrorState';
+import { WidgetSkeleton } from '../WidgetSkeleton';
 import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 
 const MAP_CENTER: [number, number] = [-98.5795, 39.8293];
@@ -18,6 +18,10 @@ const AnalyticsMap = dynamic(
 
 export default function AnalyticsMapWidget() {
   const { loading, error, data, refetch } = useSessionHeatmap();
+
+  if (loading) {
+    return <WidgetSkeleton height={400} count={1} shimmerHeight={400} />;
+  }
 
   if (error) {
     return (
@@ -36,17 +40,13 @@ export default function AnalyticsMapWidget() {
       description={WIDGET_INFO[WidgetSlug.Map]}
       headingLevel="h3"
     >
-      {loading ? (
-        <StaggeredShimmers count={1} height={400} />
-      ) : (
-        <div style={{ height: '400px' }}>
-          <AnalyticsMap
-            center={MAP_CENTER}
-            zoom={MAP_ZOOM}
-            heatmapPoints={data?.heatmapPoints ?? []}
-          />
-        </div>
-      )}
+      <div style={{ height: '400px' }}>
+        <AnalyticsMap
+          center={MAP_CENTER}
+          zoom={MAP_ZOOM}
+          heatmapPoints={data?.heatmapPoints ?? []}
+        />
+      </div>
     </WidgetCard>
   );
 }

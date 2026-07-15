@@ -1,12 +1,13 @@
 'use client';
 
-import { StaggeredShimmers, Table } from '@payloadcms/ui';
+import { Table } from '@payloadcms/ui';
 import type { Column } from 'payload';
 import { memo, useEffect, useMemo, useState } from 'react';
 
 import type { AreaMetricsRow } from './types';
 import { WidgetCard } from './WidgetCard';
 import { WidgetErrorState } from './WidgetErrorState';
+import { WidgetSkeleton } from './WidgetSkeleton';
 
 type SortKey = 'area' | 'totalSearches' | 'zeroSearches' | 'zeroRate';
 type SortDirection = 'asc' | 'desc';
@@ -37,11 +38,7 @@ export const AreaSearchesTable = memo(function AreaSearchesTable({
   errorDescription?: string;
 }) {
   if (loading) {
-    return (
-      <Container title={title} description={description}>
-        <StaggeredShimmers count={5} height={40} />
-      </Container>
-    );
+    return <WidgetSkeleton height="480px" count={5} shimmerHeight={40} />;
   }
 
   if (errorTitle) {

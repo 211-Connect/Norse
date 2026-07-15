@@ -1,6 +1,5 @@
 'use client';
 
-import { StaggeredShimmers } from '@payloadcms/ui';
 import { memo } from 'react';
 import {
   CartesianGrid,
@@ -14,6 +13,7 @@ import {
 
 import { WidgetCard } from './WidgetCard';
 import { WidgetErrorState } from './WidgetErrorState';
+import { WidgetSkeleton } from './WidgetSkeleton';
 
 export interface LineChartDataPoint {
   [key: string]: string | number;
@@ -48,6 +48,10 @@ export const Chart = memo(function Chart({
   errorTitle,
   errorDescription,
 }: ChartProps) {
+  if (loading) {
+    return <WidgetSkeleton height="100%" count={1} shimmerHeight={340} />;
+  }
+
   if (errorTitle) {
     return (
       <WidgetErrorState
@@ -66,32 +70,28 @@ export const Chart = memo(function Chart({
       headingLevel="h3"
       height="100%"
     >
-      {loading ? (
-        <StaggeredShimmers count={1} height={340} />
-      ) : (
-        <div style={{ flex: 1, minHeight: 0 }}>
-          <ResponsiveContainer
-            width="100%"
-            height="100%"
-            initialDimension={{ width: 1, height: 1 }}
-          >
-            <LineChart data={data} margin={CHART_MARGIN}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis dataKey={xAxisKey} tick={TICK_STYLE} />
-              <YAxis tick={TICK_STYLE} />
-              <Tooltip />
-              <Line
-                type="linear"
-                dataKey={title}
-                stroke={color}
-                strokeWidth={2}
-                dot={false}
-                activeDot={LINE_ACTIVE_DOT}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      )}
+      <div style={{ flex: 1, minHeight: 0 }}>
+        <ResponsiveContainer
+          width="100%"
+          height="100%"
+          initialDimension={{ width: 1, height: 1 }}
+        >
+          <LineChart data={data} margin={CHART_MARGIN}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <XAxis dataKey={xAxisKey} tick={TICK_STYLE} />
+            <YAxis tick={TICK_STYLE} />
+            <Tooltip />
+            <Line
+              type="linear"
+              dataKey={title}
+              stroke={color}
+              strokeWidth={2}
+              dot={false}
+              activeDot={LINE_ACTIVE_DOT}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </WidgetCard>
   );
 });
