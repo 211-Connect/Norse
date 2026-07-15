@@ -49,10 +49,22 @@ export function DistanceSelect({
         ?.map((option) => option.value)
         .filter((value): value is number => typeof value === 'number') ?? [];
 
-    return configuredRadiusOptions.length > 0
-      ? configuredRadiusOptions
-      : [15, 30, 45];
-  }, [appConfig?.search?.radiusOptions]);
+    const baseOptions =
+      configuredRadiusOptions.length > 0
+        ? configuredRadiusOptions
+        : [15, 30, 45];
+
+    const numericDistance = Number(distance);
+    const shouldAddCurrentDistance =
+      Number.isFinite(numericDistance) &&
+      numericDistance > 0 &&
+      numericDistance < 1000 &&
+      !baseOptions.includes(numericDistance);
+
+    return shouldAddCurrentDistance
+      ? [...baseOptions, numericDistance].sort((a, b) => a - b)
+      : baseOptions;
+  }, [appConfig?.search?.radiusOptions, distance]);
 
   const hasLocation = coords?.length == 2;
 
@@ -83,7 +95,7 @@ export function DistanceSelect({
         onValueChange={setDistance}
         value={distance}
       >
-        <SelectTrigger id={DISTANCE_SELECT_TRIGGER_ID} className="w-[125px]">
+        <SelectTrigger id={DISTANCE_SELECT_TRIGGER_ID} className="h-8 w-31.25">
           <SelectValue placeholder={t('search.radius_placeholder')} />
         </SelectTrigger>
         <SelectContent>
