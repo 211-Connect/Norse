@@ -19,6 +19,7 @@ import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { filtersAtom, filtersOpenAtom } from '@/app/(app)/shared/store/results';
 import { searchCoordinatesAtom } from '@/app/(app)/shared/store/search';
+import type { LegacyAiClarifyState } from '@/app/(app)/features/search/utils/parseLegacyAiClarifyParams';
 
 import { AgeFilter } from './age-filter';
 import { Filters } from './filters';
@@ -26,7 +27,11 @@ import { useFacetUiConfig } from './use-facet-ui-config';
 import { useScrollOffset } from './use-scroll-offset';
 import { useSearchResultsNavigation } from './use-search-results-navigation';
 
-export function FilterPanel() {
+type FilterPanelProps = {
+  legacyAiClarifyState?: LegacyAiClarifyState;
+};
+
+export function FilterPanel({ legacyAiClarifyState }: FilterPanelProps) {
   const { t } = useTranslation();
   const appConfig = useAppConfig();
   const showAgeFilter = appConfig.featureFlags.showAgeFilter;
@@ -80,7 +85,10 @@ export function FilterPanel() {
       }}
     >
       <div className="flex items-center print:hidden">
-        <MainSearchLayout className="flex-1" />
+        <MainSearchLayout
+          className="flex-1"
+          legacyAiClarifyState={legacyAiClarifyState}
+        />
         <Button
           size="sm"
           variant="ghost"

@@ -1,10 +1,7 @@
 'use client';
 
-import { useAtomValue, useSetAtom } from 'jotai';
-import { useRouter } from 'next/navigation';
 import {
   FocusEvent,
-  FormEvent,
   KeyboardEvent,
   useCallback,
   useEffect,
@@ -17,7 +14,6 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { useAppConfig } from '../../hooks/use-app-config';
-import { useFlag } from '../../hooks/use-flag';
 import {
   LOCATION_INPUT_ID,
   SEARCH_DIALOG_DESCRIPTION_ID,
@@ -25,72 +21,66 @@ import {
   SEARCH_DIALOG_TITLE_ID,
   SEARCH_INPUT_ID,
 } from '../../lib/constants';
-import { buildSearchLocationPayload } from '../../lib/search-location-meta';
-import { persistSearchDistancePreference } from '../../lib/search-distance-preference';
-import { UmamiEvent, trackUmamiEvent } from '../../lib/umami';
 import { cn, getScrollbarWidth } from '../../lib/utils';
 import {
   AiClassificationScenario,
   AiPredictOption,
-  predictSearchNeeds,
   reRankSearchNeeds,
 } from '../../services/ai-classification-search-service';
-import {
-  searchCoordinatesAtom,
-  searchDistanceAtom,
-  userCoordinatesAtom,
-} from '../../store/search';
-import {
-  buildAiNeedWeights,
-  buildAiSearchUrl,
-  normalizeHsisTaxonomies,
-} from '../../utils/ai-search';
-import { createUrlParamsForSearch } from '../../utils/createUrlParamsForSearch';
+import { buildAiNeedWeights } from '../../../features/search/utils/buildAiNeedWeights';
 import { AiClassificationOptions } from './ai-classification-options';
 import { LocationSearchBar } from './location-search-bar';
 import { SearchDialogHeaderActions } from './search-dialog-header-actions';
-import { useMainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
 import { SearchBar } from './search-bar';
+import {
+  useNavigateAiSearch,
+  useUserLocationNavigator,
+} from '@/app/(app)/features/search/hooks';
+import { useOnSearchSubmit } from '@/app/(app)/features/search/hooks/useOnSearchSubmit';
 
 export interface SearchDialogProps {
   focusByDefault?: 'search' | 'location';
+  initialAiState?: Partial<{
+    scenario: AiClassificationScenario;
+    clarifyOptions: AiPredictOption[];
+    selectedClarifyCodes: string[];
+  }>;
   open: boolean;
   setOpen?: (open: boolean) => void;
   restoreFocusElement?: HTMLElement | null;
 }
 
+export type AiAction = 'predict' | 'skip' | 'confirm';
+
 export function SearchDialog({
   focusByDefault = 'search',
+  initialAiState,
   open,
   setOpen,
   restoreFocusElement,
 }: SearchDialogProps) {
   const { t, i18n } = useTranslation('common');
   const [isPending, startTransition] = useTransition();
-  const router = useRouter();
   const appConfig = useAppConfig();
-  const requireUserLocation = useFlag('requireUserLocation');
   const scrollPositionRef = useRef(0);
   const initialRenderRef = useRef(true);
   const [mounted, setMounted] = useState(false);
   const dialogRef = useRef<HTMLDivElement | null>(null);
 
-  const distance = useAtomValue(searchDistanceAtom);
-  const { search, setSearch } = useMainSearchLayoutContext();
-  const setUserCoordinates = useSetAtom(userCoordinatesAtom);
-  const searchCoordinates = useAtomValue(searchCoordinatesAtom);
-  const userCoordinates = useAtomValue(userCoordinatesAtom);
-  const [aiSearchScenario, setAiSearchScenario] =
-    useState<AiClassificationScenario>();
-  const [activeAiAction, setActiveAiAction] = useState<
-    'predict' | 'skip' | 'confirm' | null
-  >(null);
+  const [aiSearchScenario, setAiSearchScenario] = useState<
+    AiClassificationScenario | undefined
+  >(initialAiState?.scenario);
+  const [activeAiAction, setActiveAiAction] = useState<AiAction | null>(null);
   const [isLocationActive, setIsLocationActive] = useState(false);
   const [clarifyOptions, setClarifyOptions] = useState<
     AiPredictOption[] | null
-  >(null);
+  >(
+    initialAiState?.clarifyOptions && initialAiState.clarifyOptions.length > 0
+      ? initialAiState.clarifyOptions
+      : null,
+  );
   const [selectedClarifyCodes, setSelectedClarifyCodes] = useState<string[]>(
-    [],
+    initialAiState?.selectedClarifyCodes ?? [],
   );
   const [clarifyValidationError, setClarifyValidationError] = useState('');
 
@@ -104,221 +94,20 @@ export function SearchDialog({
     setClarifyValidationError('');
   }, []);
 
-  const navigateClassicSearch = useCallback(
-    async (locationPayload: Record<string, unknown>) => {
-      startTransition(() => {
-        const query = search.query || search.searchTerm;
-
-        const hasCoordinates = search.searchCoordinates.length === 2;
-        const locationParams = hasCoordinates
-          ? {
-              searchLocation: search.searchLocation,
-              searchCoordinates: search.searchCoordinates,
-            }
-          : {};
-
-        const urlParams = createUrlParamsForSearch(
-          {
-            ...search,
-            ...locationParams,
-            query: query || '',
-            queryType:
-              search.queryType ||
-              (appConfig.search.searchEngine === 'hybrid' ? 'hybrid' : 'text'),
-          },
-          appConfig.search.searchEngine,
-        );
-
-        const queryParams = new URLSearchParams(urlParams).toString();
-        persistSearchDistancePreference(distance);
-
-        const effectiveQueryType = search.queryType;
-
-        const umamiPayload = {
-          query: String(query ?? ''),
-          queryLabel: String(search.queryLabel ?? ''),
-          tenantId: appConfig.tenantId ?? '',
-          ...locationPayload,
-        };
-
-        if (effectiveQueryType === 'text') {
-          trackUmamiEvent(UmamiEvent.SearchText, umamiPayload);
-        }
-
-        if (effectiveQueryType === 'taxonomy') {
-          trackUmamiEvent(UmamiEvent.SearchTaxonomy, umamiPayload);
-        }
-
-        setOpen?.(false);
-        router.push(`/search${queryParams ? `?${queryParams}` : ''}`);
-
-        setSearch((prev) => ({
-          ...prev,
-          ...locationParams,
-        }));
-      });
-    },
-    [
-      appConfig.search.searchEngine,
-      appConfig.tenantId,
-      distance,
-      router,
-      search,
-      setOpen,
-      setSearch,
-      startTransition,
-    ],
-  );
-
-  const navigateAiSearch = useCallback(
-    ({
-      scenario,
-      taxonomies,
-    }: {
-      scenario?: AiClassificationScenario;
-      taxonomies?: string[];
-    } = {}) => {
-      const query = (search.query || search.searchTerm || '').trim();
-      if (!query) {
-        return false;
-      }
-
-      const url = buildAiSearchUrl({
-        scenario,
-        query,
-        queryLabel: search.queryLabel,
-        taxonomies,
-      });
-
-      persistSearchDistancePreference(distance);
-      startTransition(() => {
-        setOpen?.(false);
-        router.push(url);
-      });
-
-      return true;
-    },
-    [
-      distance,
-      router,
-      search.query,
-      search.queryLabel,
-      search.searchTerm,
-      setOpen,
-      startTransition,
-    ],
-  );
-
-  const onSubmit = useCallback(
-    async (e: FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-
-      if (activeAiAction) {
-        return;
-      }
-
-      if (search.queryType === 'link' && search.href) {
-        const opensInNewTab = search.target === '_blank';
-        setOpen?.(false);
-
-        if (opensInNewTab) {
-          window.open(search.href, '_blank', 'noopener,noreferrer');
-        } else {
-          window.location.assign(search.href);
-        }
-
-        return;
-      }
-
-      if (requireUserLocation && search.searchLocation.trim().length === 0) {
-        setSearch((prev) => ({
-          ...prev,
-          searchLocationValidationError: 'Address is required.',
-        }));
-        return;
-      }
-
-      const locationPayload = await buildSearchLocationPayload(
-        searchCoordinates,
-        userCoordinates,
-        appConfig.tenantId,
-      );
-
-      const query = (search.query || search.searchTerm || '').trim();
-      if (
-        appConfig.search.searchEngine !== 'ai_classification' ||
-        search.queryType === 'taxonomy' ||
-        !query
-      ) {
-        await navigateClassicSearch(locationPayload);
-        return;
-      }
-
-      setActiveAiAction('predict');
-      setClarifyValidationError('');
-
-      const predictResponse = await predictSearchNeeds(
-        { query },
-        i18n.language,
-        appConfig.tenantId,
-      );
-
-      setActiveAiAction(null);
-
-      if (!predictResponse) {
-        await navigateClassicSearch(locationPayload);
-        return;
-      }
-      const scenario = predictResponse.scenario;
-      setAiSearchScenario(scenario);
-
-      const taxonomies = normalizeHsisTaxonomies(
-        predictResponse.hsis_taxonomies,
-      );
-
-      if (predictResponse.scenario === 'search') {
-        navigateAiSearch({ taxonomies });
-        return;
-      }
-
-      if (
-        scenario === 'search_and_notify_low_confidence' ||
-        scenario === 'search_and_notify_low_info'
-      ) {
-        navigateAiSearch({ taxonomies, scenario });
-        return;
-      }
-
-      const options = Array.isArray(predictResponse.options)
-        ? predictResponse.options
-        : [];
-      setClarifyOptions(options);
-      setSelectedClarifyCodes(
-        options
-          .filter((option) => option.pre_selected)
-          .map((option) => option.code),
-      );
-    },
-    [
-      appConfig.search.searchEngine,
-      appConfig.tenantId,
-      activeAiAction,
-      navigateAiSearch,
-      navigateClassicSearch,
-      requireUserLocation,
-      i18n.language,
-      search.query,
-      search.href,
-      search.searchLocation,
-      search.searchTerm,
-      search.target,
-      search.queryType,
-      searchCoordinates,
-      setSearch,
-      setOpen,
-      userCoordinates,
-    ],
-  );
+  const navigateAiSearch = useNavigateAiSearch({
+    setDialogOpen: setOpen,
+    startTransition,
+  });
+  const onSubmit = useOnSearchSubmit({
+    activeAiAction,
+    setDialogOpen: setOpen,
+    setActiveAiAction,
+    setClarifyValidationError,
+    setAiSearchScenario,
+    setClarifyOptions,
+    setSelectedClarifyCodes,
+    startTransition,
+  });
 
   const handleToggleClarifyCode = useCallback((code: string) => {
     setClarifyValidationError('');
@@ -377,10 +166,7 @@ export function SearchDialog({
       return;
     }
 
-    const rerankedTaxonomies = normalizeHsisTaxonomies(
-      reRankResponse.hsis_taxonomies,
-    );
-    navigateAiSearch({ taxonomies: rerankedTaxonomies });
+    navigateAiSearch({ taxonomies: reRankResponse.hsis_taxonomies });
   }, [
     activeAiAction,
     appConfig.tenantId,
@@ -443,18 +229,7 @@ export function SearchDialog({
     clearAiState();
   }, [clarifyVisible, clearAiState]);
 
-  useEffect(() => {
-    if (!open || !navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setUserCoordinates([pos.coords.longitude, pos.coords.latitude]);
-      },
-      () => {
-        setUserCoordinates(searchCoordinates);
-      },
-      { enableHighAccuracy: false, timeout: 5000, maximumAge: 60_000 },
-    );
-  }, [open, setUserCoordinates, searchCoordinates]);
+  useUserLocationNavigator({ isDialogOpen: open });
 
   useEffect(() => {
     if (initialRenderRef.current) return;
@@ -473,7 +248,8 @@ export function SearchDialog({
       setTimeout(() => {
         (
           document.querySelector(`#${elementToSelect}`) as
-            HTMLInputElement | undefined
+            | HTMLInputElement
+            | undefined
         )?.focus();
       }, 100);
     } else {
@@ -560,7 +336,9 @@ export function SearchDialog({
     };
   }, []);
 
-  if (!mounted) return null;
+  if (!mounted) {
+    return null;
+  }
 
   return createPortal(
     <div
