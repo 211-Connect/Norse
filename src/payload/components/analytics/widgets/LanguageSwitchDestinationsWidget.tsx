@@ -1,25 +1,12 @@
 'use client';
 
-import { Banner, StaggeredShimmers } from '@payloadcms/ui';
-
 import { getLanguageName } from '../../../../app/(app)/shared/lib/language-names';
 import { MetricsTable } from '../MetricsTable';
 import { useLanguageSwitchDestinations } from '../useAnalyticsData';
 import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 
 export default function LanguageSwitchDestinationsWidget() {
-  const { loading, error, data } = useLanguageSwitchDestinations();
-
-  if (loading) return <StaggeredShimmers count={5} height={40} />;
-
-  if (error) {
-    return (
-      <Banner type="error">
-        <strong>Could not load language switch destinations.</strong> Please
-        contact the support team.
-      </Banner>
-    );
-  }
+  const { loading, error, data, refetch } = useLanguageSwitchDestinations();
 
   const rows = (data?.languageSwitchDestinations ?? []).map((entry) => {
     const languageName = getLanguageName(entry.x, { displayLocale: 'en' });
@@ -37,6 +24,13 @@ export default function LanguageSwitchDestinationsWidget() {
       colLabel="Destination language"
       colValue="Count"
       rows={rows}
+      onRefresh={refetch}
+      refreshing={loading}
+      loading={loading}
+      errorTitle={
+        error ? 'Could not load language switch destinations.' : undefined
+      }
+      errorDescription={error ? 'Please contact the support team.' : undefined}
     />
   );
 }

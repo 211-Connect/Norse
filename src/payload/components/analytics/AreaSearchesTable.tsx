@@ -5,7 +5,9 @@ import type { Column } from 'payload';
 import { memo, useEffect, useMemo, useState } from 'react';
 
 import type { AreaMetricsRow } from './types';
-import { WidgetInfoButton } from './WidgetInfoButton';
+import { WidgetCard } from './WidgetCard';
+import { WidgetErrorState } from './WidgetErrorState';
+import { WidgetSkeleton } from './WidgetSkeleton';
 
 type SortKey = 'area' | 'totalSearches' | 'zeroSearches' | 'zeroRate';
 type SortDirection = 'asc' | 'desc';
@@ -17,6 +19,11 @@ export const AreaSearchesTable = memo(function AreaSearchesTable({
   emptyMessage,
   pageSize = 10,
   description,
+  onRefresh,
+  refreshing,
+  loading = false,
+  errorTitle,
+  errorDescription,
 }: {
   title: string;
   areaLabel: string;
@@ -24,7 +31,27 @@ export const AreaSearchesTable = memo(function AreaSearchesTable({
   emptyMessage: string;
   pageSize?: number;
   description?: string;
+  onRefresh: () => void;
+  refreshing?: boolean;
+  loading?: boolean;
+  errorTitle?: string;
+  errorDescription?: string;
 }) {
+  if (loading) {
+    return <WidgetSkeleton height="480px" count={5} shimmerHeight={40} />;
+  }
+
+  if (errorTitle) {
+    return (
+      <WidgetErrorState
+        title={errorTitle}
+        description={errorDescription}
+        onRetry={onRefresh}
+        retrying={refreshing}
+      />
+    );
+  }
+
   if (rows.length === 0) {
     return (
       <Container title={title} description={description}>
@@ -219,40 +246,9 @@ function Container({
   children: React.ReactNode;
 }) {
   return (
-    <div
-      style={{
-        border: '1px solid var(--theme-elevation-150)',
-        borderRadius: '0.5rem',
-        padding: '1rem',
-        background: 'var(--theme-elevation-0)',
-        height: '480px',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '0.75rem',
-          height: '100%',
-        }}
-      >
-        <h4
-          style={{
-            margin: 0,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.375rem',
-            fontSize: '1rem',
-            fontWeight: 600,
-            color: 'var(--theme-text)',
-          }}
-        >
-          {title}
-          <WidgetInfoButton description={description} />
-        </h4>
-        {children}
-      </div>
-    </div>
+    <WidgetCard title={title} description={description} bordered height="480px">
+      {children}
+    </WidgetCard>
   );
 }
 

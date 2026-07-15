@@ -2,7 +2,7 @@
 
 import { useTenantSelection } from '@payloadcms/plugin-multi-tenant/client';
 import { useAtomValue } from 'jotai';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import {
   analyticsDateRangeAtom,
@@ -42,6 +42,7 @@ export type AsyncData<T> = {
   loading: boolean;
   error: string | null;
   data: T | null;
+  refetch: () => void;
 };
 
 function useAnalyticsParams(): {
@@ -64,43 +65,61 @@ function makeAsyncHook<T>(
     range: DateRange,
     tenantId: string | undefined,
     websiteIds?: string[],
+    force?: boolean,
   ) => Promise<T>,
 ) {
   return function useAsyncData(): AsyncData<T> {
     const { range, tenantId, websiteIds } = useAnalyticsParams();
-    const [state, setState] = useState<AsyncData<T>>({
+    const [state, setState] = useState<Omit<AsyncData<T>, 'refetch'>>({
       loading: true,
       error: null,
       data: null,
     });
 
-    useEffect(() => {
-      let cancelled = false;
+    const paramsRef = useRef({ range, tenantId, websiteIds });
+    paramsRef.current = { range, tenantId, websiteIds };
 
-      if (!tenantId) {
+    const requestIdRef = useRef(0);
+
+    const load = useCallback((force: boolean) => {
+      const requestId = ++requestIdRef.current;
+      const {
+        range: currentRange,
+        tenantId: currentTenantId,
+        websiteIds: currentWebsiteIds,
+      } = paramsRef.current;
+
+      if (!currentTenantId) {
         setState({ loading: false, error: null, data: null });
         return;
       }
 
       setState({ loading: true, error: null, data: null });
-      fetcher(range, tenantId, websiteIds)
+      fetcher(currentRange, currentTenantId, currentWebsiteIds, force)
         .then((data) => {
-          if (!cancelled) setState({ loading: false, error: null, data });
+          if (requestIdRef.current === requestId) {
+            setState({ loading: false, error: null, data });
+          }
         })
         .catch((err) => {
-          if (!cancelled)
+          if (requestIdRef.current === requestId) {
             setState({
               loading: false,
               error: err instanceof Error ? err.message : String(err),
               data: null,
             });
+          }
         });
-      return () => {
-        cancelled = true;
-      };
-    }, [range, tenantId, websiteIds]);
+    }, []);
 
-    return state;
+    useEffect(() => {
+      load(false);
+    }, [range, tenantId, websiteIds, load]);
+
+    return {
+      ...state,
+      refetch: () => load(true),
+    };
   };
 }
 
@@ -130,27 +149,55 @@ export function useEventDataValues(
   propertyName: string,
 ): AsyncData<EventDataValuesData> {
   const { range, tenantId, websiteIds } = useAnalyticsParams();
-  const [state, setState] = useState<AsyncData<EventDataValuesData>>({
+  const [state, setState] = useState<
+    Omit<AsyncData<EventDataValuesData>, 'refetch'>
+  >({
     loading: true,
     error: null,
     data: null,
   });
 
-  useEffect(() => {
-    let cancelled = false;
+  const paramsRef = useRef({
+    range,
+    tenantId,
+    websiteIds,
+    event,
+    propertyName,
+  });
+  paramsRef.current = { range, tenantId, websiteIds, event, propertyName };
 
-    if (!tenantId || !event || !propertyName) {
+  const requestIdRef = useRef(0);
+
+  const load = useCallback((force: boolean) => {
+    const requestId = ++requestIdRef.current;
+    const {
+      range: currentRange,
+      tenantId: currentTenantId,
+      websiteIds: currentWebsiteIds,
+      event: currentEvent,
+      propertyName: currentPropertyName,
+    } = paramsRef.current;
+
+    if (!currentTenantId || !currentEvent || !currentPropertyName) {
       setState({ loading: false, error: null, data: null });
       return;
     }
 
     setState({ loading: true, error: null, data: null });
-    fetchEventDataValues(range, tenantId, websiteIds, { event, propertyName })
+    fetchEventDataValues(
+      currentRange,
+      currentTenantId,
+      currentWebsiteIds,
+      { event: currentEvent, propertyName: currentPropertyName },
+      force,
+    )
       .then((data) => {
-        if (!cancelled) setState({ loading: false, error: null, data });
+        if (requestIdRef.current === requestId) {
+          setState({ loading: false, error: null, data });
+        }
       })
       .catch((err) => {
-        if (!cancelled) {
+        if (requestIdRef.current === requestId) {
           setState({
             loading: false,
             error: err instanceof Error ? err.message : String(err),
@@ -158,11 +205,14 @@ export function useEventDataValues(
           });
         }
       });
+  }, []);
 
-    return () => {
-      cancelled = true;
-    };
-  }, [range, tenantId, websiteIds, event, propertyName]);
+  useEffect(() => {
+    load(false);
+  }, [range, tenantId, websiteIds, event, propertyName, load]);
 
-  return state;
+  return {
+    ...state,
+    refetch: () => load(true),
+  };
 }

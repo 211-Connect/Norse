@@ -1,10 +1,11 @@
 'use client';
 
-import { Banner, StaggeredShimmers } from '@payloadcms/ui';
 import dynamic from 'next/dynamic';
 
 import { useSessionHeatmap } from '../useAnalyticsData';
-import { WidgetInfoButton } from '../WidgetInfoButton';
+import { WidgetCard } from '../WidgetCard';
+import { WidgetErrorState } from '../WidgetErrorState';
+import { WidgetSkeleton } from '../WidgetSkeleton';
 import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 
 const MAP_CENTER: [number, number] = [-98.5795, 39.8293];
@@ -16,32 +17,29 @@ const AnalyticsMap = dynamic(
 );
 
 export default function AnalyticsMapWidget() {
-  const { loading, error, data } = useSessionHeatmap();
+  const { loading, error, data, refetch } = useSessionHeatmap();
 
-  if (loading) return <StaggeredShimmers count={1} height={400} />;
+  if (loading) {
+    return <WidgetSkeleton height={400} count={1} shimmerHeight={400} />;
+  }
 
   if (error) {
     return (
-      <Banner type="error">
-        <strong>Could not load analytics map.</strong> Please contact the
-        support team.
-      </Banner>
+      <WidgetErrorState
+        title="Could not load analytics map."
+        description="Please contact the support team."
+        onRetry={refetch}
+        retrying={loading}
+      />
     );
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-      <h3
-        style={{
-          margin: 0,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.375rem',
-        }}
-      >
-        Heat Map
-        <WidgetInfoButton description={WIDGET_INFO[WidgetSlug.Map]} />
-      </h3>
+    <WidgetCard
+      title="Heat Map"
+      description={WIDGET_INFO[WidgetSlug.Map]}
+      headingLevel="h3"
+    >
       <div style={{ height: '400px' }}>
         <AnalyticsMap
           center={MAP_CENTER}
@@ -49,6 +47,6 @@ export default function AnalyticsMapWidget() {
           heatmapPoints={data?.heatmapPoints ?? []}
         />
       </div>
-    </div>
+    </WidgetCard>
   );
 }

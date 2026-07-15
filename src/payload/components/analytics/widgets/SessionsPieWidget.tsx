@@ -1,18 +1,17 @@
 'use client';
 
-import { Banner, StaggeredShimmers } from '@payloadcms/ui';
-
 import { PieChartWidget, PieChartWidgetSegment } from '../PieChartWidget';
 import { UmamiSession } from '../types';
 import { useSessions } from '../useAnalyticsData';
-import { WidgetInfoButton } from '../WidgetInfoButton';
+import { WidgetCard } from '../WidgetCard';
+import { WidgetErrorState } from '../WidgetErrorState';
+import { WidgetSkeleton } from '../WidgetSkeleton';
 
 type SessionsPieWidgetProps = {
   buildSegments: (sessions: UmamiSession[]) => PieChartWidgetSegment[];
   errorTitle: string;
   errorDescription?: string;
-  shimmerHeight?: number;
-  title?: string;
+  title: string;
   description?: string;
 };
 
@@ -20,44 +19,31 @@ export function SessionsPieWidget({
   buildSegments,
   errorTitle,
   errorDescription,
-  shimmerHeight = 220,
   title,
   description,
 }: SessionsPieWidgetProps) {
-  const { loading, error, data } = useSessions();
+  const { loading, error, data, refetch } = useSessions();
 
-  if (loading) return <StaggeredShimmers count={1} height={shimmerHeight} />;
-
-  if (error) {
-    return (
-      <Banner type="error">
-        <strong>{errorTitle}</strong>
-        {errorDescription ? ` ${errorDescription}` : null}
-      </Banner>
-    );
+  if (loading) {
+    return <WidgetSkeleton height={220} count={1} shimmerHeight={180} />;
   }
 
   const sessions = data?.sessions ?? [];
 
+  if (error) {
+    return (
+      <WidgetErrorState
+        title={errorTitle}
+        description={errorDescription}
+        onRetry={refetch}
+        retrying={loading}
+      />
+    );
+  }
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-      {title && (
-        <h4
-          style={{
-            margin: 0,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.375rem',
-            fontSize: '1rem',
-            fontWeight: 600,
-            color: 'var(--theme-text)',
-          }}
-        >
-          {title}
-          <WidgetInfoButton description={description} />
-        </h4>
-      )}
+    <WidgetCard title={title} description={description}>
       <PieChartWidget segments={buildSegments(sessions)} />
-    </div>
+    </WidgetCard>
   );
 }

@@ -1,6 +1,5 @@
 'use client';
 
-import { Banner, StaggeredShimmers } from '@payloadcms/ui';
 import { useState } from 'react';
 
 import { MetricsTable } from '../MetricsTable';
@@ -19,19 +18,8 @@ const FILTERS: { value: Filter; label: string }[] = [
 ];
 
 export default function SearchQueriesWidget() {
-  const { loading, error, data } = usePaths();
+  const { loading, error, data, refetch } = usePaths();
   const [filter, setFilter] = useState<Filter>('all');
-
-  if (loading) return <StaggeredShimmers count={5} height={40} />;
-
-  if (error) {
-    return (
-      <Banner type="error">
-        <strong>Could not load search queries.</strong> Please contact the
-        support team.
-      </Banner>
-    );
-  }
 
   const byType = data?.searchByLabelByType;
   const rows: MetricEntry[] =
@@ -60,6 +48,11 @@ export default function SearchQueriesWidget() {
       footerStart={<FilterPills value={filter} onChange={setFilter} />}
       emptyState={<EmptyState message={emptyMessage} />}
       description={WIDGET_INFO[WidgetSlug.SearchQueries]}
+      onRefresh={refetch}
+      refreshing={loading}
+      loading={loading}
+      errorTitle={error ? 'Could not load search queries.' : undefined}
+      errorDescription={error ? 'Please contact the support team.' : undefined}
     />
   );
 }

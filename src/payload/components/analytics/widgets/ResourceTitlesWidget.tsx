@@ -1,6 +1,5 @@
 'use client';
 
-import { Banner, StaggeredShimmers } from '@payloadcms/ui';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { MetricsTable } from '../MetricsTable';
@@ -10,7 +9,7 @@ import { extractResourceId } from '../utils';
 import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 
 export default function ResourceTitlesWidget() {
-  const { loading, error, data } = usePaths();
+  const { loading, error, data, refetch } = usePaths();
   const [titleMap, setTitleMap] = useState<Record<string, string>>({});
   const titleCacheRef = useRef<Map<string, string>>(new Map());
   const requestedRef = useRef<Set<string>>(new Set());
@@ -97,17 +96,6 @@ export default function ResourceTitlesWidget() {
     [tenantId],
   );
 
-  if (loading) return <StaggeredShimmers count={5} height={40} />;
-
-  if (error) {
-    return (
-      <Banner type="error">
-        <strong>Could not load resource titles.</strong> Please contact the
-        support team.
-      </Banner>
-    );
-  }
-
   return (
     <MetricsTable
       title="Resource clicks"
@@ -116,6 +104,11 @@ export default function ResourceTitlesWidget() {
       colValue="Referrals"
       rows={rowsWithResolvedTitles}
       onPageRowsChange={resolveTitlesForPage}
+      onRefresh={refetch}
+      refreshing={loading}
+      loading={loading}
+      errorTitle={error ? 'Could not load resource titles.' : undefined}
+      errorDescription={error ? 'Please contact the support team.' : undefined}
     />
   );
 }
