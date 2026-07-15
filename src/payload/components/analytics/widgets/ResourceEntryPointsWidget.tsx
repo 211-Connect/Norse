@@ -1,7 +1,5 @@
 'use client';
 
-import { Banner, StaggeredShimmers } from '@payloadcms/ui';
-
 import { ResourceEntry } from '../../../../app/(app)/shared/lib/umami';
 import { MetricsTable } from '../MetricsTable';
 import { useResourceByEntry } from '../useAnalyticsData';
@@ -40,18 +38,7 @@ function sortByKnownOrder(rows: { x: string; y: number }[]) {
 }
 
 export default function ResourceEntryPointsWidget() {
-  const { loading, error, data } = useResourceByEntry();
-
-  if (loading) return <StaggeredShimmers count={5} height={40} />;
-
-  if (error) {
-    return (
-      <Banner type="error">
-        <strong>Could not load resource entry points.</strong> Please contact
-        the support team.
-      </Banner>
-    );
-  }
+  const { loading, error, data, refetch } = useResourceByEntry();
 
   const rows = sortByKnownOrder((data?.resourceByEntry ?? []).map(humanizeRow));
 
@@ -63,6 +50,11 @@ export default function ResourceEntryPointsWidget() {
       colValue="Views"
       rows={rows}
       emptyState="No resource view events recorded for this period."
+      onRefresh={refetch}
+      refreshing={loading}
+      loading={loading}
+      errorTitle={error ? 'Could not load resource entry points.' : undefined}
+      errorDescription={error ? 'Please contact the support team.' : undefined}
     />
   );
 }

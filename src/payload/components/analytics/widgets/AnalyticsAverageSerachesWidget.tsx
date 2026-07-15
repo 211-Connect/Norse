@@ -26,6 +26,10 @@ function useAverageSearchesData() {
     loading: paths.loading || sessions.loading,
     error: paths.error ?? sessions.error,
     data,
+    refetch: () => {
+      paths.refetch();
+      sessions.refetch();
+    },
   };
 }
 

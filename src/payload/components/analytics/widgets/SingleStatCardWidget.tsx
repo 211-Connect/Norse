@@ -1,10 +1,11 @@
 'use client';
 
-import { Banner, StaggeredShimmers } from '@payloadcms/ui';
+import { StaggeredShimmers } from '@payloadcms/ui';
 
 import { StatCard } from '../StatCard';
 import { EventsData, PathsData, UmamiStats } from '../types';
 import { AsyncData, useEvents, usePaths, useStats } from '../useAnalyticsData';
+import { WidgetErrorState } from '../WidgetErrorState';
 
 type Metric = { current: number; previous: number };
 
@@ -58,17 +59,21 @@ function StatCardFromData<T>({
   formatValue?: (value: number) => string;
   description?: string;
 }) {
-  const { loading, error, data } = useData();
-
-  if (loading) return <StaggeredShimmers count={1} height={80} />;
-  if (error)
-    return (
-      <Banner type="error">
-        <strong>Could not load {label}.</strong>
-      </Banner>
-    );
+  const { loading, error, data, refetch } = useData();
 
   const metric = data ? selector(data) : null;
+
+  if (error) {
+    return (
+      <WidgetErrorState
+        title={`Could not load ${label}.`}
+        onRetry={refetch}
+        retrying={loading}
+      />
+    );
+  }
+
+  if (loading) return <StaggeredShimmers count={1} height={80} />;
   if (!metric) return null;
 
   return (

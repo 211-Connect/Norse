@@ -1,11 +1,12 @@
 'use client';
 
-import { Table } from '@payloadcms/ui';
+import { StaggeredShimmers, Table } from '@payloadcms/ui';
 import type { Column } from 'payload';
 import { type ReactNode, memo, useEffect, useMemo, useState } from 'react';
 
-import { WidgetInfoButton } from './WidgetInfoButton';
 import type { MetricEntry } from './types';
+import { WidgetCard } from './WidgetCard';
+import { WidgetErrorState } from './WidgetErrorState';
 
 type Row = MetricEntry;
 
@@ -19,6 +20,11 @@ export const MetricsTable = memo(function MetricsTable({
   footerStart,
   emptyState,
   description,
+  onRefresh,
+  refreshing,
+  loading = false,
+  errorTitle,
+  errorDescription,
 }: {
   title: string;
   colLabel: string;
@@ -29,8 +35,15 @@ export const MetricsTable = memo(function MetricsTable({
   footerStart?: ReactNode;
   emptyState?: ReactNode;
   description?: string;
+  onRefresh: () => void;
+  refreshing?: boolean;
+  loading?: boolean;
+  errorTitle?: string;
+  errorDescription?: string;
 }) {
-  if (rows.length === 0 && !emptyState) return null;
+  const resolvedEmptyState = emptyState ?? (
+    <EmptyState message="No data available in this period." />
+  );
 
   const [page, setPage] = useState(1);
 
@@ -79,101 +92,112 @@ export const MetricsTable = memo(function MetricsTable({
   const canGoPrev = page > 1;
   const canGoNext = page < totalPages;
 
+  if (errorTitle) {
+    return (
+      <WidgetErrorState
+        title={errorTitle}
+        description={errorDescription}
+        onRetry={onRefresh}
+        retrying={refreshing}
+      />
+    );
+  }
+
+  return (
+    <WidgetCard title={title} description={description} bordered height="480px">
+      {loading ? (
+        <StaggeredShimmers count={5} height={40} />
+      ) : (
+        <>
+          <div style={{ flex: 1, overflow: 'auto' }}>
+            {rows.length === 0 ? (
+              resolvedEmptyState
+            ) : (
+              <Table columns={columns} data={data} appearance="condensed" />
+            )}
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: '0.75rem',
+              flexWrap: 'wrap',
+            }}
+          >
+            <div
+              style={{ display: 'flex', alignItems: 'center', minHeight: 0 }}
+            >
+              {footerStart}
+            </div>
+            <div
+              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+            >
+              <button
+                type="button"
+                onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                disabled={!canGoPrev}
+                style={{
+                  border: '1px solid var(--theme-elevation-200)',
+                  borderRadius: '0.375rem',
+                  padding: '0.25rem 0.625rem',
+                  fontSize: '0.875rem',
+                  cursor: canGoPrev ? 'pointer' : 'not-allowed',
+                  opacity: canGoPrev ? 1 : 0.5,
+                  background: 'var(--theme-elevation-0)',
+                }}
+              >
+                Previous
+              </button>
+              <span
+                style={{
+                  color: 'var(--theme-elevation-500)',
+                  fontSize: '0.875rem',
+                }}
+              >
+                Page {page} of {totalPages}
+              </span>
+              <button
+                type="button"
+                onClick={() =>
+                  setPage((prev) => Math.min(totalPages, prev + 1))
+                }
+                disabled={!canGoNext}
+                style={{
+                  border: '1px solid var(--theme-elevation-200)',
+                  borderRadius: '0.375rem',
+                  padding: '0.25rem 0.625rem',
+                  fontSize: '0.875rem',
+                  cursor: canGoNext ? 'pointer' : 'not-allowed',
+                  opacity: canGoNext ? 1 : 0.5,
+                  background: 'var(--theme-elevation-0)',
+                }}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+    </WidgetCard>
+  );
+});
+
+function EmptyState({ message }: { message: string }) {
   return (
     <div
       style={{
-        border: '1px solid var(--theme-elevation-150)',
-        borderRadius: '0.5rem',
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: 'var(--theme-elevation-500)',
+        fontSize: '0.875rem',
+        textAlign: 'center',
         padding: '1rem',
-        background: 'var(--theme-elevation-0)',
-        height: '480px',
       }}
     >
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '0.75rem',
-          height: '100%',
-        }}
-      >
-        <h4
-          style={{
-            margin: 0,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.375rem',
-            fontSize: '1rem',
-            fontWeight: 600,
-            color: 'var(--theme-text)',
-          }}
-        >
-          {title}
-          <WidgetInfoButton description={description} />
-        </h4>
-        <div style={{ flex: 1, overflow: 'auto' }}>
-          {rows.length === 0 ? (
-            emptyState
-          ) : (
-            <Table columns={columns} data={data} appearance="condensed" />
-          )}
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            gap: '0.75rem',
-            flexWrap: 'wrap',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', minHeight: 0 }}>
-            {footerStart}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <button
-              type="button"
-              onClick={() => setPage((prev) => Math.max(1, prev - 1))}
-              disabled={!canGoPrev}
-              style={{
-                border: '1px solid var(--theme-elevation-200)',
-                borderRadius: '0.375rem',
-                padding: '0.25rem 0.625rem',
-                fontSize: '0.875rem',
-                cursor: canGoPrev ? 'pointer' : 'not-allowed',
-                opacity: canGoPrev ? 1 : 0.5,
-                background: 'var(--theme-elevation-0)',
-              }}
-            >
-              Previous
-            </button>
-            <span
-              style={{
-                color: 'var(--theme-elevation-500)',
-                fontSize: '0.875rem',
-              }}
-            >
-              Page {page} of {totalPages}
-            </span>
-            <button
-              type="button"
-              onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
-              disabled={!canGoNext}
-              style={{
-                border: '1px solid var(--theme-elevation-200)',
-                borderRadius: '0.375rem',
-                padding: '0.25rem 0.625rem',
-                fontSize: '0.875rem',
-                cursor: canGoNext ? 'pointer' : 'not-allowed',
-                opacity: canGoNext ? 1 : 0.5,
-                background: 'var(--theme-elevation-0)',
-              }}
-            >
-              Next
-            </button>
-          </div>
-        </div>
-      </div>
+      {message}
     </div>
   );
-});
+}

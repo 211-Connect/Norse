@@ -1,6 +1,6 @@
 'use client';
 
-import { Banner, StaggeredShimmers, usePreferences } from '@payloadcms/ui';
+import { StaggeredShimmers, usePreferences } from '@payloadcms/ui';
 import { useTenantSelection } from '@payloadcms/plugin-multi-tenant/client';
 import dayjs from 'dayjs';
 import { PREFERENCE_KEYS } from 'payload/shared';
@@ -21,6 +21,7 @@ import { StatCard } from '../StatCard';
 import type { MetricEntry } from '../types';
 import { useEventDataValues, useEvents } from '../useAnalyticsData';
 import { useWidgetId } from '../useWidgetId';
+import { WidgetErrorState } from '../WidgetErrorState';
 
 const SEGMENT_COLORS = [
   '#60a5fa',
@@ -86,6 +87,13 @@ export default function EventCardWidgetClient({
 
   const contentLoading =
     eventsData.loading || (eventDataValues?.loading ?? false);
+  const contentError =
+    event && property ? eventDataValues.error : eventsData.error;
+
+  const refetchAll = useCallback(() => {
+    eventsData.refetch();
+    eventDataValues.refetch();
+  }, [eventsData, eventDataValues]);
 
   useEffect(() => {
     setEvent(widgetData?.event ?? null);
@@ -338,27 +346,45 @@ export default function EventCardWidgetClient({
     );
   }
 
+  if (contentError) {
+    return (
+      <WidgetContainer ref={rootRef}>
+        <WidgetErrorState
+          title="Could not load event data."
+          description="Please contact the support team."
+          onRetry={refetchAll}
+          retrying={contentLoading}
+        />
+      </WidgetContainer>
+    );
+  }
+
   return (
     <WidgetContainer ref={rootRef}>
-      <button
-        type="button"
-        onClick={() => setIsEditing(true)}
+      <div
         style={{
           position: 'absolute',
           top: '0.5rem',
           right: '0.5rem',
-          fontSize: '0.75rem',
-          color: 'var(--theme-text)',
-          background: 'var(--theme-elevation-0)',
-          border: '1px solid var(--theme-elevation-200)',
-          borderRadius: '0.25rem',
-          padding: '0.25rem 0.5rem',
-          cursor: 'pointer',
           zIndex: 1,
         }}
       >
-        Edit
-      </button>
+        <button
+          type="button"
+          onClick={() => setIsEditing(true)}
+          style={{
+            fontSize: '0.75rem',
+            color: 'var(--theme-text)',
+            background: 'var(--theme-elevation-0)',
+            border: '1px solid var(--theme-elevation-200)',
+            borderRadius: '0.25rem',
+            padding: '0.25rem 0.5rem',
+            cursor: 'pointer',
+          }}
+        >
+          Edit
+        </button>
+      </div>
 
       {event && property ? (
         <ChartContent
@@ -458,16 +484,7 @@ function ChartContent({
   property: string;
   eventDataValues: ReturnType<typeof useEventDataValues>;
 }) {
-  const { error, data } = eventDataValues;
-
-  if (error) {
-    return (
-      <Banner type="error">
-        <strong>Could not load event data.</strong> Please contact the support
-        team.
-      </Banner>
-    );
-  }
+  const { data } = eventDataValues;
 
   const values = data?.values ?? [];
   const title = `${event} by ${property}`;

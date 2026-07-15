@@ -125,10 +125,15 @@ function makeCachedFetch<T>(
     range: DateRange,
     tenantId: string | undefined,
     websiteIds?: string[],
+    force?: boolean,
   ): Promise<T> {
     const key = cacheKey(range, tenantId, websiteIds);
-    const cached = getCache(cache, key);
-    if (cached) return cached;
+    if (force) {
+      cache.delete(key);
+    } else {
+      const cached = getCache(cache, key);
+      if (cached) return cached;
+    }
     const promise = load(timeWindow(range), tenantId, websiteIds);
     setCache(cache, key, promise);
     return promise;
@@ -150,10 +155,15 @@ function makeCachedFetchWithArgs<T, A extends Record<string, string>>(
     tenantId: string | undefined,
     websiteIds: string[] | undefined,
     args: A,
+    force?: boolean,
   ): Promise<T> {
     const key = `${cacheKey(range, tenantId, websiteIds)}:${argsToKey(args)}`;
-    const cached = getCache(cache, key);
-    if (cached) return cached;
+    if (force) {
+      cache.delete(key);
+    } else {
+      const cached = getCache(cache, key);
+      if (cached) return cached;
+    }
     const promise = load(timeWindow(range), tenantId, websiteIds, args);
     setCache(cache, key, promise);
     return promise;
