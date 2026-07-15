@@ -14,6 +14,18 @@ export const common: Tab = {
     {
       type: 'array',
       name: 'alert',
+      validate: (value) => {
+        const activeAlertsCount = (Array.isArray(value) ? value : []).filter(
+          (alertItem) =>
+            Boolean((alertItem as { isActive?: boolean } | null)?.isActive),
+        ).length;
+
+        if (activeAlertsCount > 1) {
+          return 'Only one alert can be active at a time.';
+        }
+
+        return true;
+      },
       access: {
         create: superAdminOrSupportOrTenantAccess,
         update: superAdminOrSupportOrTenantAccess,
