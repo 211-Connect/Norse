@@ -228,6 +228,7 @@ async function getAppConfigBase(
       contact: {},
       sms: null,
       featureFlags: {
+        enablePrintableDirectories: false,
         requireAuthenticationForFavorites: false,
         requireUserLocation: false,
         showAgeFilter: false,
@@ -239,6 +240,12 @@ async function getAppConfigBase(
         showSuggestionListTaxonomyBadge: false,
         showUseMyLocationButtonOnDesktop: false,
         turnResourceCardTaxonomiesIntoLinks: true,
+      },
+      printableDirectories: {
+        allowedEmails: [],
+        allowedDomains: [],
+        maxResourcesConfigurable: true,
+        defaultMaxResources: 100,
       },
       footer: {
         customMenu: [],
@@ -384,6 +391,8 @@ async function getAppConfigBase(
     },
     sms: getSmsConfig(resourceDirectory),
     featureFlags: {
+      enablePrintableDirectories:
+        resourceDirectory.featureFlags?.enablePrintableDirectories ?? false,
       requireAuthenticationForFavorites:
         resourceDirectory.featureFlags?.requireAuthenticationForFavorites ??
         false,
@@ -410,6 +419,20 @@ async function getAppConfigBase(
         resourceDirectory.featureFlags?.turnResourceCardTaxonomiesIntoLinks ??
         true,
       showAgeFilter: resourceDirectory.featureFlags?.showAgeFilter ?? false,
+    },
+    printableDirectories: {
+      allowedEmails:
+        resourceDirectory.featureFlags?.printableDirectoriesAllowedEmails?.map(
+          ({ email }) => email,
+        ) ?? [],
+      allowedDomains:
+        resourceDirectory.featureFlags?.printableDirectoriesAllowedDomains?.map(
+          ({ domain }) => domain,
+        ) ?? [],
+      maxResourcesConfigurable:
+        resourceDirectory.featureFlags?.maxResourcesConfigurable ?? true,
+      defaultMaxResources:
+        resourceDirectory.featureFlags?.defaultMaxResources ?? 100,
     },
     gtmContainerId:
       getTenant(resourceDirectory)?.common?.gtmContainerId ?? undefined,

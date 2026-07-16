@@ -212,6 +212,79 @@ export interface FavoriteListDetailResponseDto {
 
 export type UpdateFavoriteListDto = object;
 
+export interface ResourceLocationOpenApiDto {
+  /** @example "Point" */
+  type: string;
+  /** @example [-106.0746,42.1485] */
+  coordinates: number[];
+}
+
+export interface ResourceAddressOpenApiDto {
+  address_1?: string;
+  address_2?: string;
+  city?: string;
+  stateProvince?: string;
+  postalCode?: string;
+  country?: string;
+  type?: string;
+  rank?: number;
+}
+
+export interface ResourcePhoneNumberOpenApiDto {
+  type?: string;
+  number?: string;
+  rank?: number;
+}
+
+export interface ResourceTaxonomyOpenApiDto {
+  code?: string;
+  name?: string;
+}
+
+export interface ResourceTranslationOpenApiDto {
+  locale?: string;
+  displayName?: string;
+  serviceName?: string;
+  serviceDescription?: string;
+  organizationDescription?: string;
+  hours?: string;
+  fees?: string;
+  alert?: string;
+  taxonomies?: ResourceTaxonomyOpenApiDto[];
+  attributeValues?: Record<string, any>;
+}
+
+export interface ResourceFacetOpenApiDto {
+  code?: string;
+  taxonomyName?: string;
+  termName?: string;
+}
+
+export interface TransformedResourceOpenApiDto {
+  _id: string;
+  originalId?: string;
+  displayName?: string;
+  displayPhoneNumber?: string;
+  website?: string;
+  organizationUrl?: string;
+  email?: string;
+  organizationName?: string;
+  location?: ResourceLocationOpenApiDto;
+  addresses?: ResourceAddressOpenApiDto[];
+  phoneNumbers?: ResourcePhoneNumberOpenApiDto[];
+  languages?: string[];
+  /** Service area geometry + metadata */
+  serviceArea?: Record<string, any>;
+  attribution?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  lastAssuredDate?: string;
+  tenantId?: string;
+  tenant_id?: string;
+  translation?: ResourceTranslationOpenApiDto;
+  facetsEn?: ResourceFacetOpenApiDto[];
+}
+
 export interface ResourceTitlesDto {
   /**
    * Array of resource UUIDs
@@ -250,22 +323,37 @@ export interface ResourceBatchErrorDto {
   statusCode: number;
 }
 
+export interface ResourceBatchMetaDto {
+  /**
+   * Requested IDs count
+   * @example 2
+   */
+  requested: number;
+  /**
+   * Successfully resolved resources count
+   * @example 1
+   */
+  successful: number;
+  /**
+   * Failed IDs count
+   * @example 1
+   */
+  failed: number;
+}
+
 export interface ResourceBatchResponseDto {
   /**
    * Successfully fetched resources, keyed by resource ID
    * @example {"550e8400-e29b-41d4-a716-446655440000":{"_id":"550e8400-e29b-41d4-a716-446655440000","displayName":"Example Resource"}}
    */
-  data: Record<string, object>;
+  data: Record<string, TransformedResourceOpenApiDto>;
   /**
    * Failed resource IDs with error details
    * @example [{"id":"550e8400-e29b-41d4-a716-446655440001","reason":"Resource not found","statusCode":404}]
    */
   errors: ResourceBatchErrorDto[];
-  /**
-   * Metadata about the batch operation
-   * @example {"requested":2,"successful":1,"failed":1}
-   */
-  meta: object;
+  /** Metadata about the batch operation */
+  meta: ResourceBatchMetaDto;
 }
 
 export interface ForwardGeocodeResponseDto {
@@ -660,6 +748,44 @@ export interface PaginatedSessionsResponse {
   data: SessionsResponse[];
 }
 
+export interface SearchEventExportRow {
+  /**
+   * ISO-8601 timestamp of the search event
+   * @example "2025-01-15T14:23:45.000Z"
+   */
+  timestamp: string;
+  /**
+   * User search query string
+   * @example "homeless shelter"
+   */
+  queryLabel: string;
+  /**
+   * Search type: text or taxonomy
+   * @example "text"
+   */
+  queryType: "text" | "taxonomy";
+  /**
+   * Search coordinates in "longitude,latitude" format
+   * @example "-122.4194,37.7749"
+   */
+  coordinates: object | null;
+  /**
+   * ZIP/postal code from reverse geocoding
+   * @example "94102"
+   */
+  zipCode: object | null;
+}
+
+export interface ExportSearchDataResponse {
+  /** Array of search event export rows */
+  data: SearchEventExportRow[];
+  /**
+   * Total number of exported rows
+   * @example 1523
+   */
+  totalCount: number;
+}
+
 export interface EventPayloadDto {
   /**
    * Event name (1-255 characters)
@@ -864,6 +990,367 @@ export interface EnableTaxonomyScorecardDto {
   version_id: number;
 }
 
+export interface SearchQueryApiDto {
+  /**
+   * Search query expression. Can be plain text, string array, or nested AND/OR object payload.
+   * @example "housing"
+   */
+  query?: string | string[] | Record<string, any>;
+  /** @default "text" */
+  query_type?:
+    | "text"
+    | "taxonomy"
+    | "organization"
+    | "more_like_this"
+    | "hybrid";
+  /**
+   * @min 1
+   * @default 1
+   */
+  page?: number;
+  /**
+   * Comma-delimited longitude,latitude
+   * @example "-120.740135,47.751076"
+   */
+  coords?: string;
+  /** @example {"county":"King","language":["en","es"]} */
+  filters?: Record<string, any>;
+  /**
+   * HSIS taxonomy scope as comma-delimited string or array
+   * @example "BM-1400,BM-1700"
+   */
+  taxonomy?: string | string[];
+  /**
+   * @min 0
+   * @default 0
+   */
+  distance?: number;
+  /** @min 0 */
+  age?: number;
+  /**
+   * @min 25
+   * @max 300
+   * @default 25
+   */
+  limit?: number;
+  geo_type?: "boundary" | "proximity";
+  /** @default "relevance" */
+  sort?: "relevance" | "distance" | "name" | "organization";
+}
+
+export interface SearchBodyApiDto {
+  /** GeoJSON geometry payload for POST /search */
+  geometry?: Record<string, any>;
+}
+
+export interface PrintableDirectorySourceQueryDto {
+  /** @example "Housing Search Block" */
+  title?: string;
+  /**
+   * Serialized search query parameters aligned with /search API query contract
+   * @example {"query":"housing","query_type":"text","page":1,"limit":25}
+   */
+  params: SearchQueryApiDto;
+  /**
+   * Optional serialized /search POST body
+   * @example {"geometry":{"type":"Point","coordinates":[-120.7,47.7]}}
+   */
+  body?: SearchBodyApiDto;
+}
+
+export interface CreatePrintableDirectorySourceDto {
+  type: "query" | "favorites_list" | "resource_ids";
+  query?: PrintableDirectorySourceQueryDto;
+  /** @example "favorites-list-id" */
+  favoritesListId?: string;
+  /** @example ["resource-a","resource-b"] */
+  resourceIds?: string[];
+}
+
+export interface UpdatePrintableDirectorySourceDto {
+  type?: "query" | "favorites_list" | "resource_ids";
+  query?: PrintableDirectorySourceQueryDto;
+  /** @example "favorites-list-id" */
+  favoritesListId?: string;
+  /** @example ["resource-a","resource-b"] */
+  resourceIds?: string[];
+}
+
+export interface PrintableDirectoryLocalizedTextResponseDto {
+  /** @example {"en":"Default copy","es":"Texto predeterminado"} */
+  values: Record<string, string>;
+}
+
+export interface PrintableDirectoryCoverResponseDto {
+  titleLocalized: PrintableDirectoryLocalizedTextResponseDto;
+  descriptionLocalized: PrintableDirectoryLocalizedTextResponseDto;
+  primaryColor?: string | null;
+  /** @example "default" */
+  layoutType: "default";
+  coverImageUrl?: string | null;
+}
+
+export interface PrintableDirectoryHeaderFooterResponseDto {
+  /** @example ["text","logo","domain","date"] */
+  layout: ("text" | "logo" | "domain" | "date")[];
+  textLocalized?: PrintableDirectoryLocalizedTextResponseDto;
+  logoUrl?: string | null;
+}
+
+export interface PrintableDirectoryDefaultQueryConfigDto {
+  /**
+   * @maxLength 200
+   * @example "Seattle, WA"
+   */
+  locationName?: string | null;
+  /**
+   * @maxItems 2
+   * @minItems 2
+   * @example [-122.3321,47.6062]
+   */
+  coords?: number[] | null;
+  /**
+   * @min 0
+   * @max 1000
+   * @example 25
+   */
+  radius?: number | null;
+}
+
+export interface PrintableDirectorySourceQueryResponseDto {
+  title?: string | null;
+  /**
+   * Serialized /search query parameters. Common keys include query_type, query, page, limit, filters, coords, distance, age, geo_type, taxonomy, and sort.
+   * @example {"query_type":"text","query":"housing","page":1,"limit":25,"coords":"-120.740135,47.751076","sort":"relevance"}
+   */
+  params: SearchQueryApiDto;
+  /**
+   * Optional serialized /search POST body. Used when query resolution requires geometry payload (for example polygon/bounding-box intersection or other GeoJSON-based filters).
+   * @example {"geometry":{"type":"Polygon","coordinates":[[[-120.9,47.6],[-120.6,47.6],[-120.6,47.8],[-120.9,47.8],[-120.9,47.6]]]}}
+   */
+  body?: SearchBodyApiDto | null;
+}
+
+export interface PrintableDirectorySourceSummaryResponseDto {
+  id: string;
+  name: string;
+  count: number;
+}
+
+export interface PrintableDirectorySourceResponseDto {
+  id: string;
+  order: number;
+  type: "query" | "favorites_list" | "resource_ids";
+  query?: PrintableDirectorySourceQueryResponseDto | null;
+  favoriteList?: PrintableDirectorySourceSummaryResponseDto | null;
+  resources: PrintableDirectorySourceSummaryResponseDto[];
+}
+
+export interface PrintableDirectorySectionResponseDto {
+  id: string;
+  order: number;
+  headingLocalized: PrintableDirectoryLocalizedTextResponseDto;
+  descriptionLocalized: PrintableDirectoryLocalizedTextResponseDto;
+  /**
+   * @min 1
+   * @max 1000
+   */
+  maxResources: number;
+  sources: PrintableDirectorySourceResponseDto[];
+}
+
+export interface PrintableDirectoryResponseDto {
+  id: string;
+  tenantId: string;
+  ownerUserId: string;
+  name: string;
+  updatedBy?: string | null;
+  /** Access config for tenant users: private (owner read/update), shared-read (others read, only owner updates), shared-edit (others can read and update). */
+  accessPolicy: "private" | "shared-read" | "shared-edit";
+  cover: PrintableDirectoryCoverResponseDto;
+  header: PrintableDirectoryHeaderFooterResponseDto;
+  footer: PrintableDirectoryHeaderFooterResponseDto;
+  resourceLayout:
+    | "line"
+    | "summary"
+    | "full"
+    | "custom-search"
+    | "custom-resource";
+  defaultQueryConfig?: PrintableDirectoryDefaultQueryConfigDto | null;
+  sections: PrintableDirectorySectionResponseDto[];
+  /** @example "2026-07-08T08:00:00.000Z" */
+  createdAt: string;
+  /** @example "2026-07-08T09:00:00.000Z" */
+  updatedAt: string;
+}
+
+export interface PrintableDirectoryListResponseDto {
+  /**
+   * Total number of matching results
+   * @example 40
+   */
+  total: number;
+  /**
+   * Current page number
+   * @example 1
+   */
+  page: number;
+  items: PrintableDirectoryResponseDto[];
+}
+
+export interface CreatePrintableDirectoryDto {
+  /** @example "My Printable Directory" */
+  name: string;
+  accessPolicy?: "private" | "shared-read" | "shared-edit";
+  resourceLayout?:
+    | "line"
+    | "summary"
+    | "full"
+    | "custom-search"
+    | "custom-resource";
+  defaultQueryConfig?: PrintableDirectoryDefaultQueryConfigDto | null;
+}
+
+export interface PrintableDirectoryLocalizedValuesDto {
+  /**
+   * Localized text map by locale key
+   * @example {"en":"English copy","es":"Texto en español"}
+   */
+  values?: Record<string, string>;
+}
+
+export interface PrintableDirectoryCoverDto {
+  titleLocalized?: PrintableDirectoryLocalizedValuesDto;
+  descriptionLocalized?: PrintableDirectoryLocalizedValuesDto;
+  /** @example "#0f172a" */
+  primaryColor?: string;
+  layoutType?: "default";
+  /** @example "https://example.com/cover.jpg" */
+  coverImageUrl?: string;
+}
+
+export interface PrintableDirectoryHeaderFooterDto {
+  textLocalized?: PrintableDirectoryLocalizedValuesDto;
+  /** @example ["logo","date"] */
+  layout: ("text" | "logo" | "domain" | "date")[];
+  /** @example "https://example.com/logo.svg" */
+  logoUrl?: string;
+}
+
+export interface UpdatePrintableDirectoryDto {
+  /** @example "My Printable Directory" */
+  name?: string;
+  accessPolicy?: "private" | "shared-read" | "shared-edit";
+  resourceLayout?:
+    | "line"
+    | "summary"
+    | "full"
+    | "custom-search"
+    | "custom-resource";
+  defaultQueryConfig?: PrintableDirectoryDefaultQueryConfigDto | null;
+  cover?: PrintableDirectoryCoverDto;
+  header?: PrintableDirectoryHeaderFooterDto;
+  footer?: PrintableDirectoryHeaderFooterDto;
+}
+
+export interface PrintableDirectorySectionSourceDto {
+  type: "query" | "favorites_list" | "resource_ids";
+  query?: PrintableDirectorySourceQueryDto;
+  /** @example "favorites-list-id" */
+  favoritesListId?: string;
+  /** @example ["resource-a","resource-b"] */
+  resourceIds?: string[];
+}
+
+export interface CreatePrintableDirectorySectionDto {
+  headingLocalized: PrintableDirectoryLocalizedValuesDto;
+  descriptionLocalized: PrintableDirectoryLocalizedValuesDto;
+  /**
+   * @min 1
+   * @max 1000
+   * @default 100
+   */
+  maxResources?: number;
+  sources?: PrintableDirectorySectionSourceDto[];
+}
+
+export interface ReorderPrintableDirectorySectionsDto {
+  /** Ordered section IDs */
+  sectionIds: string[];
+}
+
+export interface UpdatePrintableDirectorySectionDto {
+  headingLocalized?: PrintableDirectoryLocalizedValuesDto;
+  descriptionLocalized?: PrintableDirectoryLocalizedValuesDto;
+  /**
+   * @min 1
+   * @max 1000
+   * @default 100
+   */
+  maxResources?: number;
+}
+
+export interface ReorderPrintableDirectorySourcesDto {
+  /** Ordered source IDs */
+  sourceIds: string[];
+}
+
+export interface PrintableDirectoryPreviewSectionResourceDto {
+  id: string;
+  /**
+   * Resolved printable-ready resource object from live resource data at preview time
+   * @example {"_id":"00000000-0000-0000-0000-000000000000","location":{"type":"Point","coordinates":[-106.0746,42.1485]},"addresses":[{"city":"Example","country":"United States","address_1":"543 East Connect Street","postalCode":"99032","stateProvince":"WA","rank":1,"type":"physical"}],"attribution":"Connect 211","createdAt":"2024-08-26T00:00:00","displayName":"FINANCIAL AND FOOD ASSISTANCE | EXAMPLE ORGANIZATION","displayPhoneNumber":"(555) 555-5555","email":"info@example.com","languages":["English","Spanish"],"lastAssuredDate":"2024-08-26T00:00:00","organizationName":"EXAMPLE ORGANIZATION","phoneNumbers":[{"number":"(555) 555-5555","rank":1,"type":"voice"},{"number":"(555) 555-5555","rank":2,"type":"fax"}],"serviceArea":{"type":"Polygon","coordinates":[[[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485]]],"description":["Washington"]},"tenant_id":"00000000-0000-0000-0000-000000000000","originalId":"1234","updatedAt":"2024-08-26T00:00:00","website":"https://www.example.com/","organizationUrl":"https://www.example.org/","translation":{"displayName":"FINANCIAL AND FOOD ASSISTANCE | EXAMPLE ORGANIZATION","fees":"n/a","hours":"Monday 11:00am - 4:30pm;Tuesday 11:00am - 6:00pm;Wednesday 11:00am - 4:30pm;Thursday 11:00am - 6:00pm","locale":"en","taxonomies":[{"code":"CW-0000.0000","name":"Rental Deposit Assistance"}],"serviceName":"FINANCIAL AND FOOD ASSISTANCE","eligibilities":"Rental Assistance is limited to families and individuals.","requiredDocuments":[],"applicationProcess":"Walk-In;Call","alert":"We are currently experiencing high call volumes. Please be patient and leave a message if you are unable to reach us.","serviceDescription":"Emergency financial assistance to help with:\n- Rental and utility assistance\n- Help with first month rent\n- Utility assistance \nFood Pantry including items\n- Fresh and Shelf-Stable Food\n- Personal hygiene items\n- Diapers\n- Prescriptions","organizationDescription":"We are a nonprofit community based volunteer organizations with goals to alleviate poverty and homelessness, encourage self-sufficiency, to allocate funds and resources efficiently, and to provide a \"hands-up\" to those in need.","languages":["English","Spanish"]},"facetsEn":[{"code":"Benton County","taxonomyName":"Area Served by County","termName":"Benton County"},{"code":"People with low income","taxonomyName":"Specialization","termName":"People with low income"}]}
+   */
+  resource: TransformedResourceOpenApiDto;
+}
+
+export interface PrintableDirectoryPreviewSectionDto {
+  id: string;
+  order: number;
+  headingLocalized: PrintableDirectoryLocalizedTextResponseDto;
+  descriptionLocalized: PrintableDirectoryLocalizedTextResponseDto;
+  /**
+   * @min 1
+   * @max 1000
+   */
+  maxResources: number;
+  sources: PrintableDirectorySourceResponseDto[];
+  /** @example "Housing" */
+  resolvedHeading: string;
+  /** @example "English fallback text" */
+  resolvedDescription: string;
+  resources: PrintableDirectoryPreviewSectionResourceDto[];
+}
+
+export interface PrintableDirectoryPreviewResponseDto {
+  id: string;
+  tenantId: string;
+  ownerUserId: string;
+  name: string;
+  updatedBy?: string | null;
+  /** Access config for tenant users: private (owner read/update), shared-read (others read, only owner updates), shared-edit (others can read and update). */
+  accessPolicy: "private" | "shared-read" | "shared-edit";
+  cover: PrintableDirectoryCoverResponseDto;
+  header: PrintableDirectoryHeaderFooterResponseDto;
+  footer: PrintableDirectoryHeaderFooterResponseDto;
+  resourceLayout:
+    | "line"
+    | "summary"
+    | "full"
+    | "custom-search"
+    | "custom-resource";
+  defaultQueryConfig?: PrintableDirectoryDefaultQueryConfigDto | null;
+  sections: PrintableDirectoryPreviewSectionDto[];
+  /** @example "2026-07-08T08:00:00.000Z" */
+  createdAt: string;
+  /** @example "2026-07-08T09:00:00.000Z" */
+  updatedAt: string;
+  directoryId: string;
+  locale: string;
+  /** @example "2026-07-08T10:00:00.000Z" */
+  generatedAt: string;
+}
+
 export interface OrchestrationConfigControllerGetCustomAttributesParams {
   /**
    * Optional schema name to filter custom attributes
@@ -934,17 +1421,20 @@ export type CmsConfigControllerClearTenantCacheData = any;
 
 export interface TaxonomyControllerGetTaxonomiesV2Params {
   /**
-   * Page number for pagination
-   * @default 1
+   * Search query for taxonomy name or code
+   * @default ""
    */
-  page?: any;
+  query?: string;
   /**
    * Taxonomy code (deprecated, use query instead)
    * @deprecated
    */
-  code?: any;
-  /** Search query for taxonomy name or code */
-  query?: any;
+  code?: string;
+  /**
+   * Page number for pagination
+   * @default 1
+   */
+  page?: any;
 }
 
 export type TaxonomyControllerGetTaxonomiesV2Data = TaxonomyResponseDto;
@@ -960,55 +1450,42 @@ export interface TaxonomyControllerGetTaxonomyTermsByCodeParams {
 export type TaxonomyControllerGetTaxonomyTermsByCodeData = any;
 
 export interface SearchControllerGetResourcesParams {
-  /** Search query. Can be a simple string, comma separated strings, or a JSON object with OR and AND nested conditions. */
-  query?:
-    | string
-    | string[]
-    | {
-        OR?: {
-          AND?: string[];
-        }[];
-        AND?: {
-          AND?: string[];
-          OR?: string[];
-        }[];
-      };
-  /**
-   * Sort order: relevance (default), distance (requires coords), name (alphabetical by resource name), organization (alphabetical by provider name)
-   * @default "relevance"
-   */
-  sort?: "relevance" | "distance" | "name" | "organization";
-  /**
-   * Comma-delimited HSIS taxonomy codes used as a hard scope for hybrid search (e.g. BM-1400,BM-1700)
-   * @example "BM-1400,BM-1700"
-   */
-  taxonomy?: string;
   /** @default "text" */
-  query_type?: "text" | "taxonomy" | "more_like_this" | "hybrid";
-  /**
-   * Searcher age used to match minimum_age/service.maximum_age
-   * @min 0
-   */
-  age?: number;
+  query_type?:
+    | "text"
+    | "taxonomy"
+    | "organization"
+    | "more_like_this"
+    | "hybrid";
   /** @default 1 */
   page?: any;
-  /**
-   * Comma delimited list of longitude,latitude
-   * @example "-120.740135,47.751076"
-   */
-  coords?: any;
+  /** Comma delimited list of longitude,latitude */
+  coords?: string[];
   filters?: object;
+  /** Comma-delimited HSIS taxonomy codes used as a hard scope for hybrid search (e.g. BM-1400,BM-1700) */
+  taxonomy?: string | string[];
   /**
    * @min 0
    * @default 0
    */
   distance?: number;
   /**
+   * Searcher age used to match minimum_age/service.maximum_age
+   * @min 0
+   */
+  age?: number;
+  /**
    * @min 25
    * @max 300
    * @default 25
    */
   limit?: number;
+  geo_type?: "boundary" | "proximity";
+  /**
+   * Sort order: relevance (default), distance (requires coords), name (alphabetical by resource name), organization (alphabetical by provider name)
+   * @default "relevance"
+   */
+  sort?: "relevance" | "distance" | "name" | "organization";
 }
 
 export type SearchControllerGetResourcesData = SearchResponseDto;
@@ -1019,55 +1496,42 @@ export interface SearchControllerGetResourcesPostPayload {
 }
 
 export interface SearchControllerGetResourcesPostParams {
-  /** Search query. Can be a simple string, comma separated strings, or a JSON object with OR and AND nested conditions. */
-  query?:
-    | string
-    | string[]
-    | {
-        OR?: {
-          AND?: string[];
-        }[];
-        AND?: {
-          AND?: string[];
-          OR?: string[];
-        }[];
-      };
-  /**
-   * Sort order: relevance (default), distance (requires coords), name (alphabetical by resource name), organization (alphabetical by provider name)
-   * @default "relevance"
-   */
-  sort?: "relevance" | "distance" | "name" | "organization";
-  /**
-   * Comma-delimited HSIS taxonomy codes used as a hard scope for hybrid search (e.g. BM-1400,BM-1700)
-   * @example "BM-1400,BM-1700"
-   */
-  taxonomy?: string;
   /** @default "text" */
-  query_type?: "text" | "taxonomy" | "more_like_this" | "hybrid";
-  /**
-   * Searcher age used to match minimum_age/maximum_age
-   * @min 0
-   */
-  age?: number;
+  query_type?:
+    | "text"
+    | "taxonomy"
+    | "organization"
+    | "more_like_this"
+    | "hybrid";
   /** @default 1 */
   page?: any;
-  /**
-   * Comma delimited list of longitude,latitude
-   * @example "-120.740135,47.751076"
-   */
-  coords?: any;
+  /** Comma delimited list of longitude,latitude */
+  coords?: string[];
   filters?: object;
+  /** Comma-delimited HSIS taxonomy codes used as a hard scope for hybrid search (e.g. BM-1400,BM-1700) */
+  taxonomy?: string | string[];
   /**
    * @min 0
    * @default 0
    */
   distance?: number;
   /**
+   * Searcher age used to match minimum_age/maximum_age
+   * @min 0
+   */
+  age?: number;
+  /**
    * @min 25
    * @max 300
    * @default 25
    */
   limit?: number;
+  geo_type?: "boundary" | "proximity";
+  /**
+   * Sort order: relevance (default), distance (requires coords), name (alphabetical by resource name), organization (alphabetical by provider name)
+   * @default "relevance"
+   */
+  sort?: "relevance" | "distance" | "name" | "organization";
 }
 
 export type SearchControllerGetResourcesPostData = SearchResponseDto;
@@ -1123,6 +1587,7 @@ export type FavoriteListControllerCreateData = any;
 export interface FavoriteListControllerFindAllParams {
   /**
    * @min 1
+   * @max 100
    * @default 1
    */
   page?: number;
@@ -1147,6 +1612,7 @@ export interface FavoriteListControllerSearchParams {
   exclude?: string;
   /**
    * @min 1
+   * @max 100
    * @default 1
    */
   page?: number;
@@ -1191,25 +1657,37 @@ export interface ResourceControllerGetResourceByIdParams {
   id: string;
 }
 
-export type ResourceControllerGetResourceByIdData = any;
+export type ResourceControllerGetResourceByIdData =
+  TransformedResourceOpenApiDto;
 
 export interface ResourceControllerGetResourceByOriginalIdParams {
   /** Original Resource ID */
   id: string;
 }
 
-export type ResourceControllerGetResourceByOriginalIdData = any;
+export type ResourceControllerGetResourceByOriginalIdData =
+  TransformedResourceOpenApiDto;
 
 export type ResourceControllerGetResourceTitlesByIdsData = any;
 
 export type ResourceControllerGetResourcesBatchData = ResourceBatchResponseDto;
 
 export interface SuggestionControllerGetTaxonomiesParams {
-  /** @default 1 */
+  /**
+   * Search query for taxonomy name or code
+   * @default ""
+   */
+  query?: string;
+  /**
+   * Taxonomy code filter
+   * @deprecated
+   */
+  code?: string;
+  /**
+   * Page number for pagination
+   * @default 1
+   */
   page?: any;
-  /** @deprecated */
-  code?: any;
-  query?: any;
 }
 
 export type SuggestionControllerGetTaxonomiesData = any;
@@ -1245,7 +1723,7 @@ export interface GeocodingControllerReverseGeocodeParams {
    * Coordinates in format "longitude,latitude"
    * @example "-74.006,40.7128"
    */
-  coordinates: string;
+  coordinates: any[];
   /**
    * Geocoding module to query
    * @default "mapbox"
@@ -1255,13 +1733,6 @@ export interface GeocodingControllerReverseGeocodeParams {
 }
 
 export type GeocodingControllerReverseGeocodeData = ReverseGeocodeResponseDto[];
-
-export interface GeocodingControllerClearCacheData {
-  /** @example true */
-  cleared?: boolean;
-  /** @example "Geocoding cache cleared successfully" */
-  message?: string;
-}
 
 export type AnalyticsControllerGetInfoData = AnalyticsInfoResponse;
 
@@ -1473,6 +1944,27 @@ export interface AnalyticsControllerGetSessionsParams {
 
 export type AnalyticsControllerGetSessionsData = PaginatedSessionsResponse;
 
+export interface AnalyticsControllerGetExportSearchDataParams {
+  /**
+   * ISO-8601 start date
+   * @example "2025-01-01T00:00:00Z"
+   */
+  start: string;
+  /**
+   * ISO-8601 end date. Must be ≥ start, not in the future, and within 365 days of start.
+   * @example "2025-01-31T23:59:59Z"
+   */
+  end: string;
+  /**
+   * Optional comma-separated Umami website IDs to filter by. If omitted, the tenant root website is used.
+   * @example "abc-123,def-456"
+   */
+  websiteIds?: string;
+}
+
+export type AnalyticsControllerGetExportSearchDataData =
+  ExportSearchDataResponse;
+
 export type AnalyticsControllerSendEventData = SendEventResponseDto;
 
 export type AnalyticsControllerSendBatchData = SendBatchResponseDto;
@@ -1531,3 +2023,151 @@ export interface TaxonomyScorecardControllerEnableTaxonomyScorecardVersionParams
 
 export type TaxonomyScorecardControllerEnableTaxonomyScorecardVersionData =
   TaxonomyScorecardResponseDto;
+
+export interface PrintableDirectoryControllerListParams {
+  /**
+   * @min 1
+   * @default 1
+   */
+  page?: any;
+  /**
+   * @min 1
+   * @max 100
+   * @default 20
+   */
+  limit?: any;
+  /** Name search */
+  search?: string;
+}
+
+export type PrintableDirectoryControllerListData =
+  PrintableDirectoryListResponseDto;
+
+export type PrintableDirectoryControllerCreateData =
+  PrintableDirectoryResponseDto;
+
+export interface PrintableDirectoryControllerGetByIdParams {
+  id: string;
+}
+
+export type PrintableDirectoryControllerGetByIdData =
+  PrintableDirectoryResponseDto;
+
+export interface PrintableDirectoryControllerUpdateParams {
+  id: string;
+}
+
+export type PrintableDirectoryControllerUpdateData =
+  PrintableDirectoryResponseDto;
+
+export interface PrintableDirectoryControllerRemoveParams {
+  id: string;
+}
+
+export interface PrintableDirectoryControllerRemoveData {
+  /** @example true */
+  success?: boolean;
+}
+
+export interface PrintableDirectoryControllerCreateSectionParams {
+  id: string;
+}
+
+export type PrintableDirectoryControllerCreateSectionData =
+  PrintableDirectoryResponseDto;
+
+export interface PrintableDirectoryControllerReorderSectionsParams {
+  id: string;
+}
+
+export type PrintableDirectoryControllerReorderSectionsData =
+  PrintableDirectoryResponseDto;
+
+export interface PrintableDirectoryControllerUpdateSectionParams {
+  id: string;
+  sectionId: string;
+}
+
+export type PrintableDirectoryControllerUpdateSectionData =
+  PrintableDirectoryResponseDto;
+
+export interface PrintableDirectoryControllerRemoveSectionParams {
+  id: string;
+  sectionId: string;
+}
+
+export type PrintableDirectoryControllerRemoveSectionData =
+  PrintableDirectoryResponseDto;
+
+export type PrintableDirectoryControllerCreateSourcePayload =
+  | {
+      /** @example "query" */
+      type: "query";
+      query: {
+        /** @example "Shelter search" */
+        title?: string;
+        /** @example {"query":"shelter","query_type":"text","page":1,"limit":25} */
+        params: object;
+      };
+    }
+  | {
+      /** @example "favorites_list" */
+      type: "favorites_list";
+      /** @example "favorite-list-id" */
+      favoritesListId: string;
+    }
+  | {
+      /** @example "resource_ids" */
+      type: "resource_ids";
+      /**
+       * @minItems 1
+       * @example ["resource-1","resource-2"]
+       */
+      resourceIds: string[];
+    };
+
+export interface PrintableDirectoryControllerCreateSourceParams {
+  id: string;
+  sectionId: string;
+}
+
+export type PrintableDirectoryControllerCreateSourceData =
+  PrintableDirectoryResponseDto;
+
+export interface PrintableDirectoryControllerReorderSourcesParams {
+  id: string;
+  sectionId: string;
+}
+
+export type PrintableDirectoryControllerReorderSourcesData =
+  PrintableDirectoryResponseDto;
+
+export interface PrintableDirectoryControllerUpdateSourceParams {
+  id: string;
+  sectionId: string;
+  sourceId: string;
+}
+
+export type PrintableDirectoryControllerUpdateSourceData =
+  PrintableDirectoryResponseDto;
+
+export interface PrintableDirectoryControllerRemoveSourceParams {
+  id: string;
+  sectionId: string;
+  sourceId: string;
+}
+
+export type PrintableDirectoryControllerRemoveSourceData =
+  PrintableDirectoryResponseDto;
+
+export interface PrintableDirectoryControllerPreviewParams {
+  /**
+   * Locale override for preview rendering (fallback: header accept-language)
+   * @example "en"
+   */
+  locale?: string;
+  id: string;
+}
+
+export type PrintableDirectoryControllerPreviewData =
+  PrintableDirectoryPreviewResponseDto;

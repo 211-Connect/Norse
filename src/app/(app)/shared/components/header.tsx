@@ -3,6 +3,7 @@
 import { useSetAtom } from 'jotai';
 import {
   AlignJustifyIcon,
+  BookOpen,
   Heart,
   HomeIcon,
   LogIn,
@@ -28,6 +29,7 @@ import {
 import { UmamiEvent, trackUmamiEvent } from '../lib/umami';
 import { cn, withOptionalTrailingSlash } from '../lib/utils';
 import { dialogsAtom } from '../store/dialogs';
+import { canAccessPrintableDirectories } from '../utils/canAccessPrintableDirectories';
 import { FontSizeToggle } from './accessibility/font-size-toggle';
 import { LanguageSwitcher } from './language-switcher';
 import { Link } from './link';
@@ -116,6 +118,10 @@ export function Header() {
     appConfig.header.favoritesButtonLabel?.trim() || t('header.my_stuff');
   const feedbackButtonLabel =
     appConfig.header.feedbackButtonLabel?.trim() || t('header.report');
+  const hasPrintableDirectoriesAccess = canAccessPrintableDirectories(
+    session.data?.user?.email,
+    appConfig,
+  );
 
   const sitemap = useMemo(
     () =>
@@ -225,6 +231,22 @@ export function Header() {
             {favoritesButtonLabel}
           </Button>
         </li>,
+        hasPrintableDirectoriesAccess ? (
+          <li key="item-printable-directories-7">
+            <Link
+              href={withOptionalTrailingSlash('/directories')}
+              aria-current={getAriaCurrent('/directories')}
+              className={cn(
+                buttonVariants({ variant: 'outline' }),
+                'flex items-center gap-[5px]',
+                newLayoutEnabled && '!bg-white',
+              )}
+            >
+              <BookOpen className="size-4" aria-hidden="true" />
+              {t('header.printable_directories')}
+            </Link>
+          </li>
+        ) : null,
         !requireAuthenticationForFavorites &&
         session.status === 'unauthenticated' ? (
           <li key="item-login-6">
@@ -305,6 +327,7 @@ export function Header() {
       newLayoutEnabled,
       t,
       favoritesButtonLabel,
+      hasPrintableDirectoriesAccess,
       feedbackButtonLabel,
       getAriaCurrent,
       session.status,

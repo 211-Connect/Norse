@@ -38,6 +38,7 @@ export type AppConfig = {
     provider: 'Twilio' | 'EMS';
   } | null;
   featureFlags: {
+    enablePrintableDirectories: boolean;
     requireUserLocation: boolean;
     showAgeFilter: boolean;
     showFeedbackButtonGlobal: boolean;
@@ -49,6 +50,12 @@ export type AppConfig = {
     showUseMyLocationButtonOnDesktop: boolean;
     turnResourceCardTaxonomiesIntoLinks: boolean;
     requireAuthenticationForFavorites: boolean;
+  };
+  printableDirectories: {
+    allowedEmails: string[];
+    allowedDomains: string[];
+    maxResourcesConfigurable: boolean;
+    defaultMaxResources: number;
   };
   footer: {
     customMenu: Menu[];

@@ -48,7 +48,6 @@ export function FavoriteListsSection() {
   return (
     <div className="flex w-full flex-col p-[10px] lg:max-w-[550px] lg:pl-[20px]">
       <div className="flex w-full flex-col items-center gap-2 md:flex-row">
-        <CreateAListButton className="h-9 self-start" />
         {(favoriteLists.length > 0 || initialSearch) && (
           <FavoritesSearchBar
             className="h-full w-full"
@@ -58,6 +57,7 @@ export function FavoriteListsSection() {
             debounceDelay={FAVORITES_SEARCH_DEBOUNCE_DELAY}
           />
         )}
+        <CreateAListButton className="h-9 self-start" />
       </div>
 
       <div className="mt-[10px] flex flex-col gap-2">

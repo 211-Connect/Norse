@@ -11,6 +11,8 @@
  */
 
 import {
+  AnalyticsControllerGetExportSearchDataData,
+  AnalyticsControllerGetExportSearchDataParams,
   AnalyticsControllerGetInfoData,
   AnalyticsControllerGetLanguageSwitchesData,
   AnalyticsControllerGetLanguageSwitchesParams,
@@ -240,6 +242,27 @@ export class Analytics<
   ) =>
     this.request<AnalyticsControllerGetSessionsData, any>({
       path: `/analytics/sessions`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Returns search events with timestamps, coordinates, and ZIP codes.
+   *
+   * @tags Analytics
+   * @name AnalyticsControllerGetExportSearchData
+   * @summary Get detailed search event data for CSV export
+   * @request GET:/analytics/export-search-data
+   * @secure
+   */
+  analyticsControllerGetExportSearchData = (
+    query: AnalyticsControllerGetExportSearchDataParams,
+    params: RequestParams = {},
+  ) =>
+    this.request<AnalyticsControllerGetExportSearchDataData, any>({
+      path: `/analytics/export-search-data`,
       method: "GET",
       query: query,
       secure: true,
