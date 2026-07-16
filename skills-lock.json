@@ -58,6 +58,12 @@
       "sourceType": "github",
       "computedHash": "a26b3dd377c4572b1c34c68f82ab9a1cb806f21c7157060327fe60e9b6d2e277"
     },
+    "jotai": {
+      "source": "vercel-labs/json-render",
+      "sourceType": "github",
+      "skillPath": "skills/jotai/SKILL.md",
+      "computedHash": "25bddfd76eba7f21fe4b8bafd8309200674c3d61e125797601a49f3d8650b480"
+    },
     "layout": {
       "source": "pbakaus/impeccable",
       "sourceType": "github",
