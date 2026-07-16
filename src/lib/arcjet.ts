@@ -4,6 +4,8 @@ import { createLogger } from '@/lib/logger';
 
 const log = createLogger('arcjet');
 
+const HEADER_DO_CONNECTING_IP = 'do-connecting-ip' as const;
+
 type ArcjetHeaders =
   Record<string, string | string[] | undefined> | Headers | undefined;
 
@@ -33,14 +35,13 @@ export async function arcjetProtectPage(
   tenantId: string,
 ): Promise<void> {
   const req = await request();
-
   const decision = await aj.protect(req);
 
   if (decision.isDenied()) {
     log.warn({
       event: 'arcjet_denied',
       reason: decision.reason,
-      ip: getHeader(req.headers, 'x-forwarded-for'),
+      ip: getHeader(req.headers, HEADER_DO_CONNECTING_IP),
       tenantId,
       pathName,
     });
