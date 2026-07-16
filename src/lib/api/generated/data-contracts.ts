@@ -133,7 +133,7 @@ export interface AiSearchOptionDto {
   /** Whether this need should be pre-selected in UI */
   pre_selected: boolean;
   /** Number of results for this need */
-  results_count: object | null;
+  results_count: number | null;
 }
 
 export interface AiSearchPredictResponseDto {

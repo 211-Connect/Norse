@@ -10,4 +10,7 @@ export * from './interpolateResourceProperties';
 export * from './isJwtExpired';
 export * from './isValidCoordinate';
 export * from './normalizeAllowedEmailDomains';
+export * from './normalizeIndexedCollection';
+export * from './parseBoolean';
+export * from './parseNumberOrNull';
 export * from './supportedIcons';
