@@ -2,6 +2,7 @@
 
 import { PieChartWidgetSegment } from '../PieChartWidget';
 import { UmamiSession } from '../types';
+import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 import { SessionsPieWidget } from './SessionsPieWidget';
 
 const DEVICE_COLORS = ['#60a5fa', '#34d399', '#f59e0b', '#f472b6', '#a78bfa'];
@@ -57,6 +58,8 @@ export default function DeviceTypesWidget() {
       buildSegments={buildSegments}
       errorTitle="Could not load device types."
       errorDescription="Please contact the support team."
+      title="Device Types"
+      description={WIDGET_INFO[WidgetSlug.DeviceTypes]}
     />
   );
 }

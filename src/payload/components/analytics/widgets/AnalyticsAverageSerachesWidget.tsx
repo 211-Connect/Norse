@@ -2,6 +2,7 @@
 
 import { usePaths, useSessions } from '../useAnalyticsData';
 import { SingleStatCardWidget } from './SingleStatCardWidget';
+import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 
 type AverageSearchesData = {
   current: number;
@@ -25,12 +26,17 @@ function useAverageSearchesData() {
     loading: paths.loading || sessions.loading,
     error: paths.error ?? sessions.error,
     data,
+    refetch: () => {
+      paths.refetch();
+      sessions.refetch();
+    },
   };
 }
 
 export default function AnalyticsAverageSearchesWidget() {
   return (
     <SingleStatCardWidget
+      description={WIDGET_INFO[WidgetSlug.AverageSearches]}
       label="Average Searches / Session"
       dataSource="custom"
       useData={useAverageSearchesData}

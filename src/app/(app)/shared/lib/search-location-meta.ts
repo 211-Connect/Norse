@@ -3,11 +3,13 @@
 import { reverseGeocode } from '../serverActions/geocoding/reverseGeocode';
 
 export interface SearchLocationMeta {
+  searchCity: string;
   searchZipCode: string;
   searchCounty: string;
 }
 
 const EMPTY_META: SearchLocationMeta = {
+  searchCity: '',
   searchZipCode: '',
   searchCounty: '',
 };
@@ -28,6 +30,7 @@ export async function getSearchLocationMeta(
 
   const hit = results.find((result) => result.type === 'coordinates');
   return {
+    searchCity: hit?.place ?? '',
     searchZipCode: hit?.postcode ?? '',
     searchCounty: hit?.district ?? '',
   };
@@ -36,6 +39,7 @@ export async function getSearchLocationMeta(
 type SearchLocationPayload = {
   userCoordinates: string;
   searchCoordinates: string;
+  searchCity: string;
   searchZipCode: string;
   searchCounty: string;
 };
@@ -45,14 +49,13 @@ export async function buildSearchLocationPayload(
   userCoordinates: number[],
   tenantId?: string,
 ): Promise<SearchLocationPayload> {
-  const { searchZipCode, searchCounty } = await getSearchLocationMeta(
-    searchCoordinates,
-    tenantId,
-  );
+  const { searchCity, searchZipCode, searchCounty } =
+    await getSearchLocationMeta(searchCoordinates, tenantId);
 
   return {
     userCoordinates: userCoordinates.join(',') ?? '',
     searchCoordinates: searchCoordinates.join(',') ?? '',
+    searchCity,
     searchZipCode,
     searchCounty,
   };

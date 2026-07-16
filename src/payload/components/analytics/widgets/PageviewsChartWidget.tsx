@@ -1,14 +1,14 @@
 'use client';
 
-import { Banner, StaggeredShimmers } from '@payloadcms/ui';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 
 import { Chart } from '../Chart';
 import { usePageviews } from '../useAnalyticsData';
+import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 
 export default function PageviewsChartWidget() {
-  const { loading, error, data } = usePageviews();
+  const { loading, error, data, refetch } = usePageviews();
 
   const timelineData = useMemo(() => {
     if (!data?.pageviews) return [];
@@ -18,20 +18,20 @@ export default function PageviewsChartWidget() {
     }));
   }, [data]);
 
-  if (loading) return <StaggeredShimmers count={1} height={400} />;
-
-  if (error) {
-    return (
-      <Banner type="error">
-        <strong>Could not load pageviews chart.</strong> Please contact the
-        support team.
-      </Banner>
-    );
-  }
-
   return (
     <div style={{ height: '400px' }}>
-      <Chart title="Pageviews" data={timelineData} />
+      <Chart
+        title="Pageviews"
+        data={timelineData}
+        description={WIDGET_INFO[WidgetSlug.PageviewsChart]}
+        onRefresh={refetch}
+        refreshing={loading}
+        loading={loading}
+        errorTitle={error ? 'Could not load pageviews chart.' : undefined}
+        errorDescription={
+          error ? 'Please contact the support team.' : undefined
+        }
+      />
     </div>
   );
 }

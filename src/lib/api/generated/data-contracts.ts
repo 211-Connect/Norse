@@ -660,6 +660,44 @@ export interface PaginatedSessionsResponse {
   data: SessionsResponse[];
 }
 
+export interface SearchEventExportRow {
+  /**
+   * ISO-8601 timestamp of the search event
+   * @example "2025-01-15T14:23:45.000Z"
+   */
+  timestamp: string;
+  /**
+   * User search query string
+   * @example "homeless shelter"
+   */
+  queryLabel: string;
+  /**
+   * Search type: text or taxonomy
+   * @example "text"
+   */
+  queryType: "text" | "taxonomy";
+  /**
+   * Search coordinates in "longitude,latitude" format
+   * @example "-122.4194,37.7749"
+   */
+  coordinates: object | null;
+  /**
+   * ZIP/postal code from reverse geocoding
+   * @example "94102"
+   */
+  zipCode: object | null;
+}
+
+export interface ExportSearchDataResponse {
+  /** Array of search event export rows */
+  data: SearchEventExportRow[];
+  /**
+   * Total number of exported rows
+   * @example 1523
+   */
+  totalCount: number;
+}
+
 export interface EventPayloadDto {
   /**
    * Event name (1-255 characters)
@@ -1123,6 +1161,7 @@ export type FavoriteListControllerCreateData = any;
 export interface FavoriteListControllerFindAllParams {
   /**
    * @min 1
+   * @max 100
    * @default 1
    */
   page?: number;
@@ -1147,6 +1186,7 @@ export interface FavoriteListControllerSearchParams {
   exclude?: string;
   /**
    * @min 1
+   * @max 100
    * @default 1
    */
   page?: number;
@@ -1245,7 +1285,7 @@ export interface GeocodingControllerReverseGeocodeParams {
    * Coordinates in format "longitude,latitude"
    * @example "-74.006,40.7128"
    */
-  coordinates: string;
+  coordinates: any[];
   /**
    * Geocoding module to query
    * @default "mapbox"
@@ -1255,13 +1295,6 @@ export interface GeocodingControllerReverseGeocodeParams {
 }
 
 export type GeocodingControllerReverseGeocodeData = ReverseGeocodeResponseDto[];
-
-export interface GeocodingControllerClearCacheData {
-  /** @example true */
-  cleared?: boolean;
-  /** @example "Geocoding cache cleared successfully" */
-  message?: string;
-}
 
 export type AnalyticsControllerGetInfoData = AnalyticsInfoResponse;
 
@@ -1472,6 +1505,27 @@ export interface AnalyticsControllerGetSessionsParams {
 }
 
 export type AnalyticsControllerGetSessionsData = PaginatedSessionsResponse;
+
+export interface AnalyticsControllerGetExportSearchDataParams {
+  /**
+   * ISO-8601 start date
+   * @example "2025-01-01T00:00:00Z"
+   */
+  start: string;
+  /**
+   * ISO-8601 end date. Must be ≥ start, not in the future, and within 365 days of start.
+   * @example "2025-01-31T23:59:59Z"
+   */
+  end: string;
+  /**
+   * Optional comma-separated Umami website IDs to filter by. If omitted, the tenant root website is used.
+   * @example "abc-123,def-456"
+   */
+  websiteIds?: string;
+}
+
+export type AnalyticsControllerGetExportSearchDataData =
+  ExportSearchDataResponse;
 
 export type AnalyticsControllerSendEventData = SendEventResponseDto;
 

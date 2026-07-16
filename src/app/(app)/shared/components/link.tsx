@@ -3,8 +3,6 @@
 import { LinkProps as NextLinkProps } from 'next/link';
 import { forwardRef } from 'react';
 
-import { createLinkEvent } from '@/app/(app)/shared/lib/google-tag-manager';
-
 import { LocalizedLink } from './LocalizedLink';
 
 export interface LinkProps extends NextLinkProps {
@@ -15,13 +13,7 @@ export interface LinkProps extends NextLinkProps {
 }
 const Link = forwardRef<HTMLAnchorElement, LinkProps>(
   ({ children, ...props }, ref) => {
-    const handleLink = (e: any) => {
-      createLinkEvent(e);
-    };
-
     const onClick = (e: any) => {
-      handleLink(e);
-
       if (props.onClick) {
         props.onClick(e);
       }

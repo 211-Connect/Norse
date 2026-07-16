@@ -5,22 +5,24 @@ import type { AdminViewServerProps } from 'payload';
 import { Fragment } from 'react';
 
 import DateRange from '../analytics/DateRange';
+import ExportCSVButton from '../analytics/ExportCSVButton';
 import TenantAutoSelect from '../analytics/TenantAutoSelect';
+import { WidgetSlug } from '../analytics/widgetInfo';
 
 const ANALYTICS_DEFAULT_LAYOUT = [
-  { widgetSlug: 'analytics-total-users', width: 'x-small' as const },
-  { widgetSlug: 'analytics-searches', width: 'x-small' as const },
-  { widgetSlug: 'analytics-resource-views', width: 'x-small' as const },
-  { widgetSlug: 'analytics-zero-results', width: 'x-small' as const },
-  { widgetSlug: 'analytics-website-clicks', width: 'x-small' as const },
-  { widgetSlug: 'analytics-phone-calls', width: 'x-small' as const },
-  { widgetSlug: 'analytics-directions', width: 'x-small' as const },
-  { widgetSlug: 'analytics-total-referrals', width: 'x-small' as const },
-  { widgetSlug: 'analytics-page-views', width: 'x-small' as const },
-  { widgetSlug: 'analytics-pageviews-chart', width: 'medium' as const },
-  { widgetSlug: 'analytics-map', width: 'medium' as const },
-  { widgetSlug: 'analytics-resource-titles', width: 'medium' as const },
-  { widgetSlug: 'analytics-search-queries', width: 'medium' as const },
+  { widgetSlug: WidgetSlug.TotalUsers, width: 'x-small' as const },
+  { widgetSlug: WidgetSlug.Searches, width: 'x-small' as const },
+  { widgetSlug: WidgetSlug.ResourceViews, width: 'x-small' as const },
+  { widgetSlug: WidgetSlug.ZeroResults, width: 'x-small' as const },
+  { widgetSlug: WidgetSlug.WebsiteClicks, width: 'x-small' as const },
+  { widgetSlug: WidgetSlug.PhoneCalls, width: 'x-small' as const },
+  { widgetSlug: WidgetSlug.Directions, width: 'x-small' as const },
+  { widgetSlug: WidgetSlug.TotalReferrals, width: 'x-small' as const },
+  { widgetSlug: WidgetSlug.PageViews, width: 'x-small' as const },
+  { widgetSlug: WidgetSlug.PageviewsChart, width: 'medium' as const },
+  { widgetSlug: WidgetSlug.Map, width: 'medium' as const },
+  { widgetSlug: WidgetSlug.ResourceTitles, width: 'medium' as const },
+  { widgetSlug: WidgetSlug.SearchQueries, width: 'medium' as const },
 ];
 
 export default function AnalyticsView(props: AdminViewServerProps) {
@@ -30,12 +32,21 @@ export default function AnalyticsView(props: AdminViewServerProps) {
     return null;
   }
 
+  // Only allow analytics widgets to be added/rendered on this dashboard.
+  // Payload's core config sanitizer always injects a built-in `collections`
+  // widget into `admin.dashboard.widgets`, so we filter it (and any other
+  // non-analytics widget) out here.
+  const analyticsWidgets = (
+    props.payload.config.admin.dashboard?.widgets ?? []
+  ).filter((widget) => widget.slug.startsWith('analytics-'));
+
   const patchedConfig = {
     ...props.payload.config,
     admin: {
       ...props.payload.config.admin,
       dashboard: {
         ...(props.payload.config.admin.dashboard ?? {}),
+        widgets: analyticsWidgets,
         defaultLayout: ANALYTICS_DEFAULT_LAYOUT,
       },
     },
@@ -78,7 +89,16 @@ export default function AnalyticsView(props: AdminViewServerProps) {
             }}
           >
             <h1 style={{ margin: 0 }}>Analytics</h1>
-            <DateRange />
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '0.75rem',
+              }}
+            >
+              <ExportCSVButton />
+              <DateRange />
+            </div>
           </div>
         </Gutter>
         <DefaultDashboard {...patchedProps} user={user} />

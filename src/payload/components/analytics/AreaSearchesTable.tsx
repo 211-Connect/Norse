@@ -5,6 +5,9 @@ import type { Column } from 'payload';
 import { memo, useEffect, useMemo, useState } from 'react';
 
 import type { AreaMetricsRow } from './types';
+import { WidgetCard } from './WidgetCard';
+import { WidgetErrorState } from './WidgetErrorState';
+import { WidgetSkeleton } from './WidgetSkeleton';
 
 type SortKey = 'area' | 'totalSearches' | 'zeroSearches' | 'zeroRate';
 type SortDirection = 'asc' | 'desc';
@@ -15,16 +18,43 @@ export const AreaSearchesTable = memo(function AreaSearchesTable({
   rows,
   emptyMessage,
   pageSize = 10,
+  description,
+  onRefresh,
+  refreshing,
+  loading = false,
+  errorTitle,
+  errorDescription,
 }: {
   title: string;
   areaLabel: string;
   rows: AreaMetricsRow[];
   emptyMessage: string;
   pageSize?: number;
+  description?: string;
+  onRefresh: () => void;
+  refreshing?: boolean;
+  loading?: boolean;
+  errorTitle?: string;
+  errorDescription?: string;
 }) {
+  if (loading) {
+    return <WidgetSkeleton height="480px" count={5} shimmerHeight={40} />;
+  }
+
+  if (errorTitle) {
+    return (
+      <WidgetErrorState
+        title={errorTitle}
+        description={errorDescription}
+        onRetry={onRefresh}
+        retrying={refreshing}
+      />
+    );
+  }
+
   if (rows.length === 0) {
     return (
-      <Container title={title}>
+      <Container title={title} description={description}>
         <EmptyState message={emptyMessage} />
       </Container>
     );
@@ -149,7 +179,7 @@ export const AreaSearchesTable = memo(function AreaSearchesTable({
   const canGoNext = page < totalPages;
 
   return (
-    <Container title={title}>
+    <Container title={title} description={description}>
       <div style={{ flex: 1, overflow: 'auto' }}>
         <Table columns={columns} data={data} appearance="condensed" />
       </div>
@@ -208,42 +238,17 @@ export const AreaSearchesTable = memo(function AreaSearchesTable({
 
 function Container({
   title,
+  description,
   children,
 }: {
   title: string;
+  description?: string;
   children: React.ReactNode;
 }) {
   return (
-    <div
-      style={{
-        border: '1px solid var(--theme-elevation-150)',
-        borderRadius: '0.5rem',
-        padding: '1rem',
-        background: 'var(--theme-elevation-0)',
-        height: '480px',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '0.75rem',
-          height: '100%',
-        }}
-      >
-        <h4
-          style={{
-            margin: 0,
-            fontSize: '1rem',
-            fontWeight: 600,
-            color: 'var(--theme-text)',
-          }}
-        >
-          {title}
-        </h4>
-        {children}
-      </div>
-    </div>
+    <WidgetCard title={title} description={description} bordered height="480px">
+      {children}
+    </WidgetCard>
   );
 }
 

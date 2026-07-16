@@ -1,3 +1,4 @@
+import { Analytics } from './generated/Analytics';
 import { Geocoding } from './generated/Geocoding';
 import { Search } from './generated/Search';
 import { TaxonomyScorecard } from './generated/TaxonomyScorecard';
@@ -12,6 +13,8 @@ const clientArgs = {
     },
   },
 };
+
+export const analyticsApiClient = new Analytics(clientArgs);
 
 export const searchApiClient = new Search(clientArgs);
 

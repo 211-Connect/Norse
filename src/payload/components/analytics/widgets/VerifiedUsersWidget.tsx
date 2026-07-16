@@ -1,10 +1,11 @@
 'use client';
 
 import { useTenantSelection } from '@payloadcms/plugin-multi-tenant/client';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import type { AsyncData } from '../useAnalyticsData';
 import { SingleStatCardWidget } from './SingleStatCardWidget';
+import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 
 type VerifiedUsersData = {
   verifiedUsers: number;
@@ -13,14 +14,18 @@ type VerifiedUsersData = {
 function useVerifiedUsersData(): AsyncData<VerifiedUsersData> {
   const { selectedTenantID } = useTenantSelection();
 
-  const [state, setState] = useState<AsyncData<VerifiedUsersData>>({
+  const [state, setState] = useState<
+    Omit<AsyncData<VerifiedUsersData>, 'refetch'>
+  >({
     loading: true,
     error: null,
     data: null,
   });
 
-  useEffect(() => {
-    let cancelled = false;
+  const requestIdRef = useRef(0);
+
+  const load = useCallback(() => {
+    const requestId = ++requestIdRef.current;
 
     if (!selectedTenantID) {
       setState({ loading: false, error: null, data: null });
@@ -43,12 +48,12 @@ function useVerifiedUsersData(): AsyncData<VerifiedUsersData> {
         return (await response.json()) as VerifiedUsersData;
       })
       .then((data) => {
-        if (!cancelled) {
+        if (requestIdRef.current === requestId) {
           setState({ loading: false, error: null, data });
         }
       })
       .catch((err) => {
-        if (!cancelled) {
+        if (requestIdRef.current === requestId) {
           setState({
             loading: false,
             error: err instanceof Error ? err.message : String(err),
@@ -56,18 +61,19 @@ function useVerifiedUsersData(): AsyncData<VerifiedUsersData> {
           });
         }
       });
-
-    return () => {
-      cancelled = true;
-    };
   }, [selectedTenantID]);
 
-  return state;
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  return { ...state, refetch: load };
 }
 
 export default function VerifiedUsersWidget() {
   return (
     <SingleStatCardWidget
+      description={WIDGET_INFO[WidgetSlug.VerifiedUsers]}
       label="Verified User Accounts"
       dataSource="custom"
       useData={useVerifiedUsersData}

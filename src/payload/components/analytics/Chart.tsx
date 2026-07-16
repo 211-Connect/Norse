@@ -11,6 +11,10 @@ import {
   YAxis,
 } from 'recharts';
 
+import { WidgetCard } from './WidgetCard';
+import { WidgetErrorState } from './WidgetErrorState';
+import { WidgetSkeleton } from './WidgetSkeleton';
+
 export interface LineChartDataPoint {
   [key: string]: string | number;
 }
@@ -20,6 +24,12 @@ interface ChartProps {
   xAxisKey?: string;
   data: LineChartDataPoint[];
   color?: string;
+  description?: string;
+  onRefresh: () => void;
+  refreshing?: boolean;
+  loading?: boolean;
+  errorTitle?: string;
+  errorDescription?: string;
 }
 
 const CHART_MARGIN = { top: 5, right: 20, left: 0, bottom: 5 };
@@ -31,10 +41,35 @@ export const Chart = memo(function Chart({
   xAxisKey = 'date',
   data,
   color = '#4f46e5',
+  description,
+  onRefresh,
+  refreshing,
+  loading = false,
+  errorTitle,
+  errorDescription,
 }: ChartProps) {
+  if (loading) {
+    return <WidgetSkeleton height="100%" count={1} shimmerHeight={340} />;
+  }
+
+  if (errorTitle) {
+    return (
+      <WidgetErrorState
+        title={errorTitle}
+        description={errorDescription}
+        onRetry={onRefresh}
+        retrying={refreshing}
+      />
+    );
+  }
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <h3 style={{ margin: '0 0 0.5rem 0' }}>{title}</h3>
+    <WidgetCard
+      title={title}
+      description={description}
+      headingLevel="h3"
+      height="100%"
+    >
       <div style={{ flex: 1, minHeight: 0 }}>
         <ResponsiveContainer
           width="100%"
@@ -57,6 +92,6 @@ export const Chart = memo(function Chart({
           </LineChart>
         </ResponsiveContainer>
       </div>
-    </div>
+    </WidgetCard>
   );
 });

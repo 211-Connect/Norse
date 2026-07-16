@@ -23,12 +23,29 @@ export interface SearchEvent {
   query_label?: string | string[] | null;
   query_language?: string | null;
   location?: string | null;
-  results?: boolean | null;
+  results?: number | null;
   country?: string | null;
   district?: string | null;
   place?: string | null;
   postcode?: string | null;
   region?: string | null;
+}
+
+export interface SearchLocationContext {
+  place?: string | null;
+  postcode?: string | null;
+}
+
+interface NorseSearchEvent {
+  event: 'norse_serach';
+  sessionId: string | null;
+  queryLabel: string | null;
+  queryValue: string | null;
+  queryType: string | null;
+  resultsCount: number | null;
+  zip: string | null;
+  city: string | null;
+  timestamp: string;
 }
 
 export interface PageViewEvent {
@@ -45,6 +62,43 @@ export interface NoResultEvent {
 }
 
 const isDevelopment = process.env.NODE_ENV === 'development';
+
+const normalizeStringValue = (
+  value: string | string[] | null | undefined,
+): string | null => {
+  if (Array.isArray(value)) {
+    const normalizedArray = value
+      .map((item) => item?.trim())
+      .filter((item) => Boolean(item));
+    return normalizedArray.length > 0 ? normalizedArray.join(',') : null;
+  }
+
+  const normalized = value?.trim();
+  return normalized ? normalized : null;
+};
+
+const buildNorseSearchEvent = (
+  query: any,
+  total: number | undefined,
+  sessionId: string,
+  locationContext?: SearchLocationContext | null,
+): NorseSearchEvent => {
+  const queryValue = normalizeStringValue(query?.query);
+  const queryLabel = normalizeStringValue(query?.query_label) ?? queryValue;
+  const queryType = normalizeStringValue(query?.query_type);
+
+  return {
+    event: 'norse_serach',
+    sessionId: sessionId || null,
+    queryLabel,
+    queryValue,
+    queryType,
+    resultsCount: typeof total === 'number' ? total : null,
+    zip: normalizeStringValue(locationContext?.postcode),
+    city: normalizeStringValue(locationContext?.place),
+    timestamp: new Date().toISOString(),
+  };
+};
 
 const getFromSessionStorage = (key: string, sessionId: string) => {
   if (key == null) return;
@@ -69,26 +123,10 @@ export const createFeedbackEvent = (e: any) => {
   }
 };
 
-export const createLinkEvent = (e: any) => {
-  if (isDevelopment) {
-    console.log({
-      event: '/// LINK EVENT ///',
-      data: e,
-    });
-  }
-};
-
 export const createPageViewEvent = (e: any, sessionId: string) => {
   const eventExists = getFromSessionStorage(`pageview-${e.url}`, sessionId);
 
   if (!eventExists) {
-    if (isDevelopment) {
-      console.log({
-        event: '/// PAGE VIEW EVENT ///',
-        data: e,
-      });
-    }
-
     const newEvent = {
       event: 'pageview',
       page: e.url,
@@ -154,7 +192,12 @@ export const createReferralEvent = (
   }
 };
 
-export const createResultsEvent = (e: any, query: any, sessionId: string) => {
+export const createResultsEvent = (
+  e: any,
+  query: any,
+  sessionId: string,
+  locationContext?: SearchLocationContext | null,
+) => {
   if (query.query_type === 'taxonomy') {
     const eventExists = getFromSessionStorage(
       `search.${query.query}`,
@@ -163,13 +206,6 @@ export const createResultsEvent = (e: any, query: any, sessionId: string) => {
     const cookies = getCookies() ?? {};
 
     if (!eventExists) {
-      if (isDevelopment) {
-        console.log({
-          event: '/// RESULTS EVENT ///',
-          data: e,
-        });
-      }
-
       const newEvent = {
         event: 'search',
         ...query,
@@ -180,8 +216,10 @@ export const createResultsEvent = (e: any, query: any, sessionId: string) => {
         postcode: cookies[USER_PREF_POSTCODE] ?? null,
         region: cookies[USER_PREF_REGION] ?? null,
       };
-
       createEvent<SearchEvent>(newEvent);
+      createEvent<NorseSearchEvent>(
+        buildNorseSearchEvent(query, e.total, sessionId, locationContext),
+      );
       setSessionStorage(`search.${query.query}`, newEvent, sessionId);
 
       const taxonomies = (query?.query as string)?.split(',') ?? [];
@@ -212,13 +250,6 @@ export const createResultsEvent = (e: any, query: any, sessionId: string) => {
     const cookies = getCookies() ?? {};
 
     if (!eventExists) {
-      if (isDevelopment) {
-        console.log({
-          event: '/// RESULTS EVENT ///',
-          data: e,
-        });
-      }
-
       const newEvent = {
         event: 'search',
         ...query,
@@ -232,17 +263,11 @@ export const createResultsEvent = (e: any, query: any, sessionId: string) => {
       };
 
       createEvent<SearchEvent>(newEvent);
+      createEvent<NorseSearchEvent>(
+        buildNorseSearchEvent(query, e.total, sessionId, locationContext),
+      );
       setSessionStorage(`search.${query.query}`, newEvent, sessionId);
     }
-  }
-};
-
-export const createTourEvent = (data: any) => {
-  if (isDevelopment) {
-    console.log({
-      event: '/// TOUR EVENT ///',
-      data: data,
-    });
   }
 };
 

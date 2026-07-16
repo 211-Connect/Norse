@@ -11,7 +11,7 @@ import type { DateRange as DateRangeType } from './types';
 
 const DATE_RANGES: (7 | 30 | 90)[] = [7, 30, 90];
 
-export const analyticsDateRangeAtom = atom<DateRangeType>(30);
+export const analyticsDateRangeAtom = atom<DateRangeType>(7);
 export const analyticsSelectedWebsiteIdsAtom = atom<string[]>([]);
 
 export default function DateRange() {

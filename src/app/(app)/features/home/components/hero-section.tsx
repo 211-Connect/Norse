@@ -9,7 +9,6 @@ import { MainSearchLayout } from '@/app/(app)/shared/components/search/main-sear
 import { Button } from '@/app/(app)/shared/components/ui/button';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
-import { createTourEvent } from '@/app/(app)/shared/lib/google-tag-manager';
 
 type TourPositionPreference = 'above' | 'below';
 
@@ -151,7 +150,6 @@ export function HeroSection() {
   }, [getStepOnePosition, getStepTwoPosition, t]);
 
   const enableTour = () => {
-    createTourEvent(null);
     const tourSteps = buildTourSteps();
 
     if (setSteps) {
