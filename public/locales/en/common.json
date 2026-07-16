@@ -3,6 +3,7 @@
     "home": "Home",
     "log_out": "Log out",
     "language_select_label": "Select a language to change the site language",
+    "printable_directories": "Printable Directories",
     "my_stuff": "My stuff",
     "search": "Search",
     "report": "Submit Feedback"
@@ -85,11 +86,44 @@
     "show_more": "Show more",
     "show_less": "Show less",
     "print": "Print",
-    "close": "Close"
+    "close": "Close",
+    "edit": "Edit",
+    "save": "Save"
   },
   "list": {
     "private": "Private",
     "public": "Public"
+  },
+  "printable_directories": {
+    "save_source": {
+      "loading_directories": "Loading directories...",
+      "no_directories_found": "No directories found. Create one from the My Directories page first.",
+      "directory_label": "Directory",
+      "section_label": "Section",
+      "select_directory_placeholder": "Select directory",
+      "select_section_placeholder": "Select section",
+      "unable_load_directories_error": "Unable to load printable directories",
+      "select_directory_first_error": "Select a directory first",
+      "unable_create_section_error": "Unable to create a section in this directory",
+      "unable_select_section_error": "Unable to select a section in this directory"
+    },
+    "save_list": {
+      "open": "Save list to printable directory",
+      "button_label": "Save list to printable directory",
+      "dialog_title": "Save list to printable directory",
+      "dialog_description": "Choose a directory and section for this favorite list.",
+      "choose_directory_section": "Choose a directory and section for “{{favoriteListName}}”.",
+      "create_section_option": "Create “{{heading}}” section",
+      "success": "List saved to printable directory",
+      "error": "Unable to save list to directory"
+    },
+    "save_query": {
+      "dialog_title": "Save query to printable directory",
+      "dialog_description": "Choose a directory and section for this saved query.",
+      "create_section_option": "Create “{{heading}}” section",
+      "success": "Query saved to printable directory",
+      "error": "Unable to save query to directory"
+    }
   },
   "message": {
     "list_deleted": "List deleted",

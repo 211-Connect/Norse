@@ -1,7 +1,9 @@
 'use client';
 
 import { useAtomValue } from 'jotai';
-import { useCallback, useEffect, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
+import qs from 'qs';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { DirectoryPrintControl } from '@/app/(app)/shared/components/directory-print/directory-print-control';
@@ -28,6 +30,7 @@ import { RenderResults } from './render-results';
 import { ResultTotal } from './result-total';
 import { ResultsPagination } from './results-pagination';
 import { SortSelect } from './sort-select';
+import { SaveQueryToDirectoryButton } from './save-query-to-directory-button';
 
 const SEARCH_RESULTS_HEADING_ID = 'search-results-heading';
 const PENDING_FOCUS_TARGET_STORAGE_KEY = 'pending-search-focus-target';
@@ -55,6 +58,32 @@ const getAiAlertMessageKey = (aiSearchAlert?: string): string | undefined => {
   return undefined;
 };
 
+const toSingleString = (value: unknown): string | undefined => {
+  if (typeof value === 'string') {
+    return value;
+  }
+
+  if (Array.isArray(value) && typeof value[0] === 'string') {
+    return value[0];
+  }
+
+  return undefined;
+};
+
+const parseDistanceParam = (value?: string): number | undefined => {
+  if (!value) {
+    return undefined;
+  }
+
+  const parsed = Number(value);
+
+  if (!Number.isInteger(parsed) || parsed < 0) {
+    return undefined;
+  }
+
+  return parsed;
+};
+
 export function ResultsSection({
   cardLayout,
   aiSearchAlert,
@@ -62,6 +91,7 @@ export function ResultsSection({
   const { t } = useTranslation('page-search');
   const { i18n } = useTranslation();
   const appConfig = useAppConfig();
+  const searchParams = useSearchParams();
   const componentToPrintRef = useRef<HTMLDivElement>(null);
   const resultsHeadingRef = useRef<HTMLHeadingElement>(null);
   const results = useAtomValue(resultsAtom);
@@ -75,6 +105,36 @@ export function ResultsSection({
   const shareBody = t('share_body', { count: totalResults, title: shareTitle });
   const printableListName = shareTitle;
   const aiAlertMessageKey = getAiAlertMessageKey(aiSearchAlert);
+  const serializedQueryParams = useMemo(() => {
+    const parsedParams = qs.parse(searchParams.toString());
+    const parsedDistance = parseDistanceParam(
+      toSingleString(parsedParams.distance),
+    );
+    const parsedFilters =
+      parsedParams.filters &&
+      typeof parsedParams.filters === 'object' &&
+      !Array.isArray(parsedParams.filters)
+        ? (parsedParams.filters as Record<string, unknown>)
+        : undefined;
+
+    const nextParams: Record<string, unknown> = {
+      query: toSingleString(parsedParams.query) || query || '',
+      query_label: toSingleString(parsedParams.query_label) || queryLabel || '',
+      query_type: toSingleString(parsedParams.query_type) || queryType || '',
+      coords: toSingleString(parsedParams.coords) || '',
+      location: toSingleString(parsedParams.location) || '',
+    };
+
+    if (parsedDistance !== undefined) {
+      nextParams.distance = parsedDistance;
+    }
+
+    if (parsedFilters) {
+      nextParams.filters = parsedFilters;
+    }
+
+    return nextParams;
+  }, [searchParams, query, queryLabel, queryType]);
 
   const showSort = queryType !== 'hybrid';
 
@@ -130,6 +190,12 @@ export function ResultsSection({
           <div className="flex gap-2.5">
             {resultsCount > 0 && (
               <DirectoryPrintControl data={null} loadData={loadPrintableData} />
+            )}
+            {resultsCount > 0 && (
+              <SaveQueryToDirectoryButton
+                queryTitle={shareTitle}
+                queryParams={serializedQueryParams}
+              />
             )}
             <ShareButton
               componentToPrintRef={componentToPrintRef}

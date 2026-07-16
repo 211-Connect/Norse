@@ -82,6 +82,12 @@ const createAuthOptions = ({
       session.accessToken = token.accessToken;
       session.error = token.error ?? null;
 
+      session.user = {
+        ...session.user,
+        id: session.user?.id ?? token.sub ?? '',
+        email: token.email || (session.user?.email ?? null),
+      };
+
       return session;
     },
     async signIn({ user }) {
@@ -109,11 +115,12 @@ const createAuthOptions = ({
 
       return allowedDomainSet.has(domain);
     },
-    async jwt({ token, account }) {
+    async jwt({ token, account, user }) {
       const tokens = {
         accessToken: token.accessToken,
         refreshToken: token.refreshToken,
         expiresAt: token.expiresAt,
+        email: token.email,
       };
 
       if (account) {
@@ -123,6 +130,7 @@ const createAuthOptions = ({
           accessToken: account.access_token,
           refreshToken: account.refresh_token,
           expiresAt: account.expires_at,
+          email: user?.email ?? token.email,
         };
       }
 
@@ -176,6 +184,7 @@ const createAuthOptions = ({
           accessToken: data.access_token,
           refreshToken: data.refresh_token ?? token.refreshToken,
           expiresAt: Math.floor(Date.now() / 1000 + data.expires_in),
+          email: token.email,
           error: undefined,
         };
       } catch (err: any) {

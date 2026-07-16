@@ -981,6 +981,21 @@ export interface ResourceDirectory {
     showFeedbackButtonOnResourcePages?: boolean | null;
     requireAuthenticationForFavorites?: boolean | null;
     showAgeFilter?: boolean | null;
+    enablePrintableDirectories?: boolean | null;
+    maxResourcesConfigurable?: boolean | null;
+    defaultMaxResources?: number | null;
+    printableDirectoriesAllowedEmails?:
+      | {
+          email: string;
+          id?: string | null;
+        }[]
+      | null;
+    printableDirectoriesAllowedDomains?:
+      | {
+          domain: string;
+          id?: string | null;
+        }[]
+      | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -1715,6 +1730,21 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         showFeedbackButtonOnResourcePages?: T;
         requireAuthenticationForFavorites?: T;
         showAgeFilter?: T;
+        enablePrintableDirectories?: T;
+        maxResourcesConfigurable?: T;
+        defaultMaxResources?: T;
+        printableDirectoriesAllowedEmails?:
+          | T
+          | {
+              email?: T;
+              id?: T;
+            };
+        printableDirectoriesAllowedDomains?:
+          | T
+          | {
+              domain?: T;
+              id?: T;
+            };
       };
   updatedAt?: T;
   createdAt?: T;

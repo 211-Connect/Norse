@@ -7,6 +7,7 @@ const LANGUAGE_NAME: Record<string, string> = {
 
 type LanguageNameOptions = {
   displayLocale?: string;
+  englishName?: boolean;
 };
 
 export function getLanguageName(
@@ -21,7 +22,7 @@ export function getLanguageName(
 
   try {
     return (
-      new Intl.DisplayNames([displayLocale], {
+      new Intl.DisplayNames(options?.englishName ? ['en'] : [displayLocale], {
         type: 'language',
       }).of(locale) ?? locale
     );
