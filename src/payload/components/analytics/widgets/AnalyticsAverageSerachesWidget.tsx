@@ -1,6 +1,6 @@
 'use client';
 
-import { usePaths, useSessions } from '../useAnalyticsData';
+import { useAnalyticsMetrics, useAnalyticsSessions } from '../useAnalyticsData';
 import { SingleStatCardWidget } from './SingleStatCardWidget';
 import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 
@@ -10,11 +10,11 @@ type AverageSearchesData = {
 };
 
 function useAverageSearchesData() {
-  const paths = usePaths();
-  const sessions = useSessions();
+  const metrics = useAnalyticsMetrics();
+  const sessions = useAnalyticsSessions();
 
-  const currentSearchCount = paths.data?.searchCount ?? 0;
-  const currentSessionCount = sessions.data?.sessions?.length ?? 0;
+  const currentSearchCount = metrics.data?.current.searches ?? 0;
+  const currentSessionCount = sessions.data?.data?.length ?? 0;
 
   const data: AverageSearchesData = {
     current:
@@ -23,11 +23,11 @@ function useAverageSearchesData() {
   };
 
   return {
-    loading: paths.loading || sessions.loading,
-    error: paths.error ?? sessions.error,
+    loading: metrics.loading || sessions.loading,
+    error: metrics.error ?? sessions.error,
     data,
     refetch: () => {
-      paths.refetch();
+      metrics.refetch();
       sessions.refetch();
     },
   };

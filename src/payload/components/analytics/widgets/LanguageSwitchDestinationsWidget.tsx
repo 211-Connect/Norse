@@ -2,18 +2,23 @@
 
 import { getLanguageName } from '../../../../app/(app)/shared/lib/language-names';
 import { MetricsTable } from '../MetricsTable';
-import { useLanguageSwitchDestinations } from '../useAnalyticsData';
+import { useAnalyticsLanguageSwitches } from '../useAnalyticsData';
 import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 
 export default function LanguageSwitchDestinationsWidget() {
-  const { loading, error, data, refetch } = useLanguageSwitchDestinations();
+  const { loading, error, data, refetch } = useAnalyticsLanguageSwitches();
 
-  const rows = (data?.languageSwitchDestinations ?? []).map((entry) => {
-    const languageName = getLanguageName(entry.x, { displayLocale: 'en' });
+  const rows = (data ?? []).map((entry) => {
+    const languageName = getLanguageName(entry.language, {
+      displayLocale: 'en',
+    });
 
     return {
-      ...entry,
-      x: languageName === entry.x ? entry.x : `${languageName} (${entry.x})`,
+      x:
+        languageName === entry.language
+          ? entry.language
+          : `${languageName} (${entry.language})`,
+      y: entry.count,
     };
   });
 
@@ -26,7 +31,7 @@ export default function LanguageSwitchDestinationsWidget() {
       rows={rows}
       onRefresh={refetch}
       refreshing={loading}
-      loading={loading}
+      loading={loading && !data}
       errorTitle={
         error ? 'Could not load language switch destinations.' : undefined
       }

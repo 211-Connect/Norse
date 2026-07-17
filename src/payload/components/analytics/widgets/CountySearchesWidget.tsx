@@ -1,11 +1,11 @@
 'use client';
 
 import { AreaSearchesTable } from '../AreaSearchesTable';
-import { useAreaSearchMetrics } from '../useAnalyticsData';
+import { useAnalyticsAreaSearches } from '../useAnalyticsData';
 import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 
 export default function CountySearchesWidget() {
-  const { loading, error, data, refetch } = useAreaSearchMetrics();
+  const { loading, error, data, refetch } = useAnalyticsAreaSearches();
 
   return (
     <AreaSearchesTable
@@ -16,7 +16,7 @@ export default function CountySearchesWidget() {
       description={WIDGET_INFO[WidgetSlug.CountySearches]}
       onRefresh={refetch}
       refreshing={loading}
-      loading={loading}
+      loading={loading && !data}
       errorTitle={error ? 'Could not load county analytics.' : undefined}
       errorDescription={error ? 'Please contact the support team.' : undefined}
     />

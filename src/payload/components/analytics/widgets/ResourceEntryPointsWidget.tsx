@@ -2,7 +2,7 @@
 
 import { ResourceEntry } from '../../../../app/(app)/shared/lib/umami';
 import { MetricsTable } from '../MetricsTable';
-import { useResourceByEntry } from '../useAnalyticsData';
+import { useAnalyticsResourceByEntry } from '../useAnalyticsData';
 import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 
 const ENTRY_LABELS: Record<string, string> = {
@@ -38,9 +38,11 @@ function sortByKnownOrder(rows: { x: string; y: number }[]) {
 }
 
 export default function ResourceEntryPointsWidget() {
-  const { loading, error, data, refetch } = useResourceByEntry();
+  const { loading, error, data, refetch } = useAnalyticsResourceByEntry();
 
-  const rows = sortByKnownOrder((data?.resourceByEntry ?? []).map(humanizeRow));
+  const rows = sortByKnownOrder(
+    (data ?? []).map((r) => humanizeRow({ x: r.entry, y: r.count })),
+  );
 
   return (
     <MetricsTable
@@ -52,7 +54,7 @@ export default function ResourceEntryPointsWidget() {
       emptyState="No resource view events recorded for this period."
       onRefresh={refetch}
       refreshing={loading}
-      loading={loading}
+      loading={loading && !data}
       errorTitle={error ? 'Could not load resource entry points.' : undefined}
       errorDescription={error ? 'Please contact the support team.' : undefined}
     />

@@ -462,6 +462,19 @@ export interface ReverseGeocodeResponseDto {
   bbox?: number[];
 }
 
+export interface AnalyticsWebsiteName {
+  /**
+   * Umami website ID
+   * @example "abc-123"
+   */
+  id: string;
+  /**
+   * Human-readable website name from Umami
+   * @example "My Resource Directory"
+   */
+  name: string;
+}
+
 export interface AnalyticsInfoResponse {
   /**
    * Root Umami website ID for this tenant
@@ -473,6 +486,8 @@ export interface AnalyticsInfoResponse {
    * @example ["def-456","ghi-789"]
    */
   additionalWebsiteIds: string[];
+  /** Website IDs with display names for the website picker */
+  websites: AnalyticsWebsiteName[];
 }
 
 export interface StatsResponse {
@@ -569,6 +584,16 @@ export interface AnalyticsMetricsResponse {
    * @example 30
    */
   resourceViewed: number;
+  /**
+   * Number of safe exit link clicks
+   * @example 25
+   */
+  safeExitClicks: number;
+  /**
+   * Number of favorites added to a list
+   * @example 40
+   */
+  favoriteAddToList: number;
 }
 
 export interface ResourceMetricsResponse {
@@ -784,6 +809,80 @@ export interface ExportSearchDataResponse {
    * @example 1523
    */
   totalCount: number;
+}
+
+export interface HeatmapPointResponse {
+  /**
+   * Longitude coordinate
+   * @example -122.41942
+   */
+  lng: number;
+  /**
+   * Latitude coordinate
+   * @example 37.77493
+   */
+  lat: number;
+  /**
+   * Aggregate weight (number of searches) at this location
+   * @example 15
+   */
+  weight: number;
+}
+
+export interface AreaMetricsRow {
+  /**
+   * Area identifier (ZIP code or county name)
+   * @example "55101"
+   */
+  area: string;
+  /**
+   * Total number of searches in this area
+   * @example 50
+   */
+  totalSearches: number;
+  /**
+   * Number of searches that returned zero results in this area
+   * @example 5
+   */
+  zeroSearches: number;
+  /**
+   * Ratio of zero-result searches to total searches
+   * @example 0.1
+   */
+  zeroRate: number;
+}
+
+export interface AreaSearchesResponse {
+  /** Metrics grouped by ZIP code */
+  zipCodeRows: AreaMetricsRow[];
+  /** Metrics grouped by county */
+  countyRows: AreaMetricsRow[];
+}
+
+export interface EventValuesResponse {
+  /**
+   * Distinct property value
+   * @example "homeless shelter"
+   */
+  value: string;
+  /**
+   * Total occurrences of this value
+   * @example 42
+   */
+  total: number;
+}
+
+export interface EventCatalogEntryResponse {
+  /**
+   * Umami event name
+   * @example "search_zero_results"
+   */
+  eventName: string;
+  /**
+   * Available property names for this event
+   * @example ["query","queryLabel","userCoordinates"]
+   */
+  properties: string[];
 }
 
 export interface EventPayloadDto {
@@ -1964,6 +2063,79 @@ export interface AnalyticsControllerGetExportSearchDataParams {
 
 export type AnalyticsControllerGetExportSearchDataData =
   ExportSearchDataResponse;
+
+export interface AnalyticsControllerGetHeatmapParams {
+  /**
+   * ISO-8601 start date
+   * @example "2025-01-01T00:00:00Z"
+   */
+  start: string;
+  /**
+   * ISO-8601 end date. Must be ≥ start, not in the future, and within 365 days of start.
+   * @example "2025-01-31T23:59:59Z"
+   */
+  end: string;
+  /**
+   * Optional comma-separated Umami website IDs to filter by. If omitted, the tenant root website is used.
+   * @example "abc-123,def-456"
+   */
+  websiteIds?: string;
+}
+
+export type AnalyticsControllerGetHeatmapData = HeatmapPointResponse[];
+
+export interface AnalyticsControllerGetAreaSearchesParams {
+  /**
+   * ISO-8601 start date
+   * @example "2025-01-01T00:00:00Z"
+   */
+  start: string;
+  /**
+   * ISO-8601 end date. Must be ≥ start, not in the future, and within 365 days of start.
+   * @example "2025-01-31T23:59:59Z"
+   */
+  end: string;
+  /**
+   * Optional comma-separated Umami website IDs to filter by. If omitted, the tenant root website is used.
+   * @example "abc-123,def-456"
+   */
+  websiteIds?: string;
+}
+
+export type AnalyticsControllerGetAreaSearchesData = AreaSearchesResponse;
+
+export interface AnalyticsControllerGetEventValuesParams {
+  /**
+   * ISO-8601 start date
+   * @example "2025-01-01T00:00:00Z"
+   */
+  start: string;
+  /**
+   * ISO-8601 end date. Must be ≥ start, not in the future, and within 365 days of start.
+   * @example "2025-01-31T23:59:59Z"
+   */
+  end: string;
+  /**
+   * Optional comma-separated Umami website IDs to filter by. If omitted, the tenant root website is used.
+   * @example "abc-123,def-456"
+   */
+  websiteIds?: string;
+  /**
+   * Umami event name (e.g. search_zero_results)
+   * @example "search_zero_results"
+   */
+  event: string;
+  /**
+   * Property name to retrieve distinct values for
+   * @example "query"
+   */
+  property: string;
+}
+
+export type AnalyticsControllerGetEventValuesData = EventValuesResponse[];
+
+export type AnalyticsControllerGetEventCatalogData =
+  EventCatalogEntryResponse[];
 
 export type AnalyticsControllerSendEventData = SendEventResponseDto;
 

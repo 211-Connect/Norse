@@ -1,14 +1,14 @@
 'use client';
 
+import type { SessionsResponse } from '../../../../lib/api/generated/data-contracts';
 import { PieChartWidget, PieChartWidgetSegment } from '../PieChartWidget';
-import { UmamiSession } from '../types';
-import { useSessions } from '../useAnalyticsData';
+import { useAnalyticsSessions } from '../useAnalyticsData';
 import { WidgetCard } from '../WidgetCard';
 import { WidgetErrorState } from '../WidgetErrorState';
 import { WidgetSkeleton } from '../WidgetSkeleton';
 
 type SessionsPieWidgetProps = {
-  buildSegments: (sessions: UmamiSession[]) => PieChartWidgetSegment[];
+  buildSegments: (sessions: SessionsResponse[]) => PieChartWidgetSegment[];
   errorTitle: string;
   errorDescription?: string;
   title: string;
@@ -22,13 +22,13 @@ export function SessionsPieWidget({
   title,
   description,
 }: SessionsPieWidgetProps) {
-  const { loading, error, data, refetch } = useSessions();
+  const { loading, error, data, refetch } = useAnalyticsSessions();
 
-  if (loading) {
+  if (loading && !data) {
     return <WidgetSkeleton height={220} count={1} shimmerHeight={180} />;
   }
 
-  const sessions = data?.sessions ?? [];
+  const sessions = data?.data ?? [];
 
   if (error) {
     return (

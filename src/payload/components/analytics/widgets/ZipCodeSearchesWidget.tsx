@@ -1,11 +1,11 @@
 'use client';
 
 import { AreaSearchesTable } from '../AreaSearchesTable';
-import { useAreaSearchMetrics } from '../useAnalyticsData';
+import { useAnalyticsAreaSearches } from '../useAnalyticsData';
 import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 
 export default function ZipCodeSearchesWidget() {
-  const { loading, error, data, refetch } = useAreaSearchMetrics();
+  const { loading, error, data, refetch } = useAnalyticsAreaSearches();
 
   return (
     <AreaSearchesTable
@@ -16,7 +16,7 @@ export default function ZipCodeSearchesWidget() {
       description={WIDGET_INFO[WidgetSlug.ZipCodeSearches]}
       onRefresh={refetch}
       refreshing={loading}
-      loading={loading}
+      loading={loading && !data}
       errorTitle={error ? 'Could not load zip code analytics.' : undefined}
       errorDescription={error ? 'Please contact the support team.' : undefined}
     />
