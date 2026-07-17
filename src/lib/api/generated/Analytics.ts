@@ -11,8 +11,15 @@
  */
 
 import {
+  AnalyticsControllerGetAreaSearchesData,
+  AnalyticsControllerGetAreaSearchesParams,
+  AnalyticsControllerGetEventCatalogData,
+  AnalyticsControllerGetEventValuesData,
+  AnalyticsControllerGetEventValuesParams,
   AnalyticsControllerGetExportSearchDataData,
   AnalyticsControllerGetExportSearchDataParams,
+  AnalyticsControllerGetHeatmapData,
+  AnalyticsControllerGetHeatmapParams,
   AnalyticsControllerGetInfoData,
   AnalyticsControllerGetLanguageSwitchesData,
   AnalyticsControllerGetLanguageSwitchesParams,
@@ -265,6 +272,86 @@ export class Analytics<
       path: `/analytics/export-search-data`,
       method: "GET",
       query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags Analytics
+   * @name AnalyticsControllerGetHeatmap
+   * @summary Get search heatmap points
+   * @request GET:/analytics/heatmap
+   * @secure
+   */
+  analyticsControllerGetHeatmap = (
+    query: AnalyticsControllerGetHeatmapParams,
+    params: RequestParams = {},
+  ) =>
+    this.request<AnalyticsControllerGetHeatmapData, any>({
+      path: `/analytics/heatmap`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags Analytics
+   * @name AnalyticsControllerGetAreaSearches
+   * @summary Get search metrics grouped by ZIP code and county
+   * @request GET:/analytics/area-searches
+   * @secure
+   */
+  analyticsControllerGetAreaSearches = (
+    query: AnalyticsControllerGetAreaSearchesParams,
+    params: RequestParams = {},
+  ) =>
+    this.request<AnalyticsControllerGetAreaSearchesData, any>({
+      path: `/analytics/area-searches`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags Analytics
+   * @name AnalyticsControllerGetEventValues
+   * @summary Get distinct values for an event property
+   * @request GET:/analytics/event-values
+   * @secure
+   */
+  analyticsControllerGetEventValues = (
+    query: AnalyticsControllerGetEventValuesParams,
+    params: RequestParams = {},
+  ) =>
+    this.request<AnalyticsControllerGetEventValuesData, any>({
+      path: `/analytics/event-values`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags Analytics
+   * @name AnalyticsControllerGetEventCatalog
+   * @summary Get available events and their properties for the tenant
+   * @request GET:/analytics/event-catalog
+   * @secure
+   */
+  analyticsControllerGetEventCatalog = (params: RequestParams = {}) =>
+    this.request<AnalyticsControllerGetEventCatalogData, any>({
+      path: `/analytics/event-catalog`,
+      method: "GET",
       secure: true,
       format: "json",
       ...params,

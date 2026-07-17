@@ -1,6 +1,5 @@
 'use client';
 
-import { UmamiEvent } from '../../../../app/(app)/shared/lib/umami';
 import { SingleStatCardWidget } from './SingleStatCardWidget';
 import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 
@@ -8,17 +7,17 @@ export default function TotalReferralsWidget() {
   return (
     <SingleStatCardWidget
       description={WIDGET_INFO[WidgetSlug.TotalReferrals]}
-      dataSource="events"
+      dataSource="metrics"
       label="Total Referrals"
-      selector={(events) => ({
+      selector={(metrics) => ({
         current:
-          (events.eventTotals[UmamiEvent.DirectionClick] ?? 0) +
-          (events.eventTotals[UmamiEvent.PhoneClick] ?? 0) +
-          (events.eventTotals[UmamiEvent.WebsiteClick] ?? 0),
+          (metrics.current.directions ?? 0) +
+          (metrics.current.phoneCalls ?? 0) +
+          (metrics.current.websiteClicks ?? 0),
         previous:
-          (events.prevEventTotals[UmamiEvent.DirectionClick] ?? 0) +
-          (events.prevEventTotals[UmamiEvent.PhoneClick] ?? 0) +
-          (events.prevEventTotals[UmamiEvent.WebsiteClick] ?? 0),
+          (metrics.previous.directions ?? 0) +
+          (metrics.previous.phoneCalls ?? 0) +
+          (metrics.previous.websiteClicks ?? 0),
       })}
     />
   );

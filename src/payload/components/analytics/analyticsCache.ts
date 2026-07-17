@@ -3,40 +3,28 @@
 import dayjs from 'dayjs';
 
 import { fetchWrapper } from '../../../app/(app)/shared/lib/fetchWrapper';
-import { UmamiEvent } from '../../../app/(app)/shared/lib/umami';
-import { geocodeSessions } from './geocodeSessions';
 import type {
-  AnalyticsMetrics,
-  AreaMetricsRow,
-  AreaSearchMetricsData,
+  AnalyticsInfoResponse,
+  AnalyticsMetricsResponse,
+  AreaSearchesResponse,
+  EventCatalogEntryResponse,
+  EventValuesResponse,
+  HeatmapPointResponse,
+  LanguageSwitchesResponse,
+  PageviewsResponse,
+  PaginatedSessionsResponse,
+  ResourceByEntryResponse,
+  ResourceMetricsResponse,
+  SearchesResponse,
+  StatsResponse,
+  ZeroResultQueriesResponse,
+} from '../../../lib/api/generated/data-contracts';
+import type {
   DateRange,
-  EventDataValuesData,
-  EventNamesData,
-  EventPropertiesData,
-  EventsData,
-  LanguageSwitchDestinationsData,
-  Metric,
-  MetricEntry,
-  MetricsData,
-  MetricsExpandedEntry,
-  PathsData,
-  ResourceByEntryData,
-  SessionHeatmapData,
-  SessionsData,
-  UmamiEventDataValue,
-  UmamiPageviews,
-  UmamiSessionResponse,
-  UmamiStats,
-  ZeroResultQueriesData,
 } from './types';
-import {
-  buildProxyQuery,
-  mergeSearchByLabelBuckets,
-  parseMetrics,
-  sumEventTotals,
-} from './utils';
+import { buildAnalyticsQuery } from './utils';
 
-const TTL_MS = 5 * 60 * 1000; // 5 minutes
+const TTL_MS = 30 * 1000;
 
 type CacheEntry<T> = { promise: Promise<T>; timestamp: number };
 
@@ -44,18 +32,6 @@ type TimeWindow = ReturnType<typeof timeWindow>;
 
 function isFresh<T>(entry: CacheEntry<T>): boolean {
   return Date.now() - entry.timestamp < TTL_MS;
-}
-
-function toMetricEntries(
-  rows: UmamiEventDataValue[] | null | undefined,
-): MetricEntry[] {
-  return (rows ?? [])
-    .map((row) => ({
-      x: String(row.value ?? '').trim(),
-      y: Number(row.total) || 0,
-    }))
-    .filter((row) => row.x.length > 0 && row.y > 0)
-    .sort((a, b) => b.y - a.y);
 }
 
 function normalizeWebsiteIds(websiteIds: string[] | undefined): string {
@@ -101,7 +77,10 @@ function timeWindow(range: DateRange) {
     rangeDays = range;
   } else {
     // Custom range: use specified dates
-    endAt = dayjs(range.end).endOf('day').valueOf();
+    endAt = Math.min(
+      dayjs(range.end).endOf('day').valueOf(),
+      dayjs().valueOf(),
+    );
     startAt = dayjs(range.start).startOf('day').valueOf();
     rangeDays = dayjs(range.end).diff(dayjs(range.start), 'day');
   }
@@ -170,108 +149,100 @@ function makeCachedFetchWithArgs<T, A extends Record<string, string>>(
   };
 }
 
-function normalizeAreaValue(value: string): string {
-  return value.trim().toLowerCase();
-}
+export const fetchAnalyticsInfo = (() => {
+  const cache = new Map<string, CacheEntry<AnalyticsInfoResponse>>();
 
-function buildAreaRows(
-  textEntries: MetricEntry[],
-  taxonomyEntries: MetricEntry[],
-  zeroEntries: MetricEntry[],
-): AreaMetricsRow[] {
-  const table = new Map<
-    string,
-    {
-      area: string;
-      text: number;
-      taxonomy: number;
-      zero: number;
+  return function (
+    tenantId: string | undefined,
+    force?: boolean,
+  ): Promise<AnalyticsInfoResponse> {
+    if (!tenantId) {
+      return Promise.reject(new Error('tenantId is required'));
     }
-  >();
-
-  const touch = (area: string) => {
-    const normalized = normalizeAreaValue(area);
-    if (!normalized) return null;
-    const existing = table.get(normalized);
-    if (existing) return existing;
-
-    const created = {
-      area: area.trim(),
-      text: 0,
-      taxonomy: 0,
-      zero: 0,
-    };
-    table.set(normalized, created);
-    return created;
-  };
-
-  for (const entry of textEntries) {
-    const row = touch(entry.x);
-    if (!row) continue;
-    row.text += entry.y;
-  }
-
-  for (const entry of taxonomyEntries) {
-    const row = touch(entry.x);
-    if (!row) continue;
-    row.taxonomy += entry.y;
-  }
-
-  for (const entry of zeroEntries) {
-    const row = touch(entry.x);
-    if (!row) continue;
-    row.zero += entry.y;
-  }
-
-  return Array.from(table.values())
-    .map((row) => {
-      const totalSearches = row.text + row.taxonomy;
-      const denominator = totalSearches + row.zero;
-      return {
-        area: row.area,
-        totalSearches,
-        zeroSearches: row.zero,
-        zeroRate: denominator > 0 ? row.zero / denominator : 0,
-      };
-    })
-    .sort((a, b) => {
-      if (b.zeroRate !== a.zeroRate) {
-        return b.zeroRate - a.zeroRate;
-      }
-      if (b.zeroSearches !== a.zeroSearches) {
-        return b.zeroSearches - a.zeroSearches;
-      }
-      if (b.totalSearches !== a.totalSearches) {
-        return b.totalSearches - a.totalSearches;
-      }
-      return a.area.localeCompare(b.area);
+    const key = tenantId;
+    if (!force) {
+      const cached = getCache(cache, key);
+      if (cached) return cached;
+    }
+    const promise = fetchWrapper<AnalyticsInfoResponse>(
+      `/api/analytics/info?tenantId=${encodeURIComponent(tenantId)}`,
+    ).then((data) => {
+      if (!data) throw new Error('No info data returned');
+      return data;
     });
-}
+    setCache(cache, key, promise);
+    return promise;
+  };
+})();
 
-export const fetchStats = makeCachedFetch(
-  new Map<string, CacheEntry<UmamiStats>>(),
+export const fetchAnalyticsStats = makeCachedFetch(
+  new Map<string, CacheEntry<StatsResponse>>(),
   async ({ startAt, endAt }, tenantId, websiteIds) => {
-    const data = await fetchWrapper<UmamiStats>(
-      buildProxyQuery('stats', startAt, endAt, tenantId, undefined, websiteIds),
+    const data = await fetchWrapper<StatsResponse>(
+      buildAnalyticsQuery(
+        '/analytics/stats',
+        startAt,
+        endAt,
+        tenantId,
+        undefined,
+        websiteIds,
+      ),
     );
     if (!data) throw new Error('No stats data returned');
     return data;
   },
 );
 
-export const fetchPageviews = makeCachedFetch(
-  new Map<string, CacheEntry<UmamiPageviews>>(),
+export type AnalyticsMetricsWithTrend = {
+  current: AnalyticsMetricsResponse;
+  previous: AnalyticsMetricsResponse;
+};
+
+export const fetchAnalyticsMetrics = makeCachedFetch(
+  new Map<string, CacheEntry<AnalyticsMetricsWithTrend>>(),
+  async (
+    { startAt, endAt, prevStartAt, prevEndAt },
+    tenantId,
+    websiteIds,
+  ) => {
+    const [current, previous] = await Promise.all([
+      fetchWrapper<AnalyticsMetricsResponse>(
+        buildAnalyticsQuery(
+          '/analytics/metrics',
+          startAt,
+          endAt,
+          tenantId,
+          { timezone: 'UTC' },
+          websiteIds,
+        ),
+      ),
+      fetchWrapper<AnalyticsMetricsResponse>(
+        buildAnalyticsQuery(
+          '/analytics/metrics',
+          prevStartAt,
+          prevEndAt,
+          tenantId,
+          { timezone: 'UTC' },
+          websiteIds,
+        ),
+      ),
+    ]);
+    if (!current) throw new Error('No metrics data returned');
+    if (!previous) throw new Error('No previous metrics data returned');
+    return { current, previous };
+  },
+);
+
+export const fetchAnalyticsPageviews = makeCachedFetch(
+  new Map<string, CacheEntry<PageviewsResponse[]>>(),
   async ({ startAt, endAt }, tenantId, websiteIds) => {
-    const data = await fetchWrapper<UmamiPageviews>(
-      buildProxyQuery(
-        'pageviews',
+    const data = await fetchWrapper<PageviewsResponse[]>(
+      buildAnalyticsQuery(
+        '/analytics/pageviews',
         startAt,
         endAt,
         tenantId,
-        {
-          unit: 'day',
-          timezone: 'UTC',
-        },
+        { timezone: 'UTC' },
         websiteIds,
       ),
     );
@@ -280,558 +251,195 @@ export const fetchPageviews = makeCachedFetch(
   },
 );
 
-export const fetchMetrics = makeCachedFetch(
-  new Map<string, CacheEntry<MetricsData>>(),
-  async ({ startAt, endAt, prevStartAt, prevEndAt }, tenantId, websiteIds) => {
-    const [
-      pathMetrics,
-      queryMetrics,
-      events,
-      prevPathMetrics,
-      prevQueryMetrics,
-      prevEvents,
-    ] = await Promise.all([
-      fetchWrapper<MetricsExpandedEntry[]>(
-        buildProxyQuery(
-          'metrics/expanded',
-          startAt,
-          endAt,
-          tenantId,
-          {
-            type: 'path',
-          },
-          websiteIds,
-        ),
+export const fetchAnalyticsResourceMetrics = makeCachedFetch(
+  new Map<string, CacheEntry<ResourceMetricsResponse[]>>(),
+  async ({ startAt, endAt }, tenantId, websiteIds) => {
+    const data = await fetchWrapper<ResourceMetricsResponse[]>(
+      buildAnalyticsQuery(
+        '/analytics/resource-metrics',
+        startAt,
+        endAt,
+        tenantId,
+        undefined,
+        websiteIds,
       ),
-      fetchWrapper<MetricsExpandedEntry[]>(
-        buildProxyQuery(
-          'metrics/expanded',
-          startAt,
-          endAt,
-          tenantId,
-          {
-            type: 'query',
-          },
-          websiteIds,
-        ),
-      ),
-      fetchWrapper<MetricEntry[]>(
-        buildProxyQuery(
-          'events/series',
-          startAt,
-          endAt,
-          tenantId,
-          {
-            timezone: 'UTC',
-          },
-          websiteIds,
-        ),
-      ),
-      fetchWrapper<MetricsExpandedEntry[]>(
-        buildProxyQuery(
-          'metrics/expanded',
-          prevStartAt,
-          prevEndAt,
-          tenantId,
-          {
-            type: 'path',
-          },
-          websiteIds,
-        ),
-      ),
-      fetchWrapper<MetricsExpandedEntry[]>(
-        buildProxyQuery(
-          'metrics/expanded',
-          prevStartAt,
-          prevEndAt,
-          tenantId,
-          {
-            type: 'query',
-          },
-          websiteIds,
-        ),
-      ),
-      fetchWrapper<MetricEntry[]>(
-        buildProxyQuery(
-          'events/series',
-          prevStartAt,
-          prevEndAt,
-          tenantId,
-          {
-            timezone: 'UTC',
-          },
-          websiteIds,
-        ),
-      ),
-    ]);
-
-    const eventTotals = sumEventTotals(events ?? []);
-    const prevEventTotals = sumEventTotals(prevEvents ?? []);
-
-    const { searchCount, resourceMetrics, searchByLabelByType } = parseMetrics(
-      pathMetrics ?? [],
-      queryMetrics ?? [],
     );
-    const searchByLabel = mergeSearchByLabelBuckets(searchByLabelByType);
-    const {
-      searchCount: prevSearchCount,
-      resourceMetrics: prevResourceMetrics,
-    } = parseMetrics(prevPathMetrics ?? [], prevQueryMetrics ?? []);
+    if (!data) throw new Error('No resource metrics data returned');
+    return data;
+  },
+);
 
-    const metric = (current: number, previous: number): Metric => ({
-      current,
-      previous,
+export const fetchAnalyticsSearches = makeCachedFetch(
+  new Map<string, CacheEntry<SearchesResponse>>(),
+  async ({ startAt, endAt }, tenantId, websiteIds) => {
+    const data = await fetchWrapper<SearchesResponse>(
+      buildAnalyticsQuery(
+        '/analytics/searches',
+        startAt,
+        endAt,
+        tenantId,
+        undefined,
+        websiteIds,
+      ),
+    );
+    if (!data) throw new Error('No searches data returned');
+    return data;
+  },
+);
+
+export const fetchAnalyticsZeroResultQueries = makeCachedFetch(
+  new Map<string, CacheEntry<ZeroResultQueriesResponse[]>>(),
+  async ({ startAt, endAt }, tenantId, websiteIds) => {
+    const data = await fetchWrapper<ZeroResultQueriesResponse[]>(
+      buildAnalyticsQuery(
+        '/analytics/zero-result-queries',
+        startAt,
+        endAt,
+        tenantId,
+        undefined,
+        websiteIds,
+      ),
+    );
+    if (!data) throw new Error('No zero-result queries data returned');
+    return data;
+  },
+);
+
+export const fetchAnalyticsLanguageSwitches = makeCachedFetch(
+  new Map<string, CacheEntry<LanguageSwitchesResponse[]>>(),
+  async ({ startAt, endAt }, tenantId, websiteIds) => {
+    const data = await fetchWrapper<LanguageSwitchesResponse[]>(
+      buildAnalyticsQuery(
+        '/analytics/language-switches',
+        startAt,
+        endAt,
+        tenantId,
+        undefined,
+        websiteIds,
+      ),
+    );
+    if (!data) throw new Error('No language switches data returned');
+    return data;
+  },
+);
+
+export const fetchAnalyticsResourceByEntry = makeCachedFetch(
+  new Map<string, CacheEntry<ResourceByEntryResponse[]>>(),
+  async ({ startAt, endAt }, tenantId, websiteIds) => {
+    const data = await fetchWrapper<ResourceByEntryResponse[]>(
+      buildAnalyticsQuery(
+        '/analytics/resource-by-entry',
+        startAt,
+        endAt,
+        tenantId,
+        undefined,
+        websiteIds,
+      ),
+    );
+    if (!data) throw new Error('No resource by entry data returned');
+    return data;
+  },
+);
+
+export const fetchAnalyticsSessions = makeCachedFetch(
+  new Map<string, CacheEntry<PaginatedSessionsResponse>>(),
+  async ({ startAt, endAt }, tenantId, websiteIds) => {
+    const data = await fetchWrapper<PaginatedSessionsResponse>(
+      buildAnalyticsQuery(
+        '/analytics/sessions',
+        startAt,
+        endAt,
+        tenantId,
+        undefined,
+        websiteIds,
+      ),
+    );
+    if (!data) throw new Error('No sessions data returned');
+    return data;
+  },
+);
+
+export const fetchAnalyticsHeatmap = makeCachedFetch(
+  new Map<string, CacheEntry<HeatmapPointResponse[]>>(),
+  async ({ startAt, endAt }, tenantId, websiteIds) => {
+    const data = await fetchWrapper<HeatmapPointResponse[]>(
+      buildAnalyticsQuery(
+        '/analytics/heatmap',
+        startAt,
+        endAt,
+        tenantId,
+        undefined,
+        websiteIds,
+      ),
+    );
+    if (!data) throw new Error('No heatmap data returned');
+    return data;
+  },
+);
+
+export const fetchAnalyticsAreaSearches = makeCachedFetch(
+  new Map<string, CacheEntry<AreaSearchesResponse>>(),
+  async ({ startAt, endAt }, tenantId, websiteIds) => {
+    const data = await fetchWrapper<AreaSearchesResponse>(
+      buildAnalyticsQuery(
+        '/analytics/area-searches',
+        startAt,
+        endAt,
+        tenantId,
+        undefined,
+        websiteIds,
+      ),
+    );
+    if (!data) throw new Error('No area searches data returned');
+    return data;
+  },
+);
+
+export const fetchAnalyticsEventCatalog = (() => {
+  const cache = new Map<string, CacheEntry<EventCatalogEntryResponse[]>>();
+
+  return function (
+    tenantId: string | undefined,
+    force?: boolean,
+  ): Promise<EventCatalogEntryResponse[]> {
+    if (!tenantId) {
+      return Promise.reject(new Error('tenantId is required'));
+    }
+    const key = tenantId;
+    if (!force) {
+      const cached = getCache(cache, key);
+      if (cached) return cached;
+    }
+    const promise = fetchWrapper<EventCatalogEntryResponse[]>(
+      `/api/analytics/event-catalog?tenantId=${encodeURIComponent(tenantId)}`,
+    ).then((data) => {
+      if (!data) throw new Error('No event catalog data returned');
+      return data;
     });
+    setCache(cache, key, promise);
+    return promise;
+  };
+})();
 
-    const metrics: AnalyticsMetrics = {
-      searches: metric(searchCount, prevSearchCount),
-      resourceViews: metric(
-        resourceMetrics.reduce((s, m) => s + m.y, 0),
-        prevResourceMetrics.reduce((s, m) => s + m.y, 0),
-      ),
-      zeroResults: metric(
-        eventTotals[UmamiEvent.SearchZeroResults] ?? 0,
-        prevEventTotals[UmamiEvent.SearchZeroResults] ?? 0,
-      ),
-      directions: metric(
-        eventTotals[UmamiEvent.DirectionClick] ?? 0,
-        prevEventTotals[UmamiEvent.DirectionClick] ?? 0,
-      ),
-      phoneCalls: metric(
-        eventTotals[UmamiEvent.PhoneClick] ?? 0,
-        prevEventTotals[UmamiEvent.PhoneClick] ?? 0,
-      ),
-      websiteClicks: metric(
-        eventTotals[UmamiEvent.WebsiteClick] ?? 0,
-        prevEventTotals[UmamiEvent.WebsiteClick] ?? 0,
-      ),
-      widgetSearches: metric(
-        eventTotals[UmamiEvent.WidgetSearch] ?? 0,
-        prevEventTotals[UmamiEvent.WidgetSearch] ?? 0,
-      ),
-      calloutClicks: metric(
-        eventTotals[UmamiEvent.CalloutClick] ?? 0,
-        prevEventTotals[UmamiEvent.CalloutClick] ?? 0,
-      ),
-    };
-
-    return { metrics, resourceMetrics, searchByLabel };
-  },
-);
-
-export const fetchPaths = makeCachedFetch(
-  new Map<string, CacheEntry<PathsData>>(),
-  async ({ startAt, endAt, prevStartAt, prevEndAt }, tenantId, websiteIds) => {
-    const [pathMetrics, queryMetrics, prevPathMetrics, prevQueryMetrics] =
-      await Promise.all([
-        fetchWrapper<MetricsExpandedEntry[]>(
-          buildProxyQuery(
-            'metrics/expanded',
-            startAt,
-            endAt,
-            tenantId,
-            {
-              type: 'path',
-            },
-            websiteIds,
-          ),
-        ),
-        fetchWrapper<MetricsExpandedEntry[]>(
-          buildProxyQuery(
-            'metrics/expanded',
-            startAt,
-            endAt,
-            tenantId,
-            {
-              type: 'query',
-            },
-            websiteIds,
-          ),
-        ),
-        fetchWrapper<MetricsExpandedEntry[]>(
-          buildProxyQuery(
-            'metrics/expanded',
-            prevStartAt,
-            prevEndAt,
-            tenantId,
-            { type: 'path' },
-            websiteIds,
-          ),
-        ),
-        fetchWrapper<MetricsExpandedEntry[]>(
-          buildProxyQuery(
-            'metrics/expanded',
-            prevStartAt,
-            prevEndAt,
-            tenantId,
-            { type: 'query' },
-            websiteIds,
-          ),
-        ),
-      ]);
-
-    const { searchCount, resourceMetrics, searchByLabelByType } = parseMetrics(
-      pathMetrics ?? [],
-      queryMetrics ?? [],
-    );
-    const {
-      searchCount: prevSearchCount,
-      resourceMetrics: prevResourceMetrics,
-    } = parseMetrics(prevPathMetrics ?? [], prevQueryMetrics ?? []);
-
-    return {
-      tenantId,
-      searchCount,
-      prevSearchCount,
-      resourceMetrics,
-      prevResourceMetrics,
-      searchByLabelByType,
-    };
-  },
-);
-
-export const fetchEvents = makeCachedFetch(
-  new Map<string, CacheEntry<EventsData>>(),
-  async ({ startAt, endAt, prevStartAt, prevEndAt }, tenantId, websiteIds) => {
-    const [events, prevEvents] = await Promise.all([
-      fetchWrapper<MetricEntry[]>(
-        buildProxyQuery(
-          'events/series',
-          startAt,
-          endAt,
-          tenantId,
-          {
-            timezone: 'UTC',
-          },
-          websiteIds,
-        ),
-      ),
-      fetchWrapper<MetricEntry[]>(
-        buildProxyQuery(
-          'events/series',
-          prevStartAt,
-          prevEndAt,
-          tenantId,
-          {
-            timezone: 'UTC',
-          },
-          websiteIds,
-        ),
-      ),
-    ]);
-
-    const eventTotals = sumEventTotals(events ?? []);
-    const prevEventTotals = sumEventTotals(prevEvents ?? []);
-
-    return { eventTotals, prevEventTotals };
-  },
-);
-
-export const fetchEventDataValues = makeCachedFetchWithArgs<
-  EventDataValuesData,
-  { event: string; propertyName: string }
+export const fetchAnalyticsEventValues = makeCachedFetchWithArgs<
+  EventValuesResponse[],
+  { event: string; property: string }
 >(
-  new Map<string, CacheEntry<EventDataValuesData>>(),
-  ({ event, propertyName }) => `${event}:${propertyName}`,
-  async ({ startAt, endAt }, tenantId, websiteIds, { event, propertyName }) => {
-    const raw = await fetchWrapper<UmamiEventDataValue[]>(
-      buildProxyQuery(
-        'event-data/values',
+  new Map<string, CacheEntry<EventValuesResponse[]>>(),
+  ({ event, property }) => `${event}:${property}`,
+  async ({ startAt, endAt }, tenantId, websiteIds, { event, property }) => {
+    const data = await fetchWrapper<EventValuesResponse[]>(
+      buildAnalyticsQuery(
+        '/analytics/event-values',
         startAt,
         endAt,
         tenantId,
-        { event, propertyName },
+        { event, property },
         websiteIds,
       ),
     );
-
-    return { values: toMetricEntries(raw) };
+    if (!data) throw new Error('No event values data returned');
+    return data;
   },
 );
 
-export const fetchEventNames = makeCachedFetch(
-  new Map<string, CacheEntry<EventNamesData>>(),
-  async ({ startAt, endAt }, tenantId, websiteIds) => {
-    const raw = await fetchWrapper<MetricEntry[]>(
-      buildProxyQuery(
-        'events/series',
-        startAt,
-        endAt,
-        tenantId,
-        {
-          timezone: 'UTC',
-        },
-        websiteIds,
-      ),
-    );
-
-    const eventNames = (raw ?? [])
-      .map((row) => ({
-        x: String(row.x ?? '').trim(),
-        y: Number(row.y) || 0,
-      }))
-      .filter((row) => row.x.length > 0 && row.y > 0)
-      .sort((a, b) => b.y - a.y);
-
-    return { eventNames };
-  },
-);
-
-export const fetchEventProperties = makeCachedFetchWithArgs<
-  EventPropertiesData,
-  { event?: string }
->(
-  new Map<string, CacheEntry<EventPropertiesData>>(),
-  ({ event }) => event ?? '__all',
-  async ({ startAt, endAt }, tenantId, websiteIds, { event }) => {
-    const raw = await fetchWrapper<
-      { eventName: string; propertyName: string; total: number }[]
-    >(
-      buildProxyQuery(
-        'event-data/properties',
-        startAt,
-        endAt,
-        tenantId,
-        event ? { event } : undefined,
-        websiteIds,
-      ),
-    );
-
-    return { eventProperties: raw ?? [] };
-  },
-);
-
-export const fetchZeroResultQueries = makeCachedFetch(
-  new Map<string, CacheEntry<ZeroResultQueriesData>>(),
-  async ({ startAt, endAt }, tenantId, websiteIds) => {
-    const zeroResultQueriesRaw = await fetchWrapper<UmamiEventDataValue[]>(
-      buildProxyQuery(
-        'event-data/values',
-        startAt,
-        endAt,
-        tenantId,
-        {
-          event: UmamiEvent.SearchZeroResults,
-          propertyName: 'query',
-        },
-        websiteIds,
-      ),
-    );
-
-    if (!zeroResultQueriesRaw) {
-      return { zeroResultQueries: [] };
-    }
-    const zeroResultQueries = toMetricEntries(zeroResultQueriesRaw);
-
-    return { zeroResultQueries };
-  },
-);
-
-export const fetchAreaSearchMetrics = makeCachedFetch(
-  new Map<string, CacheEntry<AreaSearchMetricsData>>(),
-  async ({ startAt, endAt }, tenantId, websiteIds) => {
-    const [
-      zipTextRaw,
-      zipTaxonomyRaw,
-      zipZeroRaw,
-      countyTextRaw,
-      countyTaxonomyRaw,
-      countyZeroRaw,
-    ] = await Promise.all([
-      fetchWrapper<UmamiEventDataValue[]>(
-        buildProxyQuery(
-          'event-data/values',
-          startAt,
-          endAt,
-          tenantId,
-          {
-            event: UmamiEvent.SearchText,
-            propertyName: 'searchZipCode',
-          },
-          websiteIds,
-        ),
-      ),
-      fetchWrapper<UmamiEventDataValue[]>(
-        buildProxyQuery(
-          'event-data/values',
-          startAt,
-          endAt,
-          tenantId,
-          {
-            event: UmamiEvent.SearchTaxonomy,
-            propertyName: 'searchZipCode',
-          },
-          websiteIds,
-        ),
-      ),
-      fetchWrapper<UmamiEventDataValue[]>(
-        buildProxyQuery(
-          'event-data/values',
-          startAt,
-          endAt,
-          tenantId,
-          {
-            event: UmamiEvent.SearchZeroResults,
-            propertyName: 'searchZipCode',
-          },
-          websiteIds,
-        ),
-      ),
-      fetchWrapper<UmamiEventDataValue[]>(
-        buildProxyQuery(
-          'event-data/values',
-          startAt,
-          endAt,
-          tenantId,
-          {
-            event: UmamiEvent.SearchText,
-            propertyName: 'searchCounty',
-          },
-          websiteIds,
-        ),
-      ),
-      fetchWrapper<UmamiEventDataValue[]>(
-        buildProxyQuery(
-          'event-data/values',
-          startAt,
-          endAt,
-          tenantId,
-          {
-            event: UmamiEvent.SearchTaxonomy,
-            propertyName: 'searchCounty',
-          },
-          websiteIds,
-        ),
-      ),
-      fetchWrapper<UmamiEventDataValue[]>(
-        buildProxyQuery(
-          'event-data/values',
-          startAt,
-          endAt,
-          tenantId,
-          {
-            event: UmamiEvent.SearchZeroResults,
-            propertyName: 'searchCounty',
-          },
-          websiteIds,
-        ),
-      ),
-    ]);
-
-    const zipText = zipTextRaw ?? [];
-    const zipTaxonomy = zipTaxonomyRaw ?? [];
-    const zipZero = zipZeroRaw ?? [];
-    const countyText = countyTextRaw ?? [];
-    const countyTaxonomy = countyTaxonomyRaw ?? [];
-    const countyZero = countyZeroRaw ?? [];
-
-    const zipCodeRows = buildAreaRows(
-      toMetricEntries(zipText),
-      toMetricEntries(zipTaxonomy),
-      toMetricEntries(zipZero),
-    );
-
-    const countyRows = buildAreaRows(
-      toMetricEntries(countyText),
-      toMetricEntries(countyTaxonomy),
-      toMetricEntries(countyZero),
-    );
-
-    return {
-      zipCodeRows,
-      countyRows,
-    };
-  },
-);
-
-export const fetchLanguageSwitchDestinations = makeCachedFetch(
-  new Map<string, CacheEntry<LanguageSwitchDestinationsData>>(),
-  async ({ startAt, endAt }, tenantId, websiteIds) => {
-    const languageSwitchDestinationsRaw = await fetchWrapper<
-      UmamiEventDataValue[]
-    >(
-      buildProxyQuery(
-        'event-data/values',
-        startAt,
-        endAt,
-        tenantId,
-        {
-          event: UmamiEvent.LanguageSwitch,
-          propertyName: 'destinationLanguage',
-        },
-        websiteIds,
-      ),
-    );
-
-    if (!languageSwitchDestinationsRaw) {
-      return { languageSwitchDestinations: [] };
-    }
-
-    const languageSwitchDestinations = toMetricEntries(
-      languageSwitchDestinationsRaw,
-    );
-
-    return { languageSwitchDestinations };
-  },
-);
-
-export const fetchResourceByEntry = makeCachedFetch(
-  new Map<string, CacheEntry<ResourceByEntryData>>(),
-  async ({ startAt, endAt }, tenantId, websiteIds) => {
-    const raw = await fetchWrapper<UmamiEventDataValue[]>(
-      buildProxyQuery(
-        'event-data/values',
-        startAt,
-        endAt,
-        tenantId,
-        {
-          event: UmamiEvent.ResourceViewed,
-          propertyName: 'entry',
-        },
-        websiteIds,
-      ),
-    );
-
-    if (!raw) {
-      return { resourceByEntry: [] };
-    }
-
-    return { resourceByEntry: toMetricEntries(raw) };
-  },
-);
-
-export const fetchSessions = makeCachedFetch(
-  new Map<string, CacheEntry<SessionsData>>(),
-  async ({ startAt, endAt }, tenantId, websiteIds) => {
-    const data = await fetchWrapper<UmamiSessionResponse>(
-      buildProxyQuery(
-        'sessions',
-        startAt,
-        endAt,
-        tenantId,
-        undefined,
-        websiteIds,
-      ),
-    );
-    return { sessions: data?.data ?? [] };
-  },
-);
-
-export const fetchSessionHeatmap = makeCachedFetch(
-  new Map<string, CacheEntry<SessionHeatmapData>>(),
-  async ({ startAt, endAt }, tenantId, websiteIds) => {
-    const data = await fetchWrapper<UmamiSessionResponse>(
-      buildProxyQuery(
-        'sessions',
-        startAt,
-        endAt,
-        tenantId,
-        undefined,
-        websiteIds,
-      ),
-    );
-    const sessions = data?.data ?? [];
-    const heatmapPoints = await geocodeSessions(sessions, tenantId);
-    return { heatmapPoints };
-  },
-);

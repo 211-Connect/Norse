@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { MAPLIBRE_STYLE_URL } from '@/app/(app)/shared/lib/constants';
 import { createLogger } from '@/lib/logger';
+import type { HeatmapPointResponse } from '@/lib/api/generated/data-contracts';
 
 import { MapErrorFallback } from '../../../app/(app)/shared/components/map/map-error-fallback';
 import {
@@ -14,7 +15,6 @@ import {
   getBoundsFromServiceArea,
   normalizeServiceArea,
 } from '../../../app/(app)/shared/components/map/map-shared';
-import { HeatmapPoint } from './types';
 
 const log = createLogger('maplibre');
 
@@ -22,7 +22,7 @@ type MapProps = {
   center?: [number, number];
   zoom?: number;
   serviceArea?: ServiceAreaGeoJSON;
-  heatmapPoints?: HeatmapPoint[];
+  heatmapPoints?: HeatmapPointResponse[];
 };
 
 // Allows maplibre to load pmtiles from a single hosted file
@@ -185,7 +185,7 @@ export function AnalyticsMap({
 
     const buildGeoJSON = () => ({
       type: 'FeatureCollection' as const,
-      features: (heatmapPoints ?? []).map(([lng, lat, weight = 1]) => ({
+      features: (heatmapPoints ?? []).map(({ lng, lat, weight = 1 }) => ({
         type: 'Feature' as const,
         geometry: { type: 'Point' as const, coordinates: [lng, lat] },
         properties: { weight },

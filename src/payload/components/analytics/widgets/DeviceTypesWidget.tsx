@@ -1,7 +1,7 @@
 'use client';
 
+import type { SessionsResponse } from '../../../../lib/api/generated/data-contracts';
 import { PieChartWidgetSegment } from '../PieChartWidget';
-import { UmamiSession } from '../types';
 import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 import { SessionsPieWidget } from './SessionsPieWidget';
 
@@ -15,7 +15,7 @@ function toDeviceLabel(device: string): string {
 }
 
 export default function DeviceTypesWidget() {
-  const buildSegments = (sessions: UmamiSession[]): PieChartWidgetSegment[] => {
+  const buildSegments = (sessions: SessionsResponse[]): PieChartWidgetSegment[] => {
     const total = sessions.length;
 
     const counts = new Map<string, number>();

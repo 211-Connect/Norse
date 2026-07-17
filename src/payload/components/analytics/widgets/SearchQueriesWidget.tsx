@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 
+import type { SearchHits } from '../../../../lib/api/generated/data-contracts';
 import { MetricsTable } from '../MetricsTable';
 import type { MetricEntry, SearchQueryType } from '../types';
-import { usePaths } from '../useAnalyticsData';
-import { mergeSearchByLabelBuckets } from '../utils';
+import { useAnalyticsSearches } from '../useAnalyticsData';
 import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 
 type Filter = 'all' | SearchQueryType;
@@ -17,15 +17,23 @@ const FILTERS: { value: Filter; label: string }[] = [
   { value: 'hybrid', label: 'Hybrid' },
 ];
 
+function toEntries(hits: SearchHits[]): MetricEntry[] {
+  return hits.map((h) => ({ x: h.query, y: h.hits }));
+}
+
 export default function SearchQueriesWidget() {
-  const { loading, error, data, refetch } = usePaths();
+  const { loading, error, data, refetch } = useAnalyticsSearches();
   const [filter, setFilter] = useState<Filter>('all');
 
-  const byType = data?.searchByLabelByType;
+  const byType = data;
   const rows: MetricEntry[] =
     filter === 'all'
-      ? mergeSearchByLabelBuckets(byType)
-      : (byType?.[filter] ?? []);
+      ? [
+          ...toEntries(byType?.text ?? []),
+          ...toEntries(byType?.taxonomy ?? []),
+          ...toEntries(byType?.hybrid ?? []),
+        ].sort((a, b) => b.y - a.y)
+      : toEntries(byType?.[filter] ?? []);
 
   const activeFilterLabel =
     FILTERS.find((f) => f.value === filter)?.label ?? 'All';
@@ -50,7 +58,7 @@ export default function SearchQueriesWidget() {
       description={WIDGET_INFO[WidgetSlug.SearchQueries]}
       onRefresh={refetch}
       refreshing={loading}
-      loading={loading}
+      loading={loading && !data}
       errorTitle={error ? 'Could not load search queries.' : undefined}
       errorDescription={error ? 'Please contact the support team.' : undefined}
     />

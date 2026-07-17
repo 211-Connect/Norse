@@ -11,7 +11,7 @@ export default function TotalUsersWidget() {
       label="Total Users"
       selector={(stats) => ({
         current: stats.visitors,
-        previous: stats.comparison.visitors,
+        previous: (stats.comparison as { visitors: number }).visitors ?? 0,
       })}
     />
   );
