@@ -15,7 +15,9 @@ function toDeviceLabel(device: string): string {
 }
 
 export default function DeviceTypesWidget() {
-  const buildSegments = (sessions: SessionsResponse[]): PieChartWidgetSegment[] => {
+  const buildSegments = (
+    sessions: SessionsResponse[],
+  ): PieChartWidgetSegment[] => {
     const total = sessions.length;
 
     const counts = new Map<string, number>();

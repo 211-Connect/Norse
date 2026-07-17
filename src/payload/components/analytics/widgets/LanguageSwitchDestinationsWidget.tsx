@@ -9,10 +9,15 @@ export default function LanguageSwitchDestinationsWidget() {
   const { loading, error, data, refetch } = useAnalyticsLanguageSwitches();
 
   const rows = (data ?? []).map((entry) => {
-    const languageName = getLanguageName(entry.language, { displayLocale: 'en' });
+    const languageName = getLanguageName(entry.language, {
+      displayLocale: 'en',
+    });
 
     return {
-      x: languageName === entry.language ? entry.language : `${languageName} (${entry.language})`,
+      x:
+        languageName === entry.language
+          ? entry.language
+          : `${languageName} (${entry.language})`,
       y: entry.count,
     };
   });

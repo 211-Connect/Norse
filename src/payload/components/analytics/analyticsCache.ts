@@ -19,9 +19,7 @@ import type {
   StatsResponse,
   ZeroResultQueriesResponse,
 } from '../../../lib/api/generated/data-contracts';
-import type {
-  DateRange,
-} from './types';
+import type { DateRange } from './types';
 import { buildAnalyticsQuery } from './utils';
 
 const TTL_MS = 30 * 1000;
@@ -200,11 +198,7 @@ export type AnalyticsMetricsWithTrend = {
 
 export const fetchAnalyticsMetrics = makeCachedFetch(
   new Map<string, CacheEntry<AnalyticsMetricsWithTrend>>(),
-  async (
-    { startAt, endAt, prevStartAt, prevEndAt },
-    tenantId,
-    websiteIds,
-  ) => {
+  async ({ startAt, endAt, prevStartAt, prevEndAt }, tenantId, websiteIds) => {
     const [current, previous] = await Promise.all([
       fetchWrapper<AnalyticsMetricsResponse>(
         buildAnalyticsQuery(
@@ -442,4 +436,3 @@ export const fetchAnalyticsEventValues = makeCachedFetchWithArgs<
     return data;
   },
 );
-

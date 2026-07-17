@@ -19,7 +19,10 @@ import type {
 } from '../../../../lib/api/generated/data-contracts';
 import CompactSelectField from '../CompactSelectField';
 import { PieChartWidget, PieChartWidgetSegment } from '../PieChartWidget';
-import { useAnalyticsEventCatalog, useAnalyticsEventValues } from '../useAnalyticsData';
+import {
+  useAnalyticsEventCatalog,
+  useAnalyticsEventValues,
+} from '../useAnalyticsData';
 import { useWidgetId } from '../useWidgetId';
 import { WidgetErrorState } from '../WidgetErrorState';
 import { WidgetSkeleton } from '../WidgetSkeleton';
@@ -71,8 +74,7 @@ export default function EventCardWidgetClient({
   );
   const eventDataValues = useAnalyticsEventValues(event ?? '', property ?? '');
 
-  const contentLoading =
-    event && property ? eventDataValues.loading : false;
+  const contentLoading = event && property ? eventDataValues.loading : false;
   const contentError = event && property ? eventDataValues.error : null;
 
   useEffect(() => {
@@ -367,7 +369,9 @@ function EmptyMessage({ children }: { children: ReactNode }) {
   );
 }
 
-function buildSegments(values: { x: string; y: number }[]): PieChartWidgetSegment[] {
+function buildSegments(
+  values: { x: string; y: number }[],
+): PieChartWidgetSegment[] {
   const total = values.reduce((sum, entry) => sum + entry.y, 0);
   if (total === 0) return [];
 

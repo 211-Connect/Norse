@@ -136,27 +136,38 @@ function makeAsyncHook<T>(
   };
 }
 
-export const useAnalyticsStats = makeAsyncHook<StatsResponse>(fetchAnalyticsStats);
-export const useAnalyticsMetrics =
-  makeAsyncHook<AnalyticsMetricsWithTrend>(fetchAnalyticsMetrics);
-export const useAnalyticsPageviews =
-  makeAsyncHook<PageviewsResponse[]>(fetchAnalyticsPageviews);
-export const useAnalyticsResourceMetrics =
-  makeAsyncHook<ResourceMetricsResponse[]>(fetchAnalyticsResourceMetrics);
-export const useAnalyticsSearches =
-  makeAsyncHook<SearchesResponse>(fetchAnalyticsSearches);
-export const useAnalyticsZeroResultQueries =
-  makeAsyncHook<ZeroResultQueriesResponse[]>(fetchAnalyticsZeroResultQueries);
-export const useAnalyticsLanguageSwitches =
-  makeAsyncHook<LanguageSwitchesResponse[]>(fetchAnalyticsLanguageSwitches);
-export const useAnalyticsResourceByEntry =
-  makeAsyncHook<ResourceByEntryResponse[]>(fetchAnalyticsResourceByEntry);
-export const useAnalyticsSessions =
-  makeAsyncHook<PaginatedSessionsResponse>(fetchAnalyticsSessions);
-export const useAnalyticsHeatmap =
-  makeAsyncHook<HeatmapPointResponse[]>(fetchAnalyticsHeatmap);
-export const useAnalyticsAreaSearches =
-  makeAsyncHook<AreaSearchesResponse>(fetchAnalyticsAreaSearches);
+export const useAnalyticsStats =
+  makeAsyncHook<StatsResponse>(fetchAnalyticsStats);
+export const useAnalyticsMetrics = makeAsyncHook<AnalyticsMetricsWithTrend>(
+  fetchAnalyticsMetrics,
+);
+export const useAnalyticsPageviews = makeAsyncHook<PageviewsResponse[]>(
+  fetchAnalyticsPageviews,
+);
+export const useAnalyticsResourceMetrics = makeAsyncHook<
+  ResourceMetricsResponse[]
+>(fetchAnalyticsResourceMetrics);
+export const useAnalyticsSearches = makeAsyncHook<SearchesResponse>(
+  fetchAnalyticsSearches,
+);
+export const useAnalyticsZeroResultQueries = makeAsyncHook<
+  ZeroResultQueriesResponse[]
+>(fetchAnalyticsZeroResultQueries);
+export const useAnalyticsLanguageSwitches = makeAsyncHook<
+  LanguageSwitchesResponse[]
+>(fetchAnalyticsLanguageSwitches);
+export const useAnalyticsResourceByEntry = makeAsyncHook<
+  ResourceByEntryResponse[]
+>(fetchAnalyticsResourceByEntry);
+export const useAnalyticsSessions = makeAsyncHook<PaginatedSessionsResponse>(
+  fetchAnalyticsSessions,
+);
+export const useAnalyticsHeatmap = makeAsyncHook<HeatmapPointResponse[]>(
+  fetchAnalyticsHeatmap,
+);
+export const useAnalyticsAreaSearches = makeAsyncHook<AreaSearchesResponse>(
+  fetchAnalyticsAreaSearches,
+);
 
 export function useAnalyticsInfo(
   tenantId: string | undefined,

@@ -1,7 +1,10 @@
 import { apiConfigCacheService } from '@/cacheService';
 
 import { isSuperAdmin, isSupport } from '../collections/Users/access/roles';
-import { getConfiguredWebsiteIds, TenantAnalytics } from './getConfiguredWebsiteIds';
+import {
+  getConfiguredWebsiteIds,
+  TenantAnalytics,
+} from './getConfiguredWebsiteIds';
 import { getUserTenantIDs } from './getUserTenantIDs';
 
 type ResolveOptions = {
@@ -25,7 +28,10 @@ export async function resolveAnalyticsContext(
   const tenantId = query?.tenantId as string | undefined;
 
   if (!tenantId) {
-    return Response.json({ error: 'Missing tenantId parameter.' }, { status: 400 });
+    return Response.json(
+      { error: 'Missing tenantId parameter.' },
+      { status: 400 },
+    );
   }
 
   const userTenantIDs = getUserTenantIDs(req.user);
@@ -39,7 +45,9 @@ export async function resolveAnalyticsContext(
   let apiKey: string | undefined;
 
   try {
-    const cached = await apiConfigCacheService.get(`analytics_config:${tenantId}`);
+    const cached = await apiConfigCacheService.get(
+      `analytics_config:${tenantId}`,
+    );
     if (cached) {
       const parsed = JSON.parse(cached) as {
         umamiWebsiteId?: string | null;
@@ -73,16 +81,18 @@ export async function resolveAnalyticsContext(
 
     // Re-warm the Redis cache so subsequent requests hit
     if (apiKey) {
-      apiConfigCacheService.set(
-        `analytics_config:${tenantId}`,
-        JSON.stringify({
-          additionalWebsiteIds: analytics?.additionalWebsiteIds,
-          umamiWebsiteId: analytics?.umamiWebsiteId,
-          apiKey,
-        }),
-      ).catch(() => {
-        // Fire-and-forget; non-critical
-      });
+      apiConfigCacheService
+        .set(
+          `analytics_config:${tenantId}`,
+          JSON.stringify({
+            additionalWebsiteIds: analytics?.additionalWebsiteIds,
+            umamiWebsiteId: analytics?.umamiWebsiteId,
+            apiKey,
+          }),
+        )
+        .catch(() => {
+          // Fire-and-forget; non-critical
+        });
     }
   }
 
@@ -130,8 +140,7 @@ export async function resolveAnalyticsContext(
   if (invalidIds.length > 0) {
     return Response.json(
       {
-        error:
-          'Some requested website IDs are not configured for this tenant.',
+        error: 'Some requested website IDs are not configured for this tenant.',
         invalidIds,
       },
       { status: 400 },

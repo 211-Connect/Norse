@@ -83,7 +83,8 @@ function proxyEndpoint(
 
 const infoEndpoint = proxyEndpoint(
   '/analytics/info',
-  (ctx) => analyticsApiClient.analyticsControllerGetInfo({ headers: ctx.headers }),
+  (ctx) =>
+    analyticsApiClient.analyticsControllerGetInfo({ headers: ctx.headers }),
   { skipWebsiteIdValidation: true },
 );
 
@@ -96,19 +97,22 @@ const statsEndpoint = proxyEndpoint('/analytics/stats', (ctx, query) => {
   );
 });
 
-const pageviewsEndpoint = proxyEndpoint('/analytics/pageviews', (ctx, query) => {
-  const start = toISO(query?.startAt as string);
-  const end = toISO(query?.endAt as string);
-  return analyticsApiClient.analyticsControllerGetPageviews(
-    {
-      start,
-      end,
-      timezone: 'UTC',
-      ...websiteIdsParam(ctx.selectedWebsiteIds),
-    },
-    { headers: ctx.headers },
-  );
-});
+const pageviewsEndpoint = proxyEndpoint(
+  '/analytics/pageviews',
+  (ctx, query) => {
+    const start = toISO(query?.startAt as string);
+    const end = toISO(query?.endAt as string);
+    return analyticsApiClient.analyticsControllerGetPageviews(
+      {
+        start,
+        end,
+        timezone: 'UTC',
+        ...websiteIdsParam(ctx.selectedWebsiteIds),
+      },
+      { headers: ctx.headers },
+    );
+  },
+);
 
 const metricsEndpoint = proxyEndpoint('/analytics/metrics', (ctx, query) => {
   const start = toISO(query?.startAt as string);
@@ -248,7 +252,10 @@ const eventValuesEndpoint = proxyEndpoint(
 
 const eventCatalogEndpoint = proxyEndpoint(
   '/analytics/event-catalog',
-  (ctx) => analyticsApiClient.analyticsControllerGetEventCatalog({ headers: ctx.headers }),
+  (ctx) =>
+    analyticsApiClient.analyticsControllerGetEventCatalog({
+      headers: ctx.headers,
+    }),
   { skipWebsiteIdValidation: true },
 );
 
