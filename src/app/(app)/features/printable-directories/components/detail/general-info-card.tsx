@@ -38,6 +38,7 @@ export function GeneralInfoCard({
     name: string;
     resourceLayout: PrintableDirectoryResponseDto['resourceLayout'];
     accessPolicy: PrintableDirectoryResponseDto['accessPolicy'];
+    isBookletLayout: boolean;
     defaultQueryConfig: PrintableDirectoryResponseDto['defaultQueryConfig'];
   }) => {
     setIsSubmitting(true);
@@ -49,6 +50,7 @@ export function GeneralInfoCard({
           name: values.name,
           resourceLayout: values.resourceLayout,
           accessPolicy: values.accessPolicy,
+          isBookletLayout: values.isBookletLayout,
           defaultQueryConfig: values.defaultQueryConfig,
         },
         appConfig.tenantId,
@@ -109,6 +111,14 @@ export function GeneralInfoCard({
           </Typography>
           <Typography as="p" variant="paragraph" size="sm">
             <span className="font-medium">
+              {t('booklet_layout.label', { ns: 'page-directories' })}:
+            </span>{' '}
+            {directory.isBookletLayout
+              ? t('booklet_layout.enabled', { ns: 'page-directories' })
+              : t('booklet_layout.disabled', { ns: 'page-directories' })}
+          </Typography>
+          <Typography as="p" variant="paragraph" size="sm">
+            <span className="font-medium">
               {t('default_query_config.location_name_label', {
                 ns: 'page-directories',
               })}
@@ -124,7 +134,9 @@ export function GeneralInfoCard({
               })}
               :
             </span>{' '}
-            {directory.defaultQueryConfig?.coords?.join(', ') || '-'}
+            {directory.defaultQueryConfig?.coords
+              ? `${directory.defaultQueryConfig.coords.latitude}, ${directory.defaultQueryConfig.coords.longitude}`
+              : '-'}
           </Typography>
           <Typography as="p" variant="paragraph" size="sm">
             <span className="font-medium">
@@ -147,11 +159,11 @@ export function GeneralInfoCard({
           name: directory.name,
           accessPolicy: directory.accessPolicy,
           resourceLayout: directory.resourceLayout,
+          isBookletLayout: directory.isBookletLayout,
           defaultQueryConfig: directory.defaultQueryConfig,
         }}
         title={t('edit_directory', { ns: 'page-directories' })}
         submitLabel={t('call_to_action.save', { ns: 'common' })}
-        submittingLabel={t('saving', { ns: 'page-directories' })}
         onOpenChange={setOpen}
         onSubmit={handleSubmit}
       />

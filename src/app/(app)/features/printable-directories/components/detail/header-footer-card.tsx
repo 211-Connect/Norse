@@ -18,6 +18,7 @@ type LayoutItem = NonNullable<
 >[number];
 
 type HeaderFooterCardProps = {
+  kind: 'header' | 'footer';
   title: string;
   text: string;
   layout: LayoutItem[];
@@ -25,12 +26,17 @@ type HeaderFooterCardProps = {
 };
 
 export function HeaderFooterCard({
+  kind,
   title,
   text,
   layout,
   onEdit,
 }: HeaderFooterCardProps) {
   const { t } = useTranslation(['page-directories', 'common']);
+  const textLabel = t(
+    kind === 'header' ? 'header_text_label' : 'footer_text_label',
+    { ns: 'page-directories' },
+  );
 
   return (
     <Card>
@@ -51,13 +57,21 @@ export function HeaderFooterCard({
           <span className="font-medium">
             {t('layout_label', { ns: 'page-directories' })}:
           </span>{' '}
-          {layout.join(' - ')}
+          {layout
+            .map((item) =>
+              item === 'text'
+                ? t(
+                    kind === 'header'
+                      ? 'layout_item_text_header'
+                      : 'layout_item_text_footer',
+                    { ns: 'page-directories' },
+                  )
+                : t(`layout_item.${item}`, { ns: 'page-directories' }),
+            )
+            .join(' - ')}
         </Typography>
         <Typography as="p" variant="paragraph" size="sm">
-          <span className="font-medium">
-            {t('text_label', { ns: 'page-directories' })}:
-          </span>{' '}
-          {text}
+          <span className="font-medium">{textLabel}:</span> {text}
         </Typography>
       </CardContent>
     </Card>

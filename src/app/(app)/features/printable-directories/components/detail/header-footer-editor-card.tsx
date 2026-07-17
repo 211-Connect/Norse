@@ -73,6 +73,7 @@ export function HeaderFooterEditorCard({
   return (
     <>
       <HeaderFooterCard
+        kind={kind}
         title={
           kind === 'header'
             ? t('header_config_title', { ns: 'page-directories' })
@@ -87,6 +88,7 @@ export function HeaderFooterEditorCard({
       />
 
       <HeaderFooterDialog
+        kind={kind}
         open={open}
         onOpenChange={setOpen}
         isSubmitting={isSubmitting}

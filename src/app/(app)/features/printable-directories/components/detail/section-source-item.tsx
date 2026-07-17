@@ -20,6 +20,8 @@ import {
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
 import { PrintableDirectorySourceResponseDto } from '@/lib/api/generated/data-contracts';
 
+import { CollapseToggleButton } from './collapse-toggle-button';
+
 type SectionSourceItemProps = {
   directoryId: string;
   sectionId: string;
@@ -29,6 +31,8 @@ type SectionSourceItemProps = {
   canMoveUp: boolean;
   canMoveDown: boolean;
   isMutating: boolean;
+  isExpanded: boolean;
+  onToggleExpand: () => void;
   onMoveSource: (sourceId: string, direction: 'up' | 'down') => void;
   onDeleteSource: (sourceId: string) => void;
 };
@@ -60,6 +64,8 @@ export function SectionSourceItem({
   canMoveUp,
   canMoveDown,
   isMutating,
+  isExpanded,
+  onToggleExpand,
   onMoveSource,
   onDeleteSource,
 }: SectionSourceItemProps) {
@@ -103,7 +109,7 @@ export function SectionSourceItem({
             </Typography>
           </div>
 
-          {source.type === 'query' ? (
+          {isExpanded && source.type === 'query' ? (
             <>
               <Typography as="p" variant="paragraph" size="sm">
                 <span className="font-medium">{t('title_label')}:</span>{' '}
@@ -119,7 +125,8 @@ export function SectionSourceItem({
                       return (
                         <p key={key} className="break-all pl-4 text-sm">
                           <span className="font-medium">{key}</span>
-                          {DEFAULT_QUERY_OVERRIDE_KEYS.has(key) ? (
+                          {DEFAULT_QUERY_OVERRIDE_KEYS.has(key) &&
+                          Boolean(value) ? (
                             <TooltipProvider delayDuration={150}>
                               <Tooltip>
                                 <TooltipTrigger asChild>
@@ -128,19 +135,12 @@ export function SectionSourceItem({
                                       className="size-4 text-amber-500"
                                       aria-label={t(
                                         'query_param_overrides_default_location',
-                                        {
-                                          defaultValue:
-                                            'This query parameter overrides the default location configuration',
-                                        },
                                       )}
                                     />
                                   </span>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                  {t('query_param_overrides_default_location', {
-                                    defaultValue:
-                                      'This query parameter overrides the default location configuration',
-                                  })}
+                                  {t('query_param_overrides_default_location')}
                                 </TooltipContent>
                               </Tooltip>
                             </TooltipProvider>
@@ -168,7 +168,7 @@ export function SectionSourceItem({
             </>
           ) : null}
 
-          {source.type === 'favorites_list' ? (
+          {isExpanded && source.type === 'favorites_list' ? (
             <>
               <Typography as="p" variant="paragraph" size="sm">
                 <span className="font-medium">
@@ -183,7 +183,7 @@ export function SectionSourceItem({
             </>
           ) : null}
 
-          {source.type === 'resource_ids' ? (
+          {isExpanded && source.type === 'resource_ids' ? (
             <>
               <Typography
                 as="p"
@@ -247,6 +247,13 @@ export function SectionSourceItem({
           >
             <Trash2Icon className="size-4" aria-hidden="true" />
           </Button>
+
+          <CollapseToggleButton
+            isExpanded={isExpanded}
+            onToggle={onToggleExpand}
+            expandLabel={t('expand_source', { index: sourceIndex + 1 })}
+            collapseLabel={t('collapse_source', { index: sourceIndex + 1 })}
+          />
         </div>
       </div>
     </div>

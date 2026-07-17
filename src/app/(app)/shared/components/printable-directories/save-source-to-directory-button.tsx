@@ -3,7 +3,7 @@
 import { BookPlus, LoaderCircle } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
@@ -166,16 +166,6 @@ export function SaveSourceToDirectoryButton({
         setSelectedSectionId(
           preferredSection?.id ?? directorySections[0]?.id ?? '',
         );
-
-        if (requestedDirectoryId || requestedSectionId) {
-          const nextParams = new URLSearchParams(searchParams.toString());
-          nextParams.delete('pdid');
-          nextParams.delete('pdsid');
-          const nextQuery = nextParams.toString();
-          router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, {
-            scroll: false,
-          });
-        }
       } catch {
         if (!mounted) return;
         toast.error(
@@ -195,7 +185,30 @@ export function SaveSourceToDirectoryButton({
     return () => {
       mounted = false;
     };
-  }, [open, hasAccess, appConfig.tenantId, t, searchParams, router, pathname]);
+  }, [open, hasAccess, appConfig.tenantId, t, searchParams]);
+
+  const clearDirectoryParams = useCallback(() => {
+    if (!searchParams.has('pdid') && !searchParams.has('pdsid')) return;
+
+    const nextParams = new URLSearchParams(searchParams.toString());
+    nextParams.delete('pdid');
+    nextParams.delete('pdsid');
+    const nextQuery = nextParams.toString();
+    router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, {
+      scroll: false,
+    });
+  }, [searchParams, router, pathname]);
+
+  const handleOpenChange = useCallback(
+    (nextOpen: boolean) => {
+      setOpen(nextOpen);
+
+      if (!nextOpen) {
+        clearDirectoryParams();
+      }
+    },
+    [clearDirectoryParams],
+  );
 
   if (!hasAccess) {
     return null;
@@ -264,7 +277,7 @@ export function SaveSourceToDirectoryButton({
       }
 
       toast.success(saveSuccessMessage);
-      setOpen(false);
+      handleOpenChange(false);
     } finally {
       setIsSaving(false);
     }
@@ -297,7 +310,7 @@ export function SaveSourceToDirectoryButton({
         </Button>
       )}
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent closeLabel={t('call_to_action.close', { ns: 'common' })}>
           <DialogHeader>
             <DialogTitle>{dialogTitle}</DialogTitle>
@@ -400,7 +413,7 @@ export function SaveSourceToDirectoryButton({
             <Button
               variant="outline"
               type="button"
-              onClick={() => setOpen(false)}
+              onClick={() => handleOpenChange(false)}
               disabled={isSaving}
             >
               {t('call_to_action.cancel', { ns: 'common' })}

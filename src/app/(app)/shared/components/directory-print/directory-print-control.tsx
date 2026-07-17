@@ -12,6 +12,7 @@ import { PrintDirectoryDialog } from './print-directory-dialog';
 
 type DirectoryPrintControlProps = {
   data: PrintableDirectoryData | null;
+  variant?: 'icon' | 'icon-text';
   loadData?: () => Promise<PrintableDirectoryData>;
   testId?: string;
 };
@@ -19,6 +20,7 @@ type DirectoryPrintControlProps = {
 export function DirectoryPrintControl({
   data,
   loadData,
+  variant = 'icon-text',
   testId = 'print-directory-btn',
 }: DirectoryPrintControlProps) {
   const { t } = useTranslation(['common', 'page-list']);
@@ -72,16 +74,16 @@ export function DirectoryPrintControl({
   return (
     <>
       <Button
-        size="default"
+        size={variant === 'icon-text' ? 'default' : 'icon'}
         variant="outline"
         onClick={handleOpen}
         data-testid={testId}
         ref={triggerRef}
         aria-label={t('call_to_action.print')}
-        className={'gap-2'}
+        className="gap-2"
       >
         <Printer className="size-4" />
-        <span>{t('call_to_action.print')}</span>
+        {variant === 'icon-text' && <span>{t('call_to_action.print')}</span>}
       </Button>
 
       <PrintDirectoryDialog

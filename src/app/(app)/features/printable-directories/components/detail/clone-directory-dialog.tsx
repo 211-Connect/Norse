@@ -136,6 +136,7 @@ export function CloneDirectoryDialog({
             ? {
                 accessPolicy: directory.accessPolicy,
                 resourceLayout: directory.resourceLayout,
+                isBookletLayout: directory.isBookletLayout,
                 defaultQueryConfig: directory.defaultQueryConfig,
               }
             : {}),
