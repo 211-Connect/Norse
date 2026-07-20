@@ -18,6 +18,7 @@ import { MatomoTagManagerScript } from './matomo-tag-manager-script';
 import { SyncLocalFavoritesOnAuthEffect } from './sync-local-favorites-on-auth-effect';
 import { Toaster } from './ui/sonner';
 import { UmamiScript } from './umami-script';
+import { ArcjetScript } from './arcjet-script';
 
 interface PageWrapperProps {
   cookies?: TmpCookiesObj;
@@ -72,6 +73,10 @@ export const PageWrapper = ({
           <UmamiScript
             scriptUrl={process.env.NEXT_PUBLIC_UMAMI_SCRIPT_URL}
             websiteId={appConfig.umamiWebsiteId}
+            nonce={nonce}
+          />
+          <ArcjetScript
+            scriptUrl={process.env.NEXT_PUBLIC_ARCJET_SCRIPT_URL}
             nonce={nonce}
           />
           <DynamicHeightListener />
