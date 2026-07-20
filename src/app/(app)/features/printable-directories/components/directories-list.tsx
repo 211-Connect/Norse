@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
-import { FavoritesSearchBar } from '@/app/(app)/shared/components/favorites-search-bar';
+import { ListSearchBar } from '@/app/(app)/shared/components/list-search-bar';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { createPrintableDirectory } from '@/app/(app)/shared/serverActions/printableDirectories/createPrintableDirectory';
 import { Link } from '@/app/(app)/shared/components/link';
@@ -66,6 +66,7 @@ export function DirectoriesList({
     name: string;
     resourceLayout: ResourceLayout;
     accessPolicy: AccessPolicy;
+    isBookletLayout: boolean;
     defaultQueryConfig: PrintableDirectoryResponseDto['defaultQueryConfig'];
   }) => {
     setIsSubmitting(true);
@@ -107,7 +108,7 @@ export function DirectoriesList({
 
       <div className="flex w-full flex-col items-center gap-2 md:flex-row">
         {(directories.length > 0 || searchQuery) && (
-          <FavoritesSearchBar
+          <ListSearchBar
             className="h-full w-full"
             placeholder={t('search_placeholder', { ns: 'page-directories' })}
             initialValue={searchQuery}

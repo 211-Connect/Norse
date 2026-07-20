@@ -1196,18 +1196,29 @@ export interface PrintableDirectoryHeaderFooterResponseDto {
   logoUrl?: string | null;
 }
 
+export interface PrintableDirectoryCoordsDto {
+  /**
+   * @min -90
+   * @max 90
+   * @example 47.6062
+   */
+  latitude?: number;
+  /**
+   * @min -180
+   * @max 180
+   * @example -122.3321
+   */
+  longitude?: number;
+}
+
 export interface PrintableDirectoryDefaultQueryConfigDto {
   /**
    * @maxLength 200
    * @example "Seattle, WA"
    */
   locationName?: string | null;
-  /**
-   * @maxItems 2
-   * @minItems 2
-   * @example [-122.3321,47.6062]
-   */
-  coords?: number[] | null;
+  /** @example {"latitude":47.6062,"longitude":-122.3321} */
+  coords?: PrintableDirectoryCoordsDto | null;
   /**
    * @min 0
    * @max 1000
@@ -1275,6 +1286,11 @@ export interface PrintableDirectoryResponseDto {
     | "full"
     | "custom-search"
     | "custom-resource";
+  /**
+   * Enables booklet layout generation. When enabled, the brochure is formatted for booklet printing by ensuring the total page count is a multiple of four. If necessary, blank pages are inserted after the cover and before the back cover so that the cover remains the first page and the back cover remains the last page.
+   * @default false
+   */
+  isBookletLayout: boolean;
   defaultQueryConfig?: PrintableDirectoryDefaultQueryConfigDto | null;
   sections: PrintableDirectorySectionResponseDto[];
   /** @example "2026-07-08T08:00:00.000Z" */
@@ -1307,6 +1323,11 @@ export interface CreatePrintableDirectoryDto {
     | "full"
     | "custom-search"
     | "custom-resource";
+  /**
+   * Enables booklet layout generation. When enabled, the brochure is formatted for booklet printing by ensuring the total page count is a multiple of four. If necessary, blank pages are inserted after the cover and before the back cover so that the cover remains the first page and the back cover remains the last page.
+   * @default false
+   */
+  isBookletLayout?: boolean;
   defaultQueryConfig?: PrintableDirectoryDefaultQueryConfigDto | null;
 }
 
@@ -1346,6 +1367,11 @@ export interface UpdatePrintableDirectoryDto {
     | "full"
     | "custom-search"
     | "custom-resource";
+  /**
+   * Enables booklet layout generation. When enabled, the brochure is formatted for booklet printing by ensuring the total page count is a multiple of four. If necessary, blank pages are inserted after the cover and before the back cover so that the cover remains the first page and the back cover remains the last page.
+   * @default false
+   */
+  isBookletLayout?: boolean;
   defaultQueryConfig?: PrintableDirectoryDefaultQueryConfigDto | null;
   cover?: PrintableDirectoryCoverDto;
   header?: PrintableDirectoryHeaderFooterDto;
@@ -1438,6 +1464,11 @@ export interface PrintableDirectoryPreviewResponseDto {
     | "full"
     | "custom-search"
     | "custom-resource";
+  /**
+   * Enables booklet layout generation. When enabled, the brochure is formatted for booklet printing by ensuring the total page count is a multiple of four. If necessary, blank pages are inserted after the cover and before the back cover so that the cover remains the first page and the back cover remains the last page.
+   * @default false
+   */
+  isBookletLayout: boolean;
   defaultQueryConfig?: PrintableDirectoryDefaultQueryConfigDto | null;
   sections: PrintableDirectoryPreviewSectionDto[];
   /** @example "2026-07-08T08:00:00.000Z" */

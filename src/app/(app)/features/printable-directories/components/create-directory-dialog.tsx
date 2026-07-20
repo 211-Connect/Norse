@@ -1,10 +1,12 @@
 'use client';
 
+import { InfoIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/app/(app)/shared/components/ui/button';
 import { LocationSearchBar } from '@/app/(app)/shared/components/search/location-search-bar';
+import { Checkbox } from '@/app/(app)/shared/components/ui/checkbox';
 import {
   Dialog,
   DialogContent,
@@ -21,7 +23,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/app/(app)/shared/components/ui/select';
-import { PrintableDirectoryDefaultQueryConfigDto } from '@/lib/api/generated/data-contracts';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/app/(app)/shared/components/ui/tooltip';
+import {
+  PrintableDirectoryCoordsDto,
+  PrintableDirectoryDefaultQueryConfigDto,
+} from '@/lib/api/generated/data-contracts';
 import { AccessPolicy, ResourceLayout } from '@/types/printableDirectories';
 
 type CreateDirectoryDialogProps = {
@@ -30,11 +41,11 @@ type CreateDirectoryDialogProps = {
   mode?: 'create' | 'edit';
   title?: string;
   submitLabel?: string;
-  submittingLabel?: string;
   initialValues?: {
     name: string;
     resourceLayout: ResourceLayout;
     accessPolicy: AccessPolicy;
+    isBookletLayout?: boolean;
     defaultQueryConfig?: PrintableDirectoryDefaultQueryConfigDto | null;
   };
   onOpenChange: (open: boolean) => void;
@@ -42,12 +53,14 @@ type CreateDirectoryDialogProps = {
     name: string;
     resourceLayout: ResourceLayout;
     accessPolicy: AccessPolicy;
+    isBookletLayout: boolean;
     defaultQueryConfig: PrintableDirectoryDefaultQueryConfigDto | null;
   }) => Promise<void>;
 };
 
 const DEFAULT_RESOURCE_LAYOUT: ResourceLayout = 'line';
 const DEFAULT_ACCESS_POLICY: AccessPolicy = 'private';
+const DEFAULT_IS_BOOKLET_LAYOUT = false;
 
 export function CreateDirectoryDialog({
   open,
@@ -55,7 +68,6 @@ export function CreateDirectoryDialog({
   mode = 'create',
   title,
   submitLabel,
-  submittingLabel,
   initialValues,
   onOpenChange,
   onSubmit,
@@ -72,8 +84,12 @@ export function CreateDirectoryDialog({
   const [accessPolicy, setAccessPolicy] = useState<AccessPolicy>(
     DEFAULT_ACCESS_POLICY,
   );
+  const [isBookletLayout, setIsBookletLayout] = useState<boolean>(
+    DEFAULT_IS_BOOKLET_LAYOUT,
+  );
   const [defaultLocationName, setDefaultLocationName] = useState('');
-  const [defaultCoords, setDefaultCoords] = useState<number[] | null>(null);
+  const [defaultCoords, setDefaultCoords] =
+    useState<PrintableDirectoryCoordsDto | null>(null);
   const [defaultRadius, setDefaultRadius] = useState('');
 
   useEffect(() => {
@@ -85,15 +101,13 @@ export function CreateDirectoryDialog({
       setName(initialValues.name);
       setResourceLayout(initialValues.resourceLayout);
       setAccessPolicy(initialValues.accessPolicy);
+      setIsBookletLayout(
+        initialValues.isBookletLayout ?? DEFAULT_IS_BOOKLET_LAYOUT,
+      );
       setDefaultLocationName(
         initialValues.defaultQueryConfig?.locationName ?? everywhereLabel,
       );
-      setDefaultCoords(
-        initialValues.defaultQueryConfig?.coords &&
-          initialValues.defaultQueryConfig.coords.length === 2
-          ? initialValues.defaultQueryConfig.coords
-          : null,
-      );
+      setDefaultCoords(initialValues.defaultQueryConfig?.coords ?? null);
       setDefaultRadius(
         initialValues.defaultQueryConfig?.radius != null
           ? String(initialValues.defaultQueryConfig.radius)
@@ -105,6 +119,7 @@ export function CreateDirectoryDialog({
     setName('');
     setResourceLayout(DEFAULT_RESOURCE_LAYOUT);
     setAccessPolicy(DEFAULT_ACCESS_POLICY);
+    setIsBookletLayout(DEFAULT_IS_BOOKLET_LAYOUT);
     setDefaultLocationName(everywhereLabel);
     setDefaultCoords(null);
     setDefaultRadius('');
@@ -136,6 +151,7 @@ export function CreateDirectoryDialog({
       name: trimmedName,
       resourceLayout,
       accessPolicy,
+      isBookletLayout,
       defaultQueryConfig,
     });
   };
@@ -206,6 +222,39 @@ export function CreateDirectoryDialog({
         </div>
 
         <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="new-directory-is-booklet-layout"
+              checked={isBookletLayout}
+              onCheckedChange={(value) => setIsBookletLayout(value === true)}
+            />
+            <Label
+              htmlFor="new-directory-is-booklet-layout"
+              className="cursor-pointer"
+            >
+              {t('booklet_layout.label', { ns: 'page-directories' })}
+            </Label>
+            <TooltipProvider delayDuration={150}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="inline-flex">
+                    <InfoIcon
+                      className="text-muted-foreground size-4"
+                      aria-label={t('booklet_layout.help', {
+                        ns: 'page-directories',
+                      })}
+                    />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {t('booklet_layout.help', { ns: 'page-directories' })}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        </div>
+
+        <div className="space-y-2">
           <Label htmlFor="new-directory-access-policy">
             {t('access_policy.label', { ns: 'page-directories' })}
           </Label>
@@ -252,7 +301,14 @@ export function CreateDirectoryDialog({
             initialValue={''}
             onLocationChange={(location, coordinates) => {
               setDefaultLocationName(location);
-              setDefaultCoords(coordinates);
+              setDefaultCoords(
+                coordinates
+                  ? {
+                      latitude: coordinates[1],
+                      longitude: coordinates[0],
+                    }
+                  : null,
+              );
             }}
           />
         </div>
@@ -265,8 +321,8 @@ export function CreateDirectoryDialog({
             })}
           </Label>
           <p className="text-sm text-muted-foreground">
-            {defaultCoords?.length === 2
-              ? `${defaultCoords[0]}, ${defaultCoords[1]}`
+            {defaultCoords
+              ? `${defaultCoords.latitude}, ${defaultCoords.longitude}`
               : '-'}
           </p>
         </div>

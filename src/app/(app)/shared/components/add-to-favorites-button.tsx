@@ -29,7 +29,7 @@ import { removeFavoriteFromList } from '../serverActions/favorites/removeFavorit
 import { dialogsAtom } from '../store/dialogs';
 import { CreateFavoriteListDialog } from './create-favorite-list-dialog';
 import { CustomPagination } from './custom-pagination';
-import { FavoritesSearchBar } from './favorites-search-bar';
+import { ListSearchBar } from './list-search-bar';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import {
@@ -261,12 +261,14 @@ export function AddToFavoritesButton({
           </DialogHeader>
           <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-2 sm:flex-row">
-              <FavoritesSearchBar
+              <ListSearchBar
                 className="flex-1"
                 placeholder={t('modal.add_to_list.search_list')}
                 initialValue={searchValue}
                 onChange={setSearchValue}
                 debounceDelay={FAVORITES_SEARCH_DEBOUNCE_DELAY}
+                inputId="favorites-search-input"
+                testId="favorites-search-input"
               />
               <Button
                 ref={createListTriggerRef}

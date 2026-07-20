@@ -16,6 +16,7 @@ type SearchDialogHeaderActionsProps = {
   onConfirmClarify: () => void;
 };
 
+// todo: multi-tenant e2e tests (ai flow)
 export function SearchDialogHeaderActions({
   clarifyVisible,
   disableSearchControls,

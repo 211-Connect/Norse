@@ -103,6 +103,7 @@ export function LocalFavoritesSection({
           <div className="flex items-center gap-2">
             <DirectoryPrintControl
               data={printableDirectoryData}
+              variant="icon"
               testId="print-local-directory-btn"
             />
             <Button

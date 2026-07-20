@@ -17,6 +17,7 @@ import { LayoutEditor } from './layout-editor';
 import { LocalizedFieldTable } from './localized-field-table';
 
 type HeaderFooterDialogProps = {
+  kind: 'header' | 'footer';
   open: boolean;
   onOpenChange: (open: boolean) => void;
   isSubmitting: boolean;
@@ -26,6 +27,7 @@ type HeaderFooterDialogProps = {
 };
 
 export function HeaderFooterDialog({
+  kind,
   open,
   onOpenChange,
   isSubmitting,
@@ -34,6 +36,10 @@ export function HeaderFooterDialog({
   onSubmit,
 }: HeaderFooterDialogProps) {
   const { t } = useTranslation(['page-directories', 'common']);
+  const textLabel = t(
+    kind === 'header' ? 'header_text_label' : 'footer_text_label',
+    { ns: 'page-directories' },
+  );
   const [textValues, setTextValues] = useState<Record<string, string>>({});
   const [layout, setLayout] = useState<HeaderFooterDialogValues['layout']>([]);
 
@@ -71,10 +77,10 @@ export function HeaderFooterDialog({
         </DialogHeader>
 
         <div className="space-y-4">
-          <LayoutEditor value={layout} onChange={setLayout} />
+          <LayoutEditor kind={kind} value={layout} onChange={setLayout} />
 
           <LocalizedFieldTable
-            label={t('text_label', { ns: 'page-directories' })}
+            label={textLabel}
             values={textValues}
             multiline
             onChange={(locale, next) =>

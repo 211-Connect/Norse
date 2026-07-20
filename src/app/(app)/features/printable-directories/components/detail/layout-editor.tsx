@@ -1,174 +1,72 @@
 'use client';
 
-import { ArrowDownIcon, ArrowUpIcon, PlusIcon, XIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/app/(app)/shared/components/ui/button';
+import { Checkbox } from '@/app/(app)/shared/components/ui/checkbox';
 import { Label } from '@/app/(app)/shared/components/ui/label';
 import { LAYOUT_ITEMS, LayoutItem } from '../../utils/constants';
 
 type LayoutEditorProps = {
+  kind: 'header' | 'footer';
   value: LayoutItem[];
   onChange: (next: LayoutItem[]) => void;
 };
 
-export function LayoutEditor({ value, onChange }: LayoutEditorProps) {
+export function LayoutEditor({ kind, value, onChange }: LayoutEditorProps) {
   const { t } = useTranslation(['page-directories', 'common']);
 
-  const selectedItems = value.filter((item) => LAYOUT_ITEMS.includes(item));
-  const unselectedItems = LAYOUT_ITEMS.filter((item) => !value.includes(item));
+  const getLayoutItemLabel = (item: LayoutItem) =>
+    item === 'text'
+      ? t(
+          kind === 'header'
+            ? 'layout_item_text_header'
+            : 'layout_item_text_footer',
+          { ns: 'page-directories' },
+        )
+      : t(`layout_item.${item}`, { ns: 'page-directories' });
 
-  const selectLayoutItem = (item: LayoutItem) => {
-    if (value.includes(item)) return;
+  const toggleLayoutItem = (item: LayoutItem, checked: boolean) => {
+    const nextItems = checked
+      ? [...value, item]
+      : value.filter((existing) => existing !== item);
 
-    onChange([...value, item]);
-  };
-
-  const unselectLayoutItem = (item: LayoutItem) => {
-    if (!value.includes(item)) return;
-
-    onChange(value.filter((existing) => existing !== item));
-  };
-
-  const moveLayoutItem = (item: LayoutItem, direction: 'up' | 'down') => {
-    const index = selectedItems.indexOf(item);
-    if (index === -1) {
-      return;
-    }
-
-    const targetIndex = direction === 'up' ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= selectedItems.length) {
-      return;
-    }
-
-    const next = [...selectedItems];
-    const [moved] = next.splice(index, 1);
-    if (!moved) {
-      return;
-    }
-    next.splice(targetIndex, 0, moved);
-    onChange(next);
+    // Layout items are always saved in a fixed, canonical order
+    // (logo, text, domain, date), regardless of toggle order.
+    onChange(
+      LAYOUT_ITEMS.filter((layoutItem) => nextItems.includes(layoutItem)),
+    );
   };
 
   return (
     <div className="space-y-2">
       <Label>{t('layout_label', { ns: 'page-directories' })}</Label>
       <p className="text-sm text-muted-foreground">
-        {t('layout_reorder_hint', {
+        {t('layout_checkbox_hint', {
           ns: 'page-directories',
-          defaultValue:
-            'Click + to add item to layout. Use arrows to re-order selected items.',
+          defaultValue: 'Select the items to include in the layout.',
         })}
       </p>
       <div className="space-y-2">
-        <div className="space-y-2">
-          {selectedItems.length === 0 ? (
-            <div className="rounded-md border px-3 py-2 text-sm text-muted-foreground">
-              {t('layout_no_selected_items', {
-                ns: 'page-directories',
-                defaultValue: 'No selected items.',
-              })}
-            </div>
-          ) : (
-            selectedItems.map((item, index) => (
-              <div
-                key={item}
-                className="flex items-center justify-between rounded-md border px-3 py-2"
-              >
-                <span className="text-sm">
-                  {t(`layout_item.${item}`, { ns: 'page-directories' })}
-                </span>
-
-                <div className="flex items-center gap-1">
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="outline"
-                    disabled={index <= 0}
-                    onClick={() => moveLayoutItem(item, 'up')}
-                    aria-label={t('move_layout_item_up', {
-                      ns: 'page-directories',
-                      name: t(`layout_item.${item}`, {
-                        ns: 'page-directories',
-                      }),
-                    })}
-                  >
-                    <ArrowUpIcon className="size-4" aria-hidden="true" />
-                  </Button>
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="outline"
-                    disabled={index === selectedItems.length - 1}
-                    onClick={() => moveLayoutItem(item, 'down')}
-                    aria-label={t('move_layout_item_down', {
-                      ns: 'page-directories',
-                      name: t(`layout_item.${item}`, {
-                        ns: 'page-directories',
-                      }),
-                    })}
-                  >
-                    <ArrowDownIcon className="size-4" aria-hidden="true" />
-                  </Button>
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="outline"
-                    onClick={() => unselectLayoutItem(item)}
-                    aria-label={t('remove_layout_item', {
-                      ns: 'page-directories',
-                      defaultValue: 'Remove {{name}} from selected items',
-                      name: t(`layout_item.${item}`, {
-                        ns: 'page-directories',
-                      }),
-                    })}
-                  >
-                    <XIcon className="size-4" aria-hidden="true" />
-                  </Button>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-
-        <div className="border-t" />
-
-        <div className="space-y-2">
-          {unselectedItems.length === 0 ? (
-            <div className="rounded-md border px-3 py-2 text-sm text-muted-foreground">
-              {t('layout_no_unselected_items', {
-                ns: 'page-directories',
-                defaultValue: 'No unselected items.',
-              })}
-            </div>
-          ) : (
-            unselectedItems.map((item) => (
-              <div
-                key={item}
-                className="flex items-center justify-between rounded-md border px-3 py-2"
-              >
-                <span className="text-sm">
-                  {t(`layout_item.${item}`, { ns: 'page-directories' })}
-                </span>
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="outline"
-                  onClick={() => selectLayoutItem(item)}
-                  aria-label={t('add_layout_item', {
-                    ns: 'page-directories',
-                    defaultValue: 'Add {{name}} to selected items',
-                    name: t(`layout_item.${item}`, {
-                      ns: 'page-directories',
-                    }),
-                  })}
-                >
-                  <PlusIcon className="size-4" aria-hidden="true" />
-                </Button>
-              </div>
-            ))
-          )}
-        </div>
+        {LAYOUT_ITEMS.map((item) => (
+          <div
+            key={item}
+            className="flex items-center gap-2 rounded-md border px-3 py-2"
+          >
+            <Checkbox
+              id={`layout-item-${item}`}
+              checked={value.includes(item)}
+              onCheckedChange={(checked) =>
+                toggleLayoutItem(item, checked === true)
+              }
+            />
+            <Label
+              htmlFor={`layout-item-${item}`}
+              className="text-sm font-normal"
+            >
+              {getLayoutItemLabel(item)}
+            </Label>
+          </div>
+        ))}
       </div>
     </div>
   );

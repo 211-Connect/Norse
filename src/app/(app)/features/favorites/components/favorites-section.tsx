@@ -86,7 +86,10 @@ export function FavoritesSection({ cardLayout }: FavoritesSectionProps) {
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <DirectoryPrintControl data={printableDirectoryData} />
+                  <DirectoryPrintControl
+                    data={printableDirectoryData}
+                    variant="icon"
+                  />
                 </div>
               </TooltipTrigger>
               <TooltipContent>
