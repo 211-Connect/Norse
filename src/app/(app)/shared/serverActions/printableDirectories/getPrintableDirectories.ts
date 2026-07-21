@@ -25,6 +25,7 @@ export async function getPrintableDirectories(
         page,
         limit,
         search: search || undefined,
+        tenant_id: tenantId || undefined,
       },
       {
         headers,

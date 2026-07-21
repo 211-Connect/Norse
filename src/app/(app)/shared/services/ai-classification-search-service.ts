@@ -69,6 +69,8 @@ export async function predictSearchNeeds(
         {
           query,
           top_k: DEFAULT_TOP_K,
+          locale,
+          tenant_id: tenantId,
         },
         createAiRequestParams(locale, tenantId),
       );
@@ -103,6 +105,8 @@ export async function reRankSearchNeeds(
         {
           need_weights: JSON.stringify(body.need_weights),
           top_k: DEFAULT_TOP_K,
+          locale,
+          tenant_id: tenantId,
         },
         createAiRequestParams(locale, tenantId),
       );

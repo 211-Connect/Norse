@@ -14,6 +14,7 @@ import {
   SuggestionControllerGetTaxonomiesData,
   SuggestionControllerGetTaxonomiesParams,
   SuggestionControllerGetTaxonomyTermsByCodeData,
+  SuggestionControllerGetTaxonomyTermsByCodeParams,
 } from "./data-contracts";
 import { HttpClient, RequestParams } from "./http-client";
 
@@ -44,10 +45,14 @@ export class Suggestion<
    * @name SuggestionControllerGetTaxonomyTermsByCode
    * @request GET:/suggestion/term
    */
-  suggestionControllerGetTaxonomyTermsByCode = (params: RequestParams = {}) =>
+  suggestionControllerGetTaxonomyTermsByCode = (
+    query: SuggestionControllerGetTaxonomyTermsByCodeParams = {},
+    params: RequestParams = {},
+  ) =>
     this.request<SuggestionControllerGetTaxonomyTermsByCodeData, any>({
       path: `/suggestion/term`,
       method: "GET",
+      query: query,
       ...params,
     });
 }

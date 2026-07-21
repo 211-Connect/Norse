@@ -14,6 +14,7 @@ import {
   CreatePrintableDirectoryDto,
   CreatePrintableDirectorySectionDto,
   PrintableDirectoryControllerCreateData,
+  PrintableDirectoryControllerCreateParams,
   PrintableDirectoryControllerCreateSectionData,
   PrintableDirectoryControllerCreateSectionParams,
   PrintableDirectoryControllerCreateSourceData,
@@ -80,11 +81,13 @@ export class PrintableDirectories<
    */
   printableDirectoryControllerCreate = (
     data: CreatePrintableDirectoryDto,
+    query: PrintableDirectoryControllerCreateParams = {},
     params: RequestParams = {},
   ) =>
     this.request<PrintableDirectoryControllerCreateData, any>({
       path: `/printable-directories`,
       method: "POST",
+      query: query,
       body: data,
       type: "application/json",
       format: "json",
@@ -99,12 +102,13 @@ export class PrintableDirectories<
    * @request GET:/printable-directories/{id}
    */
   printableDirectoryControllerGetById = (
-    { id }: PrintableDirectoryControllerGetByIdParams,
+    { id, ...query }: PrintableDirectoryControllerGetByIdParams,
     params: RequestParams = {},
   ) =>
     this.request<PrintableDirectoryControllerGetByIdData, any>({
       path: `/printable-directories/${id}`,
       method: "GET",
+      query: query,
       format: "json",
       ...params,
     });
@@ -116,13 +120,14 @@ export class PrintableDirectories<
    * @request PATCH:/printable-directories/{id}
    */
   printableDirectoryControllerUpdate = (
-    { id }: PrintableDirectoryControllerUpdateParams,
+    { id, ...query }: PrintableDirectoryControllerUpdateParams,
     data: UpdatePrintableDirectoryDto,
     params: RequestParams = {},
   ) =>
     this.request<PrintableDirectoryControllerUpdateData, any>({
       path: `/printable-directories/${id}`,
       method: "PATCH",
+      query: query,
       body: data,
       type: "application/json",
       format: "json",
@@ -136,12 +141,13 @@ export class PrintableDirectories<
    * @request DELETE:/printable-directories/{id}
    */
   printableDirectoryControllerRemove = (
-    { id }: PrintableDirectoryControllerRemoveParams,
+    { id, ...query }: PrintableDirectoryControllerRemoveParams,
     params: RequestParams = {},
   ) =>
     this.request<PrintableDirectoryControllerRemoveData, any>({
       path: `/printable-directories/${id}`,
       method: "DELETE",
+      query: query,
       format: "json",
       ...params,
     });
@@ -153,13 +159,14 @@ export class PrintableDirectories<
    * @request POST:/printable-directories/{id}/sections
    */
   printableDirectoryControllerCreateSection = (
-    { id }: PrintableDirectoryControllerCreateSectionParams,
+    { id, ...query }: PrintableDirectoryControllerCreateSectionParams,
     data: CreatePrintableDirectorySectionDto,
     params: RequestParams = {},
   ) =>
     this.request<PrintableDirectoryControllerCreateSectionData, any>({
       path: `/printable-directories/${id}/sections`,
       method: "POST",
+      query: query,
       body: data,
       type: "application/json",
       format: "json",
@@ -173,13 +180,14 @@ export class PrintableDirectories<
    * @request PATCH:/printable-directories/{id}/sections/reorder
    */
   printableDirectoryControllerReorderSections = (
-    { id }: PrintableDirectoryControllerReorderSectionsParams,
+    { id, ...query }: PrintableDirectoryControllerReorderSectionsParams,
     data: ReorderPrintableDirectorySectionsDto,
     params: RequestParams = {},
   ) =>
     this.request<PrintableDirectoryControllerReorderSectionsData, any>({
       path: `/printable-directories/${id}/sections/reorder`,
       method: "PATCH",
+      query: query,
       body: data,
       type: "application/json",
       format: "json",
@@ -193,13 +201,18 @@ export class PrintableDirectories<
    * @request PATCH:/printable-directories/{id}/sections/{sectionId}
    */
   printableDirectoryControllerUpdateSection = (
-    { id, sectionId }: PrintableDirectoryControllerUpdateSectionParams,
+    {
+      id,
+      sectionId,
+      ...query
+    }: PrintableDirectoryControllerUpdateSectionParams,
     data: UpdatePrintableDirectorySectionDto,
     params: RequestParams = {},
   ) =>
     this.request<PrintableDirectoryControllerUpdateSectionData, any>({
       path: `/printable-directories/${id}/sections/${sectionId}`,
       method: "PATCH",
+      query: query,
       body: data,
       type: "application/json",
       format: "json",
@@ -213,12 +226,17 @@ export class PrintableDirectories<
    * @request DELETE:/printable-directories/{id}/sections/{sectionId}
    */
   printableDirectoryControllerRemoveSection = (
-    { id, sectionId }: PrintableDirectoryControllerRemoveSectionParams,
+    {
+      id,
+      sectionId,
+      ...query
+    }: PrintableDirectoryControllerRemoveSectionParams,
     params: RequestParams = {},
   ) =>
     this.request<PrintableDirectoryControllerRemoveSectionData, any>({
       path: `/printable-directories/${id}/sections/${sectionId}`,
       method: "DELETE",
+      query: query,
       format: "json",
       ...params,
     });
@@ -230,13 +248,14 @@ export class PrintableDirectories<
    * @request POST:/printable-directories/{id}/sections/{sectionId}/sources
    */
   printableDirectoryControllerCreateSource = (
-    { id, sectionId }: PrintableDirectoryControllerCreateSourceParams,
+    { id, sectionId, ...query }: PrintableDirectoryControllerCreateSourceParams,
     data: PrintableDirectoryControllerCreateSourcePayload,
     params: RequestParams = {},
   ) =>
     this.request<PrintableDirectoryControllerCreateSourceData, any>({
       path: `/printable-directories/${id}/sections/${sectionId}/sources`,
       method: "POST",
+      query: query,
       body: data,
       type: "application/json",
       format: "json",
@@ -250,13 +269,18 @@ export class PrintableDirectories<
    * @request PATCH:/printable-directories/{id}/sections/{sectionId}/sources/reorder
    */
   printableDirectoryControllerReorderSources = (
-    { id, sectionId }: PrintableDirectoryControllerReorderSourcesParams,
+    {
+      id,
+      sectionId,
+      ...query
+    }: PrintableDirectoryControllerReorderSourcesParams,
     data: ReorderPrintableDirectorySourcesDto,
     params: RequestParams = {},
   ) =>
     this.request<PrintableDirectoryControllerReorderSourcesData, any>({
       path: `/printable-directories/${id}/sections/${sectionId}/sources/reorder`,
       method: "PATCH",
+      query: query,
       body: data,
       type: "application/json",
       format: "json",
@@ -270,13 +294,19 @@ export class PrintableDirectories<
    * @request PATCH:/printable-directories/{id}/sections/{sectionId}/sources/{sourceId}
    */
   printableDirectoryControllerUpdateSource = (
-    { id, sectionId, sourceId }: PrintableDirectoryControllerUpdateSourceParams,
+    {
+      id,
+      sectionId,
+      sourceId,
+      ...query
+    }: PrintableDirectoryControllerUpdateSourceParams,
     data: UpdatePrintableDirectorySourceDto,
     params: RequestParams = {},
   ) =>
     this.request<PrintableDirectoryControllerUpdateSourceData, any>({
       path: `/printable-directories/${id}/sections/${sectionId}/sources/${sourceId}`,
       method: "PATCH",
+      query: query,
       body: data,
       type: "application/json",
       format: "json",
@@ -290,12 +320,18 @@ export class PrintableDirectories<
    * @request DELETE:/printable-directories/{id}/sections/{sectionId}/sources/{sourceId}
    */
   printableDirectoryControllerRemoveSource = (
-    { id, sectionId, sourceId }: PrintableDirectoryControllerRemoveSourceParams,
+    {
+      id,
+      sectionId,
+      sourceId,
+      ...query
+    }: PrintableDirectoryControllerRemoveSourceParams,
     params: RequestParams = {},
   ) =>
     this.request<PrintableDirectoryControllerRemoveSourceData, any>({
       path: `/printable-directories/${id}/sections/${sectionId}/sources/${sourceId}`,
       method: "DELETE",
+      query: query,
       format: "json",
       ...params,
     });
