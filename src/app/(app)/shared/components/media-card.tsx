@@ -32,7 +32,7 @@ export function MediaCard({
             src={image}
             alt={imageAlt}
             fill
-            style={{ objectFit: 'cover' }}
+            style={{ objectFit: 'contain' }}
           />
         </div>
       )}
