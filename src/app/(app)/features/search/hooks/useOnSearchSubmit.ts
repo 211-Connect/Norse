@@ -44,6 +44,7 @@ export const useOnSearchSubmit = ({
   const requireUserLocation = useFlag('requireUserLocation');
   const navigateClassicSearch = useNavigateClassicSearch({
     setDialogOpen,
+    startTransition,
   });
   const searchCoordinates = useAtomValue(searchCoordinatesAtom);
   const userCoordinates = useAtomValue(userCoordinatesAtom);

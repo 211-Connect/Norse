@@ -2,7 +2,7 @@ import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { persistSearchDistancePreference } from '@/app/(app)/shared/lib/search-distance-preference';
 import { trackUmamiEvent, UmamiEvent } from '@/app/(app)/shared/lib/umami';
 import { useRouter } from 'next/navigation';
-import { useCallback, startTransition } from 'react';
+import { useCallback } from 'react';
 import { buildSearchUrl } from '../utils/buildSearchUrl';
 import {
   searchAtom,
@@ -12,8 +12,12 @@ import { useAtomValue, useSetAtom } from 'jotai';
 
 type Args = {
   setDialogOpen?: (open: boolean) => void;
+  startTransition: (callback: () => void) => void;
 };
-export const useNavigateClassicSearch = ({ setDialogOpen }: Args) => {
+export const useNavigateClassicSearch = ({
+  setDialogOpen,
+  startTransition,
+}: Args) => {
   const appConfig = useAppConfig();
   const router = useRouter();
   const search = useAtomValue(searchAtom);
