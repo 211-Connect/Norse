@@ -13,6 +13,7 @@
 import {
   CreateFavoriteDto,
   FavoriteControllerCreateData,
+  FavoriteControllerCreateParams,
   FavoriteControllerRemoveData,
   FavoriteControllerRemoveParams,
 } from "./data-contracts";
@@ -30,11 +31,13 @@ export class Favorite<
    */
   favoriteControllerCreate = (
     data: CreateFavoriteDto,
+    query: FavoriteControllerCreateParams = {},
     params: RequestParams = {},
   ) =>
     this.request<FavoriteControllerCreateData, any>({
       path: `/favorite`,
       method: "POST",
+      query: query,
       body: data,
       type: "application/json",
       ...params,
@@ -47,12 +50,13 @@ export class Favorite<
    * @request DELETE:/favorite/{favoriteId}/{favoriteListId}
    */
   favoriteControllerRemove = (
-    { favoriteId, favoriteListId }: FavoriteControllerRemoveParams,
+    { favoriteId, favoriteListId, ...query }: FavoriteControllerRemoveParams,
     params: RequestParams = {},
   ) =>
     this.request<FavoriteControllerRemoveData, any>({
       path: `/favorite/${favoriteId}/${favoriteListId}`,
       method: "DELETE",
+      query: query,
       ...params,
     });
 }
