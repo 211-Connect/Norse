@@ -4,5 +4,11 @@ import { EligibilityComponent as ResourceEligibilityComponent } from '../../../r
 import { SearchCardComponentProps } from './types';
 
 export function EligibilityComponent({ result }: SearchCardComponentProps) {
-  return <ResourceEligibilityComponent resource={result} withPadding={false} />;
+  return (
+    <ResourceEligibilityComponent
+      resource={result}
+      iconColor="text-destructive"
+      withPadding={false}
+    />
+  );
 }
