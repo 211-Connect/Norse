@@ -37,7 +37,7 @@ export interface SearchLocationContext {
 }
 
 interface NorseSearchEvent {
-  event: 'norse_serach';
+  event: 'norse_search';
   sessionId: string | null;
   queryLabel: string | null;
   queryValue: string | null;
@@ -88,7 +88,7 @@ const buildNorseSearchEvent = (
   const queryType = normalizeStringValue(query?.query_type);
 
   return {
-    event: 'norse_serach',
+    event: 'norse_search',
     sessionId: sessionId || null,
     queryLabel,
     queryValue,
@@ -216,10 +216,14 @@ export const createResultsEvent = (
         postcode: cookies[USER_PREF_POSTCODE] ?? null,
         region: cookies[USER_PREF_REGION] ?? null,
       };
-      createEvent<SearchEvent>(newEvent);
-      createEvent<NorseSearchEvent>(
-        buildNorseSearchEvent(query, e.total, sessionId, locationContext),
+      const searchEvent = buildNorseSearchEvent(
+        query,
+        e.total,
+        sessionId,
+        locationContext,
       );
+      createEvent<SearchEvent>(newEvent);
+      createEvent<NorseSearchEvent>(searchEvent);
       setSessionStorage(`search.${query.query}`, newEvent, sessionId);
 
       const taxonomies = (query?.query as string)?.split(',') ?? [];
@@ -261,11 +265,15 @@ export const createResultsEvent = (
         postcode: cookies[USER_PREF_POSTCODE] ?? null,
         region: cookies[USER_PREF_REGION] ?? null,
       };
-
-      createEvent<SearchEvent>(newEvent);
-      createEvent<NorseSearchEvent>(
-        buildNorseSearchEvent(query, e.total, sessionId, locationContext),
+      const searchEvent = buildNorseSearchEvent(
+        query,
+        e.total,
+        sessionId,
+        locationContext,
       );
+      createEvent<SearchEvent>(newEvent);
+      createEvent<NorseSearchEvent>(searchEvent);
+
       setSessionStorage(`search.${query.query}`, newEvent, sessionId);
     }
   }

@@ -56,7 +56,7 @@ export const ResultsEvents = ({
         locationContext,
       );
 
-      if (totalResults) {
+      if (totalResults === 0) {
         trackUmamiEvent(UmamiEvent.SearchZeroResults, {
           query: String(searchParamsObject.query ?? ''),
           query_label: String(searchParamsObject.query_label ?? ''),
