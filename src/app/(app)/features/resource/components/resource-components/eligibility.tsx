@@ -1,6 +1,6 @@
 'use client';
 
-import { TriangleAlert } from 'lucide-react';
+import { BadgeCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { ResultType } from '@/app/(app)/shared/store/results';
@@ -11,9 +11,11 @@ import { Datum } from '../datum';
 export function EligibilityComponent({
   resource,
   withPadding,
+  iconColor,
 }: {
   resource: Resource | ResultType;
   withPadding?: boolean;
+  iconColor?: string;
 }) {
   const { t } = useTranslation('page-resource');
   const eligibility =
@@ -25,8 +27,8 @@ export function EligibilityComponent({
 
   return (
     <Datum
-      icon={TriangleAlert}
-      iconColor="text-destructive"
+      icon={BadgeCheck}
+      iconColor={iconColor}
       withPadding={withPadding}
       title={t('eligibility')}
       labelAs="h3"
