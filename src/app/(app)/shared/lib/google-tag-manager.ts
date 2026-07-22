@@ -38,11 +38,11 @@ export interface SearchLocationContext {
 
 interface NorseSearchEvent {
   event: 'norse_search';
-  sessionId: string | null;
-  queryLabel: string | null;
-  queryValue: string | null;
-  queryType: string | null;
-  resultsCount: number | null;
+  session_id: string | null;
+  query_label: string | null;
+  query_value: string | null;
+  query_type: string | null;
+  results_count: number | null;
   zip: string | null;
   city: string | null;
   timestamp: string;
@@ -89,11 +89,11 @@ const buildNorseSearchEvent = (
 
   return {
     event: 'norse_search',
-    sessionId: sessionId || null,
-    queryLabel,
-    queryValue,
-    queryType,
-    resultsCount: typeof total === 'number' ? total : null,
+    session_id: sessionId || null,
+    query_label: queryLabel,
+    query_value: queryValue,
+    query_type: queryType,
+    results_count: typeof total === 'number' ? total : null,
     zip: normalizeStringValue(locationContext?.postcode),
     city: normalizeStringValue(locationContext?.place),
     timestamp: new Date().toISOString(),
