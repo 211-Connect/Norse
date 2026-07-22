@@ -232,7 +232,7 @@ export async function getResource(
   locale: string,
   tenantId?: string,
 ): Promise<Resource | null> {
-  const url = `${API_URL}/resource/${id}?locale=${encodeURIComponent(locale)}&tenant_id=${encodeURIComponent(tenantId ?? '')}`;
+  const url = `${API_URL}/resource/${id}`;
   return fetchAndTransformResource(url, {
     locale,
     tenantId,
@@ -245,7 +245,7 @@ export async function getResourceByOriginalId(
   locale: string,
   tenantId?: string,
 ): Promise<Resource | null> {
-  const url = `${API_URL}/resource/original/${originalId}?locale=${encodeURIComponent(locale)}&tenant_id=${encodeURIComponent(tenantId ?? '')}`;
+  const url = `${API_URL}/resource/original/${originalId}`;
   return fetchAndTransformResource(url, {
     locale,
     tenantId,
