@@ -133,7 +133,7 @@ export interface AiSearchOptionDto {
   /** Whether this need should be pre-selected in UI */
   pre_selected: boolean;
   /** Number of results for this need */
-  results_count: object | null;
+  results_count: number | null;
 }
 
 export interface AiSearchPredictResponseDto {
@@ -212,6 +212,79 @@ export interface FavoriteListDetailResponseDto {
 
 export type UpdateFavoriteListDto = object;
 
+export interface ResourceLocationOpenApiDto {
+  /** @example "Point" */
+  type: string;
+  /** @example [-106.0746,42.1485] */
+  coordinates: number[];
+}
+
+export interface ResourceAddressOpenApiDto {
+  address_1?: string;
+  address_2?: string;
+  city?: string;
+  stateProvince?: string;
+  postalCode?: string;
+  country?: string;
+  type?: string;
+  rank?: number;
+}
+
+export interface ResourcePhoneNumberOpenApiDto {
+  type?: string;
+  number?: string;
+  rank?: number;
+}
+
+export interface ResourceTaxonomyOpenApiDto {
+  code?: string;
+  name?: string;
+}
+
+export interface ResourceTranslationOpenApiDto {
+  locale?: string;
+  displayName?: string;
+  serviceName?: string;
+  serviceDescription?: string;
+  organizationDescription?: string;
+  hours?: string;
+  fees?: string;
+  alert?: string;
+  taxonomies?: ResourceTaxonomyOpenApiDto[];
+  attributeValues?: Record<string, any>;
+}
+
+export interface ResourceFacetOpenApiDto {
+  code?: string;
+  taxonomyName?: string;
+  termName?: string;
+}
+
+export interface TransformedResourceOpenApiDto {
+  _id: string;
+  originalId?: string;
+  displayName?: string;
+  displayPhoneNumber?: string;
+  website?: string;
+  organizationUrl?: string;
+  email?: string;
+  organizationName?: string;
+  location?: ResourceLocationOpenApiDto;
+  addresses?: ResourceAddressOpenApiDto[];
+  phoneNumbers?: ResourcePhoneNumberOpenApiDto[];
+  languages?: string[];
+  /** Service area geometry + metadata */
+  serviceArea?: Record<string, any>;
+  attribution?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  lastAssuredDate?: string;
+  tenantId?: string;
+  tenant_id?: string;
+  translation?: ResourceTranslationOpenApiDto;
+  facetsEn?: ResourceFacetOpenApiDto[];
+}
+
 export interface ResourceTitlesDto {
   /**
    * Array of resource UUIDs
@@ -250,22 +323,37 @@ export interface ResourceBatchErrorDto {
   statusCode: number;
 }
 
+export interface ResourceBatchMetaDto {
+  /**
+   * Requested IDs count
+   * @example 2
+   */
+  requested: number;
+  /**
+   * Successfully resolved resources count
+   * @example 1
+   */
+  successful: number;
+  /**
+   * Failed IDs count
+   * @example 1
+   */
+  failed: number;
+}
+
 export interface ResourceBatchResponseDto {
   /**
    * Successfully fetched resources, keyed by resource ID
    * @example {"550e8400-e29b-41d4-a716-446655440000":{"_id":"550e8400-e29b-41d4-a716-446655440000","displayName":"Example Resource"}}
    */
-  data: Record<string, object>;
+  data: Record<string, TransformedResourceOpenApiDto>;
   /**
    * Failed resource IDs with error details
    * @example [{"id":"550e8400-e29b-41d4-a716-446655440001","reason":"Resource not found","statusCode":404}]
    */
   errors: ResourceBatchErrorDto[];
-  /**
-   * Metadata about the batch operation
-   * @example {"requested":2,"successful":1,"failed":1}
-   */
-  meta: object;
+  /** Metadata about the batch operation */
+  meta: ResourceBatchMetaDto;
 }
 
 export interface ForwardGeocodeResponseDto {
@@ -374,6 +462,19 @@ export interface ReverseGeocodeResponseDto {
   bbox?: number[];
 }
 
+export interface AnalyticsWebsiteName {
+  /**
+   * Umami website ID
+   * @example "abc-123"
+   */
+  id: string;
+  /**
+   * Human-readable website name from Umami
+   * @example "My Resource Directory"
+   */
+  name: string;
+}
+
 export interface AnalyticsInfoResponse {
   /**
    * Root Umami website ID for this tenant
@@ -385,6 +486,8 @@ export interface AnalyticsInfoResponse {
    * @example ["def-456","ghi-789"]
    */
   additionalWebsiteIds: string[];
+  /** Website IDs with display names for the website picker */
+  websites: AnalyticsWebsiteName[];
 }
 
 export interface StatsResponse {
@@ -481,6 +584,16 @@ export interface AnalyticsMetricsResponse {
    * @example 30
    */
   resourceViewed: number;
+  /**
+   * Number of safe exit link clicks
+   * @example 25
+   */
+  safeExitClicks: number;
+  /**
+   * Number of favorites added to a list
+   * @example 40
+   */
+  favoriteAddToList: number;
 }
 
 export interface ResourceMetricsResponse {
@@ -698,6 +811,80 @@ export interface ExportSearchDataResponse {
   totalCount: number;
 }
 
+export interface HeatmapPointResponse {
+  /**
+   * Longitude coordinate
+   * @example -122.41942
+   */
+  lng: number;
+  /**
+   * Latitude coordinate
+   * @example 37.77493
+   */
+  lat: number;
+  /**
+   * Aggregate weight (number of searches) at this location
+   * @example 15
+   */
+  weight: number;
+}
+
+export interface AreaMetricsRow {
+  /**
+   * Area identifier (ZIP code or county name)
+   * @example "55101"
+   */
+  area: string;
+  /**
+   * Total number of searches in this area
+   * @example 50
+   */
+  totalSearches: number;
+  /**
+   * Number of searches that returned zero results in this area
+   * @example 5
+   */
+  zeroSearches: number;
+  /**
+   * Ratio of zero-result searches to total searches
+   * @example 0.1
+   */
+  zeroRate: number;
+}
+
+export interface AreaSearchesResponse {
+  /** Metrics grouped by ZIP code */
+  zipCodeRows: AreaMetricsRow[];
+  /** Metrics grouped by county */
+  countyRows: AreaMetricsRow[];
+}
+
+export interface EventValuesResponse {
+  /**
+   * Distinct property value
+   * @example "homeless shelter"
+   */
+  value: string;
+  /**
+   * Total occurrences of this value
+   * @example 42
+   */
+  total: number;
+}
+
+export interface EventCatalogEntryResponse {
+  /**
+   * Umami event name
+   * @example "search_zero_results"
+   */
+  eventName: string;
+  /**
+   * Available property names for this event
+   * @example ["query","queryLabel","userCoordinates"]
+   */
+  properties: string[];
+}
+
 export interface EventPayloadDto {
   /**
    * Event name (1-255 characters)
@@ -902,6 +1089,398 @@ export interface EnableTaxonomyScorecardDto {
   version_id: number;
 }
 
+export interface SearchQueryApiDto {
+  /**
+   * Search query expression. Can be plain text, string array, or nested AND/OR object payload.
+   * @example "housing"
+   */
+  query?: string | string[] | Record<string, any>;
+  /** @default "text" */
+  query_type?:
+    | "text"
+    | "taxonomy"
+    | "organization"
+    | "more_like_this"
+    | "hybrid";
+  /**
+   * @min 1
+   * @default 1
+   */
+  page?: number;
+  /**
+   * Comma-delimited longitude,latitude
+   * @example "-120.740135,47.751076"
+   */
+  coords?: string;
+  /** @example {"county":"King","language":["en","es"]} */
+  filters?: Record<string, any>;
+  /**
+   * HSIS taxonomy scope as comma-delimited string or array
+   * @example "BM-1400,BM-1700"
+   */
+  taxonomy?: string | string[];
+  /**
+   * @min 0
+   * @default 0
+   */
+  distance?: number;
+  /** @min 0 */
+  age?: number;
+  /**
+   * @min 25
+   * @max 300
+   * @default 25
+   */
+  limit?: number;
+  geo_type?: "boundary" | "proximity";
+  /** @default "relevance" */
+  sort?: "relevance" | "distance" | "name" | "organization";
+}
+
+export interface SearchBodyApiDto {
+  /** GeoJSON geometry payload for POST /search */
+  geometry?: Record<string, any>;
+}
+
+export interface PrintableDirectorySourceQueryDto {
+  /** @example "Housing Search Block" */
+  title?: string;
+  /**
+   * Serialized search query parameters aligned with /search API query contract
+   * @example {"query":"housing","query_type":"text","page":1,"limit":25}
+   */
+  params: SearchQueryApiDto;
+  /**
+   * Optional serialized /search POST body
+   * @example {"geometry":{"type":"Point","coordinates":[-120.7,47.7]}}
+   */
+  body?: SearchBodyApiDto;
+}
+
+export interface CreatePrintableDirectorySourceDto {
+  type: "query" | "favorites_list" | "resource_ids";
+  query?: PrintableDirectorySourceQueryDto;
+  /** @example "favorites-list-id" */
+  favoritesListId?: string;
+  /** @example ["resource-a","resource-b"] */
+  resourceIds?: string[];
+}
+
+export interface UpdatePrintableDirectorySourceDto {
+  type?: "query" | "favorites_list" | "resource_ids";
+  query?: PrintableDirectorySourceQueryDto;
+  /** @example "favorites-list-id" */
+  favoritesListId?: string;
+  /** @example ["resource-a","resource-b"] */
+  resourceIds?: string[];
+}
+
+export interface PrintableDirectoryLocalizedTextResponseDto {
+  /** @example {"en":"Default copy","es":"Texto predeterminado"} */
+  values: Record<string, string>;
+}
+
+export interface PrintableDirectoryCoverResponseDto {
+  titleLocalized: PrintableDirectoryLocalizedTextResponseDto;
+  descriptionLocalized: PrintableDirectoryLocalizedTextResponseDto;
+  primaryColor?: string | null;
+  /** @example "default" */
+  layoutType: "default";
+  coverImageUrl?: string | null;
+}
+
+export interface PrintableDirectoryHeaderFooterResponseDto {
+  /** @example ["text","logo","domain","date"] */
+  layout: ("text" | "logo" | "domain" | "date")[];
+  textLocalized?: PrintableDirectoryLocalizedTextResponseDto;
+  logoUrl?: string | null;
+}
+
+export interface PrintableDirectoryCoordsDto {
+  /**
+   * @min -90
+   * @max 90
+   * @example 47.6062
+   */
+  latitude?: number;
+  /**
+   * @min -180
+   * @max 180
+   * @example -122.3321
+   */
+  longitude?: number;
+}
+
+export interface PrintableDirectoryDefaultQueryConfigDto {
+  /**
+   * @maxLength 200
+   * @example "Seattle, WA"
+   */
+  locationName?: string | null;
+  /** @example {"latitude":47.6062,"longitude":-122.3321} */
+  coords?: PrintableDirectoryCoordsDto | null;
+  /**
+   * @min 0
+   * @max 1000
+   * @example 25
+   */
+  radius?: number | null;
+}
+
+export interface PrintableDirectorySourceQueryResponseDto {
+  title?: string | null;
+  /**
+   * Serialized /search query parameters. Common keys include query_type, query, page, limit, filters, coords, distance, age, geo_type, taxonomy, and sort.
+   * @example {"query_type":"text","query":"housing","page":1,"limit":25,"coords":"-120.740135,47.751076","sort":"relevance"}
+   */
+  params: SearchQueryApiDto;
+  /**
+   * Optional serialized /search POST body. Used when query resolution requires geometry payload (for example polygon/bounding-box intersection or other GeoJSON-based filters).
+   * @example {"geometry":{"type":"Polygon","coordinates":[[[-120.9,47.6],[-120.6,47.6],[-120.6,47.8],[-120.9,47.8],[-120.9,47.6]]]}}
+   */
+  body?: SearchBodyApiDto | null;
+}
+
+export interface PrintableDirectorySourceSummaryResponseDto {
+  id: string;
+  name: string;
+  count: number;
+}
+
+export interface PrintableDirectorySourceResponseDto {
+  id: string;
+  order: number;
+  type: "query" | "favorites_list" | "resource_ids";
+  query?: PrintableDirectorySourceQueryResponseDto | null;
+  favoriteList?: PrintableDirectorySourceSummaryResponseDto | null;
+  resources: PrintableDirectorySourceSummaryResponseDto[];
+}
+
+export interface PrintableDirectorySectionResponseDto {
+  id: string;
+  order: number;
+  headingLocalized: PrintableDirectoryLocalizedTextResponseDto;
+  descriptionLocalized: PrintableDirectoryLocalizedTextResponseDto;
+  /**
+   * @min 1
+   * @max 1000
+   */
+  maxResources: number;
+  sources: PrintableDirectorySourceResponseDto[];
+}
+
+export interface PrintableDirectoryResponseDto {
+  id: string;
+  tenantId: string;
+  ownerUserId: string;
+  name: string;
+  updatedBy?: string | null;
+  /** Access config for tenant users: private (owner read/update), shared-read (others read, only owner updates), shared-edit (others can read and update). */
+  accessPolicy: "private" | "shared-read" | "shared-edit";
+  cover: PrintableDirectoryCoverResponseDto;
+  header: PrintableDirectoryHeaderFooterResponseDto;
+  footer: PrintableDirectoryHeaderFooterResponseDto;
+  resourceLayout:
+    | "line"
+    | "summary"
+    | "full"
+    | "custom-search"
+    | "custom-resource";
+  /**
+   * Enables booklet layout generation. When enabled, the brochure is formatted for booklet printing by ensuring the total page count is a multiple of four. If necessary, blank pages are inserted after the cover and before the back cover so that the cover remains the first page and the back cover remains the last page.
+   * @default false
+   */
+  isBookletLayout: boolean;
+  defaultQueryConfig?: PrintableDirectoryDefaultQueryConfigDto | null;
+  sections: PrintableDirectorySectionResponseDto[];
+  /** @example "2026-07-08T08:00:00.000Z" */
+  createdAt: string;
+  /** @example "2026-07-08T09:00:00.000Z" */
+  updatedAt: string;
+}
+
+export interface PrintableDirectoryListResponseDto {
+  /**
+   * Total number of matching results
+   * @example 40
+   */
+  total: number;
+  /**
+   * Current page number
+   * @example 1
+   */
+  page: number;
+  items: PrintableDirectoryResponseDto[];
+}
+
+export interface CreatePrintableDirectoryDto {
+  /** @example "My Printable Directory" */
+  name: string;
+  accessPolicy?: "private" | "shared-read" | "shared-edit";
+  resourceLayout?:
+    | "line"
+    | "summary"
+    | "full"
+    | "custom-search"
+    | "custom-resource";
+  /**
+   * Enables booklet layout generation. When enabled, the brochure is formatted for booklet printing by ensuring the total page count is a multiple of four. If necessary, blank pages are inserted after the cover and before the back cover so that the cover remains the first page and the back cover remains the last page.
+   * @default false
+   */
+  isBookletLayout?: boolean;
+  defaultQueryConfig?: PrintableDirectoryDefaultQueryConfigDto | null;
+}
+
+export interface PrintableDirectoryLocalizedValuesDto {
+  /**
+   * Localized text map by locale key
+   * @example {"en":"English copy","es":"Texto en español"}
+   */
+  values?: Record<string, string>;
+}
+
+export interface PrintableDirectoryCoverDto {
+  titleLocalized?: PrintableDirectoryLocalizedValuesDto;
+  descriptionLocalized?: PrintableDirectoryLocalizedValuesDto;
+  /** @example "#0f172a" */
+  primaryColor?: string;
+  layoutType?: "default";
+  /** @example "https://example.com/cover.jpg" */
+  coverImageUrl?: string;
+}
+
+export interface PrintableDirectoryHeaderFooterDto {
+  textLocalized?: PrintableDirectoryLocalizedValuesDto;
+  /** @example ["logo","date"] */
+  layout: ("text" | "logo" | "domain" | "date")[];
+  /** @example "https://example.com/logo.svg" */
+  logoUrl?: string;
+}
+
+export interface UpdatePrintableDirectoryDto {
+  /** @example "My Printable Directory" */
+  name?: string;
+  accessPolicy?: "private" | "shared-read" | "shared-edit";
+  resourceLayout?:
+    | "line"
+    | "summary"
+    | "full"
+    | "custom-search"
+    | "custom-resource";
+  /**
+   * Enables booklet layout generation. When enabled, the brochure is formatted for booklet printing by ensuring the total page count is a multiple of four. If necessary, blank pages are inserted after the cover and before the back cover so that the cover remains the first page and the back cover remains the last page.
+   * @default false
+   */
+  isBookletLayout?: boolean;
+  defaultQueryConfig?: PrintableDirectoryDefaultQueryConfigDto | null;
+  cover?: PrintableDirectoryCoverDto;
+  header?: PrintableDirectoryHeaderFooterDto;
+  footer?: PrintableDirectoryHeaderFooterDto;
+}
+
+export interface PrintableDirectorySectionSourceDto {
+  type: "query" | "favorites_list" | "resource_ids";
+  query?: PrintableDirectorySourceQueryDto;
+  /** @example "favorites-list-id" */
+  favoritesListId?: string;
+  /** @example ["resource-a","resource-b"] */
+  resourceIds?: string[];
+}
+
+export interface CreatePrintableDirectorySectionDto {
+  headingLocalized: PrintableDirectoryLocalizedValuesDto;
+  descriptionLocalized: PrintableDirectoryLocalizedValuesDto;
+  /**
+   * @min 1
+   * @max 1000
+   * @default 100
+   */
+  maxResources?: number;
+  sources?: PrintableDirectorySectionSourceDto[];
+}
+
+export interface ReorderPrintableDirectorySectionsDto {
+  /** Ordered section IDs */
+  sectionIds: string[];
+}
+
+export interface UpdatePrintableDirectorySectionDto {
+  headingLocalized?: PrintableDirectoryLocalizedValuesDto;
+  descriptionLocalized?: PrintableDirectoryLocalizedValuesDto;
+  /**
+   * @min 1
+   * @max 1000
+   * @default 100
+   */
+  maxResources?: number;
+}
+
+export interface ReorderPrintableDirectorySourcesDto {
+  /** Ordered source IDs */
+  sourceIds: string[];
+}
+
+export interface PrintableDirectoryPreviewSectionResourceDto {
+  id: string;
+  /**
+   * Resolved printable-ready resource object from live resource data at preview time
+   * @example {"_id":"00000000-0000-0000-0000-000000000000","serviceAtLocationId":"00000000-0000-0000-0000-000000000000","location":{"type":"Point","coordinates":[-106.0746,42.1485]},"addresses":[{"city":"Example","country":"United States","address_1":"543 East Connect Street","postalCode":"99032","stateProvince":"WA","rank":1,"type":"physical"}],"attribution":"Connect 211","createdAt":"2024-08-26T00:00:00","displayName":"FINANCIAL AND FOOD ASSISTANCE | EXAMPLE ORGANIZATION","displayPhoneNumber":"(555) 555-5555","email":"info@example.com","languages":["English","Spanish"],"lastAssuredDate":"2024-08-26T00:00:00","organizationName":"EXAMPLE ORGANIZATION","phoneNumbers":[{"number":"(555) 555-5555","rank":1,"type":"voice"},{"number":"(555) 555-5555","rank":2,"type":"fax"}],"serviceArea":{"type":"Polygon","coordinates":[[[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485]]],"description":["Washington"]},"tenant_id":"00000000-0000-0000-0000-000000000000","originalId":"1234","updatedAt":"2024-08-26T00:00:00","website":"https://www.example.com/","organizationUrl":"https://www.example.org/","translation":{"displayName":"FINANCIAL AND FOOD ASSISTANCE | EXAMPLE ORGANIZATION","fees":"n/a","hours":"Monday 11:00am - 4:30pm;Tuesday 11:00am - 6:00pm;Wednesday 11:00am - 4:30pm;Thursday 11:00am - 6:00pm","locale":"en","taxonomies":[{"code":"CW-0000.0000","name":"Rental Deposit Assistance"}],"serviceName":"FINANCIAL AND FOOD ASSISTANCE","eligibilities":"Rental Assistance is limited to families and individuals.","requiredDocuments":[],"applicationProcess":"Walk-In;Call","alert":"We are currently experiencing high call volumes. Please be patient and leave a message if you are unable to reach us.","serviceDescription":"Emergency financial assistance to help with:\n- Rental and utility assistance\n- Help with first month rent\n- Utility assistance \nFood Pantry including items\n- Fresh and Shelf-Stable Food\n- Personal hygiene items\n- Diapers\n- Prescriptions","organizationDescription":"We are a nonprofit community based volunteer organizations with goals to alleviate poverty and homelessness, encourage self-sufficiency, to allocate funds and resources efficiently, and to provide a \"hands-up\" to those in need.","languages":["English","Spanish"]},"facetsEn":[{"code":"Benton County","taxonomyName":"Area Served by County","termName":"Benton County"},{"code":"People with low income","taxonomyName":"Specialization","termName":"People with low income"}]}
+   */
+  resource: TransformedResourceOpenApiDto;
+}
+
+export interface PrintableDirectoryPreviewSectionDto {
+  id: string;
+  order: number;
+  headingLocalized: PrintableDirectoryLocalizedTextResponseDto;
+  descriptionLocalized: PrintableDirectoryLocalizedTextResponseDto;
+  /**
+   * @min 1
+   * @max 1000
+   */
+  maxResources: number;
+  sources: PrintableDirectorySourceResponseDto[];
+  /** @example "Housing" */
+  resolvedHeading: string;
+  /** @example "English fallback text" */
+  resolvedDescription: string;
+  resources: PrintableDirectoryPreviewSectionResourceDto[];
+}
+
+export interface PrintableDirectoryPreviewResponseDto {
+  id: string;
+  tenantId: string;
+  ownerUserId: string;
+  name: string;
+  updatedBy?: string | null;
+  /** Access config for tenant users: private (owner read/update), shared-read (others read, only owner updates), shared-edit (others can read and update). */
+  accessPolicy: "private" | "shared-read" | "shared-edit";
+  cover: PrintableDirectoryCoverResponseDto;
+  header: PrintableDirectoryHeaderFooterResponseDto;
+  footer: PrintableDirectoryHeaderFooterResponseDto;
+  resourceLayout:
+    | "line"
+    | "summary"
+    | "full"
+    | "custom-search"
+    | "custom-resource";
+  /**
+   * Enables booklet layout generation. When enabled, the brochure is formatted for booklet printing by ensuring the total page count is a multiple of four. If necessary, blank pages are inserted after the cover and before the back cover so that the cover remains the first page and the back cover remains the last page.
+   * @default false
+   */
+  isBookletLayout: boolean;
+  defaultQueryConfig?: PrintableDirectoryDefaultQueryConfigDto | null;
+  sections: PrintableDirectoryPreviewSectionDto[];
+  /** @example "2026-07-08T08:00:00.000Z" */
+  createdAt: string;
+  /** @example "2026-07-08T09:00:00.000Z" */
+  updatedAt: string;
+  directoryId: string;
+  locale: string;
+  /** @example "2026-07-08T10:00:00.000Z" */
+  generatedAt: string;
+}
+
 export interface OrchestrationConfigControllerGetCustomAttributesParams {
   /**
    * Optional schema name to filter custom attributes
@@ -972,17 +1551,24 @@ export type CmsConfigControllerClearTenantCacheData = any;
 
 export interface TaxonomyControllerGetTaxonomiesV2Params {
   /**
-   * Page number for pagination
-   * @default 1
+   * Search query for taxonomy name or code
+   * @default ""
    */
-  page?: any;
+  query?: string;
   /**
    * Taxonomy code (deprecated, use query instead)
    * @deprecated
    */
-  code?: any;
-  /** Search query for taxonomy name or code */
-  query?: any;
+  code?: string;
+  /**
+   * Page number for pagination
+   * @default 1
+   */
+  page?: any;
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
 }
 
 export type TaxonomyControllerGetTaxonomiesV2Data = TaxonomyResponseDto;
@@ -993,60 +1579,55 @@ export interface TaxonomyControllerGetTaxonomyTermsByCodeParams {
    * @example "NAICS-11"
    */
   terms?: any;
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
 }
 
 export type TaxonomyControllerGetTaxonomyTermsByCodeData = any;
 
 export interface SearchControllerGetResourcesParams {
-  /** Search query. Can be a simple string, comma separated strings, or a JSON object with OR and AND nested conditions. */
-  query?:
-    | string
-    | string[]
-    | {
-        OR?: {
-          AND?: string[];
-        }[];
-        AND?: {
-          AND?: string[];
-          OR?: string[];
-        }[];
-      };
-  /**
-   * Sort order: relevance (default), distance (requires coords), name (alphabetical by resource name), organization (alphabetical by provider name)
-   * @default "relevance"
-   */
-  sort?: "relevance" | "distance" | "name" | "organization";
-  /**
-   * Comma-delimited HSIS taxonomy codes used as a hard scope for hybrid search (e.g. BM-1400,BM-1700)
-   * @example "BM-1400,BM-1700"
-   */
-  taxonomy?: string;
   /** @default "text" */
-  query_type?: "text" | "taxonomy" | "more_like_this" | "hybrid";
-  /**
-   * Searcher age used to match minimum_age/service.maximum_age
-   * @min 0
-   */
-  age?: number;
+  query_type?:
+    | "text"
+    | "taxonomy"
+    | "organization"
+    | "more_like_this"
+    | "hybrid";
   /** @default 1 */
   page?: any;
-  /**
-   * Comma delimited list of longitude,latitude
-   * @example "-120.740135,47.751076"
-   */
-  coords?: any;
+  /** Comma delimited list of longitude,latitude */
+  coords?: string[];
   filters?: object;
+  /** Comma-delimited HSIS taxonomy codes used as a hard scope for hybrid search (e.g. BM-1400,BM-1700) */
+  taxonomy?: string | string[];
   /**
    * @min 0
    * @default 0
    */
   distance?: number;
   /**
+   * Searcher age used to match minimum_age/service.maximum_age
+   * @min 0
+   */
+  age?: number;
+  /**
    * @min 25
    * @max 300
    * @default 25
    */
   limit?: number;
+  geo_type?: "boundary" | "proximity";
+  /**
+   * Sort order: relevance (default), distance (requires coords), name (alphabetical by resource name), organization (alphabetical by provider name)
+   * @default "relevance"
+   */
+  sort?: "relevance" | "distance" | "name" | "organization";
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
 }
 
 export type SearchControllerGetResourcesData = SearchResponseDto;
@@ -1057,55 +1638,46 @@ export interface SearchControllerGetResourcesPostPayload {
 }
 
 export interface SearchControllerGetResourcesPostParams {
-  /** Search query. Can be a simple string, comma separated strings, or a JSON object with OR and AND nested conditions. */
-  query?:
-    | string
-    | string[]
-    | {
-        OR?: {
-          AND?: string[];
-        }[];
-        AND?: {
-          AND?: string[];
-          OR?: string[];
-        }[];
-      };
-  /**
-   * Sort order: relevance (default), distance (requires coords), name (alphabetical by resource name), organization (alphabetical by provider name)
-   * @default "relevance"
-   */
-  sort?: "relevance" | "distance" | "name" | "organization";
-  /**
-   * Comma-delimited HSIS taxonomy codes used as a hard scope for hybrid search (e.g. BM-1400,BM-1700)
-   * @example "BM-1400,BM-1700"
-   */
-  taxonomy?: string;
   /** @default "text" */
-  query_type?: "text" | "taxonomy" | "more_like_this" | "hybrid";
-  /**
-   * Searcher age used to match minimum_age/maximum_age
-   * @min 0
-   */
-  age?: number;
+  query_type?:
+    | "text"
+    | "taxonomy"
+    | "organization"
+    | "more_like_this"
+    | "hybrid";
   /** @default 1 */
   page?: any;
-  /**
-   * Comma delimited list of longitude,latitude
-   * @example "-120.740135,47.751076"
-   */
-  coords?: any;
+  /** Comma delimited list of longitude,latitude */
+  coords?: string[];
   filters?: object;
+  /** Comma-delimited HSIS taxonomy codes used as a hard scope for hybrid search (e.g. BM-1400,BM-1700) */
+  taxonomy?: string | string[];
   /**
    * @min 0
    * @default 0
    */
   distance?: number;
   /**
+   * Searcher age used to match minimum_age/maximum_age
+   * @min 0
+   */
+  age?: number;
+  /**
    * @min 25
    * @max 300
    * @default 25
    */
   limit?: number;
+  geo_type?: "boundary" | "proximity";
+  /**
+   * Sort order: relevance (default), distance (requires coords), name (alphabetical by resource name), organization (alphabetical by provider name)
+   * @default "relevance"
+   */
+  sort?: "relevance" | "distance" | "name" | "organization";
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
 }
 
 export type SearchControllerGetResourcesPostData = SearchResponseDto;
@@ -1118,6 +1690,10 @@ export interface SearchControllerPredictNeedsClassificationParams {
    * @default 150
    */
   top_k?: number;
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
 }
 
 export type SearchControllerPredictNeedsClassificationData =
@@ -1132,6 +1708,10 @@ export interface SearchControllerReRankNeedsClassificationParams {
    * @default 150
    */
   top_k?: number;
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
 }
 
 export type SearchControllerReRankNeedsClassificationData =
@@ -1147,14 +1727,28 @@ export type ShortUrlControllerGetOrCreateShortUrlData = any;
 
 export type HealthControllerGetStatusData = any;
 
+export interface FavoriteControllerCreateParams {
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+}
+
 export type FavoriteControllerCreateData = any;
 
 export interface FavoriteControllerRemoveParams {
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
   favoriteId: string;
   favoriteListId: string;
 }
 
 export type FavoriteControllerRemoveData = any;
+
+export interface FavoriteListControllerCreateParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+}
 
 export type FavoriteListControllerCreateData = any;
 
@@ -1174,9 +1768,20 @@ export interface FavoriteListControllerFindAllParams {
   search?: string;
   /** Resource ID to check if it exists in each list */
   resource_id?: string;
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
 }
 
 export type FavoriteListControllerFindAllData = FavoriteListResponseDto;
+
+export interface FavoriteListControllerSyncLocalListParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+}
 
 export type FavoriteListControllerSyncLocalListData =
   FavoriteListSyncResponseDto;
@@ -1199,60 +1804,125 @@ export interface FavoriteListControllerSearchParams {
   search?: string;
   /** Resource ID to check if it exists in each list */
   resource_id?: string;
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
 }
 
 export type FavoriteListControllerSearchData = FavoriteListResponseDto;
 
 export interface FavoriteListControllerFindOneParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
   id: string;
 }
 
 export type FavoriteListControllerFindOneData = FavoriteListDetailResponseDto;
 
 export interface FavoriteListControllerUpdateParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
   id: string;
 }
 
 export type FavoriteListControllerUpdateData = any;
 
 export interface FavoriteListControllerRemoveParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
   id: string;
 }
 
 export type FavoriteListControllerRemoveData = any;
 
 export interface FavoriteListControllerPurgeParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
   id: string;
 }
 
 export type FavoriteListControllerPurgeData = any;
 
 export interface ResourceControllerGetResourceByIdParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
   id: string;
 }
 
-export type ResourceControllerGetResourceByIdData = any;
+export type ResourceControllerGetResourceByIdData =
+  TransformedResourceOpenApiDto;
 
 export interface ResourceControllerGetResourceByOriginalIdParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
   /** Original Resource ID */
   id: string;
 }
 
-export type ResourceControllerGetResourceByOriginalIdData = any;
+export type ResourceControllerGetResourceByOriginalIdData =
+  TransformedResourceOpenApiDto;
+
+export interface ResourceControllerGetResourceTitlesByIdsParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+}
 
 export type ResourceControllerGetResourceTitlesByIdsData = any;
+
+export interface ResourceControllerGetResourcesBatchParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+}
 
 export type ResourceControllerGetResourcesBatchData = ResourceBatchResponseDto;
 
 export interface SuggestionControllerGetTaxonomiesParams {
-  /** @default 1 */
+  /**
+   * Search query for taxonomy name or code
+   * @default ""
+   */
+  query?: string;
+  /**
+   * Taxonomy code filter
+   * @deprecated
+   */
+  code?: string;
+  /**
+   * Page number for pagination
+   * @default 1
+   */
   page?: any;
-  /** @deprecated */
-  code?: any;
-  query?: any;
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
 }
 
 export type SuggestionControllerGetTaxonomiesData = any;
+
+export interface SuggestionControllerGetTaxonomyTermsByCodeParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+}
 
 export type SuggestionControllerGetTaxonomyTermsByCodeData = any;
 
@@ -1527,6 +2197,79 @@ export interface AnalyticsControllerGetExportSearchDataParams {
 export type AnalyticsControllerGetExportSearchDataData =
   ExportSearchDataResponse;
 
+export interface AnalyticsControllerGetHeatmapParams {
+  /**
+   * ISO-8601 start date
+   * @example "2025-01-01T00:00:00Z"
+   */
+  start: string;
+  /**
+   * ISO-8601 end date. Must be ≥ start, not in the future, and within 365 days of start.
+   * @example "2025-01-31T23:59:59Z"
+   */
+  end: string;
+  /**
+   * Optional comma-separated Umami website IDs to filter by. If omitted, the tenant root website is used.
+   * @example "abc-123,def-456"
+   */
+  websiteIds?: string;
+}
+
+export type AnalyticsControllerGetHeatmapData = HeatmapPointResponse[];
+
+export interface AnalyticsControllerGetAreaSearchesParams {
+  /**
+   * ISO-8601 start date
+   * @example "2025-01-01T00:00:00Z"
+   */
+  start: string;
+  /**
+   * ISO-8601 end date. Must be ≥ start, not in the future, and within 365 days of start.
+   * @example "2025-01-31T23:59:59Z"
+   */
+  end: string;
+  /**
+   * Optional comma-separated Umami website IDs to filter by. If omitted, the tenant root website is used.
+   * @example "abc-123,def-456"
+   */
+  websiteIds?: string;
+}
+
+export type AnalyticsControllerGetAreaSearchesData = AreaSearchesResponse;
+
+export interface AnalyticsControllerGetEventValuesParams {
+  /**
+   * ISO-8601 start date
+   * @example "2025-01-01T00:00:00Z"
+   */
+  start: string;
+  /**
+   * ISO-8601 end date. Must be ≥ start, not in the future, and within 365 days of start.
+   * @example "2025-01-31T23:59:59Z"
+   */
+  end: string;
+  /**
+   * Optional comma-separated Umami website IDs to filter by. If omitted, the tenant root website is used.
+   * @example "abc-123,def-456"
+   */
+  websiteIds?: string;
+  /**
+   * Umami event name (e.g. search_zero_results)
+   * @example "search_zero_results"
+   */
+  event: string;
+  /**
+   * Property name to retrieve distinct values for
+   * @example "query"
+   */
+  property: string;
+}
+
+export type AnalyticsControllerGetEventValuesData = EventValuesResponse[];
+
+export type AnalyticsControllerGetEventCatalogData =
+  EventCatalogEntryResponse[];
+
 export type AnalyticsControllerSendEventData = SendEventResponseDto;
 
 export type AnalyticsControllerSendBatchData = SendBatchResponseDto;
@@ -1585,3 +2328,205 @@ export interface TaxonomyScorecardControllerEnableTaxonomyScorecardVersionParams
 
 export type TaxonomyScorecardControllerEnableTaxonomyScorecardVersionData =
   TaxonomyScorecardResponseDto;
+
+export interface PrintableDirectoryControllerListParams {
+  /**
+   * @min 1
+   * @default 1
+   */
+  page?: any;
+  /**
+   * @min 1
+   * @max 100
+   * @default 20
+   */
+  limit?: any;
+  /** Name search */
+  search?: string;
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+}
+
+export type PrintableDirectoryControllerListData =
+  PrintableDirectoryListResponseDto;
+
+export interface PrintableDirectoryControllerCreateParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+}
+
+export type PrintableDirectoryControllerCreateData =
+  PrintableDirectoryResponseDto;
+
+export interface PrintableDirectoryControllerGetByIdParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  id: string;
+}
+
+export type PrintableDirectoryControllerGetByIdData =
+  PrintableDirectoryResponseDto;
+
+export interface PrintableDirectoryControllerUpdateParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  id: string;
+}
+
+export type PrintableDirectoryControllerUpdateData =
+  PrintableDirectoryResponseDto;
+
+export interface PrintableDirectoryControllerRemoveParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  id: string;
+}
+
+export interface PrintableDirectoryControllerRemoveData {
+  /** @example true */
+  success?: boolean;
+}
+
+export interface PrintableDirectoryControllerCreateSectionParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  id: string;
+}
+
+export type PrintableDirectoryControllerCreateSectionData =
+  PrintableDirectoryResponseDto;
+
+export interface PrintableDirectoryControllerReorderSectionsParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  id: string;
+}
+
+export type PrintableDirectoryControllerReorderSectionsData =
+  PrintableDirectoryResponseDto;
+
+export interface PrintableDirectoryControllerUpdateSectionParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  id: string;
+  sectionId: string;
+}
+
+export type PrintableDirectoryControllerUpdateSectionData =
+  PrintableDirectoryResponseDto;
+
+export interface PrintableDirectoryControllerRemoveSectionParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  id: string;
+  sectionId: string;
+}
+
+export type PrintableDirectoryControllerRemoveSectionData =
+  PrintableDirectoryResponseDto;
+
+export type PrintableDirectoryControllerCreateSourcePayload =
+  | {
+      /** @example "query" */
+      type: "query";
+      query: {
+        /** @example "Shelter search" */
+        title?: string;
+        /** @example {"query":"shelter","query_type":"text","page":1,"limit":25} */
+        params: object;
+      };
+    }
+  | {
+      /** @example "favorites_list" */
+      type: "favorites_list";
+      /** @example "favorite-list-id" */
+      favoritesListId: string;
+    }
+  | {
+      /** @example "resource_ids" */
+      type: "resource_ids";
+      /**
+       * @minItems 1
+       * @example ["resource-1","resource-2"]
+       */
+      resourceIds: string[];
+    };
+
+export interface PrintableDirectoryControllerCreateSourceParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  id: string;
+  sectionId: string;
+}
+
+export type PrintableDirectoryControllerCreateSourceData =
+  PrintableDirectoryResponseDto;
+
+export interface PrintableDirectoryControllerReorderSourcesParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  id: string;
+  sectionId: string;
+}
+
+export type PrintableDirectoryControllerReorderSourcesData =
+  PrintableDirectoryResponseDto;
+
+export interface PrintableDirectoryControllerUpdateSourceParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  id: string;
+  sectionId: string;
+  sourceId: string;
+}
+
+export type PrintableDirectoryControllerUpdateSourceData =
+  PrintableDirectoryResponseDto;
+
+export interface PrintableDirectoryControllerRemoveSourceParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  id: string;
+  sectionId: string;
+  sourceId: string;
+}
+
+export type PrintableDirectoryControllerRemoveSourceData =
+  PrintableDirectoryResponseDto;
+
+export interface PrintableDirectoryControllerPreviewParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  id: string;
+}
+
+export type PrintableDirectoryControllerPreviewData =
+  PrintableDirectoryPreviewResponseDto;

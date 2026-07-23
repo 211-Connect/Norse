@@ -50,7 +50,7 @@ const Category = ({
 
         <div className="min-w-0 flex-1">
           <h3
-            className="mb-1 text-xl font-semibold break-words"
+            className="mb-1 pl-2 text-xl font-semibold break-words"
             style={{ wordBreak: 'break-word' }}
           >
             {name}

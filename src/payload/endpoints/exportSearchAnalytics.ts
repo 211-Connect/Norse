@@ -4,12 +4,15 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 
 import { analyticsApiClient } from '@/lib/api/clients';
-import { isSuperAdmin, isSupport } from '../collections/Users/access/roles';
-import { getConfiguredWebsiteIds } from '../utilities/getConfiguredWebsiteIds';
-import { getUserTenantIDs } from '../utilities/getUserTenantIDs';
-import { Tenant } from '../payload-types';
+import { resolveAnalyticsContext } from '../utilities/resolveAnalyticsContext';
 
 dayjs.extend(utc);
+
+function toISO(ms: string | undefined): string {
+  if (!ms) return '';
+  const clamped = Math.min(Number(ms), Date.now());
+  return new Date(clamped).toISOString();
+}
 
 function escapeCSVField(value: string | number | null | undefined): string {
   const str = value == null ? '' : String(value);
@@ -62,10 +65,6 @@ export const exportSearchAnalytics: Endpoint = {
   path: '/export-search-analytics',
   method: 'get',
   handler: async (req) => {
-    if (!req.user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const { query } = req;
     const startAt = query?.startAt as string | undefined;
     const endAt = query?.endAt as string | undefined;
@@ -78,85 +77,13 @@ export const exportSearchAnalytics: Endpoint = {
       );
     }
 
-    if (!tenantId) {
-      return Response.json(
-        { error: 'Missing tenantId parameter.' },
-        { status: 400 },
-      );
-    }
-
-    const userTenantIDs = getUserTenantIDs(req.user);
-    const canReadAnyTenant = isSuperAdmin(req.user) || isSupport(req.user);
-
-    if (!canReadAnyTenant && !userTenantIDs.includes(tenantId)) {
-      return Response.json({ error: 'Forbidden' }, { status: 403 });
-    }
-
-    let tenant: Tenant;
-    try {
-      tenant = await req.payload.findByID({
-        collection: 'tenants',
-        id: tenantId,
-        overrideAccess: true,
-      });
-    } catch {
-      return Response.json({ error: 'Tenant not found.' }, { status: 404 });
-    }
-
-    const analyticsApiKey = tenant?.analytics?.apiKey;
-    if (!analyticsApiKey) {
-      return Response.json(
-        {
-          error: `Analytics API key not configured for tenant ${tenantId}. Please configure in Tenant settings.`,
-        },
-        { status: 503 },
-      );
-    }
-
-    const allowedWebsiteIds = getConfiguredWebsiteIds(tenant?.analytics);
-    if (allowedWebsiteIds.length === 0) {
-      return Response.json(
-        { error: 'No Umami website IDs configured for this tenant.' },
-        { status: 503 },
-      );
-    }
-
-    const rawWebsiteIds = query?.websiteIds as string | undefined;
-    const requestedWebsiteIds = rawWebsiteIds
-      ? Array.from(
-          new Set(
-            rawWebsiteIds
-              .split(',')
-              .map((id) => id.trim())
-              .filter(Boolean),
-          ),
-        )
-      : [];
-
-    const selectedWebsiteIds =
-      requestedWebsiteIds.length > 0
-        ? requestedWebsiteIds
-        : [allowedWebsiteIds[0]];
-
-    const invalidIds = selectedWebsiteIds.filter(
-      (id) => !allowedWebsiteIds.includes(id),
-    );
-    if (invalidIds.length > 0) {
-      return Response.json(
-        {
-          error:
-            'Some requested website IDs are not configured for this tenant.',
-          invalidIds,
-        },
-        { status: 400 },
-      );
-    }
+    const ctx = await resolveAnalyticsContext(req);
+    if (ctx instanceof Response) return ctx;
 
     try {
-      const start = new Date(Number(startAt)).toISOString();
-      const end = new Date(Number(endAt)).toISOString();
-
-      const websiteIdsParam = selectedWebsiteIds.join(',');
+      const start = toISO(startAt);
+      const end = toISO(endAt);
+      const websiteIdsParam = ctx.selectedWebsiteIds.join(',');
 
       const response =
         await analyticsApiClient.analyticsControllerGetExportSearchData(
@@ -167,8 +94,8 @@ export const exportSearchAnalytics: Endpoint = {
           },
           {
             headers: {
-              'x-analytics-api-key': analyticsApiKey,
-              'x-tenant-id': tenantId,
+              'x-analytics-api-key': ctx.apiKey,
+              'x-tenant-id': tenantId as string,
               'x-api-version': '1',
             },
           },

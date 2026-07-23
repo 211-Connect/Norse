@@ -17,7 +17,9 @@ import {
   ResourceControllerGetResourceByOriginalIdData,
   ResourceControllerGetResourceByOriginalIdParams,
   ResourceControllerGetResourceTitlesByIdsData,
+  ResourceControllerGetResourceTitlesByIdsParams,
   ResourceControllerGetResourcesBatchData,
+  ResourceControllerGetResourcesBatchParams,
   ResourceTitlesDto,
 } from "./data-contracts";
 import { HttpClient, RequestParams } from "./http-client";
@@ -33,12 +35,13 @@ export class Resource<
    * @request GET:/resource/{id}
    */
   resourceControllerGetResourceById = (
-    { id }: ResourceControllerGetResourceByIdParams,
+    { id, ...query }: ResourceControllerGetResourceByIdParams,
     params: RequestParams = {},
   ) =>
     this.request<ResourceControllerGetResourceByIdData, any>({
       path: `/resource/${id}`,
       method: "GET",
+      query: query,
       format: "json",
       ...params,
     });
@@ -50,12 +53,13 @@ export class Resource<
    * @request GET:/resource/original/{id}
    */
   resourceControllerGetResourceByOriginalId = (
-    { id }: ResourceControllerGetResourceByOriginalIdParams,
+    { id, ...query }: ResourceControllerGetResourceByOriginalIdParams,
     params: RequestParams = {},
   ) =>
     this.request<ResourceControllerGetResourceByOriginalIdData, any>({
       path: `/resource/original/${id}`,
       method: "GET",
+      query: query,
       format: "json",
       ...params,
     });
@@ -69,11 +73,13 @@ export class Resource<
    */
   resourceControllerGetResourceTitlesByIds = (
     data: ResourceTitlesDto,
+    query: ResourceControllerGetResourceTitlesByIdsParams = {},
     params: RequestParams = {},
   ) =>
     this.request<ResourceControllerGetResourceTitlesByIdsData, void>({
       path: `/resource/titles`,
       method: "POST",
+      query: query,
       body: data,
       type: "application/json",
       ...params,
@@ -88,11 +94,13 @@ export class Resource<
    */
   resourceControllerGetResourcesBatch = (
     data: ResourceBatchDto,
+    query: ResourceControllerGetResourcesBatchParams = {},
     params: RequestParams = {},
   ) =>
     this.request<ResourceControllerGetResourcesBatchData, void>({
       path: `/resource/batch`,
       method: "POST",
+      query: query,
       body: data,
       type: "application/json",
       format: "json",

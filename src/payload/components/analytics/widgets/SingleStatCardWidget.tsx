@@ -1,16 +1,20 @@
 'use client';
 
+import type { StatsResponse } from '../../../../lib/api/generated/data-contracts';
 import { StatCard } from '../StatCard';
-import { EventsData, PathsData, UmamiStats } from '../types';
-import { AsyncData, useEvents, usePaths, useStats } from '../useAnalyticsData';
+import {
+  AnalyticsMetricsWithTrend,
+  AsyncData,
+  useAnalyticsMetrics,
+  useAnalyticsStats,
+} from '../useAnalyticsData';
 import { WidgetErrorState } from '../WidgetErrorState';
 import { WidgetSkeleton } from '../WidgetSkeleton';
 
 type Metric = { current: number; previous: number };
 
-type StatsSelector = (data: UmamiStats) => Metric | null;
-type PathsSelector = (data: PathsData) => Metric | null;
-type EventsSelector = (data: EventsData) => Metric | null;
+type StatsSelector = (data: StatsResponse) => Metric | null;
+type MetricsSelector = (data: AnalyticsMetricsWithTrend) => Metric | null;
 
 export type SingleStatCardWidgetProps =
   | {
@@ -21,14 +25,8 @@ export type SingleStatCardWidgetProps =
     }
   | {
       label: string;
-      dataSource: 'paths';
-      selector: PathsSelector;
-      description?: string;
-    }
-  | {
-      label: string;
-      dataSource: 'events';
-      selector: EventsSelector;
+      dataSource: 'metrics';
+      selector: MetricsSelector;
       description?: string;
     }
   | {
@@ -72,7 +70,7 @@ function StatCardFromData<T>({
     );
   }
 
-  if (loading) {
+  if (loading && !data) {
     return <WidgetSkeleton height={80} count={1} shimmerHeight={56} />;
   }
   if (!metric) return null;
@@ -106,26 +104,19 @@ export function SingleStatCardWidget(props: SingleStatCardWidgetProps) {
     return (
       <StatCardFromData
         label={props.label}
-        useData={useStats}
+        useData={useAnalyticsStats}
         selector={props.selector}
         description={props.description}
       />
     );
-  if (props.dataSource === 'paths')
+  if (props.dataSource === 'metrics')
     return (
       <StatCardFromData
         label={props.label}
-        useData={usePaths}
+        useData={useAnalyticsMetrics}
         selector={props.selector}
         description={props.description}
       />
     );
-  return (
-    <StatCardFromData
-      label={props.label}
-      useData={useEvents}
-      selector={props.selector}
-      description={props.description}
-    />
-  );
+  return null;
 }

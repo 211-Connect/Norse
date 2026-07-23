@@ -13,6 +13,7 @@
 import {
   CreateFavoriteListDto,
   FavoriteListControllerCreateData,
+  FavoriteListControllerCreateParams,
   FavoriteListControllerFindAllData,
   FavoriteListControllerFindAllParams,
   FavoriteListControllerFindOneData,
@@ -24,6 +25,7 @@ import {
   FavoriteListControllerSearchData,
   FavoriteListControllerSearchParams,
   FavoriteListControllerSyncLocalListData,
+  FavoriteListControllerSyncLocalListParams,
   FavoriteListControllerUpdateData,
   FavoriteListControllerUpdateParams,
   SyncFavoriteListDto,
@@ -43,11 +45,13 @@ export class FavoriteList<
    */
   favoriteListControllerCreate = (
     data: CreateFavoriteListDto,
+    query: FavoriteListControllerCreateParams = {},
     params: RequestParams = {},
   ) =>
     this.request<FavoriteListControllerCreateData, any>({
       path: `/favorite-list`,
       method: "POST",
+      query: query,
       body: data,
       type: "application/json",
       ...params,
@@ -79,11 +83,13 @@ export class FavoriteList<
    */
   favoriteListControllerSyncLocalList = (
     data: SyncFavoriteListDto,
+    query: FavoriteListControllerSyncLocalListParams = {},
     params: RequestParams = {},
   ) =>
     this.request<FavoriteListControllerSyncLocalListData, any>({
       path: `/favorite-list/sync`,
       method: "POST",
+      query: query,
       body: data,
       type: "application/json",
       format: "json",
@@ -115,12 +121,13 @@ export class FavoriteList<
    * @request GET:/favorite-list/{id}
    */
   favoriteListControllerFindOne = (
-    { id }: FavoriteListControllerFindOneParams,
+    { id, ...query }: FavoriteListControllerFindOneParams,
     params: RequestParams = {},
   ) =>
     this.request<FavoriteListControllerFindOneData, any>({
       path: `/favorite-list/${id}`,
       method: "GET",
+      query: query,
       format: "json",
       ...params,
     });
@@ -132,13 +139,14 @@ export class FavoriteList<
    * @request PUT:/favorite-list/{id}
    */
   favoriteListControllerUpdate = (
-    { id }: FavoriteListControllerUpdateParams,
+    { id, ...query }: FavoriteListControllerUpdateParams,
     data: UpdateFavoriteListDto,
     params: RequestParams = {},
   ) =>
     this.request<FavoriteListControllerUpdateData, any>({
       path: `/favorite-list/${id}`,
       method: "PUT",
+      query: query,
       body: data,
       type: "application/json",
       ...params,
@@ -151,12 +159,13 @@ export class FavoriteList<
    * @request DELETE:/favorite-list/{id}
    */
   favoriteListControllerRemove = (
-    { id }: FavoriteListControllerRemoveParams,
+    { id, ...query }: FavoriteListControllerRemoveParams,
     params: RequestParams = {},
   ) =>
     this.request<FavoriteListControllerRemoveData, any>({
       path: `/favorite-list/${id}`,
       method: "DELETE",
+      query: query,
       ...params,
     });
   /**
@@ -167,12 +176,13 @@ export class FavoriteList<
    * @request DELETE:/favorite-list/{id}/favorites
    */
   favoriteListControllerPurge = (
-    { id }: FavoriteListControllerPurgeParams,
+    { id, ...query }: FavoriteListControllerPurgeParams,
     params: RequestParams = {},
   ) =>
     this.request<FavoriteListControllerPurgeData, any>({
       path: `/favorite-list/${id}/favorites`,
       method: "DELETE",
+      query: query,
       ...params,
     });
 }

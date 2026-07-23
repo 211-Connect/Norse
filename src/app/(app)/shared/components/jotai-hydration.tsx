@@ -1,6 +1,7 @@
 'use client';
 
 import { deleteCookie, setCookie } from 'cookies-next';
+import { PropsWithChildren } from 'react';
 import { useEffect, useMemo } from 'react';
 
 import { useHydrateAndSyncAtoms } from '@/app/(app)/shared/hooks/use-hydrate-and-sync-atoms';
@@ -60,7 +61,16 @@ function getSearchLocation(pageProps, cookies) {
 
 // This component handles the hydration of Jotai state as well as keeping it in sync with re-renders/fetches of new data
 // This MUST be a child of the Jotai Provider component or hydration will not work
-export function JotaiHydration({ cookies = {}, pageProps }) {
+interface JotaiHydrationProps {
+  cookies?: Partial<Record<string, string>>;
+  pageProps: Record<string, any>;
+}
+
+export function JotaiHydration({
+  cookies = {},
+  pageProps,
+  children,
+}: PropsWithChildren<JotaiHydrationProps>) {
   const appConfig = useAppConfig();
 
   // Stable primitives derived from props — used as useMemo dependencies
@@ -152,5 +162,5 @@ export function JotaiHydration({ cookies = {}, pageProps }) {
 
   useHydrateAndSyncAtoms(atomValues);
 
-  return <></>;
+  return <>{children}</>;
 }

@@ -4,46 +4,58 @@ import { useTenantSelection } from '@payloadcms/plugin-multi-tenant/client';
 import { useAtomValue } from 'jotai';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import type {
+  AnalyticsInfoResponse,
+  AreaSearchesResponse,
+  EventCatalogEntryResponse,
+  EventValuesResponse,
+  HeatmapPointResponse,
+  LanguageSwitchesResponse,
+  PageviewsResponse,
+  PaginatedSessionsResponse,
+  ResourceByEntryResponse,
+  ResourceMetricsResponse,
+  SearchesResponse,
+  StatsResponse,
+  ZeroResultQueriesResponse,
+} from '../../../lib/api/generated/data-contracts';
+
 import {
   analyticsDateRangeAtom,
   analyticsSelectedWebsiteIdsAtom,
 } from './DateRange';
 import {
-  fetchAreaSearchMetrics,
-  fetchEventDataValues,
-  fetchEvents,
-  fetchLanguageSwitchDestinations,
-  fetchMetrics,
-  fetchPageviews,
-  fetchPaths,
-  fetchResourceByEntry,
-  fetchSessionHeatmap,
-  fetchSessions,
-  fetchStats,
-  fetchZeroResultQueries,
+  AnalyticsMetricsWithTrend,
+  fetchAnalyticsAreaSearches,
+  fetchAnalyticsEventCatalog,
+  fetchAnalyticsEventValues,
+  fetchAnalyticsHeatmap,
+  fetchAnalyticsInfo,
+  fetchAnalyticsLanguageSwitches,
+  fetchAnalyticsMetrics,
+  fetchAnalyticsPageviews,
+  fetchAnalyticsResourceByEntry,
+  fetchAnalyticsResourceMetrics,
+  fetchAnalyticsSearches,
+  fetchAnalyticsSessions,
+  fetchAnalyticsStats,
+  fetchAnalyticsZeroResultQueries,
 } from './analyticsCache';
-import {
-  AreaSearchMetricsData,
-  DateRange,
-  EventDataValuesData,
-  EventsData,
-  LanguageSwitchDestinationsData,
-  MetricsData,
-  PathsData,
-  ResourceByEntryData,
-  SessionHeatmapData,
-  SessionsData,
-  UmamiPageviews,
-  UmamiStats,
-  ZeroResultQueriesData,
-} from './types';
+import { DateRange } from './types';
 
+export type { AnalyticsMetricsWithTrend } from './analyticsCache';
 export type AsyncData<T> = {
   loading: boolean;
   error: string | null;
   data: T | null;
   refetch: () => void;
 };
+
+function toTenantId(
+  selectedTenantID: string | number | null | undefined,
+): string | undefined {
+  return selectedTenantID ? String(selectedTenantID) : undefined;
+}
 
 function useAnalyticsParams(): {
   range: DateRange;
@@ -55,7 +67,7 @@ function useAnalyticsParams(): {
   const { selectedTenantID } = useTenantSelection();
   return {
     range,
-    tenantId: selectedTenantID as string | undefined,
+    tenantId: toTenantId(selectedTenantID),
     websiteIds,
   };
 }
@@ -94,7 +106,8 @@ function makeAsyncHook<T>(
         return;
       }
 
-      setState({ loading: true, error: null, data: null });
+      // Keep the last-known data visible while revalidating (SWR).
+      setState((prev) => ({ loading: true, error: null, data: prev.data }));
       fetcher(currentRange, currentTenantId, currentWebsiteIds, force)
         .then((data) => {
           if (requestIdRef.current === requestId) {
@@ -123,34 +136,144 @@ function makeAsyncHook<T>(
   };
 }
 
-export const useStats = makeAsyncHook<UmamiStats>(fetchStats);
-export const usePageviews = makeAsyncHook<UmamiPageviews>(fetchPageviews);
-export const useMetrics = makeAsyncHook<MetricsData>(fetchMetrics);
-export const usePaths = makeAsyncHook<PathsData>(fetchPaths);
-export const useEvents = makeAsyncHook<EventsData>(fetchEvents);
-export const useZeroResultQueries = makeAsyncHook<ZeroResultQueriesData>(
-  fetchZeroResultQueries,
+export const useAnalyticsStats =
+  makeAsyncHook<StatsResponse>(fetchAnalyticsStats);
+export const useAnalyticsMetrics = makeAsyncHook<AnalyticsMetricsWithTrend>(
+  fetchAnalyticsMetrics,
 );
-export const useLanguageSwitchDestinations =
-  makeAsyncHook<LanguageSwitchDestinationsData>(
-    fetchLanguageSwitchDestinations,
-  );
-export const useSessions = makeAsyncHook<SessionsData>(fetchSessions);
-export const useSessionHeatmap =
-  makeAsyncHook<SessionHeatmapData>(fetchSessionHeatmap);
-export const useResourceByEntry =
-  makeAsyncHook<ResourceByEntryData>(fetchResourceByEntry);
-export const useAreaSearchMetrics = makeAsyncHook<AreaSearchMetricsData>(
-  fetchAreaSearchMetrics,
+export const useAnalyticsPageviews = makeAsyncHook<PageviewsResponse[]>(
+  fetchAnalyticsPageviews,
+);
+export const useAnalyticsResourceMetrics = makeAsyncHook<
+  ResourceMetricsResponse[]
+>(fetchAnalyticsResourceMetrics);
+export const useAnalyticsSearches = makeAsyncHook<SearchesResponse>(
+  fetchAnalyticsSearches,
+);
+export const useAnalyticsZeroResultQueries = makeAsyncHook<
+  ZeroResultQueriesResponse[]
+>(fetchAnalyticsZeroResultQueries);
+export const useAnalyticsLanguageSwitches = makeAsyncHook<
+  LanguageSwitchesResponse[]
+>(fetchAnalyticsLanguageSwitches);
+export const useAnalyticsResourceByEntry = makeAsyncHook<
+  ResourceByEntryResponse[]
+>(fetchAnalyticsResourceByEntry);
+export const useAnalyticsSessions = makeAsyncHook<PaginatedSessionsResponse>(
+  fetchAnalyticsSessions,
+);
+export const useAnalyticsHeatmap = makeAsyncHook<HeatmapPointResponse[]>(
+  fetchAnalyticsHeatmap,
+);
+export const useAnalyticsAreaSearches = makeAsyncHook<AreaSearchesResponse>(
+  fetchAnalyticsAreaSearches,
 );
 
-export function useEventDataValues(
+export function useAnalyticsInfo(
+  tenantId: string | undefined,
+): AsyncData<AnalyticsInfoResponse> {
+  const [state, setState] = useState<
+    Omit<AsyncData<AnalyticsInfoResponse>, 'refetch'>
+  >({
+    loading: true,
+    error: null,
+    data: null,
+  });
+
+  const requestIdRef = useRef(0);
+
+  const load = useCallback(
+    (force: boolean) => {
+      const requestId = ++requestIdRef.current;
+
+      if (!tenantId) {
+        setState({ loading: false, error: null, data: null });
+        return;
+      }
+
+      setState((prev) => ({ loading: true, error: null, data: prev.data }));
+      fetchAnalyticsInfo(tenantId, force)
+        .then((data) => {
+          if (requestIdRef.current === requestId) {
+            setState({ loading: false, error: null, data });
+          }
+        })
+        .catch((err) => {
+          if (requestIdRef.current === requestId) {
+            setState({
+              loading: false,
+              error: err instanceof Error ? err.message : String(err),
+              data: null,
+            });
+          }
+        });
+    },
+    [tenantId],
+  );
+
+  useEffect(() => {
+    load(false);
+  }, [load]);
+
+  return { ...state, refetch: () => load(true) };
+}
+
+export function useAnalyticsEventCatalog(
+  tenantId: string | undefined,
+): AsyncData<EventCatalogEntryResponse[]> {
+  const [state, setState] = useState<
+    Omit<AsyncData<EventCatalogEntryResponse[]>, 'refetch'>
+  >({
+    loading: true,
+    error: null,
+    data: null,
+  });
+
+  const requestIdRef = useRef(0);
+
+  const load = useCallback(
+    (force: boolean) => {
+      const requestId = ++requestIdRef.current;
+
+      if (!tenantId) {
+        setState({ loading: false, error: null, data: null });
+        return;
+      }
+
+      setState((prev) => ({ loading: true, error: null, data: prev.data }));
+      fetchAnalyticsEventCatalog(tenantId, force)
+        .then((data) => {
+          if (requestIdRef.current === requestId) {
+            setState({ loading: false, error: null, data });
+          }
+        })
+        .catch((err) => {
+          if (requestIdRef.current === requestId) {
+            setState({
+              loading: false,
+              error: err instanceof Error ? err.message : String(err),
+              data: null,
+            });
+          }
+        });
+    },
+    [tenantId],
+  );
+
+  useEffect(() => {
+    load(false);
+  }, [load]);
+
+  return { ...state, refetch: () => load(true) };
+}
+
+export function useAnalyticsEventValues(
   event: string,
-  propertyName: string,
-): AsyncData<EventDataValuesData> {
+  property: string,
+): AsyncData<EventValuesResponse[]> {
   const { range, tenantId, websiteIds } = useAnalyticsParams();
   const [state, setState] = useState<
-    Omit<AsyncData<EventDataValuesData>, 'refetch'>
+    Omit<AsyncData<EventValuesResponse[]>, 'refetch'>
   >({
     loading: true,
     error: null,
@@ -162,9 +285,9 @@ export function useEventDataValues(
     tenantId,
     websiteIds,
     event,
-    propertyName,
+    property,
   });
-  paramsRef.current = { range, tenantId, websiteIds, event, propertyName };
+  paramsRef.current = { range, tenantId, websiteIds, event, property };
 
   const requestIdRef = useRef(0);
 
@@ -175,20 +298,20 @@ export function useEventDataValues(
       tenantId: currentTenantId,
       websiteIds: currentWebsiteIds,
       event: currentEvent,
-      propertyName: currentPropertyName,
+      property: currentProperty,
     } = paramsRef.current;
 
-    if (!currentTenantId || !currentEvent || !currentPropertyName) {
+    if (!currentTenantId || !currentEvent || !currentProperty) {
       setState({ loading: false, error: null, data: null });
       return;
     }
 
-    setState({ loading: true, error: null, data: null });
-    fetchEventDataValues(
+    setState((prev) => ({ loading: true, error: null, data: prev.data }));
+    fetchAnalyticsEventValues(
       currentRange,
       currentTenantId,
       currentWebsiteIds,
-      { event: currentEvent, propertyName: currentPropertyName },
+      { event: currentEvent, property: currentProperty },
       force,
     )
       .then((data) => {
@@ -209,7 +332,7 @@ export function useEventDataValues(
 
   useEffect(() => {
     load(false);
-  }, [range, tenantId, websiteIds, event, propertyName, load]);
+  }, [range, tenantId, websiteIds, event, property, load]);
 
   return {
     ...state,

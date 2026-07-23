@@ -36,6 +36,8 @@ type BaseProps = {
   className?: string;
   focusByDefault?: boolean;
   inputId?: string;
+  showIcon?: boolean;
+  placeholder?: string;
 };
 
 // Integrated mode - uses global atoms and context
@@ -53,7 +55,13 @@ type StandaloneModeProps = BaseProps & {
 type LocationSearchBarProps = IntegratedModeProps | StandaloneModeProps;
 
 export function LocationSearchBar(props: LocationSearchBarProps) {
-  const { className, focusByDefault = false, inputId } = props;
+  const {
+    className,
+    focusByDefault = false,
+    inputId,
+    showIcon = true,
+    placeholder,
+  } = props;
   const mode = props.mode || 'integrated';
   const isStandalone = mode === 'standalone';
 
@@ -70,6 +78,16 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
     isStandalone && 'initialValue' in props ? props.initialValue || '' : '',
   );
   const [localPrevSearchLocation, setLocalPrevSearchLocation] = useState('');
+
+  useEffect(() => {
+    if (!isStandalone || !('initialValue' in props)) {
+      return;
+    }
+
+    const nextValue = props.initialValue || '';
+    setLocalSearchLocation(nextValue);
+    setLocalPrevSearchLocation(nextValue);
+  }, [isStandalone, 'initialValue' in props ? props.initialValue : undefined]);
 
   // Global atoms for integrated mode
   const globalSearchLocation = useAtomValue(searchLocationAtom);
@@ -269,21 +287,33 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
   }, [searchLocation, isStandalone]);
 
   return (
-    <div className="location-box flex flex-col gap-4">
+    <div
+      className={cn(
+        'location-box flex flex-col',
+        isStandalone ? 'gap-2' : 'gap-4',
+      )}
+    >
       <Autocomplete
-        className={cn(className, 'search-box')}
+        className={cn(className, !isStandalone && 'search-box')}
         readerLabel={t('search.location_input_label')}
         inputProps={{
           autoFocus: focusByDefault,
           id: inputId,
-          className: validationError ? '!border-red-500' : undefined,
+          className: cn(
+            isStandalone &&
+              (showIcon
+                ? 'h-9 rounded-md px-3 pl-9 py-1 text-sm shadow-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none'
+                : 'h-9 rounded-md px-3 py-1 text-sm shadow-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none'),
+            validationError ? '!border-red-500' : undefined,
+          ),
           placeholder:
-            appConfig.search.texts?.locationInputPlaceholder ||
+            placeholder ??
+            appConfig.search.texts?.locationInputPlaceholder ??
             t('search.location_placeholder'),
         }}
         defaultOpen={focusByDefault}
         options={displayOptions}
-        Icon={MapPin}
+        Icon={showIcon ? MapPin : () => null}
         onInputChange={handleInputChange}
         onValueChange={setSearchLocation}
         onClear={handleClear}

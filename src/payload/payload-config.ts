@@ -21,6 +21,7 @@ import {
 } from './collections/Tenants/actions';
 import { Users } from './collections/Users';
 import { isSuperAdmin, isSupport } from './collections/Users/access/roles';
+import { analyticsProxyEndpoints } from './endpoints/analyticsProxy';
 import { clearCache } from './endpoints/clearCache';
 import { duplicateTenant } from './endpoints/duplicateTenant';
 import { exportSearchAnalytics } from './endpoints/exportSearchAnalytics';
@@ -34,8 +35,6 @@ import {
   taxonomyScorecardsStatus,
   taxonomyScorecardsUpdate,
 } from './endpoints/taxonomyScorecards';
-import { umamiProxy } from './endpoints/umamiProxy';
-import { umamiWebsites } from './endpoints/umamiWebsites';
 import { defaultLocale, locales } from './i18n/locales';
 import { translate } from './jobs/translate';
 import { translateTopics } from './jobs/translateTopics';
@@ -54,8 +53,6 @@ const endpoints: Endpoint[] = [
   translateEndpoint,
   duplicateTenant,
   exportSearchAnalytics,
-  umamiProxy,
-  umamiWebsites,
   taxonomyScorecardsStatus,
   taxonomyScorecardsSearch,
   taxonomyScorecardsGet,
@@ -63,6 +60,7 @@ const endpoints: Endpoint[] = [
   taxonomyScorecardsEnable,
   keycloakVerifiedUsers,
   seedEndpoint,
+  ...analyticsProxyEndpoints,
 ];
 
 if (process.env.NODE_ENV === 'development') {

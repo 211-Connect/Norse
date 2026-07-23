@@ -2,7 +2,6 @@
 
 import { usePreferences } from '@payloadcms/ui';
 import { useTenantSelection } from '@payloadcms/plugin-multi-tenant/client';
-import dayjs from 'dayjs';
 import { PREFERENCE_KEYS } from 'payload/shared';
 import {
   forwardRef,
@@ -14,12 +13,16 @@ import {
   useState,
 } from 'react';
 
-import { fetchEventNames, fetchEventProperties } from '../analyticsCache';
+import type {
+  EventCatalogEntryResponse,
+  EventValuesResponse,
+} from '../../../../lib/api/generated/data-contracts';
 import CompactSelectField from '../CompactSelectField';
 import { PieChartWidget, PieChartWidgetSegment } from '../PieChartWidget';
-import { StatCard } from '../StatCard';
-import type { MetricEntry } from '../types';
-import { useEventDataValues, useEvents } from '../useAnalyticsData';
+import {
+  useAnalyticsEventCatalog,
+  useAnalyticsEventValues,
+} from '../useAnalyticsData';
 import { useWidgetId } from '../useWidgetId';
 import { WidgetErrorState } from '../WidgetErrorState';
 import { WidgetSkeleton } from '../WidgetSkeleton';
@@ -35,11 +38,6 @@ const SEGMENT_COLORS = [
 const OTHER_COLOR = '#9ca3af';
 const MAX_SEGMENTS = 6;
 
-const WIDE_RANGE = {
-  start: dayjs().subtract(10, 'year').format('YYYY-MM-DD'),
-  end: dayjs().format('YYYY-MM-DD'),
-};
-
 type EventCardWidgetData = {
   event?: string;
   property?: string;
@@ -53,11 +51,6 @@ type LayoutItem = {
   id: string;
   data?: Record<string, unknown>;
 };
-
-function toTrend(current: number, previous: number): number | undefined {
-  if (!previous) return undefined;
-  return ((current - previous) / previous) * 100;
-}
 
 export default function EventCardWidgetClient({
   widgetData,
@@ -76,25 +69,13 @@ export default function EventCardWidgetClient({
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
-  const [eventNames, setEventNames] = useState<MetricEntry[]>([]);
-  const [allProperties, setAllProperties] = useState<
-    { eventName: string; propertyName: string; total: number }[]
-  >([]);
-  const [optionsLoading, setOptionsLoading] = useState(false);
-  const [optionsError, setOptionsError] = useState<string | null>(null);
+  const catalog = useAnalyticsEventCatalog(
+    selectedTenantID ? String(selectedTenantID) : undefined,
+  );
+  const eventDataValues = useAnalyticsEventValues(event ?? '', property ?? '');
 
-  const eventsData = useEvents();
-  const eventDataValues = useEventDataValues(event ?? '', property ?? '');
-
-  const contentLoading =
-    eventsData.loading || (eventDataValues?.loading ?? false);
-  const contentError =
-    event && property ? eventDataValues.error : eventsData.error;
-
-  const refetchAll = useCallback(() => {
-    eventsData.refetch();
-    eventDataValues.refetch();
-  }, [eventsData, eventDataValues]);
+  const contentLoading = event && property ? eventDataValues.loading : false;
+  const contentError = event && property ? eventDataValues.error : null;
 
   useEffect(() => {
     setEvent(widgetData?.event ?? null);
@@ -103,78 +84,32 @@ export default function EventCardWidgetClient({
     setDirty(false);
   }, [widgetData]);
 
-  useEffect(() => {
-    if (!selectedTenantID) {
-      setEventNames([]);
-      return;
+  const catalogByEvent = useMemo(() => {
+    const map = new Map<string, EventCatalogEntryResponse>();
+    for (const entry of catalog.data ?? []) {
+      if (!map.has(entry.eventName)) map.set(entry.eventName, entry);
     }
-
-    setOptionsLoading(true);
-    setOptionsError(null);
-
-    fetchEventNames(
-      WIDE_RANGE,
-      selectedTenantID ? String(selectedTenantID) : undefined,
-      [],
-    )
-      .then((namesData) => {
-        setEventNames(namesData.eventNames);
-      })
-      .catch((err) => {
-        setOptionsError(
-          err instanceof Error ? err.message : 'Failed to load events.',
-        );
-      })
-      .finally(() => {
-        setOptionsLoading(false);
-      });
-  }, [selectedTenantID]);
-
-  useEffect(() => {
-    if (!selectedTenantID || !event) {
-      setAllProperties([]);
-      return;
-    }
-
-    setOptionsLoading(true);
-    setOptionsError(null);
-
-    fetchEventProperties(
-      WIDE_RANGE,
-      selectedTenantID ? String(selectedTenantID) : undefined,
-      [],
-      { event },
-    )
-      .then((propertiesData) => {
-        setAllProperties(propertiesData.eventProperties);
-      })
-      .catch((err) => {
-        setOptionsError(
-          err instanceof Error ? err.message : 'Failed to load properties.',
-        );
-      })
-      .finally(() => {
-        setOptionsLoading(false);
-      });
-  }, [selectedTenantID, event]);
+    return map;
+  }, [catalog.data]);
 
   const eventOptions = useMemo(
     () =>
-      eventNames.map((entry) => ({
-        label: `${entry.x} (${entry.y.toLocaleString()})`,
-        value: entry.x,
+      Array.from(catalogByEvent.keys()).map((eventName) => ({
+        label: eventName,
+        value: eventName,
       })),
-    [eventNames],
+    [catalogByEvent],
   );
 
   const propertyOptions = useMemo(() => {
     if (!event) return [];
-
-    return allProperties.map((propertyItem) => ({
-      label: propertyItem.propertyName,
-      value: propertyItem.propertyName,
+    const entry = catalogByEvent.get(event);
+    if (!entry) return [];
+    return entry.properties.map((prop) => ({
+      label: prop,
+      value: prop,
     }));
-  }, [allProperties, event]);
+  }, [catalogByEvent, event]);
 
   const saveWidgetData = useCallback(
     async (nextEvent: string | null, nextProperty: string | null) => {
@@ -294,8 +229,8 @@ export default function EventCardWidgetClient({
             options={eventOptions}
             placeholder="Select an event…"
             emptyMessage="No events found."
-            loading={optionsLoading}
-            error={optionsError}
+            loading={catalog.loading}
+            error={catalog.error ?? undefined}
           />
 
           <CompactSelectField
@@ -339,7 +274,7 @@ export default function EventCardWidgetClient({
     );
   }
 
-  if (contentLoading) {
+  if (contentLoading && !eventDataValues.data) {
     return <WidgetSkeleton height="100%" count={1} shimmerHeight={80} />;
   }
 
@@ -349,7 +284,7 @@ export default function EventCardWidgetClient({
         <WidgetErrorState
           title="Could not load event data."
           description="Please contact the support team."
-          onRetry={refetchAll}
+          onRetry={eventDataValues.refetch}
           retrying={contentLoading}
         />
       </WidgetContainer>
@@ -387,17 +322,10 @@ export default function EventCardWidgetClient({
         <ChartContent
           event={event}
           property={property}
-          eventDataValues={eventDataValues}
+          data={eventDataValues.data ?? []}
         />
       ) : event ? (
-        <StatCard
-          label={event}
-          value={(eventsData.data?.eventTotals[event] ?? 0).toLocaleString()}
-          trend={toTrend(
-            eventsData.data?.eventTotals[event] ?? 0,
-            eventsData.data?.prevEventTotals[event] ?? 0,
-          )}
-        />
+        <EmptyMessage>Select a property to view data.</EmptyMessage>
       ) : null}
     </WidgetContainer>
   );
@@ -441,7 +369,9 @@ function EmptyMessage({ children }: { children: ReactNode }) {
   );
 }
 
-function buildSegments(values: MetricEntry[]): PieChartWidgetSegment[] {
+function buildSegments(
+  values: { x: string; y: number }[],
+): PieChartWidgetSegment[] {
   const total = values.reduce((sum, entry) => sum + entry.y, 0);
   if (total === 0) return [];
 
@@ -475,15 +405,13 @@ function buildSegments(values: MetricEntry[]): PieChartWidgetSegment[] {
 function ChartContent({
   event,
   property,
-  eventDataValues,
+  data,
 }: {
   event: string;
   property: string;
-  eventDataValues: ReturnType<typeof useEventDataValues>;
+  data: EventValuesResponse[];
 }) {
-  const { data } = eventDataValues;
-
-  const values = data?.values ?? [];
+  const values = data.map((r) => ({ x: r.value, y: r.total }));
   const title = `${event} by ${property}`;
 
   return (

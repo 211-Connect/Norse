@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { FavoritesSearchBar } from '@/app/(app)/shared/components/favorites-search-bar';
+import { ListSearchBar } from '@/app/(app)/shared/components/list-search-bar';
 import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
 import { FAVORITES_SEARCH_DEBOUNCE_DELAY } from '@/app/(app)/shared/lib/constants';
 import { favoriteListsStateAtom } from '@/app/(app)/shared/store/favorites';
@@ -48,9 +48,8 @@ export function FavoriteListsSection() {
   return (
     <div className="flex w-full flex-col p-[10px] lg:max-w-[550px] lg:pl-[20px]">
       <div className="flex w-full flex-col items-center gap-2 md:flex-row">
-        <CreateAListButton className="h-9 self-start" />
         {(favoriteLists.length > 0 || initialSearch) && (
-          <FavoritesSearchBar
+          <ListSearchBar
             className="h-full w-full"
             placeholder={t('modal.add_to_list.search_list')}
             initialValue={initialSearch}
@@ -58,6 +57,7 @@ export function FavoriteListsSection() {
             debounceDelay={FAVORITES_SEARCH_DEBOUNCE_DELAY}
           />
         )}
+        <CreateAListButton className="h-9 self-start" />
       </div>
 
       <div className="mt-[10px] flex flex-col gap-2">

@@ -1,7 +1,7 @@
 'use client';
 
+import type { SessionsResponse } from '../../../../lib/api/generated/data-contracts';
 import { PieChartWidgetSegment } from '../PieChartWidget';
-import { UmamiSession } from '../types';
 import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 import { SessionsPieWidget } from './SessionsPieWidget';
 
@@ -24,7 +24,9 @@ const DURATION_THRESHOLDS = {
 };
 
 export default function SessionQualityWidget() {
-  const buildSegments = (sessions: UmamiSession[]): PieChartWidgetSegment[] => {
+  const buildSegments = (
+    sessions: SessionsResponse[],
+  ): PieChartWidgetSegment[] => {
     let short = 0;
     let balanced = 0;
     let meaningful = 0;

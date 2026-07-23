@@ -11,7 +11,7 @@ export default function PageViewsWidget() {
       label="Page Views"
       selector={(stats) => ({
         current: stats.pageviews,
-        previous: stats.comparison.pageviews,
+        previous: (stats.comparison as { pageviews: number }).pageviews ?? 0,
       })}
     />
   );

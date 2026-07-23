@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 
-import { useSessionHeatmap } from '../useAnalyticsData';
+import { useAnalyticsHeatmap } from '../useAnalyticsData';
 import { WidgetCard } from '../WidgetCard';
 import { WidgetErrorState } from '../WidgetErrorState';
 import { WidgetSkeleton } from '../WidgetSkeleton';
@@ -17,9 +17,9 @@ const AnalyticsMap = dynamic(
 );
 
 export default function AnalyticsMapWidget() {
-  const { loading, error, data, refetch } = useSessionHeatmap();
+  const { loading, error, data, refetch } = useAnalyticsHeatmap();
 
-  if (loading) {
+  if (loading && !data) {
     return <WidgetSkeleton height={400} count={1} shimmerHeight={400} />;
   }
 
@@ -44,7 +44,7 @@ export default function AnalyticsMapWidget() {
         <AnalyticsMap
           center={MAP_CENTER}
           zoom={MAP_ZOOM}
-          heatmapPoints={data?.heatmapPoints ?? []}
+          heatmapPoints={data ?? []}
         />
       </div>
     </WidgetCard>

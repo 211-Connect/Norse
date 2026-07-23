@@ -27,6 +27,7 @@ import { DeleteFavoriteListButton } from './delete-favorite-list-button';
 import { Favorite } from './favorite';
 import { NoFavoritesCard } from './no-favorites-card';
 import { PurgeFavoriteListButton } from './purge-favorite-list-button';
+import { SaveFavoriteListToDirectoryButton } from './save-favorite-list-to-directory';
 import { UpdateFavoriteListButton } from './update-favorite-list-button';
 
 type FavoritesSectionProps = {
@@ -59,7 +60,7 @@ export function FavoritesSection({ cardLayout }: FavoritesSectionProps) {
   };
 
   return (
-    <div className="flex w-full flex-col p-[10px] lg:max-w-[550px] lg:pl-[20px]">
+    <div className="flex w-full flex-col p-2.5 lg:max-w-137.5 lg:pl-5">
       {/* Row 1: navigation + list actions */}
       <div className="flex items-center justify-between print:hidden">
         {favoriteList.viewingAsOwner ? (
@@ -85,11 +86,34 @@ export function FavoritesSection({ cardLayout }: FavoritesSectionProps) {
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <DirectoryPrintControl data={printableDirectoryData} />
+                  <DirectoryPrintControl
+                    data={printableDirectoryData}
+                    variant="icon"
+                  />
                 </div>
               </TooltipTrigger>
               <TooltipContent>
                 <p>{t('tooltips.print')}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div>
+                  <SaveFavoriteListToDirectoryButton
+                    favoriteListId={favoriteList.id}
+                    favoriteListName={favoriteList.name}
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>
+                  {t('printable_directories.save_list.button_label', {
+                    ns: 'common',
+                  })}
+                </p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

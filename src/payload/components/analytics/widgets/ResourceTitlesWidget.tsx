@@ -1,100 +1,17 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-
 import { MetricsTable } from '../MetricsTable';
-import { MetricEntry, ResourceTitleEntry } from '../types';
-import { usePaths } from '../useAnalyticsData';
-import { extractResourceId } from '../utils';
+import type { MetricEntry } from '../types';
+import { useAnalyticsResourceMetrics } from '../useAnalyticsData';
 import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 
 export default function ResourceTitlesWidget() {
-  const { loading, error, data, refetch } = usePaths();
-  const [titleMap, setTitleMap] = useState<Record<string, string>>({});
-  const titleCacheRef = useRef<Map<string, string>>(new Map());
-  const requestedRef = useRef<Set<string>>(new Set());
+  const { loading, error, data, refetch } = useAnalyticsResourceMetrics();
 
-  const tenantId = useMemo(() => {
-    return data?.tenantId;
-  }, [data]);
-
-  useEffect(() => {
-    setTitleMap({});
-    titleCacheRef.current.clear();
-    requestedRef.current.clear();
-  }, [tenantId]);
-
-  const rowsWithResolvedTitles = useMemo(() => {
-    return (data?.resourceMetrics ?? []).map((row) => {
-      const id = extractResourceId(row.x);
-      if (!id) return row;
-      return {
-        x: titleMap[id] ?? row.x,
-        y: row.y,
-      };
-    });
-  }, [data?.resourceMetrics, titleMap]);
-
-  const resolveTitlesForPage = useCallback(
-    async (pageRows: MetricEntry[]) => {
-      const ids = pageRows
-        .map((row) => extractResourceId(row.x))
-        .filter((id): id is string => id !== null);
-
-      if (ids.length === 0) {
-        return;
-      }
-
-      const uniqueMissingIds = Array.from(
-        new Set(
-          ids.filter(
-            (id) =>
-              !titleCacheRef.current.has(id) && !requestedRef.current.has(id),
-          ),
-        ),
-      );
-
-      let addedCount = 0;
-      if (uniqueMissingIds.length > 0) {
-        for (const id of uniqueMissingIds) {
-          requestedRef.current.add(id);
-        }
-
-        try {
-          const response = await fetch('/api/resource-titles', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ids: uniqueMissingIds, tenantId }),
-          });
-
-          if (response.ok) {
-            const titles: ResourceTitleEntry[] = await response.json();
-            for (const entry of titles) {
-              if (!titleCacheRef.current.has(entry.id)) {
-                addedCount++;
-              }
-              titleCacheRef.current.set(entry.id, entry.displayName);
-            }
-          }
-        } catch {
-          // silently fall back to raw path labels
-        }
-      }
-
-      // Only update state when the cache actually gained new entries,
-      // breaking the render feedback loop with MetricsTable.
-      if (addedCount > 0) {
-        setTitleMap((prev) => {
-          const next = { ...prev };
-          for (const [id, title] of titleCacheRef.current.entries()) {
-            next[id] = title;
-          }
-          return next;
-        });
-      }
-    },
-    [tenantId],
-  );
+  const rows: MetricEntry[] = (data ?? []).map((r) => ({
+    x: r.title,
+    y: r.views,
+  }));
 
   return (
     <MetricsTable
@@ -102,11 +19,10 @@ export default function ResourceTitlesWidget() {
       description={WIDGET_INFO[WidgetSlug.ResourceTitles]}
       colLabel="Resource"
       colValue="Referrals"
-      rows={rowsWithResolvedTitles}
-      onPageRowsChange={resolveTitlesForPage}
+      rows={rows}
       onRefresh={refetch}
       refreshing={loading}
-      loading={loading}
+      loading={loading && !data}
       errorTitle={error ? 'Could not load resource titles.' : undefined}
       errorDescription={error ? 'Please contact the support team.' : undefined}
     />

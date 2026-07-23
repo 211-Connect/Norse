@@ -4,10 +4,8 @@ import { Metadata } from 'next/types';
 import qs from 'qs';
 import { cache } from 'react';
 
-import { FilterPanel } from '@/app/(app)/features/search/components/filter/filter-panel';
-import { MapContainer } from '@/app/(app)/features/search/components/map-container';
+import { SearchPageShell } from '@/app/(app)/features/search/components/search-page-shell';
 import { ResultsEvents } from '@/app/(app)/features/search/components/results-events';
-import { ResultsSection } from '@/app/(app)/features/search/components/results-section';
 import { DEFAULT_SEARCH_CARD_LAYOUT } from '@/app/(app)/features/search/types/card-layout-config';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
@@ -21,71 +19,21 @@ import {
 } from '@/app/(app)/shared/services/search-service';
 import { type ResultType } from '@/app/(app)/shared/store/results';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
-import { getSortOption } from '@/app/(app)/shared/utils/getSortOption';
-import { parseCommaSeparatedValues } from '@/app/(app)/shared/utils/parseCommaSeparatedValues';
 import { createLogger } from '@/lib/logger';
 import { toBbox } from '@/app/(app)/shared/lib/utils';
 import { arcjetProtectPage } from '@/lib/arcjet';
 
 import { UmamiEvent, trackUmamiEvent } from '../../../shared/lib/umami';
+import {
+  parseSearchParams,
+  RawSearchParams,
+} from '@/app/(app)/features/search/utils/parseSearchParams';
+import { handleLegacyDeepLinks } from '@/app/(app)/features/search/utils/handleLegacyDeepLinks';
+import { parseLegacyAiClarifyParams } from '@/app/(app)/features/search/utils/parseLegacyAiClarifyParams';
 
 const log = createLogger('search-page');
 
 const i18nNamespaces = ['page-search', 'page-resource', 'page-list', 'common'];
-
-type RawSearchParams = Record<string, string | string[] | undefined>;
-
-/**
- * Parse the raw Next.js searchParams (which may contain bracket-notation filter keys
- * like `filters[key][0]=val`) into a typed FindResourcesQuery object.
- */
-function parseSearchParams(raw: RawSearchParams): FindResourcesQuery {
-  const entries = Object.entries(raw).flatMap(([k, v]) =>
-    (Array.isArray(v) ? v : [v ?? '']).map(
-      (val) => [k, val] as [string, string],
-    ),
-  );
-  const parsed = qs.parse(new URLSearchParams(entries).toString());
-
-  const coordsStr =
-    typeof parsed.coords === 'string' ? parsed.coords : undefined;
-  const coordinates = coordsStr
-    ? coordsStr
-        .split(',')
-        .map(Number)
-        .filter((n) => !isNaN(n))
-    : undefined;
-  const sort = getSortOption(String(parsed.sort), coordinates);
-
-  return {
-    query:
-      typeof parsed.query === 'string' ? parsed.query || undefined : undefined,
-    queryLabel:
-      typeof parsed.query_label === 'string'
-        ? parsed.query_label || undefined
-        : undefined,
-    queryType:
-      typeof parsed.query_type === 'string'
-        ? parsed.query_type || undefined
-        : undefined,
-    location:
-      typeof parsed.location === 'string'
-        ? parsed.location || undefined
-        : undefined,
-    coordinates,
-    distance:
-      typeof parsed.distance === 'string'
-        ? parsed.distance || undefined
-        : undefined,
-    taxonomy: parseCommaSeparatedValues(raw.taxonomy),
-    filters: parsed.filters as Record<string, string[]> | undefined,
-    sort,
-    age:
-      typeof parsed.age === 'string' && parsed.age
-        ? parseInt(parsed.age, 10) || undefined
-        : undefined,
-  };
-}
 
 const getPageData = cache(async function (
   locale: string,
@@ -257,9 +205,16 @@ export default async function SearchPage({
 
   const aiSearchAlert =
     typeof searchParamsResult.a === 'string' ? searchParamsResult.a : undefined;
+  const legacyAiClarifyState = parseLegacyAiClarifyParams(searchParamsResult);
 
   const { filters, results, totalResults, resources, searchQuery, cardLayout } =
     await getPageData(locale, searchParamsResult);
+  await handleLegacyDeepLinks({
+    appConfig,
+    searchQuery,
+    locale,
+    skipLegacyLinkCheck: searchParamsResult.sllc === '1',
+  });
 
   if (searchQuery.widgetId) {
     trackUmamiEvent(UmamiEvent.WidgetSearch);
@@ -288,11 +243,11 @@ export default async function SearchPage({
     >
       <h1 className="sr-only">View Search Results</h1>
       <ResultsEvents results={results} totalResults={totalResults} />
-      <div className="flex h-full w-full flex-col md:flex-row">
-        <FilterPanel />
-        <ResultsSection cardLayout={cardLayout} aiSearchAlert={aiSearchAlert} />
-        <MapContainer />
-      </div>
+      <SearchPageShell
+        legacyAiClarifyState={legacyAiClarifyState ?? undefined}
+        cardLayout={cardLayout}
+        aiSearchAlert={aiSearchAlert}
+      />
     </PageWrapper>
   );
 }
