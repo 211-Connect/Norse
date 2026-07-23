@@ -93,7 +93,7 @@ function makeAsyncHook<T>(
 
     const requestIdRef = useRef(0);
 
-    const load = useCallback((force: boolean) => {
+    const load = useCallback((force: boolean, resetData: boolean) => {
       const requestId = ++requestIdRef.current;
       const {
         range: currentRange,
@@ -106,8 +106,14 @@ function makeAsyncHook<T>(
         return;
       }
 
-      // Keep the last-known data visible while revalidating (SWR).
-      setState((prev) => ({ loading: true, error: null, data: prev.data }));
+      // On a filter/param change, clear stale data so the loading shimmer
+      // shows again (fresh-load UX). On a manual refetch, keep the
+      // last-known data visible while revalidating (SWR).
+      setState((prev) => ({
+        loading: true,
+        error: null,
+        data: resetData ? null : prev.data,
+      }));
       fetcher(currentRange, currentTenantId, currentWebsiteIds, force)
         .then((data) => {
           if (requestIdRef.current === requestId) {
@@ -126,12 +132,12 @@ function makeAsyncHook<T>(
     }, []);
 
     useEffect(() => {
-      load(false);
+      load(false, true);
     }, [range, tenantId, websiteIds, load]);
 
     return {
       ...state,
-      refetch: () => load(true),
+      refetch: () => load(true, false),
     };
   };
 }
@@ -183,7 +189,7 @@ export function useAnalyticsInfo(
   const requestIdRef = useRef(0);
 
   const load = useCallback(
-    (force: boolean) => {
+    (force: boolean, resetData: boolean) => {
       const requestId = ++requestIdRef.current;
 
       if (!tenantId) {
@@ -191,7 +197,11 @@ export function useAnalyticsInfo(
         return;
       }
 
-      setState((prev) => ({ loading: true, error: null, data: prev.data }));
+      setState((prev) => ({
+        loading: true,
+        error: null,
+        data: resetData ? null : prev.data,
+      }));
       fetchAnalyticsInfo(tenantId, force)
         .then((data) => {
           if (requestIdRef.current === requestId) {
@@ -212,10 +222,10 @@ export function useAnalyticsInfo(
   );
 
   useEffect(() => {
-    load(false);
+    load(false, true);
   }, [load]);
 
-  return { ...state, refetch: () => load(true) };
+  return { ...state, refetch: () => load(true, false) };
 }
 
 export function useAnalyticsEventCatalog(
@@ -232,7 +242,7 @@ export function useAnalyticsEventCatalog(
   const requestIdRef = useRef(0);
 
   const load = useCallback(
-    (force: boolean) => {
+    (force: boolean, resetData: boolean) => {
       const requestId = ++requestIdRef.current;
 
       if (!tenantId) {
@@ -240,7 +250,11 @@ export function useAnalyticsEventCatalog(
         return;
       }
 
-      setState((prev) => ({ loading: true, error: null, data: prev.data }));
+      setState((prev) => ({
+        loading: true,
+        error: null,
+        data: resetData ? null : prev.data,
+      }));
       fetchAnalyticsEventCatalog(tenantId, force)
         .then((data) => {
           if (requestIdRef.current === requestId) {
@@ -261,10 +275,10 @@ export function useAnalyticsEventCatalog(
   );
 
   useEffect(() => {
-    load(false);
+    load(false, true);
   }, [load]);
 
-  return { ...state, refetch: () => load(true) };
+  return { ...state, refetch: () => load(true, false) };
 }
 
 export function useAnalyticsEventValues(
@@ -291,7 +305,7 @@ export function useAnalyticsEventValues(
 
   const requestIdRef = useRef(0);
 
-  const load = useCallback((force: boolean) => {
+  const load = useCallback((force: boolean, resetData: boolean) => {
     const requestId = ++requestIdRef.current;
     const {
       range: currentRange,
@@ -306,7 +320,11 @@ export function useAnalyticsEventValues(
       return;
     }
 
-    setState((prev) => ({ loading: true, error: null, data: prev.data }));
+    setState((prev) => ({
+      loading: true,
+      error: null,
+      data: resetData ? null : prev.data,
+    }));
     fetchAnalyticsEventValues(
       currentRange,
       currentTenantId,
@@ -331,11 +349,11 @@ export function useAnalyticsEventValues(
   }, []);
 
   useEffect(() => {
-    load(false);
+    load(false, true);
   }, [range, tenantId, websiteIds, event, property, load]);
 
   return {
     ...state,
-    refetch: () => load(true),
+    refetch: () => load(true, false),
   };
 }
