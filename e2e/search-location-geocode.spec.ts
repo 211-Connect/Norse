@@ -48,7 +48,7 @@ test.describe('Search deep link geocoding', () => {
       .not.toBeNull();
 
     const coords = getCoordsParam(page.url());
-    expect(coords).toBe("-93.266096,44.976106");
+    expect(coords).toBe('-93.266096,44.976106');
 
     await expect(page.locator('#search-container')).toBeVisible({
       timeout: UI_SHELL_TIMEOUT_MS,
