@@ -264,6 +264,22 @@ export const search: Tab = {
           },
         },
         {
+          name: 'boostPinnedResources',
+          type: 'checkbox',
+          defaultValue: true,
+          admin: {
+            description:
+              'When enabled, pinned/priority resources receive a score boost instead of being hard-sorted to the top of results. Only applies when Search Engine is Hybrid or AI Classification.',
+            condition: (_, siblingData) =>
+              siblingData?.searchEngine === 'hybrid' ||
+              siblingData?.searchEngine === 'ai_classification',
+          },
+          access: {
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
+          },
+        },
+        {
           name: 'resultsLimit',
           type: 'number',
           defaultValue: 25,

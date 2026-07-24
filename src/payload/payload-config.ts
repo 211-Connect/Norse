@@ -11,6 +11,7 @@ import sharp from 'sharp';
 import { getNumberFromString } from '@/utils/getNumberFromString';
 
 import { WidgetSlug } from './components/analytics/widgetInfo';
+import { HybridSearchConfig } from './collections/HybridSearchConfig';
 import { OrchestrationConfig } from './collections/OrchestrationConfig';
 import { ResourceDirectories } from './collections/ResourceDirectories';
 import { TenantMedia } from './collections/TenantMedia';
@@ -74,6 +75,7 @@ const config = buildConfig({
     TenantMedia,
     ResourceDirectories,
     OrchestrationConfig,
+    HybridSearchConfig,
   ],
   jobs: {
     tasks: [translateTopics, translate, warmCache],
@@ -422,6 +424,9 @@ const config = buildConfig({
           isGlobal: true,
         },
         [OrchestrationConfig.slug]: {
+          isGlobal: true,
+        },
+        [HybridSearchConfig.slug]: {
           isGlobal: true,
         },
       },

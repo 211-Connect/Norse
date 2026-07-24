@@ -4,6 +4,7 @@ import { createLogger } from '@/lib/logger';
 import { defaultLocale } from '@/payload/i18n/locales';
 import { Tenant } from '@/payload/payload-types';
 
+import { pushHybridSearchConfigToCache } from '../collections/HybridSearchConfig/hooks/pushHybridSearchConfigToCache';
 import { pushOrchestrationConfigToCache } from '../collections/OrchestrationConfig/hooks/pushOrchestrationConfigToCache';
 import { pushFacetsToCache } from '../collections/ResourceDirectories/hooks/pushFacetsToCache';
 import { pushEnabledLocalesToCache } from '../collections/Tenants/hooks/pushEnabledLocalesToCache';
@@ -58,6 +59,7 @@ export const populateApiConfigCache: Endpoint = {
       let facetsTriggered = 0;
       let orchestrationConfigTriggered = 0;
       let analyticsConfigTriggered = 0;
+      let hybridSearchConfigTriggered = 0;
 
       for (const tenant of tenants) {
         const tenantId = tenant.id;
@@ -115,6 +117,26 @@ export const populateApiConfigCache: Endpoint = {
           );
           orchestrationConfigTriggered++;
         }
+
+        if (resourceDirectory) {
+          const [hybridSearchConfig] = await payload
+            .find({
+              collection: 'hybrid-search-config',
+              where: {
+                tenant: {
+                  equals: tenantId,
+                },
+              },
+              limit: 1,
+            })
+            .then((result) => result.docs);
+
+          await pushHybridSearchConfigToCache(tenantId, req, {
+            hybridSearchConfig: hybridSearchConfig || null,
+            resourceDirectory,
+          });
+          hybridSearchConfigTriggered++;
+        }
       }
 
       log.info(
@@ -126,6 +148,7 @@ export const populateApiConfigCache: Endpoint = {
           facetsTriggered,
           orchestrationConfigTriggered,
           analyticsConfigTriggered,
+          hybridSearchConfigTriggered,
         },
         'API config cache population completed',
       );
@@ -139,6 +162,7 @@ export const populateApiConfigCache: Endpoint = {
           facetsTriggered,
           orchestrationConfigTriggered,
           analyticsConfigTriggered,
+          hybridSearchConfigTriggered,
         },
         { status: 200 },
       );

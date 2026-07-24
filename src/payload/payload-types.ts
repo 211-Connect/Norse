@@ -72,6 +72,7 @@ export interface Config {
     'tenant-media': TenantMedia;
     'resource-directories': ResourceDirectory;
     'orchestration-config': OrchestrationConfig;
+    'hybrid-search-config': HybridSearchConfig;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
@@ -85,6 +86,7 @@ export interface Config {
     'tenant-media': TenantMediaSelect<false> | TenantMediaSelect<true>;
     'resource-directories': ResourceDirectoriesSelect<false> | ResourceDirectoriesSelect<true>;
     'orchestration-config': OrchestrationConfigSelect<false> | OrchestrationConfigSelect<true>;
+    'hybrid-search-config': HybridSearchConfigSelect<false> | HybridSearchConfigSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -848,6 +850,10 @@ export interface ResourceDirectory {
     };
     searchSettings: {
       searchEngine?: ('classic' | 'hybrid' | 'ai_classification') | null;
+      /**
+       * When enabled, pinned/priority resources receive a score boost instead of being hard-sorted to the top of results. Only applies when Search Engine is Hybrid or AI Classification.
+       */
+      boostPinnedResources?: boolean | null;
       resultsLimit: number;
       radiusSelectValues?:
         | {
@@ -1034,6 +1040,64 @@ export interface OrchestrationConfig {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "hybrid-search-config".
+ */
+export interface HybridSearchConfig {
+  tenant?: (string | null) | Tenant;
+  id: string;
+  /**
+   * Weight applied to the vector/semantic similarity score. Leave empty to use the API default (100).
+   */
+  vectorScoreWeight?: number | null;
+  /**
+   * Base boost for a matched predicted taxonomy code, multiplied by the code's prediction score and a rank-decay factor. Leave empty to use the API default (50).
+   */
+  baseTaxonomyBoost?: number | null;
+  /**
+   * Weight of the Gaussian distance-decay boost applied to geo-located results. Leave empty to use the API default (1.5).
+   */
+  geoGaussWeight?: number | null;
+  /**
+   * Default distance (miles) at which the Gaussian geo boost decays. Leave empty to use the API default (5).
+   */
+  geoDefaultScaleMi?: number | null;
+  /**
+   * Score contribution added for pinned resources. Leave empty to use the API default (5).
+   */
+  pinnedScoreBoost?: number | null;
+  /**
+   * Score contribution added for priority resources. Leave empty to use the API default (1).
+   */
+  priorityScoreWeight?: number | null;
+  /**
+   * BM25 boost for resource/location name matches. Leave empty to use the API default (15).
+   */
+  bm25NameBoost?: number | null;
+  /**
+   * BM25 boost for service name matches. Leave empty to use the API default (10).
+   */
+  bm25ServiceNameBoost?: number | null;
+  /**
+   * BM25 boost for organization name matches. Leave empty to use the API default (6).
+   */
+  bm25OrgNameBoost?: number | null;
+  /**
+   * BM25 boost for matches against curated taxonomy use-references (aliases such as "Girl Scouts" for Scouting Programs) — a stronger intent signal than a generic text match. Leave empty to use the API default (12).
+   */
+  bm25TaxonomyUseRefBoost?: number | null;
+  /**
+   * Number of nearest-neighbor taxonomy codes to retrieve (k). Leave empty to use the API default (10).
+   */
+  taxonomyK?: number | null;
+  /**
+   * Number of candidates considered during taxonomy kNN search. Leave empty to use the API default (500).
+   */
+  taxonomyNumCandidates?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -1176,6 +1240,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'orchestration-config';
         value: string | OrchestrationConfig;
+      } | null)
+    | ({
+        relationTo: 'hybrid-search-config';
+        value: string | HybridSearchConfig;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1613,6 +1681,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
           | T
           | {
               searchEngine?: T;
+              boostPinnedResources?: T;
               resultsLimit?: T;
               radiusSelectValues?:
                 | T
@@ -1775,6 +1844,28 @@ export interface OrchestrationConfigSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "hybrid-search-config_select".
+ */
+export interface HybridSearchConfigSelect<T extends boolean = true> {
+  tenant?: T;
+  id?: T;
+  vectorScoreWeight?: T;
+  baseTaxonomyBoost?: T;
+  geoGaussWeight?: T;
+  geoDefaultScaleMi?: T;
+  pinnedScoreBoost?: T;
+  priorityScoreWeight?: T;
+  bm25NameBoost?: T;
+  bm25ServiceNameBoost?: T;
+  bm25OrgNameBoost?: T;
+  bm25TaxonomyUseRefBoost?: T;
+  taxonomyK?: T;
+  taxonomyNumCandidates?: T;
   updatedAt?: T;
   createdAt?: T;
 }
