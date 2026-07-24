@@ -5,6 +5,7 @@ import utc from 'dayjs/plugin/utc';
 
 import { analyticsApiClient } from '@/lib/api/clients';
 import { resolveAnalyticsContext } from '../utilities/resolveAnalyticsContext';
+import { SearchEventExportRow } from '../../lib/api/generated/data-contracts';
 
 dayjs.extend(utc);
 
@@ -27,21 +28,19 @@ function escapeCSVField(value: string | number | null | undefined): string {
   return str;
 }
 
-function buildCSV(
-  rows: Array<{
-    timestamp: string;
-    queryLabel: string;
-    queryType: string;
-    coordinates: any;
-    zipCode: any;
-  }>,
-): string {
+function buildCSV(rows: SearchEventExportRow[]): string {
   const headers = [
     'Timestamp',
     'Query Label',
     'Query Type',
-    'Coordinates',
-    'ZIP Code',
+    'Search Latitude',
+    'Search Longitude',
+    'Search City',
+    'Search ZIP Code',
+    'User Latitude',
+    'User Longitude',
+    'User City',
+    'User ZIP Code',
   ];
 
   const lines: string[] = [headers.map(escapeCSVField).join(',')];
@@ -52,8 +51,14 @@ function buildCSV(
         escapeCSVField(row.timestamp),
         escapeCSVField(row.queryLabel),
         escapeCSVField(row.queryType),
-        escapeCSVField(row.coordinates),
-        escapeCSVField(row.zipCode ?? ''),
+        escapeCSVField(row.searchLatitude ?? ''),
+        escapeCSVField(row.searchLongitude ?? ''),
+        escapeCSVField(row.searchCity ?? ''),
+        escapeCSVField(row.searchZipCode ?? ''),
+        escapeCSVField(row.userLatitude ?? ''),
+        escapeCSVField(row.userLongitude ?? ''),
+        escapeCSVField(row.userCity ?? ''),
+        escapeCSVField(row.userZipCode ?? ''),
       ].join(','),
     );
   }

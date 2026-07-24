@@ -154,7 +154,6 @@ export enum QueryType {
   Text = 'text',
   Hybrid = 'hybrid',
   Taxonomy = 'taxonomy',
-  Organization = 'organization',
   MoreLikeThis = 'more_like_this',
 }
 
