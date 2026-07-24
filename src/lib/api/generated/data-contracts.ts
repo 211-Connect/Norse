@@ -1186,7 +1186,8 @@ export interface PrintableDirectoryCoverResponseDto {
   primaryColor?: string | null;
   /** @example "default" */
   layoutType: "default";
-  coverImageUrl?: string | null;
+  coverImageUrlFront?: string | null;
+  coverImageUrlBack?: string | null;
 }
 
 export interface PrintableDirectoryHeaderFooterResponseDto {
@@ -1345,8 +1346,10 @@ export interface PrintableDirectoryCoverDto {
   /** @example "#0f172a" */
   primaryColor?: string;
   layoutType?: "default";
-  /** @example "https://example.com/cover.jpg" */
-  coverImageUrl?: string;
+  /** @example "https://example.com/cover-front.jpg" */
+  coverImageUrlFront?: string;
+  /** @example "https://example.com/cover-back.jpg" */
+  coverImageUrlBack?: string;
 }
 
 export interface PrintableDirectoryHeaderFooterDto {
@@ -1479,6 +1482,41 @@ export interface PrintableDirectoryPreviewResponseDto {
   locale: string;
   /** @example "2026-07-08T10:00:00.000Z" */
   generatedAt: string;
+}
+
+export interface OrganizationLocationDto {
+  address_1: object | null;
+  city: object | null;
+  state: object | null;
+  postal_code: object | null;
+}
+
+export interface OrganizationSearchSourceDto {
+  organization_id: string;
+  tenant_id: string;
+  resource_writer_id: string;
+  name: string;
+  alternate_name: object | null;
+  email: object | null;
+  website: object | null;
+  phone: object | null;
+  location: OrganizationLocationDto | null;
+}
+
+export interface OrganizationSearchHitDto {
+  _index: string;
+  _id: string;
+  _score: object | null;
+  _source: OrganizationSearchSourceDto;
+}
+
+export interface OrganizationSearchResponseDto {
+  took: number;
+  timed_out: boolean;
+  total: number;
+  page: number;
+  limit: number;
+  hits: OrganizationSearchHitDto[];
 }
 
 export interface OrchestrationConfigControllerGetCustomAttributesParams {
@@ -2530,3 +2568,21 @@ export interface PrintableDirectoryControllerPreviewParams {
 
 export type PrintableDirectoryControllerPreviewData =
   PrintableDirectoryPreviewResponseDto;
+
+export interface OrganizationControllerSearchParams {
+  /**
+   * @min 1
+   * @max 50
+   * @default 10
+   */
+  limit?: any;
+  /**
+   * @min 1
+   * @default 1
+   */
+  page?: any;
+  /** Organization name prefix or text for typeahead search */
+  query: any;
+}
+
+export type OrganizationControllerSearchData = OrganizationSearchResponseDto;

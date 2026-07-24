@@ -8,6 +8,7 @@ import { ColorPicker } from '@/app/(app)/shared/components/ui/color-picker';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -16,6 +17,7 @@ import { Input } from '@/app/(app)/shared/components/ui/input';
 import { Label } from '@/app/(app)/shared/components/ui/label';
 
 import { CoverDialogValues } from '../../utils/dialog-types';
+import { CoverImageField } from './cover-image-field';
 import { LocalizedFieldTable } from './localized-field-table';
 
 type CoverDialogProps = {
@@ -24,6 +26,7 @@ type CoverDialogProps = {
   isSubmitting: boolean;
   initialValues: CoverDialogValues;
   onSubmit: (values: CoverDialogValues) => Promise<void>;
+  directoryId: string;
 };
 
 export function CoverDialog({
@@ -32,6 +35,7 @@ export function CoverDialog({
   isSubmitting,
   initialValues,
   onSubmit,
+  directoryId,
 }: CoverDialogProps) {
   const { t } = useTranslation(['page-directories', 'common']);
   const [titleValues, setTitleValues] = useState<Record<string, string>>({});
@@ -39,11 +43,15 @@ export function CoverDialog({
     Record<string, string>
   >({});
   const [primaryColor, setPrimaryColor] = useState('');
+  const [coverImageUrlFront, setCoverImageUrlFront] = useState('');
+  const [coverImageUrlBack, setCoverImageUrlBack] = useState('');
 
   const reset = () => {
     setTitleValues(initialValues.titleLocalized.values ?? {});
     setDescriptionValues(initialValues.descriptionLocalized.values ?? {});
     setPrimaryColor(initialValues.primaryColor);
+    setCoverImageUrlFront(initialValues.coverImageUrlFront ?? '');
+    setCoverImageUrlBack(initialValues.coverImageUrlBack ?? '');
   };
 
   useEffect(() => {
@@ -65,6 +73,8 @@ export function CoverDialog({
       titleLocalized: { values: titleValues },
       descriptionLocalized: { values: descriptionValues },
       primaryColor,
+      coverImageUrlFront,
+      coverImageUrlBack,
     });
   };
 
@@ -75,9 +85,32 @@ export function CoverDialog({
           <DialogTitle>
             {t('edit_cover', { ns: 'page-directories' })}
           </DialogTitle>
+          <DialogDescription>
+            {t('cover_image_description', { ns: 'page-directories' })}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <CoverImageField
+              id="cover-image-front"
+              label={t('cover_image_front_label', { ns: 'page-directories' })}
+              imageUrl={coverImageUrlFront}
+              onChange={setCoverImageUrlFront}
+              directoryId={directoryId}
+              disabled={isSubmitting}
+            />
+
+            <CoverImageField
+              id="cover-image-back"
+              label={t('cover_image_back_label', { ns: 'page-directories' })}
+              imageUrl={coverImageUrlBack}
+              onChange={setCoverImageUrlBack}
+              directoryId={directoryId}
+              disabled={isSubmitting}
+            />
+          </div>
+
           <LocalizedFieldTable
             label={t('title_label', { ns: 'page-directories' })}
             values={titleValues}

@@ -1,8 +1,8 @@
 'use client';
 
-import { pdf } from '@react-pdf/renderer';
+import { Document, pdf } from '@react-pdf/renderer';
 import { Check, LoaderCircle } from 'lucide-react';
-import { useState } from 'react';
+import { type ComponentProps, type ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
@@ -16,23 +16,36 @@ import {
   DialogTitle,
 } from '@/app/(app)/shared/components/ui/dialog';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
-import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { cn } from '@/app/(app)/shared/lib/utils';
-import { type PrintableDirectoryData } from '@/app/(app)/shared/utils/printable-directory-transformers';
 
-import { PDFDirectory } from './pdf-directory';
+import { type FontSizeMode, type PrintVariant } from './pdf-print-primitives';
 
-type PrintDirectoryDialogProps = {
+export type PrintDocumentRenderContext = {
+  variant: PrintVariant;
+  fontSizeMode: FontSizeMode;
+  currentDomain: string;
+  currentDate: string;
+};
+
+export type PdfDocumentElement = ReactElement<ComponentProps<typeof Document>>;
+
+type PrintDirectoryDialogProps<TData> = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  data: PrintableDirectoryData | null;
+  data: TData | null;
   isLoadingData?: boolean;
   hasLoadError?: boolean;
   onRetryLoad?: () => void;
   onRestoreFocus?: () => void;
+  initialVariant?: PrintVariant;
+  renderDocument: (
+    data: TData,
+    context: PrintDocumentRenderContext,
+  ) => PdfDocumentElement;
+  postProcessBlob?: (blob: Blob, data: TData) => Promise<Blob>;
 };
 
-export function PrintDirectoryDialog({
+export function PrintDirectoryDialog<TData>({
   open,
   onOpenChange,
   data,
@@ -40,15 +53,14 @@ export function PrintDirectoryDialog({
   hasLoadError = false,
   onRetryLoad,
   onRestoreFocus,
-}: PrintDirectoryDialogProps) {
+  initialVariant = 'line-listing',
+  renderDocument,
+  postProcessBlob,
+}: PrintDirectoryDialogProps<TData>) {
   const { t } = useTranslation('page-list');
-  const appConfig = useAppConfig();
-  const [selectedVariant, setSelectedVariant] = useState<
-    'line-listing' | 'summary-listing' | 'full-listing'
-  >('line-listing');
-  const [fontSizeMode, setFontSizeMode] = useState<'default' | 'large'>(
-    'default',
-  );
+  const [selectedVariant, setSelectedVariant] =
+    useState<PrintVariant>(initialVariant);
+  const [fontSizeMode, setFontSizeMode] = useState<FontSizeMode>('default');
   const [isGenerating, setIsGenerating] = useState(false);
 
   const handlePrintPDF = async () => {
@@ -66,20 +78,18 @@ export function PrintDirectoryDialog({
         year: 'numeric',
       });
 
-      const blob = await pdf(
-        <PDFDirectory
-          data={data}
-          variant={selectedVariant}
-          fontSizeMode={fontSizeMode}
-          currentDomain={currentDomain}
-          currentDate={currentDate}
-          brandLogoUrl={appConfig.brand.logoUrl}
-          disclaimerText={t('print_footer_disclaimer', {
-            brandName: appConfig.brand.name,
-            interpolation: { escapeValue: false },
-          })}
-        />,
-      ).toBlob();
+      const documentElement = renderDocument(data, {
+        variant: selectedVariant,
+        fontSizeMode,
+        currentDomain,
+        currentDate,
+      });
+
+      let blob = await pdf(documentElement).toBlob();
+
+      if (postProcessBlob) {
+        blob = await postProcessBlob(blob, data);
+      }
 
       const url = window.URL.createObjectURL(blob);
       const printWindow = window.open(url, '_blank');

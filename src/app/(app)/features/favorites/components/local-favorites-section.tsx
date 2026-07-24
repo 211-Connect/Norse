@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { CardLayoutRenderer } from '@/app/(app)/features/search/components/card-layout-renderer';
 import { SearchCardLayoutConfig } from '@/app/(app)/features/search/types/card-layout-config';
 import { DirectoryPrintControl } from '@/app/(app)/shared/components/directory-print/directory-print-control';
+import { useDefaultDirectoryPdfDocument } from '@/app/(app)/shared/components/directory-print/use-default-directory-pdf-document';
 import { Link } from '@/app/(app)/shared/components/link';
 import {
   Button,
@@ -76,6 +77,7 @@ export function LocalFavoritesSection({
       ),
     [resources, i18n.language, t],
   );
+  const renderPdfDocument = useDefaultDirectoryPdfDocument();
 
   return (
     <div className="flex w-full flex-col p-6 lg:max-w-137.5 lg:pl-5">
@@ -105,6 +107,7 @@ export function LocalFavoritesSection({
               data={printableDirectoryData}
               variant="icon"
               testId="print-local-directory-btn"
+              renderDocument={renderPdfDocument}
             />
             <Button
               variant="outline"
