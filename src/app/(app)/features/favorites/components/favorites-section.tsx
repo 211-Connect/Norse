@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { SearchCardLayoutConfig } from '@/app/(app)/features/search/types/card-layout-config';
 import { DirectoryPrintControl } from '@/app/(app)/shared/components/directory-print/directory-print-control';
+import { useDefaultDirectoryPdfDocument } from '@/app/(app)/shared/components/directory-print/use-default-directory-pdf-document';
 import { Link } from '@/app/(app)/shared/components/link';
 import { ShareButton } from '@/app/(app)/shared/components/share-button';
 import { Badge } from '@/app/(app)/shared/components/ui/badge';
@@ -45,6 +46,7 @@ export function FavoritesSection({ cardLayout }: FavoritesSectionProps) {
     () => favoriteListToPrintableDirectory(favoriteList, i18n.language),
     [favoriteList, i18n.language],
   );
+  const renderPdfDocument = useDefaultDirectoryPdfDocument();
 
   const handleRemoveFromList = (_listId: string, favoriteId: string) => {
     // Optimistically update the local atom by filtering out the removed favorite
@@ -89,6 +91,7 @@ export function FavoritesSection({ cardLayout }: FavoritesSectionProps) {
                   <DirectoryPrintControl
                     data={printableDirectoryData}
                     variant="icon"
+                    renderDocument={renderPdfDocument}
                   />
                 </div>
               </TooltipTrigger>

@@ -6,30 +6,41 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { Button } from '@/app/(app)/shared/components/ui/button';
-import { type PrintableDirectoryData } from '@/app/(app)/shared/utils/printable-directory-transformers';
 
-import { PrintDirectoryDialog } from './print-directory-dialog';
+import { type PrintVariant } from './pdf-print-primitives';
+import {
+  PrintDirectoryDialog,
+  type PdfDocumentElement,
+  type PrintDocumentRenderContext,
+} from './print-directory-dialog';
 
-type DirectoryPrintControlProps = {
-  data: PrintableDirectoryData | null;
+type DirectoryPrintControlProps<TData> = {
+  data: TData | null;
   variant?: 'icon' | 'icon-text';
-  loadData?: () => Promise<PrintableDirectoryData>;
+  loadData?: () => Promise<TData>;
   testId?: string;
+  initialVariant?: PrintVariant;
+  renderDocument: (
+    data: TData,
+    context: PrintDocumentRenderContext,
+  ) => PdfDocumentElement;
+  postProcessBlob?: (blob: Blob, data: TData) => Promise<Blob>;
 };
 
-export function DirectoryPrintControl({
+export function DirectoryPrintControl<TData>({
   data,
   loadData,
   variant = 'icon-text',
   testId = 'print-directory-btn',
-}: DirectoryPrintControlProps) {
+  initialVariant,
+  renderDocument,
+  postProcessBlob,
+}: DirectoryPrintControlProps<TData>) {
   const { t } = useTranslation(['common', 'page-list']);
   const [open, setOpen] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(false);
   const [loadError, setLoadError] = useState(false);
-  const [loadedData, setLoadedData] = useState<PrintableDirectoryData | null>(
-    null,
-  );
+  const [loadedData, setLoadedData] = useState<TData | null>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
   const resolvedData = data ?? loadedData;
@@ -94,6 +105,9 @@ export function DirectoryPrintControl({
         hasLoadError={loadError}
         onRetryLoad={handleRetry}
         onRestoreFocus={() => triggerRef.current?.focus()}
+        initialVariant={initialVariant}
+        renderDocument={renderDocument}
+        postProcessBlob={postProcessBlob}
       />
     </>
   );

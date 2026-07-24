@@ -18,6 +18,7 @@ import { CloneDirectoryDialog } from './detail/clone-directory-dialog';
 import { CoverCard } from './detail/cover-card';
 import { GeneralInfoCard } from './detail/general-info-card';
 import { HeaderFooterEditorCard } from './detail/header-footer-editor-card';
+import { PrintPrintableDirectoryButton } from './detail/print-printable-directory-button';
 import { SectionsEditorCard } from './detail/sections-editor-card';
 
 type PrintableDirectoryDetailProps = {
@@ -49,15 +50,19 @@ export function PrintableDirectoryDetail({
             {t('back_to_directories', { ns: 'page-directories' })}
           </Link>
 
-          <Button
-            type="button"
-            variant="outline"
-            className="gap-2"
-            onClick={() => setIsCloneOpen(true)}
-          >
-            <CopyIcon className="size-4" aria-hidden="true" />
-            {t('clone_directory', { ns: 'page-directories' })}
-          </Button>
+          <div className="flex items-center gap-2">
+            <PrintPrintableDirectoryButton directory={directory} />
+
+            <Button
+              type="button"
+              variant="outline"
+              className="gap-2"
+              onClick={() => setIsCloneOpen(true)}
+            >
+              <CopyIcon className="size-4" aria-hidden="true" />
+              {t('clone_directory', { ns: 'page-directories' })}
+            </Button>
+          </div>
         </div>
 
         <Typography as="h1" className="text-2xl font-semibold">

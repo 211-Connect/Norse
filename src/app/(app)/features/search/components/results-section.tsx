@@ -7,6 +7,7 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { DirectoryPrintControl } from '@/app/(app)/shared/components/directory-print/directory-print-control';
+import { useDefaultDirectoryPdfDocument } from '@/app/(app)/shared/components/directory-print/use-default-directory-pdf-document';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { getPrintableDirectoryData } from '@/app/(app)/shared/serverActions/search/getPrintableDirectoryData';
 import { ShareButton } from '@/app/(app)/shared/components/share-button';
@@ -150,6 +151,7 @@ export function ResultsSection({
       printableListName,
     );
   }, [results, i18n.language, appConfig.tenantId, printableListName]);
+  const renderPdfDocument = useDefaultDirectoryPdfDocument();
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -189,7 +191,11 @@ export function ResultsSection({
           <ResultTotal />
           <div className="flex gap-2.5">
             {resultsCount > 0 && (
-              <DirectoryPrintControl data={null} loadData={loadPrintableData} />
+              <DirectoryPrintControl
+                data={null}
+                loadData={loadPrintableData}
+                renderDocument={renderPdfDocument}
+              />
             )}
             {resultsCount > 0 && (
               <SaveQueryToDirectoryButton

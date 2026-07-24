@@ -18,6 +18,7 @@ import { updatePrintableDirectory } from '@/app/(app)/shared/serverActions/print
 import { PrintableDirectoryResponseDto } from '@/lib/api/generated/data-contracts';
 
 import { CoverDialog } from './cover-dialog';
+import { CoverImageThumbnail } from './cover-image-thumbnail';
 import { CoverDialogValues } from '../../utils/dialog-types';
 import {
   getPrintableDirectoryLocalizedText,
@@ -28,6 +29,29 @@ type CoverCardProps = {
   directory: PrintableDirectoryResponseDto;
   onDirectoryUpdated: (directory: PrintableDirectoryResponseDto) => void;
 };
+
+function CoverImagePreview({
+  label,
+  url,
+}: {
+  label: string;
+  url?: string | null;
+}) {
+  return (
+    <div className="space-y-1">
+      <Typography as="p" variant="paragraph" size="sm" className="font-medium">
+        {label}
+      </Typography>
+      {url ? (
+        <CoverImageThumbnail src={url} alt={label} />
+      ) : (
+        <Typography variant="paragraph" size="sm" textColor="secondary">
+          -
+        </Typography>
+      )}
+    </div>
+  );
+}
 
 export function CoverCard({ directory, onDirectoryUpdated }: CoverCardProps) {
   const { t, i18n } = useTranslation(['page-directories', 'common']);
@@ -47,6 +71,8 @@ export function CoverCard({ directory, onDirectoryUpdated }: CoverCardProps) {
             descriptionLocalized: values.descriptionLocalized,
             primaryColor: values.primaryColor || undefined,
             layoutType: 'default',
+            coverImageUrlFront: values.coverImageUrlFront ?? '',
+            coverImageUrlBack: values.coverImageUrlBack ?? '',
           },
         },
         appConfig.tenantId,
@@ -115,6 +141,16 @@ export function CoverCard({ directory, onDirectoryUpdated }: CoverCardProps) {
             </span>{' '}
             {directory.cover.layoutType ?? 'default'}
           </Typography>
+          <div className="flex flex-wrap gap-4 pt-1">
+            <CoverImagePreview
+              label={t('cover_image_front_label', { ns: 'page-directories' })}
+              url={directory.cover.coverImageUrlFront}
+            />
+            <CoverImagePreview
+              label={t('cover_image_back_label', { ns: 'page-directories' })}
+              url={directory.cover.coverImageUrlBack}
+            />
+          </div>
         </CardContent>
       </Card>
 
@@ -122,12 +158,15 @@ export function CoverCard({ directory, onDirectoryUpdated }: CoverCardProps) {
         open={open}
         onOpenChange={setOpen}
         isSubmitting={isSubmitting}
+        directoryId={directory.id}
         initialValues={{
           titleLocalized: toLocalizedValues(directory.cover.titleLocalized),
           descriptionLocalized: toLocalizedValues(
             directory.cover.descriptionLocalized,
           ),
           primaryColor: String(directory.cover.primaryColor ?? ''),
+          coverImageUrlFront: directory.cover.coverImageUrlFront ?? '',
+          coverImageUrlBack: directory.cover.coverImageUrlBack ?? '',
         }}
         onSubmit={handleSubmit}
       />
