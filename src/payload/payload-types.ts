@@ -851,7 +851,7 @@ export interface ResourceDirectory {
     searchSettings: {
       searchEngine?: ('classic' | 'hybrid' | 'ai_classification') | null;
       /**
-       * When enabled, pinned/priority resources receive a score boost instead of being hard-sorted to the top of results. Only applies when Search Engine is Hybrid or AI Classification. Fine-tune the boost amounts in the Hybrid Search Config collection.
+       * When enabled, pinned/priority resources receive a score boost instead of being hard-sorted to the top of results. Only applies when Search Engine is Hybrid or AI Classification.
        */
       boostPinnedResources?: boolean | null;
       resultsLimit: number;

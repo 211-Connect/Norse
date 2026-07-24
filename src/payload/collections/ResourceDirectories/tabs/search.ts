@@ -269,7 +269,7 @@ export const search: Tab = {
           defaultValue: true,
           admin: {
             description:
-              'When enabled, pinned/priority resources receive a score boost instead of being hard-sorted to the top of results. Only applies when Search Engine is Hybrid or AI Classification. Fine-tune the boost amounts in the Hybrid Search Config collection.',
+              'When enabled, pinned/priority resources receive a score boost instead of being hard-sorted to the top of results. Only applies when Search Engine is Hybrid or AI Classification.',
             condition: (_, siblingData) =>
               siblingData?.searchEngine === 'hybrid' ||
               siblingData?.searchEngine === 'ai_classification',
