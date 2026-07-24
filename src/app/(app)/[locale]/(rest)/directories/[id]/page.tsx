@@ -47,7 +47,7 @@ export default async function PrintableDirectoryDetailPage({
 
   const { locale, id } = await params;
   const appConfig = await getAppConfigWithoutHost(locale);
-  const { resources, t } = await initTranslations(
+  const { resources } = await initTranslations(
     locale,
     i18nNamespaces,
     appConfig.i18n.locales,
