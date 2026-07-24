@@ -1126,12 +1126,7 @@ export interface SearchQueryApiDto {
    */
   query?: string | string[] | Record<string, any>;
   /** @default "text" */
-  query_type?:
-    | "text"
-    | "taxonomy"
-    | "organization"
-    | "more_like_this"
-    | "hybrid";
+  query_type?: "text" | "taxonomy" | "more_like_this" | "hybrid";
   /**
    * @min 1
    * @default 1
@@ -1216,7 +1211,8 @@ export interface PrintableDirectoryCoverResponseDto {
   primaryColor?: string | null;
   /** @example "default" */
   layoutType: "default";
-  coverImageUrl?: string | null;
+  coverImageUrlFront?: string | null;
+  coverImageUrlBack?: string | null;
 }
 
 export interface PrintableDirectoryHeaderFooterResponseDto {
@@ -1375,8 +1371,10 @@ export interface PrintableDirectoryCoverDto {
   /** @example "#0f172a" */
   primaryColor?: string;
   layoutType?: "default";
-  /** @example "https://example.com/cover.jpg" */
-  coverImageUrl?: string;
+  /** @example "https://example.com/cover-front.jpg" */
+  coverImageUrlFront?: string;
+  /** @example "https://example.com/cover-back.jpg" */
+  coverImageUrlBack?: string;
 }
 
 export interface PrintableDirectoryHeaderFooterDto {
@@ -1654,12 +1652,7 @@ export type TaxonomyControllerGetTaxonomyTermsByCodeData = any;
 
 export interface SearchControllerGetResourcesParams {
   /** @default "text" */
-  query_type?:
-    | "text"
-    | "taxonomy"
-    | "organization"
-    | "more_like_this"
-    | "hybrid";
+  query_type?: "text" | "taxonomy" | "more_like_this" | "hybrid";
   /** @default 1 */
   page?: any;
   /** Comma delimited list of longitude,latitude */
@@ -1704,12 +1697,7 @@ export interface SearchControllerGetResourcesPostPayload {
 
 export interface SearchControllerGetResourcesPostParams {
   /** @default "text" */
-  query_type?:
-    | "text"
-    | "taxonomy"
-    | "organization"
-    | "more_like_this"
-    | "hybrid";
+  query_type?: "text" | "taxonomy" | "more_like_this" | "hybrid";
   /** @default 1 */
   page?: any;
   /** Comma delimited list of longitude,latitude */
