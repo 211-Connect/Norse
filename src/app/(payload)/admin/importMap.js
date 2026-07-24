@@ -25,6 +25,7 @@ import { default as default_76ffa28dff37b978c6ada354e1e9e67c } from '@/payload/c
 import { default as default_7a8b15e24786becdbc27798cd6643e36 } from '@/payload/collections/OrchestrationConfig/components/TenantHeader'
 import { default as default_251fd09bbd0b103ad0dcec7022f13978 } from '@/payload/collections/OrchestrationConfig/components/CustomAttributesRowLabel'
 import { default as default_e9d1e9858fa8526951b37594e35d9c62 } from '@/payload/collections/OrchestrationConfig/components/SchemasRowLabel'
+import { default as default_b690e758ec84d761af30377d4503f117 } from '@/payload/collections/HybridSearchConfig/components/HybridSearchConfigHeader'
 import { GlobalViewRedirect as GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { default as default_2e07f7087ae6aa13d1fded4684728076 } from '@/payload/components/AnalyticsNavLink'
 import { default as default_f4855407f4109e46fff942e4b3f7606f } from '@/payload/components/ScorecardsNavLink'
@@ -93,6 +94,7 @@ export const importMap = {
   "@/payload/collections/OrchestrationConfig/components/TenantHeader#default": default_7a8b15e24786becdbc27798cd6643e36,
   "@/payload/collections/OrchestrationConfig/components/CustomAttributesRowLabel#default": default_251fd09bbd0b103ad0dcec7022f13978,
   "@/payload/collections/OrchestrationConfig/components/SchemasRowLabel#default": default_e9d1e9858fa8526951b37594e35d9c62,
+  "@/payload/collections/HybridSearchConfig/components/HybridSearchConfigHeader#default": default_b690e758ec84d761af30377d4503f117,
   "@payloadcms/plugin-multi-tenant/rsc#GlobalViewRedirect": GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62,
   "@/payload/components/AnalyticsNavLink#default": default_2e07f7087ae6aa13d1fded4684728076,
   "@/payload/components/ScorecardsNavLink#default": default_f4855407f4109e46fff942e4b3f7606f,
