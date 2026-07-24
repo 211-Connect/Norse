@@ -27,6 +27,13 @@ export function searchLinkCorrectionMiddleware(request: NextRequest) {
       anyChanges = true;
     }
 
+    if (alreadyHasLocation && !alreadyHasCoords ) {
+      // this case will be handled in the search page component,
+      // where we will redirect to the same page with coords added to the query params
+      return;
+    }
+
+
     if (alreadyHasCoords) {
       const hasValidCoords = validateCoordsString(
         url.searchParams.get('coords'),

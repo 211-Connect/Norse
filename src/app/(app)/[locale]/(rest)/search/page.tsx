@@ -30,6 +30,7 @@ import {
 } from '@/app/(app)/features/search/utils/parseSearchParams';
 import { handleLegacyDeepLinks } from '@/app/(app)/features/search/utils/handleLegacyDeepLinks';
 import { parseLegacyAiClarifyParams } from '@/app/(app)/features/search/utils/parseLegacyAiClarifyParams';
+import { navigateToSearchWithCoords } from '@/app/(app)/features/search/utils';
 
 const log = createLogger('search-page');
 
@@ -42,6 +43,11 @@ const getPageData = cache(async function (
   const appConfig = await getAppConfigWithoutHost(locale);
 
   const searchQuery = parseSearchParams(rawParams);
+
+  if (searchQuery.location && !searchQuery.coordinates) {
+    await navigateToSearchWithCoords(locale, searchQuery, rawParams);
+  }
+
   const page =
     typeof rawParams.page === 'string' ? parseInt(rawParams.page) || 1 : 1;
   const limit = appConfig.search.resultsLimit;

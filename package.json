@@ -20,6 +20,7 @@
     "test:e2e:accessibility": "npx playwright test --project=accessibility",
     "test:e2e:favorites": "npx playwright test --project=favorites",
     "test:e2e:translations": "npx playwright test --project=translations",
+    "test:e2e:search-geocode": "npx playwright test --project=search-geocode",
     "test:e2e:search-taxonomy": "npx playwright test --project=search-taxonomy"
   },
   "engines": {
