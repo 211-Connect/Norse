@@ -45,55 +45,55 @@ export interface TaxonomyResponseDto {
 
 export interface ServiceDto {
   name: string;
-  alert: object | null;
-  alternate_name: object | null;
-  description: object | null;
-  summary: object | null;
-  eligibility: object | null;
-  application_process: object | null;
+  alert: string | null;
+  alternate_name: string | null;
+  description: string | null;
+  summary: string | null;
+  eligibility: string | null;
+  application_process: string | null;
 }
 
 export interface PhysicalAddressDto {
-  address_1: object | null;
-  address_2: object | null;
-  city: object | null;
-  state: object | null;
-  country: object | null;
-  postal_code: object | null;
+  address_1: string | null;
+  address_2: string | null;
+  city: string | null;
+  state: string | null;
+  country: string | null;
+  postal_code: string | null;
 }
 
 export interface LocationDto {
   name: string;
-  alternate_name: object | null;
-  description: object | null;
-  summary: object | null;
+  alternate_name: string | null;
+  description: string | null;
+  summary: string | null;
   point: object | null;
   physical_address: PhysicalAddressDto | null;
 }
 
 export interface OrganizationDto {
   name: string;
-  alternate_name: object | null;
-  description: object | null;
-  summary: object | null;
+  alternate_name: string | null;
+  description: string | null;
+  summary: string | null;
 }
 
 export interface TaxonomyDto {
   code: string;
   name: string;
-  description: object | null;
+  description: string | null;
 }
 
 export interface SearchSource {
   id: string;
   service_at_location_id: string;
   name: string;
-  description: object | null;
-  summary: object | null;
-  phone: object | null;
-  url: object | null;
-  email: object | null;
-  schedule: object | null;
+  description: string | null;
+  summary: string | null;
+  phone: string | null;
+  url: string | null;
+  email: string | null;
+  schedule: string | null;
   service_area: object | null;
   service: ServiceDto;
   location: LocationDto;
@@ -109,8 +109,8 @@ export interface SearchSource {
 export interface SearchHit {
   _index: string;
   _id?: string;
-  _score?: object | null;
-  _routing: object | null;
+  _score?: number | null;
+  _routing: string | null;
   _source?: SearchSource;
   sort: number[] | null;
 }
@@ -118,7 +118,7 @@ export interface SearchHit {
 export interface SearchHitsContainer {
   /** @example {"value":100,"relation":"eq"} */
   total: object;
-  max_score: object | null;
+  max_score: number | null;
   hits: SearchHit[];
 }
 
@@ -790,15 +790,45 @@ export interface SearchEventExportRow {
    */
   queryType: "text" | "taxonomy";
   /**
-   * Search coordinates in "longitude,latitude" format
-   * @example "-122.4194,37.7749"
-   */
-  coordinates: object | null;
-  /**
-   * ZIP/postal code from reverse geocoding
+   * Search ZIP/postal code from reverse geocoding
    * @example "94102"
    */
-  zipCode: object | null;
+  searchZipCode: string | null;
+  /**
+   * Search city from reverse geocoding
+   * @example "San Francisco"
+   */
+  searchCity: string | null;
+  /**
+   * Search latitude coordinate
+   * @example 37.7749
+   */
+  searchLatitude: number | null;
+  /**
+   * Search longitude coordinate
+   * @example -122.5678
+   */
+  searchLongitude: number | null;
+  /**
+   * User ZIP/postal code from reverse geocoding
+   * @example "94102"
+   */
+  userZipCode: string | null;
+  /**
+   * User city from reverse geocoding
+   * @example "San Francisco"
+   */
+  userCity: string | null;
+  /**
+   * User latitude coordinate
+   * @example 37.7749
+   */
+  userLatitude: number | null;
+  /**
+   * User longitude coordinate
+   * @example -122.5678
+   */
+  userLongitude: number | null;
 }
 
 export interface ExportSearchDataResponse {
@@ -956,9 +986,9 @@ export interface ScorecardNeedResponseDto {
   /** @example {"FO-200":0.9,"EM-100":0.1} */
   weights: Record<string, number>;
   /** @example "FO-200" */
-  top_category_code: object | null;
+  top_category_code: string | null;
   /** @example 0.9 */
-  top_weight: object | null;
+  top_weight: number | null;
   /** @example ["FO-200","EM-100"] */
   need_categories_present: string[];
 }
@@ -975,7 +1005,7 @@ export interface TaxonomySourceResponseDto {
   /** @example "default" */
   owner: string;
   /** @example null */
-  customization_version: object | null;
+  customization_version: string | null;
   /** @example true */
   isProduction: boolean;
   /** @example "2026-06-05T12:00:00.000Z" */
@@ -986,7 +1016,7 @@ export interface VersionMetadataResponseDto {
   /** @example 3 */
   next_version: number;
   /** @example 2 */
-  active_version: object | null;
+  active_version: number | null;
   /** @example "update" */
   last_action: "update" | "enable";
 }
@@ -999,9 +1029,9 @@ export interface TaxonomyScorecardResponseDto {
   /** @example "Food" */
   hsis_name: string;
   /** @example null */
-  scorecard_version: object | null;
+  scorecard_version: string | null;
   /** @example null */
-  taxonomy_version: object | null;
+  taxonomy_version: string | null;
   scorecard: TaxonomyScorecardPayloadResponseDto;
   /** @example ["need"] */
   components_available: string[];
@@ -1010,7 +1040,7 @@ export interface TaxonomyScorecardResponseDto {
   versions: Record<string, ScorecardVersionEntryResponseDto>;
   version_metadata: VersionMetadataResponseDto;
   /** @example "admin@payload.local" */
-  updated_by_email?: object | null;
+  updated_by_email?: string | null;
   /** @example "2026-06-05T12:00:00.000Z" */
   updated_at: string;
 }
@@ -1023,7 +1053,7 @@ export interface ScorecardVersionEntryResponseDto {
   /** @example "2026-06-05T12:00:00.000Z" */
   created_at: string;
   /** @example "admin@payload.local" */
-  created_by_email?: object | null;
+  created_by_email?: string | null;
 }
 
 export interface ScorecardTaxonomyItemDto {
@@ -1186,8 +1216,7 @@ export interface PrintableDirectoryCoverResponseDto {
   primaryColor?: string | null;
   /** @example "default" */
   layoutType: "default";
-  coverImageUrlFront?: string | null;
-  coverImageUrlBack?: string | null;
+  coverImageUrl?: string | null;
 }
 
 export interface PrintableDirectoryHeaderFooterResponseDto {
@@ -1346,10 +1375,8 @@ export interface PrintableDirectoryCoverDto {
   /** @example "#0f172a" */
   primaryColor?: string;
   layoutType?: "default";
-  /** @example "https://example.com/cover-front.jpg" */
-  coverImageUrlFront?: string;
-  /** @example "https://example.com/cover-back.jpg" */
-  coverImageUrlBack?: string;
+  /** @example "https://example.com/cover.jpg" */
+  coverImageUrl?: string;
 }
 
 export interface PrintableDirectoryHeaderFooterDto {
@@ -1485,10 +1512,10 @@ export interface PrintableDirectoryPreviewResponseDto {
 }
 
 export interface OrganizationLocationDto {
-  address_1: object | null;
-  city: object | null;
-  state: object | null;
-  postal_code: object | null;
+  address_1: string | null;
+  city: string | null;
+  state: string | null;
+  postal_code: string | null;
 }
 
 export interface OrganizationSearchSourceDto {
@@ -1496,17 +1523,17 @@ export interface OrganizationSearchSourceDto {
   tenant_id: string;
   resource_writer_id: string;
   name: string;
-  alternate_name: object | null;
-  email: object | null;
-  website: object | null;
-  phone: object | null;
+  alternate_name: string | null;
+  email: string | null;
+  website: string | null;
+  phone: string | null;
   location: OrganizationLocationDto | null;
 }
 
 export interface OrganizationSearchHitDto {
   _index: string;
   _id: string;
-  _score: object | null;
+  _score: number | null;
   _source: OrganizationSearchSourceDto;
 }
 
@@ -2323,16 +2350,6 @@ export interface TaxonomyScorecardControllerSearchTaxonomiesParams {
    * @example "BD"
    */
   query: string;
-  /**
-   * Pagination page index
-   * @default 1
-   */
-  page?: any;
-  /**
-   * Page size
-   * @default 10
-   */
-  limit?: any;
 }
 
 export type TaxonomyScorecardControllerSearchTaxonomiesData =
@@ -2368,17 +2385,6 @@ export type TaxonomyScorecardControllerEnableTaxonomyScorecardVersionData =
   TaxonomyScorecardResponseDto;
 
 export interface PrintableDirectoryControllerListParams {
-  /**
-   * @min 1
-   * @default 1
-   */
-  page?: any;
-  /**
-   * @min 1
-   * @max 100
-   * @default 20
-   */
-  limit?: any;
   /** Name search */
   search?: string;
   /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
