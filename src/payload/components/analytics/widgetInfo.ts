@@ -25,6 +25,7 @@ export enum WidgetSlug {
   LanguageSwitchDestinations = 'analytics-language-switch-destinations',
   FavoriteAddToList = 'analytics-favorite-add-to-list',
   VerifiedUsers = 'analytics-verified-users',
+  EventCard = 'analytics-event-card',
 }
 
 export const WIDGET_INFO: Record<WidgetSlug, string> = {
@@ -73,4 +74,6 @@ export const WIDGET_INFO: Record<WidgetSlug, string> = {
     'The number of times users change the site language sorted by language users changed to.',
   [WidgetSlug.FavoriteAddToList]: 'The number of resources added to favorites.',
   [WidgetSlug.VerifiedUsers]: 'The total number of verified user accounts.',
+  [WidgetSlug.EventCard]:
+    'Display the number of custom events. Intended for API analytics from partners.',
 };

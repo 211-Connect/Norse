@@ -112,15 +112,18 @@ const config = buildConfig({
     },
     user: Users.slug,
     components: {
+      beforeNavLinks: ['@/payload/components/AnalyticsNavLink'],
       afterNavLinks: [
-        '@/payload/components/AnalyticsNavLink',
         '@/payload/components/ScorecardsNavLink',
         '@/payload/components/PopulateApiConfigCacheButton',
         '@/payload/components/ClearCacheButton',
       ],
       views: {
-        analytics: {
+        dashboard: {
           Component: '@/payload/components/AnalyticsView',
+        },
+        analytics: {
+          Component: '@/payload/components/AnalyticsRedirectView',
           path: '/analytics',
           exact: true,
         },
@@ -324,7 +327,9 @@ const config = buildConfig({
           maxWidth: 'full',
         },
       ],
-      defaultLayout: [{ widgetSlug: 'collections', width: 'full' as const }],
+      // Note: the default layout is defined in AnalyticsView, which is
+      // registered as `admin.components.views.dashboard.Component` above
+      // and patches this config's widgets/layout at render time.
     },
   },
   secret: process.env.PAYLOAD_SECRET as string,
