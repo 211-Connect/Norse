@@ -2358,6 +2358,16 @@ export interface TaxonomyScorecardControllerSearchTaxonomiesParams {
    * @example "BD"
    */
   query: string;
+  /**
+   * Pagination page index
+   * @default 1
+   */
+  page?: any;
+  /**
+   * Page size
+   * @default 10
+   */
+  limit?: any;
 }
 
 export type TaxonomyScorecardControllerSearchTaxonomiesData =
@@ -2393,6 +2403,17 @@ export type TaxonomyScorecardControllerEnableTaxonomyScorecardVersionData =
   TaxonomyScorecardResponseDto;
 
 export interface PrintableDirectoryControllerListParams {
+  /**
+   * @min 1
+   * @default 1
+   */
+  page?: number;
+  /**
+   * @min 1
+   * @max 100
+   * @default 20
+   */
+  limit?: number;
   /** Name search */
   search?: string;
   /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
