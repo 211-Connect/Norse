@@ -13,7 +13,7 @@ import {
 } from '@/app/(app)/shared/utils/printable-directory-transformers';
 import { PrintableDirectoryResponseDto } from '@/lib/api/generated/data-contracts';
 
-const RESOURCE_LAYOUT_TO_PRINT_VARIANT = {
+export const RESOURCE_LAYOUT_TO_PRINT_VARIANT = {
   line: 'line-listing',
   summary: 'summary-listing',
   full: 'full-listing',
