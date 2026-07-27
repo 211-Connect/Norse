@@ -65,6 +65,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
   },
+  headerFooterRegionLeft: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    gap: 12,
+  },
+  headerFooterRegionCenter: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerFooterRegionRight: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    gap: 12,
+  },
+  headerFooterTextCentered: {
+    fontSize: BASE_FONT.small,
+    color: COLORS.secondary,
+    textAlign: 'center',
+  },
   header: {
     position: 'absolute',
     top: 30,
@@ -140,47 +165,63 @@ function HeaderFooterRow({
 }: HeaderFooterRowProps) {
   const logoUrl = config.logoUrl || brandLogoUrl;
 
+  const renderPiece = (piece: (typeof config.layout)[number]) => {
+    if (piece === 'text' && config.text) {
+      return (
+        <Text key={piece} style={styles.headerFooterText}>
+          {config.text}
+        </Text>
+      );
+    }
+
+    if (piece === 'logo' && logoUrl) {
+      return <Image key={piece} style={styles.headerFooterLogo} src={logoUrl} />;
+    }
+
+    if (piece === 'domain') {
+      return (
+        <Text key={piece} style={styles.headerFooterText}>
+          {currentDomain}
+        </Text>
+      );
+    }
+
+    if (piece === 'date') {
+      return (
+        <Text key={piece} style={styles.headerFooterText}>
+          {currentDate}
+        </Text>
+      );
+    }
+
+    return null;
+  };
+
+  const textIndex = config.layout.indexOf('text');
+  const hasCenteredText = textIndex !== -1 && !!config.text;
+
   return (
     <View style={positionStyle} fixed>
-      <View style={styles.headerFooterRow}>
-        {config.layout.map((piece) => {
-          if (piece === 'text' && config.text) {
-            return (
-              <Text key={piece} style={styles.headerFooterText}>
-                {config.text}
-              </Text>
-            );
-          }
-
-          if (piece === 'logo' && logoUrl) {
-            return (
-              <Image
-                key={piece}
-                style={styles.headerFooterLogo}
-                src={logoUrl}
-              />
-            );
-          }
-
-          if (piece === 'domain') {
-            return (
-              <Text key={piece} style={styles.headerFooterText}>
-                {currentDomain}
-              </Text>
-            );
-          }
-
-          if (piece === 'date') {
-            return (
-              <Text key={piece} style={styles.headerFooterText}>
-                {currentDate}
-              </Text>
-            );
-          }
-
-          return null;
-        })}
-      </View>
+      {hasCenteredText ? (
+        // Split into three equal-width regions so the text is always
+        // visually centered, regardless of how wide the logo/domain/date
+        // pieces on either side happen to be.
+        <View style={styles.headerFooterRow}>
+          <View style={styles.headerFooterRegionLeft}>
+            {config.layout.slice(0, textIndex).map(renderPiece)}
+          </View>
+          <View style={styles.headerFooterRegionCenter}>
+            <Text style={styles.headerFooterTextCentered}>{config.text}</Text>
+          </View>
+          <View style={styles.headerFooterRegionRight}>
+            {config.layout.slice(textIndex + 1).map(renderPiece)}
+          </View>
+        </View>
+      ) : (
+        <View style={styles.headerFooterRow}>
+          {config.layout.map(renderPiece)}
+        </View>
+      )}
       {withSeparator && <View style={styles.headerSeparator} />}
     </View>
   );

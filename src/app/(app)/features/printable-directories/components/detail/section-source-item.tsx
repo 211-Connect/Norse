@@ -96,25 +96,44 @@ export function SectionSourceItem({
   const sourceCount = source.resources.length;
   const favoriteListCount = source.favoriteList?.count ?? 0;
 
+  const sourceSummary =
+    source.type === 'query'
+      ? source.query?.title || ''
+      : source.type === 'favorites_list'
+        ? source.favoriteList?.name || ''
+        : null;
+
   return (
     <div className="rounded-md border border-dashed p-2">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 space-y-1">
-          <div className="flex items-center gap-2">
-            <Typography as="p" variant="heading" size="sm">
+          <div className="flex min-w-0 items-center gap-2">
+            <Typography as="p" variant="heading" size="sm" className="shrink-0">
               {`${t('source_label')}: ${sourceIndex + 1}`}
             </Typography>
-            <Typography as="p" variant="paragraph" size="sm">
+            <Typography
+              as="p"
+              variant="paragraph"
+              size="sm"
+              className="shrink-0"
+            >
               ({sourceTypeLabel})
             </Typography>
+            {sourceSummary ? (
+              <Typography
+                as="p"
+                variant="paragraph"
+                size="sm"
+                textColor="secondary"
+                className="min-w-0 truncate"
+              >
+                {sourceSummary}
+              </Typography>
+            ) : null}
           </div>
 
           {isExpanded && source.type === 'query' ? (
             <>
-              <Typography as="p" variant="paragraph" size="sm">
-                <span className="font-medium">{t('title_label')}:</span>{' '}
-                {source.query?.title || '-'}
-              </Typography>
               {queryParamsEntries.length > 0 ? (
                 <div className="text-sm break-all">
                   <span className="font-medium">
