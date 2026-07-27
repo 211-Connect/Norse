@@ -1,3 +1,3 @@
 export const getHybridSearchConfigKey = (tenantId: string) => {
-  return `hybrid_search_config:${tenantId}`;
+  return `search_config:${tenantId}`;
 };
