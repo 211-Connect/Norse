@@ -13,7 +13,6 @@ import { Button } from '@/app/(app)/shared/components/ui/button';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/app/(app)/shared/components/ui/dialog';
@@ -175,19 +174,11 @@ export function DirectoryDownloadDialog({
     void generate(state.preview);
   };
 
-  const title =
-    state.status === 'loading' || state.status === 'not_found'
-      ? t('public_preview_meta_title')
-      : state.preview.name;
-
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>
-            {t('public_preview_meta_description')}
-          </DialogDescription>
+          <DialogTitle>{t('public_preview_meta_title')}</DialogTitle>
         </DialogHeader>
 
         <div className="flex flex-col items-center gap-4 py-4 text-center">
