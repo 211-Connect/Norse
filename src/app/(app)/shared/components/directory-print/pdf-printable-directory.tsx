@@ -175,7 +175,9 @@ function HeaderFooterRow({
     }
 
     if (piece === 'logo' && logoUrl) {
-      return <Image key={piece} style={styles.headerFooterLogo} src={logoUrl} />;
+      return (
+        <Image key={piece} style={styles.headerFooterLogo} src={logoUrl} />
+      );
     }
 
     if (piece === 'domain') {
