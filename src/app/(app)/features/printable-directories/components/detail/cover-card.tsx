@@ -63,7 +63,7 @@ export function CoverCard({ directory, onDirectoryUpdated }: CoverCardProps) {
     setIsSubmitting(true);
 
     try {
-      const updated = await updatePrintableDirectory(
+      const result = await updatePrintableDirectory(
         directory.id,
         {
           cover: {
@@ -78,12 +78,12 @@ export function CoverCard({ directory, onDirectoryUpdated }: CoverCardProps) {
         appConfig.tenantId,
       );
 
-      if (!updated) {
+      if (!result.success) {
         toast.error(t('unable_to_update_cover', { ns: 'page-directories' }));
         return;
       }
 
-      onDirectoryUpdated(updated);
+      onDirectoryUpdated(result.data);
       toast.success(t('cover_updated', { ns: 'page-directories' }));
       setOpen(false);
     } catch {

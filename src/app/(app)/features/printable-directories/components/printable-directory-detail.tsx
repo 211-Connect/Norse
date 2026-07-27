@@ -20,6 +20,7 @@ import { GeneralInfoCard } from './detail/general-info-card';
 import { HeaderFooterEditorCard } from './detail/header-footer-editor-card';
 import { PrintPrintableDirectoryButton } from './detail/print-printable-directory-button';
 import { SectionsEditorCard } from './detail/sections-editor-card';
+import { SharePrintableDirectoryButton } from './detail/share-printable-directory-button';
 
 type PrintableDirectoryDetailProps = {
   locale: string;
@@ -52,6 +53,10 @@ export function PrintableDirectoryDetail({
 
           <div className="flex items-center gap-2">
             <PrintPrintableDirectoryButton directory={directory} />
+            <SharePrintableDirectoryButton
+              directory={directory}
+              locale={locale}
+            />
 
             <Button
               type="button"

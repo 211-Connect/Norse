@@ -1,17 +1,15 @@
 'use server';
 
-import {
-  CreatePrintableDirectoryDto,
-  PrintableDirectoryResponseDto,
-} from '@/lib/api/generated/data-contracts';
+import { CreatePrintableDirectoryDto } from '@/lib/api/generated/data-contracts';
 import { printableDirectoriesApiClient } from '@/lib/api/clients';
 
 import { getAuthHeaders } from '../../lib/authHeaders';
+import { PrintableDirectoryMutationResult } from './printableDirectoryMutationResult';
 
 export async function createPrintableDirectory(
   input: CreatePrintableDirectoryDto,
   tenantId?: string,
-): Promise<PrintableDirectoryResponseDto | null> {
+): Promise<PrintableDirectoryMutationResult> {
   const headers = await getAuthHeaders(tenantId);
 
   try {
@@ -22,8 +20,15 @@ export async function createPrintableDirectory(
         { cache: 'no-store', headers },
       );
 
-    return response.data;
+    if (!response.ok) {
+      return {
+        success: false,
+        error: response.status === 409 ? 'slug_taken' : 'unknown',
+      };
+    }
+
+    return { success: true, data: response.data };
   } catch {
-    return null;
+    return { success: false, error: 'unknown' };
   }
 }

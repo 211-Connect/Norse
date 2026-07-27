@@ -46,6 +46,7 @@ export function DirectoriesList({
   const [directories, setDirectories] =
     useState<PrintableDirectoryResponseDto[]>(initialDirectories);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [slugError, setSlugError] = useState<string | null>(null);
 
   useEffect(() => {
     if (initialLoadError) {
@@ -64,6 +65,7 @@ export function DirectoriesList({
 
   const handleCreateDirectory = async (values: {
     name: string;
+    slug: string;
     resourceLayout: ResourceLayout;
     accessPolicy: AccessPolicy;
     isBookletLayout: boolean;
@@ -72,19 +74,21 @@ export function DirectoriesList({
     setIsSubmitting(true);
 
     try {
-      const created = await createPrintableDirectory(
-        values,
-        appConfig.tenantId,
-      );
+      const result = await createPrintableDirectory(values, appConfig.tenantId);
 
-      if (!created) {
-        toast.error(
-          t('unable_to_create_directory', { ns: 'page-directories' }),
-        );
+      if (!result.success) {
+        if (result.error === 'slug_taken') {
+          setSlugError(t('slug_taken_error', { ns: 'page-directories' }));
+        } else {
+          toast.error(
+            t('unable_to_create_directory', { ns: 'page-directories' }),
+          );
+        }
         return;
       }
 
-      setDirectories((previous) => [created, ...previous]);
+      setDirectories((previous) => [result.data, ...previous]);
+      setSlugError(null);
       setIsAddOpen(false);
       toast.success(t('directory_created', { ns: 'page-directories' }));
     } catch {
@@ -119,7 +123,10 @@ export function DirectoriesList({
           type="button"
           variant="outline"
           className="h-9 self-start gap-1"
-          onClick={() => setIsAddOpen(true)}
+          onClick={() => {
+            setSlugError(null);
+            setIsAddOpen(true);
+          }}
         >
           <PlusIcon className="size-4" aria-hidden="true" />
           {t('add_directory', { ns: 'page-directories' })}
@@ -192,6 +199,8 @@ export function DirectoriesList({
       <CreateDirectoryDialog
         open={isAddOpen}
         isSubmitting={isSubmitting}
+        slugError={slugError}
+        onSlugChange={() => setSlugError(null)}
         onOpenChange={setIsAddOpen}
         onSubmit={handleCreateDirectory}
       />

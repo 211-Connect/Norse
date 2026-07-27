@@ -1,6 +1,6 @@
 'use client';
 
-import { InfoIcon } from 'lucide-react';
+import { InfoIcon, RefreshCwIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -35,22 +35,28 @@ import {
 } from '@/lib/api/generated/data-contracts';
 import { AccessPolicy, ResourceLayout } from '@/types/printableDirectories';
 
+import { slugify } from '../utils';
+
 type CreateDirectoryDialogProps = {
   open: boolean;
   isSubmitting: boolean;
   mode?: 'create' | 'edit';
   title?: string;
   submitLabel?: string;
+  slugError?: string | null;
   initialValues?: {
     name: string;
+    slug?: string | null;
     resourceLayout: ResourceLayout;
     accessPolicy: AccessPolicy;
     isBookletLayout?: boolean;
     defaultQueryConfig?: PrintableDirectoryDefaultQueryConfigDto | null;
   };
   onOpenChange: (open: boolean) => void;
+  onSlugChange?: () => void;
   onSubmit: (values: {
     name: string;
+    slug: string;
     resourceLayout: ResourceLayout;
     accessPolicy: AccessPolicy;
     isBookletLayout: boolean;
@@ -68,8 +74,10 @@ export function CreateDirectoryDialog({
   mode = 'create',
   title,
   submitLabel,
+  slugError,
   initialValues,
   onOpenChange,
+  onSlugChange,
   onSubmit,
 }: CreateDirectoryDialogProps) {
   const { t } = useTranslation(['page-directories', 'common']);
@@ -78,6 +86,8 @@ export function CreateDirectoryDialog({
     defaultValue: 'Everywhere',
   });
   const [name, setName] = useState('');
+  const [slug, setSlug] = useState('');
+  const [slugTouched, setSlugTouched] = useState(false);
   const [resourceLayout, setResourceLayout] = useState<ResourceLayout>(
     DEFAULT_RESOURCE_LAYOUT,
   );
@@ -99,6 +109,8 @@ export function CreateDirectoryDialog({
 
     if (mode === 'edit' && initialValues) {
       setName(initialValues.name);
+      setSlug(initialValues.slug ?? '');
+      setSlugTouched(Boolean(initialValues.slug));
       setResourceLayout(initialValues.resourceLayout);
       setAccessPolicy(initialValues.accessPolicy);
       setIsBookletLayout(
@@ -117,6 +129,8 @@ export function CreateDirectoryDialog({
     }
 
     setName('');
+    setSlug('');
+    setSlugTouched(false);
     setResourceLayout(DEFAULT_RESOURCE_LAYOUT);
     setAccessPolicy(DEFAULT_ACCESS_POLICY);
     setIsBookletLayout(DEFAULT_IS_BOOKLET_LAYOUT);
@@ -125,9 +139,29 @@ export function CreateDirectoryDialog({
     setDefaultRadius('');
   }, [open, everywhereLabel]);
 
+  const handleNameChange = (value: string) => {
+    setName(value);
+    if (!slugTouched) {
+      setSlug(slugify(value));
+    }
+  };
+
+  const handleSlugChange = (value: string) => {
+    setSlug(value);
+    setSlugTouched(true);
+    onSlugChange?.();
+  };
+
+  const handleGenerateSlug = () => {
+    setSlug(slugify(name));
+    setSlugTouched(false);
+    onSlugChange?.();
+  };
+
   const handleSubmit = async () => {
     const trimmedName = name.trim();
-    if (!trimmedName) return;
+    const trimmedSlug = slugify(slug);
+    if (!trimmedName || !trimmedSlug) return;
 
     const trimmedLocationName = defaultLocationName.trim();
     const normalizedLocationName =
@@ -149,6 +183,7 @@ export function CreateDirectoryDialog({
 
     await onSubmit({
       name: trimmedName,
+      slug: trimmedSlug,
       resourceLayout,
       accessPolicy,
       isBookletLayout,
@@ -176,8 +211,50 @@ export function CreateDirectoryDialog({
             id="new-directory-name"
             className="h-9 text-sm"
             value={name}
-            onChange={(event) => setName(event.target.value)}
+            onChange={(event) => handleNameChange(event.target.value)}
           />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="new-directory-slug">
+            {t('slug_label', { ns: 'page-directories' })}
+          </Label>
+          <div className="flex items-center gap-2">
+            <Input
+              id="new-directory-slug"
+              className="h-9 text-sm"
+              value={slug}
+              placeholder={t('slug_placeholder', { ns: 'page-directories' })}
+              onChange={(event) => handleSlugChange(event.target.value)}
+              onBlur={(event) => setSlug(slugify(event.target.value))}
+              aria-invalid={Boolean(slugError)}
+              aria-describedby={
+                slugError ? 'new-directory-slug-error' : undefined
+              }
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={handleGenerateSlug}
+              aria-label={t('slug_auto_generate', { ns: 'page-directories' })}
+              title={t('slug_auto_generate', { ns: 'page-directories' })}
+            >
+              <RefreshCwIcon className="size-4" aria-hidden="true" />
+            </Button>
+          </div>
+          <p className="text-muted-foreground text-xs">
+            {t('slug_help', { ns: 'page-directories' })}
+          </p>
+          {slugError && (
+            <p
+              id="new-directory-slug-error"
+              className="text-destructive text-xs"
+              role="alert"
+            >
+              {slugError}
+            </p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -351,7 +428,7 @@ export function CreateDirectoryDialog({
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={!name.trim()}
+            disabled={!name.trim() || !slug.trim()}
             loading={isSubmitting}
           >
             {submitLabel ??

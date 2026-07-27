@@ -13,6 +13,14 @@
   "open_directory": "Open printable directory",
   "name_label": "Name",
   "name_placeholder": "Printable directory name",
+  "slug_label": "Share slug",
+  "slug_placeholder": "winter-shelter-guide",
+  "slug_help": "Used in the public share link. It can be auto-generated from the name.",
+  "slug_auto_generate": "Auto-generate from name",
+  "slug_taken_error": "This slug is already in use. Please choose a different one.",
+  "share_link_copied": "Share link copied to clipboard",
+  "unable_to_copy_share_link": "Unable to copy share link",
+  "share_slug_missing_tooltip": "Set a share slug in General info before sharing",
   "general_info_title": "General info",
   "edit_directory": "Edit printable directory",
   "directory_updated": "Printable directory updated",
@@ -157,5 +165,14 @@
     "header": "Header",
     "footer": "Footer",
     "sources": "Sources"
-  }
+  },
+  "public_preview_meta_title": "Shared printable directory",
+  "public_preview_meta_description": "A printable directory shared with you.",
+  "public_preview_download_button": "Download PDF",
+  "public_preview_generating": "Generating PDF...",
+  "public_preview_unavailable": "This directory can't be downloaded as a PDF.",
+  "public_preview_not_found": "This shared directory could not be found.",
+  "public_preview_ready": "Your download should start automatically.",
+  "public_preview_retry": "Download again",
+  "public_preview_error": "Something went wrong generating this PDF."
 }

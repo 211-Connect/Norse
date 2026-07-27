@@ -25,6 +25,8 @@ import {
   PrintableDirectoryResponseDto,
 } from '@/lib/api/generated/data-contracts';
 
+import { randomSlugSuffix, slugify } from '../../utils';
+
 type CloneDirectoryDialogProps = {
   open: boolean;
   directory: PrintableDirectoryResponseDto;
@@ -129,9 +131,10 @@ export function CloneDirectoryDialog({
     setIsSubmitting(true);
 
     try {
-      const created = await createPrintableDirectory(
+      const createResult = await createPrintableDirectory(
         {
           name: trimmedName,
+          slug: `${slugify(trimmedName)}-${randomSlugSuffix()}`,
           ...(options.generalInfo
             ? {
                 accessPolicy: directory.accessPolicy,
@@ -144,10 +147,12 @@ export function CloneDirectoryDialog({
         appConfig.tenantId,
       );
 
-      if (!created) {
+      if (!createResult.success) {
         toast.error(t('clone_failed', { ns: 'page-directories' }));
         return;
       }
+
+      const created = createResult.data;
 
       const updatePayload: Parameters<typeof updatePrintableDirectory>[1] = {};
 
@@ -184,18 +189,18 @@ export function CloneDirectoryDialog({
       let latestDirectory = created;
 
       if (Object.keys(updatePayload).length > 0) {
-        const updated = await updatePrintableDirectory(
+        const updateResult = await updatePrintableDirectory(
           created.id,
           updatePayload,
           appConfig.tenantId,
         );
 
-        if (!updated) {
+        if (!updateResult.success) {
           toast.error(t('clone_failed', { ns: 'page-directories' }));
           return;
         }
 
-        latestDirectory = updated;
+        latestDirectory = updateResult.data;
       }
 
       if (options.sources) {

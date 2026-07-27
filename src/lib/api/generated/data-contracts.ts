@@ -1303,6 +1303,11 @@ export interface PrintableDirectoryResponseDto {
   updatedBy?: string | null;
   /** Access config for tenant users: private (owner read/update), shared-read (others read, only owner updates), shared-edit (others can read and update). */
   accessPolicy: "private" | "shared-read" | "shared-edit";
+  /**
+   * Public, tenant-unique slug used for fully public preview sharing. Null if not set.
+   * @example "winter-shelter-guide"
+   */
+  slug?: string | null;
   cover: PrintableDirectoryCoverResponseDto;
   header: PrintableDirectoryHeaderFooterResponseDto;
   footer: PrintableDirectoryHeaderFooterResponseDto;
@@ -1343,6 +1348,11 @@ export interface CreatePrintableDirectoryDto {
   /** @example "My Printable Directory" */
   name: string;
   accessPolicy?: "private" | "shared-read" | "shared-edit";
+  /**
+   * Public, tenant-unique, URL-safe identifier used to share this directory's preview via a fully public link (`GET /printable-directories/public/:slug/preview`). Must be explicitly supplied by the client; it is never auto-generated. The slug acts as a capability token: anyone with the slug can resolve the preview, regardless of accessPolicy, so choose a non-guessable value for directories that should not be publicly discoverable.
+   * @example "winter-shelter-guide"
+   */
+  slug?: string;
   resourceLayout?:
     | "line"
     | "summary"
@@ -1389,6 +1399,11 @@ export interface UpdatePrintableDirectoryDto {
   /** @example "My Printable Directory" */
   name?: string;
   accessPolicy?: "private" | "shared-read" | "shared-edit";
+  /**
+   * Public, tenant-unique, URL-safe identifier used to share this directory's preview via a fully public link (`GET /printable-directories/public/:slug/preview`). Must be explicitly supplied by the client; it is never auto-generated. The slug acts as a capability token: anyone with the slug can resolve the preview, regardless of accessPolicy, so choose a non-guessable value for directories that should not be publicly discoverable.
+   * @example "winter-shelter-guide"
+   */
+  slug?: string;
   resourceLayout?:
     | "line"
     | "summary"
@@ -1483,6 +1498,11 @@ export interface PrintableDirectoryPreviewResponseDto {
   updatedBy?: string | null;
   /** Access config for tenant users: private (owner read/update), shared-read (others read, only owner updates), shared-edit (others can read and update). */
   accessPolicy: "private" | "shared-read" | "shared-edit";
+  /**
+   * Public, tenant-unique slug used for fully public preview sharing. Null if not set.
+   * @example "winter-shelter-guide"
+   */
+  slug?: string | null;
   cover: PrintableDirectoryCoverResponseDto;
   header: PrintableDirectoryHeaderFooterResponseDto;
   footer: PrintableDirectoryHeaderFooterResponseDto;
@@ -2338,16 +2358,6 @@ export interface TaxonomyScorecardControllerSearchTaxonomiesParams {
    * @example "BD"
    */
   query: string;
-  /**
-   * Pagination page index
-   * @default 1
-   */
-  page?: any;
-  /**
-   * Page size
-   * @default 10
-   */
-  limit?: any;
 }
 
 export type TaxonomyScorecardControllerSearchTaxonomiesData =
@@ -2383,17 +2393,6 @@ export type TaxonomyScorecardControllerEnableTaxonomyScorecardVersionData =
   TaxonomyScorecardResponseDto;
 
 export interface PrintableDirectoryControllerListParams {
-  /**
-   * @min 1
-   * @default 1
-   */
-  page?: number;
-  /**
-   * @min 1
-   * @max 100
-   * @default 20
-   */
-  limit?: number;
   /** Name search */
   search?: string;
   /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
@@ -2582,6 +2581,17 @@ export interface PrintableDirectoryControllerPreviewParams {
 }
 
 export type PrintableDirectoryControllerPreviewData =
+  PrintableDirectoryPreviewResponseDto;
+
+export interface PrintableDirectoryPublicControllerPreviewParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  slug: string;
+}
+
+export type PrintableDirectoryPublicControllerPreviewData =
   PrintableDirectoryPreviewResponseDto;
 
 export interface OrganizationControllerSearchParams {

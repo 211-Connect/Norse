@@ -1,6 +1,7 @@
 import { Analytics } from './generated/Analytics';
 import { Geocoding } from './generated/Geocoding';
 import { PrintableDirectories } from './generated/PrintableDirectories';
+import { PrintableDirectoriesPublic } from './generated/PrintableDirectoriesPublic';
 import { Search } from './generated/Search';
 import { TaxonomyScorecard } from './generated/TaxonomyScorecard';
 import { API_URL, INTERNAL_API_KEY } from '@/app/(app)/shared/lib/constants';
@@ -24,5 +25,8 @@ export const geocodingApiClient = new Geocoding(clientArgs);
 export const printableDirectoriesApiClient = new PrintableDirectories(
   clientArgs,
 );
+
+export const printableDirectoriesPublicApiClient =
+  new PrintableDirectoriesPublic(clientArgs);
 
 export const taxonomyScorecardApiClient = new TaxonomyScorecard(clientArgs);

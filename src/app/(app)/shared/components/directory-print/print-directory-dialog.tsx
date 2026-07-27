@@ -1,6 +1,6 @@
 'use client';
 
-import { Document, pdf } from '@react-pdf/renderer';
+import { Document } from '@react-pdf/renderer';
 import { Check, LoaderCircle } from 'lucide-react';
 import { type ComponentProps, type ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -18,6 +18,7 @@ import {
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
 import { cn } from '@/app/(app)/shared/lib/utils';
 
+import { openPdfDocument } from './openPdfDocument';
 import { type FontSizeMode, type PrintVariant } from './pdf-print-primitives';
 
 export type PrintDocumentRenderContext = {
@@ -85,28 +86,19 @@ export function PrintDirectoryDialog<TData>({
         currentDate,
       });
 
-      let blob = await pdf(documentElement).toBlob();
+      const result = await openPdfDocument(documentElement, {
+        postProcessBlob: postProcessBlob
+          ? (blob) => postProcessBlob(blob, data)
+          : undefined,
+      });
 
-      if (postProcessBlob) {
-        blob = await postProcessBlob(blob, data);
-      }
-
-      const url = window.URL.createObjectURL(blob);
-      const printWindow = window.open(url, '_blank');
-
-      if (printWindow) {
-        printWindow.addEventListener('load', () => {
-          setTimeout(() => {
-            printWindow.print();
-          }, 1000);
-        });
-
-        const cleanup = () => window.URL.revokeObjectURL(url);
-        printWindow.addEventListener('beforeunload', cleanup);
-        setTimeout(cleanup, 10 * 60 * 1000);
-      } else {
-        window.URL.revokeObjectURL(url);
-        toast.error(t('print_dialog.popup_blocked'));
+      if (!result.ok) {
+        toast.error(
+          result.reason === 'popup_blocked'
+            ? t('print_dialog.popup_blocked')
+            : t('print_dialog.error'),
+        );
+        return;
       }
 
       onOpenChange(false);
