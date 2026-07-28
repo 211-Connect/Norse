@@ -21,7 +21,10 @@ import {
   PRINT_DIALOG_LANGUAGE_CONTENT_ID,
   PRINT_DIALOG_LANGUAGE_TRIGGER_ID,
 } from '@/app/(app)/shared/lib/aria-constants';
-import { cn } from '@/app/(app)/shared/lib/utils';
+import {
+  cn,
+  withCustomBasePathAppendedToDomain,
+} from '@/app/(app)/shared/lib/utils';
 import { createLogger } from '@/lib/logger';
 
 import { LanguageSwitcherPrimitive } from '../language-switcher-primitive';
@@ -90,7 +93,9 @@ export function PrintDirectoryDialog<TData>({
         return;
       }
 
-      const currentDomain = window.location.hostname;
+      const currentDomain = withCustomBasePathAppendedToDomain(
+        window.location.hostname,
+      );
       const currentDate = new Date().toLocaleDateString('en-US', {
         month: '2-digit',
         day: '2-digit',

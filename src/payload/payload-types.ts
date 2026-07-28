@@ -569,6 +569,12 @@ export interface ResourceDirectory {
       title?: string | null;
       description?: string | null;
     };
+    printableDocuments?: {
+      /**
+       * Leave blank to use the default "Dial 2-1-1" label (or locale equivalent)
+       */
+      ctaText?: string | null;
+    };
   };
   header?: {
     /**
@@ -1494,6 +1500,11 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
           | {
               title?: T;
               description?: T;
+            };
+        printableDocuments?:
+          | T
+          | {
+              ctaText?: T;
             };
       };
   header?:

@@ -26,6 +26,7 @@ export function useDefaultDirectoryPdfDocument() {
       data={data}
       brandLogoUrl={appConfig.brand.logoUrl}
       brandName={appConfig.brand.name}
+      ctaText={appConfig.brand.ctaText}
     />
   );
 }

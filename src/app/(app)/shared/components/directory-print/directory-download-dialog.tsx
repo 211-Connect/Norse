@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { applyBookletPadding } from '@/app/(app)/shared/components/directory-print/applyBookletPadding';
 import { downloadPdfDocument } from '@/app/(app)/shared/components/directory-print/openPdfDocument';
 import { PDFPrintableDirectory } from '@/app/(app)/shared/components/directory-print/pdf-printable-directory';
+import { withCustomBasePathAppendedToDomain } from '@/app/(app)/shared/lib/utils';
 import { type PrintVariant } from '@/app/(app)/shared/components/directory-print/pdf-print-primitives';
 import { Button } from '@/app/(app)/shared/components/ui/button';
 import {
@@ -81,7 +82,9 @@ export function DirectoryDownloadDialog({
 
     try {
       const data = printableDirectoryPreviewToPdfData(preview, locale);
-      const currentDomain = window.location.hostname;
+      const currentDomain = withCustomBasePathAppendedToDomain(
+        window.location.hostname,
+      );
       const currentDate = new Date().toLocaleDateString('en-US', {
         month: '2-digit',
         day: '2-digit',

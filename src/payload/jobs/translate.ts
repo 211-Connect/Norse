@@ -253,6 +253,21 @@ export const translate: TaskConfig<'translate'> = {
           });
         }
 
+        // Brand Tab
+        if (
+          shouldTranslate(
+            englishResourceDirectory.brand?.printableDocuments?.ctaText,
+            targetDoc.brand?.printableDocuments?.ctaText,
+            'brand.printableDocuments.ctaText',
+          )
+        ) {
+          fieldsToTranslate.push({
+            path: 'brand.printableDocuments.ctaText',
+            value: englishResourceDirectory.brand!.printableDocuments!.ctaText!,
+            locale: targetLocale,
+          });
+        }
+
         // Topics Top Level
         if (
           shouldTranslate(
@@ -654,6 +669,26 @@ export const translate: TaskConfig<'translate'> = {
           updateData.resource = {
             ...(updateData.resource ?? targetDoc.resource),
             lastAssuredText: englishResourceDirectory.resource?.lastAssuredText,
+          };
+        }
+
+        // Brand Tab
+        if (translationsByPath['brand.printableDocuments.ctaText']) {
+          updateData.brand = {
+            ...targetDoc.brand,
+            printableDocuments: {
+              ...targetDoc.brand?.printableDocuments,
+              ctaText: translationsByPath['brand.printableDocuments.ctaText'],
+            },
+          };
+        } else if (isEmpty(targetDoc.brand?.printableDocuments?.ctaText)) {
+          updateData.brand = {
+            ...targetDoc.brand,
+            printableDocuments: {
+              ...targetDoc.brand?.printableDocuments,
+              ctaText:
+                englishResourceDirectory.brand?.printableDocuments?.ctaText,
+            },
           };
         }
 
