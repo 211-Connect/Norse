@@ -780,6 +780,16 @@ export interface SearchEventExportRow {
    */
   timestamp: string;
   /**
+   * Anonymized, unique identifier for the user who performed the search. Derived by one-way hashing a client-generated anonymous identifier; contains no personally identifiable information.
+   * @example "a3f9c2b1e4d6f0a8b7c5d3e1"
+   */
+  userId: string | null;
+  /**
+   * Anonymized, unique identifier for the browsing session in which the search was performed. Derived by one-way hashing a client-generated anonymous identifier; contains no personally identifiable information.
+   * @example "b7e1d4a9c2f8036e5b1a9d0c"
+   */
+  sessionId: string | null;
+  /**
    * User search query string
    * @example "homeless shelter"
    */

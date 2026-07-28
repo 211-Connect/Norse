@@ -256,7 +256,7 @@ export class Analytics<
       ...params,
     });
   /**
-   * @description Returns search events with timestamps, coordinates, and ZIP codes.
+   * @description Returns search events with timestamps, coordinates, ZIP codes, and anonymized unique user/session identifiers.
    *
    * @tags Analytics
    * @name AnalyticsControllerGetExportSearchData
