@@ -14,6 +14,7 @@ interface ChangeDetail {
 export const AUTO_TRANSLATED_STRING_PATHS = [
   'resource.categoriesText',
   'resource.lastAssuredText',
+  'brand.printableDocuments.ctaText',
   'topics.backText',
   'topics.customHeading',
   'search.texts.title',

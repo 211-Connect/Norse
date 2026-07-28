@@ -230,6 +230,7 @@ type PDFDirectoryProps = {
   currentDate: string;
   brandLogoUrl?: string;
   brandName: string;
+  ctaText?: string;
 };
 
 export function PDFDirectory({
@@ -240,6 +241,7 @@ export function PDFDirectory({
   currentDate,
   brandLogoUrl,
   brandName,
+  ctaText,
 }: PDFDirectoryProps) {
   const fontScale = getFontScale(fontSizeMode);
   const datumLabels = useDatumLabels();
@@ -289,7 +291,7 @@ export function PDFDirectory({
               <View style={styles.fullPageLeftSpacer} />
               <View style={styles.fullPageLeftBottomSeparator} />
               <Text style={scaleStyle(styles.fullPageLeftDial, fontScale)}>
-                {datumLabels.dial211}
+                {ctaText || datumLabels.dial211}
               </Text>
               <Text style={scaleStyle(styles.fullPageLeftDomain, fontScale)}>
                 {currentDomain}

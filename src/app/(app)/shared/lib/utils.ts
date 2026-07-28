@@ -28,11 +28,15 @@ export function withOptionalTrailingSlash(path: string): string {
   return `${pathname}/${query}${hash}`;
 }
 
-export function withOptionalCustomBasePath(path: string): string {
+function getNormalizedCustomBasePath(): string {
   const configuredBasePath = process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH;
-  const normalizedBasePath = configuredBasePath
+  return configuredBasePath
     ? `/${configuredBasePath.replace(/^\/+|\/+$/g, '')}`
     : '';
+}
+
+export function withOptionalCustomBasePath(path: string): string {
+  const normalizedBasePath = getNormalizedCustomBasePath();
 
   if (!normalizedBasePath) {
     return path;
@@ -86,6 +90,16 @@ export function withOptionalCustomBasePath(path: string): string {
   }
 
   return `${normalizedBasePath}${pathname}${query}${hash}`;
+}
+
+/**
+ * Appends the configured custom base path (if any) to a plain domain string
+ * (e.g. `example.com` -> `example.com/adresources`). Used for the domain
+ * shown in printable directory PDFs (header, footer, CTA sections), since
+ * that domain is displayed as plain text rather than a link.
+ */
+export function withCustomBasePathAppendedToDomain(domain: string): string {
+  return `${domain}${getNormalizedCustomBasePath()}`;
 }
 
 export type Coords = [number, number]; // [longitude, latitude]
