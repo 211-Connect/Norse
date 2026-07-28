@@ -5,7 +5,8 @@
     "language_select_label": "Suɓo ɗemngal ngam waylude ɗemngal lowre ndee",
     "my_stuff": "Geɗe am",
     "search": "Teffol",
-    "report": "Neldu Miijooji"
+    "report": "Neldu Miijooji",
+    "printable_directories": "Reggindorɗe baawɗe tappirde"
   },
   "favorites": {
     "added_to_list": "Ɓeydaama e doggol",
@@ -87,7 +88,9 @@
     "show_less": "Hollit ko famɗi",
     "print": "Tappirde",
     "close": "Uddu",
-    "send": "Neldugo"
+    "send": "Neldugo",
+    "edit": "Windugo",
+    "save": "Hisugo"
   },
   "list": {
     "private": "Feerejo",
@@ -284,6 +287,37 @@
       "name": "Wonirde & Dokkal",
       "description": "Haajuuji hokkugo walla heɓugo bee yaafuye rento — to neɗɗo ɗon mari haaje jawdi dokkaandi, walla woodi bawɗe e yidde hokkugo wakkati, anndal, malla jawdi ngam woɓɓe. Ina hawra e haajuuji banngeeji ɗiɗi ɗii fof e mbayliigu siwil : yimɓe yiɗɓe dokke kaalis walla sarwisaaji dokke, e yimɓe walla juɓɓule yiɗɓe jokkondirde e wallidiiɓe e dokkuɓe fartaŋŋeeji baɗɗi faayiida ngam wallitde.",
       "displayDescription": "Haajaade jawdi dokkaandi walla yiɗde wallude woɗɓe? Eɗen mbaawi jokkondirde e yimɓe yiɗɓe rokkude e yimɓe haajuuji junngo."
+    }
+  },
+  "printable_directories": {
+    "save_source": {
+      "loading_directories": "Lowde regginorde...",
+      "no_directories_found": "Alaa regginorde tawaa. Sos heen gooto e hello Reggindorde am ko adii.",
+      "directory_label": "Reggindo",
+      "section_label": "Tairde",
+      "select_directory_placeholder": "Suɓo regginorde",
+      "select_section_placeholder": "Suɓo taƴre",
+      "unable_load_directories_error": "Waawaa loowde regginorde tappirde",
+      "select_directory_first_error": "Suɓo regginorde ko adii",
+      "unable_create_section_error": "Waawaa sosde feccere e ndee regginorde",
+      "unable_select_section_error": "Waawaa suɓaade feccere e ndee regginorde"
+    },
+    "save_list": {
+      "open": "Hisnu doggol ngol e regginorde tappirde",
+      "button_label": "Hisnu doggol ngol e regginorde tappirde",
+      "dialog_title": "Hisnu doggol ngol e regginorde tappirde",
+      "dialog_description": "Suɓo regginorde e taƴre ngam ndee doggol ɓurngol yiɗeede.",
+      "choose_directory_section": "Suɓo regginorde e taƴre ngam “{{favoriteListName}}”.",
+      "create_section_option": "Sos taƴre “{{heading}}”.",
+      "success": "Doggol hisnaangol e regginorde tappirde",
+      "error": "Waawaa hisnude doggol ngol e regginorde"
+    },
+    "save_query": {
+      "dialog_title": "Hisnu naamnal e nder regginorde tappirde",
+      "dialog_description": "Suɓo regginorde e taƴre ngam ndee naamndal hisnaande.",
+      "create_section_option": "Sos taƴre “{{heading}}”.",
+      "success": "Naamnal hiisaama e regginorde tappirde",
+      "error": "Waawaa hisnude naamnal e regginorde"
     }
   }
 }

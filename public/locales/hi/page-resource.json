@@ -29,5 +29,7 @@
   "other_information": "अन्य सूचना",
   "organization_url": "संगठन यूआरएल",
   "contacts": "इस सेवा का लाभ उठाने के लिए, निम्नलिखित से संपर्क करें:",
-  "location_name": "स्थान का नाम"
+  "location_name": "स्थान का नाम",
+  "resource_name": "संसाधन का नाम",
+  "quality": "गुणवत्तापूर्ण जानकारी"
 }

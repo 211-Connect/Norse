@@ -57,7 +57,8 @@
     "dial_211": "Kāhea iā 2-1-1",
     "loading_resources": "Ke hoʻouka nei i nā kikoʻī kumuwaiwai...",
     "load_error": "ʻAʻole hiki ke hoʻouka i nā kikoʻī kumuwaiwai hiki ke paʻi ʻia. E ʻoluʻolu e hoʻāʻo hou.",
-    "retry": "E ho'āʻo hou"
+    "retry": "E ho'āʻo hou",
+    "language_title": "ʻŌlelo papa kuhikuhi"
   },
   "print_footer_disclaimer": "Hāʻawi ʻo {{brandName}} i kēia ʻike ma ke ʻano he lawelawe lehulehu a ʻaʻole ia e hāʻawi i nā palapala hōʻoia e pili ana i kona pololei, piha, a i ʻole ka manawa kūpono. ʻAʻole kuleana ʻo {{brandName}} no ke ʻano o ka hoʻohana ʻia ʻana o kēia ʻike a ʻaʻole ia e lawe i ke kuleana no nā hopena e kū mai ana mai kona hoʻohana ʻana. ʻAʻole hōʻike ka hoʻolaha ʻana o kēia paʻi i ka ʻae ʻia e {{brandName}} a i ʻole ka pilina me {{brandName}}.",
   "print_page_counter": "ʻAoʻao {{current}} o {{total}}",

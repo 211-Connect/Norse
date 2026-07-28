@@ -29,5 +29,7 @@
   "other_information": "Thông tin khác",
   "organization_url": "URL của tổ chức",
   "contacts": "Để sử dụng dịch vụ này, vui lòng liên hệ:",
-  "location_name": "Tên địa điểm"
+  "location_name": "Tên địa điểm",
+  "resource_name": "Tên tài nguyên",
+  "quality": "Thông tin chất lượng"
 }

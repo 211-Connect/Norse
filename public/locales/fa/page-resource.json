@@ -29,5 +29,7 @@
   "other_information": "سایر اطلاعات",
   "organization_url": "آدرس اینترنتی سازمان",
   "contacts": "برای دسترسی به این سرویس، با ما تماس بگیرید:",
-  "location_name": "نام مکان"
+  "location_name": "نام مکان",
+  "resource_name": "نام منبع",
+  "quality": "اطلاعات کیفیت"
 }

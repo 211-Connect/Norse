@@ -29,5 +29,7 @@
   "other_information": "Ostale informacije",
   "organization_url": "URL organizacije",
   "contacts": "Za pristup ovoj usluzi kontaktirajte:",
-  "location_name": "Naziv lokacije"
+  "location_name": "Naziv lokacije",
+  "resource_name": "Naziv resursa",
+  "quality": "Informacije o kvaliteti"
 }

@@ -14,11 +14,13 @@ import { BackToResultsButton } from './back-to-results-button';
 export function Navigation({
   componentToPrintRef,
   resource,
-  printableDirectoryData,
+  loadPrintableDirectoryData,
 }: {
   componentToPrintRef: React.RefObject<HTMLElement | null>;
   resource: Resource;
-  printableDirectoryData: PrintableDirectoryData;
+  loadPrintableDirectoryData: (
+    locale: string,
+  ) => Promise<PrintableDirectoryData>;
 }) {
   const appConfig = useAppConfig();
   const renderPdfDocument = useDefaultDirectoryPdfDocument();
@@ -30,7 +32,7 @@ export function Navigation({
       <BackToResultsButton />
       <div className="flex gap-2">
         <DirectoryPrintControl
-          data={printableDirectoryData}
+          loadData={loadPrintableDirectoryData}
           renderDocument={renderPdfDocument}
         />
         <ShareButton

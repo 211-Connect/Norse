@@ -5,7 +5,8 @@
     "language_select_label": "Xaiv ib hom lus los hloov hom lus ntawm lub xaib",
     "my_stuff": "Kuv cov khoom",
     "search": "Tshawb Nrhiav",
-    "report": "Xa Cov Lus Qhia"
+    "report": "Xa Cov Lus Qhia",
+    "printable_directories": "Cov Ntawv Teev Npe Luam Tawm"
   },
   "favorites": {
     "added_to_list": "Ntxiv rau daim ntawv teev npe",
@@ -87,7 +88,9 @@
     "show_less": "Qhia tsawg dua",
     "print": "Luam tawm",
     "close": "Kaw",
-    "send": "Xa"
+    "send": "Xa",
+    "edit": "Kho kom raug",
+    "save": "Txuag"
   },
   "list": {
     "private": "Ntiag tug",
@@ -284,6 +287,37 @@
       "name": "Kev Pab Dawb & Kev Pub Nyiaj",
       "description": "Qhov xav tau kev pub lossis txais los ntawm kev siab dawb siab zoo hauv zej zog - txawm tias ib tus neeg xav tau cov khoom pub dawb, lossis muaj peev xwm thiab xav pab sijhawm, kev txawj, lossis cov peev txheej rau lwm tus. suav nrog cov kev xav tau ntawm ob sab ntawm kev sib pauv pej xeem: cov tib neeg nrhiav kev pub dawb lossis cov kev pabcuam pub dawb, thiab cov tib neeg lossis cov koom haum nrhiav kev txuas cov neeg ua haujlwm pab dawb thiab cov neeg pub dawb nrog cov cib fim tseem ceeb los pab.",
       "displayDescription": "Xav tau khoom pub dawb los yog xav pab lwm tus? Peb tuaj yeem txuas cov neeg uas xav pub dawb nrog cov neeg uas xav tau kev pab."
+    }
+  },
+  "printable_directories": {
+    "save_source": {
+      "loading_directories": "Loading cov directories...",
+      "no_directories_found": "Tsis pom cov npe nplaub tshev. Tsim ib qho los ntawm nplooj ntawv Kuv Cov Npe nplaub tshev ua ntej.",
+      "directory_label": "Cov Npe",
+      "section_label": "Tshooj",
+      "select_directory_placeholder": "Xaiv daim nplaub tshev",
+      "select_section_placeholder": "Xaiv ntu",
+      "unable_load_directories_error": "Tsis tuaj yeem thauj cov ntawv qhia chaw luam tawm",
+      "select_directory_first_error": "Xaiv ib daim nplaub tshev ua ntej",
+      "unable_create_section_error": "Tsis tuaj yeem tsim ib ntu hauv daim nplaub tshev no",
+      "unable_select_section_error": "Tsis tuaj yeem xaiv ib ntu hauv daim ntawv teev npe no"
+    },
+    "save_list": {
+      "open": "Txuag daim ntawv teev npe rau hauv phau ntawv teev npe uas luam tawm tau",
+      "button_label": "Txuag daim ntawv teev npe rau hauv phau ntawv teev npe uas luam tawm tau",
+      "dialog_title": "Txuag daim ntawv teev npe rau hauv phau ntawv teev npe uas luam tawm tau",
+      "dialog_description": "Xaiv ib daim nplaub tshev thiab ib ntu rau daim ntawv teev npe nyiam no.",
+      "choose_directory_section": "Xaiv ib daim nplaub tshev thiab ntu rau “{{favoriteListName}}”.",
+      "create_section_option": "Tsim ntu \"{{heading}}\"",
+      "success": "Daim ntawv teev tseg tau khaws cia rau hauv phau ntawv teev npe uas luam tawm tau",
+      "error": "Tsis tuaj yeem txuag daim ntawv teev npe rau hauv daim nplaub tshev"
+    },
+    "save_query": {
+      "dialog_title": "Txuag cov lus nug rau hauv daim nplaub tshev luam tawm",
+      "dialog_description": "Xaiv ib daim nplaub tshev thiab ib ntu rau qhov kev nug uas tau khaws cia no.",
+      "create_section_option": "Tsim ntu \"{{heading}}\"",
+      "success": "Cov lus nug tau khaws cia rau hauv daim nplaub tshev luam tawm",
+      "error": "Tsis tuaj yeem txuag cov lus nug rau hauv daim nplaub tshev"
     }
   }
 }

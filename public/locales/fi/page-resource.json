@@ -29,5 +29,7 @@
   "other_information": "Muut tiedot",
   "organization_url": "Organisaation URL-osoite",
   "contacts": "Päästäksesi tähän palveluun, ota yhteyttä:",
-  "location_name": "Sijainnin nimi"
+  "location_name": "Sijainnin nimi",
+  "resource_name": "Resurssin nimi",
+  "quality": "Laadukas tieto"
 }

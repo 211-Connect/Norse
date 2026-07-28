@@ -29,5 +29,7 @@
   "other_information": "نور معلومات",
   "organization_url": "د سازمان URL",
   "contacts": "دې خدمت ته د لاسرسي لپاره، اړیکه ونیسئ:",
-  "location_name": "د ځای نوم"
+  "location_name": "د ځای نوم",
+  "resource_name": "د سرچینې نوم",
+  "quality": "د کیفیت معلومات"
 }

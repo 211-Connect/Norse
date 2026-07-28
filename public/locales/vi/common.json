@@ -5,7 +5,8 @@
     "language_select_label": "Chọn ngôn ngữ để thay đổi ngôn ngữ trang web",
     "my_stuff": "Đồ của tôi",
     "search": "Tìm kiếm",
-    "report": "Gửi phản hồi"
+    "report": "Gửi phản hồi",
+    "printable_directories": "Danh bạ có thể in"
   },
   "favorites": {
     "added_to_list": "Đã thêm vào danh sách",
@@ -87,7 +88,9 @@
     "show_less": "Hiển thị ít hơn",
     "print": "In",
     "close": "Đóng",
-    "send": "Gửi"
+    "send": "Gửi",
+    "edit": "Biên tập",
+    "save": "Cứu"
   },
   "list": {
     "private": "Tư",
@@ -284,6 +287,37 @@
       "name": "Tình nguyện viên & Quyên góp",
       "description": "Nhu cầu cho đi hoặc nhận lại thông qua lòng hào phóng của cộng đồng — cho dù một người cần hàng hóa quyên góp, hay có khả năng và mong muốn đóng góp thời gian, kỹ năng hoặc nguồn lực cho người khác. Bao gồm nhu cầu ở cả hai phía của sự trao đổi công dân: các cá nhân tìm kiếm sự quyên góp vật chất hoặc dịch vụ được tặng, và các cá nhân hoặc tổ chức tìm cách kết nối các tình nguyện viên và nhà tài trợ với những cơ hội giúp đỡ có ý nghĩa.",
       "displayDescription": "Bạn cần đồ quyên góp hoặc muốn giúp đỡ người khác? Chúng tôi có thể kết nối những người muốn cho đi với những người cần giúp đỡ."
+    }
+  },
+  "printable_directories": {
+    "save_source": {
+      "loading_directories": "Đang tải thư mục...",
+      "no_directories_found": "Không tìm thấy thư mục nào. Vui lòng tạo một thư mục từ trang Thư mục của tôi trước.",
+      "directory_label": "Thư mục",
+      "section_label": "Phần",
+      "select_directory_placeholder": "Chọn thư mục",
+      "select_section_placeholder": "Chọn phần",
+      "unable_load_directories_error": "Không thể tải thư mục có thể in",
+      "select_directory_first_error": "Trước tiên hãy chọn thư mục.",
+      "unable_create_section_error": "Không thể tạo mục trong thư mục này.",
+      "unable_select_section_error": "Không thể chọn một mục trong thư mục này."
+    },
+    "save_list": {
+      "open": "Lưu danh sách vào thư mục có thể in",
+      "button_label": "Lưu danh sách vào thư mục có thể in",
+      "dialog_title": "Lưu danh sách vào thư mục có thể in",
+      "dialog_description": "Hãy chọn thư mục và mục cho danh sách yêu thích này.",
+      "choose_directory_section": "Chọn thư mục và mục cho “{{favoriteListName}}”.",
+      "create_section_option": "Tạo phần “{{heading}}”",
+      "success": "Danh sách đã được lưu vào thư mục có thể in.",
+      "error": "Không thể lưu danh sách vào thư mục"
+    },
+    "save_query": {
+      "dialog_title": "Lưu truy vấn vào thư mục có thể in.",
+      "dialog_description": "Hãy chọn thư mục và mục cho truy vấn đã lưu này.",
+      "create_section_option": "Tạo phần “{{heading}}”",
+      "success": "Truy vấn đã được lưu vào thư mục có thể in.",
+      "error": "Không thể lưu truy vấn vào thư mục."
     }
   }
 }

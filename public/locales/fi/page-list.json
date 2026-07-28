@@ -57,7 +57,8 @@
     "dial_211": "Soita numeroon 2-1-1",
     "loading_resources": "Ladataan resurssin tietoja...",
     "load_error": "Tulostettavan resurssin tietojen lataaminen epäonnistui. Yritä uudelleen.",
-    "retry": "Yritä uudelleen"
+    "retry": "Yritä uudelleen",
+    "language_title": "Hakemiston kieli"
   },
   "print_footer_disclaimer": "{{brandName}} tarjoaa nämä tiedot julkisena palveluna eikä anna takuita niiden tarkkuudesta, täydellisyydestä tai ajantasaisuudesta. {{brandName}} ei ole vastuussa siitä, miten näitä tietoja käytetään, eikä ota vastuuta mistään niiden käytöstä aiheutuvista tuloksista. Tämän tulosteen jakelu ei tarkoita, että {{brandName}} hyväksyisi tai olisi yhteydessä niihin.",
   "print_page_counter": "Sivu {{current}} / {{total}}",

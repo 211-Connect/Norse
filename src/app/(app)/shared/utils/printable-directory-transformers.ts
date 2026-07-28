@@ -5,7 +5,7 @@ import {
 } from '@/lib/api/generated/data-contracts';
 
 import { formatAddressForDisplay } from '@/app/(app)/shared/lib/utils';
-import { type FavoriteListWithFavorites } from '@/app/(app)/shared/store/favorites';
+import { type Favorite } from '@/app/(app)/shared/store/favorites';
 import { type ResultType } from '@/app/(app)/shared/store/results';
 import { type Resource } from '@/types/resource';
 
@@ -113,7 +113,7 @@ function getAddressFromResource(resource: Resource): string {
  * Transforms a favorite list with its items into a printable directory format
  */
 export function favoriteListToPrintableDirectory(
-  favoriteList: FavoriteListWithFavorites,
+  favoriteList: { name: string; favorites?: Favorite[] },
   locale: string,
 ): PrintableDirectoryData {
   return {

@@ -57,7 +57,8 @@
     "dial_211": "Wybierz 2-1-1",
     "loading_resources": "Ładowanie szczegółów zasobu...",
     "load_error": "Nie można załadować szczegółów zasobu do druku. Spróbuj ponownie.",
-    "retry": "Spróbować ponownie"
+    "retry": "Spróbować ponownie",
+    "language_title": "Język katalogu"
   },
   "print_footer_disclaimer": "{{brandName}} udostępnia te informacje w ramach usługi publicznej i nie udziela żadnych gwarancji co do ich dokładności, kompletności ani aktualności. {{brandName}} nie ponosi odpowiedzialności za sposób wykorzystania tych informacji ani nie ponosi odpowiedzialności za jakiekolwiek skutki wynikające z ich wykorzystania. Rozpowszechnianie niniejszego wydruku nie oznacza poparcia ani powiązania z {{brandName}}.",
   "print_page_counter": "Strona {{current}} z {{total}}",

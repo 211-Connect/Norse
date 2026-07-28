@@ -1,13 +1,7 @@
 'use client';
 
 import { ChevronLeft, Eraser } from 'lucide-react';
-import {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useMemo,
-  useState,
-} from 'react';
+import { Dispatch, SetStateAction, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { CardLayoutRenderer } from '@/app/(app)/features/search/components/card-layout-renderer';
@@ -26,8 +20,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@/app/(app)/shared/components/ui/card';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { useLocalFavorites } from '@/app/(app)/shared/hooks/use-local-favorites';
 import { cn, withOptionalTrailingSlash } from '@/app/(app)/shared/lib/utils';
+import { getResources } from '@/app/(app)/shared/services/resource-service';
 import { fontSans } from '@/app/(app)/shared/styles/fonts';
 import { resourcesToPrintableDirectory } from '@/app/(app)/shared/utils/printable-directory-transformers';
 import { Resource } from '@/types/resource';
@@ -51,7 +47,8 @@ export function LocalFavoritesSection({
   loading,
   setResources,
 }: LocalFavoritesSectionProps) {
-  const { t, i18n } = useTranslation('page-list');
+  const { t } = useTranslation('page-list');
+  const appConfig = useAppConfig();
   const { localFavoriteIds, removeLocalFavorite, clearLocalFavorites } =
     useLocalFavorites();
   const [clearConfirmOpen, setClearConfirmOpen] = useState(false);
@@ -68,14 +65,21 @@ export function LocalFavoritesSection({
     resourceToLocalFavoriteResult(r, handleRemoveFromList),
   );
 
-  const printableDirectoryData = useMemo(
-    () =>
-      resourcesToPrintableDirectory(
-        resources,
-        i18n.language,
+  const loadPrintableData = useCallback(
+    async (locale: string) => {
+      const freshResources = await getResources(
+        localFavoriteIds,
+        locale,
+        appConfig.tenantId,
+      );
+
+      return resourcesToPrintableDirectory(
+        freshResources,
+        locale,
         t('local_list.title'),
-      ),
-    [resources, i18n.language, t],
+      );
+    },
+    [localFavoriteIds, appConfig.tenantId, t],
   );
   const renderPdfDocument = useDefaultDirectoryPdfDocument();
 
@@ -104,7 +108,7 @@ export function LocalFavoritesSection({
         {results.length > 0 && (
           <div className="flex items-center gap-2">
             <DirectoryPrintControl
-              data={printableDirectoryData}
+              loadData={loadPrintableData}
               variant="icon"
               testId="print-local-directory-btn"
               renderDocument={renderPdfDocument}

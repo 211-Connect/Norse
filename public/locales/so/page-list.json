@@ -57,7 +57,8 @@
     "dial_211": "Garaac 2-1-1",
     "loading_resources": "Soo raraya faahfaahinta kheyraadka...",
     "load_error": "Ma awoodo in la soo raro faahfaahinta kheyraadka la daabacan karo. Fadlan isku day mar kale.",
-    "retry": "Dib u tijaabi"
+    "retry": "Dib u tijaabi",
+    "language_title": "Luqadda hagaha"
   },
   "print_footer_disclaimer": "{{brandName}} waxay macluumaadkan u bixisaa adeeg dadweyne mana bixiso wax dammaanad ah oo ku saabsan saxnaantiisa, dhammaystirnaantiisa, ama waqtigiisa. {{brandName}} mas'uul kama aha sida macluumaadkan loo isticmaalo mana qaadanayso mas'uuliyad natiijooyinka ka dhasha isticmaalkiisa. Qaybinta daabacaaddan macnaheedu maaha inay taageerto ama ku xiran tahay {{brandName}}.",
   "print_page_counter": "Bogga {{current}} ee {{total}}",

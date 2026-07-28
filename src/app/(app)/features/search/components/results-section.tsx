@@ -90,7 +90,6 @@ export function ResultsSection({
   aiSearchAlert,
 }: ResultsSectionProps) {
   const { t } = useTranslation('page-search');
-  const { i18n } = useTranslation();
   const appConfig = useAppConfig();
   const searchParams = useSearchParams();
   const componentToPrintRef = useRef<HTMLDivElement>(null);
@@ -139,18 +138,21 @@ export function ResultsSection({
 
   const showSort = queryType !== 'hybrid';
 
-  const loadPrintableData = useCallback(async () => {
-    const ids = (results ?? [])
-      .map((result) => result.id || result._id)
-      .filter(Boolean);
+  const loadPrintableData = useCallback(
+    (locale: string) => {
+      const ids = (results ?? [])
+        .map((result) => result.id || result._id)
+        .filter(Boolean);
 
-    return getPrintableDirectoryData(
-      ids,
-      i18n.language,
-      appConfig.tenantId,
-      printableListName,
-    );
-  }, [results, i18n.language, appConfig.tenantId, printableListName]);
+      return getPrintableDirectoryData(
+        ids,
+        locale,
+        appConfig.tenantId,
+        printableListName,
+      );
+    },
+    [results, appConfig.tenantId, printableListName],
+  );
   const renderPdfDocument = useDefaultDirectoryPdfDocument();
 
   useEffect(() => {
@@ -192,7 +194,6 @@ export function ResultsSection({
           <div className="flex gap-2.5">
             {resultsCount > 0 && (
               <DirectoryPrintControl
-                data={null}
                 loadData={loadPrintableData}
                 renderDocument={renderPdfDocument}
               />

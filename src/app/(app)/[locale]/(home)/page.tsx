@@ -17,7 +17,7 @@ import { getServerDevice } from '@/app/(app)/shared/lib/get-server-device';
 import { NewHomeContent } from '../../features/home/components/new-home-content';
 import { getAppConfigWithoutHost } from '../../shared/utils/appConfig';
 
-const i18nNamespaces = ['page-home', 'page-directories', 'common'];
+const i18nNamespaces = ['page-home', 'page-directories', 'common', 'page-list'];
 
 export const generateMetadata = async ({ params }): Promise<Metadata> => {
   const { locale } = await params;

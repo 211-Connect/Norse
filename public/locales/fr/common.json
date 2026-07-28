@@ -5,7 +5,8 @@
     "language_select_label": "Sélectionnez une langue pour modifier la langue du site",
     "my_stuff": "Mes affaires",
     "search": "Chercher",
-    "report": "Soumettre des commentaires"
+    "report": "Soumettre des commentaires",
+    "printable_directories": "Répertoires imprimables"
   },
   "favorites": {
     "added_to_list": "Ajouté à la liste",
@@ -87,7 +88,9 @@
     "show_less": "Afficher moins",
     "print": "Imprimer",
     "close": "Fermer",
-    "send": "Envoyer"
+    "send": "Envoyer",
+    "edit": "Modifier",
+    "save": "Sauvegarder"
   },
   "list": {
     "private": "Privé",
@@ -284,6 +287,37 @@
       "name": "Bénévolat et dons",
       "description": "Le besoin de donner ou de recevoir grâce à la générosité communautaire – qu’une personne ait besoin de biens donnés ou qu’elle ait la capacité et le désir de contribuer de son temps, de ses compétences ou de ses ressources – englobe les besoins des deux côtés de l’échange civique : les personnes qui recherchent des dons matériels ou des services bénévoles, et les personnes ou organisations qui cherchent à mettre en relation bénévoles et donateurs avec des opportunités d’aide significatives.",
       "displayDescription": "Vous avez besoin de dons ou vous souhaitez aider les autres ? Nous pouvons mettre en relation les personnes qui veulent donner avec celles qui ont besoin d’aide."
+    }
+  },
+  "printable_directories": {
+    "save_source": {
+      "loading_directories": "Chargement des répertoires...",
+      "no_directories_found": "Aucun répertoire trouvé. Veuillez d'abord en créer un depuis la page « Mes répertoires ».",
+      "directory_label": "Annuaire",
+      "section_label": "Section",
+      "select_directory_placeholder": "Sélectionner un répertoire",
+      "select_section_placeholder": "Sélectionner une section",
+      "unable_load_directories_error": "Impossible de charger les répertoires imprimables",
+      "select_directory_first_error": "Sélectionnez d'abord un répertoire",
+      "unable_create_section_error": "Impossible de créer une section dans ce répertoire",
+      "unable_select_section_error": "Impossible de sélectionner une section dans ce répertoire"
+    },
+    "save_list": {
+      "open": "Enregistrer la liste dans le répertoire imprimable",
+      "button_label": "Enregistrer la liste dans le répertoire imprimable",
+      "dialog_title": "Enregistrer la liste dans le répertoire imprimable",
+      "dialog_description": "Choisissez un répertoire et une section pour cette liste de favoris.",
+      "choose_directory_section": "Choisissez un répertoire et une section pour « {{favoriteListName}} ».",
+      "create_section_option": "Créer une section « {{heading}} »",
+      "success": "Liste enregistrée dans le répertoire imprimable",
+      "error": "Impossible d'enregistrer la liste dans le répertoire"
+    },
+    "save_query": {
+      "dialog_title": "Enregistrer la requête dans le répertoire imprimable",
+      "dialog_description": "Choisissez un répertoire et une section pour cette requête enregistrée.",
+      "create_section_option": "Créer une section « {{heading}} »",
+      "success": "Requête enregistrée dans le répertoire imprimable",
+      "error": "Impossible d'enregistrer la requête dans le répertoire"
     }
   }
 }

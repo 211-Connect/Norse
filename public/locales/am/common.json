@@ -5,7 +5,8 @@
     "language_select_label": "የድረ ገጹን ቋንቋ ለመቀየር ቋንቋ ይምረጡ",
     "my_stuff": "የእኔ ነገሮች",
     "search": "ፍለጋ",
-    "report": "አስተያየት ያቅርቡ"
+    "report": "አስተያየት ያቅርቡ",
+    "printable_directories": "ሊታተሙ የሚችሉ ማውጫዎች"
   },
   "favorites": {
     "added_to_list": "ወደ ዝርዝር ውስጥ ይጨመራል",
@@ -87,7 +88,9 @@
     "show_less": "ያነሰ አሳይ",
     "print": "ህትመት",
     "close": "ዝጋ",
-    "send": "ላክ"
+    "send": "ላክ",
+    "edit": "አርትዕ",
+    "save": "አስቀምጥ"
   },
   "list": {
     "private": "የግል",
@@ -284,6 +287,37 @@
       "name": "በጎ ፈቃደኛ እና ልገሳ",
       "description": "በማህበረሰብ ልግስና የመስጠት ወይም የመቀበል አስፈላጊነት - አንድ ሰው የተለገሱ እቃዎችን ቢፈልግ ወይም ጊዜን፣ ክህሎቶችን ወይም ሀብቶችን ለሌሎች የማበርከት አቅም እና ፍላጎት ቢኖረው። በሲቪክ ልውውጥ በሁለቱም በኩል ያሉትን ፍላጎቶች ያጠቃልላል፡- ቁሳዊ ልገሳዎችን ወይም የተለገሱ አገልግሎቶችን የሚፈልጉ ግለሰቦች፣ እና በጎ ፈቃደኞችን እና ለጋሾችን ትርጉም ባለው መንገድ ለመርዳት የሚያስችሉ እድሎችን ለማገናኘት የሚፈልጉ ግለሰቦች ወይም ድርጅቶች።",
       "displayDescription": "የተለገሱ እቃዎች ይፈልጋሉ ወይስ ሌሎችን መርዳት ይፈልጋሉ? መስጠት የሚፈልጉ ሰዎችን እርዳታ ከሚያስፈልጋቸው ሰዎች ጋር ማገናኘት እንችላለን።"
+    }
+  },
+  "printable_directories": {
+    "save_source": {
+      "loading_directories": "ማውጫዎችን በመጫን ላይ...",
+      "no_directories_found": "ምንም ማውጫዎች አልተገኙም። መጀመሪያ ከየእኔ ማውጫዎች ገጽ አንድ ይፍጠሩ።",
+      "directory_label": "ማውጫ",
+      "section_label": "ክፍል",
+      "select_directory_placeholder": "ማውጫ ይምረጡ",
+      "select_section_placeholder": "ክፍል ይምረጡ",
+      "unable_load_directories_error": "ሊታተሙ የሚችሉ ማውጫዎችን መጫን አልተቻለም",
+      "select_directory_first_error": "መጀመሪያ ማውጫ ይምረጡ",
+      "unable_create_section_error": "በዚህ ማውጫ ውስጥ ክፍል መፍጠር አልተቻለም",
+      "unable_select_section_error": "በዚህ ማውጫ ውስጥ ክፍል መምረጥ አልተቻለም"
+    },
+    "save_list": {
+      "open": "ዝርዝሩን ወደ ሊታተም ወደሚችል ማውጫ ያስቀምጡ",
+      "button_label": "ዝርዝሩን ወደ ሊታተም ወደሚችል ማውጫ ያስቀምጡ",
+      "dialog_title": "ዝርዝሩን ወደ ሊታተም ወደሚችል ማውጫ ያስቀምጡ",
+      "dialog_description": "ለዚህ ተወዳጅ ዝርዝር ማውጫ እና ክፍል ይምረጡ።",
+      "choose_directory_section": "ለ\"{{favoriteListName}}\" ማውጫ እና ክፍል ይምረጡ።",
+      "create_section_option": "የ\"{{heading}}\" ክፍል ይፍጠሩ",
+      "success": "ዝርዝሩ ሊታተም ወደሚችል ማውጫ ተቀምጧል",
+      "error": "ዝርዝሩን ወደ ማውጫ ማስቀመጥ አልተቻለም"
+    },
+    "save_query": {
+      "dialog_title": "ጥያቄውን ወደ ሊታተም ወደሚችል ማውጫ ያስቀምጡ",
+      "dialog_description": "ለዚህ የተቀመጠ መጠይቅ ማውጫ እና ክፍል ይምረጡ።",
+      "create_section_option": "የ\"{{heading}}\" ክፍል ይፍጠሩ",
+      "success": "ጥያቄው ሊታተም ወደሚችል ማውጫ ተቀምጧል",
+      "error": "ጥያቄውን ወደ ማውጫ ማስቀመጥ አልተቻለም"
     }
   }
 }

@@ -29,5 +29,7 @@
   "other_information": "Inne informacje",
   "organization_url": "Adres URL organizacji",
   "contacts": "Aby uzyskać dostęp do tej usługi, skontaktuj się z:",
-  "location_name": "Nazwa lokalizacji"
+  "location_name": "Nazwa lokalizacji",
+  "resource_name": "Nazwa zasobu",
+  "quality": "Informacje o jakości"
 }
