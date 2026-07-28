@@ -240,6 +240,8 @@ export interface Config {
     'analytics-total-referrals': AnalyticsTotalReferralsWidget;
     'analytics-widget-searches': AnalyticsWidgetSearchesWidget;
     'analytics-callout-clicks': AnalyticsCalloutClicksWidget;
+    'analytics-highlight-clicks': AnalyticsHighlightClicksWidget;
+    'analytics-alert-clicks': AnalyticsAlertClicksWidget;
     'analytics-page-views': AnalyticsPageViewsWidget;
     'analytics-pageviews-chart': AnalyticsPageviewsChartWidget;
     'analytics-map': AnalyticsMapWidget;
@@ -2074,6 +2076,26 @@ export interface AnalyticsWidgetSearchesWidget {
  * via the `definition` "analytics-callout-clicks_widget".
  */
 export interface AnalyticsCalloutClicksWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-highlight-clicks_widget".
+ */
+export interface AnalyticsHighlightClicksWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-alert-clicks_widget".
+ */
+export interface AnalyticsAlertClicksWidget {
   data?: {
     [k: string]: unknown;
   };

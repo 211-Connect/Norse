@@ -11,6 +11,8 @@ export enum UmamiEvent {
   SearchText = 'search_text',
   CalloutClick = 'callout_click',
   ResourceViewed = 'resource_viewed',
+  HighlightClick = 'highlight_click',
+  AlertClick = 'alert_click',
 }
 
 export enum ResourceEntry {

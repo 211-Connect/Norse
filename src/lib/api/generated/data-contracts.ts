@@ -594,6 +594,16 @@ export interface AnalyticsMetricsResponse {
    * @example 40
    */
   favoriteAddToList: number;
+  /**
+   * Number of highlight clicks
+   * @example 15
+   */
+  highlightClicks: number;
+  /**
+   * Number of alert clicks
+   * @example 10
+   */
+  alertClicks: number;
 }
 
 export interface ResourceMetricsResponse {

@@ -10,6 +10,8 @@ export enum WidgetSlug {
   TotalReferrals = 'analytics-total-referrals',
   WidgetSearches = 'analytics-widget-searches',
   CalloutClicks = 'analytics-callout-clicks',
+  HighlightClicks = 'analytics-highlight-clicks',
+  AlertClicks = 'analytics-alert-clicks',
   PageViews = 'analytics-page-views',
   PageviewsChart = 'analytics-pageviews-chart',
   Map = 'analytics-map',
@@ -66,6 +68,10 @@ export const WIDGET_INFO: Record<WidgetSlug, string> = {
     'The number of searches that came from the search widget.',
   [WidgetSlug.CalloutClicks]:
     'The number of times uses have clicked call out buttons on New Layout.',
+  [WidgetSlug.HighlightClicks]:
+    'The number of times users have clicked on a highlight button on the home page.',
+  [WidgetSlug.AlertClicks]:
+    'The number of times users have clicked an alert button on the home page.',
   [WidgetSlug.PageViews]: 'The number of pages viewed.',
   [WidgetSlug.PageviewsChart]: 'The number of page views each day.',
   [WidgetSlug.Map]: 'The geographic origin of user traffic.',
