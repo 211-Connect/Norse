@@ -6,21 +6,7 @@ import { Fragment } from 'react';
 import DateRange from '../analytics/DateRange';
 import ExportCSVButton from '../analytics/ExportCSVButton';
 import TenantAutoSelect from '../analytics/TenantAutoSelect';
-import { WidgetSlug } from '../analytics/widgetInfo';
-
-const ANALYTICS_DEFAULT_LAYOUT = [
-  { widgetSlug: WidgetSlug.TotalUsers, width: 'x-small' as const },
-  { widgetSlug: WidgetSlug.Searches, width: 'x-small' as const },
-  { widgetSlug: WidgetSlug.PageViews, width: 'x-small' as const },
-  { widgetSlug: WidgetSlug.ResourceViews, width: 'x-small' as const },
-  { widgetSlug: WidgetSlug.ZeroResults, width: 'x-small' as const },
-  { widgetSlug: WidgetSlug.WebsiteClicks, width: 'x-small' as const },
-  { widgetSlug: WidgetSlug.PhoneCalls, width: 'x-small' as const },
-  { widgetSlug: WidgetSlug.Directions, width: 'x-small' as const },
-  { widgetSlug: WidgetSlug.PageviewsChart, width: 'full' as const },
-  { widgetSlug: WidgetSlug.ResourceTitles, width: 'medium' as const },
-  { widgetSlug: WidgetSlug.SearchQueries, width: 'medium' as const },
-];
+import { ANALYTICS_DEFAULT_LAYOUT } from '../analytics/widgetInfo';
 
 export default function AnalyticsView(props: AdminViewServerProps) {
   const user = props.user ?? (props.initPageResult?.req?.user as any);
