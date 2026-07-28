@@ -22,7 +22,7 @@ export function buildHybridSearchConfigCache(
   }
 
   const boostPinnedResources =
-    resourceDirectory.search?.searchSettings?.boostPinnedResources ?? true;
+    resourceDirectory.search?.searchSettings?.boostPinnedResources ?? false;
 
   return {
     tenant_id: tenantId,
