@@ -5,12 +5,16 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical';
 import { s3Storage } from '@payloadcms/storage-s3';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import type { DashboardConfig } from 'payload';
 import { Endpoint, buildConfig } from 'payload';
 import sharp from 'sharp';
 
 import { getNumberFromString } from '@/utils/getNumberFromString';
 
-import { WidgetSlug } from './components/analytics/widgetInfo';
+import {
+  ANALYTICS_DEFAULT_LAYOUT,
+  WidgetSlug,
+} from './components/analytics/widgetInfo';
 import { HybridSearchConfig } from './collections/HybridSearchConfig';
 import { OrchestrationConfig } from './collections/OrchestrationConfig';
 import { ResourceDirectories } from './collections/ResourceDirectories';
@@ -329,9 +333,14 @@ const config = buildConfig({
           maxWidth: 'full',
         },
       ],
-      // Note: the default layout is defined in AnalyticsView, which is
-      // registered as `admin.components.views.dashboard.Component` above
-      // and patches this config's widgets/layout at render time.
+      // Set explicitly so Payload's core config sanitizer doesn't fall
+      // back to its built-in default (the `collections` widget) when the
+      // "Reset Layout" server function reads `admin.dashboard.defaultLayout`
+      // directly off the real server-side config. AnalyticsView also
+      // renders with this same array for the initial dashboard render.
+      defaultLayout: ANALYTICS_DEFAULT_LAYOUT as NonNullable<
+        DashboardConfig['defaultLayout']
+      >,
     },
   },
   secret: process.env.PAYLOAD_SECRET as string,

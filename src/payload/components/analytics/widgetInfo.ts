@@ -28,6 +28,23 @@ export enum WidgetSlug {
   EventCard = 'analytics-event-card',
 }
 
+// Default layout for the analytics dashboard. Used both to sanitize the
+// real Payload config (so the server-side "Reset Layout" action restores
+// this layout) and by AnalyticsView when rendering the dashboard.
+export const ANALYTICS_DEFAULT_LAYOUT = [
+  { widgetSlug: WidgetSlug.TotalUsers, width: 'x-small' as const },
+  { widgetSlug: WidgetSlug.Searches, width: 'x-small' as const },
+  { widgetSlug: WidgetSlug.PageViews, width: 'x-small' as const },
+  { widgetSlug: WidgetSlug.ResourceViews, width: 'x-small' as const },
+  { widgetSlug: WidgetSlug.ZeroResults, width: 'x-small' as const },
+  { widgetSlug: WidgetSlug.WebsiteClicks, width: 'x-small' as const },
+  { widgetSlug: WidgetSlug.PhoneCalls, width: 'x-small' as const },
+  { widgetSlug: WidgetSlug.Directions, width: 'x-small' as const },
+  { widgetSlug: WidgetSlug.PageviewsChart, width: 'full' as const },
+  { widgetSlug: WidgetSlug.ResourceTitles, width: 'medium' as const },
+  { widgetSlug: WidgetSlug.SearchQueries, width: 'medium' as const },
+];
+
 export const WIDGET_INFO: Record<WidgetSlug, string> = {
   [WidgetSlug.TotalUsers]: 'The number of unique visitors to the site.',
   [WidgetSlug.Searches]:
