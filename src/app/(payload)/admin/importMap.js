@@ -48,6 +48,8 @@ import { default as default_1921c8a0e459e5e56f0c55d235737c16 } from '@/payload/c
 import { default as default_26f5344addbdbe0637ad947e94ea3028 } from '@/payload/components/analytics/widgets/TotalReferralsWidget'
 import { default as default_766777203ef7043a1e1fcbe8188c6840 } from '@/payload/components/analytics/widgets/WidgetSearchesWidget'
 import { default as default_121ebe1dca269f4984b617c43fef14fe } from '@/payload/components/analytics/widgets/CalloutClicksWidget'
+import { default as default_69d23959707ed857d328adc822ab95d6 } from '@/payload/components/analytics/widgets/HighlightClicksWidget'
+import { default as default_26a30d2d7154615da33fbb2d808fd957 } from '@/payload/components/analytics/widgets/AlertClicksWidget'
 import { default as default_723f4a967de6eda4bbdcbf96fd002037 } from '@/payload/components/analytics/widgets/PageViewsWidget'
 import { default as default_ae2d726342a3a45563bf3152abfad607 } from '@/payload/components/analytics/widgets/PageviewsChartWidget'
 import { default as default_40e5d1b279d66a0c65b1a98e988971c4 } from '@/payload/components/analytics/widgets/AnalyticsMapWidget'
@@ -118,6 +120,8 @@ export const importMap = {
   "@/payload/components/analytics/widgets/TotalReferralsWidget#default": default_26f5344addbdbe0637ad947e94ea3028,
   "@/payload/components/analytics/widgets/WidgetSearchesWidget#default": default_766777203ef7043a1e1fcbe8188c6840,
   "@/payload/components/analytics/widgets/CalloutClicksWidget#default": default_121ebe1dca269f4984b617c43fef14fe,
+  "@/payload/components/analytics/widgets/HighlightClicksWidget#default": default_69d23959707ed857d328adc822ab95d6,
+  "@/payload/components/analytics/widgets/AlertClicksWidget#default": default_26a30d2d7154615da33fbb2d808fd957,
   "@/payload/components/analytics/widgets/PageViewsWidget#default": default_723f4a967de6eda4bbdcbf96fd002037,
   "@/payload/components/analytics/widgets/PageviewsChartWidget#default": default_ae2d726342a3a45563bf3152abfad607,
   "@/payload/components/analytics/widgets/AnalyticsMapWidget#default": default_40e5d1b279d66a0c65b1a98e988971c4,

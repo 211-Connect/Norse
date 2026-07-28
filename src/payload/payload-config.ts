@@ -220,6 +220,22 @@ const config = buildConfig({
           maxWidth: 'full',
         },
         {
+          slug: WidgetSlug.HighlightClicks,
+          Component:
+            '@/payload/components/analytics/widgets/HighlightClicksWidget#default',
+          label: 'Highlight clicks',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: WidgetSlug.AlertClicks,
+          Component:
+            '@/payload/components/analytics/widgets/AlertClicksWidget#default',
+          label: 'Alert clicks',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
           slug: WidgetSlug.PageViews,
           Component:
             '@/payload/components/analytics/widgets/PageViewsWidget#default',

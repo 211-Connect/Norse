@@ -8,6 +8,7 @@ import { Button } from '@/app/(app)/shared/components/ui/button';
 import { SectionCarousel } from '@/app/(app)/shared/components/section-carousel';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { getStableKey } from '@/app/(app)/shared/lib/get-stable-key';
+import { trackUmamiEvent, UmamiEvent } from '@/app/(app)/shared/lib/umami';
 
 export function HighlightsSection() {
   const appConfig = useAppConfig();
@@ -35,7 +36,15 @@ export function HighlightsSection() {
           target={highlight.openInNewTab ? '_blank' : '_self'}
           className="w-full"
         >
-          <Button variant="default" className="w-full gap-2">
+          <Button
+            variant="default"
+            className="w-full gap-2"
+            onClick={() => {
+              trackUmamiEvent(UmamiEvent.HighlightClick, {
+                highlightTitle: highlight.title,
+              });
+            }}
+          >
             {highlight.buttonText}
             {highlight.openInNewTab && <ExternalLink className="size-4" />}
           </Button>
