@@ -29,5 +29,7 @@
   "other_information": "અન્ય માહિતી",
   "organization_url": "સંસ્થા URL",
   "contacts": "આ સેવાનો ઉપયોગ કરવા માટે, સંપર્ક કરો:",
-  "location_name": "સ્થાનનું નામ"
+  "location_name": "સ્થાનનું નામ",
+  "resource_name": "સંસાધનનું નામ",
+  "quality": "ગુણવત્તા માહિતી"
 }

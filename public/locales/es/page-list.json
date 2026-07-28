@@ -47,7 +47,7 @@
     "datum_hours": "Horas",
     "datum_email": "Correo electrónico",
     "datum_website": "Sitio web",
-    "datum_address": "DIRECCIÓN",
+    "datum_address": "Dirección",
     "datum_transportation": "Transporte",
     "datum_accessibility": "Accesibilidad",
     "datum_eligibility": "Elegibilidad",
@@ -57,7 +57,8 @@
     "dial_211": "Marque 2-1-1",
     "loading_resources": "Cargando detalles del recurso...",
     "load_error": "No se pudieron cargar los detalles del recurso imprimible. Inténtelo de nuevo.",
-    "retry": "Rever"
+    "retry": "Rever",
+    "language_title": "Idioma del directorio"
   },
   "print_footer_disclaimer": "{{brandName}} proporciona esta información como un servicio público y no ofrece garantías respecto a su exactitud, integridad o actualidad. {{brandName}} no se responsabiliza del uso que se le dé a esta información y no asume ninguna responsabilidad por las consecuencias derivadas de su uso. La distribución de esta impresión no implica el respaldo ni la afiliación con {{brandName}}.",
   "print_page_counter": "Página {{current}} de {{total}}",

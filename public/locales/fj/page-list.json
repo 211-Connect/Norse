@@ -57,7 +57,8 @@
     "dial_211": "Qiri ena 2-1-10.",
     "loading_resources": "Vakavodoki tiko na itukutuku matailalai ni ivurevure...",
     "load_error": "E sega ni rawa ni vakavodoki na itukutuku matailalai ni ivurevure tabaki. Kerekere mo tovolea tale.",
-    "retry": "Tovolea tale"
+    "retry": "Tovolea tale",
+    "language_title": "Vosa ni Dairekita"
   },
   "print_footer_disclaimer": "{{brandName}} e vakarautaka na itukutuku oqo me vaka e dua na veiqaravi raraba ka sega ni dua na veivakadeitaki me baleta na kena dodonu, taucoko, se kena gauna dodonu. E sega ni vakaitavitaki koya na {{brandName}} ena kena vakayagataki na itukutuku oqo ka sega ni vakaitavitaki koya ena dua na ka e rawa ni yaco mai na kena vakayagataki. Na kena veisoliyaki na ivola tabaki oqo e sega ni kena ibalebale ni vakadonuya se veiwekani kei na {{brandName}}.",
   "print_page_counter": "Página {{current}} de {{total}}",

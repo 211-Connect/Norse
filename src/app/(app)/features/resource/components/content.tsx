@@ -1,9 +1,10 @@
 'use client';
 
-import { useRef } from 'react';
+import { useCallback, useRef } from 'react';
 
 import { ResourceEntry } from '@/app/(app)/shared/lib/umami';
 import { cn } from '@/app/(app)/shared/lib/utils';
+import { getResource } from '@/app/(app)/shared/services/resource-service';
 import { fontSans } from '@/app/(app)/shared/styles/fonts';
 import { resourcesToPrintableDirectory } from '@/app/(app)/shared/utils/printable-directory-transformers';
 import { AppConfig } from '@/types/appConfig';
@@ -28,13 +29,24 @@ export const ResourcePageContent = ({
   entry,
   resourceId,
   tenantId,
-  locale,
 }: ResourcePageContentProps) => {
   const componentToPrintRef = useRef<HTMLDivElement>(null);
-  const printableDirectoryData = resourcesToPrintableDirectory(
-    [resource],
-    locale,
-    resource.name?.trim() || resource.serviceName?.trim() || '',
+  const loadPrintableDirectoryData = useCallback(
+    async (printLocale: string) => {
+      const freshResource = await getResource(
+        resource.id,
+        printLocale,
+        tenantId,
+      );
+      const target = freshResource ?? resource;
+
+      return resourcesToPrintableDirectory(
+        [target],
+        printLocale,
+        target.name?.trim() || target.serviceName?.trim() || '',
+      );
+    },
+    [resource, tenantId],
   );
 
   useResourceViewTracking({ entry, resourceId, tenantId });
@@ -48,7 +60,7 @@ export const ResourcePageContent = ({
       <Navigation
         componentToPrintRef={componentToPrintRef}
         resource={resource}
-        printableDirectoryData={printableDirectoryData}
+        loadPrintableDirectoryData={loadPrintableDirectoryData}
       />
 
       <div ref={componentToPrintRef}>

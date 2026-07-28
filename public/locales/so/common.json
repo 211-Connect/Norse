@@ -5,7 +5,8 @@
     "language_select_label": "Dooro luqad si ay u beddelaan luqada bogga",
     "my_stuff": "My stuff",
     "search": "Search",
-    "report": "Gudbi jawaab celin"
+    "report": "Gudbi jawaab celin",
+    "printable_directories": "Tusmooyinka La Daabacan Karo"
   },
   "favorites": {
     "added_to_list": "Ku daray liiska",
@@ -87,7 +88,9 @@
     "show_less": "muuji wax yar",
     "print": "Haku",
     "close": "Xidh",
-    "send": "Dir"
+    "send": "Dir",
+    "edit": "Wax ka beddel",
+    "save": "Keydi"
   },
   "list": {
     "private": "Private",
@@ -284,6 +287,37 @@
       "name": "Iskaa wax u qabso iyo Deeq",
       "description": "Baahida loo qabo in la bixiyo ama la helo iyada oo loo marayo deeqsinimada bulshada - ha ahaato qof u baahan alaab la deeqay, ama uu leeyahay awood iyo rabitaan uu waqti, xirfado, ama agab ugu deeqo dadka kale. Waxay daboolaysaa baahiyaha labada dhinac ee is-weydaarsiga bulshada: shakhsiyaadka raadinaya deeqo agab ama adeegyo la deeqay, iyo shakhsiyaadka ama ururada doonaya inay isku xiraan mutadawiciinta iyo deeq-bixiyeyaasha fursado macno leh oo ay ku caawiyaan.",
       "displayDescription": "Ma u baahan tahay alaab la deeqay ama ma rabtaa inaad caawiso dadka kale? Waxaan isku xiri karnaa dadka doonaya inay wax bixiyaan iyo dadka u baahan gacan."
+    }
+  },
+  "printable_directories": {
+    "save_source": {
+      "loading_directories": "Soo raraya tusmooyinka...",
+      "no_directories_found": "Hagayaal lama helin. Marka hore mid ka samee bogga My Directories.",
+      "directory_label": "Tusmada Buugga",
+      "section_label": "Qaybta",
+      "select_directory_placeholder": "Dooro galka",
+      "select_section_placeholder": "Dooro qayb",
+      "unable_load_directories_error": "Lama soo rari karo tusmooyinka la daabacan karo",
+      "select_directory_first_error": "Marka hore dooro buug-yare",
+      "unable_create_section_error": "Lama abuuri karo qayb ka mid ah buuggan",
+      "unable_select_section_error": "Lama dooran karo qayb ka mid ah tusahan"
+    },
+    "save_list": {
+      "open": "Liiska ku kaydi galka la daabacan karo",
+      "button_label": "Liiska ku kaydi galka la daabacan karo",
+      "dialog_title": "Liiska ku kaydi galka la daabacan karo",
+      "dialog_description": "Dooro buug iyo qayb liiskan aad ugu jeceshahay.",
+      "choose_directory_section": "Dooro buug iyo qayb loogu talagalay \"{{favoriteListName}}\".",
+      "create_section_option": "Samee qaybta \"{{heading}}\"",
+      "success": "Liiska waxa lagu kaydiyay galka la daabacan karo",
+      "error": "Lama kaydin karo liiska buugga"
+    },
+    "save_query": {
+      "dialog_title": "Ku kaydi su'aasha galka la daabacan karo",
+      "dialog_description": "Dooro buug iyo qayb loogu talagalay weydiintan la keydiyay.",
+      "create_section_option": "Samee qaybta \"{{heading}}\"",
+      "success": "Su'aasha waxaa lagu keydiyay galka la daabacan karo",
+      "error": "Lama kaydin karo su'aasha buugga"
     }
   }
 }

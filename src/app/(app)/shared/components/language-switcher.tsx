@@ -1,6 +1,5 @@
 'use client';
 
-import { LanguagesIcon } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTopLoader } from 'nextjs-toploader';
 import { useCallback, useMemo } from 'react';
@@ -13,17 +12,9 @@ import {
   LANGUAGE_SWITCHER_CONTENT_ID,
   LANGUAGE_SWITCHER_TRIGGER_ID,
 } from '../lib/aria-constants';
-import { getLanguageName } from '../lib/language-names';
 import { UmamiEvent, trackUmamiEvent } from '../lib/umami';
 import { cn } from '../lib/utils';
-import { Label } from './ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from './ui/select';
+import { LanguageSwitcherPrimitive } from './language-switcher-primitive';
 
 export const LanguageSwitcher = () => {
   const appConfig = useAppConfig();
@@ -33,7 +24,7 @@ export const LanguageSwitcher = () => {
   const { start } = useTopLoader();
   const isSmOrLarger = useBreakpoint(640);
 
-  const { t, i18n } = useTranslation('common');
+  const { i18n } = useTranslation('common');
 
   const currentLanguage = useMemo(() => i18n.language, [i18n.language]);
 
@@ -75,47 +66,15 @@ export const LanguageSwitcher = () => {
 
   return (
     <li className="h-full">
-      <Select
-        a11yLabel={
-          <Label htmlFor={LANGUAGE_SWITCHER_TRIGGER_ID} className="sr-only">
-            {t('header.language_select_label')}
-          </Label>
-        }
-        contentId={LANGUAGE_SWITCHER_CONTENT_ID}
-        defaultValue={i18n.language}
+      <LanguageSwitcherPrimitive
+        value={currentLanguage}
         onValueChange={handleValueChange}
-      >
-        <SelectTrigger
-          id={LANGUAGE_SWITCHER_TRIGGER_ID}
-          className={cn(
-            'flex border-input h-full w-auto min-w-36 cursor-pointer items-center gap-1',
-            newLayoutEnabled && 'bg-white!',
-          )}
-        >
-          <div className="flex items-center gap-1 overflow-hidden">
-            <LanguagesIcon className="size-4" aria-hidden="true" />
-            <SelectValue placeholder={t('header.language_select_label')}>
-              <span className="text-xs leading-5 font-medium capitalize">
-                {getLanguageName(currentLanguage)}
-              </span>
-            </SelectValue>
-          </div>
-        </SelectTrigger>
-        <SelectContent align={isSmOrLarger ? 'end' : 'start'}>
-          {appConfig.i18n.locales.map((locale: string) => {
-            const languageName = getLanguageName(locale);
-
-            return (
-              <SelectItem key={locale} value={locale}>
-                <span className="text-xs font-medium capitalize">
-                  {languageName}
-                </span>
-                {` (${locale})`}
-              </SelectItem>
-            );
-          })}
-        </SelectContent>
-      </Select>
+        locales={appConfig.i18n.locales}
+        triggerId={LANGUAGE_SWITCHER_TRIGGER_ID}
+        contentId={LANGUAGE_SWITCHER_CONTENT_ID}
+        align={isSmOrLarger ? 'end' : 'start'}
+        triggerClassName={cn(newLayoutEnabled && 'bg-white!')}
+      />
     </li>
   );
 };

@@ -65,6 +65,20 @@ export function useDatumLabels(): DatumLabels {
   };
 }
 
+/**
+ * Resolved against the nearest `I18nextProvider` at render time, so when
+ * rendered inside the print-locale-scoped provider it reflects the chosen
+ * directory language rather than the visitor's current UI language.
+ */
+export function useDisclaimerText(brandName: string): string {
+  const { t } = useTranslation('page-list');
+
+  return t('print_footer_disclaimer', {
+    brandName,
+    interpolation: { escapeValue: false },
+  });
+}
+
 export const itemStyles = StyleSheet.create({
   resourceGridTwoColumns: {
     flexDirection: 'row',

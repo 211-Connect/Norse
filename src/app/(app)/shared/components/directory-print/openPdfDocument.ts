@@ -1,6 +1,10 @@
 import { pdf } from '@react-pdf/renderer';
 
+import { createLogger } from '@/lib/logger';
+
 import { type PdfDocumentElement } from './print-directory-dialog';
+
+const log = createLogger('openPdfDocument');
 
 export type OpenPdfDocumentResult =
   { ok: true } | { ok: false; reason: 'popup_blocked' | 'unknown' };
@@ -15,6 +19,8 @@ export async function openPdfDocument(
   documentElement: PdfDocumentElement,
   options?: { postProcessBlob?: (blob: Blob) => Promise<Blob> },
 ): Promise<OpenPdfDocumentResult> {
+  const startedAt = performance.now();
+
   try {
     let blob = await pdf(documentElement).toBlob();
 
@@ -22,11 +28,21 @@ export async function openPdfDocument(
       blob = await options.postProcessBlob(blob);
     }
 
+    const renderMs = Math.round(performance.now() - startedAt);
+    log.debug(
+      { renderMs, blobSize: blob.size },
+      'PDF blob ready, opening window',
+    );
+
     const url = window.URL.createObjectURL(blob);
     const printWindow = window.open(url, '_blank');
 
     if (!printWindow) {
       window.URL.revokeObjectURL(url);
+      log.warn(
+        { renderMs },
+        'window.open returned null, browser popup blocker likely prevented opening the PDF tab',
+      );
       return { ok: false, reason: 'popup_blocked' };
     }
 
@@ -40,9 +56,12 @@ export async function openPdfDocument(
     printWindow.addEventListener('beforeunload', cleanup);
     setTimeout(cleanup, 10 * 60 * 1000);
 
+    log.debug({ renderMs }, 'PDF window opened successfully');
+
     return { ok: true };
   } catch (error) {
-    console.error('Error generating PDF:', error);
+    const renderMs = Math.round(performance.now() - startedAt);
+    log.error({ err: error, renderMs }, 'Error generating PDF');
     return { ok: false, reason: 'unknown' };
   }
 }

@@ -5,7 +5,8 @@
     "language_select_label": "Chwazi yon lang pou chanje lang sit la",
     "my_stuff": "Bagay mwen yo",
     "search": "Rechèch",
-    "report": "Soumèt Kòmantè"
+    "report": "Soumèt Kòmantè",
+    "printable_directories": "Anyè pou enprime"
   },
   "favorites": {
     "added_to_list": "Ajoute nan lis la",
@@ -87,7 +88,9 @@
     "show_less": "Montre mwens",
     "print": "Enprime",
     "close": "Fèmen",
-    "send": "Voye"
+    "send": "Voye",
+    "edit": "Modifye",
+    "save": "Sove"
   },
   "list": {
     "private": "Prive",
@@ -284,6 +287,37 @@
       "name": "Volontè ak Donasyon",
       "description": "Bezwen pou bay oswa resevwa atravè jenewozite kominote a — kit yon moun bezwen machandiz ki soti nan don, oswa li gen kapasite ak dezi pou kontribye tan, konpetans, oswa resous bay lòt moun. Li anglobe bezwen nan tou de bò echanj sivik la: moun k ap chèche don materyèl oswa sèvis ki soti nan don, ak moun oswa òganizasyon k ap chèche konekte volontè ak donatè ak opòtinite ki gen sans pou ede.",
       "displayDescription": "Bezwen machandiz ki soti nan don oswa ou vle ede lòt moun? Nou ka mete moun ki vle bay ak moun ki bezwen yon koutmen."
+    }
+  },
+  "printable_directories": {
+    "save_source": {
+      "loading_directories": "Ap chaje anyè yo...",
+      "no_directories_found": "Pa jwenn okenn anyè. Kreye youn nan paj Anyè mwen yo an premye.",
+      "directory_label": "Anyè",
+      "section_label": "Seksyon",
+      "select_directory_placeholder": "Chwazi anyè",
+      "select_section_placeholder": "Chwazi seksyon",
+      "unable_load_directories_error": "Pa kapab chaje anyè enprimab yo",
+      "select_directory_first_error": "Chwazi yon anyè an premye",
+      "unable_create_section_error": "Pa kapab kreye yon seksyon nan anyè sa a",
+      "unable_select_section_error": "Pa kapab chwazi yon seksyon nan anyè sa a"
+    },
+    "save_list": {
+      "open": "Sove lis la nan yon anyè enprimab",
+      "button_label": "Sove lis la nan yon anyè enprimab",
+      "dialog_title": "Sove lis la nan yon anyè enprimab",
+      "dialog_description": "Chwazi yon anyè ak yon seksyon pou lis favori sa a.",
+      "choose_directory_section": "Chwazi yon anyè ak yon seksyon pou \"{{favoriteListName}}\".",
+      "create_section_option": "Kreye seksyon \"{{heading}}\" la",
+      "success": "Lis la sove nan anyè enprimab la",
+      "error": "Pa kapab sove lis la nan anyè a"
+    },
+    "save_query": {
+      "dialog_title": "Sove demann lan nan yon anyè enprimab",
+      "dialog_description": "Chwazi yon anyè ak yon seksyon pou rechèch anrejistre sa a.",
+      "create_section_option": "Kreye seksyon \"{{heading}}\" la",
+      "success": "Rechèch sove nan anyè pou enprime a",
+      "error": "Pa kapab sove demann lan nan anyè a"
     }
   }
 }

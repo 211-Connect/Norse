@@ -5,7 +5,8 @@
     "language_select_label": "选择一种语言以更改网站语言",
     "my_stuff": "我的东西",
     "search": "搜索",
-    "report": "提交反馈"
+    "report": "提交反馈",
+    "printable_directories": "可打印目录"
   },
   "favorites": {
     "added_to_list": "已添加到列表",
@@ -87,7 +88,9 @@
     "show_less": "显示简要信息",
     "print": "打印",
     "close": "关闭",
-    "send": "发送"
+    "send": "发送",
+    "edit": "编辑",
+    "save": "节省"
   },
   "list": {
     "private": "私人",
@@ -284,6 +287,37 @@
       "name": "志愿者与捐赠",
       "description": "通过社区慷慨给予或接受的需求——无论是需要捐赠物品，还是有能力和意愿为他人贡献时间、技能或资源——都包含在内。它涵盖了公民交流双方的需求：寻求物质捐赠或服务捐赠的个人，以及希望将志愿者和捐赠者与有意义的助人机会联系起来的个人或组织。",
       "displayDescription": "需要捐赠物品或想帮助他人？我们可以将想要捐赠的人与需要帮助的人联系起来。"
+    }
+  },
+  "printable_directories": {
+    "save_source": {
+      "loading_directories": "正在加载目录...",
+      "no_directories_found": "未找到目录。请先从“我的目录”页面创建一个。",
+      "directory_label": "目录",
+      "section_label": "部分",
+      "select_directory_placeholder": "选择目录",
+      "select_section_placeholder": "选择部分",
+      "unable_load_directories_error": "无法加载可打印目录",
+      "select_directory_first_error": "首先选择一个目录",
+      "unable_create_section_error": "无法在此目录中创建节。",
+      "unable_select_section_error": "无法选择此目录中的某个部分。"
+    },
+    "save_list": {
+      "open": "将列表保存到可打印目录",
+      "button_label": "将列表保存到可打印目录",
+      "dialog_title": "将列表保存到可打印目录",
+      "dialog_description": "请选择收藏列表的目录和版块。",
+      "choose_directory_section": "请为“{{favoriteListName}}”选择一个目录和部分。",
+      "create_section_option": "创建“{{heading}}”部分",
+      "success": "列表已保存到可打印目录",
+      "error": "无法将列表保存到目录"
+    },
+    "save_query": {
+      "dialog_title": "将查询保存到可打印目录",
+      "dialog_description": "请为此已保存的查询选择一个目录和部分。",
+      "create_section_option": "创建“{{heading}}”部分",
+      "success": "查询结果已保存到可打印目录",
+      "error": "无法将查询保存到目录"
     }
   }
 }

@@ -1,7 +1,5 @@
 'use client';
 
-import { useTranslation } from 'react-i18next';
-
 import { DirectoryPrintControl } from '@/app/(app)/shared/components/directory-print/directory-print-control';
 import { PDFPrintableDirectory } from '@/app/(app)/shared/components/directory-print/pdf-printable-directory';
 import { applyBookletPadding } from '@/app/(app)/shared/components/directory-print/applyBookletPadding';
@@ -26,7 +24,6 @@ type PrintPrintableDirectoryButtonProps = {
 export function PrintPrintableDirectoryButton({
   directory,
 }: PrintPrintableDirectoryButtonProps) {
-  const { i18n } = useTranslation();
   const appConfig = useAppConfig();
 
   if (
@@ -39,10 +36,12 @@ export function PrintPrintableDirectoryButton({
   const initialVariant =
     RESOURCE_LAYOUT_TO_PRINT_VARIANT[directory.resourceLayout];
 
-  const loadData = async (): Promise<PrintableDirectoryPdfData> => {
+  const loadData = async (
+    locale: string,
+  ): Promise<PrintableDirectoryPdfData> => {
     const preview = await getPrintableDirectoryPreview(
       directory.id,
-      i18n.language,
+      locale,
       appConfig.tenantId,
     );
 
@@ -50,12 +49,11 @@ export function PrintPrintableDirectoryButton({
       throw new Error('Failed to load printable directory preview');
     }
 
-    return printableDirectoryPreviewToPdfData(preview, i18n.language);
+    return printableDirectoryPreviewToPdfData(preview, locale);
   };
 
   return (
     <DirectoryPrintControl<PrintableDirectoryPdfData>
-      data={null}
       loadData={loadData}
       initialVariant={initialVariant}
       testId="print-printable-directory-btn"

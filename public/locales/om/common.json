@@ -5,7 +5,8 @@
     "language_select_label": "Afaan saayitii jijjiiruuf afaan filadhu",
     "my_stuff": "Waan koo",
     "search": "Barbaaduu",
-    "report": "Yaada Galchuu"
+    "report": "Yaada Galchuu",
+    "printable_directories": "Galmeewwan Maxxanfamuu Danda'an"
   },
   "favorites": {
     "added_to_list": "Tarree irratti dabalameera",
@@ -87,7 +88,9 @@
     "show_less": "Xiqqaa agarsiisi",
     "print": "Maxxansa",
     "close": "Cufii",
-    "send": "Erguu"
+    "send": "Erguu",
+    "edit": "Gulaaluu",
+    "save": "Qusachuu"
   },
   "list": {
     "private": "Dhuunfaa",
@@ -284,6 +287,37 @@
       "name": "Tola Ooltummaa & Arjooma",
       "description": "Barbaachisummaa arjummaa hawaasaatiin kennuu ykn fudhachuu — namni tokko meeshaalee arjoomaman yoo barbaadu, ykn dandeettii fi fedhii yeroo, dandeettii, ykn qabeenya namoota biroof gumaachuu yoo qabaate. Fedhiiwwan gama lamaan jijjiirraa lammummaa ni hammata: namoota dhuunfaa arjooma meeshaa barbaadan ykn tajaajila arjoomame, fi namoota dhuunfaa ykn dhaabbilee tola ooltotaa fi arjoomtoota carraa gargaarsaa hiika qabu waliin walqabsiisuu barbaadan.",
       "displayDescription": "Meeshaalee arjoomaman barbaadduu moo namoota biroo gargaaruu barbaadduu? Namoota kennuu barbaadan namoota harka barbaadan waliin wal qunnamsiisuu dandeenya."
+    }
+  },
+  "printable_directories": {
+    "save_source": {
+      "loading_directories": "Galmeewwan fe'amaa jira...",
+      "no_directories_found": "Galmeewwan hin argamne. Dursa fuula Galmeewwan Koo irraa tokko uumi.",
+      "directory_label": "Daayirektarii",
+      "section_label": "Kutaa",
+      "select_directory_placeholder": "Galmee filadhu",
+      "select_section_placeholder": "Kutaa filadhu",
+      "unable_load_directories_error": "Galmeewwan maxxanfamuu danda'an fe'uu hin dandeenye",
+      "select_directory_first_error": "Dursa galmee filadhu",
+      "unable_create_section_error": "Galmee kana keessatti kutaa uumuu hin dandeenye",
+      "unable_select_section_error": "Galmee kana keessatti kutaa filachuu hin dandeenye"
+    },
+    "save_list": {
+      "open": "Tarree gara galmee maxxanfamuu danda'utti saagi",
+      "button_label": "Tarree gara galmee maxxanfamuu danda'utti saagi",
+      "dialog_title": "Tarree gara galmee maxxanfamuu danda'utti saagi",
+      "dialog_description": "Tarree jaallatamaa kanaaf galmee fi kutaa fili.",
+      "choose_directory_section": "Galmee fi kutaa “{{favoriteListName}}” filadhu.",
+      "create_section_option": "Kutaa “{{heading}}” jedhu uumi",
+      "success": "Tarree galmee maxxanfamuu danda'utti saagame",
+      "error": "Tarree gara galmee saaguu hin dandeenye"
+    },
+    "save_query": {
+      "dialog_title": "Gaaffii gara galmee maxxanfamuu danda'utti saagi",
+      "dialog_description": "Gaaffii saagame kanaaf galmee fi kutaa fili.",
+      "create_section_option": "Kutaa “{{heading}}” jedhu uumi",
+      "success": "Gaaffiin gara galmee maxxanfamuu danda'utti saagame",
+      "error": "Gaaffii gara galmee saaguu hin dandeenye"
     }
   }
 }

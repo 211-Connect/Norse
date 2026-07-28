@@ -18,6 +18,7 @@ import {
   scaleStyle,
   splitItemsIntoColumns,
   useDatumLabels,
+  useDisclaimerText,
   type FontSizeMode,
   type PrintVariant,
 } from './pdf-print-primitives';
@@ -228,7 +229,7 @@ type PDFDirectoryProps = {
   currentDomain: string;
   currentDate: string;
   brandLogoUrl?: string;
-  disclaimerText: string;
+  brandName: string;
 };
 
 export function PDFDirectory({
@@ -238,10 +239,11 @@ export function PDFDirectory({
   currentDomain,
   currentDate,
   brandLogoUrl,
-  disclaimerText,
+  brandName,
 }: PDFDirectoryProps) {
   const fontScale = getFontScale(fontSizeMode);
   const datumLabels = useDatumLabels();
+  const disclaimerText = useDisclaimerText(brandName);
 
   const useSidebarLayout =
     variant === 'full-listing' && fontSizeMode !== 'large';

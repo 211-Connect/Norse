@@ -5,7 +5,8 @@
     "language_select_label": "サイトの言語を変更するには、言語を選択してください。",
     "my_stuff": "私の持ち物",
     "search": "検索",
-    "report": "フィードバックを送信"
+    "report": "フィードバックを送信",
+    "printable_directories": "印刷可能なディレクトリ"
   },
   "favorites": {
     "added_to_list": "リストに追加されました",
@@ -87,7 +88,9 @@
     "show_less": "表示を減らす",
     "print": "印刷",
     "close": "閉じる",
-    "send": "送信"
+    "send": "送信",
+    "edit": "編集",
+    "save": "保存"
   },
   "list": {
     "private": "プライベート",
@@ -284,6 +287,37 @@
       "name": "ボランティアと寄付",
       "description": "地域社会の寛大さを通して与えたり受け取ったりする必要性――個人が寄付された物品を必要としている場合も、時間、スキル、資源を他者に提供する能力と意欲がある場合も含まれる。これは、市民交流の両側のニーズを包含する。つまり、物資の寄付やサービスの寄付を求める個人と、ボランティアや寄付者を意義のある支援機会に結びつけようとする個人や組織の両方のニーズである。",
       "displayDescription": "寄付品が必要な方、あるいは困っている人を助けたい方はいらっしゃいますか？寄付をしたい方と、支援を必要としている方をつなぐお手伝いをいたします。"
+    }
+  },
+  "printable_directories": {
+    "save_source": {
+      "loading_directories": "ディレクトリを読み込んでいます...",
+      "no_directories_found": "ディレクトリが見つかりませんでした。まず「マイディレクトリ」ページから作成してください。",
+      "directory_label": "ディレクトリ",
+      "section_label": "セクション",
+      "select_directory_placeholder": "ディレクトリを選択してください",
+      "select_section_placeholder": "セクションを選択",
+      "unable_load_directories_error": "印刷可能なディレクトリを読み込めません",
+      "select_directory_first_error": "まずディレクトリを選択してください",
+      "unable_create_section_error": "このディレクトリにセクションを作成できません",
+      "unable_select_section_error": "このディレクトリ内のセクションを選択できません"
+    },
+    "save_list": {
+      "open": "リストを印刷可能なディレクトリに保存する",
+      "button_label": "リストを印刷可能なディレクトリに保存する",
+      "dialog_title": "リストを印刷可能なディレクトリに保存する",
+      "dialog_description": "このお気に入りリストを表示するディレクトリとセクションを選択してください。",
+      "choose_directory_section": "「{{favoriteListName}}」のディレクトリとセクションを選択してください。",
+      "create_section_option": "「{{heading}}」セクションを作成します。",
+      "success": "リストは印刷可能なディレクトリに保存されました",
+      "error": "リストをディレクトリに保存できません"
+    },
+    "save_query": {
+      "dialog_title": "クエリを印刷可能なディレクトリに保存する",
+      "dialog_description": "保存したクエリの保存先ディレクトリとセクションを選択してください。",
+      "create_section_option": "「{{heading}}」セクションを作成します。",
+      "success": "クエリは印刷可能なディレクトリに保存されました",
+      "error": "クエリをディレクトリに保存できません"
     }
   }
 }

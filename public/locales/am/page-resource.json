@@ -29,5 +29,7 @@
   "other_information": "ሌላ መረጃ",
   "organization_url": "የድርጅት ዩአርኤል",
   "contacts": "ይህንን አገልግሎት ለማግኘት የሚከተለውን ያግኙ፦",
-  "location_name": "የአካባቢ ስም"
+  "location_name": "የአካባቢ ስም",
+  "resource_name": "የንብረት ስም",
+  "quality": "የጥራት መረጃ"
 }

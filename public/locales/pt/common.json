@@ -5,7 +5,8 @@
     "language_select_label": "Selecione um idioma para alterar o idioma do site.",
     "my_stuff": "Minhas coisas",
     "search": "Procurar",
-    "report": "Enviar feedback"
+    "report": "Enviar feedback",
+    "printable_directories": "Listas telefônicas para impressão"
   },
   "favorites": {
     "added_to_list": "Adicionado à lista",
@@ -87,7 +88,9 @@
     "show_less": "Mostrar menos",
     "print": "Imprimir",
     "close": "Fechar",
-    "send": "Enviar"
+    "send": "Enviar",
+    "edit": "Editar",
+    "save": "Salvar"
   },
   "list": {
     "private": "Privado",
@@ -284,6 +287,37 @@
       "name": "Voluntariado e Doações",
       "description": "A necessidade de dar ou receber por meio da generosidade da comunidade — seja uma pessoa que precisa de bens doados ou que tem a capacidade e o desejo de contribuir com tempo, habilidades ou recursos para ajudar os outros. Abrange as necessidades de ambos os lados da troca cívica: indivíduos que buscam doações de materiais ou serviços doados e indivíduos ou organizações que buscam conectar voluntários e doadores com oportunidades significativas de ajudar.",
       "displayDescription": "Precisa de doações ou quer ajudar outras pessoas? Podemos conectar quem quer doar com quem precisa de ajuda."
+    }
+  },
+  "printable_directories": {
+    "save_source": {
+      "loading_directories": "Carregando diretórios...",
+      "no_directories_found": "Nenhum diretório encontrado. Crie um primeiro na página Meus Diretórios.",
+      "directory_label": "Diretório",
+      "section_label": "Seção",
+      "select_directory_placeholder": "Selecione o diretório",
+      "select_section_placeholder": "Selecione a seção",
+      "unable_load_directories_error": "Não foi possível carregar diretórios imprimíveis.",
+      "select_directory_first_error": "Selecione primeiro um diretório",
+      "unable_create_section_error": "Não foi possível criar uma seção neste diretório.",
+      "unable_select_section_error": "Não foi possível selecionar uma seção neste diretório."
+    },
+    "save_list": {
+      "open": "Salvar lista em diretório imprimível",
+      "button_label": "Salvar lista em diretório imprimível",
+      "dialog_title": "Salvar lista em diretório imprimível",
+      "dialog_description": "Escolha um diretório e uma seção para esta lista de favoritos.",
+      "choose_directory_section": "Escolha um diretório e uma seção para “{{favoriteListName}}”.",
+      "create_section_option": "Criar seção “{{heading}}”",
+      "success": "Lista salva no diretório imprimível",
+      "error": "Não foi possível salvar a lista no diretório."
+    },
+    "save_query": {
+      "dialog_title": "Salvar consulta no diretório imprimível",
+      "dialog_description": "Selecione um diretório e uma seção para esta consulta salva.",
+      "create_section_option": "Criar seção “{{heading}}”",
+      "success": "Consulta salva no diretório imprimível",
+      "error": "Não foi possível salvar a consulta no diretório."
     }
   }
 }
