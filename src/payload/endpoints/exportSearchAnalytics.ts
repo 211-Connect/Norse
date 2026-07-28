@@ -31,6 +31,8 @@ function escapeCSVField(value: string | number | null | undefined): string {
 function buildCSV(rows: SearchEventExportRow[]): string {
   const headers = [
     'Timestamp',
+    'Anonymous User ID',
+    'Session ID',
     'Query Label',
     'Query Type',
     'Search Latitude',
@@ -49,6 +51,8 @@ function buildCSV(rows: SearchEventExportRow[]): string {
     lines.push(
       [
         escapeCSVField(row.timestamp),
+        escapeCSVField(row.userId ?? ''),
+        escapeCSVField(row.sessionId ?? ''),
         escapeCSVField(row.queryLabel),
         escapeCSVField(row.queryType),
         escapeCSVField(row.searchLatitude ?? ''),

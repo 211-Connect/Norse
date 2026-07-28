@@ -52,9 +52,17 @@ export const useNavigateClassicSearch = ({
         };
 
         if (search.queryType === 'taxonomy') {
-          trackUmamiEvent(UmamiEvent.SearchTaxonomy, umamiPayload);
+          trackUmamiEvent(
+            UmamiEvent.SearchTaxonomy,
+            umamiPayload,
+            appConfig.sessionId,
+          );
         } else {
-          trackUmamiEvent(UmamiEvent.SearchText, umamiPayload);
+          trackUmamiEvent(
+            UmamiEvent.SearchText,
+            umamiPayload,
+            appConfig.sessionId,
+          );
         }
 
         setDialogOpen?.(false);

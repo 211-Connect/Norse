@@ -34,8 +34,10 @@ export function resolveResourceEntry(
 export function trackUmamiEvent(
   event: UmamiEvent,
   data?: Record<string, string>,
+  sessionId?: string,
 ): void {
   if (typeof window !== 'undefined' && window.umami) {
-    window.umami.track(event, data);
+    const payload = sessionId ? { ...data, session_id: sessionId } : data;
+    window.umami.track(event, payload);
   }
 }
