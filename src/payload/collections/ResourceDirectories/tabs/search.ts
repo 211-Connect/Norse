@@ -266,7 +266,7 @@ export const search: Tab = {
         {
           name: 'boostPinnedResources',
           type: 'checkbox',
-          defaultValue: true,
+          defaultValue: false,
           admin: {
             description:
               'When enabled, pinned/priority resources receive a score boost instead of being hard-sorted to the top of results. Only applies when Search Engine is Hybrid or AI Classification.',
