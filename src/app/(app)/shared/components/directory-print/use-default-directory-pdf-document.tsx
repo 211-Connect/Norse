@@ -4,7 +4,10 @@ import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { type PrintableDirectoryData } from '@/app/(app)/shared/utils/printable-directory-transformers';
 
 import { PDFDirectory } from './pdf-directory';
-import { type PdfDocumentElement, type PrintDocumentRenderContext } from './print-directory-dialog';
+import {
+  type PdfDocumentElement,
+  type PrintDocumentRenderContext,
+} from './print-directory-dialog';
 
 /**
  * Default `renderDocument` for the flat item-list printable directory PDF

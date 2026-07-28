@@ -61,9 +61,7 @@ export const LanguageSwitcherPrimitive = ({
         )}
       >
         <div className="flex items-center gap-1 overflow-hidden">
-          {showIcon && (
-            <LanguagesIcon className="size-4" aria-hidden="true" />
-          )}
+          {showIcon && <LanguagesIcon className="size-4" aria-hidden="true" />}
           <SelectValue placeholder={t('header.language_select_label')}>
             <span className="text-xs leading-5 font-medium capitalize">
               {getLanguageName(value)}
