@@ -7,10 +7,11 @@ import { createLogger } from '@/lib/logger';
 const log = createLogger('withCache');
 
 type Seconds = number;
-const FIFTEEN_MINUTES: Seconds = 15 * 60;
-export const ONE_MONTH: Seconds = 30 * 24 * 60 * 60;
-export const ONE_HOUR: Seconds = 60 * 60;
-const ONE_MINUTE: Seconds = 60;
+export const ONE_MINUTE: Seconds = 60;
+const FIFTEEN_MINUTES: Seconds = 15 * ONE_MINUTE;
+export const ONE_HOUR: Seconds = 60 * ONE_MINUTE;
+export const ONE_DAY: Seconds = 24 * ONE_HOUR;
+export const ONE_MONTH: Seconds = 30 * ONE_DAY;
 const MAX_CACHE_ENTRIES = 1000;
 
 type Domain = string;

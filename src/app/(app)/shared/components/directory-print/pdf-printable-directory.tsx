@@ -12,6 +12,7 @@ import {
   type PrintableDirectoryPdfHeaderFooterData,
 } from '@/app/(app)/shared/utils/printable-directory-transformers';
 
+import { usePdfFontFamily } from './pdf-fonts';
 import {
   BASE_FONT,
   COLORS,
@@ -31,7 +32,6 @@ const styles = StyleSheet.create({
     paddingTop: 85,
     paddingBottom: 100,
     paddingHorizontal: 40,
-    fontFamily: 'Helvetica',
   },
   coverPage: {
     flexDirection: 'column',
@@ -49,7 +49,6 @@ const styles = StyleSheet.create({
   },
   coverTitle: {
     fontSize: BASE_FONT.title * 2,
-    fontFamily: 'Helvetica-Bold',
     color: COLORS.primary,
     textAlign: 'center',
     marginBottom: 16,
@@ -125,7 +124,6 @@ const styles = StyleSheet.create({
   },
   sectionHeading: {
     fontSize: BASE_FONT.title,
-    fontFamily: 'Helvetica-Bold',
     color: COLORS.primary,
     marginTop: 16,
     marginBottom: 4,
@@ -249,6 +247,7 @@ export function PDFPrintableDirectory({
   const fontScale = getFontScale(fontSizeMode);
   const datumLabels = useDatumLabels();
   const isTwoColumn = fontSizeMode !== 'large' && variant !== 'full-listing';
+  const { regular, bold } = usePdfFontFamily();
 
   // A supplied cover image fully replaces the default title/description
   // layout and is rendered as a full-bleed page. These are computed here so
@@ -258,8 +257,14 @@ export function PDFPrintableDirectory({
       <Image style={styles.coverImage} src={data.cover.coverImageUrlFront} />
     </Page>
   ) : (
-    <Page key="cover-front" size="LETTER" style={styles.coverPage}>
-      <Text style={styles.coverTitle}>{data.cover.title}</Text>
+    <Page
+      key="cover-front"
+      size="LETTER"
+      style={[styles.coverPage, { fontFamily: regular }]}
+    >
+      <Text style={[styles.coverTitle, { fontFamily: bold }]}>
+        {data.cover.title}
+      </Text>
       {data.cover.description && (
         <Text style={styles.coverDescription}>{data.cover.description}</Text>
       )}
@@ -276,7 +281,7 @@ export function PDFPrintableDirectory({
     <Document>
       {frontCoverPage}
 
-      <Page size="LETTER" style={styles.page}>
+      <Page size="LETTER" style={[styles.page, { fontFamily: regular }]}>
         <HeaderFooterRow
           config={data.header}
           brandLogoUrl={brandLogoUrl}
@@ -304,7 +309,9 @@ export function PDFPrintableDirectory({
 
             return (
               <View key={section.id}>
-                <Text style={styles.sectionHeading}>{section.heading}</Text>
+                <Text style={[styles.sectionHeading, { fontFamily: bold }]}>
+                  {section.heading}
+                </Text>
                 {section.description && (
                   <Text style={styles.sectionDescription}>
                     {section.description}

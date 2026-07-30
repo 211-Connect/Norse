@@ -8,6 +8,7 @@ import { withOptionalCustomBasePath } from './app/(app)/shared/lib/utils';
 import { parseHost } from './app/(app)/shared/utils/parseHost';
 import { TenantBasicConfigResponse } from './app/(payload)/api/getTenantBasicConfig/route';
 import { searchLinkCorrectionMiddleware } from './middlewares/searchLinkCorrectionMiddleware';
+import { ONE_DAY, ONE_HOUR, ONE_MINUTE } from './utilities/withCache';
 
 const DOMAINS_WITH_CSP = ['localhost', 'therc.vdh.virginia.gov'];
 
@@ -115,34 +116,31 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      */
-    '/((?!admin|api/auth|chrome.devtools|api|_next/static|_next/image|images|favicon.ico|robots.txt|sitemap.xml).*)',
+    '/((?!admin|api/auth|chrome.devtools|api|_next/static|_next/image|images|fonts|favicon.ico|robots.txt|sitemap.xml).*)',
     { source: '/' },
   ],
 };
 
-const MINUTE = 60;
-const HOUR = 3600;
-
 const CDN_CACHE_POLICIES = {
   legal: {
     pattern: /\/legal\//,
-    cacheControl: `public, max-age=${1 * HOUR}, s-maxage=${24 * HOUR}, stale-while-revalidate=${12 * HOUR}`,
+    cacheControl: `public, max-age=${ONE_HOUR}, s-maxage=${ONE_DAY}, stale-while-revalidate=${12 * ONE_HOUR}`,
   },
   home: {
     pattern: /^\/[a-z]{2}(\/)?$/,
-    cacheControl: `public, max-age=${10 * MINUTE}, s-maxage=${30 * MINUTE}, stale-while-revalidate=${10 * MINUTE}`,
+    cacheControl: `public, max-age=${10 * ONE_MINUTE}, s-maxage=${30 * ONE_MINUTE}, stale-while-revalidate=${10 * ONE_MINUTE}`,
   },
   topics: {
     pattern: /\/topics(\/)?$/,
-    cacheControl: `public, max-age=${30 * MINUTE}, s-maxage=${1 * HOUR}, stale-while-revalidate=${30 * MINUTE}`,
+    cacheControl: `public, max-age=${30 * ONE_MINUTE}, s-maxage=${ONE_HOUR}, stale-while-revalidate=${30 * ONE_MINUTE}`,
   },
   resourceDetail: {
     pattern: /\/search\/[^/?]+$/,
-    cacheControl: `public, max-age=${30 * MINUTE}, s-maxage=${1 * HOUR}, stale-while-revalidate=${10 * MINUTE}`,
+    cacheControl: `public, max-age=${30 * ONE_MINUTE}, s-maxage=${ONE_HOUR}, stale-while-revalidate=${10 * ONE_MINUTE}`,
   },
   detailsOriginal: {
     pattern: /\/details\/original/,
-    cacheControl: `public, max-age=${30 * MINUTE}, s-maxage=${1 * HOUR}, stale-while-revalidate=${10 * MINUTE}`,
+    cacheControl: `public, max-age=${30 * ONE_MINUTE}, s-maxage=${ONE_HOUR}, stale-while-revalidate=${10 * ONE_MINUTE}`,
   },
 } as const;
 

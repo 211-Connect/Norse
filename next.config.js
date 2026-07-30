@@ -1,10 +1,14 @@
 import { withPayload } from '@payloadcms/next/withPayload';
 
+const ONE_DAY = 24 * 60 * 60;
+
 /**
  * @type {import('next').NextConfig}
  **/
 const nextConfig = {
   async headers() {
+    const isProduction = process.env.NODE_ENV === 'production';
+
     return [
       {
         source: '/(.*)',
@@ -18,6 +22,17 @@ const nextConfig = {
             value: 'nosniff',
           },
           { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+        ],
+      },
+      {
+        source: '/fonts/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: isProduction
+              ? `public, max-age=${ONE_DAY}, s-maxage=${7 * ONE_DAY}, stale-while-revalidate=${ONE_DAY}`
+              : 'no-cache',
+          },
         ],
       },
     ];
