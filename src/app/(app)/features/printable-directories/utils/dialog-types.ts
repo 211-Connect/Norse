@@ -7,7 +7,11 @@ import {
 export type CoverDialogValues = Required<
   Pick<
     PrintableDirectoryCoverDto,
-    'titleLocalized' | 'descriptionLocalized' | 'primaryColor'
+    | 'titleLocalized'
+    | 'descriptionLocalized'
+    | 'primaryColor'
+    | 'coverImageUrlBack'
+    | 'coverImageUrlFront'
   >
 >;
 

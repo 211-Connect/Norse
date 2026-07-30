@@ -42,8 +42,8 @@ export default function ExportCSVButton() {
   let endAt: number;
 
   if (typeof range === 'number') {
-    endAt = dayjs().valueOf();
-    startAt = dayjs().subtract(range, 'day').valueOf();
+    endAt = dayjs().endOf('day').valueOf();
+    startAt = dayjs().subtract(range, 'day').startOf('day').valueOf();
   } else {
     startAt = dayjs(range.start).startOf('day').valueOf();
     endAt = dayjs(range.end).endOf('day').valueOf();

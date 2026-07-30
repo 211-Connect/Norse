@@ -25,15 +25,17 @@ import { default as default_76ffa28dff37b978c6ada354e1e9e67c } from '@/payload/c
 import { default as default_7a8b15e24786becdbc27798cd6643e36 } from '@/payload/collections/OrchestrationConfig/components/TenantHeader'
 import { default as default_251fd09bbd0b103ad0dcec7022f13978 } from '@/payload/collections/OrchestrationConfig/components/CustomAttributesRowLabel'
 import { default as default_e9d1e9858fa8526951b37594e35d9c62 } from '@/payload/collections/OrchestrationConfig/components/SchemasRowLabel'
+import { default as default_b690e758ec84d761af30377d4503f117 } from '@/payload/collections/HybridSearchConfig/components/HybridSearchConfigHeader'
 import { GlobalViewRedirect as GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
-import { default as default_2e07f7087ae6aa13d1fded4684728076 } from '@/payload/components/AnalyticsNavLink'
 import { default as default_f4855407f4109e46fff942e4b3f7606f } from '@/payload/components/ScorecardsNavLink'
 import { default as default_516dbf33cc3b162579335bb6874ed173 } from '@/payload/components/PopulateApiConfigCacheButton'
 import { default as default_4a6586eaa0248cb1fccb2e03335a2b51 } from '@/payload/components/ClearCacheButton'
 import { TenantSelector as TenantSelector_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
+import { default as default_2e07f7087ae6aa13d1fded4684728076 } from '@/payload/components/AnalyticsNavLink'
 import { TenantSelectionProvider as TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 import { default as default_c5dffe636895d753138026b95fe2f960 } from '@/payload/components/AnalyticsView'
+import { default as default_935f67371f05c46a1bc08ee807616da6 } from '@/payload/components/AnalyticsRedirectView'
 import { default as default_31be5857ede30a47c40f3a0eb21d716a } from '@/payload/components/ScorecardsView'
 import { default as default_89b0fc1c15499fa299fab63bf28229b4 } from '@/payload/components/analytics/widgets/TotalUsersWidget'
 import { default as default_f8df26be7e7afb6ec18139b4a17451c4 } from '@/payload/components/analytics/widgets/SearchesWidget'
@@ -46,6 +48,8 @@ import { default as default_1921c8a0e459e5e56f0c55d235737c16 } from '@/payload/c
 import { default as default_26f5344addbdbe0637ad947e94ea3028 } from '@/payload/components/analytics/widgets/TotalReferralsWidget'
 import { default as default_766777203ef7043a1e1fcbe8188c6840 } from '@/payload/components/analytics/widgets/WidgetSearchesWidget'
 import { default as default_121ebe1dca269f4984b617c43fef14fe } from '@/payload/components/analytics/widgets/CalloutClicksWidget'
+import { default as default_69d23959707ed857d328adc822ab95d6 } from '@/payload/components/analytics/widgets/HighlightClicksWidget'
+import { default as default_26a30d2d7154615da33fbb2d808fd957 } from '@/payload/components/analytics/widgets/AlertClicksWidget'
 import { default as default_723f4a967de6eda4bbdcbf96fd002037 } from '@/payload/components/analytics/widgets/PageViewsWidget'
 import { default as default_ae2d726342a3a45563bf3152abfad607 } from '@/payload/components/analytics/widgets/PageviewsChartWidget'
 import { default as default_40e5d1b279d66a0c65b1a98e988971c4 } from '@/payload/components/analytics/widgets/AnalyticsMapWidget'
@@ -93,15 +97,17 @@ export const importMap = {
   "@/payload/collections/OrchestrationConfig/components/TenantHeader#default": default_7a8b15e24786becdbc27798cd6643e36,
   "@/payload/collections/OrchestrationConfig/components/CustomAttributesRowLabel#default": default_251fd09bbd0b103ad0dcec7022f13978,
   "@/payload/collections/OrchestrationConfig/components/SchemasRowLabel#default": default_e9d1e9858fa8526951b37594e35d9c62,
+  "@/payload/collections/HybridSearchConfig/components/HybridSearchConfigHeader#default": default_b690e758ec84d761af30377d4503f117,
   "@payloadcms/plugin-multi-tenant/rsc#GlobalViewRedirect": GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62,
-  "@/payload/components/AnalyticsNavLink#default": default_2e07f7087ae6aa13d1fded4684728076,
   "@/payload/components/ScorecardsNavLink#default": default_f4855407f4109e46fff942e4b3f7606f,
   "@/payload/components/PopulateApiConfigCacheButton#default": default_516dbf33cc3b162579335bb6874ed173,
   "@/payload/components/ClearCacheButton#default": default_4a6586eaa0248cb1fccb2e03335a2b51,
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelector": TenantSelector_d6d5f193a167989e2ee7d14202901e62,
+  "@/payload/components/AnalyticsNavLink#default": default_2e07f7087ae6aa13d1fded4684728076,
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelectionProvider": TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
   "@/payload/components/AnalyticsView#default": default_c5dffe636895d753138026b95fe2f960,
+  "@/payload/components/AnalyticsRedirectView#default": default_935f67371f05c46a1bc08ee807616da6,
   "@/payload/components/ScorecardsView#default": default_31be5857ede30a47c40f3a0eb21d716a,
   "@/payload/components/analytics/widgets/TotalUsersWidget#default": default_89b0fc1c15499fa299fab63bf28229b4,
   "@/payload/components/analytics/widgets/SearchesWidget#default": default_f8df26be7e7afb6ec18139b4a17451c4,
@@ -114,6 +120,8 @@ export const importMap = {
   "@/payload/components/analytics/widgets/TotalReferralsWidget#default": default_26f5344addbdbe0637ad947e94ea3028,
   "@/payload/components/analytics/widgets/WidgetSearchesWidget#default": default_766777203ef7043a1e1fcbe8188c6840,
   "@/payload/components/analytics/widgets/CalloutClicksWidget#default": default_121ebe1dca269f4984b617c43fef14fe,
+  "@/payload/components/analytics/widgets/HighlightClicksWidget#default": default_69d23959707ed857d328adc822ab95d6,
+  "@/payload/components/analytics/widgets/AlertClicksWidget#default": default_26a30d2d7154615da33fbb2d808fd957,
   "@/payload/components/analytics/widgets/PageViewsWidget#default": default_723f4a967de6eda4bbdcbf96fd002037,
   "@/payload/components/analytics/widgets/PageviewsChartWidget#default": default_ae2d726342a3a45563bf3152abfad607,
   "@/payload/components/analytics/widgets/AnalyticsMapWidget#default": default_40e5d1b279d66a0c65b1a98e988971c4,

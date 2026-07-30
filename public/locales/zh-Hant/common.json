@@ -5,7 +5,8 @@
     "language_select_label": "選擇語言以變更網站語言",
     "my_stuff": "我的東西",
     "search": "搜尋",
-    "report": "提交回饋"
+    "report": "提交回饋",
+    "printable_directories": "可列印目錄"
   },
   "favorites": {
     "added_to_list": "已新增至列表",
@@ -87,7 +88,9 @@
     "show_less": "顯示更少",
     "print": "列印",
     "close": "關閉",
-    "send": "傳送"
+    "send": "傳送",
+    "edit": "編輯",
+    "save": "節省"
   },
   "list": {
     "private": "私人的",
@@ -284,6 +287,37 @@
       "name": "志工與捐贈",
       "description": "透過社區慷慨給予或接受的需求——無論是需要捐贈物品，還是有能力和意願為他人貢獻時間、技能或資源——都包含在內。它涵蓋了公民交流雙方的需求：尋求物質捐贈或服務捐贈的個人，以及希望將志工和捐贈者與有意義的助人機會聯繫起來的個人或組織。",
       "displayDescription": "需要捐贈物品或想幫助他人？我們可以將想要捐贈的人與需要幫助的人聯繫起來。"
+    }
+  },
+  "printable_directories": {
+    "save_source": {
+      "loading_directories": "正在載入目錄...",
+      "no_directories_found": "未找到目錄。請先從「我的目錄」頁面建立一個。",
+      "directory_label": "目錄",
+      "section_label": "部分",
+      "select_directory_placeholder": "選擇目錄",
+      "select_section_placeholder": "選擇部分",
+      "unable_load_directories_error": "無法載入可列印目錄",
+      "select_directory_first_error": "首先選擇一個目錄",
+      "unable_create_section_error": "無法在此目錄中建立節。",
+      "unable_select_section_error": "無法選擇此目錄中的某個部分。"
+    },
+    "save_list": {
+      "open": "將清單儲存到可列印目錄",
+      "button_label": "將清單儲存到可列印目錄",
+      "dialog_title": "將清單儲存到可列印目錄",
+      "dialog_description": "請選擇收藏清單的目錄和版塊。",
+      "choose_directory_section": "請為“{{favoriteListName}}”選擇目錄和部分。",
+      "create_section_option": "建立“{{heading}}”部分",
+      "success": "清單已儲存至可列印目錄",
+      "error": "無法將清單儲存到目錄"
+    },
+    "save_query": {
+      "dialog_title": "將查詢儲存到可列印目錄",
+      "dialog_description": "請為此已儲存的查詢選擇一個目錄和部分。",
+      "create_section_option": "建立“{{heading}}”部分",
+      "success": "查詢結果已儲存至可列印目錄",
+      "error": "無法將查詢儲存到目錄"
     }
   }
 }

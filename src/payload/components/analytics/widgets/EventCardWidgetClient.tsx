@@ -25,7 +25,9 @@ import {
 } from '../useAnalyticsData';
 import { useWidgetId } from '../useWidgetId';
 import { WidgetErrorState } from '../WidgetErrorState';
+import { WidgetInfoButton } from '../WidgetInfoButton';
 import { WidgetSkeleton } from '../WidgetSkeleton';
+import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';
 
 const SEGMENT_COLORS = [
   '#60a5fa',
@@ -430,9 +432,13 @@ function ChartContent({
           fontWeight: 600,
           color: 'var(--theme-text)',
           width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.375rem',
         }}
       >
         {title}
+        <WidgetInfoButton description={WIDGET_INFO[WidgetSlug.EventCard]} />
       </h4>
       {values.length === 0 ? (
         <div

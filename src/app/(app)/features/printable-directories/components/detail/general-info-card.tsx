@@ -33,9 +33,11 @@ export function GeneralInfoCard({
   const appConfig = useAppConfig();
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [slugError, setSlugError] = useState<string | null>(null);
 
   const handleSubmit = async (values: {
     name: string;
+    slug: string;
     resourceLayout: PrintableDirectoryResponseDto['resourceLayout'];
     accessPolicy: PrintableDirectoryResponseDto['accessPolicy'];
     isBookletLayout: boolean;
@@ -44,10 +46,11 @@ export function GeneralInfoCard({
     setIsSubmitting(true);
 
     try {
-      const updated = await updatePrintableDirectory(
+      const result = await updatePrintableDirectory(
         directory.id,
         {
           name: values.name,
+          slug: values.slug,
           resourceLayout: values.resourceLayout,
           accessPolicy: values.accessPolicy,
           isBookletLayout: values.isBookletLayout,
@@ -56,15 +59,20 @@ export function GeneralInfoCard({
         appConfig.tenantId,
       );
 
-      if (!updated) {
-        toast.error(
-          t('unable_to_update_directory', { ns: 'page-directories' }),
-        );
+      if (!result.success) {
+        if (result.error === 'slug_taken') {
+          setSlugError(t('slug_taken_error', { ns: 'page-directories' }));
+        } else {
+          toast.error(
+            t('unable_to_update_directory', { ns: 'page-directories' }),
+          );
+        }
         return;
       }
 
-      onDirectoryUpdated(updated);
+      onDirectoryUpdated(result.data);
       toast.success(t('directory_updated', { ns: 'page-directories' }));
+      setSlugError(null);
       setOpen(false);
     } catch {
       toast.error(t('unable_to_update_directory', { ns: 'page-directories' }));
@@ -84,7 +92,10 @@ export function GeneralInfoCard({
             type="button"
             variant="outline"
             className="gap-1"
-            onClick={() => setOpen(true)}
+            onClick={() => {
+              setSlugError(null);
+              setOpen(true);
+            }}
           >
             <PencilIcon className="size-4" aria-hidden="true" />
             {t('call_to_action.edit', { ns: 'common' })}
@@ -96,6 +107,12 @@ export function GeneralInfoCard({
               {t('name_label', { ns: 'page-directories' })}:
             </span>{' '}
             {directory.name}
+          </Typography>
+          <Typography as="p" variant="paragraph" size="sm">
+            <span className="font-medium">
+              {t('slug_label', { ns: 'page-directories' })}:
+            </span>{' '}
+            {directory.slug || '-'}
           </Typography>
           <Typography as="p" variant="paragraph" size="sm">
             <span className="font-medium">
@@ -155,8 +172,11 @@ export function GeneralInfoCard({
         open={open}
         isSubmitting={isSubmitting}
         mode="edit"
+        slugError={slugError}
+        onSlugChange={() => setSlugError(null)}
         initialValues={{
           name: directory.name,
+          slug: directory.slug,
           accessPolicy: directory.accessPolicy,
           resourceLayout: directory.resourceLayout,
           isBookletLayout: directory.isBookletLayout,

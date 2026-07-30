@@ -5,7 +5,8 @@
     "language_select_label": "Filifili se gagana e sui ai le gagana a le 'upega tafaʻilagi",
     "my_stuff": "A'u mea",
     "search": "Saili",
-    "report": "Tuuina atu ni Manatu Faaalia"
+    "report": "Tuuina atu ni Manatu Faaalia",
+    "printable_directories": "Fa'asinomaga e mafai ona lolomiina"
   },
   "favorites": {
     "added_to_list": "Ua fa'aopoopoina i le lisi",
@@ -87,7 +88,9 @@
     "show_less": "Faaali itiiti ifo",
     "print": "Lolomi",
     "close": "Tapuni",
-    "send": "Auina atu"
+    "send": "Auina atu",
+    "edit": "Fa'asa'o",
+    "save": "Seivi"
   },
   "list": {
     "private": "Tumaoti",
@@ -284,6 +287,37 @@
       "name": "Volenitia & Foa'i",
       "description": "O le manaʻoga e foaʻi pe maua mai e ala i le agalelei o le nuʻu — pe manaʻomia e se tagata ni mea foaʻi, pe iai le gafatia ma le naunautaʻiga e foaʻi atu le taimi, tomai, poʻo punaoa i isi. E aofia ai manaʻoga i itu uma e lua o fefaʻatauaʻiga faʻalemalo: tagata taʻitoʻatasi o loʻo sailia foaʻi faaletino poʻo auaunaga foaʻi, ma tagata taʻitoʻatasi poʻo faʻalapotopotoga o loʻo sailia le faʻafesoʻotaʻi o volenitia ma ē foaʻi i avanoa taua e fesoasoani ai.",
       "displayDescription": "E te manaʻomia ni mea foaʻi pe e te fia fesoasoani i isi? E mafai ona tatou faʻafesoʻotaʻi tagata e fia foaʻi ma tagata e manaʻomia se fesoasoani."
+    }
+  },
+  "printable_directories": {
+    "save_source": {
+      "loading_directories": "O lo'o utaina fa'asinomaga...",
+      "no_directories_found": "Leai ni fa'asinomaga ua maua. Fausia muamua se tasi mai le itulau o A'u Fa'asinomaga.",
+      "directory_label": "Fa'asinomaga",
+      "section_label": "Vaega",
+      "select_directory_placeholder": "Filifili le faila",
+      "select_section_placeholder": "Filifili le vaega",
+      "unable_load_directories_error": "E le mafai ona utaina ni fa'asinomaga e mafai ona lolomiina",
+      "select_directory_first_error": "Filifili muamua se faila",
+      "unable_create_section_error": "E le mafai ona fatuina se vaega i totonu o lenei fa'asinomaga",
+      "unable_select_section_error": "E le mafai ona filifilia se vaega i totonu o lenei fa'asinomaga"
+    },
+    "save_list": {
+      "open": "Seivi le lisi i le fa'asinomaga e mafai ona lolomiina",
+      "button_label": "Seivi le lisi i le fa'asinomaga e mafai ona lolomiina",
+      "dialog_title": "Seivi le lisi i le fa'asinomaga e mafai ona lolomiina",
+      "dialog_description": "Filifili se fa'asinomaga ma se vaega mo lenei lisi e sili ona e fiafia i ai.",
+      "choose_directory_section": "Filifili se faila ma se vaega mo le “{{favoriteListName}}”.",
+      "create_section_option": "Fausia le vaega “{{heading}}”",
+      "success": "Lisi ua sefe i le fa'asinomaga e mafai ona lolomiina",
+      "error": "Le mafai ona sefe le lisi i le fa'asinomaga"
+    },
+    "save_query": {
+      "dialog_title": "Seivi le fesili i le fa'asinomaga e mafai ona lolomiina",
+      "dialog_description": "Filifili se faila ma se vaega mo lenei fesili ua sefeina.",
+      "create_section_option": "Fausia le vaega “{{heading}}”",
+      "success": "Ua sefe le fesili i le fa'asinomaga e mafai ona lolomiina",
+      "error": "E le mafai ona sefe le fesili i le fa'asinomaga"
     }
   }
 }

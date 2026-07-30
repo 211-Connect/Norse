@@ -2,6 +2,7 @@
 
 import { AddToFavoritesButton } from '@/app/(app)/shared/components/add-to-favorites-button';
 import { DirectoryPrintControl } from '@/app/(app)/shared/components/directory-print/directory-print-control';
+import { useDefaultDirectoryPdfDocument } from '@/app/(app)/shared/components/directory-print/use-default-directory-pdf-document';
 import { ReportButton } from '@/app/(app)/shared/components/report-button';
 import { ShareButton } from '@/app/(app)/shared/components/share-button';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
@@ -13,13 +14,16 @@ import { BackToResultsButton } from './back-to-results-button';
 export function Navigation({
   componentToPrintRef,
   resource,
-  printableDirectoryData,
+  loadPrintableDirectoryData,
 }: {
   componentToPrintRef: React.RefObject<HTMLElement | null>;
   resource: Resource;
-  printableDirectoryData: PrintableDirectoryData;
+  loadPrintableDirectoryData: (
+    locale: string,
+  ) => Promise<PrintableDirectoryData>;
 }) {
   const appConfig = useAppConfig();
+  const renderPdfDocument = useDefaultDirectoryPdfDocument();
   const feedbackButtonLabel =
     appConfig.header.feedbackButtonLabel?.trim() || undefined;
 
@@ -27,7 +31,10 @@ export function Navigation({
     <div className="flex justify-between print:hidden">
       <BackToResultsButton />
       <div className="flex gap-2">
-        <DirectoryPrintControl data={printableDirectoryData} />
+        <DirectoryPrintControl
+          loadData={loadPrintableDirectoryData}
+          renderDocument={renderPdfDocument}
+        />
         <ShareButton
           componentToPrintRef={componentToPrintRef}
           title={resource.name || ''}

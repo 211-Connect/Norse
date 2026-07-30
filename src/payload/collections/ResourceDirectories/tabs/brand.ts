@@ -176,5 +176,26 @@ export const brand: Tab = {
         },
       ],
     },
+    {
+      type: 'group',
+      name: 'printableDocuments',
+      label: 'Printable documents',
+      fields: [
+        {
+          name: 'ctaText',
+          type: 'text',
+          localized: true,
+          admin: {
+            placeholder: 'Dial 2-1-1',
+            description:
+              'Leave blank to use the default "Dial 2-1-1" label (or locale equivalent)',
+          },
+          access: {
+            update: superAdminOrSupportOrTenantAccess,
+            create: superAdminOrSupportOrTenantAccess,
+          },
+        },
+      ],
+    },
   ],
 };

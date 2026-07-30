@@ -24,6 +24,7 @@ export type AppConfig = {
     faviconUrl?: string;
     openGraphUrl?: string;
     copyright?: string;
+    ctaText?: string;
     theme: {
       primaryColor?: string;
       secondaryColor?: string;

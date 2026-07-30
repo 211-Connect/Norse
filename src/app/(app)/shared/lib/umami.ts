@@ -11,6 +11,8 @@ export enum UmamiEvent {
   SearchText = 'search_text',
   CalloutClick = 'callout_click',
   ResourceViewed = 'resource_viewed',
+  HighlightClick = 'highlight_click',
+  AlertClick = 'alert_click',
 }
 
 export enum ResourceEntry {
@@ -34,8 +36,10 @@ export function resolveResourceEntry(
 export function trackUmamiEvent(
   event: UmamiEvent,
   data?: Record<string, string>,
+  sessionId?: string,
 ): void {
   if (typeof window !== 'undefined' && window.umami) {
-    window.umami.track(event, data);
+    const payload = sessionId ? { ...data, session_id: sessionId } : data;
+    window.umami.track(event, payload);
   }
 }

@@ -2,11 +2,12 @@
 
 import { useAtom } from 'jotai';
 import { ChevronLeft } from 'lucide-react';
-import { useMemo, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { SearchCardLayoutConfig } from '@/app/(app)/features/search/types/card-layout-config';
 import { DirectoryPrintControl } from '@/app/(app)/shared/components/directory-print/directory-print-control';
+import { useDefaultDirectoryPdfDocument } from '@/app/(app)/shared/components/directory-print/use-default-directory-pdf-document';
 import { Link } from '@/app/(app)/shared/components/link';
 import { ShareButton } from '@/app/(app)/shared/components/share-button';
 import { Badge } from '@/app/(app)/shared/components/ui/badge';
@@ -17,8 +18,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/app/(app)/shared/components/ui/tooltip';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
 import { cn, withOptionalTrailingSlash } from '@/app/(app)/shared/lib/utils';
+import { getFavoriteList } from '@/app/(app)/shared/serverActions/favorites/getFavoriteList';
 import { favoriteListWithFavoritesAtom } from '@/app/(app)/shared/store/favorites';
 import { fontSans } from '@/app/(app)/shared/styles/fonts';
 import { favoriteListToPrintableDirectory } from '@/app/(app)/shared/utils/printable-directory-transformers';
@@ -35,16 +38,29 @@ type FavoritesSectionProps = {
 };
 
 export function FavoritesSection({ cardLayout }: FavoritesSectionProps) {
-  const { t, i18n } = useTranslation('page-list');
+  const { t } = useTranslation('page-list');
+  const appConfig = useAppConfig();
   const [favoriteList, setFavoriteList] = useAtom(
     favoriteListWithFavoritesAtom,
   );
   const componentToPrint = useRef<HTMLDivElement>(null);
   const { stringifiedSearchParams } = useClientSearchParams();
-  const printableDirectoryData = useMemo(
-    () => favoriteListToPrintableDirectory(favoriteList, i18n.language),
-    [favoriteList, i18n.language],
+  const loadPrintableData = useCallback(
+    async (locale: string) => {
+      const freshList = await getFavoriteList(
+        favoriteList.id,
+        locale,
+        appConfig.tenantId,
+      );
+
+      return favoriteListToPrintableDirectory(
+        freshList ?? favoriteList,
+        locale,
+      );
+    },
+    [favoriteList, appConfig.tenantId],
   );
+  const renderPdfDocument = useDefaultDirectoryPdfDocument();
 
   const handleRemoveFromList = (_listId: string, favoriteId: string) => {
     // Optimistically update the local atom by filtering out the removed favorite
@@ -87,8 +103,9 @@ export function FavoritesSection({ cardLayout }: FavoritesSectionProps) {
               <TooltipTrigger asChild>
                 <div>
                   <DirectoryPrintControl
-                    data={printableDirectoryData}
+                    loadData={loadPrintableData}
                     variant="icon"
+                    renderDocument={renderPdfDocument}
                   />
                 </div>
               </TooltipTrigger>

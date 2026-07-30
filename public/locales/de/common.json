@@ -5,7 +5,8 @@
     "language_select_label": "Wählen Sie eine Sprache aus, um die Website-Sprache zu ändern.",
     "my_stuff": "Meine Sachen",
     "search": "Suchen",
-    "report": "Feedback senden"
+    "report": "Feedback senden",
+    "printable_directories": "Druckbare Verzeichnisse"
   },
   "favorites": {
     "added_to_list": "Zur Liste hinzugefügt",
@@ -87,7 +88,9 @@
     "show_less": "Weniger anzeigen",
     "print": "Drucken",
     "close": "Schließen",
-    "send": "Schicken"
+    "send": "Schicken",
+    "edit": "Bearbeiten",
+    "save": "Speichern"
   },
   "list": {
     "private": "Privat",
@@ -284,6 +287,37 @@
       "name": "Freiwilligenarbeit & Spenden",
       "description": "Das Bedürfnis, durch gemeinschaftliche Großzügigkeit zu geben oder zu empfangen – sei es durch Sachspenden oder durch die Möglichkeit und den Wunsch, Zeit, Fähigkeiten oder Ressourcen für andere einzusetzen. Es umfasst die Bedürfnisse beider Seiten des bürgerschaftlichen Austauschs: Einzelpersonen, die Sachspenden oder Dienstleistungen benötigen, und Einzelpersonen oder Organisationen, die Freiwillige und Spender mit sinnvollen Hilfsmöglichkeiten zusammenbringen möchten.",
       "displayDescription": "Benötigen Sie Sachspenden oder möchten Sie anderen helfen? Wir können Menschen, die spenden möchten, mit Menschen in Kontakt bringen, die Hilfe benötigen."
+    }
+  },
+  "printable_directories": {
+    "save_source": {
+      "loading_directories": "Verzeichnisse werden geladen...",
+      "no_directories_found": "Es wurden keine Verzeichnisse gefunden. Erstellen Sie zuerst ein Verzeichnis auf der Seite „Meine Verzeichnisse“.",
+      "directory_label": "Verzeichnis",
+      "section_label": "Abschnitt",
+      "select_directory_placeholder": "Verzeichnis auswählen",
+      "select_section_placeholder": "Abschnitt auswählen",
+      "unable_load_directories_error": "Druckbare Verzeichnisse konnten nicht geladen werden",
+      "select_directory_first_error": "Wählen Sie zuerst ein Verzeichnis aus.",
+      "unable_create_section_error": "Es konnte kein Abschnitt in diesem Verzeichnis erstellt werden.",
+      "unable_select_section_error": "Es konnte kein Abschnitt in diesem Verzeichnis ausgewählt werden."
+    },
+    "save_list": {
+      "open": "Liste in druckbares Verzeichnis speichern",
+      "button_label": "Liste in druckbares Verzeichnis speichern",
+      "dialog_title": "Liste in druckbares Verzeichnis speichern",
+      "dialog_description": "Wählen Sie ein Verzeichnis und eine Rubrik für diese Favoritenliste.",
+      "choose_directory_section": "Wählen Sie ein Verzeichnis und einen Abschnitt für „{{favoriteListName}}“.",
+      "create_section_option": "Erstellen Sie den Abschnitt „{{heading}}“.",
+      "success": "Liste im druckbaren Verzeichnis gespeichert",
+      "error": "Liste konnte nicht im Verzeichnis gespeichert werden"
+    },
+    "save_query": {
+      "dialog_title": "Abfrage im druckbaren Verzeichnis speichern",
+      "dialog_description": "Wählen Sie ein Verzeichnis und einen Abschnitt für diese gespeicherte Abfrage aus.",
+      "create_section_option": "Erstellen Sie den Abschnitt „{{heading}}“.",
+      "success": "Abfrage im druckbaren Verzeichnis gespeichert",
+      "error": "Abfrage konnte nicht im Verzeichnis gespeichert werden"
     }
   }
 }

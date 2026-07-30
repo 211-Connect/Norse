@@ -5,7 +5,8 @@
     "language_select_label": "Valitse kieli vaihtaaksesi sivuston kielen",
     "my_stuff": "Minun tavarani",
     "search": "Haku",
-    "report": "Lähetä palautetta"
+    "report": "Lähetä palautetta",
+    "printable_directories": "Tulostettavat hakemistot"
   },
   "favorites": {
     "added_to_list": "Lisätty listaan",
@@ -87,7 +88,9 @@
     "show_less": "Näytä vähemmän",
     "print": "Tulosta",
     "close": "Sulje",
-    "send": "Lähetä"
+    "send": "Lähetä",
+    "edit": "Muokata",
+    "save": "Tallentaa"
   },
   "list": {
     "private": "Yksityinen",
@@ -284,6 +287,37 @@
       "name": "Vapaaehtoistyö ja lahjoitukset",
       "description": "Tarve antaa tai saada yhteisön anteliaisuuden kautta – riippumatta siitä, tarvitseeko henkilö lahjoitettuja tavaroita vai onko hänellä kykyä ja halua lahjoittaa aikaa, taitoja tai resursseja muille. Kattaa tarpeet molemmilla puolilla kansalaisyhteiskuntaa: yksilöt, jotka etsivät aineellisia lahjoituksia tai lahjoitettuja palveluita, ja yksilöt tai organisaatiot, jotka pyrkivät yhdistämään vapaaehtoisia ja lahjoittajia merkityksellisiin auttamismahdollisuuksiin.",
       "displayDescription": "Tarvitsetko lahjoitettuja tavaroita tai haluatko auttaa muita? Voimme yhdistää ihmiset, jotka haluavat antaa, ihmisiin, jotka tarvitsevat apua."
+    }
+  },
+  "printable_directories": {
+    "save_source": {
+      "loading_directories": "Ladataan hakemistoja...",
+      "no_directories_found": "Hakemistoja ei löytynyt. Luo ensin sellainen Omat hakemistot -sivulta.",
+      "directory_label": "Hakemisto",
+      "section_label": "Osa",
+      "select_directory_placeholder": "Valitse hakemisto",
+      "select_section_placeholder": "Valitse osio",
+      "unable_load_directories_error": "Tulostettavien hakemistojen lataaminen epäonnistui",
+      "select_directory_first_error": "Valitse ensin hakemisto",
+      "unable_create_section_error": "Tähän hakemistoon ei voitu luoda osiota",
+      "unable_select_section_error": "Osaa ei voitu valita tästä hakemistosta"
+    },
+    "save_list": {
+      "open": "Tallenna lista tulostettavaan hakemistoon",
+      "button_label": "Tallenna lista tulostettavaan hakemistoon",
+      "dialog_title": "Tallenna lista tulostettavaan hakemistoon",
+      "dialog_description": "Valitse hakemisto ja osio tälle suosikkilistalle.",
+      "choose_directory_section": "Valitse hakemisto ja osio kohderyhmälle “{{favoriteListName}}”.",
+      "create_section_option": "Luo osio “{{heading}}”",
+      "success": "Lista tallennettu tulostettavaan hakemistoon",
+      "error": "Listan tallentaminen hakemistoon epäonnistui"
+    },
+    "save_query": {
+      "dialog_title": "Tallenna kysely tulostettavaan hakemistoon",
+      "dialog_description": "Valitse hakemisto ja osio tälle tallennetulle kyselylle.",
+      "create_section_option": "Luo osio “{{heading}}”",
+      "success": "Kysely tallennettiin tulostettavaan hakemistoon",
+      "error": "Kyselyä ei voitu tallentaa hakemistoon"
     }
   }
 }

@@ -5,7 +5,8 @@
     "language_select_label": "Wybierz język, aby zmienić język witryny",
     "my_stuff": "Moje rzeczy",
     "search": "Szukaj",
-    "report": "Prześlij opinię"
+    "report": "Prześlij opinię",
+    "printable_directories": "Katalogi do druku"
   },
   "favorites": {
     "added_to_list": "Dodano do listy",
@@ -87,7 +88,9 @@
     "show_less": "Pokaż mniej",
     "print": "Wydrukować",
     "close": "Zamknij",
-    "send": "Wysłać"
+    "send": "Wysłać",
+    "edit": "Redagować",
+    "save": "Ratować"
   },
   "list": {
     "private": "Prywatny",
@@ -284,6 +287,37 @@
       "name": "Wolontariat i darowizny",
       "description": "Potrzeba dawania lub otrzymywania w ramach hojności społeczności – niezależnie od tego, czy dana osoba potrzebuje darów, czy też ma możliwości i chęć poświęcenia czasu, umiejętności lub zasobów innym. Obejmuje potrzeby obu stron wymiany obywatelskiej: osób poszukujących darowizn materialnych lub usług, a także osób lub organizacji poszukujących możliwości łączenia wolontariuszy i darczyńców z wartościowymi możliwościami pomocy.",
       "displayDescription": "Potrzebujesz darowizny lub chcesz pomóc innym? Łączymy osoby, które chcą coś dać, z osobami, które potrzebują pomocy."
+    }
+  },
+  "printable_directories": {
+    "save_source": {
+      "loading_directories": "Ładowanie katalogów...",
+      "no_directories_found": "Nie znaleziono katalogów. Utwórz go najpierw na stronie Moje katalogi.",
+      "directory_label": "Informator",
+      "section_label": "Sekcja",
+      "select_directory_placeholder": "Wybierz katalog",
+      "select_section_placeholder": "Wybierz sekcję",
+      "unable_load_directories_error": "Nie można załadować katalogów do wydruku",
+      "select_directory_first_error": "Najpierw wybierz katalog",
+      "unable_create_section_error": "Nie można utworzyć sekcji w tym katalogu",
+      "unable_select_section_error": "Nie można wybrać sekcji w tym katalogu"
+    },
+    "save_list": {
+      "open": "Zapisz listę w katalogu do druku",
+      "button_label": "Zapisz listę w katalogu do druku",
+      "dialog_title": "Zapisz listę w katalogu do druku",
+      "dialog_description": "Wybierz katalog i sekcję dla tej listy ulubionych.",
+      "choose_directory_section": "Wybierz katalog i sekcję dla „{{favoriteListName}}”.",
+      "create_section_option": "Utwórz sekcję „{{heading}}”",
+      "success": "Lista zapisana w katalogu do druku",
+      "error": "Nie można zapisać listy w katalogu"
+    },
+    "save_query": {
+      "dialog_title": "Zapisz zapytanie do katalogu do druku",
+      "dialog_description": "Wybierz katalog i sekcję dla tego zapisanego zapytania.",
+      "create_section_option": "Utwórz sekcję „{{heading}}”",
+      "success": "Zapytanie zapisane w katalogu do druku",
+      "error": "Nie można zapisać zapytania do katalogu"
     }
   }
 }

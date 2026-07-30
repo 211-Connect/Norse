@@ -11,7 +11,7 @@ import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { canAccessPrintableDirectories } from '@/app/(app)/shared/utils/canAccessPrintableDirectories';
 import { getSession } from '@/app/(app)/shared/utils/getServerSession';
 
-const i18nNamespaces = ['page-directories', 'common'];
+const i18nNamespaces = ['page-directories', 'page-list', 'common'];
 
 type DirectoryDetailPageProps = {
   params: Promise<{ locale: string; id: string }>;
@@ -47,7 +47,7 @@ export default async function PrintableDirectoryDetailPage({
 
   const { locale, id } = await params;
   const appConfig = await getAppConfigWithoutHost(locale);
-  const { resources, t } = await initTranslations(
+  const { resources } = await initTranslations(
     locale,
     i18nNamespaces,
     appConfig.i18n.locales,

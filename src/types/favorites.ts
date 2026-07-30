@@ -1,9 +1,16 @@
+import { Address, ApiResource, Translation } from '@/types/resource';
+
 export type Privacy = 'PRIVATE' | 'PUBLIC';
 
 // Component Props
 export interface FavoritesPageProps {
   params: Promise<{ locale: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+export interface Favorite extends ApiResource {
+  addresses: Address[];
+  translations: Translation[];
 }
 
 // Base favorite list interface
@@ -38,6 +45,9 @@ export interface FavoriteListItemDto extends BaseFavoriteList {
   privacy: string;
   ownerId: string;
   containsResource?: boolean;
+  // Present on the single-list detail endpoint (`GET /favorite-list/:id`),
+  // absent on the paginated list endpoint (`GET /favorite-list`).
+  favorites?: Favorite[];
 }
 
 export interface PaginationResponseDto {

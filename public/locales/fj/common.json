@@ -5,7 +5,8 @@
     "language_select_label": "Digitaka e dua na vosa me veisautaki kina na vosa ni vanua .",
     "my_stuff": "Na noqu iyaya",
     "search": "Vakasaqaqara",
-    "report": "Vakauta mai na nomu vakatutu"
+    "report": "Vakauta mai na nomu vakatutu",
+    "printable_directories": "Dairekita e rawa ni tabaki"
   },
   "favorites": {
     "added_to_list": "Vakacurumi ki na lisi",
@@ -87,7 +88,9 @@
     "show_less": "Vakaraitaka lailai",
     "print": "Tabaka",
     "close": "Sogo",
-    "send": "Vakauta"
+    "send": "Vakauta",
+    "edit": "Veisautaka",
+    "save": "Maroroi"
   },
   "list": {
     "private": "Veika e baleti keda",
@@ -284,6 +287,37 @@
       "name": "Volivolitaki & Soli",
       "description": "Na kena gadrevi me soli se ciqomi ena lomasoli ni veivanua — se dua na tamata e gadreva na iyaya e soli, se tu vua na kaukauwa kei na gagadre me solia na gauna, kila, se ivurevure vei ira na tani. E okati kina na gagadre ena yasana ruarua ni veisau vakamatanitu: na tamata yadua era vakasaqara na cau vakayago se veiqaravi soli, kei na tamata yadua se isoqosoqo era vakasaqara me ra semati ira na dauveiqaravi kei na dausoli ka ena madigi vakaibalebale me ra veivuke.",
       "displayDescription": "Gadreva na iyaya soli se vinakata mo vukei ira tale eso? E rawa ni da semati ira na tamata era vinakata me ra soli kei ira na tamata era gadreva e dua na liga."
+    }
+  },
+  "printable_directories": {
+    "save_source": {
+      "loading_directories": "Vakavodoki tiko na dairekita...",
+      "no_directories_found": "E sega ni kunei na dairekita. Cakava e dua mai na tabana ni Noqu Dairekita taumada.",
+      "directory_label": "Dairekita",
+      "section_label": "Iwasewase",
+      "select_directory_placeholder": "Digitaka na dairekita",
+      "select_section_placeholder": "Digitaka na iwasewase .",
+      "unable_load_directories_error": "E sega ni rawa ni vakavodoki na dairekita e rawa ni tabaki",
+      "select_directory_first_error": "Digitaka taumada e dua na dairekita .",
+      "unable_create_section_error": "E sega ni rawa ni buli e dua na iwasewase ena dairekita oqo",
+      "unable_select_section_error": "E sega ni rawa ni digitaki e dua na iwasewase ena dairekita oqo"
+    },
+    "save_list": {
+      "open": "Maroroya na lisi ki na dairekita ni tabaki",
+      "button_label": "Maroroya na lisi ki na dairekita ni tabaki",
+      "dialog_title": "Maroroya na lisi ki na dairekita ni tabaki",
+      "dialog_description": "Digitaka e dua na dairekita kei na iwasewase me baleta na lisi taleitaki oqo.",
+      "choose_directory_section": "Digitaka e dua na dairekita kei na iwasewase me baleta na “{{favoriteListName}}”.",
+      "create_section_option": "Cakava na iwasewase ni “@@__PH_0_@@” {{heading}}",
+      "success": "Lisi maroroi ki na dairekita ni tabaki",
+      "error": "Sega ni rawa ni maroroi na lisi ki na dairekita"
+    },
+    "save_query": {
+      "dialog_title": "Maroroya na taro ki na dairekita ni tabaki",
+      "dialog_description": "Digitaka e dua na dairekita kei na iwasewase me baleta na taro maroroi oqo.",
+      "create_section_option": "Cakava na iwasewase ni “@@__PH_0_@@” {{heading}}",
+      "success": "Taro maroroi ki na dairekita ni tabaki",
+      "error": "Sega ni rawa ni maroroi na taro ki na dairekita"
     }
   }
 }

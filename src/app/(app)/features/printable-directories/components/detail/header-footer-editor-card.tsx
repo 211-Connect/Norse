@@ -36,7 +36,7 @@ export function HeaderFooterEditorCard({
     setIsSubmitting(true);
 
     try {
-      const updated = await updatePrintableDirectory(
+      const result = await updatePrintableDirectory(
         directory.id,
         {
           [kind]: {
@@ -47,14 +47,14 @@ export function HeaderFooterEditorCard({
         appConfig.tenantId,
       );
 
-      if (!updated) {
+      if (!result.success) {
         toast.error(
           t('unable_to_update_header_footer', { ns: 'page-directories' }),
         );
         return;
       }
 
-      onDirectoryUpdated(updated);
+      onDirectoryUpdated(result.data);
       toast.success(
         kind === 'header'
           ? t('header_updated', { ns: 'page-directories' })

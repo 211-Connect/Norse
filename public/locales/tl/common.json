@@ -5,7 +5,8 @@
     "language_select_label": "Pumili ng wika para baguhin ang wika ng site",
     "my_stuff": "Mga gamit ko",
     "search": "Maghanap",
-    "report": "Magsumite ng Feedback"
+    "report": "Magsumite ng Feedback",
+    "printable_directories": "Mga Direktoryong Pwedeng I-print"
   },
   "favorites": {
     "added_to_list": "Idinagdag sa listahan",
@@ -87,7 +88,9 @@
     "show_less": "Ipakita nang mas kaunti",
     "print": "I-print",
     "close": "Isara",
-    "send": "Ipadala"
+    "send": "Ipadala",
+    "edit": "I-edit",
+    "save": "I-save"
   },
   "list": {
     "private": "Pribado",
@@ -284,6 +287,37 @@
       "name": "Boluntaryo at Donasyon",
       "description": "Ang pangangailangang magbigay o tumanggap sa pamamagitan ng pagkabukas-palad ng komunidad — maging ang isang tao ay nangangailangan ng mga donasyong kalakal, o may kakayahan at pagnanais na mag-ambag ng oras, kasanayan, o mga mapagkukunan sa iba. Saklaw nito ang mga pangangailangan sa magkabilang panig ng palitang sibiko: mga indibidwal na naghahanap ng mga materyal na donasyon o mga serbisyong naibigay, at mga indibidwal o organisasyon na naghahangad na ikonekta ang mga boluntaryo at donor sa mga makabuluhang pagkakataon upang makatulong.",
       "displayDescription": "Kailangan mo ba ng mga donasyon o gustong tumulong sa iba? Maaari nating ikonekta ang mga taong gustong magbigay sa mga taong nangangailangan."
+    }
+  },
+  "printable_directories": {
+    "save_source": {
+      "loading_directories": "Naglo-load ng mga direktoryo...",
+      "no_directories_found": "Walang natagpuang direktoryo. Gumawa muna ng isa mula sa pahina ng Aking Mga Direktoryo.",
+      "directory_label": "Direktoryo",
+      "section_label": "Seksyon",
+      "select_directory_placeholder": "Pumili ng direktoryo",
+      "select_section_placeholder": "Pumili ng seksyon",
+      "unable_load_directories_error": "Hindi ma-load ang mga printable na direktoryo",
+      "select_directory_first_error": "Pumili muna ng direktoryo",
+      "unable_create_section_error": "Hindi makagawa ng seksyon sa direktoryong ito",
+      "unable_select_section_error": "Hindi makapili ng seksyon sa direktoryong ito"
+    },
+    "save_list": {
+      "open": "I-save ang listahan sa direktoryong maaaring i-print",
+      "button_label": "I-save ang listahan sa direktoryong maaaring i-print",
+      "dialog_title": "I-save ang listahan sa direktoryong maaaring i-print",
+      "dialog_description": "Pumili ng direktoryo at seksyon para sa listahang ito ng mga paborito.",
+      "choose_directory_section": "Pumili ng direktoryo at seksyon para sa “{{favoriteListName}}”.",
+      "create_section_option": "Gumawa ng seksyong “{{heading}}”",
+      "success": "Naka-save ang listahan sa direktoryong maaaring i-print",
+      "error": "Hindi ma-save ang listahan sa direktoryo"
+    },
+    "save_query": {
+      "dialog_title": "I-save ang query sa direktoryong maaaring i-print",
+      "dialog_description": "Pumili ng direktoryo at seksyon para sa naka-save na query na ito.",
+      "create_section_option": "Gumawa ng seksyong “{{heading}}”",
+      "success": "Na-save ang query sa direktoryo ng pagpi-print",
+      "error": "Hindi ma-save ang query sa direktoryo"
     }
   }
 }

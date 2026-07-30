@@ -5,12 +5,17 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical';
 import { s3Storage } from '@payloadcms/storage-s3';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import type { DashboardConfig } from 'payload';
 import { Endpoint, buildConfig } from 'payload';
 import sharp from 'sharp';
 
 import { getNumberFromString } from '@/utils/getNumberFromString';
 
-import { WidgetSlug } from './components/analytics/widgetInfo';
+import {
+  ANALYTICS_DEFAULT_LAYOUT,
+  WidgetSlug,
+} from './components/analytics/widgetInfo';
+import { HybridSearchConfig } from './collections/HybridSearchConfig';
 import { OrchestrationConfig } from './collections/OrchestrationConfig';
 import { ResourceDirectories } from './collections/ResourceDirectories';
 import { TenantMedia } from './collections/TenantMedia';
@@ -74,6 +79,7 @@ const config = buildConfig({
     TenantMedia,
     ResourceDirectories,
     OrchestrationConfig,
+    HybridSearchConfig,
   ],
   jobs: {
     tasks: [translateTopics, translate, warmCache],
@@ -112,15 +118,18 @@ const config = buildConfig({
     },
     user: Users.slug,
     components: {
+      beforeNavLinks: ['@/payload/components/AnalyticsNavLink'],
       afterNavLinks: [
-        '@/payload/components/AnalyticsNavLink',
         '@/payload/components/ScorecardsNavLink',
         '@/payload/components/PopulateApiConfigCacheButton',
         '@/payload/components/ClearCacheButton',
       ],
       views: {
-        analytics: {
+        dashboard: {
           Component: '@/payload/components/AnalyticsView',
+        },
+        analytics: {
+          Component: '@/payload/components/AnalyticsRedirectView',
           path: '/analytics',
           exact: true,
         },
@@ -137,6 +146,7 @@ const config = buildConfig({
           slug: WidgetSlug.TotalUsers,
           Component:
             '@/payload/components/analytics/widgets/TotalUsersWidget#default',
+          label: 'Total users',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
@@ -144,6 +154,7 @@ const config = buildConfig({
           slug: WidgetSlug.Searches,
           Component:
             '@/payload/components/analytics/widgets/SearchesWidget#default',
+          label: 'Searches',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
@@ -151,6 +162,7 @@ const config = buildConfig({
           slug: WidgetSlug.AverageSearches,
           Component:
             '@/payload/components/analytics/widgets/AnalyticsAverageSerachesWidget#default',
+          label: 'Average searches',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
@@ -158,6 +170,7 @@ const config = buildConfig({
           slug: WidgetSlug.ResourceViews,
           Component:
             '@/payload/components/analytics/widgets/ResourceViewsWidget#default',
+          label: 'Resource views',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
@@ -165,6 +178,7 @@ const config = buildConfig({
           slug: WidgetSlug.ZeroResults,
           Component:
             '@/payload/components/analytics/widgets/ZeroResultsWidget#default',
+          label: 'Zero results',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
@@ -172,6 +186,7 @@ const config = buildConfig({
           slug: WidgetSlug.WebsiteClicks,
           Component:
             '@/payload/components/analytics/widgets/WebsiteClicksWidget#default',
+          label: 'Website clicks',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
@@ -179,6 +194,7 @@ const config = buildConfig({
           slug: WidgetSlug.PhoneCalls,
           Component:
             '@/payload/components/analytics/widgets/PhoneCallsWidget#default',
+          label: 'Phone calls',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
@@ -186,6 +202,7 @@ const config = buildConfig({
           slug: WidgetSlug.Directions,
           Component:
             '@/payload/components/analytics/widgets/DirectionsWidget#default',
+          label: 'Directions',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
@@ -193,6 +210,7 @@ const config = buildConfig({
           slug: WidgetSlug.TotalReferrals,
           Component:
             '@/payload/components/analytics/widgets/TotalReferralsWidget#default',
+          label: 'Total referrals',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
@@ -200,6 +218,7 @@ const config = buildConfig({
           slug: WidgetSlug.WidgetSearches,
           Component:
             '@/payload/components/analytics/widgets/WidgetSearchesWidget#default',
+          label: 'Widget searches',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
@@ -207,6 +226,23 @@ const config = buildConfig({
           slug: WidgetSlug.CalloutClicks,
           Component:
             '@/payload/components/analytics/widgets/CalloutClicksWidget#default',
+          label: 'Callout clicks',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: WidgetSlug.HighlightClicks,
+          Component:
+            '@/payload/components/analytics/widgets/HighlightClicksWidget#default',
+          label: 'Highlight clicks',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
+          slug: WidgetSlug.AlertClicks,
+          Component:
+            '@/payload/components/analytics/widgets/AlertClicksWidget#default',
+          label: 'Alert clicks',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
@@ -214,6 +250,7 @@ const config = buildConfig({
           slug: WidgetSlug.PageViews,
           Component:
             '@/payload/components/analytics/widgets/PageViewsWidget#default',
+          label: 'Page views',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
@@ -221,6 +258,7 @@ const config = buildConfig({
           slug: WidgetSlug.PageviewsChart,
           Component:
             '@/payload/components/analytics/widgets/PageviewsChartWidget#default',
+          label: 'Pageviews chart',
           minWidth: 'large',
           maxWidth: 'full',
         },
@@ -228,6 +266,7 @@ const config = buildConfig({
           slug: WidgetSlug.Map,
           Component:
             '@/payload/components/analytics/widgets/AnalyticsMapWidget#default',
+          label: 'Map',
           minWidth: 'medium',
           maxWidth: 'full',
         },
@@ -235,6 +274,7 @@ const config = buildConfig({
           slug: WidgetSlug.ResourceTitles,
           Component:
             '@/payload/components/analytics/widgets/ResourceTitlesWidget#default',
+          label: 'Resource titles',
           minWidth: 'medium',
           maxWidth: 'full',
         },
@@ -242,6 +282,7 @@ const config = buildConfig({
           slug: WidgetSlug.SearchQueries,
           Component:
             '@/payload/components/analytics/widgets/SearchQueriesWidget#default',
+          label: 'Search queries',
           minWidth: 'medium',
           maxWidth: 'full',
         },
@@ -249,6 +290,7 @@ const config = buildConfig({
           slug: WidgetSlug.ZipCodeSearches,
           Component:
             '@/payload/components/analytics/widgets/ZipCodeSearchesWidget#default',
+          label: 'Zip code searches',
           minWidth: 'medium',
           maxWidth: 'full',
         },
@@ -256,6 +298,7 @@ const config = buildConfig({
           slug: WidgetSlug.CountySearches,
           Component:
             '@/payload/components/analytics/widgets/CountySearchesWidget#default',
+          label: 'County searches',
           minWidth: 'medium',
           maxWidth: 'full',
         },
@@ -263,6 +306,7 @@ const config = buildConfig({
           slug: WidgetSlug.ResourceEntryPoints,
           Component:
             '@/payload/components/analytics/widgets/ResourceEntryPointsWidget#default',
+          label: 'Resource entry points',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
@@ -270,6 +314,7 @@ const config = buildConfig({
           slug: WidgetSlug.ZeroResultQueries,
           Component:
             '@/payload/components/analytics/widgets/ZeroResultQueriesWidget#default',
+          label: 'Zero result queries',
           minWidth: 'medium',
           maxWidth: 'full',
         },
@@ -277,6 +322,7 @@ const config = buildConfig({
           slug: WidgetSlug.SessionQuality,
           Component:
             '@/payload/components/analytics/widgets/SessionQualityWidget#default',
+          label: 'Session quality',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
@@ -284,6 +330,7 @@ const config = buildConfig({
           slug: WidgetSlug.DeviceTypes,
           Component:
             '@/payload/components/analytics/widgets/DeviceTypesWidget#default',
+          label: 'Device types',
           minWidth: 'medium',
           maxWidth: 'full',
         },
@@ -291,6 +338,7 @@ const config = buildConfig({
           slug: WidgetSlug.SafeExitClicks,
           Component:
             '@/payload/components/analytics/widgets/SafeExitClicksWidget#default',
+          label: 'Safe exit clicks',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
@@ -298,6 +346,7 @@ const config = buildConfig({
           slug: WidgetSlug.LanguageSwitchDestinations,
           Component:
             '@/payload/components/analytics/widgets/LanguageSwitchDestinationsWidget#default',
+          label: 'Language switch destinations',
           minWidth: 'medium',
           maxWidth: 'full',
         },
@@ -305,6 +354,7 @@ const config = buildConfig({
           slug: WidgetSlug.FavoriteAddToList,
           Component:
             '@/payload/components/analytics/widgets/FavoriteAddToListWidget#default',
+          label: 'Favorite add to list',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
@@ -312,6 +362,7 @@ const config = buildConfig({
           slug: WidgetSlug.VerifiedUsers,
           Component:
             '@/payload/components/analytics/widgets/VerifiedUsersWidget#default',
+          label: 'Verified users',
           minWidth: 'x-small',
           maxWidth: 'full',
         },
@@ -324,7 +375,14 @@ const config = buildConfig({
           maxWidth: 'full',
         },
       ],
-      defaultLayout: [{ widgetSlug: 'collections', width: 'full' as const }],
+      // Set explicitly so Payload's core config sanitizer doesn't fall
+      // back to its built-in default (the `collections` widget) when the
+      // "Reset Layout" server function reads `admin.dashboard.defaultLayout`
+      // directly off the real server-side config. AnalyticsView also
+      // renders with this same array for the initial dashboard render.
+      defaultLayout: ANALYTICS_DEFAULT_LAYOUT as NonNullable<
+        DashboardConfig['defaultLayout']
+      >,
     },
   },
   secret: process.env.PAYLOAD_SECRET as string,
@@ -422,6 +480,9 @@ const config = buildConfig({
           isGlobal: true,
         },
         [OrchestrationConfig.slug]: {
+          isGlobal: true,
+        },
+        [HybridSearchConfig.slug]: {
           isGlobal: true,
         },
       },

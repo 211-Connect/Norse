@@ -1,16 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+
+import './styles.css';
 
 export default function AnalyticsNavLink() {
-  const pathname = usePathname();
-  const href = '/admin/analytics';
-  const isActive = pathname?.startsWith(href);
+  const href = '/admin';
 
   return (
     <Link className="nav__link" href={href} id="nav-analytics" prefetch={false}>
-      {isActive && <div className="nav__link-indicator" />}
       <span className="nav__link-label">Analytics</span>
     </Link>
   );

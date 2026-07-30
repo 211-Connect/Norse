@@ -378,6 +378,7 @@ async function getAppConfigBase(
       faviconUrl: getMediaUrl(resourceDirectory.brand.favicon),
       openGraphUrl: getMediaUrl(resourceDirectory.brand.openGraph),
       copyright: resourceDirectory.brand.copyright ?? undefined,
+      ctaText: resourceDirectory.brand.printableDocuments?.ctaText ?? undefined,
       theme: {
         borderRadius: resourceDirectory.brand.theme.borderRadius ?? undefined,
         primaryColor: resourceDirectory.brand.theme.primaryColor ?? undefined,

@@ -10,6 +10,8 @@ export enum WidgetSlug {
   TotalReferrals = 'analytics-total-referrals',
   WidgetSearches = 'analytics-widget-searches',
   CalloutClicks = 'analytics-callout-clicks',
+  HighlightClicks = 'analytics-highlight-clicks',
+  AlertClicks = 'analytics-alert-clicks',
   PageViews = 'analytics-page-views',
   PageviewsChart = 'analytics-pageviews-chart',
   Map = 'analytics-map',
@@ -25,7 +27,25 @@ export enum WidgetSlug {
   LanguageSwitchDestinations = 'analytics-language-switch-destinations',
   FavoriteAddToList = 'analytics-favorite-add-to-list',
   VerifiedUsers = 'analytics-verified-users',
+  EventCard = 'analytics-event-card',
 }
+
+// Default layout for the analytics dashboard. Used both to sanitize the
+// real Payload config (so the server-side "Reset Layout" action restores
+// this layout) and by AnalyticsView when rendering the dashboard.
+export const ANALYTICS_DEFAULT_LAYOUT = [
+  { widgetSlug: WidgetSlug.TotalUsers, width: 'x-small' as const },
+  { widgetSlug: WidgetSlug.Searches, width: 'x-small' as const },
+  { widgetSlug: WidgetSlug.PageViews, width: 'x-small' as const },
+  { widgetSlug: WidgetSlug.ResourceViews, width: 'x-small' as const },
+  { widgetSlug: WidgetSlug.ZeroResults, width: 'x-small' as const },
+  { widgetSlug: WidgetSlug.WebsiteClicks, width: 'x-small' as const },
+  { widgetSlug: WidgetSlug.PhoneCalls, width: 'x-small' as const },
+  { widgetSlug: WidgetSlug.Directions, width: 'x-small' as const },
+  { widgetSlug: WidgetSlug.PageviewsChart, width: 'full' as const },
+  { widgetSlug: WidgetSlug.ResourceTitles, width: 'medium' as const },
+  { widgetSlug: WidgetSlug.SearchQueries, width: 'medium' as const },
+];
 
 export const WIDGET_INFO: Record<WidgetSlug, string> = {
   [WidgetSlug.TotalUsers]: 'The number of unique visitors to the site.',
@@ -48,6 +68,10 @@ export const WIDGET_INFO: Record<WidgetSlug, string> = {
     'The number of searches that came from the search widget.',
   [WidgetSlug.CalloutClicks]:
     'The number of times uses have clicked call out buttons on New Layout.',
+  [WidgetSlug.HighlightClicks]:
+    'The number of times users have clicked on a highlight button on the home page.',
+  [WidgetSlug.AlertClicks]:
+    'The number of times users have clicked an alert button on the home page.',
   [WidgetSlug.PageViews]: 'The number of pages viewed.',
   [WidgetSlug.PageviewsChart]: 'The number of page views each day.',
   [WidgetSlug.Map]: 'The geographic origin of user traffic.',
@@ -73,4 +97,6 @@ export const WIDGET_INFO: Record<WidgetSlug, string> = {
     'The number of times users change the site language sorted by language users changed to.',
   [WidgetSlug.FavoriteAddToList]: 'The number of resources added to favorites.',
   [WidgetSlug.VerifiedUsers]: 'The total number of verified user accounts.',
+  [WidgetSlug.EventCard]:
+    'Display the number of custom events. Intended for API analytics from partners.',
 };

@@ -183,14 +183,27 @@ export function AnalyticsMap({
       } catch {}
     };
 
-    const buildGeoJSON = () => ({
-      type: 'FeatureCollection' as const,
-      features: (heatmapPoints ?? []).map(({ lng, lat, weight = 1 }) => ({
-        type: 'Feature' as const,
-        geometry: { type: 'Point' as const, coordinates: [lng, lat] },
-        properties: { weight },
-      })),
-    });
+    const buildGeoJSON = () => {
+      const points = heatmapPoints ?? [];
+      // Dampen the raw aggregate weights with a sqrt scale so a few very
+      // high-traffic locations don't saturate the whole heatmap and drown
+      // out lower-traffic points. Normalized relative to the current
+      // batch's max weight, then mapped back into a 0-1 range.
+      const maxWeight = Math.max(1, ...points.map((p) => p.weight ?? 1));
+      const maxScaled = Math.sqrt(maxWeight);
+
+      return {
+        type: 'FeatureCollection' as const,
+        features: points.map(({ lng, lat, weight = 1 }) => {
+          const scaledWeight = Math.sqrt(Math.max(0, weight)) / maxScaled;
+          return {
+            type: 'Feature' as const,
+            geometry: { type: 'Point' as const, coordinates: [lng, lat] },
+            properties: { weight: scaledWeight },
+          };
+        }),
+      };
+    };
 
     const addLayer = () => {
       if (cancelled || !map?.style) return;

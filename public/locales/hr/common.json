@@ -5,7 +5,8 @@
     "language_select_label": "Odaberite jezik za promjenu jezika web-mjesta",
     "my_stuff": "Moje stvari",
     "search": "Pretraživanje",
-    "report": "Pošalji povratne informacije"
+    "report": "Pošalji povratne informacije",
+    "printable_directories": "Ispisivi imenici"
   },
   "favorites": {
     "added_to_list": "Dodano na popis",
@@ -87,7 +88,9 @@
     "show_less": "Prikaži manje",
     "print": "Ispis",
     "close": "Zatvori",
-    "send": "Poslati"
+    "send": "Poslati",
+    "edit": "Uredi",
+    "save": "Uštedjeti"
   },
   "list": {
     "private": "Privatno",
@@ -284,6 +287,37 @@
       "name": "Volontiranje i donacije",
       "description": "Potreba za davanjem ili primanjem kroz velikodušnost zajednice - bez obzira treba li osoba donirana roba ili ima sposobnost i želju doprinijeti vremenom, vještinama ili resursima drugima. Obuhvaća potrebe na obje strane građanske razmjene: pojedince koji traže materijalne donacije ili donirane usluge i pojedince ili organizacije koje žele povezati volontere i donatore sa značajnim prilikama za pomoć.",
       "displayDescription": "Trebate donirane stvari ili želite pomoći drugima? Možemo povezati ljude koji žele dati s ljudima kojima je potrebna pomoć."
+    }
+  },
+  "printable_directories": {
+    "save_source": {
+      "loading_directories": "Učitavanje direktorija...",
+      "no_directories_found": "Nisu pronađeni direktoriji. Prvo stvorite jedan na stranici Moji direktoriji.",
+      "directory_label": "Imenik",
+      "section_label": "Odjeljak",
+      "select_directory_placeholder": "Odaberite direktorij",
+      "select_section_placeholder": "Odaberite odjeljak",
+      "unable_load_directories_error": "Nije moguće učitati ispisive direktorije",
+      "select_directory_first_error": "Prvo odaberite direktorij",
+      "unable_create_section_error": "Nije moguće stvoriti odjeljak u ovom direktoriju",
+      "unable_select_section_error": "Nije moguće odabrati odjeljak u ovom direktoriju"
+    },
+    "save_list": {
+      "open": "Spremi popis u direktorij za ispis",
+      "button_label": "Spremi popis u direktorij za ispis",
+      "dialog_title": "Spremi popis u direktorij za ispis",
+      "dialog_description": "Odaberite direktorij i odjeljak za ovaj popis favorita.",
+      "choose_directory_section": "Odaberite direktorij i odjeljak za “{{favoriteListName}}”.",
+      "create_section_option": "Izradi odjeljak „{{heading}}”",
+      "success": "Popis spremljen u direktorij za ispis",
+      "error": "Nije moguće spremiti popis u direktorij"
+    },
+    "save_query": {
+      "dialog_title": "Spremi upit u direktorij za ispis",
+      "dialog_description": "Odaberite direktorij i odjeljak za ovaj spremljeni upit.",
+      "create_section_option": "Izradi odjeljak „{{heading}}”",
+      "success": "Upit spremljen u direktorij za ispis",
+      "error": "Nije moguće spremiti upit u direktorij"
     }
   }
 }

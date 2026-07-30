@@ -64,6 +64,11 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'], baseURL },
     },
     {
+      name: 'search-geocode',
+      testMatch: ['**/search-location-geocode.spec.ts'],
+      use: { ...devices['Desktop Chrome'], baseURL },
+    },
+    {
       name: 'favorites',
       testMatch: ['**/favorites.spec.ts', '**/local-favorites.spec.ts'],
       use: { ...devices['Desktop Chrome'], baseURL },

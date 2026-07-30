@@ -5,7 +5,8 @@
     "language_select_label": "E koho i kahi ʻōlelo e hoʻololi i ka ʻōlelo o ka pūnaewele",
     "my_stuff": "Kaʻu mau mea",
     "search": "Huli",
-    "report": "Hoʻouna i nā Manaʻo"
+    "report": "Hoʻouna i nā Manaʻo",
+    "printable_directories": "Nā Papa Kuhikuhi Hiki ke Paʻi ʻia"
   },
   "favorites": {
     "added_to_list": "Ua hoʻohui ʻia i ka papa inoa",
@@ -87,7 +88,9 @@
     "show_less": "Hōʻike emi mai",
     "print": "Paʻi",
     "close": "Pani",
-    "send": "Hoʻouna"
+    "send": "Hoʻouna",
+    "edit": "Hoʻoponopono",
+    "save": "Mālama"
   },
   "list": {
     "private": "Pilikino",
@@ -284,6 +287,37 @@
       "name": "Hana Manawaleʻa & Hāʻawi",
       "description": "ʻO ka pono e hāʻawi a loaʻa paha ma o ka lokomaikaʻi o ke kaiāulu - inā paha he pono i kahi kanaka nā waiwai i hāʻawi ʻia, a i ʻole he hiki a me ka makemake e hāʻawi i ka manawa, nā mākau, a i ʻole nā ​​​​kumuwaiwai i nā poʻe ʻē aʻe. Hoʻopuni i nā pono ma nā ʻaoʻao ʻelua o ka hoʻololi kīwila: nā kānaka e ʻimi nei i nā hāʻawi waiwai a i ʻole nā ​​​​lawelawe i hāʻawi ʻia, a me nā kānaka a i ʻole nā ​​​​hui e ʻimi nei e hoʻopili i nā mea manawaleʻa a me nā mea hāʻawi me nā manawa kūpono e kōkua.",
       "displayDescription": "Pono nā waiwai i hāʻawi ʻia a makemake paha e kōkua i nā poʻe ʻē aʻe? Hiki iā mākou ke hoʻopili i ka poʻe makemake e hāʻawi me ka poʻe e pono ai ke kōkua."
+    }
+  },
+  "printable_directories": {
+    "save_source": {
+      "loading_directories": "Ke hoʻouka nei i nā papa kuhikuhi...",
+      "no_directories_found": "ʻAʻohe papa kuhikuhi i loaʻa. E hana mua i hoʻokahi mai ka ʻaoʻao My Directories.",
+      "directory_label": "Papa Kuhikuhi",
+      "section_label": "Māhele",
+      "select_directory_placeholder": "Koho i ka papa kuhikuhi",
+      "select_section_placeholder": "Koho i ka ʻāpana",
+      "unable_load_directories_error": "ʻAʻole hiki ke hoʻouka i nā papa kuhikuhi hiki ke paʻi ʻia",
+      "select_directory_first_error": "E koho mua i kahi papa kuhikuhi",
+      "unable_create_section_error": "ʻAʻole hiki ke hana i kahi ʻāpana ma kēia papa kuhikuhi",
+      "unable_select_section_error": "ʻAʻole hiki ke koho i kahi ʻāpana ma kēia papa kuhikuhi"
+    },
+    "save_list": {
+      "open": "E mālama i ka papa inoa i ka papa kuhikuhi hiki ke paʻi ʻia",
+      "button_label": "E mālama i ka papa inoa i ka papa kuhikuhi hiki ke paʻi ʻia",
+      "dialog_title": "E mālama i ka papa inoa i ka papa kuhikuhi hiki ke paʻi ʻia",
+      "dialog_description": "E koho i kahi papa kuhikuhi a me kahi ʻāpana no kēia papa inoa punahele.",
+      "choose_directory_section": "E koho i kahi papa kuhikuhi a me kahi ʻāpana no “{{favoriteListName}}”.",
+      "create_section_option": "E hana i ka ʻāpana “{{heading}}”",
+      "success": "Papa inoa i mālama ʻia i ka papa kuhikuhi hiki ke paʻi ʻia",
+      "error": "ʻAʻole hiki ke mālama i ka papa inoa i ka papa kuhikuhi"
+    },
+    "save_query": {
+      "dialog_title": "E mālama i ka nīnau i ka papa kuhikuhi hiki ke paʻi ʻia",
+      "dialog_description": "E koho i kahi papa kuhikuhi a me kahi ʻāpana no kēia nīnau i mālama ʻia.",
+      "create_section_option": "E hana i ka ʻāpana “{{heading}}”",
+      "success": "Ua mālama ʻia ka nīnau i ka papa kuhikuhi hiki ke paʻi ʻia",
+      "error": "ʻAʻole hiki ke mālama i ka nīnau i ka papa kuhikuhi"
     }
   }
 }

@@ -7,6 +7,7 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { DirectoryPrintControl } from '@/app/(app)/shared/components/directory-print/directory-print-control';
+import { useDefaultDirectoryPdfDocument } from '@/app/(app)/shared/components/directory-print/use-default-directory-pdf-document';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { getPrintableDirectoryData } from '@/app/(app)/shared/serverActions/search/getPrintableDirectoryData';
 import { ShareButton } from '@/app/(app)/shared/components/share-button';
@@ -89,7 +90,6 @@ export function ResultsSection({
   aiSearchAlert,
 }: ResultsSectionProps) {
   const { t } = useTranslation('page-search');
-  const { i18n } = useTranslation();
   const appConfig = useAppConfig();
   const searchParams = useSearchParams();
   const componentToPrintRef = useRef<HTMLDivElement>(null);
@@ -138,18 +138,22 @@ export function ResultsSection({
 
   const showSort = queryType !== 'hybrid';
 
-  const loadPrintableData = useCallback(async () => {
-    const ids = (results ?? [])
-      .map((result) => result.id || result._id)
-      .filter(Boolean);
+  const loadPrintableData = useCallback(
+    (locale: string) => {
+      const ids = (results ?? [])
+        .map((result) => result.id || result._id)
+        .filter(Boolean);
 
-    return getPrintableDirectoryData(
-      ids,
-      i18n.language,
-      appConfig.tenantId,
-      printableListName,
-    );
-  }, [results, i18n.language, appConfig.tenantId, printableListName]);
+      return getPrintableDirectoryData(
+        ids,
+        locale,
+        appConfig.tenantId,
+        printableListName,
+      );
+    },
+    [results, appConfig.tenantId, printableListName],
+  );
+  const renderPdfDocument = useDefaultDirectoryPdfDocument();
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -189,7 +193,10 @@ export function ResultsSection({
           <ResultTotal />
           <div className="flex gap-2.5">
             {resultsCount > 0 && (
-              <DirectoryPrintControl data={null} loadData={loadPrintableData} />
+              <DirectoryPrintControl
+                loadData={loadPrintableData}
+                renderDocument={renderPdfDocument}
+              />
             )}
             {resultsCount > 0 && (
               <SaveQueryToDirectoryButton

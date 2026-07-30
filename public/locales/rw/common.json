@@ -5,7 +5,8 @@
     "language_select_label": "Hitamo ururimi rwo guhindura ururimi rw'urubuga",
     "my_stuff": "Ibintu byanjye",
     "search": "Gushakisha",
-    "report": "Ohereza igitekerezo"
+    "report": "Ohereza igitekerezo",
+    "printable_directories": "Amadosiye Ashobora Gucapwa"
   },
   "favorites": {
     "added_to_list": "Yongewe ku rutonde",
@@ -87,7 +88,9 @@
     "show_less": "Erekana bike",
     "print": "Capa",
     "close": "Funga",
-    "send": "Ohereza"
+    "send": "Ohereza",
+    "edit": "Hindura",
+    "save": "Bika"
   },
   "list": {
     "private": "Ibanga",
@@ -284,6 +287,37 @@
       "name": "Ubukorerabushake n'impano",
       "description": "Gukenera gutanga cyangwa kwakira binyuze mu bufasha bw'abaturage - yaba umuntu akeneye ibintu byatanzwe, cyangwa afite ubushobozi n'ubushake bwo gutanga umwanya, ubuhanga, cyangwa umutungo ku bandi. Bikubiyemo ibikenewe ku mpande zombi z'ihanahana ry'abaturage: abantu bashaka impano z'ibikoresho cyangwa serivisi zatanzwe, hamwe n'abantu ku giti cyabo cyangwa imiryango ishaka guhuza abakorerabushake n'abaterankunga n'amahirwe afite akamaro yo gufasha.",
       "displayDescription": "Ukeneye ibintu byatanzwe cyangwa wifuza gufasha abandi? Dushobora guhuza abantu bashaka gutanga n'abantu bakeneye ubufasha."
+    }
+  },
+  "printable_directories": {
+    "save_source": {
+      "loading_directories": "Irimo gupakira ububiko bw'amakuru...",
+      "no_directories_found": "Nta ububiko bw'amakuru bwabonetse. Banza ushyiremo bumwe uhereye ku ipaji ya My Directories.",
+      "directory_label": "Ububiko",
+      "section_label": "Igice",
+      "select_directory_placeholder": "Hitamo ububiko",
+      "select_section_placeholder": "Hitamo igice",
+      "unable_load_directories_error": "Ntibishoboka gufungura ububiko bw'ibitabo bushobora gucapwa",
+      "select_directory_first_error": "Banza uhitemo ububiko",
+      "unable_create_section_error": "Ntibishoboka gukora igice muri iyi directory",
+      "unable_select_section_error": "Ntabwo nashoboye guhitamo igice muri iyi directory"
+    },
+    "save_list": {
+      "open": "Bika urutonde mu bubiko bw'inyandiko bushobora gucapwa",
+      "button_label": "Bika urutonde mu bubiko bw'inyandiko bushobora gucapwa",
+      "dialog_title": "Bika urutonde mu bubiko bw'inyandiko bushobora gucapwa",
+      "dialog_description": "Hitamo ububiko n'igice cy'uru rutonde ukunda.",
+      "choose_directory_section": "Hitamo ububiko n'igice cya \"{{favoriteListName}}\".",
+      "create_section_option": "Kora igice cya “{{heading}}”",
+      "success": "Urutonde rwabitswe mu bubiko bw'ibitabo bishobora gucapwa",
+      "error": "Ntibishoboka kubika urutonde muri ububiko"
+    },
+    "save_query": {
+      "dialog_title": "Bika ikibazo mu bubiko bw'inyandiko bushobora gucapwa",
+      "dialog_description": "Hitamo ububiko n'igice cy'iki kibazo cyabitswe.",
+      "create_section_option": "Kora igice cya “{{heading}}”",
+      "success": "Ikibazo cyabitswe mu bubiko bw'inyandiko bushobora gucapwa",
+      "error": "Ntibishoboka kubika ikibazo muri ububiko"
     }
   }
 }

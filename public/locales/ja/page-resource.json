@@ -29,5 +29,7 @@
   "other_information": "その他の情報",
   "organization_url": "組織のURL",
   "contacts": "このサービスをご利用になるには、下記までお問い合わせください。",
-  "location_name": "場所名"
+  "location_name": "場所名",
+  "resource_name": "リソース名",
+  "quality": "品質情報"
 }

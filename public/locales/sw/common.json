@@ -5,7 +5,8 @@
     "language_select_label": "Chagua lugha ya kubadilisha lugha ya tovuti",
     "my_stuff": "Mambo yangu",
     "search": "Tafuta",
-    "report": "Wasilisha maoni"
+    "report": "Wasilisha maoni",
+    "printable_directories": "Saraka Zinazoweza Kuchapishwa"
   },
   "favorites": {
     "added_to_list": "Imeongezwa kwenye orodha",
@@ -87,7 +88,9 @@
     "show_less": "Onyesha chini",
     "print": "Chapisha",
     "close": "Funga",
-    "send": "Tuma"
+    "send": "Tuma",
+    "edit": "Hariri",
+    "save": "Hifadhi"
   },
   "list": {
     "private": "Binafsi",
@@ -284,6 +287,37 @@
       "name": "Kujitolea na Mchango",
       "description": "Haja ya kutoa au kupokea kupitia ukarimu wa jamii — iwe mtu anahitaji bidhaa zilizotolewa, au ana uwezo na hamu ya kuchangia muda, ujuzi, au rasilimali kwa wengine. Inajumuisha mahitaji ya pande zote mbili za ubadilishanaji wa kiraia: watu binafsi wanaotafuta michango ya vifaa au huduma zilizotolewa, na watu binafsi au mashirika yanayotafuta kuwaunganisha watu wa kujitolea na wafadhili na fursa zenye maana za kusaidia.",
       "displayDescription": "Unahitaji bidhaa zilizotolewa au unataka kuwasaidia wengine? Tunaweza kuwaunganisha watu wanaotaka kutoa na watu wanaohitaji msaada."
+    }
+  },
+  "printable_directories": {
+    "save_source": {
+      "loading_directories": "Inapakia saraka...",
+      "no_directories_found": "Hakuna saraka zilizopatikana. Unda moja kutoka ukurasa wa Saraka Zangu kwanza.",
+      "directory_label": "Saraka",
+      "section_label": "Sehemu",
+      "select_directory_placeholder": "Chagua saraka",
+      "select_section_placeholder": "Chagua sehemu",
+      "unable_load_directories_error": "Haiwezi kupakia saraka zinazoweza kuchapishwa",
+      "select_directory_first_error": "Chagua saraka kwanza",
+      "unable_create_section_error": "Haiwezi kuunda sehemu katika saraka hii",
+      "unable_select_section_error": "Haiwezi kuchagua sehemu katika saraka hii"
+    },
+    "save_list": {
+      "open": "Hifadhi orodha kwenye saraka inayoweza kuchapishwa",
+      "button_label": "Hifadhi orodha kwenye saraka inayoweza kuchapishwa",
+      "dialog_title": "Hifadhi orodha kwenye saraka inayoweza kuchapishwa",
+      "dialog_description": "Chagua saraka na sehemu ya orodha hii unayoipenda.",
+      "choose_directory_section": "Chagua saraka na sehemu ya “{{favoriteListName}}”.",
+      "create_section_option": "Unda sehemu ya “{{heading}}”",
+      "success": "Orodha imehifadhiwa kwenye saraka inayoweza kuchapishwa",
+      "error": "Haiwezi kuhifadhi orodha kwenye saraka"
+    },
+    "save_query": {
+      "dialog_title": "Hifadhi hoja kwenye saraka inayoweza kuchapishwa",
+      "dialog_description": "Chagua saraka na sehemu ya hoja hii iliyohifadhiwa.",
+      "create_section_option": "Unda sehemu ya “{{heading}}”",
+      "success": "Hoja imehifadhiwa kwenye saraka inayoweza kuchapishwa",
+      "error": "Haiwezi kuhifadhi hoja kwenye saraka"
     }
   }
 }

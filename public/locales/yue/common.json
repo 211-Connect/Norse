@@ -5,7 +5,8 @@
     "language_select_label": "揀一種語言嚟更改網站語言",
     "my_stuff": "我嘅嘢",
     "search": "搜尋",
-    "report": "提交意見"
+    "report": "提交意見",
+    "printable_directories": "可列印嘅目錄"
   },
   "favorites": {
     "added_to_list": "加咗去清單",
@@ -87,7 +88,9 @@
     "show_less": "顯示少啲",
     "print": "列印",
     "close": "關閉",
-    "send": "寄送"
+    "send": "寄送",
+    "edit": "修改",
+    "save": "保存"
   },
   "list": {
     "private": "私人",
@@ -284,6 +287,37 @@
       "name": "義工同捐款",
       "description": "透過社區慷慨去捐贈或者接受嘅需要 — 無論一個人係咪需要捐贈嘅物品，定係有能力同慾望為其他人貢獻時間、技能或者資源。包括公民交流兩邊嘅需要：尋求物質捐贈或捐贈服務嘅個人，同埋尋求將義工同捐贈者連結到有意義嘅幫助機會嘅個人或組織。",
       "displayDescription": "需要捐贈嘅物品定係想幫人？我哋可以將想捐贈嘅人同需要幫手嘅人聯繫起嚟。"
+    }
+  },
+  "printable_directories": {
+    "save_source": {
+      "loading_directories": "載入緊目錄⋯",
+      "no_directories_found": "搵唔到目錄。先喺「我嘅目錄」頁面建立一個。",
+      "directory_label": "目錄",
+      "section_label": "部分",
+      "select_directory_placeholder": "揀目錄",
+      "select_section_placeholder": "揀部分",
+      "unable_load_directories_error": "加載唔到可列印嘅目錄",
+      "select_directory_first_error": "先揀個目錄",
+      "unable_create_section_error": "喺呢個目錄入面建立唔到個部分",
+      "unable_select_section_error": "揀唔到呢個目錄入面嘅部分"
+    },
+    "save_list": {
+      "open": "將清單儲存去可列印嘅目錄",
+      "button_label": "將清單儲存去可列印嘅目錄",
+      "dialog_title": "將清單儲存去可列印嘅目錄",
+      "dialog_description": "為呢個最愛清單揀一個目錄同部分。",
+      "choose_directory_section": "揀一個目錄同埋「 @@__PH_0__ @ @ 」嘅目錄同埋部分。 {{favoriteListName}}",
+      "create_section_option": "建立「 {{heading}} 」部分",
+      "success": "儲存到可列印目錄嘅清單",
+      "error": "將清單儲存去目錄"
+    },
+    "save_query": {
+      "dialog_title": "將查詢儲存去可列印嘅目錄",
+      "dialog_description": "為呢個儲存咗嘅查詢揀一個目錄同部分。",
+      "create_section_option": "建立「 {{heading}} 」部分",
+      "success": "查詢儲存到可列印目錄",
+      "error": "儲存唔到查詢去目錄"
     }
   }
 }
