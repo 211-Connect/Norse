@@ -9,6 +9,7 @@ import {
 
 import { type PrintableDirectoryData } from '@/app/(app)/shared/utils/printable-directory-transformers';
 
+import { usePdfFontFamily } from './pdf-fonts';
 import {
   BASE_FONT,
   COLORS,
@@ -29,14 +30,12 @@ const styles = StyleSheet.create({
     paddingTop: 85,
     paddingBottom: 100,
     paddingHorizontal: 40,
-    fontFamily: 'Helvetica',
   },
   pageNoHeader: {
     flexDirection: 'column',
     paddingTop: 40,
     paddingBottom: 100,
     paddingHorizontal: 40,
-    fontFamily: 'Helvetica',
   },
   header: {
     position: 'absolute',
@@ -52,7 +51,6 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: BASE_FONT.title,
-    fontFamily: 'Helvetica-Bold',
     color: COLORS.primary,
   },
   headerMeta: {
@@ -62,12 +60,10 @@ const styles = StyleSheet.create({
   headerDate: {
     fontSize: BASE_FONT.subtitle,
     color: COLORS.primary,
-    fontFamily: 'Helvetica',
   },
   headerDomain: {
     fontSize: BASE_FONT.subtitle,
     color: COLORS.primary,
-    fontFamily: 'Helvetica-Bold',
   },
   headerSeparator: {
     borderTopWidth: 1,
@@ -106,7 +102,6 @@ const styles = StyleSheet.create({
   fullPageLeftName: {
     fontSize: BASE_FONT.title,
     color: COLORS.primary,
-    fontFamily: 'Helvetica-Bold',
     marginBottom: 6,
     lineHeight: 1.25,
   },
@@ -125,7 +120,6 @@ const styles = StyleSheet.create({
   fullPageLeftDial: {
     fontSize: BASE_FONT.heading,
     color: COLORS.primary,
-    fontFamily: 'Helvetica-Bold',
     marginBottom: 2,
   },
   fullPageLeftDomain: {
@@ -184,13 +178,19 @@ function DirectoryHeader({
   currentDate,
   currentDomain,
 }: DirectoryHeaderProps) {
+  const { bold } = usePdfFontFamily();
+
   return (
     <View style={styles.header} fixed>
       <View style={styles.headerContent}>
-        <Text style={styles.headerTitle}>{listName}</Text>
+        <Text style={[styles.headerTitle, { fontFamily: bold }]}>
+          {listName}
+        </Text>
         <View style={styles.headerMeta}>
           <Text style={styles.headerDate}>{currentDate}</Text>
-          <Text style={styles.headerDomain}>{currentDomain}</Text>
+          <Text style={[styles.headerDomain, { fontFamily: bold }]}>
+            {currentDomain}
+          </Text>
         </View>
       </View>
       <View style={styles.headerSeparator} />
@@ -246,6 +246,7 @@ export function PDFDirectory({
   const fontScale = getFontScale(fontSizeMode);
   const datumLabels = useDatumLabels();
   const disclaimerText = useDisclaimerText(brandName);
+  const { regular, bold } = usePdfFontFamily();
 
   const useSidebarLayout =
     variant === 'full-listing' && fontSizeMode !== 'large';
@@ -265,7 +266,10 @@ export function PDFDirectory({
     <Document>
       <Page
         size="LETTER"
-        style={useSidebarLayout ? styles.pageNoHeader : styles.pageWithHeader}
+        style={[
+          useSidebarLayout ? styles.pageNoHeader : styles.pageWithHeader,
+          { fontFamily: regular },
+        ]}
       >
         {!useSidebarLayout && (
           <DirectoryHeader
@@ -282,7 +286,12 @@ export function PDFDirectory({
                 <Image style={styles.fullPageLeftLogo} src={brandLogoUrl} />
               )}
               <View style={styles.fullPageLeftLogoSeparator} />
-              <Text style={scaleStyle(styles.fullPageLeftName, fontScale)}>
+              <Text
+                style={[
+                  scaleStyle(styles.fullPageLeftName, fontScale),
+                  { fontFamily: bold },
+                ]}
+              >
                 {data.name}
               </Text>
               <Text style={scaleStyle(styles.fullPageLeftDate, fontScale)}>
@@ -290,7 +299,12 @@ export function PDFDirectory({
               </Text>
               <View style={styles.fullPageLeftSpacer} />
               <View style={styles.fullPageLeftBottomSeparator} />
-              <Text style={scaleStyle(styles.fullPageLeftDial, fontScale)}>
+              <Text
+                style={[
+                  scaleStyle(styles.fullPageLeftDial, fontScale),
+                  { fontFamily: bold },
+                ]}
+              >
                 {ctaText || datumLabels.dial211}
               </Text>
               <Text style={scaleStyle(styles.fullPageLeftDomain, fontScale)}>

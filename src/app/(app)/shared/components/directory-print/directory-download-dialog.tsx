@@ -7,6 +7,8 @@ import { useTranslation } from 'react-i18next';
 
 import { applyBookletPadding } from '@/app/(app)/shared/components/directory-print/applyBookletPadding';
 import { downloadPdfDocument } from '@/app/(app)/shared/components/directory-print/openPdfDocument';
+import { type PdfDocumentElement } from '@/app/(app)/shared/components/directory-print/print-directory-dialog';
+import { PdfFontProvider } from '@/app/(app)/shared/components/directory-print/pdf-fonts';
 import { PDFPrintableDirectory } from '@/app/(app)/shared/components/directory-print/pdf-printable-directory';
 import { withCustomBasePathAppendedToDomain } from '@/app/(app)/shared/lib/utils';
 import { type PrintVariant } from '@/app/(app)/shared/components/directory-print/pdf-print-primitives';
@@ -91,15 +93,17 @@ export function DirectoryDownloadDialog({
         year: 'numeric',
       });
 
-      const documentElement = (
-        <PDFPrintableDirectory
-          data={data}
-          variant={printVariant}
-          fontSizeMode="default"
-          currentDomain={currentDomain}
-          currentDate={currentDate}
-          brandLogoUrl={appConfig.brand.logoUrl ?? undefined}
-        />
+      const documentElement: PdfDocumentElement = (
+        <PdfFontProvider locale={locale}>
+          <PDFPrintableDirectory
+            data={data}
+            variant={printVariant}
+            fontSizeMode="default"
+            currentDomain={currentDomain}
+            currentDate={currentDate}
+            brandLogoUrl={appConfig.brand.logoUrl ?? undefined}
+          />
+        </PdfFontProvider>
       );
 
       const result = await downloadPdfDocument(

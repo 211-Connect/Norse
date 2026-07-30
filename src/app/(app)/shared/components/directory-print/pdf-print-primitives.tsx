@@ -7,6 +7,7 @@ import {
   addLineBreaksToLongWords,
   toPdfPrintableText,
 } from './pdf-text-normalizer';
+import { usePdfFontFamily } from './pdf-fonts';
 
 export type PdfStyle = Styles[string];
 
@@ -113,7 +114,6 @@ export const itemStyles = StyleSheet.create({
   },
   lineItemTitle: {
     fontSize: BASE_FONT.subtitle,
-    fontFamily: 'Helvetica-Bold',
     color: COLORS.primary,
   },
   lineItemDetailRow: {
@@ -131,7 +131,6 @@ export const itemStyles = StyleSheet.create({
   lineItemPhone: {
     fontSize: BASE_FONT.body,
     color: COLORS.primary,
-    fontFamily: 'Helvetica-Bold',
   },
   summaryItem: {
     marginBottom: 14,
@@ -146,7 +145,6 @@ export const itemStyles = StyleSheet.create({
   },
   resourceTitle: {
     fontSize: BASE_FONT.heading,
-    fontFamily: 'Helvetica-Bold',
     color: COLORS.primary,
   },
   resourceSubtitle: {
@@ -179,7 +177,6 @@ export const itemStyles = StyleSheet.create({
     flex: 1,
     fontSize: BASE_FONT.body,
     color: COLORS.primary,
-    fontFamily: 'Helvetica-Bold',
   },
   fullItem: {
     marginBottom: 16,
@@ -330,6 +327,8 @@ export function PrintDatum({
   isPhone = false,
   fontScale,
 }: PrintDatumProps) {
+  const { bold } = usePdfFontFamily();
+
   if (!value) {
     return null;
   }
@@ -338,10 +337,13 @@ export function PrintDatum({
     <View style={itemStyles.datumRow} wrap={false}>
       <Text style={getDatumLabelStyle(fontScale)}>{label}</Text>
       <Text
-        style={scaleStyle(
-          isPhone ? itemStyles.datumPhoneValue : itemStyles.datumValue,
-          fontScale,
-        )}
+        style={{
+          ...scaleStyle(
+            isPhone ? itemStyles.datumPhoneValue : itemStyles.datumValue,
+            fontScale,
+          ),
+          ...(isPhone ? { fontFamily: bold } : null),
+        }}
       >
         {addLineBreaksToLongWords(value)}
       </Text>
@@ -355,12 +357,18 @@ type LineListingItemProps = {
 };
 
 export function LineListingItem({ item, fontScale }: LineListingItemProps) {
+  const { bold } = usePdfFontFamily();
   const itemTitle = item.displayName || item.serviceName;
 
   return (
     <View style={itemStyles.lineItemBase} wrap={false}>
       {itemTitle && (
-        <Text style={scaleStyle(itemStyles.lineItemTitle, fontScale)}>
+        <Text
+          style={[
+            scaleStyle(itemStyles.lineItemTitle, fontScale),
+            { fontFamily: bold },
+          ]}
+        >
           {itemTitle}
         </Text>
       )}
@@ -369,7 +377,12 @@ export function LineListingItem({ item, fontScale }: LineListingItemProps) {
         <Text style={scaleStyle(itemStyles.lineItemAddress, fontScale)}>
           {addLineBreaksToLongWords(item.address)}
         </Text>
-        <Text style={scaleStyle(itemStyles.lineItemPhone, fontScale)}>
+        <Text
+          style={[
+            scaleStyle(itemStyles.lineItemPhone, fontScale),
+            { fontFamily: bold },
+          ]}
+        >
           {addLineBreaksToLongWords(item.phone)}
         </Text>
       </View>
@@ -390,6 +403,7 @@ export function SummaryListingItem({
   fontScale,
   showSeparator,
 }: SummaryListingItemProps) {
+  const { bold } = usePdfFontFamily();
   const { title, subtitle } = getDisplayTitleAndSubtitle(item);
 
   return (
@@ -402,7 +416,12 @@ export function SummaryListingItem({
       wrap={false}
     >
       {title && (
-        <Text style={scaleStyle(itemStyles.resourceTitle, fontScale)}>
+        <Text
+          style={[
+            scaleStyle(itemStyles.resourceTitle, fontScale),
+            { fontFamily: bold },
+          ]}
+        >
           {title}
         </Text>
       )}
@@ -453,6 +472,7 @@ export function FullListingItem({
   labels,
   fontScale,
 }: FullListingItemProps) {
+  const { bold } = usePdfFontFamily();
   const { title, subtitle } = getDisplayTitleAndSubtitle(item);
   const printableDescription = toPdfPrintableText(item.description);
   const printableEligibility = toPdfPrintableText(item.eligibility);
@@ -461,7 +481,12 @@ export function FullListingItem({
     <View style={itemStyles.fullItem}>
       <View wrap={fontScale > 1}>
         {title && (
-          <Text style={scaleStyle(itemStyles.resourceTitle, fontScale)}>
+          <Text
+            style={[
+              scaleStyle(itemStyles.resourceTitle, fontScale),
+              { fontFamily: bold },
+            ]}
+          >
             {title}
           </Text>
         )}
