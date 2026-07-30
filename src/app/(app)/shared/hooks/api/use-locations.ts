@@ -12,7 +12,7 @@ import { useGeocodingAdapter } from '../use-geocoding-adapter';
 
 export function useLocations(searchTerm: string, excludeEverywhere = false) {
   const adapter = useGeocodingAdapter();
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation('common');
 
   const { data = [], isFetching } = useQuery({
     placeholderData: (prev) => prev,

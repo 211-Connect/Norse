@@ -184,18 +184,11 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
       } else {
         setSearch?.((prev) => {
           // Ensure we are only providing updated coordinates to prevent unnecessary rerenders
-          let isNewCoords = false;
           const coordinates = coords.coordinates;
-          if (
+          const isNewCoords =
             coords.type === 'invalid' ||
-            (coords.type === 'coordinates' &&
-              coordinates?.[0] !== userCoordinates?.[0] &&
-              coordinates?.[1] !== userCoordinates?.[1]) ||
             (coordinates?.[0] !== userCoordinates?.[0] &&
-              coordinates?.[1] !== userCoordinates?.[1])
-          ) {
-            isNewCoords = true;
-          }
+              coordinates?.[1] !== userCoordinates?.[1]);
 
           return {
             ...prev,
