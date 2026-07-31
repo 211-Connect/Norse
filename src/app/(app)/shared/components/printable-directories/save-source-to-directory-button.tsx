@@ -58,10 +58,10 @@ export function SaveSourceToDirectoryButton({
 }: SaveSourceToDirectoryButtonProps) {
   const { t, i18n } = useTranslation(['common']);
   const session = useSession();
+  const appConfig = useAppConfig();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const appConfig = useAppConfig();
 
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);

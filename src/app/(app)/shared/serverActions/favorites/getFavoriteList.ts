@@ -1,41 +1,26 @@
 'use server';
 
-import { FavoriteListItemDto } from '@/types/favorites';
-
+import { createLogger } from '@/lib/logger';
 import { getAuthHeaders } from '../../lib/authHeaders';
-import {
-  API_URL,
-  FAVORITES_LIST_ENDPOINT,
-  INTERNAL_API_KEY,
-} from '../../lib/constants';
-import { fetchWrapper } from '../../lib/fetchWrapper';
+import { favoriteListApiClient } from '@/lib/api/clients';
+
+const log = createLogger('getFavoriteList');
 
 export async function getFavoriteList(
   id: string,
   locale: string,
   tenantId?: string,
-): Promise<FavoriteListItemDto | null> {
-  const authHeaders = await getAuthHeaders(tenantId);
+) {
+  const headers = await getAuthHeaders(tenantId);
+  const response = await favoriteListApiClient.favoriteListControllerFindOne(
+    { id, locale, tenant_id: tenantId },
+    { headers },
+  );
 
-  const searchParams = new URLSearchParams({ locale });
-  if (tenantId) {
-    searchParams.append('tenant_id', tenantId);
-  }
-
-  const url = `${API_URL}/${FAVORITES_LIST_ENDPOINT}/${id}?${searchParams.toString()}`;
-  const response = await fetchWrapper<FavoriteListItemDto>(url, {
-    headers: {
-      ...authHeaders,
-      'accept-language': locale,
-      'x-api-version': '1',
-      'x-api-key': INTERNAL_API_KEY || '',
-    },
-    cache: 'no-store',
-  });
-
-  if (!response) {
+  if (!response.data) {
+    log.error(response.error, `Failed to fetch favorite list with id: ${id}`);
     return null;
   }
 
-  return response;
+  return response.data;
 }

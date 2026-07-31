@@ -65,24 +65,15 @@ export default async function FavoritesDetailsPage({ params }) {
     appConfig.i18n.defaultLocale,
   );
 
-  let viewingAsOwner = false;
-  let favoriteList;
-
-  if (!session) {
-    favoriteList = await getFavoriteList(id, locale, appConfig.tenantId);
-    if (!favoriteList) {
-      notFound();
-    }
-  } else if (session.error) {
+  if (session?.error) {
     redirect(
       `/${locale}/auth/signin?redirect=${encodeURIComponent('/favorites')}`,
     );
-  } else {
-    favoriteList = await getFavoriteList(id, locale, appConfig.tenantId);
-    if (!favoriteList) {
-      notFound();
-    }
-    viewingAsOwner = true;
+  }
+
+  const favoriteList = await getFavoriteList(id, locale, appConfig.tenantId);
+  if (!favoriteList) {
+    notFound();
   }
 
   const cardLayout = appConfig.search.cardLayout ?? DEFAULT_SEARCH_CARD_LAYOUT;
@@ -91,7 +82,7 @@ export default async function FavoritesDetailsPage({ params }) {
     <PageWrapper
       cookies={cookieList}
       translationData={{ i18nNamespaces, locale, resources }}
-      jotaiData={{ favoriteList, viewingAsOwner }}
+      jotaiData={{ favoriteList }}
       nonce={nonce}
     >
       <div className="flex flex-1">

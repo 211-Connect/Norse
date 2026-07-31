@@ -1,13 +1,12 @@
 'use client';
 
-import { CheckIcon, ClipboardIcon, Mail, Printer, Share2 } from 'lucide-react';
+import { CheckIcon, ClipboardIcon, Mail, Share2 } from 'lucide-react';
 import { useEffect, useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useReactToPrint } from 'react-to-print';
 
 import { useAppConfig } from '../hooks/use-app-config';
 import { useClipboard } from '../hooks/use-clipboard';
-import { withOptionalCustomBasePath } from '../lib/utils';
+import { cn, withOptionalCustomBasePath } from '../lib/utils';
 import { shortenUrl } from '../serverActions/shortUrl/shortenUrl';
 import { Facebook } from './icons/facebook';
 import { LinkedIn } from './icons/linkedin';
@@ -23,24 +22,23 @@ import {
 } from './ui/dialog';
 
 type ShareButtonProps = {
-  componentToPrintRef?: React.RefObject<HTMLElement | null>;
   title: string;
   body: string;
+  variant?: 'icon' | 'icon-text';
+  testId?: string;
 };
 
 const SHARE_ACTION_BUTTON_CLASSNAME =
   'flex min-w-0 justify-center gap-2 focus-visible:ring-inset focus-visible:ring-offset-0';
 
 export function ShareButton({
-  componentToPrintRef,
   title,
   body,
+  variant = 'icon-text',
+  testId = 'share-btn',
 }: ShareButtonProps) {
   const appConfig = useAppConfig();
   const clipboard = useClipboard();
-  const handlePrint = useReactToPrint({
-    contentRef: componentToPrintRef,
-  });
   const { t } = useTranslation('common');
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const dialogId = useId();
@@ -86,9 +84,11 @@ export function ShareButton({
     <>
       <Button
         ref={triggerRef}
-        className="flex gap-1"
+        size={variant === 'icon' ? 'icon' : 'default'}
+        className={variant === 'icon' ? undefined : 'flex gap-1'}
         variant="outline"
         onClick={() => setOpen(true)}
+        data-testid={testId}
         aria-controls={dialogId}
         aria-haspopup="dialog"
         aria-label={
@@ -98,7 +98,7 @@ export function ShareButton({
         }
       >
         <Share2 className="size-4" aria-hidden="true" />
-        {t('call_to_action.share')}
+        {variant !== 'icon' && t('call_to_action.share')}
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
@@ -113,104 +113,90 @@ export function ShareButton({
             </DialogDescription>
           </DialogHeader>
 
-          <div className="flex min-w-0 flex-col gap-2">
-            <div className="grid grid-cols-2 gap-2">
-              <Button
-                asChild
-                variant="outline"
-                className={SHARE_ACTION_BUTTON_CLASSNAME}
-                aria-label={`${t('modal.share.facebook')} ${t('modal.share.opens_in_new_tab')}`}
+          <div className="grid min-w-0 grid-cols-1 gap-2 md:grid-cols-6">
+            <Button
+              asChild
+              variant="outline"
+              className={cn(SHARE_ACTION_BUTTON_CLASSNAME, 'md:col-span-2')}
+              aria-label={`${t('modal.share.facebook')} ${t('modal.share.opens_in_new_tab')}`}
+            >
+              <a
+                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+                  shortUrl,
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                <a
-                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-                    shortUrl,
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Facebook className="size-4" aria-hidden="true" />
-                  {t('modal.share.facebook')}
-                  <span className="sr-only">
-                    {' '}
-                    {t('modal.share.opens_in_new_tab')}
-                  </span>
-                </a>
-              </Button>
+                <Facebook className="size-4" aria-hidden="true" />
+                <span className="sr-only">
+                  {t('modal.share.facebook')}{' '}
+                  {t('modal.share.opens_in_new_tab')}
+                </span>
+              </a>
+            </Button>
 
-              <Button
-                asChild
-                variant="outline"
-                className={SHARE_ACTION_BUTTON_CLASSNAME}
-                aria-label={`${t('modal.share.linkedin')} ${t('modal.share.opens_in_new_tab')}`}
+            <Button
+              asChild
+              variant="outline"
+              className={cn(SHARE_ACTION_BUTTON_CLASSNAME, 'md:col-span-2')}
+              aria-label={`${t('modal.share.linkedin')} ${t('modal.share.opens_in_new_tab')}`}
+            >
+              <a
+                href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shortUrl)}`}
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                <a
-                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shortUrl)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <LinkedIn className="size-4" aria-hidden="true" />
-                  {t('modal.share.linkedin')}
-                  <span className="sr-only">
-                    {' '}
-                    {t('modal.share.opens_in_new_tab')}
-                  </span>
-                </a>
-              </Button>
+                <LinkedIn className="size-4" aria-hidden="true" />
+                <span className="sr-only">
+                  {t('modal.share.linkedin')}{' '}
+                  {t('modal.share.opens_in_new_tab')}
+                </span>
+              </a>
+            </Button>
 
-              <Button
-                asChild
-                variant="outline"
-                className={SHARE_ACTION_BUTTON_CLASSNAME}
-                aria-label={`X ${t('modal.share.opens_in_new_tab')}`}
+            <Button
+              asChild
+              variant="outline"
+              className={cn(SHARE_ACTION_BUTTON_CLASSNAME, 'md:col-span-2')}
+              aria-label={`X ${t('modal.share.opens_in_new_tab')}`}
+            >
+              <a
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                  title + '\n' + shortUrl,
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                <a
-                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
-                    title + '\n' + shortUrl,
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <X className="size-4" aria-hidden="true" />X
-                  <span className="sr-only">
-                    {' '}
-                    {t('modal.share.opens_in_new_tab')}
-                  </span>
-                </a>
-              </Button>
+                <X className="size-4" aria-hidden="true" />
+                <span className="sr-only">
+                  X {t('modal.share.opens_in_new_tab')}
+                </span>
+              </a>
+            </Button>
 
-              <SmsButton shareMessage={smsMessage} />
+            <SmsButton shareMessage={smsMessage} className="md:col-span-3" />
 
-              <Button
-                asChild
-                variant="outline"
-                className={SHARE_ACTION_BUTTON_CLASSNAME}
-                aria-label={`${t('modal.share.email')} ${t('modal.share.opens_in_new_tab')}`}
+            <Button
+              asChild
+              variant="outline"
+              className={cn(SHARE_ACTION_BUTTON_CLASSNAME, 'md:col-span-3')}
+              aria-label={`${t('modal.share.email')} ${t('modal.share.opens_in_new_tab')}`}
+            >
+              <a
+                href={`mailto:?subject=${encodeURIComponent(
+                  shareSubject,
+                )}&body=${encodeURIComponent(emailMessage)}`}
               >
-                <a
-                  href={`mailto:?subject=${encodeURIComponent(
-                    shareSubject,
-                  )}&body=${encodeURIComponent(emailMessage)}`}
-                >
-                  <Mail className="size-4" aria-hidden="true" />
-                  {t('modal.share.email')}
-                  <span className="sr-only">
-                    {' '}
-                    {t('modal.share.opens_in_new_tab')}
-                  </span>
-                </a>
-              </Button>
+                <Mail className="size-4" aria-hidden="true" />
+                {t('modal.share.email')}
+                <span className="sr-only">
+                  {' '}
+                  {t('modal.share.opens_in_new_tab')}
+                </span>
+              </a>
+            </Button>
 
-              <Button
-                variant="outline"
-                className={SHARE_ACTION_BUTTON_CLASSNAME}
-                onClick={handlePrint}
-              >
-                <Printer className="size-4" aria-hidden="true" />
-                {t('modal.share.print')}
-              </Button>
-            </div>
-
-            <div className="relative flex">
+            <div className="relative flex md:col-span-6">
               <Button
                 onClick={() => clipboard.copy(shortUrl)}
                 variant="outline"

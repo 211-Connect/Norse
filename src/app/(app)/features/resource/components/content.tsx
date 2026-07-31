@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useRef } from 'react';
+import { useCallback } from 'react';
 
 import { ResourceEntry } from '@/app/(app)/shared/lib/umami';
 import { cn } from '@/app/(app)/shared/lib/utils';
@@ -30,7 +30,6 @@ export const ResourcePageContent = ({
   resourceId,
   tenantId,
 }: ResourcePageContentProps) => {
-  const componentToPrintRef = useRef<HTMLDivElement>(null);
   const loadPrintableDirectoryData = useCallback(
     async (printLocale: string) => {
       const freshResource = await getResource(
@@ -58,12 +57,11 @@ export const ResourcePageContent = ({
     <div className="container mx-auto flex flex-col gap-2 pt-2 pb-2">
       <h1 className="sr-only">{pageHeadingText}</h1>
       <Navigation
-        componentToPrintRef={componentToPrintRef}
         resource={resource}
         loadPrintableDirectoryData={loadPrintableDirectoryData}
       />
 
-      <div ref={componentToPrintRef}>
+      <div>
         <LayoutRenderer
           layout={layout}
           resource={resource}

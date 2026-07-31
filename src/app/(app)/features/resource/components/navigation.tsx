@@ -12,11 +12,9 @@ import { Resource } from '@/types/resource';
 import { BackToResultsButton } from './back-to-results-button';
 
 export function Navigation({
-  componentToPrintRef,
   resource,
   loadPrintableDirectoryData,
 }: {
-  componentToPrintRef: React.RefObject<HTMLElement | null>;
   resource: Resource;
   loadPrintableDirectoryData: (
     locale: string,
@@ -36,7 +34,6 @@ export function Navigation({
           renderDocument={renderPdfDocument}
         />
         <ShareButton
-          componentToPrintRef={componentToPrintRef}
           title={resource.name || ''}
           body={resource.description || ''}
         />
