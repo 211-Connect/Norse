@@ -5,6 +5,8 @@ import {
 import { useAtomValue, useSetAtom } from 'jotai';
 import { useEffect } from 'react';
 
+import { isValidCoordinate } from '@/utils/isValidCoordinate';
+
 type Args = {
   isDialogOpen: boolean;
 };
@@ -12,9 +14,16 @@ type Args = {
 export const useUserLocationNavigator = ({ isDialogOpen }: Args) => {
   const setUserCoordinates = useSetAtom(userCoordinatesAtom);
   const searchCoordinates = useAtomValue(searchCoordinatesAtom);
+  const hasSearchLocation = isValidCoordinate(searchCoordinates);
 
   useEffect(() => {
-    if (!isDialogOpen || !navigator.geolocation) {
+    if (hasSearchLocation) {
+      setUserCoordinates(searchCoordinates);
+    }
+  }, [hasSearchLocation, searchCoordinates, setUserCoordinates]);
+
+  useEffect(() => {
+    if (hasSearchLocation || !isDialogOpen || !navigator.geolocation) {
       return;
     }
 
@@ -23,9 +32,9 @@ export const useUserLocationNavigator = ({ isDialogOpen }: Args) => {
         setUserCoordinates([pos.coords.longitude, pos.coords.latitude]);
       },
       () => {
-        setUserCoordinates(searchCoordinates);
+        setUserCoordinates([]);
       },
       { enableHighAccuracy: false, timeout: 5000, maximumAge: 60_000 },
     );
-  }, [isDialogOpen, setUserCoordinates, searchCoordinates]);
+  }, [hasSearchLocation, isDialogOpen, setUserCoordinates]);
 };
