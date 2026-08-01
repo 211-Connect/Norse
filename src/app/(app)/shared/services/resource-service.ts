@@ -236,7 +236,7 @@ export async function getResource(
   return fetchAndTransformResource(url, {
     locale,
     tenantId,
-    cacheKey: `resource:${id}:${locale}`,
+    cacheKey: `resource:${tenantId ?? 'public'}:${id}:${locale}`,
   });
 }
 
@@ -249,7 +249,7 @@ export async function getResourceByOriginalId(
   return fetchAndTransformResource(url, {
     locale,
     tenantId,
-    cacheKey: `resource:${originalId}:${locale}`,
+    cacheKey: `resource:${tenantId ?? 'public'}:${originalId}:${locale}`,
   });
 }
 
