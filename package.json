@@ -124,7 +124,7 @@
     "radash": "^12.1.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "react-i18next": "^17.0.8",
+    "react-i18next": "^17.0.11",
     "react-to-print": "^3.1.1",
     "recharts": "^3.8.0",
     "remove-markdown": "~0.6.4",
