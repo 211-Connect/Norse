@@ -1,5 +1,11 @@
 # Agents
 
+## Cross-system stewardship
+
+Before changing an API client, endpoint, generated DTO, data pipeline, or
+authentication boundary, read `../architecture-docs/AGENTS.md`. Update its
+catalog evidence in the same change and run `npm run validate` there.
+
 ## Payload Feature Workflow
 
 When working on a Payload feature, follow this workflow:
