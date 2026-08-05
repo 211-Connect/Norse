@@ -2,9 +2,11 @@
 
 ## Cross-system stewardship
 
-Before changing an API client, endpoint, generated DTO, data pipeline, or
-authentication boundary, read `../architecture-docs/AGENTS.md`. Update its
-catalog evidence in the same change and run `npm run validate` there.
+Start from the issue and local code. If investigation finds or may find an API
+client, endpoint, generated DTO, data pipeline, or authentication boundary,
+follow `../architecture-docs/SKILL.md`: discover the actual boundary, then use
+the catalog for impact and evidence. Update it when the boundary changes and
+run `npm run validate` there.
 
 ## Payload Feature Workflow
 
