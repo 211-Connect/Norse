@@ -43,6 +43,7 @@ function buildCSV(rows: SearchEventExportRow[]): string {
     'User Longitude',
     'User City',
     'User ZIP Code',
+    'Referral Source',
   ];
 
   const lines: string[] = [headers.map(escapeCSVField).join(',')];
@@ -63,6 +64,7 @@ function buildCSV(rows: SearchEventExportRow[]): string {
         escapeCSVField(row.userLongitude ?? ''),
         escapeCSVField(row.userCity ?? ''),
         escapeCSVField(row.userZipCode ?? ''),
+        escapeCSVField(row.referralSource ?? ''),
       ].join(','),
     );
   }

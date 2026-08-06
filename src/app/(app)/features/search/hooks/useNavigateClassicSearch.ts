@@ -1,7 +1,7 @@
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { persistSearchDistancePreference } from '@/app/(app)/shared/lib/search-distance-preference';
 import { trackUmamiEvent, UmamiEvent } from '@/app/(app)/shared/lib/umami';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
 import { buildSearchUrl } from '../utils/buildSearchUrl';
 import {
@@ -20,6 +20,7 @@ export const useNavigateClassicSearch = ({
 }: Args) => {
   const appConfig = useAppConfig();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const search = useAtomValue(searchAtom);
   const setSearch = useSetAtom(searchAtom);
   const distance = useAtomValue(searchDistanceAtom);
@@ -44,16 +45,28 @@ export const useNavigateClassicSearch = ({
         });
         persistSearchDistancePreference(distance);
 
+        // Only present on the current URL for the user's first search
+        // action after landing on a campaign link; buildSearchUrl never
+        // carries utm_source forward into subsequent navigations.
+        const utmSource = searchParams.get('utm_source');
+
         const umamiPayload = {
           query: String(query ?? ''),
           queryLabel: String(search.queryLabel ?? ''),
           tenantId: appConfig.tenantId ?? '',
           ...locationPayload,
+          ...(utmSource ? { utm_source: utmSource } : {}),
         };
 
         if (search.queryType === 'taxonomy') {
           trackUmamiEvent(
             UmamiEvent.SearchTaxonomy,
+            umamiPayload,
+            appConfig.sessionId,
+          );
+        } else if (search.queryType === 'hybrid') {
+          trackUmamiEvent(
+            UmamiEvent.SearchHybrid,
             umamiPayload,
             appConfig.sessionId,
           );
@@ -80,6 +93,7 @@ export const useNavigateClassicSearch = ({
       distance,
       router,
       search,
+      searchParams,
       setDialogOpen,
       setSearch,
       startTransition,
