@@ -565,6 +565,11 @@ export interface AnalyticsMetricsResponse {
    */
   websiteClicks: number;
   /**
+   * Number of SMS interactions initiated
+   * @example 0
+   */
+  smsClicks: number;
+  /**
    * Number of searches performed via the embedded widget
    * @example 150
    */

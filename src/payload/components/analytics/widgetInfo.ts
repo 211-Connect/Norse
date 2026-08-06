@@ -6,6 +6,7 @@ export enum WidgetSlug {
   ZeroResults = 'analytics-zero-results',
   WebsiteClicks = 'analytics-website-clicks',
   PhoneCalls = 'analytics-phone-calls',
+  SmsClicks = 'analytics-sms-clicks',
   Directions = 'analytics-directions',
   TotalReferrals = 'analytics-total-referrals',
   WidgetSearches = 'analytics-widget-searches',
@@ -41,6 +42,7 @@ export const ANALYTICS_DEFAULT_LAYOUT = [
   { widgetSlug: WidgetSlug.ZeroResults, width: 'x-small' as const },
   { widgetSlug: WidgetSlug.WebsiteClicks, width: 'x-small' as const },
   { widgetSlug: WidgetSlug.PhoneCalls, width: 'x-small' as const },
+  { widgetSlug: WidgetSlug.SmsClicks, width: 'x-small' as const },
   { widgetSlug: WidgetSlug.Directions, width: 'x-small' as const },
   { widgetSlug: WidgetSlug.PageviewsChart, width: 'full' as const },
   { widgetSlug: WidgetSlug.ResourceTitles, width: 'medium' as const },
@@ -60,6 +62,8 @@ export const WIDGET_INFO: Record<WidgetSlug, string> = {
     'The number of times that users click on the Website button or website link.',
   [WidgetSlug.PhoneCalls]:
     'The number of times that users click on the Call button or the phone number link.',
+  [WidgetSlug.SmsClicks]:
+    'The number of times that users click the SMS button.',
   [WidgetSlug.Directions]:
     'The number of times users click on the Directions button.',
   [WidgetSlug.TotalReferrals]:

@@ -44,6 +44,7 @@ import { default as default_340cec3ca5bd6af056111595c6a6de39 } from '@/payload/c
 import { default as default_543e87190703f0fc451b5ed80bd5d2b2 } from '@/payload/components/analytics/widgets/ZeroResultsWidget'
 import { default as default_fbae18a1b95cdd13335fb245375b9f73 } from '@/payload/components/analytics/widgets/WebsiteClicksWidget'
 import { default as default_a82dd827a4ddfd311fd1db18091a6447 } from '@/payload/components/analytics/widgets/PhoneCallsWidget'
+import { default as default_e98be41edf8d01acca02b5406c042056 } from '@/payload/components/analytics/widgets/SmsClicksWidget'
 import { default as default_1921c8a0e459e5e56f0c55d235737c16 } from '@/payload/components/analytics/widgets/DirectionsWidget'
 import { default as default_26f5344addbdbe0637ad947e94ea3028 } from '@/payload/components/analytics/widgets/TotalReferralsWidget'
 import { default as default_766777203ef7043a1e1fcbe8188c6840 } from '@/payload/components/analytics/widgets/WidgetSearchesWidget'
@@ -116,6 +117,7 @@ export const importMap = {
   "@/payload/components/analytics/widgets/ZeroResultsWidget#default": default_543e87190703f0fc451b5ed80bd5d2b2,
   "@/payload/components/analytics/widgets/WebsiteClicksWidget#default": default_fbae18a1b95cdd13335fb245375b9f73,
   "@/payload/components/analytics/widgets/PhoneCallsWidget#default": default_a82dd827a4ddfd311fd1db18091a6447,
+  "@/payload/components/analytics/widgets/SmsClicksWidget#default": default_e98be41edf8d01acca02b5406c042056,
   "@/payload/components/analytics/widgets/DirectionsWidget#default": default_1921c8a0e459e5e56f0c55d235737c16,
   "@/payload/components/analytics/widgets/TotalReferralsWidget#default": default_26f5344addbdbe0637ad947e94ea3028,
   "@/payload/components/analytics/widgets/WidgetSearchesWidget#default": default_766777203ef7043a1e1fcbe8188c6840,

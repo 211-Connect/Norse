@@ -199,6 +199,14 @@ const config = buildConfig({
           maxWidth: 'full',
         },
         {
+          slug: WidgetSlug.SmsClicks,
+          Component:
+            '@/payload/components/analytics/widgets/SmsClicksWidget#default',
+          label: 'SMS clicks',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
           slug: WidgetSlug.Directions,
           Component:
             '@/payload/components/analytics/widgets/DirectionsWidget#default',
