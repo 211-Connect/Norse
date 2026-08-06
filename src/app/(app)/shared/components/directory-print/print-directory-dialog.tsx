@@ -29,6 +29,7 @@ import { createLogger } from '@/lib/logger';
 
 import { LanguageSwitcherPrimitive } from '../language-switcher-primitive';
 import { openPdfDocument } from './openPdfDocument';
+import { PdfFontProvider } from './pdf-fonts';
 import { createPrintI18nInstance } from './print-i18n';
 import { type FontSizeMode, type PrintVariant } from './pdf-print-primitives';
 
@@ -115,7 +116,9 @@ export function PrintDirectoryDialog<TData>({
         appConfig.i18n.defaultLocale,
       );
       const localizedDocumentElement: PdfDocumentElement = (
-        <I18nextProvider i18n={printI18n}>{documentElement}</I18nextProvider>
+        <PdfFontProvider locale={selectedLocale}>
+          <I18nextProvider i18n={printI18n}>{documentElement}</I18nextProvider>
+        </PdfFontProvider>
       );
 
       const result = await openPdfDocument(localizedDocumentElement, {

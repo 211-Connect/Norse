@@ -565,6 +565,11 @@ export interface AnalyticsMetricsResponse {
    */
   websiteClicks: number;
   /**
+   * Number of SMS interactions initiated
+   * @example 0
+   */
+  smsClicks: number;
+  /**
    * Number of searches performed via the embedded widget
    * @example 150
    */
@@ -849,6 +854,11 @@ export interface SearchEventExportRow {
    * @example -122.5678
    */
   userLongitude: number | null;
+  /**
+   * Referral source (from utm_source event property)
+   * @example "google"
+   */
+  referralSource: string | null;
 }
 
 export interface ExportSearchDataResponse {

@@ -4,9 +4,9 @@ import type { AdminViewServerProps } from 'payload';
 import { Fragment } from 'react';
 
 import DateRange from '../analytics/DateRange';
-import ExportCSVButton from '../analytics/ExportCSVButton';
 import TenantAutoSelect from '../analytics/TenantAutoSelect';
 import { ANALYTICS_DEFAULT_LAYOUT } from '../analytics/widgetInfo';
+// import ExportCSVButton from '../analytics/ExportCSVButton';
 
 export default function AnalyticsView(props: AdminViewServerProps) {
   const user = props.user ?? (props.initPageResult?.req?.user as any);
@@ -65,7 +65,8 @@ export default function AnalyticsView(props: AdminViewServerProps) {
               gap: '0.75rem',
             }}
           >
-            <ExportCSVButton />
+            {/* The ExportCSVButton is temporarily disabled until we will stabilize a solution for exporting analytics data. */}
+            {/* <ExportCSVButton /> */}
             <DateRange />
           </div>
         </div>

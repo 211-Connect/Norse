@@ -24,3 +24,10 @@ For internal API integrations, treat OpenAPI as source of truth and use generate
 4. Remove duplicate hand-written API request/response types when the generated type already exists.
 5. Keep app-specific UI/domain types when they represent transformed view models (not raw API contracts).
 6. If API behavior and generated types diverge, update the OpenAPI spec first, then regenerate.
+
+## Norse API tenant requirement
+
+Every Norse API request must include a tenant id (`x-tenant-id` / `tenant_id`).
+Tenant defines the data blend; no-tenant requests are invalid.
+Fail fast in the service that calls Norse API — do not invent shared cache keys
+or send anonymous requests.

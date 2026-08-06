@@ -21,16 +21,24 @@ import { fetchWrapper } from '../lib/fetchWrapper';
 
 const RESOURCE_BATCH_LIMIT = 100;
 
+function requireTenantId(tenantId: string | undefined): string {
+  if (!tenantId) {
+    throw new Error('tenantId is required');
+  }
+
+  return tenantId;
+}
+
 function createResourceHeaders(
   locale: string,
-  tenantId?: string,
+  tenantId: string,
   contentType?: string,
 ): HeadersInit {
   return {
     'accept-language': locale,
     'x-api-version': '1',
     'x-api-key': INTERNAL_API_KEY || '',
-    ...(tenantId && { 'x-tenant-id': tenantId }),
+    'x-tenant-id': tenantId,
     ...(contentType && { 'Content-Type': contentType }),
   };
 }
@@ -131,7 +139,7 @@ function chunkIds(ids: string[], chunkSize: number): string[][] {
 async function fetchResourcesIndividually(
   ids: string[],
   locale: string,
-  tenantId?: string,
+  tenantId: string,
 ): Promise<Record<string, Resource>> {
   const resources = await Promise.all(
     ids.map(async (id) => {
@@ -151,18 +159,15 @@ async function fetchResourcesIndividually(
 
 async function fetchAndTransformResourceOrigin(
   url: string,
-  options: { locale: string; tenantId?: string; cacheKey: CacheKey },
+  options: { locale: string; tenantId: string; cacheKey: CacheKey },
 ): Promise<Resource | null> {
   return await withCache(
     options.cacheKey,
     async () => {
       const searchParams = new URLSearchParams({
         locale: options.locale,
+        tenant_id: options.tenantId,
       });
-
-      if (options.tenantId) {
-        searchParams.append('tenant_id', options.tenantId);
-      }
 
       const data: ApiResource | null = await fetchWrapper(
         `${url}?${searchParams.toString()}`,
@@ -187,7 +192,7 @@ const fetchAndTransformResource = cache(fetchAndTransformResourceOrigin);
 async function fetchAndTransformResourcesOrigin(
   idsKey: string,
   ids: string[],
-  options: { locale: string; tenantId?: string; cacheKey: CacheKey },
+  options: { locale: string; tenantId: string; cacheKey: CacheKey },
 ): Promise<Record<string, Resource>> {
   void idsKey;
 
@@ -232,11 +237,12 @@ export async function getResource(
   locale: string,
   tenantId?: string,
 ): Promise<Resource | null> {
+  const resolvedTenantId = requireTenantId(tenantId);
   const url = `${API_URL}/resource/${id}`;
   return fetchAndTransformResource(url, {
     locale,
-    tenantId,
-    cacheKey: `resource:${id}:${locale}`,
+    tenantId: resolvedTenantId,
+    cacheKey: `resource:${resolvedTenantId}:${id}:${locale}`,
   });
 }
 
@@ -245,11 +251,12 @@ export async function getResourceByOriginalId(
   locale: string,
   tenantId?: string,
 ): Promise<Resource | null> {
+  const resolvedTenantId = requireTenantId(tenantId);
   const url = `${API_URL}/resource/original/${originalId}`;
   return fetchAndTransformResource(url, {
     locale,
-    tenantId,
-    cacheKey: `resource:${originalId}:${locale}`,
+    tenantId: resolvedTenantId,
+    cacheKey: `resource:${resolvedTenantId}:${originalId}:${locale}`,
   });
 }
 
@@ -262,6 +269,7 @@ export async function getResources(
     return [];
   }
 
+  const resolvedTenantId = requireTenantId(tenantId);
   const uniqueIds = [...new Set(ids)];
   const chunks = chunkIds(uniqueIds, RESOURCE_BATCH_LIMIT);
 
@@ -269,8 +277,8 @@ export async function getResources(
     chunks.map((chunk) =>
       fetchAndTransformResources(chunk.join(','), chunk, {
         locale,
-        tenantId,
-        cacheKey: `resource_batch:${tenantId ?? 'public'}:${locale}:${stableHash(chunk)}`,
+        tenantId: resolvedTenantId,
+        cacheKey: `resource_batch:${resolvedTenantId}:${locale}:${stableHash(chunk)}`,
       }),
     ),
   );
@@ -290,7 +298,7 @@ export async function getResources(
   if (fallbackChunks.length > 0) {
     const fallbackMaps = await Promise.all(
       fallbackChunks.map((chunk) =>
-        fetchResourcesIndividually(chunk, locale, tenantId),
+        fetchResourcesIndividually(chunk, locale, resolvedTenantId),
       ),
     );
 

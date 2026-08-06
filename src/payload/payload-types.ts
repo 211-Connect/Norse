@@ -236,6 +236,7 @@ export interface Config {
     'analytics-zero-results': AnalyticsZeroResultsWidget;
     'analytics-website-clicks': AnalyticsWebsiteClicksWidget;
     'analytics-phone-calls': AnalyticsPhoneCallsWidget;
+    'analytics-sms-clicks': AnalyticsSmsClicksWidget;
     'analytics-directions': AnalyticsDirectionsWidget;
     'analytics-total-referrals': AnalyticsTotalReferralsWidget;
     'analytics-widget-searches': AnalyticsWidgetSearchesWidget;
@@ -2047,6 +2048,16 @@ export interface AnalyticsWebsiteClicksWidget {
  * via the `definition` "analytics-phone-calls_widget".
  */
 export interface AnalyticsPhoneCallsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-sms-clicks_widget".
+ */
+export interface AnalyticsSmsClicksWidget {
   data?: {
     [k: string]: unknown;
   };
