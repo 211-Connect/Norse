@@ -854,6 +854,11 @@ export interface SearchEventExportRow {
    * @example -122.5678
    */
   userLongitude: number | null;
+  /**
+   * Referral source (from utm_source event property)
+   * @example "google"
+   */
+  referralSource: string | null;
 }
 
 export interface ExportSearchDataResponse {

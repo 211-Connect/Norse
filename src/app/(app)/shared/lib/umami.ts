@@ -10,6 +10,7 @@ export enum UmamiEvent {
   WidgetSearch = 'widget_search',
   SearchTaxonomy = 'search_taxonomy',
   SearchText = 'search_text',
+  SearchHybrid = 'search_hybrid',
   CalloutClick = 'callout_click',
   ResourceViewed = 'resource_viewed',
   HighlightClick = 'highlight_click',
