@@ -60,6 +60,7 @@
   "print_page_counter": "Page {{current}} of {{total}}",
   "tooltips": {
     "print": "Print this list",
+    "share": "Share this list",
     "update": "Update list details",
     "purge": "Clear all favorites from this list",
     "delete": "Delete this list"

@@ -24,9 +24,10 @@ import {
 
 type SmsButtonProps = {
   shareMessage: string;
+  className?: string;
 };
 
-export function SmsButton({ shareMessage }: SmsButtonProps) {
+export function SmsButton({ shareMessage, className }: SmsButtonProps) {
   const { t } = useTranslation('common');
   const [open, setOpen] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -111,7 +112,7 @@ export function SmsButton({ shareMessage }: SmsButtonProps) {
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <span tabIndex={isDisabled ? 0 : undefined}>
+            <span className={className} tabIndex={isDisabled ? 0 : undefined}>
               <Button
                 ref={triggerRef}
                 className="flex w-full gap-1"

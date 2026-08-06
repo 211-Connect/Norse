@@ -1,4 +1,5 @@
 import { Analytics } from './generated/Analytics';
+import { FavoriteList } from './generated/FavoriteList';
 import { Geocoding } from './generated/Geocoding';
 import { PrintableDirectories } from './generated/PrintableDirectories';
 import { PrintableDirectoriesPublic } from './generated/PrintableDirectoriesPublic';
@@ -30,3 +31,5 @@ export const printableDirectoriesPublicApiClient =
   new PrintableDirectoriesPublic(clientArgs);
 
 export const taxonomyScorecardApiClient = new TaxonomyScorecard(clientArgs);
+
+export const favoriteListApiClient = new FavoriteList(clientArgs);

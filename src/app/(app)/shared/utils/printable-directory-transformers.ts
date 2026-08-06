@@ -1,5 +1,7 @@
 import { getPrintableDirectoryLocalizedText } from '@/app/(app)/features/printable-directories/utils/getPrintableDirectoryLocalizedText';
 import {
+  FavoriteResourceOpenApiDto,
+  ResourceTranslationOpenApiDto,
   type PrintableDirectoryPreviewResponseDto,
   type PrintableDirectoryPreviewSectionResourceDto,
 } from '@/lib/api/generated/data-contracts';
@@ -109,11 +111,27 @@ function getAddressFromResource(resource: Resource): string {
   return formatAddressForDisplay(primaryAddress) ?? resource.address ?? '';
 }
 
+const getTranslationStringValue = (
+  translation: ResourceTranslationOpenApiDto | undefined,
+  key: string,
+): string => {
+  if (!translation) return '';
+
+  if (key in translation && typeof translation[key] === 'string') {
+    return translation[key] ?? '';
+  }
+
+  return '';
+};
+
 /**
  * Transforms a favorite list with its items into a printable directory format
  */
 export function favoriteListToPrintableDirectory(
-  favoriteList: { name: string; favorites?: Favorite[] },
+  favoriteList: {
+    name: string;
+    favorites?: (Favorite | FavoriteResourceOpenApiDto)[];
+  },
   locale: string,
 ): PrintableDirectoryData {
   return {
@@ -137,13 +155,27 @@ export function favoriteListToPrintableDirectory(
           phone: favorite.displayPhoneNumber ?? '',
           email: favorite.email ?? '',
           website: favorite.website ?? '',
-          transportation: translation?.transportation ?? '',
-          accessibility: translation?.accessibility ?? '',
-          eligibility: translation?.eligibilities ?? '',
-          requiredDocuments: normalizePrintableList(
-            translation?.requiredDocuments,
+          transportation: getTranslationStringValue(
+            translation,
+            'transportation',
           ),
-          languages: normalizePrintableList(translation?.languages),
+          accessibility: getTranslationStringValue(
+            translation,
+            'accessibility',
+          ),
+          eligibility: getTranslationStringValue(translation, 'eligibilities'),
+          requiredDocuments:
+            translation &&
+            'requiredDocuments' in translation &&
+            Array.isArray(translation?.requiredDocuments)
+              ? normalizePrintableList(translation?.requiredDocuments)
+              : '',
+          languages:
+            translation &&
+            'languages' in translation &&
+            Array.isArray(translation.languages)
+              ? normalizePrintableList(translation?.languages)
+              : '',
           fees: translation?.fees ?? '',
         };
       }) ?? [],
