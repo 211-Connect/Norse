@@ -4,7 +4,6 @@ import type { AdminViewServerProps } from 'payload';
 import { Fragment } from 'react';
 
 import DateRange from '../analytics/DateRange';
-import ExportCSVButton from '../analytics/ExportCSVButton';
 import TenantAutoSelect from '../analytics/TenantAutoSelect';
 import { ANALYTICS_DEFAULT_LAYOUT } from '../analytics/widgetInfo';
 
