@@ -50,6 +50,17 @@ const CALLOUT_TEXT_FIELDS = ['description', 'title'] as const;
 
 const HIGHLIGHT_TEXT_FIELDS = ['title', 'description', 'buttonText'] as const;
 
+/**
+ * The only `localized: true` fields on a Custom Attribute layout item
+ * (see customAttributeFields.ts). icon/iconColor/size/titleBelow/url/urlTarget
+ * are configuration, not user-facing copy, and must not be translated.
+ */
+const CUSTOM_ATTRIBUTE_TEXT_FIELDS = [
+  'title',
+  'subtitle',
+  'description',
+] as const;
+
 const log = createLogger('translate');
 
 async function executeBatchTranslation(
@@ -608,6 +619,69 @@ export const translate: TaskConfig<'translate'> = {
           },
         );
 
+        // Resource Tab - Custom Layout (Custom Attributes)
+        (['leftColumn', 'rightColumn'] as const).forEach((columnKey) => {
+          englishResourceDirectory.resource?.[columnKey]?.forEach(
+            (sourceGroup, groupIndex) => {
+              sourceGroup.items?.forEach((sourceItem, itemIndex) => {
+                if (!sourceItem.customAttribute) return;
+
+                const targetItem =
+                  targetDoc.resource?.[columnKey]?.[groupIndex]?.items?.[
+                    itemIndex
+                  ];
+
+                CUSTOM_ATTRIBUTE_TEXT_FIELDS.forEach((field) => {
+                  const sourceValue = sourceItem.customAttribute?.[field];
+                  const targetValue = targetItem?.customAttribute?.[field];
+
+                  // Skip dynamic template values (e.g. "{{customAttribute.title}}")
+                  if (sourceValue && CONTAINS_DYNAMIC_VALUE.test(sourceValue))
+                    return;
+
+                  if (
+                    shouldTranslate(sourceValue, targetValue, sourceItem.id)
+                  ) {
+                    fieldsToTranslate.push({
+                      path: `resource.${columnKey}.${groupIndex}.items.${itemIndex}.customAttribute.${field}`,
+                      value: sourceValue!,
+                      locale: targetLocale,
+                      id: sourceItem.id ?? undefined,
+                    });
+                  }
+                });
+              });
+            },
+          );
+        });
+
+        // Search Tab - Card Layout (Custom Attributes)
+        englishResourceDirectory.search?.cardLayout?.forEach(
+          (sourceItem, itemIndex) => {
+            if (!sourceItem.customAttribute) return;
+
+            const targetItem = targetDoc.search?.cardLayout?.[itemIndex];
+
+            CUSTOM_ATTRIBUTE_TEXT_FIELDS.forEach((field) => {
+              const sourceValue = sourceItem.customAttribute?.[field];
+              const targetValue = targetItem?.customAttribute?.[field];
+
+              // Skip dynamic template values (e.g. "{{customAttribute.title}}")
+              if (sourceValue && CONTAINS_DYNAMIC_VALUE.test(sourceValue))
+                return;
+
+              if (shouldTranslate(sourceValue, targetValue, sourceItem.id)) {
+                fieldsToTranslate.push({
+                  path: `search.cardLayout.${itemIndex}.customAttribute.${field}`,
+                  value: sourceValue!,
+                  locale: targetLocale,
+                  id: sourceItem.id ?? undefined,
+                });
+              }
+            });
+          },
+        );
+
         if (fieldsToTranslate.length === 0) {
           log.debug(
             { targetLocale, tenantId },
@@ -1071,6 +1145,100 @@ export const translate: TaskConfig<'translate'> = {
                 },
               );
           }
+        }
+
+        // Resource Tab - Custom Layout (Custom Attributes)
+        (['leftColumn', 'rightColumn'] as const).forEach((columnKey) => {
+          const sourceColumn = englishResourceDirectory.resource?.[columnKey];
+          if (!sourceColumn) return;
+
+          const targetColumn = targetDoc.resource?.[columnKey];
+
+          const newColumn = sourceColumn.map((sourceGroup, groupIndex) => {
+            const targetGroup = targetColumn?.[groupIndex];
+            const newGroup = {
+              ...sourceGroup,
+              ...(targetGroup || {}),
+              id: sourceGroup.id,
+            };
+
+            newGroup.items = sourceGroup.items?.map((sourceItem, itemIndex) => {
+              const targetItem = targetGroup?.items?.[itemIndex];
+              const newItem = {
+                ...sourceItem,
+                ...(targetItem || {}),
+                id: sourceItem.id,
+              };
+
+              if (sourceItem.customAttribute) {
+                const newCustomAttribute = {
+                  ...sourceItem.customAttribute,
+                  ...(targetItem?.customAttribute || {}),
+                };
+
+                CUSTOM_ATTRIBUTE_TEXT_FIELDS.forEach((field) => {
+                  const path = `resource.${columnKey}.${groupIndex}.items.${itemIndex}.customAttribute.${field}`;
+                  if (translationsByPath[path]) {
+                    newCustomAttribute[field] = translationsByPath[path];
+                  } else if (isEmpty(targetItem?.customAttribute?.[field])) {
+                    // Always backfill, including dynamic {{...}} templates: the
+                    // placeholder must exist in every locale for interpolation to work.
+                    newCustomAttribute[field] =
+                      sourceItem.customAttribute?.[field];
+                  }
+                });
+
+                newItem.customAttribute = newCustomAttribute;
+              }
+
+              return newItem;
+            });
+
+            return newGroup;
+          });
+
+          updateData.resource = {
+            ...(updateData.resource ?? targetDoc.resource),
+            [columnKey]: newColumn,
+          };
+        });
+
+        // Search Tab - Card Layout (Custom Attributes)
+        if (englishResourceDirectory.search?.cardLayout) {
+          updateData.search!.cardLayout =
+            englishResourceDirectory.search.cardLayout.map(
+              (sourceItem, itemIndex) => {
+                const targetItem = targetDoc.search?.cardLayout?.[itemIndex];
+                const newItem = {
+                  ...sourceItem,
+                  ...(targetItem || {}),
+                  id: sourceItem.id,
+                };
+
+                if (sourceItem.customAttribute) {
+                  const newCustomAttribute = {
+                    ...sourceItem.customAttribute,
+                    ...(targetItem?.customAttribute || {}),
+                  };
+
+                  CUSTOM_ATTRIBUTE_TEXT_FIELDS.forEach((field) => {
+                    const path = `search.cardLayout.${itemIndex}.customAttribute.${field}`;
+                    if (translationsByPath[path]) {
+                      newCustomAttribute[field] = translationsByPath[path];
+                    } else if (isEmpty(targetItem?.customAttribute?.[field])) {
+                      // Always backfill, including dynamic {{...}} templates: the
+                      // placeholder must exist in every locale for interpolation to work.
+                      newCustomAttribute[field] =
+                        sourceItem.customAttribute?.[field];
+                    }
+                  });
+
+                  newItem.customAttribute = newCustomAttribute;
+                }
+
+                return newItem;
+              },
+            );
         }
 
         updateData._translationMeta = {

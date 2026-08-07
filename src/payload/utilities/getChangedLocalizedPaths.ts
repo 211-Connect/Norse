@@ -11,6 +11,27 @@ interface ChangeDetail {
   after: any;
 }
 
+type ResourceLayoutColumnGroup = NonNullable<
+  NonNullable<ResourceDirectory['resource']>['leftColumn']
+>[number];
+type ResourceLayoutItem = NonNullable<
+  ResourceLayoutColumnGroup['items']
+>[number];
+type SearchCardLayoutItem = NonNullable<
+  ResourceDirectory['search']['cardLayout']
+>[number];
+
+/**
+ * The only `localized: true` fields on a Custom Attribute layout item
+ * (see customAttributeFields.ts). icon/iconColor/size/titleBelow/url/urlTarget
+ * are configuration, not user-facing copy, and must not be diffed here.
+ */
+const CUSTOM_ATTRIBUTE_TEXT_FIELDS = [
+  'title',
+  'subtitle',
+  'description',
+] as const;
+
 export const AUTO_TRANSLATED_STRING_PATHS = [
   'resource.categoriesText',
   'resource.lastAssuredText',
@@ -269,6 +290,87 @@ function deepLocalizedDiff(
         after: undefined,
       });
     }
+  });
+
+  // RESOURCE CUSTOM ATTRIBUTES (leftColumn / rightColumn layout items)
+
+  (['leftColumn', 'rightColumn'] as const).forEach((columnKey) => {
+    const beforeGroups: ResourceLayoutColumnGroup[] = get(
+      before,
+      `resource.${columnKey}`,
+      [],
+    );
+    const afterGroups: ResourceLayoutColumnGroup[] = get(
+      after,
+      `resource.${columnKey}`,
+      [],
+    );
+
+    const beforeGroupsMap = new Map(
+      beforeGroups.map((group) => [group.id, group]),
+    );
+
+    afterGroups.forEach((afterGroup, groupIndex) => {
+      const beforeGroup = beforeGroupsMap.get(afterGroup.id);
+
+      const beforeItems: ResourceLayoutItem[] = beforeGroup?.items || [];
+      const afterItems: ResourceLayoutItem[] = afterGroup.items || [];
+
+      const beforeItemsMap = new Map(
+        beforeItems.map((item) => [item.id, item]),
+      );
+
+      afterItems.forEach((afterItem, itemIndex) => {
+        const beforeItem = beforeItemsMap.get(afterItem.id);
+
+        CUSTOM_ATTRIBUTE_TEXT_FIELDS.forEach((field) => {
+          const beforeValue = beforeItem?.customAttribute?.[field];
+          const afterValue = afterItem.customAttribute?.[field];
+
+          if (beforeValue !== afterValue) {
+            changes.push({
+              path: `resource.${columnKey}.${groupIndex}.items.${itemIndex}.customAttribute.${field}`,
+              before: beforeValue,
+              after: afterValue,
+            });
+          }
+        });
+      });
+    });
+  });
+
+  // SEARCH CARD LAYOUT CUSTOM ATTRIBUTES
+
+  const beforeCardLayout: SearchCardLayoutItem[] = get(
+    before,
+    'search.cardLayout',
+    [],
+  );
+  const afterCardLayout: SearchCardLayoutItem[] = get(
+    after,
+    'search.cardLayout',
+    [],
+  );
+
+  const beforeCardLayoutMap = new Map(
+    beforeCardLayout.map((item) => [item.id, item]),
+  );
+
+  afterCardLayout.forEach((afterItem, itemIndex) => {
+    const beforeItem = beforeCardLayoutMap.get(afterItem.id);
+
+    CUSTOM_ATTRIBUTE_TEXT_FIELDS.forEach((field) => {
+      const beforeValue = beforeItem?.customAttribute?.[field];
+      const afterValue = afterItem.customAttribute?.[field];
+
+      if (beforeValue !== afterValue) {
+        changes.push({
+          path: `search.cardLayout.${itemIndex}.customAttribute.${field}`,
+          before: beforeValue,
+          after: afterValue,
+        });
+      }
+    });
   });
 
   return changes;
