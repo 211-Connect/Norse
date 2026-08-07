@@ -596,8 +596,7 @@ async function getAppConfigBase(
       backText: resourceDirectory.topics?.backText ?? undefined,
       customHeading: resourceDirectory.topics?.customHeading ?? undefined,
       iconSize: resourceDirectory.topics?.iconSize ?? 'small',
-      imageBorderRadius:
-        resourceDirectory.topics?.imageBorderRadius ?? undefined,
+      imageBorderRadius: resourceDirectory.topics?.imageBorderRadius ?? 0,
       list: (resourceDirectory.topics?.list ?? []).map(
         ({ name, href, id, image, subtopics, openInNewTab }) => ({
           name,
