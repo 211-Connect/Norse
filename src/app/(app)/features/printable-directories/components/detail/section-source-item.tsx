@@ -18,14 +18,22 @@ import {
   TooltipTrigger,
 } from '@/app/(app)/shared/components/ui/tooltip';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
-import { PrintableDirectorySourceResponseDto } from '@/lib/api/generated/data-contracts';
+import {
+  PrintableDirectoryDefaultQueryConfigDto,
+  PrintableDirectorySourceResponseDto,
+} from '@/lib/api/generated/data-contracts';
 
+import { LOCATION_QUERY_PARAM_KEYS } from '../../utils/constants';
+import { formatQueryParamValue } from '../../utils/formatQueryParamValue';
+import { getLocationConflict } from '../../utils/getLocationConflict';
 import { CollapseToggleButton } from './collapse-toggle-button';
 
 type SectionSourceItemProps = {
   directoryId: string;
   sectionId: string;
   source: PrintableDirectorySourceResponseDto;
+  defaultQueryConfig:
+    PrintableDirectoryDefaultQueryConfigDto | null | undefined;
   sourceIndex: number;
   sectionName: string;
   canMoveUp: boolean;
@@ -37,28 +45,11 @@ type SectionSourceItemProps = {
   onDeleteSource: (sourceId: string) => void;
 };
 
-const formatQueryParamValue = (value: unknown): string => {
-  if (value === null || value === undefined) {
-    return '-';
-  }
-
-  if (typeof value === 'string') {
-    return value;
-  }
-
-  if (typeof value === 'number' || typeof value === 'boolean') {
-    return String(value);
-  }
-
-  return JSON.stringify(value);
-};
-
-const DEFAULT_QUERY_OVERRIDE_KEYS = new Set(['coords', 'location', 'distance']);
-
 export function SectionSourceItem({
   directoryId,
   sectionId,
   source,
+  defaultQueryConfig,
   sourceIndex,
   sectionName,
   canMoveUp,
@@ -72,6 +63,13 @@ export function SectionSourceItem({
   const { t } = useTranslation('page-directories');
 
   const queryParamsEntries = Object.entries(source.query?.params ?? {});
+  const hasLocationConflict =
+    source.type === 'query'
+      ? getLocationConflict(
+          defaultQueryConfig,
+          (source.query?.params ?? {}) as Record<string, unknown>,
+        )
+      : false;
   const searchHref =
     source.type === 'query' && source.query?.params
       ? `/search?${qs.stringify(
@@ -144,8 +142,9 @@ export function SectionSourceItem({
                       return (
                         <p key={key} className="break-all pl-4 text-sm">
                           <span className="font-medium">{key}</span>
-                          {DEFAULT_QUERY_OVERRIDE_KEYS.has(key) &&
-                          Boolean(value) ? (
+                          {LOCATION_QUERY_PARAM_KEYS.has(key) &&
+                          Boolean(value) &&
+                          hasLocationConflict ? (
                             <TooltipProvider delayDuration={150}>
                               <Tooltip>
                                 <TooltipTrigger asChild>

@@ -1,8 +1,8 @@
 'use client';
 
 import { Share2 } from 'lucide-react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
 
 import { Button } from '@/app/(app)/shared/components/ui/button';
 import {
@@ -11,9 +11,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/app/(app)/shared/components/ui/tooltip';
-import { useClipboard } from '@/app/(app)/shared/hooks/use-clipboard';
-import { withOptionalCustomBasePath } from '@/app/(app)/shared/lib/utils';
 import { PrintableDirectoryResponseDto } from '@/lib/api/generated/data-contracts';
+
+import { ShareDirectoryDialog } from './share-directory-dialog';
 
 type SharePrintableDirectoryButtonProps = {
   directory: PrintableDirectoryResponseDto;
@@ -25,7 +25,7 @@ export function SharePrintableDirectoryButton({
   locale,
 }: SharePrintableDirectoryButtonProps) {
   const { t } = useTranslation(['page-directories', 'common']);
-  const clipboard = useClipboard();
+  const [open, setOpen] = useState(false);
 
   if (
     directory.resourceLayout === 'custom-search' ||
@@ -33,19 +33,6 @@ export function SharePrintableDirectoryButton({
   ) {
     return null;
   }
-
-  const handleShare = () => {
-    if (!directory.slug) {
-      return;
-    }
-
-    const shareUrl = withOptionalCustomBasePath(
-      `${window.location.origin}/${locale}?directory=${encodeURIComponent(directory.slug)}`,
-    );
-
-    clipboard.copy(shareUrl);
-    toast.success(t('share_link_copied', { ns: 'page-directories' }));
-  };
 
   if (!directory.slug) {
     return (
@@ -73,15 +60,24 @@ export function SharePrintableDirectoryButton({
   }
 
   return (
-    <Button
-      type="button"
-      variant="outline"
-      className="gap-2"
-      onClick={handleShare}
-      data-testid="share-printable-directory-btn"
-    >
-      <Share2 className="size-4" aria-hidden="true" />
-      {t('call_to_action.share', { ns: 'common' })}
-    </Button>
+    <>
+      <Button
+        type="button"
+        variant="outline"
+        className="gap-2"
+        onClick={() => setOpen(true)}
+        data-testid="share-printable-directory-btn"
+      >
+        <Share2 className="size-4" aria-hidden="true" />
+        {t('call_to_action.share', { ns: 'common' })}
+      </Button>
+
+      <ShareDirectoryDialog
+        open={open}
+        onOpenChange={setOpen}
+        directory={directory}
+        locale={locale}
+      />
+    </>
   );
 }

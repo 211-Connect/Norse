@@ -29,8 +29,15 @@ export const BASE_FONT = {
 
 const DATUM_LABEL_WIDTH = 72;
 
-export type PrintVariant = 'line-listing' | 'summary-listing' | 'full-listing';
-export type FontSizeMode = 'default' | 'large';
+export const PRINT_VARIANTS = [
+  'line-listing',
+  'summary-listing',
+  'full-listing',
+] as const;
+export type PrintVariant = (typeof PRINT_VARIANTS)[number];
+
+export const FONT_SIZE_MODES = ['default', 'large'] as const;
+export type FontSizeMode = (typeof FONT_SIZE_MODES)[number];
 
 type DatumLabels = {
   phone: string;

@@ -105,7 +105,11 @@
       "unable_load_directories_error": "Unable to load printable directories",
       "select_directory_first_error": "Select a directory first",
       "unable_create_section_error": "Unable to create a section in this directory",
-      "unable_select_section_error": "Unable to select a section in this directory"
+      "unable_select_section_error": "Unable to select a section in this directory",
+      "view_directory": "View directory",
+      "include_search_location_label": "Include current search location in this query",
+      "preview_label": "This is how it will be saved",
+      "location_conflict_warning": "This location is different from the directory's default location and will override it"
     },
     "save_list": {
       "open": "Save list to printable directory",

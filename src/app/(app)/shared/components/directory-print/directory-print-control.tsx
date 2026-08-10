@@ -18,6 +18,8 @@ type DirectoryPrintControlProps<TData> = {
   loadData: (locale: string) => Promise<TData>;
   testId?: string;
   initialVariant?: PrintVariant;
+  availableLocales?: string[];
+  initialLocale?: string;
   renderDocument: (
     data: TData,
     context: PrintDocumentRenderContext,
@@ -30,6 +32,8 @@ export function DirectoryPrintControl<TData>({
   variant = 'icon-text',
   testId = 'print-directory-btn',
   initialVariant,
+  availableLocales,
+  initialLocale,
   renderDocument,
   postProcessBlob,
 }: DirectoryPrintControlProps<TData>) {
@@ -58,6 +62,8 @@ export function DirectoryPrintControl<TData>({
         loadData={loadData}
         onRestoreFocus={() => triggerRef.current?.focus()}
         initialVariant={initialVariant}
+        availableLocales={availableLocales}
+        initialLocale={initialLocale}
         renderDocument={renderDocument}
         postProcessBlob={postProcessBlob}
       />

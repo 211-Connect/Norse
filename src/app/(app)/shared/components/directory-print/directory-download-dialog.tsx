@@ -12,6 +12,13 @@ import { PdfFontProvider } from '@/app/(app)/shared/components/directory-print/p
 import { PDFPrintableDirectory } from '@/app/(app)/shared/components/directory-print/pdf-printable-directory';
 import { withCustomBasePathAppendedToDomain } from '@/app/(app)/shared/lib/utils';
 import { type PrintVariant } from '@/app/(app)/shared/components/directory-print/pdf-print-primitives';
+import {
+  parseFontSizeModeParam,
+  parsePrintVariantParam,
+  PD_FONT_SIZE_PARAM,
+  PD_SLUG_PARAM,
+  PD_VARIANT_PARAM,
+} from '@/app/(app)/shared/components/directory-print/share-link-params';
 import { Button } from '@/app/(app)/shared/components/ui/button';
 import {
   Dialog,
@@ -23,8 +30,6 @@ import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { getPrintableDirectoryPublicPreview } from '@/app/(app)/shared/serverActions/printableDirectories/getPrintableDirectoryPublicPreview';
 import { printableDirectoryPreviewToPdfData } from '@/app/(app)/shared/utils/printable-directory-transformers';
 import { PrintableDirectoryPreviewResponseDto } from '@/lib/api/generated/data-contracts';
-
-const QUERY_PARAM = 'directory';
 
 const RESOURCE_LAYOUT_TO_PRINT_VARIANT: Partial<
   Record<PrintableDirectoryPreviewResponseDto['resourceLayout'], PrintVariant>
@@ -65,20 +70,29 @@ export function DirectoryDownloadDialog({
   const searchParams = useSearchParams();
   const appConfig = useAppConfig();
 
-  const slug = searchParams.get(QUERY_PARAM);
+  const slug = searchParams.get(PD_SLUG_PARAM);
   const open = Boolean(slug);
+  const requestedVariant = parsePrintVariantParam(
+    searchParams.get(PD_VARIANT_PARAM),
+  );
+  const requestedFontSizeMode = parseFontSizeModeParam(
+    searchParams.get(PD_FONT_SIZE_PARAM),
+  );
 
   const [state, setState] = useState<DialogState>({ status: 'loading' });
   const startedForSlugRef = useRef<string | null>(null);
 
   const generate = async (preview: PrintableDirectoryPreviewResponseDto) => {
     const printVariant =
+      requestedVariant ??
       RESOURCE_LAYOUT_TO_PRINT_VARIANT[preview.resourceLayout];
 
     if (!printVariant) {
       setState({ status: 'unsupported', preview });
       return;
     }
+
+    const fontSizeMode = requestedFontSizeMode ?? 'default';
 
     setState({ status: 'generating', preview });
 
@@ -98,7 +112,7 @@ export function DirectoryDownloadDialog({
           <PDFPrintableDirectory
             data={data}
             variant={printVariant}
-            fontSizeMode="default"
+            fontSizeMode={fontSizeMode}
             currentDomain={currentDomain}
             currentDate={currentDate}
             brandLogoUrl={appConfig.brand.logoUrl ?? undefined}
@@ -165,7 +179,9 @@ export function DirectoryDownloadDialog({
     startedForSlugRef.current = null;
 
     const params = new URLSearchParams(searchParams.toString());
-    params.delete(QUERY_PARAM);
+    params.delete(PD_SLUG_PARAM);
+    params.delete(PD_VARIANT_PARAM);
+    params.delete(PD_FONT_SIZE_PARAM);
     const query = params.toString();
 
     router.replace(query ? `${pathname}?${query}` : pathname, {
