@@ -5,8 +5,8 @@ import {
   expectPageUrl,
   goHome,
   goToLocalFavorites,
-  performSearch,
   resetLocalFavoritesStorage,
+  searchAndGetFirstResult,
   test,
 } from './helpers';
 import { ASYNC_UI_TIMEOUT_MS, UI_SHELL_TIMEOUT_MS } from './timeouts';
@@ -16,21 +16,11 @@ async function addFirstSearchResultToLocalFavorites(
   query: string,
   queryLabel: string,
 ) {
-  await performSearch(page, {
+  const { name: firstResourceName } = await searchAndGetFirstResult(page, {
     query,
     query_label: queryLabel,
     query_type: 'text',
   });
-
-  await page
-    .locator('#search-container')
-    .waitFor({ state: 'visible', timeout: UI_SHELL_TIMEOUT_MS });
-
-  const firstResourceLink = page.getByTestId('resource-link').first();
-  await expect(firstResourceLink).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
-  const firstResourceName = (
-    (await firstResourceLink.textContent()) ?? ''
-  ).trim();
 
   const favoriteBtn = page.getByTestId('favorite-btn').first();
   await expect(favoriteBtn).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
@@ -140,18 +130,11 @@ test.describe('Favorites Feature (Anonymous Local List)', () => {
   test('should add and remove a local favorite from resource details page', async ({
     page,
   }) => {
-    await performSearch(page, {
+    const { link: resourceLink } = await searchAndGetFirstResult(page, {
       query: 'shelter',
       query_label: 'shelter',
       query_type: 'text',
     });
-
-    await page
-      .locator('#search-container')
-      .waitFor({ state: 'visible', timeout: UI_SHELL_TIMEOUT_MS });
-
-    const resourceLink = page.getByTestId('resource-link').first();
-    await expect(resourceLink).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
     await resourceLink.click();
 
     await expectPageUrl(page, /search\/[a-f0-9-]{36}/);
@@ -167,7 +150,19 @@ test.describe('Favorites Feature (Anonymous Local List)', () => {
 
     await favoriteBtn.click();
 
+    // Local (unauthenticated) favoriting toggles synchronously via localStorage
+    // and reflects on the button's Heart icon fill — assert the "added" state
+    // before toggling again, rather than firing two clicks back-to-back with
+    // no signal between them (previously timing-fragile / ambiguous intent).
+    await expect(favoriteBtn.locator('svg')).toHaveClass(/fill-current/, {
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
+
     await favoriteBtn.click();
+
+    await expect(favoriteBtn.locator('svg')).not.toHaveClass(/fill-current/, {
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
 
     await goToLocalFavorites(page);
 
