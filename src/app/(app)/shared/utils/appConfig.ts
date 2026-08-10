@@ -30,12 +30,12 @@ function getTenant(resourceDirectory: ResourceDirectory): Tenant | undefined {
   return resourceDirectory.tenant ?? undefined;
 }
 
-function getTenantId(resourceDirectory: ResourceDirectory): string | undefined {
+function getTenantId(resourceDirectory: ResourceDirectory): string {
   if (typeof resourceDirectory.tenant === 'string') {
     return resourceDirectory.tenant;
   }
 
-  return resourceDirectory.tenant?.id;
+  return resourceDirectory.tenant?.id || 'unknown';
 }
 
 function getTenantMainUmamiWebsiteId(
@@ -295,6 +295,7 @@ async function getAppConfigBase(
         iconSize: 'small',
         list: [],
       },
+      tenantId: 'unknown',
     };
   }
 

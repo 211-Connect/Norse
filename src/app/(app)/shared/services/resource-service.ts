@@ -21,14 +21,6 @@ import { fetchWrapper } from '../lib/fetchWrapper';
 
 const RESOURCE_BATCH_LIMIT = 100;
 
-function requireTenantId(tenantId: string | undefined): string {
-  if (!tenantId) {
-    throw new Error('tenantId is required');
-  }
-
-  return tenantId;
-}
-
 function createResourceHeaders(
   locale: string,
   tenantId: string,
@@ -235,41 +227,38 @@ const fetchAndTransformResources = cache(fetchAndTransformResourcesOrigin);
 export async function getResource(
   id: string,
   locale: string,
-  tenantId?: string,
+  tenantId: string,
 ): Promise<Resource | null> {
-  const resolvedTenantId = requireTenantId(tenantId);
   const url = `${API_URL}/resource/${id}`;
   return fetchAndTransformResource(url, {
     locale,
-    tenantId: resolvedTenantId,
-    cacheKey: `resource:${resolvedTenantId}:${id}:${locale}`,
+    tenantId,
+    cacheKey: `resource:${tenantId}:${id}:${locale}`,
   });
 }
 
 export async function getResourceByOriginalId(
   originalId: string,
   locale: string,
-  tenantId?: string,
+  tenantId: string,
 ): Promise<Resource | null> {
-  const resolvedTenantId = requireTenantId(tenantId);
   const url = `${API_URL}/resource/original/${originalId}`;
   return fetchAndTransformResource(url, {
     locale,
-    tenantId: resolvedTenantId,
-    cacheKey: `resource:${resolvedTenantId}:${originalId}:${locale}`,
+    tenantId,
+    cacheKey: `resource:${tenantId}:${originalId}:${locale}`,
   });
 }
 
 export async function getResources(
   ids: string[],
   locale: string,
-  tenantId?: string,
+  tenantId: string,
 ): Promise<Resource[]> {
   if (ids.length === 0) {
     return [];
   }
 
-  const resolvedTenantId = requireTenantId(tenantId);
   const uniqueIds = [...new Set(ids)];
   const chunks = chunkIds(uniqueIds, RESOURCE_BATCH_LIMIT);
 
@@ -277,8 +266,8 @@ export async function getResources(
     chunks.map((chunk) =>
       fetchAndTransformResources(chunk.join(','), chunk, {
         locale,
-        tenantId: resolvedTenantId,
-        cacheKey: `resource_batch:${resolvedTenantId}:${locale}:${stableHash(chunk)}`,
+        tenantId: tenantId,
+        cacheKey: `resource_batch:${tenantId}:${locale}:${stableHash(chunk)}`,
       }),
     ),
   );
@@ -298,7 +287,7 @@ export async function getResources(
   if (fallbackChunks.length > 0) {
     const fallbackMaps = await Promise.all(
       fallbackChunks.map((chunk) =>
-        fetchResourcesIndividually(chunk, locale, resolvedTenantId),
+        fetchResourcesIndividually(chunk, locale, tenantId),
       ),
     );
 
