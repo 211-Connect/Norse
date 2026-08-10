@@ -46,5 +46,4 @@ export async function switchLanguage(page: Page, locale: 'en' | 'es') {
     },
     { timeout: SEARCH_NAV_TIMEOUT_MS },
   );
-  await page.waitForLoadState('networkidle');
 }

@@ -221,8 +221,8 @@ test.describe('Search accessibility preservation', () => {
 
     await expect(searchInput).toBeFocused();
     await searchInput.fill('food');
-    await searchInput
-      .locator('..')
+    await page
+      .getByTestId('search-field')
       .getByTestId('autocomplete-listbox')
       .waitFor({ state: 'visible', timeout: AUTOCOMPLETE_TIMEOUT_MS });
 
@@ -244,8 +244,8 @@ test.describe('Search accessibility preservation', () => {
     const locationInput = page.locator('#location-input');
 
     await locationInput.fill('minneapolis');
-    await locationInput
-      .locator('..')
+    await page
+      .getByTestId('location-field')
       .getByTestId('autocomplete-listbox')
       .waitFor({ state: 'visible', timeout: AUTOCOMPLETE_TIMEOUT_MS });
 
@@ -263,7 +263,7 @@ test.describe('Search accessibility preservation', () => {
     await openDialogFromSearchTrigger(page);
 
     const locationInput = page.locator('#location-input');
-    const locationField = locationInput.locator('..');
+    const locationField = page.getByTestId('location-field');
     const clearButton = locationField.getByTestId('search-clear-btn');
     const listbox = locationField.getByTestId('autocomplete-listbox');
 

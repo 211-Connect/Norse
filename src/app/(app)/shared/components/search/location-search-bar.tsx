@@ -288,6 +288,7 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
     >
       <Autocomplete
         className={cn(className, !isStandalone && 'search-box')}
+        wrapperTestId="location-field"
         readerLabel={t('search.location_input_label')}
         inputProps={{
           autoFocus: focusByDefault,

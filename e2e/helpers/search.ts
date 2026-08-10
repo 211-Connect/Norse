@@ -187,7 +187,9 @@ export async function openTopicSearch(page: Page) {
     await expect(topicsLink).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
     await topicsLink.click();
     await expectPageUrl(page, /topics\/?(?:\?|$)/);
-    await page.waitForLoadState('networkidle');
+    await expect(directTopicLinks.first()).toBeVisible({
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
   }
 
   const maxTries = 10;

@@ -57,6 +57,74 @@ New helpers go in the module matching their domain, not back into a flat
 file. If a helper doesn't fit an existing module, that's a signal to add one
 rather than to grow `url.ts`/`navigation.ts` into a dumping ground.
 
+## Authenticated favorites: log in once, not per test
+
+Both `favorites.spec.ts` and `local-favorites.spec.ts` run under the same
+`favorites` Playwright project — there's no separate auth-only project or
+`setup` step in `playwright.config.ts`. Playwright gives every `test()` a
+fresh `BrowserContext` by default, so calling `loginViaKeycloak` in a
+per-test `beforeEach` would mean a full Keycloak redirect + credential fill
++ submit on **every single test**, not just once. Instead, login happens
+once per file via `favorites.spec.ts`'s own `beforeAll` + `test.use`:
+
+1. `test.beforeAll` logs in via `loginViaKeycloak` using a dedicated
+   `browser.newContext({ storageState: undefined })` — the explicit
+   `undefined` guarantees this context can never accidentally pick up a
+   stale/leftover session file; it must always be a real, fresh login. It
+   then saves that session with
+   `context.storageState({ path: AUTH_STORAGE_STATE_PATH })`
+   (`e2e/env.ts`, gitignored under `e2e/.auth/`). It also runs
+   `deleteAllE2ETestLists` on that same context, cleaning up any leftover
+   E2E test lists from previous failed runs before the suite starts.
+2. `test.use({ storageState: hasAuth ? AUTH_STORAGE_STATE_PATH : undefined })`
+   is declared at the top of the `describe` block. This is evaluated once at
+   file-collection time (before the file on disk exists yet), but
+   `storageState` is only *read* lazily — when Playwright actually creates
+   each test's `page`/`context` fixture, which happens after `beforeAll` has
+   already written the file. That ordering is the load-bearing assumption
+   here; if you ever see intermittent "not authenticated" failures on the
+   *first* test only, look here first.
+3. `storageState` is `undefined` (not a path) when `hasTestCredentials` is
+   false, so a credential-less run never tries to read a nonexistent file —
+   it just skips every test in the block via the existing
+   `test.skip(!hasAuth, ...)`.
+4. `test.afterAll`'s cleanup uses `browser.newContext({ storageState: AUTH_STORAGE_STATE_PATH })`
+   explicitly — `browser.newContext()`/`newPage()` don't inherit the
+   describe-level `test.use()` override (that only applies to the
+   fixture-provided `page`/`context`), so the path has to be passed again.
+   It's guarded by `existsSync(AUTH_STORAGE_STATE_PATH)` first: if
+   `beforeAll` itself failed (bad credentials, IdP unreachable, etc.) before
+   ever writing the file, `afterAll` throws its own clear "no saved session"
+   error instead of a confusing ENOENT that masks `beforeAll`'s real error.
+5. Both `beforeAll` and `afterAll` call `expectAuthenticatedShell(page)`
+   explicitly right before `deleteAllE2ETestLists`, even though
+   `loginViaKeycloak` already asserts this internally at its own end. This is
+   deliberate belt-and-braces: the guard is visible at the exact call site
+   that performs a destructive action, so it doesn't silently depend on
+   `loginViaKeycloak`'s internals never changing.
+6. `test.beforeEach(async ({ page }) => { await goHome(page); })` is
+   **required** here, unlike other spec files where it's just a convention —
+   `test.use({ storageState })` only preloads cookies/localStorage into each
+   test's fresh context, it does **not** navigate anywhere. Without this
+   `beforeEach`, every test starts on a blank page and the first
+   `favorites-btn`/`search-trigger` interaction fails ("white screen"). This
+   used to be a side effect of the old per-test `loginViaKeycloak` call
+   (which itself called `goHome`); now that login happens once in
+   `beforeAll`, the per-test navigation has to be explicit. If you ever
+   remove or reorder this hook, expect every test to fail immediately with
+   an "element not found" error on the first interaction.
+
+If you add more authenticated tests, put them in `favorites.spec.ts` (or
+mirror this exact `test.use` + `beforeAll` + `beforeEach(goHome)` pattern in
+a new file) rather than reintroducing a per-test `loginViaKeycloak` call.
+
+**Trade-off to watch:** the captured session is reused for the whole file's
+test run. If Keycloak session lifetimes are ever shortened, a very long run
+could see the session expire mid-suite — not observed in practice given
+current timeout budgets, but worth knowing if `favorites.spec.ts`'s
+authenticated tests start failing partway through a run with auth-prompt
+symptoms.
+
 ## Known risks (documented, not fixed here)
 
 - **Data-dependent tests silently skip**: several tests call
@@ -89,6 +157,6 @@ rather than to grow `url.ts`/`navigation.ts` into a dumping ground.
 - Requires a running app server; `baseURL` defaults to `http://localhost:3000`,
   override with `E2E_BASE_URL`.
 - Favorites (authenticated) specs skip automatically unless `TEST_USER_EMAIL`
-  and `TEST_USER_PASSWORD` are set.
+  and `TEST_USER_PASSWORD` are set — see "Authenticated favorites" above.
 - All `E2E_*_TIMEOUT_MS` env vars in `timeouts.ts` are overridable per-run —
   use them to debug flakiness on a slow environment before assuming a bug.

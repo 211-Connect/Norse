@@ -1,10 +1,14 @@
+import { existsSync } from 'node:fs';
+
 import {
   addFirstResultToList,
   closeFavoritesDialog,
   deleteAllE2ETestLists,
   expect,
+  expectAuthenticatedShell,
   expectPageUrl,
   getFavoritesDialogListActionButton,
+  goHome,
   goToFavorites,
   loginViaKeycloak,
   openFavoritesDialogForList,
@@ -16,10 +20,10 @@ import {
   waitForFavoriteOnListPage,
   waitForFavoriteToBeAbsentOnListPage,
 } from './helpers';
+import { AUTH_STORAGE_STATE_PATH, hasTestCredentials } from './env';
 import { ASYNC_UI_TIMEOUT_MS, UI_SHELL_TIMEOUT_MS } from './timeouts';
 
-const hasAuth =
-  !!process.env.TEST_USER_EMAIL && !!process.env.TEST_USER_PASSWORD;
+const hasAuth = hasTestCredentials;
 
 test.describe('Favorites Feature (Authenticated)', () => {
   test.describe.configure({ mode: 'serial' });
@@ -29,30 +33,81 @@ test.describe('Favorites Feature (Authenticated)', () => {
     'Skipped — no test credentials (set TEST_USER_EMAIL & TEST_USER_PASSWORD)',
   );
 
-  // Clean up any leftover E2E test lists before the suite runs (from previous
-  // failed runs) so the favorites page doesn't accumulate stale entries.
+  // Every test's `page` fixture in this describe block loads the session
+  // saved to `AUTH_STORAGE_STATE_PATH` by `beforeAll` below — no per-test
+  // login. The file doesn't exist yet when this `test.use` is evaluated
+  // (file-collection time), but `storageState` is only *read* lazily, when
+  // Playwright creates each test's context — which happens after `beforeAll`
+  // has already written it. See e2e/AGENTS.md.
+  test.use({
+    storageState: hasAuth ? AUTH_STORAGE_STATE_PATH : undefined,
+  });
+
+  // Logs in via Keycloak once for the whole file, saves the session so every
+  // test's `page` fixture starts pre-authenticated (see `test.use` above),
+  // then cleans up any leftover E2E test lists from previous failed runs
+  // using that same freshly-authenticated context. `storageState: undefined`
+  // is explicit here (not just omitted) so this context can never
+  // accidentally pick up a stale/leftover session file — it must start from
+  // a real, fresh Keycloak login every time.
   test.beforeAll(async ({ browser }) => {
-    const page = await browser.newPage();
+    const context = await browser.newContext({ storageState: undefined });
+    const page = await context.newPage();
     try {
       await loginViaKeycloak(page);
+      // Explicit, visible guard right before any destructive action — not
+      // just relying on the assertion buried inside `loginViaKeycloak`,
+      // which future refactors could weaken or move without this call site
+      // noticing.
+      await expectAuthenticatedShell(page);
+      await context.storageState({ path: AUTH_STORAGE_STATE_PATH });
+      await deleteAllE2ETestLists(page);
     } finally {
-      await page.close();
+      await context.close();
     }
   });
 
   // Clean up the list created in this run even if tests fail partway through.
+  // `browser.newContext()` doesn't inherit `test.use`'s `storageState`
+  // (that only applies to the fixture-provided `page`/`context`), so it's
+  // passed explicitly here to reuse the session saved by `beforeAll`. Guarded
+  // by `existsSync`: if `beforeAll` itself failed before writing the file,
+  // this surfaces its own clear "missing session" message instead of an
+  // opaque ENOENT that masks the real `beforeAll` failure above it.
   test.afterAll(async ({ browser }) => {
-    const page = await browser.newPage();
+    if (!existsSync(AUTH_STORAGE_STATE_PATH)) {
+      throw new Error(
+        `Skipping afterAll cleanup — no saved session at ${AUTH_STORAGE_STATE_PATH}. ` +
+          'This means beforeAll failed before logging in; see its error above for the real cause.',
+      );
+    }
+
+    const context = await browser.newContext({
+      storageState: AUTH_STORAGE_STATE_PATH,
+    });
+    const page = await context.newPage();
     try {
-      await loginViaKeycloak(page);
+      // Same explicit guard as beforeAll — the loaded storageState session
+      // could in principle have expired between beforeAll and afterAll on a
+      // very long run (see e2e/AGENTS.md's "trade-off to watch"); verify
+      // before attempting to delete anything rather than assume.
+      await expectAuthenticatedShell(page);
       await deleteAllE2ETestLists(page);
     } finally {
-      await page.close();
+      await context.close();
     }
   });
 
+  // Every test's `page` fixture starts with the session loaded via
+  // `test.use({ storageState })` above, but that only preloads
+  // cookies/localStorage — it does not navigate anywhere. Without this,
+  // every test starts on a blank page and the first `favorites-btn`/
+  // `search-trigger` interaction fails ("white screen"). This used to be a
+  // side effect of the old per-test `loginViaKeycloak` call (which itself
+  // called `goHome`); now that login happens once in `beforeAll`, the
+  // per-test navigation has to be explicit.
   test.beforeEach(async ({ page }) => {
-    await loginViaKeycloak(page);
+    await goHome(page);
   });
 
   const listName = `E2E Test List ${Date.now()}`;

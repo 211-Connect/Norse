@@ -156,6 +156,7 @@ export function SearchBar({
   return (
     <Autocomplete
       className="search-box"
+      wrapperTestId="search-field"
       readerLabel={t('search.query_input_label')}
       inputProps={{
         autoFocus: focusByDefault,
