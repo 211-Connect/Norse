@@ -7,7 +7,11 @@ import {
   UI_SHELL_TIMEOUT_MS,
 } from '../timeouts';
 import { waitForFilterPanelInteractive } from './filters';
-import { expectPageUrl, isSearchResultsListUrl, parseTrailingInteger } from './url';
+import {
+  expectPageUrl,
+  isSearchResultsListUrl,
+  parseTrailingInteger,
+} from './url';
 
 /**
  * Opens the search dialog and waits until the modal is visible (same contract
@@ -95,7 +99,10 @@ export async function performSearch(page: Page, params: SearchParams) {
  * name. Centralizes the "search → wait for `#search-container` → grab the
  * first `resource-link`" sequence repeated across favorites specs.
  */
-export async function searchAndGetFirstResult(page: Page, params: SearchParams) {
+export async function searchAndGetFirstResult(
+  page: Page,
+  params: SearchParams,
+) {
   await performSearch(page, params);
 
   await page

@@ -42,16 +42,16 @@ Scope: `e2e/**`. Read this before adding or editing Playwright specs or helpers.
 Barrel `index.ts` re-exports everything plus the customized `test`/`expect`
 — specs import from `./helpers`, never from an individual module file.
 
-| Module | Contents |
-|---|---|
-| `url.ts` | URL predicates, `expectPageUrl`, integer/text parsing, regex-escaping utils |
-| `navigation.ts` | `goHome`, `waitForPageStabilized`, `expectAuthenticatedShell` |
-| `search.ts` | Search dialog, `performSearch`, `searchAndGetFirstResult`, result-total/title getters, topic search, location filter setup |
-| `filters.ts` | Filter-panel helpers (`markFiltersByIds`, `markFirstNEnabledFilters`, etc.) |
-| `favorites.ts` | Favorites navigation, list-page waits, dialog add/remove flows, cleanup |
-| `auth.ts` | `loginViaKeycloak` |
-| `i18n.ts` | `switchLanguage` |
-| `internal.ts` | Non-exported-from-barrel internals (e.g. `isVisible` for branching logic) |
+| Module          | Contents                                                                                                                   |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `url.ts`        | URL predicates, `expectPageUrl`, integer/text parsing, regex-escaping utils                                                |
+| `navigation.ts` | `goHome`, `waitForPageStabilized`, `expectAuthenticatedShell`                                                              |
+| `search.ts`     | Search dialog, `performSearch`, `searchAndGetFirstResult`, result-total/title getters, topic search, location filter setup |
+| `filters.ts`    | Filter-panel helpers (`markFiltersByIds`, `markFirstNEnabledFilters`, etc.)                                                |
+| `favorites.ts`  | Favorites navigation, list-page waits, dialog add/remove flows, cleanup                                                    |
+| `auth.ts`       | `loginViaKeycloak`                                                                                                         |
+| `i18n.ts`       | `switchLanguage`                                                                                                           |
+| `internal.ts`   | Non-exported-from-barrel internals (e.g. `isVisible` for branching logic)                                                  |
 
 New helpers go in the module matching their domain, not back into a flat
 file. If a helper doesn't fit an existing module, that's a signal to add one
@@ -64,8 +64,9 @@ Both `favorites.spec.ts` and `local-favorites.spec.ts` run under the same
 `setup` step in `playwright.config.ts`. Playwright gives every `test()` a
 fresh `BrowserContext` by default, so calling `loginViaKeycloak` in a
 per-test `beforeEach` would mean a full Keycloak redirect + credential fill
-+ submit on **every single test**, not just once. Instead, login happens
-once per file via `favorites.spec.ts`'s own `beforeAll` + `test.use`:
+
+- submit on **every single test**, not just once. Instead, login happens
+  once per file via `favorites.spec.ts`'s own `beforeAll` + `test.use`:
 
 1. `test.beforeAll` logs in via `loginViaKeycloak` using a dedicated
    `browser.newContext({ storageState: undefined })` — the explicit
@@ -79,11 +80,11 @@ once per file via `favorites.spec.ts`'s own `beforeAll` + `test.use`:
 2. `test.use({ storageState: hasAuth ? AUTH_STORAGE_STATE_PATH : undefined })`
    is declared at the top of the `describe` block. This is evaluated once at
    file-collection time (before the file on disk exists yet), but
-   `storageState` is only *read* lazily — when Playwright actually creates
+   `storageState` is only _read_ lazily — when Playwright actually creates
    each test's `page`/`context` fixture, which happens after `beforeAll` has
    already written the file. That ordering is the load-bearing assumption
    here; if you ever see intermittent "not authenticated" failures on the
-   *first* test only, look here first.
+   _first_ test only, look here first.
 3. `storageState` is `undefined` (not a path) when `hasTestCredentials` is
    false, so a credential-less run never tries to read a nonexistent file —
    it just skips every test in the block via the existing
