@@ -50,6 +50,7 @@ export const topics: Tab = {
     {
       name: 'imageBorderRadius',
       type: 'number',
+      defaultValue: 0,
       access: {
         create: superAdminOrSupportOrTenantAccess,
         update: superAdminOrSupportOrTenantAccess,
