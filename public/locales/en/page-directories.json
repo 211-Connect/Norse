@@ -21,6 +21,9 @@
   "share_link_copied": "Share link copied to clipboard",
   "unable_to_copy_share_link": "Unable to copy share link",
   "share_slug_missing_tooltip": "Set a share slug in General info before sharing",
+  "share_dialog_title": "Share printable directory",
+  "share_dialog_description": "Choose the format recipients will see, then copy the link.",
+  "copy_link_button": "Copy link",
   "general_info_title": "General info",
   "edit_directory": "Edit printable directory",
   "directory_updated": "Printable directory updated",
@@ -47,7 +50,7 @@
   },
   "booklet_layout": {
     "label": "Booklet layout",
-    "help": "Pad the page count to a multiple of four",
+    "help": "Formats the PDF for booklet printing (folded and printed double-sided). Blank pages are added as needed so the cover stays on page 1 and the back cover stays on the last page.",
     "enabled": "Enabled",
     "disabled": "Disabled"
   },

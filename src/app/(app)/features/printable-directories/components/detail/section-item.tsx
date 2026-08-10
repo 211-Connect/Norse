@@ -7,7 +7,10 @@ import { useTranslation } from 'react-i18next';
 import { Link } from '@/app/(app)/shared/components/link';
 import { Button } from '@/app/(app)/shared/components/ui/button';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
-import { PrintableDirectorySectionResponseDto } from '@/lib/api/generated/data-contracts';
+import {
+  PrintableDirectoryDefaultQueryConfigDto,
+  PrintableDirectorySectionResponseDto,
+} from '@/lib/api/generated/data-contracts';
 
 import { getPrintableDirectoryLocalizedText } from '../../utils/getPrintableDirectoryLocalizedText';
 import { CollapseToggleButton } from './collapse-toggle-button';
@@ -16,6 +19,8 @@ import { SectionSourceItem } from './section-source-item';
 type SectionItemProps = {
   directoryId: string;
   section: PrintableDirectorySectionResponseDto;
+  defaultQueryConfig:
+    PrintableDirectoryDefaultQueryConfigDto | null | undefined;
   index: number;
   isLast: boolean;
   isExpanded: boolean;
@@ -37,6 +42,7 @@ type SectionItemProps = {
 export function SectionItem({
   directoryId,
   section,
+  defaultQueryConfig,
   index,
   isLast,
   isExpanded,
@@ -143,6 +149,7 @@ export function SectionItem({
                   directoryId={directoryId}
                   sectionId={section.id}
                   source={source}
+                  defaultQueryConfig={defaultQueryConfig}
                   sourceIndex={sourceIndex}
                   sectionName={sectionName}
                   canMoveUp={sourceIndex > 0}

@@ -11,7 +11,10 @@ import {
   CardTitle,
 } from '@/app/(app)/shared/components/ui/card';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
-import { PrintableDirectorySectionResponseDto } from '@/lib/api/generated/data-contracts';
+import {
+  PrintableDirectoryDefaultQueryConfigDto,
+  PrintableDirectorySectionResponseDto,
+} from '@/lib/api/generated/data-contracts';
 
 import { useCollapsibleSet } from '../../hooks/use-collapsible-set';
 import { SectionItem } from './section-item';
@@ -19,6 +22,8 @@ import { SectionItem } from './section-item';
 type SectionsCardProps = {
   directoryId: string;
   sections: PrintableDirectorySectionResponseDto[];
+  defaultQueryConfig:
+    PrintableDirectoryDefaultQueryConfigDto | null | undefined;
   isReorderingSections: boolean;
   isMutatingSources: boolean;
   onAddSection: () => void;
@@ -35,6 +40,7 @@ type SectionsCardProps = {
 export function SectionsCard({
   directoryId,
   sections,
+  defaultQueryConfig,
   isReorderingSections,
   isMutatingSources,
   onAddSection,
@@ -103,6 +109,7 @@ export function SectionsCard({
               key={section.id}
               directoryId={directoryId}
               section={section}
+              defaultQueryConfig={defaultQueryConfig}
               index={index}
               isLast={index === sections.length - 1}
               isExpanded={sectionsCollapsible.isExpanded(section.id)}
