@@ -91,6 +91,7 @@ export const autoTranslate: CollectionAfterChangeHook<
         'suggestions',
         'badges.list',
         'search.facets',
+        'search.cardLayout',
       ] as const;
 
       for (const prefix of flatPrefixes) {
@@ -99,6 +100,25 @@ export const autoTranslate: CollectionAfterChangeHook<
           changedItemIds.add(id);
           return;
         }
+      }
+
+      const resourceLayoutMatch = path.match(
+        /^resource\.(leftColumn|rightColumn)\.(\d+)\.items\.(\d+)\./,
+      );
+      if (resourceLayoutMatch) {
+        const [, columnKey, groupIndex, itemIndex] = resourceLayoutMatch;
+        const item = get(
+          doc,
+          `resource.${columnKey}.${groupIndex}.items.${itemIndex}`,
+        );
+        if (
+          item &&
+          typeof item === 'object' &&
+          'id' in item &&
+          typeof item.id === 'string'
+        )
+          changedItemIds.add(item.id);
+        return;
       }
 
       const topicMatch = path.match(/^topics\.list\.(\d+)\./);
