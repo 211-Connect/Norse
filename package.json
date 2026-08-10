@@ -126,7 +126,7 @@
     "react-dom": "^19.2.6",
     "react-i18next": "^17.0.8",
     "react-to-print": "^3.1.1",
-    "recharts": "^3.8.0",
+    "recharts": "^3.10.1",
     "remove-markdown": "~0.6.4",
     "sharp": "0.35.3",
     "sonner": "^2.0.7",
