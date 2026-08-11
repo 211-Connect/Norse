@@ -20,21 +20,27 @@ function getHeader(headers: ArcjetHeaders, name: string) {
   return value ?? 'unknown';
 }
 
-const aj = arcjet({
-  key: process.env.ARCJET_KEY!,
-  proxies: [cloudflare(), MBOA_PROXY_IP],
-  rules: [
-    detectBot({
-      mode: 'LIVE',
-      allow: ['CATEGORY:SEARCH_ENGINE'],
-    }),
-  ],
-});
+const arcjetKey = process.env.ARCJET_KEY;
+
+const aj = arcjetKey
+  ? arcjet({
+      key: arcjetKey,
+      proxies: [cloudflare(), MBOA_PROXY_IP],
+      rules: [
+        detectBot({
+          mode: 'LIVE',
+          allow: ['CATEGORY:SEARCH_ENGINE'],
+        }),
+      ],
+    })
+  : undefined;
 
 export async function arcjetProtectPage(
   pathName: string,
   tenantId: string,
 ): Promise<void> {
+  if (!aj) return;
+
   const req = await request();
   const decision = await aj.protect(req);
 
