@@ -65,7 +65,6 @@ export default function AnalyticsView(props: AdminViewServerProps) {
               gap: '0.75rem',
             }}
           >
-            {/* The ExportCSVButton is temporarily disabled until we will stabilize a solution for exporting analytics data. */}
             <ExportCSVButton />
             <DateRange />
           </div>
