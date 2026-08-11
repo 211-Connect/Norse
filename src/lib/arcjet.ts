@@ -6,6 +6,7 @@ const log = createLogger('arcjet');
 
 const HEADER_DO_CONNECTING_IP = 'do-connecting-ip' as const;
 
+const MBOA_PROXY_IP = '13.86.38.95' as const;
 type ArcjetHeaders =
   Record<string, string | string[] | undefined> | Headers | undefined;
 
@@ -21,7 +22,7 @@ function getHeader(headers: ArcjetHeaders, name: string) {
 
 const aj = arcjet({
   key: process.env.ARCJET_KEY!,
-  proxies: [cloudflare()],
+  proxies: [cloudflare(), MBOA_PROXY_IP],
   rules: [
     detectBot({
       mode: 'LIVE',
