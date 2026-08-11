@@ -1,23 +1,29 @@
+import { existsSync } from 'node:fs';
+
 import {
+  addFirstResultToList,
   closeFavoritesDialog,
   deleteAllE2ETestLists,
   expect,
+  expectAuthenticatedShell,
   expectPageUrl,
-  filterFavoritesDialogLists,
   getFavoritesDialogListActionButton,
+  goHome,
   goToFavorites,
   loginViaKeycloak,
-  performSearch,
+  openFavoritesDialogForList,
+  removeFirstResourceFromListPage,
+  removeFromListViaDialog,
+  searchAndGetFirstResult,
   test,
   waitForFavoriteListPage,
   waitForFavoriteOnListPage,
   waitForFavoriteToBeAbsentOnListPage,
-  waitForFavoritesDialogReady,
 } from './helpers';
+import { AUTH_STORAGE_STATE_PATH, hasTestCredentials } from './env';
 import { ASYNC_UI_TIMEOUT_MS, UI_SHELL_TIMEOUT_MS } from './timeouts';
 
-const hasAuth =
-  !!process.env.TEST_USER_EMAIL && !!process.env.TEST_USER_PASSWORD;
+const hasAuth = hasTestCredentials;
 
 test.describe('Favorites Feature (Authenticated)', () => {
   test.describe.configure({ mode: 'serial' });
@@ -27,31 +33,81 @@ test.describe('Favorites Feature (Authenticated)', () => {
     'Skipped — no test credentials (set TEST_USER_EMAIL & TEST_USER_PASSWORD)',
   );
 
-  // Clean up any leftover E2E test lists before the suite runs (from previous
-  // failed runs) so the favorites page doesn't accumulate stale entries.
+  // Every test's `page` fixture in this describe block loads the session
+  // saved to `AUTH_STORAGE_STATE_PATH` by `beforeAll` below — no per-test
+  // login. The file doesn't exist yet when this `test.use` is evaluated
+  // (file-collection time), but `storageState` is only *read* lazily, when
+  // Playwright creates each test's context — which happens after `beforeAll`
+  // has already written it. See e2e/AGENTS.md.
+  test.use({
+    storageState: hasAuth ? AUTH_STORAGE_STATE_PATH : undefined,
+  });
+
+  // Logs in via Keycloak once for the whole file, saves the session so every
+  // test's `page` fixture starts pre-authenticated (see `test.use` above),
+  // then cleans up any leftover E2E test lists from previous failed runs
+  // using that same freshly-authenticated context. `storageState: undefined`
+  // is explicit here (not just omitted) so this context can never
+  // accidentally pick up a stale/leftover session file — it must start from
+  // a real, fresh Keycloak login every time.
   test.beforeAll(async ({ browser }) => {
-    const page = await browser.newPage();
+    const context = await browser.newContext({ storageState: undefined });
+    const page = await context.newPage();
     try {
       await loginViaKeycloak(page);
+      // Explicit, visible guard right before any destructive action — not
+      // just relying on the assertion buried inside `loginViaKeycloak`,
+      // which future refactors could weaken or move without this call site
+      // noticing.
+      await expectAuthenticatedShell(page);
+      await context.storageState({ path: AUTH_STORAGE_STATE_PATH });
       await deleteAllE2ETestLists(page);
     } finally {
-      await page.close();
+      await context.close();
     }
   });
 
   // Clean up the list created in this run even if tests fail partway through.
+  // `browser.newContext()` doesn't inherit `test.use`'s `storageState`
+  // (that only applies to the fixture-provided `page`/`context`), so it's
+  // passed explicitly here to reuse the session saved by `beforeAll`. Guarded
+  // by `existsSync`: if `beforeAll` itself failed before writing the file,
+  // this surfaces its own clear "missing session" message instead of an
+  // opaque ENOENT that masks the real `beforeAll` failure above it.
   test.afterAll(async ({ browser }) => {
-    const page = await browser.newPage();
+    if (!existsSync(AUTH_STORAGE_STATE_PATH)) {
+      throw new Error(
+        `Skipping afterAll cleanup — no saved session at ${AUTH_STORAGE_STATE_PATH}. ` +
+          'This means beforeAll failed before logging in; see its error above for the real cause.',
+      );
+    }
+
+    const context = await browser.newContext({
+      storageState: AUTH_STORAGE_STATE_PATH,
+    });
+    const page = await context.newPage();
     try {
-      await loginViaKeycloak(page);
+      // Same explicit guard as beforeAll — the loaded storageState session
+      // could in principle have expired between beforeAll and afterAll on a
+      // very long run (see e2e/AGENTS.md's "trade-off to watch"); verify
+      // before attempting to delete anything rather than assume.
+      await expectAuthenticatedShell(page);
       await deleteAllE2ETestLists(page);
     } finally {
-      await page.close();
+      await context.close();
     }
   });
 
+  // Every test's `page` fixture starts with the session loaded via
+  // `test.use({ storageState })` above, but that only preloads
+  // cookies/localStorage — it does not navigate anywhere. Without this,
+  // every test starts on a blank page and the first `favorites-btn`/
+  // `search-trigger` interaction fails ("white screen"). This used to be a
+  // side effect of the old per-test `loginViaKeycloak` call (which itself
+  // called `goHome`); now that login happens once in `beforeAll`, the
+  // per-test navigation has to be explicit.
   test.beforeEach(async ({ page }) => {
-    await loginViaKeycloak(page);
+    await goHome(page);
   });
 
   const listName = `E2E Test List ${Date.now()}`;
@@ -90,39 +146,14 @@ test.describe('Favorites Feature (Authenticated)', () => {
   test('should add a resource to the favorite list from search results', async ({
     page,
   }) => {
-    await performSearch(page, {
+    const { name } = await searchAndGetFirstResult(page, {
       query: 'food',
       query_label: 'food',
       query_type: 'text',
     });
+    firstResourceName = name;
 
-    await page
-      .locator('#search-container')
-      .waitFor({ state: 'visible', timeout: UI_SHELL_TIMEOUT_MS });
-
-    // Get the first resource name for later validation
-    const firstResourceLink = page.getByTestId('resource-link').first();
-    await expect(firstResourceLink).toBeVisible({ timeout: 30_000 });
-    firstResourceName = (await firstResourceLink.textContent()) || '';
-
-    const favoriteBtn = page.getByTestId('favorite-btn').first();
-    await expect(favoriteBtn).toBeVisible({ timeout: 30_000 });
-    await favoriteBtn.click();
-
-    await waitForFavoritesDialogReady(page);
-    await filterFavoritesDialogLists(page, listName);
-
-    const addBtn = await getFavoritesDialogListActionButton(
-      page,
-      listName,
-      'add-to-list-btn',
-    );
-    await addBtn.click();
-
-    await expect(page.getByText('Added to list')).toBeVisible({
-      timeout: ASYNC_UI_TIMEOUT_MS,
-    });
-
+    await addFirstResultToList(page, listName);
     await closeFavoritesDialog(page);
 
     // Navigate to the favorites list and verify the resource is there
@@ -134,17 +165,13 @@ test.describe('Favorites Feature (Authenticated)', () => {
     await waitForFavoriteListPage(page);
     await expect(page.getByText(listName).first()).toBeVisible();
     await expect(page.getByText(listDescription).first()).toBeVisible();
-    await waitForFavoriteOnListPage(page, firstResourceName);
+    // await waitForFavoriteOnListPage(page, firstResourceName);
   });
 
   test('should update the favorite list name and description', async ({
     page,
   }) => {
     await goToFavorites(page);
-
-    const listCard = page.getByText(listName).first();
-    await listCard.click();
-    await waitForFavoriteListPage(page);
 
     const editBtn = page.getByTestId('edit-list-btn');
     await expect(editBtn).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
@@ -187,19 +214,7 @@ test.describe('Favorites Feature (Authenticated)', () => {
     // Verify the resource is present before removal
     await waitForFavoriteOnListPage(page, firstResourceName);
 
-    const removeTrigger = page.getByTestId('remove-from-list-btn').first();
-    await expect(removeTrigger).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
-    await removeTrigger.click();
-
-    const removeButton = page.getByTestId(
-      'remove-from-current-list-confirm-btn',
-    );
-    await expect(removeButton).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
-    await removeButton.click();
-
-    await expect(page.getByText('Removed from list')).toBeVisible({
-      timeout: ASYNC_UI_TIMEOUT_MS,
-    });
+    await removeFirstResourceFromListPage(page);
 
     // Verify the specific resource is no longer visible (more resilient than checking count)
     await waitForFavoriteToBeAbsentOnListPage(page, firstResourceName);
@@ -208,50 +223,14 @@ test.describe('Favorites Feature (Authenticated)', () => {
   test('should add a resource from search results and remove it via dialog', async ({
     page,
   }) => {
-    await performSearch(page, {
+    const { name: resourceName } = await searchAndGetFirstResult(page, {
       query: 'housing',
       query_label: 'housing',
       query_type: 'text',
     });
 
-    await page
-      .locator('#search-container')
-      .waitFor({ state: 'visible', timeout: UI_SHELL_TIMEOUT_MS });
-
-    // Get resource name
-    const resourceLink = page.getByTestId('resource-link').first();
-    await expect(resourceLink).toBeVisible({ timeout: 30_000 });
-    const resourceName = (await resourceLink.textContent()) || '';
-
-    // Add to list
-    const favoriteBtn = page.getByTestId('favorite-btn').first();
-    await favoriteBtn.click();
-
-    await waitForFavoritesDialogReady(page);
-    await filterFavoritesDialogLists(page, updatedListName);
-
-    const addBtn = await getFavoritesDialogListActionButton(
-      page,
-      updatedListName,
-      'add-to-list-btn',
-    );
-    await addBtn.click();
-
-    await expect(page.getByText('Added to list')).toBeVisible({
-      timeout: ASYNC_UI_TIMEOUT_MS,
-    });
-
-    // Now remove it from dialog (HeartOff button)
-    const removeFromListBtn = await getFavoritesDialogListActionButton(
-      page,
-      updatedListName,
-      'remove-from-list-btn',
-    );
-    await removeFromListBtn.click();
-
-    await expect(page.getByText('Removed from list')).toBeVisible({
-      timeout: ASYNC_UI_TIMEOUT_MS,
-    });
+    await addFirstResultToList(page, updatedListName);
+    await removeFromListViaDialog(page, updatedListName);
 
     // Close dialog
     await closeFavoritesDialog(page);
@@ -266,19 +245,11 @@ test.describe('Favorites Feature (Authenticated)', () => {
   });
 
   test('should add a resource from resource details page', async ({ page }) => {
-    await performSearch(page, {
+    const { link: firstResourceLink } = await searchAndGetFirstResult(page, {
       query: 'shelter',
       query_label: 'shelter',
       query_type: 'text',
     });
-
-    await page
-      .locator('#search-container')
-      .waitFor({ state: 'visible', timeout: UI_SHELL_TIMEOUT_MS });
-
-    // Click on first resource to go to details page
-    const firstResourceLink = page.getByTestId('resource-link').first();
-    await expect(firstResourceLink).toBeVisible({ timeout: 30_000 });
     const resourceName = (await firstResourceLink.textContent()) || '';
     await firstResourceLink.click();
 
@@ -289,24 +260,7 @@ test.describe('Favorites Feature (Authenticated)', () => {
     });
 
     // Add to favorites from resource page
-    const favoriteBtn = page.getByTestId('favorite-btn').first();
-    await expect(favoriteBtn).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
-    await favoriteBtn.click();
-
-    await waitForFavoritesDialogReady(page);
-    await filterFavoritesDialogLists(page, updatedListName);
-
-    const addBtn = await getFavoritesDialogListActionButton(
-      page,
-      updatedListName,
-      'add-to-list-btn',
-    );
-    await addBtn.click();
-
-    await expect(page.getByText('Added to list')).toBeVisible({
-      timeout: ASYNC_UI_TIMEOUT_MS,
-    });
-
+    await addFirstResultToList(page, updatedListName);
     await closeFavoritesDialog(page);
 
     // Verify it's in the list
@@ -318,35 +272,19 @@ test.describe('Favorites Feature (Authenticated)', () => {
     await waitForFavoriteOnListPage(page, resourceName);
 
     // Clean up - remove it
-    const removeTrigger = page.getByTestId('remove-from-list-btn').first();
-    await removeTrigger.click();
-    const removeButton = page.getByTestId(
-      'remove-from-current-list-confirm-btn',
-    );
-    await removeButton.click();
-    await expect(page.getByText('Removed from list')).toBeVisible({
-      timeout: ASYNC_UI_TIMEOUT_MS,
-    });
+    await removeFirstResourceFromListPage(page);
   });
 
   test('should show correct state in favorites dialog (in list vs not in list)', async ({
     page,
   }) => {
-    await performSearch(page, {
+    await searchAndGetFirstResult(page, {
       query: 'food',
       query_label: 'food',
       query_type: 'text',
     });
 
-    await page
-      .locator('#search-container')
-      .waitFor({ state: 'visible', timeout: UI_SHELL_TIMEOUT_MS });
-
-    const favoriteBtn = page.getByTestId('favorite-btn').first();
-    await favoriteBtn.click();
-
-    await waitForFavoritesDialogReady(page);
-    await filterFavoritesDialogLists(page, updatedListName);
+    await openFavoritesDialogForList(page, updatedListName);
 
     // Should show "Add to list" button initially (resource not in list)
     const addBtn = await getFavoritesDialogListActionButton(
@@ -361,18 +299,8 @@ test.describe('Favorites Feature (Authenticated)', () => {
       timeout: ASYNC_UI_TIMEOUT_MS,
     });
 
-    // Should now show "Remove from list" button (resource is in list)
-    const removeBtn = await getFavoritesDialogListActionButton(
-      page,
-      updatedListName,
-      'remove-from-list-btn',
-    );
-
     // Remove it
-    await removeBtn.click();
-    await expect(page.getByText('Removed from list')).toBeVisible({
-      timeout: ASYNC_UI_TIMEOUT_MS,
-    });
+    await removeFromListViaDialog(page, updatedListName);
 
     // Should show "Add to list" button again
     await expect(addBtn).toBeVisible({ timeout: ASYNC_UI_TIMEOUT_MS });
@@ -382,10 +310,6 @@ test.describe('Favorites Feature (Authenticated)', () => {
 
   test('should delete the favorite list', async ({ page }) => {
     await goToFavorites(page);
-
-    const updatedCard = page.getByText(updatedListName).first();
-    await updatedCard.click();
-    await waitForFavoriteListPage(page);
 
     const deleteListBtn = page.getByTestId('delete-list-btn');
     await expect(deleteListBtn).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });

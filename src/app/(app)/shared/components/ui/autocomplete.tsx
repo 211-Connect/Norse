@@ -77,6 +77,10 @@ export type AutocompleteProps = {
   defaultOpen?: boolean;
   clearButtonLabel?: string;
   positionBelowElementId?: string;
+  /** data-testid applied to the outer wrapper so e2e tests can scope the
+   *  input, its clear button, and its autocomplete listbox together without
+   *  relying on DOM-parent traversal (e.g. `page.getByTestId(wrapperTestId)`). */
+  wrapperTestId?: string;
   /** Treat a committed (selected) value as an indivisible block. Any printable
    *  keypress replaces the whole block and starts a fresh search. */
   blockMode?: boolean;
@@ -129,6 +133,7 @@ export function Autocomplete(props: AutocompleteProps) {
     defaultOpen = false,
     clearButtonLabel = 'Clear',
     positionBelowElementId,
+    wrapperTestId,
     blockMode = false,
     onDecommit,
     onEscape,
@@ -707,6 +712,7 @@ export function Autocomplete(props: AutocompleteProps) {
     <div
       className={cn('relative flex items-center', className)}
       ref={wrapperElementRef}
+      data-testid={wrapperTestId}
     >
       <div className="relative w-full rounded-lg">
         <label

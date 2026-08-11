@@ -1,5 +1,7 @@
 # Agents
 
+See [e2e/AGENTS.md](/e2e/AGENTS.md) for Playwright e2e test conventions (waiting rules, selectors, helper module map).
+
 ## Payload Feature Workflow
 
 When working on a Payload feature, follow this workflow:

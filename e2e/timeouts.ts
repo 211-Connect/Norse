@@ -111,6 +111,18 @@ export const FAVORITES_PERSISTENCE_TIMEOUT_MS = parseEnvMs(
 );
 
 /**
+ * Short existence probe: "is this element present right now?" checks that
+ * should fail fast rather than wait a full UI-shell budget (e.g. looping over
+ * cleanup cards that may or may not exist).
+ *
+ * @see E2E_PRESENCE_PROBE_TIMEOUT_MS
+ */
+export const PRESENCE_PROBE_TIMEOUT_MS = parseEnvMs(
+  process.env.E2E_PRESENCE_PROBE_TIMEOUT_MS,
+  3_000,
+);
+
+/**
  * Playwright `expect` (default) and `actionTimeout` (clicks, fill, type).
  * Keep aligned with `UI_SHELL` / `SEARCH_NAV` for one logical “step”.
  *
