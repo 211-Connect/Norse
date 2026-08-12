@@ -26,21 +26,6 @@ export enum ResourceEntry {
 
 const RESOURCE_ENTRY_VALUES = new Set<string>(Object.values(ResourceEntry));
 
-/**
- * Coerces a raw `?entry=` query param value (already known to originate
- * from the current search context) into a `ResourceEntry`, falling back to
- * `fallback` for missing/unrecognized values.
- */
-export function coerceResourceEntry(
-  rawEntry: string | undefined | null,
-  fallback: ResourceEntry,
-): ResourceEntry {
-  if (rawEntry != null && RESOURCE_ENTRY_VALUES.has(rawEntry)) {
-    return rawEntry as ResourceEntry;
-  }
-  return fallback;
-}
-
 export function resolveResourceEntry(
   rawEntry: string | undefined | null,
 ): ResourceEntry {
@@ -100,13 +85,56 @@ export function consumePendingResourceEntry(
   }
 }
 
+type PendingUmamiEvent = {
+  event: UmamiEvent;
+  payload?: Record<string, string>;
+};
+
+// Caps how many events we'll buffer while waiting for the Umami script to
+// load, so a permanently-blocked/failed script (ad blocker, ITP, missing
+// config) can't leak memory in a long-lived tab.
+const MAX_PENDING_UMAMI_EVENTS = 50;
+
+const pendingUmamiEvents: PendingUmamiEvent[] = [];
+
+/**
+ * Flushes any events buffered by `trackUmamiEvent` while `window.umami`
+ * wasn't defined yet. Call this from the Umami `<Script>`'s `onLoad`
+ * handler.
+ *
+ * Without this, `trackUmamiEvent` calls made very early (e.g.
+ * `useResourceViewTracking`'s mount effect on a cold/direct page load) can
+ * race ahead of the async-loaded Umami script and be silently dropped —
+ * unlike GTM/Matomo, whose `dataLayer`/`_mtm` arrays exist synchronously and
+ * naturally buffer early calls.
+ */
+export function flushPendingUmamiEvents(): void {
+  if (typeof window === 'undefined' || !window.umami) return;
+
+  while (pendingUmamiEvents.length > 0) {
+    const next = pendingUmamiEvents.shift();
+    if (next) {
+      window.umami.track(next.event, next.payload);
+    }
+  }
+}
+
 export function trackUmamiEvent(
   event: UmamiEvent,
   data?: Record<string, string>,
   sessionId?: string,
 ): void {
-  if (typeof window !== 'undefined' && window.umami) {
-    const payload = sessionId ? { ...data, session_id: sessionId } : data;
+  if (typeof window === 'undefined') return;
+
+  const payload = sessionId ? { ...data, session_id: sessionId } : data;
+
+  if (window.umami) {
     window.umami.track(event, payload);
+    return;
   }
+
+  if (pendingUmamiEvents.length >= MAX_PENDING_UMAMI_EVENTS) {
+    pendingUmamiEvents.shift();
+  }
+  pendingUmamiEvents.push({ event, payload });
 }

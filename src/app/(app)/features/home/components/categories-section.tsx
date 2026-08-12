@@ -1,5 +1,6 @@
 'use client';
 
+import { useSetAtom } from 'jotai';
 import { ChevronLeft, ExternalLink } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -12,6 +13,7 @@ import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { useTopics } from '@/app/(app)/shared/hooks/use-topics';
 import { NEW_TAB_WARNING } from '@/app/(app)/shared/lib/constants';
 import { cn } from '@/app/(app)/shared/lib/utils';
+import { searchEntryAtom } from '@/app/(app)/shared/store/search';
 import { Topic } from '@/types/topics';
 
 import { ResourceEntry } from '../../../shared/lib/umami';
@@ -28,6 +30,7 @@ const Category = ({
   topic: { name, image, subtopics, href, target },
 }: Props) => {
   const sizeOfIcon = iconSize === 'small' ? 40 : 64;
+  const setSearchEntry = useSetAtom(searchEntryAtom);
 
   if (subtopics && subtopics.length > 0) {
     return (
@@ -73,8 +76,13 @@ const Category = ({
                             el.name,
                           )}&query_type=${encodeURIComponent(
                             el.queryType ?? '',
-                          )}&entry=${ResourceEntry.TopicCard}`
+                          )}`
                     }`}
+                    onClick={() => {
+                      if (!el.href) {
+                        setSearchEntry(ResourceEntry.TopicCard);
+                      }
+                    }}
                     prefetch={false}
                     target={el.target}
                     aria-label={

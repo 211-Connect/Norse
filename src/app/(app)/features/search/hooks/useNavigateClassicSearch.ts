@@ -1,12 +1,17 @@
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { persistSearchDistancePreference } from '@/app/(app)/shared/lib/search-distance-preference';
-import { trackUmamiEvent, UmamiEvent } from '@/app/(app)/shared/lib/umami';
+import {
+  trackUmamiEvent,
+  UmamiEvent,
+  ResourceEntry,
+} from '@/app/(app)/shared/lib/umami';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
 import { buildSearchUrl } from '../utils/buildSearchUrl';
 import {
   searchAtom,
   searchDistanceAtom,
+  searchEntryAtom,
 } from '@/app/(app)/shared/store/search';
 import { useAtomValue, useSetAtom } from 'jotai';
 
@@ -23,6 +28,7 @@ export const useNavigateClassicSearch = ({
   const searchParams = useSearchParams();
   const search = useAtomValue(searchAtom);
   const setSearch = useSetAtom(searchAtom);
+  const setSearchEntry = useSetAtom(searchEntryAtom);
   const distance = useAtomValue(searchDistanceAtom);
 
   return useCallback(
@@ -79,6 +85,7 @@ export const useNavigateClassicSearch = ({
         }
 
         setDialogOpen?.(false);
+        setSearchEntry(ResourceEntry.SearchCard);
         router.push(url);
 
         setSearch((prev) => ({
@@ -96,6 +103,7 @@ export const useNavigateClassicSearch = ({
       searchParams,
       setDialogOpen,
       setSearch,
+      setSearchEntry,
       startTransition,
     ],
   );

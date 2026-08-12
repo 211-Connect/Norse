@@ -1,5 +1,4 @@
 import { deriveQueryType } from '@/app/(app)/shared/lib/search-utils';
-import { ResourceEntry } from '@/app/(app)/shared/lib/umami';
 import { AiClassificationScenario } from '@/app/(app)/shared/services/ai-classification-search-service';
 import type { AiPredictOption } from '@/app/(app)/shared/services/ai-classification-search-service';
 import { parseCommaSeparatedValues } from '@/app/(app)/shared/utils/parseCommaSeparatedValues';
@@ -62,7 +61,6 @@ export function buildSearchUrl({
   }
 
   params.set('query_type', queryType);
-  params.set('entry', ResourceEntry.SearchCard);
 
   const normalizedTaxonomies = normalizeHsisTaxonomies(taxonomies);
   if (normalizedTaxonomies.length > 0) {

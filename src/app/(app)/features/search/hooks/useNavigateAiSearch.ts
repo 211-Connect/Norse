@@ -1,13 +1,15 @@
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { persistSearchDistancePreference } from '@/app/(app)/shared/lib/search-distance-preference';
+import { ResourceEntry } from '@/app/(app)/shared/lib/umami';
 import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
 import { buildSearchUrl } from '../utils/buildSearchUrl';
 import {
   searchAtom,
   searchDistanceAtom,
+  searchEntryAtom,
 } from '@/app/(app)/shared/store/search';
-import { useAtomValue } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { AiClassificationScenario } from '@/app/(app)/shared/services/ai-classification-search-service';
 
 type Args = {
@@ -23,6 +25,7 @@ export const useNavigateAiSearch = ({
   const router = useRouter();
   const search = useAtomValue(searchAtom);
   const distance = useAtomValue(searchDistanceAtom);
+  const setSearchEntry = useSetAtom(searchEntryAtom);
 
   return useCallback(
     ({
@@ -49,6 +52,7 @@ export const useNavigateAiSearch = ({
       persistSearchDistancePreference(distance);
       startTransition(() => {
         setDialogOpen?.(false);
+        setSearchEntry(ResourceEntry.SearchCard);
         router.push(url);
       });
 
@@ -62,6 +66,7 @@ export const useNavigateAiSearch = ({
       search.searchTerm,
       appConfig.search.searchEngine,
       setDialogOpen,
+      setSearchEntry,
       startTransition,
     ],
   );
