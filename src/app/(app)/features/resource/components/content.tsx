@@ -2,7 +2,6 @@
 
 import { useCallback } from 'react';
 
-import { ResourceEntry } from '@/app/(app)/shared/lib/umami';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { getResource } from '@/app/(app)/shared/services/resource-service';
 import { fontSans } from '@/app/(app)/shared/styles/fonts';
@@ -17,7 +16,6 @@ import { Navigation } from './navigation';
 type ResourcePageContentProps = {
   resource: Resource;
   layout: AppConfig['resource']['layout'];
-  entry?: ResourceEntry;
   resourceId: string;
   tenantId: string;
   locale: string;
@@ -26,7 +24,6 @@ type ResourcePageContentProps = {
 export const ResourcePageContent = ({
   resource,
   layout,
-  entry,
   resourceId,
   tenantId,
 }: ResourcePageContentProps) => {
@@ -48,7 +45,7 @@ export const ResourcePageContent = ({
     [resource, tenantId],
   );
 
-  useResourceViewTracking({ entry, resourceId, tenantId });
+  useResourceViewTracking({ resourceId, tenantId });
 
   const pageHeadingText =
     resource.name?.trim() || resource.serviceName?.trim() || 'Resource details';

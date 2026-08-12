@@ -97,17 +97,6 @@ const MAX_PENDING_UMAMI_EVENTS = 50;
 
 const pendingUmamiEvents: PendingUmamiEvent[] = [];
 
-/**
- * Flushes any events buffered by `trackUmamiEvent` while `window.umami`
- * wasn't defined yet. Call this from the Umami `<Script>`'s `onLoad`
- * handler.
- *
- * Without this, `trackUmamiEvent` calls made very early (e.g.
- * `useResourceViewTracking`'s mount effect on a cold/direct page load) can
- * race ahead of the async-loaded Umami script and be silently dropped —
- * unlike GTM/Matomo, whose `dataLayer`/`_mtm` arrays exist synchronously and
- * naturally buffer early calls.
- */
 export function flushPendingUmamiEvents(): void {
   if (typeof window === 'undefined' || !window.umami) return;
 
