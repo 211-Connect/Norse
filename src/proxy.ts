@@ -336,6 +336,19 @@ export async function proxy(request: NextRequest) {
     locales.push(defaultLocale);
   }
 
+  const rdwrIp = request.headers.get('x-rdwr-ip');
+  if (rdwrIp) {
+    const existingXff = request.headers.get('x-forwarded-for');
+    request.headers.set(
+      'x-forwarded-for',
+      existingXff ? `${rdwrIp}, ${existingXff}` : rdwrIp,
+    );
+    edgeLog('debug', 'rdwr_ip_xff_rewritten', {
+      rdwrIp,
+      host,
+    });
+  }
+
   const url = request.nextUrl.clone();
   const { pathname } = url;
 
