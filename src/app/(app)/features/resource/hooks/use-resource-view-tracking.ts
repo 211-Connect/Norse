@@ -10,24 +10,11 @@ import {
 } from '@/app/(app)/shared/lib/umami';
 
 interface UseResourceViewTrackingArgs {
-  entry?: ResourceEntry;
   resourceId: string;
   tenantId: string;
 }
 
-/**
- * Fires the `ResourceViewed` Umami event exactly once per mount of the
- * resource page.
- *
- * After the event fires, the `entry` query param (if present, e.g. from a
- * legacy or external link) is stripped from the URL via
- * `window.history.replaceState` so that bookmarks, shares, reloads, and
- * back/forward navigation don't keep re-classifying this page as the same
- * entry point. We deliberately avoid `router.replace` here because it would
- * trigger a server re-render of this dynamic route.
- */
 export function useResourceViewTracking({
-  entry,
   resourceId,
   tenantId,
 }: UseResourceViewTrackingArgs): void {
@@ -37,13 +24,8 @@ export function useResourceViewTracking({
     if (firedRef.current) return;
     firedRef.current = true;
 
-    const resolvedEntry =
-      entry ??
-      consumePendingResourceEntry(resourceId) ??
-      ResourceEntry.DeepLink;
-
     trackUmamiEvent(UmamiEvent.ResourceViewed, {
-      entry: resolvedEntry,
+      entry: consumePendingResourceEntry(resourceId) ?? ResourceEntry.DeepLink,
       resourceId,
       tenantId,
     });
@@ -60,5 +42,5 @@ export function useResourceViewTracking({
     } catch {
       // best-effort URL cleanup; never block analytics on URL parsing errors
     }
-  }, [entry, resourceId, tenantId]);
+  }, [resourceId, tenantId]);
 }

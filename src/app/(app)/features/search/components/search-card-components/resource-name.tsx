@@ -16,12 +16,6 @@ export function ResourceNameComponent({ result }: SearchCardComponentProps) {
   const name = result.name || t('name_unavailable', { ns: 'page-search' });
   const entry = useResourceCardEntry();
 
-  // `entry` is intentionally not appended to the href: a non-routing query
-  // string on a prefetchable `/search/{id}` link causes Next.js's Segment
-  // Cache to create an extra prefetch request per link (see
-  // docs/agents/prefetch-href-search-params-cost.md). It's instead recorded
-  // via `setPendingResourceEntry` on click and read back on the destination
-  // page.
   const url = withOptionalTrailingSlash(`/search/${result.id}`);
 
   // Render RemoveFromFavoriteListButton when viewing a specific favorite list

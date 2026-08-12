@@ -79,9 +79,7 @@ const Category = ({
                           )}`
                     }`}
                     onClick={() => {
-                      if (!el.href) {
-                        setSearchEntry(ResourceEntry.TopicCard);
-                      }
+                      setSearchEntry(ResourceEntry.TopicCard);
                     }}
                     prefetch={false}
                     target={el.target}
