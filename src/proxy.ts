@@ -125,22 +125,27 @@ const CDN_CACHE_POLICIES = {
   legal: {
     pattern: /\/legal\//,
     cacheControl: `public, max-age=${ONE_HOUR}, s-maxage=${ONE_DAY}, stale-while-revalidate=${12 * ONE_HOUR}`,
+    shared: true,
   },
   home: {
     pattern: /^\/[a-z]{2}(\/)?$/,
     cacheControl: `public, max-age=${10 * ONE_MINUTE}, s-maxage=${30 * ONE_MINUTE}, stale-while-revalidate=${10 * ONE_MINUTE}`,
+    shared: true,
   },
   topics: {
     pattern: /\/topics(\/)?$/,
     cacheControl: `public, max-age=${30 * ONE_MINUTE}, s-maxage=${ONE_HOUR}, stale-while-revalidate=${30 * ONE_MINUTE}`,
+    shared: true,
   },
   resourceDetail: {
     pattern: /\/search\/[^/?]+$/,
-    cacheControl: `public, max-age=${30 * ONE_MINUTE}, s-maxage=${ONE_HOUR}, stale-while-revalidate=${10 * ONE_MINUTE}`,
+    cacheControl: `private, max-age=${30 * ONE_MINUTE}, stale-while-revalidate=${10 * ONE_MINUTE}`,
+    shared: false,
   },
   detailsOriginal: {
     pattern: /\/details\/original/,
-    cacheControl: `public, max-age=${30 * ONE_MINUTE}, s-maxage=${ONE_HOUR}, stale-while-revalidate=${10 * ONE_MINUTE}`,
+    cacheControl: `private, max-age=${30 * ONE_MINUTE}, stale-while-revalidate=${10 * ONE_MINUTE}`,
+    shared: false,
   },
 } as const;
 
@@ -155,7 +160,9 @@ function cacheControlMiddleware(response: NextResponse, pathname: string) {
   for (const [_name, policy] of Object.entries(CDN_CACHE_POLICIES)) {
     if (policy.pattern.test(pathname)) {
       response.headers.set('Cache-Control', policy.cacheControl);
-      response.headers.set('Vary', 'Cookie');
+      if (policy.shared) {
+        response.headers.set('Vary', 'Cookie');
+      }
       return;
     }
   }
