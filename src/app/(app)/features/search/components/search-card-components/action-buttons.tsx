@@ -10,7 +10,7 @@ import { Link } from '@/app/(app)/shared/components/link';
 import { ReferralButton } from '@/app/(app)/shared/components/referral-button';
 import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
-import { ResourceEntry } from '@/app/(app)/shared/lib/umami';
+import { ResourceEntry, coerceResourceEntry, setPendingResourceEntry } from '@/app/(app)/shared/lib/umami';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { searchCoordinatesAtom } from '@/app/(app)/shared/store/search';
 
@@ -21,7 +21,10 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
   const appConfig = useAppConfig();
   const searchCoords = useAtomValue(searchCoordinatesAtom);
   const searchParams = useSearchParams();
-  const entry = searchParams.get('entry') ?? ResourceEntry.SearchCard;
+  const entry = coerceResourceEntry(
+    searchParams.get('entry'),
+    ResourceEntry.SearchCard,
+  );
   const viewDetailsText =
     appConfig.search.texts?.viewDetailsText || t('call_to_action.view_details');
   const viewDetailsButtonVariant =
@@ -115,7 +118,8 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
               variant: viewDetailsButtonVariant,
             }),
           )}
-          href={`/search/${result.id}?entry=${entry}`}
+          href={`/search/${result.id}`}
+          onClick={() => setPendingResourceEntry(result.id, entry)}
           aria-label={`${viewDetailsText}: ${result.name}`}
           prefetch={false}
         >

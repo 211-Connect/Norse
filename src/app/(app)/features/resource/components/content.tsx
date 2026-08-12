@@ -17,7 +17,7 @@ import { Navigation } from './navigation';
 type ResourcePageContentProps = {
   resource: Resource;
   layout: AppConfig['resource']['layout'];
-  entry: ResourceEntry;
+  entry?: ResourceEntry;
   resourceId: string;
   tenantId: string;
   locale: string;
