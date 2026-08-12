@@ -30,6 +30,7 @@ export function ResourceNameComponent({ result }: SearchCardComponentProps) {
         variant="heading"
         size="md"
         url={url}
+        prefetch={false}
         data-testid="resource-link"
         className="min-w-0 flex-1 self-center"
       >

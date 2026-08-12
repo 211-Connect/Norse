@@ -11,7 +11,7 @@ import { ReferralButton } from '@/app/(app)/shared/components/referral-button';
 import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { ResourceEntry } from '@/app/(app)/shared/lib/umami';
-import { cn } from '@/app/(app)/shared/lib/utils';
+import { cn, withOptionalTrailingSlash } from '@/app/(app)/shared/lib/utils';
 import { searchCoordinatesAtom } from '@/app/(app)/shared/store/search';
 
 import { SearchCardComponentProps } from './types';
@@ -115,8 +115,9 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
               variant: viewDetailsButtonVariant,
             }),
           )}
-          href={`/search/${result.id}?entry=${entry}`}
+          href={`${withOptionalTrailingSlash(`/search/${result.id}`)}?entry=${entry}`}
           aria-label={`${viewDetailsText}: ${result.name}`}
+          prefetch={false}
         >
           {viewDetailsText}
         </Link>

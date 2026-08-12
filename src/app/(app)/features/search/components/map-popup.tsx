@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Badges } from '@/app/(app)/shared/components/badges';
 import { Link } from '@/app/(app)/shared/components/link';
 import { Card, CardContent } from '@/app/(app)/shared/components/ui/card';
+import { withOptionalTrailingSlash } from '@/app/(app)/shared/lib/utils';
 
 interface MapPopupProps {
   id: string;
@@ -40,9 +41,10 @@ export function MapPopup({
           </div>
         )}
         <Link
-          href={`/search/${id}`}
+          href={withOptionalTrailingSlash(`/search/${id}`)}
           aria-label={`${t('learn_more', { ns: 'page-search' })}: ${name}`}
           className="text-primary py-[5px] text-center text-sm font-medium hover:underline"
+          prefetch={false}
         >
           {t('learn_more', { ns: 'page-search' })}
           <ChevronRight className="ml-1 inline-block size-4" />
