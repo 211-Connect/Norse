@@ -41,7 +41,7 @@ export function MapPopup({
           </div>
         )}
         <Link
-          href={withOptionalTrailingSlash(`/search/${id}`)}
+          href={`/search/${id}`}
           aria-label={`${t('learn_more', { ns: 'page-search' })}: ${name}`}
           className="text-primary py-[5px] text-center text-sm font-medium hover:underline"
           prefetch={false}

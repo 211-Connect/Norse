@@ -115,7 +115,7 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
               variant: viewDetailsButtonVariant,
             }),
           )}
-          href={`${withOptionalTrailingSlash(`/search/${result.id}`)}?entry=${entry}`}
+          href={`/search/${result.id}?entry=${entry}`}
           aria-label={`${viewDetailsText}: ${result.name}`}
           prefetch={false}
         >
