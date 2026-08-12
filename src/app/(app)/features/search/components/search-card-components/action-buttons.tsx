@@ -117,6 +117,7 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
           )}
           href={`/search/${result.id}?entry=${entry}`}
           aria-label={`${viewDetailsText}: ${result.name}`}
+          prefetch={false}
         >
           {viewDetailsText}
         </Link>
