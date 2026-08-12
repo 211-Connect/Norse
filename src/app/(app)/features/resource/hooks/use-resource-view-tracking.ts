@@ -10,15 +10,6 @@ import {
 } from '@/app/(app)/shared/lib/umami';
 
 interface UseResourceViewTrackingArgs {
-  /**
-   * Optional explicit entry value, for callers that resolve it server-side
-   * from a query param (e.g. external/deep-link routes that legitimately
-   * accept `?entry=` since they aren't reached via a prefetchable in-app
-   * `<Link>`). When omitted, the hook resolves `entry` itself from the
-   * pending value recorded by `setPendingResourceEntry` (see
-   * `docs/agents/prefetch-href-search-params-cost.md`), falling back to
-   * `ResourceEntry.DeepLink` if nothing was recorded.
-   */
   entry?: ResourceEntry;
   resourceId: string;
   tenantId: string;
@@ -47,7 +38,9 @@ export function useResourceViewTracking({
     firedRef.current = true;
 
     const resolvedEntry =
-      entry ?? consumePendingResourceEntry(resourceId) ?? ResourceEntry.DeepLink;
+      entry ??
+      consumePendingResourceEntry(resourceId) ??
+      ResourceEntry.DeepLink;
 
     trackUmamiEvent(UmamiEvent.ResourceViewed, {
       entry: resolvedEntry,

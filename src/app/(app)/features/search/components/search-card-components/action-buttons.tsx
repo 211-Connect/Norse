@@ -10,7 +10,11 @@ import { Link } from '@/app/(app)/shared/components/link';
 import { ReferralButton } from '@/app/(app)/shared/components/referral-button';
 import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
-import { ResourceEntry, coerceResourceEntry, setPendingResourceEntry } from '@/app/(app)/shared/lib/umami';
+import {
+  ResourceEntry,
+  coerceResourceEntry,
+  setPendingResourceEntry,
+} from '@/app/(app)/shared/lib/umami';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { searchCoordinatesAtom } from '@/app/(app)/shared/store/search';
 
