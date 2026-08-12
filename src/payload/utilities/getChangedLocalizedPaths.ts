@@ -42,7 +42,6 @@ export const AUTO_TRANSLATED_STRING_PATHS = [
   'search.texts.queryInputPlaceholder',
   'search.texts.locationInputPlaceholder',
   'search.texts.suggestionHeaders.suggestions',
-  'search.texts.suggestionHeaders.categories',
   'search.texts.suggestionHeaders.taxonomies',
   'search.texts.viewDetailsText',
   'search.texts.noResultsFallbackText',

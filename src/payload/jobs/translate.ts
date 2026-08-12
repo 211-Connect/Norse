@@ -35,11 +35,7 @@ const SEARCH_TEXT_FIELDS = [
   'noResultsFallbackText',
 ] as const;
 
-const SEARCH_SUGGESTION_HEADER_FIELDS = [
-  'suggestions',
-  'categories',
-  'taxonomies',
-] as const;
+const SEARCH_SUGGESTION_HEADER_FIELDS = ['suggestions', 'taxonomies'] as const;
 
 const HEADER_TEXT_FIELDS = [
   'favoritesButtonLabel',
@@ -303,6 +299,20 @@ export const translate: TaskConfig<'translate'> = {
         ) {
           fieldsToTranslate.push({
             path: 'topics.customHeading',
+            value: englishTopics.customHeading || '',
+            locale: targetLocale,
+          });
+        }
+
+        if (
+          shouldTranslate(
+            englishTopics.customHeading,
+            targetDoc.search?.texts?.suggestionHeaders?.categories,
+            'topics.customHeading',
+          )
+        ) {
+          fieldsToTranslate.push({
+            path: 'search.texts.suggestionHeaders.categories',
             value: englishTopics.customHeading || '',
             locale: targetLocale,
           });
@@ -779,6 +789,35 @@ export const translate: TaskConfig<'translate'> = {
           updateData.topics!.customHeading = englishTopics?.customHeading;
         }
 
+        if (translationsByPath['search.texts.suggestionHeaders.categories']) {
+          updateData.search = {
+            ...targetDoc.search,
+            texts: {
+              ...targetDoc.search?.texts,
+              suggestionHeaders: {
+                ...targetDoc.search?.texts?.suggestionHeaders,
+                categories:
+                  translationsByPath[
+                    'search.texts.suggestionHeaders.categories'
+                  ],
+              },
+            },
+          };
+        } else if (
+          isEmpty(targetDoc.search?.texts?.suggestionHeaders?.categories)
+        ) {
+          updateData.search = {
+            ...targetDoc.search,
+            texts: {
+              ...targetDoc.search?.texts,
+              suggestionHeaders: {
+                ...targetDoc.search?.texts?.suggestionHeaders,
+                categories: englishTopics?.customHeading,
+              },
+            },
+          };
+        }
+
         // Reconstruct Lists ensuring structure matches Source
         if (englishTopics?.list) {
           const targetMap = new Map<
@@ -861,11 +900,12 @@ export const translate: TaskConfig<'translate'> = {
 
         // Search Texts
         updateData.search = {
-          ...targetDoc.search,
+          ...(updateData.search ?? targetDoc.search),
           texts: {
-            ...targetDoc.search?.texts,
+            ...(updateData.search?.texts ?? targetDoc.search?.texts),
             suggestionHeaders: {
-              ...targetDoc.search?.texts?.suggestionHeaders,
+              ...(updateData.search?.texts?.suggestionHeaders ??
+                targetDoc.search?.texts?.suggestionHeaders),
             },
           },
         };
