@@ -76,13 +76,15 @@ export default async function FavoritesDetailsPage({ params }) {
     notFound();
   }
 
+  const viewingAsOwner = session?.user?.id === favoriteList.ownerId;
+
   const cardLayout = appConfig.search.cardLayout ?? DEFAULT_SEARCH_CARD_LAYOUT;
 
   return (
     <PageWrapper
       cookies={cookieList}
       translationData={{ i18nNamespaces, locale, resources }}
-      jotaiData={{ favoriteList }}
+      jotaiData={{ favoriteList, viewingAsOwner }}
       nonce={nonce}
     >
       <div className="flex flex-1">
