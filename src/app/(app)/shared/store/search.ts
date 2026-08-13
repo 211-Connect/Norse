@@ -1,5 +1,7 @@
 import { atom } from 'jotai';
 
+import { ResourceEntry } from '@/app/(app)/shared/lib/umami';
+
 export const searchAtom = atom({
   query: '',
   queryLabel: '',
@@ -45,3 +47,5 @@ export const searchPlaceTypeAtom = atom(
   (get) => get(searchAtom).searchPlaceType,
 );
 export const searchBboxAtom = atom((get) => get(searchAtom).searchBbox);
+
+export const searchEntryAtom = atom<ResourceEntry>(ResourceEntry.SearchCard);

@@ -1,23 +1,22 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 
 import { AddToFavoritesButton } from '@/app/(app)/shared/components/add-to-favorites-button';
 import { RemoveFromFavoriteListButton } from '@/app/(app)/shared/components/remove-from-favorite-list-button';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
-import { ResourceEntry } from '@/app/(app)/shared/lib/umami';
+import { setPendingResourceEntry } from '@/app/(app)/shared/lib/umami';
 import { withOptionalTrailingSlash } from '@/app/(app)/shared/lib/utils';
 
 import { SearchCardComponentProps } from './types';
+import { useResourceCardEntry } from './use-resource-card-entry';
 
 export function ResourceNameComponent({ result }: SearchCardComponentProps) {
   const { t } = useTranslation();
   const name = result.name || t('name_unavailable', { ns: 'page-search' });
-  const searchParams = useSearchParams();
-  const entry = searchParams.get('entry') ?? ResourceEntry.SearchCard;
+  const entry = useResourceCardEntry();
 
-  const url = `${withOptionalTrailingSlash(`/search/${result.id}`)}?entry=${entry}`;
+  const url = withOptionalTrailingSlash(`/search/${result.id}`);
 
   // Render RemoveFromFavoriteListButton when viewing a specific favorite list
   const isInFavoriteListContext = Boolean(
@@ -31,6 +30,7 @@ export function ResourceNameComponent({ result }: SearchCardComponentProps) {
         size="md"
         url={url}
         prefetch={false}
+        onClick={() => setPendingResourceEntry(result.id, entry)}
         data-testid="resource-link"
         className="min-w-0 flex-1 self-center"
       >

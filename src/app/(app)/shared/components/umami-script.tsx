@@ -1,4 +1,8 @@
+'use client';
+
 import Script from 'next/script';
+
+import { flushPendingUmamiEvents } from '@/app/(app)/shared/lib/umami';
 
 export function UmamiScript({
   scriptUrl,
@@ -17,6 +21,7 @@ export function UmamiScript({
       src={scriptUrl}
       data-website-id={websiteId}
       nonce={nonce}
+      onLoad={flushPendingUmamiEvents}
     />
   );
 }
