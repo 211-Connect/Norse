@@ -103,9 +103,9 @@ const FAVORITES_LIST_URL_RE = /favorites\/[a-f0-9-]{24,36}/;
  */
 export async function waitForFavoriteListPage(page: Page) {
   await expectPageUrl(page, FAVORITES_LIST_URL_RE);
-  // await page
-  //   .getByTestId('back-to-favorites')
-  //   .waitFor({ state: 'visible', timeout: UI_SHELL_TIMEOUT_MS });
+  await page
+    .getByTestId('back-to-favorites')
+    .waitFor({ state: 'visible', timeout: UI_SHELL_TIMEOUT_MS });
 }
 
 /**
