@@ -24,7 +24,7 @@ export function FavoriteList({ list }: { list: FavoriteListState }) {
   const { stringifiedSearchParams } = useClientSearchParams();
 
   return (
-    <Card>
+    <Card data-testid="favorite-list-card">
       <CardHeader>
         <div className="flex items-center justify-between">
           <Badge variant="outline">

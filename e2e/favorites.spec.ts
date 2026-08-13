@@ -3,7 +3,8 @@ import { existsSync } from 'node:fs';
 import {
   addFirstResultToList,
   closeFavoritesDialog,
-  deleteAllE2ETestLists,
+  deleteFavoriteList,
+  editFavoriteList,
   expect,
   expectAuthenticatedShell,
   expectPageUrl,
@@ -33,23 +34,10 @@ test.describe('Favorites Feature (Authenticated)', () => {
     'Skipped — no test credentials (set TEST_USER_EMAIL & TEST_USER_PASSWORD)',
   );
 
-  // Every test's `page` fixture in this describe block loads the session
-  // saved to `AUTH_STORAGE_STATE_PATH` by `beforeAll` below — no per-test
-  // login. The file doesn't exist yet when this `test.use` is evaluated
-  // (file-collection time), but `storageState` is only *read* lazily, when
-  // Playwright creates each test's context — which happens after `beforeAll`
-  // has already written it. See e2e/AGENTS.md.
   test.use({
     storageState: hasAuth ? AUTH_STORAGE_STATE_PATH : undefined,
   });
 
-  // Logs in via Keycloak once for the whole file, saves the session so every
-  // test's `page` fixture starts pre-authenticated (see `test.use` above),
-  // then cleans up any leftover E2E test lists from previous failed runs
-  // using that same freshly-authenticated context. `storageState: undefined`
-  // is explicit here (not just omitted) so this context can never
-  // accidentally pick up a stale/leftover session file — it must start from
-  // a real, fresh Keycloak login every time.
   test.beforeAll(async ({ browser }) => {
     const context = await browser.newContext({ storageState: undefined });
     const page = await context.newPage();
@@ -61,19 +49,11 @@ test.describe('Favorites Feature (Authenticated)', () => {
       // noticing.
       await expectAuthenticatedShell(page);
       await context.storageState({ path: AUTH_STORAGE_STATE_PATH });
-      await deleteAllE2ETestLists(page);
     } finally {
       await context.close();
     }
   });
 
-  // Clean up the list created in this run even if tests fail partway through.
-  // `browser.newContext()` doesn't inherit `test.use`'s `storageState`
-  // (that only applies to the fixture-provided `page`/`context`), so it's
-  // passed explicitly here to reuse the session saved by `beforeAll`. Guarded
-  // by `existsSync`: if `beforeAll` itself failed before writing the file,
-  // this surfaces its own clear "missing session" message instead of an
-  // opaque ENOENT that masks the real `beforeAll` failure above it.
   test.afterAll(async ({ browser }) => {
     if (!existsSync(AUTH_STORAGE_STATE_PATH)) {
       throw new Error(
@@ -87,30 +67,18 @@ test.describe('Favorites Feature (Authenticated)', () => {
     });
     const page = await context.newPage();
     try {
-      // Same explicit guard as beforeAll — the loaded storageState session
-      // could in principle have expired between beforeAll and afterAll on a
-      // very long run (see e2e/AGENTS.md's "trade-off to watch"); verify
-      // before attempting to delete anything rather than assume.
       await expectAuthenticatedShell(page);
-      await deleteAllE2ETestLists(page);
     } finally {
       await context.close();
     }
   });
 
-  // Every test's `page` fixture starts with the session loaded via
-  // `test.use({ storageState })` above, but that only preloads
-  // cookies/localStorage — it does not navigate anywhere. Without this,
-  // every test starts on a blank page and the first `favorites-btn`/
-  // `search-trigger` interaction fails ("white screen"). This used to be a
-  // side effect of the old per-test `loginViaKeycloak` call (which itself
-  // called `goHome`); now that login happens once in `beforeAll`, the
-  // per-test navigation has to be explicit.
   test.beforeEach(async ({ page }) => {
     await goHome(page);
   });
 
-  const listName = `E2E Test List ${Date.now()}`;
+  const runId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const listName = `E2E Test List ${runId}`;
   const listDescription = 'Created by Playwright E2E test';
   const updatedListName = `${listName} (Updated)`;
   const updatedDescription = 'Updated by Playwright E2E test';
@@ -173,22 +141,10 @@ test.describe('Favorites Feature (Authenticated)', () => {
   }) => {
     await goToFavorites(page);
 
-    const editBtn = page.getByTestId('edit-list-btn');
-    await expect(editBtn).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
-    await editBtn.click();
-
-    const nameInput = page.locator('#name');
-    await expect(nameInput).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
-    await nameInput.fill(updatedListName);
-
-    const descInput = page.locator('#description');
-    await descInput.fill(updatedDescription);
-
-    const updateListSubmitBtn = page.getByTestId('update-list-submit-btn');
-    await expect(updateListSubmitBtn).toBeVisible({
-      timeout: UI_SHELL_TIMEOUT_MS,
+    await editFavoriteList(page, listName, {
+      name: updatedListName,
+      description: updatedDescription,
     });
-    await updateListSubmitBtn.click();
 
     await expect(page.getByText('Updated list')).toBeVisible({
       timeout: ASYNC_UI_TIMEOUT_MS,
@@ -311,15 +267,7 @@ test.describe('Favorites Feature (Authenticated)', () => {
   test('should delete the favorite list', async ({ page }) => {
     await goToFavorites(page);
 
-    const deleteListBtn = page.getByTestId('delete-list-btn');
-    await expect(deleteListBtn).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
-    await deleteListBtn.click();
-
-    const deleteListConfirmBtn = page.getByTestId('delete-list-confirm-btn');
-    await expect(deleteListConfirmBtn).toBeVisible({
-      timeout: UI_SHELL_TIMEOUT_MS,
-    });
-    await deleteListConfirmBtn.click();
+    await deleteFavoriteList(page, updatedListName);
 
     const removedCard = page.getByText(updatedListName);
 

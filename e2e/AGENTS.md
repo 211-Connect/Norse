@@ -48,7 +48,7 @@ Barrel `index.ts` re-exports everything plus the customized `test`/`expect`
 | `navigation.ts` | `goHome`, `waitForPageStabilized`, `expectAuthenticatedShell`                                                              |
 | `search.ts`     | Search dialog, `performSearch`, `searchAndGetFirstResult`, result-total/title getters, topic search, location filter setup |
 | `filters.ts`    | Filter-panel helpers (`markFiltersByIds`, `markFirstNEnabledFilters`, etc.)                                                |
-| `favorites.ts`  | Favorites navigation, list-page waits, dialog add/remove flows, cleanup                                                    |
+| `favorites.ts`  | Favorites navigation, list-page waits, dialog add/remove flows                                                             |
 | `auth.ts`       | `loginViaKeycloak`                                                                                                         |
 | `i18n.ts`       | `switchLanguage`                                                                                                           |
 | `internal.ts`   | Non-exported-from-barrel internals (e.g. `isVisible` for branching logic)                                                  |
@@ -74,9 +74,7 @@ per-test `beforeEach` would mean a full Keycloak redirect + credential fill
    stale/leftover session file; it must always be a real, fresh login. It
    then saves that session with
    `context.storageState({ path: AUTH_STORAGE_STATE_PATH })`
-   (`e2e/env.ts`, gitignored under `e2e/.auth/`). It also runs
-   `deleteAllE2ETestLists` on that same context, cleaning up any leftover
-   E2E test lists from previous failed runs before the suite starts.
+   (`e2e/env.ts`, gitignored under `e2e/.auth/`).
 2. `test.use({ storageState: hasAuth ? AUTH_STORAGE_STATE_PATH : undefined })`
    is declared at the top of the `describe` block. This is evaluated once at
    file-collection time (before the file on disk exists yet), but
@@ -98,10 +96,9 @@ per-test `beforeEach` would mean a full Keycloak redirect + credential fill
    ever writing the file, `afterAll` throws its own clear "no saved session"
    error instead of a confusing ENOENT that masks `beforeAll`'s real error.
 5. Both `beforeAll` and `afterAll` call `expectAuthenticatedShell(page)`
-   explicitly right before `deleteAllE2ETestLists`, even though
-   `loginViaKeycloak` already asserts this internally at its own end. This is
-   deliberate belt-and-braces: the guard is visible at the exact call site
-   that performs a destructive action, so it doesn't silently depend on
+   explicitly, even though `loginViaKeycloak` already asserts this
+   internally at its own end. This is deliberate belt-and-braces: the guard
+   is visible at the exact call site, so it doesn't silently depend on
    `loginViaKeycloak`'s internals never changing.
 6. `test.beforeEach(async ({ page }) => { await goHome(page); })` is
    **required** here, unlike other spec files where it's just a convention —
@@ -125,6 +122,17 @@ could see the session expire mid-suite — not observed in practice given
 current timeout budgets, but worth knowing if `favorites.spec.ts`'s
 authenticated tests start failing partway through a run with auth-prompt
 symptoms.
+
+## Favorite-list naming and deletion
+
+Every list `favorites.spec.ts` creates is tagged with a per-run `runId`
+(`` `${Date.now()}-${Math.random().toString(36).slice(2, 8)}` ``) baked into
+its name (`E2E Test List <runId>`), purely to keep names unique across
+concurrent runs against the same shared `TEST_USER_EMAIL`/`TEST_USER_PASSWORD`
+test account/tenant — it has no bearing on cleanup. Lists are deleted by id
+via `deleteFavoriteList(page, listName)` (`helpers/favorites.ts`), called
+directly in the test that owns the list, not from a broad `beforeAll`/
+`afterAll` sweep.
 
 ## Known risks (documented, not fixed here)
 
