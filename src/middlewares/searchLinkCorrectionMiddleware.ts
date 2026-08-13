@@ -5,6 +5,7 @@ import {
   USER_PREF_DISTANCE,
   USER_PREF_LOCATION,
 } from '@/app/(app)/shared/lib/constants';
+import { isSearchPathname } from '@/app/(app)/shared/lib/paths';
 import { validateCoordsString } from '@/app/(app)/shared/lib/validators';
 
 export function searchLinkCorrectionMiddleware(request: NextRequest) {
@@ -18,7 +19,7 @@ export function searchLinkCorrectionMiddleware(request: NextRequest) {
   const alreadyHasCoords = searchParams.has('coords');
   const alreadyHasDistance = searchParams.has('distance');
 
-  if (pathname.endsWith('/search') || pathname.endsWith('/search/')) {
+  if (isSearchPathname(pathname)) {
     let anyChanges = false;
     const url = request.nextUrl.clone();
 
