@@ -53,6 +53,16 @@ export default async function FavoritesPage({
   );
 
   if (!session || session.error) {
+    log.debug(
+      {
+        hasSession: Boolean(session),
+        sessionError: session?.error ?? null,
+        requireAuthenticationForFavorites:
+          appConfig.featureFlags.requireAuthenticationForFavorites,
+      },
+      'Redirecting from /favorites',
+    );
+
     if (appConfig.featureFlags.requireAuthenticationForFavorites) {
       redirect(
         `/${locale}/auth/signin?redirect=${encodeURIComponent('/favorites')}`,
