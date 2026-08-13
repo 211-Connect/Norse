@@ -149,7 +149,7 @@ export type AppConfig = {
     value: string;
     taxonomies: string;
   }[];
-  tenantId?: string;
+  tenantId: string;
   alerts?: {
     text: string;
     buttonText?: string;

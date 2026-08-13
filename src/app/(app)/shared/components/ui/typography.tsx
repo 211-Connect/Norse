@@ -91,6 +91,7 @@ export interface TypographyProps
   as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span' | 'div' | 'label';
   url?: string | null;
   urlTarget?: '_blank' | '_self' | null;
+  prefetch?: boolean;
 }
 
 const Typography = forwardRef<HTMLElement, TypographyProps>(
@@ -104,6 +105,7 @@ const Typography = forwardRef<HTMLElement, TypographyProps>(
       children,
       url,
       urlTarget = '_self',
+      prefetch,
       ...props
     },
     ref,
@@ -125,6 +127,7 @@ const Typography = forwardRef<HTMLElement, TypographyProps>(
           ref={ref as React.Ref<HTMLAnchorElement>}
           target={urlTarget || undefined}
           rel="noopener noreferrer"
+          prefetch={prefetch}
           {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
         >
           {children}

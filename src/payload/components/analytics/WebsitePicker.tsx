@@ -13,6 +13,7 @@ export default function WebsitePicker() {
   );
   const { selectedTenantID } = useTenantSelection();
   const initializedRef = useRef(false);
+  const prevTenantIdRef = useRef(selectedTenantID);
 
   const { data } = useAnalyticsInfo(
     selectedTenantID ? String(selectedTenantID) : undefined,
@@ -32,9 +33,10 @@ export default function WebsitePicker() {
   }, [websiteIds, selectedWebsiteIds.length, setSelectedWebsiteIds]);
 
   useEffect(() => {
-    if (!selectedTenantID) {
+    if (prevTenantIdRef.current !== selectedTenantID) {
       initializedRef.current = false;
       setSelectedWebsiteIds([]);
+      prevTenantIdRef.current = selectedTenantID;
     }
   }, [selectedTenantID, setSelectedWebsiteIds]);
 

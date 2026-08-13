@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import enCommon from '../../public/locales/en/common.json' with { type: 'json' };
+import enCommon from '../public/locales/en/common.json' with { type: 'json' };
 import {
   expect,
   expectPageUrl,
@@ -8,14 +8,14 @@ import {
   goHome,
   isSearchResultsListUrl,
   test,
-} from '../helpers';
+} from './helpers';
 import {
   ASYNC_UI_TIMEOUT_MS,
   AUTOCOMPLETE_TIMEOUT_MS,
   FOCUS_TIMEOUT_MS,
   KEYBOARD_UI_STABILITY_MS,
   UI_SHELL_TIMEOUT_MS,
-} from '../timeouts';
+} from './timeouts';
 
 async function openDialogFromSearchTrigger(page: Page) {
   const trigger = page.getByTestId('search-trigger').first();
@@ -155,7 +155,13 @@ test.describe('Search accessibility preservation', () => {
     await expect(clearSearchButton).toHaveAttribute('aria-label', /remove/i);
     await expect(searchInput).toBeFocused();
 
-    await page.waitForTimeout(500);
+    // Wait for the autocomplete listbox to render before tabbing: the debounced
+    // suggestions open after `fill`, and the Tab focus order to the clear button
+    // is only stable once the popover is present (replaces a blind 500ms sleep).
+    await page
+      .getByTestId('autocomplete-listbox')
+      .waitFor({ state: 'visible', timeout: AUTOCOMPLETE_TIMEOUT_MS })
+      .catch(() => null);
 
     await page.keyboard.press('Tab');
     await expect(clearSearchButton).toBeFocused();
@@ -215,8 +221,8 @@ test.describe('Search accessibility preservation', () => {
 
     await expect(searchInput).toBeFocused();
     await searchInput.fill('food');
-    await searchInput
-      .locator('..')
+    await page
+      .getByTestId('search-field')
       .getByTestId('autocomplete-listbox')
       .waitFor({ state: 'visible', timeout: AUTOCOMPLETE_TIMEOUT_MS });
 
@@ -238,8 +244,8 @@ test.describe('Search accessibility preservation', () => {
     const locationInput = page.locator('#location-input');
 
     await locationInput.fill('minneapolis');
-    await locationInput
-      .locator('..')
+    await page
+      .getByTestId('location-field')
       .getByTestId('autocomplete-listbox')
       .waitFor({ state: 'visible', timeout: AUTOCOMPLETE_TIMEOUT_MS });
 
@@ -257,7 +263,7 @@ test.describe('Search accessibility preservation', () => {
     await openDialogFromSearchTrigger(page);
 
     const locationInput = page.locator('#location-input');
-    const locationField = locationInput.locator('..');
+    const locationField = page.getByTestId('location-field');
     const clearButton = locationField.getByTestId('search-clear-btn');
     const listbox = locationField.getByTestId('autocomplete-listbox');
 

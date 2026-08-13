@@ -344,6 +344,7 @@ export function SectionsEditorCard({
       <SectionsCard
         directoryId={directory.id}
         sections={sections}
+        defaultQueryConfig={directory.defaultQueryConfig}
         isReorderingSections={isReordering}
         isMutatingSources={isMutatingSources}
         onAddSection={() => setIsCreateOpen(true)}

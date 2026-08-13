@@ -284,16 +284,6 @@ export function CreateDirectoryDialog({
               <SelectItem value="full">
                 {t('resource_layout_name.full', { ns: 'page-directories' })}
               </SelectItem>
-              <SelectItem value="custom-search">
-                {t('resource_layout_name.custom_search', {
-                  ns: 'page-directories',
-                })}
-              </SelectItem>
-              <SelectItem value="custom-resource">
-                {t('resource_layout_name.custom_resource', {
-                  ns: 'page-directories',
-                })}
-              </SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -323,7 +313,7 @@ export function CreateDirectoryDialog({
                     />
                   </span>
                 </TooltipTrigger>
-                <TooltipContent>
+                <TooltipContent className="max-w-md">
                   {t('booklet_layout.help', { ns: 'page-directories' })}
                 </TooltipContent>
               </Tooltip>

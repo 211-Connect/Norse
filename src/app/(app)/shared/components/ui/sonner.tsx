@@ -40,6 +40,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       ref={toasterRef}
       theme={theme as ToasterProps['theme']}
       className="toaster group"
+      style={{ '--width': '24rem' } as React.CSSProperties}
       toastOptions={{
         classNames: {
           toast:

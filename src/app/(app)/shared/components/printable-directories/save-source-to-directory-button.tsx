@@ -1,6 +1,6 @@
 'use client';
 
-import { BookPlus, LoaderCircle } from 'lucide-react';
+import { BookPlus, LoaderCircle, TriangleAlert } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -15,6 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/app/(app)/shared/components/ui/dialog';
+import { Checkbox } from '@/app/(app)/shared/components/ui/checkbox';
 import { Label } from '@/app/(app)/shared/components/ui/label';
 import {
   Select,
@@ -23,6 +24,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/app/(app)/shared/components/ui/select';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/app/(app)/shared/components/ui/tooltip';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { createPrintableDirectorySection } from '@/app/(app)/shared/serverActions/printableDirectories/createPrintableDirectorySection';
@@ -35,7 +42,12 @@ import {
   PrintableDirectoryResponseDto,
 } from '@/lib/api/generated/data-contracts';
 
-import { getPrintableDirectoryLocalizedText } from '@/app/(app)/features/printable-directories/utils';
+import {
+  formatQueryParamValue,
+  getLocationConflict,
+  getPrintableDirectoryLocalizedText,
+  LOCATION_QUERY_PARAM_KEYS,
+} from '@/app/(app)/features/printable-directories/utils';
 
 type SaveSourceToDirectoryButtonProps = {
   kind: SaveSourceKind;
@@ -58,10 +70,10 @@ export function SaveSourceToDirectoryButton({
 }: SaveSourceToDirectoryButtonProps) {
   const { t, i18n } = useTranslation(['common']);
   const session = useSession();
+  const appConfig = useAppConfig();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const appConfig = useAppConfig();
 
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -71,6 +83,7 @@ export function SaveSourceToDirectoryButton({
   >([]);
   const [selectedDirectoryId, setSelectedDirectoryId] = useState('');
   const [selectedSectionId, setSelectedSectionId] = useState('');
+  const [includeSearchLocation, setIncludeSearchLocation] = useState(true);
 
   const hasAccess = canAccessPrintableDirectories(
     session.data?.user?.email,
@@ -80,6 +93,42 @@ export function SaveSourceToDirectoryButton({
   const selectedDirectory = useMemo(
     () => directories.find((directory) => directory.id === selectedDirectoryId),
     [directories, selectedDirectoryId],
+  );
+
+  const hasLocationParams = useMemo(() => {
+    if (sourcePayload.type !== 'query') return false;
+
+    const params = sourcePayload.query.params as Record<string, unknown>;
+    return Array.from(LOCATION_QUERY_PARAM_KEYS).some((key) =>
+      Boolean(params[key]),
+    );
+  }, [sourcePayload]);
+
+  const effectiveQueryParams = useMemo(() => {
+    if (sourcePayload.type !== 'query') return null;
+
+    const params = sourcePayload.query.params as Record<string, unknown>;
+    if (includeSearchLocation) return params;
+
+    const stripped = { ...params };
+    LOCATION_QUERY_PARAM_KEYS.forEach((key) => {
+      delete stripped[key];
+    });
+    return stripped;
+  }, [sourcePayload, includeSearchLocation]);
+
+  const locationConflict = useMemo(() => {
+    if (!includeSearchLocation || !effectiveQueryParams) return false;
+
+    return getLocationConflict(
+      selectedDirectory?.defaultQueryConfig,
+      effectiveQueryParams,
+    );
+  }, [includeSearchLocation, effectiveQueryParams, selectedDirectory]);
+
+  const queryPreviewEntries = useMemo(
+    () => (effectiveQueryParams ? Object.entries(effectiveQueryParams) : []),
+    [effectiveQueryParams],
   );
 
   const kindTranslationNamespace =
@@ -264,10 +313,18 @@ export function SaveSourceToDirectoryButton({
         return;
       }
 
+      const effectivePayload: PrintableDirectoryControllerCreateSourcePayload =
+        sourcePayload.type === 'query' && effectiveQueryParams
+          ? {
+              ...sourcePayload,
+              query: { ...sourcePayload.query, params: effectiveQueryParams },
+            }
+          : sourcePayload;
+
       const saved = await createPrintableDirectorySource({
         directoryId: selectedDirectory.id,
         sectionId,
-        payload: sourcePayload,
+        payload: effectivePayload,
         tenantId: appConfig.tenantId,
       });
 
@@ -276,7 +333,19 @@ export function SaveSourceToDirectoryButton({
         return;
       }
 
-      toast.success(saveSuccessMessage);
+      const directoryHref =
+        i18n.language === appConfig.i18n.defaultLocale
+          ? `/directories/${selectedDirectory.id}`
+          : `/${i18n.language}/directories/${selectedDirectory.id}`;
+
+      toast.success(saveSuccessMessage, {
+        action: {
+          label: t('printable_directories.save_source.view_directory', {
+            ns: 'common',
+          }),
+          onClick: () => router.push(directoryHref),
+        },
+      });
       handleOpenChange(false);
     } finally {
       setIsSaving(false);
@@ -406,6 +475,86 @@ export function SaveSourceToDirectoryButton({
                   </SelectContent>
                 </Select>
               </div>
+
+              {sourcePayload.type === 'query' ? (
+                <div className="space-y-3 rounded-md border p-3">
+                  {hasLocationParams ? (
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id="save-source-include-location"
+                        checked={includeSearchLocation}
+                        onCheckedChange={(value) =>
+                          setIncludeSearchLocation(value === true)
+                        }
+                      />
+                      <Label
+                        htmlFor="save-source-include-location"
+                        className="cursor-pointer"
+                      >
+                        {t(
+                          'printable_directories.save_source.include_search_location_label',
+                          { ns: 'common' },
+                        )}
+                      </Label>
+                    </div>
+                  ) : null}
+
+                  <div className="space-y-1">
+                    <Typography
+                      variant="paragraph"
+                      size="sm"
+                      textColor="secondary"
+                    >
+                      {t('printable_directories.save_source.preview_label', {
+                        ns: 'common',
+                      })}
+                    </Typography>
+                    <div className="space-y-1">
+                      {queryPreviewEntries.length > 0 ? (
+                        queryPreviewEntries.map(([key, value]) => (
+                          <p key={key} className="break-all text-sm">
+                            <span className="font-medium">{key}</span>
+                            {LOCATION_QUERY_PARAM_KEYS.has(key) &&
+                            locationConflict ? (
+                              <TooltipProvider delayDuration={150}>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <span className="ml-1 inline-flex align-text-bottom">
+                                      <TriangleAlert
+                                        className="size-4 text-amber-500"
+                                        aria-label={t(
+                                          'printable_directories.save_source.location_conflict_warning',
+                                          { ns: 'common' },
+                                        )}
+                                      />
+                                    </span>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    {t(
+                                      'printable_directories.save_source.location_conflict_warning',
+                                      { ns: 'common' },
+                                    )}
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            ) : null}
+                            {': '}
+                            {formatQueryParamValue(value)}
+                          </p>
+                        ))
+                      ) : (
+                        <Typography
+                          variant="paragraph"
+                          size="sm"
+                          textColor="secondary"
+                        >
+                          -
+                        </Typography>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ) : null}
             </div>
           )}
 

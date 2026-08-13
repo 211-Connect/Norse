@@ -65,25 +65,18 @@ export default async function FavoritesDetailsPage({ params }) {
     appConfig.i18n.defaultLocale,
   );
 
-  let viewingAsOwner = false;
-  let favoriteList;
-
-  if (!session) {
-    favoriteList = await getFavoriteList(id, locale, appConfig.tenantId);
-    if (!favoriteList) {
-      notFound();
-    }
-  } else if (session.error) {
+  if (session?.error) {
     redirect(
       `/${locale}/auth/signin?redirect=${encodeURIComponent('/favorites')}`,
     );
-  } else {
-    favoriteList = await getFavoriteList(id, locale, appConfig.tenantId);
-    if (!favoriteList) {
-      notFound();
-    }
-    viewingAsOwner = true;
   }
+
+  const favoriteList = await getFavoriteList(id, locale, appConfig.tenantId);
+  if (!favoriteList) {
+    notFound();
+  }
+
+  const viewingAsOwner = session?.user?.id === favoriteList.ownerId;
 
   const cardLayout = appConfig.search.cardLayout ?? DEFAULT_SEARCH_CARD_LAYOUT;
 

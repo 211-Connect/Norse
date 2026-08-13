@@ -1,8 +1,7 @@
 'use client';
 
-import { useCallback, useRef } from 'react';
+import { useCallback } from 'react';
 
-import { ResourceEntry } from '@/app/(app)/shared/lib/umami';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { getResource } from '@/app/(app)/shared/services/resource-service';
 import { fontSans } from '@/app/(app)/shared/styles/fonts';
@@ -17,7 +16,6 @@ import { Navigation } from './navigation';
 type ResourcePageContentProps = {
   resource: Resource;
   layout: AppConfig['resource']['layout'];
-  entry: ResourceEntry;
   resourceId: string;
   tenantId: string;
   locale: string;
@@ -26,11 +24,9 @@ type ResourcePageContentProps = {
 export const ResourcePageContent = ({
   resource,
   layout,
-  entry,
   resourceId,
   tenantId,
 }: ResourcePageContentProps) => {
-  const componentToPrintRef = useRef<HTMLDivElement>(null);
   const loadPrintableDirectoryData = useCallback(
     async (printLocale: string) => {
       const freshResource = await getResource(
@@ -49,7 +45,7 @@ export const ResourcePageContent = ({
     [resource, tenantId],
   );
 
-  useResourceViewTracking({ entry, resourceId, tenantId });
+  useResourceViewTracking({ resourceId, tenantId });
 
   const pageHeadingText =
     resource.name?.trim() || resource.serviceName?.trim() || 'Resource details';
@@ -58,12 +54,11 @@ export const ResourcePageContent = ({
     <div className="container mx-auto flex flex-col gap-2 pt-2 pb-2">
       <h1 className="sr-only">{pageHeadingText}</h1>
       <Navigation
-        componentToPrintRef={componentToPrintRef}
         resource={resource}
         loadPrintableDirectoryData={loadPrintableDirectoryData}
       />
 
-      <div ref={componentToPrintRef}>
+      <div>
         <LayoutRenderer
           layout={layout}
           resource={resource}

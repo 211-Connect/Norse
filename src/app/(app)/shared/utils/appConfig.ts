@@ -30,12 +30,12 @@ function getTenant(resourceDirectory: ResourceDirectory): Tenant | undefined {
   return resourceDirectory.tenant ?? undefined;
 }
 
-function getTenantId(resourceDirectory: ResourceDirectory): string | undefined {
+function getTenantId(resourceDirectory: ResourceDirectory): string {
   if (typeof resourceDirectory.tenant === 'string') {
     return resourceDirectory.tenant;
   }
 
-  return resourceDirectory.tenant?.id;
+  return resourceDirectory.tenant?.id || 'unknown';
 }
 
 function getTenantMainUmamiWebsiteId(
@@ -295,6 +295,7 @@ async function getAppConfigBase(
         iconSize: 'small',
         list: [],
       },
+      tenantId: 'unknown',
     };
   }
 
@@ -549,9 +550,7 @@ async function getAppConfigBase(
         queryInputPlaceholder:
           resourceDirectory.search.texts?.queryInputPlaceholder ?? undefined,
         suggestionHeaders: {
-          categories:
-            resourceDirectory.search.texts?.suggestionHeaders?.categories ??
-            undefined,
+          categories: resourceDirectory.topics?.customHeading ?? undefined,
           suggestions:
             resourceDirectory.search.texts?.suggestionHeaders?.suggestions ??
             undefined,
@@ -596,8 +595,7 @@ async function getAppConfigBase(
       backText: resourceDirectory.topics?.backText ?? undefined,
       customHeading: resourceDirectory.topics?.customHeading ?? undefined,
       iconSize: resourceDirectory.topics?.iconSize ?? 'small',
-      imageBorderRadius:
-        resourceDirectory.topics?.imageBorderRadius ?? undefined,
+      imageBorderRadius: resourceDirectory.topics?.imageBorderRadius ?? 0,
       list: (resourceDirectory.topics?.list ?? []).map(
         ({ name, href, id, image, subtopics, openInNewTab }) => ({
           name,

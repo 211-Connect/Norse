@@ -9,7 +9,7 @@ import { LocalFavoritesSection } from './local-favorites-section';
 type LocalFavoritesWithMapProps = {
   cardLayout: SearchCardLayoutConfig;
   locale: string;
-  tenantId?: string;
+  tenantId: string;
 };
 
 export function LocalFavoritesWithMap({

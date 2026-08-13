@@ -6,7 +6,7 @@ import { resourcesToPrintableDirectory } from '@/app/(app)/shared/utils/printabl
 export async function getPrintableDirectoryData(
   resourceIds: string[],
   locale: string,
-  tenantId: string | undefined,
+  tenantId: string,
   listName: string,
 ) {
   const uniqueIds = [...new Set(resourceIds.filter(Boolean))];

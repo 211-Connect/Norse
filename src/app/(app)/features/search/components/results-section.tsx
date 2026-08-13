@@ -92,7 +92,6 @@ export function ResultsSection({
   const { t } = useTranslation('page-search');
   const appConfig = useAppConfig();
   const searchParams = useSearchParams();
-  const componentToPrintRef = useRef<HTMLDivElement>(null);
   const resultsHeadingRef = useRef<HTMLHeadingElement>(null);
   const results = useAtomValue(resultsAtom);
   const resultsCount = results?.length ?? 0;
@@ -204,17 +203,13 @@ export function ResultsSection({
                 queryParams={serializedQueryParams}
               />
             )}
-            <ShareButton
-              componentToPrintRef={componentToPrintRef}
-              title={shareTitle}
-              body={shareBody}
-            />
+            <ShareButton title={shareTitle} body={shareBody} />
           </div>
         </div>
         {showSort && <SortSelect />}
       </div>
 
-      <div className="flex flex-col gap-6" ref={componentToPrintRef}>
+      <div className="flex flex-col gap-6">
         <RenderResults cardLayout={cardLayout} />
         <ResultsPagination />
       </div>

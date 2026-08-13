@@ -9,7 +9,7 @@ const MAX_LOCAL_FAVORITES_FETCH = 100;
 
 type UseLocalFavoriteResourcesOptions = {
   locale: string;
-  tenantId?: string;
+  tenantId: string;
 };
 
 export function useLocalFavoriteResources({

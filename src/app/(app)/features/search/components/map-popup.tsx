@@ -43,6 +43,7 @@ export function MapPopup({
           href={`/search/${id}`}
           aria-label={`${t('learn_more', { ns: 'page-search' })}: ${name}`}
           className="text-primary py-[5px] text-center text-sm font-medium hover:underline"
+          prefetch={false}
         >
           {t('learn_more', { ns: 'page-search' })}
           <ChevronRight className="ml-1 inline-block size-4" />

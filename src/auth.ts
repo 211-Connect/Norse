@@ -8,6 +8,7 @@ import { Tenant } from './payload/payload-types';
 import { getKeycloakIssuer } from './utils/getKeycloakIssuer';
 import { isJwtExpired } from './utils/isJwtExpired';
 import { normalizeAllowedEmailDomains } from './utils/normalizeAllowedEmailDomains';
+import { getJwtSub } from './utils/getJwtSub';
 
 const log = createLogger('auth');
 const isDebug = process.env.NEXTAUTH_DEBUG === 'true';
@@ -84,7 +85,7 @@ const createAuthOptions = ({
 
       session.user = {
         ...session.user,
-        id: session.user?.id ?? token.sub ?? '',
+        id: session.user?.id || token.sub || getJwtSub(token.accessToken) || '',
         email: token.email || (session.user?.email ?? null),
       };
 

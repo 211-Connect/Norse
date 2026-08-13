@@ -1,6 +1,7 @@
 import { withPayload } from '@payloadcms/next/withPayload';
 
-const ONE_DAY = 24 * 60 * 60;
+const ONE_HOUR = 60 * 60;
+const ONE_DAY = 24 * ONE_HOUR;
 
 /**
  * @type {import('next').NextConfig}
@@ -31,6 +32,17 @@ const nextConfig = {
             key: 'Cache-Control',
             value: isProduction
               ? `public, max-age=${ONE_DAY}, s-maxage=${7 * ONE_DAY}, stale-while-revalidate=${ONE_DAY}`
+              : 'no-cache',
+          },
+        ],
+      },
+      {
+        source: '/locales/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: isProduction
+              ? `public, max-age=${ONE_HOUR}, s-maxage=${6 * ONE_HOUR}, stale-while-revalidate=${ONE_DAY}`
               : 'no-cache',
           },
         ],

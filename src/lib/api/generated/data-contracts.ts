@@ -198,20 +198,6 @@ export interface FavoriteListResponseDto {
   items: FavoriteListItemDto[];
 }
 
-export interface FavoriteListDetailResponseDto {
-  id: string;
-  name: string;
-  description: string;
-  privacy: string;
-  ownerId: string;
-  /** Whether the list contains the specified resource (only present when resource_id is provided) */
-  containsResource?: boolean;
-  /** Populated favorites (resources) */
-  favorites: object[];
-}
-
-export type UpdateFavoriteListDto = object;
-
 export interface ResourceLocationOpenApiDto {
   /** @example "Point" */
   type: string;
@@ -253,6 +239,42 @@ export interface ResourceTranslationOpenApiDto {
   taxonomies?: ResourceTaxonomyOpenApiDto[];
   attributeValues?: Record<string, any>;
 }
+
+export interface FavoriteResourceOpenApiDto {
+  _id: string;
+  originalId?: string;
+  displayName?: string;
+  displayPhoneNumber?: string;
+  website?: string;
+  organizationUrl?: string;
+  email?: string;
+  organizationName?: string;
+  location?: ResourceLocationOpenApiDto;
+  addresses?: ResourceAddressOpenApiDto[];
+  phoneNumbers?: ResourcePhoneNumberOpenApiDto[];
+  languages?: string[];
+  attribution?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  lastAssuredDate?: string;
+  tenantId?: string;
+  tenant_id?: string;
+  translations?: ResourceTranslationOpenApiDto[];
+}
+
+export interface FavoriteListDetailResponseDto {
+  id: string;
+  name: string;
+  description: string;
+  privacy: string;
+  ownerId: string;
+  /** Whether the list contains the specified resource (only present when resource_id is provided) */
+  containsResource?: boolean;
+  /** Populated favorites (resources) */
+  favorites: FavoriteResourceOpenApiDto[];
+}
+
+export type UpdateFavoriteListDto = object;
 
 export interface ResourceFacetOpenApiDto {
   code?: string;
