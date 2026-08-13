@@ -177,39 +177,58 @@ export async function waitForFavoriteToBeAbsentOnListPage(
     .toBe(0);
 }
 
-/**
- * Deletes all favorite lists whose names start with "E2E Test List".
- * Loops until no more matching cards are found on the favorites page,
- * clearing out accumulated lists from previous failed test runs.
- */
-export async function deleteAllE2ETestLists(page: Page): Promise<void> {
-  await goToFavorites(page);
+function favoriteListCardByExactName(page: Page, listName: string) {
+  return page.getByTestId('favorite-list-card').filter({
+    has: page.getByRole('link', { name: listName, exact: true }),
+  });
+}
 
-  for (;;) {
-    await page.waitForLoadState('networkidle');
+export async function deleteFavoriteList(
+  page: Page,
+  listName: string,
+): Promise<void> {
+  const card = favoriteListCardByExactName(page, listName);
+  await expect(card).toHaveCount(1, { timeout: UI_SHELL_TIMEOUT_MS });
 
-    const card = page.getByText(/^E2E Test List /).first();
-    const isVisible = await card
-      .isVisible({ timeout: PRESENCE_PROBE_TIMEOUT_MS })
-      .catch(() => false);
-    if (!isVisible) break;
+  const deleteListBtn = card.getByTestId('delete-list-btn');
+  await deleteListBtn.waitFor({
+    state: 'visible',
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
+  await deleteListBtn.click();
 
-    const deleteListBtn = page.getByTestId('delete-list-btn');
-    await deleteListBtn.waitFor({
-      state: 'visible',
-      timeout: UI_SHELL_TIMEOUT_MS,
-    });
-    await deleteListBtn.click();
+  const deleteListConfirmBtn = page.getByTestId('delete-list-confirm-btn');
+  await deleteListConfirmBtn.waitFor({
+    state: 'visible',
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
+  await deleteListConfirmBtn.click();
+}
 
-    const deleteListConfirmBtn = page.getByTestId('delete-list-confirm-btn');
-    await deleteListConfirmBtn.waitFor({
-      state: 'visible',
-      timeout: UI_SHELL_TIMEOUT_MS,
-    });
-    await deleteListConfirmBtn.click();
+export async function editFavoriteList(
+  page: Page,
+  currentListName: string,
+  { name, description }: { name: string; description: string },
+): Promise<void> {
+  const card = favoriteListCardByExactName(page, currentListName);
+  await expect(card).toHaveCount(1, { timeout: UI_SHELL_TIMEOUT_MS });
 
-    await expectPageUrl(page, /favorites\/?(?:\?|$)/);
-  }
+  const editListBtn = card.getByTestId('edit-list-btn');
+  await editListBtn.waitFor({ state: 'visible', timeout: UI_SHELL_TIMEOUT_MS });
+  await editListBtn.click();
+
+  const nameInput = page.locator('#name');
+  await expect(nameInput).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+  await nameInput.fill(name);
+
+  const descInput = page.locator('#description');
+  await descInput.fill(description);
+
+  const updateListSubmitBtn = page.getByTestId('update-list-submit-btn');
+  await expect(updateListSubmitBtn).toBeVisible({
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
+  await updateListSubmitBtn.click();
 }
 
 export async function waitForFavoritesDialogReady(page: Page) {
