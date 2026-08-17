@@ -48,7 +48,7 @@ export function FilterPanel({
   const facetUiConfig = useFacetUiConfig(appConfig.search.facets);
   const hasSearchCoordinates = searchCoordinates.length === 2;
 
-  const { scrollOffset } = useScrollOffset();
+  useScrollOffset();
   const { isPending, updateSearchParams } = useSearchResultsNavigation();
 
   const handleDistanceChange = useCallback(
@@ -84,9 +84,6 @@ export function FilterPanel({
           'md:top-38',
       )}
       id="filter-panel"
-      style={{
-        top: scrollOffset !== undefined ? `${scrollOffset}px` : undefined,
-      }}
     >
       <div className="flex items-center print:hidden">
         <MainSearchLayout
