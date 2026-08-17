@@ -55,6 +55,12 @@ export function searchLinkCorrectionMiddleware(request: NextRequest) {
     }
 
     if (anyChanges) {
+      // nextUrl.clone() drops the RSC request marker; re-add it so Next
+      // doesn't need a second redirect just to restore it after this one.
+      const rsc = new URL(request.url).searchParams.get('_rsc');
+      if (rsc && !url.searchParams.has('_rsc')) {
+        url.searchParams.set('_rsc', rsc);
+      }
       return NextResponse.redirect(url);
     }
   }
