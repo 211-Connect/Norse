@@ -7,6 +7,7 @@ export * from './categories';
 export * from './custom-attribute';
 export * from './description';
 export * from './eligibility';
+export * from './hours';
 export * from './location-name';
 export * from './location-name-subtitle';
 export * from './phone';

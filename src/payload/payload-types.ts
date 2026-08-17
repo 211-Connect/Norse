@@ -921,6 +921,7 @@ export interface ResourceDirectory {
             | 'serviceName'
             | 'eligibility'
             | 'applicationProcess'
+            | 'hours'
             | 'locationName'
             | 'locationNameSubtitle'
             | 'address'
