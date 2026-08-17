@@ -76,6 +76,10 @@ const nextConfig = {
     webpackMemoryOptimizations: true,
     webpackBuildWorker: true,
     preloadEntriesOnStart: false,
+    // Lets client router cache serve Back/Forward from cache briefly instead
+    // of always refetching dynamic routes; well under the search data's own
+    // 1-hour cache TTL, so it can't surface staler results than a fresh hit.
+    staleTimes: { dynamic: 30 },
   },
   // Do not bundle pino/pino-pretty for server — use native require() at
   // runtime. This avoids pino.transport() worker threads resolving paths

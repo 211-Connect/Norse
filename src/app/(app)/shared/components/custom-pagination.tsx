@@ -119,6 +119,7 @@ export function CustomPagination({
             <PaginationItem>
               <PaginationPrevious
                 href={createPageHref(activePage - 1)}
+                prefetch={false}
                 onClick={(e) => {
                   if (onPageChange) {
                     e.preventDefault();
@@ -146,6 +147,7 @@ export function CustomPagination({
                 <PaginationLink
                   className="h-[30px] w-[36px]"
                   href={createPageHref(Number(val))}
+                  prefetch={false}
                   aria-label={
                     val === activePage
                       ? `Page ${val}, current page`
@@ -172,6 +174,7 @@ export function CustomPagination({
             <PaginationItem>
               <PaginationNext
                 href={createPageHref(activePage + 1)}
+                prefetch={false}
                 onClick={(e) => {
                   if (onPageChange) {
                     e.preventDefault();
