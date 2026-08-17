@@ -220,7 +220,7 @@ export function ShareButton({
                 disabled={!shortUrl}
               >
                 <span className="min-w-0 truncate text-left">
-                  {shortUrl || t('modal.share.copy_link')}
+                  {shortUrl || '...'}
                 </span>
 
                 {clipboard.copied ? (
