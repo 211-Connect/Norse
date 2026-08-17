@@ -300,7 +300,11 @@
       "unable_load_directories_error": "ບໍ່ສາມາດໂຫຼດໄດເລກະທໍລີທີ່ສາມາດພິມໄດ້",
       "select_directory_first_error": "ເລືອກໄດເລກະທໍລີກ່ອນ",
       "unable_create_section_error": "ບໍ່ສາມາດສ້າງພາກສ່ວນໃນໄດເລກະທໍລີນີ້ໄດ້",
-      "unable_select_section_error": "ບໍ່ສາມາດເລືອກພາກສ່ວນໃນໄດເລກະທໍລີນີ້ໄດ້"
+      "unable_select_section_error": "ບໍ່ສາມາດເລືອກພາກສ່ວນໃນໄດເລກະທໍລີນີ້ໄດ້",
+      "view_directory": "ເບິ່ງລາຍຊື່",
+      "include_search_location_label": "ລວມເອົາສະຖານທີ່ຄົ້ນຫາປັດຈຸບັນໃນຄຳຖາມນີ້",
+      "preview_label": "ນີ້ແມ່ນວິທີທີ່ມັນຈະຖືກບັນທຶກໄວ້",
+      "location_conflict_warning": "ສະຖານທີ່ນີ້ແຕກຕ່າງຈາກສະຖານທີ່ເລີ່ມຕົ້ນຂອງໄດເລກະທໍລີ ແລະ ຈະມາແທນທີ່ມັນ"
     },
     "save_list": {
       "open": "ບັນທຶກລາຍຊື່ໄວ້ໃນໄດເລກະທໍລີທີ່ສາມາດພິມອອກໄດ້",

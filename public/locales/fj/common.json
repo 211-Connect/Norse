@@ -300,7 +300,11 @@
       "unable_load_directories_error": "E sega ni rawa ni vakavodoki na dairekita e rawa ni tabaki",
       "select_directory_first_error": "Digitaka taumada e dua na dairekita .",
       "unable_create_section_error": "E sega ni rawa ni buli e dua na iwasewase ena dairekita oqo",
-      "unable_select_section_error": "E sega ni rawa ni digitaki e dua na iwasewase ena dairekita oqo"
+      "unable_select_section_error": "E sega ni rawa ni digitaki e dua na iwasewase ena dairekita oqo",
+      "view_directory": "Raica na dairekita",
+      "include_search_location_label": "Vakacuruma na vanua ni vakasaqaqara ena gauna oqo ena taro oqo",
+      "preview_label": "Oqo na sala ena vakabulai kina .",
+      "location_conflict_warning": "Na vanua oqo e duidui mai na vanua ni dairekita ni default ka na vakasuka sobu ."
     },
     "save_list": {
       "open": "Maroroya na lisi ki na dairekita ni tabaki",

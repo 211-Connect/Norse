@@ -174,5 +174,8 @@
   "public_preview_not_found": "找不到此共享目錄。",
   "public_preview_ready": "您的下載應該會自動開始。",
   "public_preview_retry": "再次下載",
-  "public_preview_error": "產生此PDF文件時出現錯誤。"
+  "public_preview_error": "產生此PDF文件時出現錯誤。",
+  "share_dialog_title": "分享可列印目錄",
+  "share_dialog_description": "選擇收件者將看到的格式，然後複製連結。",
+  "copy_link_button": "複製連結"
 }

@@ -174,5 +174,8 @@
   "public_preview_not_found": "搵唔到呢個共用目錄。",
   "public_preview_ready": "你嘅下載應該會自動開始。",
   "public_preview_retry": "再下載一次",
-  "public_preview_error": "有啲嘢出錯，生成緊呢個 PDF 。"
+  "public_preview_error": "有啲嘢出錯，生成緊呢個 PDF 。",
+  "share_dialog_title": "分享可列印嘅目錄",
+  "share_dialog_description": "揀收件者會睇到嘅格式，然後複製連結。",
+  "copy_link_button": "複製連結"
 }

@@ -300,7 +300,11 @@
       "unable_load_directories_error": "د چاپ وړ ډایرکټریو د بارولو توان نلري",
       "select_directory_first_error": "لومړی یو ډایرکټرۍ غوره کړئ",
       "unable_create_section_error": "په دې ډایرکټرۍ کې د برخې جوړولو توان نلري",
-      "unable_select_section_error": "په دې ډایرکټرۍ کې د یوې برخې غوره کولو توان نلري"
+      "unable_select_section_error": "په دې ډایرکټرۍ کې د یوې برخې غوره کولو توان نلري",
+      "view_directory": "ډایرکټرۍ وګورئ",
+      "include_search_location_label": "په دې پوښتنه کې د لټون اوسنی ځای شامل کړئ",
+      "preview_label": "دا به څنګه خوندي شي",
+      "location_conflict_warning": "دا ځای د ډایرکټرۍ د ډیفالټ موقعیت څخه توپیر لري او دا به له سره تنظیم کړي"
     },
     "save_list": {
       "open": "لیست د چاپ وړ ډایرکټرۍ کې خوندي کړئ",

@@ -174,5 +174,8 @@
   "public_preview_not_found": "이 공유 디렉터리를 찾을 수 없습니다.",
   "public_preview_ready": "다운로드가 자동으로 시작됩니다.",
   "public_preview_retry": "다시 다운로드하세요",
-  "public_preview_error": "PDF 파일을 생성하는 과정에서 오류가 발생했습니다."
+  "public_preview_error": "PDF 파일을 생성하는 과정에서 오류가 발생했습니다.",
+  "share_dialog_title": "인쇄 가능한 디렉토리를 공유하세요",
+  "share_dialog_description": "수신자가 볼 형식을 선택한 다음 링크를 복사하세요.",
+  "copy_link_button": "링크 복사"
 }

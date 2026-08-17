@@ -174,5 +174,8 @@
   "public_preview_not_found": "Tätä jaettua hakemistoa ei löytynyt.",
   "public_preview_ready": "Latauksesi pitäisi alkaa automaattisesti.",
   "public_preview_retry": "Lataa uudelleen",
-  "public_preview_error": "PDF-tiedoston luomisessa tapahtui virhe."
+  "public_preview_error": "PDF-tiedoston luomisessa tapahtui virhe.",
+  "share_dialog_title": "Jaa tulostettava hakemisto",
+  "share_dialog_description": "Valitse muoto, jossa vastaanottajat näkevät linkin, ja kopioi sitten linkki.",
+  "copy_link_button": "Kopioi linkki"
 }

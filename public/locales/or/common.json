@@ -300,7 +300,11 @@
       "unable_load_directories_error": "ପ୍ରିଣ୍ଟଯୋଗ୍ୟ ଡାଇରେକ୍ଟୋରୀ ଲୋଡ୍ କରିବାରେ ଅସମର୍ଥ",
       "select_directory_first_error": "ପ୍ରଥମେ ଏକ ଡିରେକ୍ଟୋରୀ ଚୟନ କରନ୍ତୁ",
       "unable_create_section_error": "ଏହି ଡିରେକ୍ଟୋରୀରେ ଏକ ବିଭାଗ ତିଆରି କରିବାରେ ଅସମର୍ଥ।",
-      "unable_select_section_error": "ଏହି ଡିରେକ୍ଟୋରୀରେ ଏକ ବିଭାଗ ଚୟନ କରିବାକୁ ଅକ୍ଷମ"
+      "unable_select_section_error": "ଏହି ଡିରେକ୍ଟୋରୀରେ ଏକ ବିଭାଗ ଚୟନ କରିବାକୁ ଅକ୍ଷମ",
+      "view_directory": "ଡିରେକ୍ଟୋରୀ ଦେଖନ୍ତୁ",
+      "include_search_location_label": "ଏହି କ୍ୱେରୀରେ ବର୍ତ୍ତମାନର ସନ୍ଧାନ ସ୍ଥାନ ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ",
+      "preview_label": "ଏହାକୁ ଏହିପରି ସେଭ୍ କରାଯିବ।",
+      "location_conflict_warning": "ଏହି ସ୍ଥାନଟି ଡିରେକ୍ଟୋରୀର ଡିଫଲ୍ଟ ସ୍ଥାନଠାରୁ ଭିନ୍ନ ଏବଂ ଏହାକୁ ଓଭରରାଇଡ କରିବ।"
     },
     "save_list": {
       "open": "ପ୍ରିଣ୍ଟଯୋଗ୍ୟ ଡିରେକ୍ଟୋରୀରେ ତାଲିକାକୁ ସେଭ୍ କରନ୍ତୁ",

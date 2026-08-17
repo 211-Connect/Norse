@@ -174,5 +174,8 @@
   "public_preview_not_found": "این دایرکتوری مشترک پیدا نشد.",
   "public_preview_ready": "دانلود شما باید به طور خودکار شروع شود.",
   "public_preview_retry": "دوباره دانلود کنید",
-  "public_preview_error": "هنگام تولید این PDF مشکلی پیش آمد."
+  "public_preview_error": "هنگام تولید این PDF مشکلی پیش آمد.",
+  "share_dialog_title": "اشتراک‌گذاری دایرکتوری قابل چاپ",
+  "share_dialog_description": "قالبی را که گیرندگان مشاهده می‌کنند انتخاب کنید، سپس لینک را کپی کنید.",
+  "copy_link_button": "کپی کردن لینک"
 }

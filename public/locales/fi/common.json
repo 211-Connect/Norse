@@ -300,7 +300,11 @@
       "unable_load_directories_error": "Tulostettavien hakemistojen lataaminen epäonnistui",
       "select_directory_first_error": "Valitse ensin hakemisto",
       "unable_create_section_error": "Tähän hakemistoon ei voitu luoda osiota",
-      "unable_select_section_error": "Osaa ei voitu valita tästä hakemistosta"
+      "unable_select_section_error": "Osaa ei voitu valita tästä hakemistosta",
+      "view_directory": "Näytä hakemisto",
+      "include_search_location_label": "Sisällytä nykyinen hakusijainti tähän kyselyyn",
+      "preview_label": "Näin se pelastuu",
+      "location_conflict_warning": "Tämä sijainti eroaa hakemiston oletussijainnista ja korvaa sen."
     },
     "save_list": {
       "open": "Tallenna lista tulostettavaan hakemistoon",

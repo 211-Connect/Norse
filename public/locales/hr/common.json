@@ -300,7 +300,11 @@
       "unable_load_directories_error": "Nije moguće učitati ispisive direktorije",
       "select_directory_first_error": "Prvo odaberite direktorij",
       "unable_create_section_error": "Nije moguće stvoriti odjeljak u ovom direktoriju",
-      "unable_select_section_error": "Nije moguće odabrati odjeljak u ovom direktoriju"
+      "unable_select_section_error": "Nije moguće odabrati odjeljak u ovom direktoriju",
+      "view_directory": "Prikaži direktorij",
+      "include_search_location_label": "Uključi trenutnu lokaciju pretraživanja u ovaj upit",
+      "preview_label": "Ovako će se spasiti",
+      "location_conflict_warning": "Ova lokacija se razlikuje od zadane lokacije direktorija i nadjačat će je"
     },
     "save_list": {
       "open": "Spremi popis u direktorij za ispis",

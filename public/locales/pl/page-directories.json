@@ -174,5 +174,8 @@
   "public_preview_not_found": "Nie można odnaleźć tego współdzielonego katalogu.",
   "public_preview_ready": "Pobieranie powinno rozpocząć się automatycznie.",
   "public_preview_retry": "Pobierz ponownie",
-  "public_preview_error": "Wystąpił błąd podczas generowania tego pliku PDF."
+  "public_preview_error": "Wystąpił błąd podczas generowania tego pliku PDF.",
+  "share_dialog_title": "Udostępnij katalog do druku",
+  "share_dialog_description": "Wybierz format, jaki zobaczą odbiorcy, a następnie skopiuj link.",
+  "copy_link_button": "Kopiuj link"
 }

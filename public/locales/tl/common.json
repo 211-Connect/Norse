@@ -300,7 +300,11 @@
       "unable_load_directories_error": "Hindi ma-load ang mga printable na direktoryo",
       "select_directory_first_error": "Pumili muna ng direktoryo",
       "unable_create_section_error": "Hindi makagawa ng seksyon sa direktoryong ito",
-      "unable_select_section_error": "Hindi makapili ng seksyon sa direktoryong ito"
+      "unable_select_section_error": "Hindi makapili ng seksyon sa direktoryong ito",
+      "view_directory": "Tingnan ang direktoryo",
+      "include_search_location_label": "Isama ang kasalukuyang lokasyon ng paghahanap sa query na ito",
+      "preview_label": "Ganito ito maliligtas",
+      "location_conflict_warning": "Iba ang lokasyong ito sa default na lokasyon ng direktoryo at i-o-override ito."
     },
     "save_list": {
       "open": "I-save ang listahan sa direktoryong maaaring i-print",

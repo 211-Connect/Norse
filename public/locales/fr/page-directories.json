@@ -174,5 +174,8 @@
   "public_preview_not_found": "Ce répertoire partagé est introuvable.",
   "public_preview_ready": "Votre téléchargement devrait démarrer automatiquement.",
   "public_preview_retry": "Télécharger à nouveau",
-  "public_preview_error": "Une erreur s'est produite lors de la génération de ce PDF."
+  "public_preview_error": "Une erreur s'est produite lors de la génération de ce PDF.",
+  "share_dialog_title": "Répertoire imprimable partagé",
+  "share_dialog_description": "Choisissez le format que les destinataires verront, puis copiez le lien.",
+  "copy_link_button": "Copier le lien"
 }

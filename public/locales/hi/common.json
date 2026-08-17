@@ -300,7 +300,11 @@
       "unable_load_directories_error": "प्रिंट करने योग्य निर्देशिकाओं को लोड करने में असमर्थ",
       "select_directory_first_error": "सबसे पहले एक डायरेक्टरी चुनें",
       "unable_create_section_error": "इस डायरेक्टरी में सेक्शन बनाने में असमर्थ।",
-      "unable_select_section_error": "इस निर्देशिका में कोई अनुभाग चयनित नहीं किया जा सकता है"
+      "unable_select_section_error": "इस निर्देशिका में कोई अनुभाग चयनित नहीं किया जा सकता है",
+      "view_directory": "निर्देशिका देखें",
+      "include_search_location_label": "इस क्वेरी में वर्तमान खोज स्थान शामिल करें",
+      "preview_label": "इस तरह इसे बचाया जाएगा",
+      "location_conflict_warning": "यह स्थान डायरेक्टरी के डिफ़ॉल्ट स्थान से भिन्न है और उसे ओवरराइड कर देगा।"
     },
     "save_list": {
       "open": "सूची को प्रिंट करने योग्य निर्देशिका में सहेजें",

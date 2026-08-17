@@ -174,5 +174,8 @@
   "public_preview_not_found": "No se pudo encontrar este directorio compartido.",
   "public_preview_ready": "La descarga debería comenzar automáticamente.",
   "public_preview_retry": "Descargar de nuevo",
-  "public_preview_error": "Se produjo un error al generar este PDF."
+  "public_preview_error": "Se produjo un error al generar este PDF.",
+  "share_dialog_title": "Compartir directorio imprimible",
+  "share_dialog_description": "Elige el formato que verán los destinatarios y, a continuación, copia el enlace.",
+  "copy_link_button": "Copiar enlace"
 }

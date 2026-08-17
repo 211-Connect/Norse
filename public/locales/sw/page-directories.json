@@ -174,5 +174,8 @@
   "public_preview_not_found": "Saraka hii iliyoshirikiwa haikuweza kupatikana.",
   "public_preview_ready": "Upakuaji wako unapaswa kuanza kiotomatiki.",
   "public_preview_retry": "Pakua tena",
-  "public_preview_error": "Kuna kitu kimeenda vibaya wakati wa kutengeneza PDF hii."
+  "public_preview_error": "Kuna kitu kimeenda vibaya wakati wa kutengeneza PDF hii.",
+  "share_dialog_title": "Shiriki saraka inayoweza kuchapishwa",
+  "share_dialog_description": "Chagua umbizo ambalo wapokeaji wataona, kisha nakili kiungo.",
+  "copy_link_button": "Nakili kiungo"
 }

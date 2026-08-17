@@ -300,7 +300,11 @@
       "unable_load_directories_error": "Не вдалося завантажити каталоги для друку",
       "select_directory_first_error": "Спочатку виберіть каталог",
       "unable_create_section_error": "Не вдалося створити розділ у цьому каталозі",
-      "unable_select_section_error": "Неможливо вибрати розділ у цьому каталозі"
+      "unable_select_section_error": "Неможливо вибрати розділ у цьому каталозі",
+      "view_directory": "Переглянути каталог",
+      "include_search_location_label": "Включити поточне місцезнаходження пошуку в цей запит",
+      "preview_label": "Ось так це буде збережено",
+      "location_conflict_warning": "Це розташування відрізняється від розташування каталогу за замовчуванням і замінить його."
     },
     "save_list": {
       "open": "Зберегти список у каталог для друку",

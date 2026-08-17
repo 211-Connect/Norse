@@ -300,7 +300,11 @@
       "unable_load_directories_error": "Waawaa loowde regginorde tappirde",
       "select_directory_first_error": "Suɓo regginorde ko adii",
       "unable_create_section_error": "Waawaa sosde feccere e ndee regginorde",
-      "unable_select_section_error": "Waawaa suɓaade feccere e ndee regginorde"
+      "unable_select_section_error": "Waawaa suɓaade feccere e ndee regginorde",
+      "view_directory": "Yiylo regginorde",
+      "include_search_location_label": "Hawtin nokku njiylawu jooni oo e ndee naamndal",
+      "preview_label": "Ko nii ɗum hisnirtee",
+      "location_conflict_warning": "Oo nokku ina seerti e nokku gonɗo e regginorde ndee, maa ɗum ustoy ɗum"
     },
     "save_list": {
       "open": "Hisnu doggol ngol e regginorde tappirde",

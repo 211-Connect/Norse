@@ -174,5 +174,8 @@
   "public_preview_not_found": "Hindi mahanap ang nakabahaging direktoryong ito.",
   "public_preview_ready": "Dapat awtomatikong magsimula ang iyong pag-download.",
   "public_preview_retry": "I-download muli",
-  "public_preview_error": "Nagkaroon ng problema sa pagbuo ng PDF na ito."
+  "public_preview_error": "Nagkaroon ng problema sa pagbuo ng PDF na ito.",
+  "share_dialog_title": "Ibahagi ang direktoryo na maaaring i-print",
+  "share_dialog_description": "Piliin ang format na makikita ng mga tatanggap, pagkatapos ay kopyahin ang link.",
+  "copy_link_button": "Kopyahin ang link"
 }

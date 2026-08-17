@@ -300,7 +300,11 @@
       "unable_load_directories_error": "Não foi possível carregar diretórios imprimíveis.",
       "select_directory_first_error": "Selecione primeiro um diretório",
       "unable_create_section_error": "Não foi possível criar uma seção neste diretório.",
-      "unable_select_section_error": "Não foi possível selecionar uma seção neste diretório."
+      "unable_select_section_error": "Não foi possível selecionar uma seção neste diretório.",
+      "view_directory": "Ver diretório",
+      "include_search_location_label": "Inclua a localização de pesquisa atual nesta consulta.",
+      "preview_label": "É assim que será salvo.",
+      "location_conflict_warning": "Esta localização é diferente da localização padrão do diretório e irá substituí-la."
     },
     "save_list": {
       "open": "Salvar lista em diretório imprimível",

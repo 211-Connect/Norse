@@ -300,7 +300,11 @@
       "unable_load_directories_error": "Galmeewwan maxxanfamuu danda'an fe'uu hin dandeenye",
       "select_directory_first_error": "Dursa galmee filadhu",
       "unable_create_section_error": "Galmee kana keessatti kutaa uumuu hin dandeenye",
-      "unable_select_section_error": "Galmee kana keessatti kutaa filachuu hin dandeenye"
+      "unable_select_section_error": "Galmee kana keessatti kutaa filachuu hin dandeenye",
+      "view_directory": "Galmee ilaali",
+      "include_search_location_label": "Gaaffii kana keessatti bakka barbaacha ammaa dabali",
+      "preview_label": "Akkasitti ni fayya",
+      "location_conflict_warning": "Bakki kun bakka durtii galmee irraa adda waan ta'eef ni irra darba"
     },
     "save_list": {
       "open": "Tarree gara galmee maxxanfamuu danda'utti saagi",
