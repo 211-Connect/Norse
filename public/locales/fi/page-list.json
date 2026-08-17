@@ -66,6 +66,7 @@
     "print": "Tulosta tämä lista",
     "update": "Päivitä listan tiedot",
     "purge": "Tyhjennä kaikki suosikit tästä listasta",
-    "delete": "Poista tämä lista"
+    "delete": "Poista tämä lista",
+    "share": "Jaa tämä lista"
   }
 }

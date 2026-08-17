@@ -300,7 +300,11 @@
       "unable_load_directories_error": "Tsis tuaj yeem thauj cov ntawv qhia chaw luam tawm",
       "select_directory_first_error": "Xaiv ib daim nplaub tshev ua ntej",
       "unable_create_section_error": "Tsis tuaj yeem tsim ib ntu hauv daim nplaub tshev no",
-      "unable_select_section_error": "Tsis tuaj yeem xaiv ib ntu hauv daim ntawv teev npe no"
+      "unable_select_section_error": "Tsis tuaj yeem xaiv ib ntu hauv daim ntawv teev npe no",
+      "view_directory": "Saib daim ntawv teev npe",
+      "include_search_location_label": "Muab qhov chaw tshawb nrhiav tam sim no rau hauv cov lus nug no",
+      "preview_label": "Qhov no yog li cas nws yuav raug cawm dim",
+      "location_conflict_warning": "Qhov chaw no txawv ntawm qhov chaw nyob ntawm daim nplaub tshev thiab yuav hloov nws."
     },
     "save_list": {
       "open": "Txuag daim ntawv teev npe rau hauv phau ntawv teev npe uas luam tawm tau",

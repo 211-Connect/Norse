@@ -174,5 +174,8 @@
   "public_preview_not_found": "Ngalɗoo regginorde renndinde yiytaaka.",
   "public_preview_ready": "Sosde maa ina foti fuɗɗaade ɗoon e ɗoon.",
   "public_preview_retry": "Sokkit kadi",
-  "public_preview_error": "Won ko ŋakki e feewnude ndeeɗoo PDF."
+  "public_preview_error": "Won ko ŋakki e feewnude ndeeɗoo PDF.",
+  "share_dialog_title": "Renndinde regginorde tappirde",
+  "share_dialog_description": "Suɓo mbaadi ndi keɓooɓe ɓee njiyata, caggal ɗuum ƴettu jokkorde ndee.",
+  "copy_link_button": "Koppi jokkorde"
 }

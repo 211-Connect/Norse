@@ -174,5 +174,8 @@
   "public_preview_not_found": "Ovaj dijeljeni direktorij nije pronađen.",
   "public_preview_ready": "Preuzimanje bi trebalo započeti automatski.",
   "public_preview_retry": "Preuzmi ponovno",
-  "public_preview_error": "Došlo je do pogreške prilikom generiranja ovog PDF-a."
+  "public_preview_error": "Došlo je do pogreške prilikom generiranja ovog PDF-a.",
+  "share_dialog_title": "Dijeli ispisivi direktorij",
+  "share_dialog_description": "Odaberite format koji će primatelji vidjeti, a zatim kopirajte poveznicu.",
+  "copy_link_button": "Kopiraj poveznicu"
 }

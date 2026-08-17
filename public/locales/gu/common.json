@@ -300,7 +300,11 @@
       "unable_load_directories_error": "છાપવા યોગ્ય ડિરેક્ટરીઓ લોડ કરવામાં અસમર્થ",
       "select_directory_first_error": "પહેલા ડિરેક્ટરી પસંદ કરો",
       "unable_create_section_error": "આ ડિરેક્ટરીમાં વિભાગ બનાવી શકાતો નથી.",
-      "unable_select_section_error": "આ ડિરેક્ટરીમાં વિભાગ પસંદ કરી શકાતો નથી."
+      "unable_select_section_error": "આ ડિરેક્ટરીમાં વિભાગ પસંદ કરી શકાતો નથી.",
+      "view_directory": "ડિરેક્ટરી જુઓ",
+      "include_search_location_label": "આ ક્વેરીમાં વર્તમાન શોધ સ્થાન શામેલ કરો",
+      "preview_label": "આ રીતે બચશે",
+      "location_conflict_warning": "આ સ્થાન ડિરેક્ટરીના ડિફોલ્ટ સ્થાનથી અલગ છે અને તેને ઓવરરાઇડ કરશે."
     },
     "save_list": {
       "open": "છાપવા યોગ્ય ડિરેક્ટરીમાં સૂચિ સાચવો",

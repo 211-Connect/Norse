@@ -300,7 +300,11 @@
       "unable_load_directories_error": "Impossible de charger les répertoires imprimables",
       "select_directory_first_error": "Sélectionnez d'abord un répertoire",
       "unable_create_section_error": "Impossible de créer une section dans ce répertoire",
-      "unable_select_section_error": "Impossible de sélectionner une section dans ce répertoire"
+      "unable_select_section_error": "Impossible de sélectionner une section dans ce répertoire",
+      "view_directory": "Voir le répertoire",
+      "include_search_location_label": "Incluez l'emplacement de recherche actuel dans cette requête.",
+      "preview_label": "Voici comment il sera sauvegardé",
+      "location_conflict_warning": "Cet emplacement est différent de l'emplacement par défaut du répertoire et le remplacera."
     },
     "save_list": {
       "open": "Enregistrer la liste dans le répertoire imprimable",

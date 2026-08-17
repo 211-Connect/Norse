@@ -66,6 +66,7 @@
     "print": "Luam daim ntawv teev npe no",
     "update": "Hloov kho cov ntaub ntawv teev npe",
     "purge": "Tshem tawm txhua yam nyiam ntawm daim ntawv teev npe no",
-    "delete": "Tshem daim ntawv teev npe no"
+    "delete": "Tshem daim ntawv teev npe no",
+    "share": "Qhia daim ntawv teev npe no"
   }
 }

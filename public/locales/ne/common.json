@@ -300,7 +300,11 @@
       "unable_load_directories_error": "प्रिन्टयोग्य डाइरेक्टरीहरू लोड गर्न असमर्थ",
       "select_directory_first_error": "पहिला एउटा निर्देशिका चयन गर्नुहोस्",
       "unable_create_section_error": "यस निर्देशिकामा खण्ड सिर्जना गर्न सकिएन।",
-      "unable_select_section_error": "यस निर्देशिकामा खण्ड चयन गर्न असमर्थ"
+      "unable_select_section_error": "यस निर्देशिकामा खण्ड चयन गर्न असमर्थ",
+      "view_directory": "निर्देशिका हेर्नुहोस्",
+      "include_search_location_label": "यस क्वेरीमा हालको खोज स्थान समावेश गर्नुहोस्",
+      "preview_label": "यसरी बचाइनेछ",
+      "location_conflict_warning": "यो स्थान निर्देशिकाको पूर्वनिर्धारित स्थान भन्दा फरक छ र यसलाई ओभरराइड गर्नेछ।"
     },
     "save_list": {
       "open": "सूचीलाई प्रिन्ट गर्न मिल्ने डाइरेक्टरीमा सेभ गर्नुहोस्",

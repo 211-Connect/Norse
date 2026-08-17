@@ -28,8 +28,8 @@
   "interpretation_services": "د ژباړې خدمتونه",
   "other_information": "نور معلومات",
   "organization_url": "د سازمان URL",
-  "contacts": "دې خدمت ته د لاسرسي لپاره، اړیکه ونیسئ:",
   "location_name": "د ځای نوم",
   "resource_name": "د سرچینې نوم",
-  "quality": "د کیفیت معلومات"
+  "quality": "د کیفیت معلومات",
+  "contacts": "د اړیکو اضافي معلومات"
 }

@@ -300,7 +300,11 @@
       "unable_load_directories_error": "印刷可能なディレクトリを読み込めません",
       "select_directory_first_error": "まずディレクトリを選択してください",
       "unable_create_section_error": "このディレクトリにセクションを作成できません",
-      "unable_select_section_error": "このディレクトリ内のセクションを選択できません"
+      "unable_select_section_error": "このディレクトリ内のセクションを選択できません",
+      "view_directory": "ディレクトリを表示",
+      "include_search_location_label": "このクエリに現在の検索場所を含める",
+      "preview_label": "こうして保存されます",
+      "location_conflict_warning": "この場所はディレクトリのデフォルトの場所とは異なり、それを上書きします。"
     },
     "save_list": {
       "open": "リストを印刷可能なディレクトリに保存する",

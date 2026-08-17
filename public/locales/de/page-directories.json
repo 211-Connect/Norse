@@ -174,5 +174,8 @@
   "public_preview_not_found": "Dieses freigegebene Verzeichnis konnte nicht gefunden werden.",
   "public_preview_ready": "Ihr Download sollte automatisch starten.",
   "public_preview_retry": "Erneut herunterladen",
-  "public_preview_error": "Bei der Erstellung dieser PDF-Datei ist ein Fehler aufgetreten."
+  "public_preview_error": "Bei der Erstellung dieser PDF-Datei ist ein Fehler aufgetreten.",
+  "share_dialog_title": "Druckbares Verzeichnis teilen",
+  "share_dialog_description": "Wählen Sie das Format aus, das die Empfänger sehen sollen, und kopieren Sie dann den Link.",
+  "copy_link_button": "Link kopieren"
 }

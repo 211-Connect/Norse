@@ -174,5 +174,8 @@
   "public_preview_not_found": "Buuggan la wadaago lama heli karin.",
   "public_preview_ready": "Soo dejintaadu waa inay si toos ah u bilaabataa.",
   "public_preview_retry": "Mar kale soo dejiso",
-  "public_preview_error": "Wax baa qaldamay sameynta PDF-kan."
+  "public_preview_error": "Wax baa qaldamay sameynta PDF-kan.",
+  "share_dialog_title": "La wadaag buugga la daabacan karo",
+  "share_dialog_description": "Dooro qaabka ay dadka qaata arki doonaan, ka dibna nuqul ka samee xiriirka.",
+  "copy_link_button": "Nuqul ka samee xiriirka"
 }

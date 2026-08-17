@@ -174,5 +174,8 @@
   "public_preview_not_found": "لم يتم العثور على هذا المجلد المشترك.",
   "public_preview_ready": "سيبدأ التنزيل تلقائيًا.",
   "public_preview_retry": "قم بالتنزيل مرة أخرى",
-  "public_preview_error": "حدث خطأ ما أثناء إنشاء ملف PDF هذا."
+  "public_preview_error": "حدث خطأ ما أثناء إنشاء ملف PDF هذا.",
+  "share_dialog_title": "دليل قابل للمشاركة والطباعة",
+  "share_dialog_description": "اختر التنسيق الذي سيراه المستلمون، ثم انسخ الرابط.",
+  "copy_link_button": "نسخ الوصلة"
 }

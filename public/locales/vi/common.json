@@ -300,7 +300,11 @@
       "unable_load_directories_error": "Không thể tải thư mục có thể in",
       "select_directory_first_error": "Trước tiên hãy chọn thư mục.",
       "unable_create_section_error": "Không thể tạo mục trong thư mục này.",
-      "unable_select_section_error": "Không thể chọn một mục trong thư mục này."
+      "unable_select_section_error": "Không thể chọn một mục trong thư mục này.",
+      "view_directory": "Xem thư mục",
+      "include_search_location_label": "Bao gồm vị trí tìm kiếm hiện tại trong truy vấn này.",
+      "preview_label": "Đây là cách nó sẽ được lưu",
+      "location_conflict_warning": "Vị trí này khác với vị trí mặc định của thư mục và sẽ ghi đè lên vị trí mặc định đó."
     },
     "save_list": {
       "open": "Lưu danh sách vào thư mục có thể in",

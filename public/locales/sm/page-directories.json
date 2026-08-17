@@ -174,5 +174,8 @@
   "public_preview_not_found": "E le mafai ona maua lenei fa'asinomaga fa'asoa.",
   "public_preview_ready": "E tatau ona otometi lava ona amata lau download.",
   "public_preview_retry": "Toe sii mai",
-  "public_preview_error": "Sa i ai se mea na sese i le fatuina o lenei PDF."
+  "public_preview_error": "Sa i ai se mea na sese i le fatuina o lenei PDF.",
+  "share_dialog_title": "Faasoa atu le tusi fa'asino e mafai ona lolomi",
+  "share_dialog_description": "Filifili le faatulagaga o le a vaʻaia e tagata e mauaina, ona kopi lea o le soʻotaga.",
+  "copy_link_button": "Kopi le so'otaga"
 }

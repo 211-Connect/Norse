@@ -300,7 +300,11 @@
       "unable_load_directories_error": "Ntibishoboka gufungura ububiko bw'ibitabo bushobora gucapwa",
       "select_directory_first_error": "Banza uhitemo ububiko",
       "unable_create_section_error": "Ntibishoboka gukora igice muri iyi directory",
-      "unable_select_section_error": "Ntabwo nashoboye guhitamo igice muri iyi directory"
+      "unable_select_section_error": "Ntabwo nashoboye guhitamo igice muri iyi directory",
+      "view_directory": "Reba ububiko",
+      "include_search_location_label": "Shyiramo aho ishakisha riri ubu muri iki kibazo",
+      "preview_label": "Uku ni ko bizarokorwa",
+      "location_conflict_warning": "Aha hantu hatandukanye n'aho ububiko busanzwe buri kandi hazahinduka"
     },
     "save_list": {
       "open": "Bika urutonde mu bubiko bw'inyandiko bushobora gucapwa",

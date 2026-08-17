@@ -174,5 +174,8 @@
   "public_preview_not_found": "ບໍ່ພົບໄດເລກະທໍລີທີ່ແບ່ງປັນນີ້.",
   "public_preview_ready": "ການດາວໂຫຼດຂອງທ່ານຄວນເລີ່ມຕົ້ນໂດຍອັດຕະໂນມັດ.",
   "public_preview_retry": "ດາວໂຫຼດອີກຄັ້ງ",
-  "public_preview_error": "ມີບາງຢ່າງຜິດພາດໃນການສ້າງ PDF ນີ້."
+  "public_preview_error": "ມີບາງຢ່າງຜິດພາດໃນການສ້າງ PDF ນີ້.",
+  "share_dialog_title": "ແບ່ງປັນລາຍຊື່ທີ່ສາມາດພິມໄດ້",
+  "share_dialog_description": "ເລືອກຮູບແບບທີ່ຜູ້ຮັບຈະເຫັນ, ຈາກນັ້ນຄັດລອກລິ້ງ.",
+  "copy_link_button": "ສຳເນົາລິ້ງ"
 }

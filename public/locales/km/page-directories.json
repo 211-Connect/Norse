@@ -174,5 +174,8 @@
   "public_preview_not_found": "រកមិនឃើញថតឯកសារដែលបានចែករំលែកនេះទេ។",
   "public_preview_ready": "ការទាញយករបស់អ្នកគួរតែចាប់ផ្តើមដោយស្វ័យប្រវត្តិ។",
   "public_preview_retry": "ទាញយកម្តងទៀត",
-  "public_preview_error": "មានអ្វីមួយខុសប្រក្រតីក្នុងការបង្កើត PDF នេះ។"
+  "public_preview_error": "មានអ្វីមួយខុសប្រក្រតីក្នុងការបង្កើត PDF នេះ។",
+  "share_dialog_title": "ចែករំលែកថតដែលអាចបោះពុម្ពបាន",
+  "share_dialog_description": "ជ្រើសរើសទម្រង់ដែលអ្នកទទួលនឹងឃើញ បន្ទាប់មកចម្លងតំណ។",
+  "copy_link_button": "ចម្លងតំណ"
 }

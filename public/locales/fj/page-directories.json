@@ -174,5 +174,8 @@
   "public_preview_not_found": "E sega ni kunei rawa na dairekita ni veiwasei oqo.",
   "public_preview_ready": "Na nomu lavetaka e dodonu me tekivu vakataki koya.",
   "public_preview_retry": "Lavetaka tale",
-  "public_preview_error": "E dua na ka e cala ena kena vakatuburi na PDF oqo."
+  "public_preview_error": "E dua na ka e cala ena kena vakatuburi na PDF oqo.",
+  "share_dialog_title": "Wasea na dairekita ni tabaki",
+  "share_dialog_description": "Digitaka na ituvatuva era na raica na ciqomi, qai kopitaka na isema.",
+  "copy_link_button": "Kopitaka na isema"
 }

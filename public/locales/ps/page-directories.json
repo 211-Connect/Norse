@@ -174,5 +174,8 @@
   "public_preview_not_found": "دا شریک شوی ډایرکټرۍ ونه موندل شوه.",
   "public_preview_ready": "ستاسو ډاونلوډ باید په اتوماتيک ډول پیل شي.",
   "public_preview_retry": "بیا ډاونلوډ کړئ",
-  "public_preview_error": "د دې PDF په جوړولو کې یو څه غلط شو."
+  "public_preview_error": "د دې PDF په جوړولو کې یو څه غلط شو.",
+  "share_dialog_title": "د چاپ وړ ډایرکټرۍ شریک کړئ",
+  "share_dialog_description": "هغه بڼه غوره کړئ چې ترلاسه کوونکي به یې وګوري، بیا لینک کاپي کړئ.",
+  "copy_link_button": "لینک کاپي کړئ"
 }

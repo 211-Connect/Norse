@@ -174,5 +174,8 @@
   "public_preview_not_found": "Iyi directory yasangiwe ntiyashoboye kuboneka.",
   "public_preview_ready": "Gukuramo kwawe bigomba gutangira mu buryo bwikora.",
   "public_preview_retry": "Ongera ukuremo",
-  "public_preview_error": "Hari ikintu kitagenze neza mu gukora iyi PDF."
+  "public_preview_error": "Hari ikintu kitagenze neza mu gukora iyi PDF.",
+  "share_dialog_title": "Sangiza ububiko bw'ibitabo bushobora gucapwa",
+  "share_dialog_description": "Hitamo imiterere abagenerwabikorwa bazabona, hanyuma ukope iyi link.",
+  "copy_link_button": "Kopisha iyi link"
 }

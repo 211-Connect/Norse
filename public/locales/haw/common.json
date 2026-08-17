@@ -300,7 +300,11 @@
       "unable_load_directories_error": "ʻAʻole hiki ke hoʻouka i nā papa kuhikuhi hiki ke paʻi ʻia",
       "select_directory_first_error": "E koho mua i kahi papa kuhikuhi",
       "unable_create_section_error": "ʻAʻole hiki ke hana i kahi ʻāpana ma kēia papa kuhikuhi",
-      "unable_select_section_error": "ʻAʻole hiki ke koho i kahi ʻāpana ma kēia papa kuhikuhi"
+      "unable_select_section_error": "ʻAʻole hiki ke koho i kahi ʻāpana ma kēia papa kuhikuhi",
+      "view_directory": "Nānā i ka papa kuhikuhi",
+      "include_search_location_label": "E hoʻokomo i ka wahi huli o kēia manawa i loko o kēia nīnau",
+      "preview_label": "Penei e mālama ʻia ai",
+      "location_conflict_warning": "He ʻokoʻa kēia wahi mai ka wahi paʻamau o ka papa kuhikuhi a e hoʻololi ia mea"
     },
     "save_list": {
       "open": "E mālama i ka papa inoa i ka papa kuhikuhi hiki ke paʻi ʻia",

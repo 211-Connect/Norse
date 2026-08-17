@@ -300,7 +300,11 @@
       "unable_load_directories_error": "Druckbare Verzeichnisse konnten nicht geladen werden",
       "select_directory_first_error": "Wählen Sie zuerst ein Verzeichnis aus.",
       "unable_create_section_error": "Es konnte kein Abschnitt in diesem Verzeichnis erstellt werden.",
-      "unable_select_section_error": "Es konnte kein Abschnitt in diesem Verzeichnis ausgewählt werden."
+      "unable_select_section_error": "Es konnte kein Abschnitt in diesem Verzeichnis ausgewählt werden.",
+      "view_directory": "Verzeichnis anzeigen",
+      "include_search_location_label": "Schließen Sie den aktuellen Suchort in diese Abfrage ein.",
+      "preview_label": "So wird es gespeichert",
+      "location_conflict_warning": "Dieser Speicherort weicht vom Standardspeicherort des Verzeichnisses ab und überschreibt diesen."
     },
     "save_list": {
       "open": "Liste in druckbares Verzeichnis speichern",

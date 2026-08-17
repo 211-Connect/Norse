@@ -300,7 +300,11 @@
       "unable_load_directories_error": "قادر به بارگذاری دایرکتوری‌های قابل چاپ نیست",
       "select_directory_first_error": "ابتدا یک دایرکتوری انتخاب کنید",
       "unable_create_section_error": "ایجاد بخش در این فهرست امکان‌پذیر نیست",
-      "unable_select_section_error": "نمی‌توان بخشی را در این فهرست انتخاب کرد"
+      "unable_select_section_error": "نمی‌توان بخشی را در این فهرست انتخاب کرد",
+      "view_directory": "مشاهده دایرکتوری",
+      "include_search_location_label": "مکان جستجوی فعلی را در این پرس و جو وارد کنید",
+      "preview_label": "اینجوری ذخیره میشه",
+      "location_conflict_warning": "این مکان با مکان پیش‌فرض دایرکتوری متفاوت است و آن را لغو خواهد کرد"
     },
     "save_list": {
       "open": "ذخیره لیست در دایرکتوری قابل چاپ",

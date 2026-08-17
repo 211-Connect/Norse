@@ -174,5 +174,8 @@
   "public_preview_not_found": "ʻAʻole hiki ke loaʻa kēia papa kuhikuhi i kaʻana like ʻia.",
   "public_preview_ready": "Pono e hoʻomaka koke kāu hoʻoiho ʻana.",
   "public_preview_retry": "Hoʻoiho hou",
-  "public_preview_error": "Ua hewa kekahi mea i ka hana ʻana i kēia PDF."
+  "public_preview_error": "Ua hewa kekahi mea i ka hana ʻana i kēia PDF.",
+  "share_dialog_title": "Kaʻana like i ka papa kuhikuhi hiki ke paʻi ʻia",
+  "share_dialog_description": "E koho i ke ʻano e ʻike ai ka poʻe loaʻa, a laila kope i ka loulou.",
+  "copy_link_button": "Kope loulou"
 }

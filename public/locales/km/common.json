@@ -300,7 +300,11 @@
       "unable_load_directories_error": "មិនអាចផ្ទុកថតដែលអាចបោះពុម្ពបានទេ",
       "select_directory_first_error": "ជ្រើសរើសថតឯកសារជាមុនសិន",
       "unable_create_section_error": "មិនអាចបង្កើតផ្នែកនៅក្នុងថតនេះបានទេ",
-      "unable_select_section_error": "មិនអាចជ្រើសរើសផ្នែកនៅក្នុងថតនេះបានទេ"
+      "unable_select_section_error": "មិនអាចជ្រើសរើសផ្នែកនៅក្នុងថតនេះបានទេ",
+      "view_directory": "មើល​ថតឯកសារ",
+      "include_search_location_label": "រួមបញ្ចូលទីតាំងស្វែងរកបច្ចុប្បន្ននៅក្នុងសំណួរនេះ",
+      "preview_label": "នេះជារបៀបដែលវានឹងត្រូវបានរក្សាទុក",
+      "location_conflict_warning": "ទីតាំងនេះខុសពីទីតាំងលំនាំដើមរបស់ថត ហើយនឹងជំនួសវា"
     },
     "save_list": {
       "open": "រក្សាទុកបញ្ជីទៅថតដែលអាចបោះពុម្ពបាន",

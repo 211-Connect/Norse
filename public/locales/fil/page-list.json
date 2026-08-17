@@ -66,6 +66,7 @@
     "print": "I-print ang listahang ito",
     "update": "I-update ang mga detalye ng listahan",
     "purge": "Burahin ang lahat ng paborito mula sa listahang ito",
-    "delete": "Burahin ang listahang ito"
+    "delete": "Burahin ang listahang ito",
+    "share": "Ibahagi ang listahang ito"
   }
 }
