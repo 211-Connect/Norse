@@ -11,10 +11,10 @@ export async function getFavoriteList(
   locale: string,
   tenantId?: string,
 ) {
-  const headers = await getAuthHeaders(tenantId);
+  const authHeaders = await getAuthHeaders(tenantId);
   const response = await favoriteListApiClient.favoriteListControllerFindOne(
     { id, locale, tenant_id: tenantId },
-    { headers },
+    { headers: { ...authHeaders, ['accept-language']: locale } },
   );
 
   if (!response.data) {
