@@ -54,6 +54,43 @@ and the `mboa` tenant's special deployment).
 - `tsconfig.json` has `strict: false` but `strictNullChecks: true` — null/undefined handling is checked, other strict rules are not.
 - ESLint ignores generated/vendored code: `src/payload/migrations`, `src/payload/payload-types.ts`, `src/lib/api/generated`, `.agents/`, `.claude/`, `widget/`. Don't hand-edit files under these paths — regenerate instead.
 
+## Available Skills
+
+Skills live in `.agents/skills/`. Load one via the skill tool when its trigger matches the task at hand.
+
+### UI & Design
+
+- **adapt** ([`.agents/skills/adapt`](.agents/skills/adapt/SKILL.md)) — responsive design across screen sizes/devices. Use for breakpoints, mobile layouts, touch targets, viewport adaptation.
+- **animate** ([`.agents/skills/animate`](.agents/skills/animate/SKILL.md)) — add purposeful animation and micro-interactions to an existing feature.
+- **audit** ([`.agents/skills/audit`](.agents/skills/audit/SKILL.md)) — run an accessibility/performance/theming/anti-pattern audit, producing a scored, severity-rated report.
+- **bolder** ([`.agents/skills/bolder`](.agents/skills/bolder/SKILL.md)) — amplify a bland, generic, or overly safe design to add visual impact and personality.
+- **clarify** ([`.agents/skills/clarify`](.agents/skills/clarify/SKILL.md)) — improve confusing UX copy: error messages, labels, microcopy, instructions.
+- **colorize** ([`.agents/skills/colorize`](.agents/skills/colorize/SKILL.md)) — add strategic color to a monochromatic or dull-looking feature.
+- **delight** ([`.agents/skills/delight`](.agents/skills/delight/SKILL.md)) — add joy, personality, and small delightful touches to make an interface memorable.
+- **distill** ([`.agents/skills/distill`](.agents/skills/distill/SKILL.md)) — simplify and declutter a UI by stripping unnecessary complexity.
+- **impeccable** ([`.agents/skills/impeccable`](.agents/skills/impeccable/SKILL.md)) — build distinctive, production-grade, non-generic frontend UI. Use for new components/pages/apps, or when another design skill needs project context (`craft`/`teach`/`extract` modes).
+- **layout** ([`.agents/skills/layout`](.agents/skills/layout/SKILL.md)) — fix spacing, visual rhythm, and hierarchy problems (monotonous grids, crowded UI, alignment).
+- **optimize** ([`.agents/skills/optimize`](.agents/skills/optimize/SKILL.md)) — diagnose and fix UI performance: slow loads, jank, bundle size, images.
+- **overdrive** ([`.agents/skills/overdrive`](.agents/skills/overdrive/SKILL.md)) — push a UI implementation to the technical extreme (shaders, spring physics, scroll effects) when asked to "wow" or go all-out.
+- **polish** ([`.agents/skills/polish`](.agents/skills/polish/SKILL.md)) — final pre-ship pass fixing alignment/spacing/consistency micro-issues.
+- **quieter** ([`.agents/skills/quieter`](.agents/skills/quieter/SKILL.md)) — tone down an overly loud, aggressive, or garish design.
+- **shape** ([`.agents/skills/shape`](.agents/skills/shape/SKILL.md)) — plan the UX/UI for a feature _before_ writing code; produces a design brief.
+- **typeset** ([`.agents/skills/typeset`](.agents/skills/typeset/SKILL.md)) — fix typography: font choice, hierarchy, sizing, weight, readability.
+- **web-design-guidelines** ([`.agents/skills/web-design-guidelines`](.agents/skills/web-design-guidelines/SKILL.md)) — review UI code against Web Interface Guidelines for accessibility/UX compliance.
+
+### Framework & Platform Specific
+
+- **arcjet** ([`.agents/skills/arcjet`](.agents/skills/arcjet/SKILL.md)) — add Arcjet security (rate limiting, bot detection, prompt-injection/PII blocking) to any code path: routes, API endpoints, AI tool calls, background jobs.
+- **google-cloud-recipe-auth** ([`.agents/skills/google-cloud-recipe-auth`](.agents/skills/google-cloud-recipe-auth/SKILL.md)) — authenticate/authorize to Google Cloud services (ADC, service identities, human users).
+- **jotai** ([`.agents/skills/jotai`](.agents/skills/jotai/SKILL.md)) — Jotai adapter for json-render's `StateStore` interface (`@json-render/jotai`).
+- **keycloak-admin** ([`.agents/skills/keycloak-admin`](.agents/skills/keycloak-admin/SKILL.md)) — Keycloak realm/client/OAuth/user/role/group/theme administration via the Admin API.
+- **payload** ([`.agents/skills/payload`](.agents/skills/payload/SKILL.md)) — work with Payload CMS collections, fields, hooks, access control; debugging validation, relationship, or transaction issues. See the Payload Feature Workflow below.
+- **playwright-cli** ([`.agents/skills/playwright-cli`](.agents/skills/playwright-cli/SKILL.md)) — browser automation for navigating pages, filling forms, screenshots, and e2e-style extraction.
+- **react-pdf** ([`.agents/skills/react-pdf`](.agents/skills/react-pdf/SKILL.md)) — generate PDF documents (invoices, reports, forms) with `@react-pdf/renderer`. Prefer over a generic "pdf" skill.
+- **vercel-composition-patterns** ([`.agents/skills/vercel-composition-patterns`](.agents/skills/vercel-composition-patterns/SKILL.md)) — React composition patterns (compound components, render props, context) for refactoring boolean-prop-heavy components or designing reusable APIs.
+- **vercel-react-best-practices** ([`.agents/skills/vercel-react-best-practices`](.agents/skills/vercel-react-best-practices/SKILL.md)) — React/Next.js performance guidelines (components, data fetching, bundling) from Vercel Engineering.
+- **vercel-react-view-transitions** ([`.agents/skills/vercel-react-view-transitions`](.agents/skills/vercel-react-view-transitions/SKILL.md)) — implement React's View Transition API for page/route transitions, shared-element animations, list reorder, enter/exit animations.
+
 ## Payload Feature Workflow
 
 When working on a Payload feature, follow this workflow:
