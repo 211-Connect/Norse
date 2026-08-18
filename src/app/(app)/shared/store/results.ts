@@ -22,6 +22,7 @@ export type ResultType = {
   attributeValues: Record<string, string>;
   eligibility: string | null;
   applicationProcess: string | null;
+  hours: string | null;
   currentListId?: string;
   onRemoveFromList?: (listId: string, favoriteId: string) => void;
 };

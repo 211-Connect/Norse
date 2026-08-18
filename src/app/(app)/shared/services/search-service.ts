@@ -94,6 +94,7 @@ function transformSearchHits(
       taxonomies: hit?._source?.taxonomies ?? null,
       eligibility: hit?._source?.service?.eligibility ?? null,
       applicationProcess: hit?._source?.service?.application_process ?? null,
+      hours: hit?._source?.schedule ?? null,
       attributeValues: hit?._source?.attribute_values ?? null,
       facets: transformedFacets.length > 0 ? transformedFacets : null,
     };

@@ -16,6 +16,7 @@ import {
   CategoriesComponent,
   CustomAttributeComponent,
   DescriptionComponent,
+  HoursComponent,
   LocationNameComponent,
   LocationNameSubtitleComponent,
   PhoneComponent,
@@ -36,6 +37,7 @@ export const searchCardComponentRegistry: Record<
   [SearchCardComponentId.SERVICE_NAME]: ServiceNameComponent,
   [SearchCardComponentId.ELIGIBILITY]: EligibilityComponent,
   [SearchCardComponentId.APPLICATION_PROCESS]: ApplicationProcessComponent,
+  [SearchCardComponentId.HOURS]: HoursComponent,
   [SearchCardComponentId.LOCATION_NAME]: LocationNameComponent,
   [SearchCardComponentId.LOCATION_NAME_SUBTITLE]: LocationNameSubtitleComponent,
   [SearchCardComponentId.ADDRESS]: AddressComponent,
@@ -95,6 +97,8 @@ export function shouldSearchCardComponentRender(
       return Boolean(result.eligibility);
     case SearchCardComponentId.APPLICATION_PROCESS:
       return Boolean(result.applicationProcess);
+    case SearchCardComponentId.HOURS:
+      return Boolean(result.hours);
     case SearchCardComponentId.LOCATION_NAME:
       return Boolean(result.locationName);
     case SearchCardComponentId.LOCATION_NAME_SUBTITLE:
