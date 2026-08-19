@@ -15,6 +15,7 @@ import {
   openFavoritesDialogForList,
   removeFirstResourceFromListPage,
   removeFromListViaDialog,
+  resetLocalFavoritesStorage,
   searchAndGetFirstResult,
   test,
   waitForFavoriteListPage,
@@ -107,6 +108,20 @@ test.describe('Favorites Feature (Authenticated)', () => {
     });
 
     await expect(page.getByText(listName)).toBeVisible({
+      timeout: ASYNC_UI_TIMEOUT_MS,
+    });
+  });
+
+  test('should show the empty state for a newly created list', async ({
+    page,
+  }) => {
+    await goToFavorites(page);
+
+    const listCard = page.getByText(listName).first();
+    await listCard.click();
+    await waitForFavoriteListPage(page);
+
+    await expect(page.getByText(/nothing here yet/i)).toBeVisible({
       timeout: ASYNC_UI_TIMEOUT_MS,
     });
   });
@@ -264,6 +279,85 @@ test.describe('Favorites Feature (Authenticated)', () => {
     await closeFavoritesDialog(page);
   });
 
+  test('should cancel and then confirm clearing all favorites from the list', async ({
+    page,
+  }) => {
+    await searchAndGetFirstResult(page, {
+      query: 'food',
+      query_label: 'food',
+      query_type: 'text',
+    });
+    await addFirstResultToList(page, updatedListName);
+    await closeFavoritesDialog(page);
+
+    await goToFavorites(page);
+    const listCard = page.getByText(updatedListName).first();
+    await listCard.click();
+    await waitForFavoriteListPage(page);
+
+    await expect
+      .poll(async () => page.getByTestId('remove-from-list-btn').count(), {
+        timeout: ASYNC_UI_TIMEOUT_MS,
+      })
+      .toBeGreaterThan(0);
+
+    // Cancel path: the confirm dialog closes and favorites are untouched.
+    await page.getByTestId('purge-list-btn').click();
+    const purgeDialog = page.getByRole('dialog');
+    await expect(purgeDialog).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+    await purgeDialog.getByRole('button', { name: 'Cancel' }).click();
+    await expect(purgeDialog).toHaveCount(0, { timeout: UI_SHELL_TIMEOUT_MS });
+
+    await expect(page.getByTestId('remove-from-list-btn').first()).toBeVisible({
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
+
+    // Confirm path: all favorites are cleared.
+    await page.getByTestId('purge-list-btn').click();
+    await expect(page.getByTestId('purge-list-confirm-btn')).toBeVisible({
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
+    await page.getByTestId('purge-list-confirm-btn').click();
+
+    await expect(page.getByText('All favorites cleared')).toBeVisible({
+      timeout: ASYNC_UI_TIMEOUT_MS,
+    });
+
+    await expect
+      .poll(
+        async () => {
+          const count = await page.getByTestId('remove-from-list-btn').count();
+          if (count > 0) {
+            await page.reload({ waitUntil: 'domcontentloaded' });
+            await waitForFavoriteListPage(page);
+          }
+          return count;
+        },
+        { timeout: ASYNC_UI_TIMEOUT_MS, intervals: [250, 500, 1_000, 2_000] },
+      )
+      .toBe(0);
+  });
+
+  test('should cancel deleting the favorite list', async ({ page }) => {
+    await goToFavorites(page);
+
+    const card = page.getByTestId('favorite-list-card').filter({
+      has: page.getByRole('link', { name: updatedListName, exact: true }),
+    });
+    await expect(card).toHaveCount(1, { timeout: UI_SHELL_TIMEOUT_MS });
+
+    await card.getByTestId('delete-list-btn').click();
+
+    const deleteDialog = page.getByRole('dialog');
+    await expect(deleteDialog).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+    await deleteDialog.getByRole('button', { name: 'Cancel' }).click();
+    await expect(deleteDialog).toHaveCount(0, { timeout: UI_SHELL_TIMEOUT_MS });
+
+    await expect(page.getByText(updatedListName).first()).toBeVisible({
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
+  });
+
   test('should delete the favorite list', async ({ page }) => {
     await goToFavorites(page);
 
@@ -274,5 +368,70 @@ test.describe('Favorites Feature (Authenticated)', () => {
     await expect(removedCard).toHaveCount(0, {
       timeout: ASYNC_UI_TIMEOUT_MS,
     });
+  });
+
+  test('should sync local favorites into the account on sign-in', async ({
+    browser,
+  }) => {
+    const context = await browser.newContext({ storageState: undefined });
+    const page = await context.newPage();
+
+    try {
+      await goHome(page);
+      await resetLocalFavoritesStorage(page);
+
+      await searchAndGetFirstResult(page, {
+        query: 'clothing',
+        query_label: 'clothing',
+        query_type: 'text',
+      });
+
+      const favoriteBtn = page.getByTestId('favorite-btn').first();
+      await expect(favoriteBtn).toHaveAttribute(
+        'data-session-status',
+        'unauthenticated',
+        { timeout: UI_SHELL_TIMEOUT_MS },
+      );
+      await favoriteBtn.click();
+      await expect(favoriteBtn.locator('svg')).toHaveClass(/fill-current/, {
+        timeout: UI_SHELL_TIMEOUT_MS,
+      });
+
+      const storedIdsBeforeLogin = JSON.parse(
+        (await page.evaluate(() =>
+          window.localStorage.getItem('local-favorites'),
+        )) ?? '[]',
+      );
+      expect(storedIdsBeforeLogin.length).toBeGreaterThan(0);
+
+      await loginViaKeycloak(page);
+
+      // `useSyncLocalFavoritesOnAuth` only clears local favorites after the
+      // server-side sync succeeds — on failure it deliberately keeps them for
+      // a future retry (see the hook's catch block). An emptied local-favorites
+      // key is therefore proof the sync completed, regardless of whether it
+      // created a new list or merged into an existing one server-side.
+      await expect
+        .poll(
+          async () => {
+            const raw = await page.evaluate(() =>
+              window.localStorage.getItem('local-favorites'),
+            );
+            return JSON.parse(raw ?? '[]').length;
+          },
+          { timeout: ASYNC_UI_TIMEOUT_MS },
+        )
+        .toBe(0);
+
+      // Authenticated users have no local list — favorites navigation now
+      // goes straight to the real account favorites page instead of
+      // /favorites/local.
+      await goToFavorites(page);
+      await expect(page.getByTestId('favorite-list-card').first()).toBeVisible({
+        timeout: ASYNC_UI_TIMEOUT_MS,
+      });
+    } finally {
+      await context.close();
+    }
   });
 });
