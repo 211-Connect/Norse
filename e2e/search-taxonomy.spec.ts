@@ -2,11 +2,14 @@ import type { Page } from '@playwright/test';
 
 import {
   expect,
+  expectPageUrl,
   getResultTotal,
   goHome,
+  isSearchResourceDetailUrl,
   openSearchDialog,
   parseTotalFromResultText,
   performSearch,
+  searchAndGetFirstResult,
   test,
 } from './helpers';
 import {
@@ -157,6 +160,46 @@ test.describe('Taxonomy Search Result Accuracy', () => {
     const totalText = await getResultTotal(page);
     const total = parseTotalFromResultText(totalText);
     expect(total).toBeGreaterThan(0);
+  });
+});
+
+test.describe('Search result navigation feedback', () => {
+  test.beforeEach(async ({ page }) => {
+    await goHome(page);
+  });
+
+  // Regression coverage for the resource-title top-loader bug: clicking a
+  // result's title used to render `target="_self"` on the link, which makes
+  // nextjs-toploader's click handler treat it like a target="_blank"/external
+  // link and finish the progress bar synchronously (before any navigation
+  // feedback is visible), instead of keeping it up until the resource page
+  // actually renders. See `typography.tsx`'s `isNextLink` branch.
+  test('top loader stays visible from resource title click until the resource page renders', async ({
+    page,
+  }) => {
+    const { link } = await searchAndGetFirstResult(page, {
+      query: 'shelter',
+      query_label: 'shelter',
+      query_type: 'text',
+    });
+
+    const toploaderBar = page.getByTestId('toploader-bar');
+
+    await link.click();
+
+    // Must appear right away and stay up while the resource page's server
+    // work (arcjet check, resource fetch, i18n init) is still in flight.
+    await expect(toploaderBar).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+
+    await expectPageUrl(page, isSearchResourceDetailUrl, {
+      timeout: SEARCH_NAV_TIMEOUT_MS,
+    });
+    await expect(page.getByTestId('favorite-btn').first()).toBeVisible({
+      timeout: SEARCH_NAV_TIMEOUT_MS,
+    });
+
+    // Only once the resource page has actually rendered should it disappear.
+    await expect(toploaderBar).toBeHidden({ timeout: UI_SHELL_TIMEOUT_MS });
   });
 });
 
