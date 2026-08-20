@@ -407,7 +407,7 @@ const config = buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URI,
       min: getNumberFromString(process.env.DATABASE_POOL_MIN, 1),
-      max: getNumberFromString(process.env.DATABASE_POOL_MAX, 4),
+      max: getNumberFromString(process.env.DATABASE_POOL_MAX, 15),
     },
     allowIDOnCreate: true,
     beforeSchemaInit: [

@@ -7,6 +7,7 @@ import {
   findResourceDirectoryByTenantId,
 } from '../collections/ResourceDirectories/actions';
 import { findTenantByHost } from '../collections/Tenants/actions';
+import { withJobLock } from '../utilities/withJobLock';
 
 const log = createLogger('warmCache');
 
@@ -57,90 +58,116 @@ export const warmCache: TaskConfig<'warmCache'> = {
       'Handler started',
     );
 
-    let domains: string[] = [];
+    // Multiple replicas poll the same 'cache' queue; only one may execute this job.
+    const lockResult = await withJobLock(
+      payload,
+      `warmCache:${job.id}`,
+      async () => {
+        let domains: string[] = [];
 
-    if (!input.domains || input.domains.length === 0) {
-      log.debug('Fetching all tenants to resolve domains');
-      const { docs: tenants } = await payload.find({
-        collection: 'tenants',
-        limit: 1000,
-        pagination: false,
-      });
+        if (!input.domains || input.domains.length === 0) {
+          log.debug('Fetching all tenants to resolve domains');
+          const { docs: tenants } = await payload.find({
+            collection: 'tenants',
+            limit: 1000,
+            pagination: false,
+          });
 
-      for (const tenant of tenants) {
-        if (tenant.trustedDomains) {
-          for (const { domain } of tenant.trustedDomains) {
-            domains.push(domain);
-          }
-        }
-      }
-
-      log.info(
-        { domainCount: domains.length },
-        'Discovered domains for warming',
-      );
-    } else {
-      domains = input.domains
-        .map(({ domain }) => domain)
-        .filter((domain) => typeof domain === 'string');
-      log.info({ domainCount: domains.length }, 'Warming specified domains');
-    }
-
-    let warmedTenants = 0;
-    let warmedResourceDirectories = 0;
-
-    for (const domain of domains) {
-      try {
-        const tenant = await findTenantByHost(domain);
-        if (tenant) {
-          warmedTenants++;
-
-          if (tenant.enabledLocales && tenant.enabledLocales.length > 0) {
-            for (const locale of tenant.enabledLocales) {
-              try {
-                const resourceDirectory = await Promise.all([
-                  findResourceDirectoryByHost(domain, locale),
-                  findResourceDirectoryByTenantId(tenant.id, locale),
-                ]);
-
-                if (resourceDirectory) {
-                  warmedResourceDirectories++;
-                }
-              } catch (error) {
-                log.error(
-                  { err: error, domain, locale },
-                  'Error warming ResourceDirectory',
-                );
+          for (const tenant of tenants) {
+            if (tenant.trustedDomains) {
+              for (const { domain } of tenant.trustedDomains) {
+                domains.push(domain);
               }
             }
           }
+
+          log.info(
+            { domainCount: domains.length },
+            'Discovered domains for warming',
+          );
         } else {
-          log.warn({ domain }, 'No tenant found for domain');
+          domains = input.domains
+            .map(({ domain }) => domain)
+            .filter((domain) => typeof domain === 'string');
+          log.info(
+            { domainCount: domains.length },
+            'Warming specified domains',
+          );
         }
-      } catch (error) {
-        log.error({ err: error, domain }, 'Error warming cache for domain');
-      }
-    }
 
-    const duration = Date.now() - startTime;
+        let warmedTenants = 0;
+        let warmedResourceDirectories = 0;
 
-    log.info(
-      {
-        totalDomains: domains.length,
-        warmedTenants,
-        warmedResourceDirectories,
-        durationMs: duration,
+        for (const domain of domains) {
+          try {
+            const tenant = await findTenantByHost(domain);
+            if (tenant) {
+              warmedTenants++;
+
+              if (tenant.enabledLocales && tenant.enabledLocales.length > 0) {
+                for (const locale of tenant.enabledLocales) {
+                  try {
+                    const resourceDirectory = await Promise.all([
+                      findResourceDirectoryByHost(domain, locale),
+                      findResourceDirectoryByTenantId(tenant.id, locale),
+                    ]);
+
+                    if (resourceDirectory) {
+                      warmedResourceDirectories++;
+                    }
+                  } catch (error) {
+                    log.error(
+                      { err: error, domain, locale },
+                      'Error warming ResourceDirectory',
+                    );
+                  }
+                }
+              }
+            } else {
+              log.warn({ domain }, 'No tenant found for domain');
+            }
+          } catch (error) {
+            log.error({ err: error, domain }, 'Error warming cache for domain');
+          }
+        }
+
+        const duration = Date.now() - startTime;
+
+        log.info(
+          {
+            totalDomains: domains.length,
+            warmedTenants,
+            warmedResourceDirectories,
+            durationMs: duration,
+          },
+          'Cache warming complete',
+        );
+
+        return {
+          output: {
+            success: true,
+            warmedTenants,
+            warmedResourceDirectories,
+          },
+        };
       },
-      'Cache warming complete',
     );
 
-    return {
-      output: {
-        success: true,
-        warmedTenants,
-        warmedResourceDirectories,
-      },
-    };
+    if (!lockResult.acquired) {
+      log.warn(
+        { jobId: job.id },
+        'warmCache job already running on another instance; skipping duplicate execution',
+      );
+      return {
+        output: {
+          success: true,
+          warmedTenants: 0,
+          warmedResourceDirectories: 0,
+        },
+      };
+    }
+
+    return lockResult.result;
   },
   retries: 2,
 };

@@ -14,7 +14,18 @@ export function getKeycloakAdminBaseUrl(): string {
   return requireEnv('KEYCLOAK_BASE_URL').replace(/\/$/, '');
 }
 
+// Refresh this long before actual expiry so a slow request never uses a token
+// that expires mid-flight.
+const TOKEN_REFRESH_MARGIN_MS = 30_000;
+const DEFAULT_TOKEN_TTL_MS = 60_000;
+
+let cachedToken: { token: string; expiresAt: number } | null = null;
+
 export async function getKeycloakAdminAccessToken(): Promise<string> {
+  if (cachedToken && cachedToken.expiresAt > Date.now()) {
+    return cachedToken.token;
+  }
+
   const baseUrl = getKeycloakAdminBaseUrl();
   const clientId = requireEnv('KEYCLOAK_ADMIN_CLIENT_ID');
   const clientSecret = requireEnv('KEYCLOAK_ADMIN_SECRET');
@@ -42,13 +53,22 @@ export async function getKeycloakAdminAccessToken(): Promise<string> {
     );
   }
 
-  const tokenPayload = (await response.json()) as { access_token?: string };
+  const tokenPayload = (await response.json()) as {
+    access_token?: string;
+    expires_in?: number;
+  };
 
   if (!tokenPayload.access_token) {
     throw new Error('Token response did not include access_token');
   }
 
-  return tokenPayload.access_token;
+  const ttlMs = (tokenPayload.expires_in ?? DEFAULT_TOKEN_TTL_MS / 1000) * 1000;
+  cachedToken = {
+    token: tokenPayload.access_token,
+    expiresAt: Date.now() + Math.max(ttlMs - TOKEN_REFRESH_MARGIN_MS, 0),
+  };
+
+  return cachedToken.token;
 }
 
 export async function getVerifiedEnabledUsersCount(
