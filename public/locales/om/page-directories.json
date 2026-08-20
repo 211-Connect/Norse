@@ -174,5 +174,8 @@
   "public_preview_not_found": "Galmeen qoodame kun hin argamne.",
   "public_preview_ready": "Download kee ofumaan jalqabuu qaba.",
   "public_preview_retry": "Ammas buufadhaa",
-  "public_preview_error": "PDF kana maddisiisuu irratti wanti tokko dogoggora ta'e."
+  "public_preview_error": "PDF kana maddisiisuu irratti wanti tokko dogoggora ta'e.",
+  "share_dialog_title": "Galmee maxxanfamuu danda'u qoodu",
+  "share_dialog_description": "Akkaataa fudhattoonni argan filadhu, sana booda hidhaa sana waraabi.",
+  "copy_link_button": "Link waraabuu"
 }

@@ -1,7 +1,7 @@
 'use client';
 
-import { ChevronLeft, Eraser } from 'lucide-react';
-import { Dispatch, SetStateAction, useCallback, useState } from 'react';
+import { ChevronLeft } from 'lucide-react';
+import { Dispatch, SetStateAction, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { CardLayoutRenderer } from '@/app/(app)/features/search/components/card-layout-renderer';
@@ -9,10 +9,7 @@ import { SearchCardLayoutConfig } from '@/app/(app)/features/search/types/card-l
 import { DirectoryPrintControl } from '@/app/(app)/shared/components/directory-print/directory-print-control';
 import { useDefaultDirectoryPdfDocument } from '@/app/(app)/shared/components/directory-print/use-default-directory-pdf-document';
 import { Link } from '@/app/(app)/shared/components/link';
-import {
-  Button,
-  buttonVariants,
-} from '@/app/(app)/shared/components/ui/button';
+import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import {
   Card,
   CardContent,
@@ -32,7 +29,8 @@ import {
   RemoveFromListHandler,
   resourceToLocalFavoriteResult,
 } from '../utils/favorite-result-transformers';
-import { PurgeConfirmDialog } from './purge-confirm-dialog';
+import { PurgeIconButton } from './purge-icon-button';
+import { TooltipIconButton } from './tooltip-icon-button';
 
 type LocalFavoritesSectionProps = {
   cardLayout: SearchCardLayoutConfig;
@@ -51,7 +49,6 @@ export function LocalFavoritesSection({
   const appConfig = useAppConfig();
   const { localFavoriteIds, removeLocalFavorite, clearLocalFavorites } =
     useLocalFavorites();
-  const [clearConfirmOpen, setClearConfirmOpen] = useState(false);
 
   const handleRemoveFromList = useCallback<RemoveFromListHandler>(
     (_listId: string, favoriteId: string) => {
@@ -107,34 +104,26 @@ export function LocalFavoritesSection({
 
         {results.length > 0 && (
           <div className="flex items-center gap-2">
-            <DirectoryPrintControl
-              loadData={loadPrintableData}
-              variant="icon"
-              testId="print-local-directory-btn"
-              renderDocument={renderPdfDocument}
-            />
-            <Button
-              variant="outline"
-              className="gap-2"
-              onClick={() => setClearConfirmOpen(true)}
-              data-testid="purge-local-list-btn"
-            >
-              <Eraser className="size-4" />
-              {t('purge_list.label')}
-            </Button>
+            <TooltipIconButton label={t('tooltips.print')}>
+              <DirectoryPrintControl
+                loadData={loadPrintableData}
+                variant="icon"
+                testId="print-local-directory-btn"
+                renderDocument={renderPdfDocument}
+              />
+            </TooltipIconButton>
+            <TooltipIconButton label={t('tooltips.purge')}>
+              <PurgeIconButton
+                onConfirm={() => {
+                  clearLocalFavorites();
+                  setResources([]);
+                }}
+                testId="purge-local-list-btn"
+              />
+            </TooltipIconButton>
           </div>
         )}
       </div>
-
-      <PurgeConfirmDialog
-        open={clearConfirmOpen}
-        onOpenChange={setClearConfirmOpen}
-        onConfirm={() => {
-          clearLocalFavorites();
-          setResources([]);
-          setClearConfirmOpen(false);
-        }}
-      />
 
       {loading && localFavoriteIds.length > 0 && (
         <div className="text-muted-foreground mt-4 text-sm">

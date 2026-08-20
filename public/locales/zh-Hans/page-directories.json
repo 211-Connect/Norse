@@ -174,5 +174,8 @@
   "public_preview_not_found": "找不到此共享目录。",
   "public_preview_ready": "您的下载应该会自动开始。",
   "public_preview_retry": "再次下载",
-  "public_preview_error": "生成此PDF文件时出现错误。"
+  "public_preview_error": "生成此PDF文件时出现错误。",
+  "share_dialog_title": "分享可打印目录",
+  "share_dialog_description": "选择收件人将看到的格式，然后复制链接。",
+  "copy_link_button": "复制链接"
 }

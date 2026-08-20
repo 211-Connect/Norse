@@ -53,6 +53,7 @@ export function favoriteToResult(
     attributeValues: translation?.attributeValues ?? {},
     applicationProcess: translation?.applicationProcess ?? null,
     eligibility: translation?.eligibilities ?? null,
+    hours: translation?.hours ?? null,
     currentListId,
     onRemoveFromList,
   };
@@ -87,6 +88,7 @@ export function resourceToLocalFavoriteResult(
     attributeValues: resource.attributeValues ?? {},
     applicationProcess: resource.applicationProcess ?? null,
     eligibility: resource.eligibilities ?? null,
+    hours: resource.hours ?? null,
     currentListId: LOCAL_LIST_ID,
     onRemoveFromList,
   };

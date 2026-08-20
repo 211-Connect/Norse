@@ -300,7 +300,11 @@
       "unable_load_directories_error": "无法加载可打印目录",
       "select_directory_first_error": "首先选择一个目录",
       "unable_create_section_error": "无法在此目录中创建节。",
-      "unable_select_section_error": "无法选择此目录中的某个部分。"
+      "unable_select_section_error": "无法选择此目录中的某个部分。",
+      "view_directory": "查看目录",
+      "include_search_location_label": "在此查询中包含当前搜索位置",
+      "preview_label": "这样就能保存它了。",
+      "location_conflict_warning": "此位置与目录的默认位置不同，将会覆盖默认位置。"
     },
     "save_list": {
       "open": "将列表保存到可打印目录",

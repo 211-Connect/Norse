@@ -174,5 +174,8 @@
   "public_preview_not_found": "Không tìm thấy thư mục chia sẻ này.",
   "public_preview_ready": "Quá trình tải xuống sẽ bắt đầu tự động.",
   "public_preview_retry": "Tải xuống lại",
-  "public_preview_error": "Đã xảy ra lỗi khi tạo tệp PDF này."
+  "public_preview_error": "Đã xảy ra lỗi khi tạo tệp PDF này.",
+  "share_dialog_title": "Chia sẻ thư mục có thể in",
+  "share_dialog_description": "Chọn định dạng mà người nhận sẽ thấy, sau đó sao chép liên kết.",
+  "copy_link_button": "Sao chép liên kết"
 }

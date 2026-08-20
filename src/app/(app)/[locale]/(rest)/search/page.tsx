@@ -48,6 +48,15 @@ const getPageData = cache(async function (
     await navigateToSearchWithCoords(locale, searchQuery, rawParams);
   }
 
+  // Run before the search executes: for AI-classification tenants this
+  // always redirects, so running it after would discard a real search.
+  await handleLegacyDeepLinks({
+    appConfig,
+    searchQuery,
+    locale,
+    skipLegacyLinkCheck: rawParams.sllc === '1',
+  });
+
   const page =
     typeof rawParams.page === 'string' ? parseInt(rawParams.page) || 1 : 1;
   const limit = appConfig.search.resultsLimit;
@@ -215,12 +224,6 @@ export default async function SearchPage({
 
   const { filters, results, totalResults, resources, searchQuery, cardLayout } =
     await getPageData(locale, searchParamsResult);
-  await handleLegacyDeepLinks({
-    appConfig,
-    searchQuery,
-    locale,
-    skipLegacyLinkCheck: searchParamsResult.sllc === '1',
-  });
 
   if (searchQuery.widgetId) {
     trackUmamiEvent(UmamiEvent.WidgetSearch);

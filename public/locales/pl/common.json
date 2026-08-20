@@ -300,7 +300,11 @@
       "unable_load_directories_error": "Nie można załadować katalogów do wydruku",
       "select_directory_first_error": "Najpierw wybierz katalog",
       "unable_create_section_error": "Nie można utworzyć sekcji w tym katalogu",
-      "unable_select_section_error": "Nie można wybrać sekcji w tym katalogu"
+      "unable_select_section_error": "Nie można wybrać sekcji w tym katalogu",
+      "view_directory": "Wyświetl katalog",
+      "include_search_location_label": "Uwzględnij bieżącą lokalizację wyszukiwania w tym zapytaniu",
+      "preview_label": "Tak zostanie zapisane",
+      "location_conflict_warning": "Ta lokalizacja różni się od domyślnej lokalizacji katalogu i ją zastąpi"
     },
     "save_list": {
       "open": "Zapisz listę w katalogu do druku",

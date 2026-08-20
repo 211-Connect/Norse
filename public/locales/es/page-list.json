@@ -66,6 +66,7 @@
     "print": "Imprime esta lista",
     "update": "Actualizar detalles de la lista",
     "purge": "Borrar todos los favoritos de esta lista",
-    "delete": "Eliminar esta lista"
+    "delete": "Eliminar esta lista",
+    "share": "Comparte esta lista"
   }
 }

@@ -300,7 +300,11 @@
       "unable_load_directories_error": "Не удалось загрузить папки для печати.",
       "select_directory_first_error": "Сначала выберите каталог.",
       "unable_create_section_error": "Не удалось создать раздел в этом каталоге.",
-      "unable_select_section_error": "Не удалось выбрать раздел в этом каталоге."
+      "unable_select_section_error": "Не удалось выбрать раздел в этом каталоге.",
+      "view_directory": "Просмотреть каталог",
+      "include_search_location_label": "Включите в этот запрос текущее местоположение поиска.",
+      "preview_label": "Вот как это будет спасено.",
+      "location_conflict_warning": "Это местоположение отличается от местоположения по умолчанию в каталоге и будет его переопределять."
     },
     "save_list": {
       "open": "Сохраните список в папку для печати.",

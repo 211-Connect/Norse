@@ -1,85 +1,89 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect } from 'react';
 
 import { HEADER_ID } from '@/app/(app)/shared/lib/constants';
 
+/**
+ * Keeps the sticky filter panel following the page scroll (Facebook-style
+ * sticky sidebar) so a panel taller than the viewport can still be scrolled
+ * into view.
+ *
+ * Position updates are written directly to the DOM (bypassing React state)
+ * and batched with requestAnimationFrame so the panel tracks scroll as
+ * smoothly as native browser scrolling, instead of jittering a frame behind
+ * due to a React re-render on every scroll event.
+ */
 export const useScrollOffset = () => {
-  const [scrollOffset, setScrollOffset] = useState<number>();
-
-  const lastScrollYRef = useRef(0);
-  const scrollOffsetRef = useRef(scrollOffset);
-
-  const maxMinusOffsetRef = useRef(0);
-  const maxPlusOffsetRef = useRef(0);
-
   useEffect(() => {
-    lastScrollYRef.current = window.scrollY;
+    const element = document.querySelector('#filter-panel') as HTMLDivElement;
+    const header = document.querySelector(`#${HEADER_ID}`) as HTMLDivElement;
+
+    if (!element || !header) {
+      return;
+    }
+
+    let maxMinusOffset = element.clientHeight - window.innerHeight;
+    let maxPlusOffset = header.offsetHeight;
+    let lastScrollY = window.scrollY;
+    let rafId: number | null = null;
+
+    const initialTop = parseInt(
+      window.getComputedStyle(element).top || '0',
+      10,
+    );
+    let offset = Number.isNaN(initialTop) ? 0 : initialTop;
+
+    const clampOffset = () => {
+      offset = Math.min(Math.max(offset, -maxMinusOffset), maxPlusOffset);
+      element.style.top = `${offset}px`;
+    };
 
     const handleResize = () => {
-      const element = document.querySelector('#filter-panel') as HTMLDivElement;
-      const header = document.querySelector(`#${HEADER_ID}`) as HTMLDivElement;
+      maxMinusOffset = element.clientHeight - window.innerHeight;
+      maxPlusOffset = header.offsetHeight;
+      clampOffset();
+    };
 
-      if (element && header) {
-        maxMinusOffsetRef.current = element.clientHeight - window.innerHeight;
-        maxPlusOffsetRef.current = header.offsetHeight;
+    const applyScroll = () => {
+      rafId = null;
+
+      const scrollY = window.scrollY;
+      const delta = scrollY - lastScrollY;
+
+      lastScrollY = scrollY;
+
+      if (delta > 0) {
+        offset = Math.max(offset - delta, -maxMinusOffset);
+      } else if (delta < 0) {
+        offset = Math.min(offset - delta, maxPlusOffset);
       }
+
+      element.style.top = `${offset}px`;
     };
 
     const handleScroll = () => {
-      const delta = window.scrollY - lastScrollYRef.current;
-
-      lastScrollYRef.current = window.scrollY;
-
-      if (delta > 0) {
-        if (scrollOffsetRef.current! <= -maxMinusOffsetRef.current) {
-          return;
-        }
-
-        scrollOffsetRef.current = Math.max(
-          (scrollOffsetRef.current ?? 0) - delta,
-          -maxMinusOffsetRef.current,
-        );
-      } else if (delta < 0) {
-        if (scrollOffsetRef.current! >= maxPlusOffsetRef.current) {
-          return;
-        }
-
-        scrollOffsetRef.current = Math.min(
-          scrollOffsetRef.current! - delta,
-          maxPlusOffsetRef.current,
-        );
+      if (rafId !== null) {
+        return;
       }
 
-      setScrollOffset(scrollOffsetRef.current);
+      rafId = window.requestAnimationFrame(applyScroll);
     };
 
-    handleResize();
-
-    const resize_ob = new ResizeObserver(handleResize);
-
-    const element = document.querySelector('#filter-panel') as HTMLDivElement;
-    if (element) {
-      resize_ob.observe(element);
-      const topStyle = window.getComputedStyle(element).top ?? '0px';
-      const parsedStyle = parseInt(topStyle.replace('px', ''), 10);
-      scrollOffsetRef.current = parsedStyle;
-    }
+    const resizeObserver = new ResizeObserver(handleResize);
+    resizeObserver.observe(element);
 
     window.addEventListener('resize', handleResize);
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
+      if (rafId !== null) {
+        window.cancelAnimationFrame(rafId);
+      }
+
+      resizeObserver.disconnect();
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('scroll', handleScroll);
-
-      if (element) {
-        resize_ob.unobserve(element);
-      }
     };
   }, []);
-
-  return {
-    scrollOffset,
-  };
 };

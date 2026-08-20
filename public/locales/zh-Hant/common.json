@@ -300,7 +300,11 @@
       "unable_load_directories_error": "無法載入可列印目錄",
       "select_directory_first_error": "首先選擇一個目錄",
       "unable_create_section_error": "無法在此目錄中建立節。",
-      "unable_select_section_error": "無法選擇此目錄中的某個部分。"
+      "unable_select_section_error": "無法選擇此目錄中的某個部分。",
+      "view_directory": "查看目錄",
+      "include_search_location_label": "在此查詢中包含目前搜尋位置",
+      "preview_label": "這樣就能保存它了。",
+      "location_conflict_warning": "此位置與目錄的預設位置不同，將會覆蓋預設位置。"
     },
     "save_list": {
       "open": "將清單儲存到可列印目錄",

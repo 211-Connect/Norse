@@ -300,7 +300,11 @@
       "unable_load_directories_error": "ሊታተሙ የሚችሉ ማውጫዎችን መጫን አልተቻለም",
       "select_directory_first_error": "መጀመሪያ ማውጫ ይምረጡ",
       "unable_create_section_error": "በዚህ ማውጫ ውስጥ ክፍል መፍጠር አልተቻለም",
-      "unable_select_section_error": "በዚህ ማውጫ ውስጥ ክፍል መምረጥ አልተቻለም"
+      "unable_select_section_error": "በዚህ ማውጫ ውስጥ ክፍል መምረጥ አልተቻለም",
+      "view_directory": "ማውጫ ይመልከቱ",
+      "include_search_location_label": "የአሁኑን የፍለጋ ቦታ በዚህ መጠይቅ ውስጥ ያካትቱ",
+      "preview_label": "የሚድነው በዚህ መንገድ ነው",
+      "location_conflict_warning": "ይህ ቦታ ከማውጫው ነባሪ ቦታ የተለየ ሲሆን ይሽረውታል"
     },
     "save_list": {
       "open": "ዝርዝሩን ወደ ሊታተም ወደሚችል ማውጫ ያስቀምጡ",

@@ -174,5 +174,8 @@
   "public_preview_not_found": "Pa t ka jwenn anyè pataje sa a.",
   "public_preview_ready": "Telechajman ou an ta dwe kòmanse otomatikman.",
   "public_preview_retry": "Telechaje ankò",
-  "public_preview_error": "Yon bagay te ale mal pandan y ap jenere PDF sa a."
+  "public_preview_error": "Yon bagay te ale mal pandan y ap jenere PDF sa a.",
+  "share_dialog_title": "Pataje anyè enprimab la",
+  "share_dialog_description": "Chwazi fòma moun k ap resevwa yo ap wè a, epi kopye lyen an.",
+  "copy_link_button": "Kopye lyen an"
 }

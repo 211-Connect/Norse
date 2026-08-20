@@ -174,5 +174,8 @@
   "public_preview_not_found": "આ શેર કરેલી ડિરેક્ટરી મળી શકી નથી.",
   "public_preview_ready": "તમારું ડાઉનલોડ આપમેળે શરૂ થવું જોઈએ.",
   "public_preview_retry": "ફરીથી ડાઉનલોડ કરો",
-  "public_preview_error": "આ PDF જનરેટ કરવામાં કંઈક ખોટું થયું."
+  "public_preview_error": "આ PDF જનરેટ કરવામાં કંઈક ખોટું થયું.",
+  "share_dialog_title": "છાપવા યોગ્ય ડિરેક્ટરી શેર કરો",
+  "share_dialog_description": "પ્રાપ્તકર્તાઓ જે ફોર્મેટ જોશે તે પસંદ કરો, પછી લિંકની નકલ કરો.",
+  "copy_link_button": "લિંક કૉપી કરો"
 }

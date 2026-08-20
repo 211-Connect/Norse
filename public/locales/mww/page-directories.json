@@ -174,5 +174,8 @@
   "public_preview_not_found": "Tsis pom daim nplaub tshev sib koom no.",
   "public_preview_ready": "Koj qhov kev rub tawm yuav tsum pib cia li.",
   "public_preview_retry": "Rub tawm dua",
-  "public_preview_error": "Muaj ib yam dab tsi tsis ncaj ncees lawm thaum tsim daim PDF no."
+  "public_preview_error": "Muaj ib yam dab tsi tsis ncaj ncees lawm thaum tsim daim PDF no.",
+  "share_dialog_title": "Qhia cov ntawv qhia luam tawm",
+  "share_dialog_description": "Xaiv hom ntawv uas cov neeg tau txais yuav pom, tom qab ntawd theej qhov txuas.",
+  "copy_link_button": "Luam qhov txuas"
 }

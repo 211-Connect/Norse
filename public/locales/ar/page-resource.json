@@ -28,8 +28,8 @@
   "interpretation_services": "خدمات الترجمة",
   "other_information": "معلومات أخرى",
   "organization_url": "رابط المنظمة",
-  "contacts": "للوصول إلى هذه الخدمة، يرجى الاتصال بما يلي:",
   "location_name": "اسم الموقع",
   "resource_name": "اسم المورد",
-  "quality": "معلومات عالية الجودة"
+  "quality": "معلومات عالية الجودة",
+  "contacts": "معلومات اتصال إضافية"
 }

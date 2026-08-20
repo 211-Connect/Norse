@@ -300,7 +300,11 @@
       "unable_load_directories_error": "تعذر تحميل المجلدات القابلة للطباعة",
       "select_directory_first_error": "حدد الدليل أولاً",
       "unable_create_section_error": "تعذر إنشاء قسم في هذا الدليل",
-      "unable_select_section_error": "تعذر تحديد قسم في هذا الدليل"
+      "unable_select_section_error": "تعذر تحديد قسم في هذا الدليل",
+      "view_directory": "عرض الدليل",
+      "include_search_location_label": "قم بتضمين موقع البحث الحالي في هذا الاستعلام",
+      "preview_label": "هكذا سيتم حفظها",
+      "location_conflict_warning": "يختلف هذا الموقع عن الموقع الافتراضي للدليل، وسيتم استبداله به."
     },
     "save_list": {
       "open": "احفظ القائمة في مجلد قابل للطباعة",

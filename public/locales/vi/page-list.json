@@ -66,6 +66,7 @@
     "print": "In danh sách này",
     "update": "Cập nhật chi tiết danh sách",
     "purge": "Xóa tất cả mục yêu thích khỏi danh sách này",
-    "delete": "Xóa danh sách này"
+    "delete": "Xóa danh sách này",
+    "share": "Chia sẻ danh sách này"
   }
 }

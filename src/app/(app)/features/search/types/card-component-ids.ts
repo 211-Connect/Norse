@@ -5,6 +5,7 @@ export enum SearchCardComponentId {
   SERVICE_NAME = 'serviceName',
   ELIGIBILITY = 'eligibility',
   APPLICATION_PROCESS = 'applicationProcess',
+  HOURS = 'hours',
   LOCATION_NAME = 'locationName',
   LOCATION_NAME_SUBTITLE = 'locationNameSubtitle',
   ADDRESS = 'address',

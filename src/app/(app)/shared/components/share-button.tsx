@@ -46,6 +46,7 @@ export function ShareButton({
 
   const [open, setOpen] = useState(false);
   const [shortUrl, setShortUrl] = useState('');
+  const [isShortUrlLoading, setIsShortUrlLoading] = useState(false);
   const metadataTitle =
     typeof document !== 'undefined' ? document.title.trim() : '';
   const metadataDescription =
@@ -69,16 +70,28 @@ export function ShareButton({
   const emailMessage = [normalizedBody, shortUrl].filter(Boolean).join('\n\n');
 
   useEffect(() => {
+    // Only request a short URL once the dialog is opened, not on every mount.
+    if (!open || shortUrl) return;
+
+    let isCancelled = false;
+
     async function getShortUrl() {
+      setIsShortUrlLoading(true);
       const id = await shortenUrl(window.location.href, appConfig.tenantId);
+      if (isCancelled) return;
       const url = withOptionalCustomBasePath(
         `${window.location.origin}/share/${id}`,
       );
       setShortUrl(url);
+      setIsShortUrlLoading(false);
     }
 
     getShortUrl();
-  }, [appConfig.tenantId]);
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [open, shortUrl, appConfig.tenantId]);
 
   return (
     <>
@@ -198,13 +211,17 @@ export function ShareButton({
 
             <div className="relative flex md:col-span-6">
               <Button
-                onClick={() => clipboard.copy(shortUrl)}
+                onClick={() => shortUrl && clipboard.copy(shortUrl)}
                 variant="outline"
                 className="flex w-full min-w-0 items-center justify-between gap-1 focus-visible:ring-offset-0 focus-visible:ring-inset"
                 aria-label={t('modal.share.copy_link')}
                 aria-describedby={copyStatusId}
+                aria-busy={isShortUrlLoading}
+                disabled={!shortUrl}
               >
-                <span className="min-w-0 truncate text-left">{shortUrl}</span>
+                <span className="min-w-0 truncate text-left">
+                  {shortUrl || '...'}
+                </span>
 
                 {clipboard.copied ? (
                   <CheckIcon className="size-4" aria-hidden="true" />

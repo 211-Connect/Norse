@@ -300,7 +300,11 @@
       "unable_load_directories_error": "Lama soo rari karo tusmooyinka la daabacan karo",
       "select_directory_first_error": "Marka hore dooro buug-yare",
       "unable_create_section_error": "Lama abuuri karo qayb ka mid ah buuggan",
-      "unable_select_section_error": "Lama dooran karo qayb ka mid ah tusahan"
+      "unable_select_section_error": "Lama dooran karo qayb ka mid ah tusahan",
+      "view_directory": "Fiiri buugga",
+      "include_search_location_label": "Ku dar goobta raadinta hadda su'aashan",
+      "preview_label": "Sidan ayaa loo badbaadin doonaa",
+      "location_conflict_warning": "Goobtani way ka duwan tahay goobta caadiga ah ee tusmada waana la beddeli doonaa"
     },
     "save_list": {
       "open": "Liiska ku kaydi galka la daabacan karo",

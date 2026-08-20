@@ -300,7 +300,11 @@
       "unable_load_directories_error": "E le mafai ona utaina ni fa'asinomaga e mafai ona lolomiina",
       "select_directory_first_error": "Filifili muamua se faila",
       "unable_create_section_error": "E le mafai ona fatuina se vaega i totonu o lenei fa'asinomaga",
-      "unable_select_section_error": "E le mafai ona filifilia se vaega i totonu o lenei fa'asinomaga"
+      "unable_select_section_error": "E le mafai ona filifilia se vaega i totonu o lenei fa'asinomaga",
+      "view_directory": "Va'ai le fa'asinomaga",
+      "include_search_location_label": "Fa'aofi le nofoaga o lo'o sailia nei i lenei fesili",
+      "preview_label": "O le auala lea e faasaoina ai",
+      "location_conflict_warning": "E ese lenei nofoaga mai le nofoaga masani o le fa'asinomaga ma o le a suia ai."
     },
     "save_list": {
       "open": "Seivi le lisi i le fa'asinomaga e mafai ona lolomiina",

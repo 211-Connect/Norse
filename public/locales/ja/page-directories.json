@@ -174,5 +174,8 @@
   "public_preview_not_found": "この共有ディレクトリが見つかりませんでした。",
   "public_preview_ready": "ダウンロードは自動的に開始されます。",
   "public_preview_retry": "再度ダウンロードしてください",
-  "public_preview_error": "PDFファイルの生成中に問題が発生しました。"
+  "public_preview_error": "PDFファイルの生成中に問題が発生しました。",
+  "share_dialog_title": "印刷可能なディレクトリを共有する",
+  "share_dialog_description": "受信者に表示される形式を選択し、リンクをコピーしてください。",
+  "copy_link_button": "リンクをコピー"
 }

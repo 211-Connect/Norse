@@ -300,7 +300,11 @@
       "unable_load_directories_error": "Pa kapab chaje anyè enprimab yo",
       "select_directory_first_error": "Chwazi yon anyè an premye",
       "unable_create_section_error": "Pa kapab kreye yon seksyon nan anyè sa a",
-      "unable_select_section_error": "Pa kapab chwazi yon seksyon nan anyè sa a"
+      "unable_select_section_error": "Pa kapab chwazi yon seksyon nan anyè sa a",
+      "view_directory": "Gade anyè a",
+      "include_search_location_label": "Mete ladan l kote rechèch aktyèl la nan rechèch sa a",
+      "preview_label": "Men kijan l ap sove",
+      "location_conflict_warning": "Kote sa a diferan de kote pa defo anyè a epi li pral ranplase li."
     },
     "save_list": {
       "open": "Sove lis la nan yon anyè enprimab",

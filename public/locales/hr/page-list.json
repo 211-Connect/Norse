@@ -66,6 +66,7 @@
     "print": "Ispis ovog popisa",
     "update": "Ažuriraj detalje popisa",
     "purge": "Izbriši sve favorite s ovog popisa",
-    "delete": "Izbriši ovaj popis"
+    "delete": "Izbriši ovaj popis",
+    "share": "Podijeli ovaj popis"
   }
 }

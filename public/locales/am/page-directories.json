@@ -174,5 +174,8 @@
   "public_preview_not_found": "ይህ የተጋራ ማውጫ ሊገኝ አልቻለም።",
   "public_preview_ready": "ማውረድዎ በራስ-ሰር መጀመር አለበት።",
   "public_preview_retry": "እንደገና ያውርዱ",
-  "public_preview_error": "ይህንን ፒዲኤፍ በመፍጠር ላይ የሆነ ችግር ተፈጥሯል።"
+  "public_preview_error": "ይህንን ፒዲኤፍ በመፍጠር ላይ የሆነ ችግር ተፈጥሯል።",
+  "share_dialog_title": "ሊታተም የሚችል ማውጫ ያጋሩ",
+  "share_dialog_description": "ተቀባዮቹ የሚያዩትን ቅርጸት ይምረጡ፣ ከዚያም አገናኙን ይቅዱ።",
+  "copy_link_button": "አገናኝ ቅዳ"
 }

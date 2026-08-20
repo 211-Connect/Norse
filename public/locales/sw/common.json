@@ -300,7 +300,11 @@
       "unable_load_directories_error": "Haiwezi kupakia saraka zinazoweza kuchapishwa",
       "select_directory_first_error": "Chagua saraka kwanza",
       "unable_create_section_error": "Haiwezi kuunda sehemu katika saraka hii",
-      "unable_select_section_error": "Haiwezi kuchagua sehemu katika saraka hii"
+      "unable_select_section_error": "Haiwezi kuchagua sehemu katika saraka hii",
+      "view_directory": "Tazama saraka",
+      "include_search_location_label": "Jumuisha eneo la utafutaji la sasa katika hoja hii",
+      "preview_label": "Hivi ndivyo itakavyookolewa",
+      "location_conflict_warning": "Eneo hili ni tofauti na eneo chaguo-msingi la saraka na litaibadilisha"
     },
     "save_list": {
       "open": "Hifadhi orodha kwenye saraka inayoweza kuchapishwa",

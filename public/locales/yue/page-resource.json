@@ -28,8 +28,8 @@
   "interpretation_services": "口譯服務",
   "other_information": "其他資料",
   "organization_url": "機構網址",
-  "contacts": "如果要使用呢個服務，請聯絡：",
   "location_name": "地點名稱",
   "resource_name": "資源名稱",
-  "quality": "優質資訊"
+  "quality": "優質資訊",
+  "contacts": "額外嘅聯絡資料"
 }

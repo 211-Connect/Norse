@@ -28,8 +28,8 @@
   "interpretation_services": "Serviços de interpretação",
   "other_information": "Outras informações",
   "organization_url": "URL da organização",
-  "contacts": "Para acessar este serviço, entre em contato com:",
   "location_name": "Nome do local",
   "resource_name": "Nome do recurso",
-  "quality": "Informações de qualidade"
+  "quality": "Informações de qualidade",
+  "contacts": "Informações de contato adicionais"
 }
