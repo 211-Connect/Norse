@@ -766,30 +766,29 @@ export function Autocomplete(props: AutocompleteProps) {
           role="combobox"
         />
 
-        <TooltipProvider>
-          <Tooltip delayDuration={100}>
-            <TooltipTrigger asChild autoFocus={false}>
-              <Button
-                ref={clearButtonRef}
-                size="icon"
-                variant="ghost"
-                className={cn(
-                  (value?.length ?? 0) > 0 ? 'visible' : 'invisible',
-                  'absolute top-0 right-0 h-full hover:bg-transparent hover:bg-none',
-                )}
-                onClick={clear}
-                aria-label={clearButtonLabel}
-                data-testid="search-clear-btn"
-                type="button"
-              >
-                <XIcon className={cn('h-4 w-4 shrink-0 opacity-50')} />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              <span>{clearButtonLabel}</span>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        {(value?.length ?? 0) > 0 && (
+          <TooltipProvider>
+            <Tooltip delayDuration={100}>
+              <TooltipTrigger asChild autoFocus={false}>
+                <Button
+                  ref={clearButtonRef}
+                  size="icon"
+                  variant="ghost"
+                  className="absolute top-0 right-0 h-full hover:bg-transparent hover:bg-none"
+                  onClick={clear}
+                  aria-label={clearButtonLabel}
+                  data-testid="search-clear-btn"
+                  type="button"
+                >
+                  <XIcon className={cn('h-4 w-4 shrink-0 opacity-50')} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <span>{clearButtonLabel}</span>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
 
         {open && (
           <div

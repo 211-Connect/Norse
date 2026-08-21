@@ -26,15 +26,15 @@ export async function openSearchDialog(page: Page) {
 }
 
 /**
- * After submit navigates to /search, the dialog must be dismissed - assert
- * `aria-hidden` (see SearchDialog).
+ * After submit navigates to /search, the dialog must be dismissed. The
+ * dialog is a Radix `Dialog.Content`, which unmounts entirely once closed
+ * (no `forceMount`) - `toBeHidden` covers both that case and a same-page
+ * close where the node briefly lingers mid exit-animation.
  */
 export async function expectSearchDialogDismissed(page: Page) {
-  await expect(page.getByTestId('search-dialog')).toHaveAttribute(
-    'aria-hidden',
-    'true',
-    { timeout: UI_SHELL_TIMEOUT_MS },
-  );
+  await expect(page.getByTestId('search-dialog')).toBeHidden({
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
 }
 
 export type SearchParams = {

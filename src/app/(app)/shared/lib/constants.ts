@@ -36,8 +36,6 @@ export const MAIN_CONTENT_ID = 'main-content';
 export const SEARCH_DIALOG_ID = 'search-dialog';
 export const SEARCH_INPUT_ID = 'search-input';
 export const LOCATION_INPUT_ID = 'location-input';
-export const SEARCH_DIALOG_TITLE_ID = 'search-dialog-title';
-export const SEARCH_DIALOG_DESCRIPTION_ID = 'search-dialog-description';
 
 export const NEW_TAB_WARNING = ' (opens in a new tab)';
 

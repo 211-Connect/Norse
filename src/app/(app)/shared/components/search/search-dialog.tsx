@@ -1,27 +1,23 @@
 'use client';
 
+import * as DialogPrimitive from '@radix-ui/react-dialog';
 import {
   FocusEvent,
-  KeyboardEvent,
   useCallback,
   useEffect,
-  useRef,
   useState,
   useTransition,
 } from 'react';
-import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { useAppConfig } from '../../hooks/use-app-config';
 import {
   LOCATION_INPUT_ID,
-  SEARCH_DIALOG_DESCRIPTION_ID,
   SEARCH_DIALOG_ID,
-  SEARCH_DIALOG_TITLE_ID,
   SEARCH_INPUT_ID,
 } from '../../lib/constants';
-import { cn, getScrollbarWidth } from '../../lib/utils';
+import { cn } from '../../lib/utils';
 import {
   AiClassificationScenario,
   AiPredictOption,
@@ -64,10 +60,6 @@ export function SearchDialog({
   const { t, i18n } = useTranslation('common');
   const [isPending, startTransition] = useTransition();
   const appConfig = useAppConfig();
-  const scrollPositionRef = useRef(0);
-  const initialRenderRef = useRef(true);
-  const [mounted, setMounted] = useState(false);
-  const dialogRef = useRef<HTMLDivElement | null>(null);
 
   const [aiSearchScenario, setAiSearchScenario] = useState<
     AiClassificationScenario | undefined
@@ -235,183 +227,116 @@ export function SearchDialog({
 
   useUserLocationNavigator({ isDialogOpen: open });
 
-  useEffect(() => {
-    if (initialRenderRef.current) return;
-
-    if (open) {
-      const elementToSelect =
-        focusByDefault === 'location' ? LOCATION_INPUT_ID : SEARCH_INPUT_ID;
-
-      const scrollbarWidth = getScrollbarWidth();
-      scrollPositionRef.current = window.scrollY;
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollPositionRef.current}px`;
-      document.body.style.width = '100%';
-      document.body.style.paddingRight = `${scrollbarWidth}px`;
-
-      setTimeout(() => {
-        (
-          document.querySelector(`#${elementToSelect}`) as
-            HTMLInputElement | undefined
-        )?.focus();
-      }, 100);
-    } else {
-      setTimeout(() => {
-        document.body.style.top = '';
-        document.body.style.width = '';
-        document.body.style.position = '';
-        document.body.style.paddingRight = '';
-        window.scrollTo(0, scrollPositionRef.current || 0);
-      }, 10);
-    }
-  }, [focusByDefault, open]);
-
   const closeDialog = useCallback(() => {
     onLegacyAiClarifyAction?.();
     setOpen?.(false);
+  }, [onLegacyAiClarifyAction, setOpen]);
 
-    if (restoreFocusElement) {
-      setTimeout(() => {
-        restoreFocusElement.focus({ preventScroll: true });
-      }, 20);
-    }
-  }, [onLegacyAiClarifyAction, restoreFocusElement, setOpen]);
-
-  const handleDialogKeyDown = useCallback(
-    (event: KeyboardEvent<HTMLDivElement>) => {
-      if (event.key === 'Escape') {
-        event.preventDefault();
+  const handleOpenChange = useCallback(
+    (nextOpen: boolean) => {
+      if (!nextOpen) {
         closeDialog();
-        return;
-      }
-
-      if (event.key !== 'Tab' || !dialogRef.current) {
-        return;
-      }
-
-      const focusableSelectors = [
-        'a[href]',
-        'button:not([disabled])',
-        'input:not([disabled])',
-        'select:not([disabled])',
-        'textarea:not([disabled])',
-        '[tabindex]:not([tabindex="-1"])',
-      ].join(', ');
-
-      const focusableElements = Array.from(
-        dialogRef.current.querySelectorAll<HTMLElement>(focusableSelectors),
-      ).filter((element) => {
-        return (
-          element.getAttribute('aria-hidden') !== 'true' &&
-          !element.hasAttribute('disabled') &&
-          element.tabIndex !== -1
-        );
-      });
-
-      if (focusableElements.length === 0) {
-        return;
-      }
-
-      const firstElement = focusableElements[0];
-      const lastElement = focusableElements[focusableElements.length - 1];
-      const activeElement = document.activeElement as HTMLElement | null;
-
-      if (!event.shiftKey && activeElement === lastElement) {
-        event.preventDefault();
-        firstElement.focus();
-      } else if (event.shiftKey && activeElement === firstElement) {
-        event.preventDefault();
-        lastElement.focus();
       }
     },
     [closeDialog],
   );
 
-  useEffect(() => {
-    initialRenderRef.current = false;
-    setMounted(true);
+  // Radix normally auto-focuses the dialog's first focusable element; we
+  // preventDefault and focus the search/location input ourselves instead so
+  // `focusByDefault` keeps deciding which field opens with focus.
+  const handleOpenAutoFocus = useCallback(
+    (event: Event) => {
+      event.preventDefault();
+      const elementId =
+        focusByDefault === 'location' ? LOCATION_INPUT_ID : SEARCH_INPUT_ID;
+      document.getElementById(elementId)?.focus();
+    },
+    [focusByDefault],
+  );
 
-    return () => {
-      document.body.style.top = '';
-      document.body.style.width = '';
-      document.body.style.position = '';
-      document.body.style.paddingRight = '';
-      window.scrollTo(0, 0);
-    };
-  }, []);
+  const handleCloseAutoFocus = useCallback(
+    (event: Event) => {
+      if (!restoreFocusElement) {
+        return;
+      }
 
-  if (!mounted) {
-    return null;
-  }
+      event.preventDefault();
+      restoreFocusElement.focus({ preventScroll: true });
+    },
+    [restoreFocusElement],
+  );
 
-  return createPortal(
-    <div
-      ref={dialogRef}
-      id={SEARCH_DIALOG_ID}
-      className={cn(
-        'fixed top-0 right-0 bottom-0 left-0 z-50 overflow-y-auto overscroll-contain bg-white p-6 transition-opacity duration-300',
-        open ? 'opacity-100' : 'pointer-events-none opacity-0',
-      )}
-      role="dialog"
-      data-testid={SEARCH_DIALOG_ID}
-      aria-hidden={open ? undefined : true}
-      aria-modal={open ? true : undefined}
-      aria-labelledby={SEARCH_DIALOG_TITLE_ID}
-      aria-describedby={SEARCH_DIALOG_DESCRIPTION_ID}
-      onKeyDown={handleDialogKeyDown}
-    >
-      <h2 className="sr-only" id={SEARCH_DIALOG_TITLE_ID}>
-        {t('header.search')}
-      </h2>
-      <p className="sr-only" id={SEARCH_DIALOG_DESCRIPTION_ID}>
-        {t('search.search_dialog_description')}
-      </p>
-      <div className="flex min-h-full w-full max-w-full items-start justify-center rounded-none! border-0">
-        {open && (
-          <form
-            onSubmit={onSubmit}
-            className="flex w-full max-w-100 flex-col gap-4 overflow-y-auto pt-6 pb-6 [@media(min-width:640px)_and_(min-height:600px)]:pt-30"
-          >
-            <div className="flex flex-row justify-between gap-4">
-              <SearchDialogHeaderActions
-                clarifyVisible={clarifyVisible}
-                disableSearchControls={disableSearchControls}
-                isMainSearchLoading={isMainSearchLoading}
-                isSkipLoading={isSkipButtonLoading}
-                isConfirmLoading={isConfirmButtonLoading}
-                onClose={closeDialog}
-                onSkipClarify={handleSkipClarify}
-                onConfirmClarify={handleConfirmClarify}
-              />
-            </div>
-            <div
-              id="search-form-inputs"
-              className="overflow-y-auto"
-              onFocusCapture={handleSearchFormFocusCapture}
-              onBlurCapture={handleSearchFormBlurCapture}
-            >
-              <SearchBar
-                inputId={SEARCH_INPUT_ID}
-                hideOptions={clarifyVisible}
-                onQueryInputChange={handleSearchInputChange}
-              />
-              <LocationSearchBar inputId={LOCATION_INPUT_ID} className="mt-4" />
+  return (
+    <DialogPrimitive.Root open={open} onOpenChange={handleOpenChange}>
+      <DialogPrimitive.Portal>
+        <DialogPrimitive.Content
+          id={SEARCH_DIALOG_ID}
+          data-testid={SEARCH_DIALOG_ID}
+          aria-hidden={open ? undefined : true}
+          aria-modal={open ? true : undefined}
+          className={cn(
+            'fixed inset-0 z-50 overflow-y-auto overscroll-contain bg-white p-6',
+            'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:pointer-events-none duration-300',
+          )}
+          onOpenAutoFocus={handleOpenAutoFocus}
+          onCloseAutoFocus={handleCloseAutoFocus}
+        >
+          <DialogPrimitive.Title className="sr-only">
+            {t('header.search')}
+          </DialogPrimitive.Title>
+          <DialogPrimitive.Description className="sr-only">
+            {t('search.search_dialog_description')}
+          </DialogPrimitive.Description>
+          <div className="flex min-h-full w-full max-w-full items-start justify-center rounded-none! border-0">
+            {open && (
+              <form
+                onSubmit={onSubmit}
+                className="flex w-full max-w-100 flex-col gap-4 overflow-y-auto pt-6 pb-6 [@media(min-width:640px)_and_(min-height:600px)]:pt-30"
+              >
+                <div className="flex flex-row justify-between gap-4">
+                  <SearchDialogHeaderActions
+                    clarifyVisible={clarifyVisible}
+                    disableSearchControls={disableSearchControls}
+                    isMainSearchLoading={isMainSearchLoading}
+                    isSkipLoading={isSkipButtonLoading}
+                    isConfirmLoading={isConfirmButtonLoading}
+                    onClose={closeDialog}
+                    onSkipClarify={handleSkipClarify}
+                    onConfirmClarify={handleConfirmClarify}
+                  />
+                </div>
+                <div
+                  id="search-form-inputs"
+                  className="overflow-y-auto"
+                  onFocusCapture={handleSearchFormFocusCapture}
+                  onBlurCapture={handleSearchFormBlurCapture}
+                >
+                  <SearchBar
+                    inputId={SEARCH_INPUT_ID}
+                    hideOptions={clarifyVisible}
+                    onQueryInputChange={handleSearchInputChange}
+                  />
+                  <LocationSearchBar
+                    inputId={LOCATION_INPUT_ID}
+                    className="mt-4"
+                  />
 
-              {showAiClassificationOptions && (
-                <AiClassificationOptions
-                  selectedCodes={selectedClarifyCodes}
-                  options={effectiveClarifyOptions}
-                  onToggle={handleToggleClarifyCode}
-                  scenario={aiSearchScenario}
-                  validationMessage={clarifyValidationError}
-                  disabled={disableSearchControls}
-                />
-              )}
-            </div>
-          </form>
-        )}
-      </div>
-    </div>,
-    document.querySelector('#app-root') as Element,
+                  {showAiClassificationOptions && (
+                    <AiClassificationOptions
+                      selectedCodes={selectedClarifyCodes}
+                      options={effectiveClarifyOptions}
+                      onToggle={handleToggleClarifyCode}
+                      scenario={aiSearchScenario}
+                      validationMessage={clarifyValidationError}
+                      disabled={disableSearchControls}
+                    />
+                  )}
+                </div>
+              </form>
+            )}
+          </div>
+        </DialogPrimitive.Content>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
   );
 }
