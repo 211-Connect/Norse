@@ -114,15 +114,19 @@ Uses existing modal components and actions:
 
 - gate + server predict + redirect + prefill payload:
   - [src/app/(app)/[locale]/(rest)/search/page.tsx](src/app/(app)/[locale]/(rest)/search/page.tsx)
-- AI URL/canonical helpers + gate resolution:
-  - [src/app/(app)/shared/utils/ai-search.ts](src/app/(app)/shared/utils/ai-search.ts)
+  - [src/app/(app)/features/search/utils/handleLegacyDeepLinks.ts](src/app/(app)/features/search/utils/handleLegacyDeepLinks.ts)
+- AI URL/canonical helpers + legacy param parsing:
+  - [src/app/(app)/features/search/utils/buildSearchUrl.ts](src/app/(app)/features/search/utils/buildSearchUrl.ts)
+  - [src/app/(app)/features/search/utils/parseLegacyAiClarifyParams.ts](src/app/(app)/features/search/utils/parseLegacyAiClarifyParams.ts)
 - hydrated prefill state:
   - [src/app/(app)/shared/store/search.ts](src/app/(app)/shared/store/search.ts)
   - [src/app/(app)/shared/components/jotai-hydration.tsx](src/app/(app)/shared/components/jotai-hydration.tsx)
 - one-shot dialog open:
   - [src/app/(app)/shared/components/search/main-search-layout/main-search-layout.tsx](src/app/(app)/shared/components/search/main-search-layout/main-search-layout.tsx)
-- AI flow orchestration hook:
-  - [src/app/(app)/shared/components/search/use-ai-classification-flow.ts](src/app/(app)/shared/components/search/use-ai-classification-flow.ts)
+- AI flow orchestration (predict/confirm/skip handlers):
+  - [src/app/(app)/features/search/hooks/useOnSearchSubmit.ts](src/app/(app)/features/search/hooks/useOnSearchSubmit.ts)
+  - [src/app/(app)/features/search/hooks/useNavigateAiSearch.ts](src/app/(app)/features/search/hooks/useNavigateAiSearch.ts)
+  - [src/app/(app)/shared/components/search/search-dialog.tsx](src/app/(app)/shared/components/search/search-dialog.tsx)
 - dialog UI reuse:
   - [src/app/(app)/shared/components/search/search-dialog.tsx](src/app/(app)/shared/components/search/search-dialog.tsx)
   - [src/app/(app)/shared/components/search/ai-classification-options.tsx](src/app/(app)/shared/components/search/ai-classification-options.tsx)

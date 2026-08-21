@@ -4,16 +4,86 @@ permissions:
   contents: read
 
 on:
+  # Safety net: push events have no `inputs` context, so the job condition
+  # below falls back to the `dev` matrix cells for this trigger.
   push:
     branches:
       - main
 
   workflow_call:
+    inputs:
+      environment:
+        description: >-
+          Which deployed environment to test against: 'dev' or 'production'.
+          Selects the matrix cells to run (see `include` below).
+        required: false
+        type: string
 
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Which deployed environment to test against.'
+        required: true
+        type: choice
+        options:
+          - dev
+          - production
+        default: dev
 
 jobs:
   e2e-tests:
+    if: matrix.env == (inputs.environment || 'dev')
+    strategy:
+      fail-fast: false
+      matrix:
+        # Single source of truth for the tenant × env test matrix. Base URLs
+        # are public (non-secret); credentials are resolved per-cell below
+        # via `secret_suffix` (see e2e/AGENTS.md "Multi-tenant test matrix").
+        # To add a 5th tenant: add its dev + prod rows here, add its 4
+        # TEST_USER_EMAIL/PASSWORD_<SUFFIX>_{DEV,PROD} secrets, and add it to
+        # e2e/fixtures/tenants.ts.
+        include:
+          - tenant: MBOA
+            env: dev
+            base_url: https://stg-mboa.c211.io/adresources
+            secret_suffix: MBOA_DEV
+            ai_project: false
+          - tenant: MBOA
+            env: production
+            base_url: https://mn.gov/adresources
+            secret_suffix: MBOA_PROD
+            ai_project: false
+          - tenant: MD
+            env: dev
+            base_url: https://dev-md211.c211.io
+            secret_suffix: MD_DEV
+            ai_project: false
+          - tenant: MD
+            env: production
+            base_url: https://search.marylandaccesspoint.211md.org
+            secret_suffix: MD_PROD
+            ai_project: false
+          - tenant: VT
+            env: dev
+            base_url: https://dev-vt.c211.io
+            secret_suffix: VT_DEV
+            ai_project: false
+          - tenant: VT
+            env: production
+            base_url: https://search.vermont211.org
+            secret_suffix: VT_PROD
+            ai_project: false
+          - tenant: WA
+            env: dev
+            base_url: https://dev-wa211.c211.io
+            secret_suffix: WA_DEV
+            ai_project: true
+          - tenant: WA
+            env: production
+            base_url: https://search.wa211.org
+            secret_suffix: WA_PROD
+            ai_project: false
+
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -25,9 +95,11 @@ jobs:
       E2E_UI_SHELL_TIMEOUT_MS: 20000
       E2E_DEFAULT_ACTION_TIMEOUT_MS: 20000
       E2E_TEST_TIMEOUT_MS: 600000
-      E2E_BASE_URL: ${{ vars.TEST_STG_URL }}
-      TEST_USER_EMAIL: ${{ secrets.TEST_STG_USER_EMAIL }}
-      TEST_USER_PASSWORD: ${{ secrets.TEST_STG_USER_PASSWORD }}
+      E2E_BASE_URL: ${{ matrix.base_url }}
+      E2E_TENANT_KEY: ${{ matrix.tenant }}
+      E2E_TENANT_ENV: ${{ matrix.env == 'production' && 'prod' || 'dev' }}
+      TEST_USER_EMAIL: ${{ secrets[format('TEST_USER_EMAIL_{0}', matrix.secret_suffix)] }}
+      TEST_USER_PASSWORD: ${{ secrets[format('TEST_USER_PASSWORD_{0}', matrix.secret_suffix)] }}
 
     steps:
       - name: Checkout code
@@ -46,17 +118,18 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run E2E tests
-        run: >
-          npx playwright test
-          --project=search-taxonomy
-          --project=translations
-          --project=favorites
-          --project=accessibility
+        run: |
+          PROJECTS="--project=search-taxonomy --project=translations --project=search-geocode --project=favorites --project=accessibility"
+          if [ "${{ matrix.ai_project }}" = "true" ]; then
+            PROJECTS="$PROJECTS --project=ai-classification"
+          fi
+          npx playwright test $PROJECTS
+
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.tenant }}-${{ matrix.env }}
           path: |
             playwright-report/
           if-no-files-found: ignore

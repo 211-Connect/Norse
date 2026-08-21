@@ -10,6 +10,7 @@ import { SEARCH_NAV_TIMEOUT_MS, UI_SHELL_TIMEOUT_MS } from './timeouts';
  *
  * @see src/app/(app)/features/search/utils/navigateToSearchWithCoords.ts
  * @see src/middlewares/searchLinkCorrectionMiddleware.ts
+ * @see docs/search-deep-link-geocoding.md
  */
 
 function buildSearchDeepLinkUrl(params: Record<string, string>): string {

@@ -1,16 +1,22 @@
 import type { Page } from '@playwright/test';
 
+import { getCurrentTenant } from './fixtures/tenants';
 import {
   expect,
   expectPageUrl,
   getResultTotal,
+  getResultTotalNumber,
+  getSelectedFilterIds,
   goHome,
   isSearchResourceDetailUrl,
+  markFirstNEnabledFilters,
   openSearchDialog,
   parseTotalFromResultText,
   performSearch,
   searchAndGetFirstResult,
+  switchLanguage,
   test,
+  waitForFilterPanelInteractive,
 } from './helpers';
 import {
   AUTOCOMPLETE_TIMEOUT_MS,
@@ -151,9 +157,11 @@ test.describe('Taxonomy Search Result Accuracy', () => {
   test('searching for a taxonomy subcategory should return results', async ({
     page,
   }) => {
+    const { taxonomy } = getCurrentTenant();
+
     await performSearch(page, {
-      query: 'BD-1800.2000',
-      query_label: 'Food',
+      query: taxonomy.code,
+      query_label: taxonomy.label,
       query_type: 'taxonomy',
     });
 
@@ -318,4 +326,41 @@ test.describe('Search Filters', () => {
 
     await expect(page.locator('#search-container')).toBeVisible();
   });
+
+  for (const locale of ['en', 'es'] as const) {
+    test(`selecting a facet narrows results, marks it selected, and adds it to the URL (${locale})`, async ({
+      page,
+    }) => {
+      // `searchWithFallbackQueries` calls `goHome` (always `/en`) between
+      // attempts, so switch language *after* it settles on results rather
+      // than before - matches the existing search-then-switch pattern in
+      // translations.spec.ts.
+      await searchWithFallbackQueries(page);
+
+      if (locale !== 'en') {
+        await switchLanguage(page, locale);
+      }
+
+      await waitForFilterPanelInteractive(page);
+
+      const filterPanel = page.locator('#filter-panel');
+      await expect(filterPanel).toBeVisible();
+      expect(await filterPanel.getByRole('checkbox').count()).toBeGreaterThan(
+        0,
+      );
+
+      const resultsBefore = await getResultTotalNumber(page);
+      expect(decodeURIComponent(page.url())).not.toContain('filters[');
+
+      await markFirstNEnabledFilters(page, 1);
+
+      const selectedFilterIds = await getSelectedFilterIds(page);
+      expect(selectedFilterIds.length).toBeGreaterThan(0);
+
+      const resultsAfter = await getResultTotalNumber(page);
+      expect(resultsAfter).toBeLessThanOrEqual(resultsBefore);
+
+      expect(decodeURIComponent(page.url())).toContain('filters[');
+    });
+  }
 });

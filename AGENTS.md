@@ -19,6 +19,7 @@ Other docs, load only when the task touches that area:
 - [docs/custom-attributes.md](/docs/custom-attributes.md) — tenant-configurable generic "Datum" fields on resource/search-card layouts.
 - [docs/printable-directories.md](/docs/printable-directories.md) — curated branded PDF directory feature.
 - [docs/ai-search-legacy-link-flow.md](/docs/ai-search-legacy-link-flow.md) — legacy search URL normalization when a tenant's `searchEngine` is `ai_classification`.
+- [docs/search-deep-link-geocoding.md](/docs/search-deep-link-geocoding.md) — forward-geocoding a deep link's `location` when `coords` is missing (all tenants).
 
 ## Feature documentation
 

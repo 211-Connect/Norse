@@ -37,6 +37,38 @@ Scope: `e2e/**`. Read this before adding or editing Playwright specs or helpers.
   exercise English. Known, accepted risk — not blocking, but don't add more
   of them if a testid is available.
 
+## Multi-tenant test matrix
+
+The full suite (`search-taxonomy`, `translations`, `search-geocode`,
+`favorites`, `accessibility`, `ai-classification`) runs against 4 tenants ×
+2 environments (dev/prod) in CI — see `.github/workflows/e2e-tests.yaml` for
+the matrix (base URLs, per-cell secrets) and `e2e/fixtures/tenants.ts` for the
+per-tenant data (taxonomy codes/labels, broad queries, `aiSearchEnabled`).
+
+- Tenant is selected locally via `E2E_TENANT_KEY` (`MBOA` | `MD` | `VT` |
+  `WA`, defaults to `MBOA`); environment via `E2E_TENANT_ENV` (`dev` | `prod`,
+  defaults to `dev`). Both only affect fixture lookups in
+  `e2e/fixtures/tenants.ts` — `playwright.config.ts`'s `baseURL` still comes
+  from `E2E_BASE_URL` as before; CI sets all three env vars together per
+  matrix cell.
+- No hosts-file tricks needed: tenant resolution is by request `Host` header
+  (`findResourceDirectoryByHost`), so pointing `E2E_BASE_URL` at any real
+  tenant domain is sufficient.
+- Real data, no mocks: fixture values are live taxonomy codes/labels gathered
+  by crawling each tenant's site, not invented or synthetic. All
+  fixture-driven assertions stay content-presence (`> 0`, element visible),
+  never exact counts, since live data changes over time — same rule that
+  already applied to `BROAD_QUERIES` in `search-taxonomy.spec.ts`.
+- `search-ai-classification.spec.ts` self-skips entirely unless
+  `isAiSearchEnabledForCurrentTenant()` is true (currently WA dev only).
+  Its Case B/D-derived tests do **not** self-skip or branch on the live
+  classifier's outcome: each uses a real, hand-verified query from
+  `tenant.aiScenarioQueries` (`e2e/fixtures/tenants.ts`) that
+  deterministically triggers one specific `AiClassificationScenario`. If a
+  query stops triggering the scenario it was picked for, the test should
+  fail loudly — fix it by finding a new verified query, not by
+  reintroducing skip/branch logic.
+
 ## Helper module map (`e2e/helpers/`)
 
 Barrel `index.ts` re-exports everything plus the customized `test`/`expect`
