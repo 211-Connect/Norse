@@ -10,6 +10,14 @@ on:
     branches:
       - main
 
+  # TEMPORARY, for testing only: run the dev matrix on every PR into
+  # `development`. Same `inputs.environment` fallback as `push` applies
+  # (pull_request has no `inputs` context either), so this always runs the
+  # `dev` cells. Remove this trigger once done testing.
+  pull_request:
+    branches:
+      - development
+
   workflow_call:
     inputs:
       environment:
