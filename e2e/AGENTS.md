@@ -42,10 +42,17 @@ Scope: `e2e/**`. Read this before adding or editing Playwright specs or helpers.
 The full suite (`search-taxonomy`, `translations`, `search-geocode`,
 `favorites`, `accessibility`, `ai-classification`) runs against 4 tenants ×
 2 environments (dev/prod) in CI — see `.github/workflows/e2e-tests.yaml` for
-the matrix (base URLs, per-cell secrets) and `e2e/fixtures/tenants.ts` for the
-per-tenant data (taxonomy codes/labels, broad queries, `aiSearchEnabled`).
+the matrix (base URLs, per-cell test email) and `e2e/fixtures/tenants.ts` for
+the per-tenant data (taxonomy codes/labels, broad queries, `aiSearchEnabled`).
 
-- Tenant is selected locally via `E2E_TENANT_KEY` (`MBOA` | `MD` | `VT` |
+- Test accounts: one account per matrix cell, email deterministic
+  (`test-<tenant>-<env>@c211.io`, e.g. `test-wa-dev@c211.io`), all sharing a
+  single `TEST_USER_PASSWORD` GitHub secret — not a per-cell secret. Each
+  account must actually exist in that tenant/env's Keycloak realm with that
+  shared password. To add a 5th tenant, create its 2 accounts and add its
+  matrix rows — no new secrets needed.
+
+- Tenant is selected locally via `E2E_TENANT_KEY` (`MBOA` | `MAP` | `VT` |
   `WA`, defaults to `MBOA`); environment via `E2E_TENANT_ENV` (`dev` | `prod`,
   defaults to `dev`). Both only affect fixture lookups in
   `e2e/fixtures/tenants.ts` — `playwright.config.ts`'s `baseURL` still comes

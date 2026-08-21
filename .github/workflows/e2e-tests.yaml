@@ -37,51 +37,52 @@ jobs:
       fail-fast: false
       matrix:
         # Single source of truth for the tenant × env test matrix. Base URLs
-        # are public (non-secret); credentials are resolved per-cell below
-        # via `secret_suffix` (see e2e/AGENTS.md "Multi-tenant test matrix").
-        # To add a 5th tenant: add its dev + prod rows here, add its 4
-        # TEST_USER_EMAIL/PASSWORD_<SUFFIX>_{DEV,PROD} secrets, and add it to
-        # e2e/fixtures/tenants.ts.
+        # are public (non-secret). Test-account email is deterministic per
+        # cell (`test-<tenant>-<env>@c211.io`, see `test_email` below) — only
+        # the shared password is a secret (see e2e/AGENTS.md "Multi-tenant
+        # test matrix"). To add a 5th tenant: add its dev + prod rows here,
+        # create its 2 `test-<tenant>-{dev,prod}@c211.io` accounts (same
+        # shared `TEST_USER_PASSWORD`), and add it to e2e/fixtures/tenants.ts.
         include:
           - tenant: MBOA
             env: dev
             base_url: https://stg-mboa.c211.io/adresources
-            secret_suffix: MBOA_DEV
+            test_email: test-mboa-dev@c211.io
             ai_project: false
           - tenant: MBOA
             env: production
             base_url: https://mn.gov/adresources
-            secret_suffix: MBOA_PROD
+            test_email: test-mboa-prod@c211.io
             ai_project: false
-          - tenant: MD
+          - tenant: MAP
             env: dev
             base_url: https://dev-md211.c211.io
-            secret_suffix: MD_DEV
+            test_email: test-map-dev@c211.io
             ai_project: false
-          - tenant: MD
+          - tenant: MAP
             env: production
             base_url: https://search.marylandaccesspoint.211md.org
-            secret_suffix: MD_PROD
+            test_email: test-map-prod@c211.io
             ai_project: false
           - tenant: VT
             env: dev
             base_url: https://dev-vt.c211.io
-            secret_suffix: VT_DEV
+            test_email: test-vt-dev@c211.io
             ai_project: false
           - tenant: VT
             env: production
             base_url: https://search.vermont211.org
-            secret_suffix: VT_PROD
+            test_email: test-vt-prod@c211.io
             ai_project: false
           - tenant: WA
             env: dev
             base_url: https://dev-wa211.c211.io
-            secret_suffix: WA_DEV
+            test_email: test-wa-dev@c211.io
             ai_project: true
           - tenant: WA
             env: production
             base_url: https://search.wa211.org
-            secret_suffix: WA_PROD
+            test_email: test-wa-prod@c211.io
             ai_project: false
 
     runs-on: ubuntu-latest
@@ -98,8 +99,8 @@ jobs:
       E2E_BASE_URL: ${{ matrix.base_url }}
       E2E_TENANT_KEY: ${{ matrix.tenant }}
       E2E_TENANT_ENV: ${{ matrix.env == 'production' && 'prod' || 'dev' }}
-      TEST_USER_EMAIL: ${{ secrets[format('TEST_USER_EMAIL_{0}', matrix.secret_suffix)] }}
-      TEST_USER_PASSWORD: ${{ secrets[format('TEST_USER_PASSWORD_{0}', matrix.secret_suffix)] }}
+      TEST_USER_EMAIL: ${{ matrix.test_email }}
+      TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
 
     steps:
       - name: Checkout code

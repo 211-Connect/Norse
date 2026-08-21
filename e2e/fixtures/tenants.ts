@@ -1,5 +1,5 @@
 /**
- * Per-tenant fixture data for the multi-tenant e2e matrix (MBOA, MD, VT, WA
+ * Per-tenant fixture data for the multi-tenant e2e matrix (MBOA, MAP, VT, WA
  * across dev/prod - see e2e/AGENTS.md "Multi-tenant test matrix").
  *
  * The active tenant is selected at runtime via `E2E_TENANT_KEY` (set per CI
@@ -15,7 +15,7 @@
  * counts, since live data changes over time.
  */
 
-export type TenantKey = 'MBOA' | 'MD' | 'VT' | 'WA';
+export type TenantKey = 'MBOA' | 'MAP' | 'VT' | 'WA';
 
 export type TenantEnv = 'dev' | 'prod';
 
@@ -63,8 +63,8 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
     taxonomy: { code: 'DT-8800', label: 'Tax Help' },
     aiSearchEnabled: { dev: false, prod: false },
   },
-  MD: {
-    key: 'MD',
+  MAP: {
+    key: 'MAP',
     displayName: 'Maryland AccessPoint',
     broadQuery: 'housing',
     taxonomy: { code: 'BD-5000.3500', label: 'Home Delivered Meals' },
