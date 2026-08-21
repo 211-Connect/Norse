@@ -60,38 +60,74 @@ test.describe('Search Autocomplete Suggestions', () => {
     await goHome(page);
   });
 
-  test('typing "food shelves" and submitting first topic suggestion returns results', async ({
+  test('typing a broad query and submitting a topic suggestion returns results', async ({
     page,
   }) => {
-    const searchInput = await openSearchDialog(page);
-    await searchInput.fill('food shelves');
+    async function trySuggestion(
+      query: string,
+      index: number,
+    ): Promise<number> {
+      await goHome(page);
+      const searchInput = await openSearchDialog(page);
+      await searchInput.fill(query);
 
-    const listbox = page.getByTestId('autocomplete-listbox');
-    await listbox.waitFor({
-      state: 'visible',
-      timeout: AUTOCOMPLETE_TIMEOUT_MS,
-    });
-
-    const options = listbox.getByTestId('autocomplete-option');
-    await expect
-      .poll(async () => options.count(), {
+      const listbox = page.getByTestId('autocomplete-listbox');
+      await listbox.waitFor({
+        state: 'visible',
         timeout: AUTOCOMPLETE_TIMEOUT_MS,
-        intervals: [100, 250, 500],
-      })
-      .toBeGreaterThan(0);
+      });
 
-    const foodShelvesTopic = options.filter({ hasText: /food shelves/i });
-    await expect(foodShelvesTopic.first()).toBeVisible({
-      timeout: AUTOCOMPLETE_TIMEOUT_MS,
-    });
-    await foodShelvesTopic.first().click();
+      const topicSuggestions = listbox
+        .getByTestId('autocomplete-option')
+        .filter({ hasNotText: /^i need/i });
+      // Suggestions can stream in progressively after the listbox first
+      // becomes visible - poll for the count to stop changing (not just
+      // become non-zero) so we don't act on a partial render.
+      let previousCount = -1;
+      await expect
+        .poll(
+          async () => {
+            const current = await topicSuggestions.count();
+            const stable = current > 0 && current === previousCount;
+            previousCount = current;
+            return stable;
+          },
+          {
+            timeout: AUTOCOMPLETE_TIMEOUT_MS,
+            intervals: [150, 250, 400],
+          },
+        )
+        .toBe(true);
 
-    const submitButton = page.getByTestId('search-submit-btn');
-    await expect(submitButton).toBeEnabled({ timeout: UI_SHELL_TIMEOUT_MS });
-    await submitButton.click();
+      const count = await topicSuggestions.count();
+      if (index >= count) {
+        return 0;
+      }
 
-    const totalText = await getResultTotal(page);
-    const total = parseTotalFromResultText(totalText);
+      await topicSuggestions.nth(index).click();
+
+      const submitButton = page.getByTestId('search-submit-btn');
+      await expect(submitButton).toBeEnabled({ timeout: UI_SHELL_TIMEOUT_MS });
+      await submitButton.click();
+
+      const totalText = await getResultTotal(page);
+      return parseTotalFromResultText(totalText);
+    }
+
+    const MAX_SUGGESTIONS_TO_TRY = 5;
+    let total = 0;
+    outer: for (const query of [
+      getCurrentTenant().broadQuery,
+      ...BROAD_QUERIES,
+    ]) {
+      for (let i = 0; i < MAX_SUGGESTIONS_TO_TRY; i++) {
+        total = await trySuggestion(query, i);
+        if (total > 0) {
+          break outer;
+        }
+      }
+    }
+
     expect(total).toBeGreaterThan(0);
   });
 

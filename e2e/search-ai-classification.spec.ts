@@ -1,4 +1,4 @@
-import { type Page, expect } from '@playwright/test';
+import { type Locator, type Page, expect } from '@playwright/test';
 
 import {
   getCurrentTenant,
@@ -72,6 +72,32 @@ async function waitForCanonicalAiUrl(page: Page) {
       intervals: [250, 500, 1_000],
     })
     .toBe(true);
+}
+
+/**
+ * Returns a locator pinned to the first currently-unselected option button,
+ * by index rather than by `pressed: false`. Filtering by `pressed` and
+ * reusing that same locator after clicking is a bug: the locator is a live
+ * query, so once the click flips that button's `aria-pressed` to `true`, the
+ * `pressed: false` filter re-resolves to a *different* (still-unselected)
+ * button on the next query, not the one that was just clicked - making a
+ * follow-up `toHaveAttribute('aria-pressed', 'true')` assertion on it
+ * impossible to satisfy. Button DOM order is stable across toggles, so a
+ * positional `.nth(index)` locator is used instead.
+ */
+async function getFirstUnselectedOption(optionsContainer: Locator) {
+  const allOptions = optionsContainer.getByRole('button');
+  await expect(allOptions.first()).toBeVisible({
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
+  const count = await allOptions.count();
+  for (let i = 0; i < count; i++) {
+    const pressed = await allOptions.nth(i).getAttribute('aria-pressed');
+    if (pressed === 'false') {
+      return allOptions.nth(i);
+    }
+  }
+  throw new Error('No unselected AI classification option button found.');
 }
 
 test.describe('AI classification search flow (real data, no mocks)', () => {
@@ -246,12 +272,7 @@ test.describe('AI classification search flow (real data, no mocks)', () => {
       page,
     }) => {
       const optionsContainer = page.getByTestId('ai-classification-options');
-      const unselectedOption = optionsContainer
-        .getByRole('button', { pressed: false })
-        .first();
-      await expect(unselectedOption).toBeVisible({
-        timeout: UI_SHELL_TIMEOUT_MS,
-      });
+      const unselectedOption = await getFirstUnselectedOption(optionsContainer);
       await unselectedOption.click();
       await expect(unselectedOption).toHaveAttribute('aria-pressed', 'true');
 
@@ -288,12 +309,7 @@ test.describe('AI classification search flow (real data, no mocks)', () => {
       page,
     }) => {
       const optionsContainer = page.getByTestId('ai-classification-options');
-      const unselectedOption = optionsContainer
-        .getByRole('button', { pressed: false })
-        .first();
-      await expect(unselectedOption).toBeVisible({
-        timeout: UI_SHELL_TIMEOUT_MS,
-      });
+      const unselectedOption = await getFirstUnselectedOption(optionsContainer);
       await unselectedOption.click();
       await expect(unselectedOption).toHaveAttribute('aria-pressed', 'true');
 
