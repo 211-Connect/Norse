@@ -66,12 +66,14 @@ jobs:
           FULL_MATRIX='[
             {"tenant":"MBOA","env":"dev","base_url":"https://stg-mboa.c211.io/adresources","test_email":"test-mboa-dev@c211.io","ai_project":false},
             {"tenant":"MBOA","env":"production","base_url":"https://mn.gov/adresources","test_email":"test-mboa-prod@c211.io","ai_project":false},
-            {"tenant":"MAP","env":"dev","base_url":"https://dev-md211.c211.io","test_email":"test-map-dev@c211.io","ai_project":false},
-            {"tenant":"MAP","env":"production","base_url":"https://search.marylandaccesspoint.211md.org","test_email":"test-map-prod@c211.io","ai_project":false},
-            {"tenant":"VT","env":"dev","base_url":"https://dev-vt.c211.io","test_email":"test-vt-dev@c211.io","ai_project":false},
-            {"tenant":"VT","env":"production","base_url":"https://search.vermont211.org","test_email":"test-vt-prod@c211.io","ai_project":false},
             {"tenant":"WA","env":"dev","base_url":"https://dev-wa211.c211.io","test_email":"test-wa-dev@c211.io","ai_project":true},
-            {"tenant":"WA","env":"production","base_url":"https://search.wa211.org","test_email":"test-wa-prod@c211.io","ai_project":false}
+            {"tenant":"WA","env":"production","base_url":"https://search.wa211.org","test_email":"test-wa-prod@c211.io","ai_project":false},
+            {"tenant":"VA","env":"dev","base_url":"https://dev-va211.c211.io","test_email":"test-va-dev@c211.io","ai_project":true},
+            {"tenant":"VA","env":"production","base_url":"https://search.211virginia.org","test_email":"test-va-prod@c211.io","ai_project":false},
+            {"tenant":"PA","env":"dev","base_url":"https://dev-pa211.c211.io","test_email":"test-pa-dev@c211.io","ai_project":false},
+            {"tenant":"PA","env":"production","base_url":"https://search.pa211.org","test_email":"test-pa-prod@c211.io","ai_project":false},
+            {"tenant":"AZ","env":"dev","base_url":"https://dev-az211.c211.io","test_email":"test-az-dev@c211.io","ai_project":false},
+            {"tenant":"AZ","env":"production","base_url":"https://search.211arizona.org","test_email":"test-az-prod@c211.io","ai_project":false}
           ]'
           FILTERED=$(echo "$FULL_MATRIX" | jq -c --arg env "$TARGET_ENV" '[.[] | select(.env == $env)]')
           echo "matrix={\"include\":$FILTERED}" >> "$GITHUB_OUTPUT"

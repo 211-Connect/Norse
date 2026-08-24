@@ -40,7 +40,7 @@ Scope: `e2e/**`. Read this before adding or editing Playwright specs or helpers.
 ## Multi-tenant test matrix
 
 The full suite (`search-taxonomy`, `translations`, `search-geocode`,
-`favorites`, `accessibility`, `ai-classification`) runs against 4 tenants ×
+`favorites`, `accessibility`, `ai-classification`) runs against 5 tenants ×
 2 environments (dev/prod) in CI — see `.github/workflows/e2e-tests.yaml` for
 the matrix (base URLs, per-cell test email) and `e2e/fixtures/tenants.ts` for
 the per-tenant data (taxonomy codes/labels, broad queries, `aiSearchEnabled`).
@@ -49,12 +49,12 @@ the per-tenant data (taxonomy codes/labels, broad queries, `aiSearchEnabled`).
   (`test-<tenant>-<env>@c211.io`, e.g. `test-wa-dev@c211.io`), all sharing a
   single `TEST_USER_PASSWORD` GitHub secret — not a per-cell secret. Each
   account must actually exist in that tenant/env's Keycloak realm with that
-  shared password. To add a 5th tenant, create its 2 accounts and add its
+  shared password. To add another tenant, create its 2 accounts and add its
   matrix rows — no new secrets needed.
 
-- Tenant is selected locally via `E2E_TENANT_KEY` (`MBOA` | `MAP` | `VT` |
-  `WA`, defaults to `MBOA`); environment via `E2E_TENANT_ENV` (`dev` | `prod`,
-  defaults to `dev`). Both only affect fixture lookups in
+- Tenant is selected locally via `E2E_TENANT_KEY` (`MBOA` | `WA` | `VA` |
+  `PA` | `AZ`, defaults to `MBOA`); environment via `E2E_TENANT_ENV` (`dev` |
+  `prod`, defaults to `dev`). Both only affect fixture lookups in
   `e2e/fixtures/tenants.ts` — `playwright.config.ts`'s `baseURL` still comes
   from `E2E_BASE_URL` as before; CI sets all three env vars together per
   matrix cell.
@@ -66,9 +66,16 @@ the per-tenant data (taxonomy codes/labels, broad queries, `aiSearchEnabled`).
   fixture-driven assertions stay content-presence (`> 0`, element visible),
   never exact counts, since live data changes over time — same rule that
   already applied to `BROAD_QUERIES` in `search-taxonomy.spec.ts`.
+- Not every tenant has a facets/filters panel configured (currently VA and AZ
+  don't). `TenantFixture.hasFacets` (`e2e/fixtures/tenants.ts`) records this;
+  facet/filter-dependent tests are gated behind `hasFacetsForCurrentTenant()`
+  (`test.skip` at the top of the `Search Filters` describe in
+  `search-taxonomy.spec.ts`, and inside the filter-persistence test in
+  `translations.spec.ts`) rather than failing or self-skipping on an empty
+  checkbox count.
 - `search-ai-classification.spec.ts` self-skips entirely unless
-  `isAiSearchEnabledForCurrentTenant()` is true (currently WA dev only).
-  Its Case B/D-derived tests do **not** self-skip or branch on the live
+  `isAiSearchEnabledForCurrentTenant()` is true (currently WA dev and VA dev
+  only). Its Case B/D-derived tests do **not** self-skip or branch on the live
   classifier's outcome: each uses a real, hand-verified query from
   `tenant.aiScenarioQueries` (`e2e/fixtures/tenants.ts`) that
   deterministically triggers one specific `AiClassificationScenario`. If a

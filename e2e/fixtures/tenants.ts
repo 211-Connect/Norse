@@ -1,6 +1,6 @@
 /**
- * Per-tenant fixture data for the multi-tenant e2e matrix (MBOA, MAP, VT, WA
- * across dev/prod - see e2e/AGENTS.md "Multi-tenant test matrix").
+ * Per-tenant fixture data for the multi-tenant e2e matrix (MBOA, WA, VA, PA,
+ * AZ across dev/prod - see e2e/AGENTS.md "Multi-tenant test matrix").
  *
  * The active tenant is selected at runtime via `E2E_TENANT_KEY` (set per CI
  * matrix job in `.github/workflows/e2e-tests.yaml`, defaults to `MBOA`
@@ -15,7 +15,7 @@
  * counts, since live data changes over time.
  */
 
-export type TenantKey = 'MBOA' | 'MAP' | 'VT' | 'WA';
+export type TenantKey = 'MBOA' | 'WA' | 'VA' | 'PA' | 'AZ';
 
 export type TenantEnv = 'dev' | 'prod';
 
@@ -53,6 +53,13 @@ export type TenantFixture = {
   aiSearchEnabled: Record<TenantEnv, boolean>;
   /** Only set for tenants/environments with AI search enabled - see `AiScenarioQueries`. */
   aiScenarioQueries?: AiScenarioQueries;
+  /**
+   * Whether this tenant's search results page has a facets/filters panel at
+   * all. Some tenants (e.g. VA, AZ) don't configure any facets, so
+   * facet/filter-dependent tests must not run for them rather than fail or
+   * self-skip on an empty checkbox count.
+   */
+  hasFacets: boolean;
 };
 
 export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
@@ -62,20 +69,7 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
     broadQuery: 'food',
     taxonomy: { code: 'DT-8800', label: 'Tax Help' },
     aiSearchEnabled: { dev: false, prod: false },
-  },
-  MAP: {
-    key: 'MAP',
-    displayName: 'Maryland AccessPoint',
-    broadQuery: 'housing',
-    taxonomy: { code: 'BD-5000.3500', label: 'Home Delivered Meals' },
-    aiSearchEnabled: { dev: false, prod: false },
-  },
-  VT: {
-    key: 'VT',
-    displayName: 'Vermont 211',
-    broadQuery: 'shelter',
-    taxonomy: { code: 'FT-3200', label: 'General Legal Aid' },
-    aiSearchEnabled: { dev: false, prod: false },
+    hasFacets: true,
   },
   WA: {
     key: 'WA',
@@ -89,6 +83,40 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
       lowInfoNoResults: 'xd',
       clarify: 'shelter or transport or food',
     },
+    hasFacets: true,
+  },
+  VA: {
+    key: 'VA',
+    displayName: 'Virginia 211',
+    broadQuery: 'food',
+    taxonomy: {
+      code: 'BH-0500',
+      label: 'At Risk/Homeless Housing Related Assistance Programs',
+    },
+    aiSearchEnabled: { dev: true, prod: false },
+    aiScenarioQueries: {
+      direct: "I'm hungry",
+      lowInfoWithResults: 'computer',
+      lowInfoNoResults: 'xd',
+      clarify: 'shelter or transport or food',
+    },
+    hasFacets: false,
+  },
+  PA: {
+    key: 'PA',
+    displayName: 'Pennsylvania 211',
+    broadQuery: 'food',
+    taxonomy: { code: 'BH-1800.1500-100', label: 'Domestic Violence Shelters' },
+    aiSearchEnabled: { dev: false, prod: false },
+    hasFacets: true,
+  },
+  AZ: {
+    key: 'AZ',
+    displayName: 'Arizona 211',
+    broadQuery: 'food',
+    taxonomy: { code: 'BH-1800.8500-185', label: 'Extreme Weather Shelters' },
+    aiSearchEnabled: { dev: false, prod: false },
+    hasFacets: false,
   },
 };
 
@@ -112,6 +140,10 @@ export function getCurrentTenant(): TenantFixture {
 export function isAiSearchEnabledForCurrentTenant(): boolean {
   const tenant = getCurrentTenant();
   return tenant.aiSearchEnabled[getCurrentTenantEnv()];
+}
+
+export function hasFacetsForCurrentTenant(): boolean {
+  return getCurrentTenant().hasFacets;
 }
 
 /**

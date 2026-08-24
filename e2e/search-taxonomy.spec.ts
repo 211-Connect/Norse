@@ -1,6 +1,9 @@
 import type { Page } from '@playwright/test';
 
-import { getCurrentTenant } from './fixtures/tenants';
+import {
+  getCurrentTenant,
+  hasFacetsForCurrentTenant,
+} from './fixtures/tenants';
 import {
   expect,
   expectPageUrl,
@@ -330,6 +333,11 @@ test.describe('Search Result Pagination', () => {
 });
 
 test.describe('Search Filters', () => {
+  test.skip(
+    !hasFacetsForCurrentTenant(),
+    'This tenant/environment has no search facets/filters (see e2e/fixtures/tenants.ts)',
+  );
+
   test.beforeEach(async ({ page }) => {
     await goHome(page);
   });
