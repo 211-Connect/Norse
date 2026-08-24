@@ -6,6 +6,7 @@ import { SESSION_ID } from './app/(app)/shared/lib/constants';
 import { fetchWrapper } from './app/(app)/shared/lib/fetchWrapper';
 import { withOptionalCustomBasePath } from './app/(app)/shared/lib/utils';
 import { parseHost } from './app/(app)/shared/utils/parseHost';
+import { shouldBlockCrawlers } from './app/(app)/shared/utils/shouldBlockCrawlers';
 import { TenantBasicConfigResponse } from './app/(payload)/api/getTenantBasicConfig/route';
 import { searchLinkCorrectionMiddleware } from './middlewares/searchLinkCorrectionMiddleware';
 import { ONE_DAY, ONE_HOUR, ONE_MINUTE } from './utilities/withCache';
@@ -170,8 +171,19 @@ function cacheControlMiddleware(response: NextResponse, pathname: string) {
   response.headers.set('Cache-Control', 'no-cache');
 }
 
-function robotsMiddleware(response: NextResponse, pathname: string) {
-  // Disallow indexing for certain paths
+function robotsMiddleware(
+  response: NextResponse,
+  pathname: string,
+  tenantConfig: TenantBasicConfigResponse | null | undefined,
+) {
+  // Per-tenant de-indexing: when this branded domain opts out of search
+  // engines (or the global env gate blocks indexing), mark every page noindex.
+  if (shouldBlockCrawlers(tenantConfig?.seo?.noindex ?? false)) {
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+    return;
+  }
+
+  // Otherwise, still disallow indexing for specific sensitive paths.
   const disallowIndexPaths = ['/details/original'];
 
   const isProduction = process.env.NODE_ENV === 'production';
@@ -453,7 +465,7 @@ export async function proxy(request: NextRequest) {
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
 
   cacheControlMiddleware(response, pathname);
-  robotsMiddleware(response, pathname);
+  robotsMiddleware(response, pathname, tenantConfig);
 
   return response;
 }
