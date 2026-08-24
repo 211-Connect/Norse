@@ -7,7 +7,6 @@ import {
 import {
   expect,
   expectPageUrl,
-  getResultTotal,
   getResultTotalNumber,
   getSelectedFilterIds,
   goHome,
@@ -44,8 +43,7 @@ async function searchWithFallbackQueries(page: Page) {
         query_type: 'text',
       });
 
-      const totalText = await getResultTotal(page);
-      const total = parseTotalFromResultText(totalText);
+      const total = await getResultTotalNumber(page);
       last = { query, total };
       if (total > 10) {
         return { query, total };
@@ -113,8 +111,11 @@ test.describe('Search Autocomplete Suggestions', () => {
       await expect(submitButton).toBeEnabled({ timeout: UI_SHELL_TIMEOUT_MS });
       await submitButton.click();
 
-      const totalText = await getResultTotal(page);
-      return parseTotalFromResultText(totalText);
+      try {
+        return await getResultTotalNumber(page);
+      } catch {
+        return 0;
+      }
     }
 
     const MAX_SUGGESTIONS_TO_TRY = 5;
@@ -204,8 +205,7 @@ test.describe('Taxonomy Search Result Accuracy', () => {
       query_type: 'taxonomy',
     });
 
-    const totalText = await getResultTotal(page);
-    const total = parseTotalFromResultText(totalText);
+    const total = await getResultTotalNumber(page);
     expect(total).toBeGreaterThan(0);
   });
 });
@@ -261,8 +261,7 @@ test.describe('Keyword Search', () => {
       query_type: 'text',
     });
 
-    const totalText = await getResultTotal(page);
-    const total = parseTotalFromResultText(totalText);
+    const total = await getResultTotalNumber(page);
     expect(total).toBeGreaterThan(0);
   });
 

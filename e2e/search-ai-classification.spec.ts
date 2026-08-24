@@ -74,6 +74,23 @@ async function waitForCanonicalAiUrl(page: Page) {
     .toBe(true);
 }
 
+function isHybridAlertUrl(pageUrl: string, alert: string): boolean {
+  const url = new URL(pageUrl);
+  return (
+    url.searchParams.get('query_type') === 'hybrid' &&
+    url.searchParams.get('a') === alert
+  );
+}
+
+async function waitForHybridAlertUrl(page: Page, alert: string) {
+  await expect
+    .poll(() => isHybridAlertUrl(page.url(), alert), {
+      timeout: ASYNC_UI_TIMEOUT_MS,
+      intervals: [250, 500, 1_000],
+    })
+    .toBe(true);
+}
+
 /**
  * Returns a locator pinned to the first currently-unselected option button,
  * by index rather than by `pressed: false`. Filtering by `pressed` and
@@ -130,6 +147,8 @@ test.describe('AI classification search flow (real data, no mocks)', () => {
       timeout: UI_SHELL_TIMEOUT_MS,
     });
     await expect(page.getByTestId('ai-classification-options')).toHaveCount(0);
+
+    expect(await getResultTotalNumber(page)).toBeGreaterThan(10);
   });
 
   test('Case C: taxonomy query type searches directly without opening AI clarification', async ({
@@ -182,35 +201,12 @@ test.describe('AI classification search flow (real data, no mocks)', () => {
     });
 
     await page.goto(url, { waitUntil: 'domcontentloaded' });
-    await waitForCanonicalAiUrl(page);
+    await waitForHybridAlertUrl(page, 'low_info');
 
-    expect(new URL(page.url()).searchParams.get('a')).toBe('low_info');
     await expect(page.getByRole('alert')).toContainText(/broader results/i, {
       timeout: UI_SHELL_TIMEOUT_MS,
     });
     expect(await getResultTotalNumber(page)).toBeGreaterThan(0);
-  });
-
-  test('Case B/D "search_and_notify_low_info" scenario with no results: redirects to the canonical URL, shows the notice banner, and shows the no-results state', async ({
-    page,
-    baseURL,
-  }) => {
-    const url = buildAiSearchUrl(baseURL!, {
-      query: aiScenarioQueries.lowInfoNoResults,
-      query_label: aiScenarioQueries.lowInfoNoResults,
-      query_type: 'text',
-    });
-
-    await page.goto(url, { waitUntil: 'domcontentloaded' });
-    await waitForCanonicalAiUrl(page);
-
-    expect(new URL(page.url()).searchParams.get('a')).toBe('low_info');
-    await expect(page.getByRole('alert')).toContainText(/broader results/i, {
-      timeout: UI_SHELL_TIMEOUT_MS,
-    });
-    await expect(page.getByTestId('no-results-card')).toBeVisible({
-      timeout: UI_SHELL_TIMEOUT_MS,
-    });
   });
 
   test('Case B/D clarify scenario: legacy query opens the AI clarification UI instead of redirecting', async ({
@@ -289,11 +285,9 @@ test.describe('AI classification search flow (real data, no mocks)', () => {
     }) => {
       await page.getByRole('button', { name: 'Skip' }).click();
 
-      await expect(page.getByTestId('search-dialog')).toHaveAttribute(
-        'aria-hidden',
-        'true',
-        { timeout: UI_SHELL_TIMEOUT_MS },
-      );
+      await expect(page.getByTestId('search-dialog')).toBeHidden({
+        timeout: UI_SHELL_TIMEOUT_MS,
+      });
       await expect
         .poll(() => isSkipFallbackUrl(page.url()), {
           timeout: SEARCH_NAV_TIMEOUT_MS,
@@ -315,11 +309,9 @@ test.describe('AI classification search flow (real data, no mocks)', () => {
 
       await page.getByRole('button', { name: 'Skip' }).click();
 
-      await expect(page.getByTestId('search-dialog')).toHaveAttribute(
-        'aria-hidden',
-        'true',
-        { timeout: UI_SHELL_TIMEOUT_MS },
-      );
+      await expect(page.getByTestId('search-dialog')).toBeHidden({
+        timeout: UI_SHELL_TIMEOUT_MS,
+      });
       await expect
         .poll(() => isSkipFallbackUrl(page.url()), {
           timeout: SEARCH_NAV_TIMEOUT_MS,

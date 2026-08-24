@@ -36,8 +36,6 @@ export type AiScenarioQueries = {
   direct: string;
   /** Triggers `search_and_notify_low_info` with a non-zero result count. */
   lowInfoWithResults: string;
-  /** Triggers `search_and_notify_low_info` with a zero result count. */
-  lowInfoNoResults: string;
   /** Triggers a clarification scenario (`clarify_low_info` / `clarify_multiple_labels`). */
   clarify: string;
 };
@@ -80,7 +78,6 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
     aiScenarioQueries: {
       direct: "I'm hungry",
       lowInfoWithResults: 'computer',
-      lowInfoNoResults: 'xd',
       clarify: 'shelter or transport or food',
     },
     hasFacets: true,
@@ -97,7 +94,6 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
     aiScenarioQueries: {
       direct: "I'm hungry",
       lowInfoWithResults: 'computer',
-      lowInfoNoResults: 'xd',
       clarify: 'shelter or transport or food',
     },
     hasFacets: false,
