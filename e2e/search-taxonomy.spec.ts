@@ -3,6 +3,7 @@ import type { Page } from '@playwright/test';
 import {
   getCurrentTenant,
   hasFacetsForCurrentTenant,
+  isAiSearchEnabledForCurrentTenant,
 } from './fixtures/tenants';
 import {
   expect,
@@ -266,6 +267,12 @@ test.describe('Keyword Search', () => {
   });
 
   test('no results page is shown for gibberish query', async ({ page }) => {
+    test.skip(
+      isAiSearchEnabledForCurrentTenant(),
+      'AI classification search always broadens a low-info query to some ' +
+        'results instead of a true no-results state (see e2e/search-ai-classification.spec.ts).',
+    );
+
     await performSearch(page, {
       query: 'xyzzyspoonshift12345',
       query_label: 'xyzzyspoonshift12345',
