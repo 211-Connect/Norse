@@ -437,6 +437,10 @@ export interface Tenant {
      * ⚠️ WARNING: Enabling this will make the website private. Only authenticated users will be able to access it. Use this setting with caution.
      */
     requiresLogin?: boolean | null;
+    /**
+     * When the site requires login, these page types remain publicly accessible without authentication.
+     */
+    publicPages?: ('home' | 'search-results' | 'resource-detail' | 'favorites-list')[] | null;
     allowedEmailDomains?:
       | {
           domain: string;
@@ -1368,6 +1372,7 @@ export interface TenantsSelect<T extends boolean = true> {
         keycloakSecret?: T;
         nextAuthSecret?: T;
         requiresLogin?: T;
+        publicPages?: T;
         allowedEmailDomains?:
           | T
           | {

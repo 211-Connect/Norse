@@ -58,6 +58,8 @@ export function assertValidLocale(
   }
 }
 
+export const localeSet = new Set<string>(locales);
+
 export function isValidLocale(locale: unknown): boolean {
   return typeof locale === 'string' && validLocaleCodes.has(locale);
 }
