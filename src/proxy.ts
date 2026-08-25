@@ -7,6 +7,10 @@ import { fetchWrapper } from './app/(app)/shared/lib/fetchWrapper';
 import { withOptionalCustomBasePath } from './app/(app)/shared/lib/utils';
 import { parseHost } from './app/(app)/shared/utils/parseHost';
 import { shouldBlockCrawlers } from './app/(app)/shared/utils/shouldBlockCrawlers';
+import {
+  getPublicPageCategory,
+  isShareLinkPath,
+} from './app/(app)/shared/utils/publicPageCategory';
 import { TenantBasicConfigResponse } from './app/(payload)/api/getTenantBasicConfig/route';
 import { searchLinkCorrectionMiddleware } from './middlewares/searchLinkCorrectionMiddleware';
 import { ONE_DAY, ONE_HOUR, ONE_MINUTE } from './utilities/withCache';
@@ -371,24 +375,36 @@ export async function proxy(request: NextRequest) {
   const url = request.nextUrl.clone();
   const { pathname } = url;
 
-  if (tenantConfig?.auth?.requiresLogin && !isAuthPath(pathname)) {
-    const authenticated = await hasActiveSession(request);
+  if (
+    tenantConfig?.auth?.requiresLogin &&
+    !isAuthPath(pathname) &&
+    !isShareLinkPath(pathname)
+  ) {
+    const publicPageCategory = getPublicPageCategory(pathname);
+    const isPublicPage = Boolean(
+      publicPageCategory &&
+      tenantConfig.auth.publicPages?.includes(publicPageCategory),
+    );
 
-    if (!authenticated) {
-      const signInPath = withOptionalCustomBasePath('/auth/signin');
-      const signInUrl = new URL(signInPath, request.url);
-      const redirectTarget = withOptionalCustomBasePath(
-        `${request.nextUrl.pathname}${request.nextUrl.search}`,
-      );
-      signInUrl.searchParams.set('redirect', redirectTarget || '/');
+    if (!isPublicPage) {
+      const authenticated = await hasActiveSession(request);
 
-      edgeLog('debug', 'tenant_loginwall_redirect', {
-        host,
-        path: pathname,
-        signInPath: signInUrl.pathname,
-      });
+      if (!authenticated) {
+        const signInPath = withOptionalCustomBasePath('/auth/signin');
+        const signInUrl = new URL(signInPath, request.url);
+        const redirectTarget = withOptionalCustomBasePath(
+          `${request.nextUrl.pathname}${request.nextUrl.search}`,
+        );
+        signInUrl.searchParams.set('redirect', redirectTarget || '/');
 
-      return NextResponse.redirect(signInUrl);
+        edgeLog('debug', 'tenant_loginwall_redirect', {
+          host,
+          path: pathname,
+          signInPath: signInUrl.pathname,
+        });
+
+        return NextResponse.redirect(signInUrl);
+      }
     }
   }
 

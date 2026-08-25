@@ -227,6 +227,29 @@ export const Tenants: CollectionConfig = {
           type: 'row',
           fields: [
             {
+              name: 'publicPages',
+              type: 'select',
+              hasMany: true,
+              defaultValue: [],
+              options: [
+                { label: 'Home', value: 'home' },
+                { label: 'Search results', value: 'search-results' },
+                { label: 'Resource detail', value: 'resource-detail' },
+                { label: 'Favorites list', value: 'favorites-list' },
+              ],
+              admin: {
+                description:
+                  'When the site requires login, these page types remain publicly accessible without authentication.',
+                condition: (data, siblingData) =>
+                  siblingData?.requiresLogin || data?.auth?.requiresLogin,
+              },
+            },
+          ],
+        },
+        {
+          type: 'row',
+          fields: [
+            {
               name: 'allowedEmailDomains',
               type: 'array',
               fields: [
