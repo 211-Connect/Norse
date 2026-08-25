@@ -25,14 +25,9 @@ export const useScrollOffset = () => {
 
     let maxMinusOffset = element.clientHeight - window.innerHeight;
     let maxPlusOffset = header.offsetHeight;
+    let offset = maxPlusOffset;
     let lastScrollY = window.scrollY;
     let rafId: number | null = null;
-
-    const initialTop = parseInt(
-      window.getComputedStyle(element).top || '0',
-      10,
-    );
-    let offset = Number.isNaN(initialTop) ? 0 : initialTop;
 
     const clampOffset = () => {
       offset = Math.min(Math.max(offset, -maxMinusOffset), maxPlusOffset);
@@ -45,29 +40,20 @@ export const useScrollOffset = () => {
       clampOffset();
     };
 
-    const applyScroll = () => {
-      rafId = null;
-
-      const scrollY = window.scrollY;
-      const delta = scrollY - lastScrollY;
-
-      lastScrollY = scrollY;
-
-      if (delta > 0) {
-        offset = Math.max(offset - delta, -maxMinusOffset);
-      } else if (delta < 0) {
-        offset = Math.min(offset - delta, maxPlusOffset);
-      }
-
-      element.style.top = `${offset}px`;
-    };
-
     const handleScroll = () => {
       if (rafId !== null) {
         return;
       }
 
-      rafId = window.requestAnimationFrame(applyScroll);
+      rafId = window.requestAnimationFrame(() => {
+        rafId = null;
+
+        const scrollY = window.scrollY;
+        offset -= scrollY - lastScrollY;
+        lastScrollY = scrollY;
+
+        clampOffset();
+      });
     };
 
     const resizeObserver = new ResizeObserver(handleResize);
