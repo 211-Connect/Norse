@@ -33,6 +33,10 @@ async function addFirstSearchResultToLocalFavorites(
   );
   await favoriteBtn.click();
 
+  await expect(favoriteBtn.locator('svg')).toHaveClass(/fill-current/, {
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
+
   return { resourceName: firstResourceName };
 }
 
@@ -110,8 +114,8 @@ test.describe('Favorites Feature (Anonymous Local List)', () => {
   }) => {
     const { resourceName } = await addFirstSearchResultToLocalFavorites(
       page,
-      'clothing',
-      'clothing',
+      'shelter',
+      'shelter',
     );
 
     await goToLocalFavorites(page);
