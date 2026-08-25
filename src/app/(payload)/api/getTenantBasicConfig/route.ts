@@ -11,6 +11,9 @@ export type TenantBasicConfigResponse = {
     requiresLogin: boolean;
     allowedEmailDomains: string[];
   };
+  seo: {
+    noindex: boolean;
+  };
 };
 
 export const GET = async (request: Request) => {
@@ -39,6 +42,9 @@ export const GET = async (request: Request) => {
           allowedEmailDomains: normalizeAllowedEmailDomains(
             tenant?.auth?.allowedEmailDomains,
           ),
+        },
+        seo: {
+          noindex: tenant?.seo?.noindex ?? false,
         },
       };
     },

@@ -576,6 +576,7 @@ async function getAppConfigBase(
           : DEFAULT_SEARCH_CARD_LAYOUT,
     },
     sessionId,
+    noindex: getTenant(resourceDirectory)?.seo?.noindex ?? false,
     badges:
       resourceDirectory.badges?.list
         ?.filter((badge) => badge.filter)

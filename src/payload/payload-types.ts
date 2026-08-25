@@ -423,6 +423,12 @@ export interface Tenant {
   services: {
     resourceDirectory?: boolean | null;
   };
+  seo?: {
+    /**
+     * Keeps this site out of Google and other search results — useful while it's still being built, not yet ready to launch, or kept behind a login, so it isn't found before you intend it to be. Applies to your live site; staging and preview are always kept private. This asks reputable search engines not to list your pages; separately, and always on, our built-in protections keep your directory from being harvested by automated scrapers — so your information reaches real people using it fairly, not outside businesses repackaging it in their own products.
+     */
+    noindex?: boolean | null;
+  };
   auth: {
     realmId: string;
     keycloakSecret?: string | null;
@@ -1349,6 +1355,11 @@ export interface TenantsSelect<T extends boolean = true> {
     | T
     | {
         resourceDirectory?: T;
+      };
+  seo?:
+    | T
+    | {
+        noindex?: T;
       };
   auth?:
     | T
