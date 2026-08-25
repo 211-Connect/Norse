@@ -43,6 +43,7 @@ export interface PhoneNumber {
 export interface QualityLink {
   url: string;
   displayText: string;
+  subheadingText?: string;
 }
 
 export type BBox = [number, number, number, number];
