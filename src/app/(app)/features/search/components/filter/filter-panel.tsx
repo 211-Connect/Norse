@@ -44,6 +44,7 @@ export function FilterPanel({
   const [filtersOpen, setFiltersOpen] = useAtom(filtersOpenAtom);
 
   const filterKeys = useMemo(() => Object.keys(filters), [filters]);
+  const hasFilterControls = filterKeys.length > 0 || showAgeFilter;
 
   const facetUiConfig = useFacetUiConfig(appConfig.search.facets);
   const hasSearchCoordinates = searchCoordinates.length === 2;
@@ -95,9 +96,7 @@ export function FilterPanel({
           size="sm"
           variant="ghost"
           className={cn(
-            filterKeys.length > 0 || showAgeFilter
-              ? 'flex md:hidden'
-              : 'hidden',
+            hasFilterControls ? 'flex md:hidden' : 'hidden',
             'mt-1 gap-1 self-start',
           )}
           onClick={() => setFiltersOpen(true)}
@@ -122,7 +121,7 @@ export function FilterPanel({
           <AgeFilter />
         </div>
       )}
-      {(filterKeys.length > 0 || showAgeFilter) && (
+      {hasFilterControls && (
         <>
           <div className="hidden w-full md:block print:hidden">
             {renderFilters('desktop')}
