@@ -1,11 +1,19 @@
-import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
+import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres';
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
-   ALTER TABLE "tenants" ADD COLUMN "seo_noindex" boolean DEFAULT false;`)
+    ALTER TABLE "tenants"
+    ADD COLUMN "seo_noindex" boolean DEFAULT FALSE;
+  `);
 }
 
-export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
+export async function down({
+  db,
+  payload,
+  req,
+}: MigrateDownArgs): Promise<void> {
   await db.execute(sql`
-   ALTER TABLE "tenants" DROP COLUMN "seo_noindex";`)
+    ALTER TABLE "tenants"
+    DROP COLUMN "seo_noindex";
+  `);
 }
