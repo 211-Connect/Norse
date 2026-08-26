@@ -55,9 +55,10 @@ jobs:
           # to the `dev` cells for those triggers.
           TARGET_ENV: ${{ inputs.environment || 'dev' }}
         run: |
+          # MBOA production (mn.gov/adresources) is excluded here — it sits
+          # behind bot/robot blockers that reject automated Playwright traffic.
           FULL_MATRIX='[
             {"tenant":"MBOA","env":"dev","base_url":"https://stg-mboa.c211.io/adresources","test_email":"test-mboa-dev@c211.io","ai_project":false},
-            {"tenant":"MBOA","env":"production","base_url":"https://mn.gov/adresources","test_email":"test-mboa-prod@c211.io","ai_project":false},
             {"tenant":"WA","env":"dev","base_url":"https://dev-wa211.c211.io","test_email":"test-wa-dev@c211.io","ai_project":true},
             {"tenant":"WA","env":"production","base_url":"https://search.wa211.org","test_email":"test-wa-prod@c211.io","ai_project":false},
             {"tenant":"VA","env":"dev","base_url":"https://dev-va211.c211.io","test_email":"test-va-dev@c211.io","ai_project":true},
