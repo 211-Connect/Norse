@@ -15,7 +15,7 @@
  * counts, since live data changes over time.
  */
 
-export type TenantKey = 'MBOA' | 'WA' | 'VA' | 'PA' | 'AZ';
+export type TenantKey = 'MBOA' | 'WA' | 'VA' | 'PA' | 'AZ' | 'SCC';
 
 export type TenantEnv = 'dev' | 'prod';
 
@@ -112,6 +112,19 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
     broadQuery: 'food',
     taxonomy: { code: 'BH-1800.8500-185', label: 'Extreme Weather Shelters' },
     aiSearchEnabled: { dev: false, prod: false },
+    hasFacets: false,
+  },
+  SCC: {
+    key: 'SCC',
+    displayName: '211 Santa Cruz County',
+    broadQuery: 'food',
+    taxonomy: { code: 'ND-1500', label: 'Job Assistance Centers' },
+    aiSearchEnabled: { dev: true, prod: true },
+    aiScenarioQueries: {
+      direct: "I'm hungry",
+      lowInfoWithResults: 'computer',
+      clarify: 'shelter or transport or food',
+    },
     hasFacets: false,
   },
 };

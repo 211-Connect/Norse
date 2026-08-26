@@ -44,7 +44,7 @@ jobs:
       # Single source of truth for the tenant × env test matrix. Base URLs
       # are public (non-secret). Test-account email is deterministic per
       # cell (`test-<tenant>-<env>@c211.io`) — only the shared password is a
-      # secret (see e2e/AGENTS.md "Multi-tenant test matrix"). To add a 5th
+      # secret (see e2e/AGENTS.md "Multi-tenant test matrix"). To add another
       # tenant: add its dev + prod rows here, create its 2
       # `test-<tenant>-{dev,prod}@c211.io` accounts (same shared
       # `TEST_USER_PASSWORD`), and add it to e2e/fixtures/tenants.ts.
@@ -66,7 +66,9 @@ jobs:
             {"tenant":"PA","env":"dev","base_url":"https://dev-pa211.c211.io","test_email":"test-pa-dev@c211.io","ai_project":false},
             {"tenant":"PA","env":"production","base_url":"https://search.pa211.org","test_email":"test-pa-prod@c211.io","ai_project":false},
             {"tenant":"AZ","env":"dev","base_url":"https://dev-az211.c211.io","test_email":"test-az-dev@c211.io","ai_project":false},
-            {"tenant":"AZ","env":"production","base_url":"https://search.211arizona.org","test_email":"test-az-prod@c211.io","ai_project":false}
+            {"tenant":"AZ","env":"production","base_url":"https://search.211arizona.org","test_email":"test-az-prod@c211.io","ai_project":false},
+            {"tenant":"SCC","env":"dev","base_url":"https://dev-scc211.c211.io","test_email":"test-scc-dev@c211.io","ai_project":true},
+            {"tenant":"SCC","env":"production","base_url":"https://search.211santacruzcounty.org","test_email":"test-scc-prod@c211.io","ai_project":true}
           ]'
           FILTERED=$(echo "$FULL_MATRIX" | jq -c --arg env "$TARGET_ENV" '[.[] | select(.env == $env)]')
           echo "matrix={\"include\":$FILTERED}" >> "$GITHUB_OUTPUT"
