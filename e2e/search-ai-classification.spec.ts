@@ -19,9 +19,10 @@ import {
  * @see docs/ai-search-legacy-link-flow.md for the full flow this exercises.
  *
  * Only runs when the active tenant/env fixture has `aiSearchEnabled` (see
- * `e2e/fixtures/tenants.ts`) - currently WA dev only. WA prod and all other
- * tenants self-skip here; flip the fixture flag on for a tenant/env once AI
- * search is enabled there and this suite picks it up automatically.
+ * `e2e/fixtures/tenants.ts`) - currently WA dev, VA dev, and SCC (dev+prod).
+ * All other tenant/env combos self-skip here; flip the fixture flag on for a
+ * tenant/env once AI search is enabled there and this suite picks it up
+ * automatically.
  *
  * Cases B/D depend on what the live classifier decides for a given query, so
  * this suite uses `tenant.aiScenarioQueries` - real queries hand-verified to
