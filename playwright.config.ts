@@ -75,6 +75,11 @@ export default defineConfig({
       workers: 1,
     },
     {
+      name: 'share-link',
+      testMatch: ['**/share-link.spec.ts'],
+      use: { ...devices['Desktop Chrome'], baseURL },
+    },
+    {
       name: 'accessibility',
       testMatch: ['**/search-accessibility.spec.ts'],
       use: { ...devices['Desktop Chrome'], baseURL },
