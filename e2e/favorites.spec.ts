@@ -3,6 +3,7 @@ import { existsSync } from 'node:fs';
 import {
   addFirstResultToList,
   closeFavoritesDialog,
+  closeShareDialog,
   deleteFavoriteList,
   editFavoriteList,
   expect,
@@ -13,6 +14,8 @@ import {
   goToFavorites,
   loginViaKeycloak,
   openFavoritesDialogForList,
+  openShareDialogAndGetShortUrl,
+  openShortUrlInNewPage,
   removeFirstResourceFromListPage,
   removeFromListViaDialog,
   resetLocalFavoritesStorage,
@@ -366,6 +369,72 @@ test.describe('Favorites Feature (Authenticated)', () => {
     const removedCard = page.getByText(updatedListName);
 
     await expect(removedCard).toHaveCount(0, {
+      timeout: ASYNC_UI_TIMEOUT_MS,
+    });
+  });
+
+  test('should allow anonymous access to a public favorite list via its share link', async ({
+    page,
+    browser,
+  }) => {
+    await goToFavorites(page);
+
+    const publicListName = `E2E Public Share List ${runId}`;
+
+    const createListBtn = page.getByTestId('create-list-btn');
+    await expect(createListBtn).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+    await createListBtn.click();
+
+    await page.locator('#name').fill(publicListName);
+    // Make the list public at creation time so the share button (only
+    // rendered for FavoriteListState.privacy === 'PUBLIC') is present as
+    // soon as the list detail page loads.
+    await page.locator('#public').click();
+
+    const createListSubmitBtn = page.getByTestId('create-list-submit-btn');
+    await expect(createListSubmitBtn).toBeVisible({
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
+    await createListSubmitBtn.click();
+
+    await expect(page.getByText('List created')).toBeVisible({
+      timeout: ASYNC_UI_TIMEOUT_MS,
+    });
+
+    const listCard = page.getByText(publicListName).first();
+    await listCard.click();
+    await waitForFavoriteListPage(page);
+
+    const shortUrl = await openShareDialogAndGetShortUrl(page);
+    await closeShareDialog(page);
+
+    // Verify from a completely anonymous browser context — no cookies, no
+    // session — that the share link is actually publicly reachable and is
+    // rendered as a non-owner would see it (no owner-only actions).
+    const anonymousContext = await browser.newContext({
+      storageState: undefined,
+    });
+    try {
+      const anonymousPage = await openShortUrlInNewPage(
+        anonymousContext,
+        shortUrl,
+      );
+      try {
+        await waitForFavoriteListPage(anonymousPage);
+        await expect(
+          anonymousPage.getByText(publicListName).first(),
+        ).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+        await expect(anonymousPage.getByTestId('edit-list-btn')).toHaveCount(0);
+      } finally {
+        await anonymousPage.close();
+      }
+    } finally {
+      await anonymousContext.close();
+    }
+
+    await goToFavorites(page);
+    await deleteFavoriteList(page, publicListName);
+    await expect(page.getByText(publicListName)).toHaveCount(0, {
       timeout: ASYNC_UI_TIMEOUT_MS,
     });
   });

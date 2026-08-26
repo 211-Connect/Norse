@@ -6,6 +6,7 @@ export * from './filters';
 export * from './i18n';
 export * from './navigation';
 export * from './search';
+export * from './share';
 export * from './url';
 
 export { base as test, expect };
