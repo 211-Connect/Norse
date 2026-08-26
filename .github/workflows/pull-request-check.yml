@@ -32,3 +32,17 @@ jobs:
 
       - name: Build project
         run: npm run build
+
+  # TEMPORARY: run both dev and production e2e matrices on every PR for
+  # extra confidence. Remove these two jobs once done testing.
+  e2e-dev:
+    uses: ./.github/workflows/e2e-tests.yaml
+    secrets: inherit
+    with:
+      environment: dev
+
+  e2e-production:
+    uses: ./.github/workflows/e2e-tests.yaml
+    secrets: inherit
+    with:
+      environment: production
