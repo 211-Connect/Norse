@@ -58,6 +58,14 @@ export type TenantFixture = {
    * self-skip on an empty checkbox count.
    */
   hasFacets: boolean;
+  /**
+   * A real, live resource id (dev environment) known to exist on this
+   * tenant, used by `search-resource-direct-link.spec.ts` to verify that
+   * navigating straight to `/search/{id}` (no search flow) renders that
+   * resource. Optional - omitted for tenants without a verified id yet;
+   * the spec skips (not fails) for those, same convention as `hasFacets`.
+   */
+  directResourceId?: string;
 };
 
 export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
@@ -68,6 +76,7 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
     taxonomy: { code: 'DT-8800', label: 'Tax Help' },
     aiSearchEnabled: { dev: false, prod: false },
     hasFacets: true,
+    directResourceId: '98e5490a-8468-5673-afe3-8baffef6a236',
   },
   WA: {
     key: 'WA',
@@ -81,6 +90,7 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
       clarify: 'shelter or transport or food',
     },
     hasFacets: true,
+    directResourceId: '01fc1648-60db-59d0-b5fc-ba5027767fb1',
   },
   VA: {
     key: 'VA',
@@ -97,6 +107,7 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
       clarify: 'shelter or transport or food',
     },
     hasFacets: false,
+    directResourceId: 'd87e8f4e-9995-546d-b57a-f38cde595304',
   },
   PA: {
     key: 'PA',
@@ -105,6 +116,7 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
     taxonomy: { code: 'BH-1800.1500-100', label: 'Domestic Violence Shelters' },
     aiSearchEnabled: { dev: false, prod: false },
     hasFacets: true,
+    directResourceId: 'aa3e3bb5-b065-5996-9019-e52b75b9a8e8',
   },
   AZ: {
     key: 'AZ',
@@ -113,6 +125,7 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
     taxonomy: { code: 'BH-1800.8500-185', label: 'Extreme Weather Shelters' },
     aiSearchEnabled: { dev: false, prod: false },
     hasFacets: false,
+    directResourceId: '0470d494-2311-5dd5-b3d7-584371f872af',
   },
   SCC: {
     key: 'SCC',
@@ -126,6 +139,7 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
       clarify: 'shelter or transport or food',
     },
     hasFacets: false,
+    directResourceId: '21d6b142-6dde-57dd-bbbf-e65139c6ff99',
   },
 };
 
@@ -153,6 +167,10 @@ export function isAiSearchEnabledForCurrentTenant(): boolean {
 
 export function hasFacetsForCurrentTenant(): boolean {
   return getCurrentTenant().hasFacets;
+}
+
+export function getDirectResourceIdForCurrentTenant(): string | undefined {
+  return getCurrentTenant().directResourceId;
 }
 
 /**
