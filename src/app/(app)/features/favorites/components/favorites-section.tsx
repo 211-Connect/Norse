@@ -42,7 +42,10 @@ export function FavoritesSection({ cardLayout }: FavoritesSectionProps) {
   };
 
   return (
-    <div className="flex w-full flex-col p-2.5 lg:max-w-137.5 lg:pl-5">
+    <div
+      className="flex w-full flex-col p-2.5 lg:max-w-137.5 lg:pl-5"
+      data-testid="favorites-section"
+    >
       {/* Row 1: navigation + list actions */}
       <div className="flex items-center justify-between print:hidden">
         {favoriteList.viewingAsOwner ? (
