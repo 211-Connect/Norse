@@ -1,13 +1,25 @@
 import type { Page } from '@playwright/test';
 
 import {
+  getCurrentTenant,
+  hasFacetsForCurrentTenant,
+  isAiSearchEnabledForCurrentTenant,
+} from './fixtures/tenants';
+import {
   expect,
-  getResultTotal,
+  expectPageUrl,
+  getResultTotalNumber,
+  getSelectedFilterIds,
   goHome,
+  isSearchResourceDetailUrl,
+  markFirstNEnabledFilters,
   openSearchDialog,
   parseTotalFromResultText,
   performSearch,
+  searchAndGetFirstResult,
+  switchLanguage,
   test,
+  waitForFilterPanelInteractive,
 } from './helpers';
 import {
   AUTOCOMPLETE_TIMEOUT_MS,
@@ -32,8 +44,7 @@ async function searchWithFallbackQueries(page: Page) {
         query_type: 'text',
       });
 
-      const totalText = await getResultTotal(page);
-      const total = parseTotalFromResultText(totalText);
+      const total = await getResultTotalNumber(page);
       last = { query, total };
       if (total > 10) {
         return { query, total };
@@ -51,38 +62,77 @@ test.describe('Search Autocomplete Suggestions', () => {
     await goHome(page);
   });
 
-  test('typing "food shelves" and submitting first topic suggestion returns results', async ({
+  test('typing a broad query and submitting a topic suggestion returns results', async ({
     page,
   }) => {
-    const searchInput = await openSearchDialog(page);
-    await searchInput.fill('food shelves');
+    async function trySuggestion(
+      query: string,
+      index: number,
+    ): Promise<number> {
+      await goHome(page);
+      const searchInput = await openSearchDialog(page);
+      await searchInput.fill(query);
 
-    const listbox = page.getByTestId('autocomplete-listbox');
-    await listbox.waitFor({
-      state: 'visible',
-      timeout: AUTOCOMPLETE_TIMEOUT_MS,
-    });
-
-    const options = listbox.getByTestId('autocomplete-option');
-    await expect
-      .poll(async () => options.count(), {
+      const listbox = page.getByTestId('autocomplete-listbox');
+      await listbox.waitFor({
+        state: 'visible',
         timeout: AUTOCOMPLETE_TIMEOUT_MS,
-        intervals: [100, 250, 500],
-      })
-      .toBeGreaterThan(0);
+      });
 
-    const foodShelvesTopic = options.filter({ hasText: /food shelves/i });
-    await expect(foodShelvesTopic.first()).toBeVisible({
-      timeout: AUTOCOMPLETE_TIMEOUT_MS,
-    });
-    await foodShelvesTopic.first().click();
+      const topicSuggestions = listbox
+        .getByTestId('autocomplete-option')
+        .filter({ hasNotText: /^i need/i });
+      // Suggestions can stream in progressively after the listbox first
+      // becomes visible - poll for the count to stop changing (not just
+      // become non-zero) so we don't act on a partial render.
+      let previousCount = -1;
+      await expect
+        .poll(
+          async () => {
+            const current = await topicSuggestions.count();
+            const stable = current > 0 && current === previousCount;
+            previousCount = current;
+            return stable;
+          },
+          {
+            timeout: AUTOCOMPLETE_TIMEOUT_MS,
+            intervals: [150, 250, 400],
+          },
+        )
+        .toBe(true);
 
-    const submitButton = page.getByTestId('search-submit-btn');
-    await expect(submitButton).toBeEnabled({ timeout: UI_SHELL_TIMEOUT_MS });
-    await submitButton.click();
+      const count = await topicSuggestions.count();
+      if (index >= count) {
+        return 0;
+      }
 
-    const totalText = await getResultTotal(page);
-    const total = parseTotalFromResultText(totalText);
+      await topicSuggestions.nth(index).click();
+
+      const submitButton = page.getByTestId('search-submit-btn');
+      await expect(submitButton).toBeEnabled({ timeout: UI_SHELL_TIMEOUT_MS });
+      await submitButton.click();
+
+      try {
+        return await getResultTotalNumber(page);
+      } catch {
+        return 0;
+      }
+    }
+
+    const MAX_SUGGESTIONS_TO_TRY = 5;
+    let total = 0;
+    outer: for (const query of [
+      getCurrentTenant().broadQuery,
+      ...BROAD_QUERIES,
+    ]) {
+      for (let i = 0; i < MAX_SUGGESTIONS_TO_TRY; i++) {
+        total = await trySuggestion(query, i);
+        if (total > 0) {
+          break outer;
+        }
+      }
+    }
+
     expect(total).toBeGreaterThan(0);
   });
 
@@ -148,15 +198,56 @@ test.describe('Taxonomy Search Result Accuracy', () => {
   test('searching for a taxonomy subcategory should return results', async ({
     page,
   }) => {
+    const { taxonomy } = getCurrentTenant();
+
     await performSearch(page, {
-      query: 'BD-1800.2000',
-      query_label: 'Food',
+      query: taxonomy.code,
+      query_label: taxonomy.label,
       query_type: 'taxonomy',
     });
 
-    const totalText = await getResultTotal(page);
-    const total = parseTotalFromResultText(totalText);
+    const total = await getResultTotalNumber(page);
     expect(total).toBeGreaterThan(0);
+  });
+});
+
+test.describe('Search result navigation feedback', () => {
+  test.beforeEach(async ({ page }) => {
+    await goHome(page);
+  });
+
+  // Regression coverage for the resource-title top-loader bug: clicking a
+  // result's title used to render `target="_self"` on the link, which makes
+  // nextjs-toploader's click handler treat it like a target="_blank"/external
+  // link and finish the progress bar synchronously (before any navigation
+  // feedback is visible), instead of keeping it up until the resource page
+  // actually renders. See `typography.tsx`'s `isNextLink` branch.
+  test('top loader stays visible from resource title click until the resource page renders', async ({
+    page,
+  }) => {
+    const { link } = await searchAndGetFirstResult(page, {
+      query: 'shelter',
+      query_label: 'shelter',
+      query_type: 'text',
+    });
+
+    const toploaderBar = page.getByTestId('toploader-bar');
+
+    await link.click();
+
+    // Must appear right away and stay up while the resource page's server
+    // work (arcjet check, resource fetch, i18n init) is still in flight.
+    await expect(toploaderBar).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+
+    await expectPageUrl(page, isSearchResourceDetailUrl, {
+      timeout: SEARCH_NAV_TIMEOUT_MS,
+    });
+    await expect(page.getByTestId('favorite-btn').first()).toBeVisible({
+      timeout: SEARCH_NAV_TIMEOUT_MS,
+    });
+
+    // Only once the resource page has actually rendered should it disappear.
+    await expect(toploaderBar).toBeHidden({ timeout: UI_SHELL_TIMEOUT_MS });
   });
 });
 
@@ -171,12 +262,17 @@ test.describe('Keyword Search', () => {
       query_type: 'text',
     });
 
-    const totalText = await getResultTotal(page);
-    const total = parseTotalFromResultText(totalText);
+    const total = await getResultTotalNumber(page);
     expect(total).toBeGreaterThan(0);
   });
 
   test('no results page is shown for gibberish query', async ({ page }) => {
+    test.skip(
+      isAiSearchEnabledForCurrentTenant(),
+      'AI classification search always broadens a low-info query to some ' +
+        'results instead of a true no-results state (see e2e/search-ai-classification.spec.ts).',
+    );
+
     await performSearch(page, {
       query: 'xyzzyspoonshift12345',
       query_label: 'xyzzyspoonshift12345',
@@ -243,6 +339,11 @@ test.describe('Search Result Pagination', () => {
 });
 
 test.describe('Search Filters', () => {
+  test.skip(
+    !hasFacetsForCurrentTenant(),
+    'This tenant/environment has no search facets/filters (see e2e/fixtures/tenants.ts)',
+  );
+
   test.beforeEach(async ({ page }) => {
     await goHome(page);
   });
@@ -275,4 +376,41 @@ test.describe('Search Filters', () => {
 
     await expect(page.locator('#search-container')).toBeVisible();
   });
+
+  for (const locale of ['en', 'es'] as const) {
+    test(`selecting a facet narrows results, marks it selected, and adds it to the URL (${locale})`, async ({
+      page,
+    }) => {
+      // `searchWithFallbackQueries` calls `goHome` (always `/en`) between
+      // attempts, so switch language *after* it settles on results rather
+      // than before - matches the existing search-then-switch pattern in
+      // translations.spec.ts.
+      await searchWithFallbackQueries(page);
+
+      if (locale !== 'en') {
+        await switchLanguage(page, locale);
+      }
+
+      await waitForFilterPanelInteractive(page);
+
+      const filterPanel = page.locator('#filter-panel');
+      await expect(filterPanel).toBeVisible();
+      expect(await filterPanel.getByRole('checkbox').count()).toBeGreaterThan(
+        0,
+      );
+
+      const resultsBefore = await getResultTotalNumber(page);
+      expect(decodeURIComponent(page.url())).not.toContain('filters[');
+
+      await markFirstNEnabledFilters(page, 1);
+
+      const selectedFilterIds = await getSelectedFilterIds(page);
+      expect(selectedFilterIds.length).toBeGreaterThan(0);
+
+      const resultsAfter = await getResultTotalNumber(page);
+      expect(resultsAfter).toBeLessThanOrEqual(resultsBefore);
+
+      expect(decodeURIComponent(page.url())).toContain('filters[');
+    });
+  }
 });

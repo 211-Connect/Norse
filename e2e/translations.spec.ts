@@ -16,6 +16,7 @@ import {
   test,
   waitForPageStabilized,
 } from './helpers';
+import { hasFacetsForCurrentTenant } from './fixtures/tenants';
 import { UI_SHELL_TIMEOUT_MS } from './timeouts';
 
 test.describe('Language Persistence And Results Button', () => {
@@ -26,6 +27,11 @@ test.describe('Language Persistence And Results Button', () => {
   test('same selected filters and result count persist across EN <-> ES', async ({
     page,
   }) => {
+    test.skip(
+      !hasFacetsForCurrentTenant(),
+      'This tenant/environment has no search facets/filters (see e2e/fixtures/tenants.ts)',
+    );
+
     await openTopicSearch(page);
     await applyTestLocationOnSearchPage(page);
 

@@ -19,10 +19,36 @@ env:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    outputs:
+      deployment_id_multitenant: ${{ steps.before-multitenant.outputs.deployment_id }}
+      deployment_id_mboa: ${{ steps.before-mboa.outputs.deployment_id }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Get multi-tenant-prod active deployment ID before push
+        id: before-multitenant
+        run: |
+          APP_ID="${{ secrets.DO_MULTITENANT_PROD_APP_ID }}"
+
+          ACTIVE_DEPLOYMENT=$(doctl apps list-deployments "$APP_ID" --format ID,Phase --no-header | grep ACTIVE | awk '{print $1}' | head -n1)
+          echo "deployment_id=$ACTIVE_DEPLOYMENT" >> "$GITHUB_OUTPUT"
+          echo "Current active deployment (multi-tenant-prod): $ACTIVE_DEPLOYMENT"
+
+      - name: Get mboa-prod active deployment ID before push
+        id: before-mboa
+        run: |
+          APP_ID="${{ secrets.DO_MBOA_PROD_APP_ID }}"
+
+          ACTIVE_DEPLOYMENT=$(doctl apps list-deployments "$APP_ID" --format ID,Phase --no-header | grep ACTIVE | awk '{print $1}' | head -n1)
+          echo "deployment_id=$ACTIVE_DEPLOYMENT" >> "$GITHUB_OUTPUT"
+          echo "Current active deployment (mboa-prod): $ACTIVE_DEPLOYMENT"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -74,3 +100,163 @@ jobs:
         run: |
           rm -rf ${{ runner.temp }}/.buildx-cache
           mv ${{ runner.temp }}/.buildx-cache-new ${{ runner.temp }}/.buildx-cache
+
+  # Note: the release has already shipped by the time these run. Waiting for
+  # deploy + running e2e here is alert-only (Slack) — nothing downstream
+  # depends on these jobs, so a failure never blocks or rolls back anything.
+  wait-for-deploy-multitenant:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Wait for new multi-tenant-prod deployment to become active
+        env:
+          OLD_DEPLOYMENT_ID: ${{ needs.build-and-push.outputs.deployment_id_multitenant }}
+        run: |
+          APP_ID="${{ secrets.DO_MULTITENANT_PROD_APP_ID }}"
+          echo "Waiting for a new deployment to replace: $OLD_DEPLOYMENT_ID"
+          MAX_ATTEMPTS=60
+          SLEEP_SECONDS=30
+          for i in $(seq 1 $MAX_ATTEMPTS); do
+            CURRENT=$(doctl apps list-deployments "$APP_ID" --format ID,Phase --no-header | grep ACTIVE | awk '{print $1}' | head -n1)
+
+            if [ -n "$CURRENT" ] && [ "$CURRENT" != "$OLD_DEPLOYMENT_ID" ]; then
+              echo "New deployment is active: $CURRENT"
+              echo "new_deployment_id=$CURRENT" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+
+            LATEST_PHASE=$(doctl apps list-deployments "$APP_ID" --format Phase --no-header | head -n1)
+            if [ "$LATEST_PHASE" = "ERROR" ]; then
+              echo "::error::Latest deployment failed with ERROR status"
+              exit 1
+            fi
+
+            echo "Attempt $i/$MAX_ATTEMPTS - deployment not yet active (current: ${CURRENT:-none}, phase: ${LATEST_PHASE:-unknown}). Waiting ${SLEEP_SECONDS}s..."
+            sleep $SLEEP_SECONDS
+          done
+
+          echo "::error::Timed out waiting for new deployment after $((MAX_ATTEMPTS * SLEEP_SECONDS)) seconds"
+          exit 1
+
+  wait-for-deploy-mboa:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Wait for new mboa-prod deployment to become active
+        env:
+          OLD_DEPLOYMENT_ID: ${{ needs.build-and-push.outputs.deployment_id_mboa }}
+        run: |
+          APP_ID="${{ secrets.DO_MBOA_PROD_APP_ID }}"
+          echo "Waiting for a new deployment to replace: $OLD_DEPLOYMENT_ID"
+          MAX_ATTEMPTS=60
+          SLEEP_SECONDS=30
+          for i in $(seq 1 $MAX_ATTEMPTS); do
+            CURRENT=$(doctl apps list-deployments "$APP_ID" --format ID,Phase --no-header | grep ACTIVE | awk '{print $1}' | head -n1)
+
+            if [ -n "$CURRENT" ] && [ "$CURRENT" != "$OLD_DEPLOYMENT_ID" ]; then
+              echo "New deployment is active: $CURRENT"
+              echo "new_deployment_id=$CURRENT" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+
+            LATEST_PHASE=$(doctl apps list-deployments "$APP_ID" --format Phase --no-header | head -n1)
+            if [ "$LATEST_PHASE" = "ERROR" ]; then
+              echo "::error::Latest deployment failed with ERROR status"
+              exit 1
+            fi
+
+            echo "Attempt $i/$MAX_ATTEMPTS - deployment not yet active (current: ${CURRENT:-none}, phase: ${LATEST_PHASE:-unknown}). Waiting ${SLEEP_SECONDS}s..."
+            sleep $SLEEP_SECONDS
+          done
+
+          echo "::error::Timed out waiting for new deployment after $((MAX_ATTEMPTS * SLEEP_SECONDS)) seconds"
+          exit 1
+
+  e2e-tests:
+    needs: [wait-for-deploy-multitenant, wait-for-deploy-mboa]
+    uses: ./.github/workflows/e2e-tests.yaml
+    with:
+      environment: production
+    secrets: inherit
+
+  notify-build-failure:
+    if: always() && needs.build-and-push.result == 'failure'
+    needs: [build-and-push]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack notification - Build & Push Failed
+        uses: slackapi/slack-github-action@v2.1.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": ":x: *Build & Push Failed*",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ":x: *Production Build & Push Failed*\nThe Docker image could not be built or pushed to the registry.\n*Commit:* `${{ github.sha }}`\n*Author:* ${{ github.actor }}"
+                  }
+                }
+              ]
+            }
+
+  notify-activate-failure:
+    if: always() && (needs.wait-for-deploy-multitenant.result == 'failure' || needs.wait-for-deploy-mboa.result == 'failure')
+    needs: [wait-for-deploy-multitenant, wait-for-deploy-mboa]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack notification - Deploy Failed
+        uses: slackapi/slack-github-action@v2.1.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": ":warning: *Production Deploy Check Failed*",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ":warning: *Production Deploy Failed to Activate*\nThe image was pushed, but the new deployment did not become active within the expected timeframe (multi-tenant-prod and/or mboa-prod). This is alert-only — nothing was rolled back.\n*Tag:* `${{ github.ref_name }}`\n*Author:* ${{ github.actor }}"
+                  }
+                }
+              ]
+            }
+
+  notify-e2e-failure:
+    if: always() && needs.e2e-tests.result == 'failure'
+    needs: [e2e-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack notification - Production E2E Failed
+        uses: slackapi/slack-github-action@v2.1.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": ":warning: *Production E2E Failed*",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ":warning: *Production E2E Tests Failed*\nOne or more tenant/environment e2e suites failed against production after this release. This is alert-only — the release already shipped and nothing was blocked.\n*Tag:* `${{ github.ref_name }}`\n*Author:* ${{ github.actor }}"
+                  }
+                }
+              ]
+            }

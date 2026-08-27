@@ -33,6 +33,10 @@ async function addFirstSearchResultToLocalFavorites(
   );
   await favoriteBtn.click();
 
+  await expect(favoriteBtn.locator('svg')).toHaveClass(/fill-current/, {
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
+
   return { resourceName: firstResourceName };
 }
 
@@ -49,6 +53,17 @@ test.describe('Favorites Feature (Anonymous Local List)', () => {
     await goToLocalFavorites(page);
     await expectPageUrl(page, /favorites\/local\/?(?:\?|$)/);
     await expect(page.getByTestId('create-list-btn')).toHaveCount(0);
+  });
+
+  test('should show the empty state when there are no local favorites', async ({
+    page,
+  }) => {
+    await goToLocalFavorites(page);
+
+    await expect(page.getByTestId('purge-local-list-btn')).toHaveCount(0);
+    await expect(page.getByText('No saved resources yet')).toBeVisible({
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
   });
 
   test('should add a resource from search results to local favorites', async ({
@@ -94,6 +109,33 @@ test.describe('Favorites Feature (Anonymous Local List)', () => {
     });
   });
 
+  test('should keep a local favorite when the remove confirmation is cancelled', async ({
+    page,
+  }) => {
+    const { resourceName } = await addFirstSearchResultToLocalFavorites(
+      page,
+      'shelter',
+      'shelter',
+    );
+
+    await goToLocalFavorites(page);
+
+    await expect(page.getByText(resourceName).first()).toBeVisible({
+      timeout: ASYNC_UI_TIMEOUT_MS,
+    });
+
+    await page.getByTestId('remove-from-list-btn').first().click();
+
+    const removeDialog = page.getByRole('dialog');
+    await expect(removeDialog).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+    await removeDialog.getByRole('button', { name: 'Cancel' }).click();
+    await expect(removeDialog).toHaveCount(0, { timeout: UI_SHELL_TIMEOUT_MS });
+
+    await expect(page.getByText(resourceName).first()).toBeVisible({
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
+  });
+
   test('should purge all local favorites from local favorites page', async ({
     page,
   }) => {
@@ -111,6 +153,21 @@ test.describe('Favorites Feature (Anonymous Local List)', () => {
     await expect(page.getByTestId('purge-local-list-btn')).toBeVisible({
       timeout: UI_SHELL_TIMEOUT_MS,
     });
+
+    // Cancel path: the confirm dialog closes and favorites are untouched.
+    await page.getByTestId('purge-local-list-btn').click();
+    const purgeDialog = page.getByRole('dialog');
+    await expect(purgeDialog).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+    await purgeDialog.getByRole('button', { name: 'Cancel' }).click();
+    await expect(purgeDialog).toHaveCount(0, { timeout: UI_SHELL_TIMEOUT_MS });
+
+    await expect
+      .poll(async () => page.getByTestId('remove-from-list-btn').count(), {
+        timeout: ASYNC_UI_TIMEOUT_MS,
+      })
+      .toBeGreaterThan(0);
+
+    // Confirm path: all favorites are cleared.
     await page.getByTestId('purge-local-list-btn').click();
 
     await expect(page.getByTestId('purge-list-confirm-btn')).toBeVisible({

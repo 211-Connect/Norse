@@ -28,7 +28,7 @@ export function withOptionalTrailingSlash(path: string): string {
   return `${pathname}/${query}${hash}`;
 }
 
-function getNormalizedCustomBasePath(): string {
+export function getNormalizedCustomBasePath(): string {
   const configuredBasePath = process.env.NEXT_PUBLIC_CUSTOM_BASE_PATH;
   return configuredBasePath
     ? `/${configuredBasePath.replace(/^\/+|\/+$/g, '')}`

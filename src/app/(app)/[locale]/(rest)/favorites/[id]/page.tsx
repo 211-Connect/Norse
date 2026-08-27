@@ -11,6 +11,8 @@ import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { getFavoriteList } from '@/app/(app)/shared/serverActions/favorites/getFavoriteList';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { getSession } from '@/app/(app)/shared/utils/getServerSession';
+import { parseHost } from '@/app/(app)/shared/utils/parseHost';
+import { findTenantByHost } from '@/payload/collections/Tenants/actions';
 
 const i18nNamespaces = [
   'common',
@@ -73,6 +75,24 @@ export default async function FavoritesDetailsPage({ params }) {
 
   const favoriteList = await getFavoriteList(id, locale, appConfig.tenantId);
   if (!favoriteList) {
+    if (!session) {
+      // A logged-out visitor may be the list's own owner, just not signed in
+      // right now (this route is reachable without auth when `favorites-list`
+      // is one of the tenant's public-page exceptions). Give them a chance to
+      // sign in and retry instead of a dead-end 404.
+      const host =
+        headersList.get('x-forwarded-host') ||
+        headersList.get('host') ||
+        'localhost';
+      const tenant = await findTenantByHost(parseHost(host));
+
+      if (tenant?.auth?.requiresLogin) {
+        redirect(
+          `/${locale}/auth/signin?redirect=${encodeURIComponent(`/favorites/${id}`)}`,
+        );
+      }
+    }
+
     notFound();
   }
 

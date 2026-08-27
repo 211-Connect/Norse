@@ -19,6 +19,7 @@ import {
 import { getAppConfigWithoutHost } from '../shared/utils/appConfig';
 import { getSession } from '../shared/utils/getServerSession';
 import { sanitizeSessionForClient } from '../shared/utils/sanitizeSession';
+import { shouldBlockCrawlers } from '../shared/utils/shouldBlockCrawlers';
 
 export const generateMetadata = async ({
   params,
@@ -30,11 +31,9 @@ export const generateMetadata = async ({
 
   const favicon = appConfig.brand.faviconUrl ?? '/favicon.ico';
 
-  // Block search engines in production unless explicitly allowed
-  const isProduction = process.env.NODE_ENV === 'production';
-  const allowSearchEngines =
-    process.env.NEXT_PUBLIC_ALLOW_SEARCH_ENGINES === 'true';
-  const shouldBlockCrawlers = isProduction && !allowSearchEngines;
+  // Block search engines when the global env gate blocks indexing or this
+  // specific branded tenant has opted out via `tenants.seo.noindex`.
+  const blockCrawlers = shouldBlockCrawlers(appConfig.noindex ?? false);
 
   return {
     description: appConfig.meta.description,
@@ -42,7 +41,7 @@ export const generateMetadata = async ({
       icon: favicon,
     },
     title: appConfig.meta.title,
-    ...(shouldBlockCrawlers && {
+    ...(blockCrawlers && {
       robots: {
         index: false,
         follow: false,

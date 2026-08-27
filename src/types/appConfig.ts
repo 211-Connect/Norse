@@ -18,6 +18,11 @@ export type AppConfig = {
     };
   };
   baseUrl: string;
+  /**
+   * Per-tenant search-engine de-indexing flag (`tenants.seo.noindex`).
+   * When true, this branded domain is served with a noindex directive.
+   */
+  noindex?: boolean;
   brand: {
     name: string;
     logoUrl?: string;

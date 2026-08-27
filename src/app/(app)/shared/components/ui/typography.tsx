@@ -125,7 +125,13 @@ const Typography = forwardRef<HTMLElement, TypographyProps>(
             typographyVariants({ variant, size, textColor, className }),
           )}
           ref={ref as React.Ref<HTMLAnchorElement>}
-          target={urlTarget || undefined}
+          // `_self` is the browser default for same-tab navigation, so it
+          // must never be rendered as a literal `target` attribute: a
+          // non-empty `target` (even "_self") makes nextjs-toploader's click
+          // handler treat this like a target="_blank"/external link and
+          // finish the progress bar instantly instead of tracking the real
+          // navigation. Only emit `target` for the genuinely different case.
+          target={urlTarget === '_blank' ? '_blank' : undefined}
           rel="noopener noreferrer"
           prefetch={prefetch}
           {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}

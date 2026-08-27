@@ -1,5 +1,6 @@
 import { TypedLocale } from 'payload';
 
+import { PublicPageCategory } from '@/app/(app)/shared/utils/publicPageCategory';
 import { findTenantByHost } from '@/payload/collections/Tenants/actions';
 import { withCache } from '@/utilities/withCache';
 import { normalizeAllowedEmailDomains } from '@/utils/normalizeAllowedEmailDomains';
@@ -10,6 +11,10 @@ export type TenantBasicConfigResponse = {
   auth: {
     requiresLogin: boolean;
     allowedEmailDomains: string[];
+    publicPages: PublicPageCategory[];
+  };
+  seo: {
+    noindex: boolean;
   };
 };
 
@@ -39,6 +44,10 @@ export const GET = async (request: Request) => {
           allowedEmailDomains: normalizeAllowedEmailDomains(
             tenant?.auth?.allowedEmailDomains,
           ),
+          publicPages: tenant?.auth?.publicPages ?? [],
+        },
+        seo: {
+          noindex: tenant?.seo?.noindex ?? false,
         },
       };
     },

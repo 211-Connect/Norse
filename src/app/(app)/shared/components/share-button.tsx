@@ -118,6 +118,7 @@ export function ShareButton({
           id={dialogId}
           restoreFocusElement={triggerRef.current}
           closeLabel={t('call_to_action.close')}
+          data-testid="share-dialog"
         >
           <DialogHeader>
             <DialogTitle>{t('modal.share.share_via')}</DialogTitle>
@@ -218,6 +219,7 @@ export function ShareButton({
                 aria-describedby={copyStatusId}
                 aria-busy={isShortUrlLoading}
                 disabled={!shortUrl}
+                data-testid="copy-short-url-btn"
               >
                 <span className="min-w-0 truncate text-left">
                   {shortUrl || '...'}

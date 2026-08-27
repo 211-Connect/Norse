@@ -95,7 +95,7 @@ test.describe('Search accessibility preservation', () => {
 
     await page.keyboard.press('Escape');
 
-    await expect(dialog).toHaveAttribute('aria-hidden', 'true');
+    await expect(dialog).toBeHidden();
     await expect(trigger).toBeFocused();
   });
 
@@ -145,10 +145,14 @@ test.describe('Search accessibility preservation', () => {
     expect(searchLabel).toMatch(/search for resources/i);
     expect(locationLabel).toMatch(/search for a location/i);
 
-    await searchInput.fill('food');
-    const clearButtons = page.getByTestId('search-clear-btn');
+    // The clear button only exists in the DOM while its field has a value
+    // (see Autocomplete), so scope lookups per field via each wrapper's
+    // testid instead of indexing a single shared locator by position.
+    const searchField = page.getByTestId('search-field');
+    const locationField = page.getByTestId('location-field');
 
-    const clearSearchButton = clearButtons.first();
+    await searchInput.fill('food');
+    const clearSearchButton = searchField.getByTestId('search-clear-btn');
     await expect(clearSearchButton).toBeVisible({
       timeout: UI_SHELL_TIMEOUT_MS,
     });
@@ -169,12 +173,13 @@ test.describe('Search accessibility preservation', () => {
     await expect(searchInput).toHaveValue('');
 
     await locationInput.fill('minneapolis');
-    await expect(clearButtons.nth(1)).toBeVisible({
+    const clearLocationButton = locationField.getByTestId('search-clear-btn');
+    await expect(clearLocationButton).toBeVisible({
       timeout: UI_SHELL_TIMEOUT_MS,
     });
     await locationInput.focus();
     await page.keyboard.press('Tab');
-    await expect(clearButtons.nth(1)).toBeFocused();
+    await expect(clearLocationButton).toBeFocused();
   });
 
   test('autocomplete announces suggestions and keeps the popover scrollable in constrained layouts', async ({
@@ -273,7 +278,8 @@ test.describe('Search accessibility preservation', () => {
       timeout: AUTOCOMPLETE_TIMEOUT_MS,
     });
     await listbox.getByTestId('autocomplete-option').first().click();
-    // Clear uses committed `value` from context; it stays `invisible` until a real pick.
+    // Clear uses committed `value` from context; it only renders once a real
+    // pick has been made (see Autocomplete's conditional clear button).
     await expect(clearButton).toBeVisible({
       timeout: AUTOCOMPLETE_TIMEOUT_MS,
     });

@@ -151,6 +151,33 @@ export const Tenants: CollectionConfig = {
       ],
     },
     {
+      name: 'seo',
+      label: 'SEO Settings',
+      type: 'group',
+      access: {
+        create: superAdminOrSupportAccess,
+        read: () => true,
+        update: superAdminOrSupportAccess,
+      },
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'noindex',
+              label: 'Hide this site from search engines',
+              type: 'checkbox',
+              defaultValue: false,
+              admin: {
+                description:
+                  "Keeps this site out of Google and other search results — useful while it's still being built, not yet ready to launch, or kept behind a login, so it isn't found before you intend it to be. Applies to your live site; staging and preview are always kept private. This asks reputable search engines not to list your pages; separately, and always on, our built-in protections keep your directory from being harvested by automated scrapers — so your information reaches real people using it fairly, not outside businesses repackaging it in their own products.",
+              },
+            },
+          ],
+        },
+      ],
+    },
+    {
       name: 'auth',
       type: 'group',
       access: {
@@ -192,6 +219,29 @@ export const Tenants: CollectionConfig = {
               admin: {
                 description:
                   '⚠️ WARNING: Enabling this will make the website private. Only authenticated users will be able to access it. Use this setting with caution.',
+              },
+            },
+          ],
+        },
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'publicPages',
+              type: 'select',
+              hasMany: true,
+              defaultValue: [],
+              options: [
+                { label: 'Home', value: 'home' },
+                { label: 'Search results', value: 'search-results' },
+                { label: 'Resource detail', value: 'resource-detail' },
+                { label: 'Favorites list', value: 'favorites-list' },
+              ],
+              admin: {
+                description:
+                  'When the site requires login, these page types remain publicly accessible without authentication.',
+                condition: (data, siblingData) =>
+                  siblingData?.requiresLogin || data?.auth?.requiresLogin,
               },
             },
           ],
