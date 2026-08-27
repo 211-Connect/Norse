@@ -92,4 +92,31 @@ test.describe('Search deep link geocoding', () => {
     const coords = getCoordsParam(page.url());
     expect(coords).not.toBe(staleCoords);
   });
+
+  test('a deep link with location=Everywhere is never forward-geocoded', async ({
+    page,
+  }) => {
+    // "Everywhere" is the in-app sentinel for "no location filter" (see
+    // NO_LOCATION_SENTINEL). The external search widget sends it literally
+    // when no location is picked; it must never be forward-geocoded as if it
+    // were a real place name (e.g. it happens to match a real street in TX).
+    const deepLink = buildSearchDeepLinkUrl({
+      location: 'Everywhere',
+      query: 'food',
+      query_label: 'food',
+      query_type: 'text',
+    });
+
+    await page.goto(deepLink, { waitUntil: 'domcontentloaded' });
+
+    await expect(page.locator('#search-container')).toBeVisible({
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
+    await expect(page.locator('#result-total')).toBeVisible({
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
+
+    // No redirect to append `coords` should ever happen for the sentinel.
+    expect(getCoordsParam(page.url())).toBeNull();
+  });
 });

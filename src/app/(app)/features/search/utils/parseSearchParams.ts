@@ -27,6 +27,15 @@ export function parseSearchParams(raw: RawSearchParams): FindResourcesQuery {
     : undefined;
   const sort = getSortOption(String(parsed.sort), coordinates);
 
+  const rawLocation =
+    typeof parsed.location === 'string'
+      ? parsed.location || undefined
+      : undefined;
+  const location =
+    rawLocation && rawLocation.trim().toLowerCase() === 'everywhere'
+      ? undefined
+      : rawLocation;
+
   return {
     query:
       typeof parsed.query === 'string' ? parsed.query || undefined : undefined,
@@ -38,10 +47,7 @@ export function parseSearchParams(raw: RawSearchParams): FindResourcesQuery {
       typeof parsed.query_type === 'string'
         ? parsed.query_type || undefined
         : undefined,
-    location:
-      typeof parsed.location === 'string'
-        ? parsed.location || undefined
-        : undefined,
+    location,
     coordinates,
     distance:
       typeof parsed.distance === 'string'
