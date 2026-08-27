@@ -97,14 +97,24 @@ export async function goToLocalFavorites(page: Page) {
 const FAVORITES_LIST_URL_RE = /favorites\/[a-f0-9-]{24,36}/;
 
 /**
- * Wait until the browser is on a favorites list-detail page and its static
- * chrome (`back-to-favorites`) is rendered. Single source of truth for the
- * list-page contract (previously split across two near-identical helpers).
+ * Wait until the browser is on a favorites list-detail page and its content
+ * is rendered. Single source of truth for the list-page contract (previously
+ * split across two near-identical helpers).
+ *
+ * `back-to-favorites` (`favorites-section.tsx`) is owner-only chrome — it's
+ * only rendered when `favoriteList.viewingAsOwner` is true, which is never
+ * the case for an anonymous visitor following a public list's share link.
+ * Pass `{ asOwner: false }` for that scenario so the wait targets
+ * `favorites-section` (always rendered, regardless of viewer) instead of
+ * `back-to-favorites` (would time out forever for a non-owner).
  */
-export async function waitForFavoriteListPage(page: Page) {
+export async function waitForFavoriteListPage(
+  page: Page,
+  { asOwner = true }: { asOwner?: boolean } = {},
+) {
   await expectPageUrl(page, FAVORITES_LIST_URL_RE);
   await page
-    .getByTestId('back-to-favorites')
+    .getByTestId(asOwner ? 'back-to-favorites' : 'favorites-section')
     .waitFor({ state: 'visible', timeout: UI_SHELL_TIMEOUT_MS });
 }
 

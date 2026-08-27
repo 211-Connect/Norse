@@ -420,11 +420,14 @@ test.describe('Favorites Feature (Authenticated)', () => {
         shortUrl,
       );
       try {
-        await waitForFavoriteListPage(anonymousPage);
+        await waitForFavoriteListPage(anonymousPage, { asOwner: false });
         await expect(
           anonymousPage.getByText(publicListName).first(),
         ).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
         await expect(anonymousPage.getByTestId('edit-list-btn')).toHaveCount(0);
+        await expect(
+          anonymousPage.getByTestId('back-to-favorites'),
+        ).toHaveCount(0);
       } finally {
         await anonymousPage.close();
       }
