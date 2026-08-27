@@ -41,7 +41,9 @@ function transformApiResource(data: ApiResource): Resource {
   );
 
   return {
-    id: data._id,
+    id: data.serviceAtLocationId ?? data._id,
+    serviceAtLocationId: data?.serviceAtLocationId ?? null,
+    _id: data?._id ?? null,
     originalId: data?.originalId ?? null,
     tenantId: data?.tenant_id ?? null,
     alert: data?.translation?.alert ?? null,

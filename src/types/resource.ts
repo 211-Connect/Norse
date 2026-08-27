@@ -101,6 +101,7 @@ export interface Translation {
 
 export interface ApiResource {
   _id: string;
+  serviceAtLocationId?: string;
   location?: Location;
   locationName?: string;
   addresses?: Address[];
@@ -145,6 +146,8 @@ export interface ApiResourceBatchResponse {
 
 export interface Resource {
   id: string;
+  serviceAtLocationId: string | null;
+  _id: string | null;
   originalId: string | null;
   tenantId: string | null;
   alert: string | null;
