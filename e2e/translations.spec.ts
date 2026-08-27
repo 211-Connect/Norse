@@ -16,7 +16,10 @@ import {
   test,
   waitForPageStabilized,
 } from './helpers';
-import { hasFacetsForCurrentTenant } from './fixtures/tenants';
+import {
+  getCurrentTenant,
+  hasFacetsForCurrentTenant,
+} from './fixtures/tenants';
 import { UI_SHELL_TIMEOUT_MS } from './timeouts';
 
 test.describe('Language Persistence And Results Button', () => {
@@ -32,7 +35,12 @@ test.describe('Language Persistence And Results Button', () => {
       'This tenant/environment has no search facets/filters (see e2e/fixtures/tenants.ts)',
     );
 
-    await openTopicSearch(page);
+    const { taxonomy } = getCurrentTenant();
+    await performSearch(page, {
+      query: taxonomy.code,
+      query_label: taxonomy.label,
+      query_type: 'taxonomy',
+    });
     await applyTestLocationOnSearchPage(page);
 
     // Wait for page to fully stabilize after location application
