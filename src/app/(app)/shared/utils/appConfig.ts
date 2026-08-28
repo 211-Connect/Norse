@@ -303,11 +303,7 @@ async function getAppConfigBase(
 
   // Fetch English resource directory for fallback if not English locale
   let englishResourceDirectory: ResourceDirectory | null = null;
-  if (
-    locale !== 'en' &&
-    (resourceDirectory.resource?.useCustomLayout ||
-      !resourceDirectory.search.cardLayout)
-  ) {
+  if (locale !== 'en') {
     englishResourceDirectory = await findResourceDirectoryByHost(host, 'en');
   }
 
@@ -617,13 +613,27 @@ async function getAppConfigBase(
         }),
       ),
     },
-    alerts: activeAlerts.map((alert) => ({
-      text: alert.text,
-      buttonText: alert.buttonText ?? undefined,
-      target: alert.openInNewTab ? '_blank' : undefined,
-      url: alert.url ?? undefined,
-      variant: alert.variant ?? undefined,
-    })),
+    alerts: activeAlerts
+      .map((alert, index) => {
+        const englishAlerts = englishResourceDirectory?.common?.alert ?? [];
+        const fallbackAlert =
+          findFallbackById(alert, englishAlerts) ?? englishAlerts[index];
+        const text = alert.text || fallbackAlert?.text;
+
+        if (!text?.trim()) {
+          return null;
+        }
+
+        return {
+          text,
+          buttonText:
+            (alert.buttonText || fallbackAlert?.buttonText) ?? undefined,
+          target: alert.openInNewTab ? ('_blank' as const) : undefined,
+          url: alert.url ?? undefined,
+          variant: alert.variant ?? undefined,
+        };
+      })
+      .filter((alert): alert is NonNullable<typeof alert> => alert !== null),
     heroUrl,
     highlights: resourceDirectory.highlights
       ? {
