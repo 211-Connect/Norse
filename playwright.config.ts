@@ -89,5 +89,10 @@ export default defineConfig({
       testMatch: ['**/search-ai-classification.spec.ts'],
       use: { ...devices['Desktop Chrome'], baseURL },
     },
+    {
+      name: 'resource-direct-link',
+      testMatch: ['**/search-resource-direct-link.spec.ts'],
+      use: { ...devices['Desktop Chrome'], baseURL },
+    },
   ],
 });

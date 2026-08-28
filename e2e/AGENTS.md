@@ -82,6 +82,12 @@ the per-tenant data (taxonomy codes/labels, broad queries, `aiSearchEnabled`).
   query stops triggering the scenario it was picked for, the test should
   fail loudly — fix it by finding a new verified query, not by
   reintroducing skip/branch logic.
+- `search-resource-direct-link.spec.ts` (project `resource-direct-link`)
+  covers opening a resource detail URL directly (bookmark/typed-in-address
+  style navigation, no search flow first), in both `en` and `es`. Uses
+  `tenant.directResourceId` (`e2e/fixtures/tenants.ts`) — a real, live
+  resource id per tenant — and skips (doesn't fail) for tenants without one
+  yet, same convention as `hasFacets`. Currently set for all 6 tenants.
 
 ## Helper module map (`e2e/helpers/`)
 
@@ -208,7 +214,8 @@ directly in the test that owns the list, not from a broad `beforeAll`/
 
 - `npm run test:e2e` — full suite (all projects, Desktop Chrome only).
 - `npm run test:e2e:<project>` — one project (`accessibility`, `favorites`,
-  `translations`, `search-geocode`, `search-taxonomy`).
+  `translations`, `search-geocode`, `search-taxonomy`, `share-link`,
+  `resource-direct-link`).
 - Requires a running app server; `baseURL` defaults to `http://localhost:3000`,
   override with `E2E_BASE_URL`.
 - Favorites (authenticated) specs skip automatically unless `TEST_USER_EMAIL`
