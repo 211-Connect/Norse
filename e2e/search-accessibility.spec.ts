@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import enCommon from '../public/locales/en/common.json' with { type: 'json' };
+import { getCurrentTenant } from './fixtures/tenants';
 import {
   expect,
   expectPageUrl,
@@ -16,6 +17,11 @@ import {
   KEYBOARD_UI_STABILITY_MS,
   UI_SHELL_TIMEOUT_MS,
 } from './timeouts';
+
+// A real place within the current tenant's service area (see
+// `TenantFixture.testLocation`) - not a single shared city, since a location
+// outside a tenant's coverage isn't guaranteed to behave the same way.
+const testLocation = getCurrentTenant().testLocation;
 
 async function openDialogFromSearchTrigger(page: Page) {
   const trigger = page.getByTestId('search-trigger').first();
@@ -172,7 +178,7 @@ test.describe('Search accessibility preservation', () => {
     await page.keyboard.press('Enter');
     await expect(searchInput).toHaveValue('');
 
-    await locationInput.fill('minneapolis');
+    await locationInput.fill(testLocation);
     const clearLocationButton = locationField.getByTestId('search-clear-btn');
     await expect(clearLocationButton).toBeVisible({
       timeout: UI_SHELL_TIMEOUT_MS,
@@ -248,7 +254,7 @@ test.describe('Search accessibility preservation', () => {
 
     const locationInput = page.locator('#location-input');
 
-    await locationInput.fill('minneapolis');
+    await locationInput.fill(testLocation);
     await page
       .getByTestId('location-field')
       .getByTestId('autocomplete-listbox')
@@ -272,7 +278,7 @@ test.describe('Search accessibility preservation', () => {
     const clearButton = locationField.getByTestId('search-clear-btn');
     const listbox = locationField.getByTestId('autocomplete-listbox');
 
-    await locationInput.fill('minneapolis');
+    await locationInput.fill(testLocation);
     await listbox.waitFor({
       state: 'visible',
       timeout: AUTOCOMPLETE_TIMEOUT_MS,

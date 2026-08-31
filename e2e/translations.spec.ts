@@ -41,7 +41,7 @@ test.describe('Language Persistence And Results Button', () => {
       query_label: taxonomy.label,
       query_type: 'taxonomy',
     });
-    await applyTestLocationOnSearchPage(page);
+    await applyTestLocationOnSearchPage(page, getCurrentTenant().testLocation);
 
     // Wait for page to fully stabilize after location application
     await waitForPageStabilized(page);
