@@ -34,7 +34,12 @@ export const useNavigateClassicSearch = ({
   return useCallback(
     async (locationPayload: Record<string, unknown>) => {
       startTransition(() => {
-        const query = search.query || search.searchTerm;
+        // When an organization is selected, keep the query empty (terminal
+        // "show this org's resources" scope) instead of falling back to the
+        // org name in searchTerm, which would add an unintended text match.
+        const query = search.organizationId
+          ? search.query
+          : search.query || search.searchTerm;
 
         const hasCoordinates = search.searchCoordinates.length === 2;
         const locationParams = hasCoordinates

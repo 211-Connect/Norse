@@ -47,6 +47,10 @@ export function parseSearchParams(raw: RawSearchParams): FindResourcesQuery {
       typeof parsed.query_type === 'string'
         ? parsed.query_type || undefined
         : undefined,
+    organizationId:
+      typeof parsed.organization_id === 'string'
+        ? parsed.organization_id || undefined
+        : undefined,
     location,
     coordinates,
     distance:

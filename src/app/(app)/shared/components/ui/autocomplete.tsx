@@ -52,6 +52,7 @@ export type AutocompleteOption = {
   badge?: string;
   query?: string;
   queryType?: string;
+  organizationId?: string;
   href?: string;
   target?: '_self' | '_blank';
 };

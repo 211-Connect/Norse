@@ -229,6 +229,7 @@ async function getAppConfigBase(
       sms: null,
       featureFlags: {
         enablePrintableDirectories: false,
+        enableOrganizationSearch: false,
         requireAuthenticationForFavorites: false,
         requireUserLocation: false,
         showAgeFilter: false,
@@ -238,6 +239,7 @@ async function getAppConfigBase(
         showPrintButton: false,
         showSearchAndResourceServiceName: false,
         showSuggestionListTaxonomyBadge: false,
+        showSuggestionListOrganizationLocationBadge: false,
         showUseMyLocationButtonOnDesktop: false,
         turnResourceCardTaxonomiesIntoLinks: true,
       },
@@ -391,6 +393,8 @@ async function getAppConfigBase(
     featureFlags: {
       enablePrintableDirectories:
         resourceDirectory.featureFlags?.enablePrintableDirectories ?? false,
+      enableOrganizationSearch:
+        resourceDirectory.featureFlags?.enableOrganizationSearch ?? false,
       requireAuthenticationForFavorites:
         resourceDirectory.featureFlags?.requireAuthenticationForFavorites ??
         false,
@@ -410,6 +414,9 @@ async function getAppConfigBase(
       showSuggestionListTaxonomyBadge:
         resourceDirectory.featureFlags?.showSuggestionListTaxonomyBadge ??
         false,
+      showSuggestionListOrganizationLocationBadge:
+        resourceDirectory.featureFlags
+          ?.showSuggestionListOrganizationLocationBadge ?? false,
       showUseMyLocationButtonOnDesktop:
         resourceDirectory.featureFlags?.showUseMyLocationButtonOnDesktop ??
         false,
@@ -552,6 +559,9 @@ async function getAppConfigBase(
             undefined,
           taxonomies:
             resourceDirectory.search.texts?.suggestionHeaders?.taxonomies ??
+            undefined,
+          organizations:
+            resourceDirectory.search.texts?.suggestionHeaders?.organizations ??
             undefined,
         },
         title: resourceDirectory.search.texts?.title ?? undefined,

@@ -5,7 +5,7 @@ import { SearchIcon } from 'lucide-react';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useTaxonomies } from '../../hooks/api/use-taxonomies';
+import { useSearchSuggestions } from '../../hooks/api/use-search-suggestions';
 import { useAppConfig } from '../../hooks/use-app-config';
 import { useDebounce } from '../../hooks/use-debounce';
 import { useFlag } from '../../hooks/use-flag';
@@ -32,9 +32,14 @@ export function SearchBar({
   const searchTerm = useAtomValue(searchTermAtom);
   const debouncedSearchTerm = useDebounce(searchTerm, SEARCH_DEBOUNCE_DELAY);
   const { setSearch } = useMainSearchLayoutContext();
-  const { displayData: taxonomiesDisplay } = useTaxonomies(debouncedSearchTerm);
+  const { taxonomies: taxonomiesDisplay, organizations: organizationsDisplay } =
+    useSearchSuggestions(debouncedSearchTerm);
 
   const showTaxonomyBadge = useFlag('showSuggestionListTaxonomyBadge');
+  const enableOrganizationSearch = useFlag('enableOrganizationSearch');
+  const showOrganizationLocationBadge = useFlag(
+    'showSuggestionListOrganizationLocationBadge',
+  );
   const suggestions = appConfig.suggestions;
   const topics = appConfig.topics;
 
@@ -46,6 +51,8 @@ export function SearchBar({
       suggestionHeaders?.categories || t('search.categories');
     const taxonomiesGroup =
       suggestionHeaders?.taxonomies || t('search.taxonomies');
+    const organizationsGroup =
+      suggestionHeaders?.organizations || t('search.organizations');
 
     const normalizedSearchTerm = searchTerm.trim().toLowerCase();
 
@@ -97,19 +104,39 @@ export function SearchBar({
       }),
     );
 
+    const organizationList: AutocompleteOption[] = enableOrganizationSearch
+      ? organizationsDisplay.map((org) => ({
+          group: organizationsGroup,
+          value: org.name,
+          // Terminal org view: no text query — scope to the org by its stable
+          // id and show all of its resources (backend match_all + org filter).
+          query: '',
+          organizationId: org.organization_id,
+          badge:
+            showOrganizationLocationBadge && org.city
+              ? `${org.city}${org.state ? `, ${org.state}` : ''}`
+              : undefined,
+        }))
+      : [];
+
     const atLeastTwo =
-      [suggestionList, topicList, taxonomyList].filter((a) => a.length)
-        .length >= 2;
+      [suggestionList, topicList, taxonomyList, organizationList].filter(
+        (a) => a.length,
+      ).length >= 2;
 
     return [
       ...suggestionList.filter((_, index) => !(atLeastTwo && index > 5)),
       ...topicList.filter((_, index) => !(atLeastTwo && index > 5)),
       ...taxonomyList.filter((_, index) => !(atLeastTwo && index > 5)),
+      ...organizationList.filter((_, index) => !(atLeastTwo && index > 5)),
     ];
   }, [
     suggestions,
     topics,
     taxonomiesDisplay,
+    organizationsDisplay,
+    enableOrganizationSearch,
+    showOrganizationLocationBadge,
     appConfig.search.texts?.suggestionHeaders,
     t,
     searchTerm,
@@ -120,6 +147,7 @@ export function SearchBar({
     (value: string, option?: AutocompleteOption) => {
       const query = option?.query ?? '';
       const queryType = option?.queryType ?? 'text';
+      const organizationId = option?.organizationId ?? '';
       const href = queryType === 'link' ? (option?.href ?? '') : '';
       const target = queryType === 'link' ? (option?.target ?? '') : '';
 
@@ -127,6 +155,7 @@ export function SearchBar({
         ...prev,
         query,
         queryType,
+        organizationId,
         href,
         target,
         searchTerm: value,
@@ -144,6 +173,8 @@ export function SearchBar({
         ...prev,
         query: value,
         queryType: 'text',
+        // Typing a fresh query clears any organization scope from a prior pick.
+        organizationId: '',
         href: '',
         target: '',
         searchTerm: value,

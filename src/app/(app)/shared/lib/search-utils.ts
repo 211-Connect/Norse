@@ -110,6 +110,10 @@ export function buildSearchRequest(
     searchEngine,
   });
 
+  if (searchStore.organizationId) {
+    baseParams.organization_id = searchStore.organizationId;
+  }
+
   if (hasLocation && searchStore.location?.trim()) {
     baseParams.location = searchStore.location.trim();
   }
