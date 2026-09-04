@@ -47,6 +47,15 @@ export type TenantFixture = {
   broadQuery: string;
   /** A real HSDS taxonomy code + its on-site label, used by taxonomy-search tests. */
   taxonomy: { code: string; label: string };
+  /**
+   * A real city name within this tenant's actual service area, used to
+   * exercise location-dependent search UI (facets, sort-by-distance).
+   * Deliberately per-tenant rather than a single shared city (e.g.
+   * 'minneapolis') - a location far outside a tenant's service area is not
+   * guaranteed to return the same non-zero result counts other
+   * location-gated assertions rely on.
+   */
+  testLocation: string;
   /** Whether AI classification search is enabled, per environment. */
   aiSearchEnabled: Record<TenantEnv, boolean>;
   /** Only set for tenants/environments with AI search enabled - see `AiScenarioQueries`. */
@@ -74,6 +83,7 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
     displayName: 'MN AdResources (MBOA)',
     broadQuery: 'food',
     taxonomy: { code: 'DT-8800', label: 'Tax Help' },
+    testLocation: 'Minneapolis',
     aiSearchEnabled: { dev: false, prod: false },
     hasFacets: true,
     directResourceId: '98e5490a-8468-5673-afe3-8baffef6a236',
@@ -83,6 +93,7 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
     displayName: 'Washington 211',
     broadQuery: 'health',
     taxonomy: { code: 'LV-1600', label: 'Dental Care' },
+    testLocation: 'Seattle',
     aiSearchEnabled: { dev: true, prod: false },
     aiScenarioQueries: {
       direct: "I'm hungry",
@@ -100,6 +111,7 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
       code: 'BH-0500',
       label: 'At Risk/Homeless Housing Related Assistance Programs',
     },
+    testLocation: 'Richmond',
     aiSearchEnabled: { dev: true, prod: false },
     aiScenarioQueries: {
       direct: "I'm hungry",
@@ -114,6 +126,7 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
     displayName: 'Pennsylvania 211',
     broadQuery: 'food',
     taxonomy: { code: 'BH-1800.1500-100', label: 'Domestic Violence Shelters' },
+    testLocation: 'Philadelphia',
     aiSearchEnabled: { dev: false, prod: false },
     hasFacets: true,
     directResourceId: 'aa3e3bb5-b065-5996-9019-e52b75b9a8e8',
@@ -123,6 +136,7 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
     displayName: 'Arizona 211',
     broadQuery: 'food',
     taxonomy: { code: 'BH-1800.8500-185', label: 'Extreme Weather Shelters' },
+    testLocation: 'Phoenix',
     aiSearchEnabled: { dev: false, prod: false },
     hasFacets: false,
     directResourceId: '0470d494-2311-5dd5-b3d7-584371f872af',
@@ -132,6 +146,7 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
     displayName: '211 Santa Cruz County',
     broadQuery: 'food',
     taxonomy: { code: 'ND-1500', label: 'Job Assistance Centers' },
+    testLocation: 'Santa Cruz',
     aiSearchEnabled: { dev: true, prod: true },
     aiScenarioQueries: {
       direct: "I'm hungry",
