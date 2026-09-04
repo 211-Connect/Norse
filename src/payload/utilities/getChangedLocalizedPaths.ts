@@ -247,6 +247,54 @@ function deepLocalizedDiff(
     }
   });
 
+  // ALERTS (from common tab)
+
+  const beforeAlerts: NonNullable<
+    NonNullable<ResourceDirectory['common']>['alert']
+  > = get(before, 'common.alert', []);
+  const afterAlerts: NonNullable<
+    NonNullable<ResourceDirectory['common']>['alert']
+  > = get(after, 'common.alert', []);
+
+  const beforeAlertsMap = new Map(beforeAlerts.map((a) => [a.id, a]));
+  const afterAlertsMap = new Map(afterAlerts.map((a) => [a.id, a]));
+
+  afterAlerts.forEach((afterAlert, index) => {
+    const beforeAlert = beforeAlertsMap.get(afterAlert.id);
+
+    (['text', 'buttonText'] as const).forEach((field) => {
+      if (!beforeAlert) {
+        if (afterAlert[field]) {
+          changes.push({
+            path: `common.alert.${index}.${field}`,
+            before: undefined,
+            after: afterAlert[field],
+          });
+        }
+      } else if (beforeAlert[field] !== afterAlert[field]) {
+        changes.push({
+          path: `common.alert.${index}.${field}`,
+          before: beforeAlert[field],
+          after: afterAlert[field],
+        });
+      }
+    });
+  });
+
+  beforeAlerts.forEach((beforeAlert, index) => {
+    if (!afterAlertsMap.has(beforeAlert.id)) {
+      (['text', 'buttonText'] as const).forEach((field) => {
+        if (beforeAlert[field]) {
+          changes.push({
+            path: `common.alert.${index}.${field}`,
+            before: beforeAlert[field],
+            after: undefined,
+          });
+        }
+      });
+    }
+  });
+
   // SEARCH FACETS
 
   const beforeFacets: NonNullable<ResourceDirectory['search']['facets']> = get(
