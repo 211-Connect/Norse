@@ -6,6 +6,10 @@ export const searchAtom = atom({
   query: '',
   queryLabel: '',
   queryType: '',
+  // Scope results to a single organization by its stable id (set when the user
+  // picks an organization from the typeahead). Sent to /search as
+  // organization_id; composes with query/query_type rather than replacing them.
+  organizationId: '',
   href: '',
   target: '' as '' | '_self' | '_blank',
   searchTerm: '',

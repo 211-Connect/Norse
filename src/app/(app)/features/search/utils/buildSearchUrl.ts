@@ -17,6 +17,7 @@ export type BuildSearchUrlArgs = Partial<{
   query: string;
   queryLabel: string;
   queryType: string;
+  organizationId: string;
   location: string | null;
   coordinates: string | number[] | null;
   distance: string | [string, string] | null;
@@ -34,6 +35,7 @@ export function buildSearchUrl({
   query,
   queryLabel,
   queryType: originQueryType,
+  organizationId,
   location: originLocation,
   coordinates: originCoordinates,
   distance: originDistance,
@@ -61,6 +63,10 @@ export function buildSearchUrl({
   }
 
   params.set('query_type', queryType);
+
+  if (organizationId?.trim()) {
+    params.set('organization_id', organizationId.trim());
+  }
 
   const normalizedTaxonomies = normalizeHsisTaxonomies(taxonomies);
   if (normalizedTaxonomies.length > 0) {

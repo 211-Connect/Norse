@@ -92,6 +92,10 @@ export const useOnSearchSubmit = ({
       if (
         appConfig.search.searchEngine !== 'ai_classification' ||
         search.queryType === 'taxonomy' ||
+        // An organization scope is a filter, not a classifiable text query —
+        // never route it through AI classification (which would drop the
+        // scope and classify the org name as free text).
+        search.organizationId ||
         !query
       ) {
         await navigateClassicSearch(locationPayload);
@@ -155,6 +159,7 @@ export const useOnSearchSubmit = ({
       search.searchTerm,
       search.target,
       search.queryType,
+      search.organizationId,
       searchCoordinates,
       setSearch,
       setDialogOpen,

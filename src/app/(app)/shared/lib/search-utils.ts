@@ -110,6 +110,10 @@ export function buildSearchRequest(
     searchEngine,
   });
 
+  if (searchStore.organizationId) {
+    baseParams.organization_id = searchStore.organizationId;
+  }
+
   if (hasLocation && searchStore.location?.trim()) {
     baseParams.location = searchStore.location.trim();
   }
@@ -154,7 +158,6 @@ export enum QueryType {
   Text = 'text',
   Hybrid = 'hybrid',
   Taxonomy = 'taxonomy',
-  Organization = 'organization',
   MoreLikeThis = 'more_like_this',
 }
 
@@ -189,10 +192,6 @@ export function deriveQueryType({
   originQueryType,
   query,
 }: DeriveQueryTypeArgs): QueryType {
-  if (originQueryType === 'organization') {
-    return QueryType.Organization;
-  }
-
   if (originQueryType === 'taxonomy') {
     return QueryType.Taxonomy;
   }

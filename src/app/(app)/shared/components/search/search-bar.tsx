@@ -108,12 +108,14 @@ export function SearchBar({
       ? organizationsDisplay.map((org) => ({
           group: organizationsGroup,
           value: org.name,
-          query: org.name,
+          // Terminal org view: no text query — scope to the org by its stable
+          // id and show all of its resources (backend match_all + org filter).
+          query: '',
+          organizationId: org.organization_id,
           badge:
             showOrganizationLocationBadge && org.city
               ? `${org.city}${org.state ? `, ${org.state}` : ''}`
               : undefined,
-          queryType: 'organization',
         }))
       : [];
 
@@ -145,6 +147,7 @@ export function SearchBar({
     (value: string, option?: AutocompleteOption) => {
       const query = option?.query ?? '';
       const queryType = option?.queryType ?? 'text';
+      const organizationId = option?.organizationId ?? '';
       const href = queryType === 'link' ? (option?.href ?? '') : '';
       const target = queryType === 'link' ? (option?.target ?? '') : '';
 
@@ -152,6 +155,7 @@ export function SearchBar({
         ...prev,
         query,
         queryType,
+        organizationId,
         href,
         target,
         searchTerm: value,
@@ -169,6 +173,8 @@ export function SearchBar({
         ...prev,
         query: value,
         queryType: 'text',
+        // Typing a fresh query clears any organization scope from a prior pick.
+        organizationId: '',
         href: '',
         target: '',
         searchTerm: value,
