@@ -7,6 +7,7 @@ import {
   AUTO_TRANSLATED_STRING_PATHS,
   getChangedLocalizedPaths,
 } from '@/payload/utilities/getChangedLocalizedPaths';
+import { shouldSkipSideEffects } from '@/payload/utilities/hookContext';
 
 const log = createLogger('autoTranslate');
 
@@ -43,6 +44,12 @@ export const autoTranslate: CollectionAfterChangeHook<
     return doc;
   }
 
+  // Defense in depth: translation writes never touch 'en', but this guarantees
+  // a translate job can never recursively queue another translate job.
+  if (shouldSkipSideEffects(req.context)) {
+    return doc;
+  }
+
   const { payload } = req;
 
   try {
@@ -75,6 +82,32 @@ export const autoTranslate: CollectionAfterChangeHook<
       log.info(
         { docId: doc.id, tenantId: tenant },
         'No target locales for translation; skipping',
+      );
+      return doc;
+    }
+
+    const pendingJobs = await payload.find({
+      collection: 'payload-jobs',
+      where: {
+        and: [
+          { taskSlug: { equals: 'translate' } },
+          { queue: { equals: 'translation' } },
+          { completedAt: { exists: false } },
+          { hasError: { not_equals: true } },
+        ],
+      },
+      limit: 50,
+      depth: 0,
+    });
+
+    const alreadyQueued = pendingJobs.docs.some(
+      (job) => (job.input as { tenantId?: string } | null)?.tenantId === doc.id,
+    );
+
+    if (alreadyQueued) {
+      log.info(
+        { docId: doc.id, tenantId: tenant },
+        'Translate job already pending for tenant; skipping duplicate queue',
       );
       return doc;
     }

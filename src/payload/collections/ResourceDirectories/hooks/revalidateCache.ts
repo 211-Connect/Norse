@@ -1,14 +1,28 @@
+import { PayloadRequest } from 'payload';
+
 import { parseHost } from '@/app/(app)/shared/utils/parseHost';
 import { cacheService } from '@/cacheService';
 import { createLogger } from '@/lib/logger';
 import { ResourceDirectory } from '@/payload/payload-types';
-import { CacheKey, clearMemoryCache } from '@/utilities/withCache';
+import { shouldSkipSideEffects } from '@/payload/utilities/hookContext';
+import { CacheKey, memoryCache } from '@/utilities/withCache';
 
 import { findTenantById } from '../../Tenants/actions';
 
 const log = createLogger('revalidateCache');
 
-export async function revalidateCache({ doc }): Promise<ResourceDirectory> {
+export async function revalidateCache({
+  doc,
+  req,
+}: {
+  doc: ResourceDirectory;
+  req?: PayloadRequest;
+}): Promise<ResourceDirectory> {
+  // Translation jobs write each locale individually; they run this once after all locales instead.
+  if (shouldSkipSideEffects(req?.context)) {
+    return doc;
+  }
+
   const tenantId = doc.tenant;
 
   if (typeof tenantId === 'string') {
@@ -16,12 +30,22 @@ export async function revalidateCache({ doc }): Promise<ResourceDirectory> {
       const tenant = await findTenantById(tenantId, false);
 
       if (tenant && tenant.trustedDomains) {
-        const cacheKeys = tenant.trustedDomains.map(({ domain }): CacheKey => {
+        const locales = tenant.enabledLocales?.length
+          ? tenant.enabledLocales
+          : ['en'];
+
+        for (const { domain } of tenant.trustedDomains) {
           const host = parseHost(domain);
-          return `resource_directory:${host}:*`;
-        });
-        for (const key of cacheKeys) {
-          await cacheService.delPattern(key);
+
+          await cacheService.delPattern(`resource_directory:${host}:*`);
+
+          // Redis is invalidated for every locale via delPattern above; only the
+          // per-process memory cache needs an explicit key per locale to avoid
+          // wiping every other tenant's entries (see incident 2026-08-13).
+          locales.forEach((locale) => {
+            const memoryCacheKey: CacheKey = `resource_directory:${host}:${locale}`;
+            memoryCache.delete(memoryCacheKey);
+          });
         }
       }
     } catch (error) {
@@ -31,8 +55,6 @@ export async function revalidateCache({ doc }): Promise<ResourceDirectory> {
       );
     }
   }
-
-  clearMemoryCache();
 
   return doc;
 }

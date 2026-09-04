@@ -53,6 +53,11 @@ export const clearMemoryCache = () => {
   memoryCache.clear();
 };
 
+// Deduplicates concurrent cache misses for the same key so a burst of
+// requests (e.g. right after an invalidation) triggers one fetch, not one
+// per request.
+const inFlightFetches = new Map<CacheKey, Promise<unknown>>();
+
 export const withCache = async <T>(
   key: CacheKey,
   fetchFunction: () => Promise<T>,
@@ -110,29 +115,48 @@ export const withCache = async <T>(
     }
   }
 
-  const value = await fetchFunction();
-
-  if (value != null && shouldCache(value)) {
-    const serialized = JSON.stringify(value);
-
-    if (redis) {
-      try {
-        await cacheService.set(key, serialized, config.ttl ?? FIFTEEN_MINUTES);
-      } catch (error) {
-        log.error({ err: error, key }, 'Error writing to Redis cache');
-      }
-    }
-
-    if (memory) {
-      try {
-        memoryCache.set(key, serialized);
-      } catch (error) {
-        log.error({ err: error, key }, 'Error writing to memory cache');
-      }
-    }
+  const existingFetch = inFlightFetches.get(key);
+  if (existingFetch) {
+    return (await existingFetch) as T;
   }
 
-  return value;
+  const fetchPromise = (async (): Promise<T> => {
+    const value = await fetchFunction();
+
+    if (value != null && shouldCache(value)) {
+      const serialized = JSON.stringify(value);
+
+      if (redis) {
+        try {
+          await cacheService.set(
+            key,
+            serialized,
+            config.ttl ?? FIFTEEN_MINUTES,
+          );
+        } catch (error) {
+          log.error({ err: error, key }, 'Error writing to Redis cache');
+        }
+      }
+
+      if (memory) {
+        try {
+          memoryCache.set(key, serialized);
+        } catch (error) {
+          log.error({ err: error, key }, 'Error writing to memory cache');
+        }
+      }
+    }
+
+    return value;
+  })();
+
+  inFlightFetches.set(key, fetchPromise);
+
+  try {
+    return await fetchPromise;
+  } finally {
+    inFlightFetches.delete(key);
+  }
 };
 
 /**
