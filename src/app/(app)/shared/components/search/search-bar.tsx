@@ -5,7 +5,7 @@ import { SearchIcon } from 'lucide-react';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useTaxonomies } from '../../hooks/api/use-taxonomies';
+import { useSearchSuggestions } from '../../hooks/api/use-search-suggestions';
 import { useAppConfig } from '../../hooks/use-app-config';
 import { useDebounce } from '../../hooks/use-debounce';
 import { useFlag } from '../../hooks/use-flag';
@@ -32,9 +32,14 @@ export function SearchBar({
   const searchTerm = useAtomValue(searchTermAtom);
   const debouncedSearchTerm = useDebounce(searchTerm, SEARCH_DEBOUNCE_DELAY);
   const { setSearch } = useMainSearchLayoutContext();
-  const { displayData: taxonomiesDisplay } = useTaxonomies(debouncedSearchTerm);
+  const { taxonomies: taxonomiesDisplay, organizations: organizationsDisplay } =
+    useSearchSuggestions(debouncedSearchTerm);
 
   const showTaxonomyBadge = useFlag('showSuggestionListTaxonomyBadge');
+  const enableOrganizationSearch = useFlag('enableOrganizationSearch');
+  const showOrganizationLocationBadge = useFlag(
+    'showSuggestionListOrganizationLocationBadge',
+  );
   const suggestions = appConfig.suggestions;
   const topics = appConfig.topics;
 
@@ -46,6 +51,8 @@ export function SearchBar({
       suggestionHeaders?.categories || t('search.categories');
     const taxonomiesGroup =
       suggestionHeaders?.taxonomies || t('search.taxonomies');
+    const organizationsGroup =
+      suggestionHeaders?.organizations || t('search.organizations');
 
     const normalizedSearchTerm = searchTerm.trim().toLowerCase();
 
@@ -97,19 +104,37 @@ export function SearchBar({
       }),
     );
 
+    const organizationList: AutocompleteOption[] = enableOrganizationSearch
+      ? organizationsDisplay.map((org) => ({
+          group: organizationsGroup,
+          value: org.name,
+          query: org.name,
+          badge:
+            showOrganizationLocationBadge && org.city
+              ? `${org.city}${org.state ? `, ${org.state}` : ''}`
+              : undefined,
+          queryType: 'organization',
+        }))
+      : [];
+
     const atLeastTwo =
-      [suggestionList, topicList, taxonomyList].filter((a) => a.length)
-        .length >= 2;
+      [suggestionList, topicList, taxonomyList, organizationList].filter(
+        (a) => a.length,
+      ).length >= 2;
 
     return [
       ...suggestionList.filter((_, index) => !(atLeastTwo && index > 5)),
       ...topicList.filter((_, index) => !(atLeastTwo && index > 5)),
       ...taxonomyList.filter((_, index) => !(atLeastTwo && index > 5)),
+      ...organizationList.filter((_, index) => !(atLeastTwo && index > 5)),
     ];
   }, [
     suggestions,
     topics,
     taxonomiesDisplay,
+    organizationsDisplay,
+    enableOrganizationSearch,
+    showOrganizationLocationBadge,
     appConfig.search.texts?.suggestionHeaders,
     t,
     searchTerm,

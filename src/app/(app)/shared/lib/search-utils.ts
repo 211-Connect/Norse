@@ -154,6 +154,7 @@ export enum QueryType {
   Text = 'text',
   Hybrid = 'hybrid',
   Taxonomy = 'taxonomy',
+  Organization = 'organization',
   MoreLikeThis = 'more_like_this',
 }
 
@@ -188,6 +189,10 @@ export function deriveQueryType({
   originQueryType,
   query,
 }: DeriveQueryTypeArgs): QueryType {
+  if (originQueryType === 'organization') {
+    return QueryType.Organization;
+  }
+
   if (originQueryType === 'taxonomy') {
     return QueryType.Taxonomy;
   }

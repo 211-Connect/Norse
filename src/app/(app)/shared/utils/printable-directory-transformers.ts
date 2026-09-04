@@ -1,7 +1,7 @@
 import { getPrintableDirectoryLocalizedText } from '@/app/(app)/features/printable-directories/utils/getPrintableDirectoryLocalizedText';
 import {
-  FavoriteResourceOpenApiDto,
   ResourceTranslationOpenApiDto,
+  TransformedResourceOpenApiDto,
   type PrintableDirectoryPreviewResponseDto,
   type PrintableDirectoryPreviewSectionResourceDto,
 } from '@/lib/api/generated/data-contracts';
@@ -127,20 +127,15 @@ const getTranslationStringValue = (
 /**
  * Transforms a favorite list with its items into a printable directory format
  */
-export function favoriteListToPrintableDirectory(
-  favoriteList: {
-    name: string;
-    favorites?: (Favorite | FavoriteResourceOpenApiDto)[];
-  },
-  locale: string,
-): PrintableDirectoryData {
+export function favoriteListToPrintableDirectory(favoriteList: {
+  name: string;
+  favorites?: (Favorite | TransformedResourceOpenApiDto)[];
+}): PrintableDirectoryData {
   return {
     name: favoriteList.name,
     items:
       favoriteList.favorites?.map((favorite) => {
-        const translation = favorite.translations?.find(
-          (translationItem) => translationItem.locale === locale,
-        );
+        const translation = favorite.translation;
         const primaryAddress = favorite.addresses?.find(
           (address) => address.rank === 1 && address.type === 'physical',
         );

@@ -45,6 +45,7 @@ export type AppConfig = {
   } | null;
   featureFlags: {
     enablePrintableDirectories: boolean;
+    enableOrganizationSearch: boolean;
     requireUserLocation: boolean;
     showAgeFilter: boolean;
     showFeedbackButtonGlobal: boolean;
@@ -53,6 +54,7 @@ export type AppConfig = {
     showPrintButton: boolean;
     showSearchAndResourceServiceName: boolean;
     showSuggestionListTaxonomyBadge: boolean;
+    showSuggestionListOrganizationLocationBadge: boolean;
     showUseMyLocationButtonOnDesktop: boolean;
     turnResourceCardTaxonomiesIntoLinks: boolean;
     requireAuthenticationForFavorites: boolean;
@@ -141,6 +143,7 @@ export type AppConfig = {
         suggestions?: string;
         categories?: string;
         taxonomies?: string;
+        organizations?: string;
       };
       viewDetailsText?: string;
       viewDetailsButtonVariant?: 'default' | 'secondary' | 'ghost' | 'link';

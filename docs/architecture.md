@@ -86,7 +86,9 @@ location, calls `findResources` (legacy/classic+hybrid path) or the v2
 geospatial path, then renders `SearchPageShell`. Search result cards and the
 resource detail page render a tenant-configured list of layout components
 (`cardLayout` / resource `leftColumn`/`rightColumn`) resolved through a
-component registry — see the "parallel component systems" note above.
+component registry — see the "parallel component systems" note above. See
+[docs/search.md](/docs/search.md) for the full autocomplete/`queryType`
+architecture, including the organization search flow.
 
 ## Norse API
 

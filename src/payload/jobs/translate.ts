@@ -35,7 +35,11 @@ const SEARCH_TEXT_FIELDS = [
   'noResultsFallbackText',
 ] as const;
 
-const SEARCH_SUGGESTION_HEADER_FIELDS = ['suggestions', 'taxonomies'] as const;
+const SEARCH_SUGGESTION_HEADER_FIELDS = [
+  'suggestions',
+  'taxonomies',
+  'organizations',
+] as const;
 
 const HEADER_TEXT_FIELDS = [
   'favoritesButtonLabel',

@@ -13,4 +13,5 @@ export type HybridSearchConfigCache = {
   taxonomy_k: number | null;
   taxonomy_num_candidates: number | null;
   boost_pinned_resources: boolean;
+  enable_organization_search: boolean;
 };
