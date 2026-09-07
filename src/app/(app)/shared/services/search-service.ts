@@ -28,6 +28,7 @@ export type FindResourcesQuery = {
   query?: string;
   queryLabel?: string;
   queryType?: string;
+  organizationId?: string;
   taxonomy?: string[];
   location?: string;
   coordinates?: number[];
@@ -170,6 +171,7 @@ async function findResourcesOrigin({
       ...(query.query?.trim() && { query: query.query.trim() }),
       ...(query.queryLabel?.trim() && { query_label: query.queryLabel.trim() }),
       query_type: resolvedQueryType,
+      ...(query.organizationId && { organization_id: query.organizationId }),
       ...(Array.isArray(query.taxonomy) &&
         query.taxonomy.length > 0 && { taxonomy: query.taxonomy.join(',') }),
       ...(query.location?.trim() && { location: query.location.trim() }),

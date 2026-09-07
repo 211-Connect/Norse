@@ -46,6 +46,24 @@ export const featureFlags: Tab = {
       },
     },
     {
+      name: 'enableOrganizationSearch',
+      type: 'checkbox',
+      defaultValue: false,
+      access: {
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
+      },
+    },
+    {
+      name: 'showSuggestionListOrganizationLocationBadge',
+      type: 'checkbox',
+      defaultValue: false,
+      access: {
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
+      },
+    },
+    {
       name: 'showUseMyLocationButtonOnDesktop',
       type: 'checkbox',
       defaultValue: false,

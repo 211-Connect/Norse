@@ -11,8 +11,8 @@
  */
 
 import {
-  SuggestionControllerGetTaxonomiesData,
-  SuggestionControllerGetTaxonomiesParams,
+  SuggestionControllerGetSuggestionsData,
+  SuggestionControllerGetSuggestionsParams,
   SuggestionControllerGetTaxonomyTermsByCodeData,
   SuggestionControllerGetTaxonomyTermsByCodeParams,
 } from "./data-contracts";
@@ -25,17 +25,18 @@ export class Suggestion<
    * No description
    *
    * @tags Suggestion
-   * @name SuggestionControllerGetTaxonomies
+   * @name SuggestionControllerGetSuggestions
    * @request GET:/suggestion
    */
-  suggestionControllerGetTaxonomies = (
-    query: SuggestionControllerGetTaxonomiesParams = {},
+  suggestionControllerGetSuggestions = (
+    query: SuggestionControllerGetSuggestionsParams = {},
     params: RequestParams = {},
   ) =>
-    this.request<SuggestionControllerGetTaxonomiesData, any>({
+    this.request<SuggestionControllerGetSuggestionsData, any>({
       path: `/suggestion`,
       method: "GET",
       query: query,
+      format: "json",
       ...params,
     });
   /**

@@ -862,6 +862,10 @@ export interface ResourceDirectory {
          * Shown above taxonomy matches in the autocomplete dropdown. This can be renamed to terms like Services.
          */
         taxonomies?: string | null;
+        /**
+         * Shown above organization matches in the autocomplete dropdown. Only visible when the Enable Organization Search feature flag is on.
+         */
+        organizations?: string | null;
       };
       viewDetailsText?: string | null;
       /**
@@ -1003,6 +1007,8 @@ export interface ResourceDirectory {
     requireUserLocation?: boolean | null;
     showSearchAndResourceServiceName?: boolean | null;
     showSuggestionListTaxonomyBadge?: boolean | null;
+    enableOrganizationSearch?: boolean | null;
+    showSuggestionListOrganizationLocationBadge?: boolean | null;
     showUseMyLocationButtonOnDesktop?: boolean | null;
     showPrintButton?: boolean | null;
     turnResourceCardTaxonomiesIntoLinks?: boolean | null;
@@ -1706,6 +1712,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
                     suggestions?: T;
                     categories?: T;
                     taxonomies?: T;
+                    organizations?: T;
                   };
               viewDetailsText?: T;
               viewDetailsButtonVariant?: T;
@@ -1826,6 +1833,8 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         requireUserLocation?: T;
         showSearchAndResourceServiceName?: T;
         showSuggestionListTaxonomyBadge?: T;
+        enableOrganizationSearch?: T;
+        showSuggestionListOrganizationLocationBadge?: T;
         showUseMyLocationButtonOnDesktop?: T;
         showPrintButton?: T;
         turnResourceCardTaxonomiesIntoLinks?: T;

@@ -240,42 +240,6 @@ export interface ResourceTranslationOpenApiDto {
   attributeValues?: Record<string, any>;
 }
 
-export interface FavoriteResourceOpenApiDto {
-  _id: string;
-  originalId?: string;
-  displayName?: string;
-  displayPhoneNumber?: string;
-  website?: string;
-  organizationUrl?: string;
-  email?: string;
-  organizationName?: string;
-  location?: ResourceLocationOpenApiDto;
-  addresses?: ResourceAddressOpenApiDto[];
-  phoneNumbers?: ResourcePhoneNumberOpenApiDto[];
-  languages?: string[];
-  attribution?: string;
-  createdAt?: string;
-  updatedAt?: string;
-  lastAssuredDate?: string;
-  tenantId?: string;
-  tenant_id?: string;
-  translations?: ResourceTranslationOpenApiDto[];
-}
-
-export interface FavoriteListDetailResponseDto {
-  id: string;
-  name: string;
-  description: string;
-  privacy: string;
-  ownerId: string;
-  /** Whether the list contains the specified resource (only present when resource_id is provided) */
-  containsResource?: boolean;
-  /** Populated favorites (resources) */
-  favorites: FavoriteResourceOpenApiDto[];
-}
-
-export type UpdateFavoriteListDto = object;
-
 export interface ResourceFacetOpenApiDto {
   code?: string;
   taxonomyName?: string;
@@ -306,6 +270,20 @@ export interface TransformedResourceOpenApiDto {
   translation?: ResourceTranslationOpenApiDto;
   facetsEn?: ResourceFacetOpenApiDto[];
 }
+
+export interface FavoriteListDetailResponseDto {
+  id: string;
+  name: string;
+  description: string;
+  privacy: string;
+  ownerId: string;
+  /** Whether the list contains the specified resource (only present when resource_id is provided) */
+  containsResource?: boolean;
+  /** Resolved favorite resources */
+  favorites: TransformedResourceOpenApiDto[];
+}
+
+export type UpdateFavoriteListDto = object;
 
 export interface ResourceTitlesDto {
   /**
@@ -376,6 +354,97 @@ export interface ResourceBatchResponseDto {
   errors: ResourceBatchErrorDto[];
   /** Metadata about the batch operation */
   meta: ResourceBatchMetaDto;
+}
+
+export interface OrganizationSuggestionItemDto {
+  organization_id: string;
+  name: string;
+  city: string | null;
+  state: string | null;
+}
+
+export interface SuggestionCombinedResponseDto {
+  taxonomies: TaxonomyItemDto[];
+  organizations: OrganizationSuggestionItemDto[];
+}
+
+export interface OrganizationLocationDto {
+  address_1: string | null;
+  city: string | null;
+  state: string | null;
+  postal_code: string | null;
+}
+
+export interface OrganizationSearchSourceDto {
+  organization_id: string;
+  tenant_id: string;
+  resource_writer_id: string;
+  name: string;
+  alternate_name: string | null;
+  email: string | null;
+  website: string | null;
+  phone: string | null;
+  location: OrganizationLocationDto | null;
+}
+
+export interface OrganizationSearchHitDto {
+  _index: string;
+  _id: string;
+  _score: number | null;
+  _source: OrganizationSearchSourceDto;
+}
+
+export interface OrganizationSearchResponseDto {
+  took: number;
+  timed_out: boolean;
+  total: number;
+  page: number;
+  limit: number;
+  hits: OrganizationSearchHitDto[];
+}
+
+export interface TranslationDto {
+  ID: string | null;
+  LOCALE: string | null;
+  DESCRIPTION: string | null;
+  IS_CANONICAL: boolean | null;
+}
+
+export interface PhoneDto {
+  ID: string;
+  NUMBER: string | null;
+  TYPE: string | null;
+  TRANSLATIONS: TranslationDto[];
+}
+
+export interface ContactDto {
+  ID: string;
+  NAME: string | null;
+  TITLE: string | null;
+  EMAIL: string | null;
+}
+
+export interface OrganizationDetailResponseDto {
+  organizationId: string | null;
+  resourceWriterId: string | null;
+  tenant_id: string;
+  name: string;
+  alternateName: string | null;
+  email: string | null;
+  website: string | null;
+  taxStatus: string | null;
+  tax_status: string | null;
+  legalStatus: string | null;
+  parentOrganizationId: string | null;
+  translations: TranslationDto[];
+  phones: PhoneDto[];
+  contacts: ContactDto[];
+  locations: LocationDto[];
+  /** HSDS services. Use SERVICE_AT_LOCATIONS[].ID with POST /resource/batch for service-at-location detail. */
+  services: ServiceDto[];
+  programs?: object[];
+  funding?: object[];
+  organizationIdentifiers?: object[];
 }
 
 export interface ForwardGeocodeResponseDto {
@@ -817,11 +886,6 @@ export interface SearchEventExportRow {
    */
   timestamp: string;
   /**
-   * Anonymized, unique identifier for the user who performed the search. Derived by one-way hashing a client-generated anonymous identifier; contains no personally identifiable information.
-   * @example "a3f9c2b1e4d6f0a8b7c5d3e1"
-   */
-  userId: string | null;
-  /**
    * Anonymized, unique identifier for the browsing session in which the search was performed. Derived by one-way hashing a client-generated anonymous identifier; contains no personally identifiable information.
    * @example "b7e1d4a9c2f8036e5b1a9d0c"
    */
@@ -1178,7 +1242,12 @@ export interface SearchQueryApiDto {
    */
   query?: string | string[] | Record<string, any>;
   /** @default "text" */
-  query_type?: "text" | "taxonomy" | "more_like_this" | "hybrid";
+  query_type?:
+    | "text"
+    | "taxonomy"
+    | "more_like_this"
+    | "hybrid"
+    | "organization";
   /**
    * @min 1
    * @default 1
@@ -1581,41 +1650,6 @@ export interface PrintableDirectoryPreviewResponseDto {
   generatedAt: string;
 }
 
-export interface OrganizationLocationDto {
-  address_1: string | null;
-  city: string | null;
-  state: string | null;
-  postal_code: string | null;
-}
-
-export interface OrganizationSearchSourceDto {
-  organization_id: string;
-  tenant_id: string;
-  resource_writer_id: string;
-  name: string;
-  alternate_name: string | null;
-  email: string | null;
-  website: string | null;
-  phone: string | null;
-  location: OrganizationLocationDto | null;
-}
-
-export interface OrganizationSearchHitDto {
-  _index: string;
-  _id: string;
-  _score: number | null;
-  _source: OrganizationSearchSourceDto;
-}
-
-export interface OrganizationSearchResponseDto {
-  took: number;
-  timed_out: boolean;
-  total: number;
-  page: number;
-  limit: number;
-  hits: OrganizationSearchHitDto[];
-}
-
 export interface OrchestrationConfigControllerGetCustomAttributesParams {
   /**
    * Optional schema name to filter custom attributes
@@ -1724,7 +1758,12 @@ export type TaxonomyControllerGetTaxonomyTermsByCodeData = any;
 
 export interface SearchControllerGetResourcesParams {
   /** @default "text" */
-  query_type?: "text" | "taxonomy" | "more_like_this" | "hybrid";
+  query_type?:
+    | "text"
+    | "taxonomy"
+    | "more_like_this"
+    | "hybrid"
+    | "organization";
   /** @default 1 */
   page?: any;
   /** Comma delimited list of longitude,latitude */
@@ -1733,6 +1772,7 @@ export interface SearchControllerGetResourcesParams {
   /** Comma-delimited HSIS taxonomy codes used as a hard scope for hybrid search (e.g. BM-1400,BM-1700) */
   taxonomy?: string | string[];
   /**
+   * Radius in miles. Only takes effect when `coords` is also set.
    * @min 0
    * @default 0
    */
@@ -1748,6 +1788,7 @@ export interface SearchControllerGetResourcesParams {
    * @default 25
    */
   limit?: number;
+  /** Controls how coords/distance combine with a resource's declared service_area. Omitted (default): a result must be within `distance` of `coords` AND have a service_area that geographically contains the exact `coords` point — both required. `proximity`: skips the service_area check; returns anything within `distance` of `coords`. `boundary`: ignores `coords`/`distance` and instead requires a GeoJSON `geometry` in the POST body — matches any resource whose service_area intersects that shape; POST only, 400s on GET without a body. */
   geo_type?: "boundary" | "proximity";
   /**
    * Sort order: relevance (default), distance (requires coords), name (alphabetical by resource name), organization (alphabetical by provider name)
@@ -1769,7 +1810,12 @@ export interface SearchControllerGetResourcesPostPayload {
 
 export interface SearchControllerGetResourcesPostParams {
   /** @default "text" */
-  query_type?: "text" | "taxonomy" | "more_like_this" | "hybrid";
+  query_type?:
+    | "text"
+    | "taxonomy"
+    | "more_like_this"
+    | "hybrid"
+    | "organization";
   /** @default 1 */
   page?: any;
   /** Comma delimited list of longitude,latitude */
@@ -1778,6 +1824,7 @@ export interface SearchControllerGetResourcesPostParams {
   /** Comma-delimited HSIS taxonomy codes used as a hard scope for hybrid search (e.g. BM-1400,BM-1700) */
   taxonomy?: string | string[];
   /**
+   * Radius in miles. Only takes effect when `coords` is also set.
    * @min 0
    * @default 0
    */
@@ -1793,6 +1840,7 @@ export interface SearchControllerGetResourcesPostParams {
    * @default 25
    */
   limit?: number;
+  /** Controls how coords/distance combine with a resource's declared service_area. Omitted (default): a result must be within `distance` of `coords` AND have a service_area that geographically contains the exact `coords` point — both required. `proximity`: skips the service_area check; returns anything within `distance` of `coords`. `boundary`: ignores `coords`/`distance` and instead requires a GeoJSON `geometry` in the POST body — matches any resource whose service_area intersects that shape. */
   geo_type?: "boundary" | "proximity";
   /**
    * Sort order: relevance (default), distance (requires coords), name (alphabetical by resource name), organization (alphabetical by provider name)
@@ -2018,17 +2066,12 @@ export interface ResourceControllerGetResourcesBatchParams {
 
 export type ResourceControllerGetResourcesBatchData = ResourceBatchResponseDto;
 
-export interface SuggestionControllerGetTaxonomiesParams {
+export interface SuggestionControllerGetSuggestionsParams {
   /**
    * Search query for taxonomy name or code
    * @default ""
    */
   query?: string;
-  /**
-   * Taxonomy code filter
-   * @deprecated
-   */
-  code?: string;
   /**
    * Page number for pagination
    * @default 1
@@ -2040,7 +2083,8 @@ export interface SuggestionControllerGetTaxonomiesParams {
   tenant_id?: string;
 }
 
-export type SuggestionControllerGetTaxonomiesData = any;
+export type SuggestionControllerGetSuggestionsData =
+  SuggestionCombinedResponseDto;
 
 export interface SuggestionControllerGetTaxonomyTermsByCodeParams {
   /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
@@ -2050,6 +2094,36 @@ export interface SuggestionControllerGetTaxonomyTermsByCodeParams {
 }
 
 export type SuggestionControllerGetTaxonomyTermsByCodeData = any;
+
+export interface OrganizationControllerSearchParams {
+  /**
+   * @min 1
+   * @max 50
+   * @default 10
+   */
+  limit?: any;
+  /**
+   * @min 1
+   * @default 1
+   */
+  page?: any;
+  /** Organization name prefix or text for typeahead search */
+  query: any;
+}
+
+export type OrganizationControllerSearchData = OrganizationSearchResponseDto;
+
+export interface OrganizationControllerGetOrganizationByIdParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  /** Public organizationId */
+  id: string;
+}
+
+export type OrganizationControllerGetOrganizationByIdData =
+  OrganizationDetailResponseDto;
 
 export interface GeocodingControllerForwardGeocodeParams {
   /**
@@ -2666,21 +2740,3 @@ export interface PrintableDirectoryPublicControllerPreviewParams {
 
 export type PrintableDirectoryPublicControllerPreviewData =
   PrintableDirectoryPreviewResponseDto;
-
-export interface OrganizationControllerSearchParams {
-  /**
-   * @min 1
-   * @max 50
-   * @default 10
-   */
-  limit?: any;
-  /**
-   * @min 1
-   * @default 1
-   */
-  page?: any;
-  /** Organization name prefix or text for typeahead search */
-  query: any;
-}
-
-export type OrganizationControllerSearchData = OrganizationSearchResponseDto;

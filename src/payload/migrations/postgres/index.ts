@@ -71,6 +71,7 @@ import * as migration_20260807_101853 from './20260807_101853';
 import * as migration_20260817_121855 from './20260817_121855';
 import * as migration_20260824_143128_add_tenant_seo_noindex from './20260824_143128_add_tenant_seo_noindex';
 import * as migration_20260825_075527_add_tenant_auth_public_pages from './20260825_075527_add_tenant_auth_public_pages';
+import * as migration_20260904_071935 from './20260904_071935';
 
 export const migrations = [
   {
@@ -437,5 +438,10 @@ export const migrations = [
     up: migration_20260825_075527_add_tenant_auth_public_pages.up,
     down: migration_20260825_075527_add_tenant_auth_public_pages.down,
     name: '20260825_075527_add_tenant_auth_public_pages',
+  },
+  {
+    up: migration_20260904_071935.up,
+    down: migration_20260904_071935.down,
+    name: '20260904_071935',
   },
 ];

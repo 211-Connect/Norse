@@ -154,6 +154,21 @@ export const search: Tab = {
                         update: superAdminOrSupportOrTenantAccess,
                       },
                     },
+                    {
+                      name: 'organizations',
+                      label: 'Organizations Heading',
+                      type: 'text',
+                      localized: true,
+                      admin: {
+                        placeholder: 'Organizations',
+                        description:
+                          'Shown above organization matches in the autocomplete dropdown. Only visible when the Enable Organization Search feature flag is on.',
+                      },
+                      access: {
+                        create: superAdminOrSupportOrTenantAccess,
+                        update: superAdminOrSupportOrTenantAccess,
+                      },
+                    },
                   ],
                 },
               ],
