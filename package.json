@@ -95,7 +95,7 @@
     "cookies-next": "^6.1.0",
     "cors": "^2.8.6",
     "cross-env": "^10.1.0",
-    "dayjs": "^1.11.21",
+    "dayjs": "^1.11.23",
     "dotenv": "^17.4.2",
     "dotenv-cli": "^11.0.0",
     "embla-carousel-autoplay": "^8.6.0",
