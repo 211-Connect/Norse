@@ -100,7 +100,7 @@
     "dotenv-cli": "^11.0.0",
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
-    "globals": "^17.9.0",
+    "globals": "^17.11.0",
     "html-react-parser": "^6.1.1",
     "html-to-text": "^10.0.0",
     "i18next": "^26.2.0",
