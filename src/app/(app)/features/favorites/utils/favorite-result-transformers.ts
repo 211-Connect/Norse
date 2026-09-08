@@ -36,6 +36,7 @@ export function favoriteToResult(
     _id: favorite._id,
     id: favorite._id,
     alert: translation?.alert ?? null,
+    alertDate: translation?.alertDate ?? null,
     address: displayAddress ?? '',
     summary:
       translation?.serviceSummary ?? translation?.serviceDescription ?? '',
@@ -67,6 +68,7 @@ export function resourceToLocalFavoriteResult(
     _id: resource.id,
     id: resource.id,
     alert: resource.alert,
+    alertDate: resource.alertDate ?? null,
     address: resource.address ?? '',
     summary: resource.description ?? '',
     description: resource.description ?? '',
