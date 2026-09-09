@@ -4573,8 +4573,8 @@
           "notNull": false,
           "default": false
         },
-        "feature_flags_show_suggestion_list_organization_location_badge": {
-          "name": "feature_flags_show_suggestion_list_organization_location_badge",
+        "feature_flags_show_organization_location_badge": {
+          "name": "feature_flags_show_organization_location_badge",
           "type": "boolean",
           "primaryKey": false,
           "notNull": false,
@@ -8513,8 +8513,8 @@
           "notNull": false,
           "default": false
         },
-        "version_feature_flags_show_suggestion_list_organization_location_badge": {
-          "name": "version_feature_flags_show_suggestion_list_organization_location_badge",
+        "version_feature_flags_show_organization_location_badge": {
+          "name": "version_feature_flags_show_organization_location_badge",
           "type": "boolean",
           "primaryKey": false,
           "notNull": false,
