@@ -9,13 +9,16 @@ import {
   expect,
   expectAuthenticatedShell,
   expectPageUrl,
+  filterFavoriteListsByName,
   getFavoritesDialogListActionButton,
   goHome,
   goToFavorites,
   loginViaKeycloak,
   openFavoritesDialogForList,
+  openFavoriteListByName,
   openShareDialogAndGetShortUrl,
   openShortUrlInNewPage,
+  removeAllResourcesFromListPage,
   removeFirstResourceFromListPage,
   removeFromListViaDialog,
   resetLocalFavoritesStorage,
@@ -120,9 +123,13 @@ test.describe('Favorites Feature (Authenticated)', () => {
   }) => {
     await goToFavorites(page);
 
-    const listCard = page.getByText(listName).first();
-    await listCard.click();
+    await openFavoriteListByName(page, listName);
     await waitForFavoriteListPage(page);
+
+    // Ensure the list is empty before asserting the empty state. A previous
+    // failed run may have left favorites behind; remove them one-by-one so
+    // this test can stand on its own.
+    await removeAllResourcesFromListPage(page);
 
     await expect(page.getByText(/nothing here yet/i)).toBeVisible({
       timeout: ASYNC_UI_TIMEOUT_MS,
@@ -145,9 +152,7 @@ test.describe('Favorites Feature (Authenticated)', () => {
     // Navigate to the favorites list and verify the resource is there
     await goToFavorites(page);
 
-    const listCard = page.getByText(listName).first();
-    await listCard.click();
-
+    await openFavoriteListByName(page, listName);
     await waitForFavoriteListPage(page);
     await expect(page.getByText(listName).first()).toBeVisible();
     await expect(page.getByText(listDescription).first()).toBeVisible();
@@ -181,8 +186,7 @@ test.describe('Favorites Feature (Authenticated)', () => {
   }) => {
     await goToFavorites(page);
 
-    const updatedCard = page.getByText(updatedListName).first();
-    await updatedCard.click();
+    await openFavoriteListByName(page, updatedListName);
     await waitForFavoriteListPage(page);
 
     // Verify the resource is present before removal
@@ -211,8 +215,7 @@ test.describe('Favorites Feature (Authenticated)', () => {
 
     // Verify it's not in the list
     await goToFavorites(page);
-    const listCard = page.getByText(updatedListName).first();
-    await listCard.click();
+    await openFavoriteListByName(page, updatedListName);
     await waitForFavoriteListPage(page);
 
     await waitForFavoriteToBeAbsentOnListPage(page, resourceName);
@@ -239,8 +242,7 @@ test.describe('Favorites Feature (Authenticated)', () => {
 
     // Verify it's in the list
     await goToFavorites(page);
-    const listCard = page.getByText(updatedListName).first();
-    await listCard.click();
+    await openFavoriteListByName(page, updatedListName);
     await waitForFavoriteListPage(page);
 
     await waitForFavoriteOnListPage(page, resourceName);
@@ -294,8 +296,7 @@ test.describe('Favorites Feature (Authenticated)', () => {
     await closeFavoritesDialog(page);
 
     await goToFavorites(page);
-    const listCard = page.getByText(updatedListName).first();
-    await listCard.click();
+    await openFavoriteListByName(page, updatedListName);
     await waitForFavoriteListPage(page);
 
     await expect
@@ -343,6 +344,8 @@ test.describe('Favorites Feature (Authenticated)', () => {
 
   test('should cancel deleting the favorite list', async ({ page }) => {
     await goToFavorites(page);
+
+    await filterFavoriteListsByName(page, updatedListName);
 
     const card = page.getByTestId('favorite-list-card').filter({
       has: page.getByRole('link', { name: updatedListName, exact: true }),
@@ -401,8 +404,7 @@ test.describe('Favorites Feature (Authenticated)', () => {
       timeout: ASYNC_UI_TIMEOUT_MS,
     });
 
-    const listCard = page.getByText(publicListName).first();
-    await listCard.click();
+    await openFavoriteListByName(page, publicListName);
     await waitForFavoriteListPage(page);
 
     const shortUrl = await openShareDialogAndGetShortUrl(page);
