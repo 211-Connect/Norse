@@ -54,7 +54,7 @@ export type AppConfig = {
     showPrintButton: boolean;
     showSearchAndResourceServiceName: boolean;
     showSuggestionListTaxonomyBadge: boolean;
-    showSuggestionListOrganizationLocationBadge: boolean;
+    showOrganizationLocationBadge: boolean;
     showUseMyLocationButtonOnDesktop: boolean;
     turnResourceCardTaxonomiesIntoLinks: boolean;
     requireAuthenticationForFavorites: boolean;

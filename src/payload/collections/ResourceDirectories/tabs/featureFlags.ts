@@ -55,7 +55,7 @@ export const featureFlags: Tab = {
       },
     },
     {
-      name: 'showSuggestionListOrganizationLocationBadge',
+      name: 'showOrganizationLocationBadge',
       type: 'checkbox',
       defaultValue: false,
       access: {

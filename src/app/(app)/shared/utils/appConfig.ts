@@ -239,7 +239,7 @@ async function getAppConfigBase(
         showPrintButton: false,
         showSearchAndResourceServiceName: false,
         showSuggestionListTaxonomyBadge: false,
-        showSuggestionListOrganizationLocationBadge: false,
+        showOrganizationLocationBadge: false,
         showUseMyLocationButtonOnDesktop: false,
         turnResourceCardTaxonomiesIntoLinks: true,
       },
@@ -414,9 +414,8 @@ async function getAppConfigBase(
       showSuggestionListTaxonomyBadge:
         resourceDirectory.featureFlags?.showSuggestionListTaxonomyBadge ??
         false,
-      showSuggestionListOrganizationLocationBadge:
-        resourceDirectory.featureFlags
-          ?.showSuggestionListOrganizationLocationBadge ?? false,
+      showOrganizationLocationBadge:
+        resourceDirectory.featureFlags?.showOrganizationLocationBadge ?? false,
       showUseMyLocationButtonOnDesktop:
         resourceDirectory.featureFlags?.showUseMyLocationButtonOnDesktop ??
         false,

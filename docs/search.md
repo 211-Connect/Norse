@@ -52,7 +52,7 @@ Every option in the dropdown (`AutocompleteOption`, in
   which of the above `query` is.
 - `badge` — optional secondary text shown next to the row (taxonomy code
   when `showSuggestionListTaxonomyBadge` is on; organization city/state when
-  `showSuggestionListOrganizationLocationBadge` is on).
+  `showOrganizationLocationBadge` is on).
 
 Selecting an option copies `query`/`queryType`/`value` into the shared
 `searchAtom` (via `setSearchTerm` in `search-bar.tsx`). **Clicking** an
@@ -140,7 +140,7 @@ tenant actually reports confusion from it.
 - `enableOrganizationSearch` (default off, per tenant) — gates whether the
   Organizations group ever renders and whether `organization` is ever used
   as a `queryType` in that tenant's UI.
-- `showSuggestionListOrganizationLocationBadge` (default off, per tenant) —
+- `showOrganizationLocationBadge` (default off, per tenant) —
   gates the city/state badge on organization rows. Mirrors
   `showSuggestionListTaxonomyBadge`'s role for taxonomy codes.
 

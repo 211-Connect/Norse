@@ -38,7 +38,7 @@ export function SearchBar({
   const showTaxonomyBadge = useFlag('showSuggestionListTaxonomyBadge');
   const enableOrganizationSearch = useFlag('enableOrganizationSearch');
   const showOrganizationLocationBadge = useFlag(
-    'showSuggestionListOrganizationLocationBadge',
+    'showOrganizationLocationBadge',
   );
   const suggestions = appConfig.suggestions;
   const topics = appConfig.topics;

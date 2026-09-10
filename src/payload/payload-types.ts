@@ -1008,7 +1008,7 @@ export interface ResourceDirectory {
     showSearchAndResourceServiceName?: boolean | null;
     showSuggestionListTaxonomyBadge?: boolean | null;
     enableOrganizationSearch?: boolean | null;
-    showSuggestionListOrganizationLocationBadge?: boolean | null;
+    showOrganizationLocationBadge?: boolean | null;
     showUseMyLocationButtonOnDesktop?: boolean | null;
     showPrintButton?: boolean | null;
     turnResourceCardTaxonomiesIntoLinks?: boolean | null;
@@ -1834,7 +1834,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         showSearchAndResourceServiceName?: T;
         showSuggestionListTaxonomyBadge?: T;
         enableOrganizationSearch?: T;
-        showSuggestionListOrganizationLocationBadge?: T;
+        showOrganizationLocationBadge?: T;
         showUseMyLocationButtonOnDesktop?: T;
         showPrintButton?: T;
         turnResourceCardTaxonomiesIntoLinks?: T;
