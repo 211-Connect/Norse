@@ -122,7 +122,7 @@ export function MainSearchLayout({
             </span>
           </Button>
           <SearchIcon
-            className="text-primary absolute top-2 left-4 size-6"
+            className="text-primary pointer-events-none absolute top-2 left-4 size-6"
             aria-hidden="true"
           />
         </div>

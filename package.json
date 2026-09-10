@@ -23,7 +23,8 @@
     "test:e2e:search-geocode": "npx playwright test --project=search-geocode",
     "test:e2e:search-taxonomy": "npx playwright test --project=search-taxonomy",
     "test:e2e:share-link": "npx playwright test --project=share-link",
-    "test:e2e:resource-direct-link": "npx playwright test --project=resource-direct-link"
+    "test:e2e:resource-direct-link": "npx playwright test --project=resource-direct-link",
+    "test:e2e:organization": "npx playwright test --project=organization"
   },
   "engines": {
     "node": "24.x"

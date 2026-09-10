@@ -27,11 +27,20 @@ export async function waitForPageStabilized(page: Page) {
 export async function goHome(page: Page) {
   const base = baseURL.endsWith('/') ? baseURL : `${baseURL}/`;
   const url = new URL(LOCALE, base).href;
+  // Wait for the full document 'load' event (not just DOMContentLoaded) so
+  // the app's React bundles have a chance to load and hydrate before we start
+  // clicking. Dev environments with heavy third-party scripts still complete
+  // 'load'; they just never reach 'networkidle'.
   await page.goto(url, {
     timeout: PAGE_LOAD_TIMEOUT_MS,
-    waitUntil: 'domcontentloaded',
+    waitUntil: 'load',
   });
-  await page.waitForLoadState('networkidle', { timeout: PAGE_LOAD_TIMEOUT_MS });
+  // Hydration/translation timing can be slower on dev deployments, so assert
+  // on the global header shell instead of a blanket networkidle.
+  await page.getByTestId('favorites-btn').waitFor({
+    state: 'visible',
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
 }
 
 export async function expectAuthenticatedShell(page: Page) {

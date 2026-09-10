@@ -3,7 +3,6 @@ import { type Page, expect } from '@playwright/test';
 import {
   ASYNC_UI_TIMEOUT_MS,
   FAVORITES_PERSISTENCE_TIMEOUT_MS,
-  PRESENCE_PROBE_TIMEOUT_MS,
   SEARCH_NAV_TIMEOUT_MS,
   UI_SHELL_TIMEOUT_MS,
   expectVisibleEventually,
@@ -267,6 +266,23 @@ export async function filterFavoriteListsByName(page: Page, listName: string) {
   const searchInput = page.getByTestId('list-search-input');
   await expect(searchInput).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
   await searchInput.fill(listName);
+
+  // The filter is debounced and then re-fetched server-side. Wait for the
+  // debounced router push to land in the URL before clicking the list link.
+  // Otherwise the pending `/favorites?search=...` update can race with the
+  // `/favorites/:id` navigation and leave us on the listing page.
+  await expect
+    .poll(
+      async () => {
+        try {
+          return new URL(page.url()).searchParams.get('search');
+        } catch {
+          return null;
+        }
+      },
+      { timeout: ASYNC_UI_TIMEOUT_MS },
+    )
+    .toBe(listName);
 
   // The filter is debounced and then re-fetched server-side. Wait for the
   // target card instead of a URL string, because URL encoding of the search

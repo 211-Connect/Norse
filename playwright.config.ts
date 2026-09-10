@@ -94,5 +94,13 @@ export default defineConfig({
       testMatch: ['**/search-resource-direct-link.spec.ts'],
       use: { ...devices['Desktop Chrome'], baseURL },
     },
+    {
+      name: 'organization',
+      testMatch: [
+        '**/search-organization.spec.ts',
+        '**/search-organization-direct-link.spec.ts',
+      ],
+      use: { ...devices['Desktop Chrome'], baseURL },
+    },
   ],
 });

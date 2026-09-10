@@ -30,6 +30,19 @@ export function isSearchResourceDetailUrl(url: URL): boolean {
 }
 
 /**
+ * True when the URL is an organization search results route:
+ * `.../search?organization_id={id}`.
+ */
+export function isSearchOrganizationResultsUrl(url: URL): boolean {
+  const segments = url.pathname.replace(/\/+$/, '').split('/').filter(Boolean);
+  return (
+    segments.length > 0 &&
+    segments.at(-1) === 'search' &&
+    url.searchParams.get('organization_id') !== null
+  );
+}
+
+/**
  * Use instead of `waitForURL` for in-app routes: resolves if the page is
  * already on a matching URL, and does not depend on a specific readystate.
  */
