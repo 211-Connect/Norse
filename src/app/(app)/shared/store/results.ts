@@ -6,6 +6,7 @@ export type ResultType = {
   _id: string;
   id: string;
   alert: string | null;
+  alertDate: string | null;
   address: string;
   summary: string;
   description: string;

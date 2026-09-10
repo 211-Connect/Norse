@@ -130,6 +130,7 @@
       "error": "Unable to save query to directory"
     }
   },
+  "alert_date": "Alert date",
   "message": {
     "list_deleted": "List deleted",
     "list_deleted_success": "Your list has been deleted.",
