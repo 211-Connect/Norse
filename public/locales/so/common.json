@@ -66,7 +66,8 @@
     "ai_show_more_categories": "Muuji qaybo badan",
     "ai_validation_select_or_skip": "Dooro ugu yaraan hal ikhtiyaar ama ka bood.",
     "ai_option_results_count_one": "{{count}} kheyraadka la xiriira",
-    "ai_option_results_count_other": "{{count}} kheyraadka la xiriira"
+    "ai_option_results_count_other": "{{count}} kheyraadka la xiriira",
+    "organizations": "Ururada"
   },
   "call_to_action": {
     "call": "Wac",

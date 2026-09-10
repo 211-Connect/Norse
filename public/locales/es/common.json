@@ -66,7 +66,8 @@
     "ai_show_more_categories": "Mostrar más categorías",
     "ai_validation_select_or_skip": "Seleccione al menos una opción o sáltese esta.",
     "ai_option_results_count_one": "{{count}} recurso relacionado",
-    "ai_option_results_count_other": "Recursos relacionados con {{count}}"
+    "ai_option_results_count_other": "Recursos relacionados con {{count}}",
+    "organizations": "Organizaciones"
   },
   "call_to_action": {
     "call": "Llamar",

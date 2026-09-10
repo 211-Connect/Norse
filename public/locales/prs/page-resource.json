@@ -31,5 +31,6 @@
   "location_name": "نام مکان",
   "resource_name": "نام منبع",
   "quality": "اطلاعات کیفیت",
-  "contacts": "اطلاعات تماس اضافی"
+  "contacts": "اطلاعات تماس اضافی",
+  "quality_others": "دیگران"
 }

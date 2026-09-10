@@ -31,5 +31,6 @@
   "location_name": "स्थानको नाम",
   "resource_name": "स्रोतको नाम",
   "quality": "गुणस्तर जानकारी",
-  "contacts": "थप सम्पर्क जानकारी"
+  "contacts": "थप सम्पर्क जानकारी",
+  "quality_others": "अन्य"
 }

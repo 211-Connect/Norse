@@ -31,5 +31,6 @@
   "location_name": "Sijainnin nimi",
   "resource_name": "Resurssin nimi",
   "quality": "Laadukas tieto",
-  "contacts": "Lisätietoja yhteystiedoista"
+  "contacts": "Lisätietoja yhteystiedoista",
+  "quality_others": "Muut"
 }

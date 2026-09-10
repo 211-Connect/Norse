@@ -66,7 +66,8 @@
     "ai_show_more_categories": "ተጨማሪ ምድቦችን አሳይ",
     "ai_validation_select_or_skip": "ቢያንስ አንድ አማራጭ ይምረጡ ወይም ይዝለሉ።",
     "ai_option_results_count_one": "{{count}} ተዛማጅ ግብዓት",
-    "ai_option_results_count_other": "{{count}} ተዛማጅ ግብዓቶች"
+    "ai_option_results_count_other": "{{count}} ተዛማጅ ግብዓቶች",
+    "organizations": "ድርጅቶች"
   },
   "call_to_action": {
     "call": "ይደውሉ",

@@ -66,7 +66,8 @@
     "ai_show_more_categories": "और श्रेणियां दिखाएं",
     "ai_validation_select_or_skip": "कम से कम एक विकल्प चुनें या छोड़ दें।",
     "ai_option_results_count_one": "{{count}} संबंधित संसाधन",
-    "ai_option_results_count_other": "{{count}} संबंधित संसाधन"
+    "ai_option_results_count_other": "{{count}} संबंधित संसाधन",
+    "organizations": "संगठनों"
   },
   "call_to_action": {
     "call": "पुकारना",

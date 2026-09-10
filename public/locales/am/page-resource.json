@@ -31,5 +31,6 @@
   "location_name": "የአካባቢ ስም",
   "resource_name": "የንብረት ስም",
   "quality": "የጥራት መረጃ",
-  "contacts": "ተጨማሪ የእውቂያ መረጃ"
+  "contacts": "ተጨማሪ የእውቂያ መረጃ",
+  "quality_others": "ሌሎች"
 }

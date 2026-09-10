@@ -66,7 +66,8 @@
     "ai_show_more_categories": "បង្ហាញប្រភេទច្រើនទៀត",
     "ai_validation_select_or_skip": "ជ្រើសរើសយ៉ាងហោចណាស់ជម្រើសមួយ ឬរំលង។",
     "ai_option_results_count_one": "ធនធានពាក់ព័ន្ធ {{count}}",
-    "ai_option_results_count_other": "ធនធានពាក់ព័ន្ធ {{count}}"
+    "ai_option_results_count_other": "ធនធានពាក់ព័ន្ធ {{count}}",
+    "organizations": "អង្គការ"
   },
   "call_to_action": {
     "call": "ហៅទូរសព្ទ",

@@ -31,5 +31,6 @@
   "location_name": "Tên địa điểm",
   "resource_name": "Tên tài nguyên",
   "quality": "Thông tin chất lượng",
-  "contacts": "Thông tin liên hệ bổ sung"
+  "contacts": "Thông tin liên hệ bổ sung",
+  "quality_others": "Người khác"
 }

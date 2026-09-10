@@ -31,5 +31,6 @@
   "location_name": "Name des Standorts",
   "resource_name": "Ressourcenname",
   "quality": "Qualitätsinformationen",
-  "contacts": "Weitere Kontaktinformationen"
+  "contacts": "Weitere Kontaktinformationen",
+  "quality_others": "Andere"
 }

@@ -31,5 +31,6 @@
   "location_name": "Naziv lokacije",
   "resource_name": "Naziv resursa",
   "quality": "Informacije o kvaliteti",
-  "contacts": "Dodatne kontaktne informacije"
+  "contacts": "Dodatne kontaktne informacije",
+  "quality_others": "Drugi"
 }
