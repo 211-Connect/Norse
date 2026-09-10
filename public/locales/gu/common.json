@@ -66,7 +66,8 @@
     "ai_show_more_categories": "વધુ શ્રેણીઓ બતાવો",
     "ai_validation_select_or_skip": "ઓછામાં ઓછો એક વિકલ્પ પસંદ કરો અથવા છોડી દો.",
     "ai_option_results_count_one": "{{count}} સંબંધિત સંસાધન",
-    "ai_option_results_count_other": "{{count}} સંબંધિત સંસાધનો"
+    "ai_option_results_count_other": "{{count}} સંબંધિત સંસાધનો",
+    "organizations": "સંસ્થાઓ"
   },
   "call_to_action": {
     "call": "કૉલ કરો",

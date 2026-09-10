@@ -114,7 +114,7 @@ jobs:
 
       - name: Run E2E tests
         run: |
-          PROJECTS="--project=search-taxonomy --project=translations --project=search-geocode --project=favorites --project=accessibility"
+          PROJECTS="--project=search-taxonomy --project=translations --project=search-geocode --project=favorites --project=accessibility --project=resource-direct-link"
           if [ "${{ matrix.ai_project }}" = "true" ]; then
             PROJECTS="$PROJECTS --project=ai-classification"
           fi

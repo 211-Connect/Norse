@@ -31,5 +31,6 @@
   "location_name": "اسم الموقع",
   "resource_name": "اسم المورد",
   "quality": "معلومات عالية الجودة",
-  "contacts": "معلومات اتصال إضافية"
+  "contacts": "معلومات اتصال إضافية",
+  "quality_others": "آحرون"
 }

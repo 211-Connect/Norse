@@ -1,9 +1,11 @@
 import { Analytics } from './generated/Analytics';
 import { FavoriteList } from './generated/FavoriteList';
 import { Geocoding } from './generated/Geocoding';
+import { Organization } from './generated/Organization';
 import { PrintableDirectories } from './generated/PrintableDirectories';
 import { PrintableDirectoriesPublic } from './generated/PrintableDirectoriesPublic';
 import { Search } from './generated/Search';
+import { Suggestion } from './generated/Suggestion';
 import { TaxonomyScorecard } from './generated/TaxonomyScorecard';
 import { API_URL, INTERNAL_API_KEY } from '@/app/(app)/shared/lib/constants';
 
@@ -33,3 +35,5 @@ export const printableDirectoriesPublicApiClient =
 export const taxonomyScorecardApiClient = new TaxonomyScorecard(clientArgs);
 
 export const favoriteListApiClient = new FavoriteList(clientArgs);
+
+export const suggestionApiClient = new Suggestion(clientArgs);

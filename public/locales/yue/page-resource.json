@@ -31,5 +31,6 @@
   "location_name": "地點名稱",
   "resource_name": "資源名稱",
   "quality": "優質資訊",
-  "contacts": "額外嘅聯絡資料"
+  "contacts": "額外嘅聯絡資料",
+  "quality_others": "其他人"
 }

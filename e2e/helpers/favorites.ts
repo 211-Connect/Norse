@@ -197,6 +197,8 @@ export async function deleteFavoriteList(
   page: Page,
   listName: string,
 ): Promise<void> {
+  await filterFavoriteListsByName(page, listName);
+
   const card = favoriteListCardByExactName(page, listName);
   await expect(card).toHaveCount(1, { timeout: UI_SHELL_TIMEOUT_MS });
 
@@ -220,6 +222,8 @@ export async function editFavoriteList(
   currentListName: string,
   { name, description }: { name: string; description: string },
 ): Promise<void> {
+  await filterFavoriteListsByName(page, currentListName);
+
   const card = favoriteListCardByExactName(page, currentListName);
   await expect(card).toHaveCount(1, { timeout: UI_SHELL_TIMEOUT_MS });
 
@@ -251,6 +255,37 @@ export async function waitForFavoritesDialogReady(page: Page) {
   await expect(page.getByTestId('favorites-search-input')).toBeVisible({
     timeout: UI_SHELL_TIMEOUT_MS,
   });
+}
+
+/**
+ * On the /favorites listing page, filter the lists by name so the target list
+ * is guaranteed to be on screen. This makes tests resilient to accumulated
+ * leftover lists that would otherwise push the target onto another page or
+ * below the fold.
+ */
+export async function filterFavoriteListsByName(page: Page, listName: string) {
+  const searchInput = page.getByTestId('list-search-input');
+  await expect(searchInput).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+  await searchInput.fill(listName);
+
+  // The filter is debounced and then re-fetched server-side. Wait for the
+  // target card instead of a URL string, because URL encoding of the search
+  // value can vary.
+  await expect(favoriteListCardByExactName(page, listName)).toBeVisible({
+    timeout: ASYNC_UI_TIMEOUT_MS,
+  });
+}
+
+/**
+ * Open a favorite list from the /favorites listing page by filtering to it
+ * first, then clicking its title link.
+ */
+export async function openFavoriteListByName(page: Page, listName: string) {
+  await filterFavoriteListsByName(page, listName);
+
+  const card = favoriteListCardByExactName(page, listName);
+  await card.waitFor({ state: 'visible', timeout: UI_SHELL_TIMEOUT_MS });
+  await card.getByRole('link', { name: listName, exact: true }).click();
 }
 
 export async function filterFavoritesDialogLists(page: Page, listName: string) {
@@ -337,6 +372,31 @@ export async function removeFromListViaDialog(page: Page, listName: string) {
   await expect(page.getByText('Removed from list')).toBeVisible({
     timeout: ASYNC_UI_TIMEOUT_MS,
   });
+}
+
+/**
+ * On a favorites list-detail page, removes every listed resource one-by-one
+ * until the list is empty. Use to make empty-state assertions resilient when a
+ * previous run left leftover favorites behind.
+ */
+export async function removeAllResourcesFromListPage(page: Page) {
+  await expect
+    .poll(
+      async () => {
+        const count = await page.getByTestId('remove-from-list-btn').count();
+        if (count > 0) {
+          await removeFirstResourceFromListPage(page);
+          await page.reload({ waitUntil: 'domcontentloaded' });
+          await waitForFavoriteListPage(page);
+        }
+        return count;
+      },
+      {
+        timeout: FAVORITES_PERSISTENCE_TIMEOUT_MS,
+        intervals: [250, 500, 1_000, 2_000, 4_000],
+      },
+    )
+    .toBe(0);
 }
 
 /**

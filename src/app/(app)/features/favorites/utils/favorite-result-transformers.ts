@@ -19,7 +19,9 @@ export function favoriteToResult(
   currentListId?: string,
   onRemoveFromList?: RemoveFromListHandler,
 ): ResultType {
-  const translation = favorite.translations.find((el) => el.locale === locale);
+  const translation =
+    favorite.translation ||
+    favorite.translations?.find((el) => el.locale === locale);
 
   const address = favorite.addresses?.find(
     (el) => el.rank === 1 && el.type === 'physical',

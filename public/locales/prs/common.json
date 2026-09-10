@@ -66,7 +66,8 @@
     "ai_show_more_categories": "نمایش دسته بندی های بیشتر",
     "ai_validation_select_or_skip": "حداقل یک گزینه را انتخاب کنید یا از آن صرف نظر کنید.",
     "ai_option_results_count_one": "منبع مرتبط {{count}}",
-    "ai_option_results_count_other": "منابع مرتبط {{count}}"
+    "ai_option_results_count_other": "منابع مرتبط {{count}}",
+    "organizations": "سازمان‌ها"
   },
   "call_to_action": {
     "call": "تماس بگیرید",

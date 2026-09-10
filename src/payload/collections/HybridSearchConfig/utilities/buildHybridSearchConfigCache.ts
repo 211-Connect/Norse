@@ -24,6 +24,9 @@ export function buildHybridSearchConfigCache(
   const boostPinnedResources =
     resourceDirectory.search?.searchSettings?.boostPinnedResources ?? false;
 
+  const enableOrganizationSearch =
+    resourceDirectory.featureFlags?.enableOrganizationSearch ?? false;
+
   return {
     tenant_id: tenantId,
     vector_score_weight: hybridSearchConfig?.vectorScoreWeight ?? null,
@@ -40,5 +43,6 @@ export function buildHybridSearchConfigCache(
     taxonomy_k: hybridSearchConfig?.taxonomyK ?? null,
     taxonomy_num_candidates: hybridSearchConfig?.taxonomyNumCandidates ?? null,
     boost_pinned_resources: boostPinnedResources,
+    enable_organization_search: enableOrganizationSearch,
   };
 }

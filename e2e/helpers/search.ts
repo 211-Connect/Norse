@@ -220,10 +220,18 @@ export async function openTopicSearch(page: Page) {
 
 /**
  * County (and other) facets stay disabled until the user sets a place—same as
- * the “Add my location” product rule. Fills a stable test city and submits
+ * the “Add my location” product rule. Fills the given test city and submits
  * from the search dialog so the filter panel can be exercised.
+ *
+ * `location` must be a real place within the current tenant's actual service
+ * area (see `TenantFixture.testLocation` in `fixtures/tenants.ts`) - a
+ * location outside a tenant's coverage isn't guaranteed to return the same
+ * non-zero result counts other location-gated assertions rely on.
  */
-export async function applyTestLocationOnSearchPage(page: Page) {
+export async function applyTestLocationOnSearchPage(
+  page: Page,
+  location: string,
+) {
   const addOrChange = page.getByRole('button', {
     name: /add my location|change location|cambiar ubicación|agregar mi ubicación/i,
   });
@@ -233,7 +241,7 @@ export async function applyTestLocationOnSearchPage(page: Page) {
   await addOrChange.first().click();
   const locationInput = page.locator('#location-input');
   await expect(locationInput).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
-  await locationInput.fill('minneapolis');
+  await locationInput.fill(location);
   const listbox = page.getByTestId('autocomplete-listbox');
   await listbox.waitFor({ state: 'visible', timeout: AUTOCOMPLETE_TIMEOUT_MS });
   await locationInput.press('Enter');

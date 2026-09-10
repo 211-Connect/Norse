@@ -5,24 +5,24 @@ import {
   expectPageUrl,
   goHome,
   goToLocalFavorites,
+  performSearch,
   resetLocalFavoritesStorage,
   searchAndGetFirstResult,
   test,
 } from './helpers';
 import { ASYNC_UI_TIMEOUT_MS, UI_SHELL_TIMEOUT_MS } from './timeouts';
 
-async function addFirstSearchResultToLocalFavorites(
+/**
+ * Favorites the search result at `index` in the currently rendered results
+ * list (search must already have been performed) and returns its name.
+ */
+async function addSearchResultAtIndexToLocalFavorites(
   page: Page,
-  query: string,
-  queryLabel: string,
+  index: number,
 ) {
-  const { name: firstResourceName } = await searchAndGetFirstResult(page, {
-    query,
-    query_label: queryLabel,
-    query_type: 'text',
-  });
+  const favoriteBtn = page.getByTestId('favorite-btn').nth(index);
+  const resourceLink = page.getByTestId('resource-link').nth(index);
 
-  const favoriteBtn = page.getByTestId('favorite-btn').first();
   await expect(favoriteBtn).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
   await expect(favoriteBtn).toHaveAttribute(
     'data-session-status',
@@ -31,13 +31,65 @@ async function addFirstSearchResultToLocalFavorites(
       timeout: UI_SHELL_TIMEOUT_MS,
     },
   );
+
+  const resourceName = ((await resourceLink.textContent()) ?? '').trim();
+
   await favoriteBtn.click();
 
   await expect(favoriteBtn.locator('svg')).toHaveClass(/fill-current/, {
     timeout: UI_SHELL_TIMEOUT_MS,
   });
 
-  return { resourceName: firstResourceName };
+  return { resourceName };
+}
+
+async function addFirstSearchResultToLocalFavorites(
+  page: Page,
+  query: string,
+  queryLabel: string,
+) {
+  await searchAndGetFirstResult(page, {
+    query,
+    query_label: queryLabel,
+    query_type: 'text',
+  });
+
+  return addSearchResultAtIndexToLocalFavorites(page, 0);
+}
+
+/**
+ * Navigates to the local favorites page and asserts `resourceName` is
+ * listed there.
+ */
+async function expectResourceInLocalFavorites(
+  page: Page,
+  resourceName: string,
+) {
+  await goToLocalFavorites(page);
+
+  await expect(page.getByText(resourceName).first()).toBeVisible({
+    timeout: ASYNC_UI_TIMEOUT_MS,
+  });
+}
+
+/**
+ * Polls the local favorites page's `remove-from-list-btn` count until it's
+ * empty (`toBe: 0`) or has at least one entry (`toBe: 'non-empty'`).
+ */
+async function expectLocalFavoritesButtonCount(
+  page: Page,
+  toBe: 0 | 'non-empty',
+) {
+  const poll = expect.poll(
+    async () => page.getByTestId('remove-from-list-btn').count(),
+    { timeout: ASYNC_UI_TIMEOUT_MS },
+  );
+
+  if (toBe === 0) {
+    await poll.toBe(0);
+  } else {
+    await poll.toBeGreaterThan(0);
+  }
 }
 
 test.describe('Favorites Feature (Anonymous Local List)', () => {
@@ -75,11 +127,7 @@ test.describe('Favorites Feature (Anonymous Local List)', () => {
       'food',
     );
 
-    await goToLocalFavorites(page);
-
-    await expect(page.getByText(resourceName).first()).toBeVisible({
-      timeout: ASYNC_UI_TIMEOUT_MS,
-    });
+    await expectResourceInLocalFavorites(page, resourceName);
 
     await expect(page.getByTestId('purge-local-list-btn')).toBeVisible({
       timeout: UI_SHELL_TIMEOUT_MS,
@@ -95,11 +143,7 @@ test.describe('Favorites Feature (Anonymous Local List)', () => {
       'housing',
     );
 
-    await goToLocalFavorites(page);
-
-    await expect(page.getByText(resourceName).first()).toBeVisible({
-      timeout: ASYNC_UI_TIMEOUT_MS,
-    });
+    await expectResourceInLocalFavorites(page, resourceName);
 
     await page.getByTestId('remove-from-list-btn').first().click();
     await page.getByTestId('remove-from-current-list-confirm-btn').click();
@@ -118,11 +162,7 @@ test.describe('Favorites Feature (Anonymous Local List)', () => {
       'shelter',
     );
 
-    await goToLocalFavorites(page);
-
-    await expect(page.getByText(resourceName).first()).toBeVisible({
-      timeout: ASYNC_UI_TIMEOUT_MS,
-    });
+    await expectResourceInLocalFavorites(page, resourceName);
 
     await page.getByTestId('remove-from-list-btn').first().click();
 
@@ -139,16 +179,22 @@ test.describe('Favorites Feature (Anonymous Local List)', () => {
   test('should purge all local favorites from local favorites page', async ({
     page,
   }) => {
-    await addFirstSearchResultToLocalFavorites(page, 'food', 'food');
-    await addFirstSearchResultToLocalFavorites(page, 'shelter', 'shelter');
+    // Favorite two distinct results from a single result set. Using two
+    // separate queries here previously could return the same pinned
+    // resource as the first result for both, in which case the second
+    // "favorite" click would toggle it back off instead of adding a second
+    // favorite, leaving only one favorite behind.
+    await performSearch(page, {
+      query: 'food',
+      query_label: 'food',
+      query_type: 'text',
+    });
+    await addSearchResultAtIndexToLocalFavorites(page, 0);
+    await addSearchResultAtIndexToLocalFavorites(page, 1);
 
     await goToLocalFavorites(page);
 
-    await expect
-      .poll(async () => page.getByTestId('remove-from-list-btn').count(), {
-        timeout: ASYNC_UI_TIMEOUT_MS,
-      })
-      .toBeGreaterThan(0);
+    await expectLocalFavoritesButtonCount(page, 'non-empty');
 
     await expect(page.getByTestId('purge-local-list-btn')).toBeVisible({
       timeout: UI_SHELL_TIMEOUT_MS,
@@ -161,11 +207,7 @@ test.describe('Favorites Feature (Anonymous Local List)', () => {
     await purgeDialog.getByRole('button', { name: 'Cancel' }).click();
     await expect(purgeDialog).toHaveCount(0, { timeout: UI_SHELL_TIMEOUT_MS });
 
-    await expect
-      .poll(async () => page.getByTestId('remove-from-list-btn').count(), {
-        timeout: ASYNC_UI_TIMEOUT_MS,
-      })
-      .toBeGreaterThan(0);
+    await expectLocalFavoritesButtonCount(page, 'non-empty');
 
     // Confirm path: all favorites are cleared.
     await page.getByTestId('purge-local-list-btn').click();
@@ -175,11 +217,7 @@ test.describe('Favorites Feature (Anonymous Local List)', () => {
     });
     await page.getByTestId('purge-list-confirm-btn').click();
 
-    await expect
-      .poll(async () => page.getByTestId('remove-from-list-btn').count(), {
-        timeout: ASYNC_UI_TIMEOUT_MS,
-      })
-      .toBe(0);
+    await expectLocalFavoritesButtonCount(page, 0);
 
     await expect(page.getByTestId('purge-local-list-btn')).toHaveCount(0);
   });
@@ -223,11 +261,7 @@ test.describe('Favorites Feature (Anonymous Local List)', () => {
 
     await goToLocalFavorites(page);
 
-    await expect
-      .poll(async () => page.getByTestId('remove-from-list-btn').count(), {
-        timeout: ASYNC_UI_TIMEOUT_MS,
-      })
-      .toBe(0);
+    await expectLocalFavoritesButtonCount(page, 0);
   });
 
   test('should persist local favorites after reload and in a new tab', async ({
@@ -240,11 +274,7 @@ test.describe('Favorites Feature (Anonymous Local List)', () => {
       'food',
     );
 
-    await goToLocalFavorites(page);
-
-    await expect(page.getByText(resourceName).first()).toBeVisible({
-      timeout: ASYNC_UI_TIMEOUT_MS,
-    });
+    await expectResourceInLocalFavorites(page, resourceName);
 
     await page.reload({ waitUntil: 'domcontentloaded' });
 
@@ -255,11 +285,7 @@ test.describe('Favorites Feature (Anonymous Local List)', () => {
     const secondPage = await context.newPage();
     try {
       await goHome(secondPage);
-      await goToLocalFavorites(secondPage);
-
-      await expect(secondPage.getByText(resourceName).first()).toBeVisible({
-        timeout: ASYNC_UI_TIMEOUT_MS,
-      });
+      await expectResourceInLocalFavorites(secondPage, resourceName);
     } finally {
       await secondPage.close();
     }

@@ -66,7 +66,8 @@
     "ai_show_more_categories": "Erekana ibyiciro byinshi",
     "ai_validation_select_or_skip": "Hitamo nibura uburyo bumwe cyangwa usimbuke.",
     "ai_option_results_count_one": "{{count}} umutungo ujyanye",
-    "ai_option_results_count_other": "{{count}} ibikoresho bifitanye isano"
+    "ai_option_results_count_other": "{{count}} ibikoresho bifitanye isano",
+    "organizations": "Amashyirahamwe"
   },
   "call_to_action": {
     "call": "Hamagara",

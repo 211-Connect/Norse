@@ -66,7 +66,8 @@
     "ai_show_more_categories": "ଅଧିକ ବର୍ଗ ଦେଖାନ୍ତୁ",
     "ai_validation_select_or_skip": "ଅତି କମରେ ଗୋଟିଏ ବିକଳ୍ପ ଚୟନ କରନ୍ତୁ କିମ୍ବା ବାଦ୍ ଦିଅନ୍ତୁ।",
     "ai_option_results_count_one": "{{count}} ସମ୍ବନ୍ଧିତ ସମ୍ବଳ",
-    "ai_option_results_count_other": "{{count}} ସମ୍ବନ୍ଧିତ ସମ୍ବଳ"
+    "ai_option_results_count_other": "{{count}} ସମ୍ବନ୍ଧିତ ସମ୍ବଳ",
+    "organizations": "ସଂଗଠନଗୁଡିକ"
   },
   "call_to_action": {
     "call": "କଲ୍ କରନ୍ତୁ",

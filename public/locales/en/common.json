@@ -43,6 +43,7 @@
     "miles_short": "mi",
     "any": "Any",
     "taxonomies": "Taxonomies",
+    "organizations": "Organizations",
     "suggestions": "Suggestions",
     "use_my_location": "Use my location",
     "change_location_label": "Change location: {{location}}",
