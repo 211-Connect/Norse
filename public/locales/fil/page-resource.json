@@ -31,5 +31,6 @@
   "location_name": "Pangalan ng Lokasyon",
   "resource_name": "Pangalan ng Mapagkukunan",
   "quality": "Impormasyon sa Kalidad",
-  "contacts": "Karagdagang Impormasyon sa Pakikipag-ugnayan"
+  "contacts": "Karagdagang Impormasyon sa Pakikipag-ugnayan",
+  "quality_others": "Iba pa"
 }

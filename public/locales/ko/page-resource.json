@@ -31,5 +31,6 @@
   "location_name": "위치 이름",
   "resource_name": "리소스 이름",
   "quality": "품질 정보",
-  "contacts": "추가 연락처 정보"
+  "contacts": "추가 연락처 정보",
+  "quality_others": "기타"
 }

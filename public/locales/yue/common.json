@@ -66,7 +66,8 @@
     "ai_show_more_categories": "顯示更多類別",
     "ai_validation_select_or_skip": "揀至少一個選項或者跳過。",
     "ai_option_results_count_one": "{{count}} 相關資源",
-    "ai_option_results_count_other": "{{count}} 相關資源"
+    "ai_option_results_count_other": "{{count}} 相關資源",
+    "organizations": "組織"
   },
   "call_to_action": {
     "call": "叫",

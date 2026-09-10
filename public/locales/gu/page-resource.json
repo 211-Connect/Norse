@@ -31,5 +31,6 @@
   "location_name": "સ્થાનનું નામ",
   "resource_name": "સંસાધનનું નામ",
   "quality": "ગુણવત્તા માહિતી",
-  "contacts": "વધારાની સંપર્ક માહિતી"
+  "contacts": "વધારાની સંપર્ક માહિતી",
+  "quality_others": "અન્ય"
 }

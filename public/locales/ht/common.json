@@ -66,7 +66,8 @@
     "ai_show_more_categories": "Montre plis kategori",
     "ai_validation_select_or_skip": "Chwazi omwen yon opsyon oubyen sote li.",
     "ai_option_results_count_one": "Resous ki gen rapò ak {{count}}",
-    "ai_option_results_count_other": "{{count}} resous ki gen rapò"
+    "ai_option_results_count_other": "{{count}} resous ki gen rapò",
+    "organizations": "Òganizasyon yo"
   },
   "call_to_action": {
     "call": "Rele",

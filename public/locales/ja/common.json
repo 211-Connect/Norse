@@ -66,7 +66,8 @@
     "ai_show_more_categories": "その他のカテゴリを表示",
     "ai_validation_select_or_skip": "少なくとも1つのオプションを選択するか、スキップしてください。",
     "ai_option_results_count_one": "{{count}} 関連リソース",
-    "ai_option_results_count_other": "{{count}} 関連リソース"
+    "ai_option_results_count_other": "{{count}} 関連リソース",
+    "organizations": "組織"
   },
   "call_to_action": {
     "call": "電話",

@@ -31,5 +31,6 @@
   "location_name": "د ځای نوم",
   "resource_name": "د سرچینې نوم",
   "quality": "د کیفیت معلومات",
-  "contacts": "د اړیکو اضافي معلومات"
+  "contacts": "د اړیکو اضافي معلومات",
+  "quality_others": "نور"
 }

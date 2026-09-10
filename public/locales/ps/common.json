@@ -66,7 +66,8 @@
     "ai_show_more_categories": "نورې کټګورۍ وښایاست",
     "ai_validation_select_or_skip": "لږ تر لږه یو انتخاب غوره کړئ یا پریږدئ.",
     "ai_option_results_count_one": "{{count}} اړونده سرچینه",
-    "ai_option_results_count_other": "{{count}} اړوند سرچینې"
+    "ai_option_results_count_other": "{{count}} اړوند سرچینې",
+    "organizations": "سازمانونه"
   },
   "call_to_action": {
     "call": "زنګ ووهئ",

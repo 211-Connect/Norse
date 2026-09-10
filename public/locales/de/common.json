@@ -66,7 +66,8 @@
     "ai_show_more_categories": "Weitere Kategorien anzeigen",
     "ai_validation_select_or_skip": "Wählen Sie mindestens eine Option aus oder überspringen Sie diesen Schritt.",
     "ai_option_results_count_one": "{{count}} zugehörige Ressource",
-    "ai_option_results_count_other": "{{count}} verwandte Ressourcen"
+    "ai_option_results_count_other": "{{count}} verwandte Ressourcen",
+    "organizations": "Organisationen"
   },
   "call_to_action": {
     "call": "Anruf",

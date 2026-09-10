@@ -66,7 +66,8 @@
     "ai_show_more_categories": "Afficher plus de catégories",
     "ai_validation_select_or_skip": "Sélectionnez au moins une option ou passez votre chemin.",
     "ai_option_results_count_one": "{{count}} ressource associée",
-    "ai_option_results_count_other": "Ressources connexes {{count}}"
+    "ai_option_results_count_other": "Ressources connexes {{count}}",
+    "organizations": "Organisations"
   },
   "call_to_action": {
     "call": "Appeler",

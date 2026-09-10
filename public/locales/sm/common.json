@@ -66,7 +66,8 @@
     "ai_show_more_categories": "Faaali nisi vaega",
     "ai_validation_select_or_skip": "Filifili ia le itiiti ifo ma le tasi le filifiliga pe faamisi.",
     "ai_option_results_count_one": "{{count}} punaoa e feso'ota'i",
-    "ai_option_results_count_other": "{{count}} punaoa e feso'ota'i"
+    "ai_option_results_count_other": "{{count}} punaoa e feso'ota'i",
+    "organizations": "Fa'alapotopotoga"
   },
   "call_to_action": {
     "call": "Telefoni",

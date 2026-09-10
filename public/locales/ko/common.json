@@ -66,7 +66,8 @@
     "ai_show_more_categories": "더 많은 카테고리 보기",
     "ai_validation_select_or_skip": "하나 이상의 옵션을 선택하거나 건너뛰세요.",
     "ai_option_results_count_one": "{{count}} 관련 리소스",
-    "ai_option_results_count_other": "{{count}} 관련 리소스"
+    "ai_option_results_count_other": "{{count}} 관련 리소스",
+    "organizations": "조직"
   },
   "call_to_action": {
     "call": "외침",

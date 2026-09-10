@@ -66,7 +66,8 @@
     "ai_show_more_categories": "Näytä lisää luokkia",
     "ai_validation_select_or_skip": "Valitse vähintään yksi vaihtoehto tai ohita.",
     "ai_option_results_count_one": "{{count}} aiheeseen liittyvä resurssi",
-    "ai_option_results_count_other": "{{count}} aiheeseen liittyvät resurssit"
+    "ai_option_results_count_other": "{{count}} aiheeseen liittyvät resurssit",
+    "organizations": "Organisaatiot"
   },
   "call_to_action": {
     "call": "Soittaa",
