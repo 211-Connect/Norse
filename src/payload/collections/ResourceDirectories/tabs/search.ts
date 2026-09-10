@@ -280,12 +280,27 @@ export const search: Tab = {
           },
         },
         {
-          name: 'boostPinnedResources',
-          type: 'checkbox',
-          defaultValue: false,
+          name: 'pinnedResourcesMode',
+          type: 'select',
+          dbName: 'pinned_mode',
+          defaultValue: 'boost',
+          options: [
+            {
+              label: 'Ignore pinned status',
+              value: 'ignore',
+            },
+            {
+              label: 'Boost pinned resources in ranking',
+              value: 'boost',
+            },
+            {
+              label: 'Show pinned resources at the top',
+              value: 'top',
+            },
+          ],
           admin: {
             description:
-              'When enabled, pinned/priority resources receive a score boost instead of being hard-sorted to the top of results. Only applies when Search Engine is Hybrid or AI Classification.',
+              'Choose how pinned/priority resources are handled for hybrid and AI classification search engines. Ignore drops pinned status; Boost adds a score contribution; Top hard-sorts pinned resources to the top of results.',
             condition: (_, siblingData) =>
               siblingData?.searchEngine === 'hybrid' ||
               siblingData?.searchEngine === 'ai_classification',
