@@ -12,6 +12,6 @@ export type HybridSearchConfigCache = {
   bm25_taxonomy_use_ref_boost: number | null;
   taxonomy_k: number | null;
   taxonomy_num_candidates: number | null;
-  boost_pinned_resources: boolean;
+  pinned_resources_mode: 'ignore' | 'boost' | 'top';
   enable_organization_search: boolean;
 };
