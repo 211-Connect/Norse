@@ -40,10 +40,11 @@ Scope: `e2e/**`. Read this before adding or editing Playwright specs or helpers.
 ## Multi-tenant test matrix
 
 The full suite (`search-taxonomy`, `translations`, `search-geocode`,
-`favorites`, `accessibility`, `ai-classification`) runs against 6 tenants ×
-2 environments (dev/prod) in CI — see `.github/workflows/e2e-tests.yaml` for
-the matrix (base URLs, per-cell test email) and `e2e/fixtures/tenants.ts` for
-the per-tenant data (taxonomy codes/labels, broad queries, `aiSearchEnabled`).
+`favorites`, `accessibility`, `ai-classification`, `resource-direct-link`,
+`organization`) runs against 7 tenants × 2 environments (dev/prod) in CI — see
+`.github/workflows/e2e-tests.yaml` for the matrix (base URLs, per-cell test
+email) and `e2e/fixtures/tenants.ts` for the per-tenant data (taxonomy
+codes/labels, broad queries, `aiSearchEnabled`, `organizationSearchEnabled`).
 
 - Test accounts: one account per matrix cell, email deterministic
   (`test-<tenant>-<env>@c211.io`, e.g. `test-wa-dev@c211.io`), all sharing a
@@ -53,10 +54,10 @@ the per-tenant data (taxonomy codes/labels, broad queries, `aiSearchEnabled`).
   matrix rows — no new secrets needed.
 
 - Tenant is selected locally via `E2E_TENANT_KEY` (`MBOA` | `WA` | `VA` |
-  `PA` | `AZ` | `SCC`, defaults to `MBOA`); environment via `E2E_TENANT_ENV`
-  (`dev` | `prod`, defaults to `dev`). Both only affect fixture lookups in
-  `e2e/fixtures/tenants.ts` — `playwright.config.ts`'s `baseURL` still comes
-  from `E2E_BASE_URL` as before; CI sets all three env vars together per
+  `PA` | `AZ` | `SCC` | `DUPAGE`, defaults to `MBOA`); environment via
+  `E2E_TENANT_ENV` (`dev` | `prod`, defaults to `dev`). Both only affect fixture
+  lookups in `e2e/fixtures/tenants.ts` — `playwright.config.ts`'s `baseURL` still
+  comes from `E2E_BASE_URL` as before; CI sets all three env vars together per
   matrix cell.
 - No hosts-file tricks needed: tenant resolution is by request `Host` header
   (`findResourceDirectoryByHost`), so pointing `E2E_BASE_URL` at any real
@@ -88,6 +89,13 @@ the per-tenant data (taxonomy codes/labels, broad queries, `aiSearchEnabled`).
   `tenant.directResourceId` (`e2e/fixtures/tenants.ts`) — a real, live
   resource id per tenant — and skips (doesn't fail) for tenants without one
   yet, same convention as `hasFacets`. Currently set for all 6 tenants.
+- `search-organization.spec.ts` / `search-organization-direct-link.spec.ts`
+  (project `organization`) cover organization search via the autocomplete
+  and via a cold `/search?organization_id={id}` URL. They require a real,
+  name-unique organization fixture (`tenant.organization`) and use the
+  stable organization id rather than the organization name. Organization
+  search is tenant-environment-gated by `organizationSearchEnabled` and
+  currently enabled for DUPAGE and SCC (`e2e/fixtures/tenants.ts`).
 
 ## Helper module map (`e2e/helpers/`)
 
@@ -215,7 +223,7 @@ directly in the test that owns the list, not from a broad `beforeAll`/
 - `npm run test:e2e` — full suite (all projects, Desktop Chrome only).
 - `npm run test:e2e:<project>` — one project (`accessibility`, `favorites`,
   `translations`, `search-geocode`, `search-taxonomy`, `share-link`,
-  `resource-direct-link`).
+  `resource-direct-link`, `organization`).
 - Requires a running app server; `baseURL` defaults to `http://localhost:3000`,
   override with `E2E_BASE_URL`.
 - Favorites (authenticated) specs skip automatically unless `TEST_USER_EMAIL`
