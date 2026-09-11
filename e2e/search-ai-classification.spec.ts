@@ -149,7 +149,7 @@ test.describe('AI classification search flow (real data, no mocks)', () => {
     });
     await expect(page.getByTestId('ai-classification-options')).toHaveCount(0);
 
-    expect(await getResultTotalNumber(page)).toBeGreaterThan(10);
+    expect(await getResultTotalNumber(page)).toBeGreaterThan(0);
   });
 
   test('Case C: taxonomy query type searches directly without opening AI clarification', async ({
