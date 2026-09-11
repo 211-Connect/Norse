@@ -5,7 +5,6 @@ import { Heart, HeartOff, Loader2, PlusIcon } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import {
-  Fragment,
   type MouseEvent,
   useCallback,
   useEffect,
