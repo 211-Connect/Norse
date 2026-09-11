@@ -4,6 +4,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 
 import { analyticsApiClient } from '@/lib/api/clients';
+import { getTenantApiKeyHeaders } from '@/lib/api/getTenantApiKey';
 import { resolveAnalyticsContext } from '../utilities/resolveAnalyticsContext';
 import { SearchEventExportRow } from '../../lib/api/generated/data-contracts';
 
@@ -106,6 +107,7 @@ export const exportSearchAnalytics: Endpoint = {
               'x-analytics-api-key': ctx.apiKey,
               'x-tenant-id': tenantId as string,
               'x-api-version': '1',
+              ...(await getTenantApiKeyHeaders(tenantId as string)),
             },
           },
         );

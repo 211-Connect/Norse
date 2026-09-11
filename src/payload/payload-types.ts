@@ -448,6 +448,12 @@ export interface Tenant {
         }[]
       | null;
   };
+  api?: {
+    /**
+     * Used to authenticate this tenant's requests to the Norse API (sent as the x-tenant-api-key header).
+     */
+    apiKey?: string | null;
+  };
   common?: {
     gtmContainerId?: string | null;
     matomoContainerUrl?: string | null;
@@ -1385,6 +1391,11 @@ export interface TenantsSelect<T extends boolean = true> {
               domain?: T;
               id?: T;
             };
+      };
+  api?:
+    | T
+    | {
+        apiKey?: T;
       };
   common?:
     | T

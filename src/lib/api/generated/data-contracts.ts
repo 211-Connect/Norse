@@ -46,6 +46,7 @@ export interface TaxonomyResponseDto {
 export interface ServiceDto {
   name: string;
   alert: string | null;
+  alert_date: string | null;
   alternate_name: string | null;
   description: string | null;
   summary: string | null;
@@ -72,6 +73,7 @@ export interface LocationDto {
 }
 
 export interface OrganizationDto {
+  id: string | null;
   name: string;
   alternate_name: string | null;
   description: string | null;
@@ -236,6 +238,7 @@ export interface ResourceTranslationOpenApiDto {
   hours?: string;
   fees?: string;
   alert?: string;
+  alertDate?: string;
   taxonomies?: ResourceTaxonomyOpenApiDto[];
   attributeValues?: Record<string, any>;
 }
@@ -1242,12 +1245,7 @@ export interface SearchQueryApiDto {
    */
   query?: string | string[] | Record<string, any>;
   /** @default "text" */
-  query_type?:
-    | "text"
-    | "taxonomy"
-    | "more_like_this"
-    | "hybrid"
-    | "organization";
+  query_type?: "text" | "taxonomy" | "more_like_this" | "hybrid";
   /**
    * @min 1
    * @default 1
@@ -1588,7 +1586,7 @@ export interface PrintableDirectoryPreviewSectionResourceDto {
   id: string;
   /**
    * Resolved printable-ready resource object from live resource data at preview time
-   * @example {"_id":"00000000-0000-0000-0000-000000000000","serviceAtLocationId":"00000000-0000-0000-0000-000000000000","location":{"type":"Point","coordinates":[-106.0746,42.1485]},"addresses":[{"city":"Example","country":"United States","address_1":"543 East Connect Street","postalCode":"99032","stateProvince":"WA","rank":1,"type":"physical"}],"attribution":"Connect 211","createdAt":"2024-08-26T00:00:00","displayName":"FINANCIAL AND FOOD ASSISTANCE | EXAMPLE ORGANIZATION","displayPhoneNumber":"(555) 555-5555","email":"info@example.com","languages":["English","Spanish"],"lastAssuredDate":"2024-08-26T00:00:00","organizationName":"EXAMPLE ORGANIZATION","phoneNumbers":[{"number":"(555) 555-5555","rank":1,"type":"voice"},{"number":"(555) 555-5555","rank":2,"type":"fax"}],"serviceArea":{"type":"Polygon","coordinates":[[[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485]]],"description":["Washington"]},"tenant_id":"00000000-0000-0000-0000-000000000000","originalId":"1234","updatedAt":"2024-08-26T00:00:00","website":"https://www.example.com/","organizationUrl":"https://www.example.org/","translation":{"displayName":"FINANCIAL AND FOOD ASSISTANCE | EXAMPLE ORGANIZATION","fees":"n/a","hours":"Monday 11:00am - 4:30pm;Tuesday 11:00am - 6:00pm;Wednesday 11:00am - 4:30pm;Thursday 11:00am - 6:00pm","locale":"en","taxonomies":[{"code":"CW-0000.0000","name":"Rental Deposit Assistance"}],"serviceName":"FINANCIAL AND FOOD ASSISTANCE","eligibilities":"Rental Assistance is limited to families and individuals.","requiredDocuments":[],"applicationProcess":"Walk-In;Call","alert":"We are currently experiencing high call volumes. Please be patient and leave a message if you are unable to reach us.","serviceDescription":"Emergency financial assistance to help with:\n- Rental and utility assistance\n- Help with first month rent\n- Utility assistance \nFood Pantry including items\n- Fresh and Shelf-Stable Food\n- Personal hygiene items\n- Diapers\n- Prescriptions","organizationDescription":"We are a nonprofit community based volunteer organizations with goals to alleviate poverty and homelessness, encourage self-sufficiency, to allocate funds and resources efficiently, and to provide a \"hands-up\" to those in need.","languages":["English","Spanish"]},"facetsEn":[{"code":"Benton County","taxonomyName":"Area Served by County","termName":"Benton County"},{"code":"People with low income","taxonomyName":"Specialization","termName":"People with low income"}]}
+   * @example {"_id":"00000000-0000-0000-0000-000000000000","serviceAtLocationId":"00000000-0000-0000-0000-000000000000","location":{"type":"Point","coordinates":[-106.0746,42.1485]},"addresses":[{"city":"Example","country":"United States","address_1":"543 East Connect Street","postalCode":"99032","stateProvince":"WA","rank":1,"type":"physical"}],"attribution":"Connect 211","createdAt":"2024-08-26T00:00:00","displayName":"FINANCIAL AND FOOD ASSISTANCE | EXAMPLE ORGANIZATION","displayPhoneNumber":"(555) 555-5555","email":"info@example.com","languages":["English","Spanish"],"lastAssuredDate":"2024-08-26T00:00:00","organizationName":"EXAMPLE ORGANIZATION","phoneNumbers":[{"number":"(555) 555-5555","rank":1,"type":"voice"},{"number":"(555) 555-5555","rank":2,"type":"fax"}],"serviceArea":{"type":"Polygon","coordinates":[[[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485]]],"description":["Washington"]},"tenant_id":"00000000-0000-0000-0000-000000000000","originalId":"1234","updatedAt":"2024-08-26T00:00:00","website":"https://www.example.com/","organizationUrl":"https://www.example.org/","translation":{"displayName":"FINANCIAL AND FOOD ASSISTANCE | EXAMPLE ORGANIZATION","fees":"n/a","hours":"Monday 11:00am - 4:30pm;Tuesday 11:00am - 6:00pm;Wednesday 11:00am - 4:30pm;Thursday 11:00am - 6:00pm","locale":"en","taxonomies":[{"code":"CW-0000.0000","name":"Rental Deposit Assistance"}],"serviceName":"FINANCIAL AND FOOD ASSISTANCE","eligibilities":"Rental Assistance is limited to families and individuals.","requiredDocuments":[],"applicationProcess":"Walk-In;Call","alert":"We are currently experiencing high call volumes. Please be patient and leave a message if you are unable to reach us.","alertDate":"Tuesday, 8 September 2026","serviceDescription":"Emergency financial assistance to help with:\n- Rental and utility assistance\n- Help with first month rent\n- Utility assistance \nFood Pantry including items\n- Fresh and Shelf-Stable Food\n- Personal hygiene items\n- Diapers\n- Prescriptions","organizationDescription":"We are a nonprofit community based volunteer organizations with goals to alleviate poverty and homelessness, encourage self-sufficiency, to allocate funds and resources efficiently, and to provide a \"hands-up\" to those in need.","languages":["English","Spanish"]},"facetsEn":[{"code":"Benton County","taxonomyName":"Area Served by County","termName":"Benton County"},{"code":"People with low income","taxonomyName":"Specialization","termName":"People with low income"}]}
    */
   resource: TransformedResourceOpenApiDto;
 }
@@ -1757,18 +1755,18 @@ export interface TaxonomyControllerGetTaxonomyTermsByCodeParams {
 export type TaxonomyControllerGetTaxonomyTermsByCodeData = any;
 
 export interface SearchControllerGetResourcesParams {
-  /** @default "text" */
-  query_type?:
-    | "text"
-    | "taxonomy"
-    | "more_like_this"
-    | "hybrid"
-    | "organization";
+  /**
+   * Matching engine used to select results: `text` (default, lexical), `taxonomy` (HSIS code scope), `more_like_this`, and `hybrid` (lexical + semantic vector + geographic proximity). Orthogonal to `sort`, which controls result ordering.
+   * @default "text"
+   */
+  query_type?: "text" | "taxonomy" | "more_like_this" | "hybrid";
   /** @default 1 */
   page?: any;
   /** Comma delimited list of longitude,latitude */
   coords?: string[];
   filters?: object;
+  /** Scope results to resources belonging to a single organization, by its stable organization id (the `organization_id` returned by /suggestion and /organization). Composes with any query_type and with filters. */
+  organization_id?: string;
   /** Comma-delimited HSIS taxonomy codes used as a hard scope for hybrid search (e.g. BM-1400,BM-1700) */
   taxonomy?: string | string[];
   /**
@@ -1791,7 +1789,7 @@ export interface SearchControllerGetResourcesParams {
   /** Controls how coords/distance combine with a resource's declared service_area. Omitted (default): a result must be within `distance` of `coords` AND have a service_area that geographically contains the exact `coords` point — both required. `proximity`: skips the service_area check; returns anything within `distance` of `coords`. `boundary`: ignores `coords`/`distance` and instead requires a GeoJSON `geometry` in the POST body — matches any resource whose service_area intersects that shape; POST only, 400s on GET without a body. */
   geo_type?: "boundary" | "proximity";
   /**
-   * Sort order: relevance (default), distance (requires coords), name (alphabetical by resource name), organization (alphabetical by provider name)
+   * Presentation order of results. Independent of `query_type`: the query engine decides which resources match, `sort` decides their order. For `hybrid` search, pinned/prioritized resource handling is controlled by the tenant's `pinned_resources_mode` setting (`boost` by default, which folds pinned/priority into the relevance score; `top` hard-sorts them first; `ignore` disables them). Values: `relevance` (default — best match first; under `hybrid`, geographic proximity is folded into the relevance score), `distance` (nearest first; requires `coords`, otherwise falls back to `relevance`), `name` (alphabetical by resource name), `organization` (alphabetical by provider name). Honored for all query types, including `hybrid`.
    * @default "relevance"
    */
   sort?: "relevance" | "distance" | "name" | "organization";
@@ -1809,18 +1807,18 @@ export interface SearchControllerGetResourcesPostPayload {
 }
 
 export interface SearchControllerGetResourcesPostParams {
-  /** @default "text" */
-  query_type?:
-    | "text"
-    | "taxonomy"
-    | "more_like_this"
-    | "hybrid"
-    | "organization";
+  /**
+   * Matching engine used to select results: `text` (default, lexical), `taxonomy` (HSIS code scope), `more_like_this`, and `hybrid` (lexical + semantic vector + geographic proximity). Orthogonal to `sort`, which controls result ordering.
+   * @default "text"
+   */
+  query_type?: "text" | "taxonomy" | "more_like_this" | "hybrid";
   /** @default 1 */
   page?: any;
   /** Comma delimited list of longitude,latitude */
   coords?: string[];
   filters?: object;
+  /** Scope results to resources belonging to a single organization, by its stable organization id (the `organization_id` returned by /suggestion and /organization). Composes with any query_type and with filters. */
+  organization_id?: string;
   /** Comma-delimited HSIS taxonomy codes used as a hard scope for hybrid search (e.g. BM-1400,BM-1700) */
   taxonomy?: string | string[];
   /**
@@ -1843,7 +1841,7 @@ export interface SearchControllerGetResourcesPostParams {
   /** Controls how coords/distance combine with a resource's declared service_area. Omitted (default): a result must be within `distance` of `coords` AND have a service_area that geographically contains the exact `coords` point — both required. `proximity`: skips the service_area check; returns anything within `distance` of `coords`. `boundary`: ignores `coords`/`distance` and instead requires a GeoJSON `geometry` in the POST body — matches any resource whose service_area intersects that shape. */
   geo_type?: "boundary" | "proximity";
   /**
-   * Sort order: relevance (default), distance (requires coords), name (alphabetical by resource name), organization (alphabetical by provider name)
+   * Presentation order of results. Independent of `query_type`: the query engine decides which resources match, `sort` decides their order. For `hybrid` search, pinned/prioritized resource handling is controlled by the tenant's `pinned_resources_mode` setting (`boost` by default, which folds pinned/priority into the relevance score; `top` hard-sorts them first; `ignore` disables them). Values: `relevance` (default — best match first; under `hybrid`, geographic proximity is folded into the relevance score), `distance` (nearest first; requires `coords`, otherwise falls back to `relevance`), `name` (alphabetical by resource name), `organization` (alphabetical by provider name). Honored for all query types, including `hybrid`.
    * @default "relevance"
    */
   sort?: "relevance" | "distance" | "name" | "organization";

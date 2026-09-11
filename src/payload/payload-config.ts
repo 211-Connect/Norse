@@ -27,6 +27,7 @@ import {
 import { Users } from './collections/Users';
 import { isSuperAdmin, isSupport } from './collections/Users/access/roles';
 import { analyticsProxyEndpoints } from './endpoints/analyticsProxy';
+import { bulkSetTenantApiKeys } from './endpoints/bulkSetTenantApiKeys';
 import { clearCache } from './endpoints/clearCache';
 import { duplicateTenant } from './endpoints/duplicateTenant';
 import { exportSearchAnalytics } from './endpoints/exportSearchAnalytics';
@@ -55,6 +56,7 @@ const dirname = path.dirname(filename);
 const endpoints: Endpoint[] = [
   clearCache,
   populateApiConfigCache,
+  bulkSetTenantApiKeys,
   translateEndpoint,
   duplicateTenant,
   exportSearchAnalytics,

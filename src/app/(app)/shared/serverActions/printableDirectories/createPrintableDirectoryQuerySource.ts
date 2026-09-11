@@ -7,7 +7,7 @@ type CreatePrintableDirectoryQuerySourceParams = {
   sectionId: string;
   title?: string;
   queryParams: Record<string, unknown>;
-  tenantId?: string;
+  tenantId: string;
 };
 
 export async function createPrintableDirectoryQuerySource({

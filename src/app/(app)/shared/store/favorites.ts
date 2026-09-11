@@ -10,7 +10,7 @@ export type FavoriteListWithFavorites = {
   description: string;
   privacy: FavoriteListState['privacy'];
   viewingAsOwner: boolean;
-  favorites: Favorite[];
+  favorites: Favorite[]; // todo: remove the file
 };
 
 export const favoriteListsStateAtom = atom<{

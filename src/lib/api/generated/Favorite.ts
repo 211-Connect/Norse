@@ -28,6 +28,7 @@ export class Favorite<
    * @tags Favorite
    * @name FavoriteControllerCreate
    * @request POST:/favorite
+   * @secure
    */
   favoriteControllerCreate = (
     data: CreateFavoriteDto,
@@ -39,6 +40,7 @@ export class Favorite<
       method: "POST",
       query: query,
       body: data,
+      secure: true,
       type: "application/json",
       ...params,
     });
@@ -48,6 +50,7 @@ export class Favorite<
    * @tags Favorite
    * @name FavoriteControllerRemove
    * @request DELETE:/favorite/{favoriteId}/{favoriteListId}
+   * @secure
    */
   favoriteControllerRemove = (
     { favoriteId, favoriteListId, ...query }: FavoriteControllerRemoveParams,
@@ -57,6 +60,7 @@ export class Favorite<
       path: `/favorite/${favoriteId}/${favoriteListId}`,
       method: "DELETE",
       query: query,
+      secure: true,
       ...params,
     });
 }
