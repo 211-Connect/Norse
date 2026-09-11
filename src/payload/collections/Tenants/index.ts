@@ -269,6 +269,32 @@ export const Tenants: CollectionConfig = {
       ],
     },
     {
+      name: 'api',
+      type: 'group',
+      label: 'API Settings',
+      access: {
+        create: superAdminAccess,
+        read: superAdminAccess,
+        update: superAdminAccess,
+      },
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'apiKey',
+              type: 'text',
+              label: 'API Key',
+              admin: {
+                description:
+                  "Used to authenticate this tenant's requests to the Norse API (sent as the x-tenant-api-key header).",
+              },
+            },
+          ],
+        },
+      ],
+    },
+    {
       name: 'common',
       type: 'group',
       label: 'Common Settings',

@@ -45,7 +45,12 @@ const getPageData = cache(async function (
   const searchQuery = parseSearchParams(rawParams);
 
   if (searchQuery.location && !searchQuery.coordinates) {
-    await navigateToSearchWithCoords(locale, searchQuery, rawParams);
+    await navigateToSearchWithCoords(
+      locale,
+      appConfig.tenantId,
+      searchQuery,
+      rawParams,
+    );
   }
 
   // Run before the search executes: for AI-classification tenants this
@@ -69,6 +74,7 @@ const getPageData = cache(async function (
   if (isAdvancedGeoEnabled() && searchQuery.location) {
     const [placeMetadata] = await forwardGeocode(searchQuery.location, {
       locale,
+      tenantId: appConfig.tenantId,
     });
 
     if (placeMetadata) {
