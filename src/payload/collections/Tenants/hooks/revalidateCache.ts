@@ -33,6 +33,7 @@ export async function revalidateCache({
       );
       if (doc?.id) {
         await cacheService.del(`tenant:${doc.id}`);
+        await cacheService.del(`tenant_api_key:${doc.id}`);
       }
     } catch (error) {
       log.error({ err: error }, 'Error invalidating tenant cache');

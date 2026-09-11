@@ -11,6 +11,7 @@ const log = createLogger('navigateToSearchWithCoords');
 
 export async function navigateToSearchWithCoords(
   locale: string,
+  tenantId: string,
   searchQuery: FindResourcesQuery,
   rawParams: RawSearchParams,
 ) {
@@ -29,6 +30,7 @@ export async function navigateToSearchWithCoords(
 
   const [placeMetadata] = await forwardGeocode(searchQuery.location, {
     locale,
+    tenantId,
   });
 
   if (placeMetadata) {

@@ -80,6 +80,7 @@ import * as migration_20260825_075527_add_tenant_auth_public_pages from './20260
 import * as migration_20260904_071935 from './20260904_071935';
 import * as migration_20260910_074021_drop_legacy_analytics_relation from './20260910_074021_drop_legacy_analytics_relation';
 import * as migration_20260910_095121_search_pinned_resources_mode from './20260910_095121_search_pinned_resources_mode';
+import * as migration_20260911_114053_add_tenant_api_key from './20260911_114053_add_tenant_api_key';
 
 export const migrations = [
   {
@@ -491,5 +492,10 @@ export const migrations = [
     up: migration_20260910_095121_search_pinned_resources_mode.up,
     down: migration_20260910_095121_search_pinned_resources_mode.down,
     name: '20260910_095121_search_pinned_resources_mode',
+  },
+  {
+    up: migration_20260911_114053_add_tenant_api_key.up,
+    down: migration_20260911_114053_add_tenant_api_key.down,
+    name: '20260911_114053_add_tenant_api_key',
   },
 ];

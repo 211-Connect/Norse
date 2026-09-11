@@ -1,4 +1,4 @@
-import { Address, ApiResource, Translation } from '@/types/resource';
+import { Address, ApiResource } from '@/types/resource';
 
 export type Privacy = 'PRIVATE' | 'PUBLIC';
 
@@ -10,7 +10,6 @@ export interface FavoritesPageProps {
 
 export interface Favorite extends ApiResource {
   addresses: Address[];
-  translations: Translation[];
 }
 
 // Base favorite list interface

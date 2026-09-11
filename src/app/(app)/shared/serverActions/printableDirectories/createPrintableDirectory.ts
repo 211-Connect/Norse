@@ -2,15 +2,20 @@
 
 import { CreatePrintableDirectoryDto } from '@/lib/api/generated/data-contracts';
 import { printableDirectoriesApiClient } from '@/lib/api/clients';
+import { getTenantApiKeyHeaders } from '@/lib/api/getTenantApiKey';
 
 import { getAuthHeaders } from '../../lib/authHeaders';
 import { PrintableDirectoryMutationResult } from './printableDirectoryMutationResult';
 
 export async function createPrintableDirectory(
   input: CreatePrintableDirectoryDto,
-  tenantId?: string,
+  tenantId: string,
 ): Promise<PrintableDirectoryMutationResult> {
-  const headers = await getAuthHeaders(tenantId);
+  const [authHeaders, tenantApiKeyHeaders] = await Promise.all([
+    getAuthHeaders(tenantId),
+    getTenantApiKeyHeaders(tenantId),
+  ]);
+  const headers = { ...authHeaders, ...tenantApiKeyHeaders };
 
   try {
     const response =
