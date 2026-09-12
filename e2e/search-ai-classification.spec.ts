@@ -125,7 +125,9 @@ test.describe('AI classification search flow (real data, no mocks)', () => {
   );
 
   const tenant = getCurrentTenant();
-  const aiScenarioQueries = getRequiredAiScenarioQueries();
+  const aiScenarioQueries = isAiSearchEnabledForCurrentTenant()
+    ? getRequiredAiScenarioQueries()
+    : undefined;
 
   test.beforeEach(async ({ page }) => {
     await goHome(page);
@@ -175,8 +177,8 @@ test.describe('AI classification search flow (real data, no mocks)', () => {
     baseURL,
   }) => {
     const url = buildAiSearchUrl(baseURL!, {
-      query: aiScenarioQueries.direct,
-      query_label: aiScenarioQueries.direct,
+      query: aiScenarioQueries!.direct,
+      query_label: aiScenarioQueries!.direct,
       query_type: 'text',
     });
 
@@ -196,8 +198,8 @@ test.describe('AI classification search flow (real data, no mocks)', () => {
     baseURL,
   }) => {
     const url = buildAiSearchUrl(baseURL!, {
-      query: aiScenarioQueries.lowInfoWithResults,
-      query_label: aiScenarioQueries.lowInfoWithResults,
+      query: aiScenarioQueries!.lowInfoWithResults,
+      query_label: aiScenarioQueries!.lowInfoWithResults,
       query_type: 'text',
     });
 
@@ -215,8 +217,8 @@ test.describe('AI classification search flow (real data, no mocks)', () => {
     baseURL,
   }) => {
     const url = buildAiSearchUrl(baseURL!, {
-      query: aiScenarioQueries.clarify,
-      query_label: aiScenarioQueries.clarify,
+      query: aiScenarioQueries!.clarify,
+      query_label: aiScenarioQueries!.clarify,
       query_type: 'text',
     });
 
@@ -234,8 +236,8 @@ test.describe('AI classification search flow (real data, no mocks)', () => {
   test.describe('AI clarification interaction', () => {
     test.beforeEach(async ({ page, baseURL }) => {
       const url = buildAiSearchUrl(baseURL!, {
-        query: aiScenarioQueries.clarify,
-        query_label: aiScenarioQueries.clarify,
+        query: aiScenarioQueries!.clarify,
+        query_label: aiScenarioQueries!.clarify,
         query_type: 'text',
       });
 
