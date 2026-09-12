@@ -47,7 +47,11 @@ test.describe('Direct organization search URL access', () => {
     'Organization search is not enabled for this tenant/environment (see e2e/fixtures/tenants.ts)',
   );
 
-  const organization = getRequiredOrganizationFixture();
+  let organization: { id: string; name: string; city?: string };
+
+  test.beforeAll(() => {
+    organization = getRequiredOrganizationFixture();
+  });
 
   for (const locale of ['en', 'es'] as const) {
     test(`opening an organization search URL directly renders results (${locale})`, async ({

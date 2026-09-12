@@ -5,7 +5,6 @@ import { Heart, HeartOff, Loader2, PlusIcon } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import {
-  Fragment,
   type MouseEvent,
   useCallback,
   useEffect,
@@ -322,7 +321,11 @@ export function AddToFavoritesButton({
                   {favoritesState.data.map((el) => {
                     const isInList = el.containsResource ?? false;
                     return (
-                      <Fragment key={el.id}>
+                      <div
+                        key={el.id}
+                        data-testid="favorites-list-row"
+                        className="contents"
+                      >
                         <Link
                           href={withOptionalTrailingSlash(
                             `/${i18n.language}/favorites/${el.id}`,
@@ -366,7 +369,7 @@ export function AddToFavoritesButton({
                             )}
                           </Button>
                         </div>
-                      </Fragment>
+                      </div>
                     );
                   })}
                 </>

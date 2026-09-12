@@ -1,8 +1,21 @@
 import { defineConfig, devices } from '@playwright/test';
 
+import { getBaseUrlForCurrentTenant } from './e2e/fixtures/tenants';
 import { DEFAULT_ACTION_TIMEOUT_MS, TEST_TIMEOUT_MS } from './e2e/timeouts';
 
-export const baseURL = process.env.E2E_BASE_URL || 'http://localhost:3000';
+function resolveBaseURL(): string {
+  if (process.env.E2E_BASE_URL) {
+    return process.env.E2E_BASE_URL;
+  }
+  // When a tenant/env is explicitly selected, derive the base URL from the
+  // fixture. Otherwise keep the historical localhost default for bare runs.
+  if (process.env.E2E_TENANT_KEY || process.env.E2E_TENANT_ENV) {
+    return getBaseUrlForCurrentTenant();
+  }
+  return 'http://localhost:3000';
+}
+
+export const baseURL = resolveBaseURL();
 
 /**
  * Playwright E2E test configuration for Norse.
@@ -12,9 +25,17 @@ export const baseURL = process.env.E2E_BASE_URL || 'http://localhost:3000';
  *
  *   E2E_BASE_URL=https://staging.example.com
  *
+ * Or select a tenant/environment and the base URL is derived from
+ * e2e/fixtures/tenants.ts:
+ *
+ *   E2E_TENANT_KEY=WA E2E_TENANT_ENV=dev
+ *
  * For authenticated tests (Favorites), provide:
  *   TEST_USER_EMAIL=...
  *   TEST_USER_PASSWORD=...
+ *
+ * TEST_USER_EMAIL can be omitted when E2E_TENANT_KEY/E2E_TENANT_ENV are set;
+ * it is derived as test-<tenant>-<env>@c211.io from the fixture.
  */
 export default defineConfig({
   testDir: './e2e',
