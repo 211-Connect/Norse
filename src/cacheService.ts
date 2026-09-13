@@ -21,6 +21,21 @@ class CacheService {
 
     if (this.client?.status === 'ready') return;
 
+    // ioredis stops reconnecting once retryStrategy gives up (status 'end'),
+    // but keeps the client object around; without this the service would stay
+    // permanently uncached until process restart (see incident 2026-08-13).
+    if (
+      this.client &&
+      (this.client.status === 'end' || this.client.status === 'close')
+    ) {
+      log.warn(
+        { db: this.db, status: this.client.status },
+        'Redis client is dead; recreating',
+      );
+      this.client = null;
+      this.connectionAttempted = false;
+    }
+
     if (this.isConnecting && this.connectionPromise) {
       return this.connectionPromise;
     }
@@ -56,10 +71,12 @@ class CacheService {
         enableOfflineQueue: false,
         keepAlive: 30_000,
         connectTimeout: 3_000,
-        commandTimeout: 1_000,
+        commandTimeout: 5_000,
         lazyConnect: true,
         retryStrategy: (times) => {
-          // 0.25s → 0.5s → 0.75s → 1s, then give up (~2.5s total)
+          // 0.25s → 0.5s → 0.75s → 1s, then give up (~2.5s total). Once ioredis
+          // gives up, ensureConnection() detects the dead client and recreates
+          // it on the next cache operation, so giving up here is safe.
           if (times > 4) {
             log.error(
               { db: this.db, attempts: times },
@@ -83,11 +100,35 @@ class CacheService {
       });
 
       this.client.on('error', (err) => {
-        log.error({ err, db: this.db }, 'Redis error');
+        log.error(
+          { err, db: this.db, status: this.client?.status },
+          'Redis error',
+        );
       });
 
       this.client.on('reconnecting', () => {
-        log.warn({ db: this.db }, 'Redis reconnecting');
+        log.warn(
+          { db: this.db, status: this.client?.status },
+          'Redis reconnecting',
+        );
+      });
+
+      this.client.on('ready', () => {
+        log.info({ db: this.db, status: this.client?.status }, 'Redis ready');
+      });
+
+      this.client.on('close', () => {
+        log.warn(
+          { db: this.db, status: this.client?.status },
+          'Redis connection closed',
+        );
+      });
+
+      this.client.on('end', () => {
+        log.error(
+          { db: this.db, status: this.client?.status },
+          'Redis connection ended; will reconnect on next cache operation',
+        );
       });
 
       await this.client.connect();

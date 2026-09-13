@@ -1,6 +1,12 @@
+import { hostname } from 'os';
 import pino from 'pino';
 
 const isDev = process.env.NODE_ENV === 'development';
+
+// os.hostname() reads the container's actual hostname (unique per DO App
+// Platform instance), unaffected by the Dockerfile's `ENV HOSTNAME=0.0.0.0`
+// (which only sets process.env.HOSTNAME for Next.js's listen address).
+const instanceId = typeof window === 'undefined' ? hostname() : undefined;
 
 // typeof window === 'undefined' is statically evaluated by bundlers:
 // - On the server it's true  → full pino with serializers; pretty stream in dev
@@ -43,7 +49,7 @@ export const logger = pino(
         err: pino.stdSerializers.err,
         error: pino.stdSerializers.err,
       },
-      base: { env: process.env.NODE_ENV },
+      base: { env: process.env.NODE_ENV, instanceId },
     }),
   },
   stream,

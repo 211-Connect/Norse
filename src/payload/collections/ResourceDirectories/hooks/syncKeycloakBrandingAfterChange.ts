@@ -2,6 +2,7 @@ import type { CollectionAfterChangeHook } from 'payload';
 
 import { createLogger } from '@/lib/logger';
 import type { ResourceDirectory } from '@/payload/payload-types';
+import { shouldSkipSideEffects } from '@/payload/utilities/hookContext';
 
 import { syncKeycloakRealmBrandingAttributes } from './keycloakRealmBranding';
 
@@ -63,6 +64,11 @@ export const syncKeycloakRealmBrandingAfterChange: CollectionAfterChangeHook<
   ResourceDirectory
 > = async ({ doc, operation, req }) => {
   if (operation !== 'create' && operation !== 'update') {
+    return doc;
+  }
+
+  // Translated locales never change realm branding attributes (theme/logo/title come from `en`).
+  if (shouldSkipSideEffects(req.context)) {
     return doc;
   }
 

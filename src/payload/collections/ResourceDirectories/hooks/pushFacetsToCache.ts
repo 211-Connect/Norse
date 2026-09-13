@@ -3,6 +3,7 @@ import { CollectionAfterChangeHook, PayloadRequest } from 'payload';
 import { apiConfigCacheService } from '@/cacheService';
 import { createLogger } from '@/lib/logger';
 import { ResourceDirectory } from '@/payload/payload-types';
+import { shouldSkipSideEffects } from '@/payload/utilities/hookContext';
 
 import { findTenantById } from '../../Tenants/actions';
 import { buildFacetsCache } from '../utilities/buildFacetsCache';
@@ -67,4 +68,11 @@ export const pushFacetsToCache = async (
 
 export const pushFacetsToCacheAfterChangeHook: CollectionAfterChangeHook<
   ResourceDirectory
-> = ({ doc, req }) => pushFacetsToCache(doc, req);
+> = ({ doc, req }) => {
+  // Translation jobs write each locale individually; they run this once after all locales instead.
+  if (shouldSkipSideEffects(req.context)) {
+    return doc;
+  }
+
+  return pushFacetsToCache(doc, req);
+};
