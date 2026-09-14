@@ -117,29 +117,19 @@ what's requested — the API always returns both — it only controls whether
 `search-bar.tsx` turns the `organizations` array into visible dropdown
 options.
 
-### Identity: name, not id
+### Identity: stable `organization_id`, not name
 
-Selecting an organization sets `query = organization name` (an exact,
-case-insensitive string), **not** an id. `GET /search?query_type=organization&query=<name>`
-filters resources to that organization by name match. This is a deliberate
-constraint, not an oversight: there is no `organization_id` field on the
-resource/service-at-location search index, and the Norse API team confirmed
-it can't be added without an external indexer change.
-
-**Known limitation, accepted as-is**: if two organizations in the same
-tenant share the exact same name, this filter cannot distinguish them —
-selecting either produces identical `/search` results, even though the
-dropdown's city/state badge makes them *look* distinguishable. This was a
-deliberate product decision (ship with the limitation documented, not
-mitigated in the UI) — don't "fix" this with dropdown warnings or dedup
-logic without revisiting that decision first; do so only if a flagged-in
-tenant actually reports confusion from it.
+Selecting an organization sets `organization_id` to the organization's stable id
+and clears the free-text query (`query = ''`). `GET /search?query_type=<tenant engine>&organization_id=<id>`
+uses the id to scope results to that organization. This replaced the earlier
+name-based organization filter (`query_type=organization&query=<name>`) once the
+backend gained support for filtering by stable organization id.
 
 ### Feature flags
 
 - `enableOrganizationSearch` (default off, per tenant) — gates whether the
-  Organizations group ever renders and whether `organization` is ever used
-  as a `queryType` in that tenant's UI.
+  Organizations group ever renders and whether `organization_id` is ever used
+  in that tenant's UI.
 - `showOrganizationLocationBadge` (default off, per tenant) —
   gates the city/state badge on organization rows. Mirrors
   `showSuggestionListTaxonomyBadge`'s role for taxonomy codes.
