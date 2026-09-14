@@ -56,6 +56,11 @@ export type TenantFixture = {
    * location-gated assertions rely on.
    */
   testLocation: string;
+  /**
+   * Base URL for each environment. Used to derive `E2E_BASE_URL` in CI and
+   * local runs unless it is explicitly overridden.
+   */
+  baseUrl: Record<TenantEnv, string>;
   /** Whether AI classification search is enabled, per environment. */
   aiSearchEnabled: Record<TenantEnv, boolean>;
   /** Only set for tenants/environments with AI search enabled - see `AiScenarioQueries`. */
@@ -99,6 +104,10 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
     broadQuery: 'food',
     taxonomy: { code: 'DT-8800', label: 'Tax Help' },
     testLocation: 'Minneapolis',
+    baseUrl: {
+      dev: 'https://stg-mboa.c211.io/adresources',
+      prod: 'https://mn.gov/adresources',
+    },
     aiSearchEnabled: { dev: false, prod: false },
     hasFacets: true,
     directResourceId: '98e5490a-8468-5673-afe3-8baffef6a236',
@@ -110,6 +119,10 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
     broadQuery: 'health',
     taxonomy: { code: 'LV-1600', label: 'Dental Care' },
     testLocation: 'Seattle',
+    baseUrl: {
+      dev: 'https://dev-wa211.c211.io',
+      prod: 'https://search.wa211.org',
+    },
     aiSearchEnabled: { dev: true, prod: false },
     aiScenarioQueries: {
       direct: "I'm hungry",
@@ -129,6 +142,10 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
       label: 'At Risk/Homeless Housing Related Assistance Programs',
     },
     testLocation: 'Richmond',
+    baseUrl: {
+      dev: 'https://dev-va211.c211.io',
+      prod: 'https://search.211virginia.org',
+    },
     aiSearchEnabled: { dev: true, prod: false },
     aiScenarioQueries: {
       direct: "I'm hungry",
@@ -145,6 +162,10 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
     broadQuery: 'food',
     taxonomy: { code: 'BH-1800.1500-100', label: 'Domestic Violence Shelters' },
     testLocation: 'Philadelphia',
+    baseUrl: {
+      dev: 'https://dev-pa211.c211.io',
+      prod: 'https://search.pa211.org',
+    },
     aiSearchEnabled: { dev: false, prod: false },
     hasFacets: true,
     directResourceId: 'aa3e3bb5-b065-5996-9019-e52b75b9a8e8',
@@ -156,6 +177,10 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
     broadQuery: 'food',
     taxonomy: { code: 'BH-1800.8500-185', label: 'Extreme Weather Shelters' },
     testLocation: 'Phoenix',
+    baseUrl: {
+      dev: 'https://dev-az211.c211.io',
+      prod: 'https://search.211arizona.org',
+    },
     aiSearchEnabled: { dev: false, prod: false },
     hasFacets: false,
     directResourceId: '0470d494-2311-5dd5-b3d7-584371f872af',
@@ -167,6 +192,10 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
     broadQuery: 'food',
     taxonomy: { code: 'ND-1500', label: 'Job Assistance Centers' },
     testLocation: 'Santa Cruz',
+    baseUrl: {
+      dev: 'https://dev-scc211.c211.io',
+      prod: 'https://search.211santacruzcounty.org',
+    },
     aiSearchEnabled: { dev: true, prod: true },
     aiScenarioQueries: {
       direct: "I'm hungry",
@@ -188,6 +217,10 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
     broadQuery: 'food',
     taxonomy: { code: 'BD-1800.2000', label: 'Food Pantries' },
     testLocation: 'Warrenville',
+    baseUrl: {
+      dev: 'https://dev-dupage.c211.io',
+      prod: 'https://search.dupage211.c211.io',
+    },
     aiSearchEnabled: { dev: false, prod: false },
     hasFacets: false,
     directResourceId: '041a0d9f-d907-5f9d-a7bf-76854c7afbbf',
@@ -215,6 +248,17 @@ export function getCurrentTenantEnv(): TenantEnv {
 
 export function getCurrentTenant(): TenantFixture {
   return TENANT_FIXTURES[getCurrentTenantKey()];
+}
+
+export function getBaseUrlForCurrentTenant(): string {
+  const tenant = getCurrentTenant();
+  return tenant.baseUrl[getCurrentTenantEnv()];
+}
+
+export function getTestEmailForCurrentTenant(): string {
+  const tenant = getCurrentTenant();
+  const env = getCurrentTenantEnv();
+  return `test-${tenant.key.toLowerCase()}-${env}@c211.io`;
 }
 
 export function isAiSearchEnabledForCurrentTenant(): boolean {

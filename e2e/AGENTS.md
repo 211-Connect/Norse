@@ -42,23 +42,25 @@ Scope: `e2e/**`. Read this before adding or editing Playwright specs or helpers.
 The full suite (`search-taxonomy`, `translations`, `search-geocode`,
 `favorites`, `accessibility`, `ai-classification`, `resource-direct-link`,
 `organization`) runs against 7 tenants × 2 environments (dev/prod) in CI — see
-`.github/workflows/e2e-tests.yaml` for the matrix (base URLs, per-cell test
-email) and `e2e/fixtures/tenants.ts` for the per-tenant data (taxonomy
-codes/labels, broad queries, `aiSearchEnabled`, `organizationSearchEnabled`).
+`.github/workflows/e2e-tests.yaml` for the matrix (tenant + environment only)
+and `e2e/fixtures/tenants.ts` for the per-tenant data (base URLs, taxonomy
+codes/labels, broad queries, test-account emails, `aiSearchEnabled`,
+`organizationSearchEnabled`).
 
 - Test accounts: one account per matrix cell, email deterministic
-  (`test-<tenant>-<env>@c211.io`, e.g. `test-wa-dev@c211.io`), all sharing a
-  single `TEST_USER_PASSWORD` GitHub secret — not a per-cell secret. Each
+  (`test-<tenant>-<env>@c211.io`, e.g. `test-wa-dev@c211.io`), derived from
+  the fixture unless `TEST_USER_EMAIL` is explicitly set. All accounts share
+  a single `TEST_USER_PASSWORD` GitHub secret — not a per-cell secret. Each
   account must actually exist in that tenant/env's Keycloak realm with that
   shared password. To add another tenant, create its 2 accounts and add its
-  matrix rows — no new secrets needed.
+  matrix rows + fixture entry (including `baseUrl`) — no new secrets needed.
 
 - Tenant is selected locally via `E2E_TENANT_KEY` (`MBOA` | `WA` | `VA` |
   `PA` | `AZ` | `SCC` | `DUPAGE`, defaults to `MBOA`); environment via
-  `E2E_TENANT_ENV` (`dev` | `prod`, defaults to `dev`). Both only affect fixture
-  lookups in `e2e/fixtures/tenants.ts` — `playwright.config.ts`'s `baseURL` still
-  comes from `E2E_BASE_URL` as before; CI sets all three env vars together per
-  matrix cell.
+  `E2E_TENANT_ENV` (`dev` | `prod`, defaults to `dev`). When a tenant/env is
+  selected, `playwright.config.ts` derives `baseURL` from the fixture; set
+  `E2E_BASE_URL` to override it. With no tenant/env selected, `baseURL` still
+  defaults to `http://localhost:3000`.
 - No hosts-file tricks needed: tenant resolution is by request `Host` header
   (`findResourceDirectoryByHost`), so pointing `E2E_BASE_URL` at any real
   tenant domain is sufficient.
@@ -224,9 +226,12 @@ directly in the test that owns the list, not from a broad `beforeAll`/
 - `npm run test:e2e:<project>` — one project (`accessibility`, `favorites`,
   `translations`, `search-geocode`, `search-taxonomy`, `share-link`,
   `resource-direct-link`, `organization`).
-- Requires a running app server; `baseURL` defaults to `http://localhost:3000`,
-  override with `E2E_BASE_URL`.
-- Favorites (authenticated) specs skip automatically unless `TEST_USER_EMAIL`
-  and `TEST_USER_PASSWORD` are set — see "Authenticated favorites" above.
+- Requires a running app server; `baseURL` defaults to `http://localhost:3000`
+  when no tenant/env is selected, otherwise it is derived from
+  `e2e/fixtures/tenants.ts`. Override with `E2E_BASE_URL` at any time.
+- Favorites (authenticated) specs skip automatically unless
+  `TEST_USER_PASSWORD` is set — `TEST_USER_EMAIL` can be omitted when
+  `E2E_TENANT_KEY`/`E2E_TENANT_ENV` are set, since it is derived from the
+  fixture.
 - All `E2E_*_TIMEOUT_MS` env vars in `timeouts.ts` are overridable per-run —
   use them to debug flakiness on a slow environment before assuming a bug.

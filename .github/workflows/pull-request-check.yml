@@ -32,3 +32,12 @@ jobs:
 
       - name: Build project
         run: npm run build
+
+  # TEMPORARY: verify the e2e suite against dev tenants on this PR.
+  # Remove this job before merging — e2e already runs on push to `main`
+  # (see e2e-tests.yaml) and doesn't normally run on every PR.
+  e2e-tests:
+    uses: ./.github/workflows/e2e-tests.yaml
+    with:
+      environment: dev
+    secrets: inherit

@@ -5,10 +5,12 @@ import {
   closeFavoritesDialog,
   closeShareDialog,
   deleteFavoriteList,
+  dialogHasButton,
   editFavoriteList,
   expect,
   expectAuthenticatedShell,
   expectPageUrl,
+  favoriteListCardByExactName,
   filterFavoriteListsByName,
   getFavoritesDialogListActionButton,
   goHome,
@@ -38,7 +40,7 @@ test.describe('Favorites Feature (Authenticated)', () => {
 
   test.skip(
     !hasAuth,
-    'Skipped — no test credentials (set TEST_USER_EMAIL & TEST_USER_PASSWORD)',
+    'Skipped — no test credentials (set TEST_USER_PASSWORD; TEST_USER_EMAIL is derived from fixtures when E2E_TENANT_KEY/E2E_TENANT_ENV are set)',
   );
 
   test.use({
@@ -262,24 +264,52 @@ test.describe('Favorites Feature (Authenticated)', () => {
 
     await openFavoritesDialogForList(page, updatedListName);
 
-    // Should show "Add to list" button initially (resource not in list)
-    const addBtn = await getFavoritesDialogListActionButton(
+    // Detect the current membership state from whichever action button is
+    // rendered. Earlier tests may have left the resource in the list, so the
+    // test toggles the state rather than assuming a specific starting state.
+    const inListInitially = await dialogHasButton(
       page,
       updatedListName,
-      'add-to-list-btn',
+      'remove-from-list-btn',
     );
 
-    // Add it
-    await addBtn.click();
-    await expect(page.getByText('Added to list')).toBeVisible({
-      timeout: ASYNC_UI_TIMEOUT_MS,
-    });
+    if (inListInitially) {
+      // Resource is in the list: remove it and verify the add button appears.
+      const removeBtn = await getFavoritesDialogListActionButton(
+        page,
+        updatedListName,
+        'remove-from-list-btn',
+      );
+      await removeBtn.click();
+      await expect(page.getByText('Removed from list')).toBeVisible({
+        timeout: ASYNC_UI_TIMEOUT_MS,
+      });
 
-    // Remove it
-    await removeFromListViaDialog(page, updatedListName);
+      const addBtn = await getFavoritesDialogListActionButton(
+        page,
+        updatedListName,
+        'add-to-list-btn',
+      );
+      await expect(addBtn).toBeVisible({ timeout: ASYNC_UI_TIMEOUT_MS });
+    } else {
+      // Resource is not in the list: add it and verify the remove button appears.
+      const addBtn = await getFavoritesDialogListActionButton(
+        page,
+        updatedListName,
+        'add-to-list-btn',
+      );
+      await addBtn.click();
+      await expect(page.getByText('Added to list')).toBeVisible({
+        timeout: ASYNC_UI_TIMEOUT_MS,
+      });
 
-    // Should show "Add to list" button again
-    await expect(addBtn).toBeVisible({ timeout: ASYNC_UI_TIMEOUT_MS });
+      const removeBtn = await getFavoritesDialogListActionButton(
+        page,
+        updatedListName,
+        'remove-from-list-btn',
+      );
+      await expect(removeBtn).toBeVisible({ timeout: ASYNC_UI_TIMEOUT_MS });
+    }
 
     await closeFavoritesDialog(page);
   });
@@ -292,7 +322,30 @@ test.describe('Favorites Feature (Authenticated)', () => {
       query_label: 'food',
       query_type: 'text',
     });
-    await addFirstResultToList(page, updatedListName);
+
+    // The same broad query can return a resource that is already in the list
+    // (e.g. left behind by the previous test), so add only when needed instead
+    // of assuming a fresh state.
+    await openFavoritesDialogForList(page, updatedListName);
+
+    const alreadyInList = await dialogHasButton(
+      page,
+      updatedListName,
+      'remove-from-list-btn',
+    );
+
+    if (!alreadyInList) {
+      const addBtn = await getFavoritesDialogListActionButton(
+        page,
+        updatedListName,
+        'add-to-list-btn',
+      );
+      await addBtn.click();
+      await expect(page.getByText('Added to list')).toBeVisible({
+        timeout: ASYNC_UI_TIMEOUT_MS,
+      });
+    }
+
     await closeFavoritesDialog(page);
 
     await goToFavorites(page);
@@ -369,9 +422,11 @@ test.describe('Favorites Feature (Authenticated)', () => {
 
     await deleteFavoriteList(page, updatedListName);
 
-    const removedCard = page.getByText(updatedListName);
-
-    await expect(removedCard).toHaveCount(0, {
+    // Scope the absence check to the list cards so transient UI (toasts,
+    // dialogs) that may contain the list name don't cause false positives.
+    await expect(
+      favoriteListCardByExactName(page, updatedListName),
+    ).toHaveCount(0, {
       timeout: ASYNC_UI_TIMEOUT_MS,
     });
   });
@@ -439,9 +494,12 @@ test.describe('Favorites Feature (Authenticated)', () => {
 
     await goToFavorites(page);
     await deleteFavoriteList(page, publicListName);
-    await expect(page.getByText(publicListName)).toHaveCount(0, {
-      timeout: ASYNC_UI_TIMEOUT_MS,
-    });
+    await expect(favoriteListCardByExactName(page, publicListName)).toHaveCount(
+      0,
+      {
+        timeout: ASYNC_UI_TIMEOUT_MS,
+      },
+    );
   });
 
   test('should sync local favorites into the account on sign-in', async ({

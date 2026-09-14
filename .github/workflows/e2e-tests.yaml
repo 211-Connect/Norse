@@ -41,13 +41,11 @@ jobs:
     outputs:
       matrix: ${{ steps.filter.outputs.matrix }}
     steps:
-      # Single source of truth for the tenant × env test matrix. Base URLs
-      # are public (non-secret). Test-account email is deterministic per
-      # cell (`test-<tenant>-<env>@c211.io`) — only the shared password is a
-      # secret (see e2e/AGENTS.md "Multi-tenant test matrix"). To add another
-      # tenant: add its dev + prod rows here, create its 2
-      # `test-<tenant>-{dev,prod}@c211.io` accounts (same shared
-      # `TEST_USER_PASSWORD`), and add it to e2e/fixtures/tenants.ts.
+      # Single source of truth for the tenant × env test matrix. Base URLs and
+      # test-account emails are derived from `e2e/fixtures/tenants.ts`; only the
+      # shared password is a secret (see e2e/AGENTS.md "Multi-tenant test
+      # matrix"). To add another tenant: add its dev + prod rows here and add
+      # its fixture entry (including baseUrl) in e2e/fixtures/tenants.ts.
       - name: Filter matrix to the target environment
         id: filter
         env:
@@ -58,17 +56,19 @@ jobs:
           # MBOA production (mn.gov/adresources) is excluded here — it sits
           # behind bot/robot blockers that reject automated Playwright traffic.
           FULL_MATRIX='[
-            {"tenant":"MBOA","env":"dev","base_url":"https://stg-mboa.c211.io/adresources","test_email":"test-mboa-dev@c211.io","ai_project":false},
-            {"tenant":"WA","env":"dev","base_url":"https://dev-wa211.c211.io","test_email":"test-wa-dev@c211.io","ai_project":true},
-            {"tenant":"WA","env":"production","base_url":"https://search.wa211.org","test_email":"test-wa-prod@c211.io","ai_project":false},
-            {"tenant":"VA","env":"dev","base_url":"https://dev-va211.c211.io","test_email":"test-va-dev@c211.io","ai_project":true},
-            {"tenant":"VA","env":"production","base_url":"https://search.211virginia.org","test_email":"test-va-prod@c211.io","ai_project":false},
-            {"tenant":"PA","env":"dev","base_url":"https://dev-pa211.c211.io","test_email":"test-pa-dev@c211.io","ai_project":false},
-            {"tenant":"PA","env":"production","base_url":"https://search.pa211.org","test_email":"test-pa-prod@c211.io","ai_project":false},
-            {"tenant":"AZ","env":"dev","base_url":"https://dev-az211.c211.io","test_email":"test-az-dev@c211.io","ai_project":false},
-            {"tenant":"AZ","env":"production","base_url":"https://search.211arizona.org","test_email":"test-az-prod@c211.io","ai_project":false},
-            {"tenant":"SCC","env":"dev","base_url":"https://dev-scc211.c211.io","test_email":"test-scc-dev@c211.io","ai_project":true},
-            {"tenant":"SCC","env":"production","base_url":"https://search.211santacruzcounty.org","test_email":"test-scc-prod@c211.io","ai_project":true}
+            {"tenant":"MBOA","env":"dev"},
+            {"tenant":"DUPAGE","env":"dev"},
+            {"tenant":"DUPAGE","env":"production"},
+            {"tenant":"WA","env":"dev"},
+            {"tenant":"WA","env":"production"},
+            {"tenant":"VA","env":"dev"},
+            {"tenant":"VA","env":"production"},
+            {"tenant":"PA","env":"dev"},
+            {"tenant":"PA","env":"production"},
+            {"tenant":"AZ","env":"dev"},
+            {"tenant":"AZ","env":"production"},
+            {"tenant":"SCC","env":"dev"},
+            {"tenant":"SCC","env":"production"}
           ]'
           FILTERED=$(echo "$FULL_MATRIX" | jq -c --arg env "$TARGET_ENV" '[.[] | select(.env == $env)]')
           echo "matrix={\"include\":$FILTERED}" >> "$GITHUB_OUTPUT"
@@ -90,10 +90,8 @@ jobs:
       E2E_UI_SHELL_TIMEOUT_MS: 20000
       E2E_DEFAULT_ACTION_TIMEOUT_MS: 20000
       E2E_TEST_TIMEOUT_MS: 600000
-      E2E_BASE_URL: ${{ matrix.base_url }}
       E2E_TENANT_KEY: ${{ matrix.tenant }}
       E2E_TENANT_ENV: ${{ matrix.env == 'production' && 'prod' || 'dev' }}
-      TEST_USER_EMAIL: ${{ matrix.test_email }}
       TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
 
     steps:
@@ -114,11 +112,15 @@ jobs:
 
       - name: Run E2E tests
         run: |
-          PROJECTS="--project=search-taxonomy --project=translations --project=search-geocode --project=favorites --project=accessibility --project=resource-direct-link"
-          if [ "${{ matrix.ai_project }}" = "true" ]; then
-            PROJECTS="$PROJECTS --project=ai-classification"
-          fi
-          npx playwright test $PROJECTS
+          npx playwright test \
+            --project=search-taxonomy \
+            --project=translations \
+            --project=search-geocode \
+            --project=favorites \
+            --project=accessibility \
+            --project=resource-direct-link \
+            --project=organization \
+            --project=ai-classification
 
       - name: Upload Playwright report
         if: always()

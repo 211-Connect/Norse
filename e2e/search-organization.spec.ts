@@ -8,8 +8,6 @@ import {
   getResultTotalNumber,
   goHome,
   isSearchResultsListUrl,
-  openSearchDialog,
-  performSearch,
   test,
 } from './helpers';
 import { UI_SHELL_TIMEOUT_MS } from './timeouts';
@@ -38,7 +36,11 @@ test.describe('Organization search (real data, no mocks)', () => {
     'Organization search is not enabled for this tenant/environment (see e2e/fixtures/tenants.ts)',
   );
 
-  const organization = getRequiredOrganizationFixture();
+  let organization: { id: string; name: string; city?: string };
+
+  test.beforeAll(() => {
+    organization = getRequiredOrganizationFixture();
+  });
 
   test.beforeEach(async ({ page }) => {
     await goHome(page);

@@ -1,5 +1,6 @@
 import { type Page, expect } from '@playwright/test';
 
+import { getTestEmailForCurrentTenant } from '../fixtures/tenants';
 import { AUTH_NAV_TIMEOUT_MS, UI_SHELL_TIMEOUT_MS } from '../timeouts';
 import { isVisible } from './internal';
 import { expectAuthenticatedShell, goHome } from './navigation';
@@ -15,7 +16,8 @@ function isAuthHost(urlString: string): boolean {
 }
 
 export async function loginViaKeycloak(page: Page) {
-  const identity = process.env.TEST_USER_EMAIL || 'test@c211.io';
+  const identity =
+    process.env.TEST_USER_EMAIL || getTestEmailForCurrentTenant();
   const password = process.env.TEST_USER_PASSWORD || 'test-password';
 
   await goHome(page);

@@ -36,8 +36,10 @@ export async function goHome(page: Page) {
     waitUntil: 'load',
   });
   // Hydration/translation timing can be slower on dev deployments, so assert
-  // on the global header shell instead of a blanket networkidle.
-  await page.getByTestId('favorites-btn').waitFor({
+  // on the global header shell instead of a blanket networkidle. The header
+  // itself is always rendered; individual nav items (e.g. favorites-btn) may
+  // be hidden inside the mobile sheet on narrow viewports.
+  await page.locator('#app-header').waitFor({
     state: 'visible',
     timeout: UI_SHELL_TIMEOUT_MS,
   });
