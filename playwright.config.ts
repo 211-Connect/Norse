@@ -90,6 +90,11 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'], baseURL },
     },
     {
+      name: 'search-dialog-location',
+      testMatch: ['**/search-dialog-location.spec.ts'],
+      use: { ...devices['Desktop Chrome'], baseURL },
+    },
+    {
       name: 'favorites',
       testMatch: ['**/favorites.spec.ts', '**/local-favorites.spec.ts'],
       use: { ...devices['Desktop Chrome'], baseURL },

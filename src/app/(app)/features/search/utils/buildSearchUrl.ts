@@ -1,4 +1,7 @@
-import { deriveQueryType } from '@/app/(app)/shared/lib/search-utils';
+import {
+  deriveQueryType,
+  isEverywhereLocation,
+} from '@/app/(app)/shared/lib/search-utils';
 import { AiClassificationScenario } from '@/app/(app)/shared/services/ai-classification-search-service';
 import type { AiPredictOption } from '@/app/(app)/shared/services/ai-classification-search-service';
 import { parseCommaSeparatedValues } from '@/app/(app)/shared/utils/parseCommaSeparatedValues';
@@ -104,13 +107,24 @@ export function buildSearchUrl({
     });
   }
 
-  const hasLocation = originCoordinates?.length === 2;
-  if (hasLocation) {
-    const location = originLocation?.trim();
-    if (location) {
-      params.set('location', location);
-    }
+  const trimmedLocation = originLocation?.trim();
+  const hasRealLocation =
+    Boolean(trimmedLocation) && !isEverywhereLocation(trimmedLocation);
+  const hasCoords = originCoordinates?.length === 2;
 
+  // `location` is set whenever there's a real (non-"Everywhere") place name,
+  // even before it has been geocoded to coordinates yet (e.g. the user typed
+  // a location and submitted before the debounced lookup resolved). A
+  // `/search` URL with a `location` but no `coords` is forward-geocoded
+  // server-side on landing (see navigateToSearchWithCoords), so the
+  // destination page resolves coordinates on its own rather than the search
+  // silently falling back to "everywhere". `coords` is only ever set once
+  // real coordinates exist.
+  if (hasRealLocation) {
+    params.set('location', trimmedLocation!);
+  }
+
+  if (hasCoords) {
     const coords = (
       typeof originCoordinates === 'string'
         ? originCoordinates
@@ -119,7 +133,9 @@ export function buildSearchUrl({
     if (coords) {
       params.set('coords', coords);
     }
+  }
 
+  if (hasRealLocation || hasCoords) {
     const distance = (
       typeof originDistance === 'string'
         ? originDistance

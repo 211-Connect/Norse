@@ -42,6 +42,9 @@ export const useNavigateClassicSearch = ({
           : search.query || search.searchTerm;
 
         const hasCoordinates = search.searchCoordinates.length === 2;
+        // Persisted back into the atom after navigation below — unrelated to
+        // the URL itself, which buildSearchUrl derives from the explicit
+        // location/coordinates/distance args passed in below.
         const locationParams = hasCoordinates
           ? {
               searchLocation: search.searchLocation,
@@ -52,6 +55,9 @@ export const useNavigateClassicSearch = ({
         const url = buildSearchUrl({
           ...search,
           query,
+          location: search.searchLocation,
+          coordinates: search.searchCoordinates,
+          distance: search.searchDistance,
           searchEngine: appConfig.search.searchEngine,
         });
         persistSearchDistancePreference(distance);

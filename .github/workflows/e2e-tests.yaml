@@ -116,6 +116,7 @@ jobs:
             --project=search-taxonomy \
             --project=translations \
             --project=search-geocode \
+            --project=search-dialog-location \
             --project=favorites \
             --project=accessibility \
             --project=resource-direct-link \

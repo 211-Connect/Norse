@@ -200,7 +200,7 @@ export function SearchBar({
       Icon={SearchIcon}
       options={hideOptions ? [] : options}
       onInputChange={handleInputChange}
-      onValueChange={setSearchTerm}
+      onCommit={setSearchTerm}
       clearButtonLabel={t('call_to_action.remove')}
       value={searchTerm}
       positionBelowElementId="search-form-inputs"

@@ -244,6 +244,15 @@ export async function applyTestLocationOnSearchPage(
   await locationInput.fill(location);
   const listbox = page.getByTestId('autocomplete-listbox');
   await listbox.waitFor({ state: 'visible', timeout: AUTOCOMPLETE_TIMEOUT_MS });
+  // Listbox visibility alone isn't enough: while the geocode request for
+  // `location` is still in flight, the only option shown is the "Everywhere"
+  // placeholder (see the autocomplete's isLoading gating), and pressing
+  // Enter against just that one option would either no-op or fall back to
+  // Everywhere. Wait for a real, resolved suggestion before committing.
+  const options = listbox.getByTestId('autocomplete-option');
+  await expect
+    .poll(() => options.count(), { timeout: AUTOCOMPLETE_TIMEOUT_MS })
+    .toBeGreaterThan(1);
   await locationInput.press('Enter');
   await expect(page.locator('#search-container')).toBeVisible({
     timeout: UI_SHELL_TIMEOUT_MS,
