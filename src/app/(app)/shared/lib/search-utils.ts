@@ -7,6 +7,17 @@ import { BBox } from '@/types/resource';
 import { FindResourcesQuery } from '../services/search-service';
 
 /**
+ * "Everywhere" is the wire-format sentinel for "no location filter" (the
+ * literal string, independent of locale — see `search.everywhere` in
+ * common.json). A `location` matching it (case-insensitively) must never be
+ * treated as a real place: not forward-geocoded, not sent as a `location`
+ * query param.
+ */
+export function isEverywhereLocation(location: string | undefined | null) {
+  return location?.trim().toLowerCase() === 'everywhere';
+}
+
+/**
  * Check if advanced geospatial filtering is enabled via feature flag
  * @returns {boolean} True if feature flag is enabled
  */

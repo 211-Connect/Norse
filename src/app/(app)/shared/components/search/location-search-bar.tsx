@@ -2,14 +2,7 @@
 
 import { useAtomValue } from 'jotai';
 import { MapPin } from 'lucide-react';
-import {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useLocations } from '../../hooks/api/use-locations';
@@ -67,11 +60,10 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
 
   const appConfig = useAppConfig();
   const { t } = useTranslation('common');
-  const [shouldSearch, setShouldSearch] = useState(false);
-  // When our own code commits a location (handleDecommit), it sets shouldSearch
-  // intentionally. This ref prevents the external-commit effect below from
-  // overriding that value in the same render cycle.
-  const skipShouldSearchResetRef = useRef(false);
+  // True while the user is actively typing an uncommitted value — drives the
+  // debounced geocode lookup. Set by Autocomplete's onInputChange (typing)
+  // and cleared by onCommit/onDecommit-to-empty (a value settled).
+  const [isTyping, setIsTyping] = useState(false);
 
   // Local state for standalone mode
   const [localSearchLocation, setLocalSearchLocation] = useState(
@@ -91,7 +83,7 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
 
   // Global atoms for integrated mode
   const globalSearchLocation = useAtomValue(searchLocationAtom);
-  const coords = useAtomValue(searchCoordinatesAtom);
+  const globalCoords = useAtomValue(searchCoordinatesAtom);
   const globalPrevSearchLocation = useAtomValue(prevSearchLocationAtom);
   const userCoordinates = useAtomValue(userCoordinatesAtom);
 
@@ -113,13 +105,19 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
     additionalLocations,
     isFetching,
   } = useLocations(
-    shouldSearch ? debouncedSearchLocation : prevSearchLocation,
+    isTyping ? debouncedSearchLocation : prevSearchLocation,
     isStandalone, // Exclude additional locations in standalone mode
   );
 
   // While actively searching and awaiting API results, suppress stale geocoded
-  // suggestions so Enter/Tab can never commit a stale location
-  const isPendingResults = shouldSearch && isFetching;
+  // suggestions so Enter/Tab can never commit a stale location. This must
+  // also cover the debounce window itself, not just the network fetch: for
+  // up to LOCATION_SEARCH_DEBOUNCE_DELAY after a keystroke, `options` still
+  // reflects the *previous* debounced query (locationQuery hasn't reached
+  // debouncedSearchLocation yet), so `isFetching` alone would stay false and
+  // let a stale/irrelevant option through.
+  const isPendingResults =
+    isTyping && (locationQuery !== debouncedSearchLocation || isFetching);
   const displayOptions = useMemo(
     () =>
       isPendingResults
@@ -130,6 +128,18 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
     [isPendingResults, options, additionalLocations],
   );
   const validationError = useAtomValue(searchLocationValidationErrorAtom);
+
+  // In standalone mode "Everywhere" is excluded from options (see
+  // useLocations' excludeEverywhere), so the first result is already at
+  // index 0. In integrated mode "Everywhere" always occupies index 0, so
+  // the first real result is at index 1. Standalone mode also has no
+  // meaningful "already has coordinates" state of its own to suppress
+  // auto-select with, so it always defaults to index 0.
+  const autoSelectIndex = isStandalone
+    ? 0
+    : globalCoords?.length === 2
+      ? undefined
+      : 1;
 
   // Use context only if available (for main search integration)
   const context = useContext(MainSearchLayoutContext);
@@ -160,7 +170,9 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
     [locations, additionalLocations],
   );
 
-  const setSearchLocation = useCallback(
+  // Called only when Autocomplete commits a value (click, Enter, Tab,
+  // Escape-with-highlight, blur-autoselect) — never on raw typing.
+  const handleCommit = useCallback(
     (value) => {
       const coords = findCoords(value);
 
@@ -173,7 +185,7 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
         clearLocationCookies();
       }
 
-      setShouldSearch(false);
+      setIsTyping(false);
 
       if (isStandalone && 'onLocationChange' in props) {
         setLocalSearchLocation(value);
@@ -210,9 +222,12 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
     [findCoords, setSearch, isStandalone, props, userCoordinates],
   );
 
+  // Called on every keystroke (Autocomplete's onInputChange) — purely a live
+  // echo that feeds the debounced geocode lookup. Never touches cookies or
+  // the committed searchLocation/searchCoordinates; see handleCommit for that.
   const handleInputChange = useCallback(
     (value: string) => {
-      setShouldSearch(true);
+      setIsTyping(true);
 
       if (isStandalone) {
         setLocalSearchLocation(value);
@@ -228,13 +243,13 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
   );
 
   const handleClear = useCallback(() => {
-    setSearchLocation(t('search.everywhere', 'Everywhere'));
+    handleCommit(t('search.everywhere', 'Everywhere'));
     if (isStandalone) {
       setLocalPrevSearchLocation('');
     } else {
       setSearch?.((prev) => ({ ...prev, prevSearchLocation: '' }));
     }
-  }, [isStandalone, setSearch, setSearchLocation, t]);
+  }, [isStandalone, setSearch, handleCommit, t]);
 
   // Called by Autocomplete when the committed block is burst-cleared by a
   // keypress. `nextValue` is the triggering character, or '' for Backspace/Delete.
@@ -243,10 +258,7 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
   const handleDecommit = useCallback(
     (nextValue: string) => {
       clearLocationCookies();
-      // Exempt this intentional shouldSearch update from the external-commit
-      // detection effect — we're the one changing searchLocation here.
-      skipShouldSearchResetRef.current = true;
-      setShouldSearch(nextValue.length > 0);
+      setIsTyping(nextValue.length > 0);
 
       if (isStandalone && 'onLocationChange' in props) {
         setLocalSearchLocation(nextValue);
@@ -265,19 +277,6 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
     },
     [isStandalone, props, setSearch],
   );
-
-  // Detect when searchLocation is committed by an external source (currently
-  // only UseMyLocationButton, which writes directly to searchAtom). Our own
-  // handlers (setSearchLocation, handleDecommit, handleClear) already manage
-  // shouldSearch synchronously, so only the external path needs this reset.
-  useEffect(() => {
-    if (isStandalone) return;
-    if (skipShouldSearchResetRef.current) {
-      skipShouldSearchResetRef.current = false;
-      return;
-    }
-    setShouldSearch(false);
-  }, [searchLocation, isStandalone]);
 
   return (
     <div
@@ -309,15 +308,15 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
         options={displayOptions}
         Icon={showIcon ? MapPin : () => null}
         onInputChange={handleInputChange}
-        onValueChange={setSearchLocation}
+        onCommit={handleCommit}
         onClear={handleClear}
         blockMode
         onDecommit={handleDecommit}
         onEscape={handleClear}
         value={searchLocation}
         clearButtonLabel={t('call_to_action.remove')}
-        autoSelectIndex={coords?.length === 2 ? undefined : 1}
-        autoSelectOnBlurIndex={1}
+        autoSelectIndex={autoSelectIndex}
+        autoSelectOnBlurIndex={autoSelectIndex}
         positionBelowElementId={isStandalone ? undefined : 'search-form-inputs'}
       />
       {validationError && (

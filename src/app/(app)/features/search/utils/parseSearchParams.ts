@@ -1,4 +1,5 @@
 import { FindResourcesQuery } from '@/app/(app)/shared/services/search-service';
+import { isEverywhereLocation } from '@/app/(app)/shared/lib/search-utils';
 import { getSortOption } from '@/app/(app)/shared/utils/getSortOption';
 import { parseCommaSeparatedValues } from '@/app/(app)/shared/utils/parseCommaSeparatedValues';
 import qs from 'qs';
@@ -31,10 +32,7 @@ export function parseSearchParams(raw: RawSearchParams): FindResourcesQuery {
     typeof parsed.location === 'string'
       ? parsed.location || undefined
       : undefined;
-  const location =
-    rawLocation && rawLocation.trim().toLowerCase() === 'everywhere'
-      ? undefined
-      : rawLocation;
+  const location = isEverywhereLocation(rawLocation) ? undefined : rawLocation;
 
   return {
     query:
