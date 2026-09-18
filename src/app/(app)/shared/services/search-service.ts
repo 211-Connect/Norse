@@ -14,13 +14,14 @@ import {
 import { ONE_HOUR, stableHash, withCache } from '@/utilities/withCache';
 import { ensureUrlProtocol } from '@/utils';
 
-import { API_URL, INTERNAL_API_KEY } from '../lib/constants';
+import { API_URL } from '../lib/constants';
 import { fetchWrapper } from '../lib/fetchWrapper';
 import { buildSearchRequest, deriveQueryType } from '../lib/search-utils';
 import { formatAddressForDisplay } from '../lib/utils';
 import { ResultType } from '../store/results';
 import { SortOption } from '../utils/getSortOption';
 import { transformFacetsToArray } from '../utils/toFacetsWithTranslation';
+import { getApiHeaders } from '../lib/get-api-headers';
 
 const log = createLogger('search');
 
@@ -143,7 +144,7 @@ type FindResourcesOriginArgs = {
   locale: string;
   page: number;
   limit?: number;
-  tenantId?: string;
+  tenantId: string;
   searchEngine: SearchEngine;
 };
 
@@ -192,8 +193,7 @@ async function findResourcesOrigin({
       headers: {
         'accept-language': locale,
         'x-api-version': '1',
-        'x-api-key': INTERNAL_API_KEY || '',
-        ...(tenantId && { 'x-tenant-id': tenantId }),
+        ...(await getApiHeaders(tenantId)),
       },
       cache: 'no-store',
     });
@@ -238,7 +238,7 @@ export async function findResources(
   locale: string,
   page: number,
   limit: number | undefined,
-  tenantId: string | undefined,
+  tenantId: string,
   searchEngine: SearchEngine,
 ) {
   return withCache(
@@ -273,7 +273,7 @@ export async function findResourcesV2(
   locale: string,
   page: number,
   limit: number | undefined,
-  tenantId: string | undefined,
+  tenantId: string,
   searchEngine: SearchEngine,
 ): Promise<SearchResult> {
   if (isNaN(page)) page = 1;
@@ -304,7 +304,7 @@ export async function findResourcesV2(
         'Content-Type': 'application/json',
         'accept-language': locale,
         'x-api-version': '1',
-        ...(tenantId && { 'x-tenant-id': tenantId }),
+        ...(await getApiHeaders(tenantId)),
       },
       body: request.body,
     });

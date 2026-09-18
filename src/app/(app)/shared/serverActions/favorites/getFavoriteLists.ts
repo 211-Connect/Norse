@@ -6,28 +6,22 @@ import {
   Privacy,
 } from '@/types/favorites';
 
-import { getAuthHeaders } from '../../lib/authHeaders';
-import {
-  API_URL,
-  FAVORITES_LIST_ENDPOINT,
-  INTERNAL_API_KEY,
-} from '../../lib/constants';
+import { API_URL, FAVORITES_LIST_ENDPOINT } from '../../lib/constants';
 import { fetchWrapper } from '../../lib/fetchWrapper';
+import { getApiHeaders } from '../../lib/get-api-headers';
 
 export async function getFavoriteLists(
-  tenantId?: string,
+  tenantId: string,
   page: number = 1,
   limit: number = 10,
   search: string = '',
   locale: string = 'en',
   resourceId?: string,
 ): Promise<GetFavoriteListsResponse> {
-  const authHeaders = await getAuthHeaders(tenantId);
+  const headers = await getApiHeaders(tenantId);
 
   const searchParams = new URLSearchParams();
-  if (tenantId) {
-    searchParams.append('tenant_id', tenantId);
-  }
+  searchParams.append('tenant_id', tenantId);
   searchParams.append('page', page.toString());
   searchParams.append('limit', limit.toString());
   if (search) {
@@ -41,10 +35,8 @@ export async function getFavoriteLists(
 
   const response = await fetchWrapper<FavoriteListResponseDto>(url, {
     headers: {
-      ...authHeaders,
+      ...headers,
       'accept-language': locale,
-      'x-api-version': '1',
-      'x-api-key': INTERNAL_API_KEY || '',
     },
     cache: 'no-store',
   });

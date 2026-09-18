@@ -1,25 +1,20 @@
 'use server';
 
-import { API_URL, INTERNAL_API_KEY } from '../../lib/constants';
-import { fetchWrapper } from '../../lib/fetchWrapper';
+import { shortUrlApiClient } from '@/lib/api/clients';
+
+import { getApiHeaders } from '../../lib/get-api-headers';
 
 export async function shortenUrl(
   url: string,
-  tenantId?: string,
+  tenantId: string,
 ): Promise<string | null> {
-  const data = await fetchWrapper(`${API_URL}/short-url`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-version': '1',
-      'x-api-key': INTERNAL_API_KEY || '',
-      ...(tenantId && { 'x-tenant-id': tenantId }),
-    },
-    body: { url },
-    cache: 'no-store',
-  });
+  const response =
+    await shortUrlApiClient.shortUrlControllerGetOrCreateShortUrl(
+      { url },
+      { headers: await getApiHeaders(tenantId) },
+    );
 
-  const shortUrl = data?.url;
+  const shortUrl = response.data?.url;
   if (!shortUrl) {
     return null;
   }
@@ -29,5 +24,5 @@ export async function shortenUrl(
   // by extracting the ID from the short URL.
   const id = shortUrl.split('/').pop();
 
-  return id;
+  return id ?? null;
 }
