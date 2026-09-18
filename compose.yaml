@@ -24,6 +24,7 @@ services:
       DATABASE_URI: postgresql://norse-ng:norse-ng@norse-db:5432/norse-ng
       CACHE_REDIS_URI: redis://:norse-ng@valkey:6379
       UMAMI_API_URL: http://umami:4444
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4318
 
   norse-db:
     image: postgres:18
@@ -84,6 +85,19 @@ services:
     command:
       - '--persistence.file=/data/pushgateway.data'
 
+  tempo:
+    image: grafana/tempo:3.0.3
+    restart: always
+    ports:
+      - 3200:3200 # Tempo query API (used by the Grafana datasource)
+      - 4317:4317 # OTLP gRPC receiver
+      - 4318:4318 # OTLP HTTP receiver
+    volumes:
+      - ./tempo.yaml:/etc/tempo.yaml
+      - tempo_data:/var/tempo
+    command:
+      - '-config.file=/etc/tempo.yaml'
+
   grafana:
     image: grafana/grafana:12.3
     restart: always
@@ -95,8 +109,10 @@ services:
       - GF_USERS_ALLOW_SIGN_UP=false
     volumes:
       - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
     depends_on:
       - prometheus
+      - tempo
 
   umami:
     image: ghcr.io/umami-software/umami:latest
@@ -140,3 +156,4 @@ volumes:
   pushgateway_data:
   grafana_data:
   umami-db-data:
+  tempo_data:
