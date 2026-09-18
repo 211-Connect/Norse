@@ -39,7 +39,7 @@ clients. Instead, each call site resolves the tenant and its key first, then
 sends the header:
 
 ```http
-x-tenant-api-key: ${tenantApiKey}
+x-api-key: ${tenantApiKey}
 ```
 
 The helper lives in `src/lib/api/getTenantApiKey.ts`:
@@ -47,7 +47,7 @@ The helper lives in `src/lib/api/getTenantApiKey.ts`:
 - `getTenantApiKey(tenantId)` — returns the cached key or throws if none is
   configured.
 - `getTenantApiKeyHeaders(tenantId)` — returns
-  `{ 'x-tenant-api-key': apiKey }`.
+  `{ 'x-api-key': apiKey }`.
 
 ## Fail-fast behavior
 
@@ -92,5 +92,4 @@ The response summarizes `updated` and `failed` tenant ids.
 Hand-rolled `fetch()` calls — for example in `resource-service.ts`,
 `search-service.ts`, most favorites server actions (all except
 `getFavoriteList.ts`), `shortUrl/*`, and `src/app/(app)/api/resource-titles/route.ts`
-— still use the global `INTERNAL_API_KEY` as `x-api-key`. Those call sites
-were intentionally left unchanged in this feature.
+

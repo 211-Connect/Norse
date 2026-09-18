@@ -4,6 +4,7 @@ import { Geocoding } from './generated/Geocoding';
 import { PrintableDirectories } from './generated/PrintableDirectories';
 import { PrintableDirectoriesPublic } from './generated/PrintableDirectoriesPublic';
 import { Search } from './generated/Search';
+import { ShortUrl } from './generated/ShortUrl';
 import { Suggestion } from './generated/Suggestion';
 import { TaxonomyScorecard } from './generated/TaxonomyScorecard';
 import { API_URL } from '@/app/(app)/shared/lib/constants';
@@ -20,6 +21,8 @@ const clientArgs = {
 export const analyticsApiClient = new Analytics(clientArgs);
 
 export const searchApiClient = new Search(clientArgs);
+
+export const shortUrlApiClient = new ShortUrl(clientArgs);
 
 export const geocodingApiClient = new Geocoding(clientArgs);
 

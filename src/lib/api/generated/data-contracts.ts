@@ -153,6 +153,22 @@ export interface AiSearchReRankResponseDto {
   hsis_taxonomies: string[];
 }
 
+export interface ShortUrlResponseDto {
+  /**
+   * For `GET /short-url/:id`, the original URL the short ID resolves to. For `POST /short-url`, the fully-qualified short URL that was found or created.
+   * @example "https://example.org/share/aBcD1234EfGh"
+   */
+  url: string;
+}
+
+export interface CreateShortUrlDto {
+  /**
+   * The absolute HTTP(S) URL to shorten. An existing short URL is reused if one already exists for this URL.
+   * @example "https://example.org/resource/1"
+   */
+  url: string;
+}
+
 export type CreateFavoriteDto = object;
 
 export type CreateFavoriteListDto = object;
@@ -415,6 +431,7 @@ export interface TranslationDto {
 
 export interface PhoneDto {
   ID: string;
+  ORIGINAL_ID: string | null;
   NUMBER: string | null;
   TYPE: string | null;
   TRANSLATIONS: TranslationDto[];
@@ -422,6 +439,7 @@ export interface PhoneDto {
 
 export interface ContactDto {
   ID: string;
+  ORIGINAL_ID: string | null;
   NAME: string | null;
   TITLE: string | null;
   EMAIL: string | null;
@@ -1716,7 +1734,7 @@ export interface CmsConfigControllerClearTenantCacheParams {
 
 export type CmsConfigControllerClearTenantCacheData = any;
 
-export interface TaxonomyControllerGetTaxonomiesV2Params {
+export interface TaxonomyControllerGetTaxonomiesParams {
   /**
    * Search query for taxonomy name or code
    * @default ""
@@ -1738,7 +1756,7 @@ export interface TaxonomyControllerGetTaxonomiesV2Params {
   tenant_id?: string;
 }
 
-export type TaxonomyControllerGetTaxonomiesV2Data = TaxonomyResponseDto;
+export type TaxonomyControllerGetTaxonomiesData = TaxonomyResponseDto;
 
 export interface TaxonomyControllerGetTaxonomyTermsByCodeParams {
   /**
@@ -1889,12 +1907,16 @@ export type SearchControllerReRankNeedsClassificationData =
   AiSearchReRankResponseDto;
 
 export interface ShortUrlControllerGetShortUrlByIdParams {
+  /**
+   * The short ID issued by `POST /short-url`
+   * @example "aBcD1234EfGh"
+   */
   id: string;
 }
 
-export type ShortUrlControllerGetShortUrlByIdData = any;
+export type ShortUrlControllerGetShortUrlByIdData = ShortUrlResponseDto;
 
-export type ShortUrlControllerGetOrCreateShortUrlData = any;
+export type ShortUrlControllerGetOrCreateShortUrlData = ShortUrlResponseDto;
 
 export type HealthControllerGetStatusData = any;
 

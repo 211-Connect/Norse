@@ -450,7 +450,7 @@ export interface Tenant {
   };
   api?: {
     /**
-     * Used to authenticate this tenant's requests to the Norse API (sent as the x-tenant-api-key header).
+     * Used to authenticate this tenant's requests to the Norse API (sent as the x-api-key header).
      */
     apiKey?: string | null;
   };

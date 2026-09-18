@@ -16,21 +16,21 @@ import {
 } from '@/utilities/withCache';
 import { ensureUrlProtocol } from '@/utils';
 
-import { API_URL, INTERNAL_API_KEY } from '../lib/constants';
+import { API_URL } from '../lib/constants';
 import { fetchWrapper } from '../lib/fetchWrapper';
+import { getApiHeaders } from '../lib/get-api-headers';
 
 const RESOURCE_BATCH_LIMIT = 100;
 
-function createResourceHeaders(
+async function createResourceHeaders(
   locale: string,
   tenantId: string,
   contentType?: string,
-): HeadersInit {
+): Promise<HeadersInit> {
   return {
+    ...(await getApiHeaders(tenantId)),
     'accept-language': locale,
     'x-api-version': '1',
-    'x-api-key': INTERNAL_API_KEY || '',
-    'x-tenant-id': tenantId,
     ...(contentType && { 'Content-Type': contentType }),
   };
 }
@@ -167,7 +167,10 @@ async function fetchAndTransformResourceOrigin(
       const data: ApiResource | null = await fetchWrapper(
         `${url}?${searchParams.toString()}`,
         {
-          headers: createResourceHeaders(options.locale, options.tenantId),
+          headers: await createResourceHeaders(
+            options.locale,
+            options.tenantId,
+          ),
           cache: 'no-store',
         },
       );
@@ -198,7 +201,7 @@ async function fetchAndTransformResourcesOrigin(
         `${API_URL}/resource/batch`,
         {
           method: 'POST',
-          headers: createResourceHeaders(
+          headers: await createResourceHeaders(
             options.locale,
             options.tenantId,
             'application/json',
