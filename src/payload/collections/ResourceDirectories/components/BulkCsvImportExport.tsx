@@ -39,7 +39,7 @@ const BULK_CSV_CONFIG: Record<
     exportFilePrefix: 'topics',
     itemLabel: 'topics',
     templateCSV: generateCSV(
-      ['topic', 'subtopic', 'query', 'query_type', 'new_window'],
+      ['topic', 'subtopic', 'query', 'query_type', 'new_window', 'image'],
       [
         {
           topic: 'Food',
@@ -47,6 +47,7 @@ const BULK_CSV_CONFIG: Record<
           query: 'BD-1800.2000',
           query_type: 'taxonomy',
           new_window: '',
+          image: '',
         },
         {
           topic: 'Transportation',
@@ -54,6 +55,7 @@ const BULK_CSV_CONFIG: Record<
           query: 'BT-8300.1000',
           query_type: 'taxonomy',
           new_window: '',
+          image: '',
         },
       ],
     ),
@@ -227,10 +229,13 @@ const BulkCsvImportExport: React.FC<BulkCsvImportExportProps> = ({ kind }) => {
         };
       });
 
+      const image = getRowFieldValue(topicPath, 'image');
+
       return {
         id: getRowId(topicRow, `topic-${topicIndex}`),
         name: getRowFieldValue(topicPath, 'name'),
         href: getRowFieldValue(topicPath, 'href'),
+        image,
         subtopics,
       };
     });

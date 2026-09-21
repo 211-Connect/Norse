@@ -66,7 +66,7 @@ export const generateCSV = (
 };
 
 // Topics CSV utilities
-// Template columns: topic, subtopic, query, query_type, new_window
+// Template columns: topic, subtopic, query, query_type, new_window, image
 export const parseTopicsCSV = (csvText: string): any[] => {
   const lines = parseCSV(csvText);
   if (lines.length < 2) return [];
@@ -92,12 +92,23 @@ export const parseTopicsCSV = (csvText: string): any[] => {
       topicsMap.set(topicKey, {
         id: createRowId(),
         name: topicKey,
+        image: '',
         subtopics: [],
       });
       topicsOrder.push(topicKey);
     }
 
     const topicEntry = topicsMap.get(topicKey);
+
+    // The image column belongs to the topic, not individual subtopics. Any
+    // non-empty value on a row for this topic updates the topic's image.
+    // TenantMedia ids are numbers in Postgres, so a purely numeric string is
+    // converted back to a number so Payload accepts it as a valid relation.
+    if (item.image) {
+      topicEntry.image = /^\d+$/.test(item.image)
+        ? Number(item.image)
+        : item.image;
+    }
 
     if (item.subtopic) {
       topicEntry.subtopics.push({
@@ -107,6 +118,8 @@ export const parseTopicsCSV = (csvText: string): any[] => {
         query: item.query || '',
         newWindow: item.new_window?.toLowerCase() === 'true',
       });
+    } else if (item.query_type === 'link') {
+      topicEntry.href = item.query || '';
     }
   }
 
@@ -114,11 +127,19 @@ export const parseTopicsCSV = (csvText: string): any[] => {
 };
 
 export const generateTopicsCSV = (items: any[]): string => {
-  const headers = ['topic', 'subtopic', 'query', 'query_type', 'new_window'];
+  const headers = [
+    'topic',
+    'subtopic',
+    'query',
+    'query_type',
+    'new_window',
+    'image',
+  ];
   const rows: Record<string, string>[] = [];
 
   for (const topic of items) {
     const subtopics = topic.subtopics || [];
+    const topicImage = topic.image || '';
 
     if (subtopics.length === 0) {
       rows.push({
@@ -127,6 +148,7 @@ export const generateTopicsCSV = (items: any[]): string => {
         query: topic.href || '',
         query_type: topic.href ? 'link' : 'taxonomy',
         new_window: '',
+        image: topicImage,
       });
     } else {
       for (const subtopic of subtopics) {
@@ -136,6 +158,7 @@ export const generateTopicsCSV = (items: any[]): string => {
           query: subtopic.query || subtopic.href || '',
           query_type: subtopic.queryType || 'taxonomy',
           new_window: subtopic.newWindow ? 'true' : '',
+          image: topicImage,
         });
       }
     }
