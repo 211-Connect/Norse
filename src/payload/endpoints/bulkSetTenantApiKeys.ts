@@ -10,7 +10,7 @@ type BulkSetApiKeyEntry = {
 };
 
 export const bulkSetTenantApiKeys: Endpoint = {
-  path: '/tenants/bulk-set-api-keys',
+  path: '/bulk-set-api-keys',
   method: 'post',
   handler: async (req) => {
     const expectedKey = process.env.INTERNAL_API_KEY;

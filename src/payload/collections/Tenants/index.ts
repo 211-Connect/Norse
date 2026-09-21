@@ -15,6 +15,7 @@ import { pushAnalyticsConfigToCacheAfterChangeHook } from './hooks/pushAnalytics
 import { removeRelatedResources } from './hooks/removeRelatedResources';
 import { revalidateCache } from './hooks/revalidateCache';
 import { hasResourceDirectory } from './validators/hasResourceDirectory';
+import { bulkSetTenantApiKeys } from '@/payload/endpoints/bulkSetTenantApiKeys';
 
 export const Tenants: CollectionConfig = {
   slug: 'tenants',
@@ -43,6 +44,7 @@ export const Tenants: CollectionConfig = {
     beforeDelete: [removeRelatedResources],
     afterDelete: [revalidateCache],
   },
+  endpoints: [bulkSetTenantApiKeys],
   fields: [
     {
       type: 'ui',
