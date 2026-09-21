@@ -1,5 +1,6 @@
-import type { Page } from '@playwright/test';
+import { type Page, expect } from '@playwright/test';
 
+import { getTestEmailForCurrentTenant } from '../fixtures/tenants';
 import { AUTH_NAV_TIMEOUT_MS, UI_SHELL_TIMEOUT_MS } from '../timeouts';
 import { isVisible } from './internal';
 import { expectAuthenticatedShell, goHome } from './navigation';
@@ -15,28 +16,34 @@ function isAuthHost(urlString: string): boolean {
 }
 
 export async function loginViaKeycloak(page: Page) {
-  const identity = process.env.TEST_USER_EMAIL || 'test@c211.io';
+  const identity =
+    process.env.TEST_USER_EMAIL || getTestEmailForCurrentTenant();
   const password = process.env.TEST_USER_PASSWORD || 'test-password';
 
   await goHome(page);
 
   const logoutButton = page.getByRole('button', { name: /log out/i });
+  const headerSignInButton = page.getByTestId('header-sign-in-btn');
+
+  // The header can render in a loading state after goto. Wait for one of the
+  // auth-specific states instead of relying on an immediate isVisible probe,
+  // which can race with hydration.
+  await expect(headerSignInButton.or(logoutButton)).toBeVisible({
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
+
   if (await isVisible(logoutButton)) {
     return;
   }
 
-  const headerSignInButton = page.getByTestId('header-sign-in-btn');
-  if (await isVisible(headerSignInButton)) {
-    await headerSignInButton.click();
-  } else {
-    await page.getByTestId('favorites-btn').click();
-    await page.getByTestId('login-btn').click();
-  }
+  await headerSignInButton.click();
 
   await page
     .waitForURL(/auth\.c211\.io|keycloak/i, { timeout: AUTH_NAV_TIMEOUT_MS })
     .catch(() => null);
-  await page.waitForLoadState('networkidle', { timeout: AUTH_NAV_TIMEOUT_MS });
+  await page.waitForLoadState('domcontentloaded', {
+    timeout: AUTH_NAV_TIMEOUT_MS,
+  });
 
   const url = page.url();
   if (isAuthHost(url)) {
@@ -65,9 +72,6 @@ export async function loginViaKeycloak(page: Page) {
       }),
       page.locator('#kc-login').click(),
     ]);
-    await page.waitForLoadState('networkidle', {
-      timeout: AUTH_NAV_TIMEOUT_MS,
-    });
   }
 
   await expectAuthenticatedShell(page);

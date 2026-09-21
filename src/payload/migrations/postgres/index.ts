@@ -79,6 +79,7 @@ import * as migration_20260824_143128_add_tenant_seo_noindex from './20260824_14
 import * as migration_20260825_075527_add_tenant_auth_public_pages from './20260825_075527_add_tenant_auth_public_pages';
 import * as migration_20260904_071935 from './20260904_071935';
 import * as migration_20260910_074021_drop_legacy_analytics_relation from './20260910_074021_drop_legacy_analytics_relation';
+import * as migration_20260910_095121_search_pinned_resources_mode from './20260910_095121_search_pinned_resources_mode';
 
 export const migrations = [
   {
@@ -485,5 +486,10 @@ export const migrations = [
     up: migration_20260910_074021_drop_legacy_analytics_relation.up,
     down: migration_20260910_074021_drop_legacy_analytics_relation.down,
     name: '20260910_074021_drop_legacy_analytics_relation',
+  },
+  {
+    up: migration_20260910_095121_search_pinned_resources_mode.up,
+    down: migration_20260910_095121_search_pinned_resources_mode.down,
+    name: '20260910_095121_search_pinned_resources_mode',
   },
 ];

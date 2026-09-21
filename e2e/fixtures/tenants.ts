@@ -15,7 +15,7 @@
  * counts, since live data changes over time.
  */
 
-export type TenantKey = 'MBOA' | 'WA' | 'VA' | 'PA' | 'AZ' | 'SCC';
+export type TenantKey = 'MBOA' | 'WA' | 'VA' | 'PA' | 'AZ' | 'SCC' | 'DUPAGE';
 
 export type TenantEnv = 'dev' | 'prod';
 
@@ -56,6 +56,11 @@ export type TenantFixture = {
    * location-gated assertions rely on.
    */
   testLocation: string;
+  /**
+   * Base URL for each environment. Used to derive `E2E_BASE_URL` in CI and
+   * local runs unless it is explicitly overridden.
+   */
+  baseUrl: Record<TenantEnv, string>;
   /** Whether AI classification search is enabled, per environment. */
   aiSearchEnabled: Record<TenantEnv, boolean>;
   /** Only set for tenants/environments with AI search enabled - see `AiScenarioQueries`. */
@@ -75,6 +80,21 @@ export type TenantFixture = {
    * the spec skips (not fails) for those, same convention as `hasFacets`.
    */
   directResourceId?: string;
+  /**
+   * Whether organization search (`enableOrganizationSearch`) is enabled,
+   * per environment - same shape as `aiSearchEnabled`. Defaults to `false`
+   * for every tenant/environment until a tenant actually opts in.
+   */
+  organizationSearchEnabled: Record<TenantEnv, boolean>;
+  /**
+   * A real organization id, name (+ optional city, for badge assertions)
+   * known to exist on this tenant, and verified NOT to collide with another
+   * organization of the exact same name in that tenant - see
+   * `docs/search.md`'s "known limitation" note. Required once
+   * `organizationSearchEnabled` is true for a tenant/env; omitted until
+   * then, same convention as `aiScenarioQueries`.
+   */
+  organization?: { id: string; name: string; city?: string };
 };
 
 export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
@@ -84,9 +104,14 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
     broadQuery: 'food',
     taxonomy: { code: 'DT-8800', label: 'Tax Help' },
     testLocation: 'Minneapolis',
+    baseUrl: {
+      dev: 'https://stg-mboa.c211.io/adresources',
+      prod: 'https://mn.gov/adresources',
+    },
     aiSearchEnabled: { dev: false, prod: false },
     hasFacets: true,
     directResourceId: '98e5490a-8468-5673-afe3-8baffef6a236',
+    organizationSearchEnabled: { dev: false, prod: false },
   },
   WA: {
     key: 'WA',
@@ -94,6 +119,10 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
     broadQuery: 'health',
     taxonomy: { code: 'LV-1600', label: 'Dental Care' },
     testLocation: 'Seattle',
+    baseUrl: {
+      dev: 'https://dev-wa211.c211.io',
+      prod: 'https://search.wa211.org',
+    },
     aiSearchEnabled: { dev: true, prod: false },
     aiScenarioQueries: {
       direct: "I'm hungry",
@@ -102,6 +131,7 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
     },
     hasFacets: true,
     directResourceId: '01fc1648-60db-59d0-b5fc-ba5027767fb1',
+    organizationSearchEnabled: { dev: false, prod: false },
   },
   VA: {
     key: 'VA',
@@ -112,6 +142,10 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
       label: 'At Risk/Homeless Housing Related Assistance Programs',
     },
     testLocation: 'Richmond',
+    baseUrl: {
+      dev: 'https://dev-va211.c211.io',
+      prod: 'https://search.211virginia.org',
+    },
     aiSearchEnabled: { dev: true, prod: false },
     aiScenarioQueries: {
       direct: "I'm hungry",
@@ -120,6 +154,7 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
     },
     hasFacets: false,
     directResourceId: 'd87e8f4e-9995-546d-b57a-f38cde595304',
+    organizationSearchEnabled: { dev: false, prod: false },
   },
   PA: {
     key: 'PA',
@@ -127,9 +162,14 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
     broadQuery: 'food',
     taxonomy: { code: 'BH-1800.1500-100', label: 'Domestic Violence Shelters' },
     testLocation: 'Philadelphia',
+    baseUrl: {
+      dev: 'https://dev-pa211.c211.io',
+      prod: 'https://search.pa211.org',
+    },
     aiSearchEnabled: { dev: false, prod: false },
     hasFacets: true,
     directResourceId: 'aa3e3bb5-b065-5996-9019-e52b75b9a8e8',
+    organizationSearchEnabled: { dev: false, prod: false },
   },
   AZ: {
     key: 'AZ',
@@ -137,9 +177,14 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
     broadQuery: 'food',
     taxonomy: { code: 'BH-1800.8500-185', label: 'Extreme Weather Shelters' },
     testLocation: 'Phoenix',
+    baseUrl: {
+      dev: 'https://dev-az211.c211.io',
+      prod: 'https://search.211arizona.org',
+    },
     aiSearchEnabled: { dev: false, prod: false },
     hasFacets: false,
     directResourceId: '0470d494-2311-5dd5-b3d7-584371f872af',
+    organizationSearchEnabled: { dev: false, prod: false },
   },
   SCC: {
     key: 'SCC',
@@ -147,6 +192,10 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
     broadQuery: 'food',
     taxonomy: { code: 'ND-1500', label: 'Job Assistance Centers' },
     testLocation: 'Santa Cruz',
+    baseUrl: {
+      dev: 'https://dev-scc211.c211.io',
+      prod: 'https://search.211santacruzcounty.org',
+    },
     aiSearchEnabled: { dev: true, prod: true },
     aiScenarioQueries: {
       direct: "I'm hungry",
@@ -155,6 +204,32 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
     },
     hasFacets: false,
     directResourceId: '21d6b142-6dde-57dd-bbbf-e65139c6ff99',
+    organizationSearchEnabled: { dev: true, prod: true },
+    organization: {
+      id: 'acc5576b-b1ff-5cd6-ad7f-befff6912601',
+      name: 'COMMUNITY BRIDGES',
+      city: 'Watsonville',
+    },
+  },
+  DUPAGE: {
+    key: 'DUPAGE',
+    displayName: '211 of DuPage County',
+    broadQuery: 'food',
+    taxonomy: { code: 'BD-1800.2000', label: 'Food Pantries' },
+    testLocation: 'Warrenville',
+    baseUrl: {
+      dev: 'https://dev-dupage.c211.io',
+      prod: 'https://search.dupage211.c211.io',
+    },
+    aiSearchEnabled: { dev: false, prod: false },
+    hasFacets: false,
+    directResourceId: '041a0d9f-d907-5f9d-a7bf-76854c7afbbf',
+    organizationSearchEnabled: { dev: true, prod: true },
+    organization: {
+      id: 'd37a6453-e5b4-56a9-ba6f-22e7e7c7b2f6',
+      name: 'Interfaith Food Pantry',
+      city: 'Warrenville',
+    },
   },
 };
 
@@ -173,6 +248,17 @@ export function getCurrentTenantEnv(): TenantEnv {
 
 export function getCurrentTenant(): TenantFixture {
   return TENANT_FIXTURES[getCurrentTenantKey()];
+}
+
+export function getBaseUrlForCurrentTenant(): string {
+  const tenant = getCurrentTenant();
+  return tenant.baseUrl[getCurrentTenantEnv()];
+}
+
+export function getTestEmailForCurrentTenant(): string {
+  const tenant = getCurrentTenant();
+  const env = getCurrentTenantEnv();
+  return `test-${tenant.key.toLowerCase()}-${env}@c211.io`;
 }
 
 export function isAiSearchEnabledForCurrentTenant(): boolean {
@@ -202,4 +288,24 @@ export function getRequiredAiScenarioQueries(): AiScenarioQueries {
     );
   }
   return tenant.aiScenarioQueries;
+}
+
+export function getRequiredOrganizationFixture(): {
+  id: string;
+  name: string;
+  city?: string;
+} {
+  const tenant = getCurrentTenant();
+  if (!tenant.organization) {
+    throw new Error(
+      `Tenant "${tenant.key}" has organization search enabled but no organization fixture - ` +
+        'add one to e2e/fixtures/tenants.ts before running search-organization.spec.ts for it.',
+    );
+  }
+  return tenant.organization;
+}
+
+export function isOrganizationSearchEnabledForCurrentTenant(): boolean {
+  const tenant = getCurrentTenant();
+  return tenant.organizationSearchEnabled[getCurrentTenantEnv()];
 }

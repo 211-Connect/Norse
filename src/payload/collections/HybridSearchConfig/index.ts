@@ -108,7 +108,7 @@ export const HybridSearchConfig: CollectionConfig = {
       label: 'Pinned & Priority',
       admin: {
         description:
-          'Used when Boost Pinned Resources is enabled (Settings → Search), so pinned/priority resources get a score contribution instead of a hard sort tier.',
+          'Used when Pinned Resources Mode is set to Boost (Settings → Search), so pinned/priority resources get a score contribution instead of a hard sort tier.',
       },
       fields: [
         {

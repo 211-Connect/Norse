@@ -877,9 +877,9 @@ export interface ResourceDirectory {
     searchSettings: {
       searchEngine?: ('classic' | 'hybrid' | 'ai_classification') | null;
       /**
-       * When enabled, pinned/priority resources receive a score boost instead of being hard-sorted to the top of results. Only applies when Search Engine is Hybrid or AI Classification.
+       * Choose how pinned/priority resources are handled for hybrid and AI classification search engines. Ignore drops pinned status; Boost adds a score contribution; Top hard-sorts pinned resources to the top of results.
        */
-      boostPinnedResources?: boolean | null;
+      pinnedResourcesMode?: ('ignore' | 'boost' | 'top') | null;
       resultsLimit: number;
       radiusSelectValues?:
         | {
@@ -1722,7 +1722,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
           | T
           | {
               searchEngine?: T;
-              boostPinnedResources?: T;
+              pinnedResourcesMode?: T;
               resultsLimit?: T;
               radiusSelectValues?:
                 | T

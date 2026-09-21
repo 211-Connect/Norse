@@ -6,7 +6,7 @@ import type { HybridSearchConfigCache } from '@/types/hybridSearchConfig';
 
 /**
  * Merges the tenant's HybridSearchConfig weight overrides with the
- * boostPinnedResources flag from the tenant's ResourceDirectory search
+ * pinnedResourcesMode value from the tenant's ResourceDirectory search
  * settings into a single cache payload for the API.
  *
  * Returns null when there is no ResourceDirectory for the tenant, since
@@ -21,8 +21,8 @@ export function buildHybridSearchConfigCache(
     return null;
   }
 
-  const boostPinnedResources =
-    resourceDirectory.search?.searchSettings?.boostPinnedResources ?? false;
+  const pinnedResourcesMode =
+    resourceDirectory.search?.searchSettings?.pinnedResourcesMode ?? 'boost';
 
   const enableOrganizationSearch =
     resourceDirectory.featureFlags?.enableOrganizationSearch ?? false;
@@ -42,7 +42,7 @@ export function buildHybridSearchConfigCache(
       hybridSearchConfig?.bm25TaxonomyUseRefBoost ?? null,
     taxonomy_k: hybridSearchConfig?.taxonomyK ?? null,
     taxonomy_num_candidates: hybridSearchConfig?.taxonomyNumCandidates ?? null,
-    boost_pinned_resources: boostPinnedResources,
+    pinned_resources_mode: pinnedResourcesMode,
     enable_organization_search: enableOrganizationSearch,
   };
 }

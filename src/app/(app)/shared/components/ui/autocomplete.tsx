@@ -28,7 +28,6 @@ import {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useUncontrolled } from '@/app/(app)/shared/hooks/use-uncontrolled';
 import { cn } from '@/app/(app)/shared/lib/utils';
 
 import { useAppConfig } from '../../hooks/use-app-config';
@@ -68,11 +67,16 @@ export type AutocompleteProps = {
   inputProps?: InputProps;
   options?: AutocompleteOption[];
   className?: string;
+  /** Fires on every keystroke/composition-end (and, alongside commits, with
+   *  the settled value too) — a live-text echo. Never gates side effects on
+   *  its own; see `onCommit` for that. */
   onInputChange?: (value: string) => void;
-  onValueChange?: (value: string, option?: AutocompleteOption) => void;
+  /** Fires only when a value is explicitly settled: click, Enter, Tab,
+   *  Escape with an option highlighted, or blur-autoselect. Never fires from
+   *  raw typing — this is the signal to act on (persist, geocode, etc). */
+  onCommit?: (value: string, option?: AutocompleteOption) => void;
   onClear?: () => void;
   value?: string;
-  defaultValue?: string;
   autoSelectIndex?: number;
   autoSelectOnBlurIndex?: number;
   defaultOpen?: boolean;
@@ -125,9 +129,8 @@ export function Autocomplete(props: AutocompleteProps) {
     Icon,
     className,
     onInputChange,
-    onValueChange,
+    onCommit,
     onClear,
-    defaultValue,
     autoSelectIndex,
     autoSelectOnBlurIndex,
     value: inputValue,
@@ -150,9 +153,7 @@ export function Autocomplete(props: AutocompleteProps) {
   const effectiveInputId = inputProps?.id ?? fallbackInputId;
 
   const isMouseMoving = useMouseMovement();
-  const [lastManualInput, setLastManualInput] = useState(
-    inputValue ?? defaultValue ?? '',
-  );
+  const [lastManualInput, setLastManualInput] = useState(inputValue ?? '');
   const [uniqueId, setUniqueId] = useState('');
   const [open, setOpen] = useState(defaultOpen);
   const [currentIndex, setCurrentIndex] = useState(-1);
@@ -160,13 +161,7 @@ export function Autocomplete(props: AutocompleteProps) {
   const [referenceWidth, setReferenceWidth] = useState<number | undefined>(
     undefined,
   );
-  const [value, setValue] = useUncontrolled<string>({
-    value: inputValue,
-    defaultValue,
-    finalValue: '',
-    onChange: onValueChange,
-  });
-  const [tempValue, setTempValue] = useState(value || '');
+  const [tempValue, setTempValue] = useState(inputValue || '');
   const clearButtonRef = useRef<HTMLButtonElement>(null);
   const [srStatus, setSrStatus] = useState('');
 
@@ -228,8 +223,8 @@ export function Autocomplete(props: AutocompleteProps) {
   }, [y]);
 
   const selectedOption = useMemo(() => {
-    return rest.options?.find((option) => option.value === value);
-  }, [rest.options, value]);
+    return rest.options?.find((option) => option.value === inputValue);
+  }, [rest.options, inputValue]);
 
   const isBlockCommitted = blockMode && !!selectedOption && currentIndex === -1;
 
@@ -269,6 +264,21 @@ export function Autocomplete(props: AutocompleteProps) {
     stayOpenOnBlurRef.current = false;
   }, []);
 
+  // The one place a value is announced outward: mirrors it into the visible
+  // text, the "last manually entered" bookkeeping used for match-highlighting
+  // and arrow-nav fallbacks, and — the only call that matters to callers —
+  // `onCommit`. Used by every explicit-commit path (click, Enter, Tab,
+  // Escape-with-highlight, blur-autoselect); never by raw typing.
+  const commit = useCallback(
+    (value: string, option?: AutocompleteOption) => {
+      setTempValue(value);
+      onInputChange?.(value);
+      setLastManualInput(value);
+      onCommit?.(value, option);
+    },
+    [onInputChange, onCommit],
+  );
+
   const handleValueSelect = useCallback(
     (value: string, option?: AutocompleteOption) => {
       return (e?: MouseEvent) => {
@@ -277,15 +287,12 @@ export function Autocomplete(props: AutocompleteProps) {
           e.stopPropagation();
         }
 
-        setValue(value);
         setOpen(false);
         setCurrentIndex(-1);
-        onInputChange?.(value);
-        setLastManualInput(value);
-        onValueChange?.(value, option);
+        commit(value, option);
       };
     },
-    [setValue, onInputChange, onValueChange],
+    [commit],
   );
 
   const handleInputChange = useCallback(
@@ -300,14 +307,14 @@ export function Autocomplete(props: AutocompleteProps) {
 
       setCurrentIndex(-1);
       setLastManualInput(e.target.value);
-      setValue(e.target.value);
+      setTempValue(e.target.value);
       onInputChange?.(e.target.value);
 
       if (!open) {
         setOpen(true);
       }
     },
-    [onInputChange, setValue, open],
+    [onInputChange, open],
   );
 
   const handleCompositionStart = useCallback(() => {
@@ -322,14 +329,13 @@ export function Autocomplete(props: AutocompleteProps) {
       setCurrentIndex(-1);
       setLastManualInput(nextValue);
       setTempValue(nextValue);
-      setValue(nextValue);
       onInputChange?.(nextValue);
 
       if (!open) {
         setOpen(true);
       }
     },
-    [onInputChange, open, setValue],
+    [onInputChange, open],
   );
 
   const handleClickOutside = useCallback(
@@ -452,9 +458,7 @@ export function Autocomplete(props: AutocompleteProps) {
         if (open) {
           setOpen(false);
           if (currentOption) {
-            onInputChange?.(currentOption.value);
-            setLastManualInput(currentOption.value);
-            onValueChange?.(currentOption.value, currentOption);
+            commit(currentOption.value, currentOption);
           } else {
             // No option was highlighted — user was mid-typing. Let the caller
             // decide how to restore the field to a known-good state.
@@ -467,17 +471,21 @@ export function Autocomplete(props: AutocompleteProps) {
         if (open) {
           setOpen(false);
           if (currentOption) {
-            onInputChange?.(currentOption.value);
-            setLastManualInput(currentOption.value);
-            onValueChange?.(currentOption.value, currentOption);
-          } else if (autoSelectIndex != null) {
-            const defaultOption = rest.options[autoSelectIndex];
-            if (defaultOption) {
-              onInputChange?.(defaultOption.value);
-              setValue(defaultOption.value);
-              setLastManualInput(defaultOption.value);
-              onValueChange?.(defaultOption.value, defaultOption);
-            }
+            commit(currentOption.value, currentOption);
+          } else {
+            // `rest.options` is the caller's current option list — while
+            // results are still loading for what's typed, the caller is
+            // expected to have suppressed stale/irrelevant entries there
+            // (see location-search-bar's isPendingResults), so indexing into
+            // it here can't silently pick a stale option. If there's no
+            // confident match at all, commit whatever's literally typed
+            // rather than silently discarding it and leaving a stale
+            // previously-committed value in place.
+            const defaultOption =
+              autoSelectIndex != null
+                ? rest.options[autoSelectIndex]
+                : undefined;
+            commit(defaultOption?.value ?? tempValue, defaultOption);
           }
           setCurrentIndex(-1);
           nextIndex = -1;
@@ -488,17 +496,13 @@ export function Autocomplete(props: AutocompleteProps) {
           setOpen(false);
 
           if (currentOption) {
-            onInputChange?.(currentOption.value);
-            setLastManualInput(currentOption.value);
-            onValueChange?.(currentOption.value, currentOption);
-          } else if (autoSelectIndex != null) {
-            const defaultOption = rest.options[autoSelectIndex];
-            if (defaultOption) {
-              onInputChange?.(defaultOption.value);
-              setValue(defaultOption.value);
-              setLastManualInput(defaultOption.value);
-              onValueChange?.(defaultOption.value, defaultOption);
-            }
+            commit(currentOption.value, currentOption);
+          } else {
+            const defaultOption =
+              autoSelectIndex != null
+                ? rest.options[autoSelectIndex]
+                : undefined;
+            commit(defaultOption?.value ?? tempValue, defaultOption);
           }
 
           const form = (e.target as HTMLElement).closest('form');
@@ -574,20 +578,19 @@ export function Autocomplete(props: AutocompleteProps) {
     },
     [
       rest.options,
-      setValue,
+      commit,
       open,
       openOptions,
       currentIndex,
-      onInputChange,
       setInputSelectionPoint,
       autoSelectIndex,
       lastManualInput,
       popperElement,
       uniqueId,
-      onValueChange,
       isBlockCommitted,
       onDecommit,
       onEscape,
+      tempValue,
     ],
   );
 
@@ -599,7 +602,7 @@ export function Autocomplete(props: AutocompleteProps) {
       if (onClear) {
         onClear();
       } else {
-        setValue('');
+        setTempValue('');
         onInputChange?.('');
       }
 
@@ -610,7 +613,7 @@ export function Autocomplete(props: AutocompleteProps) {
       referenceElement?.focus();
       setLastManualInput('');
     },
-    [setValue, onInputChange, onClear, referenceElement],
+    [onInputChange, onClear, referenceElement],
   );
 
   const handleOptionMouseEnter = useCallback(
@@ -685,8 +688,8 @@ export function Autocomplete(props: AutocompleteProps) {
   }, [referenceElement]);
 
   useEffect(() => {
-    setTempValue(value ?? '');
-  }, [value]);
+    setTempValue(inputValue ?? '');
+  }, [inputValue]);
 
   useEffect(() => {
     if (!open) {
@@ -767,7 +770,7 @@ export function Autocomplete(props: AutocompleteProps) {
           role="combobox"
         />
 
-        {(value?.length ?? 0) > 0 && (
+        {(tempValue?.length ?? 0) > 0 && (
           <TooltipProvider>
             <Tooltip delayDuration={100}>
               <TooltipTrigger asChild autoFocus={false}>

@@ -3,8 +3,11 @@
  * `favorites.spec.ts` to avoid duplicating the credential check and the
  * storage-state file path in three places.
  */
+import { getTestEmailForCurrentTenant } from './fixtures/tenants';
+
 export const hasTestCredentials =
-  !!process.env.TEST_USER_EMAIL && !!process.env.TEST_USER_PASSWORD;
+  !!process.env.TEST_USER_PASSWORD &&
+  !!(process.env.TEST_USER_EMAIL || getTestEmailForCurrentTenant());
 
 /**
  * Where the authenticated session (cookies + localStorage) captured by

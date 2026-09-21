@@ -3,7 +3,6 @@ import { type Page, expect } from '@playwright/test';
 import {
   ASYNC_UI_TIMEOUT_MS,
   FAVORITES_PERSISTENCE_TIMEOUT_MS,
-  PRESENCE_PROBE_TIMEOUT_MS,
   SEARCH_NAV_TIMEOUT_MS,
   UI_SHELL_TIMEOUT_MS,
   expectVisibleEventually,
@@ -187,7 +186,7 @@ export async function waitForFavoriteToBeAbsentOnListPage(
     .toBe(0);
 }
 
-function favoriteListCardByExactName(page: Page, listName: string) {
+export function favoriteListCardByExactName(page: Page, listName: string) {
   return page.getByTestId('favorite-list-card').filter({
     has: page.getByRole('link', { name: listName, exact: true }),
   });
@@ -269,11 +268,46 @@ export async function filterFavoriteListsByName(page: Page, listName: string) {
   await searchInput.fill(listName);
 
   // The filter is debounced and then re-fetched server-side. Wait for the
-  // target card instead of a URL string, because URL encoding of the search
-  // value can vary.
-  await expect(favoriteListCardByExactName(page, listName)).toBeVisible({
-    timeout: ASYNC_UI_TIMEOUT_MS,
-  });
+  // debounced router push to land in the URL before clicking the list link.
+  // Otherwise the pending `/favorites?search=...` update can race with the
+  // `/favorites/:id` navigation and leave us on the listing page.
+  await expect
+    .poll(
+      async () => {
+        try {
+          return new URL(page.url()).searchParams.get('search');
+        } catch {
+          return null;
+        }
+      },
+      { timeout: ASYNC_UI_TIMEOUT_MS },
+    )
+    .toBe(listName);
+
+  // The filter is debounced and then re-fetched server-side. The server-side
+  // search index can briefly lag behind a just-completed rename, so reload and
+  // re-filter until the target card appears.
+  await expect
+    .poll(
+      async () => {
+        const card = favoriteListCardByExactName(page, listName);
+        const visible = await card.isVisible().catch(() => false);
+        if (!visible) {
+          await page.reload({ waitUntil: 'domcontentloaded' });
+          const reloadedSearchInput = page.getByTestId('list-search-input');
+          await expect(reloadedSearchInput).toBeVisible({
+            timeout: UI_SHELL_TIMEOUT_MS,
+          });
+          await reloadedSearchInput.fill(listName);
+        }
+        return visible;
+      },
+      {
+        timeout: ASYNC_UI_TIMEOUT_MS,
+        intervals: [250, 500, 1_000, 2_000],
+      },
+    )
+    .toBe(true);
 }
 
 /**
@@ -300,18 +334,30 @@ export async function filterFavoritesDialogLists(page: Page, listName: string) {
   });
 }
 
+export async function dialogHasButton(
+  page: Page,
+  listName: string,
+  testId: 'add-to-list-btn' | 'remove-from-list-btn',
+): Promise<boolean> {
+  const dialog = page.getByRole('dialog', { name: /manage favorites/i });
+  const row = dialog.getByTestId('favorites-list-row').filter({
+    has: page.getByRole('link', { name: listName, exact: true }),
+  });
+  return (await row.getByTestId(testId).count()) > 0;
+}
+
 export async function getFavoritesDialogListActionButton(
   page: Page,
   listName: string,
   testId: 'add-to-list-btn' | 'remove-from-list-btn',
 ) {
   const dialog = page.getByRole('dialog', { name: /manage favorites/i });
-  const listLink = dialog.getByRole('link', { name: listName, exact: true });
-  await expect(listLink).toBeVisible({ timeout: ASYNC_UI_TIMEOUT_MS });
+  const row = dialog.getByTestId('favorites-list-row').filter({
+    has: page.getByRole('link', { name: listName, exact: true }),
+  });
+  await expect(row).toBeVisible({ timeout: ASYNC_UI_TIMEOUT_MS });
 
-  const button = listLink.locator(
-    `xpath=following-sibling::div[2]//*[@data-testid="${testId}"]`,
-  );
+  const button = row.getByTestId(testId);
   await expect(button).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
   return button;
 }

@@ -81,6 +81,7 @@ function transformSearchHits(
       _id: hit._id,
       id: hit?._source?.service_at_location_id ?? null,
       alert: hit?._source?.service?.alert ?? null,
+      alertDate: hit?._source?.service?.alertDate ?? null,
       priority: hit?._source?.priority,
       serviceName: hit?._source?.service?.name ?? null,
       attribution: hit?._source?.attribution ?? null,

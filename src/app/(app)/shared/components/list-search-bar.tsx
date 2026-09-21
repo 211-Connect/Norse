@@ -52,7 +52,7 @@ export function ListSearchBar({
       <label htmlFor={inputId} className="sr-only">
         {placeholder ?? 'Search'}
       </label>
-      <MagnifyingGlassIcon className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+      <MagnifyingGlassIcon className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
       <Input
         id={inputId}
         placeholder={placeholder}

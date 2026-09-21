@@ -253,12 +253,24 @@ test.describe('Search accessibility preservation', () => {
     await openDialogFromSearchTrigger(page);
 
     const locationInput = page.locator('#location-input');
+    const listbox = page
+      .getByTestId('location-field')
+      .getByTestId('autocomplete-listbox');
 
     await locationInput.fill(testLocation);
-    await page
-      .getByTestId('location-field')
-      .getByTestId('autocomplete-listbox')
-      .waitFor({ state: 'visible', timeout: AUTOCOMPLETE_TIMEOUT_MS });
+    await listbox.waitFor({
+      state: 'visible',
+      timeout: AUTOCOMPLETE_TIMEOUT_MS,
+    });
+    // Wait for a real, geocoded suggestion (not just the "Everywhere"
+    // placeholder shown while the request is in flight) before pressing
+    // Enter — while a geocode fetch is pending, Enter intentionally no-ops
+    // instead of submitting against an unresolved location.
+    await expect
+      .poll(() => listbox.getByTestId('autocomplete-option').count(), {
+        timeout: AUTOCOMPLETE_TIMEOUT_MS,
+      })
+      .toBeGreaterThan(1);
 
     await Promise.all([
       expectPageUrl(page, isSearchResultsListUrl),
