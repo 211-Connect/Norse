@@ -51,39 +51,37 @@ export const bulkSetTenantApiKeys: Endpoint = {
     const updated: string[] = [];
     const failed: { tenantId: string; error: string }[] = [];
 
-    await Promise.all(
-      apiKeys.map(async ({ tenantId, apiKey }) => {
-        if (typeof tenantId !== 'string' || !tenantId.trim()) {
-          failed.push({
-            tenantId: String(tenantId ?? ''),
-            error: 'Invalid tenantId',
-          });
-          return;
-        }
-        if (typeof apiKey !== 'string' || !apiKey.trim()) {
-          failed.push({ tenantId, error: 'Invalid apiKey' });
-          return;
-        }
+    for (const { tenantId, apiKey } of apiKeys) {
+      if (typeof tenantId !== 'string' || !tenantId.trim()) {
+        failed.push({
+          tenantId: String(tenantId ?? ''),
+          error: 'Invalid tenantId',
+        });
+        continue;
+      }
+      if (typeof apiKey !== 'string' || !apiKey.trim()) {
+        failed.push({ tenantId, error: 'Invalid apiKey' });
+        continue;
+      }
 
-        try {
-          await req.payload.update({
-            collection: 'tenants',
-            id: tenantId,
-            data: { api: { apiKey } },
-            overrideAccess: true,
-          });
-          updated.push(tenantId);
-        } catch (error) {
-          const message =
-            error instanceof Error ? error.message : 'Unknown error';
-          log.error(
-            { err: error, tenantId },
-            'Failed to bulk-set tenant API key',
-          );
-          failed.push({ tenantId, error: message });
-        }
-      }),
-    );
+      try {
+        await req.payload.update({
+          collection: 'tenants',
+          id: tenantId,
+          data: { api: { apiKey } },
+          overrideAccess: true,
+        });
+        updated.push(tenantId);
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : 'Unknown error';
+        log.error(
+          { err: error, tenantId },
+          'Failed to bulk-set tenant API key',
+        );
+        failed.push({ tenantId, error: message });
+      }
+    }
 
     log.info(
       { updatedCount: updated.length, failedCount: failed.length },

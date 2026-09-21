@@ -2,6 +2,8 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import process from 'node:process';
 
+const CHUNK_SIZE = 4;
+
 function parseEnvFile(filePath) {
   const text = readFileSync(resolve(filePath), 'utf8');
   const entries = {};
@@ -29,6 +31,14 @@ function buildApiKeyPairs(entries) {
   return pairs;
 }
 
+function chunkArray(array, size) {
+  const chunks = [];
+  for (let i = 0; i < array.length; i += size) {
+    chunks.push(array.slice(i, i + size));
+  }
+  return chunks;
+}
+
 function usage() {
   console.error(
     'Usage: node bin/bulk-set-tenant-api-keys.js <baseUrl> <envFilePath>',
@@ -37,6 +47,21 @@ function usage() {
     'Example: node bin/bulk-set-tenant-api-keys.js http://localhost:3000 unkey-resources-random.env',
   );
   console.error('INTERNAL_API_KEY env var must also be set.');
+}
+
+async function sendChunk(baseUrl, apiKeys, internalApiKey) {
+  const url = `${baseUrl.replace(/\/$/, '')}/api/tenants/bulk-set-api-keys`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-internal-api-key': internalApiKey,
+    },
+    body: JSON.stringify({ apiKeys }),
+  });
+
+  const body = await response.json().catch(() => ({}));
+  return { ok: response.ok, status: response.status, body };
 }
 
 async function main() {
@@ -55,32 +80,60 @@ async function main() {
   }
 
   const entries = parseEnvFile(envFilePath);
-  const apiKeys = buildApiKeyPairs(entries);
+  const allPairs = buildApiKeyPairs(entries);
 
-  if (apiKeys.length === 0) {
+  if (allPairs.length === 0) {
     console.error(`No tenant API key pairs found in ${envFilePath}`);
     process.exit(1);
   }
 
-  console.log(`Found ${apiKeys.length} tenant API key pair(s) to update:`);
-  for (const { tenantId, apiKey } of apiKeys) {
+  console.log(`Found ${allPairs.length} tenant API key pair(s) to update:`);
+  for (const { tenantId, apiKey } of allPairs) {
     console.log(`  ${tenantId} -> ${apiKey}`);
   }
 
-  const url = `${baseUrl.replace(/\/$/, '')}/api/tenants/bulk-set-api-keys`;
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-internal-api-key': internalApiKey,
-    },
-    body: JSON.stringify({ apiKeys }),
-  });
+  const chunks = chunkArray(allPairs, CHUNK_SIZE);
+  console.log(
+    `Sending in ${chunks.length} chunk(s) of up to ${CHUNK_SIZE} item(s) each.`,
+  );
 
-  const body = await response.json().catch(() => ({}));
-  console.log(`Response ${response.status}:`, body);
+  const allUpdated = [];
+  const allFailed = [];
+  let anyRequestFailed = false;
 
-  if (!response.ok) {
+  for (let i = 0; i < chunks.length; i++) {
+    const chunk = chunks[i];
+    console.log(`\nChunk ${i + 1}/${chunks.length}: ${chunk.length} item(s)`);
+    const { ok, status, body } = await sendChunk(
+      baseUrl,
+      chunk,
+      internalApiKey,
+    );
+
+    console.log(`Response ${status}:`, body);
+
+    if (!ok) {
+      anyRequestFailed = true;
+      continue;
+    }
+
+    if (Array.isArray(body.updated)) {
+      allUpdated.push(...body.updated);
+    }
+    if (Array.isArray(body.failed)) {
+      allFailed.push(...body.failed);
+    }
+  }
+
+  console.log('\n--- Summary ---');
+  console.log(`Updated: ${allUpdated.length}`);
+  console.log(`Failed:  ${allFailed.length}`);
+
+  if (allFailed.length > 0) {
+    console.log('Failed details:', allFailed);
+  }
+
+  if (anyRequestFailed || allFailed.length > 0) {
     process.exit(1);
   }
 }
