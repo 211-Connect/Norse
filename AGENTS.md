@@ -20,6 +20,7 @@ Other docs, load only when the task touches that area:
 - [docs/printable-directories.md](/docs/printable-directories.md) — curated branded PDF directory feature.
 - [docs/search.md](/docs/search.md) — how the search dialog's autocomplete, `queryType`/`query` model, and the `/search` request pipeline work, including organization search.
 - [docs/ai-search-legacy-link-flow.md](/docs/ai-search-legacy-link-flow.md) — legacy search URL normalization when a tenant's `searchEngine` is `ai_classification`.
+- [docs/scorecards.md](/docs/scorecards.md) — managing per-tenant AI-classification taxonomy-to-need weights.
 - [docs/search-deep-link-geocoding.md](/docs/search-deep-link-geocoding.md) — forward-geocoding a deep link's `location` when `coords` is missing (all tenants).
 
 ## Feature documentation

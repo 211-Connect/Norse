@@ -1,58 +1,30 @@
 'use client';
 
+import { useAuth } from '@payloadcms/ui';
 import { useTenantSelection } from '@payloadcms/plugin-multi-tenant/client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { ClientUser } from 'payload';
 
-import { fetchWrapper } from '@/app/(app)/shared/lib/fetchWrapper';
+function isInternalUser(user: ClientUser | null | undefined): boolean {
+  if (user == null || typeof user !== 'object') {
+    return false;
+  }
 
-type ScorecardsStatusResponse = {
-  tenantId: string;
-  aiClassificationEnabled: boolean;
-};
+  return (
+    Array.isArray(user.roles) &&
+    user.roles.some((role) => role === 'super-admin' || role === 'support')
+  );
+}
 
 export default function ScorecardsNavLink() {
   const pathname = usePathname();
   const href = '/admin/scorecards';
   const isActive = pathname?.startsWith(href);
   const { selectedTenantID } = useTenantSelection();
-  const [isVisible, setIsVisible] = useState(false);
+  const { user } = useAuth();
 
-  useEffect(() => {
-    let cancelled = false;
-
-    const checkStatus = async () => {
-      if (!selectedTenantID) {
-        setIsVisible(false);
-        return;
-      }
-
-      try {
-        const result = await fetchWrapper<ScorecardsStatusResponse>(
-          `/api/taxonomy-scorecards/status?tenantId=${encodeURIComponent(selectedTenantID)}`,
-        );
-
-        if (cancelled) {
-          return;
-        }
-
-        setIsVisible(Boolean(result?.aiClassificationEnabled));
-      } catch {
-        if (!cancelled) {
-          setIsVisible(false);
-        }
-      }
-    };
-
-    checkStatus();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [selectedTenantID]);
-
-  if (!isVisible) {
+  if (!selectedTenantID || !isInternalUser(user)) {
     return null;
   }
 

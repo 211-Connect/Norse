@@ -1,20 +1,16 @@
 import type { Endpoint, PayloadRequest } from 'payload';
 
 import {
+  assertAuthorized,
+  isInternalUser,
+} from './taxonomyScorecardsAuthorization';
+import {
   enableScorecard,
   getScorecard,
   searchTaxonomies,
   updateScorecard,
 } from '@/payload/utilities/taxonomyScorecardsApi';
 import { findResourceDirectoryByTenantId } from '@/payload/collections/ResourceDirectories/actions/findResourceDirectoryByTenantId';
-import {
-  isSuperAdmin,
-  isSupport,
-} from '@/payload/collections/Users/access/roles';
-
-type AuthorizedContext = {
-  tenantId: string;
-};
 
 function toStringValue(value: unknown): string | null {
   if (typeof value !== 'string') {
@@ -37,68 +33,6 @@ function getTenantIdFromReq(req: PayloadRequest): string | null {
 function getPathParam(req: PayloadRequest, key: string): string | null {
   const routeParams = req.routeParams as Record<string, unknown> | undefined;
   return toStringValue(routeParams?.[key]);
-}
-
-function isInternalUser(req: PayloadRequest): boolean {
-  return isSuperAdmin(req.user) || isSupport(req.user as any);
-}
-
-async function assertAuthorizedAndEnabled(
-  req: PayloadRequest,
-  tenantId: string,
-): Promise<AuthorizedContext> {
-  if (!req.user) {
-    throw new Response(JSON.stringify({ error: 'Unauthorized' }), {
-      status: 401,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
-  if (!isInternalUser(req)) {
-    throw new Response(JSON.stringify({ error: 'Forbidden' }), {
-      status: 403,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
-  let tenantExists = true;
-  try {
-    await req.payload.findByID({
-      collection: 'tenants',
-      id: tenantId,
-      overrideAccess: true,
-    });
-  } catch {
-    tenantExists = false;
-  }
-
-  if (!tenantExists) {
-    throw new Response(JSON.stringify({ error: 'Tenant not found.' }), {
-      status: 404,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
-  const resourceDirectory = await findResourceDirectoryByTenantId(tenantId);
-  const aiClassificationEnabled =
-    resourceDirectory?.search?.searchSettings?.searchEngine ===
-    'ai_classification';
-
-  if (!aiClassificationEnabled) {
-    throw new Response(
-      JSON.stringify({
-        error:
-          'AI classification is disabled for this tenant. Enable it in Search Settings first.',
-        code: 'AI_CLASSIFICATION_DISABLED',
-      }),
-      {
-        status: 403,
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
-  }
-
-  return { tenantId };
 }
 
 function toNorseErrorResponse(error: unknown): Response {
@@ -201,7 +135,7 @@ export const taxonomyScorecardsSearch: Endpoint = {
         );
       }
 
-      await assertAuthorizedAndEnabled(req, tenantId);
+      await assertAuthorized(req, tenantId);
 
       const query = toStringValue(req.query?.query) ?? '';
       const page = Number(req.query?.page ?? 1);
@@ -236,7 +170,7 @@ export const taxonomyScorecardsGet: Endpoint = {
         );
       }
 
-      await assertAuthorizedAndEnabled(req, tenantId);
+      await assertAuthorized(req, tenantId);
 
       const result = await getScorecard({ tenantId, hsisCode });
       return Response.json(result);
@@ -261,7 +195,7 @@ export const taxonomyScorecardsUpdate: Endpoint = {
         );
       }
 
-      await assertAuthorizedAndEnabled(req, tenantId);
+      await assertAuthorized(req, tenantId);
 
       const body =
         ((await req.json?.()) as Record<string, unknown> | undefined) ?? {};
@@ -328,7 +262,7 @@ export const taxonomyScorecardsEnable: Endpoint = {
         );
       }
 
-      await assertAuthorizedAndEnabled(req, tenantId);
+      await assertAuthorized(req, tenantId);
 
       const body =
         ((await req.json?.()) as Record<string, unknown> | undefined) ?? {};

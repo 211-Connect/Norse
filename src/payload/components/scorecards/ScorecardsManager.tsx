@@ -89,24 +89,23 @@ export default function ScorecardsManager() {
     );
   }
 
-  if (!statusState.data?.aiClassificationEnabled) {
-    return (
-      <div
-        style={{
-          border: '1px solid var(--theme-warning-400)',
-          background: 'var(--theme-warning-100)',
-          borderRadius: '8px',
-          padding: '12px',
-        }}
-      >
-        AI classification is disabled for this tenant. Enable it in Search
-        Settings to manage scorecards.
-      </div>
-    );
-  }
-
   return (
     <div style={{ display: 'grid', gap: '1rem' }}>
+      {!statusState.data?.aiClassificationEnabled && (
+        <div
+          style={{
+            border: '1px solid var(--theme-warning-400)',
+            background: 'var(--theme-warning-100)',
+            borderRadius: '8px',
+            padding: '12px',
+          }}
+        >
+          This tenant&apos;s public directory is not using AI classification.
+          These scorecard weights still apply when the AI-classification engine
+          is requested directly, for example by API consumers.
+        </div>
+      )}
+
       <SearchTaxonomiesPanel openTaxonomy={openTaxonomy} />
 
       {selectedTaxonomy && (
