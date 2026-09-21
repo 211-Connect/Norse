@@ -2,10 +2,9 @@
 
 import { createLogger } from '@/lib/logger';
 import { suggestionApiClient } from '@/lib/api/clients';
+import { getTenantApiKeyHeaders } from '@/lib/api/getTenantApiKey';
 import { SuggestionCombinedResponseDto } from '@/lib/api/generated/data-contracts';
 import { RequestParams } from '@/lib/api/generated/http-client';
-
-import { INTERNAL_API_KEY } from '../lib/constants';
 
 const log = createLogger('search-suggestions-service');
 
@@ -14,16 +13,16 @@ const EMPTY_SUGGESTIONS: SuggestionCombinedResponseDto = {
   organizations: [],
 };
 
-function createSuggestionRequestParams(
+async function createSuggestionRequestParams(
   locale: string,
   tenantId: string,
-): RequestParams {
+): Promise<RequestParams> {
   return {
     headers: {
       'accept-language': locale,
       'x-api-version': '1',
-      'x-api-key': INTERNAL_API_KEY || '',
       'x-tenant-id': tenantId,
+      ...(await getTenantApiKeyHeaders(tenantId)),
     },
   };
 }
@@ -56,7 +55,7 @@ export async function getSearchSuggestions(
     const response =
       await suggestionApiClient.suggestionControllerGetSuggestions(
         { query, locale, tenant_id: tenantId },
-        createSuggestionRequestParams(locale, tenantId),
+        await createSuggestionRequestParams(locale, tenantId),
       );
 
     if (!response.data) {

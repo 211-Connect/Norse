@@ -1,17 +1,15 @@
 import { API_URL } from '../lib/constants';
 import { fetchWrapper } from '../lib/fetchWrapper';
+import { getApiHeaders } from '../lib/get-api-headers';
 
 export class ShortUrlService {
   static endpoint = 'short-url';
 
-  static async expandUrl(
-    id: string,
-    tenantId?: string,
-  ): Promise<string | null> {
+  static async expandUrl(id: string, tenantId: string): Promise<string | null> {
     const data = await fetchWrapper(`${API_URL}/${this.endpoint}/${id}`, {
       headers: {
         'x-api-version': '1',
-        ...(tenantId && { 'x-tenant-id': tenantId }),
+        ...(await getApiHeaders(tenantId)),
       },
       cache: 'no-store',
     });
@@ -24,14 +22,14 @@ export class ShortUrlService {
 
   static async shortenUrl(
     url: string,
-    tenantId?: string,
+    tenantId: string,
   ): Promise<string | null> {
     const data = await fetchWrapper(`${API_URL}/${this.endpoint}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'x-api-version': '1',
-        ...(tenantId && { 'x-tenant-id': tenantId }),
+        ...(await getApiHeaders(tenantId)),
       },
       body: { url },
       cache: 'no-store',

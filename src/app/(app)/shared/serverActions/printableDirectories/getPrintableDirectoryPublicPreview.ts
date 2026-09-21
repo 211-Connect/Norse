@@ -2,18 +2,20 @@
 
 import { PrintableDirectoryPreviewResponseDto } from '@/lib/api/generated/data-contracts';
 import { printableDirectoriesPublicApiClient } from '@/lib/api/clients';
+import { getTenantApiKeyHeaders } from '@/lib/api/getTenantApiKey';
 
 export async function getPrintableDirectoryPublicPreview(
   slug: string,
   locale: string,
-  tenantId?: string,
+  tenantId: string,
 ): Promise<PrintableDirectoryPreviewResponseDto | null> {
   try {
+    const tenantApiKeyHeaders = await getTenantApiKeyHeaders(tenantId);
     const response =
       await printableDirectoriesPublicApiClient.printableDirectoryPublicControllerPreview(
-        { slug, locale, ...(tenantId ? { tenant_id: tenantId } : {}) },
+        { slug, locale, tenant_id: tenantId },
         {
-          headers: tenantId ? { 'x-tenant-id': tenantId } : undefined,
+          headers: { 'x-tenant-id': tenantId, ...tenantApiKeyHeaders },
           cache: 'no-store',
         },
       );

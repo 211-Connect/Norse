@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { API_URL, INTERNAL_API_KEY } from '@/app/(app)/shared/lib/constants';
+import { API_URL } from '@/app/(app)/shared/lib/constants';
+import { getApiHeaders } from '@/app/(app)/shared/lib/get-api-headers';
 
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null);
@@ -20,6 +21,14 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const tenantId = body?.tenantId;
+  if (typeof tenantId !== 'string' || tenantId.length === 0) {
+    return NextResponse.json(
+      { error: 'tenantId is required and must be a non-empty string' },
+      { status: 400 },
+    );
+  }
+
   if (!API_URL) {
     return NextResponse.json(
       { error: 'API_URL is not configured' },
@@ -31,9 +40,8 @@ export async function POST(request: NextRequest) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': INTERNAL_API_KEY ?? '',
-      'x-tenant-id': body?.tenantId ?? '',
       'x-api-version': '1',
+      ...(await getApiHeaders(tenantId)),
     },
     body: JSON.stringify({ ids }),
   });

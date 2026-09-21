@@ -42,6 +42,7 @@ export class FavoriteList<
    * @tags Favorite List
    * @name FavoriteListControllerCreate
    * @request POST:/favorite-list
+   * @secure
    */
   favoriteListControllerCreate = (
     data: CreateFavoriteListDto,
@@ -53,6 +54,7 @@ export class FavoriteList<
       method: "POST",
       query: query,
       body: data,
+      secure: true,
       type: "application/json",
       ...params,
     });
@@ -62,6 +64,7 @@ export class FavoriteList<
    * @tags Favorite List
    * @name FavoriteListControllerFindAll
    * @request GET:/favorite-list
+   * @secure
    */
   favoriteListControllerFindAll = (
     query: FavoriteListControllerFindAllParams = {},
@@ -71,6 +74,7 @@ export class FavoriteList<
       path: `/favorite-list`,
       method: "GET",
       query: query,
+      secure: true,
       format: "json",
       ...params,
     });
@@ -80,6 +84,7 @@ export class FavoriteList<
    * @tags Favorite List
    * @name FavoriteListControllerSyncLocalList
    * @request POST:/favorite-list/sync
+   * @secure
    */
   favoriteListControllerSyncLocalList = (
     data: SyncFavoriteListDto,
@@ -91,6 +96,7 @@ export class FavoriteList<
       method: "POST",
       query: query,
       body: data,
+      secure: true,
       type: "application/json",
       format: "json",
       ...params,
@@ -101,6 +107,7 @@ export class FavoriteList<
    * @tags Favorite List
    * @name FavoriteListControllerSearch
    * @request GET:/favorite-list/search
+   * @secure
    */
   favoriteListControllerSearch = (
     query: FavoriteListControllerSearchParams = {},
@@ -110,6 +117,7 @@ export class FavoriteList<
       path: `/favorite-list/search`,
       method: "GET",
       query: query,
+      secure: true,
       format: "json",
       ...params,
     });
@@ -137,6 +145,7 @@ export class FavoriteList<
    * @tags Favorite List
    * @name FavoriteListControllerUpdate
    * @request PUT:/favorite-list/{id}
+   * @secure
    */
   favoriteListControllerUpdate = (
     { id, ...query }: FavoriteListControllerUpdateParams,
@@ -148,6 +157,7 @@ export class FavoriteList<
       method: "PUT",
       query: query,
       body: data,
+      secure: true,
       type: "application/json",
       ...params,
     });
@@ -157,6 +167,7 @@ export class FavoriteList<
    * @tags Favorite List
    * @name FavoriteListControllerRemove
    * @request DELETE:/favorite-list/{id}
+   * @secure
    */
   favoriteListControllerRemove = (
     { id, ...query }: FavoriteListControllerRemoveParams,
@@ -166,6 +177,7 @@ export class FavoriteList<
       path: `/favorite-list/${id}`,
       method: "DELETE",
       query: query,
+      secure: true,
       ...params,
     });
   /**
@@ -174,6 +186,7 @@ export class FavoriteList<
    * @tags Favorite List
    * @name FavoriteListControllerPurge
    * @request DELETE:/favorite-list/{id}/favorites
+   * @secure
    */
   favoriteListControllerPurge = (
     { id, ...query }: FavoriteListControllerPurgeParams,
@@ -183,6 +196,7 @@ export class FavoriteList<
       path: `/favorite-list/${id}/favorites`,
       method: "DELETE",
       query: query,
+      secure: true,
       ...params,
     });
 }

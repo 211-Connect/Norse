@@ -11,6 +11,10 @@ export async function GET(
   { params }: { params: Promise<{ id: string; tenantId?: string }> },
 ) {
   const { id, tenantId } = await params;
+  if (!tenantId) {
+    return NextResponse.redirect('/404', 302);
+  }
+
   try {
     const url = await expandShortUrl(id, tenantId);
     if (url) {

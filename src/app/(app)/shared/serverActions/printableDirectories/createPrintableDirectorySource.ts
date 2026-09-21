@@ -6,6 +6,7 @@ import {
   SearchQueryApiDto,
 } from '@/lib/api/generated/data-contracts';
 import { printableDirectoriesApiClient } from '@/lib/api/clients';
+import { getTenantApiKeyHeaders } from '@/lib/api/getTenantApiKey';
 
 import { getAuthHeaders } from '../../lib/authHeaders';
 import { QueryType } from '../../lib/search-utils';
@@ -75,7 +76,7 @@ type CreatePrintableDirectorySourceParams = {
   directoryId: string;
   sectionId: string;
   payload: PrintableDirectoryControllerCreateSourcePayload;
-  tenantId?: string;
+  tenantId: string;
 };
 
 export async function createPrintableDirectorySource({
@@ -84,7 +85,11 @@ export async function createPrintableDirectorySource({
   payload,
   tenantId,
 }: CreatePrintableDirectorySourceParams): Promise<PrintableDirectoryResponseDto | null> {
-  const headers = await getAuthHeaders(tenantId);
+  const [authHeaders, tenantApiKeyHeaders] = await Promise.all([
+    getAuthHeaders(tenantId),
+    getTenantApiKeyHeaders(tenantId),
+  ]);
+  const headers = { ...authHeaders, ...tenantApiKeyHeaders };
 
   try {
     const response =

@@ -60,6 +60,7 @@ export class PrintableDirectories<
    * @name PrintableDirectoryControllerList
    * @summary List printable directories
    * @request GET:/printable-directories
+   * @secure
    */
   printableDirectoryControllerList = (
     query: PrintableDirectoryControllerListParams = {},
@@ -69,6 +70,7 @@ export class PrintableDirectories<
       path: `/printable-directories`,
       method: "GET",
       query: query,
+      secure: true,
       format: "json",
       ...params,
     });
@@ -78,6 +80,7 @@ export class PrintableDirectories<
    * @tags Printable Directories
    * @name PrintableDirectoryControllerCreate
    * @request POST:/printable-directories
+   * @secure
    */
   printableDirectoryControllerCreate = (
     data: CreatePrintableDirectoryDto,
@@ -89,6 +92,7 @@ export class PrintableDirectories<
       method: "POST",
       query: query,
       body: data,
+      secure: true,
       type: "application/json",
       format: "json",
       ...params,
@@ -100,6 +104,7 @@ export class PrintableDirectories<
    * @name PrintableDirectoryControllerGetById
    * @summary Get printable directory
    * @request GET:/printable-directories/{id}
+   * @secure
    */
   printableDirectoryControllerGetById = (
     { id, ...query }: PrintableDirectoryControllerGetByIdParams,
@@ -109,6 +114,7 @@ export class PrintableDirectories<
       path: `/printable-directories/${id}`,
       method: "GET",
       query: query,
+      secure: true,
       format: "json",
       ...params,
     });
@@ -118,6 +124,7 @@ export class PrintableDirectories<
    * @tags Printable Directories
    * @name PrintableDirectoryControllerUpdate
    * @request PATCH:/printable-directories/{id}
+   * @secure
    */
   printableDirectoryControllerUpdate = (
     { id, ...query }: PrintableDirectoryControllerUpdateParams,
@@ -129,6 +136,7 @@ export class PrintableDirectories<
       method: "PATCH",
       query: query,
       body: data,
+      secure: true,
       type: "application/json",
       format: "json",
       ...params,
@@ -139,6 +147,7 @@ export class PrintableDirectories<
    * @tags Printable Directories
    * @name PrintableDirectoryControllerRemove
    * @request DELETE:/printable-directories/{id}
+   * @secure
    */
   printableDirectoryControllerRemove = (
     { id, ...query }: PrintableDirectoryControllerRemoveParams,
@@ -148,6 +157,7 @@ export class PrintableDirectories<
       path: `/printable-directories/${id}`,
       method: "DELETE",
       query: query,
+      secure: true,
       format: "json",
       ...params,
     });
@@ -157,6 +167,7 @@ export class PrintableDirectories<
    * @tags Printable Directories
    * @name PrintableDirectoryControllerCreateSection
    * @request POST:/printable-directories/{id}/sections
+   * @secure
    */
   printableDirectoryControllerCreateSection = (
     { id, ...query }: PrintableDirectoryControllerCreateSectionParams,
@@ -168,6 +179,7 @@ export class PrintableDirectories<
       method: "POST",
       query: query,
       body: data,
+      secure: true,
       type: "application/json",
       format: "json",
       ...params,
@@ -178,6 +190,7 @@ export class PrintableDirectories<
    * @tags Printable Directories
    * @name PrintableDirectoryControllerReorderSections
    * @request PATCH:/printable-directories/{id}/sections/reorder
+   * @secure
    */
   printableDirectoryControllerReorderSections = (
     { id, ...query }: PrintableDirectoryControllerReorderSectionsParams,
@@ -189,6 +202,7 @@ export class PrintableDirectories<
       method: "PATCH",
       query: query,
       body: data,
+      secure: true,
       type: "application/json",
       format: "json",
       ...params,
@@ -199,6 +213,7 @@ export class PrintableDirectories<
    * @tags Printable Directories
    * @name PrintableDirectoryControllerUpdateSection
    * @request PATCH:/printable-directories/{id}/sections/{sectionId}
+   * @secure
    */
   printableDirectoryControllerUpdateSection = (
     {
@@ -214,6 +229,7 @@ export class PrintableDirectories<
       method: "PATCH",
       query: query,
       body: data,
+      secure: true,
       type: "application/json",
       format: "json",
       ...params,
@@ -224,6 +240,7 @@ export class PrintableDirectories<
    * @tags Printable Directories
    * @name PrintableDirectoryControllerRemoveSection
    * @request DELETE:/printable-directories/{id}/sections/{sectionId}
+   * @secure
    */
   printableDirectoryControllerRemoveSection = (
     {
@@ -237,6 +254,7 @@ export class PrintableDirectories<
       path: `/printable-directories/${id}/sections/${sectionId}`,
       method: "DELETE",
       query: query,
+      secure: true,
       format: "json",
       ...params,
     });
@@ -246,6 +264,7 @@ export class PrintableDirectories<
    * @tags Printable Directories
    * @name PrintableDirectoryControllerCreateSource
    * @request POST:/printable-directories/{id}/sections/{sectionId}/sources
+   * @secure
    */
   printableDirectoryControllerCreateSource = (
     { id, sectionId, ...query }: PrintableDirectoryControllerCreateSourceParams,
@@ -257,6 +276,7 @@ export class PrintableDirectories<
       method: "POST",
       query: query,
       body: data,
+      secure: true,
       type: "application/json",
       format: "json",
       ...params,
@@ -267,6 +287,7 @@ export class PrintableDirectories<
    * @tags Printable Directories
    * @name PrintableDirectoryControllerReorderSources
    * @request PATCH:/printable-directories/{id}/sections/{sectionId}/sources/reorder
+   * @secure
    */
   printableDirectoryControllerReorderSources = (
     {
@@ -282,6 +303,7 @@ export class PrintableDirectories<
       method: "PATCH",
       query: query,
       body: data,
+      secure: true,
       type: "application/json",
       format: "json",
       ...params,
@@ -292,6 +314,7 @@ export class PrintableDirectories<
    * @tags Printable Directories
    * @name PrintableDirectoryControllerUpdateSource
    * @request PATCH:/printable-directories/{id}/sections/{sectionId}/sources/{sourceId}
+   * @secure
    */
   printableDirectoryControllerUpdateSource = (
     {
@@ -308,6 +331,7 @@ export class PrintableDirectories<
       method: "PATCH",
       query: query,
       body: data,
+      secure: true,
       type: "application/json",
       format: "json",
       ...params,
@@ -318,6 +342,7 @@ export class PrintableDirectories<
    * @tags Printable Directories
    * @name PrintableDirectoryControllerRemoveSource
    * @request DELETE:/printable-directories/{id}/sections/{sectionId}/sources/{sourceId}
+   * @secure
    */
   printableDirectoryControllerRemoveSource = (
     {
@@ -332,6 +357,7 @@ export class PrintableDirectories<
       path: `/printable-directories/${id}/sections/${sectionId}/sources/${sourceId}`,
       method: "DELETE",
       query: query,
+      secure: true,
       format: "json",
       ...params,
     });
@@ -342,6 +368,7 @@ export class PrintableDirectories<
    * @name PrintableDirectoryControllerPreview
    * @summary Build printable preview payload
    * @request GET:/printable-directories/{id}/preview
+   * @secure
    */
   printableDirectoryControllerPreview = (
     { id, ...query }: PrintableDirectoryControllerPreviewParams,
@@ -351,6 +378,7 @@ export class PrintableDirectories<
       path: `/printable-directories/${id}/preview`,
       method: "GET",
       query: query,
+      secure: true,
       format: "json",
       ...params,
     });

@@ -1,20 +1,19 @@
 import { Analytics } from './generated/Analytics';
 import { FavoriteList } from './generated/FavoriteList';
 import { Geocoding } from './generated/Geocoding';
-import { Organization } from './generated/Organization';
 import { PrintableDirectories } from './generated/PrintableDirectories';
 import { PrintableDirectoriesPublic } from './generated/PrintableDirectoriesPublic';
 import { Search } from './generated/Search';
+import { ShortUrl } from './generated/ShortUrl';
 import { Suggestion } from './generated/Suggestion';
 import { TaxonomyScorecard } from './generated/TaxonomyScorecard';
-import { API_URL, INTERNAL_API_KEY } from '@/app/(app)/shared/lib/constants';
+import { API_URL } from '@/app/(app)/shared/lib/constants';
 
 const clientArgs = {
   baseUrl: API_URL || '',
   baseApiParams: {
     headers: {
       'x-api-version': '1',
-      'x-internal-api-key': INTERNAL_API_KEY || '',
     },
   },
 };
@@ -22,6 +21,8 @@ const clientArgs = {
 export const analyticsApiClient = new Analytics(clientArgs);
 
 export const searchApiClient = new Search(clientArgs);
+
+export const shortUrlApiClient = new ShortUrl(clientArgs);
 
 export const geocodingApiClient = new Geocoding(clientArgs);
 

@@ -23,6 +23,7 @@ type Hash = string;
 export type CacheKey =
   | `tenant:${Domain | TenantId}`
   | `tenant_basic_config:${Domain}`
+  | `tenant_api_key:${TenantId}`
   | `resource_directory:${Domain}:${Locale}`
   | `search_results:${TenantId}:${Locale}:${Hash}`
   | `reverse_geocode:${Hash}`

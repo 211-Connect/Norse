@@ -5,6 +5,7 @@ import { EarthIcon } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { MapService } from '@/app/(app)/shared/services/map-service';
 import { GeocodeResult } from '@/types/resource';
 
@@ -12,6 +13,7 @@ import { useGeocodingAdapter } from '../use-geocoding-adapter';
 
 export function useLocations(searchTerm: string, excludeEverywhere = false) {
   const adapter = useGeocodingAdapter();
+  const appConfig = useAppConfig();
   const { t, i18n } = useTranslation('common');
 
   const { data = [], isFetching } = useQuery({
@@ -23,6 +25,7 @@ export function useLocations(searchTerm: string, excludeEverywhere = false) {
       return await MapService.forwardGeocode(searchTerm, {
         adapter,
         locale: i18n.language,
+        tenantId: appConfig.tenantId,
       });
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
