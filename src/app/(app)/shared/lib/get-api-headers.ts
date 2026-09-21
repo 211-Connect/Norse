@@ -29,5 +29,6 @@ export const getApiHeaders = async (
   return {
     ...headersInitToRecord(authHeaders),
     'x-api-key': tenantApiKey,
+    'x-api-version': '1',
   };
 };
