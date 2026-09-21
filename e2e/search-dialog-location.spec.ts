@@ -291,4 +291,75 @@ test.describe('Search dialog location: navigation params + Enter-while-pending',
       timeout: UI_SHELL_TIMEOUT_MS,
     });
   });
+
+  test('replacing an already-picked location by explicitly selecting a suggestion and clicking Search updates the URL', async ({
+    page,
+  }) => {
+    const staleLocation = 'Anchorage, AK';
+    const staleCoords = '-149.9,61.2';
+
+    await page.goto(
+      buildSeedSearchUrl({
+        query: 'food',
+        query_label: 'food',
+        query_type: 'text',
+        location: staleLocation,
+        coords: staleCoords,
+      }),
+      { waitUntil: 'domcontentloaded' },
+    );
+    await expect(page.locator('#search-container')).toBeVisible({
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
+    await waitForPageStabilized(page);
+
+    const changeLocation = page
+      .getByRole('button', { name: /change location/i })
+      .first();
+    await expect(changeLocation).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+    await changeLocation.click();
+
+    const dialog = page.getByTestId('search-dialog');
+    await expect(dialog).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+
+    const locationInput = page.locator('#location-input');
+    await expect(locationInput).toHaveValue(staleLocation);
+
+    await locationInput.fill(testLocation);
+    const listbox = page
+      .getByTestId('location-field')
+      .getByTestId('autocomplete-listbox');
+    await listbox.waitFor({
+      state: 'visible',
+      timeout: AUTOCOMPLETE_TIMEOUT_MS,
+    });
+
+    const options = listbox.getByTestId('autocomplete-option');
+    await expect
+      .poll(() => options.count(), { timeout: AUTOCOMPLETE_TIMEOUT_MS })
+      .toBeGreaterThan(1);
+    await options.nth(1).click();
+
+    await Promise.all([
+      expect
+        .poll(() => getCoordsParam(page.url()), {
+          timeout: SEARCH_NAV_TIMEOUT_MS,
+          intervals: [250, 500, 1_000],
+        })
+        .not.toBe(staleCoords),
+      page.getByTestId('search-submit-btn').click(),
+    ]);
+
+    await expectSearchDialogDismissed(page);
+
+    const finalUrl = new URL(page.url());
+    expect(finalUrl.searchParams.get('coords')).not.toBe(staleCoords);
+    expect(finalUrl.searchParams.get('location')).toBeTruthy();
+    expect(finalUrl.searchParams.get('location')?.toLowerCase()).not.toContain(
+      'anchorage',
+    );
+    await expect(page.locator('#search-container')).toBeVisible({
+      timeout: UI_SHELL_TIMEOUT_MS,
+    });
+  });
 });
