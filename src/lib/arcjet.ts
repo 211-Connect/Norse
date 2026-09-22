@@ -1,4 +1,4 @@
-import arcjet, { cloudflare, detectBot, request } from '@arcjet/next';
+import arcjet, { cloudflare, detectBot, request, shield, filter } from '@arcjet/next';
 
 import { createLogger } from '@/lib/logger';
 
@@ -31,6 +31,13 @@ const aj = arcjetKey
           mode: 'LIVE',
           allow: ['CATEGORY:SEARCH_ENGINE'],
         }),
+        shield({
+          mode: 'LIVE',
+        }),
+        filter({
+          mode: 'LIVE',
+          allow: ['ip.src.country == "US"'],
+        })
       ],
     })
   : undefined;
