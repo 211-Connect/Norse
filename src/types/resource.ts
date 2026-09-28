@@ -88,5 +88,5 @@ export interface Resource {
   translations?: ResourceTranslationOpenApiDto[];
   attributeValues?: Record<string, string> | null;
   linkQualityUrls: QualityLink[] | null;
-  contacts: ResourceContactsOpenApiDto | null | undefined;
+  contacts: ResourceContactsOpenApiDto[] | null | undefined;
 }
