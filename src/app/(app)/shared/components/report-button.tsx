@@ -19,7 +19,7 @@ export function ReportButton({
 }) {
   const appConfig = useAppConfig();
   const { t } = useTranslation('page-resource');
-  const feedbackUrlValue = appConfig?.contact?.feedbackUrl;
+  const feedbackUrlValue = appConfig?.header?.feedbackUrl;
   const linkText = customText || t('report');
 
   const [href, setHref] = useState<string | null>(null);

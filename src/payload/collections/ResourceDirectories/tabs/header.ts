@@ -103,6 +103,19 @@ export const header: Tab = {
       ],
     },
     {
+      type: 'row',
+      fields: [
+        {
+          name: 'feedbackUrl',
+          type: 'text',
+          access: {
+            create: superAdminOrSupportOrTenantAccess,
+            update: superAdminOrSupportOrTenantAccess,
+          },
+        },
+      ],
+    },
+    {
       name: 'safeExit',
       type: 'group',
       access: {
