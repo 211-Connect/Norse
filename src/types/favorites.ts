@@ -1,4 +1,4 @@
-import { Address, ApiResource } from '@/types/resource';
+import { Resource } from '@/types/resource';
 
 export type Privacy = 'PRIVATE' | 'PUBLIC';
 
@@ -8,9 +8,7 @@ export interface FavoritesPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export interface Favorite extends ApiResource {
-  addresses: Address[];
-}
+export type Favorite = Resource;
 
 // Base favorite list interface
 interface BaseFavoriteList {

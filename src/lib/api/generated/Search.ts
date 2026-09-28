@@ -52,8 +52,8 @@ export class Search<
    * @request POST:/search
    */
   searchControllerGetResourcesPost = (
-    data: SearchControllerGetResourcesPostPayload,
     query: SearchControllerGetResourcesPostParams = {},
+    data: SearchControllerGetResourcesPostPayload,
     params: RequestParams = {},
   ) =>
     this.request<SearchControllerGetResourcesPostData, any>({

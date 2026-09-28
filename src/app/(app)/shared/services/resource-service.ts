@@ -3,11 +3,9 @@
 import dayjs from 'dayjs';
 import { cache } from 'react';
 
-import {
-  ApiResource,
-  ApiResourceBatchResponse,
-  Resource,
-} from '@/types/resource';
+import { resourceApiClient } from '@/lib/api/clients';
+import type { TransformedResourceOpenApiDto } from '@/lib/api/generated/data-contracts';
+import type { Resource, ServiceArea } from '@/types/resource';
 import {
   CacheKey,
   ONE_HOUR,
@@ -16,26 +14,12 @@ import {
 } from '@/utilities/withCache';
 import { ensureUrlProtocol } from '@/utils';
 
-import { API_URL } from '../lib/constants';
-import { fetchWrapper } from '../lib/fetchWrapper';
+import { getTenantApiKeyHeaders } from '@/lib/api/getTenantApiKey';
 import { getApiHeaders } from '../lib/get-api-headers';
 
 const RESOURCE_BATCH_LIMIT = 100;
 
-async function createResourceHeaders(
-  locale: string,
-  tenantId: string,
-  contentType?: string,
-): Promise<HeadersInit> {
-  return {
-    ...(await getApiHeaders(tenantId)),
-    'accept-language': locale,
-    'x-api-version': '1',
-    ...(contentType && { 'Content-Type': contentType }),
-  };
-}
-
-function transformApiResource(data: ApiResource): Resource {
+function transformApiResource(data: TransformedResourceOpenApiDto): Resource {
   const facetsEnMap = new Map(
     data?.facetsEn?.map((facet) => [facet.code, facet]) ?? [],
   );
@@ -88,13 +72,13 @@ function transformApiResource(data: ApiResource): Resource {
     organizationName: data?.organizationName ?? null,
     organizationDescription: data?.translation?.organizationDescription ?? null,
     organizationUrl: data?.organizationUrl ?? null,
-    serviceArea: data?.serviceArea ?? null,
+    serviceArea: (data?.serviceArea as ServiceArea) ?? null,
     serviceAreaDescription: data?.translation?.serviceAreaDescription ?? null,
     transportation: data?.translation?.transportation ?? null,
     accessibility: data?.translation?.accessibility ?? null,
     facets:
       data?.translation?.facets?.map((facet) => {
-        const englishFacet = facetsEnMap.get(facet.code);
+        const englishFacet = facetsEnMap.get(facet.code ?? '');
         return {
           ...facet,
           taxonomyNameEn: englishFacet?.taxonomyName,
@@ -153,33 +137,29 @@ async function fetchResourcesIndividually(
 }
 
 async function fetchAndTransformResourceOrigin(
-  url: string,
+  id: string,
   options: { locale: string; tenantId: string; cacheKey: CacheKey },
+  originalId?: boolean,
 ): Promise<Resource | null> {
   return await withCache(
     options.cacheKey,
     async () => {
-      const searchParams = new URLSearchParams({
+      const args = {
+        id,
         locale: options.locale,
         tenant_id: options.tenantId,
-      });
+      } as const;
+      const headers = await getApiHeaders(options.tenantId);
 
-      const data: ApiResource | null = await fetchWrapper(
-        `${url}?${searchParams.toString()}`,
-        {
-          headers: await createResourceHeaders(
-            options.locale,
-            options.tenantId,
-          ),
-          cache: 'no-store',
-        },
-      );
+      const response = await (originalId
+        ? resourceApiClient.resourceControllerGetResourceByOriginalId(args, {
+            headers,
+          })
+        : resourceApiClient.resourceControllerGetResourceById(args, {
+            headers,
+          }));
 
-      if (!data) {
-        return null;
-      }
-
-      return transformApiResource(data);
+      return transformApiResource(response.data);
     },
     { memory: false, redis: true, ttl: ONE_HOUR },
   );
@@ -187,29 +167,23 @@ async function fetchAndTransformResourceOrigin(
 
 const fetchAndTransformResource = cache(fetchAndTransformResourceOrigin);
 
-async function fetchAndTransformResourcesOrigin(
-  idsKey: string,
+async function fetchAndTransformResourcesBatchOrigin(
   ids: string[],
   options: { locale: string; tenantId: string; cacheKey: CacheKey },
-): Promise<Record<string, Resource>> {
-  void idsKey;
-
-  const resources = await withCache(
+): Promise<Record<string, Resource> | null> {
+  return await withCache(
     options.cacheKey,
     async () => {
-      const data = await fetchWrapper<ApiResourceBatchResponse>(
-        `${API_URL}/resource/batch`,
-        {
-          method: 'POST',
-          headers: await createResourceHeaders(
-            options.locale,
-            options.tenantId,
-            'application/json',
-          ),
-          body: { ids },
-          cache: 'no-store',
-        },
-      );
+      const response =
+        await resourceApiClient.resourceControllerGetResourcesBatch(
+          { locale: options.locale, tenant_id: options.tenantId },
+          { ids },
+          {
+            headers: await getTenantApiKeyHeaders(options.tenantId),
+          },
+        );
+
+      const data = response.data;
 
       if (!data?.data) {
         return {};
@@ -224,19 +198,18 @@ async function fetchAndTransformResourcesOrigin(
     },
     { memory: false, redis: true, ttl: ONE_HOUR },
   );
-
-  return resources ?? {};
 }
 
-const fetchAndTransformResources = cache(fetchAndTransformResourcesOrigin);
+const fetchAndTransformResourcesBatch = cache(
+  fetchAndTransformResourcesBatchOrigin,
+);
 
 export async function getResource(
   id: string,
   locale: string,
   tenantId: string,
 ): Promise<Resource | null> {
-  const url = `${API_URL}/resource/${id}`;
-  return fetchAndTransformResource(url, {
+  return fetchAndTransformResource(id, {
     locale,
     tenantId,
     cacheKey: `resource:${tenantId}:${id}:${locale}`,
@@ -248,12 +221,15 @@ export async function getResourceByOriginalId(
   locale: string,
   tenantId: string,
 ): Promise<Resource | null> {
-  const url = `${API_URL}/resource/original/${originalId}`;
-  return fetchAndTransformResource(url, {
-    locale,
-    tenantId,
-    cacheKey: `resource:${tenantId}:${originalId}:${locale}`,
-  });
+  return fetchAndTransformResource(
+    originalId,
+    {
+      locale,
+      tenantId,
+      cacheKey: `resource:${tenantId}:original:${originalId}:${locale}`,
+    },
+    true,
+  );
 }
 
 export async function getResources(
@@ -270,7 +246,7 @@ export async function getResources(
 
   const settledChunks = await Promise.allSettled(
     chunks.map((chunk) =>
-      fetchAndTransformResources(chunk.join(','), chunk, {
+      fetchAndTransformResourcesBatch(chunk, {
         locale,
         tenantId: tenantId,
         cacheKey: `resource_batch:${tenantId}:${locale}:${stableHash(chunk)}`,

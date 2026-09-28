@@ -1,17 +1,21 @@
-import type { ForwardGeocodeResponseDto } from '@/lib/api/generated/data-contracts';
+import type {
+  ForwardGeocodeResponseDto,
+  ResourceAddressOpenApiDto,
+  ResourceContactsOpenApiDto,
+  ResourceFacetOpenApiDto,
+  ResourcePhoneNumberOpenApiDto,
+  ResourceQualityLinkOpenApiDto,
+  ResourceTaxonomyOpenApiDto,
+  ResourceTranslationOpenApiDto,
+} from '@/lib/api/generated/data-contracts';
 
-export interface Taxonomy {
-  _id?: string;
-  code: string;
-  name: string;
-}
+export type Taxonomy = ResourceTaxonomyOpenApiDto;
 
-export interface Facet {
+export type T = ResourceFacetOpenApiDto;
+
+export interface Facet extends ResourceFacetOpenApiDto {
   _id?: string;
-  code: string;
-  taxonomyName: string;
   taxonomyCode?: string;
-  termName: string;
   termCode?: string;
 }
 
@@ -20,31 +24,9 @@ export interface FacetWithTranslation extends Facet {
   termNameEn?: string;
 }
 
-export interface Address {
-  _id?: string;
-  city: string;
-  country: string;
-  address_1: string;
-  address_2?: string;
-  postalCode: string;
-  stateProvince: string;
-  rank: number;
-  type: string;
-}
-
-export interface PhoneNumber {
-  _id?: string;
-  number: string;
-  rank: number;
-  type: string;
-  description?: string;
-}
-
-export interface QualityLink {
-  url: string;
-  displayText: string;
-  subheadingText?: string;
-}
+export type Address = ResourceAddressOpenApiDto;
+export type PhoneNumber = ResourcePhoneNumberOpenApiDto;
+export type QualityLink = ResourceQualityLinkOpenApiDto;
 
 export type BBox = [number, number, number, number];
 
@@ -60,89 +42,6 @@ export interface ServiceArea {
   type: 'Polygon' | 'MultiPolygon';
   coordinates: number[][][][] | number[][][];
   description?: string[];
-}
-
-export interface Translation {
-  displayName: string;
-  displaySummary?: string;
-  fees?: string;
-  hours?: string;
-  hoursDescription?: string;
-  locale: string;
-  taxonomies: Taxonomy[];
-  serviceName?: string;
-  serviceDescription?: string;
-  serviceSummary?: string;
-  organizationDescription?: string;
-  organizationSummary?: string;
-  languages?: string[];
-  interpretationServices?: string;
-  applicationProcess?: string;
-  requiredDocuments?: string[];
-  eligibilities?: string;
-  serviceAreaDescription?: string;
-  phoneNumbers?: PhoneNumber[];
-  transportation?: string;
-  accessibility?: string;
-  facets?: Facet[];
-  attributeValues?: Record<string, string>;
-  linkQualityUrls?: QualityLink[];
-  locationSummary?: string;
-  alert?: string;
-  alertDate?: string;
-  contacts: Array<{
-    id: string;
-    name: string;
-    title?: string;
-    email?: string;
-    phones?: PhoneNumber[];
-    priority: number;
-  }>;
-}
-
-export interface ApiResource {
-  _id: string;
-  serviceAtLocationId?: string;
-  location?: Location;
-  locationName?: string;
-  addresses?: Address[];
-  address?: string;
-  attribution?: string;
-  createdAt?: string | null;
-  displayName: string;
-  displayPhoneNumber?: string;
-  phone?: string;
-  email?: string | null;
-  languages?: string[];
-  lastAssuredDate?: string;
-  organizationName?: string;
-  phoneNumbers?: PhoneNumber[];
-  serviceArea?: ServiceArea;
-  serviceAreaName?: string;
-  tenant_id?: string;
-  originalId?: string | null;
-  updatedAt?: string | null;
-  website?: string;
-  organizationUrl?: string;
-  translation?: Translation;
-  translations?: Translation[];
-  facetsEn?: Facet[];
-}
-
-export interface ApiResourceBatchError {
-  id: string;
-  reason: string;
-  statusCode: number;
-}
-
-export interface ApiResourceBatchResponse {
-  data: Record<string, ApiResource>;
-  errors: ApiResourceBatchError[];
-  meta: {
-    requested: number;
-    successful: number;
-    failed: number;
-  };
 }
 
 export interface Resource {
@@ -186,8 +85,8 @@ export interface Resource {
   transportation: string | null;
   accessibility: string | null;
   facets: FacetWithTranslation[] | null | undefined;
-  translations?: Translation[];
+  translations?: ResourceTranslationOpenApiDto[];
   attributeValues?: Record<string, string> | null;
   linkQualityUrls: QualityLink[] | null;
-  contacts: Translation['contacts'] | null | undefined;
+  contacts: ResourceContactsOpenApiDto | null | undefined;
 }

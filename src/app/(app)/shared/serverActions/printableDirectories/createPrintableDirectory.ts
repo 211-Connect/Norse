@@ -20,8 +20,8 @@ export async function createPrintableDirectory(
   try {
     const response =
       await printableDirectoriesApiClient.printableDirectoryControllerCreate(
-        input,
         { locale: 'en', tenant_id: tenantId },
+        input,
         { cache: 'no-store', headers },
       );
 

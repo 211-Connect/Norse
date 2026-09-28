@@ -83,8 +83,8 @@ export class PrintableDirectories<
    * @secure
    */
   printableDirectoryControllerCreate = (
-    data: CreatePrintableDirectoryDto,
     query: PrintableDirectoryControllerCreateParams = {},
+    data: CreatePrintableDirectoryDto,
     params: RequestParams = {},
   ) =>
     this.request<PrintableDirectoryControllerCreateData, any>({
