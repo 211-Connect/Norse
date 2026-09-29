@@ -13,7 +13,7 @@ export function Footer() {
   const appConfig = useAppConfig();
   const { t } = useTranslation('common');
 
-  const brand = appConfig.brand.copyright || appConfig.brand.name;
+  const brand = appConfig.footer.copyright || appConfig.brand.name;
 
   return (
     <footer className="px-3 pt-12 pb-3">

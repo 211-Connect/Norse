@@ -376,7 +376,6 @@ async function getAppConfigBase(
       logoUrl: getMediaUrl(resourceDirectory.brand.logo),
       faviconUrl: getMediaUrl(resourceDirectory.brand.favicon),
       openGraphUrl: getMediaUrl(resourceDirectory.brand.openGraph),
-      copyright: resourceDirectory.brand.copyright ?? undefined,
       ctaText: resourceDirectory.brand.printableDocuments?.ctaText ?? undefined,
       theme: {
         borderRadius: resourceDirectory.brand.theme.borderRadius ?? undefined,
@@ -387,7 +386,6 @@ async function getAppConfigBase(
     },
     contact: {
       number: resourceDirectory.brand.phoneNumber ?? undefined,
-      feedbackUrl: resourceDirectory.brand.feedbackUrl ?? undefined,
     },
     sms: getSmsConfig(resourceDirectory),
     featureFlags: {
@@ -442,6 +440,7 @@ async function getAppConfigBase(
       getTenant(resourceDirectory)?.common?.gtmContainerId ?? undefined,
     footer: {
       customMenu: resourceDirectory.footer?.customMenu ?? [],
+      copyright: resourceDirectory.footer?.copyright ?? undefined,
       disclaimer: resourceDirectory.footer?.disclaimer ?? undefined,
     },
     header: {
@@ -451,6 +450,7 @@ async function getAppConfigBase(
         resourceDirectory.header?.favoritesButtonLabel ?? undefined,
       feedbackButtonLabel:
         resourceDirectory.header?.feedbackButtonLabel ?? undefined,
+      feedbackUrl: resourceDirectory.header?.feedbackUrl ?? undefined,
       safeExit: resourceDirectory.header?.safeExit
         ? {
             enabled: resourceDirectory.header.safeExit.enabled ?? false,

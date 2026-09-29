@@ -352,8 +352,6 @@ async function createResourceDirectory(
     tenant,
     name: populatedAppConfig.brandName,
     brand: {
-      copyright: populatedAppConfig.copyright,
-      feedbackUrl: populatedAppConfig.feedbackUrl,
       phoneNumber: populatedAppConfig.phoneNumber,
       theme: {
         primaryColor: populatedAppConfig.theme.primaryColor,
@@ -407,11 +405,13 @@ async function createResourceDirectory(
     },
     footer: {
       customMenu: populatedAppConfig.footerMenu ?? [],
+      copyright: populatedAppConfig.copyright || null,
       disclaimer: populatedAppConfig.footer?.disclaimer || null,
     },
     header: {
       customMenu: populatedAppConfig.headerMenu ?? [],
       customHomeUrl: populatedAppConfig.header?.customHomeUrl || null,
+      feedbackUrl: populatedAppConfig.feedbackUrl || null,
       safeExit: populatedAppConfig.safeExit ?? {},
       searchUrl: populatedAppConfig.header?.searchUrl || null,
     },

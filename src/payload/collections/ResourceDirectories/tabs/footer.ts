@@ -37,5 +37,13 @@ export const footer: Tab = {
         ...generateUrlFields('href'),
       ],
     },
+    {
+      name: 'copyright',
+      type: 'text',
+      access: {
+        create: superAdminOrSupportOrTenantAccess,
+        update: superAdminOrSupportOrTenantAccess,
+      },
+    },
   ],
 };

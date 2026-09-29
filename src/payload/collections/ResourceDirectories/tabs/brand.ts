@@ -68,27 +68,6 @@ export const brand: Tab = {
       type: 'row',
       fields: [
         {
-          name: 'copyright',
-          type: 'text',
-          access: {
-            update: superAdminOrSupportOrTenantAccess,
-            create: superAdminOrSupportOrTenantAccess,
-          },
-        },
-        {
-          name: 'feedbackUrl',
-          type: 'text',
-          access: {
-            create: superAdminOrSupportOrTenantAccess,
-            update: superAdminOrSupportOrTenantAccess,
-          },
-        },
-      ],
-    },
-    {
-      type: 'row',
-      fields: [
-        {
           name: 'phoneNumber',
           type: 'text',
           access: {

@@ -574,8 +574,6 @@ export interface ResourceDirectory {
     favicon: number | TenantMedia;
     hero?: (number | null) | TenantMedia;
     openGraph?: (number | null) | TenantMedia;
-    copyright?: string | null;
-    feedbackUrl?: string | null;
     phoneNumber?: string | null;
     theme: {
       primaryColor: string;
@@ -616,6 +614,7 @@ export interface ResourceDirectory {
      * Leave blank to use the default feedback label ("Report" or locale equivalent)
      */
     feedbackButtonLabel?: string | null;
+    feedbackUrl?: string | null;
     safeExit?: {
       enabled?: boolean | null;
       url?: string | null;
@@ -633,6 +632,7 @@ export interface ResourceDirectory {
           id?: string | null;
         }[]
       | null;
+    copyright?: string | null;
   };
   suggestions: {
     value: string;
@@ -1523,8 +1523,6 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         favicon?: T;
         hero?: T;
         openGraph?: T;
-        copyright?: T;
-        feedbackUrl?: T;
         phoneNumber?: T;
         theme?:
           | T
@@ -1561,6 +1559,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         searchUrl?: T;
         favoritesButtonLabel?: T;
         feedbackButtonLabel?: T;
+        feedbackUrl?: T;
         safeExit?:
           | T
           | {
@@ -1582,6 +1581,7 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
               openInNewTab?: T;
               id?: T;
             };
+        copyright?: T;
       };
   suggestions?:
     | T
