@@ -78,7 +78,10 @@ export function shouldSearchCardComponentRender(
         result.facets,
         result.taxonomies,
       );
-      const showComponent = badges.length > 0 || result.priority === 1;
+      const showPriority =
+        result.priority === 1 &&
+        appConfig.search.pinnedResourcesMode !== 'ignore';
+      const showComponent = badges.length > 0 || showPriority;
 
       return showComponent;
     }

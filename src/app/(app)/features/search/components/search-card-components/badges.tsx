@@ -4,14 +4,19 @@ import { Pin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { Badge } from '@/app/(app)/shared/components/ui/badge';
+import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 
 import { BadgesComponent as ResourceBadgesComponent } from '../../../resource/components/resource-components';
 import { SearchCardComponentProps } from './types';
 
 const PriorityBadge = ({ result }: SearchCardComponentProps) => {
   const { t } = useTranslation('common');
+  const appConfig = useAppConfig();
 
-  if (result.priority !== 1) {
+  if (
+    appConfig.search.pinnedResourcesMode === 'ignore' ||
+    result.priority !== 1
+  ) {
     return null;
   }
 

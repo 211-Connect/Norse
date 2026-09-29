@@ -135,6 +135,7 @@ export type AppConfig = {
     defaultRadius?: number;
     searchEngine: SearchEngine;
     resultsLimit: number;
+    pinnedResourcesMode: 'ignore' | 'boost' | 'top';
     texts?: {
       title?: string;
       queryInputPlaceholder?: string;
