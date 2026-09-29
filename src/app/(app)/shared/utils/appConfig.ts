@@ -289,6 +289,7 @@ async function getAppConfigBase(
         radiusOptions: [],
         searchEngine: 'classic',
         resultsLimit: 25,
+        pinnedResourcesMode: 'boost',
       },
       sessionId: '',
       badges: [],
@@ -544,6 +545,8 @@ async function getAppConfigBase(
       searchEngine:
         resourceDirectory.search.searchSettings.searchEngine ?? 'classic',
       resultsLimit: resourceDirectory.search.searchSettings.resultsLimit ?? 25,
+      pinnedResourcesMode:
+        resourceDirectory.search.searchSettings.pinnedResourcesMode ?? 'boost',
       texts: {
         locationInputPlaceholder:
           resourceDirectory.search.texts?.locationInputPlaceholder ?? undefined,
