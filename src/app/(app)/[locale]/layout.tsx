@@ -17,8 +17,6 @@ import {
   resolveHeaderGradient,
 } from '../shared/theme/theme-config';
 import { getAppConfigWithoutHost } from '../shared/utils/appConfig';
-import { getSession } from '../shared/utils/getServerSession';
-import { sanitizeSessionForClient } from '../shared/utils/sanitizeSession';
 import { shouldBlockCrawlers } from '../shared/utils/shouldBlockCrawlers';
 
 export const generateMetadata = async ({
@@ -115,9 +113,6 @@ export default async function RootLayout({
   const { locale } = await params;
   const appConfig = await getAppConfigWithoutHost(locale);
 
-  const session = await getSession();
-  const clientSession = sanitizeSessionForClient(session);
-
   if (appConfig.brand.name === '') {
     notFound();
   }
@@ -130,9 +125,7 @@ export default async function RootLayout({
         className={cn('font-sans antialiased', fontSans.variable)}
         id="app-root"
       >
-        <Providers appConfig={appConfig} session={clientSession}>
-          {children}
-        </Providers>
+        <Providers appConfig={appConfig}>{children}</Providers>
       </body>
     </html>
   );

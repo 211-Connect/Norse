@@ -161,38 +161,20 @@ export const generateMetadata = async ({
   params: Promise<{ locale: string }>;
   searchParams: Promise<RawSearchParams>;
 }): Promise<Metadata> => {
-  const [paramsResult, searchParamsResult] = await Promise.all([
-    params,
-    searchParams,
-  ]);
+  const [{ locale }, rawParams] = await Promise.all([params, searchParams]);
+  const appConfig = await getAppConfigWithoutHost(locale);
+  const searchQuery = parseSearchParams(rawParams);
 
-  const { appConfig, results, totalResults, t, searchQuery } =
-    await getPageData(paramsResult.locale, searchParamsResult);
-
-  const title = `${
-    searchQuery.queryLabel ||
-    searchQuery.query ||
-    t('no_query', { ns: 'page-search' })
-  } - ${totalResults?.toLocaleString()} ${t('results', { ns: 'page-search' })}`;
-
-  const description = `Showing ${
-    results.length >= 25 ? '25' : results.length
-  } / ${totalResults} ${t('results_for', { ns: 'page-search' })} ${searchQuery.query || ''}.`;
+  const baseTitle = appConfig.meta.title || appConfig.brand.name || '';
+  const parts = [searchQuery.query, searchQuery.location].filter(
+    (value): value is string =>
+      typeof value === 'string' && value.trim() !== '',
+  );
+  const title =
+    parts.length > 0 ? `${parts.join(' - ')} | ${baseTitle}` : baseTitle;
 
   return {
-    openGraph: {
-      description,
-      images: appConfig.brand.openGraphUrl
-        ? [
-            {
-              url: appConfig.brand.openGraphUrl,
-            },
-          ]
-        : undefined,
-      type: 'website',
-      title,
-    },
-    description,
+    description: appConfig.meta.description,
     title,
   };
 };
@@ -215,10 +197,14 @@ export default async function SearchPage({
   });
   const locale = paramsResult.locale;
   const appConfig = await getAppConfigWithoutHost(locale);
-  await arcjetProtectPage(
+  // Run arcjet off the critical path. A deny is only logged, so there is no
+  // reason to block the SSR data fetch waiting for the verdict.
+  void arcjetProtectPage(
     `/search${queryString}`,
     appConfig.tenantId || 'unknown',
-  );
+  ).catch((err) => {
+    log.warn({ err }, 'arcjet protect failed');
+  });
 
   const headersList = await headers();
   const nonce = headersList.get('x-nonce') ?? '';
