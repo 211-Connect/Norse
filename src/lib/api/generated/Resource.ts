@@ -72,8 +72,8 @@ export class Resource<
    * @request POST:/resource/titles
    */
   resourceControllerGetResourceTitlesByIds = (
-    data: ResourceTitlesDto,
     query: ResourceControllerGetResourceTitlesByIdsParams = {},
+    data: ResourceTitlesDto,
     params: RequestParams = {},
   ) =>
     this.request<ResourceControllerGetResourceTitlesByIdsData, void>({
@@ -93,8 +93,8 @@ export class Resource<
    * @request POST:/resource/batch
    */
   resourceControllerGetResourcesBatch = (
-    data: ResourceBatchDto,
     query: ResourceControllerGetResourcesBatchParams = {},
+    data: ResourceBatchDto,
     params: RequestParams = {},
   ) =>
     this.request<ResourceControllerGetResourcesBatchData, void>({

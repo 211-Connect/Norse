@@ -3,6 +3,7 @@ import { FavoriteList } from './generated/FavoriteList';
 import { Geocoding } from './generated/Geocoding';
 import { PrintableDirectories } from './generated/PrintableDirectories';
 import { PrintableDirectoriesPublic } from './generated/PrintableDirectoriesPublic';
+import { Resource } from './generated/Resource';
 import { Search } from './generated/Search';
 import { ShortUrl } from './generated/ShortUrl';
 import { Suggestion } from './generated/Suggestion';
@@ -36,5 +37,7 @@ export const printableDirectoriesPublicApiClient =
 export const taxonomyScorecardApiClient = new TaxonomyScorecard(clientArgs);
 
 export const favoriteListApiClient = new FavoriteList(clientArgs);
+
+export const resourceApiClient = new Resource(clientArgs);
 
 export const suggestionApiClient = new Suggestion(clientArgs);

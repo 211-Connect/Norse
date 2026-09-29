@@ -45,8 +45,8 @@ export class FavoriteList<
    * @secure
    */
   favoriteListControllerCreate = (
-    data: CreateFavoriteListDto,
     query: FavoriteListControllerCreateParams = {},
+    data: CreateFavoriteListDto,
     params: RequestParams = {},
   ) =>
     this.request<FavoriteListControllerCreateData, any>({
@@ -87,8 +87,8 @@ export class FavoriteList<
    * @secure
    */
   favoriteListControllerSyncLocalList = (
-    data: SyncFavoriteListDto,
     query: FavoriteListControllerSyncLocalListParams = {},
+    data: SyncFavoriteListDto,
     params: RequestParams = {},
   ) =>
     this.request<FavoriteListControllerSyncLocalListData, any>({

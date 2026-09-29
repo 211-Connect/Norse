@@ -31,8 +31,8 @@ export class Favorite<
    * @secure
    */
   favoriteControllerCreate = (
-    data: CreateFavoriteDto,
     query: FavoriteControllerCreateParams = {},
+    data: CreateFavoriteDto,
     params: RequestParams = {},
   ) =>
     this.request<FavoriteControllerCreateData, any>({

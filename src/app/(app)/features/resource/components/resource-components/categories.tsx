@@ -39,7 +39,7 @@ export function CategoriesComponent({
       </Typography>
       <div className="flex flex-wrap gap-1">
         {categories.map((el: Taxonomy) => {
-          return turnResourceCardTaxonomiesIntoLinks ? (
+          return turnResourceCardTaxonomiesIntoLinks && el.code && el.name ? (
             <Link
               key={el?.code}
               className={cn(badgeVariants(), 'hover:underline')}

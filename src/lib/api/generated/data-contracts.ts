@@ -124,9 +124,25 @@ export interface SearchHitsContainer {
   hits: SearchHit[];
 }
 
+export interface RelevanceCutoffDto {
+  /** Whether results were actually removed. `false` means the strategy ran and declined to cut — not that it failed. */
+  applied: boolean;
+  /** Why nothing was cut, when `applied` is false. `no_elbow`: nothing scored meaningfully below the threshold, so the distribution is flat and returning everything is the honest answer. `below_min_keep`: the matched set is already smaller than the floor. `cut_too_large`: the cut point was located exactly, but keeps more results than are worth enumerating, so nothing was trimmed — "found it, too big", not "could not find it". */
+  reason: "no_elbow" | "below_min_keep" | "cut_too_large" | null;
+  /** Results kept. Equals `matched_before_cutoff` when `applied` is false. */
+  kept: number;
+  /** Results the query matched before trimming — the number `hits.total` would have reported with `relevance_cutoff=off`. Kept on the wire because a cutoff hides results rather than reordering them; a consumer needs to be able to say "18 of 1,200 shown". */
+  matched_before_cutoff: number;
+  /** Score of the last kept result **on the cutoff probe’s scale, which is not the scale of `_score` in `hits`**. The probe ranks on semantic and lexical signal only — it omits the distance decay (0–25 points) and the priority boost that the main query adds — so this value is systematically lower than the score of the same document in the response, and the two must not be compared. It is comparable across responses, which is what it is for: evaluating the shipped threshold retroactively against real traffic. */
+  cutoff_score: number | null;
+  /** How many results scored above the threshold — the size of the cut that was located, whether or not it was applied. Counted over the whole matched set, not a fixed window. */
+  candidates_examined: number;
+}
+
 export interface SearchResponseDto {
   search: SearchHitsContainer;
   facets: string[];
+  relevance_cutoff?: RelevanceCutoffDto | null;
 }
 
 export interface AiSearchOptionDto {
@@ -224,20 +240,36 @@ export interface ResourceLocationOpenApiDto {
 }
 
 export interface ResourceAddressOpenApiDto {
-  address_1?: string;
+  address_1: string;
   address_2?: string;
-  city?: string;
-  stateProvince?: string;
-  postalCode?: string;
-  country?: string;
-  type?: string;
-  rank?: number;
+  city: string;
+  stateProvince: string;
+  postalCode: string;
+  country: string;
+  type: string;
+  rank: number;
 }
 
 export interface ResourcePhoneNumberOpenApiDto {
-  type?: string;
-  number?: string;
-  rank?: number;
+  type: string;
+  number: string;
+  rank: number;
+  description?: string;
+}
+
+export interface ResourceQualityLinkOpenApiDto {
+  url: string;
+  displayText: string;
+  subheadingText?: string;
+}
+
+export interface ResourceContactsOpenApiDto {
+  id: string;
+  name: string;
+  title?: string;
+  email?: string;
+  phones?: ResourcePhoneNumberOpenApiDto[];
+  priority: number;
 }
 
 export interface ResourceTaxonomyOpenApiDto {
@@ -245,29 +277,46 @@ export interface ResourceTaxonomyOpenApiDto {
   name?: string;
 }
 
+export interface ResourceFacetOpenApiDto {
+  code: string;
+  taxonomyName: string;
+  termName: string;
+}
+
 export interface ResourceTranslationOpenApiDto {
   locale?: string;
   displayName?: string;
   serviceName?: string;
+  serviceSummary?: string;
   serviceDescription?: string;
   organizationDescription?: string;
+  languages?: string[];
   hours?: string;
+  hoursDescription?: string;
   fees?: string;
+  interpretationServices?: string;
+  applicationProcess?: string;
+  requiredDocuments?: string[];
+  eligibilities?: string;
+  serviceAreaDescription?: string;
+  transportation?: string;
+  accessibility?: string;
   alert?: string;
   alertDate?: string;
+  linkQualityUrls?: ResourceQualityLinkOpenApiDto[];
+  phoneNumbers?: ResourcePhoneNumberOpenApiDto[];
+  contacts?: ResourceContactsOpenApiDto[];
   taxonomies?: ResourceTaxonomyOpenApiDto[];
+  facets?: ResourceFacetOpenApiDto[];
   attributeValues?: Record<string, any>;
-}
-
-export interface ResourceFacetOpenApiDto {
-  code?: string;
-  taxonomyName?: string;
-  termName?: string;
 }
 
 export interface TransformedResourceOpenApiDto {
   _id: string;
+  serviceAtLocationId?: string;
   originalId?: string;
+  phone?: string;
+  address?: string;
   displayName?: string;
   displayPhoneNumber?: string;
   website?: string;
@@ -275,9 +324,11 @@ export interface TransformedResourceOpenApiDto {
   email?: string;
   organizationName?: string;
   location?: ResourceLocationOpenApiDto;
+  locationName?: string;
   addresses?: ResourceAddressOpenApiDto[];
   phoneNumbers?: ResourcePhoneNumberOpenApiDto[];
   languages?: string[];
+  serviceAreaName?: string;
   /** Service area geometry + metadata */
   serviceArea?: Record<string, any>;
   attribution?: string;
@@ -1666,6 +1717,67 @@ export interface PrintableDirectoryPreviewResponseDto {
   generatedAt: string;
 }
 
+export interface OrganizationSummaryDto {
+  ID: string | null;
+  NAME: string | null;
+  ALTERNATE_NAME: string | null;
+  DESCRIPTION: string | null;
+  EMAIL: string | null;
+  WEBSITE: string | null;
+  LEGAL_STATUS: string | null;
+  YEAR_INCORPORATED: string | null;
+  /** Source-system provider key as found. Does NOT resolve to an Organization in this model. */
+  PARENT_ORGANIZATION_ID: string | null;
+  TRANSLATIONS: TranslationDto[];
+}
+
+export interface WithTranslationsDto {
+  ID: string | null;
+  TRANSLATIONS: TranslationDto[];
+}
+
+export interface ServiceDetailResponseDto {
+  serviceId: string;
+  tenant_id: string;
+  resourceWriterId: string | null;
+  /** Tenant-scoped pointer ({tenant_id}:{ORGANIZATION_ID}), not an HSDS id. The HSDS id is organization.ID. */
+  organizationId: string | null;
+  originalId: string | null;
+  name: string | null;
+  alternateName: string | null;
+  description: string | null;
+  url: string | null;
+  email: string | null;
+  status: string | null;
+  applicationProcess: string | null;
+  eligibilityDescription: string | null;
+  interpretationServices: string | null;
+  minimumAge: number | null;
+  maximumAge: number | null;
+  assuredDate: string | null;
+  assurerEmail: string | null;
+  alert: string | null;
+  accreditations: string | null;
+  lastModified: string | null;
+  /** The parent Organization. NULL for an orphan service; an empty object is never returned. */
+  organization: OrganizationSummaryDto | null;
+  /** Every Location this service is delivered at, de-duplicated by location id. */
+  locations: LocationDto[];
+  phones: PhoneDto[];
+  contacts: WithTranslationsDto[];
+  schedules: WithTranslationsDto[];
+  languages: WithTranslationsDto[];
+  serviceAreas: WithTranslationsDto[];
+  costOptions: WithTranslationsDto[];
+  funding: WithTranslationsDto[];
+  requiredDocuments: WithTranslationsDto[];
+  attributeTaxonomies: WithTranslationsDto[];
+  /** AIRS codes as coded, for display. */
+  taxonomyCodes: string[];
+  /** Ancestor-expanded AIRS codes — the matching key, not coded content. */
+  taxonomyPath: string[];
+}
+
 export interface OrchestrationConfigControllerGetCustomAttributesParams {
   /**
    * Optional schema name to filter custom attributes
@@ -1811,6 +1923,11 @@ export interface SearchControllerGetResourcesParams {
    * @default "relevance"
    */
   sort?: "relevance" | "distance" | "name" | "organization";
+  /**
+   * Opt-in trimming of low-relevance results (hybrid search only; ignored for other query types). `off` (default) returns the full matched set and leaves the response document unchanged. `on` keeps results scoring at least a fraction of the top score — 0.2 of the top, tightened stepwise (up to 0.5) when more than 1,000 results would survive, and never less than the top-20 results' own scores — and **returns everything when the scores are too flat for that to remove anything meaningful** — a uniformly weak result set is reported as such rather than cut arbitrarily. The cut is computed on semantic and lexical relevance only: proximity still filters and ranks, but never decides what is irrelevant, since how far someone will travel is their own choice and not a property of the resource. It is applied as a membership filter rather than a score threshold, so `sort` still orders whatever survives — cut by relevance, then sort by distance, name or organization. When a cutoff applies, `hits.total` reports the kept count and the pre-cutoff total is preserved in `relevance_cutoff.matched_before_cutoff`. A `relevance_cutoff` object is added to the response whenever this param is `on`.
+   * @default "off"
+   */
+  relevance_cutoff?: "off" | "on";
   /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
   locale?: string;
   /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
@@ -1863,6 +1980,11 @@ export interface SearchControllerGetResourcesPostParams {
    * @default "relevance"
    */
   sort?: "relevance" | "distance" | "name" | "organization";
+  /**
+   * Opt-in trimming of low-relevance results (hybrid search only; ignored for other query types). `off` (default) returns the full matched set and leaves the response document unchanged. `on` keeps results scoring at least a fraction of the top score — 0.2 of the top, tightened stepwise (up to 0.5) when more than 1,000 results would survive, and never less than the top-20 results' own scores — and **returns everything when the scores are too flat for that to remove anything meaningful** — a uniformly weak result set is reported as such rather than cut arbitrarily. The cut is computed on semantic and lexical relevance only: proximity still filters and ranks, but never decides what is irrelevant, since how far someone will travel is their own choice and not a property of the resource. It is applied as a membership filter rather than a score threshold, so `sort` still orders whatever survives — cut by relevance, then sort by distance, name or organization. When a cutoff applies, `hits.total` reports the kept count and the pre-cutoff total is preserved in `relevance_cutoff.matched_before_cutoff`. A `relevance_cutoff` object is added to the response whenever this param is `on`.
+   * @default "off"
+   */
+  relevance_cutoff?: "off" | "on";
   /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
   locale?: string;
   /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
@@ -2165,6 +2287,26 @@ export interface GeocodingControllerForwardGeocodeParams {
    * @example 5
    */
   limit?: number;
+  /**
+   * Feature types to return, repeated or comma-separated (e.g. "address,poi"). Mapbox only; with the OpenCage provider this is a 400.
+   * @example ["address","poi"]
+   */
+  types?: (
+    | "country"
+    | "region"
+    | "postcode"
+    | "district"
+    | "place"
+    | "locality"
+    | "neighborhood"
+    | "address"
+    | "poi"
+  )[];
+  /**
+   * Bias results toward this point, as "longitude,latitude". Mapbox only; OpenCage ignores it.
+   * @example "-78.8986,35.994"
+   */
+  proximity?: string;
 }
 
 export type GeocodingControllerForwardGeocodeData = ForwardGeocodeResponseDto[];
@@ -2760,3 +2902,14 @@ export interface PrintableDirectoryPublicControllerPreviewParams {
 
 export type PrintableDirectoryPublicControllerPreviewData =
   PrintableDirectoryPreviewResponseDto;
+
+export interface ServiceControllerGetServiceByIdParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  /** HSDS serviceId */
+  id: string;
+}
+
+export type ServiceControllerGetServiceByIdData = ServiceDetailResponseDto;

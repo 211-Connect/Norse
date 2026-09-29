@@ -41,7 +41,11 @@ export function FavoriteListActions({
         appConfig.tenantId,
       );
 
-      return favoriteListToPrintableDirectory(freshList ?? favoriteList);
+      if (!freshList) {
+        return [];
+      }
+
+      return favoriteListToPrintableDirectory(freshList);
     },
     [favoriteList, appConfig.tenantId],
   );
