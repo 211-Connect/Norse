@@ -268,7 +268,7 @@ export async function findResources(
  * @param searchEngine - Active search engine mode
  * @returns Search results with pagination info
  */
-export async function findResourcesV2(
+async function findResourcesV2Origin(
   searchStore: FindResourcesQuery,
   locale: string,
   page: number,
@@ -342,4 +342,30 @@ export async function findResourcesV2(
     page,
     filters,
   };
+}
+
+export async function findResourcesV2(
+  searchStore: FindResourcesQuery,
+  locale: string,
+  page: number,
+  limit: number | undefined,
+  tenantId: string,
+  searchEngine: SearchEngine,
+): Promise<SearchResult> {
+  return (
+    (await withCache(
+      `search_results:${tenantId}:${locale}:${stableHash({ query: searchStore, page, limit, searchEngine, version: 'v2' })}`,
+      () =>
+        findResourcesV2Origin(
+          searchStore,
+          locale,
+          page,
+          limit,
+          tenantId,
+          searchEngine,
+        ),
+      { redis: true, memory: true, ttl: ONE_HOUR },
+      (value) => value.results.length > 0,
+    )) ?? createEmptyResult(page)
+  );
 }
