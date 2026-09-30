@@ -150,7 +150,11 @@ export function CreateFavoriteListDialog({
         </form>
 
         <DialogFooter>
-          <Button variant="outline" onClick={handleClose} disabled={isSubmitting}>
+          <Button
+            variant="outline"
+            onClick={handleClose}
+            disabled={isSubmitting}
+          >
             {t('call_to_action.cancel')}
           </Button>
           <Button
