@@ -46,8 +46,49 @@ The helper lives in `src/lib/api/getTenantApiKey.ts`:
 
 - `getTenantApiKey(tenantId)` — returns the cached key or throws if none is
   configured.
-- `getTenantApiKeyHeaders(tenantId)` — returns
-  `{ 'x-api-key': apiKey }`.
+
+For request building, prefer the combined helper in `src/lib/api/getApiHeaders.ts`:
+
+- `getApiHeaders(tenantId, locale?, withAuth?)` — returns the headers every
+  Norse API request needs, including:
+  - `x-api-key` from `getTenantApiKey(tenantId)`
+  - `x-api-version: 1`
+  - `x-tenant-id: ${tenantId}`
+  - `accept-language: ${locale}` when a locale is provided
+  - auth headers when `withAuth` is `true`
+
+Use it directly at the call site, e.g.:
+
+```ts
+import { getApiHeaders, printableDirectoriesApiClient } from '@/lib/api';
+
+await printableDirectoriesApiClient.printableDirectoryControllerCreate(
+  { locale: 'en', tenant_id: tenantId },
+  input,
+  {
+    cache: 'no-store',
+    headers: await getApiHeaders(tenantId, 'en', true),
+  },
+);
+```
+
+For hand-rolled `fetch()` calls, spread the result and add extra headers such as
+`Content-Type` when needed:
+
+```ts
+await fetchWrapper(url, {
+  method: 'POST',
+  headers: {
+    ...(await getApiHeaders(tenantId, 'en', true)),
+    'Content-Type': 'application/json',
+  },
+  body,
+  cache: 'no-store',
+});
+```
+
+`getApiHeaders` is re-exported from `src/lib/api/index.ts` so import it from
+`@/lib/api`, not from per-feature wrapper files.
 
 ## Fail-fast behavior
 
@@ -89,7 +130,9 @@ The response summarizes `updated` and `failed` tenant ids.
 
 ## Out of scope
 
-Hand-rolled `fetch()` calls — for example in `resource-service.ts`,
-`search-service.ts`, most favorites server actions (all except
-`getFavoriteList.ts`), `shortUrl/*`, and `src/app/(app)/api/resource-titles/route.ts`
+Hand-rolled `fetch()` calls remain the call site's responsibility to build:
+`resource-service.ts`, `search-service.ts`, `shortUrl/*`, and
+`src/app/(app)/api/resource-titles/route.ts`. They should import
+`getApiHeaders` from `@/lib/api` and pass the returned record as their request
+headers rather than constructing tenant key headers manually.
 

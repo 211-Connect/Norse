@@ -27,12 +27,14 @@ export function DeleteFavoriteListButton({ id, name }) {
   const appConfig = useAppConfig();
   const { t } = useTranslation('common');
   const [open, setOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const { stringifiedSearchParams } = useClientSearchParams();
 
   const onConfirm = async () => {
     try {
+      setIsDeleting(true);
       await deleteFavoriteList(id, appConfig.tenantId);
 
       toast.success(`${name} ${t('message.list_deleted')}`, {
@@ -51,6 +53,7 @@ export function DeleteFavoriteListButton({ id, name }) {
       } else {
         router.refresh();
       }
+      setOpen(false);
     } catch (err) {
       log.error({ err }, 'Failed to delete favorite list');
 
@@ -58,7 +61,7 @@ export function DeleteFavoriteListButton({ id, name }) {
         description: t('message.list_not_deleted_error'),
       });
     } finally {
-      setOpen(false);
+      setIsDeleting(false);
     }
   };
 
@@ -82,13 +85,18 @@ export function DeleteFavoriteListButton({ id, name }) {
             <DialogDescription />
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setOpen(false)}
+              disabled={isDeleting}
+            >
               {t('call_to_action.cancel')}
             </Button>
             <Button
               variant="destructive"
               onClick={onConfirm}
               data-testid="delete-list-confirm-btn"
+              loading={isDeleting}
             >
               {t('call_to_action.delete')}
             </Button>

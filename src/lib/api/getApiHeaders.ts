@@ -1,8 +1,13 @@
-import { getTenantApiKey } from '@/lib/api/getTenantApiKey';
+import { getAuthHeaders } from '@/app/(app)/shared/lib/authHeaders';
+import { getTenantApiKey } from './getTenantApiKey';
 
-import { getAuthHeaders } from './authHeaders';
+function headersInitToRecord(
+  headers: HeadersInit | null,
+): Record<string, string> {
+  if (!headers) {
+    return {};
+  }
 
-function headersInitToRecord(headers: HeadersInit): Record<string, string> {
   if (headers instanceof Headers) {
     const record: Record<string, string> = {};
     headers.forEach((value, key) => {
@@ -20,15 +25,19 @@ function headersInitToRecord(headers: HeadersInit): Record<string, string> {
 
 export const getApiHeaders = async (
   tenantId: string,
+  locale?: string,
+  withAuth = false,
 ): Promise<Record<string, string>> => {
   const [authHeaders, tenantApiKey] = await Promise.all([
-    getAuthHeaders(tenantId),
+    withAuth ? getAuthHeaders(tenantId) : null,
     getTenantApiKey(tenantId),
   ]);
 
   return {
-    ...headersInitToRecord(authHeaders),
     'x-api-key': tenantApiKey,
     'x-api-version': '1',
+    'x-tenant-id': tenantId,
+    ...headersInitToRecord(authHeaders),
+    ...(locale ? { 'accept-language': locale } : {}),
   };
 };

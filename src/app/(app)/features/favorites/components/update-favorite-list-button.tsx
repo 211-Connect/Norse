@@ -21,6 +21,7 @@ import { Switch } from '@/app/(app)/shared/components/ui/switch';
 import { Textarea } from '@/app/(app)/shared/components/ui/textarea';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { updateFavoriteList } from '@/app/(app)/shared/serverActions/favorites/updateFavoriteList';
+import { UpdateFavoriteListDto } from '@/lib/api/generated/data-contracts';
 import { createLogger } from '@/lib/logger';
 
 const log = createLogger('update-favorite-list-button');
@@ -30,17 +31,23 @@ export function UpdateFavoriteListButton({ id, name, description, privacy }) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const { t } = useTranslation('common');
-  const [formState, setFormState] = useState({
+  const [formState, setFormState] = useState<{
+    name: string;
+    description: string;
+    public: boolean;
+  }>({
     name,
     description,
     public: privacy === 'PUBLIC',
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (formState.name.length === 0) return;
 
     try {
+      setIsSubmitting(true);
       await updateFavoriteList(id, formState, appConfig.tenantId);
 
       toast.success(t('favorites.updated_list'), {
@@ -48,6 +55,7 @@ export function UpdateFavoriteListButton({ id, name, description, privacy }) {
       });
 
       router.refresh();
+      setOpen(false);
     } catch (err) {
       log.error({ err }, 'Failed to update favorite list');
 
@@ -55,11 +63,14 @@ export function UpdateFavoriteListButton({ id, name, description, privacy }) {
         description: t('favorites.unable_to_update_list_message'),
       });
     } finally {
-      setOpen(false);
+      setIsSubmitting(false);
     }
   };
 
-  const setValue = (fieldName: keyof typeof formState, value: any) => {
+  const setValue = (
+    fieldName: keyof typeof formState,
+    value: (typeof formState)[typeof fieldName],
+  ) => {
     setFormState((prev) => ({
       ...prev,
       [fieldName]: value,
@@ -129,13 +140,18 @@ export function UpdateFavoriteListButton({ id, name, description, privacy }) {
           </form>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setOpen(false)}
+              disabled={isSubmitting}
+            >
               {t('call_to_action.cancel')}
             </Button>
             <Button
               form="update-favorite-form"
               type="submit"
               data-testid="update-list-submit-btn"
+              loading={isSubmitting}
             >
               {t('call_to_action.update')}
             </Button>

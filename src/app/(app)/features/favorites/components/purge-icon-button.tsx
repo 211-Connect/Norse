@@ -17,10 +17,16 @@ export function PurgeIconButton({
   testId = 'purge-list-btn',
 }: PurgeIconButtonProps) {
   const [open, setOpen] = useState(false);
+  const [isPurging, setIsPurging] = useState(false);
 
   const handleConfirm = async () => {
-    await onConfirm();
-    setOpen(false);
+    try {
+      setIsPurging(true);
+      await onConfirm();
+      setOpen(false);
+    } finally {
+      setIsPurging(false);
+    }
   };
 
   return (
@@ -37,6 +43,7 @@ export function PurgeIconButton({
         open={open}
         onOpenChange={setOpen}
         onConfirm={handleConfirm}
+        isConfirming={isPurging}
       />
     </>
   );

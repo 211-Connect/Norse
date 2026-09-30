@@ -15,7 +15,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
-import { FavoriteListState } from '@/types/favorites';
+import { FavoriteListItemDto } from '@/lib/api/generated/data-contracts';
 
 import { useAppConfig } from '../hooks/use-app-config';
 import { useLocalFavorites } from '../hooks/use-local-favorites';
@@ -69,7 +69,7 @@ export function AddToFavoritesButton({
   const [createListOpen, setCreateListOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [favoritesState, setFavoritesState] = useState<{
-    data: FavoriteListState[];
+    data: FavoriteListItemDto[];
     status: 'idle' | 'refreshing' | 'loading' | 'success';
     page: number;
     limit: number;
@@ -104,9 +104,9 @@ export function AddToFavoritesButton({
     if (response) {
       setFavoritesState((prev) => ({
         ...prev,
-        data: response.data,
+        data: response.items,
         status: 'success',
-        totalCount: response.totalCount,
+        totalCount: response.total,
       }));
     }
   }, [
@@ -180,7 +180,9 @@ export function AddToFavoritesButton({
     };
   };
 
-  const handleCreateListSuccess = async () => {
+  const handleCreateListSuccess = async (
+    _createdList?: FavoriteListItemDto,
+  ) => {
     await refreshFavoritesList();
   };
 

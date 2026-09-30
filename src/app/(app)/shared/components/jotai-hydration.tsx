@@ -132,7 +132,6 @@ export function JotaiHydration({
             totalCount: pageProps?.favoriteListsTotal ?? 0,
             currentPage: pageProps?.favoriteListsCurrentPage ?? 1,
             limit: 10,
-            status: 'success',
           },
         ],
         [

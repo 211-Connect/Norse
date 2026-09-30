@@ -1,8 +1,6 @@
 'use server';
 
-import { geocodingApiClient } from '@/lib/api/clients';
-import { getTenantApiKeyHeaders } from '@/lib/api/getTenantApiKey';
-
+import { geocodingApiClient, getApiHeaders } from '@/lib/api';
 import { GeocodingControllerForwardGeocodeParams } from '@/lib/api/generated/data-contracts';
 import { GeocodeResult } from '@/types/resource';
 import { ONE_DAY, stableHash, withCache } from '@/utilities/withCache';
@@ -26,11 +24,7 @@ async function forwardGeocodeOrigin(
   const response = await geocodingApiClient.geocodingControllerForwardGeocode(
     query,
     {
-      headers: {
-        'accept-language': locale,
-        'x-tenant-id': tenantId,
-        ...(await getTenantApiKeyHeaders(tenantId)),
-      },
+      headers: await getApiHeaders(tenantId, locale),
       cache: 'no-store',
     },
   );

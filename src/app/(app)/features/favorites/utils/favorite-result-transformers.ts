@@ -20,7 +20,10 @@ export function favoriteToResult(
   currentListId?: string,
   onRemoveFromList?: RemoveFromListHandler,
 ): ResultType {
-  const translations = 'translations' in favorite ? favorite.translations : [];
+  const translations =
+    'translations' in favorite && Array.isArray(favorite.translations)
+      ? favorite.translations
+      : [];
   const facetsEn = 'facetsEn' in favorite ? favorite.facetsEn : undefined;
   const displayName =
     'displayName' in favorite && typeof favorite.displayName === 'string'

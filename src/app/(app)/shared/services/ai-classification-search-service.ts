@@ -2,7 +2,6 @@
 
 import { createLogger } from '@/lib/logger';
 import { searchApiClient } from '@/lib/api/clients';
-import { getTenantApiKeyHeaders } from '@/lib/api/getTenantApiKey';
 import {
   AiSearchOptionDto,
   AiSearchPredictResponseDto,
@@ -10,6 +9,7 @@ import {
   SearchControllerPredictNeedsClassificationParams,
 } from '@/lib/api/generated/data-contracts';
 import { RequestParams } from '@/lib/api/generated/http-client';
+import { getApiHeaders } from '@/lib/api';
 
 const log = createLogger('ai-classification-search-service');
 
@@ -37,12 +37,7 @@ async function createAiRequestParams(
   tenantId: string,
 ): Promise<RequestParams> {
   return {
-    headers: {
-      'accept-language': locale,
-      'x-api-version': '1',
-      'x-tenant-id': tenantId,
-      ...(await getTenantApiKeyHeaders(tenantId)),
-    },
+    headers: await getApiHeaders(tenantId, locale),
   };
 }
 

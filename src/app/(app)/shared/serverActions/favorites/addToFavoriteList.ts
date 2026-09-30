@@ -1,10 +1,7 @@
 'use server';
 
 import { createLogger } from '@/lib/logger';
-
-import { API_URL, FAVORITES_BASE_ENDPOINT } from '../../lib/constants';
-import { fetchWrapper } from '../../lib/fetchWrapper';
-import { getApiHeaders } from '../../lib/get-api-headers';
+import { favoriteApiClient, getApiHeaders } from '@/lib/api';
 
 const log = createLogger('addToFavoriteList');
 
@@ -17,38 +14,33 @@ export const addToFavoriteList = async (
     favoriteListId: string;
   },
   tenantId: string,
-): Promise<any> => {
-  const searchParams = new URLSearchParams();
-  searchParams.append('tenant_id', tenantId);
-
-  const url = `${API_URL}/${FAVORITES_BASE_ENDPOINT}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
-  const headers = {
-    ...(await getApiHeaders(tenantId)),
-    'Content-Type': 'application/json',
-    'x-api-version': '1',
-  };
-  const body = {
-    resourceId: resourceId,
-    favoriteListId: favoriteListId,
-  };
-
+) => {
   log.debug(
-    { url, resourceId, favoriteListId, tenantId },
+    { resourceId, favoriteListId, tenantId },
     'addToFavoriteList request',
   );
 
   try {
-    const response = await fetchWrapper<any>(url, {
-      method: 'POST',
-      headers,
-      body,
-      cache: 'no-store',
-    });
+    const response = await favoriteApiClient.favoriteControllerCreate(
+      {
+        tenant_id: tenantId,
+      },
+      {
+        resourceId,
+        favoriteListId,
+      },
+      {
+        format: 'json',
+        headers: await getApiHeaders(tenantId, 'en', true),
+      },
+    );
     log.debug(
       { resourceId, favoriteListId, tenantId },
       'addToFavoriteList succeeded',
     );
-    return response;
+    // Only the plain JSON payload is serializable across the server
+    // action boundary — the raw fetch `Response` object is not.
+    return response.data;
   } catch (error: any) {
     log.error(
       { err: error, status: error.response?.status, tenantId },

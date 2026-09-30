@@ -1,9 +1,9 @@
 import type { Endpoint } from 'payload';
 
 import { analyticsApiClient } from '@/lib/api/clients';
-import { getTenantApiKeyHeaders } from '@/lib/api/getTenantApiKey';
 
 import { resolveAnalyticsContext } from '../utilities/resolveAnalyticsContext';
+import { getApiHeaders } from '@/lib/api';
 
 function makeEndpoint(
   path: string,
@@ -50,13 +50,11 @@ function proxyEndpoint(
     if (resolved instanceof Response) return resolved;
 
     const tenantId = req.query?.tenantId as string;
-    const tenantApiKeyHeaders = await getTenantApiKeyHeaders(tenantId);
+    const tenantApiHeaders = await getApiHeaders(tenantId);
     const ctx: ResolvedCtx = {
       headers: {
         'x-analytics-api-key': resolved.apiKey,
-        'x-tenant-id': tenantId,
-        'x-api-version': '1',
-        ...tenantApiKeyHeaders,
+        ...tenantApiHeaders,
       },
       selectedWebsiteIds: resolved.selectedWebsiteIds,
     };

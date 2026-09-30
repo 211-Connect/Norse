@@ -38,6 +38,7 @@ export function CreateAListButton({ className = '' }: { className?: string }) {
       newParams.set('page', newPage.toString());
 
       router.replace(`${pathname}${stringifySearchParams(newParams)}`);
+      router.refresh();
     }
   };
 

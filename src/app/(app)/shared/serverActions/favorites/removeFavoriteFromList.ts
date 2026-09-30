@@ -1,8 +1,6 @@
 'use server';
 
-import { API_URL, FAVORITES_BASE_ENDPOINT } from '../../lib/constants';
-import { fetchWrapper } from '../../lib/fetchWrapper';
-import { getApiHeaders } from '../../lib/get-api-headers';
+import { getApiHeaders, favoriteApiClient } from '@/lib/api';
 
 export const removeFavoriteFromList = async (
   {
@@ -13,18 +11,15 @@ export const removeFavoriteFromList = async (
     favoriteListId: string;
   },
   tenantId: string,
-): Promise<any> => {
-  const headers = await getApiHeaders(tenantId);
-
-  const searchParams = new URLSearchParams();
-  searchParams.append('tenant_id', tenantId);
-
-  const url = `${API_URL}/${FAVORITES_BASE_ENDPOINT}/${resourceId}/${favoriteListId}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
-  return fetchWrapper<void>(url, {
-    method: 'DELETE',
-    headers: {
-      ...headers,
+): Promise<void> => {
+  await favoriteApiClient.favoriteControllerRemove(
+    {
+      favoriteId: resourceId,
+      favoriteListId,
+      tenant_id: tenantId,
     },
-    cache: 'no-store',
-  });
+    {
+      headers: await getApiHeaders(tenantId, 'en', true),
+    },
+  );
 };
