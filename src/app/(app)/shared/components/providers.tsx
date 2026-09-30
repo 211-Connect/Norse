@@ -12,7 +12,7 @@ import { PageView } from './page-view';
 
 const queryClient = new QueryClient();
 
-export function Providers({ appConfig, children, session = null }) {
+export function Providers({ appConfig, children, session }) {
   return (
     <SessionProvider
       basePath={withOptionalCustomBasePath('/api/auth')}
