@@ -149,7 +149,10 @@ async function fetchAndTransformResourceOrigin(
         locale: options.locale,
         tenant_id: options.tenantId,
       } as const;
-      const headers = await getApiHeaders(options.tenantId);
+      const headers = {
+        ...(await getApiHeaders(options.tenantId)),
+        'accept-language': options.locale,
+      };
 
       const response = await (originalId
         ? resourceApiClient.resourceControllerGetResourceByOriginalId(args, {
@@ -179,7 +182,10 @@ async function fetchAndTransformResourcesBatchOrigin(
           { locale: options.locale, tenant_id: options.tenantId },
           { ids },
           {
-            headers: await getTenantApiKeyHeaders(options.tenantId),
+            headers: {
+              ...(await getTenantApiKeyHeaders(options.tenantId)),
+              'accept-language': options.locale,
+            },
           },
         );
 
