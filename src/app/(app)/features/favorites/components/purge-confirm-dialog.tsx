@@ -16,12 +16,14 @@ type PurgeConfirmDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
+  isConfirming?: boolean;
 };
 
 export function PurgeConfirmDialog({
   open,
   onOpenChange,
   onConfirm,
+  isConfirming = false,
 }: PurgeConfirmDialogProps) {
   const { t } = useTranslation('page-list');
 
@@ -35,13 +37,18 @@ export function PurgeConfirmDialog({
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={isConfirming}
+          >
             {t('purge_list.cancel')}
           </Button>
           <Button
             variant="destructive"
             onClick={onConfirm}
             data-testid="purge-list-confirm-btn"
+            loading={isConfirming}
           >
             {t('purge_list.label')}
           </Button>

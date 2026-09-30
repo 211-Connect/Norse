@@ -1,9 +1,6 @@
 'use server';
 
-import { printableDirectoriesApiClient } from '@/lib/api/clients';
-import { getTenantApiKeyHeaders } from '@/lib/api/getTenantApiKey';
-
-import { getAuthHeaders } from '../../lib/authHeaders';
+import { getApiHeaders, printableDirectoriesApiClient } from '@/lib/api';
 
 type UpdatePrintableDirectoryQuerySourceParams = {
   directoryId: string;
@@ -22,12 +19,6 @@ export async function updatePrintableDirectoryQuerySource({
   queryParams,
   tenantId,
 }: UpdatePrintableDirectoryQuerySourceParams): Promise<boolean> {
-  const [authHeaders, tenantApiKeyHeaders] = await Promise.all([
-    getAuthHeaders(tenantId),
-    getTenantApiKeyHeaders(tenantId),
-  ]);
-  const headers = { ...authHeaders, ...tenantApiKeyHeaders };
-
   try {
     await printableDirectoriesApiClient.printableDirectoryControllerUpdateSource(
       {
@@ -43,8 +34,8 @@ export async function updatePrintableDirectoryQuerySource({
         },
       },
       {
-        headers,
         cache: 'no-store',
+        headers: await getApiHeaders(tenantId, 'en', true),
       },
     );
 

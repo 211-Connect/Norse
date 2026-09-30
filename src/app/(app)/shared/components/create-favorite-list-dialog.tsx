@@ -4,8 +4,6 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
-import { CreateFavoriteListDto } from '@/types/favorites';
-
 import { useAppConfig } from '../hooks/use-app-config';
 import { createFavoriteList } from '../serverActions/favorites/createFavoriteList';
 import { Button } from './ui/button';
@@ -22,10 +20,12 @@ import { Label } from './ui/label';
 import { Switch } from './ui/switch';
 import { Textarea } from './ui/textarea';
 
+import { FavoriteListItemDto } from '@/lib/api/generated/data-contracts';
+
 type CreateFavoriteListDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSuccess?: () => void | Promise<void>;
+  onSuccess?: (createdList?: FavoriteListItemDto) => void | Promise<void>;
   /** Passed through to DialogContent so focus returns to the trigger on close. */
   restoreFocusElement?: HTMLElement | null;
   /** Passed through to DialogContent for aria-controls linkage on the trigger. */
@@ -42,16 +42,22 @@ export function CreateFavoriteListDialog({
   const appConfig = useAppConfig();
   const { t } = useTranslation('common');
 
-  const [formState, setFormState] = useState<CreateFavoriteListDto>({
+  const [formState, setFormState] = useState<{
+    name: string;
+    description: string;
+    public: boolean;
+  }>({
     name: '',
     description: '',
     public: false,
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
+      setIsSubmitting(true);
       const created = await createFavoriteList(formState, appConfig.tenantId);
 
       if (created) {
@@ -59,18 +65,20 @@ export function CreateFavoriteListDialog({
           description: t('favorites.list_created_message'),
         });
         handleClose();
-        await onSuccess?.();
+        await onSuccess?.(created);
       }
     } catch {
       toast.error(t('message.error'), {
         description: t('favorites.unable_to_create_list_message'),
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const setFormValue = <K extends keyof CreateFavoriteListDto>(
-    fieldName: K,
-    value: CreateFavoriteListDto[K],
+  const setFormValue = (
+    fieldName: keyof typeof formState,
+    value: (typeof formState)[typeof fieldName],
   ) => {
     setFormState((prev) => ({
       ...prev,
@@ -142,13 +150,18 @@ export function CreateFavoriteListDialog({
         </form>
 
         <DialogFooter>
-          <Button variant="outline" onClick={handleClose}>
+          <Button
+            variant="outline"
+            onClick={handleClose}
+            disabled={isSubmitting}
+          >
             {t('call_to_action.cancel')}
           </Button>
           <Button
             type="submit"
             form="create-favorite-form"
             data-testid="create-list-submit-btn"
+            loading={isSubmitting}
           >
             {t('call_to_action.create')}
           </Button>

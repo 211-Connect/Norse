@@ -14,12 +14,12 @@ import {
 } from '@/app/(app)/shared/components/ui/card';
 import { useClientSearchParams } from '@/app/(app)/shared/hooks/use-client-search-params';
 import { withOptionalTrailingSlash } from '@/app/(app)/shared/lib/utils';
-import { FavoriteListState } from '@/types/favorites';
+import { FavoriteListItemDto } from '@/lib/api/generated/data-contracts';
 
 import { DeleteFavoriteListButton } from './delete-favorite-list-button';
 import { UpdateFavoriteListButton } from './update-favorite-list-button';
 
-export function FavoriteList({ list }: { list: FavoriteListState }) {
+export function FavoriteList({ list }: { list: FavoriteListItemDto }) {
   const { t } = useTranslation('page-favorites');
   const { stringifiedSearchParams } = useClientSearchParams();
 
@@ -28,7 +28,9 @@ export function FavoriteList({ list }: { list: FavoriteListState }) {
       <CardHeader>
         <div className="flex items-center justify-between">
           <Badge variant="outline">
-            {t(`list.${list.privacy.toLowerCase()}`, { ns: 'common' })}
+            {t(`list.${list.privacy.toLowerCase()}`, {
+              ns: 'common',
+            })}
           </Badge>
 
           <div className="flex gap-2">

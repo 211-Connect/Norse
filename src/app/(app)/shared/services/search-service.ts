@@ -21,7 +21,7 @@ import { formatAddressForDisplay } from '../lib/utils';
 import { ResultType } from '../store/results';
 import { SortOption } from '../utils/getSortOption';
 import { transformFacetsToArray } from '../utils/toFacetsWithTranslation';
-import { getApiHeaders } from '../lib/get-api-headers';
+import { getApiHeaders } from '@/lib/api';
 
 const log = createLogger('search');
 
@@ -190,12 +190,7 @@ async function findResourcesOrigin({
     });
 
     data = await fetchWrapper(`${API_URL}/search?${searchString}`, {
-      headers: {
-        'accept-language': locale,
-        'x-api-version': '1',
-        ...(await getApiHeaders(tenantId)),
-      },
-      cache: 'no-store',
+      headers: await getApiHeaders(tenantId, locale),
     });
   } catch (err) {
     log.error(
@@ -302,9 +297,7 @@ async function findResourcesV2Origin(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'accept-language': locale,
-        'x-api-version': '1',
-        ...(await getApiHeaders(tenantId)),
+        ...(await getApiHeaders(tenantId, locale)),
       },
       body: request.body,
     });

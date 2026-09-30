@@ -1,5 +1,6 @@
 import { Analytics } from './generated/Analytics';
 import { FavoriteList } from './generated/FavoriteList';
+import { Favorite } from './generated/Favorite';
 import { Geocoding } from './generated/Geocoding';
 import { PrintableDirectories } from './generated/PrintableDirectories';
 import { PrintableDirectoriesPublic } from './generated/PrintableDirectoriesPublic';
@@ -37,6 +38,8 @@ export const printableDirectoriesPublicApiClient =
 export const taxonomyScorecardApiClient = new TaxonomyScorecard(clientArgs);
 
 export const favoriteListApiClient = new FavoriteList(clientArgs);
+
+export const favoriteApiClient = new Favorite(clientArgs);
 
 export const resourceApiClient = new Resource(clientArgs);
 

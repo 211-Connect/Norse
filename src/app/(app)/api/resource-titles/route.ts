@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { API_URL } from '@/app/(app)/shared/lib/constants';
-import { getApiHeaders } from '@/app/(app)/shared/lib/get-api-headers';
+import { getApiHeaders } from '@/lib/api';
 
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null);
@@ -40,7 +40,6 @@ export async function POST(request: NextRequest) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-version': '1',
       ...(await getApiHeaders(tenantId)),
     },
     body: JSON.stringify({ ids }),

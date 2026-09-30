@@ -22,7 +22,7 @@ export function FavoriteMapContainer() {
 
         if (!favorite._id) {
           logger.warn(
-            `Missing id for favorite: ${favorite.id} (${favorite.name})`,
+            `Missing id for favorite: ${favorite._id ?? 'unknown'} (${favorite.displayName ?? 'unknown'})`,
           );
         }
 

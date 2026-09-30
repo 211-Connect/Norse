@@ -11,7 +11,7 @@ import { getFavoriteLists } from '@/app/(app)/shared/serverActions/favorites/get
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { getSession } from '@/app/(app)/shared/utils/getServerSession';
 import { createLogger } from '@/lib/logger';
-import { FavoritesPageProps } from '@/types/favorites';
+import { FavoriteListResponseDto } from '@/lib/api/generated/data-contracts';
 
 const log = createLogger('favorites-page');
 
@@ -32,6 +32,11 @@ export const generateMetadata = async ({ params }): Promise<Metadata> => {
     description: t('meta_description', { ns: 'page-favorites' }),
   };
 };
+
+interface FavoritesPageProps {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
 
 export default async function FavoritesPage({
   params,
@@ -76,15 +81,15 @@ export default async function FavoritesPage({
   const limitParam = Array.isArray(limit) ? limit[0] : limit;
   const searchParam = Array.isArray(search) ? search[0] : search;
 
-  const { data: favoriteLists, totalCount: favoriteListsTotal } =
+  const { items: favoriteLists, total: favoriteListsTotal } =
     await getFavoriteLists(
       appConfig.tenantId,
       Number(pageParam) || 1,
       Number(limitParam) || 10,
       searchParam || '',
-    ).catch((err) => {
+    ).catch((err): FavoriteListResponseDto => {
       log.error({ err }, 'Error fetching favorite lists');
-      return { data: [], totalCount: 0 };
+      return { items: [], page: 1, total: 0 };
     });
 
   const currentPage = Number(pageParam) || 1;

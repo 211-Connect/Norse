@@ -2,10 +2,10 @@
 
 import { createLogger } from '@/lib/logger';
 import { suggestionApiClient } from '@/lib/api/clients';
-import { getTenantApiKeyHeaders } from '@/lib/api/getTenantApiKey';
 import { SuggestionCombinedResponseDto } from '@/lib/api/generated/data-contracts';
 import { RequestParams } from '@/lib/api/generated/http-client';
 import { ONE_MINUTE, stableHash, withCache } from '@/utilities/withCache';
+import { getApiHeaders } from '@/lib/api';
 
 const log = createLogger('search-suggestions-service');
 
@@ -21,12 +21,7 @@ async function createSuggestionRequestParams(
   tenantId: string,
 ): Promise<RequestParams> {
   return {
-    headers: {
-      'accept-language': locale,
-      'x-api-version': '1',
-      'x-tenant-id': tenantId,
-      ...(await getTenantApiKeyHeaders(tenantId)),
-    },
+    headers: await getApiHeaders(tenantId, locale),
   };
 }
 

@@ -13,9 +13,7 @@ import {
   withCache,
 } from '@/utilities/withCache';
 import { ensureUrlProtocol } from '@/utils';
-
-import { getTenantApiKeyHeaders } from '@/lib/api/getTenantApiKey';
-import { getApiHeaders } from '../lib/get-api-headers';
+import { getApiHeaders } from '@/lib/api';
 
 const RESOURCE_BATCH_LIMIT = 100;
 
@@ -149,10 +147,7 @@ async function fetchAndTransformResourceOrigin(
         locale: options.locale,
         tenant_id: options.tenantId,
       } as const;
-      const headers = {
-        ...(await getApiHeaders(options.tenantId)),
-        'accept-language': options.locale,
-      };
+      const headers = await getApiHeaders(options.tenantId, options.locale);
 
       const response = await (originalId
         ? resourceApiClient.resourceControllerGetResourceByOriginalId(args, {
@@ -182,10 +177,7 @@ async function fetchAndTransformResourcesBatchOrigin(
           { locale: options.locale, tenant_id: options.tenantId },
           { ids },
           {
-            headers: {
-              ...(await getTenantApiKeyHeaders(options.tenantId)),
-              'accept-language': options.locale,
-            },
+            headers: await getApiHeaders(options.tenantId, options.locale),
           },
         );
 

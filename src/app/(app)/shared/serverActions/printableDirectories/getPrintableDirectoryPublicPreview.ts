@@ -1,8 +1,7 @@
 'use server';
 
 import { PrintableDirectoryPreviewResponseDto } from '@/lib/api/generated/data-contracts';
-import { printableDirectoriesPublicApiClient } from '@/lib/api/clients';
-import { getTenantApiKeyHeaders } from '@/lib/api/getTenantApiKey';
+import { getApiHeaders, printableDirectoriesPublicApiClient } from '@/lib/api';
 
 export async function getPrintableDirectoryPublicPreview(
   slug: string,
@@ -10,12 +9,11 @@ export async function getPrintableDirectoryPublicPreview(
   tenantId: string,
 ): Promise<PrintableDirectoryPreviewResponseDto | null> {
   try {
-    const tenantApiKeyHeaders = await getTenantApiKeyHeaders(tenantId);
     const response =
       await printableDirectoriesPublicApiClient.printableDirectoryPublicControllerPreview(
         { slug, locale, tenant_id: tenantId },
         {
-          headers: { 'x-tenant-id': tenantId, ...tenantApiKeyHeaders },
+          headers: await getApiHeaders(tenantId, locale),
           cache: 'no-store',
         },
       );

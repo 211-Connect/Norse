@@ -32,9 +32,3 @@ export async function getTenantApiKey(tenantId: string): Promise<string> {
 
   return apiKey;
 }
-
-export async function getTenantApiKeyHeaders(
-  tenantId: string,
-): Promise<Record<string, string>> {
-  return { 'x-api-key': await getTenantApiKey(tenantId) };
-}

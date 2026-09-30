@@ -1,14 +1,10 @@
 'use server';
 
 import {
+  FavoriteListControllerFindAllParams,
   FavoriteListResponseDto,
-  GetFavoriteListsResponse,
-  Privacy,
-} from '@/types/favorites';
-
-import { API_URL, FAVORITES_LIST_ENDPOINT } from '../../lib/constants';
-import { fetchWrapper } from '../../lib/fetchWrapper';
-import { getApiHeaders } from '../../lib/get-api-headers';
+} from '@/lib/api/generated/data-contracts';
+import { favoriteListApiClient, getApiHeaders } from '@/lib/api';
 
 export async function getFavoriteLists(
   tenantId: string,
@@ -17,41 +13,27 @@ export async function getFavoriteLists(
   search: string = '',
   locale: string = 'en',
   resourceId?: string,
-): Promise<GetFavoriteListsResponse> {
-  const headers = await getApiHeaders(tenantId);
+): Promise<FavoriteListResponseDto> {
+  const params: FavoriteListControllerFindAllParams = {
+    tenant_id: tenantId,
+    page,
+    limit,
+    ...(search ? { search } : {}),
+    ...(resourceId ? { resource_id: resourceId } : {}),
+    locale,
+  };
 
-  const searchParams = new URLSearchParams();
-  searchParams.append('tenant_id', tenantId);
-  searchParams.append('page', page.toString());
-  searchParams.append('limit', limit.toString());
-  if (search) {
-    searchParams.append('search', search);
+  try {
+    const response = await favoriteListApiClient.favoriteListControllerFindAll(
+      params,
+      {
+        cache: 'no-store',
+        headers: await getApiHeaders(tenantId, locale, true),
+      },
+    );
+
+    return response.data;
+  } catch {
+    return { items: [], page: 1, total: 0 };
   }
-  if (resourceId) {
-    searchParams.append('resource_id', resourceId);
-  }
-
-  const url = `${API_URL}/${FAVORITES_LIST_ENDPOINT}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
-
-  const response = await fetchWrapper<FavoriteListResponseDto>(url, {
-    headers: {
-      ...headers,
-      'accept-language': locale,
-    },
-    cache: 'no-store',
-  });
-
-  const items = response?.items || [];
-  const totalCount = response?.total || 0;
-
-  const data = items.map((item) => ({
-    id: item.id,
-    name: item.name,
-    description: item.description,
-    privacy: item.privacy as Privacy,
-    ownerId: item.ownerId,
-    containsResource: item.containsResource,
-  }));
-
-  return { data, totalCount };
 }

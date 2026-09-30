@@ -1,7 +1,6 @@
 'use server';
 
-import { geocodingApiClient } from '@/lib/api/clients';
-import { getTenantApiKeyHeaders } from '@/lib/api/getTenantApiKey';
+import { geocodingApiClient, getApiHeaders } from '@/lib/api';
 import { GeocodingControllerReverseGeocodeData } from '@/lib/api/generated/data-contracts';
 import { GeocodeResult } from '@/types/resource';
 import {
@@ -40,11 +39,7 @@ export async function reverseGeocode(
           ...(provider ? { provider } : {}),
         },
         format: 'json',
-        headers: {
-          'accept-language': locale,
-          'x-tenant-id': tenantId,
-          ...(await getTenantApiKeyHeaders(tenantId)),
-        },
+        headers: await getApiHeaders(tenantId, locale),
         cache: 'no-store',
       });
 

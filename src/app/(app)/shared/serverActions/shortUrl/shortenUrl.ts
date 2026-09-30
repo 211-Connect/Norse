@@ -1,8 +1,7 @@
 'use server';
 
+import { getApiHeaders } from '@/lib/api';
 import { shortUrlApiClient } from '@/lib/api/clients';
-
-import { getApiHeaders } from '../../lib/get-api-headers';
 
 export async function shortenUrl(
   url: string,
