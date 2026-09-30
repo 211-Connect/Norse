@@ -170,11 +170,25 @@ export const generateMetadata = async ({
     (value): value is string =>
       typeof value === 'string' && value.trim() !== '',
   );
+
+  const description = appConfig.meta.description;
   const title =
     parts.length > 0 ? `${parts.join(' - ')} | ${baseTitle}` : baseTitle;
 
   return {
-    description: appConfig.meta.description,
+    openGraph: {
+      description,
+      images: appConfig.brand.openGraphUrl
+        ? [
+            {
+              url: appConfig.brand.openGraphUrl,
+            },
+          ]
+        : undefined,
+      type: 'website',
+      title,
+    },
+    description,
     title,
   };
 };
