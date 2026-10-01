@@ -1,5 +1,5 @@
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
-import { FormEvent, useCallback } from 'react';
+import { FormEvent, TransitionStartFunction, useCallback } from 'react';
 import {
   searchCoordinatesAtom,
   userCoordinatesAtom,
@@ -26,7 +26,7 @@ type Args = {
   setClarifyValidationError: (error: string) => void;
   setClarifyOptions: (options: AiPredictOption[]) => void;
   setSelectedClarifyCodes: (codes: string[]) => void;
-  startTransition: (callback: () => void) => void;
+  startTransition: TransitionStartFunction;
 };
 export const useOnSearchSubmit = ({
   activeAiAction,
@@ -82,23 +82,25 @@ export const useOnSearchSubmit = ({
         return;
       }
 
-      const locationPayload = await buildSearchLocationPayload(
-        searchCoordinates,
-        userCoordinates,
-        appConfig.tenantId,
-      );
-
       const query = (search.query || search.searchTerm || '').trim();
-      if (
+      const isClassicSearch =
         appConfig.search.searchEngine !== 'ai_classification' ||
         search.queryType === 'taxonomy' ||
         // An organization scope is a filter, not a classifiable text query —
         // never route it through AI classification (which would drop the
         // scope and classify the org name as free text).
-        search.organizationId ||
-        !query
-      ) {
-        await navigateClassicSearch(locationPayload);
+        Boolean(search.organizationId) ||
+        !query;
+
+      if (isClassicSearch) {
+        startTransition(async () => {
+          const locationPayload = await buildSearchLocationPayload(
+            searchCoordinates,
+            userCoordinates,
+            appConfig.tenantId,
+          );
+          await navigateClassicSearch(locationPayload);
+        });
         return;
       }
 
@@ -114,6 +116,11 @@ export const useOnSearchSubmit = ({
       setActiveAiAction(null);
 
       if (!predictResponse) {
+        const locationPayload = await buildSearchLocationPayload(
+          searchCoordinates,
+          userCoordinates,
+          appConfig.tenantId,
+        );
         await navigateClassicSearch(locationPayload);
         return;
       }
