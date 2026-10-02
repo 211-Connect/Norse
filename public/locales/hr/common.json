@@ -324,5 +324,6 @@
       "success": "Upit spremljen u direktorij za ispis",
       "error": "Nije moguće spremiti upit u direktorij"
     }
-  }
+  },
+  "alert_date": "Datum upozorenja"
 }

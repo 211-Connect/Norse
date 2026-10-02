@@ -324,5 +324,6 @@
       "success": "Zapytanie zapisane w katalogu do druku",
       "error": "Nie można zapisać zapytania do katalogu"
     }
-  }
+  },
+  "alert_date": "Data alertu"
 }

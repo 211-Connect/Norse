@@ -324,5 +324,6 @@
       "success": "Kysely tallennettiin tulostettavaan hakemistoon",
       "error": "Kyselyä ei voitu tallentaa hakemistoon"
     }
-  }
+  },
+  "alert_date": "Hälytyspäivämäärä"
 }

@@ -324,5 +324,6 @@
       "success": "Consulta guardada en el directorio imprimible",
       "error": "No se pudo guardar la consulta en el directorio."
     }
-  }
+  },
+  "alert_date": "Fecha de alerta"
 }

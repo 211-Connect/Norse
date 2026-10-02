@@ -324,5 +324,6 @@
       "success": "Na-save ang query sa direktoryo ng pagpi-print",
       "error": "Hindi ma-save ang query sa direktoryo"
     }
-  }
+  },
+  "alert_date": "Petsa ng alerto"
 }
