@@ -5,7 +5,11 @@ import { useTranslation } from 'react-i18next';
 
 import { getDisplayHost } from '@/utils/getDisplayHost';
 
-import { UmamiEvent, trackUmamiEvent } from '../../../../shared/lib/umami';
+import {
+  AnalyticsEvent,
+  AnalyticsTools,
+  trackEvent,
+} from '../../../../shared/lib/analytics';
 import { Datum } from '../../../resource/components/datum';
 import { SearchCardComponentProps } from './types';
 
@@ -29,11 +33,12 @@ export function WebsiteComponent({ result }: SearchCardComponentProps) {
       urlAriaLabel={`${t('website')}: ${host}`}
       shouldParseHtml={false}
       withPadding={false}
-      onClick={() =>
-        trackUmamiEvent(UmamiEvent.WebsiteClick, {
-          resourceId: result.id,
-        })
-      }
+      onClick={() => {
+        const resourceId = String(result.id);
+        trackEvent(AnalyticsEvent.WebsiteClick, AnalyticsTools.UmamiAndMatomo, {
+          resourceId,
+        });
+      }}
     />
   );
 }

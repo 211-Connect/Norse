@@ -9,7 +9,12 @@ import { Link } from '@/app/(app)/shared/components/link';
 import { ReferralButton } from '@/app/(app)/shared/components/referral-button';
 import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
-import { setPendingResourceEntry } from '@/app/(app)/shared/lib/umami';
+import {
+  AnalyticsEvent,
+  AnalyticsTools,
+  setPendingResourceEntry,
+  trackEvent,
+} from '@/app/(app)/shared/lib/analytics';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { searchCoordinatesAtom } from '@/app/(app)/shared/store/search';
 
@@ -66,6 +71,15 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
         {result.website ? (
           <ReferralButton
             asChild
+            onClick={() =>
+              trackEvent(
+                AnalyticsEvent.WebsiteButtonClick,
+                AnalyticsTools.Matomo,
+                {
+                  resourceId: String(result.id),
+                },
+              )
+            }
             className="w-full gap-1 overflow-hidden"
             referralType="website_referral"
             size="sm"
@@ -115,7 +129,17 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
             }),
           )}
           href={`/search/${result.id}`}
-          onClick={() => setPendingResourceEntry(result.id, entry)}
+          onClick={() => {
+            setPendingResourceEntry(result.id, entry);
+            trackEvent(
+              AnalyticsEvent.ResourceDetailsClick,
+              AnalyticsTools.Matomo,
+              {
+                resourceId: String(result.id),
+                entry,
+              },
+            );
+          }}
           aria-label={`${viewDetailsText}: ${result.name}`}
           prefetch={false}
         >

@@ -2,7 +2,7 @@
 
 import Script from 'next/script';
 
-import { flushPendingUmamiEvents } from '@/app/(app)/shared/lib/umami';
+import { flushPendingUmamiEvents } from '@/app/(app)/shared/lib/analytics';
 
 export function UmamiScript({
   scriptUrl,

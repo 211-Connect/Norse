@@ -12,7 +12,7 @@ import {
   LANGUAGE_SWITCHER_CONTENT_ID,
   LANGUAGE_SWITCHER_TRIGGER_ID,
 } from '../lib/aria-constants';
-import { UmamiEvent, trackUmamiEvent } from '../lib/umami';
+import { AnalyticsEvent, AnalyticsTools, trackEvent } from '../lib/analytics';
 import { cn } from '../lib/utils';
 import { LanguageSwitcherPrimitive } from './language-switcher-primitive';
 
@@ -36,7 +36,7 @@ export const LanguageSwitcher = () => {
   const handleValueChange = useCallback(
     (language: string) => {
       if (language !== currentLanguage) {
-        trackUmamiEvent(UmamiEvent.LanguageSwitch, {
+        trackEvent(AnalyticsEvent.LanguageSwitch, AnalyticsTools.Umami, {
           destinationLanguage: language,
         });
       }

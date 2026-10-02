@@ -3,11 +3,12 @@
 import { useEffect, useRef } from 'react';
 
 import {
+  AnalyticsEvent,
+  AnalyticsTools,
   ResourceEntry,
-  UmamiEvent,
   consumePendingResourceEntry,
-  trackUmamiEvent,
-} from '@/app/(app)/shared/lib/umami';
+  trackEvent,
+} from '@/app/(app)/shared/lib/analytics';
 
 interface UseResourceViewTrackingArgs {
   resourceId: string;
@@ -24,7 +25,7 @@ export function useResourceViewTracking({
     if (firedRef.current) return;
     firedRef.current = true;
 
-    trackUmamiEvent(UmamiEvent.ResourceViewed, {
+    trackEvent(AnalyticsEvent.ResourceViewed, AnalyticsTools.Umami, {
       entry: consumePendingResourceEntry(resourceId) ?? ResourceEntry.DeepLink,
       resourceId,
       tenantId,

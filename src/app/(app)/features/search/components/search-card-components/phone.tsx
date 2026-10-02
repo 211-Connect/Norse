@@ -2,7 +2,11 @@
 
 import { Phone } from 'lucide-react';
 
-import { UmamiEvent, trackUmamiEvent } from '../../../../shared/lib/umami';
+import {
+  AnalyticsEvent,
+  AnalyticsTools,
+  trackEvent,
+} from '../../../../shared/lib/analytics';
 import { Datum } from '../../../resource/components/datum';
 import { SearchCardComponentProps } from './types';
 
@@ -21,11 +25,12 @@ export function PhoneComponent({ result }: SearchCardComponentProps) {
       urlTarget="_self"
       shouldParseHtml={false}
       withPadding={false}
-      onClick={() =>
-        trackUmamiEvent(UmamiEvent.PhoneClick, {
-          resourceId: String(result.id),
-        })
-      }
+      onClick={() => {
+        const resourceId = String(result.id);
+        trackEvent(AnalyticsEvent.PhoneClick, AnalyticsTools.UmamiAndMatomo, {
+          resourceId,
+        });
+      }}
     />
   );
 }

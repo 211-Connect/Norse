@@ -23,7 +23,11 @@ import { createLogger } from '@/lib/logger';
 import { toBbox } from '@/app/(app)/shared/lib/utils';
 import { arcjetProtectPage } from '@/lib/arcjet';
 
-import { UmamiEvent, trackUmamiEvent } from '../../../shared/lib/umami';
+import {
+  AnalyticsEvent,
+  AnalyticsTools,
+  trackEvent,
+} from '@/app/(app)/shared/lib/analytics';
 import {
   parseSearchParams,
   RawSearchParams,
@@ -232,7 +236,7 @@ export default async function SearchPage({
     await getPageData(locale, searchParamsResult);
 
   if (searchQuery.widgetId) {
-    trackUmamiEvent(UmamiEvent.WidgetSearch);
+    trackEvent(AnalyticsEvent.WidgetSearch, AnalyticsTools.Umami);
   }
   return (
     <PageWrapper

@@ -1,6 +1,6 @@
 import { atom } from 'jotai';
 
-import { ResourceEntry } from '@/app/(app)/shared/lib/umami';
+import { ResourceEntry } from '@/app/(app)/shared/lib/analytics';
 
 export const searchAtom = atom({
   query: '',

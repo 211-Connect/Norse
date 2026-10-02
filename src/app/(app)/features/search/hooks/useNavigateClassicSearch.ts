@@ -1,10 +1,11 @@
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { persistSearchDistancePreference } from '@/app/(app)/shared/lib/search-distance-preference';
 import {
-  trackUmamiEvent,
-  UmamiEvent,
+  AnalyticsEvent,
+  AnalyticsTools,
   ResourceEntry,
-} from '@/app/(app)/shared/lib/umami';
+  trackEvent,
+} from '@/app/(app)/shared/lib/analytics';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
 import { buildSearchUrl } from '../utils/buildSearchUrl';
@@ -76,20 +77,23 @@ export const useNavigateClassicSearch = ({
         };
 
         if (search.queryType === 'taxonomy') {
-          trackUmamiEvent(
-            UmamiEvent.SearchTaxonomy,
+          trackEvent(
+            AnalyticsEvent.SearchTaxonomy,
+            AnalyticsTools.Umami,
             umamiPayload,
             appConfig.sessionId,
           );
         } else if (search.queryType === 'hybrid') {
-          trackUmamiEvent(
-            UmamiEvent.SearchHybrid,
+          trackEvent(
+            AnalyticsEvent.SearchHybrid,
+            AnalyticsTools.Umami,
             umamiPayload,
             appConfig.sessionId,
           );
         } else {
-          trackUmamiEvent(
-            UmamiEvent.SearchText,
+          trackEvent(
+            AnalyticsEvent.SearchText,
+            AnalyticsTools.Umami,
             umamiPayload,
             appConfig.sessionId,
           );
