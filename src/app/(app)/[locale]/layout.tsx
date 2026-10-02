@@ -1,5 +1,5 @@
 import color from 'color';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next/types';
 
@@ -11,6 +11,7 @@ import { getContrastColor } from '@/utils';
 
 import { Providers } from '../shared/components/providers';
 import { USER_PREF_FONT_SIZE } from '../shared/lib/constants';
+import { getServerDevice } from '../shared/lib/get-server-device';
 import { cn } from '../shared/lib/utils';
 import {
   resolveBrandTheme,
@@ -93,15 +94,18 @@ async function prepareTheme(appConfig: AppConfig) {
   }
 
   return {
-    '--primary': `${primaryHsl[0]} ${primaryHsl[1]}% ${primaryHsl[2]}%`,
-    '--primary-foreground': primaryForeground,
-    '--ring-on-primary': ringOnPrimary,
-    '--secondary': `${secondaryHsl[0]} ${secondaryHsl[1]}% ${secondaryHsl[2]}%`,
-    '--secondary-foreground': secondaryForeground,
-    '--border-radius': borderRadius,
-    '--header-start': headerStart,
-    '--header-end': headerEnd,
-    'font-size': savedFontSize,
+    savedFontSize,
+    style: {
+      '--primary': `${primaryHsl[0]} ${primaryHsl[1]}% ${primaryHsl[2]}%`,
+      '--primary-foreground': primaryForeground,
+      '--ring-on-primary': ringOnPrimary,
+      '--secondary': `${secondaryHsl[0]} ${secondaryHsl[1]}% ${secondaryHsl[2]}%`,
+      '--secondary-foreground': secondaryForeground,
+      '--border-radius': borderRadius,
+      '--header-start': headerStart,
+      '--header-end': headerEnd,
+      'font-size': savedFontSize,
+    },
   };
 }
 
@@ -122,15 +126,24 @@ export default async function RootLayout({
     notFound();
   }
 
-  const theme = await prepareTheme(appConfig);
+  const [{ savedFontSize, style }, headersList] = await Promise.all([
+    prepareTheme(appConfig),
+    headers(),
+  ]);
+  const device = getServerDevice(headersList.get('user-agent') ?? '');
 
   return (
-    <html lang={locale} style={theme as any} className="max-sm:!text-[100%]">
+    <html lang={locale} style={style as any} className="max-sm:!text-[100%]">
       <body
         className={cn('font-sans antialiased', fontSans.variable)}
         id="app-root"
       >
-        <Providers appConfig={appConfig} session={clientSession}>
+        <Providers
+          appConfig={appConfig}
+          device={device}
+          fontSize={savedFontSize ?? '1rem'}
+          session={clientSession}
+        >
           {children}
         </Providers>
       </body>

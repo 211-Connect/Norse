@@ -13,8 +13,8 @@ import { Footer } from './footer';
 import { GlobalDialogs } from './global-dialogs/global-dialogs';
 import { GoogleTagManagerScript } from './google-tag-manager-script';
 import { Header } from './header';
-import { JotaiHydration } from './jotai-hydration';
 import { MatomoTagManagerScript } from './matomo-tag-manager-script';
+import { PageSearchState, SearchStateSync } from './search-state-sync';
 import { SyncLocalFavoritesOnAuthEffect } from './sync-local-favorites-on-auth-effect';
 import { Toaster } from './ui/sonner';
 import { UmamiScript } from './umami-script';
@@ -27,14 +27,15 @@ interface PageWrapperProps {
     locale: string;
     resources: any;
   };
-  jotaiData?: Record<string, any>;
+  /** The page URL's search, used to reset the header search form. */
+  search?: PageSearchState;
   nonce?: string;
 }
 
 export const PageWrapper = ({
   children,
-  cookies,
-  jotaiData = {},
+  cookies = {},
+  search,
   translationData,
   nonce,
 }: PropsWithChildren<PageWrapperProps>) => {
@@ -47,41 +48,41 @@ export const PageWrapper = ({
       resources={translationData.resources}
     >
       <SyncLocalFavoritesOnAuthEffect />
-      <JotaiHydration cookies={cookies} pageProps={jotaiData}>
-        <ErrorBoundary>
-          <a
-            href={`#${MAIN_CONTENT_ID}`}
-            className="bg-background text-foreground focus:ring-ring sr-only z-50 m-3 inline-flex rounded-md px-4 py-2 text-sm font-medium focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:ring-2"
-          >
-            Skip to content
-          </a>
-          <Header />
-          <main id={MAIN_CONTENT_ID} className="flex flex-1 flex-col">
-            {children}
-          </main>
-          <Footer />
-          <GlobalDialogs />
-          <Toaster />
-          <GoogleTagManagerScript
-            containerId={appConfig.gtmContainerId}
-            nonce={nonce}
-          />
-          <MatomoTagManagerScript
-            matamoContainerUrl={appConfig.matomoContainerUrl}
-            nonce={nonce}
-          />
-          <UmamiScript
-            scriptUrl={process.env.NEXT_PUBLIC_UMAMI_SCRIPT_URL}
-            websiteId={appConfig.umamiWebsiteId}
-            nonce={nonce}
-          />
-          <ArcjetScript
-            scriptUrl={process.env.NEXT_PUBLIC_ARCJET_SCRIPT_URL}
-            nonce={nonce}
-          />
-          <DynamicHeightListener />
-        </ErrorBoundary>
-      </JotaiHydration>
+      {/* Before <Header>: on the first render it seeds the atom the header reads. */}
+      <SearchStateSync cookies={cookies} search={search} />
+      <ErrorBoundary>
+        <a
+          href={`#${MAIN_CONTENT_ID}`}
+          className="bg-background text-foreground focus:ring-ring sr-only z-50 m-3 inline-flex rounded-md px-4 py-2 text-sm font-medium focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:ring-2"
+        >
+          Skip to content
+        </a>
+        <Header />
+        <main id={MAIN_CONTENT_ID} className="flex flex-1 flex-col">
+          {children}
+        </main>
+        <Footer />
+        <GlobalDialogs />
+        <Toaster />
+        <GoogleTagManagerScript
+          containerId={appConfig.gtmContainerId}
+          nonce={nonce}
+        />
+        <MatomoTagManagerScript
+          matamoContainerUrl={appConfig.matomoContainerUrl}
+          nonce={nonce}
+        />
+        <UmamiScript
+          scriptUrl={process.env.NEXT_PUBLIC_UMAMI_SCRIPT_URL}
+          websiteId={appConfig.umamiWebsiteId}
+          nonce={nonce}
+        />
+        <ArcjetScript
+          scriptUrl={process.env.NEXT_PUBLIC_ARCJET_SCRIPT_URL}
+          nonce={nonce}
+        />
+        <DynamicHeightListener />
+      </ErrorBoundary>
     </TranslationsProvider>
   );
 };

@@ -1,18 +1,13 @@
 'use client';
 
-import { useAtomValue } from 'jotai';
-
 import { CustomPagination } from '@/app/(app)/shared/components/custom-pagination';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
-import {
-  resultTotalAtom,
-  resultsCurrentPageAtom,
-} from '@/app/(app)/shared/store/results';
+
+import { useSearchResults } from '../context/search-results-context';
 
 export function ResultsPagination() {
   const appConfig = useAppConfig();
-  const totalResults = useAtomValue(resultTotalAtom);
-  const currentPage = useAtomValue(resultsCurrentPageAtom);
+  const { totalResults, currentPage } = useSearchResults();
 
   const limit = appConfig?.search?.resultsLimit ?? 1;
   const totalPages = Math.ceil(totalResults / limit);

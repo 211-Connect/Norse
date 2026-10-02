@@ -2,7 +2,9 @@ import { atom } from 'jotai';
 
 import { ResourceEntry } from '@/app/(app)/shared/lib/umami';
 
-export const searchAtom = atom({
+export type SearchState = typeof DEFAULT_SEARCH_STATE;
+
+export const DEFAULT_SEARCH_STATE = {
   query: '',
   queryLabel: '',
   queryType: '',
@@ -21,7 +23,9 @@ export const searchAtom = atom({
   // New fields for advanced geospatial filtering
   searchPlaceType: [] as string[],
   searchBbox: null as [number, number, number, number] | null,
-});
+};
+
+export const searchAtom = atom<SearchState>(DEFAULT_SEARCH_STATE);
 
 export const userCoordinatesAtom = atom([] as number[]);
 

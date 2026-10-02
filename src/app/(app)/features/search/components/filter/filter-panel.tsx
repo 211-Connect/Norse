@@ -17,10 +17,11 @@ import {
 } from '@/app/(app)/shared/components/ui/sheet';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { cn } from '@/app/(app)/shared/lib/utils';
-import { filtersAtom, filtersOpenAtom } from '@/app/(app)/shared/store/results';
+import { filtersOpenAtom } from '@/app/(app)/shared/store/results';
 import { searchCoordinatesAtom } from '@/app/(app)/shared/store/search';
 import type { LegacyAiClarifyState } from '@/app/(app)/features/search/utils/parseLegacyAiClarifyParams';
 
+import { useSearchResults } from '../../context/search-results-context';
 import { AgeFilter } from './age-filter';
 import { Filters } from './filters';
 import { useFacetUiConfig } from './use-facet-ui-config';
@@ -39,7 +40,7 @@ export function FilterPanel({
   const { t } = useTranslation();
   const appConfig = useAppConfig();
   const showAgeFilter = appConfig.featureFlags.showAgeFilter;
-  const filters = useAtomValue(filtersAtom);
+  const { filters } = useSearchResults();
   const searchCoordinates = useAtomValue(searchCoordinatesAtom);
   const [filtersOpen, setFiltersOpen] = useAtom(filtersOpenAtom);
 

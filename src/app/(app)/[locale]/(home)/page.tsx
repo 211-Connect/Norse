@@ -12,7 +12,6 @@ import { DirectoryDownloadDialog } from '@/app/(app)/shared/components/directory
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import { TourProvider } from '@/app/(app)/shared/context/tour-provider';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
-import { getServerDevice } from '@/app/(app)/shared/lib/get-server-device';
 
 import { NewHomeContent } from '../../features/home/components/new-home-content';
 import { getAppConfigWithoutHost } from '../../shared/utils/appConfig';
@@ -60,12 +59,9 @@ export default async function HomePage({ params }) {
   );
   const cookieList = await getCookies({ cookies });
 
-  const device = getServerDevice((await headers()).get('user-agent')!);
-
   return (
     <PageWrapper
       cookies={cookieList}
-      jotaiData={{ device }}
       translationData={{ i18nNamespaces, locale, resources }}
       nonce={nonce}
     >
