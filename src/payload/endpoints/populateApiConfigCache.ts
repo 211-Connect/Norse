@@ -7,6 +7,8 @@ import { Tenant } from '@/payload/payload-types';
 import { pushHybridSearchConfigToCache } from '../collections/HybridSearchConfig/hooks/pushHybridSearchConfigToCache';
 import { pushOrchestrationConfigToCache } from '../collections/OrchestrationConfig/hooks/pushOrchestrationConfigToCache';
 import { pushFacetsToCache } from '../collections/ResourceDirectories/hooks/pushFacetsToCache';
+import { pushSuggestionsToCache } from '../collections/ResourceDirectories/hooks/pushSuggestionsToCache';
+import { pushTopicsToCache } from '../collections/ResourceDirectories/hooks/pushTopicsToCache';
 import { pushEnabledLocalesToCache } from '../collections/Tenants/hooks/pushEnabledLocalesToCache';
 import { pushRealmIdToCache } from '../collections/Tenants/hooks/pushRealmIdToCache';
 import { pushAnalyticsConfigToCache } from '../collections/Tenants/hooks/pushAnalyticsConfig';
@@ -57,6 +59,8 @@ export const populateApiConfigCache: Endpoint = {
       let realmIdTriggered = 0;
       let enabledLocalesTriggered = 0;
       let facetsTriggered = 0;
+      let topicsTriggered = 0;
+      let suggestionsTriggered = 0;
       let orchestrationConfigTriggered = 0;
       let analyticsConfigTriggered = 0;
       let hybridSearchConfigTriggered = 0;
@@ -94,6 +98,12 @@ export const populateApiConfigCache: Endpoint = {
         if (resourceDirectory) {
           await pushFacetsToCache(resourceDirectory, req, defaultLocale);
           facetsTriggered++;
+
+          await pushTopicsToCache(resourceDirectory, req, defaultLocale);
+          topicsTriggered++;
+
+          await pushSuggestionsToCache(resourceDirectory, req, defaultLocale);
+          suggestionsTriggered++;
         }
 
         const [orchestrationConfig] = await payload
@@ -146,6 +156,8 @@ export const populateApiConfigCache: Endpoint = {
           realmIdTriggered,
           enabledLocalesTriggered,
           facetsTriggered,
+          topicsTriggered,
+          suggestionsTriggered,
           orchestrationConfigTriggered,
           analyticsConfigTriggered,
           hybridSearchConfigTriggered,
@@ -160,6 +172,8 @@ export const populateApiConfigCache: Endpoint = {
           realmIdTriggered,
           enabledLocalesTriggered,
           facetsTriggered,
+          topicsTriggered,
+          suggestionsTriggered,
           orchestrationConfigTriggered,
           analyticsConfigTriggered,
           hybridSearchConfigTriggered,
