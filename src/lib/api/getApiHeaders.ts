@@ -34,10 +34,10 @@ export const getApiHeaders = async (
   ]);
 
   return {
-    'x-api-key': tenantApiKey,
     'x-api-version': '1',
     'x-tenant-id': tenantId,
     ...headersInitToRecord(authHeaders),
+    ...(tenantApiKey ? { 'x-api-key': tenantApiKey } : {}),
     ...(locale ? { 'accept-language': locale } : {}),
   };
 };
