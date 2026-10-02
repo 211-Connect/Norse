@@ -26,7 +26,7 @@ import {
   MAIN_CONTENT_ID,
   NEW_TAB_WARNING,
 } from '../lib/constants';
-import { UmamiEvent, trackUmamiEvent } from '../lib/umami';
+import { AnalyticsEvent, AnalyticsTools, trackEvent } from '../lib/analytics';
 import { cn, withOptionalTrailingSlash } from '../lib/utils';
 import { dialogsAtom } from '../store/dialogs';
 import { canAccessPrintableDirectories } from '../utils/canAccessPrintableDirectories';
@@ -299,7 +299,7 @@ export function Header() {
               target={appConfig.header.safeExit.target}
               href={appConfig.header.safeExit?.url ?? '#'}
               onClick={() => {
-                trackUmamiEvent(UmamiEvent.SafeExitClick);
+                trackEvent(AnalyticsEvent.SafeExitClick, AnalyticsTools.Umami);
               }}
               aria-label={
                 appConfig.header.safeExit.target === '_blank'

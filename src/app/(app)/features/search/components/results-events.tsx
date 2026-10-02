@@ -10,7 +10,11 @@ import {
   SearchLocationContext,
 } from '@/app/(app)/shared/lib/google-tag-manager';
 import { buildSearchLocationPayload } from '@/app/(app)/shared/lib/search-location-meta';
-import { UmamiEvent, trackUmamiEvent } from '@/app/(app)/shared/lib/umami';
+import {
+  AnalyticsEvent,
+  AnalyticsTools,
+  trackEvent,
+} from '@/app/(app)/shared/lib/analytics';
 import {
   searchCoordinatesAtom,
   userCoordinatesAtom,
@@ -57,7 +61,7 @@ export const ResultsEvents = ({
       );
 
       if (totalResults === 0) {
-        trackUmamiEvent(UmamiEvent.SearchZeroResults, {
+        trackEvent(AnalyticsEvent.SearchZeroResults, AnalyticsTools.Umami, {
           query: String(searchParamsObject.query ?? ''),
           query_label: String(searchParamsObject.query_label ?? ''),
           ...locationPayload,

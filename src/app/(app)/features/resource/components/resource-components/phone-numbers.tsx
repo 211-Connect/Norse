@@ -6,7 +6,11 @@ import { useTranslation } from 'react-i18next';
 
 import { Resource } from '@/types/resource';
 
-import { UmamiEvent, trackUmamiEvent } from '../../../../shared/lib/umami';
+import {
+  AnalyticsEvent,
+  AnalyticsTools,
+  trackEvent,
+} from '../../../../shared/lib/analytics';
 import { Datum } from '../datum';
 
 export function PhoneNumbersComponent({ resource }: { resource: Resource }) {
@@ -50,11 +54,14 @@ export function PhoneNumbersComponent({ resource }: { resource: Resource }) {
           description={number}
           url={`tel:${number}`}
           urlAriaLabel={`${label}${description ? ` - ${description}` : ''}: ${number}`}
-          onClick={() =>
-            trackUmamiEvent(UmamiEvent.PhoneClick, {
-              resourceId: resource.id,
-            })
-          }
+          onClick={() => {
+            const resourceId = resource.id;
+            trackEvent(
+              AnalyticsEvent.PhoneClick,
+              AnalyticsTools.UmamiAndMatomo,
+              { resourceId },
+            );
+          }}
           urlTarget="_self"
           titleBelow
           shouldParseHtml={false}

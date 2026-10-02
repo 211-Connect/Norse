@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 
 import { useAppConfig } from '../hooks/use-app-config';
 import { fetchWrapper } from '../lib/fetchWrapper';
-import { UmamiEvent, trackUmamiEvent } from '../lib/umami';
+import { AnalyticsEvent, AnalyticsTools, trackEvent } from '../lib/analytics';
 import { withOptionalCustomBasePath } from '../lib/utils';
 import { validatePhoneNumber } from '../lib/validators';
 import { deviceAtom } from '../store/device';
@@ -57,7 +57,7 @@ export function SmsButton({ shareMessage, className }: SmsButtonProps) {
   }, [shareMessage]);
 
   const handleClick = () => {
-    trackUmamiEvent(UmamiEvent.SmsClick);
+    trackEvent(AnalyticsEvent.SmsClick, AnalyticsTools.Umami);
 
     if (shouldUseNativeSmsApp) {
       openNativeSmsApp();

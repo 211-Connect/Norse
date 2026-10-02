@@ -5,7 +5,12 @@ import { useTranslation } from 'react-i18next';
 import { AddToFavoritesButton } from '@/app/(app)/shared/components/add-to-favorites-button';
 import { RemoveFromFavoriteListButton } from '@/app/(app)/shared/components/remove-from-favorite-list-button';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
-import { setPendingResourceEntry } from '@/app/(app)/shared/lib/umami';
+import {
+  AnalyticsEvent,
+  AnalyticsTools,
+  setPendingResourceEntry,
+  trackEvent,
+} from '@/app/(app)/shared/lib/analytics';
 import { withOptionalTrailingSlash } from '@/app/(app)/shared/lib/utils';
 
 import { SearchCardComponentProps } from './types';
@@ -30,7 +35,17 @@ export function ResourceNameComponent({ result }: SearchCardComponentProps) {
         size="md"
         url={url}
         prefetch={false}
-        onClick={() => setPendingResourceEntry(result.id, entry)}
+        onClick={() => {
+          setPendingResourceEntry(result.id, entry);
+          trackEvent(
+            AnalyticsEvent.ResourceDetailsClick,
+            AnalyticsTools.Matomo,
+            {
+              resourceId: String(result.id),
+              entry,
+            },
+          );
+        }}
         data-testid="resource-link"
         className="min-w-0 flex-1 self-center"
       >

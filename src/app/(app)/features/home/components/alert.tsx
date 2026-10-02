@@ -7,7 +7,11 @@ import { Alert as AlertComponent } from '@/app/(app)/shared/components/ui/alert'
 import { buttonVariants } from '@/app/(app)/shared/components/ui/button';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { cn } from '@/app/(app)/shared/lib/utils';
-import { trackUmamiEvent, UmamiEvent } from '@/app/(app)/shared/lib/umami';
+import {
+  AnalyticsEvent,
+  AnalyticsTools,
+  trackEvent,
+} from '@/app/(app)/shared/lib/analytics';
 
 type Direction = 'col' | 'row';
 
@@ -68,9 +72,13 @@ export default function Alert({ itemsDirection }: AlertProps) {
                     href={alert.url}
                     target={alert.target}
                     onClick={() =>
-                      trackUmamiEvent(UmamiEvent.AlertClick, {
-                        alertTitle: alert.text ?? '',
-                      })
+                      trackEvent(
+                        AnalyticsEvent.AlertClick,
+                        AnalyticsTools.Umami,
+                        {
+                          alertTitle: alert.text ?? '',
+                        },
+                      )
                     }
                   >
                     {alert.buttonText}
