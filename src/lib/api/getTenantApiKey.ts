@@ -16,7 +16,9 @@ async function fetchTenantApiKey(tenantId: string): Promise<string | null> {
   return tenant?.api?.apiKey ?? null;
 }
 
-export async function getTenantApiKey(tenantId: string): Promise<string> {
+export async function getTenantApiKey(
+  tenantId: string,
+): Promise<string | null> {
   const apiKey = await withCache(
     `tenant_api_key:${tenantId}`,
     () => fetchTenantApiKey(tenantId),
@@ -24,10 +26,8 @@ export async function getTenantApiKey(tenantId: string): Promise<string> {
   );
 
   if (!apiKey) {
-    log.error({ tenantId }, 'Norse API key not configured for tenant');
-    throw new Error(
-      `Norse API key not configured for tenant "${tenantId}". Set it under Tenants > API Settings in the Payload admin, or use the bulk-set endpoint.`,
-    );
+    log.warn({ tenantId }, 'Norse API key not configured for tenant');
+    return null;
   }
 
   return apiKey;
