@@ -6,7 +6,6 @@ import { Metadata } from 'next/types';
 import { CategoriesSection } from '@/app/(app)/features/home/components/categories-section';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
-import { getServerDevice } from '@/app/(app)/shared/lib/get-server-device';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 
 const i18nNamespaces = ['common'];
@@ -53,8 +52,6 @@ export default async function TopicsView({ params }) {
   const nonce = headersList.get('x-nonce') ?? '';
   const cookieList = await getCookies({ cookies });
 
-  const device = getServerDevice((await headers()).get('user-agent')!);
-
   if (!appConfig.newLayout?.enabled) {
     redirect('/');
   }
@@ -62,7 +59,6 @@ export default async function TopicsView({ params }) {
   return (
     <PageWrapper
       cookies={cookieList}
-      jotaiData={{ device }}
       translationData={{ i18nNamespaces, locale, resources }}
       nonce={nonce}
     >

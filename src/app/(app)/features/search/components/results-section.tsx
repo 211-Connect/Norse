@@ -16,16 +16,12 @@ import {
   AlertDescription,
 } from '@/app/(app)/shared/components/ui/alert';
 import {
-  resultTotalAtom,
-  resultsAtom,
-  resultsCurrentPageAtom,
-} from '@/app/(app)/shared/store/results';
-import {
   queryAtom,
   queryLabelAtom,
   queryTypeAtom,
 } from '@/app/(app)/shared/store/search';
 
+import { useSearchResults } from '../context/search-results-context';
 import { SearchCardLayoutConfig } from '../types/card-layout-config';
 import { RenderResults } from './render-results';
 import { ResultTotal } from './result-total';
@@ -93,10 +89,8 @@ export function ResultsSection({
   const appConfig = useAppConfig();
   const searchParams = useSearchParams();
   const resultsHeadingRef = useRef<HTMLHeadingElement>(null);
-  const results = useAtomValue(resultsAtom);
-  const resultsCount = results?.length ?? 0;
-  const totalResults = useAtomValue(resultTotalAtom);
-  const currentPage = useAtomValue(resultsCurrentPageAtom);
+  const { results, totalResults, currentPage } = useSearchResults();
+  const resultsCount = results.length;
   const query = useAtomValue(queryAtom);
   const queryLabel = useAtomValue(queryLabelAtom);
   const queryType = useAtomValue(queryTypeAtom);
@@ -139,7 +133,7 @@ export function ResultsSection({
 
   const loadPrintableData = useCallback(
     (locale: string) => {
-      const ids = (results ?? [])
+      const ids = results
         .map((result) => result.id || result._id)
         .filter(Boolean);
 

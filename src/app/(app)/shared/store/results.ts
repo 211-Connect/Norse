@@ -28,9 +28,6 @@ export type ResultType = {
   onRemoveFromList?: (listId: string, favoriteId: string) => void;
 };
 
-export const resultsAtom = atom<ResultType[] | null>(null);
-export const resultTotalAtom = atom(0);
-export const resultsCurrentPageAtom = atom<number>(0);
-
+// Search results themselves are request data, not client state: they live in
+// `SearchResultsProvider` (features/search/context/search-results-context.tsx).
 export const filtersOpenAtom = atom(false);
-export const filtersAtom = atom({});

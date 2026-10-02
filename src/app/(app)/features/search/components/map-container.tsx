@@ -11,16 +11,16 @@ import {
   cn,
   distanceBetweenCoordsInMiles,
 } from '@/app/(app)/shared/lib/utils';
-import { resultsAtom } from '@/app/(app)/shared/store/results';
 import { userCoordinatesAtom } from '@/app/(app)/shared/store/search';
 
+import { useSearchResults } from '../context/search-results-context';
 import { MapPopup } from './map-popup';
 
 export function MapContainer() {
   const appConfig = useAppConfig();
   const [headerHeight, setHeaderHeight] = useState(0);
 
-  const results = useAtomValue(resultsAtom);
+  const { results } = useSearchResults();
   const coords = useAtomValue(userCoordinatesAtom);
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export function MapContainer() {
 
   // Memoize to prevent unecessary map re-renders
   const mapMarkers = useMemo(() => {
-    return (results ?? []).map((result) => {
+    return results.map((result) => {
       const coordinates = result?.location?.coordinates as Coords | undefined;
       const distance = (() => {
         if (!coordinates || (coords?.length ?? 0) !== 2) {
