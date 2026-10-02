@@ -219,7 +219,7 @@ export const TENANT_FIXTURES: Record<TenantKey, TenantFixture> = {
     testLocation: 'Warrenville',
     baseUrl: {
       dev: 'https://dev-dupage.c211.io',
-      prod: 'https://search.dupage211.c211.io',
+      prod: 'https://search.211dupage.gov',
     },
     aiSearchEnabled: { dev: false, prod: false },
     hasFacets: false,

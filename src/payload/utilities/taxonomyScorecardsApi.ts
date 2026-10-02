@@ -1,3 +1,4 @@
+import { getApiHeaders } from '@/lib/api';
 import { taxonomyScorecardApiClient } from '@/lib/api/clients';
 import {
   EnableTaxonomyScorecardDto,
@@ -26,6 +27,9 @@ export async function searchTaxonomies(params: {
         page: params.page ?? 1,
         limit: params.limit ?? 20,
       },
+      {
+        headers: await getApiHeaders(params.tenantId),
+      },
     );
 
   if (response.data === null) {
@@ -44,6 +48,9 @@ export async function getScorecard(params: {
       {
         tenantId: params.tenantId,
         hsisCode: params.hsisCode,
+      },
+      {
+        headers: await getApiHeaders(params.tenantId),
       },
     );
 
@@ -75,6 +82,9 @@ export async function updateScorecard(params: {
     await taxonomyScorecardApiClient.taxonomyScorecardControllerUpdateTaxonomyConfiguration(
       query,
       body,
+      {
+        headers: await getApiHeaders(params.tenantId),
+      },
     );
 
   if (response.data === null) {
@@ -100,6 +110,9 @@ export async function enableScorecard(params: {
         hsisCode: params.hsisCode,
       },
       body,
+      {
+        headers: await getApiHeaders(params.tenantId),
+      },
     );
 
   if (response.data === null) {

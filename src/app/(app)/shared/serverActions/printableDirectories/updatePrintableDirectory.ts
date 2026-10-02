@@ -1,26 +1,23 @@
 'use server';
 
 import { UpdatePrintableDirectoryDto } from '@/lib/api/generated/data-contracts';
-import { printableDirectoriesApiClient } from '@/lib/api/clients';
+import { getApiHeaders, printableDirectoriesApiClient } from '@/lib/api';
 
-import { getAuthHeaders } from '../../lib/authHeaders';
 import { PrintableDirectoryMutationResult } from './printableDirectoryMutationResult';
 
 export async function updatePrintableDirectory(
   id: string,
   input: UpdatePrintableDirectoryDto,
-  tenantId?: string,
+  tenantId: string,
 ): Promise<PrintableDirectoryMutationResult> {
-  const headers = await getAuthHeaders(tenantId);
-
   try {
     const response =
       await printableDirectoriesApiClient.printableDirectoryControllerUpdate(
         { id },
         input,
         {
-          headers,
           cache: 'no-store',
+          headers: await getApiHeaders(tenantId, 'en', true),
         },
       );
 

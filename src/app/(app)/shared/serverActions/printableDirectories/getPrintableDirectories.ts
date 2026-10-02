@@ -1,9 +1,7 @@
 'use server';
 
 import { PrintableDirectoryResponseDto } from '@/lib/api/generated/data-contracts';
-import { printableDirectoriesApiClient } from '@/lib/api/clients';
-
-import { getAuthHeaders } from '../../lib/authHeaders';
+import { getApiHeaders, printableDirectoriesApiClient } from '@/lib/api';
 
 export type PrintableDirectoriesListResult = {
   items: PrintableDirectoryResponseDto[];
@@ -12,24 +10,22 @@ export type PrintableDirectoriesListResult = {
 };
 
 export async function getPrintableDirectories(
-  tenantId?: string,
+  tenantId: string,
   page: number = 1,
   limit: number = 50,
   search: string = '',
 ): Promise<PrintableDirectoriesListResult> {
-  const headers = await getAuthHeaders(tenantId);
-
   const response =
     await printableDirectoriesApiClient.printableDirectoryControllerList(
       {
         page,
         limit,
         search: search || undefined,
-        tenant_id: tenantId || undefined,
+        tenant_id: tenantId,
       },
       {
-        headers,
         cache: 'no-store',
+        headers: await getApiHeaders(tenantId, 'en', true),
       },
     );
 

@@ -4,9 +4,7 @@ import {
   PrintableDirectoryLocalizedValuesDto,
   PrintableDirectoryResponseDto,
 } from '@/lib/api/generated/data-contracts';
-import { printableDirectoriesApiClient } from '@/lib/api/clients';
-
-import { getAuthHeaders } from '../../lib/authHeaders';
+import { getApiHeaders, printableDirectoriesApiClient } from '@/lib/api';
 
 type CreatePrintableDirectorySectionInput = {
   headingLocalized: PrintableDirectoryLocalizedValuesDto;
@@ -17,10 +15,8 @@ type CreatePrintableDirectorySectionInput = {
 export async function createPrintableDirectorySection(
   directoryId: string,
   input: string | CreatePrintableDirectorySectionInput,
-  tenantId?: string,
+  tenantId: string,
 ): Promise<PrintableDirectoryResponseDto | null> {
-  const headers = await getAuthHeaders(tenantId);
-
   const payload: CreatePrintableDirectorySectionInput =
     typeof input === 'string'
       ? {
@@ -35,8 +31,8 @@ export async function createPrintableDirectorySection(
         { id: directoryId },
         payload,
         {
-          headers,
           cache: 'no-store',
+          headers: await getApiHeaders(tenantId, 'en', true),
         },
       );
 

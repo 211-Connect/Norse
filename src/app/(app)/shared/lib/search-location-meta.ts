@@ -16,7 +16,7 @@ const EMPTY_META: SearchLocationMeta = {
 
 export async function getSearchLocationMeta(
   searchCoordinates: number[],
-  tenantId?: string,
+  tenantId: string,
 ): Promise<SearchLocationMeta> {
   if (searchCoordinates.length !== 2) {
     return EMPTY_META;
@@ -47,7 +47,7 @@ type SearchLocationPayload = {
 export async function buildSearchLocationPayload(
   searchCoordinates: number[],
   userCoordinates: number[],
-  tenantId?: string,
+  tenantId: string,
 ): Promise<SearchLocationPayload> {
   const { searchCity, searchZipCode, searchCounty } =
     await getSearchLocationMeta(searchCoordinates, tenantId);

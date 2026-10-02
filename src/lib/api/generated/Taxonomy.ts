@@ -11,8 +11,8 @@
  */
 
 import {
-  TaxonomyControllerGetTaxonomiesV2Data,
-  TaxonomyControllerGetTaxonomiesV2Params,
+  TaxonomyControllerGetTaxonomiesData,
+  TaxonomyControllerGetTaxonomiesParams,
   TaxonomyControllerGetTaxonomyTermsByCodeData,
   TaxonomyControllerGetTaxonomyTermsByCodeParams,
 } from "./data-contracts";
@@ -25,14 +25,14 @@ export class Taxonomy<
    * No description
    *
    * @tags Taxonomy
-   * @name TaxonomyControllerGetTaxonomiesV2
+   * @name TaxonomyControllerGetTaxonomies
    * @request GET:/taxonomy
    */
-  taxonomyControllerGetTaxonomiesV2 = (
-    query: TaxonomyControllerGetTaxonomiesV2Params = {},
+  taxonomyControllerGetTaxonomies = (
+    query: TaxonomyControllerGetTaxonomiesParams = {},
     params: RequestParams = {},
   ) =>
-    this.request<TaxonomyControllerGetTaxonomiesV2Data, any>({
+    this.request<TaxonomyControllerGetTaxonomiesData, any>({
       path: `/taxonomy`,
       method: "GET",
       query: query,

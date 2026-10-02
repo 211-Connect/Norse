@@ -324,5 +324,6 @@
       "success": "Taro maroroi ki na dairekita ni tabaki",
       "error": "Sega ni rawa ni maroroi na taro ki na dairekita"
     }
-  }
+  },
+  "alert_date": "Siga ni veivakaroti"
 }

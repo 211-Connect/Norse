@@ -60,10 +60,15 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@arcjet/next": "^1.11.0",
+    "@arcjet/next": "^1.12.0",
     "@azure-rest/ai-translation-text": "^1.0.1",
     "@floating-ui/react": "^0.27.18",
-    "@google-cloud/translate": "^9.4.1",
+    "@google-cloud/translate": "^10.1.0",
+    "@opentelemetry/api": "^1.9.1",
+    "@opentelemetry/api-logs": "^0.222.0",
+    "@opentelemetry/instrumentation": "^0.222.0",
+    "@opentelemetry/sdk-logs": "^0.222.0",
+    "@opentelemetry/sdk-trace-base": "^2.11.0",
     "@payloadcms/db-postgres": "3.86.0",
     "@payloadcms/email-nodemailer": "3.86.0",
     "@payloadcms/next": "3.86.0",
@@ -89,6 +94,7 @@
     "@sendgrid/mail": "^8.1.6",
     "@tanstack/react-query": "^5.101.2",
     "@turf/bbox-polygon": "^7.3.2",
+    "@vercel/otel": "^2.1.3",
     "autosuggest-highlight": "^3.3.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -131,7 +137,7 @@
     "react-i18next": "^17.0.11",
     "react-to-print": "^3.1.1",
     "recharts": "^3.8.0",
-    "remove-markdown": "~0.6.4",
+    "remove-markdown": "~0.7.0",
     "sharp": "0.35.3",
     "sonner": "^2.0.8",
     "tailwind-merge": "^3.6.0",
@@ -139,6 +145,6 @@
     "tsx": "^4.23.13",
     "twilio": "^6.1.0",
     "ua-parser-js": "^2.0.10",
-    "zod": "^4.4.3"
+    "zod": "^4.6.5"
   }
 }

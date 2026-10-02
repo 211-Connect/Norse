@@ -1,24 +1,20 @@
 'use server';
 
 import { PrintableDirectoryPreviewResponseDto } from '@/lib/api/generated/data-contracts';
-import { printableDirectoriesApiClient } from '@/lib/api/clients';
-
-import { getAuthHeaders } from '../../lib/authHeaders';
+import { getApiHeaders, printableDirectoriesApiClient } from '@/lib/api';
 
 export async function getPrintableDirectoryPreview(
   id: string,
   locale: string,
-  tenantId?: string,
+  tenantId: string,
 ): Promise<PrintableDirectoryPreviewResponseDto | null> {
-  const headers = await getAuthHeaders(tenantId);
-
   try {
     const response =
       await printableDirectoriesApiClient.printableDirectoryControllerPreview(
         { id, locale },
         {
-          headers,
           cache: 'no-store',
+          headers: await getApiHeaders(tenantId, locale, true),
         },
       );
 

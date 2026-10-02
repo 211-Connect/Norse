@@ -324,5 +324,6 @@
       "success": "Requête enregistrée dans le répertoire imprimable",
       "error": "Impossible d'enregistrer la requête dans le répertoire"
     }
-  }
+  },
+  "alert_date": "Date d'alerte"
 }

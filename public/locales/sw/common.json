@@ -324,5 +324,6 @@
       "success": "Hoja imehifadhiwa kwenye saraka inayoweza kuchapishwa",
       "error": "Haiwezi kuhifadhi hoja kwenye saraka"
     }
-  }
+  },
+  "alert_date": "Tarehe ya tahadhari"
 }

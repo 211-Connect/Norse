@@ -5,25 +5,21 @@ import {
   PrintableDirectoryResponseDto,
   UpdatePrintableDirectorySectionDto,
 } from '@/lib/api/generated/data-contracts';
-import { printableDirectoriesApiClient } from '@/lib/api/clients';
-
-import { getAuthHeaders } from '../../lib/authHeaders';
+import { getApiHeaders, printableDirectoriesApiClient } from '@/lib/api';
 
 export async function updatePrintableDirectorySection(
   params: PrintableDirectoryControllerUpdateSectionParams,
   input: UpdatePrintableDirectorySectionDto,
-  tenantId?: string,
+  tenantId: string,
 ): Promise<PrintableDirectoryResponseDto | null> {
-  const headers = await getAuthHeaders(tenantId);
-
   try {
     const response =
       await printableDirectoriesApiClient.printableDirectoryControllerUpdateSection(
         params,
         input,
         {
-          headers,
           cache: 'no-store',
+          headers: await getApiHeaders(tenantId, 'en', true),
         },
       );
 

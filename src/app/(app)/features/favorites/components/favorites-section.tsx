@@ -33,7 +33,9 @@ export function FavoritesSection({ cardLayout }: FavoritesSectionProps) {
     setFavoriteList((prev) => ({
       ...prev,
       favorites:
-        prev.favorites?.filter((favorite) => favorite._id !== favoriteId) || [],
+        prev.favorites?.filter(
+          (favorite) => (favorite._id ?? '') !== favoriteId,
+        ) || [],
     }));
   };
 

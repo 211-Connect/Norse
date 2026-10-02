@@ -15,6 +15,7 @@ import { pushAnalyticsConfigToCacheAfterChangeHook } from './hooks/pushAnalytics
 import { removeRelatedResources } from './hooks/removeRelatedResources';
 import { revalidateCache } from './hooks/revalidateCache';
 import { hasResourceDirectory } from './validators/hasResourceDirectory';
+import { bulkSetTenantApiKeys } from '@/payload/endpoints/bulkSetTenantApiKeys';
 
 export const Tenants: CollectionConfig = {
   slug: 'tenants',
@@ -43,6 +44,7 @@ export const Tenants: CollectionConfig = {
     beforeDelete: [removeRelatedResources],
     afterDelete: [revalidateCache],
   },
+  endpoints: [bulkSetTenantApiKeys],
   fields: [
     {
       type: 'ui',
@@ -262,6 +264,32 @@ export const Tenants: CollectionConfig = {
               admin: {
                 condition: (data, siblingData) =>
                   siblingData?.requiresLogin || data?.auth?.requiresLogin,
+              },
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'api',
+      type: 'group',
+      label: 'API Settings',
+      access: {
+        create: superAdminAccess,
+        read: superAdminAccess,
+        update: superAdminAccess,
+      },
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'apiKey',
+              type: 'text',
+              label: 'API Key',
+              admin: {
+                description:
+                  "Used to authenticate this tenant's requests to the Norse API (sent as the x-api-key header).",
               },
             },
           ],

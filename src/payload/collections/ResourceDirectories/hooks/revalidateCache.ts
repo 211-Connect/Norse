@@ -16,10 +16,19 @@ export async function revalidateCache({ doc }): Promise<ResourceDirectory> {
       const tenant = await findTenantById(tenantId, false);
 
       if (tenant && tenant.trustedDomains) {
-        const cacheKeys = tenant.trustedDomains.map(({ domain }): CacheKey => {
-          const host = parseHost(domain);
-          return `resource_directory:${host}:*`;
-        });
+        const resourceDirectoryKeys = tenant.trustedDomains.map(
+          ({ domain }): CacheKey => {
+            const host = parseHost(domain);
+            return `resource_directory:${host}:*`;
+          },
+        );
+        const appConfigKeys = tenant.trustedDomains.map(
+          ({ domain }): CacheKey => {
+            const host = parseHost(domain);
+            return `app_config:${host}:*`;
+          },
+        );
+        const cacheKeys = [...resourceDirectoryKeys, ...appConfigKeys];
         for (const key of cacheKeys) {
           await cacheService.delPattern(key);
         }

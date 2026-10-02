@@ -9,7 +9,7 @@ import { ShareButton } from '@/app/(app)/shared/components/share-button';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { getFavoriteList } from '@/app/(app)/shared/serverActions/favorites/getFavoriteList';
 import { favoriteListToPrintableDirectory } from '@/app/(app)/shared/utils/printable-directory-transformers';
-import { FavoriteListState } from '@/types/favorites';
+import { FavoriteListItemDto } from '@/lib/api/generated/data-contracts';
 
 import { DeleteFavoriteListButton } from './delete-favorite-list-button';
 import { PurgeFavoriteListButton } from './purge-favorite-list-button';
@@ -19,7 +19,7 @@ import { UpdateFavoriteListButton } from './update-favorite-list-button';
 import { useSession } from 'next-auth/react';
 
 type FavoriteListActionsProps = {
-  favoriteList: FavoriteListState;
+  favoriteList: FavoriteListItemDto;
   onPurge: () => void;
 };
 
@@ -41,7 +41,11 @@ export function FavoriteListActions({
         appConfig.tenantId,
       );
 
-      return favoriteListToPrintableDirectory(freshList ?? favoriteList);
+      if (!freshList) {
+        return [];
+      }
+
+      return favoriteListToPrintableDirectory(freshList);
     },
     [favoriteList, appConfig.tenantId],
   );

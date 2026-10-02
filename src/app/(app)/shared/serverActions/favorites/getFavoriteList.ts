@@ -1,20 +1,20 @@
 'use server';
 
 import { createLogger } from '@/lib/logger';
-import { getAuthHeaders } from '../../lib/authHeaders';
-import { favoriteListApiClient } from '@/lib/api/clients';
+import { favoriteListApiClient, getApiHeaders } from '@/lib/api';
 
 const log = createLogger('getFavoriteList');
 
 export async function getFavoriteList(
   id: string,
   locale: string,
-  tenantId?: string,
+  tenantId: string,
 ) {
-  const authHeaders = await getAuthHeaders(tenantId);
   const response = await favoriteListApiClient.favoriteListControllerFindOne(
     { id, locale, tenant_id: tenantId },
-    { headers: { ...authHeaders, ['accept-language']: locale } },
+    {
+      headers: await getApiHeaders(tenantId, locale, true),
+    },
   );
 
   if (!response.data) {

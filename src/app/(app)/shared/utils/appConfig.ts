@@ -1,4 +1,4 @@
-import { cookies, headers } from 'next/headers';
+import { cookies } from 'next/headers';
 import { TypedLocale } from 'payload';
 import { cache } from 'react';
 
@@ -10,12 +10,16 @@ import {
   TenantMedia,
 } from '@/payload/payload-types';
 import { AppConfig } from '@/types/appConfig';
+import { ONE_HOUR, withCache } from '@/utilities/withCache';
 
 import { DEFAULT_RESOURCE_LAYOUT } from '../../features/resource/types/layout-config';
 import { DEFAULT_SEARCH_CARD_LAYOUT } from '../../features/search/types/card-layout-config';
 import { SESSION_ID } from '../lib/constants';
 import { DEFAULT_BADGE_COLOR } from '../theme/theme-config';
 import { getHost } from './getHost';
+import { parseHost } from './parseHost';
+
+type CachedAppConfig = Omit<AppConfig, 'baseUrl' | 'sessionId'>;
 
 function getMediaUrl(media?: TenantMedia | number | null): string | undefined {
   if (typeof media === 'number' || !media) return undefined;
@@ -199,10 +203,10 @@ function applyCardLayoutCustomAttributeFallback(
   );
 }
 
-async function getAppConfigBase(
+async function getCachedAppConfigBase(
   host: string,
   locale: string,
-): Promise<AppConfig> {
+): Promise<CachedAppConfig> {
   const resourceDirectory = await findResourceDirectoryByHost(
     host,
     locale as TypedLocale,
@@ -220,7 +224,6 @@ async function getAppConfigBase(
           allowedValues: ['1rem'],
         },
       },
-      baseUrl: '',
       brand: {
         name: '',
         theme: {},
@@ -289,8 +292,8 @@ async function getAppConfigBase(
         radiusOptions: [],
         searchEngine: 'classic',
         resultsLimit: 25,
+        pinnedResourcesMode: 'boost',
       },
-      sessionId: '',
       badges: [],
       suggestions: [],
       topics: {
@@ -308,12 +311,6 @@ async function getAppConfigBase(
   if (locale !== 'en') {
     englishResourceDirectory = await findResourceDirectoryByHost(host, 'en');
   }
-
-  const headerList = await headers();
-  const cookiesList = await cookies();
-
-  const baseUrl = `${headerList.get('x-forwarded-proto')}://${headerList.get('host')}`;
-  const sessionId = cookiesList.get(SESSION_ID)?.value || '';
 
   try {
     const parsedCenter = JSON.parse(resourceDirectory.search.map.center);
@@ -370,13 +367,11 @@ async function getAppConfigBase(
         allowedValues: a11yAllowedFontSizes,
       },
     },
-    baseUrl,
     brand: {
       name: resourceDirectory.name,
       logoUrl: getMediaUrl(resourceDirectory.brand.logo),
       faviconUrl: getMediaUrl(resourceDirectory.brand.favicon),
       openGraphUrl: getMediaUrl(resourceDirectory.brand.openGraph),
-      copyright: resourceDirectory.brand.copyright ?? undefined,
       ctaText: resourceDirectory.brand.printableDocuments?.ctaText ?? undefined,
       theme: {
         borderRadius: resourceDirectory.brand.theme.borderRadius ?? undefined,
@@ -387,7 +382,6 @@ async function getAppConfigBase(
     },
     contact: {
       number: resourceDirectory.brand.phoneNumber ?? undefined,
-      feedbackUrl: resourceDirectory.brand.feedbackUrl ?? undefined,
     },
     sms: getSmsConfig(resourceDirectory),
     featureFlags: {
@@ -442,6 +436,7 @@ async function getAppConfigBase(
       getTenant(resourceDirectory)?.common?.gtmContainerId ?? undefined,
     footer: {
       customMenu: resourceDirectory.footer?.customMenu ?? [],
+      copyright: resourceDirectory.footer?.copyright ?? undefined,
       disclaimer: resourceDirectory.footer?.disclaimer ?? undefined,
     },
     header: {
@@ -451,6 +446,7 @@ async function getAppConfigBase(
         resourceDirectory.header?.favoritesButtonLabel ?? undefined,
       feedbackButtonLabel:
         resourceDirectory.header?.feedbackButtonLabel ?? undefined,
+      feedbackUrl: resourceDirectory.header?.feedbackUrl ?? undefined,
       safeExit: resourceDirectory.header?.safeExit
         ? {
             enabled: resourceDirectory.header.safeExit.enabled ?? false,
@@ -544,6 +540,8 @@ async function getAppConfigBase(
       searchEngine:
         resourceDirectory.search.searchSettings.searchEngine ?? 'classic',
       resultsLimit: resourceDirectory.search.searchSettings.resultsLimit ?? 25,
+      pinnedResourcesMode:
+        resourceDirectory.search.searchSettings.pinnedResourcesMode ?? 'boost',
       texts: {
         locationInputPlaceholder:
           resourceDirectory.search.texts?.locationInputPlaceholder ?? undefined,
@@ -580,7 +578,6 @@ async function getAppConfigBase(
             )
           : DEFAULT_SEARCH_CARD_LAYOUT,
     },
-    sessionId,
     noindex: getTenant(resourceDirectory)?.seo?.noindex ?? false,
     badges:
       resourceDirectory.badges?.list
@@ -673,7 +670,41 @@ async function getAppConfigBase(
       resourceDirectory.common?.customDataProvidersHeading ?? undefined,
   };
 }
-export const getAppConfig = cache(getAppConfigBase);
+
+export const getAppConfig = cache(async function (
+  host: string,
+  locale: string,
+): Promise<AppConfig> {
+  const cachedAppConfig = await getCachedAppConfig(host, locale);
+  const { host: domain, protocol } = await getHost();
+  const cookieList = await cookies();
+
+  return {
+    ...cachedAppConfig,
+    baseUrl: `${protocol}://${domain}`,
+    sessionId: cookieList.get(SESSION_ID)?.value || '',
+  };
+});
+
+const getCachedAppConfig = cache(async function (
+  host: string,
+  locale: string,
+): Promise<CachedAppConfig> {
+  const domain = parseHost(host);
+  const cached = await withCache(
+    `app_config:${domain}:${locale}`,
+    () => getCachedAppConfigBase(host, locale),
+    { redis: true, memory: true, ttl: ONE_HOUR },
+  );
+
+  if (!cached) {
+    throw new Error(
+      `Failed to resolve cached app config for ${host}:${locale}`,
+    );
+  }
+
+  return cached;
+});
 
 export const getAppConfigWithoutHost = async (locale: string) => {
   const { host } = await getHost();

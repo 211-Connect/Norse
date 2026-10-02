@@ -324,5 +324,6 @@
       "success": "Cov lus nug tau khaws cia rau hauv daim nplaub tshev luam tawm",
       "error": "Tsis tuaj yeem txuag cov lus nug rau hauv daim nplaub tshev"
     }
-  }
+  },
+  "alert_date": "Hnub ceeb toom"
 }

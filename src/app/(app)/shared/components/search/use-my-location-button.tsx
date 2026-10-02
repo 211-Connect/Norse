@@ -39,6 +39,7 @@ export function UseMyLocationButton() {
       const promise = MapService.reverseGeocode(`${lng},${lat}`, {
         locale: i18n.language,
         adapter,
+        tenantId: appConfig.tenantId,
       });
 
       toast.promise(promise, {

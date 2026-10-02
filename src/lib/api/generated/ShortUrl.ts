@@ -11,6 +11,7 @@
  */
 
 import {
+  CreateShortUrlDto,
   ShortUrlControllerGetOrCreateShortUrlData,
   ShortUrlControllerGetShortUrlByIdData,
   ShortUrlControllerGetShortUrlByIdParams,
@@ -21,32 +22,41 @@ export class ShortUrl<
   SecurityDataType = unknown,
 > extends HttpClient<SecurityDataType> {
   /**
-   * No description
+   * @description Looks up the original URL for a previously issued short ID.
    *
    * @tags Short URL
    * @name ShortUrlControllerGetShortUrlById
+   * @summary Resolve a short URL
    * @request GET:/short-url/{id}
    */
   shortUrlControllerGetShortUrlById = (
     { id }: ShortUrlControllerGetShortUrlByIdParams,
     params: RequestParams = {},
   ) =>
-    this.request<ShortUrlControllerGetShortUrlByIdData, any>({
+    this.request<ShortUrlControllerGetShortUrlByIdData, void>({
       path: `/short-url/${id}`,
       method: "GET",
+      format: "json",
       ...params,
     });
   /**
-   * No description
+   * @description Returns the existing short URL for the given URL, or creates a new one if none exists yet.
    *
    * @tags Short URL
    * @name ShortUrlControllerGetOrCreateShortUrl
+   * @summary Get or create a short URL
    * @request POST:/short-url
    */
-  shortUrlControllerGetOrCreateShortUrl = (params: RequestParams = {}) =>
-    this.request<ShortUrlControllerGetOrCreateShortUrlData, any>({
+  shortUrlControllerGetOrCreateShortUrl = (
+    data: CreateShortUrlDto,
+    params: RequestParams = {},
+  ) =>
+    this.request<ShortUrlControllerGetOrCreateShortUrlData, void>({
       path: `/short-url`,
       method: "POST",
+      body: data,
+      type: "application/json",
+      format: "json",
       ...params,
     });
 }

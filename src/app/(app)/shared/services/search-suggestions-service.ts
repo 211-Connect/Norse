@@ -4,8 +4,8 @@ import { createLogger } from '@/lib/logger';
 import { suggestionApiClient } from '@/lib/api/clients';
 import { SuggestionCombinedResponseDto } from '@/lib/api/generated/data-contracts';
 import { RequestParams } from '@/lib/api/generated/http-client';
-
-import { INTERNAL_API_KEY } from '../lib/constants';
+import { ONE_MINUTE, stableHash, withCache } from '@/utilities/withCache';
+import { getApiHeaders } from '@/lib/api';
 
 const log = createLogger('search-suggestions-service');
 
@@ -14,17 +14,14 @@ const EMPTY_SUGGESTIONS: SuggestionCombinedResponseDto = {
   organizations: [],
 };
 
-function createSuggestionRequestParams(
+const SUGGESTIONS_CACHE_TTL = 5 * ONE_MINUTE;
+
+async function createSuggestionRequestParams(
   locale: string,
   tenantId: string,
-): RequestParams {
+): Promise<RequestParams> {
   return {
-    headers: {
-      'accept-language': locale,
-      'x-api-version': '1',
-      'x-api-key': INTERNAL_API_KEY || '',
-      'x-tenant-id': tenantId,
-    },
+    headers: await getApiHeaders(tenantId, locale),
   };
 }
 
@@ -52,30 +49,42 @@ export async function getSearchSuggestions(
     return EMPTY_SUGGESTIONS;
   }
 
-  try {
-    const response =
-      await suggestionApiClient.suggestionControllerGetSuggestions(
-        { query, locale, tenant_id: tenantId },
-        createSuggestionRequestParams(locale, tenantId),
-      );
+  return (
+    (await withCache(
+      `search_suggestions:${tenantId}:${locale}:${stableHash({
+        locale,
+        query: query.toLowerCase(),
+        tenantId,
+      })}`,
+      async () => {
+        try {
+          const response =
+            await suggestionApiClient.suggestionControllerGetSuggestions(
+              { query, locale, tenant_id: tenantId },
+              await createSuggestionRequestParams(locale, tenantId),
+            );
 
-    if (!response.data) {
-      return EMPTY_SUGGESTIONS;
-    }
+          if (!response.data) {
+            return EMPTY_SUGGESTIONS;
+          }
 
-    return {
-      taxonomies: Array.isArray(response.data.taxonomies)
-        ? response.data.taxonomies
-        : [],
-      organizations: Array.isArray(response.data.organizations)
-        ? response.data.organizations
-        : [],
-    };
-  } catch (error) {
-    log.error(
-      { err: error, tenantId, locale },
-      'Search suggestions request failed',
-    );
-    return EMPTY_SUGGESTIONS;
-  }
+          return {
+            taxonomies: Array.isArray(response.data.taxonomies)
+              ? response.data.taxonomies
+              : [],
+            organizations: Array.isArray(response.data.organizations)
+              ? response.data.organizations
+              : [],
+          };
+        } catch (error) {
+          log.error(
+            { err: error, tenantId, locale },
+            'Search suggestions request failed',
+          );
+          return EMPTY_SUGGESTIONS;
+        }
+      },
+      { redis: true, memory: true, ttl: SUGGESTIONS_CACHE_TTL },
+    )) ?? EMPTY_SUGGESTIONS
+  );
 }

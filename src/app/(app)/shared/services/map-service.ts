@@ -3,19 +3,21 @@ import { BaseGeocoderAdapter } from '../adapters/geocoder/base-geocoder-adapter'
 export class MapService {
   static async forwardGeocode(
     address: string,
-    options: { adapter: BaseGeocoderAdapter; locale: string },
+    options: { adapter: BaseGeocoderAdapter; locale: string; tenantId: string },
   ) {
     return await options.adapter.forwardGeocode(address, {
       locale: options.locale,
+      tenantId: options.tenantId,
     });
   }
 
   static async reverseGeocode(
     coordinates: string,
-    options: { adapter: BaseGeocoderAdapter; locale: string },
+    options: { adapter: BaseGeocoderAdapter; locale: string; tenantId: string },
   ) {
     return await options.adapter.reverseGeocode(coordinates, {
       locale: options.locale,
+      tenantId: options.tenantId,
     });
   }
 }

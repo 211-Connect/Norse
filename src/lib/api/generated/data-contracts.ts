@@ -46,6 +46,7 @@ export interface TaxonomyResponseDto {
 export interface ServiceDto {
   name: string;
   alert: string | null;
+  alert_date: string | null;
   alternate_name: string | null;
   description: string | null;
   summary: string | null;
@@ -72,6 +73,7 @@ export interface LocationDto {
 }
 
 export interface OrganizationDto {
+  id: string | null;
   name: string;
   alternate_name: string | null;
   description: string | null;
@@ -122,9 +124,25 @@ export interface SearchHitsContainer {
   hits: SearchHit[];
 }
 
+export interface RelevanceCutoffDto {
+  /** Whether results were actually removed. `false` means the strategy ran and declined to cut — not that it failed. */
+  applied: boolean;
+  /** Why nothing was cut, when `applied` is false. `no_elbow`: nothing scored meaningfully below the threshold, so the distribution is flat and returning everything is the honest answer. `below_min_keep`: the matched set is already smaller than the floor. `cut_too_large`: the cut point was located exactly, but keeps more results than are worth enumerating, so nothing was trimmed — "found it, too big", not "could not find it". */
+  reason: "no_elbow" | "below_min_keep" | "cut_too_large" | null;
+  /** Results kept. Equals `matched_before_cutoff` when `applied` is false. */
+  kept: number;
+  /** Results the query matched before trimming — the number `hits.total` would have reported with `relevance_cutoff=off`. Kept on the wire because a cutoff hides results rather than reordering them; a consumer needs to be able to say "18 of 1,200 shown". */
+  matched_before_cutoff: number;
+  /** Score of the last kept result **on the cutoff probe’s scale, which is not the scale of `_score` in `hits`**. The probe ranks on semantic and lexical signal only — it omits the distance decay (0–25 points) and the priority boost that the main query adds — so this value is systematically lower than the score of the same document in the response, and the two must not be compared. It is comparable across responses, which is what it is for: evaluating the shipped threshold retroactively against real traffic. */
+  cutoff_score: number | null;
+  /** How many results scored above the threshold — the size of the cut that was located, whether or not it was applied. Counted over the whole matched set, not a fixed window. */
+  candidates_examined: number;
+}
+
 export interface SearchResponseDto {
   search: SearchHitsContainer;
   facets: string[];
+  relevance_cutoff?: RelevanceCutoffDto | null;
 }
 
 export interface AiSearchOptionDto {
@@ -149,6 +167,22 @@ export interface AiSearchPredictResponseDto {
 
 export interface AiSearchReRankResponseDto {
   hsis_taxonomies: string[];
+}
+
+export interface ShortUrlResponseDto {
+  /**
+   * For `GET /short-url/:id`, the original URL the short ID resolves to. For `POST /short-url`, the fully-qualified short URL that was found or created.
+   * @example "https://example.org/share/aBcD1234EfGh"
+   */
+  url: string;
+}
+
+export interface CreateShortUrlDto {
+  /**
+   * The absolute HTTP(S) URL to shorten. An existing short URL is reused if one already exists for this URL.
+   * @example "https://example.org/resource/1"
+   */
+  url: string;
 }
 
 export type CreateFavoriteDto = object;
@@ -206,20 +240,36 @@ export interface ResourceLocationOpenApiDto {
 }
 
 export interface ResourceAddressOpenApiDto {
-  address_1?: string;
+  address_1: string;
   address_2?: string;
-  city?: string;
-  stateProvince?: string;
-  postalCode?: string;
-  country?: string;
-  type?: string;
-  rank?: number;
+  city: string;
+  stateProvince: string;
+  postalCode: string;
+  country: string;
+  type: string;
+  rank: number;
 }
 
 export interface ResourcePhoneNumberOpenApiDto {
-  type?: string;
-  number?: string;
-  rank?: number;
+  type: string;
+  number: string;
+  rank: number;
+  description?: string;
+}
+
+export interface ResourceQualityLinkOpenApiDto {
+  url: string;
+  displayText: string;
+  subheadingText?: string;
+}
+
+export interface ResourceContactsOpenApiDto {
+  id: string;
+  name: string;
+  title?: string;
+  email?: string;
+  phones?: ResourcePhoneNumberOpenApiDto[];
+  priority: number;
 }
 
 export interface ResourceTaxonomyOpenApiDto {
@@ -227,28 +277,46 @@ export interface ResourceTaxonomyOpenApiDto {
   name?: string;
 }
 
+export interface ResourceFacetOpenApiDto {
+  code: string;
+  taxonomyName: string;
+  termName: string;
+}
+
 export interface ResourceTranslationOpenApiDto {
   locale?: string;
   displayName?: string;
   serviceName?: string;
+  serviceSummary?: string;
   serviceDescription?: string;
   organizationDescription?: string;
+  languages?: string[];
   hours?: string;
+  hoursDescription?: string;
   fees?: string;
+  interpretationServices?: string;
+  applicationProcess?: string;
+  requiredDocuments?: string[];
+  eligibilities?: string;
+  serviceAreaDescription?: string;
+  transportation?: string;
+  accessibility?: string;
   alert?: string;
+  alertDate?: string;
+  linkQualityUrls?: ResourceQualityLinkOpenApiDto[];
+  phoneNumbers?: ResourcePhoneNumberOpenApiDto[];
+  contacts?: ResourceContactsOpenApiDto[];
   taxonomies?: ResourceTaxonomyOpenApiDto[];
+  facets?: ResourceFacetOpenApiDto[];
   attributeValues?: Record<string, any>;
-}
-
-export interface ResourceFacetOpenApiDto {
-  code?: string;
-  taxonomyName?: string;
-  termName?: string;
 }
 
 export interface TransformedResourceOpenApiDto {
   _id: string;
+  serviceAtLocationId?: string;
   originalId?: string;
+  phone?: string;
+  address?: string;
   displayName?: string;
   displayPhoneNumber?: string;
   website?: string;
@@ -256,9 +324,11 @@ export interface TransformedResourceOpenApiDto {
   email?: string;
   organizationName?: string;
   location?: ResourceLocationOpenApiDto;
+  locationName?: string;
   addresses?: ResourceAddressOpenApiDto[];
   phoneNumbers?: ResourcePhoneNumberOpenApiDto[];
   languages?: string[];
+  serviceAreaName?: string;
   /** Service area geometry + metadata */
   serviceArea?: Record<string, any>;
   attribution?: string;
@@ -412,6 +482,7 @@ export interface TranslationDto {
 
 export interface PhoneDto {
   ID: string;
+  ORIGINAL_ID: string | null;
   NUMBER: string | null;
   TYPE: string | null;
   TRANSLATIONS: TranslationDto[];
@@ -419,6 +490,7 @@ export interface PhoneDto {
 
 export interface ContactDto {
   ID: string;
+  ORIGINAL_ID: string | null;
   NAME: string | null;
   TITLE: string | null;
   EMAIL: string | null;
@@ -1242,12 +1314,7 @@ export interface SearchQueryApiDto {
    */
   query?: string | string[] | Record<string, any>;
   /** @default "text" */
-  query_type?:
-    | "text"
-    | "taxonomy"
-    | "more_like_this"
-    | "hybrid"
-    | "organization";
+  query_type?: "text" | "taxonomy" | "more_like_this" | "hybrid";
   /**
    * @min 1
    * @default 1
@@ -1588,7 +1655,7 @@ export interface PrintableDirectoryPreviewSectionResourceDto {
   id: string;
   /**
    * Resolved printable-ready resource object from live resource data at preview time
-   * @example {"_id":"00000000-0000-0000-0000-000000000000","serviceAtLocationId":"00000000-0000-0000-0000-000000000000","location":{"type":"Point","coordinates":[-106.0746,42.1485]},"addresses":[{"city":"Example","country":"United States","address_1":"543 East Connect Street","postalCode":"99032","stateProvince":"WA","rank":1,"type":"physical"}],"attribution":"Connect 211","createdAt":"2024-08-26T00:00:00","displayName":"FINANCIAL AND FOOD ASSISTANCE | EXAMPLE ORGANIZATION","displayPhoneNumber":"(555) 555-5555","email":"info@example.com","languages":["English","Spanish"],"lastAssuredDate":"2024-08-26T00:00:00","organizationName":"EXAMPLE ORGANIZATION","phoneNumbers":[{"number":"(555) 555-5555","rank":1,"type":"voice"},{"number":"(555) 555-5555","rank":2,"type":"fax"}],"serviceArea":{"type":"Polygon","coordinates":[[[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485]]],"description":["Washington"]},"tenant_id":"00000000-0000-0000-0000-000000000000","originalId":"1234","updatedAt":"2024-08-26T00:00:00","website":"https://www.example.com/","organizationUrl":"https://www.example.org/","translation":{"displayName":"FINANCIAL AND FOOD ASSISTANCE | EXAMPLE ORGANIZATION","fees":"n/a","hours":"Monday 11:00am - 4:30pm;Tuesday 11:00am - 6:00pm;Wednesday 11:00am - 4:30pm;Thursday 11:00am - 6:00pm","locale":"en","taxonomies":[{"code":"CW-0000.0000","name":"Rental Deposit Assistance"}],"serviceName":"FINANCIAL AND FOOD ASSISTANCE","eligibilities":"Rental Assistance is limited to families and individuals.","requiredDocuments":[],"applicationProcess":"Walk-In;Call","alert":"We are currently experiencing high call volumes. Please be patient and leave a message if you are unable to reach us.","serviceDescription":"Emergency financial assistance to help with:\n- Rental and utility assistance\n- Help with first month rent\n- Utility assistance \nFood Pantry including items\n- Fresh and Shelf-Stable Food\n- Personal hygiene items\n- Diapers\n- Prescriptions","organizationDescription":"We are a nonprofit community based volunteer organizations with goals to alleviate poverty and homelessness, encourage self-sufficiency, to allocate funds and resources efficiently, and to provide a \"hands-up\" to those in need.","languages":["English","Spanish"]},"facetsEn":[{"code":"Benton County","taxonomyName":"Area Served by County","termName":"Benton County"},{"code":"People with low income","taxonomyName":"Specialization","termName":"People with low income"}]}
+   * @example {"_id":"00000000-0000-0000-0000-000000000000","serviceAtLocationId":"00000000-0000-0000-0000-000000000000","location":{"type":"Point","coordinates":[-106.0746,42.1485]},"addresses":[{"city":"Example","country":"United States","address_1":"543 East Connect Street","postalCode":"99032","stateProvince":"WA","rank":1,"type":"physical"}],"attribution":"Connect 211","createdAt":"2024-08-26T00:00:00","displayName":"FINANCIAL AND FOOD ASSISTANCE | EXAMPLE ORGANIZATION","displayPhoneNumber":"(555) 555-5555","email":"info@example.com","languages":["English","Spanish"],"lastAssuredDate":"2024-08-26T00:00:00","organizationName":"EXAMPLE ORGANIZATION","phoneNumbers":[{"number":"(555) 555-5555","rank":1,"type":"voice"},{"number":"(555) 555-5555","rank":2,"type":"fax"}],"serviceArea":{"type":"Polygon","coordinates":[[[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485],[-106.0746,42.1485]]],"description":["Washington"]},"tenant_id":"00000000-0000-0000-0000-000000000000","originalId":"1234","updatedAt":"2024-08-26T00:00:00","website":"https://www.example.com/","organizationUrl":"https://www.example.org/","translation":{"displayName":"FINANCIAL AND FOOD ASSISTANCE | EXAMPLE ORGANIZATION","fees":"n/a","hours":"Monday 11:00am - 4:30pm;Tuesday 11:00am - 6:00pm;Wednesday 11:00am - 4:30pm;Thursday 11:00am - 6:00pm","locale":"en","taxonomies":[{"code":"CW-0000.0000","name":"Rental Deposit Assistance"}],"serviceName":"FINANCIAL AND FOOD ASSISTANCE","eligibilities":"Rental Assistance is limited to families and individuals.","requiredDocuments":[],"applicationProcess":"Walk-In;Call","alert":"We are currently experiencing high call volumes. Please be patient and leave a message if you are unable to reach us.","alertDate":"Tuesday, 8 September 2026","serviceDescription":"Emergency financial assistance to help with:\n- Rental and utility assistance\n- Help with first month rent\n- Utility assistance \nFood Pantry including items\n- Fresh and Shelf-Stable Food\n- Personal hygiene items\n- Diapers\n- Prescriptions","organizationDescription":"We are a nonprofit community based volunteer organizations with goals to alleviate poverty and homelessness, encourage self-sufficiency, to allocate funds and resources efficiently, and to provide a \"hands-up\" to those in need.","languages":["English","Spanish"]},"facetsEn":[{"code":"Benton County","taxonomyName":"Area Served by County","termName":"Benton County"},{"code":"People with low income","taxonomyName":"Specialization","termName":"People with low income"}]}
    */
   resource: TransformedResourceOpenApiDto;
 }
@@ -1648,6 +1715,67 @@ export interface PrintableDirectoryPreviewResponseDto {
   locale: string;
   /** @example "2026-07-08T10:00:00.000Z" */
   generatedAt: string;
+}
+
+export interface OrganizationSummaryDto {
+  ID: string | null;
+  NAME: string | null;
+  ALTERNATE_NAME: string | null;
+  DESCRIPTION: string | null;
+  EMAIL: string | null;
+  WEBSITE: string | null;
+  LEGAL_STATUS: string | null;
+  YEAR_INCORPORATED: string | null;
+  /** Source-system provider key as found. Does NOT resolve to an Organization in this model. */
+  PARENT_ORGANIZATION_ID: string | null;
+  TRANSLATIONS: TranslationDto[];
+}
+
+export interface WithTranslationsDto {
+  ID: string | null;
+  TRANSLATIONS: TranslationDto[];
+}
+
+export interface ServiceDetailResponseDto {
+  serviceId: string;
+  tenant_id: string;
+  resourceWriterId: string | null;
+  /** Tenant-scoped pointer ({tenant_id}:{ORGANIZATION_ID}), not an HSDS id. The HSDS id is organization.ID. */
+  organizationId: string | null;
+  originalId: string | null;
+  name: string | null;
+  alternateName: string | null;
+  description: string | null;
+  url: string | null;
+  email: string | null;
+  status: string | null;
+  applicationProcess: string | null;
+  eligibilityDescription: string | null;
+  interpretationServices: string | null;
+  minimumAge: number | null;
+  maximumAge: number | null;
+  assuredDate: string | null;
+  assurerEmail: string | null;
+  alert: string | null;
+  accreditations: string | null;
+  lastModified: string | null;
+  /** The parent Organization. NULL for an orphan service; an empty object is never returned. */
+  organization: OrganizationSummaryDto | null;
+  /** Every Location this service is delivered at, de-duplicated by location id. */
+  locations: LocationDto[];
+  phones: PhoneDto[];
+  contacts: WithTranslationsDto[];
+  schedules: WithTranslationsDto[];
+  languages: WithTranslationsDto[];
+  serviceAreas: WithTranslationsDto[];
+  costOptions: WithTranslationsDto[];
+  funding: WithTranslationsDto[];
+  requiredDocuments: WithTranslationsDto[];
+  attributeTaxonomies: WithTranslationsDto[];
+  /** AIRS codes as coded, for display. */
+  taxonomyCodes: string[];
+  /** Ancestor-expanded AIRS codes — the matching key, not coded content. */
+  taxonomyPath: string[];
 }
 
 export interface OrchestrationConfigControllerGetCustomAttributesParams {
@@ -1718,7 +1846,7 @@ export interface CmsConfigControllerClearTenantCacheParams {
 
 export type CmsConfigControllerClearTenantCacheData = any;
 
-export interface TaxonomyControllerGetTaxonomiesV2Params {
+export interface TaxonomyControllerGetTaxonomiesParams {
   /**
    * Search query for taxonomy name or code
    * @default ""
@@ -1740,7 +1868,7 @@ export interface TaxonomyControllerGetTaxonomiesV2Params {
   tenant_id?: string;
 }
 
-export type TaxonomyControllerGetTaxonomiesV2Data = TaxonomyResponseDto;
+export type TaxonomyControllerGetTaxonomiesData = TaxonomyResponseDto;
 
 export interface TaxonomyControllerGetTaxonomyTermsByCodeParams {
   /**
@@ -1757,18 +1885,18 @@ export interface TaxonomyControllerGetTaxonomyTermsByCodeParams {
 export type TaxonomyControllerGetTaxonomyTermsByCodeData = any;
 
 export interface SearchControllerGetResourcesParams {
-  /** @default "text" */
-  query_type?:
-    | "text"
-    | "taxonomy"
-    | "more_like_this"
-    | "hybrid"
-    | "organization";
+  /**
+   * Matching engine used to select results: `text` (default, lexical), `taxonomy` (HSIS code scope), `more_like_this`, and `hybrid` (lexical + semantic vector + geographic proximity). Orthogonal to `sort`, which controls result ordering.
+   * @default "text"
+   */
+  query_type?: "text" | "taxonomy" | "more_like_this" | "hybrid";
   /** @default 1 */
   page?: any;
   /** Comma delimited list of longitude,latitude */
   coords?: string[];
   filters?: object;
+  /** Scope results to resources belonging to a single organization, by its stable organization id (the `organization_id` returned by /suggestion and /organization). Composes with any query_type and with filters. */
+  organization_id?: string;
   /** Comma-delimited HSIS taxonomy codes used as a hard scope for hybrid search (e.g. BM-1400,BM-1700) */
   taxonomy?: string | string[];
   /**
@@ -1791,10 +1919,15 @@ export interface SearchControllerGetResourcesParams {
   /** Controls how coords/distance combine with a resource's declared service_area. Omitted (default): a result must be within `distance` of `coords` AND have a service_area that geographically contains the exact `coords` point — both required. `proximity`: skips the service_area check; returns anything within `distance` of `coords`. `boundary`: ignores `coords`/`distance` and instead requires a GeoJSON `geometry` in the POST body — matches any resource whose service_area intersects that shape; POST only, 400s on GET without a body. */
   geo_type?: "boundary" | "proximity";
   /**
-   * Sort order: relevance (default), distance (requires coords), name (alphabetical by resource name), organization (alphabetical by provider name)
+   * Presentation order of results. Independent of `query_type`: the query engine decides which resources match, `sort` decides their order. For `hybrid` search, pinned/prioritized resource handling is controlled by the tenant's `pinned_resources_mode` setting (`boost` by default, which folds pinned/priority into the relevance score; `top` hard-sorts them first; `ignore` disables them). Values: `relevance` (default — best match first; under `hybrid`, geographic proximity is folded into the relevance score), `distance` (nearest first; requires `coords`, otherwise falls back to `relevance`), `name` (alphabetical by resource name), `organization` (alphabetical by provider name). Honored for all query types, including `hybrid`.
    * @default "relevance"
    */
   sort?: "relevance" | "distance" | "name" | "organization";
+  /**
+   * Opt-in trimming of low-relevance results (hybrid search only; ignored for other query types). `off` (default) returns the full matched set and leaves the response document unchanged. `on` keeps results scoring at least a fraction of the top score — 0.2 of the top, tightened stepwise (up to 0.5) when more than 1,000 results would survive, and never less than the top-20 results' own scores — and **returns everything when the scores are too flat for that to remove anything meaningful** — a uniformly weak result set is reported as such rather than cut arbitrarily. The cut is computed on semantic and lexical relevance only: proximity still filters and ranks, but never decides what is irrelevant, since how far someone will travel is their own choice and not a property of the resource. It is applied as a membership filter rather than a score threshold, so `sort` still orders whatever survives — cut by relevance, then sort by distance, name or organization. When a cutoff applies, `hits.total` reports the kept count and the pre-cutoff total is preserved in `relevance_cutoff.matched_before_cutoff`. A `relevance_cutoff` object is added to the response whenever this param is `on`.
+   * @default "off"
+   */
+  relevance_cutoff?: "off" | "on";
   /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
   locale?: string;
   /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
@@ -1809,18 +1942,18 @@ export interface SearchControllerGetResourcesPostPayload {
 }
 
 export interface SearchControllerGetResourcesPostParams {
-  /** @default "text" */
-  query_type?:
-    | "text"
-    | "taxonomy"
-    | "more_like_this"
-    | "hybrid"
-    | "organization";
+  /**
+   * Matching engine used to select results: `text` (default, lexical), `taxonomy` (HSIS code scope), `more_like_this`, and `hybrid` (lexical + semantic vector + geographic proximity). Orthogonal to `sort`, which controls result ordering.
+   * @default "text"
+   */
+  query_type?: "text" | "taxonomy" | "more_like_this" | "hybrid";
   /** @default 1 */
   page?: any;
   /** Comma delimited list of longitude,latitude */
   coords?: string[];
   filters?: object;
+  /** Scope results to resources belonging to a single organization, by its stable organization id (the `organization_id` returned by /suggestion and /organization). Composes with any query_type and with filters. */
+  organization_id?: string;
   /** Comma-delimited HSIS taxonomy codes used as a hard scope for hybrid search (e.g. BM-1400,BM-1700) */
   taxonomy?: string | string[];
   /**
@@ -1843,10 +1976,15 @@ export interface SearchControllerGetResourcesPostParams {
   /** Controls how coords/distance combine with a resource's declared service_area. Omitted (default): a result must be within `distance` of `coords` AND have a service_area that geographically contains the exact `coords` point — both required. `proximity`: skips the service_area check; returns anything within `distance` of `coords`. `boundary`: ignores `coords`/`distance` and instead requires a GeoJSON `geometry` in the POST body — matches any resource whose service_area intersects that shape. */
   geo_type?: "boundary" | "proximity";
   /**
-   * Sort order: relevance (default), distance (requires coords), name (alphabetical by resource name), organization (alphabetical by provider name)
+   * Presentation order of results. Independent of `query_type`: the query engine decides which resources match, `sort` decides their order. For `hybrid` search, pinned/prioritized resource handling is controlled by the tenant's `pinned_resources_mode` setting (`boost` by default, which folds pinned/priority into the relevance score; `top` hard-sorts them first; `ignore` disables them). Values: `relevance` (default — best match first; under `hybrid`, geographic proximity is folded into the relevance score), `distance` (nearest first; requires `coords`, otherwise falls back to `relevance`), `name` (alphabetical by resource name), `organization` (alphabetical by provider name). Honored for all query types, including `hybrid`.
    * @default "relevance"
    */
   sort?: "relevance" | "distance" | "name" | "organization";
+  /**
+   * Opt-in trimming of low-relevance results (hybrid search only; ignored for other query types). `off` (default) returns the full matched set and leaves the response document unchanged. `on` keeps results scoring at least a fraction of the top score — 0.2 of the top, tightened stepwise (up to 0.5) when more than 1,000 results would survive, and never less than the top-20 results' own scores — and **returns everything when the scores are too flat for that to remove anything meaningful** — a uniformly weak result set is reported as such rather than cut arbitrarily. The cut is computed on semantic and lexical relevance only: proximity still filters and ranks, but never decides what is irrelevant, since how far someone will travel is their own choice and not a property of the resource. It is applied as a membership filter rather than a score threshold, so `sort` still orders whatever survives — cut by relevance, then sort by distance, name or organization. When a cutoff applies, `hits.total` reports the kept count and the pre-cutoff total is preserved in `relevance_cutoff.matched_before_cutoff`. A `relevance_cutoff` object is added to the response whenever this param is `on`.
+   * @default "off"
+   */
+  relevance_cutoff?: "off" | "on";
   /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
   locale?: string;
   /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
@@ -1891,12 +2029,16 @@ export type SearchControllerReRankNeedsClassificationData =
   AiSearchReRankResponseDto;
 
 export interface ShortUrlControllerGetShortUrlByIdParams {
+  /**
+   * The short ID issued by `POST /short-url`
+   * @example "aBcD1234EfGh"
+   */
   id: string;
 }
 
-export type ShortUrlControllerGetShortUrlByIdData = any;
+export type ShortUrlControllerGetShortUrlByIdData = ShortUrlResponseDto;
 
-export type ShortUrlControllerGetOrCreateShortUrlData = any;
+export type ShortUrlControllerGetOrCreateShortUrlData = ShortUrlResponseDto;
 
 export type HealthControllerGetStatusData = any;
 
@@ -2145,6 +2287,26 @@ export interface GeocodingControllerForwardGeocodeParams {
    * @example 5
    */
   limit?: number;
+  /**
+   * Feature types to return, repeated or comma-separated (e.g. "address,poi"). Mapbox only; with the OpenCage provider this is a 400.
+   * @example ["address","poi"]
+   */
+  types?: (
+    | "country"
+    | "region"
+    | "postcode"
+    | "district"
+    | "place"
+    | "locality"
+    | "neighborhood"
+    | "address"
+    | "poi"
+  )[];
+  /**
+   * Bias results toward this point, as "longitude,latitude". Mapbox only; OpenCage ignores it.
+   * @example "-78.8986,35.994"
+   */
+  proximity?: string;
 }
 
 export type GeocodingControllerForwardGeocodeData = ForwardGeocodeResponseDto[];
@@ -2740,3 +2902,14 @@ export interface PrintableDirectoryPublicControllerPreviewParams {
 
 export type PrintableDirectoryPublicControllerPreviewData =
   PrintableDirectoryPreviewResponseDto;
+
+export interface ServiceControllerGetServiceByIdParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  /** HSDS serviceId */
+  id: string;
+}
+
+export type ServiceControllerGetServiceByIdData = ServiceDetailResponseDto;

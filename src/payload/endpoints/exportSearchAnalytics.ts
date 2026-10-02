@@ -6,6 +6,7 @@ import utc from 'dayjs/plugin/utc';
 import { analyticsApiClient } from '@/lib/api/clients';
 import { resolveAnalyticsContext } from '../utilities/resolveAnalyticsContext';
 import { SearchEventExportRow } from '../../lib/api/generated/data-contracts';
+import { getApiHeaders } from '@/lib/api';
 
 dayjs.extend(utc);
 
@@ -104,8 +105,7 @@ export const exportSearchAnalytics: Endpoint = {
           {
             headers: {
               'x-analytics-api-key': ctx.apiKey,
-              'x-tenant-id': tenantId as string,
-              'x-api-version': '1',
+              ...(await getApiHeaders(tenantId || '')),
             },
           },
         );

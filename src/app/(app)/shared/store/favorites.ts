@@ -1,30 +1,33 @@
 import { atom } from 'jotai';
 
-import { Favorite, FavoriteListState } from '@/types/favorites';
+import {
+  FavoriteListDetailResponseDto,
+  FavoriteListItemDto,
+  TransformedResourceOpenApiDto,
+} from '@/lib/api/generated/data-contracts';
 
-export type { Favorite };
+export type Favorite = TransformedResourceOpenApiDto;
 
 export type FavoriteListWithFavorites = {
   id: string;
   name: string;
   description: string;
-  privacy: FavoriteListState['privacy'];
+  privacy: FavoriteListDetailResponseDto['privacy'];
+  ownerId: string;
   viewingAsOwner: boolean;
   favorites: Favorite[];
 };
 
 export const favoriteListsStateAtom = atom<{
-  data: FavoriteListState[];
+  data: FavoriteListItemDto[];
   totalCount: number;
   currentPage: number;
   limit: number;
-  status: 'loading' | 'success';
 }>({
   data: [],
   totalCount: 0,
   currentPage: 1,
   limit: 10,
-  status: 'loading',
 });
 
 export const favoriteListWithFavoritesAtom = atom<FavoriteListWithFavorites>({
@@ -32,6 +35,7 @@ export const favoriteListWithFavoritesAtom = atom<FavoriteListWithFavorites>({
   name: '',
   description: '',
   privacy: 'PRIVATE',
+  ownerId: '',
   viewingAsOwner: false,
   favorites: [],
 });

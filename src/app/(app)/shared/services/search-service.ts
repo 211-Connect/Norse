@@ -14,13 +14,14 @@ import {
 import { ONE_HOUR, stableHash, withCache } from '@/utilities/withCache';
 import { ensureUrlProtocol } from '@/utils';
 
-import { API_URL, INTERNAL_API_KEY } from '../lib/constants';
+import { API_URL } from '../lib/constants';
 import { fetchWrapper } from '../lib/fetchWrapper';
 import { buildSearchRequest, deriveQueryType } from '../lib/search-utils';
 import { formatAddressForDisplay } from '../lib/utils';
 import { ResultType } from '../store/results';
 import { SortOption } from '../utils/getSortOption';
 import { transformFacetsToArray } from '../utils/toFacetsWithTranslation';
+import { getApiHeaders } from '@/lib/api';
 
 const log = createLogger('search');
 
@@ -143,7 +144,7 @@ type FindResourcesOriginArgs = {
   locale: string;
   page: number;
   limit?: number;
-  tenantId?: string;
+  tenantId: string;
   searchEngine: SearchEngine;
 };
 
@@ -189,13 +190,7 @@ async function findResourcesOrigin({
     });
 
     data = await fetchWrapper(`${API_URL}/search?${searchString}`, {
-      headers: {
-        'accept-language': locale,
-        'x-api-version': '1',
-        'x-api-key': INTERNAL_API_KEY || '',
-        ...(tenantId && { 'x-tenant-id': tenantId }),
-      },
-      cache: 'no-store',
+      headers: await getApiHeaders(tenantId, locale),
     });
   } catch (err) {
     log.error(
@@ -238,7 +233,7 @@ export async function findResources(
   locale: string,
   page: number,
   limit: number | undefined,
-  tenantId: string | undefined,
+  tenantId: string,
   searchEngine: SearchEngine,
 ) {
   return withCache(
@@ -268,12 +263,12 @@ export async function findResources(
  * @param searchEngine - Active search engine mode
  * @returns Search results with pagination info
  */
-export async function findResourcesV2(
+async function findResourcesV2Origin(
   searchStore: FindResourcesQuery,
   locale: string,
   page: number,
   limit: number | undefined,
-  tenantId: string | undefined,
+  tenantId: string,
   searchEngine: SearchEngine,
 ): Promise<SearchResult> {
   if (isNaN(page)) page = 1;
@@ -302,9 +297,7 @@ export async function findResourcesV2(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'accept-language': locale,
-        'x-api-version': '1',
-        ...(tenantId && { 'x-tenant-id': tenantId }),
+        ...(await getApiHeaders(tenantId, locale)),
       },
       body: request.body,
     });
@@ -342,4 +335,30 @@ export async function findResourcesV2(
     page,
     filters,
   };
+}
+
+export async function findResourcesV2(
+  searchStore: FindResourcesQuery,
+  locale: string,
+  page: number,
+  limit: number | undefined,
+  tenantId: string,
+  searchEngine: SearchEngine,
+): Promise<SearchResult> {
+  return (
+    (await withCache(
+      `search_results:${tenantId}:${locale}:${stableHash({ query: searchStore, page, limit, searchEngine, version: 'v2' })}`,
+      () =>
+        findResourcesV2Origin(
+          searchStore,
+          locale,
+          page,
+          limit,
+          tenantId,
+          searchEngine,
+        ),
+      { redis: true, memory: true, ttl: ONE_HOUR },
+      (value) => value.results.length > 0,
+    )) ?? createEmptyResult(page)
+  );
 }

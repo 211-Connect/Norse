@@ -1,6 +1,4 @@
 export const API_URL = process.env.API_URL;
-export const INTERNAL_API_KEY = process.env.INTERNAL_API_KEY;
-
 export const MAPBOX_API_KEY = process.env.NEXT_PUBLIC_MAPBOX_API_KEY;
 export const MAPBOX_STYLE_URL = process.env.NEXT_PUBLIC_MAPBOX_STYLE_URL;
 export const MAPLIBRE_STYLE_URL = process.env.NEXT_PUBLIC_MAPLIBRE_STYLE_URL;

@@ -23,12 +23,16 @@ type Hash = string;
 export type CacheKey =
   | `tenant:${Domain | TenantId}`
   | `tenant_basic_config:${Domain}`
+  | `tenant_api_key:${TenantId}`
   | `resource_directory:${Domain}:${Locale}`
+  | `app_config:${Domain}:${Locale}`
   | `search_results:${TenantId}:${Locale}:${Hash}`
+  | `forward_geocode:${Hash}`
   | `reverse_geocode:${Hash}`
   | `resource:${TenantId}:${ResourceId}:${Locale}`
   | `resource_batch:${TenantId}:${Locale}:${Hash}`
   | `search_config:${TenantId}:${Locale}`
+  | `search_suggestions:${TenantId}:${Locale}:${Hash}`
   | `orchestration_config:${TenantId}`;
 
 export type CacheConfig = {

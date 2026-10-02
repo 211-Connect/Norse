@@ -1,23 +1,16 @@
 'use server';
 
-import { API_URL, INTERNAL_API_KEY } from '../../lib/constants';
-import { fetchWrapper } from '../../lib/fetchWrapper';
+import { getApiHeaders } from '@/lib/api';
+import { shortUrlApiClient } from '@/lib/api/clients';
 
 export async function expandShortUrl(
   id: string,
-  tenantId?: string,
+  tenantId: string,
 ): Promise<string | null> {
-  const data = await fetchWrapper(`${API_URL}/short-url/${id}`, {
-    headers: {
-      'x-api-version': '1',
-      'x-api-key': INTERNAL_API_KEY || '',
-      ...(tenantId && { 'x-tenant-id': tenantId }),
-    },
-    cache: 'no-store',
-  });
+  const response = await shortUrlApiClient.shortUrlControllerGetShortUrlById(
+    { id },
+    { headers: await getApiHeaders(tenantId) },
+  );
 
-  if (!data) {
-    return null;
-  }
-  return data.url;
+  return response.data?.url ?? null;
 }

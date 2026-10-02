@@ -1,46 +1,35 @@
 'use server';
 
-import { CreateFavoriteListDto, FavoriteListItemDto } from '@/types/favorites';
-
-import { getAuthHeaders } from '../../lib/authHeaders';
 import {
-  API_URL,
-  FAVORITES_LIST_ENDPOINT,
-  INTERNAL_API_KEY,
-} from '../../lib/constants';
-import { fetchWrapper } from '../../lib/fetchWrapper';
+  CreateFavoriteListDto,
+  FavoriteListControllerCreateData,
+  FavoriteListItemDto,
+} from '@/lib/api/generated/data-contracts';
+import { favoriteListApiClient, getApiHeaders } from '@/lib/api';
 
 export const createFavoriteList = async (
   data: CreateFavoriteListDto,
-  tenantId?: string,
+  tenantId: string,
 ): Promise<FavoriteListItemDto | null> => {
-  const authHeaders = await getAuthHeaders(tenantId);
+  try {
+    const response = await favoriteListApiClient.favoriteListControllerCreate(
+      { tenant_id: tenantId },
+      data,
+      {
+        cache: 'no-store',
+        format: 'json',
+        headers: await getApiHeaders(tenantId, 'en', true),
+      },
+    );
 
-  const searchParams = new URLSearchParams();
-  if (tenantId) {
-    searchParams.append('tenant_id', tenantId);
-  }
+    const responseData: FavoriteListControllerCreateData = response.data;
 
-  const url = `${API_URL}/${FAVORITES_LIST_ENDPOINT}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
-  const response = await fetchWrapper<FavoriteListItemDto>(url, {
-    method: 'POST',
-    headers: {
-      ...authHeaders,
-      'Content-Type': 'application/json',
-      'x-api-version': '1',
-      'x-api-key': INTERNAL_API_KEY || '',
-    },
-    body: {
-      name: data.name,
-      description: data.description,
-      public: data.public,
-    },
-    cache: 'no-store',
-  });
+    if (!responseData) {
+      return null;
+    }
 
-  if (!response) {
+    return responseData;
+  } catch {
     return null;
   }
-
-  return response;
 };

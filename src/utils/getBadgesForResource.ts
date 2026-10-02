@@ -22,11 +22,11 @@ function taxonomiesToFacets(
   }
 
   return taxonomies.map((taxonomy) => ({
-    code: taxonomy.code,
+    code: taxonomy.code || 'UNKNOWN CODE',
     taxonomyCode: taxonomy.code,
-    taxonomyName: taxonomy.name,
+    taxonomyName: taxonomy.name || 'UNKNOWN TAXONOMY',
     taxonomyNameEn: taxonomy.name,
-    termName: taxonomy.name,
+    termName: taxonomy.name || 'UNKNOWN TERM NAME',
     termNameEn: taxonomy.name,
   }));
 }

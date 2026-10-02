@@ -3,6 +3,7 @@ import type { Endpoint } from 'payload';
 import { analyticsApiClient } from '@/lib/api/clients';
 
 import { resolveAnalyticsContext } from '../utilities/resolveAnalyticsContext';
+import { getApiHeaders } from '@/lib/api';
 
 function makeEndpoint(
   path: string,
@@ -23,17 +24,6 @@ function toISO(ms: string | undefined): string {
   if (!ms) return '';
   const clamped = Math.min(Number(ms), Date.now());
   return new Date(clamped).toISOString();
-}
-
-function commonHeaders(
-  apiKey: string,
-  tenantId: string,
-): Record<string, string> {
-  return {
-    'x-analytics-api-key': apiKey,
-    'x-tenant-id': tenantId,
-    'x-api-version': '1',
-  };
 }
 
 function websiteIdsParam(ids: string[]): { websiteIds: string } | object {
@@ -60,8 +50,12 @@ function proxyEndpoint(
     if (resolved instanceof Response) return resolved;
 
     const tenantId = req.query?.tenantId as string;
+    const tenantApiHeaders = await getApiHeaders(tenantId);
     const ctx: ResolvedCtx = {
-      headers: commonHeaders(resolved.apiKey, tenantId),
+      headers: {
+        'x-analytics-api-key': resolved.apiKey,
+        ...tenantApiHeaders,
+      },
       selectedWebsiteIds: resolved.selectedWebsiteIds,
     };
 

@@ -28,7 +28,6 @@ export type AppConfig = {
     logoUrl?: string;
     faviconUrl?: string;
     openGraphUrl?: string;
-    copyright?: string;
     ctaText?: string;
     theme: {
       primaryColor?: string;
@@ -38,7 +37,6 @@ export type AppConfig = {
   };
   contact: {
     number?: string;
-    feedbackUrl?: string;
   };
   sms: {
     provider: 'Twilio' | 'EMS';
@@ -67,6 +65,7 @@ export type AppConfig = {
   };
   footer: {
     customMenu: Menu[];
+    copyright?: string;
     disclaimer?: string;
   };
   header: {
@@ -74,6 +73,7 @@ export type AppConfig = {
     customHomeUrl?: string;
     favoritesButtonLabel?: string;
     feedbackButtonLabel?: string;
+    feedbackUrl?: string;
     safeExit?: {
       enabled?: boolean;
       text?: string;
@@ -135,6 +135,7 @@ export type AppConfig = {
     defaultRadius?: number;
     searchEngine: SearchEngine;
     resultsLimit: number;
+    pinnedResourcesMode: 'ignore' | 'boost' | 'top';
     texts?: {
       title?: string;
       queryInputPlaceholder?: string;

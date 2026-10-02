@@ -4,6 +4,7 @@ import { formatAddressForDisplay } from '@/app/(app)/shared/lib/utils';
 import { type Favorite as FavoriteType } from '@/app/(app)/shared/store/favorites';
 import { ResultType } from '@/app/(app)/shared/store/results';
 import { transformFacetsToArray } from '@/app/(app)/shared/utils/toFacetsWithTranslation';
+import { ResourceTranslationOpenApiDto } from '@/lib/api/generated/data-contracts';
 import { Resource } from '@/types/resource';
 
 export type RemoveFromListHandler = (
@@ -19,34 +20,49 @@ export function favoriteToResult(
   currentListId?: string,
   onRemoveFromList?: RemoveFromListHandler,
 ): ResultType {
-  const translation =
-    favorite.translation ||
-    favorite.translations?.find((el) => el.locale === locale);
+  const translations =
+    'translations' in favorite && Array.isArray(favorite.translations)
+      ? favorite.translations
+      : [];
+  const facetsEn = 'facetsEn' in favorite ? favorite.facetsEn : undefined;
+  const displayName =
+    'displayName' in favorite && typeof favorite.displayName === 'string'
+      ? favorite.displayName
+      : undefined;
+  const displayPhoneNumber =
+    'displayPhoneNumber' in favorite &&
+    typeof favorite.displayPhoneNumber === 'string'
+      ? favorite.displayPhoneNumber
+      : undefined;
+  const rawTranslation =
+    'translation' in favorite ? favorite.translation : undefined;
+  const translation = (rawTranslation ||
+    translations?.find(
+      (el) => el.locale === locale,
+    )) as ResourceTranslationOpenApiDto;
 
   const address = favorite.addresses?.find(
     (el) => el.rank === 1 && el.type === 'physical',
   );
   const displayAddress = formatAddressForDisplay(address);
 
-  const transformedFacets = transformFacetsToArray(
-    favorite.facetsEn,
-    {},
-    locale,
-  );
+  const transformedFacets = transformFacetsToArray(facetsEn, {}, locale);
 
   return {
-    _id: favorite._id,
-    id: favorite._id,
+    _id: favorite._id ?? '',
+    id: favorite._id ?? '',
     alert: translation?.alert ?? null,
     alertDate: translation?.alertDate ?? null,
     address: displayAddress ?? '',
     summary:
       translation?.serviceSummary ?? translation?.serviceDescription ?? '',
     description: translation?.serviceDescription ?? '',
-    location: favorite.location ?? null,
+    location:
+      (favorite.location as
+        { type: 'Point'; coordinates: number[] } | null | undefined) ?? null,
     locationName: favorite.locationName ?? null,
-    name: translation?.displayName ?? favorite.displayName ?? '',
-    phone: favorite.displayPhoneNumber ?? '',
+    name: (translation?.displayName ?? displayName) || '',
+    phone: displayPhoneNumber || '',
     attribution: favorite.attribution ?? null,
     priority: 0,
     serviceName: translation?.serviceName ?? '',

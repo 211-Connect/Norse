@@ -7,6 +7,10 @@ import { favoriteListWithFavoritesAtom } from '@/app/(app)/shared/store/favorite
 import { isValidCoordinate } from '@/utils/isValidCoordinate';
 
 import { FavoriteMapContainerBase } from './favorite-map-container-base';
+import { createLogger } from '@/lib/logger';
+import { randomUUID } from 'crypto';
+
+const logger = createLogger('FavoriteMapContainer');
 
 export function FavoriteMapContainer() {
   const favoriteList = useAtomValue(favoriteListWithFavoritesAtom);
@@ -15,8 +19,15 @@ export function FavoriteMapContainer() {
     return (
       favoriteList?.favorites?.map((favorite) => {
         const coords = favorite.location?.coordinates;
+
+        if (!favorite._id) {
+          logger.warn(
+            `Missing id for favorite: ${favorite._id ?? 'unknown'} (${favorite.displayName ?? 'unknown'})`,
+          );
+        }
+
         return {
-          id: favorite._id,
+          id: favorite._id ?? randomUUID(),
           coordinates: isValidCoordinate(coords) ? coords : undefined,
         };
       }) ?? []

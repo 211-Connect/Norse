@@ -324,5 +324,6 @@
       "success": "Truy vấn đã được lưu vào thư mục có thể in.",
       "error": "Không thể lưu truy vấn vào thư mục."
     }
-  }
+  },
+  "alert_date": "Ngày cảnh báo"
 }

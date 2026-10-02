@@ -1,18 +1,14 @@
 'use server';
 
 import { PrintableDirectoryResponseDto } from '@/lib/api/generated/data-contracts';
-import { printableDirectoriesApiClient } from '@/lib/api/clients';
-
-import { getAuthHeaders } from '../../lib/authHeaders';
+import { getApiHeaders, printableDirectoriesApiClient } from '@/lib/api';
 
 export async function reorderPrintableDirectorySectionSources(
   directoryId: string,
   sectionId: string,
   sourceIds: string[],
-  tenantId?: string,
+  tenantId: string,
 ): Promise<PrintableDirectoryResponseDto | null> {
-  const headers = await getAuthHeaders(tenantId);
-
   try {
     const response =
       await printableDirectoriesApiClient.printableDirectoryControllerReorderSources(
@@ -22,8 +18,8 @@ export async function reorderPrintableDirectorySectionSources(
         },
         { sourceIds },
         {
-          headers,
           cache: 'no-store',
+          headers: await getApiHeaders(tenantId, 'en', true),
         },
       );
 
