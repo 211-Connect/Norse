@@ -324,5 +324,6 @@
       "success": "Abfrage im druckbaren Verzeichnis gespeichert",
       "error": "Abfrage konnte nicht im Verzeichnis gespeichert werden"
     }
-  }
+  },
+  "alert_date": "Alarmdatum"
 }

@@ -324,5 +324,6 @@
       "success": "Consulta salva no diretório imprimível",
       "error": "Não foi possível salvar a consulta no diretório."
     }
-  }
+  },
+  "alert_date": "Data de alerta"
 }
