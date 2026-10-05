@@ -70,7 +70,7 @@
     "@opentelemetry/sdk-logs": "^0.222.0",
     "@opentelemetry/sdk-trace-base": "^2.11.0",
     "@payloadcms/db-postgres": "3.86.0",
-    "@payloadcms/email-nodemailer": "3.86.0",
+    "@payloadcms/email-nodemailer": "3.90.2",
     "@payloadcms/next": "3.86.0",
     "@payloadcms/plugin-multi-tenant": "3.86.0",
     "@payloadcms/richtext-lexical": "3.86.0",
