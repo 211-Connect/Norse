@@ -57,7 +57,7 @@
     "swagger-typescript-api": "^13.12.4",
     "tailwindcss": "^4.1.16",
     "tailwindcss-animate": "^1.0.7",
-    "typescript": "^5.9.3"
+    "typescript": "^7.0.2"
   },
   "dependencies": {
     "@arcjet/next": "^1.12.0",
