@@ -8,7 +8,11 @@ import { Button } from '@/app/(app)/shared/components/ui/button';
 import { SectionCarousel } from '@/app/(app)/shared/components/section-carousel';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { getStableKey } from '@/app/(app)/shared/lib/get-stable-key';
-import { trackUmamiEvent, UmamiEvent } from '@/app/(app)/shared/lib/umami';
+import {
+  AnalyticsEvent,
+  AnalyticsTools,
+  trackEvent,
+} from '@/app/(app)/shared/lib/analytics';
 
 export function HighlightsSection() {
   const appConfig = useAppConfig();
@@ -40,7 +44,7 @@ export function HighlightsSection() {
             variant="default"
             className="w-full gap-2"
             onClick={() => {
-              trackUmamiEvent(UmamiEvent.HighlightClick, {
+              trackEvent(AnalyticsEvent.HighlightClick, AnalyticsTools.Umami, {
                 highlightTitle: highlight.title,
               });
             }}

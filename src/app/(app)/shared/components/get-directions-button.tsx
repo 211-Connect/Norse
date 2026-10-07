@@ -17,7 +17,7 @@ import {
 import { ResultType } from '@/app/(app)/shared/store/results';
 import { Address, Resource } from '@/types/resource';
 
-import { UmamiEvent, trackUmamiEvent } from '../lib/umami';
+import { AnalyticsEvent, AnalyticsTools, trackEvent } from '../lib/analytics';
 import { cn } from '../lib/utils';
 
 interface GetDirectionsButtonProps {
@@ -86,7 +86,9 @@ export function GetDirectionsButton({
   const mapsUrl = buildMapsUrl(originStr, destinationStr);
 
   function trackDirectionsClick() {
-    trackUmamiEvent(UmamiEvent.DirectionClick, { resourceId: String(data.id) });
+    trackEvent(AnalyticsEvent.DirectionClick, AnalyticsTools.Umami, {
+      resourceId: String(data.id),
+    });
   }
 
   // When rendered as <button> — open dialog if no origin, otherwise navigate programmatically

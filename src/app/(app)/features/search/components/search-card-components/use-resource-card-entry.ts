@@ -4,7 +4,7 @@ import { useAtomValue } from 'jotai';
 import { usePathname } from 'next/navigation';
 
 import { isSearchPathname } from '@/app/(app)/shared/lib/paths';
-import { ResourceEntry } from '@/app/(app)/shared/lib/umami';
+import { ResourceEntry } from '@/app/(app)/shared/lib/analytics';
 import { searchEntryAtom } from '@/app/(app)/shared/store/search';
 
 export function useResourceCardEntry(): ResourceEntry {

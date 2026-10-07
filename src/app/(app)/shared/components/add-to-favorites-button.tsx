@@ -20,7 +20,7 @@ import { FavoriteListItemDto } from '@/lib/api/generated/data-contracts';
 import { useAppConfig } from '../hooks/use-app-config';
 import { useLocalFavorites } from '../hooks/use-local-favorites';
 import { FAVORITES_SEARCH_DEBOUNCE_DELAY } from '../lib/constants';
-import { UmamiEvent, trackUmamiEvent } from '../lib/umami';
+import { AnalyticsEvent, AnalyticsTools, trackEvent } from '../lib/analytics';
 import { cn, withOptionalTrailingSlash } from '../lib/utils';
 import { addToFavoriteList } from '../serverActions/favorites/addToFavoriteList';
 import { getFavoriteLists } from '../serverActions/favorites/getFavoriteLists';
@@ -154,7 +154,7 @@ export function AddToFavoritesButton({
           );
 
           if (data) {
-            trackUmamiEvent(UmamiEvent.FavoriteAddToList, {
+            trackEvent(AnalyticsEvent.FavoriteAddToList, AnalyticsTools.Umami, {
               resourceId: serviceAtLocationId,
               favoriteListId: listId,
             });

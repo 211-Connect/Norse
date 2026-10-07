@@ -16,7 +16,7 @@ import { cn } from '@/app/(app)/shared/lib/utils';
 import { searchEntryAtom } from '@/app/(app)/shared/store/search';
 import { Topic } from '@/types/topics';
 
-import { ResourceEntry } from '../../../shared/lib/umami';
+import { ResourceEntry } from '../../../shared/lib/analytics';
 
 type Props = {
   topic: Topic;
