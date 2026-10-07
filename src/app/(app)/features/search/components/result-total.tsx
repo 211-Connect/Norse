@@ -1,19 +1,15 @@
 'use client';
 
-import { useAtomValue } from 'jotai';
 import { useTranslation } from 'react-i18next';
 
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
-import {
-  resultTotalAtom,
-  resultsCurrentPageAtom,
-} from '@/app/(app)/shared/store/results';
+
+import { useSearchResults } from '../context/search-results-context';
 
 export function ResultTotal() {
   const { t } = useTranslation('page-search');
   const appConfig = useAppConfig();
-  const resultTotal = useAtomValue(resultTotalAtom);
-  const currentPage = useAtomValue(resultsCurrentPageAtom);
+  const { totalResults: resultTotal, currentPage } = useSearchResults();
 
   const limit = appConfig?.search?.resultsLimit ?? 0;
 
