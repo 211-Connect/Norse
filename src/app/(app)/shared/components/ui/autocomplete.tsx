@@ -9,7 +9,7 @@ import {
 } from '@floating-ui/react';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
-import { XIcon } from 'lucide-react';
+import { LoaderCircle, XIcon } from 'lucide-react';
 import {
   ChangeEvent,
   ComponentType,
@@ -67,6 +67,11 @@ export type AutocompleteProps = {
   inputProps?: InputProps;
   options?: AutocompleteOption[];
   className?: string;
+  /** Shows a small spinner between the text and the clear button while
+   *  results for the current input are being fetched (e.g. during a
+   *  debounced geocode lookup). Purely presentational — doesn't affect
+   *  focus, selection, or keyboard handling. */
+  isLoading?: boolean;
   /** Fires on every keystroke/composition-end (and, alongside commits, with
    *  the settled value too) — a live-text echo. Never gates side effects on
    *  its own; see `onCommit` for that. */
@@ -128,6 +133,7 @@ export function Autocomplete(props: AutocompleteProps) {
     inputProps,
     Icon,
     className,
+    isLoading = false,
     onInputChange,
     onCommit,
     onClear,
@@ -769,6 +775,13 @@ export function Autocomplete(props: AutocompleteProps) {
           }
           role="combobox"
         />
+
+        {isLoading && (tempValue?.length ?? 0) > 0 && (
+          <LoaderCircle
+            className="text-muted-foreground absolute top-1/2 right-9 size-4 shrink-0 -translate-y-1/2 animate-spin"
+            aria-hidden="true"
+          />
+        )}
 
         {(tempValue?.length ?? 0) > 0 && (
           <TooltipProvider>
