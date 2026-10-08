@@ -1,6 +1,5 @@
 'use client';
 
-import { useAtomValue } from 'jotai';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useTopLoader } from 'nextjs-toploader';
 import { useTranslation } from 'react-i18next';
@@ -14,11 +13,9 @@ import {
   SelectValue,
 } from '@/app/(app)/shared/components/ui/select';
 import { useFlag } from '@/app/(app)/shared/hooks/use-flag';
-import { userCoordinatesAtom } from '@/app/(app)/shared/store/search';
-import {
-  SortOption,
-  getSortOption,
-} from '@/app/(app)/shared/utils/getSortOption';
+import { SortOption } from '@/app/(app)/shared/utils/getSortOption';
+
+import { useSearchResults } from '../context/search-results-context';
 
 const SORT_LABEL: Record<SortOption, string> = {
   relevance: 'Most Relevant',
@@ -35,11 +32,11 @@ export function SortSelect() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const coords = useAtomValue(userCoordinatesAtom);
+  // Both come from the server-parsed URL so the label matches the order the
+  // results were actually returned in, including during SSR.
+  const { sort: currentSort, hasSearchCoordinates } = useSearchResults();
   const showServiceName = useFlag('showSearchAndResourceServiceName');
   const { start } = useTopLoader();
-
-  const currentSort = getSortOption(searchParams.get('sort'), coords);
 
   const handleSortChange = (value: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -59,7 +56,7 @@ export function SortSelect() {
     ...(showServiceName
       ? [{ value: 'organization', label: SORT_LABEL.organization }]
       : []),
-    ...(Array.isArray(coords) && coords.length === 2
+    ...(hasSearchCoordinates
       ? [{ value: 'distance', label: SORT_LABEL.distance }]
       : []),
   ];
@@ -83,7 +80,11 @@ export function SortSelect() {
           id={SORT_SELECT_TRIGGER_ID}
           className="h-8 w-[180px] bg-white"
         >
-          <SelectValue />
+          {/* Explicit children: Radix only fills SelectValue from the selected
+              item after mount, which leaves the SSR trigger empty. */}
+          <SelectValue>
+            {t(`sort.options.${currentSort}`, SORT_LABEL[currentSort])}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
           {sortOptions.map((option) => (

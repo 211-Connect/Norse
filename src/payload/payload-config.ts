@@ -32,6 +32,7 @@ import { duplicateTenant } from './endpoints/duplicateTenant';
 import { exportSearchAnalytics } from './endpoints/exportSearchAnalytics';
 import { keycloakVerifiedUsers } from './endpoints/keycloakVerifiedUsers';
 import { populateApiConfigCache } from './endpoints/populateApiConfigCache';
+import { syncKeycloakBranding } from './endpoints/syncKeycloakBranding';
 import { translateEndpoint } from './endpoints/translate';
 import {
   taxonomyScorecardsGet,
@@ -55,6 +56,7 @@ const dirname = path.dirname(filename);
 const endpoints: Endpoint[] = [
   clearCache,
   populateApiConfigCache,
+  syncKeycloakBranding,
   translateEndpoint,
   duplicateTenant,
   exportSearchAnalytics,
@@ -122,6 +124,7 @@ const config = buildConfig({
       afterNavLinks: [
         '@/payload/components/ScorecardsNavLink',
         '@/payload/components/PopulateApiConfigCacheButton',
+        '@/payload/components/SyncKeycloakBrandingButton',
         '@/payload/components/ClearCacheButton',
       ],
       views: {

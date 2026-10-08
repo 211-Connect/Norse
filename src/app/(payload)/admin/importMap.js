@@ -29,6 +29,7 @@ import { default as default_b690e758ec84d761af30377d4503f117 } from '@/payload/c
 import { GlobalViewRedirect as GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { default as default_f4855407f4109e46fff942e4b3f7606f } from '@/payload/components/ScorecardsNavLink'
 import { default as default_516dbf33cc3b162579335bb6874ed173 } from '@/payload/components/PopulateApiConfigCacheButton'
+import { default as default_cc6a892a38550f48130aae13fe7fe854 } from '@/payload/components/SyncKeycloakBrandingButton'
 import { default as default_4a6586eaa0248cb1fccb2e03335a2b51 } from '@/payload/components/ClearCacheButton'
 import { TenantSelector as TenantSelector_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { default as default_2e07f7087ae6aa13d1fded4684728076 } from '@/payload/components/AnalyticsNavLink'
@@ -102,6 +103,7 @@ export const importMap = {
   "@payloadcms/plugin-multi-tenant/rsc#GlobalViewRedirect": GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62,
   "@/payload/components/ScorecardsNavLink#default": default_f4855407f4109e46fff942e4b3f7606f,
   "@/payload/components/PopulateApiConfigCacheButton#default": default_516dbf33cc3b162579335bb6874ed173,
+  "@/payload/components/SyncKeycloakBrandingButton#default": default_cc6a892a38550f48130aae13fe7fe854,
   "@/payload/components/ClearCacheButton#default": default_4a6586eaa0248cb1fccb2e03335a2b51,
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelector": TenantSelector_d6d5f193a167989e2ee7d14202901e62,
   "@/payload/components/AnalyticsNavLink#default": default_2e07f7087ae6aa13d1fded4684728076,

@@ -5,7 +5,11 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
-import { UmamiEvent, trackUmamiEvent } from '@/app/(app)/shared/lib/umami';
+import {
+  AnalyticsEvent,
+  AnalyticsTools,
+  trackEvent,
+} from '@/app/(app)/shared/lib/analytics';
 import { Resource } from '@/types/resource';
 
 import { Datum } from '../datum';
@@ -51,6 +55,11 @@ export function ContactsComponent({ resource }: { resource: Resource }) {
                 icon={Send}
                 description={contact.email}
                 url={`mailto:${contact.email}`}
+                onClick={() =>
+                  trackEvent(AnalyticsEvent.EmailClick, AnalyticsTools.Matomo, {
+                    resourceId: resource.id,
+                  })
+                }
                 shouldParseHtml={false}
                 withPadding={false}
                 size="sm"
@@ -68,11 +77,14 @@ export function ContactsComponent({ resource }: { resource: Resource }) {
                         : phone.number
                     }
                     url={`tel:${phone.number}`}
-                    onClick={() =>
-                      trackUmamiEvent(UmamiEvent.PhoneClick, {
-                        resourceId: resource.id,
-                      })
-                    }
+                    onClick={() => {
+                      const resourceId = resource.id;
+                      trackEvent(
+                        AnalyticsEvent.PhoneClick,
+                        AnalyticsTools.UmamiAndMatomo,
+                        { resourceId },
+                      );
+                    }}
                     urlTarget="_self"
                     shouldParseHtml={false}
                     withPadding={false}

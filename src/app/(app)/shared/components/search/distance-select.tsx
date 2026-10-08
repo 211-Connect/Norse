@@ -68,6 +68,9 @@ export function DistanceSelect({
 
   const hasLocation = coords?.length == 2;
 
+  const formatDistance = (value: string) =>
+    value === '0' ? t('search.any') : `${value} ${t('search.miles')}`;
+
   const setDistance = (value: string) => {
     persistSearchDistancePreference(value);
 
@@ -96,14 +99,18 @@ export function DistanceSelect({
         value={distance}
       >
         <SelectTrigger id={DISTANCE_SELECT_TRIGGER_ID} className="h-8 w-31.25">
-          <SelectValue placeholder={t('search.radius_placeholder')} />
+          {/* Explicit children: Radix only fills SelectValue from the selected
+              item after mount, which leaves the SSR trigger empty. */}
+          <SelectValue placeholder={t('search.radius_placeholder')}>
+            {distance ? formatDistance(distance) : undefined}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectItem value="0">{t('search.any')}</SelectItem>
+            <SelectItem value="0">{formatDistance('0')}</SelectItem>
             {radiusOptions.map((radius) => (
               <SelectItem key={radius} value={radius.toString()}>
-                {`${radius} ${t('search.miles')}`}
+                {formatDistance(radius.toString())}
               </SelectItem>
             ))}
           </SelectGroup>

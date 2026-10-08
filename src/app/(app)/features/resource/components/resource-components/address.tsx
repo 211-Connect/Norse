@@ -20,7 +20,11 @@ import { ResultType } from '@/app/(app)/shared/store/results';
 import { userCoordinatesAtom } from '@/app/(app)/shared/store/search';
 import { Resource } from '@/types/resource';
 
-import { UmamiEvent, trackUmamiEvent } from '../../../../shared/lib/umami';
+import {
+  AnalyticsEvent,
+  AnalyticsTools,
+  trackEvent,
+} from '../../../../shared/lib/analytics';
 import { Datum } from '../datum';
 
 export function AddressComponent({
@@ -61,7 +65,7 @@ export function AddressComponent({
       singleLine
       withPadding={false}
       onClick={() =>
-        trackUmamiEvent(UmamiEvent.DirectionClick, {
+        trackEvent(AnalyticsEvent.DirectionClick, AnalyticsTools.Umami, {
           resourceId: resource.id,
         })
       }

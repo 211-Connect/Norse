@@ -1,6 +1,6 @@
 'use client';
 
-import { ResourceEntry } from '../../../../app/(app)/shared/lib/umami';
+import { ResourceEntry } from '../../../../app/(app)/shared/lib/analytics';
 import { MetricsTable } from '../MetricsTable';
 import { useAnalyticsResourceByEntry } from '../useAnalyticsData';
 import { WIDGET_INFO, WidgetSlug } from '../widgetInfo';

@@ -94,7 +94,7 @@ function ColumnRenderer({ groups, resource }: ColumnRendererProps) {
           return null;
         }
 
-        log.debug(renderedComponents, 'Rendered components');
+        // log.debug(renderedComponents, 'Rendered components');
 
         if (group.isCard) {
           return (

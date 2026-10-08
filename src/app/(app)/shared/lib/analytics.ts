@@ -1,12 +1,26 @@
-export enum UmamiEvent {
+export enum AnalyticsProvider {
+  Umami = 'umami',
+  Matomo = 'matomo',
+}
+
+export const AnalyticsTools = {
+  Umami: [AnalyticsProvider.Umami],
+  Matomo: [AnalyticsProvider.Matomo],
+  UmamiAndMatomo: [AnalyticsProvider.Umami, AnalyticsProvider.Matomo],
+} as const;
+
+export enum AnalyticsEvent {
   FavoriteAddToList = 'favorite_add_to_list',
   LanguageSwitch = 'language_switch',
   SearchZeroResults = 'search_zero_results',
   DirectionClick = 'direction_click',
   PhoneClick = 'phone_click',
   WebsiteClick = 'website_click',
+  EmailClick = 'email_click',
   SmsClick = 'sms_click',
   SafeExitClick = 'safe_exit_click',
+  WebsiteButtonClick = 'website_button_click',
+  ResourceDetailsClick = 'resource_details_click',
   WidgetSearch = 'widget_search',
   SearchTaxonomy = 'search_taxonomy',
   SearchText = 'search_text',
@@ -15,6 +29,52 @@ export enum UmamiEvent {
   ResourceViewed = 'resource_viewed',
   HighlightClick = 'highlight_click',
   AlertClick = 'alert_click',
+}
+
+type PendingUmamiEvent = {
+  event: AnalyticsEvent;
+  payload?: Record<string, string>;
+};
+
+// Cap queued Umami events so a blocked script cannot leak memory in a long-lived tab.
+const MAX_PENDING_UMAMI_EVENTS = 50;
+const pendingUmamiEvents: PendingUmamiEvent[] = [];
+
+export function flushPendingUmamiEvents(): void {
+  if (typeof window === 'undefined' || !window.umami) return;
+
+  while (pendingUmamiEvents.length > 0) {
+    const next = pendingUmamiEvents.shift();
+    if (next) {
+      window.umami.track(next.event, next.payload);
+    }
+  }
+}
+
+export function trackEvent(
+  event: AnalyticsEvent,
+  tools: readonly AnalyticsProvider[],
+  data?: Record<string, string>,
+  sessionId?: string,
+): void {
+  if (typeof window === 'undefined') return;
+
+  if (tools.includes(AnalyticsProvider.Umami)) {
+    const payload = sessionId ? { ...data, session_id: sessionId } : data;
+    if (window.umami) {
+      window.umami.track(event, payload);
+    } else {
+      if (pendingUmamiEvents.length >= MAX_PENDING_UMAMI_EVENTS) {
+        pendingUmamiEvents.shift();
+      }
+      pendingUmamiEvents.push({ event, payload });
+    }
+  }
+
+  if (tools.includes(AnalyticsProvider.Matomo)) {
+    window._mtm ??= [];
+    window._mtm.push({ ...data, event });
+  }
 }
 
 export enum ResourceEntry {
@@ -74,47 +134,4 @@ export function consumePendingResourceEntry(
   } catch {
     return undefined;
   }
-}
-
-type PendingUmamiEvent = {
-  event: UmamiEvent;
-  payload?: Record<string, string>;
-};
-
-// Caps how many events we'll buffer while waiting for the Umami script to
-// load, so a permanently-blocked/failed script (ad blocker, ITP, missing
-// config) can't leak memory in a long-lived tab.
-const MAX_PENDING_UMAMI_EVENTS = 50;
-
-const pendingUmamiEvents: PendingUmamiEvent[] = [];
-
-export function flushPendingUmamiEvents(): void {
-  if (typeof window === 'undefined' || !window.umami) return;
-
-  while (pendingUmamiEvents.length > 0) {
-    const next = pendingUmamiEvents.shift();
-    if (next) {
-      window.umami.track(next.event, next.payload);
-    }
-  }
-}
-
-export function trackUmamiEvent(
-  event: UmamiEvent,
-  data?: Record<string, string>,
-  sessionId?: string,
-): void {
-  if (typeof window === 'undefined') return;
-
-  const payload = sessionId ? { ...data, session_id: sessionId } : data;
-
-  if (window.umami) {
-    window.umami.track(event, payload);
-    return;
-  }
-
-  if (pendingUmamiEvents.length >= MAX_PENDING_UMAMI_EVENTS) {
-    pendingUmamiEvents.shift();
-  }
-  pendingUmamiEvents.push({ event, payload });
 }

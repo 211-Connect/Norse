@@ -5,6 +5,7 @@ import { Metadata } from 'next/types';
 
 import { FavoriteMapContainer } from '@/app/(app)/features/favorites/components/favorite-map-container';
 import { FavoritesSection } from '@/app/(app)/features/favorites/components/favorites-section';
+import { FavoriteListStateSync } from '@/app/(app)/features/favorites/components/favorites-state-sync';
 import { DEFAULT_SEARCH_CARD_LAYOUT } from '@/app/(app)/features/search/types/card-layout-config';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
@@ -104,9 +105,12 @@ export default async function FavoritesDetailsPage({ params }) {
     <PageWrapper
       cookies={cookieList}
       translationData={{ i18nNamespaces, locale, resources }}
-      jotaiData={{ favoriteList, viewingAsOwner }}
       nonce={nonce}
     >
+      <FavoriteListStateSync
+        favoriteList={favoriteList}
+        viewingAsOwner={viewingAsOwner}
+      />
       <div className="flex flex-1">
         <FavoritesSection cardLayout={cardLayout} />
         <FavoriteMapContainer />

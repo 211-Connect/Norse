@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { Metadata } from 'next/types';
 
 import { FavoriteListsSection } from '@/app/(app)/features/favorites/components/favorite-lists-section';
+import { FavoriteListsStateSync } from '@/app/(app)/features/favorites/components/favorites-state-sync';
 import { MapContainer } from '@/app/(app)/features/favorites/components/map-container';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
@@ -116,13 +117,13 @@ export default async function FavoritesPage({
     <PageWrapper
       cookies={cookieList}
       translationData={{ i18nNamespaces, locale, resources }}
-      jotaiData={{
-        favoriteLists,
-        favoriteListsTotal,
-        favoriteListsCurrentPage: currentPage,
-      }}
       nonce={nonce}
     >
+      <FavoriteListsStateSync
+        favoriteLists={favoriteLists}
+        totalCount={favoriteListsTotal}
+        currentPage={currentPage}
+      />
       <div className="flex flex-1">
         <FavoriteListsSection />
         <MapContainer />
