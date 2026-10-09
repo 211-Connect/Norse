@@ -72,8 +72,9 @@ export function trackEvent(
   }
 
   if (tools.includes(AnalyticsProvider.Matomo)) {
-    window._mtm ??= [];
-    window._mtm.push({ ...data, event });
+    // Keep Matomo events on the same dataLayer as legacy tracked events.
+    window.dataLayer ??= [];
+    window.dataLayer.push({ ...data, event });
   }
 }
 
