@@ -82,6 +82,10 @@ onto the `/search` URL. The results page reads them back verbatim via
 `parseSearchParams.ts` — nothing downstream needs to know how a `queryType`
 was derived, only what it is.
 
+## Search analytics
+
+On classic search submission, the Umami event (`search_taxonomy`, `search_hybrid`, or `search_text`) follows the resolved `query_type` produced by `deriveQueryType()`, not the autocomplete option's origin `queryType`. A free-text search using the hybrid engine therefore emits `search_hybrid`.
+
 ## The AI-classification precedent
 
 For `ai_classification` tenants, a free-text query triggers a second API

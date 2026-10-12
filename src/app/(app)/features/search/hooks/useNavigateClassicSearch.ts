@@ -6,6 +6,10 @@ import {
   ResourceEntry,
   trackEvent,
 } from '@/app/(app)/shared/lib/analytics';
+import {
+  deriveQueryType,
+  QueryType,
+} from '@/app/(app)/shared/lib/search-utils';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
 import { buildSearchUrl } from '../utils/buildSearchUrl';
@@ -61,6 +65,12 @@ export const useNavigateClassicSearch = ({
           distance: search.searchDistance,
           searchEngine: appConfig.search.searchEngine,
         });
+
+        const queryType = deriveQueryType({
+          searchEngine: appConfig.search.searchEngine,
+          originQueryType: search.queryType,
+          query,
+        });
         persistSearchDistancePreference(distance);
 
         // Only present on the current URL for the user's first search
@@ -76,14 +86,14 @@ export const useNavigateClassicSearch = ({
           ...(utmSource ? { utm_source: utmSource } : {}),
         };
 
-        if (search.queryType === 'taxonomy') {
+        if (queryType === QueryType.Taxonomy) {
           trackEvent(
             AnalyticsEvent.SearchTaxonomy,
             AnalyticsTools.Umami,
             umamiPayload,
             appConfig.sessionId,
           );
-        } else if (search.queryType === 'hybrid') {
+        } else if (queryType === QueryType.Hybrid) {
           trackEvent(
             AnalyticsEvent.SearchHybrid,
             AnalyticsTools.Umami,
