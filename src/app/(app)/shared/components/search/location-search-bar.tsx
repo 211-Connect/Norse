@@ -322,7 +322,6 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
         defaultOpen={focusByDefault}
         options={displayOptions}
         Icon={showIcon ? MapPin : () => null}
-        isLoading={isPendingResults}
         onInputChange={handleInputChange}
         onCommit={handleCommit}
         onClear={handleClear}
