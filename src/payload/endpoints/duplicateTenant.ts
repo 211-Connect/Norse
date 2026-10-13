@@ -1,41 +1,122 @@
 import { randomUUID } from 'crypto';
-import type { Endpoint } from 'payload';
+import type { Endpoint, PayloadRequest } from 'payload';
 
 import { createLogger } from '@/lib/logger';
 
+import {
+  collectTenantMediaIDs,
+  getTenantMediaFieldPaths,
+  mapTenantMediaIDs,
+} from '../collections/TenantMedia/utilities/tenantMediaFields';
 import { isSuperAdmin } from '../collections/Users/access/roles';
-import { ResourceDirectory, Tenant } from '../payload-types';
+import { ResourceDirectory, Tenant, TenantMedia } from '../payload-types';
 import { generateRandomKey } from '../utilities';
 
 const log = createLogger('duplicateTenant');
 
 /**
- * Recursively regenerate all id fields in nested objects and arrays.
+ * Copies a tenant-media file (and its S3 object) into another tenant, so the
+ * duplicate doesn't depend on media owned by the original tenant.
  */
-function regenerateIds<T>(obj: T): T {
-  if (obj === null || obj === undefined) {
-    return obj;
+async function duplicateTenantMedia(
+  req: PayloadRequest,
+  mediaId: TenantMedia['id'],
+  tenantId: string,
+): Promise<TenantMedia['id']> {
+  const media = await req.payload.findByID({
+    collection: 'tenant-media',
+    id: mediaId,
+    depth: 0,
+  });
+
+  if (!media.url || !media.filename) {
+    throw new Error(`Tenant media ${mediaId} has no file to copy`);
   }
 
-  if (Array.isArray(obj)) {
-    return obj.map((item) => regenerateIds(item)) as T;
+  const response = await fetch(media.url);
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to download tenant media ${mediaId}: ${response.status}`,
+    );
   }
 
-  if (typeof obj === 'object') {
-    const newObj: Record<string, unknown> = {};
-    for (const key in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        if (key === 'id' && typeof obj[key] === 'string') {
-          newObj[key] = randomUUID();
-        } else {
-          newObj[key] = regenerateIds(obj[key]);
-        }
-      }
-    }
-    return newObj as T;
+  const data = Buffer.from(await response.arrayBuffer());
+
+  const copy = await req.payload.create({
+    collection: 'tenant-media',
+    data: { tenant: tenantId },
+    file: {
+      data,
+      mimetype:
+        media.mimeType ??
+        response.headers.get('content-type') ??
+        'application/octet-stream',
+      name: media.filename,
+      size: data.length,
+    },
+    depth: 0,
+  });
+
+  return copy.id;
+}
+
+/**
+ * Points the duplicated resource directory's uploads at copies of the media
+ * owned by the new tenant. Upload fields aren't localized, but the tabs that
+ * hold them are written back in one locale, so they're read without fallback
+ * to leave the other locales untouched.
+ */
+async function remapDuplicatedMedia(
+  req: PayloadRequest,
+  resourceDirectoryId: ResourceDirectory['id'],
+  tenant: Tenant,
+): Promise<void> {
+  const fields =
+    req.payload.collections['resource-directories'].config.flattenedFields;
+  const locale = tenant.defaultLocale ?? tenant.enabledLocales[0];
+
+  const resourceDirectory = await req.payload.findByID({
+    collection: 'resource-directories',
+    id: resourceDirectoryId,
+    depth: 0,
+    locale,
+    fallbackLocale: false,
+  });
+
+  const mediaIdMap = new Map<TenantMedia['id'], TenantMedia['id']>();
+
+  for (const mediaId of collectTenantMediaIDs(resourceDirectory, fields)) {
+    mediaIdMap.set(
+      mediaId,
+      await duplicateTenantMedia(req, mediaId, tenant.id),
+    );
   }
 
-  return obj;
+  if (mediaIdMap.size === 0) {
+    return;
+  }
+
+  mapTenantMediaIDs(
+    resourceDirectory,
+    fields,
+    (mediaId) => mediaIdMap.get(mediaId) ?? mediaId,
+  );
+
+  const topLevelKeys = new Set(
+    getTenantMediaFieldPaths(fields).map((path) => path.split('.')[0]),
+  );
+  const data = Object.fromEntries(
+    Object.entries(resourceDirectory).filter(([key]) => topLevelKeys.has(key)),
+  );
+
+  await req.payload.update({
+    collection: 'resource-directories',
+    id: resourceDirectoryId,
+    data,
+    depth: 0,
+    locale,
+  });
 }
 
 export const duplicateTenant: Endpoint = {
@@ -112,31 +193,24 @@ export const duplicateTenant: Endpoint = {
           collection: 'resource-directories',
           where: { tenant: { equals: tenantId } },
           limit: 1,
+          depth: 0,
         });
 
         if (resourceDirectories.length > 0) {
           const originalRD = resourceDirectories[0];
 
-          const { id, tenant, ...rdData } = originalRD;
-
-          // `payload.create` requires unique IDs for all sub-documents
-          const processedData = regenerateIds<ResourceDirectory>({
-            ...rdData,
-            name: `${originalRD.name} - copy`,
-            id: randomUUID(),
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          });
-
-          const data: ResourceDirectory = {
-            ...processedData,
-            tenant: newTenant.id,
-          };
-
-          await req.payload.create({
+          // `duplicate` copies every locale and gives array rows fresh IDs
+          const newRD = await req.payload.duplicate({
             collection: 'resource-directories',
-            data,
+            id: originalRD.id,
+            data: {
+              name: `${originalRD.name} - copy`,
+              tenant: newTenant.id,
+            },
+            depth: 0,
           });
+
+          await remapDuplicatedMedia(req, newRD.id, newTenant);
 
           await req.payload.update({
             collection: 'tenants',
