@@ -8,21 +8,19 @@ import { useState } from 'react';
 import { validateDateRange } from './utils';
 import WebsitePicker from './WebsitePicker';
 import type { DateRange as DateRangeType } from './types';
-
 const DATE_RANGES: (7 | 30 | 90)[] = [7, 30, 90];
 
 export const analyticsDateRangeAtom = atom<DateRangeType>(7);
 export const analyticsSelectedWebsiteIdsAtom = atom<string[]>([]);
-
 export default function DateRange() {
   const [range, setRange] = useAtom(analyticsDateRangeAtom);
 
-  // Initialize date inputs with current range
   const getInitialDates = () => {
     if (typeof range === 'number') {
+      const now = dayjs.utc();
       return {
-        start: dayjs().subtract(range, 'day').format('YYYY-MM-DD'),
-        end: dayjs().format('YYYY-MM-DD'),
+        start: now.subtract(range, 'day').format('YYYY-MM-DD'),
+        end: now.format('YYYY-MM-DD'),
       };
     }
     return { start: range.start, end: range.end };
@@ -33,8 +31,9 @@ export default function DateRange() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handlePresetClick = (days: 7 | 30 | 90) => {
-    const end = dayjs().format('YYYY-MM-DD');
-    const start = dayjs().subtract(days, 'day').format('YYYY-MM-DD');
+    const now = dayjs.utc();
+    const end = now.format('YYYY-MM-DD');
+    const start = now.subtract(days, 'day').format('YYYY-MM-DD');
     setStartDate(start);
     setEndDate(end);
     setErrorMessage(null);
@@ -60,6 +59,8 @@ export default function DateRange() {
     setEndDate(e.target.value);
     setErrorMessage(null);
   };
+
+  const today = dayjs.utc().format('YYYY-MM-DD');
 
   return (
     <div
@@ -112,7 +113,7 @@ export default function DateRange() {
             type="date"
             value={startDate}
             onChange={handleStartDateChange}
-            max={dayjs().format('YYYY-MM-DD')}
+            max={today}
             style={{
               padding: '0.375rem 0.5rem',
               fontSize: '0.875rem',
@@ -130,7 +131,7 @@ export default function DateRange() {
             type="date"
             value={endDate}
             onChange={handleEndDateChange}
-            max={dayjs().format('YYYY-MM-DD')}
+            max={today}
             style={{
               padding: '0.375rem 0.5rem',
               fontSize: '0.875rem',

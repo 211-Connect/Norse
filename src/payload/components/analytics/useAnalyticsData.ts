@@ -71,12 +71,11 @@ function useAnalyticsParams(): {
     websiteIds,
   };
 }
-
 function makeAsyncHook<T>(
   fetcher: (
     range: DateRange,
     tenantId: string | undefined,
-    websiteIds?: string[],
+    websiteIds: string[] | undefined,
     force?: boolean,
   ) => Promise<T>,
 ) {
@@ -106,9 +105,6 @@ function makeAsyncHook<T>(
         return;
       }
 
-      // On a filter/param change, clear stale data so the loading shimmer
-      // shows again (fresh-load UX). On a manual refetch, keep the
-      // last-known data visible while revalidating (SWR).
       setState((prev) => ({
         loading: true,
         error: null,
@@ -301,7 +297,13 @@ export function useAnalyticsEventValues(
     event,
     property,
   });
-  paramsRef.current = { range, tenantId, websiteIds, event, property };
+  paramsRef.current = {
+    range,
+    tenantId,
+    websiteIds,
+    event,
+    property,
+  };
 
   const requestIdRef = useRef(0);
 

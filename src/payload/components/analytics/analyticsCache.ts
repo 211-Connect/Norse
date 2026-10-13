@@ -20,7 +20,7 @@ import type {
   ZeroResultQueriesResponse,
 } from '../../../lib/api/generated/data-contracts';
 import type { DateRange } from './types';
-import { buildAnalyticsQuery } from './utils';
+import { buildAnalyticsQuery, getUtcDayEnd, getUtcDayStart } from './utils';
 
 const TTL_MS = 30 * 1000;
 
@@ -69,27 +69,21 @@ function timeWindow(range: DateRange) {
   let rangeDays: number;
 
   if (typeof range === 'number') {
-    // Preset range: use current time as end
-    endAt = dayjs().valueOf();
-    startAt = dayjs().subtract(range, 'day').valueOf();
+    const now = dayjs.utc();
+    endAt = now.valueOf();
+    startAt = now.subtract(range, 'day').valueOf();
     rangeDays = range;
   } else {
-    // Custom range: use specified dates
-    endAt = Math.min(
-      dayjs(range.end).endOf('day').valueOf(),
-      dayjs().valueOf(),
-    );
-    startAt = dayjs(range.start).startOf('day').valueOf();
-    rangeDays = dayjs(range.end).diff(dayjs(range.start), 'day');
+    endAt = Math.min(getUtcDayEnd(range.end), Date.now());
+    startAt = getUtcDayStart(range.start);
+    rangeDays = dayjs.utc(range.end).diff(dayjs.utc(range.start), 'day');
   }
 
-  // Calculate previous period for comparison
   const prevEndAt = startAt;
-  const prevStartAt = dayjs(startAt).subtract(rangeDays, 'day').valueOf();
+  const prevStartAt = dayjs.utc(prevEndAt).subtract(rangeDays, 'day').valueOf();
 
   return { endAt, startAt, prevEndAt, prevStartAt };
 }
-
 function makeCachedFetch<T>(
   cache: Map<string, CacheEntry<T>>,
   load: (
@@ -101,7 +95,7 @@ function makeCachedFetch<T>(
   return function (
     range: DateRange,
     tenantId: string | undefined,
-    websiteIds?: string[],
+    websiteIds: string[] | undefined,
     force?: boolean,
   ): Promise<T> {
     const key = cacheKey(range, tenantId, websiteIds);
