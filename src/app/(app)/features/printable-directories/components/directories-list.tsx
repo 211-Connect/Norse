@@ -2,13 +2,13 @@
 
 import { PlusIcon } from 'lucide-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { ListSearchBar } from '@/app/(app)/shared/components/list-search-bar';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
-import { createPrintableDirectory } from '@/app/(app)/shared/serverActions/printableDirectories/createPrintableDirectory';
 import { Link } from '@/app/(app)/shared/components/link';
 import { Badge } from '@/app/(app)/shared/components/ui/badge';
 import { Button } from '@/app/(app)/shared/components/ui/button';
@@ -22,11 +22,10 @@ import {
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
 import { getImageUrl } from '@/app/(app)/shared/utils/getImageUrl';
 import { PrintableDirectoryResponseDto } from '@/lib/api/generated/data-contracts';
-import { AccessPolicy, ResourceLayout } from '@/types/printableDirectories';
 
-import { CreateDirectoryDialog } from './create-directory-dialog';
+import { CreateDirectoryWizard } from './create-directory-wizard';
 import { DeleteDirectoryButton } from './delete-directory-button';
-import { getAccessPolicyLabel, getResourceLayoutLabel } from '../utils';
+import { getAccessPolicyLabel } from '../utils';
 
 type DirectoriesListProps = {
   locale: string;
@@ -39,14 +38,15 @@ export function DirectoriesList({
   initialDirectories,
   initialLoadError = false,
 }: DirectoriesListProps) {
-  const appConfig = useAppConfig();
   const { t } = useTranslation(['page-directories', 'common']);
+  const router = useRouter();
+  const appConfig = useAppConfig();
+  const hideAccessPolicy =
+    appConfig.printableDirectories.accessMode === 'everyone';
   const [searchQuery, setSearchQuery] = useState('');
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [directories, setDirectories] =
     useState<PrintableDirectoryResponseDto[]>(initialDirectories);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [slugError, setSlugError] = useState<string | null>(null);
 
   useEffect(() => {
     if (initialLoadError) {
@@ -63,39 +63,10 @@ export function DirectoriesList({
     );
   }, [directories, searchQuery]);
 
-  const handleCreateDirectory = async (values: {
-    name: string;
-    slug: string;
-    resourceLayout: ResourceLayout;
-    accessPolicy: AccessPolicy;
-    isBookletLayout: boolean;
-    defaultQueryConfig: PrintableDirectoryResponseDto['defaultQueryConfig'];
-  }) => {
-    setIsSubmitting(true);
-
-    try {
-      const result = await createPrintableDirectory(values, appConfig.tenantId);
-
-      if (!result.success) {
-        if (result.error === 'slug_taken') {
-          setSlugError(t('slug_taken_error', { ns: 'page-directories' }));
-        } else {
-          toast.error(
-            t('unable_to_create_directory', { ns: 'page-directories' }),
-          );
-        }
-        return;
-      }
-
-      setDirectories((previous) => [result.data, ...previous]);
-      setSlugError(null);
-      setIsAddOpen(false);
-      toast.success(t('directory_created', { ns: 'page-directories' }));
-    } catch {
-      toast.error(t('unable_to_create_directory', { ns: 'page-directories' }));
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleDirectoryCreated = (directory: PrintableDirectoryResponseDto) => {
+    setDirectories((previous) => [directory, ...previous]);
+    toast.success(t('directory_created', { ns: 'page-directories' }));
+    router.push(`/${locale}/directories/${directory.id}`);
   };
 
   const handleDeleteDirectory = (id: string) => {
@@ -123,10 +94,7 @@ export function DirectoriesList({
           type="button"
           variant="outline"
           className="h-9 self-start gap-1"
-          onClick={() => {
-            setSlugError(null);
-            setIsAddOpen(true);
-          }}
+          onClick={() => setIsAddOpen(true)}
         >
           <PlusIcon className="size-4" aria-hidden="true" />
           {t('add_directory', { ns: 'page-directories' })}
@@ -166,16 +134,15 @@ export function DirectoriesList({
                 <CardContent className="flex items-center justify-between gap-4">
                   <div className="flex min-w-0 items-center gap-2">
                     <CardTitle className="mb-0 truncate text-base">
-                      <Link href={`/${locale}/directories/${directory.id}`}>
+                      <Link href={`/directories/${directory.id}`}>
                         {directory.name}
                       </Link>
                     </CardTitle>
-                    <Badge variant="outline">
-                      {getAccessPolicyLabel(directory.accessPolicy, t)}
-                    </Badge>
-                    <Badge variant="outline">
-                      {getResourceLayoutLabel(directory.resourceLayout, t)}
-                    </Badge>
+                    {!hideAccessPolicy && (
+                      <Badge variant="outline">
+                        {getAccessPolicyLabel(directory.accessPolicy, t)}
+                      </Badge>
+                    )}
                     <Badge variant="outline">
                       {t('sections_count', {
                         ns: 'page-directories',
@@ -196,13 +163,11 @@ export function DirectoriesList({
         )}
       </div>
 
-      <CreateDirectoryDialog
+      <CreateDirectoryWizard
         open={isAddOpen}
-        isSubmitting={isSubmitting}
-        slugError={slugError}
-        onSlugChange={() => setSlugError(null)}
+        locale={locale}
         onOpenChange={setIsAddOpen}
-        onSubmit={handleCreateDirectory}
+        onCreated={handleDirectoryCreated}
       />
     </div>
   );

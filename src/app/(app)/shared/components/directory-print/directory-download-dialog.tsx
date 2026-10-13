@@ -13,8 +13,10 @@ import { PDFPrintableDirectory } from '@/app/(app)/shared/components/directory-p
 import { withCustomBasePathAppendedToDomain } from '@/app/(app)/shared/lib/utils';
 import { type PrintVariant } from '@/app/(app)/shared/components/directory-print/pdf-print-primitives';
 import {
+  parseBookletLayoutParam,
   parseFontSizeModeParam,
   parsePrintVariantParam,
+  PD_BOOKLET_PARAM,
   PD_FONT_SIZE_PARAM,
   PD_SLUG_PARAM,
   PD_VARIANT_PARAM,
@@ -30,14 +32,16 @@ import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { getPrintableDirectoryPublicPreview } from '@/app/(app)/shared/serverActions/printableDirectories/getPrintableDirectoryPublicPreview';
 import { printableDirectoryPreviewToPdfData } from '@/app/(app)/shared/utils/printable-directory-transformers';
 import { PrintableDirectoryPreviewResponseDto } from '@/lib/api/generated/data-contracts';
+import { createLogger } from '@/lib/logger';
 
-const RESOURCE_LAYOUT_TO_PRINT_VARIANT: Partial<
-  Record<PrintableDirectoryPreviewResponseDto['resourceLayout'], PrintVariant>
-> = {
-  line: 'line-listing',
-  summary: 'summary-listing',
-  full: 'full-listing',
-};
+const log = createLogger('DirectoryDownloadDialog');
+
+/**
+ * Default print-time template when no variant is specified in the share
+ * link. Ephemeral only — never persisted. See
+ * docs/adr/0002-remove-resource-layout-and-booklet-fields.md.
+ */
+const DEFAULT_PRINT_VARIANT: PrintVariant = 'line-listing';
 
 function toFileName(name: string): string {
   const slug = name
@@ -53,7 +57,7 @@ type DialogState =
   | { status: 'loading' }
   | { status: 'not_found' }
   | {
-      status: 'unsupported' | 'generating' | 'done' | 'error';
+      status: 'generating' | 'done' | 'error';
       preview: PrintableDirectoryPreviewResponseDto;
     };
 
@@ -78,20 +82,15 @@ export function DirectoryDownloadDialog({
   const requestedFontSizeMode = parseFontSizeModeParam(
     searchParams.get(PD_FONT_SIZE_PARAM),
   );
+  const requestedBookletLayout = parseBookletLayoutParam(
+    searchParams.get(PD_BOOKLET_PARAM),
+  );
 
   const [state, setState] = useState<DialogState>({ status: 'loading' });
   const startedForSlugRef = useRef<string | null>(null);
 
   const generate = async (preview: PrintableDirectoryPreviewResponseDto) => {
-    const printVariant =
-      requestedVariant ??
-      RESOURCE_LAYOUT_TO_PRINT_VARIANT[preview.resourceLayout];
-
-    if (!printVariant) {
-      setState({ status: 'unsupported', preview });
-      return;
-    }
-
+    const printVariant = requestedVariant ?? DEFAULT_PRINT_VARIANT;
     const fontSizeMode = requestedFontSizeMode ?? 'default';
 
     setState({ status: 'generating', preview });
@@ -116,6 +115,7 @@ export function DirectoryDownloadDialog({
             currentDomain={currentDomain}
             currentDate={currentDate}
             brandLogoUrl={appConfig.brand.logoUrl ?? undefined}
+            isBookletLayout={requestedBookletLayout}
           />
         </PdfFontProvider>
       );
@@ -124,7 +124,7 @@ export function DirectoryDownloadDialog({
         documentElement,
         toFileName(preview.name),
         {
-          postProcessBlob: data.isBookletLayout
+          postProcessBlob: requestedBookletLayout
             ? applyBookletPadding
             : undefined,
         },
@@ -155,15 +155,19 @@ export function DirectoryDownloadDialog({
       );
 
       if (cancelled) {
+        log.debug('Cancelled');
         return;
       }
 
       if (!preview) {
         setState({ status: 'not_found' });
+        log.error('Preview not found');
         return;
       }
 
+      log.debug('Preview fetched. Generating PDF...');
       await generate(preview);
+      log.debug('Preview generated');
     })();
 
     return () => {
@@ -218,12 +222,6 @@ export function DirectoryDownloadDialog({
           {state.status === 'not_found' && (
             <p className="text-muted-foreground text-sm">
               {t('public_preview_not_found')}
-            </p>
-          )}
-
-          {state.status === 'unsupported' && (
-            <p className="text-muted-foreground text-sm">
-              {t('public_preview_unavailable')}
             </p>
           )}
 

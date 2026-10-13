@@ -184,7 +184,8 @@
   "autocomplete": {
     "results_available_one": "{{count}} rezilta disponib",
     "results_available_other": "{{count}} rezilta disponib",
-    "no_results": "Pa gen rezilta"
+    "no_results": "Pa gen rezilta",
+    "loading": "Ap chaje sijesyon yo…"
   },
   "auth_error": {
     "access_denied_title": "Aksè refize",

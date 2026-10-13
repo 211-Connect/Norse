@@ -184,7 +184,8 @@
   "autocomplete": {
     "results_available_one": "{{count}} پایله موجوده ده",
     "results_available_other": "{{count}} پایلې شتون لري",
-    "no_results": "هیڅ پایلې نشته"
+    "no_results": "هیڅ پایلې نشته",
+    "loading": "وړاندیزونه بارېږي…"
   },
   "auth_error": {
     "access_denied_title": "لاسرسی رد شو",

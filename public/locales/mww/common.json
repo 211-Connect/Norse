@@ -184,7 +184,8 @@
   "autocomplete": {
     "results_available_one": "muaj qhov tshwm sim {{count}}",
     "results_available_other": "Muaj cov txiaj ntsig {{count}}",
-    "no_results": "Tsis muaj txiaj ntsig"
+    "no_results": "Tsis muaj txiaj ntsig",
+    "loading": "Tab tom thauj cov lus qhia…"
   },
   "auth_error": {
     "access_denied_title": "Kev nkag mus tsis raug cai",

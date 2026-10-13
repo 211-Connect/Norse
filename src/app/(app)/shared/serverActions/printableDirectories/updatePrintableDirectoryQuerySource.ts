@@ -2,6 +2,8 @@
 
 import { getApiHeaders, printableDirectoriesApiClient } from '@/lib/api';
 
+import { getPrintableDirectoryServerAccess } from '../../utils/printableDirectoryServerAccess';
+
 type UpdatePrintableDirectoryQuerySourceParams = {
   directoryId: string;
   sectionId: string;
@@ -19,6 +21,10 @@ export async function updatePrintableDirectoryQuerySource({
   queryParams,
   tenantId,
 }: UpdatePrintableDirectoryQuerySourceParams): Promise<boolean> {
+  if (!(await getPrintableDirectoryServerAccess(tenantId))) {
+    return false;
+  }
+
   try {
     await printableDirectoriesApiClient.printableDirectoryControllerUpdateSource(
       {

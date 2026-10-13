@@ -184,7 +184,8 @@
   "autocomplete": {
     "results_available_one": "{{count}} bu'aan argama",
     "results_available_other": "{{count}} bu'aa argama",
-    "no_results": "Bu'aan hin jiru"
+    "no_results": "Bu'aan hin jiru",
+    "loading": "Yaada fe'amaa jira..."
   },
   "auth_error": {
     "access_denied_title": "Dhaqqabummaan dhorkame",

@@ -21,7 +21,7 @@ import {
   searchLocationValidationErrorAtom,
   userCoordinatesAtom,
 } from '../../store/search';
-import { Autocomplete } from '../ui/autocomplete';
+import { Autocomplete, FLOATING_LISTBOX_CLASSNAME } from '../ui/autocomplete';
 import { MainSearchLayoutContext } from './main-search-layout/main-search-layout-context';
 import { UseMyLocationButton } from './use-my-location-button';
 
@@ -94,7 +94,13 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
   const prevSearchLocation = isStandalone
     ? localPrevSearchLocation
     : globalPrevSearchLocation;
-  const locationQuery = isStandalone ? searchLocation : prevSearchLocation;
+  // "Everywhere" is an option of its own, not a place: never geocode it
+  // (that would suggest e.g. "Everywhere Street, Houston").
+  const everywhereLabel = t('search.everywhere', 'Everywhere');
+  const isEverywhere = (value: string) =>
+    value.trim().toLowerCase() === everywhereLabel.toLowerCase();
+  const rawLocationQuery = isStandalone ? searchLocation : prevSearchLocation;
+  const locationQuery = isEverywhere(rawLocationQuery) ? '' : rawLocationQuery;
   const debouncedSearchLocation = useDebounce(
     locationQuery,
     LOCATION_SEARCH_DEBOUNCE_DELAY,
@@ -105,7 +111,11 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
     additionalLocations,
     isFetching,
   } = useLocations(
-    isTyping ? debouncedSearchLocation : prevSearchLocation,
+    isTyping
+      ? debouncedSearchLocation
+      : isEverywhere(prevSearchLocation)
+        ? ''
+        : prevSearchLocation,
     isStandalone, // Exclude additional locations in standalone mode
   );
 
@@ -135,11 +145,16 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
   // the first real result is at index 1. Standalone mode also has no
   // meaningful "already has coordinates" state of its own to suppress
   // auto-select with, so it always defaults to index 0.
-  const autoSelectIndex = isStandalone
-    ? 0
-    : globalCoords?.length === 2
+  //
+  // A committed "Everywhere" is a valid value, so nothing replaces it.
+  const autoSelectIndex =
+    !isTyping && isEverywhere(searchLocation)
       ? undefined
-      : 1;
+      : isStandalone
+        ? 0
+        : globalCoords?.length === 2
+          ? undefined
+          : 1;
 
   // Use context only if available (for main search integration)
   const context = useContext(MainSearchLayoutContext);
@@ -243,13 +258,13 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
   );
 
   const handleClear = useCallback(() => {
-    handleCommit(t('search.everywhere', 'Everywhere'));
+    handleCommit(everywhereLabel);
     if (isStandalone) {
       setLocalPrevSearchLocation('');
     } else {
       setSearch?.((prev) => ({ ...prev, prevSearchLocation: '' }));
     }
-  }, [isStandalone, setSearch, handleCommit, t]);
+  }, [isStandalone, setSearch, handleCommit, everywhereLabel]);
 
   // Called by Autocomplete when the committed block is burst-cleared by a
   // keypress. `nextValue` is the triggering character, or '' for Backspace/Delete.
@@ -318,6 +333,10 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
         clearButtonLabel={t('call_to_action.remove')}
         autoSelectIndex={autoSelectIndex}
         autoSelectOnBlurIndex={autoSelectIndex}
+        loading={isPendingResults}
+        // Standalone fields live in dialogs, where the list floats over the
+        // dialog's other content.
+        listboxClassName={isStandalone ? FLOATING_LISTBOX_CLASSNAME : undefined}
         positionBelowElementId={isStandalone ? undefined : 'search-form-inputs'}
       />
       {validationError && (

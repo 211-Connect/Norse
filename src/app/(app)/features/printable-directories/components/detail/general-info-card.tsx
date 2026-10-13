@@ -14,11 +14,21 @@ import {
 } from '@/app/(app)/shared/components/ui/card';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { usePrintableDirectoryCapability } from '@/app/(app)/shared/hooks/use-printable-directory-capability';
 import { updatePrintableDirectory } from '@/app/(app)/shared/serverActions/printableDirectories/updatePrintableDirectory';
 import { PrintableDirectoryResponseDto } from '@/lib/api/generated/data-contracts';
 
-import { getAccessPolicyLabel, getResourceLayoutLabel } from '../../utils';
-import { CreateDirectoryDialog } from '../create-directory-dialog';
+import { useShareUrlBase } from '../../hooks/use-share-url-base';
+import { getLanguageName } from '@/app/(app)/shared/lib/language-names';
+
+import { getAccessPolicyLabel, orderLocales } from '../../utils';
+import { EditDirectoryDialog } from '../edit-directory-dialog';
+import { CopyShareUrlButton } from './copy-share-url-button';
+import { DirectoryImageThumbnail } from './directory-image-thumbnail';
+
+const haveSameItems = (first: string[], second: string[]) =>
+  first.length === second.length &&
+  first.every((item) => second.includes(item));
 
 type GeneralInfoCardProps = {
   directory: PrintableDirectoryResponseDto;
@@ -33,28 +43,42 @@ export function GeneralInfoCard({
   const appConfig = useAppConfig();
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [slugError, setSlugError] = useState<string | null>(null);
+  const shareUrlBase = useShareUrlBase();
+  const canUploadLogo = usePrintableDirectoryCapability('logoUpload');
+  const hideAccessPolicy =
+    appConfig.printableDirectories.accessMode === 'everyone';
 
   const handleSubmit = async (values: {
     name: string;
     slug: string;
-    resourceLayout: PrintableDirectoryResponseDto['resourceLayout'];
-    accessPolicy: PrintableDirectoryResponseDto['accessPolicy'];
-    isBookletLayout: boolean;
+    accessPolicy?: PrintableDirectoryResponseDto['accessPolicy'];
+    locales: string[];
+    logoUrl?: string;
     defaultQueryConfig: PrintableDirectoryResponseDto['defaultQueryConfig'];
   }) => {
     setIsSubmitting(true);
 
     try {
+      // The user chose this slug explicitly, so a collision is reported
+      // rather than silently suffixed (that only happens at creation).
       const result = await updatePrintableDirectory(
         directory.id,
         {
           name: values.name,
           slug: values.slug,
-          resourceLayout: values.resourceLayout,
-          accessPolicy: values.accessPolicy,
-          isBookletLayout: values.isBookletLayout,
+          // Changing languages re-translates the whole directory for users
+          // with automatic translation, so only send them when they changed.
+          ...(haveSameItems(values.locales, directory.locales)
+            ? {}
+            : { locales: values.locales }),
           defaultQueryConfig: values.defaultQueryConfig,
+          ...(values.logoUrl !== undefined &&
+          values.logoUrl !== (directory.logoUrl ?? '')
+            ? { logoUrl: values.logoUrl }
+            : {}),
+          ...(values.accessPolicy ? { accessPolicy: values.accessPolicy } : {}),
         },
         appConfig.tenantId,
       );
@@ -72,7 +96,6 @@ export function GeneralInfoCard({
 
       onDirectoryUpdated(result.data);
       toast.success(t('directory_updated', { ns: 'page-directories' }));
-      setSlugError(null);
       setOpen(false);
     } catch {
       toast.error(t('unable_to_update_directory', { ns: 'page-directories' }));
@@ -110,30 +133,36 @@ export function GeneralInfoCard({
           </Typography>
           <Typography as="p" variant="paragraph" size="sm">
             <span className="font-medium">
-              {t('slug_label', { ns: 'page-directories' })}:
+              {t('share_url_label', { ns: 'page-directories' })}:
             </span>{' '}
-            {directory.slug || '-'}
+            {directory.slug ? (
+              <>
+                {`${shareUrlBase}${directory.slug}`}
+                <CopyShareUrlButton
+                  url={`${shareUrlBase}${directory.slug}`}
+                  className="-my-0.5 ml-1 align-middle"
+                />
+              </>
+            ) : (
+              '-'
+            )}
           </Typography>
           <Typography as="p" variant="paragraph" size="sm">
             <span className="font-medium">
-              {t('resource_layout.label', { ns: 'page-directories' })}:
+              {t('languages_label', { ns: 'page-directories' })}:
             </span>{' '}
-            {getResourceLayoutLabel(directory.resourceLayout, t)}
+            {orderLocales(directory.locales, directory.primaryLanguage)
+              .map((locale) => getLanguageName(locale, { englishName: true }))
+              .join(', ')}
           </Typography>
-          <Typography as="p" variant="paragraph" size="sm">
-            <span className="font-medium">
-              {t('access_policy.label', { ns: 'page-directories' })}:
-            </span>{' '}
-            {getAccessPolicyLabel(directory.accessPolicy, t)}
-          </Typography>
-          <Typography as="p" variant="paragraph" size="sm">
-            <span className="font-medium">
-              {t('booklet_layout.label', { ns: 'page-directories' })}:
-            </span>{' '}
-            {directory.isBookletLayout
-              ? t('booklet_layout.enabled', { ns: 'page-directories' })
-              : t('booklet_layout.disabled', { ns: 'page-directories' })}
-          </Typography>
+          {!hideAccessPolicy && (
+            <Typography as="p" variant="paragraph" size="sm">
+              <span className="font-medium">
+                {t('access_policy.label', { ns: 'page-directories' })}:
+              </span>{' '}
+              {getAccessPolicyLabel(directory.accessPolicy, t)}
+            </Typography>
+          )}
           <Typography as="p" variant="paragraph" size="sm">
             <span className="font-medium">
               {t('default_query_config.location_name_label', {
@@ -145,18 +174,6 @@ export function GeneralInfoCard({
           </Typography>
           <Typography as="p" variant="paragraph" size="sm">
             <span className="font-medium">
-              {t('default_query_config.coords_label', {
-                ns: 'page-directories',
-                defaultValue: 'Default coordinates',
-              })}
-              :
-            </span>{' '}
-            {directory.defaultQueryConfig?.coords
-              ? `${directory.defaultQueryConfig.coords.latitude}, ${directory.defaultQueryConfig.coords.longitude}`
-              : '-'}
-          </Typography>
-          <Typography as="p" variant="paragraph" size="sm">
-            <span className="font-medium">
               {t('default_query_config.radius_label', {
                 ns: 'page-directories',
                 defaultValue: 'Default radius',
@@ -165,25 +182,42 @@ export function GeneralInfoCard({
             </span>{' '}
             {directory.defaultQueryConfig?.radius ?? '-'}
           </Typography>
+          {canUploadLogo && (
+            <div className="space-y-1">
+              <Typography as="p" variant="paragraph" size="sm">
+                <span className="font-medium">
+                  {t('logo_label', { ns: 'page-directories' })}:
+                </span>{' '}
+                {!directory.logoUrl &&
+                  t('logo_default', { ns: 'page-directories' })}
+              </Typography>
+              {directory.logoUrl && (
+                <DirectoryImageThumbnail
+                  src={directory.logoUrl}
+                  alt={t('logo_label', { ns: 'page-directories' })}
+                  kind="logo"
+                />
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
 
-      <CreateDirectoryDialog
+      <EditDirectoryDialog
         open={open}
+        directoryId={directory.id}
         isSubmitting={isSubmitting}
-        mode="edit"
         slugError={slugError}
         onSlugChange={() => setSlugError(null)}
         initialValues={{
           name: directory.name,
           slug: directory.slug,
+          logoUrl: directory.logoUrl ?? '',
           accessPolicy: directory.accessPolicy,
-          resourceLayout: directory.resourceLayout,
-          isBookletLayout: directory.isBookletLayout,
+          primaryLanguage: directory.primaryLanguage,
+          locales: directory.locales,
           defaultQueryConfig: directory.defaultQueryConfig,
         }}
-        title={t('edit_directory', { ns: 'page-directories' })}
-        submitLabel={t('call_to_action.save', { ns: 'common' })}
         onOpenChange={setOpen}
         onSubmit={handleSubmit}
       />

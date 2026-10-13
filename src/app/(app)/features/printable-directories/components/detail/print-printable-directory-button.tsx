@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslation } from 'react-i18next';
+
 import { DirectoryPrintControl } from '@/app/(app)/shared/components/directory-print/directory-print-control';
 import { PDFPrintableDirectory } from '@/app/(app)/shared/components/directory-print/pdf-printable-directory';
 import { applyBookletPadding } from '@/app/(app)/shared/components/directory-print/applyBookletPadding';
@@ -11,11 +13,11 @@ import {
 } from '@/app/(app)/shared/utils/printable-directory-transformers';
 import { PrintableDirectoryResponseDto } from '@/lib/api/generated/data-contracts';
 
-export const RESOURCE_LAYOUT_TO_PRINT_VARIANT = {
-  line: 'line-listing',
-  summary: 'summary-listing',
-  full: 'full-listing',
-} as const;
+/**
+ * Default print-time template when the dialog first opens. Ephemeral only —
+ * never persisted. See docs/adr/0002-remove-resource-layout-and-booklet-fields.md.
+ */
+const DEFAULT_PRINT_VARIANT = 'line-listing';
 
 type PrintPrintableDirectoryButtonProps = {
   directory: PrintableDirectoryResponseDto;
@@ -25,16 +27,16 @@ export function PrintPrintableDirectoryButton({
   directory,
 }: PrintPrintableDirectoryButtonProps) {
   const appConfig = useAppConfig();
+  const { i18n } = useTranslation();
 
-  if (
-    directory.resourceLayout === 'custom-search' ||
-    directory.resourceLayout === 'custom-resource'
-  ) {
-    return null;
-  }
-
-  const initialVariant =
-    RESOURCE_LAYOUT_TO_PRINT_VARIANT[directory.resourceLayout];
+  // Only locales the directory actually has translated content for are
+  // selectable when printing — see docs/printable-directories.md ("A.II.
+  // Localization & automatic translation"). This is always `directory.locales`
+  // regardless of the printing user's own capability (capability only
+  // matters at edit time).
+  const initialLocale = directory.locales.includes(i18n.language)
+    ? i18n.language
+    : directory.primaryLanguage;
 
   const loadData = async (
     locale: string,
@@ -55,7 +57,9 @@ export function PrintPrintableDirectoryButton({
   return (
     <DirectoryPrintControl<PrintableDirectoryPdfData>
       loadData={loadData}
-      initialVariant={initialVariant}
+      initialVariant={DEFAULT_PRINT_VARIANT}
+      availableLocales={directory.locales}
+      initialLocale={initialLocale}
       testId="print-printable-directory-btn"
       renderDocument={(data, context) => (
         <PDFPrintableDirectory
@@ -64,8 +68,8 @@ export function PrintPrintableDirectoryButton({
           brandLogoUrl={appConfig.brand.logoUrl}
         />
       )}
-      postProcessBlob={(blob, data) =>
-        data.isBookletLayout ? applyBookletPadding(blob) : Promise.resolve(blob)
+      postProcessBlob={(blob, _data, isBookletLayout) =>
+        isBookletLayout ? applyBookletPadding(blob) : Promise.resolve(blob)
       }
     />
   );

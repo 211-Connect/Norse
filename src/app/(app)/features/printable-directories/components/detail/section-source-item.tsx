@@ -26,6 +26,7 @@ import {
 import { LOCATION_QUERY_PARAM_KEYS } from '../../utils/constants';
 import { formatQueryParamValue } from '../../utils/formatQueryParamValue';
 import { getLocationConflict } from '../../utils/getLocationConflict';
+import { withDefaultQueryParams } from '../../utils/withDefaultQueryParams';
 import { CollapseToggleButton } from './collapse-toggle-button';
 
 type SectionSourceItemProps = {
@@ -74,7 +75,10 @@ export function SectionSourceItem({
     source.type === 'query' && source.query?.params
       ? `/search?${qs.stringify(
           {
-            ...(source.query.params as Record<string, unknown>),
+            ...withDefaultQueryParams(
+              source.query.params as Record<string, unknown>,
+              defaultQueryConfig,
+            ),
             pdid: directoryId,
             pdsid: sectionId,
           },

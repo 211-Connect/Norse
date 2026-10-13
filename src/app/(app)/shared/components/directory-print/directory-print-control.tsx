@@ -24,7 +24,11 @@ type DirectoryPrintControlProps<TData> = {
     data: TData,
     context: PrintDocumentRenderContext,
   ) => PdfDocumentElement;
-  postProcessBlob?: (blob: Blob, data: TData) => Promise<Blob>;
+  postProcessBlob?: (
+    blob: Blob,
+    data: TData,
+    isBookletLayout: boolean,
+  ) => Promise<Blob>;
 };
 
 export function DirectoryPrintControl<TData>({

@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ReferralButton } from '@/app/(app)/shared/components/referral-button';
 import { LocationSearchBar } from '@/app/(app)/shared/components/search/location-search-bar';
+import { keepDialogOpenWhileAutocompleteIsOpen } from '@/app/(app)/shared/components/ui/autocomplete';
 import { Button } from '@/app/(app)/shared/components/ui/button';
 import {
   Dialog,
@@ -145,6 +146,9 @@ export function GetDirectionsButton({
           id={dialogId}
           restoreFocusElement={triggerRef.current}
           closeLabel={t('call_to_action.close')}
+          onEscapeKeyDown={keepDialogOpenWhileAutocompleteIsOpen}
+          // The location suggestions float over the dialog's bottom edge.
+          className="overflow-visible"
         >
           <DialogHeader>
             <DialogTitle>
@@ -155,14 +159,12 @@ export function GetDirectionsButton({
             </DialogDescription>
           </DialogHeader>
 
-          <div className="min-h-60">
-            <LocationSearchBar
-              mode="standalone"
-              onLocationChange={(_location, coordinates) => {
-                setSelectedCoordinates(coordinates);
-              }}
-            />
-          </div>
+          <LocationSearchBar
+            mode="standalone"
+            onLocationChange={(_location, coordinates) => {
+              setSelectedCoordinates(coordinates);
+            }}
+          />
 
           <div className="flex items-center justify-between">
             <Button onClick={() => setOpen(false)} variant="outline">

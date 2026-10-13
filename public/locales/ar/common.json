@@ -184,7 +184,8 @@
   "autocomplete": {
     "results_available_one": "{{count}} نتيجة متاحة",
     "results_available_other": "{{count}} نتيجة متاحة",
-    "no_results": "لا توجد نتائج"
+    "no_results": "لا توجد نتائج",
+    "loading": "جارٍ تحميل الاقتراحات…"
   },
   "auth_error": {
     "access_denied_title": "تم الرفض",

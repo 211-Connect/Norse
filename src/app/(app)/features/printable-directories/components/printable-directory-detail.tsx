@@ -41,7 +41,7 @@ export function PrintableDirectoryDetail({
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between gap-2">
           <Link
-            href={`/${locale}/directories`}
+            href="/directories"
             className={cn(
               buttonVariants({ variant: 'outline' }),
               'items-center gap-1',

@@ -184,7 +184,8 @@
   "autocomplete": {
     "results_available_one": "{{count}} kết quả có sẵn",
     "results_available_other": "{{count}} kết quả có sẵn",
-    "no_results": "Không có kết quả"
+    "no_results": "Không có kết quả",
+    "loading": "Đang tải gợi ý…"
   },
   "auth_error": {
     "access_denied_title": "Quyền truy cập bị từ chối",

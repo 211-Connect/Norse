@@ -184,7 +184,8 @@
   "autocomplete": {
     "results_available_one": "លទ្ធផល {{count}} មានហើយ",
     "results_available_other": "មានលទ្ធផល {{count}}",
-    "no_results": "គ្មានលទ្ធផលទេ"
+    "no_results": "គ្មានលទ្ធផលទេ",
+    "loading": "កំពុងផ្ទុកការណែនាំ…"
   },
   "auth_error": {
     "access_denied_title": "ការចូលប្រើប្រាស់ត្រូវបានបដិសេធ",

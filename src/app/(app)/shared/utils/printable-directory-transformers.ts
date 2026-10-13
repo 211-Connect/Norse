@@ -75,7 +75,6 @@ export type PrintableDirectoryPdfSectionData = {
  */
 export type PrintableDirectoryPdfData = {
   name: string;
-  isBookletLayout: boolean;
   cover: PrintableDirectoryPdfCoverData;
   header: PrintableDirectoryPdfHeaderFooterData;
   footer: PrintableDirectoryPdfHeaderFooterData;
@@ -290,16 +289,17 @@ export function printableDirectoryPreviewToPdfData(
 ): PrintableDirectoryPdfData {
   return {
     name: preview.name,
-    isBookletLayout: preview.isBookletLayout,
     cover: {
       title:
         getPrintableDirectoryLocalizedText(
           preview.cover.titleLocalized,
           locale,
+          preview.primaryLanguage,
         ) || preview.name,
       description: getPrintableDirectoryLocalizedText(
         preview.cover.descriptionLocalized,
         locale,
+        preview.primaryLanguage,
       ),
       primaryColor: preview.cover.primaryColor,
       coverImageUrlFront: preview.cover.coverImageUrlFront,
@@ -310,16 +310,18 @@ export function printableDirectoryPreviewToPdfData(
       text: getPrintableDirectoryLocalizedText(
         preview.header.textLocalized,
         locale,
+        preview.primaryLanguage,
       ),
-      logoUrl: preview.header.logoUrl,
+      logoUrl: preview.logoUrl,
     },
     footer: {
       layout: preview.footer.layout,
       text: getPrintableDirectoryLocalizedText(
         preview.footer.textLocalized,
         locale,
+        preview.primaryLanguage,
       ),
-      logoUrl: preview.footer.logoUrl,
+      logoUrl: preview.logoUrl,
     },
     sections: preview.sections.map((section) => ({
       id: section.id,

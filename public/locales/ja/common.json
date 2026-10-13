@@ -184,7 +184,8 @@
   "autocomplete": {
     "results_available_one": "{{count}}件の結果が利用可能です",
     "results_available_other": "{{count}}件の結果が利用可能です",
-    "no_results": "検索結果なし"
+    "no_results": "検索結果なし",
+    "loading": "おすすめを読み込んでいます…"
   },
   "auth_error": {
     "access_denied_title": "アクセスが拒否されました",
