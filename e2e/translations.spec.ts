@@ -14,7 +14,7 @@ import {
   performSearch,
   switchLanguage,
   test,
-  waitForPageStabilized,
+  waitForSearchResultsSettled,
 } from './helpers';
 import {
   getCurrentTenant,
@@ -44,7 +44,7 @@ test.describe('Language Persistence And Results Button', () => {
     await applyTestLocationOnSearchPage(page, getCurrentTenant().testLocation);
 
     // Wait for page to fully stabilize after location application
-    await waitForPageStabilized(page);
+    await waitForSearchResultsSettled(page);
 
     const availableFilters = await page
       .locator('#filter-panel [role="checkbox"]')
@@ -60,7 +60,7 @@ test.describe('Language Persistence And Results Button', () => {
     await markFirstNEnabledFilters(page, 3);
 
     // Wait for results to update after filter changes
-    await waitForPageStabilized(page);
+    await waitForSearchResultsSettled(page);
 
     const r2 = await getResultTotalNumber(page);
     expect(r2).toBeLessThanOrEqual(r0);
@@ -79,7 +79,7 @@ test.describe('Language Persistence And Results Button', () => {
     await switchLanguage(page, 'es');
 
     // Wait for language switch and results to stabilize
-    await waitForPageStabilized(page);
+    await waitForSearchResultsSettled(page);
 
     const r2InSpanish = await getResultTotalNumber(page);
     expect(r2InSpanish).toBe(r2);
@@ -96,7 +96,7 @@ test.describe('Language Persistence And Results Button', () => {
     await switchLanguage(page, 'en');
 
     // Wait for language switch back to English and results to stabilize
-    await waitForPageStabilized(page);
+    await waitForSearchResultsSettled(page);
 
     const r2BackInEnglish = await getResultTotalNumber(page);
     expect(r2BackInEnglish).toBe(r2);
