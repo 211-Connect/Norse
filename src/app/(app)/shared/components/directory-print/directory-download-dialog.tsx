@@ -74,16 +74,16 @@ export function DirectoryDownloadDialog({
   const searchParams = useSearchParams();
   const appConfig = useAppConfig();
 
-  const slug = searchParams.get(PD_SLUG_PARAM);
+  const slug = searchParams?.get(PD_SLUG_PARAM);
   const open = Boolean(slug);
   const requestedVariant = parsePrintVariantParam(
-    searchParams.get(PD_VARIANT_PARAM),
+    searchParams?.get(PD_VARIANT_PARAM) ?? null,
   );
   const requestedFontSizeMode = parseFontSizeModeParam(
-    searchParams.get(PD_FONT_SIZE_PARAM),
+    searchParams?.get(PD_FONT_SIZE_PARAM) ?? null,
   );
   const requestedBookletLayout = parseBookletLayoutParam(
-    searchParams.get(PD_BOOKLET_PARAM),
+    searchParams?.get(PD_BOOKLET_PARAM) ?? null,
   );
 
   const [state, setState] = useState<DialogState>({ status: 'loading' });
@@ -182,13 +182,13 @@ export function DirectoryDownloadDialog({
 
     startedForSlugRef.current = null;
 
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams?.toString());
     params.delete(PD_SLUG_PARAM);
     params.delete(PD_VARIANT_PARAM);
     params.delete(PD_FONT_SIZE_PARAM);
     const query = params.toString();
 
-    router.replace(query ? `${pathname}?${query}` : pathname, {
+    router.replace(query ? `${pathname}?${query}` : (pathname ?? '/'), {
       scroll: false,
     });
   };

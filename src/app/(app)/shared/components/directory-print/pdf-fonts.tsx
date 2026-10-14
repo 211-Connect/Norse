@@ -40,8 +40,12 @@ const FONT_FAMILY = {
   oriya: { regular: 'PdfSansOriya', bold: 'PdfSansOriya' },
 } as const satisfies Record<string, PdfFontFamily>;
 
+// The browser fetches fonts from the public URL; the server (scheduled PDF
+// delivery, docs/scheduled-pdf-delivery.md) reads the same files from disk.
 const toSrc = (fileName: string) =>
-  withOptionalCustomBasePath(`/fonts/${fileName}.ttf`);
+  typeof window === 'undefined'
+    ? `${process.cwd()}/public/fonts/${fileName}.ttf`
+    : withOptionalCustomBasePath(`/fonts/${fileName}.ttf`);
 
 Font.register({
   family: FONT_FAMILY.latin.regular,

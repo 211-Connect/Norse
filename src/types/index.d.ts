@@ -65,6 +65,11 @@ declare global {
       // Email service
       SENDGRID_API_KEY?: string;
 
+      // Service-to-service: Norse API internal endpoints and internal routes
+      INTERNAL_API_KEY?: string;
+      /** Overrides the loopback origin for internal routes (scheduled PDF delivery). */
+      INTERNAL_APP_URL?: string;
+
       // Auth
       NEXTAUTH_URL?: string;
 

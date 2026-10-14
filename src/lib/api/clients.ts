@@ -4,6 +4,8 @@ import { Favorite } from './generated/Favorite';
 import { Geocoding } from './generated/Geocoding';
 import { PrintableDirectories } from './generated/PrintableDirectories';
 import { PrintableDirectoriesPublic } from './generated/PrintableDirectoriesPublic';
+import { PrintableDirectoryDeliveries } from './generated/PrintableDirectoryDeliveries';
+import { PrintableDirectoryDeliveriesInternal } from './generated/PrintableDirectoryDeliveriesInternal';
 import { Resource } from './generated/Resource';
 import { Search } from './generated/Search';
 import { ShortUrl } from './generated/ShortUrl';
@@ -34,6 +36,12 @@ export const printableDirectoriesApiClient = new PrintableDirectories(
 
 export const printableDirectoriesPublicApiClient =
   new PrintableDirectoriesPublic(clientArgs);
+
+export const printableDirectoryDeliveriesApiClient =
+  new PrintableDirectoryDeliveries(clientArgs);
+
+export const printableDirectoryDeliveriesInternalApiClient =
+  new PrintableDirectoryDeliveriesInternal(clientArgs);
 
 export const taxonomyScorecardApiClient = new TaxonomyScorecard(clientArgs);
 

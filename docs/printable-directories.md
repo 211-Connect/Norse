@@ -194,7 +194,7 @@ Per-directory `accessPolicy` is enforced by the API.
    | `customHeadersFooters` | Editing header and footer layout and text |
    | `automaticTranslation` | Machine translation into the directory's languages on save |
    | `logoUpload` | The directory logo (`logoUrl`), used in header and footer |
-   | `scheduledPdfDelivery` | Reserved; no feature yet — labelled "not available yet" in the CMS |
+   | `scheduledPdfDelivery` | Emailing the directory's PDF on a schedule; see [scheduled-pdf-delivery.md](./scheduled-pdf-delivery.md) |
 
    Basic (always allowed with basic access): name, share URL, languages,
    access policy, default location, cover title and description, sections

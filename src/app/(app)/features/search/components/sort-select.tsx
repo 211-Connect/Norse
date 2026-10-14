@@ -39,7 +39,7 @@ export function SortSelect() {
   const { start } = useTopLoader();
 
   const handleSortChange = (value: string) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams?.toString());
 
     params.set('sort', value);
 

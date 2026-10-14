@@ -19,6 +19,7 @@ import { CoverCard } from './detail/cover-card';
 import { GeneralInfoCard } from './detail/general-info-card';
 import { HeaderFooterEditorCard } from './detail/header-footer-editor-card';
 import { PrintPrintableDirectoryButton } from './detail/print-printable-directory-button';
+import { ScheduledDeliveriesCard } from './detail/scheduled-deliveries-card';
 import { SectionsEditorCard } from './detail/sections-editor-card';
 import { SharePrintableDirectoryButton } from './detail/share-printable-directory-button';
 
@@ -100,6 +101,8 @@ export function PrintableDirectoryDetail({
         directory={directory}
         onDirectoryUpdated={setDirectory}
       />
+
+      <ScheduledDeliveriesCard directory={directory} />
 
       <CloneDirectoryDialog
         open={isCloneOpen}

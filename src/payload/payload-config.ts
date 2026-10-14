@@ -42,6 +42,7 @@ import {
   taxonomyScorecardsUpdate,
 } from './endpoints/taxonomyScorecards';
 import { defaultLocale, locales } from './i18n/locales';
+import { deliverScheduledPdfs } from './jobs/deliverScheduledPdfs';
 import { translate } from './jobs/translate';
 import { translateTopics } from './jobs/translateTopics';
 import { warmCache } from './jobs/warmCache';
@@ -84,7 +85,7 @@ const config = buildConfig({
     HybridSearchConfig,
   ],
   jobs: {
-    tasks: [translateTopics, translate, warmCache],
+    tasks: [translateTopics, translate, warmCache, deliverScheduledPdfs],
     autoRun: [
       {
         queue: 'translation',
@@ -92,6 +93,10 @@ const config = buildConfig({
       },
       {
         queue: 'cache',
+        cron: '* * * * *',
+      },
+      {
+        queue: 'pdfDelivery',
         cron: '* * * * *',
       },
     ],

@@ -99,7 +99,7 @@ export function ResultsSection({
   const printableListName = shareTitle;
   const aiAlertMessageKey = getAiAlertMessageKey(aiSearchAlert);
   const serializedQueryParams = useMemo(() => {
-    const parsedParams = qs.parse(searchParams.toString());
+    const parsedParams = qs.parse(searchParams?.toString() ?? '');
     const parsedDistance = parseDistanceParam(
       toSingleString(parsedParams.distance),
     );
