@@ -78,6 +78,21 @@ export function trackEvent(
   }
 }
 
+export function trackSearchEvent(
+  queryType: string | undefined,
+  data: Record<string, string>,
+  sessionId?: string,
+): void {
+  const event =
+    queryType === 'taxonomy'
+      ? AnalyticsEvent.SearchTaxonomy
+      : queryType === 'hybrid'
+        ? AnalyticsEvent.SearchHybrid
+        : AnalyticsEvent.SearchText;
+
+  trackEvent(event, AnalyticsTools.Umami, data, sessionId);
+}
+
 export enum ResourceEntry {
   SearchCard = 'search_card',
   TopicCard = 'topic_card',
