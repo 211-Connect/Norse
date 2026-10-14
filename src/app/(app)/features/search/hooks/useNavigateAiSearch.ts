@@ -3,7 +3,6 @@ import {
   ResourceEntry,
   trackSearchEvent,
 } from '@/app/(app)/shared/lib/analytics';
-import { deriveQueryType } from '@/app/(app)/shared/lib/search-utils';
 import { persistSearchDistancePreference } from '@/app/(app)/shared/lib/search-distance-preference';
 import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
@@ -44,12 +43,6 @@ export const useNavigateAiSearch = ({
         return false;
       }
 
-      const queryType = deriveQueryType({
-        searchEngine: appConfig.search.searchEngine,
-        originQueryType: undefined,
-        query,
-      });
-
       const url = buildSearchUrl({
         aiScenario: scenario,
         query,
@@ -67,7 +60,7 @@ export const useNavigateAiSearch = ({
         setDialogOpen?.(false);
         setSearchEntry(ResourceEntry.SearchCard);
         trackSearchEvent(
-          queryType,
+          'hybrid',
           {
             query,
             queryLabel: String(search.queryLabel ?? ''),
