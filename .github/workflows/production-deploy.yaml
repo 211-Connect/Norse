@@ -260,3 +260,27 @@ jobs:
                 }
               ]
             }
+
+  notify-e2e-success:
+    if: needs.e2e-tests.result == 'success'
+    needs: [e2e-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack notification - Production E2E Passed
+        uses: slackapi/slack-github-action@v2.1.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": ":white_check_mark: *Production E2E Passed*",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ":white_check_mark: *Production E2E Tests Passed*\nAll tenant e2e suites passed against production after this release.\n*Tag:* `${{ github.ref_name }}`\n*Author:* ${{ github.actor }}"
+                  }
+                }
+              ]
+            }
