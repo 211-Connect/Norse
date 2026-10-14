@@ -19,6 +19,8 @@ import {
   HoursComponent,
   LocationNameComponent,
   LocationNameSubtitleComponent,
+  OrganizationAlternateNameComponent,
+  OrganizationAlternateNameSubtitleComponent,
   PhoneComponent,
   ResourceNameComponent,
   SearchCardComponentProps,
@@ -40,6 +42,10 @@ export const searchCardComponentRegistry: Record<
   [SearchCardComponentId.HOURS]: HoursComponent,
   [SearchCardComponentId.LOCATION_NAME]: LocationNameComponent,
   [SearchCardComponentId.LOCATION_NAME_SUBTITLE]: LocationNameSubtitleComponent,
+  [SearchCardComponentId.ORGANIZATION_ALTERNATE_NAME]:
+    OrganizationAlternateNameComponent,
+  [SearchCardComponentId.ORGANIZATION_ALTERNATE_NAME_SUBTITLE]:
+    OrganizationAlternateNameSubtitleComponent,
   [SearchCardComponentId.ADDRESS]: AddressComponent,
   [SearchCardComponentId.PHONE]: PhoneComponent,
   [SearchCardComponentId.WEBSITE]: WebsiteComponent,
@@ -106,6 +112,9 @@ export function shouldSearchCardComponentRender(
       return Boolean(result.locationName);
     case SearchCardComponentId.LOCATION_NAME_SUBTITLE:
       return Boolean(result.locationName);
+    case SearchCardComponentId.ORGANIZATION_ALTERNATE_NAME:
+    case SearchCardComponentId.ORGANIZATION_ALTERNATE_NAME_SUBTITLE:
+      return Boolean(result.organizationAlternateName);
     case SearchCardComponentId.PHONE:
       return Boolean(result.phone);
     case SearchCardComponentId.WEBSITE:

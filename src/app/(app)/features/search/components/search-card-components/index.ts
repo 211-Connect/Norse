@@ -10,6 +10,8 @@ export * from './eligibility';
 export * from './hours';
 export * from './location-name';
 export * from './location-name-subtitle';
+export * from './organization-alternate-name';
+export * from './organization-alternate-name-subtitle';
 export * from './phone';
 export * from './resource-name';
 export * from './service-name';

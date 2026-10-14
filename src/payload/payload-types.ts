@@ -944,6 +944,8 @@ export interface ResourceDirectory {
             | 'hours'
             | 'locationName'
             | 'locationNameSubtitle'
+            | 'organizationAlternateName'
+            | 'organizationAlternateNameSubtitle'
             | 'address'
             | 'phone'
             | 'website'
