@@ -116,6 +116,30 @@ export async function searchAndGetFirstResult(
   return { link, name };
 }
 
+/**
+ * Settle point after a search-results navigation (location change, filter
+ * toggle, language switch). Waits on the page's own completion signals - the
+ * route toploader finishing and the filter panel leaving its `isPending`
+ * (disabled) state, which only clears once the new search params commit -
+ * instead of `networkidle`. Some tenants' third-party trackers (e.g. Feathr on
+ * WA holds `polo.feathr.co/v1/analytics/crumb` requests open for 10s+) mean
+ * `networkidle` is reached only by chance there.
+ */
+export async function waitForSearchResultsSettled(page: Page) {
+  await page
+    .getByTestId('toploader-bar')
+    .waitFor({ state: 'hidden', timeout: SEARCH_NAV_TIMEOUT_MS });
+  await expect(page.locator('#search-container')).toBeVisible({
+    timeout: UI_SHELL_TIMEOUT_MS,
+  });
+  // Data-thin tenants/locations can render no facets at all; callers decide
+  // whether that's a skip, so only wait on the panel when it has checkboxes.
+  const checkboxes = page.locator('#filter-panel [role="checkbox"]');
+  if ((await checkboxes.count()) > 0) {
+    await waitForFilterPanelInteractive(page);
+  }
+}
+
 export async function getResultTotal(page: Page): Promise<string> {
   const resultTotal = page.locator('#result-total');
   await resultTotal.waitFor({ state: 'visible', timeout: UI_SHELL_TIMEOUT_MS });
@@ -254,8 +278,9 @@ export async function applyTestLocationOnSearchPage(
     .poll(() => options.count(), { timeout: AUTOCOMPLETE_TIMEOUT_MS })
     .toBeGreaterThan(1);
   await locationInput.press('Enter');
-  await expect(page.locator('#search-container')).toBeVisible({
-    timeout: UI_SHELL_TIMEOUT_MS,
-  });
-  await waitForFilterPanelInteractive(page);
+  // The location picker lives in the search dialog; until it closes it
+  // intercepts clicks on the filter panel behind it.
+  await expectSearchDialogDismissed(page);
+  await expectPageUrl(page, (u) => u.searchParams.has('location'));
+  await waitForSearchResultsSettled(page);
 }

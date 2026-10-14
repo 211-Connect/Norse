@@ -17,7 +17,10 @@ Scope: `e2e/**`. Read this before adding or editing Playwright specs or helpers.
    transient cards). Where a signal exists — a testid becoming visible, a URL
    matching, a container appearing — assert on that instead and drop
    `networkidle`. `waitForPageStabilized()` (networkidle + toploader-hidden)
-   is the accepted base primitive for "settle after navigation."
+   is the accepted base primitive for "settle after navigation." On search
+   results pages use `waitForSearchResultsSettled()` instead: tenant-injected
+   trackers (e.g. Feathr on WA, whose requests hang 10s+) make `networkidle`
+   reachable only by chance there.
 4. Value comparisons across state changes (e.g. a result count compared
    before/after a language switch) must poll until the value is **stable**
    (unchanged across two reads), not just present — see
@@ -104,16 +107,16 @@ codes/labels, broad queries, test-account emails, `aiSearchEnabled`,
 Barrel `index.ts` re-exports everything plus the customized `test`/`expect`
 — specs import from `./helpers`, never from an individual module file.
 
-| Module          | Contents                                                                                                                   |
-| --------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `url.ts`        | URL predicates, `expectPageUrl`, integer/text parsing, regex-escaping utils                                                |
-| `navigation.ts` | `goHome`, `waitForPageStabilized`, `expectAuthenticatedShell`                                                              |
-| `search.ts`     | Search dialog, `performSearch`, `searchAndGetFirstResult`, result-total/title getters, topic search, location filter setup |
-| `filters.ts`    | Filter-panel helpers (`markFiltersByIds`, `markFirstNEnabledFilters`, etc.)                                                |
-| `favorites.ts`  | Favorites navigation, list-page waits, dialog add/remove flows                                                             |
-| `auth.ts`       | `loginViaKeycloak`                                                                                                         |
-| `i18n.ts`       | `switchLanguage`                                                                                                           |
-| `internal.ts`   | Non-exported-from-barrel internals (e.g. `isVisible` for branching logic)                                                  |
+| Module          | Contents                                                                                                                                                  |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `url.ts`        | URL predicates, `expectPageUrl`, integer/text parsing, regex-escaping utils                                                                               |
+| `navigation.ts` | `goHome`, `waitForPageStabilized`, `expectAuthenticatedShell`                                                                                             |
+| `search.ts`     | Search dialog, `performSearch`, `searchAndGetFirstResult`, `waitForSearchResultsSettled`, result-total/title getters, topic search, location filter setup |
+| `filters.ts`    | Filter-panel helpers (`markFiltersByIds`, `markFirstNEnabledFilters`, etc.)                                                                               |
+| `favorites.ts`  | Favorites navigation, list-page waits, dialog add/remove flows                                                                                            |
+| `auth.ts`       | `loginViaKeycloak`                                                                                                                                        |
+| `i18n.ts`       | `switchLanguage`                                                                                                                                          |
+| `internal.ts`   | Non-exported-from-barrel internals (e.g. `isVisible` for branching logic)                                                                                 |
 
 New helpers go in the module matching their domain, not back into a flat
 file. If a helper doesn't fit an existing module, that's a signal to add one
