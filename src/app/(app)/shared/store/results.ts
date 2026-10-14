@@ -13,6 +13,7 @@ export type ResultType = {
   location: Location | null;
   name: string;
   locationName: string | null;
+  organizationAlternateName: string | null;
   phone: string;
   attribution: string | null;
   priority: number;
