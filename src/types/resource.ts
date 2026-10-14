@@ -79,6 +79,7 @@ export interface Resource {
     coordinates: number[];
   } | null;
   organizationName: string | null;
+  organizationAlternateName: string | null;
   organizationDescription: string | null;
   organizationUrl: string | null;
   serviceArea: ServiceArea | null;

@@ -68,6 +68,7 @@ function transformApiResource(data: TransformedResourceOpenApiDto): Resource {
         }
       : null,
     organizationName: data?.organizationName ?? null,
+    organizationAlternateName: data?.organizationAlternateName ?? null,
     organizationDescription: data?.translation?.organizationDescription ?? null,
     organizationUrl: data?.organizationUrl ?? null,
     serviceArea: (data?.serviceArea as ServiceArea) ?? null,

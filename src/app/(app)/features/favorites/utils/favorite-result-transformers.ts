@@ -61,7 +61,7 @@ export function favoriteToResult(
       (favorite.location as
         { type: 'Point'; coordinates: number[] } | null | undefined) ?? null,
     locationName: favorite.locationName ?? null,
-    organizationAlternateName: null,
+    organizationAlternateName: favorite.organizationAlternateName ?? null,
     name: (translation?.displayName ?? displayName) || '',
     phone: displayPhoneNumber || '',
     attribution: favorite.attribution ?? null,
@@ -98,7 +98,7 @@ export function resourceToLocalFavoriteResult(
         }
       : null,
     locationName: resource.locationName ?? null,
-    organizationAlternateName: null,
+    organizationAlternateName: resource.organizationAlternateName ?? null,
     name: resource.name ?? '',
     phone: resource.phone ?? '',
     attribution: resource.attribution ?? null,
