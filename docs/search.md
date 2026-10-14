@@ -82,6 +82,12 @@ onto the `/search` URL. The results page reads them back verbatim via
 `parseSearchParams.ts` — nothing downstream needs to know how a `queryType`
 was derived, only what it is.
 
+Search submissions use the resolved `query_type` for their Umami custom event:
+`taxonomy` emits `search_taxonomy`, `hybrid` emits `search_hybrid`, and other
+searches emit `search_text`. This includes free-text searches on `hybrid` and
+`ai_classification` tenants, even though the search input's own `queryType` is
+`text` (or unset for AI-classification navigation).
+
 ## The AI-classification precedent
 
 For `ai_classification` tenants, a free-text query triggers a second API
