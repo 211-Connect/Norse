@@ -1,9 +1,20 @@
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 
 import { withOptionalCustomBasePath } from '@/app/(app)/shared/lib/utils';
 
+dayjs.extend(utc);
+
+export function getUtcDayStart(date: string): number {
+  return dayjs.utc(date).startOf('day').valueOf();
+}
+
+export function getUtcDayEnd(date: string): number {
+  return dayjs.utc(date).endOf('day').valueOf();
+}
+
 /**
- * Validates a custom date range.
+ * Validates a custom date range whose calendar dates are interpreted in UTC.
  * @param start - Start date in YYYY-MM-DD format
  * @param end - End date in YYYY-MM-DD format
  * @returns Error message if invalid, null if valid
@@ -13,19 +24,18 @@ export function validateDateRange(start: string, end: string): string | null {
     return 'Both start and end dates are required';
   }
 
-  const startDate = dayjs(start);
-  const endDate = dayjs(end);
-  const today = dayjs();
-
+  const startDate = dayjs.utc(start);
+  const endDate = dayjs.utc(end);
+  const today = dayjs.utc().format('YYYY-MM-DD');
   if (!startDate.isValid() || !endDate.isValid()) {
     return 'Invalid date format';
   }
 
-  if (endDate.isBefore(startDate)) {
+  if (endDate.isBefore(startDate, 'day')) {
     return 'End date must be after start date';
   }
 
-  if (startDate.isAfter(today) || endDate.isAfter(today)) {
+  if (start > today || end > today) {
     return 'Dates cannot be in the future';
   }
 

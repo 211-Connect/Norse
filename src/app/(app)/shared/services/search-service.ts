@@ -88,6 +88,8 @@ function transformSearchHits(
       attribution: hit?._source?.attribution ?? null,
       name: hit?._source?.name ?? null,
       locationName: hit?._source?.location?.name ?? null,
+      organizationAlternateName:
+        hit?._source?.organization?.alternate_name ?? null,
       summary: hit?._source?.service?.summary ?? null,
       description: hit?._source?.service?.description ?? null,
       phone: hit?._source?.phone ?? null,

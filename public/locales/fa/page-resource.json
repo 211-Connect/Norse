@@ -32,5 +32,6 @@
   "resource_name": "نام منبع",
   "quality": "اطلاعات کیفیت",
   "contacts": "اطلاعات تماس اضافی",
-  "quality_others": "دیگران"
+  "quality_others": "دیگران",
+  "organization_alternate_name": "نام جایگزین سازمان"
 }

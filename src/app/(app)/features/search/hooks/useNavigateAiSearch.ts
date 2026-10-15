@@ -1,6 +1,9 @@
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import {
+  ResourceEntry,
+  trackSearchEvent,
+} from '@/app/(app)/shared/lib/analytics';
 import { persistSearchDistancePreference } from '@/app/(app)/shared/lib/search-distance-preference';
-import { ResourceEntry } from '@/app/(app)/shared/lib/analytics';
 import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
 import { buildSearchUrl } from '../utils/buildSearchUrl';
@@ -56,6 +59,15 @@ export const useNavigateAiSearch = ({
       startTransition(() => {
         setDialogOpen?.(false);
         setSearchEntry(ResourceEntry.SearchCard);
+        trackSearchEvent(
+          'hybrid',
+          {
+            query,
+            queryLabel: String(search.queryLabel ?? ''),
+            tenantId: appConfig.tenantId ?? '',
+          },
+          appConfig.sessionId,
+        );
         router.push(url);
       });
 
@@ -71,6 +83,8 @@ export const useNavigateAiSearch = ({
       search.searchCoordinates,
       search.searchDistance,
       appConfig.search.searchEngine,
+      appConfig.sessionId,
+      appConfig.tenantId,
       setDialogOpen,
       setSearchEntry,
       startTransition,

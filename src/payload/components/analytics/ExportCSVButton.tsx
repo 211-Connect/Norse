@@ -9,26 +9,7 @@ import {
   analyticsDateRangeAtom,
   analyticsSelectedWebsiteIdsAtom,
 } from './DateRange';
-
-function buildExportUrl(params: {
-  startAt: number;
-  endAt: number;
-  tenantId: string;
-  websiteIds: string[];
-}): string {
-  const searchParams = new URLSearchParams({
-    startAt: String(params.startAt),
-    endAt: String(params.endAt),
-    tenantId: params.tenantId,
-  });
-
-  if (params.websiteIds.length > 0) {
-    searchParams.set('websiteIds', params.websiteIds.join(','));
-  }
-
-  return `/api/export-search-analytics?${searchParams}`;
-}
-
+import { getUtcDayEnd, getUtcDayStart } from './utils';
 export default function ExportCSVButton() {
   const range = useAtomValue(analyticsDateRangeAtom);
   const websiteIds = useAtomValue(analyticsSelectedWebsiteIdsAtom);
@@ -42,11 +23,12 @@ export default function ExportCSVButton() {
   let endAt: number;
 
   if (typeof range === 'number') {
-    endAt = dayjs().endOf('day').valueOf();
-    startAt = dayjs().subtract(range, 'day').startOf('day').valueOf();
+    const now = dayjs.utc();
+    endAt = getUtcDayEnd(now.format('YYYY-MM-DD'));
+    startAt = getUtcDayStart(now.subtract(range, 'day').format('YYYY-MM-DD'));
   } else {
-    startAt = dayjs(range.start).startOf('day').valueOf();
-    endAt = dayjs(range.end).endOf('day').valueOf();
+    startAt = getUtcDayStart(range.start);
+    endAt = getUtcDayEnd(range.end);
   }
 
   const href = buildExportUrl({
@@ -67,4 +49,23 @@ export default function ExportCSVButton() {
       Export CSV
     </Button>
   );
+}
+
+function buildExportUrl(params: {
+  startAt: number;
+  endAt: number;
+  tenantId: string;
+  websiteIds: string[];
+}): string {
+  const searchParams = new URLSearchParams({
+    startAt: String(params.startAt),
+    endAt: String(params.endAt),
+    tenantId: params.tenantId,
+  });
+
+  if (params.websiteIds.length > 0) {
+    searchParams.set('websiteIds', params.websiteIds.join(','));
+  }
+
+  return `/api/export-search-analytics?${searchParams}`;
 }

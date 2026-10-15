@@ -32,5 +32,6 @@
   "resource_name": "Название ресурса",
   "quality": "Информация о качестве",
   "contacts": "Дополнительная контактная информация",
-  "quality_others": "Другие"
+  "quality_others": "Другие",
+  "organization_alternate_name": "Альтернативное название организации"
 }

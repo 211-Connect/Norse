@@ -32,5 +32,6 @@
   "resource_name": "Pangalan ng Mapagkukunan",
   "quality": "Impormasyon sa Kalidad",
   "contacts": "Karagdagang Impormasyon sa Pakikipag-ugnayan",
-  "quality_others": "Iba pa"
+  "quality_others": "Iba pa",
+  "organization_alternate_name": "Alternatibong Pangalan ng Organisasyon"
 }

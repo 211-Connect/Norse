@@ -1,11 +1,10 @@
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
-import { persistSearchDistancePreference } from '@/app/(app)/shared/lib/search-distance-preference';
 import {
-  AnalyticsEvent,
-  AnalyticsTools,
   ResourceEntry,
-  trackEvent,
+  trackSearchEvent,
 } from '@/app/(app)/shared/lib/analytics';
+import { deriveQueryType } from '@/app/(app)/shared/lib/search-utils';
+import { persistSearchDistancePreference } from '@/app/(app)/shared/lib/search-distance-preference';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
 import { buildSearchUrl } from '../utils/buildSearchUrl';
@@ -42,6 +41,11 @@ export const useNavigateClassicSearch = ({
           ? search.query
           : search.query || search.searchTerm;
 
+        const queryType = deriveQueryType({
+          searchEngine: appConfig.search.searchEngine,
+          originQueryType: search.queryType,
+          query,
+        });
         const hasCoordinates = search.searchCoordinates.length === 2;
         // Persisted back into the atom after navigation below — unrelated to
         // the URL itself, which buildSearchUrl derives from the explicit
@@ -76,28 +80,7 @@ export const useNavigateClassicSearch = ({
           ...(utmSource ? { utm_source: utmSource } : {}),
         };
 
-        if (search.queryType === 'taxonomy') {
-          trackEvent(
-            AnalyticsEvent.SearchTaxonomy,
-            AnalyticsTools.Umami,
-            umamiPayload,
-            appConfig.sessionId,
-          );
-        } else if (search.queryType === 'hybrid') {
-          trackEvent(
-            AnalyticsEvent.SearchHybrid,
-            AnalyticsTools.Umami,
-            umamiPayload,
-            appConfig.sessionId,
-          );
-        } else {
-          trackEvent(
-            AnalyticsEvent.SearchText,
-            AnalyticsTools.Umami,
-            umamiPayload,
-            appConfig.sessionId,
-          );
-        }
+        trackSearchEvent(queryType, umamiPayload, appConfig.sessionId);
 
         setDialogOpen?.(false);
         setSearchEntry(ResourceEntry.SearchCard);
@@ -112,6 +95,7 @@ export const useNavigateClassicSearch = ({
     [
       appConfig.search.searchEngine,
       appConfig.tenantId,
+      appConfig.sessionId,
       distance,
       router,
       search,

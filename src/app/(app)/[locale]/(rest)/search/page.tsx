@@ -171,7 +171,10 @@ export const generateMetadata = async ({
   const searchQuery = parseSearchParams(rawParams);
 
   const baseTitle = appConfig.meta.title || appConfig.brand.name || '';
-  const parts = [searchQuery.query, searchQuery.location].filter(
+  const parts = [
+    searchQuery.queryLabel || searchQuery.query,
+    searchQuery.location,
+  ].filter(
     (value): value is string =>
       typeof value === 'string' && value.trim() !== '',
   );

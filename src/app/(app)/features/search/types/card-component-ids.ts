@@ -8,6 +8,8 @@ export enum SearchCardComponentId {
   HOURS = 'hours',
   LOCATION_NAME = 'locationName',
   LOCATION_NAME_SUBTITLE = 'locationNameSubtitle',
+  ORGANIZATION_ALTERNATE_NAME = 'organizationAlternateName',
+  ORGANIZATION_ALTERNATE_NAME_SUBTITLE = 'organizationAlternateNameSubtitle',
   ADDRESS = 'address',
   PHONE = 'phone',
   WEBSITE = 'website',

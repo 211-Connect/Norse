@@ -32,5 +32,6 @@
   "resource_name": "Nome do recurso",
   "quality": "Informações de qualidade",
   "contacts": "Informações de contato adicionais",
-  "quality_others": "Outros"
+  "quality_others": "Outros",
+  "organization_alternate_name": "Nome alternativo da organização"
 }

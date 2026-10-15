@@ -32,5 +32,6 @@
   "resource_name": "리소스 이름",
   "quality": "품질 정보",
   "contacts": "추가 연락처 정보",
-  "quality_others": "기타"
+  "quality_others": "기타",
+  "organization_alternate_name": "조직 대체 명칭"
 }
