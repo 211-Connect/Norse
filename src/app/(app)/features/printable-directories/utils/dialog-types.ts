@@ -2,6 +2,7 @@ import {
   CreatePrintableDirectorySectionDto,
   PrintableDirectoryCoverDto,
   PrintableDirectoryHeaderFooterDto,
+  PrintableDirectoryLocalizedValuesDto,
 } from '@/lib/api/generated/data-contracts';
 
 export type CoverDialogValues = Required<
@@ -9,18 +10,19 @@ export type CoverDialogValues = Required<
     PrintableDirectoryCoverDto,
     | 'titleLocalized'
     | 'descriptionLocalized'
-    | 'primaryColor'
     | 'coverImageUrlBack'
     | 'coverImageUrlFront'
   >
 >;
 
-export type HeaderFooterDialogValues = Omit<
-  PrintableDirectoryHeaderFooterDto,
-  'logoUrl'
->;
+export type HeaderFooterDialogValues = PrintableDirectoryHeaderFooterDto;
 
 export type SectionDialogValues = Pick<
   CreatePrintableDirectorySectionDto,
   'headingLocalized' | 'descriptionLocalized' | 'maxResources'
 >;
+
+export const EMPTY_LOCALIZED_VALUES: PrintableDirectoryLocalizedValuesDto = {
+  values: {},
+  autoTranslatedLocales: [],
+};

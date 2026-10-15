@@ -184,7 +184,8 @@
   "autocomplete": {
     "results_available_one": "{{count}} ଫଳାଫଳ ଉପଲବ୍ଧ ଅଛି",
     "results_available_other": "{{count}} ଫଳାଫଳ ଉପଲବ୍ଧ ଅଛି",
-    "no_results": "କୌଣସି ଫଳାଫଳ ନାହିଁ"
+    "no_results": "କୌଣସି ଫଳାଫଳ ନାହିଁ",
+    "loading": "ପରାମର୍ଶ ଲୋଡ୍ ହେଉଛି…"
   },
   "auth_error": {
     "access_denied_title": "ପ୍ରବେଶ ନିଷେଧ",

@@ -1025,17 +1025,51 @@ export interface ResourceDirectory {
     requireAuthenticationForFavorites?: boolean | null;
     showAgeFilter?: boolean | null;
     enablePrintableDirectories?: boolean | null;
-    maxResourcesConfigurable?: boolean | null;
-    defaultMaxResources?: number | null;
-    printableDirectoriesAllowedEmails?:
+  };
+  printableDirectories?: {
+    /**
+     * Everyone: every signed-in user of this tenant can use the basic feature. Restricted Allow-list: only the emails/domains below can use it at all.
+     */
+    accessMode?: ('everyone' | 'allowlist') | null;
+    allowedEmails?:
       | {
           email: string;
           id?: string | null;
         }[]
       | null;
-    printableDirectoriesAllowedDomains?:
+    allowedDomains?:
       | {
           domain: string;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Grant specific premium capabilities to users matched by email or domain. A user's effective capabilities are the union of every group they match.
+     */
+    userGroups?:
+      | {
+          name: string;
+          emails?:
+            | {
+                email: string;
+                id?: string | null;
+              }[]
+            | null;
+          domains?:
+            | {
+                domain: string;
+                id?: string | null;
+              }[]
+            | null;
+          capabilities?:
+            | (
+                | 'logoUpload'
+                | 'coverCustomization'
+                | 'customHeadersFooters'
+                | 'automaticTranslation'
+                | 'scheduledPdfDelivery'
+              )[]
+            | null;
           id?: string | null;
         }[]
       | null;
@@ -1856,18 +1890,40 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         requireAuthenticationForFavorites?: T;
         showAgeFilter?: T;
         enablePrintableDirectories?: T;
-        maxResourcesConfigurable?: T;
-        defaultMaxResources?: T;
-        printableDirectoriesAllowedEmails?:
+      };
+  printableDirectories?:
+    | T
+    | {
+        accessMode?: T;
+        allowedEmails?:
           | T
           | {
               email?: T;
               id?: T;
             };
-        printableDirectoriesAllowedDomains?:
+        allowedDomains?:
           | T
           | {
               domain?: T;
+              id?: T;
+            };
+        userGroups?:
+          | T
+          | {
+              name?: T;
+              emails?:
+                | T
+                | {
+                    email?: T;
+                    id?: T;
+                  };
+              domains?:
+                | T
+                | {
+                    domain?: T;
+                    id?: T;
+                  };
+              capabilities?: T;
               id?: T;
             };
       };

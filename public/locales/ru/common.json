@@ -184,7 +184,8 @@
   "autocomplete": {
     "results_available_one": "{{count}} результатов доступно",
     "results_available_other": "{{count}} результатов доступно",
-    "no_results": "Результаты отсутствуют"
+    "no_results": "Результаты отсутствуют",
+    "loading": "Загрузка предложений…"
   },
   "auth_error": {
     "access_denied_title": "Доступ запрещен",

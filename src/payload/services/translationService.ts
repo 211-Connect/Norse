@@ -35,6 +35,7 @@ export interface BatchTranslationResult {
 }
 
 const CACHE_TTL = 31536000; // 1 year in seconds
+const DEFAULT_SOURCE_LOCALE = 'en';
 
 function createTextHash(text: string): string {
   return crypto.createHash('sha256').update(text, 'utf8').digest('hex');
@@ -42,16 +43,25 @@ function createTextHash(text: string): string {
 
 function createCacheKey(
   engine: TranslationEngine,
+  sourceLocale: string,
   locale: string,
-  englishText: string,
+  text: string,
 ): string {
-  const hash = createTextHash(englishText);
-  return `${engine}:${locale}:${hash}`;
+  const hash = createTextHash(text);
+  // Omit the source locale segment entirely when it's the default ('en'),
+  // the overwhelming majority of historical cache entries, so this change
+  // doesn't invalidate the existing (large) cache. Only non-English sources
+  // — which never existed before `primaryLanguage` was introduced — get the
+  // new, more specific key shape.
+  return sourceLocale === DEFAULT_SOURCE_LOCALE
+    ? `${engine}:${locale}:${hash}`
+    : `${engine}:${sourceLocale}:${locale}:${hash}`;
 }
 
 async function translateWithAzure(
   texts: string[],
   targetLocale: string,
+  sourceLocale: string,
 ): Promise<string[]> {
   const apiKey = process.env.AZURE_TRANSLATOR_KEY;
   const endpoint =
@@ -73,7 +83,7 @@ async function translateWithAzure(
     body: inputText,
     queryParameters: {
       to: targetLocale,
-      from: 'en',
+      from: sourceLocale,
     },
   });
 
@@ -89,6 +99,7 @@ async function translateWithAzure(
 async function translateWithGoogle(
   texts: string[],
   targetLocale: string,
+  sourceLocale: string,
 ): Promise<string[]> {
   const credentialsBase64 = process.env.GOOGLE_TRANSLATE_CREDENTIALS_BASE64;
 
@@ -108,7 +119,7 @@ async function translateWithGoogle(
     parent: `projects/${projectId}/locations/${location}`,
     contents: texts,
     mimeType: 'text/plain',
-    sourceLanguageCode: 'en',
+    sourceLanguageCode: LANGUAGE_ALIAS[sourceLocale] || sourceLocale,
     targetLanguageCode: LANGUAGE_ALIAS[targetLocale] || targetLocale,
   };
 
@@ -119,6 +130,7 @@ async function translateWithGoogle(
 export async function batchTranslate(
   engine: TranslationEngine,
   inputs: BatchTranslationInput[],
+  sourceLocale: string = DEFAULT_SOURCE_LOCALE,
 ): Promise<BatchTranslationResult[]> {
   const results: BatchTranslationResult[] = new Array(inputs.length);
 
@@ -139,7 +151,12 @@ export async function batchTranslate(
     const itemsToTranslate: typeof inputsWithIndex = [];
 
     for (const item of localeInputs) {
-      const cacheKey = createCacheKey(engine, locale, item.input.text);
+      const cacheKey = createCacheKey(
+        engine,
+        sourceLocale,
+        locale,
+        item.input.text,
+      );
       const cached = await translationCacheService.get(cacheKey);
 
       if (cached) {
@@ -160,15 +177,28 @@ export async function batchTranslate(
       let translations: string[];
 
       if (engine === 'azure') {
-        translations = await translateWithAzure(textsToTranslate, locale);
+        translations = await translateWithAzure(
+          textsToTranslate,
+          locale,
+          sourceLocale,
+        );
       } else {
-        translations = await translateWithGoogle(textsToTranslate, locale);
+        translations = await translateWithGoogle(
+          textsToTranslate,
+          locale,
+          sourceLocale,
+        );
       }
 
       for (let i = 0; i < translations.length; i++) {
         const item = itemsToTranslate[i];
         const translatedText = translations[i];
-        const cacheKey = createCacheKey(engine, locale, item.input.text);
+        const cacheKey = createCacheKey(
+          engine,
+          sourceLocale,
+          locale,
+          item.input.text,
+        );
 
         await translationCacheService.set(cacheKey, translatedText, CACHE_TTL);
 
@@ -190,8 +220,13 @@ export async function translate(
   engine: TranslationEngine,
   text: string,
   targetLocale: string,
+  sourceLocale: string = DEFAULT_SOURCE_LOCALE,
 ): Promise<TranslationResult> {
-  const results = await batchTranslate(engine, [{ text, targetLocale }]);
+  const results = await batchTranslate(
+    engine,
+    [{ text, targetLocale }],
+    sourceLocale,
+  );
   const result = results[0];
 
   return {

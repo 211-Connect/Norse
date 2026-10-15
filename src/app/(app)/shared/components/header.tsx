@@ -29,7 +29,7 @@ import {
 import { AnalyticsEvent, AnalyticsTools, trackEvent } from '../lib/analytics';
 import { cn, withOptionalTrailingSlash } from '../lib/utils';
 import { dialogsAtom } from '../store/dialogs';
-import { canAccessPrintableDirectories } from '../utils/canAccessPrintableDirectories';
+import { usePrintableDirectoryAccess } from '../hooks/use-printable-directory-capability';
 import { FontSizeToggle } from './accessibility/font-size-toggle';
 import { LanguageSwitcher } from './language-switcher';
 import { Link } from './link';
@@ -118,10 +118,8 @@ export function Header() {
     appConfig.header.favoritesButtonLabel?.trim() || t('header.my_stuff');
   const feedbackButtonLabel =
     appConfig.header.feedbackButtonLabel?.trim() || t('header.report');
-  const hasPrintableDirectoriesAccess = canAccessPrintableDirectories(
-    session.data?.user?.email,
-    appConfig,
-  );
+  const { canAccess: hasPrintableDirectoriesAccess } =
+    usePrintableDirectoryAccess();
 
   const sitemap = useMemo(
     () =>

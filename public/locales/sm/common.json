@@ -184,7 +184,8 @@
   "autocomplete": {
     "results_available_one": "{{count}} i'uga o lo'o maua",
     "results_available_other": "{{count}} i'uga o lo'o maua",
-    "no_results": "Leai ni taunuuga"
+    "no_results": "Leai ni taunuuga",
+    "loading": "O lo'o utaina fautuaga…"
   },
   "auth_error": {
     "access_denied_title": "Ua teena le ulufale",

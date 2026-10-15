@@ -184,7 +184,8 @@
   "autocomplete": {
     "results_available_one": "{{count}} Ergebnisse verfügbar",
     "results_available_other": "{{count}} Ergebnisse verfügbar",
-    "no_results": "Keine Ergebnisse"
+    "no_results": "Keine Ergebnisse",
+    "loading": "Ladevorschläge…"
   },
   "auth_error": {
     "access_denied_title": "Zugriff verweigert",

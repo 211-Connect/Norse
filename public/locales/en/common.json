@@ -224,7 +224,8 @@
   "autocomplete": {
     "results_available_one": "{{count}} result available",
     "results_available_other": "{{count}} results available",
-    "no_results": "No results"
+    "no_results": "No results",
+    "loading": "Loading suggestions…"
   },
   "needs": {
     "AR-100": {

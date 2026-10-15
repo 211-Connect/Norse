@@ -3,6 +3,8 @@
 import { Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+import { Checkbox } from '@/app/(app)/shared/components/ui/checkbox';
+import { Label } from '@/app/(app)/shared/components/ui/label';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
 import {
   PRINT_DIALOG_LANGUAGE_CONTENT_ID,
@@ -21,12 +23,17 @@ type PrintFormatOptionsProps = {
   selectedLocale: string;
   onSelectedLocaleChange: (locale: string) => void;
   availableLocales: string[];
+  isBookletLayout?: boolean;
+  /** Omit to hide the booklet option (only printable directories support it). */
+  onBookletLayoutChange?: (value: boolean) => void;
 };
 
 /**
- * Print variant + font size + language controls shared by the print dialog
- * and the share dialog, so both flows offer the same directory-format
- * choices.
+ * Print variant + font size + booklet + language controls shared by the
+ * print dialog and the share dialog, so both flows offer the same
+ * directory-format choices. All of these are ephemeral, print-time-only
+ * choices (never persisted on the directory) — see
+ * docs/adr/0002-remove-resource-layout-and-booklet-fields.md.
  */
 export function PrintFormatOptions({
   selectedVariant,
@@ -36,6 +43,8 @@ export function PrintFormatOptions({
   selectedLocale,
   onSelectedLocaleChange,
   availableLocales,
+  isBookletLayout,
+  onBookletLayoutChange,
 }: PrintFormatOptionsProps) {
   const { t } = useTranslation('page-list');
 
@@ -196,6 +205,22 @@ export function PrintFormatOptions({
           </button>
         </div>
       </div>
+
+      {onBookletLayoutChange && (
+        <div className="flex items-center gap-2">
+          <Checkbox
+            id="print-format-booklet-layout"
+            checked={isBookletLayout ?? false}
+            onCheckedChange={(value) => onBookletLayoutChange(value === true)}
+          />
+          <Label
+            htmlFor="print-format-booklet-layout"
+            className="cursor-pointer"
+          >
+            {t('print_dialog.booklet_layout')}
+          </Label>
+        </div>
+      )}
 
       {availableLocales.length > 1 && (
         <div className="flex flex-col gap-3">

@@ -7,6 +7,8 @@ import {
 } from '@/lib/api/generated/data-contracts';
 import { getApiHeaders, printableDirectoriesApiClient } from '@/lib/api';
 
+import { getPrintableDirectoryServerAccess } from '../../utils/printableDirectoryServerAccess';
+
 import { QueryType } from '../../lib/search-utils';
 import { FindResourcesQuery } from '../../services/search-service';
 
@@ -83,6 +85,10 @@ export async function createPrintableDirectorySource({
   payload,
   tenantId,
 }: CreatePrintableDirectorySourceParams): Promise<PrintableDirectoryResponseDto | null> {
+  if (!(await getPrintableDirectoryServerAccess(tenantId))) {
+    return null;
+  }
+
   try {
     const response =
       await printableDirectoriesApiClient.printableDirectoryControllerCreateSource(

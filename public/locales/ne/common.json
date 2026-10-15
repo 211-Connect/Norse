@@ -184,7 +184,8 @@
   "autocomplete": {
     "results_available_one": "{{count}} नतिजा उपलब्ध छ",
     "results_available_other": "{{count}} परिणामहरू उपलब्ध छन्",
-    "no_results": "कुनै परिणामहरू छैनन्"
+    "no_results": "कुनै परिणामहरू छैनन्",
+    "loading": "सुझावहरू लोड गर्दै..."
   },
   "auth_error": {
     "access_denied_title": "पहुँच अस्वीकार गरियो",

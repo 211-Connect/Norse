@@ -27,13 +27,6 @@ export function SharePrintableDirectoryButton({
   const { t } = useTranslation(['page-directories', 'common']);
   const [open, setOpen] = useState(false);
 
-  if (
-    directory.resourceLayout === 'custom-search' ||
-    directory.resourceLayout === 'custom-resource'
-  ) {
-    return null;
-  }
-
   if (!directory.slug) {
     return (
       <TooltipProvider delayDuration={150}>

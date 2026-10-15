@@ -25,6 +25,7 @@ import { footer } from './tabs/footer';
 import { header } from './tabs/header';
 import { highlights } from './tabs/highlights';
 import { newLayout } from './tabs/newLayout';
+import { printableDirectories } from './tabs/printableDirectories';
 import { privacyPolicyPage } from './tabs/privacyPolicyPage';
 import { resource } from './tabs/resource';
 import { search } from './tabs/search';
@@ -161,6 +162,7 @@ export const ResourceDirectories: CollectionConfig = {
         privacyPolicyPage,
         termsOfUsePage,
         featureFlags,
+        printableDirectories,
       ],
     },
   ],

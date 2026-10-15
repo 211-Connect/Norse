@@ -184,7 +184,8 @@
   "autocomplete": {
     "results_available_one": "Matokeo ya {{count}} yanapatikana",
     "results_available_other": "Matokeo {{count}} yanapatikana",
-    "no_results": "Hakuna matokeo"
+    "no_results": "Hakuna matokeo",
+    "loading": "Inapakia mapendekezo…"
   },
   "auth_error": {
     "access_denied_title": "Ufikiaji umekataliwa",

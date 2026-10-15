@@ -22,7 +22,8 @@ type HeaderFooterCardProps = {
   title: string;
   text: string;
   layout: LayoutItem[];
-  onEdit: () => void;
+  /** Omit to render the card read-only. */
+  onEdit?: () => void;
 };
 
 export function HeaderFooterCard({
@@ -42,15 +43,17 @@ export function HeaderFooterCard({
     <Card>
       <CardHeader className="flex flex-row items-start justify-between gap-2 space-y-0">
         <CardTitle className="mb-1 text-lg">{title}</CardTitle>
-        <Button
-          type="button"
-          variant="outline"
-          className="gap-1"
-          onClick={onEdit}
-        >
-          <PencilIcon className="size-4" aria-hidden="true" />
-          {t('call_to_action.edit', { ns: 'common' })}
-        </Button>
+        {onEdit && (
+          <Button
+            type="button"
+            variant="outline"
+            className="gap-1"
+            onClick={onEdit}
+          >
+            <PencilIcon className="size-4" aria-hidden="true" />
+            {t('call_to_action.edit', { ns: 'common' })}
+          </Button>
+        )}
       </CardHeader>
       <CardContent className="space-y-1 text-sm">
         <Typography as="p" variant="paragraph" size="sm">
@@ -70,9 +73,13 @@ export function HeaderFooterCard({
             )
             .join(' - ')}
         </Typography>
-        <Typography as="p" variant="paragraph" size="sm">
-          <span className="font-medium">{textLabel}:</span> {text}
-        </Typography>
+        {/* The text is part of what can be customized: without the
+            capability, only the layout is shown. */}
+        {onEdit && (
+          <Typography as="p" variant="paragraph" size="sm">
+            <span className="font-medium">{textLabel}:</span> {text}
+          </Typography>
+        )}
       </CardContent>
     </Card>
   );

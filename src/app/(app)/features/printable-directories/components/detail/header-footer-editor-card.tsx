@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { usePrintableDirectoryCapability } from '@/app/(app)/shared/hooks/use-printable-directory-capability';
 import { updatePrintableDirectory } from '@/app/(app)/shared/serverActions/printableDirectories/updatePrintableDirectory';
 import { PrintableDirectoryResponseDto } from '@/lib/api/generated/data-contracts';
 
@@ -27,6 +28,7 @@ export function HeaderFooterEditorCard({
 }: HeaderFooterEditorCardProps) {
   const { t, i18n } = useTranslation(['page-directories', 'common']);
   const appConfig = useAppConfig();
+  const canEdit = usePrintableDirectoryCapability('customHeadersFooters');
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -38,18 +40,18 @@ export function HeaderFooterEditorCard({
     try {
       const result = await updatePrintableDirectory(
         directory.id,
-        {
-          [kind]: {
-            textLocalized: values.textLocalized,
-            layout: values.layout,
-          },
-        },
+        { [kind]: values },
         appConfig.tenantId,
       );
 
       if (!result.success) {
         toast.error(
-          t('unable_to_update_header_footer', { ns: 'page-directories' }),
+          t(
+            result.error === 'forbidden'
+              ? 'capability_required'
+              : 'unable_to_update_header_footer',
+            { ns: 'page-directories' },
+          ),
         );
         return;
       }
@@ -82,9 +84,10 @@ export function HeaderFooterEditorCard({
         text={getPrintableDirectoryLocalizedText(
           value.textLocalized,
           i18n.language,
+          directory.primaryLanguage,
         )}
         layout={value.layout}
-        onEdit={() => setOpen(true)}
+        onEdit={canEdit ? () => setOpen(true) : undefined}
       />
 
       <HeaderFooterDialog
@@ -92,6 +95,8 @@ export function HeaderFooterEditorCard({
         open={open}
         onOpenChange={setOpen}
         isSubmitting={isSubmitting}
+        primaryLanguage={directory.primaryLanguage}
+        locales={directory.locales}
         title={
           kind === 'header'
             ? t('edit_header_config', { ns: 'page-directories' })

@@ -184,7 +184,8 @@
   "autocomplete": {
     "results_available_one": "{{count}} njeñtudi ina woodi",
     "results_available_other": "{{count}} njeñtudi ina woodi",
-    "no_results": "Alaa njeñtudi"
+    "no_results": "Alaa njeñtudi",
+    "loading": "Lowde miijooji..."
   },
   "auth_error": {
     "access_denied_title": "Heɓde haɗaama",

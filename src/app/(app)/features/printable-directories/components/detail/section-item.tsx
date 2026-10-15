@@ -18,6 +18,7 @@ import { SectionSourceItem } from './section-source-item';
 
 type SectionItemProps = {
   directoryId: string;
+  primaryLanguage: string;
   section: PrintableDirectorySectionResponseDto;
   defaultQueryConfig:
     PrintableDirectoryDefaultQueryConfigDto | null | undefined;
@@ -41,6 +42,7 @@ type SectionItemProps = {
 
 export function SectionItem({
   directoryId,
+  primaryLanguage,
   section,
   defaultQueryConfig,
   index,
@@ -61,6 +63,7 @@ export function SectionItem({
   const sectionName = getPrintableDirectoryLocalizedText(
     section.headingLocalized,
     i18n.language,
+    primaryLanguage,
   );
 
   const directoryQueryParams = {
@@ -138,6 +141,7 @@ export function SectionItem({
             {getPrintableDirectoryLocalizedText(
               section.descriptionLocalized,
               i18n.language,
+              primaryLanguage,
             )}
           </Typography>
 

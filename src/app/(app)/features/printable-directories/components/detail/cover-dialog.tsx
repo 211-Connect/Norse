@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/app/(app)/shared/components/ui/button';
-import { ColorPicker } from '@/app/(app)/shared/components/ui/color-picker';
 import {
   Dialog,
   DialogContent,
@@ -13,11 +12,18 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/app/(app)/shared/components/ui/dialog';
-import { Input } from '@/app/(app)/shared/components/ui/input';
-import { Label } from '@/app/(app)/shared/components/ui/label';
 
-import { CoverDialogValues } from '../../utils/dialog-types';
-import { CoverImageField } from './cover-image-field';
+import { usePrintableDirectoryCapability } from '@/app/(app)/shared/hooks/use-printable-directory-capability';
+import {
+  PrintableDirectoryCoverDto,
+  PrintableDirectoryLocalizedValuesDto,
+} from '@/lib/api/generated/data-contracts';
+
+import {
+  CoverDialogValues,
+  EMPTY_LOCALIZED_VALUES,
+} from '../../utils/dialog-types';
+import { DirectoryImageField } from './directory-image-field';
 import { LocalizedFieldTable } from './localized-field-table';
 
 type CoverDialogProps = {
@@ -25,10 +31,17 @@ type CoverDialogProps = {
   onOpenChange: (open: boolean) => void;
   isSubmitting: boolean;
   initialValues: CoverDialogValues;
-  onSubmit: (values: CoverDialogValues) => Promise<void>;
+  /** Receives only the fields the current user is allowed to change. */
+  onSubmit: (values: PrintableDirectoryCoverDto) => Promise<void>;
   directoryId: string;
+  primaryLanguage: string;
+  locales: string[];
 };
 
+/**
+ * Title and description are basic; the cover images need the Cover
+ * Customization capability (enforced again by `updatePrintableDirectory`).
+ */
 export function CoverDialog({
   open,
   onOpenChange,
@@ -36,20 +49,23 @@ export function CoverDialog({
   initialValues,
   onSubmit,
   directoryId,
+  primaryLanguage,
+  locales,
 }: CoverDialogProps) {
   const { t } = useTranslation(['page-directories', 'common']);
-  const [titleValues, setTitleValues] = useState<Record<string, string>>({});
-  const [descriptionValues, setDescriptionValues] = useState<
-    Record<string, string>
-  >({});
-  const [primaryColor, setPrimaryColor] = useState('');
+  const canCustomizeCover =
+    usePrintableDirectoryCapability('coverCustomization');
+  const [title, setTitle] = useState<PrintableDirectoryLocalizedValuesDto>(
+    EMPTY_LOCALIZED_VALUES,
+  );
+  const [description, setDescription] =
+    useState<PrintableDirectoryLocalizedValuesDto>(EMPTY_LOCALIZED_VALUES);
   const [coverImageUrlFront, setCoverImageUrlFront] = useState('');
   const [coverImageUrlBack, setCoverImageUrlBack] = useState('');
 
   const reset = () => {
-    setTitleValues(initialValues.titleLocalized.values ?? {});
-    setDescriptionValues(initialValues.descriptionLocalized.values ?? {});
-    setPrimaryColor(initialValues.primaryColor);
+    setTitle(initialValues.titleLocalized);
+    setDescription(initialValues.descriptionLocalized);
     setCoverImageUrlFront(initialValues.coverImageUrlFront ?? '');
     setCoverImageUrlBack(initialValues.coverImageUrlBack ?? '');
   };
@@ -70,11 +86,9 @@ export function CoverDialog({
 
   const handleSubmit = async () => {
     await onSubmit({
-      titleLocalized: { values: titleValues },
-      descriptionLocalized: { values: descriptionValues },
-      primaryColor,
-      coverImageUrlFront,
-      coverImageUrlBack,
+      titleLocalized: title,
+      descriptionLocalized: description,
+      ...(canCustomizeCover ? { coverImageUrlFront, coverImageUrlBack } : {}),
     });
   };
 
@@ -85,73 +99,54 @@ export function CoverDialog({
           <DialogTitle>
             {t('edit_cover', { ns: 'page-directories' })}
           </DialogTitle>
-          <DialogDescription>
-            {t('cover_image_description', { ns: 'page-directories' })}
-          </DialogDescription>
+          {canCustomizeCover && (
+            <DialogDescription>
+              {t('cover_image_description', { ns: 'page-directories' })}
+            </DialogDescription>
+          )}
         </DialogHeader>
 
         <div className="space-y-4">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <CoverImageField
-              id="cover-image-front"
-              label={t('cover_image_front_label', { ns: 'page-directories' })}
-              imageUrl={coverImageUrlFront}
-              onChange={setCoverImageUrlFront}
-              directoryId={directoryId}
-              disabled={isSubmitting}
-            />
+          {canCustomizeCover && (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <DirectoryImageField
+                kind="cover"
+                id="cover-image-front"
+                label={t('cover_image_front_label', { ns: 'page-directories' })}
+                imageUrl={coverImageUrlFront}
+                onChange={setCoverImageUrlFront}
+                directoryId={directoryId}
+                disabled={isSubmitting}
+              />
 
-            <CoverImageField
-              id="cover-image-back"
-              label={t('cover_image_back_label', { ns: 'page-directories' })}
-              imageUrl={coverImageUrlBack}
-              onChange={setCoverImageUrlBack}
-              directoryId={directoryId}
-              disabled={isSubmitting}
-            />
-          </div>
+              <DirectoryImageField
+                kind="cover"
+                id="cover-image-back"
+                label={t('cover_image_back_label', { ns: 'page-directories' })}
+                imageUrl={coverImageUrlBack}
+                onChange={setCoverImageUrlBack}
+                directoryId={directoryId}
+                disabled={isSubmitting}
+              />
+            </div>
+          )}
 
           <LocalizedFieldTable
             label={t('title_label', { ns: 'page-directories' })}
-            values={titleValues}
-            onChange={(locale, next) =>
-              setTitleValues((previous) => ({
-                ...previous,
-                [locale]: next,
-              }))
-            }
+            value={title}
+            primaryLanguage={primaryLanguage}
+            locales={locales}
+            onChange={setTitle}
           />
 
           <LocalizedFieldTable
             label={t('description_label', { ns: 'page-directories' })}
-            values={descriptionValues}
+            value={description}
             multiline
-            onChange={(locale, next) =>
-              setDescriptionValues((previous) => ({
-                ...previous,
-                [locale]: next,
-              }))
-            }
+            primaryLanguage={primaryLanguage}
+            locales={locales}
+            onChange={setDescription}
           />
-
-          <div className="space-y-2">
-            <Label htmlFor="cover-primary-color">
-              {t('primary_color_label', { ns: 'page-directories' })}
-            </Label>
-            <ColorPicker
-              id="cover-primary-color"
-              value={primaryColor}
-              onChange={setPrimaryColor}
-              placeholder="#0f172a"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="cover-layout-type">
-              {t('layout_type_label', { ns: 'page-directories' })}
-            </Label>
-            <Input id="cover-layout-type" value="default" disabled />
-          </div>
         </div>
 
         <DialogFooter>

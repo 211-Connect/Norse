@@ -184,7 +184,8 @@
   "autocomplete": {
     "results_available_one": "{{count}} natiijo ayaa la heli karaa",
     "results_available_other": "Natiijooyinka {{count}} ayaa la heli karaa",
-    "no_results": "Natiijooyin ma jiraan"
+    "no_results": "Natiijooyin ma jiraan",
+    "loading": "Soo rarista talooyinka…"
   },
   "auth_error": {
     "access_denied_title": "Helitaanka waa la diiday",

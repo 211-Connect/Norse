@@ -247,10 +247,10 @@ async function getCachedAppConfigBase(
         turnResourceCardTaxonomiesIntoLinks: true,
       },
       printableDirectories: {
+        accessMode: 'allowlist',
         allowedEmails: [],
         allowedDomains: [],
-        maxResourcesConfigurable: true,
-        defaultMaxResources: 100,
+        userGroups: [],
       },
       footer: {
         customMenu: [],
@@ -419,18 +419,23 @@ async function getCachedAppConfigBase(
       showAgeFilter: resourceDirectory.featureFlags?.showAgeFilter ?? false,
     },
     printableDirectories: {
+      accessMode:
+        resourceDirectory.printableDirectories?.accessMode ?? 'allowlist',
       allowedEmails:
-        resourceDirectory.featureFlags?.printableDirectoriesAllowedEmails?.map(
+        resourceDirectory.printableDirectories?.allowedEmails?.map(
           ({ email }) => email,
         ) ?? [],
       allowedDomains:
-        resourceDirectory.featureFlags?.printableDirectoriesAllowedDomains?.map(
+        resourceDirectory.printableDirectories?.allowedDomains?.map(
           ({ domain }) => domain,
         ) ?? [],
-      maxResourcesConfigurable:
-        resourceDirectory.featureFlags?.maxResourcesConfigurable ?? true,
-      defaultMaxResources:
-        resourceDirectory.featureFlags?.defaultMaxResources ?? 100,
+      userGroups:
+        resourceDirectory.printableDirectories?.userGroups?.map((group) => ({
+          name: group.name,
+          emails: group.emails?.map(({ email }) => email) ?? [],
+          domains: group.domains?.map(({ domain }) => domain) ?? [],
+          capabilities: group.capabilities ?? [],
+        })) ?? [],
     },
     gtmContainerId:
       getTenant(resourceDirectory)?.common?.gtmContainerId ?? undefined,

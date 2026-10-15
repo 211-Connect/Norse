@@ -184,7 +184,8 @@
   "autocomplete": {
     "results_available_one": "{{count}} dostępnych wyników",
     "results_available_other": "{{count}} dostępnych wyników",
-    "no_results": "Brak wyników"
+    "no_results": "Brak wyników",
+    "loading": "Ładowanie sugestii…"
   },
   "auth_error": {
     "access_denied_title": "Odmowa dostępu",

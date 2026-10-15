@@ -184,7 +184,8 @@
   "autocomplete": {
     "results_available_one": "{{count}} na macala e tiko",
     "results_available_other": "{{count}} na macala e tiko",
-    "no_results": "Sega na kena macala"
+    "no_results": "Sega na kena macala",
+    "loading": "Vakavodoki ni vakatutu..."
   },
   "auth_error": {
     "access_denied_title": "Sa vakatabui na curu",

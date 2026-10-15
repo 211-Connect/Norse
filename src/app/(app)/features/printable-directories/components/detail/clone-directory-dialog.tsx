@@ -16,6 +16,7 @@ import {
 import { Input } from '@/app/(app)/shared/components/ui/input';
 import { Label } from '@/app/(app)/shared/components/ui/label';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { usePrintableDirectoryCapability } from '@/app/(app)/shared/hooks/use-printable-directory-capability';
 import { createPrintableDirectory } from '@/app/(app)/shared/serverActions/printableDirectories/createPrintableDirectory';
 import { createPrintableDirectorySection } from '@/app/(app)/shared/serverActions/printableDirectories/createPrintableDirectorySection';
 import { createPrintableDirectorySource } from '@/app/(app)/shared/serverActions/printableDirectories/createPrintableDirectorySource';
@@ -25,7 +26,7 @@ import {
   PrintableDirectoryResponseDto,
 } from '@/lib/api/generated/data-contracts';
 
-import { randomSlugSuffix, slugify } from '../../utils';
+import { randomSlugSuffix, slugify, toLocalizedValues } from '../../utils';
 
 type CloneDirectoryDialogProps = {
   open: boolean;
@@ -88,6 +89,12 @@ export function CloneDirectoryDialog({
 }: CloneDirectoryDialogProps) {
   const { t } = useTranslation(['page-directories', 'common']);
   const appConfig = useAppConfig();
+  // Copying a customized header/footer is itself a customization, so it
+  // follows the same capability as editing.
+  const canCopyHeaderFooter = usePrintableDirectoryCapability(
+    'customHeadersFooters',
+  );
+  const canCopyLogo = usePrintableDirectoryCapability('logoUpload');
   const [cloneName, setCloneName] = useState('');
   const [options, setOptions] = useState<CloneOptions>(DEFAULT_OPTIONS);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -135,12 +142,16 @@ export function CloneDirectoryDialog({
         {
           name: trimmedName,
           slug: `${slugify(trimmedName)}-${randomSlugSuffix()}`,
+          primaryLanguage: directory.primaryLanguage,
+          locales: directory.locales,
           ...(options.generalInfo
             ? {
                 accessPolicy: directory.accessPolicy,
-                resourceLayout: directory.resourceLayout,
-                isBookletLayout: directory.isBookletLayout,
                 defaultQueryConfig: directory.defaultQueryConfig,
+                // Copying the logo is setting it: same capability.
+                ...(canCopyLogo && directory.logoUrl
+                  ? { logoUrl: directory.logoUrl }
+                  : {}),
               }
             : {}),
         },
@@ -158,31 +169,24 @@ export function CloneDirectoryDialog({
 
       if (options.cover) {
         updatePayload.cover = {
-          titleLocalized: {
-            values: directory.cover.titleLocalized?.values ?? {},
-          },
-          descriptionLocalized: {
-            values: directory.cover.descriptionLocalized?.values ?? {},
-          },
-          primaryColor: directory.cover.primaryColor ?? undefined,
+          titleLocalized: toLocalizedValues(directory.cover.titleLocalized),
+          descriptionLocalized: toLocalizedValues(
+            directory.cover.descriptionLocalized,
+          ),
         };
       }
 
-      if (options.header) {
+      if (options.header && canCopyHeaderFooter) {
         updatePayload.header = {
           layout: directory.header.layout,
-          textLocalized: {
-            values: directory.header.textLocalized?.values ?? {},
-          },
+          textLocalized: toLocalizedValues(directory.header.textLocalized),
         };
       }
 
-      if (options.footer) {
+      if (options.footer && canCopyHeaderFooter) {
         updatePayload.footer = {
           layout: directory.footer.layout,
-          textLocalized: {
-            values: directory.footer.textLocalized?.values ?? {},
-          },
+          textLocalized: toLocalizedValues(directory.footer.textLocalized),
         };
       }
 
@@ -208,12 +212,12 @@ export function CloneDirectoryDialog({
           const sectionCreated = await createPrintableDirectorySection(
             latestDirectory.id,
             {
-              headingLocalized: {
-                values: sourceSection.headingLocalized.values ?? {},
-              },
-              descriptionLocalized: {
-                values: sourceSection.descriptionLocalized.values ?? {},
-              },
+              headingLocalized: toLocalizedValues(
+                sourceSection.headingLocalized,
+              ),
+              descriptionLocalized: toLocalizedValues(
+                sourceSection.descriptionLocalized,
+              ),
               maxResources: sourceSection.maxResources,
             },
             appConfig.tenantId,
@@ -320,28 +324,32 @@ export function CloneDirectoryDialog({
                   {t('clone_options.cover', { ns: 'page-directories' })}
                 </span>
               </label>
-              <label className="flex items-center gap-2 text-sm">
-                <Checkbox
-                  checked={options.header}
-                  onCheckedChange={(value) =>
-                    setOption('header', value === true)
-                  }
-                />
-                <span>
-                  {t('clone_options.header', { ns: 'page-directories' })}
-                </span>
-              </label>
-              <label className="flex items-center gap-2 text-sm">
-                <Checkbox
-                  checked={options.footer}
-                  onCheckedChange={(value) =>
-                    setOption('footer', value === true)
-                  }
-                />
-                <span>
-                  {t('clone_options.footer', { ns: 'page-directories' })}
-                </span>
-              </label>
+              {canCopyHeaderFooter && (
+                <label className="flex items-center gap-2 text-sm">
+                  <Checkbox
+                    checked={options.header}
+                    onCheckedChange={(value) =>
+                      setOption('header', value === true)
+                    }
+                  />
+                  <span>
+                    {t('clone_options.header', { ns: 'page-directories' })}
+                  </span>
+                </label>
+              )}
+              {canCopyHeaderFooter && (
+                <label className="flex items-center gap-2 text-sm">
+                  <Checkbox
+                    checked={options.footer}
+                    onCheckedChange={(value) =>
+                      setOption('footer', value === true)
+                    }
+                  />
+                  <span>
+                    {t('clone_options.footer', { ns: 'page-directories' })}
+                  </span>
+                </label>
+              )}
               <label className="flex items-center gap-2 text-sm">
                 <Checkbox
                   checked={options.sources}

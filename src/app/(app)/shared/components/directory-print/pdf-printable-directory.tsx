@@ -89,6 +89,9 @@ const styles = StyleSheet.create({
     color: COLORS.secondary,
     textAlign: 'center',
   },
+  fullWidth: {
+    flex: 1,
+  },
   header: {
     position: 'absolute',
     top: 30,
@@ -199,10 +202,18 @@ function HeaderFooterRow({
 
   const textIndex = config.layout.indexOf('text');
   const hasCenteredText = textIndex !== -1 && !!config.text;
+  const isTextOnly = hasCenteredText && config.layout.length === 1;
 
   return (
     <View style={positionStyle} fixed>
-      {hasCenteredText ? (
+      {isTextOnly ? (
+        // Nothing beside it: the text may use the full width.
+        <View style={styles.headerFooterRow}>
+          <Text style={[styles.headerFooterTextCentered, styles.fullWidth]}>
+            {config.text}
+          </Text>
+        </View>
+      ) : hasCenteredText ? (
         // Split into three equal-width regions so the text is always
         // visually centered, regardless of how wide the logo/domain/date
         // pieces on either side happen to be.
@@ -234,6 +245,7 @@ type PDFPrintableDirectoryProps = {
   currentDomain: string;
   currentDate: string;
   brandLogoUrl?: string;
+  isBookletLayout?: boolean;
 };
 
 export function PDFPrintableDirectory({
@@ -243,6 +255,7 @@ export function PDFPrintableDirectory({
   currentDomain,
   currentDate,
   brandLogoUrl,
+  isBookletLayout = false,
 }: PDFPrintableDirectoryProps) {
   const fontScale = getFontScale(fontSizeMode);
   const datumLabels = useDatumLabels();
@@ -363,7 +376,7 @@ export function PDFPrintableDirectory({
         <Text
           style={styles.pageNumber}
           render={({ pageNumber, totalPages }) => {
-            if (!data.isBookletLayout) {
+            if (!isBookletLayout) {
               return `${pageNumber} / ${totalPages}`;
             }
 

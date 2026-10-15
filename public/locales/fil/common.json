@@ -184,7 +184,8 @@
   "autocomplete": {
     "results_available_one": "{{count}} resulta ang makukuha",
     "results_available_other": "{{count}} resulta ang makukuha",
-    "no_results": "Walang resulta"
+    "no_results": "Walang resulta",
+    "loading": "Naglo-load ng mga mungkahi…"
   },
   "auth_error": {
     "access_denied_title": "Tinanggihan ang pag-access",

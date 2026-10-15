@@ -32,8 +32,16 @@ export function SearchBar({
   const searchTerm = useAtomValue(searchTermAtom);
   const debouncedSearchTerm = useDebounce(searchTerm, SEARCH_DEBOUNCE_DELAY);
   const { setSearch } = useMainSearchLayoutContext();
-  const { taxonomies: taxonomiesDisplay, organizations: organizationsDisplay } =
-    useSearchSuggestions(debouncedSearchTerm);
+  const {
+    taxonomies: taxonomiesDisplay,
+    organizations: organizationsDisplay,
+    isFetching: isFetchingSuggestions,
+  } = useSearchSuggestions(debouncedSearchTerm);
+  // Covers the debounce window too, not just the request itself.
+  const isLoadingSuggestions =
+    !hideOptions &&
+    searchTerm.trim().length > 0 &&
+    (searchTerm !== debouncedSearchTerm || isFetchingSuggestions);
 
   const showTaxonomyBadge = useFlag('showSuggestionListTaxonomyBadge');
   const enableOrganizationSearch = useFlag('enableOrganizationSearch');
@@ -203,6 +211,7 @@ export function SearchBar({
       onCommit={setSearchTerm}
       clearButtonLabel={t('call_to_action.remove')}
       value={searchTerm}
+      loading={isLoadingSuggestions}
       positionBelowElementId="search-form-inputs"
     />
   );

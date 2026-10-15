@@ -8,9 +8,7 @@ import {
 } from '@radix-ui/react-tooltip';
 import { t } from 'i18next';
 import { Tooltip } from '@radix-ui/react-tooltip';
-import { canAccessPrintableDirectories } from '@/app/(app)/shared/utils/canAccessPrintableDirectories';
-import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
-import { useSession } from 'next-auth/react';
+import { usePrintableDirectoryAccess } from '@/app/(app)/shared/hooks/use-printable-directory-capability';
 
 type SaveFavoriteListToDirectoryButtonProps = {
   favoriteListId: string;
@@ -22,13 +20,7 @@ export function SaveFavoriteListToDirectoryButton({
   favoriteListId,
   disabled,
 }: SaveFavoriteListToDirectoryButtonProps) {
-  const session = useSession();
-  const appConfig = useAppConfig();
-
-  const hasAccess = canAccessPrintableDirectories(
-    session.data?.user?.email,
-    appConfig,
-  );
+  const { canAccess: hasAccess } = usePrintableDirectoryAccess();
 
   if (!hasAccess) {
     return null;
