@@ -32,5 +32,6 @@
   "resource_name": "Resurssin nimi",
   "quality": "Laadukas tieto",
   "contacts": "Lisätietoja yhteystiedoista",
-  "quality_others": "Muut"
+  "quality_others": "Muut",
+  "organization_alternate_name": "Organisaation vaihtoehtoinen nimi"
 }

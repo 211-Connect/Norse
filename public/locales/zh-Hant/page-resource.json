@@ -32,5 +32,6 @@
   "resource_name": "資源名稱",
   "quality": "品質資訊",
   "contacts": "其他聯絡方式",
-  "quality_others": "其他的"
+  "quality_others": "其他的",
+  "organization_alternate_name": "組織別名"
 }
