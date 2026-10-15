@@ -32,5 +32,6 @@
   "resource_name": "संसाधन का नाम",
   "quality": "गुणवत्तापूर्ण जानकारी",
   "contacts": "अतिरिक्त संपर्क जानकारी",
-  "quality_others": "अन्य"
+  "quality_others": "अन्य",
+  "organization_alternate_name": "संगठन का वैकल्पिक नाम"
 }

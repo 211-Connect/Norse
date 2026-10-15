@@ -32,5 +32,6 @@
   "resource_name": "اسم المورد",
   "quality": "معلومات عالية الجودة",
   "contacts": "معلومات اتصال إضافية",
-  "quality_others": "آحرون"
+  "quality_others": "آحرون",
+  "organization_alternate_name": "الاسم البديل للمنظمة"
 }

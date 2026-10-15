@@ -32,5 +32,6 @@
   "resource_name": "Nazwa zasobu",
   "quality": "Informacje o jakości",
   "contacts": "Dodatkowe informacje kontaktowe",
-  "quality_others": "Inni"
+  "quality_others": "Inni",
+  "organization_alternate_name": "Nazwa alternatywna organizacji"
 }

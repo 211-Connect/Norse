@@ -32,5 +32,6 @@
   "resource_name": "Naziv resursa",
   "quality": "Informacije o kvaliteti",
   "contacts": "Dodatne kontaktne informacije",
-  "quality_others": "Drugi"
+  "quality_others": "Drugi",
+  "organization_alternate_name": "Alternativni naziv organizacije"
 }
