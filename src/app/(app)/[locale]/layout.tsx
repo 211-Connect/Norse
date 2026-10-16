@@ -9,6 +9,7 @@ import '@/app/(app)/shared/styles/map.css';
 import { AppConfig } from '@/types/appConfig';
 import { getContrastColor } from '@/utils';
 
+import { GoogleTagManagerNoscript } from '../shared/components/google-tag-manager-noscript';
 import { Providers } from '../shared/components/providers';
 import { USER_PREF_FONT_SIZE } from '../shared/lib/constants';
 import { getServerDevice } from '../shared/lib/get-server-device';
@@ -138,6 +139,8 @@ export default async function RootLayout({
         className={cn('font-sans antialiased', fontSans.variable)}
         id="app-root"
       >
+        {/* Must stay the first child of <body> for Search Console GTM verification. */}
+        <GoogleTagManagerNoscript containerId={appConfig.gtmContainerId} />
         <Providers
           appConfig={appConfig}
           device={device}
