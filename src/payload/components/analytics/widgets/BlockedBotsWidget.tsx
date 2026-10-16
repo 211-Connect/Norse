@@ -15,8 +15,9 @@ import {
 /**
  * ISS-2366: requests Arcjet blocked at the proxy, by classification. Reads
  * the server-side `bot_blocked` event (src/lib/blocked-traffic-events.ts)
- * broken down by its `classification` property. These requests never load
- * the page, so they are not in Page Views.
+ * broken down by its `segment` property: the classification for requests
+ * that got the 403, `not_enforced` for observe-only hosts, which were
+ * detected but served. The headline counts only the blocked ones.
  */
 export default function BlockedBotsWidget() {
   const { loading, error, data, refetch } = useAnalyticsEventValues(
@@ -39,7 +40,9 @@ export default function BlockedBotsWidget() {
     );
   }
 
-  const { total, segments } = buildBlockedBotsSegments(data ?? []);
+  const { total, blocked, notEnforced, segments } = buildBlockedBotsSegments(
+    data ?? [],
+  );
 
   return (
     <WidgetCard
@@ -54,8 +57,18 @@ export default function BlockedBotsWidget() {
           color: 'var(--theme-text)',
         }}
       >
-        {total.toLocaleString()}
+        {blocked.toLocaleString()}
       </span>
+      {notEnforced > 0 && (
+        <div
+          style={{
+            fontSize: '0.875rem',
+            color: 'var(--theme-elevation-500)',
+          }}
+        >
+          + {notEnforced.toLocaleString()} detected, not blocked
+        </div>
+      )}
       {total === 0 ? (
         <div
           style={{

@@ -225,7 +225,9 @@ Every denial (enforced `DENY` and observe-only `DENIED_NOT_ENFORCED`) also
 emits a server-side `bot_blocked` Umami event, batched per Edge instance and
 sent to Norse-API `/analytics/events/batch` off the request path
 (`NextFetchEvent.waitUntil`), shown in the **Blocked Bots** dashboard
-widget. Full pipeline, event shape and env vars:
+widget (observe-only denials as a separate "Detected, not blocked" slice,
+not in the blocked count). The fallback env vars are a production deploy
+requirement whenever `ARCJET_KEY` is set. Full pipeline, event shape and env vars:
 [docs/blocked-traffic-analytics.md](/docs/blocked-traffic-analytics.md).
 
 The event's `classification` is decided by `classifyBlockedTraffic` in

@@ -4,11 +4,16 @@ import {
 } from '@opentelemetry/sdk-trace-base';
 import { registerOTel } from '@vercel/otel';
 
+import { assertBlockedTrafficFallbackEnv } from '@/lib/blocked-traffic-events';
 import { createLogger } from '@/lib/logger';
 
 const log = createLogger('instrumentation');
 
 export function register() {
+  // Deploy requirement (ISS-2366): throws, and so stops the server, when
+  // Arcjet is on in production without the blocked-traffic fallback env.
+  assertBlockedTrafficFallbackEnv(process.env);
+
   if (!process.env.OTEL_EXPORTER_OTLP_ENDPOINT) {
     log.info('Tracing disabled: OTEL_EXPORTER_OTLP_ENDPOINT not set');
     return;

@@ -12,13 +12,19 @@ are **not** in Page Views or any other widget.
 - Per tenant: Payload **Tenants → Analytics Settings** — `Main website`
   (`analytics.umamiWebsiteId`) and `API Key` (`analytics.apiKey`). Both must
   be set for the tenant's blocked traffic to reach its own Umami website.
-- Platform fallback (env, all three or none):
+- Platform fallback (env, all three):
   `ARCJET_BLOCKED_EVENTS_FALLBACK_WEBSITE_ID`,
   `ARCJET_BLOCKED_EVENTS_FALLBACK_TENANT_ID`,
   `ARCJET_BLOCKED_EVENTS_FALLBACK_ANALYTICS_API_KEY`. Used when the host
   matches no tenant or the tenant lacks a website id / analytics key.
-  Unset: those events are dropped and counted in
-  `blocked_traffic_event_dropped` logs (`reason`, `droppedTotal`).
+  **Deploy requirement:** in production with `ARCJET_KEY` set, all three
+  must be set on every app (main and MBOA). `register()` in
+  `src/instrumentation.ts` calls `assertBlockedTrafficFallbackEnv`, which
+  throws naming the missing vars (never their values); the server does not
+  start, so the deploy fails and the previous version keeps serving. Set
+  them in the app's environment **before** deploying this change. Outside
+  production they are optional; unset, those events are dropped and counted
+  in `blocked_traffic_event_dropped` logs (`reason`, `droppedTotal`).
 - `API_URL` (Norse API). Unset: the sender is disabled with one
   `blocked_traffic_sender_disabled` warn per Edge instance.
 
@@ -48,7 +54,7 @@ Files:
 | `src/lib/blocked-traffic-events.ts` | `buildBlockedTrafficEvent` (the `SendEventDto` shape), `resolveBlockedTrafficTarget` (tenant → fallback → drop), `createBlockedTrafficSender` (per-instance batcher; never throws). |
 | `src/proxy.ts` | `recordBlockedTraffic`, handed to `NextFetchEvent.waitUntil` so it never delays the response. `loadTenantConfig` is the per-host cached fetch the main flow also uses. |
 | `src/app/(payload)/api/getTenantBasicConfig/route.ts` | `TenantBasicConfigResponse.tenantId` + `analytics.{umamiWebsiteId, apiKey}` so the Edge proxy can attribute without reading app config. |
-| `src/payload/components/analytics/widgets/BlockedBotsWidget.tsx` | The dashboard widget (`WidgetSlug.BlockedBots`), reading `event-values` for `bot_blocked` / `classification`. |
+| `src/payload/components/analytics/widgets/BlockedBotsWidget.tsx` | The dashboard widget (`WidgetSlug.BlockedBots`), reading `event-values` for `bot_blocked` / `segment`. The headline counts only blocked requests; observe-only denials are a separate **Detected, not blocked** slice, because those requests were served. |
 
 ### The event
 
@@ -62,6 +68,7 @@ Name `bot_blocked`; `data`:
 | `reason` | `bot` \| `filter` \| other `decision.reason.type`, lower-cased |
 | `source` | `proxy` (reserved: `fingerprint-cache`, `filter-rule`) |
 | `enforced` | `true` for a DENY; `false` for an observe-only host (`ARCJET_ENFORCEMENT_EXCLUDED_HOSTS`), so MBOA's denials are counted too |
+| `segment` | the widget's bucket: `classification` when `enforced`, else `not_enforced`. Derived in `buildBlockedTrafficEvent`, never passed in, so it cannot disagree with `enforced` |
 | `host` | request host (port stripped) |
 | `path` | request pathname (no query string) |
 

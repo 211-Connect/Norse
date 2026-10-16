@@ -14,9 +14,9 @@ import {
 } from '../src/payload/components/analytics/widgetInfo';
 
 describe('Blocked Bots widget (ISS-2366)', () => {
-  test('reads the event the proxy emits, by classification', () => {
+  test('reads the event the proxy emits, by segment', () => {
     assert.equal(BLOCKED_BOTS_EVENT, BLOCKED_TRAFFIC_EVENT_NAME);
-    assert.equal(BLOCKED_BOTS_PROPERTY, 'classification');
+    assert.equal(BLOCKED_BOTS_PROPERTY, 'segment');
   });
 
   test('is in the default layout right after Page Views', () => {
@@ -35,12 +35,18 @@ describe('Blocked Bots widget (ISS-2366)', () => {
     );
   });
 
+  test('description explains the detected-but-not-blocked slice', () => {
+    assert.match(WIDGET_INFO[WidgetSlug.BlockedBots], /not blocked/i);
+  });
+
   test('segments: fixed classification order, counts and rounded shares', () => {
-    const { total, segments } = buildBlockedBotsSegments([
+    const { total, blocked, notEnforced, segments } = buildBlockedBotsSegments([
       { value: 'seo', total: 10 },
       { value: 'nefarious', total: 30 },
     ]);
     assert.equal(total, 40);
+    assert.equal(blocked, 40);
+    assert.equal(notEnforced, 0);
     assert.deepEqual(
       segments.map((s) => [s.key, s.rawValue, s.value]),
       [
@@ -48,6 +54,32 @@ describe('Blocked Bots widget (ISS-2366)', () => {
         ['seo', 10, 25],
         ['unknown', 0, 0],
       ],
+    );
+  });
+
+  test('segments: not_enforced is its own slice and is not counted as blocked', () => {
+    const { total, blocked, notEnforced, segments } = buildBlockedBotsSegments([
+      { value: 'nefarious', total: 25 },
+      { value: 'not_enforced', total: 75 },
+    ]);
+    assert.equal(total, 100);
+    assert.equal(blocked, 25);
+    assert.equal(notEnforced, 75);
+    const slice = segments.find((s) => s.key === 'not_enforced');
+    assert.equal(slice?.rawValue, 75);
+    assert.equal(slice?.value, 75);
+    assert.match(slice?.label ?? '', /not blocked/i);
+    assert.equal(
+      segments.find((s) => s.key === 'other'),
+      undefined,
+    );
+  });
+
+  test('segments: no not_enforced slice when there is none', () => {
+    const { segments } = buildBlockedBotsSegments([{ value: 'seo', total: 1 }]);
+    assert.equal(
+      segments.find((s) => s.key === 'not_enforced'),
+      undefined,
     );
   });
 
@@ -62,6 +94,11 @@ describe('Blocked Bots widget (ISS-2366)', () => {
   });
 
   test('segments: empty data gives total 0 and no segments', () => {
-    assert.deepEqual(buildBlockedBotsSegments([]), { total: 0, segments: [] });
+    assert.deepEqual(buildBlockedBotsSegments([]), {
+      total: 0,
+      blocked: 0,
+      notEnforced: 0,
+      segments: [],
+    });
   });
 });

@@ -5,8 +5,10 @@ import type { ArcjetLog } from '../src/lib/arcjet';
 import {
   BLOCKED_TRAFFIC_EVENT_NAME,
   BLOCKED_TRAFFIC_MAX_BATCH,
+  assertBlockedTrafficFallbackEnv,
   buildBlockedTrafficEvent,
   createBlockedTrafficSender,
+  redactTenantConfigForLog,
   resolveBlockedTrafficTarget,
   type BlockedTrafficEventData,
   type BlockedTrafficTarget,
@@ -83,6 +85,7 @@ describe('buildBlockedTrafficEvent (ISS-2366)', () => {
           reason: 'bot',
           source: 'proxy',
           enforced: true,
+          segment: 'nefarious',
           host: 'example.org',
           path: '/en/search?q=food',
         },
@@ -110,6 +113,23 @@ describe('buildBlockedTrafficEvent (ISS-2366)', () => {
       enforced: false,
     });
     assert.equal((built.payload.data as { enforced: boolean }).enforced, false);
+  });
+
+  test('segment is the classification when enforced, not_enforced otherwise', () => {
+    const segmentOf = (enforced: boolean, classification: 'seo' | 'unknown') =>
+      (
+        buildBlockedTrafficEvent(TENANT_A.websiteId, {
+          ...DATA,
+          classification,
+          enforced,
+        }).payload.data as { segment: string }
+      ).segment;
+    assert.equal(segmentOf(true, 'seo'), 'seo');
+    assert.equal(segmentOf(true, 'unknown'), 'unknown');
+    // Observe-only traffic was served, so it never lands in a blocked bucket,
+    // whatever its classification (which is still sent unchanged).
+    assert.equal(segmentOf(false, 'seo'), 'not_enforced');
+    assert.equal(segmentOf(false, 'unknown'), 'not_enforced');
   });
 });
 
@@ -199,6 +219,97 @@ describe('resolveBlockedTrafficTarget (ISS-2366)', () => {
         ARCJET_BLOCKED_EVENTS_FALLBACK_WEBSITE_ID: TENANT_B.websiteId,
       }),
       { target: null, dropped: 'fallback_incomplete' },
+    );
+  });
+});
+
+describe('redactTenantConfigForLog (ISS-2366)', () => {
+  test('replaces the analytics API key and keeps everything else', () => {
+    const config = {
+      tenantId: 'tenant-a',
+      enabledLocales: [],
+      analytics: { umamiWebsiteId: TENANT_A.websiteId, apiKey: 'key-a' },
+    };
+    const redacted = redactTenantConfigForLog(config);
+    assert.deepEqual(redacted, {
+      tenantId: 'tenant-a',
+      enabledLocales: [],
+      analytics: { umamiWebsiteId: TENANT_A.websiteId, apiKey: '[redacted]' },
+    });
+    assert.ok(!JSON.stringify(redacted).includes('key-a'));
+    // The cached config itself is not mutated.
+    assert.equal(config.analytics.apiKey, 'key-a');
+  });
+
+  test('null key stays null; null/undefined config and missing analytics pass through', () => {
+    assert.deepEqual(
+      redactTenantConfigForLog({ analytics: { apiKey: null } }),
+      { analytics: { apiKey: null } },
+    );
+    assert.equal(redactTenantConfigForLog(null), null);
+    assert.equal(redactTenantConfigForLog(undefined), undefined);
+    assert.deepEqual(redactTenantConfigForLog({ tenantId: 'x' }), {
+      tenantId: 'x',
+    });
+  });
+});
+
+describe('assertBlockedTrafficFallbackEnv (ISS-2366 deploy requirement)', () => {
+  const FALLBACK = {
+    ARCJET_BLOCKED_EVENTS_FALLBACK_WEBSITE_ID:
+      '33333333-3333-4333-8333-333333333333',
+    ARCJET_BLOCKED_EVENTS_FALLBACK_TENANT_ID: 'platform',
+    ARCJET_BLOCKED_EVENTS_FALLBACK_ANALYTICS_API_KEY: 'secret-fallback-key',
+  };
+  const PROD = { NODE_ENV: 'production', ARCJET_KEY: 'ajkey_x' };
+
+  test('production with Arcjet on and all three set: passes', () => {
+    assert.doesNotThrow(() =>
+      assertBlockedTrafficFallbackEnv({ ...PROD, ...FALLBACK }),
+    );
+  });
+
+  test('production with Arcjet on: throws naming every missing var', () => {
+    assert.throws(
+      () => assertBlockedTrafficFallbackEnv({ ...PROD }),
+      (err: Error) =>
+        /ARCJET_BLOCKED_EVENTS_FALLBACK_WEBSITE_ID/.test(err.message) &&
+        /ARCJET_BLOCKED_EVENTS_FALLBACK_TENANT_ID/.test(err.message) &&
+        /ARCJET_BLOCKED_EVENTS_FALLBACK_ANALYTICS_API_KEY/.test(err.message),
+    );
+  });
+
+  test('one missing or whitespace-only: throws naming only that var, never a value', () => {
+    assert.throws(
+      () =>
+        assertBlockedTrafficFallbackEnv({
+          ...PROD,
+          ...FALLBACK,
+          ARCJET_BLOCKED_EVENTS_FALLBACK_TENANT_ID: '  ',
+        }),
+      (err: Error) =>
+        /ARCJET_BLOCKED_EVENTS_FALLBACK_TENANT_ID/.test(err.message) &&
+        !/FALLBACK_WEBSITE_ID|FALLBACK_ANALYTICS_API_KEY/.test(err.message) &&
+        !err.message.includes('secret-fallback-key') &&
+        !err.message.includes('ajkey_x'),
+    );
+  });
+
+  test('not production, or Arcjet off: no requirement', () => {
+    assert.doesNotThrow(() =>
+      assertBlockedTrafficFallbackEnv({
+        NODE_ENV: 'development',
+        ARCJET_KEY: 'k',
+      }),
+    );
+    assert.doesNotThrow(() =>
+      assertBlockedTrafficFallbackEnv({ NODE_ENV: 'production' }),
+    );
+    assert.doesNotThrow(() =>
+      assertBlockedTrafficFallbackEnv({
+        NODE_ENV: 'production',
+        ARCJET_KEY: '',
+      }),
     );
   });
 });

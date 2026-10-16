@@ -12,6 +12,7 @@ import { createArcjetDeniedResponse } from '@/lib/arcjet-denied-response';
 import {
   buildBlockedTrafficEvent,
   createBlockedTrafficSender,
+  redactTenantConfigForLog,
   resolveBlockedTrafficTarget,
 } from '@/lib/blocked-traffic-events';
 
@@ -301,7 +302,7 @@ async function loadTenantConfig(
       !tenantBasicConfig.defaultLocale
     ) {
       edgeLog('warn', 'tenant_basic_config_not_configured', {
-        tenantBasicConfig,
+        tenantBasicConfig: redactTenantConfigForLog(tenantBasicConfig),
         url: request.url,
         method: request.method,
         host,
