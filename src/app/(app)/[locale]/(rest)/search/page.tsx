@@ -1,7 +1,6 @@
 import { getCookies } from 'cookies-next/server';
 import { cookies, headers } from 'next/headers';
 import { Metadata } from 'next/types';
-import qs from 'qs';
 import { cache } from 'react';
 
 import { SearchPageShell } from '@/app/(app)/features/search/components/search-page-shell';
@@ -21,7 +20,6 @@ import { type ResultType } from '@/app/(app)/shared/store/results';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { createLogger } from '@/lib/logger';
 import { toBbox } from '@/app/(app)/shared/lib/utils';
-import { arcjetProtectPage } from '@/lib/arcjet';
 import { type FiltersMap } from '@/types/search';
 
 import {
@@ -214,19 +212,7 @@ export default async function SearchPage({
     getCookies({ cookies }),
   ]);
 
-  const queryString = qs.stringify(searchParamsResult, {
-    addQueryPrefix: true,
-  });
   const locale = paramsResult.locale;
-  const appConfig = await getAppConfigWithoutHost(locale);
-  // Run arcjet off the critical path. A deny is only logged, so there is no
-  // reason to block the SSR data fetch waiting for the verdict.
-  void arcjetProtectPage(
-    `/search${queryString}`,
-    appConfig.tenantId || 'unknown',
-  ).catch((err) => {
-    log.warn({ err }, 'arcjet protect failed');
-  });
 
   const headersList = await headers();
   const nonce = headersList.get('x-nonce') ?? '';

@@ -2,6 +2,9 @@ import { i18nRouter } from 'next-i18n-router';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+import { arcjetProtect } from '@/lib/arcjet';
+import { createArcjetDeniedResponse } from '@/lib/arcjet-denied-response';
+
 import { SESSION_ID } from './app/(app)/shared/lib/constants';
 import { fetchWrapper } from './app/(app)/shared/lib/fetchWrapper';
 import { withOptionalCustomBasePath } from './app/(app)/shared/lib/utils';
@@ -274,6 +277,13 @@ export async function proxy(request: NextRequest) {
       // Return 400 Bad Request for invalid Origin header
       return new NextResponse('Invalid Origin header', { status: 400 });
     }
+  }
+
+  // Bot protection runs before tenant resolution so a denied request costs
+  // nothing further. Fails open: a missing key or SDK error never blocks.
+  const arcjetResult = await arcjetProtect(request, edgeLog);
+  if (arcjetResult.denied) {
+    return createArcjetDeniedResponse(request);
   }
 
   // Use raw host for headers that require it, but parsed host for logic/identification

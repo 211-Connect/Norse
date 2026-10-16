@@ -11,7 +11,6 @@ import { getResource } from '@/app/(app)/shared/services/resource-service';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { isValidUUID } from '@/app/(app)/shared/utils/uuid';
 import { createLogger } from '@/lib/logger';
-import { arcjetProtectPage } from '@/lib/arcjet';
 import { Resource } from '@/types/resource';
 
 const log = createLogger('resource-page');
@@ -73,8 +72,6 @@ export default async function ResourcePage({ params }) {
     getCookies({ cookies }),
     getAppConfigWithoutHost(locale),
   ]);
-
-  await arcjetProtectPage(`/search/${id}`, appConfig.tenantId || 'unknown');
 
   const { resources } = await initTranslations(
     locale,
