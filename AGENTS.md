@@ -26,6 +26,7 @@ Other docs, load only when the task touches that area:
 - [docs/tenant-api-key.md](/docs/tenant-api-key.md) — per-tenant Norse API authentication key (`x-api-key`), caching, and bulk backfill endpoint.
 - [docs/bot-protection.md](/docs/bot-protection.md) — Arcjet bot protection on directory pages: covered routes, env-only enforcement (no Payload setting), rollout and recovery runbook.
 - [docs/tracing.md](/docs/tracing.md) — OpenTelemetry tracing setup, propagated to the Norse API via `traceparent`, and how to view traces locally.
+- [docs/blocked-traffic-analytics.md](/docs/blocked-traffic-analytics.md) — server-side `bot_blocked` Umami events for Arcjet denials and the Blocked Bots dashboard widget; classification table lives in `docs/architecture.md`.
 
 ## Feature documentation
 

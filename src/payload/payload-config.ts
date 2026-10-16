@@ -271,6 +271,14 @@ const config = buildConfig({
           maxWidth: 'full',
         },
         {
+          slug: WidgetSlug.BlockedBots,
+          Component:
+            '@/payload/components/analytics/widgets/BlockedBotsWidget#default',
+          label: 'Blocked bots',
+          minWidth: 'x-small',
+          maxWidth: 'full',
+        },
+        {
           slug: WidgetSlug.PageviewsChart,
           Component:
             '@/payload/components/analytics/widgets/PageviewsChartWidget#default',
