@@ -4,6 +4,8 @@ import {
   ArcjetDenyDecision,
   ArcjetErrorDecision,
   ArcjetErrorReason,
+  ArcjetFilterReason,
+  ArcjetRuleResult,
   type ArcjetDecision,
 } from '@arcjet/next';
 import { NextRequest } from 'next/server';
@@ -13,6 +15,8 @@ import { describe, test } from 'node:test';
 import {
   ARCJET_ALLOWED_BOTS,
   ARCJET_ENFORCEMENT_EXCLUDED_HOSTS,
+  NO_USER_AGENT_FILTER,
+  buildArcjetRules,
   type ArcjetLog,
   FINGERPRINT_HEADER_LOG_MAX_PER_MINUTE,
   MBOA_PROXY_IP,
@@ -172,6 +176,97 @@ describe('arcjetProtect enforcement (ISS-1728)', () => {
 
     assert.equal(entries[0].data.ip, CLIENT_IP);
     assert.equal(entries[0].data.doConnectingIp, MBOA_PROXY_IP);
+  });
+});
+
+describe('no-User-Agent filter rule (ISS-1744)', () => {
+  const filterReason = () =>
+    new ArcjetFilterReason({
+      matchedExpressions: [NO_USER_AGENT_FILTER],
+      undeterminedExpressions: [],
+    });
+
+  const filterRuleResult = (state: 'DRY_RUN' | 'RUN') =>
+    new ArcjetRuleResult({
+      ruleId: 'filter-rule',
+      fingerprint: 'fp',
+      ttl: 0,
+      state,
+      conclusion: 'DENY',
+      reason: filterReason(),
+    });
+
+  test('DRY_RUN match: decision stays allowed and is logged once', async () => {
+    const decision = new ArcjetAllowDecision({
+      ttl: 0,
+      results: [filterRuleResult('DRY_RUN')],
+      reason: new ArcjetBotReason({
+        allowed: [],
+        denied: [],
+        verified: false,
+        spoofed: false,
+      }),
+    });
+    const protect = createArcjetProtect(clientReturning(decision));
+    const { log, entries } = captureLog();
+
+    const result = await protect(makeRequest(), log);
+
+    assert.deepEqual(result, { denied: false, conclusion: 'ALLOW' });
+    assert.equal(entries.length, 1);
+    assert.equal(entries[0].event, 'arcjet_dry_run_match');
+    assert.equal(entries[0].data.ruleType, 'filter');
+    assert.equal(entries[0].data.host, 'example.org');
+    assert.equal(entries[0].data.pathName, '/en/search?q=food');
+    assert.deepEqual(entries[0].data.matchedExpressions, [
+      NO_USER_AGENT_FILTER,
+    ]);
+  });
+
+  test('LIVE filter denial: denied with reasonType FILTER and no bots', async () => {
+    const decision = new ArcjetDenyDecision({
+      ttl: 0,
+      results: [filterRuleResult('RUN')],
+      reason: filterReason(),
+    });
+    const protect = createArcjetProtect(clientReturning(decision));
+    const { log, entries } = captureLog();
+
+    const result = await protect(makeRequest(), log);
+
+    assert.deepEqual(result, {
+      denied: true,
+      conclusion: 'DENY',
+      deniedBots: [],
+    });
+    assert.equal(entries.length, 1);
+    assert.equal(entries[0].event, 'arcjet_denied');
+    assert.equal(entries[0].data.reasonType, 'FILTER');
+    assert.deepEqual(entries[0].data.deniedBots, []);
+    assert.equal(entries[0].data.enforced, true);
+  });
+
+  test('bot denial logs reasonType BOT', async () => {
+    const protect = createArcjetProtect(clientReturning(denyBots(['CURL'])));
+    const { log, entries } = captureLog();
+    await protect(makeRequest(), log);
+    assert.equal(entries[0].data.reasonType, 'BOT');
+  });
+
+  test('rules contain the filter in DRY_RUN with exactly the expression', () => {
+    // Each rule factory returns a one-element tuple; flatten to inspect.
+    const rules = buildArcjetRules().flat();
+    const filters = rules.filter((r) => r.type === 'FILTER');
+    assert.equal(filters.length, 1);
+    assert.equal(filters[0].mode, 'DRY_RUN');
+    assert.deepEqual([...filters[0].deny], [NO_USER_AGENT_FILTER]);
+    assert.equal(
+      NO_USER_AGENT_FILTER,
+      'len(http.request.headers["user-agent"]) eq 0',
+    );
+    // detectBot stays first and LIVE.
+    assert.equal(rules[0].type, 'BOT');
+    assert.equal(rules[0].mode, 'LIVE');
   });
 });
 

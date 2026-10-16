@@ -209,6 +209,16 @@ MNIT confirms which automated traffic is theirs (ISS-1737). To enforce for
 MBOA, delete that entry; nothing else changes. Changes to `NEXT_PUBLIC_CUSTOM_BASE_PATH`/trailing-slash
 handling or Arcjet rules should be checked against this deployment.
 
+The rule set (`buildArcjetRules` in `src/lib/arcjet.ts`) also carries a
+`filter` rule denying requests with no `User-Agent`
+(`NO_USER_AGENT_FILTER`, ISS-1744): such requests cannot be evaluated by the
+bot rule and otherwise end as `CONCLUSION_ERROR` (fail-open). It runs in
+`DRY_RUN`, so the decision stays ALLOW and each match is logged as
+`arcjet_dry_run_match`. The promotion step is to read the dry-run impact
+after deploy (Arcjet dashboard and those log lines) and then flip the mode to
+`LIVE`. On 2026-10-16 the only traffic observed in this class was Outlook
+link-scanning from Microsoft's `2a01:111:f400::/48` range.
+
 ### Historical note: Strapi → Payload
 
 Norse originally ran on Strapi. `src/payload/migrations/` (notably

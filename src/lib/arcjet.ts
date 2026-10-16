@@ -3,6 +3,7 @@ import arcjet, {
   type ArcjetDecision,
   cloudflare,
   detectBot,
+  filter,
 } from '@arcjet/next';
 import type { NextRequest } from 'next/server';
 
@@ -63,6 +64,33 @@ export function isEnforcementExcludedHost(
 ): boolean {
   const host = (request.headers.get('host') ?? '').toLowerCase().split(':')[0];
   return excludedHosts.has(host);
+}
+
+/**
+ * ISS-1744: a request with no User-Agent cannot be evaluated by the bot rule
+ * and today ends as CONCLUSION_ERROR (fail-open). Arcjet support recommends
+ * denying it outright. The filter rule runs in DRY_RUN until the dry-run
+ * impact has been read after deploy; then switch its mode to LIVE.
+ */
+export const NO_USER_AGENT_FILTER =
+  'len(http.request.headers["user-agent"]) eq 0' as const;
+
+/** The rule set passed to `arcjet()`; exported so tests can inspect it. */
+export function buildArcjetRules() {
+  return [
+    detectBot({
+      mode: 'LIVE',
+      allow: [...ARCJET_ALLOWED_BOTS],
+    }),
+    // ISS-1744: a request with no User-Agent cannot be evaluated by the bot
+    // rule and today ends as CONCLUSION_ERROR (fail-open). Arcjet support
+    // recommends denying it outright. DRY_RUN until the dry-run impact has
+    // been read after deploy; then switch to LIVE.
+    filter({
+      mode: 'DRY_RUN',
+      deny: [NO_USER_AGENT_FILTER],
+    }),
+  ];
 }
 
 /** Headers never logged, in any form. */
@@ -241,6 +269,25 @@ function deniedBotsOf(decision: ArcjetDecision): string[] {
   return [...bots];
 }
 
+/**
+ * Rule results that matched in DRY_RUN: the overall decision stays ALLOW,
+ * but the rule reports what it would have done. Logged so the dry-run
+ * impact of a rule (e.g. the ISS-1744 no-User-Agent filter) can be read
+ * from our own logs before it is promoted to LIVE.
+ */
+function dryRunMatchesOf(decision: ArcjetDecision) {
+  return decision.results
+    .filter((r) => r.state === 'DRY_RUN' && r.conclusion === 'DENY')
+    .map((r) => ({
+      ruleType: (r.reason.type ?? 'unknown').toLowerCase(),
+      ruleId: r.ruleId,
+      matchedExpressions: r.reason.isFilter()
+        ? r.reason.matchedExpressions
+        : undefined,
+      deniedBots: r.reason.isBot() ? r.reason.denied : undefined,
+    }));
+}
+
 function errorMessageOf(decision: ArcjetDecision): string {
   if (decision.reason.isError()) return decision.reason.message;
   const errored = decision.results.find((r) => r.reason.isError());
@@ -336,6 +383,7 @@ export function createArcjetProtect(
       log('warn', 'arcjet_denied', {
         ...requestContext(request),
         reason: decision.reason,
+        reasonType: decision.reason.type,
         deniedBots,
         decisionId: decision.id,
         enforced,
@@ -355,6 +403,14 @@ export function createArcjetProtect(
       return { denied: false, conclusion: 'ERROR' };
     }
 
+    for (const match of dryRunMatchesOf(decision)) {
+      log('warn', 'arcjet_dry_run_match', {
+        ...requestContext(request),
+        ...match,
+        decisionId: decision.id,
+      });
+    }
+
     return {
       denied: false,
       conclusion: decision.conclusion === 'CHALLENGE' ? 'CHALLENGE' : 'ALLOW',
@@ -371,12 +427,7 @@ const aj = arcjetKey
   ? arcjet({
       key: arcjetKey,
       proxies: PROXIES,
-      rules: [
-        detectBot({
-          mode: 'LIVE',
-          allow: [...ARCJET_ALLOWED_BOTS],
-        }),
-      ],
+      rules: buildArcjetRules(),
     })
   : undefined;
 
