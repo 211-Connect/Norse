@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 import { arcjetProtect } from '@/lib/arcjet';
+import { createArcjetDeniedResponse } from '@/lib/arcjet-denied-response';
 
 import { SESSION_ID } from './app/(app)/shared/lib/constants';
 import { fetchWrapper } from './app/(app)/shared/lib/fetchWrapper';
@@ -282,7 +283,7 @@ export async function proxy(request: NextRequest) {
   // nothing further. Fails open: a missing key or SDK error never blocks.
   const arcjetResult = await arcjetProtect(request, edgeLog);
   if (arcjetResult.denied) {
-    return new NextResponse('Forbidden', { status: 403 });
+    return createArcjetDeniedResponse(request);
   }
 
   // Use raw host for headers that require it, but parsed host for logic/identification
