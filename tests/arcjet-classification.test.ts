@@ -22,7 +22,7 @@ describe('category map (real @arcjet/protocol data)', () => {
   });
 
   test('every named SEO vendor is a well-known bot in the SDK map', () => {
-    const known = new Set(Object.values(ARCJET_CATEGORIES).flat());
+    const known = new Set<string>(Object.values(ARCJET_CATEGORIES).flat());
     for (const bot of SEO_VENDOR_BOTS) {
       assert.ok(known.has(bot), `${bot} is not a known Arcjet bot`);
     }

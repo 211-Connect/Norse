@@ -136,8 +136,30 @@ export type ArcjetProtectResult =
       denied: false;
       conclusion: 'DENIED_NOT_ENFORCED';
       deniedBots: string[];
+      /** `decision.reason.type`: 'BOT' | 'FILTER' | ... (ISS-2366). */
+      reasonType: string;
     }
-  | { denied: true; conclusion: 'DENY'; deniedBots: string[] };
+  | {
+      denied: true;
+      conclusion: 'DENY';
+      deniedBots: string[];
+      reasonType: string;
+    };
+
+/** The denied shapes of `ArcjetProtectResult`. */
+export type ArcjetDeniedResult = Extract<
+  ArcjetProtectResult,
+  { conclusion: 'DENY' | 'DENIED_NOT_ENFORCED' }
+>;
+
+/** True for both an enforced DENY and an observe-only DENIED_NOT_ENFORCED. */
+export function isArcjetDeniedResult(
+  result: ArcjetProtectResult,
+): result is ArcjetDeniedResult {
+  return (
+    result.conclusion === 'DENY' || result.conclusion === 'DENIED_NOT_ENFORCED'
+  );
+}
 
 export interface ArcjetClientLike {
   protect(request: NextRequest): Promise<ArcjetDecision>;
@@ -380,18 +402,24 @@ export function createArcjetProtect(
     if (decision.isDenied()) {
       const deniedBots = deniedBotsOf(decision);
       const enforced = !isEnforcementExcludedHost(request, excludedHosts);
+      const reasonType = decision.reason.type ?? 'unknown';
       log('warn', 'arcjet_denied', {
         ...requestContext(request),
         reason: decision.reason,
-        reasonType: decision.reason.type,
+        reasonType,
         deniedBots,
         decisionId: decision.id,
         enforced,
       });
       if (!enforced) {
-        return { denied: false, conclusion: 'DENIED_NOT_ENFORCED', deniedBots };
+        return {
+          denied: false,
+          conclusion: 'DENIED_NOT_ENFORCED',
+          deniedBots,
+          reasonType,
+        };
       }
-      return { denied: true, conclusion: 'DENY', deniedBots };
+      return { denied: true, conclusion: 'DENY', deniedBots, reasonType };
     }
 
     if (decision.isErrored()) {

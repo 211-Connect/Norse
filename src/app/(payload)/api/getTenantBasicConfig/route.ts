@@ -6,6 +6,8 @@ import { withCache } from '@/utilities/withCache';
 import { normalizeAllowedEmailDomains } from '@/utils/normalizeAllowedEmailDomains';
 
 export type TenantBasicConfigResponse = {
+  /** Payload `tenants` id, or null when the host matches no tenant. */
+  tenantId: string | null;
   enabledLocales: TypedLocale[];
   defaultLocale: string;
   auth: {
@@ -15,6 +17,17 @@ export type TenantBasicConfigResponse = {
   };
   seo: {
     noindex: boolean;
+  };
+  /**
+   * ISS-2366: lets the Edge proxy attribute server-side `bot_blocked`
+   * events to the tenant's Umami website via Norse-API, which authenticates
+   * per tenant with this analytics key. Same source `getTenantMainUmamiWebsiteId`
+   * (appConfig.ts) reads. This route is only reachable with
+   * `PAYLOAD_API_ROUTE_SECRET`.
+   */
+  analytics: {
+    umamiWebsiteId: string | null;
+    apiKey: string | null;
   };
 };
 
@@ -37,6 +50,7 @@ export const GET = async (request: Request) => {
       const tenant = await findTenantByHost(host);
 
       return {
+        tenantId: tenant ? String(tenant.id) : null,
         enabledLocales: tenant ? tenant.enabledLocales : [],
         defaultLocale: tenant ? tenant.defaultLocale : 'en',
         auth: {
@@ -48,6 +62,10 @@ export const GET = async (request: Request) => {
         },
         seo: {
           noindex: tenant?.seo?.noindex ?? false,
+        },
+        analytics: {
+          umamiWebsiteId: tenant?.analytics?.umamiWebsiteId?.trim() || null,
+          apiKey: tenant?.analytics?.apiKey?.trim() || null,
         },
       };
     },

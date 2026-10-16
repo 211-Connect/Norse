@@ -1,11 +1,21 @@
 import { i18nRouter } from 'next-i18n-router';
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import type { NextFetchEvent, NextRequest } from 'next/server';
 
-import { arcjetProtect } from '@/lib/arcjet';
+import {
+  type ArcjetDeniedResult,
+  arcjetProtect,
+  isArcjetDeniedResult,
+} from '@/lib/arcjet';
+import { classifyBlockedTraffic } from '@/lib/arcjet-classification';
 import { createArcjetDeniedResponse } from '@/lib/arcjet-denied-response';
+import {
+  buildBlockedTrafficEvent,
+  createBlockedTrafficSender,
+  resolveBlockedTrafficTarget,
+} from '@/lib/blocked-traffic-events';
 
-import { SESSION_ID } from './app/(app)/shared/lib/constants';
+import { API_URL, SESSION_ID } from './app/(app)/shared/lib/constants';
 import { fetchWrapper } from './app/(app)/shared/lib/fetchWrapper';
 import { withOptionalCustomBasePath } from './app/(app)/shared/lib/utils';
 import { parseHost } from './app/(app)/shared/utils/parseHost';
@@ -249,7 +259,146 @@ async function hasActiveSession(request: NextRequest): Promise<boolean> {
   }
 }
 
-export async function proxy(request: NextRequest) {
+/**
+ * The per-host tenant config, from the in-memory cache or the Payload
+ * route (cached for TENANT_DATA_CACHE_TTL_MS either way). `undefined` only
+ * when the fetch failed on an earlier request and that failure is cached.
+ */
+async function loadTenantConfig(
+  request: NextRequest,
+  rawHost: string,
+  host: string,
+): Promise<TenantBasicConfigResponse | null | undefined> {
+  const cached = getCachedTenantData(host);
+  if (cached !== undefined) {
+    return cached;
+  }
+
+  const apiRoute = getApiRoute(request, 'getTenantBasicConfig');
+  let timeoutId: NodeJS.Timeout | undefined;
+
+  try {
+    const controller = new AbortController();
+    timeoutId = setTimeout(() => controller.abort(), 5000);
+
+    const tenantBasicConfig: TenantBasicConfigResponse | null =
+      await fetchWrapper(
+        `${apiRoute}?host=${host}&secret=${process.env.PAYLOAD_API_ROUTE_SECRET}`,
+        {
+          headers: {
+            host: rawHost,
+          },
+          signal: controller.signal,
+          cache: 'no-store',
+        },
+      );
+
+    setCachedTenantData(host, tenantBasicConfig);
+
+    if (
+      !tenantBasicConfig ||
+      !tenantBasicConfig.enabledLocales.length ||
+      !tenantBasicConfig.defaultLocale
+    ) {
+      edgeLog('warn', 'tenant_basic_config_not_configured', {
+        tenantBasicConfig,
+        url: request.url,
+        method: request.method,
+        host,
+        rawHost,
+        userAgent: request.headers.get('user-agent'),
+        referer: request.headers.get('referer'),
+        xForwardedFor: request.headers.get('x-forwarded-for'),
+      });
+    }
+
+    return tenantBasicConfig;
+  } catch (error) {
+    setCachedTenantData(host, null);
+    edgeLog('error', 'tenant_basic_config_fetch_failed', {
+      error: error instanceof Error ? error.message : String(error),
+      url: request.url,
+      method: request.method,
+      host,
+      rawHost,
+      userAgent: request.headers.get('user-agent'),
+      referer: request.headers.get('referer'),
+      xForwardedFor: request.headers.get('x-forwarded-for'),
+    });
+    return undefined;
+  } finally {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+  }
+}
+
+/**
+ * ISS-2366: one `bot_blocked` Umami event per Arcjet denial, enforced or
+ * not, batched per instance and sent to Norse-API off the request path.
+ * One sender per Edge instance (module scope). Never throws.
+ */
+const blockedTrafficSender = createBlockedTrafficSender({
+  apiUrl: API_URL,
+  log: edgeLog,
+});
+
+let blockedTrafficDropped = 0;
+
+async function recordBlockedTraffic(
+  request: NextRequest,
+  result: ArcjetDeniedResult,
+): Promise<void> {
+  try {
+    const rawHost = request.headers.get('host') || '';
+    const host = parseHost(rawHost);
+    // Arcjet runs before the tenant fetch on purpose (cost); the tenant is
+    // resolved here, on the deny path only, and the cache keeps it cheap.
+    const tenantConfig = await loadTenantConfig(request, rawHost, host);
+
+    const attribution = resolveBlockedTrafficTarget(tenantConfig, {
+      ARCJET_BLOCKED_EVENTS_FALLBACK_WEBSITE_ID:
+        process.env.ARCJET_BLOCKED_EVENTS_FALLBACK_WEBSITE_ID,
+      ARCJET_BLOCKED_EVENTS_FALLBACK_TENANT_ID:
+        process.env.ARCJET_BLOCKED_EVENTS_FALLBACK_TENANT_ID,
+      ARCJET_BLOCKED_EVENTS_FALLBACK_ANALYTICS_API_KEY:
+        process.env.ARCJET_BLOCKED_EVENTS_FALLBACK_ANALYTICS_API_KEY,
+    });
+
+    if (!attribution.target) {
+      blockedTrafficDropped += 1;
+      edgeLog('warn', 'blocked_traffic_event_dropped', {
+        reason: attribution.dropped,
+        droppedTotal: blockedTrafficDropped,
+        host,
+      });
+      return;
+    }
+
+    const classified = classifyBlockedTraffic(result);
+    const event = buildBlockedTrafficEvent(attribution.target.websiteId, {
+      ...classified,
+      source: 'proxy',
+      enforced: result.conclusion === 'DENY',
+      host,
+      path: request.nextUrl.pathname,
+    });
+
+    edgeLog('debug', 'blocked_traffic_event_queued', {
+      host,
+      attributedTo: attribution.attributedTo,
+      ...classified,
+    });
+
+    await blockedTrafficSender.enqueue(attribution.target, event);
+  } catch (error) {
+    edgeLog('warn', 'blocked_traffic_record_failed', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
+}
+
+export async function proxy(request: NextRequest, event?: NextFetchEvent) {
   if (request.method === 'POST' && request.url.includes('/[locale]')) {
     edgeLog('warn', 'potentially_malicious_request_blocked', {
       url: request.url,
@@ -282,6 +431,12 @@ export async function proxy(request: NextRequest) {
   // Bot protection runs before tenant resolution so a denied request costs
   // nothing further. Fails open: a missing key or SDK error never blocks.
   const arcjetResult = await arcjetProtect(request, edgeLog);
+  if (isArcjetDeniedResult(arcjetResult)) {
+    // Off the request path: the 403 (or, for an observe-only host, the
+    // normal response) is never delayed by analytics.
+    const work = recordBlockedTraffic(request, arcjetResult);
+    if (event?.waitUntil) event.waitUntil(work);
+  }
   if (arcjetResult.denied) {
     return createArcjetDeniedResponse(request);
   }
@@ -293,76 +448,14 @@ export async function proxy(request: NextRequest) {
   let locales = ['en'];
   let defaultLocale = 'en';
 
-  const cached = getCachedTenantData(host);
-  let tenantConfig: TenantBasicConfigResponse | null | undefined;
-
-  if (cached !== undefined) {
-    // Cache hit (may be null if tenant was not found previously)
-    if (cached && cached.enabledLocales.length && cached.defaultLocale) {
-      locales = cached.enabledLocales;
-      defaultLocale = cached.defaultLocale;
-      tenantConfig = cached;
-    }
-  } else {
-    const apiRoute = getApiRoute(request, 'getTenantBasicConfig');
-    let timeoutId: NodeJS.Timeout | undefined;
-
-    try {
-      const controller = new AbortController();
-      timeoutId = setTimeout(() => controller.abort(), 5000);
-
-      const tenantBasicConfig: TenantBasicConfigResponse | null =
-        await fetchWrapper(
-          `${apiRoute}?host=${host}&secret=${process.env.PAYLOAD_API_ROUTE_SECRET}`,
-          {
-            headers: {
-              host: rawHost,
-            },
-            signal: controller.signal,
-            cache: 'no-store',
-          },
-        );
-
-      setCachedTenantData(host, tenantBasicConfig);
-      tenantConfig = tenantBasicConfig;
-
-      if (
-        tenantBasicConfig &&
-        tenantBasicConfig.enabledLocales.length &&
-        tenantBasicConfig.defaultLocale
-      ) {
-        locales = tenantBasicConfig.enabledLocales;
-        defaultLocale = tenantBasicConfig.defaultLocale;
-      } else {
-        edgeLog('warn', 'tenant_basic_config_not_configured', {
-          tenantBasicConfig,
-          url: request.url,
-          method: request.method,
-          host,
-          rawHost,
-          userAgent: request.headers.get('user-agent'),
-          referer: request.headers.get('referer'),
-          xForwardedFor: request.headers.get('x-forwarded-for'),
-        });
-      }
-    } catch (error) {
-      // Cache the failure so we don't retry immediately
-      setCachedTenantData(host, null);
-      edgeLog('error', 'tenant_basic_config_fetch_failed', {
-        error: error instanceof Error ? error.message : String(error),
-        url: request.url,
-        method: request.method,
-        host,
-        rawHost,
-        userAgent: request.headers.get('user-agent'),
-        referer: request.headers.get('referer'),
-        xForwardedFor: request.headers.get('x-forwarded-for'),
-      });
-    } finally {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-    }
+  const tenantConfig = await loadTenantConfig(request, rawHost, host);
+  if (
+    tenantConfig &&
+    tenantConfig.enabledLocales.length &&
+    tenantConfig.defaultLocale
+  ) {
+    locales = tenantConfig.enabledLocales;
+    defaultLocale = tenantConfig.defaultLocale;
   }
 
   if (!locales.includes(defaultLocale)) {

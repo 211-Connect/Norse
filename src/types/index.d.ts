@@ -78,6 +78,11 @@ declare global {
       // EMS
       EMS_SERVICE_URL?: string;
 
+      // Arcjet blocked-traffic analytics fallback (ISS-2366)
+      ARCJET_BLOCKED_EVENTS_FALLBACK_WEBSITE_ID?: string;
+      ARCJET_BLOCKED_EVENTS_FALLBACK_TENANT_ID?: string;
+      ARCJET_BLOCKED_EVENTS_FALLBACK_ANALYTICS_API_KEY?: string;
+
       // Logging
       NEXT_PUBLIC_LOG_LEVEL?: string;
 
