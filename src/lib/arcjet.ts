@@ -46,6 +46,22 @@ export const ARCJET_ALLOWED_BOTS = [
   'BAIDU_CRAWLER',
 ] as const;
 
+/**
+ * Hosts where Arcjet runs and logs but a DENY is NOT enforced.
+ * Temporary: MBOA (State of Minnesota) is excluded until MNIT confirms
+ * which automated traffic is theirs (ISS-1737). To enforce for MBOA,
+ * delete its entry; no other change is needed.
+ */
+export const ARCJET_ENFORCEMENT_EXCLUDED_HOSTS: ReadonlySet<string> = new Set([
+  'mboa.c211.io',
+]);
+
+/** Matches on the `host` header only (lower-cased, port stripped). */
+export function isEnforcementExcludedHost(request: NextRequest): boolean {
+  const host = (request.headers.get('host') ?? '').toLowerCase().split(':')[0];
+  return ARCJET_ENFORCEMENT_EXCLUDED_HOSTS.has(host);
+}
+
 /** Headers never logged, in any form. */
 const DROPPED_HEADERS = new Set(['cookie', 'set-cookie', 'authorization']);
 
@@ -83,6 +99,12 @@ export type ArcjetProtectResult =
        */
       conclusion:
         'ALLOW' | 'CHALLENGE' | 'ERROR' | 'SKIPPED' | 'THREW' | 'NO_CLIENT_IP';
+    }
+  | {
+      /** Denied by Arcjet but the host is in ARCJET_ENFORCEMENT_EXCLUDED_HOSTS. */
+      denied: false;
+      conclusion: 'DENIED_NOT_ENFORCED';
+      deniedBots: string[];
     }
   | { denied: true; conclusion: 'DENY'; deniedBots: string[] };
 
@@ -298,12 +320,17 @@ export function createArcjetProtect(
 
     if (decision.isDenied()) {
       const deniedBots = deniedBotsOf(decision);
+      const enforced = !isEnforcementExcludedHost(request);
       log('warn', 'arcjet_denied', {
         ...requestContext(request),
         reason: decision.reason,
         deniedBots,
         decisionId: decision.id,
+        enforced,
       });
+      if (!enforced) {
+        return { denied: false, conclusion: 'DENIED_NOT_ENFORCED', deniedBots };
+      }
       return { denied: true, conclusion: 'DENY', deniedBots };
     }
 

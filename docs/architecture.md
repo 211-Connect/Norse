@@ -202,7 +202,11 @@ tenant: it runs with `NEXT_PUBLIC_CUSTOM_BASE_PATH=/adresources` and
 instead of treating every MBOA visitor as one address. The proxy IP is not
 allow-listed as a bot; bots behind it are still detected (the allow list in
 `ARCJET_ALLOWED_BOTS` names the ones MBOA depends on, e.g.
-`SITEIMPROVE_CRAWLER`). Changes to `NEXT_PUBLIC_CUSTOM_BASE_PATH`/trailing-slash
+`SITEIMPROVE_CRAWLER`). Temporarily, `mboa.c211.io` is listed in
+`ARCJET_ENFORCEMENT_EXCLUDED_HOSTS` (same file): Arcjet still runs and logs
+`arcjet_denied` with `enforced: false`, but the request is not blocked, until
+MNIT confirms which automated traffic is theirs (ISS-1737). To enforce for
+MBOA, delete that entry; nothing else changes. Changes to `NEXT_PUBLIC_CUSTOM_BASE_PATH`/trailing-slash
 handling or Arcjet rules should be checked against this deployment.
 
 ### Historical note: Strapi → Payload
