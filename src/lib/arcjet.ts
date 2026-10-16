@@ -60,9 +60,10 @@ const IP_HEADERS = new Set([
 ]);
 
 /**
- * Max `arcjet_fingerprint_failed` events carrying redacted headers per
- * minute per process. Measured 2026-10-16: ~70/min on the MBOA app, so the
- * header-bearing event is sampled and the rest emit a counter-only warn.
+ * Max `arcjet_fingerprint_failed` / `arcjet_no_client_ip` events carrying
+ * redacted headers per minute per process. Measured 2026-10-16: ~70/min
+ * (~100k/day) on the MBOA app, so the header-bearing event is sampled and
+ * the rest emit a counter-only warn (`*_sampled_out`).
  */
 export const FINGERPRINT_HEADER_LOG_MAX_PER_MINUTE = 5;
 
@@ -76,8 +77,12 @@ export type ArcjetLog = (
 export type ArcjetProtectResult =
   | {
       denied: false;
-      /** `SKIPPED` = no ARCJET_KEY; `THREW` = SDK threw (failed open). */
-      conclusion: 'ALLOW' | 'CHALLENGE' | 'ERROR' | 'SKIPPED' | 'THREW';
+      /**
+       * `SKIPPED` = no ARCJET_KEY; `THREW` = SDK threw (failed open);
+       * `NO_CLIENT_IP` = no routable client address, deliberately allowed.
+       */
+      conclusion:
+        'ALLOW' | 'CHALLENGE' | 'ERROR' | 'SKIPPED' | 'THREW' | 'NO_CLIENT_IP';
     }
   | { denied: true; conclusion: 'DENY'; deniedBots: string[] };
 
@@ -85,9 +90,41 @@ export interface ArcjetClientLike {
   protect(request: NextRequest): Promise<ArcjetDecision>;
 }
 
+/**
+ * Addresses that identify infrastructure rather than a person: private
+ * (10/8, 172.16/12, 192.168/16), CGNAT (100.64/10), loopback, link-local,
+ * and IPv6 ULA (fc00::/7) / loopback / link-local. These are logged
+ * unmasked because MNIT needs the exact value to trace MBOA's network path.
+ */
+export function isNonRoutableIp(ip: string): boolean {
+  if (ip.includes(':')) {
+    const lower = ip.toLowerCase();
+    if (lower === '::1' || lower === '::') return true;
+    if (/^f[cd][0-9a-f]{0,2}:/.test(lower)) return true; // fc00::/7
+    if (/^fe[89ab][0-9a-f]?:/.test(lower)) return true; // fe80::/10
+    return false;
+  }
+  const octets = ip.split('.').map((o) => Number(o));
+  if (octets.length !== 4 || octets.some((o) => Number.isNaN(o))) return false;
+  const [a, b] = octets;
+  if (a === 10) return true;
+  if (a === 172 && b >= 16 && b <= 31) return true;
+  if (a === 192 && b === 168) return true;
+  if (a === 100 && b >= 64 && b <= 127) return true;
+  if (a === 127) return true;
+  if (a === 169 && b === 254) return true;
+  return false;
+}
+
+/**
+ * Mask a globally routable address to its first two octets (IPv6: first
+ * two groups). Non-routable addresses (see `isNonRoutableIp`) pass through
+ * unmasked.
+ */
 export function maskIp(value: string): string {
   const ip = value.trim();
   if (!ip) return ip;
+  if (isNonRoutableIp(ip)) return ip;
   if (ip.includes(':')) {
     const groups = ip.split(':');
     return `${groups.slice(0, 2).join(':')}:x`;
@@ -117,17 +154,26 @@ export function redactHeaders(headers: Headers): Record<string, string> {
   return out;
 }
 
-/** The client IP Arcjet resolves for this request (same proxy list). */
-export function resolveArcjetClientIp(request: NextRequest): string {
+/**
+ * The client IP Arcjet resolves for this request (same proxy list), or ''
+ * when no globally routable address is left after trusted proxies and
+ * private/CGNAT/ULA hops are skipped.
+ */
+function resolveClientIpOrEmpty(request: NextRequest): string {
   try {
     const { ip } = resolveClientIp(
       { headers: request.headers },
       { proxies: PARSED_PROXIES },
     );
-    return ip || 'unknown';
+    return ip;
   } catch {
-    return 'unknown';
+    return '';
   }
+}
+
+/** As `resolveClientIpOrEmpty`, with `'unknown'` for the empty case. */
+export function resolveArcjetClientIp(request: NextRequest): string {
+  return resolveClientIpOrEmpty(request) || 'unknown';
 }
 
 /** Returns true at most `maxPerMinute` times in any wall-clock minute. */
@@ -200,11 +246,42 @@ export function createArcjetProtect(
     }
   }
 
+  function logNoClientIp(request: NextRequest, log: ArcjetLog) {
+    const base = {
+      host: request.headers.get('host') ?? 'unknown',
+      pathName: `${request.nextUrl.pathname}${request.nextUrl.search}`,
+      doConnectingIp: request.headers.get('do-connecting-ip') ?? 'unknown',
+      forwardedFor: maskIpList(request.headers.get('x-forwarded-for') ?? ''),
+    };
+    if (sampleHeaderLog()) {
+      log('warn', 'arcjet_no_client_ip', {
+        ...base,
+        headers: redactHeaders(request.headers),
+      });
+    } else {
+      log('warn', 'arcjet_no_client_ip_sampled_out', base);
+    }
+  }
+
   return async function arcjetProtect(
     request: NextRequest,
     log: ArcjetLog,
   ): Promise<ArcjetProtectResult> {
     if (!client) return { denied: false, conclusion: 'SKIPPED' };
+
+    /**
+     * Deliberate allow. On the MBOA app ~70 req/min arrive with no globally
+     * routable client address once trusted proxies and private/CGNAT hops
+     * are skipped (visitors on the State of Minnesota network). The SDK
+     * would fail fingerprinting for these, so we do not call it at all and
+     * count them instead. Any future rule keyed on IP (sliding window,
+     * fingerprint cache, hosting/VPN checks) must treat NO_CLIENT_IP as
+     * pass-through, not as a shared "" identity.
+     */
+    if (resolveClientIpOrEmpty(request) === '') {
+      logNoClientIp(request, log);
+      return { denied: false, conclusion: 'NO_CLIENT_IP' };
+    }
 
     let decision: ArcjetDecision;
     try {

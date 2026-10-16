@@ -32,12 +32,20 @@ function captureLog(): { log: ArcjetLog; entries: LogEntry[] } {
   };
 }
 
+// A Cloudflare edge address (173.245.48.0/20 is a published Cloudflare range).
+const CLOUDFLARE_IP = '173.245.48.10';
+// Must be a globally routable address: Arcjet skips reserved ranges such as
+// TEST-NET (203.0.113.0/24) when walking x-forwarded-for, so those would
+// resolve to '' and make this test pass for the wrong reason.
+const CLIENT_IP = '8.8.8.8';
+
+/** A request with a routable client so the Arcjet client is reached. */
 function makeRequest(
   headers: Record<string, string> = {},
   path = '/en/search?q=food',
 ) {
   return new NextRequest(`https://example.org${path}`, {
-    headers: { host: 'example.org', ...headers },
+    headers: { host: 'example.org', 'x-forwarded-for': CLIENT_IP, ...headers },
   });
 }
 
@@ -79,16 +87,10 @@ const clientReturning = (decision: ArcjetDecision) => ({
   protect: async () => decision,
 });
 
-// A Cloudflare edge address (173.245.48.0/20 is a published Cloudflare range).
-const CLOUDFLARE_IP = '173.245.48.10';
-// Must be a globally routable address: Arcjet skips reserved ranges such as
-// TEST-NET (203.0.113.0/24) when walking x-forwarded-for, so those would
-// resolve to '' and make this test pass for the wrong reason.
-const CLIENT_IP = '8.8.8.8';
 const SENSITIVE_HEADERS = {
   cookie: 'session=secret',
   authorization: 'Bearer secret-token',
-  'x-forwarded-for': '203.0.113.77, 10.0.0.1',
+  'x-forwarded-for': '8.8.4.4, 10.0.0.1',
   'do-connecting-ip': '198.51.100.9',
   'cf-connecting-ip': '192.0.2.44',
   'x-real-ip': '2001:db8:85a3::8a2e:370:7334',
@@ -172,6 +174,102 @@ describe('arcjetProtect enforcement (ISS-1728)', () => {
   });
 });
 
+describe('no client IP allow path (ISS-1734, ISS-1728)', () => {
+  const MBOA_PRIVATE_CHAIN =
+    '10.44.12.7, 10.215.199.3,13.86.38.95,172.70.35.175';
+
+  function neverCalledClient() {
+    let calls = 0;
+    return {
+      calls: () => calls,
+      client: {
+        protect: async () => {
+          calls += 1;
+          return denyBots(['CURL']);
+        },
+      },
+    };
+  }
+
+  test('private client behind MBOA chain is allowed without calling Arcjet', async () => {
+    const { client, calls } = neverCalledClient();
+    const protect = createArcjetProtect(client, {
+      sampleHeaderLog: () => true,
+    });
+    const { log, entries } = captureLog();
+    const req = makeRequest({
+      'x-forwarded-for': MBOA_PRIVATE_CHAIN,
+      'do-connecting-ip': MBOA_PROXY_IP,
+      cookie: 'session=secret',
+    });
+
+    const result = await protect(req, log);
+
+    assert.deepEqual(result, { denied: false, conclusion: 'NO_CLIENT_IP' });
+    assert.equal(calls(), 0, 'Arcjet protect must not be called');
+    assert.equal(entries.length, 1);
+    assert.equal(entries[0].level, 'warn');
+    assert.equal(entries[0].event, 'arcjet_no_client_ip');
+    assert.equal(entries[0].data.host, 'example.org');
+    assert.equal(entries[0].data.pathName, '/en/search?q=food');
+    assert.equal(entries[0].data.doConnectingIp, MBOA_PROXY_IP);
+    // Private hops stay exact; the public proxy/edge hops are masked.
+    assert.equal(
+      entries[0].data.forwardedFor,
+      '10.44.12.7, 10.215.199.3, 13.86.x.x, 172.70.x.x',
+    );
+    const headers = entries[0].data.headers as Record<string, string>;
+    assert.equal('cookie' in headers, false);
+    assert.equal(
+      headers['x-forwarded-for'],
+      '10.44.12.7, 10.215.199.3, 13.86.x.x, 172.70.x.x',
+    );
+  });
+
+  test('empty client slot is also NO_CLIENT_IP', async () => {
+    const { client, calls } = neverCalledClient();
+    const protect = createArcjetProtect(client, {
+      sampleHeaderLog: () => true,
+    });
+    const { log } = captureLog();
+    const req = new NextRequest('https://example.org/en', {
+      headers: { host: 'example.org' },
+    });
+    const result = await protect(req, log);
+    assert.equal(result.conclusion, 'NO_CLIENT_IP');
+    assert.equal(calls(), 0);
+  });
+
+  test('sampled-out no-client-ip emits the counter event without headers', async () => {
+    const { client } = neverCalledClient();
+    const protect = createArcjetProtect(client, {
+      sampleHeaderLog: () => false,
+    });
+    const { log, entries } = captureLog();
+
+    await protect(
+      makeRequest({ 'x-forwarded-for': MBOA_PRIVATE_CHAIN, cookie: 'a=b' }),
+      log,
+    );
+
+    assert.equal(entries.length, 1);
+    assert.equal(entries[0].event, 'arcjet_no_client_ip_sampled_out');
+    assert.equal('headers' in entries[0].data, false);
+    assert.equal(
+      entries[0].data.forwardedFor,
+      '10.44.12.7, 10.215.199.3, 13.86.x.x, 172.70.x.x',
+    );
+  });
+
+  test('routable client still reaches Arcjet', async () => {
+    const { client, calls } = neverCalledClient();
+    const protect = createArcjetProtect(client);
+    const { log } = captureLog();
+    await protect(makeRequest(), log);
+    assert.equal(calls(), 1);
+  });
+});
+
 describe('fingerprint failure logging (ISS-1734)', () => {
   test('thrown SDK error fails open and logs redacted headers', async () => {
     const protect = createArcjetProtect(
@@ -200,7 +298,7 @@ describe('fingerprint failure logging (ISS-1734)', () => {
     const headers = entry.data.headers as Record<string, string>;
     assert.equal('cookie' in headers, false);
     assert.equal('authorization' in headers, false);
-    assert.equal(headers['x-forwarded-for'], '203.0.x.x, 10.0.x.x');
+    assert.equal(headers['x-forwarded-for'], '8.8.x.x, 10.0.0.1');
     assert.equal(headers['do-connecting-ip'], '198.51.x.x');
     assert.equal(headers['cf-connecting-ip'], '192.0.x.x');
     assert.equal(headers['x-real-ip'], '2001:db8:x');
@@ -267,11 +365,38 @@ describe('fingerprint failure logging (ISS-1734)', () => {
 });
 
 describe('helpers', () => {
-  test('maskIp keeps the first two octets / groups', () => {
+  test('maskIp masks routable addresses to two octets / groups', () => {
+    assert.equal(maskIp('8.8.8.8'), '8.8.x.x');
     assert.equal(maskIp('203.0.113.77'), '203.0.x.x');
-    assert.equal(maskIp(' 10.1.2.3 '), '10.1.x.x');
     assert.equal(maskIp('2001:db8::1'), '2001:db8:x');
     assert.equal(maskIp(''), '');
+  });
+
+  test('maskIp leaves infrastructure addresses unmasked', () => {
+    assert.equal(maskIp('10.44.12.7'), '10.44.12.7');
+    assert.equal(maskIp(' 10.1.2.3 '), '10.1.2.3');
+    assert.equal(maskIp('172.16.0.9'), '172.16.0.9');
+    assert.equal(maskIp('192.168.1.1'), '192.168.1.1');
+    assert.equal(maskIp('100.64.3.4'), '100.64.3.4');
+    assert.equal(maskIp('127.0.0.1'), '127.0.0.1');
+    assert.equal(maskIp('169.254.1.1'), '169.254.1.1');
+    assert.equal(maskIp('fd12:3456::1'), 'fd12:3456::1');
+    assert.equal(maskIp('fe80::1'), 'fe80::1');
+    assert.equal(maskIp('::1'), '::1');
+    // Not private: 172.32/12 and 100.128/10 are routable.
+    assert.equal(maskIp('172.32.0.1'), '172.32.x.x');
+    assert.equal(maskIp('100.128.0.1'), '100.128.x.x');
+  });
+
+  test('redactHeaders applies the routable-only rule per chain entry', () => {
+    const headers = new Headers({
+      'x-forwarded-for': '8.8.8.8, 10.215.199.3,100.64.1.2',
+      'x-rdwr-ip': '192.168.5.5',
+    });
+    assert.deepEqual(redactHeaders(headers), {
+      'x-forwarded-for': '8.8.x.x, 10.215.199.3, 100.64.1.2',
+      'x-rdwr-ip': '192.168.5.5',
+    });
   });
 
   test('redactHeaders drops set-cookie too', () => {
@@ -287,6 +412,9 @@ describe('helpers', () => {
   });
 
   test('resolveArcjetClientIp returns unknown with no usable header', () => {
-    assert.equal(resolveArcjetClientIp(makeRequest()), 'unknown');
+    const bare = new NextRequest('https://example.org/en', {
+      headers: { host: 'example.org' },
+    });
+    assert.equal(resolveArcjetClientIp(bare), 'unknown');
   });
 });
