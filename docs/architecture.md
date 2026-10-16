@@ -219,6 +219,33 @@ after deploy (Arcjet dashboard and those log lines) and then flip the mode to
 `LIVE`. On 2026-10-16 the only traffic observed in this class was Outlook
 link-scanning from Microsoft's `2a01:111:f400::/48` range.
 
+#### Blocked traffic analytics (ISS-2366)
+
+Every denial (enforced `DENY` and observe-only `DENIED_NOT_ENFORCED`) also
+emits a server-side `bot_blocked` Umami event, batched per Edge instance and
+sent to Norse-API `/analytics/events/batch` off the request path
+(`NextFetchEvent.waitUntil`), shown in the **Blocked Bots** dashboard
+widget (observe-only denials as a separate "Detected, not blocked" slice,
+not in the blocked count). The fallback env vars are a production deploy
+requirement whenever `ARCJET_KEY` is set. Full pipeline, event shape and env vars:
+[docs/blocked-traffic-analytics.md](/docs/blocked-traffic-analytics.md).
+
+The event's `classification` is decided by `classifyBlockedTraffic` in
+`src/lib/arcjet-classification.ts` from the SDK's own category map
+(`categories` in `@arcjet/protocol`, pinned in package.json). When a bot
+carries several signals the most severe wins: nefarious > seo > unknown.
+
+| Classification | Rule |
+| --- | --- |
+| `nefarious` | Any member of `CATEGORY:PROGRAMMATIC`, `CATEGORY:TOOL`, `CATEGORY:BOTNET`, `CATEGORY:AI`, `CATEGORY:ARCHIVE`, `CATEGORY:ACADEMIC`; the labels `UNKNOWN_BOT` and `HEADLESS_*`; and **any filter-rule denial** (`reason: filter`, e.g. the no-User-Agent filter). |
+| `seo` | Any member of `CATEGORY:ADVERTISING` or `CATEGORY:OPTIMIZER`, plus the named SEO vendors the map files elsewhere: `SEMRUSH_CRAWLER`, `AHREFS_CRAWLER`, `AHREFS_SITE_AUDIT`, `MOZ_CRAWLER`, `DATAFORSEO_CRAWLER`, `MAJESTIC_CRAWLER`, `BRIGHTEDGE_CRAWLER`, `BOTIFY_CRAWLER` — unless a nefarious rule also matches (`BOTIFY_CRAWLER` is in `CATEGORY:AI`, so it is `nefarious`). |
+| `unknown` | Everything else: `CATEGORY:UNKNOWN` bots not named above, bots in no category, and categories outside both lists (e.g. `CATEGORY:SOCIAL`, `CATEGORY:SEARCH_ENGINE` — normally allowed anyway). |
+
+`bot` is the first denied label; `category` is the category of the label
+that decided the classification. Tests in `tests/arcjet-classification.test.ts`
+run against the real map, so an SDK upgrade that moves a bot between
+categories shows up there.
+
 ### Historical note: Strapi → Payload
 
 Norse originally ran on Strapi. `src/payload/migrations/` (notably

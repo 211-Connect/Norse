@@ -238,6 +238,7 @@ describe('no-User-Agent filter rule (ISS-1744)', () => {
       denied: true,
       conclusion: 'DENY',
       deniedBots: [],
+      reasonType: 'FILTER',
     });
     assert.equal(entries.length, 1);
     assert.equal(entries[0].event, 'arcjet_denied');
@@ -291,6 +292,7 @@ describe('enforcement exclusion (ISS-1728, ISS-1737)', () => {
       denied: false,
       conclusion: 'DENIED_NOT_ENFORCED',
       deniedBots: ['CURL'],
+      reasonType: 'BOT',
     });
     assert.equal(entries.length, 1);
     assert.equal(entries[0].event, 'arcjet_denied');
