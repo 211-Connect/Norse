@@ -145,6 +145,25 @@ class CacheService {
     }
   }
 
+  /**
+   * Atomically increments a counter that expires `ttl` seconds after its
+   * first increment. Null when Redis is unavailable.
+   */
+  async incrementWithTtl(key: string, ttl: number): Promise<number | null> {
+    try {
+      await this.ensureConnection();
+      if (!this.client) return null;
+      const count = await this.client.incr(key);
+      if (count === 1) {
+        await this.client.expire(key, ttl);
+      }
+      return count;
+    } catch (error) {
+      log.error({ err: error, db: this.db }, 'Redis incr error');
+      return null;
+    }
+  }
+
   async del(key: string): Promise<void> {
     try {
       await this.ensureConnection();

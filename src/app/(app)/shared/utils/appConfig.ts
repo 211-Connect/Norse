@@ -711,6 +711,15 @@ const getCachedAppConfig = cache(async function (
   return cached;
 });
 
+/**
+ * The app config for a tenant host outside a request (no cookies or request
+ * headers), e.g. in Payload jobs. `baseUrl` and `sessionId` are not set.
+ */
+export const getAppConfigForHost = (
+  host: string,
+  locale: string,
+): Promise<CachedAppConfig> => getCachedAppConfig(host, locale);
+
 export const getAppConfigWithoutHost = async (locale: string) => {
   const { host } = await getHost();
   return getAppConfig(host, locale);

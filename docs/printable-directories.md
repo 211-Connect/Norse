@@ -103,8 +103,13 @@ choices (ADR 0002).
   without a location — in the PDF (Norse API) and in the source's "Go to
   search results" link (`withDefaultQueryParams()`). No filters and no
   favorites lists here; both are available later.
-- The slug is the slugified name. When it is taken, `withUniqueSlugRetry()`
-  retries with a random 4-digit suffix.
+- Names need at least 3 characters (`isDirectoryNameValid()`), in the
+  wizard and in the edit and clone dialogs; a typed share URL needs at least
+  3 letters or numbers. The API rejects slugs shorter than 3.
+- The slug is the slugified name (`baseSlugFromName()`, capped at 110
+  characters); a name with fewer than 3 Latin letters or digits, such as one
+  in another script, gets `directory` instead. When it is taken,
+  `withUniqueSlugRetry()` retries with a random 4-digit suffix.
 - `createPrintableDirectory` sets `locales` (every tenant language for users
   with `automaticTranslation`, the primary language otherwise) and applies
   the defaults on the server: cover title = name, header = website + logo +
@@ -130,7 +135,9 @@ suggestions are on their way.
   hidden until more cover layouts exist.
 - **Header / footer**: layout and text (Custom Headers & Footers);
   without it the card shows only the layout. A footer whose only item is
-  the disclaimer prints it full-width.
+  the disclaimer prints it full-width. The text, or else the middle one of
+  three items (e.g. Website · Logo · Date), is centered on the page
+  whatever the width of the items beside it.
 - **Logo** (general info; Logo Upload): one image per directory
   (`logoUrl`), printed wherever the header or footer layout includes "Logo".
   Without one, the site logo is used. Without the capability the logo isn't
@@ -194,7 +201,7 @@ Per-directory `accessPolicy` is enforced by the API.
    | `customHeadersFooters` | Editing header and footer layout and text |
    | `automaticTranslation` | Machine translation into the directory's languages on save |
    | `logoUpload` | The directory logo (`logoUrl`), used in header and footer |
-   | `scheduledPdfDelivery` | Reserved; no feature yet — labelled "not available yet" in the CMS |
+   | `scheduledPdfDelivery` | Emailing the directory's PDF on a schedule; see [scheduled-pdf-delivery.md](./scheduled-pdf-delivery.md) |
 
    Basic (always allowed with basic access): name, share URL, languages,
    access policy, default location, cover title and description, sections

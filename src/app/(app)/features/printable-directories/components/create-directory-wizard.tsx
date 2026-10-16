@@ -42,8 +42,10 @@ import { AccessPolicy } from '@/types/printableDirectories';
 
 import {
   getAccessPolicyDescription,
+  baseSlugFromName,
   getAccessPolicyLabel,
-  slugify,
+  isDirectoryNameValid,
+  MIN_DIRECTORY_NAME_LENGTH,
   withUniqueSlugRetry,
 } from '../utils';
 
@@ -76,6 +78,8 @@ export function CreateDirectoryWizard({
 
   const [step, setStep] = useState<1 | 2>(1);
   const [name, setName] = useState('');
+  // Shown once something is typed; an empty name just disables Next.
+  const nameTooShort = name.trim().length > 0 && !isDirectoryNameValid(name);
   const [accessPolicy, setAccessPolicy] = useState<AccessPolicy>(
     DEFAULT_ACCESS_POLICY,
   );
@@ -232,17 +236,19 @@ export function CreateDirectoryWizard({
 
       // Cover title, header and footer defaults are applied by the server
       // action itself.
-      const createResult = await withUniqueSlugRetry(slugify(name), (slug) =>
-        createPrintableDirectory(
-          {
-            name: trimmedName,
-            slug,
-            primaryLanguage: locale,
-            defaultQueryConfig,
-            ...(hideAccessPolicy ? {} : { accessPolicy }),
-          },
-          appConfig.tenantId,
-        ),
+      const createResult = await withUniqueSlugRetry(
+        baseSlugFromName(name),
+        (slug) =>
+          createPrintableDirectory(
+            {
+              name: trimmedName,
+              slug,
+              primaryLanguage: locale,
+              defaultQueryConfig,
+              ...(hideAccessPolicy ? {} : { accessPolicy }),
+            },
+            appConfig.tenantId,
+          ),
       );
 
       if (!createResult.success) {
@@ -362,7 +368,22 @@ export function CreateDirectoryWizard({
                 className="h-9 text-sm"
                 value={name}
                 onChange={(event) => setName(event.target.value)}
+                aria-invalid={nameTooShort}
+                aria-describedby={
+                  nameTooShort ? 'wizard-directory-name-error' : undefined
+                }
               />
+              {nameTooShort && (
+                <p
+                  id="wizard-directory-name-error"
+                  className="text-destructive text-xs"
+                >
+                  {t('name_too_short', {
+                    ns: 'page-directories',
+                    min: MIN_DIRECTORY_NAME_LENGTH,
+                  })}
+                </p>
+              )}
             </div>
 
             {!hideAccessPolicy && (
@@ -405,7 +426,10 @@ export function CreateDirectoryWizard({
               <Button variant="outline" onClick={() => handleOpenChange(false)}>
                 {t('call_to_action.cancel', { ns: 'common' })}
               </Button>
-              <Button onClick={() => setStep(2)} disabled={!name.trim()}>
+              <Button
+                onClick={() => setStep(2)}
+                disabled={!isDirectoryNameValid(name)}
+              >
                 {t('wizard_next', { ns: 'page-directories' })}
               </Button>
             </DialogFooter>

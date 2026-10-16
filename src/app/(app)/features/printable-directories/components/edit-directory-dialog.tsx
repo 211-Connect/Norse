@@ -35,7 +35,12 @@ import { CopyShareUrlButton } from './detail/copy-share-url-button';
 import { DirectoryImageField } from './detail/directory-image-field';
 import {
   getAccessPolicyDescription,
+  baseSlugFromName,
   getAccessPolicyLabel,
+  isDirectoryNameValid,
+  isSlugTooShort,
+  MIN_DIRECTORY_NAME_LENGTH,
+  MIN_SLUG_LENGTH,
   slugify,
 } from '../utils';
 
@@ -131,9 +136,12 @@ export function EditDirectoryDialog({
     // render, and resetting then would discard what the user typed.
   }, [open]);
 
+  const nameTooShort = name.trim().length > 0 && !isDirectoryNameValid(name);
+  const slugTooShort = isSlugTooShort(slug);
+
   const handleSubmit = async () => {
     const trimmedName = name.trim();
-    if (!trimmedName) return;
+    if (!isDirectoryNameValid(trimmedName) || isSlugTooShort(slug)) return;
 
     const trimmedSlug = slug.trim();
     const normalizedSlug = trimmedSlug ? slugify(trimmedSlug) : '';
@@ -157,7 +165,7 @@ export function EditDirectoryDialog({
 
     await onSubmit({
       name: trimmedName,
-      slug: normalizedSlug || slugify(trimmedName),
+      slug: normalizedSlug || baseSlugFromName(trimmedName),
       // Hidden means "not configurable here", not "reset": leave the stored
       // policy untouched.
       ...(hideAccessPolicy ? {} : { accessPolicy }),
@@ -185,7 +193,22 @@ export function EditDirectoryDialog({
             className="h-9 text-sm"
             value={name}
             onChange={(event) => setName(event.target.value)}
+            aria-invalid={nameTooShort}
+            aria-describedby={
+              nameTooShort ? 'edit-directory-name-error' : undefined
+            }
           />
+          {nameTooShort && (
+            <p
+              id="edit-directory-name-error"
+              className="text-destructive text-xs"
+            >
+              {t('name_too_short', {
+                ns: 'page-directories',
+                min: MIN_DIRECTORY_NAME_LENGTH,
+              })}
+            </p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -204,7 +227,7 @@ export function EditDirectoryDialog({
               className="h-full min-w-0 flex-1 bg-transparent px-2 outline-none"
               placeholder={t('slug_placeholder', { ns: 'page-directories' })}
               value={slug}
-              aria-invalid={Boolean(slugError)}
+              aria-invalid={Boolean(slugError) || slugTooShort}
               aria-describedby="edit-directory-slug-help"
               onChange={(event) => {
                 setSlug(event.target.value);
@@ -221,12 +244,18 @@ export function EditDirectoryDialog({
           <p
             id="edit-directory-slug-help"
             className={
-              slugError
+              slugError || slugTooShort
                 ? 'text-destructive text-xs'
                 : 'text-muted-foreground text-xs'
             }
           >
-            {slugError ?? t('share_url_help', { ns: 'page-directories' })}
+            {slugError ??
+              (slugTooShort
+                ? t('slug_too_short', {
+                    ns: 'page-directories',
+                    min: MIN_SLUG_LENGTH,
+                  })
+                : t('share_url_help', { ns: 'page-directories' }))}
           </p>
         </div>
 
@@ -370,7 +399,7 @@ export function EditDirectoryDialog({
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={!name.trim()}
+            disabled={!isDirectoryNameValid(name) || slugTooShort}
             loading={isSubmitting}
           >
             {t('call_to_action.save', { ns: 'common' })}

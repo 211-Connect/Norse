@@ -59,7 +59,8 @@
     "load_error": "無法載入可列印資源詳情。請重試。",
     "retry": "重試",
     "language_title": "目錄語言",
-    "booklet_layout": "小冊子版式"
+    "booklet_layout": "小冊子版式",
+    "booklet_layout_help": "頁面排列方式使得列印出來的頁面可以折疊並裝訂成冊：新增了空白內封面，並將頁數增加到 4 的倍數。雙面列印。"
   },
   "print_footer_disclaimer": "{{brandName}} 提供此資訊作為公共服務，但不對其準確性、完整性或及時性作任何保證。 {{brandName}} 對此資訊的使用方式概不負責，也不對因使用此資訊而產生的任何後果承擔責任。分發此列印件並不表示 {{brandName}} 對此資訊表示認可或與其有任何關聯。",
   "print_page_counter": "第 {{current}} 頁，共 {{total}} 頁",

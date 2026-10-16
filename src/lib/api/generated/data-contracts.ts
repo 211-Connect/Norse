@@ -860,18 +860,18 @@ export interface SearchHits {
    */
   query: string;
   /**
-   * Number of hits for the search query
+   * Number of matching search events for the query
    * @example 42
    */
   hits: number;
 }
 
 export interface SearchesResponse {
-  /** Search queries and their hit counts for text searches */
+  /** Query labels and counts for text search events */
   text: SearchHits[];
-  /** Search queries and their hit counts for taxonomy searches */
+  /** Query labels and counts for taxonomy search events */
   taxonomy: SearchHits[];
-  /** Search queries and their hit counts for hybrid searches */
+  /** Query labels and counts for hybrid search events */
   hybrid: SearchHits[];
 }
 
@@ -1801,6 +1801,122 @@ export interface PrintableDirectoryPreviewResponseDto {
   generatedAt: string;
 }
 
+export interface PrintableDirectoryDeliveryPrintOptionsDto {
+  /**
+   * One of the directory's languages.
+   * @example "en"
+   */
+  locale: string;
+  variant: "line-listing" | "summary-listing" | "full-listing";
+  fontSize: "default" | "large";
+  booklet: boolean;
+}
+
+export interface PrintableDirectoryDeliveryLastRunResponseDto {
+  /** @example "2026-10-14" */
+  date: string;
+  status: "sent" | "sent_as_link" | "failed" | "skipped";
+  reason: string | null;
+  at: string;
+}
+
+export interface PrintableDirectoryDeliveryResponseDto {
+  id: string;
+  directoryId: string;
+  createdByEmail: string;
+  enabled: boolean;
+  frequency: "weekly" | "monthly";
+  weekdays: number[];
+  monthDays: number[];
+  print: PrintableDirectoryDeliveryPrintOptionsDto;
+  recipients: string[];
+  lastRun: PrintableDirectoryDeliveryLastRunResponseDto | null;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface PrintableDirectoryDeliveryListResponseDto {
+  items: PrintableDirectoryDeliveryResponseDto[];
+}
+
+export interface CreatePrintableDirectoryDeliveryDto {
+  /** @default true */
+  enabled?: boolean;
+  frequency: "weekly" | "monthly";
+  /** Days of the week, 0 (Sunday) to 6 (Saturday). Required when weekly. */
+  weekdays?: number[];
+  /** Days of the month, 1 to 28. Required when monthly. */
+  monthDays?: number[];
+  print: PrintableDirectoryDeliveryPrintOptionsDto;
+  /**
+   * @maxItems 100
+   * @minItems 1
+   */
+  recipients: string[];
+}
+
+export interface UpdatePrintableDirectoryDeliveryDto {
+  /** @default true */
+  enabled?: boolean;
+  frequency?: "weekly" | "monthly";
+  /** Days of the week, 0 (Sunday) to 6 (Saturday). Required when weekly. */
+  weekdays?: number[];
+  /** Days of the month, 1 to 28. Required when monthly. */
+  monthDays?: number[];
+  print?: PrintableDirectoryDeliveryPrintOptionsDto;
+  /**
+   * @maxItems 100
+   * @minItems 1
+   */
+  recipients?: string[];
+}
+
+export interface DuePrintableDirectoryDeliveryDirectoryDto {
+  id: string;
+  name: string;
+  /** Public share slug; null when the directory has none. */
+  slug: string | null;
+  primaryLanguage: string;
+  locales: string[];
+}
+
+export interface DuePrintableDirectoryDeliveryResponseDto {
+  id: string;
+  directoryId: string;
+  createdByEmail: string;
+  enabled: boolean;
+  frequency: "weekly" | "monthly";
+  weekdays: number[];
+  monthDays: number[];
+  print: PrintableDirectoryDeliveryPrintOptionsDto;
+  recipients: string[];
+  lastRun: PrintableDirectoryDeliveryLastRunResponseDto | null;
+  createdAt?: string;
+  updatedAt?: string;
+  directory: DuePrintableDirectoryDeliveryDirectoryDto;
+}
+
+export interface DuePrintableDirectoryDeliveryListResponseDto {
+  items: DuePrintableDirectoryDeliveryResponseDto[];
+}
+
+export interface ClaimPrintableDirectoryDeliveryDto {
+  /** @example "2026-10-14" */
+  date: string;
+}
+
+export interface ClaimPrintableDirectoryDeliveryResponseDto {
+  /** False when the delivery was already claimed for this date (another run handled it). */
+  claimed: boolean;
+}
+
+export interface ReportPrintableDirectoryDeliveryResultDto {
+  /** @example "2026-10-14" */
+  date: string;
+  status: "sent" | "sent_as_link" | "failed" | "skipped";
+  reason?: string | null;
+}
+
 export interface OrganizationSummaryDto {
   ID: string | null;
   NAME: string | null;
@@ -2376,6 +2492,18 @@ export interface OrganizationControllerSearchParams {
 }
 
 export type OrganizationControllerSearchData = OrganizationSearchResponseDto;
+
+export interface OrganizationControllerGetOrganizationByServiceAtLocationParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  /** service@location id (services[].SERVICE_AT_LOCATIONS[].ID) */
+  salId: string;
+}
+
+export type OrganizationControllerGetOrganizationByServiceAtLocationData =
+  OrganizationDetailResponseDto;
 
 export interface OrganizationControllerGetOrganizationByIdParams {
   /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
@@ -3023,6 +3151,88 @@ export interface PrintableDirectoryPublicControllerPreviewParams {
 }
 
 export type PrintableDirectoryPublicControllerPreviewData =
+  PrintableDirectoryPreviewResponseDto;
+
+export interface PrintableDirectoryDeliveryControllerListParams {
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  id: string;
+}
+
+export type PrintableDirectoryDeliveryControllerListData =
+  PrintableDirectoryDeliveryListResponseDto;
+
+export interface PrintableDirectoryDeliveryControllerCreateParams {
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  id: string;
+}
+
+export type PrintableDirectoryDeliveryControllerCreateData =
+  PrintableDirectoryDeliveryResponseDto;
+
+export interface PrintableDirectoryDeliveryControllerUpdateParams {
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  id: string;
+  deliveryId: string;
+}
+
+export type PrintableDirectoryDeliveryControllerUpdateData =
+  PrintableDirectoryDeliveryResponseDto;
+
+export interface PrintableDirectoryDeliveryControllerRemoveParams {
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  id: string;
+  deliveryId: string;
+}
+
+export type PrintableDirectoryDeliveryControllerRemoveData = any;
+
+export interface PrintableDirectoryDeliveryInternalControllerListDueParams {
+  /**
+   * Calendar date (America/New_York) of the run.
+   * @example "2026-10-14"
+   */
+  date: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+}
+
+export type PrintableDirectoryDeliveryInternalControllerListDueData =
+  DuePrintableDirectoryDeliveryListResponseDto;
+
+export interface PrintableDirectoryDeliveryInternalControllerClaimParams {
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  deliveryId: string;
+}
+
+export type PrintableDirectoryDeliveryInternalControllerClaimData =
+  ClaimPrintableDirectoryDeliveryResponseDto;
+
+export interface PrintableDirectoryDeliveryInternalControllerReportResultParams {
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  deliveryId: string;
+}
+
+export type PrintableDirectoryDeliveryInternalControllerReportResultData =
+  PrintableDirectoryDeliveryResponseDto;
+
+export interface PrintableDirectoryDeliveryInternalControllerPreviewParams {
+  /**
+   * Locale override for preview rendering (fallback: header accept-language)
+   * @example "en"
+   */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  deliveryId: string;
+}
+
+export type PrintableDirectoryDeliveryInternalControllerPreviewData =
   PrintableDirectoryPreviewResponseDto;
 
 export interface ServiceControllerGetServiceByIdParams {

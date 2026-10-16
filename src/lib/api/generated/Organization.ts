@@ -13,6 +13,8 @@
 import {
   OrganizationControllerGetOrganizationByIdData,
   OrganizationControllerGetOrganizationByIdParams,
+  OrganizationControllerGetOrganizationByServiceAtLocationData,
+  OrganizationControllerGetOrganizationByServiceAtLocationParams,
   OrganizationControllerSearchData,
   OrganizationControllerSearchParams,
 } from "./data-contracts";
@@ -34,6 +36,31 @@ export class Organization<
   ) =>
     this.request<OrganizationControllerSearchData, any>({
       path: `/organization`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Resolves the one organization in the x-tenant-id tenant whose services carry this service@location id. Tenant-scoped only: no cross-tenant or legacy-id fallback. The same SAL id can belong to different organization documents in different tenants, so the tenant is required.
+   *
+   * @tags Organization
+   * @name OrganizationControllerGetOrganizationByServiceAtLocation
+   * @summary Organization that offers a service-at-location, in this tenant
+   * @request GET:/organization/service-at-location/{salId}
+   */
+  organizationControllerGetOrganizationByServiceAtLocation = (
+    {
+      salId,
+      ...query
+    }: OrganizationControllerGetOrganizationByServiceAtLocationParams,
+    params: RequestParams = {},
+  ) =>
+    this.request<
+      OrganizationControllerGetOrganizationByServiceAtLocationData,
+      void
+    >({
+      path: `/organization/service-at-location/${salId}`,
       method: "GET",
       query: query,
       format: "json",
