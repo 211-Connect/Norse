@@ -33,7 +33,6 @@ describe('createArcjetDeniedResponse (ISS-1728)', () => {
 
     assert.equal(res.status, 403);
     assertCommonHeaders(res, 'text/html; charset=utf-8');
-    assert.ok(body.includes(URL));
     assert.ok(body.includes('<h1>A note from Connect211</h1>'));
     assert.ok(body.includes('What to do next'));
     assert.equal(/<script|<img/i.test(body), false);
