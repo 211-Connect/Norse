@@ -236,7 +236,7 @@ test.describe('Search result navigation feedback', () => {
     await link.click();
 
     // Must appear right away and stay up while the resource page's server
-    // work (arcjet check, resource fetch, i18n init) is still in flight.
+    // work (resource fetch, i18n init) is still in flight.
     await expect(toploaderBar).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
 
     await expectPageUrl(page, isSearchResourceDetailUrl, {

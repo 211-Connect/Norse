@@ -42,8 +42,13 @@ Convention: page/layout files under `[locale]/` stay thin — they fetch
 data (`getAppConfigWithoutHost`, `initTranslations`, session), then delegate
 to a component in the matching `features/<name>/components/` folder. Look at
 an existing page (e.g. `[locale]/(rest)/favorites/page.tsx`) as the template
-for a new route: resolve `appConfig` for the locale, call `arcjetProtectPage`,
-initialize i18n namespaces, wrap children in `PageWrapper`.
+for a new route: resolve `appConfig` for the locale, initialize i18n
+namespaces, wrap children in `PageWrapper`. Pages do not call Arcjet: bot
+protection runs once per request in the middleware (`src/proxy.ts` →
+`arcjetProtect` in `src/lib/arcjet.ts`) for every path the middleware matcher
+covers, and answers `403` on a denied decision before tenant resolution. Paths
+the matcher excludes (`api`, `admin`, `_next`, static assets, `robots.txt`,
+`sitemap.xml`) are not bot-checked.
 
 `shared/` holds code used by more than one feature:
 
@@ -191,11 +196,14 @@ locales (`locales`, `defaultLocale`) used by both systems.
 `mboa` is a real client with its own separate deployment, not just a generic
 tenant: it runs with `NEXT_PUBLIC_CUSTOM_BASE_PATH=/adresources` and
 `NEXT_PUBLIC_WITH_TRAILING_SLASHES=true` (see the commented-out block in
-`.env.examples`), and its outbound requests are proxied through a known IP
-allow-listed in Arcjet's bot detection (`MBOA_PROXY_IP` in
-`src/lib/arcjet.ts`) instead of being flagged as a bot. Changes to
-`NEXT_PUBLIC_CUSTOM_BASE_PATH`/trailing-slash handling or Arcjet rules should
-be checked against this deployment.
+`.env.examples`), and its inbound requests arrive through the mn.gov proxy
+(`MBOA_PROXY_IP` in `src/lib/arcjet.ts`). That IP is in Arcjet's trusted
+`proxies` list, so Arcjet resolves the real client from `x-forwarded-for`
+instead of treating every MBOA visitor as one address. The proxy IP is not
+allow-listed as a bot; bots behind it are still detected (the allow list in
+`ARCJET_ALLOWED_BOTS` names the ones MBOA depends on, e.g.
+`SITEIMPROVE_CRAWLER`). Changes to `NEXT_PUBLIC_CUSTOM_BASE_PATH`/trailing-slash
+handling or Arcjet rules should be checked against this deployment.
 
 ### Historical note: Strapi → Payload
 
