@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useId, useMemo, useState } from 'react';
+import { Clock3 } from 'lucide-react';
+import { type ReactNode, useEffect, useId, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { PrintFormatOptions } from '@/app/(app)/shared/components/directory-print/print-format-options';
@@ -17,7 +18,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/app/(app)/shared/components/ui/dialog';
-import { Label } from '@/app/(app)/shared/components/ui/label';
 import { Textarea } from '@/app/(app)/shared/components/ui/textarea';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
 import { cn } from '@/app/(app)/shared/lib/utils';
@@ -49,13 +49,21 @@ type ScheduledDeliveryDialogProps = {
 };
 
 type DayToggleProps = {
+  /** Smaller cell, for the 28-day month grid. */
+  compact?: boolean;
   label: string;
   ariaLabel?: string;
   pressed: boolean;
   onToggle: () => void;
 };
 
-function DayToggle({ label, ariaLabel, pressed, onToggle }: DayToggleProps) {
+function DayToggle({
+  compact = false,
+  label,
+  ariaLabel,
+  pressed,
+  onToggle,
+}: DayToggleProps) {
   return (
     <button
       type="button"
@@ -63,7 +71,8 @@ function DayToggle({ label, ariaLabel, pressed, onToggle }: DayToggleProps) {
       aria-label={ariaLabel}
       onClick={onToggle}
       className={cn(
-        'flex h-10 min-w-10 items-center justify-center rounded-md border px-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+        'flex cursor-pointer items-center justify-center rounded-md border text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+        compact ? 'h-9 min-w-9 px-1' : 'h-10 min-w-10 px-2',
         pressed
           ? 'border-primary bg-primary text-primary-foreground'
           : 'border-input bg-background hover:border-primary/50 hover:bg-primary/5',
@@ -71,6 +80,14 @@ function DayToggle({ label, ariaLabel, pressed, onToggle }: DayToggleProps) {
     >
       {label}
     </button>
+  );
+}
+
+function SectionHeading({ id, children }: { id: string; children: ReactNode }) {
+  return (
+    <h3 id={id} className="text-base font-semibold">
+      {children}
+    </h3>
   );
 }
 
@@ -93,6 +110,8 @@ export function ScheduledDeliveryDialog({
   const recipientsId = useId();
   const recipientsHelpId = useId();
   const recipientsErrorId = useId();
+  const scheduleId = useId();
+  const pdfId = useId();
 
   const [frequency, setFrequency] = useState<DeliveryFrequency>('weekly');
   const [weekdays, setWeekdays] = useState<number[]>([1]);
@@ -142,6 +161,8 @@ export function ScheduledDeliveryDialog({
     recipients.invalid.length > 0
       ? t('scheduled_delivery_recipients_invalid', {
           emails: recipients.invalid.join(', '),
+          // React escapes the output; i18next must not escape it again.
+          interpolation: { escapeValue: false },
         })
       : recipients.valid.length === 0
         ? t('scheduled_delivery_recipients_required')
@@ -172,175 +193,203 @@ export function ScheduledDeliveryDialog({
     { value: 'monthly', label: t('scheduled_delivery_monthly') },
   ];
 
+  const presets =
+    frequency === 'weekly'
+      ? [
+          {
+            label: t('scheduled_delivery_preset_weekdays'),
+            apply: () => setWeekdays([...WEEKDAY_PRESETS.weekdays]),
+          },
+          {
+            label: t('scheduled_delivery_preset_mon_sat'),
+            apply: () => setWeekdays([...WEEKDAY_PRESETS.monToSat]),
+          },
+          {
+            label: t('scheduled_delivery_preset_every_day'),
+            apply: () => setWeekdays([...WEEKDAY_PRESETS.everyDay]),
+          },
+        ]
+      : [
+          {
+            label: t('scheduled_delivery_preset_first'),
+            apply: () => setMonthDays([...MONTH_DAY_PRESETS.first]),
+          },
+          {
+            label: t('scheduled_delivery_preset_first_and_sixteenth'),
+            apply: () => setMonthDays([...MONTH_DAY_PRESETS.firstAndSixteenth]),
+          },
+          {
+            label: t('scheduled_delivery_preset_fifteenth'),
+            apply: () => setMonthDays([...MONTH_DAY_PRESETS.fifteenth]),
+          },
+        ];
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-h-[90vh] max-w-2xl overflow-y-auto"
+        // Header and footer stay put; only the body scrolls, and only when
+        // the viewport is too short for it.
+        className="flex max-h-[calc(100dvh-2rem)] max-w-4xl flex-col gap-0 overflow-hidden p-0"
         closeLabel={t('call_to_action.close', { ns: 'common' })}
         data-testid="scheduled-delivery-dialog"
       >
-        <DialogHeader>
+        <DialogHeader className="border-b px-6 py-4 pr-14">
           <DialogTitle>
             {delivery
               ? t('scheduled_delivery_dialog_edit_title')
               : t('scheduled_delivery_dialog_add_title')}
           </DialogTitle>
           <DialogDescription>
-            {t('scheduled_delivery_description')}
+            {t('scheduled_delivery_dialog_description')}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6">
-          <fieldset className="space-y-3">
-            <legend className="mb-2 text-sm font-semibold">
-              {t('scheduled_delivery_frequency_label')}
-            </legend>
+        <div className="flex-1 divide-y overflow-y-auto px-6">
+          <section className="space-y-3 py-4" aria-labelledby={scheduleId}>
+            <SectionHeading id={scheduleId}>
+              {t('scheduled_delivery_schedule_label')}
+            </SectionHeading>
 
-            <div
-              role="radiogroup"
-              aria-label={t('scheduled_delivery_frequency_label')}
-              className="inline-flex rounded-md border border-input p-0.5"
-            >
-              {frequencyOptions.map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  role="radio"
-                  aria-checked={frequency === option.value}
-                  onClick={() => setFrequency(option.value)}
-                  className={cn(
-                    'rounded px-4 py-1.5 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
-                    frequency === option.value
-                      ? 'bg-primary text-primary-foreground'
-                      : 'hover:bg-primary/5',
-                  )}
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+              <div
+                role="radiogroup"
+                aria-label={t('scheduled_delivery_frequency_label')}
+                className="inline-flex rounded-md border border-input p-0.5"
+              >
+                {frequencyOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    role="radio"
+                    aria-checked={frequency === option.value}
+                    onClick={() => setFrequency(option.value)}
+                    className={cn(
+                      'cursor-pointer rounded px-4 py-1.5 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+                      frequency === option.value
+                        ? 'bg-primary text-primary-foreground'
+                        : 'hover:bg-primary/5',
+                    )}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex flex-wrap items-center gap-1">
+                <Typography
+                  as="span"
+                  variant="paragraph"
+                  size="sm"
+                  textColor="secondary"
+                  className="mr-1"
                 >
-                  {option.label}
-                </button>
-              ))}
+                  {t('scheduled_delivery_presets_label')}
+                </Typography>
+                {presets.map((preset) => (
+                  <Button
+                    key={preset.label}
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 px-2 text-sm underline-offset-4 hover:underline"
+                    onClick={preset.apply}
+                  >
+                    {preset.label}
+                  </Button>
+                ))}
+              </div>
             </div>
 
             {frequency === 'weekly' ? (
-              <div className="space-y-2">
-                <Typography as="p" variant="paragraph" size="sm">
-                  {t('scheduled_delivery_weekdays_label')}
-                </Typography>
-                <div
-                  className="flex flex-wrap gap-2"
-                  role="group"
-                  aria-label={t('scheduled_delivery_weekdays_label')}
-                >
-                  {WEEKDAYS_MONDAY_FIRST.map((day) => (
-                    <DayToggle
-                      key={day}
-                      label={weekdayNames[day]}
-                      ariaLabel={weekdayLongNames[day]}
-                      pressed={weekdays.includes(day)}
-                      onToggle={() => setWeekdays(toggle(weekdays, day))}
-                    />
-                  ))}
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setWeekdays([...WEEKDAY_PRESETS.weekdays])}
-                  >
-                    {t('scheduled_delivery_preset_weekdays')}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setWeekdays([...WEEKDAY_PRESETS.monToSat])}
-                  >
-                    {t('scheduled_delivery_preset_mon_sat')}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setWeekdays([...WEEKDAY_PRESETS.everyDay])}
-                  >
-                    {t('scheduled_delivery_preset_every_day')}
-                  </Button>
-                </div>
+              <div
+                className="flex flex-wrap gap-2"
+                role="group"
+                aria-label={t('scheduled_delivery_weekdays_label')}
+              >
+                {WEEKDAYS_MONDAY_FIRST.map((day) => (
+                  <DayToggle
+                    key={day}
+                    label={weekdayNames[day]}
+                    ariaLabel={weekdayLongNames[day]}
+                    pressed={weekdays.includes(day)}
+                    onToggle={() =>
+                      setWeekdays((current) => toggle(current, day))
+                    }
+                  />
+                ))}
               </div>
             ) : (
               <div className="space-y-2">
-                <Typography as="p" variant="paragraph" size="sm">
-                  {t('scheduled_delivery_month_days_label')}
-                </Typography>
                 <div
-                  className="grid max-w-sm grid-cols-7 gap-1.5"
+                  className="grid max-w-sm grid-cols-7 gap-1.5 sm:max-w-none sm:grid-cols-14"
                   role="group"
                   aria-label={t('scheduled_delivery_month_days_label')}
                 >
                   {MONTH_DAYS.map((day) => (
                     <DayToggle
                       key={day}
+                      compact
                       label={String(day)}
                       ariaLabel={formatMonthDay(i18n.language, day)}
                       pressed={monthDays.includes(day)}
-                      onToggle={() => setMonthDays(toggle(monthDays, day))}
+                      onToggle={() =>
+                        setMonthDays((current) => toggle(current, day))
+                      }
                     />
                   ))}
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setMonthDays([...MONTH_DAY_PRESETS.first])}
-                  >
-                    {t('scheduled_delivery_preset_first')}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() =>
-                      setMonthDays([...MONTH_DAY_PRESETS.firstAndSixteenth])
-                    }
-                  >
-                    {t('scheduled_delivery_preset_first_and_sixteenth')}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() =>
-                      setMonthDays([...MONTH_DAY_PRESETS.fifteenth])
-                    }
-                  >
-                    {t('scheduled_delivery_preset_fifteenth')}
-                  </Button>
-                </div>
-                <Typography variant="paragraph" size="sm" textColor="secondary">
+                <Typography
+                  variant="paragraph"
+                  size="sm"
+                  textColor="secondary"
+                  className="text-xs"
+                >
                   {t('scheduled_delivery_month_days_help')}
                 </Typography>
               </div>
             )}
 
-            {showErrors && daysError && (
+            {selectedDays.length > 0 ? (
               <Typography
                 as="p"
                 variant="paragraph"
                 size="sm"
-                className="text-destructive"
-                role="alert"
+                className="flex items-center gap-2"
+                aria-live="polite"
               >
-                {daysError}
+                <Clock3
+                  className="size-4 shrink-0 text-muted-foreground"
+                  aria-hidden="true"
+                />
+                <ScheduleSummary
+                  frequency={frequency}
+                  weekdays={weekdays}
+                  monthDays={monthDays}
+                  withTime
+                />
               </Typography>
+            ) : (
+              showErrors &&
+              daysError && (
+                <Typography
+                  as="p"
+                  variant="paragraph"
+                  size="sm"
+                  className="text-destructive"
+                  role="alert"
+                >
+                  {daysError}
+                </Typography>
+              )
             )}
-          </fieldset>
+          </section>
 
-          <fieldset className="space-y-3">
-            <legend className="mb-2 text-sm font-semibold">
+          <section className="space-y-3 py-4" aria-labelledby={pdfId}>
+            <SectionHeading id={pdfId}>
               {t('scheduled_delivery_pdf_label')}
-            </legend>
+            </SectionHeading>
             <PrintFormatOptions
+              layout="compact"
               selectedVariant={variant}
               onVariantChange={setVariant}
               fontSizeMode={fontSize}
@@ -351,13 +400,13 @@ export function ScheduledDeliveryDialog({
               isBookletLayout={booklet}
               onBookletLayoutChange={setBooklet}
             />
-          </fieldset>
+          </section>
 
-          <div className="space-y-2">
+          <section className="space-y-2 py-4">
             <div className="flex items-baseline justify-between gap-2">
-              <Label htmlFor={recipientsId} className="font-semibold">
+              <label htmlFor={recipientsId} className="text-base font-semibold">
                 {t('scheduled_delivery_recipients_label')}
-              </Label>
+              </label>
               <Typography
                 variant="paragraph"
                 size="sm"
@@ -372,7 +421,7 @@ export function ScheduledDeliveryDialog({
             </div>
             <Textarea
               id={recipientsId}
-              rows={5}
+              rows={3}
               value={recipientsText}
               onChange={(event) => setRecipientsText(event.target.value)}
               onBlur={() => setShowErrors(true)}
@@ -389,9 +438,7 @@ export function ScheduledDeliveryDialog({
               size="sm"
               textColor="secondary"
             >
-              {t('scheduled_delivery_recipients_help', {
-                max: MAX_DELIVERY_RECIPIENTS,
-              })}
+              {t('scheduled_delivery_recipients_help')}
             </Typography>
             <div id={recipientsErrorId}>
               {showErrors && recipientsError && (
@@ -406,21 +453,10 @@ export function ScheduledDeliveryDialog({
                 </Typography>
               )}
             </div>
-          </div>
-
-          {selectedDays.length > 0 && (
-            <div className="rounded-md bg-primary/5 p-3 text-sm">
-              <ScheduleSummary
-                frequency={frequency}
-                weekdays={weekdays}
-                monthDays={monthDays}
-                withTime
-              />
-            </div>
-          )}
+          </section>
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="border-t px-6 py-4">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             {t('call_to_action.cancel', { ns: 'common' })}
           </Button>

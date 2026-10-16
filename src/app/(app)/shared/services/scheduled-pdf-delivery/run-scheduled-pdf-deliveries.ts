@@ -1,7 +1,6 @@
 import type { Payload } from 'payload';
 
 import { getUserPrintableDirectoryCapabilities } from '@/app/(app)/shared/utils/canAccessPrintableDirectories';
-import { getApiHeaders } from '@/lib/api';
 import { printableDirectoryDeliveriesInternalApiClient } from '@/lib/api/clients';
 import {
   DuePrintableDirectoryDeliveryResponseDto,
@@ -11,6 +10,10 @@ import { createLogger } from '@/lib/logger';
 import { Tenant } from '@/payload/payload-types';
 
 import { deliverPrintableDirectoryPdf } from './deliver-printable-directory-pdf';
+import {
+  getInternalHeaders,
+  loadDeliveryPreview,
+} from './internal-delivery-api';
 import { sendDeliveryFailureEmail } from './scheduled-pdf-delivery-email';
 import {
   getTenantDeliveryContext,
@@ -27,21 +30,6 @@ export type ScheduledPdfDeliveryStats = {
   skipped: number;
   failed: number;
 };
-
-async function getInternalHeaders(
-  tenantId: string,
-  locale = 'en',
-): Promise<Record<string, string>> {
-  const internalApiKey = process.env.INTERNAL_API_KEY;
-  if (!internalApiKey) {
-    throw new Error('INTERNAL_API_KEY is not configured');
-  }
-
-  return {
-    ...(await getApiHeaders(tenantId, locale)),
-    'x-internal-api-key': internalApiKey,
-  };
-}
 
 async function reportResult(
   tenantId: string,
@@ -200,24 +188,19 @@ async function runDelivery(
     delivery,
     directory: delivery.directory,
     date,
-    loadPreview: async (locale) => {
-      const { data: preview } =
-        await printableDirectoryDeliveriesInternalApiClient.printableDirectoryDeliveryInternalControllerPreview(
-          { deliveryId: delivery.id, locale, tenant_id: tenantId },
-          {
-            headers: await getInternalHeaders(tenantId, locale),
-            cache: 'no-store',
-          },
-        );
-      return preview;
-    },
+    loadPreview: (locale) => loadDeliveryPreview(tenantId, delivery.id, locale),
   });
 
-  if (outcome.status === 'failed') {
-    stats.failed += 1;
+  if (outcome.status === 'failed' || outcome.status === 'skipped') {
+    // Nothing reached the recipients: record why and tell the creator.
+    if (outcome.status === 'failed') {
+      stats.failed += 1;
+    } else {
+      stats.skipped += 1;
+    }
     await reportResult(tenantId, delivery.id, {
       date,
-      status: 'failed',
+      status: outcome.status,
       reason: outcome.reason,
     });
 
@@ -236,7 +219,7 @@ async function runDelivery(
     } catch (error) {
       log.error(
         { err: error, tenantId, deliveryId: delivery.id },
-        'Failed to send the failure notice',
+        'Failed to send the not-sent notice',
       );
     }
     return;

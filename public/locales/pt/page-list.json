@@ -59,7 +59,8 @@
     "load_error": "Não foi possível carregar os detalhes do recurso para impressão. Tente novamente.",
     "retry": "Tentar novamente",
     "language_title": "Idioma do diretório",
-    "booklet_layout": "Layout do livreto"
+    "booklet_layout": "Layout do livreto",
+    "booklet_layout_help": "As páginas são organizadas de forma que a impressão possa ser dobrada e grampeada em um livreto: capas internas em branco são adicionadas e o número de páginas é aumentado para um múltiplo de 4. Imprima em frente e verso."
   },
   "print_footer_disclaimer": "{{brandName}} fornece esta informação como um serviço público e não oferece garantias quanto à sua exatidão, integridade ou atualidade. {{brandName}} não se responsabiliza pela forma como esta informação é utilizada e não assume qualquer responsabilidade por quaisquer consequências decorrentes da sua utilização. A distribuição deste material impresso não implica endosso ou afiliação com {{brandName}}.",
   "print_page_counter": "Página {{current}} de {{total}}",

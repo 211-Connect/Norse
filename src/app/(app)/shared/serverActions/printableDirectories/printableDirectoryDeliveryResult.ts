@@ -6,6 +6,10 @@ export type PrintableDirectoryDeliveryError =
   | 'invalid'
   | 'limit_reached'
   | 'not_found'
+  /** "Send to me now" quota used up. */
+  | 'rate_limited'
+  /** The directory has no resources, so there's nothing to send. */
+  | 'empty'
   | 'unknown';
 
 export type PrintableDirectoryDeliveryResult<

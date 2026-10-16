@@ -9,11 +9,16 @@ import {
   Trash2Icon,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import { useCallback, useEffect, useState } from 'react';
+import {
+  Fragment,
+  type ReactElement,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
-import { Badge } from '@/app/(app)/shared/components/ui/badge';
 import { Button } from '@/app/(app)/shared/components/ui/button';
 import {
   Card,
@@ -31,6 +36,12 @@ import {
 } from '@/app/(app)/shared/components/ui/dialog';
 import { Skeleton } from '@/app/(app)/shared/components/ui/skeleton';
 import { Switch } from '@/app/(app)/shared/components/ui/switch';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/app/(app)/shared/components/ui/tooltip';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { usePrintableDirectoryCapability } from '@/app/(app)/shared/hooks/use-printable-directory-capability';
@@ -48,6 +59,7 @@ import {
 import {
   DeliveryInput,
   MAX_DELIVERIES_PER_DIRECTORY,
+  TEST_SENDS_PER_HOUR,
 } from '../../utils/scheduledDelivery';
 import { ScheduledDeliveryDialog } from './scheduled-delivery-dialog';
 import { ScheduleSummary } from './scheduled-delivery-summary';
@@ -76,6 +88,26 @@ function useLanguageName(): (locale: string) => string {
       return locale;
     }
   };
+}
+
+/**
+ * Hover/focus label for compact controls; needs a TooltipProvider above.
+ * The child receives the trigger's `data-state`, so wrap Radix controls
+ * that style themselves by their own `data-state` (e.g. Switch) in a span.
+ */
+function WithTooltip({
+  label,
+  children,
+}: {
+  label: string;
+  children: ReactElement;
+}) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{children}</TooltipTrigger>
+      <TooltipContent className="max-w-xs leading-snug">{label}</TooltipContent>
+    </Tooltip>
+  );
 }
 
 function formatRunDate(date: string, locale: string): string {
@@ -131,6 +163,8 @@ function ScheduledDeliveriesCardContent({
   const [pendingDelete, setPendingDelete] =
     useState<PrintableDirectoryDeliveryResponseDto | null>(null);
   const [busyIds, setBusyIds] = useState<Set<string>>(new Set());
+  // Rendering and emailing the PDF takes several seconds; show progress.
+  const [sendingId, setSendingId] = useState<string | null>(null);
 
   const setBusy = (id: string, busy: boolean) =>
     setBusyIds((current) => {
@@ -279,6 +313,7 @@ function ScheduledDeliveriesCardContent({
     delivery: PrintableDirectoryDeliveryResponseDto,
   ) => {
     setBusy(delivery.id, true);
+    setSendingId(delivery.id);
     try {
       const result = await sendPrintableDirectoryDeliveryTest(
         directory.id,
@@ -289,15 +324,25 @@ function ScheduledDeliveriesCardContent({
         toast.success(
           t('scheduled_delivery_test_sent', {
             email: session.data?.user?.email ?? '',
+            interpolation: { escapeValue: false },
           }),
         );
       } else {
-        toast.error(t('scheduled_delivery_test_failed'));
+        toast.error(
+          result.error === 'rate_limited'
+            ? t('scheduled_delivery_test_rate_limited', {
+                max: TEST_SENDS_PER_HOUR,
+              })
+            : result.error === 'empty'
+              ? t('scheduled_delivery_test_empty')
+              : t('scheduled_delivery_test_failed'),
+        );
       }
     } catch {
       toast.error(t('scheduled_delivery_test_failed'));
     } finally {
       setBusy(delivery.id, false);
+      setSendingId(null);
     }
   };
 
@@ -309,11 +354,11 @@ function ScheduledDeliveriesCardContent({
   const atLimit = count >= MAX_DELIVERIES_PER_DIRECTORY;
 
   return (
-    <>
+    <TooltipProvider delayDuration={200}>
       <Card data-testid="scheduled-deliveries-card">
-        <CardHeader className="flex flex-row items-start justify-between gap-2 space-y-0">
-          <div className="space-y-1">
-            <CardTitle className="text-lg">
+        <CardHeader className="mb-4 flex flex-col gap-3 space-y-0 sm:flex-row sm:items-start sm:justify-between">
+          <div className="space-y-1.5">
+            <CardTitle className="mb-0 text-lg">
               {t('scheduled_delivery_title')}
             </CardTitle>
             <Typography variant="paragraph" size="sm" textColor="secondary">
@@ -350,12 +395,17 @@ function ScheduledDeliveriesCardContent({
               <Skeleton className="h-16 w-full" />
             </div>
           ) : deliveries.length === 0 ? (
-            <div className="flex flex-col items-start gap-2 rounded-md border border-dashed p-4">
+            <div className="flex flex-col items-center gap-2 rounded-md border border-dashed px-4 py-8 text-center">
               <MailIcon
-                className="size-5 text-muted-foreground"
+                className="size-6 text-muted-foreground"
                 aria-hidden="true"
               />
-              <Typography variant="paragraph" size="sm" textColor="secondary">
+              <Typography
+                variant="paragraph"
+                size="sm"
+                textColor="secondary"
+                className="max-w-md"
+              >
                 {t('scheduled_delivery_empty')}
               </Typography>
             </div>
@@ -396,28 +446,54 @@ function ScheduledDeliveriesCardContent({
                         )}
                       </Typography>
 
-                      <div className="flex flex-wrap gap-1.5">
-                        <Badge>{languageName(delivery.print.locale)}</Badge>
-                        <Badge>
-                          {t(VARIANT_LABEL_KEYS[delivery.print.variant], {
+                      <Typography
+                        as="p"
+                        variant="paragraph"
+                        size="sm"
+                        className="flex flex-wrap items-center gap-x-1.5"
+                      >
+                        {[
+                          languageName(delivery.print.locale),
+                          t(VARIANT_LABEL_KEYS[delivery.print.variant], {
                             ns: 'page-list',
-                          })}
-                        </Badge>
-                        {delivery.print.fontSize === 'large' && (
-                          <Badge>
-                            {t('print_dialog.font_size_large', {
+                          }),
+                          delivery.print.fontSize === 'large' &&
+                            t('print_dialog.font_size_large', {
                               ns: 'page-list',
-                            })}
-                          </Badge>
-                        )}
-                        {delivery.print.booklet && (
-                          <Badge>
-                            {t('print_dialog.booklet_layout', {
-                              ns: 'page-list',
-                            })}
-                          </Badge>
-                        )}
-                      </div>
+                            }),
+                          delivery.print.booklet && (
+                            <WithTooltip
+                              key="booklet"
+                              label={t('print_dialog.booklet_layout_help', {
+                                ns: 'page-list',
+                              })}
+                            >
+                              <span
+                                tabIndex={0}
+                                className="cursor-help rounded-sm underline decoration-dotted underline-offset-4 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                              >
+                                {t('print_dialog.booklet_layout', {
+                                  ns: 'page-list',
+                                })}
+                              </span>
+                            </WithTooltip>
+                          ),
+                        ]
+                          .filter(Boolean)
+                          .map((item, index) => (
+                            <Fragment key={index}>
+                              {index > 0 && (
+                                <span
+                                  aria-hidden="true"
+                                  className="text-muted-foreground"
+                                >
+                                  •
+                                </span>
+                              )}
+                              {item}
+                            </Fragment>
+                          ))}
+                      </Typography>
 
                       <Typography
                         as="p"
@@ -432,7 +508,10 @@ function ScheduledDeliveriesCardContent({
                         {' · '}
                         {delivery.lastRun
                           ? t(
-                              `scheduled_delivery_last_run_${delivery.lastRun.status}`,
+                              delivery.lastRun.status === 'skipped' &&
+                                delivery.lastRun.reason === 'empty'
+                                ? 'scheduled_delivery_last_run_skipped_empty'
+                                : `scheduled_delivery_last_run_${delivery.lastRun.status}`,
                               {
                                 date: formatRunDate(
                                   delivery.lastRun.date,
@@ -456,50 +535,75 @@ function ScheduledDeliveriesCardContent({
                           />
                           {t('scheduled_delivery_locale_removed', {
                             language: languageName(directory.primaryLanguage),
+                            interpolation: { escapeValue: false },
                           })}
                         </Typography>
                       )}
                     </div>
 
-                    <div className="flex shrink-0 flex-wrap items-center gap-2">
-                      <Switch
-                        checked={delivery.enabled}
-                        disabled={isBusy}
-                        onCheckedChange={(checked) =>
-                          handleToggle(delivery, checked)
+                    <div className="flex shrink-0 items-center gap-2">
+                      <WithTooltip
+                        label={
+                          delivery.enabled
+                            ? t('scheduled_delivery_pause')
+                            : t('scheduled_delivery_resume')
                         }
-                        aria-label={t('scheduled_delivery_enabled_label')}
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="gap-1"
-                        disabled={isBusy}
-                        onClick={() => handleSendTest(delivery)}
                       >
-                        <SendIcon className="size-4" aria-hidden="true" />
-                        {t('scheduled_delivery_send_test')}
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        disabled={isBusy}
-                        onClick={() => setDialogState({ open: true, delivery })}
-                        aria-label={t('call_to_action.edit', { ns: 'common' })}
-                      >
-                        <PencilIcon className="size-4" aria-hidden="true" />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        disabled={isBusy}
-                        onClick={() => setPendingDelete(delivery)}
-                        aria-label={t('scheduled_delivery_delete')}
-                      >
-                        <Trash2Icon className="size-4" aria-hidden="true" />
-                      </Button>
+                        <span className="inline-flex">
+                          <Switch
+                            checked={delivery.enabled}
+                            disabled={isBusy}
+                            onCheckedChange={(checked) =>
+                              handleToggle(delivery, checked)
+                            }
+                            aria-label={
+                              delivery.enabled
+                                ? t('scheduled_delivery_pause')
+                                : t('scheduled_delivery_resume')
+                            }
+                            className="mr-1 cursor-pointer"
+                          />
+                        </span>
+                      </WithTooltip>
+                      <WithTooltip label={t('scheduled_delivery_send_test')}>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          disabled={isBusy}
+                          loading={sendingId === delivery.id}
+                          onClick={() => handleSendTest(delivery)}
+                          aria-label={t('scheduled_delivery_send_test')}
+                        >
+                          <SendIcon className="size-4" aria-hidden="true" />
+                        </Button>
+                      </WithTooltip>
+                      <WithTooltip label={t('scheduled_delivery_edit')}>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          disabled={isBusy}
+                          onClick={() =>
+                            setDialogState({ open: true, delivery })
+                          }
+                          aria-label={t('scheduled_delivery_edit')}
+                        >
+                          <PencilIcon className="size-4" aria-hidden="true" />
+                        </Button>
+                      </WithTooltip>
+                      <WithTooltip label={t('scheduled_delivery_delete')}>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          disabled={isBusy}
+                          onClick={() => setPendingDelete(delivery)}
+                          aria-label={t('scheduled_delivery_delete')}
+                        >
+                          <Trash2Icon className="size-4" aria-hidden="true" />
+                        </Button>
+                      </WithTooltip>
                     </div>
                   </li>
                 );
@@ -550,6 +654,6 @@ function ScheduledDeliveriesCardContent({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
+    </TooltipProvider>
   );
 }

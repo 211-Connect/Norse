@@ -40,7 +40,7 @@ export function PrintableDirectoryDetail({
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 p-4 sm:p-6">
       <div className="flex flex-col gap-3">
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <Link
             href="/directories"
             className={cn(
@@ -52,7 +52,7 @@ export function PrintableDirectoryDetail({
             {t('back_to_directories', { ns: 'page-directories' })}
           </Link>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <PrintPrintableDirectoryButton directory={directory} />
             <SharePrintableDirectoryButton
               directory={directory}

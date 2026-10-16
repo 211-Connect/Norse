@@ -43,6 +43,13 @@ export type DeliveryOutcome =
       reason: DeliveryFailureReason;
       locale: string;
       title: string;
+    }
+  | {
+      /** Nothing to send: the directory resolved to no resources. */
+      status: 'skipped';
+      reason: 'empty';
+      locale: string;
+      title: string;
     };
 
 type DeliverPrintableDirectoryPdfOptions = {
@@ -178,6 +185,15 @@ export async function deliverPrintableDirectoryPdf({
       locale,
       preview.primaryLanguage,
     ) || preview.name;
+
+  const resourceCount = preview.sections.reduce(
+    (total, section) => total + section.resources.length,
+    0,
+  );
+  if (resourceCount === 0) {
+    log.info(logContext, 'Directory has no resources; not sending');
+    return { status: 'skipped', reason: 'empty', locale, title };
+  }
 
   let bytes: Uint8Array;
   try {

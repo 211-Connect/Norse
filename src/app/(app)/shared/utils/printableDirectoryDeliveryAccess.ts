@@ -1,3 +1,6 @@
+import { TEST_SENDS_PER_HOUR } from '@/app/(app)/features/printable-directories/utils/scheduledDelivery';
+import { cacheService } from '@/cacheService';
+
 import { getApiErrorStatus } from './printableDirectoryServerAccess';
 import {
   getPrintableDirectoryServerAccess,
@@ -45,4 +48,31 @@ export function toDeliveryError(
     default:
       return 'unknown';
   }
+}
+
+const ONE_HOUR_SECONDS = 60 * 60;
+const memoryTestSendCounts = new Map<string, number>();
+
+/**
+ * Counts one "Send to me now" against the user's hourly quota; false once
+ * it's used up. Redis-backed so the quota holds across instances, with an
+ * in-process fallback when Redis is unavailable.
+ */
+export async function consumeTestSendQuota(
+  tenantId: string,
+  userEmail: string,
+): Promise<boolean> {
+  const hour = Math.floor(Date.now() / (ONE_HOUR_SECONDS * 1000));
+  const key = `pd-test-send:${tenantId}:${userEmail.toLowerCase()}:${hour}`;
+
+  let count = await cacheService.incrementWithTtl(key, ONE_HOUR_SECONDS);
+  if (count === null) {
+    count = (memoryTestSendCounts.get(key) ?? 0) + 1;
+    memoryTestSendCounts.set(key, count);
+    for (const staleKey of memoryTestSendCounts.keys()) {
+      if (!staleKey.endsWith(`:${hour}`)) memoryTestSendCounts.delete(staleKey);
+    }
+  }
+
+  return count <= TEST_SENDS_PER_HOUR;
 }

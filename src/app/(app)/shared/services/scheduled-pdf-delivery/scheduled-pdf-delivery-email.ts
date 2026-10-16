@@ -142,13 +142,16 @@ export async function sendDeliveryEmail({
           shareUrl ?? '',
           t('scheduled_delivery_email_download'),
         )}`,
-    ...(isTest ? [escapeHtml(t('scheduled_delivery_email_test_note'))] : []),
-    `<span style="color:#616e7c;font-size:13px">${escapeHtml(
-      t('scheduled_delivery_email_footer', {
-        email: creatorEmail,
-        interpolation: { escapeValue: false },
-      }),
-    )}</span>`,
+    // A test goes only to the person who sent it, so the "who scheduled
+    // this" footer would name the reader themselves.
+    isTest
+      ? escapeHtml(t('scheduled_delivery_email_test_note'))
+      : `<span style="color:#616e7c;font-size:13px">${escapeHtml(
+          t('scheduled_delivery_email_footer', {
+            email: creatorEmail,
+            interpolation: { escapeValue: false },
+          }),
+        )}</span>`,
   ];
 
   await payload.sendEmail({
@@ -178,11 +181,15 @@ type SendDeliveryFailureEmailOptions = EmailLocaleOptions & {
   creatorEmail: string;
   title: string;
   date: string;
-  reason: DeliveryFailureReason;
+  /** `empty`: nothing was sent because the directory has no resources. */
+  reason: DeliveryFailureReason | 'empty';
   directoryUrl: string;
 };
 
-/** Tells the schedule's creator that a delivery couldn't be sent. */
+/**
+ * Tells the schedule's creator that a delivery wasn't sent: it failed, or
+ * was skipped because the directory had nothing to send.
+ */
 export async function sendDeliveryFailureEmail({
   payload,
   brandName,
@@ -199,17 +206,24 @@ export async function sendDeliveryFailureEmail({
   await payload.sendEmail({
     from: getFrom(payload, brandName),
     to: creatorEmail,
-    subject: t('scheduled_delivery_failure_subject', {
-      title,
-      interpolation: { escapeValue: false },
-    }),
+    subject: t(
+      reason === 'empty'
+        ? 'scheduled_delivery_skipped_subject'
+        : 'scheduled_delivery_failure_subject',
+      { title, interpolation: { escapeValue: false } },
+    ),
     html: renderParagraphs([
       escapeHtml(
-        t('scheduled_delivery_failure_intro', {
-          title,
-          date: formattedDate,
-          interpolation: { escapeValue: false },
-        }),
+        t(
+          reason === 'empty'
+            ? 'scheduled_delivery_skipped_intro'
+            : 'scheduled_delivery_failure_intro',
+          {
+            title,
+            date: formattedDate,
+            interpolation: { escapeValue: false },
+          },
+        ),
       ),
       escapeHtml(t(`scheduled_delivery_reason_${reason}`)),
       renderLink(directoryUrl, t('scheduled_delivery_failure_open_directory')),

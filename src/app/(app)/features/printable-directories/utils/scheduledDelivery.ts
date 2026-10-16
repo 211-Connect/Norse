@@ -13,6 +13,8 @@ import { CreatePrintableDirectoryDeliveryDto } from '@/lib/api/generated/data-co
  */
 export const MAX_DELIVERIES_PER_DIRECTORY = 100;
 export const MAX_DELIVERY_RECIPIENTS = 100;
+/** "Send to me now" quota, per user and tenant, per clock hour. */
+export const TEST_SENDS_PER_HOUR = 10;
 /** Month days stop at 28 so every month gets every selected day. */
 export const MAX_DELIVERY_MONTH_DAY = 28;
 export {
@@ -87,9 +89,10 @@ function sortedUnique(values: number[]): number[] {
 }
 
 /**
- * Splits pasted text (commas, semicolons, whitespace or new lines) into
- * trimmed, lowercased, deduplicated addresses, and separates out the ones
- * that aren't valid emails.
+ * Splits pasted text into trimmed, lowercased, deduplicated addresses, and
+ * separates out entries that aren't valid emails. Accepts what people paste
+ * from mail clients: addresses separated by commas, semicolons, spaces or
+ * new lines, `Name <address>` entries and `mailto:` links.
  */
 export function parseRecipients(text: string): {
   valid: string[];
@@ -98,14 +101,34 @@ export function parseRecipients(text: string): {
   const valid = new Set<string>();
   const invalid = new Set<string>();
 
-  for (const token of text.split(/[\s,;]+/)) {
-    const candidate = token.trim().toLowerCase();
-    if (!candidate) continue;
+  const add = (raw: string) => {
+    const display = raw.trim();
+    const candidate = display.replace(/^mailto:/i, '').toLowerCase();
+    if (!candidate) return;
 
     if (recipientSchema.safeParse(candidate).success) {
       valid.add(candidate);
     } else {
-      invalid.add(token.trim());
+      invalid.add(display);
+    }
+  };
+
+  // Quoted display names may contain separators (`"Doe, Jane" <…>`).
+  const withoutQuotedNames = text.replace(/"[^"]*"/g, ' ');
+
+  for (const entry of withoutQuotedNames.split(/[,;\n]+/)) {
+    // `Jane Doe <jane@example.org>`: the bracketed part is the address and
+    // the other words are a name, unless they look like addresses too.
+    const bracketed = [...entry.matchAll(/<([^<>]*)>/g)].map((m) => m[1]);
+    if (bracketed.length > 0) {
+      bracketed.forEach(add);
+      entry
+        .replace(/<[^<>]*>/g, ' ')
+        .split(/\s+/)
+        .filter((word) => word.includes('@'))
+        .forEach(add);
+    } else {
+      entry.split(/\s+/).forEach(add);
     }
   }
 

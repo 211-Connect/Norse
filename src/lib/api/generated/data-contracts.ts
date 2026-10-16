@@ -860,18 +860,18 @@ export interface SearchHits {
    */
   query: string;
   /**
-   * Number of hits for the search query
+   * Number of matching search events for the query
    * @example 42
    */
   hits: number;
 }
 
 export interface SearchesResponse {
-  /** Search queries and their hit counts for text searches */
+  /** Query labels and counts for text search events */
   text: SearchHits[];
-  /** Search queries and their hit counts for taxonomy searches */
+  /** Query labels and counts for taxonomy search events */
   taxonomy: SearchHits[];
-  /** Search queries and their hit counts for hybrid searches */
+  /** Query labels and counts for hybrid search events */
   hybrid: SearchHits[];
 }
 
@@ -2492,6 +2492,18 @@ export interface OrganizationControllerSearchParams {
 }
 
 export type OrganizationControllerSearchData = OrganizationSearchResponseDto;
+
+export interface OrganizationControllerGetOrganizationByServiceAtLocationParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  /** service@location id (services[].SERVICE_AT_LOCATIONS[].ID) */
+  salId: string;
+}
+
+export type OrganizationControllerGetOrganizationByServiceAtLocationData =
+  OrganizationDetailResponseDto;
 
 export interface OrganizationControllerGetOrganizationByIdParams {
   /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */

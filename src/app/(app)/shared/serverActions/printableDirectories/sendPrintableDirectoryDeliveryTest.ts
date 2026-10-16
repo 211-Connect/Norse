@@ -4,6 +4,7 @@ import { headers } from 'next/headers';
 
 import { getDeliveryClock } from '@/app/(app)/features/printable-directories/utils/deliveryClock';
 import { deliverPrintableDirectoryPdf } from '@/app/(app)/shared/services/scheduled-pdf-delivery/deliver-printable-directory-pdf';
+import { loadDeliveryPreview } from '@/app/(app)/shared/services/scheduled-pdf-delivery/internal-delivery-api';
 import { getTenantDeliveryContext } from '@/app/(app)/shared/services/scheduled-pdf-delivery/tenant-delivery-context';
 import {
   getApiHeaders,
@@ -14,6 +15,7 @@ import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
 
 import { getSession } from '../../utils/getServerSession';
 import {
+  consumeTestSendQuota,
   getScheduledDeliveryAccess,
   toDeliveryError,
 } from '../../utils/printableDirectoryDeliveryAccess';
@@ -39,6 +41,11 @@ export async function sendPrintableDirectoryDeliveryTest(
   const host = (await headers()).get('host');
   if (!userEmail || !host) {
     return { success: false, error: 'unauthorized' };
+  }
+
+  // Each test renders a PDF on the server and sends an email.
+  if (!(await consumeTestSendQuota(tenantId, userEmail))) {
+    return { success: false, error: 'rate_limited' };
   }
 
   try {
@@ -79,19 +86,13 @@ export async function sendPrintableDirectoryDeliveryTest(
       },
       date: getDeliveryClock().date,
       testRecipient: userEmail,
-      loadPreview: async (locale) => {
-        const { data } =
-          await printableDirectoriesApiClient.printableDirectoryControllerPreview(
-            { id: directoryId, locale },
-            {
-              cache: 'no-store',
-              headers: await getApiHeaders(tenantId, locale, true),
-            },
-          );
-        return data;
-      },
+      loadPreview: (locale) =>
+        loadDeliveryPreview(tenantId, delivery.id, locale),
     });
 
+    if (outcome.status === 'skipped') {
+      return { success: false, error: 'empty' };
+    }
     if (outcome.status === 'failed') {
       return { success: false, error: 'unknown' };
     }

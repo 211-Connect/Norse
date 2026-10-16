@@ -43,7 +43,9 @@ font size, booklet) and up to 100 recipient emails. A directory can have up to
 | Permissions | Capability checked by Norse on every action; directory edit access by the API. The job re-checks the **creator's** capability and skips (`capability_revoked`) when it's gone. |
 | Transport   | PDF attached when ≤ 20 MB, otherwise the public share link (same variant/font size/booklet). Creator in To and Reply-To, recipients in BCC. No unsubscribe link.                 |
 | Failures    | Recorded on the delivery and emailed to the creator with the reason and a link to the directory.                                                                                  |
-| Test        | "Send to me now" renders a saved delivery and emails it only to the signed-in user; it doesn't affect the schedule or its last run.                                               |
+| Empty       | A directory that resolves to no resources isn't sent: the run is recorded as skipped (`empty`) and the creator gets a "skipped" notice. "Send to me now" says there's nothing to send. |
+| Test limit  | "Send to me now" is limited to 10 per user and tenant per clock hour (`consumeTestSendQuota`, a Redis counter with an in-process fallback). |
+| Test        | "Send to me now" renders a saved delivery and emails it only to the signed-in user; it doesn't affect the schedule or its last run. It uses the same owner-resolved preview as the job, so it matches what recipients get. |
 | Language    | If the delivery's language was removed from the directory, it's sent in the primary language and the card shows a warning.                                                        |
 
 ## Architecture
@@ -76,7 +78,9 @@ to run or re-run a day by hand.
 processes everything **sequentially**:
 
 1. Resource directories with printable directories enabled → each tenant's
-   first trusted domain → app config (`getAppConfigForHost`).
+   first trusted domain → app config (`getAppConfigForHost`). That domain is
+   also the one printed in the PDF and used in share links, so a tenant's
+   public domain must be listed first.
 2. Skip tenants where no user group grants `scheduledPdfDelivery`.
 3. For each due delivery: claim → re-check the creator's capability →
    preview (as the directory owner) → render → email → record the result;
@@ -107,9 +111,17 @@ Because a `pages/` directory exists, Next types `useSearchParams()` and
 ### UI and server actions
 
 - `ScheduledDeliveriesCard` / `ScheduledDeliveryDialog`
-  (`features/printable-directories/components/detail/`): weekly (7 day
-  toggles) or monthly (1–28 grid) with presets, the shared print format
-  options, and a recipients box that accepts pasted lists.
+  (`features/printable-directories/components/detail/`). The card lists
+  schedules with icon actions (pause/resume switch, send a test, edit,
+  delete), each with a tooltip. The dialog has three sections: Schedule
+  (weekly day toggles or a 1–28 grid, quick-select presets, a live summary),
+  PDF (the shared print format options in their `compact` layout), and
+  Recipients (a box that accepts lists pasted from mail clients: commas,
+  semicolons, spaces or new lines, `Name <address>` entries and `mailto:`
+  links; `parseRecipients()`). Only its body scrolls, and
+  only on short screens.
+- Booklet layout has an explanatory tooltip wherever it appears
+  (`BookletLayoutHelp` in `print-format-options.tsx`, and the card's badge).
 - Validation shared by the dialog and server actions:
   `features/printable-directories/utils/scheduledDelivery.ts` (zod).
 - Server actions in `shared/serverActions/printableDirectories/`:
