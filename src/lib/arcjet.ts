@@ -57,9 +57,12 @@ export const ARCJET_ENFORCEMENT_EXCLUDED_HOSTS: ReadonlySet<string> = new Set([
 ]);
 
 /** Matches on the `host` header only (lower-cased, port stripped). */
-export function isEnforcementExcludedHost(request: NextRequest): boolean {
+export function isEnforcementExcludedHost(
+  request: NextRequest,
+  excludedHosts: ReadonlySet<string> = ARCJET_ENFORCEMENT_EXCLUDED_HOSTS,
+): boolean {
   const host = (request.headers.get('host') ?? '').toLowerCase().split(':')[0];
-  return ARCJET_ENFORCEMENT_EXCLUDED_HOSTS.has(host);
+  return excludedHosts.has(host);
 }
 
 /** Headers never logged, in any form. */
@@ -244,13 +247,22 @@ function errorMessageOf(decision: ArcjetDecision): string {
   return errored?.reason.isError() ? errored.reason.message : 'unknown';
 }
 
+export interface ArcjetProtectOptions {
+  /** Test seam for the per-minute header-log sampler. */
+  sampleHeaderLog?: () => boolean;
+  /** Hosts where a DENY is logged but not enforced. */
+  excludedHosts?: ReadonlySet<string>;
+}
+
 export function createArcjetProtect(
   client: ArcjetClientLike | undefined,
-  options: { sampleHeaderLog?: () => boolean } = {},
+  options: ArcjetProtectOptions = {},
 ) {
   const sampleHeaderLog =
     options.sampleHeaderLog ??
     createMinuteSampler(FINGERPRINT_HEADER_LOG_MAX_PER_MINUTE);
+  const excludedHosts =
+    options.excludedHosts ?? ARCJET_ENFORCEMENT_EXCLUDED_HOSTS;
 
   function logFingerprintFailed(
     request: NextRequest,
@@ -285,7 +297,7 @@ export function createArcjetProtect(
     }
   }
 
-  return async function arcjetProtect(
+  async function arcjetProtect(
     request: NextRequest,
     log: ArcjetLog,
   ): Promise<ArcjetProtectResult> {
@@ -320,7 +332,7 @@ export function createArcjetProtect(
 
     if (decision.isDenied()) {
       const deniedBots = deniedBotsOf(decision);
-      const enforced = !isEnforcementExcludedHost(request);
+      const enforced = !isEnforcementExcludedHost(request, excludedHosts);
       log('warn', 'arcjet_denied', {
         ...requestContext(request),
         reason: decision.reason,
@@ -347,7 +359,10 @@ export function createArcjetProtect(
       denied: false,
       conclusion: decision.conclusion === 'CHALLENGE' ? 'CHALLENGE' : 'ALLOW',
     };
-  };
+  }
+
+  /** `excludedHosts` is exposed so callers/tests can see what is in effect. */
+  return Object.assign(arcjetProtect, { excludedHosts });
 }
 
 const arcjetKey = process.env.ARCJET_KEY;

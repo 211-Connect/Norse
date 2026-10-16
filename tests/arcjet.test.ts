@@ -175,16 +175,22 @@ describe('arcjetProtect enforcement (ISS-1728)', () => {
   });
 });
 
-describe('MBOA enforcement exclusion (ISS-1728, ISS-1737)', () => {
-  test('the set currently holds exactly mboa.c211.io', () => {
-    assert.deepEqual([...ARCJET_ENFORCEMENT_EXCLUDED_HOSTS], ['mboa.c211.io']);
+describe('enforcement exclusion (ISS-1728, ISS-1737)', () => {
+  // Behaviour tests use their own set so editing the production constant
+  // (e.g. deleting the MBOA entry later) cannot break them.
+  const excludedHosts: ReadonlySet<string> = new Set(['excluded.test']);
+  const denyingClient = () => clientReturning(denyBots(['CURL']));
+
+  test('default excludedHosts is the production constant (by reference)', () => {
+    const protect = createArcjetProtect(denyingClient());
+    assert.equal(protect.excludedHosts, ARCJET_ENFORCEMENT_EXCLUDED_HOSTS);
   });
 
   test('excluded host: denied decision is logged but not enforced', async () => {
-    const protect = createArcjetProtect(clientReturning(denyBots(['CURL'])));
+    const protect = createArcjetProtect(denyingClient(), { excludedHosts });
     const { log, entries } = captureLog();
 
-    const result = await protect(makeRequest({ host: 'mboa.c211.io' }), log);
+    const result = await protect(makeRequest({ host: 'excluded.test' }), log);
 
     assert.deepEqual(result, {
       denied: false,
@@ -195,11 +201,11 @@ describe('MBOA enforcement exclusion (ISS-1728, ISS-1737)', () => {
     assert.equal(entries[0].event, 'arcjet_denied');
     assert.equal(entries[0].data.enforced, false);
     assert.deepEqual(entries[0].data.deniedBots, ['CURL']);
-    assert.equal(entries[0].data.host, 'mboa.c211.io');
+    assert.equal(entries[0].data.host, 'excluded.test');
   });
 
   test('other host: same decision is enforced', async () => {
-    const protect = createArcjetProtect(clientReturning(denyBots(['CURL'])));
+    const protect = createArcjetProtect(denyingClient(), { excludedHosts });
     const { log, entries } = captureLog();
 
     const result = await protect(makeRequest({ host: 'example.org' }), log);
@@ -210,20 +216,20 @@ describe('MBOA enforcement exclusion (ISS-1728, ISS-1737)', () => {
   });
 
   test('host match is case-insensitive and ignores a port', async () => {
-    const protect = createArcjetProtect(clientReturning(denyBots(['CURL'])));
+    const protect = createArcjetProtect(denyingClient(), { excludedHosts });
     const { log } = captureLog();
     const result = await protect(
-      makeRequest({ host: 'MBOA.C211.IO:443' }),
+      makeRequest({ host: 'EXCLUDED.TEST:443' }),
       log,
     );
     assert.equal(result.conclusion, 'DENIED_NOT_ENFORCED');
   });
 
   test('x-forwarded-host does not exclude', async () => {
-    const protect = createArcjetProtect(clientReturning(denyBots(['CURL'])));
+    const protect = createArcjetProtect(denyingClient(), { excludedHosts });
     const { log } = captureLog();
     const result = await protect(
-      makeRequest({ host: 'example.org', 'x-forwarded-host': 'mboa.c211.io' }),
+      makeRequest({ host: 'example.org', 'x-forwarded-host': 'excluded.test' }),
       log,
     );
     assert.equal(result.denied, true);
