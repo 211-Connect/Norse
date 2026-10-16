@@ -37,7 +37,18 @@ describe('createArcjetDeniedResponse (ISS-1728)', () => {
     assert.ok(body.includes('<h1>A note from Connect211</h1>'));
     assert.ok(body.includes('What to do next'));
     assert.equal(/<script|<img/i.test(body), false);
-    assert.equal((body.match(/<ul>/g) ?? []).length, 1);
+    assert.equal((body.match(/<ul>/g) ?? []).length, 2);
+    // Each product is its own block: the HSDA line is a <p>, not a bullet.
+    assert.ok(
+      body.includes(
+        '<p><strong>HSDA (Human Services Data API)</strong> — performant data replication in the open HSDS standard.</p>',
+      ),
+    );
+    const lis = [...body.matchAll(/<li>([\s\S]*?)<\/li>/g)].map((m) => m[1]);
+    assert.equal(lis.length, 5);
+    assert.ok(
+      lis.every((li) => !li.includes('HSDA (Human Services Data API)')),
+    );
     // Only link is connect211.com.
     const hrefs = [...body.matchAll(/href="([^"]+)"/g)].map((m) => m[1]);
     assert.ok(hrefs.length > 0);

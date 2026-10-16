@@ -29,7 +29,9 @@ const HTML_BODY = `<!doctype html>
 <li>AI Search: natural-language queries over curated community resources, with the same ranking and re-ranking the public site uses.</li>
 <li>AI Needs Classification: turn a person's description of their situation into structured needs and urgency, so your product can route people to the right help faster.</li>
 <li>Search, suggestions, geocoding, and resource detail endpoints, scoped to the directories you're licensed for.</li>
-<li><strong>HSDA (Human Services Data API)</strong> — performant data replication in the open HSDS standard.</li>
+</ul>
+<p><strong>HSDA (Human Services Data API)</strong> — performant data replication in the open HSDS standard.</p>
+<ul>
 <li>Pull complete, current records for organizations, services, locations, and taxonomy, built for syncing into your own systems.</li>
 <li>Incremental updates so your copy stays fresh without re-crawling.</li>
 </ul>
