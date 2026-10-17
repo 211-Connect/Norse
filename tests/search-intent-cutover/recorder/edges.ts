@@ -48,6 +48,15 @@ export const edge = {
   predict: 'search' as PredictOutcome,
   geocode: 'hit' as GeocodeOutcome,
   calls: { predict: 0, geocode: 0 },
+  apiCalls: [] as Array<Record<string, unknown>>,
+  shortUrl: null as string | null | Error,
+  serverSession: null as unknown,
+  tenant: null as unknown,
+  resourceDirectory: null as unknown,
+  resourceError: null as unknown,
+  /** Answers for the proxy's calls back into Norse's own API. */
+  tenantBasic: null as unknown,
+  session: {} as unknown,
   requests: [] as Array<{
     method: string;
     url: string;
@@ -66,11 +75,17 @@ export const client = {
   cookies: [] as Array<{ op: 'set' | 'delete'; name: string; value?: string }>,
   /** Handlers captured from stubbed UI primitives during a render, called afterwards with each input. */
   handlers: {} as Record<string, ((...args: never[]) => unknown) | undefined>,
+  dialogs: [] as Array<((open: boolean) => void) | undefined>,
+  dialog: {} as Record<string, unknown>,
+  dialogUpdates: [] as unknown[],
+  /** What useSearchResults() returns: the server-parsed results context. */
   results: {
     sort: 'relevance',
     hasSearchCoordinates: false,
-    filters: {} as Record<string, unknown>,
-  },
+    filters: {},
+  } as Record<string, unknown>,
+  /** App config a case adds on top of the profile (topics, resource texts, ...). */
+  config: {} as Record<string, unknown>,
   reset(pathname: string, query: string) {
     this.pathname = pathname;
     this.search = new URLSearchParams(query);
@@ -78,6 +93,7 @@ export const client = {
     this.replaces = [];
     this.cookies = [];
     this.handlers = {};
+    this.dialogs = [];
   },
   observed() {
     return {
@@ -112,6 +128,14 @@ function appConfig(profile: Profile) {
     featureFlags: { showAgeFilter: true },
     header: {},
     newLayout: { enabled: false },
+    topics: {
+      iconSize: 'small',
+      imageBorderRadius: 0,
+      customHeading: 'Topics',
+      list: [],
+    },
+    resource: { categoriesText: 'Categories' },
+    ...client.config,
   };
 }
 
@@ -220,6 +244,7 @@ export function installEdges(): void {
       useSearchParams: () => client.search,
       usePathname: () => client.pathname,
       useParams: () => ({}),
+      RedirectType: { push: 'push', replace: 'replace' },
     },
   });
   // CommonJS package: its named exports are properties of the default export.
@@ -280,6 +305,17 @@ export function installEdges(): void {
   mock.module('@/lib/api', {
     namedExports: {
       // Same shape as the real helper, minus the tenant API key (a Payload lookup).
+      printableDirectoriesApiClient: {
+        printableDirectoryControllerCreateSource: async (
+          path: unknown,
+          body: unknown,
+        ) => {
+          edge.apiCalls.push({ op: 'createSource', path, body });
+          return {
+            data: { id: 'dir-1', sections: [{ id: 'sec-1', sources: [] }] },
+          };
+        },
+      },
       getApiHeaders: async (tenantId: string) => ({
         'x-api-version': '1',
         'x-tenant-id': tenantId,
@@ -386,8 +422,193 @@ export function installEdges(): void {
     namedExports: { ResultsEvents: Marker.ResultsEvents },
   });
 
+  mock.module('@/app/(app)/shared/components/image', {
+    namedExports: { Image: () => null },
+  });
+  // Images don't build URLs; next/image's CJS default export doesn't unwrap outside Next's bundler.
+  mock.module('next/image', { defaultExport: () => null });
+
+  // Directory chain (BUILDERS 11, 15, 16): the dialog always renders its content and hands over onOpenChange;
+  // the checkbox hands over its toggle. Directory lookups are the server actions' Norse-API edges.
+  const dialogPart = (props: { children?: ReactNode }) =>
+    createElement('div', null, props.children);
+  mock.module('@/app/(app)/shared/components/ui/dialog', {
+    namedExports: {
+      // Several dialogs can render at once (share, save): each gets an index, and the harness picks its own.
+      Dialog: (props: { children?: ReactNode; onOpenChange?: never }) => {
+        const i = client.dialogs.length;
+        client.dialogs.push(props.onOpenChange);
+        return createElement(
+          'div',
+          { 'data-dialog': String(i) },
+          props.children,
+        );
+      },
+      DialogContent: dialogPart,
+      DialogHeader: dialogPart,
+      DialogTitle: dialogPart,
+      DialogDescription: dialogPart,
+      DialogFooter: (props: { children?: ReactNode }) =>
+        createElement('div', { 'data-footer': '' }, props.children),
+      DialogTrigger: dialogPart,
+      DialogClose: dialogPart,
+      DialogOverlay: dialogPart,
+      DialogPortal: dialogPart,
+    },
+  });
+  mock.module('@/app/(app)/shared/components/ui/checkbox', {
+    namedExports: {
+      Checkbox: (props: { onCheckedChange?: never }) => {
+        client.handlers.checkbox = props.onCheckedChange;
+        return null;
+      },
+    },
+  });
+  mock.module('@/app/(app)/shared/hooks/use-printable-directory-capability', {
+    namedExports: { usePrintableDirectoryAccess: () => ({ canAccess: true }) },
+  });
+  mock.module('@/app/(app)/shared/utils/printableDirectoryServerAccess', {
+    namedExports: {
+      getPrintableDirectoryServerAccess: async () => ({ canAccess: true }),
+    },
+  });
+  mock.module(
+    '@/app/(app)/shared/serverActions/printableDirectories/getPrintableDirectories',
+    {
+      namedExports: {
+        getPrintableDirectories: async () => ({
+          items: [
+            {
+              id: 'dir-1',
+              name: 'Directory',
+              sections: [{ id: 'sec-1', headingLocalized: { en: 'Section' } }],
+              defaultQueryConfig: null,
+            },
+          ],
+        }),
+      },
+    },
+  );
+  mock.module(
+    '@/app/(app)/shared/serverActions/printableDirectories/createPrintableDirectorySection',
+    {
+      namedExports: {
+        createPrintableDirectorySection: async () => ({
+          id: 'dir-1',
+          sections: [{ id: 'sec-1' }],
+        }),
+      },
+    },
+  );
+  // The results list itself doesn't build search URLs.
+  mock.module('@/app/(app)/features/search/components/render-results', {
+    namedExports: { RenderResults: () => null },
+  });
+  mock.module(
+    '@/app/(app)/shared/components/directory-print/directory-print-control',
+    {
+      namedExports: { DirectoryPrintControl: () => null },
+    },
+  );
+  mock.module(
+    '@/app/(app)/shared/components/directory-print/use-default-directory-pdf-document',
+    {
+      namedExports: { useDefaultDirectoryPdfDocument: () => () => null },
+    },
+  );
+  mock.module(
+    '@/app/(app)/shared/serverActions/search/getPrintableDirectoryData',
+    {
+      namedExports: { getPrintableDirectoryData: async () => null },
+    },
+  );
+  mock.module('sonner', {
+    namedExports: {
+      toast: Object.assign(() => undefined, {
+        success: () => undefined,
+        error: () => undefined,
+      }),
+    },
+  });
+
+  // Dialog submit (BUILDERS 1, 2, 3): the dialog's state comes from its layout context; the location
+  // payload only feeds analytics.
+  mock.module(
+    '@/app/(app)/shared/components/search/main-search-layout/main-search-layout-context',
+    {
+      namedExports: {
+        MainSearchLayoutContext: {
+          Provider: (p: { children?: ReactNode }) => p.children,
+        },
+        MainSearchLayoutContextProvider: (p: { children?: ReactNode }) =>
+          createElement(Fragment, null, p.children),
+        useMainSearchLayoutContext: () => ({
+          search: client.dialog,
+          setSearch: (u: unknown) => {
+            const next =
+              typeof u === 'function'
+                ? (u as (p: unknown) => unknown)(client.dialog)
+                : u;
+            client.dialogUpdates.push(next);
+            client.dialog = next as Record<string, unknown>;
+          },
+        }),
+      },
+    },
+  );
+  mock.module('@/app/(app)/shared/lib/search-location-meta', {
+    namedExports: {
+      buildSearchLocationPayload: async () => ({}),
+      getSearchLocationMeta: async () => ({}),
+    },
+  });
+
+  // Share links, resource 404s and the widget config API (BUILDERS 21, 25, 26): their Payload / API lookups.
+  mock.module('@/app/(app)/shared/serverActions/shortUrl/expandShortUrl', {
+    namedExports: {
+      expandShortUrl: async () => {
+        if (edge.shortUrl instanceof Error) throw edge.shortUrl;
+        return edge.shortUrl;
+      },
+    },
+  });
+  mock.module('@/app/(app)/shared/utils/getServerSession', {
+    namedExports: { getSession: async () => edge.serverSession },
+  });
+  mock.module('@/payload/collections/Tenants/actions', {
+    namedExports: { findTenantByHost: async () => edge.tenant },
+  });
+  mock.module('@/payload/collections/ResourceDirectories/actions', {
+    namedExports: {
+      findResourceDirectoryByTenantId: async () => edge.resourceDirectory,
+      findResourceDirectoryByHost: async () => edge.resourceDirectory,
+    },
+  });
+  mock.module('@/app/(app)/shared/services/resource-service', {
+    namedExports: {
+      getResource: async () => {
+        throw edge.resourceError;
+      },
+      getResourceByOriginalId: async () => {
+        throw edge.resourceError;
+      },
+      getResources: async () => [],
+    },
+  });
+  mock.module('@/app/(app)/features/resource/components/content', {
+    namedExports: { ResourcePageContent: () => null },
+  });
+
   globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = String(input);
+    const json = (body: unknown) =>
+      new Response(JSON.stringify(body), {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      });
+    if (url.includes('/api/getTenantBasicConfig'))
+      return json(edge.tenantBasic);
+    if (url.includes('/api/auth/session')) return json(edge.session);
     edge.requests.push({
       method: (init?.method ?? 'GET').toUpperCase(),
       url: url.startsWith(API_URL) ? url.slice(API_URL.length) : url,
