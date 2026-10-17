@@ -39,3 +39,21 @@ test('no harness claims a path BUILDERS.md does not list', () => {
   );
   assert.deepEqual(unknown, [], `unknown paths claimed: ${unknown.join(', ')}`);
 });
+
+test('every harness runs in exactly one parity test file', () => {
+  const files = ['parity-server', 'parity-client', 'parity-dom'].map((f) =>
+    readFileSync(join(import.meta.dirname, `${f}.test.ts`), 'utf8'),
+  );
+  const grouped = files.flatMap((src) =>
+    [...(src.split('runParity(')[1] ?? '').matchAll(/'([a-z0-9-]+)'/g)].map(
+      (m) => m[1],
+    ),
+  );
+  for (const h of HARNESSES) {
+    assert.equal(
+      grouped.filter((g) => g === h.id).length,
+      1,
+      `harness ${h.id} must be in exactly one parity file`,
+    );
+  }
+});
