@@ -30,5 +30,12 @@ jobs:
       - name: Run formatter check
         run: npm run format:check
 
+      - name: Run unit tests
+        run: npm run test:unit
+
+      # Temporary: the search-intent cut-over parity suite (ISS-2371). Removed by ISS-2377.
+      - name: Run search-intent parity suite
+        run: npm run test:parity
+
       - name: Build project
         run: npm run build
