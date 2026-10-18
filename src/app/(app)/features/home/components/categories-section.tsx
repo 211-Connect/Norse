@@ -4,6 +4,7 @@ import { useSetAtom } from 'jotai';
 import { ChevronLeft, ExternalLink } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+import { topicSearchHref } from '@/app/(app)/features/search/utils/handBuiltSearchLinks';
 import { Image } from '@/app/(app)/shared/components/image';
 import { Link } from '@/app/(app)/shared/components/link';
 import { Button } from '@/app/(app)/shared/components/ui/button';
@@ -70,13 +71,7 @@ const Category = ({
                     href={`${
                       el.href
                         ? el.href
-                        : `/search?query=${encodeURIComponent(
-                            el.query ?? '',
-                          )}&query_label=${encodeURIComponent(
-                            el.name,
-                          )}&query_type=${encodeURIComponent(
-                            el.queryType ?? '',
-                          )}`
+                        : topicSearchHref(el.query, el.name, el.queryType)
                     }`}
                     onClick={() => {
                       setSearchEntry(ResourceEntry.TopicCard);

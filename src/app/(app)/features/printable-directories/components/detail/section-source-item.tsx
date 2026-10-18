@@ -6,9 +6,9 @@ import {
   Trash2Icon,
   TriangleAlert,
 } from 'lucide-react';
-import qs from 'qs';
 import { useTranslation } from 'react-i18next';
 
+import { directorySourceSearchHref } from '@/app/(app)/features/search/utils/handBuiltSearchLinks';
 import { Link } from '@/app/(app)/shared/components/link';
 import { Button } from '@/app/(app)/shared/components/ui/button';
 import {
@@ -18,7 +18,6 @@ import {
   TooltipTrigger,
 } from '@/app/(app)/shared/components/ui/tooltip';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
-import { PRINTABLE_DIRECTORY_CONTEXT_PARAMS } from '@/app/(app)/shared/utils/printableDirectorySearchContext';
 import {
   PrintableDirectoryDefaultQueryConfigDto,
   PrintableDirectorySourceResponseDto,
@@ -77,24 +76,15 @@ export function SectionSourceItem({
       : false;
   const searchHref =
     source.type === 'query' && source.query?.params
-      ? `/search?${qs.stringify(
-          {
-            ...withDefaultQueryParams(
-              source.query.params as Record<string, unknown>,
-              defaultQueryConfig,
-            ),
-            // So the search page shows the source's title (e.g. a taxonomy
-            // name) rather than the raw query (a taxonomy code).
-            query_label: source.query.title || undefined,
-            [PRINTABLE_DIRECTORY_CONTEXT_PARAMS.directoryId]: directoryId,
-            [PRINTABLE_DIRECTORY_CONTEXT_PARAMS.sectionId]: sectionId,
-            [PRINTABLE_DIRECTORY_CONTEXT_PARAMS.sourceId]: source.id,
-          },
-          {
-            arrayFormat: 'indices',
-            encodeValuesOnly: true,
-          },
-        )}`
+      ? directorySourceSearchHref(
+          withDefaultQueryParams(
+            source.query.params as Record<string, unknown>,
+            defaultQueryConfig,
+          ),
+          directoryId,
+          sectionId,
+          source.id,
+        )
       : '';
   const favoriteListHref =
     source.type === 'favorites_list' && source.favoriteList?.id
