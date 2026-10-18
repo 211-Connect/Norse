@@ -23,29 +23,8 @@ import {
   toFindResourcesQuery,
   toLegacyAiClarifyState,
 } from '../../../src/app/(app)/features/search/intent';
-import { ALL_FIXTURES } from '../../search-intent-fixtures';
-import { loadCorpus, readSnapshot, ROOT } from './snapshots';
-
-/** Every query string to lift, with where it came from. */
-export function liftInputs(): Map<string, string> {
-  const inputs = new Map<string, string>();
-  for (const row of loadCorpus())
-    inputs.set(row.query, `corpus ${row.scenario}`);
-  // The permanent fixtures too, so each one is proved to be today's reading, not just asserted.
-  for (const f of ALL_FIXTURES) inputs.set(f.query, `fixture ${f.name}`);
-  const writers = readSnapshot('server-page-writer-output');
-  const pages = readSnapshot('server-page');
-  assert.ok(writers && pages, 'snapshots missing: nothing would be compared');
-  for (const id of writers.keys()) {
-    const url = id.slice(0, id.indexOf('|'));
-    inputs.set(url.split('?')[1] ?? '', `writer ${url.slice(0, 80)}`);
-  }
-  for (const [id, output] of [...pages, ...writers]) {
-    const redirect = (JSON.parse(output) as { redirect?: string }).redirect;
-    if (redirect) inputs.set(redirect.split('?')[1] ?? '', `redirect ${id}`);
-  }
-  return inputs;
-}
+import { liftInputs } from './inputs';
+import { loadCorpus, ROOT } from './snapshots';
 
 test('the lift mapped back equals parseSearchParams and parseLegacyAiClarifyParams', () => {
   const inputs = liftInputs();
@@ -144,6 +123,8 @@ test('a slot added later comes through unstated from every URL', () => {
 });
 
 // ISS-2373 builds the lift beside the old parsers. ISS-2375 moves the page onto it and deletes this.
+// The serializer is not the lift: buildSearchUrl imports it from ISS-2374 on, and it imports nothing that
+// lifts. Every other import from the intent module still counts.
 test('no production code calls the lift yet', () => {
   const src = join(ROOT, '../../src');
   const intentDir = join(src, 'app/(app)/features/search/intent');
@@ -158,7 +139,7 @@ test('no production code calls the lift yet', () => {
     if (file.startsWith(intentDir)) continue;
     scanned++;
     if (
-      /from\s+['"][^'"]*search\/intent(\/[^'"]*)?['"]|from\s+['"]\.\.?\/intent['"]/.test(
+      /from\s+['"][^'"]*search\/intent(?!\/serialize['"])(\/[^'"]*)?['"]|from\s+['"]\.\.?\/intent['"]/.test(
         readFileSync(file, 'utf8'),
       )
     )
