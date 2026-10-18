@@ -23,6 +23,7 @@ import {
   toFindResourcesQuery,
   toLegacyAiClarifyState,
 } from '../../../src/app/(app)/features/search/intent';
+import { ALL_FIXTURES } from '../../search-intent-fixtures';
 import { loadCorpus, readSnapshot, ROOT } from './snapshots';
 
 /** Every query string to lift, with where it came from. */
@@ -30,6 +31,8 @@ export function liftInputs(): Map<string, string> {
   const inputs = new Map<string, string>();
   for (const row of loadCorpus())
     inputs.set(row.query, `corpus ${row.scenario}`);
+  // The permanent fixtures too, so each one is proved to be today's reading, not just asserted.
+  for (const f of ALL_FIXTURES) inputs.set(f.query, `fixture ${f.name}`);
   const writers = readSnapshot('server-page-writer-output');
   const pages = readSnapshot('server-page');
   assert.ok(writers && pages, 'snapshots missing: nothing would be compared');
