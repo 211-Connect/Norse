@@ -22,14 +22,20 @@ export type Slot<T> = Unstated | Stated<T>;
 
 export const UNSTATED: Unstated = Object.freeze({ stated: false });
 
+/** URL parameters in the order they are written. */
+export type UrlPairs = ReadonlyArray<readonly [string, string]>;
+
 /**
  * One slot, declared once. `keys` are the top-level URL keys it owns (a bracket key such as
  * `filters[x][0]` counts by its root). `decode` reads the slot from the URL and returns undefined when
- * the URL states nothing readable. Both are required: a slot without its URL encoding is a type error.
+ * the URL states nothing readable; `encode` writes a stated value back so that `decode` reads the same
+ * value again. All three are required: a slot without its URL encoding is a type error.
  */
 export type SlotDeclaration<T> = {
   readonly keys: readonly string[];
   readonly decode: (source: LiftSource) => T | undefined;
+  // Method syntax keeps declarations of any T assignable to SlotDeclaration<unknown>.
+  encode(value: T): UrlPairs;
 };
 
 export type SlotDeclarations = Record<string, SlotDeclaration<unknown>>;
@@ -53,5 +59,6 @@ export function stringParam(key: string): SlotDeclaration<string> {
       const value = parsed[key];
       return typeof value === 'string' ? value : undefined;
     },
+    encode: (value) => [[key, value]],
   };
 }
