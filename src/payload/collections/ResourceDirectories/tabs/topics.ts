@@ -6,6 +6,7 @@ import {
   superAdminAccess,
   superAdminOrSupportOrTenantAccess,
 } from '../../Users/access/roles';
+import { validateSubtopicQueryType } from '../utilities/validateSubtopicQueryType';
 
 export const topics: Tab = {
   label: 'Topics',
@@ -141,6 +142,7 @@ export const topics: Tab = {
                   name: 'queryType',
                   type: 'select',
                   options: ['taxonomy', 'text', 'link'],
+                  validate: validateSubtopicQueryType,
                 },
               ],
             },
