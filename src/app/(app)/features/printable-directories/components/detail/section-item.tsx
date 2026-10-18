@@ -4,6 +4,10 @@ import { ArrowDownIcon, ArrowUpIcon, PencilIcon } from 'lucide-react';
 import qs from 'qs';
 import { useTranslation } from 'react-i18next';
 
+import {
+  searchIntent,
+  serializeSearchUrl,
+} from '@/app/(app)/features/search/intent/serialize';
 import { Link } from '@/app/(app)/shared/components/link';
 import { Button } from '@/app/(app)/shared/components/ui/button';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
@@ -71,9 +75,10 @@ export function SectionItem({
     [PRINTABLE_DIRECTORY_CONTEXT_PARAMS.directoryId]: directoryId,
     [PRINTABLE_DIRECTORY_CONTEXT_PARAMS.sectionId]: section.id,
   };
-  const searchHref = `/search?${qs.stringify(directoryQueryParams, {
-    encodeValuesOnly: true,
-  })}`;
+  const searchHref = serializeSearchUrl(searchIntent({}), {
+    ...directoryQueryParams,
+    passThrough: [],
+  });
   const favoritesHref = `/favorites?${qs.stringify(directoryQueryParams, {
     encodeValuesOnly: true,
   })}`;
