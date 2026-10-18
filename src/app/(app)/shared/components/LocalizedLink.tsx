@@ -5,6 +5,7 @@ import { Ref, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useAppConfig } from '../hooks/use-app-config';
+import { localizeHref } from '../lib/localized-href';
 
 export interface LinkProps extends NextLinkProps {
   children?: React.ReactNode;
@@ -19,14 +20,11 @@ export const LocalizedLink = (props: LinkProps) => {
 
   const currentLanguage = useMemo(() => i18n.language, [i18n.language]);
 
-  let href = props.href?.toString() || '';
-
-  if (
-    currentLanguage !== appConfig.i18n.defaultLocale &&
-    href.startsWith('/')
-  ) {
-    href = `/${currentLanguage}${href}`;
-  }
+  const href = localizeHref(
+    props.href?.toString() || '',
+    currentLanguage,
+    appConfig.i18n.defaultLocale,
+  );
 
   return <Link {...props} href={href} rel="noopener noreferrer" />;
 };

@@ -2,8 +2,11 @@
 
 import { usePathname } from 'next/navigation';
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import { useAppConfig } from '../hooks/use-app-config';
 import { useClientSearchParams } from '../hooks/use-client-search-params';
+import { paginationHref } from '../lib/localized-href';
 import {
   Pagination,
   PaginationContent,
@@ -41,6 +44,10 @@ export function CustomPagination({
   focusTargetId,
 }: CustomPaginationProps) {
   const pathname = usePathname();
+  const appConfig = useAppConfig();
+  const { i18n } = useTranslation();
+  const currentLanguage = i18n.language;
+  const defaultLocale = appConfig.i18n.defaultLocale;
   const { stringifiedSearchParams, stringifySearchParams } =
     useClientSearchParams();
 
@@ -53,9 +60,20 @@ export function CustomPagination({
     (page: number) => {
       const newSearchParams = new URLSearchParams(stringifiedSearchParams);
       newSearchParams.set('page', page.toString());
-      return `${pathname}${stringifySearchParams(newSearchParams)}`;
+      return paginationHref(
+        pathname,
+        stringifySearchParams(newSearchParams),
+        currentLanguage,
+        defaultLocale,
+      );
     },
-    [pathname, stringifiedSearchParams, stringifySearchParams],
+    [
+      pathname,
+      stringifiedSearchParams,
+      stringifySearchParams,
+      currentLanguage,
+      defaultLocale,
+    ],
   );
 
   const changePage = useCallback(
