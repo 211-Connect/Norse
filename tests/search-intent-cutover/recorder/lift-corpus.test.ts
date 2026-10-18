@@ -1,13 +1,14 @@
 // Cut-over scaffolding (ISS-2373): deleted by ISS-2377.
 //
 // The lift over every corpus URL and every URL the writers and the legacy gate produced in the recorded
-// snapshots. Mapped back onto the old shapes, it must equal the old parsers field by field (the replay in
-// parity-lift.test.ts proves the same against observable behaviour; this also covers fields no recorded
-// output reads). Every URL must classify into exactly one generation, and a slot added later must come
+// snapshots. Mapped back onto the old shapes, it must equal the old parsers field by field (the search
+// page runs on the lift from ISS-2375, so parity-server.test.ts proves the same against observable
+// behaviour; this also covers fields no recorded output reads). Every URL must classify into exactly one
+// generation, and a slot added later must come
 // through unstated. The permanent versions of the last two run on the fixtures in tests/search-intent.test.ts.
 import assert from 'node:assert/strict';
-import { readdirSync, readFileSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { test } from 'node:test';
 
 import { parseLegacyAiClarifyParams } from '../../../src/app/(app)/features/search/utils/parseLegacyAiClarifyParams';
@@ -123,28 +124,16 @@ test('a slot added later comes through unstated from every URL', () => {
 });
 
 // ISS-2373 builds the lift beside the old parsers. ISS-2375 moves the page onto it and deletes this.
-// The serializer is not the lift: buildSearchUrl imports it from ISS-2374 on, and it imports nothing that
-// lifts. Every other import from the intent module still counts.
-test('no production code calls the lift yet', () => {
-  const src = join(ROOT, '../../src');
-  const intentDir = join(src, 'app/(app)/features/search/intent');
-  const callers: string[] = [];
-  let scanned = 0;
-  for (const entry of readdirSync(src, {
-    recursive: true,
-    withFileTypes: true,
-  })) {
-    if (!entry.isFile() || !/\.(ts|tsx|js|jsx)$/.test(entry.name)) continue;
-    const file = join(entry.parentPath, entry.name);
-    if (file.startsWith(intentDir)) continue;
-    scanned++;
-    if (
-      /from\s+['"][^'"]*search\/intent(?!\/serialize['"])(\/[^'"]*)?['"]|from\s+['"]\.\.?\/intent['"]/.test(
-        readFileSync(file, 'utf8'),
-      )
-    )
-      callers.push(relative(src, file));
-  }
-  assert.ok(scanned > 500, `only ${scanned} source files scanned`);
-  assert.deepStrictEqual(callers, []);
+// From ISS-2375 the search page reads search state only through the lift. It still hands the raw
+// parameters, whole, to two places, both listed on ISS-2375: the coords redirect, which re-serialises the URL
+// as received (moved by ISS-2376), and the arcjet request URL, which is not search state.
+test('the search page reads no raw search parameter and neither old parser', () => {
+  const page = readFileSync(
+    join(ROOT, '../../src/app/(app)/[locale]/(rest)/search/page.tsx'),
+    'utf8',
+  );
+  assert.ok(page.includes('liftSearchRequest('), 'the page does not lift');
+  assert.doesNotMatch(page, /parseSearchParams|parseLegacyAiClarifyParams/);
+  const reads = page.match(/\b(rawParams|searchParamsResult)\s*(\.|\[)/g) ?? [];
+  assert.deepStrictEqual(reads, []);
 });
