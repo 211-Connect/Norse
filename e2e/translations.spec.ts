@@ -169,3 +169,65 @@ test.describe('Language Persistence And Results Button', () => {
     });
   });
 });
+
+/** Number of path segments equal to `locale` (base-path agnostic). */
+function countLocaleSegments(url: URL, locale: string): number {
+  return url.pathname.split('/').filter((segment) => segment === locale).length;
+}
+
+test.describe('Localized Search Pagination', () => {
+  test.beforeEach(async ({ page }) => {
+    await goHome(page);
+  });
+
+  // Regression: pagination hrefs were built from `usePathname()` (already
+  // locale-prefixed) and then prefixed again by `LocalizedLink`, producing
+  // `/es/es/search?...&page=2`.
+  test('pagination links keep a single locale segment in ES', async ({
+    page,
+  }) => {
+    const { broadQuery } = getCurrentTenant();
+
+    await switchLanguage(page, 'es');
+    await performSearch(page, {
+      query: broadQuery,
+      query_label: broadQuery,
+      query_type: 'text',
+    });
+    await waitForSearchResultsSettled(page);
+
+    const total = await getResultTotalNumber(page);
+    test.skip(total <= 10, `Expected >10 results for pagination, got ${total}`);
+
+    expect(countLocaleSegments(new URL(page.url()), 'es')).toBe(1);
+
+    const pagination = page.getByTestId('pagination');
+    await expect(pagination).toBeVisible({ timeout: UI_SHELL_TIMEOUT_MS });
+
+    const hrefs = await pagination
+      .locator('a[href]')
+      .evaluateAll((links) =>
+        links.map((link) => (link as HTMLAnchorElement).href),
+      );
+    expect(hrefs.length).toBeGreaterThan(0);
+    for (const href of hrefs) {
+      const url = new URL(href);
+      expect(isSearchResultsListUrl(url), href).toBe(true);
+      expect(countLocaleSegments(url, 'es'), href).toBe(1);
+    }
+
+    await Promise.all([
+      expectPageUrl(
+        page,
+        (url) =>
+          url.searchParams.get('page') === '2' &&
+          isSearchResultsListUrl(url) &&
+          countLocaleSegments(url, 'es') === 1,
+      ),
+      page.getByTestId('pagination-next').click(),
+    ]);
+    await waitForSearchResultsSettled(page);
+
+    expect(await getResultTotalNumber(page)).toBe(total);
+  });
+});

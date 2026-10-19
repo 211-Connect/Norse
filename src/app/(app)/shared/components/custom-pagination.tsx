@@ -1,6 +1,5 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
 import { useCallback } from 'react';
 
 import { useClientSearchParams } from '../hooks/use-client-search-params';
@@ -40,7 +39,6 @@ export function CustomPagination({
   onPageChange,
   focusTargetId,
 }: CustomPaginationProps) {
-  const pathname = usePathname();
   const { stringifiedSearchParams, stringifySearchParams } =
     useClientSearchParams();
 
@@ -53,9 +51,9 @@ export function CustomPagination({
     (page: number) => {
       const newSearchParams = new URLSearchParams(stringifiedSearchParams);
       newSearchParams.set('page', page.toString());
-      return `${pathname}${stringifySearchParams(newSearchParams)}`;
+      return stringifySearchParams(newSearchParams);
     },
-    [pathname, stringifiedSearchParams, stringifySearchParams],
+    [stringifiedSearchParams, stringifySearchParams],
   );
 
   const changePage = useCallback(
