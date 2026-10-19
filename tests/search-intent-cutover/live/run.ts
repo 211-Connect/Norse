@@ -6,6 +6,8 @@
 //     node --import tsx tests/search-intent-cutover/live/run.ts baseline --env prod [--tenants WA,AZ] [--cap 50]
 //   diff      visit each sampled URL on A (a tenant environment) then B (a preview build), back to back:
 //     node --import tsx tests/search-intent-cutover/live/run.ts diff --env prod --b WA=https://preview.example
+//   A can be another build instead of the environment (two local builds, say):
+//     … diff --a WA=http://search.wa211.org.localhost:3000 --b WA=http://search.wa211.org.localhost:3001
 //
 // Exit codes: 0 every URL passed (data drift allowed); 1 a behaviour change; 2 something could not be
 // verified (and nothing changed behaviour). A baseline exits 2 when any visit could not be verified.
@@ -33,6 +35,7 @@ const { positionals, values } = parseArgs({
     env: { type: 'string', default: 'prod' },
     tenants: { type: 'string' },
     cap: { type: 'string', default: '50' },
+    a: { type: 'string', multiple: true },
     b: { type: 'string', multiple: true },
     out: { type: 'string', default: join(import.meta.dirname, 'runs') },
     'delay-ms': { type: 'string', default: '1000' },
@@ -55,12 +58,15 @@ if (!['baseline', 'diff'].includes(mode) || !['dev', 'prod'].includes(env)) {
   process.exit(2);
 }
 
-const previews = new Map(
-  (values.b ?? []).map((pair) => {
-    const [tenant, base] = pair.split('=');
-    return [tenant as TenantKey, base] as const;
-  }),
-);
+const targets = (pairs: string[] = []) =>
+  new Map(
+    pairs.map((pair) => {
+      const [tenant, base] = pair.split('=');
+      return [tenant as TenantKey, base] as const;
+    }),
+  );
+const previews = targets(values.b);
+const overridesA = targets(values.a);
 const tenants: TenantKey[] =
   mode === 'diff'
     ? [...previews.keys()]
@@ -83,7 +89,7 @@ let unverifiedVisits = 0;
 try {
   for (const tenant of tenants) {
     const sample = sampleForTenant(rows, tenant, cap);
-    const base = TENANT_FIXTURES[tenant].baseUrl[env];
+    const base = overridesA.get(tenant) ?? TENANT_FIXTURES[tenant].baseUrl[env];
     const lines: string[] = [];
     const counts: Record<string, number> = { sampled: sample.length };
     for (const row of sample) {
@@ -138,6 +144,7 @@ writeFileSync(
       env,
       cap,
       userAgent: RUNNER_USER_AGENT,
+      a: Object.fromEntries(overridesA),
       previews: Object.fromEntries(previews),
       summary,
     },
