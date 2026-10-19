@@ -1,19 +1,22 @@
 import { parseProxies, resolveClientIp } from '@arcjet/ip';
 import arcjet, {
   type ArcjetDecision,
+  type ArcjetNextRequest,
   cloudflare,
   detectBot,
   filter,
 } from '@arcjet/next';
-import type { NextRequest } from 'next/server';
 
 /**
- * Arcjet bot protection, called from `src/proxy.ts` (Edge runtime) on every
- * request the middleware matcher covers. This module must stay Edge-safe:
- * no pino, no Node-only imports. Logging goes through the `ArcjetLog`
- * callback the caller supplies (the proxy passes its `edgeLog`).
+ * Arcjet bot protection, called per page from the routes that serve
+ * directory data (see `protectPage` in `src/lib/arcjet-page.ts`), not from
+ * middleware: Arcjet recommends route-level calls, and a middleware call
+ * would also run on every RSC navigation and prefetch. This module has no
+ * Next.js runtime imports so it can be unit-tested; logging goes through
+ * the `ArcjetLog` callback the caller supplies.
  *
- * ISS-1728: a denied decision is returned to the proxy, which answers 403.
+ * ISS-1728: a denied decision on an enforced host is returned to the page,
+ * which answers 403 via `forbidden()`.
  * ISS-2305: allow list below.
  * ISS-1734: fingerprint failures log redacted request headers (sampled).
  * ISS-1739: the SDK's own log level is `ARCJET_LOG_LEVEL` (see .env.examples).
@@ -48,23 +51,54 @@ export const ARCJET_ALLOWED_BOTS = [
 ] as const;
 
 /**
- * Hosts where Arcjet runs and logs but a DENY is NOT enforced.
- * Temporary: MBOA (State of Minnesota) is excluded until MNIT confirms
- * which automated traffic is theirs (ISS-1737). To enforce for MBOA,
- * delete its entry; no other change is needed.
+ * Parse a comma-separated host list (lower-cased, ports stripped, blanks
+ * dropped).
  */
-export const ARCJET_ENFORCEMENT_EXCLUDED_HOSTS: ReadonlySet<string> = new Set([
-  'mboa.c211.io',
-]);
+export function parseHostList(value: string | undefined): ReadonlySet<string> {
+  return new Set(
+    (value ?? '')
+      .split(',')
+      .map((h) => normalizeHost(h))
+      .filter(Boolean),
+  );
+}
+
+function normalizeHost(host: string): string {
+  return host.trim().toLowerCase().split(':')[0];
+}
+
+/**
+ * Hosts where a DENY is enforced (403). Everywhere else Arcjet still runs
+ * and logs `arcjet_denied` with `enforced: false`, but the request is
+ * served. Read from `ARCJET_ENFORCED_HOSTS` at startup, so enforcement can
+ * be rolled out per tenant and rolled back with an env change, no code
+ * change. Unset or empty = log-only everywhere.
+ *
+ * MBOA (`mboa.c211.io`) must stay out of this list until MNIT confirms
+ * which automated traffic is theirs (ISS-1737).
+ */
+export const ARCJET_ENFORCED_HOSTS: ReadonlySet<string> = parseHostList(
+  process.env.ARCJET_ENFORCED_HOSTS,
+);
 
 /** Matches on the `host` header only (lower-cased, port stripped). */
-export function isEnforcementExcludedHost(
-  request: NextRequest,
-  excludedHosts: ReadonlySet<string> = ARCJET_ENFORCEMENT_EXCLUDED_HOSTS,
+export function isEnforcedHost(
+  request: ArcjetRequestLike,
+  enforcedHosts: ReadonlySet<string> = ARCJET_ENFORCED_HOSTS,
 ): boolean {
-  const host = (request.headers.get('host') ?? '').toLowerCase().split(':')[0];
-  return excludedHosts.has(host);
+  return enforcedHosts.has(hostOf(request));
 }
+
+function hostOf(request: ArcjetRequestLike): string {
+  return normalizeHost(request.headers.get('host') ?? '');
+}
+
+/**
+ * The only host where a request with no routable client IP skips Arcjet,
+ * and only when it arrived through the mn.gov proxy (ISS-1734). Anywhere
+ * else, missing or untrusted forwarding headers must not bypass the check.
+ */
+export const NO_CLIENT_IP_BYPASS_HOST = 'mboa.c211.io' as const;
 
 /**
  * ISS-1744: a request with no User-Agent cannot be evaluated by the bot rule
@@ -93,10 +127,7 @@ export function buildArcjetRules() {
   ];
 }
 
-/** Headers never logged, in any form. */
-const DROPPED_HEADERS = new Set(['cookie', 'set-cookie', 'authorization']);
-
-/** Headers that carry client IPs; logged masked to their first 2 octets. */
+/** Headers that carry client IPs; logged masked (see `maskIp`). */
 const IP_HEADERS = new Set([
   'x-forwarded-for',
   'do-connecting-ip',
@@ -104,6 +135,20 @@ const IP_HEADERS = new Set([
   'x-real-ip',
   'x-rdwr-ip',
   'source_ip',
+]);
+
+/**
+ * The only headers ever logged. An allowlist, so a header added later is
+ * excluded by default. Never add `referer` (it carries the search query),
+ * `cookie` or `authorization`.
+ */
+const LOGGED_HEADERS = new Set([
+  'host',
+  'user-agent',
+  'accept',
+  'accept-language',
+  'via',
+  ...IP_HEADERS,
 ]);
 
 /**
@@ -132,58 +177,63 @@ export type ArcjetProtectResult =
         'ALLOW' | 'CHALLENGE' | 'ERROR' | 'SKIPPED' | 'THREW' | 'NO_CLIENT_IP';
     }
   | {
-      /** Denied by Arcjet but the host is in ARCJET_ENFORCEMENT_EXCLUDED_HOSTS. */
+      /** Denied by Arcjet but the host is not in ARCJET_ENFORCED_HOSTS. */
       denied: false;
       conclusion: 'DENIED_NOT_ENFORCED';
       deniedBots: string[];
     }
   | { denied: true; conclusion: 'DENY'; deniedBots: string[] };
 
+/** The parts of a request this module reads: headers only. */
+export interface ArcjetRequestLike {
+  headers: Pick<Headers, 'get' | 'forEach'>;
+}
+
 export interface ArcjetClientLike {
-  protect(request: NextRequest): Promise<ArcjetDecision>;
+  protect(request: ArcjetRequestLike): Promise<ArcjetDecision>;
+}
+
+const IPV4 = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
+
+function maskIpv4(ip: string): string | undefined {
+  const m = IPV4.exec(ip);
+  if (!m || m.slice(1).some((o) => Number(o) > 255)) return undefined;
+  return `${m[1]}.${m[2]}.x.x`;
 }
 
 /**
- * Addresses that identify infrastructure rather than a person: private
- * (10/8, 172.16/12, 192.168/16), CGNAT (100.64/10), loopback, link-local,
- * and IPv6 ULA (fc00::/7) / loopback / link-local. These are logged
- * unmasked because MNIT needs the exact value to trace MBOA's network path.
- */
-export function isNonRoutableIp(ip: string): boolean {
-  if (ip.includes(':')) {
-    const lower = ip.toLowerCase();
-    if (lower === '::1' || lower === '::') return true;
-    if (/^f[cd][0-9a-f]{0,2}:/.test(lower)) return true; // fc00::/7
-    if (/^fe[89ab][0-9a-f]?:/.test(lower)) return true; // fe80::/10
-    return false;
-  }
-  const octets = ip.split('.').map((o) => Number(o));
-  if (octets.length !== 4 || octets.some((o) => Number.isNaN(o))) return false;
-  const [a, b] = octets;
-  if (a === 10) return true;
-  if (a === 172 && b >= 16 && b <= 31) return true;
-  if (a === 192 && b === 168) return true;
-  if (a === 100 && b >= 64 && b <= 127) return true;
-  if (a === 127) return true;
-  if (a === 169 && b === 254) return true;
-  return false;
-}
-
-/**
- * Mask a globally routable address to its first two octets (IPv6: first
- * two groups). Non-routable addresses (see `isNonRoutableIp`) pass through
- * unmasked.
+ * Mask an address for logging: IPv4 to its first two octets, IPv6 to its
+ * first two groups. Every address is masked the same way, routable or not.
+ * A `:port` suffix (and `[v6]:port`) is dropped first; IPv4-mapped IPv6
+ * keeps its prefix and masks the IPv4 part. Anything unparseable becomes
+ * `x`, so a malformed value can never leak verbatim.
  */
 export function maskIp(value: string): string {
-  const ip = value.trim();
+  let ip = value.trim();
   if (!ip) return ip;
-  if (isNonRoutableIp(ip)) return ip;
-  if (ip.includes(':')) {
-    const groups = ip.split(':');
-    return `${groups.slice(0, 2).join(':')}:x`;
+
+  const bracketed = /^\[([^\]]+)\](?::\d{1,5})?$/.exec(ip);
+  if (bracketed) ip = bracketed[1];
+
+  const v4WithPort = /^([\d.]+):\d{1,5}$/.exec(ip);
+  if (v4WithPort) ip = v4WithPort[1];
+
+  const v4 = maskIpv4(ip);
+  if (v4) return v4;
+
+  const mapped = /^::ffff:([\d.]+)$/i.exec(ip);
+  if (mapped) {
+    const inner = maskIpv4(mapped[1]);
+    return inner ? `::ffff:${inner}` : 'x';
   }
-  const octets = ip.split('.');
-  return `${octets.slice(0, 2).join('.')}.x.x`;
+
+  if (/^[0-9a-f:]+$/i.test(ip) && ip.includes(':')) {
+    const groups = ip.split(':');
+    if (groups.length <= 8 && groups.every((g) => g.length <= 4)) {
+      return `${groups.slice(0, 2).join(':')}:x`;
+    }
+  }
+  return 'x';
 }
 
 function maskIpList(value: string): string {
@@ -194,14 +244,16 @@ function maskIpList(value: string): string {
 }
 
 /**
- * Request headers safe to log: cookies/authorization dropped, IP-bearing
- * headers masked to their first two octets, everything else verbatim.
+ * Request headers safe to log: only `LOGGED_HEADERS`, with IP-bearing
+ * headers masked. Every other header is dropped.
  */
-export function redactHeaders(headers: Headers): Record<string, string> {
+export function redactHeaders(
+  headers: ArcjetRequestLike['headers'],
+): Record<string, string> {
   const out: Record<string, string> = {};
   headers.forEach((value, rawName) => {
     const name = rawName.toLowerCase();
-    if (DROPPED_HEADERS.has(name)) return;
+    if (!LOGGED_HEADERS.has(name)) return;
     out[name] = IP_HEADERS.has(name) ? maskIpList(value) : value;
   });
   return out;
@@ -212,10 +264,10 @@ export function redactHeaders(headers: Headers): Record<string, string> {
  * when no globally routable address is left after trusted proxies and
  * private/CGNAT/ULA hops are skipped.
  */
-function resolveClientIpOrEmpty(request: NextRequest): string {
+function resolveClientIpOrEmpty(request: ArcjetRequestLike): string {
   try {
     const { ip } = resolveClientIp(
-      { headers: request.headers },
+      { headers: request.headers as Headers },
       { proxies: PARSED_PROXIES },
     );
     return ip;
@@ -225,7 +277,7 @@ function resolveClientIpOrEmpty(request: NextRequest): string {
 }
 
 /** As `resolveClientIpOrEmpty`, with `'unknown'` for the empty case. */
-export function resolveArcjetClientIp(request: NextRequest): string {
+export function resolveArcjetClientIp(request: ArcjetRequestLike): string {
   return resolveClientIpOrEmpty(request) || 'unknown';
 }
 
@@ -247,10 +299,14 @@ export function createMinuteSampler(
   };
 }
 
-function requestContext(request: NextRequest) {
+/**
+ * `pathName` is supplied by the page and is a path only: never include the
+ * query string, which can carry crisis searches and coordinates.
+ */
+function requestContext(request: ArcjetRequestLike, pathName: string) {
   return {
     host: request.headers.get('host') ?? 'unknown',
-    pathName: `${request.nextUrl.pathname}${request.nextUrl.search}`,
+    pathName,
     ip: resolveArcjetClientIp(request),
     doConnectingIp: request.headers.get('do-connecting-ip') ?? 'unknown',
   };
@@ -294,11 +350,20 @@ function errorMessageOf(decision: ArcjetDecision): string {
   return errored?.reason.isError() ? errored.reason.message : 'unknown';
 }
 
+/** See the NO_CLIENT_IP branch in `arcjetProtect`. */
+function isNoClientIpBypass(request: ArcjetRequestLike): boolean {
+  return (
+    hostOf(request) === NO_CLIENT_IP_BYPASS_HOST &&
+    request.headers.get('do-connecting-ip')?.trim() === MBOA_PROXY_IP &&
+    resolveClientIpOrEmpty(request) === ''
+  );
+}
+
 export interface ArcjetProtectOptions {
   /** Test seam for the per-minute header-log sampler. */
   sampleHeaderLog?: () => boolean;
-  /** Hosts where a DENY is logged but not enforced. */
-  excludedHosts?: ReadonlySet<string>;
+  /** Hosts where a DENY is enforced. */
+  enforcedHosts?: ReadonlySet<string>;
 }
 
 export function createArcjetProtect(
@@ -308,15 +373,15 @@ export function createArcjetProtect(
   const sampleHeaderLog =
     options.sampleHeaderLog ??
     createMinuteSampler(FINGERPRINT_HEADER_LOG_MAX_PER_MINUTE);
-  const excludedHosts =
-    options.excludedHosts ?? ARCJET_ENFORCEMENT_EXCLUDED_HOSTS;
+  const enforcedHosts = options.enforcedHosts ?? ARCJET_ENFORCED_HOSTS;
 
   function logFingerprintFailed(
-    request: NextRequest,
+    request: ArcjetRequestLike,
+    pathName: string,
     log: ArcjetLog,
     detail: { conclusion: string; errorType: string; message: string },
   ) {
-    const base = { ...requestContext(request), ...detail };
+    const base = { ...requestContext(request, pathName), ...detail };
     if (sampleHeaderLog()) {
       log('warn', 'arcjet_fingerprint_failed', {
         ...base,
@@ -327,10 +392,14 @@ export function createArcjetProtect(
     }
   }
 
-  function logNoClientIp(request: NextRequest, log: ArcjetLog) {
+  function logNoClientIp(
+    request: ArcjetRequestLike,
+    pathName: string,
+    log: ArcjetLog,
+  ) {
     const base = {
       host: request.headers.get('host') ?? 'unknown',
-      pathName: `${request.nextUrl.pathname}${request.nextUrl.search}`,
+      pathName,
       doConnectingIp: request.headers.get('do-connecting-ip') ?? 'unknown',
       forwardedFor: maskIpList(request.headers.get('x-forwarded-for') ?? ''),
     };
@@ -345,22 +414,26 @@ export function createArcjetProtect(
   }
 
   async function arcjetProtect(
-    request: NextRequest,
+    request: ArcjetRequestLike,
+    pathName: string,
     log: ArcjetLog,
   ): Promise<ArcjetProtectResult> {
     if (!client) return { denied: false, conclusion: 'SKIPPED' };
 
     /**
-     * Deliberate allow. On the MBOA app ~70 req/min arrive with no globally
-     * routable client address once trusted proxies and private/CGNAT hops
-     * are skipped (visitors on the State of Minnesota network). The SDK
-     * would fail fingerprinting for these, so we do not call it at all and
-     * count them instead. Any future rule keyed on IP (sliding window,
-     * fingerprint cache, hosting/VPN checks) must treat NO_CLIENT_IP as
-     * pass-through, not as a shared "" identity.
+     * Deliberate allow, MBOA only. On the MBOA app ~70 req/min arrive
+     * through the mn.gov proxy with no globally routable client address
+     * once trusted proxies and private/CGNAT hops are skipped (visitors on
+     * the State of Minnesota network). The SDK would fail fingerprinting
+     * for these, so we do not call it and count them instead. Scoped to
+     * that host AND that proxy: forwarding headers can be spoofed, so on
+     * any other request a missing client IP goes to Arcjet like any other.
+     * Any future rule keyed on IP (sliding window, fingerprint cache,
+     * hosting/VPN checks) must treat NO_CLIENT_IP as pass-through, not as
+     * a shared "" identity.
      */
-    if (resolveClientIpOrEmpty(request) === '') {
-      logNoClientIp(request, log);
+    if (isNoClientIpBypass(request)) {
+      logNoClientIp(request, pathName, log);
       return { denied: false, conclusion: 'NO_CLIENT_IP' };
     }
 
@@ -369,7 +442,7 @@ export function createArcjetProtect(
       decision = await client.protect(request);
     } catch (error) {
       // Fail open: a protection outage must never take the site down.
-      logFingerprintFailed(request, log, {
+      logFingerprintFailed(request, pathName, log, {
         conclusion: 'THREW',
         errorType: error instanceof Error ? error.name : typeof error,
         message: error instanceof Error ? error.message : String(error),
@@ -379,9 +452,9 @@ export function createArcjetProtect(
 
     if (decision.isDenied()) {
       const deniedBots = deniedBotsOf(decision);
-      const enforced = !isEnforcementExcludedHost(request, excludedHosts);
+      const enforced = isEnforcedHost(request, enforcedHosts);
       log('warn', 'arcjet_denied', {
-        ...requestContext(request),
+        ...requestContext(request, pathName),
         reason: decision.reason,
         reasonType: decision.reason.type,
         deniedBots,
@@ -395,7 +468,7 @@ export function createArcjetProtect(
     }
 
     if (decision.isErrored()) {
-      logFingerprintFailed(request, log, {
+      logFingerprintFailed(request, pathName, log, {
         conclusion: decision.conclusion,
         errorType: decision.reason.type,
         message: errorMessageOf(decision),
@@ -405,7 +478,7 @@ export function createArcjetProtect(
 
     for (const match of dryRunMatchesOf(decision)) {
       log('warn', 'arcjet_dry_run_match', {
-        ...requestContext(request),
+        ...requestContext(request, pathName),
         ...match,
         decisionId: decision.id,
       });
@@ -417,8 +490,8 @@ export function createArcjetProtect(
     };
   }
 
-  /** `excludedHosts` is exposed so callers/tests can see what is in effect. */
-  return Object.assign(arcjetProtect, { excludedHosts });
+  /** `enforcedHosts` is exposed so callers/tests can see what is in effect. */
+  return Object.assign(arcjetProtect, { enforcedHosts });
 }
 
 const arcjetKey = process.env.ARCJET_KEY;
@@ -432,7 +505,13 @@ const aj = arcjetKey
   : undefined;
 
 /**
- * Run Arcjet on a middleware request. No-op (`SKIPPED`) without
- * `ARCJET_KEY`. Never throws.
+ * Run Arcjet on a page request. No-op (`SKIPPED`) without `ARCJET_KEY`.
+ * Never throws.
  */
-export const arcjetProtect = createArcjetProtect(aj);
+export const arcjetProtect = createArcjetProtect(
+  aj && {
+    // The page passes `request()` from @arcjet/next; the narrower type here
+    // only reflects what this module reads.
+    protect: (request) => aj.protect(request as ArcjetNextRequest),
+  },
+);

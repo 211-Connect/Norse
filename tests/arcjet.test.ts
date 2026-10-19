@@ -14,7 +14,8 @@ import { describe, test } from 'node:test';
 
 import {
   ARCJET_ALLOWED_BOTS,
-  ARCJET_ENFORCEMENT_EXCLUDED_HOSTS,
+  ARCJET_ENFORCED_HOSTS,
+  NO_CLIENT_IP_BYPASS_HOST,
   NO_USER_AGENT_FILTER,
   buildArcjetRules,
   type ArcjetLog,
@@ -23,6 +24,7 @@ import {
   createArcjetProtect,
   createMinuteSampler,
   maskIp,
+  parseHostList,
   redactHeaders,
   resolveArcjetClientIp,
 } from '../src/lib/arcjet';
@@ -44,15 +46,23 @@ const CLOUDFLARE_IP = '173.245.48.10';
 // resolve to '' and make this test pass for the wrong reason.
 const CLIENT_IP = '8.8.8.8';
 
+/** The path the page passes to `arcjetProtect` (never a query string). */
+const PATH = '/en/search';
+
 /** A request with a routable client so the Arcjet client is reached. */
-function makeRequest(
-  headers: Record<string, string> = {},
-  path = '/en/search?q=food',
-) {
-  return new NextRequest(`https://example.org${path}`, {
+function makeRequest(headers: Record<string, string> = {}) {
+  return new NextRequest(`https://example.org${PATH}?q=food`, {
     headers: { host: 'example.org', 'x-forwarded-for': CLIENT_IP, ...headers },
   });
 }
+
+/** Hosts enforced in tests; the production set comes from env. */
+const ENFORCED: ReadonlySet<string> = new Set(['example.org']);
+
+const createProtect = (
+  client: Parameters<typeof createArcjetProtect>[0],
+  options: Parameters<typeof createArcjetProtect>[1] = {},
+) => createArcjetProtect(client, { enforcedHosts: ENFORCED, ...options });
 
 const denyBots = (denied: string[]) =>
   new ArcjetDenyDecision({
@@ -100,6 +110,8 @@ const SENSITIVE_HEADERS = {
   'cf-connecting-ip': '192.0.2.44',
   'x-real-ip': '2001:db8:85a3::8a2e:370:7334',
   'user-agent': 'TestAgent/1.0',
+  referer: 'https://example.org/en/search?q=secret-crisis-query',
+  'x-custom-header': 'not-on-the-allowlist',
 };
 
 describe('allow list (ISS-2305)', () => {
@@ -121,12 +133,12 @@ describe('allow list (ISS-2305)', () => {
 
 describe('arcjetProtect enforcement (ISS-1728)', () => {
   test('denied decision returns denied result with flat deniedBots', async () => {
-    const protect = createArcjetProtect(
+    const protect = createProtect(
       clientReturning(denyBots(['CURL', 'PYTHON_REQUESTS'])),
     );
     const { log, entries } = captureLog();
 
-    const result = await protect(makeRequest(), log);
+    const result = await protect(makeRequest(), PATH, log);
 
     assert.equal(result.denied, true);
     assert.equal(result.conclusion, 'DENY');
@@ -139,15 +151,15 @@ describe('arcjetProtect enforcement (ISS-1728)', () => {
     assert.equal(entries[0].event, 'arcjet_denied');
     assert.deepEqual(entries[0].data.deniedBots, ['CURL', 'PYTHON_REQUESTS']);
     assert.equal(entries[0].data.host, 'example.org');
-    assert.equal(entries[0].data.pathName, '/en/search?q=food');
+    assert.equal(entries[0].data.pathName, PATH);
     assert.ok(entries[0].data.reason);
   });
 
   test('allowed decision passes without logging', async () => {
-    const protect = createArcjetProtect(clientReturning(allow()));
+    const protect = createProtect(clientReturning(allow()));
     const { log, entries } = captureLog();
 
-    const result = await protect(makeRequest(), log);
+    const result = await protect(makeRequest(), PATH, log);
 
     assert.equal(result.denied, false);
     assert.equal(result.conclusion, 'ALLOW');
@@ -155,24 +167,24 @@ describe('arcjetProtect enforcement (ISS-1728)', () => {
   });
 
   test('missing ARCJET_KEY (no client) is a no-op', async () => {
-    const protect = createArcjetProtect(undefined);
+    const protect = createProtect(undefined);
     const { log, entries } = captureLog();
 
-    const result = await protect(makeRequest(), log);
+    const result = await protect(makeRequest(), PATH, log);
 
     assert.deepEqual(result, { denied: false, conclusion: 'SKIPPED' });
     assert.equal(entries.length, 0);
   });
 
   test('denied log reports the IP Arcjet resolves, not the MBOA proxy', async () => {
-    const protect = createArcjetProtect(clientReturning(denyBots(['CURL'])));
+    const protect = createProtect(clientReturning(denyBots(['CURL'])));
     const { log, entries } = captureLog();
     const req = makeRequest({
       'x-forwarded-for': `${CLIENT_IP}, 10.215.199.3,${MBOA_PROXY_IP},${CLOUDFLARE_IP}`,
       'do-connecting-ip': MBOA_PROXY_IP,
     });
 
-    await protect(req, log);
+    await protect(req, PATH, log);
 
     assert.equal(entries[0].data.ip, CLIENT_IP);
     assert.equal(entries[0].data.doConnectingIp, MBOA_PROXY_IP);
@@ -207,17 +219,17 @@ describe('no-User-Agent filter rule (ISS-1744)', () => {
         spoofed: false,
       }),
     });
-    const protect = createArcjetProtect(clientReturning(decision));
+    const protect = createProtect(clientReturning(decision));
     const { log, entries } = captureLog();
 
-    const result = await protect(makeRequest(), log);
+    const result = await protect(makeRequest(), PATH, log);
 
     assert.deepEqual(result, { denied: false, conclusion: 'ALLOW' });
     assert.equal(entries.length, 1);
     assert.equal(entries[0].event, 'arcjet_dry_run_match');
     assert.equal(entries[0].data.ruleType, 'filter');
     assert.equal(entries[0].data.host, 'example.org');
-    assert.equal(entries[0].data.pathName, '/en/search?q=food');
+    assert.equal(entries[0].data.pathName, PATH);
     assert.deepEqual(entries[0].data.matchedExpressions, [
       NO_USER_AGENT_FILTER,
     ]);
@@ -229,10 +241,10 @@ describe('no-User-Agent filter rule (ISS-1744)', () => {
       results: [filterRuleResult('RUN')],
       reason: filterReason(),
     });
-    const protect = createArcjetProtect(clientReturning(decision));
+    const protect = createProtect(clientReturning(decision));
     const { log, entries } = captureLog();
 
-    const result = await protect(makeRequest(), log);
+    const result = await protect(makeRequest(), PATH, log);
 
     assert.deepEqual(result, {
       denied: true,
@@ -247,9 +259,9 @@ describe('no-User-Agent filter rule (ISS-1744)', () => {
   });
 
   test('bot denial logs reasonType BOT', async () => {
-    const protect = createArcjetProtect(clientReturning(denyBots(['CURL'])));
+    const protect = createProtect(clientReturning(denyBots(['CURL'])));
     const { log, entries } = captureLog();
-    await protect(makeRequest(), log);
+    await protect(makeRequest(), PATH, log);
     assert.equal(entries[0].data.reasonType, 'BOT');
   });
 
@@ -270,22 +282,43 @@ describe('no-User-Agent filter rule (ISS-1744)', () => {
   });
 });
 
-describe('enforcement exclusion (ISS-1728, ISS-1737)', () => {
-  // Behaviour tests use their own set so editing the production constant
-  // (e.g. deleting the MBOA entry later) cannot break them.
-  const excludedHosts: ReadonlySet<string> = new Set(['excluded.test']);
+describe('enforced hosts (ISS-1728, ISS-1737)', () => {
   const denyingClient = () => clientReturning(denyBots(['CURL']));
 
-  test('default excludedHosts is the production constant (by reference)', () => {
+  test('default enforcedHosts is the env-derived constant (by reference)', () => {
     const protect = createArcjetProtect(denyingClient());
-    assert.equal(protect.excludedHosts, ARCJET_ENFORCEMENT_EXCLUDED_HOSTS);
+    assert.equal(protect.enforcedHosts, ARCJET_ENFORCED_HOSTS);
   });
 
-  test('excluded host: denied decision is logged but not enforced', async () => {
-    const protect = createArcjetProtect(denyingClient(), { excludedHosts });
+  test('parseHostList: comma list, lower-cased, ports stripped, blanks dropped', () => {
+    assert.deepEqual(
+      [...parseHostList(' A.example.org , b.example.org:443,, ')],
+      ['a.example.org', 'b.example.org'],
+    );
+    assert.equal(parseHostList(undefined).size, 0);
+    assert.equal(parseHostList('').size, 0);
+  });
+
+  test('enforced host: denied decision is enforced', async () => {
+    const protect = createProtect(denyingClient());
     const { log, entries } = captureLog();
 
-    const result = await protect(makeRequest({ host: 'excluded.test' }), log);
+    const result = await protect(makeRequest(), PATH, log);
+
+    assert.equal(result.denied, true);
+    assert.equal(result.conclusion, 'DENY');
+    assert.equal(entries[0].data.enforced, true);
+  });
+
+  test('host not listed: denied decision is logged but not enforced', async () => {
+    const protect = createProtect(denyingClient());
+    const { log, entries } = captureLog();
+
+    const result = await protect(
+      makeRequest({ host: 'other.example.org' }),
+      PATH,
+      log,
+    );
 
     assert.deepEqual(result, {
       denied: false,
@@ -295,47 +328,54 @@ describe('enforcement exclusion (ISS-1728, ISS-1737)', () => {
     assert.equal(entries.length, 1);
     assert.equal(entries[0].event, 'arcjet_denied');
     assert.equal(entries[0].data.enforced, false);
-    assert.deepEqual(entries[0].data.deniedBots, ['CURL']);
-    assert.equal(entries[0].data.host, 'excluded.test');
+    assert.equal(entries[0].data.host, 'other.example.org');
   });
 
-  test('other host: same decision is enforced', async () => {
-    const protect = createArcjetProtect(denyingClient(), { excludedHosts });
-    const { log, entries } = captureLog();
-
-    const result = await protect(makeRequest({ host: 'example.org' }), log);
-
-    assert.equal(result.denied, true);
-    assert.equal(result.conclusion, 'DENY');
-    assert.equal(entries[0].data.enforced, true);
-  });
-
-  test('host match is case-insensitive and ignores a port', async () => {
-    const protect = createArcjetProtect(denyingClient(), { excludedHosts });
+  test('empty list (kill switch): nothing is enforced', async () => {
+    const protect = createArcjetProtect(denyingClient(), {
+      enforcedHosts: parseHostList(''),
+    });
     const { log } = captureLog();
-    const result = await protect(
-      makeRequest({ host: 'EXCLUDED.TEST:443' }),
-      log,
-    );
+    const result = await protect(makeRequest(), PATH, log);
     assert.equal(result.conclusion, 'DENIED_NOT_ENFORCED');
   });
 
-  test('x-forwarded-host does not exclude', async () => {
-    const protect = createArcjetProtect(denyingClient(), { excludedHosts });
+  test('host match is case-insensitive and ignores a port', async () => {
+    const protect = createProtect(denyingClient());
     const { log } = captureLog();
     const result = await protect(
-      makeRequest({ host: 'example.org', 'x-forwarded-host': 'excluded.test' }),
+      makeRequest({ host: 'EXAMPLE.ORG:443' }),
+      PATH,
       log,
     );
-    assert.equal(result.denied, true);
+    assert.equal(result.conclusion, 'DENY');
+  });
+
+  test('x-forwarded-host does not enforce', async () => {
+    const protect = createProtect(denyingClient());
+    const { log } = captureLog();
+    const result = await protect(
+      makeRequest({
+        host: 'other.example.org',
+        'x-forwarded-host': 'example.org',
+      }),
+      PATH,
+      log,
+    );
+    assert.equal(result.conclusion, 'DENIED_NOT_ENFORCED');
   });
 });
 
 describe('no client IP allow path (ISS-1734, ISS-1728)', () => {
   const MBOA_PRIVATE_CHAIN =
     '10.44.12.7, 10.215.199.3,13.86.38.95,172.70.35.175';
+  const MBOA_HEADERS = {
+    host: NO_CLIENT_IP_BYPASS_HOST,
+    'x-forwarded-for': MBOA_PRIVATE_CHAIN,
+    'do-connecting-ip': MBOA_PROXY_IP,
+  };
 
-  function neverCalledClient() {
+  function countingClient() {
     let calls = 0;
     return {
       calls: () => calls,
@@ -348,88 +388,98 @@ describe('no client IP allow path (ISS-1734, ISS-1728)', () => {
     };
   }
 
-  test('private client behind MBOA chain is allowed without calling Arcjet', async () => {
-    const { client, calls } = neverCalledClient();
-    const protect = createArcjetProtect(client, {
-      sampleHeaderLog: () => true,
-    });
+  test('MBOA host via the mn.gov proxy, private client: allowed without calling Arcjet', async () => {
+    const { client, calls } = countingClient();
+    const protect = createProtect(client, { sampleHeaderLog: () => true });
     const { log, entries } = captureLog();
-    const req = makeRequest({
-      'x-forwarded-for': MBOA_PRIVATE_CHAIN,
-      'do-connecting-ip': MBOA_PROXY_IP,
-      cookie: 'session=secret',
-    });
+    const req = makeRequest({ ...MBOA_HEADERS, cookie: 'session=secret' });
 
-    const result = await protect(req, log);
+    const result = await protect(req, PATH, log);
 
     assert.deepEqual(result, { denied: false, conclusion: 'NO_CLIENT_IP' });
     assert.equal(calls(), 0, 'Arcjet protect must not be called');
     assert.equal(entries.length, 1);
     assert.equal(entries[0].level, 'warn');
     assert.equal(entries[0].event, 'arcjet_no_client_ip');
-    assert.equal(entries[0].data.host, 'example.org');
-    assert.equal(entries[0].data.pathName, '/en/search?q=food');
+    assert.equal(entries[0].data.host, NO_CLIENT_IP_BYPASS_HOST);
+    assert.equal(entries[0].data.pathName, PATH);
     assert.equal(entries[0].data.doConnectingIp, MBOA_PROXY_IP);
-    // Private hops stay exact; the public proxy/edge hops are masked.
+    // Every hop is masked the same way, private or public.
     assert.equal(
       entries[0].data.forwardedFor,
-      '10.44.12.7, 10.215.199.3, 13.86.x.x, 172.70.x.x',
+      '10.44.x.x, 10.215.x.x, 13.86.x.x, 172.70.x.x',
     );
     const headers = entries[0].data.headers as Record<string, string>;
     assert.equal('cookie' in headers, false);
     assert.equal(
       headers['x-forwarded-for'],
-      '10.44.12.7, 10.215.199.3, 13.86.x.x, 172.70.x.x',
+      '10.44.x.x, 10.215.x.x, 13.86.x.x, 172.70.x.x',
     );
-  });
-
-  test('empty client slot is also NO_CLIENT_IP', async () => {
-    const { client, calls } = neverCalledClient();
-    const protect = createArcjetProtect(client, {
-      sampleHeaderLog: () => true,
-    });
-    const { log } = captureLog();
-    const req = new NextRequest('https://example.org/en', {
-      headers: { host: 'example.org' },
-    });
-    const result = await protect(req, log);
-    assert.equal(result.conclusion, 'NO_CLIENT_IP');
-    assert.equal(calls(), 0);
   });
 
   test('sampled-out no-client-ip emits the counter event without headers', async () => {
-    const { client } = neverCalledClient();
-    const protect = createArcjetProtect(client, {
-      sampleHeaderLog: () => false,
-    });
+    const { client } = countingClient();
+    const protect = createProtect(client, { sampleHeaderLog: () => false });
     const { log, entries } = captureLog();
 
-    await protect(
-      makeRequest({ 'x-forwarded-for': MBOA_PRIVATE_CHAIN, cookie: 'a=b' }),
-      log,
-    );
+    await protect(makeRequest({ ...MBOA_HEADERS, cookie: 'a=b' }), PATH, log);
 
     assert.equal(entries.length, 1);
     assert.equal(entries[0].event, 'arcjet_no_client_ip_sampled_out');
     assert.equal('headers' in entries[0].data, false);
-    assert.equal(
-      entries[0].data.forwardedFor,
-      '10.44.12.7, 10.215.199.3, 13.86.x.x, 172.70.x.x',
-    );
   });
 
-  test('routable client still reaches Arcjet', async () => {
-    const { client, calls } = neverCalledClient();
-    const protect = createArcjetProtect(client);
+  test('routable client on MBOA still reaches Arcjet', async () => {
+    const { client, calls } = countingClient();
+    const protect = createProtect(client);
     const { log } = captureLog();
-    await protect(makeRequest(), log);
+    await protect(
+      makeRequest({ ...MBOA_HEADERS, 'x-forwarded-for': CLIENT_IP }),
+      PATH,
+      log,
+    );
     assert.equal(calls(), 1);
   });
+
+  // Forwarding headers can be spoofed: outside MBOA-via-proxy, a missing
+  // or untrusted client IP must never skip the check.
+  const mustReachArcjet: Array<[string, Record<string, string>]> = [
+    ['no forwarding headers, other host', { 'x-forwarded-for': '' }],
+    [
+      'private-only XFF from another host',
+      {
+        'x-forwarded-for': MBOA_PRIVATE_CHAIN,
+        'do-connecting-ip': MBOA_PROXY_IP,
+      },
+    ],
+    [
+      'spoofed cf-connecting-ip from a non-Cloudflare peer',
+      { 'x-forwarded-for': '', 'cf-connecting-ip': '10.0.0.1' },
+    ],
+    [
+      'MBOA host, but not via the mn.gov proxy',
+      { ...MBOA_HEADERS, 'do-connecting-ip': '198.51.100.9' },
+    ],
+    [
+      'MBOA host, no do-connecting-ip',
+      { host: NO_CLIENT_IP_BYPASS_HOST, 'x-forwarded-for': MBOA_PRIVATE_CHAIN },
+    ],
+  ];
+  for (const [name, headers] of mustReachArcjet) {
+    test(`${name}: Arcjet is called`, async () => {
+      const { client, calls } = countingClient();
+      const protect = createProtect(client);
+      const { log } = captureLog();
+      const result = await protect(makeRequest(headers), PATH, log);
+      assert.equal(calls(), 1, 'Arcjet protect must be called');
+      assert.notEqual(result.conclusion, 'NO_CLIENT_IP');
+    });
+  }
 });
 
 describe('fingerprint failure logging (ISS-1734)', () => {
   test('thrown SDK error fails open and logs redacted headers', async () => {
-    const protect = createArcjetProtect(
+    const protect = createProtect(
       {
         protect: async () => {
           throw new TypeError(FINGERPRINT_ERROR);
@@ -439,7 +489,7 @@ describe('fingerprint failure logging (ISS-1734)', () => {
     );
     const { log, entries } = captureLog();
 
-    const result = await protect(makeRequest(SENSITIVE_HEADERS), log);
+    const result = await protect(makeRequest(SENSITIVE_HEADERS), PATH, log);
 
     assert.deepEqual(result, { denied: false, conclusion: 'THREW' });
     assert.equal(entries.length, 1);
@@ -450,12 +500,14 @@ describe('fingerprint failure logging (ISS-1734)', () => {
     assert.equal(entry.data.errorType, 'TypeError');
     assert.equal(entry.data.message, FINGERPRINT_ERROR);
     assert.equal(entry.data.host, 'example.org');
-    assert.equal(entry.data.pathName, '/en/search?q=food');
+    assert.equal(entry.data.pathName, PATH);
 
     const headers = entry.data.headers as Record<string, string>;
     assert.equal('cookie' in headers, false);
     assert.equal('authorization' in headers, false);
-    assert.equal(headers['x-forwarded-for'], '8.8.x.x, 10.0.0.1');
+    assert.equal('referer' in headers, false);
+    assert.equal('x-custom-header' in headers, false);
+    assert.equal(headers['x-forwarded-for'], '8.8.x.x, 10.0.x.x');
     assert.equal(headers['do-connecting-ip'], '198.51.x.x');
     assert.equal(headers['cf-connecting-ip'], '192.0.x.x');
     assert.equal(headers['x-real-ip'], '2001:db8:x');
@@ -465,12 +517,12 @@ describe('fingerprint failure logging (ISS-1734)', () => {
   });
 
   test('ERROR conclusion fails open and logs the SDK error message', async () => {
-    const protect = createArcjetProtect(clientReturning(errored()), {
+    const protect = createProtect(clientReturning(errored()), {
       sampleHeaderLog: () => true,
     });
     const { log, entries } = captureLog();
 
-    const result = await protect(makeRequest(SENSITIVE_HEADERS), log);
+    const result = await protect(makeRequest(SENSITIVE_HEADERS), PATH, log);
 
     assert.deepEqual(result, { denied: false, conclusion: 'ERROR' });
     assert.equal(entries[0].event, 'arcjet_fingerprint_failed');
@@ -481,12 +533,12 @@ describe('fingerprint failure logging (ISS-1734)', () => {
   });
 
   test('sampled-out failures log a counter event without headers', async () => {
-    const protect = createArcjetProtect(clientReturning(errored()), {
+    const protect = createProtect(clientReturning(errored()), {
       sampleHeaderLog: () => false,
     });
     const { log, entries } = captureLog();
 
-    await protect(makeRequest(SENSITIVE_HEADERS), log);
+    await protect(makeRequest(SENSITIVE_HEADERS), PATH, log);
 
     assert.equal(entries.length, 1);
     assert.equal(entries[0].event, 'arcjet_fingerprint_failed_sampled_out');
@@ -501,13 +553,13 @@ describe('fingerprint failure logging (ISS-1734)', () => {
       FINGERPRINT_HEADER_LOG_MAX_PER_MINUTE,
       () => now,
     );
-    const protect = createArcjetProtect(clientReturning(errored()), {
+    const protect = createProtect(clientReturning(errored()), {
       sampleHeaderLog: sampler,
     });
     const { log, entries } = captureLog();
 
     for (let i = 0; i < FINGERPRINT_HEADER_LOG_MAX_PER_MINUTE + 10; i++) {
-      await protect(makeRequest(), log);
+      await protect(makeRequest(), PATH, log);
     }
     const withHeaders = entries.filter(
       (e) => e.event === 'arcjet_fingerprint_failed',
@@ -516,49 +568,71 @@ describe('fingerprint failure logging (ISS-1734)', () => {
     assert.equal(entries.length, FINGERPRINT_HEADER_LOG_MAX_PER_MINUTE + 10);
 
     now += 60_000;
-    await protect(makeRequest(), log);
+    await protect(makeRequest(), PATH, log);
     assert.equal(entries.at(-1)?.event, 'arcjet_fingerprint_failed');
   });
 });
 
 describe('helpers', () => {
-  test('maskIp masks routable addresses to two octets / groups', () => {
+  test('maskIp masks every address to two octets / groups', () => {
     assert.equal(maskIp('8.8.8.8'), '8.8.x.x');
-    assert.equal(maskIp('203.0.113.77'), '203.0.x.x');
+    assert.equal(maskIp(' 10.1.2.3 '), '10.1.x.x');
+    assert.equal(maskIp('192.168.1.1'), '192.168.x.x');
     assert.equal(maskIp('2001:db8::1'), '2001:db8:x');
+    assert.equal(maskIp('fe80::1'), 'fe80::x');
+    assert.equal(maskIp('::1'), '::x');
     assert.equal(maskIp(''), '');
   });
 
-  test('maskIp leaves infrastructure addresses unmasked', () => {
-    assert.equal(maskIp('10.44.12.7'), '10.44.12.7');
-    assert.equal(maskIp(' 10.1.2.3 '), '10.1.2.3');
-    assert.equal(maskIp('172.16.0.9'), '172.16.0.9');
-    assert.equal(maskIp('192.168.1.1'), '192.168.1.1');
-    assert.equal(maskIp('100.64.3.4'), '100.64.3.4');
-    assert.equal(maskIp('127.0.0.1'), '127.0.0.1');
-    assert.equal(maskIp('169.254.1.1'), '169.254.1.1');
-    assert.equal(maskIp('fd12:3456::1'), 'fd12:3456::1');
-    assert.equal(maskIp('fe80::1'), 'fe80::1');
-    assert.equal(maskIp('::1'), '::1');
-    // Not private: 172.32/12 and 100.128/10 are routable.
-    assert.equal(maskIp('172.32.0.1'), '172.32.x.x');
-    assert.equal(maskIp('100.128.0.1'), '100.128.x.x');
+  test('maskIp strips a port before masking', () => {
+    assert.equal(maskIp('8.8.8.8:51234'), '8.8.x.x');
+    assert.equal(maskIp('[2001:db8::1]:443'), '2001:db8:x');
+    assert.equal(maskIp('[2001:db8::1]'), '2001:db8:x');
   });
 
-  test('redactHeaders applies the routable-only rule per chain entry', () => {
+  test('maskIp handles short IPv6 groups and IPv4-mapped addresses', () => {
+    assert.equal(maskIp('fc::1'), 'fc::x');
+    assert.equal(maskIp('fe8::1'), 'fe8::x');
+    assert.equal(maskIp('::ffff:10.0.0.1'), '::ffff:10.0.x.x');
+    assert.equal(maskIp('::FFFF:8.8.8.8'), '::ffff:8.8.x.x');
+  });
+
+  test('maskIp fully masks malformed input', () => {
+    for (const bad of [
+      '10.999.0.0',
+      '1e1',
+      '1.2.3',
+      'unknown',
+      '::ffff:999.1.1.1',
+      'a:b:c:d:e:f:1:2:3',
+      '12345::1',
+    ]) {
+      assert.equal(maskIp(bad), 'x', bad);
+    }
+  });
+
+  test('redactHeaders keeps only allowlisted headers, IPs masked', () => {
     const headers = new Headers({
-      'x-forwarded-for': '8.8.8.8, 10.215.199.3,100.64.1.2',
+      host: 'example.org',
+      'user-agent': 'UA',
+      accept: 'text/html',
+      'accept-language': 'es',
+      via: '1.1 proxy',
+      'x-forwarded-for': '8.8.8.8, 10.215.199.3:8080',
       'x-rdwr-ip': '192.168.5.5',
+      referer: 'https://example.org/en/search?q=food',
+      'set-cookie': 'a=b',
+      'x-id': '1',
     });
     assert.deepEqual(redactHeaders(headers), {
-      'x-forwarded-for': '8.8.x.x, 10.215.199.3, 100.64.1.2',
-      'x-rdwr-ip': '192.168.5.5',
+      host: 'example.org',
+      'user-agent': 'UA',
+      accept: 'text/html',
+      'accept-language': 'es',
+      via: '1.1 proxy',
+      'x-forwarded-for': '8.8.x.x, 10.215.x.x',
+      'x-rdwr-ip': '192.168.x.x',
     });
-  });
-
-  test('redactHeaders drops set-cookie too', () => {
-    const headers = new Headers({ 'set-cookie': 'a=b', 'x-id': '1' });
-    assert.deepEqual(redactHeaders(headers), { 'x-id': '1' });
   });
 
   test('resolveArcjetClientIp walks past trusted proxies and private hops', () => {

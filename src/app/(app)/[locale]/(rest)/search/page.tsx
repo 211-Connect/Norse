@@ -18,6 +18,7 @@ import {
 } from '@/app/(app)/shared/services/search-service';
 import { type ResultType } from '@/app/(app)/shared/store/results';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
+import { protectPage } from '@/lib/arcjet-page';
 import { createLogger } from '@/lib/logger';
 import { toBbox } from '@/app/(app)/shared/lib/utils';
 import { type FiltersMap } from '@/types/search';
@@ -213,6 +214,9 @@ export default async function SearchPage({
   ]);
 
   const locale = paramsResult.locale;
+
+  // Before any data fetch or streaming, so a denial is a real 403.
+  await protectPage(`/${locale}/search`);
 
   const headersList = await headers();
   const nonce = headersList.get('x-nonce') ?? '';

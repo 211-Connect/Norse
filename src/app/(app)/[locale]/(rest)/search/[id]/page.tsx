@@ -10,6 +10,7 @@ import { FetchError } from '@/app/(app)/shared/lib/fetchError';
 import { getResource } from '@/app/(app)/shared/services/resource-service';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { isValidUUID } from '@/app/(app)/shared/utils/uuid';
+import { protectPage } from '@/lib/arcjet-page';
 import { createLogger } from '@/lib/logger';
 import { Resource } from '@/types/resource';
 
@@ -67,6 +68,9 @@ export default async function ResourcePage({ params }) {
     );
     notFound();
   }
+
+  // Before any data fetch or streaming, so a denial is a real 403.
+  await protectPage(`/${locale}/search/${id}`);
 
   const [cookieList, appConfig] = await Promise.all([
     getCookies({ cookies }),

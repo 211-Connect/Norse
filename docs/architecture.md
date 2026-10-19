@@ -43,12 +43,20 @@ data (`getAppConfigWithoutHost`, `initTranslations`, session), then delegate
 to a component in the matching `features/<name>/components/` folder. Look at
 an existing page (e.g. `[locale]/(rest)/favorites/page.tsx`) as the template
 for a new route: resolve `appConfig` for the locale, initialize i18n
-namespaces, wrap children in `PageWrapper`. Pages do not call Arcjet: bot
-protection runs once per request in the middleware (`src/proxy.ts` →
-`arcjetProtect` in `src/lib/arcjet.ts`) for every path the middleware matcher
-covers, and answers `403` on a denied decision before tenant resolution. Paths
-the matcher excludes (`api`, `admin`, `_next`, static assets, `robots.txt`,
-`sitemap.xml`) are not bot-checked.
+namespaces, wrap children in `PageWrapper`. A page that serves directory
+data also calls `await protectPage(path)` (`src/lib/arcjet-page.ts`) first,
+before any data fetch, passing the path without the query string.
+
+Bot protection is per page, not in `src/proxy.ts`. Today it covers
+`/search` and `/search/[id]`. Arcjet recommends calling `protect()` in the
+route, not in middleware, and a middleware call would also run on every RSC
+navigation and prefetch, each one billed. `protectPage` throws `forbidden()`
+on a denial for an enforced host; `[locale]/(rest)/forbidden.tsx` renders
+the branded page with a `403`. The status is a real `403` only because the
+call runs before anything streams: do not move it below a `<Suspense>`
+boundary or into a page with `loading.tsx`. Enforcement is per host, from
+`ARCJET_ENFORCED_HOSTS` (comma list; unset = log-only everywhere), so
+rollout and rollback are env changes.
 
 `shared/` holds code used by more than one feature:
 
@@ -202,11 +210,13 @@ tenant: it runs with `NEXT_PUBLIC_CUSTOM_BASE_PATH=/adresources` and
 instead of treating every MBOA visitor as one address. The proxy IP is not
 allow-listed as a bot; bots behind it are still detected (the allow list in
 `ARCJET_ALLOWED_BOTS` names the ones MBOA depends on, e.g.
-`SITEIMPROVE_CRAWLER`). Temporarily, `mboa.c211.io` is listed in
-`ARCJET_ENFORCEMENT_EXCLUDED_HOSTS` (same file): Arcjet still runs and logs
-`arcjet_denied` with `enforced: false`, but the request is not blocked, until
-MNIT confirms which automated traffic is theirs (ISS-1737). To enforce for
-MBOA, delete that entry; nothing else changes. Changes to `NEXT_PUBLIC_CUSTOM_BASE_PATH`/trailing-slash
+`SITEIMPROVE_CRAWLER`). `mboa.c211.io` must stay out of
+`ARCJET_ENFORCED_HOSTS` until MNIT confirms which automated traffic is theirs
+(ISS-1737): Arcjet still runs and logs `arcjet_denied` with `enforced: false`,
+but the request is not blocked. On that host only, a request that arrives
+via the mn.gov proxy with no routable client IP skips Arcjet
+(`NO_CLIENT_IP`); everywhere else it goes to Arcjet, because forwarding
+headers can be spoofed. Changes to `NEXT_PUBLIC_CUSTOM_BASE_PATH`/trailing-slash
 handling or Arcjet rules should be checked against this deployment.
 
 The rule set (`buildArcjetRules` in `src/lib/arcjet.ts`) also carries a
