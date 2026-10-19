@@ -5,6 +5,7 @@ import arcjet, {
   type ArcjetDecision,
   type ArcjetNextRequest,
   cloudflare,
+  createRemoteClient,
   detectBot,
   filter,
 } from '@arcjet/next';
@@ -50,6 +51,9 @@ export const ARCJET_ALLOWED_BOTS = [
   // serves Hmong and Somali communities.
   'NAVER_CRAWLER',
   'BAIDU_CRAWLER',
+  // PageSpeed Insights / Lighthouse. Only in CATEGORY:GOOGLE and
+  // CATEGORY:OPTIMIZER, so it must be named. Needed for SEO baselines.
+  'GOOGLE_LIGHTHOUSE',
 ] as const;
 
 /**
@@ -526,9 +530,20 @@ export function createArcjetProtect(
 
 const arcjetKey = process.env.ARCJET_KEY;
 
+/**
+ * Decide API timeout, set explicitly so it cannot drift with an SDK
+ * upgrade. Same value as the SDK default. The page waits for the decision
+ * before it fetches data, so this is the worst-case added latency; on
+ * timeout the decision errors and the page fails open. Arcjet support
+ * reports occasional `deadline_exceeded` at this value, so lowering it
+ * raises the fail-open rate.
+ */
+export const ARCJET_TIMEOUT_MS = 2000;
+
 const aj = arcjetKey
   ? arcjet({
       key: arcjetKey,
+      client: createRemoteClient({ timeout: ARCJET_TIMEOUT_MS }),
       proxies: PROXIES,
       rules: buildArcjetRules(),
     })

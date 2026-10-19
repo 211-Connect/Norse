@@ -127,6 +127,7 @@ describe('allow list (ISS-2305)', () => {
         'SITEIMPROVE_CRAWLER',
         'NAVER_CRAWLER',
         'BAIDU_CRAWLER',
+        'GOOGLE_LIGHTHOUSE',
       ],
     );
   });
