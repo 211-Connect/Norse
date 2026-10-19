@@ -23,6 +23,7 @@ import {
   MBOA_PROXY_IP,
   createArcjetProtect,
   createMinuteSampler,
+  internalIpSrc,
   maskIp,
   parseHostList,
   redactHeaders,
@@ -366,7 +367,7 @@ describe('enforced hosts (ISS-1728, ISS-1737)', () => {
   });
 });
 
-describe('no client IP allow path (ISS-1734, ISS-1728)', () => {
+describe('MBOA internal traffic (ISS-1734, ISS-1728)', () => {
   const MBOA_PRIVATE_CHAIN =
     '10.44.12.7, 10.215.199.3,13.86.38.95,172.70.35.175';
   const MBOA_HEADERS = {
@@ -375,30 +376,35 @@ describe('no client IP allow path (ISS-1734, ISS-1728)', () => {
     'do-connecting-ip': MBOA_PROXY_IP,
   };
 
-  function countingClient() {
+  function countingClient(decision: ArcjetDecision = denyBots(['CURL'])) {
     let calls = 0;
+    let lastOptions: { ipSrc?: string } | undefined;
     return {
       calls: () => calls,
+      lastOptions: () => lastOptions,
       client: {
-        protect: async () => {
+        protect: async (_req: unknown, options?: { ipSrc?: string }) => {
           calls += 1;
-          return denyBots(['CURL']);
+          lastOptions = options;
+          return decision;
         },
       },
     };
   }
 
-  test('MBOA host via the mn.gov proxy, private client: allowed without calling Arcjet', async () => {
-    const { client, calls } = countingClient();
+  test('private client via the mn.gov proxy gets a real decision with ipSrc = the hop the proxy appended', async () => {
+    const { client, calls, lastOptions } = countingClient(allow());
     const protect = createProtect(client, { sampleHeaderLog: () => true });
     const { log, entries } = captureLog();
     const req = makeRequest({ ...MBOA_HEADERS, cookie: 'session=secret' });
 
     const result = await protect(req, PATH, log);
 
-    assert.deepEqual(result, { denied: false, conclusion: 'NO_CLIENT_IP' });
-    assert.equal(calls(), 0, 'Arcjet protect must not be called');
+    assert.deepEqual(result, { denied: false, conclusion: 'ALLOW' });
+    assert.equal(calls(), 1, 'Arcjet protect must be called');
+    assert.deepEqual(lastOptions(), { ipSrc: '10.215.199.3' });
     assert.equal(entries.length, 1);
+    assert.equal(entries[0].data.ipSrc, '10.215.x.x');
     assert.equal(entries[0].level, 'warn');
     assert.equal(entries[0].event, 'arcjet_no_client_ip');
     assert.equal(entries[0].data.host, NO_CLIENT_IP_BYPASS_HOST);
@@ -417,8 +423,36 @@ describe('no client IP allow path (ISS-1734, ISS-1728)', () => {
     );
   });
 
+  test('bot behind the State network is still detected (logged, not enforced on MBOA)', async () => {
+    const { client, lastOptions } = countingClient(denyBots(['CURL']));
+    const protect = createArcjetProtect(client);
+    const { log, entries } = captureLog();
+
+    const result = await protect(makeRequest(MBOA_HEADERS), PATH, log);
+
+    assert.deepEqual(lastOptions(), { ipSrc: '10.215.199.3' });
+    assert.equal(result.conclusion, 'DENIED_NOT_ENFORCED');
+    assert.equal(entries.at(-1)?.event, 'arcjet_denied');
+  });
+
+  test('via the mn.gov proxy but no usable hop: allowed without calling Arcjet', async () => {
+    const { client, calls } = countingClient();
+    const protect = createProtect(client);
+    const { log, entries } = captureLog();
+
+    const result = await protect(
+      makeRequest({ ...MBOA_HEADERS, 'x-forwarded-for': '10.0.0.1' }),
+      PATH,
+      log,
+    );
+
+    assert.deepEqual(result, { denied: false, conclusion: 'NO_CLIENT_IP' });
+    assert.equal(calls(), 0);
+    assert.equal(entries[0].data.ipSrc, 'none');
+  });
+
   test('sampled-out no-client-ip emits the counter event without headers', async () => {
-    const { client } = countingClient();
+    const { client } = countingClient(allow());
     const protect = createProtect(client, { sampleHeaderLog: () => false });
     const { log, entries } = captureLog();
 
@@ -466,12 +500,17 @@ describe('no client IP allow path (ISS-1734, ISS-1728)', () => {
     ],
   ];
   for (const [name, headers] of mustReachArcjet) {
-    test(`${name}: Arcjet is called`, async () => {
-      const { client, calls } = countingClient();
+    test(`${name}: Arcjet is called, no ipSrc`, async () => {
+      const { client, calls, lastOptions } = countingClient();
       const protect = createProtect(client);
       const { log } = captureLog();
       const result = await protect(makeRequest(headers), PATH, log);
       assert.equal(calls(), 1, 'Arcjet protect must be called');
+      assert.equal(
+        lastOptions(),
+        undefined,
+        'spoofable chain must not set ipSrc',
+      );
       assert.notEqual(result.conclusion, 'NO_CLIENT_IP');
     });
   }
@@ -633,6 +672,24 @@ describe('helpers', () => {
       'x-forwarded-for': '8.8.x.x, 10.215.x.x',
       'x-rdwr-ip': '192.168.x.x',
     });
+  });
+
+  test('internalIpSrc returns the entry left of the last mn.gov proxy hop', () => {
+    assert.equal(
+      internalIpSrc(
+        `10.44.12.7, 10.215.199.3,${MBOA_PROXY_IP},${CLOUDFLARE_IP}`,
+      ),
+      '10.215.199.3',
+    );
+    assert.equal(internalIpSrc(`10.0.0.1, ${MBOA_PROXY_IP}`), '10.0.0.1');
+    assert.equal(
+      internalIpSrc(`${MBOA_PROXY_IP}, ${CLOUDFLARE_IP}`),
+      undefined,
+    );
+    assert.equal(internalIpSrc('10.0.0.1, 10.0.0.2'), undefined);
+    assert.equal(internalIpSrc(`garbage, ${MBOA_PROXY_IP}`), undefined);
+    assert.equal(internalIpSrc(`, ${MBOA_PROXY_IP}`), undefined);
+    assert.equal(internalIpSrc(null), undefined);
   });
 
   test('resolveArcjetClientIp walks past trusted proxies and private hops', () => {

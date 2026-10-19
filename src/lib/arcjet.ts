@@ -1,3 +1,5 @@
+import { isIP } from 'node:net';
+
 import { parseProxies, resolveClientIp } from '@arcjet/ip';
 import arcjet, {
   type ArcjetDecision,
@@ -94,9 +96,10 @@ function hostOf(request: ArcjetRequestLike): string {
 }
 
 /**
- * The only host where a request with no routable client IP skips Arcjet,
- * and only when it arrived through the mn.gov proxy (ISS-1734). Anywhere
- * else, missing or untrusted forwarding headers must not bypass the check.
+ * The only host where a request with no routable client IP gets special
+ * handling, and only when it arrived through the mn.gov proxy (ISS-1734):
+ * see `internalIpSrc`. Anywhere else, missing or untrusted forwarding
+ * headers go to Arcjet unchanged.
  */
 export const NO_CLIENT_IP_BYPASS_HOST = 'mboa.c211.io' as const;
 
@@ -171,7 +174,8 @@ export type ArcjetProtectResult =
       denied: false;
       /**
        * `SKIPPED` = no ARCJET_KEY; `THREW` = SDK threw (failed open);
-       * `NO_CLIENT_IP` = no routable client address, deliberately allowed.
+       * `NO_CLIENT_IP` = MBOA via the mn.gov proxy with no client address at
+       * all (not even an internal one); deliberately allowed.
        */
       conclusion:
         'ALLOW' | 'CHALLENGE' | 'ERROR' | 'SKIPPED' | 'THREW' | 'NO_CLIENT_IP';
@@ -190,7 +194,25 @@ export interface ArcjetRequestLike {
 }
 
 export interface ArcjetClientLike {
-  protect(request: ArcjetRequestLike): Promise<ArcjetDecision>;
+  protect(
+    request: ArcjetRequestLike,
+    options?: { ipSrc?: string },
+  ): Promise<ArcjetDecision>;
+}
+
+/**
+ * The hop the mn.gov proxy appended to `x-forwarded-for`: the entry
+ * immediately left of the last `MBOA_PROXY_IP`. That proxy wrote it, so it
+ * is trusted even though it is a private (State network) address; entries
+ * further left were written by hops we do not control. Returns undefined
+ * when the proxy is absent or that entry is not an IP. Pattern advised by
+ * Arcjet support (2026-10-19).
+ */
+export function internalIpSrc(forwardedFor: string | null): string | undefined {
+  const hops = (forwardedFor ?? '').split(',').map((hop) => hop.trim());
+  const proxyAt = hops.lastIndexOf(MBOA_PROXY_IP);
+  const peer = proxyAt > 0 ? hops[proxyAt - 1] : undefined;
+  return peer && isIP(peer) !== 0 ? peer : undefined;
 }
 
 const IPV4 = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
@@ -350,8 +372,8 @@ function errorMessageOf(decision: ArcjetDecision): string {
   return errored?.reason.isError() ? errored.reason.message : 'unknown';
 }
 
-/** See the NO_CLIENT_IP branch in `arcjetProtect`. */
-function isNoClientIpBypass(request: ArcjetRequestLike): boolean {
+/** See the internal-traffic branch in `arcjetProtect`. */
+function isMboaWithoutClientIp(request: ArcjetRequestLike): boolean {
   return (
     hostOf(request) === NO_CLIENT_IP_BYPASS_HOST &&
     request.headers.get('do-connecting-ip')?.trim() === MBOA_PROXY_IP &&
@@ -396,10 +418,12 @@ export function createArcjetProtect(
     request: ArcjetRequestLike,
     pathName: string,
     log: ArcjetLog,
+    ipSrc: string | undefined,
   ) {
     const base = {
       host: request.headers.get('host') ?? 'unknown',
       pathName,
+      ipSrc: ipSrc ? maskIp(ipSrc) : 'none',
       doConnectingIp: request.headers.get('do-connecting-ip') ?? 'unknown',
       forwardedFor: maskIpList(request.headers.get('x-forwarded-for') ?? ''),
     };
@@ -421,25 +445,31 @@ export function createArcjetProtect(
     if (!client) return { denied: false, conclusion: 'SKIPPED' };
 
     /**
-     * Deliberate allow, MBOA only. On the MBOA app ~70 req/min arrive
-     * through the mn.gov proxy with no globally routable client address
-     * once trusted proxies and private/CGNAT hops are skipped (visitors on
-     * the State of Minnesota network). The SDK would fail fingerprinting
-     * for these, so we do not call it and count them instead. Scoped to
-     * that host AND that proxy: forwarding headers can be spoofed, so on
-     * any other request a missing client IP goes to Arcjet like any other.
-     * Any future rule keyed on IP (sliding window, fingerprint cache,
-     * hosting/VPN checks) must treat NO_CLIENT_IP as pass-through, not as
-     * a shared "" identity.
+     * MBOA internal traffic. On the MBOA app ~70 req/min arrive through the
+     * mn.gov proxy with only private hops in front of it (visitors on the
+     * State of Minnesota network), so the SDK finds no global client IP and
+     * cannot build a fingerprint. We pass the hop the mn.gov proxy appended
+     * as `ipSrc` (see `internalIpSrc`), so these requests get a real
+     * decision: browsers pass, bots are still detected by user agent. IP
+     * reputation, geo and verified-bot checks cannot match a private
+     * address, and everyone behind that hop shares one IP identity: any
+     * future IP-keyed rate limit must use a session/user characteristic
+     * here. Scoped to that host AND that proxy: forwarding headers can be
+     * spoofed, so on any other request a missing client IP goes to Arcjet
+     * unchanged. With no usable hop at all, the request is allowed
+     * (NO_CLIENT_IP) without calling Arcjet.
      */
-    if (isNoClientIpBypass(request)) {
-      logNoClientIp(request, pathName, log);
-      return { denied: false, conclusion: 'NO_CLIENT_IP' };
+    let protectOptions: { ipSrc: string } | undefined;
+    if (isMboaWithoutClientIp(request)) {
+      const ipSrc = internalIpSrc(request.headers.get('x-forwarded-for'));
+      logNoClientIp(request, pathName, log, ipSrc);
+      if (!ipSrc) return { denied: false, conclusion: 'NO_CLIENT_IP' };
+      protectOptions = { ipSrc };
     }
 
     let decision: ArcjetDecision;
     try {
-      decision = await client.protect(request);
+      decision = await client.protect(request, protectOptions);
     } catch (error) {
       // Fail open: a protection outage must never take the site down.
       logFingerprintFailed(request, pathName, log, {
@@ -512,6 +542,7 @@ export const arcjetProtect = createArcjetProtect(
   aj && {
     // The page passes `request()` from @arcjet/next; the narrower type here
     // only reflects what this module reads.
-    protect: (request) => aj.protect(request as ArcjetNextRequest),
+    protect: (request, options) =>
+      aj.protect(request as ArcjetNextRequest, options),
   },
 );

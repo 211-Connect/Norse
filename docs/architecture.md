@@ -214,9 +214,12 @@ allow-listed as a bot; bots behind it are still detected (the allow list in
 `ARCJET_ENFORCED_HOSTS` until MNIT confirms which automated traffic is theirs
 (ISS-1737): Arcjet still runs and logs `arcjet_denied` with `enforced: false`,
 but the request is not blocked. On that host only, a request that arrives
-via the mn.gov proxy with no routable client IP skips Arcjet
-(`NO_CLIENT_IP`); everywhere else it goes to Arcjet, because forwarding
-headers can be spoofed. Changes to `NEXT_PUBLIC_CUSTOM_BASE_PATH`/trailing-slash
+via the mn.gov proxy with only private hops in front of it (State network
+visitors) is sent to Arcjet with `ipSrc` set to the hop that proxy appended
+(`internalIpSrc`), so it still gets a bot decision; everywhere else a
+missing client IP goes to Arcjet unchanged, because forwarding headers can
+be spoofed. Everyone behind that hop shares one IP identity, so a future
+IP-keyed rate limit must use a session or user characteristic there. Changes to `NEXT_PUBLIC_CUSTOM_BASE_PATH`/trailing-slash
 handling or Arcjet rules should be checked against this deployment.
 
 The rule set (`buildArcjetRules` in `src/lib/arcjet.ts`) also carries a
