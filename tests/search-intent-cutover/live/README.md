@@ -32,6 +32,11 @@ node --import tsx tests/search-intent-cutover/live/run.ts baseline --env dev --t
 node --import tsx tests/search-intent-cutover/live/run.ts diff --env prod --b WA=https://<preview-host>
 ```
 
+```sh
+# diff between two builds instead of an environment and a build (A overrides the environment's site)
+node --import tsx tests/search-intent-cutover/live/run.ts diff --a WA=http://search.wa211.org.localhost:3003 --b WA=http://search.wa211.org.localhost:3004
+```
+
 Output goes to `live/runs/<date>-<mode>-<env>/`: one `<TENANT>.jsonl` per tenant, plus a `manifest.json`
 with the cap, the User-Agent and per-tenant counts.
 
@@ -49,6 +54,22 @@ nothing was compared), otherwise `0`.
 
 **Not observable from the browser:** the Norse-API request the server sends. The final URL stands in for
 it. The request is a function of the URL and tenant config, which the `server-page` snapshots pin.
+
+## Verified locally (2026-10-19), with no live traffic
+
+On David's decision, no run has touched production analytics. Instead, two local production builds of the
+stack served WA from the local Podman Postgres (production dump), with Valkey, a local Norse-API, and a
+**local Umami** in Podman whose website id was set on WA in the local copy only.
+
+- **Red check.** A build whose page title drops the location, against an unchanged build, over WA's 50-URL
+  sample: 29 behaviour changes (all `title`) and 21 passes, matching the lift's prediction on 50 of 50 URLs
+  (exactly the URLs with a real location). Exit 1.
+- **Analytics.** Against the local Umami database:
+  - the runner alone: 0 events (exit 2, could not verify: an empty window proves nothing);
+  - one unblocked control visit: recorded and reported as a leak (exit 1);
+  - ordinary traffic plus runner visits: 1 event, no leak (exit 0).
+
+  Umami also drops `HeadlessChrome` as a bot, so the control visit had to use a desktop User-Agent.
 
 ## Before and after a live run
 
