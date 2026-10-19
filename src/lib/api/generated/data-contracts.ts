@@ -1034,10 +1034,10 @@ export interface SearchEventExportRow {
    */
   queryLabel: string;
   /**
-   * Search type: text or taxonomy
+   * Search type: text, taxonomy, or hybrid
    * @example "text"
    */
-  queryType: "text" | "taxonomy";
+  queryType: "text" | "taxonomy" | "hybrid";
   /**
    * Search ZIP/postal code from reverse geocoding
    * @example "94102"
