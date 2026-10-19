@@ -59,7 +59,8 @@
     "load_error": "Haiwezi kupakia maelezo ya rasilimali yanayoweza kuchapishwa. Tafadhali jaribu tena.",
     "retry": "Jaribu tena",
     "language_title": "Lugha ya saraka",
-    "booklet_layout": "Mpangilio wa kijitabu"
+    "booklet_layout": "Mpangilio wa kijitabu",
+    "booklet_layout_help": "Kurasa zimepangwa ili uchapishaji uweze kukunjwa na kubandikwa kwenye kijitabu: vifuniko vya ndani vilivyo wazi huongezwa na idadi ya kurasa huwekwa kwenye kizidishio cha 4. Chapisha pande mbili."
   },
   "print_footer_disclaimer": "{{brandName}} hutoa taarifa hii kama huduma ya umma na haitoi dhamana yoyote kuhusu usahihi, ukamilifu, au wakati wake. {{brandName}} haina jukumu la jinsi taarifa hii inavyotumika na haichukui dhima yoyote kwa matokeo yoyote yanayotokana na matumizi yake. Usambazaji wa chapisho hili haumaanishi kuidhinishwa au kuhusishwa na {{brandName}}.",
   "print_page_counter": "Ukurasa {{current}} wa {{total}}",

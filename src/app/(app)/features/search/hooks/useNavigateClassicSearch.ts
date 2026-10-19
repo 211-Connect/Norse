@@ -70,7 +70,7 @@ export const useNavigateClassicSearch = ({
         // Only present on the current URL for the user's first search
         // action after landing on a campaign link; buildSearchUrl never
         // carries utm_source forward into subsequent navigations.
-        const utmSource = searchParams.get('utm_source');
+        const utmSource = searchParams?.get('utm_source');
 
         const umamiPayload = {
           query: String(query ?? ''),

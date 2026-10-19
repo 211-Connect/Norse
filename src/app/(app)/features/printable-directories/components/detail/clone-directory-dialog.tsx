@@ -26,7 +26,13 @@ import {
   PrintableDirectoryResponseDto,
 } from '@/lib/api/generated/data-contracts';
 
-import { randomSlugSuffix, slugify, toLocalizedValues } from '../../utils';
+import {
+  baseSlugFromName,
+  isDirectoryNameValid,
+  MIN_DIRECTORY_NAME_LENGTH,
+  randomSlugSuffix,
+  toLocalizedValues,
+} from '../../utils';
 
 type CloneDirectoryDialogProps = {
   open: boolean;
@@ -96,6 +102,8 @@ export function CloneDirectoryDialog({
   );
   const canCopyLogo = usePrintableDirectoryCapability('logoUpload');
   const [cloneName, setCloneName] = useState('');
+  const cloneNameTooShort =
+    cloneName.trim().length > 0 && !isDirectoryNameValid(cloneName);
   const [options, setOptions] = useState<CloneOptions>(DEFAULT_OPTIONS);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -131,7 +139,7 @@ export function CloneDirectoryDialog({
 
   const handleSubmit = async () => {
     const trimmedName = cloneName.trim();
-    if (!trimmedName) {
+    if (!isDirectoryNameValid(trimmedName)) {
       return;
     }
 
@@ -141,7 +149,7 @@ export function CloneDirectoryDialog({
       const createResult = await createPrintableDirectory(
         {
           name: trimmedName,
-          slug: `${slugify(trimmedName)}-${randomSlugSuffix()}`,
+          slug: `${baseSlugFromName(trimmedName)}-${randomSlugSuffix()}`,
           primaryLanguage: directory.primaryLanguage,
           locales: directory.locales,
           ...(options.generalInfo
@@ -293,7 +301,22 @@ export function CloneDirectoryDialog({
               id="clone-directory-name"
               value={cloneName}
               onChange={(event) => setCloneName(event.target.value)}
+              aria-invalid={cloneNameTooShort}
+              aria-describedby={
+                cloneNameTooShort ? 'clone-directory-name-error' : undefined
+              }
             />
+            {cloneNameTooShort && (
+              <p
+                id="clone-directory-name-error"
+                className="text-destructive text-xs"
+              >
+                {t('name_too_short', {
+                  ns: 'page-directories',
+                  min: MIN_DIRECTORY_NAME_LENGTH,
+                })}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -377,7 +400,7 @@ export function CloneDirectoryDialog({
           <Button
             type="button"
             onClick={handleSubmit}
-            disabled={!cloneName.trim()}
+            disabled={!isDirectoryNameValid(cloneName)}
             loading={isSubmitting}
           >
             {isSubmitting

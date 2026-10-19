@@ -185,8 +185,8 @@ export function SaveSourceToDirectoryButton({
         const items = result.items ?? [];
         setDirectories(items);
 
-        const requestedDirectoryId = searchParams.get('pdid') ?? '';
-        const requestedSectionId = searchParams.get('pdsid') ?? '';
+        const requestedDirectoryId = searchParams?.get('pdid') ?? '';
+        const requestedSectionId = searchParams?.get('pdsid') ?? '';
 
         const preferredDirectory = requestedDirectoryId
           ? items.find((directory) => directory.id === requestedDirectoryId)
@@ -232,13 +232,13 @@ export function SaveSourceToDirectoryButton({
   }, [open, hasAccess, appConfig.tenantId, t, searchParams]);
 
   const clearDirectoryParams = useCallback(() => {
-    if (!searchParams.has('pdid') && !searchParams.has('pdsid')) return;
+    if (!searchParams?.has('pdid') && !searchParams?.has('pdsid')) return;
 
-    const nextParams = new URLSearchParams(searchParams.toString());
+    const nextParams = new URLSearchParams(searchParams?.toString());
     nextParams.delete('pdid');
     nextParams.delete('pdsid');
     const nextQuery = nextParams.toString();
-    router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, {
+    router.replace(nextQuery ? `${pathname}?${nextQuery}` : (pathname ?? '/'), {
       scroll: false,
     });
   }, [searchParams, router, pathname]);

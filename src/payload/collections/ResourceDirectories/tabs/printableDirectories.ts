@@ -5,18 +5,14 @@ import { superAdminOrSupportOrTenantAccess } from '../../Users/access/roles';
 /**
  * Capability keys gatable per Printable Directory User Group. See
  * docs/printable-directories.md and docs/adr/0001-printable-directory-authz-boundary.md.
- * `scheduledPdfDelivery` is a reserved placeholder: no feature exists behind
- * it yet.
+ * `scheduledPdfDelivery`: docs/scheduled-pdf-delivery.md.
  */
 export const PRINTABLE_DIRECTORY_CAPABILITIES = [
   { label: 'Logo Upload', value: 'logoUpload' },
   { label: 'Cover Customization', value: 'coverCustomization' },
   { label: 'Custom Headers & Footers', value: 'customHeadersFooters' },
   { label: 'Automatic Translation', value: 'automaticTranslation' },
-  {
-    label: 'Scheduled PDF Delivery (not available yet)',
-    value: 'scheduledPdfDelivery',
-  },
+  { label: 'Scheduled PDF Delivery', value: 'scheduledPdfDelivery' },
 ] as const;
 
 export const printableDirectories: Tab = {

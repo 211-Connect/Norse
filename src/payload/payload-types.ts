@@ -267,6 +267,7 @@ export interface Config {
       translateTopics: TaskTranslateTopics;
       translate: TaskTranslate;
       warmCache: TaskWarmCache;
+      deliverScheduledPdfs: TaskDeliverScheduledPdfs;
       inline: {
         input: unknown;
         output: unknown;
@@ -1236,7 +1237,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'translateTopics' | 'translate' | 'warmCache';
+        taskSlug: 'inline' | 'translateTopics' | 'translate' | 'warmCache' | 'deliverScheduledPdfs';
         taskID: string;
         input?:
           | {
@@ -1269,7 +1270,7 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'translateTopics' | 'translate' | 'warmCache') | null;
+  taskSlug?: ('inline' | 'translateTopics' | 'translate' | 'warmCache' | 'deliverScheduledPdfs') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
@@ -2448,6 +2449,25 @@ export interface TaskWarmCache {
     success: boolean;
     warmedTenants: number;
     warmedResourceDirectories: number;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskDeliverScheduledPdfs".
+ */
+export interface TaskDeliverScheduledPdfs {
+  input: {
+    date?: string | null;
+    force?: boolean | null;
+  };
+  output: {
+    ran: boolean;
+    tenants: number;
+    due: number;
+    sent: number;
+    sentAsLink: number;
+    skipped: number;
+    failed: number;
   };
 }
 /**

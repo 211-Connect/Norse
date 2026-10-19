@@ -59,7 +59,8 @@
     "load_error": "Die Details der druckbaren Ressource konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
     "retry": "Wiederholen",
     "language_title": "Verzeichnissprache",
-    "booklet_layout": "Broschürenlayout"
+    "booklet_layout": "Broschürenlayout",
+    "booklet_layout_help": "Die Seiten sind so angeordnet, dass der Ausdruck gefaltet und zu einem Heft geheftet werden kann: Leere Innenseiten werden hinzugefügt und die Seitenzahl auf ein Vielfaches von 4 erhöht. Beidseitig drucken."
   },
   "print_footer_disclaimer": "{{brandName}} stellt diese Informationen als öffentlichen Service zur Verfügung und übernimmt keine Gewähr für deren Richtigkeit, Vollständigkeit oder Aktualität. {{brandName}} ist nicht verantwortlich für die Verwendung dieser Informationen und haftet nicht für etwaige Folgen ihrer Verwendung. Die Verteilung dieses Ausdrucks impliziert weder eine Billigung noch eine Zugehörigkeit zu {{brandName}}.",
   "print_page_counter": "Seite {{current}} von {{total}}",
