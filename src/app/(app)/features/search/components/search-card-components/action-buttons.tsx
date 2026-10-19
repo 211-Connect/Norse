@@ -16,6 +16,7 @@ import {
   trackEvent,
 } from '@/app/(app)/shared/lib/analytics';
 import { cn } from '@/app/(app)/shared/lib/utils';
+import { getPhoneHref } from '@/app/(app)/shared/utils/phone';
 import { searchCoordinatesAtom } from '@/app/(app)/shared/store/search';
 
 import { SearchCardComponentProps } from './types';
@@ -45,7 +46,7 @@ export function ActionButtonsComponent({ result }: SearchCardComponentProps) {
             variant="highlight"
           >
             <Link
-              href={`tel:${result.phone}`}
+              href={getPhoneHref(result.phone)}
               aria-label={`${t('call_to_action.call')} ${result.name}`}
               prefetch={false}
             >

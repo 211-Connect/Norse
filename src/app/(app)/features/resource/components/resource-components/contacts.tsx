@@ -10,6 +10,10 @@ import {
   AnalyticsTools,
   trackEvent,
 } from '@/app/(app)/shared/lib/analytics';
+import {
+  formatPhoneNumber,
+  getPhoneHref,
+} from '@/app/(app)/shared/utils/phone';
 import { Resource } from '@/types/resource';
 
 import { Datum } from '../datum';
@@ -73,10 +77,10 @@ export function ContactsComponent({ resource }: { resource: Resource }) {
                     icon={Phone}
                     description={
                       phone.description
-                        ? `${phone.number} (${phone.description})`
-                        : phone.number
+                        ? `${formatPhoneNumber(phone.number)} (${phone.description})`
+                        : formatPhoneNumber(phone.number)
                     }
-                    url={`tel:${phone.number}`}
+                    url={getPhoneHref(phone.number)}
                     onClick={() => {
                       const resourceId = resource.id;
                       trackEvent(
