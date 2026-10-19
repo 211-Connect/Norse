@@ -1,5 +1,3 @@
-import { createHash, timingSafeEqual } from 'node:crypto';
-
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import {
@@ -7,6 +5,7 @@ import {
   RenderPrintableDirectoryPdfOptions,
 } from '@/app/(app)/shared/services/scheduled-pdf-delivery/render-printable-directory-pdf';
 import { createLogger } from '@/lib/logger';
+import { secretsMatch } from '@/lib/secrets';
 
 /**
  * Renders a printable directory PDF on the server for scheduled PDF delivery
@@ -28,16 +27,12 @@ export const config = {
   },
 };
 
-const digest = (value: string) => createHash('sha256').update(value).digest();
-
 function isAuthorized(req: NextApiRequest): boolean {
-  const expected = process.env.INTERNAL_API_KEY;
   const received = req.headers['x-internal-api-key'];
 
   return (
-    Boolean(expected) &&
     typeof received === 'string' &&
-    timingSafeEqual(digest(received), digest(expected as string))
+    secretsMatch(received, process.env.INTERNAL_API_KEY)
   );
 }
 
