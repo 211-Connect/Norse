@@ -25,6 +25,10 @@ export const generateMetadata = async ({ params }): Promise<Metadata> => {
   let resource: Resource | null = null;
 
   if (id && isValidUUID(id)) {
+    // Runs in parallel with the page: gate the resource fetch on the same
+    // Arcjet decision, so a denied bot causes no Norse API call and its 403
+    // carries no resource title.
+    await protectPage(`/${locale}/search/${id}`);
     try {
       resource = await getResource(id, locale, appConfig.tenantId);
     } catch {}
