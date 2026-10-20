@@ -14,7 +14,8 @@ import { describe, test } from 'node:test';
 
 import {
   ARCJET_ALLOWED_BOTS,
-  ARCJET_ENFORCED_HOSTS,
+  ARCJET_ENFORCEMENT,
+  type ArcjetEnforcement,
   NO_CLIENT_IP_BYPASS_HOST,
   NO_USER_AGENT_FILTER,
   buildArcjetRules,
@@ -57,13 +58,17 @@ function makeRequest(headers: Record<string, string> = {}) {
   });
 }
 
-/** Hosts enforced in tests; the production set comes from env. */
-const ENFORCED: ReadonlySet<string> = new Set(['example.org']);
+/** Enforcement in tests; production reads it from env. */
+const enforcement = (enforced: string, unenforced = ''): ArcjetEnforcement => ({
+  enforced: parseHostList(enforced),
+  unenforced: parseHostList(unenforced),
+});
+const ENFORCED = enforcement('example.org');
 
 const createProtect = (
   client: Parameters<typeof createArcjetProtect>[0],
   options: Parameters<typeof createArcjetProtect>[1] = {},
-) => createArcjetProtect(client, { enforcedHosts: ENFORCED, ...options });
+) => createArcjetProtect(client, { enforcement: ENFORCED, ...options });
 
 const denyBots = (denied: string[]) =>
   new ArcjetDenyDecision({
@@ -287,9 +292,9 @@ describe('no-User-Agent filter rule (ISS-1744)', () => {
 describe('enforced hosts (ISS-1728, ISS-1737)', () => {
   const denyingClient = () => clientReturning(denyBots(['CURL']));
 
-  test('default enforcedHosts is the env-derived constant (by reference)', () => {
+  test('default enforcement is the env-derived constant (by reference)', () => {
     const protect = createArcjetProtect(denyingClient());
-    assert.equal(protect.enforcedHosts, ARCJET_ENFORCED_HOSTS);
+    assert.equal(protect.enforcement, ARCJET_ENFORCEMENT);
   });
 
   test('parseHostList: comma list, lower-cased, ports stripped, blanks dropped', () => {
@@ -297,6 +302,7 @@ describe('enforced hosts (ISS-1728, ISS-1737)', () => {
       [...parseHostList(' A.example.org , b.example.org:443,, ')],
       ['a.example.org', 'b.example.org'],
     );
+    assert.deepEqual([...parseHostList(' * ')], ['*']);
     assert.equal(parseHostList(undefined).size, 0);
     assert.equal(parseHostList('').size, 0);
   });
@@ -335,11 +341,50 @@ describe('enforced hosts (ISS-1728, ISS-1737)', () => {
 
   test('empty list (kill switch): nothing is enforced', async () => {
     const protect = createArcjetProtect(denyingClient(), {
-      enforcedHosts: parseHostList(''),
+      enforcement: enforcement(''),
     });
     const { log } = captureLog();
     const result = await protect(makeRequest(), PATH, log);
     assert.equal(result.conclusion, 'DENIED_NOT_ENFORCED');
+  });
+
+  const conclusionFor = async (config: ArcjetEnforcement, host: string) => {
+    const protect = createArcjetProtect(denyingClient(), {
+      enforcement: config,
+    });
+    const { log } = captureLog();
+    return (await protect(makeRequest({ host }), PATH, log)).conclusion;
+  };
+
+  test('`*` enforces every host', async () => {
+    assert.equal(
+      await conclusionFor(enforcement('*'), 'any.example.org'),
+      'DENY',
+    );
+  });
+
+  test('unenforced host wins over `*`', async () => {
+    const config = enforcement('*', 'mboa.c211.io');
+    assert.equal(
+      await conclusionFor(config, 'MBOA.C211.IO:443'),
+      'DENIED_NOT_ENFORCED',
+    );
+    assert.equal(await conclusionFor(config, 'example.org'), 'DENY');
+  });
+
+  test('unenforced host wins over the same host in the enforced list', async () => {
+    const config = enforcement('example.org', 'example.org');
+    assert.equal(
+      await conclusionFor(config, 'example.org'),
+      'DENIED_NOT_ENFORCED',
+    );
+  });
+
+  test('`*` in the unenforced list enforces nothing', async () => {
+    assert.equal(
+      await conclusionFor(enforcement('*', '*'), 'example.org'),
+      'DENIED_NOT_ENFORCED',
+    );
   });
 
   test('host match is case-insensitive and ignores a port', async () => {

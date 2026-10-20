@@ -73,26 +73,44 @@ function normalizeHost(host: string): string {
   return host.trim().toLowerCase().split(':')[0];
 }
 
+/** Host-list value that matches every host. */
+export const ALL_HOSTS = '*' as const;
+
+export interface ArcjetEnforcement {
+  /** Hosts where a DENY is enforced, or `*` for all. */
+  enforced: ReadonlySet<string>;
+  /** Hosts never enforced. Wins over `enforced`; `*` = nothing enforced. */
+  unenforced: ReadonlySet<string>;
+}
+
 /**
- * Hosts where a DENY is enforced (403). Everywhere else Arcjet still runs
- * and logs `arcjet_denied` with `enforced: false`, but the request is
- * served. Read from `ARCJET_ENFORCED_HOSTS` at startup, so enforcement can
- * be rolled out per tenant and rolled back with an env change, no code
- * change. Unset or empty = log-only everywhere.
+ * Where a DENY is enforced (403). Everywhere else Arcjet still runs and
+ * logs `arcjet_denied` with `enforced: false`, but the request is served.
+ * Read from env at startup, so rollout and rollback are env changes:
  *
- * MBOA (`mboa.c211.io`) must stay out of this list until MNIT confirms
+ * - `ARCJET_ENFORCED_HOSTS`: comma list, or `*` for every host. Unset or
+ *   empty = log-only everywhere (the kill switch).
+ * - `ARCJET_UNENFORCED_HOSTS`: comma list of hosts left out, even under
+ *   `*`. A host in both lists is not enforced.
+ *
+ * Rollout: one agreed host, then `*` with the exceptions listed. MBOA
+ * (`mboa.c211.io`) stays in `ARCJET_UNENFORCED_HOSTS` until MNIT confirms
  * which automated traffic is theirs (ISS-1737).
  */
-export const ARCJET_ENFORCED_HOSTS: ReadonlySet<string> = parseHostList(
-  process.env.ARCJET_ENFORCED_HOSTS,
-);
+export const ARCJET_ENFORCEMENT: ArcjetEnforcement = {
+  enforced: parseHostList(process.env.ARCJET_ENFORCED_HOSTS),
+  unenforced: parseHostList(process.env.ARCJET_UNENFORCED_HOSTS),
+};
 
 /** Matches on the `host` header only (lower-cased, port stripped). */
 export function isEnforcedHost(
   request: ArcjetRequestLike,
-  enforcedHosts: ReadonlySet<string> = ARCJET_ENFORCED_HOSTS,
+  enforcement: ArcjetEnforcement = ARCJET_ENFORCEMENT,
 ): boolean {
-  return enforcedHosts.has(hostOf(request));
+  const host = hostOf(request);
+  const listed = (hosts: ReadonlySet<string>) =>
+    hosts.has(ALL_HOSTS) || hosts.has(host);
+  return listed(enforcement.enforced) && !listed(enforcement.unenforced);
 }
 
 function hostOf(request: ArcjetRequestLike): string {
@@ -185,7 +203,7 @@ export type ArcjetProtectResult =
         'ALLOW' | 'CHALLENGE' | 'ERROR' | 'SKIPPED' | 'THREW' | 'NO_CLIENT_IP';
     }
   | {
-      /** Denied by Arcjet but the host is not in ARCJET_ENFORCED_HOSTS. */
+      /** Denied by Arcjet but the host is not enforced (see ARCJET_ENFORCEMENT). */
       denied: false;
       conclusion: 'DENIED_NOT_ENFORCED';
       deniedBots: string[];
@@ -388,8 +406,8 @@ function isMboaWithoutClientIp(request: ArcjetRequestLike): boolean {
 export interface ArcjetProtectOptions {
   /** Test seam for the per-minute header-log sampler. */
   sampleHeaderLog?: () => boolean;
-  /** Hosts where a DENY is enforced. */
-  enforcedHosts?: ReadonlySet<string>;
+  /** Where a DENY is enforced. */
+  enforcement?: ArcjetEnforcement;
 }
 
 export function createArcjetProtect(
@@ -399,7 +417,7 @@ export function createArcjetProtect(
   const sampleHeaderLog =
     options.sampleHeaderLog ??
     createMinuteSampler(FINGERPRINT_HEADER_LOG_MAX_PER_MINUTE);
-  const enforcedHosts = options.enforcedHosts ?? ARCJET_ENFORCED_HOSTS;
+  const enforcement = options.enforcement ?? ARCJET_ENFORCEMENT;
 
   function logFingerprintFailed(
     request: ArcjetRequestLike,
@@ -486,7 +504,7 @@ export function createArcjetProtect(
 
     if (decision.isDenied()) {
       const deniedBots = deniedBotsOf(decision);
-      const enforced = isEnforcedHost(request, enforcedHosts);
+      const enforced = isEnforcedHost(request, enforcement);
       log('warn', 'arcjet_denied', {
         ...requestContext(request, pathName),
         reason: decision.reason,
@@ -524,8 +542,8 @@ export function createArcjetProtect(
     };
   }
 
-  /** `enforcedHosts` is exposed so callers/tests can see what is in effect. */
-  return Object.assign(arcjetProtect, { enforcedHosts });
+  /** `enforcement` is exposed so callers/tests can see what is in effect. */
+  return Object.assign(arcjetProtect, { enforcement });
 }
 
 const arcjetKey = process.env.ARCJET_KEY;

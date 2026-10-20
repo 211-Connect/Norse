@@ -55,8 +55,12 @@ on a denial for an enforced host; `[locale]/(rest)/forbidden.tsx` renders
 the branded page with a `403`. The status is a real `403` only because the
 call runs before anything streams: do not move it below a `<Suspense>`
 boundary or into a page with `loading.tsx`. Enforcement is per host, from
-`ARCJET_ENFORCED_HOSTS` (comma list; unset = log-only everywhere), so
-rollout and rollback are env changes.
+two env vars: `ARCJET_ENFORCED_HOSTS` (comma list, or `*` for every host;
+unset = log-only everywhere) and `ARCJET_UNENFORCED_HOSTS` (hosts left out
+even under `*`; wins over the first list). Rollout and rollback are env
+changes: one agreed host first, then `*` with the exceptions listed. A new
+tenant is enforced from day one under `*`, so read `arcjet_denied` for its
+host in the first week, or start it in `ARCJET_UNENFORCED_HOSTS`.
 
 `shared/` holds code used by more than one feature:
 
@@ -210,8 +214,9 @@ tenant: it runs with `NEXT_PUBLIC_CUSTOM_BASE_PATH=/adresources` and
 instead of treating every MBOA visitor as one address. The proxy IP is not
 allow-listed as a bot; bots behind it are still detected (the allow list in
 `ARCJET_ALLOWED_BOTS` names the ones MBOA depends on, e.g.
-`SITEIMPROVE_CRAWLER`). `mboa.c211.io` must stay out of
-`ARCJET_ENFORCED_HOSTS` until MNIT confirms which automated traffic is theirs
+`SITEIMPROVE_CRAWLER`). `mboa.c211.io` stays in `ARCJET_UNENFORCED_HOSTS`
+(and out of `ARCJET_ENFORCED_HOSTS` on the MBOA app) until MNIT confirms
+which automated traffic is theirs
 (ISS-1737): Arcjet still runs and logs `arcjet_denied` with `enforced: false`,
 but the request is not blocked. On that host only, a request that arrives
 via the mn.gov proxy with only private hops in front of it (State network
