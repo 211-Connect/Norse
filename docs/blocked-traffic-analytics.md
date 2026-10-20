@@ -95,5 +95,6 @@ visitors; it is a constant, not proportional to blocked traffic.
   (`blocked_traffic_batch_rejected` / `_failed`) and dropped.
 - Queue cap `BLOCKED_TRAFFIC_MAX_QUEUED` (1000) per instance; beyond it new
   events are dropped with a counter.
-- Only `/search` and `/search/[id]` call `protectPage`, so only denials
-  there are counted.
+- Only the routes that call `protectPage` are counted (list in
+  [bot-protection.md](/docs/bot-protection.md)). A page and its
+  `generateMetadata` share one decision, so one request records one event.
