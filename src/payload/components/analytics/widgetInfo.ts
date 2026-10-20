@@ -81,7 +81,7 @@ export const WIDGET_INFO: Record<WidgetSlug, string> = {
   [WidgetSlug.PageViews]:
     'The number of pages viewed by people. Automated requests that were blocked before the page loaded are not counted here; see the Blocked Bots widget.',
   [WidgetSlug.BlockedBots]:
-    'The number of requests that were identified as automated traffic and blocked before the page loaded, in the selected period. Nefarious: scrapers, scripts, headless browsers, AI crawlers, botnets. SEO: marketing and search-optimization crawlers. Unknown: other automated clients. These requests are not included in Page Views or any other widget.',
+    'The number of requests that were identified as automated traffic and blocked before the page loaded, in the selected period. Nefarious: scrapers, scripts, headless browsers, AI crawlers, botnets. SEO: marketing and search-optimization crawlers. Unknown: other automated clients. These requests are not included in Page Views or any other widget. Detected, not blocked: automated traffic on a site where blocking is not yet switched on; it was identified the same way but the page was served, so it is shown separately and not counted as blocked.',
   [WidgetSlug.PageviewsChart]: 'The number of page views each day.',
   [WidgetSlug.Map]: 'The geographic origin of user traffic.',
   [WidgetSlug.ResourceTitles]:

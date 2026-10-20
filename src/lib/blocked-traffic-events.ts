@@ -40,6 +40,21 @@ export interface BlockedTrafficEventData {
   path: string;
 }
 
+/**
+ * The Blocked Bots widget's bucket: the classification for a request that
+ * was actually blocked, `not_enforced` for an observe-only denial (the
+ * request was served). Derived in `buildBlockedTrafficEvent` so it cannot
+ * disagree with `enforced`.
+ */
+export type BlockedTrafficSegment =
+  BlockedTrafficClassification | 'not_enforced';
+
+export function blockedTrafficSegmentOf(
+  data: Pick<BlockedTrafficEventData, 'classification' | 'enforced'>,
+): BlockedTrafficSegment {
+  return data.enforced ? data.classification : 'not_enforced';
+}
+
 /** Where (and as whom) a batch is sent. */
 export interface BlockedTrafficTarget {
   tenantId: string;
@@ -60,6 +75,37 @@ export interface BlockedTrafficFallbackEnv {
   ARCJET_BLOCKED_EVENTS_FALLBACK_WEBSITE_ID?: string;
   ARCJET_BLOCKED_EVENTS_FALLBACK_TENANT_ID?: string;
   ARCJET_BLOCKED_EVENTS_FALLBACK_ANALYTICS_API_KEY?: string;
+}
+
+export const BLOCKED_TRAFFIC_FALLBACK_ENV_NAMES = [
+  'ARCJET_BLOCKED_EVENTS_FALLBACK_WEBSITE_ID',
+  'ARCJET_BLOCKED_EVENTS_FALLBACK_TENANT_ID',
+  'ARCJET_BLOCKED_EVENTS_FALLBACK_ANALYTICS_API_KEY',
+] as const;
+
+/**
+ * Deploy requirement: a production server with Arcjet on (`ARCJET_KEY`)
+ * must have all three fallback vars, so denials for unknown hosts are
+ * counted instead of dropped. Called from `register()` in
+ * `src/instrumentation.ts`; a throw there stops `next start`, so a deploy
+ * missing them fails and the previous version keeps serving. The message
+ * names the missing vars, never a value.
+ */
+export function assertBlockedTrafficFallbackEnv(
+  env: BlockedTrafficFallbackEnv & {
+    NODE_ENV?: string;
+    ARCJET_KEY?: string;
+  },
+): void {
+  if (env.NODE_ENV !== 'production' || !nonEmpty(env.ARCJET_KEY)) return;
+  const missing = BLOCKED_TRAFFIC_FALLBACK_ENV_NAMES.filter(
+    (name) => !nonEmpty(env[name]),
+  );
+  if (missing.length > 0) {
+    throw new Error(
+      `Blocked-traffic analytics (ISS-2366) requires ${missing.join(', ')} when ARCJET_KEY is set in production. See docs/blocked-traffic-analytics.md.`,
+    );
+  }
 }
 
 export type BlockedTrafficDropReason =
@@ -142,6 +188,7 @@ export function buildBlockedTrafficEvent(
         reason: data.reason,
         source: data.source,
         enforced: data.enforced,
+        segment: blockedTrafficSegmentOf(data),
         host: data.host,
         path: data.path,
       },

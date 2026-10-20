@@ -1,7 +1,8 @@
 # Blocked traffic analytics (ISS-2366)
 
-Requests Arcjet denies in `src/proxy.ts` answer 403 before any page loads,
-so the client-side Umami script never runs for them and the Payload
+Requests Arcjet denies in `protectPage` (`src/lib/arcjet-page.ts`) answer
+403 with `forbidden.tsx`, which renders no `PageWrapper`, so the client-side
+Umami script never runs for them and the Payload
 analytics dashboard could not show them. This feature counts them
 server-side as a `bot_blocked` Umami event and shows the count, by
 classification, in a **Blocked Bots** dashboard widget. Blocked requests
@@ -12,25 +13,32 @@ are **not** in Page Views or any other widget.
 - Per tenant: Payload **Tenants → Analytics Settings** — `Main website`
   (`analytics.umamiWebsiteId`) and `API Key` (`analytics.apiKey`). Both must
   be set for the tenant's blocked traffic to reach its own Umami website.
-- Platform fallback (env, all three or none):
+- Platform fallback (env, all three):
   `ARCJET_BLOCKED_EVENTS_FALLBACK_WEBSITE_ID`,
   `ARCJET_BLOCKED_EVENTS_FALLBACK_TENANT_ID`,
   `ARCJET_BLOCKED_EVENTS_FALLBACK_ANALYTICS_API_KEY`. Used when the host
   matches no tenant or the tenant lacks a website id / analytics key.
-  Unset: those events are dropped and counted in
-  `blocked_traffic_event_dropped` logs (`reason`, `droppedTotal`).
+  **Deploy requirement:** in production with `ARCJET_KEY` set, all three
+  must be set on every app (main and MBOA). `register()` in
+  `src/instrumentation.ts` calls `assertBlockedTrafficFallbackEnv`, which
+  throws naming the missing vars (never their values); the server does not
+  start, so the deploy fails and the previous version keeps serving. Set
+  them in the app's environment **before** deploying this change. Outside
+  production they are optional; unset, those events are dropped and counted
+  in `blocked_traffic_event_dropped` logs (`reason`, `droppedTotal`).
 - `API_URL` (Norse API). Unset: the sender is disabled with one
-  `blocked_traffic_sender_disabled` warn per Edge instance.
+  `blocked_traffic_sender_disabled` warn per server instance.
 
 ## Architecture
 
 ```
-proxy (Edge)                          Norse-API                 Umami
+protectPage (page, Node)              Norse-API                 Umami
 ──────────────────────────────────    ─────────────────────     ──────────
 arcjetProtect → DENY / DENIED_NOT_ENFORCED
-  │ 403 goes out immediately (DENY)
-  └ waitUntil(recordBlockedTraffic)
-      ├ loadTenantConfig(host)   ← cached per host (10 min)
+  ├ after(recordBlockedTraffic)   registered before forbidden()
+  │ forbidden() → 403 (DENY only)
+  └ recordBlockedTraffic, after the response
+      ├ findTenantByHost(host)   ← cached per host
       ├ resolveBlockedTrafficTarget → tenant | fallback | drop
       ├ classifyBlockedTraffic  (src/lib/arcjet-classification.ts)
       └ sender.enqueue(target, SendEventDto)
@@ -46,9 +54,8 @@ Files:
 | --- | --- |
 | `src/lib/arcjet-classification.ts` | `classifyBlockedTraffic` — the seo / nefarious / unknown rules (table in [architecture.md](/docs/architecture.md#blocked-traffic-analytics-iss-2366)) over `@arcjet/protocol`'s own category map. |
 | `src/lib/blocked-traffic-events.ts` | `buildBlockedTrafficEvent` (the `SendEventDto` shape), `resolveBlockedTrafficTarget` (tenant → fallback → drop), `createBlockedTrafficSender` (per-instance batcher; never throws). |
-| `src/proxy.ts` | `recordBlockedTraffic`, handed to `NextFetchEvent.waitUntil` so it never delays the response. `loadTenantConfig` is the per-host cached fetch the main flow also uses. |
-| `src/app/(payload)/api/getTenantBasicConfig/route.ts` | `TenantBasicConfigResponse.tenantId` + `analytics.{umamiWebsiteId, apiKey}` so the Edge proxy can attribute without reading app config. |
-| `src/payload/components/analytics/widgets/BlockedBotsWidget.tsx` | The dashboard widget (`WidgetSlug.BlockedBots`), reading `event-values` for `bot_blocked` / `classification`. |
+| `src/lib/arcjet-page.ts` | `recordBlockedTraffic`, scheduled with `after()` so it never delays the response, and still runs when `forbidden()` interrupts the render. Attributes with `findTenantByHost`. |
+| `src/payload/components/analytics/widgets/BlockedBotsWidget.tsx` | The dashboard widget (`WidgetSlug.BlockedBots`), reading `event-values` for `bot_blocked` / `segment`. The headline counts only blocked requests; observe-only denials are a separate **Detected, not blocked** slice, because those requests were served. |
 
 ### The event
 
@@ -60,8 +67,9 @@ Name `bot_blocked`; `data`:
 | `bot` | first denied Arcjet bot label, or `''` |
 | `category` | the Arcjet category that decided the classification, or `''` |
 | `reason` | `bot` \| `filter` \| other `decision.reason.type`, lower-cased |
-| `source` | `proxy` (reserved: `fingerprint-cache`, `filter-rule`) |
-| `enforced` | `true` for a DENY; `false` for an observe-only host (`ARCJET_ENFORCEMENT_EXCLUDED_HOSTS`), so MBOA's denials are counted too |
+| `source` | `page` (reserved: `fingerprint-cache`, `filter-rule`) |
+| `enforced` | `true` for a DENY; `false` for an observe-only host (not in `ARCJET_ENFORCED_HOSTS`, or in `ARCJET_UNENFORCED_HOSTS`), so MBOA's denials are counted too |
+| `segment` | the widget's bucket: `classification` when `enforced`, else `not_enforced`. Derived in `buildBlockedTrafficEvent`, never passed in, so it cannot disagree with `enforced` |
 | `host` | request host (port stripped) |
 | `path` | request pathname (no query string) |
 
@@ -79,7 +87,7 @@ visitors; it is a constant, not proportional to blocked traffic.
 
 ### Guarantees and limits
 
-- Never delays or fails the 403: all work is behind `waitUntil` and every
+- Never delays or fails the 403: all work is behind `after()` and every
   path catches.
 - Per-tenant authentication is the reason the batcher groups by tenant; a
   batch is one tenant's credentials and only that tenant's website id.
@@ -87,5 +95,5 @@ visitors; it is a constant, not proportional to blocked traffic.
   (`blocked_traffic_batch_rejected` / `_failed`) and dropped.
 - Queue cap `BLOCKED_TRAFFIC_MAX_QUEUED` (1000) per instance; beyond it new
   events are dropped with a counter.
-- On an observe-only host the deny path and the main flow may both fetch
-  the tenant config once on a cold cache; afterwards both hit the cache.
+- Only `/search` and `/search/[id]` call `protectPage`, so only denials
+  there are counted.

@@ -3,7 +3,7 @@ import type { PieChartWidgetSegment } from '../PieChartWidget';
 
 /** Event + property the Blocked Bots widget reads (ISS-2366). */
 export const BLOCKED_BOTS_EVENT = 'bot_blocked';
-export const BLOCKED_BOTS_PROPERTY = 'classification';
+export const BLOCKED_BOTS_PROPERTY = 'segment';
 
 export const BLOCKED_BOTS_CLASSIFICATIONS: {
   key: string;
@@ -16,12 +16,24 @@ export const BLOCKED_BOTS_CLASSIFICATIONS: {
 ];
 const OTHER_COLOR = '#a78bfa';
 
+/** Observe-only denials (`enforced: false`): detected, but the request was served. */
+export const NOT_ENFORCED_SEGMENT = {
+  key: 'not_enforced',
+  label: 'Detected, not blocked',
+  color: '#fbbf24',
+};
+
 export function buildBlockedBotsSegments(values: EventValuesResponse[]): {
+  /** Every `bot_blocked` event in the period, blocked or not. */
   total: number;
+  /** Requests that actually got the 403. */
+  blocked: number;
+  /** Observe-only denials: detected, but served. */
+  notEnforced: number;
   segments: PieChartWidgetSegment[];
 } {
   const total = values.reduce((sum, entry) => sum + entry.total, 0);
-  if (total === 0) return { total, segments: [] };
+  if (total === 0) return { total, blocked: 0, notEnforced: 0, segments: [] };
 
   const counts = new Map<string, number>();
   for (const entry of values) {
@@ -43,6 +55,16 @@ export function buildBlockedBotsSegments(values: EventValuesResponse[]): {
     },
   );
 
+  const notEnforced = counts.get(NOT_ENFORCED_SEGMENT.key) ?? 0;
+  counts.delete(NOT_ENFORCED_SEGMENT.key);
+  if (notEnforced > 0) {
+    segments.push({
+      ...NOT_ENFORCED_SEGMENT,
+      value: Math.round((notEnforced / total) * 100),
+      rawValue: notEnforced,
+    });
+  }
+
   const otherCount = Array.from(counts.values()).reduce((a, b) => a + b, 0);
   if (otherCount > 0) {
     segments.push({
@@ -54,5 +76,5 @@ export function buildBlockedBotsSegments(values: EventValuesResponse[]): {
     });
   }
 
-  return { total, segments };
+  return { total, blocked: total - notEnforced, notEnforced, segments };
 }
