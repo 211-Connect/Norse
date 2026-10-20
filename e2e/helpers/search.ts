@@ -55,11 +55,14 @@ export async function performSearch(page: Page, params: SearchParams) {
       timeout: AUTOCOMPLETE_TIMEOUT_MS,
     });
 
+    // The listbox becomes visible as soon as the request starts, showing only
+    // a loading row (see `isListVisible` in the autocomplete), so a one-shot
+    // `count()` here can read 0 mid-fetch. Wait for a resolved option.
     const options = listbox.getByTestId('autocomplete-option');
-    const optionCount = await options.count();
-    if (optionCount === 0) {
-      throw new Error('No taxonomy options were returned from autocomplete');
-    }
+    await expect(
+      options.first(),
+      'No taxonomy options were returned from autocomplete',
+    ).toBeVisible({ timeout: AUTOCOMPLETE_TIMEOUT_MS });
 
     const taxonomyPrefix = params.query.split('.')[0];
     const exactCodeOption = options.filter({ hasText: params.query });
