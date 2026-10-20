@@ -1,3 +1,4 @@
+import type { TranslationMeter } from '@/app/(app)/shared/services/translation-usage/translation-meter';
 import { batchTranslate } from '@/payload/services/translationService';
 import {
   PrintableDirectoryLocalizedTextResponseDto,
@@ -30,11 +31,13 @@ type DirectorySection = PrintableDirectoryResponseDto['sections'][number];
  * - When the primary-language text was cleared, machine translations of it
  *   are removed rather than left stale.
  * - Returns `null` when nothing would change.
+ * - `meter` records the characters sent for docs/translation-usage.md.
  */
 export async function autoTranslatePrintableDirectoryText(
   current: LocalizedText,
   primaryLanguage: string,
   targetLocales: string[],
+  meter: TranslationMeter,
 ): Promise<PrintableDirectoryLocalizedValuesDto | null> {
   const existingValues = current?.values ?? {};
   const existingAutoTranslatedLocales = new Set(
@@ -76,6 +79,7 @@ export async function autoTranslatePrintableDirectoryText(
     })),
     primaryLanguage,
   );
+  meter.record(translations);
 
   const nextValues: Record<string, string> = { ...existingValues };
   for (const result of translations) {
@@ -109,6 +113,7 @@ export async function autoTranslatePrintableDirectoryText(
 export async function getDirectoryAutoTranslationUpdate(
   directory: PrintableDirectoryResponseDto,
   input: UpdatePrintableDirectoryDto,
+  meter: TranslationMeter,
 ): Promise<UpdatePrintableDirectoryDto | null> {
   const translate = (text: LocalizedText, touched: unknown) =>
     touched
@@ -116,6 +121,7 @@ export async function getDirectoryAutoTranslationUpdate(
           text,
           directory.primaryLanguage,
           directory.locales,
+          meter,
         )
       : Promise.resolve(null);
 
@@ -163,17 +169,20 @@ export async function getSectionAutoTranslationUpdate(
   section: DirectorySection,
   primaryLanguage: string,
   targetLocales: string[],
+  meter: TranslationMeter,
 ): Promise<UpdatePrintableDirectorySectionDto | null> {
   const [heading, description] = await Promise.all([
     autoTranslatePrintableDirectoryText(
       section.headingLocalized,
       primaryLanguage,
       targetLocales,
+      meter,
     ),
     autoTranslatePrintableDirectoryText(
       section.descriptionLocalized,
       primaryLanguage,
       targetLocales,
+      meter,
     ),
   ]);
 

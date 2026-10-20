@@ -1,6 +1,7 @@
 import { UpdatePrintableDirectoryDto } from '@/lib/api/generated/data-contracts';
 import { AppConfig, PrintableDirectoryCapability } from '@/types/appConfig';
 
+import type { TranslationUsageContext } from '../services/translation-usage/translation-usage-service';
 import { getAppConfigWithoutHost } from './appConfig';
 import {
   canAccessPrintableDirectories,
@@ -16,6 +17,8 @@ import { getSession } from './getServerSession';
 
 export type PrintableDirectoryServerAccess = {
   appConfig: AppConfig;
+  /** The signed-in user's email; basic access requires one. */
+  userEmail: string;
   hasCapability: (capability: PrintableDirectoryCapability) => boolean;
 };
 
@@ -36,6 +39,7 @@ export async function getPrintableDirectoryServerAccess(
   const userEmail = session?.user?.email;
 
   if (
+    !userEmail ||
     tenantId !== appConfig.tenantId ||
     !canAccessPrintableDirectories(userEmail, appConfig)
   ) {
@@ -49,6 +53,7 @@ export async function getPrintableDirectoryServerAccess(
 
   return {
     appConfig,
+    userEmail,
     hasCapability: (capability) => capabilities.has(capability),
   };
 }
@@ -93,4 +98,15 @@ export function getRequiredUpdateCapabilities(
   }
 
   return [...required];
+}
+
+/** Who to bill machine translation to; see docs/translation-usage.md. */
+export function getTranslationUsageContext(
+  access: PrintableDirectoryServerAccess,
+): TranslationUsageContext {
+  return {
+    tenantId: access.appConfig.tenantId,
+    tenantName: access.appConfig.brand.name,
+    userEmail: access.userEmail,
+  };
 }

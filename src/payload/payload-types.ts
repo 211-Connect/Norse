@@ -73,6 +73,8 @@ export interface Config {
     'resource-directories': ResourceDirectory;
     'orchestration-config': OrchestrationConfig;
     'hybrid-search-config': HybridSearchConfig;
+    'translation-usage': TranslationUsage;
+    'translation-usage-alerts': TranslationUsageAlert;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
@@ -87,6 +89,8 @@ export interface Config {
     'resource-directories': ResourceDirectoriesSelect<false> | ResourceDirectoriesSelect<true>;
     'orchestration-config': OrchestrationConfigSelect<false> | OrchestrationConfigSelect<true>;
     'hybrid-search-config': HybridSearchConfigSelect<false> | HybridSearchConfigSelect<true>;
+    'translation-usage': TranslationUsageSelect<false> | TranslationUsageSelect<true>;
+    'translation-usage-alerts': TranslationUsageAlertsSelect<false> | TranslationUsageAlertsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -1074,6 +1078,17 @@ export interface ResourceDirectory {
           id?: string | null;
         }[]
       | null;
+    /**
+     * Monthly machine-translation limits, in estimated USD at list price. Leave empty to use the global default (shown as placeholder). When a limit is reached, saves still succeed but are not machine-translated until next month (UTC).
+     */
+    translation?: {
+      /**
+       * Emails all super-admins and support once per month when the tenant total reaches this.
+       */
+      alertThresholdUsd?: number | null;
+      userQuotaUsd?: number | null;
+      tenantCapUsd?: number | null;
+    };
   };
   updatedAt: string;
   createdAt: string;
@@ -1165,6 +1180,60 @@ export interface HybridSearchConfig {
    * Number of candidates considered during taxonomy kNN search. Leave empty to use the API default (500).
    */
   taxonomyNumCandidates?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "translation-usage".
+ */
+export interface TranslationUsage {
+  id: number;
+  tenantId: string;
+  /**
+   * YYYY-MM (UTC)
+   */
+  month: string;
+  userEmail: string;
+  /**
+   * Characters sent to the translation provider (cache misses × target languages).
+   */
+  billedCharacters: number;
+  /**
+   * Billed characters plus cache hits.
+   */
+  requestedCharacters: number;
+  /**
+   * Saves that machine-translated something.
+   */
+  translationRuns: number;
+  largestFieldCharacters: number;
+  locales?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  lastUsedAt: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "translation-usage-alerts".
+ */
+export interface TranslationUsageAlert {
+  id: number;
+  tenantId: string;
+  month: string;
+  /**
+   * Tenant total when the alert was sent.
+   */
+  billedCharacters: number;
+  thresholdUsd: number;
   updatedAt: string;
   createdAt: string;
 }
@@ -1316,6 +1385,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'hybrid-search-config';
         value: string | HybridSearchConfig;
+      } | null)
+    | ({
+        relationTo: 'translation-usage';
+        value: number | TranslationUsage;
+      } | null)
+    | ({
+        relationTo: 'translation-usage-alerts';
+        value: number | TranslationUsageAlert;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1927,6 +2004,13 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
               capabilities?: T;
               id?: T;
             };
+        translation?:
+          | T
+          | {
+              alertThresholdUsd?: T;
+              userQuotaUsd?: T;
+              tenantCapUsd?: T;
+            };
       };
   updatedAt?: T;
   createdAt?: T;
@@ -1979,6 +2063,35 @@ export interface HybridSearchConfigSelect<T extends boolean = true> {
   bm25TaxonomyUseRefBoost?: T;
   taxonomyK?: T;
   taxonomyNumCandidates?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "translation-usage_select".
+ */
+export interface TranslationUsageSelect<T extends boolean = true> {
+  tenantId?: T;
+  month?: T;
+  userEmail?: T;
+  billedCharacters?: T;
+  requestedCharacters?: T;
+  translationRuns?: T;
+  largestFieldCharacters?: T;
+  locales?: T;
+  lastUsedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "translation-usage-alerts_select".
+ */
+export interface TranslationUsageAlertsSelect<T extends boolean = true> {
+  tenantId?: T;
+  month?: T;
+  billedCharacters?: T;
+  thresholdUsd?: T;
   updatedAt?: T;
   createdAt?: T;
 }

@@ -14,6 +14,10 @@ import { getLanguageName } from '@/app/(app)/shared/lib/language-names';
 import { PrintableDirectoryLocalizedValuesDto } from '@/lib/api/generated/data-contracts';
 
 import { orderLocales } from '../../utils/orderLocales';
+import {
+  DIRECTORY_LONG_TEXT_MAX_LENGTH,
+  DIRECTORY_SHORT_TEXT_MAX_LENGTH,
+} from '../../utils/constants';
 
 type LocalizedFieldTableProps = {
   label: string;
@@ -24,6 +28,7 @@ type LocalizedFieldTableProps = {
   /** The directory's languages (`directory.locales`): one row each. The
    *  list itself is edited in the general info dialog. */
   locales: string[];
+  /** Multiline fields (descriptions, header/footer text) allow longer text. */
   multiline?: boolean;
 };
 
@@ -74,6 +79,9 @@ export function LocalizedFieldTable({
   const getFieldProps = (locale: string) => ({
     'aria-label': `${label} (${languageName(locale)})`,
     value: values[locale] ?? '',
+    maxLength: multiline
+      ? DIRECTORY_LONG_TEXT_MAX_LENGTH
+      : DIRECTORY_SHORT_TEXT_MAX_LENGTH,
   });
 
   return (
