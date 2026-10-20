@@ -102,8 +102,11 @@ jobs:
           mv ${{ runner.temp }}/.buildx-cache-new ${{ runner.temp }}/.buildx-cache
 
   # Note: the release has already shipped by the time these run. Waiting for
-  # deploy + running e2e here is alert-only (Slack) — nothing downstream
-  # depends on these jobs, so a failure never blocks or rolls back anything.
+  # deploy here is alert-only (Slack) — nothing downstream depends on these
+  # jobs, so a failure never blocks or rolls back anything. E2E does not run
+  # against production: production hosts are enforced by Arcjet bot
+  # protection, which is expected to deny headless Chromium (see docs/bot-protection.md).
+  # E2E runs against the dev hosts, which stay unenforced.
   wait-for-deploy-multitenant:
     needs: build-and-push
     runs-on: ubuntu-latest
@@ -182,13 +185,6 @@ jobs:
           echo "::error::Timed out waiting for new deployment after $((MAX_ATTEMPTS * SLEEP_SECONDS)) seconds"
           exit 1
 
-  e2e-tests:
-    needs: [wait-for-deploy-multitenant, wait-for-deploy-mboa]
-    uses: ./.github/workflows/e2e-tests.yaml
-    with:
-      environment: production
-    secrets: inherit
-
   notify-build-failure:
     if: always() && needs.build-and-push.result == 'failure'
     needs: [build-and-push]
@@ -232,54 +228,6 @@ jobs:
                   "text": {
                     "type": "mrkdwn",
                     "text": ":warning: *Production Deploy Failed to Activate*\nThe image was pushed, but the new deployment did not become active within the expected timeframe (multi-tenant-prod and/or mboa-prod). This is alert-only — nothing was rolled back.\n*Tag:* `${{ github.ref_name }}`\n*Author:* ${{ github.actor }}"
-                  }
-                }
-              ]
-            }
-
-  notify-e2e-failure:
-    if: always() && needs.e2e-tests.result == 'failure'
-    needs: [e2e-tests]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Send Slack notification - Production E2E Failed
-        uses: slackapi/slack-github-action@v2.1.0
-        with:
-          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
-          webhook-type: incoming-webhook
-          payload: |
-            {
-              "text": ":warning: *Production E2E Failed*",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": ":warning: *Production E2E Tests Failed*\nOne or more tenant/environment e2e suites failed against production after this release. This is alert-only — the release already shipped and nothing was blocked.\n*Tag:* `${{ github.ref_name }}`\n*Author:* ${{ github.actor }}"
-                  }
-                }
-              ]
-            }
-
-  notify-e2e-success:
-    if: needs.e2e-tests.result == 'success'
-    needs: [e2e-tests]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Send Slack notification - Production E2E Passed
-        uses: slackapi/slack-github-action@v2.1.0
-        with:
-          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
-          webhook-type: incoming-webhook
-          payload: |
-            {
-              "text": ":white_check_mark: *Production E2E Passed*",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": ":white_check_mark: *Production E2E Tests Passed*\nAll tenant e2e suites passed against production after this release.\n*Tag:* `${{ github.ref_name }}`\n*Author:* ${{ github.actor }}"
                   }
                 }
               ]
