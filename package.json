@@ -61,8 +61,8 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@arcjet/ip": "1.13.0",
-    "@arcjet/next": "1.13.0",
+    "@arcjet/ip": "1.14.1",
+    "@arcjet/next": "1.14.1",
     "@azure-rest/ai-translation-text": "^1.0.1",
     "@floating-ui/react": "^0.27.18",
     "@google-cloud/translate": "^10.1.1",
