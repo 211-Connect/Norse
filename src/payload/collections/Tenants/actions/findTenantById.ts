@@ -1,5 +1,9 @@
-'use server';
-
+/**
+ * Server-only: returns the full tenant document, credentials included. Not
+ * a `'use server'` module on purpose: anything exported from one of those
+ * becomes a publicly callable action. Client components use
+ * `findTenantNameById` instead.
+ */
 import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
 import { Tenant } from '@/payload/payload-types';
 import { withCache } from '@/utilities/withCache';
