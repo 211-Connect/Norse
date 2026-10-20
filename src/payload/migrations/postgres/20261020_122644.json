@@ -4240,6 +4240,319 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.pd_group_emails": {
+      "name": "pd_group_emails",
+      "schema": "",
+      "columns": {
+        "_order": {
+          "name": "_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "_parent_id": {
+          "name": "_parent_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "pd_group_emails_order_idx": {
+          "name": "pd_group_emails_order_idx",
+          "columns": [
+            {
+              "expression": "_order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "pd_group_emails_parent_id_idx": {
+          "name": "pd_group_emails_parent_id_idx",
+          "columns": [
+            {
+              "expression": "_parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "pd_group_emails_parent_id_fk": {
+          "name": "pd_group_emails_parent_id_fk",
+          "tableFrom": "pd_group_emails",
+          "tableTo": "pd_user_groups",
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.pd_group_domains": {
+      "name": "pd_group_domains",
+      "schema": "",
+      "columns": {
+        "_order": {
+          "name": "_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "_parent_id": {
+          "name": "_parent_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "domain": {
+          "name": "domain",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "pd_group_domains_order_idx": {
+          "name": "pd_group_domains_order_idx",
+          "columns": [
+            {
+              "expression": "_order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "pd_group_domains_parent_id_idx": {
+          "name": "pd_group_domains_parent_id_idx",
+          "columns": [
+            {
+              "expression": "_parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "pd_group_domains_parent_id_fk": {
+          "name": "pd_group_domains_parent_id_fk",
+          "tableFrom": "pd_group_domains",
+          "tableTo": "pd_user_groups",
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.pd_user_groups_capabilities": {
+      "name": "pd_user_groups_capabilities",
+      "schema": "",
+      "columns": {
+        "order": {
+          "name": "order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "value": {
+          "name": "value",
+          "type": "enum_pd_user_groups_capabilities",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "pd_user_groups_capabilities_order_idx": {
+          "name": "pd_user_groups_capabilities_order_idx",
+          "columns": [
+            {
+              "expression": "order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "pd_user_groups_capabilities_parent_idx": {
+          "name": "pd_user_groups_capabilities_parent_idx",
+          "columns": [
+            {
+              "expression": "parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "pd_user_groups_capabilities_parent_fk": {
+          "name": "pd_user_groups_capabilities_parent_fk",
+          "tableFrom": "pd_user_groups_capabilities",
+          "tableTo": "pd_user_groups",
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.pd_user_groups": {
+      "name": "pd_user_groups",
+      "schema": "",
+      "columns": {
+        "_order": {
+          "name": "_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "_parent_id": {
+          "name": "_parent_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "pd_user_groups_order_idx": {
+          "name": "pd_user_groups_order_idx",
+          "columns": [
+            {
+              "expression": "_order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "pd_user_groups_parent_id_idx": {
+          "name": "pd_user_groups_parent_id_idx",
+          "columns": [
+            {
+              "expression": "_parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "pd_user_groups_parent_id_fk": {
+          "name": "pd_user_groups_parent_id_fk",
+          "tableFrom": "pd_user_groups",
+          "tableTo": "rds",
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.rds": {
       "name": "rds",
       "schema": "",
@@ -4643,19 +4956,31 @@
           "notNull": false,
           "default": false
         },
-        "feature_flags_max_resources_configurable": {
-          "name": "feature_flags_max_resources_configurable",
-          "type": "boolean",
+        "printable_directories_access_mode": {
+          "name": "printable_directories_access_mode",
+          "type": "pd_access_mode",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": false,
-          "default": true
+          "default": "'allowlist'"
         },
-        "feature_flags_default_max_resources": {
-          "name": "feature_flags_default_max_resources",
+        "printable_directories_translation_alert_threshold_usd": {
+          "name": "printable_directories_translation_alert_threshold_usd",
           "type": "numeric",
           "primaryKey": false,
-          "notNull": false,
-          "default": 100
+          "notNull": false
+        },
+        "printable_directories_translation_user_quota_usd": {
+          "name": "printable_directories_translation_user_quota_usd",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "printable_directories_translation_tenant_cap_usd": {
+          "name": "printable_directories_translation_tenant_cap_usd",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
         },
         "updated_at": {
           "name": "updated_at",
@@ -8175,6 +8500,337 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public._pd_group_emails_v": {
+      "name": "_pd_group_emails_v",
+      "schema": "",
+      "columns": {
+        "_order": {
+          "name": "_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "_parent_id": {
+          "name": "_parent_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "_uuid": {
+          "name": "_uuid",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "_pd_group_emails_v_order_idx": {
+          "name": "_pd_group_emails_v_order_idx",
+          "columns": [
+            {
+              "expression": "_order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_pd_group_emails_v_parent_id_idx": {
+          "name": "_pd_group_emails_v_parent_id_idx",
+          "columns": [
+            {
+              "expression": "_parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "_pd_group_emails_v_parent_id_fk": {
+          "name": "_pd_group_emails_v_parent_id_fk",
+          "tableFrom": "_pd_group_emails_v",
+          "tableTo": "_pd_user_groups_v",
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public._pd_group_domains_v": {
+      "name": "_pd_group_domains_v",
+      "schema": "",
+      "columns": {
+        "_order": {
+          "name": "_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "_parent_id": {
+          "name": "_parent_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "domain": {
+          "name": "domain",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "_uuid": {
+          "name": "_uuid",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "_pd_group_domains_v_order_idx": {
+          "name": "_pd_group_domains_v_order_idx",
+          "columns": [
+            {
+              "expression": "_order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_pd_group_domains_v_parent_id_idx": {
+          "name": "_pd_group_domains_v_parent_id_idx",
+          "columns": [
+            {
+              "expression": "_parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "_pd_group_domains_v_parent_id_fk": {
+          "name": "_pd_group_domains_v_parent_id_fk",
+          "tableFrom": "_pd_group_domains_v",
+          "tableTo": "_pd_user_groups_v",
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public._pd_user_groups_v_capabilities": {
+      "name": "_pd_user_groups_v_capabilities",
+      "schema": "",
+      "columns": {
+        "order": {
+          "name": "order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "value": {
+          "name": "value",
+          "type": "enum__pd_user_groups_v_capabilities",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "_pd_user_groups_v_capabilities_order_idx": {
+          "name": "_pd_user_groups_v_capabilities_order_idx",
+          "columns": [
+            {
+              "expression": "order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_pd_user_groups_v_capabilities_parent_idx": {
+          "name": "_pd_user_groups_v_capabilities_parent_idx",
+          "columns": [
+            {
+              "expression": "parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "_pd_user_groups_v_capabilities_parent_fk": {
+          "name": "_pd_user_groups_v_capabilities_parent_fk",
+          "tableFrom": "_pd_user_groups_v_capabilities",
+          "tableTo": "_pd_user_groups_v",
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public._pd_user_groups_v": {
+      "name": "_pd_user_groups_v",
+      "schema": "",
+      "columns": {
+        "_order": {
+          "name": "_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "_parent_id": {
+          "name": "_parent_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "_uuid": {
+          "name": "_uuid",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "_pd_user_groups_v_order_idx": {
+          "name": "_pd_user_groups_v_order_idx",
+          "columns": [
+            {
+              "expression": "_order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_pd_user_groups_v_parent_id_idx": {
+          "name": "_pd_user_groups_v_parent_id_idx",
+          "columns": [
+            {
+              "expression": "_parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "_pd_user_groups_v_parent_id_fk": {
+          "name": "_pd_user_groups_v_parent_id_fk",
+          "tableFrom": "_pd_user_groups_v",
+          "tableTo": "_rds_v",
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public._rds_v": {
       "name": "_rds_v",
       "schema": "",
@@ -8584,19 +9240,31 @@
           "notNull": false,
           "default": false
         },
-        "version_feature_flags_max_resources_configurable": {
-          "name": "version_feature_flags_max_resources_configurable",
-          "type": "boolean",
+        "version_printable_directories_access_mode": {
+          "name": "version_printable_directories_access_mode",
+          "type": "pd_access_mode",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": false,
-          "default": true
+          "default": "'allowlist'"
         },
-        "version_feature_flags_default_max_resources": {
-          "name": "version_feature_flags_default_max_resources",
+        "version_printable_directories_translation_alert_threshold_usd": {
+          "name": "version_printable_directories_translation_alert_threshold_usd",
           "type": "numeric",
           "primaryKey": false,
-          "notNull": false,
-          "default": 100
+          "notNull": false
+        },
+        "version_printable_directories_translation_user_quota_usd": {
+          "name": "version_printable_directories_translation_user_quota_usd",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_printable_directories_translation_tenant_cap_usd": {
+          "name": "version_printable_directories_translation_tenant_cap_usd",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
         },
         "version_updated_at": {
           "name": "version_updated_at",
@@ -10328,6 +10996,294 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.translation_usage": {
+      "name": "translation_usage",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "tenant_id": {
+          "name": "tenant_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "month": {
+          "name": "month",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_email": {
+          "name": "user_email",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "billed_characters": {
+          "name": "billed_characters",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "requested_characters": {
+          "name": "requested_characters",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "translation_runs": {
+          "name": "translation_runs",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "largest_field_characters": {
+          "name": "largest_field_characters",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "locales": {
+          "name": "locales",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_used_at": {
+          "name": "last_used_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "translation_usage_tenant_id_idx": {
+          "name": "translation_usage_tenant_id_idx",
+          "columns": [
+            {
+              "expression": "tenant_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "translation_usage_month_idx": {
+          "name": "translation_usage_month_idx",
+          "columns": [
+            {
+              "expression": "month",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "translation_usage_updated_at_idx": {
+          "name": "translation_usage_updated_at_idx",
+          "columns": [
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "translation_usage_created_at_idx": {
+          "name": "translation_usage_created_at_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "tenantId_month_userEmail_idx": {
+          "name": "tenantId_month_userEmail_idx",
+          "columns": [
+            {
+              "expression": "tenant_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "month",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "user_email",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.translation_usage_alerts": {
+      "name": "translation_usage_alerts",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "tenant_id": {
+          "name": "tenant_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "month": {
+          "name": "month",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "billed_characters": {
+          "name": "billed_characters",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "threshold_usd": {
+          "name": "threshold_usd",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "translation_usage_alerts_updated_at_idx": {
+          "name": "translation_usage_alerts_updated_at_idx",
+          "columns": [
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "translation_usage_alerts_created_at_idx": {
+          "name": "translation_usage_alerts_created_at_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "tenantId_month_idx": {
+          "name": "tenantId_month_idx",
+          "columns": [
+            {
+              "expression": "tenant_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "month",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.payload_kv": {
       "name": "payload_kv",
       "schema": "",
@@ -10879,6 +11835,18 @@
           "type": "varchar",
           "primaryKey": false,
           "notNull": false
+        },
+        "translation_usage_id": {
+          "name": "translation_usage_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "translation_usage_alerts_id": {
+          "name": "translation_usage_alerts_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {
@@ -11016,6 +11984,36 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+        },
+        "payload_locked_documents_rels_translation_usage_id_idx": {
+          "name": "payload_locked_documents_rels_translation_usage_id_idx",
+          "columns": [
+            {
+              "expression": "translation_usage_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "payload_locked_documents_rels_translation_usage_alerts_i_idx": {
+          "name": "payload_locked_documents_rels_translation_usage_alerts_i_idx",
+          "columns": [
+            {
+              "expression": "translation_usage_alerts_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
@@ -11078,6 +12076,24 @@
           "tableFrom": "payload_locked_documents_rels",
           "tableTo": "hsc",
           "columnsFrom": ["hsc_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "payload_locked_documents_rels_translation_usage_fk": {
+          "name": "payload_locked_documents_rels_translation_usage_fk",
+          "tableFrom": "payload_locked_documents_rels",
+          "tableTo": "translation_usage",
+          "columnsFrom": ["translation_usage_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "payload_locked_documents_rels_translation_usage_alerts_fk": {
+          "name": "payload_locked_documents_rels_translation_usage_alerts_fk",
+          "tableFrom": "payload_locked_documents_rels",
+          "tableTo": "translation_usage_alerts",
+          "columnsFrom": ["translation_usage_alerts_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
@@ -11716,6 +12732,17 @@
       "schema": "public",
       "values": ["Call", "SMS", "Chat", "Email"]
     },
+    "public.enum_pd_user_groups_capabilities": {
+      "name": "enum_pd_user_groups_capabilities",
+      "schema": "public",
+      "values": [
+        "logoUpload",
+        "coverCustomization",
+        "customHeadersFooters",
+        "automaticTranslation",
+        "scheduledPdfDelivery"
+      ]
+    },
     "public.enum_rds__translationmeta_translated_by": {
       "name": "enum_rds__translationmeta_translated_by",
       "schema": "public",
@@ -11755,6 +12782,11 @@
       "name": "pinned_mode",
       "schema": "public",
       "values": ["ignore", "boost", "top"]
+    },
+    "public.pd_access_mode": {
+      "name": "pd_access_mode",
+      "schema": "public",
+      "values": ["everyone", "allowlist"]
     },
     "public.enum__rds_v_version_common_alert_variant": {
       "name": "enum__rds_v_version_common_alert_variant",
@@ -11889,6 +12921,17 @@
       "schema": "public",
       "values": ["Call", "SMS", "Chat", "Email"]
     },
+    "public.enum__pd_user_groups_v_capabilities": {
+      "name": "enum__pd_user_groups_v_capabilities",
+      "schema": "public",
+      "values": [
+        "logoUpload",
+        "coverCustomization",
+        "customHeadersFooters",
+        "automaticTranslation",
+        "scheduledPdfDelivery"
+      ]
+    },
     "public.enum__rds_v_version__translationmeta_translated_by": {
       "name": "enum__rds_v_version__translationmeta_translated_by",
       "schema": "public",
@@ -11937,7 +12980,13 @@
     "public.enum_payload_jobs_log_task_slug": {
       "name": "enum_payload_jobs_log_task_slug",
       "schema": "public",
-      "values": ["inline", "translateTopics", "translate", "warmCache"]
+      "values": [
+        "inline",
+        "translateTopics",
+        "translate",
+        "warmCache",
+        "deliverScheduledPdfs"
+      ]
     },
     "public.enum_payload_jobs_log_state": {
       "name": "enum_payload_jobs_log_state",
@@ -11947,7 +12996,13 @@
     "public.enum_payload_jobs_task_slug": {
       "name": "enum_payload_jobs_task_slug",
       "schema": "public",
-      "values": ["inline", "translateTopics", "translate", "warmCache"]
+      "values": [
+        "inline",
+        "translateTopics",
+        "translate",
+        "warmCache",
+        "deliverScheduledPdfs"
+      ]
     }
   },
   "schemas": {},
@@ -11960,6 +13015,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "ce858ad3-45f5-4bf9-9c6e-431d30dd1d97",
+  "id": "697b5641-8358-4d95-8d03-a92397102ce6",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }

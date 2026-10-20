@@ -18,6 +18,7 @@ Other docs, load only when the task touches that area:
 
 - [docs/custom-attributes.md](/docs/custom-attributes.md) — tenant-configurable generic "Datum" fields on resource/search-card layouts.
 - [docs/printable-directories.md](/docs/printable-directories.md) — curated branded PDF directory feature.
+- [docs/translation-usage.md](/docs/translation-usage.md) — metering, monthly limits, alert email and admin usage table for printable directory auto-translation.
 - [docs/search.md](/docs/search.md) — how the search dialog's autocomplete, `queryType`/`query` model, and the `/search` request pipeline work, including organization search.
 - [docs/ai-search-legacy-link-flow.md](/docs/ai-search-legacy-link-flow.md) — legacy search URL normalization when a tenant's `searchEngine` is `ai_classification`.
 - [docs/scorecards.md](/docs/scorecards.md) — managing per-tenant AI-classification taxonomy-to-need weights.
