@@ -53,25 +53,13 @@ an existing page (e.g. `[locale]/(rest)/favorites/page.tsx`) as the template
 for a new route: resolve `appConfig` for the locale, initialize i18n
 namespaces, wrap children in `PageWrapper`. A page that serves directory
 data also calls `await protectPage(path)` (`src/lib/arcjet-page.ts`) first,
-before any data fetch, passing the path without the query string.
+before any data fetch, passing the path without the query string; so does
+its `generateMetadata` if it fetches directory data.
 
-Bot protection is per page, not in `src/proxy.ts`. Today it covers
-`/search` and `/search/[id]`. Arcjet recommends calling `protect()` in the
-route, not in middleware, and a middleware call would also run on every RSC
-navigation and prefetch, each one billed. `protectPage` throws `forbidden()`
-on a denial for an enforced host; `[locale]/(rest)/forbidden.tsx` renders
-the branded page with a `403`. The status is a real `403` only because the
-call runs before anything streams: do not move it below a `<Suspense>`
-boundary or into a page with `loading.tsx`. Enforcement is per host, from
-two env vars: `ARCJET_ENFORCED_HOSTS` (comma list, or `*` for every host;
-unset = log-only everywhere) and `ARCJET_UNENFORCED_HOSTS` (hosts left out
-even under `*`; wins over the first list). Rollout and rollback are env
-changes: one agreed host first, then `*` with the exceptions listed. A new
-tenant is enforced from day one under `*`, so read `arcjet_denied` for its
-host in the first week, or start it in `ARCJET_UNENFORCED_HOSTS`. Both
-variables live in the DigitalOcean App Platform app specs
-(`norse2-prod-search`, `norse2-prod-search-mboa`, and the dev apps), not in
-git; changing one redeploys the app, which takes a few minutes.
+Bot protection (Arcjet) is per page, not in `src/proxy.ts`, and its
+enforcement is set by env vars, not in Payload. See
+[bot-protection.md](/docs/bot-protection.md) for the covered routes, the
+config, the rollout and the recovery runbook.
 
 `shared/` holds code used by more than one feature:
 
@@ -220,7 +208,7 @@ locales (`locales`, `defaultLocale`) used by both systems.
 tenant: it runs with `NEXT_PUBLIC_CUSTOM_BASE_PATH=/adresources` and
 `NEXT_PUBLIC_WITH_TRAILING_SLASHES=true` (see the commented-out block in
 `.env.examples`), and its inbound requests arrive through the mn.gov proxy
-(`MBOA_PROXY_IP` in `src/lib/arcjet.ts`). That IP is in Arcjet's trusted
+(`MBOA_PROXY_IP` in `src/lib/arcjet/client-ip.ts`). That IP is in Arcjet's trusted
 `proxies` list, so Arcjet resolves the real client from `x-forwarded-for`
 instead of treating every MBOA visitor as one address. The proxy IP is not
 allow-listed as a bot; bots behind it are still detected (the allow list in
@@ -238,7 +226,7 @@ be spoofed. Everyone behind that hop shares one IP identity, so a future
 IP-keyed rate limit must use a session or user characteristic there. Changes to `NEXT_PUBLIC_CUSTOM_BASE_PATH`/trailing-slash
 handling or Arcjet rules should be checked against this deployment.
 
-The rule set (`buildArcjetRules` in `src/lib/arcjet.ts`) also carries a
+The rule set (`buildArcjetRules` in `src/lib/arcjet/rules.ts`) also carries a
 `filter` rule denying requests with no `User-Agent`
 (`NO_USER_AGENT_FILTER`, ISS-1744): such requests cannot be evaluated by the
 bot rule and otherwise end as `CONCLUSION_ERROR` (fail-open). It runs in
