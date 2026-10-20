@@ -14,7 +14,9 @@ import { describe, test } from 'node:test';
 
 import {
   ARCJET_ALLOWED_BOTS,
+  ARCJET_DEFAULT_TIMEOUT_MS,
   ARCJET_ENFORCEMENT,
+  DENIED_LOG_MAX_PER_MINUTE,
   type ArcjetEnforcement,
   NO_CLIENT_IP_BYPASS_HOST,
   NO_USER_AGENT_FILTER,
@@ -26,7 +28,9 @@ import {
   createMinuteSampler,
   internalIpSrc,
   maskIp,
+  normalizeHost,
   parseHostList,
+  parseTimeoutMs,
   redactHeaders,
   resolveArcjetClientIp,
 } from '../src/lib/arcjet';
@@ -183,8 +187,9 @@ describe('arcjetProtect enforcement (ISS-1728)', () => {
     assert.equal(entries.length, 0);
   });
 
-  test('denied log reports the IP Arcjet resolves, not the MBOA proxy', async () => {
-    const protect = createProtect(clientReturning(denyBots(['CURL'])));
+  test('decision logs carry the decisionId and no IP address', async () => {
+    const decision = denyBots(['CURL']);
+    const protect = createProtect(clientReturning(decision));
     const { log, entries } = captureLog();
     const req = makeRequest({
       'x-forwarded-for': `${CLIENT_IP}, 10.215.199.3,${MBOA_PROXY_IP},${CLOUDFLARE_IP}`,
@@ -193,8 +198,49 @@ describe('arcjetProtect enforcement (ISS-1728)', () => {
 
     await protect(req, PATH, log);
 
-    assert.equal(entries[0].data.ip, CLIENT_IP);
-    assert.equal(entries[0].data.doConnectingIp, MBOA_PROXY_IP);
+    assert.equal(entries[0].data.decisionId, decision.id);
+    assert.equal('ip' in entries[0].data, false);
+    assert.equal('doConnectingIp' in entries[0].data, false);
+    const logged = JSON.stringify(entries[0]);
+    for (const ip of [CLIENT_IP, MBOA_PROXY_IP, CLOUDFLARE_IP, '10.215']) {
+      assert.equal(logged.includes(ip), false, ip);
+    }
+  });
+
+  test('arcjet_denied is sampled; the next line counts what was dropped', async () => {
+    let allowLine = true;
+    const protect = createProtect(clientReturning(denyBots(['CURL'])), {
+      sampleDeniedLog: () => allowLine,
+    });
+    const { log, entries } = captureLog();
+
+    await protect(makeRequest(), PATH, log);
+    allowLine = false;
+    for (let i = 0; i < 3; i++) {
+      const result = await protect(makeRequest(), PATH, log);
+      assert.equal(
+        result.conclusion,
+        'DENY',
+        'sampling never changes the decision',
+      );
+    }
+    allowLine = true;
+    await protect(makeRequest(), PATH, log);
+
+    assert.equal(entries.length, 2);
+    assert.equal(entries[0].data.sampledOutSinceLast, 0);
+    assert.equal(entries[1].data.sampledOutSinceLast, 3);
+  });
+
+  test('default denied sampler logs at most N lines per minute', async () => {
+    const protect = createProtect(clientReturning(denyBots(['CURL'])));
+    const { log, entries } = captureLog();
+    for (let i = 0; i < DENIED_LOG_MAX_PER_MINUTE + 5; i++) {
+      await protect(makeRequest(), PATH, log);
+    }
+    // A minute boundary inside the loop can only allow more, never fewer.
+    assert.ok(entries.length >= DENIED_LOG_MAX_PER_MINUTE);
+    assert.ok(entries.length < DENIED_LOG_MAX_PER_MINUTE + 5);
   });
 });
 
@@ -299,8 +345,8 @@ describe('enforced hosts (ISS-1728, ISS-1737)', () => {
 
   test('parseHostList: comma list, lower-cased, ports stripped, blanks dropped', () => {
     assert.deepEqual(
-      [...parseHostList(' A.example.org , b.example.org:443,, ')],
-      ['a.example.org', 'b.example.org'],
+      [...parseHostList(' A.example.org , b.example.org:443,, c.example.org.')],
+      ['a.example.org', 'b.example.org', 'c.example.org'],
     );
     assert.deepEqual([...parseHostList(' * ')], ['*']);
     assert.equal(parseHostList(undefined).size, 0);
@@ -398,6 +444,38 @@ describe('enforced hosts (ISS-1728, ISS-1737)', () => {
     assert.equal(result.conclusion, 'DENY');
   });
 
+  test('normalizeHost: IPv6 literals, trailing dots and junk', () => {
+    assert.equal(normalizeHost('[::1]:3000'), '[::1]');
+    assert.equal(normalizeHost('[2001:DB8::1]'), '[2001:db8::1]');
+    assert.equal(normalizeHost('Example.org.'), 'example.org');
+    assert.equal(normalizeHost('example.org.:443'), 'example.org');
+    assert.equal(normalizeHost('  '), '');
+    assert.equal(normalizeHost('bad host'), '');
+  });
+
+  test('trailing-dot host matches its listed host', async () => {
+    assert.equal(
+      await conclusionFor(enforcement('example.org'), 'example.org.'),
+      'DENY',
+    );
+  });
+
+  test('IPv6 host matches only its own entry', async () => {
+    const config = enforcement('[2001:db8::1]');
+    assert.equal(await conclusionFor(config, '[2001:db8::1]:443'), 'DENY');
+    assert.equal(
+      await conclusionFor(config, '[2001:db8::2]'),
+      'DENIED_NOT_ENFORCED',
+    );
+  });
+
+  test('unparseable host is never enforced by a specific entry', async () => {
+    assert.equal(
+      await conclusionFor(enforcement('example.org'), 'bad host'),
+      'DENIED_NOT_ENFORCED',
+    );
+  });
+
   test('x-forwarded-host does not enforce', async () => {
     const protect = createProtect(denyingClient());
     const { log } = captureLog();
@@ -455,7 +533,7 @@ describe('MBOA internal traffic (ISS-1734, ISS-1728)', () => {
     assert.equal(entries[0].event, 'arcjet_no_client_ip');
     assert.equal(entries[0].data.host, NO_CLIENT_IP_BYPASS_HOST);
     assert.equal(entries[0].data.pathName, PATH);
-    assert.equal(entries[0].data.doConnectingIp, MBOA_PROXY_IP);
+    assert.equal(entries[0].data.doConnectingIp, '13.86.x.x');
     // Every hop is masked the same way, private or public.
     assert.equal(
       entries[0].data.forwardedFor,
@@ -664,8 +742,8 @@ describe('helpers', () => {
     assert.equal(maskIp(' 10.1.2.3 '), '10.1.x.x');
     assert.equal(maskIp('192.168.1.1'), '192.168.x.x');
     assert.equal(maskIp('2001:db8::1'), '2001:db8:x');
-    assert.equal(maskIp('fe80::1'), 'fe80::x');
-    assert.equal(maskIp('::1'), '::x');
+    assert.equal(maskIp('fe80::1'), 'fe80:0:x');
+    assert.equal(maskIp('::1'), '0:0:x');
     assert.equal(maskIp(''), '');
   });
 
@@ -676,10 +754,12 @@ describe('helpers', () => {
   });
 
   test('maskIp handles short IPv6 groups and IPv4-mapped addresses', () => {
-    assert.equal(maskIp('fc::1'), 'fc::x');
-    assert.equal(maskIp('fe8::1'), 'fe8::x');
-    assert.equal(maskIp('::ffff:10.0.0.1'), '::ffff:10.0.x.x');
-    assert.equal(maskIp('::FFFF:8.8.8.8'), '::ffff:8.8.x.x');
+    assert.equal(maskIp('fc::1'), 'fc:0:x');
+    assert.equal(maskIp('fe8::1'), 'fe8:0:x');
+    assert.equal(maskIp('0:0::1'), '0:0:x');
+    assert.equal(maskIp('::ffff:10.0.0.1'), '10.0.x.x');
+    assert.equal(maskIp('::FFFF:8.8.8.8'), '8.8.x.x');
+    assert.equal(maskIp('[::ffff:8.8.8.8]:443'), '8.8.x.x');
   });
 
   test('maskIp fully masks malformed input', () => {
@@ -745,10 +825,18 @@ describe('helpers', () => {
     assert.equal(resolveArcjetClientIp(req), CLIENT_IP);
   });
 
-  test('resolveArcjetClientIp returns unknown with no usable header', () => {
+  test('resolveArcjetClientIp returns empty with no usable header', () => {
     const bare = new NextRequest('https://example.org/en', {
       headers: { host: 'example.org' },
     });
-    assert.equal(resolveArcjetClientIp(bare), 'unknown');
+    assert.equal(resolveArcjetClientIp(bare), '');
+  });
+
+  test('parseTimeoutMs: positive integer from env, else 500 ms', () => {
+    assert.equal(ARCJET_DEFAULT_TIMEOUT_MS, 500);
+    assert.equal(parseTimeoutMs('750'), 750);
+    for (const bad of [undefined, '', '0', '-5', '1.5', 'abc']) {
+      assert.equal(parseTimeoutMs(bad), 500, String(bad));
+    }
   });
 });
