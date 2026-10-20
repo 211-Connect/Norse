@@ -3,7 +3,7 @@ import {
   PRINT_VARIANTS,
   type FontSizeMode,
   type PrintVariant,
-} from './pdf-print-primitives';
+} from './print-options';
 
 /**
  * Query param keys shared between the share dialog (which writes them into

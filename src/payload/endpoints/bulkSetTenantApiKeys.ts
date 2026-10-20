@@ -1,6 +1,7 @@
 import type { Endpoint } from 'payload';
 
 import { createLogger } from '@/lib/logger';
+import { secretsMatch } from '@/lib/secrets';
 
 const log = createLogger('bulkSetTenantApiKeys');
 
@@ -24,7 +25,7 @@ export const bulkSetTenantApiKeys: Endpoint = {
       );
     }
 
-    if (!receivedKey || receivedKey !== expectedKey) {
+    if (!secretsMatch(receivedKey, expectedKey)) {
       log.warn('Unauthorized bulk-set-api-keys attempt');
       return Response.json(
         { error: 'Unauthorized. Provide a valid x-internal-api-key header.' },

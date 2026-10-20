@@ -8,6 +8,7 @@ import {
 
 import { formatAddressForDisplay } from '@/app/(app)/shared/lib/utils';
 import { type ResultType } from '@/app/(app)/shared/store/results';
+import { formatPhoneNumber } from '@/app/(app)/shared/utils/phone';
 import { type Resource } from '@/types/resource';
 
 /**
@@ -144,7 +145,7 @@ export function favoriteListToPrintableDirectory(
           description: translation?.serviceDescription ?? '',
           hours: normalizePrintableHours(translation?.hours ?? ''),
           address: formatAddressForDisplay(primaryAddress) ?? '',
-          phone: favorite.displayPhoneNumber ?? '',
+          phone: formatPhoneNumber(favorite.displayPhoneNumber),
           email: favorite.email ?? '',
           website: favorite.website ?? '',
           transportation: getTranslationStringValue(
@@ -199,7 +200,7 @@ export function resourcesToPrintableDirectory(
           translation?.hours ?? resource.hours ?? '',
         ),
         address: getAddressFromResource(resource),
-        phone: resource.phone ?? '',
+        phone: formatPhoneNumber(resource.phone),
         email: resource.email ?? '',
         website: resource.website ?? '',
         transportation:
@@ -235,7 +236,7 @@ export function resultsToPrintableDirectory(
       description: result.description ?? '',
       hours: '',
       address: result.address ?? '',
-      phone: result.phone ?? '',
+      phone: formatPhoneNumber(result.phone),
       email: '',
       website: result.website ?? '',
       transportation: '',
@@ -267,7 +268,7 @@ function previewResourceToItemData(
     description: translation?.serviceDescription ?? '',
     hours: normalizePrintableHours(translation?.hours ?? ''),
     address: formatAddressForDisplay(primaryAddress) ?? '',
-    phone: resource.displayPhoneNumber ?? '',
+    phone: formatPhoneNumber(resource.displayPhoneNumber),
     email: resource.email ?? '',
     website: resource.website ?? '',
     transportation: '',

@@ -18,6 +18,14 @@ sharing a build:
   ESLint-ignored) — don't hand-edit; regenerate via Payload CLI
   (`npm run generate:importmap`) if it drifts.
 
+`src/pages/` holds a single internal Pages Router API route,
+`api/internal/printable-directory-pdf.ts`, for server-side PDF rendering:
+App Router and Payload code is compiled for React Server Components, where
+the React-PDF templates can't run (see
+[scheduled-pdf-delivery.md](./scheduled-pdf-delivery.md)). Don't add pages
+there. Its existence makes Next type `useSearchParams()`/`usePathname()` as
+nullable app-wide, so handle `null` at call sites.
+
 Payload itself is embedded via `withPayload()` in `next.config.js`, not a
 separate service — `src/payload/payload-config.ts` is the single Payload
 config (collections, endpoints, jobs) and is reached via the `@payload-config`

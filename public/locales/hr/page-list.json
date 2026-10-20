@@ -59,7 +59,8 @@
     "load_error": "Nije moguće učitati detalje resursa za ispis. Pokušajte ponovno.",
     "retry": "Pokušaj ponovno",
     "language_title": "Jezik direktorija",
-    "booklet_layout": "Izgled knjižice"
+    "booklet_layout": "Izgled knjižice",
+    "booklet_layout_help": "Stranice su raspoređene tako da se ispis može presaviti i spojiti u knjižicu: dodaju se prazne unutarnje korice, a broj stranica se dopunjuje na višekratnik broja 4. Ispisujte obostrano."
   },
   "print_footer_disclaimer": "{{brandName}} pruža ove informacije kao javnu uslugu i ne daje nikakva jamstva u pogledu njihove točnosti, potpunosti ili pravovremenosti. {{brandName}} nije odgovoran za način na koji se ove informacije koriste i ne preuzima nikakvu odgovornost za bilo kakve posljedice koje proizlaze iz njihove upotrebe. Distribucija ovog ispisa ne podrazumijeva odobrenje ili povezanost s {{brandName}}.",
   "print_page_counter": "Stranica {{current}} od {{total}}",

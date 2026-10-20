@@ -3,6 +3,11 @@
 import { Phone } from 'lucide-react';
 
 import {
+  formatPhoneNumber,
+  getPhoneHref,
+} from '@/app/(app)/shared/utils/phone';
+
+import {
   AnalyticsEvent,
   AnalyticsTools,
   trackEvent,
@@ -20,8 +25,8 @@ export function PhoneComponent({ result }: SearchCardComponentProps) {
       key={result.phone}
       icon={Phone}
       iconColor="text-primary"
-      description={result.phone}
-      url={`tel:${result.phone}`}
+      description={formatPhoneNumber(result.phone)}
+      url={getPhoneHref(result.phone)}
       urlTarget="_self"
       shouldParseHtml={false}
       withPadding={false}

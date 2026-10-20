@@ -151,11 +151,11 @@ export class Analytics<
       ...params,
     });
   /**
-   * No description
+   * @description Counts Umami search_text, search_taxonomy, and search_hybrid events.
    *
    * @tags Analytics
    * @name AnalyticsControllerGetSearches
-   * @summary Get number of all search queries grouped by query type
+   * @summary Get counts of tracked search events grouped by query type
    * @request GET:/analytics/searches
    * @secure
    */
@@ -256,7 +256,7 @@ export class Analytics<
       ...params,
     });
   /**
-   * @description Returns search events with timestamps, coordinates, ZIP codes, and anonymized unique user/session identifiers.
+   * @description Returns search events with timestamps, coordinates, ZIP codes, and anonymized unique user/session identifiers. Includes search_text, search_taxonomy, and search_hybrid events.
    *
    * @tags Analytics
    * @name AnalyticsControllerGetExportSearchData

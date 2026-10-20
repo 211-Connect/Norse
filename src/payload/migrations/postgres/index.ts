@@ -84,6 +84,7 @@ import * as migration_20260911_114053_add_tenant_api_key from './20260911_114053
 import * as migration_20260928_131716 from './20260928_131716';
 import * as migration_20261014_094136 from './20261014_094136';
 import * as migration_20261009_064658 from './20261009_064658';
+import * as migration_20261014_080226_scheduled_pdf_delivery from './20261014_080226_scheduled_pdf_delivery';
 
 export const migrations = [
   {
@@ -515,5 +516,10 @@ export const migrations = [
     up: migration_20261009_064658.up,
     down: migration_20261009_064658.down,
     name: '20261009_064658',
+  },
+  {
+    up: migration_20261014_080226_scheduled_pdf_delivery.up,
+    down: migration_20261014_080226_scheduled_pdf_delivery.down,
+    name: '20261014_080226_scheduled_pdf_delivery',
   },
 ];
