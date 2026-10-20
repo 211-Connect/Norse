@@ -68,7 +68,10 @@ unset = log-only everywhere) and `ARCJET_UNENFORCED_HOSTS` (hosts left out
 even under `*`; wins over the first list). Rollout and rollback are env
 changes: one agreed host first, then `*` with the exceptions listed. A new
 tenant is enforced from day one under `*`, so read `arcjet_denied` for its
-host in the first week, or start it in `ARCJET_UNENFORCED_HOSTS`.
+host in the first week, or start it in `ARCJET_UNENFORCED_HOSTS`. Both
+variables live in the DigitalOcean App Platform app specs
+(`norse2-prod-search`, `norse2-prod-search-mboa`, and the dev apps), not in
+git; changing one redeploys the app, which takes a few minutes.
 
 `shared/` holds code used by more than one feature:
 
