@@ -6,6 +6,8 @@ import {
 import { getApiHeaders, printableDirectoriesApiClient } from '@/lib/api';
 
 import { PrintableDirectoryMutationResult } from '../serverActions/printableDirectories/printableDirectoryMutationResult';
+import type { TranslationMeter } from '../services/translation-usage/translation-meter';
+import { runMeteredTranslation } from '../services/translation-usage/translation-usage-service';
 import {
   getDirectoryAutoTranslationUpdate,
   getSectionAutoTranslationUpdate,
@@ -13,6 +15,7 @@ import {
 import {
   PrintableDirectoryServerAccess,
   getApiErrorStatus,
+  getTranslationUsageContext,
 } from './printableDirectoryServerAccess';
 
 /**
@@ -72,7 +75,8 @@ async function callUpdate(
  * capability — machine-translates into the directory's `locales`
  * (synchronously, per docs/adr/0003-printable-directory-translation-model.md):
  * the localized fields `input` touched or, when `input` changes `locales`,
- * the whole directory, so newly added languages get content.
+ * the whole directory, so newly added languages get content. Skipped once
+ * the user or tenant reaches a monthly limit (docs/translation-usage.md).
  */
 export async function updatePrintableDirectoryContent(
   id: string,
@@ -88,25 +92,33 @@ export async function updatePrintableDirectoryContent(
 
   try {
     const translateEverything = input.locales !== undefined;
-    const translationUpdate = await getDirectoryAutoTranslationUpdate(
-      result.data,
-      translateEverything ? ALL_DIRECTORY_FIELDS : input,
+    const metered = await runMeteredTranslation(
+      getTranslationUsageContext(access),
+      async (meter) => {
+        const translationUpdate = await getDirectoryAutoTranslationUpdate(
+          result.data,
+          translateEverything ? ALL_DIRECTORY_FIELDS : input,
+          meter,
+        );
+
+        let directory = result.data;
+
+        if (translationUpdate) {
+          const translated = await callUpdate(id, translationUpdate, tenantId);
+          if (translated.success) {
+            directory = translated.data;
+          }
+        }
+
+        if (translateEverything) {
+          directory = await translateAllSections(directory, tenantId, meter);
+        }
+
+        return directory;
+      },
     );
 
-    let directory = result.data;
-
-    if (translationUpdate) {
-      const translated = await callUpdate(id, translationUpdate, tenantId);
-      if (translated.success) {
-        directory = translated.data;
-      }
-    }
-
-    if (translateEverything) {
-      directory = await translateAllSections(directory, tenantId);
-    }
-
-    return { success: true, data: directory };
+    return metered.skipped ? result : { success: true, data: metered.result };
   } catch {
     // The save itself succeeded; a translation outage must not turn it into
     // a failure.
@@ -124,6 +136,7 @@ const ALL_DIRECTORY_FIELDS: UpdatePrintableDirectoryDto = {
 async function translateAllSections(
   directory: PrintableDirectoryResponseDto,
   tenantId: string,
+  meter: TranslationMeter,
 ): Promise<PrintableDirectoryResponseDto> {
   let latest = directory;
   const headers = await getApiHeaders(tenantId, 'en', true);
@@ -133,6 +146,7 @@ async function translateAllSections(
       section,
       directory.primaryLanguage,
       directory.locales,
+      meter,
     );
     if (!update) {
       continue;

@@ -172,6 +172,8 @@
     "primary_language": "Primary",
     "machine_translated": "Machine translated",
     "auto_translate_hint": "Empty languages are translated automatically when you save. Edited translations are kept.",
+    "auto_translate_paused_user_quota": "Automatic translation is paused until next month because you reached your monthly translation limit. Saving still works, and you can type translations yourself.",
+    "auto_translate_paused_tenant_cap": "Automatic translation is paused until next month because this site reached its monthly translation limit. Saving still works, and you can type translations yourself.",
     "show_more_languages_one": "Show {{count}} more language",
     "show_more_languages_other": "Show {{count}} more languages",
     "show_fewer_languages": "Show fewer languages"

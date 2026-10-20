@@ -27,7 +27,9 @@ Printable Directories let authorized users create curated, branded, printable br
 - Payload CMS (tenant config only)
   - `featureFlags.enablePrintableDirectories` (super-admin/support only)
   - `printableDirectories` tab: access mode, allow-lists, user groups (see
-    "Access control" below)
+    "Access control" below); automatic translation limits and the usage
+    table (super-admins and support only; see
+    [translation-usage.md](./translation-usage.md))
 - Norse API (directory domain model + CRUD + preview resolution)
 - Norse Next.js frontend (list/detail/edit/save-query UX + PDF preview/download/print)
 
@@ -199,7 +201,7 @@ Per-directory `accessPolicy` is enforced by the API.
    | --- | --- |
    | `coverCustomization` | Cover images (and primary color / layout type) |
    | `customHeadersFooters` | Editing header and footer layout and text |
-   | `automaticTranslation` | Machine translation into the directory's languages on save |
+   | `automaticTranslation` | Machine translation into the directory's languages on save, within monthly limits; see [translation-usage.md](./translation-usage.md) |
    | `logoUpload` | The directory logo (`logoUrl`), used in header and footer |
    | `scheduledPdfDelivery` | Emailing the directory's PDF on a schedule; see [scheduled-pdf-delivery.md](./scheduled-pdf-delivery.md) |
 
@@ -256,6 +258,11 @@ Implementation:
   languages are never overwritten. When the primary text is cleared, its
   machine translations are removed. A translation failure never fails the
   save.
+- **Metering and limits**: every auto-translation is metered per tenant and
+  user in billed characters. It is skipped, without failing the save, once
+  the user's quota or the tenant's monthly cap is reached. Every localized
+  value is capped at 200 characters (title, heading) or 2,000 (description,
+  header/footer text). See [translation-usage.md](./translation-usage.md).
 - `translationService.batchTranslate()`/`translate()` accept a `sourceLocale`
   (default `'en'`); non-English sources get their own cache key shape.
 

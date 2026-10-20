@@ -1,0 +1,103 @@
+.translation-usage {
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--style-radius-m);
+  margin: 24px 0;
+  padding: 16px;
+  font-family: var(--font-body);
+}
+
+.translation-usage__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.translation-usage__title {
+  margin: 0;
+}
+
+.translation-usage__month {
+  padding: 4px 8px;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--style-radius-s);
+  background: var(--theme-input-bg);
+  color: var(--theme-text);
+}
+
+.translation-usage__description,
+.translation-usage__muted {
+  margin: 8px 0;
+  font-size: 13px;
+  color: var(--theme-elevation-600);
+}
+
+.translation-usage__error {
+  margin: 8px 0;
+  color: var(--theme-error-500);
+}
+
+.translation-usage__summary {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 16px 0;
+}
+
+.translation-usage__meter {
+  position: relative;
+  height: 8px;
+  max-width: 480px;
+  border-radius: 4px;
+  background: var(--theme-elevation-100);
+}
+
+.translation-usage__meter-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: var(--theme-success-500);
+}
+
+.translation-usage__meter-fill--full {
+  background: var(--theme-error-500);
+}
+
+.translation-usage__meter-alert {
+  position: absolute;
+  top: -3px;
+  width: 2px;
+  height: 14px;
+  background: var(--theme-warning-500);
+}
+
+.translation-usage__table-wrapper {
+  overflow-x: auto;
+}
+
+.translation-usage__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.translation-usage__table th,
+.translation-usage__table td {
+  padding: 6px 12px 6px 0;
+  border-bottom: 1px solid var(--theme-elevation-100);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.translation-usage__table .is-numeric {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.translation-usage__badge {
+  margin-left: 8px;
+  padding: 1px 6px;
+  border-radius: var(--style-radius-s);
+  background: var(--theme-error-100);
+  color: var(--theme-error-800);
+  font-size: 11px;
+}

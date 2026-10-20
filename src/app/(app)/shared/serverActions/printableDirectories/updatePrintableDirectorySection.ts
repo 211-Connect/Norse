@@ -7,8 +7,12 @@ import {
 } from '@/lib/api/generated/data-contracts';
 import { getApiHeaders, printableDirectoriesApiClient } from '@/lib/api';
 
+import { runMeteredTranslation } from '../../services/translation-usage/translation-usage-service';
 import { getSectionAutoTranslationUpdate } from '../../utils/autoTranslatePrintableDirectoryText';
-import { getPrintableDirectoryServerAccess } from '../../utils/printableDirectoryServerAccess';
+import {
+  getPrintableDirectoryServerAccess,
+  getTranslationUsageContext,
+} from '../../utils/printableDirectoryServerAccess';
 
 async function callUpdateSection(
   params: PrintableDirectoryControllerUpdateSectionParams,
@@ -62,20 +66,28 @@ export async function updatePrintableDirectorySection(
   }
 
   try {
-    const translationUpdate = await getSectionAutoTranslationUpdate(
-      section,
-      updatedDirectory.primaryLanguage,
-      updatedDirectory.locales,
+    const metered = await runMeteredTranslation(
+      getTranslationUsageContext(access),
+      async (meter) => {
+        const translationUpdate = await getSectionAutoTranslationUpdate(
+          section,
+          updatedDirectory.primaryLanguage,
+          updatedDirectory.locales,
+          meter,
+        );
+
+        if (!translationUpdate) {
+          return updatedDirectory;
+        }
+
+        return (
+          (await callUpdateSection(params, translationUpdate, tenantId)) ??
+          updatedDirectory
+        );
+      },
     );
 
-    if (!translationUpdate) {
-      return updatedDirectory;
-    }
-
-    return (
-      (await callUpdateSection(params, translationUpdate, tenantId)) ??
-      updatedDirectory
-    );
+    return metered.skipped ? updatedDirectory : metered.result;
   } catch {
     return updatedDirectory;
   }

@@ -6,9 +6,13 @@ import {
 } from '@/lib/api/generated/data-contracts';
 import { getApiHeaders, printableDirectoriesApiClient } from '@/lib/api';
 
+import { runMeteredTranslation } from '../../services/translation-usage/translation-usage-service';
 import { getSectionAutoTranslationUpdate } from '../../utils/autoTranslatePrintableDirectoryText';
 import { fetchPrintableDirectory } from '../../utils/printableDirectoryMutations';
-import { getPrintableDirectoryServerAccess } from '../../utils/printableDirectoryServerAccess';
+import {
+  getPrintableDirectoryServerAccess,
+  getTranslationUsageContext,
+} from '../../utils/printableDirectoryServerAccess';
 
 type CreatePrintableDirectorySectionInput = {
   headingLocalized: PrintableDirectoryLocalizedValuesDto;
@@ -74,24 +78,32 @@ export async function createPrintableDirectorySection(
     }
 
     try {
-      const translationUpdate = await getSectionAutoTranslationUpdate(
-        newestSection,
-        updatedDirectory.primaryLanguage,
-        updatedDirectory.locales,
+      const metered = await runMeteredTranslation(
+        getTranslationUsageContext(access),
+        async (meter) => {
+          const translationUpdate = await getSectionAutoTranslationUpdate(
+            newestSection,
+            updatedDirectory.primaryLanguage,
+            updatedDirectory.locales,
+            meter,
+          );
+
+          if (!translationUpdate) {
+            return updatedDirectory;
+          }
+
+          const translatedResponse =
+            await printableDirectoriesApiClient.printableDirectoryControllerUpdateSection(
+              { id: directoryId, sectionId: newestSection.id },
+              translationUpdate,
+              { cache: 'no-store', headers },
+            );
+
+          return translatedResponse.data ?? updatedDirectory;
+        },
       );
 
-      if (!translationUpdate) {
-        return updatedDirectory;
-      }
-
-      const translatedResponse =
-        await printableDirectoriesApiClient.printableDirectoryControllerUpdateSection(
-          { id: directoryId, sectionId: newestSection.id },
-          translationUpdate,
-          { cache: 'no-store', headers },
-        );
-
-      return translatedResponse.data ?? updatedDirectory;
+      return metered.skipped ? updatedDirectory : metered.result;
     } catch {
       return updatedDirectory;
     }

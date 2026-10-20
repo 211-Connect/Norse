@@ -24,6 +24,8 @@ import {
   findTenantByHost,
   findTenantById,
 } from './collections/Tenants/actions';
+import { TranslationUsage } from './collections/TranslationUsage';
+import { TranslationUsageAlerts } from './collections/TranslationUsageAlerts';
 import { Users } from './collections/Users';
 import { isSuperAdmin, isSupport } from './collections/Users/access/roles';
 import { analyticsProxyEndpoints } from './endpoints/analyticsProxy';
@@ -83,6 +85,8 @@ const config = buildConfig({
     ResourceDirectories,
     OrchestrationConfig,
     HybridSearchConfig,
+    TranslationUsage,
+    TranslationUsageAlerts,
   ],
   jobs: {
     tasks: [translateTopics, translate, warmCache, deliverScheduledPdfs],

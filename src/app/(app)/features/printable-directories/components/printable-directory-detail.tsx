@@ -7,6 +7,10 @@ import { useRouter } from 'next/navigation';
 
 import { Link } from '@/app/(app)/shared/components/link';
 import {
+  Alert,
+  AlertDescription,
+} from '@/app/(app)/shared/components/ui/alert';
+import {
   Button,
   buttonVariants,
 } from '@/app/(app)/shared/components/ui/button';
@@ -26,11 +30,15 @@ import { SharePrintableDirectoryButton } from './detail/share-printable-director
 type PrintableDirectoryDetailProps = {
   locale: string;
   initialDirectory: PrintableDirectoryResponseDto;
+  /** Set when the viewer's automatic translation hit a monthly limit
+   *  (docs/translation-usage.md). */
+  translationPausedReason?: 'user_quota' | 'tenant_cap';
 };
 
 export function PrintableDirectoryDetail({
   locale,
   initialDirectory,
+  translationPausedReason,
 }: PrintableDirectoryDetailProps) {
   const { t } = useTranslation(['page-directories']);
   const router = useRouter();
@@ -75,6 +83,20 @@ export function PrintableDirectoryDetail({
           {directory.name}
         </Typography>
       </div>
+
+      {translationPausedReason && (
+        <Alert>
+          <AlertDescription>
+            {translationPausedReason === 'tenant_cap'
+              ? t('auto_translate_paused_tenant_cap', {
+                  ns: 'page-directories',
+                })
+              : t('auto_translate_paused_user_quota', {
+                  ns: 'page-directories',
+                })}
+          </AlertDescription>
+        </Alert>
+      )}
 
       <GeneralInfoCard
         directory={directory}

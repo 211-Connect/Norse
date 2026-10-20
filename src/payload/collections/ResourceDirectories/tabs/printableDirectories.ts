@@ -1,6 +1,11 @@
 import { Tab } from 'payload';
 
-import { superAdminOrSupportOrTenantAccess } from '../../Users/access/roles';
+import { DEFAULT_TRANSLATION_USAGE_LIMITS as defaultLimits } from '@/app/(app)/shared/services/translation-usage/translation-usage-limits';
+
+import {
+  superAdminOrSupportAccess,
+  superAdminOrSupportOrTenantAccess,
+} from '../../Users/access/roles';
 
 /**
  * Capability keys gatable per Printable Directory User Group. See
@@ -159,6 +164,72 @@ export const printableDirectories: Tab = {
           })),
         },
       ],
+    },
+    {
+      name: 'translation',
+      type: 'group',
+      label: 'Automatic Translation Limits',
+      admin: {
+        condition: (data) =>
+          Boolean(data?.featureFlags?.enablePrintableDirectories),
+        description:
+          'Monthly machine-translation limits, in estimated USD at list price. Leave empty to use the global default (shown as placeholder). When a limit is reached, saves still succeed but are not machine-translated until next month (UTC).',
+      },
+      access: {
+        read: superAdminOrSupportAccess,
+        create: superAdminOrSupportAccess,
+        update: superAdminOrSupportAccess,
+      },
+      // Keep names short: Postgres truncates identifiers over 63 characters,
+      // and the versions table prefixes `version_printable_directories_translation_`.
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'alertThresholdUsd',
+              type: 'number',
+              label: 'Alert threshold (USD / month)',
+              min: 0,
+              admin: {
+                placeholder: String(defaultLimits.alertThresholdUsd),
+                description:
+                  'Emails all super-admins and support once per month when the tenant total reaches this.',
+              },
+            },
+            {
+              name: 'userQuotaUsd',
+              type: 'number',
+              label: 'Per-user quota (USD / month)',
+              min: 0,
+              admin: {
+                placeholder: String(defaultLimits.userQuotaUsd),
+              },
+            },
+            {
+              name: 'tenantCapUsd',
+              type: 'number',
+              label: 'Tenant hard cap (USD / month)',
+              min: 0,
+              admin: {
+                placeholder: String(defaultLimits.tenantCapUsd),
+              },
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'translationUsage',
+      type: 'ui',
+      admin: {
+        condition: (data) =>
+          Boolean(data?.featureFlags?.enablePrintableDirectories),
+        components: {
+          Field:
+            '@/payload/collections/ResourceDirectories/components/TranslationUsageTable',
+        },
+      },
     },
   ],
 };
