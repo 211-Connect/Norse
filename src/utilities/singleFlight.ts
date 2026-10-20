@@ -7,10 +7,7 @@
  * An entry older than `maxAgeMs` is not joined: a hung call must not block
  * every later caller of that key for the life of the process.
  */
-export function createSingleFlight<K>(
-  maxAgeMs: number,
-  now: () => number = Date.now,
-) {
+export function createSingleFlight<K>(maxAgeMs: number) {
   const inFlight = new Map<
     K,
     { promise: Promise<unknown>; startedAt: number }
@@ -21,7 +18,7 @@ export function createSingleFlight<K>(
     fn: () => Promise<T>,
   ): { promise: Promise<T>; shared: boolean } {
     const existing = inFlight.get(key);
-    if (existing && now() - existing.startedAt < maxAgeMs) {
+    if (existing && Date.now() - existing.startedAt < maxAgeMs) {
       return { promise: existing.promise as Promise<T>, shared: true };
     }
 
@@ -29,7 +26,7 @@ export function createSingleFlight<K>(
       // A stale entry may have been replaced; only remove our own.
       if (inFlight.get(key)?.promise === promise) inFlight.delete(key);
     });
-    inFlight.set(key, { promise, startedAt: now() });
+    inFlight.set(key, { promise, startedAt: Date.now() });
     return { promise, shared: false };
   }
 

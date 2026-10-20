@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { test } from 'node:test';
+import { mock, test } from 'node:test';
 
 import { createSingleFlight } from '../src/utilities/singleFlight';
 import { clearMemoryCache, withCache } from '../src/utilities/withCache';
@@ -74,14 +74,16 @@ test('a synchronous throw in fn becomes a rejection and clears the key', async (
   assert.equal(run.size(), 0);
 });
 
-test('an entry older than maxAgeMs is not joined', async () => {
-  let clock = 0;
-  const run = createSingleFlight<string>(1_000, () => clock);
+test('an entry older than maxAgeMs is not joined', async (t) => {
+  mock.timers.enable({ apis: ['Date'], now: 0 });
+  t.after(() => mock.timers.reset());
+
+  const run = createSingleFlight<string>(1_000);
   const hung = deferred<string>();
   const fresh = deferred<string>();
 
   const a = run('k', () => hung.promise);
-  clock = 1_000;
+  mock.timers.tick(1_000);
   const b = run('k', () => fresh.promise);
   assert.equal(b.shared, false);
 
