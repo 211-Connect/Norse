@@ -28,6 +28,8 @@ import {
   LocationNameComponent,
   LocationNameSubtitleComponent,
   MapComponent,
+  OrganizationAlternateNameComponent,
+  OrganizationAlternateNameSubtitleComponent,
   OrganizationComponent,
   PhoneNumbersComponent,
   QualityComponent,
@@ -57,6 +59,10 @@ export const componentRegistry: Record<
   [ResourceComponentId.SERVICE_NAME]: ServiceNameComponent,
   [ResourceComponentId.LOCATION_NAME]: LocationNameComponent,
   [ResourceComponentId.LOCATION_NAME_SUBTITLE]: LocationNameSubtitleComponent,
+  [ResourceComponentId.ORGANIZATION_ALTERNATE_NAME]:
+    OrganizationAlternateNameComponent,
+  [ResourceComponentId.ORGANIZATION_ALTERNATE_NAME_SUBTITLE]:
+    OrganizationAlternateNameSubtitleComponent,
   [ResourceComponentId.ADDRESS]: AddressComponent,
   [ResourceComponentId.TRANSPORTATION]: TransportationComponent,
   [ResourceComponentId.ACCESSIBILITY]: AccessibilityComponent,
@@ -121,6 +127,9 @@ export function shouldComponentRender(
       return Boolean(resource.locationName);
     case ResourceComponentId.LOCATION_NAME_SUBTITLE:
       return Boolean(resource.locationName);
+    case ResourceComponentId.ORGANIZATION_ALTERNATE_NAME:
+    case ResourceComponentId.ORGANIZATION_ALTERNATE_NAME_SUBTITLE:
+      return Boolean(resource.organizationAlternateName);
     case ResourceComponentId.ADDRESS:
       return Boolean(resource.address);
     case ResourceComponentId.TRANSPORTATION:
