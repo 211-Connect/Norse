@@ -137,6 +137,10 @@ describe('allow list (ISS-2305)', () => {
         'NAVER_CRAWLER',
         'BAIDU_CRAWLER',
         'GOOGLE_LIGHTHOUSE',
+        'OPENAI_CRAWLER_USER',
+        'OPENAI_CRAWLER_SEARCH',
+        'PERPLEXITY_USER',
+        'ANTHROPIC_CRAWLER_USER',
       ],
     );
   });

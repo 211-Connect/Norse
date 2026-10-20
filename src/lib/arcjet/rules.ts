@@ -23,6 +23,15 @@ export const ARCJET_ALLOWED_BOTS = [
   // PageSpeed Insights / Lighthouse. Only in CATEGORY:GOOGLE and
   // CATEGORY:OPTIMIZER, so it must be named. Needed for SEO baselines.
   'GOOGLE_LIGHTHOUSE',
+  // AI assistants fetching a page for a person who asked them (e.g. "find a
+  // food bank near me"), not crawling for training: ChatGPT-User,
+  // OAI-SearchBot, Perplexity-User, Claude-User. All are CATEGORY:AI, which
+  // is otherwise denied. Training crawlers stay denied and are disallowed in
+  // robots.txt (src/app/robots.ts).
+  'OPENAI_CRAWLER_USER',
+  'OPENAI_CRAWLER_SEARCH',
+  'PERPLEXITY_USER',
+  'ANTHROPIC_CRAWLER_USER',
 ] as const;
 
 /**
