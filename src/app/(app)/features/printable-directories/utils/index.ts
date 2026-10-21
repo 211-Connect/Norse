@@ -10,3 +10,4 @@ export * from './toLocalizedValues';
 export * from './withUniqueSlugRetry';
 export * from './orderLocales';
 export * from './withDefaultQueryParams';
+export * from './matchesDefaultLocation';
