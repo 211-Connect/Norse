@@ -10,11 +10,21 @@ import { installEdges } from './edges';
 
 installEdges();
 const { HARNESSES } = await import('./harnesses');
-const { compare, loadCorpus, readSnapshot, RECORDING, writeSnapshot } =
-  await import('./snapshots');
+const {
+  assertRecordable,
+  compare,
+  loadCorpus,
+  readBaseline,
+  readSnapshot,
+  RECORDING,
+  writeSnapshot,
+} = await import('./snapshots');
 
 const corpus = loadCorpus();
 assert.ok(corpus.length > 0, 'corpus is empty: nothing would be compared');
+// Checked once, before any harness runs, so a refused recording leaves every snapshot untouched.
+const provenance = RECORDING ? assertRecordable() : null;
+const baseline = readBaseline();
 
 export function runParity(ids: string[]) {
   const known = new Set(HARNESSES.map((h) => h.id));
@@ -26,13 +36,18 @@ export function runParity(ids: string[]) {
       assert.ok(rows.length > 0, `${h.id} produced no cases`);
 
       if (RECORDING) {
-        writeSnapshot(h.id, rows);
+        writeSnapshot(h.id, rows, provenance!);
         return;
       }
       const expected = readSnapshot(h.id);
       assert.ok(
         expected,
         `no snapshot for ${h.id}: record the baseline first (RECORD=1 on development)`,
+      );
+      const from = baseline[h.id];
+      assert.ok(
+        from,
+        `no provenance for ${h.id} in snapshots/baseline.json: it was not recorded through the guard; re-record it on development`,
       );
       const diff = compare(expected, rows);
       const show = diff.changed
