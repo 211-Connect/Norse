@@ -10,7 +10,7 @@ import { renderToString } from 'react-dom/server';
 import { I18nextProvider } from 'react-i18next';
 
 import { client, edge, PROFILES } from './edges';
-import { localeFor } from './server-page';
+import { localeFor, rawParamsFrom } from './server-page';
 import type { Row } from './snapshots';
 
 const ENGINES = PROFILES.filter((p) => !p.advancedGeo); // the browser code does not read the geo flag
@@ -63,6 +63,24 @@ function dialogStates(query: string) {
     { id: 'picked', state: { ...base, query: text, searchTerm: text } },
     { id: 'typed', state: { ...base, query: '', searchTerm: text } },
   ];
+}
+
+/**
+ * What `SearchResultsProvider` would hold for a row: the sort and origin the server page parses from the
+ * URL, through the real parser, so a component that reads the current sort or whether coordinates exist
+ * sees what the page would hand it, not a constant.
+ */
+async function providerValue(query: string) {
+  const { parseSearchParams } =
+    await import('../../../src/app/(app)/features/search/utils/parseSearchParams');
+  const { isValidCoordinate } =
+    await import('../../../src/utils/isValidCoordinate');
+  const parsed = parseSearchParams(rawParamsFrom(query));
+  return {
+    sort: parsed.sort,
+    hasSearchCoordinates: isValidCoordinate(parsed.coordinates ?? null),
+    filters: {},
+  };
 }
 
 async function setSearchAtom(state: Record<string, unknown>) {
@@ -197,16 +215,12 @@ export async function* panelCases(corpus: Row[]) {
   const DISTANCES = ['0', '10', '25'];
   for (const row of corpus) {
     const { pathname, locale } = browserView(row);
-    const hasCoords = new URLSearchParams(row.query).has('coords');
+    const results = await providerValue(row.query);
     const renderPanel = async () => {
       client.reset(pathname, row.query);
-      client.results = {
-        sort: 'relevance',
-        hasSearchCoordinates: hasCoords,
-        filters: {},
-      };
+      client.results = results;
       await setSearchAtom({
-        searchCoordinates: hasCoords ? [-122.3, 47.6] : [],
+        searchCoordinates: results.hasSearchCoordinates ? [-122.3, 47.6] : [],
       });
       render(
         locale,
@@ -244,13 +258,10 @@ export async function* sortCases(corpus: Row[]) {
     await import('../../../src/app/(app)/features/search/components/sort-select');
   for (const row of corpus) {
     const { pathname, locale } = browserView(row);
+    const results = await providerValue(row.query);
     for (const value of ['relevance', 'name', 'organization', 'distance']) {
       client.reset(pathname, row.query);
-      client.results = {
-        sort: 'relevance',
-        hasSearchCoordinates: new URLSearchParams(row.query).has('coords'),
-        filters: {},
-      };
+      client.results = results;
       render(locale, createElement(SortSelect));
       (client.handlers.select as (v: string) => void)(value);
       yield {
