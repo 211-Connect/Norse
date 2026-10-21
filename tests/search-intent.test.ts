@@ -16,6 +16,7 @@ import {
   rawSearchParams,
   readEnvelope,
   SEARCH_SLOTS,
+  searchIntent,
   serializeSearch,
   serializeSearchUrl,
   stringParam,
@@ -154,6 +155,24 @@ test('a slot added later writes nothing for any older URL', () => {
     const written = new Map(encodeIntent(WITH_DUMMY_SLOT, intent));
     assert.deepStrictEqual(written.get('syntheticDummy'), [], name);
   }
+});
+
+test('a reserved slot cannot be written to a /search URL', () => {
+  const place = { kind: 'slug', slug: 'spokane-wa-us' } as const;
+  const reserved: Array<[keyof typeof SEARCH_SLOTS, unknown]> = [
+    ['place', place],
+    ['geoMode', { kind: 'boundary', place }],
+  ];
+  for (const [name, value] of reserved) {
+    assert.throws(
+      () =>
+        serializeSearch(searchIntent({ [name]: value }), { passThrough: [] }),
+      /reserved for the slug route/,
+      `${name} stated must not serialize silently`,
+    );
+  }
+  // Control: the same call with every slot unstated writes an empty query string.
+  assert.equal(serializeSearch(searchIntent({}), { passThrough: [] }), '');
 });
 
 test('the lift is pure: the same URL lifts the same way twice', () => {

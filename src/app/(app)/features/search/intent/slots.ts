@@ -16,6 +16,7 @@ import {
   stringParam,
   type IntentOf,
   type SlotDeclaration,
+  type UrlPairs,
 } from './slot';
 
 /** Whatever `qs` made of `filters[...]`: normally `{ key: string[] }`, but the URL decides. */
@@ -141,17 +142,25 @@ const aiOptions: SlotDeclaration<AiPredictOption[]> = {
     ]),
 };
 
-// Reserved for the slug route (ISS-2296). A /search URL never states them.
-// Reserved for the slug route (ISS-2296), which lifts them from the path. Never in a /search URL.
+/**
+ * Reserved for the slug route (ISS-2296), which lifts them from the path. A /search URL never states them,
+ * and cannot express them: writing a stated reserved slot throws rather than silently dropping it, so the
+ * round-trip property holds for every slot that can be written at all.
+ */
+const reserved = (name: string) => (): UrlPairs => {
+  throw new Error(
+    `${name} is reserved for the slug route (ISS-2296): a /search URL cannot express it`,
+  );
+};
 const place: SlotDeclaration<PlaceReference> = {
   keys: [],
   decode: () => undefined,
-  encode: () => [],
+  encode: reserved('place'),
 };
 const geoMode: SlotDeclaration<GeoMode> = {
   keys: [],
   decode: () => undefined,
-  encode: () => [],
+  encode: reserved('geoMode'),
 };
 
 /**
