@@ -15,7 +15,11 @@ const UNVERIFIABLE = (status: number) =>
   status === 403 || status === 429 || status >= 500;
 
 export function launchBrowser(): Promise<Browser> {
-  return chromium.launch();
+  // PARITY_HOST_RULES="MAP rf-wa211.c211.io 1.2.3.4" pins a host whose DNS the local resolver does not have yet.
+  const rules = process.env.PARITY_HOST_RULES;
+  return chromium.launch({
+    args: rules ? [`--host-resolver-rules=${rules}`] : [],
+  });
 }
 
 const relative = (url: string, origin: string) =>
