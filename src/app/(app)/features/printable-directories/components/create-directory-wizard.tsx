@@ -402,15 +402,21 @@ export function CreateDirectoryWizard({
                       placeholder={t('access_policy.label', {
                         ns: 'page-directories',
                       })}
-                    />
+                    >
+                      {getAccessPolicyLabel(accessPolicy, t)}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {(['private', 'shared-read', 'shared-edit'] as const).map(
                       (policy) => (
-                        <SelectItem key={policy} value={policy}>
+                        <SelectItem
+                          key={policy}
+                          value={policy}
+                          className="group"
+                        >
                           <div className="flex flex-col py-0.5">
                             <span>{getAccessPolicyLabel(policy, t)}</span>
-                            <span className="text-muted-foreground text-xs">
+                            <span className="text-muted-foreground group-data-[highlighted]:text-primary-foreground/80 text-xs">
                               {getAccessPolicyDescription(policy, t)}
                             </span>
                           </div>
