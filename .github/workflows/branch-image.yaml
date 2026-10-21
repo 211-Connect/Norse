@@ -1,0 +1,75 @@
+name: Branch Image
+
+# Builds the Norse image from the branch this workflow is dispatched on and pushes it to the registry
+# under a tag of your choosing. It deploys nothing: no app watches these tags. Used for one-off parallel
+# deployments such as the search-intent refactor comparison app (norse-rf-search), which is redeployed by
+# hand from the DigitalOcean console after a new image is pushed.
+
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Image tag to push (also pushed as <tag>-<short sha>)'
+        required: true
+        default: 'search-intent-refactor'
+      umami_script_url:
+        description: 'NEXT_PUBLIC_UMAMI_SCRIPT_URL baked into the build (development by default)'
+        required: false
+        default: ''
+
+env:
+  REGISTRY: registry.digitalocean.com
+  IMAGE_NAME: ${{ secrets.DO_REGISTRY_NAME }}/norse
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Refuse the tags the apps watch
+        run: |
+          case "${{ inputs.tag }}" in
+            development|production|main|latest)
+              echo "::error::'${{ inputs.tag }}' is a tag an app deploys from; pick another"; exit 1;;
+          esac
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log in to DigitalOcean Container Registry
+        run: doctl registry login --expiry-seconds 1200
+
+      - name: Short sha
+        id: sha
+        run: echo "short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ inputs.tag }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ inputs.tag }}-${{ steps.sha.outputs.short }}
+          build-args: |
+            NEXT_PUBLIC_MAPBOX_API_KEY=${{ vars.NEXT_PUBLIC_MAPBOX_API_KEY }}
+            NEXT_PUBLIC_MAPBOX_STYLE_URL=${{ vars.NEXT_PUBLIC_MAPBOX_STYLE_URL }}
+            NEXT_PUBLIC_MAPLIBRE_STYLE_URL=${{ vars.NEXT_PUBLIC_MAPLIBRE_STYLE_URL }}
+            NEXT_PUBLIC_UMAMI_SCRIPT_URL=${{ inputs.umami_script_url || vars.DEVELOPMENT_UMAMI_SCRIPT_URL }}
+            NEXT_PUBLIC_ALLOW_SEARCH_ENGINES=false
+
+      - name: Summary
+        run: |
+          echo "Pushed ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ inputs.tag }} (${{ steps.sha.outputs.short }})" >> "$GITHUB_STEP_SUMMARY"
+          echo "Deploy by hand: DigitalOcean console → norse-rf-search → Actions → Force Rebuild and Deploy" >> "$GITHUB_STEP_SUMMARY"
