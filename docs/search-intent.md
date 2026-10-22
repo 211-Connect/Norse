@@ -18,6 +18,7 @@ writer args ──▶ intent ──applyWriterRules──▶ serializeSearch ─
 | Lift              | `lift.ts`               | `liftSearchParams` / `liftQueryString`: URL to intent and envelope, plus its generation                                      |
 | Generations       | `generations.ts`        | The 8 URL shapes Norse has written, classified by shape                                                                      |
 | Serializer        | `serialize.ts`          | `serializeSearch` (lossless) and `applyWriterRules` (the URL rules)                                                          |
+| Rewrite           | `rewrite.ts`            | `rewriteSearchUrl`: lift the current URL, change it, serialize it (filter navigation, the coords redirect)                    |
 | Adapter           | `legacy.ts`             | `toFindResourcesQuery`: the intent in the shape the search service and the deep-link gate take                               |
 
 ## Rules
@@ -36,6 +37,11 @@ writer args ──▶ intent ──applyWriterRules──▶ serializeSearch ─
   - "Everywhere" means no location; coords are written only as a pair; distance only with a location
     or coords;
   - a new search starts on page 1.
+- **Writers that edit the URL the visitor is on** (filter navigation, the coords redirect) lift it, change
+  the intent and serialize it, through `rewriteSearchUrl` (`rewrite.ts`). A recognised plain key repeated
+  in the URL, which the lift reads as nothing, is read as its first value, as `URLSearchParams.get` and the
+  cookie middleware read it; a repeat the lift does read (`taxonomy`) and repeated pass-through keys are
+  kept. No writer emits `key[n]` for a plain key (ISS-2409).
 - **Hand-built `/search` URLs** live only in `features/search/utils/handBuiltSearchLinks.ts`, each
   pinned by a fixture. `tests/search-url-writers.test.ts` fails on any other one.
 
