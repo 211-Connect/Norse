@@ -1,6 +1,8 @@
 // The search resolver's permanent tests: every state carries one page action, the deep-link gate's
 // A/B/C/D outcomes, and what gate and refine policy do, all over the one machine.
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { test } from 'node:test';
 
 import { initialTransition, transition, type AnyStateNode } from 'xstate';
@@ -15,6 +17,7 @@ import {
 } from '../src/app/(app)/features/search/resolver';
 import type { AiPredictResponse } from '../src/app/(app)/shared/services/ai-classification-search-service';
 
+import { resolverDiagram } from './search-resolver-diagram';
 import { ALL_FIXTURES } from './search-intent-fixtures';
 
 const AI: SearchPolicy = { needs: 'gate', location: 'refine' };
@@ -267,4 +270,18 @@ test('the resolver is pure: the same input resolves the same way, with no action
     assert.deepStrictEqual(first.context, second.context);
     assert.deepStrictEqual(firstActions, []);
   }
+});
+
+test('the diagram in docs/search-intent.md is the machine', () => {
+  const doc = readFileSync(
+    join(import.meta.dirname, '../docs/search-intent.md'),
+    'utf8',
+  );
+  const block = doc.match(/```mermaid\n([\s\S]*?)\n```/);
+  assert.ok(block, 'docs/search-intent.md has no mermaid diagram');
+  assert.equal(
+    block[1],
+    resolverDiagram(),
+    'regenerate it: node --import tsx tests/search-resolver-diagram.ts',
+  );
 });
