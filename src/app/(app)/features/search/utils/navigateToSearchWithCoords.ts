@@ -1,3 +1,5 @@
+// Server-only: the search page calls this directly. It is not a Server Action: nothing on the client
+// imports it, and a `'use server'` export is a public POST endpoint (tests/search-server-actions.test.ts).
 import qs from 'qs';
 import { redirect } from 'next/navigation';
 import { createLogger } from '@/lib/logger';
