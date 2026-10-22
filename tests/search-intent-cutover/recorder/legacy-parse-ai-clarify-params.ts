@@ -1,3 +1,5 @@
+// Cut-over scaffolding (ISS-2377): a frozen copy of the old parseLegacyAiClarifyParams from src/, removed there by ISS-2377.
+// The lift differential and the client harnesses compare against it. Deleted with this directory.
 import qs from 'qs';
 
 import type {
@@ -5,7 +7,7 @@ import type {
   AiPredictOption,
 } from '@/app/(app)/shared/services/ai-classification-search-service';
 
-import type { RawSearchParams } from './parseSearchParams';
+import type { RawSearchParams } from './legacy-parse-search-params';
 import { parseBoolean, parseNumberOrNull } from '@/utils';
 import { normalizeIndexedCollection } from '@/utils/normalizeIndexedCollection';
 

@@ -8,7 +8,7 @@ import {
   searchPolicy,
   searchResolverMachine,
 } from '@/app/(app)/features/search/resolver';
-import type { LegacyAiClarifyState } from '@/app/(app)/features/search/utils/parseLegacyAiClarifyParams';
+import type { LegacyAiClarifyState } from '@/app/(app)/features/search/intent';
 import { predictSearchNeeds } from '@/app/(app)/shared/services/ai-classification-search-service';
 import { createLogger } from '@/lib/logger';
 import { AppConfig } from '@/types/appConfig';

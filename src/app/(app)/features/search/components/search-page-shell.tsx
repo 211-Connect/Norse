@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react';
 
 import type { SearchIntent } from '@/app/(app)/features/search/intent';
 import { SearchCardLayoutConfig } from '@/app/(app)/features/search/types/card-layout-config';
-import type { LegacyAiClarifyState } from '@/app/(app)/features/search/utils/parseLegacyAiClarifyParams';
+import type { LegacyAiClarifyState } from '@/app/(app)/features/search/intent';
 
 import { FilterPanel } from './filter/filter-panel';
 import { MapContainer } from './map-container';
