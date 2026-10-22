@@ -174,7 +174,9 @@
     "auto_translate_hint": "Los idiomas vacíos se traducen automáticamente al guardar. Las traducciones editadas se conservan.",
     "show_more_languages_one": "Mostrar {{count}} más idioma",
     "show_more_languages_other": "Mostrar {{count}} más idiomas",
-    "show_fewer_languages": "Mostrar menos idiomas"
+    "show_fewer_languages": "Mostrar menos idiomas",
+    "auto_translate_paused_user_quota": "La traducción automática se ha pausado hasta el mes que viene porque has alcanzado tu límite mensual de traducciones. Puedes seguir guardando las traducciones y escribirlas tú mismo.",
+    "auto_translate_paused_tenant_cap": "La traducción automática está en pausa hasta el próximo mes porque este sitio ha alcanzado su límite mensual de traducciones. La función de guardar traducciones sigue funcionando y puedes escribirlas manualmente."
   },
   "languages_label": "Idiomas",
   "languages_help": "Los idiomas a los que está traducido este directorio y en los que se puede imprimir o compartir.",

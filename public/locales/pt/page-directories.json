@@ -174,7 +174,9 @@
     "auto_translate_hint": "Idiomas vazios são traduzidos automaticamente ao salvar. As traduções editadas são mantidas.",
     "show_more_languages_one": "Mostrar mais idiomas {{count}}",
     "show_more_languages_other": "Mostrar mais idiomas {{count}}",
-    "show_fewer_languages": "Mostrar menos idiomas"
+    "show_fewer_languages": "Mostrar menos idiomas",
+    "auto_translate_paused_user_quota": "A tradução automática foi pausada até o próximo mês porque você atingiu seu limite mensal de traduções. Você ainda pode salvar o jogo e digitar as traduções manualmente.",
+    "auto_translate_paused_tenant_cap": "A tradução automática está pausada até o próximo mês porque este site atingiu seu limite mensal de traduções. Ainda é possível salvar o conteúdo e você pode digitar as traduções manualmente."
   },
   "languages_label": "Línguas",
   "languages_help": "Os idiomas para os quais este diretório está traduzido e pode ser impresso ou compartilhado.",

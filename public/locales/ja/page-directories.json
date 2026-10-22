@@ -174,7 +174,9 @@
     "auto_translate_hint": "空欄の言語は保存時に自動的に翻訳されます。編集済みの翻訳は保持されます。",
     "show_more_languages_one": "{{count}} より多くの言語を表示",
     "show_more_languages_other": "{{count}} より多くの言語を表示",
-    "show_fewer_languages": "言語を少なく表示する"
+    "show_fewer_languages": "言語を少なく表示する",
+    "auto_translate_paused_user_quota": "月間翻訳上限に達したため、自動翻訳は来月まで一時停止されます。保存機能は引き続きご利用いただけます。また、手動で翻訳を入力することは可能です。",
+    "auto_translate_paused_tenant_cap": "このサイトは月間翻訳上限に達したため、自動翻訳は来月まで一時停止されます。保存機能は引き続きご利用いただけます。また、手動で翻訳を入力することは可能です。"
   },
   "languages_label": "言語",
   "languages_help": "このディレクトリが翻訳され、印刷または共有できる言語は以下のとおりです。",

@@ -174,7 +174,9 @@
     "auto_translate_hint": "Afaanonni duwwaa yeroo qusattu ofumaan ni hiikamu. Hiikkaawwan gulaalaman ni qabamu.",
     "show_more_languages_one": "Afaan dabalataa {{count}} agarsiisi",
     "show_more_languages_other": "Afaanota dabalataa {{count}} agarsiisi",
-    "show_fewer_languages": "Afaanota muraasa agarsiisi"
+    "show_fewer_languages": "Afaanota muraasa agarsiisi",
+    "auto_translate_paused_user_quota": "Hiikkaan ofumaan hanga ji'a dhufutti kan dhaabbatu sababni isaas daangaa hiikkaa ji'aa keessan waan geesseef. Qusachuun ammallee ni hojjeta, hiikkaa ofii keetii barreessuu dandeessa.",
+    "auto_translate_paused_tenant_cap": "Marsariitiin kun daangaa hiikkaa ji'a ji'aan waan ga'eef hiikkaan ofumaan hanga ji'a dhufutti dhaabbateera. Qusachuun ammallee ni hojjeta, hiikkaa ofii keetii barreessuu dandeessa."
   },
   "languages_label": "Afaanota",
   "languages_help": "Afaanota galmeen kun itti hiikamee fi maxxanfamuu ykn qoodamuu danda'u.",

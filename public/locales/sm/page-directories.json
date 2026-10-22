@@ -174,7 +174,9 @@
     "auto_translate_hint": "E otometi lava ona faaliliuina gagana gaogao pe a e sefeina. O faaliliuga ua faasa'oina e teuina.",
     "show_more_languages_one": "Faaali atu le {{count}} nisi gagana",
     "show_more_languages_other": "Faaali atu {{count}} isi gagana",
-    "show_fewer_languages": "Faaali ni nai gagana"
+    "show_fewer_languages": "Faaali ni nai gagana",
+    "auto_translate_paused_user_quota": "Ua taofia le faaliliuga otometi seia oo i le masina fou ona ua e oo i lau tapula'a faalemasina mo faaliliuga. E aoga pea le sefeina, ma e mafai ona e lolomiina oe lava ia faaliliuga.",
+    "auto_translate_paused_tenant_cap": "Ua taofia le faaliliuga otometi seia oo i le masina fou ona ua oo atu lenei 'upega tafaʻilagi i lona tapulaʻa faaliliu faalemasina. O loo aoga pea le sefeina, ma e mafai ona e lolomiina oe lava ia faaliliuga."
   },
   "languages_label": "Gagana",
   "languages_help": "O gagana ia e fa'aliliu i ai lenei fa'asinomaga ma e mafai ona lolomi pe fa'asoa atu ai.",

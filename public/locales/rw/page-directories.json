@@ -174,7 +174,9 @@
     "auto_translate_hint": "Indimi zirimo ubusa zihindurwa mu buryo bwikora iyo ubitse. Ubuhinduzi bwahinduwe burabikwa.",
     "show_more_languages_one": "Erekana indimi nyinshi kuri {{count}}",
     "show_more_languages_other": "Erekana indimi nyinshi kuri {{count}}",
-    "show_fewer_languages": "Erekana indimi nke"
+    "show_fewer_languages": "Erekana indimi nke",
+    "auto_translate_paused_user_quota": "Guhindura mu buryo bwikora birahagaze kugeza mu kwezi gutaha kuko wageze ku mubare ntarengwa w'ubuhinduzi bwa buri kwezi. Kubika biracyakora, kandi ushobora kwandika ubuhinduzi ubwawe.",
+    "auto_translate_paused_tenant_cap": "Guhindura mu buryo bwikora birahagaze kugeza mu kwezi gutaha kuko uru rubuga rwageze ku mubare ntarengwa w’ubuhinduzi bwarwo bwa buri kwezi. Kubika biracyakora, kandi ushobora kwandika ubuhinduzi ubwawe."
   },
   "languages_label": "Indimi",
   "languages_help": "Indimi iyi directory yahinduwemo kandi ishobora gucapwa cyangwa gusangirwamo.",

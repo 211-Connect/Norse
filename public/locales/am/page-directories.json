@@ -174,7 +174,9 @@
     "auto_translate_hint": "ባዶ ቋንቋዎች ሲያስቀምጡ በራስ-ሰር ይተረጎማሉ። የተስተካከሉ ትርጉሞች ይቀመጣሉ።",
     "show_more_languages_one": "{{count}} ተጨማሪ ቋንቋ አሳይ",
     "show_more_languages_other": "{{count}} ተጨማሪ ቋንቋዎችን አሳይ",
-    "show_fewer_languages": "ያነሱ ቋንቋዎችን አሳይ"
+    "show_fewer_languages": "ያነሱ ቋንቋዎችን አሳይ",
+    "auto_translate_paused_user_quota": "ወርሃዊ የትርጉም ገደብዎ ላይ ስለደረሱ ራስ-ሰር ትርጉም እስከሚቀጥለው ወር ድረስ ለአፍታ ቆሟል። ማስቀመጥ አሁንም ይሰራል፣ እና ትርጉሞችን እራስዎ መተየብ ይችላሉ።",
+    "auto_translate_paused_tenant_cap": "ይህ ጣቢያ ወርሃዊ የትርጉም ገደቡ ላይ ስለደረሰ ራስ-ሰር ትርጉም እስከሚቀጥለው ወር ድረስ ለአፍታ ቆሟል። ማስቀመጥ አሁንም ይሰራል፣ እና ትርጉሞችን እራስዎ መተየብ ይችላሉ።"
   },
   "languages_label": "ቋንቋዎች",
   "languages_help": "ይህ ማውጫ የሚተረጎምባቸው ቋንቋዎች ሲሆኑ ሊታተሙ ወይም ሊጋሩ ይችላሉ።",

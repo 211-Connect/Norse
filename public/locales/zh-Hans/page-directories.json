@@ -174,7 +174,9 @@
     "auto_translate_hint": "保存时，空白语言会自动翻译。已编辑的翻译会被保留。",
     "show_more_languages_one": "显示 {{count}} 更多语言",
     "show_more_languages_other": "显示 {{count}} 更多语言",
-    "show_fewer_languages": "显示较少语言"
+    "show_fewer_languages": "显示较少语言",
+    "auto_translate_paused_user_quota": "由于您已达到每月翻译次数上限，自动翻译功能已暂停，下个月才会恢复。您仍然可以保存翻译，也可以手动输入翻译内容。",
+    "auto_translate_paused_tenant_cap": "由于本站已达到每月翻译次数上限，自动翻译功能已暂停至下个月。您仍然可以保存翻译，也可以手动输入翻译内容。"
   },
   "languages_label": "语言",
   "languages_help": "本目录已被翻译成以下语言，并可打印或共享。",

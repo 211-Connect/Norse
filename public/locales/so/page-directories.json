@@ -174,7 +174,9 @@
     "auto_translate_hint": "Luqadaha madhan si toos ah ayaa loo turjumaa marka aad kaydiso. Turjumaadaha wax laga beddelay waa la hayaa.",
     "show_more_languages_one": "Muuji luqad dheeraad ah {{count}}",
     "show_more_languages_other": "Muuji luqado badan oo ay ku jiraan {{count}}",
-    "show_fewer_languages": "Muuji luqado yar"
+    "show_fewer_languages": "Muuji luqado yar",
+    "auto_translate_paused_user_quota": "Turjumaadda otomaatiga ah waa la hakiyay ilaa bisha soo socota sababtoo ah waxaad gaartay xadkaaga turjumaadda bishiiba. Kaydintu wali way shaqaysaa, adiguna waad qori kartaa turjumaadaha.",
+    "auto_translate_paused_tenant_cap": "Turjumaadda otomaatiga ah waa la hakiyay ilaa bisha soo socota sababtoo ah boggan wuxuu gaaray xadka turjumaadda bishii. Kaydintu wali way shaqaysaa, adiguna waad qori kartaa turjumaadaha."
   },
   "languages_label": "Luqadaha",
   "languages_help": "Luqadaha buugan lagu turjumay waa la daabacan karaa ama la wadaagi karaa.",

@@ -174,7 +174,9 @@
     "auto_translate_hint": "Cov lus uas tsis muaj dab tsi yuav raug txhais ua ntej thaum koj txuag. Cov lus txhais uas tau kho lawm yuav raug khaws cia.",
     "show_more_languages_one": "Qhia {{count}} ntau yam lus",
     "show_more_languages_other": "Qhia {{count}} ntau hom lus ntxiv",
-    "show_fewer_languages": "Qhia tsawg dua cov lus"
+    "show_fewer_languages": "Qhia tsawg dua cov lus",
+    "auto_translate_paused_user_quota": "Kev txhais lus tsis siv neeg raug ncua mus txog rau lub hlis tom ntej vim tias koj tau txog koj qhov kev txwv txhais lus txhua hli. Kev txuag tseem ua haujlwm, thiab koj tuaj yeem ntaus cov lus txhais koj tus kheej.",
+    "auto_translate_paused_tenant_cap": "Kev txhais lus tsis siv neeg raug ncua kom txog rau lub hlis tom ntej vim tias lub xaib no tau txog nws qhov kev txwv txhais lus txhua hli. Kev txuag tseem ua haujlwm, thiab koj tuaj yeem ntaus cov lus txhais koj tus kheej."
   },
   "languages_label": "Cov lus",
   "languages_help": "Cov lus uas daim ntawv teev npe no tau txhais ua thiab tuaj yeem luam tawm lossis qhia rau lwm tus.",

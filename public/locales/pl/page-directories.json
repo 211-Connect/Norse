@@ -174,7 +174,9 @@
     "auto_translate_hint": "Języki puste są tłumaczone automatycznie podczas zapisywania. Edytowane tłumaczenia są zachowywane.",
     "show_more_languages_one": "Pokaż {{count}} więcej języków",
     "show_more_languages_other": "Pokaż {{count}} więcej języków",
-    "show_fewer_languages": "Pokaż mniej języków"
+    "show_fewer_languages": "Pokaż mniej języków",
+    "auto_translate_paused_user_quota": "Automatyczne tłumaczenie jest wstrzymane do przyszłego miesiąca, ponieważ osiągnąłeś miesięczny limit tłumaczeń. Zapisywanie nadal działa i możesz samodzielnie wpisywać tłumaczenia.",
+    "auto_translate_paused_tenant_cap": "Automatyczne tłumaczenie jest wstrzymane do przyszłego miesiąca, ponieważ ta strona osiągnęła miesięczny limit tłumaczeń. Zapisywanie nadal działa i możesz samodzielnie wpisywać tłumaczenia."
   },
   "languages_label": "Języki",
   "languages_help": "Języki, na które przetłumaczono ten katalog i w których można go wydrukować lub udostępnić.",

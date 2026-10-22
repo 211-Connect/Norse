@@ -174,7 +174,9 @@
     "auto_translate_hint": "Các ngôn ngữ trống sẽ được dịch tự động khi bạn lưu. Các bản dịch đã chỉnh sửa sẽ được giữ nguyên.",
     "show_more_languages_one": "Hiển thị thêm ngôn ngữ cho {{count}}",
     "show_more_languages_other": "Hiển thị thêm ngôn ngữ cho {{count}}",
-    "show_fewer_languages": "Hiển thị ít ngôn ngữ hơn"
+    "show_fewer_languages": "Hiển thị ít ngôn ngữ hơn",
+    "auto_translate_paused_user_quota": "Chức năng dịch tự động tạm dừng cho đến tháng sau vì bạn đã đạt đến giới hạn dịch hàng tháng. Chức năng lưu vẫn hoạt động và bạn có thể tự nhập bản dịch.",
+    "auto_translate_paused_tenant_cap": "Chức năng dịch tự động tạm dừng cho đến tháng sau vì trang web này đã đạt đến giới hạn dịch hàng tháng. Việc lưu vẫn hoạt động bình thường và bạn có thể tự nhập bản dịch."
   },
   "languages_label": "Ngôn ngữ",
   "languages_help": "Danh sách các ngôn ngữ mà thư mục này được dịch sang và có thể in hoặc chia sẻ.",

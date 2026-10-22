@@ -174,7 +174,9 @@
     "auto_translate_hint": "Unuhi ʻia nā ʻōlelo hakahaka ke mālama ʻoe. Mālama ʻia nā unuhi i hoʻoponopono ʻia.",
     "show_more_languages_one": "Hōʻike i ka {{count}} ʻōlelo hou aku",
     "show_more_languages_other": "Hōʻike i nā ʻōlelo hou aʻe {{count}}",
-    "show_fewer_languages": "Hōʻike i nā ʻōlelo liʻiliʻi"
+    "show_fewer_languages": "Hōʻike i nā ʻōlelo liʻiliʻi",
+    "auto_translate_paused_user_quota": "Ua hoʻōki ʻia ka unuhi ʻakomi a hiki i ka mahina aʻe no ka mea ua hiki ʻoe i kāu palena unuhi mahina. Hana mau ka mālama ʻana, a hiki iā ʻoe ke paʻi i nā unuhi iā ʻoe iho.",
+    "auto_translate_paused_tenant_cap": "Ua hoʻōki ʻia ka unuhi ʻakomi a hiki i ka mahina aʻe no ka mea ua hiki kēia pūnaewele i kona palena unuhi mahina. Hana mau ka mālama ʻana, a hiki iā ʻoe ke paʻi i nā unuhi iā ʻoe iho."
   },
   "languages_label": "Nā ʻōlelo",
   "languages_help": "Nā ʻōlelo i unuhi ʻia ai kēia papa kuhikuhi a hiki ke paʻi ʻia a kaʻana like ʻia paha.",
