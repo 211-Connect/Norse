@@ -135,9 +135,15 @@ export const useOnSearchSubmit = ({
           'search_and_notify_low_info',
         ].includes(scenario)
       ) {
+        const locationPayload = await buildSearchLocationPayload(
+          searchCoordinates,
+          userCoordinates,
+          appConfig.tenantId,
+        );
         navigateAiSearch({
           taxonomies: predictResponse.hsis_taxonomies,
           scenario,
+          locationPayload,
         });
         return;
       }

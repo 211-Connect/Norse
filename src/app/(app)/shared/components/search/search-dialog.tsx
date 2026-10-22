@@ -24,6 +24,12 @@ import {
   reRankSearchNeeds,
 } from '../../services/ai-classification-search-service';
 import { buildAiNeedWeights } from '../../../features/search/utils/buildAiNeedWeights';
+import { buildSearchLocationPayload } from '@/app/(app)/shared/lib/search-location-meta';
+import { useAtomValue } from 'jotai';
+import {
+  searchCoordinatesAtom,
+  userCoordinatesAtom,
+} from '@/app/(app)/shared/store/search';
 import { AiClassificationOptions } from './ai-classification-options';
 import { LocationSearchBar } from './location-search-bar';
 import { SearchDialogHeaderActions } from './search-dialog-header-actions';
@@ -60,6 +66,9 @@ export function SearchDialog({
   const { t, i18n } = useTranslation('common');
   const [isPending, startTransition] = useTransition();
   const appConfig = useAppConfig();
+
+  const searchCoordinates = useAtomValue(searchCoordinatesAtom);
+  const userCoordinates = useAtomValue(userCoordinatesAtom);
 
   const [aiSearchScenario, setAiSearchScenario] = useState<
     AiClassificationScenario | undefined
@@ -120,11 +129,23 @@ export function SearchDialog({
     onLegacyAiClarifyAction?.();
     setActiveAiAction('skip');
     await Promise.resolve();
-    const didNavigate = navigateAiSearch();
+    const locationPayload = await buildSearchLocationPayload(
+      searchCoordinates,
+      userCoordinates,
+      appConfig.tenantId,
+    );
+    const didNavigate = navigateAiSearch({ locationPayload });
     if (!didNavigate) {
       setActiveAiAction(null);
     }
-  }, [activeAiAction, isPending, navigateAiSearch]);
+  }, [
+    activeAiAction,
+    appConfig.tenantId,
+    isPending,
+    navigateAiSearch,
+    searchCoordinates,
+    userCoordinates,
+  ]);
 
   const handleConfirmClarify = useCallback(async () => {
     if (activeAiAction || isPending) {
@@ -162,13 +183,24 @@ export function SearchDialog({
       return;
     }
 
-    navigateAiSearch({ taxonomies: reRankResponse.hsis_taxonomies });
+    const locationPayload = await buildSearchLocationPayload(
+      searchCoordinates,
+      userCoordinates,
+      appConfig.tenantId,
+    );
+
+    navigateAiSearch({
+      taxonomies: reRankResponse.hsis_taxonomies,
+      locationPayload,
+    });
   }, [
     activeAiAction,
     appConfig.tenantId,
     effectiveClarifyOptions,
     isPending,
     navigateAiSearch,
+    searchCoordinates,
+    userCoordinates,
     selectedClarifyCodes,
     t,
     i18n.language,
