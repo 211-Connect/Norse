@@ -5,10 +5,13 @@ import type { AnyStateNode } from 'xstate';
 
 import { searchResolverMachine } from '../src/app/(app)/features/search/resolver';
 
-const guardName = (guard: unknown) =>
-  typeof guard === 'string'
-    ? guard
-    : ((guard as { type?: string } | undefined)?.type ?? 'guard');
+/** A guard's name; `and([...])` shows its parts joined with `&&`. */
+const guardName = (guard: unknown): string => {
+  if (typeof guard === 'string') return guard;
+  const parts = (guard as { guards?: unknown[] } | undefined)?.guards;
+  if (Array.isArray(parts)) return parts.map(guardName).join(' && ');
+  return (guard as { type?: string } | undefined)?.type ?? 'guard';
+};
 
 function lines(node: AnyStateNode, indent: string): string[] {
   const out: string[] = [];

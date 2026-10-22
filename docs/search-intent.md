@@ -64,22 +64,33 @@ made and nothing is kept between requests. Prediction (ml-broker) runs outside t
 as a `PREDICTION_RESOLVED` event, so the machine is tested without it. ISS-2294 moved today's deep-link
 gate onto it unchanged.
 
-| State              | Page action           | When                                                                                     |
-| ------------------ | --------------------- | ---------------------------------------------------------------------------------------- |
-| `resolving`        | none, transient       | tries the old gate's early returns in order                                              |
-| `needs_prediction` | `page:render-gate`    | an AI tenant's query needs classifying (gate cases B and D); the server awaits it         |
-| `redirect_canonical` | `page:redirect`     | the prediction searches straight away: the canonical AI URL, with `a` for notify          |
-| `redirect_clarify` | `page:redirect`       | the prediction asks the user: the clarify URL                                            |
-| `settled`          | none, transient       | the search runs as the URL says                                                          |
-| `clarify_needs`    | `page:render-gate`    | the URL carries clarify state: the clarify dialog opens beside the results (any tenant)  |
-| `ready`            | `page:render-results` | everything else                                                                          |
+| State                | Page action           | When                                                                                     |
+| -------------------- | --------------------- | ---------------------------------------------------------------------------------------- |
+| `resolving`          | none, transient       | tries the old gate's early returns in order                                              |
+| `needs_prediction`   | `page:render-gate`    | a query needs classifying: on the server (gate cases B and D) or from the dialog's submit |
+| `redirect_canonical` | `page:redirect`       | the prediction searches straight away: the canonical AI URL, with `a` for notify          |
+| `redirect_clarify`   | `page:redirect`       | the prediction asks the user: the clarify URL                                            |
+| `settled`, `idle`    | none, transient       | back to rest: clarify state left to show, or none                                        |
+| `clarify_needs`      | `page:render-gate`    | clarify options are up: the dialog asks beside the results (any tenant, from the URL)    |
+| `ready`              | `page:render-results` | everything else                                                                          |
+| `location_required`  | `page:render-gate`    | the dialog's submit has no location and the location slot is a gate                      |
+| `following_link`, `navigating_classic`, `navigating_ai` | `page:redirect` | the dialog's submit: a link topic, a search as typed, or a classified search |
+| `skipping`, `confirmed` | `page:redirect`    | the clarify step's Skip, or Confirm after the re-rank                                    |
+| `confirming`         | `page:render-gate`    | Confirm is waiting for the re-rank                                                       |
+
+**The dialog runs on the same machine.** `useOnSearchSubmit` routes a submit with the same pure
+transitions as the server, from `ready`: a link topic, the location policy, a search as typed, or a
+prediction. `SearchDialog` runs an actor of the machine with `useMachine`, started from the page's
+intent; its effects (navigation, the re-rank, the error toast) are supplied by `machine.provide()`.
+Prediction and the re-rank run outside the machine and come back as events.
 
 Every state the machine can rest in carries exactly one page-action tag, and a transient state carries
 none; `tests/search-resolver.test.ts` walks every state node, nested ones included, to keep it that way.
 
 **Policy.** Each slot is `gate` or `refine` per tenant (`resolver/policy.ts`), derived from existing
 config: needs is `gate` on AI-classification tenants, location is `gate` where `requireUserLocation` is
-on. Location gates only the dialog submit; it never changes what the server does.
+on. Location gates only the dialog's submit (`location_required`); it never changes what the server
+does.
 
 ```mermaid
 stateDiagram-v2
@@ -90,14 +101,51 @@ stateDiagram-v2
   resolving --> settled: always [taxonomySearch]
   resolving --> settled: always [noQuery]
   resolving --> needs_prediction: always
+  needs_prediction --> navigating_classic: PREDICTION_RESOLVED [fromDialog && predictionMissing]
+  needs_prediction --> navigating_ai: PREDICTION_RESOLVED [fromDialog && directScenario]
+  needs_prediction --> clarify_needs: PREDICTION_RESOLVED [fromDialog]
   needs_prediction --> settled: PREDICTION_RESOLVED [predictionMissing]
   needs_prediction --> redirect_canonical: PREDICTION_RESOLVED [directScenario]
   needs_prediction --> redirect_clarify: PREDICTION_RESOLVED
+  needs_prediction --> idle: PREDICTION_SETTLED
   note right of needs_prediction: page:render-gate
   settled --> clarify_needs: always [clarifyStated]
   settled --> ready: always
+  idle --> clarify_needs: always [clarifyShown]
+  idle --> ready: always
+  clarify_needs --> following_link: SUBMIT [linkTopic]
+  clarify_needs --> location_required: SUBMIT [locationRequired]
+  clarify_needs --> navigating_classic: SUBMIT [classicSubmit]
+  clarify_needs --> needs_prediction: SUBMIT
+  clarify_needs --> needs_prediction: PREDICTION_REQUESTED
+  clarify_needs --> clarify_needs: OPTIONS_OFFERED
+  clarify_needs --> ready: QUERY_EDITED
+  clarify_needs --> skipping: SKIPPED
+  clarify_needs --> confirming: CONFIRMED
   note right of clarify_needs: page:render-gate
+  ready --> following_link: SUBMIT [linkTopic]
+  ready --> location_required: SUBMIT [locationRequired]
+  ready --> navigating_classic: SUBMIT [classicSubmit]
+  ready --> needs_prediction: SUBMIT
+  ready --> needs_prediction: PREDICTION_REQUESTED
+  ready --> clarify_needs: OPTIONS_OFFERED
   note right of ready: page:render-results
+  skipping --> idle: NAVIGATION_REFUSED
+  skipping --> idle: NAVIGATION_SETTLED
+  note right of skipping: page:redirect
+  confirming --> idle: RERANK_RESOLVED [rerankFailed]
+  confirming --> confirmed: RERANK_RESOLVED
+  note right of confirming: page:render-gate
+  confirmed --> idle: NAVIGATION_SETTLED
+  note right of confirmed: page:redirect
+  note right of following_link: page:redirect
+  location_required --> following_link: SUBMIT [linkTopic]
+  location_required --> location_required: SUBMIT [locationRequired]
+  location_required --> navigating_classic: SUBMIT [classicSubmit]
+  location_required --> needs_prediction: SUBMIT
+  note right of location_required: page:render-gate
+  note right of navigating_classic: page:redirect
+  note right of navigating_ai: page:redirect
   note right of redirect_canonical: page:redirect
   note right of redirect_clarify: page:redirect
 ```
