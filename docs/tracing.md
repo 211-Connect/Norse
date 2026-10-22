@@ -18,6 +18,12 @@ a separate NestJS repo).
   span still shows up locally) but do **not** get a `traceparent` header,
   since those services don't consume/expect one.
 
+  The scope is read from `API_URL` at startup; if it's unset, a warning is
+  logged and no `traceparent` reaches the API. Don't rely on `@vercel/otel`'s
+  defaults instead: without `propagateContextUrls` it only propagates to
+  `http://localhost` URLs (or the deployment's own host on Vercel), so local
+  dev would look fine while staging/prod traces silently stop at `norse-app`.
+
 The Norse API's `main.ts` already documents `traceparent` as an accepted
 global Swagger header, so no API-side change was needed for it to receive
 and link the propagated context.

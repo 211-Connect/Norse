@@ -42,10 +42,27 @@ export function register() {
     );
   }
 
+  // Next.js's own built-in fetch span does not propagate trace context.
+  // Disable it so @vercel/otel's fetch instrumentation (which does, via
+  // propagateContextUrls below) is the only one tracing outgoing fetches.
+  process.env.NEXT_OTEL_FETCH_DISABLED = '1';
+
+  const apiUrl = process.env.API_URL;
+  if (!apiUrl) {
+    log.warn('API_URL not set: traceparent will not be sent to the Norse API');
+  }
+
   registerOTel({
     serviceName: 'norse-app',
     traceSampler: new ParentBasedSampler({
       root: new TraceIdRatioBasedSampler(parseFloat(traceSamplerArg)),
     }),
+    instrumentationConfig: {
+      fetch: {
+        // Only inject `traceparent` for calls to the Norse API — not
+        // Keycloak, S3, Umami, Mapbox, Azure/Google Translate, etc.
+        propagateContextUrls: apiUrl ? [apiUrl] : [],
+      },
+    },
   });
 }
