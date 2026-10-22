@@ -20,7 +20,7 @@ import { cn } from '@/app/(app)/shared/lib/utils';
 import { filtersOpenAtom } from '@/app/(app)/shared/store/results';
 import { searchCoordinatesAtom } from '@/app/(app)/shared/store/search';
 import type { SearchIntent } from '@/app/(app)/features/search/intent';
-import type { LegacyAiClarifyState } from '@/app/(app)/features/search/utils/parseLegacyAiClarifyParams';
+import type { LegacyAiClarifyState } from '@/app/(app)/features/search/intent';
 
 import { useSearchResults } from '../../context/search-results-context';
 import { AgeFilter } from './age-filter';

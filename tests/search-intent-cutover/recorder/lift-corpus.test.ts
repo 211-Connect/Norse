@@ -11,8 +11,8 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { test } from 'node:test';
 
-import { parseLegacyAiClarifyParams } from '../../../src/app/(app)/features/search/utils/parseLegacyAiClarifyParams';
-import { parseSearchParams } from '../../../src/app/(app)/features/search/utils/parseSearchParams';
+import { parseLegacyAiClarifyParams } from './legacy-parse-ai-clarify-params';
+import { parseSearchParams } from './legacy-parse-search-params';
 import {
   liftIntent,
   liftSearchParams,
