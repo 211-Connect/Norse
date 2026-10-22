@@ -10,6 +10,7 @@ import { AppConfig } from '@/types/appConfig';
 import { getContrastColor } from '@/utils';
 
 import { GoogleTagManagerNoscript } from '../shared/components/google-tag-manager-noscript';
+import { GoogleTagManagerScript } from '../shared/components/google-tag-manager-script';
 import { Providers } from '../shared/components/providers';
 import { USER_PREF_FONT_SIZE } from '../shared/lib/constants';
 import { getServerDevice } from '../shared/lib/get-server-device';
@@ -140,9 +141,17 @@ export default async function RootLayout({
     headers(),
   ]);
   const device = getServerDevice(headersList.get('user-agent') ?? '');
+  const nonce = headersList.get('x-nonce') ?? '';
 
   return (
     <html lang={locale} style={style as any} className="max-sm:!text-[100%]">
+      <head>
+        {/* Must be server-rendered inside <head> for Search Console GTM verification. */}
+        <GoogleTagManagerScript
+          containerId={appConfig.gtmContainerId}
+          nonce={nonce}
+        />
+      </head>
       <body
         className={cn('font-sans antialiased', fontSans.variable)}
         id="app-root"
