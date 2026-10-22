@@ -19,6 +19,7 @@ import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { cn } from '@/app/(app)/shared/lib/utils';
 import { filtersOpenAtom } from '@/app/(app)/shared/store/results';
 import { searchCoordinatesAtom } from '@/app/(app)/shared/store/search';
+import type { SearchIntent } from '@/app/(app)/features/search/intent';
 import type { LegacyAiClarifyState } from '@/app/(app)/features/search/utils/parseLegacyAiClarifyParams';
 
 import { useSearchResults } from '../../context/search-results-context';
@@ -31,11 +32,13 @@ import { useSearchResultsNavigation } from './use-search-results-navigation';
 type FilterPanelProps = {
   legacyAiClarifyState?: LegacyAiClarifyState;
   onLegacyAiClarifyAction: () => void;
+  searchIntent?: SearchIntent;
 };
 
 export function FilterPanel({
   legacyAiClarifyState,
   onLegacyAiClarifyAction,
+  searchIntent,
 }: FilterPanelProps) {
   const { t } = useTranslation();
   const appConfig = useAppConfig();
@@ -92,6 +95,7 @@ export function FilterPanel({
           className="flex-1"
           legacyAiClarifyState={legacyAiClarifyState}
           onLegacyAiClarifyAction={onLegacyAiClarifyAction}
+          searchIntent={searchIntent}
         />
         <Button
           size="sm"

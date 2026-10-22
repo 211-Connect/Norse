@@ -1,4 +1,4 @@
-import type { AppConfig } from '@/types/appConfig';
+import type { SearchEngine } from '@/types/appConfig';
 
 /**
  * What a slot does when the URL leaves it unstated: `gate` may hold the page back until it is known,
@@ -19,12 +19,15 @@ export type SearchPolicy = {
  * gate on AI-classification tenants, location is a gate where `requireUserLocation` is on. A Payload
  * setting comes when a tenant first needs to gate another slot.
  */
-export function searchPolicy(
-  appConfig: Pick<AppConfig, 'search' | 'featureFlags'>,
-): SearchPolicy {
+export function searchPolicy({
+  searchEngine,
+  requireUserLocation,
+}: {
+  searchEngine: SearchEngine;
+  requireUserLocation: boolean;
+}): SearchPolicy {
   return {
-    needs:
-      appConfig.search.searchEngine === 'ai_classification' ? 'gate' : 'refine',
-    location: appConfig.featureFlags.requireUserLocation ? 'gate' : 'refine',
+    needs: searchEngine === 'ai_classification' ? 'gate' : 'refine',
+    location: requireUserLocation ? 'gate' : 'refine',
   };
 }
