@@ -50,8 +50,16 @@ Convention: page/layout files under `[locale]/` stay thin — they fetch
 data (`getAppConfigWithoutHost`, `initTranslations`, session), then delegate
 to a component in the matching `features/<name>/components/` folder. Look at
 an existing page (e.g. `[locale]/(rest)/favorites/page.tsx`) as the template
-for a new route: resolve `appConfig` for the locale, call `arcjetProtectPage`,
-initialize i18n namespaces, wrap children in `PageWrapper`.
+for a new route: resolve `appConfig` for the locale, initialize i18n
+namespaces, wrap children in `PageWrapper`. A page that serves directory
+data also calls `await protectPage(path)` (`src/lib/arcjet-page.ts`) first,
+before any data fetch, passing the path without the query string; so does
+its `generateMetadata` if it fetches directory data.
+
+Bot protection (Arcjet) is per page, not in `src/proxy.ts`, and its
+enforcement is set by env vars, not in Payload. See
+[bot-protection.md](/docs/bot-protection.md) for the covered routes, the
+config, the rollout and the recovery runbook.
 
 `shared/` holds code used by more than one feature:
 
@@ -199,11 +207,34 @@ locales (`locales`, `defaultLocale`) used by both systems.
 `mboa` is a real client with its own separate deployment, not just a generic
 tenant: it runs with `NEXT_PUBLIC_CUSTOM_BASE_PATH=/adresources` and
 `NEXT_PUBLIC_WITH_TRAILING_SLASHES=true` (see the commented-out block in
-`.env.examples`), and its outbound requests are proxied through a known IP
-allow-listed in Arcjet's bot detection (`MBOA_PROXY_IP` in
-`src/lib/arcjet.ts`) instead of being flagged as a bot. Changes to
-`NEXT_PUBLIC_CUSTOM_BASE_PATH`/trailing-slash handling or Arcjet rules should
-be checked against this deployment.
+`.env.examples`), and its inbound requests arrive through the mn.gov proxy
+(`MBOA_PROXY_IP` in `src/lib/arcjet/client-ip.ts`). That IP is in Arcjet's trusted
+`proxies` list, so Arcjet resolves the real client from `x-forwarded-for`
+instead of treating every MBOA visitor as one address. The proxy IP is not
+allow-listed as a bot; bots behind it are still detected (the allow list in
+`ARCJET_ALLOWED_BOTS` names the ones MBOA depends on, e.g.
+`SITEIMPROVE_CRAWLER`). `mboa.c211.io` stays in `ARCJET_UNENFORCED_HOSTS`
+(and out of `ARCJET_ENFORCED_HOSTS` on the MBOA app) until MNIT confirms
+which automated traffic is theirs
+(ISS-1737): Arcjet still runs and logs `arcjet_denied` with `enforced: false`,
+but the request is not blocked. On that host only, a request that arrives
+via the mn.gov proxy with only private hops in front of it (State network
+visitors) is sent to Arcjet with `ipSrc` set to the hop that proxy appended
+(`internalIpSrc`), so it still gets a bot decision; everywhere else a
+missing client IP goes to Arcjet unchanged, because forwarding headers can
+be spoofed. Everyone behind that hop shares one IP identity, so a future
+IP-keyed rate limit must use a session or user characteristic there. Changes to `NEXT_PUBLIC_CUSTOM_BASE_PATH`/trailing-slash
+handling or Arcjet rules should be checked against this deployment.
+
+The rule set (`buildArcjetRules` in `src/lib/arcjet/rules.ts`) also carries a
+`filter` rule denying requests with no `User-Agent`
+(`NO_USER_AGENT_FILTER`, ISS-1744): such requests cannot be evaluated by the
+bot rule and otherwise end as `CONCLUSION_ERROR` (fail-open). It runs in
+`DRY_RUN`, so the decision stays ALLOW and each match is logged as
+`arcjet_dry_run_match`. The promotion step is to read the dry-run impact
+after deploy (Arcjet dashboard and those log lines) and then flip the mode to
+`LIVE`. On 2026-10-16 the only traffic observed in this class was Outlook
+link-scanning from Microsoft's `2a01:111:f400::/48` range.
 
 ### Historical note: Strapi → Payload
 

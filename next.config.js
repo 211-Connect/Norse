@@ -73,6 +73,8 @@ const nextConfig = {
   cacheMaxMemorySize: 32 * 1024 * 1024, // 32 MB
   // Memory optimization settings
   experimental: {
+    // Enables `forbidden()` / forbidden.tsx for Arcjet denials (src/lib/arcjet-page.ts).
+    authInterrupts: true,
     webpackMemoryOptimizations: true,
     webpackBuildWorker: true,
     preloadEntriesOnStart: false,

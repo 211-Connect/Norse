@@ -61,7 +61,8 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@arcjet/next": "^1.12.0",
+    "@arcjet/ip": "1.14.1",
+    "@arcjet/next": "1.14.1",
     "@azure-rest/ai-translation-text": "^1.0.1",
     "@floating-ui/react": "^0.27.18",
     "@google-cloud/translate": "^10.1.1",
@@ -115,6 +116,7 @@
     "i18next": "^26.2.0",
     "i18next-resources-to-backend": "^1.2.1",
     "ioredis": "^5.8.2",
+    "ipaddr.js": "2.2.0",
     "jotai": "^2.12.5",
     "libphonenumber-js": "^1.13.15",
     "lru-cache": "^11.3.5",

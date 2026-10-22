@@ -14,8 +14,9 @@ on:
     inputs:
       environment:
         description: >-
-          Which deployed environment to test against: 'dev' or 'production'.
-          Selects the matrix cells to run (see `include` below).
+          Which deployed environment to test against. Only 'dev': production
+          hosts are enforced by Arcjet bot protection, which is expected to
+          deny headless Chromium (see docs/bot-protection.md).
         required: false
         type: string
 
@@ -27,7 +28,6 @@ on:
         type: choice
         options:
           - dev
-          - production
         default: dev
 
 jobs:
@@ -53,22 +53,18 @@ jobs:
           # to the `dev` cells for those triggers.
           TARGET_ENV: ${{ inputs.environment || 'dev' }}
         run: |
-          # MBOA production (mn.gov/adresources) is excluded here — it sits
-          # behind bot/robot blockers that reject automated Playwright traffic.
+          # Dev only. Production hosts are enforced by Arcjet bot protection,
+          # which is expected to deny headless Chromium; the dev hosts stay unenforced
+          # (ARCJET_ENFORCED_HOSTS unset on the dev apps). See
+          # docs/bot-protection.md.
           FULL_MATRIX='[
             {"tenant":"MBOA","env":"dev"},
             {"tenant":"DUPAGE","env":"dev"},
-            {"tenant":"DUPAGE","env":"production"},
             {"tenant":"WA","env":"dev"},
-            {"tenant":"WA","env":"production"},
             {"tenant":"VA","env":"dev"},
-            {"tenant":"VA","env":"production"},
             {"tenant":"PA","env":"dev"},
-            {"tenant":"PA","env":"production"},
             {"tenant":"AZ","env":"dev"},
-            {"tenant":"AZ","env":"production"},
-            {"tenant":"SCC","env":"dev"},
-            {"tenant":"SCC","env":"production"}
+            {"tenant":"SCC","env":"dev"}
           ]'
           FILTERED=$(echo "$FULL_MATRIX" | jq -c --arg env "$TARGET_ENV" '[.[] | select(.env == $env)]')
           echo "matrix={\"include\":$FILTERED}" >> "$GITHUB_OUTPUT"
