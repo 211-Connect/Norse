@@ -110,7 +110,8 @@
       "view_directory": "View directory",
       "include_search_location_label": "Include current search location in this query",
       "preview_label": "This is how it will be saved",
-      "location_conflict_warning": "This location is different from the directory's default location and will override it"
+      "location_conflict_warning": "This location is different from the directory's default location and will override it",
+      "add_to_section_description": "This search will be added to the “{{section}}” section of “{{directory}}”."
     },
     "save_list": {
       "open": "Save list to printable directory",
@@ -128,6 +129,19 @@
       "create_section_option": "Create “{{heading}}” section",
       "success": "Query saved to printable directory",
       "error": "Unable to save query to directory"
+    },
+    "edit_source": {
+      "trigger": "Update search",
+      "dialog_title": "Update search in printable directory",
+      "dialog_description": "This replaces search {{index}} in the “{{section}}” section of “{{directory}}”.",
+      "success": "Search updated in printable directory",
+      "error": "Unable to update search in directory"
+    },
+    "search_context": {
+      "editing": "You’re editing search {{index}} in the “{{section}}” section of “{{directory}}”. Saving will replace it with this search.",
+      "adding": "Saving will add this search to the “{{section}}” section of “{{directory}}”.",
+      "back_to_directory": "Back to directory",
+      "dismiss": "Stop editing the printable directory"
     }
   },
   "alert_date": "Alert date",

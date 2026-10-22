@@ -7,6 +7,7 @@ import { deriveQueryType } from '@/app/(app)/shared/lib/search-utils';
 import { persistSearchDistancePreference } from '@/app/(app)/shared/lib/search-distance-preference';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
+import { withPrintableDirectoryContext } from '@/app/(app)/shared/utils/printableDirectorySearchContext';
 import { buildSearchUrl } from '../utils/buildSearchUrl';
 import {
   searchAtom,
@@ -57,14 +58,17 @@ export const useNavigateClassicSearch = ({
             }
           : {};
 
-        const url = buildSearchUrl({
-          ...search,
-          query,
-          location: search.searchLocation,
-          coordinates: search.searchCoordinates,
-          distance: search.searchDistance,
-          searchEngine: appConfig.search.searchEngine,
-        });
+        const url = withPrintableDirectoryContext(
+          buildSearchUrl({
+            ...search,
+            query,
+            location: search.searchLocation,
+            coordinates: search.searchCoordinates,
+            distance: search.searchDistance,
+            searchEngine: appConfig.search.searchEngine,
+          }),
+          searchParams,
+        );
         persistSearchDistancePreference(distance);
 
         // Only present on the current URL for the user's first search

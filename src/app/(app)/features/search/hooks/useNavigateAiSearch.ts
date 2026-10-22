@@ -4,8 +4,9 @@ import {
   trackSearchEvent,
 } from '@/app/(app)/shared/lib/analytics';
 import { persistSearchDistancePreference } from '@/app/(app)/shared/lib/search-distance-preference';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
+import { withPrintableDirectoryContext } from '@/app/(app)/shared/utils/printableDirectorySearchContext';
 import { buildSearchUrl } from '../utils/buildSearchUrl';
 import {
   searchAtom,
@@ -26,6 +27,7 @@ export const useNavigateAiSearch = ({
 }: Args) => {
   const appConfig = useAppConfig();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const search = useAtomValue(searchAtom);
   const distance = useAtomValue(searchDistanceAtom);
   const setSearchEntry = useSetAtom(searchEntryAtom);
@@ -43,17 +45,20 @@ export const useNavigateAiSearch = ({
         return false;
       }
 
-      const url = buildSearchUrl({
-        aiScenario: scenario,
-        query,
-        queryLabel: search.queryLabel,
-        taxonomies,
-        location: search.searchLocation,
-        coordinates: search.searchCoordinates,
-        distance: search.searchDistance,
-        searchEngine: appConfig.search.searchEngine,
-        skipLegacyLinkCheck: true,
-      });
+      const url = withPrintableDirectoryContext(
+        buildSearchUrl({
+          aiScenario: scenario,
+          query,
+          queryLabel: search.queryLabel,
+          taxonomies,
+          location: search.searchLocation,
+          coordinates: search.searchCoordinates,
+          distance: search.searchDistance,
+          searchEngine: appConfig.search.searchEngine,
+          skipLegacyLinkCheck: true,
+        }),
+        searchParams,
+      );
 
       persistSearchDistancePreference(distance);
       startTransition(() => {
@@ -82,6 +87,7 @@ export const useNavigateAiSearch = ({
       search.searchLocation,
       search.searchCoordinates,
       search.searchDistance,
+      searchParams,
       appConfig.search.searchEngine,
       appConfig.sessionId,
       appConfig.tenantId,

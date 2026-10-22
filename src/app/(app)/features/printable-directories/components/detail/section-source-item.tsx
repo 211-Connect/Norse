@@ -18,6 +18,7 @@ import {
   TooltipTrigger,
 } from '@/app/(app)/shared/components/ui/tooltip';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
+import { PRINTABLE_DIRECTORY_CONTEXT_PARAMS } from '@/app/(app)/shared/utils/printableDirectorySearchContext';
 import {
   PrintableDirectoryDefaultQueryConfigDto,
   PrintableDirectorySourceResponseDto,
@@ -79,8 +80,9 @@ export function SectionSourceItem({
               source.query.params as Record<string, unknown>,
               defaultQueryConfig,
             ),
-            pdid: directoryId,
-            pdsid: sectionId,
+            [PRINTABLE_DIRECTORY_CONTEXT_PARAMS.directoryId]: directoryId,
+            [PRINTABLE_DIRECTORY_CONTEXT_PARAMS.sectionId]: sectionId,
+            [PRINTABLE_DIRECTORY_CONTEXT_PARAMS.sourceId]: source.id,
           },
           {
             arrayFormat: 'indices',

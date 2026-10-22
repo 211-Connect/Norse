@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { DirectoryPrintControl } from '@/app/(app)/shared/components/directory-print/directory-print-control';
 import { useDefaultDirectoryPdfDocument } from '@/app/(app)/shared/components/directory-print/use-default-directory-pdf-document';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import { usePrintableDirectorySearchContext } from '@/app/(app)/shared/hooks/use-printable-directory-search-context';
 import { getPrintableDirectoryData } from '@/app/(app)/shared/serverActions/search/getPrintableDirectoryData';
 import { ShareButton } from '@/app/(app)/shared/components/share-button';
 import {
@@ -23,6 +24,7 @@ import {
 
 import { useSearchResults } from '../context/search-results-context';
 import { SearchCardLayoutConfig } from '../types/card-layout-config';
+import { PrintableDirectoryContextBanner } from './printable-directory-context-banner';
 import { RenderResults } from './render-results';
 import { ResultTotal } from './result-total';
 import { ResultsPagination } from './results-pagination';
@@ -98,6 +100,11 @@ export function ResultsSection({
   const shareBody = t('share_body', { count: totalResults, title: shareTitle });
   const printableListName = shareTitle;
   const aiAlertMessageKey = getAiAlertMessageKey(aiSearchAlert);
+  const {
+    context: directoryContext,
+    isLoading: isDirectoryContextLoading,
+    dismiss: dismissDirectoryContext,
+  } = usePrintableDirectorySearchContext();
   const serializedQueryParams = useMemo(() => {
     const parsedParams = qs.parse(searchParams?.toString() ?? '');
     const parsedDistance = parseDistanceParam(
@@ -177,6 +184,12 @@ export function ResultsSection({
         Search Results
       </h2>
       <div className="flex flex-col gap-3 print:hidden">
+        {directoryContext && (
+          <PrintableDirectoryContextBanner
+            context={directoryContext}
+            onDismiss={dismissDirectoryContext}
+          />
+        )}
         {aiAlertMessageKey && (
           <Alert>
             <AlertDescription>{t(aiAlertMessageKey)}</AlertDescription>
@@ -184,17 +197,21 @@ export function ResultsSection({
         )}
         <div className="flex items-center justify-between">
           <ResultTotal />
-          <div className="flex gap-2.5">
+          <div className="flex flex-wrap justify-end gap-2.5">
             {resultsCount > 0 && (
               <DirectoryPrintControl
                 loadData={loadPrintableData}
                 renderDocument={renderPdfDocument}
               />
             )}
-            {resultsCount > 0 && (
+            {/* When editing a source, allow saving a query that matches
+                nothing yet — the user may be narrowing it on purpose. */}
+            {(resultsCount > 0 || directoryContext?.source) && (
               <SaveQueryToDirectoryButton
                 queryTitle={shareTitle}
                 queryParams={serializedQueryParams}
+                directoryContext={directoryContext}
+                disabled={isDirectoryContextLoading}
               />
             )}
             <ShareButton title={shareTitle} body={shareBody} />
