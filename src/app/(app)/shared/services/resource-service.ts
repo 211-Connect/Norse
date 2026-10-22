@@ -137,18 +137,23 @@ async function fetchResourcesIndividually(
 
 async function fetchAndTransformResourceOrigin(
   id: string,
-  options: { locale: string; tenantId: string; cacheKey: CacheKey },
-  originalId?: boolean,
+  locale: string,
+  tenantId: string,
+  originalId: boolean,
 ): Promise<Resource | null> {
+  const cacheKey: CacheKey = originalId
+    ? `resource:${tenantId}:original:${id}:${locale}`
+    : `resource:${tenantId}:${id}:${locale}`;
+
   return await withCache(
-    options.cacheKey,
+    cacheKey,
     async () => {
       const args = {
         id,
-        locale: options.locale,
-        tenant_id: options.tenantId,
+        locale,
+        tenant_id: tenantId,
       } as const;
-      const headers = await getApiHeaders(options.tenantId, options.locale);
+      const headers = await getApiHeaders(tenantId, locale);
 
       const response = await (originalId
         ? resourceApiClient.resourceControllerGetResourceByOriginalId(args, {
@@ -164,6 +169,9 @@ async function fetchAndTransformResourceOrigin(
   );
 }
 
+// Primitive arguments only: React `cache()` compares arguments by identity, so
+// an options object would miss on every call. This dedupes the fetch shared
+// by a page and its `generateMetadata` within one request.
 const fetchAndTransformResource = cache(fetchAndTransformResourceOrigin);
 
 async function fetchAndTransformResourcesBatchOrigin(
@@ -208,11 +216,7 @@ export async function getResource(
   locale: string,
   tenantId: string,
 ): Promise<Resource | null> {
-  return fetchAndTransformResource(id, {
-    locale,
-    tenantId,
-    cacheKey: `resource:${tenantId}:${id}:${locale}`,
-  });
+  return fetchAndTransformResource(id, locale, tenantId, false);
 }
 
 export async function getResourceByOriginalId(
@@ -220,15 +224,7 @@ export async function getResourceByOriginalId(
   locale: string,
   tenantId: string,
 ): Promise<Resource | null> {
-  return fetchAndTransformResource(
-    originalId,
-    {
-      locale,
-      tenantId,
-      cacheKey: `resource:${tenantId}:original:${originalId}:${locale}`,
-    },
-    true,
-  );
+  return fetchAndTransformResource(originalId, locale, tenantId, true);
 }
 
 export async function getResources(

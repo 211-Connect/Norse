@@ -3,6 +3,7 @@ import { LRUCache } from 'lru-cache';
 
 import { cacheService } from '@/cacheService';
 import { createLogger } from '@/lib/logger';
+import { createSingleFlight } from '@/utilities/singleFlight';
 
 const log = createLogger('withCache');
 
@@ -56,6 +57,16 @@ const memoryCache = new LRUCache<CacheKey, string>({
 export const clearMemoryCache = () => {
   memoryCache.clear();
 };
+
+/**
+ * Upper bound on how long concurrent misses wait on one shared fetch. Past
+ * this a caller starts its own fetch, so a hung upstream call cannot block a
+ * key for the life of the process.
+ */
+const IN_FLIGHT_MAX_AGE_MS = 30_000;
+
+/** One upstream fetch per cache key per process, shared by concurrent misses. */
+const fetchInFlight = createSingleFlight<CacheKey>(IN_FLIGHT_MAX_AGE_MS);
 
 export const withCache = async <T>(
   key: CacheKey,
@@ -114,29 +125,46 @@ export const withCache = async <T>(
     }
   }
 
-  const value = await fetchFunction();
+  // Concurrent misses for the same key share one fetch. The cache writes
+  // happen inside it, so a caller arriving after it settles hits the cache.
+  const { promise, shared } = fetchInFlight(key, async () => {
+    const value = await fetchFunction();
+    if (value == null) return { value, serialized: null };
 
-  if (value != null && shouldCache(value)) {
+    // Serialized before any caller sees `value`, so joiners get a clean copy
+    // even if the first caller mutates its result.
     const serialized = JSON.stringify(value);
 
-    if (redis) {
-      try {
-        await cacheService.set(key, serialized, config.ttl ?? FIFTEEN_MINUTES);
-      } catch (error) {
-        log.error({ err: error, key }, 'Error writing to Redis cache');
+    if (shouldCache(value)) {
+      if (redis) {
+        try {
+          await cacheService.set(
+            key,
+            serialized,
+            config.ttl ?? FIFTEEN_MINUTES,
+          );
+        } catch (error) {
+          log.error({ err: error, key }, 'Error writing to Redis cache');
+        }
+      }
+
+      if (memory) {
+        try {
+          memoryCache.set(key, serialized);
+        } catch (error) {
+          log.error({ err: error, key }, 'Error writing to memory cache');
+        }
       }
     }
 
-    if (memory) {
-      try {
-        memoryCache.set(key, serialized);
-      } catch (error) {
-        log.error({ err: error, key }, 'Error writing to memory cache');
-      }
-    }
-  }
+    return { value, serialized };
+  });
 
-  return value;
+  const result = await promise;
+  // The caller that started the fetch keeps the original; joiners get their
+  // own copy, like a cache hit.
+  if (!shared || result.serialized === null) return result.value;
+  return JSON.parse(result.serialized) as T;
 };
 
 /**
