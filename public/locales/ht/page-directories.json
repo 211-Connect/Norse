@@ -174,7 +174,9 @@
     "auto_translate_hint": "Lang vid yo tradui otomatikman lè ou sove. Tradiksyon modifye yo konsève.",
     "show_more_languages_one": "Montre {{count}} plis langaj",
     "show_more_languages_other": "Montre {{count}} plis lang",
-    "show_fewer_languages": "Montre mwens lang"
+    "show_fewer_languages": "Montre mwens lang",
+    "auto_translate_paused_user_quota": "Tradiksyon otomatik la pran yon poz jiska mwa pwochen paske ou rive nan limit tradiksyon mansyèl ou. Anrejistreman an toujou fonksyone, epi ou ka tape tradiksyon yo tèt ou.",
+    "auto_translate_paused_tenant_cap": "Tradiksyon otomatik la pran yon poz jiska mwa pwochen paske sit sa a rive nan limit tradiksyon mansyèl li. Anrejistreman an toujou fonksyone, epi ou ka tape tradiksyon yo tèt ou."
   },
   "languages_label": "Lang",
   "languages_help": "Lang yo tradui anyè sa a nan epi yo ka enprime oswa pataje ladan yo.",

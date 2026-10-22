@@ -174,7 +174,9 @@
     "auto_translate_hint": "Awtomatikong isinasalin ang mga walang laman na wika kapag na-save mo. Ang mga na-edit na pagsasalin ay pinapanatili.",
     "show_more_languages_one": "Ipakita ang {{count}} ng higit pang wika",
     "show_more_languages_other": "Ipakita ang {{count}} higit pang mga wika",
-    "show_fewer_languages": "Magpakita ng mas kaunting mga wika"
+    "show_fewer_languages": "Magpakita ng mas kaunting mga wika",
+    "auto_translate_paused_user_quota": "Nakahinto ang awtomatikong pagsasalin hanggang sa susunod na buwan dahil naabot mo na ang iyong buwanang limitasyon sa pagsasalin. Gumagana pa rin ang pag-save, at maaari mo nang i-type ang mga pagsasalin nang mag-isa.",
+    "auto_translate_paused_tenant_cap": "Nakahinto ang awtomatikong pagsasalin hanggang sa susunod na buwan dahil naabot na ng site na ito ang buwanang limitasyon nito sa pagsasalin. Gumagana pa rin ang pag-save, at maaari mo nang i-type ang mga pagsasalin nang mag-isa."
   },
   "languages_label": "Mga Wika",
   "languages_help": "Ang mga wikang ginagamit sa pagsasalin ng direktoryong ito at maaaring i-print o ibahagi.",

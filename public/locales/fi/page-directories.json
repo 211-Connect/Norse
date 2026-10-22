@@ -174,7 +174,9 @@
     "auto_translate_hint": "Tyhjät kielet käännetään automaattisesti tallennettaessa. Muokatut käännökset säilytetään.",
     "show_more_languages_one": "Näytä {{count}} lisää kieliä",
     "show_more_languages_other": "Näytä {{count}} lisää kieliä",
-    "show_fewer_languages": "Näytä vähemmän kieliä"
+    "show_fewer_languages": "Näytä vähemmän kieliä",
+    "auto_translate_paused_user_quota": "Automaattinen käännös on keskeytetty ensi kuuhun asti, koska olet saavuttanut kuukausittaisen käännöskiintiösi. Tallentaminen toimii edelleen, ja voit kirjoittaa käännöksiä itse.",
+    "auto_translate_paused_tenant_cap": "Automaattinen käännös on keskeytetty ensi kuuhun asti, koska tämä sivusto on saavuttanut kuukausittaisen käännösrajan. Tallentaminen toimii edelleen, ja voit kirjoittaa käännöksiä itse."
   },
   "languages_label": "Kielet",
   "languages_help": "Kielet, joille tämä hakemisto on käännetty ja joilla se voidaan tulostaa tai jakaa.",

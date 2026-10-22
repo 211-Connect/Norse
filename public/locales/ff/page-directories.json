@@ -174,7 +174,9 @@
     "auto_translate_hint": "Ɗemɗe meere ina pirtee otomatik so a hisnii. Firooji baylaaɗi ina keɓee.",
     "show_more_languages_one": "Hollit {{count}} ɗemngal ɓurngal heewde",
     "show_more_languages_other": "Hollit {{count}} ɗemɗe goɗɗe",
-    "show_fewer_languages": "Hollit ɗemɗe seeɗa"
+    "show_fewer_languages": "Hollit ɗemɗe seeɗa",
+    "auto_translate_paused_user_quota": "Firo otomatik ina dartinaa haa lewru arooru nduu sabu a yettiima keerol firo maa lewru kala. Hisnude ina golloo haa jooni, kadi aɗa waawi winndude firooji e hoore maa.",
+    "auto_translate_paused_tenant_cap": "Firo otomatik ina dartinaa haa lewru arooru nduu sabu ndee lowre yettiima keerol firo mum lewru kala. Hisnude ina golloo haa jooni, kadi aɗa waawi winndude firooji e hoore maa."
   },
   "languages_label": "Ɗemɗe",
   "languages_help": "Ɗemɗe ɗe ndee regginorde firtetee, ina waawi tappeede walla renndineede.",

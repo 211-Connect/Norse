@@ -174,7 +174,9 @@
     "auto_translate_hint": "儲存時，空白語言會自動翻譯。已編輯的翻譯會被保留。",
     "show_more_languages_one": "顯示 {{count}} 更多語言",
     "show_more_languages_other": "顯示 {{count}} 更多語言",
-    "show_fewer_languages": "顯示較少語言"
+    "show_fewer_languages": "顯示較少語言",
+    "auto_translate_paused_user_quota": "由於您已達到每月翻譯次數上限，自動翻譯功能已暫停，下個月才會恢復。您仍然可以儲存翻譯，也可以手動輸入翻譯內容。",
+    "auto_translate_paused_tenant_cap": "由於本站已達到每月翻譯次數上限，自動翻譯功能已暫停至下個月。您仍然可以儲存翻譯，也可以手動輸入翻譯內容。"
   },
   "languages_label": "語言",
   "languages_help": "本目錄已翻譯成以下語言，並可列印或分享。",

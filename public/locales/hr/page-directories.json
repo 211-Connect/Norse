@@ -174,7 +174,9 @@
     "auto_translate_hint": "Prazni jezici se automatski prevode prilikom spremanja. Uređeni prijevodi se čuvaju.",
     "show_more_languages_one": "Prikaži {{count}} više jezika",
     "show_more_languages_other": "Prikaži {{count}} više jezika",
-    "show_fewer_languages": "Prikaži manje jezika"
+    "show_fewer_languages": "Prikaži manje jezika",
+    "auto_translate_paused_user_quota": "Automatski prijevod je pauziran do sljedećeg mjeseca jer ste dosegli mjesečni limit prijevoda. Spremanje i dalje radi i možete sami tipkati prijevode.",
+    "auto_translate_paused_tenant_cap": "Automatski prijevod je pauziran do sljedećeg mjeseca jer je ova stranica dosegla mjesečni limit prijevoda. Spremanje i dalje radi, a prijevode možete sami tipkati."
   },
   "languages_label": "Jezici",
   "languages_help": "Jezici na koje je ovaj direktorij preveden i na kojima se može ispisati ili dijeliti.",

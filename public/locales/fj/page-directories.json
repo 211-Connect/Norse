@@ -174,7 +174,9 @@
     "auto_translate_hint": "Na vosa lala e vakadewataki vakataki koya ni o maroroya. E maroroi tu na vakadewa vakadodonutaki.",
     "show_more_languages_one": "Vakaraitaka {{count}} eso tale na vosa",
     "show_more_languages_other": "Vakaraitaka {{count}} eso tale na vosa",
-    "show_fewer_languages": "Vakaraitaka e lailai na vosa"
+    "show_fewer_languages": "Vakaraitaka e lailai na vosa",
+    "auto_translate_paused_user_quota": "Na vakadewa vakataki koya e cegu me yacova na vula ka tarava baleta ni o sa yacova na nomu iyalayala ni vakadewa ena veivula. E se cakacaka tikoga na maroroi, ka rawa ni o tabaka vakataki iko na vakadewa.",
+    "auto_translate_paused_tenant_cap": "Na vakadewa vakataki koya e vakadaroi me yacova na vula ka tarava baleta ni sa yacova na vanua oqo na kena iyalayala ni vakadewa ena veivula. E se cakacaka tikoga na maroroi, ka rawa ni o tabaka vakataki iko na vakadewa."
   },
   "languages_label": "Vosa",
   "languages_help": "Na vosa e vakadewataki kina na dairekita oqo ka rawa ni tabaki se wasei kina.",

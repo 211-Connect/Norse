@@ -174,7 +174,9 @@
     "auto_translate_hint": "Leere Sprachdateien werden beim Speichern automatisch übersetzt. Bearbeitete Übersetzungen bleiben erhalten.",
     "show_more_languages_one": "Zeige {{count}} weitere Sprachen",
     "show_more_languages_other": "Zeige {{count}} weitere Sprachen",
-    "show_fewer_languages": "Weniger Sprachen anzeigen"
+    "show_fewer_languages": "Weniger Sprachen anzeigen",
+    "auto_translate_paused_user_quota": "Die automatische Übersetzung ist bis zum nächsten Monat pausiert, da Sie Ihr monatliches Übersetzungslimit erreicht haben. Das Speichern ist weiterhin möglich, und Sie können Übersetzungen auch selbst eingeben.",
+    "auto_translate_paused_tenant_cap": "Die automatische Übersetzung ist bis nächsten Monat pausiert, da das monatliche Übersetzungslimit dieser Website erreicht ist. Das Speichern funktioniert weiterhin, und Sie können Übersetzungen auch selbst eingeben."
   },
   "languages_label": "Sprachen",
   "languages_help": "Die Sprachen, in die dieses Verzeichnis übersetzt wurde und in denen es ausgedruckt oder weitergegeben werden kann.",

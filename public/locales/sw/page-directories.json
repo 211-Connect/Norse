@@ -174,7 +174,9 @@
     "auto_translate_hint": "Lugha tupu hutafsiriwa kiotomatiki unapohifadhi. Tafsiri zilizohaririwa huhifadhiwa.",
     "show_more_languages_one": "Onyesha @@__PH_0__@ lugha zaidi {{count}}",
     "show_more_languages_other": "Onyesha {{count}} lugha zaidi",
-    "show_fewer_languages": "Onyesha lugha chache zaidi"
+    "show_fewer_languages": "Onyesha lugha chache zaidi",
+    "auto_translate_paused_user_quota": "Tafsiri otomatiki imesitishwa hadi mwezi ujao kwa sababu umefikia kikomo chako cha kila mwezi cha tafsiri. Kuhifadhi bado kunafanya kazi, na unaweza kuandika tafsiri mwenyewe.",
+    "auto_translate_paused_tenant_cap": "Tafsiri otomatiki imesitishwa hadi mwezi ujao kwa sababu tovuti hii imefikia kikomo chake cha kila mwezi cha tafsiri. Kuhifadhi bado kunafanya kazi, na unaweza kuandika tafsiri mwenyewe."
   },
   "languages_label": "Lugha",
   "languages_help": "Lugha ambazo saraka hii imetafsiriwa na zinaweza kuchapishwa au kushirikiwa.",
