@@ -7,6 +7,7 @@ import type {
   AnalyticsInfoResponse,
   AnalyticsMetricsResponse,
   AreaSearchesResponse,
+  BlockedTrafficResponse,
   EventCatalogEntryResponse,
   EventValuesResponse,
   HeatmapPointResponse,
@@ -181,6 +182,22 @@ export const fetchAnalyticsStats = makeCachedFetch(
       ),
     );
     if (!data) throw new Error('No stats data returned');
+    return data;
+  },
+);
+
+export const fetchAnalyticsBlockedTraffic = makeCachedFetch(
+  new Map<string, CacheEntry<BlockedTrafficResponse>>(),
+  async ({ startAt, endAt }, tenantId) => {
+    const data = await fetchWrapper<BlockedTrafficResponse>(
+      buildAnalyticsQuery(
+        '/analytics/blocked-traffic',
+        startAt,
+        endAt,
+        tenantId,
+      ),
+    );
+    if (!data) throw new Error('No blocked traffic data returned');
     return data;
   },
 );

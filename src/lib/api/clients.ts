@@ -1,4 +1,5 @@
 import { Analytics } from './generated/Analytics';
+import { BlockedTrafficInternal } from './generated/BlockedTrafficInternal';
 import { FavoriteList } from './generated/FavoriteList';
 import { Favorite } from './generated/Favorite';
 import { Geocoding } from './generated/Geocoding';
@@ -23,6 +24,10 @@ const clientArgs = {
 };
 
 export const analyticsApiClient = new Analytics(clientArgs);
+
+export const blockedTrafficInternalApiClient = new BlockedTrafficInternal(
+  clientArgs,
+);
 
 export const searchApiClient = new Search(clientArgs);
 
