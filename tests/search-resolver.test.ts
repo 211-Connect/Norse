@@ -74,6 +74,19 @@ function stateNodes(node: AnyStateNode = searchResolverMachine.root) {
   ];
 }
 
+/** The page-action tags a snapshot in this state has: its own and its ancestors', as `hasTag` reads them. */
+function pageActionsOn(node: AnyStateNode): string[] {
+  const tags: string[] = [];
+  for (let at: AnyStateNode | undefined = node; at; at = at.parent) {
+    tags.push(
+      ...at.tags.filter((tag) =>
+        (PAGE_ACTIONS as readonly string[]).includes(tag),
+      ),
+    );
+  }
+  return tags;
+}
+
 /** A transient state cannot be rested in: its last `always` transition has no guard. */
 const isTransient = (node: AnyStateNode) => {
   const always = node.always ?? [];
@@ -83,14 +96,13 @@ const isTransient = (node: AnyStateNode) => {
 test('every state carries exactly one page action, or is transient', () => {
   const nodes = stateNodes();
   assert.ok(nodes.length >= 7, `only ${nodes.length} state nodes found`);
+  // A snapshot rests in leaf states, so each leaf, nested ones included, is checked with its ancestors.
   const wrong = nodes
     .filter((node) => node.type !== 'compound' && node.type !== 'parallel')
     .map((node) => ({
       id: node.id,
       transient: isTransient(node),
-      actions: node.tags.filter((tag) =>
-        (PAGE_ACTIONS as readonly string[]).includes(tag),
-      ),
+      actions: pageActionsOn(node),
     }))
     .filter(({ transient, actions }) =>
       transient ? actions.length !== 0 : actions.length !== 1,
