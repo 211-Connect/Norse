@@ -5,13 +5,19 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { test } from 'node:test';
 
-import { initialTransition, transition, type AnyStateNode } from 'xstate';
+import {
+  createActor,
+  initialTransition,
+  transition,
+  type AnyStateNode,
+} from 'xstate';
 
 import { liftQueryString } from '../src/app/(app)/features/search/intent';
 import {
   PAGE_ACTIONS,
   pageActionOf,
   searchResolverMachine,
+  type DialogSubmission,
   type ResolverInput,
   type SearchPolicy,
 } from '../src/app/(app)/features/search/resolver';
@@ -123,7 +129,11 @@ test('a transient state is never where the machine rests', () => {
       .filter(isTransient)
       .map((node) => node.key),
   );
-  assert.deepStrictEqual([...transient].sort(), ['resolving', 'settled']);
+  assert.deepStrictEqual([...transient].sort(), [
+    'idle',
+    'resolving',
+    'settled',
+  ]);
   for (const fixture of ALL_FIXTURES) {
     for (const policy of [AI, CLASSIC]) {
       const snapshot = resolve(fixture.query, policy);
@@ -284,4 +294,197 @@ test('the diagram in docs/search-intent.md is the machine', () => {
     resolverDiagram(),
     'regenerate it: node --import tsx tests/search-resolver-diagram.ts',
   );
+});
+
+// The dialog: the same machine routes its submit (useOnSearchSubmit) and runs its clarify step (SearchDialog).
+
+const dialogInput = (policy: SearchPolicy, query = ''): ResolverInput => ({
+  ...input(query, policy),
+  loopGuard: true,
+});
+
+const submission = (
+  over: Partial<DialogSubmission> = {},
+): DialogSubmission => ({
+  query: 'food',
+  queryType: '',
+  organizationId: '',
+  href: '',
+  target: '',
+  location: 'Seattle',
+  ...over,
+});
+
+const submit = (policy: SearchPolicy, over: Partial<DialogSubmission> = {}) => {
+  const [resting] = initialTransition(
+    searchResolverMachine,
+    dialogInput(policy),
+  );
+  assert.equal(resting.value, 'ready');
+  return transition(searchResolverMachine, resting, {
+    type: 'SUBMIT',
+    submission: submission(over),
+  })[0];
+};
+
+test('requireUserLocation: location as gate blocks only the dialog submit without a location', () => {
+  const gated: SearchPolicy = { needs: 'gate', location: 'gate' };
+  for (const location of ['', '   ']) {
+    const blocked = submit(gated, { location });
+    assert.equal(blocked.value, 'location_required');
+    assert.equal(pageActionOf(blocked), 'page:render-gate');
+  }
+  assert.equal(submit(gated).value, 'needs_prediction');
+  assert.equal(submit(AI, { location: '' }).value, 'needs_prediction');
+  assert.equal(
+    submit({ ...CLASSIC, location: 'gate' }, { location: '' }).value,
+    'location_required',
+  );
+  // A link topic opens its href before the location is asked for, as it always has.
+  assert.equal(
+    submit(gated, { location: '', queryType: 'link', href: '/x' }).value,
+    'following_link',
+  );
+});
+
+test('the dialog submit searches as typed unless needs is a gate and there is a query to classify', () => {
+  assert.equal(submit(CLASSIC).value, 'navigating_classic');
+  assert.equal(
+    submit(AI, { queryType: 'taxonomy' }).value,
+    'navigating_classic',
+  );
+  assert.equal(
+    submit(AI, { organizationId: 'org-1' }).value,
+    'navigating_classic',
+  );
+  assert.equal(submit(AI, { query: '' }).value, 'navigating_classic');
+  assert.equal(submit(AI).value, 'needs_prediction');
+  assert.equal(
+    submit(AI, { queryType: 'link', href: '' }).value,
+    'needs_prediction',
+  );
+});
+
+test("the dialog's prediction navigates, offers clarify options, or searches as typed", () => {
+  const predicting = submit(AI);
+  const after = (prediction: AiPredictResponse | null) =>
+    transition(searchResolverMachine, predicting, {
+      type: 'PREDICTION_RESOLVED',
+      prediction,
+    })[0];
+  assert.equal(after(null).value, 'navigating_classic');
+  const direct = after(PREDICT_NOTIFY);
+  assert.equal(direct.value, 'navigating_ai');
+  assert.equal(direct.context.scenario, 'search_and_notify_low_info');
+  assert.equal(direct.context.redirectTo, undefined);
+  const clarify = after(PREDICT_CLARIFY);
+  assert.equal(clarify.value, 'clarify_needs');
+  assert.equal(clarify.context.clarifyOptions?.length, 2);
+  assert.deepStrictEqual(clarify.context.selectedCodes, ['food']);
+});
+
+/** A dialog actor with recording effects, as SearchDialog runs it through useMachine and provide(). */
+function dialogActor(
+  query: string,
+  rerank: string[] | null = ['BH-1800.8500'],
+) {
+  const log: string[] = [];
+  const actor = createActor(
+    searchResolverMachine.provide({
+      actions: {
+        clarifyActed: () => void log.push('clarifyActed'),
+        navigateSkipped: () => void log.push('navigateSkipped'),
+        requestRerank: ({ context, self }) => {
+          log.push(`rerank ${context.selectedCodes.join(',')}`);
+          self.send({ type: 'RERANK_RESOLVED', taxonomies: rerank });
+        },
+        navigateConfirmed: (_, { taxonomies }) =>
+          void log.push(`navigateConfirmed ${taxonomies.join(',')}`),
+        notifyRerankFailed: () => void log.push('notifyRerankFailed'),
+      },
+    }),
+    { input: dialogInput(AI, query) },
+  ).start();
+  return { actor, log, state: () => actor.getSnapshot() };
+}
+
+const CLARIFY_URL = predicted(
+  'query=food',
+  PREDICT_CLARIFY,
+).context.redirectTo!.replace('/search?', '');
+
+test('the dialog opens on the clarify step a clarify URL carries', () => {
+  const { state } = dialogActor(CLARIFY_URL);
+  assert.equal(state().value, 'clarify_needs');
+  assert.deepStrictEqual(
+    state().context.clarifyOptions?.map((o) => o.code),
+    ['food', 'housing'],
+  );
+  assert.deepStrictEqual(state().context.selectedCodes, ['food']);
+  assert.equal(state().context.scenario, 'clarify_multiple_labels');
+  const { state: plain } = dialogActor('query=food');
+  assert.equal(plain().value, 'ready');
+  assert.equal(plain().context.clarifyOptions, null);
+});
+
+test('confirm re-ranks the picked needs, then navigates with their taxonomy', () => {
+  const { actor, log, state } = dialogActor(CLARIFY_URL);
+  actor.send({ type: 'CODE_TOGGLED', code: 'housing' });
+  assert.deepStrictEqual(state().context.selectedCodes, ['food', 'housing']);
+  actor.send({ type: 'CONFIRMED', pending: false });
+  assert.deepStrictEqual(log, [
+    'clarifyActed',
+    'rerank food,housing',
+    'navigateConfirmed BH-1800.8500',
+  ]);
+  assert.equal(state().value, 'confirmed');
+  assert.equal(pageActionOf(state()), 'page:redirect');
+  actor.send({ type: 'NAVIGATION_SETTLED' });
+  assert.equal(state().value, 'clarify_needs');
+});
+
+test('confirm with nothing picked asks for a pick; a failed re-rank stays on the clarify step', () => {
+  const { actor, log, state } = dialogActor(CLARIFY_URL, null);
+  actor.send({ type: 'CODE_TOGGLED', code: 'food' });
+  actor.send({ type: 'CONFIRMED', pending: false });
+  assert.equal(state().value, 'clarify_needs');
+  assert.equal(state().context.needsSelection, true);
+  assert.deepStrictEqual(log, []);
+  actor.send({ type: 'CODE_TOGGLED', code: 'housing' });
+  assert.equal(state().context.needsSelection, false);
+  actor.send({ type: 'CONFIRMED', pending: false });
+  assert.deepStrictEqual(log, [
+    'clarifyActed',
+    'rerank housing',
+    'notifyRerankFailed',
+  ]);
+  assert.equal(state().value, 'clarify_needs');
+});
+
+test('skip navigates without a taxonomy; a refused navigation returns to the clarify step', () => {
+  const { actor, log, state } = dialogActor(CLARIFY_URL);
+  actor.send({ type: 'SKIPPED', pending: true });
+  assert.equal(state().value, 'clarify_needs');
+  actor.send({ type: 'SKIPPED', pending: false });
+  assert.equal(state().value, 'skipping');
+  assert.deepStrictEqual(log, ['clarifyActed', 'navigateSkipped']);
+  actor.send({ type: 'NAVIGATION_REFUSED' });
+  assert.equal(state().value, 'clarify_needs');
+});
+
+test("the dialog follows the submit's prediction steps and clears the clarify step on an edit", () => {
+  const { actor, state } = dialogActor('query=food');
+  actor.send({ type: 'PREDICTION_REQUESTED' });
+  assert.equal(state().value, 'needs_prediction');
+  actor.send({ type: 'PREDICTION_SETTLED' });
+  assert.equal(state().value, 'ready');
+  actor.send({ type: 'SCENARIO_RESOLVED', scenario: 'clarify_low_info' });
+  actor.send({ type: 'OPTIONS_OFFERED', options: PREDICT_CLARIFY.options });
+  actor.send({ type: 'CODES_SELECTED', codes: ['food'] });
+  assert.equal(state().value, 'clarify_needs');
+  assert.equal(state().context.scenario, 'clarify_low_info');
+  actor.send({ type: 'QUERY_EDITED' });
+  assert.equal(state().value, 'ready');
+  assert.equal(state().context.clarifyOptions, null);
+  assert.deepStrictEqual(state().context.selectedCodes, []);
 });
