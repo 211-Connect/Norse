@@ -32,11 +32,19 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Refuse the tags the apps watch
+        # The tag reaches the shell through an environment variable, never by `${{ }}` interpolation into the
+        # script: an input such as `$(…)` would otherwise run as a command on the runner.
+        env:
+          TAG: ${{ inputs.tag }}
         run: |
-          case "${{ inputs.tag }}" in
+          case "$TAG" in
             development|production|main|latest)
-              echo "::error::'${{ inputs.tag }}' is a tag an app deploys from; pick another"; exit 1;;
+              echo "::error::'$TAG' is a tag an app deploys from; pick another"; exit 1;;
           esac
+          # A Docker tag: up to 128 letters, digits, `_`, `.` or `-`, not starting with `.` or `-`.
+          if ! printf '%s' "$TAG" | grep -Eq '^[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}$'; then
+            echo "::error::'$TAG' is not a valid image tag"; exit 1
+          fi
 
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
@@ -70,6 +78,8 @@ jobs:
             NEXT_PUBLIC_ALLOW_SEARCH_ENGINES=false
 
       - name: Summary
+        env:
+          TAG: ${{ inputs.tag }}
         run: |
-          echo "Pushed ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ inputs.tag }} (${{ steps.sha.outputs.short }})" >> "$GITHUB_STEP_SUMMARY"
+          echo "Pushed ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$TAG (${{ steps.sha.outputs.short }})" >> "$GITHUB_STEP_SUMMARY"
           echo "Deploy by hand: DigitalOcean console → norse-rf-search → Actions → Force Rebuild and Deploy" >> "$GITHUB_STEP_SUMMARY"
