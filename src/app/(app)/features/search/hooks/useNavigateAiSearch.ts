@@ -15,6 +15,7 @@ import {
 } from '@/app/(app)/shared/store/search';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { AiClassificationScenario } from '@/app/(app)/shared/services/ai-classification-search-service';
+import type { SearchLocationPayload } from '@/app/(app)/shared/lib/search-location-meta';
 
 type Args = {
   setDialogOpen?: (open: boolean) => void;
@@ -36,10 +37,12 @@ export const useNavigateAiSearch = ({
     ({
       scenario,
       taxonomies,
+      locationPayload,
     }: {
       scenario?: AiClassificationScenario;
       taxonomies?: string[];
-    } = {}) => {
+      locationPayload: SearchLocationPayload;
+    }) => {
       const query = (search.query || search.searchTerm || '').trim();
       if (!query) {
         return false;
@@ -70,6 +73,7 @@ export const useNavigateAiSearch = ({
             query,
             queryLabel: String(search.queryLabel ?? ''),
             tenantId: appConfig.tenantId ?? '',
+            ...locationPayload,
           },
           appConfig.sessionId,
         );
