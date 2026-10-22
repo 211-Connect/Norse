@@ -71,8 +71,7 @@ function dialogStates(query: string) {
  * sees what the page would hand it, not a constant.
  */
 async function providerValue(query: string) {
-  const { parseSearchParams } =
-    await import('../../../src/app/(app)/features/search/utils/parseSearchParams');
+  const { parseSearchParams } = await import('./legacy-parse-search-params');
   const { isValidCoordinate } =
     await import('../../../src/utils/isValidCoordinate');
   const parsed = parseSearchParams(rawParamsFrom(query));
