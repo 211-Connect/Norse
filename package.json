@@ -18,7 +18,6 @@
     "format:check": "prettier --check .",
     "test:e2e": "npx playwright test",
     "test:unit": "node --import tsx --test tests/*.test.ts",
-    "test:parity": "node --max-old-space-size=8192 --import tsx --experimental-test-module-mocks --test 'tests/search-intent-cutover/recorder/*.test.ts'",
     "test:e2e:accessibility": "npx playwright test --project=accessibility",
     "test:e2e:favorites": "npx playwright test --project=favorites",
     "test:e2e:translations": "npx playwright test --project=translations",

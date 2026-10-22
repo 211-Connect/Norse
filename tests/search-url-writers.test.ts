@@ -4,9 +4,8 @@
 // add it here with a fixture and a reason.
 //
 // It finds a string or template literal that opens with /search (or has it straight after an interpolation),
-// followed by `?`, `${` or the end of the literal. Writers
-// that edit the current URL without spelling out /search (sort, pagination, the language switcher) are not
-// seen here; tests/search-intent-cutover/BUILDERS.md lists them.
+// followed by `?`, `${` or the end of the literal. Writers that edit the current URL without spelling out
+// /search (sort, pagination, the language switcher) are caught by the second scan, below.
 import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
