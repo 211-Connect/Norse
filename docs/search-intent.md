@@ -56,17 +56,54 @@ Exactly one generation matches every URL; a test fails if that ever stops being 
 reported beside the generation: location without coords, printable directory, filters, sort, page, age,
 distance, coords.
 
-## Deep-link gate (until ISS-2294)
+## Resolver
 
-The gate runs only on AI-classification tenants, and is skipped when `sllc=1`:
+One XState machine, `searchResolverMachine` in `features/search/resolver/`, decides what the page does
+with an intent. The server resolves it with a pure `initialTransition` before the search runs: no actor is
+made and nothing is kept between requests. Prediction (ml-broker) runs outside the machine and comes back
+as a `PREDICTION_RESOLVED` event, so the machine is tested without it. ISS-2294 moved today's deep-link
+gate onto it unchanged.
 
-- **hybrid with taxonomy, or `query_type=taxonomy`:** search as is;
-- **any other query:** classify it, then redirect to the canonical AI URL, or to the clarify URL.
+| State              | Page action           | When                                                                                     |
+| ------------------ | --------------------- | ---------------------------------------------------------------------------------------- |
+| `resolving`        | none, transient       | tries the old gate's early returns in order                                              |
+| `needs_prediction` | `page:render-gate`    | an AI tenant's query needs classifying (gate cases B and D); the server awaits it         |
+| `redirect_canonical` | `page:redirect`     | the prediction searches straight away: the canonical AI URL, with `a` for notify          |
+| `redirect_clarify` | `page:redirect`       | the prediction asks the user: the clarify URL                                            |
+| `settled`          | none, transient       | the search runs as the URL says                                                          |
+| `clarify_needs`    | `page:render-gate`    | the URL carries clarify state: the clarify dialog opens beside the results (any tenant)  |
+| `ready`            | `page:render-results` | everything else                                                                          |
 
-The redirect is written by `buildSearchUrl`, which goes through the serializer.
+Every state the machine can rest in carries exactly one page-action tag, and a transient state carries
+none; `tests/search-resolver.test.ts` walks every state node, nested ones included, to keep it that way.
 
-`docs/ai-search-legacy-link-flow.md` describes the gate in full until ISS-2377 replaces it with this
-document.
+**Policy.** Each slot is `gate` or `refine` per tenant (`resolver/policy.ts`), derived from existing
+config: needs is `gate` on AI-classification tenants, location is `gate` where `requireUserLocation` is
+on. Location gates only the dialog submit; it never changes what the server does.
+
+```mermaid
+stateDiagram-v2
+  [*] --> resolving
+  resolving --> settled: always [needsRefined]
+  resolving --> settled: always [loopGuarded]
+  resolving --> settled: always [canonicalAi]
+  resolving --> settled: always [taxonomySearch]
+  resolving --> settled: always [noQuery]
+  resolving --> needs_prediction: always
+  needs_prediction --> settled: PREDICTION_RESOLVED [predictionMissing]
+  needs_prediction --> redirect_canonical: PREDICTION_RESOLVED [directScenario]
+  needs_prediction --> redirect_clarify: PREDICTION_RESOLVED
+  note right of needs_prediction: page:render-gate
+  settled --> clarify_needs: always [clarifyStated]
+  settled --> ready: always
+  note right of clarify_needs: page:render-gate
+  note right of ready: page:render-results
+  note right of redirect_canonical: page:redirect
+  note right of redirect_clarify: page:redirect
+```
+
+`always` transitions out of a state are tried top to bottom. The diagram is generated from the machine
+(`node --import tsx tests/search-resolver-diagram.ts`), and a test fails when this copy differs.
 
 ## How to add a slot
 
