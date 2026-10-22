@@ -158,6 +158,7 @@ const getPageData = cache(async function (
     searchQuery,
     envelope,
     clarify,
+    intent,
     cardLayout,
   };
 });
@@ -233,6 +234,7 @@ export default async function SearchPage({
     searchQuery,
     envelope,
     clarify: legacyAiClarifyState,
+    intent,
     cardLayout,
   } = await getPageData(locale, searchParamsResult);
   const aiSearchAlert = envelope.a;
@@ -270,6 +272,7 @@ export default async function SearchPage({
       >
         <SearchPageShell
           legacyAiClarifyState={legacyAiClarifyState ?? undefined}
+          searchIntent={intent}
           cardLayout={cardLayout}
           aiSearchAlert={aiSearchAlert}
         />

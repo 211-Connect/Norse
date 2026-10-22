@@ -43,7 +43,10 @@ export async function handleLegacyDeepLinks({
   let [snapshot] = initialTransition(searchResolverMachine, {
     intent,
     loopGuard: skipLegacyLinkCheck,
-    policy: searchPolicy(appConfig),
+    policy: searchPolicy({
+      searchEngine: appConfig.search.searchEngine,
+      requireUserLocation: appConfig.featureFlags.requireUserLocation,
+    }),
     searchEngine: appConfig.search.searchEngine,
   });
 
