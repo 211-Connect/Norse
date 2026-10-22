@@ -36,6 +36,8 @@ writer args ──▶ intent ──applyWriterRules──▶ serializeSearch ─
   - "Everywhere" means no location; coords are written only as a pair; distance only with a location
     or coords;
   - a new search starts on page 1.
+- **Hand-built `/search` URLs** live only in `features/search/utils/handBuiltSearchLinks.ts`, each
+  pinned by a fixture. `tests/search-url-writers.test.ts` fails on any other one.
 
 ## Generations
 
