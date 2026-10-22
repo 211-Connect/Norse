@@ -30,7 +30,6 @@ import {
 } from '@/app/(app)/shared/lib/analytics';
 import {
   toFindResourcesQuery,
-  toLegacyAiClarifyState,
   type RawSearchParams,
 } from '@/app/(app)/features/search/intent';
 import { handleLegacyDeepLinks } from '@/app/(app)/features/search/utils/handleLegacyDeepLinks';
@@ -60,11 +59,10 @@ const getPageData = cache(async function (
     );
   }
 
-  // Run before the search executes: for AI-classification tenants this
-  // always redirects, so running it after would discard a real search.
-  await handleLegacyDeepLinks({
+  // Resolve before the search executes: a redirect here would discard a real search.
+  const clarify = await handleLegacyDeepLinks({
     appConfig,
-    searchQuery,
+    intent,
     locale,
     skipLegacyLinkCheck: envelope.sllc === '1',
   });
@@ -157,7 +155,7 @@ const getPageData = cache(async function (
     t,
     searchQuery,
     envelope,
-    clarify: toLegacyAiClarifyState(intent),
+    clarify,
     cardLayout,
   };
 });
