@@ -3,11 +3,11 @@ import { and, assign, setup } from 'xstate';
 import {
   toFindResourcesQuery,
   toLegacyAiClarifyState,
+  type LegacyAiClarifyState,
   type SearchIntent,
 } from '@/app/(app)/features/search/intent';
 import { buildAiNeedWeights } from '@/app/(app)/features/search/utils/buildAiNeedWeights';
 import { buildSearchUrl } from '@/app/(app)/features/search/utils/buildSearchUrl';
-import type { LegacyAiClarifyState } from '@/app/(app)/features/search/utils/parseLegacyAiClarifyParams';
 import type {
   AiClassificationScenario,
   AiPredictOption,

@@ -1,3 +1,5 @@
+// Cut-over scaffolding (ISS-2377): a frozen copy of the old parseSearchParams from src/, removed there by ISS-2377.
+// The lift differential and the client harnesses compare against it. Deleted with this directory.
 import { FindResourcesQuery } from '@/app/(app)/shared/services/search-service';
 import { isEverywhereLocation } from '@/app/(app)/shared/lib/search-utils';
 import { getSortOption } from '@/app/(app)/shared/utils/getSortOption';
