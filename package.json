@@ -52,7 +52,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "postcss": "^8.5.5",
     "prettier": "^3.9.9",
-    "prettier-plugin-embed": "^0.5.1",
+    "prettier-plugin-embed": "^0.7.1",
     "prettier-plugin-sql": "^0.20.0",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "swagger-typescript-api": "^13.12.4",
