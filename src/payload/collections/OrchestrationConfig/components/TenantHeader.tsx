@@ -3,7 +3,7 @@
 import { useDocumentInfo } from '@payloadcms/ui';
 import { useEffect, useState } from 'react';
 
-import { findTenantById } from '@/payload/collections/Tenants/actions/findTenantById';
+import { findTenantNameById } from '@/payload/collections/Tenants/actions/findTenantNameById';
 
 const TenantHeader = () => {
   const { id } = useDocumentInfo();
@@ -12,13 +12,9 @@ const TenantHeader = () => {
   useEffect(() => {
     if (!id) return;
 
-    findTenantById(String(id), false)
-      .then((tenant) => {
-        if (tenant?.name) {
-          setTenantName(tenant.name);
-        } else {
-          setTenantName(String(id));
-        }
+    findTenantNameById(String(id))
+      .then((name) => {
+        setTenantName(name || String(id));
       })
       .catch(() => {
         setTenantName(String(id));

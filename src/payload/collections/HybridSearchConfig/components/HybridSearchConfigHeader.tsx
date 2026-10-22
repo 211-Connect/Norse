@@ -4,7 +4,7 @@ import { useDocumentInfo } from '@payloadcms/ui';
 import { useEffect, useState } from 'react';
 
 import { findResourceDirectoryByTenantId } from '@/payload/collections/ResourceDirectories/actions/findResourceDirectoryByTenantId';
-import { findTenantById } from '@/payload/collections/Tenants/actions/findTenantById';
+import { findTenantNameById } from '@/payload/collections/Tenants/actions/findTenantNameById';
 
 const HYBRID_SEARCH_ENGINES = ['hybrid', 'ai_classification'];
 
@@ -18,9 +18,9 @@ const HybridSearchConfigHeader = () => {
   useEffect(() => {
     if (!id) return;
 
-    findTenantById(String(id), false)
-      .then((tenant) => {
-        setTenantName(tenant?.name || String(id));
+    findTenantNameById(String(id))
+      .then((name) => {
+        setTenantName(name || String(id));
       })
       .catch(() => {
         setTenantName(String(id));
