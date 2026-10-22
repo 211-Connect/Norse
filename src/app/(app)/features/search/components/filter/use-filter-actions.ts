@@ -2,11 +2,13 @@
 
 import { useCallback, useMemo } from 'react';
 
+import { UNSTATED } from '@/app/(app)/features/search/intent';
+
 import { ActiveFilters } from './types';
 import { useSearchResultsNavigation } from './use-search-results-navigation';
 
 export function useFilterActions() {
-  const { isPending, searchParamsObject, updateSearchParams } =
+  const { isPending, searchParamsObject, updateSearch } =
     useSearchResultsNavigation();
 
   const activeFilters = useMemo(
@@ -16,20 +18,12 @@ export function useFilterActions() {
 
   const applyFilters = useCallback(
     (newFilters?: ActiveFilters) => {
-      updateSearchParams((params) => {
-        if (!newFilters) {
-          const next = { ...params };
-          delete next.filters;
-          return next;
-        }
-
-        return {
-          ...params,
-          filters: newFilters,
-        };
-      });
+      updateSearch((intent) => ({
+        ...intent,
+        filters: newFilters ? { stated: true, value: newFilters } : UNSTATED,
+      }));
     },
-    [updateSearchParams],
+    [updateSearch],
   );
 
   const toggleFilter = useCallback(
