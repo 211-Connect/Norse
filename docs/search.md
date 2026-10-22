@@ -7,7 +7,7 @@ This document explains how the search dialog's autocomplete works, how the
 results page, and how organization search fits into that model. It is
 intended for engineering agents and contributors implementing or modifying
 search behavior — see also
-[docs/ai-search-legacy-link-flow.md](/docs/ai-search-legacy-link-flow.md)
+[docs/search-intent.md](/docs/search-intent.md)
 and [docs/search-deep-link-geocoding.md](/docs/search-deep-link-geocoding.md)
 for narrower, adjacent flows.
 
@@ -79,7 +79,7 @@ actually gets sent to `/search`:
 `buildSearchUrl()` (`src/app/(app)/features/search/utils/buildSearchUrl.ts`)
 calls `deriveQueryType()` and writes `query`, `query_label`, and `query_type`
 onto the `/search` URL. The results page reads them back verbatim via
-`parseSearchParams.ts` — nothing downstream needs to know how a `queryType`
+the lift (`liftSearchParams`, see [docs/search-intent.md](/docs/search-intent.md)) — nothing downstream needs to know how a `queryType`
 was derived, only what it is.
 
 Search submissions use the resolved `query_type` for their Umami custom event:
