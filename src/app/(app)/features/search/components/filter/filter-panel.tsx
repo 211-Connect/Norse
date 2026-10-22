@@ -54,16 +54,16 @@ export function FilterPanel({
   const hasSearchCoordinates = searchCoordinates.length === 2;
 
   useScrollOffset();
-  const { isPending, updateSearchParams } = useSearchResultsNavigation();
+  const { isPending, updateSearch } = useSearchResultsNavigation();
 
   const handleDistanceChange = useCallback(
     (distance: string) => {
-      updateSearchParams((params) => ({
-        ...params,
-        distance,
+      updateSearch((intent) => ({
+        ...intent,
+        distance: { stated: true, value: distance },
       }));
     },
-    [updateSearchParams],
+    [updateSearch],
   );
 
   const renderFilters = useCallback(

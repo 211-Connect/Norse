@@ -73,13 +73,14 @@ export function serializeSearch(
   return new URLSearchParams(pairs as Array<[string, string]>).toString();
 }
 
-/** The `/search` URL for an intent and its envelope. */
+/** The `/search` URL for an intent and its envelope, under `basePath` (a locale prefix) when given. */
 export function serializeSearchUrl(
   intent: SearchIntent,
   envelope: SearchEnvelope,
+  basePath = '',
 ): string {
   const query = serializeSearch(intent, envelope);
-  return `/search${query ? `?${query}` : ''}`;
+  return `${basePath}/search${query ? `?${query}` : ''}`;
 }
 
 export type WriterOptions = { searchEngine: SearchEngine };
