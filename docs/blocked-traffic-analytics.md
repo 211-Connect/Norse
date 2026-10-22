@@ -23,14 +23,13 @@ already in the `arcjet_denied` logs and the Arcjet console (`decisionId`).
 ## Where it is configured
 
 - Nothing per tenant. A tenant's denials are attributed by host with
-  `findTenantByHost` (`trustedDomains`), like the rest of the app.
+  `findTenantByHost` (`trustedDomains`), like the rest of the app. A denial
+  on a host that matches no tenant is not counted and not logged
+  (`recordBlockedTraffic` returns early); the page only renders for a host
+  the proxy resolved to a tenant, so this is not expected to happen.
 - `INTERNAL_API_KEY` and `API_URL`: the push uses Norse-API's internal
   endpoint with the tenant's usual headers (`getInternalHeaders`). Already
   required by scheduled PDF delivery.
-- `ARCJET_BLOCKED_TRAFFIC_FALLBACK_TENANT_ID` (optional): tenant that
-  denials on a host matching no tenant are counted for. Unset: they are not
-  counted, only logged (`blocked_traffic_unattributed`, 5 per minute, with a
-  running `unattributedTotal`).
 
 ## Architecture
 
@@ -73,7 +72,7 @@ in the Norse-API repo.
 
 | Key | Values |
 | --- | --- |
-| tenant | from the request host; the fallback tenant, if set, for unknown hosts |
+| tenant | from the request host (`findTenantByHost`) |
 | `hour` | start of the UTC hour the denial happened in |
 | `classification` | `seo` \| `nefarious` \| `unknown` |
 | `enforced` | `true` for a DENY (403); `false` for an observe-only host (not in `ARCJET_ENFORCED_HOSTS`, or in `ARCJET_UNENFORCED_HOSTS`, e.g. MBOA), so those denials are counted too, separately |
