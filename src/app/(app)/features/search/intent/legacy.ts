@@ -1,4 +1,7 @@
-import type { LegacyAiClarifyState } from '@/app/(app)/features/search/utils/parseLegacyAiClarifyParams';
+import type {
+  AiClassificationScenario,
+  AiPredictOption,
+} from '@/app/(app)/shared/services/ai-classification-search-service';
 import type { FindResourcesQuery } from '@/app/(app)/shared/services/search-service';
 import { isEverywhereLocation } from '@/app/(app)/shared/lib/search-utils';
 import { getSortOption } from '@/app/(app)/shared/utils/getSortOption';
@@ -13,7 +16,7 @@ const valueOf = <T>(slot: Slot<T>): T | undefined =>
 const nonEmpty = (slot: Slot<string>) => valueOf(slot) || undefined;
 
 /**
- * The intent in the shape `parseSearchParams` returns. This is where today's readings that the intent
+ * The intent in the shape the search service and the deep-link gate take. This is where the readings that the intent
  * deliberately does not make live: empty is absent, "Everywhere" is no location, age 0 is no age, and
  * sort falls back to relevance (and to relevance from distance without valid coords).
  */
@@ -36,7 +39,15 @@ export function toFindResourcesQuery(intent: SearchIntent): FindResourcesQuery {
   };
 }
 
-/** The intent in the shape `parseLegacyAiClarifyParams` returns. */
+/** The clarify step a URL carries, as the page and the dialog read it. */
+export type LegacyAiClarifyState = {
+  autoOpenDialog: boolean;
+  scenario?: AiClassificationScenario;
+  options: AiPredictOption[];
+  selectedCodes: string[];
+};
+
+/** The clarify state the URL carries, or null when it carries none. */
 export function toLegacyAiClarifyState(
   intent: SearchIntent,
 ): LegacyAiClarifyState | null {

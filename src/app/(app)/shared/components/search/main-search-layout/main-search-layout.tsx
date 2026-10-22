@@ -24,7 +24,7 @@ import {
 import { SearchDialog, SearchDialogProps } from '../search-dialog';
 import { MainSearchLayoutContextProvider } from './main-search-layout-context';
 import type { SearchIntent } from '@/app/(app)/features/search/intent';
-import type { LegacyAiClarifyState } from '@/app/(app)/features/search/utils/parseLegacyAiClarifyParams';
+import type { LegacyAiClarifyState } from '@/app/(app)/features/search/intent';
 
 interface MainSearchLayoutProps {
   addMyLocationButtonVariant?: AddMyLocationButtonProps['variant'];

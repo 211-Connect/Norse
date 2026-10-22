@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import { createLogger } from '@/lib/logger';
 import { forwardGeocode } from '@/app/(app)/shared/serverActions/geocoding/forwardGeocode';
 import { FindResourcesQuery } from '@/app/(app)/shared/services/search-service';
-import type { RawSearchParams } from './parseSearchParams';
+import type { RawSearchParams } from '@/app/(app)/features/search/intent';
 
 const log = createLogger('navigateToSearchWithCoords');
 
