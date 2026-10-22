@@ -162,8 +162,11 @@ stateDiagram-v2
    else.
 3. **Readers:** map it where it is consumed, in `toFindResourcesQuery` or in the resolver.
 4. **Tests:**
-   - add a fixture to `tests/search-intent-fixtures.ts` with its `canonical` URL;
-   - the dummy-slot tests already prove every older URL lifts it unstated and writes nothing for it;
+   - add a fixture to `tests/search-intent-fixtures.ts` with its `canonical` URL. It fails until the
+     slot is declared, because the key passes through instead;
+   - every existing fixture already pins every slot, so a decoder that fills the slot when the URL says
+     nothing fails them all (88 of them did when this guide was checked). The dummy-slot tests guard the
+     lift itself: they fail if the lift ever fills a slot the URL did not state, whatever the slot;
    - if the slot changes which generation a URL is, update `generations.ts`, and the exactly-one test
      will say whether two generations now overlap.
 5. **Run** `npm run test:unit`.
