@@ -143,7 +143,7 @@ test('a transient state is never where the machine rests', () => {
   }
 });
 
-// The old gate's A/B/C/D table (docs/ai-search-legacy-link-flow.md), on an AI-classification tenant.
+// The deep-link gate's A/B/C/D table, kept from the retired legacy-link doc, on an AI-classification tenant.
 
 test('gate case A: hybrid with taxonomy searches as is', () => {
   const snapshot = resolve('query=food&query_type=hybrid&taxonomy=BD-1800', AI);
