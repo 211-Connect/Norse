@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import {
+  liftForRewrite,
   liftQueryString,
   rawSearchParams,
   rewriteSearchUrl,
@@ -120,6 +121,23 @@ test('no search writer emits key[n] for a plain key', () => {
         (k) => k.includes('[') && plain.has(k.slice(0, k.indexOf('['))),
       );
       assert.deepStrictEqual(bracketed, [], `${query} -> ${url}`);
+    }
+  }
+});
+
+test('a rewrite changes bytes, not meaning: the URL it writes lifts to the intent it read', () => {
+  for (const fixture of ALL_FIXTURES.filter((f) => !f.loses)) {
+    for (const query of [fixture.query, withRepeats(fixture.query)]) {
+      const raw = rawSearchParams(query);
+      const read = liftForRewrite(raw);
+      const url = rewriteSearchUrl(raw, (i) => i, { newSearch: false });
+      const written = liftQueryString(url.split('?')[1] ?? '');
+      assert.deepStrictEqual(written.intent, read.intent, `${query} -> ${url}`);
+      assert.deepStrictEqual(
+        written.envelope,
+        read.envelope,
+        `${query} -> ${url}`,
+      );
     }
   }
 });
