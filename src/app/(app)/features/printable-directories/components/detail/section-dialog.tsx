@@ -14,7 +14,13 @@ import {
 import { Input } from '@/app/(app)/shared/components/ui/input';
 import { Label } from '@/app/(app)/shared/components/ui/label';
 
-import { SectionDialogValues } from '../../utils/dialog-types';
+import { PrintableDirectoryLocalizedValuesDto } from '@/lib/api/generated/data-contracts';
+
+import { DEFAULT_MAX_RESOURCES } from '../../utils/constants';
+import {
+  EMPTY_LOCALIZED_VALUES,
+  SectionDialogValues,
+} from '../../utils/dialog-types';
 import { LocalizedFieldTable } from './localized-field-table';
 
 type SectionDialogProps = {
@@ -23,10 +29,10 @@ type SectionDialogProps = {
   isSubmitting: boolean;
   title: string;
   submitLabel: string;
-  defaultMaxResources: number;
-  maxResourcesConfigurable: boolean;
   initialValues?: SectionDialogValues;
   onSubmit: (values: SectionDialogValues) => Promise<void>;
+  primaryLanguage: string;
+  locales: string[];
 };
 
 export function SectionDialog({
@@ -35,31 +41,28 @@ export function SectionDialog({
   isSubmitting,
   title,
   submitLabel,
-  defaultMaxResources,
-  maxResourcesConfigurable,
   initialValues,
   onSubmit,
+  primaryLanguage,
+  locales,
 }: SectionDialogProps) {
   const { t } = useTranslation(['page-directories', 'common']);
-  const [headingValues, setHeadingValues] = useState<Record<string, string>>(
-    {},
+  const [heading, setHeading] = useState<PrintableDirectoryLocalizedValuesDto>(
+    EMPTY_LOCALIZED_VALUES,
   );
-  const [descriptionValues, setDescriptionValues] = useState<
-    Record<string, string>
-  >({});
+  const [description, setDescription] =
+    useState<PrintableDirectoryLocalizedValuesDto>(EMPTY_LOCALIZED_VALUES);
   const [maxResources, setMaxResources] = useState<string>(
-    String(defaultMaxResources),
+    String(DEFAULT_MAX_RESOURCES),
   );
 
   const reset = () => {
-    setHeadingValues(initialValues?.headingLocalized.values ?? {});
-    setDescriptionValues(initialValues?.descriptionLocalized.values ?? {});
+    setHeading(initialValues?.headingLocalized ?? EMPTY_LOCALIZED_VALUES);
+    setDescription(
+      initialValues?.descriptionLocalized ?? EMPTY_LOCALIZED_VALUES,
+    );
     setMaxResources(
-      String(
-        maxResourcesConfigurable
-          ? (initialValues?.maxResources ?? defaultMaxResources)
-          : defaultMaxResources,
-      ),
+      String(initialValues?.maxResources ?? DEFAULT_MAX_RESOURCES),
     );
   };
 
@@ -79,15 +82,13 @@ export function SectionDialog({
 
   const handleSubmit = async () => {
     const max = Number(maxResources);
-    const maxResourcesValue = maxResourcesConfigurable
-      ? Number.isFinite(max)
-        ? max
-        : defaultMaxResources
-      : defaultMaxResources;
+    const maxResourcesValue = Number.isFinite(max)
+      ? max
+      : DEFAULT_MAX_RESOURCES;
 
     await onSubmit({
-      headingLocalized: { values: headingValues },
-      descriptionLocalized: { values: descriptionValues },
+      headingLocalized: heading,
+      descriptionLocalized: description,
       maxResources: maxResourcesValue,
     });
   };
@@ -102,25 +103,19 @@ export function SectionDialog({
         <div className="space-y-4">
           <LocalizedFieldTable
             label={t('section_heading_label', { ns: 'page-directories' })}
-            values={headingValues}
-            onChange={(locale, next) =>
-              setHeadingValues((previous) => ({
-                ...previous,
-                [locale]: next,
-              }))
-            }
+            value={heading}
+            primaryLanguage={primaryLanguage}
+            locales={locales}
+            onChange={setHeading}
           />
 
           <LocalizedFieldTable
             label={t('description_label', { ns: 'page-directories' })}
-            values={descriptionValues}
+            value={description}
             multiline
-            onChange={(locale, next) =>
-              setDescriptionValues((previous) => ({
-                ...previous,
-                [locale]: next,
-              }))
-            }
+            primaryLanguage={primaryLanguage}
+            locales={locales}
+            onChange={setDescription}
           />
 
           <div className="space-y-2">
@@ -133,7 +128,6 @@ export function SectionDialog({
               min={1}
               max={1000}
               value={maxResources}
-              disabled={!maxResourcesConfigurable}
               onChange={(event) => setMaxResources(event.target.value)}
             />
           </div>

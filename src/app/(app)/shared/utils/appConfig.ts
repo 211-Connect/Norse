@@ -247,10 +247,10 @@ async function getCachedAppConfigBase(
         turnResourceCardTaxonomiesIntoLinks: true,
       },
       printableDirectories: {
+        accessMode: 'allowlist',
         allowedEmails: [],
         allowedDomains: [],
-        maxResourcesConfigurable: true,
-        defaultMaxResources: 100,
+        userGroups: [],
       },
       footer: {
         customMenu: [],
@@ -419,18 +419,23 @@ async function getCachedAppConfigBase(
       showAgeFilter: resourceDirectory.featureFlags?.showAgeFilter ?? false,
     },
     printableDirectories: {
+      accessMode:
+        resourceDirectory.printableDirectories?.accessMode ?? 'allowlist',
       allowedEmails:
-        resourceDirectory.featureFlags?.printableDirectoriesAllowedEmails?.map(
+        resourceDirectory.printableDirectories?.allowedEmails?.map(
           ({ email }) => email,
         ) ?? [],
       allowedDomains:
-        resourceDirectory.featureFlags?.printableDirectoriesAllowedDomains?.map(
+        resourceDirectory.printableDirectories?.allowedDomains?.map(
           ({ domain }) => domain,
         ) ?? [],
-      maxResourcesConfigurable:
-        resourceDirectory.featureFlags?.maxResourcesConfigurable ?? true,
-      defaultMaxResources:
-        resourceDirectory.featureFlags?.defaultMaxResources ?? 100,
+      userGroups:
+        resourceDirectory.printableDirectories?.userGroups?.map((group) => ({
+          name: group.name,
+          emails: group.emails?.map(({ email }) => email) ?? [],
+          domains: group.domains?.map(({ domain }) => domain) ?? [],
+          capabilities: group.capabilities ?? [],
+        })) ?? [],
     },
     gtmContainerId:
       getTenant(resourceDirectory)?.common?.gtmContainerId ?? undefined,
@@ -705,6 +710,15 @@ const getCachedAppConfig = cache(async function (
 
   return cached;
 });
+
+/**
+ * The app config for a tenant host outside a request (no cookies or request
+ * headers), e.g. in Payload jobs. `baseUrl` and `sessionId` are not set.
+ */
+export const getAppConfigForHost = (
+  host: string,
+  locale: string,
+): Promise<CachedAppConfig> => getCachedAppConfig(host, locale);
 
 export const getAppConfigWithoutHost = async (locale: string) => {
   const { host } = await getHost();

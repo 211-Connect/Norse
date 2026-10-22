@@ -4,6 +4,10 @@ import { Phone, Printer } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import {
+  formatPhoneNumber,
+  getPhoneHref,
+} from '@/app/(app)/shared/utils/phone';
 import { Resource } from '@/types/resource';
 
 import {
@@ -51,9 +55,9 @@ export function PhoneNumbersComponent({ resource }: { resource: Resource }) {
           title={label}
           labelAs="h3"
           subtitle={description}
-          description={number}
-          url={`tel:${number}`}
-          urlAriaLabel={`${label}${description ? ` - ${description}` : ''}: ${number}`}
+          description={formatPhoneNumber(number)}
+          url={getPhoneHref(number)}
+          urlAriaLabel={`${label}${description ? ` - ${description}` : ''}: ${formatPhoneNumber(number)}`}
           onClick={() => {
             const resourceId = resource.id;
             trackEvent(

@@ -10,7 +10,7 @@
   "local_list": {
     "title": "My Saved Resources",
     "description": "Resources you save here are stored in your browser. Sign in to keep them across devices.",
-    "loading": "Loading saved resources\u2026",
+    "loading": "Loading saved resources…",
     "empty_title": "No saved resources yet",
     "empty_description": "Click the heart icon on any resource to add it here. Your selections are saved in this browser."
   },
@@ -35,6 +35,8 @@
     "font_size_title": "Font size",
     "font_size_standard": "Standard",
     "font_size_large": "Large",
+    "booklet_layout": "Booklet layout",
+    "booklet_layout_help": "Pages are arranged so the printout can be folded and stapled into a booklet: blank inside covers are added and the page count is padded to a multiple of 4. Print double-sided.",
     "language_title": "Directory language",
     "datum_phone": "Phone",
     "datum_hours": "Hours",

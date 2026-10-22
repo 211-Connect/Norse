@@ -184,7 +184,8 @@
   "autocomplete": {
     "results_available_one": "Доступний результат: {{count}}",
     "results_available_other": "Доступно {{count}} результатів",
-    "no_results": "Немає результатів"
+    "no_results": "Немає результатів",
+    "loading": "Завантаження пропозицій…"
   },
   "auth_error": {
     "access_denied_title": "Доступ заборонено",

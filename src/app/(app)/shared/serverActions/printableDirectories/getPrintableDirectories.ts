@@ -3,6 +3,8 @@
 import { PrintableDirectoryResponseDto } from '@/lib/api/generated/data-contracts';
 import { getApiHeaders, printableDirectoriesApiClient } from '@/lib/api';
 
+import { getPrintableDirectoryServerAccess } from '../../utils/printableDirectoryServerAccess';
+
 export type PrintableDirectoriesListResult = {
   items: PrintableDirectoryResponseDto[];
   total: number;
@@ -15,6 +17,10 @@ export async function getPrintableDirectories(
   limit: number = 50,
   search: string = '',
 ): Promise<PrintableDirectoriesListResult> {
+  if (!(await getPrintableDirectoryServerAccess(tenantId))) {
+    return { items: [], total: 0, page };
+  }
+
   const response =
     await printableDirectoriesApiClient.printableDirectoryControllerList(
       {

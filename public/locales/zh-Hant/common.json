@@ -184,7 +184,8 @@
   "autocomplete": {
     "results_available_one": "{{count}} 個結果可用",
     "results_available_other": "可用的 {{count}} 個結果",
-    "no_results": "沒有結果"
+    "no_results": "沒有結果",
+    "loading": "正在加載建議…"
   },
   "auth_error": {
     "access_denied_title": "拒絕訪問",

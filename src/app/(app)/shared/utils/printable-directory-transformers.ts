@@ -8,6 +8,7 @@ import {
 
 import { formatAddressForDisplay } from '@/app/(app)/shared/lib/utils';
 import { type ResultType } from '@/app/(app)/shared/store/results';
+import { formatPhoneNumber } from '@/app/(app)/shared/utils/phone';
 import { type Resource } from '@/types/resource';
 
 /**
@@ -75,7 +76,6 @@ export type PrintableDirectoryPdfSectionData = {
  */
 export type PrintableDirectoryPdfData = {
   name: string;
-  isBookletLayout: boolean;
   cover: PrintableDirectoryPdfCoverData;
   header: PrintableDirectoryPdfHeaderFooterData;
   footer: PrintableDirectoryPdfHeaderFooterData;
@@ -145,7 +145,7 @@ export function favoriteListToPrintableDirectory(
           description: translation?.serviceDescription ?? '',
           hours: normalizePrintableHours(translation?.hours ?? ''),
           address: formatAddressForDisplay(primaryAddress) ?? '',
-          phone: favorite.displayPhoneNumber ?? '',
+          phone: formatPhoneNumber(favorite.displayPhoneNumber),
           email: favorite.email ?? '',
           website: favorite.website ?? '',
           transportation: getTranslationStringValue(
@@ -200,7 +200,7 @@ export function resourcesToPrintableDirectory(
           translation?.hours ?? resource.hours ?? '',
         ),
         address: getAddressFromResource(resource),
-        phone: resource.phone ?? '',
+        phone: formatPhoneNumber(resource.phone),
         email: resource.email ?? '',
         website: resource.website ?? '',
         transportation:
@@ -236,7 +236,7 @@ export function resultsToPrintableDirectory(
       description: result.description ?? '',
       hours: '',
       address: result.address ?? '',
-      phone: result.phone ?? '',
+      phone: formatPhoneNumber(result.phone),
       email: '',
       website: result.website ?? '',
       transportation: '',
@@ -268,7 +268,7 @@ function previewResourceToItemData(
     description: translation?.serviceDescription ?? '',
     hours: normalizePrintableHours(translation?.hours ?? ''),
     address: formatAddressForDisplay(primaryAddress) ?? '',
-    phone: resource.displayPhoneNumber ?? '',
+    phone: formatPhoneNumber(resource.displayPhoneNumber),
     email: resource.email ?? '',
     website: resource.website ?? '',
     transportation: '',
@@ -290,16 +290,17 @@ export function printableDirectoryPreviewToPdfData(
 ): PrintableDirectoryPdfData {
   return {
     name: preview.name,
-    isBookletLayout: preview.isBookletLayout,
     cover: {
       title:
         getPrintableDirectoryLocalizedText(
           preview.cover.titleLocalized,
           locale,
+          preview.primaryLanguage,
         ) || preview.name,
       description: getPrintableDirectoryLocalizedText(
         preview.cover.descriptionLocalized,
         locale,
+        preview.primaryLanguage,
       ),
       primaryColor: preview.cover.primaryColor,
       coverImageUrlFront: preview.cover.coverImageUrlFront,
@@ -310,16 +311,18 @@ export function printableDirectoryPreviewToPdfData(
       text: getPrintableDirectoryLocalizedText(
         preview.header.textLocalized,
         locale,
+        preview.primaryLanguage,
       ),
-      logoUrl: preview.header.logoUrl,
+      logoUrl: preview.logoUrl,
     },
     footer: {
       layout: preview.footer.layout,
       text: getPrintableDirectoryLocalizedText(
         preview.footer.textLocalized,
         locale,
+        preview.primaryLanguage,
       ),
-      logoUrl: preview.footer.logoUrl,
+      logoUrl: preview.logoUrl,
     },
     sections: preview.sections.map((section) => ({
       id: section.id,

@@ -58,7 +58,9 @@
     "loading_resources": "Naglo-load ng mga detalye ng mapagkukunan...",
     "load_error": "Hindi ma-load ang mga detalye ng napi-print na mapagkukunan. Pakisubukang muli.",
     "retry": "Subukan muli",
-    "language_title": "Wika ng direktoryo"
+    "language_title": "Wika ng direktoryo",
+    "booklet_layout": "Layout ng buklet",
+    "booklet_layout_help": "Ang mga pahina ay nakaayos upang ang naka-print na kopya ay maaaring itupi at i-stapler upang maging isang buklet: idinaragdag ang mga blangkong pabalat sa loob at ang bilang ng pahina ay pinapatungan sa multiple ng 4. I-print nang doble ang panig."
   },
   "print_footer_disclaimer": "Ang {{brandName}} ay nagbibigay ng impormasyong ito bilang isang serbisyo publiko at walang ginagawang garantiya tungkol sa katumpakan, pagkakumpleto, o pagiging napapanahon nito. Ang {{brandName}} ay hindi mananagot sa kung paano ginagamit ang impormasyong ito at hindi mananagot para sa anumang mga resultang magmumula sa paggamit nito. Ang pamamahagi ng printout na ito ay hindi nagpapahiwatig ng pag-endorso o kaugnayan sa {{brandName}}.",
   "print_page_counter": "Pahina {{current}} ng {{total}}",

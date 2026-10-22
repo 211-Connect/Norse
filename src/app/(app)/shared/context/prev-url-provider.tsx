@@ -36,7 +36,7 @@ export const PrevUrlProvider = ({ children }: PropsWithChildren) => {
         setPrevUrl(path);
       }
 
-      currentUrl.current = path ?? undefined;
+      currentUrl.current = path ?? null;
     }
 
     // Update current url when path changes
@@ -46,7 +46,7 @@ export const PrevUrlProvider = ({ children }: PropsWithChildren) => {
         setCookie(PREV_URL, currentUrl.current, { path: '/' });
         setPrevUrl(currentUrl.current);
       }
-      currentUrl.current = path ?? undefined;
+      currentUrl.current = path ?? null;
     }
   }, [path, prevUrl]);
 

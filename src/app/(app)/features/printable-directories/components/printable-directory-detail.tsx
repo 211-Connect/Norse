@@ -7,6 +7,10 @@ import { useRouter } from 'next/navigation';
 
 import { Link } from '@/app/(app)/shared/components/link';
 import {
+  Alert,
+  AlertDescription,
+} from '@/app/(app)/shared/components/ui/alert';
+import {
   Button,
   buttonVariants,
 } from '@/app/(app)/shared/components/ui/button';
@@ -19,17 +23,22 @@ import { CoverCard } from './detail/cover-card';
 import { GeneralInfoCard } from './detail/general-info-card';
 import { HeaderFooterEditorCard } from './detail/header-footer-editor-card';
 import { PrintPrintableDirectoryButton } from './detail/print-printable-directory-button';
+import { ScheduledDeliveriesCard } from './detail/scheduled-deliveries-card';
 import { SectionsEditorCard } from './detail/sections-editor-card';
 import { SharePrintableDirectoryButton } from './detail/share-printable-directory-button';
 
 type PrintableDirectoryDetailProps = {
   locale: string;
   initialDirectory: PrintableDirectoryResponseDto;
+  /** Set when the viewer's automatic translation hit a monthly limit
+   *  (docs/translation-usage.md). */
+  translationPausedReason?: 'user_quota' | 'tenant_cap';
 };
 
 export function PrintableDirectoryDetail({
   locale,
   initialDirectory,
+  translationPausedReason,
 }: PrintableDirectoryDetailProps) {
   const { t } = useTranslation(['page-directories']);
   const router = useRouter();
@@ -39,9 +48,9 @@ export function PrintableDirectoryDetail({
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 p-4 sm:p-6">
       <div className="flex flex-col gap-3">
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <Link
-            href={`/${locale}/directories`}
+            href="/directories"
             className={cn(
               buttonVariants({ variant: 'outline' }),
               'items-center gap-1',
@@ -51,7 +60,7 @@ export function PrintableDirectoryDetail({
             {t('back_to_directories', { ns: 'page-directories' })}
           </Link>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <PrintPrintableDirectoryButton directory={directory} />
             <SharePrintableDirectoryButton
               directory={directory}
@@ -74,6 +83,20 @@ export function PrintableDirectoryDetail({
           {directory.name}
         </Typography>
       </div>
+
+      {translationPausedReason && (
+        <Alert>
+          <AlertDescription>
+            {translationPausedReason === 'tenant_cap'
+              ? t('auto_translate_paused_tenant_cap', {
+                  ns: 'page-directories',
+                })
+              : t('auto_translate_paused_user_quota', {
+                  ns: 'page-directories',
+                })}
+          </AlertDescription>
+        </Alert>
+      )}
 
       <GeneralInfoCard
         directory={directory}
@@ -100,6 +123,8 @@ export function PrintableDirectoryDetail({
         directory={directory}
         onDirectoryUpdated={setDirectory}
       />
+
+      <ScheduledDeliveriesCard directory={directory} />
 
       <CloneDirectoryDialog
         open={isCloneOpen}

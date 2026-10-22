@@ -184,7 +184,8 @@
   "autocomplete": {
     "results_available_one": "ມີຜົນໄດ້ຮັບ {{count}} ແລ້ວ",
     "results_available_other": "ມີຜົນໄດ້ຮັບ {{count}}",
-    "no_results": "ບໍ່ມີຜົນໄດ້ຮັບ"
+    "no_results": "ບໍ່ມີຜົນໄດ້ຮັບ",
+    "loading": "ກຳລັງໂຫຼດຄຳແນະນຳ…"
   },
   "auth_error": {
     "access_denied_title": "ປະຕິເສດການເຂົ້າເຖິງ",

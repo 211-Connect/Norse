@@ -73,6 +73,8 @@ export interface Config {
     'resource-directories': ResourceDirectory;
     'orchestration-config': OrchestrationConfig;
     'hybrid-search-config': HybridSearchConfig;
+    'translation-usage': TranslationUsage;
+    'translation-usage-alerts': TranslationUsageAlert;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
@@ -87,6 +89,8 @@ export interface Config {
     'resource-directories': ResourceDirectoriesSelect<false> | ResourceDirectoriesSelect<true>;
     'orchestration-config': OrchestrationConfigSelect<false> | OrchestrationConfigSelect<true>;
     'hybrid-search-config': HybridSearchConfigSelect<false> | HybridSearchConfigSelect<true>;
+    'translation-usage': TranslationUsageSelect<false> | TranslationUsageSelect<true>;
+    'translation-usage-alerts': TranslationUsageAlertsSelect<false> | TranslationUsageAlertsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -267,6 +271,7 @@ export interface Config {
       translateTopics: TaskTranslateTopics;
       translate: TaskTranslate;
       warmCache: TaskWarmCache;
+      deliverScheduledPdfs: TaskDeliverScheduledPdfs;
       inline: {
         input: unknown;
         output: unknown;
@@ -745,6 +750,8 @@ export interface ResourceDirectory {
                   | 'serviceName'
                   | 'locationName'
                   | 'locationNameSubtitle'
+                  | 'organizationAlternateName'
+                  | 'organizationAlternateNameSubtitle'
                   | 'address'
                   | 'transportation'
                   | 'accessibility'
@@ -804,6 +811,8 @@ export interface ResourceDirectory {
                   | 'serviceName'
                   | 'locationName'
                   | 'locationNameSubtitle'
+                  | 'organizationAlternateName'
+                  | 'organizationAlternateNameSubtitle'
                   | 'address'
                   | 'transportation'
                   | 'accessibility'
@@ -1025,20 +1034,65 @@ export interface ResourceDirectory {
     requireAuthenticationForFavorites?: boolean | null;
     showAgeFilter?: boolean | null;
     enablePrintableDirectories?: boolean | null;
-    maxResourcesConfigurable?: boolean | null;
-    defaultMaxResources?: number | null;
-    printableDirectoriesAllowedEmails?:
+  };
+  printableDirectories?: {
+    /**
+     * Everyone: every signed-in user of this tenant can use the basic feature. Restricted Allow-list: only the emails/domains below can use it at all.
+     */
+    accessMode?: ('everyone' | 'allowlist') | null;
+    allowedEmails?:
       | {
           email: string;
           id?: string | null;
         }[]
       | null;
-    printableDirectoriesAllowedDomains?:
+    allowedDomains?:
       | {
           domain: string;
           id?: string | null;
         }[]
       | null;
+    /**
+     * Grant specific premium capabilities to users matched by email or domain. A user's effective capabilities are the union of every group they match.
+     */
+    userGroups?:
+      | {
+          name: string;
+          emails?:
+            | {
+                email: string;
+                id?: string | null;
+              }[]
+            | null;
+          domains?:
+            | {
+                domain: string;
+                id?: string | null;
+              }[]
+            | null;
+          capabilities?:
+            | (
+                | 'logoUpload'
+                | 'coverCustomization'
+                | 'customHeadersFooters'
+                | 'automaticTranslation'
+                | 'scheduledPdfDelivery'
+              )[]
+            | null;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Monthly machine-translation limits, in estimated USD at list price. Leave empty to use the global default (shown as placeholder). When a limit is reached, saves still succeed but are not machine-translated until next month (UTC).
+     */
+    translation?: {
+      /**
+       * Emails all super-admins and support once per month when the tenant total reaches this.
+       */
+      alertThresholdUsd?: number | null;
+      userQuotaUsd?: number | null;
+      tenantCapUsd?: number | null;
+    };
   };
   updatedAt: string;
   createdAt: string;
@@ -1135,6 +1189,60 @@ export interface HybridSearchConfig {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "translation-usage".
+ */
+export interface TranslationUsage {
+  id: number;
+  tenantId: string;
+  /**
+   * YYYY-MM (UTC)
+   */
+  month: string;
+  userEmail: string;
+  /**
+   * Characters sent to the translation provider (cache misses × target languages).
+   */
+  billedCharacters: number;
+  /**
+   * Billed characters plus cache hits.
+   */
+  requestedCharacters: number;
+  /**
+   * Saves that machine-translated something.
+   */
+  translationRuns: number;
+  largestFieldCharacters: number;
+  locales?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  lastUsedAt: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "translation-usage-alerts".
+ */
+export interface TranslationUsageAlert {
+  id: number;
+  tenantId: string;
+  month: string;
+  /**
+   * Tenant total when the alert was sent.
+   */
+  billedCharacters: number;
+  thresholdUsd: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -1202,7 +1310,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'translateTopics' | 'translate' | 'warmCache';
+        taskSlug: 'inline' | 'translateTopics' | 'translate' | 'warmCache' | 'deliverScheduledPdfs';
         taskID: string;
         input?:
           | {
@@ -1235,7 +1343,7 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'translateTopics' | 'translate' | 'warmCache') | null;
+  taskSlug?: ('inline' | 'translateTopics' | 'translate' | 'warmCache' | 'deliverScheduledPdfs') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
@@ -1281,6 +1389,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'hybrid-search-config';
         value: string | HybridSearchConfig;
+      } | null)
+    | ({
+        relationTo: 'translation-usage';
+        value: number | TranslationUsage;
+      } | null)
+    | ({
+        relationTo: 'translation-usage-alerts';
+        value: number | TranslationUsageAlert;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1856,19 +1972,48 @@ export interface ResourceDirectoriesSelect<T extends boolean = true> {
         requireAuthenticationForFavorites?: T;
         showAgeFilter?: T;
         enablePrintableDirectories?: T;
-        maxResourcesConfigurable?: T;
-        defaultMaxResources?: T;
-        printableDirectoriesAllowedEmails?:
+      };
+  printableDirectories?:
+    | T
+    | {
+        accessMode?: T;
+        allowedEmails?:
           | T
           | {
               email?: T;
               id?: T;
             };
-        printableDirectoriesAllowedDomains?:
+        allowedDomains?:
           | T
           | {
               domain?: T;
               id?: T;
+            };
+        userGroups?:
+          | T
+          | {
+              name?: T;
+              emails?:
+                | T
+                | {
+                    email?: T;
+                    id?: T;
+                  };
+              domains?:
+                | T
+                | {
+                    domain?: T;
+                    id?: T;
+                  };
+              capabilities?: T;
+              id?: T;
+            };
+        translation?:
+          | T
+          | {
+              alertThresholdUsd?: T;
+              userQuotaUsd?: T;
+              tenantCapUsd?: T;
             };
       };
   updatedAt?: T;
@@ -1922,6 +2067,35 @@ export interface HybridSearchConfigSelect<T extends boolean = true> {
   bm25TaxonomyUseRefBoost?: T;
   taxonomyK?: T;
   taxonomyNumCandidates?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "translation-usage_select".
+ */
+export interface TranslationUsageSelect<T extends boolean = true> {
+  tenantId?: T;
+  month?: T;
+  userEmail?: T;
+  billedCharacters?: T;
+  requestedCharacters?: T;
+  translationRuns?: T;
+  largestFieldCharacters?: T;
+  locales?: T;
+  lastUsedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "translation-usage-alerts_select".
+ */
+export interface TranslationUsageAlertsSelect<T extends boolean = true> {
+  tenantId?: T;
+  month?: T;
+  billedCharacters?: T;
+  thresholdUsd?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2392,6 +2566,25 @@ export interface TaskWarmCache {
     success: boolean;
     warmedTenants: number;
     warmedResourceDirectories: number;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskDeliverScheduledPdfs".
+ */
+export interface TaskDeliverScheduledPdfs {
+  input: {
+    date?: string | null;
+    force?: boolean | null;
+  };
+  output: {
+    ran: boolean;
+    tenants: number;
+    due: number;
+    sent: number;
+    sentAsLink: number;
+    skipped: number;
+    failed: number;
   };
 }
 /**

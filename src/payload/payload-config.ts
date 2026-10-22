@@ -24,6 +24,8 @@ import {
   findTenantByHost,
   findTenantById,
 } from './collections/Tenants/actions';
+import { TranslationUsage } from './collections/TranslationUsage';
+import { TranslationUsageAlerts } from './collections/TranslationUsageAlerts';
 import { Users } from './collections/Users';
 import { isSuperAdmin, isSupport } from './collections/Users/access/roles';
 import { analyticsProxyEndpoints } from './endpoints/analyticsProxy';
@@ -42,6 +44,7 @@ import {
   taxonomyScorecardsUpdate,
 } from './endpoints/taxonomyScorecards';
 import { defaultLocale, locales } from './i18n/locales';
+import { deliverScheduledPdfs } from './jobs/deliverScheduledPdfs';
 import { translate } from './jobs/translate';
 import { translateTopics } from './jobs/translateTopics';
 import { warmCache } from './jobs/warmCache';
@@ -82,9 +85,11 @@ const config = buildConfig({
     ResourceDirectories,
     OrchestrationConfig,
     HybridSearchConfig,
+    TranslationUsage,
+    TranslationUsageAlerts,
   ],
   jobs: {
-    tasks: [translateTopics, translate, warmCache],
+    tasks: [translateTopics, translate, warmCache, deliverScheduledPdfs],
     autoRun: [
       {
         queue: 'translation',
@@ -92,6 +97,10 @@ const config = buildConfig({
       },
       {
         queue: 'cache',
+        cron: '* * * * *',
+      },
+      {
+        queue: 'pdfDelivery',
         cron: '* * * * *',
       },
     ],

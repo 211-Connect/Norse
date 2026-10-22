@@ -15,13 +15,14 @@ const EMPTY_SUGGESTIONS: SuggestionCombinedResponseDto = {
  * Fetches both the taxonomies and organizations autocomplete groups in one
  * request. Always returns both arrays regardless of tenant flags — callers
  * decide whether to render the organizations group (see
- * `enableOrganizationSearch` in `search-bar.tsx`).
+ * `enableOrganizationSearch` in `search-bar.tsx`). `isFetching` drives the
+ * autocomplete loading indicator.
  */
 export function useSearchSuggestions(searchTerm: string = '') {
   const appConfig = useAppConfig();
   const { i18n } = useTranslation();
 
-  const { data } = useQuery({
+  const { data, isFetching } = useQuery({
     queryKey: ['search-suggestions', i18n.language, searchTerm],
     queryFn: async () => {
       if (!i18n.language || searchTerm.length === 0) {
@@ -37,5 +38,5 @@ export function useSearchSuggestions(searchTerm: string = '') {
     gcTime: 10 * 60 * 1000, // 10 minutes
   });
 
-  return data || EMPTY_SUGGESTIONS;
+  return { ...(data || EMPTY_SUGGESTIONS), isFetching };
 }

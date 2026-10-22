@@ -184,7 +184,8 @@
   "autocomplete": {
     "results_available_one": "{{count}} પરિણામ ઉપલબ્ધ છે",
     "results_available_other": "{{count}} પરિણામો ઉપલબ્ધ છે",
-    "no_results": "કોઈ પરિણામ નથી"
+    "no_results": "કોઈ પરિણામ નથી",
+    "loading": "સૂચનો લોડ કરી રહ્યું છે…"
   },
   "auth_error": {
     "access_denied_title": "ઍક્સેસ નકારાઈ",

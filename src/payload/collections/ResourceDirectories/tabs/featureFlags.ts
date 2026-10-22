@@ -127,96 +127,14 @@ export const featureFlags: Tab = {
       },
     },
     {
-      type: 'row',
-      fields: [
-        {
-          name: 'enablePrintableDirectories',
-          type: 'checkbox',
-          defaultValue: false,
-          access: {
-            create: superAdminOrSupportOrTenantAccess,
-            update: superAdminOrSupportOrTenantAccess,
-          },
-        },
-        {
-          name: 'maxResourcesConfigurable',
-          type: 'checkbox',
-          defaultValue: true,
-          admin: {
-            condition: (_, siblingData) =>
-              Boolean(siblingData?.enablePrintableDirectories),
-          },
-          access: {
-            create: superAdminOrSupportOrTenantAccess,
-            update: superAdminOrSupportOrTenantAccess,
-          },
-        },
-        {
-          name: 'defaultMaxResources',
-          type: 'number',
-          defaultValue: 100,
-          min: 1,
-          max: 1000,
-          admin: {
-            condition: (_, siblingData) =>
-              Boolean(siblingData?.enablePrintableDirectories),
-          },
-          access: {
-            create: superAdminOrSupportOrTenantAccess,
-            update: superAdminOrSupportOrTenantAccess,
-          },
-        },
-        {
-          name: 'printableDirectoriesAllowedEmails',
-          type: 'array',
-          dbName: 'pd_allow_emails',
-          label: 'Allowed Emails',
-          admin: {
-            condition: (_, siblingData) =>
-              Boolean(siblingData?.enablePrintableDirectories),
-          },
-          labels: {
-            singular: 'Email',
-            plural: 'Allowed Emails',
-          },
-          access: {
-            create: superAdminOrSupportOrTenantAccess,
-            update: superAdminOrSupportOrTenantAccess,
-          },
-          fields: [
-            {
-              name: 'email',
-              type: 'email',
-              required: true,
-            },
-          ],
-        },
-        {
-          name: 'printableDirectoriesAllowedDomains',
-          type: 'array',
-          dbName: 'pd_allow_domains',
-          label: 'Allowed Domains',
-          admin: {
-            condition: (_, siblingData) =>
-              Boolean(siblingData?.enablePrintableDirectories),
-          },
-          labels: {
-            singular: 'Domain',
-            plural: 'Allowed Domains',
-          },
-          access: {
-            create: superAdminOrSupportOrTenantAccess,
-            update: superAdminOrSupportOrTenantAccess,
-          },
-          fields: [
-            {
-              name: 'domain',
-              type: 'text',
-              required: true,
-            },
-          ],
-        },
-      ],
+      name: 'enablePrintableDirectories',
+      type: 'checkbox',
+      label: 'Enable Printable Directories',
+      defaultValue: false,
+      access: {
+        create: superAdminOrSupportAccess,
+        update: superAdminOrSupportAccess,
+      },
     },
   ],
 };

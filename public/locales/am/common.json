@@ -184,7 +184,8 @@
   "autocomplete": {
     "results_available_one": "{{count}} ውጤት ይገኛል",
     "results_available_other": "{{count}} ውጤቶች ይገኛሉ",
-    "no_results": "ምንም ውጤቶች የሉም"
+    "no_results": "ምንም ውጤቶች የሉም",
+    "loading": "የአስተያየት ጥቆማዎችን በመጫን ላይ…"
   },
   "auth_error": {
     "access_denied_title": "መዳረሻ ተከልክሏል",

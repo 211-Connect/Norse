@@ -10,6 +10,68 @@
  * ---------------------------------------------------------------
  */
 
+export interface TopicSubtopicConfigItemDto {
+  id?: string;
+  name: string;
+  names: Record<string, string>;
+  queryType?: string;
+  query?: string;
+  href?: string;
+  target?: string;
+}
+
+export interface TopicConfigItemDto {
+  id?: string;
+  name: string;
+  names: Record<string, string>;
+  image?: string;
+  href?: string;
+  target?: string;
+  subtopics: TopicSubtopicConfigItemDto[];
+}
+
+export interface TopicsConfigResponseDto {
+  tenantId: string;
+  iconSize: string;
+  imageBorderRadius: string;
+  backText?: string;
+  backTexts: Record<string, string>;
+  customHeading?: string;
+  customHeadings: Record<string, string>;
+  list: TopicConfigItemDto[];
+}
+
+export interface SuggestionConfigItemDto {
+  id?: string;
+  taxonomies: string;
+  value: string;
+  values: Record<string, string>;
+}
+
+export interface SuggestionsConfigResponseDto {
+  tenantId: string;
+  suggestions: SuggestionConfigItemDto[];
+}
+
+export interface AllTenantConfigResponseDto {
+  /** @example ["en","es"] */
+  locales: string[];
+  /** Facets configuration with localized names keyed by locale */
+  facets: {
+    /** @example "age_groups" */
+    facet?: string;
+    /** @example "Age Groups" */
+    name?: string;
+    [key: string]: any;
+  }[];
+  topics: TopicsConfigResponseDto;
+  suggestions: SuggestionsConfigResponseDto;
+  /** Hybrid search configuration */
+  hybridSearchConfig?: object | null;
+  /** Orchestration configuration */
+  orchestrationConfig?: object | null;
+}
+
 export interface TaxonomyItemDto {
   /**
    * Unique identifier of the taxonomy term
@@ -270,6 +332,7 @@ export interface ResourceContactsOpenApiDto {
   email?: string;
   phones?: ResourcePhoneNumberOpenApiDto[];
   priority: number;
+  rank: number;
 }
 
 export interface ResourceTaxonomyOpenApiDto {
@@ -486,6 +549,8 @@ export interface PhoneDto {
   ORIGINAL_ID: string | null;
   NUMBER: string | null;
   TYPE: string | null;
+  /** Rank, not a score: **0 is the primary phone** and larger numbers are progressively less preferred. 0 is always a voice line; fax appears from 1 down. See docs/phone-and-address-rank.md — the equivalent field on addresses is 1-based, which has already caused one bug. */
+  PRIORITY?: number | null;
   TRANSLATIONS: TranslationDto[];
 }
 
@@ -795,18 +860,18 @@ export interface SearchHits {
    */
   query: string;
   /**
-   * Number of hits for the search query
+   * Number of matching search events for the query
    * @example 42
    */
   hits: number;
 }
 
 export interface SearchesResponse {
-  /** Search queries and their hit counts for text searches */
+  /** Query labels and counts for text search events */
   text: SearchHits[];
-  /** Search queries and their hit counts for taxonomy searches */
+  /** Query labels and counts for taxonomy search events */
   taxonomy: SearchHits[];
-  /** Search queries and their hit counts for hybrid searches */
+  /** Query labels and counts for hybrid search events */
   hybrid: SearchHits[];
 }
 
@@ -969,10 +1034,10 @@ export interface SearchEventExportRow {
    */
   queryLabel: string;
   /**
-   * Search type: text or taxonomy
+   * Search type: text, taxonomy, or hybrid
    * @example "text"
    */
-  queryType: "text" | "taxonomy";
+  queryType: "text" | "taxonomy" | "hybrid";
   /**
    * Search ZIP/postal code from reverse geocoding
    * @example "94102"
@@ -1317,6 +1382,7 @@ export interface SearchQueryApiDto {
   /** @default "text" */
   query_type?: "text" | "taxonomy" | "more_like_this" | "hybrid";
   /**
+   * Result offset must stay within Elasticsearch max_result_window: page * limit may not exceed 10000 (defaults to limit 25 when omitted).
    * @min 1
    * @default 1
    */
@@ -1392,6 +1458,11 @@ export interface UpdatePrintableDirectorySourceDto {
 export interface PrintableDirectoryLocalizedTextResponseDto {
   /** @example {"en":"Default copy","es":"Texto predeterminado"} */
   values: Record<string, string>;
+  /**
+   * Locales whose values were machine-translated and are safe to overwrite with an automatic re-translation. Locales with values but not in this list are treated as human-edited and protected.
+   * @example ["es"]
+   */
+  autoTranslatedLocales: string[];
 }
 
 export interface PrintableDirectoryCoverResponseDto {
@@ -1408,7 +1479,6 @@ export interface PrintableDirectoryHeaderFooterResponseDto {
   /** @example ["text","logo","domain","date"] */
   layout: ("text" | "logo" | "domain" | "date")[];
   textLocalized?: PrintableDirectoryLocalizedTextResponseDto;
-  logoUrl?: string | null;
 }
 
 export interface PrintableDirectoryCoordsDto {
@@ -1489,7 +1559,14 @@ export interface PrintableDirectoryResponseDto {
   tenantId: string;
   ownerUserId: string;
   name: string;
+  /**
+   * Locale code for the language the directory content was authored in. Immutable after creation.
+   * @example "en"
+   */
+  primaryLanguage: string;
   updatedBy?: string | null;
+  /** The directory's logo for the header/footer; null when the tenant's logo is used. */
+  logoUrl: string | null;
   /** Access config for tenant users: private (owner read/update), shared-read (others read, only owner updates), shared-edit (others can read and update). */
   accessPolicy: "private" | "shared-read" | "shared-edit";
   /**
@@ -1500,19 +1577,13 @@ export interface PrintableDirectoryResponseDto {
   cover: PrintableDirectoryCoverResponseDto;
   header: PrintableDirectoryHeaderFooterResponseDto;
   footer: PrintableDirectoryHeaderFooterResponseDto;
-  resourceLayout:
-    | "line"
-    | "summary"
-    | "full"
-    | "custom-search"
-    | "custom-resource";
-  /**
-   * Enables booklet layout generation. When enabled, the brochure is formatted for booklet printing by ensuring the total page count is a multiple of four. If necessary, blank pages are inserted after the cover and before the back cover so that the cover remains the first page and the back cover remains the last page.
-   * @default false
-   */
-  isBookletLayout: boolean;
   defaultQueryConfig?: PrintableDirectoryDefaultQueryConfigDto | null;
   sections: PrintableDirectorySectionResponseDto[];
+  /**
+   * Locales the directory is offered in, primaryLanguage always included. Set via create/update `locales`. For directories created before locales were stored, derived from the locales that have content.
+   * @example ["en","es"]
+   */
+  locales: string[];
   /** @example "2026-07-08T08:00:00.000Z" */
   createdAt: string;
   /** @example "2026-07-08T09:00:00.000Z" */
@@ -1536,23 +1607,27 @@ export interface PrintableDirectoryListResponseDto {
 export interface CreatePrintableDirectoryDto {
   /** @example "My Printable Directory" */
   name: string;
+  /**
+   * Locale code for the language the directory content was authored in. Required at creation and immutable after creation.
+   * @example "en"
+   */
+  primaryLanguage: string;
+  /**
+   * Locale codes the directory is offered in (translated, printed and shared in). primaryLanguage is always included, even if omitted. Defaults to [primaryLanguage] at creation.
+   * @example ["en","es"]
+   */
+  locales?: string[];
+  /**
+   * The directory's logo, printed wherever the header or footer layout includes `logo`. Empty to clear (the tenant's logo is used then).
+   * @example "https://example.com/logo.svg"
+   */
+  logoUrl?: string;
   accessPolicy?: "private" | "shared-read" | "shared-edit";
   /**
    * Public, tenant-unique, URL-safe identifier used to share this directory's preview via a fully public link (`GET /printable-directories/public/:slug/preview`). Must be explicitly supplied by the client; it is never auto-generated. The slug acts as a capability token: anyone with the slug can resolve the preview, regardless of accessPolicy, so choose a non-guessable value for directories that should not be publicly discoverable.
    * @example "winter-shelter-guide"
    */
   slug?: string;
-  resourceLayout?:
-    | "line"
-    | "summary"
-    | "full"
-    | "custom-search"
-    | "custom-resource";
-  /**
-   * Enables booklet layout generation. When enabled, the brochure is formatted for booklet printing by ensuring the total page count is a multiple of four. If necessary, blank pages are inserted after the cover and before the back cover so that the cover remains the first page and the back cover remains the last page.
-   * @default false
-   */
-  isBookletLayout?: boolean;
   defaultQueryConfig?: PrintableDirectoryDefaultQueryConfigDto | null;
 }
 
@@ -1562,6 +1637,11 @@ export interface PrintableDirectoryLocalizedValuesDto {
    * @example {"en":"English copy","es":"Texto en español"}
    */
   values?: Record<string, string>;
+  /**
+   * Locales whose values in `values` were machine-translated and are safe to overwrite with an automatic re-translation. Locales with values but not in this list are treated as human-edited and protected.
+   * @example ["es"]
+   */
+  autoTranslatedLocales?: string[];
 }
 
 export interface PrintableDirectoryCoverDto {
@@ -1580,30 +1660,32 @@ export interface PrintableDirectoryHeaderFooterDto {
   textLocalized?: PrintableDirectoryLocalizedValuesDto;
   /** @example ["logo","date"] */
   layout: ("text" | "logo" | "domain" | "date")[];
-  /** @example "https://example.com/logo.svg" */
-  logoUrl?: string;
 }
 
 export interface UpdatePrintableDirectoryDto {
   /** @example "My Printable Directory" */
   name?: string;
+  /**
+   * Locale code for the language the directory content was authored in. Required at creation and immutable after creation.
+   * @example "en"
+   */
+  primaryLanguage?: string;
+  /**
+   * Locale codes the directory is offered in (translated, printed and shared in). primaryLanguage is always included, even if omitted. Defaults to [primaryLanguage] at creation.
+   * @example ["en","es"]
+   */
+  locales?: string[];
+  /**
+   * The directory's logo, printed wherever the header or footer layout includes `logo`. Empty to clear (the tenant's logo is used then).
+   * @example "https://example.com/logo.svg"
+   */
+  logoUrl?: string;
   accessPolicy?: "private" | "shared-read" | "shared-edit";
   /**
    * Public, tenant-unique, URL-safe identifier used to share this directory's preview via a fully public link (`GET /printable-directories/public/:slug/preview`). Must be explicitly supplied by the client; it is never auto-generated. The slug acts as a capability token: anyone with the slug can resolve the preview, regardless of accessPolicy, so choose a non-guessable value for directories that should not be publicly discoverable.
    * @example "winter-shelter-guide"
    */
   slug?: string;
-  resourceLayout?:
-    | "line"
-    | "summary"
-    | "full"
-    | "custom-search"
-    | "custom-resource";
-  /**
-   * Enables booklet layout generation. When enabled, the brochure is formatted for booklet printing by ensuring the total page count is a multiple of four. If necessary, blank pages are inserted after the cover and before the back cover so that the cover remains the first page and the back cover remains the last page.
-   * @default false
-   */
-  isBookletLayout?: boolean;
   defaultQueryConfig?: PrintableDirectoryDefaultQueryConfigDto | null;
   cover?: PrintableDirectoryCoverDto;
   header?: PrintableDirectoryHeaderFooterDto;
@@ -1684,7 +1766,14 @@ export interface PrintableDirectoryPreviewResponseDto {
   tenantId: string;
   ownerUserId: string;
   name: string;
+  /**
+   * Locale code for the language the directory content was authored in. Immutable after creation.
+   * @example "en"
+   */
+  primaryLanguage: string;
   updatedBy?: string | null;
+  /** The directory's logo for the header/footer; null when the tenant's logo is used. */
+  logoUrl: string | null;
   /** Access config for tenant users: private (owner read/update), shared-read (others read, only owner updates), shared-edit (others can read and update). */
   accessPolicy: "private" | "shared-read" | "shared-edit";
   /**
@@ -1695,19 +1784,13 @@ export interface PrintableDirectoryPreviewResponseDto {
   cover: PrintableDirectoryCoverResponseDto;
   header: PrintableDirectoryHeaderFooterResponseDto;
   footer: PrintableDirectoryHeaderFooterResponseDto;
-  resourceLayout:
-    | "line"
-    | "summary"
-    | "full"
-    | "custom-search"
-    | "custom-resource";
-  /**
-   * Enables booklet layout generation. When enabled, the brochure is formatted for booklet printing by ensuring the total page count is a multiple of four. If necessary, blank pages are inserted after the cover and before the back cover so that the cover remains the first page and the back cover remains the last page.
-   * @default false
-   */
-  isBookletLayout: boolean;
   defaultQueryConfig?: PrintableDirectoryDefaultQueryConfigDto | null;
   sections: PrintableDirectoryPreviewSectionDto[];
+  /**
+   * Locales the directory is offered in, primaryLanguage always included. Set via create/update `locales`. For directories created before locales were stored, derived from the locales that have content.
+   * @example ["en","es"]
+   */
+  locales: string[];
   /** @example "2026-07-08T08:00:00.000Z" */
   createdAt: string;
   /** @example "2026-07-08T09:00:00.000Z" */
@@ -1716,6 +1799,122 @@ export interface PrintableDirectoryPreviewResponseDto {
   locale: string;
   /** @example "2026-07-08T10:00:00.000Z" */
   generatedAt: string;
+}
+
+export interface PrintableDirectoryDeliveryPrintOptionsDto {
+  /**
+   * One of the directory's languages.
+   * @example "en"
+   */
+  locale: string;
+  variant: "line-listing" | "summary-listing" | "full-listing";
+  fontSize: "default" | "large";
+  booklet: boolean;
+}
+
+export interface PrintableDirectoryDeliveryLastRunResponseDto {
+  /** @example "2026-10-14" */
+  date: string;
+  status: "sent" | "sent_as_link" | "failed" | "skipped";
+  reason: string | null;
+  at: string;
+}
+
+export interface PrintableDirectoryDeliveryResponseDto {
+  id: string;
+  directoryId: string;
+  createdByEmail: string;
+  enabled: boolean;
+  frequency: "weekly" | "monthly";
+  weekdays: number[];
+  monthDays: number[];
+  print: PrintableDirectoryDeliveryPrintOptionsDto;
+  recipients: string[];
+  lastRun: PrintableDirectoryDeliveryLastRunResponseDto | null;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface PrintableDirectoryDeliveryListResponseDto {
+  items: PrintableDirectoryDeliveryResponseDto[];
+}
+
+export interface CreatePrintableDirectoryDeliveryDto {
+  /** @default true */
+  enabled?: boolean;
+  frequency: "weekly" | "monthly";
+  /** Days of the week, 0 (Sunday) to 6 (Saturday). Required when weekly. */
+  weekdays?: number[];
+  /** Days of the month, 1 to 28. Required when monthly. */
+  monthDays?: number[];
+  print: PrintableDirectoryDeliveryPrintOptionsDto;
+  /**
+   * @maxItems 100
+   * @minItems 1
+   */
+  recipients: string[];
+}
+
+export interface UpdatePrintableDirectoryDeliveryDto {
+  /** @default true */
+  enabled?: boolean;
+  frequency?: "weekly" | "monthly";
+  /** Days of the week, 0 (Sunday) to 6 (Saturday). Required when weekly. */
+  weekdays?: number[];
+  /** Days of the month, 1 to 28. Required when monthly. */
+  monthDays?: number[];
+  print?: PrintableDirectoryDeliveryPrintOptionsDto;
+  /**
+   * @maxItems 100
+   * @minItems 1
+   */
+  recipients?: string[];
+}
+
+export interface DuePrintableDirectoryDeliveryDirectoryDto {
+  id: string;
+  name: string;
+  /** Public share slug; null when the directory has none. */
+  slug: string | null;
+  primaryLanguage: string;
+  locales: string[];
+}
+
+export interface DuePrintableDirectoryDeliveryResponseDto {
+  id: string;
+  directoryId: string;
+  createdByEmail: string;
+  enabled: boolean;
+  frequency: "weekly" | "monthly";
+  weekdays: number[];
+  monthDays: number[];
+  print: PrintableDirectoryDeliveryPrintOptionsDto;
+  recipients: string[];
+  lastRun: PrintableDirectoryDeliveryLastRunResponseDto | null;
+  createdAt?: string;
+  updatedAt?: string;
+  directory: DuePrintableDirectoryDeliveryDirectoryDto;
+}
+
+export interface DuePrintableDirectoryDeliveryListResponseDto {
+  items: DuePrintableDirectoryDeliveryResponseDto[];
+}
+
+export interface ClaimPrintableDirectoryDeliveryDto {
+  /** @example "2026-10-14" */
+  date: string;
+}
+
+export interface ClaimPrintableDirectoryDeliveryResponseDto {
+  /** False when the delivery was already claimed for this date (another run handled it). */
+  claimed: boolean;
+}
+
+export interface ReportPrintableDirectoryDeliveryResultDto {
+  /** @example "2026-10-14" */
+  date: string;
+  status: "sent" | "sent_as_link" | "failed" | "skipped";
+  reason?: string | null;
 }
 
 export interface OrganizationSummaryDto {
@@ -1847,6 +2046,38 @@ export interface CmsConfigControllerClearTenantCacheParams {
 
 export type CmsConfigControllerClearTenantCacheData = any;
 
+export interface TenantConfigControllerGetTopicsParams {
+  /**
+   * Tenant ID to fetch topics configuration for
+   * @example "1"
+   */
+  tenantId: string;
+}
+
+export type TenantConfigControllerGetTopicsData = TopicsConfigResponseDto;
+
+export interface TenantConfigControllerGetSuggestionsParams {
+  /**
+   * Tenant ID to fetch suggestions configuration for
+   * @example "1"
+   */
+  tenantId: string;
+}
+
+export type TenantConfigControllerGetSuggestionsData =
+  SuggestionsConfigResponseDto;
+
+export interface TenantConfigControllerGetAllTenantConfigParams {
+  /**
+   * Tenant ID to fetch complete configuration for (locales, facets, topics, suggestions, hybrid search, orchestration)
+   * @example "1"
+   */
+  tenantId: string;
+}
+
+export type TenantConfigControllerGetAllTenantConfigData =
+  AllTenantConfigResponseDto;
+
 export interface TaxonomyControllerGetTaxonomiesParams {
   /**
    * Search query for taxonomy name or code
@@ -1891,7 +2122,10 @@ export interface SearchControllerGetResourcesParams {
    * @default "text"
    */
   query_type?: "text" | "taxonomy" | "more_like_this" | "hybrid";
-  /** @default 1 */
+  /**
+   * Result offset must stay within Elasticsearch max_result_window: page * limit may not exceed 10000 (ES can only return the first 10000 hits), e.g. with the default limit of 25 the highest page is 400.
+   * @default 1
+   */
   page?: any;
   /** Comma delimited list of longitude,latitude */
   coords?: string[];
@@ -1920,7 +2154,7 @@ export interface SearchControllerGetResourcesParams {
   /** Controls how coords/distance combine with a resource's declared service_area. Omitted (default): a result must be within `distance` of `coords` AND have a service_area that geographically contains the exact `coords` point — both required. `proximity`: skips the service_area check; returns anything within `distance` of `coords`. `boundary`: ignores `coords`/`distance` and instead requires a GeoJSON `geometry` in the POST body — matches any resource whose service_area intersects that shape; POST only, 400s on GET without a body. */
   geo_type?: "boundary" | "proximity";
   /**
-   * Presentation order of results. Independent of `query_type`: the query engine decides which resources match, `sort` decides their order. For `hybrid` search, pinned/prioritized resource handling is controlled by the tenant's `pinned_resources_mode` setting (`boost` by default, which folds pinned/priority into the relevance score; `top` hard-sorts them first; `ignore` disables them). Values: `relevance` (default — best match first; under `hybrid`, geographic proximity is folded into the relevance score), `distance` (nearest first; requires `coords`, otherwise falls back to `relevance`), `name` (alphabetical by resource name), `organization` (alphabetical by provider name). Honored for all query types, including `hybrid`.
+   * Presentation order of results. Independent of `query_type`: the query engine decides which resources match, `sort` decides their order. Pinned/prioritized resource handling is controlled by the tenant's `pinned_resources_mode` setting (`boost` by default; `top` hard-sorts them first; `ignore` disables them). For `hybrid` search, `boost` folds pinned/priority into the relevance score; for other query types, `ignore` removes the priority sort tier while other modes preserve it. Values: `relevance` (default — best match first; under `hybrid`, geographic proximity is folded into the relevance score), `distance` (nearest first; requires `coords`, otherwise falls back to `relevance`), `name` (alphabetical by resource name), `organization` (alphabetical by provider name). Honored for all query types, including `hybrid`.
    * @default "relevance"
    */
   sort?: "relevance" | "distance" | "name" | "organization";
@@ -1948,7 +2182,10 @@ export interface SearchControllerGetResourcesPostParams {
    * @default "text"
    */
   query_type?: "text" | "taxonomy" | "more_like_this" | "hybrid";
-  /** @default 1 */
+  /**
+   * Result offset must stay within Elasticsearch max_result_window: page * limit may not exceed 10000 (ES can only return the first 10000 hits), e.g. with the default limit of 25 the highest page is 400.
+   * @default 1
+   */
   page?: any;
   /** Comma delimited list of longitude,latitude */
   coords?: string[];
@@ -1977,7 +2214,7 @@ export interface SearchControllerGetResourcesPostParams {
   /** Controls how coords/distance combine with a resource's declared service_area. Omitted (default): a result must be within `distance` of `coords` AND have a service_area that geographically contains the exact `coords` point — both required. `proximity`: skips the service_area check; returns anything within `distance` of `coords`. `boundary`: ignores `coords`/`distance` and instead requires a GeoJSON `geometry` in the POST body — matches any resource whose service_area intersects that shape. */
   geo_type?: "boundary" | "proximity";
   /**
-   * Presentation order of results. Independent of `query_type`: the query engine decides which resources match, `sort` decides their order. For `hybrid` search, pinned/prioritized resource handling is controlled by the tenant's `pinned_resources_mode` setting (`boost` by default, which folds pinned/priority into the relevance score; `top` hard-sorts them first; `ignore` disables them). Values: `relevance` (default — best match first; under `hybrid`, geographic proximity is folded into the relevance score), `distance` (nearest first; requires `coords`, otherwise falls back to `relevance`), `name` (alphabetical by resource name), `organization` (alphabetical by provider name). Honored for all query types, including `hybrid`.
+   * Presentation order of results. Independent of `query_type`: the query engine decides which resources match, `sort` decides their order. Pinned/prioritized resource handling is controlled by the tenant's `pinned_resources_mode` setting (`boost` by default; `top` hard-sorts them first; `ignore` disables them). For `hybrid` search, `boost` folds pinned/priority into the relevance score; for other query types, `ignore` removes the priority sort tier while other modes preserve it. Values: `relevance` (default — best match first; under `hybrid`, geographic proximity is folded into the relevance score), `distance` (nearest first; requires `coords`, otherwise falls back to `relevance`), `name` (alphabetical by resource name), `organization` (alphabetical by provider name). Honored for all query types, including `hybrid`.
    * @default "relevance"
    */
   sort?: "relevance" | "distance" | "name" | "organization";
@@ -2255,6 +2492,18 @@ export interface OrganizationControllerSearchParams {
 }
 
 export type OrganizationControllerSearchData = OrganizationSearchResponseDto;
+
+export interface OrganizationControllerGetOrganizationByServiceAtLocationParams {
+  /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  /** service@location id (services[].SERVICE_AT_LOCATIONS[].ID) */
+  salId: string;
+}
+
+export type OrganizationControllerGetOrganizationByServiceAtLocationData =
+  OrganizationDetailResponseDto;
 
 export interface OrganizationControllerGetOrganizationByIdParams {
   /** Optional mirror of the resolved accept-language locale, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match the resolved accept-language value or the request is rejected with 400. */
@@ -2902,6 +3151,88 @@ export interface PrintableDirectoryPublicControllerPreviewParams {
 }
 
 export type PrintableDirectoryPublicControllerPreviewData =
+  PrintableDirectoryPreviewResponseDto;
+
+export interface PrintableDirectoryDeliveryControllerListParams {
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  id: string;
+}
+
+export type PrintableDirectoryDeliveryControllerListData =
+  PrintableDirectoryDeliveryListResponseDto;
+
+export interface PrintableDirectoryDeliveryControllerCreateParams {
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  id: string;
+}
+
+export type PrintableDirectoryDeliveryControllerCreateData =
+  PrintableDirectoryDeliveryResponseDto;
+
+export interface PrintableDirectoryDeliveryControllerUpdateParams {
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  id: string;
+  deliveryId: string;
+}
+
+export type PrintableDirectoryDeliveryControllerUpdateData =
+  PrintableDirectoryDeliveryResponseDto;
+
+export interface PrintableDirectoryDeliveryControllerRemoveParams {
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  id: string;
+  deliveryId: string;
+}
+
+export type PrintableDirectoryDeliveryControllerRemoveData = any;
+
+export interface PrintableDirectoryDeliveryInternalControllerListDueParams {
+  /**
+   * Calendar date (America/New_York) of the run.
+   * @example "2026-10-14"
+   */
+  date: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+}
+
+export type PrintableDirectoryDeliveryInternalControllerListDueData =
+  DuePrintableDirectoryDeliveryListResponseDto;
+
+export interface PrintableDirectoryDeliveryInternalControllerClaimParams {
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  deliveryId: string;
+}
+
+export type PrintableDirectoryDeliveryInternalControllerClaimData =
+  ClaimPrintableDirectoryDeliveryResponseDto;
+
+export interface PrintableDirectoryDeliveryInternalControllerReportResultParams {
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  deliveryId: string;
+}
+
+export type PrintableDirectoryDeliveryInternalControllerReportResultData =
+  PrintableDirectoryDeliveryResponseDto;
+
+export interface PrintableDirectoryDeliveryInternalControllerPreviewParams {
+  /**
+   * Locale override for preview rendering (fallback: header accept-language)
+   * @example "en"
+   */
+  locale?: string;
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
+  deliveryId: string;
+}
+
+export type PrintableDirectoryDeliveryInternalControllerPreviewData =
   PrintableDirectoryPreviewResponseDto;
 
 export interface ServiceControllerGetServiceByIdParams {

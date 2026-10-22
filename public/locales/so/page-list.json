@@ -58,7 +58,9 @@
     "loading_resources": "Soo raraya faahfaahinta kheyraadka...",
     "load_error": "Ma awoodo in la soo raro faahfaahinta kheyraadka la daabacan karo. Fadlan isku day mar kale.",
     "retry": "Dib u tijaabi",
-    "language_title": "Luqadda hagaha"
+    "language_title": "Luqadda hagaha",
+    "booklet_layout": "Qaab-dhismeedka buugga",
+    "booklet_layout_help": "Bogagga waxaa loo habeeyey si daabacaadda loo laabi karo oo loogu dhejin karo buug yar: daboollada gudaha ee madhan ayaa lagu darayaa tirada boggana waxaa lagu dhejiyaa dhowr jeer oo 4 ah. Daabac laba-dhinac ah."
   },
   "print_footer_disclaimer": "{{brandName}} waxay macluumaadkan u bixisaa adeeg dadweyne mana bixiso wax dammaanad ah oo ku saabsan saxnaantiisa, dhammaystirnaantiisa, ama waqtigiisa. {{brandName}} mas'uul kama aha sida macluumaadkan loo isticmaalo mana qaadanayso mas'uuliyad natiijooyinka ka dhasha isticmaalkiisa. Qaybinta daabacaaddan macnaheedu maaha inay taageerto ama ku xiran tahay {{brandName}}.",
   "print_page_counter": "Bogga {{current}} ee {{total}}",

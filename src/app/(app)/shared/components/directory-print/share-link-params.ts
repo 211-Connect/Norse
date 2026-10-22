@@ -3,7 +3,7 @@ import {
   PRINT_VARIANTS,
   type FontSizeMode,
   type PrintVariant,
-} from './pdf-print-primitives';
+} from './print-options';
 
 /**
  * Query param keys shared between the share dialog (which writes them into
@@ -13,6 +13,7 @@ import {
 export const PD_VARIANT_PARAM = 'pdVariant';
 export const PD_FONT_SIZE_PARAM = 'pdFontSize';
 export const PD_SLUG_PARAM = 'pdSlug';
+export const PD_BOOKLET_PARAM = 'pdBooklet';
 
 export function parsePrintVariantParam(
   value: string | null,
@@ -28,4 +29,8 @@ export function parseFontSizeModeParam(
   return value && (FONT_SIZE_MODES as readonly string[]).includes(value)
     ? (value as FontSizeMode)
     : null;
+}
+
+export function parseBookletLayoutParam(value: string | null): boolean {
+  return value === 'true';
 }

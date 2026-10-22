@@ -18,9 +18,11 @@ Other docs, load only when the task touches that area:
 
 - [docs/custom-attributes.md](/docs/custom-attributes.md) — tenant-configurable generic "Datum" fields on resource/search-card layouts.
 - [docs/printable-directories.md](/docs/printable-directories.md) — curated branded PDF directory feature.
+- [docs/translation-usage.md](/docs/translation-usage.md) — metering, monthly limits, alert email and admin usage table for printable directory auto-translation.
 - [docs/search.md](/docs/search.md) — how the search dialog's autocomplete, `queryType`/`query` model, and the `/search` request pipeline work, including organization search.
 - [docs/ai-search-legacy-link-flow.md](/docs/ai-search-legacy-link-flow.md) — legacy search URL normalization when a tenant's `searchEngine` is `ai_classification`.
 - [docs/scorecards.md](/docs/scorecards.md) — managing per-tenant AI-classification taxonomy-to-need weights.
+- [docs/scheduled-pdf-delivery.md](/docs/scheduled-pdf-delivery.md) — emailing printable directory PDFs on a weekly/monthly schedule: daily Payload job, server-side rendering via an internal Pages API route.
 - [docs/search-deep-link-geocoding.md](/docs/search-deep-link-geocoding.md) — forward-geocoding a deep link's `location` when `coords` is missing (all tenants).
 - [docs/tenant-api-key.md](/docs/tenant-api-key.md) — per-tenant Norse API authentication key (`x-api-key`), caching, and bulk backfill endpoint.
 - [docs/tracing.md](/docs/tracing.md) — OpenTelemetry tracing setup, propagated to the Norse API via `traceparent`, and how to view traces locally.

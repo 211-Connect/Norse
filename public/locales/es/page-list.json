@@ -58,7 +58,9 @@
     "loading_resources": "Cargando detalles del recurso...",
     "load_error": "No se pudieron cargar los detalles del recurso imprimible. Inténtelo de nuevo.",
     "retry": "Rever",
-    "language_title": "Idioma del directorio"
+    "language_title": "Idioma del directorio",
+    "booklet_layout": "Diseño del folleto",
+    "booklet_layout_help": "Las páginas están dispuestas de forma que la impresión se pueda doblar y grapar para formar un folleto: se añaden cubiertas interiores en blanco y el número de páginas se incrementa hasta un múltiplo de 4. Imprimir a doble cara."
   },
   "print_footer_disclaimer": "{{brandName}} proporciona esta información como un servicio público y no ofrece garantías respecto a su exactitud, integridad o actualidad. {{brandName}} no se responsabiliza del uso que se le dé a esta información y no asume ninguna responsabilidad por las consecuencias derivadas de su uso. La distribución de esta impresión no implica el respaldo ni la afiliación con {{brandName}}.",
   "print_page_counter": "Página {{current}} de {{total}}",

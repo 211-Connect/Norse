@@ -7,15 +7,19 @@ import { toast } from 'sonner';
 
 import { Button } from '@/app/(app)/shared/components/ui/button';
 import { Label } from '@/app/(app)/shared/components/ui/label';
-import { uploadPrintableDirectoryCoverImage } from '@/app/(app)/shared/serverActions/printableDirectories/uploadPrintableDirectoryCoverImage';
+import {
+  PrintableDirectoryImageKind,
+  uploadPrintableDirectoryImage,
+} from '@/app/(app)/shared/serverActions/printableDirectories/uploadPrintableDirectoryImage';
 
-import { CoverImageThumbnail } from './cover-image-thumbnail';
+import { DirectoryImageThumbnail } from './directory-image-thumbnail';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
 
-type CoverImageFieldProps = {
+type DirectoryImageFieldProps = {
   id: string;
+  kind: PrintableDirectoryImageKind;
   label: string;
   imageUrl: string;
   onChange: (url: string) => void;
@@ -23,14 +27,16 @@ type CoverImageFieldProps = {
   disabled?: boolean;
 };
 
-export function CoverImageField({
+/** Upload/remove control for a directory image (cover image or logo). */
+export function DirectoryImageField({
   id,
+  kind,
   label,
   imageUrl,
   onChange,
   directoryId,
   disabled = false,
-}: CoverImageFieldProps) {
+}: DirectoryImageFieldProps) {
   const { t } = useTranslation(['page-directories', 'common']);
   const inputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -46,12 +52,12 @@ export function CoverImageField({
     }
 
     if (!file.type.startsWith('image/')) {
-      toast.error(t('cover_image_invalid_type', { ns: 'page-directories' }));
+      toast.error(t('image_invalid_type', { ns: 'page-directories' }));
       return;
     }
 
     if (file.size > MAX_FILE_SIZE_BYTES) {
-      toast.error(t('cover_image_too_large', { ns: 'page-directories' }));
+      toast.error(t('image_too_large', { ns: 'page-directories' }));
       return;
     }
 
@@ -60,21 +66,22 @@ export function CoverImageField({
     try {
       const uploadData = new FormData();
       uploadData.set('file', file);
+      uploadData.set('kind', kind);
       uploadData.set('directoryId', directoryId);
       if (tenantId) {
         uploadData.set('tenantId', tenantId);
       }
 
-      const result = await uploadPrintableDirectoryCoverImage(uploadData);
+      const result = await uploadPrintableDirectoryImage(uploadData);
 
       if (!result) {
-        toast.error(t('cover_image_upload_error', { ns: 'page-directories' }));
+        toast.error(t('image_upload_error', { ns: 'page-directories' }));
         return;
       }
 
       onChange(result.url);
     } catch {
-      toast.error(t('cover_image_upload_error', { ns: 'page-directories' }));
+      toast.error(t('image_upload_error', { ns: 'page-directories' }));
     } finally {
       setIsUploading(false);
     }
@@ -87,7 +94,7 @@ export function CoverImageField({
       <div>
         {imageUrl ? (
           <div className="flex flex-col gap-2">
-            <CoverImageThumbnail src={imageUrl} alt={label} />
+            <DirectoryImageThumbnail src={imageUrl} alt={label} kind={kind} />
             <Button
               type="button"
               variant="outline"
@@ -97,7 +104,7 @@ export function CoverImageField({
               onClick={() => onChange('')}
             >
               <Trash2 className="size-4" aria-hidden="true" />
-              {t('cover_image_remove', { ns: 'page-directories' })}
+              {t('image_remove', { ns: 'page-directories' })}
             </Button>
           </div>
         ) : (
@@ -111,7 +118,7 @@ export function CoverImageField({
             onClick={() => inputRef.current?.click()}
           >
             <Upload className="size-4" aria-hidden="true" />
-            {t('cover_image_upload', { ns: 'page-directories' })}
+            {t('image_upload', { ns: 'page-directories' })}
           </Button>
         )}
       </div>

@@ -21,6 +21,7 @@ import { SectionItem } from './section-item';
 
 type SectionsCardProps = {
   directoryId: string;
+  primaryLanguage: string;
   sections: PrintableDirectorySectionResponseDto[];
   defaultQueryConfig:
     PrintableDirectoryDefaultQueryConfigDto | null | undefined;
@@ -39,6 +40,7 @@ type SectionsCardProps = {
 
 export function SectionsCard({
   directoryId,
+  primaryLanguage,
   sections,
   defaultQueryConfig,
   isReorderingSections,
@@ -108,6 +110,7 @@ export function SectionsCard({
             <SectionItem
               key={section.id}
               directoryId={directoryId}
+              primaryLanguage={primaryLanguage}
               section={section}
               defaultQueryConfig={defaultQueryConfig}
               index={index}

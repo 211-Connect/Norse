@@ -7,9 +7,11 @@ import { PrintableDirectoryDetail } from '@/app/(app)/features/printable-directo
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { getPrintableDirectoryById } from '@/app/(app)/shared/serverActions/printableDirectories/getPrintableDirectoryById';
+import { getTranslationAllowance } from '@/app/(app)/shared/services/translation-usage/translation-usage-service';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { canAccessPrintableDirectories } from '@/app/(app)/shared/utils/canAccessPrintableDirectories';
 import { getSession } from '@/app/(app)/shared/utils/getServerSession';
+import { getPrintableDirectoryServerAccess } from '@/app/(app)/shared/utils/printableDirectoryServerAccess';
 
 const i18nNamespaces = ['page-directories', 'page-list', 'common'];
 
@@ -73,13 +75,40 @@ export default async function PrintableDirectoryDetailPage({
     notFound();
   }
 
+  const translationPausedReason = await getTranslationPausedReason(
+    appConfig.tenantId,
+    locale,
+  );
+
   return (
     <PageWrapper
       cookies={cookieList}
       translationData={{ i18nNamespaces, locale, resources }}
       nonce={nonce}
     >
-      <PrintableDirectoryDetail locale={locale} initialDirectory={directory} />
+      <PrintableDirectoryDetail
+        locale={locale}
+        initialDirectory={directory}
+        translationPausedReason={translationPausedReason}
+      />
     </PageWrapper>
   );
+}
+
+/** Only users who auto-translate can have it paused. */
+async function getTranslationPausedReason(
+  tenantId: string,
+  locale: string,
+): Promise<'user_quota' | 'tenant_cap' | undefined> {
+  const access = await getPrintableDirectoryServerAccess(tenantId, locale);
+  if (!access?.hasCapability('automaticTranslation')) {
+    return undefined;
+  }
+
+  try {
+    const allowance = await getTranslationAllowance(tenantId, access.userEmail);
+    return allowance.allowed ? undefined : allowance.reason;
+  } catch {
+    return undefined;
+  }
 }

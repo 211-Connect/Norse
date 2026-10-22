@@ -9,6 +9,7 @@ import { Datum } from '../datum';
 export function OrganizationComponent({ resource }: { resource: Resource }) {
   const { t } = useTranslation('page-resource');
   const organizationName = resource.organizationName;
+  const organizationAlternateName = resource.organizationAlternateName;
   const organizationDescription = resource.organizationDescription;
 
   if (!organizationName && !organizationDescription) {
@@ -20,6 +21,7 @@ export function OrganizationComponent({ resource }: { resource: Resource }) {
       {organizationName && (
         <Datum
           description={organizationName}
+          subdescription={organizationAlternateName}
           title={t('providing_organization')}
           labelAs="h3"
         />

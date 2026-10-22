@@ -184,7 +184,8 @@
   "autocomplete": {
     "results_available_one": "{{count}} tulos saatavilla",
     "results_available_other": "{{count}} tulosta saatavilla",
-    "no_results": "Ei tuloksia"
+    "no_results": "Ei tuloksia",
+    "loading": "Ehdotuksia ladataan…"
   },
   "auth_error": {
     "access_denied_title": "Käyttö estetty",

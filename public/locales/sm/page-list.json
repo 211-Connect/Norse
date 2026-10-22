@@ -58,7 +58,9 @@
     "loading_resources": "O lo'o utaina fa'amatalaga o punaoa...",
     "load_error": "E le mafai ona utaina fa'amatalaga o punaoa e mafai ona lolomi. Fa'amolemole toe taumafai.",
     "retry": "Toe taumafai",
-    "language_title": "Gagana o le fa'asinomaga"
+    "language_title": "Gagana o le fa'asinomaga",
+    "booklet_layout": "Fa'atulagaga o le tusi",
+    "booklet_layout_help": "Ua fa'atulaga itulau ina ia mafai ona gaugau ma fa'amau le pepa lolomi i totonu o se tama'itusi: fa'aopoopo fa'avaa gaogao i totonu ma fa'atumu le numera o itulau i le fa'atelega o le 4. Lolomi i itu e lua."
   },
   "print_footer_disclaimer": "{{brandName}} e tuʻuina atu nei faʻamatalaga o se auaunaga lautele ma e leai se faʻamaoniga e uiga i lona saʻo, atoatoa, poʻo le taimi atofaina. E le tali atu le {{brandName}} i le faʻaaogaina o nei faʻamatalaga ma e leai se noataga mo soʻo se taunuuga e tulaʻi mai i lona faʻaaogaina. O le tufatufaina atu o lenei lomiga e le faʻaalia ai le faʻamaoniaina poʻo le fesoʻotaʻi ma le {{brandName}}.",
   "print_page_counter": "Itūlau {{current}} o le {{total}}",

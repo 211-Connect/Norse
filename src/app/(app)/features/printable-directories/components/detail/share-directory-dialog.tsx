@@ -11,6 +11,7 @@ import {
   type PrintVariant,
 } from '@/app/(app)/shared/components/directory-print/pdf-print-primitives';
 import {
+  PD_BOOKLET_PARAM,
   PD_FONT_SIZE_PARAM,
   PD_SLUG_PARAM,
   PD_VARIANT_PARAM,
@@ -24,12 +25,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/app/(app)/shared/components/ui/dialog';
-import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { useClipboard } from '@/app/(app)/shared/hooks/use-clipboard';
 import { withOptionalCustomBasePath } from '@/app/(app)/shared/lib/utils';
 import { PrintableDirectoryResponseDto } from '@/lib/api/generated/data-contracts';
 
-import { RESOURCE_LAYOUT_TO_PRINT_VARIANT } from './print-printable-directory-button';
+/**
+ * Default print-time template when the dialog first opens. Ephemeral only —
+ * never persisted. See docs/adr/0002-remove-resource-layout-and-booklet-fields.md.
+ */
+const DEFAULT_PRINT_VARIANT: PrintVariant = 'line-listing';
 
 type ShareDirectoryDialogProps = {
   open: boolean;
@@ -45,23 +49,23 @@ export function ShareDirectoryDialog({
   locale,
 }: ShareDirectoryDialogProps) {
   const { t } = useTranslation(['page-directories', 'common']);
-  const appConfig = useAppConfig();
   const clipboard = useClipboard();
 
-  const availableLocales = appConfig.i18n.locales;
+  // Only locales the directory actually has translated content for are
+  // selectable when sharing — see docs/printable-directories.md ("A.II.
+  // Localization & automatic translation"). This is always `directory.locales`
+  // regardless of the sharing user's own capability (capability only
+  // matters at edit time).
+  const availableLocales = directory.locales;
   const defaultShareLocale = availableLocales.includes(locale)
     ? locale
-    : appConfig.i18n.defaultLocale;
+    : directory.primaryLanguage;
 
-  const initialVariant: PrintVariant =
-    directory.resourceLayout === 'custom-search' ||
-    directory.resourceLayout === 'custom-resource'
-      ? 'line-listing'
-      : RESOURCE_LAYOUT_TO_PRINT_VARIANT[directory.resourceLayout];
-
-  const [selectedVariant, setSelectedVariant] =
-    useState<PrintVariant>(initialVariant);
+  const [selectedVariant, setSelectedVariant] = useState<PrintVariant>(
+    DEFAULT_PRINT_VARIANT,
+  );
   const [fontSizeMode, setFontSizeMode] = useState<FontSizeMode>('default');
+  const [isBookletLayout, setIsBookletLayout] = useState(false);
   const [selectedLocale, setSelectedLocale] = useState(defaultShareLocale);
 
   useEffect(() => {
@@ -69,8 +73,9 @@ export function ShareDirectoryDialog({
       return;
     }
 
-    setSelectedVariant(initialVariant);
+    setSelectedVariant(DEFAULT_PRINT_VARIANT);
     setFontSizeMode('default');
+    setIsBookletLayout(false);
     setSelectedLocale(defaultShareLocale);
   }, [open]);
 
@@ -83,6 +88,7 @@ export function ShareDirectoryDialog({
       [PD_SLUG_PARAM]: directory.slug,
       [PD_VARIANT_PARAM]: selectedVariant,
       [PD_FONT_SIZE_PARAM]: fontSizeMode,
+      [PD_BOOKLET_PARAM]: String(isBookletLayout),
     });
 
     const shareUrl = withOptionalCustomBasePath(
@@ -114,6 +120,8 @@ export function ShareDirectoryDialog({
           selectedLocale={selectedLocale}
           onSelectedLocaleChange={setSelectedLocale}
           availableLocales={availableLocales}
+          isBookletLayout={isBookletLayout}
+          onBookletLayoutChange={setIsBookletLayout}
         />
 
         <DialogFooter>

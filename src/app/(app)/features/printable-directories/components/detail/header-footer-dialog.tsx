@@ -12,7 +12,12 @@ import {
   DialogTitle,
 } from '@/app/(app)/shared/components/ui/dialog';
 
-import { HeaderFooterDialogValues } from '../../utils/dialog-types';
+import { PrintableDirectoryLocalizedValuesDto } from '@/lib/api/generated/data-contracts';
+
+import {
+  EMPTY_LOCALIZED_VALUES,
+  HeaderFooterDialogValues,
+} from '../../utils/dialog-types';
 import { LayoutEditor } from './layout-editor';
 import { LocalizedFieldTable } from './localized-field-table';
 
@@ -24,6 +29,8 @@ type HeaderFooterDialogProps = {
   title: string;
   initialValues: HeaderFooterDialogValues;
   onSubmit: (values: HeaderFooterDialogValues) => Promise<void>;
+  primaryLanguage: string;
+  locales: string[];
 };
 
 export function HeaderFooterDialog({
@@ -34,17 +41,21 @@ export function HeaderFooterDialog({
   title,
   initialValues,
   onSubmit,
+  primaryLanguage,
+  locales,
 }: HeaderFooterDialogProps) {
   const { t } = useTranslation(['page-directories', 'common']);
   const textLabel = t(
     kind === 'header' ? 'header_text_label' : 'footer_text_label',
     { ns: 'page-directories' },
   );
-  const [textValues, setTextValues] = useState<Record<string, string>>({});
+  const [text, setText] = useState<PrintableDirectoryLocalizedValuesDto>(
+    EMPTY_LOCALIZED_VALUES,
+  );
   const [layout, setLayout] = useState<HeaderFooterDialogValues['layout']>([]);
 
   const reset = () => {
-    setTextValues(initialValues?.textLocalized?.values ?? {});
+    setText(initialValues.textLocalized ?? EMPTY_LOCALIZED_VALUES);
     setLayout(initialValues.layout);
   };
 
@@ -64,7 +75,7 @@ export function HeaderFooterDialog({
 
   const handleSubmit = async () => {
     await onSubmit({
-      textLocalized: { values: textValues },
+      textLocalized: text,
       layout,
     });
   };
@@ -81,14 +92,11 @@ export function HeaderFooterDialog({
 
           <LocalizedFieldTable
             label={textLabel}
-            values={textValues}
+            value={text}
             multiline
-            onChange={(locale, next) =>
-              setTextValues((previous) => ({
-                ...previous,
-                [locale]: next,
-              }))
-            }
+            primaryLanguage={primaryLanguage}
+            locales={locales}
+            onChange={setText}
           />
         </div>
 

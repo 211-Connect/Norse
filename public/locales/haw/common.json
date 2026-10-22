@@ -184,7 +184,8 @@
   "autocomplete": {
     "results_available_one": "Loaʻa ka hopena {{count}}",
     "results_available_other": "Loaʻa nā hopena {{count}}",
-    "no_results": "ʻAʻohe hopena"
+    "no_results": "ʻAʻohe hopena",
+    "loading": "Ke hoʻouka nei i nā manaʻo kōkua…"
   },
   "auth_error": {
     "access_denied_title": "Ua hōʻole ʻia ke komo ʻana",

@@ -19,7 +19,6 @@ import { toLocalizedValues } from '../../utils/toLocalizedValues';
 import { SectionDialogValues } from '../../utils/dialog-types';
 import { SectionDialog } from './section-dialog';
 import { SectionsCard } from './sections-card';
-import { DEFAULT_MAX_RESOURCES } from '../../utils/constants';
 
 type SectionsEditorCardProps = {
   directory: PrintableDirectoryResponseDto;
@@ -343,6 +342,7 @@ export function SectionsEditorCard({
     <>
       <SectionsCard
         directoryId={directory.id}
+        primaryLanguage={directory.primaryLanguage}
         sections={sections}
         defaultQueryConfig={directory.defaultQueryConfig}
         isReorderingSections={isReordering}
@@ -360,13 +360,8 @@ export function SectionsEditorCard({
         isSubmitting={isSubmitting}
         title={t('add_section', { ns: 'page-directories' })}
         submitLabel={t('call_to_action.create', { ns: 'common' })}
-        defaultMaxResources={
-          appConfig.printableDirectories.defaultMaxResources ??
-          DEFAULT_MAX_RESOURCES
-        }
-        maxResourcesConfigurable={
-          appConfig.printableDirectories.maxResourcesConfigurable
-        }
+        primaryLanguage={directory.primaryLanguage}
+        locales={directory.locales}
         onSubmit={handleCreateSection}
       />
 
@@ -381,13 +376,8 @@ export function SectionsEditorCard({
           isSubmitting={isSubmitting}
           title={t('edit_section', { ns: 'page-directories' })}
           submitLabel={t('call_to_action.save', { ns: 'common' })}
-          defaultMaxResources={
-            appConfig.printableDirectories.defaultMaxResources ??
-            DEFAULT_MAX_RESOURCES
-          }
-          maxResourcesConfigurable={
-            appConfig.printableDirectories.maxResourcesConfigurable
-          }
+          primaryLanguage={directory.primaryLanguage}
+          locales={directory.locales}
           initialValues={{
             headingLocalized: toLocalizedValues(
               editingSection.headingLocalized,

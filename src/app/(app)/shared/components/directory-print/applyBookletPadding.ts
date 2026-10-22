@@ -9,7 +9,16 @@ import { PDFDocument } from 'pdf-lib';
  * blank pages are inserted right before the last page until it is.
  */
 export async function applyBookletPadding(blob: Blob): Promise<Blob> {
-  const bytes = await blob.arrayBuffer();
+  const paddedBytes = await applyBookletPaddingToBytes(
+    await blob.arrayBuffer(),
+  );
+  return new Blob([paddedBytes as BlobPart], { type: 'application/pdf' });
+}
+
+/** `applyBookletPadding` for raw PDF bytes (server-side rendering). */
+export async function applyBookletPaddingToBytes(
+  bytes: ArrayBuffer | Uint8Array,
+): Promise<Uint8Array> {
   const doc = await PDFDocument.load(bytes);
 
   const { width, height } = doc.getPage(0).getSize();
@@ -24,6 +33,5 @@ export async function applyBookletPadding(blob: Blob): Promise<Blob> {
     doc.insertPage(doc.getPageCount() - 1, [width, height]);
   }
 
-  const paddedBytes = await doc.save();
-  return new Blob([paddedBytes as BlobPart], { type: 'application/pdf' });
+  return doc.save();
 }

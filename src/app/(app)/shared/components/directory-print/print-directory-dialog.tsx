@@ -32,6 +32,7 @@ export type PrintDocumentRenderContext = {
   currentDomain: string;
   currentDate: string;
   locale: string;
+  isBookletLayout: boolean;
 };
 
 export type PdfDocumentElement = ReactElement<ComponentProps<typeof Document>>;
@@ -48,7 +49,11 @@ type PrintDirectoryDialogProps<TData> = {
     data: TData,
     context: PrintDocumentRenderContext,
   ) => PdfDocumentElement;
-  postProcessBlob?: (blob: Blob, data: TData) => Promise<Blob>;
+  postProcessBlob?: (
+    blob: Blob,
+    data: TData,
+    isBookletLayout: boolean,
+  ) => Promise<Blob>;
 };
 
 export function PrintDirectoryDialog<TData>({
@@ -68,6 +73,7 @@ export function PrintDirectoryDialog<TData>({
   const [selectedVariant, setSelectedVariant] =
     useState<PrintVariant>(initialVariant);
   const [fontSizeMode, setFontSizeMode] = useState<FontSizeMode>('default');
+  const [isBookletLayout, setIsBookletLayout] = useState(false);
   const [selectedLocale, setSelectedLocale] = useState(
     initialLocale ?? i18n.language,
   );
@@ -107,6 +113,7 @@ export function PrintDirectoryDialog<TData>({
         currentDomain,
         currentDate,
         locale: selectedLocale,
+        isBookletLayout,
       });
 
       const printI18n = await createPrintI18nInstance(
@@ -121,7 +128,7 @@ export function PrintDirectoryDialog<TData>({
 
       const result = await openPdfDocument(localizedDocumentElement, {
         postProcessBlob: postProcessBlob
-          ? (blob) => postProcessBlob(blob, resolvedData)
+          ? (blob) => postProcessBlob(blob, resolvedData, isBookletLayout)
           : undefined,
       });
 
@@ -172,6 +179,14 @@ export function PrintDirectoryDialog<TData>({
           selectedLocale={selectedLocale}
           onSelectedLocaleChange={setSelectedLocale}
           availableLocales={locales}
+          // Booklet padding is applied by `postProcessBlob`, so the option
+          // is only offered to callers that provide one.
+          {...(postProcessBlob
+            ? {
+                isBookletLayout,
+                onBookletLayoutChange: setIsBookletLayout,
+              }
+            : {})}
         />
 
         <DialogFooter>

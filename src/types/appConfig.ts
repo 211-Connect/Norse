@@ -5,6 +5,29 @@ import { Nullable } from './common';
 
 export type SearchEngine = 'classic' | 'hybrid' | 'ai_classification';
 
+type PayloadPrintableDirectoryUserGroup = NonNullable<
+  NonNullable<
+    NonNullable<ResourceDirectory['printableDirectories']>['userGroups']
+  >
+>[number];
+
+export type PrintableDirectoryCapability = NonNullable<
+  NonNullable<PayloadPrintableDirectoryUserGroup['capabilities']>[number]
+>;
+
+export type PrintableDirectoryUserGroup = {
+  name: string;
+  emails: string[];
+  domains: string[];
+  capabilities: PrintableDirectoryCapability[];
+};
+
+/** A user's resolved printable directory access. */
+export type PrintableDirectoryViewerAccess = {
+  canAccess: boolean;
+  capabilities: PrintableDirectoryCapability[];
+};
+
 type Menu = {
   name: string;
   href?: Nullable<string>;
@@ -58,10 +81,10 @@ export type AppConfig = {
     requireAuthenticationForFavorites: boolean;
   };
   printableDirectories: {
+    accessMode: 'everyone' | 'allowlist';
     allowedEmails: string[];
     allowedDomains: string[];
-    maxResourcesConfigurable: boolean;
-    defaultMaxResources: number;
+    userGroups: PrintableDirectoryUserGroup[];
   };
   footer: {
     customMenu: Menu[];

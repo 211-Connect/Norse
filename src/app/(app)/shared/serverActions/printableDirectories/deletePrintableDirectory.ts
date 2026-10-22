@@ -2,10 +2,16 @@
 
 import { getApiHeaders, printableDirectoriesApiClient } from '@/lib/api';
 
+import { getPrintableDirectoryServerAccess } from '../../utils/printableDirectoryServerAccess';
+
 export async function deletePrintableDirectory(
   id: string,
   tenantId: string,
 ): Promise<boolean> {
+  if (!(await getPrintableDirectoryServerAccess(tenantId))) {
+    return false;
+  }
+
   try {
     await printableDirectoriesApiClient.printableDirectoryControllerRemove(
       { id },

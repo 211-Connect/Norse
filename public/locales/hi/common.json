@@ -184,7 +184,8 @@
   "autocomplete": {
     "results_available_one": "{{count}} परिणाम उपलब्ध",
     "results_available_other": "{{count}} परिणाम उपलब्ध हैं",
-    "no_results": "कोई परिणाम नहीं"
+    "no_results": "कोई परिणाम नहीं",
+    "loading": "सुझाव लोड हो रहे हैं…"
   },
   "auth_error": {
     "access_denied_title": "पहुंच अस्वीकृत",

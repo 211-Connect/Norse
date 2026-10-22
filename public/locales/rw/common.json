@@ -184,7 +184,8 @@
   "autocomplete": {
     "results_available_one": "Ibisubizo bya {{count}} biraboneka",
     "results_available_other": "Ibisubizo {{count}} biraboneka",
-    "no_results": "Nta bisubizo"
+    "no_results": "Nta bisubizo",
+    "loading": "Ibyifuzo biri kuri interineti…"
   },
   "auth_error": {
     "access_denied_title": "Kubona uburenganzira byanze",

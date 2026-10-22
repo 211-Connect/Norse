@@ -1,7 +1,6 @@
 'use client';
 
 import { BookPlus, LoaderCircle, TriangleAlert } from 'lucide-react';
-import { useSession } from 'next-auth/react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -35,7 +34,7 @@ import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 import { createPrintableDirectorySection } from '@/app/(app)/shared/serverActions/printableDirectories/createPrintableDirectorySection';
 import { createPrintableDirectorySource } from '@/app/(app)/shared/serverActions/printableDirectories/createPrintableDirectorySource';
 import { getPrintableDirectories } from '@/app/(app)/shared/serverActions/printableDirectories/getPrintableDirectories';
-import { canAccessPrintableDirectories } from '@/app/(app)/shared/utils/canAccessPrintableDirectories';
+import { usePrintableDirectoryAccess } from '@/app/(app)/shared/hooks/use-printable-directory-capability';
 import { Button } from '@/app/(app)/shared/components/ui/button';
 import {
   PrintableDirectoryControllerCreateSourcePayload,
@@ -69,7 +68,6 @@ export function SaveSourceToDirectoryButton({
   triggerMode = 'button',
 }: SaveSourceToDirectoryButtonProps) {
   const { t, i18n } = useTranslation(['common']);
-  const session = useSession();
   const appConfig = useAppConfig();
   const router = useRouter();
   const pathname = usePathname();
@@ -85,10 +83,7 @@ export function SaveSourceToDirectoryButton({
   const [selectedSectionId, setSelectedSectionId] = useState('');
   const [includeSearchLocation, setIncludeSearchLocation] = useState(true);
 
-  const hasAccess = canAccessPrintableDirectories(
-    session.data?.user?.email,
-    appConfig,
-  );
+  const { canAccess: hasAccess } = usePrintableDirectoryAccess();
 
   const selectedDirectory = useMemo(
     () => directories.find((directory) => directory.id === selectedDirectoryId),
@@ -190,8 +185,8 @@ export function SaveSourceToDirectoryButton({
         const items = result.items ?? [];
         setDirectories(items);
 
-        const requestedDirectoryId = searchParams.get('pdid') ?? '';
-        const requestedSectionId = searchParams.get('pdsid') ?? '';
+        const requestedDirectoryId = searchParams?.get('pdid') ?? '';
+        const requestedSectionId = searchParams?.get('pdsid') ?? '';
 
         const preferredDirectory = requestedDirectoryId
           ? items.find((directory) => directory.id === requestedDirectoryId)
@@ -237,13 +232,13 @@ export function SaveSourceToDirectoryButton({
   }, [open, hasAccess, appConfig.tenantId, t, searchParams]);
 
   const clearDirectoryParams = useCallback(() => {
-    if (!searchParams.has('pdid') && !searchParams.has('pdsid')) return;
+    if (!searchParams?.has('pdid') && !searchParams?.has('pdsid')) return;
 
-    const nextParams = new URLSearchParams(searchParams.toString());
+    const nextParams = new URLSearchParams(searchParams?.toString());
     nextParams.delete('pdid');
     nextParams.delete('pdsid');
     const nextQuery = nextParams.toString();
-    router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, {
+    router.replace(nextQuery ? `${pathname}?${nextQuery}` : (pathname ?? '/'), {
       scroll: false,
     });
   }, [searchParams, router, pathname]);
@@ -466,6 +461,7 @@ export function SaveSourceToDirectoryButton({
                         {getPrintableDirectoryLocalizedText(
                           section.headingLocalized,
                           i18n.language,
+                          selectedDirectory?.primaryLanguage ?? '',
                         )}
                       </SelectItem>
                     ))}

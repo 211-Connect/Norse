@@ -65,20 +65,28 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   headerFooterRegionLeft: {
-    flex: 1,
+    // Equal widths whatever the content, so the center region sits at
+    // the page center.
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
     gap: 12,
   },
   headerFooterRegionCenter: {
-    flex: 1,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
   },
   headerFooterRegionRight: {
-    flex: 1,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
@@ -88,6 +96,9 @@ const styles = StyleSheet.create({
     fontSize: BASE_FONT.small,
     color: COLORS.secondary,
     textAlign: 'center',
+  },
+  fullWidth: {
+    flex: 1,
   },
   header: {
     position: 'absolute',
@@ -199,28 +210,49 @@ function HeaderFooterRow({
 
   const textIndex = config.layout.indexOf('text');
   const hasCenteredText = textIndex !== -1 && !!config.text;
+  const isTextOnly = hasCenteredText && config.layout.length === 1;
+
+  // Pieces that actually render (no logo or empty text leaves a gap).
+  const pieces = config.layout.filter((piece) =>
+    piece === 'text' ? !!config.text : piece === 'logo' ? !!logoUrl : true,
+  );
+  // The piece that belongs at the page center: the text when present,
+  // otherwise the middle one of three (e.g. website · logo · date).
+  const centerIndex = hasCenteredText
+    ? pieces.indexOf('text')
+    : pieces.length === 3
+      ? 1
+      : -1;
 
   return (
     <View style={positionStyle} fixed>
-      {hasCenteredText ? (
-        // Split into three equal-width regions so the text is always
-        // visually centered, regardless of how wide the logo/domain/date
-        // pieces on either side happen to be.
+      {isTextOnly ? (
+        // Nothing beside it: the text may use the full width.
+        <View style={styles.headerFooterRow}>
+          <Text style={[styles.headerFooterTextCentered, styles.fullWidth]}>
+            {config.text}
+          </Text>
+        </View>
+      ) : centerIndex !== -1 ? (
+        // Three equal-width regions, so the center piece is centered on the
+        // page regardless of how wide the pieces on either side are.
         <View style={styles.headerFooterRow}>
           <View style={styles.headerFooterRegionLeft}>
-            {config.layout.slice(0, textIndex).map(renderPiece)}
+            {pieces.slice(0, centerIndex).map(renderPiece)}
           </View>
           <View style={styles.headerFooterRegionCenter}>
-            <Text style={styles.headerFooterTextCentered}>{config.text}</Text>
+            {pieces[centerIndex] === 'text' ? (
+              <Text style={styles.headerFooterTextCentered}>{config.text}</Text>
+            ) : (
+              renderPiece(pieces[centerIndex])
+            )}
           </View>
           <View style={styles.headerFooterRegionRight}>
-            {config.layout.slice(textIndex + 1).map(renderPiece)}
+            {pieces.slice(centerIndex + 1).map(renderPiece)}
           </View>
         </View>
       ) : (
-        <View style={styles.headerFooterRow}>
-          {config.layout.map(renderPiece)}
-        </View>
+        <View style={styles.headerFooterRow}>{pieces.map(renderPiece)}</View>
       )}
       {withSeparator && <View style={styles.headerSeparator} />}
     </View>
@@ -234,6 +266,7 @@ type PDFPrintableDirectoryProps = {
   currentDomain: string;
   currentDate: string;
   brandLogoUrl?: string;
+  isBookletLayout?: boolean;
 };
 
 export function PDFPrintableDirectory({
@@ -243,6 +276,7 @@ export function PDFPrintableDirectory({
   currentDomain,
   currentDate,
   brandLogoUrl,
+  isBookletLayout = false,
 }: PDFPrintableDirectoryProps) {
   const fontScale = getFontScale(fontSizeMode);
   const datumLabels = useDatumLabels();
@@ -363,7 +397,7 @@ export function PDFPrintableDirectory({
         <Text
           style={styles.pageNumber}
           render={({ pageNumber, totalPages }) => {
-            if (!data.isBookletLayout) {
+            if (!isBookletLayout) {
               return `${pageNumber} / ${totalPages}`;
             }
 

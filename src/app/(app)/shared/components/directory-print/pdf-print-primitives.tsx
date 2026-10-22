@@ -8,6 +8,7 @@ import {
   toPdfPrintableText,
 } from './pdf-text-normalizer';
 import { usePdfFontFamily } from './pdf-fonts';
+import { type FontSizeMode, type PrintVariant } from './print-options';
 
 export type PdfStyle = Styles[string];
 
@@ -29,15 +30,12 @@ export const BASE_FONT = {
 
 const DATUM_LABEL_WIDTH = 72;
 
-export const PRINT_VARIANTS = [
-  'line-listing',
-  'summary-listing',
-  'full-listing',
-] as const;
-export type PrintVariant = (typeof PRINT_VARIANTS)[number];
-
-export const FONT_SIZE_MODES = ['default', 'large'] as const;
-export type FontSizeMode = (typeof FONT_SIZE_MODES)[number];
+export {
+  FONT_SIZE_MODES,
+  PRINT_VARIANTS,
+  type FontSizeMode,
+  type PrintVariant,
+} from './print-options';
 
 type DatumLabels = {
   phone: string;

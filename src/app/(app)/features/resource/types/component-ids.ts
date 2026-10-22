@@ -5,6 +5,8 @@ export enum ResourceComponentId {
   SERVICE_NAME = 'serviceName',
   LOCATION_NAME = 'locationName',
   LOCATION_NAME_SUBTITLE = 'locationNameSubtitle',
+  ORGANIZATION_ALTERNATE_NAME = 'organizationAlternateName',
+  ORGANIZATION_ALTERNATE_NAME_SUBTITLE = 'organizationAlternateNameSubtitle',
 
   // Main info
   ADDRESS = 'address',

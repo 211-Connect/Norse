@@ -1,8 +1,12 @@
 'use server';
 
 import { UpdatePrintableDirectoryDto } from '@/lib/api/generated/data-contracts';
-import { getApiHeaders, printableDirectoriesApiClient } from '@/lib/api';
 
+import {
+  getPrintableDirectoryServerAccess,
+  getRequiredUpdateCapabilities,
+} from '../../utils/printableDirectoryServerAccess';
+import { updatePrintableDirectoryContent } from '../../utils/printableDirectoryMutations';
 import { PrintableDirectoryMutationResult } from './printableDirectoryMutationResult';
 
 export async function updatePrintableDirectory(
@@ -10,26 +14,21 @@ export async function updatePrintableDirectory(
   input: UpdatePrintableDirectoryDto,
   tenantId: string,
 ): Promise<PrintableDirectoryMutationResult> {
-  try {
-    const response =
-      await printableDirectoriesApiClient.printableDirectoryControllerUpdate(
-        { id },
-        input,
-        {
-          cache: 'no-store',
-          headers: await getApiHeaders(tenantId, 'en', true),
-        },
-      );
+  const access = await getPrintableDirectoryServerAccess(tenantId);
 
-    if (!response.ok) {
-      return {
-        success: false,
-        error: response.status === 409 ? 'slug_taken' : 'unknown',
-      };
-    }
-
-    return { success: true, data: response.data };
-  } catch {
-    return { success: false, error: 'unknown' };
+  if (!access) {
+    return { success: false, error: 'unauthorized' };
   }
+
+  // Premium fields (custom header/footer, logo, cover images) are gated by
+  // the CMS-configured user groups.
+  if (
+    !getRequiredUpdateCapabilities(input).every((capability) =>
+      access.hasCapability(capability),
+    )
+  ) {
+    return { success: false, error: 'forbidden' };
+  }
+
+  return updatePrintableDirectoryContent(id, input, tenantId, access);
 }
