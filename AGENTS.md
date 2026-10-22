@@ -25,6 +25,7 @@ Other docs, load only when the task touches that area:
 - [docs/scheduled-pdf-delivery.md](/docs/scheduled-pdf-delivery.md) — emailing printable directory PDFs on a weekly/monthly schedule: daily Payload job, server-side rendering via an internal Pages API route.
 - [docs/search-deep-link-geocoding.md](/docs/search-deep-link-geocoding.md) — forward-geocoding a deep link's `location` when `coords` is missing (all tenants).
 - [docs/tenant-api-key.md](/docs/tenant-api-key.md) — per-tenant Norse API authentication key (`x-api-key`), caching, and bulk backfill endpoint.
+- [docs/bot-protection.md](/docs/bot-protection.md) — Arcjet bot protection on directory pages: covered routes, env-only enforcement (no Payload setting), rollout and recovery runbook.
 - [docs/tracing.md](/docs/tracing.md) — OpenTelemetry tracing setup, propagated to the Norse API via `traceparent`, and how to view traces locally.
 
 ## Feature documentation

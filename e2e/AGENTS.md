@@ -44,9 +44,13 @@ Scope: `e2e/**`. Read this before adding or editing Playwright specs or helpers.
 
 The full suite (`search-taxonomy`, `translations`, `search-geocode`,
 `favorites`, `accessibility`, `ai-classification`, `resource-direct-link`,
-`organization`) runs against 7 tenants × 2 environments (dev/prod) in CI — see
-`.github/workflows/e2e-tests.yaml` for the matrix (tenant + environment only)
-and `e2e/fixtures/tenants.ts` for the per-tenant data (base URLs, taxonomy
+`organization`) runs against the 7 tenants' dev hosts in CI — see
+`.github/workflows/e2e-tests.yaml` for the matrix (tenant + environment only).
+CI does not run against production: production hosts are enforced by Arcjet
+bot protection, which is expected to deny headless Chromium, while the dev hosts stay
+unenforced ([docs/bot-protection.md](/docs/bot-protection.md)). The prod
+fixtures remain for local runs with `E2E_TENANT_ENV=prod`. See
+`e2e/fixtures/tenants.ts` for the per-tenant data (base URLs, taxonomy
 codes/labels, broad queries, test-account emails, `aiSearchEnabled`,
 `organizationSearchEnabled`).
 

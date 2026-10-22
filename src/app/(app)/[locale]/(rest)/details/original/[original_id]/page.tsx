@@ -9,6 +9,7 @@ import initTranslations from '@/app/(app)/shared/i18n/i18n';
 import { FetchError } from '@/app/(app)/shared/lib/fetchError';
 import { getResourceByOriginalId } from '@/app/(app)/shared/services/resource-service';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
+import { protectPage } from '@/lib/arcjet-page';
 import { createLogger } from '@/lib/logger';
 import { Resource } from '@/types/resource';
 
@@ -29,6 +30,9 @@ export const generateMetadata = async ({ params }) => {
   let notFoundFlag = false;
 
   if (original_id) {
+    // Runs in parallel with the page: gate the fetch on the same Arcjet
+    // decision, so a denied bot causes no Norse API call.
+    await protectPage(`/${locale}/details/original/${original_id}`);
     try {
       await getResourceByOriginalId(original_id, locale, appConfig.tenantId);
     } catch (err) {
@@ -61,10 +65,15 @@ export const generateMetadata = async ({ params }) => {
 };
 
 export default async function OriginalDetailsPage({ params }) {
+  const { original_id, locale } = await params;
+
+  // Before any data fetch or streaming, so a denial is a real 403. Same
+  // resource page as /search/[id], so it needs the same protection.
+  await protectPage(`/${locale}/details/original/${original_id}`);
+
   const cookieList = await getCookies({ cookies });
   const headersList = await headers();
   const nonce = headersList.get('x-nonce') ?? '';
-  const { original_id, locale } = await params;
   const appConfig = await getAppConfigWithoutHost(locale);
   const { resources } = await initTranslations(
     locale,

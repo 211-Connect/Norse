@@ -10,8 +10,8 @@ import { FetchError } from '@/app/(app)/shared/lib/fetchError';
 import { getResource } from '@/app/(app)/shared/services/resource-service';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { isValidUUID } from '@/app/(app)/shared/utils/uuid';
+import { protectPage } from '@/lib/arcjet-page';
 import { createLogger } from '@/lib/logger';
-import { arcjetProtectPage } from '@/lib/arcjet';
 import { Resource } from '@/types/resource';
 
 const log = createLogger('resource-page');
@@ -25,6 +25,10 @@ export const generateMetadata = async ({ params }): Promise<Metadata> => {
   let resource: Resource | null = null;
 
   if (id && isValidUUID(id)) {
+    // Runs in parallel with the page: gate the resource fetch on the same
+    // Arcjet decision, so a denied bot causes no Norse API call and its 403
+    // carries no resource title.
+    await protectPage(`/${locale}/search/${id}`);
     try {
       resource = await getResource(id, locale, appConfig.tenantId);
     } catch {}
@@ -69,12 +73,13 @@ export default async function ResourcePage({ params }) {
     notFound();
   }
 
+  // Before any data fetch or streaming, so a denial is a real 403.
+  await protectPage(`/${locale}/search/${id}`);
+
   const [cookieList, appConfig] = await Promise.all([
     getCookies({ cookies }),
     getAppConfigWithoutHost(locale),
   ]);
-
-  await arcjetProtectPage(`/search/${id}`, appConfig.tenantId || 'unknown');
 
   const { resources } = await initTranslations(
     locale,
