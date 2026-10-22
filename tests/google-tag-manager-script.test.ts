@@ -23,9 +23,7 @@ test('server-renders the stock GTM loader as an inline script', () => {
     /https:\/\/www\.googletagmanager\.com\/gtm\.js\?id='\+i\+dl/,
   );
   assert.match(html, /j\.nonce='abc123';/);
-  assert.ok(
-    html.endsWith("'script','dataLayer','GTM-WQXT865');</script>"),
-  );
+  assert.ok(html.endsWith("'script','dataLayer','GTM-WQXT865');</script>"));
 });
 
 test('omits the nonce assignment when no nonce is provided', () => {
