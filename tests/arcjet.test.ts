@@ -699,6 +699,50 @@ describe('fingerprint failure logging (ISS-1734)', () => {
     assert.ok(entries[0].data.headers);
   });
 
+  test('failures carry call duration and event-loop delay (ISS-1739)', async () => {
+    // 700 ms between start and the log, against a 500 ms Arcjet timeout:
+    // the timer fired late, and the event-loop delay says why.
+    const times = [1_000, 1_700];
+    for (const sampleHeaderLog of [() => true, () => false]) {
+      let call = 0;
+      const protect = createProtect(clientReturning(errored()), {
+        sampleHeaderLog,
+        now: () => times[call++],
+        eventLoopDelay: () => 640,
+      });
+      const { log, entries } = captureLog();
+
+      await protect(makeRequest(), PATH, log);
+
+      assert.equal(entries[0].data.durationMs, 700, entries[0].event);
+      assert.equal(entries[0].data.eventLoopDelayMs, 640, entries[0].event);
+      assert.equal('startedAt' in entries[0].data, false);
+    }
+  });
+
+  test('a thrown SDK error also carries duration and event-loop delay', async () => {
+    let call = 0;
+    const protect = createProtect(
+      {
+        protect: async () => {
+          throw new TypeError(FINGERPRINT_ERROR);
+        },
+      },
+      {
+        sampleHeaderLog: () => true,
+        now: () => [0, 30][call++],
+        eventLoopDelay: () => undefined,
+      },
+    );
+    const { log, entries } = captureLog();
+
+    await protect(makeRequest(), PATH, log);
+
+    assert.equal(entries[0].data.conclusion, 'THREW');
+    assert.equal(entries[0].data.durationMs, 30);
+    assert.equal(entries[0].data.eventLoopDelayMs, undefined);
+  });
+
   test('sampled-out failures log a counter event without headers', async () => {
     const protect = createProtect(clientReturning(errored()), {
       sampleHeaderLog: () => false,
