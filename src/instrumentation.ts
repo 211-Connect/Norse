@@ -8,7 +8,16 @@ import { createLogger } from '@/lib/logger';
 
 const log = createLogger('instrumentation');
 
-export function register() {
+export async function register() {
+  if (process.env.NEXT_RUNTIME === 'nodejs') {
+    // Logs `event_loop` every 10 s and lets Arcjet failure logs carry the
+    // current event-loop delay (ISS-1739). Imported here so `node:perf_hooks`
+    // never reaches the Edge bundle.
+    const { startEventLoopMonitor } = await import('@/lib/event-loop-monitor');
+    const eventLoopLog = createLogger('event-loop');
+    await startEventLoopMonitor((data) => eventLoopLog.info(data));
+  }
+
   if (!process.env.OTEL_EXPORTER_OTLP_ENDPOINT) {
     log.info('Tracing disabled: OTEL_EXPORTER_OTLP_ENDPOINT not set');
     return;

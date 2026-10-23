@@ -1,3 +1,4 @@
+import { isSpanContextValid, trace, TraceFlags } from '@opentelemetry/api';
 import arcjet, {
   type ArcjetDecision,
   type ArcjetNextRequest,
@@ -22,6 +23,8 @@ import {
 } from './redact';
 import { buildArcjetRules } from './rules';
 import type { ArcjetLog, ArcjetRequestLike } from './types';
+import { eventLoopDelayMs, instanceId } from '../event-loop';
+import { recordCount, recordTiming } from '../runtime-stats';
 
 /**
  * Arcjet bot protection, called per page from the routes that serve
@@ -100,6 +103,19 @@ function requestContext(request: ArcjetRequestLike, pathName: string) {
   };
 }
 
+/**
+ * The active OpenTelemetry trace, so a failure can be opened in Tempo when
+ * it was sampled (`OTEL_TRACES_SAMPLER_ARG`, 10% in production).
+ */
+function traceContext(): { traceId?: string; traceSampled?: boolean } {
+  const ctx = trace.getActiveSpan()?.spanContext();
+  if (!ctx || !isSpanContextValid(ctx)) return {};
+  return {
+    traceId: ctx.traceId,
+    traceSampled: (ctx.traceFlags & TraceFlags.SAMPLED) === TraceFlags.SAMPLED,
+  };
+}
+
 function deniedBotsOf(decision: ArcjetDecision): string[] {
   const bots = new Set<string>();
   if (decision.reason.isBot()) {
@@ -145,6 +161,10 @@ export interface ArcjetProtectOptions {
   sampleDeniedLog?: () => boolean;
   /** Where a DENY is enforced. */
   enforcement?: ArcjetEnforcement;
+  /** Test seam for the clock that times the Arcjet call (ms). */
+  now?: () => number;
+  /** Test seam for the event-loop delay read on a failure (ms). */
+  eventLoopDelay?: () => number | undefined;
 }
 
 export function createArcjetProtect(
@@ -157,6 +177,8 @@ export function createArcjetProtect(
   const sampleDeniedLog =
     options.sampleDeniedLog ?? createMinuteSampler(DENIED_LOG_MAX_PER_MINUTE);
   const enforcement = options.enforcement ?? ARCJET_ENFORCEMENT;
+  const now = options.now ?? (() => performance.now());
+  const eventLoopDelay = options.eventLoopDelay ?? eventLoopDelayMs;
   let deniedSampledOut = 0;
 
   function logFingerprintFailed(
@@ -168,9 +190,21 @@ export function createArcjetProtect(
       errorType: string;
       message: string;
       decisionId?: string;
+      startedAt: number;
     },
   ) {
-    const base = { ...requestContext(request, pathName), ...detail };
+    const { startedAt, ...rest } = detail;
+    // A call that took far longer than ARCJET_TIMEOUT_MS, or a large
+    // event-loop delay, means our process was too busy to read the answer in
+    // time, not that Arcjet was slow (ISS-1739).
+    const base = {
+      ...requestContext(request, pathName),
+      ...rest,
+      durationMs: Math.round(now() - startedAt),
+      eventLoopDelayMs: eventLoopDelay(),
+      instance: instanceId(),
+      ...traceContext(),
+    };
     if (sampleHeaderLog()) {
       log('warn', 'arcjet_fingerprint_failed', {
         ...base,
@@ -215,7 +249,23 @@ export function createArcjetProtect(
     deniedSampledOut = 0;
   }
 
+  /**
+   * Every call is counted by conclusion and every Arcjet call timed, into
+   * the in-memory stats the `event_loop` line drains (ISS-1739). These are
+   * the request rate and the Arcjet latency distribution, which the logs
+   * otherwise lack: allowed requests are not logged.
+   */
   async function arcjetProtect(
+    request: ArcjetRequestLike,
+    pathName: string,
+    log: ArcjetLog,
+  ): Promise<ArcjetProtectResult> {
+    const result = await decide(request, pathName, log);
+    recordCount(`arcjet.${result.conclusion}`);
+    return result;
+  }
+
+  async function decide(
     request: ArcjetRequestLike,
     pathName: string,
     log: ArcjetLog,
@@ -246,14 +296,18 @@ export function createArcjetProtect(
     }
 
     let decision: ArcjetDecision;
+    const startedAt = now();
     try {
       decision = await client.protect(request, protectOptions);
+      recordTiming('arcjet', now() - startedAt, !decision.isErrored());
     } catch (error) {
+      recordTiming('arcjet', now() - startedAt, false);
       // Fail open: a protection outage must never take the site down.
       logFingerprintFailed(request, pathName, log, {
         conclusion: 'THREW',
         errorType: error instanceof Error ? error.name : typeof error,
         message: error instanceof Error ? error.message : String(error),
+        startedAt,
       });
       return { denied: false, conclusion: 'THREW' };
     }
@@ -282,6 +336,7 @@ export function createArcjetProtect(
         errorType: decision.reason.type,
         message: errorMessageOf(decision),
         decisionId: decision.id,
+        startedAt,
       });
       return { denied: false, conclusion: 'ERROR' };
     }
