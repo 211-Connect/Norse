@@ -23,8 +23,14 @@ writer args ──▶ intent ──applyWriterRules──▶ serializeSearch ─
 
 ## Rules
 
-- **Unknown is not empty.** A slot is unstated only where the URL says nothing readable (absent, repeated
-  or bracketed plain keys, `age=abc`). Empty and `Everywhere` are stated.
+- **Unknown is not empty.** A slot is unstated only where the URL says nothing readable (absent, `age=abc`,
+  a named or nested bracket such as `location[x]`). Empty and `Everywhere` are stated.
+- **A plain key reads as its first value.** A repeated plain key (`location=Seattle&location=Tacoma`) and
+  an index-bracketed one (`location[0]=Seattle`, written by the old filter navigation) read as the first
+  value, as the browser's `URLSearchParams.get` reads a repeat; so do the envelope markers. `qs` turns an
+  index above 20 into an object, so `location[25]` stays unstated. `taxonomy` reads every repeat, and
+  `filters[...]` and `ai_options[...]` are bracketed by design. Decided 2026-10-22 on ISS-2472 and
+  ISS-2473; until then repeated and bracketed plain keys read as nothing (ISS-2382).
 - **The lift is pure.** It reads only the query string: no tenant config, no defaults, no lookups.
   Defaults belong to the resolver (ISS-2294).
 - **Writing back is lossless.** `serializeSearch(lift(url))` lifts back to the same intent. The one
@@ -38,10 +44,9 @@ writer args ──▶ intent ──applyWriterRules──▶ serializeSearch ─
     or coords;
   - a new search starts on page 1.
 - **Writers that edit the URL the visitor is on** (filter navigation, the coords redirect) lift it, change
-  the intent and serialize it, through `rewriteSearchUrl` (`rewrite.ts`). A recognised plain key repeated
-  in the URL, which the lift reads as nothing, is read as its first value, as `URLSearchParams.get` and the
-  cookie middleware read it; a repeat the lift does read (`taxonomy`) and repeated pass-through keys are
-  kept. No writer emits `key[n]` for a plain key (ISS-2409).
+  the intent and serialize it, through `rewriteSearchUrl` (`rewrite.ts`). They read the URL as the page
+  does, so a repeated or bracketed plain key is written back once, as its first value; `taxonomy` repeats
+  and repeated pass-through keys are kept. No writer emits `key[n]` for a plain key (ISS-2409).
 - **Hand-built `/search` URLs** live only in `features/search/utils/handBuiltSearchLinks.ts`, each
   pinned by a fixture. `tests/search-url-writers.test.ts` fails on any other one.
 
@@ -77,12 +82,19 @@ gate onto it unchanged.
 | `redirect_canonical` | `page:redirect`       | the prediction searches straight away: the canonical AI URL, with `a` for notify          |
 | `redirect_clarify`   | `page:redirect`       | the prediction asks the user: the clarify URL                                            |
 | `settled`, `idle`    | none, transient       | back to rest: clarify state left to show, or none                                        |
-| `clarify_needs`      | `page:render-gate`    | clarify options are up: the dialog asks beside the results (any tenant, from the URL)    |
+| `clarify_needs`      | `page:render-gate`    | clarify options are up: the dialog asks beside the results (any tenant, from the URL; ISS-2475) |
 | `ready`              | `page:render-results` | everything else                                                                          |
 | `location_required`  | `page:render-gate`    | the dialog's submit has no location and the location slot is a gate                      |
 | `following_link`, `navigating_classic`, `navigating_ai` | `page:redirect` | the dialog's submit: a link topic, a search as typed, or a classified search |
 | `skipping`, `confirmed` | `page:redirect`    | the clarify step's Skip, or Confirm after the re-rank                                    |
 | `confirming`         | `page:render-gate`    | Confirm is waiting for the re-rank                                                       |
+
+**Two decided asymmetries (2026-10-22).** The server gate classifies an organization-scoped deep link on an
+AI tenant (`?query=food&organization_id=…`), while the dialog's submit searches it as typed (`classicSubmit`),
+as both did before the resolver; it stays so because no URL in the 90-day corpus (627,612) carries both an
+`organization_id` and a query (ISS-2474). An incoming clarify URL opens the clarify step on any tenant,
+classic ones included; whether classic tenants should ignore it is revisited with ISS-2297, which changes
+what a clarify URL carries (ISS-2475).
 
 **The dialog runs on the same machine.** `useOnSearchSubmit` routes a submit with the same pure
 transitions as the server, from `ready`: a link topic, the location policy, a search as typed, or a

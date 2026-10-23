@@ -13,6 +13,7 @@ import { normalizeIndexedCollection } from '@/utils/normalizeIndexedCollection';
 
 import {
   defineSlots,
+  firstValue,
   stringParam,
   type IntentOf,
   type SlotDeclaration,
@@ -45,13 +46,15 @@ const AI_SCENARIOS: ReadonlySet<string> = new Set<AiClassificationScenario>([
 
 const coords: SlotDeclaration<number[]> = {
   keys: ['coords'],
-  decode: ({ parsed }) =>
-    typeof parsed.coords === 'string' && parsed.coords
-      ? parsed.coords
+  decode: ({ parsed }) => {
+    const value = firstValue(parsed.coords);
+    return value
+      ? value
           .split(',')
           .map(Number)
           .filter((n) => !isNaN(n))
-      : undefined,
+      : undefined;
+  },
   // `coords=abc` reads as no numbers, which is stated (it suppresses the geocode redirect). An empty
   // value would read as unstated and `,` as [0, 0], so the empty list is written as a non-number.
   encode: (value) => [['coords', value.join(',').trim() || 'invalid']],
@@ -81,15 +84,19 @@ const filters: SlotDeclaration<FiltersValue> = {
 
 const sort: SlotDeclaration<SortOption> = {
   keys: ['sort'],
-  decode: ({ parsed }) => (isSortOption(parsed.sort) ? parsed.sort : undefined),
+  decode: ({ parsed }) => {
+    const value = firstValue(parsed.sort);
+    return isSortOption(value) ? value : undefined;
+  },
   encode: (value) => [['sort', value]],
 };
 
 const age: SlotDeclaration<number> = {
   keys: ['age'],
   decode: ({ parsed }) => {
-    if (typeof parsed.age !== 'string' || !parsed.age) return undefined;
-    const value = parseInt(parsed.age, 10);
+    const age = firstValue(parsed.age);
+    if (!age) return undefined;
+    const value = parseInt(age, 10);
     return isNaN(value) ? undefined : value;
   },
   encode: (value) => [['age', String(value)]],
@@ -97,11 +104,12 @@ const age: SlotDeclaration<number> = {
 
 const aiScenario: SlotDeclaration<AiClassificationScenario> = {
   keys: ['ai_scenario'],
-  decode: ({ parsed }) =>
-    typeof parsed.ai_scenario === 'string' &&
-    AI_SCENARIOS.has(parsed.ai_scenario)
-      ? (parsed.ai_scenario as AiClassificationScenario)
-      : undefined,
+  decode: ({ parsed }) => {
+    const value = firstValue(parsed.ai_scenario);
+    return value !== undefined && AI_SCENARIOS.has(value)
+      ? (value as AiClassificationScenario)
+      : undefined;
+  },
   encode: (value) => [['ai_scenario', value]],
 };
 
