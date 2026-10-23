@@ -23,6 +23,7 @@ import {
 } from '../add-my-location-button';
 import { SearchDialog, SearchDialogProps } from '../search-dialog';
 import { MainSearchLayoutContextProvider } from './main-search-layout-context';
+import type { SearchIntent } from '@/app/(app)/features/search/intent';
 import type { LegacyAiClarifyState } from '@/app/(app)/features/search/utils/parseLegacyAiClarifyParams';
 
 interface MainSearchLayoutProps {
@@ -31,6 +32,8 @@ interface MainSearchLayoutProps {
   legacyAiClarifyState?: LegacyAiClarifyState;
   onLegacyAiClarifyAction?: () => void;
   searchTriggerRef?: Ref<HTMLButtonElement>;
+  /** The search page's intent, for the dialog's resolver. */
+  searchIntent?: SearchIntent;
 }
 
 export function MainSearchLayout({
@@ -39,6 +42,7 @@ export function MainSearchLayout({
   legacyAiClarifyState,
   onLegacyAiClarifyAction,
   searchTriggerRef: externalSearchTriggerRef,
+  searchIntent,
 }: MainSearchLayoutProps) {
   const appConfig = useAppConfig();
   const { t } = useTranslation();
@@ -136,15 +140,7 @@ export function MainSearchLayout({
       <SearchDialog
         focusByDefault={focusByDefault}
         onLegacyAiClarifyAction={onLegacyAiClarifyAction}
-        initialAiState={
-          legacyAiClarifyState
-            ? {
-                scenario: legacyAiClarifyState.scenario,
-                clarifyOptions: legacyAiClarifyState.options,
-                selectedClarifyCodes: legacyAiClarifyState.selectedCodes,
-              }
-            : undefined
-        }
+        intent={searchIntent}
         open={dialogOpened}
         setOpen={setDialogOpened}
         restoreFocusElement={
