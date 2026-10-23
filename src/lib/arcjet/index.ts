@@ -22,6 +22,7 @@ import {
 } from './redact';
 import { buildArcjetRules } from './rules';
 import type { ArcjetLog, ArcjetRequestLike } from './types';
+import { eventLoopDelayMs } from '../event-loop';
 
 /**
  * Arcjet bot protection, called per page from the routes that serve
@@ -167,6 +168,10 @@ export interface ArcjetProtectOptions {
   sampleDeniedLog?: () => boolean;
   /** Where a DENY is enforced. */
   enforcement?: ArcjetEnforcement;
+  /** Test seam for the clock that times the Arcjet call (ms). */
+  now?: () => number;
+  /** Test seam for the event-loop delay read on a failure (ms). */
+  eventLoopDelay?: () => number | undefined;
 }
 
 export function createArcjetProtect(
@@ -179,6 +184,8 @@ export function createArcjetProtect(
   const sampleDeniedLog =
     options.sampleDeniedLog ?? createMinuteSampler(DENIED_LOG_MAX_PER_MINUTE);
   const enforcement = options.enforcement ?? ARCJET_ENFORCEMENT;
+  const now = options.now ?? (() => performance.now());
+  const eventLoopDelay = options.eventLoopDelay ?? eventLoopDelayMs;
   let deniedSampledOut = 0;
 
   function logFingerprintFailed(
@@ -190,9 +197,19 @@ export function createArcjetProtect(
       errorType: string;
       message: string;
       decisionId?: string;
+      startedAt: number;
     },
   ) {
-    const base = { ...requestContext(request, pathName), ...detail };
+    const { startedAt, ...rest } = detail;
+    // A call that took far longer than ARCJET_TIMEOUT_MS, or a large
+    // event-loop delay, means our process was too busy to read the answer in
+    // time, not that Arcjet was slow (ISS-1739).
+    const base = {
+      ...requestContext(request, pathName),
+      ...rest,
+      durationMs: Math.round(now() - startedAt),
+      eventLoopDelayMs: eventLoopDelay(),
+    };
     if (sampleHeaderLog()) {
       log('warn', 'arcjet_fingerprint_failed', {
         ...base,
@@ -268,6 +285,7 @@ export function createArcjetProtect(
     }
 
     let decision: ArcjetDecision;
+    const startedAt = now();
     try {
       decision = await client.protect(request, protectOptions);
     } catch (error) {
@@ -276,6 +294,7 @@ export function createArcjetProtect(
         conclusion: 'THREW',
         errorType: error instanceof Error ? error.name : typeof error,
         message: error instanceof Error ? error.message : String(error),
+        startedAt,
       });
       return { denied: false, conclusion: 'THREW' };
     }
@@ -310,6 +329,7 @@ export function createArcjetProtect(
         errorType: decision.reason.type,
         message: errorMessageOf(decision),
         decisionId: decision.id,
+        startedAt,
       });
       return { denied: false, conclusion: 'ERROR' };
     }
