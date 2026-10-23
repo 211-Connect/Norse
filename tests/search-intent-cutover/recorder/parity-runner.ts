@@ -1,0 +1,75 @@
+// Cut-over scaffolding (ISS-2371): deleted by ISS-2377.
+//
+// Zero drift: every scenario in corpus/ through every harness, under every profile, compared with the
+// snapshots recorded from today's code. RECORD=1 rewrites the snapshots (only ever on the baseline).
+// The harnesses are split across three test files so node --test runs them in parallel.
+import assert from 'node:assert/strict';
+import { test } from 'node:test';
+
+import { installEdges } from './edges';
+
+installEdges();
+const { HARNESSES } = await import('./harnesses');
+const {
+  assertRecordable,
+  compare,
+  loadCorpus,
+  readBaseline,
+  readSnapshot,
+  RECORDING,
+  writeSnapshot,
+} = await import('./snapshots');
+
+const corpus = loadCorpus();
+assert.ok(corpus.length > 0, 'corpus is empty: nothing would be compared');
+// Checked once, before any harness runs, so a refused recording leaves every snapshot untouched.
+const provenance = RECORDING ? assertRecordable() : null;
+const baseline = readBaseline();
+
+export function runParity(ids: string[]) {
+  const known = new Set(HARNESSES.map((h) => h.id));
+  for (const id of ids) assert.ok(known.has(id), `unknown harness ${id}`);
+  for (const h of HARNESSES.filter((x) => ids.includes(x.id))) {
+    test(`parity: ${h.id} (BUILDERS ${h.paths.join(', ')})`, async () => {
+      const rows: Array<{ case: string; output: unknown }> = [];
+      for await (const r of h.cases(corpus)) rows.push(r);
+      assert.ok(rows.length > 0, `${h.id} produced no cases`);
+
+      if (RECORDING) {
+        writeSnapshot(h.id, rows, provenance!);
+        return;
+      }
+      const expected = readSnapshot(h.id);
+      assert.ok(
+        expected,
+        `no snapshot for ${h.id}: record the baseline first (RECORD=1 on development)`,
+      );
+      const from = baseline[h.id];
+      assert.ok(
+        from,
+        `no provenance for ${h.id} in snapshots/baseline.json: it was not recorded through the guard; re-record it on development`,
+      );
+      const diff = compare(expected, rows);
+      const show = diff.changed
+        .slice(0, 5)
+        .map(
+          (c) =>
+            `\n  ${c.case}\n    expected ${c.expected.slice(0, 400)}\n    actual   ${c.actual.slice(0, 400)}`,
+        )
+        .join('');
+      assert.ok(
+        diff.changed.length === 0 &&
+          diff.missing.length === 0 &&
+          diff.extra.length === 0,
+        `${h.id}: ${rows.length} cases, ${diff.changed.length} changed, ${diff.missing.length} with no snapshot, ` +
+          `${diff.extra.length} snapshots with no case${show}` +
+          (diff.missing.length
+            ? `\n  first missing: ${diff.missing.slice(0, 3).join(', ')}`
+            : '') +
+          (diff.extra.length
+            ? `\n  first extra: ${diff.extra.slice(0, 3).join(', ')}`
+            : ''),
+      );
+    });
+  }
+}
