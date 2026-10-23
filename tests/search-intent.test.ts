@@ -7,6 +7,8 @@ import { test } from 'node:test';
 import ts from 'typescript';
 
 import {
+  applyWriterRules,
+  encodeIntent,
   GENERATIONS,
   liftIntent,
   liftQueryString,
@@ -14,16 +16,22 @@ import {
   rawSearchParams,
   readEnvelope,
   SEARCH_SLOTS,
+  searchIntent,
+  serializeSearch,
+  serializeSearchUrl,
   stringParam,
 } from '../src/app/(app)/features/search/intent';
+import type { SearchEngine } from '../src/types/appConfig';
 
 import {
   ALL_FIXTURES,
   GENERATION_FIXTURES,
   intentWith,
+  LOSSY_FIXTURES,
   RULE_FIXTURES,
   SHAPE_FIXTURES,
   UNSTATED,
+  WRITER_FIXTURES,
 } from './search-intent-fixtures';
 
 for (const [generation, fixture] of Object.entries(GENERATION_FIXTURES)) {
@@ -55,6 +63,63 @@ for (const fixture of SHAPE_FIXTURES) {
   });
 }
 
+for (const fixture of LOSSY_FIXTURES) {
+  test(`listed loss: ${fixture.name}`, () => {
+    assert.deepStrictEqual(liftQueryString(fixture.query), {
+      ...fixture.expected,
+      intent: intentWith(fixture.expected.intent),
+    });
+  });
+}
+
+for (const fixture of ALL_FIXTURES) {
+  test(`canonical URL: ${fixture.name}`, () => {
+    const lifted = liftQueryString(fixture.query);
+    assert.equal(
+      serializeSearch(lifted.intent, lifted.envelope),
+      fixture.canonical,
+    );
+    const again = liftQueryString(fixture.canonical);
+    if (fixture.loses) assert.notDeepStrictEqual(again, lifted, fixture.loses);
+    else assert.deepStrictEqual(again, lifted);
+  });
+}
+
+for (const fixture of WRITER_FIXTURES) {
+  test(`writer rule: ${fixture.name}`, () => {
+    const lifted = liftQueryString(fixture.query);
+    const written = applyWriterRules(lifted.intent, lifted.envelope, {
+      searchEngine: fixture.searchEngine,
+    });
+    assert.equal(
+      serializeSearchUrl(written.intent, written.envelope),
+      fixture.written,
+    );
+  });
+}
+
+const ENGINES: SearchEngine[] = ['classic', 'hybrid', 'ai_classification'];
+
+test('the writer rules are idempotent: a written URL is written the same way again', () => {
+  const urls = [
+    ...ALL_FIXTURES.filter((f) => !f.loses).map((f) => f.query),
+    ...WRITER_FIXTURES.map((f) => f.query),
+  ];
+  for (const query of urls) {
+    for (const searchEngine of ENGINES) {
+      const write = (q: string) => {
+        const lifted = liftQueryString(q);
+        const w = applyWriterRules(lifted.intent, lifted.envelope, {
+          searchEngine,
+        });
+        return serializeSearch(w.intent, w.envelope);
+      };
+      const once = write(query);
+      assert.equal(write(once), once, `${searchEngine} ${query}`);
+    }
+  }
+});
+
 test('every generation has a fixture', () => {
   assert.deepStrictEqual(
     Object.keys(GENERATION_FIXTURES).sort(),
@@ -82,6 +147,32 @@ test('a slot added later lifts unstated from every older URL', () => {
     const intent = liftIntent(WITH_DUMMY_SLOT, rawSearchParams(query));
     assert.deepStrictEqual(intent.syntheticDummy, UNSTATED, name);
   }
+});
+
+test('a slot added later writes nothing for any older URL', () => {
+  for (const { name, query } of ALL_FIXTURES) {
+    const intent = liftIntent(WITH_DUMMY_SLOT, rawSearchParams(query));
+    const written = new Map(encodeIntent(WITH_DUMMY_SLOT, intent));
+    assert.deepStrictEqual(written.get('syntheticDummy'), [], name);
+  }
+});
+
+test('a reserved slot cannot be written to a /search URL', () => {
+  const place = { kind: 'slug', slug: 'spokane-wa-us' } as const;
+  const reserved: Array<[keyof typeof SEARCH_SLOTS, unknown]> = [
+    ['place', place],
+    ['geoMode', { kind: 'boundary', place }],
+  ];
+  for (const [name, value] of reserved) {
+    assert.throws(
+      () =>
+        serializeSearch(searchIntent({ [name]: value }), { passThrough: [] }),
+      /reserved for the slug route/,
+      `${name} stated must not serialize silently`,
+    );
+  }
+  // Control: the same call with every slot unstated writes an empty query string.
+  assert.equal(serializeSearch(searchIntent({}), { passThrough: [] }), '');
 });
 
 test('the lift is pure: the same URL lifts the same way twice', () => {
@@ -120,14 +211,22 @@ function typeErrors(body: string): string[] {
 }
 
 test('a slot declared without its URL encoding is a type error', () => {
-  // Negative control: the same declaration with its decoder compiles, so the check can tell them apart.
+  // Negative control: the same declaration with its decoder and encoder compiles, so the check can tell
+  // them apart.
   assert.deepStrictEqual(
     typeErrors(
-      `defineSlots({ urgency: { keys: ['urgency'], decode: () => 'high' } });`,
+      `defineSlots({ urgency: { keys: ['urgency'], decode: () => 'high', encode: (v: string) => [['urgency', v]] } });`,
     ),
     [],
   );
-  const errors = typeErrors(`defineSlots({ urgency: { keys: ['urgency'] } });`);
-  assert.equal(errors.length, 1, errors.join('\n'));
-  assert.match(errors[0], /decode/);
+  const noDecoder = typeErrors(
+    `defineSlots({ urgency: { keys: ['urgency'], encode: (v: string) => [['urgency', v]] } });`,
+  );
+  assert.equal(noDecoder.length, 1, noDecoder.join('\n'));
+  assert.match(noDecoder[0], /decode/);
+  const noEncoder = typeErrors(
+    `defineSlots({ urgency: { keys: ['urgency'], decode: () => 'high' } });`,
+  );
+  assert.equal(noEncoder.length, 1, noEncoder.join('\n'));
+  assert.match(noEncoder[0], /encode/);
 });
