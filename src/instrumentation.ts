@@ -13,7 +13,7 @@ export async function register() {
     // Logs `event_loop` every 10 s and lets Arcjet failure logs carry the
     // current event-loop delay (ISS-1739). Imported here so `node:perf_hooks`
     // never reaches the Edge bundle.
-    const { startEventLoopMonitor } = await import('@/lib/event-loop');
+    const { startEventLoopMonitor } = await import('@/lib/event-loop-monitor');
     const eventLoopLog = createLogger('event-loop');
     await startEventLoopMonitor((data) => eventLoopLog.info(data));
   }

@@ -8,8 +8,16 @@ import {
   ArcjetRuleResult,
   type ArcjetDecision,
 } from '@arcjet/next';
+import {
+  context as otelContext,
+  type Context,
+  ROOT_CONTEXT,
+  trace,
+  TraceFlags,
+} from '@opentelemetry/api';
 import { NextRequest } from 'next/server';
 import assert from 'node:assert/strict';
+import { AsyncLocalStorage } from 'node:async_hooks';
 import { describe, test } from 'node:test';
 
 import {
@@ -34,6 +42,7 @@ import {
   redactHeaders,
   resolveArcjetClientIp,
 } from '../src/lib/arcjet';
+import { drainRuntimeStats } from '../src/lib/runtime-stats';
 
 type LogEntry = { level: string; event: string; data: Record<string, unknown> };
 
@@ -704,12 +713,11 @@ describe('fingerprint failure logging (ISS-1734)', () => {
   test('failures carry call duration and event-loop delay (ISS-1739)', async () => {
     // 700 ms between start and the log, against a 500 ms Arcjet timeout:
     // the timer fired late, and the event-loop delay says why.
-    const times = [1_000, 1_700];
     for (const sampleHeaderLog of [() => true, () => false]) {
       let call = 0;
       const protect = createProtect(clientReturning(errored()), {
         sampleHeaderLog,
-        now: () => times[call++],
+        now: () => (call++ === 0 ? 1_000 : 1_700),
         eventLoopDelay: () => 640,
       });
       const { log, entries } = captureLog();
@@ -722,6 +730,77 @@ describe('fingerprint failure logging (ISS-1734)', () => {
     }
   });
 
+  test('every call is counted by conclusion and every Arcjet call timed', async () => {
+    drainRuntimeStats();
+    const { log } = captureLog();
+    await createProtect(clientReturning(allow()))(makeRequest(), PATH, log);
+    await createProtect(clientReturning(denyBots(['CURL'])))(
+      makeRequest(),
+      PATH,
+      log,
+    );
+    await createProtect(clientReturning(errored()), {
+      sampleHeaderLog: () => false,
+    })(makeRequest(), PATH, log);
+    await createProtect(undefined)(makeRequest(), PATH, log);
+
+    const { counts, timings } = drainRuntimeStats();
+    assert.deepEqual(counts, {
+      'arcjet.ALLOW': 1,
+      'arcjet.DENY': 1,
+      'arcjet.ERROR': 1,
+      'arcjet.SKIPPED': 1,
+    });
+    // SKIPPED never calls Arcjet, so three timed calls, one of them errored.
+    assert.equal(timings.arcjet.count, 3);
+    assert.equal(timings.arcjet.errors, 1);
+  });
+
+  test('failure logs carry the active trace id for Tempo', async () => {
+    const als = new AsyncLocalStorage<Context>();
+    otelContext.setGlobalContextManager({
+      active: () => als.getStore() ?? ROOT_CONTEXT,
+      with: (ctx, fn, thisArg, ...args) =>
+        als.run(ctx, () => fn.call(thisArg, ...args)),
+      bind: (_ctx, target) => target,
+      enable() {
+        return this;
+      },
+      disable() {
+        return this;
+      },
+    });
+    try {
+      const span = trace.wrapSpanContext({
+        traceId: '0af7651916cd43dd8448eb211c80319c',
+        spanId: 'b7ad6b7169203331',
+        traceFlags: TraceFlags.SAMPLED,
+      });
+      const protect = createProtect(clientReturning(errored()), {
+        sampleHeaderLog: () => true,
+      });
+      const { log, entries } = captureLog();
+
+      await otelContext.with(trace.setSpan(ROOT_CONTEXT, span), () =>
+        protect(makeRequest(), PATH, log),
+      );
+
+      assert.equal(entries[0].data.traceId, '0af7651916cd43dd8448eb211c80319c');
+      assert.equal(entries[0].data.traceSampled, true);
+    } finally {
+      otelContext.disable();
+    }
+  });
+
+  test('without an active span there is no trace id', async () => {
+    const protect = createProtect(clientReturning(errored()), {
+      sampleHeaderLog: () => true,
+    });
+    const { log, entries } = captureLog();
+    await protect(makeRequest(), PATH, log);
+    assert.equal('traceId' in entries[0].data, false);
+  });
+
   test('a thrown SDK error also carries duration and event-loop delay', async () => {
     let call = 0;
     const protect = createProtect(
@@ -732,7 +811,7 @@ describe('fingerprint failure logging (ISS-1734)', () => {
       },
       {
         sampleHeaderLog: () => true,
-        now: () => [0, 30][call++],
+        now: () => (call++ === 0 ? 0 : 30),
         eventLoopDelay: () => undefined,
       },
     );

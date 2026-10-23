@@ -1,6 +1,7 @@
 import { Redis } from 'ioredis';
 
 import { createLogger } from '@/lib/logger';
+import { recordTiming } from '@/lib/runtime-stats';
 
 const log = createLogger('cache');
 
@@ -118,6 +119,8 @@ class CacheService {
   }
 
   async set(key: string, value: string, ttl?: number): Promise<void> {
+    const startedAt = performance.now();
+    let ok = false;
     try {
       await this.ensureConnection();
       if (!this.client) {
@@ -129,19 +132,34 @@ class CacheService {
       } else {
         await this.client.set(key, value);
       }
+      ok = true;
     } catch (error) {
       log.error({ err: error, db: this.db }, 'Redis set error');
+    } finally {
+      if (this.client) {
+        recordTiming('redis', performance.now() - startedAt, ok);
+      }
     }
   }
 
   async get(key: string): Promise<string | null> {
+    const startedAt = performance.now();
+    let ok = false;
     try {
       await this.ensureConnection();
       if (!this.client) return null;
-      return await this.client.get(key);
+      const value = await this.client.get(key);
+      ok = true;
+      return value;
     } catch (error) {
       log.error({ err: error, db: this.db }, 'Redis get error');
       return null;
+    } finally {
+      // Timed into the `event_loop` line (ISS-1739): Redis and Arcjet timing
+      // out together points at our event loop, not at either service.
+      if (this.client) {
+        recordTiming('redis', performance.now() - startedAt, ok);
+      }
     }
   }
 

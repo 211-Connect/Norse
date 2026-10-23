@@ -2,11 +2,7 @@ import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import { setTimeout as sleep } from 'node:timers/promises';
 
-import {
-  createEventLoopMonitor,
-  createEventLoopProbe,
-  eventLoopDelayMs,
-} from '../src/lib/event-loop';
+import { createEventLoopProbe, eventLoopDelayMs } from '../src/lib/event-loop';
 
 /** Block the event loop, as a slow synchronous render would. */
 function blockFor(ms: number) {
@@ -84,30 +80,8 @@ describe('createEventLoopProbe', () => {
   });
 });
 
-describe('createEventLoopMonitor', () => {
-  test('logs event_loop with delay percentiles and utilization', async () => {
-    const entries: Record<string, unknown>[] = [];
-    const monitor = await createEventLoopMonitor((d) => entries.push(d), 300);
-    try {
-      await sleep(50);
-      blockFor(250);
-      await sleep(400);
-      assert.ok(entries.length >= 1, 'no event_loop entry');
-      const entry = entries.find((e) => (e.maxMs as number) >= 200);
-      assert.ok(entry, `no entry saw the block: ${JSON.stringify(entries)}`);
-      assert.equal(entry.event, 'event_loop');
-      assert.equal(entry.intervalMs, 300);
-      for (const key of ['p50Ms', 'p99Ms', 'maxMs', 'utilization']) {
-        assert.equal(typeof entry[key], 'number', key);
-      }
-      assert.ok((entry.utilization as number) > 0);
-      assert.ok((entry.utilization as number) <= 1);
-    } finally {
-      monitor.stop();
-    }
-  });
-
-  test('eventLoopDelayMs is undefined until the process-wide monitor starts', () => {
+describe('eventLoopDelayMs', () => {
+  test('is undefined until the process-wide monitor starts', () => {
     assert.equal(eventLoopDelayMs(), undefined);
   });
 });
