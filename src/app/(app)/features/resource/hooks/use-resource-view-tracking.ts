@@ -12,11 +12,13 @@ import {
 
 interface UseResourceViewTrackingArgs {
   resourceId: string;
+  resourceTitle: string;
   tenantId: string;
 }
 
 export function useResourceViewTracking({
   resourceId,
+  resourceTitle,
   tenantId,
 }: UseResourceViewTrackingArgs): void {
   const firedRef = useRef(false);
@@ -28,6 +30,7 @@ export function useResourceViewTracking({
     trackEvent(AnalyticsEvent.ResourceViewed, AnalyticsTools.Umami, {
       entry: consumePendingResourceEntry(resourceId) ?? ResourceEntry.DeepLink,
       resourceId,
+      resourceTitle,
       tenantId,
     });
 
@@ -43,5 +46,5 @@ export function useResourceViewTracking({
     } catch {
       // best-effort URL cleanup; never block analytics on URL parsing errors
     }
-  }, [resourceId, tenantId]);
+  }, [resourceId, resourceTitle, tenantId]);
 }
