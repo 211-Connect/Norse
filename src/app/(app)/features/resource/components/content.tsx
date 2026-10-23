@@ -27,6 +27,9 @@ export const ResourcePageContent = ({
   resourceId,
   tenantId,
 }: ResourcePageContentProps) => {
+  const resourceTitle =
+    resource.name?.trim() || resource.serviceName?.trim() || '';
+
   const loadPrintableDirectoryData = useCallback(
     async (printLocale: string) => {
       const freshResource = await getResource(
@@ -45,10 +48,9 @@ export const ResourcePageContent = ({
     [resource, tenantId],
   );
 
-  useResourceViewTracking({ resourceId, tenantId });
+  useResourceViewTracking({ resourceId, resourceTitle, tenantId });
 
-  const pageHeadingText =
-    resource.name?.trim() || resource.serviceName?.trim() || 'Resource details';
+  const pageHeadingText = resourceTitle || 'Resource details';
 
   return (
     <div className="container mx-auto flex flex-col gap-2 pt-2 pb-2">
