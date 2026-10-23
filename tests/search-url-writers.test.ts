@@ -89,8 +89,12 @@ const ALLOWED_EDITS: Record<string, { count: number; why: string }> = {
   'app/(app)/shared/components/printable-directories/save-source-to-directory-button.tsx':
     {
       count: 1,
-      why: 'removes pdid and pdsid from the current URL (BUILDERS 11), then links to the directory',
+      why: 'navigates to the directory after a save (the context params are removed by use-printable-directory-search-context)',
     },
+  'app/(app)/shared/hooks/use-printable-directory-search-context.ts': {
+    count: 1,
+    why: 'dismissing the directory context removes pdid, pdsid and pdsrcid from the current URL (BUILDERS 11) and keeps the rest as received',
+  },
   'app/(app)/shared/components/header.tsx': {
     count: 3,
     why: 'favorites links, and the sign-in callback that round-trips the current URL (BUILDERS 23)',

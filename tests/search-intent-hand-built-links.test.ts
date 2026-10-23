@@ -88,10 +88,11 @@ test('printable-directory source replays its stored search inside the directory'
     },
     'synthetic-directory',
     'synthetic-section',
+    'synthetic-source',
   );
   assert.equal(
     href,
-    '/search?query=syntheticquery&query_type=text&location=Syntheticplace%2C%20WA&coords=-122.3%2C47.6&distance=10&filters[age_group][0]=adult&filters[age_group][1]=senior&pdid=synthetic-directory&pdsid=synthetic-section',
+    '/search?query=syntheticquery&query_type=text&location=Syntheticplace%2C%20WA&coords=-122.3%2C47.6&distance=10&filters[age_group][0]=adult&filters[age_group][1]=senior&pdid=synthetic-directory&pdsid=synthetic-section&pdsrcid=synthetic-source',
   );
   assert.deepStrictEqual(liftQueryString(queryOf(href)), {
     generation: 'classic_text',
@@ -107,6 +108,7 @@ test('printable-directory source replays its stored search inside the directory'
     envelope: {
       pdid: 'synthetic-directory',
       pdsid: 'synthetic-section',
+      pdsrcid: 'synthetic-source',
       passThrough: [],
     },
   });

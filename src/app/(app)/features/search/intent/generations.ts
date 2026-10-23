@@ -95,7 +95,9 @@ export function modifiersOf(
     ],
     [
       'printable_directory',
-      envelope.pdid !== undefined || envelope.pdsid !== undefined,
+      envelope.pdid !== undefined ||
+        envelope.pdsid !== undefined ||
+        envelope.pdsrcid !== undefined,
     ],
     ['filters', intent.filters.stated],
     ['organization_id', intent.organizationId.stated],
