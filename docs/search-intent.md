@@ -14,7 +14,7 @@ writer args ──▶ intent ──applyWriterRules──▶ serializeSearch ─
 | ----------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | Slot declarations | `slots.ts`              | `SEARCH_SLOTS`: each slot's URL keys, `decode` and `encode`, in URL parameter order                                          |
 | Intent            | `slot.ts`, `slots.ts`   | One `Slot<T>` per declaration: `{stated:false}` or `{stated:true, value}`                                                    |
-| Envelope          | `envelope.ts`           | How the URL came to be, not what is searched: `sllc`, `a`, `page`, `pdid`, `pdsid`, `entry`, and unrecognised pairs in order |
+| Envelope          | `envelope.ts`           | How the URL came to be, not what is searched: `sllc`, `a`, `page`, `pdid`, `pdsid`, `pdsrcid`, `entry`, and unrecognised pairs in order |
 | Lift              | `lift.ts`               | `liftSearchParams` / `liftQueryString`: URL to intent and envelope, plus its generation                                      |
 | Generations       | `generations.ts`        | The 8 URL shapes Norse has written, classified by shape                                                                      |
 | Serializer        | `serialize.ts`          | `serializeSearch` (lossless) and `applyWriterRules` (the URL rules)                                                          |
@@ -36,6 +36,8 @@ writer args ──▶ intent ──applyWriterRules──▶ serializeSearch ─
   - "Everywhere" means no location; coords are written only as a pair; distance only with a location
     or coords;
   - a new search starts on page 1.
+- **Hand-built `/search` URLs** live only in `features/search/utils/handBuiltSearchLinks.ts`, each
+  pinned by a fixture. `tests/search-url-writers.test.ts` fails on any other one.
 
 ## Generations
 

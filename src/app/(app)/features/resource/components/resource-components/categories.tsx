@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { categorySearchHref } from '@/app/(app)/features/search/utils/handBuiltSearchLinks';
 import { Link } from '@/app/(app)/shared/components/link';
 import { Badge, badgeVariants } from '@/app/(app)/shared/components/ui/badge';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
@@ -43,11 +44,7 @@ export function CategoriesComponent({
             <Link
               key={el?.code}
               className={cn(badgeVariants(), 'hover:underline')}
-              href={`/search?query=${encodeURIComponent(
-                el?.code,
-              )}&query_label=${encodeURIComponent(
-                el?.name,
-              )}&query_type=taxonomy`}
+              href={categorySearchHref(el.code, el.name)}
               prefetch={false}
             >
               {el?.name}

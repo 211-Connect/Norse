@@ -11,9 +11,10 @@ export type SearchEnvelope = {
   /** Notify alert (`low_info`, `low_confidence`). */
   readonly a?: string;
   readonly page?: string;
-  /** Printable directory and section the visitor is adding sources to. */
+  /** Printable directory and section the visitor is adding sources to, and the source being edited. */
   readonly pdid?: string;
   readonly pdsid?: string;
+  readonly pdsrcid?: string;
   /** Retired analytics entry point (Norse #758 to #953). Still on old links; nothing reads it. */
   readonly entry?: string;
   /** Every parameter the lift does not recognise (`utm_*`, `gad_*`, `hl`, …), in the order received. */
@@ -26,6 +27,7 @@ export const ENVELOPE_KEYS = [
   'page',
   'pdid',
   'pdsid',
+  'pdsrcid',
   'entry',
 ] as const;
 
@@ -63,6 +65,7 @@ export function readEnvelope(
     page: single(raw, 'page'),
     pdid: first(raw, 'pdid'),
     pdsid: first(raw, 'pdsid'),
+    pdsrcid: first(raw, 'pdsrcid'),
     entry: single(raw, 'entry'),
   };
   // Absent markers are left out rather than set to undefined, so an envelope reads as what the URL said.
