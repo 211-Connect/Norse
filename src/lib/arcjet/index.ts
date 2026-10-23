@@ -1,3 +1,4 @@
+import { isSpanContextValid, trace, TraceFlags } from '@opentelemetry/api';
 import arcjet, {
   type ArcjetDecision,
   type ArcjetNextRequest,
@@ -22,7 +23,8 @@ import {
 } from './redact';
 import { buildArcjetRules } from './rules';
 import type { ArcjetLog, ArcjetRequestLike } from './types';
-import { eventLoopDelayMs } from '../event-loop';
+import { eventLoopDelayMs, instanceId } from '../event-loop';
+import { recordCount, recordTiming } from '../runtime-stats';
 
 /**
  * Arcjet bot protection, called per page from the routes that serve
@@ -98,6 +100,19 @@ function requestContext(request: ArcjetRequestLike, pathName: string) {
   return {
     host: request.headers.get('host') ?? 'unknown',
     pathName,
+  };
+}
+
+/**
+ * The active OpenTelemetry trace, so a failure can be opened in Tempo when
+ * it was sampled (`OTEL_TRACES_SAMPLER_ARG`, 10% in production).
+ */
+function traceContext(): { traceId?: string; traceSampled?: boolean } {
+  const ctx = trace.getActiveSpan()?.spanContext();
+  if (!ctx || !isSpanContextValid(ctx)) return {};
+  return {
+    traceId: ctx.traceId,
+    traceSampled: (ctx.traceFlags & TraceFlags.SAMPLED) === TraceFlags.SAMPLED,
   };
 }
 
@@ -187,6 +202,8 @@ export function createArcjetProtect(
       ...rest,
       durationMs: Math.round(now() - startedAt),
       eventLoopDelayMs: eventLoopDelay(),
+      instance: instanceId(),
+      ...traceContext(),
     };
     if (sampleHeaderLog()) {
       log('warn', 'arcjet_fingerprint_failed', {
@@ -232,7 +249,23 @@ export function createArcjetProtect(
     deniedSampledOut = 0;
   }
 
+  /**
+   * Every call is counted by conclusion and every Arcjet call timed, into
+   * the in-memory stats the `event_loop` line drains (ISS-1739). These are
+   * the request rate and the Arcjet latency distribution, which the logs
+   * otherwise lack: allowed requests are not logged.
+   */
   async function arcjetProtect(
+    request: ArcjetRequestLike,
+    pathName: string,
+    log: ArcjetLog,
+  ): Promise<ArcjetProtectResult> {
+    const result = await decide(request, pathName, log);
+    recordCount(`arcjet.${result.conclusion}`);
+    return result;
+  }
+
+  async function decide(
     request: ArcjetRequestLike,
     pathName: string,
     log: ArcjetLog,
@@ -266,7 +299,9 @@ export function createArcjetProtect(
     const startedAt = now();
     try {
       decision = await client.protect(request, protectOptions);
+      recordTiming('arcjet', now() - startedAt, !decision.isErrored());
     } catch (error) {
+      recordTiming('arcjet', now() - startedAt, false);
       // Fail open: a protection outage must never take the site down.
       logFingerprintFailed(request, pathName, log, {
         conclusion: 'THREW',

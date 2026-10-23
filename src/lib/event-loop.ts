@@ -4,20 +4,17 @@
  * Arcjet decisions time out at `ARCJET_TIMEOUT_MS` (500 ms) on a few percent
  * of requests on norse2-prod-search, while Redis times out at the same
  * moments and the MBOA app, calling the same Arcjet site, rarely does. Both
- * point at our own event loop being blocked, not at Arcjet. This module turns
- * that into a measurement:
+ * point at our own event loop being blocked, not at Arcjet.
  *
- * - `event_loop` log line every `intervalMs` per instance: delay p50 / p99 /
- *   max (ms) from `monitorEventLoopDelay`, and utilization (0–1, the share of
- *   time the loop was busy).
- * - `eventLoopDelayMs()`: how blocked the loop is right now, read when an
- *   Arcjet call fails so each timeout carries its own evidence.
+ * This file holds the probe behind `eventLoopDelayMs()` (how blocked the loop
+ * is right now, read when an Arcjet call fails so each timeout carries its
+ * own evidence) and the process-wide registry the monitor fills.
  *
- * The reader has no Node-only imports, so `src/lib/arcjet` stays importable
- * from any runtime; `node:perf_hooks` is loaded only by the monitor.
+ * This file has no Node-only imports, so `src/lib/arcjet` stays importable
+ * from any runtime. The monitor itself is `src/lib/event-loop-monitor.ts`,
+ * loaded only on the Node runtime.
  */
 
-export const EVENT_LOOP_LOG_INTERVAL_MS = 10_000;
 export const EVENT_LOOP_PROBE_PERIOD_MS = 50;
 export const EVENT_LOOP_RECENT_WINDOW_MS = 1_000;
 
@@ -91,60 +88,24 @@ export function eventLoopDelayMs(): number | undefined {
   return (globalThis as ProbeHolder)[PROBE_KEY]?.delayMs();
 }
 
-export type EventLoopLog = (data: Record<string, unknown>) => void;
-
-const nsToMs = (ns: number) => Math.round(ns / 1e5) / 10;
+const INSTANCE_KEY = Symbol.for('norse.instanceId');
+type InstanceHolder = { [INSTANCE_KEY]?: string };
 
 /**
- * Start the per-interval `event_loop` log and the probe behind
- * `eventLoopDelayMs()`. Node runtime only. Returns a stop function.
+ * This container's hostname, set by the monitor; `undefined` before then.
+ * Lets a failure log be joined to the `event_loop` lines of the same
+ * instance (DigitalOcean's log prefix names the component, not the instance).
  */
-export async function createEventLoopMonitor(
-  log: EventLoopLog,
-  intervalMs = EVENT_LOOP_LOG_INTERVAL_MS,
-): Promise<{ probe: EventLoopProbe; stop: () => void }> {
-  const { monitorEventLoopDelay, performance: perf } =
-    await import('node:perf_hooks');
-  const probe = createEventLoopProbe();
-  probe.start();
-
-  // 20 ms is the sampling resolution: blocks shorter than that are not seen,
-  // and ours that matter are hundreds of ms. The histogram includes the
-  // resolution itself, so an idle loop reads about 21 ms, not 0.
-  const histogram = monitorEventLoopDelay({ resolution: 20 });
-  histogram.enable();
-  let elu = perf.eventLoopUtilization();
-
-  const timer = setInterval(() => {
-    const next = perf.eventLoopUtilization();
-    const { utilization } = perf.eventLoopUtilization(next, elu);
-    elu = next;
-    log({
-      event: 'event_loop',
-      intervalMs,
-      p50Ms: nsToMs(histogram.percentile(50)),
-      p99Ms: nsToMs(histogram.percentile(99)),
-      maxMs: nsToMs(histogram.max),
-      utilization: Math.round(utilization * 1000) / 1000,
-    });
-    histogram.reset();
-  }, intervalMs);
-  timer.unref?.();
-
-  return {
-    probe,
-    stop() {
-      clearInterval(timer);
-      histogram.disable();
-      probe.stop();
-    },
-  };
+export function instanceId(): string | undefined {
+  return (globalThis as InstanceHolder)[INSTANCE_KEY];
 }
 
-/** Process-wide monitor, started once from `register()`. */
-export async function startEventLoopMonitor(log: EventLoopLog) {
-  const holder = globalThis as ProbeHolder;
-  if (holder[PROBE_KEY]) return;
-  const { probe } = await createEventLoopMonitor(log);
-  holder[PROBE_KEY] = probe;
+/** Called once by `startEventLoopMonitor` (Node runtime). */
+export function registerProcessProbe(probe: EventLoopProbe, instance: string) {
+  (globalThis as ProbeHolder)[PROBE_KEY] = probe;
+  (globalThis as InstanceHolder)[INSTANCE_KEY] = instance;
+}
+
+export function processProbeRegistered(): boolean {
+  return (globalThis as ProbeHolder)[PROBE_KEY] !== undefined;
 }
