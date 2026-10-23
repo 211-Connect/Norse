@@ -23,15 +23,6 @@ const ALLOWED: Record<string, { count: number; why: string }> = {
     count: 3,
     why: 'hand-built links, each pinned by a fixture',
   },
-  'app/(app)/features/search/components/filter/use-search-results-navigation.ts':
-    {
-      count: 1,
-      why: 'filter navigation re-serialises the raw parameters until ISS-2409',
-    },
-  'app/(app)/features/search/utils/navigateToSearchWithCoords.ts': {
-    count: 1,
-    why: 'the coords redirect re-serialises the raw parameters until ISS-2409',
-  },
   'app/(app)/[locale]/(rest)/search/page.tsx': {
     count: 1,
     why: 'the request URL for bot protection, not a link',
@@ -67,7 +58,7 @@ const ALLOWED_EDITS: Record<string, { count: number; why: string }> = {
   'app/(app)/features/search/components/filter/use-search-results-navigation.ts':
     {
       count: 1,
-      why: 'filter navigation pushes its re-serialised URL until ISS-2409 (BUILDERS 7)',
+      why: 'filter navigation pushes the current search, lifted, changed and serialized (ISS-2409)',
     },
   'app/(app)/features/search/hooks/useNavigateClassicSearch.ts': {
     count: 1,

@@ -6,11 +6,13 @@ import { useTranslation } from 'react-i18next';
 import { Input } from '@/app/(app)/shared/components/ui/input';
 import { Label } from '@/app/(app)/shared/components/ui/label';
 
+import { UNSTATED } from '@/app/(app)/features/search/intent';
+
 import { useSearchResultsNavigation } from './use-search-results-navigation';
 
 export const AgeFilter = () => {
   const { t } = useTranslation();
-  const { isPending, searchParamsObject, updateSearchParams } =
+  const { isPending, searchParamsObject, updateSearch } =
     useSearchResultsNavigation();
   const currentAge =
     typeof searchParamsObject.age === 'string' ? searchParamsObject.age : '';
@@ -23,17 +25,15 @@ export const AgeFilter = () => {
 
       const parsed = parseInt(value, 10);
 
-      updateSearchParams((params) => {
-        if (!value || isNaN(parsed)) {
-          const next = { ...params };
-          delete next.age;
-          return next;
-        }
-        const normalized = Math.min(Math.max(parsed, 0), 200);
-        return { ...params, age: String(normalized) };
-      });
+      updateSearch((intent) => ({
+        ...intent,
+        age:
+          !value || isNaN(parsed)
+            ? UNSTATED
+            : { stated: true, value: Math.min(Math.max(parsed, 0), 200) },
+      }));
     },
-    [updateSearchParams, currentAge],
+    [updateSearch, currentAge],
   );
 
   return (
