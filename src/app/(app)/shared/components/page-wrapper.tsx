@@ -11,7 +11,6 @@ import { MAIN_CONTENT_ID } from '../lib/constants';
 import { DynamicHeightListener } from './dynamic-height-listener';
 import { Footer } from './footer';
 import { GlobalDialogs } from './global-dialogs/global-dialogs';
-import { GoogleTagManagerScript } from './google-tag-manager-script';
 import { Header } from './header';
 import { MatomoTagManagerScript } from './matomo-tag-manager-script';
 import { PageSearchState, SearchStateSync } from './search-state-sync';
@@ -64,10 +63,6 @@ export const PageWrapper = ({
         <Footer />
         <GlobalDialogs />
         <Toaster />
-        <GoogleTagManagerScript
-          containerId={appConfig.gtmContainerId}
-          nonce={nonce}
-        />
         <MatomoTagManagerScript
           matamoContainerUrl={appConfig.matomoContainerUrl}
           nonce={nonce}
