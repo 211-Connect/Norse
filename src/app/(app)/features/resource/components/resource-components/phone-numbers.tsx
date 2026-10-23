@@ -1,6 +1,6 @@
 'use client';
 
-import { Phone, Printer } from 'lucide-react';
+import { MessageSquare, Phone, Printer } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -23,6 +23,9 @@ export function PhoneNumbersComponent({ resource }: { resource: Resource }) {
       if (type === 'fax') {
         Icon = Printer;
         label = t('fax');
+      } else if (type === 'textphone') {
+        Icon = MessageSquare;
+        label = t('textphone');
       }
 
       return {
