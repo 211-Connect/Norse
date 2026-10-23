@@ -24,9 +24,13 @@ already in the `arcjet_denied` logs and the Arcjet console (`decisionId`).
 
 - Nothing per tenant. A tenant's denials are attributed by host with
   `findTenantByHost` (`trustedDomains`), like the rest of the app. A denial
-  on a host that matches no tenant is not counted and not logged
-  (`recordBlockedTraffic` returns early); the page only renders for a host
-  the proxy resolved to a tenant, so this is not expected to happen.
+  on a host that matches no tenant is counted for the shared "unknown"
+  tenant `UNKNOWN_TENANT_ID` (`00000000-0000-0000-0000-000000000000`),
+  pushed with the internal key only (it has no Payload document or Norse
+  API key). The page only renders for a host the proxy resolved to a
+  tenant, so this is not expected; if it happens (e.g. a domain missing
+  from `trustedDomains`), it shows up in Norse-API's
+  `blocked_traffic_hourly` for that tenant id instead of being lost.
 - `INTERNAL_API_KEY` and `API_URL`: the push uses Norse-API's internal
   endpoint with the tenant's usual headers (`getInternalHeaders`). Already
   required by scheduled PDF delivery.
@@ -72,7 +76,7 @@ in the Norse-API repo.
 
 | Key | Values |
 | --- | --- |
-| tenant | from the request host (`findTenantByHost`) |
+| tenant | from the request host (`findTenantByHost`); `UNKNOWN_TENANT_ID` when no tenant matches |
 | `hour` | start of the UTC hour the denial happened in |
 | `classification` | `seo` \| `nefarious` \| `unknown` |
 | `enforced` | `true` for a DENY (403); `false` for an observe-only host (not in `ARCJET_ENFORCED_HOSTS`, or in `ARCJET_UNENFORCED_HOSTS`, e.g. MBOA), so those denials are counted too, separately |
@@ -88,5 +92,7 @@ in the Norse-API repo.
   - Up to one minute per instance is lost on a crash; on SIGTERM the
     instance tries one last push, which may not finish before exit.
 - Hourly resolution: the widget's range is rounded out to whole UTC hours.
+- Retention: Norse-API keeps buckets for 2 years (TTL index), so seasons
+  can be compared year over year.
 - Only routes that call `protectPage` are counted (list in
   [bot-protection.md](/docs/bot-protection.md)).
