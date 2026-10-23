@@ -14,7 +14,7 @@ writer args ──▶ intent ──applyWriterRules──▶ serializeSearch ─
 | ----------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | Slot declarations | `slots.ts`              | `SEARCH_SLOTS`: each slot's URL keys, `decode` and `encode`, in URL parameter order                                          |
 | Intent            | `slot.ts`, `slots.ts`   | One `Slot<T>` per declaration: `{stated:false}` or `{stated:true, value}`                                                    |
-| Envelope          | `envelope.ts`           | How the URL came to be, not what is searched: `sllc`, `a`, `page`, `pdid`, `pdsid`, `entry`, and unrecognised pairs in order |
+| Envelope          | `envelope.ts`           | How the URL came to be, not what is searched: `sllc`, `a`, `page`, `pdid`, `pdsid`, `pdsrcid`, `entry`, and unrecognised pairs in order |
 | Lift              | `lift.ts`               | `liftSearchParams` / `liftQueryString`: URL to intent and envelope, plus its generation                                      |
 | Generations       | `generations.ts`        | The 8 URL shapes Norse has written, classified by shape                                                                      |
 | Serializer        | `serialize.ts`          | `serializeSearch` (lossless) and `applyWriterRules` (the URL rules)                                                          |
