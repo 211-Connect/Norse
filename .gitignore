@@ -75,6 +75,3 @@ test-results/
 #Ignore code quality AI rules
 .cursor/rules/codacy.mdc
 
-# Python tooling under tests/search-intent-cutover/tools
-__pycache__/
-*.pyc

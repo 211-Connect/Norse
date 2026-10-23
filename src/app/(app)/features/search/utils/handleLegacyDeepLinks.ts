@@ -1,5 +1,5 @@
-'use server';
-
+// Server-only: the search page calls this directly. It is not a Server Action: nothing on the client
+// imports it, and a `'use server'` export is a public POST endpoint (tests/search-server-actions.test.ts).
 import { initialTransition, transition } from 'xstate';
 
 import type { SearchIntent } from '@/app/(app)/features/search/intent';
@@ -8,7 +8,7 @@ import {
   searchPolicy,
   searchResolverMachine,
 } from '@/app/(app)/features/search/resolver';
-import type { LegacyAiClarifyState } from '@/app/(app)/features/search/utils/parseLegacyAiClarifyParams';
+import type { LegacyAiClarifyState } from '@/app/(app)/features/search/intent';
 import { predictSearchNeeds } from '@/app/(app)/shared/services/ai-classification-search-service';
 import { createLogger } from '@/lib/logger';
 import { AppConfig } from '@/types/appConfig';
