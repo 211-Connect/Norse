@@ -14,6 +14,7 @@ export enum WidgetSlug {
   HighlightClicks = 'analytics-highlight-clicks',
   AlertClicks = 'analytics-alert-clicks',
   PageViews = 'analytics-page-views',
+  BlockedBots = 'analytics-blocked-bots',
   PageviewsChart = 'analytics-pageviews-chart',
   Map = 'analytics-map',
   ResourceTitles = 'analytics-resource-titles',
@@ -38,6 +39,7 @@ export const ANALYTICS_DEFAULT_LAYOUT = [
   { widgetSlug: WidgetSlug.TotalUsers, width: 'x-small' as const },
   { widgetSlug: WidgetSlug.Searches, width: 'x-small' as const },
   { widgetSlug: WidgetSlug.PageViews, width: 'x-small' as const },
+  { widgetSlug: WidgetSlug.BlockedBots, width: 'x-small' as const },
   { widgetSlug: WidgetSlug.ResourceViews, width: 'x-small' as const },
   { widgetSlug: WidgetSlug.ZeroResults, width: 'x-small' as const },
   { widgetSlug: WidgetSlug.WebsiteClicks, width: 'x-small' as const },
@@ -76,7 +78,10 @@ export const WIDGET_INFO: Record<WidgetSlug, string> = {
     'The number of times users have clicked on a highlight button on the home page.',
   [WidgetSlug.AlertClicks]:
     'The number of times users have clicked an alert button on the home page.',
-  [WidgetSlug.PageViews]: 'The number of pages viewed.',
+  [WidgetSlug.PageViews]:
+    'The number of pages viewed by people. Automated requests that were blocked before the page loaded are not counted here; see the Blocked Bots widget.',
+  [WidgetSlug.BlockedBots]:
+    'The number of requests to search and resource pages that were identified as automated traffic and blocked before the page loaded, in the selected period. Other pages are not counted. Nefarious: scrapers, scripts, headless browsers, AI crawlers, botnets. SEO: marketing and search-optimization crawlers. Unknown: other automated clients. These requests are not included in Page Views or any other widget. Detected, not blocked: automated traffic on a site where blocking is not yet switched on; it was identified the same way but the page was served, so it is shown separately and not counted as blocked. Counts are approximate and kept for 2 years.',
   [WidgetSlug.PageviewsChart]: 'The number of page views each day.',
   [WidgetSlug.Map]: 'The geographic origin of user traffic.',
   [WidgetSlug.ResourceTitles]:

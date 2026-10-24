@@ -1,6 +1,7 @@
 import type { Payload } from 'payload';
 
 import { getUserPrintableDirectoryCapabilities } from '@/app/(app)/shared/utils/canAccessPrintableDirectories';
+import { getInternalHeaders } from '@/lib/api';
 import { printableDirectoryDeliveriesInternalApiClient } from '@/lib/api/clients';
 import {
   DuePrintableDirectoryDeliveryResponseDto,
@@ -10,10 +11,7 @@ import { createLogger } from '@/lib/logger';
 import { Tenant } from '@/payload/payload-types';
 
 import { deliverPrintableDirectoryPdf } from './deliver-printable-directory-pdf';
-import {
-  getInternalHeaders,
-  loadDeliveryPreview,
-} from './internal-delivery-api';
+import { loadDeliveryPreview } from './internal-delivery-api';
 import { sendDeliveryFailureEmail } from './scheduled-pdf-delivery-email';
 import {
   getTenantDeliveryContext,

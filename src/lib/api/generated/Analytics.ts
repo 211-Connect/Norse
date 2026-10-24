@@ -13,6 +13,8 @@
 import {
   AnalyticsControllerGetAreaSearchesData,
   AnalyticsControllerGetAreaSearchesParams,
+  AnalyticsControllerGetBlockedTrafficData,
+  AnalyticsControllerGetBlockedTrafficParams,
   AnalyticsControllerGetEventCatalogData,
   AnalyticsControllerGetEventValuesData,
   AnalyticsControllerGetEventValuesParams,
@@ -92,7 +94,7 @@ export class Analytics<
    *
    * @tags Analytics
    * @name AnalyticsControllerGetPageviews
-   * @summary Get pageview metrics per day
+   * @summary Get pageview metrics per day for date ranges of up to 8 months. For longer date ranges, aggregate the data by month.
    * @request GET:/analytics/pageviews
    * @secure
    */
@@ -352,6 +354,27 @@ export class Analytics<
     this.request<AnalyticsControllerGetEventCatalogData, any>({
       path: `/analytics/event-catalog`,
       method: "GET",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * @description Counts of requests Norse bot protection denied, by classification, with 1-hour resolution. Not from Umami: these requests never load the page. Blocked requests are not in pageviews or any other analytics endpoint.
+   *
+   * @tags Analytics
+   * @name AnalyticsControllerGetBlockedTraffic
+   * @summary Get requests blocked as automated traffic for the tenant
+   * @request GET:/analytics/blocked-traffic
+   * @secure
+   */
+  analyticsControllerGetBlockedTraffic = (
+    query: AnalyticsControllerGetBlockedTrafficParams,
+    params: RequestParams = {},
+  ) =>
+    this.request<AnalyticsControllerGetBlockedTrafficData, any>({
+      path: `/analytics/blocked-traffic`,
+      method: "GET",
+      query: query,
       secure: true,
       format: "json",
       ...params,
