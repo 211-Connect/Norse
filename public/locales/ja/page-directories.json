@@ -49,7 +49,6 @@
   "cover_image_back_label": "表紙画像（裏面）",
   "image_upload": "画像をアップロード",
   "image_remove": "取り除く",
-  "image_invalid_type": "画像ファイルを選択してください",
   "image_too_large": "画像サイズは10MB未満である必要があります。",
   "image_upload_error": "画像をアップロードできません",
   "header_config_title": "ヘッダー設定",

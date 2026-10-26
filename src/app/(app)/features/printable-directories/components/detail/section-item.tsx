@@ -118,7 +118,7 @@ export function SectionItem({
             variant="outline"
             size="icon"
             onClick={() => onEditSection(section.id)}
-            aria-label={t('call_to_action.edit', { ns: 'common' })}
+            aria-label={t('edit_named', { name: sectionName })}
           >
             <PencilIcon className="size-4" aria-hidden="true" />
           </Button>

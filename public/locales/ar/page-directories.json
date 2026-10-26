@@ -49,7 +49,6 @@
   "cover_image_back_label": "صورة الغلاف (الخلفية)",
   "image_upload": "تحميل صورة",
   "image_remove": "يزيل",
-  "image_invalid_type": "الرجاء اختيار ملف صورة",
   "image_too_large": "يجب ألا يتجاوز حجم الصورة 10 ميجابايت",
   "image_upload_error": "تعذر تحميل الصورة",
   "header_config_title": "تكوين الرأس",

@@ -23,6 +23,8 @@ type LanguageSwitcherPrimitiveProps = {
   align?: 'start' | 'end';
   triggerClassName?: string;
   showIcon?: boolean;
+  /** Accessible name; defaults to the header's "change the site language". */
+  label?: string;
 };
 
 /**
@@ -39,14 +41,16 @@ export const LanguageSwitcherPrimitive = ({
   align = 'end',
   triggerClassName,
   showIcon = true,
+  label,
 }: LanguageSwitcherPrimitiveProps) => {
   const { t } = useTranslation('common');
+  const accessibleLabel = label ?? t('header.language_select_label');
 
   return (
     <Select
       a11yLabel={
         <Label htmlFor={triggerId} className="sr-only">
-          {t('header.language_select_label')}
+          {accessibleLabel}
         </Label>
       }
       contentId={contentId}
@@ -62,7 +66,7 @@ export const LanguageSwitcherPrimitive = ({
       >
         <div className="flex items-center gap-1 overflow-hidden">
           {showIcon && <LanguagesIcon className="size-4" aria-hidden="true" />}
-          <SelectValue placeholder={t('header.language_select_label')}>
+          <SelectValue placeholder={accessibleLabel}>
             <span className="text-xs leading-5 font-medium capitalize">
               {getLanguageName(value)}
             </span>

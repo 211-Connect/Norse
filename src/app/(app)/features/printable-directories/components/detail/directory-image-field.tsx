@@ -12,6 +12,7 @@ import {
   uploadPrintableDirectoryImage,
 } from '@/app/(app)/shared/serverActions/printableDirectories/uploadPrintableDirectoryImage';
 
+import { DIRECTORY_IMAGE_MIME_TYPES } from '../../utils/constants';
 import { DirectoryImageThumbnail } from './directory-image-thumbnail';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
 
@@ -51,8 +52,8 @@ export function DirectoryImageField({
       return;
     }
 
-    if (!file.type.startsWith('image/')) {
-      toast.error(t('image_invalid_type', { ns: 'page-directories' }));
+    if (!DIRECTORY_IMAGE_MIME_TYPES.includes(file.type)) {
+      toast.error(t('image_unsupported_type', { ns: 'page-directories' }));
       return;
     }
 
@@ -127,7 +128,7 @@ export function DirectoryImageField({
         ref={inputRef}
         id={id}
         type="file"
-        accept="image/*"
+        accept={DIRECTORY_IMAGE_MIME_TYPES.join(',')}
         className="hidden"
         onChange={handleFileChange}
       />

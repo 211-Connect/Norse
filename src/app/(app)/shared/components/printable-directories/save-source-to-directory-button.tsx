@@ -31,6 +31,10 @@ import {
 } from '@/app/(app)/shared/components/ui/tooltip';
 import { Typography } from '@/app/(app)/shared/components/ui/typography';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
+import {
+  QuerySourceParams,
+  toQuerySourceParams,
+} from '@/app/(app)/shared/utils/printableDirectoryQueryParams';
 import { PRINTABLE_DIRECTORY_CONTEXT_PARAMS } from '@/app/(app)/shared/utils/printableDirectorySearchContext';
 import { PrintableDirectorySearchContext } from '@/app/(app)/shared/hooks/use-printable-directory-search-context';
 import { createPrintableDirectorySection } from '@/app/(app)/shared/serverActions/printableDirectories/createPrintableDirectorySection';
@@ -71,10 +75,10 @@ type SaveSourceToDirectoryButtonProps = {
 type SaveSourceKind = 'query' | 'favorites_list';
 
 /**
- * The source keeps its own title when the edited search has no label of its
- * own and the same query (e.g. only filters or location changed): the source
- * link doesn't carry `query_label`, so the search page would otherwise title
- * it with the raw query, such as a taxonomy code.
+ * The source keeps its own title while what it searches for (its query or
+ * organization) is unchanged, e.g. only filters or location changed, so a
+ * title the search page couldn't reproduce isn't replaced by the raw query,
+ * such as a taxonomy code.
  */
 function getUpdatedSourceTitle(
   source: PrintableDirectorySourceResponseDto,
@@ -87,8 +91,8 @@ function getUpdatedSourceTitle(
   const nextParams = nextQuery.params as Record<string, unknown>;
   const keepsTitle =
     Boolean(source.query?.title) &&
-    !nextParams.query_label &&
-    previousParams.query === nextParams.query;
+    previousParams.query === nextParams.query &&
+    previousParams.organization_id === nextParams.organization_id;
 
   return keepsTitle ? (source.query?.title ?? undefined) : nextQuery.title;
 }
@@ -124,27 +128,38 @@ export function SaveSourceToDirectoryButton({
     [directories, selectedDirectoryId],
   );
 
-  const hasLocationParams = useMemo(() => {
-    if (sourcePayload.type !== 'query') return false;
+  // What the server would store (`toQuerySourceParams()`), so the preview
+  // shows exactly what is saved.
+  const sanitizedQueryParams = useMemo(
+    () =>
+      sourcePayload.type === 'query'
+        ? toQuerySourceParams(
+            sourcePayload.query.params as Record<string, unknown>,
+          )
+        : null,
+    [sourcePayload],
+  );
 
-    const params = sourcePayload.query.params as Record<string, unknown>;
-    return Array.from(LOCATION_QUERY_PARAM_KEYS).some((key) =>
-      Boolean(params[key]),
-    );
-  }, [sourcePayload]);
+  const hasLocationParams = useMemo(
+    () =>
+      Boolean(sanitizedQueryParams) &&
+      Array.from(LOCATION_QUERY_PARAM_KEYS).some((key) =>
+        Boolean(sanitizedQueryParams?.[key as keyof QuerySourceParams]),
+      ),
+    [sanitizedQueryParams],
+  );
 
-  const effectiveQueryParams = useMemo(() => {
-    if (sourcePayload.type !== 'query') return null;
+  const effectiveQueryParams = useMemo((): Record<string, unknown> | null => {
+    if (!sanitizedQueryParams) return null;
 
-    const params = sourcePayload.query.params as Record<string, unknown>;
-    if (includeSearchLocation) return params;
-
-    const stripped = { ...params };
-    LOCATION_QUERY_PARAM_KEYS.forEach((key) => {
-      delete stripped[key];
-    });
-    return stripped;
-  }, [sourcePayload, includeSearchLocation]);
+    const params: Record<string, unknown> = { ...sanitizedQueryParams };
+    if (!includeSearchLocation) {
+      LOCATION_QUERY_PARAM_KEYS.forEach((key) => {
+        delete params[key];
+      });
+    }
+    return params;
+  }, [sanitizedQueryParams, includeSearchLocation]);
 
   const locationConflict = useMemo(() => {
     if (!includeSearchLocation || !effectiveQueryParams) return false;

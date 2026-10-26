@@ -49,7 +49,6 @@
   "cover_image_back_label": "Kansikuva (takana)",
   "image_upload": "Lataa kuva",
   "image_remove": "Poistaa",
-  "image_invalid_type": "Valitse kuvatiedosto",
   "image_too_large": "Kuvan on oltava alle 10 Mt",
   "image_upload_error": "Kuvan lataaminen epäonnistui",
   "header_config_title": "Otsikon määritys",

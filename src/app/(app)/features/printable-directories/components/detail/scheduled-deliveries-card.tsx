@@ -440,7 +440,8 @@ function ScheduledDeliveriesCardContent({
                           monthDays={delivery.monthDays}
                         />
                         {!delivery.enabled && (
-                          <span className="ml-2 text-xs font-normal">
+                          <span className="ml-1 text-xs font-normal">
+                            {' '}
                             ({t('scheduled_delivery_paused')})
                           </span>
                         )}

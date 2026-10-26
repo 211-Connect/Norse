@@ -103,7 +103,7 @@ export function MainSearchLayout({
             variant="outline"
             aria-controls={SEARCH_DIALOG_ID}
             aria-haspopup="dialog"
-            aria-label={t('search.open_search_dialog')}
+            aria-label={t('search.open_search_dialog', { ns: 'common' })}
             data-testid="search-trigger"
             onClick={() => openSearchDialog('search')}
             className={cn(

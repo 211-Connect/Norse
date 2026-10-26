@@ -12,6 +12,11 @@ export const PRINTABLE_DIRECTORY_CONTEXT_PARAMS = {
 
 const CONTEXT_PARAM_KEYS = Object.values(PRINTABLE_DIRECTORY_CONTEXT_PARAMS);
 
+/** The context params present on a URL, by param name (`pdid`, …). */
+export type PrintableDirectoryContextParams = Partial<
+  Record<(typeof CONTEXT_PARAM_KEYS)[number], string>
+>;
+
 /**
  * Copies the context params from the current URL onto a freshly built
  * search URL, so starting a new search (which rebuilds the URL from scratch)
@@ -31,6 +36,21 @@ export function withPrintableDirectoryContext(
 
   const nextQuery = params.toString();
   return nextQuery ? `${path}?${nextQuery}` : path;
+}
+
+/**
+ * The context params present in a page's raw search params, for server code
+ * that redirects (see `handleLegacyDeepLinks`).
+ */
+export function getPrintableDirectoryContextParams(
+  rawParams: Record<string, string | string[] | undefined>,
+): PrintableDirectoryContextParams {
+  return Object.fromEntries(
+    CONTEXT_PARAM_KEYS.flatMap((key) => {
+      const value = rawParams[key];
+      return typeof value === 'string' && value ? [[key, value]] : [];
+    }),
+  );
 }
 
 /** The current search params without the context params. */

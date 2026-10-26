@@ -49,6 +49,10 @@ export function HeaderFooterCard({
             variant="outline"
             className="gap-1"
             onClick={onEdit}
+            aria-label={t('edit_named', {
+              ns: 'page-directories',
+              name: title,
+            })}
           >
             <PencilIcon className="size-4" aria-hidden="true" />
             {t('call_to_action.edit', { ns: 'common' })}

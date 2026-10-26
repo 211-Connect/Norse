@@ -49,7 +49,6 @@
   "cover_image_back_label": "ຮູບໜ້າປົກ (ດ້ານຫຼັງ)",
   "image_upload": "ອັບໂຫຼດຮູບພາບ",
   "image_remove": "ລຶບອອກ",
-  "image_invalid_type": "ກະລຸນາເລືອກໄຟລ໌ຮູບພາບ",
   "image_too_large": "ຮູບພາບຕ້ອງມີຂະໜາດນ້ອຍກວ່າ 10MB",
   "image_upload_error": "ບໍ່ສາມາດອັບໂຫຼດຮູບພາບໄດ້",
   "header_config_title": "ການຕັ້ງຄ່າຫົວຂໍ້",

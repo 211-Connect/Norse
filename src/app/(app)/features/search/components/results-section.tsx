@@ -117,12 +117,14 @@ export function ResultsSection({
         ? (parsedParams.filters as Record<string, unknown>)
         : undefined;
 
+    // The search's label is saved as the source's title, not as a param.
+    // The save dialog sanitizes these (`toQuerySourceParams()`).
     const nextParams: Record<string, unknown> = {
-      query: toSingleString(parsedParams.query) || query || '',
-      query_label: toSingleString(parsedParams.query_label) || queryLabel || '',
-      query_type: toSingleString(parsedParams.query_type) || queryType || '',
-      coords: toSingleString(parsedParams.coords) || '',
-      location: toSingleString(parsedParams.location) || '',
+      query: toSingleString(parsedParams.query) || query,
+      query_type: toSingleString(parsedParams.query_type) || queryType,
+      organization_id: toSingleString(parsedParams.organization_id),
+      coords: toSingleString(parsedParams.coords),
+      location: toSingleString(parsedParams.location),
     };
 
     if (parsedDistance !== undefined) {
@@ -134,7 +136,7 @@ export function ResultsSection({
     }
 
     return nextParams;
-  }, [searchParams, query, queryLabel, queryType]);
+  }, [searchParams, query, queryType]);
 
   const showSort = queryType !== 'hybrid';
 

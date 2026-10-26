@@ -1,5 +1,6 @@
 'use server';
 
+import { DIRECTORY_IMAGE_MIME_TYPES } from '@/app/(app)/features/printable-directories/utils/constants';
 import { createLogger } from '@/lib/logger';
 import { getPayloadSingleton } from '@/payload/getPayloadSingleton';
 
@@ -57,8 +58,8 @@ export async function uploadPrintableDirectoryImage(
     return null;
   }
 
-  if (!file.type.startsWith('image/')) {
-    log.warn(`Rejected non-image file upload: ${file.type}`);
+  if (!DIRECTORY_IMAGE_MIME_TYPES.includes(file.type)) {
+    log.warn(`Rejected unsupported image type: ${file.type}`);
     return null;
   }
 

@@ -462,7 +462,8 @@ export function CreateDirectoryWizard({
 
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="wizard-query">
+                {/* The Autocomplete names the input itself (`readerLabel`). */}
+                <Label htmlFor="wizard-query" aria-hidden="true">
                   {t('wizard_query_label', { ns: 'page-directories' })}
                 </Label>
                 <Autocomplete
