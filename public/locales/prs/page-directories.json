@@ -49,7 +49,6 @@
   "cover_image_back_label": "تصویر جلد (پشت جلد)",
   "image_upload": "آپلود تصویر",
   "image_remove": "حذف",
-  "image_invalid_type": "لطفا یک فایل تصویری انتخاب کنید",
   "image_too_large": "تصویر باید کوچکتر از 10 مگابایت باشد",
   "image_upload_error": "امکان آپلود تصویر وجود ندارد",
   "header_config_title": "پیکربندی هدر",

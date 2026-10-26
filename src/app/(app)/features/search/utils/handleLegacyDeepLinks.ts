@@ -1,8 +1,10 @@
-'use server';
-
 import { predictSearchNeeds } from '@/app/(app)/shared/services/ai-classification-search-service';
 import { FindResourcesQuery } from '@/app/(app)/shared/services/search-service';
 import { createLogger } from '@/lib/logger';
+import {
+  PrintableDirectoryContextParams,
+  withPrintableDirectoryContext,
+} from '@/app/(app)/shared/utils/printableDirectorySearchContext';
 import { AppConfig } from '@/types/appConfig';
 import { redirect } from 'next/navigation';
 import { buildSearchUrl, BuildSearchUrlArgs } from './buildSearchUrl';
@@ -14,14 +16,27 @@ type Args = {
   searchQuery: FindResourcesQuery;
   locale: string;
   skipLegacyLinkCheck: boolean;
+  /**
+   * Kept on the redirect, so a directory source opened from its "Go to
+   * search results" link stays editable.
+   */
+  printableDirectoryContext?: PrintableDirectoryContextParams;
 };
 
+/**
+ * Server-only: called by the search page before it searches. Deliberately
+ * not a `'use server'` module, which would make it a publicly callable
+ * action taking a client-supplied app config.
+ */
 export async function handleLegacyDeepLinks({
   appConfig,
   searchQuery,
   locale,
   skipLegacyLinkCheck,
+  printableDirectoryContext,
 }: Args): Promise<unknown> {
+  const contextParams = new URLSearchParams(printableDirectoryContext);
+
   if (appConfig.search.searchEngine !== 'ai_classification') {
     log.debug(
       "Skipping legacy deep link handling because search engine is not 'ai_classification'",
@@ -46,6 +61,13 @@ export async function handleLegacyDeepLinks({
   if (searchQuery.queryType === 'taxonomy') {
     log.debug(
       "Skipping legacy deep link handling because queryType is 'taxonomy'",
+    );
+    return;
+  }
+
+  if (searchQuery.organizationId) {
+    log.debug(
+      'Skipping legacy deep link handling because the search is scoped to an organization',
     );
     return;
   }
@@ -95,7 +117,7 @@ export async function handleLegacyDeepLinks({
 
     const url = buildSearchUrl(searchUrlArgs);
 
-    return redirect(url);
+    return redirect(withPrintableDirectoryContext(url, contextParams));
   }
 
   const options = Array.isArray(predictResponse.options)
@@ -116,5 +138,5 @@ export async function handleLegacyDeepLinks({
 
   const url = buildSearchUrl(searchUrlArgs);
 
-  return redirect(url);
+  return redirect(withPrintableDirectoryContext(url, contextParams));
 }

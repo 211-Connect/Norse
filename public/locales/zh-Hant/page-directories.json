@@ -49,7 +49,6 @@
   "cover_image_back_label": "封面圖片（背面）",
   "image_upload": "上傳圖片",
   "image_remove": "消除",
-  "image_invalid_type": "請選擇圖像文件",
   "image_too_large": "圖片大小必須小於10MB",
   "image_upload_error": "無法上傳圖片",
   "header_config_title": "頭部配置",

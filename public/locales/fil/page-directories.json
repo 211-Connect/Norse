@@ -49,7 +49,6 @@
   "cover_image_back_label": "Larawan sa pabalat (likod)",
   "image_upload": "Mag-upload ng larawan",
   "image_remove": "Alisin",
-  "image_invalid_type": "Pumili ng file ng larawan",
   "image_too_large": "Dapat mas maliit sa 10MB ang larawan",
   "image_upload_error": "Hindi ma-upload ang larawan",
   "header_config_title": "Pag-configure ng header",

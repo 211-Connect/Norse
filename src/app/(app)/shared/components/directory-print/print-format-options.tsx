@@ -1,6 +1,7 @@
 'use client';
 
 import { Check, Info } from 'lucide-react';
+import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Checkbox } from '@/app/(app)/shared/components/ui/checkbox';
@@ -131,6 +132,7 @@ export function PrintFormatOptions({
   const { t } = useTranslation('page-list');
   const compact = layout === 'compact';
   const showLanguage = availableLocales.length > 1;
+  const variantIdPrefix = useId();
 
   const fieldLabel = (text: string, id?: string) =>
     compact ? (
@@ -166,6 +168,8 @@ export function PrintFormatOptions({
             type="button"
             role="radio"
             aria-checked={checked}
+            aria-label={t(labelKey)}
+            aria-describedby={`${variantIdPrefix}-${value}-description`}
             onClick={() => onVariantChange(value)}
             className={cn(
               'flex cursor-pointer items-start gap-3 rounded-lg border-2 text-left transition-colors',
@@ -187,6 +191,7 @@ export function PrintFormatOptions({
               </Typography>
               <Typography
                 as="span"
+                id={`${variantIdPrefix}-${value}-description`}
                 variant="paragraph"
                 size="sm"
                 textColor="secondary"
@@ -246,6 +251,7 @@ export function PrintFormatOptions({
         align="start"
         triggerClassName={cn('w-full', compact && 'h-9')}
         showIcon={false}
+        label={t('print_dialog.language_title')}
       />
     </div>
   );

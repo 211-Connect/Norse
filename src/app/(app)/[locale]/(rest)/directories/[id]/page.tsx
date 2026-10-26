@@ -2,6 +2,7 @@ import { getCookies } from 'cookies-next/server';
 import { cookies, headers } from 'next/headers';
 import { notFound, redirect } from 'next/navigation';
 import { Metadata } from 'next/types';
+import { cache } from 'react';
 
 import { PrintableDirectoryDetail } from '@/app/(app)/features/printable-directories/components/printable-directory-detail';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
@@ -15,6 +16,9 @@ import { getPrintableDirectoryServerAccess } from '@/app/(app)/shared/utils/prin
 
 const i18nNamespaces = ['page-directories', 'page-list', 'common'];
 
+/** Shared by the metadata and the page, so the directory is fetched once. */
+const getDirectory = cache(getPrintableDirectoryById);
+
 type DirectoryDetailPageProps = {
   params: Promise<{ locale: string; id: string }>;
 };
@@ -22,7 +26,7 @@ type DirectoryDetailPageProps = {
 export const generateMetadata = async ({
   params,
 }: DirectoryDetailPageProps): Promise<Metadata> => {
-  const { locale } = await params;
+  const { locale, id } = await params;
   const appConfig = await getAppConfigWithoutHost(locale);
   const { t } = await initTranslations(
     locale,
@@ -30,7 +34,10 @@ export const generateMetadata = async ({
     appConfig.i18n.locales,
     appConfig.i18n.defaultLocale,
   );
-  const title = t('meta_title', { ns: 'page-directories' });
+  // null without access, so a directory's name is never leaked.
+  const directory = await getDirectory(id, appConfig.tenantId);
+  const listTitle = t('meta_title', { ns: 'page-directories' });
+  const title = directory ? `${directory.name} - ${listTitle}` : listTitle;
   const description = t('meta_description', { ns: 'page-directories' });
 
   return {
@@ -70,7 +77,7 @@ export default async function PrintableDirectoryDetailPage({
     redirect(`/${locale}`);
   }
 
-  const directory = await getPrintableDirectoryById(id, appConfig.tenantId);
+  const directory = await getDirectory(id, appConfig.tenantId);
   if (!directory) {
     notFound();
   }

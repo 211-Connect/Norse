@@ -26,3 +26,14 @@ export const LOCATION_QUERY_PARAM_KEYS = new Set([
   'location',
   'distance',
 ]);
+
+/**
+ * Image types a cover image or logo may be uploaded as: the formats
+ * `@react-pdf/renderer` can draw. Others (WebP, GIF, AVIF, …) would upload
+ * fine but silently disappear from the PDF.
+ */
+export const DIRECTORY_IMAGE_MIME_TYPES = [
+  'image/png',
+  'image/jpeg',
+  'image/svg+xml',
+];

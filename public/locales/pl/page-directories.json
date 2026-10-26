@@ -49,7 +49,6 @@
   "cover_image_back_label": "Zdjęcie na okładce (tył)",
   "image_upload": "Prześlij obraz",
   "image_remove": "Usunąć",
-  "image_invalid_type": "Proszę wybrać plik obrazu",
   "image_too_large": "Obraz musi być mniejszy niż 10 MB",
   "image_upload_error": "Nie można przesłać obrazu",
   "header_config_title": "Konfiguracja nagłówka",

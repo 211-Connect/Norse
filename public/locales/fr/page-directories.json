@@ -49,7 +49,6 @@
   "cover_image_back_label": "Image de couverture (verso)",
   "image_upload": "Télécharger une image",
   "image_remove": "Retirer",
-  "image_invalid_type": "Veuillez choisir un fichier image",
   "image_too_large": "L'image doit avoir une taille inférieure à 10 Mo.",
   "image_upload_error": "Impossible de télécharger l'image",
   "header_config_title": "Configuration de l'en-tête",

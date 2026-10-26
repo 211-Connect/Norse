@@ -49,7 +49,6 @@
   "cover_image_back_label": "표지 이미지 (뒷면)",
   "image_upload": "이미지 업로드",
   "image_remove": "제거하다",
-  "image_invalid_type": "이미지 파일을 선택해 주세요.",
   "image_too_large": "이미지 크기는 10MB 미만이어야 합니다.",
   "image_upload_error": "이미지를 업로드할 수 없습니다",
   "header_config_title": "헤더 구성",

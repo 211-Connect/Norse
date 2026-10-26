@@ -49,7 +49,6 @@
   "cover_image_back_label": "Titelbild (Rückseite)",
   "image_upload": "Bild hochladen",
   "image_remove": "Entfernen",
-  "image_invalid_type": "Bitte wählen Sie eine Bilddatei aus.",
   "image_too_large": "Das Bild darf maximal 10 MB groß sein.",
   "image_upload_error": "Bild konnte nicht hochgeladen werden",
   "header_config_title": "Header-Konfiguration",

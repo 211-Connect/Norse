@@ -49,7 +49,6 @@
   "cover_image_back_label": "आवरण छवि (पछाडि)",
   "image_upload": "छवि अपलोड गर्नुहोस्",
   "image_remove": "हटाउनुहोस्",
-  "image_invalid_type": "कृपया एउटा छवि फाइल छनौट गर्नुहोस्।",
   "image_too_large": "छवि १० एमबी भन्दा सानो हुनुपर्छ।",
   "image_upload_error": "छवि अपलोड गर्न सकिएन",
   "header_config_title": "हेडर कन्फिगरेसन",

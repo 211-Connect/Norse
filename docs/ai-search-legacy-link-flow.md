@@ -62,9 +62,12 @@ Applies only when AI is enabled.
 Search page parses URL params and resolves whether to search immediately or classify first.
 
 - Evaluate engine + query + query type + taxonomy + skip marker.
+- Organization-scoped searches (`organization_id`) are never classified:
+  the organization is already an explicit scope.
 - If gate resolves to classify:
   - call `predictSearchNeeds` on server;
   - direct-search scenarios (`search`, `search_and_notify_*`) redirect immediately to canonical AI URL;
+  - both redirects keep the printable directory context params (`pdid`, `pdsid`, `pdsrcid`; see [printable-directories.md](./printable-directories.md));
   - clarification scenarios return preloaded options to client and continue normal results query behind modal.
 
 ### 2) Client hydration and one-shot modal open

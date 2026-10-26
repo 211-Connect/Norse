@@ -1,5 +1,3 @@
-'use server';
-
 import qs from 'qs';
 import { redirect } from 'next/navigation';
 import { createLogger } from '@/lib/logger';
@@ -9,6 +7,11 @@ import type { RawSearchParams } from './parseSearchParams';
 
 const log = createLogger('navigateToSearchWithCoords');
 
+/**
+ * Server-only: called by the search page when a deep link has a location
+ * but no coordinates. Deliberately not a `'use server'` module, which would
+ * make it a publicly callable action.
+ */
 export async function navigateToSearchWithCoords(
   locale: string,
   tenantId: string,

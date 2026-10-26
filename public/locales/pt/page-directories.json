@@ -49,7 +49,6 @@
   "cover_image_back_label": "Imagem da capa (verso)",
   "image_upload": "Carregar imagem",
   "image_remove": "Remover",
-  "image_invalid_type": "Por favor, selecione um arquivo de imagem.",
   "image_too_large": "A imagem deve ter menos de 10 MB.",
   "image_upload_error": "Não foi possível carregar a imagem.",
   "header_config_title": "Configuração do cabeçalho",
