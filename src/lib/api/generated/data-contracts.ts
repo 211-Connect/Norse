@@ -1169,6 +1169,52 @@ export interface EventCatalogEntryResponse {
   properties: string[];
 }
 
+export interface BlockedTrafficClassificationTotalDto {
+  /** @example "nefarious" */
+  classification: "seo" | "nefarious" | "unknown";
+  /**
+   * Requests that got a 403.
+   * @example 1200
+   */
+  blocked: number;
+  /**
+   * Requests detected on an observe-only host and served.
+   * @example 0
+   */
+  notEnforced: number;
+}
+
+export interface BlockedTrafficHourlyBucketDto {
+  /**
+   * Start of the UTC hour.
+   * @example "2026-10-21T14:00:00.000Z"
+   */
+  hour: string;
+  /** @example "seo" */
+  classification: "seo" | "nefarious" | "unknown";
+  /** @example true */
+  enforced: boolean;
+  /** @example 17 */
+  count: number;
+}
+
+export interface BlockedTrafficResponse {
+  /**
+   * Requests that got a 403 in the range.
+   * @example 1500
+   */
+  blocked: number;
+  /**
+   * Requests detected on an observe-only host in the range; served, so not blocked.
+   * @example 0
+   */
+  notEnforced: number;
+  /** Totals per classification; always one entry for each. */
+  byClassification: BlockedTrafficClassificationTotalDto[];
+  /** Non-empty hourly buckets in the range, oldest first. Only when requested with `hourly=true`. */
+  hourly?: BlockedTrafficHourlyBucketDto[];
+}
+
 export interface EventPayloadDto {
   /**
    * Event name (1-255 characters)
@@ -1234,6 +1280,44 @@ export interface SendBatchResponseDto {
     index?: number;
     error?: string;
   }[];
+}
+
+export interface BlockedTrafficBucketDto {
+  /**
+   * Start of the UTC hour the denials fall in (minutes, seconds and milliseconds must be zero). At most 7 days old and not in the future.
+   * @example "2026-10-22T14:00:00.000Z"
+   */
+  hour: string;
+  /**
+   * Classification from Norse `classifyBlockedTraffic`.
+   * @example "nefarious"
+   */
+  classification: "seo" | "nefarious" | "unknown";
+  /**
+   * true: the request got a 403. false: observe-only host, the request was detected but served.
+   * @example true
+   */
+  enforced: boolean;
+  /**
+   * Denials to add to the bucket.
+   * @min 1
+   * @max 10000000
+   * @example 42
+   */
+  count: number;
+}
+
+export interface RecordBlockedTrafficDto {
+  /** Per-bucket deltas for the tenant in x-tenant-id (max 500). */
+  buckets: BlockedTrafficBucketDto[];
+}
+
+export interface RecordBlockedTrafficResponseDto {
+  /**
+   * Denials added across all buckets.
+   * @example 42
+   */
+  recorded: number;
 }
 
 export interface ScorecardNeedResponseDto {
@@ -1645,7 +1729,9 @@ export interface PrintableDirectoryLocalizedValuesDto {
 }
 
 export interface PrintableDirectoryCoverDto {
+  /** Each value is at most 200 characters. */
   titleLocalized?: PrintableDirectoryLocalizedValuesDto;
+  /** Each value is at most 2000 characters. */
   descriptionLocalized?: PrintableDirectoryLocalizedValuesDto;
   /** @example "#0f172a" */
   primaryColor?: string;
@@ -1657,6 +1743,7 @@ export interface PrintableDirectoryCoverDto {
 }
 
 export interface PrintableDirectoryHeaderFooterDto {
+  /** Each value is at most 2000 characters. */
   textLocalized?: PrintableDirectoryLocalizedValuesDto;
   /** @example ["logo","date"] */
   layout: ("text" | "logo" | "domain" | "date")[];
@@ -1702,7 +1789,9 @@ export interface PrintableDirectorySectionSourceDto {
 }
 
 export interface CreatePrintableDirectorySectionDto {
+  /** Each value is at most 200 characters. */
   headingLocalized: PrintableDirectoryLocalizedValuesDto;
+  /** Each value is at most 2000 characters. */
   descriptionLocalized: PrintableDirectoryLocalizedValuesDto;
   /**
    * @min 1
@@ -1719,7 +1808,9 @@ export interface ReorderPrintableDirectorySectionsDto {
 }
 
 export interface UpdatePrintableDirectorySectionDto {
+  /** Each value is at most 200 characters. */
   headingLocalized?: PrintableDirectoryLocalizedValuesDto;
+  /** Each value is at most 2000 characters. */
   descriptionLocalized?: PrintableDirectoryLocalizedValuesDto;
   /**
    * @min 1
@@ -2881,9 +2972,32 @@ export type AnalyticsControllerGetEventValuesData = EventValuesResponse[];
 export type AnalyticsControllerGetEventCatalogData =
   EventCatalogEntryResponse[];
 
+export interface AnalyticsControllerGetBlockedTrafficParams {
+  /**
+   * ISO-8601 start. Rounded down to the UTC hour: the counts have 1-hour resolution.
+   * @example "2026-10-01T00:00:00Z"
+   */
+  start: string;
+  /**
+   * ISO-8601 end (inclusive: the hour containing it is included). Must be ≥ start, not in the future, and within 365 days of start.
+   * @example "2026-10-21T23:59:59Z"
+   */
+  end: string;
+  /**
+   * Also return the hourly buckets. Off by default: a 365-day range can hold tens of thousands of them, and totals need none.
+   * @default false
+   */
+  hourly?: boolean;
+}
+
+export type AnalyticsControllerGetBlockedTrafficData = BlockedTrafficResponse;
+
 export type AnalyticsControllerSendEventData = SendEventResponseDto;
 
 export type AnalyticsControllerSendBatchData = SendBatchResponseDto;
+
+export type BlockedTrafficInternalControllerRecordData =
+  RecordBlockedTrafficResponseDto;
 
 export interface TaxonomyScorecardControllerSearchTaxonomiesParams {
   /**
