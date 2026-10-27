@@ -15,8 +15,8 @@ It serves three callers with one model:
 - agents and other API clients (Keeper), which only have the user's words
   ("Yakima") and must not need to know Region ids.
 
-Status: T2–T7 implemented on branch `feat/area-search` in Norse and Norse-API
-(not merged); T1 (Dagster) and T8 (POST removal) pending.
+Status: T1–T6 implemented on branch `feat/area-search` in Norse and
+Norse-API (not merged); T7 (seed cities) and T8 (POST removal) pending.
 Tickets: [area-search-tickets.md](/docs/area-search-tickets.md).
 
 ## The model: three ways to say where
@@ -88,9 +88,8 @@ the candidates and the user picks one.
 
 A resource matches a Region when **either**:
 
-- its `service_area` intersects the Region's **interior** shape
-  (`geometry_interior`, the shape shrunk by ~1 km), or
-- its `location.point` lies inside the Region's full shape.
+- its `service_area` intersects the Region's shape, or
+- its `location.point` lies inside the Region's shape.
 
 Several Regions are OR'ed. Both clauses use `geo_shape` with
 `indexed_shape: { index: "regions", id, path }`, so ES reads the shape by id
@@ -98,15 +97,6 @@ and no geometry crosses the wire; the request stays a cacheable GET.
 
 - **Union** fixes the gap where resources without `service_area` (up to ~45%
   for some tenants) were invisible to service-area matching.
-- **Interior shape** avoids "border contact": service areas and Regions come
-  from different, separately simplified boundary sources, so a neighbouring
-  county's services overlap the edge by up to ~1 km. With the plain shape,
-  "Tacoma" (Pierce County) returns 5,862 results located outside the county,
-  4,998 of them covering neither downtown Tacoma nor the county's middle;
-  shrunk by 1 km, 947 remain — services that really serve it (statewide or
-  multi-county, with an office elsewhere). Until Dagster ships
-  `geometry_interior` (ticket T1) the API uses `geometry`; the path is one
-  constant.
 - Resources with neither field match no area (same as point search today).
 - An unknown Region id is a 400.
 

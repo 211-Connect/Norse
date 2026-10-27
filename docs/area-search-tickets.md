@@ -1,56 +1,12 @@
 # Area search — tickets
 
-Design: [area-search.md](/docs/area-search.md). Order: T1 and T2–T4 in
-parallel (all additive), then T5–T7, then T8 after the deprecation window.
+Design: [area-search.md](/docs/area-search.md). Order: T1–T4 (Norse-API, all
+additive), then T5–T6 (Norse), T7 whenever cities are ready, then T8 after
+the deprecation window.
 
 ---
 
-## T1 — Dagster: interior Region shapes (`geometry_interior`)
-
-**Status:** not started (Dagster repo not in this workspace).
-
-**Repo:** dagster-data-orchestration (regions loader)
-
-Why: `intersects` against the full Region shape matches services whose area
-only overlaps the edge. Service areas and Regions come from different,
-separately simplified boundary sources, so a neighbouring county's services
-overlap by up to ~1 km. Measured on the WA tenant (2026-10-27), searching
-"Tacoma" (Pierce County): 5,862 of 7,568 results are located outside the
-county, and 4,998 of those cover neither downtown Tacoma nor the county's
-middle (e.g. Seattle after-school programs, a Bothell senior center).
-
-Simulated with the county shrunk before matching (`service_area` only; the
-location clause keeps the full shape):
-
-| Region | full | −100 m | −500 m | −1 km | −2 km |
-| --- | --- | --- | --- | --- | --- |
-| Pierce, located outside | 5,862 | 5,460 | 4,240 | 947 | 899 |
-| Yakima, located outside | 3,298 | — | — | 715 | 715 |
-
-Both level off at 1 km; what is left serves the county (statewide or
-multi-county services with an office elsewhere).
-
-- Add `geometry_interior` (`geo_shape`) to every Region: `geometry` buffered
-  by **−1 km** (in an equal-area projection, e.g. EPSG:5070, then back to
-  WGS84), normalized with the same policy as `geometry`.
-- If the buffer is empty or loses most of the shape (small ZIPs, `point_like`
-  ones), store `geometry` unchanged — e.g. keep the buffer only when it holds
-  at least half the area.
-- New versioned index + alias swap (publish-before-delete, #604); the index is
-  shared by all environments.
-
-Acceptance
-
-- [ ] Every Region has a non-empty `geometry_interior`.
-- [ ] Spot check: Pierce County (`county:53053`) on the WA tenant drops to
-      about 950 results located outside; `zip:63110` and Jackson County, MO
-      unchanged in id and name.
-- [ ] Norse-API switches `REGION_SERVICE_AREA_PATH` to `geometry_interior`
-      (one constant) after the alias swap.
-
----
-
-## T2 — Norse-API: geocoder hit → Region
+## T1 — Norse-API: geocoder hit → Region
 
 **Status:** implemented on `feat/area-search` (Norse-API), unit-tested, verified on localhost.
 
@@ -68,12 +24,12 @@ Acceptance
 
 ---
 
-## T3 — Norse-API: forward geocoding returns `region_id` and `state_code`
+## T2 — Norse-API: forward geocoding returns `region_id` and `state_code`
 
 **Status:** implemented on `feat/area-search` (Norse-API).
 
 - Every Mapbox hit of `GET /geocoding/forward` gains `state_code` (from the
-  region context `short_code`, `US-WA` → `WA`) and `region_id` (T2; null for
+  region context `short_code`, `US-WA` → `WA`) and `region_id` (T1; null for
   points), cached with the hit (key `geocode:forward:v2:`). OpenCage
   unchanged.
 
@@ -84,15 +40,15 @@ Acceptance
 
 ---
 
-## T4 — Norse-API: `region`, `location`, `state` on `GET /search`
+## T3 — Norse-API: `region`, `location`, `state` on `GET /search`
 
 **Status:** implemented on `feat/area-search` (Norse-API), unit-tested, verified on localhost against production ES data.
 
 - `region`: 1–20 Region ids, pattern-validated, existence checked with one
   `mget` (400 lists unknown ids). Filter per Region: `service_area`
-  intersects `indexed_shape(regions, id, REGION_SERVICE_AREA_PATH)` OR
-  `location.point` inside `indexed_shape(regions, id, geometry)`. `distance`
-  ignored; `coords` only the origin for sort and hybrid proximity.
+  intersects the Region's shape OR `location.point` inside it
+  (`indexed_shape(regions, id, geometry)`). `distance` ignored; `coords`
+  only the origin for sort and hybrid proximity.
 - `location` (+ `state`): ignored with `region`/`coords`; geocode (Mapbox),
   first hit in `state`; its `region_id` is searched like `region=`, else its
   point with the request's `distance`. No hit → 400.
@@ -109,7 +65,7 @@ Acceptance
 
 ---
 
-## T5 — Norse-API: public `GET /regions/:id` and printable-directory default region
+## T4 — Norse-API: public `GET /regions/:id` and printable-directory default region
 
 **Status:** implemented on `feat/area-search` (Norse-API).
 
@@ -121,16 +77,17 @@ Acceptance
 
 Acceptance
 
-- [ ] 404 for a well-formed unknown id, 400 for a malformed one.
-- [ ] A directory with `regionId` renders its PDF scoped to the Region.
+- [x] 404 for a well-formed unknown id, 400 for a malformed one.
+- [ ] A directory with `regionId` renders its PDF scoped to the Region
+      (unit-tested; not exercised end to end).
 
 ---
 
-## T6 — Norse: picker, URL, search request, map
+## T5 — Norse: picker, URL, search request, map
 
 **Status:** implemented on `feat/area-search` (Norse), verified in the browser on localhost (WA tenant); e2e `search-geocode` + `search-dialog-location` pass locally.
 
-- Regenerate SDK. `GeocodeResult` gains `region`, `state_code`.
+- Regenerate SDK. `GeocodeResult` gains `region_id`, `state_code`.
 - Picker commit stores `searchRegion`; URL/`parseSearchParams`/`buildSearchUrl`
   carry `region`; cookies + middleware fallback carry it.
 - `findResources` sends `region` (and no `distance`) when set.
@@ -142,20 +99,43 @@ Acceptance
 
 Acceptance
 
-- [ ] Picking "Yakima County, WA" → URL has `region=county:53077`, radius
+- [x] Picking "King County, WA" → URL has `region=county:53033`, radius
       hidden, map shows the county.
-- [ ] Picking an address → unchanged point search.
-- [ ] `e2e/search-location-geocode.spec.ts` still passes; add an area case.
+- [x] Picking an address → unchanged point search.
+- [x] `e2e/search-location-geocode.spec.ts` still passes.
+- [ ] An e2e case for an area pick.
 
 ---
 
-## T7 — Norse: printable directories default region
+## T6 — Norse: printable directories default region
 
 **Status:** implemented on `feat/area-search` (Norse), unit-tested; UI not exercised (needs a signed-in user).
 
 - Wizard and edit dialog store `regionId` from the picker; radius only for
   point locations; `withDefaultQueryParams`/`matchesDefaultLocation` know
   `region`.
+
+---
+
+## T7 — Seed city Regions
+
+**Status:** not started. Covered by the colleague's "Add cities to the Region
+store" ticket; only the part below is needed for area search.
+
+- Load `place:<7-digit Census GEOID>` Regions (cities) into the `regions`
+  index, with `name`, `state`, `centroid` and `geometry`, like counties.
+- Nothing to change in Norse or Norse-API: `regionOf` already prefers a
+  `place` Region over the county fallback.
+- After the load, bump the geocode cache keys so picks resolve to cities at
+  once: `geocode:forward:v2:` in Norse-API `geocoding.service.ts` and `v` in
+  Norse `forwardGeocode.ts` (otherwise they switch as entries expire, ≤7
+  days).
+
+Acceptance
+
+- [ ] "Tacoma" → `region_id: place:5370000`; the map outlines the city, not
+      Pierce County.
+- [ ] `GET /regions/place:5370000` returns the city boundary.
 
 ---
 
@@ -175,7 +155,6 @@ After the deprecation window with no logged callers:
 - **Forward geocoding bbox:** superseded — `state` filtering on `/search`
   covers "21021, MD".
 - **Coherent geospatial model for agents:** answered by the three patterns
-  and `resolved_location`; T4 adds the docs.
-- **Cities in the Region store:** still needed for `place:` Regions (with
-  centroid). Its "pass geometry through POST /search" path is replaced by
-  `region=place:…`.
+  and `resolved_location`; T3 adds the docs.
+- **Cities in the Region store:** see T7. Its "pass geometry through POST
+  /search" path is replaced by `region=place:…`.
