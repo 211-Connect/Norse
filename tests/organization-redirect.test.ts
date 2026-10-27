@@ -152,7 +152,7 @@ test('the rewritten URL keeps order, repeated keys and values that are not the o
   const url = searchUrlWithOrganization(
     {
       taxonomy: ['BD-1800', 'BD-1800.2000'],
-      organization_id: OLD_ORG,
+      organization_id: [OLD_ORG, 'another-org'],
       'filters[x][0]': 'a b&c',
     },
     OLD_ORG,
@@ -167,6 +167,7 @@ test('the rewritten URL keeps order, repeated keys and values that are not the o
       ['taxonomy', 'BD-1800'],
       ['taxonomy', 'BD-1800.2000'],
       ['organization_id', NEW_ORG],
+      ['organization_id', 'another-org'],
       ['filters[x][0]', 'a b&c'],
     ],
   );
