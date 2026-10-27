@@ -20,6 +20,7 @@ type Locale = string;
 type ResourceId = string;
 type TenantId = string;
 type Hash = string;
+type RegionId = string;
 
 export type CacheKey =
   | `tenant:${Domain | TenantId}`
@@ -30,6 +31,7 @@ export type CacheKey =
   | `search_results:${TenantId}:${Locale}:${Hash}`
   | `forward_geocode:${Hash}`
   | `reverse_geocode:${Hash}`
+  | `region:${RegionId}`
   | `resource:${TenantId}:${ResourceId}:${Locale}`
   | `resource_batch:${TenantId}:${Locale}:${Hash}`
   | `search_config:${TenantId}:${Locale}`

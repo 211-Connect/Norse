@@ -23,6 +23,8 @@ export type BuildSearchUrlArgs = Partial<{
   organizationId: string;
   location: string | null;
   coordinates: string | number[] | null;
+  /** Region id(s) the location is an area of; see docs/area-search.md. */
+  region: string | null;
   distance: string | [string, string] | null;
   filters: Record<string, string[]> | null;
   taxonomies: string[] | null;
@@ -41,6 +43,7 @@ export function buildSearchUrl({
   organizationId,
   location: originLocation,
   coordinates: originCoordinates,
+  region: originRegion,
   distance: originDistance,
   filters,
   taxonomies,
@@ -135,7 +138,13 @@ export function buildSearchUrl({
     }
   }
 
-  if (hasRealLocation || hasCoords) {
+  // A Region is searched as its shape, so it carries no distance.
+  const region = hasRealLocation ? originRegion?.trim() : undefined;
+  if (region) {
+    params.set('region', region);
+  }
+
+  if ((hasRealLocation || hasCoords) && !region) {
     const distance = (
       typeof originDistance === 'string'
         ? originDistance

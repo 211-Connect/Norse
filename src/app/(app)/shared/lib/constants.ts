@@ -24,6 +24,8 @@ export const USER_PREF_DISTRICT = 'user-pref-district';
 export const USER_PREF_PLACE = 'user-pref-place';
 export const USER_PREF_POSTCODE = 'user-pref-postcode';
 export const USER_PREF_REGION = 'user-pref-region';
+/** Region id(s) of the saved location when it is an area (docs/area-search.md). */
+export const USER_PREF_REGION_ID = 'user-pref-region-id';
 export const USER_PREF_FONT_SIZE = 'user-pref-font-size';
 
 // Accessibility IDs

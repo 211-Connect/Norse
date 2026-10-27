@@ -9,18 +9,11 @@ import { ResultsEvents } from '@/app/(app)/features/search/components/results-ev
 import { DEFAULT_SEARCH_CARD_LAYOUT } from '@/app/(app)/features/search/types/card-layout-config';
 import { PageWrapper } from '@/app/(app)/shared/components/page-wrapper';
 import initTranslations from '@/app/(app)/shared/i18n/i18n';
-import { isAdvancedGeoEnabled } from '@/app/(app)/shared/lib/search-utils';
-import { forwardGeocode } from '@/app/(app)/shared/serverActions/geocoding/forwardGeocode';
-import {
-  FindResourcesQuery,
-  findResources,
-  findResourcesV2,
-} from '@/app/(app)/shared/services/search-service';
+import { findResources } from '@/app/(app)/shared/services/search-service';
 import { type ResultType } from '@/app/(app)/shared/store/results';
 import { getAppConfigWithoutHost } from '@/app/(app)/shared/utils/appConfig';
 import { protectPage } from '@/lib/arcjet-page';
 import { createLogger } from '@/lib/logger';
-import { toBbox } from '@/app/(app)/shared/lib/utils';
 import { type FiltersMap } from '@/types/search';
 
 import {
@@ -72,72 +65,25 @@ const getPageData = cache(async function (
     typeof rawParams.page === 'string' ? parseInt(rawParams.page) || 1 : 1;
   const limit = appConfig.search.resultsLimit;
 
-  let useFindResourcesV2 = false;
-  let results: ResultType[] = [];
-  let totalResults = 0;
-  let filters: FiltersMap = {};
+  const searchResult = await findResources(
+    searchQuery,
+    locale,
+    page,
+    limit,
+    appConfig.tenantId,
+    appConfig.search.searchEngine,
+  );
 
-  if (isAdvancedGeoEnabled() && searchQuery.location) {
-    const [placeMetadata] = await forwardGeocode(searchQuery.location, {
-      locale,
-      tenantId: appConfig.tenantId,
-    });
-
-    if (placeMetadata) {
-      const geoQuery: FindResourcesQuery = {
-        ...searchQuery,
-        coordinates: searchQuery.coordinates ?? placeMetadata.coordinates,
-        placeType: placeMetadata.place_type,
-        bbox: toBbox(placeMetadata.bbox),
-      };
-
-      try {
-        const v2Result = await findResourcesV2(
-          geoQuery,
-          locale,
-          page,
-          limit,
-          appConfig.tenantId,
-          appConfig.search.searchEngine,
-        );
-        results = v2Result.results as ResultType[];
-        totalResults = v2Result.totalResults;
-        filters = v2Result.filters;
-        useFindResourcesV2 = true;
-      } catch (error) {
-        log.error(
-          { err: error },
-          'Geospatial search failed; falling back to legacy',
-        );
-      }
-    }
-  }
-
-  // Fallback to legacy search if geospatial wasn't used or failed
-  if (!useFindResourcesV2) {
-    const searchResult = await findResources(
-      searchQuery,
-      locale,
-      page,
-      limit,
-      appConfig.tenantId,
-      appConfig.search.searchEngine,
+  if (!searchResult) {
+    log.warn(
+      { searchQuery, locale, page, limit, tenantId: appConfig.tenantId },
+      'Search returned no result object; defaulting to empty results',
     );
-
-    if (!searchResult) {
-      log.warn(
-        { searchQuery, locale, page, limit, tenantId: appConfig.tenantId },
-        'Search returned no result object; defaulting to empty results',
-      );
-      results = [];
-      totalResults = 0;
-      filters = {};
-    } else {
-      results = searchResult.results as ResultType[];
-      totalResults = searchResult.totalResults;
-      filters = searchResult.filters;
-    }
   }
+
+  const results = (searchResult?.results ?? []) as ResultType[];
+  const totalResults = searchResult?.totalResults ?? 0;
+  const filters: FiltersMap = searchResult?.filters ?? {};
 
   const { resources, t } = await initTranslations(
     locale,
@@ -245,6 +191,7 @@ export default async function SearchPage({
         coords: searchQuery.coordinates?.join(','),
         distance: searchQuery.distance,
         location: searchQuery.location,
+        region: searchQuery.region,
         query: searchQuery.query,
         queryLabel: searchQuery.queryLabel,
         queryType: searchQuery.queryType,

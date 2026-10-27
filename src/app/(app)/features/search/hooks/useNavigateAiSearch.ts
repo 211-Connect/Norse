@@ -56,6 +56,7 @@ export const useNavigateAiSearch = ({
           taxonomies,
           location: search.searchLocation,
           coordinates: search.searchCoordinates,
+          region: search.searchRegion,
           distance: search.searchDistance,
           searchEngine: appConfig.search.searchEngine,
           skipLegacyLinkCheck: true,

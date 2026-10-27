@@ -27,6 +27,11 @@ export interface ServiceAreaGeoJSON {
 type MapRendererProps = {
   markers?: MarkerDef[]; // made optional; component will default to []
   serviceArea?: ServiceAreaGeoJSON;
+  /**
+   * The searched Region(s) of an area search: outlined and framed instead of
+   * the user's pin. `null` while it loads (still no pin); omit for a point search.
+   */
+  searchArea?: ServiceAreaGeoJSON | null;
   usersLocation?: [number, number];
   disableUserLocation?: boolean;
   center?: [number, number];
@@ -67,7 +72,8 @@ const MapRenderer = (props: MapRendererProps) => {
           zoom={appConfig.search.map.zoom}
           markers={markers}
           serviceArea={props.serviceArea}
-          usersLocation={userCoords}
+          searchArea={props.searchArea ?? undefined}
+          usersLocation={props.searchArea === undefined ? userCoords : []}
           disableUserLocation={props.disableUserLocation}
         />
       </div>

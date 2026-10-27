@@ -112,6 +112,9 @@ export function EditDirectoryDialog({
     PrintableDirectoryDefaultQueryConfigDto['coords']
   > | null>(null);
   const [defaultRadius, setDefaultRadius] = useState('');
+  // Set when the default location is an area (county, city, ZIP…): the
+  // directory then searches that Region, with no radius.
+  const [defaultRegionId, setDefaultRegionId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open) {
@@ -127,6 +130,7 @@ export function EditDirectoryDialog({
       initialValues.defaultQueryConfig?.locationName ?? everywhereLabel,
     );
     setDefaultCoords(initialValues.defaultQueryConfig?.coords ?? null);
+    setDefaultRegionId(initialValues.defaultQueryConfig?.regionId ?? null);
     setDefaultRadius(
       initialValues.defaultQueryConfig?.radius != null
         ? String(initialValues.defaultQueryConfig.radius)
@@ -150,7 +154,9 @@ export function EditDirectoryDialog({
       trimmedLocationName === everywhereLabel ? '' : trimmedLocationName;
     const parsedRadiusValue = Number(defaultRadius.trim());
     const parsedRadius =
-      defaultRadius.trim() && Number.isFinite(parsedRadiusValue)
+      !defaultRegionId &&
+      defaultRadius.trim() &&
+      Number.isFinite(parsedRadiusValue)
         ? parsedRadiusValue
         : undefined;
 
@@ -160,6 +166,7 @@ export function EditDirectoryDialog({
             locationName: normalizedLocationName || undefined,
             coords: defaultCoords ?? undefined,
             radius: parsedRadius,
+            regionId: defaultRegionId,
           }
         : null;
 
@@ -346,8 +353,9 @@ export function EditDirectoryDialog({
             showIcon={false}
             placeholder=""
             initialValue={defaultLocationName}
-            onLocationChange={(location, coordinates) => {
+            onLocationChange={(location, coordinates, regionId) => {
               setDefaultLocationName(location);
+              setDefaultRegionId(regionId);
               setDefaultCoords(
                 coordinates
                   ? {
@@ -360,23 +368,26 @@ export function EditDirectoryDialog({
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="edit-directory-default-radius">
-            {t('default_query_config.radius_label', {
-              ns: 'page-directories',
-              defaultValue: 'Default radius',
-            })}
-          </Label>
-          <Input
-            id="edit-directory-default-radius"
-            className="h-9 text-sm"
-            type="number"
-            min={0}
-            max={1000}
-            value={defaultRadius}
-            onChange={(event) => setDefaultRadius(event.target.value)}
-          />
-        </div>
+        {/* An area default is searched as its shape: no radius. */}
+        {!defaultRegionId && (
+          <div className="space-y-2">
+            <Label htmlFor="edit-directory-default-radius">
+              {t('default_query_config.radius_label', {
+                ns: 'page-directories',
+                defaultValue: 'Default radius',
+              })}
+            </Label>
+            <Input
+              id="edit-directory-default-radius"
+              className="h-9 text-sm"
+              type="number"
+              min={0}
+              max={1000}
+              value={defaultRadius}
+              onChange={(event) => setDefaultRadius(event.target.value)}
+            />
+          </div>
+        )}
 
         {canUploadLogo && (
           <div className="space-y-1">

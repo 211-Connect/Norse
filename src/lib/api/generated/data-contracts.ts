@@ -201,10 +201,34 @@ export interface RelevanceCutoffDto {
   candidates_examined: number;
 }
 
+export interface ResolvedRegionDto {
+  /** @example "county:53077" */
+  id: string;
+  type: "state" | "county" | "place" | "zip";
+  /** @example "Yakima County, WA" */
+  name: string;
+}
+
+export interface ResolvedLocationDto {
+  /**
+   * The `location` text, when the search was resolved from it.
+   * @example "Yakima"
+   */
+  input?: string;
+  /** The Regions searched. Empty when `location` resolved to a point (an address), which is searched with `coords` and `distance`. */
+  regions: ResolvedRegionDto[];
+  /**
+   * [longitude, latitude] the search measured distance from, when there is one.
+   * @example [-120.5061,46.6022]
+   */
+  coords?: number[];
+}
+
 export interface SearchResponseDto {
   search: SearchHitsContainer;
   facets: string[];
   relevance_cutoff?: RelevanceCutoffDto | null;
+  resolved_location?: ResolvedLocationDto;
 }
 
 export interface AiSearchOptionDto {
@@ -231,6 +255,127 @@ export interface AiSearchReRankResponseDto {
   hsis_taxonomies: string[];
 }
 
+export interface ForwardGeocodeResponseDto {
+  /**
+   * Type of the result
+   * @example "coordinates"
+   */
+  type: "coordinates" | "invalid";
+  /**
+   * Formatted address
+   * @example "123 Main St, New York, NY 10001, United States"
+   */
+  address: string;
+  /**
+   * Coordinates [longitude, latitude]
+   * @example [-74.006,40.7128]
+   */
+  coordinates: number[];
+  /**
+   * Postcode of the location
+   * @example "10001"
+   */
+  postcode?: string;
+  /**
+   * Place/city name
+   * @example "New York"
+   */
+  place?: string;
+  /**
+   * District name
+   * @example "Manhattan"
+   */
+  district?: string;
+  /**
+   * Region/state name
+   * @example "New York"
+   */
+  region?: string;
+  /**
+   * Postal code of the US state (Mapbox only), e.g. `WA`. What `GET /search` filters `location` hits by when `state` is given.
+   * @example "WA"
+   */
+  state_code?: string;
+  /**
+   * Country name
+   * @example "United States"
+   */
+  country?: string;
+  /**
+   * Array of feature types
+   * @example ["address"]
+   */
+  place_type?: string[];
+  /**
+   * Bounding box [minLng, minLat, maxLng, maxLat]
+   * @example [-74.007,40.712,-74.005,40.714]
+   */
+  bbox?: number[];
+  /**
+   * Id of the Region this hit is an area of (Mapbox only): `region` → state, `district` → county, `place` → place, `postcode` → ZIP; a place with no Region falls back to its county. Pass it to `GET /search` as `region`. `null` for a point (address, POI, neighborhood) — search those with `coords`. See docs/area-search.md.
+   * @example "county:53077"
+   */
+  region_id?: string | null;
+}
+
+export interface ReverseGeocodeResponseDto {
+  /**
+   * Type of the result
+   * @example "coordinates"
+   */
+  type: "coordinates" | "invalid";
+  /**
+   * Formatted address
+   * @example "123 Main St, New York, NY 10001, United States"
+   */
+  address: string;
+  /**
+   * Coordinates [longitude, latitude]
+   * @example [-74.006,40.7128]
+   */
+  coordinates: number[];
+  /**
+   * Postcode of the location
+   * @example "10001"
+   */
+  postcode?: string;
+  /**
+   * Place/city name
+   * @example "New York"
+   */
+  place?: string;
+  /**
+   * District name
+   * @example "Manhattan"
+   */
+  district?: string;
+  /**
+   * Region/state name
+   * @example "New York"
+   */
+  region?: string;
+  /**
+   * Postal code of the US state (Mapbox only), e.g. `WA`. What `GET /search` filters `location` hits by when `state` is given.
+   * @example "WA"
+   */
+  state_code?: string;
+  /**
+   * Country name
+   * @example "United States"
+   */
+  country?: string;
+  /**
+   * Array of feature types
+   * @example ["address"]
+   */
+  place_type?: string[];
+  /**
+   * Bounding box [minLng, minLat, maxLng, maxLat]
+   * @example [-74.007,40.712,-74.005,40.714]
+   */
+  bbox?: number[];
+}
+
 export interface ShortUrlResponseDto {
   /**
    * For `GET /short-url/:id`, the original URL the short ID resolves to. For `POST /short-url`, the fully-qualified short URL that was found or created.
@@ -245,6 +390,21 @@ export interface CreateShortUrlDto {
    * @example "https://example.org/resource/1"
    */
   url: string;
+}
+
+export interface HealthResponseDto {
+  /** @example "up" */
+  status: "up";
+  /**
+   * The Norse-API release serving this request: its git release tag, or `<branch>-<commit>` for a non-release build, or `unknown` when the build did not record one. Not the API contract version (`x-api-version`). Every response also carries it in the `x-norse-api-release` header.
+   * @example "v1.3.0"
+   */
+  release: string;
+  /**
+   * The git commit the release was built from, or `unknown`.
+   * @example "30048b24e37b4c1f8a2e5d6b7c8d9e0f1a2b3c4d"
+   */
+  commit: string;
 }
 
 export type CreateFavoriteDto = object;
@@ -585,110 +745,39 @@ export interface OrganizationDetailResponseDto {
   organizationIdentifiers?: object[];
 }
 
-export interface ForwardGeocodeResponseDto {
-  /**
-   * Type of the result
-   * @example "coordinates"
-   */
-  type: "coordinates" | "invalid";
-  /**
-   * Formatted address
-   * @example "123 Main St, New York, NY 10001, United States"
-   */
-  address: string;
-  /**
-   * Coordinates [longitude, latitude]
-   * @example [-74.006,40.7128]
-   */
-  coordinates: number[];
-  /**
-   * Postcode of the location
-   * @example "10001"
-   */
-  postcode?: string;
-  /**
-   * Place/city name
-   * @example "New York"
-   */
-  place?: string;
-  /**
-   * District name
-   * @example "Manhattan"
-   */
-  district?: string;
-  /**
-   * Region/state name
-   * @example "New York"
-   */
-  region?: string;
-  /**
-   * Country name
-   * @example "United States"
-   */
-  country?: string;
-  /**
-   * Array of feature types
-   * @example ["address"]
-   */
-  place_type?: string[];
-  /**
-   * Bounding box [minLng, minLat, maxLng, maxLat]
-   * @example [-74.007,40.712,-74.005,40.714]
-   */
-  bbox?: number[];
+export interface LatLngDto {
+  /** @example 39.0086 */
+  lat: number;
+  /** @example -94.3462 */
+  lng: number;
 }
 
-export interface ReverseGeocodeResponseDto {
+export interface RegionAttributionDto {
+  text: string;
+  url?: string;
+}
+
+export interface RegionDetailDto {
+  /** @example "county:29095" */
+  id: string;
+  type: "state" | "county" | "place" | "zip";
+  /** @example "Jackson County, MO" */
+  name: string;
   /**
-   * Type of the result
-   * @example "coordinates"
+   * Postal code of the state.
+   * @example "MO"
    */
-  type: "coordinates" | "invalid";
-  /**
-   * Formatted address
-   * @example "123 Main St, New York, NY 10001, United States"
-   */
-  address: string;
-  /**
-   * Coordinates [longitude, latitude]
-   * @example [-74.006,40.7128]
-   */
-  coordinates: number[];
-  /**
-   * Postcode of the location
-   * @example "10001"
-   */
-  postcode?: string;
-  /**
-   * Place/city name
-   * @example "New York"
-   */
-  place?: string;
-  /**
-   * District name
-   * @example "Manhattan"
-   */
-  district?: string;
-  /**
-   * Region/state name
-   * @example "New York"
-   */
-  region?: string;
-  /**
-   * Country name
-   * @example "United States"
-   */
-  country?: string;
-  /**
-   * Array of feature types
-   * @example ["address"]
-   */
-  place_type?: string[];
-  /**
-   * Bounding box [minLng, minLat, maxLng, maxLat]
-   * @example [-74.007,40.712,-74.005,40.714]
-   */
-  bbox?: number[];
+  state: string;
+  /** A representative point, e.g. to bias an address search. */
+  centroid?: LatLngDto;
+  /** Counties only. */
+  fips?: string;
+  /** ZIPs only. */
+  zip?: string;
+  /** GeoJSON geometry (Polygon or MultiPolygon). */
+  geometry: Record<string, any>;
+  /** Present when the source licence requires it; show it. */
+  attribution?: RegionAttributionDto;
 }
 
 export interface AnalyticsWebsiteName {
@@ -1476,6 +1565,21 @@ export interface SearchQueryApiDto {
    * @example "-120.740135,47.751076"
    */
   coords?: string;
+  /**
+   * Search an area instead of a point: one or more Region ids (comma list, up to 20), e.g. `county:53077` or `county:53077,county:53033` — `state:XX`, `county:<5-digit FIPS>`, `place:<7-digit Census GEOID>` or `zip:<5 digits>`. A resource matches when its service_area overlaps a Region or its location lies inside one. Takes precedence over `coords` and `location`; `distance` is ignored, and `coords`, if sent, only sets the origin for `sort=distance`. Unknown ids are a 400. Ids come from `resolved_location` or `GET /geocoding/forward` (`region_id`).
+   * @example "county:53077"
+   */
+  region?: string;
+  /**
+   * Free-text place to search, as a person would type it ("Yakima", "King County, WA", "98901"). Resolved by the API: an area (state, county, city, ZIP) is searched as its Region, anything finer (an address) as a point with `distance`. Ignored when `region` or `coords` is sent. An ambiguous name ("Springfield") takes the best geocoder match; add `state` to pick one. What was searched is returned in `resolved_location`. A location that cannot be resolved is a 400.
+   * @example "Yakima"
+   */
+  location?: string;
+  /**
+   * Two-letter US state code that `location` must resolve inside (e.g. `WA`). Only used with `location`.
+   * @example "WA"
+   */
+  state?: string;
   /** @example {"county":"King","language":["en","es"]} */
   filters?: Record<string, any>;
   /**
@@ -1483,6 +1587,8 @@ export interface SearchQueryApiDto {
    * @example "BM-1400,BM-1700"
    */
   taxonomy?: string | string[];
+  /** Scope results to resources belonging to a single organization, by its stable organization id (the `organization_id` returned by /suggestion and /organization). Composes with any query_type and with filters. */
+  organization_id?: string;
   /**
    * @min 0
    * @default 0
@@ -1594,6 +1700,11 @@ export interface PrintableDirectoryDefaultQueryConfigDto {
    * @example 25
    */
   radius?: number | null;
+  /**
+   * Region the directory is scoped to (`region` on GET /search), for an area default location such as a county or city. When set, query sources without their own location search this Region and `radius` is not applied; `coords` is then only the origin for distance sort. See docs/area-search.md.
+   * @example "county:53077"
+   */
+  regionId?: string | null;
 }
 
 export interface PrintableDirectorySourceQueryResponseDto {
@@ -2220,13 +2331,29 @@ export interface SearchControllerGetResourcesParams {
   page?: any;
   /** Comma delimited list of longitude,latitude */
   coords?: string[];
+  /**
+   * Search an area instead of a point: one or more Region ids (comma list, up to 20), e.g. `county:53077` or `county:53077,county:53033` — `state:XX`, `county:<5-digit FIPS>`, `place:<7-digit Census GEOID>` or `zip:<5 digits>`. A resource matches when its service_area overlaps a Region or its location lies inside one. Takes precedence over `coords` and `location`; `distance` is ignored, and `coords`, if sent, only sets the origin for `sort=distance`. Unknown ids are a 400. Ids come from `resolved_location` or `GET /geocoding/forward` (`region_id`).
+   * @example "county:53077"
+   */
+  region?: string;
+  /**
+   * Free-text place to search, as a person would type it ("Yakima", "King County, WA", "98901"). Resolved by the API: an area (state, county, city, ZIP) is searched as its Region, anything finer (an address) as a point with `distance`. Ignored when `region` or `coords` is sent. An ambiguous name ("Springfield") takes the best geocoder match; add `state` to pick one. What was searched is returned in `resolved_location`. A location that cannot be resolved is a 400.
+   * @maxLength 200
+   * @example "Yakima"
+   */
+  location?: string;
+  /**
+   * Two-letter US state code that `location` must resolve inside (e.g. `WA`). Only used with `location`.
+   * @example "WA"
+   */
+  state?: string;
   filters?: object;
   /** Scope results to resources belonging to a single organization, by its stable organization id (the `organization_id` returned by /suggestion and /organization). Composes with any query_type and with filters. */
   organization_id?: string;
   /** Comma-delimited HSIS taxonomy codes used as a hard scope for hybrid search (e.g. BM-1400,BM-1700) */
   taxonomy?: string | string[];
   /**
-   * Radius in miles. Only takes effect when `coords` is also set.
+   * Radius in miles. Only takes effect when `coords` is also set, and never with `region`: an area is searched as its shape.
    * @min 0
    * @default 0
    */
@@ -2242,7 +2369,7 @@ export interface SearchControllerGetResourcesParams {
    * @default 25
    */
   limit?: number;
-  /** Controls how coords/distance combine with a resource's declared service_area. Omitted (default): a result must be within `distance` of `coords` AND have a service_area that geographically contains the exact `coords` point — both required. `proximity`: skips the service_area check; returns anything within `distance` of `coords`. `boundary`: ignores `coords`/`distance` and instead requires a GeoJSON `geometry` in the POST body — matches any resource whose service_area intersects that shape; POST only, 400s on GET without a body. */
+  /** Controls how coords/distance combine with a resource's declared service_area. Omitted (default): a result must be within `distance` of `coords` AND have a service_area that geographically contains the exact `coords` point — both required. `proximity`: skips the service_area check; returns anything within `distance` of `coords`. `boundary`: ignores `coords`/`distance` and instead requires a GeoJSON `geometry` in the POST body — matches any resource whose service_area intersects that shape; POST only, 400s on GET without a body. Deprecated: search an area with `region` or `location` instead. Ignored when `region` is set. */
   geo_type?: "boundary" | "proximity";
   /**
    * Presentation order of results. Independent of `query_type`: the query engine decides which resources match, `sort` decides their order. Pinned/prioritized resource handling is controlled by the tenant's `pinned_resources_mode` setting (`boost` by default; `top` hard-sorts them first; `ignore` disables them). For `hybrid` search, `boost` folds pinned/priority into the relevance score; for other query types, `ignore` removes the priority sort tier while other modes preserve it. Values: `relevance` (default — best match first; under `hybrid`, geographic proximity is folded into the relevance score), `distance` (nearest first; requires `coords`, otherwise falls back to `relevance`), `name` (alphabetical by resource name), `organization` (alphabetical by provider name). Honored for all query types, including `hybrid`.
@@ -2280,13 +2407,29 @@ export interface SearchControllerGetResourcesPostParams {
   page?: any;
   /** Comma delimited list of longitude,latitude */
   coords?: string[];
+  /**
+   * Search an area instead of a point: one or more Region ids (comma list, up to 20), e.g. `county:53077` or `county:53077,county:53033` — `state:XX`, `county:<5-digit FIPS>`, `place:<7-digit Census GEOID>` or `zip:<5 digits>`. A resource matches when its service_area overlaps a Region or its location lies inside one. Takes precedence over `coords` and `location`; `distance` is ignored, and `coords`, if sent, only sets the origin for `sort=distance`. Unknown ids are a 400. Ids come from `resolved_location` or `GET /geocoding/forward` (`region_id`).
+   * @example "county:53077"
+   */
+  region?: string;
+  /**
+   * Free-text place to search, as a person would type it ("Yakima", "King County, WA", "98901"). Resolved by the API: an area (state, county, city, ZIP) is searched as its Region, anything finer (an address) as a point with `distance`. Ignored when `region` or `coords` is sent. An ambiguous name ("Springfield") takes the best geocoder match; add `state` to pick one. What was searched is returned in `resolved_location`. A location that cannot be resolved is a 400.
+   * @maxLength 200
+   * @example "Yakima"
+   */
+  location?: string;
+  /**
+   * Two-letter US state code that `location` must resolve inside (e.g. `WA`). Only used with `location`.
+   * @example "WA"
+   */
+  state?: string;
   filters?: object;
   /** Scope results to resources belonging to a single organization, by its stable organization id (the `organization_id` returned by /suggestion and /organization). Composes with any query_type and with filters. */
   organization_id?: string;
   /** Comma-delimited HSIS taxonomy codes used as a hard scope for hybrid search (e.g. BM-1400,BM-1700) */
   taxonomy?: string | string[];
   /**
-   * Radius in miles. Only takes effect when `coords` is also set.
+   * Radius in miles. Only takes effect when `coords` is also set, and never with `region`: an area is searched as its shape.
    * @min 0
    * @default 0
    */
@@ -2357,6 +2500,66 @@ export interface SearchControllerReRankNeedsClassificationParams {
 export type SearchControllerReRankNeedsClassificationData =
   AiSearchReRankResponseDto;
 
+export interface GeocodingControllerForwardGeocodeParams {
+  /**
+   * Address to geocode
+   * @example "123 Main St, New York, NY"
+   */
+  address: string;
+  /**
+   * Geocoding module to query
+   * @default "mapbox"
+   * @example "mapbox"
+   */
+  provider?: "mapbox" | "opencage";
+  /**
+   * Maximum number of results to return
+   * @min 1
+   * @max 10
+   * @default 5
+   * @example 5
+   */
+  limit?: number;
+  /**
+   * Feature types to return, repeated or comma-separated (e.g. "address,poi"). Mapbox only; with the OpenCage provider this is a 400.
+   * @example ["address","poi"]
+   */
+  types?: (
+    | "country"
+    | "region"
+    | "postcode"
+    | "district"
+    | "place"
+    | "locality"
+    | "neighborhood"
+    | "address"
+    | "poi"
+  )[];
+  /**
+   * Bias results toward this point, as "longitude,latitude". Mapbox only; OpenCage ignores it.
+   * @example "-78.8986,35.994"
+   */
+  proximity?: string;
+}
+
+export type GeocodingControllerForwardGeocodeData = ForwardGeocodeResponseDto[];
+
+export interface GeocodingControllerReverseGeocodeParams {
+  /**
+   * Coordinates in format "longitude,latitude"
+   * @example "-74.006,40.7128"
+   */
+  coordinates: any[];
+  /**
+   * Geocoding module to query
+   * @default "mapbox"
+   * @example "mapbox"
+   */
+  provider?: "mapbox" | "opencage";
+}
+
+export type GeocodingControllerReverseGeocodeData = ReverseGeocodeResponseDto[];
+
 export interface ShortUrlControllerGetShortUrlByIdParams {
   /**
    * The short ID issued by `POST /short-url`
@@ -2369,7 +2572,7 @@ export type ShortUrlControllerGetShortUrlByIdData = ShortUrlResponseDto;
 
 export type ShortUrlControllerGetOrCreateShortUrlData = ShortUrlResponseDto;
 
-export type HealthControllerGetStatusData = any;
+export type HealthControllerGetStatusData = HealthResponseDto;
 
 export interface FavoriteControllerCreateParams {
   /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
@@ -2608,65 +2811,17 @@ export interface OrganizationControllerGetOrganizationByIdParams {
 export type OrganizationControllerGetOrganizationByIdData =
   OrganizationDetailResponseDto;
 
-export interface GeocodingControllerForwardGeocodeParams {
+export interface RegionPublicControllerGetParams {
+  /** Optional mirror of the x-tenant-id header, used as a CDN cache-key workaround for edges that ignore Vary headers. If provided, must exactly match x-tenant-id or the request is rejected with 400. */
+  tenant_id?: string;
   /**
-   * Address to geocode
-   * @example "123 Main St, New York, NY"
+   * @pattern ^(state:[A-Z]{2}|county:\d{5}|place:\d{7}|zip:\d{5})$
+   * @example "county:29095"
    */
-  address: string;
-  /**
-   * Geocoding module to query
-   * @default "mapbox"
-   * @example "mapbox"
-   */
-  provider?: "mapbox" | "opencage";
-  /**
-   * Maximum number of results to return
-   * @min 1
-   * @max 10
-   * @default 5
-   * @example 5
-   */
-  limit?: number;
-  /**
-   * Feature types to return, repeated or comma-separated (e.g. "address,poi"). Mapbox only; with the OpenCage provider this is a 400.
-   * @example ["address","poi"]
-   */
-  types?: (
-    | "country"
-    | "region"
-    | "postcode"
-    | "district"
-    | "place"
-    | "locality"
-    | "neighborhood"
-    | "address"
-    | "poi"
-  )[];
-  /**
-   * Bias results toward this point, as "longitude,latitude". Mapbox only; OpenCage ignores it.
-   * @example "-78.8986,35.994"
-   */
-  proximity?: string;
+  id: string;
 }
 
-export type GeocodingControllerForwardGeocodeData = ForwardGeocodeResponseDto[];
-
-export interface GeocodingControllerReverseGeocodeParams {
-  /**
-   * Coordinates in format "longitude,latitude"
-   * @example "-74.006,40.7128"
-   */
-  coordinates: any[];
-  /**
-   * Geocoding module to query
-   * @default "mapbox"
-   * @example "mapbox"
-   */
-  provider?: "mapbox" | "opencage";
-}
-
-export type GeocodingControllerReverseGeocodeData = ReverseGeocodeResponseDto[];
+export type RegionPublicControllerGetData = RegionDetailDto;
 
 export type AnalyticsControllerGetInfoData = AnalyticsInfoResponse;
 

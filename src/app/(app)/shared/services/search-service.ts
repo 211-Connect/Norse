@@ -4,7 +4,6 @@ import qs from 'qs';
 
 import { createLogger } from '@/lib/logger';
 import { SearchEngine } from '@/types/appConfig';
-import { BBox } from '@/types/resource';
 import {
   FiltersMap,
   SearchApiResponse,
@@ -16,7 +15,7 @@ import { ensureUrlProtocol } from '@/utils';
 
 import { API_URL } from '../lib/constants';
 import { fetchWrapper } from '../lib/fetchWrapper';
-import { buildSearchRequest, deriveQueryType } from '../lib/search-utils';
+import { deriveQueryType } from '../lib/search-utils';
 import { formatAddressForDisplay } from '../lib/utils';
 import { ResultType } from '../store/results';
 import { SortOption } from '../utils/getSortOption';
@@ -34,8 +33,8 @@ export type FindResourcesQuery = {
   location?: string;
   coordinates?: number[];
   distance?: string;
-  placeType?: string[];
-  bbox?: BBox;
+  /** Region id(s) to search as an area, e.g. `county:53077` (docs/area-search.md). */
+  region?: string;
   filters?: Record<string, string[]>;
   sort?: SortOption;
   widgetId?: string;
@@ -168,6 +167,7 @@ async function findResourcesOrigin({
   });
 
   const hasCoords = query.coordinates?.length === 2;
+  const hasRegion = Boolean(query.region?.trim());
 
   let data: SearchApiResponse | null | undefined;
   try {
@@ -178,9 +178,13 @@ async function findResourcesOrigin({
       ...(query.organizationId && { organization_id: query.organizationId }),
       ...(Array.isArray(query.taxonomy) &&
         query.taxonomy.length > 0 && { taxonomy: query.taxonomy.join(',') }),
-      ...(query.location?.trim() && { location: query.location.trim() }),
+      // `location` is only a label here and is not sent: the API would
+      // geocode a `location` that comes without `coords`/`region`.
+      ...(hasRegion && { region: query.region!.trim() }),
       ...(hasCoords && { coords: query.coordinates!.join(',') }),
-      ...(hasCoords && { distance: query.distance?.trim() || '0' }),
+      // A Region is searched as its shape: no radius.
+      ...(hasCoords &&
+        !hasRegion && { distance: query.distance?.trim() || '0' }),
       ...(query.sort && { sort: query.sort }),
       page,
       locale,
@@ -251,116 +255,5 @@ export async function findResources(
       }),
     { redis: true, memory: false, ttl: ONE_HOUR },
     (value) => value.results.length > 0,
-  );
-}
-
-/**
- * Find resources using POST endpoint with advanced geospatial filtering
- * This is the V2 implementation that supports both boundary and proximity search
- * @param searchStore - Search state from searchAtom
- * @param locale - Language locale
- * @param page - Current page number
- * @param limit - Results per page
- * @param tenantId - Tenant identifier
- * @param searchEngine - Active search engine mode
- * @returns Search results with pagination info
- */
-async function findResourcesV2Origin(
-  searchStore: FindResourcesQuery,
-  locale: string,
-  page: number,
-  limit: number | undefined,
-  tenantId: string,
-  searchEngine: SearchEngine,
-): Promise<SearchResult> {
-  if (isNaN(page)) page = 1;
-  if (!limit || isNaN(limit)) limit = 25;
-
-  const request = buildSearchRequest(searchStore, searchEngine);
-  const queryParams = qs.stringify({
-    ...request.queryParams,
-    page,
-    locale,
-    limit,
-    ...(searchStore.sort && { sort: searchStore.sort }),
-    ...(Array.isArray(searchStore.taxonomy) && searchStore.taxonomy.length > 0
-      ? { taxonomy: searchStore.taxonomy.join(',') }
-      : {}),
-    ...(searchStore.filters && Object.keys(searchStore.filters).length > 0
-      ? { filters: searchStore.filters }
-      : {}),
-    ...(searchStore.age !== undefined && { age: searchStore.age }),
-  });
-  const searchUrl = `${API_URL}/search?${queryParams}`;
-
-  let data: SearchApiResponse | null | undefined;
-  try {
-    data = await fetchWrapper(searchUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(await getApiHeaders(tenantId, locale)),
-      },
-      body: request.body,
-    });
-  } catch (err) {
-    log.error(
-      { err, url: searchUrl, tenantId, page, locale, limit },
-      'Search API error (V2)',
-    );
-    return createEmptyResult(page);
-  }
-
-  if (!data || !data.search) {
-    log.error(
-      { url: searchUrl, tenantId, page, locale, limit },
-      'Malformed API response from search (V2)',
-    );
-    return createEmptyResult(page);
-  }
-
-  const totalResults = extractTotalResults(data);
-
-  const hits = data?.search?.hits?.hits;
-  const facetDefinitions = Object.fromEntries(
-    (data.facets ?? []).map((f) => [
-      f.key,
-      { en: f.name.en, [locale]: f.name.locale },
-    ]),
-  );
-  const results = transformSearchHits(hits, locale, facetDefinitions);
-  const filters = extractFilters(data, locale);
-
-  return {
-    results,
-    totalResults,
-    page,
-    filters,
-  };
-}
-
-export async function findResourcesV2(
-  searchStore: FindResourcesQuery,
-  locale: string,
-  page: number,
-  limit: number | undefined,
-  tenantId: string,
-  searchEngine: SearchEngine,
-): Promise<SearchResult> {
-  return (
-    (await withCache(
-      `search_results:${tenantId}:${locale}:${stableHash({ query: searchStore, page, limit, searchEngine, version: 'v2' })}`,
-      () =>
-        findResourcesV2Origin(
-          searchStore,
-          locale,
-          page,
-          limit,
-          tenantId,
-          searchEngine,
-        ),
-      { redis: true, memory: true, ttl: ONE_HOUR },
-      (value) => value.results.length > 0,
-    )) ?? createEmptyResult(page)
   );
 }

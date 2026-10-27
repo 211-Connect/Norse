@@ -1,7 +1,10 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
+import { useSearchParams } from 'next/navigation';
 import { CSSProperties, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { MapRenderer } from '@/app/(app)/shared/components/map/map-renderer';
 import { useAppConfig } from '@/app/(app)/shared/hooks/use-app-config';
@@ -11,6 +14,7 @@ import {
   cn,
   distanceBetweenCoordsInMiles,
 } from '@/app/(app)/shared/lib/utils';
+import { getRegionArea } from '@/app/(app)/shared/serverActions/regions/getRegionArea';
 import { userCoordinatesAtom } from '@/app/(app)/shared/store/search';
 
 import { useSearchResults } from '../context/search-results-context';
@@ -22,6 +26,16 @@ export function MapContainer() {
 
   const { results } = useSearchResults();
   const coords = useAtomValue(userCoordinatesAtom);
+  const { i18n } = useTranslation();
+
+  // An area search shows the searched Region(s) instead of a pin.
+  const region = useSearchParams()?.get('region') ?? '';
+  const { data: searchArea = null } = useQuery({
+    queryKey: ['region-area', region, appConfig.tenantId],
+    enabled: Boolean(region),
+    queryFn: () => getRegionArea(region, appConfig.tenantId, i18n.language),
+    staleTime: Infinity,
+  });
 
   useEffect(() => {
     const header = document.getElementById(HEADER_ID);
@@ -76,7 +90,11 @@ export function MapContainer() {
       }
     >
       <div className="h-full w-full rounded-lg">
-        <MapRenderer markers={mapMarkers} />
+        <MapRenderer
+          markers={mapMarkers}
+          // null while the outline loads: an area search never shows the pin.
+          searchArea={region ? searchArea : undefined}
+        />
       </div>
     </div>
   );

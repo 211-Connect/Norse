@@ -34,6 +34,7 @@ type MapProps = {
   usersLocation: any[];
   disableUserLocation?: boolean;
   serviceArea?: ServiceAreaGeoJSON;
+  searchArea?: ServiceAreaGeoJSON;
 };
 
 // Allows maplibre to load pmtiles from a single hosted file
@@ -48,6 +49,7 @@ export function Map({
   usersLocation,
   disableUserLocation,
   serviceArea,
+  searchArea,
 }: MapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapLibreMap = useRef<any>(null);
@@ -278,7 +280,16 @@ export function Map({
       }
     }
 
-    if (!bounds.isEmpty()) {
+    // A searched area frames the map: results may lie outside it (services
+    // serving the area from elsewhere), but the area is what was asked for.
+    const areaBounds = searchArea ? getBoundsFromServiceArea(searchArea) : null;
+
+    if (areaBounds) {
+      mapLibreMap.current.fitBounds(areaBounds, {
+        padding: 40,
+        animate: false,
+      });
+    } else if (!bounds.isEmpty()) {
       if (_markers.current.length > 0 && _markers.current.length <= 2) {
         mapLibreMap.current.fitBounds(bounds, {
           padding: 50,
@@ -299,7 +310,76 @@ export function Map({
         });
       }
     }
-  }, [markers, usersLocation, disableUserLocation, zoom]);
+  }, [markers, usersLocation, disableUserLocation, zoom, searchArea]);
+
+  // The searched Region(s) of an area search, drawn under the result markers.
+  useEffect(() => {
+    if (!mapLibreMap.current) return;
+
+    const map = mapLibreMap.current as any;
+    let cancelled = false;
+
+    const cleanup = () => {
+      try {
+        if (map.getLayer('search-area-fill'))
+          map.removeLayer('search-area-fill');
+        if (map.getLayer('search-area-outline'))
+          map.removeLayer('search-area-outline');
+        if (map.getSource('search-area')) map.removeSource('search-area');
+      } catch {}
+    };
+
+    const normalized = searchArea
+      ? normalizeServiceArea(JSON.parse(JSON.stringify(searchArea)))
+      : null;
+    if (!normalized) {
+      cleanup();
+      return;
+    }
+
+    // `addSource` throws until the style itself has loaded; `load` may have
+    // fired already and `isStyleLoaded()` stays false while basemap tiles
+    // are failing, so retry on every style event until it succeeds.
+    let added = false;
+    const addLayer = () => {
+      if (added || cancelled || !map || !map.style) return;
+      // Claimed first: adding a source fires `styledata` synchronously.
+      added = true;
+      try {
+        map.addSource('search-area', {
+          type: 'geojson',
+          data: { type: 'Feature', geometry: normalized, properties: {} },
+        });
+        map.addLayer({
+          id: 'search-area-fill',
+          type: 'fill',
+          source: 'search-area',
+          paint: { 'fill-color': '#2563eb', 'fill-opacity': 0.08 },
+        });
+        map.addLayer({
+          id: 'search-area-outline',
+          type: 'line',
+          source: 'search-area',
+          paint: { 'line-color': '#2563eb', 'line-width': 2 },
+        });
+        map.off('styledata', addLayer);
+      } catch {
+        added = false;
+        cleanup();
+      }
+    };
+
+    map.on('styledata', addLayer);
+    addLayer();
+
+    return () => {
+      cancelled = true;
+      try {
+        map.off && map.off('styledata', addLayer);
+      } catch {}
+      cleanup();
+    };
+  }, [searchArea]);
 
   // The map component displays a service area polygon when there are no valid markers.
   // normalizeServiceArea: Ensures all polygon rings are closed and supports Polygon, MultiPolygon, and GeometryCollection types. It modifies the geometry so it is valid for rendering.

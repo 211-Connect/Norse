@@ -37,6 +37,20 @@ export function getLocationConflict(
     return false;
   }
 
+  // Areas compare by Region id; an area and a point are different places.
+  const queryRegion =
+    typeof queryParams.region === 'string' ? queryParams.region : undefined;
+  if (defaultQueryConfig.regionId || queryRegion) {
+    const queryHasLocation =
+      queryRegion != null ||
+      queryParams.coords != null ||
+      queryParams.location != null;
+    return (
+      queryHasLocation &&
+      queryRegion !== (defaultQueryConfig.regionId ?? undefined)
+    );
+  }
+
   const defaultCoords = defaultQueryConfig.coords;
   const queryCoords = parseCoordsParam(queryParams.coords);
 

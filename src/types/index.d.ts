@@ -98,7 +98,6 @@ declare global {
       CUSTOM_AUTH_PROTOCOL?: string;
 
       // Geospatial filtering feature flag
-      NEXT_PUBLIC_ADVANCED_GEOSPATIAL_FILTERING_FEATURE_FLAG?: string;
     }
   }
 }
