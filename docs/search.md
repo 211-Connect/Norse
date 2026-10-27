@@ -131,6 +131,21 @@ uses the id to scope results to that organization. This replaced the earlier
 name-based organization filter (`query_type=organization&query=<name>`) once the
 backend gained support for filtering by stable organization id.
 
+### A re-keyed organization id
+
+When a tenant is re-keyed, every organization id changes, and a saved
+`/search?organization_id=<old id>` would come back empty. When an
+org-scoped search returns **no results**, the search page asks Norse-API
+`GET /organization/<id>`. If this tenant has a `redirects` row for the id,
+the 404 carries `redirect: /search?organization_id=<new id>` and the page
+issues a **308** to the same URL with only that value replaced. Every other
+parameter keeps its order and repeated keys
+(`features/search/utils/organizationRedirect.ts`). Any other answer, a
+failed lookup included, renders the empty search as before. An org search
+that returns results never makes the lookup. Which `organization_id` value
+counts is the reader's call (`parseSearchParams`; a repeated key reads as no
+organization today), and the redirect acts on the id the reader produced.
+
 ### Feature flags
 
 - `enableOrganizationSearch` (default off, per tenant) — gates whether the

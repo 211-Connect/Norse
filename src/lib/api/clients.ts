@@ -3,6 +3,7 @@ import { BlockedTrafficInternal } from './generated/BlockedTrafficInternal';
 import { FavoriteList } from './generated/FavoriteList';
 import { Favorite } from './generated/Favorite';
 import { Geocoding } from './generated/Geocoding';
+import { Organization } from './generated/Organization';
 import { PrintableDirectories } from './generated/PrintableDirectories';
 import { PrintableDirectoriesPublic } from './generated/PrintableDirectoriesPublic';
 import { PrintableDirectoryDeliveries } from './generated/PrintableDirectoryDeliveries';
@@ -55,5 +56,7 @@ export const favoriteListApiClient = new FavoriteList(clientArgs);
 export const favoriteApiClient = new Favorite(clientArgs);
 
 export const resourceApiClient = new Resource(clientArgs);
+
+export const organizationApiClient = new Organization(clientArgs);
 
 export const suggestionApiClient = new Suggestion(clientArgs);

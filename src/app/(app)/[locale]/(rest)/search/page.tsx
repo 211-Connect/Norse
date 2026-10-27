@@ -36,6 +36,8 @@ import { handleLegacyDeepLinks } from '@/app/(app)/features/search/utils/handleL
 import { liftSearchRequest } from '@/app/(app)/features/search/utils/liftSearchRequest';
 import { navigateToSearchWithCoords } from '@/app/(app)/features/search/utils';
 import { getPrintableDirectoryContextParams } from '@/app/(app)/shared/utils/printableDirectorySearchContext';
+import { redirectIfOrganizationRekeyed } from '@/app/(app)/features/search/utils/organizationRedirect';
+import { getApiHeaders, organizationApiClient } from '@/lib/api';
 
 const log = createLogger('search-page');
 
@@ -137,6 +139,21 @@ const getPageData = cache(async function (
       totalResults = searchResult.totalResults;
       filters = searchResult.filters;
     }
+  }
+
+  // An empty org-scoped search may be a re-keyed organization id (ISS-2517).
+  // Only empty ones pay for the lookup; anything but a redirect renders as-is.
+  if (searchQuery.organizationId && totalResults === 0) {
+    await redirectIfOrganizationRekeyed({
+      organizationId: searchQuery.organizationId,
+      rawParams,
+      locale,
+      lookup: async (id) =>
+        organizationApiClient.organizationControllerGetOrganizationById(
+          { id, locale, tenant_id: appConfig.tenantId },
+          { headers: await getApiHeaders(appConfig.tenantId, locale) },
+        ),
+    });
   }
 
   const { resources, t } = await initTranslations(
