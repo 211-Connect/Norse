@@ -232,8 +232,25 @@ export async function getResources(
   locale: string,
   tenantId: string,
 ): Promise<Resource[]> {
+  const resourcesById = await getResourcesById(ids, locale, tenantId);
+
+  return ids
+    .map((id) => resourcesById[id] ?? null)
+    .filter((resource): resource is Resource => resource !== null);
+}
+
+/**
+ * Resources keyed by the id that was REQUESTED. A re-keyed id comes back
+ * under its old id, with the record's own `id` the new one (ISS-2516), so a
+ * caller holding stored ids can tell which ones were renamed.
+ */
+export async function getResourcesById(
+  ids: string[],
+  locale: string,
+  tenantId: string,
+): Promise<Record<string, Resource>> {
   if (ids.length === 0) {
-    return [];
+    return {};
   }
 
   const uniqueIds = [...new Set(ids)];
@@ -273,7 +290,5 @@ export async function getResources(
     });
   }
 
-  return ids
-    .map((id) => resourcesById[id] ?? null)
-    .filter((resource): resource is Resource => resource !== null);
+  return resourcesById;
 }

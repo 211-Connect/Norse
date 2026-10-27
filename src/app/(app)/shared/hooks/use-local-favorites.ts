@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
+import { renameLocalFavoriteIds } from '@/app/(app)/shared/lib/localFavoriteRenames';
+
 import { useAppConfig } from './use-app-config';
 
 const LOCAL_FAVORITES_KEY = 'local-favorites';
@@ -105,6 +107,20 @@ export function useLocalFavorites() {
     [requireAuthenticationForFavorites],
   );
 
+  /** Replaces re-keyed ids in storage (ISS-2516); see renameLocalFavoriteIds. */
+  const renameLocalFavorites = useCallback(
+    (resolved: Record<string, string>) => {
+      if (requireAuthenticationForFavorites) return;
+
+      const next = renameLocalFavoriteIds(readFromStorage(), resolved);
+      if (!next) return;
+      writeToStorage(next);
+      setIds(next);
+      emitLocalFavoritesUpdated();
+    },
+    [requireAuthenticationForFavorites],
+  );
+
   const isLocalFavorite = useCallback(
     (id: string) => !requireAuthenticationForFavorites && ids.includes(id),
     [requireAuthenticationForFavorites, ids],
@@ -124,6 +140,7 @@ export function useLocalFavorites() {
     localFavoriteIds: ids,
     addLocalFavorite,
     removeLocalFavorite,
+    renameLocalFavorites,
     isLocalFavorite,
     clearLocalFavorites,
     hydrated,
