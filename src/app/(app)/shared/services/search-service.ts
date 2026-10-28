@@ -11,7 +11,8 @@ import {
   SearchFacet,
   SearchHit,
 } from '@/types/search';
-import { ONE_HOUR, stableHash, withCache } from '@/utilities/withCache';
+import { normalizeLimit, withSearchJob } from '@/lib/search-job';
+import { ONE_HOUR, stableHash } from '@/utilities/withCache';
 import { ensureUrlProtocol } from '@/utils';
 
 import { API_URL } from '../lib/constants';
@@ -238,7 +239,7 @@ export async function findResources(
   tenantId: string,
   searchEngine: SearchEngine,
 ) {
-  return withCache(
+  return withSearchJob(
     `search_results:${tenantId}:${locale}:${stableHash({ query, page, limit, searchEngine })}`,
     () =>
       findResourcesOrigin({
@@ -251,6 +252,7 @@ export async function findResources(
       }),
     { redis: true, memory: false, ttl: ONE_HOUR },
     (value) => value.results.length > 0,
+    { api: 'v1', engine: searchEngine, page, limit: normalizeLimit(limit) },
   );
 }
 
@@ -348,7 +350,7 @@ export async function findResourcesV2(
   searchEngine: SearchEngine,
 ): Promise<SearchResult> {
   return (
-    (await withCache(
+    (await withSearchJob(
       `search_results:${tenantId}:${locale}:${stableHash({ query: searchStore, page, limit, searchEngine, version: 'v2' })}`,
       () =>
         findResourcesV2Origin(
@@ -361,6 +363,7 @@ export async function findResourcesV2(
         ),
       { redis: true, memory: true, ttl: ONE_HOUR },
       (value) => value.results.length > 0,
+      { api: 'v2', engine: searchEngine, page, limit: normalizeLimit(limit) },
     )) ?? createEmptyResult(page)
   );
 }

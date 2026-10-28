@@ -93,12 +93,26 @@ arcjetProtect                    src/lib/arcjet/index.ts
 | --- | --- | --- |
 | `arcjet_denied` | A denial | host, path, reason, `deniedBots`, `decisionId`, `enforced`, `sampledOutSinceLast`. At most 30 lines per minute per process; the rest are counted in the next line. |
 | `arcjet_dry_run_match` | A `DRY_RUN` rule matched | host, path, rule, `decisionId` |
-| `arcjet_fingerprint_failed` | SDK threw or the decision errored (includes timeouts) | host, path, error, redacted headers. Sampled, 5 per minute; `*_sampled_out` otherwise. |
+| `arcjet_fingerprint_failed` | SDK threw or the decision errored (includes timeouts) | host, path, error, `durationMs`, `eventLoopUtilization`, `instance`, `traceId` / `traceSampled` when traced, redacted headers. Sampled, 5 per minute; `*_sampled_out` carries everything but the headers. |
 | `arcjet_no_client_ip` | MBOA traffic with no routable client IP | host, path, masked hops, redacted headers. Sampled as above. |
 
 Every denial, enforced or not, is also counted for the tenant's Blocked
 Bots widget after the response; see
 [blocked-traffic-analytics.md](/docs/blocked-traffic-analytics.md).
+
+On a timeout, `durationMs` and `eventLoopUtilization` say whose fault it was
+(ISS-1739). `durationMs` is the wall time of the Decide call;
+`eventLoopUtilization` is the share of that time our main thread was busy,
+0 to 1. A call at the timeout with utilization near 0 waited on Arcjet. A
+call well past the timeout, or with utilization near 1, was our process too
+busy to read the answer. `instance` is the container; `traceId` opens the
+request in Tempo when `traceSampled` is true (see
+[tracing.md](/docs/tracing.md)).
+
+Every decision is also a Prometheus metric on `/api/metrics`:
+`norse_arcjet_decisions_total{conclusion}` and
+`norse_arcjet_decision_duration_seconds{conclusion}` (a histogram; 0.5 s is
+the timeout bucket). Nothing scrapes the App Platform apps yet (ISS-1732).
 
 Decision logs contain no IP address: find the request in the Arcjet console
 by `decisionId`. Events with no decision log headers from an allow list only,

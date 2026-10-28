@@ -8,7 +8,30 @@ import { createLogger } from '@/lib/logger';
 
 const log = createLogger('instrumentation');
 
-export function register() {
+/**
+ * The container that produced a trace, as `host.name` on the OTel resource.
+ * App Platform runs one container per instance and sets `HOSTNAME` to the
+ * listen address, so the OS hostname is the only identity; it is also what
+ * the Arcjet failure logs carry as `instance` (ISS-1739). Node only, hence
+ * the runtime check and the dynamic import: `register()` also runs on the
+ * Edge runtime, where `node:os` does not exist.
+ */
+async function instanceAttributes(): Promise<Record<string, string>> {
+  if (process.env.NEXT_RUNTIME !== 'nodejs') return {};
+  try {
+    const { INSTANCE_ID, INSTANCE_STARTED_AT } = await import('@/lib/instance');
+    return {
+      'host.name': INSTANCE_ID,
+      'service.instance.id': INSTANCE_ID,
+      'process.creation.time': INSTANCE_STARTED_AT,
+    };
+  } catch (error) {
+    log.warn({ err: error }, 'Instance id unavailable; traces carry none');
+    return {};
+  }
+}
+
+export async function register() {
   if (!process.env.OTEL_EXPORTER_OTLP_ENDPOINT) {
     log.info('Tracing disabled: OTEL_EXPORTER_OTLP_ENDPOINT not set');
     return;
@@ -54,6 +77,14 @@ export function register() {
 
   registerOTel({
     serviceName: 'norse-app',
+    attributes: await instanceAttributes(),
+    // On the root span of every request, so a trace can be filtered by
+    // tenant host and told apart from bot traffic. The query string is not
+    // a header, so no search text is recorded.
+    attributesFromHeaders: {
+      'server.address': 'host',
+      'user_agent.original': 'user-agent',
+    },
     traceSampler: new ParentBasedSampler({
       root: new TraceIdRatioBasedSampler(parseFloat(traceSamplerArg)),
     }),

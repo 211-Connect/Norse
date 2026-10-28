@@ -24,9 +24,88 @@ a separate NestJS repo).
   `http://localhost` URLs (or the deployment's own host on Vercel), so local
   dev would look fine while staging/prod traces silently stop at `norse-app`.
 
+- **Arcjet decisions**: the Arcjet SDK calls its API over a `node:http2`
+  Connect RPC session (`@arcjet/transport` → `@connectrpc/connect-node`),
+  not the global `fetch`, so the fetch instrumentation never sees it.
+  `arcjetProtect` (`src/lib/arcjet/index.ts`) wraps each decision in an
+  `arcjet.protect` span with `url.path`, `arcjet.enforced`,
+  `arcjet.conclusion`, `arcjet.reason_type` on a denial, and
+  `event_loop.utilization`: the share of the call's wall time our main
+  thread was busy (ISS-1739, see below). A timeout or an SDK error sets the
+  span status to ERROR with the message. On observe-only hosts the decision
+  runs in `after()`, so its span ends after the request's root span. No
+  `traceparent` is sent to Arcjet.
+- **Redis**: `cacheService.get` / `set` (`src/cacheService.ts`) are
+  `redis.get` / `redis.set` client spans with `db.system.name`,
+  `db.operation.name`, `db.namespace` (the db index) and `cache.hit` on a
+  read. Never the key: it can carry a search query. ioredis is not
+  auto-instrumented on purpose; require-hooking under the Next.js bundler
+  fails silently.
+- **Search job size**: `findResources` / `findResourcesV2` put the job on
+  the active span through `withSearchJob` (`src/lib/search-job.ts`):
+  `search.api` (`v1` / `v2`), `search.engine`, `search.page`,
+  `search.limit`, `search.results`, `search.total_results` and
+  `search.cache_hit` (true when the memory or Redis cache answered and the
+  API was not called). Never the query text. A `limit=100` miss is roughly
+  1 MB of JSON to parse and 100 results to render; these attributes make
+  latency groupable by that cost.
+- **Response parsing**: `fetchWrapper` (`src/app/(app)/shared/lib/fetchWrapper.ts`)
+  wraps `JSON.parse` of every API response in a `response.parse` span with
+  `response.parse.bytes`, `server.address` and `url.path` (never the query
+  string). The fetch span is the network wait; this is the on-thread parse,
+  so service time can be read by payload size.
+- **Which container, since when, which tenant, which client**: `register()`
+  puts `host.name` / `service.instance.id` (the container's hostname) and
+  `process.creation.time` (when the process started, ISO 8601) on the
+  resource, and `server.address` (the `Host` header) and
+  `user_agent.original` on every root span. App Platform runs one container
+  per instance, so a trace can be matched to that instance's CPU and memory
+  in the DigitalOcean console, filtered by tenant host, separated from bot
+  traffic, or checked for a cold instance (`resource.process.creation.time`
+  close to the trace's start). The `arcjet.protect` span also carries
+  `arcjet.decision_id`, the record in the Arcjet console.
+
 The Norse API's `main.ts` already documents `traceparent` as an accepted
 global Swagger header, so no API-side change was needed for it to receive
 and link the propagated context.
+
+## Reading an Arcjet timeout (ISS-1739)
+
+An Arcjet decision that times out (`ARCJET_TIMEOUT_MS`, 500 ms) fails open.
+Whether the cause is Arcjet or our own process shows in two places:
+
+- **The log line.** `arcjet_fingerprint_failed` (and `_sampled_out`) carry
+  `durationMs`, `eventLoopUtilization`, `instance` and, when the request was
+  traced, `traceId` / `traceSampled`. `durationMs` well over the timeout, or
+  `eventLoopUtilization` near 1, means the main thread was busy and read the
+  answer late: our process. `durationMs` at the timeout with utilization
+  near 0 means the loop was idle and the answer never came: Arcjet or the
+  network. See docs/bot-protection.md.
+- **The trace**, for the sampled 10%. In Grafana → Explore → Tempo:
+
+  ```
+  { resource.service.name = "norse-app" && name = "arcjet.protect" && status = error }
+  { resource.service.name = "norse-app" && span.event_loop.utilization > 0.8 }
+  { resource.service.name = "norse-app" && span.server.address = "search.wa211.org" && duration > 2s }
+  { resource.service.name = "norse-app" && span.search.limit >= 100 && span.search.cache_hit = false }
+  ```
+
+  With Tempo's metrics generator enabled (charts: `prometheus-stack`,
+  `tempo.metricsGenerator`), the same selectors become time series:
+
+  ```
+  { resource.service.name = "norse-app" && name = "GET /[locale]/search" } | quantile_over_time(duration, .5, .9, .99)
+  { resource.service.name = "norse-app" && name = "arcjet.protect" && status = error } | rate() by (resource.host.name)
+  { resource.service.name = "norse-app" && span.search.cache_hit = false } | rate() by (span.search.limit)
+  ```
+
+  In a slow trace, time that no child span covers is time the process
+  spent not waiting on anything instrumented: the event loop, or garbage
+  collection. With the Arcjet and Redis spans above, every remote call the
+  search page makes is a child span.
+
+`OTEL_TRACES_SAMPLER_ARG=1.0` for a bounded window puts every timeout in
+Tempo; check Tempo retention with whoever owns the monitoring cluster first.
 
 ## Why `@vercel/otel`, not a manual `NodeSDK`
 
