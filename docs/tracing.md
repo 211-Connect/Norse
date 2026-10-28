@@ -49,13 +49,21 @@ a separate NestJS repo).
   API was not called). Never the query text. A `limit=100` miss is roughly
   1 MB of JSON to parse and 100 results to render; these attributes make
   latency groupable by that cost.
-- **Which container, which tenant, which client**: `register()` puts
-  `host.name` / `service.instance.id` (the container's hostname) on the
+- **Response parsing**: `fetchWrapper` (`src/app/(app)/shared/lib/fetchWrapper.ts`)
+  wraps `JSON.parse` of every API response in a `response.parse` span with
+  `response.parse.bytes`, `server.address` and `url.path` (never the query
+  string). The fetch span is the network wait; this is the on-thread parse,
+  so service time can be read by payload size.
+- **Which container, since when, which tenant, which client**: `register()`
+  puts `host.name` / `service.instance.id` (the container's hostname) and
+  `process.creation.time` (when the process started, ISO 8601) on the
   resource, and `server.address` (the `Host` header) and
   `user_agent.original` on every root span. App Platform runs one container
   per instance, so a trace can be matched to that instance's CPU and memory
-  in the DigitalOcean console, filtered by tenant host, or separated from
-  bot traffic.
+  in the DigitalOcean console, filtered by tenant host, separated from bot
+  traffic, or checked for a cold instance (`resource.process.creation.time`
+  close to the trace's start). The `arcjet.protect` span also carries
+  `arcjet.decision_id`, the record in the Arcjet console.
 
 The Norse API's `main.ts` already documents `traceparent` as an accepted
 global Swagger header, so no API-side change was needed for it to receive

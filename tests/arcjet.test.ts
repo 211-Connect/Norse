@@ -827,7 +827,8 @@ describe('fingerprint failure logging (ISS-1734)', () => {
   test('every decision is one arcjet.protect span', async () => {
     await withSpanExporter(async (exporter) => {
       const { log } = captureLog();
-      await createProtect(clientReturning(denyBots(['CURL'])), {
+      const denyDecision = denyBots(['CURL']);
+      await createProtect(clientReturning(denyDecision), {
         eventLoop: fakeEventLoop(0.12),
       })(makeRequest(), PATH, log);
       await createProtect(clientReturning(errored()), {
@@ -848,6 +849,7 @@ describe('fingerprint failure logging (ISS-1734)', () => {
         'arcjet.conclusion': 'DENY',
         'arcjet.reason_type': 'BOT',
         'event_loop.utilization': 0.12,
+        'arcjet.decision_id': denyDecision.id,
       });
       assert.equal(deny.status.code, SpanStatusCode.UNSET);
       assert.equal(error.attributes['arcjet.enforced'], false);

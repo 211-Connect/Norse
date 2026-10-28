@@ -16,13 +16,18 @@ const log = createLogger('instrumentation');
  * the runtime check and the dynamic import: `register()` also runs on the
  * Edge runtime, where `node:os` does not exist.
  */
-async function instanceId(): Promise<string | undefined> {
-  if (process.env.NEXT_RUNTIME !== 'nodejs') return undefined;
+async function instanceAttributes(): Promise<Record<string, string>> {
+  if (process.env.NEXT_RUNTIME !== 'nodejs') return {};
   try {
-    return (await import('@/lib/instance')).INSTANCE_ID;
+    const { INSTANCE_ID, INSTANCE_STARTED_AT } = await import('@/lib/instance');
+    return {
+      'host.name': INSTANCE_ID,
+      'service.instance.id': INSTANCE_ID,
+      'process.creation.time': INSTANCE_STARTED_AT,
+    };
   } catch (error) {
     log.warn({ err: error }, 'Instance id unavailable; traces carry none');
-    return undefined;
+    return {};
   }
 }
 
@@ -70,13 +75,9 @@ export async function register() {
     log.warn('API_URL not set: traceparent will not be sent to the Norse API');
   }
 
-  const instance = await instanceId();
-
   registerOTel({
     serviceName: 'norse-app',
-    attributes: instance
-      ? { 'host.name': instance, 'service.instance.id': instance }
-      : {},
+    attributes: await instanceAttributes(),
     // On the root span of every request, so a trace can be filtered by
     // tenant host and told apart from bot traffic. The query string is not
     // a header, so no search text is recorded.

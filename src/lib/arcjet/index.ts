@@ -415,6 +415,9 @@ export function createArcjetProtect(
     const { decision, error, timing } = await timed(span, () =>
       client.protect(request, protectOptions),
     );
+    // The Arcjet console record for this decision, so a trace can be opened
+    // there without going through the logs.
+    if (decision) span.setAttribute('arcjet.decision_id', decision.id);
     if (!decision) {
       // Fail open: a protection outage must never take the site down.
       const message = error instanceof Error ? error.message : String(error);
