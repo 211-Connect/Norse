@@ -24,6 +24,15 @@ a separate NestJS repo).
   `http://localhost` URLs (or the deployment's own host on Vercel), so local
   dev would look fine while staging/prod traces silently stop at `norse-app`.
 
+- **Arcjet decisions**: the Arcjet SDK calls its API over a `node:http2`
+  Connect RPC session (`@arcjet/transport` → `@connectrpc/connect-node`),
+  not the global `fetch`, so the fetch instrumentation above never sees it.
+  `src/lib/arcjet-page.ts` wraps each decision in a manual `arcjet.protect`
+  span (attributes `url.path`, `arcjet.enforced`, `arcjet.conclusion`, and
+  `arcjet.reason_type` on a denial). On observe-only hosts the decision runs
+  in `after()`, so its span ends after the request's root span. No
+  `traceparent` is sent to Arcjet.
+
 The Norse API's `main.ts` already documents `traceparent` as an accepted
 global Swagger header, so no API-side change was needed for it to receive
 and link the propagated context.
