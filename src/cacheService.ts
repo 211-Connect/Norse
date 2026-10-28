@@ -1,9 +1,47 @@
+import { type Span, SpanKind, SpanStatusCode, trace } from '@opentelemetry/api';
 import { Redis } from 'ioredis';
 
 import { createLogger } from '@/lib/logger';
-import { recordTiming } from '@/lib/runtime-stats';
 
 const log = createLogger('cache');
+
+/**
+ * One client span per `get` / `set`, so a slow page shows whether it was
+ * waiting on Redis (ISS-1739: `commandTimeout` is 1 s, and Redis timeouts
+ * cluster with the Arcjet ones). No auto-instrumentation: ioredis would need
+ * require-hooking under the Next.js bundler, which fails silently. The key
+ * is never an attribute; it can carry a search query.
+ *
+ * The tracer is resolved per call, not at module load: the provider is
+ * registered by `register()` in src/instrumentation.ts, and a tracer looked
+ * up before that stays a no-op for the life of the process.
+ */
+const tracer = () => trace.getTracer('norse-app');
+
+function redisSpan<T>(
+  operation: 'GET' | 'SET',
+  db: number,
+  fn: (span: Span) => Promise<T>,
+): Promise<T> {
+  return tracer().startActiveSpan(
+    `redis.${operation.toLowerCase()}`,
+    {
+      kind: SpanKind.CLIENT,
+      attributes: {
+        'db.system.name': 'redis',
+        'db.operation.name': operation,
+        'db.namespace': String(db),
+      },
+    },
+    async (span) => {
+      try {
+        return await fn(span);
+      } finally {
+        span.end();
+      }
+    },
+  );
+}
 
 class CacheService {
   private client: Redis | null = null;
@@ -119,48 +157,46 @@ class CacheService {
   }
 
   async set(key: string, value: string, ttl?: number): Promise<void> {
-    const startedAt = performance.now();
-    let ok = false;
-    try {
-      await this.ensureConnection();
-      if (!this.client) {
-        log.warn({ key }, 'Cache set skipped; Redis disabled');
-        return;
-      }
-      if (ttl !== undefined && ttl > 0) {
-        await this.client.setex(key, ttl, value);
-      } else {
-        await this.client.set(key, value);
-      }
-      ok = true;
-    } catch (error) {
-      log.error({ err: error, db: this.db }, 'Redis set error');
-    } finally {
-      if (this.client) {
-        recordTiming('redis', performance.now() - startedAt, ok);
-      }
+    if (!this.isEnabled) {
+      log.warn({ key }, 'Cache set skipped; Redis disabled');
+      return;
     }
+    await redisSpan('SET', this.db, async (span) => {
+      try {
+        await this.ensureConnection();
+        if (!this.client) {
+          log.warn({ key }, 'Cache set skipped; Redis disabled');
+          return;
+        }
+        if (ttl !== undefined && ttl > 0) {
+          await this.client.setex(key, ttl, value);
+        } else {
+          await this.client.set(key, value);
+        }
+      } catch (error) {
+        span.recordException(error as Error);
+        span.setStatus({ code: SpanStatusCode.ERROR });
+        log.error({ err: error, db: this.db }, 'Redis set error');
+      }
+    });
   }
 
   async get(key: string): Promise<string | null> {
-    const startedAt = performance.now();
-    let ok = false;
-    try {
-      await this.ensureConnection();
-      if (!this.client) return null;
-      const value = await this.client.get(key);
-      ok = true;
-      return value;
-    } catch (error) {
-      log.error({ err: error, db: this.db }, 'Redis get error');
-      return null;
-    } finally {
-      // Timed into the `event_loop` line (ISS-1739): Redis and Arcjet timing
-      // out together points at our event loop, not at either service.
-      if (this.client) {
-        recordTiming('redis', performance.now() - startedAt, ok);
+    if (!this.isEnabled) return null;
+    return redisSpan('GET', this.db, async (span) => {
+      try {
+        await this.ensureConnection();
+        if (!this.client) return null;
+        const value = await this.client.get(key);
+        span.setAttribute('cache.hit', value !== null);
+        return value;
+      } catch (error) {
+        span.recordException(error as Error);
+        span.setStatus({ code: SpanStatusCode.ERROR });
+        log.error({ err: error, db: this.db }, 'Redis get error');
+        return null;
       }
-    }
+    });
   }
 
   /**

@@ -24,9 +24,62 @@ a separate NestJS repo).
   `http://localhost` URLs (or the deployment's own host on Vercel), so local
   dev would look fine while staging/prod traces silently stop at `norse-app`.
 
+- **Arcjet decisions**: the Arcjet SDK calls its API over a `node:http2`
+  Connect RPC session (`@arcjet/transport` → `@connectrpc/connect-node`),
+  not the global `fetch`, so the fetch instrumentation never sees it.
+  `arcjetProtect` (`src/lib/arcjet/index.ts`) wraps each decision in an
+  `arcjet.protect` span with `url.path`, `arcjet.enforced`,
+  `arcjet.conclusion`, `arcjet.reason_type` on a denial, and
+  `event_loop.utilization`: the share of the call's wall time our main
+  thread was busy (ISS-1739, see below). A timeout or an SDK error sets the
+  span status to ERROR with the message. On observe-only hosts the decision
+  runs in `after()`, so its span ends after the request's root span. No
+  `traceparent` is sent to Arcjet.
+- **Redis**: `cacheService.get` / `set` (`src/cacheService.ts`) are
+  `redis.get` / `redis.set` client spans with `db.system.name`,
+  `db.operation.name`, `db.namespace` (the db index) and `cache.hit` on a
+  read. Never the key: it can carry a search query. ioredis is not
+  auto-instrumented on purpose; require-hooking under the Next.js bundler
+  fails silently.
+- **Which container, which tenant, which client**: `register()` puts
+  `host.name` / `service.instance.id` (the container's hostname) on the
+  resource, and `server.address` (the `Host` header) and
+  `user_agent.original` on every root span. App Platform runs one container
+  per instance, so a trace can be matched to that instance's CPU and memory
+  in the DigitalOcean console, filtered by tenant host, or separated from
+  bot traffic.
+
 The Norse API's `main.ts` already documents `traceparent` as an accepted
 global Swagger header, so no API-side change was needed for it to receive
 and link the propagated context.
+
+## Reading an Arcjet timeout (ISS-1739)
+
+An Arcjet decision that times out (`ARCJET_TIMEOUT_MS`, 500 ms) fails open.
+Whether the cause is Arcjet or our own process shows in two places:
+
+- **The log line.** `arcjet_fingerprint_failed` (and `_sampled_out`) carry
+  `durationMs`, `eventLoopUtilization`, `instance` and, when the request was
+  traced, `traceId` / `traceSampled`. `durationMs` well over the timeout, or
+  `eventLoopUtilization` near 1, means the main thread was busy and read the
+  answer late: our process. `durationMs` at the timeout with utilization
+  near 0 means the loop was idle and the answer never came: Arcjet or the
+  network. See docs/bot-protection.md.
+- **The trace**, for the sampled 10%. In Grafana → Explore → Tempo:
+
+  ```
+  { resource.service.name = "norse-app" && name = "arcjet.protect" && status = error }
+  { resource.service.name = "norse-app" && span.event_loop.utilization > 0.8 }
+  { resource.service.name = "norse-app" && span.server.address = "search.wa211.org" && duration > 2s }
+  ```
+
+  In a slow trace, time that no child span covers is time the process
+  spent not waiting on anything instrumented: the event loop, or garbage
+  collection. With the Arcjet and Redis spans above, every remote call the
+  search page makes is a child span.
+
+`OTEL_TRACES_SAMPLER_ARG=1.0` for a bounded window puts every timeout in
+Tempo; check Tempo retention with whoever owns the monitoring cluster first.
 
 ## Why `@vercel/otel`, not a manual `NodeSDK`
 

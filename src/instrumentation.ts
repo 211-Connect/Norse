@@ -8,16 +8,25 @@ import { createLogger } from '@/lib/logger';
 
 const log = createLogger('instrumentation');
 
-export async function register() {
-  if (process.env.NEXT_RUNTIME === 'nodejs') {
-    // Logs `event_loop` every 10 s and lets Arcjet failure logs carry the
-    // current event-loop delay (ISS-1739). Imported here so `node:perf_hooks`
-    // never reaches the Edge bundle.
-    const { startEventLoopMonitor } = await import('@/lib/event-loop-monitor');
-    const eventLoopLog = createLogger('event-loop');
-    await startEventLoopMonitor((data) => eventLoopLog.info(data));
+/**
+ * The container that produced a trace, as `host.name` on the OTel resource.
+ * App Platform runs one container per instance and sets `HOSTNAME` to the
+ * listen address, so the OS hostname is the only identity; it is also what
+ * the Arcjet failure logs carry as `instance` (ISS-1739). Node only, hence
+ * the runtime check and the dynamic import: `register()` also runs on the
+ * Edge runtime, where `node:os` does not exist.
+ */
+async function instanceId(): Promise<string | undefined> {
+  if (process.env.NEXT_RUNTIME !== 'nodejs') return undefined;
+  try {
+    return (await import('@/lib/instance')).INSTANCE_ID;
+  } catch (error) {
+    log.warn({ err: error }, 'Instance id unavailable; traces carry none');
+    return undefined;
   }
+}
 
+export async function register() {
   if (!process.env.OTEL_EXPORTER_OTLP_ENDPOINT) {
     log.info('Tracing disabled: OTEL_EXPORTER_OTLP_ENDPOINT not set');
     return;
@@ -61,8 +70,20 @@ export async function register() {
     log.warn('API_URL not set: traceparent will not be sent to the Norse API');
   }
 
+  const instance = await instanceId();
+
   registerOTel({
     serviceName: 'norse-app',
+    attributes: instance
+      ? { 'host.name': instance, 'service.instance.id': instance }
+      : {},
+    // On the root span of every request, so a trace can be filtered by
+    // tenant host and told apart from bot traffic. The query string is not
+    // a header, so no search text is recorded.
+    attributesFromHeaders: {
+      'server.address': 'host',
+      'user_agent.original': 'user-agent',
+    },
     traceSampler: new ParentBasedSampler({
       root: new TraceIdRatioBasedSampler(parseFloat(traceSamplerArg)),
     }),

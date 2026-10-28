@@ -12,13 +12,21 @@ import {
   context as otelContext,
   type Context,
   ROOT_CONTEXT,
+  SpanStatusCode,
   trace,
   TraceFlags,
 } from '@opentelemetry/api';
+import {
+  BasicTracerProvider,
+  InMemorySpanExporter,
+  SimpleSpanProcessor,
+} from '@opentelemetry/sdk-trace-base';
 import { NextRequest } from 'next/server';
 import assert from 'node:assert/strict';
 import { AsyncLocalStorage } from 'node:async_hooks';
+import { hostname } from 'node:os';
 import { describe, test } from 'node:test';
+import { register as metricsRegistry } from 'prom-client';
 
 import {
   ARCJET_ALLOWED_BOTS,
@@ -42,9 +50,53 @@ import {
   redactHeaders,
   resolveArcjetClientIp,
 } from '../src/lib/arcjet';
-import { drainRuntimeStats } from '../src/lib/runtime-stats';
+import {
+  arcjetDecisionDuration,
+  arcjetDecisions,
+} from '../src/lib/arcjet/metrics';
 
 type LogEntry = { level: string; event: string; data: Record<string, unknown> };
+
+/**
+ * A context manager so `startActiveSpan` and `getActiveSpan` work without
+ * the SDK's AsyncHooks manager; `@vercel/otel` uses the same kind.
+ */
+function withContextManager<T>(fn: () => Promise<T>): Promise<T> {
+  const als = new AsyncLocalStorage<Context>();
+  otelContext.setGlobalContextManager({
+    active: () => als.getStore() ?? ROOT_CONTEXT,
+    with: (ctx, f, thisArg, ...args) =>
+      als.run(ctx, () => f.call(thisArg, ...args)),
+    bind: (_ctx, target) => target,
+    enable() {
+      return this;
+    },
+    disable() {
+      return this;
+    },
+  });
+  return fn().finally(() => otelContext.disable());
+}
+
+/** A real tracer provider that keeps ended spans in memory. */
+function withSpanExporter<T>(
+  fn: (exporter: InMemorySpanExporter) => Promise<T>,
+): Promise<T> {
+  const exporter = new InMemorySpanExporter();
+  const provider = new BasicTracerProvider({
+    spanProcessors: [new SimpleSpanProcessor(exporter)],
+  });
+  trace.setGlobalTracerProvider(provider);
+  return withContextManager(() => fn(exporter)).finally(() => {
+    trace.disable();
+    return provider.shutdown();
+  });
+}
+
+const fakeEventLoop = (utilization: number | undefined) => ({
+  sample: () => ({ idle: 0, active: 0, utilization: 0 }),
+  utilizationSince: () => utilization,
+});
 
 function captureLog(): { log: ArcjetLog; entries: LogEntry[] } {
   const entries: LogEntry[] = [];
@@ -710,28 +762,34 @@ describe('fingerprint failure logging (ISS-1734)', () => {
     assert.ok(entries[0].data.headers);
   });
 
-  test('failures carry call duration and event-loop delay (ISS-1739)', async () => {
-    // 700 ms between start and the log, against a 500 ms Arcjet timeout:
-    // the timer fired late, and the event-loop delay says why.
+  test('failures carry call duration, event-loop utilization and instance (ISS-1739)', async () => {
+    // 700 ms between start and the log, against a 500 ms Arcjet timeout,
+    // with the loop busy for 93% of it: our process, not Arcjet.
     for (const sampleHeaderLog of [() => true, () => false]) {
       let call = 0;
       const protect = createProtect(clientReturning(errored()), {
         sampleHeaderLog,
         now: () => (call++ === 0 ? 1_000 : 1_700),
-        eventLoopDelay: () => 640,
+        eventLoop: fakeEventLoop(0.93),
       });
       const { log, entries } = captureLog();
 
       await protect(makeRequest(), PATH, log);
 
       assert.equal(entries[0].data.durationMs, 700, entries[0].event);
-      assert.equal(entries[0].data.eventLoopDelayMs, 640, entries[0].event);
-      assert.equal('startedAt' in entries[0].data, false);
+      assert.equal(
+        entries[0].data.eventLoopUtilization,
+        0.93,
+        entries[0].event,
+      );
+      assert.equal(entries[0].data.instance, hostname(), entries[0].event);
+      assert.equal('timing' in entries[0].data, false);
     }
   });
 
-  test('every call is counted by conclusion and every Arcjet call timed', async () => {
-    drainRuntimeStats();
+  test('every decision is counted and timed as Prometheus metrics', async () => {
+    arcjetDecisions.reset();
+    arcjetDecisionDuration.reset();
     const { log } = captureLog();
     await createProtect(clientReturning(allow()))(makeRequest(), PATH, log);
     await createProtect(clientReturning(denyBots(['CURL'])))(
@@ -744,34 +802,80 @@ describe('fingerprint failure logging (ISS-1734)', () => {
     })(makeRequest(), PATH, log);
     await createProtect(undefined)(makeRequest(), PATH, log);
 
-    const { counts, timings } = drainRuntimeStats();
-    assert.deepEqual(counts, {
-      'arcjet.ALLOW': 1,
-      'arcjet.DENY': 1,
-      'arcjet.ERROR': 1,
-      'arcjet.SKIPPED': 1,
-    });
+    const counts = Object.fromEntries(
+      (await arcjetDecisions.get()).values.map((v) => [
+        v.labels.conclusion,
+        v.value,
+      ]),
+    );
+    assert.deepEqual(counts, { ALLOW: 1, DENY: 1, ERROR: 1, SKIPPED: 1 });
     // SKIPPED never calls Arcjet, so three timed calls, one of them errored.
-    assert.equal(timings.arcjet.count, 3);
-    assert.equal(timings.arcjet.errors, 1);
+    const timed = (await arcjetDecisionDuration.get()).values.filter((v) =>
+      v.metricName?.endsWith('_count'),
+    );
+    assert.deepEqual(
+      Object.fromEntries(timed.map((v) => [v.labels.conclusion, v.value])),
+      { ALLOW: 1, DENY: 1, ERROR: 1 },
+    );
+    // Both are on the registry that /api/metrics serves.
+    assert.ok(metricsRegistry.getSingleMetric('norse_arcjet_decisions_total'));
+    assert.ok(
+      metricsRegistry.getSingleMetric('norse_arcjet_decision_duration_seconds'),
+    );
   });
 
-  test('failure logs carry the active trace id for Tempo', async () => {
-    const als = new AsyncLocalStorage<Context>();
-    otelContext.setGlobalContextManager({
-      active: () => als.getStore() ?? ROOT_CONTEXT,
-      with: (ctx, fn, thisArg, ...args) =>
-        als.run(ctx, () => fn.call(thisArg, ...args)),
-      bind: (_ctx, target) => target,
-      enable() {
-        return this;
-      },
-      disable() {
-        return this;
-      },
+  test('every decision is one arcjet.protect span', async () => {
+    await withSpanExporter(async (exporter) => {
+      const { log } = captureLog();
+      await createProtect(clientReturning(denyBots(['CURL'])), {
+        eventLoop: fakeEventLoop(0.12),
+      })(makeRequest(), PATH, log);
+      await createProtect(clientReturning(errored()), {
+        sampleHeaderLog: () => false,
+        eventLoop: fakeEventLoop(0.97),
+      })(makeRequest({ host: 'other.example.org' }), PATH, log);
+
+      const spans = exporter.getFinishedSpans();
+      assert.equal(spans.length, 2);
+      assert.deepEqual(
+        spans.map((s) => s.name),
+        ['arcjet.protect', 'arcjet.protect'],
+      );
+      const [deny, error] = spans;
+      assert.deepEqual(deny.attributes, {
+        'url.path': PATH,
+        'arcjet.enforced': true,
+        'arcjet.conclusion': 'DENY',
+        'arcjet.reason_type': 'BOT',
+        'event_loop.utilization': 0.12,
+      });
+      assert.equal(deny.status.code, SpanStatusCode.UNSET);
+      assert.equal(error.attributes['arcjet.enforced'], false);
+      assert.equal(error.attributes['arcjet.conclusion'], 'ERROR');
+      assert.equal(error.attributes['event_loop.utilization'], 0.97);
+      assert.equal(error.status.code, SpanStatusCode.ERROR);
+      assert.equal(error.status.message, FINGERPRINT_ERROR);
     });
-    try {
-      const span = trace.wrapSpanContext({
+  });
+
+  test('failure logs carry the trace id of the arcjet.protect span', async () => {
+    await withSpanExporter(async (exporter) => {
+      const protect = createProtect(clientReturning(errored()), {
+        sampleHeaderLog: () => true,
+      });
+      const { log, entries } = captureLog();
+
+      await protect(makeRequest(), PATH, log);
+
+      const [span] = exporter.getFinishedSpans();
+      assert.equal(entries[0].data.traceId, span.spanContext().traceId);
+      assert.equal(entries[0].data.traceSampled, true);
+    });
+  });
+
+  test('the span joins the request trace when there is one', async () => {
+    await withContextManager(async () => {
+      const parent = trace.wrapSpanContext({
         traceId: '0af7651916cd43dd8448eb211c80319c',
         spanId: 'b7ad6b7169203331',
         traceFlags: TraceFlags.SAMPLED,
@@ -781,18 +885,16 @@ describe('fingerprint failure logging (ISS-1734)', () => {
       });
       const { log, entries } = captureLog();
 
-      await otelContext.with(trace.setSpan(ROOT_CONTEXT, span), () =>
+      await otelContext.with(trace.setSpan(ROOT_CONTEXT, parent), () =>
         protect(makeRequest(), PATH, log),
       );
 
       assert.equal(entries[0].data.traceId, '0af7651916cd43dd8448eb211c80319c');
       assert.equal(entries[0].data.traceSampled, true);
-    } finally {
-      otelContext.disable();
-    }
+    });
   });
 
-  test('without an active span there is no trace id', async () => {
+  test('without a tracer provider there is no trace id', async () => {
     const protect = createProtect(clientReturning(errored()), {
       sampleHeaderLog: () => true,
     });
@@ -801,7 +903,7 @@ describe('fingerprint failure logging (ISS-1734)', () => {
     assert.equal('traceId' in entries[0].data, false);
   });
 
-  test('a thrown SDK error also carries duration and event-loop delay', async () => {
+  test('a thrown SDK error also carries duration and utilization', async () => {
     let call = 0;
     const protect = createProtect(
       {
@@ -812,7 +914,7 @@ describe('fingerprint failure logging (ISS-1734)', () => {
       {
         sampleHeaderLog: () => true,
         now: () => (call++ === 0 ? 0 : 30),
-        eventLoopDelay: () => undefined,
+        eventLoop: fakeEventLoop(undefined),
       },
     );
     const { log, entries } = captureLog();
@@ -821,7 +923,7 @@ describe('fingerprint failure logging (ISS-1734)', () => {
 
     assert.equal(entries[0].data.conclusion, 'THREW');
     assert.equal(entries[0].data.durationMs, 30);
-    assert.equal(entries[0].data.eventLoopDelayMs, undefined);
+    assert.equal(entries[0].data.eventLoopUtilization, undefined);
   });
 
   test('sampled-out failures log a counter event without headers', async () => {
