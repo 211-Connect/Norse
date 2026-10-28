@@ -15,10 +15,6 @@ It serves three callers with one model:
 - agents and other API clients (Keeper), which only have the user's words
   ("Yakima") and must not need to know Region ids.
 
-Status: T1–T6 implemented on branch `feat/area-search` in Norse and
-Norse-API (not merged); T7 (seed cities) and T8 (POST removal) pending.
-Tickets: [area-search-tickets.md](/docs/area-search-tickets.md).
-
 ## The model: three ways to say where
 
 `GET /search` takes exactly one effective location, chosen by precedence
