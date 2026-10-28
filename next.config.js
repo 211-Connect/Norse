@@ -82,7 +82,12 @@ const nextConfig = {
   // Do not bundle pino/pino-pretty for server — use native require() at
   // runtime. This avoids pino.transport() worker threads resolving paths
   // inside the .next/server/vendor-chunks/ directory.
-  serverExternalPackages: ['pino', 'pino-pretty'],
+  //
+  // prom-client must also be one module instance per process: bundled, the
+  // page chunks and the /api/metrics route each get their own copy, and the
+  // Arcjet metrics registered by the pages never reach the endpoint
+  // (ISS-1739).
+  serverExternalPackages: ['pino', 'pino-pretty', 'prom-client'],
   // Disable source maps in production to save memory
   productionBrowserSourceMaps: false,
   webpack: (config, { dev, isServer }) => {
