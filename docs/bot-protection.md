@@ -40,12 +40,14 @@ redeploys the app; the change is live after the redeploy, a few minutes.
 ```
 page.tsx / generateMetadata
   └ protectPage(path)            src/lib/arcjet-page.ts  (React cache: one decision per request)
-      └ arcjetProtect            src/lib/arcjet/index.ts
-          ├ isMboaWithoutClientIp → ipSrc   client-ip.ts
-          ├ aj.protect(request)             rules.ts (detectBot LIVE, no-UA filter DRY_RUN)
-          ├ isEnforcedHost                  enforcement.ts
-          └ logs                            redact.ts
-      └ denied && enforced → forbidden() → 403 + forbidden.tsx
+      ├ isEnforcedHost             enforcement.ts
+      ├ enforced:     await arcjetProtect → denied → forbidden() → 403 + forbidden.tsx
+      └ not enforced: after(arcjetProtect)  (after the response; logs and counts only)
+
+arcjetProtect                    src/lib/arcjet/index.ts
+  ├ isMboaWithoutClientIp → ipSrc   client-ip.ts
+  ├ aj.protect(request)             rules.ts (detectBot LIVE, no-UA filter DRY_RUN)
+  └ logs                            redact.ts
 ```
 
 - **Where it runs.** `protectPage(path)` is awaited at the top of each page
@@ -55,6 +57,13 @@ page.tsx / generateMetadata
   a middleware call would also run (and bill) on every RSC navigation and
   prefetch. React `cache` makes the page and `generateMetadata` share one
   decision.
+- **Only enforced hosts wait for Arcjet.** On an enforced host the page
+  waits for the decision (up to `ARCJET_TIMEOUT_MS`) so it can answer `403`.
+  On every other host a denial cannot change the response, so the decision
+  runs in `after()`, once the response is sent: it still logs
+  `arcjet_denied` and counts for the Blocked Bots widget, but adds no
+  latency. Awaiting it everywhere, as v2.30.0 did, put up to 500 ms on every
+  observe-only page view and held renders open under load.
 - **Covered routes:** `/[locale]/search`, `/[locale]/search/[id]`,
   `/[locale]/details/original/[original_id]`. Server Actions and
   `/api/resource-titles` are not covered yet (follow-up ticket).
@@ -74,6 +83,9 @@ page.tsx / generateMetadata
   request.
 - **Cost.** Every request to a covered page is one Arcjet decision request,
   enforced or not, so usage counts from the observe-only stage onward.
+  Enforcing a host also adds the Arcjet wait to every page view on it,
+  real people included: enforce hosts a few at a time and watch their
+  latency.
 
 ### Logs
 
@@ -114,7 +126,7 @@ takes effect after the redeploy, a few minutes.
 | --- | --- |
 | Real people are blocked on one host | Add that host to `ARCJET_UNENFORCED_HOSTS`. |
 | Real people are blocked everywhere | Set `ARCJET_ENFORCED_HOSTS` to empty. Arcjet keeps logging. |
-| Arcjet is slow or down | Nothing: requests fail open after `ARCJET_TIMEOUT_MS`. To stop calling it at all, unset `ARCJET_KEY`. |
+| Arcjet is slow or down | Nothing on observe-only hosts (the decision runs after the response). Enforced hosts fail open after `ARCJET_TIMEOUT_MS`, so each page view can wait that long. To stop calling it at all, unset `ARCJET_KEY`. |
 | A bot we need is denied | Add its Arcjet label to `ARCJET_ALLOWED_BOTS` (code change and deploy). Meanwhile, unenforce the affected host. |
 
 Until the redeploy finishes, blocked people see the 403 page. Read the
