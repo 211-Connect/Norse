@@ -41,6 +41,14 @@ a separate NestJS repo).
   read. Never the key: it can carry a search query. ioredis is not
   auto-instrumented on purpose; require-hooking under the Next.js bundler
   fails silently.
+- **Search job size**: `findResources` / `findResourcesV2` put the job on
+  the active span through `withSearchJob` (`src/lib/search-job.ts`):
+  `search.api` (`v1` / `v2`), `search.engine`, `search.page`,
+  `search.limit`, `search.results`, `search.total_results` and
+  `search.cache_hit` (true when the memory or Redis cache answered and the
+  API was not called). Never the query text. A `limit=100` miss is roughly
+  1 MB of JSON to parse and 100 results to render; these attributes make
+  latency groupable by that cost.
 - **Which container, which tenant, which client**: `register()` puts
   `host.name` / `service.instance.id` (the container's hostname) on the
   resource, and `server.address` (the `Host` header) and
@@ -71,6 +79,16 @@ Whether the cause is Arcjet or our own process shows in two places:
   { resource.service.name = "norse-app" && name = "arcjet.protect" && status = error }
   { resource.service.name = "norse-app" && span.event_loop.utilization > 0.8 }
   { resource.service.name = "norse-app" && span.server.address = "search.wa211.org" && duration > 2s }
+  { resource.service.name = "norse-app" && span.search.limit >= 100 && span.search.cache_hit = false }
+  ```
+
+  With Tempo's metrics generator enabled (charts: `prometheus-stack`,
+  `tempo.metricsGenerator`), the same selectors become time series:
+
+  ```
+  { resource.service.name = "norse-app" && name = "GET /[locale]/search" } | quantile_over_time(duration, .5, .9, .99)
+  { resource.service.name = "norse-app" && name = "arcjet.protect" && status = error } | rate() by (resource.host.name)
+  { resource.service.name = "norse-app" && span.search.cache_hit = false } | rate() by (span.search.limit)
   ```
 
   In a slow trace, time that no child span covers is time the process
