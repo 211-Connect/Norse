@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 
-import { getResources } from '@/app/(app)/shared/services/resource-service';
+import { getResourcesById } from '@/app/(app)/shared/services/resource-service';
 import { Resource } from '@/types/resource';
 
 import { useLocalFavorites } from './use-local-favorites';
@@ -16,7 +16,8 @@ export function useLocalFavoriteResources({
   locale,
   tenantId,
 }: UseLocalFavoriteResourcesOptions) {
-  const { localFavoriteIds, isLocalFavorite, hydrated } = useLocalFavorites();
+  const { localFavoriteIds, isLocalFavorite, renameLocalFavorites, hydrated } =
+    useLocalFavorites();
   const [resources, setResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -31,10 +32,24 @@ export function useLocalFavoriteResources({
       setLoading(true);
       // Cap IDs to prevent unbounded API work
       const cappedIds = localFavoriteIds.slice(0, MAX_LOCAL_FAVORITES_FETCH);
-      const fetched = await getResources(cappedIds, locale, tenantId);
+      const byRequestedId = await getResourcesById(cappedIds, locale, tenantId);
       if (!cancelled) {
-        setResources(fetched);
+        setResources(
+          cappedIds
+            .map((id) => byRequestedId[id])
+            .filter((resource): resource is Resource => Boolean(resource)),
+        );
         setLoading(false);
+        // A re-keyed id came back as its new record: store the new id, or
+        // isLocalFavorite(resource.id) below filters the record out.
+        renameLocalFavorites(
+          Object.fromEntries(
+            Object.entries(byRequestedId).map(([id, resource]) => [
+              id,
+              resource.id,
+            ]),
+          ),
+        );
       }
     }
 
