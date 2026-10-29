@@ -142,6 +142,13 @@ option — one connection URI, not three separate instances):
 | `translationCacheService`  | 1    | Translation job caching                                                                                                                                                          |
 | `apiConfigCacheService`    | 2    | One-way config channel: Payload pushes tenant config (facets, hybrid search config, orchestration config, Keycloak realm id, enabled locales, analytics config) into Redis on save, so the **Norse API (NestJS)** can read current tenant config without calling back into Payload |
 
+Redis is a cache, never a dependency: every `CacheService` call fails open
+(a miss, or a skipped write) and callers fetch from the source. When the
+connection drops, `ioredis` keeps reconnecting with backoff capped at 5 s, and
+commands fail fast meanwhile (`enableOfflineQueue: false`) rather than
+waiting out `commandTimeout`. A failed first connect is retried after a 10 s
+cooldown. Neither case disables the cache until a restart.
+
 Point `CACHE_REDIS_URI` at a local Redis/Valkey for development
 (`compose.yaml`'s `valkey` service) — same "don't touch shared state"
 reasoning as the database.
