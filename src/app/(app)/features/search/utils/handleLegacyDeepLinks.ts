@@ -11,7 +11,10 @@ import {
 import type { LegacyAiClarifyState } from '@/app/(app)/features/search/intent';
 import { predictSearchNeeds } from '@/app/(app)/shared/services/ai-classification-search-service';
 import { createLogger } from '@/lib/logger';
-import { PrintableDirectoryContextParams } from '@/app/(app)/shared/utils/printableDirectorySearchContext';
+import {
+  PrintableDirectoryContextParams,
+  withPrintableDirectoryContext,
+} from '@/app/(app)/shared/utils/printableDirectorySearchContext';
 import { AppConfig } from '@/types/appConfig';
 import { redirect } from 'next/navigation';
 
@@ -39,6 +42,7 @@ export async function handleLegacyDeepLinks({
   intent,
   locale,
   skipLegacyLinkCheck,
+  printableDirectoryContext,
 }: Args): Promise<LegacyAiClarifyState | null> {
   let [snapshot] = initialTransition(searchResolverMachine, {
     intent,
@@ -76,7 +80,12 @@ export async function handleLegacyDeepLinks({
     const { redirectTo } = snapshot.context;
     if (!redirectTo)
       throw new Error(`search state ${snapshot.value} has no redirect`);
-    return redirect(redirectTo);
+    return redirect(
+      withPrintableDirectoryContext(
+        redirectTo,
+        new URLSearchParams(printableDirectoryContext),
+      ),
+    );
   }
   return snapshot.context.clarify;
 }

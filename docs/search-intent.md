@@ -89,12 +89,17 @@ gate onto it unchanged.
 | `skipping`, `confirmed` | `page:redirect`    | the clarify step's Skip, or Confirm after the re-rank                                    |
 | `confirming`         | `page:render-gate`    | Confirm is waiting for the re-rank                                                       |
 
-**Two decided asymmetries (2026-10-22).** The server gate classifies an organization-scoped deep link on an
-AI tenant (`?query=food&organization_id=…`), while the dialog's submit searches it as typed (`classicSubmit`),
-as both did before the resolver; it stays so because no URL in the 90-day corpus (627,612) carries both an
-`organization_id` and a query (ISS-2474). An incoming clarify URL opens the clarify step on any tenant,
+**Organization scope is never classified.** An organization-scoped deep link on an AI tenant
+(`?query=food&organization_id=…`) searches as is on the server (`organizationScoped`), as the dialog's submit
+does (`classicSubmit`); #1138 made the old gate skip it, which supersedes the asymmetry ISS-2474 recorded.
+
+**A decided asymmetry (2026-10-22).** An incoming clarify URL opens the clarify step on any tenant,
 classic ones included; whether classic tenants should ignore it is revisited with ISS-2297, which changes
 what a clarify URL carries (ISS-2475).
+
+**Printable directory context survives the redirect.** `handleLegacyDeepLinks` copies `pdid`, `pdsid` and
+`pdsrcid` onto `redirectTo` (`withPrintableDirectoryContext`), so a directory source opened from its "Go to
+search results" link stays editable after classification.
 
 **The dialog runs on the same machine.** `useOnSearchSubmit` routes a submit with the same pure
 transitions as the server, from `ready`: a link topic, the location policy, a search as typed, or a
@@ -117,6 +122,7 @@ stateDiagram-v2
   resolving --> settled: always [loopGuarded]
   resolving --> settled: always [canonicalAi]
   resolving --> settled: always [taxonomySearch]
+  resolving --> settled: always [organizationScoped]
   resolving --> settled: always [noQuery]
   resolving --> needs_prediction: always
   needs_prediction --> navigating_classic: PREDICTION_RESOLVED [fromDialog && predictionMissing]

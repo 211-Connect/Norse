@@ -174,6 +174,15 @@ test('gate case D: text, or no query type, is classified like B', () => {
   assert.equal(resolve('query=food', AI).value, 'needs_prediction');
 });
 
+test('an organization-scoped search is never classified', () => {
+  const snapshot = resolve(
+    'query=food&query_type=text&organization_id=org-1',
+    AI,
+  );
+  assert.equal(snapshot.value, 'ready');
+  assert.equal(pageActionOf(snapshot), 'page:render-results');
+});
+
 test('the loop guard and an empty query are never classified', () => {
   assert.equal(
     resolve('query=food&query_type=hybrid&sllc=1', AI).value,

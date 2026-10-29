@@ -77,10 +77,15 @@ export function SectionSourceItem({
   const searchHref =
     source.type === 'query' && source.query?.params
       ? directorySourceSearchHref(
-          withDefaultQueryParams(
-            source.query.params as Record<string, unknown>,
-            defaultQueryConfig,
-          ),
+          {
+            ...withDefaultQueryParams(
+              source.query.params as Record<string, unknown>,
+              defaultQueryConfig,
+            ),
+            // So the search page shows the source's title (e.g. a taxonomy
+            // name) rather than the raw query (a taxonomy code).
+            query_label: source.query.title || undefined,
+          },
           directoryId,
           sectionId,
           source.id,
