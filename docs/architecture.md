@@ -146,6 +146,13 @@ Point `CACHE_REDIS_URI` at a local Redis/Valkey for development
 (`compose.yaml`'s `valkey` service) — same "don't touch shared state"
 reasoning as the database.
 
+Each `CacheService` instance runs `get`/`set`/`del`/`incrementWithTtl`
+through a circuit breaker (`src/utilities/circuitBreaker.ts`): after 3
+failed commands in a row it skips Redis for 30 s (a miss, or a skipped
+write) instead of every call waiting out `commandTimeout`, then probes with
+one command. Logged as `Redis circuit open; skipping Redis` and `Redis
+circuit closed`.
+
 ### Auth (Keycloak)
 
 Authentication is Keycloak via `next-auth`'s `KeycloakProvider` (`src/auth.ts`,

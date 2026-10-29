@@ -12,8 +12,10 @@ import { NextRequest } from 'next/server';
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 
+import { createCircuitBreaker } from '../src/utilities/circuitBreaker';
 import {
   ARCJET_ALLOWED_BOTS,
+  ARCJET_CIRCUIT_FAILURE_THRESHOLD,
   ARCJET_DEFAULT_TIMEOUT_MS,
   ARCJET_ENFORCEMENT,
   DENIED_LOG_MAX_PER_MINUTE,
@@ -27,6 +29,7 @@ import {
   createArcjetProtect,
   createMinuteSampler,
   internalIpSrc,
+  isArcjetUnavailableError,
   maskIp,
   normalizeHost,
   parseHostList,
@@ -739,6 +742,132 @@ describe('fingerprint failure logging (ISS-1734)', () => {
     now += 60_000;
     await protect(makeRequest(), PATH, log);
     assert.equal(entries.at(-1)?.event, 'arcjet_fingerprint_failed');
+  });
+});
+
+describe('Arcjet API circuit breaker', () => {
+  const TIMEOUT = '[deadline_exceeded] the operation timed out';
+  const timedOut = () =>
+    new ArcjetErrorDecision({
+      ttl: 0,
+      results: [],
+      reason: new ArcjetErrorReason(TIMEOUT),
+    });
+
+  /** A client that answers from `next` and counts its calls. */
+  function scriptedClient() {
+    const state = { calls: 0, next: timedOut() as ArcjetDecision };
+    return {
+      state,
+      client: {
+        protect: async () => {
+          state.calls += 1;
+          return state.next;
+        },
+      },
+    };
+  }
+
+  function setupBreaker(openMs = 60_000) {
+    let now = 1_000_000;
+    const breaker = createCircuitBreaker({
+      failureThreshold: ARCJET_CIRCUIT_FAILURE_THRESHOLD,
+      openMs,
+      now: () => now,
+    });
+    return { breaker, advance: (ms: number) => (now += ms) };
+  }
+
+  test('consecutive API timeouts bypass Arcjet without calling it', async () => {
+    const { client, state } = scriptedClient();
+    const { breaker } = setupBreaker();
+    const protect = createProtect(client, {
+      breaker,
+      sampleHeaderLog: () => false,
+    });
+    const { log, entries } = captureLog();
+
+    for (let i = 0; i < ARCJET_CIRCUIT_FAILURE_THRESHOLD; i++) {
+      const result = await protect(makeRequest(), PATH, log);
+      assert.equal(result.conclusion, 'ERROR');
+    }
+    const open = entries.filter((e) => e.event === 'arcjet_circuit_open');
+    assert.equal(open.length, 1);
+    assert.equal(open[0].data.reopened, false);
+
+    const bypassed = await protect(makeRequest(), PATH, log);
+    assert.deepEqual(bypassed, { denied: false, conclusion: 'BYPASSED' });
+    assert.equal(state.calls, ARCJET_CIRCUIT_FAILURE_THRESHOLD);
+  });
+
+  test('a successful probe after openMs closes the circuit', async () => {
+    const { client, state } = scriptedClient();
+    const { breaker, advance } = setupBreaker(60_000);
+    const protect = createProtect(client, {
+      breaker,
+      sampleHeaderLog: () => false,
+    });
+    const { log, entries } = captureLog();
+
+    for (let i = 0; i < ARCJET_CIRCUIT_FAILURE_THRESHOLD; i++) {
+      await protect(makeRequest(), PATH, log);
+    }
+    await protect(makeRequest(), PATH, log); // bypassed
+    advance(60_000);
+    state.next = allow();
+
+    const probe = await protect(makeRequest(), PATH, log);
+    assert.equal(probe.conclusion, 'ALLOW');
+    const closed = entries.find((e) => e.event === 'arcjet_circuit_closed');
+    assert.equal(closed?.data.skipped, 1);
+    assert.equal(breaker.state, 'closed');
+  });
+
+  test('local SDK errors and thrown non-API errors do not open the circuit', async () => {
+    const { breaker } = setupBreaker();
+    const protect = createProtect(clientReturning(errored()), {
+      breaker,
+      sampleHeaderLog: () => false,
+    });
+    const { log } = captureLog();
+
+    for (let i = 0; i < ARCJET_CIRCUIT_FAILURE_THRESHOLD * 2; i++) {
+      await protect(makeRequest(), PATH, log);
+    }
+    assert.equal(breaker.state, 'closed');
+  });
+
+  test('a thrown unavailable error counts as an API failure', async () => {
+    const { breaker } = setupBreaker();
+    const protect = createProtect(
+      {
+        protect: async () => {
+          throw new Error('[unavailable] connection recycled');
+        },
+      },
+      { breaker, sampleHeaderLog: () => false },
+    );
+    const { log } = captureLog();
+
+    for (let i = 0; i < ARCJET_CIRCUIT_FAILURE_THRESHOLD; i++) {
+      assert.equal(
+        (await protect(makeRequest(), PATH, log)).conclusion,
+        'THREW',
+      );
+    }
+    assert.equal(breaker.state, 'open');
+  });
+
+  test('isArcjetUnavailableError matches only API timeouts and unavailability', () => {
+    assert.equal(isArcjetUnavailableError(TIMEOUT), true);
+    assert.equal(
+      isArcjetUnavailableError(
+        '[unavailable] connection recycled after consecutive deadline failures',
+      ),
+      true,
+    );
+    assert.equal(isArcjetUnavailableError(FINGERPRINT_ERROR), false);
+    assert.equal(isArcjetUnavailableError('[internal] boom'), false);
   });
 });
 

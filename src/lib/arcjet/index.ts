@@ -20,6 +20,11 @@ import {
   maskIpList,
   redactHeaders,
 } from './redact';
+import {
+  type CircuitBreaker,
+  createCircuitBreaker,
+} from '@/utilities/circuitBreaker';
+
 import { buildArcjetRules } from './rules';
 import type { ArcjetLog, ArcjetRequestLike } from './types';
 
@@ -63,6 +68,25 @@ export const FINGERPRINT_HEADER_LOG_MAX_PER_MINUTE = 5;
  */
 export const DENIED_LOG_MAX_PER_MINUTE = 30;
 
+/**
+ * Consecutive Arcjet API failures (timeouts, connection unavailable) that
+ * open the circuit: one slow decision must not switch protection off.
+ */
+export const ARCJET_CIRCUIT_FAILURE_THRESHOLD = 5;
+/** How long Arcjet is bypassed once the circuit opens, before one probe. */
+export const ARCJET_CIRCUIT_OPEN_MS = 60_000;
+
+/**
+ * Errors that mean the Arcjet API itself is unreachable or slow, as opposed
+ * to a local SDK error (e.g. a fingerprint with no client IP). The SDK
+ * surfaces Connect RPC codes as `[code] message`.
+ */
+const ARCJET_UNAVAILABLE_ERROR = /\[(deadline_exceeded|unavailable)\]/;
+
+export function isArcjetUnavailableError(message: string): boolean {
+  return ARCJET_UNAVAILABLE_ERROR.test(message);
+}
+
 export type ArcjetProtectResult =
   | {
       denied: false;
@@ -70,9 +94,17 @@ export type ArcjetProtectResult =
        * `SKIPPED` = no ARCJET_KEY; `THREW` = SDK threw (failed open);
        * `NO_CLIENT_IP` = MBOA via the mn.gov proxy with no client address at
        * all (not even an internal one); deliberately allowed.
+       * `BYPASSED` = not called: the Arcjet API kept failing and the circuit
+       * is open (ARCJET_CIRCUIT_OPEN_MS).
        */
       conclusion:
-        'ALLOW' | 'CHALLENGE' | 'ERROR' | 'SKIPPED' | 'THREW' | 'NO_CLIENT_IP';
+        | 'ALLOW'
+        | 'CHALLENGE'
+        | 'ERROR'
+        | 'SKIPPED'
+        | 'THREW'
+        | 'NO_CLIENT_IP'
+        | 'BYPASSED';
     }
   | {
       /** Denied by Arcjet but the host is not enforced (see ARCJET_ENFORCEMENT). */
@@ -167,6 +199,8 @@ export interface ArcjetProtectOptions {
   sampleDeniedLog?: () => boolean;
   /** Where a DENY is enforced. */
   enforcement?: ArcjetEnforcement;
+  /** Test seam for the Arcjet API circuit breaker. */
+  breaker?: CircuitBreaker;
 }
 
 export function createArcjetProtect(
@@ -179,7 +213,34 @@ export function createArcjetProtect(
   const sampleDeniedLog =
     options.sampleDeniedLog ?? createMinuteSampler(DENIED_LOG_MAX_PER_MINUTE);
   const enforcement = options.enforcement ?? ARCJET_ENFORCEMENT;
+  const breaker =
+    options.breaker ??
+    createCircuitBreaker({
+      failureThreshold: ARCJET_CIRCUIT_FAILURE_THRESHOLD,
+      openMs: ARCJET_CIRCUIT_OPEN_MS,
+    });
   let deniedSampledOut = 0;
+
+  /**
+   * Report one Arcjet call to the breaker. Anything but an API timeout or
+   * unavailability counts as success: a local SDK error says nothing about
+   * whether the API is up.
+   */
+  function recordCall(log: ArcjetLog, errorMessage: string | undefined) {
+    if (errorMessage !== undefined && isArcjetUnavailableError(errorMessage)) {
+      const opened = breaker.recordFailure();
+      if (opened) {
+        log('warn', 'arcjet_circuit_open', {
+          reopened: opened === 'reopened',
+          openForMs: ARCJET_CIRCUIT_OPEN_MS,
+          message: errorMessage,
+        });
+      }
+      return;
+    }
+    const closed = breaker.recordSuccess();
+    if (closed) log('warn', 'arcjet_circuit_closed', closed);
+  }
 
   function logFingerprintFailed(
     request: ArcjetRequestLike,
@@ -267,10 +328,15 @@ export function createArcjetProtect(
       protectOptions = { ipSrc };
     }
 
+    // Fail open without waiting: the API kept timing out, so skip it for
+    // ARCJET_CIRCUIT_OPEN_MS instead of adding a timeout to every request.
+    if (!breaker.allow()) return { denied: false, conclusion: 'BYPASSED' };
+
     let decision: ArcjetDecision;
     try {
       decision = await client.protect(request, protectOptions);
     } catch (error) {
+      recordCall(log, error instanceof Error ? error.message : String(error));
       // Fail open: a protection outage must never take the site down.
       logFingerprintFailed(request, pathName, log, {
         conclusion: 'THREW',
@@ -279,6 +345,10 @@ export function createArcjetProtect(
       });
       return { denied: false, conclusion: 'THREW' };
     }
+    recordCall(
+      log,
+      decision.isErrored() ? errorMessageOf(decision) : undefined,
+    );
 
     if (decision.isDenied()) {
       const deniedBots = deniedBotsOf(decision);
