@@ -1,8 +1,18 @@
 import { Redis } from 'ioredis';
 
 import { createLogger } from '@/lib/logger';
+import { createCircuitBreaker } from '@/utilities/circuitBreaker';
 
 const log = createLogger('cache');
+
+/** Consecutive failed Redis commands that open the circuit. */
+const REDIS_CIRCUIT_FAILURE_THRESHOLD = 3;
+/**
+ * How long Redis is skipped once the circuit opens. Callers fall back to
+ * the source (a miss, or a skipped write) instead of each waiting out
+ * `commandTimeout` while Redis is down or slow.
+ */
+const REDIS_CIRCUIT_OPEN_MS = 30_000;
 
 class CacheService {
   private client: Redis | null = null;
@@ -10,8 +20,51 @@ class CacheService {
   private isConnecting = false;
   private connectionPromise: Promise<void> | null = null;
   private connectionAttempted = false;
+  private breaker = createCircuitBreaker({
+    failureThreshold: REDIS_CIRCUIT_FAILURE_THRESHOLD,
+    openMs: REDIS_CIRCUIT_OPEN_MS,
+  });
 
   constructor(private db: number = 0) {}
+
+  /**
+   * Runs one cache operation through the circuit breaker. Redis is a cache,
+   * never a dependency: any failure, or an open circuit, resolves to
+   * `fallback` so the caller fetches from the source.
+   */
+  private async run<T>(
+    operation: string,
+    fallback: T,
+    fn: (client: Redis) => Promise<T>,
+  ): Promise<T> {
+    if (!this.breaker.allow()) return fallback;
+    try {
+      await this.ensureConnection();
+      // Disabled, or the connection failed earlier: not a Redis outage the
+      // breaker should count.
+      if (!this.client) return fallback;
+      const result = await fn(this.client);
+      const closed = this.breaker.recordSuccess();
+      if (closed) {
+        log.info({ db: this.db, ...closed }, 'Redis circuit closed');
+      }
+      return result;
+    } catch (error) {
+      log.warn({ err: error, db: this.db }, `Redis ${operation} error`);
+      const opened = this.breaker.recordFailure();
+      if (opened) {
+        log.warn(
+          {
+            db: this.db,
+            reopened: opened === 'reopened',
+            openForMs: REDIS_CIRCUIT_OPEN_MS,
+          },
+          'Redis circuit open; skipping Redis',
+        );
+      }
+      return fallback;
+    }
+  }
 
   private async ensureConnection(): Promise<void> {
     if (!this.isEnabled) {
@@ -118,31 +171,17 @@ class CacheService {
   }
 
   async set(key: string, value: string, ttl?: number): Promise<void> {
-    try {
-      await this.ensureConnection();
-      if (!this.client) {
-        log.warn({ key }, 'Cache set skipped; Redis disabled');
-        return;
-      }
+    await this.run('set', undefined, async (client) => {
       if (ttl !== undefined && ttl > 0) {
-        await this.client.setex(key, ttl, value);
+        await client.setex(key, ttl, value);
       } else {
-        await this.client.set(key, value);
+        await client.set(key, value);
       }
-    } catch (error) {
-      log.error({ err: error, db: this.db }, 'Redis set error');
-    }
+    });
   }
 
   async get(key: string): Promise<string | null> {
-    try {
-      await this.ensureConnection();
-      if (!this.client) return null;
-      return await this.client.get(key);
-    } catch (error) {
-      log.error({ err: error, db: this.db }, 'Redis get error');
-      return null;
-    }
+    return this.run('get', null, (client) => client.get(key));
   }
 
   /**
@@ -150,28 +189,19 @@ class CacheService {
    * first increment. Null when Redis is unavailable.
    */
   async incrementWithTtl(key: string, ttl: number): Promise<number | null> {
-    try {
-      await this.ensureConnection();
-      if (!this.client) return null;
-      const count = await this.client.incr(key);
+    return this.run('incr', null, async (client) => {
+      const count = await client.incr(key);
       if (count === 1) {
-        await this.client.expire(key, ttl);
+        await client.expire(key, ttl);
       }
       return count;
-    } catch (error) {
-      log.error({ err: error, db: this.db }, 'Redis incr error');
-      return null;
-    }
+    });
   }
 
   async del(key: string): Promise<void> {
-    try {
-      await this.ensureConnection();
-      if (!this.client) return;
-      await this.client.del(key);
-    } catch (error) {
-      log.error({ err: error, db: this.db }, 'Redis del error');
-    }
+    await this.run('del', undefined, async (client) => {
+      await client.del(key);
+    });
   }
 
   async delPattern(pattern: string): Promise<number> {

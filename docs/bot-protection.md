@@ -81,6 +81,13 @@ arcjetProtect                    src/lib/arcjet/index.ts
   see [architecture.md](/docs/architecture.md#mboa--a-specific-tenant-deployment).
 - **Fail open.** A missing key, an SDK error or a timeout never blocks a
   request.
+- **Circuit breaker.** After 5 Arcjet API failures in a row (timeouts or
+  `[unavailable]`, not local SDK errors such as a fingerprint with no client
+  IP), each process stops calling Arcjet for 60 s: requests are served
+  without a decision (`BYPASSED`, no wait), then one request probes the API.
+  A successful probe resumes protection; a failed one bypasses for another
+  60 s. While bypassed, no bot is detected or counted, the local user-agent
+  checks included, and enforced hosts serve bots too.
 - **Cost.** Every request to a covered page is one Arcjet decision request,
   enforced or not, so usage counts from the observe-only stage onward.
   Enforcing a host also adds the Arcjet wait to every page view on it,
@@ -95,6 +102,8 @@ arcjetProtect                    src/lib/arcjet/index.ts
 | `arcjet_dry_run_match` | A `DRY_RUN` rule matched | host, path, rule, `decisionId` |
 | `arcjet_fingerprint_failed` | SDK threw or the decision errored (includes timeouts) | host, path, error, redacted headers. Sampled, 5 per minute; `*_sampled_out` otherwise. |
 | `arcjet_no_client_ip` | MBOA traffic with no routable client IP | host, path, masked hops, redacted headers. Sampled as above. |
+| `arcjet_circuit_open` | The circuit opened, or a probe failed (`reopened: true`) | `openForMs`, the error message |
+| `arcjet_circuit_closed` | A probe succeeded | `skipped` (requests bypassed), `openForMs` |
 
 Every denial, enforced or not, is also counted for the tenant's Blocked
 Bots widget after the response; see
@@ -126,7 +135,7 @@ takes effect after the redeploy, a few minutes.
 | --- | --- |
 | Real people are blocked on one host | Add that host to `ARCJET_UNENFORCED_HOSTS`. |
 | Real people are blocked everywhere | Set `ARCJET_ENFORCED_HOSTS` to empty. Arcjet keeps logging. |
-| Arcjet is slow or down | Nothing on observe-only hosts (the decision runs after the response). Enforced hosts fail open after `ARCJET_TIMEOUT_MS`, so each page view can wait that long. To stop calling it at all, unset `ARCJET_KEY`. |
+| Arcjet is slow or down | Nothing on observe-only hosts (the decision runs after the response). On enforced hosts the first 5 failing page views per process each wait `ARCJET_TIMEOUT_MS`; then the circuit breaker bypasses Arcjet with no wait (`arcjet_circuit_open`) and probes once a minute. To stop calling it at all, unset `ARCJET_KEY`. |
 | A bot we need is denied | Add its Arcjet label to `ARCJET_ALLOWED_BOTS` (code change and deploy). Meanwhile, unenforce the affected host. |
 
 Until the redeploy finishes, blocked people see the 403 page. Read the
@@ -135,7 +144,8 @@ label caused it.
 
 ## Tests
 
-- Unit: `tests/arcjet.test.ts` (rules, enforcement, client IP, logging).
+- Unit: `tests/arcjet.test.ts` (rules, enforcement, client IP, logging,
+  circuit breaker) and `tests/circuit-breaker.test.ts`.
 - E2E runs in CI against the dev hosts only, which stay unenforced. It does
   not run against production, where headless Chromium is expected to be
   denied.
