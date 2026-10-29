@@ -15,7 +15,6 @@ import { MapService } from '../../services/map-service';
 import { deviceAtom } from '../../store/device';
 import { searchAtom } from '../../store/search';
 import { Button } from '../ui/button';
-import { toBbox } from '../../lib/utils';
 
 const log = createLogger('use-my-location-button');
 
@@ -57,8 +56,8 @@ export function UseMyLocationButton() {
               // and the Autocomplete block UX can activate on the result.
               prevSearchLocation: location.address,
               searchLocationValidationError: '',
-              searchPlaceType: location.place_type ?? [],
-              searchBbox: toBbox(location.bbox) ?? null,
+              // A device position is a point, never an area.
+              searchRegion: '',
             }));
 
             return 'Successfully fetched your location';

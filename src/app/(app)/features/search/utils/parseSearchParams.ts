@@ -51,6 +51,10 @@ export function parseSearchParams(raw: RawSearchParams): FindResourcesQuery {
         : undefined,
     location,
     coordinates,
+    region:
+      location && typeof parsed.region === 'string'
+        ? parsed.region || undefined
+        : undefined,
     distance:
       typeof parsed.distance === 'string'
         ? parsed.distance || undefined

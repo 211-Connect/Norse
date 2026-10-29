@@ -42,6 +42,8 @@ export async function forwardGeocode(
   return (
     (await withCache(
       `forward_geocode:${stableHash({
+        // v2: results carry `region_id` (docs/area-search.md).
+        v: 2,
         address: normalizedAddress,
         locale,
         provider,

@@ -17,7 +17,12 @@ export function withDefaultQueryParams(
     return merged;
   }
 
-  const { coords, locationName, radius } = defaultQueryConfig;
+  const { coords, locationName, radius, regionId } = defaultQueryConfig;
+
+  // An area default applies only to sources with no location of their own.
+  if (regionId && merged.region == null && merged.coords == null) {
+    merged.region = regionId;
+  }
 
   if (merged.coords == null && coords) {
     merged.coords = `${coords.longitude},${coords.latitude}`;
@@ -27,7 +32,8 @@ export function withDefaultQueryParams(
     }
   }
 
-  if (merged.distance == null && radius != null) {
+  // A Region is searched as its shape: no radius.
+  if (merged.region == null && merged.distance == null && radius != null) {
     merged.distance = radius;
   }
 

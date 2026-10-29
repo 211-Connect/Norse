@@ -10,6 +10,7 @@ import {
   USER_PREF_PLACE,
   USER_PREF_POSTCODE,
   USER_PREF_REGION,
+  USER_PREF_REGION_ID,
 } from './constants';
 
 const COOKIE_OPTIONS = { path: '/' } as const;
@@ -26,6 +27,7 @@ const LOCATION_COOKIE_KEYS = [
   USER_PREF_PLACE,
   USER_PREF_POSTCODE,
   USER_PREF_REGION,
+  USER_PREF_REGION_ID,
 ] as const;
 
 export function clearLocationCookies() {
@@ -45,4 +47,8 @@ export function setLocationCookies(address: string, result: GeocodeResult) {
   if (result.postcode)
     setCookie(USER_PREF_POSTCODE, result.postcode, COOKIE_OPTIONS);
   if (result.region) setCookie(USER_PREF_REGION, result.region, COOKIE_OPTIONS);
+  // Always written or cleared, so a point never inherits the last area.
+  if (result.region_id)
+    setCookie(USER_PREF_REGION_ID, result.region_id, COOKIE_OPTIONS);
+  else deleteCookie(USER_PREF_REGION_ID, COOKIE_OPTIONS);
 }

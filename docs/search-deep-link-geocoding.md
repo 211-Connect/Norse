@@ -40,7 +40,9 @@ a place.
      present but `coords` is missing (the case the middleware deferred).
    - Forward-geocodes `searchQuery.location` via `forwardGeocode` (Mapbox).
    - On success: `redirect()`s to the same `/search` path with all original
-     params preserved (`qs.stringify(rawParams, ...)`) plus `coords` appended.
+     params preserved (`qs.stringify(rawParams, ...)`) plus `coords` appended,
+     and `region` when the place is an area (county, city, ZIP…) — see
+     [docs/area-search.md](/docs/area-search.md).
    - On failure (no geocode match): logs a warning and continues rendering
      search results without `coords` rather than blocking the page.
 

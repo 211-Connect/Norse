@@ -24,6 +24,7 @@ Other docs, load only when the task touches that area:
 - [docs/scorecards.md](/docs/scorecards.md) — managing per-tenant AI-classification taxonomy-to-need weights.
 - [docs/scheduled-pdf-delivery.md](/docs/scheduled-pdf-delivery.md) — emailing printable directory PDFs on a weekly/monthly schedule: daily Payload job, server-side rendering via an internal Pages API route.
 - [docs/search-deep-link-geocoding.md](/docs/search-deep-link-geocoding.md) — forward-geocoding a deep link's `location` when `coords` is missing (all tenants).
+- [docs/area-search.md](/docs/area-search.md) — searching by Region (state/county/city/ZIP) over `GET /search`: `region`/`location` params, the geocode→Region resolver, union matching, map outline, `POST /search` deprecation.
 - [docs/tenant-api-key.md](/docs/tenant-api-key.md) — per-tenant Norse API authentication key (`x-api-key`), caching, and bulk backfill endpoint.
 - [docs/bot-protection.md](/docs/bot-protection.md) — Arcjet bot protection on directory pages: covered routes, env-only enforcement (no Payload setting), rollout and recovery runbook.
 - [docs/blocked-traffic-analytics.md](/docs/blocked-traffic-analytics.md) — counting Arcjet denials per tenant (in-memory, pushed to Norse-API each minute, stored hourly) for the Blocked Bots analytics widget; classification rules.

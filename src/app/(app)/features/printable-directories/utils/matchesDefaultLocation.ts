@@ -13,6 +13,10 @@ export function matchesDefaultLocation(
     PrintableDirectoryDefaultQueryConfigDto | null | undefined,
   queryParams: Record<string, unknown>,
 ): boolean {
+  if (defaultQueryConfig?.regionId || queryParams.region != null) {
+    return queryParams.region === defaultQueryConfig?.regionId;
+  }
+
   if (!defaultQueryConfig?.coords || !queryParams.coords) {
     return false;
   }

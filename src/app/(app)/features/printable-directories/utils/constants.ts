@@ -25,6 +25,7 @@ export const LOCATION_QUERY_PARAM_KEYS = new Set([
   'coords',
   'location',
   'distance',
+  'region',
 ]);
 
 /**

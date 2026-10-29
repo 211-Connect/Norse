@@ -4,6 +4,7 @@ import {
   USER_PREF_COORDS,
   USER_PREF_DISTANCE,
   USER_PREF_LOCATION,
+  USER_PREF_REGION_ID,
 } from '@/app/(app)/shared/lib/constants';
 import { isSearchPathname } from '@/app/(app)/shared/lib/paths';
 import { validateCoordsString } from '@/app/(app)/shared/lib/validators';
@@ -14,6 +15,7 @@ export function searchLinkCorrectionMiddleware(request: NextRequest) {
   const prefLocation = request.cookies.get(USER_PREF_LOCATION)?.value;
   const prefCoords = request.cookies.get(USER_PREF_COORDS)?.value;
   const prefDistance = request.cookies.get(USER_PREF_DISTANCE)?.value;
+  const prefRegionId = request.cookies.get(USER_PREF_REGION_ID)?.value;
 
   const alreadyHasLocation = searchParams.has('location');
   const alreadyHasCoords = searchParams.has('coords');
@@ -25,6 +27,10 @@ export function searchLinkCorrectionMiddleware(request: NextRequest) {
 
     if (prefLocation && !alreadyHasLocation) {
       url.searchParams.set('location', prefLocation);
+      // The saved location's Region travels with it, never on its own.
+      if (prefRegionId && !searchParams.has('region')) {
+        url.searchParams.set('region', prefRegionId);
+      }
       anyChanges = true;
     }
 
@@ -49,7 +55,12 @@ export function searchLinkCorrectionMiddleware(request: NextRequest) {
         anyChanges = true;
       }
     }
-    if (prefDistance && !alreadyHasDistance) {
+    // A Region is searched as its shape, so it takes no distance.
+    if (
+      prefDistance &&
+      !alreadyHasDistance &&
+      !url.searchParams.has('region')
+    ) {
       url.searchParams.set('distance', prefDistance);
       anyChanges = true;
     }

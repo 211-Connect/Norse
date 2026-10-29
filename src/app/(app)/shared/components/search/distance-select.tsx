@@ -15,6 +15,7 @@ import {
   searchAtom,
   searchCoordinatesAtom,
   searchDistanceAtom,
+  searchRegionAtom,
 } from '../../store/search';
 import { Label } from '../ui/label';
 import {
@@ -43,6 +44,7 @@ export function DistanceSelect({
   const setSearch = useSetAtom(searchAtom);
   const coords = useAtomValue(searchCoordinatesAtom);
   const distance = useAtomValue(searchDistanceAtom);
+  const region = useAtomValue(searchRegionAtom);
   const radiusOptions = useMemo(() => {
     const configuredRadiusOptions =
       appConfig?.search?.radiusOptions
@@ -81,6 +83,9 @@ export function DistanceSelect({
 
     onValueChange?.(value);
   };
+
+  // An area (county, city, ZIP…) is searched as its shape: no radius.
+  if (region) return null;
 
   return (
     <div className={cn('flex items-center gap-2', className)}>

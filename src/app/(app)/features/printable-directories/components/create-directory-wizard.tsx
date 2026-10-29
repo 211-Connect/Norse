@@ -89,6 +89,7 @@ export function CreateDirectoryWizard({
   );
   const [locationName, setLocationName] = useState('');
   const [coordinates, setCoordinates] = useState<number[] | null>(null);
+  const [regionId, setRegionId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -174,6 +175,7 @@ export function CreateDirectoryWizard({
     setTopicOption(null);
     setLocationName('');
     setCoordinates(null);
+    setRegionId(null);
     setError(null);
   };
 
@@ -231,6 +233,8 @@ export function CreateDirectoryWizard({
             coords: coordinates
               ? { latitude: coordinates[1], longitude: coordinates[0] }
               : undefined,
+            // An area (county, city, ZIP…) is searched as its Region.
+            regionId: regionId ?? undefined,
           }
         : undefined;
 
@@ -508,9 +512,10 @@ export function CreateDirectoryWizard({
                   showIcon={false}
                   placeholder=""
                   initialValue={locationName}
-                  onLocationChange={(location, nextCoordinates) => {
+                  onLocationChange={(location, nextCoordinates, regionId) => {
                     setLocationName(location);
                     setCoordinates(nextCoordinates);
+                    setRegionId(regionId);
                   }}
                 />
                 <p className="text-muted-foreground text-xs">

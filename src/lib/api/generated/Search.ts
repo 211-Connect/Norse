@@ -45,11 +45,13 @@ export class Search<
       ...params,
     });
   /**
-   * No description
+   * @description Kept only for existing callers of `geo_type=boundary` with a GeoJSON body. Area search is `GET /search?region=county:53077` (or `location=Yakima`); see docs/area-search.md. Responses carry a `Deprecation` header; the route will be removed.
    *
    * @tags Search
    * @name SearchControllerGetResourcesPost
+   * @summary Deprecated: use GET /search with `region` or `location`.
    * @request POST:/search
+   * @deprecated
    */
   searchControllerGetResourcesPost = (
     query: SearchControllerGetResourcesPostParams = {},

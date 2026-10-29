@@ -13,7 +13,7 @@ import {
   clearLocationCookies,
   setLocationCookies,
 } from '../../lib/location-cookies';
-import { cn, toBbox } from '../../lib/utils';
+import { cn } from '../../lib/utils';
 import {
   prevSearchLocationAtom,
   searchCoordinatesAtom,
@@ -41,7 +41,15 @@ type IntegratedModeProps = BaseProps & {
 // Standalone mode - uses local state and callbacks
 type StandaloneModeProps = BaseProps & {
   mode: 'standalone';
-  onLocationChange: (location: string, coordinates: number[] | null) => void;
+  /**
+   * `regionId` is set when the picked place is an area (county, city, ZIP…)
+   * and should be searched as that Region; see docs/area-search.md.
+   */
+  onLocationChange: (
+    location: string,
+    coordinates: number[] | null,
+    regionId: string | null,
+  ) => void;
   initialValue?: string;
 };
 
@@ -207,6 +215,7 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
         props.onLocationChange(
           value,
           coords.type === 'invalid' ? null : (coords.coordinates ?? null),
+          coords.type === 'invalid' ? null : (coords.region_id ?? null),
         );
       } else {
         setSearch?.((prev) => {
@@ -227,9 +236,8 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
               : {}),
             searchLocation: value,
             searchLocationValidationError: '',
-            // Capture place metadata for advanced geospatial filtering
-            searchPlaceType: coords.place_type ?? [],
-            searchBbox: toBbox(coords.bbox) ?? null,
+            searchRegion:
+              coords.type === 'invalid' ? '' : (coords.region_id ?? ''),
           };
         });
       }
@@ -285,8 +293,7 @@ export function LocationSearchBar(props: LocationSearchBarProps) {
           searchLocation: nextValue,
           prevSearchLocation: nextValue,
           searchLocationValidationError: '',
-          searchPlaceType: [],
-          searchBbox: null,
+          searchRegion: '',
         }));
       }
     },

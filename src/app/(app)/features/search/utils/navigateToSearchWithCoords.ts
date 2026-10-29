@@ -38,7 +38,12 @@ export async function navigateToSearchWithCoords(
 
   if (placeMetadata) {
     const redirectQueryString = qs.stringify(
-      { ...rawParams, coords: placeMetadata.coordinates.join(',') },
+      {
+        ...rawParams,
+        coords: placeMetadata.coordinates.join(','),
+        // An area (county, city, ZIP…) is searched as its Region.
+        ...(placeMetadata.region_id && { region: placeMetadata.region_id }),
+      },
       { addQueryPrefix: true },
     );
     redirect(`/${locale}/search${redirectQueryString}`);

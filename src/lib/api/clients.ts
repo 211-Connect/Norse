@@ -7,6 +7,7 @@ import { PrintableDirectories } from './generated/PrintableDirectories';
 import { PrintableDirectoriesPublic } from './generated/PrintableDirectoriesPublic';
 import { PrintableDirectoryDeliveries } from './generated/PrintableDirectoryDeliveries';
 import { PrintableDirectoryDeliveriesInternal } from './generated/PrintableDirectoryDeliveriesInternal';
+import { Region } from './generated/Region';
 import { Resource } from './generated/Resource';
 import { Search } from './generated/Search';
 import { ShortUrl } from './generated/ShortUrl';
@@ -34,6 +35,8 @@ export const searchApiClient = new Search(clientArgs);
 export const shortUrlApiClient = new ShortUrl(clientArgs);
 
 export const geocodingApiClient = new Geocoding(clientArgs);
+
+export const regionApiClient = new Region(clientArgs);
 
 export const printableDirectoriesApiClient = new PrintableDirectories(
   clientArgs,
