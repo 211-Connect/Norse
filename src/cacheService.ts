@@ -4,12 +4,19 @@ import { createLogger } from '@/lib/logger';
 
 const log = createLogger('cache');
 
+/** After a failed first connect, wait this long before trying again. */
+const CONNECT_RETRY_COOLDOWN_MS = 10_000;
+/** Cap on ioredis's reconnect backoff once a connection drops. */
+const MAX_RECONNECT_DELAY_MS = 5_000;
+
 class CacheService {
   private client: Redis | null = null;
-  private isEnabled = Boolean(process.env.CACHE_REDIS_URI);
+  private readonly isEnabled = Boolean(process.env.CACHE_REDIS_URI);
   private isConnecting = false;
   private connectionPromise: Promise<void> | null = null;
-  private connectionAttempted = false;
+  private lastConnectFailureAt = 0;
+  /** ioredis reconnect attempts since the connection dropped; 0 when up. */
+  private reconnectAttempts = 0;
 
   constructor(private db: number = 0) {}
 
@@ -25,11 +32,15 @@ class CacheService {
       return this.connectionPromise;
     }
 
-    if (this.connectionAttempted && !this.client) {
-      log.warn(
-        { db: this.db },
-        'Previous Redis connection attempt failed; caching is disabled',
-      );
+    // An existing client that is not ready is reconnecting on its own
+    // (retryStrategy never gives up); with enableOfflineQueue off, commands
+    // fail fast until it is back, and callers fall back to the source.
+    if (this.client) return;
+
+    // The first connect failed recently: skip Redis for now instead of
+    // paying connectTimeout on every call, but try again after a cooldown
+    // rather than staying disabled for the life of the process.
+    if (Date.now() - this.lastConnectFailureAt < CONNECT_RETRY_COOLDOWN_MS) {
       return;
     }
 
@@ -41,7 +52,6 @@ class CacheService {
     } finally {
       this.isConnecting = false;
       this.connectionPromise = null;
-      this.connectionAttempted = true;
     }
   }
 
@@ -59,19 +69,17 @@ class CacheService {
         commandTimeout: 1_000,
         lazyConnect: true,
         retryStrategy: (times) => {
-          // 0.25s → 0.5s → 0.75s → 1s, then give up (~2.5s total)
-          if (times > 4) {
-            log.error(
-              { db: this.db, attempts: times },
-              'Redis reconnection failed; giving up',
+          // 0.25s, 0.5s, 0.75s, ... capped at 5s, and never give up:
+          // returning null ends the client for good, which used to turn
+          // the cache off until the process restarted.
+          const delay = Math.min(times * 250, MAX_RECONNECT_DELAY_MS);
+          this.reconnectAttempts = times;
+          if (this.shouldLogReconnect()) {
+            log.warn(
+              { db: this.db, attempt: times, delayMs: delay },
+              'Redis reconnecting',
             );
-            return null;
           }
-          const delay = times * 250;
-          log.debug(
-            { db: this.db, attempt: times, delayMs: delay },
-            'Redis will reconnect',
-          );
           return delay;
         },
         reconnectOnError: (err) => {
@@ -83,28 +91,41 @@ class CacheService {
       });
 
       this.client.on('error', (err) => {
-        log.error({ err, db: this.db }, 'Redis error');
+        if (this.shouldLogReconnect()) {
+          log.error({ err, db: this.db }, 'Redis error');
+        }
       });
 
-      this.client.on('reconnecting', () => {
-        log.warn({ db: this.db }, 'Redis reconnecting');
+      this.client.on('ready', () => {
+        if (this.reconnectAttempts === 0) return;
+        log.info(
+          { db: this.db, attempts: this.reconnectAttempts },
+          'Redis reconnected',
+        );
+        this.reconnectAttempts = 0;
       });
 
       await this.client.connect();
       log.info({ db: this.db }, 'Redis connected and ready');
     } catch (error) {
       log.error({ err: error, db: this.db }, 'Failed to connect to Redis');
-      if (this.client) {
-        try {
-          await this.client.quit();
-        } catch {
-          // Ignore cleanup errors
-        }
-      }
+      // disconnect(), not quit(): quit() does not stop a client that is
+      // already retrying, which would then reconnect in the background as
+      // an orphan connection.
+      this.client?.disconnect();
       this.client = null;
-      this.isEnabled = false;
+      this.reconnectAttempts = 0;
+      this.lastConnectFailureAt = Date.now();
       throw error;
     }
+  }
+
+  /**
+   * While Redis is down, ioredis retries every few seconds forever; log the
+   * first attempts and then about once a minute, not every attempt.
+   */
+  private shouldLogReconnect(): boolean {
+    return this.reconnectAttempts <= 2 || this.reconnectAttempts % 12 === 0;
   }
 
   async clear(): Promise<void> {
