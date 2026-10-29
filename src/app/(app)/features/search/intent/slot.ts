@@ -51,14 +51,25 @@ export type IntentOf<D extends SlotDeclarations> = {
     : never;
 };
 
-/** A plain string parameter. Repeated or bracketed keys are not a string, so they are unstated. */
+/**
+ * A plain key's value as `qs` parsed it, read as its first value, as the browser's `URLSearchParams.get`
+ * reads it (ISS-2472). `qs` makes an array of a repeated key (`location=a&location=b`) and of an index
+ * bracket (`location[0]=a`, ISS-2473), so both read as their first value. A named or nested bracket
+ * (`location[x]=a`, `location[0][k]=a`) and an index above qs's array limit of 20, which qs makes an
+ * object, say nothing readable.
+ */
+export function firstValue(value: ParsedQs[string]): string | undefined {
+  if (typeof value === 'string') return value;
+  return Array.isArray(value) && typeof value[0] === 'string'
+    ? value[0]
+    : undefined;
+}
+
+/** A plain string parameter, read as its first value. */
 export function stringParam(key: string): SlotDeclaration<string> {
   return {
     keys: [key],
-    decode: ({ parsed }) => {
-      const value = parsed[key];
-      return typeof value === 'string' ? value : undefined;
-    },
+    decode: ({ parsed }) => firstValue(parsed[key]),
     encode: (value) => [[key, value]],
   };
 }
