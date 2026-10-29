@@ -9,6 +9,15 @@ a separate NestJS repo).
 - **Incoming requests**: Next.js's built-in request/render spans (root span
   per request, RSC render spans, route handler spans, etc.) — these come for
   free once an OTel SDK is registered, no extra code required.
+- **Redis commands**: `@opentelemetry/instrumentation-ioredis`, registered in
+  `src/instrumentation.ts` next to `'auto'`, creates a client span per
+  command (`get`, `setex`, ...; `db.system = redis`) under the request that
+  ran it, with an error status on a timeout. `db.statement` keeps the
+  command and key only; values are masked (`[2 other arguments]`). It
+  patches `ioredis` when `require()` loads it, so `ioredis` is in
+  `serverExternalPackages` (`next.config.js`): a copy bundled into
+  `.next/server/chunks` is never patched and traces nothing.
+  `requireParentSpan` drops commands that run outside a request.
 - **Outgoing calls to the Norse API**: every call made through the generated
   SDK (`src/lib/api/clients.ts`) goes through the global `fetch`. `@vercel/otel`'s
   fetch instrumentation patches that global `fetch`, creates a client span for
@@ -185,8 +194,8 @@ configuration change, out of scope here.
 
 - `onRequestError` instrumentation hook for error reporting — not wired up;
   can be added alongside `register()` in the same `instrumentation.ts`.
-- DB/Redis-level spans (e.g. `@opentelemetry/instrumentation-pg`/`ioredis`)
-  — only HTTP-level request/response tracing exists today.
+- Postgres spans (e.g. `@opentelemetry/instrumentation-pg`). Redis is
+  traced (see above); Postgres queries are not.
 - Tempo `metrics_generator` / service-graph wiring into the existing local
   Prometheus — would need `--web.enable-remote-write-receiver` on the
   `prometheus` service; not required to see propagated traces.
