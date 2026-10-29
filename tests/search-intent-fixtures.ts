@@ -380,26 +380,29 @@ export const SHAPE_FIXTURES: Fixture[] = [
     'classic_text',
     { query: 'syntheticquery%20text' },
   ),
+  // ISS-2472 (2026-10-22) supersedes ISS-2382's "unreadable means unstated": a repeated plain key reads as
+  // its first value. Both fixtures below read nothing for the repeated key until then.
   shape(
-    'ISS-2382 repeated location is unstated; coords and distance are kept',
+    'ISS-2382 repeated location reads as its first value, here empty; coords and distance are kept',
     'query=RP&query_type=taxonomy&location=&location=syntheticplace+text%2C&coords=-122.3%2C47.6&distance=5&query_label=syntheticlabel+text',
-    'query=RP&query_label=syntheticlabel+text&query_type=taxonomy&coords=-122.3%2C47.6&distance=5',
+    'query=RP&query_label=syntheticlabel+text&query_type=taxonomy&location=&coords=-122.3%2C47.6&distance=5',
     'taxonomy_card',
     {
       query: 'RP',
       queryLabel: 'syntheticlabel text',
       queryType: 'taxonomy',
+      location: '',
       coords: COORDS,
       distance: '5',
     },
     { modifiers: ['distance', 'coords'] },
   ),
   shape(
-    'ISS-2382 repeated query_type is unstated, so a topic code reads as classic text',
+    'ISS-2382 repeated query_type reads as its first value, so a topic code is a topic card',
     'query=BH-3800.7250&query_type=taxonomy&query_type=taxonomy',
-    'query=BH-3800.7250',
-    'classic_text',
-    { query: 'BH-3800.7250' },
+    'query=BH-3800.7250&query_type=taxonomy',
+    'taxonomy_card',
+    { query: 'BH-3800.7250', queryType: 'taxonomy' },
   ),
   shape(
     'ISS-2383 distance with no location or coords is stated',
@@ -434,12 +437,19 @@ export const SHAPE_FIXTURES: Fixture[] = [
     'classic_text',
     { query: 'PN-8100.4500-120', queryType: 'taxonomy ' },
   ),
+  // ISS-2473 (2026-10-22): a plain key bracketed by the old filter navigation (ISS-2409) reads as its first
+  // value. It read as nothing until then.
   shape(
-    'ISS-2384 bracketed query_type and location are unstated',
+    'ISS-2384 bracketed query_type and location read as their first values',
     'query=BH-3800.7250&query_type%5B0%5D=taxonomy&location%5B0%5D=syntheticplace',
-    'query=BH-3800.7250',
-    'classic_text',
-    { query: 'BH-3800.7250' },
+    'query=BH-3800.7250&query_type=taxonomy&location=syntheticplace',
+    'taxonomy_card',
+    {
+      query: 'BH-3800.7250',
+      queryType: 'taxonomy',
+      location: 'syntheticplace',
+    },
+    { modifiers: ['location_no_coords'] },
   ),
   shape(
     'ISS-2384 the gate on a topic code: taxonomy query_type with a and sllc is AI notify',
@@ -556,6 +566,79 @@ export const SHAPE_FIXTURES: Fixture[] = [
     'no_query',
     { location: 'syntheticplace', coords: [] },
     { modifiers: ['coords'] },
+  ),
+  // ISS-2472 (2026-10-22): a repeated plain key reads as its first value, as `URLSearchParams.get` does.
+  shape(
+    'ISS-2472 repeated location reads as its first value',
+    'query=food&location=Seattle&location=Tacoma',
+    'query=food&location=Seattle',
+    'classic_text',
+    { query: 'food', location: 'Seattle' },
+    { modifiers: ['location_no_coords'] },
+  ),
+  shape(
+    'ISS-2472 repeated query reads as its first value',
+    'query=food&query=housing&query_type=text',
+    'query=food&query_type=text',
+    'classic_text',
+    { query: 'food', queryType: 'text' },
+  ),
+  shape(
+    'ISS-2472 repeated coords read as the first pair',
+    'query=food&location=Seattle&coords=-122.3%2C47.6&coords=-122.4%2C47.5',
+    'query=food&location=Seattle&coords=-122.3%2C47.6',
+    'classic_text',
+    { query: 'food', location: 'Seattle', coords: COORDS },
+    { modifiers: ['coords'] },
+  ),
+  shape(
+    'ISS-2472 repeated sort, age and ai_scenario read as their first values',
+    'query=food&query_type=hybrid&ai_scenario=clarify_low_info&ai_scenario=search&sort=name&sort=distance&age=5&age=7',
+    'query=food&query_type=hybrid&ai_scenario=clarify_low_info&sort=name&age=5',
+    'clarify',
+    {
+      query: 'food',
+      queryType: 'hybrid',
+      aiScenario: 'clarify_low_info',
+      sort: 'name',
+      age: 5,
+    },
+    { modifiers: ['sort', 'age'] },
+  ),
+  shape(
+    'ISS-2472 repeated sllc and page read as their first values',
+    'query=food&sllc=1&sllc=1&page=2&page=3',
+    'query=food&sllc=1&page=2',
+    'classic_text',
+    { query: 'food' },
+    {
+      modifiers: ['page'],
+      envelope: { sllc: '1', page: '2', passThrough: [] },
+    },
+  ),
+  // ISS-2473 (2026-10-22): a plain key bracketed by the old filter navigation reads as its first value.
+  shape(
+    'ISS-2473 bracketed location and coords read as their first values',
+    'query=food&location%5B0%5D=Seattle&coords%5B0%5D=-122.3%2C47.6',
+    'query=food&location=Seattle&coords=-122.3%2C47.6',
+    'classic_text',
+    { query: 'food', location: 'Seattle', coords: COORDS },
+    { modifiers: ['coords'] },
+  ),
+  shape(
+    'ISS-2473 location[0] and location[1] read as the first',
+    'query=food&location%5B0%5D=Seattle&location%5B1%5D=Tacoma',
+    'query=food&location=Seattle',
+    'classic_text',
+    { query: 'food', location: 'Seattle' },
+    { modifiers: ['location_no_coords'] },
+  ),
+  shape(
+    'ISS-2473 a named bracket on a plain key says nothing readable',
+    'query=food&location%5Bx%5D=Seattle',
+    'query=food',
+    'classic_text',
+    { query: 'food' },
   ),
 ];
 

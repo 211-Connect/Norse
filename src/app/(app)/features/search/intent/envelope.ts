@@ -31,13 +31,7 @@ export const ENVELOPE_KEYS = [
   'entry',
 ] as const;
 
-/** A single value, as the search page reads it: a repeated key is not a string. */
-function single(raw: RawSearchParams, key: string): string | undefined {
-  const value = raw[key];
-  return typeof value === 'string' ? value : undefined;
-}
-
-/** The first value, as the browser's `URLSearchParams.get` reads it. */
+/** The first value, as the browser's `URLSearchParams.get` reads it: a repeated marker reads as its first (ISS-2472). */
 function first(raw: RawSearchParams, key: string): string | undefined {
   const value = raw[key];
   return Array.isArray(value) ? value[0] : value;
@@ -60,13 +54,13 @@ export function readEnvelope(
       passThrough.push([key, v]);
   }
   const markers = {
-    sllc: single(raw, 'sllc'),
-    a: single(raw, 'a'),
-    page: single(raw, 'page'),
+    sllc: first(raw, 'sllc'),
+    a: first(raw, 'a'),
+    page: first(raw, 'page'),
     pdid: first(raw, 'pdid'),
     pdsid: first(raw, 'pdsid'),
     pdsrcid: first(raw, 'pdsrcid'),
-    entry: single(raw, 'entry'),
+    entry: first(raw, 'entry'),
   };
   // Absent markers are left out rather than set to undefined, so an envelope reads as what the URL said.
   return {
