@@ -5,8 +5,8 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import {
-  liftForRewrite,
   liftQueryString,
+  liftSearchParams,
   rawSearchParams,
   rewriteSearchUrl,
   UNSTATED,
@@ -48,6 +48,17 @@ test('a filter click on a URL with a repeated location keeps one location and th
     value: [-122.3, 47.6],
   });
   assert.deepStrictEqual(intent.queryLabel, { stated: true, value: 'Food' });
+});
+
+test('a filter click on a URL with bracketed plain keys writes them as plain keys (ISS-2473)', () => {
+  assert.equal(
+    filterClick(
+      'query=food&location%5B0%5D=Seattle&coords%5B0%5D=-122.3%2C47.6',
+      addFilter,
+    ),
+    '/search?query=food&location=Seattle&coords=-122.3%2C47.6' +
+      '&filters%5Bpayment%5D%5B0%5D=Free',
+  );
 });
 
 test('clearing filters drops them and the page, and keeps the rest', () => {
@@ -129,7 +140,7 @@ test('a rewrite changes bytes, not meaning: the URL it writes lifts to the inten
   for (const fixture of ALL_FIXTURES.filter((f) => !f.loses)) {
     for (const query of [fixture.query, withRepeats(fixture.query)]) {
       const raw = rawSearchParams(query);
-      const read = liftForRewrite(raw);
+      const read = liftSearchParams(raw);
       const url = rewriteSearchUrl(raw, (i) => i, { newSearch: false });
       const written = liftQueryString(url.split('?')[1] ?? '');
       assert.deepStrictEqual(written.intent, read.intent, `${query} -> ${url}`);
