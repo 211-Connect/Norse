@@ -1,3 +1,4 @@
+import { IORedisInstrumentation } from '@opentelemetry/instrumentation-ioredis';
 import {
   ParentBasedSampler,
   TraceIdRatioBasedSampler,
@@ -57,6 +58,14 @@ export function register() {
     traceSampler: new ParentBasedSampler({
       root: new TraceIdRatioBasedSampler(parseFloat(traceSamplerArg)),
     }),
+    instrumentations: [
+      'auto',
+      // A span per Redis command (`cacheService`). Needs ioredis in
+      // serverExternalPackages (next.config.js). requireParentSpan: no
+      // orphan root spans from commands outside a request, such as the
+      // connect-time ready check.
+      new IORedisInstrumentation({ requireParentSpan: true }),
+    ],
     instrumentationConfig: {
       fetch: {
         // Only inject `traceparent` for calls to the Norse API — not

@@ -82,7 +82,11 @@ const nextConfig = {
   // Do not bundle pino/pino-pretty for server — use native require() at
   // runtime. This avoids pino.transport() worker threads resolving paths
   // inside the .next/server/vendor-chunks/ directory.
-  serverExternalPackages: ['pino', 'pino-pretty'],
+  // ioredis is loaded with native require() too, so the OpenTelemetry
+  // ioredis instrumentation (src/instrumentation.ts), which patches the
+  // module as require() loads it, can see it; a bundled copy is never
+  // patched.
+  serverExternalPackages: ['pino', 'pino-pretty', 'ioredis'],
   // Disable source maps in production to save memory
   productionBrowserSourceMaps: false,
   webpack: (config, { dev, isServer }) => {
